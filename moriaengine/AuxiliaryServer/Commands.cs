@@ -18,18 +18,6 @@ namespace SteamEngine.AuxiliaryServer {
 				case "restart":
 					CmdRestart();
 					return;
-				case "svnupdate":
-					VersionControl.SvnUpdateProject(".");
-					foreach (IGameServerSetup game in Settings.KnownGameServersList) {
-						game.SvnUpdate(state);
-					}
-					return;
-				case "svncleanup":
-					VersionControl.SvnCleanUpProject(".");
-					foreach (IGameServerSetup game in Settings.KnownGameServersList) {
-						game.SvnCleanup(state);
-					}
-					return;
 				case "help":
 					DisplayHelp(state);
 					return;
@@ -44,8 +32,6 @@ namespace SteamEngine.AuxiliaryServer {
 		private static void DisplayHelp(ConsoleClient state) {
 			state.WriteLine(GameUid.AuxServer, "Available commands:"
 				+ "restart" + Environment.NewLine
-				+ "svnupdate" + Environment.NewLine
-				+ "svncleanup" + Environment.NewLine
 				+ "processes" + Environment.NewLine
 				+ "help");
 		}

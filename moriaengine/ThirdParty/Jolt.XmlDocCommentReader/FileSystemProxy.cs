@@ -38,10 +38,6 @@ namespace Jolt.GeneratedTypes.System.IO {
 			return File.Create(path, bufferSize, options);
 		}
 
-		public FileStream Create(string path, int bufferSize, FileOptions options, FileSecurity fileSecurity) {
-			return File.Create(path, bufferSize, options, fileSecurity);
-		}
-
 		public StreamWriter CreateText(string path) {
 			return File.CreateText(path);
 		}
@@ -60,14 +56,6 @@ namespace Jolt.GeneratedTypes.System.IO {
 
 		public bool Exists(string path) {
 			return File.Exists(path);
-		}
-
-		public FileSecurity GetAccessControl(string path) {
-			return File.GetAccessControl(path);
-		}
-
-		public FileSecurity GetAccessControl(string path, AccessControlSections includeSections) {
-			return File.GetAccessControl(path, includeSections);
 		}
 
 		public FileAttributes GetAttributes(string path) {
@@ -154,10 +142,6 @@ namespace Jolt.GeneratedTypes.System.IO {
 			File.Replace(sourceFileName, destinationFileName, destinationBackupFileName, ignoreMetadataErrors);
 		}
 
-		public void SetAccessControl(string path, FileSecurity fileSecurity) {
-			File.SetAccessControl(path, fileSecurity);
-		}
-
 		public void SetAttributes(string path, FileAttributes fileAttributes) {
 			File.SetAttributes(path, fileAttributes);
 		}
@@ -220,14 +204,11 @@ namespace Jolt.GeneratedTypes.System.IO {
 		FileStream Create(string path);
 		FileStream Create(string path, int bufferSize);
 		FileStream Create(string path, int bufferSize, FileOptions options);
-		FileStream Create(string path, int bufferSize, FileOptions options, FileSecurity fileSecurity);
 		StreamWriter CreateText(string path);
 		void Decrypt(string path);
 		void Delete(string path);
 		void Encrypt(string path);
 		bool Exists(string path);
-		FileSecurity GetAccessControl(string path);
-		FileSecurity GetAccessControl(string path, AccessControlSections includeSections);
 		FileAttributes GetAttributes(string path);
 		DateTime GetCreationTime(string path);
 		DateTime GetCreationTimeUtc(string path);
@@ -249,7 +230,6 @@ namespace Jolt.GeneratedTypes.System.IO {
 		string ReadAllText(string path, Encoding encoding);
 		void Replace(string sourceFileName, string destinationFileName, string destinationBackupFileName);
 		void Replace(string sourceFileName, string destinationFileName, string destinationBackupFileName, bool ignoreMetadataErrors);
-		void SetAccessControl(string path, FileSecurity fileSecurity);
 		void SetAttributes(string path, FileAttributes fileAttributes);
 		void SetCreationTime(string path, DateTime creationTime);
 		void SetCreationTimeUtc(string path, DateTime creationTimeUtc);

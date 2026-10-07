@@ -17,7 +17,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Windows.Forms;
 using SteamEngine.Common;
 
 namespace SteamEngine {
@@ -413,14 +412,8 @@ namespace SteamEngine {
 			this.title = t;
 		}
 
-		[SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
 		public void Show() {
-			IWin32Window window = Form.ActiveForm;
-			if (window != null) {
-				MessageBox.Show(window, this.msg, this.title);
-			} else {
-				MessageBox.Show(this.msg, this.title);
-			}
+			Console.Error.WriteLine(this.title + ": " + this.msg);
 		}
 	}
 

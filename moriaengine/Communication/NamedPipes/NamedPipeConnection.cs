@@ -20,106 +20,10 @@ using System.IO.Pipes;
 using SteamEngine.Common;
 
 namespace SteamEngine.Communication.NamedPipes {
+	// System.IO.Pipes has been cross-platform (Unix-domain-socket-backed on Linux/macOS)
+	// since .NET Core 2.1, so this is a real named pipe implementation on every platform
+	// .NET 8 runs on - no TCP-loopback workaround needed.
 	public sealed class NamedPipeConnection<TState> :
-#if !MSWIN
-		//temporarily, we fake named pipes via tcp in MONO
-		AbstractConnection<NamedPipeConnection<TState>, TState, System.Net.IPEndPoint>
-		where TState : IConnectionState<NamedPipeConnection<TState>, TState, System.Net.IPEndPoint>, new() {
-
-
-		internal System.Net.Sockets.Socket socket;
-
-		private AsyncCallback onSend;
-		private AsyncCallback onReceieve;
-
-		public NamedPipeConnection() {
-			this.onSend = this.OnSend;
-			this.onReceieve = this.OnReceieve;
-		}
-
-		public override System.Net.IPEndPoint EndPoint {
-			get {
-				return (System.Net.IPEndPoint) this.socket.RemoteEndPoint;
-			}
-		}
-
-		public override bool IsConnected {
-			get {
-				if (this.socket != null) {
-					return this.socket.Connected;
-				}
-				return false;
-			}
-		}
-
-		protected override void On_Init() {
-			base.On_Init();
-			this.BeginReceive();
-		}
-
-		private void BeginReceive() {
-			int offset = this.receivedDataLength;
-			byte[] buffer = this.receivingBuffer.bytes;
-
-			this.socket.BeginReceive(buffer, offset,
-				buffer.Length - offset, System.Net.Sockets.SocketFlags.None, onReceieve, null);
-		}
-
-		private void OnReceieve(IAsyncResult asyncResult) {
-			try {
-				if ((this.socket != null) && (this.socket.Handle != IntPtr.Zero)) {
-					int length = this.socket.EndReceive(asyncResult);
-
-					if (length > 0) {
-						//we have new data, but still possibly have some old data.
-						base.ProcessReceievedData(length);
-					} else {
-						this.Close("Connection lost");
-					}
-
-					if (this.IsConnected) {
-						this.BeginReceive();
-					}
-				}
-			} catch (Exception e) {
-				Logger.WriteDebug(e);
-				this.Close(e.Message);
-			}
-		}
-
-		protected override void On_DisposeUnmanagedResources() {
-			try {
-				this.socket.Shutdown(System.Net.Sockets.SocketShutdown.Both);
-			} catch { }
-			try {
-				this.socket.Close();
-			} catch { }
-			this.socket = null;
-
-			base.On_DisposeUnmanagedResources();
-		}
-
-		protected override void BeginSend(BufferToSend toSend) {
-			this.socket.BeginSend(toSend.buffer.bytes, toSend.offset, toSend.len, System.Net.Sockets.SocketFlags.None, onSend, toSend.buffer);
-		}
-
-		private void OnSend(IAsyncResult asyncResult) {
-			Buffer toDispose = (Buffer) asyncResult.AsyncState;
-
-			try {
-				System.Net.Sockets.SocketError err;
-				this.socket.EndSend(asyncResult, out err);
-
-				if (err != System.Net.Sockets.SocketError.Success) {
-					this.Close(err.ToString());
-				}
-			} catch (Exception e) {
-				this.Close(e.Message);
-			} finally {
-				toDispose.Dispose();
-			}
-		}
-#else
 		AbstractConnection<NamedPipeConnection<TState>, TState, string>
 		where TState : IConnectionState<NamedPipeConnection<TState>, TState, string>, new() {
 
@@ -214,7 +118,5 @@ namespace SteamEngine.Communication.NamedPipes {
 				toDispose.Dispose();
 			}
 		}
-
-#endif
 	}
 }

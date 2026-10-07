@@ -44,7 +44,6 @@ namespace PerCederberg.Grammatica.Parser {
 	 * @author   Per Cederberg, <per at percederberg dot net>
 	 * @version  1.0
 	 */
-	[EQATEC.Profiler.SkipInstrumentation]
 	public class RecursiveDescentParser : Parser {
 
 		/*
@@ -831,7 +830,6 @@ namespace PerCederberg.Grammatica.Parser {
 		 * A name value stack. This stack is used to detect loops and 
 		 * repetitions of the same production during look-ahead analysis.
 		 */
-		[EQATEC.Profiler.SkipInstrumentation]
 		private class CallStack {
 
 			/**

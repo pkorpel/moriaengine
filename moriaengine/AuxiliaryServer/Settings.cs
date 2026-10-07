@@ -25,10 +25,6 @@ namespace SteamEngine.AuxiliaryServer {
 		void InternalSetIniID(int iniID);
 
 		void StartGameServerProcess(BuildType build);
-
-		void SvnUpdate(ConsoleClient console);
-
-		void SvnCleanup(ConsoleClient console);
 	}
 
 	public static class Settings {

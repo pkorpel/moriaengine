@@ -15,50 +15,19 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
-//This basically uses Windows' high performance timer via P/Invoke, and provides methods for 
-//converting to and from milliseconds, seconds, and ticks.
+//Uses System.Diagnostics.Stopwatch (cross-platform, backed by the OS's own high
+//resolution timer on every platform .NET runs on) instead of P/Invoking Windows'
+//QueryPerformanceCounter/Frequency directly, and provides methods for converting
+//to and from milliseconds, seconds, and ticks.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace SteamEngine.Common {
 	public static class HighPerformanceTimer {
-
-		private static class NativeMethods {
-			[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#"),
-			DllImport("kernel32.dll")]
-			[return: MarshalAs(UnmanagedType.Bool)]
-			internal static extern bool QueryPerformanceCounter(out long counter);
-
-			[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#"),
-			DllImport("kernel32.dll")]
-			[return: MarshalAs(UnmanagedType.Bool)]
-			internal static extern bool QueryPerformanceFrequency(out long frequency);
-		}
-		
-
-		private static long frequency;
-		private static double dFrequency;
-		private static double dmFrequency;
-
-		private static double timeSpanTicksFrequency;
-		private static bool fallback;
-
-		static HighPerformanceTimer() {
-			try {
-				bool success = NativeMethods.QueryPerformanceFrequency(out frequency);
-				if (success) {
-					dFrequency = frequency;
-					dmFrequency = dFrequency / 1000.0;
-					timeSpanTicksFrequency = frequency / 10000000.0;
-					return;
-				} 
-			} catch { }
-
-			fallback=true;
-			Logger.WriteWarning("Unable to access high performance timer. Using a less accurate timing mechanism instead.");
-		}
+		private static readonly double dFrequency = Stopwatch.Frequency;
+		private static readonly double dmFrequency = dFrequency / 1000.0;
+		private static readonly double timeSpanTicksFrequency = Stopwatch.Frequency / 10000000.0;
 
 		public static void Init() {
 
@@ -66,42 +35,22 @@ namespace SteamEngine.Common {
 
 		public static long TickCount {
 			get {
-				if (fallback) {
-				    return Environment.TickCount;
-				}
-				long count;
-				bool success = NativeMethods.QueryPerformanceCounter(out count);
-				if (success) {
-					return count;
-				}
-				throw new FatalException("Unable to access high performance timer.");
-				//Debug.WriteLine("Attempt to read the high performance timer failed.");
-				//Sanity.IfTrueSay(true, "Attempt to read the high performance timer failed.");
-				//return Environment.TickCount;
+				return Stopwatch.GetTimestamp();
 			}
 		}
 
 		public static double TicksToSeconds(long count)
 		{
-			if (fallback) {
-			    return count/1000.0;
-			}
 			return count / dFrequency;
 		}
-		
+
 		public static long TicksToMilliseconds(long count)
 		{
-			if (fallback) {
-			    return count;
-			}
 			return (long) (count / dmFrequency);
 		}
-		
+
 		public static double TicksToDMilliseconds(long count)
 		{
-			if (fallback) {
-			    return count;
-			}
 			return (count / dmFrequency);
 		}
 
@@ -109,32 +58,20 @@ namespace SteamEngine.Common {
 		//our ticks probably have the same
 		public static TimeSpan TicksToTimeSpan(long count)
 		{
-			if (fallback) {
-			    return new TimeSpan(count);
-			}
 			return new TimeSpan((long) (count / timeSpanTicksFrequency));
 		}
-		
+
 		public static long TimeSpanToTicks(TimeSpan span)
 		{
-			if (fallback) {
-			    return span.Ticks;
-			}
 			return (long) (span.Ticks * timeSpanTicksFrequency);
 		}
 
 		public static long SecondsToTicks(double count)
 		{
-			if (fallback) {
-			    return (long) (count*1000);
-			}
 			return (long) (count * dFrequency);
 		}
 		public static long MillisecondsToTicks(long count)
 		{
-			if (fallback) {
-			    return count;
-			}
 			return (long) (count * dmFrequency);	//(count/1000.0)*dFrequency);
 		}
 	}

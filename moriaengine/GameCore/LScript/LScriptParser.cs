@@ -16,11 +16,9 @@
 */
 
 using System.IO;
-using EQATEC.Profiler;
 using PerCederberg.Grammatica.Parser;
 
 namespace SteamEngine.LScript {
-	[SkipInstrumentation]
 	internal class LScriptParser : StrictParser {
 		//ScriptCode code = null;
 

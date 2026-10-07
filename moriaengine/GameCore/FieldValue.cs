@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using EQATEC.Profiler;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 using SteamEngine.LScript;
@@ -322,7 +321,6 @@ namespace SteamEngine {
 			return false;
 		}
 
-		[SkipInstrumentation]
 		private FieldValueImpl GetFittingValueImpl() {
 			switch (this.fvType) {
 				case FieldValueType.Typeless:
@@ -427,7 +425,6 @@ namespace SteamEngine {
 			//}
 		}
 
-		[SkipInstrumentation]
 		private abstract class FieldValueImpl {
 			internal abstract object Value { get; set; }
 			internal abstract FieldValueImpl Clone();
@@ -474,17 +471,14 @@ namespace SteamEngine {
 			int model;
 
 			//resolving constructor
-			[SkipInstrumentation]
 			internal ModelValueImpl() {
 			}
 
-			[SkipInstrumentation]
 			private ModelValueImpl(ModelValueImpl copyFrom) {
 				this.thingDef = copyFrom.thingDef;
 				this.model = copyFrom.model;
 			}
 
-			[SkipInstrumentation]
 			internal override FieldValueImpl Clone() {
 				return new ModelValueImpl(this);
 			}
@@ -518,18 +512,15 @@ namespace SteamEngine {
 			object val;
 
 			//resolving constructor
-			[SkipInstrumentation]
 			internal TypedValueImpl(Type type) {
 				this.type = type;
 			}
 
-			[SkipInstrumentation]
 			protected TypedValueImpl(TypedValueImpl copyFrom) {
 				this.type = copyFrom.type;
 				this.val = copyFrom.val;
 			}
 
-			[SkipInstrumentation]
 			internal override FieldValueImpl Clone() {
 				return new TypedValueImpl(this);
 			}
@@ -597,16 +588,13 @@ namespace SteamEngine {
 			object obj;
 
 			//resolving constructor
-			[SkipInstrumentation]
 			internal TypelessValueImpl() {
 			}
 
-			[SkipInstrumentation]
 			private TypelessValueImpl(TypelessValueImpl copyFrom) {
 				this.obj = copyFrom.obj;
 			}
 
-			[SkipInstrumentation]
 			internal override FieldValueImpl Clone() {
 				return new TypelessValueImpl(this);
 			}
@@ -628,17 +616,14 @@ namespace SteamEngine {
 
 		private sealed class ThingDefValueImpl : TypedValueImpl {
 			//resolving constructor
-			[SkipInstrumentation]
 			internal ThingDefValueImpl(Type type)
 				: base(type) {
 			}
 
-			[SkipInstrumentation]
 			private ThingDefValueImpl(ThingDefValueImpl copyFrom)
 				: base(copyFrom) {
 			}
 
-			[SkipInstrumentation]
 			internal override FieldValueImpl Clone() {
 				return new ThingDefValueImpl(this);
 			}

@@ -12,12 +12,7 @@ namespace SteamEngine.AuxiliaryServer.SEGameServers {
 		}
 
 		internal static void Init() {
-#if MSWIN
 			instance.Bind(Tools.commonPipeName);
-#else
-			instance.Bind(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, Common.Tools.commonPort));
-#endif
-
 		}
 
 		internal static void Exit() {

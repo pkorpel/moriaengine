@@ -104,7 +104,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static bool CompileScriptsUsingMsBuild(int compilationNumber) {
 			try {
-				var file = MsBuildLauncher.Compile(".", Build.Type, "SteamEngine_Generated", compilationNumber);
+				var file = MsBuildLauncher.Compile(".", Build.Type, "Generated/SteamEngine.Generated.csproj", compilationNumber);
 				generatedAssembly = Assembly.LoadFile(file); ;
 				Console.WriteLine("Done compiling Generated C# scripts.");
 				return true;

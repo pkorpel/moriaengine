@@ -21,10 +21,7 @@ using System.Threading;
 using SteamEngine.Common;
 
 namespace SteamEngine.Communication.TCP {
-#if MSWIN
-	sealed
-#endif
- public class TcpClientFactory<TState> :
+	public sealed class TcpClientFactory<TState> :
 		AsyncCore<TcpConnection<TState>, TState, IPEndPoint>,
 		IClientFactory<TcpConnection<TState>, TState, IPEndPoint>
 		where TState : IConnectionState<TcpConnection<TState>, TState, IPEndPoint>, new() {
