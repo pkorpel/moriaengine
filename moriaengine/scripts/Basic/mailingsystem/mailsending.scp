@@ -1,0 +1,51 @@
+//Zamìøovátko pro zacílení pro odeslání zprávy
+[ScriptedTargetDef targ_delayed_message] //argv(1) mùe bıt rovnou text zprávy anebo null!
+message="Komu chceš poslat delayed message?"
+
+on=@start
+sysmessage(targ_delayed_message.message)
+return 0
+
+on=@targon_char //zamìøeno  argv(0)
+if(argv(1) != null) //máme text zprávy
+	if(!argv(0).IsPlayer)
+		sysmessage("Zamìøuj hráèe")
+		Target(targ_delayed_message,<argv(1)>)
+		return 1
+	endif
+	argv(0).delayedmessage(this,argv(1))
+	sysmessage("Hráèi <argv(0).name> odeslána zpráva <argv(1)>")
+else
+	if(!argv(0).IsPlayer)
+		sysmessage("Zamìøuj hráèe")
+		Target(targ_delayed_message)
+		return 1
+	endif
+	Dialog(input_delayed_message,argv(0))
+endif
+
+on=@targon_ground
+sysmessage("Zamìøuj hráèe")
+Target(targ_delayed_message)
+return 1
+
+on=@targon_item
+sysmessage("Zamìøuj hráèe")
+Target(targ_delayed_message)
+return 1
+
+//dialog na vepsání zprávy (pokud je potøeba)
+[InputDef input_delayed_message] //argv1 - cíl zprávy
+label="Napiš zprávu"
+default=""
+
+on=@response
+argv(1).delayedmessage(this,argv(0))
+sysmessage("Hráèi <argv(1).name> odeslána zpráva <argv(0)>")
+
+[function sendMessage]//v argu lze rovnou specifikovat zprávu
+if(argvcount == 0)
+	Target(targ_delayed_message)
+else
+	Target(targ_delayed_message,<argv(0)>)
+endif

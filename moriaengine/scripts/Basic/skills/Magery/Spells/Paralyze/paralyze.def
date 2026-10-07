@@ -1,0 +1,32 @@
+[DurableCharEffectSpellDef 38]
+DEFNAME=s_paralyze
+NAME=Paralyze
+SOUND=0x204
+RUNES=AEP
+CASTTIME=2.5
+RUNEITEM=i_rune_PARALYZE
+SCROLLITEM=i_scroll_PARALYZE
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+EFFECT=0,1000
+DURATION=10,60
+MANAUSE=12
+Requirements=50.0 Magery
+EffectPluginDef = p_paralyze
+EffectPluginKey_Spell = @@spellEffect_paralyze
+EffectPluginKey_Potion = @@potionEffect_paralyze
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x376A, 6, 1)
+	
+//todo para resist and/or mind defense effect
+
+//a_paralyze_haste implementation
+on=@start
+arg.seconds = this.GetAbility(a_paralyze_haste) * a_paralyze_haste.EffectPower
+if (arg.seconds > 0)
+	arg.skillTimer = this.CurrentSkillTimer
+	if (arg.skillTimer.skillSeqArgs == argo) //check if it's really our timer now
+		arg.skillTimer.DueInSeconds = System.Math.Max(arg.skillTimer.DueInSeconds - arg.seconds, 0.0)
+	endif
+endif
+

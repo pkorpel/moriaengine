@@ -1,0 +1,6 @@
+[PassiveAbilityDef a_field_duration_bonus]
+Name="Field Spells Duration Bonus"
+EffectPower=0.2/3 //+30% duration at 5 points
+
+
+//implementation of the actual effect lies in WallSpellDef

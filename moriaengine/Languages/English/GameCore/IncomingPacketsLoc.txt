@@ -1,0 +1,13 @@
+NotANumber                      = '{0}' is not a number!
+MaxAccCharsReached              = You already have the maximum number of characters in your account.
+IllegalCharsInName              = Illegal name - Contains something other than letters and spaces.
+IllegalTrailingSpacesInName     = Illegal name - Starts or ends with spaces.
+IllegalLongSpacesInName         = Illegal name - More than one space in a row.
+IllegalGender                   = Illegal gender={0}
+IllegalSkinColor                = Illegal skinColor={0}
+IllegalHairStyle                = Illegal hairStyle={0}
+IllegalHairColor                = Illegal hairColor={0}
+IllegalFacialhair               = Illegal facialHair={0}
+IllegalFacialHairColor          = Illegal facialHairColor={0}
+IllegalShirtColor               = Illegal shirtColor={0}
+IllegalPantsColor               = Illegal pantsColor={0}

@@ -1,0 +1,67 @@
+500168	You cannot say anything, you have been squelched.
+500169	You cannot pick that up.
+500170	You cannot pick that up.
+500171	You are too tired to lift a finger, much less anything else.
+500176	That is not your container, you can't store things here.
+500177	Access to bank not allowed anymore.
+500178	Access to bank not allowed anymore.
+500204	You cannot say anything, you have been squelched.
+500241	name incorrect
+500251	That location is too far away.
+500252	A ship cannot be created here.
+500268	This object needs to be mounted on something.
+500269	You cannot build that there.
+500270	You cannot build that there.
+500271	You cannot build near the door.
+500272	You cannot build near the stairs.
+500274	You can only place this in a house that you own!
+500275	You can only build this in a house.
+500276	You can only place this in a house or on a ship that you own!
+500277	Construction aborted. Please try again.
+500278	As a young player, you may not cast beneficial spells onto older players.
+500283	That container is too full to hold your potion.
+500284	You are wise enough not to add a different type of potion to that keg.
+500285	You are unsure what is in the keg, and decide not to add your mixture to it.
+500286	You were unable to complete your work before you died.
+500288	Dead people can't make potions.
+500291	Someone else is using that.
+500293	You were unable to complete your work before you died.
+500294	You cannot use that.
+500295	You are too far away to do that.
+500296	That's not something you can grind with a mortar and pestle!
+500297	That is not a potion ingredient.
+500298	You are not skilled enough to make anything out of that.
+500299	That is not an appropriate container for a potion.
+500300	They don't match.
+500301	It's not there.
+500302	Unable to find script list on keg.
+500303	One potion is missing the 'power' objVar.
+500304	They don't match.
+500305	One potion is missing the 'modifier' objVar.
+500306	They don't match.
+500309	Nothing Happens.
+500310	You are too busy with something else.
+500312	You cannot reach that.
+500313	The flask is empty.
+500314	That stand belongs to someone else.
+500315	You need an empty bottle to make a potion.
+500317	Nothing Happens
+500318	This flask is empty.
+500364	You can't use that, it belongs to someone else.
+500365	That is being used by someone else
+500446	That is too far away.
+500447	That is not accessible.
+500448	That is not accessible.
+500512	You may not take items from the corpses of the more established players.
+500513	Some young warrior felled this, and you cannot bring yourself to take any items from the corpse.
+500514	You cannot loot that corpse, as you are not the one that felled it and are not yet confident its slayer has taken everything off it they desire.
+500586	You do not have enough skill or resources to build anything!
+500691	You may not take items from the corpses of the more established players.
+500692	Some young warrior felled this, and you cannot bring yourself to take any items from the corpse.
+500693	You cannot loot that corpse, as you are not the one that felled it and are not yet confident its slayer has taken everything off it they desire.
+500723	As a young player, you may not cast beneficial spells onto older players.
+500724	As a young player, you may not cast beneficial spells onto older players.
+
+
+
+

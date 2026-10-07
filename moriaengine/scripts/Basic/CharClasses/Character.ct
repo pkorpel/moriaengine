@@ -1,0 +1,68 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//	
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//	
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+
+//TODO: A gettable flags property which emulates sphere flags
+
+[ThingTemplate Character : AbstractCharacter]
+Def:	//vars on the def
+	int AngerSound = SoundNames.None
+	int IdleSound = SoundNames.None
+	int AttackSound = SoundNames.None
+	int HurtSound = SoundNames.None
+	int DeathSound = SoundNames.None
+	
+	int corpseModel = 0x2006
+
+	int icon = 0
+	
+	uint AnimsAvailable = 0xffffffff /*all anims by default*/
+	
+	int resistMagic = 0
+	int resistFire = 0
+	int resistElectric = 0
+	int resistAcid = 0
+	int resistCold = 0
+	int resistPoison = 0
+	int resistMystical = 0
+	int resistPhysical = 0
+	int resistSlashing = 0
+	int resistStabbing = 0
+	int resistBlunt = 0
+	int resistArchery = 0
+	int resistBleed = 0
+	int resistSummon = 0
+	int resistDragon = 0
+	int resistParalyse = 0
+	int armorVsM = 0
+	int armorVsP = 0
+	
+	
+Vars:	//vars defined in the class, so they basically do what tags do, but better
+	//short experience=0
+	short hitpoints=100
+	short mana=100
+	short stamina=100
+	short strength=15
+	short dexterity=15
+	short intelligence=15
+	double hitsRegenSpeed=0.0
+	double manaRegenSpeed=0.0
+	double stamRegenSpeed=0.0
+	short tithingPoints=0
+	byte statLockByte=0
+	//Character owner = null
+	string title = null
+	Character mountorrider = null

@@ -1,0 +1,728 @@
+[SpellScrollDef 0x1f2d]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Reactive Armor
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 10.0, MAGERY 5.0 // commented out by Converter 
+DEFNAME = i_scroll_reactive_armor
+
+[SpellScrollDef 0x1f2e]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Clumsy Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 10.0, MAGERY 5.0 // commented out by Converter 
+DEFNAME = i_scroll_clumsy
+
+[SpellScrollDef 0x1f2f]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Create Food Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root commented out by Converter 
+//SKILLMAKE = INSCRIPTION 10.0, MAGERY 5.0 // commented out by Converter 
+DEFNAME = i_scroll_create_food
+
+[SpellScrollDef 0x1f30]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Feeblemind Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_nightshade, i_reag_ginseng commented out by Converter 
+//SKILLMAKE = INSCRIPTION 10.0, MAGERY 5.0 // commented out by Converter 
+DEFNAME = i_scroll_feeblemind
+
+[SpellScrollDef 0x1f31]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Heal Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_ginseng, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 10.0, MAGERY 5.0 // commented out by Converter 
+DEFNAME = i_scroll_heal
+
+[SpellScrollDef 0x1f32]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Magic Arrow Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 4.9, MAGERY 5.0 // commented out by Converter 
+DEFNAME = i_scroll_magic_arrow
+
+[SpellScrollDef 0x1f33]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Night Sight Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_nightshade, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 4.9, MAGERY 5.0 // commented out by Converter 
+DEFNAME = i_scroll_night_sight
+
+[SpellScrollDef 0x1f34]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Weaken Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 10.0, MAGERY 5.0 // commented out by Converter 
+DEFNAME = i_scroll_weaken
+
+[SpellScrollDef 0x1f35]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Agility Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root commented out by Converter 
+//SKILLMAKE = INSCRIPTION 20.0, MAGERY 10.0 // commented out by Converter 
+DEFNAME = i_scroll_agility
+
+[SpellScrollDef 0x1f36]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Cunning Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_mandrake_root, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 22.0, MAGERY 10.0 // commented out by Converter 
+DEFNAME = i_scroll_cunning
+
+[SpellScrollDef 0x1f37]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Cure Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_ginseng commented out by Converter 
+//SKILLMAKE = INSCRIPTION 26.0, MAGERY 10.0 // commented out by Converter 
+DEFNAME = i_scroll_cure
+
+[SpellScrollDef 0x1f38]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Harm Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_nightshade, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 28.0, MAGERY 10.0 // commented out by Converter 
+DEFNAME = i_scroll_harm
+
+[SpellScrollDef 0x1f39]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Magic Trap Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 21.0, MAGERY 10.0 // commented out by Converter 
+DEFNAME = i_scroll_magic_trap
+
+[SpellScrollDef 0x1f3a]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Magic Remove Trap Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 23.0, MAGERY 10.0 // commented out by Converter 
+DEFNAME = i_scroll_magic_untrap
+
+[SpellScrollDef 0x1f3b]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Protection Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_ginseng, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 27.0, MAGERY 10.0 // commented out by Converter 
+DEFNAME = i_scroll_protection
+
+[SpellScrollDef 0x1f3c]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Strength Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_mandrake_root, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 25.0, MAGERY 10.0 // commented out by Converter 
+DEFNAME = i_scroll_strength
+
+[SpellScrollDef 0x1f3d]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Bless Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_mandrake_root commented out by Converter 
+//SKILLMAKE = INSCRIPTION 34.0, MAGERY 20.0 // commented out by Converter 
+DEFNAME = i_scroll_bless
+
+[SpellScrollDef 0x1f3e]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Fireball Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 35.0, MAGERY 20.0 // commented out by Converter 
+DEFNAME = i_scroll_fireball
+
+[SpellScrollDef 0x1f3f]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Magic Lock Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_nightshade, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 32.0, MAGERY 20.0 // commented out by Converter 
+DEFNAME = i_scroll_magic_lock
+
+[SpellScrollDef 0x1f40]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Poison Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 37.0, MAGERY 20.0 // commented out by Converter 
+DEFNAME = i_scroll_poison
+
+[SpellScrollDef 0x1f41]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = telekinesis Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root commented out by Converter 
+//SKILLMAKE = INSCRIPTION 31.0, MAGERY 20.0 // commented out by Converter 
+DEFNAME = i_scroll_telekinesis
+
+[SpellScrollDef 0x1f42]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Teleport Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root commented out by Converter 
+//SKILLMAKE = INSCRIPTION 33.0, MAGERY 20.0 // commented out by Converter 
+DEFNAME = i_scroll_teleport
+
+[SpellScrollDef 0x1f43]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Unlock Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 30.0, MAGERY 20.0 // commented out by Converter 
+DEFNAME = i_scroll_unlock
+
+[SpellScrollDef 0x1f44]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Wall of Stone Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_garlic commented out by Converter 
+//SKILLMAKE = INSCRIPTION 38.0, MAGERY 20.0 // commented out by Converter 
+DEFNAME = i_scroll_wall_of_stone
+
+[SpellScrollDef 0x1f45]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Archcure Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root commented out by Converter 
+//SKILLMAKE = INSCRIPTION 45.0, MAGERY 30.0 // commented out by Converter 
+DEFNAME = i_scroll_archcure
+
+[SpellScrollDef 0x1f46]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Arch Protection Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 44.0, MAGERY 30.0 // commented out by Converter 
+DEFNAME = i_scroll_archprotection
+
+[SpellScrollDef 0x1f47]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Curse Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_nightshade, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 40.0, MAGERY 30.0 // commented out by Converter 
+DEFNAME = i_scroll_curse
+
+[SpellScrollDef 0x1f48]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Fire Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 47.0, MAGERY 30.0 // commented out by Converter 
+DEFNAME = i_scroll_fire_field
+
+[SpellScrollDef 0x1f49]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Greater Heal Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 46.0, MAGERY 30.0 // commented out by Converter 
+DEFNAME = i_scroll_greater_heal
+
+[SpellScrollDef 0x1f4a]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Lightning Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_mandrake_root, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 43.0, MAGERY 30.0 // commented out by Converter 
+DEFNAME = i_scroll_lightning
+
+[SpellScrollDef 0x1f4b]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Mana Drain Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 41.0, MAGERY 30.0 // commented out by Converter 
+DEFNAME = i_scroll_mana_drain
+
+[SpellScrollDef 0x1f4c]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Recall Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root commented out by Converter 
+//SKILLMAKE = INSCRIPTION 48.0, MAGERY 30.0 // commented out by Converter 
+DEFNAME = i_scroll_recall
+
+[SpellScrollDef 0x1f4d]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Blade Spirits Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_mandrake_root, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 53.0, MAGERY 40.0 // commented out by Converter 
+DEFNAME = i_scroll_blade_spirits
+
+[SpellScrollDef 0x1f4e]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Dispel Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_garlic, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 50.0, MAGERY 40.0 // commented out by Converter 
+DEFNAME = i_scroll_dispel_field
+
+[SpellScrollDef 0x1f4f]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Incognito Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_garlic, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 51.0, MAGERY 40.0 // commented out by Converter 
+DEFNAME = i_scroll_incognito
+
+[SpellScrollDef 0x1f50]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Magic Reflection Scroll
+
+NAME = "Magic Reflection"
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 57.0, MAGERY 40.0 // commented out by Converter 
+DEFNAME = i_scroll_magic_reflection
+
+[SpellScrollDef 0x1f51]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Mind Blast Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_mandrake_root, i_reag_nightshade, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 54.0, MAGERY 40.0 // commented out by Converter 
+DEFNAME = i_scroll_mind_blast
+
+[SpellScrollDef 0x1f52]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Paralyze Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 58.0, MAGERY 40.0 // commented out by Converter 
+DEFNAME = i_scroll_paralyze
+
+[SpellScrollDef 0x1f53]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Poison Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_nightshade, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 55.0, MAGERY 40.0 // commented out by Converter 
+DEFNAME = i_scroll_poison_field
+
+[SpellScrollDef 0x1f54]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Summon Creature Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 56.0, MAGERY 40.0 // commented out by Converter 
+DEFNAME = i_scroll_summon_creature
+
+[SpellScrollDef 0x1f55]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Dispel Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_mandrake_root, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 61.5, MAGERY 50.0 // commented out by Converter 
+DEFNAME = i_scroll_dispel
+
+[SpellScrollDef 0x1f56]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Energy Bolt Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 63.0, MAGERY 50.0 // commented out by Converter 
+DEFNAME = i_scroll_energy_bolt
+
+[SpellScrollDef 0x1f57]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Explosion Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_mandrake_root, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 65.0, MAGERY 50.0 // commented out by Converter 
+DEFNAME = i_scroll_explosion
+//VALUE = {60 64} // commented out by Converter 
+
+[SpellScrollDef 0x1f58]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Invisibility Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 68.0, MAGERY 50.0 // commented out by Converter 
+DEFNAME = i_scroll_invisibility
+
+[SpellScrollDef 0x1f59]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Mark Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root commented out by Converter 
+//SKILLMAKE = INSCRIPTION 67.0, MAGERY 50.0 // commented out by Converter 
+DEFNAME = i_scroll_mark
+
+[SpellScrollDef 0x1f5a]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Mass Curse Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_garlic, i_reag_mandrake_root, i_reag_nightshade, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 64.0, MAGERY 50.0 // commented out by Converter 
+DEFNAME = i_scroll_mass_curse
+
+[SpellScrollDef 0x1f5b]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Paralyze Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_ginseng, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 66.0, MAGERY 50.0 // commented out by Converter 
+DEFNAME = i_scroll_paralyze_field
+
+[SpellScrollDef 0x1f5c]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Reveal Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 60.0, MAGERY 50.0 // commented out by Converter 
+DEFNAME = i_scroll_reveal
+
+[SpellScrollDef 0x1f5d]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Chain Lightning Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 74.0, MAGERY 60.0 // commented out by Converter 
+DEFNAME = i_scroll_chain_lightning
+
+[SpellScrollDef 0x1f5e]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Energy Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_mandrake_root, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 75.0, MAGERY 60.0 // commented out by Converter 
+DEFNAME = i_scroll_energy_field
+
+[SpellScrollDef 0x1f5f]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Flame Strike Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 78.0, MAGERY 60.0 // commented out by Converter 
+DEFNAME = i_scroll_flamestrike
+
+[SpellScrollDef 0x1f60]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Gate Travel Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_mandrake_root, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 77.0, MAGERY 60.0 // commented out by Converter 
+DEFNAME = i_scroll_gate_travel
+
+[SpellScrollDef 0x1f61]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Mana Vampire Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 74.0, MAGERY 60.0 // commented out by Converter 
+DEFNAME = i_scroll_mana_vampire
+
+[SpellScrollDef 0x1f62]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Mass Dispel Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_garlic, i_reag_mandrake_root, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 72.0, MAGERY 60.0 // commented out by Converter 
+DEFNAME = i_scroll_mass_dispel
+
+[SpellScrollDef 0x1f63]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Meteor Storm Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 76.0, MAGERY 60.0 // commented out by Converter 
+DEFNAME = i_scroll_meteor_swarm
+
+[SpellScrollDef 0x1f64]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Polymorph Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 70.0, MAGERY 60.0 // commented out by Converter 
+DEFNAME = i_scroll_polymorph
+
+[SpellScrollDef 0x1f65]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Earthquake Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 90.0, MAGERY 70.0, t_book_inscription // commented out by Converter 
+DEFNAME = i_scroll_earthquake
+
+[SpellScrollDef 0x1f66]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Energy Vortex Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root, i_reag_nightshade commented out by Converter 
+//SKILLMAKE = INSCRIPTION 93.0, MAGERY 70.0, t_book_inscription // commented out by Converter 
+DEFNAME = i_scroll_energy_vortex
+
+[SpellScrollDef 0x1f67]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Resurrection Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_garlic, i_reag_ginseng commented out by Converter 
+//SKILLMAKE = INSCRIPTION 99.9, MAGERY 70.0, t_book_inscription // commented out by Converter 
+DEFNAME = i_scroll_resurrection
+
+[SpellScrollDef 0x1f68]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Elemental Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 87.0, MAGERY 70.0, t_book_inscription // commented out by Converter 
+DEFNAME = i_scroll_summon_elem_air
+
+[SpellScrollDef 0x1f69]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Deamon Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 96.0, MAGERY 70.0, t_book_inscription // commented out by Converter 
+DEFNAME = i_scroll_summon_daemon
+
+[SpellScrollDef 0x1f6a]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Earth Elemental Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 84.0, MAGERY 70.0, t_book_inscription // commented out by Converter 
+DEFNAME = i_scroll_summon_elem_earth
+
+[SpellScrollDef 0x1f6b]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Fire Elemental Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk, i_reag_sulfur_ash commented out by Converter 
+//SKILLMAKE = INSCRIPTION 81.0, MAGERY 70.0, t_book_inscription // commented out by Converter 
+DEFNAME = i_scroll_summon_elem_fire
+
+[SpellScrollDef 0x1f6c]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Water Elemental Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+//RESOURCES = i_scroll_blank //, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk commented out by Converter 
+//SKILLMAKE = INSCRIPTION 87.0, MAGERY 70.0, t_book_inscription // commented out by Converter 
+DEFNAME = i_scroll_summon_elem_water
+
+
+[SpellScrollDef i_scroll_manashield]
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Special
+DESCRIPTION=Mana Shield Scroll
+
+Model=i_scroll_blank
+Name=Mana Shield Scroll
+RESOURCES=i_scroll_blank//, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 60.0, MAGERY 80.0
+TYPE=t_scroll //t_customspell_scroll
+WEIGHT=10
+
+
+//ON=@Create
+//ATTR_MAGIC=1
+//MOREX=104 //cislo kouzla
+//tag(class_mag,1) //bude pro magy mystiky a negry, knez muze jen psat
+//tag(class_mystik,1)
+//tag(class_necro,1)
+//tag(class_priest,1)
+//color=044d

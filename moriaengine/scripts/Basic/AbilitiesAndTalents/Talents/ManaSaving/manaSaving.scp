@@ -1,0 +1,14 @@
+[StatDrainingAbilityDef a_mana_saving]
+Name="Mana Saving"
+StamDrain=1
+EffectPower=0.03 //gives back 30% of mana at 10 points
+
+PluginKey = @@mana_saving
+PluginDef = p_mana_saving
+
+[ManaSavingPluginDef p_mana_saving]
+
+
+[PassiveAbilityDef a_mana_saving_bonus]
+Name="Mana Saving Bonus"
+EffectPower=0.03 //gives back 15% at 5 points

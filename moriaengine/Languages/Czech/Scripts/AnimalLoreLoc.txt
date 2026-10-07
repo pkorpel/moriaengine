@@ -1,0 +1,5 @@
+TargetWho                       = Co chceš zkoumat?
+TargetOnlyAnimals               = Zaměřuj pouze zvěř!
+ACanceled                       = Animal Lore bylo přerušeno.
+AFailed                         = Tvé zkoumání se nezdařilo.
+ASuccess1                       = Animal Lore se ti povedlo.

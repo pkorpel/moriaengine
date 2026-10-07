@@ -1,0 +1,16 @@
+500703	switch one up
+500704	switch one down
+500705	switch two up
+500706	switch two down
+500707	switch three up
+500708	switch three down
+500709	switch four up
+500710	switch four down
+500711	switch five up
+500712	switch five down
+500713	disarmed
+500714	disarmed
+500715	You notice something odd about the frame of the painting.
+500716	A small plaque on the bottom of the frame reads: 3-4-1-5.
+500717	A small piece of paper seems to be wedged beneath the throne.
+500718	You seem not to be able to free the note, but upon it you see the writing: 3-4-1-5.

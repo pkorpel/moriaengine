@@ -1,0 +1,6 @@
+[BankBoxDef i_bankBox]
+NAME = "Bankbox"
+model = 0xe7c
+
+Layer=LayerNames.BankBox
+

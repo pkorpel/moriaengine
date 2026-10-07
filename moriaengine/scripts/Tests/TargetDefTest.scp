@@ -1,0 +1,42 @@
+
+//spustit prikazem .Target(targ_scripted), pripadne .Target(targ_scripted, nejakejdalsiparametr)
+
+[ScriptedTargetDef targ_scripted]
+message="Target whatever you want..."
+
+//pokud neexistuje tento trigger, deje se prave akorat to ze se posle dotycna Message
+on=@start
+	sysmessage(targ_scripted.message)
+	return 0 //return 1 by znamenal ze se target vubec nezjevi
+
+//vola se na vsem, zpusobi ze ostatni triggery se ignoruji
+//on=@targon_point
+//	sysmessage("You targetted <argv(0)>, parameter <argv(1)>")
+//	return 1
+
+on=@targon_ground
+	sysmessage("You targetted ground at <argv(0)>, parameter <argv(1)>")
+	return 1
+
+//vola se na itemech i charech, zpusobi ze @targon_item a @targon_char se ignoruji
+//on=@targon_thing
+//	sysmessage("You targetted thing <argv(0)>, parameter <argv(1)>")
+//	return 1
+
+on=@targon_item
+	sysmessage("You targetted item <argv(0)>, parameter <argv(1)>")
+	return 1
+
+on=@targon_char
+	sysmessage("You targetted char <argv(0)>, parameter <argv(1)>")
+	return 1
+
+on=@targon_static
+	sysmessage("You targetted static item <argv(0)>, parameter <argv(1)>")
+	return 1
+
+on=@targon_cancel
+	sysmessage("You cancelled the target, parameter <argv(0)>")
+	return 1
+
+[eof]

@@ -1,0 +1,5 @@
+here should be somehow made clear what was new in which clients, so that the server can distinguish between them and behave correctly to them etc.
+
+
+4.0.0j - first AOS client ?
+	displays skill caps - different packet 0x3a ?

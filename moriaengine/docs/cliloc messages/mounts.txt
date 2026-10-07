@@ -1,0 +1,2 @@
+500205	You can't get on a mount that's fighting.
+500206	That is too far away to ride.

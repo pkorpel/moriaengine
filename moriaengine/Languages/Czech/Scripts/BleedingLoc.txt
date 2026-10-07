@@ -1,0 +1,2 @@
+YoureBleeding                   = Krvácíš!
+YourTargetIsBleeding            = {0} krvácí!

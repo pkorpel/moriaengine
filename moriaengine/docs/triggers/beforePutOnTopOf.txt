@@ -1,0 +1,36 @@
+Name:
+	BeforePutOnTopOf
+
+Called on:
+	Items (Item)
+
+When:
+	Someone attempts to place an item on top this item.
+
+Arguments:
+	0 (Item): The item to go on top of this one.
+	1 (int): The z level the item will be placed at.
+	
+Sphere Arguments:
+	argo: The item to go on top of this one.
+	argn: The z level the item will be placed at.
+
+Extra variables:
+	src: The character attempting to do the putting.
+	self: This item, the one having something put on top of it.
+
+Return value:
+	1 to prevent putting the item there, 0 to allow it.
+
+Purpose:
+	This trigger allows you to make an item reject attempts to place
+	an item on top of it. (Ex: Stacking shirts)
+	
+	This will be called whenever something is dropped on something else
+	and they aren't combined (See @beforeStack and @afterStack) -
+	In other words, if the items itemdefs aren't the same, or they
+	aren't stackable, or if @beforeStack prevented the stacking.
+	
+	This will also be called if anything calls item.PutOnTopOf -
+	If this trigger returns 1, then PutOnTopOf will return false (Indicating
+	the attempt failed), otherwise, it will return true.

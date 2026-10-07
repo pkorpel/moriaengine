@@ -1,0 +1,38 @@
+//DUPE:
+xor value,value		//clear it to kill any dependencies (real or imagined :P)
+lodsb				//LODSB - load from [ESI (inPtr)] to al (value_byte)
+mov numBits, flatBitTable[value*8]
+mov value, flatBitTable[value*8+4]
+
+add bitPos, numBits
+shl curByteValue, shiftArg_partOfNumBits
+or curByteValue, value
+
+//We're done with numBits and value for now
+#ifdef _FOURTEEN
+//mov numBits,numBits
+movzx numBits,jumpTable[bitPos]
+add numBits, TWOBYTES
+jmp numBits
+//nop
+//nop
+nop
+#include "fourteen.dupe"
+#else
+cmp bitPos, 8
+jnae SKIP
+
+WHILE:
+	
+sub bitPos, 8
+mov numBits, bitPos		//so we can shift by it - numbits is unused right now
+mov value, curByteValue	//using value temporarily, since it's unused right now
+						//(But actually, for non-_ONE, we need to do this in value so we can STOSB from it)
+shr	value, shiftArg_partOfNumBits	//unsigned shift right, since curByteValue is unsigned
+stosb					//write from al (value_byte) to [edi (outPtr)]
+
+cmp bitPos, 8
+jae WHILE
+SKIP:
+#endif
+		

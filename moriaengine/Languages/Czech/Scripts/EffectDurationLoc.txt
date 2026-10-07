@@ -1,0 +1,8 @@
+AbilityDeactivated              = Ability '{0}' deactivated.
+AbilityEffectEnded              = Effect of ability '{0}' ended.
+EvilAbilityEffectEnded          = The unpleasant effect of ability '{0}' ended.
+GoodAbilityEffectEnded          = The pleasant effect of ability '{0}' ended.
+SpellEffecEnded                 = Effect of spell '{0}' ended.
+EvilSpellEffecEnded             = The unpleasant effect of spell '{0}' ended.
+GoodSpellEffecEnded             = The pleasant effect of spell '{0}' ended.
+UnspecifiedEffectEnded          = Effect of '{0}' ended.

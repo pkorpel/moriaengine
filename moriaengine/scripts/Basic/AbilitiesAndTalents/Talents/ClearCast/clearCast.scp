@@ -1,0 +1,10 @@
+[StatDrainingAbilityDef a_clearcast]
+Name="Clearcast"
+StamDrain=1
+EffectDuration=30
+Cooldown = 15 * 60
+
+PluginKey = @@clearcast
+PluginDef = p_clearcast
+
+[ClearCastPluginDef p_clearcast]

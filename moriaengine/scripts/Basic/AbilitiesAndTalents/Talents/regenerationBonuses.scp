@@ -1,0 +1,11 @@
+[HitsRegenAbilityDef a_regen_hits_bonus]
+Name="Hitpoints Regeneration bonus"
+EffectPower=0.2 //+1 regenspeed at 5 points
+
+[StaminaRegenAbilityDef a_regen_stam_bonus]
+Name="Stamina Regeneration bonus"
+EffectPower=0.2 //+1 regenspeed at 5 points
+
+[ManaRegenAbilityDef a_regen_mana_bonus]
+Name="Mana regeneration bonus"
+EffectPower=0.2 //+1 regenspeed at 5 points

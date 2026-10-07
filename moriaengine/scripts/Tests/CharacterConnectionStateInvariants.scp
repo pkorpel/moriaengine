@@ -1,0 +1,62 @@
+[function connectionstateinvariantstest]//arg0: client uid
+if (<argvcount> < 1)
+	src.WriteLine("Zadej uid GameConnu nebo jmeno accountu voe!")
+	return
+endif
+
+arg.acc = GameAccount.GetByName(argv(0).ToString())
+if (arg.acc)
+	arg.acc.f_connectionstateinvariantstest_showPropertiesOnGameAccount
+	return
+endif
+
+foreach (arg.gc in Server.AllGameConns)
+	if (arg.gc)
+		if (arg.gc.uid == argv(0))
+			arg.gc.f_connectionstateinvariantstest_showPropertiesOnGameConn()
+			return
+		endif
+	endif
+endforeach
+src.WriteLine("'<argv(0)>' nenalezeno ani jako uid gameconnu ani jako jmeno accountu")
+
+[function f_connectionstateinvariantstest_showPropertiesOnGameConn]
+src.WriteLine("Showing properties of GameConn '<this>'")
+src.WriteLine("IsLoggedIn: <IsLoggedIn>")
+src.WriteLine("Account: <Account>")
+if (this.Account)
+	src.WriteLine("Account.Online: <Account.Online>")
+endif
+src.WriteLine("CurCharacter: <CurCharacter>")
+if (this.CurCharacter)
+	src.WriteLine("CurCharacter.Flag_Disconnected: <CurCharacter.Flag_Disconnected>")
+	src.WriteLine("CurCharacter.IsLingering: <CurCharacter.IsLingering>")
+	src.WriteLine("CurCharacter.IsInGame: <CurCharacter.IsInGame>")
+endif
+
+[function f_connectionstateinvariantstest_showPropertiesOnGameAccount]
+src.WriteLine("Showing properties of GameAccount '<this>'")
+src.WriteLine("Online: <Online>")
+arg.lingering = GetLingeringCharacter()
+src.WriteLine("GetLingeringCharacter(): <arg.lingering>")
+if (arg.lingering)
+	src.WriteLine("lingering.Flag_Disconnected: <lingering.Flag_Disconnected>")
+	src.WriteLine("lingering.IsLingering: <lingering.IsLingering>")
+	src.WriteLine("lingering.IsInGame: <lingering.IsInGame>")
+endif
+
+src.WriteLine("Conn: <Conn>")
+if (<Conn>)
+	src.WriteLine("Conn.IsLoggedIn: <Conn.IsLoggedIn>")
+	
+	src.WriteLine("Conn.CurCharacter: <Conn.CurCharacter>")
+	if (Conn.CurCharacter)
+		src.WriteLine("Conn.CurCharacter.Flag_Disconnected: <Conn.CurCharacter.Flag_Disconnected>")
+		src.WriteLine("Conn.CurCharacter.IsLingering: <Conn.CurCharacter.IsLingering>")
+		src.WriteLine("Conn.CurCharacter.IsInGame: <Conn.CurCharacter.IsInGame>")
+	endif
+endif
+
+
+
+[eof]

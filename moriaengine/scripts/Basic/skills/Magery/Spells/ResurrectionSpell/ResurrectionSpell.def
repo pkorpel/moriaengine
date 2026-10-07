@@ -1,0 +1,18 @@
+[ResurrectionSpellDef 59]
+DEFNAME=s_resurrection
+NAME=Resurrection
+SOUND=0x214
+RUNES=AC
+CASTTIME=4.0
+//RESOURCES=i_reag_blood_moss,i_reag_garlic,i_reag_ginseng
+RUNEITEM=i_rune_RESURRECTION
+SCROLLITEM=i_scroll_RESURRECTION
+FLAGS=SpellFlag.CanEffectDeadChar | SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial  | SpellFlag.CanEffectItem | SpellFlag.CanTargetItem
+MANAUSE=100
+Requirements=99.0 Magery
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x376A, 10, 16)
+	
+on=@effectItem
+	EffectFactory.StationaryEffectAt(this, 0x376A, 10, 16)

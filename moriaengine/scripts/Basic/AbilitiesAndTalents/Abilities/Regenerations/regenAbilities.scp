@@ -1,0 +1,14 @@
+[HitsRegenAbilityDef a_regen_hits]
+Name="Hitpoints Regeneration"
+//MaxPoints=10
+EffectPower=0.1 //number of hitpoints to regenerate per abilitypoint per second
+
+[StaminaRegenAbilityDef a_regen_stam]
+Name="Stamina Regeneration"
+//MaxPoints=10
+EffectPower=0.1 //number of stam points to regenerate per abilitypoint per second
+
+[ManaRegenAbilityDef a_regen_mana]
+Name="Mana regeneration"
+//MaxPoints=10
+EffectPower=0.1 //number of mana points to regenerate per abilitypoint per second

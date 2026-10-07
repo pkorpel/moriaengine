@@ -1,0 +1,17 @@
+500221	Ha ha!  Missed me!
+500236	You should throw it now!
+500237	Target cannot be seen.
+500263	*Acid blood scars your weapon!*
+500558	Target at close range.
+500559	Target at long range.
+500560	Preparing to breathe.
+500561	Darn! Missed you!
+500562	Eat fiery death!
+500563	Causing damage.
+500564	Finished causing damage.
+500565	Gotcha!
+500566	Causing damage.
+500567	Finished causing damage.
+500651	You're evil, and must die!
+500652	You're a murderer, and must die!
+500653	Thou hast escaped me!

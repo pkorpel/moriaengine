@@ -1,0 +1,14 @@
+500487	The axe must be equipped for any serious wood chopping.
+500488	There's not enough wood here to harvest.
+500489	You can't use an axe on that.
+500490	You can't place any kindling into your backpack!
+500491	You put some kindling into your backpack.
+500492	An axe would probably get you more wood.
+500493	There's not enough wood here to harvest.
+500494	You can't use a bladed item on that.
+500495	You hack at the tree for a while, but fail to produce any useable wood.
+500496	You hack at the tree for a while, but fail to produce any useable wood.
+500497	You can't place any wood into your backpack!
+500498	You put some logs into your backpack.
+500499	You broke your axe.
+500503	Continue chopping for a while and then return to the person who gave you this task.

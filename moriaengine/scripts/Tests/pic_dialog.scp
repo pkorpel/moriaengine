@@ -1,0 +1,140 @@
+[function picDialog]
+dialog(src, d_picDialog)
+
+[dialog d_picDialog]
+arg dialog = ImprovedDialog(argv(0)) 
+
+dialog.CreateBackground(480)
+dialog.SetLocation(80,50)
+
+//nadpis tabulky
+dialog.Add(GUTATable(1,0,ButtonMetrics.D_BUTTON_WIDTH)) 
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Co chceš stopovat?").Build())
+dialog.LastTable.AddToCell(0,1,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build()) //exit button
+dialog.MakeLastTableTransparent()
+
+dialog.Add(GUTATable(8,0)) 
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("abcdefghijklmnopqrstuvwxyz").Build())
+dialog.LastTable.AddToCell(1,0,GUTAText.Builder.TextHeadline("ABCDEFGHIJKLMNOPQRSTUVWXYZ").Build())
+dialog.LastTable.AddToCell(2,0,GUTAText.Builder.TextHeadline("123456789 0").Build())
+dialog.LastTable.AddToCell(3,0,GUTAText.Builder.TextHeadline("!?()").Build())
+dialog.LastTable.AddToCell(4,0,GUTAText.Builder.TextLabel("abcdefghijklmnopqrstuvwxyz").Build())
+dialog.LastTable.AddToCell(5,0,GUTAText.Builder.TextLabel("ABCDEFGHIJKLMNOPQRSTUVWXYZ").Build())
+dialog.LastTable.AddToCell(6,0,GUTAText.Builder.TextLabel("123456789 0").Build())
+dialog.LastTable.AddToCell(7,0,GUTAText.Builder.TextLabel("!?()").Build())
+dialog.MakeLastTableTransparent()
+
+arg rowCnt = 10
+arg picTable = GUTATable(rowCnt,150,0,150)
+picTable.InnerRowsDelimited = true
+dialog.Add(picTable)
+arg i = 0
+
+while (<i> < <rowCnt>)
+	dialog.LastTable.AddToCell(i,0, GUTAText.Builder.TextLabel("Bunka 1, radek " + i).Build())
+	dialog.LastTable.AddToCell(i,1, GUTAText.Builder.TextLabel("Bunka 2, radek " + i).Build())
+	dialog.LastTable.AddToCell(i,2, GUTAText.Builder.TextLabel("Bunka 3, radek " + i).Build())
+	arg i = <i> + 1
+endwhile
+dialog.MakeLastTableTransparent()
+
+arg picTable = GutaTable(4,43,0,ButtonMetrics.D_BUTTON_WIDTH)
+picTable.RowHeight = 50
+picTable.InnerRowsDelimited = true
+dialog.Add(picTable)
+dialog.LastTable.AddToCell(0,0,GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Llama).Build())
+dialog.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Zvíøata").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build())
+dialog.LastTable.AddToCell(0,2,GUTAButton.Builder.Id(1).Valign(DialogAlignment.Valign_Center).Build())
+
+dialog.LastTable.AddToCell(1,0,GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Ogre).Build())
+dialog.LastTable.AddToCell(1,1,GUTAText.Builder.TextLabel("Monstra").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build())
+dialog.LastTable.AddToCell(1,2,GUTAButton.Builder.Id(2).Valign(DialogAlignment.Valign_Center).Build())
+
+dialog.LastTable.AddToCell(2,0,GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Man).Build())
+dialog.LastTable.AddToCell(2,1,GUTAText.Builder.TextLabel("Hráèe").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build())
+dialog.LastTable.AddToCell(2,2,GUTAButton.Builder.Id(3).Valign(DialogAlignment.Valign_Center).Build())
+
+dialog.LastTable.AddToCell(3,0,GUTAImage.Builder.NamedGump(GumpIDs.Figurine_NPC).Build())
+dialog.LastTable.AddToCell(3,1,GUTAText.Builder.TextLabel("NPC").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build())
+dialog.LastTable.AddToCell(3,2,GUTAButton.Builder.Id(4).Valign(DialogAlignment.Valign_Center).Build())
+dialog.MakeLastTableTransparent()
+
+dialog.WriteOut()
+
+[DIALOG d_picDialog BUTTON]
+on=0 //exitting dialog by right click
+return 0
+
+on=1 //animal clicked
+src.sysmessage("Klix na zvíøe")
+return 0
+
+on=2 //monster clicked
+src.sysmessage("Klix na monstrum")
+return 0
+
+on=3 //monster clicked
+src.sysmessage("Klix na playera")
+return 0
+
+on=4 //monster clicked
+src.sysmessage("Klix na NPCèko")
+return 0
+
+[function trackPrototype]
+dialog(src, d_track_proto)
+
+[dialog d_track_proto]
+arg dialog = ImprovedDialog(argv(0)) 
+
+dialog.CreateBackground(200)
+dialog.SetLocation(80,50)
+
+//nadpis tabulky
+dialog.Add(GUTATable(1,0,ButtonMetrics.D_BUTTON_WIDTH)) 
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Co chceš stopovat?").Build())
+dialog.LastTable.AddToCell(0,1,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build()) //exit button
+dialog.MakeLastTableTransparent()
+
+arg picTable = GutaTable(4,43,0,ButtonMetrics.D_BUTTON_WIDTH)
+picTable.RowHeight = 50
+picTable.InnerRowsDelimited = true
+dialog.Add(picTable)
+dialog.LastTable.AddToCell(0,0,GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Llama).Build())
+dialog.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Zvíøata").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build())
+dialog.LastTable.AddToCell(0,2,GUTAButton.Builder.Id(1).Valign(DialogAlignment.Valign_Center).Build())
+
+dialog.LastTable.AddToCell(1,0,GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Ogre).Build())
+dialog.LastTable.AddToCell(1,1,GUTAText.Builder.TextLabel("Monstra").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build())
+dialog.LastTable.AddToCell(1,2,GUTAButton.Builder.Id(2).Valign(DialogAlignment.Valign_Center).Build())
+
+dialog.LastTable.AddToCell(2,0,GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Man).Build())
+dialog.LastTable.AddToCell(2,1,GUTAText.Builder.TextLabel("Hráèe").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build())
+dialog.LastTable.AddToCell(2,2,GUTAButton.Builder.Id(3).Valign(DialogAlignment.Valign_Center).Build())
+
+dialog.LastTable.AddToCell(3,0,GUTAImage.Builder.NamedGump(GumpIDs.Figurine_NPC).Build())
+dialog.LastTable.AddToCell(3,1,GUTAText.Builder.TextLabel("NPC").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build())
+dialog.LastTable.AddToCell(3,2,GUTAButton.Builder.Id(4).Valign(DialogAlignment.Valign_Center).Build())
+dialog.MakeLastTableTransparent()
+
+dialog.WriteOut()
+
+[DIALOG d_track_proto BUTTON]
+on=0 //exitting dialog by right click
+return 0
+
+on=1 //animal clicked
+src.sysmessage("Klix na zvíøe")
+return 0
+
+on=2 //monster clicked
+src.sysmessage("Klix na monstrum")
+return 0
+
+on=3 //monster clicked
+src.sysmessage("Klix na playera")
+return 0
+
+on=4 //monster clicked
+src.sysmessage("Klix na NPCèko")
+return 0

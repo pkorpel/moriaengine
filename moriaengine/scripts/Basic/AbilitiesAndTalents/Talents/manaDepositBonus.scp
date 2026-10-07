@@ -1,0 +1,6 @@
+[PassiveAbilityDef a_mana_deposit_bonus]
+Name="Mana Deposit Bonus"
+EffectPower=0.08 //+40% at 5 points
+
+
+//implementation of the actual effect lies in @dclick of staves (ColoredStaff.cs)

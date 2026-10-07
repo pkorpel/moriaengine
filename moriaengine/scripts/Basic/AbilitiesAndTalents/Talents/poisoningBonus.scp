@@ -1,0 +1,14 @@
+[PassiveAbilityDef a_poisoning_bonus]
+Name="Poisoning Bonus"
+EffectPower=0.05 //25% bonus at 5 points
+
+PluginKey = @@poisoning_bonus
+PluginDef = p_poisoning_bonus
+
+[EffectDurationPluginDef p_poisoning_bonus]
+on=@skillSuccess //argv[0] = SkillSequenceArgs
+	if (argv[0].SkillDef == skill_poisoning)
+		local poison = argv[0].Param1 //PoisonedItemPlugin
+		poison.PoisonPower = poison.PoisonPower * (1 + this.EffectPower)
+	endif
+

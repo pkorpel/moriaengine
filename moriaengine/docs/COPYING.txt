@@ -1,0 +1,16 @@
+The software in this package is distributed under the GNU General 
+Public License. A copy of the GNU General Public License (GPL) is 
+included in this distribution, in the file named "License.txt". 
+ 
+If you modify this software, please do not distribute the modified
+version under the original name "SteamEngine" or a similar name.
+ 
+This is not really a requirement, it's more a wish of the authors 
+who want to prevent chaos and keep clear what is the original and
+what is a fork.
+ 
+_____________________________________________________________________
+ 
+Copyright © 2003 Jan Slavetinsky. Permission is granted to copy this 
+document verbatim in any medium, provided that this copyright notice 
+is left intact.

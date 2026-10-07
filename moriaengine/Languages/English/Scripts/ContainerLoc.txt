@@ -1,0 +1,2 @@
+itemsGenitiv                    = items
+stonesGenitiv                   = stones

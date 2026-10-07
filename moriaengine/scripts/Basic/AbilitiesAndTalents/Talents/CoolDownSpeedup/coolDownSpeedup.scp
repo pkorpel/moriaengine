@@ -1,0 +1,11 @@
+//assassin's talent
+[PassiveAbilityDef a_kick_cooldownspeedup]
+Name="Kick Cooldown Speedup"
+EffectPower=0.1 // -50% CD at 5 points
+
+PluginKey = @@cooldownspeedup_kick
+PluginDef = p_cooldownspeedup_kick
+
+[CoolDownSpeedupPluginDef p_cooldownspeedup_kick]
+Ability = a_kick
+

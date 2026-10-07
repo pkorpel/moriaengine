@@ -1,0 +1,51 @@
+[SpellDef 11]
+DEFNAME=s_cure
+NAME=Cure
+SOUND=0x1E0
+RUNES=AN
+CASTTIME=1.5
+//RESOURCES=i_reag_garlic,i_reag_ginseng
+RUNEITEM=i_rune_CURE
+SCROLLITEM=i_scroll_CURE
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+EFFECT=0,10
+MANAUSE=8
+Requirements=20.0 Magery
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x373A, 10, 15)
+	this.CureEffect(s_cure.GetEffectForValue(argo.SpellPower))
+	
+
+[SpellDef 25]
+DEFNAME=s_archcure
+NAME=Arch Cure
+SOUND=0x299
+RUNES=VAN
+CASTTIME=2.3
+//RESOURCES=i_reag_garlic,i_reag_ginseng,i_reag_mandrake_root
+RUNEITEM=i_rune_ARCHCURE
+SCROLLITEM=i_scroll_ARCHCURE
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial | SpellFlag.IsAreaSpell
+EffectRange=5 //range of the area effect
+EFFECT=0,10
+MANAUSE=11
+Requirements=40.0 Magery
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x373A, 10, 15)
+	this.CureEffect(s_archcure.GetEffectForValue(argo.SpellPower))
+
+
+[function CureEffect] //find the poison plugin and lower it's effect
+	local.pluginFromSpell = this.GetPlugin(s_poison.EffectPluginKey_Spell)
+	if (pluginFromSpell != null)
+		pluginFromSpell.EffectPower = pluginFromSpell.EffectPower-argv[0]
+	endif
+	
+	if (s_poison.EffectPluginKey_Spell != s_poison.EffectPluginKey_Potion) //if potion slot for poison is different from that of spell
+		local.pluginFromPotion = this.GetPlugin(s_poison.EffectPluginKey_Potion)
+		if (pluginFromPotion != null)
+			pluginFromPotion.EffectPower = pluginFromPotion.EffectPower-argv[0]
+		endif
+	endif

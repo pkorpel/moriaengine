@@ -1,0 +1,64 @@
+SL left, so this plan is actually scratched :P
+we now have mine LScript, which is in fact spherescript reimplementation
+-tar
+
+
+
+
+
+Constant is used as a verb in this document. It is defined as: To reduce an op to a constant. An op on which this is possible is constantable. Constant, constanted, constanting, constantable.
+
+Constantable: An op which can return a ConstantResult, and thus can be replaced with a constant (constanted), is constantable. Most ops are constantable. Ops which may have side effects are not.
+
+Non-constantable ops:
+	call, callh, ., tag, src, self, error, warning, debug, trigger, arg, =.
+Functions, methods, properties, and triggers may have side-effects, and calls to these cannot be constated.
+Getting or setting the value of a variable (or tag) is a side-effect. This includes src, self, and arg.
+Error, debug, and warning are not constantable because they display a message: I/O is a side effect.
+
+while is constantable: (while 1 (break 3)) would result in break being constanted to a BreakResult, and then the while would be constanted to 3.
+
+Bounded tags available to scripts
+
+GetTagZero returns 0 if nonexistant, rather than null
+
+Additional ops: while, for, foreach, if (doubles for qval), return, break, continue, error, warning, debug, gettg, gettd
+GetTG returns a triggergroup reference, GetTD a triggerdef reference. Both these ops are constantable.
+
+Break will return BreakResult
+Continue will return ContinueResult
+Return will return ReturnResult
+BreakResult, ContinueResult, and ReturnResult all return a result if break/continue/return is given an arg, otherwise they return NoResult which contains "Caller was expecting a return result" for an error message in case something wants a return result.
+Error will return ErrorResult and display a script stack trace while returning until the script ends.
+Warning will display the warning message along with the script name and line #.
+Debug will display the debug message if in debug mode (i.e. it calls Logger's debug message funcion).
+Debug and Warning return NoResult containing "Debug/Warning cannot return a value; Caller was expecting a return result. Illegal use of debug/warning.", which basically exists to let PScript know when to yell at the scripter for trying to do math, etc, with something without a return result. (+ 5 (debug moo)) would make PScript complain with whatever error message is in the NoResult, and note the line # etc.
+
+Error, Warning, and Debug functions.
+
+Comparison operators: > < <= >= == !=, which attempt a comparison using TagMath and return a bool.
+
+. operator:
+Takes an object and a method/member/property reference and returns the result of calling that on that object, if possible. src.act.link.name=5 could be written as (= (. (. (. (src) act) link) name) 5)
+. can only take two args. If any are strings, they are converted (if possible) into info. If not possible, then an error is thrown (ErrorResult).
+exists and existsH will return true/false.
+
+= is only used for hardcoded things, and only takes 3 args, the target and the member (string or info) and what to assign to it. It returns the content of that member after setting it.
+Tags would be set by using the tag operator like =. Same for args, var, tag0, etc. All of these (except =) can take either 2 or 3 args.
+
+call and callh require the object to be specified as well. (callh (self) say "Moo! Baa!" 0x21)
+
+Certain unquoted strings are converted to ops: src, self, this->self, argn/o/s/v with or without a number and with or without []s or ()s. Otherwise, an attempt is made to find a scripted function with that name, and if one exists, that FunctionDef is used. If not, it's left alone. Certain ops will attempt further conversion of strings to Info. Call, CallH, ., =, and existsH will attempt to convert strings in their "object" arg to Info, and CallH, =, and existsH will convert their other arg too if possible.
+
+tag and tag0's first param must be the TagHolder to get/set the tag on.
+
+TagMath.AttemptToConvertToNumber will return the number as the best format available, by using Decimal's parse method, and then converting that to smallest. If convert fails, it returns the string. This function will always return a quoted string as that string sans quotes. I.E. "'bob'" would become "bob".
+
+Call that method when constructing PScript args, instead of storing everything as strings.
+
+TranslateArg should note when a ConstantResult is returned, and change that arg to the proper result. And return the proper result too!
+
+TranslateArgs should take a bool ref scriptExecuted and set it false initially. TranslateArg should be passed it (also as ref), and it should set it true if it's ScriptCode and gets exectued.
+So, an op has an easy way to know if its args are constant, and if so, it can know whether it can be constant as well.
+
+-SL

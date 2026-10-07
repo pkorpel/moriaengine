@@ -1,0 +1,5 @@
+500553	Checking burners.
+500554	Not fired up.
+500555	Already fired up.
+500556	Fueled up.
+500557	No fuel.

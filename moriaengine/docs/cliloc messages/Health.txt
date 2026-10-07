@@ -1,0 +1,5 @@
+500231	You feel cured of poison!
+500232	That potion was not strong enough to cure your ailment!
+500233	You are already poisoned.
+500234	This would have poisoned you, if you were not new to the land of Britannia.  Be careful in the future.
+500235	You must wait a few seconds before using another healing potion.

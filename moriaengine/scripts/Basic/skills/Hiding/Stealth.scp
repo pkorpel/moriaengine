@@ -1,0 +1,113 @@
+[DETECTHIDDENSKILLDEF 14]
+DEFNAME=Skill_DetectHidden
+KEY="DetectingHidden"
+StartByMacroEnabled = true
+DELAY=3.0,2.0
+EFFECT=3,7	//Radius of detecting
+ADVRATE=2.5,50.0,200.0
+
+[HIDINGSKILLDEF 21]
+DEFNAME=Skill_Hiding
+KEY="Hiding"
+StartByMacroEnabled = true
+//TITLE="Rogue"
+//PROMPTMSG=""
+DELAY = 1.0, 2.0
+//STAT_STR=20
+//STAT_INT=60
+//STAT_DEX=90
+//BONUS_STR=0
+//BONUS_DEX=80
+//BONUS_INT=20
+//BONUSSTATS=25
+ADVRATE=2.5,50.0,200.0
+
+//ON=@Fail
+//	src.message "You can't seem to hide here."
+
+[SCRIPTEDSKILLDEF 47]
+DEFNAME=Skill_Stealth
+KEY=Stealth
+//TITLE="Rogue"
+//PROMPTMSG=""
+//DELAY=2.0
+//STAT_STR=20
+//STAT_INT=60
+//STAT_DEX=90
+//BONUS_STR=0
+//BONUS_DEX=80
+//BONUS_INT=20
+//BONUSSTATS=25
+ADVRATE=10.0,200.0,800.0
+
+on=@Select
+if (Flag_Hidden)
+	return 0
+else
+	this.ClilocSysMessage(502725) //You must hide first
+endif
+return 1
+
+on=@Start
+argo.Success = Skill_Stealth.CheckSuccess(this, {0 700})
+argo.PhaseStroke()
+return 1
+	
+on=@Success
+arg.p = this.GetPlugin(@@hiddenHelper)
+if (arg.p == null)
+	arg.p = this.AddNewPlugin(@@hiddenHelper, p_stealthStep)
+endif
+arg.p.stealthStepsLeft = (this.Stealth / 50) + 1
+this.ClilocSysMessage(502730) //You begin to move quietly.
+
+on=@Fail
+this.ClilocSysMessage(502731) //You fail in your attempt to move unnoticed.
+this.UnHide()
+
+
+[HiddenHelperPluginDef p_hiddenHelper]
+//todo: looting others should also unhide
+
+On=@SkillStart
+//according to uo stratics, these skills do not unhide...
+switch (argo.Skilldef.Id)
+	case SkillName.DetectHidden
+	case SkillName.ItemID
+	case SkillName.Anatomy
+	case SkillName.ArmsLore
+	case SkillName.AnimalLore
+	case SkillName.EvalInt
+	case SkillName.Forensics
+	case SkillName.Poisoning
+	case SkillName.Stealth
+		break
+	case default
+		Cont.UnHide()
+		break
+endswitch
+
+On=@ActivateAbiliy
+	Cont.UnHide()
+	
+On=@Step
+if (Cont.Flag_Hidden)
+	if (<stealthStepsLeft> < 1)
+		Cont.SelectSkill(Skill_Stealth);
+	endif
+	if (argv(1)) //running?
+		stealthStepsLeft = stealthStepsLeft - 2
+	else
+		stealthStepsLeft = stealthStepsLeft - 1
+	endif
+else
+	Delete()
+endif
+
+//502725	You must hide first                                                           
+//502726	You are not hidden well enough.  Become better at hiding.                     
+//502727	You could not hope to move quietly wearing this much armor.                   
+//502728	It will be tremendouly difficult to move quietly with this many people around.
+//502729	Better hide under a tree and get some rest first.                             
+//502730	You begin to move quietly.                                                    
+//502731	You fail in your attempt to move unnoticed.                            

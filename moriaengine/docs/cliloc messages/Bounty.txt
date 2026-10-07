@@ -1,0 +1,39 @@
+500516	Adding victim to the bounty list.
+500517	Opening reporting menu.
+500518	You have cancelled the bounty reporting process.
+500519	An error has occurred and your murder cannot be reported.
+500520	You have cancelled the bounty reporting process.
+500521	You have cancelled the bounty reporting process.
+500522	Killer's killcount lower than victim's
+500523	You cannot report this death because the person who killed you has slain less people than you have.
+500524	Victim's notoriety too low to report.
+500525	You cannot report this death to Lord British's guards because your notoriety is too low.
+500526	Victim flagged criminal
+500527	You cannot report this death to Lord British's guards because you are flagged as a criminal because of your recent deeds.
+500528	Victim doesn't have lastCriminal attached
+500529	Victim's last criminal doesn't match killer
+500530	Allowed to report!
+500531	Returning killcount.
+500532	NULL reward!
+500533	Gold resource from bank:
+500534	Gold resource on gold after transfer:
+500535	Gold resource from board:
+500536	reward!
+500537	A bounty hath been issued for thee, and thy worldly goods are hereby confiscated!
+500538	Error attaching bounty script.
+500539	'Tis a decapitated head. How disgusting.
+500540	'Tis a decapitated head. How disgusting.
+500541	There is indeed a price on this head, but not here. Travel on, my friend, to a precinct of the guards that will pay thee.
+500542	We only accept bounty hunting from honorable folk! Away with thee!
+500543	I had heard that this scum was taken care of. But thou didst not do the deed, and thus shall not get the reward!
+500544	No kills are tallied on this person.
+500545	There is a bounty outstanding as well.
+500546	I am now bounty hunted!
+500547	Reducing bounty count.
+500548	Penalizing stats.
+500549	Killer must be above neutral to collect bounty.
+500550	You have a higher killcount than the victim and cannot claim the bounty.
+500551	As you kill them, you realize there is a bounty on their head! You take the head as evidence of your victory.
+500552	Select player to bounty:
+500660	If this were the head of a murderer, I would check for a bounty.
+500670	Ah, a head!  Let me check to see if there is a bounty on this.

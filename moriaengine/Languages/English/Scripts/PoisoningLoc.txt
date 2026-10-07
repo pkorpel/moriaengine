@@ -1,0 +1,5 @@
+CantPoisonThisWeapon            = It's impossible to poison this weapon
+CantPoisonThisProjectile        = It's impossible to poison this weapon projectile
+CantPoisonThat                  = It's impossible to poison that. You can only poison infectious weapons or weapon projectiles.
+ProjectilesHaveDifferentPoisond = These projectiles are already poisoned with a different poison.
+AllProjectilesPoisoned          = All of the projectiles are already poisoned.

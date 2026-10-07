@@ -1,0 +1,34 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//	
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//	
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+[ThingTemplate Player : Character]
+Vars:	//vars defined in the class, so they basically do what tags do, but better
+	//every skill can have modified its max value specified by profesion (e.g. by magic items etc)
+	private Dictionary<SkillName,short> maxSkillModifier = null
+	//players profession
+	private ProfessionPlugin profession = null	
+	
+	//container to put the created items into (defaultly Backpack)		
+	private Container receivingContainer = null	
+	
+	private short vitality = 100
+	
+	private byte visionRange = Globals.MaxUpdateRange
+	private byte personalLightLevel = 0
+	internal List<Thing> targMem = null
+	
+	//players in-game level and experience
+	private short level = 0	
+	private int experience = 0

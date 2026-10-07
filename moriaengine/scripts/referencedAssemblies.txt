@@ -1,0 +1,12 @@
+#in this file, assemblies are specified that are to be linked with the scripts when they are compiled.
+bin/Zip.dll
+bin/ICSharpCode.SharpZipLib.dll
+bin/MySql.Data.dll
+
+System.dll
+System.Data.dll
+System.Management.dll
+System.Configuration.dll
+System.Diagnostics.dll
+
+System.Core.dll

@@ -1,0 +1,2971 @@
+2007-04-27	jaja
+	* CHANGES.txt 1.29:
+	* scripts/classtemplates/Item.cs 1.18:
+		*** empty log message ***
+
+	* scripts/classtemplates/Character.cs 1.40:
+	* scripts/classtemplates/Item.cs 1.17:
+	* src/AbstractCharacter.cs 1.35:
+	* src/AbstractItem.cs 1.27:
+	* src/GameAccount.cs 1.19:
+	* src/LScript/LScript_strict.grammar 1.7:
+	* src/LScript/StrictTokenizer.cs 1.5:
+	* src/Packets/NetState.cs 1.16:
+	* src/Sector.cs 1.9:
+	* src/Server.cs 1.22:
+	* src/Thing.cs 1.32:
+	* src/ThingDef.cs 1.23:
+	* src/tiledata.cs 1.6:
+		smazany flagy ktere zatim nejsou pouzity, procisteny ty co 
+		pouzity jsou, popsany v docs/flags.txt
+
+2007-04-26	jaja
+	* scripts/Tests/LScriptTest.cs 1.7:
+	* scripts/classtemplates/Character.cs 1.39:
+	* scripts/systems/AI/PathFinding/AStar.cs 1.7:
+	* scripts/types/E_test_all.cs 1.5:
+	* src/AbstractCharacter.cs 1.34:
+	* src/Packets/NetState.cs 1.15:
+	* src/Packets/PacketSender.cs 1.21:
+	* src/Point.cs 1.18:
+	* src/Static.cs 1.8:
+	* src/Thing.cs 1.31:
+		zrusen Point5D a Point6D
+
+2007-04-26	jaja
+	* scripts/Tests/LScriptTest.cs 1.7:
+	* scripts/classtemplates/Character.cs 1.39:
+	* scripts/systems/AI/PathFinding/AStar.cs 1.7:
+	* scripts/types/E_test_all.cs 1.5:
+	* src/AbstractCharacter.cs 1.34:
+	* src/Packets/NetState.cs 1.15:
+	* src/Packets/PacketSender.cs 1.21:
+	* src/Point.cs 1.18:
+	* src/Static.cs 1.8:
+	* src/Thing.cs 1.31:
+		zrusen Point5D a Point6D
+
+2007-04-26	kolik
+	* scripts/systems/administration/Admin.cs 1.10:
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.10:
+	* scripts/systems/dialogs/GumpComponents.cs 1.5:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.11:
+	* scripts/systems/dialogs/Input.cs 1.8:
+	* scripts/systems/dialogs/LeafComponents.cs 1.8:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.11:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.10:
+		úprava GUTY - renaming komponent, øešení lepšího vkládání sloupeè
+		kù
+
+2007-04-25	jaja
+	* TODO.txt 1.49:
+	* scripts/classtemplates/Container.cs 1.11:
+	* scripts/classtemplates/Item.cs 1.16:
+	* src/AbstractCharacter.cs 1.33:
+	* src/AbstractItem.cs 1.26:
+	* src/AbstractItemDef.cs 1.7:
+	* src/ObjectPropertiesContainer.cs 1.3:
+	* src/Packets/InPackets.cs 1.24:
+	* src/Packets/PacketSender.cs 1.20:
+	* src/Server.cs 1.21:
+	* src/Thing.cs 1.30:
+		znovuzprovozneno posilani nazvu na kliknuti pro non-aos klienty/
+		vypnuty AOS
+
+	* TODO.txt 1.48:
+	* scripts/classtemplates/Container.cs 1.10:
+	* scripts/systems/skills/Stealth.scp 1.6:
+	* src/AbstractCharacter.cs 1.32:
+	* src/AbstractItem.cs 1.25:
+	* src/AbstractSkillDef.cs 1.12:
+	* src/ScriptLoader.cs 1.13:
+	* src/Thing.cs 1.29:
+		drobne bugfixy
+
+	* src/AbstractItem.cs 1.24:
+		*** empty log message ***
+
+	* scripts/classtemplates/Container.cs 1.9:
+	* src/Main.cs 1.18:
+	* src/ObjectPropertiesContainer.cs 1.2:
+	* src/Packets/NetState.cs 1.14:
+	* src/Server.cs 1.20:
+		AOS tooltips (pro dnesek ;) finished
+
+2007-04-25	kolik
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.9:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.10:
+	* scripts/systems/dialogs/LeafComponents.cs 1.7:
+		paging dohotoven, upraven firewall dialog kompletnì, upravena 
+		input komponenta z guty
+
+2007-04-24	jaja
+	* distrib/MSVS.NET/Scripts.csproj 1.40:
+	* distrib/MSVS.NET/Steamengine.csproj 1.17:
+	* scripts/classes/ObjectPropertiesContainer.cs 1.3:
+	* scripts/classtemplates/Container.cs 1.8:
+	* scripts/classtemplates/Item.cs 1.15:
+	* src/AbstractCharacter.cs 1.31:
+	* src/AbstractItem.cs 1.23:
+	* src/AbstractItemDef.cs 1.6:
+	* src/ClientVersion.cs 1.5:
+	* src/GameAccount.cs 1.18:
+	* src/GameConn.cs 1.18:
+	* src/ObjectPropertiesContainer.cs 1.1:
+	* src/Packets/InPackets.cs 1.23:
+	* src/Packets/NetState.cs 1.13:
+	* src/Packets/PacketSender.cs 1.19:
+	* src/Server.cs 1.19:
+	* src/Thing.cs 1.28:
+		implementace objectproperties snad vicemene dokoncena
+
+	* src/ClientVersion.cs 1.4:
+	* src/CompiledScripts/CompiledGump.cs 1.10:
+	* src/Gump.cs 1.10:
+	* src/HashSet.cs 1.2:
+	* src/LScript/ScriptedGumpDef.cs 1.18:
+	* src/Packets/InPackets.cs 1.22:
+	* src/Server.cs 1.18:
+		*** empty log message ***
+
+2007-04-24	kolik
+	* scripts/systems/administration/Admin.cs 1.9:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.8:
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.8:
+	* scripts/systems/dialogs/DialogStackItem.cs 1.3:
+	* scripts/systems/dialogs/GumpComponents.cs 1.4:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.9:
+	* scripts/systems/dialogs/Input.cs 1.7:
+	* scripts/systems/dialogs/LeafComponents.cs 1.6:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.10:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.9:
+		dialogy zmìny
+
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.8:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.8:
+	* src/Gump.cs 1.11:
+		dialog paging
+
+2007-04-23	jaja
+	* scripts/classtemplates/Item.cs 1.14:
+	* src/AbstractCharacter.cs 1.30:
+	* src/AbstractItem.cs 1.22:
+	* src/CacheDictionary.cs 1.3:
+	* src/FieldValue.cs 1.7:
+	* src/Packets/InPackets.cs 1.21:
+	* src/Packets/NetState.cs 1.12:
+	* src/Packets/PacketSender.cs 1.18:
+	* src/Server.cs 1.17:
+		*** empty log message ***
+
+	* TODO.txt 1.47:
+	* src/Commands.cs 1.12:
+	* src/Main.cs 1.17:
+		clearovani commands cache pri recompile
+
+	* src/Packets/MediumLevelOut.cs 1.6:
+	* src/Packets/PacketGroup.cs 1.5:
+		chybicka v nondebug buildu :)
+
+	* scripts/classes/ObjectPropertiesContainer.cs 1.2:
+	* scripts/classtemplates/Item.cs 1.13:
+	* src/AbstractCharacter.cs 1.29:
+	* src/AbstractItem.cs 1.21:
+	* src/OpenedContainers.cs 1.2:
+	* src/Packets/InPackets.cs 1.20:
+	* src/Packets/NetState.cs 1.11:
+	* src/Packets/PacketHandler.cs 1.11:
+	* src/Packets/PacketSender.cs 1.17:
+	* src/Server.cs 1.16:
+		mezifaze implementace objectproperties 2
+
+2007-04-23	kolik
+	* scripts/converted_used/to_be_deleted.def 1.2:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.7:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.7:
+		dialog paging
+
+2007-04-21	jaja
+	* src/Packets/MediumLevelOut.cs 1.5:
+		*** empty log message ***
+
+	* src/Packets/NetState.cs 1.10:
+		chybicka :)
+
+	* distrib/MSVS.NET/Scripts.csproj 1.39:
+	* distrib/MSVS.NET/Steamengine.csproj 1.16:
+	* scripts/classes/HashSet.cs 1.2:
+	* scripts/classtemplates/Character.cs 1.38:
+	* scripts/classtemplates/Item.cs 1.12:
+	* scripts/systems/AI/PathFinding/AStar.cs 1.6:
+	* scripts/systems/skills/SkillDef.cs 1.15:
+	* src/AbstractCharacter.cs 1.28:
+	* src/AbstractItem.cs 1.20:
+	* src/CanSeeImplementation.cs 1.6:
+	* src/CompiledScripts/ClassTemplateInstance.cs 1.8:
+	* src/CompiledScripts/ClassTemplateInstanceField.cs 1.5:
+	* src/CompiledScripts/ClassTemplateReader.cs 1.3:
+	* src/GameConn.cs 1.17:
+	* src/Globals.cs 1.24:
+	* src/HashSet.cs 1.1:
+	* src/Main.cs 1.16:
+	* src/OpenedContainers.cs 1.1:
+	* src/Packets/HighLevelOut.cs 1.3:
+	* src/Packets/InPackets.cs 1.19:
+	* src/Packets/LowLevelOut.cs 1.5:
+	* src/Packets/MediumLevelOut.cs 1.4:
+	* src/Packets/NetState.cs 1.9:
+	* src/Packets/PacketGroup.cs 1.4:
+	* src/Packets/PacketHandler.cs 1.10:
+	* src/Persistence/ObjectSaver.cs 1.6:
+	* src/Server.cs 1.15:
+	* src/Thing.cs 1.27:
+	* src/ThingDef.cs 1.22:
+		upraven item update, opencontainer tracking, atd.
+
+2007-04-19	jaja
+	* src/ConsConn.cs 1.5:
+	* src/Packets/NetState.cs 1.8:
+		*** empty log message ***
+
+2007-04-19	kolik
+	* scripts/systems/administration/Admin.cs 1.8:
+	* scripts/systems/dialogs/DialogStackItem.cs 1.2:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.9:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.6:
+		dialog stacking
+
+2007-04-18	jaja
+	* TODO.txt 1.46:
+	* distrib/MSVS.NET/Scripts.csproj 1.38:
+	* distrib/MSVS.NET/Steamengine.csproj 1.15:
+	* scripts/Tests/LScriptTest.cs 1.6:
+	* scripts/classes/ObjectPropertiesContainer.cs 1.1:
+	* scripts/classtemplates/Character.cs 1.37:
+	* scripts/classtemplates/Container.cs 1.7:
+	* scripts/classtemplates/Item.cs 1.11:
+	* scripts/systems/administration/Commands.cs 1.7:
+	* scripts/systems/skills/SkillDef.cs 1.14:
+	* scripts/types/E_test_all.cs 1.4:
+	* src/AbstractCharacter.cs 1.27:
+	* src/AbstractItem.cs 1.19:
+	* src/CacheDictionary.cs 1.2:
+	* src/CanSeeImplementation.cs 1.5:
+	* src/Commands.cs 1.11:
+	* src/ConsConn.cs 1.4:
+	* src/LScript/LScript.cs 1.8:
+	* src/Main.cs 1.15:
+	* src/Packets/HighLevelOut.cs 1.2:
+	* src/Packets/InPackets.cs 1.18:
+	* src/Packets/LowLevelOut.cs 1.4:
+	* src/Packets/MediumLevelOut.cs 1.3:
+	* src/Packets/NetState.cs 1.7:
+	* src/Packets/PacketGroup.cs 1.3:
+	* src/Packets/PacketHandler.cs 1.9:
+	* src/Packets/PacketSender.cs 1.16:
+	* src/Packets/Prepared.cs 1.3:
+	* src/Persistence/WorldSaver.cs 1.6:
+	* src/Server.cs 1.14:
+	* src/Thing.cs 1.26:
+	* src/WeakRefDictionary.cs 1.1:
+		mezifaze implementace objectproperties
+
+2007-04-17	kolik
+	* distrib/MSVS.NET/Scripts.csproj 1.37:
+	* scripts/classtemplates/Player.cs 1.19:
+	* scripts/systems/administration/Admin.cs 1.7:
+	* scripts/systems/dialogs/DialogStackItem.cs 1.1:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.8:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.5:
+	* src/GameConn.cs 1.16:
+		dialog stacking
+
+	* scripts/classtemplates/Player.cs 1.18:
+	* scripts/converted_used/itemb1.def 1.1:
+	* scripts/converted_used/itemb2.def 1.1:
+	* scripts/converted_used/to_be_deleted.def 1.1:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.6:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.7:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.4:
+	* scripts/systems/mailingsystem/mailsending.scp 1.1:
+		mailing systém zdokonalen
+
+2007-04-16	kolik
+	* scripts/converted_used/floor_tiles.def 1.2:
+		odstranìn nesmysl
+
+	* distrib/MSVS.NET/Scripts.csproj 1.36:
+	* scripts/classtemplates/Character.cs 1.36:
+	* scripts/classtemplates/Player.cs 1.17:
+	* scripts/systems/administration/Admin.cs 1.6:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.7:
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.7:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.5:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.6:
+	* scripts/systems/mailingsystem/MailingSystem.cs 1.5:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.3:
+		doimplementace mailing systému
+
+2007-04-15	kolik
+	* scripts/systems/administration/Admin.cs 1.5:
+	* scripts/systems/administration/GumpAdministration.cs 1.4:
+		další zmìny v gutì, implementace admin dialogu
+
+2007-04-12	jaja
+	* distrib/MSVS.NET/Scripts.csproj 1.35:
+	* distrib/MSVS.NET/Steamengine.csproj 1.14:
+	* scripts/classes/CacheDictionary.cs 1.3:
+	* src/CacheDictionary.cs 1.1:
+	* src/Commands.cs 1.10:
+	* src/LScript/LScript.cs 1.7:
+	* src/Main.cs 1.14:
+	* src/Persistence/WorldSaver.cs 1.5:
+	* src/ScriptHolder.cs 1.6:
+		cache pouzitych Gm prikazu
+
+	* scripts/classes/CacheDictionary.cs 1.2:
+		vtipna chybicka s vnorenou tridou, .NET je pekne divnej
+
+	* distrib/MSVS.NET/Scripts.csproj 1.34:
+	* scripts/classes/CacheDictionary.cs 1.1:
+	* src/3rdParty/Encryption/LoginEncryption.cs 1.3:
+	* src/AbstractCharacter.cs 1.26:
+	* src/ClientVersion.cs 1.3:
+	* src/Packets/InPackets.cs 1.17:
+	* src/Packets/NetState.cs 1.6:
+	* src/Packets/PacketSender.cs 1.15:
+	* src/Server.cs 1.13:
+	* src/Thing.cs 1.25:
+	* src/TriggerKey.cs 1.8:
+		vylepsena autodetekce enkrypce, prvni faze implementace 
+		megacliloc/propertylist
+
+2007-04-12	kolik
+	* scripts/systems/Enums.cs 1.8:
+	* scripts/systems/administration/Admin.cs 1.4:
+	* scripts/systems/administration/Admin.scp 1.4:
+	* scripts/systems/administration/Pages/GMPage.cs 1.6:
+	* scripts/systems/administration/Pages/pages.scp 1.9:
+	* scripts/systems/administration/firewall/Firewall.cs 1.3:
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.6:
+	* scripts/systems/dialogs/LeafComponents.cs 1.5:
+	* scripts/systems/mailingsystem/MailingSystem.cs 1.4:
+		další zmìny v gutì, implementace admin dialogu
+
+2007-04-11	jaja
+	* scripts/systems/skills/ArmsLore.cs 1.2:
+	* scripts/systems/skills/ItemID.cs 1.4:
+		zformatovano
+
+2007-04-11	jaja
+	* scripts/systems/skills/ArmsLore.cs 1.2:
+	* scripts/systems/skills/ItemID.cs 1.4:
+		zformatovano
+
+2007-04-11	glorg
+	* scripts/systems/skills/Discordance.cs 1.19:
+		*** empty log message ***
+
+2007-04-11	klaj
+	* TODO.txt 1.45:
+	* scripts/classtemplates/Character.ct 1.9:
+	* scripts/systems/skills/ArmsLore.cs 1.1:
+	* scripts/systems/skills/ItemID.cs 1.3:
+		*** empty log message ***
+
+2007-04-11	kolik
+	* scripts/systems/Enums.cs 1.7:
+		blbì remarky
+
+	* scripts/systems/dialogs/LeafComponents.cs 1.4:
+		pøeklep
+
+	* scripts/systems/mailingsystem/MailingSystem.cs 1.3:
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.2:
+		drobnosti v mailing systemu
+
+	* scripts/systems/Enums.cs 1.6:
+	* scripts/systems/administration/Admin.cs 1.3:
+	* scripts/systems/administration/GumpAdministration.cs 1.3:
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.5:
+	* scripts/systems/dialogs/Input.cs 1.6:
+	* scripts/systems/dialogs/LeafComponents.cs 1.3:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.5:
+		Velká pøedìlávka systému GUTA buttonù a inputù, úpravy v navazují
+		cím kódu
+
+2007-04-10	jaja
+	* distrib/MSVS.NET/Scripts.csproj 1.33:
+		*** empty log message ***
+
+2007-04-10	klaj
+	* scripts/systems/skills/ItemID.cs 1.1:
+	* scripts/systems/skills/ItemID.cs 1.2:
+		*** empty log message ***
+
+2007-04-10	jaja
+	* distrib/MSVS.NET/Scripts.csproj 1.33:
+		*** empty log message ***
+
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.3:
+		preformatovano, tridy includnuty v namespace
+
+	* CHANGES.txt 1.28:
+	* distrib/MSVS.NET/Steamengine.csproj 1.13:
+	* scripts/classtemplates/Character.cs 1.35:
+	* scripts/classtemplates/Item.cs 1.10:
+	* scripts/systems/skills/Discordance.cs 1.15:
+	* scripts/systems/skills/Hiding.cs 1.9:
+	* scripts/systems/skills/Musicianship.scp 1.7:
+	* scripts/systems/skills/ScriptedSkillDef.cs 1.5:
+	* scripts/systems/skills/SkillDef.cs 1.13:
+	* src/AbstractCharacter.cs 1.25:
+	* src/CompiledScripts/ClassManager.cs 1.14:
+	* src/CompiledScripts/CompilerInvoker.cs 1.10:
+	* src/LScript/LScript.cs 1.6:
+	* src/LScript/LScript_strict.grammar 1.6:
+	* src/LScript/OpNode_Code.cs 1.3:
+	* src/LScript/OpNode_Lazy_ExpressionChain.cs 1.4:
+	* src/LScript/OpNode_TypeOf.cs 1.1:
+	* src/LScript/StrictAnalyzer.cs 1.5:
+	* src/LScript/StrictConstants.cs 1.5:
+	* src/LScript/StrictParser.cs 1.6:
+	* src/LScript/StrictTokenizer.cs 1.4:
+	* src/Persistence/DecoratedClassesSaveImplementor.cs 1.4:
+		Pridano typeof a is do LScriptu
+
+2007-04-10	glorg
+	* scripts/systems/skills/Discordance.cs 1.16:
+	* scripts/systems/skills/Discordance.cs 1.17:
+	* scripts/systems/skills/Discordance.cs 1.18:
+		*** empty log message ***
+
+2007-04-10	klaj
+	* scripts/systems/skills/ItemID.cs 1.1:
+	* scripts/systems/skills/ItemID.cs 1.2:
+		*** empty log message ***
+
+2007-04-10	lokarelka
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.4:
+		*** empty log message ***
+
+2007-04-09	jaja
+	* TODO.txt 1.44:
+		todo uprava
+
+	* distrib/MSVS.NET/Scripts.csproj 1.32:
+	* distrib/MSVS.NET/Steamengine.csproj 1.12:
+	* scripts/classtemplates/Character.cs 1.33:
+	* scripts/classtemplates/Character.cs 1.34:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.9:
+	* src/Timers/FunctionTimer.cs 1.5:
+	* src/Timers/MethodTimer.cs 1.6:
+	* src/Timers/Timer.cs 1.13:
+	* src/Timers/TriggerTimer.cs 1.6:
+		*** empty log message ***
+
+	* scripts/classtemplates/Character.cs 1.32:
+	* scripts/classtemplates/Player.cs 1.16:
+	* scripts/systems/AI/PathFinding/AStar.cs 1.5:
+	* src/Timers/DelegateTimer.cs 1.1:
+		pridan delegatetimer
+
+2007-04-09	glorg
+	* scripts/systems/skills/Discordance.cs 1.13:
+	* scripts/systems/skills/Discordance.cs 1.14:
+	* scripts/systems/skills/Musicianship.scp 1.6:
+		*** empty log message ***
+
+	* scripts/systems/skills/Discordance.cs 1.12:
+		Upraven Discordance pro C#
+
+	* scripts/systems/skills/Discordance.cs 1.11:
+	* scripts/systems/skills/Musicianship.scp 1.5:
+		Upraven Discordance pro C#.
+
+2007-04-09	lokarelka
+	* scripts/systems/administration/firewall/Firewall.cs 1.1:
+	* scripts/systems/administration/firewall/Firewall.cs 1.2:
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.1:
+	* scripts/systems/administration/firewall/FirewallDialog.cs 1.2:
+		*** empty log message ***
+
+2007-04-08	verbatim
+	* bin/client_5.0.1j.exe 1.1:
+	* scripts/converted_used/chars/ogres.def 1.1:
+		pridan doporuceny client UO a z converted presunuty do used 
+		nejaka monstra pro videotesty
+
+2007-04-07	lokarelka
+	* scripts/systems/firewall/Firewall.cs 1.12:
+	* scripts/systems/firewall/FirewallDialog.cs 1.19:
+		*** empty log message ***
+
+2007-04-06	jaja
+	* scripts/classtemplates/NPC.cs 1.3:
+	* scripts/systems/AI/PathFinding/AStar.cs 1.3:
+		*** empty log message ***
+
+	* scripts/classtemplates/Player.cs 1.15:
+	* scripts/systems/AI/PathFinding/AStar.cs 1.2:
+	* src/AbstractCharacter.cs 1.24:
+	* src/CanSeeImplementation.cs 1.4:
+	* src/GameConn.cs 1.15:
+	* src/Packets/NetState.cs 1.5:
+	* src/Timers/Timer.cs 1.12:
+		pridan astar_walk testovaci kod
+
+2007-04-06	lokarelka
+	* scripts/systems/Enums.cs 1.5:
+	* scripts/systems/administration/Admin.cs 1.2:
+	* scripts/systems/administration/Admin.scp 1.3:
+	* scripts/systems/administration/Pages/pages.scp 1.7:
+	* scripts/systems/administration/Pages/pages.scp 1.8:
+	* scripts/systems/firewall/Firewall.cs 1.10:
+	* scripts/systems/firewall/Firewall.cs 1.11:
+	* scripts/systems/firewall/FirewallDialog.cs 1.13:
+	* scripts/systems/firewall/FirewallDialog.cs 1.14:
+	* scripts/systems/firewall/FirewallDialog.cs 1.15:
+	* scripts/systems/firewall/FirewallDialog.cs 1.16:
+	* scripts/systems/firewall/FirewallDialog.cs 1.17:
+	* scripts/systems/firewall/FirewallDialog.cs 1.18:
+		*** empty log message ***
+
+2007-04-06	verbatim
+	* scripts/systems/AI/PathFinding/AStar.cs 1.4:
+		Historicky prvni uprava C# kodu made by Verb :)
+
+	* scripts/converted_used/floor_tiles.def 1.1:
+		*** empty log message ***
+
+2007-04-05	lokarelka
+	* scripts/systems/firewall/Firewall.cs 1.9:
+	* scripts/systems/firewall/FirewallDialog.cs 1.12:
+		*** empty log message ***
+
+2007-04-05	verbatim
+	* TODO.txt 1.43:
+	* scripts/systems/administration/Pages/pages.scp 1.6:
+		*** empty log message ***
+
+2007-04-05	kolik
+	* distrib/MSVS.NET/Scripts.csproj 1.31:
+	* scripts/systems/Enums.cs 1.4:
+	* scripts/systems/administration/Admin.cs 1.1:
+	* scripts/systems/administration/Admin.scp 1.2:
+		zmena admin dialogu
+
+2007-04-05	lokarelka
+	* scripts/systems/firewall/Firewall.cs 1.9:
+	* scripts/systems/firewall/FirewallDialog.cs 1.12:
+		*** empty log message ***
+
+2007-04-05	verbatim
+	* TODO.txt 1.43:
+	* scripts/systems/administration/Pages/pages.scp 1.6:
+		*** empty log message ***
+
+2007-04-05	kolik
+	* distrib/MSVS.NET/Scripts.csproj 1.31:
+	* scripts/systems/Enums.cs 1.4:
+	* scripts/systems/administration/Admin.cs 1.1:
+	* scripts/systems/administration/Admin.scp 1.2:
+		zmena admin dialogu
+
+2007-04-05	jaja
+	* CHANGES.txt 1.27:
+	* distrib/MSVS.NET/Scripts.csproj 1.30:
+	* distrib/MSVS.NET/Steamengine.csproj 1.11:
+	* scripts/classes/HashSet.cs 1.1:
+	* scripts/classes/PriorityQueue.cs 1.1:
+	* scripts/systems/AI/PathFinding/AStar.cs 1.1:
+	* src/AbstractCharacter.cs 1.23:
+	* src/Movement.cs 1.4:
+	* src/Packets/PacketHandler.cs 1.8:
+	* src/Point.cs 1.17:
+	* src/Timers/PriorityQueue.cs 1.2:
+	* src/Timers/SimpleQueue.cs 1.3:
+	* src/Timers/Timer.cs 1.11:
+	* src/Timers/TimerPriorityQueue.cs 1.1:
+		pathfinding
+
+2007-04-05	lokarelka
+	* scripts/systems/firewall/Firewall.cs 1.7:
+	* scripts/systems/firewall/Firewall.cs 1.8:
+	* scripts/systems/firewall/Firewall.cs 1.9:
+	* scripts/systems/firewall/FirewallDialog.cs 1.10:
+	* scripts/systems/firewall/FirewallDialog.cs 1.11:
+	* scripts/systems/firewall/FirewallDialog.cs 1.12:
+	* scripts/systems/firewall/FirewallDialog.cs 1.6:
+	* scripts/systems/firewall/FirewallDialog.cs 1.7:
+	* scripts/systems/firewall/FirewallDialog.cs 1.8:
+	* scripts/systems/firewall/FirewallDialog.cs 1.9:
+		*** empty log message ***
+
+2007-04-05	verbatim
+	* TODO.txt 1.41:
+	* TODO.txt 1.42:
+	* TODO.txt 1.43:
+	* scripts/systems/administration/Pages/pages.scp 1.5:
+	* scripts/systems/administration/Pages/pages.scp 1.6:
+	* src/Constant.cs 1.7:
+		*** empty log message ***
+
+2007-04-05	kolik
+	* distrib/MSVS.NET/Scripts.csproj 1.31:
+	* scripts/systems/Enums.cs 1.4:
+	* scripts/systems/administration/Admin.cs 1.1:
+	* scripts/systems/administration/Admin.scp 1.2:
+		zmena admin dialogu
+
+	* scripts/systems/mailingsystem/MessagesDialog.cs 1.1:
+		*** empty log message ***
+
+2007-04-04	kolik
+	* distrib/MSVS.NET/Scripts.csproj 1.29:
+	* scripts/systems/dialogs/Input.cs 1.5:
+	* src/Packets/InPackets.cs 1.16:
+		oprava input dialgou
+
+	* src/ScriptLoader.cs 1.12:
+		zrychlení resyncù
+
+2007-04-04	lokarelka
+	* scripts/systems/firewall/Firewall.cs 1.4:
+	* scripts/systems/firewall/Firewall.cs 1.5:
+	* scripts/systems/firewall/Firewall.cs 1.6:
+	* scripts/systems/firewall/FirewallCommands.scp 1.2:
+		*** empty log message ***
+
+2007-04-04	kolik
+	* distrib/MSVS.NET/Scripts.csproj 1.29:
+	* scripts/systems/dialogs/Input.cs 1.5:
+	* src/Packets/InPackets.cs 1.16:
+		oprava input dialgou
+
+	* src/ScriptLoader.cs 1.12:
+		zrychlení resyncù
+
+2007-04-01	jaja
+	* distrib/MSVS.NET/Scripts.csproj 1.28:
+	* scripts/classtemplates/Character.cs 1.31:
+	* scripts/classtemplates/NPC.cs 1.2:
+	* scripts/classtemplates/Player.cs 1.14:
+	* src/AbstractCharacter.cs 1.22:
+	* src/AbstractItem.cs 1.18:
+	* src/CanSeeImplementation.cs 1.3:
+	* src/GameAccount.cs 1.17:
+	* src/GameConn.cs 1.14:
+	* src/Globals.cs 1.23:
+	* src/Map.cs 1.12:
+	* src/Movement.cs 1.3:
+	* src/Packets/InPackets.cs 1.15:
+	* src/Packets/LowLevelOut.cs 1.3:
+	* src/Packets/MediumLevelOut.cs 1.2:
+	* src/Packets/NetState.cs 1.4:
+	* src/Packets/PacketGroup.cs 1.2:
+	* src/Point.cs 1.16:
+	* src/Rectangle.cs 1.5:
+	* src/Server.cs 1.12:
+	* src/Thing.cs 1.24:
+		CanSee faze 1 ;)
+
+	* scripts/systems/Firewall.cs 1.4:
+	* scripts/systems/FirewallDialog.cs 1.4:
+	* scripts/systems/firewall/FirewallDialog.cs 1.3:
+	* scripts/systems/firewall/FirewallDialog.cs 1.4:
+		*** empty log message ***
+
+2007-04-01	lokarelka
+	* scripts/systems/firewall/FirewallDialog.cs 1.5:
+		*** empty log message ***
+
+2007-03-31	lokarelka
+	* scripts/systems/firewall/Firewall.cs 1.3:
+	* scripts/systems/firewall/FirewallCommands.scp 1.1:
+	* scripts/systems/firewall/FirewallDialog.cs 1.2:
+		*** empty log message ***
+
+2007-03-31	jaja
+	* CHANGES.txt 1.26:
+	* bin/DotNetLib.Windows.Forms.Themes.dll 1.1:
+	* bin/DotNetLib.Windows.Forms.dll 1.1:
+	* bin/NProf.Hook.dll 1.1:
+	* bin/NProf.exe 1.1:
+	* bin/NProf.pdb 1.1:
+	* bin/RegisterProfilerHook.bat 1.1:
+	* bin/msvcr70.dll 1.1:
+	* distrib/MSVS.NET/Scripts.csproj 1.27:
+	* profile.bat 1.1:
+	* scripts/Tests/InputDefTest.cs 1.3:
+	* scripts/Tests/d_test.cs 1.3:
+	* scripts/classes/Memory.cs 1.10:
+	* scripts/classes/MemoryDef.cs 1.10:
+	* scripts/classtemplates/Character.cs 1.29:
+	* scripts/classtemplates/Character.ct 1.8:
+	* scripts/classtemplates/Container.cs 1.6:
+	* scripts/classtemplates/Equippable.cs 1.3:
+	* scripts/classtemplates/NPC.cs 1.1:
+	* scripts/classtemplates/NPC.ct 1.1:
+	* scripts/classtemplates/Player.cs 1.12:
+	* scripts/converted/Aen/vstupchar.def 1.2:
+	* scripts/converted/chars/DEMONS.def 1.2:
+	* scripts/converted/chars/DRAGONS.def 1.2:
+	* scripts/converted/chars/Golems.def 1.2:
+	* scripts/converted/chars/INSECTS.def 1.2:
+	* scripts/converted/chars/SPECIAL.def 1.2:
+	* scripts/converted/chars/UNDEADS.def 1.2:
+	* scripts/converted/chars/animals.def 1.2:
+	* scripts/converted/chars/caves.def 1.2:
+	* scripts/converted/chars/dragons_tmp.def 1.2:
+	* scripts/converted/chars/elementals.def 1.2:
+	* scripts/converted/chars/ents.def 1.2:
+	* scripts/converted/chars/guards.def 1.2:
+	* scripts/converted/chars/mounts.def 1.2:
+	* scripts/converted/chars/npc_evil_race.def 1.2:
+	* scripts/converted/chars/ogres.def 1.2:
+	* scripts/converted/chars/orcs.def 1.2:
+	* scripts/converted/chars/snowmonsters.def 1.2:
+	* scripts/converted/chars/specNPCVerbatim.def 1.2:
+	* scripts/converted/chars/specNPCVypravec.def 1.2:
+	* scripts/converted/chars/specNPCcrunch.def 1.2:
+	* scripts/converted/chars/specNPCmandos.def 1.2:
+	* scripts/converted/chars/specNPCqv1.def 1.2:
+	* scripts/converted/chars/specNPCsarig.def 1.2:
+	* scripts/converted/chars/summons.def 1.2:
+	* scripts/converted/chars/t2a.def 1.2:
+	* scripts/converted/chars/ucitele.def 1.2:
+	* scripts/converted/chars/vendors.def 1.2:
+	* scripts/converted/nova_monstra.def 1.2:
+	* scripts/converted_used/chars/mounts.def 1.2:
+	* scripts/converted_used/chars/summons.def 1.2:
+	* scripts/converted_used/chars/vendors.def 1.2:
+	* scripts/systems/Firewall.cs 1.3:
+	* scripts/systems/FirewallDialog.cs 1.2:
+	* scripts/systems/PlayerCreation.scp 1.2:
+	* scripts/systems/administration/Commands.cs 1.5:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.5:
+	* scripts/systems/administration/Pages/GMPage.cs 1.4:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.4:
+	* scripts/systems/dialogs/Input.cs 1.4:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.3:
+	* scripts/systems/skills/Discordance.cs 1.7:
+	* scripts/systems/skills/SkillDef.cs 1.11:
+	* scripts/types/E_test_all.cs 1.3:
+	* scripts/types/type_animations.cs 1.3:
+	* scripts/types/type_beers.cs 1.3:
+	* scripts/types/type_by_profession.cs 1.3:
+	* scripts/types/type_ore.cs 1.2:
+	* scripts/types/type_resources.cs 1.2:
+	* src/AbstractCharacter.cs 1.20:
+	* src/AbstractCharacter.cs 1.21:
+	* src/AbstractDef.cs 1.14:
+	* src/AbstractDefTriggerGroupHolder.cs 1.6:
+	* src/AbstractItem.cs 1.17:
+	* src/AbstractSkillDef.cs 1.11:
+	* src/CanSeeImplementation.cs 1.2:
+	* src/Commands.cs 1.9:
+	* src/CompiledScripts/CompiledGump.cs 1.9:
+	* src/Conn.cs 1.5:
+	* src/ConsConn.cs 1.3:
+	* src/Enums.cs 1.4:
+	* src/GameAccount.cs 1.16:
+	* src/GameConn.cs 1.13:
+	* src/Globals.cs 1.22:
+	* src/Gump.cs 1.9:
+	* src/LScript/IntrinsicMethods.cs 1.4:
+	* src/LScript/OpNode_Lazy_AddTimer.cs 1.3:
+	* src/LScript/OpNode_Lazy_Arguments.cs 1.5:
+	* src/LScript/OpNode_Lazy_Expression.cs 1.7:
+	* src/LScript/ScriptedGumpDef.cs 1.17:
+	* src/Main.cs 1.13:
+	* src/MemberWrapper.cs 1.3:
+	* src/Movement.cs 1.2:
+	* src/Packets/InPackets.cs 1.13:
+	* src/Packets/InPackets.cs 1.14:
+	* src/Packets/PacketHandler.cs 1.7:
+	* src/Packets/PacketSender.cs 1.14:
+	* src/Packets/Prepared.cs 1.2:
+	* src/Persistence/DecoratedClassesSaveImplementor.cs 1.3:
+	* src/Persistence/ExportImport.cs 1.2:
+	* src/Persistence/WorldSaver.cs 1.3:
+	* src/Point.cs 1.15:
+	* src/Region.cs 1.13:
+	* src/ScriptArgs.cs 1.3:
+	* src/ScriptLoader.cs 1.11:
+	* src/Server.cs 1.11:
+	* src/Static.cs 1.7:
+	* src/TagHolder.cs 1.17:
+	* src/Thing.cs 1.23:
+	* src/ThingDef.cs 1.21:
+	* src/ThingLinkedList.cs 1.3:
+	* src/Timers/MethodTimer.cs 1.5:
+	* src/Timers/TriggerTimer.cs 1.5:
+	* src/TriggerKey.cs 1.7:
+		SRC readonly
+
+	* src/Persistence/WorldSaver.cs 1.4:
+		*** empty log message ***
+
+	* scripts/classtemplates/Character.cs 1.30:
+	* scripts/classtemplates/Player.cs 1.13:
+	* scripts/systems/Enums.cs 1.3:
+	* scripts/systems/FirewallDialog.cs 1.3:
+	* scripts/systems/administration/Commands.cs 1.6:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.6:
+	* scripts/systems/administration/Pages/GMPage.cs 1.5:
+	* scripts/systems/db/DbMethods.cs 1.4:
+	* scripts/systems/dialogs/DialogUtils.cs 1.2:
+	* scripts/systems/dialogs/GumpComponents.cs 1.3:
+	* scripts/systems/dialogs/LeafComponents.cs 1.2:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.4:
+	* scripts/systems/mailingsystem/MailingSystem.cs 1.2:
+	* scripts/systems/skills/Discordance.cs 1.8:
+	* scripts/systems/skills/SkillDef.cs 1.12:
+	* scripts/systems/types/SpawnInfo.cs 1.5:
+		reformatovany skripty
+
+	* nprof/COPYING.txt 1.1:
+	* nprof/NProf/AboutForm.cs 1.1:
+	* nprof/NProf/AboutForm.resx 1.1:
+	* nprof/NProf/App.ico 1.1:
+	* nprof/NProf/AssemblyInfo.cs 1.1:
+	* nprof/NProf/NProf.cs 1.1:
+	* nprof/NProf/NProf.csproj 1.1:
+	* nprof/NProf/NProf.resx 1.1:
+	* nprof/NProf/OptionsForm.cs 1.1:
+	* nprof/NProf/OptionsForm.resx 1.1:
+	* nprof/NProf/Resources/GPL.txt 1.1:
+	* nprof/NProf/Resources/app-icon.ico 1.1:
+	* nprof/NProf/Resources/go.bmp 1.1:
+	* nprof/NProf/Resources/initializing.bmp 1.1:
+	* nprof/NProf/Resources/process.bmp 1.1:
+	* nprof/NProf/Resources/project.bmp 1.1:
+	* nprof/NProf/Resources/stop-error.bmp 1.1:
+	* nprof/NProf/Resources/stop.bmp 1.1:
+	* nprof/NProf/Resources/thread.bmp 1.1:
+	* nprof/NProf/Resources/toolbar16.png 1.1:
+	* nprof/NProf/Resources/toolbar24.png 1.1:
+	* nprof/nprof.sln 1.1:
+		nprof
+
+2007-03-31	glorg
+	* scripts/systems/skills/Discordance.cs 1.10:
+		*** empty log message ***
+
+	* scripts/systems/skills/Discordance.cs 1.9:
+		Be aware ! Evil script is comming !
+
+2007-03-31	lokarelka
+	* scripts/systems/firewall/Firewall.cs 1.1:
+	* scripts/systems/firewall/Firewall.cs 1.2:
+	* scripts/systems/firewall/Firewall.cs 1.3:
+	* scripts/systems/firewall/FirewallCommands.scp 1.1:
+	* scripts/systems/firewall/FirewallDialog.cs 1.1:
+	* scripts/systems/firewall/FirewallDialog.cs 1.2:
+		*** empty log message ***
+
+2007-03-29	jaja
+	* CHANGES.txt 1.25:
+	* SphereShardConverter/ConvertedItemDef.cs 1.4:
+	* distrib/MSVS.NET/Steamengine.csproj 1.10:
+	* scripts/Tests/LScriptTest.cs 1.5:
+	* scripts/Tests/TargetDefTest.cs 1.5:
+	* scripts/Tests/TargetDefTest.scp 1.5:
+	* scripts/classes/Target.cs 1.7:
+	* scripts/classtemplates/Character.cs 1.28:
+	* scripts/classtemplates/Container.cs 1.5:
+	* scripts/classtemplates/Equippable.cs 1.2:
+	* scripts/classtemplates/Item.cs 1.9:
+	* scripts/classtemplates/Musical.cs 1.4:
+	* scripts/systems/administration/Commands.cs 1.4:
+	* scripts/types/type_ground_tiles.cs 1.2:
+	* src/AbstractCharacter.cs 1.19:
+	* src/AbstractItem.cs 1.16:
+	* src/AbstractItemDef.cs 1.5:
+	* src/CanSeeImplementation.cs 1.1:
+	* src/CompiledScripts/CompiledTriggerGroup.cs 1.3:
+	* src/DispidInfo.cs 1.3:
+	* src/Enums.cs 1.3:
+	* src/Globals.cs 1.21:
+	* src/Main.cs 1.12:
+	* src/Map.cs 1.11:
+	* src/Movement.cs 1.1:
+	* src/MultiData.cs 1.4:
+	* src/Packets/PacketSender.cs 1.13:
+	* src/Point.cs 1.14:
+	* src/Rectangle.cs 1.4:
+	* src/Sector.cs 1.8:
+	* src/Static.cs 1.6:
+	* src/StaticSector.cs 1.5:
+	* src/Thing.cs 1.22:
+	* src/ThingDef.cs 1.20:
+	* src/tiledata.cs 1.5:
+		Movement checking
+
+2007-03-26	jaja
+	* CHANGES.txt 1.24:
+	* Common/Exceptions.cs 1.6:
+	* Common/LogStr.cs 1.3:
+	* Common/Logger.cs 1.3:
+	* Common/TestSuite.cs 1.2:
+	* TODO.txt 1.40:
+	* distrib/MSVS.NET/Scripts.csproj 1.26:
+	* scripts/classes/Persistence/ArrayListSaver.cs 1.2:
+	* scripts/classes/Persistence/ArraySaver.cs 1.2:
+	* scripts/classes/Persistence/GenericListSaver.cs 1.2:
+	* scripts/classes/Persistence/HashtableSaver.cs 1.2:
+	* scripts/classes/Persistence/LinkedListSaver.cs 1.2:
+	* scripts/classes/Persistence/StaticMemberSaver.cs 1.2:
+	* scripts/classtemplates/Character.cs 1.27:
+	* scripts/classtemplates/Player.cs 1.11:
+	* scripts/systems/dialogs/Input.cs 1.3:
+	* src/AbstractCharacter.cs 1.18:
+	* src/AbstractDef.cs 1.13:
+	* src/ClientVersion.cs 1.2:
+	* src/Commands.cs 1.8:
+	* src/CompiledScripts/CompiledGump.cs 1.8:
+	* src/CompiledScripts/CompilerInvoker.cs 1.9:
+	* src/ConsConn.cs 1.2:
+	* src/Constant.cs 1.6:
+	* src/CoreLogger.cs 1.2:
+	* src/FieldValue.cs 1.6:
+	* src/GameAccount.cs 1.15:
+	* src/GameConn.cs 1.12:
+	* src/Globals.cs 1.20:
+	* src/LScript/LScript.cs 1.5:
+	* src/LScript/LScriptHolder.cs 1.5:
+	* src/LScript/OpNode_Final_AddTimer.cs 1.2:
+	* src/LScript/OpNode_Final_Arguments.cs 1.3:
+	* src/LScript/OpNode_Final_Array.cs 1.3:
+	* src/LScript/OpNode_Final_ArrayListIndexer.cs 1.2:
+	* src/LScript/OpNode_Final_BinMathOperators.cs 1.2:
+	* src/LScript/OpNode_Final_ComparOperators.cs 1.2:
+	* src/LScript/OpNode_Final_Constructor.cs 1.2:
+	* src/LScript/OpNode_Final_Field.cs 1.2:
+	* src/LScript/OpNode_Final_LogicalOp.cs 1.2:
+	* src/LScript/OpNode_Final_Method.cs 1.3:
+	* src/LScript/OpNode_Final_RandomExpression.cs 1.3:
+	* src/LScript/OpNode_Final_SkillKey.cs 1.2:
+	* src/LScript/OpNode_Final_TemplateItem.cs 1.3:
+	* src/LScript/OpNode_Final_UnOperators.cs 1.2:
+	* src/LScript/OpNode_For.cs 1.3:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.8:
+	* src/LScript/OpNode_Lazy_RandomExpression.cs 1.3:
+	* src/LScript/OpNode_Script.cs 1.3:
+	* src/LScript/OpNode_Switch.cs 1.5:
+	* src/Main.cs 1.11:
+	* src/MultiData.cs 1.3:
+	* src/Packets/Compression.cs 1.4:
+	* src/Packets/PacketHandler.cs 1.6:
+	* src/Packets/PacketSender.cs 1.12:
+	* src/Persistence/DecoratedClassesSaveImplementor.cs 1.2:
+	* src/Persistence/ObjectSaver.cs 1.5:
+	* src/Region.cs 1.12:
+	* src/ScriptHolder.cs 1.5:
+	* src/ScriptLoader.cs 1.10:
+	* src/StaticSector.cs 1.4:
+	* src/ThingDef.cs 1.19:
+	* src/TriggerGroup.cs 1.5:
+	* src/tiledata.cs 1.4:
+		exception handling revised
+
+2007-03-25	jaja
+	* Common/ConvertTools.cs 1.4:
+	* distrib/MSVS.NET/Scripts.csproj 1.25:
+	* scripts/Tests/TargetDefTest.cs 1.4:
+	* scripts/classes/FlaggedRegion.cs 1.5:
+	* scripts/classes/Persistence/LinkedListSaver.cs 1.1:
+	* scripts/classes/Regions/DynamicRegion.cs 1.1:
+	* scripts/classes/Regions/FlaggedRegion.cs 1.1:
+	* scripts/classes/Target.cs 1.6:
+	* scripts/classtemplates/Character.cs 1.26:
+	* scripts/classtemplates/Item.cs 1.8:
+	* scripts/classtemplates/MultiItem.cs 1.2:
+	* scripts/classtemplates/Player.cs 1.10:
+	* scripts/classtemplates/Ship.cs 1.1:
+	* scripts/classtemplates/Ship.ct 1.1:
+	* scripts/converted_used/itemb7.def 1.2:
+	* scripts/systems/administration/Commands.cs 1.3:
+	* scripts/systems/skills/Discordance.cs 1.6:
+	* scripts/systems/skills/Hiding.cs 1.8:
+	* scripts/systems/skills/Musicianship.scp 1.4:
+	* scripts/systems/skills/ScriptedSkillDef.cs 1.4:
+	* scripts/systems/skills/Skills.scp 1.5:
+	* scripts/systems/skills/Stealth.scp 1.5:
+	* src/AbstractCharacter.cs 1.17:
+	* src/Enums.cs 1.2:
+	* src/GameConn.cs 1.11:
+	* src/Main.cs 1.10:
+	* src/Map.cs 1.10:
+	* src/Packets/InPackets.cs 1.12:
+	* src/Persistence/ObjectSaver.cs 1.4:
+	* src/Persistence/WorldSaver.cs 1.2:
+	* src/Rectangle.cs 1.3:
+	* src/Region.cs 1.11:
+	* src/Sector.cs 1.7:
+	* src/Server.cs 1.10:
+	* src/Thing.cs 1.21:
+	* src/TriggerKey.cs 1.6:
+		ShipDef snad uz definitivni
+
+2007-03-25	lokarelka
+	* scripts/systems/FirewallDialog.cs 1.1:
+		*** empty log message ***
+
+2007-03-23	jaja
+	* CHANGES.txt 1.23:
+	* TODO.txt 1.39:
+	* distrib/MSVS.NET/Scripts.csproj 1.24:
+	* scripts/Tests/LScriptTest.cs 1.4:
+	* scripts/Tests/TargetDefTest.cs 1.3:
+	* scripts/Tests/TargetDefTest.scp 1.4:
+	* scripts/classes/Target.cs 1.5:
+	* scripts/classtemplates/MultiItem.cs 1.1:
+	* scripts/classtemplates/MultiItem.ct 1.1:
+	* scripts/classtemplates/Player.cs 1.9:
+	* scripts/types/E_test_all.cs 1.2:
+	* src/AbstractItem.cs 1.15:
+	* src/AbstractItemDef.cs 1.4:
+	* src/CompiledScripts/ClassTemplateInstance.cs 1.7:
+	* src/CompiledScripts/ClassTemplateInstanceField.cs 1.4:
+	* src/GameConn.cs 1.10:
+	* src/Globals.cs 1.19:
+	* src/Map.cs 1.9:
+	* src/MultiData.cs 1.2:
+	* src/Packets/InPackets.cs 1.11:
+	* src/Packets/PacketSender.cs 1.11:
+	* src/Persistence/ObjectSaver.cs 1.3:
+	* src/Point.cs 1.13:
+	* src/Sector.cs 1.6:
+	* src/Static.cs 1.5:
+	* src/StaticSector.cs 1.3:
+	* src/Thing.cs 1.20:
+	* src/ThingDef.cs 1.18:
+	* src/tiledata.cs 1.3:
+		multiitemy
+
+2007-03-22	glorg
+	* scripts/classtemplates/Character.cs 1.25:
+	* scripts/classtemplates/Character.ct 1.7:
+	* src/AbstractCharacter.cs 1.16:
+		Na char pridana hodnota experience.
+
+2007-03-17	jaja
+	* CHANGES.txt 1.22:
+	* TODO.txt 1.38:
+	* scripts/classes/ScriptUtil.cs 1.2:
+	* scripts/classtemplates/Player.cs 1.8:
+	* scripts/systems/db/DbMethods.cs 1.3:
+	* scripts/systems/db/DbUtils.cs 1.3:
+	* scripts/systems/skills/Discordance.cs 1.5:
+	* src/AbstractCharacter.cs 1.15:
+	* src/CompiledScripts/ClassTemplateInstance.cs 1.6:
+	* src/Conn.cs 1.4:
+	* src/GameConn.cs 1.9:
+	* src/Packets/PacketHandler.cs 1.5:
+		db framework, nejaky dalsi zmeny
+
+2007-03-16	jaja
+	* distrib/MSVS.NET/Scripts.csproj 1.23:
+	* scripts/classes/Memory.cs 1.9:
+	* scripts/classes/MemoryDef.cs 1.9:
+	* scripts/classtemplates/Character.cs 1.24:
+	* scripts/systems/skills/Discordance.cs 1.4:
+	* scripts/systems/skills/Hiding.cs 1.7:
+	* scripts/systems/skills/SkillDef.cs 1.10:
+	* src/AbstractCharacter.cs 1.14:
+	* src/AbstractDef.cs 1.12:
+	* src/CompiledScripts/ClassManager.cs 1.13:
+	* src/Globals.cs 1.18:
+	* src/Packets/InPackets.cs 1.10:
+	* src/Timers/SimpleQueue.cs 1.2:
+	* src/Timers/Timer.cs 1.10:
+		Memory prepisovatelna (priklad v Discordance)
+
+	* src/AbstractDef.cs 1.11:
+	* src/TagHolder.cs 1.16:
+		zruseno glorgovo "vylepseni" :P
+
+	* Common/Exceptions.cs 1.5:
+	* scripts/converted_used/brneni/IDs_armor.def 1.2:
+	* scripts/converted_used/item_cook.def 1.2:
+	* scripts/converted_used/resources.def 1.1:
+	* scripts/systems/db/DbManager.cs 1.2:
+	* scripts/systems/db/DbMethods.cs 1.2:
+	* scripts/systems/db/DbUtils.cs 1.2:
+	* src/CharData.cs 1.2:
+	* src/FieldValue.cs 1.4:
+	* src/FieldValue.cs 1.5:
+	* src/Globals.cs 1.17:
+	* src/Packets/InPackets.cs 1.9:
+	* src/ScriptLoader.cs 1.9:
+	* src/Static.cs 1.4:
+	* src/ThingDef.cs 1.12:
+	* src/ThingDef.cs 1.13:
+	* src/ThingDef.cs 1.14:
+	* src/ThingDef.cs 1.15:
+	* src/ThingDef.cs 1.16:
+	* src/ThingDef.cs 1.17:
+		*** empty log message ***
+
+	* src/ScriptFilesCollection.cs 1.4:
+		preklep
+
+2007-03-16	glorg
+	* scripts/systems/skills/Discordance.cs 1.3:
+	* src/AbstractDef.cs 1.10:
+	* src/TagHolder.cs 1.15:
+		pretizena metoda SetTag - v prvnim argumentu ji staci vypsat 
+		string jmena tagu
+
+	* scripts/systems/skills/Discordance.cs 1.2:
+	* src/Globals.cs 1.16:
+		v globals pridana funkce EvalRandomFaktor
+		popohnan discordance.cs
+
+2007-03-16	kolik
+	* distrib/MSVS.NET/Scripts.csproj 1.22:
+		mailing systém
+
+	* scripts/converted_used/brneni/2iron_armor.def 1.1:
+	* scripts/converted_used/brneni/IDs_armor.def 1.1:
+	* scripts/converted_used/chars/mounts.def 1.1:
+	* scripts/converted_used/chars/summons.def 1.1:
+	* scripts/converted_used/chars/vendors.def 1.1:
+	* scripts/converted_used/item_cook.def 1.1:
+	* scripts/converted_used/item_nabytek.def 1.1:
+	* scripts/converted_used/item_ore.def 1.1:
+	* scripts/converted_used/item_potions.def 1.1:
+	* scripts/converted_used/item_tailor.def 1.1:
+	* scripts/converted_used/item_tinker.def 1.1:
+	* scripts/converted_used/itemb6.def 1.1:
+	* scripts/converted_used/itemb7.def 1.1:
+	* scripts/converted_used/zbrane/2iron.def 1.1:
+	* scripts/converted_used/zbrane/IDs.def 1.1:
+	* scripts/converted_used/zbrane/ammo.def 1.1:
+	* scripts/converted_used/zbrane/others.def 1.1:
+		výbìr skriptù pro loading
+
+2007-03-15	glorg
+	* scripts/systems/skills/Discordance.cs 1.1:
+		*** empty log message ***
+
+	* scripts/systems/skills/Discordance.expl 1.1:
+	* scripts/systems/skills/Discordance.scp 1.11:
+	* scripts/systems/skills/Musicianship.scp 1.3:
+	* scripts/systems/skills/SkillDef.cs 1.9:
+	* scripts/systems/skills/Skills.scp 1.4:
+		Discordance - new generation
+		pokus o prepsani do C# - prvni kusy
+
+2007-03-15	kolik
+	* CHANGES.txt 1.21:
+	* TODO.txt 1.37:
+	* scripts/Tests/InputDefTest.cs 1.2:
+	* scripts/Tests/InputDefTest.scp 1.2:
+	* scripts/classtemplates/Character.cs 1.23:
+	* scripts/classtemplates/Player.cs 1.7:
+	* scripts/systems/Enums.cs 1.2:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.4:
+	* scripts/systems/administration/Pages/pages.scp 1.4:
+	* scripts/systems/dialogs/Input.cs 1.2:
+	* scripts/systems/mailingsystem/MailingSystem.cs 1.1:
+	* src/CompiledScripts/CompiledGump.cs 1.7:
+	* src/ScriptArgs.cs 1.2:
+		Page systém, input dialog atd.
+
+2007-03-15	glorg
+	* scripts/systems/skills/Discordance.cs 1.1:
+		*** empty log message ***
+
+	* scripts/systems/skills/Discordance.expl 1.1:
+	* scripts/systems/skills/Discordance.scp 1.11:
+	* scripts/systems/skills/Musicianship.scp 1.3:
+	* scripts/systems/skills/SkillDef.cs 1.9:
+	* scripts/systems/skills/Skills.scp 1.4:
+		Discordance - new generation
+		pokus o prepsani do C# - prvni kusy
+
+2007-03-15	kolik
+	* CHANGES.txt 1.21:
+	* TODO.txt 1.37:
+	* scripts/Tests/InputDefTest.cs 1.2:
+	* scripts/Tests/InputDefTest.scp 1.2:
+	* scripts/classtemplates/Character.cs 1.23:
+	* scripts/classtemplates/Player.cs 1.7:
+	* scripts/systems/Enums.cs 1.2:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.4:
+	* scripts/systems/administration/Pages/pages.scp 1.4:
+	* scripts/systems/dialogs/Input.cs 1.2:
+	* scripts/systems/mailingsystem/MailingSystem.cs 1.1:
+	* src/CompiledScripts/CompiledGump.cs 1.7:
+	* src/ScriptArgs.cs 1.2:
+		Page systém, input dialog atd.
+
+2007-03-14	jaja
+	* SteamWeb/AssemblyInfo.cs 1.2:
+	* SteamWeb/Connection.cs 1.2:
+	* SteamWeb/ListTemplate.cs 1.2:
+	* SteamWeb/Main.cs 1.2:
+	* SteamWeb/Settings.cs 1.2:
+	* SteamWeb/WebLogger.cs 1.2:
+	* SteamWeb/listing.template 1.2:
+	* bin/MySql.Data.dll 1.1:
+	* bin/crash.bmp 1.1:
+	* distrib/MSVS.NET/Scripts.csproj 1.21:
+	* distrib/MSVS.NET/Steamengine.sln 1.4:
+	* distrib/MSVS.NET/WebServer.csproj 1.3:
+	* scripts/referencedAssemblies.txt 1.2:
+	* scripts/systems/BackupsManager.cs 1.2:
+	* scripts/systems/db/DbManager.cs 1.1:
+	* scripts/systems/db/DbMethods.cs 1.1:
+	* scripts/systems/db/DbUtils.cs 1.1:
+	* src/Main.cs 1.9:
+	* webRoot/favicon.ico 1.2:
+	* webRoot/index.htm 1.2:
+	* webRoot/transparentright.png 1.2:
+		zrusen WebServer, zapocata prace na MySQL frameworku
+
+	* src/Commands.cs 1.7:
+		*** empty log message ***
+
+2007-03-14	glorg
+	* scripts/classtemplates/Item.cs 1.7:
+		*** empty log message ***
+
+	* scripts/classtemplates/Item.cs 1.6:
+		pro budouci generace pridan dukaz, ze Item je potomkem 
+		AbstractItemDef u
+
+2007-03-13	jaja
+	* scripts/classtemplates/Character.cs 1.22:
+		opravena stackoverflow exception v Go(Point4D)
+
+	* TODO.txt 1.36:
+	* distrib/MSVS.NET/Scripts.csproj 1.20:
+	* distrib/MSVS.NET/WebServer.csproj 1.2:
+	* src/3rdParty/Encryption/Encryption.cs 1.3:
+	* src/3rdParty/Encryption/LoginEncryption.cs 1.2:
+	* src/3rdParty/Encryption/LoginKey.cs 1.3:
+	* src/LScript/ScriptedGumpDef.cs 1.16:
+		*** empty log message ***
+
+2007-03-12	glorg
+	* TODO.txt 1.34:
+	* TODO.txt 1.35:
+		*** empty log message ***
+
+2007-03-11	glorg
+	* scripts/systems/skills/Discordance.scp 1.10:
+		*** empty log message ***
+
+	* scripts/classtemplates/Character.cs 1.21:
+	* scripts/systems/skills/Discordance.scp 1.9:
+	* scripts/systems/skills/Musicianship.scp 1.2:
+		skill musicianship checkuje umisteni hud. nastroje v baglu
+		z triggeru select sebrana kontrola a automaticke mazani beziciho skillu
+		kontrola bezich skillu v discordance PO targetnuti
+
+2007-03-10	kolik
+	* distrib/MSVS.NET/Scripts.csproj 1.19:
+	* distrib/MSVS.NET/Steamengine.sln 1.3:
+	* distrib/MSVS.NET/WinConsole.csproj 1.3:
+	* scripts/Tests/InputDefTest.cs 1.1:
+	* scripts/Tests/InputDefTest.scp 1.1:
+	* scripts/Tests/TargetDefTest.cs 1.2:
+	* scripts/classes/Target.cs 1.4:
+	* scripts/classtemplates/Player.cs 1.6:
+	* scripts/systems/administration/Pages/pages.scp 1.3:
+	* scripts/systems/dialogs/DialogUtils.cs 1.1:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.3:
+	* scripts/systems/dialogs/Input.cs 1.1:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.2:
+	* src/AbstractCharacter.cs 1.13:
+	* src/CompiledScripts/CompiledGump.cs 1.6:
+	* src/Gump.cs 1.8:
+	* src/LScript/ScriptedGumpDef.cs 1.15:
+	* src/Point.cs 1.12:
+	* src/PropsFileParser.cs 1.12:
+		*** empty log message ***
+
+2007-03-08	glorg
+	* TODO.txt 1.33:
+	* scripts/systems/skills/Discordance.scp 1.8:
+		*** empty log message ***
+
+2007-03-08	jaja
+	* Common/Exceptions.cs 1.4:
+	* SphereShardConverter/ConvertedItemDef.cs 1.3:
+	* TODO.txt 1.32:
+	* scripts/classtemplates/Item.cs 1.5:
+	* src/3rdParty/Encryption/LoginKey.cs 1.2:
+	* src/AbstractDefTriggerGroupHolder.cs 1.5:
+	* src/AbstractItem.cs 1.14:
+	* src/AbstractItemDef.cs 1.3:
+	* src/DispidInfo.cs 1.2:
+	* src/GameConn.cs 1.8:
+	* src/Globals.cs 1.15:
+	* src/LScript/Exceptions.cs 1.2:
+	* src/LScript/OpNode_Lazy_UnOperator.cs 1.5:
+	* src/Packets/InPackets.cs 1.8:
+	* src/Packets/PacketHandler.cs 1.4:
+	* src/Packets/PacketSender.cs 1.10:
+	* src/Point.cs 1.11:
+	* src/tiledata.cs 1.2:
+		*** empty log message ***
+
+	* src/LScript/OpNode_Lazy_UnOperator.cs 1.4:
+		pridana vyjimka pro null operand
+
+2007-03-08	kolik
+	* scripts/classtemplates/Character.cs 1.20:
+	* scripts/systems/Enums.cs 1.1:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.3:
+	* scripts/systems/administration/Pages/GMPage.cs 1.3:
+	* scripts/systems/administration/Pages/pages.scp 1.2:
+	* scripts/systems/administration/d_defs.scp 1.2:
+	* scripts/systems/dialogs/GumpComponents.cs 1.2:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.2:
+	* scripts/systems/dialogs/LeafComponents.cs 1.1:
+	* scripts/systems/dialogs/displaytext/DisplayText.cs 1.1:
+		Nový gump systém
+
+2007-03-07	glorg
+	* TODO.txt 1.30:
+	* TODO.txt 1.31:
+		*** empty log message ***
+
+2007-03-06	jaja
+	* TODO.txt 1.29:
+	* distrib/MSVS.NET/Scripts.csproj 1.18:
+	* scripts/Tests/SkillUtilsTest.scp 1.1:
+	* scripts/classtemplates/Character.cs 1.19:
+	* scripts/classtemplates/Item.cs 1.4:
+	* scripts/classtemplates/Musical.cs 1.3:
+	* scripts/systems/skills/Musicianship.scp 1.1:
+	* scripts/systems/skills/SkillDef.cs 1.8:
+	* scripts/systems/skills/SkillUtils.cs 1.1:
+	* scripts/systems/skills/Skills.scp 1.3:
+	* scripts/systems/skills/Stealth.scp 1.4:
+	* src/AbstractItem.cs 1.13:
+	* src/ScriptLoader.cs 1.8:
+	* src/ThingDef.cs 1.11:
+		zmeny ve skillu, implementovan Musicianship
+
+2007-03-06	glorg
+	* scripts/systems/skills/Discordance.scp 1.7:
+		edit prubehu discordance
+
+2007-03-05	jaja
+	* TODO.txt 1.28:
+	* distrib/MSVS.NET/Scripts.csproj 1.17:
+	* scripts/classtemplates/Character.cs 1.18:
+	* scripts/classtemplates/Character.ct 1.6:
+	* scripts/systems/skills/Hiding.cs 1.5:
+	* scripts/systems/skills/Hiding.cs 1.6:
+	* scripts/systems/skills/ScriptedSkillDef.cs 1.3:
+	* scripts/systems/skills/SkillDef.cs 1.7:
+	* scripts/systems/skills/Stealth.scp 1.2:
+	* scripts/systems/skills/Stealth.scp 1.3:
+		*** empty log message ***
+
+2007-03-05	glorg
+	* scripts/systems/skills/Discordance.scp 1.6:
+		upraven discord podle triggeru
+
+	* scripts/classtemplates/Musical.cs 1.2:
+		pridany metody successSnd a failureSnd pro snadny pristup k 
+		uspesnemu/neuspesnemu zvuku t_musical itemu
+
+2007-03-04	jaja
+	* scripts/systems/skills/Hiding.cs 1.4:
+	* scripts/systems/skills/Skill.cs 1.2:
+	* scripts/systems/skills/SkillDef.cs 1.4:
+	* scripts/systems/skills/SkillDef.cs 1.6:
+	* src/AbstractSkillDef.cs 1.10:
+	* src/Packets/PacketSender.cs 1.9:
+		*** empty log message ***
+
+	* scripts/classtemplates/Character.cs 1.17:
+	* scripts/classtemplates/Character.ct 1.5:
+	* scripts/systems/skills/Hiding.cs 1.3:
+	* scripts/systems/skills/ScriptedSkillDef.cs 1.2:
+	* scripts/systems/skills/SkillDef.cs 1.5:
+		zrusen "arg" parametr u fazi skillu
+
+	* scripts/classtemplates/Character.cs 1.16:
+	* scripts/classtemplates/Character.ct 1.4:
+	* scripts/systems/skills/Hiding.cs 1.2:
+	* scripts/systems/skills/SkillDef.cs 1.2:
+	* scripts/systems/skills/SkillDef.cs 1.3:
+		upravy ve skillech
+
+2007-03-04	glorg
+	* scripts/classtemplates/Musical.cs 1.1:
+	* scripts/classtemplates/Musical.ct 1.1:
+	* scripts/classtemplates/professionItems.cs 1.3:
+	* scripts/classtemplates/professionItems.ct 1.3:
+		prejmenovan professionItems.cs ct na Musical.cs ct + pri 
+		errorech je potreba smazat .generated soubor
+
+	* scripts/classtemplates/professionItems.cs 1.2:
+		pridana kontrola skillu musicianship pro hrani na nastroje
+
+	* scripts/converted/item_tinker.def 1.2:
+		pridany definice SuccessSound A FailureSound do t_musical itemu
+
+	* scripts/systems/skills/Discordance.scp 1.5:
+		doplneny poznamky s nedostatkama
+
+	* scripts/systems/skills/Discordance.scp 1.4:
+		*** empty log message ***
+
+	* scripts/systems/skills/Discordance.scp 1.3:
+		zakladni funkcnost discordance hotova
+
+2007-03-01	jaja
+	* src/Commands.cs 1.6:
+	* src/Main.cs 1.8:
+		fixed recompiling
+
+2007-02-28	jaja
+	* TODO.txt 1.27:
+	* src/GameConn.cs 1.7:
+		*** empty log message ***
+
+	* CHANGES.txt 1.20:
+		TargetDef popisek
+
+2007-02-27	jaja
+	* distrib/MSVS.NET/Scripts.csproj 1.16:
+	* scripts/Tests/TargetDefTest.cs 1.1:
+	* scripts/Tests/TargetDefTest.scp 1.3:
+	* scripts/classes/Target.cs 1.3:
+	* src/AbstractScript.cs 1.5:
+	* src/CompiledScripts/ClassManager.cs 1.12:
+	* src/CompiledScripts/CompiledGump.cs 1.5:
+	* src/LScript/OpNode_Lazy_Expression.cs 1.6:
+	* src/PropsFileParser.cs 1.11:
+	* src/Region.cs 1.10:
+		pridana moznost pohodlnyho targetovani pres C# scripty
+
+2007-02-25	jaja
+	* scripts/types/type_by_profession.cs 1.2:
+	* src/AbstractDefTriggerGroupHolder.cs 1.4:
+	* src/LScript/OpNode_Lazy_Expression.cs 1.5:
+	* src/MemberWrapper.cs 1.2:
+	* src/TagHolder.cs 1.14:
+		*** empty log message ***
+
+	* scripts/classes/Target.cs 1.2:
+		smazan nejakej bordel na konci souboru
+
+	* distrib/MSVS.NET/Scripts.csproj 1.15:
+	* scripts/Tests/TargetDefTest.scp 1.1:
+	* scripts/classes/Target.cs 1.1:
+	* scripts/classtemplates/Character.cs 1.14:
+	* scripts/classtemplates/Player.cs 1.5:
+	* scripts/systems/administration/Commands.cs 1.2:
+	* src/Commands.cs 1.5:
+	* src/GameConn.cs 1.5:
+	* src/LScript/LScript_strict.grammar 1.5:
+	* src/LScript/StrictParser.cs 1.5:
+	* src/Packets/PacketSender.cs 1.8:
+	* src/PropsFileParser.cs 1.10:
+	* src/Server.cs 1.9:
+	* src/Static.cs 1.3:
+	* src/StaticSector.cs 1.2:
+		pridan ScriptedTargetDef
+
+	* scripts/Tests/TargetDefTest.scp 1.2:
+	* src/GameConn.cs 1.6:
+		chybicka
+
+2007-02-25	glorg
+	* scripts/systems/skills/Discordance.scp 1.2:
+		*** empty log message ***
+
+	* src/TagHolder.cs 1.13:
+		opraven  ClearTimers()
+
+	* scripts/classes/Memory.cs 1.8:
+	* scripts/classtemplates/Character.cs 1.15:
+	* scripts/systems/skills/Discordance.scp 1.1:
+	* scripts/systems/skills/Skills.scp 1.2:
+		pridana fce FindMemory(MemoryDef def)
+		prvni stripky skillu enticement
+
+2007-02-24	jaja
+	* scripts/classes/Memory.cs 1.7:
+	* scripts/classes/MemoryDef.cs 1.8:
+	* scripts/classes/TemplateDef.cs 1.7:
+	* scripts/classtemplates/Character.cs 1.13:
+	* scripts/classtemplates/Container.cs 1.4:
+	* scripts/classtemplates/Item.cs 1.3:
+	* src/AbstractCharacter.cs 1.12:
+	* src/AbstractDef.cs 1.9:
+	* src/AbstractItem.cs 1.12:
+	* src/AbstractScript.cs 1.4:
+	* src/AbstractSkillDef.cs 1.9:
+	* src/Gump.cs 1.7:
+	* src/LScript/ScriptedGumpDef.cs 1.14:
+	* src/Packets/PacketSender.cs 1.7:
+	* src/Persistence/ObjectSaver.cs 1.2:
+	* src/ScriptHolder.cs 1.4:
+	* src/TagHolder.cs 1.12:
+	* src/Thing.cs 1.19:
+	* src/ThingDef.cs 1.10:
+	* src/TriggerGroup.cs 1.4:
+		uprava Memory
+
+	* distrib/debug.ndoc 1.2:
+	* distrib/optimized.ndoc 1.2:
+	* distrib/sane.ndoc 1.2:
+	* scripts/classes/MemoryDef.cs 1.7:
+		*** empty log message ***
+
+	* scripts/classes/MemoryDef.cs 1.6:
+	* src/AbstractSkillDef.cs 1.8:
+	* src/PropsFileParser.cs 1.9:
+	* src/ThingDef.cs 1.9:
+		chybicka v loadovani asociovanych triggergrup
+
+	* src/AbstractDefTriggerGroupHolder.cs 1.3:
+		chybicka v unloadovani
+
+	* distrib/MSVS.NET/Scripts.csproj 1.14:
+		pridani /dialogs do projekt souboru
+
+	* scripts/systems/types/SpawnInfo.cs 1.4:
+		omg!
+
+	* TODO.txt 1.26:
+	* distrib/MSVS.NET/Scripts.csproj 1.13:
+	* distrib/MSVS.NET/Steamengine.csproj 1.9:
+	* scripts/classes/ExportUtils.cs 1.3:
+	* scripts/classes/FlaggedRegion.cs 1.4:
+	* scripts/classes/Memory.cs 1.6:
+	* scripts/classes/MemoryDef.cs 1.5:
+	* scripts/classes/Persistence/ArrayListSaver.cs 1.1:
+	* scripts/classes/Persistence/ArraySaver.cs 1.1:
+	* scripts/classes/Persistence/GenericListSaver.cs 1.1:
+	* scripts/classes/Persistence/HashtableSaver.cs 1.1:
+	* scripts/classes/Persistence/PointSaver.cs 1.1:
+	* scripts/classes/Persistence/StaticMemberSaver.cs 1.1:
+	* scripts/classes/TemplateDef.cs 1.6:
+	* scripts/classtemplates/Character.cs 1.12:
+	* scripts/systems/Firewall.cs 1.2:
+	* scripts/systems/administration/Pages/GMPage.cs 1.2:
+	* scripts/systems/types/SpawnInfo.cs 1.3:
+	* src/AbstractCharacter.cs 1.11:
+	* src/AbstractDef.cs 1.8:
+	* src/AbstractItem.cs 1.11:
+	* src/CompiledScripts/ClassManager.cs 1.11:
+	* src/CompiledScripts/ClassTemplateInstance.cs 1.4:
+	* src/CompiledScripts/ClassTemplateInstance.cs 1.5:
+	* src/CompiledScripts/ClassTemplateInstanceField.cs 1.3:
+	* src/CompiledScripts/CompilerInvoker.cs 1.8:
+	* src/DecoratedClassesSaveImplementor.cs 1.6:
+	* src/ExportImport.cs 1.4:
+	* src/GameAccount.cs 1.14:
+	* src/Globals.cs 1.14:
+	* src/Main.cs 1.7:
+	* src/ObjectSaver.cs 1.14:
+	* src/Persistence/DecoratedClassesSaveImplementor.cs 1.1:
+	* src/Persistence/ExportImport.cs 1.1:
+	* src/Persistence/ObjectSaver.cs 1.1:
+	* src/Persistence/WorldSaver.cs 1.1:
+	* src/PropsFileParser.cs 1.8:
+	* src/Region.cs 1.9:
+	* src/ScriptLoader.cs 1.7:
+	* src/TagHolder.cs 1.11:
+	* src/Thing.cs 1.18:
+	* src/Timers/FunctionTimer.cs 1.4:
+	* src/Timers/MethodTimer.cs 1.4:
+	* src/Timers/Timer.cs 1.9:
+	* src/Timers/TimerKey.cs 1.3:
+	* src/Timers/TriggerTimer.cs 1.4:
+	* src/TriggerKey.cs 1.5:
+	* src/WorldSaver.cs 1.6:
+		vytvoren novej subnamespace SteamEngine.Persistence
+
+2007-02-24	kolik
+	* scripts/systems/administration/GumpAdministration.cs 1.2:
+	* scripts/systems/dialogs/GumpComponents.cs 1.1:
+	* scripts/systems/dialogs/ImprovedDialog.cs 1.1:
+	* scripts/systems/types/SpawnInfo.cs 1.2:
+	* src/CompiledScripts/CompiledGump.cs 1.4:
+	* src/Gump.cs 1.6:
+	* src/LScript/ScriptedGumpDef.cs 1.13:
+		Nový gump systém
+
+2007-02-23	jaja
+	* src/AbstractCharacter.cs 1.10:
+	* src/GameAccount.cs 1.13:
+		Account odkazy se savujou jen na charech
+
+	* SphereShardConverter/ConvertedRegion.cs 1.7:
+	* TODO.txt 1.25:
+	* docs/Class hierarchy.csd 1.1:
+	* docs/steamengine.uml 1.2:
+	* scripts/classes/ExportUtils.cs 1.2:
+	* scripts/classes/Memory.cs 1.5:
+	* scripts/converted/map.steam 1.2:
+	* src/AbstractDefTriggerGroupHolder.cs 1.2:
+	* src/AbstractSkillDef.cs 1.7:
+	* src/Conn.cs 1.3:
+	* src/ExportImport.cs 1.2:
+	* src/ExportImport.cs 1.3:
+	* src/GameAccount.cs 1.12:
+	* src/Globals.cs 1.13:
+	* src/Gump.cs 1.5:
+	* src/ObjectSaver.cs 1.13:
+	* src/Point.cs 1.10:
+	* src/PropsFileParser.cs 1.7:
+	* src/Region.cs 1.8:
+	* src/TagHolder.cs 1.10:
+	* src/Thing.cs 1.17:
+		exportimport updated
+
+	* scripts/map.steam 1.1:
+		*** empty log message ***
+
+2007-02-22	jaja
+	* bin/NClass/NClass.Core.dll 1.1:
+	* bin/NClass/NClass.GUI.Diagram.dll 1.1:
+	* bin/NClass/NClass.Translations.dll 1.1:
+	* bin/NClass/NClass.exe 1.1:
+		pridavam NClass aby to nezapadlo :)
+
+2007-02-21	jaja
+	* TODO.txt 1.24:
+		update kolikovo TODO
+
+	* CHANGES.txt 1.19:
+	* TODO.txt 1.23:
+	* distrib/MSVS.NET/Scripts.csproj 1.12:
+	* scripts/classes/ExportUtils.cs 1.1:
+	* scripts/classes/MemoryDef.cs 1.4:
+	* scripts/classes/TemplateDef.cs 1.5:
+	* src/AbstractDef.cs 1.7:
+	* src/AbstractItem.cs 1.10:
+	* src/AbstractScript.cs 1.3:
+	* src/AbstractSkillDef.cs 1.6:
+	* src/CompiledScripts/ClassManager.cs 1.10:
+	* src/CompiledScripts/CompiledGump.cs 1.3:
+	* src/Globals.cs 1.12:
+	* src/Gump.cs 1.4:
+	* src/LScript/ScriptedGumpDef.cs 1.12:
+	* src/Packets/PacketSender.cs 1.6:
+	* src/ScriptHolder.cs 1.3:
+	* src/TagHolder.cs 1.9:
+	* src/Thing.cs 1.16:
+	* src/ThingDef.cs 1.8:
+	* src/TriggerGroup.cs 1.3:
+		regiony exportovaci, AbstractDef AbstractScriptem
+
+	* SphereShardConverter/ConvertedRegion.cs 1.6:
+	* distrib/MSVS.NET/Steamengine.csproj 1.8:
+	* scripts/classes/MemoryDef.cs 1.3:
+	* scripts/classes/TemplateDef.cs 1.4:
+	* scripts/classtemplates/Character.cs 1.11:
+	* scripts/classtemplates/Container.cs 1.3:
+	* src/AbstractDef.cs 1.6:
+	* src/AbstractDefTriggerGroupHolder.cs 1.1:
+	* src/AbstractSkillDef.cs 1.5:
+	* src/CompiledScripts/ClassManager.cs 1.9:
+	* src/ExportImport.cs 1.1:
+	* src/Globals.cs 1.11:
+	* src/LScript/OpNode_Lazy_Expression.cs 1.4:
+	* src/Main.cs 1.6:
+	* src/Packets/Compression.cs 1.3:
+	* src/Region.cs 1.7:
+	* src/TagHolder.cs 1.8:
+	* src/Thing.cs 1.15:
+	* src/ThingDef.cs 1.7:
+		radsi si to commituju jako zaohu ve funkcnim stavu
+
+	* SphereShardConverter/ConvertedRegion.cs 1.5:
+	* TODO.txt 1.22:
+	* scripts/classes/FlaggedRegion.cs 1.3:
+	* scripts/converted/map.def 1.3:
+	* scripts/converted/map.steam 1.1:
+	* src/Globals.cs 1.10:
+	* src/Main.cs 1.5:
+	* src/Map.cs 1.8:
+	* src/Region.cs 1.6:
+	* src/ScriptLoader.cs 1.6:
+	* src/WorldSaver.cs 1.5:
+		zrusen map.def, bude nahrazen importovacim fajlem
+
+	* TODO.txt 1.21:
+		pridan trestni rejstrik do TODO pro kolika
+
+2007-02-20	jaja
+	* CHANGES.txt 1.18:
+	* Common/HighPerformanceTimer.cs 1.2:
+	* Common/common.cs 1.3:
+	* TODO.txt 1.20:
+	* src/Globals.cs 1.9:
+	* src/Main.cs 1.4:
+	* src/ScriptLoader.cs 1.5:
+	* src/Timers/Timer.cs 1.8:
+	* src/WorldSaver.cs 1.4:
+		Globals.Time
+
+	* TODO.txt 1.19:
+	* src/DecoratedClassesSaveImplementor.cs 1.5:
+		todo update
+
+	* TODO.txt 1.18:
+		updated todo
+
+	* src/CompiledScripts/CompilerInvoker.cs 1.7:
+	* src/DecoratedClassesSaveImplementor.cs 1.4:
+		chybicka :)
+
+	* src/CompiledScripts/CompilerInvoker.cs 1.6:
+	* src/DecoratedClassesSaveImplementor.cs 1.3:
+		chybicka
+
+	* CHANGES.txt 1.17:
+	* distrib/MSVS.NET/Scripts.csproj 1.11:
+	* scripts/classes/Memory.cs 1.4:
+	* scripts/classes/Saving/GenericListSaver.cs 1.6:
+	* src/AbstractDef.cs 1.5:
+	* src/CompiledScripts/ClassManager.cs 1.8:
+	* src/CompiledScripts/CompilerInvoker.cs 1.5:
+	* src/DecoratedClassesSaveImplementor.cs 1.2:
+	* src/Globals.cs 1.8:
+	* src/ObjectSaver.cs 1.12:
+	* src/PropsFileParser.cs 1.6:
+		generovani DecoratedClassesSaveImplementoru
+
+2007-02-19	jaja
+	* src/CompiledScripts/ClassTemplateInstance.cs 1.3:
+	* src/CompiledScripts/ClassTemplateReader.cs 1.2:
+		odstranen nejakej ten nadbytecnej/zastaralej kod
+
+	* distrib/MSVS.NET/Scripts.csproj 1.10:
+	* scripts/classes/Saving/PointSaver.cs 1.1:
+	* src/Point.cs 1.9:
+		Pointy se ted savujou pres ISimpleSaveImplementor, tj. do 
+		jednoho radku
+
+	* SphereShardConverter/ConvertedRegion.cs 1.4:
+	* src/AbstractCharacter.cs 1.9:
+	* src/AbstractItem.cs 1.9:
+	* src/Map.cs 1.7:
+	* src/Packets/NetState.cs 1.3:
+	* src/Packets/PacketSender.cs 1.5:
+	* src/Point.cs 1.8:
+	* src/Rectangle.cs 1.2:
+	* src/Region.cs 1.5:
+	* src/Sector.cs 1.5:
+	* src/Thing.cs 1.14:
+		PointXD zmenen na immutable, vytvoren MutablePoint4D pro ucely 
+		Thing.point4D
+
+	* CHANGES.txt 1.16:
+	* TODO.txt 1.17:
+	* src/LScript/LScript.cs 1.4:
+	* src/LScript/LScriptHolder.cs 1.4:
+	* src/LScript/LScript_strict.grammar 1.4:
+	* src/LScript/OpNode_Final_Arguments.cs 1.2:
+	* src/LScript/OpNode_Lazy_Arguments.cs 1.4:
+	* src/LScript/OpNode_Lazy_Indexer.cs 1.4:
+	* src/LScript/ScriptedGumpDef.cs 1.11:
+	* src/LScript/StrictAnalyzer.cs 1.4:
+	* src/LScript/StrictConstants.cs 1.4:
+	* src/LScript/StrictParser.cs 1.4:
+	* src/LScript/StrictTokenizer.cs 1.3:
+	* src/ScriptFilesCollection.cs 1.3:
+	* src/ScriptLoader.cs 1.4:
+		Lscript arguments overhaul
+
+2007-02-18	jaja
+	* src/LScript/LScript_loose.grammar 1.2:
+		puvodni idea mit dve ruzny gramatiky se ukazala nerealna, uz sem 
+		to mel smazat davno ;)
+
+	* src/ObjectSaver.cs 1.11:
+	* src/Utility.cs 1.2:
+		savovani multiline stringu
+
+	* src/GameAccount.cs 1.11:
+		este chybicka omg
+
+	* src/GameAccount.cs 1.10:
+		chybicka
+
+	* src/AbstractCharacter.cs 1.8:
+		chybicka :)
+
+	* CHANGES.txt 1.15:
+	* src/AbstractCharacter.cs 1.7:
+	* src/AbstractItem.cs 1.8:
+	* src/Map.cs 1.6:
+	* src/Sector.cs 1.4:
+	* src/Thing.cs 1.13:
+	* src/ThingLinkedList.cs 1.2:
+		linkedlisty do sektoru
+
+	* distrib/MSVS.NET/Steamengine.csproj 1.7:
+	* scripts/classtemplates/Item.cs 1.2:
+	* src/AbstractCharacter.cs 1.6:
+	* src/AbstractItem.cs 1.7:
+	* src/AbstractItemDef.cs 1.2:
+	* src/FieldValue.cs 1.3:
+	* src/Map.cs 1.5:
+	* src/Packets/InPackets.cs 1.7:
+	* src/Thing.cs 1.12:
+	* src/ThingLinkedList.cs 1.1:
+		thinglinkedlist (nehotovo ale pro jistotu commituju mezifazi)
+
+2007-02-17	jaja
+	* TODO.txt 1.16:
+		todo update
+
+	* distrib/MSVS.NET/Converter.csproj 1.2:
+	* src/GameConn.cs 1.4:
+	* src/Packets/PacketSender.cs 1.4:
+		*** empty log message ***
+
+	* CHANGES.txt 1.14:
+	* Common/Exceptions.cs 1.3:
+	* TODO.txt 1.15:
+	* distrib/old/monodevelop-linux/README 1.2:
+	* docs/compiled scripts.txt 1.2:
+	* docs/plans/pscript.txt 1.2:
+	* scripts/classes/FlaggedRegion.cs 1.2:
+	* src/3rdParty/Encryption/Encryption.cs 1.2:
+	* src/3rdParty/Encryption/README 1.2:
+	* src/AbstractCharacter.cs 1.5:
+	* src/AbstractItem.cs 1.6:
+	* src/CompiledScripts/MIScriptHolder.cs 1.2:
+	* src/Constant.cs 1.5:
+	* src/GameAccount.cs 1.9:
+	* src/Globals.cs 1.7:
+	* src/GumpBuilder.cs 1.6:
+	* src/LScript/OpNode_Final_Array.cs 1.2:
+	* src/LScript/OpNode_Final_Function.cs 1.2:
+	* src/LScript/OpNode_Final_Method.cs 1.2:
+	* src/LScript/ScriptedGumpDef.cs 1.10:
+	* src/Map.cs 1.4:
+	* src/Packets/PacketBase.cs 1.2:
+	* src/Packets/PacketHandler.cs 1.3:
+	* src/Packets/PacketSender.cs 1.3:
+	* src/Point.cs 1.7:
+	* src/ScriptFilesCollection.cs 1.2:
+	* src/Server.cs 1.8:
+	* src/Thing.cs 1.11:
+	* src/ThingDef.cs 1.6:
+		tart => tar :)
+
+	* CHANGES.txt 1.13:
+	* scripts/classtemplates/Character.cs 1.10:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.2:
+	* src/AbstractCharacter.cs 1.4:
+	* src/AbstractItem.cs 1.5:
+	* src/GameConn.cs 1.3:
+	* src/Map.cs 1.3:
+	* src/Thing.cs 1.10:
+	* src/ThingDef.cs 1.5:
+		prepsana speedhack ochrana
+
+2007-02-16	jaja
+	* docs/MUL File Docs/Free (unused) itemID numbers.txt 1.1:
+	* docs/MUL File Docs/Sounds.txt 1.1:
+	* docs/MUL File Docs/TileData - map tiles.txt 1.1:
+	* docs/MUL File Docs/english cliloc entries.txt 1.1:
+	* docs/cliloc messages/README and TODO and CHANGES 1.1:
+	* docs/cliloc messages/cannot do something.txt 1.1:
+	* docs/cliloc messages/equipping.txt 1.1:
+	* docs/cliloc messages/flags changing.txt 1.1:
+	* docs/cliloc messages/godly powers.txt 1.1:
+	* docs/cliloc messages/help.txt 1.1:
+	* docs/cliloc messages/invul.txt 1.1:
+	* docs/cliloc messages/magic.txt 1.1:
+	* docs/cliloc messages/mounts.txt 1.1:
+	* docs/cliloc messages/needs something.txt 1.1:
+	* docs/cliloc messages/snooping.txt 1.1:
+	* docs/cliloc messages/stealing.txt 1.1:
+	* docs/cliloc messages/vendors.txt 1.1:
+	* docs/plans/pscript.txt 1.1:
+	* docs/testresults/LScript.txt 1.1:
+	* docs/testresults/Script.txt 1.1:
+	* docs/testresults/statics.txt 1.1:
+	* docs/triggers/Saving and Loading.txt 1.1:
+	* docs/triggers/afterPutOnTopOf.txt 1.1:
+	* docs/triggers/afterStack.txt 1.1:
+	* docs/triggers/beforePutOnTopOf.txt 1.1:
+	* docs/triggers/beforeStack.txt 1.1:
+	* docs/triggers/command.txt 1.1:
+		koukam ze sem zapomel prilozit k moriaenginu nejaky dokumenty co 
+		se vyskytovaly se steamem, divny :)
+
+	* docs/mysql.txt 1.1:
+		*** empty log message ***
+
+	* CHANGES.txt 1.12:
+	* Common/UberEnumerator.cs 1.2:
+	* TODO.txt 1.14:
+	* distrib/MSVS.NET/Common.csproj 1.2:
+	* distrib/MSVS.NET/Steamengine.csproj 1.6:
+	* scripts/Tests/LScriptTest.cs 1.3:
+	* scripts/classes/TemplateDef.cs 1.3:
+	* src/Map.cs 1.2:
+	* src/Packets/LowLevelOut.cs 1.2:
+	* src/Point.cs 1.6:
+	* src/Sector.cs 1.3:
+	* src/Static.cs 1.2:
+	* src/Thing.cs 1.9:
+	* src/ThingDef.cs 1.4:
+	* src/UberSectorEnumerator.cs 1.2:
+		odstranen UberEnumerator
+
+	* scripts/classtemplates/Player.cs 1.4:
+		a ted jeste verze ktera jde zkompilovat :)
+
+	* scripts/classtemplates/Character.cs 1.9:
+	* scripts/classtemplates/Player.cs 1.3:
+		lingeringtimer presunut z Character do Player
+
+	* CHANGES.txt 1.11:
+	* Common/ConvertTools.cs 1.3:
+	* SphereShardConverter/ConvertedCharDef.cs 1.2:
+	* SphereShardConverter/ConvertedItemDef.cs 1.2:
+	* SphereShardConverter/ConvertedRegion.cs 1.3:
+	* TODO.txt 1.13:
+	* WinConsole/SteamConsole.cs 1.4:
+	* WinConsole/WinConsoleForm.cs 1.4:
+	* distrib/MSVS.NET/Scripts.csproj 1.9:
+	* scripts/Allcharacters.scp 1.2:
+	* scripts/BackupsManager.cs 1.2:
+	* scripts/Firewall.cs 1.9:
+	* scripts/PeriodicSave.cs 1.2:
+	* scripts/PeriodicSave.scp 1.3:
+	* scripts/PlayerCreation.scp 1.2:
+	* scripts/ScriptUtil.cs 1.2:
+	* scripts/Tests/CharacterConnectionStateInvariants.scp 1.1:
+	* scripts/Tests/TextColorTest.cs 1.1:
+	* scripts/TextColorTest.cs 1.2:
+	* scripts/classes/Container.cs 1.2:
+	* scripts/classes/Equippable.cs 1.2:
+	* scripts/classes/ScriptUtil.cs 1.1:
+	* scripts/classtemplates/Character.cs 1.8:
+	* scripts/classtemplates/Player.cs 1.2:
+	* scripts/defs.scp 1.2:
+	* scripts/systems/BackupsManager.cs 1.1:
+	* scripts/systems/Firewall.cs 1.1:
+	* scripts/systems/PeriodicSave.cs 1.1:
+	* scripts/systems/PeriodicSave.scp 1.1:
+	* scripts/systems/PlayerCreation.scp 1.1:
+	* scripts/systems/administration/Admin.scp 1.1:
+	* scripts/systems/administration/Commands.cs 1.1:
+	* scripts/systems/administration/CommandsAuthorization.cs 1.1:
+	* scripts/systems/administration/GumpAdministration.cs 1.1:
+	* scripts/systems/administration/Pages/GMPage.cs 1.1:
+	* scripts/systems/administration/Pages/pages.scp 1.1:
+	* scripts/systems/administration/d_defs.scp 1.1:
+	* scripts/systems/defs.scp 1.1:
+	* scripts/systems/skills/Hiding.cs 1.1:
+	* scripts/systems/skills/ScriptedSkillDef.cs 1.1:
+	* scripts/systems/skills/Skill.cs 1.1:
+	* scripts/systems/skills/SkillDef.cs 1.1:
+	* scripts/systems/skills/SkillName.cs 1.1:
+	* scripts/systems/skills/Skills.scp 1.1:
+	* scripts/systems/skills/Stealth.scp 1.1:
+	* src/AbstractCharacter.cs 1.3:
+	* src/AbstractDef.cs 1.4:
+	* src/AbstractItem.cs 1.4:
+	* src/AbstractScript.cs 1.2:
+	* src/AbstractSkillDef.cs 1.4:
+	* src/Commands.cs 1.4:
+	* src/CompiledScripts/ClassManager.cs 1.7:
+	* src/CompiledScripts/ClassTemplateInstanceField.cs 1.2:
+	* src/CompiledScripts/CompiledTriggerGroup.cs 1.2:
+	* src/Conn.cs 1.2:
+	* src/Constant.cs 1.4:
+	* src/GameAccount.cs 1.8:
+	* src/GameConn.cs 1.2:
+	* src/Globals.cs 1.6:
+	* src/LScript/LScriptHolder.cs 1.3:
+	* src/LScript/LocalVarKey.cs 1.2:
+	* src/LScript/OpNode_Switch.cs 1.4:
+	* src/Main.cs 1.3:
+	* src/ObjectSaver.cs 1.10:
+	* src/Packets/InPackets.cs 1.6:
+	* src/Packets/NetState.cs 1.2:
+	* src/Packets/PacketHandler.cs 1.2:
+	* src/Packets/PacketSender.cs 1.2:
+	* src/PropsFileParser.cs 1.5:
+	* src/Region.cs 1.4:
+	* src/ScriptHolder.cs 1.2:
+	* src/ScriptLoader.cs 1.3:
+	* src/Sector.cs 1.2:
+	* src/Server.cs 1.7:
+	* src/Statistics.cs 1.2:
+	* src/TagKey.cs 1.2:
+	* src/TagMath.cs 1.2:
+	* src/Thing.cs 1.8:
+	* src/ThingDef.cs 1.3:
+	* src/Timers/FunctionTimer.cs 1.3:
+	* src/Timers/MethodTimer.cs 1.3:
+	* src/Timers/Timer.cs 1.7:
+	* src/Timers/TimerKey.cs 1.2:
+	* src/Timers/TriggerTimer.cs 1.3:
+	* src/TriggerGroup.cs 1.2:
+	* src/TriggerKey.cs 1.4:
+	* src/UIDArray.cs 1.2:
+		preorganizovany skripty, overhaul (dis)connect cyklu, atd.
+
+	* CHANGES.txt 1.10:
+	* TODO.txt 1.12:
+	* distrib/MSVS.NET/Scripts.csproj 1.8:
+	* scripts/Tests/LScriptTest.cs 1.2:
+	* scripts/classtemplates/Character.cs 1.7:
+	* src/Globals.cs 1.5:
+	* src/LScript/IntrinsicMethods.cs 1.3:
+	* src/LScript/LScript.cs 1.3:
+	* src/LScript/MemberResolver.cs 1.2:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.7:
+	* src/LScript/OpNode_Lazy_Indexer.cs 1.3:
+	* src/LScript/OpNode_Lazy_UnOperator.cs 1.3:
+	* src/Point.cs 1.5:
+	* src/TagHolder.cs 1.7:
+	* src/Thing.cs 1.7:
+		"ambiguity detected" fix
+
+2007-02-14	jaja
+	* CHANGES.txt 1.9:
+		*** empty log message ***
+
+	* CHANGES.txt 1.8:
+	* Common/NantLauncher.cs 1.4:
+	* Convert.bat 1.2:
+	* SphereShardConverter/ConvertedDef.cs 1.3:
+	* SphereShardConverter/ConvertedRegion.cs 1.2:
+	* SphereShardConverter/ConvertedThingDef.cs 1.2:
+	* SphereShardConverter/Main.cs 1.3:
+	* WinConsole/SteamConsole.cs 1.3:
+	* WinConsole/WinConsoleForm.cs 1.3:
+	* distrib/nant/default.build 1.4:
+	* src/CompiledScripts/CompilerInvoker.cs 1.4:
+		Converter se ted builduje pres Nant jako vsechno ostatni (a opet 
+		funguje)
+
+2007-02-13	kolik
+	* TODO.txt 1.11:
+	* distrib/MSVS.NET/Scripts.csproj 1.7:
+	* scripts/classtemplates/Character.cs 1.6:
+		GM Pages - zatím chybí funkènost odpovìdí, a informací o 
+		accountu a postavì autora; updatnuto TODO
+
+	* scripts/classes/GMPage.cs 1.4:
+		GM Pages - zatím chybí funkènost odpovìdí, a informací o 
+		accountu a postavì autora
+
+2007-02-12	jaja
+	* src/Commands.cs 1.3:
+		eh jeste chybicka :)
+
+	* src/Commands.cs 1.2:
+		*** empty log message ***
+
+2007-02-12	kolik
+	* scripts/classes/GMPage.cs 1.3:
+	* scripts/classtemplates/Character.cs 1.5:
+	* src/Globals.cs 1.4:
+	* src/LScript/IntrinsicMethods.cs 1.2:
+		GM Pages - zatím chybí funkènost odpovìdí, a informací o 
+		accountu a postavì autora
+
+2007-02-11	kolik
+	* TODO.txt 1.10:
+		TODO updated
+
+2007-02-08	jaja
+	* distrib/MSVS.NET/Steamengine.csproj 1.5:
+		pridana nant reference
+
+	* src/Point.cs 1.4:
+		gethashcode povoleno kvuli ukladani pointu2-4D
+
+2007-02-08	kolik
+	* src/Point.cs 1.3:
+		point do øetìzce
+
+2007-02-07	jaja
+	* src/CompiledScripts/CompilerInvoker.cs 1.3:
+	* src/Packets/InPackets.cs 1.5:
+		*** empty log message ***
+
+	* CHANGES.txt 1.7:
+	* Common/Logger.cs 1.2:
+	* Common/NantLauncher.cs 1.3:
+	* TODO.txt 1.9:
+	* distrib/MSVS.NET/Scripts.csproj 1.6:
+	* distrib/nant/default.build 1.3:
+	* src/CompiledScripts/ClassManager.cs 1.6:
+	* src/CompiledScripts/CompilerInvoker.cs 1.2:
+	* src/ObjectSaver.cs 1.9:
+	* src/TagHolder.cs 1.6:
+	* src/Timers/Timer.cs 1.6:
+		skripty se kompilujou pres NAnt
+
+2007-02-07	kolik
+	* scripts/PeriodicSave.scp 1.2:
+	* scripts/classes/GMPage.cs 1.2:
+	* scripts/systems/types/spawn.scp 1.4:
+	* src/Point.cs 1.2:
+		Ukládání pointù
+
+2007-02-01	jaja
+	* TODO.txt 1.8:
+		*** empty log message ***
+
+2007-01-31	jaja
+	* Common/Exceptions.cs 1.2:
+	* Common/LogStr.cs 1.2:
+	* TODO.txt 1.7:
+	* distrib/MSVS.NET/Scripts.csproj 1.5:
+	* distrib/MSVS.NET/Steamengine.csproj 1.4:
+	* scripts/classes/Saving/ArrayListSaver.cs 1.4:
+	* scripts/classes/Saving/ArraySaver.cs 1.4:
+	* scripts/classes/Saving/GenericListSaver.cs 1.5:
+	* scripts/classes/Saving/HashtableSaver.cs 1.4:
+	* scripts/classtemplates/Character.cs 1.4:
+	* src/DecoratedClassesSaveImplementor.cs 1.1:
+	* src/GameAccount.cs 1.7:
+	* src/ObjectSaver.cs 1.8:
+	* src/Packets/InPackets.cs 1.4:
+	* src/PropsFileParser.cs 1.4:
+	* src/Thing.cs 1.6:
+	* src/Timers/Timer.cs 1.5:
+		vylepseno zobrazovani chyb pri loadovani
+
+	* CHANGES.txt 1.6:
+	* src/Gump.cs 1.3:
+	* src/GumpBuilder.cs 1.5:
+	* src/LScript/ScriptedGumpDef.cs 1.9:
+	* src/Packets/InPackets.cs 1.3:
+		zachovany texty pri vraceni dialogu kvuli numberentry
+
+2007-01-30	jaja
+	* CHANGES.txt 1.5:
+	* Common/ConvertTools.cs 1.2:
+	* scripts/Tests/d_test.cs 1.2:
+	* scripts/Tests/d_test2.scp 1.2:
+	* src/CompiledScripts/CompiledGump.cs 1.2:
+	* src/Gump.cs 1.2:
+	* src/GumpBuilder.cs 1.4:
+	* src/LScript/ScriptedGumpDef.cs 1.8:
+	* src/Packets/InPackets.cs 1.2:
+	* src/Timers/Timer.cs 1.4:
+		NumberEntry
+
+2007-01-29	jaja
+	* SphereShardConverter/ConvertedDef.cs 1.2:
+	* SphereShardConverter/Main.cs 1.2:
+	* TODO.txt 1.6:
+	* scripts/classes/MemoryDef.cs 1.2:
+	* scripts/classes/Saving/ArrayListSaver.cs 1.3:
+	* scripts/classes/Saving/ArraySaver.cs 1.3:
+	* scripts/classes/Saving/GenericListSaver.cs 1.4:
+	* scripts/classes/Saving/HashtableSaver.cs 1.3:
+	* scripts/classes/TemplateDef.cs 1.2:
+	* scripts/classtemplates/Character.cs 1.3:
+	* scripts/converted/map.def 1.2:
+	* src/AbstractDef.cs 1.3:
+	* src/AbstractSkillDef.cs 1.3:
+	* src/Constant.cs 1.3:
+	* src/GameAccount.cs 1.6:
+	* src/Globals.cs 1.3:
+	* src/LScript/LScript.cs 1.2:
+	* src/LScript/LScriptHolder.cs 1.2:
+	* src/LScript/OpNode_For.cs 1.2:
+	* src/LScript/OpNode_Foreach.cs 1.2:
+	* src/LScript/OpNode_If.cs 1.2:
+	* src/LScript/OpNode_Lazy_AddTimer.cs 1.2:
+	* src/LScript/OpNode_Lazy_Arguments.cs 1.3:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.6:
+	* src/LScript/OpNode_Lazy_EvalExpression.cs 1.2:
+	* src/LScript/OpNode_Lazy_Expression.cs 1.3:
+	* src/LScript/OpNode_Lazy_ExpressionChain.cs 1.3:
+	* src/LScript/OpNode_Lazy_Indexer.cs 1.2:
+	* src/LScript/OpNode_Lazy_QuotedString.cs 1.2:
+	* src/LScript/OpNode_Lazy_RandomExpression.cs 1.2:
+	* src/LScript/OpNode_Lazy_UnOperator.cs 1.2:
+	* src/LScript/OpNode_Lazy_VarExpression.cs 1.5:
+	* src/LScript/OpNode_Script.cs 1.2:
+	* src/LScript/OpNode_Switch.cs 1.3:
+	* src/LScript/OpNode_While.cs 1.2:
+	* src/LScript/ScriptedGumpDef.cs 1.7:
+	* src/ObjectSaver.cs 1.7:
+	* src/PropsFileParser.cs 1.3:
+	* src/Region.cs 1.3:
+	* src/ScriptLoader.cs 1.2:
+	* src/TagHolder.cs 1.5:
+	* src/Thing.cs 1.5:
+	* src/ThingDef.cs 1.2:
+	* src/Timers/Timer.cs 1.3:
+	* src/WorldSaver.cs 1.3:
+		zruseno Worldsaver.currentfile
+
+2007-01-23	jaja
+	* TODO.txt 1.5:
+	* scripts/classes/Memory.cs 1.3:
+	* scripts/classtemplates/Character.cs 1.2:
+	* scripts/classtemplates/Container.cs 1.2:
+	* scripts/types/type_beers.cs 1.2:
+	* src/GameAccount.cs 1.5:
+	* src/LScript/OpNode_Final_ARG.cs 1.3:
+	* src/LScript/OpNode_Final_RandomExpression.cs 1.2:
+	* src/LScript/OpNode_Final_Return.cs 1.2:
+	* src/LScript/OpNode_Final_TAG.cs 1.3:
+	* src/LScript/OpNode_Final_TemplateItem.cs 1.2:
+	* src/LScript/OpNode_Final_VAR.cs 1.3:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.5:
+	* src/LScript/OpNode_Lazy_Expression.cs 1.2:
+	* src/ObjectSaver.cs 1.6:
+	* src/Packets/Compression.cs 1.2:
+	* src/TagHolder.cs 1.4:
+	* src/Thing.cs 1.4:
+		*** empty log message ***
+
+2007-01-23	kolik
+	* scripts/systems/types/spawn.scp 1.2:
+	* scripts/systems/types/spawn.scp 1.3:
+	* scripts/types/type_gm.cs 1.2:
+		spawner
+
+2007-01-22	jaja
+	* src/CompiledScripts/ClassManager.cs 1.5:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.3:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.4:
+		*** empty log message ***
+
+2007-01-22	kolik
+	* scripts/systems/types/SpawnInfo.cs 1.1:
+	* scripts/systems/types/spawn.scp 1.1:
+		spawner
+
+2007-01-21	jaja
+	* CHANGES.txt 1.4:
+	* WinConsole/ConnectionForm.cs 1.2:
+	* WinConsole/WinConsoleForm.cs 1.2:
+	* distrib/MSVS.NET/Steamengine.csproj 1.3:
+	* scripts/Firewall.cs 1.8:
+	* scripts/ScriptUtil.cs 1.1:
+	* scripts/classes/Memory.cs 1.2:
+	* scripts/classes/Saving/ArrayListSaver.cs 1.2:
+	* scripts/classes/Saving/ArraySaver.cs 1.2:
+	* scripts/classes/Saving/GenericListSaver.cs 1.3:
+	* scripts/classes/Saving/HashtableSaver.cs 1.2:
+	* scripts/classes/Saving/StaticMemberSaver.cs 1.4:
+	* src/AbstractCharacter.cs 1.2:
+	* src/AbstractDef.cs 1.2:
+	* src/AbstractItem.cs 1.3:
+	* src/CompiledScripts/ClassFieldTemplate.cs 1.2:
+	* src/CompiledScripts/ClassTemplateInstance.cs 1.2:
+	* src/CompiledScripts/ClassTemplateInstanceField.cs 1.1:
+	* src/GameAccount.cs 1.4:
+	* src/LScript/LScript_strict.grammar 1.3:
+	* src/LScript/OpNode_Lazy_ExpressionChain.cs 1.2:
+	* src/LScript/OpNode_Lazy_VarExpression.cs 1.4:
+	* src/LScript/ScriptedGumpDef.cs 1.6:
+	* src/LScript/StrictAnalyzer.cs 1.3:
+	* src/LScript/StrictConstants.cs 1.3:
+	* src/LScript/StrictParser.cs 1.3:
+	* src/Main.cs 1.2:
+	* src/ObjectSaver.cs 1.5:
+	* src/TagHolder.cs 1.3:
+	* src/Thing.cs 1.3:
+	* src/Timers/FunctionTimer.cs 1.2:
+	* src/Timers/MethodTimer.cs 1.2:
+	* src/Timers/Timer.cs 1.2:
+	* src/Timers/TriggerTimer.cs 1.2:
+	* src/WorldSaver.cs 1.2:
+		classtemplate lehce prepsan
+
+	* src/LScript/OpNode_Switch.cs 1.2:
+		*** empty log message ***
+
+2007-01-20	jaja
+	* TODO.txt 1.4:
+		pripsan asyrk na party system :)
+
+2007-01-19	jaja
+	* src/CompiledScripts/ClassManager.cs 1.4:
+		indexujou se i tridy z Common
+
+2007-01-15	jaja
+	* scripts/classtemplates/Character.cs 1.1:
+	* scripts/classtemplates/Container.cs 1.1:
+	* scripts/classtemplates/Equippable.cs 1.1:
+	* scripts/classtemplates/Item.cs 1.1:
+	* scripts/classtemplates/Player.cs 1.1:
+	* scripts/classtemplates/professionItems.cs 1.1:
+		*** empty log message ***
+
+	* CHANGES.txt 1.3:
+	* TODO.txt 1.3:
+	* distrib/MSVS.NET/Scripts.csproj 1.4:
+	* distrib/MSVS.NET/Steamengine.csproj 1.2:
+	* scripts/Tests/d_test.cs 1.1:
+	* scripts/Tests/d_test2.scp 1.1:
+	* scripts/classes/Saving/StaticMemberSaver.cs 1.3:
+	* scripts/classtemplates/Character.ct 1.3:
+	* scripts/classtemplates/Container.ct 1.2:
+	* scripts/classtemplates/Equippable.ct 1.2:
+	* scripts/classtemplates/Item.ct 1.2:
+	* scripts/classtemplates/Player.ct 1.2:
+	* scripts/classtemplates/professionItems.ct 1.2:
+	* scripts/d_test.cs 1.2:
+	* scripts/d_test2.scp 1.3:
+	* scripts/types/type_animations.cs 1.2:
+	* src/AbstractItem.cs 1.2:
+	* src/ClassTemplate.cs 1.2:
+	* src/CompiledScripts/ClassFieldTemplate.cs 1.1:
+	* src/CompiledScripts/ClassManager.cs 1.3:
+	* src/CompiledScripts/ClassTemplateInstance.cs 1.1:
+	* src/CompiledScripts/ClassTemplateReader.cs 1.1:
+	* src/Constant.cs 1.2:
+	* src/FieldValue.cs 1.2:
+	* src/Globals.cs 1.2:
+	* src/GumpBuilder.cs 1.3:
+	* src/LScript/OpNode_Final_ARG.cs 1.2:
+	* src/LScript/OpNode_Final_TAG.cs 1.2:
+	* src/LScript/OpNode_Final_VAR.cs 1.2:
+	* src/LScript/OpNode_Lazy_VarExpression.cs 1.3:
+	* src/LScript/ScriptedGumpDef.cs 1.5:
+	* src/TagHolder.cs 1.2:
+		tag.exists, classtemplate zmeny na partial class
+
+2006-10-31	lokarelka
+	* scripts/Firewall.cs 1.7:
+	* src/Server.cs 1.6:
+	* src/TriggerKey.cs 1.3:
+		*** empty log message ***
+
+2006-10-30	jaja
+	* src/LScript/LScript_strict.grammar 1.2:
+	* src/LScript/OpNode_Code.cs 1.2:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.2:
+	* src/LScript/StrictAnalyzer.cs 1.2:
+	* src/LScript/StrictConstants.cs 1.2:
+	* src/LScript/StrictParser.cs 1.2:
+	* src/LScript/StrictTokenizer.cs 1.2:
+		*** empty log message ***
+
+2006-10-30	lokarelka
+	* scripts/Firewall.cs 1.5:
+	* scripts/Firewall.cs 1.6:
+	* src/Server.cs 1.5:
+	* src/TriggerKey.cs 1.2:
+		*** empty log message ***
+
+2006-10-27	jaja
+	* src/Server.cs 1.3:
+	* src/Server.cs 1.4:
+		*** empty log message ***
+
+2006-10-26	jaja
+	* TODO.txt 1.2:
+	* src/Server.cs 1.2:
+		*** empty log message ***
+
+2006-10-26	glorg
+	* src/GumpBuilder.cs 1.2:
+		odmazana duplicitni metoda AddButton s int hodnotou 5. 
+		argumentu. Ponechana metoda s argumentem typu Bool
+
+2006-10-26	lokarelka
+	* scripts/Firewall.cs 1.4:
+		*** empty log message ***
+
+2006-10-25	glorg
+	* src/LScript/ScriptedGumpDef.cs 1.4:
+		smazana duplicitni metoda Button
+
+2006-10-25	lokarelka
+	* scripts/Firewall.cs 1.3:
+		*** empty log message ***
+
+2006-10-24	jaja
+	* distrib/MSVS.NET/Scripts.csproj 1.3:
+	* scripts/classes/Saving/GenericListSaver.cs 1.2:
+	* scripts/classes/Saving/StaticMemberSaver.cs 1.2:
+		*** empty log message ***
+
+	* src/LScript/OpNode_Lazy_Arguments.cs 1.2:
+	* src/LScript/ScriptedGumpDef.cs 1.3:
+		chybicka
+
+	* CHANGES.txt 1.2:
+	* Common/common.cs 1.2:
+	* distrib/MSVS.NET/NantLauncher.csproj 1.1:
+	* distrib/MSVS.NET/Scripts.csproj 1.2:
+	* distrib/MSVS.NET/Steamengine.sln 1.2:
+	* distrib/MSVS.NET/WinConsole.csproj 1.2:
+	* scripts/classes/ArrayListSaver.cs 1.3:
+	* scripts/classes/ArraySaver.cs 1.3:
+	* scripts/classes/GenericListSaver.cs 1.3:
+	* scripts/classes/Saving/ArrayListSaver.cs 1.1:
+	* scripts/classes/Saving/ArraySaver.cs 1.1:
+	* scripts/classes/Saving/GenericListSaver.cs 1.1:
+	* scripts/classes/Saving/HashtableSaver.cs 1.1:
+	* scripts/classes/Saving/StaticMemberSaver.cs 1.1:
+	* src/CompiledScripts/ClassManager.cs 1.2:
+	* src/GameAccount.cs 1.3:
+	* src/LScript/OpNode_Lazy_VarExpression.cs 1.2:
+	* src/ObjectSaver.cs 1.4:
+		staticmembersaver, hashtablesaver, atd.
+
+2006-10-24	glorg
+	* scripts/d_test2.scp 1.2:
+		*** empty log message ***
+
+	* src/LScript/ScriptedGumpDef.cs 1.2:
+		ScriptedGumpInstance je ted internal protected
+
+2006-10-24	lokarelka
+	* scripts/Firewall.cs 1.1:
+	* scripts/Firewall.cs 1.2:
+		*** empty log message ***
+
+2006-10-23	jaja
+	* scripts/classes/ArrayListSaver.cs 1.2:
+	* scripts/classes/ArraySaver.cs 1.2:
+	* scripts/classes/GenericListSaver.cs 1.2:
+	* scripts/classtemplates/Character.ct 1.2:
+	* src/AbstractSkillDef.cs 1.2:
+	* src/GameAccount.cs 1.2:
+	* src/ObjectSaver.cs 1.3:
+	* src/PropsFileParser.cs 1.2:
+	* src/Region.cs 1.2:
+	* src/Thing.cs 1.2:
+		pridan GenericListSaver a par souvisejicich i nesouvisejicich 
+		uprav :)
+
+	* scripts/classes/GenericListSaver.cs 1.1:
+	* src/ObjectSaver.cs 1.2:
+		*** empty log message ***
+
+2006-10-19	jaja
+	* CHANGES.txt 1.1:
+	* COPYING.txt 1.1:
+	* Common/3rdParty/TemplateMaschine/TemplateMaschine.cs 1.1:
+	* Common/3rdParty/TemplateMaschine/copying 1.1:
+	* Common/3rdParty/TemplateMaschine/notice.txt 1.1:
+	* Common/3rdParty/TemplateMaschine/readme.txt 1.1:
+	* Common/ConAttrs.cs 1.1:
+	* Common/ConvertTools.cs 1.1:
+	* Common/Exceptions.cs 1.1:
+	* Common/HighPerformanceTimer.cs 1.1:
+	* Common/IniHandler.cs 1.1:
+	* Common/LogStr.cs 1.1:
+	* Common/Logger.cs 1.1:
+	* Common/NantLauncher.cs 1.1:
+	* Common/NantLauncher.cs 1.2:
+	* Common/Sanity.cs 1.1:
+	* Common/TestSuite.cs 1.1:
+	* Common/Tests/ConsoleUi.cs.ignored 1.1:
+	* Common/Tests/TestRunner.cs.ignored 1.1:
+	* Common/UberEnumerator.cs 1.1:
+	* Common/common.cs 1.1:
+	* Convert.bat 1.1:
+	* Debug.bat 1.1:
+	* LICENSE.txt 1.1:
+	* Optimized.bat 1.1:
+	* README.txt 1.1:
+	* Sane.bat 1.1:
+	* SphereShardConverter/ConvertedCharDef.cs 1.1:
+	* SphereShardConverter/ConvertedConstants.cs 1.1:
+	* SphereShardConverter/ConvertedDef.cs 1.1:
+	* SphereShardConverter/ConvertedFile.cs 1.1:
+	* SphereShardConverter/ConvertedItemDef.cs 1.1:
+	* SphereShardConverter/ConvertedRegion.cs 1.1:
+	* SphereShardConverter/ConvertedTemplateDef.cs 1.1:
+	* SphereShardConverter/ConvertedThingDef.cs 1.1:
+	* SphereShardConverter/ConverterLogger.cs 1.1:
+	* SphereShardConverter/Main.cs 1.1:
+	* SteamWeb/AssemblyInfo.cs 1.1:
+	* SteamWeb/Connection.cs 1.1:
+	* SteamWeb/ListTemplate.cs 1.1:
+	* SteamWeb/Main.cs 1.1:
+	* SteamWeb/Settings.cs 1.1:
+	* SteamWeb/WebLogger.cs 1.1:
+	* SteamWeb/listing.template 1.1:
+	* TODO.txt 1.1:
+	* WinConsole/App.config 1.1:
+	* WinConsole/AssemblyInfo.cs 1.1:
+	* WinConsole/ConnectionForm.cs 1.1:
+	* WinConsole/ConnectionForm.resx 1.1:
+	* WinConsole/ConsoleLinks.cs 1.1:
+	* WinConsole/FileViewForm.cs 1.1:
+	* WinConsole/FileViewForm.resx 1.1:
+	* WinConsole/SteamConsole.cs 1.1:
+	* WinConsole/SteamConsole.cs 1.2:
+	* WinConsole/StyleForm.cs 1.1:
+	* WinConsole/StyleForm.resx 1.1:
+	* WinConsole/WinConsoleForm.cs 1.1:
+	* WinConsole/WinConsoleForm.resx 1.1:
+	* bin/ICSharpCode.SharpZipLib.dll 1.1:
+	* bin/NAnt.Core.dll 1.1:
+	* bin/NAnt.DotNetTasks.dll 1.1:
+	* bin/NAnt.Win32Tasks.dll 1.1:
+	* bin/NAnt.exe 1.1:
+	* bin/NAnt.exe.config 1.1:
+	* bin/SteamDoc.dll 1.1:
+	* bin/Zip.dll 1.1:
+	* bin/co-distributed binaries.txt 1.1:
+	* bin/grammatica-1.4.jar 1.1:
+	* bin/log4net.dll 1.1:
+	* bin/seicon.ico 1.1:
+	* bin/zlib.dll 1.1:
+	* distrib/MSVS.NET/Common.csproj 1.1:
+	* distrib/MSVS.NET/Converter.csproj 1.1:
+	* distrib/MSVS.NET/Scripts.csproj 1.1:
+	* distrib/MSVS.NET/Steamengine.csproj 1.1:
+	* distrib/MSVS.NET/Steamengine.sln 1.1:
+	* distrib/MSVS.NET/WebServer.csproj 1.1:
+	* distrib/MSVS.NET/WinConsole.csproj 1.1:
+	* distrib/building.txt 1.1:
+	* distrib/clean.bat 1.1:
+	* distrib/debug.ndoc 1.1:
+	* distrib/doc/Documentation.chm 1.1:
+	* distrib/doc/Documentation.log 1.1:
+	* distrib/nant/default.build 1.1:
+	* distrib/nant/default.build 1.2:
+	* distrib/old/MSVS.NET 2003/Common.csproj 1.1:
+	* distrib/old/MSVS.NET 2003/Converter.csproj 1.1:
+	* distrib/old/MSVS.NET 2003/Scripts.csproj 1.1:
+	* distrib/old/MSVS.NET 2003/Steamengine.csproj 1.1:
+	* distrib/old/MSVS.NET 2003/Steamengine.sln 1.1:
+	* distrib/old/MSVS.NET 2003/WebServer.csproj 1.1:
+	* distrib/old/MSVS.NET 2003/WinConsole.csproj 1.1:
+	* distrib/old/build-common.bat 1.1:
+	* distrib/old/build-console.bat 1.1:
+	* distrib/old/build-converter.bat 1.1:
+	* distrib/old/build-fastdll.bat 1.1:
+	* distrib/old/build-steamengine-runuo-test.bat 1.1:
+	* distrib/old/build-steamengine.bat 1.1:
+	* distrib/old/build-webserver.bat 1.1:
+	* distrib/old/clean.bat 1.1:
+	* distrib/old/compile.bat 1.1:
+	* distrib/old/mono-linux/build-common.sh 1.1:
+	* distrib/old/mono-linux/build-steamengine.sh 1.1:
+	* distrib/old/mono-linux/clean.sh 1.1:
+	* distrib/old/mono-linux/compile.sh 1.1:
+	* distrib/old/mono-linux/makefile 1.1:
+	* distrib/old/mono-win/build-common.bat 1.1:
+	* distrib/old/mono-win/build-steamengine.bat 1.1:
+	* distrib/old/mono-win/clean.bat 1.1:
+	* distrib/old/mono-win/compile.bat 1.1:
+	* distrib/old/monodevelop-linux/README 1.1:
+	* distrib/old/monodevelop-linux/common/common.mdp 1.1:
+	* distrib/old/monodevelop-linux/steamengine.mds 1.1:
+	* distrib/old/monodevelop-linux/steamengine/steamengine.mdp 1.1:
+	* distrib/old/monodevelop-linux/winconsole/winconsole.mdp 1.1:
+	* distrib/old/rebuildIfNeeded.py 1.1:
+	* distrib/optimized.ndoc 1.1:
+	* distrib/sane.ndoc 1.1:
+	* docs/Lscript.txt 1.1:
+	* docs/clients history.txt 1.1:
+	* docs/compiled scripts.txt 1.1:
+	* docs/packets.txt 1.1:
+	* docs/sphere principles.txt 1.1:
+	* docs/statistical-tests.txt 1.1:
+	* docs/steamengine.uml 1.1:
+	* fastdll/autodupe.bat 1.1:
+	* fastdll/autodupe.py 1.1:
+	* fastdll/fastdll.cpp 1.1:
+	* fastdll/fastdll.def 1.1:
+	* fastdll/fastdll.dupe 1.1:
+	* fastdll/fastdll.hpp 1.1:
+	* fastdll/fourteen.dupe 1.1:
+	* fastdll/thirteen.dupe 1.1:
+	* fastdll/twelve.dupe 1.1:
+	* fastdll/unrolledloop.dupe 1.1:
+	* scripts/AI/dummy.cs 1.1:
+	* scripts/Allcharacters.scp 1.1:
+	* scripts/BackupsManager.cs 1.1:
+	* scripts/PeriodicSave.cs 1.1:
+	* scripts/PeriodicSave.scp 1.1:
+	* scripts/PlayerCreation.scp 1.1:
+	* scripts/Tests/LScriptTest.cs 1.1:
+	* scripts/Tests/MemberWrapperTests.cs 1.1:
+	* scripts/Tests/SaveLoadTests.cs 1.1:
+	* scripts/Tests/Test.cs 1.1:
+	* scripts/TextColorTest.cs 1.1:
+	* scripts/classes/ArrayListSaver.cs 1.1:
+	* scripts/classes/ArraySaver.cs 1.1:
+	* scripts/classes/Container.cs 1.1:
+	* scripts/classes/Equippable.cs 1.1:
+	* scripts/classes/FlaggedRegion.cs 1.1:
+	* scripts/classes/GMPage.cs 1.1:
+	* scripts/classes/Memory.cs 1.1:
+	* scripts/classes/MemoryDef.cs 1.1:
+	* scripts/classes/Speech.cs 1.1:
+	* scripts/classes/TemplateDef.cs 1.1:
+	* scripts/classtemplates/Character.ct 1.1:
+	* scripts/classtemplates/Container.ct 1.1:
+	* scripts/classtemplates/Equippable.ct 1.1:
+	* scripts/classtemplates/Item.ct 1.1:
+	* scripts/classtemplates/Player.ct 1.1:
+	* scripts/classtemplates/professionItems.ct 1.1:
+	* scripts/converted/Aen/vstup.def 1.1:
+	* scripts/converted/Aen/vstup1.def 1.1:
+	* scripts/converted/Aen/vstup2.def 1.1:
+	* scripts/converted/Aen/vstup3.def 1.1:
+	* scripts/converted/Aen/vstup4.def 1.1:
+	* scripts/converted/Aen/vstupchar.def 1.1:
+	* scripts/converted/Aen/vstupspeech.def 1.1:
+	* scripts/converted/book.def 1.1:
+	* scripts/converted/brneni/1copper_armor.def 1.1:
+	* scripts/converted/brneni/2iron_armor.def 1.1:
+	* scripts/converted/brneni/3silver_armor.def 1.1:
+	* scripts/converted/brneni/4golden_armor.def 1.1:
+	* scripts/converted/brneni/5verite_armor.def 1.1:
+	* scripts/converted/brneni/6valorite_armor.def 1.1:
+	* scripts/converted/brneni/7obsidian_armor.def 1.1:
+	* scripts/converted/brneni/8adamantinum_armor.def 1.1:
+	* scripts/converted/brneni/9mytheril_armor.def 1.1:
+	* scripts/converted/brneni/IDs_armor.def 1.1:
+	* scripts/converted/chars/DEMONS.def 1.1:
+	* scripts/converted/chars/DRAGONS.def 1.1:
+	* scripts/converted/chars/Golems.def 1.1:
+	* scripts/converted/chars/INSECTS.def 1.1:
+	* scripts/converted/chars/SPECIAL.def 1.1:
+	* scripts/converted/chars/UNDEADS.def 1.1:
+	* scripts/converted/chars/animals.def 1.1:
+	* scripts/converted/chars/caves.def 1.1:
+	* scripts/converted/chars/dragons_tmp.def 1.1:
+	* scripts/converted/chars/elementals.def 1.1:
+	* scripts/converted/chars/ents.def 1.1:
+	* scripts/converted/chars/groups.def 1.1:
+	* scripts/converted/chars/guards.def 1.1:
+	* scripts/converted/chars/mounts.def 1.1:
+	* scripts/converted/chars/npc_evil_race.def 1.1:
+	* scripts/converted/chars/ogres.def 1.1:
+	* scripts/converted/chars/orcs.def 1.1:
+	* scripts/converted/chars/snowmonsters.def 1.1:
+	* scripts/converted/chars/specNPCVerbatim.def 1.1:
+	* scripts/converted/chars/specNPCVypravec.def 1.1:
+	* scripts/converted/chars/specNPCcrunch.def 1.1:
+	* scripts/converted/chars/specNPCmandos.def 1.1:
+	* scripts/converted/chars/specNPCqv1.def 1.1:
+	* scripts/converted/chars/specNPCsarig.def 1.1:
+	* scripts/converted/chars/summons.def 1.1:
+	* scripts/converted/chars/t2a.def 1.1:
+	* scripts/converted/chars/ucitele.def 1.1:
+	* scripts/converted/chars/vendors.def 1.1:
+	* scripts/converted/darken.def 1.1:
+	* scripts/converted/dialog.def 1.1:
+	* scripts/converted/help.def 1.1:
+	* scripts/converted/herry.def 1.1:
+	* scripts/converted/irc.def 1.1:
+	* scripts/converted/item2.def 1.1:
+	* scripts/converted/item_beers.def 1.1:
+	* scripts/converted/item_cook.def 1.1:
+	* scripts/converted/item_deed.def 1.1:
+	* scripts/converted/item_maps.def 1.1:
+	* scripts/converted/item_misc.def 1.1:
+	* scripts/converted/item_multis.def 1.1:
+	* scripts/converted/item_nabytek.def 1.1:
+	* scripts/converted/item_ore.def 1.1:
+	* scripts/converted/item_potions.def 1.1:
+	* scripts/converted/item_tailor.def 1.1:
+	* scripts/converted/item_tinker.def 1.1:
+	* scripts/converted/item_wands.def 1.1:
+	* scripts/converted/item_x.def 1.1:
+	* scripts/converted/itemb1.def 1.1:
+	* scripts/converted/itemb2.def 1.1:
+	* scripts/converted/itemb3.def 1.1:
+	* scripts/converted/itemb4.def 1.1:
+	* scripts/converted/itemb5.def 1.1:
+	* scripts/converted/itemb6.def 1.1:
+	* scripts/converted/itemb7.def 1.1:
+	* scripts/converted/itemx.def 1.1:
+	* scripts/converted/magie.def 1.1:
+	* scripts/converted/map.def 1.1:
+	* scripts/converted/map2.def 1.1:
+	* scripts/converted/menu.def 1.1:
+	* scripts/converted/name.def 1.1:
+	* scripts/converted/newb.def 1.1:
+	* scripts/converted/newbie_portals.def 1.1:
+	* scripts/converted/nova_monstra.def 1.1:
+	* scripts/converted/resources.def 1.1:
+	* scripts/converted/scarabeus/prokmotra.def 1.1:
+	* scripts/converted/scarabeus/wipeitems.def 1.1:
+	* scripts/converted/scarabeus/wipepostav.def 1.1:
+	* scripts/converted/speech.def 1.1:
+	* scripts/converted/speech/jobbanker.def 1.1:
+	* scripts/converted/speech/kecy_a_drby.def 1.1:
+	* scripts/converted/speech/krvaveprizraky.def 1.1:
+	* scripts/converted/speech/lagrspeech.def 1.1:
+	* scripts/converted/speech/mesta_Baradsti.def 1.1:
+	* scripts/converted/speech/ochranasprostaren.def 1.1:
+	* scripts/converted/speech/pokecovej_mordor_spk.def 1.1:
+	* scripts/converted/speech/questspeech.def 1.1:
+	* scripts/converted/speech/speakhuman.def 1.1:
+	* scripts/converted/speech/speakshopkeep.def 1.1:
+	* scripts/converted/speech/verbatimspeech.def 1.1:
+	* scripts/converted/web/web.def 1.1:
+	* scripts/converted/zbrane/1copper.def 1.1:
+	* scripts/converted/zbrane/2iron.def 1.1:
+	* scripts/converted/zbrane/3verite.def 1.1:
+	* scripts/converted/zbrane/4valorite.def 1.1:
+	* scripts/converted/zbrane/5obsidian.def 1.1:
+	* scripts/converted/zbrane/6adamantinum.def 1.1:
+	* scripts/converted/zbrane/7mytheril.def 1.1:
+	* scripts/converted/zbrane/IDs.def 1.1:
+	* scripts/converted/zbrane/ammo.def 1.1:
+	* scripts/converted/zbrane/others.def 1.1:
+	* scripts/d_test.cs 1.1:
+	* scripts/d_test2.scp 1.1:
+	* scripts/defs.scp 1.1:
+	* scripts/readme.txt 1.1:
+	* scripts/referencedAssemblies.txt 1.1:
+	* scripts/types/E_test_all.cs 1.1:
+	* scripts/types/moriatypes.scp 1.1:
+	* scripts/types/type_animations.cs 1.1:
+	* scripts/types/type_armor.cs 1.1:
+	* scripts/types/type_beers.cs 1.1:
+	* scripts/types/type_buildings_doors.cs 1.1:
+	* scripts/types/type_buildings_roofs.cs 1.1:
+	* scripts/types/type_buildings_walls.cs 1.1:
+	* scripts/types/type_by_profession.cs 1.1:
+	* scripts/types/type_character_icon.cs 1.1:
+	* scripts/types/type_clothes.cs 1.1:
+	* scripts/types/type_decoration_banners_tapestries.cs 1.1:
+	* scripts/types/type_decoration_dungeons.cs 1.1:
+	* scripts/types/type_decoration_furniture.cs 1.1:
+	* scripts/types/type_decoration_miscellaneous.cs 1.1:
+	* scripts/types/type_deeds.cs 1.1:
+	* scripts/types/type_gm.cs 1.1:
+	* scripts/types/type_ground_tiles.cs 1.1:
+	* scripts/types/type_hair.cs 1.1:
+	* scripts/types/type_lbr.cs 1.1:
+	* scripts/types/type_levers_switches.cs 1.1:
+	* scripts/types/type_maps.cs 1.1:
+	* scripts/types/type_miscellaneous.cs 1.1:
+	* scripts/types/type_multis.cs 1.1:
+	* scripts/types/type_ore.cs 1.1:
+	* scripts/types/type_potions.cs 1.1:
+	* scripts/types/type_provisions_alchemy_magic.cs 1.1:
+	* scripts/types/type_provisions_miscellaneous.cs 1.1:
+	* scripts/types/type_resources.cs 1.1:
+	* scripts/types/type_ship_parts.cs 1.1:
+	* scripts/types/type_spell_icon.cs 1.1:
+	* scripts/types/type_treas.cs 1.1:
+	* scripts/types/type_vegetation.cs 1.1:
+	* scripts/types/type_weapons.cs 1.1:
+	* scripts/web/Sample.template 1.1:
+	* scripts/web/SampleDriver.cs 1.1:
+	* src/3rdParty/Encryption/ByteQueue.cs 1.1:
+	* src/3rdParty/Encryption/COPYING 1.1:
+	* src/3rdParty/Encryption/Encryption.cs 1.1:
+	* src/3rdParty/Encryption/GameEncryption.cs 1.1:
+	* src/3rdParty/Encryption/IClientEncryption.cs 1.1:
+	* src/3rdParty/Encryption/LoginEncryption.cs 1.1:
+	* src/3rdParty/Encryption/LoginKey.cs 1.1:
+	* src/3rdParty/Encryption/NoEncryption.cs 1.1:
+	* src/3rdParty/Encryption/README 1.1:
+	* src/3rdParty/Encryption/TwofishBase.cs 1.1:
+	* src/3rdParty/Encryption/TwofishEncryption.cs 1.1:
+	* src/3rdParty/Grammatica/LICENSE-GPL.txt 1.1:
+	* src/3rdParty/Grammatica/LICENSE.txt 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/AlternativeElement.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/CharacterSetElement.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/CombineElement.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/Element.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/Matcher.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/RegExp.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/RegExpException.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/RepeatElement.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser.RE/StringElement.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/Analyzer.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/LookAheadSet.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/Node.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/ParseException.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/Parser.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/ParserCreationException.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/ParserLogException.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/Production.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/ProductionPattern.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/ProductionPatternAlternative.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/ProductionPatternElement.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/RecursiveDescentParser.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/Token.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/TokenPattern.cs 1.1:
+	* src/3rdParty/Grammatica/PerCederberg.Grammatica.Parser/Tokenizer.cs 1.1:
+	* src/3rdParty/Grammatica/README.txt 1.1:
+	* src/3rdParty/Grammatica/notice.txt 1.1:
+	* src/3rdParty/JMBucknall.Containers/PriorityQueue.cs 1.1:
+	* src/3rdParty/JMBucknall.Containers/notice.txt 1.1:
+	* src/AI/AI.cs 1.1:
+	* src/AI/PathFinder.cs 1.1:
+	* src/AbstractCharacter.cs 1.1:
+	* src/AbstractCharacterDef.cs 1.1:
+	* src/AbstractDef.cs 1.1:
+	* src/AbstractItem.cs 1.1:
+	* src/AbstractItemDef.cs 1.1:
+	* src/AbstractKey.cs 1.1:
+	* src/AbstractScript.cs 1.1:
+	* src/AbstractSkillDef.cs 1.1:
+	* src/AssemblyInfo.cs 1.1:
+	* src/CharData.cs 1.1:
+	* src/ClassTemplate.cs 1.1:
+	* src/ClientVersion.cs 1.1:
+	* src/Commands.cs 1.1:
+	* src/CompiledScripts/ClassManager.cs 1.1:
+	* src/CompiledScripts/CompiledGump.cs 1.1:
+	* src/CompiledScripts/CompiledScript.cs 1.1:
+	* src/CompiledScripts/CompiledTriggerGroup.cs 1.1:
+	* src/CompiledScripts/CompilerInvoker.cs 1.1:
+	* src/CompiledScripts/MIScriptHolder.cs 1.1:
+	* src/Conn.cs 1.1:
+	* src/ConsConn.cs 1.1:
+	* src/Constant.cs 1.1:
+	* src/CoreLogger.cs 1.1:
+	* src/DelayedResolver.cs 1.1:
+	* src/DispidInfo.cs 1.1:
+	* src/Enums.cs 1.1:
+	* src/FastDLL.cs 1.1:
+	* src/FastWalk.cs 1.1:
+	* src/FieldValue.cs 1.1:
+	* src/GameAccount.cs 1.1:
+	* src/GameConn.cs 1.1:
+	* src/Globals.cs 1.1:
+	* src/Gump.cs 1.1:
+	* src/GumpBuilder.cs 1.1:
+	* src/LScript/Exceptions.cs 1.1:
+	* src/LScript/IntrinsicMethods.cs 1.1:
+	* src/LScript/LScript.cs 1.1:
+	* src/LScript/LScriptAnalyzer.cs 1.1:
+	* src/LScript/LScriptHolder.cs 1.1:
+	* src/LScript/LScriptParser.cs 1.1:
+	* src/LScript/LScript_loose.grammar 1.1:
+	* src/LScript/LScript_strict.grammar 1.1:
+	* src/LScript/LocalVarKey.cs 1.1:
+	* src/LScript/MemberResolver.cs 1.1:
+	* src/LScript/OpNode.cs 1.1:
+	* src/LScript/OpNode_Code.cs 1.1:
+	* src/LScript/OpNode_Final_ARG.cs 1.1:
+	* src/LScript/OpNode_Final_AddTimer.cs 1.1:
+	* src/LScript/OpNode_Final_Arguments.cs 1.1:
+	* src/LScript/OpNode_Final_Array.cs 1.1:
+	* src/LScript/OpNode_Final_ArrayListIndexer.cs 1.1:
+	* src/LScript/OpNode_Final_BinMathOperators.cs 1.1:
+	* src/LScript/OpNode_Final_BinOperators.cs 1.1:
+	* src/LScript/OpNode_Final_ComparOperators.cs 1.1:
+	* src/LScript/OpNode_Final_Constructor.cs 1.1:
+	* src/LScript/OpNode_Final_Field.cs 1.1:
+	* src/LScript/OpNode_Final_Function.cs 1.1:
+	* src/LScript/OpNode_Final_LogicalOp.cs 1.1:
+	* src/LScript/OpNode_Final_Method.cs 1.1:
+	* src/LScript/OpNode_Final_RandomExpression.cs 1.1:
+	* src/LScript/OpNode_Final_Return.cs 1.1:
+	* src/LScript/OpNode_Final_SkillKey.cs 1.1:
+	* src/LScript/OpNode_Final_TAG.cs 1.1:
+	* src/LScript/OpNode_Final_TemplateItem.cs 1.1:
+	* src/LScript/OpNode_Final_UnOperators.cs 1.1:
+	* src/LScript/OpNode_Final_VAR.cs 1.1:
+	* src/LScript/OpNode_For.cs 1.1:
+	* src/LScript/OpNode_Foreach.cs 1.1:
+	* src/LScript/OpNode_If.cs 1.1:
+	* src/LScript/OpNode_Lazy_AddTimer.cs 1.1:
+	* src/LScript/OpNode_Lazy_Arguments.cs 1.1:
+	* src/LScript/OpNode_Lazy_BinOperator.cs 1.1:
+	* src/LScript/OpNode_Lazy_EvalExpression.cs 1.1:
+	* src/LScript/OpNode_Lazy_Expression.cs 1.1:
+	* src/LScript/OpNode_Lazy_ExpressionChain.cs 1.1:
+	* src/LScript/OpNode_Lazy_Indexer.cs 1.1:
+	* src/LScript/OpNode_Lazy_QuotedString.cs 1.1:
+	* src/LScript/OpNode_Lazy_RandomExpression.cs 1.1:
+	* src/LScript/OpNode_Lazy_UnOperator.cs 1.1:
+	* src/LScript/OpNode_Lazy_VarExpression.cs 1.1:
+	* src/LScript/OpNode_Script.cs 1.1:
+	* src/LScript/OpNode_Switch.cs 1.1:
+	* src/LScript/OpNode_While.cs 1.1:
+	* src/LScript/ScriptedGumpDef.cs 1.1:
+	* src/LScript/StrictAnalyzer.cs 1.1:
+	* src/LScript/StrictConstants.cs 1.1:
+	* src/LScript/StrictParser.cs 1.1:
+	* src/LScript/StrictTokenizer.cs 1.1:
+	* src/LScript/generate.bat 1.1:
+	* src/LayerDefs.cs 1.1:
+	* src/Main.cs 1.1:
+	* src/Map.cs 1.1:
+	* src/MemberWrapper.cs 1.1:
+	* src/MultiData.cs 1.1:
+	* src/ObjectSaver.cs 1.1:
+	* src/Packets/Compression.cs 1.1:
+	* src/Packets/HighLevelOut.cs 1.1:
+	* src/Packets/InPackets.cs 1.1:
+	* src/Packets/LowLevelOut.cs 1.1:
+	* src/Packets/MediumLevelOut.cs 1.1:
+	* src/Packets/NetState.cs 1.1:
+	* src/Packets/PacketBase.cs 1.1:
+	* src/Packets/PacketGroup.cs 1.1:
+	* src/Packets/PacketHandler.cs 1.1:
+	* src/Packets/PacketSender.cs 1.1:
+	* src/Packets/PacketStats.cs 1.1:
+	* src/Packets/Prepared.cs 1.1:
+	* src/Point.cs 1.1:
+	* src/PropsFileParser.cs 1.1:
+	* src/Rectangle.cs 1.1:
+	* src/Region.cs 1.1:
+	* src/SEIniHandler.cs 1.1:
+	* src/ScriptArgs.cs 1.1:
+	* src/ScriptFilesCollection.cs 1.1:
+	* src/ScriptHolder.cs 1.1:
+	* src/ScriptLoader.cs 1.1:
+	* src/Sector.cs 1.1:
+	* src/Server.cs 1.1:
+	* src/SimulConn.cs 1.1:
+	* src/SoundMul.cs 1.1:
+	* src/Sounds.cs 1.1:
+	* src/Static.cs 1.1:
+	* src/StaticSector.cs 1.1:
+	* src/Statistics.cs 1.1:
+	* src/TagHolder.cs 1.1:
+	* src/TagKey.cs 1.1:
+	* src/TagMath.cs 1.1:
+	* src/Temporary.cs 1.1:
+	* src/Thing.cs 1.1:
+	* src/ThingDef.cs 1.1:
+	* src/Timers/FunctionTimer.cs 1.1:
+	* src/Timers/MethodTimer.cs 1.1:
+	* src/Timers/PriorityQueue.cs 1.1:
+	* src/Timers/SimpleQueue.cs 1.1:
+	* src/Timers/Timer.cs 1.1:
+	* src/Timers/TimerKey.cs 1.1:
+	* src/Timers/TriggerTimer.cs 1.1:
+	* src/TriggerGroup.cs 1.1:
+	* src/TriggerKey.cs 1.1:
+	* src/UIDArray.cs 1.1:
+	* src/UberSectorEnumerator.cs 1.1:
+	* src/Utility.cs 1.1:
+	* src/WorldSaver.cs 1.1:
+	* src/icon1.ico 1.1:
+	* src/icon2.ico 1.1:
+	* src/icon3.ico 1.1:
+	* src/icon4.ico 1.1:
+	* src/icon5.ico 1.1:
+	* src/icon6.ico 1.1:
+	* src/tiledata.cs 1.1:
+	* steamengine.ini 1.1:
+	* steamengine.ini 1.2:
+	* steamweb.bat 1.1:
+	* steamweb.ini 1.1:
+	* steamweb.ini 1.2:
+	* webRoot/favicon.ico 1.1:
+	* webRoot/index.htm 1.1:
+	* webRoot/transparentright.png 1.1:
+		*** empty log message ***
+

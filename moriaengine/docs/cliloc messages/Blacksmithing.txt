@@ -1,0 +1,28 @@
+500418	This item is of imported material, probably bought at a store, and does not yield much metal.
+500419	Some metal seems to have lost its color due to the heat.
+500420	You are not near a forge.
+500421	You cannot use that.
+500422	You can't work on that item.
+500423	That is already in full repair.
+500424	You destroyed the item.
+500425	You repair the item.
+500426	You can't repair that.
+500427	You cannot smith that item!
+500428	This strange metal is beyond your capability--you have no idea how to work it!
+500429	You cannot melt something that is being worn or held.
+500430	You feel compelled to not destroy this shield.
+500431	You may only melt items which are in your backpack.
+500432	You may only melt items which are in your backpack.
+500433	This item cannot be melted.
+500434	That is being used by someone else.
+500435	Select your choice from the menu above.
+500436	Select item to repair.
+500437	Select the item you wish to melt.
+500438	Target the metal you would like to use.
+500439	There is not enough metal there to make that item.
+500440	You cannot place the item into your backpack! Construction stopped.
+500441	You lost some metal.
+500442	You create the item and put it in your backpack.
+500443	In the process of hammering out the blade, you lose the distinctive color of the source metal.
+500444	Due to your exceptional skill, it's quality is higher than average.
+500445	You were barely able to make this item.  Its quality is below average.

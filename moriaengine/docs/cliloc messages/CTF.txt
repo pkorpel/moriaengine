@@ -1,0 +1,5 @@
+500730	You must join a Team in order to capture this flag.
+500731	Ghosts cannot capture a flag.
+500732	This flag cannot be captured right now.
+500733	You cannot capture your own flag!
+500734	You are not close enough to capture.

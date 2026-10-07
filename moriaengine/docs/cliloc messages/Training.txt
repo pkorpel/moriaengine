@@ -1,0 +1,2 @@
+500682	I am sorry, but thou art far to skilled for me to train.
+500683	I am sorry, but thou lacks the gold for training.

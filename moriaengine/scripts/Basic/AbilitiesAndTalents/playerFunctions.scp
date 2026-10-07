@@ -1,0 +1,32 @@
+[function talenton] //activate ability by name
+arg.a = AbilityDef.GetByName(args)
+if (<arg.a>)
+	arg.a.Activate(this)
+else
+	Echo(LocManager.GetEntry("loc_ability_functions", "NoSuchAbility", Globals.SrcLanguage))
+endif
+
+
+[function talentoff] //deactivate ability by name
+arg.a = AbilityDef.GetByName(args)
+if (<arg.a>)
+	arg.a.Deactivate(this)
+else
+	Echo(LocManager.GetEntry("loc_ability_functions", "NoSuchAbility", Globals.SrcLanguage))
+endif
+
+[function talentswitch]
+arg.a = AbilityDef.GetByName(args)
+if (<arg.a>)
+	if ((arg.a is ActivableAbilityDef) && (arg.a.IsActive(this)))
+		arg.a.Deactivate(this)
+	else
+		arg.a.Activate(this)
+	endif
+else
+	Echo(LocManager.GetEntry("loc_ability_functions", "NoSuchAbility", Globals.SrcLanguage))
+endif
+
+
+[ScriptedLoc loc_ability_functions]
+NoSuchAbility = There's no such ability

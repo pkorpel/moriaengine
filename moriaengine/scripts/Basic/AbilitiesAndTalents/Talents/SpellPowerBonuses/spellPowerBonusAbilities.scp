@@ -1,0 +1,21 @@
+//magician's talent
+[PassiveAbilityDef a_cunning_bonus]
+Name="Cunning Bonus"
+EffectPower=0.05 // +25% power at 5 points
+
+PluginKey = @@cunning_bonus
+PluginDef = p_cunning_bonus
+
+[SpellPowerBonusPluginDef p_cunning_bonus]
+Spell = s_cunning
+
+//magician's talent
+[PassiveAbilityDef a_chain_lightning_bonus]
+Name="Chain Lightning Bonus"
+EffectPower=0.04 // +20% power at 5 points
+
+PluginKey = @@chain_lightning_bonus
+PluginDef = p_chain_lightning_bonus
+
+[SpellPowerBonusPluginDef p_chain_lightning_bonus]
+Spell = s_chain_lightning

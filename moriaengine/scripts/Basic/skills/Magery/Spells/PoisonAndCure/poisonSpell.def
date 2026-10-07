@@ -1,0 +1,44 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//	
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//	
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+
+[PoisonSpellDef 20]//utocne
+DEFNAME=s_poison
+NAME=Poison
+SOUND=517
+RUNES=IN
+CASTTIME=2.0
+//RESOURCES=i_reag_nightshade
+RUNEITEM=i_rune_POISON
+SCROLLITEM=i_scroll_POISON
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+EFFECT=0,5 //damage per tick. Tick interval set in PoisonEffectPluginDef
+DURATION=0,100.0
+MANAUSE=10
+Requirements=30.0 Magery
+EffectPluginDef = p_poison
+
+//unused, since the key is global for all poisons, including those from poisoning. Set below in p_poison
+//EffectPluginKey_Spell = @@spellEffect_poison
+//EffectPluginKey_Potion = @@potionEffect_poison
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x374A, 10, 15)
+
+[DamagingPoisonEffectPluginDef p_poison]
+TickInterval = 5
+MaxTicks = 60
+MaxPower = 1000
+PluginKey = @@damaging_poison

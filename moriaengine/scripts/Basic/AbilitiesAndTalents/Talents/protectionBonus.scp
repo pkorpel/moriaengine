@@ -1,0 +1,17 @@
+[PassiveAbilityDef a_protection_bonus]
+Name="Protection Bonus"
+EffectPower=0.04 // +20% spellpower when 5 points in this
+
+PluginKey = @@protection_bonus
+PluginDef = p_protection_bonus
+
+
+//todo? hardwire into protection spelldef, since it's so simpe and likely often used?
+[EffectDurationPluginDef p_protection_bonus]
+on=@CauseSpellEffect
+if (argv[0].SpellDef == s_protection)
+	if (argv[0].CurrentTarget == argv[0].MainTarget) //so that the power is only raised once
+		argv[0].SpellPower = argv[0].SpellPower + (argv[0].SpellPower * this.EffectPower)
+	endif
+endif
+

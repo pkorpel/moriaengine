@@ -1,0 +1,7 @@
+500336	You will not be able to put it in your backpack afterwards.
+500337	Targetobj called
+500338	Can't create an anvil there.
+500339	Can't create an anvil there.
+500340	Targetloc called
+500341	Can't create an anvil there.
+500342	Can't create an anvil there.

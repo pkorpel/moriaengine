@@ -1,0 +1,71 @@
+
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+
+[function dctest]
+DialogClose(dialog(d_test), 1)
+
+[function gumptest2]
+arg content = "This is content and it can be quite long fdshui fds vbs hufdsal ghks gb ghk hgkdls ghkdsl ghkdg hkd hgkds hgkd hglk hgk gh h ghf gh ghj ghfkj ghd ghj ghj hg hjk hjkfd hgk hd hgjkdf hgjkdsl hgk ghjkds ghjkfds"
+DIALOG(d_test2, content)
+
+[dialog d_test2]
+arg headerColor = 1
+//arg header = "This is header"
+//arg contentColor = 1
+arg content = argv(1)
+arg width = 200
+arg height = 200
+
+ResizePic(0, 0, 5054, arg(width), arg(height)+120)
+
+GumpPicTiled(10, 10, arg(width) - 20, 20, 2624)
+CheckerTrans(10, 10, arg(width) - 20, 20)
+argv(0).Text(10, 10, headerColor, 0)
+
+GumpPicTiled(10, 40, arg(width) - 20, arg(height) - 80, 2624)
+CheckerTrans(10, 40, arg(width) - 20, arg(height) - 80)
+
+//argv(0).HtmlGumpA(10, 40, arg(width) - 20, arg(height) - 80, arg(content), false, true)
+
+GumpPicTiled(10, arg(height) - 30, arg(width) - 20, 20, 2624)
+CheckerTrans(10, arg(height) - 30, arg(width) - 20, 20)
+argv(0).Button(10, arg(height) - 30, 0x1e, 0x1f, true, 0, 1)
+argv(0).AddTiledButton(10, arg(height) - 60, 0xfa5, 0xfa7, true, 0, 3, 0x23f0, 2, 40, 50)
+argv(0).Button(50, arg(height) - 30, 0xfa5, 0xfa7, true, 0, 2)
+XMFHTMLGumpColor(80, arg(height) - 30, 120, 20, 1011036, 0, 0, 32767) // OKAY
+
+argv(0).CheckBox(10, arg(height) + 30, 210,211, 1, 786)
+TextEntryA(10, arg(height) + 50, 500,100, 1, 762, "this is textentry ìšèøžýá")
+NumberEntryA(10, arg(height) + 70, 500,100, 1, 763, 5.5)
+
+[dialog d_test2 TEXT]
+This is header for <name> //comment
+
+[dialog d_test2 BUTTON]
+on=0
+src.SysMessage("OnResponse from "+argo)
+src.SysMessage("cancelled")
+
+on=@anybutton
+src.SysMessage("OnResponse from "+argo)
+src.SysMessage("button : <argn>")
+src.SysMessage("checkbutton: <argchk[786]>")
+src.SysMessage("textentry: <argtxt[762]>")
+src.SysMessage("number textentry: <argtxt[763]>")
+src.SysMessage("numberentry: <argnum[763]>")
+
+[eof]

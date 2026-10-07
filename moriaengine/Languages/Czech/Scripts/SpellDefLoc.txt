@@ -1,0 +1,7 @@
+TargetResistedSpell             = Cíl odolal kouzlu!
+ForbiddenMagicIn                = Zde je zakázáno kouzlit
+ForbiddenMagicOut               = Odtud je zakázáno kouzlit
+ForbiddenHarmfulMagicIn         = Zde je zakázáno kouzlit škodlivá kouzla
+ForbiddenHarmfulMagicOut        = Odtud je zakázáno kouzlit škodlivá kouzla
+ForbiddenBeneficialMagicIn      = Zde je zakázáno kouzlit přínosná kouzla
+ForbiddenBeneficialMagicOut     = Odtud je zakázáno kouzlit přínosná kouzla

@@ -1,0 +1,5 @@
+500349	What item do you wish to get information about?
+500350	You are too far away to tell much about it.
+500351	You can't see it well enough to tell much about it.
+500352	This is neither weapon nor armor.
+500353	You are not certain...

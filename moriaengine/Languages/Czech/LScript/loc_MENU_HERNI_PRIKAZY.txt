@@ -1,0 +1,4 @@
+0                               = Umoznuje prednastaveni hernich zalezitosti.
+1                               = Jak jsem hladovy?
+2                               = Informace o Moria serveru.
+3                               = Predchozi

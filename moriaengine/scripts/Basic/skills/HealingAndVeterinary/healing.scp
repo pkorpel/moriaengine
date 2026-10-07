@@ -1,0 +1,36 @@
+[ItemDef 0xe21]
+TYPE = t_bandage
+NAME = "bandage"
+WEIGHT = 1
+DEFNAME = i_bandage
+STACKABLE = true
+
+[ItemDef 0xee9]
+DUPEITEM = 0xe21
+
+[ItemDef 0xe20]
+TYPE = t_bandage_blood
+NAME = "bloody bandage"
+WEIGHT = 1
+DEFNAME = i_bandage_bloody
+STACKABLE = true
+
+[ItemDef 0xe22]
+DUPEITEM = 0x20
+
+
+[HealingSkillDef 17]
+DEFNAME=Skill_Healing
+KEY="Healing"
+//TITLE="Healer"
+//PROMPTMSG="Who will you use the bandages on?"
+DELAY=7.0,3.0
+EFFECT=0,15
+ADVRATE=10.0,100.0,250.0
+//STAT_STR=10
+//STAT_INT=90
+//STAT_DEX=10
+//BONUSSTATS=20
+//BONUS_STR=0
+//BONUS_DEX=30
+//BONUS_INT=70

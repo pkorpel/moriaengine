@@ -1,0 +1,8 @@
+500211	You are too tired to lift a finger.
+500213	You are not strong enough to equip that.
+500214	You already have something in both hands.
+500215	You can only wield one weapon at a time.
+500216	You must have both hands free to wield this weapon.
+500217	Your right hand must be free to wield this weapon.
+500218	Your left hand must be free to wield this weapon.
+500219	You are already wielding a two handed weapon.

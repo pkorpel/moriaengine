@@ -1,0 +1,7 @@
+AbilityActivated                = Abilita {0} aktivována.
+YouDontHaveThisAbility          = O této abilitě nevíš vůbec nic.
+NotYetCooledDown                = Abilitu nelze použít tak brzy po předchozím použití.
+HasBeenSwitchedOff              = Abilita deaktivována.
+NotEnoughResourcesToConsume     = Nedostatek zdrojů ke spotřebě pro aktivaci ability.
+NotEnoughResourcesPresent       = Nedostatek zdrojů pro aktivaci ability.
+NotAllowedToHaveAbility         = Nejsi oprávněn mít tuto abilitu.

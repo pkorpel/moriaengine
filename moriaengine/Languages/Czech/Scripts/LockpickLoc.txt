@@ -1,0 +1,6 @@
+cantUseLockpick                 = Na tohle nelze paklíč použít.
+whatToUseLockOn                 = Na co chceš použít paklíč?
+abort                           = Odemykání přerušeno.
+fail                            = Nepodařilo se ti odemknout zámek
+success                         = Úspěšně jsi odemkl zámek
+successWoman                    = Úspěšně jsi odemkla zámek

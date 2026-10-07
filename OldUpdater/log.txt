@@ -1,0 +1,19 @@
+
+
+03.08.2005, 14:53
+stahuji metainfo soubor (updateinfo.xml)
+
+
+
+05.08.2005, 08:33
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+	informace precteny
+moria update files:
+soubor 'AnimLibrary.dll' ...v adresari UO neni, ale ma byt. Stahuji...
+	rozbaluji...
+	soubor uspesne stazen a rozbalen
+soubor 'animdata.mul' ...v adresari UO neni, ale ma byt. Stahuji...
+	rozbaluji...
+	soubor uspesne stazen a rozbalen
+soubor 'art.mul' ...v adresari UO neni, ale ma byt. Stahuji...

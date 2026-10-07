@@ -1,0 +1,20 @@
+[constants]
+periodicSave_Interval	60*60	//in seconds
+
+[triggergroup e_periodicsave_global]
+on=@startup
+RemoveTimer(%PeriodicSave)
+AddTimer(%PeriodicSave, periodicSave_Interval, Save)
+
+on=@beforeSave
+RemoveTimer(%PeriodicSave)
+
+on=@afterSave
+AddTimer(%PeriodicSave, periodicSave_Interval, Save)
+
+//shows info to src
+[function periodicSaveInformation]
+local t = serv.GetTimer(%PeriodicSave)
+if (t != null)
+	echo("Next save in <TagMath.TimeSpanToSimpleString(t.DueInSpan)>, interval is <System.TimeSpan.FromSeconds(periodicSave_Interval)>")
+endif

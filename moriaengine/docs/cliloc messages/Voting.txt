@@ -1,0 +1,9 @@
+500369	I'm a ballot box, not a container!
+500370	Enter a line of text for your ballot, and hit ENTER. Hit ESC after the last line is entered.
+500371	Votes zeroed out.
+500372	You have already voted on this ballot.
+500373	Your vote has been registered.
+500374	You have already voted on this ballot.
+500375	Your vote has been registered.
+500376	Ballot entry complete.
+500377	Next line or ESC to finish:

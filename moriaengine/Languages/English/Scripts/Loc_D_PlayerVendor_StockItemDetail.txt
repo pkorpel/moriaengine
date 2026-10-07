@@ -1,0 +1,8 @@
+Label_Price                     = Cena
+Label_Color                     = Barva
+Label_Change                    = Změnit
+Label_Units                     = Jednotek?
+Label_Add                       = Přidat
+Label_Recall                    = Stáhnout
+Label_Buy                       = Koupit
+Label_Examine                   = Projít

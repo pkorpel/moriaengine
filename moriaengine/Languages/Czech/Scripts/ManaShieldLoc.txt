@@ -1,0 +1,3 @@
+cantMeditateWithManaShield      = Soustředit se zároveň na meditaci i mana shield není v lidských silách.
+shieldSavedYou                  = Mana shield tě uchránil před zraněním
+shieldSavedYouPartially         = Mana shield tě částečně ochránil před zraněním

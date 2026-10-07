@@ -1,0 +1,4 @@
+500182	You cannot request help while customizing a house or transferring a character.
+500183	The next available counselor or game master will respond as soon as possible.
+500184	The next available game master will respond as soon as possible.
+500185	The next available counselor will respond as soon as possible.

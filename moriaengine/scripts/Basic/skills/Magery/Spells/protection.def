@@ -1,0 +1,50 @@
+[DurableCharEffectSpellDef 15]
+DEFNAME=s_protection
+NAME=Protection
+SOUND=0x1ED
+RUNES=US
+CASTTIME=1.5
+//RESOURCES=i_reag_garlic,i_reag_ginseng,i_reag_sulfur_ash
+RUNEITEM=i_rune_PROTECTION
+SCROLLITEM=i_scroll_PROTECTION
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+EFFECT=0,30
+DURATION=3*60.0,8*60.0
+MANAUSE=7
+Requirements=20.0 Magery
+EffectPluginDef = p_protection
+EffectPluginKey_Spell = @@spellEffect_protection
+EffectPluginKey_Potion = @@potionEffect_protection
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x375A, 9, 20)
+
+[EffectDurationPluginDef p_protection]
+on=@assign
+	this.Cont.ArmorClassModifier = this.Cont.ArmorClassModifier + this.EffectPower
+
+on=@unassign
+	argv[0].ArmorClassModifier = argv[0].ArmorClassModifier - this.EffectPower
+	
+	
+[DurableCharEffectSpellDef 26]
+DEFNAME=s_archprotection
+NAME=Arch Protection
+SOUND=0x1F7
+RUNES=VUS
+CASTTIME=2.3
+//RESOURCES=i_reag_garlic,i_reag_ginseng,i_reag_mandrake_root,i_reag_sulfur_ash
+RUNEITEM=i_rune_ARCHPROTECTION
+SCROLLITEM=i_scroll_ARCHPROTECTION
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial | SpellFlag.IsAreaSpell
+EffectRange=5 //range of the area effect
+EFFECT=0,30
+DURATION=3*60.0,8*60.0
+MANAUSE=11
+Requirements=40.0 Magery
+EffectPluginDef = p_protection
+EffectPluginKey_Spell = @@spellEffect_protection
+EffectPluginKey_Potion = @@potionEffect_protection
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x375A, 9, 20)

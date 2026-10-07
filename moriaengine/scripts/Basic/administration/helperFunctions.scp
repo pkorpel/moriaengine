@@ -1,0 +1,48 @@
+[function allSkills]
+if (argvcount)
+	foreach (sd in SkillDef.AllSkillDefs)
+		this.SetRealSkillValue(sd.Id, argv[0])
+	endforeach
+else
+	foreach (s in this.Skills)
+		arg.sd = AbstractSkillDef.GetById(<arg.s.Id>)
+		echo("<arg.sd.Key>: <s.ModifiedValue>")
+	endforeach
+endif
+
+//max skills according to profession
+[function maxskills]
+if (this.Profession)
+	foreach (sd in SkillDef.AllSkillDefs) 
+		this.SetRealSkillValue(sd, this.profession.GetSkillCap(sd))
+	endforeach
+else
+	echo("No profession set")
+endif
+
+//max abilities according to profession
+[function maxabilities]
+if (this.Profession)
+	//remove previous abilities
+	foreach (adef in AbilityDef.AllAbilities)
+		this.SetRealAbilityPoints(adef, 0)
+	endforeach
+	
+	//add abilities from professiondef
+	foreach (entry in this.Profession.AllAbilitiesSorted)
+		this.SetRealAbilityPoints(entry.abilityDef, entry.maxPoints)
+	endforeach	
+	
+	//add talents from talenttreebranches
+	foreach (entry in this.Profession.TTB1.AllTalents)
+		this.SetRealAbilityPoints(entry.talent, entry.maxPoints)
+	endforeach
+	foreach (entry in this.Profession.TTB2.AllTalents)
+		this.SetRealAbilityPoints(entry.talent, entry.maxPoints)
+	endforeach
+	foreach (entry in this.Profession.TTB3.AllTalents)
+		this.SetRealAbilityPoints(entry.talent, entry.maxPoints)
+	endforeach
+else
+	echo("No profession set")
+endif

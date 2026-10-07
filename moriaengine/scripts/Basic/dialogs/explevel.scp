@@ -1,0 +1,36 @@
+[function explevel]
+InvalidateCombatWeaponValues()
+InvalidateCombatArmorValues()
+Dialog(d_explevel)
+
+[Dialog d_explevel]
+argo.resizepic 50 50 2620 400 250
+argo.text 70 70 37 0
+argo.text 70 90 3 1
+argo.text 250 90 85 2
+argo.text 70 110 3 3
+argo.text 250 110 85 4
+argo.text 70 130 3 5
+argo.text 250 130 85 6
+argo.text 70 150 3 7
+argo.text 250 150 85 8
+argo.text 70 170 3 9
+argo.text 250 170 85 10
+//text 70 190 3 11
+//text 200 190 85 12
+//text 70 210 3 13
+//text 200 210 85 14
+
+[DIALOG d_explevel TEXT]
+<Name>
+Obranné èíslo (P, M):
+<ArmorClassVsP>, <ArmorClassVsM>
+Obrana mysli (P, M):
+<MindDefenseVsP>, <MindDefenseVsM>
+Útoèné èíslo/Piercing (P, M): 
+<WeaponAttackVsP>/<WeaponPiercing>, <WeaponAttackVsM>/<WeaponPiercing>
+Prodleva úderu:
+<WeaponDelay>
+Síla mysli (P, M):
+<MindPowerVsP>, <MindPowerVsM>
+

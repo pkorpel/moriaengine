@@ -1,0 +1,13 @@
+Talenty
+
+Talenty jsou novinka oproti morii na sfere, kde byly jen ability
+Inspirovany hrami jako je Diablo2 a WorldOfWarcraft, jsou to vylepseni postavy serazena do "stromu" (talent tree) 
+
+Nadale plati ze ability ziskava clovek pridelovanim bodu, pricemz tyto body ziskava pri kazdem zvyseni levelu. Tyto body jsou ale nekompatibilni s body ktere se prideluji talentum.
+Body do talentu se ziskavaji jinak - Patrne kombinaci 1bod/1level plus bonusove body za urcite questy.
+
+
+Dale je strom talentu rozdelen na "patra", ktere zajistuji nutnost specializace hrace.
+Prvni patro specializovane neni
+Druhe uz ano, tj. vybranim si jedne z vetvi se druhe dve zamykaji.
+Pro odemknuti dalsiho patra je vzdy nutno splnit nejaky quest a/nebo mit urcity pocet bodu v patre(ch) predchozim(ch) - TODO

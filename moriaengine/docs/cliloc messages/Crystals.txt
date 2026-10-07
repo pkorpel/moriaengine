@@ -1,0 +1,10 @@
+500672	You turn the crystal off.
+500673	You turn the crystal on.
+500674	This crystal is already linked with that crystal.
+500675	That crystal has been linked to this crystal.
+500676	This crystal is out of charges.
+500677	This crystal cannot be recharged.
+500678	This crystal is already fully charged.
+500679	You completely recharge the crystal.
+500680	You recharge the crystal.
+500681	You cannot use this crystal on that.

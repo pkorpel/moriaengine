@@ -1,0 +1,17 @@
+from sphereserver forums about Armor:
+
+SphereServer 55i? Each armor part has its own coefficient:
+
+LAYER_HELM - 0.1
+LAYER_COLLAR (gorget) - 0.05
+LAYER_SHIRT, LAYER_CHEST, LAYER_TUNIC, LAYER_CAPE, LAYER_ROBE - 0.1
+LAYER_SHIRT, LAYER_CHEST, LAYER_TUNIC, LAYER_ROBE - 0.3
+LAYER_ARMS, LAYER_CAPE, LAYER_ROBE - 0.1
+LAYER_GLOVES - 0.1
+LAYER_PANTS, LAYER_SKIRT, LAYER_HALF_APRON, LAYER_ROBE, LAYER_LEGS - 0.2
+LAYER_SHOES, LAYER_LEGS - 0.05
+
+Yes, some layers are calculating twice or even three or four times (like LAYER_ROBE). Your example:
+Robe with AC=25: 25*0.1+25*0.3+25*0.1+25*0.2=2.5+7.5+5+2.5=17. Why? Because each man have eight body part, that could be damaged: head, neck, back, trunk, two arms, two hands, two legs and two foots. So, robe closes trunk (coefficient 0.3), back (0.1), arms (0.1) and legs (0.2).
+
+But if there is more powerful armor, armor with less AC doesn't take part in calculus. For example, you have Robe with AC=25 and Arms with AC=30. In that case Robe return just 25*0.3+25*0.1+25*0.2=15, because Arms has more AC number and it reserve its coefficient — 0.1. Total AC will be 15 (from Robe) + 30*0.1=3 (from Arms) = 18.

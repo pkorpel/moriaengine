@@ -1,0 +1,261 @@
+//Don't panic, I didn't type all this myself - I made a python script to write it, of course. :P
+#define TWO two1
+#define SKIP skip1
+#define WHILE while1
+#define ONEBYTE onebyte1
+#define TWOBYTES twobytes1
+#define NOTONEBYTE notonebyte1
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two2
+#define SKIP skip2
+#define WHILE while2
+#define ONEBYTE onebyte2
+#define TWOBYTES twobytes2
+#define NOTONEBYTE notonebyte2
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two3
+#define SKIP skip3
+#define WHILE while3
+#define ONEBYTE onebyte3
+#define TWOBYTES twobytes3
+#define NOTONEBYTE notonebyte3
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two4
+#define SKIP skip4
+#define WHILE while4
+#define ONEBYTE onebyte4
+#define TWOBYTES twobytes4
+#define NOTONEBYTE notonebyte4
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two5
+#define SKIP skip5
+#define WHILE while5
+#define ONEBYTE onebyte5
+#define TWOBYTES twobytes5
+#define NOTONEBYTE notonebyte5
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two6
+#define SKIP skip6
+#define WHILE while6
+#define ONEBYTE onebyte6
+#define TWOBYTES twobytes6
+#define NOTONEBYTE notonebyte6
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two7
+#define SKIP skip7
+#define WHILE while7
+#define ONEBYTE onebyte7
+#define TWOBYTES twobytes7
+#define NOTONEBYTE notonebyte7
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two8
+#define SKIP skip8
+#define WHILE while8
+#define ONEBYTE onebyte8
+#define TWOBYTES twobytes8
+#define NOTONEBYTE notonebyte8
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two9
+#define SKIP skip9
+#define WHILE while9
+#define ONEBYTE onebyte9
+#define TWOBYTES twobytes9
+#define NOTONEBYTE notonebyte9
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two10
+#define SKIP skip10
+#define WHILE while10
+#define ONEBYTE onebyte10
+#define TWOBYTES twobytes10
+#define NOTONEBYTE notonebyte10
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two11
+#define SKIP skip11
+#define WHILE while11
+#define ONEBYTE onebyte11
+#define TWOBYTES twobytes11
+#define NOTONEBYTE notonebyte11
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two12
+#define SKIP skip12
+#define WHILE while12
+#define ONEBYTE onebyte12
+#define TWOBYTES twobytes12
+#define NOTONEBYTE notonebyte12
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two13
+#define SKIP skip13
+#define WHILE while13
+#define ONEBYTE onebyte13
+#define TWOBYTES twobytes13
+#define NOTONEBYTE notonebyte13
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two14
+#define SKIP skip14
+#define WHILE while14
+#define ONEBYTE onebyte14
+#define TWOBYTES twobytes14
+#define NOTONEBYTE notonebyte14
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two15
+#define SKIP skip15
+#define WHILE while15
+#define ONEBYTE onebyte15
+#define TWOBYTES twobytes15
+#define NOTONEBYTE notonebyte15
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two16
+#define SKIP skip16
+#define WHILE while16
+#define ONEBYTE onebyte16
+#define TWOBYTES twobytes16
+#define NOTONEBYTE notonebyte16
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two17
+#define SKIP skip17
+#define WHILE while17
+#define ONEBYTE onebyte17
+#define TWOBYTES twobytes17
+#define NOTONEBYTE notonebyte17
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two18
+#define SKIP skip18
+#define WHILE while18
+#define ONEBYTE onebyte18
+#define TWOBYTES twobytes18
+#define NOTONEBYTE notonebyte18
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two19
+#define SKIP skip19
+#define WHILE while19
+#define ONEBYTE onebyte19
+#define TWOBYTES twobytes19
+#define NOTONEBYTE notonebyte19
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO
+#define TWO two20
+#define SKIP skip20
+#define WHILE while20
+#define ONEBYTE onebyte20
+#define TWOBYTES twobytes20
+#define NOTONEBYTE notonebyte20
+#include "unrolledloop.dupe"
+#undef SKIP
+#undef WHILE
+#undef ONEBYTE
+#undef TWOBYTES
+#undef NOTONEBYTE
+#undef TWO

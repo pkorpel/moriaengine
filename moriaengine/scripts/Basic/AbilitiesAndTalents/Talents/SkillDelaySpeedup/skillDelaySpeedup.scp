@@ -1,0 +1,21 @@
+//assassin's talent
+[PassiveAbilityDef a_crushing_delayspeedup]
+Name="Crushing Speedup"
+EffectPower=0.1 // -50% delay at 5 points
+
+PluginKey = @@crushing_delayspeedup
+PluginDef = p_crushing_delayspeedup
+
+[SkillDelaySpeedupPluginDef p_crushing_delayspeedup]
+Skill = skill_crushing
+
+//assassin's talent
+[PassiveAbilityDef a_swordsmanship_delayspeedup]
+Name="Swordsmanship Speedup"
+EffectPower=0.1 // -50% delay at 5 points
+
+PluginKey = @@swordsmanship_delayspeedup
+PluginDef = p_swordsmanship_delayspeedup
+
+[SkillDelaySpeedupPluginDef p_swordsmanship_delayspeedup]
+Skill = skill_swordsmanship

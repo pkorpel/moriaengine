@@ -1,0 +1,55 @@
+[PassiveAbilityDef a_spell_damage_bonus]
+Name="Spell Damage Bonus"
+EffectPower=0.02 // +10% spellpower at 5 points
+
+PluginKey = @@spell_damage_bonus
+PluginDef = p_spell_damage_bonus
+
+//
+[PassiveAbilityDef a_spell_damage_bonus_greater]
+Name="Greater Spell Damage Bonus"
+EffectPower=0.04 // +20% spellpower when 5 points in this
+
+PluginKey = @@spell_damage_bonus_greater
+PluginDef = p_spell_damage_bonus
+
+//todo? hardwire into damagespelldef, since it's so simple and likely often used?
+[EffectDurationPluginDef p_spell_damage_bonus]
+on=@CauseSpellEffect
+if (argv[0].SpellDef is DamageSpellDef)
+	if (argv[0].CurrentTarget.Equals(argv[0].MainTarget)) //so that the power is only raised once
+		argv[0].SpellPower = argv[0].SpellPower + (argv[0].SpellPower * this.EffectPower)
+	endif
+endif
+
+//conjurer's talent
+[PassiveAbilityDef a_spell_damage_bonus_fire]
+Name="Fire Spell Damage Bonus"
+EffectPower=0.04 // +20% spellpower at 5 points
+
+PluginKey = @@spell_damage_bonus_fire
+PluginDef = p_spell_damage_bonus_fire
+
+[EffectDurationPluginDef p_spell_damage_bonus_fire]
+on=@CauseSpellEffect
+if (argv[0].SpellDef is DamageSpellDef) && (argv[0].SpellDef.DamageType & DamageType.Fire)
+	if (argv[0].CurrentTarget.Equals(argv[0].MainTarget)) //so that the power is only raised once
+		argv[0].SpellPower = argv[0].SpellPower + (argv[0].SpellPower * this.EffectPower)
+	endif
+endif
+
+//magician's talent
+[PassiveAbilityDef a_spell_damage_bonus_air]
+Name="Air Spell Damage Bonus"
+EffectPower=0.04 // +20% spellpower at 5 points
+
+PluginKey = @@spell_damage_bonus_air
+PluginDef = p_spell_damage_bonus_air
+
+[EffectDurationPluginDef p_spell_damage_bonus_air]
+on=@CauseSpellEffect
+if (argv[0].SpellDef is DamageSpellDef) && (argv[0].SpellDef.DamageType & DamageType.Electric)
+	if (argv[0].CurrentTarget.Equals(argv[0].MainTarget)) //so that the power is only raised once
+		argv[0].SpellPower = argv[0].SpellPower + (argv[0].SpellPower * this.EffectPower)
+	endif
+endif

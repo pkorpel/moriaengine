@@ -1,0 +1,8 @@
+500354	Which door do you want to add to my keylist?
+500355	okay
+500356	Added door to my keylist.
+500357	If this lever ever did anything, it doesn't do it anymore.
+500358	The lever feels loose, and you realize it no longer controls anything.
+500359	You flip the lever and think you hear something, but realize it was just your imagination.
+500360	The lever flips without effort, doing nothing.
+500361	You flip the lever, and now its even more broken than before!

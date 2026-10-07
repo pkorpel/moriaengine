@@ -1,0 +1,4306 @@
+//Textual SteamEngine save
+//Static Regions
+
+[FlaggedRegion a_world]
+name="Stredozeme"
+p=(4D)1323,1624,55,255
+mapplane=255
+rect=1,1,6142,4095
+
+[FlaggedRegion a_Mordorske_uzemi]
+name="Mordorske uzemi"
+p=(4D)3848,2312
+parent=(a_world)
+rect=2300,3612,3263,4095
+rect=2503,1886,2510,1949
+rect=2510,1868,2518,1954
+rect=2516,885,2524,939
+rect=2517,1851,2526,1973
+rect=2523,858,2557,952
+rect=2526,1839,2537,1991
+rect=2528,3512,3139,3655
+rect=2529,845,2654,864
+rect=2534,950,2556,1019
+rect=2537,1830,2543,1999
+rect=2541,837,2550,845
+rect=2545,1809,2642,2024
+rect=2546,1015,2557,1052
+rect=2548,3498,2623,3524
+rect=2552,831,2628,848
+rect=2554,864,2665,1101
+rect=2557,821,2586,834
+rect=2559,1778,2603,1809
+rect=2564,1098,2649,1165
+rect=2565,1767,2603,1778
+rect=2570,1160,2667,1187
+rect=2571,1754,2602,1766
+rect=2572,3472,2627,3503
+rect=2582,1186,2649,1217
+rect=2582,1741,2603,1753
+rect=2583,2022,2643,2044
+rect=2590,3452,2625,3473
+rect=2591,1216,2648,1253
+rect=2592,1729,2602,1740
+rect=2603,1723,2641,1810
+rect=2605,1250,2642,1277
+rect=2606,1715,2615,1724
+rect=2608,3432,2625,3451
+rect=2610,2040,2641,2059
+rect=2614,1706,2625,1725
+rect=2616,3405,2853,3532
+rect=2620,1275,2640,1302
+rect=2624,1690,2638,1725
+rect=2628,1299,2642,1331
+rect=2629,1525,2641,1691
+rect=2632,3394,2643,3406
+rect=2636,1256,2877,1543
+rect=2643,3368,2678,3405
+rect=2648,1528,3183,2079
+rect=2646,998,2875,1257
+rect=2661,871,2691,997
+rect=2664,2134,2675,2167
+rect=2670,2122,2699,2177
+rect=2675,3351,2737,3405
+rect=2680,2062,3101,2167
+rect=2687,889,2698,896
+rect=2687,923,2734,960
+rect=2687,960,2787,998
+rect=2689,895,2709,924
+rect=2706,908,2719,922
+rect=2733,938,2759,960
+rect=2735,3340,2772,3411
+rect=2736,3340,2813,3404
+rect=2743,2228,2760,2265
+rect=2755,2407,2765,2491
+rect=2756,953,2764,961
+rect=2759,2206,2768,2274
+rect=2763,2375,2775,2519
+rect=2768,3369,2817,3410
+rect=2770,2164,3099,2285
+rect=2772,3356,2805,3370
+rect=2775,2284,2780,2525
+rect=2780,2282,3099,2617
+rect=2786,977,2808,997
+rect=2795,2616,2864,2640
+rect=2806,989,2823,999
+rect=2808,2638,2864,2663
+rect=2817,3380,2831,3396
+rect=2817,3396,2853,3408
+rect=2824,2661,2863,2702
+rect=2842,2698,2864,2725
+rect=2851,3407,3109,3515
+rect=2862,2616,3101,2757
+rect=2868,1010,2913,1033
+rect=2872,1416,3199,1539
+rect=2874,1032,2895,1175
+rect=2893,1029,2936,1052
+rect=2894,1052,2906,1099
+rect=2907,1053,2923,1066
+rect=2910,1020,2931,1033
+rect=2926,2752,3096,2779
+rect=2997,2777,3041,2795
+rect=3028,2792,3041,2813
+rect=3098,2777,3104,3028
+rect=3105,1912,4671,4095
+rect=3136,1156,3161,1193
+rect=3142,1184,3163,1255
+rect=3162,1212,3173,1255
+rect=3172,1228,3187,1255
+rect=3172,1440,3547,1919
+rect=3186,1284,3231,1311
+rect=3190,1268,3209,1287
+rect=3192,1310,3275,1447
+rect=3276,1326,3297,1445
+rect=3296,1344,3306,1353
+rect=3297,1354,3322,1390
+rect=3297,1391,3339,1440
+rect=3340,1404,3371,1445
+rect=3368,1418,3405,1447
+rect=3468,1428,3535,1453
+rect=3540,1448,3635,1923
+rect=3632,1460,3683,1919
+rect=3676,1476,3735,1653
+rect=3682,1644,3761,1921
+rect=3706,1480,3743,1551
+rect=3734,1544,3761,1649
+rect=3762,1646,3793,1917
+rect=3794,1674,4089,1915
+rect=3974,1662,4027,1683
+rect=4064,1794,4299,1971
+rect=4082,1688,4095,1841
+rect=4094,1704,4117,1835
+rect=4114,1738,4131,1811
+rect=4652,3731,4773,4094
+rect=4664,2312,5071,3751
+rect=4665,2268,4788,2321
+rect=4759,3744,4879,3830
+
+[FlaggedRegion a_Gondorske_uzemi]
+name="Gondorske uzemi"
+p=(4D)1520,1704
+parent=(a_world)
+rect=1,606,1983,2327
+rect=80,964,151,1299
+rect=384,390,1095,663
+rect=1047,2318,1197,2389
+rect=1072,408,1399,711
+rect=1108,2492,1747,3327
+rect=1248,2304,1967,2511
+rect=1384,520,1655,799
+rect=1640,528,1887,783
+rect=1740,2492,2039,3163
+rect=1936,2328,2623,2783
+rect=1976,892,2411,1607
+rect=1980,1580,2495,2335
+rect=1982,682,2242,911
+rect=2016,2776,2375,3079
+rect=2031,3095,2050,3107
+rect=2034,3089,2070,3100
+rect=2038,3105,2050,3120
+rect=2041,3067,2147,3092
+rect=2045,3094,2061,3112
+rect=2068,3087,2085,3101
+rect=2130,3082,2159,3107
+rect=2146,3074,2383,3343
+rect=2246,3340,2371,3353
+rect=2250,3350,2367,3455
+rect=2366,2782,2449,3301
+rect=2376,1284,2615,1545
+rect=2382,3316,2389,3323
+rect=2384,3302,2429,3316
+rect=2400,1152,2503,1312
+rect=2409,1545,2618,1579
+rect=2421,3315,2432,3322
+rect=2429,3293,2441,3320
+rect=2440,3080,2459,3275
+rect=2442,3288,2446,3310
+rect=2444,3286,2454,3292
+rect=2444,3292,2450,3300
+rect=2446,3275,2479,3288
+rect=2448,2808,2471,3127
+rect=2454,2702,2659,3177
+rect=2456,1028,2477,1078
+rect=2456,3150,2530,3278
+rect=2464,2628,2659,3139
+rect=2469,1517,2565,1538
+rect=2473,1037,2492,1073
+rect=2478,1071,2541,1179
+rect=2488,1171,2562,1293
+rect=2490,1049,2507,1075
+rect=2492,1579,2619,1651
+rect=2493,1647,2616,1688
+rect=2493,1708,2593,1722
+rect=2495,1959,2509,2066
+rect=2496,2072,2625,2338
+rect=2497,1687,2611,1699
+rect=2497,1699,2599,1709
+rect=2497,1731,2572,1742
+rect=2497,1741,2564,1753
+rect=2497,1751,2552,1788
+rect=2498,1722,2582,1732
+rect=2499,1787,2543,1800
+rect=2500,1801,2537,1815
+rect=2500,1816,2524,1830
+rect=2500,1831,2522,1842
+rect=2500,1843,2508,1856
+rect=2500,1857,2505,1873
+rect=2502,3306,2549,3330
+rect=2503,1060,2516,1074
+rect=2506,1976,2517,2062
+rect=2506,3274,2537,3329
+rect=2516,2012,2539,2035
+rect=2516,2032,2553,2077
+rect=2530,3092,2799,3321
+rect=2537,1107,2555,1180
+rect=2550,2044,2577,2071
+rect=2559,1191,2571,1289
+rect=2570,1215,2579,1289
+rect=2574,2056,2595,2073
+rect=2576,1237,2587,1284
+rect=2584,1255,2596,1289
+rect=2611,1318,2619,1529
+rect=2615,1347,2631,1518
+rect=2618,2146,2655,2717
+rect=2626,2074,2643,2139
+rect=2642,2078,2655,2133
+rect=2646,3314,2763,3331
+rect=2648,2836,2871,3107
+rect=2650,2732,2667,2849
+rect=2656,2088,2669,2113
+rect=2656,2180,2669,2705
+rect=2664,2738,2841,2871
+rect=2668,2184,2703,2699
+rect=2668,3328,2711,3343
+rect=2694,2296,2747,2513
+rect=2694,2570,2769,2653
+rect=2696,2650,2741,2683
+rect=2704,2186,2725,2299
+rect=2716,2286,2755,2369
+rect=2718,2646,2755,2667
+rect=2724,2276,2743,2289
+rect=2734,2512,2755,2573
+rect=2752,2290,2763,2303
+rect=2754,2300,2769,2347
+rect=2768,2926,2857,3095
+rect=2794,3088,2855,3285
+rect=2798,3280,2849,3299
+rect=2798,3294,2832,3309
+rect=2838,2762,2871,2855
+rect=2854,2952,2893,3281
+rect=2870,2770,2895,2823
+rect=2870,2824,3013,2977
+rect=2887,3241,2920,3277
+rect=2892,2978,2991,3129
+rect=2892,3162,2973,3191
+rect=2892,3190,2951,3219
+rect=2892,3258,2903,3271
+rect=2894,2778,2923,2823
+rect=2894,3130,2983,3161
+rect=2894,3220,2933,3241
+rect=2894,3240,2917,3259
+rect=2920,2788,2947,2823
+rect=2946,2789,3002,2840
+rect=2946,2800,2965,2825
+rect=2961,2794,3000,2825
+rect=2992,2978,3005,2993
+rect=3002,2798,3015,2854
+rect=3010,2853,3020,2914
+rect=3015,2803,3021,2854
+rect=3021,2810,3028,2847
+
+[FlaggedRegion a_test]
+name="test"
+p=(4D)5615,801,0,100
+mapplane=100
+parent=(a_world)
+rect=5512,784,5631,839
+
+[FlaggedRegion a_Cage]
+name="Cage"
+p=(4D)5409,3771,0,100
+mapplane=100
+parent=(a_world)
+rect=5406,3765,5415,3774
+flags=28063
+
+[FlaggedRegion a_Verb]
+name="Verb"
+p=(4D)5410,3790,0,100
+mapplane=100
+parent=(a_world)
+rect=5383,3777,5429,3839
+flags=4498
+
+[FlaggedRegion a_PlanSto]
+name="PlanSto"
+p=(4D)2000,2000,0,110
+mapplane=100
+parent=(a_world)
+rect=1,1,5095,3999
+
+[FlaggedRegion a_London]
+name="London"
+p=(4D)2312,2515,0,100
+mapplane=100
+parent=(a_PlanSto)
+rect=2199,2459,2375,2618
+flags=256
+
+[FlaggedRegion a_Jail]
+name="Jail"
+p=(4D)5615,801,0,250
+mapplane=100
+parent=(a_world)
+rect=5512,784,5631,839
+flags=28063
+
+[FlaggedRegion a_klec]
+name="klec"
+p=(4D)3256,2916,5
+parent=(a_Mordor)
+rect=3255,2914,3257,2917
+flags=28063
+
+[FlaggedRegion a_Lagr]
+name="Lagr"
+p=(4D)432,1212,0,1
+mapplane=1
+parent=(a_world)
+rect=272,910,599,1365
+flags=28063
+
+[FlaggedRegion a_zivejregion]
+name="zivejregion"
+p=(4D)2281,2586,80,10
+mapplane=10
+parent=(a_world)
+rect=2281,2586,2305,2600
+flags=384
+
+[FlaggedRegion a_Start_room]
+name="Start room"
+p=(4D)4764,1362,10
+parent=(a_world)
+rect=4742,1341,4784,1365
+flags=384
+
+[FlaggedRegion a_Start_rasy]
+name="Start rasy"
+p=(4D)4753,118
+parent=(a_world)
+rect=4738,99,4770,126
+flags=384
+
+[FlaggedRegion a_Start_povolani]
+name="Start povolani"
+p=(4D)5927,110
+parent=(a_Jamy_smrti)
+rect=5914,93,5939,112
+flags=384
+
+[FlaggedRegion a_Prevodni_zona]
+name="Prevodni zona"
+p=(4D)5991,138
+parent=(a_world)
+rect=5981,120,6006,153
+flags=12695
+
+[FlaggedRegion a_Horondor]
+name="Horondor"
+p=(4D)3144,3928
+parent=(a_Mordorske_uzemi)
+rect=2332,3756,2846,4094
+rect=2532,3516,2846,3889
+rect=2620,3408,2893,3521
+rect=2552,3500,2623,3519
+rect=2576,3474,2625,3501
+rect=2592,3456,2625,3487
+rect=2610,3436,2629,3463
+rect=2644,3370,2811,3429
+rect=2636,3394,2645,3421
+rect=2676,3354,2805,3403
+rect=2735,3340,2775,3360
+rect=2808,3380,2829,3409
+rect=2807,3373,2814,3381
+rect=2825,3397,2850,3413
+
+[FlaggedRegion a_Mordor]
+name="Mordor"
+p=(4D)3848,2312
+parent=(a_Mordorske_uzemi)
+rect=3098,2551,3152,2586
+rect=3110,2831,3198,2925
+rect=3124,2544,3831,3027
+rect=3132,2516,3430,2577
+rect=3170,2452,3267,2531
+rect=3740,2499,3779,2661
+rect=3770,2507,3873,2653
+rect=3810,2485,3895,2553
+rect=3824,2791,3843,2876
+
+[FlaggedRegion a_Nurnen]
+name="Nurnen"
+p=(4D)3464,3256,13
+parent=(a_Mordorske_uzemi)
+rect=3164,3040,3461,3549
+rect=3172,3548,3523,3869
+rect=3190,3868,3307,3889
+rect=3238,3890,3302,3903
+rect=3456,3084,3979,3755
+rect=3521,3752,3795,3820
+rect=3956,3610,4157,3763
+rect=4142,3640,4297,3705
+
+[FlaggedRegion a_Haradwaith]
+name="Haradwaith"
+p=(4D)3144,3928
+parent=(a_Mordorske_uzemi)
+rect=2848,3672,2983,4094
+rect=2964,3588,3143,4064
+rect=3136,3888,3183,4094
+rect=3184,3904,3535,4094
+rect=3536,3848,3823,4094
+rect=3824,3792,4767,4094
+rect=4176,3720,4873,3791
+rect=4312,3664,4583,3719
+rect=4384,3592,4583,3663
+
+[FlaggedRegion a_Chand]
+name="Chand"
+p=(4D)4832,3472,1
+parent=(a_Mordorske_uzemi)
+rect=4528,3550,4931,3655
+rect=4555,3540,4565,3550
+rect=4560,3535,4565,3541
+rect=4564,3533,4580,3553
+rect=4568,3528,4573,3533
+rect=4573,3522,4579,3534
+rect=4578,3514,4594,3551
+rect=4593,3501,4637,3554
+rect=4630,3462,4929,3558
+rect=4694,3442,4720,3465
+rect=4700,3427,4721,3442
+rect=4704,3423,4708,3427
+rect=4708,3419,4715,3427
+rect=4711,3415,4715,3419
+rect=4715,3399,4720,3427
+rect=4920,3392,4975,3607
+rect=4720,3328,4919,3479
+rect=4920,3200,5039,3391
+rect=4848,3240,4919,3327
+
+[FlaggedRegion a_provincie_Anorien_Gondor]
+name="provincie Anorien Gondor"
+p=(4D)2736,2796
+parent=(a_Gondorske_uzemi)
+rect=2486,2690,2551,2775
+rect=2516,2763,2540,2782
+rect=2533,2717,2622,2787
+rect=2548,2695,2563,2722
+rect=2552,2784,2601,2798
+rect=2561,2702,2599,2719
+rect=2601,2788,2638,2811
+rect=2638,2787,2696,2813
+rect=2651,2813,2694,2823
+rect=2694,2772,2857,2841
+rect=2767,2834,2858,2849
+rect=2937,2856,3019,2912
+rect=2956,2911,3002,2929
+rect=2958,2925,2991,2968
+rect=2618,2741,2780,2801
+rect=2620,2722,2658,2742
+rect=2385,2697,2509,2776
+rect=2856,2781,2912,2876
+rect=2907,2791,2974,2899
+rect=2657,2734,2666,2741
+rect=2777,2746,2805,2776
+rect=2806,2756,2839,2774
+rect=2837,2765,2870,2782
+rect=2869,2772,2894,2782
+rect=2909,2784,2923,2792
+rect=2968,2841,2992,2857
+rect=2968,2830,2983,2843
+rect=2986,2847,3003,2857
+
+[FlaggedRegion a_provincie_Lebennin_Gondor]
+name="provincie Lebennin Gondor"
+p=(4D)2692,3280
+parent=(a_Gondorske_uzemi)
+rect=2502,3307,2548,3328
+rect=2509,3264,2698,3321
+rect=2532,3254,2700,3269
+rect=2553,3248,2696,3256
+rect=2575,3241,2608,3250
+rect=2631,3243,2642,3252
+rect=2637,3234,2654,3250
+rect=2646,3307,2763,3331
+rect=2651,3223,2695,3259
+rect=2669,3219,2676,3225
+rect=2671,3331,2712,3340
+rect=2673,3208,2687,3230
+rect=2677,3202,2683,3211
+rect=2682,3182,2710,3256
+rect=2690,3162,2761,3189
+rect=2695,3182,2784,3308
+rect=2702,3146,2727,3173
+rect=2716,3133,2753,3174
+rect=2723,3127,2731,3136
+rect=2729,3113,2756,3139
+rect=2738,3106,2747,3118
+rect=2744,3062,2830,3308
+rect=2760,3304,2799,3320
+rect=2823,3076,2843,3133
+rect=2823,3132,2860,3278
+rect=2827,3277,2848,3298
+rect=2837,3118,2851,3136
+rect=2844,3274,2855,3284
+
+[FlaggedRegion a_provincie_Anfalas_Gondor]
+name="provincie Anfalas Gondor"
+p=(4D)1980,3068
+parent=(a_Gondorske_uzemi)
+rect=1598,3100,1723,3221
+rect=1618,3056,1725,3113
+rect=1720,3026,1849,3157
+rect=1844,3012,1983,3125
+rect=1928,2986,2029,3127
+rect=2006,2974,2099,3055
+
+[FlaggedRegion a_provincie_Lamedon_Gondor]
+name="provincie Lamedon Gondor"
+p=(4D)2300,2896
+parent=(a_Gondorske_uzemi)
+rect=2180,2702,2253,2779
+rect=2184,2779,2200,2794
+rect=2189,2795,2199,2810
+rect=2190,2913,2205,2945
+rect=2197,2779,2300,2957
+rect=2203,2956,2222,2966
+rect=2214,2954,2305,2980
+rect=2230,2980,2263,2990
+rect=2256,2981,2296,2994
+rect=2269,2996,2298,3006
+rect=2280,3006,2296,3015
+rect=2291,2804,2423,3029
+rect=2298,3030,2361,3053
+rect=2359,3029,2373,3046
+rect=2369,3026,2390,3039
+rect=2416,2830,2451,2871
+rect=2416,2865,2535,2938
+rect=2417,2936,2505,2976
+rect=2418,2971,2467,2995
+rect=2419,2994,2461,3003
+rect=2419,3010,2433,3021
+rect=2421,3001,2451,3011
+rect=2465,2976,2497,2987
+rect=2505,2937,2519,2967
+rect=2517,2935,2528,2950
+rect=2532,2885,2551,2911
+rect=2532,2910,2544,2928
+
+[FlaggedRegion a_Rohan]
+name="Rohan"
+p=(4D)2312,2467
+parent=(a_Gondorske_uzemi)
+rect=1762,2501,1793,2517
+rect=1770,2514,1802,2529
+rect=1790,2502,1823,2541
+rect=1822,2506,1865,2547
+rect=1832,2540,1869,2559
+rect=1863,2503,1969,2573
+rect=1876,2496,1920,2508
+rect=1887,2570,1936,2584
+rect=1911,2585,1935,2597
+rect=1922,2595,1940,2605
+rect=1934,2571,1974,2620
+rect=1952,2614,1977,2635
+rect=1968,2503,2056,2668
+rect=2009,2494,2020,2505
+rect=2018,2486,2030,2505
+rect=2028,2473,2041,2504
+rect=2038,2457,2076,2569
+rect=2048,2425,2067,2458
+rect=2057,2398,2062,2427
+rect=2060,2317,2078,2359
+rect=2060,2354,2447,2635
+rect=2232,2338,2430,2370
+rect=2293,2324,2390,2342
+rect=2384,2628,2479,2652
+rect=2389,2651,2427,2662
+rect=2426,2551,2461,2637
+rect=2432,2371,2460,2532
+
+[FlaggedRegion a_Severni_Spoust]
+name="Severni Spoust"
+p=(4D)3264,224
+parent=(a_world)
+rect=1360,252,1469,383
+rect=1453,350,1566,381
+rect=1472,264,1695,335
+rect=1648,2,4639,299
+rect=3776,288,4639,495
+rect=3960,488,4639,543
+rect=4216,536,4647,703
+rect=2824,288,3775,351
+rect=3160,336,3783,391
+rect=3504,376,3799,447
+
+[FlaggedRegion a_Smutna_stezka]
+name="Smutna stezka"
+p=(4D)2854,2484,50
+parent=(a_Mordorske_uzemi)
+rect=2800,2408,2893,2551
+flags=2
+
+[FlaggedRegion a_ostrov_Rhun]
+name="ostrov Rhun"
+p=(4D)4202,1881
+parent=(a_Mordorske_uzemi)
+rect=4168,1840,4287,1935
+
+[FlaggedRegion a_Mrtve_mocaly]
+name="Mrtve mocaly"
+p=(4D)2996,2528
+parent=(a_Mordorske_uzemi)
+rect=2895,2420,3059,2569
+flags=2
+
+[FlaggedRegion a_Nindalf_vlhka_plan]
+name="Nindalf vlhka plan"
+p=(4D)2904,2648
+parent=(a_Mordorske_uzemi)
+rect=2796,2570,3059,2631
+rect=2856,2664,3007,2727
+rect=2856,2624,3031,2671
+rect=2872,2720,2983,2751
+rect=2824,2616,2863,2687
+flags=2
+
+[FlaggedRegion a_Zapadni_hrana]
+name="Zapadni hrana"
+p=(4D)1428,3156,70
+parent=(a_Gondorske_uzemi)
+rect=1416,3144,1439,3167
+
+[FlaggedRegion a_Svatyne_ohne]
+name="Svatyne ohne"
+p=(4D)1292,3148,75
+parent=(a_Gondorske_uzemi)
+rect=1280,3128,1303,3167
+
+[FlaggedRegion a_Krajska_knihovna]
+name="Krajska knihovna"
+p=(4D)1184,1364
+parent=(a_Zabovresky)
+rect=1179,1358,1189,1370
+flags=4510
+
+[FlaggedRegion a_knihovna_Harad]
+name="knihovna Harad"
+p=(4D)4170,3940,20
+parent=(a_Harad)
+rect=4163,3932,4182,3944
+flags=4510
+
+[FlaggedRegion a_knihovna_Minas_Tirith]
+name="knihovna Minas Tirith"
+p=(4D)5820,3830
+parent=(a_Minas_Tirith)
+rect=5802,3819,5829,3846
+flags=4510
+
+[FlaggedRegion a_knihovna_Minas_Tirith_sklep]
+name="knihovna Minas Tirith sklep"
+p=(4D)5450,200,20,5
+mapplane=5
+parent=(a_world)
+rect=5435,165,5475,218
+flags=4510
+
+[FlaggedRegion a_Roklinka_dum_Elronduv]
+name="Roklinka dum Elronduv"
+p=(4D)2331,1238,4
+parent=(a_Gondorske_uzemi)
+rect=2312,1200,2359,1239
+
+[FlaggedRegion a_Delvaniova_zhouba]
+name="Delvaniova zhouba"
+p=(4D)1248,3192,70
+parent=(a_Gondorske_uzemi)
+rect=1240,3184,1255,3199
+
+[FlaggedRegion a_Vetrov]
+name="Vetrov"
+p=(4D)1760,1323
+parent=(a_Gondorske_uzemi)
+rect=1738,1303,1772,1333
+
+[FlaggedRegion a_Helmuv_zleb]
+name="Helmuv zleb"
+p=(4D)2056,2544
+parent=(a_Rohan)
+rect=2040,2528,2071,2559
+rect=5184,3688,5423,3815
+
+[FlaggedRegion a_Jizni_Ithilien]
+name="Jizni Ithilien"
+p=(4D)3052,3150
+parent=(a_world)
+rect=2808,3318,2964,3362
+rect=2815,3361,2836,3367
+rect=2821,3365,2834,3372
+rect=2825,3370,2838,3378
+rect=2833,3360,2985,3382
+rect=2837,3382,2852,3390
+rect=2851,3377,2912,3397
+rect=2852,3313,2860,3319
+rect=2859,3305,2878,3320
+rect=2862,3397,2901,3404
+rect=2878,3295,2986,3363
+rect=2905,3290,2911,3295
+rect=2909,3285,2918,3298
+rect=2916,3280,2935,3297
+rect=2922,3277,2926,3280
+rect=2925,3271,2931,3282
+rect=2931,3261,2980,3308
+rect=2942,3236,2972,3262
+rect=2966,3204,3008,3320
+rect=2982,3314,3010,3350
+rect=2984,3348,2994,3370
+rect=2990,3189,3009,3216
+rect=2994,3349,3002,3358
+rect=3000,3021,3079,3319
+rect=3006,3315,3028,3336
+rect=3011,3337,3015,3344
+rect=3016,3337,3019,3342
+rect=3029,3320,3045,3332
+rect=3077,3169,3100,3239
+rect=3078,3238,3097,3276
+rect=3078,3275,3093,3315
+rect=3079,3040,3103,3093
+rect=3079,3079,3103,3169
+
+[FlaggedRegion a_zvadla_vresoviste]
+name="zvadla vresoviste"
+p=(4D)3048,760,45
+parent=(a_world)
+rect=2960,696,3087,823
+
+[FlaggedRegion a_Kraj]
+name="Kraj"
+p=(4D)1090,1524
+parent=(a_Gondorske_uzemi)
+rect=886,1120,1281,1495
+rect=890,1069,1029,1133
+
+[FlaggedRegion a_Nenuial_soumracne_jezero]
+name="Nenuial soumracne jezero"
+p=(4D)1152,1072
+parent=(a_Gondorske_uzemi)
+rect=1096,1000,1231,1119
+
+[FlaggedRegion a_Harlindon]
+name="Harlindon"
+p=(4D)400,1600
+parent=(a_Gondorske_uzemi)
+rect=312,1448,679,1935
+
+[FlaggedRegion a_Erebor]
+name="Erebor"
+p=(4D)3157,970,40
+parent=(a_world)
+rect=3108,924,3193,988
+rect=4696,2024,4783,2207
+rect=4776,2048,4919,2159
+flags=256
+
+[FlaggedRegion a_Dainovo_kralovstvi]
+name="Dainovo kralovstvi"
+p=(4D)3816,1021
+parent=(a_world)
+rect=4784,2200,4991,2279
+rect=4896,2160,4983,2199
+rect=4944,2136,4975,2159
+flags=256
+
+[FlaggedRegion a_Hobitin]
+name="Hobitin"
+p=(4D)1079,1327
+parent=(a_Kraj)
+rect=1052,1250,1125,1370
+flags=256
+
+[FlaggedRegion a_Severni_ctvrtka]
+name="Severni ctvrtka"
+p=(4D)1069,1181,2
+parent=(a_Kraj)
+rect=1000,1120,1224,1248
+flags=256
+
+[FlaggedRegion a_Parezov]
+name="Parezov"
+p=(4D)1268,1405
+parent=(a_Kraj)
+rect=1256,1391,1280,1425
+flags=256
+
+[FlaggedRegion a_Radovsko]
+name="Radovsko"
+p=(4D)1312,1373
+parent=(a_Gondorske_uzemi)
+rect=1293,1337,1326,1405
+flags=256
+
+[FlaggedRegion a_Zabovresky]
+name="Zabovresky"
+p=(4D)1215,1347
+parent=(a_Kraj)
+rect=1179,1329,1233,1374
+flags=256
+
+[FlaggedRegion a_Hurka]
+name="Hurka"
+p=(4D)1582,1184
+parent=(a_Gondorske_uzemi)
+rect=1544,1160,1599,1207
+flags=256
+
+[FlaggedRegion a_Hurecko]
+name="Hurecko"
+p=(4D)1633,1221
+parent=(a_Gondorske_uzemi)
+rect=1608,1168,1655,1239
+flags=256
+
+[FlaggedRegion a_Fornost]
+name="Fornost"
+p=(4D)1424,1090
+parent=(a_Gondorske_uzemi)
+rect=1392,1064,1484,1122
+flags=256
+
+[FlaggedRegion a_Forondon]
+name="Forondon"
+p=(4D)1210,613
+parent=(a_Gondorske_uzemi)
+rect=1168,576,1247,655
+flags=256
+
+[FlaggedRegion a_Zelezny_pas]
+name="Zelezny pas"
+p=(4D)2028,2392
+parent=(a_Gondorske_uzemi)
+rect=2000,2360,2055,2423
+flags=256
+
+[FlaggedRegion a_Sede_pristavy]
+name="Sede pristavy"
+p=(4D)752,1369
+parent=(a_Gondorske_uzemi)
+rect=683,1363,710,1385
+rect=707,1325,761,1414
+rect=662,1259,727,1346
+rect=726,1267,750,1287
+rect=723,1286,735,1307
+rect=734,1285,742,1296
+flags=256
+
+[FlaggedRegion a_Pelenorska_pole]
+name="Pelenorska pole"
+p=(4D)6000,3944,-80
+parent=(a_world)
+rect=5796,3696,6025,4097
+rect=5712,3758,5825,4043
+rect=6018,3697,6109,3965
+rect=6103,3850,6157,3907
+rect=5996,3940,6072,4008
+flags=256
+
+[FlaggedRegion a_Minas_Tirith]
+name="Minas Tirith"
+p=(4D)5927,3948,-80
+parent=(a_Pelenorska_pole)
+rect=5796,3722,5903,4016
+rect=5902,3750,5962,3992
+rect=5958,3765,5977,3921
+rect=5729,3895,5777,3979
+rect=5740,3785,5807,3867
+rect=5763,3863,5798,4024
+flags=256
+
+[FlaggedRegion a_Osgiliath_zapadni_breh]
+name="Osgiliath zapadni breh"
+p=(4D)2923,2907
+parent=(a_world)
+rect=6056,3848,6135,3959
+rect=6064,3816,6119,3847
+
+[FlaggedRegion a_Osgiliath_vychodni_breh]
+name="Osgiliath vychodni breh"
+p=(4D)3064,2952
+parent=(a_world)
+rect=3016,2920,3079,2999
+
+[FlaggedRegion a_Rhun]
+name="Rhun"
+p=(4D)3837,2053
+parent=(a_Mordorske_uzemi)
+rect=3730,2023,3962,2210
+rect=3959,2033,3989,2065
+flags=256
+
+[FlaggedRegion a_Barad_dur]
+name="Barad_dur"
+p=(4D)3656,2736
+parent=(a_Mordor)
+rect=3552,2664,3735,2831
+rect=3656,2632,3703,2687
+flags=256
+
+[FlaggedRegion a_Minas_Morgul]
+name="Minas Morgul"
+p=(4D)3249,2933
+parent=(a_Mordor)
+rect=3176,2952,3223,2999
+flags=256
+
+[FlaggedRegion a_Cair_Andros]
+name="Cair Andros"
+p=(4D)3016,2840
+parent=(a_Gondorske_uzemi)
+rect=2981,2801,3007,2826
+rect=2985,2826,3011,2848
+rect=2999,2800,3010,2825
+rect=3007,2825,3027,2846
+rect=3010,2805,3018,2825
+rect=3019,2812,3027,2823
+flags=256
+
+[FlaggedRegion a_Lorien]
+name="Lorien"
+p=(4D)2425,1894
+parent=(a_world)
+rect=2375,1830,2496,1925
+flags=256
+
+[FlaggedRegion a_Kralovstvi_lesnich_elfu]
+name="Kralovstvi lesnich elfu"
+p=(4D)2976,1248
+parent=(a_world)
+rect=2920,1208,3031,1287
+flags=256
+
+[FlaggedRegion a_Esgaroth]
+name="Esgaroth"
+p=(4D)3105,1077
+parent=(a_world)
+rect=3096,1032,3151,1087
+flags=256
+
+[FlaggedRegion a_Edoras]
+name="Edoras"
+p=(4D)2312,2515
+parent=(a_Rohan)
+rect=2240,2490,2375,2618
+flags=256
+
+[FlaggedRegion a_Tajna_chodba_pod_Edorasem]
+name="Tajna chodba pod Edorasem"
+p=(4D)2330,2441,-22,1
+mapplane=1
+parent=(a_world)
+rect=2321,2438,2369,2541
+flags=2
+
+[FlaggedRegion a_Dol_Amroth]
+name="Dol Amroth"
+p=(4D)2258,3243,2
+parent=(a_Gondorske_uzemi)
+rect=2152,3180,2287,3303
+flags=256
+
+[FlaggedRegion a_Dol]
+name="Dol"
+p=(4D)3192,1064,1
+parent=(a_world)
+rect=3160,992,3247,1015
+rect=3160,1016,3215,1079
+flags=256
+
+[FlaggedRegion a_Tharbad]
+name="Tharbad"
+p=(4D)1592,1944
+parent=(a_Gondorske_uzemi)
+rect=1568,1904,1623,1943
+flags=256
+
+[FlaggedRegion a_Pelargir]
+name="Pelargir"
+p=(4D)2887,3245
+parent=(a_Gondorske_uzemi)
+rect=2872,3216,2919,3276
+flags=256
+
+[FlaggedRegion a_Nurn]
+name="Nurn"
+p=(4D)3472,3264,13
+parent=(a_Nurnen)
+rect=3400,3216,3559,3327
+flags=256
+
+[FlaggedRegion a_Bagronk]
+name="Bagronk"
+p=(4D)3920,3012
+parent=(a_Mordorske_uzemi)
+rect=3880,2976,3959,3047
+flags=256
+
+[FlaggedRegion a_Harad]
+name="Harad"
+p=(4D)4144,4032
+parent=(a_Haradwaith)
+rect=4104,3888,4231,4047
+flags=256
+
+[FlaggedRegion a_Oaza_Hagir]
+name="Oaza Hagir"
+p=(4D)2910,3710
+parent=(a_Haradwaith)
+rect=2872,3680,2959,3735
+flags=256
+
+[FlaggedRegion a_Tahabar]
+name="Tahabar"
+p=(4D)2775,3804
+parent=(a_Horondor)
+rect=2736,3768,2815,3823
+flags=256
+
+[FlaggedRegion a_Umbar]
+name="Umbar"
+p=(4D)2502,4017,11
+parent=(a_Horondor)
+rect=2360,3952,2511,4087
+flags=256
+
+[FlaggedRegion a_Snezny_ostrov]
+name="Snezny ostrov"
+p=(4D)1024,136
+parent=(a_world)
+rect=856,0,1247,263
+
+[FlaggedRegion a_Ledovy_ostrov]
+name="Ledovy ostrov"
+p=(4D)149,2147
+parent=(a_Gondorske_uzemi)
+rect=38,1964,427,2193
+
+[FlaggedRegion a_Ostrov_Imperatoru]
+name="Ostrov Imperatoru"
+p=(4D)1149,3883
+parent=(a_world)
+rect=1032,3837,1157,3916
+
+[FlaggedRegion a_Ostrov_Divu]
+name="Ostrov Divu"
+p=(4D)728,3680
+parent=(a_world)
+rect=528,3668,999,3799
+rect=728,3490,1105,3719
+rect=684,3560,735,3673
+rect=596,3632,695,3671
+rect=664,3612,693,3639
+rect=574,3658,899,3767
+
+[FlaggedRegion a_Ostrov_Zatemnele_mysli]
+name="Ostrov Zatemnele mysli"
+p=(4D)368,3522
+parent=(a_world)
+rect=288,3290,593,3389
+rect=224,3374,559,3429
+rect=98,3418,211,3703
+rect=204,3424,267,3683
+rect=230,3424,513,3475
+rect=254,3468,475,3545
+rect=242,3536,453,3563
+rect=260,3552,407,3589
+rect=250,3578,373,3611
+rect=246,3598,301,3643
+rect=290,3604,313,3623
+rect=266,3636,285,3657
+rect=204,3678,225,3693
+rect=470,3472,487,3493
+rect=514,3424,525,3445
+rect=552,3382,573,3403
+flags=1
+
+[FlaggedRegion a_Vetrne_ostrovy]
+name="Vetrne ostrovy"
+p=(4D)544,3502
+parent=(a_world)
+rect=488,3574,541,3633
+rect=496,3512,543,3579
+rect=528,3498,589,3519
+rect=534,3460,593,3515
+rect=568,3448,587,3467
+rect=586,3394,623,3513
+rect=606,3362,695,3503
+
+[FlaggedRegion a_Slunecni_ostrov]
+name="Slunecni ostrov"
+p=(4D)396,3876
+parent=(a_world)
+rect=304,3772,397,3835
+rect=296,3828,416,3873
+rect=318,3864,431,3917
+rect=408,3876,455,3969
+rect=438,3898,473,3971
+rect=340,3888,427,3953
+rect=392,3948,413,3965
+rect=388,3814,409,3839
+rect=306,3862,321,3885
+rect=460,3922,477,3963
+rect=324,3766,369,3787
+flags=10
+
+[FlaggedRegion a_Ostrov_narku]
+name="Ostrov narku"
+p=(4D)1512,3992
+parent=(a_world)
+rect=1362,3678,1497,3805
+rect=1418,3800,1485,4069
+rect=1388,4032,1443,4073
+rect=1470,3914,1499,4059
+rect=1492,3934,1795,4057
+rect=1568,3874,1691,3941
+rect=1492,3760,1505,3803
+
+[FlaggedRegion a_Hadi_ostrovy]
+name="Hadi ostrovy"
+p=(4D)1514,3868
+parent=(a_world)
+rect=1492,3826,1527,3869
+rect=1501,3865,1535,3916
+rect=1570,3783,1640,3844
+
+[FlaggedRegion a_Draci_ostrovy]
+name="Draci ostrovy"
+p=(4D)2605,3390
+parent=(a_world)
+rect=2553,3328,2632,3375
+rect=2559,3373,2620,3402
+rect=2565,3401,2606,3435
+
+[FlaggedRegion a_Ostrov_strachu]
+name="Ostrov strachu"
+p=(4D)2450,3480
+parent=(a_world)
+rect=2348,3503,2369,3537
+rect=2385,3418,2534,3459
+rect=2407,3404,2534,3418
+rect=2426,3391,2532,3408
+rect=2440,3378,2518,3396
+rect=2449,3366,2506,3378
+rect=2454,3456,2489,3554
+rect=2464,3360,2473,3365
+rect=2471,3357,2502,3367
+rect=2487,3452,2500,3538
+rect=2498,3452,2517,3494
+rect=2512,3456,2526,3474
+rect=2373,3448,2457,3563
+rect=2362,3484,2379,3560
+rect=2370,3476,2373,3484
+
+[FlaggedRegion a_Ebenove_ostrovy]
+name="Ebenove ostrovy"
+p=(4D)2460,3323
+parent=(a_world)
+rect=2394,3319,2406,3332
+rect=2449,3312,2478,3336
+rect=2454,3295,2467,3307
+rect=2404,3339,2440,3368
+rect=2398,3342,2417,3372
+rect=2393,3348,2412,3383
+rect=2383,3349,2395,3383
+rect=2377,3352,2383,3381
+rect=2375,3358,2379,3374
+rect=2487,3292,2499,3313
+
+[FlaggedRegion a_Ostrovy_Titanu]
+name="Ostrovy Titanu"
+p=(4D)600,2600
+parent=(a_world)
+rect=472,2492,755,2799
+rect=154,2600,409,2821
+rect=404,2649,485,2756
+rect=397,2528,487,2592
+rect=346,2516,398,2563
+rect=319,2419,378,2474
+rect=463,2514,496,2535
+
+[FlaggedRegion a_Ostrov_Piratu]
+name="Ostrov Piratu"
+p=(4D)377,392,51
+parent=(a_world)
+rect=228,354,380,445
+flags=2
+
+[FlaggedRegion a_doly_Moria]
+name="doly Moria"
+p=(4D)5998,956
+parent=(a_world)
+rect=5908,830,6116,952
+rect=5800,640,6135,903
+rect=6032,576,6137,655
+rect=5504,768,5911,943
+flags=2
+
+[FlaggedRegion a_doly_slz]
+name="doly slz"
+p=(4D)5311,35
+parent=(a_Jamy_smrti)
+rect=5297,25,5347,79
+flags=2
+
+[FlaggedRegion a_Ereborsky_dul]
+name="Ereborsky dul"
+p=(4D)4750,2190
+parent=(a_Erebor)
+rect=4715,2169,4774,2206
+flags=2
+
+[FlaggedRegion a_Severni_doly]
+name="Severni doly"
+p=(4D)529,666
+parent=(a_Gondorske_uzemi)
+rect=462,641,515,685
+flags=2
+
+[FlaggedRegion a_Krajske_doly]
+name="Krajske doly"
+p=(4D)756,1528
+parent=(a_Gondorske_uzemi)
+rect=730,1509,780,1540
+flags=2
+
+[FlaggedRegion a_Osamely_dul]
+name="Osamely dul"
+p=(4D)1232,917
+parent=(a_Gondorske_uzemi)
+rect=1189,877,1247,932
+flags=2
+
+[FlaggedRegion a_Dul_u_Zelezneho_pasu]
+name="Dul u Zelezneho pasu"
+p=(4D)2030,2281
+parent=(a_Gondorske_uzemi)
+rect=2007,2259,2058,2286
+rect=2011,2283,2038,2293
+rect=2036,2286,2041,2292
+flags=2
+
+[FlaggedRegion a_Skalni_dul]
+name="Skalni dul"
+p=(4D)2066,717
+parent=(a_world)
+rect=2036,673,2075,721
+flags=2
+
+[FlaggedRegion a_Barad_durske_doly]
+name="Barad_durske doly"
+p=(4D)3849,2523
+parent=(a_Mordor)
+rect=3812,2487,3887,2524
+rect=3833,2522,3875,2540
+flags=2
+
+[FlaggedRegion a_Mordorske_doly]
+name="Mordorske doly"
+p=(4D)4518,3235
+parent=(a_Mordorske_uzemi)
+rect=4499,3221,4536,3241
+rect=4512,3241,4535,3251
+flags=2
+
+[FlaggedRegion a_Doly]
+name="Doly"
+p=(4D)0,0
+parent=(a_world)
+rect=5054,14,5101,79
+rect=5060,96,5099,147
+rect=4768,22,4823,75
+rect=4820,86,4857,127
+rect=4868,12,5043,137
+rect=4704,1592,4775,1919
+rect=4776,1616,5023,1879
+rect=4848,1584,4903,1623
+flags=2
+
+[FlaggedRegion a_Kralovske_Doly]
+name="Kralovske Doly"
+p=(4D)0,0
+parent=(a_Doly)
+rect=4704,1592,4775,1919
+rect=4776,1616,5023,1879
+rect=4848,1584,4903,1623
+flags=2
+
+[FlaggedRegion a_Kralovske_Doly_vstup]
+name="Kralovske Doly vstup"
+p=(4D)0,0
+parent=(a_Gondorske_uzemi)
+rect=2797,2870,2837,2976
+flags=2
+
+[FlaggedRegion a_Cardolanske_pohrebiste]
+name="Cardolanske pohrebiste"
+p=(4D)5735,2507,20
+parent=(a_world)
+rect=5730,2466,5863,2589
+flags=2
+
+[FlaggedRegion a_Cardolanska_hrobka]
+name="Cardolanska hrobka"
+p=(4D)5735,2507,20,10
+mapplane=10
+parent=(a_world)
+rect=5730,2466,5863,2589
+flags=2
+
+[FlaggedRegion a_Arena_Lamy]
+name="Arena Lamy"
+p=(4D)5543,244,5,10
+mapplane=10
+parent=(a_world)
+rect=5473,229,5545,259
+flags=8193
+
+[FlaggedRegion a_Arena_Lamy1]
+name="Arena Lamy1"
+p=(4D)5543,244,5,11
+mapplane=11
+parent=(a_world)
+rect=5473,229,5545,259
+flags=8193
+
+[FlaggedRegion a_Arena_Lamy2]
+name="Arena Lamy2"
+p=(4D)5543,244,5,12
+mapplane=12
+parent=(a_world)
+rect=5473,229,5545,259
+flags=8193
+
+[FlaggedRegion a_Arena]
+name="Arena"
+p=(4D)5521,3701,35
+parent=(a_world)
+rect=2244,760,2403,845
+rect=5618,3483,5799,3601
+rect=5430,3694,5625,3843
+flags=2
+
+[FlaggedRegion a_Nova_Arena_1]
+name="Nova Arena 1"
+p=(4D)5721,296,10
+mapplane=10
+parent=(a_world)
+rect=5588,149,5801,353
+flags=2
+
+[FlaggedRegion a_Nova_Arena_2]
+name="Nova Arena 2"
+p=(4D)5721,296,11
+mapplane=11
+parent=(a_world)
+rect=5588,149,5801,353
+flags=2
+
+[FlaggedRegion a_Nova_Arena_3]
+name="Nova Arena 3"
+p=(4D)5721,296,12
+mapplane=12
+parent=(a_world)
+rect=5588,149,5801,353
+flags=2
+
+[FlaggedRegion a_Nova_Arena_4]
+name="Nova Arena 4"
+p=(4D)5721,296,13
+mapplane=13
+parent=(a_world)
+rect=5588,149,5801,353
+flags=2
+
+[FlaggedRegion a_Nova_Arena_5]
+name="Nova Arena 5"
+p=(4D)5721,296,14
+mapplane=14
+parent=(a_world)
+rect=5588,149,5801,353
+flags=2
+
+[FlaggedRegion a_Nova_Arena_6]
+name="Nova Arena 6"
+p=(4D)5721,296,15
+mapplane=15
+parent=(a_world)
+rect=5588,149,5801,353
+flags=2
+
+[FlaggedRegion a_bojova_arena]
+name="bojova arena"
+p=(4D)5000,1200,0,5
+mapplane=5
+parent=(a_world)
+rect=4976,1128,5083,1223
+flags=2
+
+[FlaggedRegion a_Nova_Arena_Equip_Room]
+name="Nova Arena Equip Room"
+p=(4D)2199,1781,45
+parent=(a_Gondorske_uzemi)
+rect=2188,1781,2215,1799
+flags=2
+
+[FlaggedRegion a_Fela_Nazgl]
+name="Fela Nazgl"
+p=(4D)5847,2104,10,10
+mapplane=10
+parent=(a_world)
+rect=5847,2104,5937,2174
+flags=2
+
+[FlaggedRegion a_Cirith_ungol]
+name="Cirith ungol"
+p=(4D)3144,2854,80
+parent=(a_Mordor)
+rect=3112,2832,3183,2919
+flags=2
+
+[FlaggedRegion a_prepadeni]
+name="prepadeni"
+p=(4D)5406,4052
+parent=(a_world)
+rect=5371,4017,5433,4078
+flags=2
+
+[FlaggedRegion a_Prusmyk_Caradhras]
+name="Prusmyk Caradhras"
+p=(4D)2308,1318,20
+parent=(a_Gondorske_uzemi)
+rect=2304,1304,2415,1375
+rect=2408,1256,2487,1447
+flags=2
+
+[FlaggedRegion a_Ledove_jeskyne_1_level]
+name="Ledove jeskyne 1 level"
+p=(4D)6047,3506,20
+parent=(a_world)
+rect=5816,3264,6135,3671
+rect=5968,3184,6127,3263
+flags=2
+
+[FlaggedRegion a_Temna_jeskyne]
+name="Temna jeskyne"
+p=(4D)5896,1438
+parent=(a_world)
+rect=5720,1248,5959,1495
+flags=2
+
+[FlaggedRegion a_Doupe_slizu_entrance]
+name="Doupe slizu entrance"
+p=(4D)2672,1509,42
+parent=(a_Mordorske_uzemi)
+rect=2658,1492,2675,1515
+flags=2
+
+[FlaggedRegion a_Doupe_slizu_1_Level]
+name="Doupe slizu 1 Level"
+p=(4D)5413,695,0,6
+mapplane=6
+parent=(a_world)
+rect=5393,662,5439,716
+flags=2
+
+[FlaggedRegion a_Doupe_slizu_2_Level]
+name="Doupe slizu 2 Level"
+p=(4D)5412,2554,15,6
+mapplane=6
+parent=(a_world)
+rect=5380,2380,5534,2559
+flags=2
+
+[FlaggedRegion a_Doupe_slizu_3_Level]
+name="Doupe slizu 3 Level"
+p=(4D)5256,1912,12,6
+mapplane=6
+parent=(a_world)
+rect=5200,1864,5299,1999
+flags=2
+
+[FlaggedRegion a_Doupe_slizu_4_Level]
+name="Doupe slizu 4 Level"
+p=(4D)5272,2044,-18,6
+mapplane=6
+parent=(a_world)
+rect=5200,2028,5349,2279
+flags=2
+
+[FlaggedRegion a_Nexmirias]
+name="Nexmirias"
+p=(4D)5869,2108,10
+parent=(a_world)
+rect=5758,2098,5959,2293
+flags=2
+
+[FlaggedRegion a_Mount_dorlas_entrance]
+name="Mount dorlas entrance"
+p=(4D)2008,286
+parent=(a_world)
+rect=1867,286,1884,316
+rect=1869,274,1897,290
+rect=1891,262,1909,284
+rect=1908,260,1943,276
+rect=1939,262,1953,278
+rect=1950,266,1959,282
+rect=1958,269,1965,287
+rect=1964,274,1974,290
+rect=1974,276,2017,294
+rect=1999,293,2024,303
+rect=2005,300,2030,307
+rect=2022,306,2058,324
+rect=2046,293,2058,307
+rect=2041,284,2051,296
+rect=2051,291,2054,293
+rect=2011,273,2020,279
+rect=2017,270,2036,283
+rect=2035,275,2042,284
+rect=2041,279,2047,285
+flags=2
+
+[FlaggedRegion a_Mount_Dorlas_1_Level]
+name="Mount Dorlas 1 Level"
+p=(4D)5708,156
+parent=(a_world)
+rect=5587,148,5799,352
+flags=2
+
+[FlaggedRegion a_Mount_Dorlas_2_Level]
+name="Mount Dorlas 2 Level"
+p=(4D)5256,352
+parent=(a_world)
+rect=5187,149,5402,373
+flags=2
+
+[FlaggedRegion a_Mount_Dorlas_3_Level]
+name="Mount Dorlas 3 Level"
+p=(4D)5432,377
+parent=(a_world)
+rect=5415,152,5574,393
+flags=2
+
+[FlaggedRegion a_Dug_snagum_entrance]
+name="Dug snagum entrance"
+p=(4D)4394,3288
+parent=(a_Mordorske_uzemi)
+rect=4337,3280,4451,3348
+flags=2
+
+[FlaggedRegion a_Dug_snagum_1_Level]
+name="Dug snagum 1 Level"
+p=(4D)4850,434
+parent=(a_world)
+rect=4707,402,4915,582
+flags=2
+
+[FlaggedRegion a_Dug_snagum_2_Level]
+name="Dug snagum 2 Level"
+p=(4D)4946,407
+parent=(a_world)
+rect=4922,393,5086,595
+flags=2
+
+[FlaggedRegion a_Dug_snagum_3_Level]
+name="Dug snagum 3 Level"
+p=(4D)5072,343
+parent=(a_world)
+rect=4923,250,5077,388
+flags=2
+
+[FlaggedRegion a_Dug_snagum_4_Level]
+name="Dug snagum 4 Level"
+p=(4D)4859,185
+parent=(a_world)
+rect=4727,162,4877,366
+flags=2
+
+[FlaggedRegion a_Sluje_entrance]
+name="Sluje entrance"
+p=(4D)3934,227
+parent=(a_Severni_Spoust)
+rect=3790,183,3949,225
+rect=3846,223,3932,241
+rect=3863,237,3882,250
+rect=3926,194,3974,251
+flags=2
+
+[FlaggedRegion a_Sluje]
+name="Sluje"
+p=(4D)5482,486
+parent=(a_world)
+rect=5386,436,5795,759
+flags=2
+
+[FlaggedRegion a_Carn_Dum_entrance]
+name="Carn Dum entrance"
+p=(4D)1692,558
+parent=(a_Gondorske_uzemi)
+rect=1692,545,1755,563
+flags=2
+
+[FlaggedRegion a_Carn_Dum_1_Level]
+name="Carn Dum 1 Level"
+p=(4D)5398,1914,10
+parent=(a_world)
+rect=5305,1863,5403,1994
+flags=2
+
+[FlaggedRegion a_Carn_Dum_2_Level]
+name="Carn Dum 2 Level"
+p=(4D)5301,2307,-17
+parent=(a_world)
+rect=5199,2281,5361,2458
+flags=2
+
+[FlaggedRegion a_Carn_Dum_3_Level]
+name="Carn Dum 3 Level"
+p=(4D)5260,1909,12
+parent=(a_world)
+rect=5190,1857,5300,2004
+flags=2
+
+[FlaggedRegion a_Carn_Dum_4_Level]
+name="Carn Dum 4 Level"
+p=(4D)5345,2553
+parent=(a_world)
+rect=5195,2470,5365,2617
+flags=2
+
+[FlaggedRegion a_Carn_Dum_5_Level]
+name="Carn Dum 5 Level"
+p=(4D)5275,2042
+parent=(a_world)
+rect=5191,2023,5363,2269
+flags=2
+
+[FlaggedRegion a_Arachnon_1_Level]
+name="Arachnon 1 Level"
+p=(4D)395,1582,-22,2
+mapplane=2
+parent=(a_world)
+rect=380,1500,549,1597
+flags=2
+
+[FlaggedRegion a_Arachnon_2_Level]
+name="Arachnon 2 Level"
+p=(4D)226,1336,-19,2
+mapplane=2
+parent=(a_world)
+rect=202,1336,249,1385
+flags=2
+
+[FlaggedRegion a_Pevnost_Strachu]
+name="Pevnost Strachu"
+p=(4D)5555,2325,0,10
+mapplane=10
+parent=(a_world)
+rect=5416,2112,5689,2340
+flags=2
+
+[FlaggedRegion a_Podzemi]
+name="Podzemi"
+p=(4D)4794,837,0,10
+mapplane=10
+parent=(a_world)
+rect=4711,812,4790,910
+flags=2
+
+[FlaggedRegion a_Dol_Guldur_entrance]
+name="Dol Guldur entrance"
+p=(4D)2756,1852
+parent=(a_Mordorske_uzemi)
+rect=2723,1879,2734,1894
+rect=2732,1873,2756,1893
+rect=2735,1858,2764,1873
+rect=2728,1868,2735,1876
+rect=2743,1840,2768,1861
+rect=2752,1871,2761,1879
+rect=2754,1879,2759,1884
+flags=2
+
+[FlaggedRegion a_Dol_Guldur_1_Level]
+name="Dol Guldur 1 Level"
+p=(4D)5220,649,50
+parent=(a_world)
+rect=5204,646,5249,700
+flags=14
+
+[FlaggedRegion a_Dol_Guldur_2_Level]
+name="Dol Guldur 2 Level"
+p=(4D)5294,649,30
+parent=(a_world)
+rect=5258,644,5307,696
+flags=14
+
+[FlaggedRegion a_Dol_Guldur_3_Level]
+name="Dol Guldur 3 Level"
+p=(4D)5309,745
+parent=(a_world)
+rect=5204,706,5316,766
+flags=14
+
+[FlaggedRegion a_Dol_Guldur_4_Level]
+name="Dol Guldur 4 Level"
+p=(4D)5259,830
+parent=(a_world)
+rect=5200,820,5299,931
+flags=14
+
+[FlaggedRegion a_Beridor_entrance]
+name="Beridor entrance"
+p=(4D)620,1059
+parent=(a_Gondorske_uzemi)
+rect=607,1050,662,1084
+flags=2
+
+[FlaggedRegion a_Beridor_1_Level]
+name="Beridor 1 Level"
+p=(4D)5834,2639,10
+parent=(a_world)
+rect=5540,2618,5889,2995
+flags=2
+
+[FlaggedRegion a_Beridor_2a_Level]
+name="Beridor 2a Level"
+p=(4D)5737,3186,-18
+parent=(a_world)
+rect=5662,3036,5951,3254
+flags=2
+
+[FlaggedRegion a_Beridor_2_Level]
+name="Beridor 2 Level"
+p=(4D)1903,160,-28,2
+mapplane=2
+parent=(a_world)
+rect=1824,5,2083,217
+flags=2
+
+[FlaggedRegion a_Beridor_3_Level]
+name="Beridor 3 Level"
+p=(4D)5466,2669,10
+parent=(a_world)
+rect=5194,2628,5513,2909
+flags=2
+
+[FlaggedRegion a_Etheria_entrance]
+name="Etheria entrance"
+p=(4D)1351,3131
+parent=(a_Gondorske_uzemi)
+rect=1333,3120,1376,3140
+flags=2
+
+[FlaggedRegion a_Etheria_bonus]
+name="Etheria bonus"
+p=(4D)5100,3810
+parent=(a_world)
+rect=5064,3800,5117,3824
+flags=2
+
+[FlaggedRegion a_Etheria_1_Level]
+name="Etheria 1 Level"
+p=(4D)5638,3381
+parent=(a_world)
+rect=5196,3364,5671,3457
+flags=2
+
+[FlaggedRegion a_Etheria_2_Level]
+name="Etheria 2 Level"
+p=(4D)5286,1556
+parent=(a_world)
+rect=5200,1512,5296,1599
+flags=2
+
+[FlaggedRegion a_Etheria_3_Level]
+name="Etheria 3 Level"
+p=(4D)5285,1648
+parent=(a_world)
+rect=5194,1603,5291,1712
+flags=2
+
+[FlaggedRegion a_Etheria_4_Level]
+name="Etheria 4 Level"
+p=(4D)5281,1755
+parent=(a_world)
+rect=5203,1721,5292,1823
+flags=2
+
+[FlaggedRegion a_Etheria_5_Level]
+name="Etheria 5 Level"
+p=(4D)5268,3540
+parent=(a_world)
+rect=5198,3501,5273,3583
+flags=2
+
+[FlaggedRegion a_Arda_nare]
+name="Arda nare"
+p=(4D)5099,3810
+parent=(a_world)
+rect=5094,3783,5095,3848
+flags=2
+
+[FlaggedRegion a_Shagar_entrance]
+name="Shagar entrance"
+p=(4D)839,3614
+parent=(a_Ostrov_Divu)
+rect=823,3604,864,3627
+flags=2
+
+[FlaggedRegion a_Shagar_1_Level]
+name="Shagar 1 Level"
+p=(4D)5848,2045,10
+parent=(a_world)
+rect=5416,1496,5895,2091
+flags=2
+
+[FlaggedRegion a_Mahat_entrance]
+name="Mahat entrance"
+p=(4D)4682,2320
+parent=(a_Mordorske_uzemi)
+rect=4640,2272,4775,2351
+flags=2
+
+[FlaggedRegion a_Mahat_1_Level_old]
+name="Mahat 1 Level old"
+p=(4D)5267,1015,10
+parent=(a_world)
+rect=5196,958,5701,1229
+flags=2
+
+[FlaggedRegion a_Mahat_non_recallzone]
+name="Mahat non recallzone"
+p=(4D)5267,1016,10,10
+mapplane=10
+parent=(a_Mahat_1_Level)
+rect=5270,1100,5349,1199
+flags=14
+
+[FlaggedRegion a_Mahat_1_Level]
+name="Mahat 1 Level"
+p=(4D)5267,1015,10,10
+mapplane=10
+parent=(a_world)
+rect=5196,958,5701,1229
+flags=2
+
+[FlaggedRegion a_Mahat_2_Level]
+name="Mahat 2 Level"
+p=(4D)5233,1445,10
+parent=(a_world)
+rect=5188,1234,5645,1489
+flags=2
+
+[FlaggedRegion a_Stezky_mrtvych]
+name="Stezky mrtvych"
+p=(4D)4882,1530
+parent=(a_world)
+rect=4824,1476,4933,1569
+rect=4696,1528,4839,1575
+rect=4920,1536,5095,1599
+flags=2
+
+[FlaggedRegion a_Jamy_smrti]
+name="Jamy smrti"
+p=(4D)5372,96
+parent=(a_world)
+rect=5184,4,6131,139
+rect=5808,148,5867,227
+flags=4
+
+[FlaggedRegion a_expert]
+name="expert"
+p=(4D)4750,858
+parent=(a_world)
+rect=4707,804,4809,924
+rect=5000,859,5097,952
+
+[FlaggedRegion a_vm]
+name="vm"
+p=(4D)5287,1556,-18,5
+mapplane=5
+parent=(a_world)
+rect=5200,1512,5296,1599
+flags=2
+
+[FlaggedRegion a_jednorozcova_svatyne]
+name="jednorozcova svatyne"
+p=(4D)4764,1362,10,5
+mapplane=5
+parent=(a_world)
+rect=4742,1341,4784,1365
+flags=2054
+
+[FlaggedRegion a_jeskyne_poznani]
+name="jeskyne poznani"
+p=(4D)5866,802,0,5
+mapplane=5
+parent=(a_world)
+rect=5845,722,5898,822
+flags=2054
+
+[FlaggedRegion a_jeskyne_zapomneni]
+name="jeskyne zapomneni"
+p=(4D)5870,748,0,6
+mapplane=6
+parent=(a_world)
+rect=5845,722,5898,822
+flags=2054
+
+[FlaggedRegion a_Labyrint_Alrondhira]
+name="Labyrint Alrondhira"
+p=(4D)5195,3703
+parent=(a_world)
+rect=4989,780,5102,843
+flags=2
+
+[FlaggedRegion a_Domov_Pana_Jedu]
+name="Domov Pana Jedu"
+p=(4D)4764,1362,10,6
+mapplane=6
+parent=(a_world)
+rect=4742,1341,4784,1365
+flags=2
+
+[FlaggedRegion a_Fangorn]
+name="Fangorn"
+p=(4D)2436,2236
+parent=(a_Gondorske_uzemi)
+rect=2111,2223,2151,2301
+rect=2135,2029,2423,2319
+rect=2179,2318,2290,2332
+rect=2207,2332,2228,2348
+rect=2245,2002,2311,2030
+rect=2306,2011,2322,2031
+rect=2318,2020,2351,2032
+rect=2418,2040,2435,2092
+rect=2422,2092,2513,2316
+rect=2505,2129,2540,2167
+rect=2508,2234,2527,2316
+rect=2509,2101,2523,2134
+rect=2511,2162,2535,2182
+rect=2511,2180,2525,2198
+rect=2513,2197,2521,2209
+rect=2517,2112,2532,2134
+rect=2522,2182,2532,2193
+rect=2523,2260,2546,2293
+rect=2525,2248,2536,2263
+rect=2525,2291,2537,2304
+rect=2534,2254,2540,2261
+rect=2534,2289,2541,2298
+rect=2428,2316,2483,2323
+rect=2461,2323,2472,2330
+flags=2
+
+[FlaggedRegion a_MORIA]
+name="MORIA"
+p=(4D)6014,1223,40
+parent=(a_world)
+rect=5740,953,6130,1245
+flags=2
+
+[FlaggedRegion a_bug]
+name="bug"
+p=(4D)370,2536,45
+parent=(a_Ostrovy_Titanu)
+rect=365,2530,374,2539
+flags=28062
+
+[FlaggedRegion a_Nurnske_hradiste]
+name="Nurnske hradiste"
+p=(4D)3509,3287,26
+parent=(a_Nurnen)
+rect=3305,3258,3524,3274
+rect=3532,3260,3543,3272
+rect=3492,3287,3533,3317
+flags=4498
+
+[FlaggedRegion a_dum_1]
+name="dum 1"
+p=(4D)3622,2696,-50
+parent=(a_Barad_dur)
+rect=3613,2689,3628,2703
+flags=4498
+
+[FlaggedRegion a_dum_2]
+name="dum 2"
+p=(4D)2489,3975,11
+parent=(a_Umbar)
+rect=2485,3969,2495,3977
+flags=4498
+
+[FlaggedRegion a_dum_3]
+name="dum 3"
+p=(4D)2202,3229,2
+parent=(a_Dol_Amroth)
+rect=2197,3212,2213,3230
+flags=4498
+
+[FlaggedRegion a_dum_4]
+name="dum 4"
+p=(4D)2191,3217,5
+parent=(a_Dol_Amroth)
+rect=2179,3213,2191,3219
+flags=4498
+
+[FlaggedRegion a_dum_5]
+name="dum 5"
+p=(4D)2932,3713
+parent=(a_Oaza_Hagir)
+rect=2927,3713,2937,3728
+flags=4498
+
+[FlaggedRegion a_dum_6]
+name="dum 6"
+p=(4D)3641,2691,-50
+parent=(a_Barad_dur)
+rect=3636,2672,3648,2705
+flags=4498
+
+[FlaggedRegion a_dum_7]
+name="dum 7"
+p=(4D)3842,2174
+parent=(a_Rhun)
+rect=3836,2156,3846,2168
+flags=4498
+
+[FlaggedRegion a_dum_8]
+name="dum 8"
+p=(4D)2487,4053,11
+parent=(a_Umbar)
+rect=2482,4046,2491,4052
+flags=4498
+
+[FlaggedRegion a_dum_9]
+name="dum 9"
+p=(4D)1582,1194
+parent=(a_Hurka)
+rect=1574,1190,1582,1197
+flags=4498
+
+[FlaggedRegion a_dum_10]
+name="dum 10"
+p=(4D)3630,2710,-50
+parent=(a_Barad_dur)
+rect=3622,2706,3634,2712
+flags=4498
+
+[FlaggedRegion a_dum_11]
+name="dum 11"
+p=(4D)2922,3712
+parent=(a_Oaza_Hagir)
+rect=2917,3713,2926,3734
+flags=4498
+
+[FlaggedRegion a_dum_12]
+name="dum 12"
+p=(4D)3612,2711,-50
+parent=(a_Barad_dur)
+rect=3606,2706,3617,2713
+flags=4498
+
+[FlaggedRegion a_dum_13]
+name="dum 13"
+p=(4D)3583,2695,-50
+parent=(a_Barad_dur)
+rect=3575,2684,3585,2698
+flags=4498
+
+[FlaggedRegion a_dum_14]
+name="dum 14"
+p=(4D)1092,1344
+parent=(a_Hobitin)
+rect=1078,1341,1094,1361
+flags=4498
+
+[FlaggedRegion a_dum_15]
+name="dum 15"
+p=(4D)2492,4002,11
+parent=(a_Umbar)
+rect=2483,3983,2495,3991
+rect=2469,3989,2496,4014
+flags=4498
+
+[FlaggedRegion a_dum_16]
+name="dum 16"
+p=(4D)3566,2717,-25
+parent=(a_Barad_dur)
+rect=3555,2711,3574,2722
+flags=4498
+
+[FlaggedRegion a_dum_17]
+name="dum 17"
+p=(4D)3568,2728,-25
+parent=(a_Barad_dur)
+rect=3553,2724,3574,2737
+flags=4498
+
+[FlaggedRegion a_dum_18]
+name="dum 18"
+p=(4D)1589,1916
+parent=(a_Tharbad)
+rect=1576,1906,1593,1923
+flags=4498
+
+[FlaggedRegion a_dum_19]
+name="dum 19"
+p=(4D)3601,2704,-50
+parent=(a_Barad_dur)
+rect=3589,2694,3604,2708
+flags=4498
+
+[FlaggedRegion a_dum_20]
+name="dum 20"
+p=(4D)3599,2726,-50
+parent=(a_Barad_dur)
+rect=3594,2721,3600,2731
+rect=3582,2725,3604,2732
+rect=3584,2733,3604,2737
+rect=3587,2738,3591,2740
+rect=3589,2741,3591,2743
+rect=3592,2738,3604,2743
+flags=4498
+
+[FlaggedRegion a_dum_21]
+name="dum 21"
+p=(4D)2443,4004,1
+parent=(a_Umbar)
+rect=2430,3995,2441,4011
+flags=4498
+
+[FlaggedRegion a_dum_22]
+name="dum 22"
+p=(4D)3595,2749,-25
+parent=(a_Barad_dur)
+rect=3591,2746,3597,2750
+flags=4498
+
+[FlaggedRegion a_dum_23]
+name="dum 23"
+p=(4D)3613,2735,-50
+parent=(a_Barad_dur)
+rect=3608,2731,3615,2737
+flags=4498
+
+[FlaggedRegion a_dum_24]
+name="dum 24"
+p=(4D)3611,2744
+parent=(a_Barad_dur)
+rect=3607,2739,3615,2746
+flags=4498
+
+[FlaggedRegion a_dum_25]
+name="dum 25"
+p=(4D)3623,2736
+parent=(a_Barad_dur)
+rect=3619,2733,3626,2737
+flags=4498
+
+[FlaggedRegion a_dum_26]
+name="dum 26"
+p=(4D)3622,2728,-50
+parent=(a_Barad_dur)
+rect=3619,2724,3623,2730
+flags=4498
+
+[FlaggedRegion a_dum_27]
+name="dum 27"
+p=(4D)3628,2721,-50
+parent=(a_Barad_dur)
+rect=3624,2718,3632,2722
+flags=4498
+
+[FlaggedRegion a_dum_28]
+name="dum 28"
+p=(4D)3121,1053
+parent=(a_Esgaroth)
+rect=3114,1038,3126,1052
+flags=4498
+
+[FlaggedRegion a_dum_29]
+name="dum 29"
+p=(4D)1235,597
+parent=(a_Gondorske_uzemi)
+rect=1229,584,1249,599
+flags=4498
+
+[FlaggedRegion a_dum_30]
+name="dum 30"
+p=(4D)3633,2727,-50
+parent=(a_Barad_dur)
+rect=3629,2724,3634,2732
+flags=4498
+
+[FlaggedRegion a_dum_31]
+name="dum 31"
+p=(4D)3641,2729,-50
+parent=(a_Barad_dur)
+rect=3637,2726,3644,2731
+flags=4498
+
+[FlaggedRegion a_dum_32]
+name="dum 32"
+p=(4D)2912,3717
+parent=(a_Oaza_Hagir)
+rect=2906,3712,2916,3722
+flags=4498
+
+[FlaggedRegion a_dum_33]
+name="dum 33"
+p=(4D)3432,3225,12
+parent=(a_Nurnen)
+rect=3424,3217,3453,3229
+rect=3424,3227,3433,3235
+rect=3438,3229,3460,3247
+flags=4498
+
+[FlaggedRegion a_dum_34]
+name="dum 34"
+p=(4D)3621,3259,12
+parent=(a_Nurnen)
+rect=3615,3253,3635,3263
+rect=3622,3268,3629,3274
+flags=4498
+
+[FlaggedRegion a_dum_35]
+name="dum 35"
+p=(4D)2440,4058,10
+parent=(a_Umbar)
+rect=2433,4044,2443,4057
+flags=4498
+
+[FlaggedRegion a_dum_36]
+name="dum 36"
+p=(4D)3814,2170
+parent=(a_Rhun)
+rect=3809,2168,3815,2173
+rect=3807,2172,3815,2184
+flags=4498
+
+[FlaggedRegion a_dum_37]
+name="dum 37"
+p=(4D)3814,2157
+parent=(a_Rhun)
+rect=3812,2158,3819,2163
+flags=4498
+
+[FlaggedRegion a_dum_38]
+name="dum 38"
+p=(4D)3823,2165
+parent=(a_Rhun)
+rect=3823,2165,3829,2170
+flags=4498
+
+[FlaggedRegion a_dum_39]
+name="dum 39"
+p=(4D)3499,3301,25
+parent=(a_Nurn)
+rect=3494,3294,3502,3307
+flags=4498
+
+[FlaggedRegion a_dum_40]
+name="dum 40"
+p=(4D)3528,3314,25
+parent=(a_Nurn)
+rect=3521,3310,3533,3317
+flags=4498
+
+[FlaggedRegion a_dum_41]
+name="dum 41"
+p=(4D)3828,2129
+parent=(a_Rhun)
+rect=3828,2122,3836,2128
+flags=4498
+
+[FlaggedRegion a_dum_42]
+name="dum 42"
+p=(4D)3813,2113
+parent=(a_Rhun)
+rect=3813,2113,3819,2118
+flags=4498
+
+[FlaggedRegion a_dum_43]
+name="dum 43"
+p=(4D)3530,3305,25
+parent=(a_Nurn)
+rect=3523,3291,3533,3297
+rect=3526,3296,3533,3308
+flags=4498
+
+[FlaggedRegion a_dum_44]
+name="dum 44"
+p=(4D)2367,2600
+parent=(a_Edoras)
+rect=2362,2589,2372,2604
+flags=4498
+
+[FlaggedRegion a_dum_45]
+name="dum 45"
+p=(4D)5889,3976,-60
+parent=(a_Minas_Tirith)
+rect=5880,3958,5898,3975
+rect=5889,3953,5893,3957
+rect=5894,3949,5898,3957
+rect=5899,3932,5900,3948
+flags=4498
+
+[FlaggedRegion a_dum_46]
+name="dum 46"
+p=(4D)3711,3334
+parent=(a_Nurnen)
+rect=3696,3345,3716,3367
+rect=3704,3324,3717,3341
+rect=3725,3347,3732,3357
+flags=4498
+
+[FlaggedRegion a_dum_47]
+name="dum 47"
+p=(4D)3813,3301
+parent=(a_Nurnen)
+rect=3804,3292,3817,3307
+flags=4498
+
+[FlaggedRegion a_dum_48]
+name="dum 48"
+p=(4D)1589,1934
+parent=(a_Tharbad)
+rect=1589,1923,1599,1933
+flags=4498
+
+[FlaggedRegion a_dum_49]
+name="dum 49"
+p=(4D)1603,1921
+parent=(a_Tharbad)
+rect=1599,1911,1608,1920
+rect=1608,1910,1620,1921
+flags=4498
+
+[FlaggedRegion a_dum_50]
+name="dum 50"
+p=(4D)1604,1938
+parent=(a_Tharbad)
+rect=1604,1927,1614,1937
+flags=4498
+
+[FlaggedRegion a_dum_51]
+name="dum 51"
+p=(4D)887,631
+parent=(a_Gondorske_uzemi)
+rect=883,621,897,630
+flags=4498
+
+[FlaggedRegion a_dum_52]
+name="dum 52"
+p=(4D)878,651
+parent=(a_Gondorske_uzemi)
+rect=869,649,879,666
+rect=877,649,882,659
+rect=879,641,887,649
+flags=4498
+
+[FlaggedRegion a_dum_53]
+name="dum 53"
+p=(4D)3897,3226
+parent=(a_Nurnen)
+rect=3893,3222,3901,3230
+rect=3873,3236,3894,3255
+rect=3904,3221,3913,3239
+rect=3894,3181,3920,3211
+flags=4498
+
+[FlaggedRegion a_dum_54]
+name="dum 54"
+p=(4D)3888,3524
+parent=(a_Nurnen)
+rect=3877,3516,3895,3532
+flags=4498
+
+[FlaggedRegion a_dum_55]
+name="dum 55"
+p=(4D)4142,3939,20
+parent=(a_Harad)
+rect=4129,3933,4151,3945
+flags=4498
+
+[FlaggedRegion a_dum_56]
+name="dum 56"
+p=(4D)2378,1891
+parent=(a_Gondorske_uzemi)
+rect=2378,1868,2396,1890
+flags=4498
+
+[FlaggedRegion a_dum_57]
+name="dum 57"
+p=(4D)358,1121
+parent=(a_Gondorske_uzemi)
+rect=350,1105,363,1119
+flags=4498
+
+[FlaggedRegion a_dum_58]
+name="dum 58"
+p=(4D)370,1124
+parent=(a_Gondorske_uzemi)
+rect=365,1112,377,1123
+flags=4498
+
+[FlaggedRegion a_dum_59]
+name="dum 59"
+p=(4D)2159,2879
+parent=(a_Gondorske_uzemi)
+rect=2144,2866,2153,2885
+rect=2151,2866,2163,2878
+flags=4498
+
+[FlaggedRegion a_dum_60]
+name="dum 60"
+p=(4D)752,1367
+parent=(a_Sede_pristavy)
+rect=744,1349,760,1367
+rect=750,1346,760,1350
+flags=4498
+
+[FlaggedRegion a_dum_61]
+name="dum 61"
+p=(4D)729,1382
+parent=(a_Sede_pristavy)
+rect=720,1379,727,1390
+flags=4498
+
+[FlaggedRegion a_dum_62]
+name="dum 62"
+p=(4D)861,1435
+parent=(a_Gondorske_uzemi)
+rect=851,1428,860,1449
+rect=859,1428,865,1434
+flags=4498
+
+[FlaggedRegion a_dum_63]
+name="dum 63"
+p=(4D)3903,2133,2
+parent=(a_Rhun)
+rect=3897,2128,3911,2142
+flags=4498
+
+[FlaggedRegion a_dum_64]
+name="dum 64"
+p=(4D)4133,3954
+parent=(a_Harad)
+rect=4127,3947,4138,3956
+flags=4498
+
+[FlaggedRegion a_dum_65]
+name="dum 65"
+p=(4D)4205,3935,20
+parent=(a_Harad)
+rect=4198,3924,4214,3938
+rect=4214,3924,4216,3931
+flags=4498
+
+[FlaggedRegion a_dum_66]
+name="dum 66"
+p=(4D)4135,3924,20
+parent=(a_Harad)
+rect=4129,3917,4136,3931
+flags=4498
+
+[FlaggedRegion a_dum_67]
+name="dum 67"
+p=(4D)4171,3998
+parent=(a_Harad)
+rect=4167,3994,4175,4002
+rect=4150,4000,4159,4005
+rect=4163,4005,4170,4009
+flags=4498
+
+[FlaggedRegion a_dum_68]
+name="dum 68"
+p=(4D)3186,1010,2
+parent=(a_Dol)
+rect=3178,1004,3185,1014
+flags=4498
+
+[FlaggedRegion a_dum_69]
+name="dum 69"
+p=(4D)5891,3799,-40
+parent=(a_Minas_Tirith)
+rect=5879,3787,5902,3799
+rect=5880,3775,5883,3787
+rect=5883,3772,5884,3787
+rect=5885,3774,5888,3783
+rect=5885,3784,5901,3787
+rect=5889,3776,5891,3784
+rect=5892,3777,5893,3780
+rect=5892,3781,5898,3784
+rect=5894,3779,5896,3781
+flags=4498
+
+[FlaggedRegion a_dum_70]
+name="dum 70"
+p=(4D)2391,1861
+parent=(a_Gondorske_uzemi)
+rect=2382,1856,2390,1864
+flags=4498
+
+[FlaggedRegion a_dum_71]
+name="dum 71"
+p=(4D)2489,1857
+parent=(a_Gondorske_uzemi)
+rect=2481,1849,2488,1856
+flags=4498
+
+[FlaggedRegion a_dum_72]
+name="dum 72"
+p=(4D)2481,1848
+parent=(a_Gondorske_uzemi)
+rect=2473,1840,2480,1847
+flags=4498
+
+[FlaggedRegion a_dum_73]
+name="dum 73"
+p=(4D)2468,1851
+parent=(a_Gondorske_uzemi)
+rect=2455,1838,2467,1850
+flags=4498
+
+[FlaggedRegion a_dum_74]
+name="dum 74"
+p=(4D)5816,3941,-20
+parent=(a_Pelenorska_pole)
+rect=5802,3920,5826,3939
+flags=4498
+
+[FlaggedRegion a_dum_75]
+name="dum 75"
+p=(4D)2359,2598
+parent=(a_Edoras)
+rect=2347,2585,2358,2601
+flags=4498
+
+[FlaggedRegion a_dum_76]
+name="dum 76"
+p=(4D)2182,3226,2
+parent=(a_Dol_Amroth)
+rect=2170,3224,2181,3229
+flags=4498
+
+[FlaggedRegion a_dum_77]
+name="dum 77"
+p=(4D)4531,1220
+parent=(a_world)
+rect=4525,1209,4537,1219
+rect=4537,1209,4547,1216
+rect=4553,1221,4563,1232
+rect=4518,1233,4531,1243
+rect=4545,1235,4554,1240
+flags=4498
+
+[FlaggedRegion a_dum_78]
+name="dum 78"
+p=(4D)2993,2814
+parent=(a_Gondorske_uzemi)
+rect=2986,2806,2998,2812
+rect=2986,2812,2993,2826
+flags=4498
+
+[FlaggedRegion a_dum_79]
+name="dum 79"
+p=(4D)2333,2560,20
+parent=(a_Edoras)
+rect=2329,2552,2342,2558
+flags=4498
+
+[FlaggedRegion a_dum_80]
+name="dum 80"
+p=(4D)730,1367
+parent=(a_Sede_pristavy)
+rect=720,1364,729,1377
+flags=4498
+
+[FlaggedRegion a_dum_81]
+name="dum 81"
+p=(4D)933,1109
+parent=(a_Kraj)
+rect=921,1096,933,1106
+rect=939,1093,957,1105
+rect=921,1107,929,1110
+flags=4498
+
+[FlaggedRegion a_dum_82]
+name="dum 82"
+p=(4D)2473,3977,1
+parent=(a_Umbar)
+rect=2458,3974,2466,3987
+flags=4498
+
+[FlaggedRegion a_dum_83]
+name="dum 83"
+p=(4D)3009,2818
+parent=(a_Cair_Andros)
+rect=3006,2809,3012,2818
+flags=4498
+
+[FlaggedRegion a_dum_84]
+name="dum 84"
+p=(4D)1682,2258
+parent=(a_Gondorske_uzemi)
+rect=1682,2258,1700,2275
+flags=4498
+
+[FlaggedRegion a_dum_85]
+name="dum 85"
+p=(4D)2467,3979,1
+parent=(a_Umbar)
+rect=2468,3967,2480,3975
+flags=4498
+
+[FlaggedRegion a_dum_86]
+name="dum 86"
+p=(4D)2264,2505
+parent=(a_Edoras)
+rect=2253,2499,2263,2506
+flags=4498
+
+[FlaggedRegion a_dum_87]
+name="dum 87"
+p=(4D)2260,2524
+parent=(a_Edoras)
+rect=2250,2509,2266,2524
+flags=4498
+
+[FlaggedRegion a_dum_88]
+name="dum 88"
+p=(4D)2189,3238,2
+parent=(a_Dol_Amroth)
+rect=2175,3234,2188,3239
+flags=4498
+
+[FlaggedRegion a_dum_89]
+name="dum 89"
+p=(4D)2338,2580,20
+parent=(a_Edoras)
+rect=2323,2581,2341,2605
+flags=4498
+
+[FlaggedRegion a_dum_90]
+name="dum 90"
+p=(4D)2359,2610
+parent=(a_Rohan)
+rect=2348,2603,2361,2619
+rect=2361,2605,2372,2618
+flags=4498
+
+[FlaggedRegion a_dum_91]
+name="dum 91"
+p=(4D)2299,2544,20
+parent=(a_Edoras)
+rect=2292,2529,2306,2541
+rect=2304,2527,2309,2545
+flags=4498
+
+[FlaggedRegion a_dum_92]
+name="dum 92"
+p=(4D)2266,2499
+parent=(a_Edoras)
+rect=2266,2499,2278,2511
+flags=4498
+
+[FlaggedRegion a_dum_93]
+name="dum 93"
+p=(4D)3179,1045,1
+parent=(a_Dol)
+rect=3170,1035,3183,1041
+rect=3170,1037,3177,1049
+rect=3170,1046,3183,1054
+flags=4498
+
+[FlaggedRegion a_dum_94]
+name="dum 94"
+p=(4D)4919,2818
+parent=(a_Mordorske_uzemi)
+rect=4912,2803,4926,2817
+flags=4498
+
+[FlaggedRegion a_dum_95]
+name="dum 95"
+p=(4D)2899,3720
+parent=(a_Oaza_Hagir)
+rect=2892,3712,2905,3722
+flags=4498
+
+[FlaggedRegion a_dum_96]
+name="dum 96"
+p=(4D)5835,3942,-20
+parent=(a_Minas_Tirith)
+rect=5828,3920,5842,3939
+rect=5839,3917,5851,3933
+flags=4498
+
+[FlaggedRegion a_dum_97]
+name="dum 97"
+p=(4D)2793,3795
+parent=(a_Horondor)
+rect=2790,3787,2798,3801
+flags=4498
+
+[FlaggedRegion a_dum_98]
+name="dum 98"
+p=(4D)5793,3933,-20
+parent=(a_Pelenorska_pole)
+rect=5785,3920,5802,3929
+rect=5785,3930,5790,3936
+flags=4498
+
+[FlaggedRegion a_dum_99]
+name="dum 99"
+p=(4D)879,1452
+parent=(a_Gondorske_uzemi)
+rect=862,1447,870,1454
+rect=874,1441,885,1450
+rect=886,1441,891,1448
+rect=891,1442,896,1447
+flags=4498
+
+[FlaggedRegion a_dum_100]
+name="dum 100"
+p=(4D)2796,3780
+parent=(a_Horondor)
+rect=2796,3772,2808,3785
+flags=4498
+
+[FlaggedRegion a_dum_101]
+name="dum 101"
+p=(4D)4170,4029
+parent=(a_Harad)
+rect=4161,4026,4168,4032
+rect=4170,4026,4180,4032
+rect=4168,4037,4172,4040
+flags=4498
+
+[FlaggedRegion a_dum_102]
+name="dum 102"
+p=(4D)5878,3904,-19
+parent=(a_Minas_Tirith)
+rect=5866,3897,5876,3912
+rect=5868,3889,5876,3896
+flags=4498
+
+[FlaggedRegion a_dum_103]
+name="dum 103"
+p=(4D)2985,1271,45
+parent=(a_Kralovstvi_lesnich_elfu)
+rect=2981,1259,3011,1279
+flags=4498
+
+[FlaggedRegion a_dum_104]
+name="dum 104"
+p=(4D)4157,4024
+parent=(a_Harad)
+rect=4153,4016,4160,4023
+flags=4498
+
+[FlaggedRegion a_dum_105]
+name="dum 105"
+p=(4D)1481,1112
+parent=(a_Fornost)
+rect=1470,1107,1478,1121
+rect=1478,1113,1483,1121
+flags=4498
+
+[FlaggedRegion a_dum_106]
+name="dum 106"
+p=(4D)4119,4020
+parent=(a_Harad)
+rect=4115,4012,4124,4019
+flags=4498
+
+[FlaggedRegion a_dum_107]
+name="dum 107"
+p=(4D)1582,1201
+parent=(a_Hurka)
+rect=1574,1198,1581,1206
+flags=4498
+
+[FlaggedRegion a_dum_108]
+name="dum 108"
+p=(4D)4909,2798
+parent=(a_Mordorske_uzemi)
+rect=4903,2784,4917,2798
+flags=4498
+
+[FlaggedRegion a_dum_109]
+name="dum 109"
+p=(4D)5310,3714
+parent=(a_Helmuv_zleb)
+rect=5305,3715,5316,3723
+rect=5310,3709,5317,3712
+rect=5312,3712,5316,3715
+rect=5303,3703,5317,3711
+flags=4498
+
+[FlaggedRegion a_dum_110]
+name="dum 110"
+p=(4D)1083,1185
+parent=(a_Severni_ctvrtka)
+rect=1080,1172,1091,1183
+flags=4498
+
+[FlaggedRegion a_dum_111]
+name="dum 111"
+p=(4D)3794,2141,2
+parent=(a_Rhun)
+rect=3772,2121,3799,2151
+rect=3769,2146,3795,2158
+flags=4498
+
+[FlaggedRegion a_dum_112]
+name="dum 112"
+p=(4D)3830,2118
+parent=(a_Rhun)
+rect=3826,2112,3833,2118
+flags=4498
+
+[FlaggedRegion a_dum_113]
+name="dum 113"
+p=(4D)2729,3274
+parent=(a_provincie_Lebennin_Gondor)
+rect=2714,3259,2727,3277
+rect=2726,3264,2734,3276
+flags=4498
+
+[FlaggedRegion a_dum_114]
+name="dum 114"
+p=(4D)2487,4063,11
+parent=(a_Umbar)
+rect=2483,4057,2491,4062
+flags=4498
+
+[FlaggedRegion a_dum_115]
+name="dum 115"
+p=(4D)5918,3967,-80
+parent=(a_Minas_Tirith)
+rect=5907,3953,5917,3974
+rect=5907,3972,5913,3977
+flags=4498
+
+[FlaggedRegion a_dum_116]
+name="dum 116"
+p=(4D)1092,3885,40
+parent=(a_Ostrov_Imperatoru)
+rect=1047,3847,1092,3888
+flags=4498
+
+[FlaggedRegion a_dum_117]
+name="dum 117"
+p=(4D)5931,3975,-80
+parent=(a_Minas_Tirith)
+rect=5928,3964,5938,3972
+flags=4498
+
+[FlaggedRegion a_dum_118]
+name="dum 118"
+p=(4D)1074,1339
+parent=(a_Hobitin)
+rect=1064,1337,1074,1345
+flags=4498
+
+[FlaggedRegion a_dum_119]
+name="dum 119"
+p=(4D)5826,3994,-80
+parent=(a_Pelenorska_pole)
+rect=5819,3989,5825,3997
+flags=4498
+
+[FlaggedRegion a_dum_120]
+name="dum 120"
+p=(4D)5817,3999,-80
+parent=(a_Pelenorska_pole)
+rect=5811,3989,5818,3998
+flags=4498
+
+[FlaggedRegion a_dum_121]
+name="dum 121"
+p=(4D)5807,3998,-80
+parent=(a_Pelenorska_pole)
+rect=5803,3989,5810,3997
+flags=4498
+
+[FlaggedRegion a_dum_122]
+name="dum 122"
+p=(4D)1194,1336
+parent=(a_Zabovresky)
+rect=1179,1338,1188,1344
+rect=1193,1335,1205,1344
+flags=4498
+
+[FlaggedRegion a_dum_123]
+name="dum 123"
+p=(4D)1065,1327
+parent=(a_Kraj)
+rect=1061,1323,1070,1331
+rect=1050,1324,1058,1330
+flags=4498
+
+[FlaggedRegion a_dum_124]
+name="dum 124"
+p=(4D)1639,1196,35
+parent=(a_Hurecko)
+rect=1627,1190,1634,1205
+rect=1636,1187,1643,1194
+flags=4498
+
+[FlaggedRegion a_dum_125]
+name="dum 125"
+p=(4D)5791,3998,-80
+parent=(a_Pelenorska_pole)
+rect=5795,3989,5802,3997
+rect=5787,3989,5794,3997
+flags=4498
+
+[FlaggedRegion a_dum_127]
+name="dum 127"
+p=(4D)1633,1185,35
+parent=(a_Hurecko)
+rect=1625,1182,1630,1187
+rect=1632,1173,1639,1181
+flags=4498
+
+[FlaggedRegion a_dum_128]
+name="dum 128"
+p=(4D)5942,3973,-79
+parent=(a_Minas_Tirith)
+rect=5939,3964,5947,3972
+flags=4498
+
+[FlaggedRegion a_dum_129]
+name="dum 129"
+p=(4D)3134,1073
+parent=(a_Esgaroth)
+rect=3125,1068,3134,1076
+flags=4498
+
+[FlaggedRegion a_dum_130]
+name="dum 130"
+p=(4D)3128,1065
+parent=(a_Esgaroth)
+rect=3130,1053,3141,1065
+rect=3125,1057,3131,1063
+flags=4498
+
+[FlaggedRegion a_dum_131]
+name="dum 131"
+p=(4D)2268,2552,20
+parent=(a_Edoras)
+rect=2261,2549,2266,2554
+flags=4498
+
+[FlaggedRegion a_dum_132]
+name="dum 132"
+p=(4D)3116,1067
+parent=(a_Esgaroth)
+rect=3107,1064,3114,1070
+flags=4498
+
+[FlaggedRegion a_dum_133]
+name="dum 133"
+p=(4D)1198,644
+parent=(a_Gondorske_uzemi)
+rect=1193,632,1203,643
+rect=1192,621,1206,638
+flags=4498
+
+[FlaggedRegion a_dum_134]
+name="dum 134"
+p=(4D)2477,1747
+parent=(a_Gondorske_uzemi)
+rect=2469,1740,2477,1746
+flags=4498
+
+[FlaggedRegion a_dum_135]
+name="dum 135"
+p=(4D)677,1307
+parent=(a_Sede_pristavy)
+rect=668,1303,676,1323
+flags=4498
+
+[FlaggedRegion a_dum_136]
+name="dum 136"
+p=(4D)5937,3850,-80
+parent=(a_Minas_Tirith)
+rect=5927,3846,5936,3853
+flags=4498
+
+[FlaggedRegion a_dum_137]
+name="dum 137"
+p=(4D)5938,3841,-80
+parent=(a_Minas_Tirith)
+rect=5927,3838,5936,3844
+flags=4498
+
+[FlaggedRegion a_dum_138]
+name="dum 138"
+p=(4D)5937,3834,-80
+parent=(a_Minas_Tirith)
+rect=5927,3830,5936,3836
+flags=4498
+
+[FlaggedRegion a_dum_139]
+name="dum 139"
+p=(4D)5934,3825,-80
+parent=(a_Minas_Tirith)
+rect=5927,3820,5936,3828
+flags=4498
+
+[FlaggedRegion a_dum_140]
+name="dum 140"
+p=(4D)5942,3806,-80
+parent=(a_Minas_Tirith)
+rect=5927,3800,5941,3811
+rect=5927,3811,5934,3817
+flags=4498
+
+[FlaggedRegion a_dum_141]
+name="dum 141"
+p=(4D)2423,4011
+parent=(a_Umbar)
+rect=2416,4011,2422,4018
+flags=4498
+
+[FlaggedRegion a_dum_142]
+name="dum 142"
+p=(4D)2440,4021,16
+parent=(a_Umbar)
+rect=2430,4014,2441,4024
+flags=4498
+
+[FlaggedRegion a_dum_143]
+name="dum 143"
+p=(4D)2440,4029,16
+parent=(a_Umbar)
+rect=2430,4025,2441,4034
+flags=4498
+
+[FlaggedRegion a_dum_144]
+name="dum 144"
+p=(4D)2394,4045
+parent=(a_Umbar)
+rect=2394,4045,2402,4052
+flags=4498
+
+[FlaggedRegion a_dum_145]
+name="dum 145"
+p=(4D)2440,4066,11
+parent=(a_Umbar)
+rect=2430,4063,2439,4070
+flags=4498
+
+[FlaggedRegion a_dum_146]
+name="dum 146"
+p=(4D)2449,4055,12
+parent=(a_Umbar)
+rect=2445,4044,2452,4056
+flags=4498
+
+[FlaggedRegion a_dum_147]
+name="dum 147"
+p=(4D)2465,4059,11
+parent=(a_Umbar)
+rect=2459,4041,2469,4058
+flags=4498
+
+[FlaggedRegion a_dum_148]
+name="dum 148"
+p=(4D)2479,4069,7
+parent=(a_Umbar)
+rect=2468,4069,2490,4087
+flags=4498
+
+[FlaggedRegion a_dum_149]
+name="dum 149"
+p=(4D)2290,2521
+parent=(a_Edoras)
+rect=2285,2510,2294,2521
+flags=4498
+
+[FlaggedRegion a_dum_150]
+name="dum 150"
+p=(4D)694,1293
+parent=(a_Sede_pristavy)
+rect=685,1290,692,1301
+flags=4498
+
+[FlaggedRegion a_dum_151]
+name="dum 151"
+p=(4D)2344,2525
+parent=(a_Edoras)
+rect=2340,2516,2348,2523
+flags=4498
+
+[FlaggedRegion a_dum_152]
+name="dum 152"
+p=(4D)2357,2525
+parent=(a_Edoras)
+rect=2350,2516,2358,2523
+flags=4498
+
+[FlaggedRegion a_dum_153]
+name="dum 153"
+p=(4D)2354,2579
+parent=(a_Edoras)
+rect=2349,2570,2358,2579
+flags=4498
+
+[FlaggedRegion a_dum_154]
+name="dum 154"
+p=(4D)2323,2562,30
+parent=(a_Edoras)
+rect=2318,2549,2327,2560
+flags=4498
+
+[FlaggedRegion a_dum_155]
+name="dum 155"
+p=(4D)2286,2573,40
+parent=(a_Edoras)
+rect=2282,2564,2291,2573
+flags=4498
+
+[FlaggedRegion a_dum_156]
+name="dum 156"
+p=(4D)2293,2558,20
+parent=(a_Edoras)
+rect=2282,2553,2293,2561
+flags=4498
+
+[FlaggedRegion a_dum_157]
+name="dum 157"
+p=(4D)2307,2558,20
+parent=(a_Edoras)
+rect=2296,2553,2307,2561
+flags=4498
+
+[FlaggedRegion a_dum_158]
+name="dum 158"
+p=(4D)2264,2544,20
+parent=(a_Edoras)
+rect=2257,2540,2264,2547
+flags=4498
+
+[FlaggedRegion a_dum_159]
+name="dum 159"
+p=(4D)3115,1059
+parent=(a_Esgaroth)
+rect=3107,1052,3114,1061
+flags=4498
+
+[FlaggedRegion a_dum_160]
+name="dum 160"
+p=(4D)1106,1353,-5
+parent=(a_Hobitin)
+rect=1100,1347,1114,1359
+flags=4498
+
+[FlaggedRegion a_dum_161]
+name="dum 161"
+p=(4D)1106,1307,-5
+parent=(a_Hobitin)
+rect=1098,1298,1110,1306
+rect=1100,1305,1113,1313
+rect=1088,1296,1096,1305
+flags=4498
+
+[FlaggedRegion a_dum_162]
+name="dum 162"
+p=(4D)1094,1288
+parent=(a_Hobitin)
+rect=1085,1276,1102,1289
+rect=1085,1282,1094,1292
+flags=4498
+
+[FlaggedRegion a_dum_163]
+name="dum 163"
+p=(4D)731,1281
+parent=(a_Sede_pristavy)
+rect=725,1271,735,1278
+flags=4498
+
+[FlaggedRegion a_dum_164]
+name="dum 164"
+p=(4D)742,1281
+parent=(a_Sede_pristavy)
+rect=737,1271,747,1278
+flags=4498
+
+[FlaggedRegion a_dum_165]
+name="dum 165"
+p=(4D)5959,4027,-80
+parent=(a_Pelenorska_pole)
+rect=5956,4016,5966,4024
+rect=5963,4007,5971,4017
+rect=5942,4019,5955,4026
+flags=4498
+
+[FlaggedRegion a_dum_166]
+name="dum 166"
+p=(4D)5961,3906,-80
+parent=(a_Minas_Tirith)
+rect=5953,3902,5960,3912
+rect=5953,3912,5966,3918
+flags=4498
+
+[FlaggedRegion a_dum_167]
+name="dum 167"
+p=(4D)5795,3959,-40
+parent=(a_Pelenorska_pole)
+rect=5786,3950,5802,3957
+flags=4498
+
+[FlaggedRegion a_dum_168]
+name="dum 168"
+p=(4D)5814,3959,-40
+parent=(a_Pelenorska_pole)
+rect=5803,3950,5822,3957
+flags=4498
+
+[FlaggedRegion a_dum_169]
+name="dum 169"
+p=(4D)5896,3906,-40
+parent=(a_Minas_Tirith)
+rect=5886,3903,5897,3913
+flags=4498
+
+[FlaggedRegion a_dum_170]
+name="dum 170"
+p=(4D)5896,3898,-40
+parent=(a_Minas_Tirith)
+rect=5888,3888,5897,3901
+flags=4498
+
+[FlaggedRegion a_dum_171]
+name="dum 171"
+p=(4D)5863,3789,-40
+parent=(a_Minas_Tirith)
+rect=5858,3781,5867,3788
+flags=4498
+
+[FlaggedRegion a_dum_172]
+name="dum 172"
+p=(4D)1042,1178
+parent=(a_Severni_ctvrtka)
+rect=1023,1170,1036,1181
+rect=1037,1164,1046,1181
+rect=1048,1167,1057,1177
+rect=1047,1179,1058,1189
+flags=4498
+
+[FlaggedRegion a_dum_173]
+name="dum 173"
+p=(4D)718,1389,5
+parent=(a_Sede_pristavy)
+rect=710,1386,717,1397
+flags=4498
+
+[FlaggedRegion a_dum_174]
+name="dum 174"
+p=(4D)744,1382
+parent=(a_Sede_pristavy)
+rect=732,1379,742,1388
+flags=4498
+
+[FlaggedRegion a_dum_175]
+name="dum 175"
+p=(4D)742,1375
+parent=(a_Sede_pristavy)
+rect=733,1365,741,1374
+flags=4498
+
+[FlaggedRegion a_dum_176]
+name="dum 176"
+p=(4D)1268,1410
+parent=(a_Parezov)
+rect=1258,1407,1268,1414
+flags=4498
+
+[FlaggedRegion a_dum_177]
+name="dum 177"
+p=(4D)1266,1402
+parent=(a_Parezov)
+rect=1262,1393,1271,1401
+flags=4498
+
+[FlaggedRegion a_dum_178]
+name="dum 178"
+p=(4D)1277,1417
+parent=(a_Parezov)
+rect=1265,1417,1276,1425
+flags=4498
+
+[FlaggedRegion a_dum_179]
+name="dum 179"
+p=(4D)1562,1179
+parent=(a_Hurka)
+rect=1553,1172,1562,1184
+flags=4498
+
+[FlaggedRegion a_dum_180]
+name="dum 180"
+p=(4D)1568,1199
+parent=(a_Hurka)
+rect=1557,1189,1567,1198
+flags=4498
+
+[FlaggedRegion a_dum_181]
+name="dum 181"
+p=(4D)1442,1089
+parent=(a_Fornost)
+rect=1437,1085,1452,1091
+flags=4498
+
+[FlaggedRegion a_dum_182]
+name="dum 182"
+p=(4D)1415,1100
+parent=(a_Fornost)
+rect=1411,1098,1426,1104
+flags=4498
+
+[FlaggedRegion a_dum_183]
+name="dum 183"
+p=(4D)1395,1114
+parent=(a_Fornost)
+rect=1395,1106,1403,1113
+flags=4498
+
+[FlaggedRegion a_dum_184]
+name="dum 184"
+p=(4D)5851,3789,-40
+parent=(a_Minas_Tirith)
+rect=5845,3781,5858,3788
+flags=4498
+
+[FlaggedRegion a_dum_185]
+name="dum 185"
+p=(4D)2896,3226,2
+parent=(a_Pelargir)
+rect=2888,3219,2899,3226
+flags=4498
+
+[FlaggedRegion a_dum_186]
+name="dum 186"
+p=(4D)2907,3237,5
+parent=(a_Pelargir)
+rect=2898,3230,2909,3237
+flags=4498
+
+[FlaggedRegion a_dum_187]
+name="dum 187"
+p=(4D)2915,3230,5
+parent=(a_Gondorske_uzemi)
+rect=2909,3222,2920,3229
+flags=4498
+
+[FlaggedRegion a_dum_188]
+name="dum 188"
+p=(4D)2721,3255
+parent=(a_provincie_Lebennin_Gondor)
+rect=2715,3240,2743,3252
+rect=2715,3251,2726,3255
+flags=4498
+
+[FlaggedRegion a_dum_189]
+name="dum 189"
+p=(4D)1220,1345
+parent=(a_Zabovresky)
+rect=1220,1337,1228,1344
+flags=4498
+
+[FlaggedRegion a_dum_190]
+name="dum 190"
+p=(4D)1210,604
+parent=(a_Forondon)
+rect=1205,593,1215,604
+flags=4498
+
+[FlaggedRegion a_dum_191]
+name="dum 191"
+p=(4D)1317,1394
+parent=(a_Radovsko)
+rect=1311,1384,1318,1397
+flags=4498
+
+[FlaggedRegion a_dum_192]
+name="dum 192"
+p=(4D)3905,3009
+parent=(a_Bagronk)
+rect=3891,2996,3907,3018
+flags=4498
+
+[FlaggedRegion a_dum_193]
+name="dum 193"
+p=(4D)1229,654
+parent=(a_Gondorske_uzemi)
+rect=1224,643,1234,654
+flags=4498
+
+[FlaggedRegion a_dum_194]
+name="dum 194"
+p=(4D)5837,3789,-40
+parent=(a_Minas_Tirith)
+rect=5832,3781,5843,3788
+flags=4498
+
+[FlaggedRegion a_dum_195]
+name="dum 195"
+p=(4D)5933,3960,-80
+parent=(a_Minas_Tirith)
+rect=5929,3951,5948,3958
+flags=4498
+
+[FlaggedRegion a_dum_196]
+name="dum 196"
+p=(4D)5827,3789,-40
+parent=(a_Pelenorska_pole)
+rect=5823,3781,5830,3788
+flags=4498
+
+[FlaggedRegion a_dum_197]
+name="dum 197"
+p=(4D)2889,3710
+parent=(a_Oaza_Hagir)
+rect=2875,3702,2888,3717
+flags=4498
+
+[FlaggedRegion a_dum_198]
+name="dum 198"
+p=(4D)2568,2169
+parent=(a_Gondorske_uzemi)
+rect=2556,2164,2567,2172
+flags=4498
+
+[FlaggedRegion a_dum_199]
+name="dum 199"
+p=(4D)2568,2151
+parent=(a_Gondorske_uzemi)
+rect=2563,2142,2572,2151
+flags=4498
+
+[FlaggedRegion a_dum_200]
+name="dum 200"
+p=(4D)5821,3810,-20
+parent=(a_Pelenorska_pole)
+rect=5815,3797,5832,3808
+flags=4498
+
+[FlaggedRegion a_dum_201]
+name="dum 201"
+p=(4D)5944,3781,-80
+parent=(a_Minas_Tirith)
+rect=5940,3773,5946,3780
+flags=4498
+
+[FlaggedRegion a_dum_202]
+name="dum 202"
+p=(4D)5951,3781,-80
+parent=(a_Minas_Tirith)
+rect=5947,3773,5955,3780
+flags=4498
+
+[FlaggedRegion a_dum_203]
+name="dum 203"
+p=(4D)5848,3810,-20
+parent=(a_Minas_Tirith)
+rect=5833,3797,5851,3808
+flags=4498
+
+[FlaggedRegion a_dum_204]
+name="dum 204"
+p=(4D)5280,3715
+parent=(a_Helmuv_zleb)
+rect=5278,3708,5285,3720
+flags=4498
+
+[FlaggedRegion a_dum_205]
+name="dum 205"
+p=(4D)5862,3811,-20
+parent=(a_Minas_Tirith)
+rect=5852,3794,5874,3808
+flags=4498
+
+[FlaggedRegion a_dum_206]
+name="dum 206"
+p=(4D)4131,4043
+parent=(a_Harad)
+rect=4127,4034,4133,4047
+flags=4498
+
+[FlaggedRegion a_dum_207]
+name="dum 207"
+p=(4D)1566,1175
+parent=(a_Hurka)
+rect=1565,1174,1571,1183
+flags=4498
+
+[FlaggedRegion a_dum_208]
+name="dum 208"
+p=(4D)3190,1068
+parent=(a_Dol)
+rect=3181,1064,3188,1074
+flags=4498
+
+[FlaggedRegion a_dum_209]
+name="dum 209"
+p=(4D)3195,1035
+parent=(a_Dol)
+rect=3188,1022,3198,1034
+flags=4498
+
+[FlaggedRegion a_dum_210]
+name="dum 210"
+p=(4D)3211,1041
+parent=(a_Dol)
+rect=3201,1037,3208,1047
+rect=3209,1033,3215,1046
+flags=4498
+
+[FlaggedRegion a_dum_211]
+name="dum 211"
+p=(4D)3191,1061,1
+parent=(a_Dol)
+rect=3188,1047,3194,1060
+flags=4498
+
+[FlaggedRegion a_dum_212]
+name="dum 212"
+p=(4D)3199,1059,2
+parent=(a_Dol)
+rect=3196,1049,3203,1059
+flags=4498
+
+[FlaggedRegion a_dum_213]
+name="dum 213"
+p=(4D)4856,2106
+parent=(a_Erebor)
+rect=4848,2087,4861,2104
+flags=4498
+
+[FlaggedRegion a_dum_214]
+name="dum 214"
+p=(4D)4840,2109
+parent=(a_Erebor)
+rect=4817,2097,4839,2110
+flags=4498
+
+[FlaggedRegion a_dum_215]
+name="dum 215"
+p=(4D)4802,2063
+parent=(a_Erebor)
+rect=4796,2052,4809,2062
+flags=4498
+
+[FlaggedRegion a_dum_216]
+name="dum 216"
+p=(4D)4800,2069
+parent=(a_Erebor)
+rect=4786,2064,4798,2072
+flags=4498
+
+[FlaggedRegion a_dum_217]
+name="dum 217"
+p=(4D)4800,2080
+parent=(a_Erebor)
+rect=4786,2075,4799,2082
+flags=4498
+
+[FlaggedRegion a_dum_218]
+name="dum 218"
+p=(4D)4800,2114
+parent=(a_Erebor)
+rect=4786,2086,4799,2093
+rect=4786,2108,4799,2115
+flags=4498
+
+[FlaggedRegion a_dum_220]
+name="dum 220"
+p=(4D)2976,1234,45
+parent=(a_Kralovstvi_lesnich_elfu)
+rect=2974,1219,2994,1233
+flags=4498
+
+[FlaggedRegion a_dum_221]
+name="dum 221"
+p=(4D)2956,1228,45
+parent=(a_Kralovstvi_lesnich_elfu)
+rect=2952,1217,2963,1227
+flags=4498
+
+[FlaggedRegion a_dum_222]
+name="dum 222"
+p=(4D)2983,1252,45
+parent=(a_Kralovstvi_lesnich_elfu)
+rect=2970,1240,2985,1251
+flags=4498
+
+[FlaggedRegion a_dum_223]
+name="dum 223"
+p=(4D)2963,1260,45
+parent=(a_Kralovstvi_lesnich_elfu)
+rect=2951,1252,2962,1262
+flags=4498
+
+[FlaggedRegion a_dum_224]
+name="dum 224"
+p=(4D)1298,1392
+parent=(a_Gondorske_uzemi)
+rect=1292,1382,1304,1394
+flags=4498
+
+[FlaggedRegion a_dum_225]
+name="dum 225"
+p=(4D)1301,1378
+parent=(a_Radovsko)
+rect=1294,1375,1300,1380
+flags=4498
+
+[FlaggedRegion a_dum_226]
+name="dum 226"
+p=(4D)5977,3947,-80
+parent=(a_Pelenorska_pole)
+rect=5969,3924,5977,3933
+rect=5969,3935,5978,3944
+rect=5979,3934,5986,3943
+flags=4498
+
+[FlaggedRegion a_dum_227]
+name="dum 227"
+p=(4D)1157,1229
+parent=(a_Severni_ctvrtka)
+rect=1155,1217,1168,1228
+flags=4498
+
+[FlaggedRegion a_dum_228]
+name="dum 228"
+p=(4D)1181,1241
+parent=(a_Severni_ctvrtka)
+rect=1176,1227,1186,1240
+flags=4498
+
+[FlaggedRegion a_dum_229]
+name="dum 229"
+p=(4D)1198,1236
+parent=(a_Severni_ctvrtka)
+rect=1191,1219,1209,1235
+flags=4498
+
+[FlaggedRegion a_dum_230]
+name="dum 230"
+p=(4D)1213,1157
+parent=(a_Severni_ctvrtka)
+rect=1204,1146,1216,1156
+flags=4498
+
+[FlaggedRegion a_dum_231]
+name="dum 231"
+p=(4D)1209,1171
+parent=(a_Severni_ctvrtka)
+rect=1201,1161,1209,1170
+flags=4498
+
+[FlaggedRegion a_dum_232]
+name="dum 232"
+p=(4D)3898,2989
+parent=(a_Bagronk)
+rect=3894,2982,3901,2987
+flags=4498
+
+[FlaggedRegion a_dum_233]
+name="dum 233"
+p=(4D)3915,2995
+parent=(a_Bagronk)
+rect=3911,2989,3918,2994
+flags=4498
+
+[FlaggedRegion a_dum_234]
+name="dum 234"
+p=(4D)3921,3008
+parent=(a_Bagronk)
+rect=3917,3002,3924,3007
+flags=4498
+
+[FlaggedRegion a_dum_235]
+name="dum 235"
+p=(4D)3921,3030
+parent=(a_Bagronk)
+rect=3917,3023,3924,3028
+flags=4498
+
+[FlaggedRegion a_dum_236]
+name="dum 236"
+p=(4D)3906,3030
+parent=(a_Bagronk)
+rect=3902,3024,3909,3029
+flags=4498
+
+[FlaggedRegion a_dum_237]
+name="dum 237"
+p=(4D)2595,2168
+parent=(a_Gondorske_uzemi)
+rect=2590,2159,2598,2167
+flags=4498
+
+[FlaggedRegion a_dum_238]
+name="dum 238"
+p=(4D)4121,3914
+parent=(a_Harad)
+rect=4111,3910,4120,3916
+flags=4498
+
+[FlaggedRegion a_dum_239]
+name="dum 239"
+p=(4D)4121,3921
+parent=(a_Harad)
+rect=4111,3917,4120,3923
+flags=4498
+
+[FlaggedRegion a_dum_240]
+name="dum 240"
+p=(4D)4121,3928
+parent=(a_Harad)
+rect=4111,3924,4120,3930
+flags=4498
+
+[FlaggedRegion a_dum_241]
+name="dum 241"
+p=(4D)4121,3935
+parent=(a_Harad)
+rect=4111,3931,4120,3937
+flags=4498
+
+[FlaggedRegion a_dum_242]
+name="dum 242"
+p=(4D)4121,3941
+parent=(a_Harad)
+rect=4111,3938,4120,3944
+flags=4498
+
+[FlaggedRegion a_dum_243]
+name="dum 243"
+p=(4D)4121,3949
+parent=(a_Harad)
+rect=4111,3945,4120,3951
+flags=4498
+
+[FlaggedRegion a_dum_244]
+name="dum 244"
+p=(4D)3773,2094
+parent=(a_Rhun)
+rect=3759,2085,3775,2092
+flags=4498
+
+[FlaggedRegion a_dum_245]
+name="dum 245"
+p=(4D)2433,1900
+parent=(a_Gondorske_uzemi)
+rect=2430,1898,2436,1903
+flags=4498
+
+[FlaggedRegion a_dum_246]
+name="dum 246"
+p=(4D)2451,1906
+parent=(a_Gondorske_uzemi)
+rect=2449,1905,2454,1910
+flags=4498
+
+[FlaggedRegion a_dum_247]
+name="dum 247"
+p=(4D)2412,1900
+parent=(a_Gondorske_uzemi)
+rect=2409,1897,2415,1903
+flags=4498
+
+[FlaggedRegion a_dum_248]
+name="dum 248"
+p=(4D)5298,3712
+parent=(a_Helmuv_zleb)
+rect=5292,3704,5301,3711
+flags=4498
+
+[FlaggedRegion a_dum_249]
+name="dum 249"
+p=(4D)5312,3736
+parent=(a_Helmuv_zleb)
+rect=5301,3727,5311,3735
+rect=5295,3726,5301,3732
+flags=4498
+
+[FlaggedRegion a_dum_250]
+name="dum 250"
+p=(4D)2925,3704,1
+parent=(a_Oaza_Hagir)
+rect=2918,3697,2933,3706
+flags=4498
+
+[FlaggedRegion a_dum_251]
+name="dum 251"
+p=(4D)5924,3929
+parent=(a_Minas_Tirith)
+rect=5914,3923,5932,3935
+rect=5932,3915,5939,3939
+rect=5925,3915,5933,3924
+rect=5918,3919,5926,3925
+flags=4498
+
+[FlaggedRegion a_dum_252]
+name="dum 252"
+p=(4D)5876,3989,-80
+parent=(a_Minas_Tirith)
+rect=5875,3988,5890,3995
+flags=4498
+
+[FlaggedRegion a_dum_253]
+name="dum 253"
+p=(4D)5859,3997,-80
+parent=(a_Minas_Tirith)
+rect=5858,3996,5865,4002
+flags=4498
+
+[FlaggedRegion a_dum_254]
+name="dum 254"
+p=(4D)5850,3997,-80
+parent=(a_Minas_Tirith)
+rect=5849,3996,5857,4002
+flags=4498
+
+[FlaggedRegion a_dum_255]
+name="dum 255"
+p=(4D)5839,3997,-80
+parent=(a_Minas_Tirith)
+rect=5838,3996,5848,4002
+flags=4498
+
+[FlaggedRegion a_dum_256]
+name="dum 256"
+p=(4D)5860,3761,-60
+parent=(a_Minas_Tirith)
+rect=5859,3760,5866,3772
+flags=4498
+
+[FlaggedRegion a_dum_257]
+name="dum 257"
+p=(4D)5811,3771,-40
+parent=(a_Pelenorska_pole)
+rect=5810,3770,5817,3782
+flags=4498
+
+[FlaggedRegion a_dum_258]
+name="dum 258"
+p=(4D)5819,3771,-40
+parent=(a_Pelenorska_pole)
+rect=5818,3770,5829,3776
+rect=5822,3774,5828,3780
+flags=4498
+
+[FlaggedRegion a_Dno_pytle]
+name="Dno pytle"
+p=(4D)1066,1313
+parent=(a_Hobitin)
+rect=1057,1285,1082,1302
+flags=4498
+
+[FlaggedRegion a_Manweho_chram]
+name="Manweho chram"
+p=(4D)5879,3857,-20
+parent=(a_Minas_Tirith)
+rect=5871,3817,5885,3843
+flags=4498
+
+[FlaggedRegion a_sidlo_Kleriku_Valar_Vardy]
+name="sidlo Kleriku Valar Vardy"
+p=(4D)2036,2146,10
+parent=(a_world)
+rect=4824,3873,4873,3928
+flags=4498
+
+[FlaggedRegion a_Chram_Valar_Vardy]
+name="Chram Valar Vardy"
+p=(4D)4841,3869
+parent=(a_world)
+rect=4830,3836,4849,3870
+flags=4498
+
+[FlaggedRegion a_stanek_1]
+name="stanek 1"
+p=(4D)5879,3945,-40
+parent=(a_Minas_Tirith)
+rect=5871,3943,5885,3949
+rect=5877,3939,5885,3943
+flags=4498
+
+[FlaggedRegion a_stanek_2]
+name="stanek 2"
+p=(4D)5884,3930,-40
+parent=(a_Minas_Tirith)
+rect=5876,3921,5885,3937
+flags=4498
+
+[FlaggedRegion a_stanek_3]
+name="stanek 3"
+p=(4D)2473,4054,10
+parent=(a_Umbar)
+rect=2470,4040,2476,4048
+flags=4498
+
+[FlaggedRegion a_stanek_4]
+name="stanek 4"
+p=(4D)2485,4026,11
+parent=(a_Umbar)
+rect=2481,4021,2489,4029
+flags=4498
+
+[FlaggedRegion a_stanek_5]
+name="stanek 5"
+p=(4D)2473,4045,10
+parent=(a_Umbar)
+rect=2470,4050,2476,4058
+flags=4498
+
+[FlaggedRegion a_stanek_6]
+name="stanek 6"
+p=(4D)2475,4025,11
+parent=(a_Umbar)
+rect=2471,4021,2479,4028
+flags=4498
+
+[FlaggedRegion a_stanek_7]
+name="stanek 7"
+p=(4D)2415,4057,1
+parent=(a_Umbar)
+rect=2409,4051,2415,4059
+flags=4498
+
+[FlaggedRegion a_stanek_8]
+name="stanek 8"
+p=(4D)2421,4055,1
+parent=(a_Umbar)
+rect=2417,4049,2424,4056
+flags=4498
+
+[FlaggedRegion a_stanek_9]
+name="stanek 9"
+p=(4D)2424,4066
+parent=(a_Umbar)
+rect=2409,4062,2416,4070
+flags=4498
+
+[FlaggedRegion a_stanek_10]
+name="stanek 10"
+p=(4D)2415,4067,1
+parent=(a_Umbar)
+rect=2418,4061,2425,4069
+flags=4498
+
+[FlaggedRegion a_stanek_11]
+name="stanek 11"
+p=(4D)5963,3798,-80
+parent=(a_Minas_Tirith)
+rect=5961,3794,5963,3798
+flags=4498
+
+[FlaggedRegion a_stanek_12]
+name="stanek 12"
+p=(4D)5962,3803,-80
+parent=(a_Minas_Tirith)
+rect=5961,3802,5963,3806
+flags=4498
+
+[FlaggedRegion a_stanek_13]
+name="stanek 13"
+p=(4D)2332,2517
+parent=(a_Edoras)
+rect=2328,2513,2334,2517
+flags=4498
+
+[FlaggedRegion a_stanek_14]
+name="stanek 14"
+p=(4D)2365,2529
+parent=(a_Edoras)
+rect=2364,2524,2368,2530
+flags=4498
+
+[FlaggedRegion a_stanek_15]
+name="stanek 15"
+p=(4D)2364,2539
+parent=(a_Edoras)
+rect=2363,2534,2367,2540
+flags=4498
+
+[FlaggedRegion a_stanek_16]
+name="stanek 16"
+p=(4D)2350,2551
+parent=(a_Edoras)
+rect=2345,2546,2349,2552
+flags=4498
+
+[FlaggedRegion a_stanek_17]
+name="stanek 17"
+p=(4D)2350,2558
+parent=(a_Edoras)
+rect=2344,2554,2348,2560
+flags=4498
+
+[FlaggedRegion a_stanek_18]
+name="stanek 18"
+p=(4D)3590,2714,-50
+parent=(a_Barad_dur)
+rect=3589,2712,3590,2715
+flags=4498
+
+[FlaggedRegion a_stanek_19]
+name="stanek 19"
+p=(4D)3577,2747,-25
+parent=(a_Barad_dur)
+rect=3575,2744,3579,2750
+flags=4498
+
+[FlaggedRegion a_stanek_20]
+name="stanek 20"
+p=(4D)3654,2746,-25
+parent=(a_Barad_dur)
+rect=3651,2743,3655,2749
+flags=4498
+
+[FlaggedRegion a_stanek_21]
+name="stanek 21"
+p=(4D)3667,2741,-25
+parent=(a_Barad_dur)
+rect=3664,2738,3667,2742
+flags=4498
+
+[FlaggedRegion a_stanek_22]
+name="stanek 22"
+p=(4D)3671,2741,-25
+parent=(a_Barad_dur)
+rect=3669,2738,3672,2741
+flags=4498
+
+[FlaggedRegion a_stanek_23]
+name="stanek 23"
+p=(4D)3639,2724
+parent=(a_Barad_dur)
+rect=3637,2722,3640,2724
+flags=4498
+
+[FlaggedRegion a_stanek_24]
+name="stanek 24"
+p=(4D)3594,2714,-50
+parent=(a_Barad_dur)
+rect=3592,2712,3595,2715
+flags=4498
+
+[FlaggedRegion a_stanek_25]
+name="stanek 25"
+p=(4D)5962,3811,-80
+parent=(a_Minas_Tirith)
+rect=5961,3810,5963,3814
+flags=4498
+
+[FlaggedRegion a_stanek_26]
+name="stanek 26"
+p=(4D)5962,3827,-80
+parent=(a_Minas_Tirith)
+rect=5961,3826,5963,3830
+flags=4498
+
+[FlaggedRegion a_stanek_27]
+name="stanek 27"
+p=(4D)5962,3835,-80
+parent=(a_Minas_Tirith)
+rect=5961,3834,5963,3838
+flags=4498
+
+[FlaggedRegion a_stanek_28]
+name="stanek 28"
+p=(4D)5962,3843,-80
+parent=(a_Minas_Tirith)
+rect=5961,3842,5963,3846
+flags=4498
+
+[FlaggedRegion a_stanek_29]
+name="stanek 29"
+p=(4D)5955,3799,-80
+parent=(a_Minas_Tirith)
+rect=5954,3798,5957,3802
+flags=4498
+
+[FlaggedRegion a_stanek_30]
+name="stanek 30"
+p=(4D)1076,1327
+parent=(a_Hobitin)
+rect=1073,1324,1078,1328
+flags=4498
+
+[FlaggedRegion a_stanek_31]
+name="stanek 31"
+p=(4D)3615,2726,-50
+parent=(a_Barad_dur)
+rect=3613,2723,3616,2728
+flags=4498
+
+[FlaggedRegion a_stanek_32]
+name="stanek 32"
+p=(4D)1586,1170
+parent=(a_Hurka)
+rect=1587,1169,1589,1173
+flags=4498
+
+[FlaggedRegion a_stanek_33]
+name="stanek 33"
+p=(4D)5955,3815,-80
+parent=(a_Minas_Tirith)
+rect=5954,3814,5957,3818
+flags=4498
+
+[FlaggedRegion a_stanek_34]
+name="stanek 34"
+p=(4D)5955,3831,-80
+parent=(a_Minas_Tirith)
+rect=5954,3830,5957,3834
+flags=4498
+
+[FlaggedRegion a_stanek_35]
+name="stanek 35"
+p=(4D)5955,3839,-80
+parent=(a_Minas_Tirith)
+rect=5954,3838,5957,3842
+flags=4498
+
+[FlaggedRegion a_stanek_36]
+name="stanek 36"
+p=(4D)2893,3702
+parent=(a_Oaza_Hagir)
+rect=2888,3701,2893,3704
+flags=4498
+
+[FlaggedRegion a_stanek_37]
+name="stanek 37"
+p=(4D)2893,3698
+parent=(a_Oaza_Hagir)
+rect=2888,3696,2893,3699
+flags=4498
+
+[FlaggedRegion a_stanek_38]
+name="stanek 38"
+p=(4D)2898,3698
+parent=(a_Oaza_Hagir)
+rect=2898,3696,2901,3699
+flags=4498
+
+[FlaggedRegion a_stanek_39]
+name="stanek 39"
+p=(4D)2898,3702
+parent=(a_Oaza_Hagir)
+rect=2898,3701,2901,3704
+flags=4498
+
+[FlaggedRegion a_stanek_40]
+name="stanek 40"
+p=(4D)2891,3263
+parent=(a_Gondorske_uzemi)
+rect=2890,3260,2892,3264
+flags=4498
+
+[FlaggedRegion a_stanek_41]
+name="stanek 41"
+p=(4D)5944,3822,-80
+parent=(a_Minas_Tirith)
+rect=5943,3821,5946,3825
+flags=4498
+
+[FlaggedRegion a_stanek_42]
+name="stanek 42"
+p=(4D)3827,2152
+parent=(a_Rhun)
+rect=3822,2148,3829,2153
+flags=4498
+
+[FlaggedRegion a_stanek_43]
+name="stanek 43"
+p=(4D)3817,2150
+parent=(a_Rhun)
+rect=3812,2145,3817,2152
+flags=4498
+
+[FlaggedRegion a_stanek_44]
+name="stanek 44"
+p=(4D)2313,2602,60
+parent=(a_Edoras)
+rect=2307,2597,2312,2601
+flags=4498
+
+[FlaggedRegion a_stanek_45]
+name="stanek 45"
+p=(4D)3665,2752,-25
+parent=(a_Barad_dur)
+rect=3661,2751,3668,2755
+flags=4498
+
+[FlaggedRegion a_stanek_46]
+name="stanek 46"
+p=(4D)4148,4035
+parent=(a_Harad)
+rect=4144,4034,4151,4041
+flags=4498
+
+[FlaggedRegion a_stanek_47]
+name="stanek 47"
+p=(4D)3153,954,40
+parent=(a_Erebor)
+rect=3152,953,3154,955
+flags=4498
+
+[FlaggedRegion a_stanek_48]
+name="stanek 48"
+p=(4D)3153,950,40
+parent=(a_Erebor)
+rect=3152,948,3154,950
+flags=4498
+
+[FlaggedRegion a_stanek_49]
+name="stanek 49"
+p=(4D)3157,947,40
+parent=(a_Erebor)
+rect=3156,946,3158,948
+flags=4498
+
+[FlaggedRegion a_stanek_50]
+name="stanek 50"
+p=(4D)3161,947,40
+parent=(a_Erebor)
+rect=3160,946,3163,948
+flags=4498
+
+[FlaggedRegion a_stanek_51]
+name="stanek 51"
+p=(4D)1302,1399
+parent=(a_Radovsko)
+rect=1301,1396,1303,1400
+flags=4498
+
+[FlaggedRegion a_stanek_52]
+name="stanek 52"
+p=(4D)739,1360
+parent=(a_Sede_pristavy)
+rect=735,1355,738,1361
+flags=4498
+
+[FlaggedRegion a_stanek_53]
+name="stanek 53"
+p=(4D)1459,1059,30
+parent=(a_Gondorske_uzemi)
+rect=1458,1059,1461,1063
+flags=4498
+
+[FlaggedRegion a_stanek_54]
+name="stanek 54"
+p=(4D)1460,1054,30
+parent=(a_Gondorske_uzemi)
+rect=1460,1053,1464,1056
+flags=4498
+
+[FlaggedRegion a_stanek_55]
+name="stanek 55"
+p=(4D)1467,1054,30
+parent=(a_Gondorske_uzemi)
+rect=1466,1053,1470,1056
+flags=4498
+
+[FlaggedRegion a_stanek_56]
+name="stanek 56"
+p=(4D)2252,3230
+parent=(a_Dol_Amroth)
+rect=2251,3229,2255,3231
+flags=4498
+
+[FlaggedRegion a_stanek_57]
+name="stanek 57"
+p=(4D)5945,3840,-80
+parent=(a_Minas_Tirith)
+rect=5943,3836,5946,3842
+flags=4498
+
+[EOF]

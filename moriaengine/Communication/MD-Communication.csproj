@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{42DC5FFC-D58D-48B2-8035-3123D4F0A84F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Communication</RootNamespace>
+    <AssemblyName>MD-Communication</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <DefineConstants>DEBUG; TRACE; MONO</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DefineConstants>TRACE; MONO; SANE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="NamedPipes\NamedPipeClient.cs" />
+    <Compile Include="NamedPipes\NamedPipeConnection.cs" />
+    <Compile Include="NamedPipes\NamedPipeServer.cs" />
+    <Compile Include="TCP\TCPClient.cs" />
+    <Compile Include="TCP\TCPConnection.cs" />
+    <Compile Include="TCP\TCPServer.cs" />
+    <Compile Include="AbstractConnection.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AsyncCore.cs" />
+    <Compile Include="Buffer.cs" />
+    <Compile Include="CommunicationUtils.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="IncomingPacket.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="OutgoingPacket.cs" />
+    <Compile Include="PacketGroup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\MD-Common.csproj">
+      <Project>{7B3428BD-F9AF-448E-92BB-85A72505DF50}</Project>
+      <Name>MD-Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="SteamDoc, Version=1.0.1984.42666, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\SteamDoc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties InternalTargetFrameworkVersion="3.5" />
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

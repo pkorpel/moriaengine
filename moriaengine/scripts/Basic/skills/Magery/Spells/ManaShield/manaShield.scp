@@ -1,0 +1,37 @@
+[DurableCharEffectSpellDef 104] //104 (taken from sphere) = Curse Weapon from necro book
+DEFNAME=s_mana_shield
+NAME="Mana Shield"
+SOUND=503 //archprotection
+RUNES=VJS //Beleg Del Tir
+CASTTIME=2
+//RESOURCES=i_reag_garlic,i_reag_ginseng,i_reag_sulfur_ash
+//RUNEITEM=i_rune_PROTECTION
+SCROLLITEM=i_scroll_manashield //i_customscroll_manashield
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial | SpellFlag.AlwaysTargetSelf
+EFFECT=0
+DURATION=30,40
+MANAUSE=30
+Requirements=600 Magery, 1 a_mana_shield
+Difficulty=500
+
+EffectPluginDef = p_mana_shield
+EffectPluginKey_Spell = @@spellEffect_mana_shield
+EffectPluginKey_Potion = @@potionEffect_mana_shield
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0373A, 6, 60) //magic mirror effect
+
+[ManaShieldPluginDef p_mana_shield]
+on=@Unassign
+	argo.Sound(511) //untrap sound
+
+on=@Damage
+	EffectFactory.StationaryEffect(self, 03779, 6, 15); //i_fx_sparkle_2 effect
+	
+	
+[PassiveAbilityDef a_mana_shield]
+Name="Mana Shield Spell"
+
+
+[PassiveAbilityDef a_mana_shield_bonus]
+Name="(Mana Shield Bonus)"

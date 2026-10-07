@@ -1,0 +1,4 @@
+GMModeOn                        = GM mode on (Plevel {0}).
+GMModeOff                       = GM mode off (Plevel 1).
+InsubstOn                       = Flag_Insubst on (you're invisible and players can not interact with you)
+InsubstOff                      = Flag_Insubst off (you're visible)

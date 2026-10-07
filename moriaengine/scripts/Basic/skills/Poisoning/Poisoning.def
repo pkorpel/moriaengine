@@ -1,0 +1,15 @@
+[PoisoningSkillDef 30]
+DEFNAME=Skill_Poisoning
+KEY="Poisoning"
+StartByMacroEnabled = true
+//TITLE="Assassin"
+//PROMPTMSG="To what do you wish to apply the poison?"
+DELAY=2.0
+ADVRATE=2.5,50.0,200.0
+//VALUES=1,30,200
+
+//ON=@Fail
+//	src.message "You fail to apply a sufficient dose of poison to it."
+
+
+

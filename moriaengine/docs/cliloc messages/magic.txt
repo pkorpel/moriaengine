@@ -1,0 +1,5 @@
+500179	That spell is already present in that spellbook.
+500202	Spell failed
+500203	Not enough mana
+500207	The spellbook must be in your backpack (and not in a container within) to open.
+500641	Your concentration is disturbed, thus ruining thy spell.

@@ -1,0 +1,92 @@
+[PlayerVendorDef c_h_vendor_f]
+CATEGORY = Civilized
+SUBSECTION = Tradesmen
+DESCRIPTION = Vendor female
+
+NAME = "Vendor"
+model = c_woman
+//can = MT_NONMOVER|MT_EQUIP|MT_FEMALE // commented out by Converter 
+//maxfood = 04fff // commented out by Converter 
+//tevents = e_vendor_custom // commented out by Converter 
+EVENTS = spk_vendor_custom
+
+[PlayerVendorDef c_h_vendor]
+CATEGORY = Civilized
+SUBSECTION = Tradesmen
+DESCRIPTION = Vendor
+
+NAME = "Vendor"
+model = c_man
+//can = MT_NONMOVER|MT_EQUIP|MT_MALE // commented out by Converter 
+//maxfood = 04fff // commented out by Converter 
+//tevents = e_vendor_custom // commented out by Converter 
+EVENTS = spk_vendor_custom
+
+[SPEECH spk_vendor_custom]
+ON=*stock* 
+ON=*sklad*
+	arg player = argv[0]
+
+	if (this.CanVendorBeControlledByWithMessage(player))
+		this.Say(LocManager.GetEntry("loc_playervendor", "OneMomentPlease", player.Language))
+		player.Target(targ_playerVendor_stock, <this.StockRoot>)
+		return 1
+	endif
+	return 0
+
+
+ON=*nakup*
+ON=*kup*
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+	arg player = argv[0]
+
+	this.Say(LocManager.GetEntry("loc_playervendor", "OneMomentPlease", player.Language))
+
+	if (!this.CanTradeWithMessage(player))
+		return 1
+	endif
+	
+	if (this.StockRoot.Count > 0)
+		this.StockRoot.DIALOG D_PlayerVendor_ListStock
+	else
+		this.Say(LocManager.GetEntry("loc_playervendor", "NothingToSell", player.Language))
+	endif
+
+
+
+[ScriptedTargetDef targ_playerVendor_stock]
+on=@targon_thing
+	local vendor = argv[1].TopObj
+	local targetted = argv[0]
+
+	if (vendor.CanStockWithMessage(this, targetted))
+		targetted.Dialog(D_PlayerVendor_Stock, <argv[1]>)
+	endif
+
+[Loc loc_playervendor]
+OneMomentPlease=Okamžíèek
+TargetThingToStock=Zamìø vìc nebo zvíøe na prodej
+NothingToSell=Nemám nic na prodej
+
+
+[ContainerDef i_playervendor_stock_container]
+Model=i_backpack
+name=Nabídka
+LAYER=60
+
+[PlayerVendorStockEntryDef i_playervendor_stock_entry]
+Model=i_backpack
+name=VendorItem
+//LAYER=61
+
+[ContainerDef i_buyer_box]
+Model=i_backpack
+name=Seznam vykupovanych veci
+LAYER=62
+
+[ContainerDef i_buyer_tag_box]
+Model=i_backpack
+name=Docasny seznam veci k prodeji
+LAYER=63

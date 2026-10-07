@@ -1,0 +1,2 @@
+TargetIsDead                    = The target is dead.
+TargetIsInsubst                 = The target is insubstantial.

@@ -1,0 +1,72 @@
+[PassiveAbilityDef a_aptitude_alchemy]
+Name="(Alchemy Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_blacksmithing]
+Name="(Blacksmithing Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_bowcrafting]
+Name="(Bowcrafting Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_carpentry]
+Name="(Carpentry Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_cartography]
+Name="(Cartography Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_cooking]
+Name="(Cooking Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_inscription]
+Name="(Inscription Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_tailoring]
+Name="(Tailoring Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_tinkering]
+Name="(Tinkering Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_taming]
+Name="(Taming Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[PassiveAbilityDef a_aptitude_lockpicking]
+Name="(Lockpicking Aptitude)"
+EffectPower=0.02 //+10% gain chance at 5 points
+
+[ImmediateAbilityDef a_aggro_lift]
+Name="(Aggro Lift 1)"
+EffectPower=0.05 //-25% Aggro at 5 points
+
+[ImmediateAbilityDef a_aggro_lift_lesser]
+Name="(Aggro Lift 2)"
+EffectPower=0.03 //-15% Aggro at 5 points
+
+[PassiveAbilityDef a_standcast_bonus]
+Name="(Standcast Bonus)"
+EffectPower=0.04 //+20% standcast effect at 5 points
+
+[PassiveAbilityDef a_standcast_freeze_reduction]
+Name="(Standcast Freeze reduction)"
+EffectPower=0.20 //-1 sec standcast freeze duration at 5 points
+
+[PassiveAbilityDef a_leech_hits_bonus]
+Name = "(Hitpoints Leech Bonus)"
+EffectPower=0.02 //2% per point
+
+[PassiveAbilityDef a_leech_stam_bonus]
+Name = "(Stamina Leech Bonus)"
+EffectPower=0.02 //2% per point
+
+[PassiveAbilityDef a_leech_mana_bonus]
+Name = "(Mana Leech Bonus)"
+EffectPower=0.02 //2% per point
+

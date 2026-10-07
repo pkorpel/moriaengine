@@ -1,0 +1,18 @@
+500587	Double click on the archery butte to practice your archery skill.
+500588	Fire on the target and then return to the person who gave you this task.
+500589	Follow the arrow to complete your task.
+500590	You're a ghost, and can't do that.
+500591	Wait until it's clear!
+500592	You gather the arrows and bolts.
+500593	You must practice with ranged weapons on this.
+500594	You do not have any arrows with which to practice.
+500595	You do not have any crossbow bolts with which to practice.
+500596	You would do better to stand in front of the archery butte.
+500597	You aren't properly lined up with the archery butte to get an accurate shot.
+500598	You are too far away from the archery butte to get an accurate shot.
+500599	You are too close to the target.
+500600	You would do better to stand in front of the archery butte.
+500601	You aren't properly lined up with the archery butte to get an accurate shot.
+500602	You are too far away from the archery butte to get an accurate shot.
+500603	You are too close to the target.
+500604	~1_name~ misses the target altogether.

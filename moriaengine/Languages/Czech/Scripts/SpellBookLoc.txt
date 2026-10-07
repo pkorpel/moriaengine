@@ -1,0 +1,1 @@
+TargetBookToEmpty               = Ze které knihy chceš vysypat svitky?

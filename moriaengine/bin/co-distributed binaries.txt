@@ -1,0 +1,34 @@
+I know that it's not common to have the binaries used by given project in it's cvs, but we don't have many of them, so I decided to keep them here for convenience.
+
+SteamDoc.dll
+This is Steamengine's co-project, hosted in our cvs as module steamdoc. 
+It uses .NET attributes instead of the /// comments to create XML doc files out of assemblies.
+The advantage is that the comments are easily accessible from the running program itself by reflection, so that they can be displayed on fly as help for various commands etc.
+
+grammatica-1.4.jar
+This is obviously not a referenced library as it is in java :) It is the compiler generator for our LSscript engine.
+steamengine/src/LScript/generate.bat uses this jar to generate the proper sources out of LScript_strict.grammar
+
+
+ICSharpCode.SharpZipLib.dll
+zip.dll
+lzip.dll
+Two implementations of the zipping algorhitm.
+Currently they're used just by the script BackupsManager.cs, but hey they can come handy in more cases later.
+
+
+
+NAnt.Core.dll
+THe Nant core (obviously ;) used by Common to programatically execute building tasks. 
+
+NAnt.*.dll
+Additional Nant libraries
+
+
+log4net.dll
+Used by Nant. It's a logging library of some sort, 
+I might as well look into it later to see if we couldn't use it for steamengine itself as well.
+
+
+SharpSvn*dll
+SharpSvn libraries, obviusly for working with svn, particularly finding out release number and updating.

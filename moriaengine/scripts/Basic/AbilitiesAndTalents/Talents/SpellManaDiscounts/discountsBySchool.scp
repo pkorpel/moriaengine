@@ -1,0 +1,32 @@
+//sorcerer talent
+[PassiveAbilityDef a_fire_school_discount]
+Name="Fire School Discount"
+EffectPower=0.03 // -15% manause at 5 points 
+
+PluginKey = @@fire_school_discount
+PluginDef = p_fire_school_discount
+
+[SpellSchoolManaDiscountPluginDef p_fire_school_discount]
+SpellSchool = DamageType.MagicFire
+
+
+
+//sorcerer talent
+[PassiveAbilityDef a_electric_school_discount]
+Name="Sorcerer's Air/Electric School Discount"
+EffectPower=0.03 // -15% manause at 5 points 
+
+PluginKey = @@electric_school_discount
+PluginDef = p_electric_school_discount
+
+[SpellSchoolManaDiscountPluginDef p_electric_school_discount]
+SpellSchool = DamageType.MagicElectric
+
+
+//magician talent
+[PassiveAbilityDef a_electric_school_discount_magician]
+Name="Magician's Air/Electric School Discount"
+EffectPower=0.04 // -20% manause at 5 points 
+
+PluginKey = @@electric_school_discount
+PluginDef = p_electric_school_discount

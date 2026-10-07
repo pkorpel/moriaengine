@@ -1,0 +1,19 @@
+[function skillutilstest]
+arg.iterations = 1000000
+arg.counter=0
+for (arg.i, 1, arg.iterations)
+	//simulate hiding
+	arg.counter = arg.counter + SkillUtils.CheckSuccess(1000, {0 900})
+endfor
+print arg.counter/1000
+
+
+
+
+//for (arg.i, -1000, 1000)
+//	print("<arg.i> : <SkillUtils.GetSCurve(arg.i)>")
+//endfor
+
+[function trackInfo]
+//run the infodialog for the skill Tracking
+SkillDef.ById(SkillName.Tracking).info

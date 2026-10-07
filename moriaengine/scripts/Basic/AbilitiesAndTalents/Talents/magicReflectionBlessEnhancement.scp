@@ -1,0 +1,29 @@
+[StatDrainingAbilityDef a_magic_reflection_enhancement]
+Name="Magic Reflection Boost Replenishment"
+StamDrain=1
+EffectPower=1
+chance=0.08 //40% at 5 points
+//CoolDown=2*60
+
+PluginKey = @@magic_reflection_enhancement
+PluginDef = p_magic_reflection_enhancement
+
+[StatDrainingEffectDurationPluginDef p_magic_reflection_enhancement]
+on=@CauseSpellEffect
+if (argv[0].SpellDef == s_magic_reflection)
+	arg.boostPlugin = argv[0].CurrentTarget.GetPlugin(s_bless.EffectPluginKey_Spell) 
+	//find by bless key. We assume compatible boosts have the same key.
+	
+	if (<arg.boostPlugin>)
+		arg.boostSpell = <arg.boostPlugin.SourceDef>
+		if (<arg.boostSpell.Flags> & SpellFlag.IsBeneficial) //so that we don't replenish Curse spells
+			arg.self = this.Cont
+			if (a_magic_reflection_enhancement.CheckSuccess(<arg.self>))				
+				arg.newTimer = arg.boostSpell.GetDurationForValue(<arg.self.Magery>)
+				//set the timer to a value corresponding to my own magery
+				arg.boostPlugin.Timer = System.Math.Max(<arg.boostPlugin.Timer>, <arg.newTimer>)
+				//TODO? effect/sysmessage?			
+			endif
+		endif
+	endif
+endif

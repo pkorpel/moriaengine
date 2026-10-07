@@ -1,0 +1,8 @@
+500504	Target cannot be seen.
+500505	As a young player, you may not cast beneficial spells onto older players.
+500506	Which item do you wish to bless?
+500507	You can only bless an item!
+500508	You may only bless objects that you are carrying.
+500509	You can't bless this object!
+500510	You can't bless this object.
+500511	That object is already blessed.

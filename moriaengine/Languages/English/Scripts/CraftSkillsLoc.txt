@@ -1,0 +1,6 @@
+ResourcesLackingButContinue     = Not enough resources to make {0}, continuing with other items.
+ResourcesLackingAndFinish       = Not enough resources to make {0}, crafting is finished.
+ItemMakingFailed                = You have failed to make {0} and lost some of the resources
+FinishCrafting                  = Crafting is finished
+CraftingAborted                 = Crafting aborted
+ItemMadeAndPutInRecCont         = You create the {0} and put it in your {1}

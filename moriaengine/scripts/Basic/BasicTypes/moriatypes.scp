@@ -1,0 +1,29 @@
+//jen za ucelem zruseni chyb vypadavajicich z automaticky prevedenych skriptu
+
+[typedef t_housemenu]
+
+[typedef t_collector]
+
+[typedef t_weapon_bow_run]
+
+[typedef T_POTION_BOMBA]
+
+[typedef t_speedpotions]
+
+[typedef t_allpotions]
+
+[typedef t_keg_potion]
+
+[typedef t_bottle_empty]
+
+[typedef t_custom_spell]
+
+[typedef T_potion_shrink]
+
+[typedef t_post_hitching]
+
+[typedef T_WEAPON_bolt_jagged]
+
+[typedef t_telepad2]
+
+[typedef t_src_changer]

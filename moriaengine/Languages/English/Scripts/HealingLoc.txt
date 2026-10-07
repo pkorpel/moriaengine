@@ -1,0 +1,10 @@
+YoureAtMaxHitpoints             = Jsi zcela zdráv!
+TargetIsAtMaxHitpoints          = {0} je zcela zdráv!
+YoureStartingToHealTarget       = Začínáš léčit {0}.
+YoureStartingToHealYourself     = Začínáš se léčit.
+HealingSucceeded                = Léčení se ti povedlo!
+HealingFailed                   = Léčení se ti nezdařilo!
+HealerFailedToHealYou           = {0} selhal při pokusu tě ošetřit!
+HealingAborted                  = Léčení přerušeno
+SuccessfullyStoppedBleeding     = Povedlo se ti zastavit krvácení
+HealingSkillNotApplicable       = Nelze léčit skillem Healing

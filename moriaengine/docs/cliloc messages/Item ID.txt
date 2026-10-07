@@ -1,0 +1,6 @@
+500343	What do you wish to appraise and identify?
+500344	You can't see that object well enough to identify it.
+500345	You can't concentrate enough to come up with a good estimate.
+500346	Target cannot be seen.
+500347	Target cannot be seen.
+500348	I am too far away to do that.

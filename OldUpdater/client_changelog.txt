@@ -1,0 +1,9 @@
+11.6.2005	ScrolledText widget now read-only, writing log to file log.txt
+
+6.4.2005	Added proxy support, and automaitic removeing of the mysterious "noid" value in UO registry that makes clients behave foolus
+
+11.4.2005	Considered ready for public use, and created this file :)
+
+?.3.2005	remade for use with Twisted (i.e. async launching of everything) + deferreds etc., partial support for "plugin" UIs
+
+?.3.2005	First version, text only, using wget to download

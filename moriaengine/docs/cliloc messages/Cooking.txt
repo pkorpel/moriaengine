@@ -1,0 +1,19 @@
+500222	What should I cook this on?
+500223	What should I cook this on?
+500224	What should I cook this on?
+500225	What should I cook this on?
+500226	What should I cook this on?
+500238	Select an ingredient to mix with or a fire to cook on.
+500240	What should I cook this on?
+500242	What should I cook this on?
+500243	You cook the pie.
+500244	What should I cook this on?
+500257	What should I cook this on?
+500258	What should I cook this on?
+500684	You do not have room for the cooked food in your backpack!  You stop cooking.
+500685	You can't use that, it belongs to someone else.
+500686	You burn the food to a crisp! It's ruined.
+500687	Looks delicious.
+500688	Mmmm, smells good.
+500689	You put the cooked food into your backpack.
+500690	You can't cook on that.

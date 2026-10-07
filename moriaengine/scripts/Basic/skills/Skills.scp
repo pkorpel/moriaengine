@@ -1,0 +1,364 @@
+[ANATOMYSKILLDEF 1]
+DEFNAME=Skill_Anatomy
+KEY="Anatomy"
+StartByMacroEnabled = true
+DELAY=3, 1
+EFFECT=0, 155 //bonus k utocnymu cislu
+
+[AnimalLoreSKILLDEF 2]
+DEFNAME=Skill_Animal_Lore
+KEY="AnimalLore"
+StartByMacroEnabled = true
+DELAY=3, 1
+
+ON=@Fail
+	src.message "You can't think of anything off hand"
+
+[ITEMIDSKILLDEF 3]
+DEFNAME=Skill_Appraise
+KEY="ItemID"
+StartByMacroEnabled = true
+DELAY=3, 1
+
+[ArmsLoreSkillDef 4]
+DEFNAME=Skill_Armslore
+KEY="ArmsLore"
+StartByMacroEnabled = true
+EFFECT=0, 76 //bonus k utocnymu cislu
+DELAY=1.0
+
+[SCRIPTEDSKILLDEF 5]
+DEFNAME=Skill_Parrying
+KEY="Parrying"
+
+[SCRIPTEDSKILLDEF 6]
+DEFNAME=Skill_Begging
+KEY="Begging"
+StartByMacroEnabled = true
+//PROMPTMSG="To whom do you wish to grovel?"
+DELAY=3, 1
+ADVRATE=2.5,50.0,200.0
+
+[SCRIPTEDSKILLDEF 9]
+DEFNAME=Skill_Peacemaking
+KEY="Peacemaking"
+StartByMacroEnabled = true
+DELAY=2.0
+ADVRATE=2.5,50.0,200.0
+
+ON=@Fail
+	src.message "You attempt to calm everyone, but fail."
+
+[SCRIPTEDSKILLDEF 10]
+DEFNAME=Skill_Camping
+KEY="Camping"
+DELAY=6.0
+ADVRATE=2.5,50.0,200.0
+
+ON=@Fail
+	src.message "You fail to ignite the campfire."
+
+[SCRIPTEDSKILLDEF 12]
+DEFNAME=Skill_CARTOGRAPHY
+KEY="Cartography"
+StartByMacroEnabled = true
+DELAY=2.0
+ADVRATE=2.5,50.0,200.0
+//VALUES=1,20,80
+
+ON=@Fail
+	src.message "Thy trembling hand results in an unusable map."
+
+[DISCORDANCESKILLDEF 15]
+DEFNAME=Skill_Discordance
+KEY="Discordance"
+StartByMacroEnabled = true
+DELAY=4.0
+ADVRATE=2.5,50.0,200.0
+
+[SCRIPTEDSKILLDEF 16]
+DEFNAME=Skill_EvalInt
+KEY="EvaluatingIntel"
+StartByMacroEnabled = true
+DELAY=3, 1
+Effect=0, 100
+
+ON=@Fail
+	src.message "You cannot seem to judge the creature correctly."
+
+[SCRIPTEDSKILLDEF 18]
+DEFNAME=Skill_Fishing
+KEY="Fishing"
+//TITLE="Fisher%s"
+//PROMPTMSG="What water do you want to fish in?"
+//DELAY=2.0
+//STAT_STR=40
+//STAT_INT=30
+//STAT_DEX=40
+//BONUS_STR=10
+//BONUS_DEX=90
+//BONUS_INT=0
+//BONUSSTATS=25
+ADVRATE=2.5,50.0,200.0
+//VALUES=1,30,200
+
+ON=@Fail
+	src.message "You fish a while, but fail to catch anything."
+
+[SCRIPTEDSKILLDEF 19]
+DEFNAME=Skill_Forensics
+KEY="Forensics"
+StartByMacroEnabled = true
+//TITLE="Scholar"
+//PROMPTMSG="What corpse would you like to examine?"
+//DELAY=1.0
+//STAT_STR=10
+//STAT_INT=60
+//STAT_DEX=25
+//BONUS_STR=0
+//BONUS_DEX=0
+//BONUS_INT=100
+//BONUSSTATS=25
+ADVRATE=2.5,50.0,200.0
+
+ON=@Fail
+	src.message "You can tell nothing about the corpse."
+
+
+[SCRIPTEDSKILLDEF 20]
+DEFNAME=Skill_Herding
+KEY="Herding"
+//TITLE="Shepherd"
+//PROMPTMSG=""
+//DELAY=2.0
+//STAT_STR=50
+//STAT_INT=50
+//STAT_DEX=50
+//BONUS_STR=25
+//BONUS_DEX=45
+//BONUS_INT=30
+//BONUSSTATS=25
+ADVRATE=2.5,50.0,200.0
+
+ON=@Fail
+	src.message "You don't seem to be able to persuade that to move."
+
+[SCRIPTEDSKILLDEF 22]
+DEFNAME=Skill_Provocation
+KEY="Provocation"
+StartByMacroEnabled = true
+//TITLE="Bard"
+//PROMPTMSG="Whom do you wish to incite?"
+//DELAY=3.0
+//STAT_STR=20
+//STAT_INT=60
+//STAT_DEX=70
+//BONUS_STR=0
+//BONUS_DEX=90
+//BONUS_INT=10
+//BONUSSTATS=5
+ADVRATE=2.5,50.0,200.0
+
+ON=@Fail
+	src.message "Your music fails to incite enough anger."
+
+[LOCKPICKSKILLDEF 24]
+DEFNAME=Skill_LockPick
+KEY="LockPicking"
+//TITLE="Locksmith"
+//PROMPTMSG="What do you want to pick?"
+DELAY=3.0
+//STAT_STR=20
+//STAT_INT=60
+//STAT_DEX=90
+//BONUS_STR=0
+//BONUS_DEX=80
+//BONUS_INT=20
+//BONUSSTATS=25
+ADVRATE=2.5,50.0,200.0
+
+ON=@Fail
+	src.message "You are unable to pick the lock."
+
+[SCRIPTEDSKILLDEF 26]
+DEFNAME=Skill_MagicResist
+KEY="MagicResistance"
+//TITLE="Resistor"
+//PROMPTMSG=""
+//EFFECT=0.0,90.0
+//STAT_STR=40
+//STAT_INT=100
+//STAT_DEX=40
+//BONUS_STR=0
+//BONUS_DEX=0
+//BONUS_INT=100
+//BONUSSTATS=50
+ADVRATE=10.0,200.0,800.0
+
+[SCRIPTEDSKILLDEF 27]
+DEFNAME=Skill_Tactics
+KEY="Tactics"
+EFFECT=0, 303 //bonus k utocnymu cislu
+
+[SNOOPINGSKILLDEF 28]
+DEFNAME=Skill_Snooping
+KEY="Snooping"
+DELAY=2.0
+ADVRATE=2.5,50.0,200.0
+
+[SCRIPTEDSKILLDEF 32]
+DEFNAME=Skill_Spiritspeak
+KEY="SpiritSpeak"
+StartByMacroEnabled = true
+DELAY=1, 3
+Effect=0, 25
+
+ON=@Fail
+	src.message "You fail your attempt at contacting the netherworld."
+
+[STEALINGSKILLDEF 33]
+DEFNAME=Skill_Stealing
+KEY="Stealing"
+StartByMacroEnabled = true
+DELAY=2.5
+ADVRATE=10.0,200.0,800.0
+
+[SCRIPTEDSKILLDEF 35]
+DEFNAME=Skill_Taming
+KEY="Taming"
+StartByMacroEnabled = true
+//TITLE="Animal Tamer"
+//PROMPTMSG="Tame which animal?"
+//DELAY=2.0
+//STAT_STR=30
+//STAT_INT=40
+//STAT_DEX=60
+//BONUS_STR=30
+//BONUS_DEX=10
+//BONUS_INT=60
+//BONUSSTATS=20
+ADVRATE=10.0,200.0,800.0
+
+ON=@Fail
+	src.message "You fail to tame the creature."
+
+[SCRIPTEDSKILLDEF 36]
+DEFNAME=Skill_tasteid
+KEY="TasteID"
+StartByMacroEnabled = true
+//TITLE="Food Taster"
+//PROMPTMSG="What would you like to taste?"
+//DELAY=1.0
+//STAT_STR=25
+//STAT_INT=50
+//STAT_DEX=15
+//BONUS_STR=20
+//BONUS_DEX=0
+//BONUS_INT=80
+//BONUSSTATS=50
+ADVRATE=2.5,50.0,200.0
+
+ON=@Fail
+	src.message "You cannot discern anything about this substance."
+
+[SCRIPTEDSKILLDEF 39]
+DEFNAME=Skill_Vet
+KEY="Veterinary"
+//TITLE="Veterinarian"
+//PROMPTMSG="What animal would you like to heal?"
+//DELAY=2.0
+//STAT_STR=30
+//STAT_INT=50
+//STAT_DEX=40
+//BONUS_STR=20
+//BONUS_DEX=20
+//BONUS_INT=60
+//BONUSSTATS=20
+ADVRATE=10.0,200.0,800.0
+
+ON=@Fail
+	src.message "You apply the bandages, but they barely help."
+
+[SCRIPTEDSKILLDEF 44]
+DEFNAME=Skill_Lumberjack
+KEY="Lumberjacking"
+//TITLE="Lumberjack"
+//PROMPTMSG=""
+//DELAY=1.0
+//STAT_STR=85
+//STAT_INT=30
+//STAT_DEX=45
+//BONUS_STR=90
+//BONUS_DEX=10
+//BONUS_INT=0
+//BONUSSTATS=20
+ADVRATE=2.5,50.0,200.0
+//VALUES=1,10,50
+
+ON=@Fail
+	src.message "You hack at the tree for a while, but fail to produce any useable wood."
+
+[SCRIPTEDSKILLDEF 45]
+DEFNAME=Skill_Mining
+KEY="Mining"
+//TITLE="Miner"
+//PROMPTMSG="Where would you like to mine?"
+//DELAY=2.0
+//STAT_STR=85
+//STAT_INT=30
+//STAT_DEX=45
+//BONUS_STR=70
+//BONUS_DEX=30
+//BONUS_INT=0
+//BONUSSTATS=20
+ADVRATE=2.5,50.0,200.0
+//VALUES=1,10,80
+
+ON=@Fail
+	src.message "You loosen some rocks but fail to find any useable ore."
+
+[SCRIPTEDSKILLDEF 48]
+DEFNAME=Skill_Remove_Trap
+KEY="RemoveTrap"
+//TITLE="Jack"
+//PROMPTMSG="Select the trap to disarm"
+//DELAY=7.0,3.0,2.0
+//STAT_STR=20
+//STAT_INT=60
+//STAT_DEX=90
+//BONUS_STR=0
+//BONUS_DEX=80
+//BONUS_INT=20
+//BONUSSTATS=25
+ADVRATE=2.5,50.0,200.0
+
+ON=@Fail
+	src.message "You fail to disarm the trap."
+
+[SCRIPTEDSKILLDEF 49]
+DEFNAME=Skill_Necromancy
+KEY="Necromancy"
+//TITLE="Necromancer"
+//STAT_STR=0
+//STAT_INT=100
+//STAT_DEX=0
+//BONUS_STR=0
+//BONUS_DEX=0
+//BONUS_INT=100
+//BONUSSTATS=15
+ADVRATE=10.0,200.0,800.0
+//VALUES=1,10,80
+
+[SCRIPTEDSKILLDEF 51]
+DEFNAME=Skill_Chivalry
+KEY="Chivalry"
+//TITLE="Knight"
+//STAT_STR=80
+//STAT_INT=10
+//STAT_DEX=10
+//BONUS_STR=100
+//BONUS_DEX=0
+//BONUS_INT=0
+//BONUSSTATS=10
+ADVRATE=10.0,200.0,800.0
+//VALUES=1,10,80

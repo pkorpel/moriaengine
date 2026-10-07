@@ -1,0 +1,60 @@
+[SCRIPTEDSKILLDEF 29]
+DEFNAME=Skill_Musicianship
+KEY="Musicianship"
+//TITLE="Bard"
+//PROMPTMSG=""
+DELAY=0.5
+ADVRATE=2.5,50.0,200.0
+	
+on=@Select
+	//TODO: unhide, etc.
+	if (argo.Tool is Musical)
+		if (argo.Tool.TopObj != this) //nemame nastroj u sebe
+			argo.Tool = Backpack.FindByClass(typeof(Musical))
+		endif
+	else
+		argo.Tool = Backpack.FindByClass(typeof(Musical))
+	endif
+		
+	if (argo.Tool != null)
+		return 0 //continue to @start
+	else
+		this.SysMessage("Nemáš u sebe hudební nástroj.")
+		argo.Success = false
+		return 1
+	endif
+
+//on=@Start
+
+on=@Stroke
+	if (argo.Tool.TopObj != this) //nemame nastroj u sebe
+		this.SysMessage("Nemáš u sebe hudební nástroj.")
+		argo.Success = false
+		return 1	
+	endif
+	argo.Success = Skill_Musicianship.CheckSuccess(this, {0 700})
+	
+	return 0 //continue to @Success/@Fail
+	
+on=@Success
+	argo.Tool.SuccessSnd()
+		
+	if (argo.Param1) 
+		return 1 //don't Dispose the skillseqargs. This is for usage in other bardic skills
+	else
+		return 0 //continue to Disposing the skillseqargs
+	endif
+
+ON=@Fail
+	argo.Tool.FailureSnd()
+	this.ClilocSysMessage(500612)	//You play poorly, and there is no effect.
+	
+	if (argo.Param1) 
+		return 1 //don't Dispose the skillseqargs. This is for usage in other bardic skills
+	else
+		return 0 //continue to Disposing the skillseqargs
+	endif
+
+on=@abort
+	this.SysMessage("Tvé hraní bylo pøerušeno")
+	

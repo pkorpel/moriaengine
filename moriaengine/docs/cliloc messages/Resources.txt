@@ -1,0 +1,9 @@
+500227	pile of boards
+500228	pile of boards
+500229	woodpile
+500230	woodpile
+500454	That wood belongs to someone else.
+500455	There isn't enough wood here
+500456	You can't prepare that fish, it belongs to someone else.
+500457	You can't place any fish into your backpack!
+500458	You cut the fish into steaks and put them in your backpack.

@@ -1,0 +1,100 @@
+[WallSpellDef 24]
+DEFNAME=s_wall_of_stone
+NAME=Wall of Stone
+SOUND=0x1F6
+RUNES=ISY
+CASTTIME=6.0
+//RESOURCES=i_reag_blood_moss,i_reag_garlic
+RUNEITEM=i_rune_WALL_OF_STONE
+SCROLLITEM=i_scroll_WALL_OF_STONE
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+//EFFECTID=0
+EFFECT=0
+DURATION=60.0,2*60.0
+MANAUSE=30
+Requirements=30.0 Magery
+ItemDef = i_wall_stone_spellEffect
+
+[WallSpellItemDef i_wall_stone_spellEffect]
+Model = 0x80
+TYPE = T_WALL
+
+[WallSpellDef 28]
+DEFNAME=s_fire_field
+NAME=Fire Field
+SOUND=snd_SPELL_FIRE_FIELD
+RUNES=IFG
+CASTTIME=6.0
+//RESOURCES=i_reag_black_pearl,i_reag_spider_silk,i_reag_sulfur_ash
+RUNEITEM=i_rune_FIRE_FIELD
+SCROLLITEM=i_scroll_FIRE_FIELD
+FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FIELD|spellflag_evil|SPELLFLAG_TARG_XYZ|spellflag_SM//|spellflag_harm
+//EFFECTID=0
+EFFECT=0,10
+DURATION=30.0,2*60.0
+MANAUSE=40
+Requirements=40.0 Magery
+
+
+[WallSpellDef 39]
+DEFNAME=s_poison_field
+NAME=Poison Field
+SOUND=snd_SPELL_POISON_FIELD
+RUNES=ING
+CASTTIME=6.0
+//RESOURCES=i_reag_black_pearl,i_reag_nightshade,i_reag_spider_silk
+RUNEITEM=i_rune_POISON_FIELD
+SCROLLITEM=i_scroll_POISON_FIELD
+FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FX_TARG|SPELLFLAG_FIELD|spellflag_evil|SPELLFLAG_TARG_XYZ
+//EFFECTID=i_fx_curse
+EFFECT=0,1000
+DURATION=30.0,2*60.0
+MANAUSE=40
+Requirements=80.0 Magery
+
+
+[WallSpellDef 47]
+DEFNAME=s_paralyzation_field
+NAME=Paralyze Field
+SOUND=snd_SPELL_PARALYZE_FIELD
+RUNES=IEG
+CASTTIME=5.0
+//RESOURCES=i_reag_black_pearl,i_reag_ginseng,i_reag_spider_silk
+RUNEITEM=i_rune_PARALYZE_FIELD
+SCROLLITEM=i_scroll_PARALYZE_FIELD
+FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_TARG_XYZ|SPELLFLAG_FIELD|spellflag_evil//|spellflag_harm
+//FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FX_TARG|SPELLFLAG_FIELD|spellflag_evil//|spellflag_harm
+//EFFECTID=i_fx_curse
+EFFECT=0,0
+DURATION=30.0,2*60.0
+MANAUSE=40
+Requirements=60.0 Magery
+
+
+[WallSpellDef 50]
+DEFNAME=s_energy_field
+NAME=Energy Field
+SOUND=0x20B
+RUNES=ISG
+CASTTIME=5.0
+//RESOURCES=i_reag_black_pearl,i_reag_mandrake_root,i_reag_spider_silk,i_reag_sulfur_ash
+RUNEITEM=i_rune_ENERGY_FIELD
+SCROLLITEM=i_scroll_ENERGY_FIELD
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=2*60.0,3*60.0
+MANAUSE=40
+Requirements=70.0 Magery
+
+ItemDefWestEast=i_energy_field_spellEffect_WE
+ItemDefNorthSouth=i_energy_field_spellEffect_NS
+
+[WallSpellItemDef i_energy_field_spellEffect_WE]
+Model = 0x3946
+TYPE = T_WALL
+Light = LightType.Circle300
+
+[WallSpellItemDef i_energy_field_spellEffect_NS]
+Model = 0x3956
+TYPE = T_WALL
+Light = LightType.Circle300

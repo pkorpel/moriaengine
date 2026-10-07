@@ -1,0 +1,2 @@
+manaInStaff                     = Mana v holi
+manaVanished                    = Mana v holi je svázána s tvou myslí - odložením hole mana vyprchala.

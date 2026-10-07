@@ -1,0 +1,356 @@
+%header%
+
+GRAMMARTYPE = "LL"
+
+LICENSE = "This software is released under GNU public license. See details in the URL: http://www.gnu.org/copyleft/gpl.html"
+
+DESCRIPTION = "Grammar for LScript, for use by SteamEngine interpreter."
+
+
+//For, ForCharLayer, ForCharMemoryType, ForChars, ForClients, 
+//ForCont, ForContID, ForItems, ForContType, ForObjs and ForPlayers 
+
+%tokens%
+
+IF					= <<[iI][fF][ \t]*>>
+ELSE				= <<[eE][lL][sS][eE]>>
+ELSEIF				= <<[eE][lL][sS][eE][iI][fF][ \t]*>>
+ENDIF				= <<[eE][nN][dD][iI][fF]>>
+WHILE				= <<[wW][hH][iI][lL][eE][ \t]*>>
+ENDWHILE			= <<[eE][nN][dD][wW][hH][iI][lL][eE]>>
+ADDTIMER			= <<[aA][dD][dD][tT][iI][mM][eE][rR]>>
+FOR					= <<[fF][oO][rR][ \t]*>>
+ENDFOR				= <<[eE][nN][dD][fF][oO][rR]>>
+FOREACH				= <<[fF][oO][rR][eE][aA][cC][hH][ \t]*>>
+IN					= <<[ \t]*[iI][nN][ \t]*>>
+ENDFOREACH			= <<[eE][nN][dD][fF][oO][rR][eE][aA][cC][hH]>>
+SWITCH				= <<[sS][wW][iI][tT][cC][hH][ \t]*>>
+CASE				= <<[cC][aA][sS][eE][ \t]*>>
+ENDSWITCH			= <<[eE][nN][dD][sS][wW][iI][tT][cC][hH]>>
+BREAK				= <<[bB][rR][eE][aA][kK]>>
+DEFAULT				= <<[dD][eE][fF][aA][uU][lL][tT]>>
+
+ARGCHK				= <<[aA][rR][gG][cC][hH][kK]>>
+ARGTXT				= <<[aA][rR][gG][tT][xX][tT]>>
+ARGNUM				= <<[aA][rR][gG][nN][uU][mM]>>
+ARGO				= <<[aA][rR][gG][oO]>>
+ARGN				= <<[aA][rR][gG][nN]>>
+ARGV				= <<[aA][rR][gG][vV]>>
+ARGON				= <<[aA][rR][gG][oO][0-9]+>>
+ARGNN				= <<[aA][rR][gG][nN][0-9]+>>
+ARGVN				= <<[aA][rR][gG][vV][0-9]+>>
+
+TAG					= <<[tT][aA][gG]>>
+ARG					= <<[aA][rR][gG]>>
+VAR					= <<[vV][aA][rR]>>
+LOCAL				= <<[lL][oO][cC][aA][lL]>>
+
+EVAL				= <<[eE][vV][aA][lL][ \t]*>>
+
+OP_ADD				= <<[ \t]*?\+[ \t]*>>
+OP_SUB				= <<[ \t]*?\-[ \t]*>>
+OP_MUL				= <<[ \t]*?\*[ \t]*>>
+OP_DIV				= <<[ \t]*?/[ \t]*>>
+OP_INTDIV			= <<[ \t]*?[dD][iI][vV][ \t]*>>
+OP_MOD				= <<[ \t]*?%[ \t]*>>
+
+OP_IS				= <<[ \t]*?[iI][sS][ \t]+>>
+OP_TYPEOF			= <<[tT][yY][pP][eE][oO][fF]>>
+
+//OP_PLUS				= <<\+[ \t]*>>
+//OP_MINUS			= <<\-[ \t]*>>
+
+OP_SCREAMER			= <<[ \t]*![ \t]*>>
+
+OP_BITAND			= <<[ \t]*&[ \t]*>>
+OP_BITCOMPLEMENT	= <<[ \t]*~[ \t]*>>
+OP_BITOR			= <<[ \t]*\|[ \t]*>>
+
+OP_AND				= <<[ \t]*&&[ \t]*>>
+OP_OR				= <<[ \t]*\|\|[ \t]*>>
+
+DOT					= "." //<<[ \t]*\.[ \t]*>>
+COMMA				= <<[ \t]*,[ \t]*>>
+
+//OP_ASIG_MOD			= <<[ \t]*%=[ \t]*>>
+//OP_ASIG_AND			= <<[ \t]*&=[ \t]*>>
+//OP_ASIG_MUL			= <<[ \t]*\*=[ \t]*>>
+//OP_ASIG_ADD			= <<[ \t]*\+=[ \t]*>>
+//OP_ASIG_SUB			= <<[ \t]*\-=[ \t]*>>
+//OP_ASIG_DIV			= <<[ \t]*/=[ \t]*>>
+//OP_ASIG_OR			= <<[ \t]*\|=[ \t]*>>
+OP_ASIG_PLAIN		= <<[ \t]*=[ \t]*>>
+
+
+OP_COMP_GRE			= <<[ \t]*\>>>
+OP_COMP_SMA			= <<\<[ \t]*>>
+OP_COMP_NOTEQ		= <<[ \t]*!=[ \t]*>>
+OP_COMP_EQ			= <<[ \t]*==[ \t]*>>
+//OP_COMP_SMAEQ		= <<[ \t]*\<=[ \t]*>>
+//OP_COMP_GREEQ		= <<[ \t]*\>=[ \t]*>>
+                      
+//OP_INCREM			= "++"
+//OP_DECREM			= "--"
+
+LEFT_PAREN			= <<\([ \t]*>>
+RIGHT_PAREN			= <<[ \t]*\)>>
+
+LEFT_BRACKET		= <<\[[ \t]*>>
+RIGHT_BRACKET		= <<[ \t]*\]>>
+
+LEFT_BRACE			= <<\{[ \t]*>>
+RIGHT_BRACE			= <<[ \t]*\}>>
+
+QUOTE				= <<\">>
+
+HEXNUMBER			= <<0[xX]?[0-9a-fA-F]+>>
+INTEGER				= <<[0-9]+>>
+FLOAT				= <<[0-9]*\.[0-9]+>>
+STRING				= <<[A-Za-z0-9_]*>>
+
+WHITESPACE			= <<[ \t]+>>
+
+CROSSHASH			= <<[ \t]*#[ \t]*>>
+AT					= <<[ \t]*@[ \t]*>>
+
+QUERYMARK			= <<[ \t]*\?[ \t]*>>
+
+ESCAPEDCHAR			= <<\\.>>
+
+OTHERSYMBOLS		= <<[^a-zA-Z_0-9]>>
+
+COMEOL				= <<([ \t]*;[ \t]*(//.*)?[\n\r]*)|([ \t]*(//.*)?[\n\r]+)>> // ; or eol (and whitespace and comment);
+
+
+
+%productions%
+
+Script = (WhileBlock | IfBlock | ForeachBlock | ForBlock | SwitchBlock | ScriptLine)+;
+ScriptLine = (DottedExpressionChain COMEOL) | COMEOL;
+
+IfBlock = IfBegin {ElseIfBlock} [ElseBlock] ENDIF COMEOL;
+IfBegin = IF Code COMEOL [Script];
+ElseIfBlock = ELSEIF Code COMEOL [Script];
+ElseBlock = ELSE COMEOL [Script];
+
+ForeachBlock = FOREACH ForeachHeader COMEOL [Script] ENDFOREACH COMEOL;
+ForeachHeader = ForeachHeaderCode | ForeachHeaderInParens;
+ForeachHeaderCode = ForeachHeaderLocalName IN SimpleCode;
+ForeachHeaderLocalName = 
+	( LocalKey LEFT_PAREN STRING RIGHT_PAREN ) |	//local(foo)
+	( LocalKey DOT STRING ) |						//local.foo
+	( LocalKey WHITESPACE STRING ) |				//local foo
+	( STRING );										//foo
+ForeachHeaderInParens = LEFT_PAREN ForeachHeader RIGHT_PAREN;
+
+
+ForBlock = FOR ForHeader COMEOL [Script] ENDFOR COMEOL;
+ForHeader = ForHeaderCode | ForHeaderInParens;
+ForHeaderCode = ForeachHeaderLocalName ArgsSeparator SimpleCode ArgsSeparator SimpleCode;
+	//we use the same LocalName syntax as foreach
+ForHeaderInParens = LEFT_PAREN ForHeader RIGHT_PAREN;
+
+WhileBlock = WHILE Code COMEOL [Script] ENDWHILE COMEOL;
+
+SwitchBlock = SWITCH SimpleCode COMEOL (CaseBlock)+ ENDSWITCH;
+CaseBlock = CASE ( SimpleCode | DEFAULT ) COMEOL [ [Script] BREAK COMEOL];
+
+Code = CodeBody { BinaryOperators CodeBody };
+CodeBody = [UnaryOperator] ( CodeBodyParens | Expression );
+CodeBodyParens = LEFT_PAREN Code RIGHT_PAREN;
+
+SimpleCode = SimpleCodeBody { BinaryOperator SimpleCodeBody }; //same as Code, but without < > as binary operators
+SimpleCodeBody = [UnaryOperator] ( SimpleCodeBodyParens | Expression);
+SimpleCodeBodyParens = LEFT_PAREN SimpleCode RIGHT_PAREN;
+
+Expression = DottedExpressionChain | EvalExpression 
+	| StrongEvalExpression | QuotedString | RandomExpression
+	| Number | CROSSHASH | AtKey | TimerKey;
+
+AddTimerExpression = ADDTIMER ( ( ( WHITESPACE | OP_ASIG_PLAIN) AddTimerBody) | (LEFT_PAREN AddTimerBody RIGHT_PAREN) );
+AddTimerBody = TimerKey ArgsSeparator SimpleCode ArgsSeparator (STRING | TriggerKey) [ArgsSeparator ArgsList];  
+//timername, interval, method/function/trigger name, args
+
+AtKey = TriggerKey | PluginKey;//@somename or @@somename
+
+TriggerKey = AT STRING;
+
+PluginKey = AT AT STRING;
+
+TimerKey = OP_MOD STRING; //%somename
+
+QuotedString = 
+QUOTE {
+	STRING
+	//| COMEOL
+	| QUERYMARK
+	| ARGCHK
+	| ARGTXT
+	| ARGNUM
+	| ARGO
+	| ARGN
+	| ARGV
+	| ARGNN
+	| ARGON
+	| ARGVN 
+	| OTHERSYMBOLS 
+	| COMMA 
+	| DOT 
+	| OP_ASIG_PLAIN
+	| OP_SCREAMER
+	| OP_BITCOMPLEMENT
+	| OP_ADD 
+	| OP_SUB 
+	| OP_MUL 
+	| OP_DIV 
+	| OP_INTDIV
+	| OP_MOD 
+	| OP_BITAND 
+	| OP_BITOR 
+	| OP_AND 
+	| OP_OR 
+	| OP_IS
+	| OP_TYPEOF
+	| CROSSHASH
+	| AT
+	| ComparOperator
+	| INTEGER
+	| HEXNUMBER
+	| FLOAT
+	| LEFT_PAREN
+	| RIGHT_PAREN
+	| LEFT_BRACKET
+	| RIGHT_BRACKET
+	| LEFT_BRACE
+	| RIGHT_BRACE
+	| WHITESPACE
+	| EvalExpression
+	| StrongEvalExpression
+	| VarKey
+	| IF            
+	| ELSE		    
+	| ELSEIF		
+	| ENDIF		    
+	| ADDTIMER	   
+	| DEFAULT	
+	| FOREACH		
+	| IN            
+	| ENDFOREACH    
+	| FOR           
+	| ENDFOR        
+	| SWITCH        
+	| CASE          
+	| ENDSWITCH     
+	| BREAK         
+	| ESCAPEDCHAR   
+	| WHILE                         	    
+	| ENDWHILE                  
+} QUOTE;                        
+                                
+Argument =                      
+	(                           
+		(
+			( ARGCHK | ARGTXT | ARGNUM | ARGO | ARGN | ARGNN | ARGON | ARGVN ) 
+			|
+			( ARGV 
+				( 
+					( LEFT_BRACKET SimpleCode RIGHT_BRACKET ) 
+					| 
+					( LEFT_PAREN SimpleCode RIGHT_PAREN ) 
+				)
+			)
+		) 
+	)
+	(Indexer)* 
+	[	
+		(OP_ASIG_PLAIN SimpleCode) //arg.foo[1] = bar X arg foo[1] = bar
+		| 
+		(LEFT_PAREN SimpleCode RIGHT_PAREN) //arg.foo[1](bar) X arg foo[1](bar)
+		| 
+		(WHITESPACE SimpleCode) //arg.foo[1] bar X arg foo[1] bar
+	];
+
+ArgsList = SimpleCode {ArgsSeparator SimpleCode};
+
+
+StrongEvalExpression = OP_COMP_SMA QUERYMARK DottedExpressionChain QUERYMARK OP_COMP_GRE; // <?xx?>
+
+RandomExpression = 
+LEFT_BRACE 
+	SimpleCode ArgsSeparator SimpleCode 
+	{ArgsSeparator SimpleCode ArgsSeparator SimpleCode} 
+RIGHT_BRACE; // {w x y z}
+
+ArgsSeparator = WHITESPACE | COMMA;
+
+EvalExpression = OP_COMP_SMA DottedExpressionChain OP_COMP_GRE; // <xx>
+
+EvalWordExpression = EVAL SimpleCode;
+
+DottedExpressionChain = (TypeOfExpression | SimpleExpression | VarExpression | AddTimerExpression | EvalWordExpression | Argument) 
+	{ DOT (TypeOfExpression | SimpleExpression | VarExpression | AddTimerExpression | EvalWordExpression | Argument) }
+	{ OP_IS STRING { ( DOT | OP_ADD ) STRING } };
+
+SimpleExpression = STRING [( (Indexer)+ [Assigner] ) | ( Caller {Indexer} ) | ( Assigner ) ];
+
+TypeOfExpression = OP_TYPEOF 
+	( LEFT_PAREN STRING { ( DOT | OP_ADD ) STRING } RIGHT_PAREN ) | 
+	( WHITESPACE STRING { ( DOT | OP_ADD ) DOT STRING } ) | 
+	( OP_ASIG_PLAIN STRING { ( DOT | OP_ADD ) DOT STRING } );
+	
+Caller = LEFT_PAREN [ArgsList] RIGHT_PAREN ;
+
+Indexer = LEFT_BRACKET SimpleCode RIGHT_BRACKET; // [xx]
+
+Assigner = WhiteSpaceAssigner | OperatorAssigner;
+WhiteSpaceAssigner = WHITESPACE ArgsList;
+OperatorAssigner = OP_ASIG_PLAIN ArgsList;
+
+Number = HEXNUMBER | INTEGER | FLOAT;
+
+VarExpression = VarKey 
+	[
+		( 
+			LEFT_PAREN STRING (Indexer)* [COMMA SimpleCode] RIGHT_PAREN //arg(foo[1], bar)
+		) 
+	|	( ( DOT | WHITESPACE ) STRING (Indexer)*
+			[	
+				(OP_ASIG_PLAIN SimpleCode) //arg.foo[1] = bar X arg foo[1] = bar
+				| 
+				(LEFT_PAREN SimpleCode RIGHT_PAREN) //arg.foo[1](bar) X arg foo[1](bar)
+				| 
+				(WHITESPACE SimpleCode) //arg.foo[1] bar X arg foo[1] bar
+			]
+		)
+	];
+LocalKey = ARG | LOCAL;
+VarKey = TAG | VAR | LocalKey;
+
+BinaryOperator =
+	( OP_ADD 
+	| OP_SUB 
+	| OP_MUL 
+	| OP_DIV 
+	| OP_INTDIV
+	| OP_MOD 
+	| OP_BITAND 
+	| OP_BITOR 
+	| OP_AND 
+	| OP_OR)
+;
+
+BinaryOperators = (BinaryOperator | TwoCharsBinOperator | ([WHITESPACE] OP_COMP_EQ) | ([WHITESPACE] OP_SCREAMER OP_ASIG_PLAIN) );
+TwoCharsBinOperator = [WHITESPACE] ComparOperator [OP_ASIG_PLAIN] [WHITESPACE];
+
+UnaryOperator = 
+	OP_SCREAMER
+	| OP_BITCOMPLEMENT
+	| OP_ADD
+	| OP_SUB
+;
+
+ComparOperator = 
+	OP_COMP_NOTEQ 
+	| OP_COMP_SMA 
+	| OP_COMP_GRE 
+;

@@ -1,0 +1,12 @@
+NotEnoughItems                  = Máš málo {0}
+NotEnoughItemsOfType            = Máš málo předmětů typu {0}
+SkillTooLow                     = Umení {0} ovládáš příliš špatně
+AbilityTooLow                   = Schopnost {0} ovládáš příliš špatně
+DexTooLow                       = Nejsi dost obratný
+IntTooLow                       = Nejsi dost inteligentní
+VitTooLow                       = Nejsi dost vitální
+StrTooLow                       = Nejsi dost silný
+HitsTooLow                      = Jsi příliš zraněný (málo hitpointů)
+ManaTooLow                      = Máš málo many
+StamTooLow                      = Jsi příliš vyčerpaný (málo staminy)
+LevelTooLow                     = 

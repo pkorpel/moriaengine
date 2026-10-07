@@ -1,0 +1,11 @@
+[ActivableAbilityDef a_bloodritual]
+Name="Bloodritual"
+EffectPower = 6 // 6 points of vit transfered to int for every point in ability 
+Cooldown = 2 * 60
+// MaxPoints = 5
+// ResourcesConsumed = 100 stam // TODO polovina max staminy - nevim jak se to dela
+
+PluginKey = @@bloodritual
+PluginDef = p_bloodritual
+
+[BloodritualPluginDef p_bloodritual]

@@ -1,0 +1,201 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//	
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//	
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+[ProfessionDef profession_mage]
+Defname = class_mage //class_ as alternate prefix
+Name = "mag"
+professionPluginDef = p_profession_mage
+
+//SkillNameOrDefname = starting value, cap value
+//not listed skills are considered 0, 0
+AnimalLore=0, 250
+Alchemy=300, 1000
+Anatomy=0, 750
+Begging=0, 500
+Camping=0, 500
+Cartography=300, 1000
+Cooking=0, 1000
+DetectingHidden=0, 500
+EvaluatingIntel=300, 1000
+Fishing=0, 1000
+Forensics=0, 750
+Healing=0, 500
+Herding=0, 500
+Hiding=0, 500
+Inscription=300, 1000
+ItemID=0, 1000
+Lumberjacking=0, 1000
+Macefighting=0, 500
+Magery=300, 1000
+MagicResistance=300, 1000
+Meditation=300, 1000
+Mining=0, 1000
+Poisoning=0, 250
+RemoveTrap=0, 500
+SpiritSpeak=0, 1000
+Stealth=0, 500
+Tactics=0, 500
+TasteID=0, 1000
+Tracking=0, 250
+Veterinary=0, 500
+Wrestling=0, 500
+
+
+//AbilityNameOrDefname = display order, maximum points
+a_regen_hits = 0, 10
+a_regen_stam = 1, 10
+a_regen_mana = 2, 10
+
+a_weapon_dodge = 3, 20
+a_spell_absorption = 4, 40
+
+a_leech_hits = 5, 10
+a_leech_stam = 6, 10
+a_leech_mana = 7, 10
+
+//TODO longrange
+//TODO? throwing
+
+a_standcast = 8, 10
+a_energy_shield = 9, 30
+
+
+
+//list allowed spells
+allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_harm, s_protection, s_fireball, s_teleport, s_wall_of_stone, s_lightning, s_recall, s_dispel_field, s_mind_blast, s_paralyze, s_dispel, s_energy_bolt, s_explosion, s_chain_lightning, s_energy_field, s_flamestrike, s_gate_travel, s_mass_dispel, s_meteor_swarm, s_mana_shield, s_resurrection, s_magic_reflection, s_mark, s_fire_field, s_invisibility, s_paralyze_field, s_reveal
+//s_mana_drain, s_blade_spirits, s_summon_creature, s_energy_vortex, s_summon_air_elemental, s_summon_daemon, s_summon_earth_elemental, s_summon_fire_elemental, s_summon_water_elemental
+
+//3 talent tree branches
+ttb1 = ttb_mage_sorcerer
+ttb2 = ttb_mage_conjurer
+ttb3 = ttb_mage_magician
+
+
+//AbilityNameOrDefname = Tier, TierPosition, MaxPoints, resourcelist
+[TalentTreeBranchDef ttb_mage_sorcerer]
+Name = "Sorcerer"
+//sorcerer = direct damage specialisation
+
+a_spell_damage_bonus = 0, 0, 5
+a_mana_saving = 0, 1, 10
+a_meditation_bonus = 0, 2, 5
+a_regen_mana_bonus = 0, 3, 5
+a_protection_bonus = 0, 4, 5
+a_aptitude_inscription = 0, 5, 5
+a_aggro_lift = 0, 6, 5
+
+a_standcast_bonus = 1, 0, 5, a_standcast
+a_leech_mana_bonus = 1, 1, 5, a_leech_mana
+a_mana_saving_bonus = 1, 2, 5, a_mana_saving
+a_energy_field_discount = 1, 3, 5
+a_electric_school_discount = 1, 4, 5
+a_fire_school_discount = 1, 5, 5
+
+a_ignition = 2, 0, 5
+a_ignition_bonus = 2, 1, 5
+a_silence = 2, 2, 5
+a_silence_bonus = 2, 3, 5
+a_energy_shield_bonus = 2, 4, 5
+
+a_mastery_magery = 3, 0, 5, 1000 magery
+a_mind_blast_enhancement = 3, 1, 5
+a_mind_blast_discount = 3, 2, 5
+a_spell_damage_bonus_greater = 3, 3, 5
+
+//TODO: tirednes/stun
+a_chain_lightning_discount = 4, 2, 5
+a_standcast_freeze_reduction = 4, 3, 5
+//TODO: shorter standcast freeze 
+
+a_spell_boost = 5, 0, 1
+
+[TalentTreeBranchDef ttb_mage_conjurer]
+Name = "Conjurer"
+//Conjurer = summoning specialisation
+
+a_regen_hits_bonus = 0, 3, 5
+a_mana_deposit_bonus = 0, 4, 5
+a_aptitude_cartography = 0, 5, 5
+
+//TODO all summon-related talents
+
+a_ignition = 4, 1, 5
+a_ignition_bonus = 4, 2, 5
+a_spell_damage_bonus_fire = 4, 3, 5
+
+
+[TalentTreeBranchDef ttb_mage_magician]
+Name = "Magician"
+//Magician = support specialisation
+
+a_mana_deposit_bonus = 0, 0, 5
+a_mana_shield = 0, 1, 1
+a_mana_shield_bonus = 0, 2, 5
+a_regen_stam_bonus = 0, 3, 5
+a_leech_stam_bonus = 0, 4, 5
+a_aptitude_alchemy = 0, 5, 5
+
+
+a_field_duration_bonus = 1, 0, 5
+a_field_mana_discount = 1, 1, 5
+a_mana_regen_boost = 1, 2, 5
+a_gate_travel_discount = 1, 3, 5
+a_recall_discount = 1, 4, 5
+a_electric_school_discount_magician = 1, 5, 5
+
+
+a_paralyze_haste = 2, 0, 5
+//TODO: energyshield_bonus
+a_cunning_bonus = 2, 1, 5
+a_magic_reflection_enhancement = 2, 2, 5
+//TODO: +1 summon
+
+a_mastery_magery_greater = 3, 0, 5, 1000 magery
+a_resurrection = 3, 1, 1 //jen 1 bod bo nevim co by to melo delat
+a_resurrection_discount = 3, 2, 5//, a_resurrection
+a_spell_damage_bonus_air = 3, 3, 5
+
+//TODO: mass fatigue
+a_chain_lightning_bonus = 4, 1, 5
+a_chain_lightning_discount = 4, 2, 5
+//TODO: shorter standcast freeze 
+
+a_clearcast = 5, 0, 1
+
+[AbilityDef a_resurrection]
+Name="Enabling Resurrection Spell"
+//?
+
+
+//specialised profession plugin to enforce only casting resurrection with the given talent
+[ProfessionPluginDef p_profession_mage]
+on=@SkillSelect
+return this.Cont.f_check_resurrection(argv[0])
+
+on=@SkillStart
+return this.Cont.f_check_resurrection(argv[0])		
+		
+[function f_check_resurrection] //this = player, 0 = SkillSeqArgs
+if ((!this.IsGM) && (argv[0].SkillDef == skill_magery))
+	if (argv[0].Param1 == s_resurrection)
+		if (this.GetAbility(a_resurrection) < 1)
+			this.RedMessage(LocManager.GetEntry("loc_mage", "ResurrectionTalentMissing", this.Language))
+			return 1 //cancel the skill
+		endif
+	endif
+endif
+			
+[ScriptedLoc loc_mage]
+ResurrectionTalentMissing = To cast the resurrection spell, you need the corresponding talent

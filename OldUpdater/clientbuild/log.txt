@@ -1,0 +1,511 @@
+11.06.2005, 19:50 :
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni11.06.2005, 19:50
+
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+11.06.2005, 19:50
+
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+11.06.2005, 19:51
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+26.07.2005, 12:40
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+	informace precteny
+moria update files:
+soubor 'MULTIMAP.RLE' ...je v aktualni verzi, netreba resit
+soubor 'verdata.mul' ...je v aktualni verzi, netreba resit
+soubor 'multi.mul' ...je v aktualni verzi, netreba resit
+soubor 'Art.mul' ...je v aktualni verzi, netreba resit
+soubor 'Hues.mul' ...je v aktualni verzi, netreba resit
+soubor 'Tiledata.mul' ...je v aktualni verzi, netreba resit
+soubor 'map0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Staidx0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Artidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Login.cfg' ...je v aktualni verzi, netreba resit
+soubor 'Client_3.0.6m.exe' ...je v aktualni verzi, netreba resit
+soubor 'Texidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Statics0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Texmaps.mul' ...je v aktualni verzi, netreba resit
+soubor 'MULTI.IDX' ...je v aktualni verzi, netreba resit
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+26.07.2005, 14:17
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback: twisted.web.error.Error, 400 Bad Request
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni	rozbaluji...
+Chyba: [Failure instance: Traceback: exceptions.Exception, 
+
+Error:
+there is no such archive
+
+C:\Python24\Lib\site-packages\twisted\internet\threads.py:37:_putResultInDeferred
+C:\SE\Updater\clientbuild\client.py:70:uncompressandremove
+C:\SE\Updater\clientbuild\client.py:61:commandline
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+26.07.2005, 14:23
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback: twisted.web.error.Error, 400 Bad Request
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+26.07.2005, 14:23
+stahuji metainfo soubor (updateinfo.xml)
+
+
+26.07.2005, 14:24
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback: twisted.web.error.Error, 400 Bad Request
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+
+26.07.2005, 14:24
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback: twisted.web.error.Error, 400 Bad Request
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni	rozbaluji...
+Chyba: [Failure instance: Traceback: exceptions.Exception, 
+
+Error:
+there is no such archive
+
+C:\Python24\Lib\site-packages\twisted\internet\threads.py:37:_putResultInDeferred
+C:\SE\Updater\clientbuild\client.py:70:uncompressandremove
+C:\SE\Updater\clientbuild\client.py:61:commandline
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+26.07.2005, 14:25
+stahuji metainfo soubor (updateinfo.xml)
+
+
+26.07.2005, 14:25
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback: twisted.web.error.Error, 400 Bad Request
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+01.08.2005, 23:53
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback: twisted.web.error.Error, 400 Bad Request
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni	rozbaluji...
+Chyba: [Failure instance: Traceback: exceptions.Exception, 
+
+Error:
+there is no such archive
+
+C:\Python24\Lib\site-packages\twisted\internet\threads.py:37:_putResultInDeferred
+C:\SE\Updater\clientbuild\client.py:70:uncompressandremove
+C:\SE\Updater\clientbuild\client.py:61:commandline
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+
+01.08.2005, 23:55
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+
+01.08.2005, 23:56
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+	informace precteny
+moria update files:
+soubor 'MULTIMAP.RLE' ...je v aktualni verzi, netreba resit
+soubor 'verdata.mul' ...je v aktualni verzi, netreba resit
+soubor 'multi.mul' ...je v aktualni verzi, netreba resit
+soubor 'Art.mul' ...je v aktualni verzi, netreba resit
+soubor 'Hues.mul' ...je v aktualni verzi, netreba resit
+soubor 'Tiledata.mul' ...je v aktualni verzi, netreba resit
+soubor 'map0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Staidx0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Artidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Login.cfg' ...je nezname verze, stahuji cely aktualni soubor a zalohuji...
+	rozbaluji...
+	soubor uspesne stazen a rozbalen
+soubor 'Client_3.0.6m.exe' ...je v aktualni verzi, netreba resit
+soubor 'Texidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Statics0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Texmaps.mul' ...je v aktualni verzi, netreba resit
+soubor 'MULTI.IDX' ...je v aktualni verzi, netreba resit
+
+souhrn:
+	Login.cfg: zalohovan a stazen novy
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+
+02.08.2005, 02:50
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+	informace precteny
+moria update files:
+soubor 'MULTIMAP.RLE' ...je v aktualni verzi, netreba resit
+soubor 'verdata.mul' ...je v aktualni verzi, netreba resit
+soubor 'multi.mul' ...je v aktualni verzi, netreba resit
+soubor 'Art.mul' ...je v aktualni verzi, netreba resit
+soubor 'Hues.mul' ...je v aktualni verzi, netreba resit
+soubor 'Tiledata.mul' ...je v aktualni verzi, netreba resit
+soubor 'map0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Staidx0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Artidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Login.cfg' ...je v aktualni verzi, netreba resit
+soubor 'Client_3.0.6m.exe' ...je v aktualni verzi, netreba resit
+soubor 'Texidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Statics0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Texmaps.mul' ...je v aktualni verzi, netreba resit
+soubor 'MULTI.IDX' ...je v aktualni verzi, netreba resit
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+02.08.2005, 03:07
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+02.08.2005, 09:32
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+	informace precteny
+moria update files:
+soubor 'MULTIMAP.RLE' ...je v aktualni verzi, netreba resit
+soubor 'verdata.mul' ...je v aktualni verzi, netreba resit
+soubor 'multi.mul' ...je v aktualni verzi, netreba resit
+soubor 'Art.mul' ...je v aktualni verzi, netreba resit
+soubor 'Hues.mul' ...je v aktualni verzi, netreba resit
+soubor 'Tiledata.mul' ...je v aktualni verzi, netreba resit
+soubor 'map0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Staidx0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Artidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Login.cfg' ...je nezname verze, stahuji cely aktualni soubor a zalohuji...
+	rozbaluji...
+	soubor uspesne stazen a rozbalen
+soubor 'Client_3.0.6m.exe' ...je v aktualni verzi, netreba resit
+soubor 'Texidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Statics0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Texmaps.mul' ...je v aktualni verzi, netreba resit
+soubor 'MULTI.IDX' ...je v aktualni verzi, netreba resit
+
+souhrn:
+	Login.cfg: zalohovan a stazen novy
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+02.08.2005, 09:44
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+	informace precteny
+moria update files:
+soubor 'MULTIMAP.RLE' ...je v aktualni verzi, netreba resit
+soubor 'verdata.mul' ...je v aktualni verzi, netreba resit
+soubor 'multi.mul' ...je v aktualni verzi, netreba resit
+soubor 'Art.mul' ...je v aktualni verzi, netreba resit
+soubor 'Hues.mul' ...je v aktualni verzi, netreba resit
+soubor 'Tiledata.mul' ...je v aktualni verzi, netreba resit
+soubor 'map0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Staidx0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Artidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Login.cfg' ...je v aktualni verzi, netreba resit
+soubor 'Client_3.0.6m.exe' ...je v aktualni verzi, netreba resit
+soubor 'Texidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Statics0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Texmaps.mul' ...je v aktualni verzi, netreba resit
+soubor 'MULTI.IDX' ...je v aktualni verzi, netreba resit
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+03.08.2005, 14:51
+stahuji metainfo soubor (updateinfo.xml)
+
+
+03.08.2005, 14:51
+stahuji metainfo soubor (updateinfo.xml)
+
+
+
+03.08.2005, 14:56
+stahuji metainfo soubor (updateinfo.xml)
+
+
+03.08.2005, 14:57
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+	informace precteny
+moria update files:
+soubor 'AnimLibrary.dll' ...je v aktualni verzi, netreba resit
+soubor 'animdata.mul' ...je v aktualni verzi, netreba resit
+soubor 'art.mul' ...je v aktualni verzi, netreba resit
+soubor 'Hues.mul' ...je v aktualni verzi, netreba resit
+soubor 'gump.def' ...je v aktualni verzi, netreba resit
+soubor 'MULTI.IDX' ...je v aktualni verzi, netreba resit
+soubor 'Login.cfg' ...je nezname verze, stahuji cely aktualni soubor a zalohuji...
+	rozbaluji...
+	soubor uspesne stazen a rozbalen
+soubor 'Client_3.0.6m.exe' ...je v aktualni verzi, netreba resit
+soubor 'TexTerr.def' ...je v aktualni verzi, netreba resit
+soubor 'Music\Digital\zenskychoral.mp3' ...je v aktualni verzi, netreba resit
+soubor 'Tiledata.mul' ...je v aktualni verzi, netreba resit
+soubor 'Texmaps.mul' ...je v aktualni verzi, netreba resit
+soubor 'animinfo.mul' ...je v aktualni verzi, netreba resit
+soubor 'Arttable.cfg' ...je v aktualni verzi, netreba resit
+soubor 'Staidx0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Statics0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Music\Digital\muzskychoral.mp3' ...je v aktualni verzi, netreba resit
+soubor 'Texidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Music\Digital\Config.txt' ...je v aktualni verzi, netreba resit
+soubor 'artidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Gumpart.mul' ...je v aktualni verzi, netreba resit
+soubor 'multi.mul' ...je v aktualni verzi, netreba resit
+soubor 'Music\Digital\Minastirith.mp3' ...je v aktualni verzi, netreba resit
+soubor 'Map0.mul' ...je v aktualni verzi, netreba resit
+soubor 'art.def' ...je v aktualni verzi, netreba resit
+soubor 'MULTIMAP.RLE' ...je v aktualni verzi, netreba resit
+soubor 'Gumpidx.mul' ...je v aktualni verzi, netreba resit
+
+souhrn:
+	Login.cfg: zalohovan a stazen novy
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+03.08.2005, 14:57
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+
+03.08.2005, 21:08
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback: twisted.web.error.Error, 400 Bad Request
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni	rozbaluji...
+Chyba: [Failure instance: Traceback: exceptions.Exception, 
+
+Error:
+there is no such archive
+
+C:\Python24\Lib\site-packages\twisted\internet\threads.py:37:_putResultInDeferred
+C:\SE\Updater\clientbuild\client.py:70:uncompressandremove
+C:\SE\Updater\clientbuild\client.py:61:commandline
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+03.08.2005, 21:08
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback: twisted.internet.error.DNSLookupError, DNS lookup failed: address 'http://82.119.243.30' not found.
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni	rozbaluji...
+Chyba: [Failure instance: Traceback: exceptions.Exception, 
+
+Error:
+there is no such archive
+
+C:\Python24\Lib\site-packages\twisted\internet\threads.py:37:_putResultInDeferred
+C:\SE\Updater\clientbuild\client.py:70:uncompressandremove
+C:\SE\Updater\clientbuild\client.py:61:commandline
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+
+03.08.2005, 22:03
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback (failure with no frames): twisted.internet.error.DNSLookupError: DNS lookup failed: address 'http://82.119.243.30' not found: (11001, 'getaddrinfo failed').
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni	rozbaluji...
+Chyba: [Failure instance: Traceback: exceptions.Exception: 
+
+Error:
+there is no such archive
+
+C:\Python24\lib\threading.py:422:run
+C:\Python24\Lib\site-packages\twisted\python\threadpool.py:145:_worker
+C:\Python24\lib\site-packages\twisted\python\context.py:52:callWithContext
+C:\Python24\lib\site-packages\twisted\python\context.py:31:callWithContext
+--- <exception caught here> ---
+C:\Python24\lib\site-packages\twisted\internet\threads.py:25:_putResultInDeferred
+C:\SE\Updater\clientbuild\client.py:70:uncompressandremove
+C:\SE\Updater\clientbuild\client.py:61:commandline
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+03.08.2005, 22:07
+stahuji metainfo soubor (updateinfo.xml)
+Chyba: [Failure instance: Traceback (failure with no frames): twisted.internet.error.DNSLookupError: DNS lookup failed: address 'http://82.119.243.30' not found: (11001, 'getaddrinfo failed').
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni	rozbaluji...
+Chyba: [Failure instance: Traceback: exceptions.Exception: 
+
+Error:
+there is no such archive
+
+C:\Python24\lib\threading.py:422:run
+C:\Python24\Lib\site-packages\twisted\python\threadpool.py:145:_worker
+C:\Python24\lib\site-packages\twisted\python\context.py:52:callWithContext
+C:\Python24\lib\site-packages\twisted\python\context.py:31:callWithContext
+--- <exception caught here> ---
+C:\Python24\lib\site-packages\twisted\internet\threads.py:25:_putResultInDeferred
+C:\SE\Updater\clientbuild\client.py:70:uncompressandremove
+C:\SE\Updater\clientbuild\client.py:61:commandline
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+
+03.08.2005, 22:08
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+03.08.2005, 22:08
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+	informace precteny
+moria update files:
+soubor 'AnimLibrary.dll' ...je v aktualni verzi, netreba resit
+soubor 'animdata.mul' ...je v aktualni verzi, netreba resit
+soubor 'art.mul' ...je v aktualni verzi, netreba resit
+soubor 'Hues.mul' ...je v aktualni verzi, netreba resit
+soubor 'gump.def' ...je v aktualni verzi, netreba resit
+soubor 'MULTI.IDX' ...je v aktualni verzi, netreba resit
+soubor 'Login.cfg' ...je nezname verze, stahuji cely aktualni soubor a zalohuji...
+	rozbaluji...
+	soubor uspesne stazen a rozbalen
+soubor 'Client_3.0.6m.exe' ...je v aktualni verzi, netreba resit
+soubor 'TexTerr.def' ...je v aktualni verzi, netreba resit
+soubor 'Music\Digital\zenskychoral.mp3' ...je v aktualni verzi, netreba resit
+soubor 'Tiledata.mul' ...je v aktualni verzi, netreba resit
+soubor 'Texmaps.mul' ...je v aktualni verzi, netreba resit
+soubor 'animinfo.mul' ...je v aktualni verzi, netreba resit
+soubor 'Arttable.cfg' ...je v aktualni verzi, netreba resit
+soubor 'Staidx0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Statics0.mul' ...je v aktualni verzi, netreba resit
+soubor 'Music\Digital\muzskychoral.mp3' ...je v aktualni verzi, netreba resit
+soubor 'Texidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Music\Digital\Config.txt' ...je v aktualni verzi, netreba resit
+soubor 'artidx.mul' ...je v aktualni verzi, netreba resit
+soubor 'Gumpart.mul' ...je v aktualni verzi, netreba resit
+soubor 'multi.mul' ...je v aktualni verzi, netreba resit
+soubor 'Music\Digital\Minastirith.mp3' ...je v aktualni verzi, netreba resit
+soubor 'Map0.mul' ...je v aktualni verzi, netreba resit
+soubor 'art.def' ...je v aktualni verzi, netreba resit
+soubor 'MULTIMAP.RLE' ...je v aktualni verzi, netreba resit
+soubor 'Gumpidx.mul' ...je v aktualni verzi, netreba resit
+
+souhrn:
+	Login.cfg: zalohovan a stazen novy
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+03.08.2005, 22:12
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+03.08.2005, 22:37
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Chyba: [Failure instance: Traceback: exceptions.Exception: 
+7-Zip 4.15 beta  Copyright (c) 1999-2005 Igor Pavlov  2005-01-25
+
+Processing archive: C:\SE\Updater\clientbuild\temp\updateinfo.xml.rar
+
+Error: C:\SE\Updater\clientbuild\temp\updateinfo.xml.rar is not supported archive
+
+C:\Python24\lib\threading.py:422:run
+C:\Python24\Lib\site-packages\twisted\python\threadpool.py:145:_worker
+C:\Python24\lib\site-packages\twisted\python\context.py:52:callWithContext
+C:\Python24\lib\site-packages\twisted\python\context.py:31:callWithContext
+--- <exception caught here> ---
+C:\Python24\lib\site-packages\twisted\internet\threads.py:25:_putResultInDeferred
+C:\SE\Updater\clientbuild\client.py:70:uncompressandremove
+C:\SE\Updater\clientbuild\client.py:61:commandline
+]
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni
+
+03.08.2005, 22:38
+stahuji metainfo soubor (updateinfo.xml)
+	rozbaluji...
+Zadna zmena od minuleho updatu (pokud jste jineho nazoru, spustte pres forceupdate.bat)
+
+Zmacknutim Ok spustite klienta...
+Kliknete na [X] v rohu pro ukonceni

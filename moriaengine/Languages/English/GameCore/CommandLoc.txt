@@ -1,0 +1,6 @@
+XCommandPrompt                  = Command who or what?
+CommandFailed                   = Command '{0}' failed - {1}
+WrongCommandArgument            = Wrong argument for that method
+UnknownCommand                  = Unknown method/function {0}
+CommandDoesNothing              = This code line does nothing
+WrongCommandFormat              = Unrecognized command format

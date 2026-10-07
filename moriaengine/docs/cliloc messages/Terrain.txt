@@ -1,0 +1,21 @@
+500259	Enter the area of operation for the terrain scan, in (x, y) (x, y) format:
+500260	Setting of operations area cancelled.
+500261	Format for operations area incorrect.
+500262	Terrain scan complete.
+500569	Terrain scan complete.
+500570	Enter the amount by which to move terrain up.
+500571	Enter the amount by which to move terrain lower.
+500572	Enter the low end of the elevation filter:
+500573	Enter the high end of the elevation filter:
+500574	Setting of terrain type cancelled.
+500575	Enter the area of operation for the terrain scan, in (x, y) (x, y) format:
+500576	Setting of operations area cancelled.
+500577	Format for operations area incorrect.
+500578	Setting of transition type cancelled.
+500579	Setting of embankment type cancelled.
+500580	Terrain fill cancelled.
+500581	Enter the target elevation, then a +/- fudge factor for randomization, in the format (a, b):
+500582	Elevation changes cancelled.
+500583	Format for elevations change incorrect.
+500584	Terrain fill cancelled.
+500585	Terrain fill cancelled.

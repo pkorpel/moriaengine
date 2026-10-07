@@ -1,0 +1,23 @@
+[ActivableAbilityDef a_standcast]
+Name = "(Standcast)"
+EffectPower=0.0005 // 0.5% per level at 10 points
+
+[PassiveAbilityDef a_weapon_dodge]
+Name = "(Weapon dodging)"
+EffectPower=0.01 //1% per point
+
+[PassiveAbilityDef a_spell_absorption]
+Name = "(Spell absorption)"
+EffectPower=0.01 //1% per point
+
+[PassiveAbilityDef a_leech_hits]
+Name = "(Hitpoints Leech)"
+EffectPower=0.01 //1% per point
+
+[PassiveAbilityDef a_leech_stam]
+Name = "(Stamina Leech)"
+EffectPower=0.01 //1% per point
+
+[PassiveAbilityDef a_leech_mana]
+Name = "(Mana Leech)"
+EffectPower=0.01 //1% per point

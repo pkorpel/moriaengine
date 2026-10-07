@@ -1,0 +1,43 @@
+[ThrowingAbilityDef a_throwing]
+Name="Throwing"
+EffectPower=30 //stamloss per tile
+Cooldown = 4 * 60
+
+on=@Activate
+//	this.Sound(530)
+//	EffectFactory.StationaryEffect(this, 02EEA, 6, 20)
+
+[function throw]
+a_throwing.Activate(this)
+
+
+
+//stackable, poisonable = projectile
+[ColoredProjectileDef i_kudla]
+NAME="Vrhací nùž"
+Model=i_dagger
+Stackable=True
+
+RESOURCES=2 i_ingot_iron
+//DAM=3
+SKILLMAKE=BLACKSMITHING 40.0, TINKERING 35.0
+
+PoisoningDifficulty = 250
+PoisoningEfficiency = 0.75
+
+Material = Material.Iron
+MaterialType = MaterialType.Metal
+ProjectileType = ProjectileType.Throwable
+
+CATEGORY=Provisions - Weapons - Special
+SUBSECTION=iron
+DESCRIPTION=Vrhaci nuz
+
+//on=@targon_item
+//if (f_weapon_sharp_targon_item)
+//  return 1
+//endif
+//return"<bowcrafting_targon_item>"	
+
+//ON=@Create
+//weaponcreate(Iron)

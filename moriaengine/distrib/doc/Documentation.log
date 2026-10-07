@@ -1,0 +1,37 @@
+Microsoft HTML Help Compiler 4.74.8702
+
+Compiling c:\SE\steamengine\distrib\doc\Documentation.chm
+
+HHC4006: Warning: The file "SteamEngine.AbstractCharacter.Plevel.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Commands.XCommand_Cancel.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Commands.XCommand_Character.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Commands.XCommand_Item.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Item.Amount.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Point2D.X.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Point2D.Y.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Point3D.Z.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Point4D.M.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Point5D.Height.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.SEException.NiceMessage.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Static.M.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Static.X.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Static.Y.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Static.Z.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.TemplateItem.Flags.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.ThingDef.Flags.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.ThingDef.Name.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Scripts.ScriptedCommands.InfoTargonGround.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Scripts.ScriptedCommands.InfoTargonChar.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Scripts.ScriptedCommands.InfoTargonItem.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Scripts.ScriptedCommands.InfoTargonStatic.html" is already listed in the [FILES] section of the project file.
+HHC4006: Warning: The file "SteamEngine.Timers.Timer.Obj.html" is already listed in the [FILES] section of the project file.
+
+Compile time: 0 minutes, 41 seconds
+4,833	Topics
+39,627	Local links
+0	Internet links
+11	Graphics
+
+
+Created c:\SE\steamengine\distrib\doc\Documentation.chm, 1,455,887 bytes
+Compression decreased file by 11,922,954 bytes.

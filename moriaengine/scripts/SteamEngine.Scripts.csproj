@@ -1,0 +1,841 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C70C4C3E-FEC0-47BB-BB30-608951B723D5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SteamEngine.CompiledScripts</RootNamespace>
+    <ScriptsAssemblyNumber>VS</ScriptsAssemblyNumber>
+    <AssemblyName>SteamEngine.CompiledScripts.$(ScriptsAssemblyNumber)</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\build\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MSWIN</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\build\Debug\SteamEngine.CompiledScripts.$(ScriptsAssemblyNumber).XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\build\Release\</OutputPath>
+    <DefineConstants>TRACE;MSWIN</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\build\Release\SteamEngine.CompiledScripts.$(ScriptsAssemblyNumber).XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AI\dummy.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Bleeding\BleedingPlugins.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Bleeding\BleedingStrikePlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Bleeding\BleedingEffectPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\LongRange\LongRangePlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\LongRange\LongRangePlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Regenerations\HitsRegenAbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Regenerations\ManaRegenAbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Regenerations\StamRegenAbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Throwing\ThrowingAbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Warcry\Warcry.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Abilities\Warcry\Warcry.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\Bloodritual\Bloodritual.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\Bloodritual\BloodritualPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\ClearCast\ClearCastPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\ClearCast\ClearCastPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\CoolDownSpeedup\CoolDownSpeedupPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\CoolDownSpeedup\CoolDownSpeedupPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\WhirlWind\WhirlWindPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\WhirlWind\WhirlWindPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SkillDelaySpeedup\SkillDelaySpeedupPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SkillDelaySpeedup\SkillDelaySpeedupPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\WeaponSkillDmgBonus\WeaponSkillDmgBonusPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\EnergyShield\EnergyShieldPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\EnergyShield\EnergyShieldPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\Ignition\IgnitionActivatedPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\Ignition\IgnitionEffectPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\Ignition\IgnitionPlugins.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\ManaSaving\ManaSavingPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\ManaSaving\ManaSavingPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SkillMasteries\SkillMasteryAbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellClassDiscountPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellClassDiscountPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellManaDiscountPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellManaDiscountPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellSchoolManaDiscountPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellSchoolManaDiscountPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SpellPowerBonuses\SpellPowerBonusPlugin.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\SpellPowerBonuses\SpellPowerBonusPlugin.Generated.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\AbilitiesEnumerator.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\Ability.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\AbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\AbilityDialog.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\ActivableAbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\CharsAbilitiesDialog.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\ImmediateAbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\PassiveAbilityDef.cs" />
+    <Compile Include="Basic\AbilitiesAndTalents\StatDrainingAbilityDef.cs" />
+    <Compile Include="Basic\administration\accounts\AccCharsList.cs" />
+    <Compile Include="Basic\administration\accounts\AccCreate.cs" />
+    <Compile Include="Basic\administration\accounts\AccList.cs" />
+    <Compile Include="Basic\administration\Admin\Admin.cs" />
+    <Compile Include="Basic\administration\firewall\D_Firewall_BlockIpRange.cs" />
+    <Compile Include="Basic\administration\firewall\D_Firewall_BlockIp.cs" />
+    <Compile Include="Basic\administration\firewall\Firewall.cs" />
+    <Compile Include="Basic\administration\firewall\D_Firewall.cs" />
+    <Compile Include="Basic\administration\Functions\FunctionsList.cs" />
+    <Compile Include="Basic\administration\InfoDialog\DataViewProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Basic\administration\InfoDialog\D_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Basic\administration\InfoDialog\D_InfoDetail.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Basic\administration\InfoDialog\FieldViewBaseImpls\ButtonDataFieldView.cs" />
+    <Compile Include="Basic\administration\InfoDialog\FieldViewBaseImpls\ReadOnlyDataFieldView.cs" />
+    <Compile Include="Basic\administration\InfoDialog\FieldViewBaseImpls\ReadWriteDataFieldView.cs" />
+    <Compile Include="Basic\administration\InfoDialog\Generator\ViewableClassAttributes.cs" />
+    <Compile Include="Basic\administration\InfoDialog\Generator\ViewableClassDataView.cs" />
+    <Compile Include="Basic\administration\InfoDialog\Generator\ViewableClassGenerator.cs" />
+    <Compile Include="Basic\administration\InfoDialog\IDataView.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Basic\administration\InfoDialog\InfoDialogHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Basic\administration\Pages\GMPage.cs" />
+    <Compile Include="Basic\administration\plugins\PluginList.cs" />
+    <Compile Include="Basic\administration\Regions\MutableRectangle.cs" />
+    <Compile Include="Basic\administration\Regions\NewRectangle.cs" />
+    <Compile Include="Basic\administration\Regions\NewRegion.cs" />
+    <Compile Include="Basic\administration\Regions\RegionsList.cs" />
+    <Compile Include="Basic\administration\Regions\RegionsRects.cs" />
+    <Compile Include="Basic\administration\Regions\SelectParent.cs" />
+    <Compile Include="Basic\administration\Register\RegisterDialogs.cs" />
+    <Compile Include="Basic\administration\Register\RegisterHandling.cs" />
+    <Compile Include="Basic\administration\InfoDialog\ContainerView.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\DataViews\DictionaryDataView.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\DataViews\EnumDataView.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\DataViews\ListDataView.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\AbilityDefDescriptor.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\AccountDescriptors.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\CharacterDescriptor.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\ItemDescriptor.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\PluginDescriptor.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\PluginHolderDescriptor.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\RectanglesDescriptor.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\RegionsDescriptor.cs" />
+    <Compile Include="Basic\administration\Settings\implementations\Descriptors\TagHolderDescriptor.cs" />
+    <Compile Include="Basic\administration\Settings\MassSettings.cs" />
+    <Compile Include="Basic\administration\Settings\MassSettingsView.cs" />
+    <Compile Include="Basic\administration\Settings\MetaSettings.cs" />
+    <Compile Include="Basic\administration\Settings\SettingsInfo.cs" />
+    <Compile Include="Basic\administration\Settings\SettingsProvider.cs" />
+    <Compile Include="Basic\administration\Settings\SettingsResult.cs" />
+    <Compile Include="Basic\administration\tags\TagCreate.cs" />
+    <Compile Include="Basic\administration\tags\TagList.cs" />
+    <Compile Include="Basic\administration\timers\TimerEdit.cs" />
+    <Compile Include="Basic\administration\timers\TimerList.cs" />
+    <Compile Include="Basic\administration\Triggers\TriggerGroupAdd.cs" />
+    <Compile Include="Basic\administration\Triggers\TriggerGroupList.cs" />
+    <Compile Include="Basic\administration\Commands.cs" />
+    <Compile Include="Basic\administration\CommandsAuthorization.cs" />
+    <Compile Include="Basic\AI\PathFinding\AStar.cs" />
+    <Compile Include="Basic\BasicTypes\E_test_all.cs" />
+    <Compile Include="Basic\BasicTypes\type_animations.cs" />
+    <Compile Include="Basic\BasicTypes\type_armor.cs" />
+    <Compile Include="Basic\BasicTypes\type_beers.cs" />
+    <Compile Include="Basic\BasicTypes\type_buildings_doors.cs" />
+    <Compile Include="Basic\BasicTypes\type_buildings_roofs.cs" />
+    <Compile Include="Basic\BasicTypes\type_buildings_walls.cs" />
+    <Compile Include="Basic\BasicTypes\type_by_profession.cs" />
+    <Compile Include="Basic\BasicTypes\type_character_icon.cs" />
+    <Compile Include="Basic\BasicTypes\type_clothes.cs" />
+    <Compile Include="Basic\BasicTypes\type_crafting.cs" />
+    <Compile Include="Basic\BasicTypes\type_decoration_banners_tapestries.cs" />
+    <Compile Include="Basic\BasicTypes\type_decoration_dungeons.cs" />
+    <Compile Include="Basic\BasicTypes\type_decoration_furniture.cs" />
+    <Compile Include="Basic\BasicTypes\type_decoration_miscellaneous.cs" />
+    <Compile Include="Basic\BasicTypes\type_deeds.cs" />
+    <Compile Include="Basic\BasicTypes\type_gm.cs" />
+    <Compile Include="Basic\BasicTypes\type_ground_tiles.cs" />
+    <Compile Include="Basic\BasicTypes\type_hair.cs" />
+    <Compile Include="Basic\BasicTypes\type_levers_switches.cs" />
+    <Compile Include="Basic\BasicTypes\type_maps.cs" />
+    <Compile Include="Basic\BasicTypes\type_miscellaneous.cs" />
+    <Compile Include="Basic\BasicTypes\type_multis.cs" />
+    <Compile Include="Basic\BasicTypes\type_ore.cs" />
+    <Compile Include="Basic\BasicTypes\type_potions.cs" />
+    <Compile Include="Basic\BasicTypes\type_provisions_alchemy_magic.cs" />
+    <Compile Include="Basic\BasicTypes\type_provisions_miscellaneous.cs" />
+    <Compile Include="Basic\BasicTypes\type_resources.cs" />
+    <Compile Include="Basic\BasicTypes\type_ship_parts.cs" />
+    <Compile Include="Basic\BasicTypes\type_spell_icon.cs" />
+    <Compile Include="Basic\BasicTypes\type_treas.cs" />
+    <Compile Include="Basic\BasicTypes\type_vegetation.cs" />
+    <Compile Include="Basic\BasicTypes\type_weapons.cs" />
+    <Compile Include="Basic\CharClasses\Character.cs" />
+    <Compile Include="Basic\CharClasses\Character.Generated.cs" />
+    <Compile Include="Basic\CharClasses\NPC.cs" />
+    <Compile Include="Basic\CharClasses\NPC.Generated.cs" />
+    <Compile Include="Basic\CharClasses\Player.cs" />
+    <Compile Include="Basic\CharClasses\Player.Generated.cs" />
+    <Compile Include="Basic\EffectDuration\FadingEffectDurationPlugin.cs" />
+    <Compile Include="Basic\EffectDuration\FadingEffectDurationPlugin.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Bank\BankBox.cs" />
+    <Compile Include="Basic\ItemClasses\Bank\BankBox.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\ShiningItem\ShiningItem.cs" />
+    <Compile Include="Basic\ItemClasses\ShiningItem\ShiningItem.Generated.cs" />
+    <Compile Include="Basic\Localization\LocDenyResult.cs" />
+    <Compile Include="Basic\Localization\NumberedLocStringCollection.cs" />
+    <Compile Include="Basic\db\DbManager.cs" />
+    <Compile Include="Basic\db\DbUtils.cs" />
+    <Compile Include="Basic\db\LoginLogsContainer.cs" />
+    <Compile Include="Basic\dialogs\displaytext\DisplayText.cs" />
+    <Compile Include="Basic\dialogs\DialogStacking.cs" />
+    <Compile Include="Basic\dialogs\DialogUtils.cs" />
+    <Compile Include="Basic\dialogs\GumpComponents.cs" />
+    <Compile Include="Basic\dialogs\ImprovedDialog.cs" />
+    <Compile Include="Basic\dialogs\Input.cs" />
+    <Compile Include="Basic\dialogs\ItemsDimensions.cs" />
+    <Compile Include="Basic\dialogs\LeafComponents.cs" />
+    <Compile Include="Basic\dialogs\Paging.cs" />
+    <Compile Include="Basic\EffectDuration\EffectDurationPlugin.cs" />
+    <Compile Include="Basic\EffectDuration\EffectDurationPlugin.Generated.cs" />
+    <Compile Include="Basic\EffectDuration\StatDrainingEffectDurationPlugin.cs" />
+    <Compile Include="Basic\EffectDuration\StatDrainingEffectDurationPlugin.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\ColoredArmor.cs" />
+    <Compile Include="Basic\ItemClasses\ColoredArmor.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\ColoredProjectile.cs" />
+    <Compile Include="Basic\ItemClasses\ColoredProjectile.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\ColoredStaff.cs" />
+    <Compile Include="Basic\ItemClasses\ColoredStaff.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\ColoredWeapon.cs" />
+    <Compile Include="Basic\ItemClasses\ColoredWeapon.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Container.cs" />
+    <Compile Include="Basic\ItemClasses\Container.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Corpse.cs" />
+    <Compile Include="Basic\ItemClasses\Corpse.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Door.cs" />
+    <Compile Include="Basic\ItemClasses\Door.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Equippable.cs" />
+    <Compile Include="Basic\ItemClasses\Equippable.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Item.cs" />
+    <Compile Include="Basic\ItemClasses\Item.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\MultiItem.cs" />
+    <Compile Include="Basic\ItemClasses\MultiItem.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Musical.cs" />
+    <Compile Include="Basic\ItemClasses\Musical.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Potion.cs" />
+    <Compile Include="Basic\ItemClasses\Potion.Generated.cs" />
+    <Compile Include="Basic\ItemClasses\Ship.cs" />
+    <Compile Include="Basic\ItemClasses\Ship.Generated.cs" />
+    <Compile Include="Basic\mailingsystem\MailingSystem.cs" />
+    <Compile Include="Basic\mailingsystem\MessagesDialog.cs" />
+    <Compile Include="Basic\Menu\AbstractMenuDef.cs" />
+    <Compile Include="Basic\Menu\CompiledMenuDef.cs" />
+    <Compile Include="Basic\Menu\ScriptedMenuDef.cs" />
+    <Compile Include="Basic\Professions\Professions.cs" />
+    <Compile Include="Basic\Professions\ProfessionDef.cs" />
+    <Compile Include="Basic\Professions\ProfessionPlugin.cs" />
+    <Compile Include="Basic\Professions\ProfessionPlugin.Generated.cs" />
+    <Compile Include="Basic\Professions\TalentTreeBranchDef.cs" />
+    <Compile Include="Basic\Regeneration\RegenerationPlugin.cs" />
+    <Compile Include="Basic\Regeneration\RegenerationPlugin.Generated.cs" />
+    <Compile Include="Basic\Regions\FlaggedRegion.cs" />
+    <Compile Include="Basic\Resources\IResourceListEntry.cs" />
+    <Compile Include="Basic\Resources\ItemCounter.cs" />
+    <Compile Include="Basic\Resources\ResourceItemFinder.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\AbilityResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\DexResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\IntResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\StaminaResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\ManaResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\HitpointsResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\ItemResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\LevelResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\ResListLoc.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\SkillResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\StrResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\TriggerGroupResource.cs" />
+    <Compile Include="Basic\Resources\ResourceListEntries\VitResource.cs" />
+    <Compile Include="Basic\Resources\ResourcesListParser.cs" />
+    <Compile Include="Basic\Resources\ResourcesListSaver.cs" />
+    <Compile Include="Basic\Resources\ResourcesList.cs" />
+    <Compile Include="Basic\Roles\Guild\Guild.cs" />
+    <Compile Include="Basic\Roles\Guild\GuildMembership.cs" />
+    <Compile Include="Basic\Roles\Party\Party.cs" />
+    <Compile Include="Basic\Roles\Party\PartyCommands.cs" />
+    <Compile Include="Basic\Roles\Party\PartyDef.cs" />
+    <Compile Include="Basic\Roles\CharsRolesDialog.cs" />
+    <Compile Include="Basic\Roles\RankSystem.cs" />
+    <Compile Include="Basic\Roles\Role.cs" />
+    <Compile Include="Basic\Roles\RoleDef.cs" />
+    <Compile Include="Basic\Roles\RoleKey.cs" />
+    <Compile Include="Basic\Roles\RoleMembership.cs" />
+    <Compile Include="Basic\Roles\RolesDialog.cs" />
+    <Compile Include="Basic\Roles\RolesManagement.cs" />
+    <Compile Include="Basic\skills\Combat\CombatCalculator.cs" />
+    <Compile Include="Basic\skills\Combat\CombatSettings.cs" />
+    <Compile Include="Basic\skills\Combat\DamageManager.cs" />
+    <Compile Include="Basic\skills\Combat\Destroyable.cs" />
+    <Compile Include="Basic\skills\Combat\Destroyable.Generated.cs" />
+    <Compile Include="Basic\skills\Combat\Plugins.Generated.cs" />
+    <Compile Include="Basic\skills\Combat\Projectile.cs" />
+    <Compile Include="Basic\skills\Combat\Projectile.Generated.cs" />
+    <Compile Include="Basic\skills\Combat\Weapon.cs" />
+    <Compile Include="Basic\skills\Combat\Weapon.Generated.cs" />
+    <Compile Include="Basic\skills\Combat\WeaponSkillDef.cs" />
+    <Compile Include="Basic\skills\Combat\WeaponSkillTargetQueuePlugin.cs" />
+    <Compile Include="Basic\skills\Combat\WeaponSkillTargetTrackerPlugin.cs" />
+    <Compile Include="Basic\skills\Combat\Wearable.cs" />
+    <Compile Include="Basic\skills\Combat\Wearable.Generated.cs" />
+    <Compile Include="Basic\skills\Crafting\Craftmenu\Craftmenu.cs" />
+    <Compile Include="Basic\skills\Crafting\Craftmenu\CraftmenuDialog.cs" />
+    <Compile Include="Basic\skills\Crafting\Craftmenu\CraftmenuSettingsDialog.cs" />
+    <Compile Include="Basic\skills\Crafting\Craftmenu\ItemInfoDialog.cs" />
+    <Compile Include="Basic\skills\Crafting\Alchemy.cs" />
+    <Compile Include="Basic\skills\Crafting\Blacksmithing.cs" />
+    <Compile Include="Basic\skills\Crafting\Bowcraft.cs" />
+    <Compile Include="Basic\skills\Crafting\Carpentry.cs" />
+    <Compile Include="Basic\skills\Crafting\Cooking.cs" />
+    <Compile Include="Basic\skills\Crafting\CraftingProcessPlugin.cs" />
+    <Compile Include="Basic\skills\Crafting\CraftingProcessPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Crafting\CraftingSkillDef.cs" />
+    <Compile Include="Basic\skills\Crafting\Inscription.cs" />
+    <Compile Include="Basic\skills\Crafting\Tailoring.cs" />
+    <Compile Include="Basic\skills\Crafting\Tinkering.cs" />
+    <Compile Include="Basic\skills\Discordance\Discordance.cs" />
+    <Compile Include="Basic\skills\Discordance\DiscordanceEffectPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\HealingAndVeterinary\BandageSkillDef.cs" />
+    <Compile Include="Basic\skills\HealingAndVeterinary\Healing.cs" />
+    <Compile Include="Basic\skills\Hiding\DetectHidden.cs" />
+    <Compile Include="Basic\skills\Hiding\HiddenHelperPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Hiding\Hiding.cs" />
+    <Compile Include="Basic\skills\Lockpicking\ItemLockPlugin.cs" />
+    <Compile Include="Basic\skills\Lockpicking\ItemLockPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Lockpicking\Lockpicking.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\DamageSpells\DamageSpellDef.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\DamageSpells\MindBlastSpellDef.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\Dispell\Dispell.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\HealingSpells\HealingSpellDef.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\MagicReflection\MagicReflectionPlugin.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\MagicReflection\MagicReflectionPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\ManaShield\ManaShieldPlugin.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\ManaShield\ManaShieldPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\Paralyze\ParalyzeEffectPlugin.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\Paralyze\ParalyzeEffectPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\PoisonAndCure\DamagingPoisonPlugin.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\PoisonAndCure\DamagingPoisonPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\PoisonAndCure\PoisonSpellDef.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\ResurrectionSpell\ResurrectionSpellDef.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\StatModSpells\StatModSpellEffectPlugins.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\StatModSpells\StatModSpellEffectPlugins.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\TeleportingSpells\RecallRune.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\TeleportingSpells\RecallRune.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\WallSpells\WallSpellDef.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\WallSpells\WallSpellItem.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\WallSpells\WallSpellItem.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\DurableSpellDef.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\SpellDef.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\SpellEffectItem.cs" />
+    <Compile Include="Basic\skills\Magery\Spells\SpellEffectItem.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\Magery.cs" />
+    <Compile Include="Basic\skills\Magery\MagerySettings.cs" />
+    <Compile Include="Basic\skills\Magery\SpellBook.cs" />
+    <Compile Include="Basic\skills\Magery\SpellBook.Generated.cs" />
+    <Compile Include="Basic\skills\Magery\SpellScroll.cs" />
+    <Compile Include="Basic\skills\Magery\SpellScroll.Generated.cs" />
+    <Compile Include="Basic\skills\Meditation\Meditation.cs" />
+    <Compile Include="Basic\skills\Meditation\MeditationPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Poisoning\PoisoningSettings.cs" />
+    <Compile Include="Basic\skills\Poisoning\PoisonedItemPlugin.cs" />
+    <Compile Include="Basic\skills\Poisoning\PoisonedItemPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Poisoning\Poisoning.cs" />
+    <Compile Include="Basic\skills\Poisoning\PoisonPotion.cs" />
+    <Compile Include="Basic\skills\Poisoning\PoisonPotion.Generated.cs" />
+    <Compile Include="Basic\skills\Stealing\Snooping.cs" />
+    <Compile Include="Basic\skills\Stealing\SnoopingPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Stealing\Stealing.cs" />
+    <Compile Include="Basic\skills\Tracking\Tracking.cs" />
+    <Compile Include="Basic\skills\Tracking\TrackingCategoriesDialog.cs" />
+    <Compile Include="Basic\skills\Tracking\TrackingCharactersDialog.cs" />
+    <Compile Include="Basic\skills\Tracking\TrackingPlugin.Generated.cs" />
+    <Compile Include="Basic\skills\Tracking\TrackingPlugins.cs" />
+    <Compile Include="Basic\skills\Tracking\TrackPoint.cs" />
+    <Compile Include="Basic\skills\Anatomy.cs" />
+    <Compile Include="Basic\skills\AnimalLore.cs" />
+    <Compile Include="Basic\skills\ArmsLore.cs" />
+    <Compile Include="Basic\skills\ItemID.cs" />
+    <Compile Include="Basic\skills\ScriptedSkillDef.cs" />
+    <Compile Include="Basic\skills\Skill.cs" />
+    <Compile Include="Basic\skills\SkillDef.cs" />
+    <Compile Include="Basic\skills\SkillName.cs" />
+    <Compile Include="Basic\skills\SkillsEnumerator.cs" />
+    <Compile Include="Basic\skills\SkillUtils.cs" />
+    <Compile Include="Basic\Spawning\SpawnInfo.cs" />
+    <Compile Include="Basic\Target\AbstractTargetDef.cs" />
+    <Compile Include="Basic\Target\CompiledTargetDef.cs" />
+    <Compile Include="Basic\Target\ScriptedTargetDef.cs" />
+    <Compile Include="Basic\utilities\ColoredItems.cs" />
+    <Compile Include="Basic\utilities\ColorsDlg.cs" />
+    <Compile Include="Basic\BackupsManager.cs" />
+    <Compile Include="Basic\CharModelInfo.cs" />
+    <Compile Include="Basic\Enums.cs" />
+    <Compile Include="Basic\GumpIDs.cs" />
+    <Compile Include="Basic\LightAndWeather.cs" />
+    <Compile Include="Basic\Notoriety.cs" />
+    <Compile Include="Basic\PeriodicSave.cs" />
+    <Compile Include="Basic\PlayerCreation.cs" />
+    <Compile Include="Basic\ScriptedAccount.cs" />
+    <Compile Include="Basic\ScriptSector.cs" />
+    <Compile Include="Basic\TemplateDef.cs" />
+    <Compile Include="Basic\TimerPlugin.cs" />
+    <Compile Include="Basic\utilities\ItemTypeNames.cs" />
+    <Compile Include="Optional\PlayerVendor\D_PlayerVendor_StockItemDetail.cs" />
+    <Compile Include="Optional\PlayerVendor\D_PlayerVendor_ListStock.cs" />
+    <Compile Include="Optional\PlayerVendor\PlayerVendor.cs" />
+    <Compile Include="Optional\PlayerVendor\playerVendor.Generated.cs" />
+    <Compile Include="Optional\PlayerVendor\PlayerVendorStockEntry.cs" />
+    <Compile Include="Optional\StorageBoxes\GemBox.cs" />
+    <Compile Include="Optional\StorageBoxes\PotionKeg.cs" />
+    <Compile Include="Optional\StorageBoxes\RegBox.cs" />
+    <Compile Include="Optional\StorageBoxes\storageBoxes.Generated.cs" />
+    <Compile Include="Optional\Treasures\Treasures.cs" />
+    <Compile Include="Optional\Treasures\treasures.Generated.cs" />
+    <Compile Include="Optional\TargetMemory.cs" />
+    <Compile Include="Temporary\Temporary.cs" />
+    <Compile Include="Tests\CompoundDialog.cs" />
+    <Compile Include="Tests\d_test.cs" />
+    <Compile Include="Tests\InputDefTest.cs" />
+    <Compile Include="Tests\LScriptTest.cs" />
+    <Compile Include="Tests\MemberWrapperTests.cs" />
+    <Compile Include="Tests\SaveLoadTests.cs" />
+    <Compile Include="Tests\SettingsTest.cs" />
+    <Compile Include="Tests\TargetDefTest.cs" />
+    <Compile Include="Tests\Test.cs" />
+    <Compile Include="Tests\TextColorTest.cs" />
+    <Compile Include="Utils\LScriptComparer.cs" />
+    <Compile Include="Utils\Persistence\ArrayListSaver.cs" />
+    <Compile Include="Utils\Persistence\ArraySaver.cs" />
+    <Compile Include="Utils\Persistence\IPAddressSaver.cs" />
+    <Compile Include="Utils\Persistence\DateSaver.cs" />
+    <Compile Include="Utils\Persistence\DictionarySaver.cs" />
+    <Compile Include="Utils\Persistence\GenericListSaver.cs" />
+    <Compile Include="Utils\Persistence\HashtableSaver.cs" />
+    <Compile Include="Utils\Persistence\LinkedListSaver.cs" />
+    <Compile Include="Utils\Persistence\PointSaver.cs" />
+    <Compile Include="Utils\Persistence\StaticMemberSaver.cs" />
+    <Compile Include="Utils\AnimCalculator.cs" />
+    <Compile Include="Utils\EffectFactory.cs" />
+    <Compile Include="Utils\ExportUtils.cs" />
+    <Compile Include="Utils\HuesCalculator.cs" />
+    <Compile Include="Utils\LegacyUtils.cs" />
+    <Compile Include="Utils\PriorityQueue.cs" />
+    <Compile Include="Utils\ScriptUtil.cs" />
+    <Compile Include="Utils\SingletonScript.cs" />
+    <Compile Include="Utils\SoundCalculator.cs" />
+    <Compile Include="Utils\SoundNames.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Basic\AbilitiesAndTalents\Abilities\Bleeding\bleedingStrike.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\Bleeding\BleedingPlugins.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\Bleeding\bleeding.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\kick.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\LongRange\longRange.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\LongRange\LongRangePlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\Regenerations\regenAbilities.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\Throwing\throwing.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\Warcry\Warcry.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Abilities\Warcry\warcry.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\Bloodritual\Bloodritual.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\Bloodritual\bloodritual.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\ClearCast\clearCast.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\ClearCast\ClearCastPlugin.ct" />
+    <Compile Include="Basic\AbilitiesAndTalents\Talents\WeaponSkillDmgBonus\WeaponSkillDmgBonusPlugin.Generated.cs" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\CoolDownSpeedup\coolDownSpeedup.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\CoolDownSpeedup\CoolDownSpeedupPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\poisoningBonus.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\WhirlWind\whirlWind.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\WhirlWind\WhirlWindPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SkillDelaySpeedup\skillDelaySpeedup.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SkillDelaySpeedup\SkillDelaySpeedupPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\WeaponSkillDmgBonus\WeaponSkillDmgBonusPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\WeaponSkillDmgBonus\weaponSkillDmgBonus.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\EnergyShield\energyShield.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\EnergyShield\EnergyShieldPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\Ignition\ignition.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\Ignition\IgnitionPlugins.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\ManaSaving\manaSaving.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\ManaSaving\ManaSavingPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SkillMasteries\skillMasteries.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\discountsByClass.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\discountsBySchool.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\discountsBySpell.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellClassDiscountPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellManaDiscountPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellManaDiscounts\SpellSchoolManaDiscountPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellPowerBonuses\spellBoost.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellPowerBonuses\spellDamageBonus.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellPowerBonuses\spellPowerBonusAbilities.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\SpellPowerBonuses\SpellPowerBonusPlugin.ct" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\magicReflectionBlessEnhancement.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\manaDepositBonus.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\manaRegenBoost.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\meditationBonus.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\mindBlastEnhancement.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\paralyzeHaste.def" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\protectionBonus.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\regenerationBonuses.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\silence.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\unimplementedTalents.scp" />
+    <None Include="Basic\AbilitiesAndTalents\Talents\wallSpellsDurationBonus.scp" />
+    <None Include="Basic\AbilitiesAndTalents\playerFunctions.scp" />
+    <None Include="Basic\AbilitiesAndTalents\unimplementedAbilities.scp" />
+    <None Include="Basic\administration\Admin\Admin.scp" />
+    <None Include="Basic\administration\Pages\pages.scp" />
+    <None Include="Basic\administration\d_defs.scp" />
+    <None Include="Basic\administration\helperFunctions.scp" />
+    <None Include="Basic\administration\Settings\nastaveni.scp" />
+    <None Include="Basic\BasicTypes\moriatypes.scp" />
+    <None Include="Basic\CharClasses\Character.ct" />
+    <None Include="Basic\CharClasses\NPC.ct" />
+    <None Include="Basic\CharClasses\Player.ct" />
+    <None Include="Basic\dialogs\Bounds.bin" />
+    <None Include="Basic\dialogs\explevel.scp" />
+    <None Include="Basic\EffectDuration\EffectDurationPlugin.ct" />
+    <None Include="Basic\EffectDuration\FadingEffectDurationPlugin.ct" />
+    <None Include="Basic\EffectDuration\StatDrainingEffectDurationPlugin.ct" />
+    <None Include="Basic\ItemClasses\Bank\BankBox.ct" />
+    <None Include="Basic\ItemClasses\ColoredArmor.ct" />
+    <None Include="Basic\ItemClasses\ColoredProjectile.ct" />
+    <None Include="Basic\ItemClasses\ColoredStaff.ct" />
+    <None Include="Basic\ItemClasses\ColoredWeapon.ct" />
+    <None Include="Basic\ItemClasses\Container.ct" />
+    <None Include="Basic\ItemClasses\Corpse.ct" />
+    <None Include="Basic\ItemClasses\Door.ct" />
+    <None Include="Basic\ItemClasses\Equippable.ct" />
+    <None Include="Basic\ItemClasses\Item.ct" />
+    <None Include="Basic\ItemClasses\MultiItem.ct" />
+    <None Include="Basic\ItemClasses\Musical.ct" />
+    <None Include="Basic\ItemClasses\Potion.ct" />
+    <None Include="Basic\ItemClasses\ShiningItem\ShiningItem.ct" />
+    <None Include="Basic\ItemClasses\ShiningItem\ShiningItem.def" />
+    <None Include="Basic\ItemClasses\Ship.ct" />
+    <None Include="Basic\mailingsystem\mailsending.scp" />
+    <None Include="Basic\skills\HealingAndVeterinary\healing.scp" />
+    <None Include="Basic\stuckHelp.scp" />
+    <None Include="Basic\Professions\Definitions\mage.def" />
+    <None Include="Basic\Professions\Definitions\thief.def" />
+    <None Include="Basic\Professions\ProfessionPlugin.ct" />
+    <None Include="Basic\Professions\ProfessionPlugin.def" />
+    <None Include="Basic\Regeneration\RegenerationPlugin.ct" />
+    <None Include="Basic\skills\Combat\Destroyable.ct" />
+    <None Include="Basic\skills\Combat\Plugins.ct" />
+    <None Include="Basic\skills\Combat\Projectile.ct" />
+    <None Include="Basic\skills\Combat\Weapon.ct" />
+    <None Include="Basic\skills\Combat\WeaponSkills.scp" />
+    <None Include="Basic\skills\Combat\Wearable.ct" />
+    <None Include="Basic\skills\Crafting\CraftingProcessPlugin.ct" />
+    <None Include="Basic\skills\Crafting\CraftingSkills.scp" />
+    <None Include="Basic\skills\Discordance\Discordance.expl" />
+    <None Include="Basic\skills\Discordance\DiscordanceEffectPlugin.ct" />
+    <None Include="Basic\skills\Hiding\HiddenHelperPlugin.ct" />
+    <None Include="Basic\skills\Hiding\Stealth.scp" />
+    <None Include="Basic\skills\Lockpicking\ItemLockPlugin .ct" />
+    <None Include="Basic\skills\Lockpicking\lockpicking.scp" />
+    <None Include="Basic\skills\Magery\Spells\DamageSpells\damageSpells.def" />
+    <None Include="Basic\skills\Magery\Spells\Dispell\dispellDefs.def" />
+    <None Include="Basic\skills\Magery\Spells\HealingSpells\healingSpells.def" />
+    <None Include="Basic\skills\Magery\Spells\MagicReflection\magicReflection.def" />
+    <None Include="Basic\skills\Magery\Spells\MagicReflection\MagicReflectionPlugin.ct" />
+    <None Include="Basic\skills\Magery\Spells\ManaShield\manaShield.scp" />
+    <None Include="Basic\skills\Magery\Spells\ManaShield\ManaShieldPlugin.ct" />
+    <None Include="Basic\skills\Magery\Spells\Paralyze\paralyze.def" />
+    <None Include="Basic\skills\Magery\Spells\Paralyze\ParalyzeEffectPlugin.ct" />
+    <None Include="Basic\skills\Magery\Spells\PoisonAndCure\cureSpell.def" />
+    <None Include="Basic\skills\Magery\Spells\PoisonAndCure\DamagingPoisonPlugin.ct" />
+    <None Include="Basic\skills\Magery\Spells\PoisonAndCure\poisonSpell.def" />
+    <None Include="Basic\skills\Magery\Spells\ResurrectionSpell\ResurrectionSpell.def" />
+    <None Include="Basic\skills\Magery\Spells\StatModSpells\StatModSpellEffectPlugins.ct" />
+    <None Include="Basic\skills\Magery\Spells\StatModSpells\statModSpells.def" />
+    <None Include="Basic\skills\Magery\Spells\TeleportingSpells\RecallRune.ct" />
+    <None Include="Basic\skills\Magery\Spells\TeleportingSpells\teleportingSpells.def" />
+    <None Include="Basic\skills\Magery\Spells\WallSpells\WallSpellItem.ct" />
+    <None Include="Basic\skills\Magery\Spells\WallSpells\wallSpells.def" />
+    <None Include="Basic\skills\Magery\Spells\nightSight.scp" />
+    <None Include="Basic\skills\Magery\Spells\protection.def" />
+    <None Include="Basic\skills\Magery\Spells\SpellEffectItem.ct" />
+    <None Include="Basic\skills\Magery\Spells\unimplementedSpells.def" />
+    <None Include="Basic\skills\Magery\magery.def" />
+    <None Include="Basic\skills\Magery\scrolls.def" />
+    <None Include="Basic\skills\Magery\SpellBook.ct" />
+    <None Include="Basic\skills\Magery\spellbooks.def" />
+    <None Include="Basic\skills\Magery\SpellScroll.ct" />
+    <None Include="Basic\skills\Meditation\Meditation.scp" />
+    <None Include="Basic\skills\Meditation\MeditationPlugin.ct" />
+    <None Include="Basic\skills\Poisoning\poisonPotions.def" />
+    <None Include="Basic\skills\Poisoning\PoisonedItemPlugin.ct" />
+    <None Include="Basic\skills\Poisoning\Poisoning.def" />
+    <None Include="Basic\skills\Poisoning\PoisonPotion.ct" />
+    <None Include="Basic\skills\Stealing\SnoopingPlugin.ct" />
+    <None Include="Basic\skills\Tracking\Tracking.scp" />
+    <None Include="Basic\skills\Tracking\TrackingPlugin.ct" />
+    <None Include="Basic\skills\Musicianship.scp" />
+    <None Include="Basic\skills\Skills.scp" />
+    <None Include="Basic\Spawning\spawn.scp" />
+    <None Include="Basic\defs.scp" />
+    <None Include="Basic\PeriodicSave.scp" />
+    <None Include="converted\Aen\vstup.def" />
+    <None Include="converted\Aen\vstup1.def" />
+    <None Include="converted\Aen\vstup2.def" />
+    <None Include="converted\Aen\vstup3.def" />
+    <None Include="converted\Aen\vstup4.def" />
+    <None Include="converted\Aen\vstupchar.def" />
+    <None Include="converted\Aen\vstupspeech.def" />
+    <None Include="converted\brneni\1copper_armor.def" />
+    <None Include="converted\brneni\2iron_armor.def" />
+    <None Include="converted\brneni\3silver_armor.def" />
+    <None Include="converted\brneni\4golden_armor.def" />
+    <None Include="converted\brneni\5verite_armor.def" />
+    <None Include="converted\brneni\6valorite_armor.def" />
+    <None Include="converted\brneni\7obsidian_armor.def" />
+    <None Include="converted\brneni\8adamantinum_armor.def" />
+    <None Include="converted\brneni\9mytheril_armor.def" />
+    <None Include="converted\brneni\IDs_armor.def" />
+    <None Include="converted\chars\animals.def" />
+    <None Include="converted\chars\caves.def" />
+    <None Include="converted\chars\daemons.def" />
+    <None Include="converted\chars\dragons.def" />
+    <None Include="converted\chars\dragons_tmp.def" />
+    <None Include="converted\chars\elementals.def" />
+    <None Include="converted\chars\ents.def" />
+    <None Include="converted\chars\golems.def" />
+    <None Include="converted\chars\groups.def" />
+    <None Include="converted\chars\guards.def" />
+    <None Include="converted\chars\insects.def" />
+    <None Include="converted\chars\mounts.def" />
+    <None Include="converted\chars\nb_monsters.def" />
+    <None Include="converted\chars\npc_evil_race.def" />
+    <None Include="converted\chars\ogres.def" />
+    <None Include="converted\chars\orcs.def" />
+    <None Include="converted\chars\snowmonsters.def" />
+    <None Include="converted\chars\special.def" />
+    <None Include="converted\chars\specNPC_HCN.def" />
+    <None Include="converted\chars\specNPCcrunch.def" />
+    <None Include="converted\chars\specNPCmandos.def" />
+    <None Include="converted\chars\specNPCqv1.def" />
+    <None Include="converted\chars\specNPCqv2.def" />
+    <None Include="converted\chars\specNPCSafira.def" />
+    <None Include="converted\chars\specNPCsarig.def" />
+    <None Include="converted\chars\specNPCVdova.def" />
+    <None Include="converted\chars\specNPCVerbatim.def" />
+    <None Include="converted\chars\specNPCverbatim2.def" />
+    <None Include="converted\chars\specNPCVypravec.def" />
+    <None Include="converted\chars\specNPCYavanna.def" />
+    <None Include="converted\chars\summons.def" />
+    <None Include="converted\chars\t2a.def" />
+    <None Include="converted\chars\ucitele.def" />
+    <None Include="converted\chars\undeads.def" />
+    <None Include="converted\chars\vendors.def" />
+    <None Include="converted\scarabeus\prokmotra.def" />
+    <None Include="converted\scarabeus\wipeitems.def" />
+    <None Include="converted\scarabeus\wipepostav.def" />
+    <None Include="converted\speech\jobbanker.def" />
+    <None Include="converted\speech\kecy_a_drby.def" />
+    <None Include="converted\speech\krvaveprizraky.def" />
+    <None Include="converted\speech\lagrspeech.def" />
+    <None Include="converted\speech\mesta_Baradsti.def" />
+    <None Include="converted\speech\ochranasprostaren.def" />
+    <None Include="converted\speech\pokecovej_mordor_spk.def" />
+    <None Include="converted\speech\questspeech.def" />
+    <None Include="converted\speech\speakhuman.def" />
+    <None Include="converted\speech\speakshopkeep.def" />
+    <None Include="converted\speech\verbatimspeech.def" />
+    <None Include="converted\web\web.def" />
+    <None Include="converted\zbrane\1copper.def" />
+    <None Include="converted\zbrane\2iron.def" />
+    <None Include="converted\zbrane\3verite.def" />
+    <None Include="converted\zbrane\4valorite.def" />
+    <None Include="converted\zbrane\5obsidian.def" />
+    <None Include="converted\zbrane\6adamantinum.def" />
+    <None Include="converted\zbrane\7mytheril.def" />
+    <None Include="converted\zbrane\ammo.def" />
+    <None Include="converted\zbrane\IDs.def" />
+    <None Include="converted\zbrane\others.def" />
+    <None Include="converted\book.def" />
+    <None Include="converted\darken.def" />
+    <None Include="converted\dialog.def" />
+    <None Include="converted\help.def" />
+    <None Include="converted\herry.def" />
+    <None Include="converted\irc.def" />
+    <None Include="converted\item_beers.def" />
+    <None Include="converted\item_cook.def" />
+    <None Include="converted\item_deed.def" />
+    <None Include="converted\item_maps.def" />
+    <None Include="converted\item_misc.def" />
+    <None Include="converted\item_multis.def" />
+    <None Include="converted\item_nabytek.def" />
+    <None Include="converted\item_ore.def" />
+    <None Include="converted\item_potions.def" />
+    <None Include="converted\item_tailor.def" />
+    <None Include="converted\item_tinker.def" />
+    <None Include="converted\item_wands.def" />
+    <None Include="converted\item_x.def" />
+    <None Include="converted\item2.def" />
+    <None Include="converted\itemb1.def" />
+    <None Include="converted\itemb2.def" />
+    <None Include="converted\itemb3.def" />
+    <None Include="converted\itemb4.def" />
+    <None Include="converted\itemb5.def" />
+    <None Include="converted\itemb6.def" />
+    <None Include="converted\itemb7.def" />
+    <None Include="converted\itemx.def" />
+    <None Include="converted\magie.def" />
+    <None Include="converted\map2.def" />
+    <None Include="converted\menu.def" />
+    <None Include="converted\name.def" />
+    <None Include="converted\newb.def" />
+    <None Include="converted\newbie_portals.def" />
+    <None Include="converted\nova_monstra.def" />
+    <None Include="converted\resources.def" />
+    <None Include="converted\speech.def" />
+    <None Include="defaults\chardefs\newCharDefsFromMuls.def" />
+    <None Include="Optional\playerHelp.scp" />
+    <Compile Include="Optional\PlayerVendor\D_PlayerVendor_Stock.cs" />
+    <None Include="Optional\PlayerVendor\playerVendor.ct" />
+    <None Include="Optional\StorageBoxes\storageBoxes.ct" />
+    <None Include="Optional\StorageBoxes\storageBoxes.def" />
+    <None Include="Optional\Treasures\treasures.ct" />
+    <None Include="Optional\Treasures\treasures.def" />
+    <None Include="packages.config" />
+    <None Include="Temporary\publicTest.scp" />
+    <None Include="Temporary\Temporary.scp" />
+    <None Include="Tests\CharacterConnectionStateInvariants.scp" />
+    <None Include="Tests\CanSeeLOSTest.scp" />
+    <None Include="Tests\MenuDefTest.scp" />
+    <None Include="Tests\craftCat-test.scp" />
+    <None Include="Tests\d_test2.scp" />
+    <None Include="Tests\InputDefTest.scp" />
+    <None Include="Tests\pic_dialog.scp" />
+    <None Include="Tests\SkillUtilsTest.scp" />
+    <None Include="Tests\TargetDefTest.scp" />
+    <None Include="Tests\various.scp" />
+    <None Include="bodyTable.cfg" />
+    <None Include="map.steam" />
+    <None Include="readme.txt" />
+    <None Include="referencedAssemblies.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\SteamEngine.Common.csproj">
+      <Project>{7B3428BD-F9AF-448E-92BB-85A72505DF50}</Project>
+      <Name>SteamEngine.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Communication\SteamEngine.Communication.csproj">
+      <Project>{42DC5FFC-D58D-48B2-8035-3123D4F0A84F}</Project>
+      <Name>SteamEngine.Communication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GameCore\SteamEngine.GameCore.csproj">
+      <Project>{91710DA9-56BA-44A1-8E86-9A8EAFCDE88A}</Project>
+      <Name>SteamEngine.GameCore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties InternalTargetFrameworkVersion="3.5" />
+    </MonoDevelop>
+    <VisualStudio />
+  </ProjectExtensions>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="MySql.Data, Version=1.0.9.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="Zip, Version=0.9.0.1215, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Optional\PlayerVendor\playerVendor.scp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Basic\ItemClasses\Bank\bankBox.def" />
+  </ItemGroup>
+  <ItemGroup />
+</Project>

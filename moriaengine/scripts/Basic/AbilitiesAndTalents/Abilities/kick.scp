@@ -1,0 +1,27 @@
+[ActivableAbilityDef a_kick]
+Name="Kick"
+EffectPower=0.2 //multiplier for damage. Relevant effect of kick is skill abort
+Cooldown = 2 * 60
+Chance = 0.09 //90% at 10 points
+Resources = 80 stam
+
+PluginKey = @@kick
+PluginDef = p_kick
+
+[EffectDurationPluginDef p_kick]
+on=@beforeswing //params: attacker, defender, attack, piercing, armorClass, damageAfterAC
+	if (a_kick.CheckSuccess(this.Cont))
+		argv[5] = argv[5] * a_kick.EffectPower //reduce damage
+		argv[1].AbortSkill() //abort skill of the defender
+		//tell the defender?
+		this.Cont.Emote(LocManager.GetEntry("loc_kick", "Kicks", this.Cont.Language))
+	else
+		//seriously cancel the whole swing? 
+		//tell the attacker he failed?
+		return 1
+	endif
+
+	this.Delete() //a_kick.Deactivate(this.Cont)
+
+[ScriptedLoc loc_kick]
+Kicks = kicks

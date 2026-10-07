@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{91710DA9-56BA-44A1-8E86-9A8EAFCDE88A}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>GameCore</RootNamespace>
+    <AssemblyName>MD-GameCore</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG; TRACE; MONO</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DefineConstants>TRACE; MONO; SANE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="3rdParty\Encryption\ByteQueue.cs" />
+    <Compile Include="3rdParty\Encryption\Encryption.cs" />
+    <Compile Include="3rdParty\Encryption\GameEncryption.cs" />
+    <Compile Include="3rdParty\Encryption\IClientEncryption.cs" />
+    <Compile Include="3rdParty\Encryption\LoginEncryption.cs" />
+    <Compile Include="3rdParty\Encryption\LoginKey.cs" />
+    <Compile Include="3rdParty\Encryption\NoEncryption.cs" />
+    <Compile Include="3rdParty\Encryption\TwofishBase.cs" />
+    <Compile Include="3rdParty\Encryption\TwofishEncryption.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\Analyzer.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\LookAheadSet.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\Node.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\ParseException.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\Parser.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\ParserCreationException.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\ParserLogException.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\Production.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\ProductionPattern.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\ProductionPatternAlternative.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\ProductionPatternElement.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\RecursiveDescentParser.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\Token.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\Tokenizer.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser\TokenPattern.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\AlternativeElement.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\CharacterSetElement.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\CombineElement.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\Element.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\Matcher.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\RegExp.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\RegExpException.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\RepeatElement.cs" />
+    <Compile Include="3rdParty\Grammatica\PerCederberg.Grammatica.Parser.RE\StringElement.cs" />
+    <Compile Include="3rdParty\JMBucknall.Containers\PriorityQueue.cs" />
+    <Compile Include="AI\AI.cs" />
+    <Compile Include="AI\PathFinder.cs" />
+    <Compile Include="AuxServerPipe\AuxServerPipeClient.cs" />
+    <Compile Include="AuxServerPipe\IncomingPackets.cs" />
+    <Compile Include="AuxServerPipe\OutgoingPackets.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\ClassDefTemplate.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\ClassTemplate.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\ClassTemplateBase.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\ClassTemplateParser.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\ClassTemplateSection.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\ClassTemplateSectionField.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\PluginDefTemplate.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\PluginTemplate.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\ThingDefTemplate.cs" />
+    <Compile Include="CompiledScripts\ClassTemplates\ThingTemplate.cs" />
+    <Compile Include="CompiledScripts\ClassManager.cs" />
+    <Compile Include="CompiledScripts\CompiledGump.cs" />
+    <Compile Include="CompiledScripts\CompiledScriptHolder.cs" />
+    <Compile Include="CompiledScripts\CompiledTriggerGroup.cs" />
+    <Compile Include="CompiledScripts\CompilerInvoker.cs" />
+    <Compile Include="CompiledScripts\GeneratedCodeUtil.cs" />
+    <Compile Include="LScript\Exceptions.cs" />
+    <Compile Include="LScript\IntrinsicMethods.cs" />
+    <Compile Include="LScript\LocalVarKey.cs" />
+    <Compile Include="LScript\LScriptAnalyzer.cs" />
+    <Compile Include="LScript\LScriptHolder.cs" />
+    <Compile Include="LScript\LScriptMain.cs" />
+    <Compile Include="LScript\LScriptParser.cs" />
+    <Compile Include="LScript\MemberResolver.cs" />
+    <Compile Include="LScript\OpNode.cs" />
+    <Compile Include="LScript\OpNode_Code.cs" />
+    <Compile Include="LScript\OpNode_Final_AddTimer.cs" />
+    <Compile Include="LScript\OpNode_Final_ARG.cs" />
+    <Compile Include="LScript\OpNode_Final_Arguments.cs" />
+    <Compile Include="LScript\OpNode_Final_Array.cs" />
+    <Compile Include="LScript\OpNode_Final_ArrayListIndexer.cs" />
+    <Compile Include="LScript\OpNode_Final_BinMathOperators.cs" />
+    <Compile Include="LScript\OpNode_Final_BinOperators.cs" />
+    <Compile Include="LScript\OpNode_Final_ComparOperators.cs" />
+    <Compile Include="LScript\OpNode_Final_Constructor.cs" />
+    <Compile Include="LScript\OpNode_Final_Field.cs" />
+    <Compile Include="LScript\OpNode_Final_Function.cs" />
+    <Compile Include="LScript\OpNode_Final_LogicalOp.cs" />
+    <Compile Include="LScript\OpNode_Final_Method.cs" />
+    <Compile Include="LScript\OpNode_Final_RandomExpression.cs" />
+    <Compile Include="LScript\OpNode_Final_Return.cs" />
+    <Compile Include="LScript\OpNode_Final_SkillKey.cs" />
+    <Compile Include="LScript\OpNode_Final_TAG.cs" />
+    <Compile Include="LScript\OpNode_Final_TemplateItem.cs" />
+    <Compile Include="LScript\OpNode_Final_UnOperators.cs" />
+    <Compile Include="LScript\OpNode_Final_VAR.cs" />
+    <Compile Include="LScript\OpNode_For.cs" />
+    <Compile Include="LScript\OpNode_Foreach.cs" />
+    <Compile Include="LScript\OpNode_If.cs" />
+    <Compile Include="LScript\OpNode_Lazy_AddTimer.cs" />
+    <Compile Include="LScript\OpNode_Lazy_Arguments.cs" />
+    <Compile Include="LScript\OpNode_Lazy_BinOperator.cs" />
+    <Compile Include="LScript\OpNode_Lazy_EvalExpression.cs" />
+    <Compile Include="LScript\OpNode_Lazy_Expression.cs" />
+    <Compile Include="LScript\OpNode_Lazy_ExpressionChain.cs" />
+    <Compile Include="LScript\OpNode_Lazy_Indexer.cs" />
+    <Compile Include="LScript\OpNode_Lazy_QuotedString.cs" />
+    <Compile Include="LScript\OpNode_Lazy_RandomExpression.cs" />
+    <Compile Include="LScript\OpNode_Lazy_UnOperator.cs" />
+    <Compile Include="LScript\OpNode_Lazy_VarExpression.cs" />
+    <Compile Include="LScript\OpNode_Script.cs" />
+    <Compile Include="LScript\OpNode_Switch.cs" />
+    <Compile Include="LScript\OpNode_TypeOf.cs" />
+    <Compile Include="LScript\OpNode_While.cs" />
+    <Compile Include="LScript\ScriptedGumpDef.cs" />
+    <Compile Include="LScript\ScriptedLoc.cs" />
+    <Compile Include="LScript\ScriptedTriggerGroup.cs" />
+    <Compile Include="LScript\StrictAnalyzer.cs" />
+    <Compile Include="LScript\StrictConstants.cs" />
+    <Compile Include="LScript\StrictParser.cs" />
+    <Compile Include="LScript\StrictTokenizer.cs" />
+    <Compile Include="Networking\CharSyncQueue.cs" />
+    <Compile Include="Networking\Enums.cs" />
+    <Compile Include="Networking\GameCompression.cs" />
+    <Compile Include="Networking\GameEncryption.cs" />
+    <Compile Include="Networking\GameServer.cs" />
+    <Compile Include="Networking\GameServerProtocol.cs" />
+    <Compile Include="Networking\GameState.cs" />
+    <Compile Include="Networking\IncomingPackets.cs" />
+    <Compile Include="Networking\ItemOnGroundUpdater.cs" />
+    <Compile Include="Networking\ItemSyncQueue.cs" />
+    <Compile Include="Networking\MovementState.cs" />
+    <Compile Include="Networking\OutgoingPackets.cs" />
+    <Compile Include="Networking\PacketSequences.cs" />
+    <Compile Include="Networking\PreparedPacketGroups.cs" />
+    <Compile Include="Networking\SyncQueue.cs" />
+    <Compile Include="Persistence\DecoratedClassesSaveImplementor.cs" />
+    <Compile Include="Persistence\ExportImport.cs" />
+    <Compile Include="Persistence\ObjectSaver.cs" />
+    <Compile Include="Persistence\WorldSaver.cs" />
+    <Compile Include="Regions\DynamicRegion.cs" />
+    <Compile Include="Regions\Map.cs" />
+    <Compile Include="Regions\MapCalculations.cs" />
+    <Compile Include="Regions\Rectangle.cs" />
+    <Compile Include="Regions\Region.cs" />
+    <Compile Include="Regions\Sector.cs" />
+    <Compile Include="Regions\StaticRegion.cs" />
+    <Compile Include="Regions\StaticSector.cs" />
+    <Compile Include="Timers\BoundTimer.cs" />
+    <Compile Include="Timers\DelegateTimer.cs" />
+    <Compile Include="Timers\FunctionTimer.cs" />
+    <Compile Include="Timers\MethodTimer.cs" />
+    <Compile Include="Timers\Timer.cs" />
+    <Compile Include="Timers\TimerKey.cs" />
+    <Compile Include="Timers\TimerPriorityQueue.cs" />
+    <Compile Include="Timers\TriggerTimer.cs" />
+    <Compile Include="AbstractAccount.cs" />
+    <Compile Include="AbstractCharacter.cs" />
+    <Compile Include="AbstractCharacterDef.cs" />
+    <Compile Include="AbstractDef.cs" />
+    <Compile Include="AbstractDefTriggerGroupHolder.cs" />
+    <Compile Include="AbstractIndexedDef.cs" />
+    <Compile Include="AbstractItem.cs" />
+    <Compile Include="AbstractItemDef.cs" />
+    <Compile Include="AbstractKey.cs" />
+    <Compile Include="AbstractScript.cs" />
+    <Compile Include="AbstractSkillDef.cs" />
+    <Compile Include="AOSToolTips.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CanSeeImplementation.cs" />
+    <Compile Include="CharData.cs" />
+    <Compile Include="ClientVersion.cs" />
+    <Compile Include="Commands.cs" />
+    <Compile Include="ConsoleDummy.cs" />
+    <Compile Include="Constant.cs" />
+    <Compile Include="CoreLogger.cs" />
+    <Compile Include="DecoratedClassesDeepCopyImplementor.cs" />
+    <Compile Include="DeepCopyFactory.cs" />
+    <Compile Include="DispidInfo.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="FastDLL.cs" />
+    <Compile Include="FastWalk.cs" />
+    <Compile Include="FieldValue.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="Gump.cs" />
+    <Compile Include="LayerNames.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="MemberWrapper.cs" />
+    <Compile Include="MultiData.cs" />
+    <Compile Include="OpenedContainers.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="PluginDef.cs" />
+    <Compile Include="PluginHolder.cs" />
+    <Compile Include="PluginKey.cs" />
+    <Compile Include="PluginTriggerGroupGenerator.cs" />
+    <Compile Include="Point.cs" />
+    <Compile Include="PropsFileParser.cs" />
+    <Compile Include="RunLevel.cs" />
+    <Compile Include="ScriptArgs.cs" />
+    <Compile Include="ScriptFilesCollection.cs" />
+    <Compile Include="ScriptHolder.cs" />
+    <Compile Include="ScriptLoader.cs" />
+    <Compile Include="SimulConn.cs" />
+    <Compile Include="SoundMul.cs" />
+    <Compile Include="Static.cs" />
+    <Compile Include="Statistics.cs" />
+    <Compile Include="TagHolder.cs" />
+    <Compile Include="TagKey.cs" />
+    <Compile Include="TagMath.cs" />
+    <Compile Include="Temporary.cs" />
+    <Compile Include="Thing.cs" />
+    <Compile Include="ThingDef.cs" />
+    <Compile Include="ThingLinkedList.cs" />
+    <Compile Include="ThingManipulationTriggers.cs" />
+    <Compile Include="TileData.cs" />
+    <Compile Include="TriggerGroup.cs" />
+    <Compile Include="TriggerKey.cs" />
+    <Compile Include="UIDArray.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="WeakRefDictionary.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rdParty\Encryption\COPYING" />
+    <None Include="3rdParty\Encryption\README" />
+    <None Include="3rdParty\Grammatica\LICENSE.txt" />
+    <None Include="3rdParty\Grammatica\LICENSE-GPL.txt" />
+    <None Include="3rdParty\Grammatica\notice.txt" />
+    <None Include="3rdParty\Grammatica\README.txt" />
+    <None Include="3rdParty\JMBucknall.Containers\notice.txt" />
+    <None Include="LScript\generate.bat" />
+    <None Include="LScript\LScript_strict.grammar" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\MD-Common.csproj">
+      <Project>{7B3428BD-F9AF-448E-92BB-85A72505DF50}</Project>
+      <Name>MD-Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Communication\MD-Communication.csproj">
+      <Project>{42DC5FFC-D58D-48B2-8035-3123D4F0A84F}</Project>
+      <Name>MD-Communication</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="EQATECProfilerRuntime, Version=2.0.122.0, Culture=neutral, PublicKeyToken=f1beac79aa82eef6">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\EQATECProfilerRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="SteamDoc, Version=1.0.1984.42666, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\SteamDoc.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpSvn, Version=1.6003.1304.38397, Culture=neutral, PublicKeyToken=d729672594885a28">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\SharpSvn.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.Core, Version=0.90.3759.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\NAnt.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties InternalTargetFrameworkVersion="3.5" />
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

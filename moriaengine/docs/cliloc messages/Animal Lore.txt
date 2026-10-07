@@ -1,0 +1,7 @@
+500328	What animal should I look at?
+500329	That's not an animal!
+500330	That's not an animal!
+500331	The spirits of the dead are not the province of animal lore.
+500332	I am too far away to do that.
+500333	You are to weary to discern anything useful.
+500334	You can't think of anything you know offhand.

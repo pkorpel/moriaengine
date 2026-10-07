@@ -1,0 +1,6 @@
+[PassiveAbilityDef a_meditation_bonus]
+Name="Meditation Bonus"
+EffectPower=0.1 //+50% meditation at 5 points
+
+
+//implementation of the actual effect lies in MeditationSkillDef

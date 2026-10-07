@@ -1,0 +1,35 @@
+[RegBoxDef i_regBox]
+CATEGORY = Items by Professions
+SUBSECTION = Carpentry
+DESCRIPTION = Bedýnka na regy
+
+NAME = "Bedýnka na regy"
+WEIGHT = 30
+model = 0x1e80
+
+[GemBoxDef i_gemBox]
+CATEGORY = Items by Professions
+SUBSECTION = Carpentry
+DESCRIPTION = Truhlièka na drané kameny
+
+NAME = "Truhlièka na drahé kameny"
+WEIGHT = 50
+model = 0x9a8
+
+[PotionKegDef i_keg_potion]
+CATEGORY = Items by Professions
+SUBSECTION = Carpentry
+DESCRIPTION = Potion Keg
+
+NAME = "Potion Keg"
+WEIGHT = 20
+model = 0x9a8
+
+NAME = "potion Keg"
+TYPE = t_keg_potion
+WEIGHT = 400
+RESOURCES = 8 i_board,  1 i_barrel_tap,  1 i_barrel_hoops //some resources were fixed by converter 
+SKILLMAKE = 65.0 tinkering, t_tinker_tools //some resources were fixed by converter 
+model = i_KEG_WOOD
+//layer = 0 //Set by Converter 
+//VALUE = {200 300} // commented out by Converter 

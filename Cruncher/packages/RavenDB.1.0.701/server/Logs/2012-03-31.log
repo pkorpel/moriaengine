@@ -1,0 +1,14 @@
+time;logger;level;message;exception
+2012-03-31 04:54:48.2927;Raven.Database.Impl.DocumentCacher;Info;"MemoryCache Settings:
+  PhysicalMemoryLimit = 99
+  CacheMemoryLimit    = 3178233856
+  PollingInterval     = 00:02:00";
+2012-03-31 04:54:48.3667;Raven.Storage.Esent.TransactionalStorage;Info;"Esent Settings:
+  MaxVerPages      = 32768
+  CacheSizeMax     = 262144
+  DatabasePageSize = 4096";
+2012-03-31 04:54:52.2359;Raven.Storage.Esent.StorageActions.DocumentStorageActions;Debug;Document with key 'Raven/Backup/Status' was not found;
+2012-03-31 04:54:52.3449;Raven.Database.Indexing.WorkContext;Debug;No work was found, workerWorkCounter: 0, for: ReducingExecuter, will wait for additional work;
+2012-03-31 04:54:52.3449;Raven.Database.Indexing.WorkContext;Debug;No work was found, workerWorkCounter: 0, for: IndexingExecuter, will wait for additional work;
+2012-03-31 15:47:01.8153;Raven.Database.Indexing.WorkContext;Debug;No work was found, workerWorkCounter: 0, for: ReducingExecuter, will wait for additional work;
+2012-03-31 15:47:01.8153;Raven.Database.Indexing.WorkContext;Debug;No work was found, workerWorkCounter: 0, for: IndexingExecuter, will wait for additional work;

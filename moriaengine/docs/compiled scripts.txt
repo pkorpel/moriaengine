@@ -1,0 +1,40 @@
+some classes, subclassing of which will make them special to the core
+
+to be written :) -tar
+for now, look in the Classmanager class in src/CompiledScripts
+
+
+
+
+CompiledTriggerGroup
+
+CompiledScript
+
+CompiledGumpDef
+
+GroundTileType
+
+ISaveImplementor
+
+Region
+
+Timer
+
+TagHolder
+
+Thing, ThingDef
+
+
+
+
+
+
+other cases:
+
+static Init method
+
+static Bootstrap method
+
+
+
+RegisterWithRunTestsAttribute

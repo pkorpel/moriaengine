@@ -1,0 +1,3 @@
+#!/bin/sh
+
+bin/NAnt.exe -buildfile:distrib/nant/default.build clean

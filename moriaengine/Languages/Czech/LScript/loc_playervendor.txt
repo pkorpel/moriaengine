@@ -1,0 +1,3 @@
+OneMomentPlease                 = Okamžíček
+TargetThingToStock              = Zaměř věc nebo zvíře na prodej
+NothingToSell                   = Nemám nic na prodej

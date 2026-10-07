@@ -1,0 +1,54 @@
+[DispellDef 34]
+DEFNAME=s_dispel_field
+NAME=Dispel Field
+SOUND=0x201
+RUNES=AG
+CASTTIME=2.5
+//RESOURCES=i_reag_black_pearl,i_reag_garlic,i_reag_spider_silk,i_reag_sulfur_ash
+RUNEITEM=i_rune_DISPEL_FIELD
+SCROLLITEM=i_scroll_DISPEL_FIELD
+FLAGS = SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+//EFFECTID=0
+EFFECT=0,1000
+//DURATION=0.0
+MANAUSE=10
+Requirements=50.0 Magery
+
+[DispellDef 41]
+DEFNAME=s_dispel
+NAME=Dispel
+SOUND=0x201
+RUNES=AO
+CASTTIME=2.5
+//RESOURCES=i_reag_garlic,i_reag_mandrake_root,i_reag_sulfur_ash
+RUNEITEM=i_rune_DISPEL
+SCROLLITEM=i_scroll_DISPEL
+FLAGS = SpellFlag.CanTargetChar | SpellFlag.CanTargetItem | SpellFlag.CanEffectChar | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+EFFECT=0,1000
+//DURATION=0.0
+MANAUSE=18
+Requirements=60.0 Magery
+
+[DispellDef 54]
+DEFNAME=s_mass_dispel
+NAME=Mass Dispel
+SOUND=0x201
+RUNES=VAO
+CASTTIME=3.5
+//RESOURCES=i_reag_black_pearl,i_reag_garlic,i_reag_mandrake_root,i_reag_sulfur_ash
+RUNEITEM=i_rune_MASS_DISPEL
+SCROLLITEM=i_scroll_MASS_DISPEL
+FLAGS = SpellFlag.CanTargetChar | SpellFlag.CanTargetItem | SpellFlag.CanEffectChar | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS | SpellFlag.IsAreaSpell
+EffectRange = 5
+EFFECT=0,1000
+//DURATION=0.0
+MANAUSE=40
+Requirements=70.0 Magery
+
+//function names used in C# scripts, don't rename
+//called when something gets actually dispelled
+[function f_dispellEffect_char]
+EffectFactory.StationaryEffectAt(this, 0x376A, 9, 20)
+
+[function f_dispellEffect_item]
+EffectFactory.StationaryEffectAt(this, 0x3728, 8, 20)

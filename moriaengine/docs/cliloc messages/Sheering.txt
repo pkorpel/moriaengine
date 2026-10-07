@@ -1,0 +1,5 @@
+500449	This sheep is not yet ready to be shorn.
+500450	You can only skin dead creatures.
+500451	You would not be able to place the gathered wool in your backpack!
+500452	You place the gathered wool into your backpack.
+500453	The sheep nimbly escapes your attempts to sheer his wool.

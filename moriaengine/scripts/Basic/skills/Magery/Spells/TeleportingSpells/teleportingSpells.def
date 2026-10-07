@@ -1,0 +1,196 @@
+[SpellDef 22]
+DEFNAME=s_teleport
+NAME=Teleport
+SOUND=0x1FE
+RUNES=RP
+CASTTIME=2.0
+//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root
+RUNEITEM=i_rune_TELEPORT
+SCROLLITEM=i_scroll_TELEPORT
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanTargetItem | SpellFlag.CanTargetGround | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+//EFFECTID=0
+EFFECT=0
+MANAUSE=9
+Requirements=30.0 Magery
+
+on=@effectGround
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 30)
+    EffectFactory.StationaryEffectAt(argo.Caster, 0x3728, 10, 30)
+	argo.Caster.Go(this)
+
+
+[SpellDef 32]
+DEFNAME=s_recall
+NAME=Recall
+SOUND=0x1FC
+RUNES=KOP
+CASTTIME=6.0
+//RESOURCES=i_reag_black_pearl,i_reag_blood_moss,i_reag_mandrake_root
+RUNEITEM=i_rune_RECALL
+SCROLLITEM=i_scroll_RECALL
+FLAGS=SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+//EFFECTID=0
+EFFECT=0
+MANAUSE=40
+Requirements=20.0 Magery
+
+on=@start //this = caster, argo = SkillArgs
+	if (argo.Target1.Type != t_rune)
+		this.ClilocSysMessage(502357)	// I can not recall from that object.
+		return 1
+	endif
+	if (argo.Target1.MoreP == null)
+		this.ClilocSysMessage(502354)	// Target is not marked.
+		return 1
+	endif	
+	if (!RecallRune.CheckTelePermissionIn(this, argo.Target1.MoreP))
+		return 1
+	endif
+
+
+on=@effectItem //this = targetted item, argo = SpellEffectArgs
+	if (this.Type != t_rune)
+		argo.Caster.ClilocSysMessage(502357)	// I can not recall from that object.
+		return 1
+	endif
+	if (this.MoreP == null)
+		argo.Caster.ClilocSysMessage(502354)	// Target is not marked.
+		return 1
+	endif
+	if (!RecallRune.CheckTelePermissionOut(argo.Caster))
+		return 1
+	endif
+	if (!RecallRune.CheckTelePermissionIn(argo.Caster, this.MoreP))
+		return 1
+	endif
+	
+	//some visual effect too?
+	PacketSequences.SendSound(this.MoreP, s_recall.Sound, Globals.MaxUpdateRange)
+
+	argo.Caster.Go(this.MoreP)
+
+	
+[SpellDef 45]
+DEFNAME=s_mark
+NAME=Mark
+SOUND=0x1FA
+RUNES=KPY
+CASTTIME=3.0
+//RESOURCES=i_reag_black_pearl,i_reag_blood_moss,i_reag_mandrake_root
+RUNEITEM=i_rune_MARK
+SCROLLITEM=i_scroll_MARK
+FLAGS=SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+//EFFECTID=0
+EFFECT=20,40
+MANAUSE=50
+Requirements=30.0 Magery
+
+on=@start //this = caster, argo = SkillArgs
+	if (argo.Target1.Type != t_rune)
+		this.ClilocSysMessage(501797)	//I cannot mark that object.
+		return 1
+	endif
+
+on=@effectItem //this = targetted item, argo = SpellEffectArgs
+	local.targetPoint = this.TopObj
+	if (!RecallRune.CheckTelePermissionIn(argo.Caster, targetPoint))
+		return 1
+	endif
+	if (this.Type != t_rune)
+		argo.Caster.ClilocSysMessage(501797)	//I cannot mark that object.
+		return 1
+	endif
+		
+	this.MoreP = Point4D(argo.Caster)
+	EffectFactory.StationaryEffectAt(targetPoint, 14201, 16, 10)
+
+[DurableSpellDef 52]
+// NOTE: should be set to less then a minute?? Gate has been known to be the downfall of innocent travellers. Down-side would be for large groups. With that in mind, one minute should suffice.
+DEFNAME=s_gate_travel
+NAME=Gate Travel
+SOUND=0x20E
+RUNES=VRP
+CASTTIME=8.0
+//RESOURCES=i_reag_black_pearl,i_reag_mandrake_root,i_reag_sulfur_ash
+RUNEITEM=i_rune_GATE_TRAVEL
+SCROLLITEM=i_scroll_GATE_TRAVEL
+FLAGS=SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=3, 4
+MANAUSE=80
+Requirements=70.0 Magery
+
+
+on=@start //this = caster, argo = SkillArgs
+	if (argo.Target1.Type != t_rune)
+		this.ClilocSysMessage(501030)	// I can not gate travel from that object.
+		return 1
+	endif
+	if (argo.Target1.MoreP == null)
+		this.ClilocSysMessage(502354)	// Target is not marked.
+		return 1
+	endif	
+	if (!RecallRune.CheckTelePermissionIn(this, argo.Target1.MoreP))
+		return 1
+	endif
+
+
+on=@effectItem //this = targetted item i.e. the rune, argo = SpellEffectArgs
+	if (this.Type != t_rune)
+		argo.Caster.ClilocSysMessage(501030)	// I can not gate travel from that object.
+		return 1
+	endif
+	if (this.MoreP == null)
+		argo.Caster.ClilocSysMessage(502354)	// Target is not marked.
+		return 1
+	endif
+	if (!RecallRune.CheckTelePermissionOut(argo.Caster))
+		return 1
+	endif
+	if (!RecallRune.CheckTelePermissionIn(argo.Caster, this.MoreP))
+		return 1
+	endif
+	
+	
+	local duration = System.TimeSpan.FromSeconds(s_gate_travel.GetDurationForValue(argo.SpellPower))
+	local distantGate = i_moongate_blue_realm.Conjure(this.MoreP, true, argo.SpellPower, duration, false)
+	if (distantGate == null)
+		argo.Caster.ClilocSysMessage(501942)	// That location is blocked.
+		return 1
+	endif
+	
+	local localGate = i_moongate_blue_realm.Conjure(argo.Caster, false, argo.SpellPower, duration, false)
+	if (localGate == null)
+		argo.Caster.ClilocSysMessage(501942)	// That location is blocked.
+		return 1
+	endif
+	
+	localGate.MoreP = this.MoreP
+	distantGate.MoreP = Point4D(argo.Caster)
+	
+	//TODO: localGate.realm = ...
+	
+	argo.Caster.ClilocSysMessage(501024 )	// You open a magical gate to another location
+	//some visual effect too?
+	PacketSequences.SendSound(this.MoreP, s_gate_travel.Sound, Globals.MaxUpdateRange)
+
+
+//TODO the realm stuff, obviously
+[SpellEffectItemDef i_moongate_blue_realm]
+Model=i_moongate_blue
+TYPE=t_telepad
+
+//on=@create
+//if (<src.tag.realm>)
+//  tag.realm=<src.tag.realm>
+//endif
+//timer=<nastaveni_duration_s_gate_travel>
+
+//on=@step
+//if (<tag.realm>)&&(<src.tag.realm>!=<tag.realm>)&&!(src.isgm)
+//  src.sysmessage("Do tehle gate nemuzes.")
+//  return(1)
+//endif
+//
+//on=@timer
+//remove

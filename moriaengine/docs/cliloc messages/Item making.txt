@@ -1,0 +1,20 @@
+500500	You do not have enough room for the item in your backpack! You stop making the item.
+500501	Due to your exceptional skill, its quality is higher than average.
+500502	You were barely able to make this item. Its quality is below average.
+500624	You do not have enough staves to construct the keg.
+500625	You do not have enough hoops to construct the keg.
+500626	You do not have a bottom for the keg.
+500627	You fail to create the keg.
+500628	Some of your staves are no longer fit for use.
+500629	You fail the project horribly, losing most of your materials in the process.
+500630	You create the keg and put it in your backpack.
+500631	You create the keg and put it at your feet.
+500632	You are too busy with something else.
+500633	What would you like to make?
+500634	The amount of wood changed since you started working with it.
+500635	Due to your exceptional skill, it's quality is higher than average.
+500636	Your tinker skill was sufficient to make the item lockable.
+500637	Your tinker skill was insufficient to make the item lockable.
+500638	You create the item and put it in your backpack.
+500639	You create the item and put it in your backpack.
+500640	You create the item and put it at your feet.

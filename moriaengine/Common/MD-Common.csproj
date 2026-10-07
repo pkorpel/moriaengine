@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7B3428BD-F9AF-448E-92BB-85A72505DF50}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SteamEngine.Common</RootNamespace>
+    <newfilesearch>OnLoad</newfilesearch>
+    <AssemblyName>MD-Common</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>DEBUG; TRACE; MONO</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DefineConstants>TRACE; MONO; SANE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ConvertTools.cs" />
+    <Compile Include="Disposable.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="HighPerformanceTimer.cs" />
+    <Compile Include="IniFile.cs" />
+    <Compile Include="NantLauncher.cs" />
+    <Compile Include="Pool.cs" />
+    <Compile Include="Poolable.cs" />
+    <Compile Include="Sanity.cs" />
+    <Compile Include="TestSuite.cs" />
+    <Compile Include="Tools.cs" />
+    <Compile Include="VersionControl.cs" />
+    <Compile Include="Collections\CacheDictionary.cs" />
+    <Compile Include="Collections\EmptyCollection.cs" />
+    <Compile Include="Collections\EnumCollection.cs" />
+    <Compile Include="Collections\HashSet.cs" />
+    <Compile Include="Collections\ReadOnlyCollection.cs" />
+    <Compile Include="Collections\SimpleQueue.cs" />
+    <Compile Include="Collections\SynchronizedQueue.cs" />
+    <Compile Include="Localisation\CommonLoc.cs" />
+    <Compile Include="Localisation\CompiledLocStringCollection.cs" />
+    <Compile Include="Localisation\LocManager.cs" />
+    <Compile Include="Localisation\LocStringCollection.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LogStr.cs" />
+    <Compile Include="Logging\LogStrBase.cs" />
+    <Compile Include="Logging\LogStrParser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Tests\ConsoleUi.cs.ignored" />
+    <None Include="Tests\TestRunner.cs.ignored" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="SteamDoc, Version=1.0.1984.42666, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\SteamDoc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System" />
+    <Reference Include="SharpSvn, Version=1.6003.1304.38397, Culture=neutral, PublicKeyToken=d729672594885a28">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\SharpSvn.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.Core, Version=0.90.3759.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\NAnt.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,197 @@
+//POZN
+//arg(discordancePower,<randFakt(<cont.Discordance>,0,300)>)		// hodnota 0,300 by mela byt v nastaveni
+//<Globals.EvalRangePermille(<Discordance>,10,15)>			// hodnota 10,15 by mela byt v nastaveni
+//link.attack(cont) 							// v dobe tvorby nefunguje
+
+[SCRIPTEDSKILLDEF 15]
+DEFNAME=Skill_Discordance
+KEY="Discordance"
+//TITLE="Bard"
+//PROMPTMSG="Whom do you wish to entice?"
+DELAY=4.0
+//STAT_STR=15
+//STAT_INT=70
+//STAT_DEX=50
+//BONUS_STR=0
+//BONUS_DEX=50
+//BONUS_INT=50
+//BONUSSTATS=5
+ADVRATE=2.5,50.0,200.0
+
+
+ON=@Select
+if (backpack.findType(t_musical))
+	currentSkillTarget2 = backpack.findType(t_musical)
+	Target(targ_discordance)
+else
+	currentSkillParam(5)
+	Skill_Discordance.fail(this)
+endif
+return 1
+
+
+ON=@Start
+currentSkill(Skill_Discordance)
+if (currentSkillTarget1.Discordance)
+	currentSkillParam(0)
+	Skill_Discordance.Fail(this)
+	return 1
+elseif (Skill_Musicianship.CheckSuccess(this, {0 900}))					// vyjde zahrani na nastroj
+	if (<Discordance>*0.3 < currentSkillTarget1.tag(experience))			// potvora presahuje schopnosti hrace
+		currentSkillParam(2)
+	else
+		arg(discordancePower,<randFakt(<Discordance>,0,300)>)
+		if (arg(discordancePower) < currentSkillTarget1.tag(experience))	// vyjde nahoda pro discordance
+			currentSkillParam(3)
+		else
+			currentSkillParam(1)
+		endif
+	endif
+	currentSkillTarget2.successSnd
+else
+	currentSkillParam(3)
+	currentSkillTarget2.failureSnd
+	sysMessage("Hrajes priserne - Nevypisovat ! jen ZVUK")
+endif
+sysMessage("Pokousis se oslabit <currentSkillTarget1.name>.")
+Skill_Discordance.DelaySkillStroke(this)
+
+
+ON=@Stroke
+if (currentSkillParam() == 1)
+	Skill_Discordance.Success(this)
+else
+	Skill_Discordance.Fail(this)
+endif
+
+
+ON=@Success
+currentSkillTarget1.tag(discorded,<Discordance>/4)
+m_discordanceEffect.create(currentSkillTarget1)
+lastNew.tag(discordanceDelay,<Globals.EvalRangePermille(<Discordance>,10,15)>)
+lastNew.Trigger(@startEffect)
+sysMessage("Oslabujes uspesne.")
+currentSkill(null)
+	
+ON=@Fail
+if (currentSkillParam() == 0)
+	sysMessage("Tohle nemuzes oslabit.")
+elseif (currentSkillParam() == 2)
+	sysMessage("Oslabeni teto prisery presahuje tve moznosti.")
+elseif (currentSkillParam() == 3)
+	sysMessage("Oslabeni se nepovedlo.")
+	//link.attack(this)
+elseif (currentSkillParam() == 4)
+	sysMessage("Cil je jiz oslaben.")
+elseif (currentSkillParam() == 5)
+	sysMessage("Nemas u sebe hudebni nastroj.")
+elseif (currentSkillParam() == 6)
+	sysMessage("Oslabovani bylo predcasne preruseno.")
+endif
+currentSkill(null)
+
+
+ON=@Abort
+currentSkillParam(6)
+Skill_Discordance.Fail(this)
+
+[TargetDef targ_discordance]
+message="Koho chces zkusit oslabit?"
+
+on=@targon_char
+if (argv(0).isplayer)
+	cont.sysMessage("Zameruj jenom monstra!")
+	return 1
+elseif (argv(0).findMemory(m_discordanceEffect))
+	cont.currentSkillParam(4)
+	Skill_Discordance.Fail(this)
+	return 0
+elseif (cont.currentSkill)	//Jiz bezi skill.
+	SysMessage(500118)	//You must wait a few moments to use another skill.
+	return 0
+endif
+cont.currentSkillTarget1 = <argv(0)>
+Skill_Discordance.Start(cont)
+return 0
+
+on=@targon_cancel
+sysMessage("Target zrusen.")
+
+
+[MemoryDef m_discordanceEffect]
+on=@startEffect
+tag.discord_loweddex	= f_discordlower(<cont.dex>)
+tag.discord_lowedstr	= f_discordlower(<cont.str>)
+tag.discord_lowedint	= f_discordlower(<cont.int>)
+tag.discord_lowedhits	= f_discordlower(<cont.maxhits>)
+tag.discord_lowedmana	= f_discordlower(<cont.maxmana>)
+tag.discord_lowedstam	= f_discordlower(<cont.maxstam>)
+tag.discord_lowedmagery	= f_discordlower(<cont.Magery>)
+tag.discord_lowedei	= f_discordlower(<cont.EvaluatingIntel>)
+tag.discord_lowedresist	= f_discordlower(<cont.MagicResistance>)
+tag.discord_lowedwrestl	= f_discordlower(<cont.Wrestling>)
+tag.discord_lowedarch	= f_discordlower(<cont.Archery>)
+tag.discord_lowedmace	= f_discordlower(<cont.Macefighting>)
+tag.discord_lowedfenc	= f_discordlower(<cont.Fencing>)
+tag.discord_lowedsword	= f_discordlower(<cont.Swordsmanship>)
+tag.discord_lowedpoison	= f_discordlower(<cont.Poisoning>)
+cont.dex		= cont.dex - tag.discord_loweddex
+cont.str		= cont.str - tag.discord_lowedstr
+cont.int		= cont.int - tag.discord_lowedint
+cont.maxhits		= cont.maxhits - tag.discord_lowedhits
+cont.maxmana		= cont.maxmana - tag.discord_lowedmana
+cont.maxstam		= cont.maxstam - tag.discord_lowedstam
+cont.Magery		= cont.Magery - tag.discord_lowedmagery
+cont.EvaluatingIntel	= cont.EvaluatingIntel - tag.discord_lowedei
+cont.MagicResistance	= cont.MagicResistance - tag.discord_lowedresist
+cont.Wrestling		= cont.Wrestling - tag.discord_lowedwrestl
+cont.Archery		= cont.Archery - tag.discord_lowedarch
+cont.Macefighting	= cont.Macefighting - tag.discord_lowedmace
+cont.Fencing		= cont.Fencing - tag.discord_lowedfenc
+cont.Swordsmanship	= cont.Swordsmanship - tag.discord_lowedsword
+cont.Poisoning		= cont.Poisoning - tag.discord_lowedpoison
+if (cont.hits>cont.maxhits)
+ cont.hits=<cont.maxhits>
+endif
+if (cont.mana>cont.maxmana)
+ cont.mana=<cont.maxmana>
+endif
+if (cont.stam>cont.maxstam)
+ cont.stam=<cont.maxstam>
+endif
+tag(discorded,"")
+AddTimer(%DiscordanceEffect, <tag(discordanceDelay)>, @finishEffect)
+
+on=@finishEffect
+RemoveTimer(%DiscordanceEffect)
+cont.dex		= cont.dex + tag.discord_loweddex
+cont.str		= cont.str + tag.discord_lowedstr
+cont.int		= cont.int + tag.discord_lowedint
+cont.maxhits		= cont.maxhits + tag.discord_lowedhits
+cont.maxmana		= cont.maxmana + tag.discord_lowedmana
+cont.maxstam		= cont.maxstam + tag.discord_lowedstam
+cont.Magery		= cont.Magery + tag.discord_lowedmagery
+cont.EvaluatingIntel	= cont.EvaluatingIntel + tag.discord_lowedei
+cont.MagicResistance	= cont.MagicResistance + tag.discord_lowedresist
+cont.Wrestling		= cont.Wrestling + tag.discord_lowedwrestl
+cont.Archery		= cont.Archery + tag.discord_lowedarch
+cont.Macefighting	= cont.Macefighting + tag.discord_lowedmace
+cont.Fencing		= cont.Fencing + tag.discord_lowedfenc
+cont.Swordsmanship	= cont.Swordsmanship + tag.discord_lowedsword
+cont.Poisoning		= cont.Poisoning + tag.discord_lowedpoison
+cont.tag(discorded,"")
+remove
+
+
+[function f_discordlower]
+arg(lower,(<argv(0)>*cont.tag(discorded)) div 1000)
+if (<argv(0)> < arg(lower))
+ arg(lower,<argv(0)>)
+endif
+return <arg(lower)>
+
+[function randFakt]
+//faktor, r0, r1
+arg(min,<eval (<argv(0)>*<argv(1)>)/1000>)
+arg(max,<eval (<argv(0)>*<argv(2)>)/1000>)
+return <eval {<min> <max>}>

@@ -1,0 +1,15 @@
+//[function nastaveni] 	//arg0 - nazev kategorie	
+//if (argvcount == 0)
+//	//kategorijni rozcestnik (0 = zacit od zacatku, jak taky jinak...)
+//	//null - pripravene misto pro ulozeni seznamu kategorii (pro vnitrodialogovou navigaci)
+//	dialog(D_Settings_Categories,0, null)
+//else
+//	//mame specifikovanou kategorii
+//	//1. klic vybrane kategorie, "" = od zacatku 
+//	//2. kolikaty member z dane kategorie bude zobrazen jako prvni v dialogu, 0 - od prvniho
+//	//3. cislo stranky ze ktere se zacina (vzdy od 0, jina cisla doplnuje paging sam, jinak to udela neco nedefinovatelnyho)
+//	//4. zobrazit vsechny kategorie pocinaje klicem(prvni argument) abecedne dal - SettingsDisplay.All
+//	//	nebo zobrazit jen jednu kategorii danou klicem - SettingsDisplay.Single
+//	//5.,6. pripavena pozice pro vnitrodialogove potreby
+//	dialog(D_Static_Settings,<argv(0)>,0,0,SettingsDisplay.Single,null,null)
+//endif

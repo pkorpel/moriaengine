@@ -1,0 +1,27 @@
+[function admin]
+if (src.isplayer)
+	if (argvcount > 0)
+		arg(sortby,<argv(0)>)
+	else
+		arg(sortby,SortingCriteria.NameAsc)
+	endif
+	if (argvcount == 2)		
+		dialog(d_admin,arg(sortby),argv(1))
+	else
+		dialog(d_admin,arg(sortby),0,null)
+	endif
+endif
+
+[function spocitejmordoryagondory]
+var(pocethracuvrealmu[-2],0)
+var(pocethracuvrealmu[-1],0)
+var(pocethracuvrealmu[1],0)
+var(pocethracuvrealmu[2],0)
+serv.ALLCLIENTS(f_spocitejmordoryagnodory)
+sysmessage("Mordorskych vyvrhelu: <var(pocethracuvrealmu[-2])>")
+sysmessage("Gondorskych vyvrhelu: <var(pocethracuvrealmu[-1])>")
+sysmessage("Gondoru: <var(pocethracuvrealmu[1])>")
+sysmessage("Mordoru: <var(pocethracuvrealmu[2])>")
+
+[function f_spocitejmordoryagnodory]
+var(pocethracuvrealmu[<tag.realm>],pocethracuvrealmu[<tag.realm>]+1)

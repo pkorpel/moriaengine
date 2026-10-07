@@ -1,0 +1,16 @@
+[function testFootsteps]
+//arg0 - first color, arg1 - last color
+//rozmisti tolik stop, kolik je barev v zadanem rozmezi, pobliz panacka, kazdou prislusne obarvi
+arg cntr = argv(1) - argv(0)
+arg px = src.x + 1 //dame je o 1 od sebe
+arg py = src.y
+arg yOffset = arg.py + arg.cntr/2
+src.sysmessage("Nyni na: <px>,<py> a posun: <yOffset>")
+for (arg.i, 1, arg.cntr+1) //barvy posuneme o 1 protoze u itemu 0 znamena default a teprve 1 je cerna!
+	//vytvor stopu
+	arg newStep = i_footstep.create(arg.px,arg.yOffset,src.z,src.m)
+	newStep.color = argv(0) + arg.i
+	//posuneme pristi pozici
+	arg yOffset = arg.yOffset - 1
+	src.sysmessage("color: <newStep.color>, pozice: <newStep.x>,<newStep.y>, pristi X: <yOffset>")
+endfor

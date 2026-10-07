@@ -1,0 +1,14 @@
+//assassin's talent
+[ActivableAbilityDef a_whirlwind]
+Name="Whirlwind"
+EffectPower=0.6 // 60% dmg
+Chance = 0.18 //90% at 5 points
+Cooldown = 2 * 60
+Resources = 75 stam
+
+PluginKey = @@whirlwind
+PluginDef = p_whirlwind
+
+[WhirlWindPluginDef p_whirlwind]
+
+

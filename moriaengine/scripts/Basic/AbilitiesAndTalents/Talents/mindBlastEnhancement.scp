@@ -1,0 +1,20 @@
+[StatDrainingAbilityDef a_mind_blast_enhancement]
+Name="Mind Blast Enhancement"
+StamDrain=1
+EffectPower=1
+chance=0.12 //60% at 5 points
+CoolDown=2*60
+
+PluginKey = @@mind_blast_enhancement
+PluginDef = p_mind_blast_enhancement
+
+[StatDrainingEffectDurationPluginDef p_mind_blast_enhancement]
+on=@CauseSpellEffect
+if (!argv[0].CurrentTarget.IsPlayerForCombat) //this is pvm only
+	if (argv[0].SpellDef == s_mind_blast)
+		arg.self = this.Cont
+		if (a_mind_blast_enhancement.CheckSuccess(<arg.self>))
+			s_feeblemind.EffectChar(arg.self, argv[0].CurrentTarget, argo.effectFlag)
+		endif
+	endif
+endif

@@ -1,0 +1,25 @@
+Name:
+	AfterStack
+
+Called on:
+	Items (Item)
+
+When:
+	After an item has been stacked on this one and they have been combined.
+
+Arguments:
+	None
+	
+Sphere Arguments:
+	None
+
+Extra variables:
+	src: The character which did the stacking.
+	self: The item.
+
+Return value:
+	None
+
+Purpose:
+	This trigger exists in case someone needs to do something *after* stacking has
+	been successful.

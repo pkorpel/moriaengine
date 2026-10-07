@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9FDF32C0-AA76-4020-BA7E-D3AE7F49E5F6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SteamEngine.ThirdParty</RootNamespace>
+    <AssemblyName>SteamEngine.ThirdParty</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\build\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\build\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EQATECProfilerRuntime">
+      <HintPath>..\bin\EQATECProfilerRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Encryption\ByteQueue.cs" />
+    <Compile Include="Encryption\Encryption.cs" />
+    <Compile Include="Encryption\GameEncryption.cs" />
+    <Compile Include="Encryption\IClientEncryption.cs" />
+    <Compile Include="Encryption\LoginEncryption.cs" />
+    <Compile Include="Encryption\LoginKey.cs" />
+    <Compile Include="Encryption\NoEncryption.cs" />
+    <Compile Include="Encryption\TwofishBase.cs" />
+    <Compile Include="Encryption\TwofishEncryption.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\AlternativeElement.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\CharacterSetElement.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\CombineElement.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\Element.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\Matcher.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\RegExp.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\RegExpException.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\RepeatElement.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser.RE\StringElement.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\Analyzer.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\RecursionTooDeepException.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\LookAheadSet.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\Node.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\ParseException.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\Parser.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\ParserCreationException.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\ParserLogException.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\Production.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\ProductionPattern.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\ProductionPatternAlternative.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\ProductionPatternElement.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\RecursiveDescentParser.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\Token.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\Tokenizer.cs" />
+    <Compile Include="Grammatica\PerCederberg.Grammatica.Parser\TokenPattern.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\AbstractXDCReadPolicy.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\Convert.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\DefaultXDCReadPolicy.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\FileSystemProxy.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\IXmlDocCommentReadPolicy.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\XmlDocCommentDirectoryElement.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\XmlDocCommentDirectoryElementCollection.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\XmlDocCommentNames.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\XmlDocCommentReader.cs" />
+    <Compile Include="Jolt.XmlDocCommentReader\XmlDocCommentReaderSettings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Encryption\COPYING" />
+    <None Include="Encryption\README" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Grammatica\LICENSE-GPL.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Grammatica\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Grammatica\notice.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Grammatica\README.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

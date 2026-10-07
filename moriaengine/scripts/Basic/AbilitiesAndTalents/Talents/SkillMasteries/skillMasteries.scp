@@ -1,0 +1,23 @@
+//sorcerer's version
+[SkillMasteryAbilityDef a_mastery_magery]
+Name="Magery Mastery"
+EffectPower=10 //1% skill per 1 talent point = +5% at 5 points
+Skill=skill_magery
+
+//magician's version
+[SkillMasteryAbilityDef a_mastery_magery_greater]
+Name="Greater Magery Mastery"
+EffectPower=20 //2% skill per 1 talent point = +10% at 5 points
+Skill=skill_magery
+
+//assassin's version
+[SkillMasteryAbilityDef a_mastery_crushing]
+Name="Crushing Mastery"
+EffectPower=10 //1% skill per 1 talent point = +5% at 5 points
+Skill=skill_crushing
+
+//assassin's version
+[SkillMasteryAbilityDef a_mastery_swordsmanship]
+Name="Swordsmanship Mastery"
+EffectPower=10 //1% skill per 1 talent point = +5% at 5 points
+Skill=skill_swordsmanship

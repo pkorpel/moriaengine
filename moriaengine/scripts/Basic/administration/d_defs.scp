@@ -1,0 +1,38 @@
+[defnames dialogy]
+d_def_writecolor	2300
+d_def_readcolor		2303
+d_def_NAcolor		2305
+
+d_def_refer_sirka	800
+
+d_def_admin_sirka	800
+
+d_def_accounts_sirka	800
+
+d_def_accinfo_sirka	800
+
+d_def_charinfo_sirka	800
+
+d_def_iteminfo_sirka	800
+
+d_def_flagsinfo_sirka	800
+
+d_def_caninfo_sirka	640
+
+d_def_skills_sirka	640
+
+d_def_Pages_sirka	1000
+
+//flags:
+iflag_rename	00001	//name: 2 - <argv(6)>
+iflag_notext	00002
+iflag_button	00004	//command: 3 - <argv(7)>
+iflag_bitmask	00008	//bit to operate: 1 <argv(5)>, name of bitmask to change: <argv(4)>
+iflag_nowrite	00010	//read only
+iflag_npc	00020
+iflag_pc	00040
+iflag_adminrea	00080	//vidi jen admin
+iflag_adminwr	00100	//jen admin muze prepisovat(ostatni cist)
+iflag_text	00200	//navratova
+iflag_check	00800
+iflag_string	01000	//pro kontrolu

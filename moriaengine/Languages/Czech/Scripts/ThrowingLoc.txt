@@ -1,0 +1,2 @@
+youNeedThrowingKnife            = Nemáš žádný házecí nůž.
+onlyWorksWhenFighting           = Házecí nože lze použít jen během boje.

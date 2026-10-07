@@ -1,0 +1,81 @@
+//[ScriptedMenuDef MENU_helproom]
+//Message=Menu pro pouziti nouzoveho teleportu
+
+//ON=0 Ano, chci pouzit nouzovy teleport. Jsem zasekly nebo jsem se ztratil.
+//newitem i_teleport_delay
+//act.equip
+//act.tag(myPosition,<src.p>)
+
+//ON=0 Ne, chci tuto volbu stornovat.
+//sysmessage("Pouziti teleportu bylo stornovano.")
+//findid(i_teleport_delay).remove
+//accmsg("Vypnul prenos do rodneho mesta - <?region.name?> (<?p?>)")
+
+//[events e_stuckdamage]
+//on=@aftergetswing
+
+//findid(i_teleport_delay).remove
+//sysmessage("Odpocet prerusen.")
+//events=-e_stuckdamage
+//return 0
+
+//on=@spelleffect
+//on=@beforegeteffect
+//on=@beforedoeffect
+//on=@afterswing
+
+
+//[ITEMDEF i_teleport_delay]
+//NAME=Delay Teleport
+//ID=i_handr_1
+//TYPE=T_EQ_SCRIPT
+//WEIGHT=0.0
+//LAYER=layer_special
+
+//ON=@Create
+//ATTR=attr_invis|attr_decay
+//MORE1=30
+//MOREP=a_helpdesk
+
+//ON=@Equip
+//cont.events=+e_stuckdamage
+//cont.accmsg("Zapnul prenos do rodneho mesta - <?cont.region.name?> (<?cont.p?>)")
+//TIMER=1
+	
+//ON=@Timer
+//// Take the effect we would like.
+//if ( <cont> )
+//  if ( <more1> )
+//    if (<more1>==30)
+//      cont.say("Zbyva 5 minut do prenosu do rodneho mesta.")
+//    elseif (<more1>==12)
+//      cont.say("Zbyvaji 2 minuty do prenosu do rodneho mesta.")
+//    elseif (<more1>==6)
+//      cont.say("Zbyva 1 minuta do prenosu do rodneho mesta.")
+//    elseif (<more1>==3)
+//      cont.say("Zbyva 30 sekund do prenosu do rodneho mesta.")
+//    else
+//      cont.message("<EVAL <more1>*10>") // put countdown above my head.
+//    endif
+//    more1=<more1>-1
+//    TIMER=10
+//    return 1
+//  else
+//    if (strlen(<tag(myPosition)>))
+//      if (<f_distanceFromPos_check(10,<tag(myPosition)>)>)
+//        src.redMessage("Prilis jsi se <src.sex(vzdalil,vzdalila)> od mista, kde byl nouzovy teleport spusten!")
+//        remove
+//        return 1	//jsme prilis daleko od puvodniho mista...
+//      endif
+//    endif
+//    cont.accmsg("(<?name?>) byl prenesen do rodneho mesta - <?cont.region.name?> (<?cont.p?>)")
+//    cont.gohome
+//  endif
+//endif
+//// normal timer fall through is to delete the item
+//remove
+//return 1
+
+//[EOF]
+
+

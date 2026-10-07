@@ -1,0 +1,26 @@
+[ActivableAbilityDef a_energy_shield]
+Name="Energy Shield"
+EffectPower=30 //30 hitpoints per ability point
+EffectDuration=60
+Cooldown = 4 * 60
+Resources = 60 mana, 1 i_amethyst
+
+PluginKey = @@energyShield
+PluginDef = p_energyShield
+
+on=@Activate
+	this.Sound(530)
+	EffectFactory.StationaryEffect(this, 02EEA, 6, 20)
+
+[PassiveAbilityDef a_energy_shield_bonus]
+Name="Energy Shield Bonus"
+
+[EnergyShieldPluginDef p_energyShield]
+on=@Damage
+	EffectFactory.StationaryEffect(this, 03779, 6, 20) //i_fx_sparkle_2 effect
+
+[function energyshield]
+a_energy_shield.Activate(this)
+
+[function cancelenergyshield]
+a_energy_shield.Deactivate(this)

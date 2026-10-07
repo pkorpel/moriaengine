@@ -1,0 +1,19 @@
+TWOBYTES:	//15 bytes
+	sub bitPos, 16
+	mov numBits, bitPos		//so we can shift by it - numbits is unused right now
+	mov value, curByteValue	//using value temporarily, since it's unused right now
+							//(But actually, for non-_ONE, we need to do this in value so we can STOSB from it)
+	shr	value, shiftArg_partOfNumBits	//unsigned shift right, since curByteValue is unsigned
+	xchg ah,al
+	stosw					//write from ax to [edi (outPtr)]
+	jmp NOTONEBYTE
+	
+ONEBYTE:	//10 bytes
+	sub bitPos, 8
+	mov numBits, bitPos		//so we can shift by it - numbits is unused right now
+	mov value, curByteValue	//using value temporarily, since it's unused right now
+							//(But actually, for non-_ONE, we need to do this in value so we can STOSB from it)
+	shr	value, shiftArg_partOfNumBits	//unsigned shift right, since curByteValue is unsigned
+	stosb					//write from al (value_byte) to [edi (outPtr)]
+
+NOTONEBYTE:

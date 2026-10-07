@@ -1,0 +1,26 @@
+Name:
+	Command
+
+Called on:
+	Connections (Conn)
+
+When:
+	Someone types in a command
+
+Arguments:
+	
+	
+Sphere Arguments:
+	
+	
+Extra variables:
+	src: The character who typed the command. Will be NULL (Use IfExists in SphereScript) if commanded from the console.
+	self (Conn): The connection where the command came from.
+
+Return value:
+	1 to prevent the command from being executed, 0 to allow it.
+
+Purpose:
+	This trigger is implemented by a default script which checks an INI file where you can specify the plevel needed to
+	use commands, including scripted ones.
+

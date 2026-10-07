@@ -1,0 +1,3 @@
+500172	I failed to steal.
+500173	Someone tried to steal from you.
+500174	You successfully steal the item!

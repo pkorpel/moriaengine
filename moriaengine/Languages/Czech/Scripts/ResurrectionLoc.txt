@@ -1,0 +1,3 @@
+ThisIsntBody                    = Toto není tělo!
+ThisIsntPlayersBody             = Toto není tělo hráčské postavy.
+GhostCantReachTheBody           = Duch nedosáhne na své tělo.

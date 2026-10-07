@@ -1,0 +1,7 @@
+0                               = Odkazy na Webove stranky tykajici se se shardu Moria
+1                               = Domovska stranka shardu Moria
+2                               = Moriawiki - oficialni informacni web
+3                               = Vyveska - stranka o volnem pokecu o hre na Morii, srazech hracu a naslednych svizelich :o) a nejen to.
+4                               = Forum, kde se muzete podelit s tvurci shardu Moria o sve napady a pripominky ke hre.
+5                               = Odkazy na spratelene servry
+6                               = Predchozi

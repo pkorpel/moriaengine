@@ -1,0 +1,209 @@
+[function pages]
+pageMan(<args>)
+
+[function pageMan]
+if(GMPages.GmPages.Count == 0)
+	src.sysmessage("Zadne GM page k zobrazeni")
+ 	return 1
+endif
+if(args == "")
+ 	dialog(d_Pages,SortingCriteria.TimeAsc,0)
+else
+ 	dialog(d_Pages,<args>,0)
+endif
+
+//pozor: src - ten kdo dialog vyvolal, argv(0) - dialog's GumpInstance argv(1) - ten komu se dialog zobrazil, this - default object gumpscriptu
+[dialog d_Pages] //argv2 - sorting criterion, argv3 - number of the page (argv1 - gumpinstance.cont (tj ten komu se dialog zobrazil))
+//the GMPage object has these fields
+//Sender - the player who sent the page
+//Handler - GM who handled the page
+//Time - the time when the page was sent
+//P - the point where the page was created
+//Reason - the players description of the problem
+//Reply - the GM's reply to the problem
+//Replied - if any GM has already replied to the page or not
+//---------
+//posible sorting criteria are
+//SortingCriteria.NameAsc/Desc - players name
+//SortingCriteria.TimeAsc/Desc - time of the GM page creation
+//SortingCriteria.AccountAsc/Desc - players accounts
+arg dialog = ImprovedDialog(argv(0))
+
+arg pagesList = <GMPages.GetSortedBy(<argv(2)>)> //seznam pagi setridenej zadanym kriteriem
+argv(0).tag.pages = pagesList //ulozime do tagu pro pouziti u buttonu
+
+arg firstiVal = <argv(3)> //cislo prvni page zobrazene na strance (od nuly)
+arg imax = Min(firstiVal + ImprovedDialog.PAGE_ROWS, pagesList.Count) //maximalni index na strance (dle poctu pagi na str.)
+
+dialog.CreateBackground(<d_def_Pages_sirka>)
+dialog.SetLocation(10,30)
+
+//nadpis tabulky
+dialog.Add(GUTATable(1,0,ButtonMetrics.D_BUTTON_WIDTH)) 
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Seznam GMPagí - (<firstival> - <imax>) z <pagesList.Count>").Build()) //prvni text, uplne vpravo
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.XPos(400).Hue(<Hues.WriteColor>).Text("ONLINE").Build()) //text o 400 bodù vpravo 
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.XPos(500).Hue(<Hues.NAColor>).Text("OFFLINE").Build()) //text o 500 bodù vpravo
+dialog.LastTable.AddToCell(0,1,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build()) //exit button
+dialog.MakeTableTransparent()
+
+//popis sloupecku
+dialog.Add(GUTATable(1,160,140,ButtonMetrics.D_BUTTON_WIDTH,180,130,ButtonMetrics.D_BUTTON_WIDTH,0,ButtonMetrics.D_BUTTON_WIDTH))
+//cudlik s hracem
+dialog.LastTable.AddToCell(0,0,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(1).Build()) //tridit dle jmena hrace asc
+dialog.LastTable.AddToCell(0,0,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(4).Build()) //tridit dle jmena hrace desc
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextLabel("Hráè").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET,0).Build()) //x posunuto kousek o sortovaci button
+//cudlik s pozici
+dialog.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Pozice"))
+//cudlik na smazani
+dialog.LastTable.AddToCell(0,2,GUTAText.Builder.TextLabel("Del"))
+//cas
+dialog.LastTable.AddToCell(0,3,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(2).Build()) //tridit podle casu asc
+dialog.LastTable.AddToCell(0,3,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonFactory.D_SORTBUTTON_LINE_OFFSET).Id(5).Build()) //tridit podle casu desc
+dialog.LastTable.AddToCell(0,3,GUTAText.Builder.TextLabel(ButtonMetrics.D_SORTBUTTON_COL_OFFSET,0, "Èas odeslání"))
+//cudlik s accountem
+dialog.LastTable.AddToCell(0,4,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(3).Build()) //tridit dle accountu asc
+dialog.LastTable.AddToCell(0,4,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonFactory.D_SORTBUTTON_LINE_OFFSET).Id(6).Build()) //tridit dle accountu desc
+dialog.LastTable.AddToCell(0,4,GUTAText.Builder.TextLabel("Account").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build())
+//cudlik na odpoved
+dialog.LastTable.AddToCell(0,5,GUTAText.Builder.TextLabel("Re:").Build())
+//zbytek - text
+dialog.LastTable.AddToCell(0,6,GUTAText.Builder.TextLabel("Popis problému").Build())
+//button na odpoved
+dialog.LastTable.AddToCell(0,7,GUTAText.Builder.TextLabel("Odpovìï").Build())
+
+dialog.MakeTableTransparent() //zpruhledni nadpisovy radek
+
+//vlastni seznam pagi
+dialog.Add(GUTATable(ImprovedDialog.PAGE_ROWS))
+dialog.CopyColsFromLastTable()
+
+arg rowCntr = 0
+arg idx = <firstiVal>
+
+while (<idx> < <imax>)
+	arg iPage = pagesList.get_Item(idx)
+	arg pcolor = <Qval(iPage.sender.Account.Online,<Hues.WriteColor>,<Hues.NAColor>)>
+
+ 	if(iPage.Replied)
+  		arg mscolor = <Hues.PageRepliedColor> //nejaka oranzova sracka
+ 	else 
+  		arg mscolor = <Hues.WriteColor> //default
+ 	endif
+		//cislo sloupce, cislo radku ve sloupci, objekt co se tam frkne
+	dialog.LastTable.AddToCell(<rowCntr>,0,GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id((7*idx)+100).Build()) //players info
+	dialog.LastTable.AddToCell(<rowCntr>,0,GUTAText.Builder.Text("<iPage.sender.Name>").XPos(ButtonFactory.D_BUTTON_WIDTH).Hues(pColor).Build()) //jmeno odesilatele
+	dialog.LastTable.AddToCell(<rowCntr>,1,GUTAButton.Builder.Id((7*idx)+101).Build()) //jdi na pozici
+	dialog.LastTable.AddToCell(<rowCntr>,1,GUTAText.Builder.Text("<iPage.p.ToNormalString()>").XPos(ButtonFactory.D_BUTTON_WIDTH).Hues(pColor).Build()) //pozice
+	dialog.LastTable.AddToCell(<rowCntr>,2,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id((7*idx)+102).Build()) //smaz page
+	dialog.LastTable.AddToCell(<rowCntr>,3,GUTAText.Builder.Text(pColor, "<iPage.time.ToString()>").Build()) //cas napsani
+	dialog.LastTable.AddToCell(<rowCntr>,4,GUTAButton.Builder.Id((7*idx)+103).Build()) //ukaz account
+	dialog.LastTable.AddToCell(<rowCntr>,4,GUTAText.Builder.Text("<iPage.sender.Account.Name>").XPos(ButtonFactory.D_BUTTON_WIDTH).Hue(pColor).Build()) //account
+	dialog.LastTable.AddToCell(<rowCntr>,6,GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id((7*idx)+105).Build()) //zobrazit text zpravy
+	dialog.LastTable.AddToCell(<rowCntr>,6,GUTAText.Builder.Text("<iPage.reason>").XPos(ButtonFactory.D_BUTTON_WIDTH).Hue(mscolor).Build()) //text page 	 	
+	if(iPage.Replied)
+  		//nepujde odpovedet vickrat
+		dialog.LastTable.AddToCell(<rowCntr>,7,GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id((7*idx)+106).Build()) //zobrazit text opdpovedi			
+ 	else
+		dialog.LastTable.AddToCell(<rowCntr>,5,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSend).Id((7*idx)+104).Build()) //cudlik pro odpoved  		
+ 	endif
+	arg rowCntr = <rowCntr>+1
+ 	arg idx = <idx>+1
+endwhile
+
+dialog.MakeTableTransparent() //zpruhledni zbytek dialogu
+
+//strankovani
+dialog.CreatePaging(pagesList.Count, firstiVal)
+dialog.WriteOut()
+
+[DIALOG d_Pages BUTTON]
+on=0 //exitting dialog by right click
+DialogStackItem.ShowPreviousDialog(argv(1).Conn) //zobrazit pripadny predchozi dialog						
+return 0
+
+on=1
+//src.sysmessage("tridit dle jmena asc")
+argv(0).InputParams.set_Item(0,SortingCriteria.NameAsc) //uprav info o sortovani
+argv(0).Cont.SendGump(<argv(0)>)
+
+on=2
+//src.sysmessage("tridit dle casu asc")
+argv(0).InputParams.set_Item(0,SortingCriteria.TimeAsc) //uprav info o sortovani
+argv(0).Cont.SendGump(<argv(0)>)
+
+on=3
+//src.sysmessage("tridit dle uctu asc")
+argv(0).InputParams.set_Item(0,SortingCriteria.AccountAsc) //uprav info o sortovani
+argv(0).Cont.SendGump(<argv(0)>)
+
+on=4
+//src.sysmessage("tridit dle jmena desc")
+argv(0).InputParams.set_Item(0,SortingCriteria.NameDesc) //uprav info o sortovani
+argv(0).Cont.SendGump(<argv(0)>)
+
+on=5
+//src.sysmessage("tridit dle casu desc")
+argv(0).InputParams.set_Item(0,SortingCriteria.TimeDesc) //uprav info o sortovani
+argv(0).Cont.SendGump(<argv(0)>)
+dsi.Show()
+
+on=6
+//src.sysmessage("tridit dle uctu desc")
+argv(0).InputParams.set_Item(0,SortingCriteria.AccountDesc) //uprav info o sortovani
+argv(0).Cont.SendGump(<argv(0)>)
+
+ON=@AnyButton 
+arg btnNumber = (argv(2)-100) % 7 //on one line we have numbers 100,101,102,103,104,105,106. next line is 107,108,109,110,111,112 etc...
+arg line = (argv(2) - (100+btnNumber)) div 7 //e.g. 104 - (100+4) / 7 = 0; 107 - (100+0) / 7 = 7/7 = 0; 115 - (100 + 1) / 7 = 2 etc...
+//src.sysmessage("cudlik: <argv(2)>, butt : <btnNumber> radek: <line>")
+arg iPage = argv(0).tag.pages.get_Item(line)
+
+//gumpinstance s adresatem, button, pripadna hodnota iputfieldu pro paging,    index informace o pagingu mezi parametry , pocet pagi celkem
+if (ImprovedDialog.PagingButtonsHandled(<argv(0)>, <argv(2)>, <argnum[ImprovedDialog.ID_PAGE_NO_INPUT]>, 1, argv(0).tag.pages.Count))
+	return 1 //neni to nahoou neco z pagingu?, jestli jo tak return hned
+endif
+
+if (btnNumber == 0) //player info
+  src.sysmessage("Zobrazuji player info")
+elseif (btnNumber==1) //go to the pages creating position
+	src.sysmessage("skacu na <iPage.p> : <iPage.p.ToString()>")
+  src.go(iPage.P)
+	//src.update
+elseif (btnNumber==2) //delete the page from the list
+  	GMPage.DeletePage(iPage)
+  	src.sysmessage("Page byla smazana")
+	DialogStackItem.ShowPreviousDialog(argv(1).Conn);
+elseif (btnNumber==3) //display the information about the account 
+  src.sysmessage("Zobrazuji account info")
+elseif (btnNumber==4) //reply to the page (if not replied, otherwise the button will not exist
+  	dialog(inpt_page_reply,iPage) //send the page instance and the dialog information	
+elseif (btnNumber==5) //display the page text in the better window
+	DisplayText(src,"Puvodní text page",iPage.reason)
+elseif (btnNumber==6) //display the page reply text in the better window
+	DisplayText(src,"Odpoved na page",iPage.reply)
+endif
+
+[InputDef inpt_page_reply]
+label="Odpoved na page"
+default="Page byla vyresena"
+
+on=@response //argv0 - the reply text, argv1 - the page object
+arg thePage = <argv(1)>
+thePage.replied = true
+thePage.reply = "<src.Name>(<src.Account.Name>): <argv(0)>" //text odpovedi
+thePage.handler = <src> //the GM who replied
+thePage.sender.Delayedmessage(src,"Odpoved na page: <argv(0)>") //poslat delayed message
+DialogStackItem.ShowPreviousDialog(src.Conn) //zavolat predchozi dialog
+
+//player-available dialog for sending a page
+[InputDef inpt_page_post]
+label="Nova GM page"
+default="Text page"
+
+on=@response //args - the page text
+src.Page(<argv(0)>)
+
+[function sendgmpage] //players function for sending a GM page
+Dialog(inpt_page_post)
+
+[eof]

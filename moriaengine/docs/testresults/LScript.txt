@@ -1,0 +1,87 @@
+Summary:
+	compiled code is 27times faster than LScript
+
+
+
+Testing:
+
+I used this code to test LScript:
+	
+	[function sqrt]
+	arg(root1,argv0)
+	arg(root2,argv0)
+	arg(sqrt_tries,0)
+	while (<sqrt_tries> < 30)
+		arg(lastroot,<root1>)
+		arg(sqrt_tries,<sqrt_tries>+1)
+		arg(root1,<eval (<root1>/2)+((<root2>/<root1>)/2)>)
+		if (<lastroot>==<root1>) ||(<lastroot>==(<root1>-1))
+		 //print "<lastroot> * <lastroot> = <eval lastroot*lastroot>"
+		 return <lastroot>
+		endif
+	endwhile
+	//print "<lastroot> * <lastroot> = <eval lastroot*lastroot>"
+	return <lastroot>
+	
+	[function test]
+	arg.before = system.datetime.now
+	arg.i = 1000000
+	while i > 0
+		sqrt(687231)
+		arg.i = <eval arg.i - 1>
+	endwhile
+	arg.after = system.datetime.now
+	print "diff: <eval after - before>"
+
+and this code to test compiled code:
+
+	public static void comptest() {
+		DateTime before = DateTime.Now;
+		for (int i = 1000000; i>0; i--) {
+			Sqrt(687231);
+		}
+		DateTime after = DateTime.Now;
+		Console.WriteLine("diff: "+(after-before));
+	}
+	
+	private static double Sqrt(double arg) {
+		double root1 = arg;
+		double root2 = arg;
+		double lastroot = -1;
+		for (int i = 0; i<30; i++) {
+			lastroot = root1;
+			root1 = (root1/2)+((root2/root1)/2);
+			if ((lastroot==root1) || (lastroot == root1)) {
+				return lastroot;
+			}
+		}
+		return lastroot;
+	}
+	
+for sphere speed test I used this code:
+
+	[function sqrt]
+	arg(root1, argv(0))
+	arg(root2, argv(0))
+	arg(sqrt_tries,0)
+	while (sqrt_tries < 30)
+		arg(lastroot,<root1>)
+		arg(sqrt_tries,<sqrt_tries>+1)
+		arg(root1,<eval (<root1>/2)+((<root2>/<root1>)/2)>)
+		if (<lastroot>==<root1>)// ||(<lastroot>==(<root1>-1))
+		 //print "<lastroot> * <lastroot> = <eval lastroot*lastroot>"
+		 return <lastroot>
+		endif
+	endwhile
+	//print "<lastroot> * <lastroot> = <eval lastroot*lastroot>"
+	return <lastroot>
+	
+	[function test]
+	arg.before = <serv.rtime>
+	arg(i, 0)
+	while (arg(i) < 800)
+		sqrt(687231)
+		arg(i, #+1)
+	endwhile
+	arg.after = <serv.rtime>
+	serv.sysmessage("diff: <eval( arg(after) - arg(before) )>")

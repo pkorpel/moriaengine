@@ -1,0 +1,155 @@
+/*
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	Or visit http://www.gnu.org/copyleft/gpl.html
+*/
+
+
+using System;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using NUnit.Core;
+using NUnit.Util;
+
+
+namespace SteamEngine.Common {
+	public class TestRunner {
+		public void RunTests() {
+			Assembly[] localAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+			int localAssembliesLength = localAssemblies.Length;
+			string[] assemblyNames = new string[localAssembliesLength];
+			for (int i = 0; i<localAssembliesLength; i++) {
+				Assembly a = localAssemblies[i];
+				assemblyNames[i] = a.GetName().Name;
+			}
+			
+			RemoteTestRunner runner = new RemoteTestRunner(Console.Out, Console.Out);
+			runner.Load("SteamEngine", assemblyNames);
+			EventCollector listener = new EventCollector();
+			runner.Run(listener);
+		}
+		
+		
+		private class EventCollector : LongLivingMarshalByRefObject, EventListener {
+			private int testRunCount;
+			private int testIgnoreCount;
+			private int failureCount;
+			private int level;
+
+
+			StringCollection messages;
+		
+			private string currentTestName;
+
+			public EventCollector() {
+				level = 0;
+				this.currentTestName = string.Empty;
+			}
+
+			public void RunStarted(Test[] tests) {
+			}
+
+			public void RunFinished(TestResult[] results) {
+			}
+
+			public void RunFinished(Exception exception) {
+			}
+
+			public void TestFinished(TestCaseResult testResult) {
+				if(testResult.Executed) {
+					testRunCount++;
+					
+					if(testResult.IsFailure) {	
+						failureCount++;
+						Console.Write("F");
+						messages.Add( string.Format( "{0}) {1} :", failureCount, testResult.Test.FullName ) );
+						messages.Add( testResult.Message.Trim( Environment.NewLine.ToCharArray() ) );
+                
+						string stackTrace = StackTraceFilter.Filter( testResult.StackTrace );
+						string[] trace = stackTrace.Split( System.Environment.NewLine.ToCharArray() );
+						foreach( string s in trace ) {
+							if ( s != string.Empty ) {
+								string link = Regex.Replace( s.Trim(), @".* in (.*):line (.*)", "$1($2)");
+								messages.Add( string.Format( "at\n{0}", link ) );
+							}
+						}
+					}
+				} else {
+					testIgnoreCount++;
+					Console.Write("N");
+				}
+				currentTestName = string.Empty;
+			}
+
+			public void TestStarted(TestCase testCase) {
+				currentTestName = testCase.FullName;
+
+//				Console.WriteLine("***** {0}", testCase.FullName );
+//				Console.Write(".");
+			}
+
+			public void SuiteStarted(TestSuite suite)  {
+				if (level++ == 0 ) {
+					messages = new StringCollection();
+					testRunCount = 0;
+					testIgnoreCount = 0;
+					failureCount = 0;
+					Trace.WriteLine( "################################ UNIT TESTS ################################" );
+					Trace.WriteLine( "Running tests in '" + suite.FullName + "'..." );
+				}
+			}
+
+			public void SuiteFinished(TestSuiteResult suiteResult)  {
+				if (--level == 0) {
+					Trace.WriteLine( "############################################################################" );
+
+					if (messages.Count == 0) 
+					{
+						Trace.WriteLine( "##############                 S U C C E S S               #################" );
+					}
+					else 
+					{
+						Trace.WriteLine( "##############                F A I L U R E S              #################" );
+						
+						foreach ( string s in messages ) 
+						{
+							Trace.WriteLine(s);
+						}
+					}
+
+					Trace.WriteLine( "############################################################################" );
+					Trace.WriteLine( "Executed tests : " + testRunCount );
+					Trace.WriteLine( "Ignored tests  : " + testIgnoreCount );
+					Trace.WriteLine( "Failed tests   : " + failureCount );
+					Trace.WriteLine( "Total time     : " + suiteResult.Time + " seconds" );
+					Trace.WriteLine( "############################################################################");
+				}
+			}
+
+			public void UnhandledException( Exception exception ) {
+				string msg = string.Format( "##### Unhandled Exception while running {0}", currentTestName );
+
+				// If we do labels, we already have a newline
+				//if ( !options.labels ) Console.WriteLine();
+				//Console.WriteLine( msg );
+				//Console.WriteLine( exception.ToString() );
+				Trace.WriteLine( msg );
+				Trace.WriteLine( exception.ToString() );
+			}
+		}
+	}
+}

@@ -1,0 +1,3 @@
+easy_install gnosis_utils
+apt-get install python-progressbar (mozna easy_install progressbar)
+apt-get install python-bsdiff (mozna easy_install cx-bsdiff nebo snad cx_bsdiff)

@@ -1,0 +1,9 @@
+[TreasureChestDef i_treasureChest]
+CATEGORY = Dungeony
+SUBSECTION = Poklady
+DESCRIPTION = Poklad Spawn
+
+NAME = "Poklad"
+WEIGHT = 30
+model = 0x0E7C
+gump = 0x004A

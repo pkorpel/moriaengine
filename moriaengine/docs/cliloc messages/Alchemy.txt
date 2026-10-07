@@ -1,0 +1,12 @@
+500279	You pour the potion into a bottle...
+500280	...and place it into your backpack.
+500281	...but there is no room in your backpack.
+500282	You create the potion and pour it into the keg.
+500287	You fail to create a useful potion.
+500289	Where is a bottle or keg for your potion?
+500290	You stop mixing and empty the mortar.
+500292	What reagent would you like to make the potion out of?
+500307	The mixture explodes!
+500308	You smell a strange odor!
+500311	Select a heating stand to heat this or a reagent to add to the mix.
+500316	You create a mysterious potion

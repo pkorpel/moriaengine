@@ -1,0 +1,9 @@
+500611	The instrument becomes forever quiet.
+500612	You play poorly, and there is no effect.
+500613	You attempt to calm everyone, but fail.
+500614	You hear music, and for a moment are distracted.
+500615	You play your hypnotic music, stopping the battle.
+500616	You hear lovely music, and forget to continue battling!
+500617	What instrument shall you play?
+500618	That is too far away!
+500619	That is not a musical instrument.

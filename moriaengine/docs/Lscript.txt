@@ -1,0 +1,154 @@
+LScript
+
+This is a document about our scripting language and (mainly) about it's difference from spherescript. Note that it is not about "which command should I write to make this and that?", i.e. this is not about the API.
+
+
+First off, know that LSCRIPT really IS NOT SPHERESCRIPT. 
+LScript is a language that tries to be as "backward" compatible to spherescript as possible, while still being fast and bug-free.LScript, unlike spherescript, is not parsed from the source every time it's run. Instead, it is parsed when loaded in, and then optimized when run for the first time, by "staticing" the types. Which leads us to a second important thing:
+
+LSCRIPT is a  STATICALLY TYPED LANGUAGE.
+It may sound odd, because you usually do not declare any types anywhere. But you use methods, properties and fields (Members) of the underlying objects, and after the LScript runtime recognizes what member of which object are you calling, it will make that call "static". So, you can not use one expression to call members on different objects that have the same name, but not the same base class for that member.
+FAILING TO DO SO MAY RESULT IN AN INAVERTABLE CRASH OF THE WHOLE SERVER, especially when running in OPTIMIZED mode. And by inavertabe I mean not an exception that you catch and throw away, I mean a fatal exception in the dotnet runtime.
+
+	example of what you CAN do:
+	C#:
+		class BaseClass {
+			public abstract void SomeMethod();
+		}
+		class A : BaseClass{
+			public override void SomeMethod() {
+				...
+			}
+		}
+		class B : BaseClass{
+			public override void SomeMethod() {
+				...
+			}
+		}
+	And then LScript:
+		[function test]
+		foo(A())
+		foo(B())
+		
+		[function foo]
+		argv(0).SomeMethod()
+	
+	
+	here, argv(0) is first A instance, then B instance. But running SomeMethod on them both is ok, because the method is on the base class of both A and B
+	
+	
+	now an example of what you CAN NOT do:
+	C#:
+		class A {
+			public void SomeMethod() {
+				...
+			}
+		}
+		class B {
+			public void SomeMethod() {
+				...
+			}
+		}
+	And then LScript:
+		[function crash]
+		foo(A())
+		foo(B())
+		
+		[function foo]
+		argv(0).SomeMethod()
+	
+	here, the SomeMethod is something completely different for A instances and B instances.
+	Don't try this at home ;)
+	
+	
+
+Because LScript is parsed just once, you can not expect from it to be as dynamic as spherescript is. You can not use variable names of variables, for example, or you can not double-evaluate something, etc.
+	Examples of what LScript will consider syntax error:
+		<<args>>
+		tag.<var_tagname>_<var_tagnumber> = <var.tagvalue>
+		
+You won't need the 0<tag.something> syntax, which was used in 55i so often, because an empty tag will evaluate to NULL, which is an empty object reference, and can behave as if it was 0 when compared with something in an If statement.
+
+Also, we do not support the syntax where you use dots to supply arguments to a function. This was used also in 55i versions, mostly with hardcoded functions (I think). 
+	Example of unsupported syntax:
+		FindCont.5.Name
+	Example of the suported equivalent:
+		FindCont(5).Name
+		
+
+In the 55i revision versions, some new possibilities were introduced. One of them is the FOR statement. 
+FOR X
+	ACTION
+ENDFOR
+It repeats the ACTION X-times, while giving you the number of the current cycle in a "Secret" local variable _for.
+In Lscript, we have 
+FOR <localvariablename> <leftboundary> <rightboundary>
+	ACTION
+ENDFOR
+the boundaries are whole numbers, and the FOR repeats the ACTION starting with the local variable at the value of leftboundary, adding/substracting one, until it reaches the rightboundary. You Set the name of the variable yourself, so that you can easily nest more FOR statements in each other, etc.
+	Example:
+		For i 1 100
+			sysmessage("this is cycle number <i>")
+		Endfor
+
+	Note that here, as well as in other cases in LScript, the syntax is quite vague (vague as in you can choose among more possibilities), and in the default scripts at least, the preferred syntax will look like this:
+		For (local.i, 1, 100)
+			SysMessage("this is cycle number <local.i>")
+		EndFor
+		
+
+In Lscript, every variable (like LOCAL/ARG, VAR, TAG) can have a value of any type. They can be numbers and strings, just like in sphere, but they can also refer to ingame objects (chars, items) or just any other object. The Variables are also fully working expressions, so you can call methods and such on the objects in them, etc. I know that this is also possible in some sphere versions, but not in all of them so I mentioned it.
+	Example:
+		local.myItem = <src.findlayer(21).findcont(0).link>
+		local.myItem.Name = "the first item's in SRC's Backpack link"
+		local.myItem.Color = 54
+		local.myItem = <Finduid(5)>
+		local.myItem.P(1000, 1000, 0, 0)
+		
+	What you had to do in some older sphere versions:
+		src.findlayer(21).findcont(0).link.Name = the first item's in SRC's Backpack link
+		src.findlayer(21).findcont(0).link.Color = 54
+		TRY uid.5.P = 1000 1000 0 0
+		
+Now tell me, what looks better? ;)
+And btw, here you would not need to use the <> at all
+	local.myItem = src.findlayer(21).findcont(0).link
+	local.myItem = Finduid(5)
+
+
+Another new statements in revision versions were the iterators, like FORCONT, FORPLAYERS, etc. Those would change the "default object" ("this") of the script beneath them to one of the object of the group they were iterating over. That is quite a stupid way to do that, because you could need the default object you had before (and you usually do). I believe it was done so partyle because you could not store object references in the local variables back then. But in LScript this is no problem, so the iterators look different. First off, we use one keyword for all of them, "foreach", and in each loop we change only the value of one local variable, not the default variable. Then we have to declare, what will be the group of objects we are iterating over. Internally, we use enumerators, which is the way that is ued in all .NET code.
+	Example: 
+		supposing the default object is a container:
+			foreach local.item in this
+				src.sysmessage("one of the items in this container is <local.item.Name>")
+			endforeach
+			
+		iterating over all things (chars and items) in the world:
+			foreach local.thing in Thing.AllThings //Thing is the basic class for chars and items, and it also stores the list of them
+				src.sysmessage("one of the objects in the world container <local.thing.Name>")
+			endforeach
+			
+		iterating over objects in range:
+			foreach local.item in ItemsInRange
+				src.sysmessage("one of the items in visible range is <local.item.Name>")
+			endforeach
+			
+Note that there is far more to the iterating over various thingies, but that's not the topic of this document
+
+
+
+Indexing
+You can use the indexer "operator" [] just like in other programming languages. Usually, you will be using an ArrayList, which is a collection class from the standard .NET library. It is basically an array of objects, with variable length. Plus, unlike some other objects, arraylist instances will be saved in the worldsave, when you use it in a tag or something. You can create an arraylist instance either like any other .NET class, that means by writing the whole name System.Collections.ArrayList(), or you can use a "shortcut" intrinsic method List()
+	Example:
+		local.myList = List()
+		local.myList.Add(1) //stores the number 1 at index 0
+		local.myList[0]="one" //replaces the 1 at index 0 with a string "one"
+		local.myList.RemoveAt(0) //removes whatever was on the index 0
+		for (local.i, 1, 10)
+			local.myList.Add("some string to put in the list")
+		endfor
+		src.sysmessage("Now our list contains <local.myList.Count> objects")
+		
+For more info about the ArrayList, consult some .NET reference (like the one at msdn.microsoft.com)
+
+		

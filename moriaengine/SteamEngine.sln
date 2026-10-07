@@ -1,0 +1,82 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.Common", "Common\SteamEngine.Common.csproj", "{7B3428BD-F9AF-448E-92BB-85A72505DF50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.Communication", "Communication\SteamEngine.Communication.csproj", "{42DC5FFC-D58D-48B2-8035-3123D4F0A84F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.GameCore", "GameCore\SteamEngine.GameCore.csproj", "{91710DA9-56BA-44A1-8E86-9A8EAFCDE88A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.AuxiliaryServer", "AuxiliaryServer\SteamEngine.AuxiliaryServer.csproj", "{7CD301E4-8009-444F-9044-CB70ACC48842}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.RemoteConsole", "RemoteConsole\SteamEngine.RemoteConsole.csproj", "{6718EF12-0F18-4B79-848E-41BAA3B7788D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.ProcessRestarter", "ProcessRestarter\SteamEngine.ProcessRestarter.csproj", "{0A6BEB83-CF08-4946-BA88-2A74480F9777}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.Generated", "Generated\SteamEngine.Generated.csproj", "{36CC1B5F-5F1B-406D-AE88-2DC3762CBDB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.Scripts", "scripts\SteamEngine.Scripts.csproj", "{C70C4C3E-FEC0-47BB-BB30-608951B723D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.SphereShardConverter", "SphereShardConverter\SteamEngine.SphereShardConverter.csproj", "{56E0D551-7D1D-4529-B355-B1C70B063526}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.ThirdParty", "ThirdParty\SteamEngine.ThirdParty.csproj", "{9FDF32C0-AA76-4020-BA7E-D3AE7F49E5F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.Tests", "Tests\SteamEngine.Tests.csproj", "{84A9E98B-1D63-4616-9BEB-85FD7FBB0B5E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B3428BD-F9AF-448E-92BB-85A72505DF50}.Debug|x64.ActiveCfg = Debug|x64
+		{7B3428BD-F9AF-448E-92BB-85A72505DF50}.Debug|x64.Build.0 = Debug|x64
+		{7B3428BD-F9AF-448E-92BB-85A72505DF50}.Release|x64.ActiveCfg = Release|x64
+		{7B3428BD-F9AF-448E-92BB-85A72505DF50}.Release|x64.Build.0 = Release|x64
+		{42DC5FFC-D58D-48B2-8035-3123D4F0A84F}.Debug|x64.ActiveCfg = Debug|x64
+		{42DC5FFC-D58D-48B2-8035-3123D4F0A84F}.Debug|x64.Build.0 = Debug|x64
+		{42DC5FFC-D58D-48B2-8035-3123D4F0A84F}.Release|x64.ActiveCfg = Release|x64
+		{42DC5FFC-D58D-48B2-8035-3123D4F0A84F}.Release|x64.Build.0 = Release|x64
+		{91710DA9-56BA-44A1-8E86-9A8EAFCDE88A}.Debug|x64.ActiveCfg = Debug|x64
+		{91710DA9-56BA-44A1-8E86-9A8EAFCDE88A}.Debug|x64.Build.0 = Debug|x64
+		{91710DA9-56BA-44A1-8E86-9A8EAFCDE88A}.Release|x64.ActiveCfg = Release|x64
+		{91710DA9-56BA-44A1-8E86-9A8EAFCDE88A}.Release|x64.Build.0 = Release|x64
+		{7CD301E4-8009-444F-9044-CB70ACC48842}.Debug|x64.ActiveCfg = Debug|x64
+		{7CD301E4-8009-444F-9044-CB70ACC48842}.Debug|x64.Build.0 = Debug|x64
+		{7CD301E4-8009-444F-9044-CB70ACC48842}.Release|x64.ActiveCfg = Release|x64
+		{7CD301E4-8009-444F-9044-CB70ACC48842}.Release|x64.Build.0 = Release|x64
+		{6718EF12-0F18-4B79-848E-41BAA3B7788D}.Debug|x64.ActiveCfg = Debug|x64
+		{6718EF12-0F18-4B79-848E-41BAA3B7788D}.Debug|x64.Build.0 = Debug|x64
+		{6718EF12-0F18-4B79-848E-41BAA3B7788D}.Release|x64.ActiveCfg = Release|x64
+		{6718EF12-0F18-4B79-848E-41BAA3B7788D}.Release|x64.Build.0 = Release|x64
+		{0A6BEB83-CF08-4946-BA88-2A74480F9777}.Debug|x64.ActiveCfg = Debug|x64
+		{0A6BEB83-CF08-4946-BA88-2A74480F9777}.Debug|x64.Build.0 = Debug|x64
+		{0A6BEB83-CF08-4946-BA88-2A74480F9777}.Release|x64.ActiveCfg = Release|x64
+		{0A6BEB83-CF08-4946-BA88-2A74480F9777}.Release|x64.Build.0 = Release|x64
+		{36CC1B5F-5F1B-406D-AE88-2DC3762CBDB5}.Debug|x64.ActiveCfg = Debug|x64
+		{36CC1B5F-5F1B-406D-AE88-2DC3762CBDB5}.Debug|x64.Build.0 = Debug|x64
+		{36CC1B5F-5F1B-406D-AE88-2DC3762CBDB5}.Release|x64.ActiveCfg = Release|x64
+		{36CC1B5F-5F1B-406D-AE88-2DC3762CBDB5}.Release|x64.Build.0 = Release|x64
+		{C70C4C3E-FEC0-47BB-BB30-608951B723D5}.Debug|x64.ActiveCfg = Debug|x64
+		{C70C4C3E-FEC0-47BB-BB30-608951B723D5}.Debug|x64.Build.0 = Debug|x64
+		{C70C4C3E-FEC0-47BB-BB30-608951B723D5}.Release|x64.ActiveCfg = Release|x64
+		{C70C4C3E-FEC0-47BB-BB30-608951B723D5}.Release|x64.Build.0 = Release|x64
+		{56E0D551-7D1D-4529-B355-B1C70B063526}.Debug|x64.ActiveCfg = Debug|x64
+		{56E0D551-7D1D-4529-B355-B1C70B063526}.Debug|x64.Build.0 = Debug|x64
+		{56E0D551-7D1D-4529-B355-B1C70B063526}.Release|x64.ActiveCfg = Release|x64
+		{56E0D551-7D1D-4529-B355-B1C70B063526}.Release|x64.Build.0 = Release|x64
+		{9FDF32C0-AA76-4020-BA7E-D3AE7F49E5F6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9FDF32C0-AA76-4020-BA7E-D3AE7F49E5F6}.Debug|x64.Build.0 = Debug|Any CPU
+		{9FDF32C0-AA76-4020-BA7E-D3AE7F49E5F6}.Release|x64.ActiveCfg = Release|Any CPU
+		{9FDF32C0-AA76-4020-BA7E-D3AE7F49E5F6}.Release|x64.Build.0 = Release|Any CPU
+		{84A9E98B-1D63-4616-9BEB-85FD7FBB0B5E}.Debug|x64.ActiveCfg = Debug|x64
+		{84A9E98B-1D63-4616-9BEB-85FD7FBB0B5E}.Debug|x64.Build.0 = Debug|x64
+		{84A9E98B-1D63-4616-9BEB-85FD7FBB0B5E}.Release|x64.ActiveCfg = Release|x64
+		{84A9E98B-1D63-4616-9BEB-85FD7FBB0B5E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

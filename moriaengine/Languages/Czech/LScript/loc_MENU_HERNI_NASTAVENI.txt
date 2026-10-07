@@ -1,0 +1,6 @@
+0                               = Umoznuje prednastaveni hernich zalezitosti.
+1                               = Novy level - rozdelit dovednostni body
+2                               = Chatovani mezi hraci
+3                               = Kdo jsem?
+4                               = Informace o Moria serveru.
+5                               = Predchozi

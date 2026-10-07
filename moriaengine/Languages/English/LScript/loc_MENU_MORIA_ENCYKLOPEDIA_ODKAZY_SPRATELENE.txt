@@ -1,0 +1,5 @@
+0                               = Odkazy na spratelene servry
+1                               = Vanamovy stranky - rady a navody
+2                               = Lu Tzeho stranky - informace o questech, bestiar a dalsi
+3                               = Dark Paradise: Otevre domovskou stranku sprateleneho shardu Dark Paradise.
+4                               = Predchozi

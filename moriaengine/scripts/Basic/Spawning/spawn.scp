@@ -1,0 +1,118 @@
+[triggergroup t_spawn_char]
+//trigger called when the timer is up
+on=@spawnNow
+//baseobject - spawn gem
+arg gem = this
+arg char = <tag.spawnInfo.SpawnDef.Create(this.x, this.y, this.z, this.m)>
+char.tag.spawnGem = gem //link to his spawn
+char.AddTriggerGroup(e_spawned_char)
+tag.spawnedCount = <tag.spawnedCount> + 1
+
+//check if there are more chars to be spawned
+if(<tag.spawnedCount> < <tag.spawnInfo.Amount> )
+ //print("timerujem <{<tag.spawnInfo.MinTime>,<tag.spawnInfo.MaxTime>}>")
+ AddTimer(%SpawnTimer, {tag.spawnInfo.MinTime,tag.spawnInfo.MaxTime}*10, @spawnNow) //next possible spawns will appear in the given time interval
+endif
+
+[function spawn] //argv(0) - chardef which to create
+if (argvcount==0)
+ if(!tag.exists(_spawndialog_data_))
+  tag._spawndialog_data_ = SpawnInfo(3,c_man,1,2,1)
+ endif
+else
+ tag._spawndialog_data_ = SpawnInfo(3,argv(0),1,2,1)
+endif
+dialog(d_spawn,tag(_spawndialog_data_))
+return 1
+
+[dialog d_spawn]
+arg sirka = 400
+//src.sysmessage(<argv(2)>)
+arg dlg = ImprovedDialog(argv(0))
+dlg.CreateBackground(<sirka>)
+dlg.SetLocation(60,80)
+
+//nadpis
+dlg.Add(GUTATable(1,0,ButtonMetrics.D_BUTTON_WIDTH))
+dlg.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Vytvoøení nového spawnu").Build())
+dlg.LastTable.AddToCell(0,1,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build()) //exit button
+dlg.MakeTableTransparent()
+
+dlg.Add(GUTATable(5,0,180))
+dlg.LastTable.AddToCell(0,0,GUTAText.Builder.TextLabel("Amount").Build())
+dlg.LastTable.AddToCell(1,0,GUTAText.Builder.TextLabel("Baseid").Build())
+dlg.LastTable.AddToCell(2,0,GUTAText.Builder.TextLabel("Mintime [min]").Build())
+dlg.LastTable.AddToCell(3,0,GUTAText.Builder.TextLabel("Maxtime [min]").Build())
+dlg.LastTable.AddToCell(4,0,GUTAText.Builder.TextLabel("Homedist").Build())
+
+dlg.LastTable.AddToCell(0,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(10).Text("<argv(2).Amount>").Build())
+dlg.LastTable.AddToCell(1,1,GUTAInput.Builder.Id(11).Text("<argv(2).SpawnDef.PrettyDefname>").Build())
+dlg.LastTable.AddToCell(2,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(12).Text("<argv(2).MinTime>").Build())
+dlg.LastTable.AddToCell(3,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(13).Text("<argv(2).MaxTime>").Build())
+dlg.LastTable.AddToCell(4,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(14).Text("<argv(2).Homedist>").Build())
+dlg.MakeTableTransparent()
+
+//a posledni radek s tlacitkem
+dlg.Add(GUTATable(1,ButtonMetrics.D_BUTTON_WIDTH,0));
+dlg.LastTable.AddToCell(0,0,GUTAButton.Builder.Id(1).Build())
+dlg.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Potvrdit").Build())
+dlg.MakeTableTransparent() //zpruhledni posledni radek
+
+dlg.WriteOut()
+
+[DIALOG d_spawn button]
+ON=0
+sysmessage("Spawning Cancelled")
+return 0
+
+ON=1
+//use abstractdef.finddef since we can get the spawngroup this way too
+arg spawnData = SpawnInfo(<argnum[10]>,<AbstractDef.Get(<argtxt[11]>)>,<argnum[12]>,<argnum[13]>,<argnum[14]>)    
+if (spawnValuesMakeSense(spawnData))
+  src.tag._spawndialog_data_ = spawnData //store the info for future creating of new spawns...
+  f_spawninit(spawnData)
+else
+  src.tag._spawndialog_data_ = spawnData //store the info for future creating of new spawns...
+  src.redmessage(tag._responseMessage_)
+  src.tag.remove(_responseMessage_)
+  dialog(d_spawn,spawnData)
+endif
+return 0
+
+[function spawnValuesMakeSense]//check if the values provided to the spawn dialog are wise :)
+//argv(0) - the SpawnInfo instance
+if(<argv(0).Amount> <= 0)
+ tag._responseMessage_ = "Poèet spawnù musí být vìtší než 0"
+ return 0
+elseif((<argv(0).SpawnDef> == 0) || (!<argv(0).SpawnDef.IsCharDef>)) //TODO doplnit spravnou metodu
+ tag._responseMessage_ = "Zadaný chardef neexistuje"
+ return 0
+elseif((<argv(0).MinTime>*<argv(0).MaxTime> < 0) || (<argv(0).MinTime> >= <argv(0).MaxTime>)) 
+ tag._responseMessage_ = "Minimalni a maximalni casy museji byt nezaporne, minimalni cas mensi nez maximalni"
+ return 0
+elseif(<argv(0).HomeDist> < 0)
+ tag._responseMessage_ = "Homedist musi by nezaporny"
+ return 0
+else
+ return 1
+endif
+
+[function f_spawninit]//argv0 - info object
+arg spawnGem = i_worldgem_bit.Create(this)
+//spawnGem.Flags=attr_move_never|attr_invis //TODO - az to bude implementovany tak to tam dat.
+spawnGem.tag.spawnInfo = argv(0) //store the spawn information (amounts, times, chardef/spawngroup, homedist)
+spawnGem.tag.spawnedCount = 0
+	
+//initialize the first timer
+spawnGem.AddTimer(%SpawnTimer, 1, @spawnNow)  //the first spawn will appear immediately
+spawnGem.Drop()
+
+[triggergroup e_spawned_char]
+on=@destroy
+//print("ted je tu <tag.spawnGem.tag.spawnedCount>")
+arg gem = tag.spawnGem
+gem.tag.spawnedCount = <gem.tag.spawnedCount> - 1
+//print("a ted je tu <gem.tag.spawnedCount>")
+if(!gem.HasTimer(%SpawnTimer)) //add a new timer only if the older one is not present
+ gem.AddTimer(%SpawnTimer, {gem.tag.spawnInfo.MinTime, gem.tag.spawnInfo.MaxTime}*10,@spawnNow) //initialize a new timer
+endif

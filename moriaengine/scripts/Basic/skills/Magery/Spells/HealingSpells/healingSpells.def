@@ -1,0 +1,37 @@
+[HealingSpellDef 4]
+DEFNAME=s_heal
+NAME=Heal
+SOUND=0x1F2
+RUNES=IM
+CASTTIME=2.0
+//RESOURCES=i_reag_garlic,i_reag_ginseng,i_reag_spider_silk
+RUNEITEM=i_rune_HEAL
+SCROLLITEM=i_scroll_HEAL
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+//EFFECTID=i_fx_HEAL_EFFECT
+EFFECT=0,15
+//DURATION=0.0
+MANAUSE=8
+Requirements=10.0 Magery
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x376A, 9, 32)
+
+[HealingSpellDef 29]
+DEFNAME=s_greater_heal
+NAME=Greater Heal
+SOUND=0x202
+RUNES=IVM
+CASTTIME=2.3
+//RESOURCES=i_reag_garlic,i_reag_ginseng,i_reag_mandrake_root,i_reag_spider_silk
+RUNEITEM=i_rune_GREATER_HEAL
+SCROLLITEM=i_scroll_GREATER_HEAL
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+//EFFECTID=i_fx_HEAL_EFFECT
+EFFECT=0,50
+//DURATION=0.0
+MANAUSE=15
+Requirements=40.0 Magery
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x376A, 9, 32)

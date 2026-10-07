@@ -1,0 +1,14 @@
+[StatDrainingAbilityDef a_ignition]
+Name="Ignition"
+ManaDrain=1
+EffectPower=1 //hits drain per second when hit
+EffectDuration=60
+
+PluginKey = @@ignition
+PluginDef = p_ignition
+
+[IgnitionActivatedPluginDef p_ignition]
+
+[PassiveAbilityDef a_ignition_bonus]
+Name="Ignition bonus"
+EffectPower=0.01 // 5% bonus at 5 points

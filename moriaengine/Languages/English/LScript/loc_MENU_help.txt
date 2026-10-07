@@ -1,0 +1,6 @@
+0                               = Main Support Menu
+1                               = Nastaveni a informace
+2                               = Herni prikazy
+3                               = Moria encyklopedia
+4                               = Zprava pro GM (page): pred zaslanim zpravy si radne prostudujte pravidla posilani zprav. Zpravy jasne nevyjadrujici problem budou mazany.
+5                               = Nouzovy teleport (stuck help): pouzij pri zaseku ci pokud jsi se ztratil - po casovem limitu budes prenesen do sveho domovskeho mesta.

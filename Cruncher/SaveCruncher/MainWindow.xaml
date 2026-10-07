@@ -1,0 +1,84 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="SaveCruncher.MainWindow"
+        Title="MainWindow" Height="350" Width="525" Activated="Window_Activated_1">
+    <Window.Resources>
+        <Style x:Key="ControlStyle" TargetType="Control">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+        <Style BasedOn="{StaticResource ControlStyle}" TargetType="Label">
+            <Setter Property="Margin" Value="-4,0,0,0"/>
+        </Style>
+        <Style BasedOn="{StaticResource ControlStyle}" TargetType="TextBox">
+        </Style>
+        <Style BasedOn="{StaticResource ControlStyle}" TargetType="CheckBox">
+        </Style>
+        <Style BasedOn="{StaticResource ControlStyle}" TargetType="Button">
+        </Style>
+
+        <Style TargetType="{x:Type Paragraph}">
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition  />
+            <RowDefinition  Height="Auto" />
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBox x:Name="tbWorldSavePath" Text="sphereworld.scp" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1" />
+            <TextBox x:Name="tbCharsSavePath" Text="spherechars.scp" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1" />
+            <Button x:Name="bWorldSavePathSelectFile" Content=" ... " Grid.Row="0" Grid.Column="2" Click="bWorldSavePathSelectFile_Click"/>
+            <Button x:Name="bCharsSavePathSelectFile" Content=" ... " Grid.Row="1" Grid.Column="2" Click="bCharsSavePathSelectFile_Click" />
+            <Label Content="SphereWorld:" Grid.Row="0" Grid.Column="0"/>
+            <Label Content="SphereChars:" Grid.Row="1" Grid.Column="0" />
+            <Button x:Name="bLoadWorldSave" Content="Načíst" Grid.Row="0" Grid.Column="3" Click="bLoadWorldSave_Click" />
+            <Button x:Name="bLoadCharsSave" Content="Načíst" Grid.Row="1" Grid.Column="3" Click="bLoadCharsSave_Click" />
+            <CheckBox x:Name="chbWorldSaveLoaded" Grid.Row="0" Grid.Column="4" IsHitTestVisible="False"/>
+            <CheckBox x:Name="chbCharSaveLoaded" Grid.Row="1" Grid.Column="4" IsHitTestVisible="False"/>
+        </Grid>
+        <StackPanel x:Name="spTemplateButtons" Grid.Row="1" />
+
+        <Grid Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBox x:Name="tbWhere" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1" Text="Data.Serial:0402D472F" />
+            <TextBox x:Name="tbFieldNames" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Text="SectionType;SectionName" />
+            <Label Content="Filtr:" Grid.Row="0" Grid.Column="0"/>
+            <Label Content="Sloupce:" Grid.Row="1" Grid.Column="0" />
+            <Button x:Name="bRunQuery" Content="Zobrazit" Grid.Row="2" Grid.Column="0" Click="bRunQuery_Click"/>
+        </Grid>
+
+
+        <DataGrid x:Name="dgResults" Grid.Row="3" />
+        <RichTextBox x:Name="tbLog" Grid.Row="4"/>
+    </Grid>
+</Window>

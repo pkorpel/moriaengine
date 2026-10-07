@@ -1,0 +1,59 @@
+Summary:
+	Debug:
+		SScriptDef is about 3.5 times as fast as MIScriptDef.
+	Release:
+		MIScriptDef is about 7.5 times as fast as SScriptDef.
+
+Debug:	
+	MIScriptDef
+	3:02 PM: Executing 50000 iterations of each test function.
+	3:02 PM: Tested TestFuncEmpty: Took 172 milliseconds.
+	3:02 PM: Tested TestFunc2Args: Took 437 milliseconds.
+	3:02 PM: Tested TestFunc3Args: Took 750 milliseconds.
+	3:03 PM: Tested TestFunc4Args: Took 1109 milliseconds.
+	3:03 PM: Tested TestFunc5Args: Took 1500 milliseconds.
+	3:03 PM: Tested TestFuncPArray: Took 1766 milliseconds.
+	3:03 PM: Done testing.
+	
+	SScriptDef
+	3:04 PM: Executing 50000 iterations of each test function.
+	3:04 PM: Tested TestFuncEmpty: Took 47 milliseconds.
+	3:04 PM: Tested TestFunc2Args: Took 125 milliseconds.
+	3:04 PM: Tested TestFunc3Args: Took 219 milliseconds.
+	3:04 PM: Tested TestFunc4Args: Took 313 milliseconds.
+	3:04 PM: Tested TestFunc5Args: Took 422 milliseconds.
+	3:04 PM: Tested TestFuncPArray: Took 485 milliseconds.
+	3:04 PM: Done testing.
+	3:04 PM: 'shadowlord' commands 'TestScriptDefSpeed'. OK
+
+WinSE:
+	MIScriptDef
+	3:18 PM: Executing 50000 iterations of each test function.
+	3:18 PM: Tested TestFuncEmpty: Took 0 milliseconds.
+	3:18 PM: Tested TestFunc2Args: Took 15 milliseconds.
+	3:18 PM: Tested TestFunc3Args: Took 31 milliseconds.
+	3:18 PM: Tested TestFunc4Args: Took 31 milliseconds.
+	3:18 PM: Tested TestFunc5Args: Took 47 milliseconds.
+	3:18 PM: Tested TestFuncPArray: Took 47 milliseconds.
+	3:18 PM: Done testing.
+	3:18 PM: 'shadowlord' commands 'TestScriptDefSpeed'. OK
+	3:18 PM: Executing 50000 iterations of each test function.
+	3:18 PM: Tested TestFuncEmpty: Took 16 milliseconds.
+	3:18 PM: Tested TestFunc2Args: Took 16 milliseconds.
+	3:18 PM: Tested TestFunc3Args: Took 32 milliseconds.
+	3:18 PM: Tested TestFunc4Args: Took 47 milliseconds.
+	3:18 PM: Tested TestFunc5Args: Took 63 milliseconds.
+	3:18 PM: Tested TestFuncPArray: Took 63 milliseconds.
+	3:18 PM: Done testing.
+	3:18 PM: 'shadowlord' commands 'TestScriptDefSpeed'. OK
+	
+	SScriptDef
+	3:16 PM: Executing 50000 iterations of each test function.
+	3:16 PM: Tested TestFuncEmpty: Took 47 milliseconds.
+	3:16 PM: Tested TestFunc2Args: Took 125 milliseconds.
+	3:16 PM: Tested TestFunc3Args: Took 203 milliseconds.
+	3:16 PM: Tested TestFunc4Args: Took 297 milliseconds.
+	3:16 PM: Tested TestFunc5Args: Took 406 milliseconds.
+	3:16 PM: Tested TestFuncPArray: Took 468 milliseconds.
+	3:16 PM: Done testing.
+	3:16 PM: 'shadowlord' commands 'TestScriptDefSpeed'. OK

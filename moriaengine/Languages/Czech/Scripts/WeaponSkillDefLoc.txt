@@ -1,0 +1,1 @@
+YouHaveNoAmmo                   = Nemáš střelivo.

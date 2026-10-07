@@ -1,0 +1,22 @@
+VERSION 1.0
+EXPORTS
+	SetupTables
+	Crushify1
+	Crushify2
+	Crushify3
+	Crushify4
+	Crushify5
+	Crushify6
+	Crushify7
+	Crushify8
+	Crushify8S
+	Crushify10
+	Crushify10no3
+	Crushify11
+	Crushify12
+	Crushify13
+	Crushify13no10
+	Crushify14
+	
+	InitBuffers
+	;add new ones

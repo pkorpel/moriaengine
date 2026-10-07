@@ -1,0 +1,1 @@
+start bin\AutoUpdater.exe -f

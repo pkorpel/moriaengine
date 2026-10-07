@@ -1,0 +1,76 @@
+Name:
+	BeforeSave
+
+Called on:
+	Globals
+
+When:
+	Just before the worldsave starts
+
+Arguments:
+	0 (string): Absolute path of the save directory
+	
+Sphere Arguments:
+	none
+
+Extra variables:
+	none
+
+Return value:
+	none, but is supposed to change the argument if needed
+
+Purpose:
+	This trigger allows you to decide about the directory path of the saves.
+	If you want it to be something else than the default, return the new one
+	as the argv[0]. Note that the returned path is used by the core only if you do not
+	use the @openSaveStream trigger to change the stream.
+	
+	
+	
+	
+	
+Name:
+	openSaveStream
+
+Called on:
+	Globals
+
+When:
+	Just before the each worldsave file is opened
+
+Arguments:
+	0 (string): Absolute path of the save directory
+	1 (filename without extension): this means string like "things", "globals", etc.
+	
+Sphere Arguments:
+	none
+
+Extra variables:
+	none
+
+Return value:
+	none, but is supposed to change the argument if needed
+
+Purpose:
+	This trigger allows you to decide about the name, encoding, etc. of the save files.
+	Instead of the names of files to be saved (in the args), the trigger should set corresponding 
+	Stream (binary) or TextWriter (textual) object. 
+	Note that if you do supply a Stream, it will be wrapped into a StreamWriter 
+	using it's default encoding (utf-8), before usage. If you do not supply anything,
+	textual files with .sav extension will be created and used (TextWriter/FileStream).
+	CHanges to the path (first arg) are not being taken into account in this trigger.
+	
+	
+-------------------------------------------------------------------------------
+	
+	
+Name:
+	BeforeLoad
+
+...
+
+	
+Name:
+	openLoadStream
+	
+these two triggers are direct "opposition" of the save triggers.

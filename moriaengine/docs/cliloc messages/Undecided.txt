@@ -1,0 +1,107 @@
+500220	OW!  THAT SMARTS!
+500239	default
+
+500245	Time to start opening.
+500246	Still opening.
+500247	Curtain is open now.
+500248	Time to start opening.
+500249	Still opening.
+500250	Curtain is open now.
+
+500264	Honestly, I'm not a key.
+500265	Honestly, I'm not a key.
+
+500362	What message do you wish to send to the player?
+500363	Text entry timed out
+
+500415	Let me see...
+500416	I dare not approach thee too closely, lest others think me an easy mark...
+500417	A sense of great foreboding overtakes you.
+
+500515	human remains
+
+500568	teleport unsuccessful
+
+500620	You feel it would take a few moments to secure your camp.
+500621	The camp is now secure.
+500622	This item must be stolen to get it.
+500623	This item must be stolen to use it.
+
+500642	Target cannot be seen.
+500643	Target is too far away.
+
+500644	To get your shield, ask any of Lord Blackthorn's Guards.
+500645	You can no longer wear some of your equipment.
+500646	It will be placed in your pack in a few mins.
+500647	Some equipment has been moved to your backpack.
+500648	This chest seems to be locked.
+500649	CLICK
+500650	RECLICK
+
+
+500661	I shall place this on my mantle!
+
+500664	Ahh!  That was the one piece I was missing!
+500665	Somehow, it reminds me of mother.
+500666	It's a sign!  I can see Elvis in this!
+500667	Thanks, I was missing mine.
+500668	I'll put this in the lost-and-found box.
+
+500671	Claim house
+
+500694	Checking for items
+500695	Creating bag
+500696	Checking for items
+500697	Creating bag
+500698	Must have a target value!
+500699	Script is Done!!
+500700	disarmed
+500701	reloaded
+500702	got message
+
+500719	else what?
+500720	You don't have enough room in your backpack!
+500721	Target cannot be seen.
+500722	You don't have enough room in your backpack!
+
+500725	Now begone with yer ugly face
+500726	Ahh!  A ghost is touching me!
+500727	Ye must join a faction before I can serve ye.
+500728	Argh!  Cursed enemy making me fetch ye things!
+500729	Ahhh!  Enemy Faction!!  Save me!
+
+500735	Don't play with things you don't know about.
+
+500758	Select object to debug:
+500759	The brazier fizzes and pops, but nothing seems to happen.
+500760	The brazier fizzes and pops, but nothing seems to happen.
+500761	Heed this warning well, and use this brazier at your own peril.
+500762	This chest seems to be locked.
+500763	CLICK
+500764	RECLICK
+500765	BUG - NOT TELEPORTING
+500766	Disarmed
+500767	Reloaded
+
+500784	Disarming
+500785	Reloading
+500786	Disarmed
+500787	Reloaded
+500788	This door appears to be locked.
+500789	SOUND EFFECT
+500790	SOUND EFFECT
+500791	returning
+
+500793	Found floortile already present
+
+
+
+
+
+
+
+
+
+
+
+

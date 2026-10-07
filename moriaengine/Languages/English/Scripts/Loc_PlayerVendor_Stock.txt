@@ -1,0 +1,8 @@
+Header_Item                     = Na prodej: {0} {1}
+Header_Char                     = Na prodej: {0}
+Label_Price                     = Cena
+Label_Description               = Popis
+Label_Sell                      = Prodej
+Label_SoldByUnits               = Jednotkový prodej
+Label_NewSection                = Nová sekce
+InvalidPrice                    = Cena musí být větší než 0

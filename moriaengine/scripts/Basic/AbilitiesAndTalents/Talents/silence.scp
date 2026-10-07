@@ -1,0 +1,62 @@
+[StatDrainingAbilityDef a_silence]
+Name="Silence"
+ManaDrain=1
+EffectPower=1
+EffectDuration=10
+chance=0.1
+
+PluginKey = @@silence
+PluginDef = p_silence
+
+[StatDrainingEffectDurationPluginDef p_silence]
+on=@CauseSpellEffect
+if (argv[0].SpellDef == s_lightning)
+	arg.self = this.Cont
+	if (a_silence.CheckSuccess(<arg.self>))
+		arg.span = a_silence.EffectDuration + arg.self.GetAbility(a_silence_bonus) * a_silence_bonus.EffectDuration
+		if (<arg.span> > 0)
+			arg.targ = argv[0].CurrentTarget
+			
+			arg.prevPlugin = arg.targ.GetPlugin(@@silence_effect)
+			if (<arg.prevPlugin>) 
+				//TODO ?check that it's silence?
+				arg.prevPlugin.Timer = arg.prevPlugin.Timer + arg.span //prolong the existing silence effect
+			else
+				arg.eff = p_silence_effect.Create()
+				arg.eff.Init(arg.self, EffectFlag.FromAbility | EffectFlag.HarmfulEffect, 0, System.TimeSpan.FromSeconds(<arg.span>), a_silence)
+				arg.targ.AddPlugin(@@silence_effect, arg.eff)
+			endif
+			
+			arg.self.SysMessage(System.String.Format(LocManager.GetEntry("loc_silence", "YourTargetIsSilenced", arg.self.Language), arg.targ.Name, <arg.span>))
+			arg.targ.SysMessage(System.String.Format(LocManager.GetEntry("loc_silence", "YouHaveBeenSilenced", arg.targ.Language), <arg.span>))
+		endif
+	endif
+endif
+
+
+[EffectDurationPluginDef p_silence_effect]
+on=@skillselect
+if (argv[0].SkillDef == skill_magery) 
+	this.Cont.SysMessage(LocManager.GetEntry("loc_silence", "YoureSilenced", this.Cont.Language))
+	return 1
+endif
+return 0
+	
+on=@skillstart
+if (argv[0].SkillDef == skill_magery) 
+	this.Cont.SysMessage(LocManager.GetEntry("loc_silence", "YoureSilenced", this.Cont.Language))
+	return 1
+endif
+return 0
+
+
+[PassiveAbilityDef a_silence_bonus]
+Name="Silence duration bonus"
+EffectPower=1 //seconds per point
+
+
+[ScriptedLoc loc_silence]
+YouHaveBeenSilenced = You have been silenced for {0} seconds
+YourTargetIsSilenced = You have silenced {0} for {1} seconds
+
+YoureSilenced = You're silenced so you can't cast any spells

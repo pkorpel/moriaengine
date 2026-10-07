@@ -1,0 +1,23 @@
+500464	Use this on corpses to carve away meat and hide.
+500465	You don't have anywhere to carry the meat. You leave the meat on the corpse.
+500466	You carve away some meat.
+500467	You carve some meat, which remains on the corpse.
+500468	There's no usable meat on the corpse.
+500469	You don't have anywhere to carry the hides.  You leave them on the corpse.
+500470	You skin the corpse and get the hide.
+500471	You skin it, and the hides are now in the corpse.
+500472	The hide does not seem useful.
+500473	You don't have anywhere to carry the furs.  You leave them on the corpse.
+500474	You skin the corpse and get the fur.
+500475	You skin the corpse and get the fur. It is now in the corpse.
+500476	The fur does not seem useful.
+500477	You don't have anywhere to carry the feathers.  You leave them on the corpse.
+500478	You pluck the bird and get the feathers.
+500479	You pluck the bird. The feathers are now on the corpse.
+500480	You don't see any usable feathers.
+500481	You don't have anywhere to carry the wool.  You leave the wool on the corpse.
+500482	You shear the corpse and get the wool.
+500483	You shear it, and the wool is now on the corpse.
+500484	Shearing the corpse seems to be a waste of time.
+500485	You see nothing useful to carve from the corpse.
+500486	That is too far away.

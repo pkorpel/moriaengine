@@ -1,0 +1,21 @@
+[StatDrainingAbilityDef a_mana_regen_boost]
+Name="Mana Regen Boost"
+EffectPower=0.4 // effect of the passive standard mana regen ability is tripled when this has 5 points
+StamDrain=1
+EffectDuration=20
+Cooldown = 15 * 60
+
+PluginKey = @@mana_regen_boost
+PluginDef = p_mana_regen_boost
+
+
+[StatDrainingEffectDurationPluginDef p_mana_regen_boost]
+on=@assign
+this.Timer = a_spell_boost.EffectDuration
+this.EffectPower = this.Cont.GetAbility(a_regen_mana) * a_regen_mana.EffectPower * this.EffectPower
+
+this.Cont.ManaRegenSpeed = this.Cont.ManaRegenSpeed + this.EffectPower
+
+on=@unassign
+argv[0].ManaRegenSpeed = argv[0].ManaRegenSpeed - this.EffectPower
+

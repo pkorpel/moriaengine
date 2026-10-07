@@ -1,0 +1,1 @@
+NextEvilSpellReflects           = Příští nepřátelské kouzlo se od tebe odrazí

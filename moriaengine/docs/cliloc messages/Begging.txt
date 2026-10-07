@@ -1,0 +1,23 @@
+500392	Spare some gold friend?
+500393	Just a few coins.
+500394	Surely thou can spare something.
+500395	I haven't eaten in days.
+500396	I have children to feed.
+500397	To whom do you wish to grovel?
+500398	Perhaps just asking would work better.
+500399	There is little chance of getting money from that!
+500400	There is little chance of getting money from that!
+500401	You are too far away to beg from him.
+500402	You are too far away to beg from her.
+500403	That's too far away.  You couldn't beg from it anyway.
+500404	They seem unwilling to give you any money.
+500405	I feel sorry for thee...
+500406	Thou dost not look trustworthy... no gold for thee today!
+500407	I have not enough money to give thee any!
+500408	victim
+500409	beggar
+500410	Thou dost not look trustworthy... no gold for thee today!
+500411	I have not enough money to give thee any!
+500412	I have not enough money to give thee any!
+500413	I have not enough money to give thee any!
+500414	reached end of begging pathfind

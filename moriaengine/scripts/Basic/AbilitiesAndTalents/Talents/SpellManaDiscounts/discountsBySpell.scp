@@ -1,0 +1,69 @@
+//sorcerer talent
+[PassiveAbilityDef a_mind_blast_discount]
+Name="Mind Blast Discount"
+EffectPower=0.03 // -15% manause at 5 points 
+
+PluginKey = @@mind_blast_discount
+PluginDef = p_mind_blast_discount
+
+[SpellManaDiscountPluginDef p_mind_blast_discount]
+Spell = s_mind_blast
+
+
+//sorcerer talent
+[PassiveAbilityDef a_energy_field_discount]
+Name="Energy Field Discount"
+EffectPower=0.04 // -20% manause at 5 points 
+
+PluginKey = @@energy_field_discount
+PluginDef = p_energy_field_discount
+
+[SpellManaDiscountPluginDef p_energy_field_discount]
+Spell = s_energy_field
+
+
+//sorcerer talent
+[PassiveAbilityDef a_chain_lightning_discount]
+Name="Chain Lightning Discount"
+EffectPower=0.04 // -20% manause at 5 points 
+
+PluginKey = @@chain_lightning_discount
+PluginDef = p_chain_lightning_discount
+
+[SpellManaDiscountPluginDef p_chain_lightning_discount]
+Spell = s_chain_lightning
+
+
+//magician talent
+[PassiveAbilityDef a_gate_travel_discount]
+Name="Gate Travel Discount"
+EffectPower=0.03 // -15% manause at 5 points 
+
+PluginKey = @@gate_travel_discount
+PluginDef = p_gate_travel_discount
+
+[SpellManaDiscountPluginDef p_gate_travel_discount]
+Spell = s_gate_travel
+
+
+//magician talent
+[PassiveAbilityDef a_recall_discount]
+Name="Recall Discount"
+EffectPower=0.05 // -25% manause at 5 points 
+
+PluginKey = @@recall_discount
+PluginDef = p_recall_discount
+
+[SpellManaDiscountPluginDef p_recall_discount]
+Spell = s_recall
+
+//magician talent
+[PassiveAbilityDef a_resurrection_discount]
+Name="Resurrection Discount"
+EffectPower=0.04 // -20% manause at 5 points 
+
+PluginKey = @@resurrection_discount
+PluginDef = p_resurrection_discount
+
+[SpellManaDiscountPluginDef p_resurrection_discount]
+Spell = s_resurrection

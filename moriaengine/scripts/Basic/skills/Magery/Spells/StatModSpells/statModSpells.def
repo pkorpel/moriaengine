@@ -1,0 +1,201 @@
+[DurableCharEffectSpellDef 1]
+DEFNAME=s_Clumsy
+NAME=Clumsy
+SOUND=0x1DF
+RUNES=UJ
+CASTTIME=1.0
+//RESOURCES=i_reag_blood_moss,i_reag_nightshade
+RUNEITEM=i_rune_CLUMSY
+SCROLLITEM=i_scroll_CLUMSY
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+EFFECT=-15
+DURATION=2*60.0,3*60.0
+MANAUSE=5
+Requirements=10.0 Magery
+EffectPluginDef = p_dexMod
+EffectPluginKey_Spell = @@spellEffect_statDebuff
+EffectPluginKey_Potion = @@potionEffect_statDebuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x3779, 10, 15)
+
+[DurableCharEffectSpellDef 3]
+DEFNAME=s_feeblemind
+NAME=Feeblemind
+SOUND=0x1E4
+RUNES=RW
+CASTTIME=1.5
+//RESOURCES=i_reag_ginseng,i_reag_nightshade
+RUNEITEM=i_rune_FEEBLEMIND
+SCROLLITEM=i_scroll_FEEBLEMIND
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+EFFECT=-15
+DURATION=2*60.0,5*60.0
+MANAUSE=5
+Requirements=10.0 Magery
+EffectPluginDef = p_intMod
+EffectPluginKey_Spell = @@spellEffect_statDebuff
+EffectPluginKey_Potion = @@potionEffect_statDebuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x3779, 10, 15)
+
+[DurableCharEffectSpellDef 8]
+DEFNAME=s_weaken
+NAME=Weaken
+SOUND=0x1E6
+RUNES=DM
+CASTTIME=1.0
+//RESOURCES=i_reag_garlic,i_reag_nightshade
+RUNEITEM=i_rune_WEAKEN
+SCROLLITEM=i_scroll_WEAKEN
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+//EFFECTID=i_fx_curse
+EFFECT=-15
+DURATION=2*60.0,5*60.0
+MANAUSE=5
+Requirements=10.0 Magery
+EffectPluginDef = p_strMod
+EffectPluginKey_Spell = @@spellEffect_statDebuff
+EffectPluginKey_Potion = @@potionEffect_statDebuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x3779, 10, 15)
+
+[DurableCharEffectSpellDef 9]
+// Raise dex
+DEFNAME=s_Agility
+NAME=Agility
+SOUND=0x28E
+RUNES=EU
+CASTTIME=1.0
+//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root
+RUNEITEM=i_rune_AGILITY
+SCROLLITEM=i_scroll_AGILITY
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+//EFFECTID=i_fx_BLESS_EFFECT
+EFFECT=0,15
+DURATION=2*60.0,5*60.0
+MANAUSE=6
+Requirements=18.0 Magery
+EffectPluginDef = p_dexMod
+EffectPluginKey_Spell = @@spellEffect_statBuff
+EffectPluginKey_Potion = @@potionEffect_statBuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x375A, 10, 15)
+
+[DurableCharEffectSpellDef 10]
+// Raise int.
+DEFNAME=s_Cunning
+NAME=Cunning
+SOUND=0x1EB
+RUNES=UW
+CASTTIME=8
+//RESOURCES=i_reag_mandrake_root,i_reag_nightshade
+RUNEITEM=i_rune_CUNNING
+SCROLLITEM=i_scroll_CUNNING
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+//EFFECTID=i_fx_BLESS_EFFECT
+EFFECT=0,15
+DURATION=2*60.0,5*60.0
+MANAUSE=6
+Requirements=20.0 Magery
+EffectPluginDef = p_intMod
+EffectPluginKey_Spell = @@spellEffect_statBuff
+EffectPluginKey_Potion = @@potionEffect_statBuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x375A, 10, 15)
+
+[DurableCharEffectSpellDef 16]
+DEFNAME=s_strength
+NAME=Strength
+SOUND=0x1EE
+RUNES=UM
+CASTTIME=1.5
+//RESOURCES=i_reag_mandrake_root,i_reag_nightshade
+RUNEITEM=i_rune_STRENGTH
+SCROLLITEM=i_scroll_STRENGTH
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+//EFFECTID=i_fx_BLESS_EFFECT
+EFFECT=0,15
+DURATION=2*60.0,8*60.0
+MANAUSE=7
+Requirements=20.0 Magery
+EffectPluginDef = p_strMod
+EffectPluginKey_Spell = @@spellEffect_statBuff
+EffectPluginKey_Potion = @@potionEffect_statBuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x375A, 10, 15)
+	
+[DurableCharEffectSpellDef 17]
+DEFNAME=s_bless
+NAME=Bless
+SOUND=0x1EA
+RUNES=RS
+CASTTIME=2.0
+//RESOURCES=i_reag_garlic,i_reag_mandrake_root
+RUNEITEM=i_rune_BLESS
+SCROLLITEM=i_scroll_BLESS
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial | SpellFlag.IsAreaSpell
+//EFFECTID=i_fx_BLESS_EFFECT
+EFFECT=0,10
+DURATION=4*60.0,10*60.0
+MANAUSE=9
+Requirements=30.0 Magery
+EffectPluginDef = p_bless
+EffectPluginKey_Spell = @@spellEffect_statBuff
+EffectPluginKey_Potion = @@potionEffect_statBuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x373A, 10, 15)
+	
+[DurableCharEffectSpellDef 27]
+DEFNAME=s_curse
+NAME=Curse
+SOUND=0x1EA
+RUNES=DS
+CASTTIME=2.3
+//RESOURCES=i_reag_garlic,i_reag_nightshade,i_reag_sulfur_ash
+RUNEITEM=i_rune_CURSE
+SCROLLITEM=i_scroll_CURSE
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+//EFFECTID=i_fx_curse
+EFFECT=-10
+DURATION=10.0,60.0
+MANAUSE=12
+Requirements=40.0 Magery
+EffectPluginDef = p_curse
+EffectPluginKey_Spell = @@spellEffect_statDebuff
+EffectPluginKey_Potion = @@potionEffect_statDebuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x374A, 10, 15)
+	
+[DurableCharEffectSpellDef 46]
+DEFNAME=s_mass_curse
+NAME=Mass Curse
+SOUND=0x1FB
+RUNES=VDS
+CASTTIME=3.0
+//RESOURCES=i_reag_garlic,i_reag_mandrake_root,i_reag_nightshade,i_reag_sulfur_ash
+RUNEITEM=i_rune_MASS_CURSE
+SCROLLITEM=i_scroll_MASS_CURSE
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful | SpellFlag.IsAreaSpell
+//EFFECTID=i_fx_curse
+EFFECT=0,-10
+DURATION=0.0
+MANAUSE=20
+Requirements=60.0 Magery
+EffectPluginDef = p_curse
+EffectPluginKey_Spell = @@spellEffect_statDebuff
+EffectPluginKey_Potion = @@potionEffect_statDebuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x374A, 10, 15)
+
+//decreasing vitality spell...?
+//increasing vitality spell...?
+//EffectPluginDef = p_vitModSpellEffect ?

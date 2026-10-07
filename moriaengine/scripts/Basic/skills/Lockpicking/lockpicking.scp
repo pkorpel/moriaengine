@@ -1,0 +1,23 @@
+[ItemDef 0x14fb]
+CATEGORY = Items by Professions
+SUBSECTION = Thief
+DESCRIPTION = Lockpick
+
+NAME = "Lockpick"
+TYPE = T_LOCKPICK
+//DUPELIST = 014fc // commented out by Converter 
+WEIGHT = 1
+RESOURCES = 1 i_ingot_iron //some resources were fixed by converter 
+SKILLMAKE = 45.0 tinkering, t_tinker_tools //some resources were fixed by converter 
+//FLIP = 1 // commented out by Converter 
+DEFNAME = i_lockpick
+
+[ItemDef 0x14fc]
+
+[ItemLockPluginDef p_lockedItem]
+on=@DenyDClick //argv(0) == denyresult; argv(1) == dclicker; argv(2) == this
+argv(1).sysMessage("woe nesmis")
+argv(0) = DenyResultMessages.Deny_NoMessage
+return 1
+
+

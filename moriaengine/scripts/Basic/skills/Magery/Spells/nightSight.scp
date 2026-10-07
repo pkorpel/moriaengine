@@ -1,0 +1,28 @@
+[DurableCharEffectSpellDef 6]
+DEFNAME = s_nightsight
+NAME = Night Sight
+SOUND = 483
+RUNES = IL
+CASTTIME = 1.5
+//RESOURCES=i_reag_spider_silk,i_reag_sulfur_ash
+RUNEITEM = i_rune_NIGHT_SIGHT
+SCROLLITEM = i_scroll_NIGHT_SIGHT
+FLAGS = SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+EFFECT = LightAndWeather.UndergroundLight
+DURATION = 15*60.0,40*60.0
+MANAUSE = 6
+Requirements = 10.0 Magery
+EffectPluginDef = p_nightsight
+EffectPluginKey_Spell = @@spellEffect_nightsight
+EffectPluginKey_Potion = @@potionEffect_nightsight
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x376A, 9, 32)
+
+[EffectDurationPluginDef p_nightsight]
+on=@assign
+	this.Cont.PersonalLightLevel = this.Cont.PersonalLightLevel + this.Effect
+
+on=@unassign
+	argv[0].PersonalLightLevel = argv[0].PersonalLightLevel - this.Effect
+

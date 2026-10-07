@@ -1,0 +1,6 @@
+[PassiveAbilityDef a_paralyze_haste]
+Name="Paralyze Haste"
+EffectPower=0.2 //-1s casttime of paralyze at 5 points
+
+
+//implementation of the actual effect lies in paralyze.def/scp

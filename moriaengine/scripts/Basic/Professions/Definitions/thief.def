@@ -1,0 +1,165 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//	
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//	
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+[ProfessionDef profession_thief]
+Defname = class_thief //class_ as alternate prefix
+Name = "thief"
+professionPluginDef = p_profession_default
+
+//SkillNameOrDefname = starting value, cap value
+//not listed skills are considered 0, 0
+
+AnimalLore=0, 250
+Alchemy=300, 1000
+Anatomy=300, 1000
+ArmsLore=0, 750
+Parrying=0, 750
+Begging=0, 1000
+Camping=0, 750
+Cooking=0, 1000
+DetectingHidden=0, 1000
+Discordance=0, 1000
+EvaluatingIntel=0, 500
+Healing=300, 750
+Fishing=0, 1000
+Forensics=0, 750
+Hiding=300, 1000
+Provocation=300, 1000
+ItemID=0, 750
+LockPicking=0, 1000
+Magery=0, 500
+MagicResistance=0, 500
+Tactics=300, 1000
+Snooping=0, 1000
+Musicianship=0, 1000
+Poisoning=0, 1000
+Archery=300, 750
+SpiritSpeak=0, 250
+Stealing=300, 1000
+TasteID=0, 1000
+Tracking=0, 500
+Swordsmanship=0, 1000
+Fencing=300, 1000
+Wrestling=0, 750
+Lumberjacking=0, 1000
+Mining=0, 1000
+Meditation=0, 500
+Stealth=0, 1000
+RemoveTrap=0, 1000
+
+//AbilityNameOrDefname = display order, maximum points
+a_regen_hits = 0, 20
+a_regen_stam = 1, 20
+a_regen_mana = 2, 20
+
+a_weapon_dodge = 3, 40
+a_spell_absorption = 4, 20
+
+a_leech_hits = 5, 20
+a_leech_stam = 6, 20
+a_leech_mana = 7, 20
+
+a_longrange = 8, 10
+a_throwing = 9, 10
+//blokace stitem
+a_kick = 10, 10
+//pretnuti slach
+a_bleeding_strike = 11, 10
+//Probodnuti
+//Dmg za lvl
+
+//list allowed spells
+allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark
+
+////3 talent tree branches
+ttb1 = ttb_thief_assassin
+ttb2 = ttb_thief_samurai
+//ttb3 = ttb_mage_magician
+
+
+[TalentTreeBranchDef ttb_thief_assassin]
+Name = "Assassin"
+
+a_regen_stam_bonus = 0, 0, 5
+a_leech_stam_bonus = 0, 1, 5
+a_aggro_lift_lesser = 0, 2, 5
+a_crushing_bonus = 0, 3, 5
+//Utok zezadu +10% dmg = 1, 4, 5
+a_bleeding_bonus = 0, 5, 5
+
+//Bleed. strike -20% SP 	5
+a_kick_cooldownspeedup = 1, 1, 5
+a_crushing_delayspeedup = 1, 2, 5
+a_swordsmanship_delayspeedup = 1, 3, 5
+//Rychlejsi polozeni pasti 	= 1, 4, 5
+a_whirlwind = 1, 5, 5
+
+a_mastery_crushing = 2, 0, 5
+a_mastery_swordsmanship = 2, 1, 5
+//Utok zezadu +20% dmg = 2, 2, 5
+//Provocation +25% = 2, 3, 5
+a_poisoning_bonus = 2, 4, 5
+
+//Oslepeni - uder = 3, 0, 5
+//Oslepeni CD -10 sek  = 3, 1, 5
+a_bleeding_maxpower_bonus = 3, 2, 5
+//Painful bleed +5% sance = 3, 4, 5
+//Painful bleed +5% efekt =3, 4, 5
+
+//Probodnuti +10% dmg 	5
+//Probodnuti -20% SP 	5
+//Zvyseny uhyb +20% 	5
+//Zvyseny uhyb CD - 2 min 	5
+
+//Assassin strike - uder 	1
+
+
+//AbilityNameOrDefname = Tier, TierPosition, MaxPoints, resourcelist
+[TalentTreeBranchDef ttb_thief_samurai]
+Name = "Samurai"
+
+a_regen_hits_bonus = 0, 0, 5
+//Sani HP +10% = 0, 1, 5
+//Agro +30% = 0, 2, 5
+a_swordsmanship_bonus = 0, 3, 5
+//Disarm - uder = 0, 4, 5
+//Zaujmuti monstra = 0, 5, 5
+
+//Pretnuti slach -20% SP = 1, 0, 5
+//Drazdeni = 1, 1, 5
+a_swordsmanship_delayspeedup = 1, 2, 5
+//Disarm +15 sekund efekt	5
+//Odrazeni kouzla stit.	5
+// + zkraceni CD	5
+//	
+//Swordmastery +5%	5
+//Vykrytí štítem + 5%	5
+//Melee +10% dmg	5
+//Oslabeni +25% 	5
+//Poisoning efekt +25%	5
+//	
+//Odrazeni uderu zpet	5
+// + zkraceni CD	5
+//Smrst - uder	5
+//Smrst +15% dmg	5
+//Smrst -20% SP	5
+//	
+//Pøesný zásah - uder	5
+//Pøesný zásah +25%	5
+//Cleave/bounce - uder	5
+//Cleave/bounce +25%	5
+//	
+//Finesa - uder	1
+

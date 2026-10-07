@@ -1,0 +1,22 @@
+500186	Greetings.  Have a look around.
+500187	Your order cannot be fulfilled, please try again.
+500188	Your order cannot be fulfilled, please try again.
+500189	Your order cannot be fulfilled, please try again.
+500190	Thou hast bought nothing!
+500191	Begging thy pardon, but thy bank account lacks these funds.
+500192	Begging thy pardon, but thou canst not afford that.
+500193	I will not buy from you, ever.
+500194	You can only sell 5 items at a time!
+500195	Unable to complete your request.
+500196	You may not sell containers unless they are empty.
+500197	Thou hast offered nothing!
+500198	Unable to complete your request.
+500199	Ahh!  We've been looking for that!
+500200	I have no need for that.
+
+500605	If you have a deed, I can appraise it or buy it from you...
+500606	Simply hand me a deed to sell it.
+500607	I'm not interested in that.
+500608	Which deed would you like appraised?
+500609	I can't appraise things I know nothing about...
+500610	Simply hand me the deed if you wish to sell it.

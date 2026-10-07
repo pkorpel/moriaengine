@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "D:/SE/MoriaUpdater/src/client_ui/ui.py", line 161, in <module>
+    vp_start_gui()
+  File "D:/SE/MoriaUpdater/src/client_ui/ui.py", line 58, in vp_start_gui
+    w = Moria_Updater (root)
+  File "D:/SE/MoriaUpdater/src/client_ui/ui.py", line 87, in __init__
+    self._img1 = PhotoImage(file="D:/SE/MoriaUpdater/src/client_ui/background.png")
+  File "C:\Python26\lib\lib-tk\Tkinter.py", line 3285, in __init__
+    Image.__init__(self, 'photo', name, cnf, master, **kw)
+  File "C:\Python26\lib\lib-tk\Tkinter.py", line 3241, in __init__
+    self.tk.call(('image', 'create', imgtype, name,) + options)
+_tkinter.TclError: couldn't recognize data in image file "D:/SE/MoriaUpdater/src/client_ui/background.png"

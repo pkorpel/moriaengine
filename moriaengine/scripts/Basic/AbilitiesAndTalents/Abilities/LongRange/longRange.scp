@@ -1,0 +1,22 @@
+[ActivableAbilityDef a_longrange]
+Name="Longrange"
+EffectPower=2 //regardless of ability points - those are only relevant for success chance
+EffectDuration=10
+Cooldown = 15 * 60
+Chance = 0.09 //90% at 10 points
+
+PluginKey = @@longrange
+PluginDef = p_longrange
+
+on=@activate
+	if (!a_longrange.CheckSuccess(this))
+		this.Sysmessage(LocManager.GetEntry("loc_longrange", "LongrangeFailed", this.Language))
+		return 1 //cancel
+	endif
+
+
+[LongRangePluginDef p_longrange]
+
+
+[ScriptedLoc loc_longrange]
+LongrangeFailed = Nepovedlo se

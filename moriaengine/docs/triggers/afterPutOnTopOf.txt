@@ -1,0 +1,27 @@
+Name:
+	AfterPutOnTopOf
+
+Called on:
+	Items (Item)
+
+When:
+	After an item has been successfully placed on top of this one.
+
+Arguments:
+	0 (Item): The item which was placed on top of this one.
+	1 (int): The z level the item was placed at.
+	
+Sphere Arguments:
+	argo: The item which was placed on top of this one.
+	argn: The z level the item was placed at.
+
+Extra variables:
+	src: The character which did the putting.
+	self: This item, the one which had something put on top of it.
+
+Return value:
+	None
+
+Purpose:
+	This trigger exists in case someone needs to do something *after* placing
+	and item on top has been successful.

@@ -1,0 +1,264 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+<meta name="description" content="JojoDiff is a program that outputs the differences between two binary files using a fast, heuristic algorithm.">
+<meta name="keywords" content="diff, jdiff, binarydiff, binary diff, binary difference, difference between two binary files, heuristic algorithm">
+<TITLE>JojoDiff - diff utility for binary files</TITLE>
+<BODY>
+
+<center>
+<H1>JojoDiff - diff utility for binary files</H1>
+<font size="-1">
+Copyright &copy; 2002 <a href="mailto:joheirba@tijd.com">Joris Heirbaut</a><br>
+</font>
+This software is hosted by:</br>
+<a href="http://sourceforge.net"> 
+<IMG src="http://sourceforge.net/sflogo.php?group_id=56897&amp;type=5" width="210" height="62" border="0" alt="SourceForge Logo">
+</a>
+</p>
+</center>
+
+<H2>1. Purpose</H2>
+<ul>
+    <b>JDIFF </b> is a program that outputs the differences between two (binary) files.</br> 
+    <b>JPATCH</b> can then be used to reconstruct the second file from the first file.</br>
+    <b>JSYNC </b> is a bash shell script that combines both for synchronizing files or directories.</br>
+    For example:
+    <ul>
+    <li><b>jdiff</b> archive0000.tar archive0001.tar archive0001.jdf
+    <li><b>jpatch</b> archive0000.tar archive0001.jdf archive0001b.tar</br>
+    </ul>
+    will create a file archive0001b.tar which is identical to archive0001.tar.
+</p>
+    Possible applications include:
+    <ul>
+    <li> incremental backups,</br>
+    <li> synchronising files between two computers over a slow network (see <b>JSYNC</b>).
+    </ul>
+</p>
+    <b>JDIFF</b> tries to find a minimal set of differences between two files using
+    a heuristic algorithm with constant space and linear time complexity. 
+    This means that accuracy is traded over speed. 
+    <b>JDIFF</b> will therefore, in general, not always find the smallest set of differences, but will try to
+    be fast and will use a fixed amount of memory.
+</p>
+    Download these utilities from the <a href="http://sourceforge.net/projects/jojodiff/">Jojo's Binary Diff Download Page</a>.
+</p>
+    In the meantime, Rune Bassmann pointed me to the <a href="http://sourceforge.net/projects/xdelta/">XDelta</a> project - also on <a href="http://sourceforge.net">Sourceforge</a> - doing the same things and a lot more...
+</p>
+</ul>
+
+<H2>2. Version and history</H2>
+<ul>
+    The current version of this utility is bèta 0.4c dating from January 2003. 
+    The modification history is as follows:
+    <ul><table>
+    <tr><td width=10%> v0.1  </td><td width=25%> June 2002      </td><td> Insert/delete algorithm. </td></tr>
+    <tr><td> v0.2a </td><td> June 2002      </td><td> Optimized patch files. </td></tr>
+    <tr><td> v0.2b </td><td> July 2002      </td><td> Bugfix on code-length of 252. </td></tr>
+    <tr><td> v0.2c </td><td> July 2002      </td><td> Bugfix on divide-by-zero in verbose mode. </td></tr>
+    <tr><td> v0.3a </td><td> July 2002      </td><td> Copy/insert algorithm. </td></tr>
+    <tr><td> v0.4a </td><td> September 2002 </td><td> Select "best" of multiple matches. </td></tr>
+    <tr><td> v0.4b </td><td> October 2002   </td><td> Optimize matches. </td></tr>
+    <tr><td> v0.4c </td><td> January 2003   </td><td> Rewrote selection algorithm between multiple matches.</td></tr>
+    </table></ul>
+</p>
+    Over time, reliability (= correct patch files) and accuracy 
+    (= smaller patch files) have been improved, and still need to
+    be improved!
+    
+</ul>
+
+<H2>3. Installation</H2>
+<ul>
+    On Windows systems: 
+    <ul>
+    <li> Compiled executables are within the "win32" directory. You can run them
+    from a command prompt. If you want to use the JSYNC shell script, you will need
+    to download the Cygwin environment from <a href="http://www.cygwin.com">www.cygwin.com</a>.
+    </ul>
+</p>
+    On GCC/Linux systems:
+    <ul>
+    <li> Compile the source by running "make" within the "src" directory.
+    <li> Copy the resulting EXE files to our /usr/local/bin. 
+    <li> Within the bash directory, you can find an example BASH script, <b>JSYNC</b>, 
+         which I use for synchronizing files between two computers connected 
+         over a slow network.
+    </ul>
+</p>
+    Within the GCC/Cygwin environment: 
+    <ul>
+    <li> Compiled executables are within the "cygwin" directory.
+    <li> Within the bash directory, you can find an example BASH script, <b>JSYNC</b>.
+    </ul>
+</p>
+</ul>
+
+<H2>4. Usage</H2>
+
+    <b>jdiff</b> [options] original_file new_file [output_file]
+    <ul>
+    <b>Options:</b>
+        <ul>
+        <table>
+        <tr><td width=20%> -v   </td><td> Verbose (greeting, results and tips).  </td></tr>
+        <tr><td> -vv  </td><td> Verbose (debug info).</td></tr>
+        <tr><td> -h   </td><td> Help (this text).</td></tr>
+        <tr><td> -l   </td><td> Listing (ascii output).</td></tr>
+        <tr><td> -lr  </td><td> Regions (ascii output).</td></tr>
+        <tr><td> -b       </td><td>   Better: use copy/insert method (random access to original file).        </td></tr>
+        <tr><td> -f       </td><td>   Fast:   use insert/delete method (sequential access to original file).  </td></tr>
+        <tr><td> -ff      </td><td>   Faster: no out of buffer compares, insert/delete method.                </td></tr>
+        <tr><td> -m size  </td><td>   Size (in kB) for look-ahead buffers (default 128).   </td></tr>
+        <tr><td> -s size  </td><td>   Number of samples per file (default 32749).          </td></tr>
+        </table>
+        </ul>
+    <b>Principles:</b>
+        <ul>
+        <b>JDIFF</b> tries to find equal regions between two binary files using a heuristic
+        hash algorithm and outputs the differences between both files.
+        Heuristics are generally used for improving performance and memory usage,
+        at the cost of accuracy. Therefore, this program may not find a minimal set
+        of differences between files.</br>
+        </ul>
+    <b>Notes:</b>
+        <ul>
+	<li>  Options -m and -s should be used after -b, -f or -ff.
+        <li>  Accuracy may be improved by increasing the number of samples.
+        <li>  Speed may be increased with option -f or -ff (lower accuracy).
+        <li>  Sample size is always lowered to the largest n-bit prime (n < 32)
+        <li>  Original and new files must be random access files.
+        <li>  Output is sent to standard output if output file is missing.</li>
+        </ul>
+    </ul>
+</p>
+    <b>jpatch</b> [options] original_file patch_file [output_file]
+    <ul>
+    <b>Options:</b>
+        <ul>
+        <table>
+        <tr><td width="20%">  
+                  -v    </td><td>  Verbose (greeting, results and tips). </td></tr>
+        <tr><td>  -vv   </td><td>  Verbose (debug info). </td></tr>
+        <tr><td>  -vvv  </td><td>  Verbose (more debug info). </td></tr>
+        <tr><td>  -h    </td><td>  Help (this text). </td></tr>
+        </table>
+        </ul>
+    <b>Principles:</b>
+        <ul>
+        <b>JPATCH</b> reapplies a diff file, generated by jdiff, to the original file,
+        restoring the new file. 
+        </ul>
+    </ul>
+</p>
+    <b>jsync</b> [options] mode archivedir remotedir name source
+    <ul>
+    <b>description:</b>
+      <ul>
+      <b>JSYNC</b> synchronizes files or directories between two or more computers by
+      passing jdiff patch files through a remote directory.
+      </p>
+      JSYNC first copies missing files from the remote directory to the archive directory.
+      </p>
+      In output mode, JSYNC copies the source data into the archive directory and outputs
+      the difference to the remote directory.</br>
+      In input mode,  JSYNC replaces the source data with the data in the archive directory.</br>
+      In update mode, JSYNC will input only if new patch files were found.
+      </p>
+      In case source is a directory, tar is used to create one source file.
+      </p>
+      By default, jsync will store the last archived data, every jdiff patch file and the
+      original data. This allows to restore the source data in each archived state (like an incremental backup), 
+      but will consume 2 or more times the size of the source data in storage.
+      During operation, this will go up to 4 or 5 times the source data.
+      </p>
+      When using the -l (low storage) option, jdiff will only store the last state
+      of the archive, reducing storage to respectively 1 and 3 times the source size 
+      when idle and during operation.
+      </p>
+      </ul>
+    <b>arguments:</b>
+      <ul>
+      <table>
+      <tr><td>mode      </td><td>either "inp", "out" or "upd"</td></tr>
+      <tr><td>archivedir</td><td>directory in which archive and temporary files are created</td></tr>
+      <tr><td>remotedir </td><td>directory in which archive files are copied</td></tr>
+      <tr><td>archive   </td><td>name of the archive</td></tr>
+      <tr><td>source    </td><td>the source file or directory</td></tr>
+      </table>
+      </ul>
+    <b>options:</b>
+      <ul>
+      <table>
+      <tr><td>  -b  </td><td>  best:        </td><td>  take best of uuencode+diff vs. jdiff.</td></tr>
+      <tr><td>  -s  </td><td>  silent:      </td><td>  do not display activity.             </td></tr>
+      <tr><td>  -v  </td><td>  verbose:     </td><td>  do not display activity.             </td></tr>
+      <tr><td>  -l  </td><td>  low storage: </td><td>  do not keep old files.               </td></tr>
+      <tr><td>  -i  </td><td>  interactive: </td><td>  ask before overwriting patch file.   </td></tr>
+      </table>
+      </ul>
+    <b>example:</b>
+      <ul>
+      Write changes in ~/data into ~/sync and /mount/srvr1/user/sync:</br>
+      host1$ jsync out ~/sync /mount/srvr1/user/sync mydata ~/data</br>
+      On the other host, read changes from remote dir and apply to data:</br>
+      host2$ jsync upd ~/sync /mount/srvr1/user/sync mydata ~/data
+      </ul>
+    </ul>
+</p>
+
+<H2>5. Contacts and remarks</H2>
+
+<ul>
+    <table>
+    <tr><td> Author:  </td><td> Joris Heirbaut         </td></tr>
+    <tr><td> Address: </td><td> Rue de la Sarthe 18D   </td></tr>
+    <tr><td>          </td><td> B-4217 Héron</br>      </td></tr>
+    <tr><td>          </td><td> Belgium (Europe)       </td></tr>
+    <tr><td> E-mail:  </td><td> <a href="mailto:joheirba@tijd.com">joheirba@tijd.com</a>      </td></tr>
+    </table>
+</p>
+    If you like this program, please let me know (by email).
+    If you reuse the source code for your personal (open source)
+    applications, please let me know too.
+</p>
+    <b>Concerning the algorithm:</b></br>
+    <ul>
+    I have written this program because I need to synchronise data between
+    two distant computers connected through a slow network (an IDSN line).
+    Strangely enough, I did not find any program performing a "diff" on binary files
+    that suited my needs (the binary diff program written by Kris Coppieters took too
+    long to complete on the files I had because it tries to find a perfect, minimal
+    set of differences between files).
+    </p>
+    Afterwards, Rune Bassmann pointer me to the <a href="http://sourceforge.net/projects/xdelta/">XDelta</a>
+    project, perfectly doing what I need and much more. Additionally, the accompagnying
+    master thesis from Joshua P. MacDonald, describes all possible algorithms for generating differences between
+    binary files, including the algoritm implemented by <b>JDIFF</b>. <b>JDIFF</b> actually 
+    </p>
+    Please feel free to reuse any of the ideas presented within this program and 
+    its source code within any other programs adhering to the GNU General 
+    Public Licence.
+    </ul></p>
+
+    <b>About the source code</b></br>
+    <ul>
+    I am certainly not an experienced C-programmer, which perhaps may show within the 
+    sources. I apologize for any bad C-contructs or C-coding that might occur.
+    If so, please let me know, I'm always eager to learn.
+    </ul>
+</ul>
+
+<H2>6. Acknowledgements</H2>
+
+    This software has been developed within the Cygwin/GNU environment. 
+    Many thanks to the people that created this environment and to all
+    open source developers in general.
+</p>
+    Thanks to Rune Bassmann for pointing me to the <a href="http://sourceforge.net/projects/xdelta/">XDelta</a> project.
+</p>
+    Many thanks too for the Sourceforge project.
+
+</BODY>
+</HTML>

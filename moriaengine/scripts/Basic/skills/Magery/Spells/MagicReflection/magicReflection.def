@@ -1,0 +1,24 @@
+[DurableCharEffectSpellDef 36]
+DEFNAME=s_magic_reflection
+NAME=Magic Reflect
+SOUND=0x1E9 //0x1ED - removal sound?
+RUNES=IJS
+CASTTIME=2.5
+//RESOURCES=i_reag_garlic,i_reag_mandrake_root,i_reag_spider_silk
+RUNEITEM=i_rune_MAGIC_REFLECTION
+SCROLLITEM=i_scroll_MAGIC_REFLECTION
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+//EFFECTID=i_fx_BLESS_EFFECT
+EFFECT=0.75 //75% of reflected spell power
+DURATION=6*60.0, 10*60.0
+MANAUSE=15
+Requirements=50.0 Magery
+
+EffectPluginDef = p_magic_reflection
+EffectPluginKey_Spell = @@spellEffect_magic_reflection
+EffectPluginKey_Potion = @@spellEffect_magic_reflection
+
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x376A, 9, 32)
+	

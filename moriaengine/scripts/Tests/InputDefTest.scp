@@ -1,0 +1,21 @@
+//Dialog pro zpracovani uzivatelskeho vstupu
+//pouziti: 
+//a)napsat [InputDef mujInputDef] sekci
+//b)specifikovat
+//	"label" - nazev input dialogu (label) (pr. "Zadani vyse najmu")
+//	"default" - predepsana hodnota v editacnim poli (pr. 50000)
+//	on=@response sekce - argv(0) v teto sekci bude ona zadana hodnota
+//		jestlize byl inputdef dialog volan s nejakymi parametry, budou tyto k dispozici jako dalsi argy
+//		(argv(1)...argv(n)) v @response sekci
+
+[function testInputDialog]
+Dialog(inpPokus,"test param")
+
+[InputDef inpPokus]
+label="Pokusnej"
+default="neco"
+
+on=@response
+src.sysmessage("Vlozeno: <argv(0)>")
+src.sysmessage("Vstupni parametr: <argv(1)>")
+return 1

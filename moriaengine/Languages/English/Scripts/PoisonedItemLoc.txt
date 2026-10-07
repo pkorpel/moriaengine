@@ -1,0 +1,2 @@
+DosesLeft                       = Poison Doses
+Power                           = Poison Power

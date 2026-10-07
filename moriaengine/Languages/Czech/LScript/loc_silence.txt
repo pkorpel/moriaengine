@@ -1,0 +1,3 @@
+YouHaveBeenSilenced             = You have been silenced for {0} seconds
+YourTargetIsSilenced            = You have silenced {0} for {1} seconds
+YoureSilenced                   = You're silenced so you can't cast any spells

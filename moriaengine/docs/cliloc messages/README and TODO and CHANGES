@@ -1,0 +1,8 @@
+Every cliloc message should be sorted into a text file in this folder. There are duplicate messages, they should be sorted as well (but you can put one in one text file, another in a different one, etc, as seems appropriate to you).
+
+See "docs/MUL File Docs/english clilocentries.txt" for the entire list of cliloc entries.
+
+Changes:
+	Nov 3, 2004:
+	(SL)	Did lines 1-220. 221 is "500220	OW!  THAT SMARTS!"
+	Rao	Did lines 221 - 360

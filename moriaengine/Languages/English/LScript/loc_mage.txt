@@ -1,0 +1,1 @@
+ResurrectionTalentMissing       = To cast the resurrection spell, you need the corresponding talent

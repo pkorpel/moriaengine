@@ -1,0 +1,3 @@
+0                               = Zde muzes zaslat zpravu GM, ale nezapomen, ze to ma sva pravidla.
+1                               = Ano, chci, mam doopravdy problem a jsem si vedom trestu za pripadne zneuziti.
+2                               = Ne - stornovani zpravy

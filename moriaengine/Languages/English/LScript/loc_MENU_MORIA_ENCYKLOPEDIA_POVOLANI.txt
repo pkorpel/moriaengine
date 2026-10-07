@@ -1,0 +1,12 @@
+0                               = Moria encyklopedia
+1                               = Aktualni informace na webu
+2                               = Remeslnik (craft)
+3                               = Druid - zatim neexistuje
+4                               = Mystik - kouzelnik silove a runove magie
+5                               = Nekromant - kouzelnik specializujci se na temnou magii a vyvolavani
+6                               = Knez (priest)
+7                               = Hranicar
+8                               = Saman - kmenovy lecitel zabyvajci se okultni prirodni magii
+9                               = Zlodej (thief), intrikar, podfukar a skely vykradac hrobek
+10                              = Valecnik (warrior) - hlavni sila jakekoliv vojenske skupiny
+11                              = Predchozi

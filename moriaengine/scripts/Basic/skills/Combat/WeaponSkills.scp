@@ -1,0 +1,75 @@
+
+[WeaponSkillDef 31] //Bow - run
+DEFNAME=Skill_Archery
+KEY="Archery"
+//TITLE="Archer"
+//PROMPTMSG=""
+//DELAY=2.0,0.1
+//STAT_STR=40
+//STAT_INT=30
+//STAT_DEX=70
+//BONUS_STR=0
+//BONUS_DEX=95
+//BONUS_INT=5
+//BONUSSTATS=10
+ADVRATE=10.0,200.0,800.0
+
+[WeaponSkillDef 40]
+DEFNAME=Skill_Swordsmanship
+KEY="Swordsmanship"
+//TITLE="Swords%s"
+//PROMPTMSG=""
+//STAT_STR=75
+//STAT_INT=40
+//STAT_DEX=75
+//BONUS_STR=50
+//BONUS_DEX=50
+//BONUS_INT=0
+//BONUSSTATS=10
+ADVRATE=10.0,150.0,600.0
+
+[WeaponSkillDef 41]
+DEFNAME=Skill_Macefighting
+KEY="Macefighting"
+//TITLE="Macefighter"
+//PROMPTMSG=""
+//STAT_STR=100
+//STAT_INT=35
+//STAT_DEX=55
+//BONUS_STR=80
+//BONUS_DEX=20
+//BONUS_INT=0
+//BONUSSTATS=10
+ADVRATE=10.0,150.0,600.0
+
+[WeaponSkillDef 42]
+DEFNAME=Skill_Fencing
+KEY="Fencing"
+//TITLE="Fencer"
+//PROMPTMSG=""
+//STAT_STR=55
+//STAT_INT=60
+//STAT_DEX=95
+//BONUS_STR=20
+//BONUS_DEX=80
+//BONUS_INT=0
+//BONUSSTATS=10
+ADVRATE=10.0,150.0,600.0
+
+[WeaponSkillDef 43]
+DEFNAME=Skill_Wrestling
+KEY="Wrestling"
+//TITLE="Wrestler"
+//PROMPTMSG=""
+//STAT_STR=100
+//STAT_INT=30
+//STAT_DEX=75
+//BONUS_STR=50
+//BONUS_DEX=50
+//BONUS_INT=0
+//BONUSSTATS=10
+ADVRATE=8.5,120.0,680.0
+
+[WeaponSkillDef 50] //XBow - stand, used to be Focus
+DEFNAME=Skill_Marksmanship
+KEY="Marksmanship"

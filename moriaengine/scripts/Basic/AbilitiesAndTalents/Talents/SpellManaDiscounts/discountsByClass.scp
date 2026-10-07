@@ -1,0 +1,11 @@
+//magician talent
+[PassiveAbilityDef a_field_mana_discount]
+Name="Field Spells Mana Discount"
+EffectPower=0.04 //-20% mana at 5 points
+
+
+PluginKey = @@field_mana_discount
+PluginDef = p_field_mana_discount
+
+[SpellClassDiscountPluginDef p_field_mana_discount]
+SpellDefClass=typeof(WallSpellDef)

@@ -1,0 +1,15 @@
+500736	You have resigned from your faction.  You will not be able to join another faction for a while.
+500737	Canceled resignation.
+500738	Due to your propensity to kill your own teammates, you have been expelled from your faction.  You will not be able to join another faction for a while.
+500739	You just killed your own teammate!
+500740	You will be expelled from your faction if you kill one more teammate.
+500741	You scored a kill for your Faction!
+500742	You will be expelled from your faction if you kill one more of your teammates.
+500743	Killing your own teammates can result in expulsion from your faction.
+500744	You will not be able to change factions for one hour.
+500745	You may resign by saying 'I resign from my faction'
+500746	Canceled teleportation.
+500747	You cannot currently join this faction because it is too full.  Perhaps try another faction or try again later to join this faction.
+500748	You are already on this faction.
+500749	You cannot join this faction within one hour of joining or resigning from another faction.
+500750	You must be a part of this faction in order to ressurect here.

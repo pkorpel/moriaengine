@@ -1,0 +1,15 @@
+500253	max = 
+500254	rate = 
+500255	level = 
+500256	satisfaction = 
+500266	What would you like to add?
+500267	No type defined! ERROR.
+500273	This add-on deed is blank.
+500794	Your counselor status has been removed.
+500795	without renewing until your counselor status is removed.
+500796	To continue being a Counselor, please re-apply to the web page
+500797	under Help and Guidance / Playguide / Counselors.
+500798	Enter OBJ_NUM, (X, Y) (X, Y)
+500799	Object Deletion cancelled.
+500800	Format for operations area incorrect.
+

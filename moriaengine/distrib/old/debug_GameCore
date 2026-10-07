@@ -1,0 +1,7 @@
+#!/bin/sh
+
+bin/NAnt.exe  -D:debug=true -D:cmdLineParams=/debug+ -D:defineSymbols="TRACE,DEBUG,MONO" -buildfile:distrib/nant/default.build buildCore
+
+
+bin/Debug.SteamEngine.GameCore.exe
+

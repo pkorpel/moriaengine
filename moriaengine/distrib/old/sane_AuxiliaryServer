@@ -1,0 +1,7 @@
+#!/bin/sh
+
+bin/NAnt.exe  -D:debug=false -D:defineSymbols="TRACE,SANE,MONO" -buildfile:distrib/nant/default.build buildAuxiliaryServer
+
+
+bin/Sane.SteamEngine.AuxiliaryServer.exe
+

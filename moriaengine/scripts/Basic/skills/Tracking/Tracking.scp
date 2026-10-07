@@ -1,0 +1,25 @@
+[TRACKINGSKILLDEF 38]
+DEFNAME=Skill_Tracking
+KEY="Tracking"
+StartByMacroEnabled=true
+DELAY=3.0,1.0
+EFFECT=4.0,8.0 //used for tracking area size computing (4 fields around at skill 0, 15 at skill 100)
+
+pvmEffect = 16.0,64.0 //size of the searched area when tracking animals/monsters/NPCs
+minFootstepAge = 15 //how old steps will be seen at skill 0
+maxFootstepAge = 120 //how old steps will be seen at skill 100
+minCharsToTrack = 3 //how many chars will be trackable (will appear in the dialog at once) at skill 0
+maxCharsToTrack = 20 //how many chars will be trackable (will appear in the dialog at once) at skill 100
+minSafeSteps = 1 //how many steps the tracker can go before another chance recomputing at skill 0
+maxSafeSteps = 10 //how many steps the tracker can go before another chance recomputing at skill 100
+
+//TITLE="Ranger"
+//PROMPTMSG=""
+//STAT_STR=25
+//STAT_INT=50
+//STAT_DEX=50
+//BONUS_STR=0
+//BONUS_DEX=50
+//BONUS_INT=50
+//BONUSSTATS=25
+//ADVRATE=2.5,50.0,200.0

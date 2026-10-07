@@ -1,0 +1,1097 @@
+<?xml version="1.0"?>
+<!DOCTYPE PyObject SYSTEM "PyObjects.dtd">
+<PyObject module="common" class="UpdateInfo" id="8938040">
+<attr name="files" type="dict" id="9016064" >
+  <entry>
+    <key type="string" value="animlibrary.dll" />
+    <val type="PyObject" id="8985856" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="AnimLibrary.dll" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8711888" >
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8985576" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="4e9fc1cd8da2ad75fdc12f982f30e19b" />
+            <attr name="archivechecksum" type="string" value="0325c37ee28949990627a4b51f69ad0c" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8985576" />
+      <attr name="versionsbychecksum" type="dict" id="8980928" >
+        <entry>
+          <key type="string" value="4e9fc1cd8da2ad75fdc12f982f30e19b" />
+          <val type="PyObject" refid="8985576" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="animdata.mul" />
+    <val type="PyObject" id="8985976" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="animdata.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9018224" >
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8984056" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="470df3c872eb2eece32a14cc210599d3" />
+            <attr name="patcharchivechecksum" type="string" value="3d6c8f7e341c3840406cd51818c05d42" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="1d00eeb4dcffc6c5eb2c884d4e9a9e61" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8984096" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="794fcc7eae5a5f9d4f22bceaf3cbae11" />
+            <attr name="archivechecksum" type="string" value="e84d8391abbe989ff26c48b80356c653" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8984096" />
+      <attr name="versionsbychecksum" type="dict" id="9016352" >
+        <entry>
+          <key type="string" value="794fcc7eae5a5f9d4f22bceaf3cbae11" />
+          <val type="PyObject" refid="8984096" />
+        </entry>
+        <entry>
+          <key type="string" value="470df3c872eb2eece32a14cc210599d3" />
+          <val type="PyObject" refid="8984056" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="art.mul" />
+    <val type="PyObject" id="8985736" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="art.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8982368" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="8983976" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="19d375f21ede87da36b0900be9b92005" />
+            <attr name="patcharchivechecksum" type="string" value="8abbb03072adcec904045788d117cc6c" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="6b6b9ded738d3d42747a430dbcdbfdbc" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8983616" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="738c873d10a21e54db63068242c377be" />
+            <attr name="patcharchivechecksum" type="string" value="c9f196b5c20314fcb1ae51649cf820e5" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="7ec006c89200963193038204ca10c5b3" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8985896" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="73a35e662a9131719d8c048257b68e7e" />
+            <attr name="archivechecksum" type="string" value="8bf1920a19dd726fce15e58448117368" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8985896" />
+      <attr name="versionsbychecksum" type="dict" id="8981648" >
+        <entry>
+          <key type="string" value="73a35e662a9131719d8c048257b68e7e" />
+          <val type="PyObject" refid="8985896" />
+        </entry>
+        <entry>
+          <key type="string" value="738c873d10a21e54db63068242c377be" />
+          <val type="PyObject" refid="8983616" />
+        </entry>
+        <entry>
+          <key type="string" value="19d375f21ede87da36b0900be9b92005" />
+          <val type="PyObject" refid="8983976" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="PyObject" refid="8983976" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="hues.mul" />
+    <val type="PyObject" id="9007312" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Hues.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9001552" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9008072" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="e02003a5cda37157341e2fc6f457b90d" />
+            <attr name="archivechecksum" type="string" value="e88ba06ed65049001f6f7225f93869aa" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8986056" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="215e637dcd03f5ed88624852080386a9" />
+            <attr name="patcharchivechecksum" type="string" value="3765e464a8ff3c83c51a98a0a8644305" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="b67faa129f14fab7612cd5d949b3a7ce" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="9008072" />
+      <attr name="versionsbychecksum" type="dict" id="9001840" >
+        <entry>
+          <key type="string" value="e02003a5cda37157341e2fc6f457b90d" />
+          <val type="PyObject" refid="9008072" />
+        </entry>
+        <entry>
+          <key type="string" value="215e637dcd03f5ed88624852080386a9" />
+          <val type="PyObject" refid="8986056" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="gump.def" />
+    <val type="PyObject" id="8983336" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="gump.def" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9029360" >
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8984856" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="f17f08d84448d98b785e4f71320c9ab9" />
+            <attr name="archivechecksum" type="string" value="847981e1cddcca518c140293ef576ee9" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8984856" />
+      <attr name="versionsbychecksum" type="dict" id="9029504" >
+        <entry>
+          <key type="string" value="f17f08d84448d98b785e4f71320c9ab9" />
+          <val type="PyObject" refid="8984856" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="multi.idx" />
+    <val type="PyObject" id="9007752" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="MULTI.IDX" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9006800" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007872" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="5bff25bda6669f764c73a2d5f911f783" />
+            <attr name="archivechecksum" type="string" value="3e3d02caece3f8f7201d1b58faaeb3de" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="9007872" />
+      <attr name="versionsbychecksum" type="dict" id="9003344" >
+        <entry>
+          <key type="string" value="5bff25bda6669f764c73a2d5f911f783" />
+          <val type="PyObject" refid="9007872" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="map0.mul" />
+    <val type="PyObject" id="8986136" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Map0.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9031232" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007672" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="1cd534fc8712d27d8f7e8680f029213a" />
+            <attr name="patcharchivechecksum" type="string" value="62972c12ebadac39034d4f81e2b4c52f" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="84ebb2a35ccead917f2104e5ae686084" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8985616" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="a924078a10022ceebc441f580af0e4ce" />
+            <attr name="archivechecksum" type="string" value="fdcb4991560202564b5f851e41f9fe23" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8985616" />
+      <attr name="versionsbychecksum" type="dict" id="9031376" >
+        <entry>
+          <key type="string" value="1cd534fc8712d27d8f7e8680f029213a" />
+          <val type="PyObject" refid="9007672" />
+        </entry>
+        <entry>
+          <key type="string" value="a924078a10022ceebc441f580af0e4ce" />
+          <val type="PyObject" refid="8985616" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="PyObject" refid="9007672" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="login.cfg" />
+    <val type="PyObject" id="9008232" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Login.cfg" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9000976" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007952" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="47e58c6dc8f721d66803996760fbcfc8" />
+            <attr name="archivechecksum" type="string" value="8671aaeb5b2d04ec1395d7d2a87a74bc" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="9007952" />
+      <attr name="versionsbychecksum" type="dict" id="9001264" >
+        <entry>
+          <key type="string" value="47e58c6dc8f721d66803996760fbcfc8" />
+          <val type="PyObject" refid="9007952" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="transerv.exe" />
+    <val type="PyObject" id="9007232" module="common" class="FileInfo">
+      <attr name="forced" type="False" value="" />
+      <attr name="filename" type="string" value="TranServ.exe" />
+      <attr name="todelete" type="True" value="" />
+      <attr name="versionsbyname" type="dict" id="9011536" >
+      </attr>
+      <attr name="latestversion" type="None" />
+      <attr name="versionsbychecksum" type="dict" id="9011248" >
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="texmaps.mul" />
+    <val type="PyObject" id="8984496" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Texmaps.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9000256" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007352" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="68cced94b1577fbcbd51526f819e5eb9" />
+            <attr name="patcharchivechecksum" type="string" value="443227d4851d2700c58c624c8ab7b7cc" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="ac1c1332ad26d3302f3c5c13caad14a5" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8985496" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="83519d3dbf15548c4c18e955f4b1dd11" />
+            <attr name="patcharchivechecksum" type="string" value="02219bb91321ec526977833ab57e9be8" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="0bf396f73bdb63c4fa7184e2a3d174e2" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8984296" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="bc896d356dfabbd6c2c82cae37849b28" />
+            <attr name="archivechecksum" type="string" value="ae69b1077dacaaae57b71564262e0d49" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8984296" />
+      <attr name="versionsbychecksum" type="dict" id="8999824" >
+        <entry>
+          <key type="string" value="68cced94b1577fbcbd51526f819e5eb9" />
+          <val type="PyObject" refid="9007352" />
+        </entry>
+        <entry>
+          <key type="string" value="83519d3dbf15548c4c18e955f4b1dd11" />
+          <val type="PyObject" refid="8985496" />
+        </entry>
+        <entry>
+          <key type="string" value="bc896d356dfabbd6c2c82cae37849b28" />
+          <val type="PyObject" refid="8984296" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="PyObject" refid="9007352" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="music\\digital\\zenskychoral.mp3" />
+    <val type="PyObject" id="8984136" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Music\\Digital\\zenskychoral.mp3" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8996736" >
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8986416" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="bf6d369c5da08264a9a9f704d77272f4" />
+            <attr name="archivechecksum" type="string" value="a52b27440bde61629dbaa7782758397b" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8986416" />
+      <attr name="versionsbychecksum" type="dict" id="8996880" >
+        <entry>
+          <key type="string" value="bf6d369c5da08264a9a9f704d77272f4" />
+          <val type="PyObject" refid="8986416" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="tiledata.mul" />
+    <val type="PyObject" id="9009952" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Tiledata.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8999392" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007392" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="00b4f1346576f6734968e7dd41cb1ea9" />
+            <attr name="patcharchivechecksum" type="string" value="d99a98d5f5e2aa8ee0f04c40a6e54901" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="967fdd3759d818c19da2e4f01133d2c2" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8983416" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="976b0731c003af40dee1b231b37dcce9" />
+            <attr name="patcharchivechecksum" type="string" value="46daa6673dabaac8bba90eabb93bf3e2" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="089e3a593431bfb009c18e14fe7ef838" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="9009792" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="94609fb5c3df013a8054ffb39e9f3c4b" />
+            <attr name="archivechecksum" type="string" value="8324ce4cafcde240410e4bede9878b55" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="9009792" />
+      <attr name="versionsbychecksum" type="dict" id="9002704" >
+        <entry>
+          <key type="string" value="94609fb5c3df013a8054ffb39e9f3c4b" />
+          <val type="PyObject" refid="9009792" />
+        </entry>
+        <entry>
+          <key type="string" value="976b0731c003af40dee1b231b37dcce9" />
+          <val type="PyObject" refid="8983416" />
+        </entry>
+        <entry>
+          <key type="string" value="00b4f1346576f6734968e7dd41cb1ea9" />
+          <val type="PyObject" refid="9007392" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="PyObject" refid="9007392" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="transerv" />
+    <val type="PyObject" id="8985376" module="common" class="FileInfo">
+      <attr name="forced" type="False" value="" />
+      <attr name="filename" type="string" value="TranServ" />
+      <attr name="todelete" type="True" value="" />
+      <attr name="versionsbyname" type="dict" id="9014704" >
+      </attr>
+      <attr name="latestversion" type="None" />
+      <attr name="versionsbychecksum" type="dict" id="9011392" >
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="arttable.cfg" />
+    <val type="PyObject" id="8984896" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Arttable.cfg" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9027920" >
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8984776" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="94ed7d7b0c10ba671ca7fda5f049eb0f" />
+            <attr name="patcharchivechecksum" type="string" value="0e3324c42c8275365b9a757e3e428ca1" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="24607214513314dc992394effe8e5175" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8985776" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="0d2e1b3561873e9b304f951ebc7613a3" />
+            <attr name="archivechecksum" type="string" value="c47bd116ef2dcab97d5b37e6a7d41e44" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8985776" />
+      <attr name="versionsbychecksum" type="dict" id="9028928" >
+        <entry>
+          <key type="string" value="0d2e1b3561873e9b304f951ebc7613a3" />
+          <val type="PyObject" refid="8985776" />
+        </entry>
+        <entry>
+          <key type="string" value="94ed7d7b0c10ba671ca7fda5f049eb0f" />
+          <val type="PyObject" refid="8984776" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="staidx0.mul" />
+    <val type="PyObject" id="8983216" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Staidx0.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8997312" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007792" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="ae7f847ecb7a052c57a597506fba9683" />
+            <attr name="patcharchivechecksum" type="string" value="1232b021f62004c918e30ab3b1f7ce54" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="5557abe5fce657dae9a2171049547c88" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8983256" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="22b28e5a8a6ac3c5141157ec5da0fe65" />
+            <attr name="patcharchivechecksum" type="string" value="8703bb820a961d4b7c059f56d8e68097" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="bc9a061738a96fe3442c6e6ba34015c9" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8986496" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="0f3b0ffdfdb06955c7ef0368b6e686b7" />
+            <attr name="archivechecksum" type="string" value="0af265a41180d8156c6f60ceecfa32ab" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8986496" />
+      <attr name="versionsbychecksum" type="dict" id="8997456" >
+        <entry>
+          <key type="string" value="0f3b0ffdfdb06955c7ef0368b6e686b7" />
+          <val type="PyObject" refid="8986496" />
+        </entry>
+        <entry>
+          <key type="string" value="ae7f847ecb7a052c57a597506fba9683" />
+          <val type="PyObject" refid="9007792" />
+        </entry>
+        <entry>
+          <key type="string" value="22b28e5a8a6ac3c5141157ec5da0fe65" />
+          <val type="PyObject" refid="8983256" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="PyObject" refid="9007792" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="statics0.mul" />
+    <val type="PyObject" id="8983056" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Statics0.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8997888" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9008392" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="e3878ea5d13d0d8c31b219c5978a2142" />
+            <attr name="patcharchivechecksum" type="string" value="7b5dcc17b2580575612950bfac3e9f61" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="65d8b00a2c8463134d77bcbe46aeb91c" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8985056" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="c1120b4ab673a467e52468161e7fa56a" />
+            <attr name="patcharchivechecksum" type="string" value="71cc47eee2736b5c36485b975e96fc2c" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="567e577deed94f1475381728bec1d830" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8984176" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="d69495945d5100f55f103851b36fc2ab" />
+            <attr name="archivechecksum" type="string" value="2583bea714fde2298da6db2b70b9bb4f" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8984176" />
+      <attr name="versionsbychecksum" type="dict" id="8998032" >
+        <entry>
+          <key type="string" value="d69495945d5100f55f103851b36fc2ab" />
+          <val type="PyObject" refid="8984176" />
+        </entry>
+        <entry>
+          <key type="string" value="e3878ea5d13d0d8c31b219c5978a2142" />
+          <val type="PyObject" refid="9008392" />
+        </entry>
+        <entry>
+          <key type="string" value="c1120b4ab673a467e52468161e7fa56a" />
+          <val type="PyObject" refid="8985056" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="PyObject" refid="9008392" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="music\\digital\\muzskychoral.mp3" />
+    <val type="PyObject" id="8986456" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Music\\Digital\\muzskychoral.mp3" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8996160" >
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8984976" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="930b90a6aff02911ed99cabf8f2bc16e" />
+            <attr name="archivechecksum" type="string" value="f8427079a82fd640cf19fa9a15bfafff" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8984976" />
+      <attr name="versionsbychecksum" type="dict" id="8996304" >
+        <entry>
+          <key type="string" value="930b90a6aff02911ed99cabf8f2bc16e" />
+          <val type="PyObject" refid="8984976" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="texidx.mul" />
+    <val type="PyObject" id="8983376" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Texidx.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8998464" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9008432" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="dda54521d93258705a76243503dfa58b" />
+            <attr name="patcharchivechecksum" type="string" value="e14de2e9ae098731c184b36d04f00ddd" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="bc3211ced10cf80bda9fc5dfbbcf81d1" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="8985136" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="514b572979cced389acb7b504c4d3a54" />
+            <attr name="patcharchivechecksum" type="string" value="f61eb6f0373f333ac2b3f01319a61862" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="811507bcf69df4bca68ba0cc2144fe75" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8984256" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="7c06f1af8bef28904e2e0c3cd148a54b" />
+            <attr name="archivechecksum" type="string" value="a10396a2d81d5e46157d4a7b05e95eb8" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8984256" />
+      <attr name="versionsbychecksum" type="dict" id="8998608" >
+        <entry>
+          <key type="string" value="dda54521d93258705a76243503dfa58b" />
+          <val type="PyObject" refid="9008432" />
+        </entry>
+        <entry>
+          <key type="string" value="514b572979cced389acb7b504c4d3a54" />
+          <val type="PyObject" refid="8985136" />
+        </entry>
+        <entry>
+          <key type="string" value="7c06f1af8bef28904e2e0c3cd148a54b" />
+          <val type="PyObject" refid="8984256" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="PyObject" refid="9008432" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="client_3.0.6m.exe" />
+    <val type="PyObject" id="9007272" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Client_3.0.6m.exe" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9002128" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007992" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="e7e77ded24f3f16c4512270c713d2b2c" />
+            <attr name="archivechecksum" type="string" value="e18d556a04f7d027bc265f032c1cb968" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="9007992" />
+      <attr name="versionsbychecksum" type="dict" id="9002416" >
+        <entry>
+          <key type="string" value="e7e77ded24f3f16c4512270c713d2b2c" />
+          <val type="PyObject" refid="9007992" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="texterr.def" />
+    <val type="PyObject" id="8967952" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="TexTerr.def" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8999968" >
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8984536" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="0cf3165984fd90f529a1f0aaca07b946" />
+            <attr name="archivechecksum" type="string" value="9d0941dd9362be8e7fc0e4b932f5af9b" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8984536" />
+      <attr name="versionsbychecksum" type="dict" id="8999248" >
+        <entry>
+          <key type="string" value="0cf3165984fd90f529a1f0aaca07b946" />
+          <val type="PyObject" refid="8984536" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="music\\digital\\config.txt" />
+    <val type="PyObject" id="8985296" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Music\\Digital\\Config.txt" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8995008" >
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8985336" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="92cea4c70672a3d4f2f2356dbec0ff5f" />
+            <attr name="archivechecksum" type="string" value="9af82a9e8064776bde8ee59a5492e17c" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8985336" />
+      <attr name="versionsbychecksum" type="dict" id="8995152" >
+        <entry>
+          <key type="string" value="92cea4c70672a3d4f2f2356dbec0ff5f" />
+          <val type="PyObject" refid="8985336" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="gumpart.mul" />
+    <val type="PyObject" id="8986336" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Gumpart.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9030080" >
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="9008032" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="7728872184cf735526835f6bc9ac8878" />
+            <attr name="patcharchivechecksum" type="string" value="8f4a31a8e62882ce3588043d934fea74" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="9a9ce28cd81397153f0ebab0a6fd0b85" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8984016" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="a0f1e6ba61f1d5539e8c9b731f6e02ac" />
+            <attr name="archivechecksum" type="string" value="6e1b852becc5678efcfdd7c96942e1bc" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8984016" />
+      <attr name="versionsbychecksum" type="dict" id="9030224" >
+        <entry>
+          <key type="string" value="7728872184cf735526835f6bc9ac8878" />
+          <val type="PyObject" refid="9008032" />
+        </entry>
+        <entry>
+          <key type="string" value="a0f1e6ba61f1d5539e8c9b731f6e02ac" />
+          <val type="PyObject" refid="8984016" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="multi.mul" />
+    <val type="PyObject" id="9007552" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="multi.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9003488" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007592" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="3a69d2188c99cdfe3eed0571138c64f7" />
+            <attr name="archivechecksum" type="string" value="356f148cb79694a1869aa7763d68ae15" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="9007592" />
+      <attr name="versionsbychecksum" type="dict" id="9005504" >
+        <entry>
+          <key type="string" value="3a69d2188c99cdfe3eed0571138c64f7" />
+          <val type="PyObject" refid="9007592" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="music\\digital\\minastirith.mp3" />
+    <val type="PyObject" id="8985016" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Music\\Digital\\Minastirith.mp3" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8995584" >
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8983296" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="99df268713f542287a7535df68190fce" />
+            <attr name="archivechecksum" type="string" value="843afbb4293fc106ccd2bc9d37d21ba2" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8983296" />
+      <attr name="versionsbychecksum" type="dict" id="8995728" >
+        <entry>
+          <key type="string" value="99df268713f542287a7535df68190fce" />
+          <val type="PyObject" refid="8983296" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="artidx.mul" />
+    <val type="PyObject" id="8985696" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="artidx.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8981792" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="8986176" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="3c83f4fa736071f07f49b377da2597f6" />
+            <attr name="patcharchivechecksum" type="string" value="3154f7f60da8e4440acfde1e1698133c" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="058bec84ea4cc915030693e273c6a92e" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="9008352" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="48285211943fb79ab1d8b5749171fd83" />
+            <attr name="patcharchivechecksum" type="string" value="c2e51012aa15ad8a468a9a5cce162c6d" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="ef100d7d27f49caf1b3c1dd72da3057a" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8983496" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="a50b144930a6ff96d1f6319d69f28082" />
+            <attr name="archivechecksum" type="string" value="5cc05a6d7028efa84ce3a9d8996e9639" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8983496" />
+      <attr name="versionsbychecksum" type="dict" id="8980784" >
+        <entry>
+          <key type="string" value="a50b144930a6ff96d1f6319d69f28082" />
+          <val type="PyObject" refid="8983496" />
+        </entry>
+        <entry>
+          <key type="string" value="48285211943fb79ab1d8b5749171fd83" />
+          <val type="PyObject" refid="9008352" />
+        </entry>
+        <entry>
+          <key type="string" value="3c83f4fa736071f07f49b377da2597f6" />
+          <val type="PyObject" refid="8986176" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="PyObject" refid="8986176" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="art.def" />
+    <val type="PyObject" id="8983736" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="art.def" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8981072" >
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="9007512" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="21ad4314c6f2f5d6b38834dcefef62d7" />
+            <attr name="patcharchivechecksum" type="string" value="e4751dd4af217a1050ef2585bf79122d" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="fa4336e968d4167d8103b4c6f8bfa60c" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8985816" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="33001ff0a2c09ab3d41dc6d89c7a743a" />
+            <attr name="archivechecksum" type="string" value="d89715bbb1b98c4d5e2c9173ea315a63" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8985816" />
+      <attr name="versionsbychecksum" type="dict" id="8981216" >
+        <entry>
+          <key type="string" value="21ad4314c6f2f5d6b38834dcefef62d7" />
+          <val type="PyObject" refid="9007512" />
+        </entry>
+        <entry>
+          <key type="string" value="33001ff0a2c09ab3d41dc6d89c7a743a" />
+          <val type="PyObject" refid="8985816" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="animinfo.mul" />
+    <val type="PyObject" id="8983816" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="animinfo.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="8936736" >
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="9007432" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="1eb59a83551295473fa75e54e6c834de" />
+            <attr name="patcharchivechecksum" type="string" value="284af1822d1731a070e3ceef99363319" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="6302a8818e22735a8ee735abcb6f9437" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8983936" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="1eb59a83551295473fa75e54e6c834de" />
+            <attr name="archivechecksum" type="string" value="2770f319d884817674a15005b222dd48" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8983936" />
+      <attr name="versionsbychecksum" type="dict" id="8950240" >
+        <entry>
+          <key type="string" value="1eb59a83551295473fa75e54e6c834de" />
+          <val type="PyObject" refid="9007432" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="multimap.rle" />
+    <val type="PyObject" id="9007192" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="MULTIMAP.RLE" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9003776" >
+        <entry>
+          <key type="string" value="Releases\\2004_06_15_v17a" />
+          <val type="PyObject" id="9007832" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="3204d3c134b819690bde65041fa1211a" />
+            <attr name="archivechecksum" type="string" value="b9e9eb036a6fab4565c4e40431f249e9" />
+            <attr name="name" type="string" value="Releases\\2004_06_15_v17a" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="9007832" />
+      <attr name="versionsbychecksum" type="dict" id="9004064" >
+        <entry>
+          <key type="string" value="3204d3c134b819690bde65041fa1211a" />
+          <val type="PyObject" refid="9007832" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+  <entry>
+    <key type="string" value="gumpidx.mul" />
+    <val type="PyObject" id="8986376" module="common" class="FileInfo">
+      <attr name="forced" type="True" value="" />
+      <attr name="filename" type="string" value="Gumpidx.mul" />
+      <attr name="todelete" type="False" value="" />
+      <attr name="versionsbyname" type="dict" id="9030656" >
+        <entry>
+          <key type="string" value="Originals\\LBR_nopatch" />
+          <val type="PyObject" id="9007152" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="4a94da19cf3112d289d4607cc31b631f" />
+            <attr name="patcharchivechecksum" type="string" value="479948d4e896b36596cbacbccb11be9c" />
+            <attr name="name" type="string" value="Originals\\LBR_nopatch" />
+            <attr name="patchchecksum" type="string" value="92ac225480186b8260bde9b06fef4712" />
+            <attr name="isoriginal" type="True" value="" />
+          </val>
+        </entry>
+        <entry>
+          <key type="string" value="Releases\\2005_8_2" />
+          <val type="PyObject" id="8986296" module="common" class="FileVersionInfo">
+            <attr name="checksum" type="string" value="9ae8499559ece1f62175583b3e4a8fc7" />
+            <attr name="archivechecksum" type="string" value="026cbbb452a1fea194b887cdc968bab3" />
+            <attr name="name" type="string" value="Releases\\2005_8_2" />
+            <attr name="patchchecksum" type="string" value="" />
+            <attr name="isoriginal" type="False" value="" />
+          </val>
+        </entry>
+      </attr>
+      <attr name="latestversion" type="PyObject" refid="8986296" />
+      <attr name="versionsbychecksum" type="dict" id="9030800" >
+        <entry>
+          <key type="string" value="9ae8499559ece1f62175583b3e4a8fc7" />
+          <val type="PyObject" refid="8986296" />
+        </entry>
+        <entry>
+          <key type="string" value="4a94da19cf3112d289d4607cc31b631f" />
+          <val type="PyObject" refid="9007152" />
+        </entry>
+      </attr>
+      <attr name="lastbutoneversion" type="None" />
+    </val>
+  </entry>
+</attr>
+<attr name="librarychecksum" type="string" value="59947f2df52e8ecde5fa423f7f2b1d97" />
+<attr name="name" type="string" value="moria update files" />
+<attr name="lastversion" type="string" value="2005_8_2" />
+</PyObject>

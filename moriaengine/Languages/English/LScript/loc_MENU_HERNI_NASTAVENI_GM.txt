@@ -1,0 +1,8 @@
+0                               = Umoznuje prednastaveni hernich zalezitosti. Jen pro GM !
+1                               = GM Nastaveni sveta: Sahat jen v nejnutnejsim pripade. Zmeny neprodlene hlasit adminovi nebo Dinivanovi!
+2                               = INFO: statistiky povolani - zbytecne nepouzivat, laguje!
+3                               = Rychle cestovani: prikaz .gomap
+4                               = Kolik je itemu v sektoru?
+5                               = Informace o spawnech v okoli
+6                               = Informace o Moria serveru
+7                               = Predchozi

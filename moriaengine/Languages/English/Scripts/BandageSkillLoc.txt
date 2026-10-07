@@ -1,0 +1,3 @@
+SelectHealingTarget             = Koho chceš léčit?
+CantHealItems                   = Předměty nelze léčit.
+YouHaveNoBandages               = Nemáš u sebe bandáže!

@@ -1,0 +1,35 @@
+Name:
+	BeforeStack
+
+Called on:
+	Items (Item)
+
+When:
+	Someone attempts to stack an item on this item.
+
+Arguments:
+	0 (Item): The item to be stacked on this one.
+	
+Sphere Arguments:
+	argo: The item to be stacked on this one.
+
+Extra variables:
+	src: The character attempting to do the stacking.
+	self: This item, the one having something stacked on/with it.
+
+Return value:
+	1 to cancel stacking, 0 to allow it.
+
+Purpose:
+	This trigger allows you to make an item reject stacking attempts. Stacking is also
+	only allowed for items with the same itemdef, and also only if both items are marked
+	stackable - That's something defined in the itemdef, so you don't have to make
+	an @beforeStack script to block stacking on items, you just set stackable=0 if they're
+	never stackable. This trigger is intended for items which have special tags on them,
+	such as potions, which may have the potion's strength. The trigger script
+	could either combine the tags somehow (averaging the potion strength), or prevent
+	stacking if the tags are not compatible.
+	
+	If stacking proceeds, the item stacked on this one (argo) is deleted and its amount
+	added to this one (self). Tags will not be migrated unless your @beforestack trigger
+	does it itself.

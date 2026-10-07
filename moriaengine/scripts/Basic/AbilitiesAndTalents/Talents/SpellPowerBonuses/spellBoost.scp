@@ -1,0 +1,22 @@
+[StatDrainingAbilityDef a_spell_boost]
+Name="SpellBoost"
+EffectPower=0.6 // +60% spellpower when 1 point in this
+StamDrain=1
+EffectDuration=20
+Cooldown = 15 * 60
+
+PluginKey = @@spellBoost
+PluginDef = p_spellBoost
+
+
+[StatDrainingEffectDurationPluginDef p_spellBoost]
+on=@assign
+this.Timer = a_spell_boost.EffectDuration
+
+on=@CauseSpellEffect
+if (argv[0].SpellDef is DamageSpellDef)
+	if (argv[0].CurrentTarget == argv[0].MainTarget) //so that the power is only raised once
+		argv[0].SpellPower = argv[0].SpellPower + (argv[0].SpellPower * this.EffectPower)
+	endif
+endif
+

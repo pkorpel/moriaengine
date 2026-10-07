@@ -1,0 +1,5 @@
+[WarcryDef a_warcry]
+name="Warcry"
+//maxPoints=10
+Cooldown = 180
+effectDuration = 10

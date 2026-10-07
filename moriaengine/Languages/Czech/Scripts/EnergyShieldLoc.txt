@@ -1,0 +1,5 @@
+cantTeleport                    = Během trvání kouzla Energy shield nemůžeš používat teleportační kouzla
+cantMove                        = Během trvání kouzla Energy shield se nemůžeš pohybovat
+shieldWasted                    = Tvůj Energy shield se vyčerpal
+shieldSavedYou                  = Energy shield tě uchránil před zraněním
+shieldSavedYouPartially         = Energy shield tě částečně ochránil před zraněním

@@ -1,0 +1,8 @@
+YouCantStockMoney               = Nemůžeš prodávat hotovost
+StockedContainerTooFull         = Nemůžeš prodávat kontejner s více jak 500ks zboží
+NoUnitAvailable                 = Kontejner pro jednotkový prodej musíš mít otevřený a v něm alespoň 1 předmět.
+VendorOffline                   = Tento prodejce má zavřeno
+VendorIsntYours                 = Tento prodejce ti není podřízen.
+ThisNpcIsntYours                = Tento tvor ti nepatří.
+CanOnlySellAnimals              = Prodávat lze jen zvířata
+PriceCalculationError           = Cenu nelze vypočítat.

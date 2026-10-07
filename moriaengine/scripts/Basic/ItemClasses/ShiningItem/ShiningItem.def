@@ -1,0 +1,37 @@
+[ShiningItemDef 0xf64]
+CATEGORY = Decoration - Lightsources
+SUBSECTION = Torches
+DESCRIPTION = Torch (Unlit)
+
+TYPE = T_LIGHT_OUT
+//DUPELIST = 0f6b // commented out by Converter 
+WEIGHT = 10
+RESOURCES = 1 i_log //some resources were fixed by converter 
+//TDATA3 = i_torch_lit // commented out by Converter 
+layer = 2 //Set by Converter 
+DEFNAME = i_torch
+
+[ItemDef 0xf6b]
+DUPEITEM = i_torch
+
+[EquippableDef 0xa12]
+CATEGORY = Decoration - Lightsources
+SUBSECTION = Torches
+DESCRIPTION = Torch (Lit)
+ 
+TYPE = T_LIGHT_LIT
+//DUPELIST = 0a13,0a14 // commented out by Converter 
+WEIGHT = 10
+RESOURCES = i_torch //some resources were fixed by converter 
+//TDATA3 = i_torch // commented out by Converter 
+layer = 2 //Set by Converter 
+DEFNAME = i_torch_lit
+//TDATA4 = 0 // commented out by Converter 
+ 
+[ItemDef 0xa13]
+DUPEITEM = i_torch_lit
+ 
+[ItemDef 0xa14]
+DUPEITEM = i_torch_lit
+
+

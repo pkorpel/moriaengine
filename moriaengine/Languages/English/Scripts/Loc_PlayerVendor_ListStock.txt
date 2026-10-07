@@ -1,0 +1,9 @@
+Buy                             = kup
+Description                     = Název zboží
+PriceInGp                       = Cena (gp)
+NewStock                        = Přidat dalši zboží
+DeleteSection                   = Odebrat sekci
+ReverseOrder                    = Převrátit nabídku
+ChangeIcon                      = Ikona
+YourAccount                     = Vaše konto: {0} gp
+TargetIconSource                = Target something to copy icon from.

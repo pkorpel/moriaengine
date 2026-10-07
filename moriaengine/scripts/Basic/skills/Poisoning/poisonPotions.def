@@ -1,0 +1,131 @@
+
+[PotionDef i_potion_CureLess]
+NAME = "Lesser Cure"
+TYPE = t_speedpotions
+RESOURCES = 2 i_reag_garlic, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 200 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02d
+
+[PotionDef i_potion_Cure]
+NAME = "Cure"
+TYPE = t_allpotions
+RESOURCES = 3 i_reag_garlic, 1 i_reag_ginseng, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02b
+
+[PotionDef i_potion_CureGreat]
+NAME = "Greater Cure"
+TYPE = t_allpotions
+RESOURCES = 4 i_reag_garlic, 2 i_reag_ginseng, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 650 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 08e
+
+[PoisonPotionDef i_potion_Poison_para]
+NAME = "Paralyze poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0314
+PoisonType = p_poison_para
+
+[PoisonPotionDef i_potion_Poison_fizz]
+NAME = "Fizzle poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 022d
+PoisonType = p_poison_fizz
+
+[PoisonPotionDef i_potion_Poison_stamina]
+NAME = "Stamina poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02f
+PoisonType = p_poison_stamina
+
+[PoisonPotionDef i_potion_Poison_weaken]
+NAME = "Weaken poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02e6
+PoisonType = p_poison_weaken
+
+[PoisonPotionDef i_potion_Poison_clumsy]
+NAME = "Clumsy poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02ed
+PoisonType = p_poison_clumsy
+
+[PoisonPotionDef i_potion_Poison_feeblemind]
+NAME = "Feeblemind poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02c9
+PoisonType = p_poison_feeblemind
+
+[PoisonPotionDef i_potion_PoisonLess]
+NAME = "Lesser Poison"
+TYPE = T_POTION
+RESOURCES = 2 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 300 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0b0
+PoisonType = p_poison
+PoisonPower = 2, 4
+
+[PoisonPotionDef i_potion_Poison]
+NAME = "Poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0b2
+PoisonType = p_poison
+PoisonPower = 4, 6
+
+[PoisonPotionDef i_potion_PoisonGreat]
+NAME = "Greater Poison"
+TYPE = T_POTION
+RESOURCES = 7 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 700 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+PoisonType = p_poison
+Color = 0179
+PoisonPower = 7, 8
+
+[PoisonPotionDef i_potion_PoisonDeadly]
+NAME = "Deadly Poison"
+TYPE = T_POTION
+RESOURCES = 13 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 999 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0593
+PoisonType = p_poison
+PoisonPower = 9, 10

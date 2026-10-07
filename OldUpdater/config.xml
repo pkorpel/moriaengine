@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE PyObject SYSTEM "PyObjects.dtd">
+<PyObject module="__main__" class="Config" id="13535272">
+<attr name="proxyport" type="string" value="8001" />
+<attr name="dobackup" type="True" value="" />
+<attr name="uiname" type="string" value="tk" />
+<attr name="useproxy" type="False" value="" />
+<attr name="uodir" type="string" value="C:\\Games\\Ultima Online" />
+<attr name="hostname" type="string" value="http://uopatch.septem.cz" />
+<attr name="proxyhost" type="string" value="http://yourproxyhost.com" />
+<attr name="deleteverdata" type="True" value="" />
+<attr name="tempdir" type="string" value="temp" />
+<attr name="runaftersuccess" type="string" value="C:\\Games\\Ultima Online\\Client_3.0.6m.exe" />
+<attr name="port" type="string" value="80" />
+<attr name="backupdir" type="string" value="backup" />
+</PyObject>

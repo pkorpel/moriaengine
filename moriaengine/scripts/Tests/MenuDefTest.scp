@@ -1,0 +1,14 @@
+
+//spustit prikazem .Menu(menu_scripted), pripadne .Menu(menu_scripted, nejakejdalsiparametr)
+
+[ScriptedMenuDef menu_scripted]
+message="This is header of the menu"
+
+on=First Choice
+	this.sysmessage("Choice 1 selected")
+
+on=Second Choice
+	this.sysmessage("Choice 2 selected")
+
+
+[eof]

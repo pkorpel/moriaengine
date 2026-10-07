@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SaveCruncher.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DataDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">F:\Development\SE\Cruncher\data</Value>
+    </Setting>
+    <Setting Name="DatabaseSubDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Database</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

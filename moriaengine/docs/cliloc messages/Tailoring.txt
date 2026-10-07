@@ -1,0 +1,3 @@
+500366	Select a loom to use that on.
+500367	Try using that on a loom.
+500368	You create some cloth and put it in your backpack.

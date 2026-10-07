@@ -1,0 +1,14 @@
+500378	Thou art a criminal and cannot access thy bank box.
+500379	Thou must tell me how much thou wishest to withdraw.
+500380	Ah, art thou trying to fool me? Thou hast not so much gold!
+500381	Thou canst not withdraw so much at one time!
+500382	Thou dost not have sufficient funds in thy account to withdraw that much.
+500383	Thou must request a minimum of 5000 gold to draw up a check.
+500384	Ah, art thou trying to fool me? Thou hast not so much gold!
+500385	Thou dost not have sufficient funds in thy account to withdraw that much.
+500386	There's not enough room in your bankbox for the check!
+500387	This is not gold!
+500388	I only accept gold coins.
+500389	I will not do business with a criminal!
+500390	Your bank box is full.
+500391	A bank account can only hold 65,000 gold at the moment.

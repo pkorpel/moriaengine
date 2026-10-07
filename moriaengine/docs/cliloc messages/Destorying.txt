@@ -1,0 +1,5 @@
+500459	Since you are a (co)owner of the house, you can destroy the movable furniture within.
+500460	You can only chop your own strongbox
+500461	You destroy the item.
+500462	You can't destroy that while it is here.
+500463	You will need an axe of some sort to destroy this.

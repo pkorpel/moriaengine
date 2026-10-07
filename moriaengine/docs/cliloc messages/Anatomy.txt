@@ -1,0 +1,7 @@
+500321	Whom shall I examine?
+500322	This person looks fine to me, though he may have some news...
+500323	Only living things have anatomies!
+500324	You know yourself quite well enough already.
+500325	I am too far away to do that.
+500326	That cannot be inspected.
+500327	Weariness prevents you from discerning anything useful.

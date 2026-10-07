@@ -1,0 +1,6 @@
+In SteamEngine, we use the Grammatica for parsing LScript. 
+Particularly there is a java binary in the /bin directory, which generates the C# classes according to .grammar file.
+The grammar file, the generated classes, and the generate.bat file that executes the jar are all in /src/LScript.
+If you want to make some changes to the parser, you will need to have Java environment installed. 
+For further instructions look at the Grammatica web.
+-tart

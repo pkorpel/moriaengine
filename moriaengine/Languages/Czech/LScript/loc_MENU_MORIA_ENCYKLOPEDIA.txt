@@ -1,0 +1,7 @@
+0                               = MORIA ENCIKLOPEDIA
+1                               = HISTORIE STREDOZEME
+2                               = Lide Stredozeme
+3                               = Realmy - Rozdeleni sveta
+4                               = Remesla a Povolani ve Stredozemi
+5                               = Webove Odkazy
+6                               = Predchozi

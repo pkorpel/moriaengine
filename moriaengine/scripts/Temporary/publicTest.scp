@@ -1,0 +1,80 @@
+//code aimed to ease alpha/beta testing
+
+
+[ContainerDef i_chest_weapset]
+Model=i_bag
+
+on=@create
+//attr=attr_move_never
+tag.material = Material.Copper
+
+on=@dclick
+emptycont
+//color=color_o_<tag.material>
+name="<tag.material> weapons"
+
+foreach (arg.basicDef in GetBasicWeapons())
+	arg.def = GetColoredWeapon(<arg.basicDef.Model>, <tag.material>)
+	Item(<arg.def>)
+endforeach
+
+foreach (arg.basicDef in GetBasicProjectiles())
+	arg.def = GetColoredProjectile(<arg.basicDef.Model>, <tag.material>)
+	if (<arg.def>)
+		Item(<arg.def>, 500)
+	else 
+		echo(<arf.def>)
+	endif
+endforeach
+
+
+//[itemdef i_chest_items]
+//id=i_bag
+//name=Items
+
+//on=@create
+//attr=attr_move_never
+
+//on=@userdclick
+//src.food=<src.def.maxfood>
+//src.smsg("Jidlo nastaveno na max.")
+//emptycont
+//newloot=i_pet_horse_tan
+//newloot=i_spellbook_8
+//lastnew.morex=0ffff
+//newloot=i_bandage,1000
+//newloot=tm_reagbag
+//newloot=tmp_ingots
+//newloot=i_potion_heal
+//lastnew.dupe(20)
+//newloot=i_potion_healgreat
+//lastnew.dupe(20)
+//newloot=i_potion_invisibility
+//lastnew.dupe(20)
+//newloot=i_potion_refreshgreater
+//lastnew.dupe(20)
+//newloot=i_drum
+//newloot=i_pickaxe
+//NEWLOOT=i_mortar_pestle
+//NEWLOOT=i_keg_potion
+//NEWLOOT=i_gold,60000
+//newloot=i_deed_vendor
+//newloot=i_deed_guildstone
+
+
+[ContainerDef i_chest_armorset]
+Model=i_bag
+
+on=@create
+//attr=attr_move_never
+tag.material = Material.Copper
+tag.armortype = WearableType.Chain
+
+on=@dclick
+this.Emptycont
+this.name="<tag.material> <tag.armortype> armors"
+//color=color_o_<tag.material>
+foreach (arg.basicDef in GetBasicArmors(<tag.armortype>))
+	arg.def = GetColoredArmor(<arg.basicDef.Model>, <tag.material>, <tag.armortype>)
+	Item(<arg.def>)
+endforeach

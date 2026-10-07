@@ -1,0 +1,215 @@
+//called by Core when paperdoll button Help is pressed
+[FUNCTION Help]
+MENU MENU_help
+
+[ScriptedMenuDef MENU_help] // PAGEGM is executed whenever someone presses the "Page GM" button
+Message=Main Support Menu
+
+ON=@Nastaveni a informace
+if (this.isgm)
+	MENU MENU_HERNI_NASTAVENI_GM
+ELSE
+	MENU MENU_HERNI_NASTAVENI
+ENDIF
+
+ON=@Herni prikazy
+MENU MENU_HERNI_PRIKAZY
+
+ON=@Moria encyklopedia
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+ON=@Zprava pro GM (page): pred zaslanim zpravy si radne prostudujte pravidla posilani zprav. Zpravy jasne nevyjadrujici problem budou mazany.
+MENU MENU_PAGEGM
+
+ON=@Nouzovy teleport (stuck help): pouzij pri zaseku ci pokud jsi se ztratil - po casovem limitu budes prenesen do sveho domovskeho mesta.
+IF (src.tag(arena))||(src.tag(trestanec))||(<src.region.flags>==06d9f)||(<strlen(<src.region.tag(knihovna)>)>)
+  src.raceMessage("Zde nemuzes pouzit Helproom.")
+ELSE
+  MENU MENU_helproom
+ENDIF
+
+////////////////////////
+
+[ScriptedMenuDef MENU_HERNI_NASTAVENI_GM]   //  vidi jen GMKA !!!
+Message=Umoznuje prednastaveni hernich zalezitosti. Jen pro GM !
+
+ON=@GM Nastaveni sveta: Sahat jen v nejnutnejsim pripade. Zmeny neprodlene hlasit adminovi nebo Dinivanovi!
+nastaveni
+
+ON=@INFO: statistiky povolani - zbytecne nepouzivat, laguje!
+statistikapovolani
+
+ON=@Rychle cestovani: prikaz .gomap
+gomap
+
+ON=@Kolik je itemu v sektoru?
+var(count,0)
+region.sectors(raisecount)
+smsg v tomto sectoru se nachazi <count> itemu
+
+ON=@Informace o spawnech v okoli
+spawncount
+
+
+ON=@Informace o Moria serveru
+serv.INFORMATION
+
+
+
+ON=@Predchozi
+MENU MENU_help
+
+
+//////////////////////////
+
+[ScriptedMenuDef MENU_HERNI_NASTAVENI]
+Message=Umoznuje prednastaveni hernich zalezitosti.
+
+ON=@Novy level - rozdelit dovednostni body
+explevel
+
+ON=@Chatovani mezi hraci
+DIALOG d_chat_options
+
+
+
+ON=@Kdo jsem?
+whoami
+
+ON=@Informace o Moria serveru.
+serv.INFORMATION
+
+ON=@Predchozi
+MENU MENU_help
+
+
+[ScriptedMenuDef MENU_HERNI_PRIKAZY]
+Message=Umoznuje prednastaveni hernich zalezitosti.
+
+ON=@Jak jsem hladovy?
+hungry
+
+ON=@Informace o Moria serveru.
+serv.INFORMATION
+
+ON=@Predchozi
+MENU MENU_help
+
+/////////////////////////////////////////////////ENCICLOPEDIE ///////////////////////////////
+
+[ScriptedMenuDef MENU_MORIA_ENCYKLOPEDIA]
+Message=MORIA ENCIKLOPEDIA 
+
+
+ON=@HISTORIE STREDOZEME
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+ON=@Lide Stredozeme
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+ON=@Realmy - Rozdeleni sveta
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+ON=@Remesla a Povolani ve Stredozemi
+MENU MENU_MORIA_ENCYKLOPEDIA_POVOLANI
+
+ON=@Webove Odkazy
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Predchozi
+MENU MENU_help
+
+/////////////
+
+[ScriptedMenuDef MENU_MORIA_ENCYKLOPEDIA_POVOLANI]
+Message=Moria encyklopedia
+
+ON=@Aktualni informace na webu
+WEBLINK("http:\/\/www.moria.cz/www/page=7")
+
+ON=@Remeslnik (craft)
+MENU MENU_MORIA_ENCYKLOPEDIA_POVOLANI
+
+ON=@Druid - zatim neexistuje
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Mystik - kouzelnik silove a runove magie
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Nekromant - kouzelnik specializujci se na temnou magii a vyvolavani
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Knez (priest)
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Hranicar
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Saman - kmenovy lecitel zabyvajci se okultni prirodni magii
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Zlodej (thief), intrikar, podfukar a skely vykradac hrobek
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Valecnik (warrior) - hlavni sila jakekoliv vojenske skupiny
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=@Predchozi
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+////////////////
+
+[ScriptedMenuDef MENU_MORIA_ENCYKLOPEDIA_ODKAZY]
+Message=Odkazy na Webove stranky tykajici se se shardu Moria 
+
+ON=@Domovska stranka shardu Moria
+WEBLINK("http:\/\/www.moria.cz/www/")
+
+ON=@Moriawiki - oficialni informacni web
+WEBLINK("http:\/\/www.moria.cz/wiki/")
+
+ON=@Vyveska - stranka o volnem pokecu o hre na Morii, srazech hracu a naslednych svizelich :o) a nejen to.
+WEBLINK("http:\/\/vyveska.kec.cz/vyveska/")
+
+ON=@Forum, kde se muzete podelit s tvurci shardu Moria o sve napady a pripominky ke hre.
+WEBLINK("http:\/\/kec.cz/forum/")
+
+ON=@Odkazy na spratelene servry
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY_SPRATELENE
+
+ON=@Predchozi
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+
+
+[ScriptedMenuDef MENU_MORIA_ENCYKLOPEDIA_ODKAZY_SPRATELENE]
+Message=Odkazy na spratelene servry
+
+ON=@Vanamovy stranky - rady a navody
+WEBLINK("http:\/\/ultima.profitux.cz/")
+
+ON=@Lu Tzeho stranky - informace o questech, bestiar a dalsi
+WEBLINK("http:\/\/encyklopedie.moria.cz/")
+
+ON=@Dark Paradise: Otevre domovskou stranku sprateleneho shardu Dark Paradise.
+WEBLINK("http:\/\/www.darkparadise.cz/")
+
+ON=@Predchozi
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+
+
+[ScriptedMenuDef MENU_PAGEGM]
+Message=Zde muzes zaslat zpravu GM, ale nezapomen, ze to ma sva pravidla.
+
+ON=@Ano, chci, mam doopravdy problem a jsem si vedom trestu za pripadne zneuziti.
+src.sysmessage("Ted muzes poslat zpravu - napis text zpravy a zmackni enter.")
+src.targ=<src>
+everbtarg GMPAGE
+
+ON=@Ne - stornovani zpravy
+src.sysmessage("Odesilani zpravy pro GM bylo zruseno.")
+
+[EOF]
+
+

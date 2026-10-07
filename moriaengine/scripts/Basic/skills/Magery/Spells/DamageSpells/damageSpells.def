@@ -1,0 +1,228 @@
+
+[DamageSpellDef 5]//utocne
+DEFNAME=s_magic_arrow
+NAME=Magic Arrow
+SOUND=0x1E5
+CASTTIME=2.5
+RUNES=IPY
+//RESOURCES=i_reag_black_pearl,i_reag_nightshade
+RUNEITEM=i_rune_MAGIC_ARROW
+SCROLLITEM=i_scroll_MAGIC_ARROW
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicFire
+EFFECT=0,3
+MANAUSE=6
+Requirements=40 Magery
+difficulty=40
+
+on=@effectChar
+	EffectFactory.EffectFromTo(argo.Caster, this, 0x36E4, 5, 0, false, true)
+	
+[DamageSpellDef 12]//utocne
+DEFNAME=s_harm
+NAME="Harm"
+SOUND=0x1F1
+RUNES=AM
+CASTTIME=1.2
+//RESOURCES=i_reag_nightshade,i_reag_spider_silk
+RUNEITEM=i_rune_HARM
+SCROLLITEM=i_scroll_HARM
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicAcid
+EFFECT=6,12
+MANAUSE=6 
+Requirements=200 Magery 
+difficulty=200
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x374A, 10, 15)
+	
+[DamageSpellDef 18]
+DEFNAME=s_fireball
+NAME=Fireball
+SOUND=0x44B
+RUNES=VF
+CASTTIME=1.7
+//RESOURCES=i_reag_black_pearl,i_reag_sulfur_ash
+RUNEITEM=i_rune_FIREBALL
+SCROLLITEM=i_scroll_FIREBALL
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicFire
+EFFECT=0,11
+MANAUSE=6
+Requirements=30.0 Magery
+difficulty=300
+
+on=@effectChar
+	EffectFactory.EffectFromTo(argo.Caster, this, 0x36D4, 7, 0, false, true)
+
+[DamageSpellDef 30]//utocne
+DEFNAME=s_lightning
+NAME=Lightning
+RUNES=POG
+CASTTIME=2.0
+SOUND=41
+//RESOURCES=i_reag_black_pearl,i_reag_mandrake_root,i_reag_sulfur_ash
+RUNEITEM=i_rune_LIGHTNING
+SCROLLITEM=i_scroll_LIGHTNING
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicElectric
+EFFECT=0,15
+MANAUSE=11
+Requirements=400 Magery
+difficulty=400
+
+on=@effectChar
+	EffectFactory.LightningEffect(this)
+
+[MindBlastSpellDef 37]//utocne
+DEFNAME=s_mind_blast
+NAME=Mind Blast
+SOUND=0x213
+RUNES=PCW
+CASTTIME=2.5
+//RESOURCES=i_reag_black_pearl,i_reag_mandrake_root,i_reag_nightshade,i_reag_sulfur_ash
+RUNEITEM=i_rune_MIND_BLAST
+SCROLLITEM=i_scroll_MIND_BLAST
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicElectric
+EFFECT=0,70
+MANAUSE=20
+Requirements=500 Magery
+difficulty=500
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x374A, 10, 15)
+	EffectFactory.StationaryEffect(argo.Caster, 0x374A, 10, 15)
+
+[DamageSpellDef 42]
+DEFNAME=s_energy_bolt
+NAME=Energy Bolt
+SOUND=0x20A
+RUNES=CP
+CASTTIME=2.5
+//RESOURCES=i_reag_black_pearl,i_reag_nightshade
+RUNEITEM=i_rune_ENERGY_BOLT
+SCROLLITEM=i_scroll_ENERGY_BOLT
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicFire
+EFFECT=0,16
+MANAUSE=22
+Requirements=600 Magery
+difficulty=600
+
+on=@effectChar
+	EffectFactory.EffectFromTo(argo.Caster, this, 0x379F, 7, 0, false, true)
+
+[DamageSpellDef 43]//utocne
+DEFNAME=s_explosion
+NAME=Explosion
+SOUND=0x307
+RUNES=VOF
+CASTTIME=2.5
+//RESOURCES=i_reag_black_pearl,i_reag_mandrake_root,i_reag_sulfur_ash
+RUNEITEM=i_rune_EXPLOSION
+SCROLLITEM=i_scroll_EXPLOSION
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanTargetGround | SpellFlag.IsAreaSpell | SpellFlag.CanEffectChar | SpellFlag.CanEffectGround | SpellFlag.UseMindPower | SpellFlag.IsHarmful | SpellFlag.IsAreaSpell
+DamageType = DamageType.MagicFire
+EFFECT=0,25
+EffectRange=5 //range of the area effect
+MANAUSE=22
+Requirements=600 Magery
+difficulty=600
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x36BD, 20, 10)
+
+[DamageSpellDef 49]//utocne
+DEFNAME=s_chain_lightning
+NAME=Chain Lightning
+SOUND=41
+RUNES=VOG
+CASTTIME=2.8
+//RESOURCES=i_reag_black_pearl,i_reag_blood_moss,i_reag_mandrake_root,i_reag_sulfur_ash
+RUNEITEM=i_rune_CHAIN_LIGHTNING
+SCROLLITEM=i_scroll_CHAIN_LIGHTNING
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanTargetGround | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful | SpellFlag.IsAreaSpell
+DamageType = DamageType.MagicElectric
+EFFECT=0,30
+EffectRange=5 //range of the area effect
+MANAUSE=30
+Requirements=700 Magery
+difficulty=700
+
+on=@effectChar
+	EffectFactory.LightningEffect(this)
+
+[DamageSpellDef 51]//utocne
+DEFNAME=s_flamestrike
+NAME=Flame Strike
+SOUND=0x208
+RUNES=KVF
+CASTTIME=2.8
+//RESOURCES=i_reag_spider_silk,i_reag_sulfur_ash
+RUNEITEM=i_rune_FLAMESTRIKE
+SCROLLITEM=i_scroll_FLAMESTRIKE
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicFire
+EFFECT=0,35
+MANAUSE=40
+Requirements=700 Magery
+difficulty=700
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x3709, 10, 30)
+
+[DamageSpellDef 55]//utocne
+DEFNAME=s_meteor_swarm
+NAME=Meteor Swarm
+SOUND=0x160
+RUNES=FKDY
+CASTTIME=3.5
+//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk,i_reag_sulfur_ash
+RUNEITEM=i_rune_METEOR_swarm
+SCROLLITEM=i_scroll_METEOR_swarm
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanTargetGround | SpellFlag.IsAreaSpell | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful | SpellFlag.IsAreaSpell
+DamageType = DamageType.MagicFire
+EFFECT=0,40
+EffectRange=5 //range of the area effect
+MANAUSE=40
+Requirements=700 Magery
+difficulty=700
+
+on=@effectChar
+	EffectFactory.EffectFromTo(argo.Caster, this, 0x36D4, 7, 0, false, true)
+
+[DamageSpellDef 57]//utocne
+DEFNAME=s_earthquake
+NAME=Earthquake
+SOUND=0x2F3
+RUNES=IVP
+CASTTIME=4.0
+//RESOURCES=i_reag_blood_moss,i_reag_ginseng,i_reag_mandrake_root,i_reag_sulfur_ash
+RUNEITEM=i_rune_EARTHQUAKE
+SCROLLITEM=i_scroll_EARTHQUAKE
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful | SpellFlag.IsAreaSpell | SpellFlag.AlwaysTargetSelf
+EFFECT=0,50
+//DURATION=30
+MANAUSE=50
+Requirements=800 Magery
+difficulty=800
+
+
+
+
+
+//[SpellDef 69]
+//DEFNAME=s_fire_bolt
+//NAME=Fire Bolt
+//SOUND=snd_SPELL_FIRE_BOLT
+//RUNES=VFP
+//CASTTIME=2.0
+//////RESOURCES=i_reag_black_pearl,i_reag_sulfur_ash,i_reag_nightshade
+//RUNEITEM=i_rune_FIREBALL
+//SCROLLITEM=i_scroll_firebolt
+//FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FX_BOLT|spellflag_evil|spellflag_SM//SPELLFLAG_TARG_CHAR
+//EFFECT=0,30
+//MANAUSE=32
+//Requirements=70.0 Magery

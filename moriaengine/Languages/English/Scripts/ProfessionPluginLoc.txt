@@ -1,0 +1,1 @@
+YouCantCastThis                 = You can't cast this spell, being {0} of profession.

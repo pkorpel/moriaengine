@@ -1,0 +1,98 @@
+CHARACTER
+
+FlagsToSend (UO protocol)
+	       0x00		Normal
+	       0x01		Unknown					//?
+	       0x02		CanAlterPaperdoll		or Female
+	       0x04		Poisoned
+	       0x08		GoldenHealth
+	       0x10		FactionShip // unsure why client needs to know
+	       0x40		WarMode
+	       0x80		Hidden
+
+
+
+SPHERE - we won't use most of them, we will only have according Flag_Something or IsSomething properties
+	0x000000001		statf_invul				// Invulnerability
+	0x000000002		statf_dead				
+	0x000000004		statf_freeze			// paralyzed. (spell)
+	0x000000008		statf_invisible			// Invisible (spell).
+	0x000000010		statf_sleeping			// You look like a corpse ?
+	0x000000020		statf_war				// War mode on ?
+	0x000000040		statf_reactive			// have reactive armor on.
+	0x000000080		statf_poisoned			// Poison level is in the poison object
+	0x000000100		statf_nightsight		// All a light to you
+	0x000000200		statf_reflection		// Magic reflect on.
+	0x000000400		statf_polymorph			// We have polymorphed to another form.
+	0x000000800		statf_incognito			// Dont show skill titles
+	0x000001000		statf_spiritspeak		// I can hear ghosts clearly.
+	0x000002000		statf_insubstantial		// Ghost has not manifest. or GM hidden
+	0x000004000		statf_emoteaction		// The creature will emote its actions to it's owners.
+	0x000008000		statf_listen			// used by t_comm_crystal
+	0x000010000		statf_hasshield			// Using a shield
+	0x000020000		statf_script_play		// Playing a Script. (book script)
+	0x000040000		statf_stone				// turned to stone.
+	0x000080000		statf_caged				// Summoned in cage.
+	0x000100000		statf_fly				// Flying or running ? (anim)
+	0x000200000		statf_respawnnpc		// This is a major NPC, needs to respawn if dead.
+	0x000400000		statf_hallucinating		// eat 'shrooms or bad food.
+	0x000800000		statf_hidden			// Hidden (non-magical)
+	0x001000000		statf_indoors			// we are covered from the rain.
+	0x002000000		statf_criminal			// The guards will attack me. (someone has called guards)
+	0x004000000		statf_conjured			// This creature is conjured and will expire. (leave no corpse or loot)
+	0x008000000		statf_pet				// I am a pet/hirling. check for my owner memory.
+	0x010000000		statf_spawned			// I am spawned by a spawn item.
+	0x020000000		statf_saveparity		// Has this char been saved or not ?
+	0x040000000		statf_ridden			// This is the horse. (don't display me) I am being ridden
+	0x080000000		statf_onhorse			// Mounted on horseback.
+
+SteamEngine
+	     0x0001		Flag_Disconnected		//core
+	     0x0002		Flag_Dead
+	     0x0004		Flag_Insubst			//GM or ghost
+	     0x0008		Flag_InvisByMagic
+	     0x0010		Flag_Hidden				//by skill
+	     0x0020		Flag_War
+	     
+	     0x2000		Flag_Riding
+
+
+
+
+
+
+
+ITEM
+
+FlagsToSend (UO protocol)
+	0x20			Movable (as opposed to mul specs)
+	????			NonMovable (as opposed to mul specs)
+	0x80			invisible (grayed?)
+
+
+
+SPHERE - we won't use most of them, we will only have according Flag_Something or IsSomething properties
+	0x000000001		attr_identified		// This is the identified name. ???
+	0x000000002		attr_decay			// Timer currently set to decay.
+	0x000000004		attr_newbie			// Not lost on death or sellable ?
+	0x000000008		attr_move_always	// Always movable (else Default as stored in client) (even if MUL says not movalble) NEVER DECAYS !
+	0x000000010		attr_move_never		// Never movable (else Default as stored in client) NEVER DECAYS !
+	0x000000020		attr_magic			// DON'T SET THIS WHILE WORN! This item is magic as apposed to marked or markable.
+	0x000000040		attr_owned			// This is owned by the town. You need to steal it. NEVER DECAYS !
+	0x000000080		attr_invis			// Gray hidden item (to GM's or owners?)
+	0x000000100		attr_cursed			
+	0x000000200		attr_cursed2		// cursed damned unholy
+	0x000000400		attr_blessed		
+	0x000000800		attr_blessed2		// blessed sacred holy
+	0x000001000		attr_forsale		// For sale on a vendor.
+	0x000002000		attr_stolen			// The item is hot. m_uidLink = previous owner.
+	0x000004000		attr_can_decay		// This item can decay. but it would seem that it would not (ATTR_MOVE_NEVER etc)
+	0x000008000		attr_static			// WorldForge merge marker. (not used)
+
+
+
+SteamEngine
+	       0x01		Flag_Disconnected		//core
+
+
+	       0x80		Flag_Invisible (grayed?)

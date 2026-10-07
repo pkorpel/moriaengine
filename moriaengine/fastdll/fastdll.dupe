@@ -1,0 +1,419 @@
+/*
+	This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	Or visit http://www.gnu.org/copyleft/gpl.html
+*/
+
+//int EXPORT CrushifyN(unsigned char *unpacked, unsigned char *retval, int retstart, int len) {
+
+/*
+Important note:
+	In _FIVE and _SIX, all labels are aligned on 16-byte boundaries. (Intel suggests doing this)
+	Basically, if you change anything that isn't limited to _ONE, you'll be throwing off those
+	addresses, and they'll need to be recalibrated and most of the nops fiddled with. You don't want
+	to have to do that. :P
+	
+	_SEVEN is too, but it was an experiment with the nop code, and is slower.
+	
+	Crushify 1-4 and 8-9 do not have aligned labels.
+*/
+
+#ifdef _CRUSHIFY
+	int outVal = 0;
+	#ifndef _ONE
+		#ifdef _NINE
+			unsigned char* inEnd  = unpacked+instart+len;
+		#else
+			unsigned char* inEnd  = unpacked+len;
+		#endif
+	#else
+	
+	#endif
+	__asm {
+		#ifdef _ONE
+			#define bitPos eax
+			#define curByteValue ebx
+			#define curByteValue_byte bl
+			#define value edx
+			#define value_byte dl
+			#define inIndex edi
+			#define outIndex esi
+		#else
+			#define value eax				//can't change, written to by LODSB and read by STOSB
+			#define value_byte al			//attached to eax, of course
+			#define curByteValue ebx
+			#define curByteValue_byte bl	//attached to ebx, of course
+			#define bitPos edx
+			#define bitPos_byte dl
+			#define inPtr esi			//has to be esi so we can LODSB from where it points (to eax).
+			#define outPtr edi			//has to be edi so we can STOSB to where it points (from eax).
+		
+		#endif
+		
+		#define numBits ecx					//has to be ecx so we can shift by it (well, part of it, cl)
+		#define shiftArg_partOfNumBits	cl	//the only thing we can shift by is cl (or a constant number)
+		
+		
+		//initialization
+		xor bitPos, bitPos
+		#ifdef _ONE
+			mov outIndex, retstart
+			xor inIndex, inIndex
+		#else
+			mov inPtr, [unpacked]
+			#ifdef _NINE
+				add inPtr, instart
+			#endif
+			mov outPtr, [retval]
+			add outPtr, retstart
+			
+			cld		//clear decrement flag, so that LODS/STOS increment ESI/EDI, rather than decrementing them.
+		#endif
+		xor curByteValue, curByteValue
+		
+		#ifdef _ONE
+			cmp inIndex, len
+		#else
+			cmp inPtr, inEnd
+		#endif
+		jae skipForInIndexLoop
+		
+		//Our first label is beyond this set of #if/#endifs.
+		//_FIVE usually has a jmp as the first element of its nops, _SIX has normal nops suggested by Intel.
+		//The number commented to the right of each nop is its size in bytes.
+		#ifdef _FIVE
+		jmp forInIndexLoop				//2
+		lea eax, [ebp+0xfffff]			//6
+		lea eax, [ebp+0xfffff]			//6
+		nop								//1
+		#endif
+		#ifdef _SIX
+		lea eax, [ebp+0xfffff]			//6
+		lea eax, [ebp+0xfffff]			//6
+		lea eax, [ebp+0x1]				//3
+		#endif
+		#ifdef _SEVEN
+		nop; nop; nop; nop; nop; nop;	//6
+		nop; nop; nop; nop; nop; nop;	//6
+		nop; nop; nop;					//3
+		#endif
+		
+		#ifdef _THIRTEEN
+			unrolledStart:
+			#ifdef _TWELVE
+			mov value, 20
+			#else
+			mov value, 250
+			#endif
+			sub value, inEnd
+			add value, inPtr
+			//20-end+in = 20-(end-in)
+			
+			//mov ebx, byte ptr loopjmptable
+			//one:
+			//09e12763 33c0             xor     eax,eax
+			//09e1278e 33c0             xor     eax,eax
+
+			#ifdef _TWELVE
+			cmp value, 20
+			#else
+			cmp value, 250
+			#endif
+			je skipForInIndexLoop
+			cmp value, 0
+			jl one
+			
+			#ifdef _FOURTEEN	//61 byte sections-1+4=64
+				mov numBits, value
+				shl value,6	//64 x jumps
+				
+			#else	//43 byte sections
+				mov numBits, value
+				push curByteValue
+				push bitPos
+				mov curByteValue, value
+				mov bitPos, value
+				
+				//32+8+2+1=43
+				shl numBits, 5
+				shl curByteValue, 3
+				add bitPos, bitPos
+				add value, bitPos
+				pop bitPos
+				add value, curByteValue
+				pop curByteValue
+				add value, numBits
+			#endif
+			//jmp [one+value]
+			add value, one
+			jmp value
+			
+			one:
+			#ifdef _TWELVE
+			#include "twelve.dupe"
+			#else
+			#include "thirteen.dupe"
+			#endif
+			jmp unrolledStart
+		#endif
+		forInIndexLoop:
+			#ifdef _ONE
+				xor value, value	//clear it to kill any dependencies (real or imagined :P)
+				mov numBits, unpacked
+				mov value_byte, byte ptr [numBits+inIndex]	//use value temporarily for an index
+				add inIndex, 1
+				mov numBits, flatBitTable[value*8]
+				mov value, flatBitTable[value*8+4]
+			#else
+				xor value,value		//clear it to kill any dependencies (real or imagined :P)
+				lodsb				//LODSB - load from [ESI (inPtr)] to al (value_byte)
+				mov numBits, flatBitTable[value*8]
+				mov value, flatBitTable[value*8+4]
+			#endif
+			add bitPos, numBits
+			shl curByteValue, shiftArg_partOfNumBits
+			or curByteValue, value
+			
+			//We're done with numBits and value for now
+			cmp bitPos, 8
+			jnae skipWhileBitpos
+			#ifdef _FIVE
+			jmp whileBitpos				//2
+			nop							//1
+			nop							//1
+			#endif
+			#ifdef _SIX
+			lea numBits, [numBits+0x01]	//3
+			nop							//1
+			#endif
+			#ifdef _SEVEN
+			nop; nop; nop; nop;			//4
+			#endif
+			whileBitpos:
+				
+				sub bitPos, 8
+				mov numBits, bitPos		//so we can shift by it - numbits is unused right now
+				mov value, curByteValue	//using value temporarily, since it's unused right now
+										//(But actually, for non-_ONE, we need to do this in value so we can STOSB from it)
+				shr	value, shiftArg_partOfNumBits	//unsigned shift right, since curByteValue is unsigned
+				#ifdef _ONE
+					mov numBits, retval
+					mov byte ptr [numBits+outIndex], value_byte
+					add outIndex, 1
+				#else
+					stosb					//write from al (value_byte) to [edi (outPtr)]
+				#endif
+				
+			cmp bitPos, 8
+			jae whileBitpos
+			#ifdef _FIVE
+			nop							//1
+			#endif
+			#ifdef _SIX
+			nop							//1
+			#endif
+			#ifdef _SEVEN
+			nop							//1
+			#endif
+			skipWhileBitpos:
+			
+			//loop end
+			#ifdef _ONE
+				cmp inIndex, len
+			#else
+				cmp inPtr, inEnd
+			#endif
+			jb forInIndexLoop
+		
+		#ifdef _FIVE
+		jmp skipForInIndexLoop			//2
+		lea numBits, [ebp+0xfffff]		//6
+		lea numBits, [ebp+0x1]			//3
+		#endif
+		#ifdef _SIX
+		lea numBits, [ebp+0xfffff]		//6
+		lea numBits, [ebp+0x1]			//3
+		mov esp, esp					//2
+		#endif
+		#ifdef _SEVEN
+		nop; nop; nop; nop;	nop; nop;	//6
+		nop; nop; nop; nop;	nop;		//5
+		#endif
+		
+		skipForInIndexLoop:
+		
+		mov numBits, flatBitTable[2048];	//512*4
+		mov value, flatBitTable[2052];		//513*4
+		
+		#ifdef _THREE
+		test numBits, numBits
+		jz afterIfNumBitsGrZero
+		#else
+		cmp numBits, 0
+		jna afterIfNumBitsGrZero
+		#endif
+		//ifNumBitsGrZero:
+		
+			add bitPos, numBits
+			shl curByteValue, shiftArg_partOfNumBits
+			#ifdef _ELEVEN
+				mov numBits,bitPos
+			#endif
+			or curByteValue, value
+			
+			//We're done with numBits and value for now
+			cmp bitPos, 8
+			jnae skipWhileBitpos2
+			
+			#ifdef _FIVE
+			jmp whileBitpos2			//2
+			lea numBits, [ebp+0x1]		//3
+			nop							//1
+			#endif
+			#ifdef _SIX
+			lea numBits, [ebp+0xfffff]	//6
+			#endif
+			#ifdef _SEVEN
+			nop; nop; nop; nop;	nop; nop;	//6
+			#endif
+			
+			whileBitpos2:
+				#ifdef _ELEVEN
+					sub numBits, 8
+				#else
+					sub bitPos, 8
+					mov numBits, bitPos		//so we can shift by it - numbits is unused right now
+				#endif
+				mov value, curByteValue	//using value temporarily, since it's unused right now
+										//(But actually, for non-_ONE, we need to do this in value so we can STOSB from it)
+				shr	value, shiftArg_partOfNumBits	//unsigned shift right, since curByteValue is unsigned
+				#ifdef _ONE
+					mov numBits, retval
+					mov byte ptr [numBits+outIndex], value_byte
+					add outIndex, 1
+				#else
+					stosb					//write from al (value_byte) to [edi (outPtr)]
+				#endif
+				
+			#ifdef _ELEVEN
+				cmp numBits, 8
+			#else
+				cmp bitPos, 8
+			#endif
+			jae whileBitpos2
+			
+			#ifdef _FIVE
+			nop							//1
+			#endif
+			#ifdef _SIX
+			nop							//1
+			#endif
+			#ifdef _SEVEN
+			nop							//1
+			#endif
+			skipWhileBitpos2:
+		
+		afterIfNumBitsGrZero:		//Since labels take no space, this is the same pos as skipWhileBitpos2
+									// - jumping to a label is really jumping to the next instruction following it.
+		#ifdef _ELEVEN
+			mov bitPos, numBits
+		#endif
+		
+		#ifdef _THREE
+			test bitPos, bitPos
+			jz skipIfBitpos
+		#else
+			#ifdef _ELEVEN
+				cmp numBits, 0
+			#else
+				cmp bitPos, 0
+			#endif
+			jna skipIfBitpos
+		#endif
+		
+			#ifdef _FOUR
+				mov value, curByteValue
+			#endif
+			xor numBits, numBits
+			#ifdef _NOPE
+				mov numBits, 8
+			#else
+				mov shiftArg_partOfNumBits, 8
+			#endif
+			sub numBits, bitPos
+			#ifdef _FOUR
+				shl value, shiftArg_partOfNumBits
+			#else
+				shl curByteValue, shiftArg_partOfNumBits
+			#endif
+			#ifdef _ONE
+				mov numBits, retval
+				mov byte ptr [numBits+outIndex], curByteValue_byte
+				add outIndex, 1
+			#else
+				#ifndef _FOUR
+				mov value, curByteValue
+				#endif
+				stosb					//write from al (value_byte) to [edi (outPtr)]
+			#endif
+		
+		#ifdef _FIVE
+		nop							//1
+		#endif
+		#ifdef _SIX
+		nop							//1
+		#endif
+		#ifdef _SEVEN
+		nop							//1
+		#endif
+		skipIfBitpos:
+			
+		//return value
+		#ifdef _ONE
+			sub outIndex, retstart
+			mov outVal, outIndex
+		#else
+			sub outPtr, retstart
+			sub outPtr, retval
+			#ifdef _TEN
+				mov eax,outPtr
+				pop edi
+				pop esi
+				pop ebx
+				mov esp,ebp
+				pop ebp
+				ret 0x8
+			#else
+				mov outVal, outPtr
+			#endif
+		#endif
+		
+	}
+	#undef bitPos
+	#undef curByteValue
+	#undef curByteValue_byte
+	#undef value
+	#undef value_byte
+	#undef numBits
+	
+	#ifdef _ONE
+		#undef outIndex
+		#undef inIndex
+	#else
+		#undef outPtr
+		#undef inPtr
+	#endif
+	
+	return outVal;
+#endif
