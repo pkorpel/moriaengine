@@ -396,7 +396,6 @@ namespace SteamEngine {
 			RunLevelManager.SetShutdown();
 			GameServer.Exit();
 			AuxServerPipeClient.Exit();
-			FastDLL.ShutDownFastDLL();
 			Console.WriteLine("Shutdown...");
 			if (Globals.Instance != null) { //is null when first run (and writing steamengine.ini)
 				Logger.WriteDebug("triggering @shutdown");

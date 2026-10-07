@@ -7,11 +7,7 @@ using SteamEngine.Communication.NamedPipes;
 
 namespace SteamEngine.AuxServerPipe {
 	public class AuxServerPipeClient : //Disposable,
-#if MSWIN
 		IConnectionState<NamedPipeConnection<AuxServerPipeClient>, AuxServerPipeClient, string> {
-#else
-		IConnectionState<NamedPipeConnection<AuxServerPipeClient>, AuxServerPipeClient, System.Net.IPEndPoint> {
-#endif
 
 
 		private static NamedPipeClientFactory<AuxServerPipeClient> clientFactory;
@@ -57,11 +53,7 @@ namespace SteamEngine.AuxServerPipe {
 			NamedPipeConnection<AuxServerPipeClient> c = null;
 			try {
 
-#if MSWIN
 				c = clientFactory.Connect(Tools.commonPipeName);
-#else
-				c = clientFactory.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, Common.Tools.commonPort));
-#endif
 				//} catch (Exception e) {
 				//Logger.WriteError("Unexpected error in timer callback method", e);
 			} catch { }
