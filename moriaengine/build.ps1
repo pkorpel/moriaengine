@@ -85,6 +85,7 @@ function Invoke-ScriptGeneration {
 		$stdout = New-TemporaryFile
 		$stderr = New-TemporaryFile
 		$proc = Start-Process -FilePath 'dotnet' -ArgumentList $dll -NoNewWindow -PassThru `
+			-WorkingDirectory $PSScriptRoot `
 			-RedirectStandardOutput $stdout -RedirectStandardError $stderr
 
 		$deadline = (Get-Date).AddSeconds(120)
@@ -101,7 +102,9 @@ function Invoke-ScriptGeneration {
 		}
 		$proc.WaitForExit()
 
-		Get-Content $stdout -ErrorAction SilentlyContinue | Select-Object -Last 15 | ForEach-Object { Write-Host "    $_" }
+		Write-Host "    exit code: $($proc.ExitCode)"
+		Get-Content $stdout -ErrorAction SilentlyContinue | Select-Object -Last 15 | ForEach-Object { Write-Host "    [out] $_" }
+		Get-Content $stderr -ErrorAction SilentlyContinue | Select-Object -Last 30 | ForEach-Object { Write-Host "    [err] $_" }
 		Remove-Item $stdout, $stderr -ErrorAction SilentlyContinue
 	}
 
@@ -170,6 +173,7 @@ try {
 		# write to it, never close it) so ReadLine() blocks indefinitely,
 		# independent of whatever this script's own stdin looks like.
 		$auxPsi = [System.Diagnostics.ProcessStartInfo]::new('dotnet', $auxDll)
+		$auxPsi.WorkingDirectory = $PSScriptRoot
 		$auxPsi.RedirectStandardInput = $true
 		$auxPsi.RedirectStandardOutput = $true
 		$auxPsi.RedirectStandardError = $true
