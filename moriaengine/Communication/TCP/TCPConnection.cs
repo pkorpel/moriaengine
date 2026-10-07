@@ -21,10 +21,7 @@ using System.Net.Sockets;
 using SteamEngine.Common;
 
 namespace SteamEngine.Communication.TCP {
-#if MSWIN
-	sealed
-#endif
-	public class TcpConnection<TState> :
+	public sealed class TcpConnection<TState> :
 		AbstractConnection<TcpConnection<TState>, TState, IPEndPoint>
 		where TState : IConnectionState<TcpConnection<TState>, TState, IPEndPoint>, new() {
 
