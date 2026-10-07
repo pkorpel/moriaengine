@@ -43,7 +43,6 @@ namespace PerCederberg.Grammatica.Parser.RE {
 	 * @author   Per Cederberg, <per at percederberg dot net>
 	 * @version  1.0
 	 */
-	[EQATEC.Profiler.SkipInstrumentation]
 	public class Matcher {
 
 		/**

@@ -44,7 +44,6 @@ namespace PerCederberg.Grammatica.Parser.RE {
 	 * @author   Per Cederberg, <per at percederberg dot net>
 	 * @version  1.0
 	 */
-	[EQATEC.Profiler.SkipInstrumentation]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2237:MarkISerializableTypesWithSerializable"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class RegExpException : Exception {
 

@@ -47,7 +47,6 @@ namespace PerCederberg.Grammatica.Parser {
 	 * @author   Per Cederberg, <per at percederberg dot net>
 	 * @version  1.0
 	 */
-	[EQATEC.Profiler.SkipInstrumentation]
 	public class ProductionPattern {
 
 		/**
