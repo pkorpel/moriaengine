@@ -70,7 +70,15 @@ namespace SteamEngine.CompiledScripts {
 
 		public class E_DbConnection_Global : CompiledTriggerGroup {
 			public void On_Shutdown(Globals ignored1, ScriptArgs ignored2) {
-				CloseConnection();
+				// Only touch CloseConnection() (and therefore only JIT/resolve
+				// MySqlConnection) when DB use is actually enabled. With useDb
+				// defaulting to false, this trigger fires on every single
+				// shutdown regardless of whether anyone ever opened a
+				// connection - skipping the call entirely avoids resolving
+				// MySql.Data at all in that case.
+				if (config.useDb) {
+					CloseConnection();
+				}
 			}
 		}
 	}
