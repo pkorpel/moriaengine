@@ -18,44 +18,15 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
-        run: dotnet restore moriaengine/SteamEngine.sln
-
-      # scripts/ and Generated/ are partial classes whose other half is
-      # produced at runtime by ClassTemplateParser from .ct template files -
-      # they can't build standalone on a fresh checkout. Build the other 7
-      # projects first for a fast, clearly-attributed failure if one breaks.
-      - name: Build standalone-buildable projects
-        run: |
-          dotnet build moriaengine/ThirdParty/SteamEngine.ThirdParty.csproj --no-restore -c Debug
-          dotnet build moriaengine/Common/SteamEngine.Common.csproj --no-restore -c Debug
-          dotnet build moriaengine/Communication/SteamEngine.Communication.csproj --no-restore -c Debug
-          dotnet build moriaengine/GameCore/SteamEngine.GameCore.csproj --no-restore -c Debug
-          dotnet build moriaengine/AuxiliaryServer/SteamEngine.AuxiliaryServer.csproj --no-restore -c Debug
-          dotnet build moriaengine/ProcessRestarter/SteamEngine.ProcessRestarter.csproj --no-restore -c Debug
-          dotnet build moriaengine/Tests/SteamEngine.Tests.csproj --no-restore -c Debug
-
-      # GameCore's own boot sequence is what actually produces scripts/Generated's
-      # .Generated.cs files (ClassTemplateParser, invoked from Main.Init(), compiles
-      # them from the .ct templates checked into scripts/). No UO client data or
-      # AuxiliaryServer needed - that happens later in boot, after script compilation.
-      #
-      # Run 1: steamengine.ini doesn't exist yet on a fresh checkout, so GameCore
-      # just writes a default one and exits - this is documented, expected
-      # first-run behavior (Globals.LoadIni), not a failure.
-      - name: Bootstrap steamengine.ini
+      # Single source of truth for "how to build this solution" - the same
+      # script contributors run locally on Windows/macOS/Linux. It handles
+      # restore, the 7 standalone-buildable projects, generating
+      # scripts/Generated from .ct templates (GameCore's own boot sequence),
+      # and the final full-solution build.
+      - name: Build
+        shell: pwsh
+        run: ./build.ps1 -Configuration Debug
         working-directory: moriaengine
-        run: timeout 30 dotnet GameCore/bin/Debug/net8.0/SteamEngine.GameCore.dll < /dev/null || true
-
-      # Run 2: with steamengine.ini now present, GameCore proceeds far enough to
-      # compile scripts/Generated and exits cleanly right after (no attached
-      # stdin - Main.cs's Console.ReadLine() hits EOF and triggers shutdown).
-      - name: Generate scripts/Generated from .ct templates
-        working-directory: moriaengine
-        run: timeout 120 dotnet GameCore/bin/Debug/net8.0/SteamEngine.GameCore.dll < /dev/null
-
-      - name: Build full solution (including scripts/Generated)
-        run: dotnet build moriaengine/SteamEngine.sln --no-restore -c Debug
 
       - name: Test
         run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug
