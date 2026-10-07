@@ -1,7 +1,9 @@
 using Xunit;
 using SteamEngine.LScript;
+using SteamEngine.Tests.Fixtures;
 
 namespace SteamEngine.Tests {
+	[Collection(EngineCollection.Name)]
 	public class LScriptTests {
 		[Fact(Skip = "Pre-existing failure, confirmed unrelated to the net8.0 port (verified against the original "
 			+ "source: only change in LScriptMain.cs/LScriptParser.cs across the whole port was removing inert "
