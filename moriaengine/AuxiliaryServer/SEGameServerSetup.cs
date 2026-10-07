@@ -89,7 +89,7 @@ namespace SteamEngine.AuxiliaryServer {
 
 		public void StartGameServerProcess(BuildType build) {
 			Console.WriteLine("Compiling " + build + " build of server at " + this.IniPath);
-			new AuxServMsBuildProjectStarter(build, this.IniPath, "SteamEngine_GameCore").Start();
+			new AuxServMsBuildProjectStarter(build, this.IniPath, "GameCore/SteamEngine.GameCore.csproj").Start();
 		}
 
 
