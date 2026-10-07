@@ -22,12 +22,8 @@ using System.IO;
 using System.Management;
 using System.Runtime.InteropServices;
 using ICSharpCode.SharpZipLib.Zip;
-using OrganicBit.Zip;
 using SteamEngine.Common;
 using ZipEntry = ICSharpCode.SharpZipLib.Zip.ZipEntry;
-
-//using ICSharpCode.SharpZipLib.Zip;
-//using OrganicBit.Zip;
 
 namespace SteamEngine.CompiledScripts {
 	public class E_BackupsManager_Global : CompiledTriggerGroup {
@@ -67,7 +63,6 @@ namespace SteamEngine.CompiledScripts {
 			//either one of these zipping "managers" should work. it's yet needed to try them out in a real 
 			//shard environment to find out if they're worth it ;)
 			//fileManager = new SharpZipFileManager(9);
-			//fileManager = new OrganicBitZipFileManager();
 
 			this.fileManager = new NormalFileManager();
 			this.pathManager = new SavePathManager(SavesSize, MaxBackups);
@@ -313,16 +308,15 @@ namespace SteamEngine.CompiledScripts {
 			private bool SizeIsOverLimit(string path)
 			{
 				if (this.maxSavesSize < 0) {//disk free space limit
-#if MSWIN
-					string deviceName = Path.GetPathRoot(Path.GetFullPath(path));
-					deviceName = deviceName.Substring(0, deviceName.Length - 1);
-					//System.Management.
-					ManagementObject disk = new ManagementObject(
-						"win32_logicaldisk.deviceid=\"" + deviceName + "\"");
-					disk.Get();
-					long bytesFree = Convert.ToInt64(disk["FreeSpace"]);
-					return (bytesFree < (-this.maxSavesSize));
-#else
+					if (OperatingSystem.IsWindows()) {
+						string deviceName = Path.GetPathRoot(Path.GetFullPath(path));
+						deviceName = deviceName.Substring(0, deviceName.Length - 1);
+						ManagementObject disk = new ManagementObject(
+							"win32_logicaldisk.deviceid=\"" + deviceName + "\"");
+						disk.Get();
+						long bytesFree = Convert.ToInt64(disk["FreeSpace"]);
+						return (bytesFree < (-this.maxSavesSize));
+					}
 
 					DriveInfo[] drives = DriveInfo.GetDrives();
 					foreach (DriveInfo drive in drives) {
@@ -332,7 +326,6 @@ namespace SteamEngine.CompiledScripts {
 						}
 					}
 					throw new SEException("Can't decide about free space. Disable counting backups size, or something.");
-#endif
 				}
 				if (this.maxSavesSize > 0) {
 					this.RefreshSize();
@@ -554,127 +547,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private class OrganicBitZipFileManager : ISaveFileManager {
-			private ZipWriter zipWriter;
-			private ZipReader zipReader;
-
-			public void StartSaving(string path) {
-				string zipFileName = Path.Combine(path, "backup.zip");
-				Console.WriteLine("Saving to " + LogStr.File(zipFileName));
-				this.zipWriter = new ZipWriter(zipFileName);
-			}
-
-			public TextWriter GetSaveStream(string name) {
-				OrganicBit.Zip.ZipEntry entry = new OrganicBit.Zip.ZipEntry(name + ".sav");
-				entry.ModifiedTime = DateTime.Now;
-				this.zipWriter.AddEntry(entry);
-
-				StreamWriter sw = new StreamWriter(new OBStream(this.zipWriter));
-				sw.AutoFlush = true;
-				return sw;
-			}
-
-			public void FinishSaving() {
-				this.zipWriter.Close();
-				this.zipWriter = null;
-			}
-
-			public void StartLoading(string path) {
-				string zipFileName = Path.Combine(path, "backup.zip");
-				Console.WriteLine("Loading " + LogStr.File(zipFileName));
-				try {
-					this.zipReader = new ZipReader(zipFileName);
-				} catch (Exception e) {
-					throw new SEException(e.Message);
-				}
-			}
-
-			public StreamReader GetLoadStream(string name) {
-				this.zipReader.MoveNext();
-				return new StreamReader(new OBStream(this.zipReader));
-			}
-
-			public void FinishLoading() {
-				try {
-					this.zipReader.Close();
-				} catch (Exception) { }
-				this.zipReader = null;
-			}
-
-			private class OBStream : Stream {
-				internal ZipWriter zipWriter;
-				internal ZipReader zipReader;
-
-				protected internal OBStream(ZipWriter zipWriter) {
-					this.zipWriter = zipWriter;
-				}
-
-				protected internal OBStream(ZipReader zipReader) {
-					this.zipReader = zipReader;
-				}
-
-				public override void Close() {
-					try {
-						this.zipWriter.Close();
-					} catch (Exception) { }
-					try {
-						this.zipReader.Close();
-					} catch (Exception) { }
-				}
-
-				public override void Flush() {
-				}
-
-				public override int Read([In, Out] byte[] buffer, int offset, int count) {
-					return this.zipReader.Read(buffer, offset, count);
-				}
-				public override long Seek(long offset, SeekOrigin origin) {
-					throw new SEException("Can't seek.");
-				}
-
-				public override void SetLength(long length) {
-					throw new SEException("Can't set length");
-				}
-				public override void Write(byte[] buffer, int offset, int count) {
-					//Console.WriteLine("Write: "+Server.utf.GetString(buffer));
-					this.zipWriter.Write(buffer, offset, count);
-				}
-
-				public override bool CanRead {
-					get {
-						return (this.zipReader != null);
-					}
-				}
-
-				public override bool CanSeek {
-					get {
-						return false;
-					}
-				}
-
-				public override bool CanWrite {
-					get {
-						return (this.zipWriter != null);
-					}
-				}
-
-				public override long Length {
-					get {
-						throw new SEException("Can't get length");
-					}
-				}
-
-				public override long Position {
-					get {
-						throw new SEException("Can't get position");
-					}
-					set {
-						throw new SEException("Can't set position");
-					}
-				}
-			}
-
-		}
 	}
 }
 

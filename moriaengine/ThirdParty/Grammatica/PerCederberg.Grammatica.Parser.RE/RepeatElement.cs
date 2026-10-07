@@ -44,7 +44,6 @@ namespace PerCederberg.Grammatica.Parser.RE {
 	 * @author   Per Cederberg, <per at percederberg dot net>
 	 * @version  1.1
 	 */
-	[EQATEC.Profiler.SkipInstrumentation]
 	internal class RepeatElement : Element {
 
 		/**

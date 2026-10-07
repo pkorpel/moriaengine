@@ -19,14 +19,12 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using SharpSvn;
+using System.Reflection;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
-#if MSWIN
 using Microsoft.Win32;	//for RegistryKey
-#endif
 
 namespace SteamEngine {
 	public interface ISrc {
@@ -104,13 +102,6 @@ namespace SteamEngine {
 		public static string DocsPath {
 			get { return docsPath; }
 		}
-
-#if MSWIN
-		private static string ndocExe;
-		public static string NdocExe {
-			get { return ndocExe; }
-		}
-#endif
 
 		private static bool logToFiles;
 		public static bool LogToFiles {
@@ -400,10 +391,6 @@ namespace SteamEngine {
 			}
 		}
 
-#if MSWIN
-		private static Process ndocProcess;
-#endif
-
 		private Globals() {
 			LoadIni();
 		}
@@ -431,9 +418,6 @@ namespace SteamEngine {
 				logToFiles = files.GetValue("logToFiles", true, "Whether to log console output to a file");
 				CoreLogger.Init();
 				savePath = Path.GetFullPath(files.GetValue("savePath", "./saves/", "Path to the save files"));
-#if MSWIN
-				ndocExe = Path.GetFullPath(files.GetValue("ndocExe", "C:\\Program Files\\NDoc\\bin\\.net-1.1\\NDocConsole.exe", "Command for NDoc invocation (leave it blank, if you don't want use NDoc)."));
-#endif
 				docsPath = Path.GetFullPath(files.GetValue("docsPath", "./docs/", "Path to the docs (Used when writing out some information from MUL files, like map tile info)"));
 				useMap = files.GetValue("useMap", true, "Whether to load map0.mul and statics0.mul and use them or not.");
 				generateMissingDefs = files.GetValue("generateMissingDefs", false, "Whether to generate missing scripts based on tiledata.");
@@ -601,70 +585,59 @@ namespace SteamEngine {
 		*/
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
 		public static string GetMulsPath() {
-#if MSWIN
-			RegistryKey soft = Registry.LocalMachine.OpenSubKey("SOFTWARE");
-			if (soft != null) {
-				RegistryKey rk = soft.OpenSubKey("Origin Worlds Online");
-				if (rk == null) {
-					rk = soft.OpenSubKey("Wow6432Node"); //32bit stuff in 64bit Windows? Bizarre node name anyway
-					if (rk != null) {
-						rk = rk.OpenSubKey("Origin Worlds Online");
-					}
-				}
-
-				if (rk != null) {
-					string[] names = rk.GetSubKeyNames();
-					foreach (string name in names) {
-						RegistryKey uoKey = rk.OpenSubKey(name);
-						if (uoKey != null) {
-							string[] names2 = uoKey.GetSubKeyNames();
-							foreach (string name2 in names2) {
-								RegistryKey verKey = uoKey.OpenSubKey(name2);
-								string s = verKey.GetValue("InstCDPath") as string;
-								if (s != null) {
-									return s;
-								}
-							}
-						} else {
-							Logger.WriteWarning("Unable to open 'uoKeys' in registry");
+			if (OperatingSystem.IsWindows()) {
+				RegistryKey soft = Registry.LocalMachine.OpenSubKey("SOFTWARE");
+				if (soft != null) {
+					RegistryKey rk = soft.OpenSubKey("Origin Worlds Online");
+					if (rk == null) {
+						rk = soft.OpenSubKey("Wow6432Node"); //32bit stuff in 64bit Windows? Bizarre node name anyway
+						if (rk != null) {
+							rk = rk.OpenSubKey("Origin Worlds Online");
 						}
 					}
+
+					if (rk != null) {
+						string[] names = rk.GetSubKeyNames();
+						foreach (string name in names) {
+							RegistryKey uoKey = rk.OpenSubKey(name);
+							if (uoKey != null) {
+								string[] names2 = uoKey.GetSubKeyNames();
+								foreach (string name2 in names2) {
+									RegistryKey verKey = uoKey.OpenSubKey(name2);
+									string s = verKey.GetValue("InstCDPath") as string;
+									if (s != null) {
+										return s;
+									}
+								}
+							} else {
+								Logger.WriteWarning("Unable to open 'uoKeys' in registry");
+							}
+						}
+					} else {
+						Logger.WriteWarning("Unable to open 'Origin Worlds Online' in registry");
+					}
 				} else {
-					Logger.WriteWarning("Unable to open 'Origin Worlds Online' in registry");
+					Logger.WriteWarning("Unable to open 'SOFTWARE' in registry");
 				}
 			} else {
-				Logger.WriteWarning("Unable to open 'SOFTWARE' in registry");
+				Logger.WriteWarning("TODO: Implement some way to find the muls when running on non-Windows (no registry to look in).");
 			}
-#else
-			Logger.WriteWarning("TODO: Implement some way to find the muls when running from MONO?");
-#endif
 			return null;
 		}
 
 		//public static readonly string version="1.0.0"; 
 		private static string version;
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public static string Version {
 			get {
 				if (version == null) {
-					try {
-						version = GetVersion();
-					} catch (Exception e) {
-						Logger.WriteError("While obtaining SVN revision info", e);
-						version = "<SVN revision number unknown>";
-					}
+					version = GetVersion();
 				}
 				return version;
 			}
 		}
 
 		private static string GetVersion() {
-			using (SvnClient client = new SvnClient()) {
-				SvnInfoEventArgs info;
-				client.GetInfo(SvnTarget.FromString(Path.GetFullPath("."), true), out info);
-
-				return "SVN revision " + info.Revision;
-			}
+			return Assembly.GetExecutingAssembly().GetName().Version.ToString();
 		}
 
 		private static readonly DateTime startedAt = DateTime.Now;
@@ -744,14 +717,6 @@ namespace SteamEngine {
 			Resync();
 		}
 
-		public static void SvnUpdate() {
-			VersionControl.SvnUpdateProject(Path.GetFullPath("."));
-		}
-
-		public static void SvnCleanUp() {
-			VersionControl.SvnCleanUpProject(Path.GetFullPath("."));
-		}
-
 		public static Type Type(string typename) {
 			//global type, you can actually get any type with this
 			return System.Type.GetType(typename, true, true);//true for case insensitive
@@ -826,66 +791,6 @@ namespace SteamEngine {
 			instance.LoadSectionLines(input);
 		}
 
-#if MSWIN
-		private static void ndocExited(object source, EventArgs e) {
-			if (ndocProcess.ExitCode != 0) {
-				Logger.WriteError("NDOC was not finished correctly (exit code: " + ndocProcess.ExitCode + ").");
-			} else {
-				Console.WriteLine("NDoc finished successfuly");
-			}
-			ndocProcess = null;
-		}
-
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public static void CompileDocs() {
-			if (ndocProcess != null) {
-				Logger.WriteError("NDoc is already running.");
-				return;
-			}
-			//try {
-			//    Console.WriteLine("Generating Common XML documentation file");
-			//    DocScanner scanner = new DocScanner();
-			//    Assembly asm = ClassManager.CommonAssembly;
-			//    scanner.ScanAssembly(asm);
-			//    scanner.WriteToFile("bin\\" + asm.GetName().Name + ".xml");
-
-			//    Console.WriteLine("Generating Core XML documentation file");
-			//    asm = ClassManager.CoreAssembly;
-			//    scanner = new DocScanner();
-			//    scanner.ScanAssembly(asm);
-			//    scanner.WriteToFile("bin\\" + asm.GetName().Name + ".xml");
-
-			//    Console.WriteLine("Generating Scripts XML documentation file");
-			//    asm = ClassManager.ScriptsAssembly;
-			//    scanner = new DocScanner();
-			//    scanner.ScanAssembly(asm);
-			//    scanner.WriteToFile("bin\\" + asm.GetName().Name + ".xml");
-
-			//} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-
-			if (ndocExe.Length != 0) {
-				Console.WriteLine("Invoking NDOC, documentation will be generated to docs/sourceDoc");
-				try {
-#if DEBUG
-					string project = "debug.ndoc";
-#elif SANE
-					string project="sane.ndoc";
-#elif OPTIMIZED
-					string project="optimized.ndoc";
-#endif
-					ProcessStartInfo info = new ProcessStartInfo(ndocExe, "-project=" + project);
-					info.WorkingDirectory = "./distrib/";
-					info.WindowStyle = ProcessWindowStyle.Normal;
-					info.UseShellExecute = true;
-					ndocProcess = new Process();
-					ndocProcess.StartInfo = info;
-					ndocProcess.Exited += ndocExited;
-					ndocProcess.EnableRaisingEvents = true;
-					ndocProcess.Start();
-				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-			}
-		}
-#endif
 
 		public static void Load(string filename) {
 			ScriptLoader.LoadNewFile(filename);

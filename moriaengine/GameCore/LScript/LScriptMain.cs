@@ -19,7 +19,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
-using EQATEC.Profiler;
 using PerCederberg.Grammatica.Parser;
 using SteamEngine.Common;
 using SteamEngine.Timers;
@@ -193,7 +192,6 @@ namespace SteamEngine.LScript {
 			return finishedNode;
 		}
 
-		[SkipInstrumentation]
 		internal static OpNode CompileNode(IOpNodeHolder parent, Node code, bool mustEval) {
 			switch ((StrictConstants) code.GetId()) {
 				case StrictConstants.STRONG_EVAL_EXPRESSION:

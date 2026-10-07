@@ -49,16 +49,14 @@ namespace SteamEngine.Communication.TCP {
 
 			try {
 				this.listener.LingerState.Enabled = false;
-#if !MONO
 				this.listener.ExclusiveAddressUse = false;
-#endif
 
 				this.listener.Bind(ipep);
 				this.listener.Listen(8);
 
 				Console.WriteLine("Listening on port " + ipep.Port);
 
-				this.listener.BeginAccept(CreateSocket(ipep.AddressFamily), 0, this.onAccept, this.listener);
+				this.listener.BeginAccept(this.onAccept, this.listener);
 			} catch (Exception e) {
 				throw new FatalException("Server socket bind failed.", e);
 			}
@@ -101,7 +99,7 @@ namespace SteamEngine.Communication.TCP {
 
 			//continue in accepting
 			try {
-				listener.BeginAccept(CreateSocket(this.listener.AddressFamily), 0, this.onAccept, listener);
+				listener.BeginAccept(this.onAccept, listener);
 			} catch (ObjectDisposedException) {
 			} catch (Exception e) {
 				Logger.WriteError(e);

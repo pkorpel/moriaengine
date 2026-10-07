@@ -46,7 +46,7 @@ namespace SteamEngine {
 		static ModuleBuilder AcquireModule() {			
 			AssemblyName name = new AssemblyName();
 			name.Name = "MemberWrapper Assembly";
-			AssemblyBuilder assembly = Thread.GetDomain().DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+			AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 			return assembly.DefineDynamicModule("MemberWrapper Module");
 		}
 

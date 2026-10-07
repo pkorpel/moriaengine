@@ -15,10 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Drawing.Text;
 
 namespace SteamEngine.Common {
 	public enum LogStyles
@@ -34,96 +31,89 @@ namespace SteamEngine.Common {
 		void SetTitleToDefault();
 	}
 
-	public class LogStyleInfo : IDisposable {
-		private readonly Color textColor;
-		private readonly FontStyle fontStyle;
-		private readonly FontFamily fontFamily;
-		private readonly float fontSize;
-		private readonly Font font;
-		private readonly bool isLink;
+	// Platform-agnostic replacement for the color/weight info this used to carry via
+	// System.Drawing.Color/Font/FontFamily - those pulled in a GDI+ dependency that
+	// isn't available cross-platform, for information no in-scope console consumer
+	// ever rendered as anything but plain text anyway.
+	public readonly struct LogColor {
+		public readonly byte R;
+		public readonly byte G;
+		public readonly byte B;
 
-		public LogStyleInfo(Color color, FontStyle fontStyle, FontFamily fontFamily, float fontSize, bool isLink) {
-			this.textColor = color;
-			this.fontStyle = fontStyle;
-			this.fontFamily = fontFamily;
-			this.fontSize = fontSize;
-			this.isLink = isLink;
-			this.font = new Font(this.fontFamily, this.fontSize, this.fontStyle);
+		public LogColor(byte r, byte g, byte b) {
+			this.R = r;
+			this.G = g;
+			this.B = b;
 		}
 
-		public LogStyleInfo(Color color, FontStyle fontStyle)
-			: this(color, fontStyle, LogStrBase.defaultFamily, LogStrBase.defaultSize, false) {
+		public static readonly LogColor Black = new LogColor(0, 0, 0);
+		public static readonly LogColor Red = new LogColor(255, 0, 0);
+		public static readonly LogColor Gray = new LogColor(128, 128, 128);
+		public static readonly LogColor Orange = new LogColor(255, 165, 0);
+		public static readonly LogColor Blue = new LogColor(0, 0, 255);
+		public static readonly LogColor Purple = new LogColor(128, 0, 128);
+	}
 
+	public class LogStyleInfo {
+		private readonly LogColor textColor;
+		private readonly bool bold;
+		private readonly bool italic;
+		private readonly bool isLink;
+
+		public LogStyleInfo(LogColor color, bool bold, bool italic, bool isLink) {
+			this.textColor = color;
+			this.bold = bold;
+			this.italic = italic;
+			this.isLink = isLink;
+		}
+
+		public LogStyleInfo(LogColor color, bool bold)
+			: this(color, bold, false, false) {
 		}
 
 		public bool IsLink {
 			get { return this.isLink; }
 		}
 
-		public Color TextColor {
+		public LogColor TextColor {
 			get { return this.textColor; }
 		}
 
-		public FontStyle FontStyle {
-			get { return this.fontStyle; }
+		public bool Bold {
+			get { return this.bold; }
 		}
 
-		public FontFamily FontFamily {
-			get { return this.fontFamily; }
-		}
-
-		public float FontSize {
-			get { return this.fontSize; }
-		}
-
-		public Font Font {
-			get { return this.font; }
-		}
-
-
-		public void Dispose() {
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		~LogStyleInfo() {
-			this.Dispose(false);
-		}
-
-		protected virtual void Dispose(bool disposing) {
-			this.font.Dispose();
+		public bool Italic {
+			get { return this.italic; }
 		}
 	}
 
 	public static class LogStrBase {
-		internal const char separatorChar = '\u001B';
+		internal const char separatorChar = '';
 		internal const char eosChar = 'e';
 		internal const char titleChar = 't';
 		internal const char styleChar = 's';
-		internal const string separatorString = "\u001B";
+		internal const string separatorString = "";
 		internal const string titleString = "t";
 		internal const string styleString = "s";
 		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		internal const string eosString = "e";
 
-		internal const float defaultSize = 8.25f;
-		internal const FontStyle defaultFontStyle = FontStyle.Regular;
-		internal static readonly FontFamily defaultFamily = new FontFamily(GenericFontFamilies.SansSerif);
-		internal static readonly Color defaultColor = Color.Black;
+		internal static readonly LogColor defaultColor = LogColor.Black;
 
 		private static readonly LogStyleInfo[] logStyles = {
-			new LogStyleInfo(defaultColor, defaultFontStyle, defaultFamily, defaultSize, false), //LogStyles.Default
-			new LogStyleInfo(Color.Red, defaultFontStyle), //LogStyles.Warning
-			new LogStyleInfo(Color.Red, defaultFontStyle), //LogStyles.Error
-			new LogStyleInfo(Color.Red, FontStyle.Bold), //LogStyles.Fatal
-			new LogStyleInfo(Color.Red, FontStyle.Bold), //LogStyles.Critical
-			new LogStyleInfo(Color.Gray, defaultFontStyle), //LogStyles.Debug
-			new LogStyleInfo(Color.Orange, defaultFontStyle), //LogStyles.Highlight
-			new LogStyleInfo(Color.Blue, FontStyle.Bold), //LogStyles.Ident
-			new LogStyleInfo(Color.Blue, defaultFontStyle, defaultFamily, defaultSize, true), //LogStyles.FileLine			
-			new LogStyleInfo(defaultColor, FontStyle.Italic, defaultFamily, defaultSize, true), //LogStyles.FilePos
-			new LogStyleInfo(Color.Purple, defaultFontStyle, defaultFamily, defaultSize, true), //LogStyles.File
-			new LogStyleInfo(Color.Blue, defaultFontStyle) //LogStyles.Number			
+			new LogStyleInfo(defaultColor, false), //LogStyles.Default
+			new LogStyleInfo(LogColor.Red, false), //LogStyles.Warning
+			new LogStyleInfo(LogColor.Red, false), //LogStyles.Error
+			new LogStyleInfo(LogColor.Red, true), //LogStyles.Fatal
+			new LogStyleInfo(LogColor.Red, true), //LogStyles.Critical
+			new LogStyleInfo(LogColor.Gray, false), //LogStyles.Debug
+			new LogStyleInfo(LogColor.Orange, false), //LogStyles.Highlight
+			new LogStyleInfo(LogColor.Blue, true), //LogStyles.Ident
+			new LogStyleInfo(LogColor.Blue, false, false, true), //LogStyles.FileLine
+			new LogStyleInfo(defaultColor, false, true, true), //LogStyles.FilePos
+			new LogStyleInfo(LogColor.Purple, false, false, true), //LogStyles.File
+			new LogStyleInfo(LogColor.Blue, false) //LogStyles.Number
 		};
 
 		public static LogStyleInfo DefaultLogStyleInfo {

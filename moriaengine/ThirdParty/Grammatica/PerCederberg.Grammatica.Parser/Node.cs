@@ -44,7 +44,6 @@ namespace PerCederberg.Grammatica.Parser {
 	 * @author   Per Cederberg, <per at percederberg dot net>
 	 * @version  1.2
 	 */
-	[EQATEC.Profiler.SkipInstrumentation]
 	public abstract class Node {
 		/**
 		 * The parent node. 
