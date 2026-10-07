@@ -183,29 +183,6 @@ namespace SteamEngine.AuxiliaryServer {
 			Process.Start(path);
 		}
 
-		public void SvnUpdate(ConsoleClient console) {
-			GameServer sphere = GameServersManager.GetInstanceByIniID(this.iniID);
-			if (sphere != null) {
-				sphere.SendCommand(console, "r");
-			}
-
-			VersionControl.SvnUpdateProject(this.HardDiscScriptsPath);
-			if (!StringComparer.OrdinalIgnoreCase.Equals(this.HardDiscIniPath, this.RamdiscIniPath)) {
-				VersionControl.SvnUpdateProject(this.RamdiscScriptsPath);
-			}
-
-			if (sphere != null) {
-				sphere.SendCommand(console, "r");
-			}
-		}
-
-		public void SvnCleanup(ConsoleClient console) {
-			VersionControl.SvnCleanUpProject(this.HardDiscScriptsPath);
-			if (!StringComparer.OrdinalIgnoreCase.Equals(this.HardDiscIniPath, this.RamdiscIniPath)) {
-				VersionControl.SvnCleanUpProject(this.RamdiscScriptsPath);
-			}
-		}
-
 		private void StartExitlaterScheduler() {
 			if (this.exitLaterParam >= 0) {
 				DateTime now = DateTime.Now;

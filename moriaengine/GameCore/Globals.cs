@@ -19,7 +19,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using SharpSvn;
+using System.Reflection;
 using SteamEngine.Common;
 using SteamEngine.Communication.TCP;
 using SteamEngine.Networking;
@@ -643,28 +643,17 @@ namespace SteamEngine {
 
 		//public static readonly string version="1.0.0"; 
 		private static string version;
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public static string Version {
 			get {
 				if (version == null) {
-					try {
-						version = GetVersion();
-					} catch (Exception e) {
-						Logger.WriteError("While obtaining SVN revision info", e);
-						version = "<SVN revision number unknown>";
-					}
+					version = GetVersion();
 				}
 				return version;
 			}
 		}
 
 		private static string GetVersion() {
-			using (SvnClient client = new SvnClient()) {
-				SvnInfoEventArgs info;
-				client.GetInfo(SvnTarget.FromString(Path.GetFullPath("."), true), out info);
-
-				return "SVN revision " + info.Revision;
-			}
+			return Assembly.GetExecutingAssembly().GetName().Version.ToString();
 		}
 
 		private static readonly DateTime startedAt = DateTime.Now;
@@ -742,14 +731,6 @@ namespace SteamEngine {
 
 		public static void R() {
 			Resync();
-		}
-
-		public static void SvnUpdate() {
-			VersionControl.SvnUpdateProject(Path.GetFullPath("."));
-		}
-
-		public static void SvnCleanUp() {
-			VersionControl.SvnCleanUpProject(Path.GetFullPath("."));
 		}
 
 		public static Type Type(string typename) {
