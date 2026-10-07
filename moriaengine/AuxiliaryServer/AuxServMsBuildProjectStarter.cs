@@ -8,12 +8,12 @@ namespace SteamEngine.AuxiliaryServer {
 	internal class AuxServMsBuildProjectStarter {
 		private readonly BuildType build;
 		private readonly string seRootPath;
-		private readonly string targetTask;
+		private readonly string projectRelativePath;
 
-		internal AuxServMsBuildProjectStarter(BuildType build, string seRootPath, string targetTask) {
+		internal AuxServMsBuildProjectStarter(BuildType build, string seRootPath, string projectRelativePath) {
 			this.build = build;
 			this.seRootPath = seRootPath;
-			this.targetTask = targetTask;
+			this.projectRelativePath = projectRelativePath;
 		}
 
 		public void Start() {
@@ -24,7 +24,7 @@ namespace SteamEngine.AuxiliaryServer {
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public virtual void CompileAndStart() {
 			try {
-				var file = MsBuildLauncher.Compile(this.seRootPath, this.build, this.targetTask);
+				var file = MsBuildLauncher.Compile(this.seRootPath, this.build, this.projectRelativePath);
 				Console.WriteLine("Starting " + file);
 				this.StartProcess(file);
 

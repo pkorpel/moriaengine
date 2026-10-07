@@ -4,3 +4,12 @@
 # least one path segment before bin/obj, so top-level /bin/ is unaffected.
 */bin/
 */obj/
+
+# Runtime-generated artifacts - produced fresh by ClassTemplateParser/the
+# loc system on every boot, never checked into source control (confirmed:
+# zero .Generated.cs files existed anywhere in the repo before these ports).
+*.Generated.cs
+/Languages/Default/
+/steamengine.ini
+/steamaux.ini
+/logs/
