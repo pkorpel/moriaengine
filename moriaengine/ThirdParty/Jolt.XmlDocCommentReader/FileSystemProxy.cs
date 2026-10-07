@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.AccessControl;
 using System.Text;
@@ -42,6 +43,11 @@ namespace Jolt.GeneratedTypes.System.IO {
 			return File.CreateText(path);
 		}
 
+		// Decrypt/Encrypt are part of IFile's 1:1 mirror of every System.IO.File
+		// static method; this reflection-driven proxy has no callers for these two
+		// (confirmed: nothing in the codebase invokes IFile.Decrypt/Encrypt) and
+		// isn't the place to enforce a platform check that belongs to a caller.
+		[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
 		public void Decrypt(string path) {
 			File.Decrypt(path);
 		}
@@ -50,6 +56,7 @@ namespace Jolt.GeneratedTypes.System.IO {
 			File.Delete(path);
 		}
 
+		[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
 		public void Encrypt(string path) {
 			File.Encrypt(path);
 		}
