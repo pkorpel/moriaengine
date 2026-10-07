@@ -1,38 +1,82 @@
-Starting SteamEngine
+MoriaEngine / SteamEngine
+==========================
 
-The server part of SE consists of 2 executables/processes - GameCore and AuxiliaryServer. GameCore is the one where all the UO stuff is happening, while Auxiliary is for secondary tasks - it server connections from remote consoles (the third major SE executable) and it serves as login server for the gamecore(s) running on the same server computer. It can also update sources from SVN and restart both itself and the nearby gameserver(s) when commanded so from remote console(s).
+A SteamEngine/MoriaEngine server, ported to .NET 8 (cross-platform: Windows,
+macOS, Linux).
 
+The server consists of two processes:
 
-Running SE for the first time, start by launching gamecore (Release_ or Debug_) - it will create steamengine.ini config file. Look at the file, fix the settings if needed (theyre commented inside) and then run both GameCore and AuxiliaryServer (most likely Release_). Then you can connect with either UO client or remoteconsole - in both cases, using any username/password will result in creating the first account - with admin priviledges.
+  - GameCore: where all the UO gameplay happens.
+  - AuxiliaryServer: secondary tasks - serves remote console connections and
+    acts as a login server for the GameCore instance(s) running on the same
+    machine.
 
-RemoteConsole - the GUI program - supports adding buttons as shortcuts for simple commands. For the basic set of recommendes buttons, look in steamrc.example.ini, where you can directly copy the buttons from.
+There's also a third, optional tool:
 
-We used to use NANT for building, but we converted to msbuild.
-
--tar
-
-
-
-
-
-
-
-now this is a little outdated, so don't believe everything:
+  - RemoteConsole: a GUI remote-console client. Not yet ported to .NET 8 -
+    it still only builds against the old .NET Framework toolchain
+    (RemoteConsole/SteamEngine.RemoteConsole.csproj).
 
 
+Building
+--------
 
-About the different builds
+One script builds everything, on any OS:
 
-There are three builds, Debug, Sane, and Optimized. 
+    ./build.ps1
 
-The Sane build is the one that you probably will be using most often (unless you are a SteamEngine developer, in which case you will probably use the Debug build most).
+This requires PowerShell Core (`pwsh`) - it runs identically on Windows,
+macOS, and Linux. (Windows PowerShell 5.1 works too.) Install pwsh if you
+don't have it: https://github.com/PowerShell/PowerShell
 
-The Sane build prints understandable error messages, and does sanity-checking to detect if something tries to call a method with invalid parameters, or tries to set a variable/property to something illegal, or if an assumption made by some code is false, etc.
+Options:
 
-This means that if you make a script which does something which shouldn't be done, if you are using the Sane (or Debug) build, then you will probably be told so right away, and if not, then you will be told when a sanity check somewhere else detects a problem, which should be fairly soon in most cases.
+    ./build.ps1 -Configuration Release     # Debug (default) or Release
+    ./build.ps1 -Clean                      # wipe bin/obj first
+    ./build.ps1 -Run GameCore               # build, then run GameCore
+    ./build.ps1 -Run AuxiliaryServer        # build, then run AuxiliaryServer
+    ./build.ps1 -Run Both                   # build, then run both together
 
-The Debug build acts like the Sane build, but it will tend to print more information than the Sane build when something goes wrong. If you do see something go wrong, you're encouraged to see if it is repeatable, firstly, and secondly, see if the Debug build will print more information. If you're reporting it as a bug, it would be best if you included the information the Debug build prints, instead of what the Sane build prints, because the greater amount of information given by the Debug build will make it easier to find the source of the problem. If the bug is in a compiled script (not LScript), then the Debug build may help you find the problem faster. With LScript scripts, the Debug build may be more useful in some situations, but not necessarily in others (If the problem is in an LScript script, you are encouraged to try the Debug build if you are having trouble figuring out the problem, but otherwise it may not be necessary).
+The first build takes a bit longer than later ones: scripts/Generated's code
+is produced at runtime by GameCore itself (ClassTemplateParser, compiling
+the .ct templates under scripts/), not checked into source control, so the
+script runs GameCore briefly to generate it before building the full
+solution. This only happens once - subsequent runs skip it automatically.
 
-If you've been running SteamEngine for a while without any problems, and you want better performance, you could try the Optimized build. It is faster than the Sane build, but you shouldn't use the Optimized build if you are writing or modifying scripts (or if you are modifying the core!), because the Optimized build will NOT detect many problems that the Sane or Debug builds detect. However, these kinds of problems are never detected and silently ignored in the Debug or Sane builds, so if you haven't been seeing any "error" messages (or "fatal" or "critical" messages), and you've been running the Sane (or Debug) build for long enough to be satisfied that everything is working properly, then it is probably safe to run the Optimized build.
+There is no "Sane" or "Optimized" build anymore - only the standard .NET
+Debug/Release split. (Older versions of this doc described three build
+types; that was from a pre-.NET-8 NAnt/old-MSBuild-era scheme that never
+survived the conversion to SDK-style projects.)
 
--SL
+
+Running for the first time
+---------------------------
+
+Run GameCore once (`./build.ps1 -Run GameCore`, or just the built binary
+directly). It will write a default `steamengine.ini` and exit - open it,
+adjust anything you want (settings are commented inline), then run GameCore
+again. Run AuxiliaryServer the same way to get `steamaux.ini`.
+
+For a real game server, run both together: `./build.ps1 -Run Both`. Then
+connect with either a UO client or RemoteConsole - with either, logging in
+with any username/password creates that account with admin privileges.
+
+RemoteConsole supports adding buttons as shortcuts for common commands; see
+steamrc.example.ini for a recommended starter set you can copy from.
+
+
+UO client data
+---------------
+
+GameCore needs real Ultima Online client files (map0.mul, statics0.mul,
+tiledata.mul, etc.) to fully boot - see `mulPath` in steamengine.ini. This
+repo's `uo-files/` directory holds a set of these; point `mulPath` at it
+(e.g. `mulPath = ../uo-files` when running from the moriaengine/ directory)
+or supply your own.
+
+
+CI
+--
+
+`.github/workflows/dotnet.yml` runs the exact same `build.ps1` plus the
+test suite on every push/PR to main.
