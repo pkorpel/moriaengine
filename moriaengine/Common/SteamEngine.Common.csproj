@@ -10,13 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Excluded until Phase 5 modernizes the in-process MSBuild hosting these use
-         (Microsoft.Build/Microsoft.Build.Framework v14.0, Framework-only). -->
-    <Compile Remove="MsBuildLauncher.cs" />
-    <Compile Remove="MsBuildLogger.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Tests\ConsoleUi.cs.ignored" />
     <None Remove="Tests\TestRunner.cs.ignored" />
   </ItemGroup>

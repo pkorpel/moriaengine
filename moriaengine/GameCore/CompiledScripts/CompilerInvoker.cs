@@ -64,7 +64,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static bool CompileScriptsUsingMsBuild() {
 			try {
-				var file = MsBuildLauncher.Compile(".", Build.Type, "SteamEngine_Scripts", compilationNumber);
+				var file = MsBuildLauncher.Compile(".", Build.Type, "scripts/SteamEngine.Scripts.csproj", compilationNumber);
 				var fileCollection = new CompiledScriptFileCollection(Globals.ScriptsPath, ".cs") {
 					assembly = Assembly.LoadFile(file)
 				};

@@ -73,7 +73,7 @@ namespace SteamEngine.Networking {
 
 			// Create a MD5 hash of the twofish crypt data and use it as a 16-byte xor table
 			// for encrypting the server->client stream.
-			MD5 md5 = new MD5CryptoServiceProvider();
+			MD5 md5 = MD5.Create();
 			this.xorData = md5.ComputeHash(this.cipherTable);
 
 			return EncryptionInitResult.SuccessUseEncryption;
