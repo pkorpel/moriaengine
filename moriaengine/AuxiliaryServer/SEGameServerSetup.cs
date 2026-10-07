@@ -93,12 +93,5 @@ namespace SteamEngine.AuxiliaryServer {
 		}
 
 
-		public void SvnUpdate(ConsoleClient console) {
-			VersionControl.SvnUpdateProject(this.IniPath);
-		}
-
-		public void SvnCleanup(ConsoleClient console) {
-			VersionControl.SvnCleanUpProject(this.IniPath);
-		}
 	}
 }
