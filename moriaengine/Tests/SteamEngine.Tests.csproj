@@ -8,6 +8,13 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- Microsoft.TestPlatform.ObjectModel/TestHost ship resource folders
+         (zh-hans, pt-br, etc.) that the .NET 8 SDK's locale validator
+         doesn't recognize - an upstream packaging issue (still present as
+         of Microsoft.NET.Test.Sdk 18.10.1, confirmed by testing), not
+         anything in our code. -->
+    <NoWarn>$(NoWarn);NETSDK1188</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

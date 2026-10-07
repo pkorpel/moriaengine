@@ -50,6 +50,7 @@ namespace SteamEngine.LScript {
 			return TryRunSnippet("<snippet>", 0, self, script);
 		}
 
+		[SuppressMessage("Microsoft.Usage", "CA2200:RethrowToPreserveStackDetails")] //intentional - see comment at "throw rtde" below
 		public static LScriptHolder GetNewSnippetRunner(string filename, int line, string script) {
 			//Logger.WriteDebug("GetNewSnippetRunner("+script+")");
 
@@ -84,6 +85,7 @@ namespace SteamEngine.LScript {
 			}
 		}
 
+		[SuppressMessage("Microsoft.Usage", "CA2200:RethrowToPreserveStackDetails")] //intentional - see comment at "throw rtde" below
 		public static object RunSnippet(string filename, int line, TagHolder self, string script) {
 			//Console.WriteLine("running snippet "+script);
 			script += Environment.NewLine;
