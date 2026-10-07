@@ -21,8 +21,19 @@ jobs:
       - name: Restore
         run: dotnet restore moriaengine/SteamEngine.sln
 
+      # scripts/ and Generated/ are excluded on purpose: they're partial
+      # classes whose other half is produced at runtime by ClassTemplateParser
+      # from .ct template files, so they cannot build standalone - this is a
+      # pre-existing, documented limitation, not something CI should paper over.
       - name: Build
-        run: dotnet build moriaengine/SteamEngine.sln --no-restore -c Debug
+        run: |
+          dotnet build moriaengine/ThirdParty/SteamEngine.ThirdParty.csproj --no-restore -c Debug
+          dotnet build moriaengine/Common/SteamEngine.Common.csproj --no-restore -c Debug
+          dotnet build moriaengine/Communication/SteamEngine.Communication.csproj --no-restore -c Debug
+          dotnet build moriaengine/GameCore/SteamEngine.GameCore.csproj --no-restore -c Debug
+          dotnet build moriaengine/AuxiliaryServer/SteamEngine.AuxiliaryServer.csproj --no-restore -c Debug
+          dotnet build moriaengine/ProcessRestarter/SteamEngine.ProcessRestarter.csproj --no-restore -c Debug
+          dotnet build moriaengine/Tests/SteamEngine.Tests.csproj --no-restore -c Debug
 
       - name: Test
         run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug
