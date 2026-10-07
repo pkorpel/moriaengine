@@ -1,0 +1,28 @@
+name: .NET Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore moriaengine/SteamEngine.sln
+
+      - name: Build
+        run: dotnet build moriaengine/SteamEngine.sln --no-restore -c Debug
+
+      - name: Test
+        run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug
