@@ -45,7 +45,6 @@ namespace PerCederberg.Grammatica.Parser {
 	 * @version  1.1
 	 * @since    1.1
 	 */
-	[EQATEC.Profiler.SkipInstrumentation]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2237:MarkISerializableTypesWithSerializable"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	public class ParserLogException : Exception {
 
