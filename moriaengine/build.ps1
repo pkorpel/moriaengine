@@ -42,6 +42,12 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
+# Set-Location only moves PowerShell's own location - .NET APIs called directly (like
+# [System.IO.StreamWriter]::new(...) below) resolve relative paths via
+# [Environment]::CurrentDirectory instead, which isn't always kept in sync (observed on
+# pwsh/macOS: it stayed at the user's home directory). Sync it explicitly rather than
+# relying on relative paths to just happen to work.
+[System.Environment]::CurrentDirectory = $PSScriptRoot
 
 $StandaloneProjects = @(
 	'ThirdParty/SteamEngine.ThirdParty.csproj'
@@ -160,7 +166,8 @@ try {
 	}
 	elseif ($Run -eq 'Both') {
 		Write-Host '==> Starting AuxiliaryServer (background, logs/auxiliaryserver.console.log)'
-		New-Item -ItemType Directory -Path 'logs' -Force | Out-Null
+		$logsDir = Join-Path $PSScriptRoot 'logs'
+		New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
 
 		# AuxiliaryServer's Main() has a background thread that blocks on
 		# Console.ReadLine() and shuts the whole process down the moment it
@@ -182,7 +189,7 @@ try {
 		$auxProc = [System.Diagnostics.Process]::Start($auxPsi)
 		$script:auxStdin = $auxProc.StandardInput # kept open & unused, see comment above
 
-		$auxLogWriter = [System.IO.StreamWriter]::new('logs/auxiliaryserver.console.log')
+		$auxLogWriter = [System.IO.StreamWriter]::new((Join-Path $logsDir 'auxiliaryserver.console.log'))
 		$auxLogWriter.AutoFlush = $true
 		$auxOutSub = Register-ObjectEvent -InputObject $auxProc -EventName OutputDataReceived -Action {
 			if ($null -ne $EventArgs.Data) { $Event.MessageData.WriteLine($EventArgs.Data) }
