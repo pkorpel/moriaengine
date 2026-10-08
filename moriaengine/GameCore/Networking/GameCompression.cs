@@ -21,9 +21,11 @@ using Buffer = System.Buffer;
 
 namespace SteamEngine.Networking {
 	public class GameCompression : ICompression {
-		private static int[] flatBitTable;
+		// internal (not private) so Tests/Protocol's HuffmanDecompressor can build a decode
+		// table from the exact same data, instead of duplicating 257 rows by hand.
+		internal static int[] flatBitTable;
 		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
-		private static int[,] bitTable;
+		internal static int[,] bitTable;
 		private static uint[] bitAmtTable;
 
 		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
