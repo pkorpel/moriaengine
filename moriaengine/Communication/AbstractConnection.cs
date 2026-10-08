@@ -129,6 +129,15 @@ namespace SteamEngine.Communication {
 			length += this.receivedDataLength;
 			int offset = 0;
 
+			if (this.useEncryption && !this.encryptionInitialised) {
+				// Raw, pre-decryption dump of the very first bytes on a new connection - the
+				// only way to see exactly what a real client sent on the wire, since everything
+				// after this point is either plaintext-by-design (no-encryption fast path) or
+				// deliberately unreadable ciphertext.
+				Logger.WriteDebug(this.State + " raw bytes before first decryption attempt:");
+				CommunicationUtils.OutputPacketLog(bytes, offset, length);
+			}
+
 			if (this.ProcessDecryption(ref length, ref bytes, ref offset)) {
 				ICompression compression = this.State.Compression;
 				if (compression != null) {
