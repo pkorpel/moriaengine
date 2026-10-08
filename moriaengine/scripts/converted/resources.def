@@ -949,7 +949,7 @@ DESCRIPTION = Torso
 TYPE = t_MEAT_RAW
 //DUPELIST = 01dad // commented out by Converter 
 WEIGHT = 2000
-RESOURCES = i_flesh_heart,  2 i_ribs_raw,  i_flesh_liver,  i_flesh_entrails, 2 i_blood_ //some resources were fixed by converter 
+RESOURCES = i_flesh_heart,  2 i_ribs_raw,  i_flesh_liver,  i_flesh_entrails, 2 i_blood //was "i_blood_" (trailing underscore, converter truncation artifact) - plain i_blood is the base item, the other i_blood_* defnames are all named variants (smear/drips/spatter/tile/2) 
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_torso
 //VALUE = 1 // commented out by Converter 
@@ -961,7 +961,7 @@ DESCRIPTION = Head
 
 //DUPELIST = 01dae // commented out by Converter 
 WEIGHT = 2000
-RESOURCES = i_bone_skull,  i_bone_jaw,  i_flesh_brain, 2 i_blood_ //some resources were fixed by converter 
+RESOURCES = i_bone_skull,  i_bone_jaw,  i_flesh_brain, 2 i_blood //was "i_blood_" (trailing underscore, converter truncation artifact) - plain i_blood is the base item, the other i_blood_* defnames are all named variants (smear/drips/spatter/tile/2) 
 DEFNAME = i_flesh_head_2
 //VALUE = 1 // commented out by Converter 
 

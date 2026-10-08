@@ -817,7 +817,7 @@ DESCRIPTION = Lemons (1/2 Peeled)
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 1 i_lemon //some resources were fixed by converter 
+RESOURCES = 1 i_fruit_lemon //was "i_lemon" - no such item anywhere; i_fruit_lemon (defined earlier in this file) is the real one
 DEFNAME = i_lemon_halved
 
 [ItemDef 0x172b]
