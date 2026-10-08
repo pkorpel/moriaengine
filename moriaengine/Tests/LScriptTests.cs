@@ -5,13 +5,7 @@ using SteamEngine.Tests.Fixtures;
 namespace SteamEngine.Tests {
 	[Collection(EngineCollection.Name)]
 	public class LScriptTests {
-		[Fact(Skip = "Pre-existing failure, confirmed unrelated to the net8.0 port (verified against the original "
-			+ "source: only change in LScriptMain.cs/LScriptParser.cs across the whole port was removing inert "
-			+ "EQATEC.Profiler.SkipInstrumentation attributes). TryRunSnippet(null, \"return \\\"abc\\\"\") fails "
-			+ "to parse - a bare 'return <expr>' statement is apparently not valid at the OpNode_Script snippet "
-			+ "root (works fine inside an actual [function]/[TRIGGER] body per real .scp content). Needs someone "
-			+ "who knows the LScript grammar to determine whether the test or the snippet-compile entry point is "
-			+ "wrong; left failing-but-skipped rather than silently deleted or guessed at.")]
+		[Fact]
 		public void TrivialScript() {
 			var result = LScriptMain.TryRunSnippet(null, @"return ""abc""");
 			Assert.Equal("abc", result);

@@ -96,7 +96,6 @@ namespace SteamEngine.LScript {
 			//if (registerNames == null) {//else it got already created by the constructor
 			//	registerNames = new Hashtable(StringComparer.OrdinalIgnoreCase);
 			//}
-			//Console.WriteLine("compiling text "+input.code);
 			using (StringReader reader = new StringReader(input.Code.ToString())) {
 				this.code = LScriptMain.TryCompile(this, reader, input.StartLine);
 			}

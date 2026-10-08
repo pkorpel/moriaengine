@@ -7,6 +7,7 @@
  */
 
 using System.IO;
+
 using PerCederberg.Grammatica.Parser;
 
 namespace SteamEngine.LScript {
@@ -94,7 +95,8 @@ namespace SteamEngine.LScript {
          */
         public StrictParser(TextReader input)
             : base(new StrictTokenizer(input)) {
-	        this.CreatePatterns();
+
+            CreatePatterns();
         }
 
         /**
@@ -109,7 +111,8 @@ namespace SteamEngine.LScript {
          */
         public StrictParser(TextReader input, Analyzer analyzer)
             : base(new StrictTokenizer(input), analyzer) {
-	        this.CreatePatterns();
+
+            CreatePatterns();
         }
 
         /**
@@ -128,7 +131,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_1, 1, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.SCRIPT_LINE,
                                             "ScriptLine");
@@ -138,7 +141,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.IF_BLOCK,
                                             "IfBlock");
@@ -149,7 +152,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.ENDIF, 1, 1);
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.IF_BEGIN,
                                             "IfBegin");
@@ -159,7 +162,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             alt.AddProduction((int) StrictConstants.SCRIPT, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.ELSE_IF_BLOCK,
                                             "ElseIfBlock");
@@ -169,7 +172,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             alt.AddProduction((int) StrictConstants.SCRIPT, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.ELSE_BLOCK,
                                             "ElseBlock");
@@ -178,7 +181,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             alt.AddProduction((int) StrictConstants.SCRIPT, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOREACH_BLOCK,
                                             "ForeachBlock");
@@ -190,7 +193,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.ENDFOREACH, 1, 1);
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOREACH_HEADER,
                                             "ForeachHeader");
@@ -200,7 +203,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.FOREACH_HEADER_IN_PARENS, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOREACH_HEADER_CODE,
                                             "ForeachHeaderCode");
@@ -209,7 +212,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.IN, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOREACH_HEADER_LOCAL_NAME,
                                             "ForeachHeaderLocalName");
@@ -225,7 +228,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOREACH_HEADER_IN_PARENS,
                                             "ForeachHeaderInParens");
@@ -234,7 +237,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.FOREACH_HEADER, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOR_BLOCK,
                                             "ForBlock");
@@ -246,7 +249,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.ENDFOR, 1, 1);
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOR_HEADER,
                                             "ForHeader");
@@ -256,7 +259,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.FOR_HEADER_IN_PARENS, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOR_HEADER_CODE,
                                             "ForHeaderCode");
@@ -267,7 +270,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.ARGS_SEPARATOR, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.FOR_HEADER_IN_PARENS,
                                             "ForHeaderInParens");
@@ -276,7 +279,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.FOR_HEADER, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.WHILE_BLOCK,
                                             "WhileBlock");
@@ -288,7 +291,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.ENDWHILE, 1, 1);
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.SWITCH_BLOCK,
                                             "SwitchBlock");
@@ -299,7 +302,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.CASE_BLOCK, 1, -1);
             alt.AddToken((int) StrictConstants.ENDSWITCH, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.CASE_BLOCK,
                                             "CaseBlock");
@@ -309,7 +312,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_7, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.CODE,
                                             "Code");
@@ -317,7 +320,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.CODE_BODY, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_8, 0, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.CODE_BODY,
                                             "CodeBody");
@@ -325,7 +328,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.UNARY_OPERATOR, 0, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_9, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.CODE_BODY_PARENS,
                                             "CodeBodyParens");
@@ -334,7 +337,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.CODE, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.SIMPLE_CODE,
                                             "SimpleCode");
@@ -342,7 +345,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE_BODY, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_10, 0, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.SIMPLE_CODE_BODY,
                                             "SimpleCodeBody");
@@ -350,7 +353,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.UNARY_OPERATOR, 0, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_11, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.SIMPLE_CODE_BODY_PARENS,
                                             "SimpleCodeBodyParens");
@@ -359,7 +362,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.EXPRESSION,
                                             "Expression");
@@ -390,7 +393,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.TIMER_KEY, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.ADD_TIMER_EXPRESSION,
                                             "AddTimerExpression");
@@ -398,7 +401,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.ADDTIMER, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_15, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.ADD_TIMER_BODY,
                                             "AddTimerBody");
@@ -410,7 +413,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_16, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_17, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.AT_KEY,
                                             "AtKey");
@@ -420,7 +423,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.PLUGIN_KEY, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.TRIGGER_KEY,
                                             "TriggerKey");
@@ -428,7 +431,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.AT, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.PLUGIN_KEY,
                                             "PluginKey");
@@ -437,7 +440,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.AT, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.TIMER_KEY,
                                             "TimerKey");
@@ -445,7 +448,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.OP_MOD, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.QUOTED_STRING,
                                             "QuotedString");
@@ -454,7 +457,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_18, 0, -1);
             alt.AddToken((int) StrictConstants.QUOTE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.ARGUMENT,
                                             "Argument");
@@ -463,7 +466,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.INDEXER, 0, -1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_28, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.ARGS_LIST,
                                             "ArgsList");
@@ -471,7 +474,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_29, 0, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.STRONG_EVAL_EXPRESSION,
                                             "StrongEvalExpression");
@@ -482,7 +485,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.QUERYMARK, 1, 1);
             alt.AddToken((int) StrictConstants.OP_COMP_GRE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.RANDOM_EXPRESSION,
                                             "RandomExpression");
@@ -494,7 +497,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_30, 0, -1);
             alt.AddToken((int) StrictConstants.RIGHT_BRACE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.ARGS_SEPARATOR,
                                             "ArgsSeparator");
@@ -504,7 +507,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.COMMA, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.EVAL_EXPRESSION,
                                             "EvalExpression");
@@ -513,7 +516,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.DOTTED_EXPRESSION_CHAIN, 1, 1);
             alt.AddToken((int) StrictConstants.OP_COMP_GRE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.EVAL_WORD_EXPRESSION,
                                             "EvalWordExpression");
@@ -521,7 +524,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.EVAL, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.DOTTED_EXPRESSION_CHAIN,
                                             "DottedExpressionChain");
@@ -530,7 +533,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_33, 0, -1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_36, 0, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.SIMPLE_EXPRESSION,
                                             "SimpleExpression");
@@ -538,7 +541,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_39, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.TYPE_OF_EXPRESSION,
                                             "TypeOfExpression");
@@ -552,7 +555,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_48, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.CALLER,
                                             "Caller");
@@ -561,7 +564,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.ARGS_LIST, 0, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.INDEXER,
                                             "Indexer");
@@ -570,7 +573,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_BRACKET, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.ASSIGNER,
                                             "Assigner");
@@ -580,7 +583,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.OPERATOR_ASSIGNER, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.WHITE_SPACE_ASSIGNER,
                                             "WhiteSpaceAssigner");
@@ -588,7 +591,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.WHITESPACE, 1, 1);
             alt.AddProduction((int) StrictConstants.ARGS_LIST, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.OPERATOR_ASSIGNER,
                                             "OperatorAssigner");
@@ -596,7 +599,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.OP_ASIG_PLAIN, 1, 1);
             alt.AddProduction((int) StrictConstants.ARGS_LIST, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.NUMBER,
                                             "Number");
@@ -609,7 +612,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.FLOAT, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.VAR_EXPRESSION,
                                             "VarExpression");
@@ -617,7 +620,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.VAR_KEY, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_57, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.LOCAL_KEY,
                                             "LocalKey");
@@ -627,7 +630,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.LOCAL, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.VAR_KEY,
                                             "VarKey");
@@ -640,21 +643,21 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.LOCAL_KEY, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.BINARY_OPERATOR,
                                             "BinaryOperator");
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_58, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.BINARY_OPERATORS,
                                             "BinaryOperators");
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_61, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.TWO_CHARS_BIN_OPERATOR,
                                             "TwoCharsBinOperator");
@@ -664,7 +667,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.OP_ASIG_PLAIN, 0, 1);
             alt.AddToken((int) StrictConstants.WHITESPACE, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.UNARY_OPERATOR,
                                             "UnaryOperator");
@@ -680,7 +683,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.OP_SUB, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) StrictConstants.COMPAR_OPERATOR,
                                             "ComparOperator");
@@ -693,7 +696,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.OP_COMP_GRE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_1,
                                             "Subproduction1");
@@ -716,7 +719,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.SCRIPT_LINE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_2,
                                             "Subproduction2");
@@ -725,7 +728,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.DOTTED_EXPRESSION_CHAIN, 1, 1);
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_3,
                                             "Subproduction3");
@@ -736,7 +739,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_4,
                                             "Subproduction4");
@@ -746,7 +749,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.DOT, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_5,
                                             "Subproduction5");
@@ -756,7 +759,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.WHITESPACE, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_6,
                                             "Subproduction6");
@@ -767,7 +770,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.DEFAULT, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_7,
                                             "Subproduction7");
@@ -777,7 +780,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.BREAK, 1, 1);
             alt.AddToken((int) StrictConstants.COMEOL, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_8,
                                             "Subproduction8");
@@ -786,7 +789,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.BINARY_OPERATORS, 1, 1);
             alt.AddProduction((int) StrictConstants.CODE_BODY, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_9,
                                             "Subproduction9");
@@ -797,7 +800,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.EXPRESSION, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_10,
                                             "Subproduction10");
@@ -806,7 +809,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.BINARY_OPERATOR, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE_BODY, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_11,
                                             "Subproduction11");
@@ -817,7 +820,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.EXPRESSION, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_12,
                                             "Subproduction12");
@@ -828,7 +831,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.OP_ASIG_PLAIN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_13,
                                             "Subproduction13");
@@ -837,7 +840,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_12, 1, 1);
             alt.AddProduction((int) StrictConstants.ADD_TIMER_BODY, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_14,
                                             "Subproduction14");
@@ -847,7 +850,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.ADD_TIMER_BODY, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_15,
                                             "Subproduction15");
@@ -858,7 +861,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_14, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_16,
                                             "Subproduction16");
@@ -869,7 +872,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.TRIGGER_KEY, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_17,
                                             "Subproduction17");
@@ -878,7 +881,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.ARGS_SEPARATOR, 1, 1);
             alt.AddProduction((int) StrictConstants.ARGS_LIST, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_18,
                                             "Subproduction18");
@@ -1072,7 +1075,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.ENDWHILE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_19,
                                             "Subproduction19");
@@ -1101,7 +1104,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.ARGVN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_20,
                                             "Subproduction20");
@@ -1111,7 +1114,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_BRACKET, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_21,
                                             "Subproduction21");
@@ -1121,7 +1124,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_22,
                                             "Subproduction22");
@@ -1132,7 +1135,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_21, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_23,
                                             "Subproduction23");
@@ -1141,7 +1144,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.ARGV, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_22, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_24,
                                             "Subproduction24");
@@ -1152,7 +1155,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_23, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_25,
                                             "Subproduction25");
@@ -1161,7 +1164,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.OP_ASIG_PLAIN, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_26,
                                             "Subproduction26");
@@ -1171,7 +1174,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_27,
                                             "Subproduction27");
@@ -1180,7 +1183,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.WHITESPACE, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_28,
                                             "Subproduction28");
@@ -1194,7 +1197,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_27, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_29,
                                             "Subproduction29");
@@ -1203,7 +1206,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.ARGS_SEPARATOR, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_30,
                                             "Subproduction30");
@@ -1214,7 +1217,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.ARGS_SEPARATOR, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_31,
                                             "Subproduction31");
@@ -1237,7 +1240,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.ARGUMENT, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_32,
                                             "Subproduction32");
@@ -1260,7 +1263,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.ARGUMENT, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_33,
                                             "Subproduction33");
@@ -1269,7 +1272,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.DOT, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_32, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_34,
                                             "Subproduction34");
@@ -1280,7 +1283,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.OP_ADD, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_35,
                                             "Subproduction35");
@@ -1289,7 +1292,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_34, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_36,
                                             "Subproduction36");
@@ -1299,7 +1302,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_35, 0, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_37,
                                             "Subproduction37");
@@ -1308,7 +1311,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.INDEXER, 1, -1);
             alt.AddProduction((int) StrictConstants.ASSIGNER, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_38,
                                             "Subproduction38");
@@ -1317,7 +1320,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.CALLER, 1, 1);
             alt.AddProduction((int) StrictConstants.INDEXER, 0, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_39,
                                             "Subproduction39");
@@ -1331,7 +1334,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) StrictConstants.ASSIGNER, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_40,
                                             "Subproduction40");
@@ -1342,7 +1345,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.OP_ADD, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_41,
                                             "Subproduction41");
@@ -1351,7 +1354,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_40, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_42,
                                             "Subproduction42");
@@ -1362,7 +1365,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_41, 0, -1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_43,
                                             "Subproduction43");
@@ -1373,7 +1376,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.OP_ADD, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_44,
                                             "Subproduction44");
@@ -1383,7 +1386,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.DOT, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_45,
                                             "Subproduction45");
@@ -1393,7 +1396,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_44, 0, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_46,
                                             "Subproduction46");
@@ -1404,7 +1407,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.OP_ADD, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_47,
                                             "Subproduction47");
@@ -1414,7 +1417,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.DOT, 1, 1);
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_48,
                                             "Subproduction48");
@@ -1424,7 +1427,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.STRING, 1, 1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_47, 0, -1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_49,
                                             "Subproduction49");
@@ -1433,7 +1436,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.COMMA, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_50,
                                             "Subproduction50");
@@ -1445,7 +1448,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_49, 0, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_51,
                                             "Subproduction51");
@@ -1456,7 +1459,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.WHITESPACE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_52,
                                             "Subproduction52");
@@ -1465,7 +1468,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.OP_ASIG_PLAIN, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_53,
                                             "Subproduction53");
@@ -1475,7 +1478,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             alt.AddToken((int) StrictConstants.RIGHT_PAREN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_54,
                                             "Subproduction54");
@@ -1484,7 +1487,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.WHITESPACE, 1, 1);
             alt.AddProduction((int) StrictConstants.SIMPLE_CODE, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_55,
                                             "Subproduction55");
@@ -1498,7 +1501,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_54, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_56,
                                             "Subproduction56");
@@ -1509,7 +1512,7 @@ namespace SteamEngine.LScript {
             alt.AddProduction((int) StrictConstants.INDEXER, 0, -1);
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_55, 0, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_57,
                                             "Subproduction57");
@@ -1520,7 +1523,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_56, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_58,
                                             "Subproduction58");
@@ -1555,7 +1558,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddToken((int) StrictConstants.OP_OR, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_59,
                                             "Subproduction59");
@@ -1564,7 +1567,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.WHITESPACE, 0, 1);
             alt.AddToken((int) StrictConstants.OP_COMP_EQ, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_60,
                                             "Subproduction60");
@@ -1574,7 +1577,7 @@ namespace SteamEngine.LScript {
             alt.AddToken((int) StrictConstants.OP_SCREAMER, 1, 1);
             alt.AddToken((int) StrictConstants.OP_ASIG_PLAIN, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
 
             pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_61,
                                             "Subproduction61");
@@ -1591,7 +1594,7 @@ namespace SteamEngine.LScript {
             alt = new ProductionPatternAlternative();
             alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_60, 1, 1);
             pattern.AddAlternative(alt);
-	        this.AddPattern(pattern);
+            AddPattern(pattern);
         }
     }
 }
