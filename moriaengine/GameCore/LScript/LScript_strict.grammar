@@ -117,7 +117,11 @@ QUERYMARK			= <<[ \t]*\?[ \t]*>>
 
 ESCAPEDCHAR			= <<\\.>>
 
-OTHERSYMBOLS		= <<[^a-zA-Z_0-9]>>
+OTHERSYMBOLS		= <<[^a-zA-Z_0-9\n\r]>> //excludes \n and \r so a bare newline (with no leading whitespace/comment,
+							//matching COMEOL's second alternative at exactly 1 char) can never tie in length against
+							//OTHERSYMBOLS's 1-char match and lose to it on declaration-order tie-breaking - this was
+							//the root cause of real .scp content failing to parse at statement boundaries with no
+							//blank line to pad them out (see commit message for the full diagnosis)
 
 COMEOL				= <<([ \t]*;[ \t]*(//.*)?[\n\r]*)|([ \t]*(//.*)?[\n\r]+)>> // ; or eol (and whitespace and comment);
 

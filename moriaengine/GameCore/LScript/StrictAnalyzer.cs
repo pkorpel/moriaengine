@@ -27,382 +27,382 @@ namespace SteamEngine.LScript {
         public override void Enter(Node node) {
             switch (node.GetId()) {
             case (int) StrictConstants.IF:
-		            this.EnterIf((Token) node);
+                EnterIf((Token) node);
                 break;
             case (int) StrictConstants.ELSE:
-		            this.EnterElse((Token) node);
+                EnterElse((Token) node);
                 break;
             case (int) StrictConstants.ELSEIF:
-		            this.EnterElseif((Token) node);
+                EnterElseif((Token) node);
                 break;
             case (int) StrictConstants.ENDIF:
-		            this.EnterEndif((Token) node);
+                EnterEndif((Token) node);
                 break;
             case (int) StrictConstants.WHILE:
-		            this.EnterWhile((Token) node);
+                EnterWhile((Token) node);
                 break;
             case (int) StrictConstants.ENDWHILE:
-		            this.EnterEndwhile((Token) node);
+                EnterEndwhile((Token) node);
                 break;
             case (int) StrictConstants.ADDTIMER:
-		            this.EnterAddtimer((Token) node);
+                EnterAddtimer((Token) node);
                 break;
             case (int) StrictConstants.FOR:
-		            this.EnterFor((Token) node);
+                EnterFor((Token) node);
                 break;
             case (int) StrictConstants.ENDFOR:
-		            this.EnterEndfor((Token) node);
+                EnterEndfor((Token) node);
                 break;
             case (int) StrictConstants.FOREACH:
-		            this.EnterForeach((Token) node);
+                EnterForeach((Token) node);
                 break;
             case (int) StrictConstants.IN:
-		            this.EnterIn((Token) node);
+                EnterIn((Token) node);
                 break;
             case (int) StrictConstants.ENDFOREACH:
-		            this.EnterEndforeach((Token) node);
+                EnterEndforeach((Token) node);
                 break;
             case (int) StrictConstants.SWITCH:
-		            this.EnterSwitch((Token) node);
+                EnterSwitch((Token) node);
                 break;
             case (int) StrictConstants.CASE:
-		            this.EnterCase((Token) node);
+                EnterCase((Token) node);
                 break;
             case (int) StrictConstants.ENDSWITCH:
-		            this.EnterEndswitch((Token) node);
+                EnterEndswitch((Token) node);
                 break;
             case (int) StrictConstants.BREAK:
-		            this.EnterBreak((Token) node);
+                EnterBreak((Token) node);
                 break;
             case (int) StrictConstants.DEFAULT:
-		            this.EnterDefault((Token) node);
+                EnterDefault((Token) node);
                 break;
             case (int) StrictConstants.ARGCHK:
-		            this.EnterArgchk((Token) node);
+                EnterArgchk((Token) node);
                 break;
             case (int) StrictConstants.ARGTXT:
-		            this.EnterArgtxt((Token) node);
+                EnterArgtxt((Token) node);
                 break;
             case (int) StrictConstants.ARGNUM:
-		            this.EnterArgnum((Token) node);
+                EnterArgnum((Token) node);
                 break;
             case (int) StrictConstants.ARGO:
-		            this.EnterArgo((Token) node);
+                EnterArgo((Token) node);
                 break;
             case (int) StrictConstants.ARGN:
-		            this.EnterArgn((Token) node);
+                EnterArgn((Token) node);
                 break;
             case (int) StrictConstants.ARGV:
-		            this.EnterArgv((Token) node);
+                EnterArgv((Token) node);
                 break;
             case (int) StrictConstants.ARGON:
-		            this.EnterArgon((Token) node);
+                EnterArgon((Token) node);
                 break;
             case (int) StrictConstants.ARGNN:
-		            this.EnterArgnn((Token) node);
+                EnterArgnn((Token) node);
                 break;
             case (int) StrictConstants.ARGVN:
-		            this.EnterArgvn((Token) node);
+                EnterArgvn((Token) node);
                 break;
             case (int) StrictConstants.TAG:
-		            this.EnterTag((Token) node);
+                EnterTag((Token) node);
                 break;
             case (int) StrictConstants.ARG:
-		            this.EnterArg((Token) node);
+                EnterArg((Token) node);
                 break;
             case (int) StrictConstants.VAR:
-		            this.EnterVar((Token) node);
+                EnterVar((Token) node);
                 break;
             case (int) StrictConstants.LOCAL:
-		            this.EnterLocal((Token) node);
+                EnterLocal((Token) node);
                 break;
             case (int) StrictConstants.EVAL:
-		            this.EnterEval((Token) node);
+                EnterEval((Token) node);
                 break;
             case (int) StrictConstants.OP_ADD:
-		            this.EnterOpAdd((Token) node);
+                EnterOpAdd((Token) node);
                 break;
             case (int) StrictConstants.OP_SUB:
-		            this.EnterOpSub((Token) node);
+                EnterOpSub((Token) node);
                 break;
             case (int) StrictConstants.OP_MUL:
-		            this.EnterOpMul((Token) node);
+                EnterOpMul((Token) node);
                 break;
             case (int) StrictConstants.OP_DIV:
-		            this.EnterOpDiv((Token) node);
+                EnterOpDiv((Token) node);
                 break;
             case (int) StrictConstants.OP_INTDIV:
-		            this.EnterOpIntdiv((Token) node);
+                EnterOpIntdiv((Token) node);
                 break;
             case (int) StrictConstants.OP_MOD:
-		            this.EnterOpMod((Token) node);
+                EnterOpMod((Token) node);
                 break;
             case (int) StrictConstants.OP_IS:
-		            this.EnterOpIs((Token) node);
+                EnterOpIs((Token) node);
                 break;
             case (int) StrictConstants.OP_TYPEOF:
-		            this.EnterOpTypeof((Token) node);
+                EnterOpTypeof((Token) node);
                 break;
             case (int) StrictConstants.OP_SCREAMER:
-		            this.EnterOpScreamer((Token) node);
+                EnterOpScreamer((Token) node);
                 break;
             case (int) StrictConstants.OP_BITAND:
-		            this.EnterOpBitand((Token) node);
+                EnterOpBitand((Token) node);
                 break;
             case (int) StrictConstants.OP_BITCOMPLEMENT:
-		            this.EnterOpBitcomplement((Token) node);
+                EnterOpBitcomplement((Token) node);
                 break;
             case (int) StrictConstants.OP_BITOR:
-		            this.EnterOpBitor((Token) node);
+                EnterOpBitor((Token) node);
                 break;
             case (int) StrictConstants.OP_AND:
-		            this.EnterOpAnd((Token) node);
+                EnterOpAnd((Token) node);
                 break;
             case (int) StrictConstants.OP_OR:
-		            this.EnterOpOr((Token) node);
+                EnterOpOr((Token) node);
                 break;
             case (int) StrictConstants.DOT:
-		            this.EnterDot((Token) node);
+                EnterDot((Token) node);
                 break;
             case (int) StrictConstants.COMMA:
-		            this.EnterComma((Token) node);
+                EnterComma((Token) node);
                 break;
             case (int) StrictConstants.OP_ASIG_PLAIN:
-		            this.EnterOpAsigPlain((Token) node);
+                EnterOpAsigPlain((Token) node);
                 break;
             case (int) StrictConstants.OP_COMP_GRE:
-		            this.EnterOpCompGre((Token) node);
+                EnterOpCompGre((Token) node);
                 break;
             case (int) StrictConstants.OP_COMP_SMA:
-		            this.EnterOpCompSma((Token) node);
+                EnterOpCompSma((Token) node);
                 break;
             case (int) StrictConstants.OP_COMP_NOTEQ:
-		            this.EnterOpCompNoteq((Token) node);
+                EnterOpCompNoteq((Token) node);
                 break;
             case (int) StrictConstants.OP_COMP_EQ:
-		            this.EnterOpCompEq((Token) node);
+                EnterOpCompEq((Token) node);
                 break;
             case (int) StrictConstants.LEFT_PAREN:
-		            this.EnterLeftParen((Token) node);
+                EnterLeftParen((Token) node);
                 break;
             case (int) StrictConstants.RIGHT_PAREN:
-		            this.EnterRightParen((Token) node);
+                EnterRightParen((Token) node);
                 break;
             case (int) StrictConstants.LEFT_BRACKET:
-		            this.EnterLeftBracket((Token) node);
+                EnterLeftBracket((Token) node);
                 break;
             case (int) StrictConstants.RIGHT_BRACKET:
-		            this.EnterRightBracket((Token) node);
+                EnterRightBracket((Token) node);
                 break;
             case (int) StrictConstants.LEFT_BRACE:
-		            this.EnterLeftBrace((Token) node);
+                EnterLeftBrace((Token) node);
                 break;
             case (int) StrictConstants.RIGHT_BRACE:
-		            this.EnterRightBrace((Token) node);
+                EnterRightBrace((Token) node);
                 break;
             case (int) StrictConstants.QUOTE:
-		            this.EnterQuote((Token) node);
+                EnterQuote((Token) node);
                 break;
             case (int) StrictConstants.HEXNUMBER:
-		            this.EnterHexnumber((Token) node);
+                EnterHexnumber((Token) node);
                 break;
             case (int) StrictConstants.INTEGER:
-		            this.EnterInteger((Token) node);
+                EnterInteger((Token) node);
                 break;
             case (int) StrictConstants.FLOAT:
-		            this.EnterFloat((Token) node);
+                EnterFloat((Token) node);
                 break;
             case (int) StrictConstants.STRING:
-		            this.EnterString((Token) node);
+                EnterString((Token) node);
                 break;
             case (int) StrictConstants.WHITESPACE:
-		            this.EnterWhitespace((Token) node);
+                EnterWhitespace((Token) node);
                 break;
             case (int) StrictConstants.CROSSHASH:
-		            this.EnterCrosshash((Token) node);
+                EnterCrosshash((Token) node);
                 break;
             case (int) StrictConstants.AT:
-		            this.EnterAt((Token) node);
+                EnterAt((Token) node);
                 break;
             case (int) StrictConstants.QUERYMARK:
-		            this.EnterQuerymark((Token) node);
+                EnterQuerymark((Token) node);
                 break;
             case (int) StrictConstants.ESCAPEDCHAR:
-		            this.EnterEscapedchar((Token) node);
+                EnterEscapedchar((Token) node);
                 break;
             case (int) StrictConstants.OTHERSYMBOLS:
-		            this.EnterOthersymbols((Token) node);
+                EnterOthersymbols((Token) node);
                 break;
             case (int) StrictConstants.COMEOL:
-		            this.EnterComeol((Token) node);
+                EnterComeol((Token) node);
                 break;
             case (int) StrictConstants.SCRIPT:
-		            this.EnterScript((Production) node);
+                EnterScript((Production) node);
                 break;
             case (int) StrictConstants.SCRIPT_LINE:
-		            this.EnterScriptLine((Production) node);
+                EnterScriptLine((Production) node);
                 break;
             case (int) StrictConstants.IF_BLOCK:
-		            this.EnterIfBlock((Production) node);
+                EnterIfBlock((Production) node);
                 break;
             case (int) StrictConstants.IF_BEGIN:
-		            this.EnterIfBegin((Production) node);
+                EnterIfBegin((Production) node);
                 break;
             case (int) StrictConstants.ELSE_IF_BLOCK:
-		            this.EnterElseIfBlock((Production) node);
+                EnterElseIfBlock((Production) node);
                 break;
             case (int) StrictConstants.ELSE_BLOCK:
-		            this.EnterElseBlock((Production) node);
+                EnterElseBlock((Production) node);
                 break;
             case (int) StrictConstants.FOREACH_BLOCK:
-		            this.EnterForeachBlock((Production) node);
+                EnterForeachBlock((Production) node);
                 break;
             case (int) StrictConstants.FOREACH_HEADER:
-		            this.EnterForeachHeader((Production) node);
+                EnterForeachHeader((Production) node);
                 break;
             case (int) StrictConstants.FOREACH_HEADER_CODE:
-		            this.EnterForeachHeaderCode((Production) node);
+                EnterForeachHeaderCode((Production) node);
                 break;
             case (int) StrictConstants.FOREACH_HEADER_LOCAL_NAME:
-		            this.EnterForeachHeaderLocalName((Production) node);
+                EnterForeachHeaderLocalName((Production) node);
                 break;
             case (int) StrictConstants.FOREACH_HEADER_IN_PARENS:
-		            this.EnterForeachHeaderInParens((Production) node);
+                EnterForeachHeaderInParens((Production) node);
                 break;
             case (int) StrictConstants.FOR_BLOCK:
-		            this.EnterForBlock((Production) node);
+                EnterForBlock((Production) node);
                 break;
             case (int) StrictConstants.FOR_HEADER:
-		            this.EnterForHeader((Production) node);
+                EnterForHeader((Production) node);
                 break;
             case (int) StrictConstants.FOR_HEADER_CODE:
-		            this.EnterForHeaderCode((Production) node);
+                EnterForHeaderCode((Production) node);
                 break;
             case (int) StrictConstants.FOR_HEADER_IN_PARENS:
-		            this.EnterForHeaderInParens((Production) node);
+                EnterForHeaderInParens((Production) node);
                 break;
             case (int) StrictConstants.WHILE_BLOCK:
-		            this.EnterWhileBlock((Production) node);
+                EnterWhileBlock((Production) node);
                 break;
             case (int) StrictConstants.SWITCH_BLOCK:
-		            this.EnterSwitchBlock((Production) node);
+                EnterSwitchBlock((Production) node);
                 break;
             case (int) StrictConstants.CASE_BLOCK:
-		            this.EnterCaseBlock((Production) node);
+                EnterCaseBlock((Production) node);
                 break;
             case (int) StrictConstants.CODE:
-		            this.EnterCode((Production) node);
+                EnterCode((Production) node);
                 break;
             case (int) StrictConstants.CODE_BODY:
-		            this.EnterCodeBody((Production) node);
+                EnterCodeBody((Production) node);
                 break;
             case (int) StrictConstants.CODE_BODY_PARENS:
-		            this.EnterCodeBodyParens((Production) node);
+                EnterCodeBodyParens((Production) node);
                 break;
             case (int) StrictConstants.SIMPLE_CODE:
-		            this.EnterSimpleCode((Production) node);
+                EnterSimpleCode((Production) node);
                 break;
             case (int) StrictConstants.SIMPLE_CODE_BODY:
-		            this.EnterSimpleCodeBody((Production) node);
+                EnterSimpleCodeBody((Production) node);
                 break;
             case (int) StrictConstants.SIMPLE_CODE_BODY_PARENS:
-		            this.EnterSimpleCodeBodyParens((Production) node);
+                EnterSimpleCodeBodyParens((Production) node);
                 break;
             case (int) StrictConstants.EXPRESSION:
-		            this.EnterExpression((Production) node);
+                EnterExpression((Production) node);
                 break;
             case (int) StrictConstants.ADD_TIMER_EXPRESSION:
-		            this.EnterAddTimerExpression((Production) node);
+                EnterAddTimerExpression((Production) node);
                 break;
             case (int) StrictConstants.ADD_TIMER_BODY:
-		            this.EnterAddTimerBody((Production) node);
+                EnterAddTimerBody((Production) node);
                 break;
             case (int) StrictConstants.AT_KEY:
-		            this.EnterAtKey((Production) node);
+                EnterAtKey((Production) node);
                 break;
             case (int) StrictConstants.TRIGGER_KEY:
-		            this.EnterTriggerKey((Production) node);
+                EnterTriggerKey((Production) node);
                 break;
             case (int) StrictConstants.PLUGIN_KEY:
-		            this.EnterPluginKey((Production) node);
+                EnterPluginKey((Production) node);
                 break;
             case (int) StrictConstants.TIMER_KEY:
-		            this.EnterTimerKey((Production) node);
+                EnterTimerKey((Production) node);
                 break;
             case (int) StrictConstants.QUOTED_STRING:
-		            this.EnterQuotedString((Production) node);
+                EnterQuotedString((Production) node);
                 break;
             case (int) StrictConstants.ARGUMENT:
-		            this.EnterArgument((Production) node);
+                EnterArgument((Production) node);
                 break;
             case (int) StrictConstants.ARGS_LIST:
-		            this.EnterArgsList((Production) node);
+                EnterArgsList((Production) node);
                 break;
             case (int) StrictConstants.STRONG_EVAL_EXPRESSION:
-		            this.EnterStrongEvalExpression((Production) node);
+                EnterStrongEvalExpression((Production) node);
                 break;
             case (int) StrictConstants.RANDOM_EXPRESSION:
-		            this.EnterRandomExpression((Production) node);
+                EnterRandomExpression((Production) node);
                 break;
             case (int) StrictConstants.ARGS_SEPARATOR:
-		            this.EnterArgsSeparator((Production) node);
+                EnterArgsSeparator((Production) node);
                 break;
             case (int) StrictConstants.EVAL_EXPRESSION:
-		            this.EnterEvalExpression((Production) node);
+                EnterEvalExpression((Production) node);
                 break;
             case (int) StrictConstants.EVAL_WORD_EXPRESSION:
-		            this.EnterEvalWordExpression((Production) node);
+                EnterEvalWordExpression((Production) node);
                 break;
             case (int) StrictConstants.DOTTED_EXPRESSION_CHAIN:
-		            this.EnterDottedExpressionChain((Production) node);
+                EnterDottedExpressionChain((Production) node);
                 break;
             case (int) StrictConstants.SIMPLE_EXPRESSION:
-		            this.EnterSimpleExpression((Production) node);
+                EnterSimpleExpression((Production) node);
                 break;
             case (int) StrictConstants.TYPE_OF_EXPRESSION:
-		            this.EnterTypeOfExpression((Production) node);
+                EnterTypeOfExpression((Production) node);
                 break;
             case (int) StrictConstants.CALLER:
-		            this.EnterCaller((Production) node);
+                EnterCaller((Production) node);
                 break;
             case (int) StrictConstants.INDEXER:
-		            this.EnterIndexer((Production) node);
+                EnterIndexer((Production) node);
                 break;
             case (int) StrictConstants.ASSIGNER:
-		            this.EnterAssigner((Production) node);
+                EnterAssigner((Production) node);
                 break;
             case (int) StrictConstants.WHITE_SPACE_ASSIGNER:
-		            this.EnterWhiteSpaceAssigner((Production) node);
+                EnterWhiteSpaceAssigner((Production) node);
                 break;
             case (int) StrictConstants.OPERATOR_ASSIGNER:
-		            this.EnterOperatorAssigner((Production) node);
+                EnterOperatorAssigner((Production) node);
                 break;
             case (int) StrictConstants.NUMBER:
-		            this.EnterNumber((Production) node);
+                EnterNumber((Production) node);
                 break;
             case (int) StrictConstants.VAR_EXPRESSION:
-		            this.EnterVarExpression((Production) node);
+                EnterVarExpression((Production) node);
                 break;
             case (int) StrictConstants.LOCAL_KEY:
-		            this.EnterLocalKey((Production) node);
+                EnterLocalKey((Production) node);
                 break;
             case (int) StrictConstants.VAR_KEY:
-		            this.EnterVarKey((Production) node);
+                EnterVarKey((Production) node);
                 break;
             case (int) StrictConstants.BINARY_OPERATOR:
-		            this.EnterBinaryOperator((Production) node);
+                EnterBinaryOperator((Production) node);
                 break;
             case (int) StrictConstants.BINARY_OPERATORS:
-		            this.EnterBinaryOperators((Production) node);
+                EnterBinaryOperators((Production) node);
                 break;
             case (int) StrictConstants.TWO_CHARS_BIN_OPERATOR:
-		            this.EnterTwoCharsBinOperator((Production) node);
+                EnterTwoCharsBinOperator((Production) node);
                 break;
             case (int) StrictConstants.UNARY_OPERATOR:
-		            this.EnterUnaryOperator((Production) node);
+                EnterUnaryOperator((Production) node);
                 break;
             case (int) StrictConstants.COMPAR_OPERATOR:
-		            this.EnterComparOperator((Production) node);
+                EnterComparOperator((Production) node);
                 break;
             }
         }
@@ -421,257 +421,257 @@ namespace SteamEngine.LScript {
         public override Node Exit(Node node) {
             switch (node.GetId()) {
             case (int) StrictConstants.IF:
-                return this.ExitIf((Token) node);
+                return ExitIf((Token) node);
             case (int) StrictConstants.ELSE:
-                return this.ExitElse((Token) node);
+                return ExitElse((Token) node);
             case (int) StrictConstants.ELSEIF:
-                return this.ExitElseif((Token) node);
+                return ExitElseif((Token) node);
             case (int) StrictConstants.ENDIF:
-                return this.ExitEndif((Token) node);
+                return ExitEndif((Token) node);
             case (int) StrictConstants.WHILE:
-                return this.ExitWhile((Token) node);
+                return ExitWhile((Token) node);
             case (int) StrictConstants.ENDWHILE:
-                return this.ExitEndwhile((Token) node);
+                return ExitEndwhile((Token) node);
             case (int) StrictConstants.ADDTIMER:
-                return this.ExitAddtimer((Token) node);
+                return ExitAddtimer((Token) node);
             case (int) StrictConstants.FOR:
-                return this.ExitFor((Token) node);
+                return ExitFor((Token) node);
             case (int) StrictConstants.ENDFOR:
-                return this.ExitEndfor((Token) node);
+                return ExitEndfor((Token) node);
             case (int) StrictConstants.FOREACH:
-                return this.ExitForeach((Token) node);
+                return ExitForeach((Token) node);
             case (int) StrictConstants.IN:
-                return this.ExitIn((Token) node);
+                return ExitIn((Token) node);
             case (int) StrictConstants.ENDFOREACH:
-                return this.ExitEndforeach((Token) node);
+                return ExitEndforeach((Token) node);
             case (int) StrictConstants.SWITCH:
-                return this.ExitSwitch((Token) node);
+                return ExitSwitch((Token) node);
             case (int) StrictConstants.CASE:
-                return this.ExitCase((Token) node);
+                return ExitCase((Token) node);
             case (int) StrictConstants.ENDSWITCH:
-                return this.ExitEndswitch((Token) node);
+                return ExitEndswitch((Token) node);
             case (int) StrictConstants.BREAK:
-                return this.ExitBreak((Token) node);
+                return ExitBreak((Token) node);
             case (int) StrictConstants.DEFAULT:
-                return this.ExitDefault((Token) node);
+                return ExitDefault((Token) node);
             case (int) StrictConstants.ARGCHK:
-                return this.ExitArgchk((Token) node);
+                return ExitArgchk((Token) node);
             case (int) StrictConstants.ARGTXT:
-                return this.ExitArgtxt((Token) node);
+                return ExitArgtxt((Token) node);
             case (int) StrictConstants.ARGNUM:
-                return this.ExitArgnum((Token) node);
+                return ExitArgnum((Token) node);
             case (int) StrictConstants.ARGO:
-                return this.ExitArgo((Token) node);
+                return ExitArgo((Token) node);
             case (int) StrictConstants.ARGN:
-                return this.ExitArgn((Token) node);
+                return ExitArgn((Token) node);
             case (int) StrictConstants.ARGV:
-                return this.ExitArgv((Token) node);
+                return ExitArgv((Token) node);
             case (int) StrictConstants.ARGON:
-                return this.ExitArgon((Token) node);
+                return ExitArgon((Token) node);
             case (int) StrictConstants.ARGNN:
-                return this.ExitArgnn((Token) node);
+                return ExitArgnn((Token) node);
             case (int) StrictConstants.ARGVN:
-                return this.ExitArgvn((Token) node);
+                return ExitArgvn((Token) node);
             case (int) StrictConstants.TAG:
-                return this.ExitTag((Token) node);
+                return ExitTag((Token) node);
             case (int) StrictConstants.ARG:
-                return this.ExitArg((Token) node);
+                return ExitArg((Token) node);
             case (int) StrictConstants.VAR:
-                return this.ExitVar((Token) node);
+                return ExitVar((Token) node);
             case (int) StrictConstants.LOCAL:
-                return this.ExitLocal((Token) node);
+                return ExitLocal((Token) node);
             case (int) StrictConstants.EVAL:
-                return this.ExitEval((Token) node);
+                return ExitEval((Token) node);
             case (int) StrictConstants.OP_ADD:
-                return this.ExitOpAdd((Token) node);
+                return ExitOpAdd((Token) node);
             case (int) StrictConstants.OP_SUB:
-                return this.ExitOpSub((Token) node);
+                return ExitOpSub((Token) node);
             case (int) StrictConstants.OP_MUL:
-                return this.ExitOpMul((Token) node);
+                return ExitOpMul((Token) node);
             case (int) StrictConstants.OP_DIV:
-                return this.ExitOpDiv((Token) node);
+                return ExitOpDiv((Token) node);
             case (int) StrictConstants.OP_INTDIV:
-                return this.ExitOpIntdiv((Token) node);
+                return ExitOpIntdiv((Token) node);
             case (int) StrictConstants.OP_MOD:
-                return this.ExitOpMod((Token) node);
+                return ExitOpMod((Token) node);
             case (int) StrictConstants.OP_IS:
-                return this.ExitOpIs((Token) node);
+                return ExitOpIs((Token) node);
             case (int) StrictConstants.OP_TYPEOF:
-                return this.ExitOpTypeof((Token) node);
+                return ExitOpTypeof((Token) node);
             case (int) StrictConstants.OP_SCREAMER:
-                return this.ExitOpScreamer((Token) node);
+                return ExitOpScreamer((Token) node);
             case (int) StrictConstants.OP_BITAND:
-                return this.ExitOpBitand((Token) node);
+                return ExitOpBitand((Token) node);
             case (int) StrictConstants.OP_BITCOMPLEMENT:
-                return this.ExitOpBitcomplement((Token) node);
+                return ExitOpBitcomplement((Token) node);
             case (int) StrictConstants.OP_BITOR:
-                return this.ExitOpBitor((Token) node);
+                return ExitOpBitor((Token) node);
             case (int) StrictConstants.OP_AND:
-                return this.ExitOpAnd((Token) node);
+                return ExitOpAnd((Token) node);
             case (int) StrictConstants.OP_OR:
-                return this.ExitOpOr((Token) node);
+                return ExitOpOr((Token) node);
             case (int) StrictConstants.DOT:
-                return this.ExitDot((Token) node);
+                return ExitDot((Token) node);
             case (int) StrictConstants.COMMA:
-                return this.ExitComma((Token) node);
+                return ExitComma((Token) node);
             case (int) StrictConstants.OP_ASIG_PLAIN:
-                return this.ExitOpAsigPlain((Token) node);
+                return ExitOpAsigPlain((Token) node);
             case (int) StrictConstants.OP_COMP_GRE:
-                return this.ExitOpCompGre((Token) node);
+                return ExitOpCompGre((Token) node);
             case (int) StrictConstants.OP_COMP_SMA:
-                return this.ExitOpCompSma((Token) node);
+                return ExitOpCompSma((Token) node);
             case (int) StrictConstants.OP_COMP_NOTEQ:
-                return this.ExitOpCompNoteq((Token) node);
+                return ExitOpCompNoteq((Token) node);
             case (int) StrictConstants.OP_COMP_EQ:
-                return this.ExitOpCompEq((Token) node);
+                return ExitOpCompEq((Token) node);
             case (int) StrictConstants.LEFT_PAREN:
-                return this.ExitLeftParen((Token) node);
+                return ExitLeftParen((Token) node);
             case (int) StrictConstants.RIGHT_PAREN:
-                return this.ExitRightParen((Token) node);
+                return ExitRightParen((Token) node);
             case (int) StrictConstants.LEFT_BRACKET:
-                return this.ExitLeftBracket((Token) node);
+                return ExitLeftBracket((Token) node);
             case (int) StrictConstants.RIGHT_BRACKET:
-                return this.ExitRightBracket((Token) node);
+                return ExitRightBracket((Token) node);
             case (int) StrictConstants.LEFT_BRACE:
-                return this.ExitLeftBrace((Token) node);
+                return ExitLeftBrace((Token) node);
             case (int) StrictConstants.RIGHT_BRACE:
-                return this.ExitRightBrace((Token) node);
+                return ExitRightBrace((Token) node);
             case (int) StrictConstants.QUOTE:
-                return this.ExitQuote((Token) node);
+                return ExitQuote((Token) node);
             case (int) StrictConstants.HEXNUMBER:
-                return this.ExitHexnumber((Token) node);
+                return ExitHexnumber((Token) node);
             case (int) StrictConstants.INTEGER:
-                return this.ExitInteger((Token) node);
+                return ExitInteger((Token) node);
             case (int) StrictConstants.FLOAT:
-                return this.ExitFloat((Token) node);
+                return ExitFloat((Token) node);
             case (int) StrictConstants.STRING:
-                return this.ExitString((Token) node);
+                return ExitString((Token) node);
             case (int) StrictConstants.WHITESPACE:
-                return this.ExitWhitespace((Token) node);
+                return ExitWhitespace((Token) node);
             case (int) StrictConstants.CROSSHASH:
-                return this.ExitCrosshash((Token) node);
+                return ExitCrosshash((Token) node);
             case (int) StrictConstants.AT:
-                return this.ExitAt((Token) node);
+                return ExitAt((Token) node);
             case (int) StrictConstants.QUERYMARK:
-                return this.ExitQuerymark((Token) node);
+                return ExitQuerymark((Token) node);
             case (int) StrictConstants.ESCAPEDCHAR:
-                return this.ExitEscapedchar((Token) node);
+                return ExitEscapedchar((Token) node);
             case (int) StrictConstants.OTHERSYMBOLS:
-                return this.ExitOthersymbols((Token) node);
+                return ExitOthersymbols((Token) node);
             case (int) StrictConstants.COMEOL:
-                return this.ExitComeol((Token) node);
+                return ExitComeol((Token) node);
             case (int) StrictConstants.SCRIPT:
-                return this.ExitScript((Production) node);
+                return ExitScript((Production) node);
             case (int) StrictConstants.SCRIPT_LINE:
-                return this.ExitScriptLine((Production) node);
+                return ExitScriptLine((Production) node);
             case (int) StrictConstants.IF_BLOCK:
-                return this.ExitIfBlock((Production) node);
+                return ExitIfBlock((Production) node);
             case (int) StrictConstants.IF_BEGIN:
-                return this.ExitIfBegin((Production) node);
+                return ExitIfBegin((Production) node);
             case (int) StrictConstants.ELSE_IF_BLOCK:
-                return this.ExitElseIfBlock((Production) node);
+                return ExitElseIfBlock((Production) node);
             case (int) StrictConstants.ELSE_BLOCK:
-                return this.ExitElseBlock((Production) node);
+                return ExitElseBlock((Production) node);
             case (int) StrictConstants.FOREACH_BLOCK:
-                return this.ExitForeachBlock((Production) node);
+                return ExitForeachBlock((Production) node);
             case (int) StrictConstants.FOREACH_HEADER:
-                return this.ExitForeachHeader((Production) node);
+                return ExitForeachHeader((Production) node);
             case (int) StrictConstants.FOREACH_HEADER_CODE:
-                return this.ExitForeachHeaderCode((Production) node);
+                return ExitForeachHeaderCode((Production) node);
             case (int) StrictConstants.FOREACH_HEADER_LOCAL_NAME:
-                return this.ExitForeachHeaderLocalName((Production) node);
+                return ExitForeachHeaderLocalName((Production) node);
             case (int) StrictConstants.FOREACH_HEADER_IN_PARENS:
-                return this.ExitForeachHeaderInParens((Production) node);
+                return ExitForeachHeaderInParens((Production) node);
             case (int) StrictConstants.FOR_BLOCK:
-                return this.ExitForBlock((Production) node);
+                return ExitForBlock((Production) node);
             case (int) StrictConstants.FOR_HEADER:
-                return this.ExitForHeader((Production) node);
+                return ExitForHeader((Production) node);
             case (int) StrictConstants.FOR_HEADER_CODE:
-                return this.ExitForHeaderCode((Production) node);
+                return ExitForHeaderCode((Production) node);
             case (int) StrictConstants.FOR_HEADER_IN_PARENS:
-                return this.ExitForHeaderInParens((Production) node);
+                return ExitForHeaderInParens((Production) node);
             case (int) StrictConstants.WHILE_BLOCK:
-                return this.ExitWhileBlock((Production) node);
+                return ExitWhileBlock((Production) node);
             case (int) StrictConstants.SWITCH_BLOCK:
-                return this.ExitSwitchBlock((Production) node);
+                return ExitSwitchBlock((Production) node);
             case (int) StrictConstants.CASE_BLOCK:
-                return this.ExitCaseBlock((Production) node);
+                return ExitCaseBlock((Production) node);
             case (int) StrictConstants.CODE:
-                return this.ExitCode((Production) node);
+                return ExitCode((Production) node);
             case (int) StrictConstants.CODE_BODY:
-                return this.ExitCodeBody((Production) node);
+                return ExitCodeBody((Production) node);
             case (int) StrictConstants.CODE_BODY_PARENS:
-                return this.ExitCodeBodyParens((Production) node);
+                return ExitCodeBodyParens((Production) node);
             case (int) StrictConstants.SIMPLE_CODE:
-                return this.ExitSimpleCode((Production) node);
+                return ExitSimpleCode((Production) node);
             case (int) StrictConstants.SIMPLE_CODE_BODY:
-                return this.ExitSimpleCodeBody((Production) node);
+                return ExitSimpleCodeBody((Production) node);
             case (int) StrictConstants.SIMPLE_CODE_BODY_PARENS:
-                return this.ExitSimpleCodeBodyParens((Production) node);
+                return ExitSimpleCodeBodyParens((Production) node);
             case (int) StrictConstants.EXPRESSION:
-                return this.ExitExpression((Production) node);
+                return ExitExpression((Production) node);
             case (int) StrictConstants.ADD_TIMER_EXPRESSION:
-                return this.ExitAddTimerExpression((Production) node);
+                return ExitAddTimerExpression((Production) node);
             case (int) StrictConstants.ADD_TIMER_BODY:
-                return this.ExitAddTimerBody((Production) node);
+                return ExitAddTimerBody((Production) node);
             case (int) StrictConstants.AT_KEY:
-                return this.ExitAtKey((Production) node);
+                return ExitAtKey((Production) node);
             case (int) StrictConstants.TRIGGER_KEY:
-                return this.ExitTriggerKey((Production) node);
+                return ExitTriggerKey((Production) node);
             case (int) StrictConstants.PLUGIN_KEY:
-                return this.ExitPluginKey((Production) node);
+                return ExitPluginKey((Production) node);
             case (int) StrictConstants.TIMER_KEY:
-                return this.ExitTimerKey((Production) node);
+                return ExitTimerKey((Production) node);
             case (int) StrictConstants.QUOTED_STRING:
-                return this.ExitQuotedString((Production) node);
+                return ExitQuotedString((Production) node);
             case (int) StrictConstants.ARGUMENT:
-                return this.ExitArgument((Production) node);
+                return ExitArgument((Production) node);
             case (int) StrictConstants.ARGS_LIST:
-                return this.ExitArgsList((Production) node);
+                return ExitArgsList((Production) node);
             case (int) StrictConstants.STRONG_EVAL_EXPRESSION:
-                return this.ExitStrongEvalExpression((Production) node);
+                return ExitStrongEvalExpression((Production) node);
             case (int) StrictConstants.RANDOM_EXPRESSION:
-                return this.ExitRandomExpression((Production) node);
+                return ExitRandomExpression((Production) node);
             case (int) StrictConstants.ARGS_SEPARATOR:
-                return this.ExitArgsSeparator((Production) node);
+                return ExitArgsSeparator((Production) node);
             case (int) StrictConstants.EVAL_EXPRESSION:
-                return this.ExitEvalExpression((Production) node);
+                return ExitEvalExpression((Production) node);
             case (int) StrictConstants.EVAL_WORD_EXPRESSION:
-                return this.ExitEvalWordExpression((Production) node);
+                return ExitEvalWordExpression((Production) node);
             case (int) StrictConstants.DOTTED_EXPRESSION_CHAIN:
-                return this.ExitDottedExpressionChain((Production) node);
+                return ExitDottedExpressionChain((Production) node);
             case (int) StrictConstants.SIMPLE_EXPRESSION:
-                return this.ExitSimpleExpression((Production) node);
+                return ExitSimpleExpression((Production) node);
             case (int) StrictConstants.TYPE_OF_EXPRESSION:
-                return this.ExitTypeOfExpression((Production) node);
+                return ExitTypeOfExpression((Production) node);
             case (int) StrictConstants.CALLER:
-                return this.ExitCaller((Production) node);
+                return ExitCaller((Production) node);
             case (int) StrictConstants.INDEXER:
-                return this.ExitIndexer((Production) node);
+                return ExitIndexer((Production) node);
             case (int) StrictConstants.ASSIGNER:
-                return this.ExitAssigner((Production) node);
+                return ExitAssigner((Production) node);
             case (int) StrictConstants.WHITE_SPACE_ASSIGNER:
-                return this.ExitWhiteSpaceAssigner((Production) node);
+                return ExitWhiteSpaceAssigner((Production) node);
             case (int) StrictConstants.OPERATOR_ASSIGNER:
-                return this.ExitOperatorAssigner((Production) node);
+                return ExitOperatorAssigner((Production) node);
             case (int) StrictConstants.NUMBER:
-                return this.ExitNumber((Production) node);
+                return ExitNumber((Production) node);
             case (int) StrictConstants.VAR_EXPRESSION:
-                return this.ExitVarExpression((Production) node);
+                return ExitVarExpression((Production) node);
             case (int) StrictConstants.LOCAL_KEY:
-                return this.ExitLocalKey((Production) node);
+                return ExitLocalKey((Production) node);
             case (int) StrictConstants.VAR_KEY:
-                return this.ExitVarKey((Production) node);
+                return ExitVarKey((Production) node);
             case (int) StrictConstants.BINARY_OPERATOR:
-                return this.ExitBinaryOperator((Production) node);
+                return ExitBinaryOperator((Production) node);
             case (int) StrictConstants.BINARY_OPERATORS:
-                return this.ExitBinaryOperators((Production) node);
+                return ExitBinaryOperators((Production) node);
             case (int) StrictConstants.TWO_CHARS_BIN_OPERATOR:
-                return this.ExitTwoCharsBinOperator((Production) node);
+                return ExitTwoCharsBinOperator((Production) node);
             case (int) StrictConstants.UNARY_OPERATOR:
-                return this.ExitUnaryOperator((Production) node);
+                return ExitUnaryOperator((Production) node);
             case (int) StrictConstants.COMPAR_OPERATOR:
-                return this.ExitComparOperator((Production) node);
+                return ExitComparOperator((Production) node);
             }
             return node;
         }
@@ -689,172 +689,172 @@ namespace SteamEngine.LScript {
         public override void Child(Production node, Node child) {
             switch (node.GetId()) {
             case (int) StrictConstants.SCRIPT:
-		            this.ChildScript(node, child);
+                ChildScript(node, child);
                 break;
             case (int) StrictConstants.SCRIPT_LINE:
-		            this.ChildScriptLine(node, child);
+                ChildScriptLine(node, child);
                 break;
             case (int) StrictConstants.IF_BLOCK:
-		            this.ChildIfBlock(node, child);
+                ChildIfBlock(node, child);
                 break;
             case (int) StrictConstants.IF_BEGIN:
-		            this.ChildIfBegin(node, child);
+                ChildIfBegin(node, child);
                 break;
             case (int) StrictConstants.ELSE_IF_BLOCK:
-		            this.ChildElseIfBlock(node, child);
+                ChildElseIfBlock(node, child);
                 break;
             case (int) StrictConstants.ELSE_BLOCK:
-		            this.ChildElseBlock(node, child);
+                ChildElseBlock(node, child);
                 break;
             case (int) StrictConstants.FOREACH_BLOCK:
-		            this.ChildForeachBlock(node, child);
+                ChildForeachBlock(node, child);
                 break;
             case (int) StrictConstants.FOREACH_HEADER:
-		            this.ChildForeachHeader(node, child);
+                ChildForeachHeader(node, child);
                 break;
             case (int) StrictConstants.FOREACH_HEADER_CODE:
-		            this.ChildForeachHeaderCode(node, child);
+                ChildForeachHeaderCode(node, child);
                 break;
             case (int) StrictConstants.FOREACH_HEADER_LOCAL_NAME:
-		            this.ChildForeachHeaderLocalName(node, child);
+                ChildForeachHeaderLocalName(node, child);
                 break;
             case (int) StrictConstants.FOREACH_HEADER_IN_PARENS:
-		            this.ChildForeachHeaderInParens(node, child);
+                ChildForeachHeaderInParens(node, child);
                 break;
             case (int) StrictConstants.FOR_BLOCK:
-		            this.ChildForBlock(node, child);
+                ChildForBlock(node, child);
                 break;
             case (int) StrictConstants.FOR_HEADER:
-		            this.ChildForHeader(node, child);
+                ChildForHeader(node, child);
                 break;
             case (int) StrictConstants.FOR_HEADER_CODE:
-		            this.ChildForHeaderCode(node, child);
+                ChildForHeaderCode(node, child);
                 break;
             case (int) StrictConstants.FOR_HEADER_IN_PARENS:
-		            this.ChildForHeaderInParens(node, child);
+                ChildForHeaderInParens(node, child);
                 break;
             case (int) StrictConstants.WHILE_BLOCK:
-		            this.ChildWhileBlock(node, child);
+                ChildWhileBlock(node, child);
                 break;
             case (int) StrictConstants.SWITCH_BLOCK:
-		            this.ChildSwitchBlock(node, child);
+                ChildSwitchBlock(node, child);
                 break;
             case (int) StrictConstants.CASE_BLOCK:
-		            this.ChildCaseBlock(node, child);
+                ChildCaseBlock(node, child);
                 break;
             case (int) StrictConstants.CODE:
-		            this.ChildCode(node, child);
+                ChildCode(node, child);
                 break;
             case (int) StrictConstants.CODE_BODY:
-		            this.ChildCodeBody(node, child);
+                ChildCodeBody(node, child);
                 break;
             case (int) StrictConstants.CODE_BODY_PARENS:
-		            this.ChildCodeBodyParens(node, child);
+                ChildCodeBodyParens(node, child);
                 break;
             case (int) StrictConstants.SIMPLE_CODE:
-		            this.ChildSimpleCode(node, child);
+                ChildSimpleCode(node, child);
                 break;
             case (int) StrictConstants.SIMPLE_CODE_BODY:
-		            this.ChildSimpleCodeBody(node, child);
+                ChildSimpleCodeBody(node, child);
                 break;
             case (int) StrictConstants.SIMPLE_CODE_BODY_PARENS:
-		            this.ChildSimpleCodeBodyParens(node, child);
+                ChildSimpleCodeBodyParens(node, child);
                 break;
             case (int) StrictConstants.EXPRESSION:
-		            this.ChildExpression(node, child);
+                ChildExpression(node, child);
                 break;
             case (int) StrictConstants.ADD_TIMER_EXPRESSION:
-		            this.ChildAddTimerExpression(node, child);
+                ChildAddTimerExpression(node, child);
                 break;
             case (int) StrictConstants.ADD_TIMER_BODY:
-		            this.ChildAddTimerBody(node, child);
+                ChildAddTimerBody(node, child);
                 break;
             case (int) StrictConstants.AT_KEY:
-		            this.ChildAtKey(node, child);
+                ChildAtKey(node, child);
                 break;
             case (int) StrictConstants.TRIGGER_KEY:
-		            this.ChildTriggerKey(node, child);
+                ChildTriggerKey(node, child);
                 break;
             case (int) StrictConstants.PLUGIN_KEY:
-		            this.ChildPluginKey(node, child);
+                ChildPluginKey(node, child);
                 break;
             case (int) StrictConstants.TIMER_KEY:
-		            this.ChildTimerKey(node, child);
+                ChildTimerKey(node, child);
                 break;
             case (int) StrictConstants.QUOTED_STRING:
-		            this.ChildQuotedString(node, child);
+                ChildQuotedString(node, child);
                 break;
             case (int) StrictConstants.ARGUMENT:
-		            this.ChildArgument(node, child);
+                ChildArgument(node, child);
                 break;
             case (int) StrictConstants.ARGS_LIST:
-		            this.ChildArgsList(node, child);
+                ChildArgsList(node, child);
                 break;
             case (int) StrictConstants.STRONG_EVAL_EXPRESSION:
-		            this.ChildStrongEvalExpression(node, child);
+                ChildStrongEvalExpression(node, child);
                 break;
             case (int) StrictConstants.RANDOM_EXPRESSION:
-		            this.ChildRandomExpression(node, child);
+                ChildRandomExpression(node, child);
                 break;
             case (int) StrictConstants.ARGS_SEPARATOR:
-		            this.ChildArgsSeparator(node, child);
+                ChildArgsSeparator(node, child);
                 break;
             case (int) StrictConstants.EVAL_EXPRESSION:
-		            this.ChildEvalExpression(node, child);
+                ChildEvalExpression(node, child);
                 break;
             case (int) StrictConstants.EVAL_WORD_EXPRESSION:
-		            this.ChildEvalWordExpression(node, child);
+                ChildEvalWordExpression(node, child);
                 break;
             case (int) StrictConstants.DOTTED_EXPRESSION_CHAIN:
-		            this.ChildDottedExpressionChain(node, child);
+                ChildDottedExpressionChain(node, child);
                 break;
             case (int) StrictConstants.SIMPLE_EXPRESSION:
-		            this.ChildSimpleExpression(node, child);
+                ChildSimpleExpression(node, child);
                 break;
             case (int) StrictConstants.TYPE_OF_EXPRESSION:
-		            this.ChildTypeOfExpression(node, child);
+                ChildTypeOfExpression(node, child);
                 break;
             case (int) StrictConstants.CALLER:
-		            this.ChildCaller(node, child);
+                ChildCaller(node, child);
                 break;
             case (int) StrictConstants.INDEXER:
-		            this.ChildIndexer(node, child);
+                ChildIndexer(node, child);
                 break;
             case (int) StrictConstants.ASSIGNER:
-		            this.ChildAssigner(node, child);
+                ChildAssigner(node, child);
                 break;
             case (int) StrictConstants.WHITE_SPACE_ASSIGNER:
-		            this.ChildWhiteSpaceAssigner(node, child);
+                ChildWhiteSpaceAssigner(node, child);
                 break;
             case (int) StrictConstants.OPERATOR_ASSIGNER:
-		            this.ChildOperatorAssigner(node, child);
+                ChildOperatorAssigner(node, child);
                 break;
             case (int) StrictConstants.NUMBER:
-		            this.ChildNumber(node, child);
+                ChildNumber(node, child);
                 break;
             case (int) StrictConstants.VAR_EXPRESSION:
-		            this.ChildVarExpression(node, child);
+                ChildVarExpression(node, child);
                 break;
             case (int) StrictConstants.LOCAL_KEY:
-		            this.ChildLocalKey(node, child);
+                ChildLocalKey(node, child);
                 break;
             case (int) StrictConstants.VAR_KEY:
-		            this.ChildVarKey(node, child);
+                ChildVarKey(node, child);
                 break;
             case (int) StrictConstants.BINARY_OPERATOR:
-		            this.ChildBinaryOperator(node, child);
+                ChildBinaryOperator(node, child);
                 break;
             case (int) StrictConstants.BINARY_OPERATORS:
-		            this.ChildBinaryOperators(node, child);
+                ChildBinaryOperators(node, child);
                 break;
             case (int) StrictConstants.TWO_CHARS_BIN_OPERATOR:
-		            this.ChildTwoCharsBinOperator(node, child);
+                ChildTwoCharsBinOperator(node, child);
                 break;
             case (int) StrictConstants.UNARY_OPERATOR:
-		            this.ChildUnaryOperator(node, child);
+                ChildUnaryOperator(node, child);
                 break;
             case (int) StrictConstants.COMPAR_OPERATOR:
-		            this.ChildComparOperator(node, child);
+                ChildComparOperator(node, child);
                 break;
             }
         }
