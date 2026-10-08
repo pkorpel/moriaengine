@@ -54,13 +54,16 @@ namespace SteamEngine.Tests.Protocol {
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
-		public int ReadRedirectPort() {
+		public (int port, byte[] seed) ReadRedirect() {
 			byte id = ReadByte(this.stream);
 			if (id != 0x8c) {
 				throw new InvalidOperationException("Expected LoginToServerPacket (0x8c), got 0x" + id.ToString("x2"));
 			}
-			byte[] rest = ReadExactly(this.stream, 10); // 4 (ip) + 2 (port) + 4 (zero key)
-			return (rest[4] << 8) | rest[5];
+			byte[] rest = ReadExactly(this.stream, 10); // 4 (ip) + 2 (port) + 4 ("new key" - the real game-server seed)
+			int port = (rest[4] << 8) | rest[5];
+			byte[] seed = new byte[4];
+			Array.Copy(rest, 6, seed, 0, 4);
+			return (port, seed);
 		}
 
 		private static void EncodeAsciiFixed(string text, byte[] buffer, int offset, int fieldLength) {

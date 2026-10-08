@@ -60,7 +60,7 @@ namespace SteamEngine.Tests.Protocol {
 						}
 
 						login.SendServerSelect(0);
-						int redirectPort = login.ReadRedirectPort();
+						var (redirectPort, _) = login.ReadRedirect();
 						Assert.True(redirectPort > 0, "Expected a real port in the login redirect.");
 						return redirectPort;
 					}
