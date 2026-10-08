@@ -1392,12 +1392,12 @@ DEFNAME = i_wood_board
 [ItemDef 0x98b]
 DUPEITEM = i_curtain_2
 
-[ContainerDef 0x9b2]
-NAME = "Bank Box"
-TYPE = T_EQ_BANK_BOX
-//TDATA2 = 04a // commented out by Converter 
-LAYER = layer_bankbox
-DEFNAME = i_bankbox
+// [ContainerDef 0x9b2] DEFNAME = i_bankbox removed: obsolete leftover from the old Sphere
+// data auto-conversion. Superseded by the real, hand-authored bank box - BankBoxDef
+// i_bankBox (model 0xe7c) in scripts/Basic/ItemClasses/Bank/bankBox.def, which reuses the
+// same symbolic name (defname lookups are case-insensitive) and loads earlier, so this
+// block only ever produced a harmless-but-logged "class changed during resync" error,
+// never actually registering.
 
 [EquippableDef 0x9fd]
 CATEGORY = Decoration - Lightsources

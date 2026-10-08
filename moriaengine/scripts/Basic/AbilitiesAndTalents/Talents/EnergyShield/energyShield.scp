@@ -3,7 +3,7 @@ Name="Energy Shield"
 EffectPower=30 //30 hitpoints per ability point
 EffectDuration=60
 Cooldown = 4 * 60
-Resources = 60 mana, 1 i_amethyst
+Resources = 60 mana, 1 i_gem_amethyst //was "i_amethyst" - no such item anywhere; i_gem_amethyst (resources.def) is the real one
 
 PluginKey = @@energyShield
 PluginDef = p_energyShield
