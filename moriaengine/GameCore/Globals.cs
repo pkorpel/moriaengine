@@ -43,6 +43,11 @@ namespace SteamEngine {
 		[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Member")]
 		public const int defaultWarningLevel = 4;
 
+		// Bump whenever a save-file-breaking change is made to the persistence format, so
+		// future loads can detect and react to old/new data instead of guessing via optional
+		// field lookups alone.
+		public const int CurrentSaveFormatVersion = 1;
+
 		private static int port;
 		public static int Port {
 			get { return port; }
@@ -769,6 +774,7 @@ namespace SteamEngine {
 			output.WriteComment("globals");
 			output.WriteLine();
 			output.WriteSection("Globals", serverName.Replace(' ', '_'));//the header name is in fact ignored
+			output.WriteValue("saveFormatVersion", CurrentSaveFormatVersion);
 			output.WriteValue("time", TimeInTicks);
 			instance.Save(output);
 			output.WriteLine();
@@ -778,6 +784,17 @@ namespace SteamEngine {
 
 		internal static void LoadGlobals(PropsSection input) {
 			//Console.WriteLine("["+input.headerType+" "+input.headerName+"]");
+			PropsLine versionLine = input.TryPopPropsLine("saveFormatVersion");
+			int loadedSaveFormatVersion = 0; //0 = pre-versioning saves (every save before this field existed)
+			if ((versionLine != null) && ConvertTools.TryParseInt32(versionLine.Value, out int parsedVersion)) {
+				loadedSaveFormatVersion = parsedVersion;
+			}
+			if (loadedSaveFormatVersion > CurrentSaveFormatVersion) {
+				Logger.WriteWarning("Save data format version (" + loadedSaveFormatVersion +
+					") is newer than this server understands (" + CurrentSaveFormatVersion +
+					"). Loading anyway, but this may be unsafe.");
+			}
+
 			PropsLine timeLine = input.TryPopPropsLine("time");
 			long value;
 			if ((timeLine != null) && (ConvertTools.TryParseInt64(timeLine.Value, out value))) {

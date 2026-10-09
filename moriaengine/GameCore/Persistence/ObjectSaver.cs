@@ -1071,9 +1071,21 @@ namespace SteamEngine.Persistence {
 	[SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
 	public class SaveStream {
 		TextWriter writer;
+		private readonly string tempFilePath;
+		private readonly string finalFilePath;
 
 		public SaveStream(TextWriter writer) {
 			this.writer = writer;
+		}
+
+		/// <summary>
+		/// Writes to tempFilePath; Close() atomically renames it to finalFilePath only once
+		/// writing is done, so a crash mid-write can't truncate/corrupt the previous save.
+		/// </summary>
+		public SaveStream(TextWriter writer, string tempFilePath, string finalFilePath) {
+			this.writer = writer;
+			this.tempFilePath = tempFilePath;
+			this.finalFilePath = finalFilePath;
 		}
 
 		public void WriteLine(string value) {
@@ -1088,11 +1100,23 @@ namespace SteamEngine.Persistence {
 		public void Close() {
 			try {
 				this.writer.Flush();
-			} catch { }
+			} catch (Exception e) {
+				Logger.WriteWarning("Error flushing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + e.Message);
+			}
 			try {
 				this.writer.Close();
-			} catch { }
+			} catch (Exception e) {
+				Logger.WriteWarning("Error closing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + e.Message);
+			}
 			this.writer = null;
+
+			if (this.tempFilePath != null) {
+				try {
+					File.Move(this.tempFilePath, this.finalFilePath, true);
+				} catch (Exception e) {
+					Logger.WriteCritical("Failed to finalize save file '" + this.finalFilePath + "' from temp file '" + this.tempFilePath + "': " + e.Message);
+				}
+			}
 		}
 
 		public void WriteValue(string name, object value) {
