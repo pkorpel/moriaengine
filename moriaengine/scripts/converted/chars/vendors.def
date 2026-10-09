@@ -156,17 +156,17 @@ model = C_WOMAN
 [NPCDef C_H_BANKER]
 NAME = "Banker"
 model = C_MAN
-//TSPEECH = spk_jobbanker // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
-//TEVENTS = e_item_refuser // commented out by Converter 
+TSPEECH = spk_jobbanker
+//TEVENTS = e_character // commented out by Converter
+//TEVENTS = e_item_refuser // commented out by Converter
 
 [NPCDef C_H_BANKER_F]
 NAME = "Bankerka"
 model = C_WOMAN
-//TSPEECH = spk_human_prime // commented out by Converter 
-//TSPEECH = spk_jobbanker // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
-//TEVENTS = e_item_refuser // commented out by Converter 
+//TSPEECH = spk_human_prime // commented out by Converter
+TSPEECH = spk_jobbanker
+//TEVENTS = e_character // commented out by Converter
+//TEVENTS = e_item_refuser // commented out by Converter
 
 [NPCDef C_m_MAGESHOP]
 NAME = "Mag"
