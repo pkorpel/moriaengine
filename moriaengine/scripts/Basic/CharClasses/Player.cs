@@ -415,7 +415,7 @@ namespace SteamEngine.CompiledScripts {
 			if (state != null) {
 				if (addedDef != null) {
 					string name = addedDef is ThingDef ? ((ThingDef) addedDef).Name : addedDef.ToString();
-					this.SysMessage("Kam chceš umístit '" + name + "' ?");
+					this.SysMessage("Kam chceï¿½ umï¿½stit '" + name + "' ?");
 
 					ItemDef idef = addedDef as ItemDef;
 					AddHelper addedH = new AddHelper(addedDef, amount);
@@ -529,13 +529,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>
+		/// Tries to pay priceTotal gold, drawing from backpack/bank per Globals.PaymentSource
+		/// (see GoldUtils.TryPay). Previously a stub that always failed for real players and
+		/// always "succeeded" for GMs regardless of price - no gold was ever actually checked or
+		/// deducted either way (enhancements Phase 14.5, issue #36).
+		/// </summary>
 		public bool Pay(decimal priceTotal) {
-			//TODO
 			if (priceTotal < 0) {
 				return false;
 			}
+			if (priceTotal > uint.MaxValue) {
+				return false; //not a representable gold amount
+			}
 
-			return this.IsGM;
+			//round up - a fractional price should never let someone pay less than the real cost
+			uint amount = (uint) System.Math.Ceiling(priceTotal);
+			return GoldUtils.TryPay(this, amount);
 		}
 	}
 }
