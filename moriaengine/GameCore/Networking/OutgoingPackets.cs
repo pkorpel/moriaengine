@@ -1965,6 +1965,39 @@ namespace SteamEngine.Networking {
 		}
 	}
 
+	/// <summary>
+	/// General Info (0xBF) subcommand 0x14 - display a right-click context/popup menu. Uses the
+	/// pre-AOS "old" cliloc format (mode 0: index + 16-bit cliloc-minus-3000000 offset + flags)
+	/// rather than the newer 32-bit-cliloc variant, since that's universally understood by both
+	/// this shard's targeted client era and any later client - no reason to use the newer, more
+	/// complex format here.
+	/// </summary>
+	[CLSCompliant(false)]
+	public sealed class DisplayPopupMenuOutPacket : GeneralInformationOutPacket {
+		uint targetUid;
+		ContextMenu menu;
+
+		public void Prepare(uint targetUid, ContextMenu menu) {
+			this.targetUid = targetUid;
+			this.menu = menu;
+		}
+
+		public override ushort SubCmdId {
+			get { return 0x14; }
+		}
+
+		protected override void WriteSubCmd() {
+			this.EncodeUShort(0); //mode 0 = old cliloc format
+			this.EncodeUInt(this.targetUid);
+			this.EncodeByte((byte) this.menu.Count);
+			foreach (var entry in this.menu.Entries) {
+				this.EncodeUShort(entry.index);
+				this.EncodeUShort((ushort) (entry.cliloc - 3000000));
+				this.EncodeUShort(0); //flags - no hue override, no replaced-cliloc field
+			}
+		}
+	}
+
 	public sealed class ResurrectionMenuOutPacket : GameOutgoingPacket {
 		byte action;
 
