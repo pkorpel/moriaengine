@@ -1859,6 +1859,9 @@ namespace SteamEngine.CompiledScripts {
 					if (i == null) {
 						throw new SEException("Unable to create bankbox.");
 					}
+					// The lazily-created box was never assigned back here - every first-touch
+					// access returned the still-null foundBankbox instead of the box just made.
+					foundBankbox = i;
 				}
 				return (BankBox) foundBankbox;
 			}

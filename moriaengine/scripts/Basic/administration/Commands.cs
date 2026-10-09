@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
+using System;
 using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
@@ -74,6 +75,26 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				self.Flag_Insubst = true;
 				Globals.SrcWriteLine(Loc<GmCommandsLoc>.Get(Globals.SrcLanguage).InsubstOn);
+			}
+		}
+
+		/// <summary>Views or changes where purchases draw gold from, live, no restart needed -
+		/// see Globals.PaymentSource's own remarks for why this is tag-backed rather than .ini.</summary>
+		[SteamFunction]
+		public static void PaymentSource(Character self, ScriptArgs sa) {
+			object[] argv = sa.Argv;
+			if (argv.Length == 0 || argv[0] == null) {
+				self.SysMessage("Current payment source: " + Globals.PaymentSource +
+					". Usage: PaymentSource <BackpackFirst|BankOnly>");
+				return;
+			}
+
+			Globals.PaymentSourceMode mode;
+			if (Enum.TryParse(Convert.ToString(argv[0]), true, out mode)) {
+				Globals.PaymentSource = mode;
+				self.SysMessage("Payment source set to " + mode + ".");
+			} else {
+				self.SysMessage("Unknown payment source '" + argv[0] + "'. Usage: PaymentSource <BackpackFirst|BankOnly>");
 			}
 		}
 
