@@ -71,9 +71,9 @@ namespace SteamEngine.Persistence {
 				saveStream.WriteComment("Textual SteamEngine save");
 				Globals.SaveGlobals(saveStream);
 				saveStream.WriteLine("[EOF]");
-				try {
-					saveStream.Close();
-				} catch { }
+				// SaveStream.Close() handles its own flush/close/rename error logging internally -
+				// no try/catch needed here anymore.
+				saveStream.Close();
 
 				foreach (IBaseClassSaveCoordinator coordinator in ObjectSaver.AllCoordinators) {
 					string name = coordinator.FileNameToSave;
@@ -83,9 +83,7 @@ namespace SteamEngine.Persistence {
 					saveStream.WriteComment("Textual SteamEngine save");
 					coordinator.SaveAll(saveStream);
 					saveStream.WriteLine("[EOF]");
-					try {
-						saveStream.Close();
-					} catch { }
+					saveStream.Close();
 				}
 				success = true;
 			} catch (FatalException) {
@@ -114,14 +112,30 @@ namespace SteamEngine.Persistence {
 			}
 			string filename = string.Concat(file);
 			string filepath = Path.Combine(path, filename + ".sav");
-			return new SaveStream(new StreamWriter(File.Create(filepath)));
+			string tempPath = filepath + ".tmp";
+			return new SaveStream(new StreamWriter(File.Create(tempPath)), tempPath, filepath);
 		}
 		////////////////////////////////////////////////////////////////////////////////
 
+		// A persistent I/O/parse error (locked file, corrupt save) would otherwise hang
+		// startup forever here with no way for an admin to notice short of killing the
+		// process. Bounded retries give transient issues (e.g. a brief file lock) a chance
+		// to clear, then fail loudly instead of spinning silently.
+		private const int MaxLoadAttempts = 3;
+
 		public static void Load() {
 			using (StopWatch.StartAndDisplay("Loading world data...")) {
-				while (!TryLoad()) {
+				for (int attempt = 1; attempt <= MaxLoadAttempts; attempt++) {
+					if (TryLoad()) {
+						return;
+					}
+					if (attempt < MaxLoadAttempts) {
+						Logger.WriteWarning("World load attempt " + attempt + " of " + MaxLoadAttempts + " failed, retrying...");
+						System.Threading.Thread.Sleep(500);
+					}
 				}
+				throw new FatalException("World data failed to load after " + MaxLoadAttempts +
+					" attempts. See prior log entries for the underlying error(s).");
 			}
 		}
 
@@ -146,9 +160,7 @@ namespace SteamEngine.Persistence {
 				Globals.Instance.Trigger(TriggerKey.openLoadStream, sa);
 				StreamReader loadStream = GetLoadStream(path, sa.Argv[1]);
 				InvokeLoad(loadStream, Path.Combine(path, "globals.sav"));
-				try {
-					loadStream.Close();
-				} catch { }
+				CloseLoadStream(loadStream);
 
 				HashSet<string> nameSet = new HashSet<string>();
 				foreach (IBaseClassSaveCoordinator coordinator in ObjectSaver.AllCoordinators) {
@@ -162,9 +174,7 @@ namespace SteamEngine.Persistence {
 					Globals.Instance.Trigger(TriggerKey.openLoadStream, sa);
 					loadStream = GetLoadStream(path, sa.Argv[1]);
 					InvokeLoad(loadStream, Path.Combine(path, name + ".sav"));
-					try {
-						loadStream.Close();
-					} catch { }
+					CloseLoadStream(loadStream);
 				}
 
 				Globals.Instance.TryTrigger(TriggerKey.afterLoad, new ScriptArgs(path, true));
@@ -252,6 +262,15 @@ namespace SteamEngine.Persistence {
 			string filename = string.Concat(file);
 			string filepath = Path.Combine(path, filename + ".sav");
 			return new StreamReader(File.OpenRead(filepath));
+		}
+
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		private static void CloseLoadStream(StreamReader loadStream) {
+			try {
+				loadStream.Close();
+			} catch (Exception e) {
+				Logger.WriteWarning("Error closing load stream: " + e.Message);
+			}
 		}
 	}
 }
