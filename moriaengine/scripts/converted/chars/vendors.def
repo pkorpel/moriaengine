@@ -82,49 +82,49 @@ DEFNAME = c_man_gm
 [NPCDef C_m_WEAPONSMITH]
 NAME = "Kovar zbrani"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_BOWYER]
 NAME = "Lucistnik"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_f_BOWYER]
 NAME = "Lucistnik"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_TINKER]
 NAME = "Tinker"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_F_TINKER]
 NAME = "Tinker"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_CARPENTER]
 NAME = "Truhlar"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_f_CARPENTER]
 NAME = "Truhlarka"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
@@ -135,21 +135,21 @@ DESCRIPTION = Holic
 
 NAME = "Holic"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_PROVIS]
 NAME = "Provisioner"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_f_PROVIS]
 NAME = "Provisioner"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
@@ -171,14 +171,14 @@ TSPEECH = spk_jobbanker
 [NPCDef C_m_MAGESHOP]
 NAME = "Mag"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_f_MAGESHOP]
 NAME = "Mag"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
@@ -187,7 +187,7 @@ NAME = "Healer"
 model = C_MAN
 //Tspeech = spk_healer // commented out by Converter 
 //TEVENTS = e_healer // commented out by Converter 
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
@@ -196,63 +196,63 @@ NAME = "Healer"
 model = C_WOMAN
 //Tspeech = spk_healer // commented out by Converter 
 //TEVENTS = e_healer // commented out by Converter 
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_m_ARMORER]
 NAME = "Kovar zbroji"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_FARMER_F]
 NAME = "Farmarka"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_ALCHEMIST]
 NAME = "Alchymista"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_COOK]
 NAME = "Hospodsky"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_TAILOR_F]
 NAME = "Krejci"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_SHIPWRIGHT]
 NAME = "Lodnik - Rybar"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_ANIMALTRAINER]
 NAME = "Ranger"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_ANIMALTRAINER_F]
 NAME = "Ranger"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_PEASANT_F]
@@ -272,49 +272,49 @@ model = C_MAN
 [NPCDef C_m_WEAPONSMITHa]
 NAME = "Kovar zbrani"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_BOWYERa]
 NAME = "Lucistnik"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_f_BOWYERa]
 NAME = "Lucistnice"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_TINKERa]
 NAME = "Tinker"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_F_TINKERa]
 NAME = "Tinker"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_CARPENTERa]
 NAME = "Truhlar"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_f_CARPENTERa]
 NAME = "Truhlarka"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
@@ -325,49 +325,49 @@ DESCRIPTION = Holic
 
 NAME = "Holic"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_PROVISa]
 NAME = "Provisioner"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_f_PROVISa]
 NAME = "Provisioner"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef c_m_butcher]
 NAME = "Reznik"
 model = C_man
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef c_m_butcher_mordor]
 NAME = "Reznice"
 model = C_man
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_m_MAGESHOPa]
 NAME = "Mag"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_f_MAGESHOPa]
 NAME = "Mag"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
 
@@ -376,7 +376,7 @@ NAME = "Healer"
 model = C_MAN
 //Tspeech = spk_healer // commented out by Converter 
 //TEVENTS = e_healer // commented out by Converter 
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
@@ -385,63 +385,63 @@ NAME = "Healer"
 model = C_WOMAN
 //Tspeech = spk_healer // commented out by Converter 
 //TEVENTS = e_healer // commented out by Converter 
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_m_ARMORERa]
 NAME = "Kovar zbroji"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_H_FARMERa_F]
 NAME = "Farmarka"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_H_ALCHEMISTa]
 NAME = "Alchymista"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_H_COOKa]
 NAME = "Hospodsky"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_H_TAILOR_Fa]
 NAME = "Krejci"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_H_SHIPWRIGHTa]
 NAME = "Lodnik - Rybar"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_H_ANIMALTRAINER_mordor]
 NAME = "Ranger"
 model = C_MAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef C_H_ANIMALTRAINER_Fa]
 NAME = "Ranger"
 model = C_WOMAN
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_item_refuser // commented out by Converter 
 
 [NPCDef C_H_PEASANT_Fa]
@@ -467,7 +467,7 @@ NAME = "Mistr Tailor"
 model = C_WOMAN
 //CAN = MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef c_tomcon_nuzky_m]
@@ -479,7 +479,7 @@ NAME = "Mistr Tailor"
 model = C_WOMAN
 //CAN = MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
 //TEVENTS = e_item_refuser // commented out by Converter 
-//TSPEECH = spk_shopkeep // commented out by Converter 
+TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
 
 [ItemDef i_newbie_scissors] //newbie nuzky//
