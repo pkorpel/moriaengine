@@ -76,6 +76,8 @@ namespace SteamEngine.Networking {
 					return Pool<LoginCharacterInPacket>.Acquire();
 				case 0x6c:
 					return Pool<TargetCursorCommandsInPacket>.Acquire();
+				case 0x6f:
+					return Pool<SecureTradeInPacket>.Acquire();
 				case 0x72:
 					return Pool<RequestWarModeInPacket>.Acquire();
 				case 0x73:
