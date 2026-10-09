@@ -23,7 +23,6 @@ using SteamEngine.Common;
 
 namespace SteamEngine.Regions {
 	public partial class Map {
-		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "to"), SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "from"), SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool CanSeeLosFromTo(IPoint3D from, IPoint3D to) {
 #if TRACE
 			int distance = Point2D.GetSimpleDistance(from, to);
@@ -31,8 +30,55 @@ namespace SteamEngine.Regions {
 				Logger.WriteWarning("CanSeeLosFromTo for 2 points outside update range...?", new StackTrace());
 			}
 #endif
-			//TODO, obviously
-			return true;
+			if ((from.X == to.X) && (from.Y == to.Y)) {
+				return true; //CreateLosPath can't handle a single column, and there's nothing horizontal to block
+			}
+
+			// CreateLosPath returns a pooled PointsInLine under the IEnumerable<Point3D> interface -
+			// it must be disposed (released back to its pool) however we leave this method.
+			IEnumerable<Point3D> path = CreateLosPath(from, to);
+			try {
+				foreach (Point3D point in path) {
+					if (((point.X == from.X) && (point.Y == from.Y)) ||
+						((point.X == to.X) && (point.Y == to.Y))) {
+						continue; //standing on your own tile, or the target's own tile, never self-blocks
+					}
+					if (this.IsLosBlockedAt(point.X, point.Y, point.Z)) {
+						return false;
+					}
+				}
+				return true;
+			} finally {
+				(path as IDisposable)?.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Checks terrain and static/multi map data for something solid enough to block sight at
+		/// this single point. Deliberately does NOT check dynamic Things/Items yet (e.g. a
+		/// player-placed crate or a future house wall) - there's no real placeable-blocking
+		/// content in the game yet to validate that against (see the housing gap, issue #19);
+		/// this covers the actual common case today, which is terrain and building statics.
+		/// </summary>
+		private bool IsLosBlockedAt(int x, int y, int z) {
+			if (!this.IsValidPos(x, y)) {
+				return true; //off the edge of the map - nothing to see through
+			}
+
+			int landZ = this.GetTileZ(x, y);
+			int landId = this.GetTileId(x, y);
+			if (TileData.HasFlag(TileData.GetTileFlags(landId), TileFlag.Impassable) && (z <= landZ)) {
+				return true;
+			}
+
+			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
+				if (TileData.HasFlag(s.Flags, TileFlag.Impassable) &&
+					(z >= s.Z) && (z < s.Z + Math.Max(s.Height, 1))) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 
