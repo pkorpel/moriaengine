@@ -1145,6 +1145,7 @@ namespace SteamEngine.CompiledScripts {
 		public void CauseDeath(Character killedBy) {
 			if (!this.Flag_Dead) {
 
+				Notoriety.RegisterMurder(this, killedBy);
 				this.Trigger_HostileAction(killedBy);
 				this.Trigger_Disrupt();
 
@@ -1799,6 +1800,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static TriggerKey hostileActionTK = TriggerKey.Acquire("hostileAction");
 		public void Trigger_HostileAction(Character enemy) {
+			Notoriety.OnHostileAction(this, enemy);
 			ScriptArgs sa = new ScriptArgs(enemy);
 			this.TryTrigger(hostileActionTK, sa);
 			this.On_HostileAction(enemy);
@@ -1990,8 +1992,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override HighlightColor GetHighlightColorFor(AbstractCharacter viewer) {
-			//TODO
-			return HighlightColor.NoColor;
+			Character viewerChar = viewer as Character;
+			if (viewerChar == null) {
+				return HighlightColor.NoColor;
+			}
+			return Notoriety.GetHighlightColor(viewerChar, this);
 		}
 
 		#region Weight
@@ -2062,6 +2067,11 @@ namespace SteamEngine.CompiledScripts {
 		#region combat
 		public override void Trigger_PlayerAttackRequest(AbstractCharacter target) {
 			if (this == target || target == null) {
+				return;
+			}
+
+			if (Notoriety.IsAttackBlockedByRegion(this, target)) {
+				this.SysMessage("You may not attack anyone here.");
 				return;
 			}
 

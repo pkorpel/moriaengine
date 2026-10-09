@@ -37,7 +37,12 @@ namespace SteamEngine.Regions {
 		NoEnemyTeleportingIn = 0x0100,
 		NoEnemyTeleportingOut = 0x0200,
 
-		Underground = 0x0800, Dungeon = Underground
+		Underground = 0x0800, Dungeon = Underground,
+
+		Safe = 0x02000,
+		Guarded = 0x04000,
+		NoPvp = 0x08000,
+		Arena = 0x10000
 	}
 
 	//todo: make some members virtual?
@@ -89,6 +94,37 @@ namespace SteamEngine.Regions {
 				}
 				//todo? refresh light and stuff of present players?
 			}
+		}
+
+		private bool HasInheritedFlag(RegionFlags flag) {
+			if ((this.flags & flag) == flag) {
+				return true;
+			}
+			FlaggedRegion parentAsFlagged = this.Parent as FlaggedRegion;
+			if (parentAsFlagged != null) {
+				return parentAsFlagged.HasInheritedFlag(flag);
+			}
+			return false;
+		}
+
+		/// <summary>No PvP damage allowed at all, regardless of notoriety (e.g. a newbie starting area).</summary>
+		public bool Flag_Safe {
+			get { return this.HasInheritedFlag(RegionFlags.Safe); }
+		}
+
+		/// <summary>Town/city guards patrol here - attacking another player (unless already criminal/murderer) is forbidden.</summary>
+		public bool Flag_Guarded {
+			get { return this.HasInheritedFlag(RegionFlags.Guarded); }
+		}
+
+		/// <summary>Player-vs-player combat disallowed, independent of guards (e.g. a roleplay-safe zone).</summary>
+		public bool Flag_NoPvp {
+			get { return this.HasInheritedFlag(RegionFlags.NoPvp); }
+		}
+
+		/// <summary>Explicitly overrides Safe/Guarded/NoPvp to allow consensual PvP (e.g. a dueling pit).</summary>
+		public bool Flag_Arena {
+			get { return this.HasInheritedFlag(RegionFlags.Arena); }
 		}
 
 		public override TriggerResult On_Enter(AbstractCharacter ch, bool forced) {
