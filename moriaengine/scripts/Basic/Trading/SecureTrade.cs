@@ -210,18 +210,10 @@ namespace SteamEngine.CompiledScripts {
 			this.CleanUp();
 		}
 
-		private static ThingDef goldDef;
 		private void GiveCurrency(Character recipient, uint gold, uint platinum) {
-			if (gold > 0) {
-				if (goldDef == null) {
-					goldDef = ThingDef.GetByDefname("i_gold");
-					if (goldDef == null) {
-						throw new SEException("Unable to find itemdef i_gold in scripts.");
-					}
-				}
-				AbstractItem goldItem = (AbstractItem) goldDef.Create(recipient.Backpack);
-				goldItem.Amount = (int) gold;
-			}
+			// GoldUtils.Grant merges into an existing backpack pile rather than always creating
+			// a new stack - this used to inline the same item-creation logic without that merge.
+			GoldUtils.Grant(recipient, gold);
 			if (platinum > 0) {
 				//platinum has no equivalent concept in this engine/era - any amount entered is
 				//silently ignored rather than guessing at an unsupported currency conversion.
