@@ -25,5 +25,19 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class BankBox {
+		/// <summary>
+		/// Real UO bank boxes are only accessible through a banker, not by double-clicking them
+		/// directly (enhancements Phase 14.5, issue #36) - Container.On_DClick has no such gate,
+		/// since it's shared by every other container. GMs are exempted so admin inspection via
+		/// the normal container-open path still works.
+		/// </summary>
+		public override void On_DClick(AbstractCharacter from) {
+			Character fromAsChar = from as Character;
+			if ((fromAsChar != null) && fromAsChar.IsGM) {
+				base.On_DClick(from);
+				return;
+			}
+			from.SysMessage("Thou must speak with a banker to access thy bank box.");
+		}
 	}
 }
