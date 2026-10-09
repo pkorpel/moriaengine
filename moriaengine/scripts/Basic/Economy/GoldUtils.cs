@@ -130,5 +130,36 @@ namespace SteamEngine.CompiledScripts {
 			goldItem.Amount = (int) amount;
 			bank.TryStackToAnyInside(goldItem);
 		}
+
+		/// <summary>Moves `amount` gold from the backpack to the bank. Unlike TryPay, this always
+		/// draws from the backpack specifically - deposit/withdraw are explicit direct transfers,
+		/// not a purchase, so Globals.PaymentSource (which only governs where purchases draw
+		/// from) doesn't apply here.</summary>
+		public static bool TryDeposit(Character who, uint amount) {
+			if (amount == 0) {
+				return true;
+			}
+			Container backpack = who.Backpack;
+			if (CountGoldIn(backpack) < amount) {
+				return false;
+			}
+			ConsumeGoldFrom(backpack, amount);
+			GrantToBank(who, amount);
+			return true;
+		}
+
+		/// <summary>Moves `amount` gold from the bank to the backpack.</summary>
+		public static bool TryWithdraw(Character who, uint amount) {
+			if (amount == 0) {
+				return true;
+			}
+			BankBox bank = who.Bank;
+			if (CountGoldIn(bank) < amount) {
+				return false;
+			}
+			ConsumeGoldFrom(bank, amount);
+			Grant(who, amount);
+			return true;
+		}
 	}
 }
