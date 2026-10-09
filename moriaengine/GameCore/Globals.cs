@@ -396,6 +396,37 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>
+		/// Which source(s) a purchase draws gold from. Deliberately NOT an .ini setting - .ini
+		/// only loads once at process start (see Globals' own one-shot static-init constraint),
+		/// so a GM could never change this without a restart. Backed by a tag on Instance
+		/// instead: tags already auto-persist through the normal save/load cycle and are already
+		/// editable live via the D_Info dialog on Globals.Instance - no new settings
+		/// infrastructure needed. Intended as the template for any future "change this live,
+		/// no restart" setting, not a one-off.
+		/// </summary>
+		public enum PaymentSourceMode {
+			/// <summary>Pay with gold on hand (backpack) first; draw from the bank only if that's not enough.</summary>
+			BackpackFirst,
+			/// <summary>Always pay from the bank balance, regardless of gold carried on hand.</summary>
+			BankOnly
+		}
+
+		private static readonly TagKey paymentSourceTK = TagKey.Acquire("_payment_source_");
+
+		public static PaymentSourceMode PaymentSource {
+			get {
+				object tag = Instance.GetTag(paymentSourceTK);
+				if (tag is PaymentSourceMode mode) {
+					return mode;
+				}
+				return PaymentSourceMode.BackpackFirst;
+			}
+			set {
+				Instance.SetTag(paymentSourceTK, value);
+			}
+		}
+
 		private Globals() {
 			LoadIni();
 		}
