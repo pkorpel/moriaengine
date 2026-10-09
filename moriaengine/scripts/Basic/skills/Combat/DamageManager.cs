@@ -21,6 +21,10 @@ using SteamEngine.Common;
 namespace SteamEngine.CompiledScripts {
 
 	public static class DamageManager {
+		// Standard UO red speech hue, used for the damage-number overhead message below - no
+		// existing color convention for this already present in the codebase to match.
+		private const int damageMessageColor = 0x21;
+
 		public static double GetResistModifier(Character resistingChar, DamageType damageType) {
 			int intDamageType = (int) damageType;
 
@@ -99,6 +103,14 @@ namespace SteamEngine.CompiledScripts {
 						SoundCalculator.PlayHurtSound(defender);
 						AnimCalculator.PerformAnim(defender, GenericAnim.GetHit);
 					} //otherwise death sound+anim, is done elsewhere
+
+					// Previously the only feedback for any damage source (melee, spells, poison)
+					// was the target's HP bar silently changing - no animation cue or message at
+					// all told anyone a hit actually landed. Overhead text is used rather than a
+					// dedicated binary "damage number" packet (which postdates this shard's
+					// targeted client era and isn't confirmed supported) - speech/overhead
+					// messages are already a solid, universally-supported path.
+					defender.Message("-" + actualDamage, damageMessageColor);
 				}
 
 				return actualDamage;
@@ -110,6 +122,11 @@ namespace SteamEngine.CompiledScripts {
 		public static void ProcessSwing(Character attacker, Character defender) {
 			WeaponSwingArgs swingArgs = GetWeaponSwingArgs(attacker, defender);
 			SoundCalculator.PlayAttackSound(attacker);
+			// The attacker never got any swing animation at all before this - only a sound
+			// played, so every attack looked like the attacker just stood still. The anim
+			// category (swing/stab/overhead/shoot) is picked by weapon type; AnimCalculator's
+			// own TranslateAnim already handles handedness (left/right hand) on top of this.
+			AnimCalculator.PerformAnim(attacker, GetSwingAnim(attacker.WeaponType));
 
 			if (TriggerResult.Cancel != Trigger_BeforeSwing(swingArgs)) {
 				int actualDamage = CauseDamage(attacker, defender, attacker.WeaponDamageType, swingArgs.DamageAfterAC);
@@ -117,6 +134,28 @@ namespace SteamEngine.CompiledScripts {
 				swingArgs.InternalSetFinalDamage(actualDamage);
 
 				Trigger_AfterSwing(swingArgs);
+			}
+		}
+
+		private static GenericAnim GetSwingAnim(WeaponType weaponType) {
+			switch (weaponType) {
+				case WeaponType.BareHands:
+					return GenericAnim.AttackBareHands;
+				case WeaponType.OneHandBlunt:
+				case WeaponType.TwoHandBlunt:
+					return GenericAnim.AttackOverhead;
+				case WeaponType.OneHandSpike:
+				case WeaponType.TwoHandSpike:
+					return GenericAnim.AttackStab;
+				case WeaponType.Bow:
+				case WeaponType.XBow:
+					return GenericAnim.AttackShoot;
+				case WeaponType.OneHandSword:
+				case WeaponType.TwoHandSword:
+				case WeaponType.OneHandAxe:
+				case WeaponType.TwoHandAxe:
+				default:
+					return GenericAnim.AttackSwing;
 			}
 		}
 
