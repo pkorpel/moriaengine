@@ -414,6 +414,70 @@ namespace SteamEngine.Networking {
 		public abstract void DeclineJoinRequest(AbstractCharacter self, AbstractCharacter leader);
 	}
 
+	/// <summary>
+	/// Registration point for the secure trade system (scripts/Basic/Trading), mirroring
+	/// PartyCommands above exactly - GameCore can't reference scripts/Basic directly (it compiles
+	/// first), so the concrete implementation registers itself here via its constructor at script
+	/// load (see scripts/Basic/Trading/SecureTrade.cs's Bootstrap()).
+	///
+	/// TryAddItemToBox/TryStartOrAddItem return false to mean "not a trade-related drop, caller
+	/// should fall through to normal container/char drop handling" - this keeps GameCore's
+	/// DropItemInPacket oblivious to what a "trade box" actually is.
+	/// </summary>
+	[CLSCompliant(false)]
+	public abstract class SecureTradeCommands {
+		private static SecureTradeCommands instance;
+
+		public static SecureTradeCommands Instance {
+			get { return instance; }
+		}
+
+		protected SecureTradeCommands() {
+			instance = this;
+		}
+
+		public abstract bool TryAddItemToBox(AbstractCharacter who, AbstractItem destCont, AbstractItem item);
+		public abstract bool TryStartOrAddItem(AbstractCharacter from, AbstractCharacter target, AbstractItem item);
+		public abstract void SetAccepted(AbstractCharacter who, uint tradeBoxUid, bool accepted);
+		public abstract void Cancel(AbstractCharacter who, uint tradeBoxUid);
+		public abstract void SetGoldAndPlatinum(AbstractCharacter who, uint tradeBoxUid, uint gold, uint platinum);
+	}
+
+	/// <summary>
+	/// Incoming 0x6F (secure trade) - client->server only ever sends type 1 (cancel/close) or
+	/// type 2 (accept-checkbox toggle); types 0/3/4 are server->client only. Byte layout verified
+	/// against TazUO's SecureTrading.cs/OutgoingPackets.cs (Send_TradeResponse) rather than from
+	/// memory.
+	/// </summary>
+	public sealed class SecureTradeInPacket : DynamicLenInPacket {
+		byte type;
+		uint tradeBoxUid;
+		uint state;
+
+		protected override ReadPacketResult ReadDynamicPart(int blockSize) {
+			this.type = this.DecodeByte();
+			this.tradeBoxUid = (uint) this.DecodeInt();
+			if (this.type == 2) {
+				this.state = (uint) this.DecodeInt();
+			}
+			return ReadPacketResult.Success;
+		}
+
+		protected override void Handle(TcpConnection<GameState> conn, GameState state) {
+			SecureTradeCommands instance = SecureTradeCommands.Instance;
+			if (instance == null) {
+				return;
+			}
+
+			AbstractCharacter who = state.CharacterNotNull;
+			if (this.type == 1) {
+				instance.Cancel(who, this.tradeBoxUid);
+			} else if (this.type == 2) {
+				instance.SetAccepted(who, this.tradeBoxUid, this.state != 0);
+			}
+		}
+	}
+
 	public sealed class GameServerLoginInPacket : GameIncomingPacket {
 		string accName, pass;
 
@@ -1207,8 +1271,15 @@ namespace SteamEngine.Networking {
 						//Console.WriteLine("HandleDropItem: x = "+x+", y = "+y+", z = "+z+", cont = "+co);
 
 						AbstractItem coAsItem = co as AbstractItem;
+						SecureTradeCommands tradeCommands = SecureTradeCommands.Instance;
 						if (coAsItem != null) {
-							if (coAsItem.IsContainer && (this.x != 0xFFFF) && (this.y != 0xFFFF)) {
+							//secure trade boxes are real containers to everything else in the
+							//engine - checked first so dropping into one doesn't fall through to
+							//the generic container-drop path, which gates on reachability that a
+							//position-less trade box would always fail.
+							if (tradeCommands != null && tradeCommands.TryAddItemToBox(cre, coAsItem, i)) {
+								result = DenyResultMessages.Allow;
+							} else if (coAsItem.IsContainer && (this.x != 0xFFFF) && (this.y != 0xFFFF)) {
 								//client put it to some coords inside container
 								result = cre.TryPutItemInItem(coAsItem, this.x, this.y, false);
 							} else {
@@ -1216,7 +1287,16 @@ namespace SteamEngine.Networking {
 								result = cre.TryPutItemOnItem(coAsItem);//we ignore the x y
 							}
 						} else {
-							result = cre.TryPutItemOnChar((AbstractCharacter) co);
+							AbstractCharacter targetChar = (AbstractCharacter) co;
+							//dropping an item on another player (not oneself) is the classic UO
+							//gesture for starting/adding to a secure trade, rather than literally
+							//stuffing the item straight into their backpack unasked.
+							if (tradeCommands != null && targetChar != cre &&
+								tradeCommands.TryStartOrAddItem(cre, targetChar, i)) {
+								result = DenyResultMessages.Allow;
+							} else {
+								result = cre.TryPutItemOnChar(targetChar);
+							}
 						}
 					} else {
 						result = DenyResultMessages.Deny_ThatDoesntExist;

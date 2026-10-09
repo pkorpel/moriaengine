@@ -1998,6 +1998,89 @@ namespace SteamEngine.Networking {
 		}
 	}
 
+	/// <summary>
+	/// Outgoing 0x6F (secure trade) - one packet ID, five distinct server->client shapes
+	/// selected by the leading type byte. Byte layouts verified against TazUO's
+	/// SecureTrading.cs (the receive/parse side) rather than from memory.
+	/// </summary>
+	[CLSCompliant(false)]
+	public sealed class SecureTradeOutPacket : DynamicLengthOutPacket {
+		byte type;
+		uint tradeBoxUid, otherUid1, otherUid2;
+		string otherName;
+		uint gold, platinum;
+
+		/// <summary>type 0: open the trade window. tradeBoxUid is THIS client's own offered-items
+		/// container; otherBoxUid is the other side's. otherName is who they're trading with.</summary>
+		public void PrepareOpen(uint tradeBoxUid, uint otherBoxUid, string otherName) {
+			this.type = 0;
+			this.tradeBoxUid = tradeBoxUid;
+			this.otherUid1 = tradeBoxUid;
+			this.otherUid2 = otherBoxUid;
+			this.otherName = otherName;
+		}
+
+		/// <summary>type 1: close/cancel the trade window.</summary>
+		public void PrepareClose(uint tradeBoxUid) {
+			this.type = 1;
+			this.tradeBoxUid = tradeBoxUid;
+		}
+
+		/// <summary>type 2: update the accepted-checkbox state for both sides.</summary>
+		public void PrepareAcceptedState(uint tradeBoxUid, bool meAccepted, bool otherAccepted) {
+			this.type = 2;
+			this.tradeBoxUid = tradeBoxUid;
+			this.otherUid1 = meAccepted ? 1u : 0u;
+			this.otherUid2 = otherAccepted ? 1u : 0u;
+		}
+
+		/// <summary>type 4: update the gold/platinum shown on THIS client's own side.</summary>
+		public void PrepareMyGold(uint tradeBoxUid, uint gold, uint platinum) {
+			this.type = 4;
+			this.tradeBoxUid = tradeBoxUid;
+			this.gold = gold;
+			this.platinum = platinum;
+		}
+
+		/// <summary>type 3: update the gold/platinum shown for the OTHER side.</summary>
+		public void PrepareHisGold(uint tradeBoxUid, uint gold, uint platinum) {
+			this.type = 3;
+			this.tradeBoxUid = tradeBoxUid;
+			this.gold = gold;
+			this.platinum = platinum;
+		}
+
+		public override byte Id {
+			get { return 0x6F; }
+		}
+
+		protected override void WriteDynamicPart() {
+			this.EncodeByte(this.type);
+			this.EncodeUInt(this.tradeBoxUid);
+			switch (this.type) {
+				case 0:
+					this.EncodeUInt(this.otherUid1);
+					this.EncodeUInt(this.otherUid2);
+					this.EncodeBool(!string.IsNullOrEmpty(this.otherName));
+					if (!string.IsNullOrEmpty(this.otherName)) {
+						this.EncodeASCIIStringTerminated(this.otherName);
+					}
+					break;
+				case 1:
+					break;
+				case 2:
+					this.EncodeUInt(this.otherUid1);
+					this.EncodeUInt(this.otherUid2);
+					break;
+				case 3:
+				case 4:
+					this.EncodeUInt(this.gold);
+					this.EncodeUInt(this.platinum);
+					break;
+			}
+		}
+	}
+
 	public sealed class ResurrectionMenuOutPacket : GameOutgoingPacket {
 		byte action;
 
