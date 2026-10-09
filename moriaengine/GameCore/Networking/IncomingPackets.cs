@@ -62,6 +62,12 @@ namespace SteamEngine.Networking {
 				case 0x1c:
 					this.subPacket = Pool<SpellSelectedSubPacket>.Acquire();
 					break;
+				case 0x13:
+					this.subPacket = Pool<RequestPopupMenuSubPacket>.Acquire();
+					break;
+				case 0x15:
+					this.subPacket = Pool<PopupMenuSelectionSubPacket>.Acquire();
+					break;
 				case 0x24:
 					this.subPacket = Pool<UnknownSubPacket>.Acquire();
 					break;
@@ -156,6 +162,61 @@ namespace SteamEngine.Networking {
 
 			protected internal override void Handle(GeneralInformationInPacket packet, TcpConnection<GameState> conn, GameState state) {
 				state.CharacterNotNull.TryCastSpellFromBook(this.spellId);
+			}
+		}
+
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		public sealed class RequestPopupMenuSubPacket : SubPacket {
+			int targetUid;
+
+			protected internal override ReadPacketResult ReadSubPacket(GeneralInformationInPacket packet, int blockSize) {
+				this.targetUid = packet.DecodeInt();
+				return ReadPacketResult.Success;
+			}
+
+			protected internal override void Handle(GeneralInformationInPacket packet, TcpConnection<GameState> conn, GameState state) {
+				Thing target = Thing.UidGetThing(this.targetUid);
+				if (target == null) {
+					return;
+				}
+
+				AbstractCharacter requester = state.CharacterNotNull;
+				ContextMenu menu = target.GetContextMenu(requester);
+				if (menu.Count == 0) {
+					return; //nothing to show - sending an empty menu is pointless
+				}
+
+				DisplayPopupMenuOutPacket responsePacket = Pool<DisplayPopupMenuOutPacket>.Acquire();
+				responsePacket.Prepare((uint) this.targetUid, menu);
+				conn.SendSinglePacket(responsePacket);
+			}
+		}
+
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		public sealed class PopupMenuSelectionSubPacket : SubPacket {
+			int targetUid;
+			ushort selectedIndex;
+
+			protected internal override ReadPacketResult ReadSubPacket(GeneralInformationInPacket packet, int blockSize) {
+				this.targetUid = packet.DecodeInt();
+				this.selectedIndex = (ushort) packet.DecodeShort();
+				return ReadPacketResult.Success;
+			}
+
+			protected internal override void Handle(GeneralInformationInPacket packet, TcpConnection<GameState> conn, GameState state) {
+				Thing target = Thing.UidGetThing(this.targetUid);
+				if (target == null) {
+					return;
+				}
+
+				AbstractCharacter requester = state.CharacterNotNull;
+				// Rebuilt fresh rather than cached from the request - see ContextMenu's own
+				// comment for why that's safe here (menus are small, infrequent, and the client
+				// only ever sends a selection right after requesting the same menu).
+				ContextMenu menu = target.GetContextMenu(requester);
+				menu.InvokeSelected(this.selectedIndex, requester);
+
+				target.TryTrigger(TriggerKey.contextMenuSelect, new ScriptArgs(requester, (int) this.selectedIndex));
 			}
 		}
 

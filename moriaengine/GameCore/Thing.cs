@@ -1187,6 +1187,29 @@ namespace SteamEngine {
 			AosToolTips.RemoveFromCache(this);
 		}
 
+		/// <summary>
+		/// Gathers the right-click context (popup) menu entries for this Thing, from both
+		/// LScript (@buildContextMenu trigger) and C# (On_BuildContextMenu override) scripts -
+		/// same dual-hook pattern as GetAosToolTips/On_BuildAosToolTips above. Not cached - menus
+		/// are small, infrequent, and rebuilt identically on the selection round-trip so the
+		/// client-picked index still matches without needing server-side session state.
+		/// </summary>
+		[CLSCompliant(false)]
+		public ContextMenu GetContextMenu(AbstractCharacter requester) {
+			ContextMenu menu = new ContextMenu();
+
+			this.TryTrigger(TriggerKey.buildContextMenu, new ScriptArgs(menu, requester));
+			try {
+				this.On_BuildContextMenu(menu, requester);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+
+			return menu;
+		}
+
+		[CLSCompliant(false)]
+		public virtual void On_BuildContextMenu(ContextMenu menu, AbstractCharacter requester) {
+		}
+
 		//public Gump Dialog(string gumpName) {
 		//	GumpDef GumpDef = GumpDef.Get(gumpName);
 		//	if (GumpDef == null) {

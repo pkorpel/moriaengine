@@ -135,6 +135,9 @@ namespace SteamEngine {
 		public static readonly TriggerKey containerOpen = Acquire("containerOpen");
 
 		public static readonly TriggerKey buildAosToolTips = Acquire("buildAosToolTips");
+
+		public static readonly TriggerKey buildContextMenu = Acquire("buildContextMenu");
+		public static readonly TriggerKey contextMenuSelect = Acquire("contextMenuSelect");
 	}
 
 
