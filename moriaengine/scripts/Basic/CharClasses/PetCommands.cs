@@ -22,22 +22,23 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
-	/// Classic UO pet control via normal speech - "all come"/"all go"/"all stop"/"all transfer"
-	/// (every pet this character owns in range) or "&lt;petname&gt; come" etc (one specific
-	/// pet). Deliberately scoped to just these four verbs per request - guard/kill/release/drop
-	/// are natural follow-ups, not built here.
+	/// Classic UO pet control via normal speech - "all come"/"all guard"/"all kill" (every pet
+	/// this character owns in range) or "&lt;petname&gt; come" etc (one specific pet). "drop" is
+	/// deliberately not implemented - pets don't carry any cargo at all right now (no pack-animal
+	/// concept exists), so there'd be nothing for it to act on, and the exact item-container
+	/// movement API wasn't worth guessing at for a command with nothing to drop yet.
 	///
 	/// GMs bypass the ownership check entirely - "all come"/"<name> stop" from a GM affects any
 	/// NPC in range (wild monsters included), not just their own pets. See Character.FollowTarget
 	/// for how a GM can direct an unowned NPC without making it their permanent pet.
 	///
-	/// Parsed on the speaker's own On_Say (not per-pet On_Hear) so that "all go"/"all transfer"
-	/// can issue a single target request whose result applies to every matched pet - if each pet
-	/// independently called Player.Target, only the last one processed would actually receive
-	/// the click.
+	/// Parsed on the speaker's own On_Say (not per-pet On_Hear) so that "all go"/"all transfer"/
+	/// "all kill" can issue a single target request whose result applies to every matched pet - if
+	/// each pet independently called Player.Target, only the last one processed would actually
+	/// receive the click.
 	/// </summary>
 	public partial class Character {
-		private static readonly string[] petCommandVerbs = { "come", "go", "stop", "transfer" };
+		private static readonly string[] petCommandVerbs = { "come", "go", "stop", "transfer", "guard", "kill", "attack", "release" };
 
 		public override TriggerResult On_Say(string speech, SpeechType type, int[] keywords) {
 			this.TryHandlePetCommand(speech);
@@ -98,6 +99,34 @@ namespace SteamEngine.CompiledScripts {
 						}
 						break;
 					}
+				case "guard":
+					foreach (NPC pet in pets) {
+						pet.IsGuarding = true;
+						pet.FollowTarget = this;
+						pet.ShouldFollowOwner = true;
+						pet.PetGoalPoint = null;
+					}
+					this.SysMessage("Your pet" + (pets.Count > 1 ? "s" : "") + " will guard you.");
+					break;
+				case "kill":
+				case "attack": {
+						Player self = this as Player;
+						if (self != null) {
+							self.SysMessage("What do you want your pet" + (pets.Count > 1 ? "s" : "") + " to attack?");
+							self.Target(SingletonScript<Targ_PetKill>.Instance, pets);
+						}
+						break;
+					}
+				case "release":
+					foreach (NPC pet in pets) {
+						pet.ControlMaster = null;
+						pet.FollowTarget = null;
+						pet.IsGuarding = false;
+						pet.ShouldFollowOwner = true;
+						pet.PetGoalPoint = null;
+					}
+					this.SysMessage("You release your pet" + (pets.Count > 1 ? "s" : "") + " into the wild.");
+					break;
 			}
 		}
 
@@ -144,6 +173,35 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
 			return this.On_TargonGround(self, targetted, parameter);
+		}
+	}
+
+	public class Targ_PetKill : CompiledTargetDef {
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			List<NPC> pets = (List<NPC>) parameter;
+			if (targetted == self) {
+				self.SysMessage("Your pet won't attack you.");
+				return TargetResult.Done;
+			}
+			foreach (NPC pet in pets) {
+				pet.Flag_WarMode = true;
+				NPCAiTimer timer = NPCAiTimer.GetFor(pet);
+				if (timer != null) {
+					timer.EngageTarget(targetted);
+				}
+			}
+			self.SysMessage("Your pet" + (pets.Count > 1 ? "s" : "") + " will attack " + targetted.Name + ".");
+			return TargetResult.Done;
+		}
+
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			self.SysMessage("You must target a creature to attack.");
+			return TargetResult.RestartTargetting;
+		}
+
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			self.SysMessage("You must target a creature to attack.");
+			return TargetResult.RestartTargetting;
 		}
 	}
 
