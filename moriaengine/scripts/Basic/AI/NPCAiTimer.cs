@@ -166,7 +166,7 @@ namespace SteamEngine.CompiledScripts {
 					self.PetGoalPoint = null; //arrived
 				} else {
 					this.LastState = AIState.GoingToPoint;
-					this.StepTowards(self, goal);
+					this.StepTowardsSmart(self, goal);
 					return;
 				}
 			}
@@ -195,8 +195,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private void Follow(NPC self, Character master) {
 			if (Point2D.GetSimpleDistance(self, master) > 1) {
-				Direction dir = Point2D.GetDirFromTo(self, master);
-				this.TryStep(self, dir);
+				this.StepTowardsSmart(self, master);
 			}
 		}
 
@@ -244,6 +243,16 @@ namespace SteamEngine.CompiledScripts {
 		private void StepTowards(NPC self, IPoint2D target) {
 			Direction dir = Point2D.GetDirFromTo(self, target);
 			this.TryStep(self, dir);
+		}
+
+		/// <summary>Like StepTowards, but routes around obstacles via the real AStar pathfinder (scripts/Basic/AI/PathFinding/AStar.cs) instead of only ever trying the single direct-line direction. Used by Follow ("come") and the "go" goal-point order, where the user specifically wants NPCs to navigate around basic obstacles rather than getting stuck walking into a wall. Recomputes the path fresh every tick rather than caching it - correct for a moving follow-target, and simple; worth revisiting if profiling ever shows this is too hot with many pets following at once.</summary>
+		private void StepTowardsSmart(NPC self, IPoint3D target) {
+			Direction[] path = AStar.GetPathFromTo(self, target, self.GetMap(), self.MovementSettings);
+			if ((path == null) || (path.Length == 0) || !this.TryStep(self, path[0])) {
+				//no path found, or the first step didn't actually work (e.g. something else moved into the way
+				//since the path was computed) - fall back to a direct attempt rather than freezing in place
+				this.StepTowards(self, target);
+			}
 		}
 
 		private void Wander(NPC self) {
