@@ -121,6 +121,13 @@ namespace SteamEngine.CompiledScripts {
 			if ((victim == null) || (attacker == null) || (victim == attacker)) {
 				return;
 			}
+			//Trigger_HostileAction can fire on a victim that has already been deleted (e.g.
+			//WeaponSkillDef.On_Fail calling target.Trigger_HostileAction(self) when the target died
+			//from an earlier hit in the same exchange and CauseDeath already deleted it) - accessing
+			//.X/.GetMap() on a deleted Thing throws, so bail out before touching either.
+			if (victim.IsDeleted || attacker.IsDeleted) {
+				return;
+			}
 			foreach (AbstractCharacter ch in victim.GetMap().GetCharsInRange(victim.X, victim.Y, AggroRange)) {
 				NPC guardian = ch as NPC;
 				if ((guardian == null) || !guardian.IsGuarding) {
