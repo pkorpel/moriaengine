@@ -27,8 +27,16 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Classic UO threshold at which a player's title turns from innocent to "murderer" (red).</summary>
 		public const int MurdererThreshold = 5;
 
-		/// <summary>How long a criminal flag lasts after a single hostile act, in seconds.</summary>
-		public const double CriminalFlagSeconds = 120;
+		private static double criminalFlagSeconds = 120;
+
+		/// <summary>How long a criminal flag lasts after a single hostile act, in seconds - the
+		/// real 2-minute classic-UO default. Settable (mirrors LightAndWeather.DayLengthSeconds's
+		/// own pattern) so a verification test can shorten it to confirm the flag actually expires
+		/// without waiting out 2 real minutes.</summary>
+		public static double CriminalFlagSeconds {
+			get { return criminalFlagSeconds; }
+			set { criminalFlagSeconds = value; }
+		}
 
 		public static int GetMurderCount(Character self) {
 			object tag = self.GetTag(murderCountTK);

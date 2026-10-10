@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
@@ -16,11 +17,127 @@ namespace SteamEngine.Tests.Protocol {
 	internal sealed class TestGameClient : IDisposable {
 		private readonly TcpClient tcp;
 		private readonly NetworkStream stream;
+		private readonly Queue<(byte Id, byte[] Payload)> packetQueue = new Queue<(byte, byte[])>();
+		private readonly List<byte> seenIds = new List<byte>();
 
 		public TestGameClient(string host, int port) {
 			this.tcp = new TcpClient();
 			this.tcp.Connect(host, port);
 			this.stream = this.tcp.GetStream();
+		}
+
+		/// <summary>
+		/// Payload byte count (everything after the id byte, NOT including it) for every
+		/// fixed-size outgoing packet this test harness has had to recognize so far - derived
+		/// mechanically from each class's own Write() method in
+		/// GameCore/Networking/OutgoingPackets.cs (sum of its EncodeByte/EncodeUShort/EncodeUInt/
+		/// EncodeZeros(n)/etc. calls), not guessed. Deliberately NOT exhaustive - scenario tests
+		/// that hit an id missing from this table (or from <see cref="DynamicPacketIds"/>) get a
+		/// clear "add it" exception from <see cref="FillQueueFromOneFrame"/> rather than silent
+		/// stream corruption, so the table grows by actual need instead of upfront guesswork.
+		/// </summary>
+		private static readonly Dictionary<byte, int> FixedPacketPayloadSizes = new Dictionary<byte, int> {
+			{ 0x1B, 36 }, // LoginConfirmationOutPacket
+			{ 0x55, 0 },  // LoginCompleteOutPacket
+			{ 0x20, 18 }, // DrawGamePlayerOutPacket
+			{ 0x77, 16 }, // UpdatePlayerPacket
+			{ 0x72, 4 },  // SetWarModeOutPacket
+			{ 0xC8, 1 },  // ClientViewRangeOutPacket
+			{ 0x2d, 16 }, // MobAttributesOutPacket
+			{ 0xa1, 8 },  // UpdateCurrentHealthOutPacket
+			{ 0xa2, 8 },  // UpdateCurrentManaOutPacket
+			{ 0xa3, 8 },  // UpdateCurrentStaminaOutPacket
+			{ 0x1d, 4 },  // DeleteObjectOutPacket
+			{ 0x2e, 14 }, // WornItemOutPacket
+			{ 0x6c, 18 }, // TargetCursorCommandsOutPacket (server->client "pick a target" prompt)
+			{ 0xBC, 2 },  // SeasonalInformationOutPacket
+			{ 0x4E, 5 },  // PersonalLightLevelOutPacket
+			{ 0x4f, 1 },  // OverallLightLevelOutPacket
+			{ 0x82, 1 },  // LoginDeniedOutPacket
+		};
+
+		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,
+		/// including the id byte, right after the id - DynamicLengthOutPacket's own framing).
+		/// 0xBF covers every GeneralInformationOutPacket subclass (party/skills/etc. sub-commands
+		/// all share that one wire id with a sub-command byte inside the payload).</summary>
+		private static readonly HashSet<byte> DynamicPacketIds = new HashSet<byte> {
+			0xA9, // CharactersListOutPacket
+			0x78, // DrawObjectOutPacket
+			0xb0, // SendGumpMenuDialogPacket
+			0x11, // StatusBarInfoOutPacket
+			0x6F, // SecureTradeOutPacket
+			0x3c, // ItemsInContainerOutPacket
+			0x1A, // ObjectInfoOutPacket
+			0x3A, // SendSkillsOutPacket
+			0x1c, // SendSpeechOutPacket
+			0xAE, // UnicodeSpeechOutPacket
+			0xBF, // GeneralInformationOutPacket (party, etc. - sub-command inside the payload)
+			0xBD, // ClientVersionOutPacket (server requesting the client report its version)
+		};
+
+		/// <summary>
+		/// Decodes one more Huffman frame off the wire and splits it into individual packets
+		/// (a single frame/TCP read can carry several packets sent back-to-back - e.g. the whole
+		/// world-entry sequence), queuing each as (id, payload-without-id-byte).
+		/// </summary>
+		private void FillQueueFromOneFrame() {
+			byte[] frame = this.ReadOneCompressedFrame();
+			int pos = 0;
+			while (pos < frame.Length) {
+				byte id = frame[pos];
+				this.seenIds.Add(id);
+				int payloadLen;
+				if (DynamicPacketIds.Contains(id)) {
+					int totalLen = (frame[pos + 1] << 8) | frame[pos + 2]; // includes the id byte itself
+					payloadLen = totalLen - 1;
+				} else if (FixedPacketPayloadSizes.TryGetValue(id, out int sz)) {
+					payloadLen = sz;
+				} else {
+					throw new InvalidOperationException(
+						"Unrecognized fixed-size outgoing packet 0x" + id.ToString("x2") +
+						" - add its payload size to TestGameClient.FixedPacketPayloadSizes (derive it from " +
+						"the class's own Write() method in GameCore/Networking/OutgoingPackets.cs).");
+				}
+				byte[] payload = new byte[payloadLen];
+				Array.Copy(frame, pos + 1, payload, 0, payloadLen);
+				this.packetQueue.Enqueue((id, payload));
+				pos += 1 + payloadLen;
+			}
+		}
+
+		/// <summary>
+		/// Reads (and discards) packets off the wire until one with <paramref name="expectedId"/>
+		/// arrives, returning its payload (everything after the id byte - for a dynamic packet
+		/// this still includes its own 2-byte length field, same convention ReadCharacterList
+		/// already uses). Throws TimeoutException, listing every id actually seen, if none arrives
+		/// in time - real UO traffic during world-entry/resync is a mix of many packet types, so
+		/// "nothing matched" needs to be diagnosable, not a bare timeout.
+		/// </summary>
+		public byte[] ReadPacketPayload(byte expectedId, TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (true) {
+				if (this.packetQueue.Count > 0) {
+					var (id, payload) = this.packetQueue.Dequeue();
+					if (id == expectedId) {
+						return payload;
+					}
+					continue;
+				}
+				TimeSpan remaining = deadline - DateTime.UtcNow;
+				if (remaining <= TimeSpan.Zero) {
+					throw new TimeoutException("Did not see packet 0x" + expectedId.ToString("x2") +
+						" within " + timeout + ". Ids actually seen: " +
+						string.Join(",", this.seenIds.ConvertAll(b => "0x" + b.ToString("x2"))));
+				}
+				this.stream.ReadTimeout = Math.Max(1, (int) remaining.TotalMilliseconds);
+				try {
+					this.FillQueueFromOneFrame();
+				} catch (IOException e) {
+					throw new TimeoutException("Did not see packet 0x" + expectedId.ToString("x2") +
+						" within " + timeout + ". Ids actually seen: " +
+						string.Join(",", this.seenIds.ConvertAll(b => "0x" + b.ToString("x2"))), e);
+				}
+			}
 		}
 
 		public void SendLogin(string account, string password) {
@@ -29,6 +146,27 @@ namespace SteamEngine.Tests.Protocol {
 			packet[4] = 0x91;
 			EncodeAsciiFixed(account, packet, 9, 30);
 			EncodeAsciiFixed(password, packet, 39, 30);
+			this.stream.Write(packet, 0, packet.Length);
+
+			// A real client reports its version unprompted right after logging in (and again
+			// whenever the server's own 0xbd query asks) - GameState.Version stays
+			// ClientVersion.nullValue until this arrives, and PacketSequences.DelayedLoginTimer
+			// (the thing that eventually sends LoginConfirmationOutPacket/0x1B) silently
+			// re-schedules itself forever rather than proceeding while that's true. Sending this
+			// immediately, unprompted, avoids every single scenario test needing to remember a
+			// separate step just to not hang forever waiting for world-entry packets that will
+			// never come.
+			this.SendClientVersion("7.0.15.1");
+		}
+
+		/// <summary>Sends ClientVersionInPacket (0xbd) - see SendLogin's own comment for why this
+		/// has to happen before the server will proceed past character creation into the world.</summary>
+		public void SendClientVersion(string version) {
+			byte[] verBytes = Encoding.ASCII.GetBytes(version);
+			byte[] packet = new byte[3 + verBytes.Length];
+			packet[0] = 0xbd;
+			EncodeUShortBigEndian(packet.Length, packet, 1);
+			Array.Copy(verBytes, 0, packet, 3, verBytes.Length);
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
@@ -137,6 +275,162 @@ namespace SteamEngine.Tests.Protocol {
 		private static void EncodeUShortBigEndian(int value, byte[] buffer, int offset) {
 			buffer[offset] = (byte) ((value >> 8) & 0xFF);
 			buffer[offset + 1] = (byte) (value & 0xFF);
+		}
+
+		private static void EncodeIntBigEndian(int value, byte[] buffer, int offset) {
+			buffer[offset] = (byte) ((value >> 24) & 0xFF);
+			buffer[offset + 1] = (byte) ((value >> 16) & 0xFF);
+			buffer[offset + 2] = (byte) ((value >> 8) & 0xFF);
+			buffer[offset + 3] = (byte) (value & 0xFF);
+		}
+
+		/// <summary>
+		/// Sends TargetCursorCommandsInPacket (0x6c) resolving the cursor to a ground point -
+		/// the response to whatever server-side Target() call opened the cursor (pet "go"/"kill"/
+		/// "transfer", taming/mining/lumberjacking skill use, house-deed placement, vendor
+		/// "sell"). Mirrors GameCore/Networking/IncomingPackets.cs's
+		/// TargetCursorCommandsInPacket.Read exactly: targGround(1) + skip(5) + uid(4) + x(2) +
+		/// y(2) + skip(1) + z(1) + model(2).
+		/// </summary>
+		public void SendTargetGround(int x, int y, int z) {
+			byte[] packet = new byte[19];
+			packet[0] = 0x6c;
+			packet[1] = 1; // targGround = true
+			// bytes 2-6: skip, zero.
+			// bytes 7-10: uid - ignored by the server when targGround is true.
+			EncodeUShortBigEndian(x, packet, 11);
+			EncodeUShortBigEndian(y, packet, 13);
+			// byte 15: skip (high byte of z in the real client's encoding, ignored server-side).
+			packet[16] = (byte) z;
+			// bytes 17-18: model - informational only, left zero.
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Same packet as <see cref="SendTargetGround"/>, but resolving to a specific
+		/// thing (a creature to tame/kill/sell-to, an item, etc.) by uid instead of a ground point.</summary>
+		public void SendTargetUid(uint uid) {
+			byte[] packet = new byte[19];
+			packet[0] = 0x6c;
+			packet[1] = 0; // targGround = false
+			EncodeIntBigEndian((int) uid, packet, 7);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Sends RequestSkillEtcUseInPacket (0x12), type 0x24 ("use skill by id") - the same
+		/// packet a real client's skill-list double-click or macro sends. Needed for taming,
+		/// mining, and lumberjacking, all of which SelectSkill() + immediately open a target
+		/// cursor server-side (see TargetCursorCommandsOutPacket/SendTargetUid/SendTargetGround).
+		/// </summary>
+		public void SendSkillUse(int skillId) {
+			byte[] idBytes = Encoding.ASCII.GetBytes(skillId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+			byte[] packet = new byte[4 + idBytes.Length];
+			packet[0] = 0x12;
+			EncodeUShortBigEndian(packet.Length, packet, 1);
+			packet[3] = 0x24;
+			Array.Copy(idBytes, 0, packet, 4, idBytes.Length);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Sends GumpMenuSelectionInPacket (0xB1) with no checkboxes/switches and no text entry
+		/// responses - just "I clicked button N on gump G", which is all every vendor-buy/simple
+		/// confirmation dialog in this codebase actually needs from a response.
+		/// </summary>
+		public void SendGumpResponse(int gumpUid, int buttonId) {
+			byte[] packet = new byte[23];
+			packet[0] = 0xB1;
+			EncodeUShortBigEndian(23, packet, 1);
+			// bytes 3-6: focus uid, skipped by the server, left zero.
+			EncodeIntBigEndian(gumpUid, packet, 7);
+			EncodeIntBigEndian(buttonId, packet, 11);
+			EncodeIntBigEndian(0, packet, 15); // switchesCount
+			EncodeIntBigEndian(0, packet, 19); // entriesCount
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Reads SendGumpMenuDialogPacket (0xB0) - the server opening a gump - and decodes just
+		/// the gump uid and its ASCII layout string (the strings list, used for free-text entry
+		/// gumps, is skipped; none of this test harness's scenarios need it). The layout string
+		/// is the same grammar a real client parses to build the dialog, including each
+		/// "button"/"checkbox" element's numeric id - callers scan it themselves for whatever
+		/// element id they need (kept generic here rather than baking in one dialog's grammar).
+		/// </summary>
+		public (int GumpUid, string LayoutText) ReadGumpDialog(TimeSpan timeout) {
+			byte[] payload = this.ReadPacketPayload(0xb0, timeout);
+			// payload[0..1] = this packet's own length field (part of the stored payload by this
+			// harness's convention - see ReadPacketPayload's doc comment); real content starts
+			// at payload[2].
+			int gumpUid = (payload[6] << 24) | (payload[7] << 16) | (payload[8] << 8) | payload[9];
+			int layoutByteLen = (payload[18] << 8) | payload[19];
+			string layoutText = Encoding.ASCII.GetString(payload, 20, layoutByteLen);
+			int nul = layoutText.IndexOf('\0');
+			if (nul >= 0) {
+				layoutText = layoutText.Substring(0, nul);
+			}
+			return (gumpUid, layoutText);
+		}
+
+		/// <summary>
+		/// Reads either DrawObjectOutPacket (0x78, dynamic) or UpdatePlayerPacket (0x77, fixed) -
+		/// whichever arrives first - for the given character uid, and returns its HighlightColor
+		/// byte (0=innocent, criminal/murderer/enemy/etc. per the real client's own hue-mapping -
+		/// see GameCore's HighlightColor enum). Both encode the same field order
+		/// (uid/model/x/y/z/dir/color/flags/highlight), but 0x78's stored payload has a 2-byte
+		/// length prefix ahead of that (per this harness's "payload includes the dynamic length
+		/// field" convention - see ReadPacketPayload) that 0x77's fixed payload doesn't, so the
+		/// two offsets differ by exactly that prefix.
+		/// </summary>
+		public byte ReadHighlightColor(uint forUid, TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (true) {
+				TimeSpan remaining = deadline - DateTime.UtcNow;
+				if (remaining <= TimeSpan.Zero) {
+					throw new TimeoutException("Did not see a highlight-color update for uid 0x" + forUid.ToString("x"));
+				}
+				byte[] payload = this.TryReadEither(0x78, 0x77, remaining, out byte whichId);
+				int uidOffset = (whichId == 0x78) ? 2 : 0;
+				uint seenUid = (uint) ((payload[uidOffset] << 24) | (payload[uidOffset + 1] << 16) | (payload[uidOffset + 2] << 8) | payload[uidOffset + 3]);
+				if (seenUid != forUid) {
+					continue;
+				}
+				int highlightOffset = uidOffset + 15; // uid(4)+model(2)+x(2)+y(2)+z(1)+dir(1)+color(2)+flags(1) = 15 bytes after uid starts
+				return payload[highlightOffset];
+			}
+		}
+
+		private byte[] TryReadEither(byte idA, byte idB, TimeSpan timeout, out byte whichId) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (true) {
+				if (this.packetQueue.Count > 0) {
+					var (id, payload) = this.packetQueue.Dequeue();
+					if (id == idA || id == idB) {
+						whichId = id;
+						return payload;
+					}
+					continue;
+				}
+				TimeSpan remaining = deadline - DateTime.UtcNow;
+				if (remaining <= TimeSpan.Zero) {
+					throw new TimeoutException("Did not see packet 0x" + idA.ToString("x2") + " or 0x" + idB.ToString("x2") +
+						" within " + timeout + ". Ids actually seen: " +
+						string.Join(",", this.seenIds.ConvertAll(b => "0x" + b.ToString("x2"))));
+				}
+				this.stream.ReadTimeout = Math.Max(1, (int) remaining.TotalMilliseconds);
+				this.FillQueueFromOneFrame();
+			}
+		}
+
+		/// <summary>Reads SeasonalInformationOutPacket (0xBC) and returns its season byte.</summary>
+		public byte ReadSeason(TimeSpan timeout) {
+			return this.ReadPacketPayload(0xBC, timeout)[0];
+		}
+
+		/// <summary>Reads OverallLightLevelOutPacket (0x4f) and returns the light level byte
+		/// (0 = full daylight, higher = darker).</summary>
+		public byte ReadOverallLightLevel(TimeSpan timeout) {
+			return this.ReadPacketPayload(0x4f, timeout)[0];
 		}
 
 		public void Dispose() {
