@@ -149,6 +149,22 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey combatSpellTK = TagKey.Acquire("_combatSpell_");
+
+		/// <summary>
+		/// The spell this NPC casts at its combat target instead of swinging a weapon, when it has
+		/// one configured and enough mana (see NPCAiTimer.TryCastSpell, enhancements #57). Null
+		/// (the default) means this NPC fights purely with weapons/unarmed combat, same as before.
+		/// </summary>
+		public SpellDef CombatSpell {
+			get {
+				return this.GetTag(combatSpellTK) as SpellDef;
+			}
+			set {
+				this.SetTag(combatSpellTK, value);
+			}
+		}
+
 		private static readonly TagKey defaultMovementTK = TagKey.Acquire("_defaultMovementCapability_");
 
 		/// <summary>The movement capability template new NPCs of this type get on creation (see NPC.On_Create) - each instance gets its own deep copy, not this shared object, so runtime effects can mutate one NPC's capability without affecting every other NPC of the same type.</summary>
@@ -177,6 +193,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "tamingdifficulty") {
 				this.TamingDifficulty = ConvertTools.ParseDouble(args);
+				return;
+			}
+			if (param == "combatspell") {
+				SpellDef spell = SpellDef.GetByDefname(args);
+				if (spell == null) {
+					Logger.WriteWarning(filename, line, "combatspell '" + args + "' is not a known SpellDef.");
+				}
+				this.CombatSpell = spell;
 				return;
 			}
 			base.LoadScriptLine(filename, line, param, args);
