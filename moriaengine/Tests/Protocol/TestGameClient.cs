@@ -81,6 +81,64 @@ namespace SteamEngine.Tests.Protocol {
 			Array.Copy(ascii, 0, buffer, offset, copyLen);
 		}
 
+		/// <summary>
+		/// Sends CreateCharacterInPacket (0x00, 104 bytes incl. id - see
+		/// GameCore/Networking/IncomingPackets.cs's CreateCharacterInPacket.Read for the exact
+		/// field layout this mirrors). Field values are the minimum that pass
+		/// CreateCharacterInPacket.Handle's validation (name is letters-only; skin/hair/shirt/
+		/// pants colors are each the lowest value in their accepted range; hairStyle/facialHair
+		/// are 0, which skips their range checks entirely) - visual appearance doesn't matter for
+		/// what this test client is for. The server synchronously logs the new character in as
+		/// part of handling this packet (CreateCharacterInPacket.Handle calls
+		/// state.LoginCharacter at the end), so no separate "select character" (0x5D) packet is
+		/// needed.
+		/// </summary>
+		public void SendCreateCharacter(string charName) {
+			byte[] packet = new byte[104];
+			packet[0] = 0x00;
+			// bytes 1-9: unknown/account block, left zero.
+			EncodeAsciiFixed(charName, packet, 10, 30);
+			// bytes 40-69: password, left zero (ignored by Handle).
+			packet[70] = 0; // gender: male
+			packet[71] = 10; // startStr
+			packet[72] = 10; // startDex
+			packet[73] = 10; // startInt
+			// bytes 74-79: three (skillId, skillValue) pairs, left zero.
+			EncodeUShortBigEndian(0x3ea, packet, 80); // skinColor - lowest accepted value
+			EncodeUShortBigEndian(0, packet, 82); // hairStyle - 0 skips the range check
+			EncodeUShortBigEndian(0x44e, packet, 84); // hairColor - still range-checked even with no hair
+			EncodeUShortBigEndian(0, packet, 86); // facialHair - 0 skips the range check
+			EncodeUShortBigEndian(0, packet, 88); // facialHairColor - 0 skips the range check
+			EncodeUShortBigEndian(0, packet, 90); // locationNum - ignored by this server's f_createPlayerCharacter
+			// bytes 92-99: unknown block, left zero.
+			EncodeUShortBigEndian(0x02, packet, 100); // shirtColor - lowest accepted value
+			EncodeUShortBigEndian(0x02, packet, 102); // pantsColor - lowest accepted value
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Sends TalkRequestInPacket (0x03) - plain ASCII speech, interpreted server-side as a
+		/// "." command if it starts with Globals.CommandPrefix (the default), same as any
+		/// player typing in their chat bar. Requires a character to already be selected/created
+		/// (state.CharacterNotNull), i.e. call after SendCreateCharacter.
+		/// </summary>
+		public void SendSpeech(string text) {
+			byte[] textBytes = Encoding.ASCII.GetBytes(text);
+			byte[] packet = new byte[8 + textBytes.Length];
+			packet[0] = 0x03;
+			EncodeUShortBigEndian((ushort) packet.Length, packet, 1); // blockSize includes the id byte
+			packet[3] = 0; // speech type (SpeechType.Normal)
+			EncodeUShortBigEndian(0, packet, 4); // color
+			EncodeUShortBigEndian(3, packet, 6); // font
+			Array.Copy(textBytes, 0, packet, 8, textBytes.Length);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		private static void EncodeUShortBigEndian(int value, byte[] buffer, int offset) {
+			buffer[offset] = (byte) ((value >> 8) & 0xFF);
+			buffer[offset + 1] = (byte) (value & 0xFF);
+		}
+
 		public void Dispose() {
 			this.stream.Dispose();
 			this.tcp.Dispose();
