@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
@@ -60,8 +61,14 @@ namespace SteamEngine.CompiledScripts {
 			string targetName = string.Join(" ", parts, 0, parts.Length - 1);
 
 			List<NPC> pets = this.FindControllableNpcs(targetName);
+			Logger.WriteDebug("PetCommand: " + this.Name + " said '" + speech + "' (target='" + targetName + "', verb='" + verb + "') -> matched " + pets.Count + " NPC(s)" +
+				(pets.Count > 0 ? ": " + string.Join(", ", pets.ConvertAll(p => p.Name + "#" + p.Uid)) : ""));
 			if (pets.Count == 0) {
 				return;
+			}
+
+			foreach (NPC pet in pets) {
+				this.AcknowledgeCommand(pet);
 			}
 
 			switch (verb) {
@@ -130,6 +137,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Faces the pet toward its owner and gives a visible overhead acknowledgement - requested so a command's receipt is visually obvious even before the next AI think-tick actually acts on it (useful for telling "command wasn't heard" apart from "command was heard but the AI tick hasn't moved it yet").</summary>
+		private void AcknowledgeCommand(NPC pet) {
+			pet.Direction = Point2D.GetDirFromTo(pet, this);
+			pet.Emote("*looks at you, understanding*");
+		}
+
 		/// <summary>
 		/// "all" -> every matching NPC within speech range. Otherwise -> the one matching NPC
 		/// whose name matches (case-insensitive), if any. A GM's commands match ANY NPC; a
@@ -139,10 +152,19 @@ namespace SteamEngine.CompiledScripts {
 			List<NPC> result = new List<NPC>();
 			bool wantsAll = string.Equals(targetName, "all", StringComparison.OrdinalIgnoreCase);
 			bool isGM = this.IsGM;
+			int npcsInRange = 0;
+			int npcsOwnedByMe = 0;
 
 			foreach (AbstractCharacter ch in this.GetMap().GetCharsInRange(this.X, this.Y, Globals.SpeechDistance)) {
 				NPC pet = ch as NPC;
-				if ((pet == null) || (!isGM && (pet.ControlMaster != this))) {
+				if (pet == null) {
+					continue;
+				}
+				npcsInRange++;
+				if (pet.ControlMaster == this) {
+					npcsOwnedByMe++;
+				}
+				if (!isGM && (pet.ControlMaster != this)) {
 					continue;
 				}
 				if (wantsAll) {
@@ -152,6 +174,8 @@ namespace SteamEngine.CompiledScripts {
 					break; //names are expected to be unique enough for this purpose - first match wins
 				}
 			}
+			Logger.WriteDebug("FindControllableNpcs: " + this.Name + " (GM=" + isGM + ") speech range=" + Globals.SpeechDistance +
+				" -> " + npcsInRange + " NPC(s) in range, " + npcsOwnedByMe + " owned by me, " + result.Count + " matched target '" + targetName + "'");
 			return result;
 		}
 	}
@@ -163,6 +187,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (NPC pet in pets) {
 				pet.PetGoalPoint = goal;
 			}
+			Logger.WriteDebug("PetCommand 'go': " + self.Name + " sent " + pets.Count + " pet(s) to " + goal);
 			self.SysMessage("Your pet" + (pets.Count > 1 ? "s" : "") + " will go there.");
 			return TargetResult.Done;
 		}
@@ -186,6 +211,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (NPC pet in pets) {
 				pet.Flag_WarMode = true;
 				NPCAiTimer timer = NPCAiTimer.GetFor(pet);
+				Logger.WriteDebug("PetCommand 'kill': " + pet.Name + "#" + pet.Uid + " engaging " + targetted.Name + " (timer found=" + (timer != null) + ")");
 				if (timer != null) {
 					timer.EngageTarget(targetted);
 				}
