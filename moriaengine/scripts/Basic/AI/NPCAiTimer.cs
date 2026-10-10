@@ -80,6 +80,36 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		public static NPCAiTimer GetFor(NPC self) {
+			return self.GetTimer(aiTimerTK) as NPCAiTimer;
+		}
+
+		/// <summary>Directly sets this NPC's current combat target, bypassing ShouldAggroOn - used by the "kill" pet command and by guard duty (AlertGuardiansOf), both of which are explicit orders rather than autonomous aggro decisions.</summary>
+		public void EngageTarget(Character enemy) {
+			this.target = enemy;
+		}
+
+		/// <summary>Called from Character.Trigger_HostileAction - any NPC guarding `victim` (Character.IsGuarding, protecting its FollowTarget/ControlMaster) joins the fight against `attacker`.</summary>
+		public static void AlertGuardiansOf(Character victim, Character attacker) {
+			if ((victim == null) || (attacker == null) || (victim == attacker)) {
+				return;
+			}
+			foreach (AbstractCharacter ch in victim.GetMap().GetCharsInRange(victim.X, victim.Y, AggroRange)) {
+				NPC guardian = ch as NPC;
+				if ((guardian == null) || !guardian.IsGuarding) {
+					continue;
+				}
+				Character ward = guardian.FollowTarget ?? guardian.ControlMaster;
+				if (ward != victim) {
+					continue;
+				}
+				NPCAiTimer timer = GetFor(guardian);
+				if (timer != null) {
+					timer.EngageTarget(attacker);
+				}
+			}
+		}
+
 		/// <summary>True if `a` and `b` are on opposing sides of the Gondor/Mordor conflict (either realm's outcasts count as being on that realm's side for this purpose). Neutral/unset realms are never opposite to anything.</summary>
 		public static bool IsOppositeRealm(Realm a, Realm b) {
 			bool aGondor = (a == Realm.Gondor) || (a == Realm.GondorOutcast);
