@@ -74,6 +74,11 @@ ArmorVsM = 10
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_selfreser // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_skeleton_mage_nb]
 CATEGORY = Monsters
