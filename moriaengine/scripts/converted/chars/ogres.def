@@ -348,6 +348,7 @@ CAN = MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
 WeaponAttack = 75
 ArmorVsP = 105
 ArmorVsM = 105
+combatspell = s_lightning
 //moverate = 3 // commented out by Converter 
 //RESOURCES = 10 i_ribs_raw // commented out by Converter 
 //FOODTYPE =  // commented out by Converter 

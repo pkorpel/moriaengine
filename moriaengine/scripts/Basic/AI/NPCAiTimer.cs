@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
@@ -253,6 +254,10 @@ namespace SteamEngine.CompiledScripts {
 		private void Fight(NPC self, Character target) {
 			self.Flag_WarMode = true;
 
+			if (this.TryCastSpell(self, target)) {
+				return; //cast instead of swinging this tick - don't also touch the weapon-skill queue below
+			}
+
 			int distance = Point2D.GetSimpleDistance(self, target);
 			if (distance > self.WeaponStrikeStartRange) {
 				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", strikeStartRange=" + self.WeaponStrikeStartRange + ")");
@@ -268,6 +273,50 @@ namespace SteamEngine.CompiledScripts {
 				WeaponSkillTargetQueuePlugin.AddTarget(self, target);
 				this.lastEngagedTarget = target;
 			}
+		}
+
+		//transient, not saved - a missed cooldown window just means one skipped cast attempt after a reload, harmless
+		private double nextSpellCastTime;
+		private const double SpellCastCooldownSeconds = 4;
+		private const int SpellCastRange = 10;
+
+		/// <summary>
+		/// Casts NPCDef.CombatSpell directly at `target`, bypassing SpellDef's targeting flow
+		/// entirely (On_TargonChar etc are all hardcoded to Player - see #57) since an NPC picks
+		/// its own target programmatically and has no client-side targeting cursor to drive that
+		/// flow anyway. Returns false (does nothing) if this NPC has no combat spell configured,
+		/// doesn't have the mana, is still on cooldown, or the target is out of spell range -
+		/// callers should fall back to normal weapon combat in that case.
+		/// </summary>
+		private bool TryCastSpell(NPC self, Character target) {
+			SpellDef spell = ((NPCDef) self.Def).CombatSpell;
+			if (spell == null) {
+				return false;
+			}
+			if (Globals.TimeInSeconds < this.nextSpellCastTime) {
+				return false;
+			}
+			if (self.Mana < spell.ManaUse) {
+				return false;
+			}
+			if (Point2D.GetSimpleDistance(self, target) > SpellCastRange) {
+				return false;
+			}
+			if (!self.CanInteractWith(target).Allow) {
+				return false;
+			}
+
+			this.nextSpellCastTime = Globals.TimeInSeconds + Math.Max(SpellCastCooldownSeconds, spell.CastTime);
+			self.Mana -= (short) spell.ManaUse;
+
+			//GM-level power (700, the classic 0-1000 permille max) rather than deriving from a Magery
+			//skill value - NPCs don't have meaningful skill points set up for this, and "this monster
+			//is an expert at its own signature spell" is a reasonable assumption for a first pass.
+			const int spellPower = 700;
+			Logger.WriteDebug("NPCAiTimer.TryCastSpell: " + self.Name + "#" + self.Uid + " casts " + spell.Name + " at " + target.Name);
+			SpellEffectArgs args = SpellEffectArgs.Acquire(self, target, target, spell, spellPower, EffectFlag.FromAbility | EffectFlag.HarmfulEffect);
+			spell.Trigger_EffectChar(target, args);
+			return true;
 		}
 
 		private void Flee(NPC self, Character target) {
