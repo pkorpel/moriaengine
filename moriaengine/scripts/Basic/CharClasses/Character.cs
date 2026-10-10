@@ -171,6 +171,34 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey shouldFollowOwnerTK = TagKey.Acquire("_shouldFollowOwner_");
+
+		/// <summary>Whether this pet currently tries to stay near its ControlMaster (see NPCAiTimer) - toggled by the "come"/"stop" pet commands. Defaults to true, matching classic UO's freshly-tamed-pets-follow-by-default behavior.</summary>
+		public bool ShouldFollowOwner {
+			get {
+				object tag = this.GetTag(shouldFollowOwnerTK);
+				if (tag is bool shouldFollow) {
+					return shouldFollow;
+				}
+				return true;
+			}
+			set {
+				this.SetTag(shouldFollowOwnerTK, value);
+			}
+		}
+
+		private static readonly TagKey petGoalPointTK = TagKey.Acquire("_petGoalPoint_");
+
+		/// <summary>Set by the "go" pet command - a one-shot destination NPCAiTimer walks this pet to (overriding Follow until it arrives, then clears itself). Null when there's no pending order.</summary>
+		public IPoint3D PetGoalPoint {
+			get {
+				return this.GetTag(petGoalPointTK) as IPoint3D;
+			}
+			set {
+				this.SetTag(petGoalPointTK, value);
+			}
+		}
+
 		public bool Flag_GreenHealthBar {
 			get {
 				return this.ProtectedFlag7;
