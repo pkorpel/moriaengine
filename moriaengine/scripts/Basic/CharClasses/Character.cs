@@ -143,6 +143,22 @@ namespace SteamEngine.CompiledScripts {
 			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
+		private static TagKey realmTK = TagKey.Acquire("_realm_");
+
+		/// <summary>Which side of the Gondor/Mordor conflict this character belongs to - used by guard-type NPC aggro (see NPCAiTimer.ShouldAggroOn). Defaults to Realm.None (no side), so untouched characters are left alone by realm-reactive guards.</summary>
+		public Realm Realm {
+			get {
+				object tag = this.GetTag(realmTK);
+				if (tag is Realm realm) {
+					return realm;
+				}
+				return Realm.None;
+			}
+			set {
+				this.SetTag(realmTK, value);
+			}
+		}
+
 		public bool Flag_GreenHealthBar {
 			get {
 				return this.ProtectedFlag7;
