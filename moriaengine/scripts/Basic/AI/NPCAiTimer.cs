@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using SteamEngine.Common;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
 
@@ -86,6 +87,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Directly sets this NPC's current combat target, bypassing ShouldAggroOn - used by the "kill" pet command and by guard duty (AlertGuardiansOf), both of which are explicit orders rather than autonomous aggro decisions.</summary>
 		public void EngageTarget(Character enemy) {
+			NPC self = this.Cont as NPC;
+			Logger.WriteDebug("NPCAiTimer.EngageTarget: " + (self != null ? self.Name + "#" + self.Uid : "?") + " explicitly engaging " + enemy.Name);
 			this.target = enemy;
 		}
 
@@ -142,11 +145,15 @@ namespace SteamEngine.CompiledScripts {
 
 		private void Think(NPC self) {
 			if ((this.target != null) && !this.IsValidTarget(self, this.target)) {
+				Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " dropped target " + this.target.Name + " (no longer valid - dead, map mismatch, or out of GiveUpRange)");
 				this.target = null;
 			}
 
 			if (this.target == null) {
 				this.target = this.FindTarget(self);
+				if (this.target != null) {
+					Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " acquired target " + this.target.Name + " via autonomous aggro");
+				}
 			}
 
 			if (this.target != null) {
@@ -225,7 +232,8 @@ namespace SteamEngine.CompiledScripts {
 
 			int distance = Point2D.GetSimpleDistance(self, target);
 			if (distance > self.WeaponStrikeStartRange) {
-				this.StepTowards(self, target);
+				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", strikeStartRange=" + self.WeaponStrikeStartRange + ")");
+				this.StepTowardsSmart(self, target);
 			}
 
 			WeaponSkillTargetQueuePlugin.AddTarget(self, target);
@@ -248,9 +256,15 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Like StepTowards, but routes around obstacles via the real AStar pathfinder (scripts/Basic/AI/PathFinding/AStar.cs) instead of only ever trying the single direct-line direction. Used by Follow ("come") and the "go" goal-point order, where the user specifically wants NPCs to navigate around basic obstacles rather than getting stuck walking into a wall. Recomputes the path fresh every tick rather than caching it - correct for a moving follow-target, and simple; worth revisiting if profiling ever shows this is too hot with many pets following at once.</summary>
 		private void StepTowardsSmart(NPC self, IPoint3D target) {
 			Direction[] path = AStar.GetPathFromTo(self, target, self.GetMap(), self.MovementSettings);
-			if ((path == null) || (path.Length == 0) || !this.TryStep(self, path[0])) {
-				//no path found, or the first step didn't actually work (e.g. something else moved into the way
-				//since the path was computed) - fall back to a direct attempt rather than freezing in place
+			if (path == null) {
+				Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " found NO path to " + target + " - falling back to direct step");
+				this.StepTowards(self, target);
+			} else if (path.Length == 0) {
+				//already adjacent/at the target per AStar's own exact-tile check - nothing to step
+			} else if (!this.TryStep(self, path[0])) {
+				Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " path's first step (" + path[0] + ") failed CheckMovement - falling back to direct step");
+				//the first step didn't actually work (e.g. something else moved into the way since the path
+				//was computed) - fall back to a direct attempt rather than freezing in place
 				this.StepTowards(self, target);
 			}
 		}
