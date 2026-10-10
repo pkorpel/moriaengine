@@ -71,6 +71,18 @@ namespace SteamEngine.CompiledScripts {
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			Character target = (Character) skillSeqArgs.Target1;
+			//A killing blow's own On_Stroke (further below, success branch) re-adds this target
+			//via AddTarget before its damage is actually applied (On_Success runs only after
+			//this method returns) - when that blow is lethal, AddTarget's restart (On_Start ->
+			//DelayStroke with a 0s delay) can re-enter this exact method again in the same tick,
+			//by which point the target is already deleted (non-player CauseDeath deletes
+			//immediately). CanInteractWith/CanSeeLOS can't be called on a deleted Thing, so
+			//check first rather than let that throw.
+			if (target.IsDeleted) {
+				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
+				self.AbortSkill();
+				return TriggerResult.Cancel;
+			}
 			if (!self.CanInteractWith(target).Allow) {
 				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
 				self.AbortSkill();
@@ -172,6 +184,12 @@ namespace SteamEngine.CompiledScripts {
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			Character target = (Character) skillSeqArgs.Target1;
+
+			//Same re-entrancy case as On_Stroke's IsDeleted guard above - a restarted sequence
+			//for a target that died from the stroke which triggered the restart.
+			if (target.IsDeleted) {
+				return;
+			}
 
 			target.Trigger_HostileAction(self);
 			SoundCalculator.PlayMissSound(self);

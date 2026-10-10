@@ -1,5 +1,13 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using Xunit;
+
+// Tests/Protocol's full-boot tier spawns real AuxiliaryServer/GameCore processes bound to
+// fixed ports (GameServerPairFixture.LoginPort/GamePort) - any two xunit *collections* that each
+// own one of these fixtures would otherwise be free to run concurrently (xunit only serializes
+// *within* a collection by default) and race on those ports. Serializing the whole assembly is
+// the simplest fix given there are only a couple of these collections.
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information

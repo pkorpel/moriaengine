@@ -104,13 +104,21 @@ namespace SteamEngine.CompiledScripts {
 						AnimCalculator.PerformAnim(defender, GenericAnim.GetHit);
 					} //otherwise death sound+anim, is done elsewhere
 
-					// Previously the only feedback for any damage source (melee, spells, poison)
-					// was the target's HP bar silently changing - no animation cue or message at
-					// all told anyone a hit actually landed. Overhead text is used rather than a
-					// dedicated binary "damage number" packet (which postdates this shard's
-					// targeted client era and isn't confirmed supported) - speech/overhead
-					// messages are already a solid, universally-supported path.
-					defender.Message("-" + actualDamage, damageMessageColor);
+					// The Hits setter above calls CauseDeath synchronously once newHits<1 - for a
+					// non-player defender that deletes it immediately (see
+					// NPCAiTimer.AlertGuardiansOf's own comment on this same engine behavior), so
+					// a killing blow can leave `defender` already deleted by the time we get
+					// here. Touching a deleted Thing throws, so skip the overhead message in
+					// that case rather than crashing the whole stroke.
+					if (!defender.IsDeleted) {
+						// Previously the only feedback for any damage source (melee, spells, poison)
+						// was the target's HP bar silently changing - no animation cue or message at
+						// all told anyone a hit actually landed. Overhead text is used rather than a
+						// dedicated binary "damage number" packet (which postdates this shard's
+						// targeted client era and isn't confirmed supported) - speech/overhead
+						// messages are already a solid, universally-supported path.
+						defender.Message("-" + actualDamage, damageMessageColor);
+					}
 				}
 
 				return actualDamage;

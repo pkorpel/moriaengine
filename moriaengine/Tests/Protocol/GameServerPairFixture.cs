@@ -71,6 +71,12 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		public string GameOutputSnapshot() {
+			lock (this.gameOutputLock) {
+				return this.gameOutput.ToString();
+			}
+		}
+
 		public bool WaitForGameOutput(string marker, TimeSpan timeout) {
 			DateTime deadline = DateTime.UtcNow + timeout;
 			while (DateTime.UtcNow < deadline) {

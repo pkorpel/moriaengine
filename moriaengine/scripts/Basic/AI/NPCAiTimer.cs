@@ -265,9 +265,20 @@ namespace SteamEngine.CompiledScripts {
 				return; //cast instead of swinging this tick - don't also touch the weapon-skill queue below
 			}
 
+			//WeaponStrikeStartRange (default 5) is only about when WeaponSkillDef transitions its
+			//own Drawing->Striking phase - it's NOT the range a stroke can actually land at. That
+			//real range is WeaponRangeVsM/VsP (default 1 for melee - i.e. adjacent), checked by
+			//WeaponSkillDef.On_Stroke's own "distance <= range" gate. Using StrikeStartRange here
+			//(as earlier versions of this method did) meant any melee NPC relying on the engine's
+			//defaults - anything that, unlike the #56 archer content, never got an explicit
+			//WeaponRange/StrikeStartRange pair in its .def - stopped approaching 4 tiles short of
+			//actual hit range and swung forever without ever connecting. Mirror On_Stroke's own
+			//formula instead, so "close enough to stop walking" and "close enough to hit" always
+			//agree.
+			int effectiveRange = Math.Min(target.IsPlayerForCombat ? self.WeaponRangeVsP : self.WeaponRangeVsM, self.VisionRange);
 			int distance = Point2D.GetSimpleDistance(self, target);
-			if (distance > self.WeaponStrikeStartRange) {
-				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", strikeStartRange=" + self.WeaponStrikeStartRange + ")");
+			if (distance > effectiveRange) {
+				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", effectiveRange=" + effectiveRange + ")");
 				this.StepTowardsSmart(self, target);
 			}
 
@@ -375,6 +386,7 @@ namespace SteamEngine.CompiledScripts {
 		private bool TryStep(NPC self, Direction dir) {
 			int x, y, z;
 			if (!self.GetMap().CheckMovement(self, self.MovementSettings, dir, false, out x, out y, out z)) {
+				Logger.WriteDebug("NPCAiTimer.TryStep: " + self.Name + "#" + self.Uid + " CheckMovement DENIED dir=" + dir + " from (" + self.X + "," + self.Y + "," + self.Z + ") settings=" + self.MovementSettings);
 				return false;
 			}
 			if (self.Direction != dir) {
