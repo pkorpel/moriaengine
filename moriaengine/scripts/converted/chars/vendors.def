@@ -8,7 +8,7 @@ DESCRIPTION = Man
 Name = "Man"
 DEFNAME = c_man
 Icon = i_pet_MAN
-//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter
+CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
 //RESOURCES = i_flesh_head, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2 // commented out by Converter
 //FOODTYPE = 15 t_food, t_fruit // commented out by Converter
 //BLOODCOLOR = 0 // commented out by Converter
@@ -24,7 +24,7 @@ DESCRIPTION = Woman
 
 NAME = "Woman"
 DEFNAME = c_woman
-//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS // commented out by Converter 
+CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
 Icon = i_pet_woman
 //RESOURCES = i_flesh_head_2, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2 // commented out by Converter 
 //FOODTYPE = 15 t_food,t_fruit // commented out by Converter 
@@ -42,7 +42,7 @@ DESCRIPTION = Ghost
 NAME = "Ghost"
 DEFNAME = c_ghost_man
 Icon = i_pet_MAN
-//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST // commented out by Converter 
+CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST
 //RESOURCES =  // commented out by Converter 
 //FOODTYPE =  // commented out by Converter 
 
@@ -54,7 +54,7 @@ DESCRIPTION = Ghost Woman
 NAME = "Ghost"
 DEFNAME = c_ghost_woman
 Icon = i_pet_woman
-//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST|MT_FEMALE // commented out by Converter 
+CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST|MT_FEMALE
 //RESOURCES = 8 i_ribs_raw // commented out by Converter 
 //FOODTYPE =  // commented out by Converter 
 
@@ -65,7 +65,7 @@ DESCRIPTION = Man {Invis}
 
 NAME = "Man"
 DEFNAME = c_man_invisible
-//CAN = MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
+CAN = MT_WALK|MT_RUN|MT_USEHANDS
 Icon = i_pet_MAN
 //RESOURCES = 4 i_ribs_raw // commented out by Converter 
 //FOODTYPE = 15 t_food,t_fruit // commented out by Converter 
@@ -79,7 +79,7 @@ NAME = "GM"
 DEFNAME = c_man_gm
 Icon = i_pet_MAN
 //FOODTYPE = 15 t_food, t_fruit // commented out by Converter 
-//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS|MT_SWIM|MT_GHOST // commented out by Converter 
+CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS|MT_SWIM|MT_GHOST
 
 [NPCDef C_m_WEAPONSMITH]
 NAME = "Kovar zbrani"
@@ -467,7 +467,7 @@ DESCRIPTION = Tailor blue
 
 NAME = "Mistr Tailor"
 model = C_WOMAN
-//CAN = MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
+CAN = MT_WALK|MT_RUN|MT_USEHANDS
 //TEVENTS = e_item_refuser // commented out by Converter 
 TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
@@ -479,7 +479,7 @@ DESCRIPTION = Tailor red
 
 NAME = "Mistr Tailor"
 model = C_WOMAN
-//CAN = MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
+CAN = MT_WALK|MT_RUN|MT_USEHANDS
 //TEVENTS = e_item_refuser // commented out by Converter 
 TSPEECH = spk_shopkeep
 //TEVENTS = e_character // commented out by Converter 
@@ -502,7 +502,7 @@ DESCRIPTION = Vetesnik (vymena magic itemu)
 
 NAME = "Vetesnik"
 model = C_MAN
-//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
+CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
 WeaponAttack = 30
 ArmorVsP = 40
 ArmorVsM = 40
@@ -520,7 +520,7 @@ DESCRIPTION = Vyberci (vymena magic itemu)
 
 NAME = "Vyberci"
 model = C_WOMAN
-//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
+CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
 WeaponAttack = 30
 ArmorVsP = 40
 ArmorVsM = 40

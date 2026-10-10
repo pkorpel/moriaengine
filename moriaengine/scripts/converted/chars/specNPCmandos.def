@@ -16,7 +16,7 @@ description = Pokladnik (dynamicky poklad)
 
 name = "definice pokladu"
 model = c_man
-//can = 0 // commented out by Converter 
+CAN = 0
 
 [NPCDef c_erebor_opilec]
 CATEGORY = Moria
@@ -45,7 +45,7 @@ WeaponAttack = 60
 ArmorVsP = 80
 ArmorVsM = 80
 //moverate = 4 // commented out by Converter 
-//CAN = MT_WALK|mt_run // commented out by Converter 
+CAN = MT_WALK|mt_run
 //TSPEECH = spk_hlavakrvaka // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
@@ -56,7 +56,7 @@ WeaponAttack = 60
 ArmorVsP = 80
 ArmorVsM = 80
 //moverate = 4 // commented out by Converter 
-//CAN = MT_WALK|mt_run // commented out by Converter 
+CAN = MT_WALK|mt_run
 //TSPEECH = spk_hlavakrvaka // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 
@@ -71,7 +71,7 @@ WeaponAttack = 60
 ArmorVsP = 80
 ArmorVsM = 80
 //moverate = 4 // commented out by Converter 
-//CAN = MT_WALK|mt_run // commented out by Converter 
+CAN = MT_WALK|mt_run
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef 0x1d5]
@@ -82,7 +82,7 @@ IdleSound = snd_MONSTER_ZOMBIE1 + 1
 AttackSound = snd_MONSTER_ZOMBIE1 + 2
 HurtSound = snd_MONSTER_ZOMBIE1 + 3
 DeathSound = snd_MONSTER_ZOMBIE1 + 4
-//CAN = MT_WALK|mt_run // commented out by Converter 
+CAN = MT_WALK|mt_run
 //color = 0076b // commented out by Converter 
 WeaponAttack = 180
 ArmorVsP = 25
@@ -103,7 +103,7 @@ model = C_MAN
 ArmorVsP = 95
 ArmorVsM = 95
 WeaponAttack = 100
-//CAN = MT_WALK|MT_run // commented out by Converter 
+CAN = MT_WALK|MT_run
 //TEVENTS = e_character // commented out by Converter 
 //tevents = e_brinbor // commented out by Converter 
 //TSPEECH = brinborkecy // commented out by Converter 
