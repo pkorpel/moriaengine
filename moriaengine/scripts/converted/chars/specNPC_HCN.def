@@ -3,7 +3,7 @@
 [NPCDef c_hcn_undead_rat]
 NAME = "Pachnouci krysa"
 model = c_rat_giant
-//CAN = MT_WALK // commented out by Converter 
+CAN = MT_WALK
 WeaponAttack = 75
 ArmorVsP = 45
 ArmorVsM = 45
@@ -28,7 +28,7 @@ AttackSound = snd_MONSTER_SEASERP1 + 2
 HurtSound = snd_MONSTER_SEASERP1 + 3
 DeathSound = snd_MONSTER_SEASERP1 + 4
 Icon = i_pet_snake
-//CAN = MT_WALK|MT_RUN // commented out by Converter 
+CAN = MT_WALK|MT_RUN
 WeaponAttack = 140
 ArmorVsP = 70
 ArmorVsM = 70

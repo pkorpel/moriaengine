@@ -131,6 +131,55 @@ namespace SteamEngine.CompiledScripts {
 				this.SetTag(aggroModeTK, value);
 			}
 		}
+
+		private static readonly TagKey defaultMovementTK = TagKey.Acquire("_defaultMovementCapability_");
+
+		/// <summary>The movement capability template new NPCs of this type get on creation (see NPC.On_Create) - each instance gets its own deep copy, not this shared object, so runtime effects can mutate one NPC's capability without affecting every other NPC of the same type.</summary>
+		public IMovementSettings DefaultMovementSettings {
+			get {
+				return (IMovementSettings) this.GetTag(defaultMovementTK);
+			}
+			set {
+				this.SetTag(defaultMovementTK, value);
+			}
+		}
+
+		/// <summary>
+		/// Restores the legacy "CAN = MT_WALK|MT_FLY|..." .def property (converted content,
+		/// enhancements #12) as a real DefaultMovementSettings template. Only the subset that
+		/// actually maps to IMovementSettings is handled (WALK/RUN -> land, SWIM, FLY) -
+		/// MT_USEHANDS/MT_EQUIP/MT_FIRE_IMMUNE/MT_MALE/MT_FEMALE/MT_GHOST/MT_NONMOVER aren't
+		/// movement-capability concepts in this engine (equip/gender/immunity/etc - gender in
+		/// particular is already derived from the model via CharModelInfo, not a separate flag)
+		/// and are intentionally ignored rather than guessed at.
+		/// </summary>
+		protected override void LoadScriptLine(string filename, int line, string param, string args) {
+			if (param == "can") {
+				this.DefaultMovementSettings = ParseMovementCapability(args);
+				return;
+			}
+			base.LoadScriptLine(filename, line, param, args);
+		}
+
+		private static DynamicMovementSettings ParseMovementCapability(string args) {
+			DynamicMovementSettings settings = new DynamicMovementSettings();
+			settings.canCrossLand = false; //start from nothing, grant only what's explicitly listed
+			foreach (string rawToken in args.Split('|')) {
+				switch (rawToken.Trim().ToUpperInvariant()) {
+					case "MT_WALK":
+					case "MT_RUN":
+						settings.canCrossLand = true;
+						break;
+					case "MT_SWIM":
+						settings.canSwim = true;
+						break;
+					case "MT_FLY":
+						settings.canFly = true;
+						break;
+				}
+			}
+			return settings;
+		}
 	}
 
 	[ViewableClass]
@@ -139,6 +188,11 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_Create() {
 			base.On_Create();
 			NPCAiTimer.EnsureInstalled(this);
+
+			IMovementSettings template = ((NPCDef) this.Def).DefaultMovementSettings;
+			if (template != null) {
+				this.MovementSettings = (IMovementSettings) DeepCopyFactory.GetCopy(template);
+			}
 		}
 
 		/// <summary>Decides whether this NPC should pick `candidate` as an aggro target - see AggroMode. Virtual so NPC subclasses/scripts can layer on additional policies beyond the three builtins.</summary>
