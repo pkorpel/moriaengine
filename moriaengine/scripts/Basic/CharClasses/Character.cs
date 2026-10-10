@@ -199,6 +199,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey followTargetTK = TagKey.Acquire("_followTarget_");
+
+		/// <summary>Who this NPC's "come" currently points at - set explicitly so a GM can direct ANY NPC (not just a real owned pet, which just uses ControlMaster by default) without making it anyone's permanent pet. Null means "use ControlMaster instead" (see NPCAiTimer.Think).</summary>
+		public Character FollowTarget {
+			get {
+				return this.GetTag(followTargetTK) as Character;
+			}
+			set {
+				this.SetTag(followTargetTK, value);
+			}
+		}
+
 		public bool Flag_GreenHealthBar {
 			get {
 				return this.ProtectedFlag7;

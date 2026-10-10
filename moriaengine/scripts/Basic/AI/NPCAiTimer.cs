@@ -130,27 +130,33 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			Character master = self.ControlMaster;
-			if (master != null) {
-				IPoint3D goal = self.PetGoalPoint;
-				if (goal != null) {
-					if (Point2D.GetSimpleDistance(self, goal) <= 1) {
-						self.PetGoalPoint = null; //arrived
-					} else {
-						this.LastState = AIState.GoingToPoint;
-						this.StepTowards(self, goal);
-						return;
-					}
-				}
-
-				if (self.ShouldFollowOwner && master.IsAliveAndValid && (master.M == self.M)) {
-					this.LastState = AIState.Following;
-					this.Follow(self, master);
+			IPoint3D goal = self.PetGoalPoint;
+			if (goal != null) {
+				if (Point2D.GetSimpleDistance(self, goal) <= 1) {
+					self.PetGoalPoint = null; //arrived
+				} else {
+					this.LastState = AIState.GoingToPoint;
+					this.StepTowards(self, goal);
 					return;
 				}
+			}
 
+			//FollowTarget lets a GM temporarily direct ANY NPC (not just a real owned pet) via the
+			//same come/go/stop/transfer commands - it defaults to ControlMaster so a real pet's
+			//owner doesn't need to do anything special, but a GM-issued "come" on an unowned
+			//monster sets it explicitly without making that monster anyone's permanent pet.
+			Character followTarget = self.FollowTarget ?? self.ControlMaster;
+			if (self.ShouldFollowOwner && (followTarget != null) && followTarget.IsAliveAndValid && (followTarget.M == self.M)) {
+				this.LastState = AIState.Following;
+				this.Follow(self, followTarget);
+				return;
+			}
+
+			if ((self.ControlMaster != null) || (self.FollowTarget != null)) {
+				//a real pet, or a monster a GM has directed at least once - stands put instead of
+				//wandering off when it's not actively following or under a "go" order
 				this.LastState = AIState.Idle;
-				return; //a pet that isn't following and has no order just stands put, not wandering off
+				return;
 			}
 
 			this.LastState = AIState.Wandering;

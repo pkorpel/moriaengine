@@ -27,6 +27,10 @@ namespace SteamEngine.CompiledScripts {
 	/// pet). Deliberately scoped to just these four verbs per request - guard/kill/release/drop
 	/// are natural follow-ups, not built here.
 	///
+	/// GMs bypass the ownership check entirely - "all come"/"<name> stop" from a GM affects any
+	/// NPC in range (wild monsters included), not just their own pets. See Character.FollowTarget
+	/// for how a GM can direct an unowned NPC without making it their permanent pet.
+	///
 	/// Parsed on the speaker's own On_Say (not per-pet On_Hear) so that "all go"/"all transfer"
 	/// can issue a single target request whose result applies to every matched pet - if each pet
 	/// independently called Player.Target, only the last one processed would actually receive
@@ -54,7 +58,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			string targetName = string.Join(" ", parts, 0, parts.Length - 1);
 
-			List<NPC> pets = this.FindOwnedPets(targetName);
+			List<NPC> pets = this.FindControllableNpcs(targetName);
 			if (pets.Count == 0) {
 				return;
 			}
@@ -62,6 +66,7 @@ namespace SteamEngine.CompiledScripts {
 			switch (verb) {
 				case "come":
 					foreach (NPC pet in pets) {
+						pet.FollowTarget = this; //explicit, not just relying on ControlMaster - lets a GM direct an unowned NPC too
 						pet.ShouldFollowOwner = true;
 						pet.PetGoalPoint = null;
 					}
@@ -69,6 +74,9 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case "stop":
 					foreach (NPC pet in pets) {
+						if (pet.ControlMaster == null) {
+							pet.FollowTarget = this; //mark a wild NPC as under control so it stands put instead of resuming autonomous wandering
+						}
 						pet.ShouldFollowOwner = false;
 						pet.PetGoalPoint = null;
 					}
@@ -93,14 +101,19 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>"all" -> every NPC this character owns within speech range. Otherwise -> the one owned NPC whose name matches (case-insensitive), if any.</summary>
-		private List<NPC> FindOwnedPets(string targetName) {
+		/// <summary>
+		/// "all" -> every matching NPC within speech range. Otherwise -> the one matching NPC
+		/// whose name matches (case-insensitive), if any. A GM's commands match ANY NPC; a
+		/// regular player's commands only match NPCs that NPC actually owns (ControlMaster == this).
+		/// </summary>
+		private List<NPC> FindControllableNpcs(string targetName) {
 			List<NPC> result = new List<NPC>();
 			bool wantsAll = string.Equals(targetName, "all", StringComparison.OrdinalIgnoreCase);
+			bool isGM = this.IsGM;
 
 			foreach (AbstractCharacter ch in this.GetMap().GetCharsInRange(this.X, this.Y, Globals.SpeechDistance)) {
 				NPC pet = ch as NPC;
-				if ((pet == null) || (pet.ControlMaster != this)) {
+				if ((pet == null) || (!isGM && (pet.ControlMaster != this))) {
 					continue;
 				}
 				if (wantsAll) {
@@ -143,6 +156,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			foreach (NPC pet in pets) {
 				pet.ControlMaster = targetted;
+				pet.FollowTarget = null; //clear any GM override so the new owner takes effect in NPCAiTimer's FollowTarget ?? ControlMaster check
 				pet.ShouldFollowOwner = true;
 				pet.PetGoalPoint = null;
 			}
