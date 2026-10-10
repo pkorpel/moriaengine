@@ -87,6 +87,10 @@ namespace SteamEngine.CompiledScripts {
 						}
 						pet.ShouldFollowOwner = false;
 						pet.PetGoalPoint = null;
+						NPCAiTimer timer = NPCAiTimer.GetFor(pet);
+						if (timer != null) {
+							timer.Disengage(); //previously "stop" only touched Follow/wander state - an active fight kept running regardless
+						}
 					}
 					this.SysMessage("Your pet" + (pets.Count > 1 ? "s" : "") + " will stay put.");
 					break;
@@ -131,6 +135,10 @@ namespace SteamEngine.CompiledScripts {
 						pet.IsGuarding = false;
 						pet.ShouldFollowOwner = true;
 						pet.PetGoalPoint = null;
+						NPCAiTimer timer = NPCAiTimer.GetFor(pet);
+						if (timer != null) {
+							timer.Disengage();
+						}
 					}
 					this.SysMessage("You release your pet" + (pets.Count > 1 ? "s" : "") + " into the wild.");
 					break;
