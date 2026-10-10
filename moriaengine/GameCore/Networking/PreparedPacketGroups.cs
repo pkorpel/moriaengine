@@ -242,5 +242,27 @@ namespace SteamEngine.Networking {
 			conn.SendPacketGroup(pg);
 		}
 		#endregion OverallLightLevel
+
+		#region SeasonalInformation
+		private static PacketGroup[][] seasonalInformation = InitSeasonalInformation();
+
+		private static PacketGroup[][] InitSeasonalInformation() {
+			int seasons = Tools.GetEnumLength<Season>();
+			int cursors = Tools.GetEnumLength<CursorType>();
+			PacketGroup[][] retVal = new PacketGroup[seasons][];
+			for (int s = 0; s < seasons; s++) {
+				retVal[s] = new PacketGroup[cursors];
+				for (int c = 0; c < cursors; c++) {
+					retVal[s][c] = PacketGroup.CreateFreePG();
+					retVal[s][c].AcquirePacket<SeasonalInformationOutPacket>().Prepare((Season) s, (CursorType) c);
+				}
+			}
+			return retVal;
+		}
+
+		public static void SendSeasonalInformation(TcpConnection<GameState> conn, Season season, CursorType cursor) {
+			conn.SendPacketGroup(seasonalInformation[(int) season][(int) cursor]);
+		}
+		#endregion SeasonalInformation
 	}
 }
