@@ -651,6 +651,11 @@ ArmorVsM = 90
 //RESOURCES =  // commented out by Converter 
 //FOODTYPE =  // commented out by Converter 
 //BLOODCOLOR = 00 // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_vampire_archer_lvl_2]
 CATEGORY = Dungy
@@ -670,6 +675,11 @@ ArmorVsM = 90
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_npc_multishot // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_vampire_archer_lvl_3]
 CATEGORY = Dungy
@@ -690,6 +700,11 @@ ArmorVsM = 100
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_npc_multishot // commented out by Converter 
 //TEVENTS = e_npc_sniper // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_vampire_archer_lvl_4]
 CATEGORY = Dungy
@@ -710,6 +725,11 @@ ArmorVsM = 100
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_npc_sniper // commented out by Converter 
 //TEVENTS = e_npc_multishot // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_vampire_archer_lvl_1_vamp]
 CATEGORY = Dungy
@@ -731,6 +751,11 @@ ArmorVsM = 90
 //TEVENTS = e_npc_sniper // commented out by Converter 
 //TEVENTS = e_npc_multishot // commented out by Converter 
 //TEVENTS = e_vysatihp // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_vampire_archer_lvl_2_vamp]
 CATEGORY = Dungy
@@ -752,6 +777,11 @@ ArmorVsM = 90
 //TEVENTS = e_npc_sniper // commented out by Converter 
 //TEVENTS = e_npc_multishot // commented out by Converter 
 //TEVENTS = e_vysatihp // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_vampire_archer_lvl_3_vamp]
 CATEGORY = Dungy
@@ -773,6 +803,11 @@ ArmorVsM = 100
 //TEVENTS = e_npc_sniper // commented out by Converter 
 //TEVENTS = e_npc_multishot // commented out by Converter 
 //TEVENTS = e_vysatihp_vampire1 // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_vampire_archer_lvl_4_vamp]
 CATEGORY = Dungy
@@ -794,3 +829,8 @@ ArmorVsM = 100
 //TEVENTS = e_npc_sniper // commented out by Converter 
 //TEVENTS = e_npc_multishot // commented out by Converter 
 //TEVENTS = e_vysatihp_vampire2 // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42

@@ -20,6 +20,11 @@ ArmorVsM = 25
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
 //TSPEECH = spk_human_prime // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_gurg_ath_thief]
 CATEGORY = Monsters
@@ -146,6 +151,11 @@ ArmorVsM = 25
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
 //TSPEECH = spk_human_prime // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_saur_hat_thief]
 CATEGORY = Monsters
@@ -251,6 +261,11 @@ ArmorVsM = 25
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
 //TSPEECH = spk_human_prime // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_nurn_man_mage]
 CATEGORY = Monsters
@@ -335,6 +350,11 @@ ArmorVsM = 30
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
 //TSPEECH = spk_human_prime // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_necro_lord]
 CATEGORY = Monsters
@@ -585,6 +605,11 @@ ArmorVsM = 40
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_necroslave // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_beridor_archer_f]
 CATEGORY = Dungy
@@ -605,6 +630,11 @@ ArmorVsM = 20
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_necroslave // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_beridor_mage]
 CATEGORY = Dungy
