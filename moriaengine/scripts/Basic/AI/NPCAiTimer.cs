@@ -65,6 +65,15 @@ namespace SteamEngine.CompiledScripts {
 		//transient - not saved. Re-acquired from scratch on the next think tick after a reload, which is fine for a live combat/aggro target.
 		private Character target;
 
+		//Tracks whether `target` has already been handed to WeaponSkillTargetQueuePlugin, so AddTarget
+		//is called exactly once per engagement rather than every single think-tick. AddTarget ->
+		//FightCurrentTarget always starts a BRAND NEW SkillSequenceArgs and calls PhaseSelect() on it,
+		//and On_Start aborts whatever skill sequence was already running - so calling it every 1.5s tick
+		//was aborting the in-progress Drawing/Striking phase before it could ever land a hit (the
+		//skill's own internal retry loop runs on a 1s cadence, so a 1.5s external restart interrupted it
+		//almost every time). This was the real cause of "NPC swings but never actually hits."
+		private Character lastEngagedTarget;
+
 		public AIState LastState { get; private set; }
 
 		[LoadingInitializer]
@@ -90,6 +99,20 @@ namespace SteamEngine.CompiledScripts {
 			NPC self = this.Cont as NPC;
 			Logger.WriteDebug("NPCAiTimer.EngageTarget: " + (self != null ? self.Name + "#" + self.Uid : "?") + " explicitly engaging " + enemy.Name);
 			this.target = enemy;
+			this.lastEngagedTarget = null; //force the next Fight() tick to (re-)hand this target to WeaponSkillTargetQueuePlugin
+		}
+
+		/// <summary>Fully breaks off combat - used by the "stop" and "release" pet commands, which previously only touched Follow/wander state and left an active fight running untouched.</summary>
+		public void Disengage() {
+			NPC self = this.Cont as NPC;
+			if ((self != null) && (this.target != null)) {
+				Logger.WriteDebug("NPCAiTimer.Disengage: " + self.Name + "#" + self.Uid + " breaking off from " + this.target.Name);
+				WeaponSkillTargetQueuePlugin.RemoveTarget(self, this.target);
+				self.AbortSkill();
+				self.Flag_WarMode = false;
+			}
+			this.target = null;
+			this.lastEngagedTarget = null;
 		}
 
 		/// <summary>Called from Character.Trigger_HostileAction - any NPC guarding `victim` (Character.IsGuarding, protecting its FollowTarget/ControlMaster) joins the fight against `attacker`.</summary>
@@ -236,7 +259,15 @@ namespace SteamEngine.CompiledScripts {
 				this.StepTowardsSmart(self, target);
 			}
 
-			WeaponSkillTargetQueuePlugin.AddTarget(self, target);
+			//AddTarget must only be called ONCE per engagement - see lastEngagedTarget's comment. The
+			//skill sequence itself (WeaponSkillDef.On_Stroke) already retries on its own every second
+			//until it's close enough and lands a hit; re-adding every AI tick was aborting that
+			//in-progress sequence before it ever got the chance.
+			if (this.lastEngagedTarget != target) {
+				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " handing " + target.Name + " to WeaponSkillTargetQueuePlugin (new engagement)");
+				WeaponSkillTargetQueuePlugin.AddTarget(self, target);
+				this.lastEngagedTarget = target;
+			}
 		}
 
 		private void Flee(NPC self, Character target) {
