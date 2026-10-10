@@ -70,30 +70,36 @@ namespace SteamEngine.Networking {
 			return thread;
 		}
 
+		//Lock order here must match MovementRequest below (globalLock acquired before queue, never
+		//the reverse) - see the ordering note next to globalLock's declaration in Main.cs. This used
+		//to lock queue first and take globalLock only around ProcessMovement, which is the opposite
+		//order from MovementRequest (called from IncomingPackets.Handle while globalLock is already
+		//held, then taking queue inside it) - a genuine lock-order inversion, not just a theoretical
+		//one (#17).
 		static void Cycle() {
 			while (manualResetEvent.WaitOne()) {
-				lock (queue) {
-					LinkedListNode<MovementState> currentNode = queue.First;
-					while (currentNode != null) {
-						LinkedListNode<MovementState> nextNode = currentNode.Next;
+				lock (MainClass.globalLock) {
+					lock (queue) {
+						LinkedListNode<MovementState> currentNode = queue.First;
+						while (currentNode != null) {
+							LinkedListNode<MovementState> nextNode = currentNode.Next;
 
-						MovementState ms = currentNode.Value;
-						if (ms.moveRequests.Count > 0) {
-							lock (MainClass.globalLock) {
+							MovementState ms = currentNode.Value;
+							if (ms.moveRequests.Count > 0) {
 								ms.ProcessMovement(ms.moveRequests.Dequeue());
-							}
-							if (ms.moveRequests.Count == 0) {
+								if (ms.moveRequests.Count == 0) {
+									queue.Remove(currentNode);
+								}
+							} else {
 								queue.Remove(currentNode);
 							}
-						} else {
-							queue.Remove(currentNode);
+
+							currentNode = nextNode;
 						}
 
-						currentNode = nextNode;
-					}
-
-					if (queue.Count == 0) {
-						manualResetEvent.Reset();
+						if (queue.Count == 0) {
+							manualResetEvent.Reset();
+						}
 					}
 				}
 
