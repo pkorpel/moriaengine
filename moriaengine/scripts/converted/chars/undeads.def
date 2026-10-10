@@ -299,6 +299,11 @@ ArmorVsM = 10
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_selfreser // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_skeleton_archer_lvl_2]
 CATEGORY = Monsters
@@ -324,6 +329,11 @@ ArmorVsM = 20
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_selfreser // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_skeleton_archer_lvl_3]
 CATEGORY = Monsters
@@ -349,6 +359,11 @@ ArmorVsM = 40
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_selfreser // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_skeleton_archer_lvl_4]
 CATEGORY = Monsters
@@ -374,6 +389,11 @@ ArmorVsM = 60
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_selfreser // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef 0x94]
 CATEGORY = Monsters

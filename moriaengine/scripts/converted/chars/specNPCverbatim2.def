@@ -91,6 +91,11 @@ ArmorVsM = 70
 //BLOODCOLOR = 0985 // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_shagar_archer_static_sniper]
 CATEGORY = Dungy
@@ -115,6 +120,11 @@ ArmorVsM = 70
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_npc_sniper // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_shagar_warrior_stone]
 CATEGORY = Dungy
@@ -169,6 +179,11 @@ ArmorVsM = 80
 //BLOODCOLOR = 0985 // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_shagar_archer_stone_static]
 CATEGORY = Dungy
@@ -187,6 +202,11 @@ ArmorVsM = 80
 //BLOODCOLOR = 0985 // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_shagar_archer_stone_static_multi]
 CATEGORY = Dungy
@@ -206,6 +226,11 @@ ArmorVsM = 80
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_npc_multishot // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef 0x300]
 CATEGORY = Dungy

@@ -438,6 +438,11 @@ ArmorVsM = 90
 //BloodColor = 0481 // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_elem_ice_mage]
 CATEGORY = Dungy
@@ -484,6 +489,11 @@ ArmorVsM = 90
 //BLOODCOLOR = -1 // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_character // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_snow_warrior_male]
 CATEGORY = Dungy
@@ -686,6 +696,11 @@ ArmorVsM = 40
 //TEVENTS = e_summoneater // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_snow_archer_male_w]
 CATEGORY = Dungy
@@ -708,6 +723,11 @@ ArmorVsM = 40
 //TEVENTS = e_summoneater // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_snow_archer_female]
 CATEGORY = Dungy
@@ -730,6 +750,11 @@ ArmorVsM = 40
 //TEVENTS = e_summoneater // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_snow_archer_female_w]
 CATEGORY = Dungy
@@ -752,6 +777,11 @@ ArmorVsM = 40
 //TEVENTS = e_summoneater // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef 0x307]
 CATEGORY = Dungy
@@ -863,6 +893,11 @@ ArmorVsM = 40
 //TEVENTS = e_character // commented out by Converter 
 //TEVENTS = e_monster // commented out by Converter 
 //TEVENTS = e_looter // commented out by Converter 
+WeaponType = WeaponType.Bow
+WeaponRange = 10
+StrikeStartRange = 10
+StrikeStopRange = 12
+ProjectileAnim = 0xf42
 
 [NPCDef c_snow_worker_tamer]
 CATEGORY = Dungy
