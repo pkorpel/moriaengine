@@ -105,12 +105,56 @@ namespace SteamEngine.CompiledScripts {
 		} //max positive difference in 1 step
 	}
 
+	/// <summary>How an NPC decides whether to attack a player it notices - see NPCAiTimer.ShouldAggroOn. Deliberately extensible: NPC/NPCDef subclasses can override ShouldAggroOn for policies beyond these three builtins (e.g. time-of-day, criminal-only) without touching the AI tick loop.</summary>
+	public enum AggroMode {
+		/// <summary>Never initiates an attack - the default, used by townsfolk/vendors/etc.</summary>
+		Calm,
+		/// <summary>Attacks any valid player that comes into aggro range, regardless of realm/notoriety - wild monsters.</summary>
+		Hostile,
+		/// <summary>Attacks players whose Realm is on the opposite side of this NPC's own Realm (Gondor vs Mordor, including outcasts) - town guards.</summary>
+		GuardsRealm
+	}
+
 	[ViewableClass]
 	public partial class NPCDef {
+		private static readonly TagKey aggroModeTK = TagKey.Acquire("_aggroMode_");
+
+		public AggroMode AggroMode {
+			get {
+				object tag = this.GetTag(aggroModeTK);
+				if (tag is AggroMode mode) {
+					return mode;
+				}
+				return AggroMode.Calm;
+			}
+			set {
+				this.SetTag(aggroModeTK, value);
+			}
+		}
 	}
 
 	[ViewableClass]
 	public partial class NPC : Character {
+
+		public override void On_Create() {
+			base.On_Create();
+			NPCAiTimer.EnsureInstalled(this);
+		}
+
+		/// <summary>Decides whether this NPC should pick `candidate` as an aggro target - see AggroMode. Virtual so NPC subclasses/scripts can layer on additional policies beyond the three builtins.</summary>
+		public virtual bool ShouldAggroOn(Character candidate) {
+			if ((candidate == null) || !candidate.IsPlayer || !candidate.IsAliveAndValid || (candidate == this)) {
+				return false;
+			}
+			switch (((NPCDef) this.Def).AggroMode) {
+				case AggroMode.Hostile:
+					return true;
+				case AggroMode.GuardsRealm:
+					return NPCAiTimer.IsOppositeRealm(this.Realm, candidate.Realm);
+				default:
+					return false;
+			}
+		}
 
 		public override short MaxHits {
 			get {

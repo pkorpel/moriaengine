@@ -35,6 +35,15 @@ namespace SteamEngine {
 
 		//public static Logger logger;
 
+		//Lock ordering (#17): globalLock must always be acquired BEFORE any other lock that's
+		//also held nested with it (e.g. MovementState.queue) - never the reverse. This matters
+		//because globalLock is taken implicitly by every incoming packet handler
+		//(GameCore/Networking/GameServer.cs passes it to AsyncCore as its per-connection lock),
+		//so any code path that's reachable from packet handling and also takes a second lock
+		//fixes that second lock's position as "nested inside globalLock" for every other caller
+		//of that same lock to stay consistent with. See MovementState.Cycle for a concrete case
+		//that used to invert this (queue taken first, globalLock nested inside) and was fixed to
+		//match.
 		internal static readonly object globalLock = new object();
 
 		private static readonly CancellationTokenSource exitTokenSource = new CancellationTokenSource();
