@@ -25,7 +25,8 @@ namespace SteamEngine.CompiledScripts {
 		Idle,
 		Wandering,
 		Fighting,
-		Fleeing
+		Fleeing,
+		Following
 	}
 
 	/// <summary>
@@ -128,8 +129,22 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
+			Character master = self.ControlMaster;
+			if ((master != null) && master.IsAliveAndValid && (master.M == self.M)) {
+				this.LastState = AIState.Following;
+				this.Follow(self, master);
+				return;
+			}
+
 			this.LastState = AIState.Wandering;
 			this.Wander(self);
+		}
+
+		private void Follow(NPC self, Character master) {
+			if (Point2D.GetSimpleDistance(self, master) > 1) {
+				Direction dir = Point2D.GetDirFromTo(self, master);
+				this.TryStep(self, dir);
+			}
 		}
 
 		private bool IsValidTarget(NPC self, Character candidate) {

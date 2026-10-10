@@ -15,6 +15,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
@@ -132,6 +133,22 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey tamingDifficultyTK = TagKey.Acquire("_tamingDifficulty_");
+
+		/// <summary>Minimum effective AnimalTaming skill needed to tame this NPC type (see TamingSkillDef), on the classic 0-1000 permille scale matching CheckSuccess's difficulty parameter. Negative (the default) means not tameable at all.</summary>
+		public double TamingDifficulty {
+			get {
+				object tag = this.GetTag(tamingDifficultyTK);
+				if (tag is double difficulty) {
+					return difficulty;
+				}
+				return -1;
+			}
+			set {
+				this.SetTag(tamingDifficultyTK, value);
+			}
+		}
+
 		private static readonly TagKey defaultMovementTK = TagKey.Acquire("_defaultMovementCapability_");
 
 		/// <summary>The movement capability template new NPCs of this type get on creation (see NPC.On_Create) - each instance gets its own deep copy, not this shared object, so runtime effects can mutate one NPC's capability without affecting every other NPC of the same type.</summary>
@@ -156,6 +173,10 @@ namespace SteamEngine.CompiledScripts {
 		protected override void LoadScriptLine(string filename, int line, string param, string args) {
 			if (param == "can") {
 				this.DefaultMovementSettings = ParseMovementCapability(args);
+				return;
+			}
+			if (param == "tamingdifficulty") {
+				this.TamingDifficulty = ConvertTools.ParseDouble(args);
 				return;
 			}
 			base.LoadScriptLine(filename, line, param, args);
@@ -199,6 +220,9 @@ namespace SteamEngine.CompiledScripts {
 		public virtual bool ShouldAggroOn(Character candidate) {
 			if ((candidate == null) || !candidate.IsPlayer || !candidate.IsAliveAndValid || (candidate == this)) {
 				return false;
+			}
+			if (this.ControlMaster != null) {
+				return false; //tamed pets don't pick fights on their own - no "guard me"/"kill" command system yet (follow-up)
 			}
 			switch (((NPCDef) this.Def).AggroMode) {
 				case AggroMode.Hostile:
