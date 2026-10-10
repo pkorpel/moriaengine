@@ -529,6 +529,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		public void SendSeasonalInformation(Season season, CursorType cursor) {
+			GameState state = this.GameState;
+			if (state != null) {
+				state.SendSeasonalInformation(season, cursor);
+			}
+		}
+
 		/// <summary>
 		/// Tries to pay priceTotal gold, drawing from backpack/bank per Globals.PaymentSource
 		/// (see GoldUtils.TryPay). Previously a stub that always failed for real players and

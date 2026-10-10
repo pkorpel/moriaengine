@@ -530,6 +530,17 @@ namespace SteamEngine.Networking {
 		}
 		#endregion LightLevel
 
+		#region Season
+		private Season lastSentSeason = (Season) (-1);
+
+		public void SendSeasonalInformation(Season season, CursorType cursor) {
+			if (season != this.lastSentSeason) {
+				PreparedPacketGroups.SendSeasonalInformation(this.conn, season, cursor);
+				this.lastSentSeason = season;
+			}
+		}
+		#endregion Season
+
 		#region Last Macro Spell/Skill
 		public int LastSkillMacroId {
 			get;
