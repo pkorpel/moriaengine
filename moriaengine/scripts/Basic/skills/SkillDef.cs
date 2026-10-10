@@ -548,7 +548,7 @@ namespace SteamEngine.CompiledScripts {
 		/// Gets usually called by the SkillTimer.
 		/// </summary>
 		public void PhaseStroke() {
-			if (this.self.IsAliveAndValid) {
+			if ((this.self != null) && this.self.IsAliveAndValid && (this.skillDef != null)) {
 				if (TriggerResult.Cancel != this.skillDef.Trigger_Stroke(this)) {
 					if (this.success) {
 						this.PhaseSuccess();
