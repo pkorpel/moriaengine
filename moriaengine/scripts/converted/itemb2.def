@@ -1960,7 +1960,7 @@ DEFNAME = i_sign_brass
 
 [ItemDef 0xbd2]
 DUPEITEM = i_sign_brass
-//DEFNAME = i_sign_brass_2 // commented out by Converter 
+DEFNAME = i_sign_brass_2
 
 [ItemDef 0xbd3]
 CATEGORY = Decoration - Signs

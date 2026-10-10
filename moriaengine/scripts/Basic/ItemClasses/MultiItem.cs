@@ -62,7 +62,8 @@ namespace SteamEngine.CompiledScripts {
 			if (n > 0) {
 				Item[] items = new Item[n];
 				for (int i = 0; i < n; i++) {
-					items[i] = this.components[i].Create(t.X, t.Y, t.Z, t.M); ;
+					items[i] = this.components[i].Create(t.X, t.Y, t.Z, t.M);
+					items[i].SetTag(MultiItem.ownerMultiTK, mi);
 				}
 				mi.components = items;
 			}
@@ -190,6 +191,16 @@ namespace SteamEngine.CompiledScripts {
 	public partial class MultiItem : Item {
 		protected MultiRegion region;
 
+		internal static readonly TagKey ownerMultiTK = TagKey.Acquire("_ownerMultiItem_");
+
+		/// <summary>Finds the MultiItem a component item belongs to (e.g. a house sign -> its House), or null if `component` isn't a multi's component.</summary>
+		public static MultiItem GetOwningMulti(Item component) {
+			if (component == null) {
+				return null;
+			}
+			return component.GetTag(ownerMultiTK) as MultiItem;
+		}
+
 		public int ComponentCount {
 			get {
 				if (this.components != null) {
@@ -235,6 +246,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>True once InitMultiRegion successfully registered this multi's region with the map. False (with no region at all) if the footprint collided with another dynamic region (another multi) - callers that care about placement validity (house deeds) should check this instead of just Region != null.</summary>
+		public bool IsRegionPlaced {
+			get;
+			private set;
+		}
+
 		internal virtual void InitMultiRegion() {
 			int n = this.TypeDef.rectangleHelpers.Count;
 			if (n > 0) {
@@ -242,8 +259,13 @@ namespace SteamEngine.CompiledScripts {
 				for (int i = 0; i < n; i++) {
 					newRectangles[i] = this.TypeDef.rectangleHelpers[i].CreateRect(this);
 				}
-				this.region = new MultiRegion(this, newRectangles);
-				// TODO - pouzit region.Place(P()) a v pripade false poresit co delat s neuspechem!!
+				MultiRegion newRegion = new MultiRegion(this, newRectangles);
+				if (newRegion.Place(this.P())) {
+					this.region = newRegion;
+					this.IsRegionPlaced = true;
+				} else {
+					Logger.WriteWarning("Could not place the region for " + this + " - its footprint collides with another multi's region.");
+				}
 			}
 		}
 	}

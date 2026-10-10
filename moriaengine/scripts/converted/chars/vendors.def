@@ -8,7 +8,7 @@ DESCRIPTION = Man
 Name = "Man"
 DEFNAME = c_man
 Icon = i_pet_MAN
-CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS // PlayerDef has no CAN/movement-capability field in this engine (NPCDef-only) - left commented, not restored
 //RESOURCES = i_flesh_head, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2 // commented out by Converter
 //FOODTYPE = 15 t_food, t_fruit // commented out by Converter
 //BLOODCOLOR = 0 // commented out by Converter
@@ -24,7 +24,7 @@ DESCRIPTION = Woman
 
 NAME = "Woman"
 DEFNAME = c_woman
-CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS // PlayerDef has no CAN/movement-capability field in this engine (NPCDef-only) - left commented, not restored
 Icon = i_pet_woman
 //RESOURCES = i_flesh_head_2, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2 // commented out by Converter 
 //FOODTYPE = 15 t_food,t_fruit // commented out by Converter 
