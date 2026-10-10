@@ -312,6 +312,7 @@ DESCRIPTION = Titan
 NAME = "Titan"
 ANIM = 0x78c7f
 DEFNAME = c_titan
+AggroMode = Hostile
 AngerSound = snd_MONSTER_TITAN1
 IdleSound = snd_MONSTER_TITAN1 + 1
 AttackSound = snd_MONSTER_TITAN1 + 2

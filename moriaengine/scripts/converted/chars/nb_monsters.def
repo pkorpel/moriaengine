@@ -52,6 +52,7 @@ ArmorVsM = 20
 
 [NPCDef c_skeleton_archer_nb]
 CATEGORY = Monsters
+AggroMode = Hostile
 SUBSECTION = NB Monsters
 DESCRIPTION = Kostlivec Lucistni
 

@@ -338,6 +338,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void Flee(NPC self, Character target) {
+			Logger.WriteDebug("NPCAiTimer.Flee: " + self.Name + "#" + self.Uid + " fleeing from " + target.Name +
+				" (hits=" + self.Hits + "/" + self.MaxHits + ")");
 			self.Flag_WarMode = false;
 			WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
 
