@@ -765,6 +765,7 @@ DESCRIPTION = Liche
 NAME = "Liche"
 ANIM = 0x7bc7f
 defname = c_liche
+AggroMode = Hostile
 AngerSound = snd_MONSTER_LICHE1
 IdleSound = snd_MONSTER_LICHE1 + 1
 AttackSound = snd_MONSTER_LICHE1 + 2

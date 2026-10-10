@@ -602,6 +602,7 @@ DESCRIPTION = Dragon Lord
 Name = "dragon lord"
 anim = 0xffc78c7f
 defname = c_dragon_lord
+AggroMode = Hostile
 AngerSound = snd_MONSTER_DRAGON1
 IdleSound = snd_MONSTER_DRAGON1 + 1
 AttackSound = snd_MONSTER_DRAGON1 + 2
