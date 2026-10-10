@@ -211,6 +211,19 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey isGuardingTK = TagKey.Acquire("_isGuarding_");
+
+		/// <summary>Set by the "guard" pet command - while true, this NPC joins any fight against whoever attacks its FollowTarget/ControlMaster (see NPCAiTimer.AlertGuardiansOf, hooked from Trigger_HostileAction).</summary>
+		public bool IsGuarding {
+			get {
+				object tag = this.GetTag(isGuardingTK);
+				return tag is bool guarding && guarding;
+			}
+			set {
+				this.SetTag(isGuardingTK, value);
+			}
+		}
+
 		public bool Flag_GreenHealthBar {
 			get {
 				return this.ProtectedFlag7;
@@ -1869,6 +1882,7 @@ namespace SteamEngine.CompiledScripts {
 		private static TriggerKey hostileActionTK = TriggerKey.Acquire("hostileAction");
 		public void Trigger_HostileAction(Character enemy) {
 			Notoriety.OnHostileAction(this, enemy);
+			NPCAiTimer.AlertGuardiansOf(this, enemy);
 			ScriptArgs sa = new ScriptArgs(enemy);
 			this.TryTrigger(hostileActionTK, sa);
 			this.On_HostileAction(enemy);
