@@ -7,13 +7,14 @@ DESCRIPTION = Man
 
 Name = "Man"
 DEFNAME = c_man
-//ICON = i_pet_MAN // commented out by Converter 
-//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
-//RESOURCES = i_flesh_head, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2 // commented out by Converter 
-//FOODTYPE = 15 t_food, t_fruit // commented out by Converter 
-//BLOODCOLOR = 0 // commented out by Converter 
-//attack = 4 // commented out by Converter 
-//ARMOR = 0 // commented out by Converter 
+Icon = i_pet_MAN
+//CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter
+//RESOURCES = i_flesh_head, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2 // commented out by Converter
+//FOODTYPE = 15 t_food, t_fruit // commented out by Converter
+//BLOODCOLOR = 0 // commented out by Converter
+//WeaponAttack = 4 // PlayerDef has no WeaponAttack field in this engine (NPCDef-only) - left commented, not restored
+ArmorVsP = 0
+ArmorVsM = 0
 //TEVENTS = e_character // commented out by Converter 
 
 [PlayerDef 0x191]
@@ -24,12 +25,13 @@ DESCRIPTION = Woman
 NAME = "Woman"
 DEFNAME = c_woman
 //CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS // commented out by Converter 
-//ICON = i_pet_woman // commented out by Converter 
+Icon = i_pet_woman
 //RESOURCES = i_flesh_head_2, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2 // commented out by Converter 
 //FOODTYPE = 15 t_food,t_fruit // commented out by Converter 
-//BLOODCOLOR = 0 // commented out by Converter 
-//attack = 0 // commented out by Converter 
-//ARMOR = 0 // commented out by Converter 
+//BLOODCOLOR = 0 // commented out by Converter
+//WeaponAttack = 0 // PlayerDef has no WeaponAttack field in this engine (NPCDef-only) - left commented, not restored
+ArmorVsP = 0
+ArmorVsM = 0
 //TEVENTS = e_character // commented out by Converter 
 
 [NPCDef 0x192]
@@ -39,7 +41,7 @@ DESCRIPTION = Ghost
 
 NAME = "Ghost"
 DEFNAME = c_ghost_man
-//ICON = i_pet_MAN // commented out by Converter 
+Icon = i_pet_MAN
 //CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST // commented out by Converter 
 //RESOURCES =  // commented out by Converter 
 //FOODTYPE =  // commented out by Converter 
@@ -51,7 +53,7 @@ DESCRIPTION = Ghost Woman
 
 NAME = "Ghost"
 DEFNAME = c_ghost_woman
-//ICON = i_pet_woman // commented out by Converter 
+Icon = i_pet_woman
 //CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST|MT_FEMALE // commented out by Converter 
 //RESOURCES = 8 i_ribs_raw // commented out by Converter 
 //FOODTYPE =  // commented out by Converter 
@@ -64,7 +66,7 @@ DESCRIPTION = Man {Invis}
 NAME = "Man"
 DEFNAME = c_man_invisible
 //CAN = MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
-//ICON = i_pet_MAN // commented out by Converter 
+Icon = i_pet_MAN
 //RESOURCES = 4 i_ribs_raw // commented out by Converter 
 //FOODTYPE = 15 t_food,t_fruit // commented out by Converter 
 
@@ -75,7 +77,7 @@ DESCRIPTION = GM Body
 
 NAME = "GM"
 DEFNAME = c_man_gm
-//ICON = i_pet_MAN // commented out by Converter 
+Icon = i_pet_MAN
 //FOODTYPE = 15 t_food, t_fruit // commented out by Converter 
 //CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS|MT_SWIM|MT_GHOST // commented out by Converter 
 
@@ -501,8 +503,9 @@ DESCRIPTION = Vetesnik (vymena magic itemu)
 NAME = "Vetesnik"
 model = C_MAN
 //CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
-//attack = 30 // commented out by Converter 
-//ARMOR = 40 // commented out by Converter 
+WeaponAttack = 30
+ArmorVsP = 40
+ArmorVsM = 40
 //moverate = 4 // commented out by Converter 
 //RESOURCES = 8 t_magic // commented out by Converter 
 //FOODTYPE = 15 t_meat_raw // commented out by Converter 
@@ -518,8 +521,9 @@ DESCRIPTION = Vyberci (vymena magic itemu)
 NAME = "Vyberci"
 model = C_WOMAN
 //CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS // commented out by Converter 
-//attack = 30 // commented out by Converter 
-//ARMOR = 40 // commented out by Converter 
+WeaponAttack = 30
+ArmorVsP = 40
+ArmorVsM = 40
 //moverate = 4 // commented out by Converter 
 //RESOURCES = 8 t_magic // commented out by Converter 
 //FOODTYPE = 15 t_meat_raw // commented out by Converter 
