@@ -21,8 +21,16 @@ namespace SteamEngine.CompiledScripts {
 
 	}
 
+	/// <summary>Guildstone (enhancements #14) - previously an empty shell. Points players at the real interaction surface (GuildCommands' text commands - see Guild.cs for why there's no gump here yet) rather than implementing a full guildstone gump.</summary>
 	public class t_guildstone : CompiledTriggerGroup {
-
+		public void On_DClick(Item self, Character clicker) {
+			Guild guild = Guild.GetGuild(clicker);
+			if (guild == null) {
+				clicker.SysMessage("You are not in a guild. Use .guildcreate <name> to found one.");
+			} else {
+				clicker.SysMessage("You are a member of the guild '" + guild.Name + "'. Use .guildinfo for details.");
+			}
+		}
 	}
 
 	public class t_stone_town : CompiledTriggerGroup {
