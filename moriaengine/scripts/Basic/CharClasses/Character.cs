@@ -159,6 +159,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey controlMasterTK = TagKey.Acquire("_controlMaster_");
+
+		/// <summary>The player who tamed/owns this pet, if any (see TamingSkillDef, NPCAiTimer's follow behavior). Null for everything that isn't someone's pet.</summary>
+		public Character ControlMaster {
+			get {
+				return this.GetTag(controlMasterTK) as Character;
+			}
+			set {
+				this.SetTag(controlMasterTK, value);
+			}
+		}
+
 		public bool Flag_GreenHealthBar {
 			get {
 				return this.ProtectedFlag7;

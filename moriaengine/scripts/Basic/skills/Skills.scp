@@ -223,7 +223,7 @@ StartByMacroEnabled = true
 DELAY=2.5
 ADVRATE=10.0,200.0,800.0
 
-[SCRIPTEDSKILLDEF 35]
+[TamingSkillDef 35]
 DEFNAME=Skill_Taming
 KEY="Taming"
 StartByMacroEnabled = true
@@ -238,9 +238,6 @@ StartByMacroEnabled = true
 //BONUS_INT=60
 //BONUSSTATS=20
 ADVRATE=10.0,200.0,800.0
-
-ON=@Fail
-	src.message "You fail to tame the creature."
 
 [SCRIPTEDSKILLDEF 36]
 DEFNAME=Skill_tasteid
@@ -279,9 +276,10 @@ ADVRATE=10.0,200.0,800.0
 ON=@Fail
 	src.message "You apply the bandages, but they barely help."
 
-[SCRIPTEDSKILLDEF 44]
+[LumberjackingSkillDef 44]
 DEFNAME=Skill_Lumberjack
 KEY="Lumberjacking"
+StartByMacroEnabled = true
 //TITLE="Lumberjack"
 //PROMPTMSG=""
 //DELAY=1.0
@@ -295,12 +293,10 @@ KEY="Lumberjacking"
 ADVRATE=2.5,50.0,200.0
 //VALUES=1,10,50
 
-ON=@Fail
-	src.message "You hack at the tree for a while, but fail to produce any useable wood."
-
-[SCRIPTEDSKILLDEF 45]
+[MiningSkillDef 45]
 DEFNAME=Skill_Mining
 KEY="Mining"
+StartByMacroEnabled = true
 //TITLE="Miner"
 //PROMPTMSG="Where would you like to mine?"
 //DELAY=2.0
@@ -313,9 +309,6 @@ KEY="Mining"
 //BONUSSTATS=20
 ADVRATE=2.5,50.0,200.0
 //VALUES=1,10,80
-
-ON=@Fail
-	src.message "You loosen some rocks but fail to find any useable ore."
 
 [SCRIPTEDSKILLDEF 48]
 DEFNAME=Skill_Remove_Trap
