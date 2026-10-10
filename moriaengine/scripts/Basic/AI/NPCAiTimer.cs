@@ -26,7 +26,8 @@ namespace SteamEngine.CompiledScripts {
 		Wandering,
 		Fighting,
 		Fleeing,
-		Following
+		Following,
+		GoingToPoint
 	}
 
 	/// <summary>
@@ -130,10 +131,26 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			Character master = self.ControlMaster;
-			if ((master != null) && master.IsAliveAndValid && (master.M == self.M)) {
-				this.LastState = AIState.Following;
-				this.Follow(self, master);
-				return;
+			if (master != null) {
+				IPoint3D goal = self.PetGoalPoint;
+				if (goal != null) {
+					if (Point2D.GetSimpleDistance(self, goal) <= 1) {
+						self.PetGoalPoint = null; //arrived
+					} else {
+						this.LastState = AIState.GoingToPoint;
+						this.StepTowards(self, goal);
+						return;
+					}
+				}
+
+				if (self.ShouldFollowOwner && master.IsAliveAndValid && (master.M == self.M)) {
+					this.LastState = AIState.Following;
+					this.Follow(self, master);
+					return;
+				}
+
+				this.LastState = AIState.Idle;
+				return; //a pet that isn't following and has no order just stands put, not wandering off
 			}
 
 			this.LastState = AIState.Wandering;
@@ -188,7 +205,7 @@ namespace SteamEngine.CompiledScripts {
 			this.TryStep(self, away);
 		}
 
-		private void StepTowards(NPC self, Character target) {
+		private void StepTowards(NPC self, IPoint2D target) {
 			Direction dir = Point2D.GetDirFromTo(self, target);
 			this.TryStep(self, dir);
 		}
