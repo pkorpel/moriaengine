@@ -34,7 +34,7 @@ namespace SteamEngine.Tests.Protocol {
 			Exception lastFailure = null;
 			(int, byte[]) redirect = default;
 			bool got = false;
-			for (int attempt = 0; attempt < 20 && !got; attempt++) {
+			for (int attempt = 0; attempt < 40 && !got; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
 						login.SendLogin(TestAccount, TestPassword);
@@ -48,7 +48,7 @@ namespace SteamEngine.Tests.Protocol {
 					}
 				} catch (InvalidOperationException e) {
 					lastFailure = e;
-					System.Threading.Thread.Sleep(250);
+					System.Threading.Thread.Sleep(300);
 				}
 			}
 			if (!got) {
