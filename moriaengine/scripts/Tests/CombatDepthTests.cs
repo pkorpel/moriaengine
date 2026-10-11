@@ -31,7 +31,13 @@ namespace SteamEngine.CompiledScripts {
 	/// depend on that movement actually succeeding.
 	/// </summary>
 	public static class CombatDepthTests {
-		private const double CheckDelaySeconds = 12;
+		// CI observed this flake for real, twice: first the archer standoff check (landing hit
+		// is a dice roll retried every ~1s, not guaranteed on the first attempt) at the old 12s
+		// delay, then (even at 30s) the spellcaster check - six consecutive Fireball casts over
+		// ~24s all dealt zero damage before this test's own timeout ran out, which looks like a
+		// resist-chance roll rather than pure scheduling delay. Either way the fix is the same:
+		// more attempts within the window. Matches CombatScenarioTests.cs's identical bump.
+		private const double CheckDelaySeconds = 45;
 
 		/// <summary>
 		/// #69 real finding: NPCDef.AggroMode (built in Phase 16, enhancements #18) was never
@@ -50,6 +56,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestHostileAggro(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef titanDef = ThingDef.GetByDefname("c_titan") as NPCDef;
 			NPC titan = (NPC) titanDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			Console.WriteLine("HOSTILE_AGGRO_TEST: STARTED (titan #" + titan.Uid + ")");
@@ -59,6 +66,7 @@ namespace SteamEngine.CompiledScripts {
 		/// CATEGORY=Animals, untouched by the AggroMode fix above) must never attack on its own.</summary>
 		[SteamFunction]
 		public static void TestCalmNoAggro(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef sheepDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			sheepDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			int startingHits = self.Hits;
@@ -72,6 +80,7 @@ namespace SteamEngine.CompiledScripts {
 		/// start fighting back or auto-aggro, keeping this test's damage source unambiguous.</summary>
 		[SteamFunction]
 		public static void TestSpellcasterDamage(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef licheDef = ThingDef.GetByDefname("c_liche") as NPCDef;
 			NPCDef dummyDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC liche = (NPC) licheDef.Create(self.X + 1, self.Y, self.Z, self.M);
@@ -79,7 +88,15 @@ namespace SteamEngine.CompiledScripts {
 
 			int startingHits = dummy.Hits;
 			NPCAiTimer.GetFor(liche).EngageTarget(dummy);
-			dummy.AddTimer(DamageCheckTimer.TimerKey, new DamageCheckTimer(dummy, startingHits, "SPELLCASTER_TEST"))
+			// Attached to self (long-lived), not dummy - see CombatScenarioTests.cs's
+			// TitanCombatCheckTimer comment: BoundTimer.Cont returns null once its TagHolder
+			// IsDeleted, so a check attached directly to the (possibly-killed) victim would
+			// silently never fire in exactly the case - the target dying - most likely to be a
+			// real pass. Real finding while chasing a CI flake here: this was the actual cause,
+			// not RNG/timing margin - the fireball's own target was dying off-screen (most
+			// likely to a leftover hostile NPC from an earlier test sharing this fixture) and
+			// the check for it never ran at all.
+			self.AddTimer(DamageCheckTimer.TimerKey, new DamageCheckTimer(dummy, startingHits, "SPELLCASTER_TEST"))
 				.DueInSeconds = CheckDelaySeconds;
 			Console.WriteLine("SPELLCASTER_TEST: STARTED");
 		}
@@ -94,6 +111,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestArcherStandsOff(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef archerDef = ThingDef.GetByDefname("c_skeleton_archer_nb") as NPCDef;
 			NPCDef dummyDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC archer = (NPC) archerDef.Create(self.X + 1, self.Y, self.Z, self.M);
@@ -101,7 +119,8 @@ namespace SteamEngine.CompiledScripts {
 
 			int startingHits = dummy.Hits;
 			NPCAiTimer.GetFor(archer).EngageTarget(dummy);
-			archer.AddTimer(ArcherStandoffCheckTimer.TimerKey,
+			// Attached to self, not archer - see TestSpellcasterDamage's comment just above.
+			self.AddTimer(ArcherStandoffCheckTimer.TimerKey,
 				new ArcherStandoffCheckTimer(archer, dummy, archer.X, archer.Y, startingHits))
 				.DueInSeconds = CheckDelaySeconds;
 			Console.WriteLine("ARCHER_STANDOFF_TEST: STARTED");
@@ -116,6 +135,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestDragonBreathAoe(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef dragonDef = ThingDef.GetByDefname("c_dragon_lord") as NPCDef;
 			NPCDef dummyDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC dragon = (NPC) dragonDef.Create(self.X + 1, self.Y, self.Z, self.M);
@@ -142,6 +162,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestLowHealthFlee(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef titanDef = ThingDef.GetByDefname("c_titan") as NPCDef;
 			NPC titan = (NPC) titanDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			titan.Hits = (short) Math.Max(1, titan.MaxHits / 10); // well under the 20% flee threshold
@@ -160,6 +181,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestGuardsRealmAggro(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef orcDef = ThingDef.GetByDefname("c_orc") as NPCDef;
 			orcDef.AggroMode = AggroMode.GuardsRealm;
 

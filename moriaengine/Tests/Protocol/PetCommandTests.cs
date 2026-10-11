@@ -129,7 +129,7 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(300);
 				game.SendSpeech("TestWild kill");
 				game.SendTargetUid(FindVictimUid(this.GameOutputSnapshot()));
-				this.AssertSeen("PET_KILL_TEST: PASS", TimeSpan.FromSeconds(15));
+				this.AssertSeen("PET_KILL_TEST: PASS", TimeSpan.FromSeconds(45));
 			}
 		}
 

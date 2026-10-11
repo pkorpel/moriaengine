@@ -32,10 +32,15 @@ namespace SteamEngine.CompiledScripts {
 	/// GameServerPairFixture.WaitForGameOutput instead of visual in-game inspection.
 	/// </summary>
 	public static class CombatScenarioTests {
-		private const double CheckDelaySeconds = 15;
+		// CI's shared/slower runner needs more margin than local runs do for combat RNG
+		// (weapon-skill success is a dice roll retried every ~1s, not guaranteed quickly) - CI
+		// observed this test fail at the old 15s delay with the actual hit landing several
+		// seconds later. See CombatDepthTests.cs's identical note.
+		private const double CheckDelaySeconds = 30;
 
 		[SteamFunction]
 		public static void TestTitanCombat(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef titanDef = ThingDef.GetByDefname("c_titan") as NPCDef;
 			if (titanDef == null) {
 				Console.WriteLine("TITAN_COMBAT_TEST: FAIL (c_titan NPCDef not found)");
