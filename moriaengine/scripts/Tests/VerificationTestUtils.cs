@@ -1,0 +1,52 @@
+/*
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	Or visit http://www.gnu.org/copyleft/gpl.html
+*/
+
+using System.Collections.Generic;
+
+namespace SteamEngine.CompiledScripts {
+
+	/// <summary>
+	/// Shared helper for the full verification pass's (#67) server-side test scenarios. Real
+	/// finding while chasing a CI flake in V-1 (#69): several scenarios there (and V-2's pet
+	/// commands) spawn NPCs with AggroMode.Hostile (c_titan/c_liche/c_dragon_lord/
+	/// c_skeleton_archer_nb - see V-1's own PR for why that's now seeded at all), and a
+	/// GameServerPairFixture/xunit collection runs several test methods back-to-back against the
+	/// SAME long-lived server process. A hostile NPC an earlier test spawned never gets cleaned
+	/// up and keeps wandering/aggroing autonomously - CI genuinely caught a leftover titan
+	/// killing an unrelated later test's brand-new character outright (started at 100 hits,
+	/// ended at 0) well before that test's own, unrelated scenario even got a chance to run.
+	/// </summary>
+	public static class VerificationTestUtils {
+		/// <summary>Deletes every non-player Character within `range` tiles of `self` - called at
+		/// the start of each scenario's setup so it always starts from a clean slate regardless
+		/// of what an earlier test in the same fixture spawned and left behind.</summary>
+		public static void CleanupNearbyNpcs(Character self, int range) {
+			List<NPC> toDelete = new List<NPC>();
+			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, range)) {
+				NPC npc = ch as NPC;
+				if (npc != null) {
+					toDelete.Add(npc);
+				}
+			}
+			foreach (NPC npc in toDelete) {
+				if (!npc.IsDeleted) {
+					npc.Delete();
+				}
+			}
+		}
+	}
+}

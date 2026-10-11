@@ -123,17 +123,17 @@ namespace SteamEngine.Tests.Protocol {
 
 		[Fact]
 		public void CalmAnimalNeverAttacksPlayer() {
-			this.RunScenario("CalmAggroer", ".TestCalmNoAggro", "CALM_AGGRO_TEST: PASS", TimeSpan.FromSeconds(20));
+			this.RunScenario("CalmAggroer", ".TestCalmNoAggro", "CALM_AGGRO_TEST: PASS", TimeSpan.FromSeconds(65));
 		}
 
 		[Fact]
 		public void NpcSpellcasterLandsDamageOnItsTarget() {
-			this.RunScenario("Spellcaster", ".TestSpellcasterDamage", "SPELLCASTER_TEST: PASS", TimeSpan.FromSeconds(20));
+			this.RunScenario("Spellcaster", ".TestSpellcasterDamage", "SPELLCASTER_TEST: PASS", TimeSpan.FromSeconds(65));
 		}
 
 		[Fact]
 		public void ArcherKeepsItsDistanceInsteadOfRushingToMelee() {
-			this.RunScenario("ArcherWatcher", ".TestArcherStandsOff", "ARCHER_STANDOFF_TEST: PASS", TimeSpan.FromSeconds(20));
+			this.RunScenario("ArcherWatcher", ".TestArcherStandsOff", "ARCHER_STANDOFF_TEST: PASS", TimeSpan.FromSeconds(65));
 		}
 	}
 
@@ -148,7 +148,7 @@ namespace SteamEngine.Tests.Protocol {
 			// this check. Either concrete answer is a pass for this test; only "no damage at
 			// all" (a test-setup problem, not an AOE answer) would leave both unseen and time out.
 			bool sawAoe = this.RunScenarioExpectEither("DragonWatcher", ".TestDragonBreathAoe",
-				"DRAGON_AOE_TEST: AOE_CONFIRMED", "DRAGON_AOE_TEST: SINGLE_TARGET_ONLY", TimeSpan.FromSeconds(20));
+				"DRAGON_AOE_TEST: AOE_CONFIRMED", "DRAGON_AOE_TEST: SINGLE_TARGET_ONLY", TimeSpan.FromSeconds(65));
 			Assert.True(sawAoe, "Expected the dragon breath test to resolve to one definite answer (see test output/log for which).");
 		}
 

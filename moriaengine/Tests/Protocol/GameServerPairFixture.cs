@@ -93,6 +93,34 @@ namespace SteamEngine.Tests.Protocol {
 			return false;
 		}
 
+		/// <summary>
+		/// Same as <see cref="WaitForGameOutput"/>, but only considers text appended at or after
+		/// <paramref name="sincePosition"/> (a length previously captured via
+		/// <see cref="GameOutputSnapshot"/>) - needed for any marker/log line that more than one
+		/// test method in the same fixture can legitimately print (e.g. a generic "GOLD_CHECK:"
+		/// debug line used by several scenarios). Plain WaitForGameOutput would otherwise report
+		/// success instantly off an EARLIER test's leftover occurrence, before this call's own
+		/// triggering action has even run - a real bug this caught: a later test's "withdraw"
+		/// read a stale GOLD_CHECK line from the test before it and silently passed on the wrong
+		/// numbers.
+		/// </summary>
+		public bool WaitForGameOutputSince(string marker, int sincePosition, TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (DateTime.UtcNow < deadline) {
+				lock (this.gameOutputLock) {
+					int searchFrom = Math.Max(0, sincePosition - marker.Length);
+					if (this.gameOutput.ToString(searchFrom, this.gameOutput.Length - searchFrom).Contains(marker)) {
+						return true;
+					}
+				}
+				if (this.gameProcess.HasExited) {
+					return false;
+				}
+				System.Threading.Thread.Sleep(100);
+			}
+			return false;
+		}
+
 		private static Process StartHeldOpenStdin(string fileName, string arguments, string workingDirectory) {
 			var psi = new ProcessStartInfo(fileName, arguments) {
 				WorkingDirectory = workingDirectory,

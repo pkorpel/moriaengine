@@ -58,6 +58,7 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestSetupOwnedPet(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef sheepDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC pet = (NPC) sheepDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			pet.Name = "TestPet";
@@ -67,6 +68,7 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestSetupTwoOwnedPets(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef sheepDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC pet1 = (NPC) sheepDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			pet1.Name = "TestPetOne";
@@ -81,6 +83,7 @@ namespace SteamEngine.CompiledScripts {
 		/// command what they don't own" and "GM can command anything" scenarios.</summary>
 		[SteamFunction]
 		public static void TestSetupWildNpc(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef sheepDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC wild = (NPC) sheepDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			wild.Name = "TestWild";
@@ -91,14 +94,22 @@ namespace SteamEngine.CompiledScripts {
 		/// unowned NPC actually lands damage" scenario.</summary>
 		[SteamFunction]
 		public static void TestSetupWildNpcAndVictim(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef sheepDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC wild = (NPC) sheepDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			wild.Name = "TestWild";
 			NPC victim = (NPC) sheepDef.Create(self.X + 2, self.Y, self.Z, self.M);
 			victim.Name = "TestVictim";
 			int startingHits = victim.Hits;
-			victim.AddTimer(DamageCheckTimer.TimerKey, new DamageCheckTimer(victim, startingHits, "PET_KILL_TEST"))
-				.DueInSeconds = 12;
+			// 30s, not the original 12s - matches CombatScenarioTests.cs/CombatDepthTests.cs's
+			// own bump for the same reason: CI's slower/more contended runner needs more margin
+			// for combat RNG (weapon-skill success retries every ~1s, not guaranteed quickly).
+			// Attached to self, not victim - see CombatDepthTests.cs's TestSpellcasterDamage
+			// comment: BoundTimer.Cont returns null once its TagHolder IsDeleted, so a check
+			// attached directly to the (possibly-killed) victim would silently never fire in
+			// exactly the case - the target dying - most likely to be a real pass.
+			self.AddTimer(DamageCheckTimer.TimerKey, new DamageCheckTimer(victim, startingHits, "PET_KILL_TEST"))
+				.DueInSeconds = 30;
 			Console.WriteLine("PET_SETUP: STARTED (wild #" + wild.Uid + ", victim #" + victim.Uid + ")");
 		}
 
@@ -106,6 +117,7 @@ namespace SteamEngine.CompiledScripts {
 		/// for the "stop actually breaks off combat" scenario.</summary>
 		[SteamFunction]
 		public static void TestSetupFightingPet(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef sheepDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC pet = (NPC) sheepDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			pet.Name = "TestPet";

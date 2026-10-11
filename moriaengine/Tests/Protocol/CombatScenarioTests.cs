@@ -47,10 +47,10 @@ namespace SteamEngine.Tests.Protocol {
 				// server-side NPCs), but it does make the server log benign-but-noisy
 				// "send after disconnect" errors for the queued world-entry packets, which only
 				// gets in the way of reading the output when a real assertion failure happens.
-				sawResult = this.fixture.WaitForGameOutput("TITAN_COMBAT_TEST: PASS", TimeSpan.FromSeconds(30));
+				sawResult = this.fixture.WaitForGameOutput("TITAN_COMBAT_TEST: PASS", TimeSpan.FromSeconds(45));
 			}
 
-			Assert.True(sawResult, "Expected the titan to deal damage within 30s of the kill order. Game output:\n" + this.fixture.GameOutputSnapshot());
+			Assert.True(sawResult, "Expected the titan to deal damage within 45s of the kill order. Game output:\n" + this.fixture.GameOutputSnapshot());
 		}
 
 		private readonly GameServerPairFixture fixture;
