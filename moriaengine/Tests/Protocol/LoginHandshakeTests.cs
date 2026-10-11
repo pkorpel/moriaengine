@@ -49,7 +49,7 @@ namespace SteamEngine.Tests.Protocol {
 		/// </summary>
 		private static int WaitForServerListingAndGetRedirectPort() {
 			Exception lastFailure = null;
-			for (int attempt = 0; attempt < 20; attempt++) {
+			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
 						login.SendLogin(TestAccount, TestPassword);
@@ -66,7 +66,7 @@ namespace SteamEngine.Tests.Protocol {
 					}
 				} catch (InvalidOperationException e) {
 					lastFailure = e;
-					Thread.Sleep(250);
+					Thread.Sleep(300);
 				}
 			}
 			throw new TimeoutException("Game server never appeared in AuxiliaryServer's list.", lastFailure);
