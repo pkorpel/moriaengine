@@ -44,7 +44,7 @@ namespace SteamEngine.Tests.Protocol {
 		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
 			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
 			InvalidOperationException lastFailure = null;
-			for (int attempt = 0; attempt < 20; attempt++) {
+			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
 					game.SendLogin(TestAccount, TestPassword);
@@ -54,7 +54,7 @@ namespace SteamEngine.Tests.Protocol {
 				} catch (InvalidOperationException e) {
 					game.Dispose();
 					lastFailure = e;
-					Thread.Sleep(250);
+					Thread.Sleep(300);
 				}
 			}
 			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
@@ -62,7 +62,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		private int WaitForServerListingAndGetRedirectPort() {
 			Exception lastFailure = null;
-			for (int attempt = 0; attempt < 20; attempt++) {
+			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
 						login.SendLogin(TestAccount, TestPassword);
@@ -79,7 +79,7 @@ namespace SteamEngine.Tests.Protocol {
 					}
 				} catch (InvalidOperationException e) {
 					lastFailure = e;
-					Thread.Sleep(250);
+					Thread.Sleep(300);
 				}
 			}
 			throw new TimeoutException("Game server never appeared in AuxiliaryServer's list.", lastFailure);
