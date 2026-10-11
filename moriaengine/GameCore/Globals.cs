@@ -227,6 +227,12 @@ namespace SteamEngine {
 		private static bool autoAccountCreation;
 		public static bool AutoAccountCreation {
 			get { return autoAccountCreation; }
+			// Settable (not just ini-configured) for the same reason Globals.PaymentSource is -
+			// a protocol test needing a second real account (e.g. a 2-player guild/trade
+			// scenario) has no other way to get one, since steamengine.ini's default is false
+			// and AbstractAccount.HandleLoginAttempt only ever auto-creates the very first
+			// account on a fresh server otherwise.
+			set { autoAccountCreation = value; }
 		}
 
 		private static bool blockOSI3DClient;

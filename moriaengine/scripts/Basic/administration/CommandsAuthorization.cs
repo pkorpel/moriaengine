@@ -48,6 +48,22 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["Resync"] = PLEVEL_PLAYER;//resend nearby stuff
 			this.commands["Messages"] = PLEVEL_PLAYER;//delayed messages board
 
+			//Guild commands - gated by their own internal leader/member checks, not plevel;
+			//missing from this allowlist meant they silently required GM (plevel>=4) by the
+			//default-deny fallback below, so no ordinary player could ever use them
+			this.commands["GuildCreate"] = PLEVEL_PLAYER;
+			this.commands["GuildInvite"] = PLEVEL_PLAYER;
+			this.commands["GuildAccept"] = PLEVEL_PLAYER;
+			this.commands["GuildDecline"] = PLEVEL_PLAYER;
+			this.commands["GuildLeave"] = PLEVEL_PLAYER;
+			this.commands["GuildDisband"] = PLEVEL_PLAYER;
+			this.commands["GuildSay"] = PLEVEL_PLAYER;
+			this.commands["GuildInfo"] = PLEVEL_PLAYER;
+			this.commands["GuildAbbreviation"] = PLEVEL_PLAYER;
+			this.commands["GuildDeclareWar"] = PLEVEL_PLAYER;
+			this.commands["GuildMakePeace"] = PLEVEL_PLAYER;
+			this.commands["GuildDeclareAlliance"] = PLEVEL_PLAYER;
+			this.commands["GuildBreakAlliance"] = PLEVEL_PLAYER;
 
 			//GMs
 			//Print the value of given expression
@@ -68,6 +84,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public int on_Command(Globals globals, ISrc commandSrc, string cmd) {
+			// "Test*" commands are verification-harness-only diagnostics (scripts/Tests/*.cs);
+			// no production command uses this prefix, and they must stay callable by the
+			// non-GM accounts the harness deliberately creates to exercise real player-level
+			// authorization paths - see #72.
+			if (cmd.StartsWith("Test", StringComparison.OrdinalIgnoreCase)) {
+				return 0;
+			}
 			int plevel = commandSrc.MaxPlevel;
 			int cmdPlevel;
 			if (this.commands.TryGetValue(cmd, out cmdPlevel))
