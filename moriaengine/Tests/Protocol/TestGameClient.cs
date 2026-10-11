@@ -317,6 +317,85 @@ namespace SteamEngine.Tests.Protocol {
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
+		/// <summary>Sends DoubleClickInPacket (0x06) - id(1) + uid(4). Used for e.g. opening a
+		/// bankbox or a deed, the same packet a real client sends on a double-click.</summary>
+		public void SendDoubleClick(uint uid) {
+			byte[] packet = new byte[5];
+			packet[0] = 0x06;
+			EncodeIntBigEndian((int) uid, packet, 1);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Sends PickUpItemInPacket (0x07) - id(1) + uid(4) + amount(2). Mirrors
+		/// GameCore/Networking/IncomingPackets.cs's PickUpItemInPacket.Read exactly.</summary>
+		public void SendPickUpItem(uint itemUid, ushort amount) {
+			byte[] packet = new byte[7];
+			packet[0] = 0x07;
+			EncodeIntBigEndian((int) itemUid, packet, 1);
+			EncodeUShortBigEndian(amount, packet, 5);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Sends DropItemInPacket (0x08) - id(1) + itemUid(4) + x(2) + y(2) + z(1) + contUid(4).
+		/// contUid of -1 means "drop on the ground at x/y/z"; any other uid can be a container
+		/// (puts the item inside, x/y are the slot position) or a character (not the dropper -
+		/// the classic UO gesture for starting/adding to a secure trade, see SecureTrade.cs).
+		/// Mirrors DropItemInPacket.Read exactly. Requires a prior SendPickUpItem for the same
+		/// itemUid - the server only honors a drop for an item it has already recorded this
+		/// connection as "holding" (AbstractCharacter.HasPickedUp).
+		/// </summary>
+		public void SendDropItem(uint itemUid, ushort x, ushort y, sbyte z, int contUid) {
+			byte[] packet = new byte[14];
+			packet[0] = 0x08;
+			EncodeIntBigEndian((int) itemUid, packet, 1);
+			EncodeUShortBigEndian(x, packet, 5);
+			EncodeUShortBigEndian(y, packet, 7);
+			packet[9] = (byte) z;
+			EncodeIntBigEndian(contUid, packet, 10);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Sends SecureTradeInPacket (0x6f) type 2 - toggle this side's accepted
+		/// checkbox. Mirrors SecureTradeInPacket.Read exactly (type(1) + tradeBoxUid(4) +
+		/// state(4)); the server only ever expects type 1 (cancel) or 2 (accept toggle) from a
+		/// real client, per that class's own doc comment.</summary>
+		public void SendSecureTradeAccept(uint tradeBoxUid, bool accepted) {
+			byte[] packet = new byte[9];
+			packet[0] = 0x6f;
+			packet[1] = 2;
+			EncodeIntBigEndian((int) tradeBoxUid, packet, 2);
+			EncodeIntBigEndian(accepted ? 1 : 0, packet, 6);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Reads SecureTradeOutPacket (0x6f) type 0 - the "trade window opened" message every
+		/// participant gets exactly once, immediately and synchronously when a trade starts (see
+		/// SecureTrade's constructor), before any accepted-state/gold update. Returns this
+		/// client's own offered-items box uid (needed to send SendSecureTradeAccept later) and
+		/// the other side's box uid/name. Mirrors SecureTradeOutPacket.WriteDynamicPart's type-0
+		/// branch: type(1) + myBoxUid(4) + myBoxUid-again(4) + otherBoxUid(4) + hasName(1) +
+		/// [name, ASCII null-terminated].
+		/// </summary>
+		public (uint MyBoxUid, uint OtherBoxUid, string OtherName) ReadSecureTradeOpen(TimeSpan timeout) {
+			byte[] payload = this.ReadPacketPayload(0x6f, timeout);
+			byte type = payload[2];
+			if (type != 0) {
+				throw new InvalidOperationException("Expected SecureTradeOutPacket type 0 (open), got type " + type);
+			}
+			uint myBoxUid = (uint) ((payload[3] << 24) | (payload[4] << 16) | (payload[5] << 8) | payload[6]);
+			uint otherBoxUid = (uint) ((payload[11] << 24) | (payload[12] << 16) | (payload[13] << 8) | payload[14]);
+			bool hasName = payload[15] != 0;
+			string otherName = "";
+			if (hasName) {
+				string rest = Encoding.ASCII.GetString(payload, 16, payload.Length - 16);
+				int nul = rest.IndexOf('\0');
+				otherName = nul >= 0 ? rest.Substring(0, nul) : rest;
+			}
+			return (myBoxUid, otherBoxUid, otherName);
+		}
+
 		/// <summary>
 		/// Sends RequestSkillEtcUseInPacket (0x12), type 0x24 ("use skill by id") - the same
 		/// packet a real client's skill-list double-click or macro sends. Needed for taming,
