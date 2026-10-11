@@ -317,6 +317,15 @@ namespace SteamEngine.Tests.Protocol {
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
+		/// <summary>Sends DoubleClickInPacket (0x06) - id(1) + uid(4). Used for e.g. opening a
+		/// bankbox or a deed, the same packet a real client sends on a double-click.</summary>
+		public void SendDoubleClick(uint uid) {
+			byte[] packet = new byte[5];
+			packet[0] = 0x06;
+			EncodeIntBigEndian((int) uid, packet, 1);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
 		/// <summary>
 		/// Sends RequestSkillEtcUseInPacket (0x12), type 0x24 ("use skill by id") - the same
 		/// packet a real client's skill-list double-click or macro sends. Needed for taming,
