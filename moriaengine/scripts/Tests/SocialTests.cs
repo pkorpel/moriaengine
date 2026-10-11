@@ -48,5 +48,41 @@ namespace SteamEngine.CompiledScripts {
 			Guild guild = Guild.GetGuild(self);
 			Console.WriteLine("GUILD_CHECK: " + self.Name + " guild=" + (guild != null ? guild.Name : "none"));
 		}
+
+		/// <summary>Creates a known, named item directly in self's backpack for a secure-trade
+		/// scenario to pick up and drop on the other participant.</summary>
+		[SteamFunction]
+		public static void TestGrantTradeItem(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			ThingDef itemDef = ThingDef.GetByDefname("i_bandage");
+			AbstractItem item = (AbstractItem) itemDef.Create(self.Backpack);
+			Console.WriteLine("TRADE_SETUP: item=#" + item.Uid + " backpack=#" + self.Backpack.Uid);
+		}
+
+		/// <summary>Reports whether the exact item (by uid) is now in self's backpack - used after
+		/// a secure trade completes to confirm that SPECIFIC item actually moved to/away from
+		/// each side, not just that the trade "finished" with no error. Checked by uid rather
+		/// than defname so a character's own starting-kit items (if any) can never be confused
+		/// with the one item this scenario is tracking.</summary>
+		[SteamFunction]
+		public static void TestCheckHasItem(Character self, ScriptArgs sa) {
+			int itemUid = Convert.ToInt32(sa.Argv[0], System.Globalization.CultureInfo.InvariantCulture);
+			AbstractItem item = (AbstractItem) Thing.UidGetItem(itemUid);
+			bool has = (item != null) && (item.Cont == self.Backpack);
+			Console.WriteLine("HAS_ITEM: uid=" + itemUid + " has=" + has);
+		}
+
+		/// <summary>Reports whether self is in a party, and if so, the leader's name and member
+		/// count - verified against real UO party semantics (Party.GetParty/IsLeader/Members).</summary>
+		[SteamFunction]
+		public static void TestCheckParty(Character self) {
+			Party party = Party.GetParty(self);
+			if (party == null) {
+				Console.WriteLine("PARTY_CHECK: " + self.Name + " inParty=False");
+			} else {
+				Console.WriteLine("PARTY_CHECK: " + self.Name + " inParty=True leader=" + party.Leader.Name +
+					" members=" + party.Members.Count);
+			}
+		}
 	}
 }

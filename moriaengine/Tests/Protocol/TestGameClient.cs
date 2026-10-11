@@ -397,6 +397,43 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		/// <summary>
+		/// Sends GeneralInformationInPacket (0xBF) subCmd 0x0006 (Party) sub-sub-command 0x01
+		/// (AddAPartyMember) - "I want to invite someone." No payload of its own; the server
+		/// responds by opening a target cursor on this client (see
+		/// PartyCommands.RequestAddMember -> self.Target(PartyAddTargetDef)), which the caller
+		/// then answers with SendTargetUid naming who to invite. Mirrors
+		/// GeneralInformationInPacket/PartySubPacket/AddAPartyMemberSubSubPacket.ReadSubPacket
+		/// exactly: id(1) + length(2) + subCmd(2) + subSubId(1).
+		/// </summary>
+		public void SendPartyAddMemberRequest() {
+			byte[] packet = new byte[6];
+			packet[0] = 0xBF;
+			EncodeUShortBigEndian(6, packet, 1);
+			EncodeUShortBigEndian(0x0006, packet, 3);
+			packet[5] = 0x01;
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Sends GeneralInformationInPacket (0xBF) subCmd 0x0006 (Party) sub-sub-command 0x08
+		/// (AcceptJoinPartyInvitation) - leaderUid names who invited this character (the client
+		/// already knows this from the PartyInvitationOutPacket/cliloc message it received when
+		/// invited; this harness learns it out-of-band via the inviter's own TestReportMyUid
+		/// instead, since gump/cliloc text isn't decoded here). Mirrors
+		/// AcceptJoinPartyInvitationSubSubPacket.ReadSubPacket exactly: id(1) + length(2) +
+		/// subCmd(2) + subSubId(1) + leaderUid(4).
+		/// </summary>
+		public void SendPartyAcceptInvite(uint leaderUid) {
+			byte[] packet = new byte[10];
+			packet[0] = 0xBF;
+			EncodeUShortBigEndian(10, packet, 1);
+			EncodeUShortBigEndian(0x0006, packet, 3);
+			packet[5] = 0x08;
+			EncodeIntBigEndian((int) leaderUid, packet, 6);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
 		/// Sends RequestSkillEtcUseInPacket (0x12), type 0x24 ("use skill by id") - the same
 		/// packet a real client's skill-list double-click or macro sends. Needed for taming,
 		/// mining, and lumberjacking, all of which SelectSkill() + immediately open a target
