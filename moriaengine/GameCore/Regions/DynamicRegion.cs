@@ -47,7 +47,9 @@ namespace SteamEngine.Regions {
 		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 		public bool Place(Point4D p) {
 			this.ThrowIfDeleted();
-			if (p != null) { //already placed!
+			if (this.Parent != null) { //already placed! (Region.P defaults to (0,0,0,0), not null,
+				//so it can't signal "never placed" - Parent is only ever set here or in Step(), so
+				//it reliably starts null until the first real placement)
 				throw new SEException("This Dynamic region has already been placed to the map. For movement try setting its P");
 			}
 			this.InternalSetP(p);
