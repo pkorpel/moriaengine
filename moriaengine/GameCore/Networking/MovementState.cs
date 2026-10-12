@@ -31,9 +31,9 @@ namespace SteamEngine.Networking {
 		//clients with different graphics-drawing speeds will actually move at the same rates instead of
 		//at different ones. Or maybe not, since I have a pretty good graphics card. (SL)
 		private readonly long RunStepTime = HighPerformanceTimer.SecondsToTicks(0.18);
-		//private readonly long WalkStepTime = HighPerformanceTimer.SecondsToTicks(0.35);
+		private readonly long WalkStepTime = HighPerformanceTimer.SecondsToTicks(0.35);
 		private readonly long RidingRunStepTime = HighPerformanceTimer.SecondsToTicks(0.09);
-		//private readonly long RidingWalkStepTime = HighPerformanceTimer.SecondsToTicks(0.18);
+		private readonly long RidingWalkStepTime = HighPerformanceTimer.SecondsToTicks(0.18);
 
 		private static LinkedList<MovementState> queue = new LinkedList<MovementState>();
 		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
@@ -143,14 +143,14 @@ namespace SteamEngine.Networking {
 				return;
 			}
 
-			if ((this.CanMoveAgain()) || (this.gameState.Account.PLevel >= Globals.PlevelOfGM)) {
+			if ((this.CanMoveAgain(mr.running)) || (this.gameState.Account.PLevel >= Globals.PlevelOfGM)) {
 				this.Movement(mr.direction, mr.running, mr.sequence);
 			} else {
 				this.moveRequests.Enqueue(mr);
 			}
 		}
 
-		private bool CanMoveAgain() {
+		private bool CanMoveAgain(bool running) {
 			long currentTime = HighPerformanceTimer.TickCount;
 			long diff = currentTime - this.nextMovementTime;
 
@@ -162,9 +162,9 @@ namespace SteamEngine.Networking {
 				//Logger.WriteInfo(MovementTracingOn, "Time later than allowed = "+HighPerformanceTimer.TicksToSeconds(diff + reserves));
 
 				if (this.gameState.CharacterNotNull.Flag_Riding) {
-					this.nextMovementTime = (currentTime + this.RidingRunStepTime);
+					this.nextMovementTime = (currentTime + (running ? this.RidingRunStepTime : this.RidingWalkStepTime));
 				} else {
-					this.nextMovementTime = (currentTime + this.RunStepTime);
+					this.nextMovementTime = (currentTime + (running ? this.RunStepTime : this.WalkStepTime));
 				}
 				this.thirdLastStepReserve = this.secondLastStepReserve;
 				this.secondLastStepReserve = this.lastStepReserve;
