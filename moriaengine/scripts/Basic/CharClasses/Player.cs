@@ -191,6 +191,17 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>"Use whatever I'm holding" shortcut - double-clicks whatever's equipped
+		/// in the primary hand, falling back to the off-hand if the primary is empty. Reuses
+		/// the real double-click trigger (same as a client double-clicking the item directly)
+		/// rather than reimplementing equip/use logic here.</summary>
+		public void UseHand() {
+			AbstractItem item = this.FindLayer(LayerNames.Hand1) ?? this.FindLayer(LayerNames.Hand2);
+			if (item != null) {
+				item.Trigger_DClick(this);
+			}
+		}
+
 		#region Profession
 		public ProfessionPlugin ProfessionPlugin {
 			get {
