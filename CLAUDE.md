@@ -11,7 +11,127 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT TOP PRIORITY (2026-10-12): basic functionality + localization architecture
+
+User explicitly paused the #67 verification pass (V-10 and beyond) to prioritize two
+things first. **Full plan written up and saved to the plan file content below** — read
+this section before touching V-10/skills work again.
+
+### Part A — basic functionality fixes ("must fix", small/low-risk)
+
+User reported two broken everyday interactions; investigated both (3 parallel Explore
+agents) before touching any code:
+
+1. **`.usehand` command doesn't work** — root cause: completely unimplemented, no
+   `SteamFunction`/method exists at all, not a bug. Reference behavior pulled from the
+   Erebor Sphere archive (see "Erebor Sphere reference" below), `scripts/funkce.scp`'s
+   `usehand` function: double-click whatever's equipped in the primary hand
+   (`layer_hand1`), fall back to the off-hand (`layer_hand2`) if empty — just invokes
+   that item's own double-click trigger, don't reimplement equip logic.
+2. **Double-click on a weapon triggers nothing** — static analysis of the whole dispatch
+   chain (`DoubleClickInPacket` → `Thing.Trigger_DClick()` → `Equippable.On_DClick()` at
+   `scripts/Basic/ItemClasses/Equippable.cs:44-59`) is solid and generic — weapons inherit
+   the exact same `On_DClick` armor/wearables use (`Weapon → Destroyable → Equippable`).
+   **This is NOT a known dispatch-architecture bug** — needs live repro (connect a
+   client, create a weapon, double-click it, watch console for a deny-trigger/exception)
+   before fixing anything. Leading candidates: a specific weapon `ItemDef` missing its
+   `Layer` value (content bug), or a deny-trigger blocking weapons specifically (real
+   engine bug). Don't guess further than this without reproducing it first.
+3. **Bonus, same bug class as #84**: `Dismount()` (Character.cs:342), `Password()`,
+   `ShowSkills()`, `AllShow()`, `QuestArrow()` (all in Player.cs) exist as real methods
+   but aren't in `CommandsAuthorization.cs`'s allowlist — non-GM players get "No
+   permission" using them. Add all of these + the new `UseHand` to the allowlist in the
+   same PR as #1 (mechanical, like #84's fix).
+
+### Part B — localization: migrate scattered `*Loc`/txt files to .resx
+
+User's complaint: today's ~38 `*Loc` classes (one per feature file, e.g. `TamingLoc`,
+`HidingLoc`) + 129 per-language `.txt` override files under `Languages/<Lang>/...` are
+scattered everywhere. Wants .resx instead — "one big file with everything" per language —
+loaded via a new steamengine.ini setting. **Confirmed with user directly**: the ini
+setting sets the server-wide *default* only; a player's own in-client language switch
+(existing `SetLanguageInPacket` mechanism) must keep overriding it exactly as today.
+
+**Design** (full detail + staged PR sequence in the plan file — this is the condensed
+version): keep all ~90+ call sites (`Loc<TamingLoc>.Get(lang).fieldName`) completely
+unchanged — only `CompiledLocStringCollection<T>.SetFieldsFromContents()`
+(`Common/Localisation/CompiledLocStringCollection.cs:22-28`, confirmed by direct read:
+it's a single `fi.SetValue(this, string.Intern(this.GetEntry(fi.Name)))` loop) needs to
+change what `GetEntry` reads from. New backing store: `Common/Localisation/Resources/
+GameText.resx` (English/neutral, fully populated) + `GameText.cs-CZ.resx` (Czech, also
+fully populated, not sparse overrides), flat keys `{OldClassName}_{OldFieldName}`, looked
+up via `ResourceManager.GetString(key, CultureInfo)` with an **explicit** CultureInfo per
+call (not ambient `CurrentUICulture` — this is a multi-connection server, many players,
+many simultaneous languages). No `ResXFileCodeGenerator` designer class — we're not
+replacing the call-site shape, so generated properties add nothing.
+
+Migrate FROM the `.txt` files (not the `.cs` literals — some `.cs` files have legacy
+non-UTF-8 bytes in Czech defaults, confirmed e.g. `scripts/Basic/Resources/
+ResourceListEntries/ResListLoc.cs`; the `.txt` files are the actually-live, fully-resolved
+content and already have a working parser to reuse). `Languages/English/` and
+`Languages/Czech/` are checked into git (confirmed via `git log`); `Languages/Default/`
+and `steamengine.ini` itself are gitignored/runtime-generated, not source of truth.
+
+Staged rollout (5 PRs, each independently safe — see plan file for full detail):
+1. Migration tool (throwaway) + generated resx files, committed but unused yet.
+2. Swap `SetFieldsFromContents()`'s storage backend + `LocManager` gets a `Language →
+   CultureInfo` map (wrap defensively — this sandbox needs
+   `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1` for unrelated ICU reasons, and invariant
+   mode can break non-invariant `CultureInfo` lookups if a real deployment ever sets it
+   too) + remove now-dead txt-overlay code. Add a permanent regression test here
+   (enumerate every `*Loc` class/field via reflection, assert real values both languages).
+3. `Globals.cs` new `defaultLanguage` ini setting (reuses existing `text` section + the
+   already-enum-aware `GetValue<T>`/`ConvertTools`) + `GameState`'s `language` field
+   initializer reads `Globals.DefaultLanguage` instead of a hardcoded literal.
+4. (later) delete the now-dead `.txt` files, once 2-3 have run clean for a while.
+5. (optional cleanup) strip vestigial literal defaults from the ~38 class bodies.
+
+### Erebor Sphere reference (pulled for this AND for later skills comparison work)
+
+Cloned `gitlab.com/erebor/sphere-public-archive` (read-only reference, scripts-only, no
+engine binary) into the scratchpad — **not committed to this repo**, re-clone if a future
+session needs it again: `git clone --depth 1 https://gitlab.com/erebor/sphere-public-archive.git`.
+Confirmed same Czech-shard lineage as moriaengine's own converted content (folder/string
+naming matches, e.g. `brneni`=armor). Used so far for: the `usehand` reference above, and
+an initial Hiding/Healing/Taming mechanics comparison (see "Skills comparison" note
+further below — resume that AFTER Parts A and B ship). Stealing is explicitly out of
+scope — disabled on moria per the user.
+
+### Skills comparison findings so far (resume after Parts A+B, don't redo)
+
+Already compared Hiding/Detect Hidden, Healing/Bandage, and Taming against Erebor (above)
+before this priority shift happened:
+- **Hiding**: Erebor is one direct roll (`hiding skill > rand(1025)`). moriaengine's
+  `HidingSkillDef.On_Stroke` instead feeds a *random* value (`Globals.dice.Next(700)`) as
+  the "difficulty" into the generic `SkillDef.CheckSuccess` S-curve formula — two layered
+  random rolls instead of one direct comparison. Worth a second look, not clearly wrong,
+  just diverges from the reference for no obvious reason.
+- **Detect Hidden — clearest real gap found**: Erebor has a full contest (sector-darkness
+  -scaled stealth bonus on the hider, distance penalty on the detector, a per-detector
+  re-detection cooldown). moriaengine's `DetectHiddenSkillDef` is just a bare
+  `CheckSuccess(self, target.Hiding)` — none of that. Good first target once skills work
+  resumes.
+- **Healing/Bandage**: moriaengine's gates (range/LOS/no-summons/already-healthy,
+  shaman-only bloody bandages) already match Erebor closely. Missing: Erebor's
+  priest-class heal-speed special ability; resurrect-via-bandage formula not found in the
+  same file, check separately.
+- **Taming**: structurally fine on both sides; Erebor adds skill-tier flavor messages
+  (cosmetic only) moriaengine doesn't have.
+- **Stealing**: skip — confirmed disabled on moria.
+
+### Sequencing / where to pick up
+
+1. User wants CLAUDE.md (this) + GitHub issues filed for all of the above BEFORE any
+   implementation starts, and wants to explicitly approve before implementation begins —
+   don't start writing code for Part A/B until that explicit go-ahead is given, even
+   though the plan itself was already approved.
+2. Once approved: Part A ships first (small, one or two PRs), then Part B's staged PRs,
+   then resume V-10 (see below) and the skills comparison.
+
 ## Current initiative: issue #67 — full-scale protocol-level verification pass
+
+**Paused as of 2026-10-12 — see "CURRENT TOP PRIORITY" above, resume this after Parts A
+and B ship.**
 
 Tracking issue: **#67** "[Verification] Full-scale protocol-level test pass benchmarked
 against real UO behavior". Plan: real client-protocol scenario tests (login → real
