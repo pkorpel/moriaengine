@@ -43,10 +43,14 @@ namespace SteamEngine.CompiledScripts {
 		//set the command plevels here... AND COMMENT IT!!!!!!!!!!!!!!!!!!!
 		public E_CommandsAuthorization_Global() {
 			//players
-			this.commands["Where"] = PLEVEL_PLAYER;//Show my coordinates and map region position			
+			this.commands["Where"] = PLEVEL_PLAYER;//Show my coordinates and map region position
 			this.commands["Sendgmpage"] = PLEVEL_PLAYER;//Post a new GMPage using an input dialog
 			this.commands["Resync"] = PLEVEL_PLAYER;//resend nearby stuff
 			this.commands["Messages"] = PLEVEL_PLAYER;//delayed messages board
+
+			//New command (#102/A1): "use whatever I'm holding" shortcut, double-clicks the
+			//equipped hand1 item (falling back to hand2) via the real Trigger_DClick path.
+			this.commands["UseHand"] = PLEVEL_PLAYER;
 
 			//Guild commands - gated by their own internal leader/member checks, not plevel;
 			//missing from this allowlist meant they silently required GM (plevel>=4) by the

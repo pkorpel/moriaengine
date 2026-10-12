@@ -16,8 +16,27 @@ don't wait until end of session.
 User explicitly paused the #67 verification pass (V-10 and beyond) to prioritize two
 things first. **Tracking issue #101**, sub-issues **#102** (.usehand + allowlist), **#103**
 (weapon double-click), **#104** (resx localization migration) — all filed, read those for
-full detail. Plan approved by user; implementation itself is gated on a separate explicit
-go-ahead (not yet given as of this note) — don't start Part A/B code changes until asked.
+full detail. Plan approved by user.
+
+**Scope narrowed again (2026-10-12, mid-implementation)**: user said "for now I just want
+usehand implemented (with tests). After that I would like to look at language resources -
+as if we keep working, we just adding more word for future rework here." So:
+- Part A = **`.usehand` only** (shipped — see below). Everything else in #102 (Group 1 GM
+  commands, Group 2 utility commands beyond UseHand, `UseRing`) and all of #103 (weapon
+  double-click) is **deferred indefinitely** — don't pick those back up without a fresh
+  explicit ask, even though they're fully scoped and ready in the issues.
+- Next up: **Part B (resx localization), starting now.**
+
+**`.usehand` — shipped**: `Player.UseHand()` (`scripts/Basic/CharClasses/Player.cs`) finds
+the hand1 item, falls back to hand2, calls `Trigger_DClick` — same trigger a real
+double-click uses, no reimplemented equip logic. Allowlisted in
+`CommandsAuthorization.cs` at `PLEVEL_PLAYER`. Protocol test:
+`Tests/Protocol/BasicCommandsTests.cs` `UseHandTriggersDoubleClickOnOffhandItem` — uses
+`i_torch` (ShiningItem.def, layer=2/hand2) as the equipped item specifically because its
+`On_DClick` has an observable side effect (Model → 0xa12) even while already equipped;
+the generic `Equippable.On_DClick` is a no-op in that case, so a plain weapon/wearable
+couldn't have proven the dispatch actually fired. Server-side test helpers in
+`scripts/Tests/BasicCommandsTests.cs` (`TestGrantAndEquipTorch`, `TestCheckItemModel`).
 
 ### Part A — basic functionality fixes ("must fix", small/low-risk)
 
