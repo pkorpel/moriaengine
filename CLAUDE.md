@@ -105,8 +105,15 @@ evidence in **issue #100**. This repo has prior `fix-ci-login-race-and-timeouts`
 dedicated pass (starting from #99's hang-dump artifacts if still downloadable) rather than
 something to re-chase piecemeal.
 
-**Paused here per explicit user request** after landing the containment fix - see "Right
-now" below for where V-10 itself stands.
+**Confirmed green (2026-10-12, same session)**: the two most recent `main` CI runs after
+PR #99 merged both passed cleanly (no hang, no flaky failure). One stale run from before
+the fix landed was still stuck at 4h20m+ - cancelled, not a new problem. At pause time,
+no runs are pending/in-progress and the latest commit's check is ✅ success. This is a
+point-in-time confirmation, not a guarantee against #100's documented intermittent
+flakiness recurring on a future run - re-verify before relying on it if much time passes.
+
+**Paused here per explicit user request** right after confirming CI is green - see
+"Right now" below for where V-10 itself stands.
 
 ## Right now: mid V-10 — movement sub-scenario done, 6 more to go
 
