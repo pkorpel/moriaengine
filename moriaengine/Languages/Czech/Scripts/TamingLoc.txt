@@ -1,0 +1,5 @@
+whatToTame                      = What would you like to tame?
+cantTameThat                    = You can't tame that.
+fail                            = You fail to tame the creature.
+success                         = You have tamed the creature.
+abort                           = You stop trying to tame the creature.

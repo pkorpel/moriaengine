@@ -1,0 +1,5 @@
+whereToMine                     = Where do you want to mine?
+notAVein                        = There is no ore to be found there.
+fail                            = You loosen some rocks but fail to find any useable ore.
+success                         = You dig some ore.
+abort                           = You stop mining.

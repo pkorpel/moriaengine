@@ -1,0 +1,5 @@
+whatToChop                      = What do you want to chop?
+notATree                        = There is no wood to be gathered there.
+fail                            = You hack at the tree for a while, but fail to produce any useable wood.
+success                         = You chop some logs.
+abort                           = You stop chopping.
