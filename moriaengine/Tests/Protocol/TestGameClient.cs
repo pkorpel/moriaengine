@@ -55,6 +55,7 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0x4f, 1 },  // OverallLightLevelOutPacket
 			{ 0x82, 1 },  // LoginDeniedOutPacket
 			{ 0x6E, 13 }, // CharacterAnimationOutPacket
+			{ 0x54, 11 }, // PlaySoundEffectOutPacket
 		};
 
 		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,
