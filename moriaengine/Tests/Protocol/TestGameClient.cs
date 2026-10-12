@@ -309,6 +309,26 @@ namespace SteamEngine.Tests.Protocol {
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
+		/// <summary>
+		/// Same packet as <see cref="SendTargetGround"/>, but naming a real world static by
+		/// coordinate + tile id - needed for lumberjacking, where the target is a map-tile
+		/// decoration (no normal Thing uid exists for it). Mirrors
+		/// GameState.HandleTarget's targGround-with-nonzero-model branch exactly: that's the
+		/// server's own distinguishing signal between "ground point" (model 0) and "named
+		/// static/multi-component" (model = the static's own tile id), both sent with
+		/// targGround=true.
+		/// </summary>
+		public void SendTargetStatic(int x, int y, int z, int model) {
+			byte[] packet = new byte[19];
+			packet[0] = 0x6c;
+			packet[1] = 1; // targGround = true
+			EncodeUShortBigEndian(x, packet, 11);
+			EncodeUShortBigEndian(y, packet, 13);
+			packet[16] = (byte) z;
+			EncodeUShortBigEndian(model, packet, 17);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
 		/// <summary>Same packet as <see cref="SendTargetGround"/>, but resolving to a specific
 		/// thing (a creature to tame/kill/sell-to, an item, etc.) by uid instead of a ground point.</summary>
 		public void SendTargetUid(uint uid) {
