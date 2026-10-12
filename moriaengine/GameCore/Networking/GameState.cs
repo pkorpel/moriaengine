@@ -510,8 +510,12 @@ namespace SteamEngine.Networking {
 		#endregion Recompiling
 
 		#region LightLevel
-		private int lastSentGlobalLightLevel;
-		private int lastSentPersonalLightLevel;
+		//int.MinValue, not the default 0, is the "nothing sent yet" sentinel - 0 is also the
+		//real, common "full daylight"/"no personal light source" value, so defaulting these to
+		//0 made the very first light packet on any daytime login silently never send (found by
+		//the #76 verification pass; lastSentSeason below already used the correct pattern).
+		private int lastSentGlobalLightLevel = int.MinValue;
+		private int lastSentPersonalLightLevel = int.MinValue;
 
 		public void SendPersonalLightLevel(int personalLight) {
 			if (personalLight != this.lastSentPersonalLightLevel) {
