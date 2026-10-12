@@ -39,11 +39,21 @@ agents) before touching any code:
    before fixing anything. Leading candidates: a specific weapon `ItemDef` missing its
    `Layer` value (content bug), or a deny-trigger blocking weapons specifically (real
    engine bug). Don't guess further than this without reproducing it first.
-3. **Bonus, same bug class as #84**: `Dismount()` (Character.cs:342), `Password()`,
-   `ShowSkills()`, `AllShow()`, `QuestArrow()` (all in Player.cs) exist as real methods
-   but aren't in `CommandsAuthorization.cs`'s allowlist — non-GM players get "No
-   permission" using them. Add all of these + the new `UseHand` to the allowlist in the
-   same PR as #1 (mechanical, like #84's fix).
+3. **Full command inventory done (2026-10-12, see issue #102 for the complete tables)**:
+   Erebor's `scripts/skillgains.scp` turned out to be a complete plevel-1-through-6
+   command list for that shard (~400 entries). Cross-checked against moriaengine's
+   actual allowlist/commands. Headline finding: **moriaengine's entire current GM
+   command set is just `Tele`/`Invis`/`Remove`/`OldInfo`/`PaymentSource`/`GM`** —
+   `Jail`/`Pardon`/`Forgive`/`Props`/`Tweak`/`Invul`/`NewNpc`/`Fix`/`GoUid`/`Account`/
+   `Dupe`/`Shrink`/`BlockIp` etc. are all genuinely missing, confirmed via direct search.
+   Sorted into 4 tiers (Must/Should/Nice/Skip) — "Skip" is the bulk of the raw list
+   (shard-specific LOTR factions/custom classes/quick-slot macros/minigames, ~130+
+   commands, none relevant here). "Must have" Group 1 (GM tooling: Invul/Props/Tweak/
+   Jail/Pardon/Forgive/NewNpc/Fix/GoUid/GoChar/Kill/real-Info) + Group 2 (player utility:
+   WhoAmI/Stats/AFK/RecallHome/GateHome/UseRing, plus `Dismount`/`Password`/`ShowSkills`/
+   `AllShow`/`QuestArrow` from the original bonus-find, all missing from the allowlist
+   same as #84's bug class) is the actual scope for Part A now — supersedes the earlier
+   narrow 5-command list.
 
 ### Part B — localization: migrate scattered `*Loc`/txt files to .resx
 
