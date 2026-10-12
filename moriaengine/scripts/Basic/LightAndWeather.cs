@@ -52,6 +52,10 @@ namespace SteamEngine.CompiledScripts {
 		[SavedMember]
 		private static Season currentSeason = Season.Spring;
 
+		//offset subtracted from Globals.TimeInSeconds before computing the day-cycle phase below;
+		//normally 0 (cycle starts at server boot). Only ResetDayCycleForTest ever changes this.
+		private static double dayCycleAnchorSeconds;
+
 		private static bool wasNight;
 
 		public static double DayLengthSeconds {
@@ -79,7 +83,8 @@ namespace SteamEngine.CompiledScripts {
 				if (dayLengthSeconds <= 0) {
 					return false;
 				}
-				double phase = (Globals.TimeInSeconds % dayLengthSeconds) / dayLengthSeconds;
+				double elapsed = Globals.TimeInSeconds - dayCycleAnchorSeconds;
+				double phase = (elapsed % dayLengthSeconds) / dayLengthSeconds;
 				return phase >= 0.5;
 			}
 		}
@@ -115,6 +120,29 @@ namespace SteamEngine.CompiledScripts {
 				timer.DueInSeconds = ClockCheckIntervalSeconds;
 				timer.PeriodInSeconds = ClockCheckIntervalSeconds;
 			}
+		}
+
+		/// <summary>Test-only hook (verification pass, #76): the real clock normally only checks
+		/// for a day/night flip every <see cref="ClockCheckIntervalSeconds"/> (60 real seconds),
+		/// which is too slow for a test to wait out. Re-arms the already-running timer's
+		/// DueInSeconds/PeriodInSeconds directly (DueInSeconds reschedules immediately even on a
+		/// live timer, unlike the Period setter) so a shortened day length actually gets noticed
+		/// and pushed to clients within a short, test-practical window.</summary>
+		public static void SpeedUpClockForTest(double dueInSeconds, double periodInSeconds) {
+			EnsureClockRunning();
+			WorldClockTimer timer = (WorldClockTimer) Globals.Instance.GetTimer(worldClockTK);
+			timer.DueInSeconds = dueInSeconds;
+			timer.PeriodInSeconds = periodInSeconds;
+		}
+
+		/// <summary>Test-only hook (verification pass, #76): <see cref="IsNight"/>'s phase is
+		/// derived from absolute server uptime (<see cref="Globals.TimeInSeconds"/>), which has no
+		/// test-controlled zero point - shortening DayLengthSeconds alone would land the test at
+		/// an unpredictable, essentially random point in the new (short) cycle. Re-anchoring to
+		/// "now" guarantees the cycle starts fresh at phase 0 (day), so a test can shorten the day
+		/// length and know exactly when the first night transition will occur.</summary>
+		public static void ResetDayCycleForTest() {
+			dayCycleAnchorSeconds = Globals.TimeInSeconds;
 		}
 
 		[SaveableClass]
