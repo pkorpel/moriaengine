@@ -556,6 +556,18 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Reads DrawGamePlayerOutPacket (0x20) - the world-entry packet carrying this
+		/// character's own spawn position - and returns (x, y, z). Mirrors its Write() exactly:
+		/// flaggedUid(4) + model(2) + zero(1) + color(2) + flagsToSend(1) + x(2) + y(2) +
+		/// zeros(2) + direction(1) + z(1).</summary>
+		public (ushort X, ushort Y, sbyte Z) ReadSpawnPosition(TimeSpan timeout) {
+			byte[] payload = this.ReadPacketPayload(0x20, timeout);
+			ushort x = (ushort) ((payload[10] << 8) | payload[11]);
+			ushort y = (ushort) ((payload[12] << 8) | payload[13]);
+			sbyte z = (sbyte) payload[17];
+			return (x, y, z);
+		}
+
 		/// <summary>Reads SeasonalInformationOutPacket (0xBC) and returns its season byte.</summary>
 		public byte ReadSeason(TimeSpan timeout) {
 			return this.ReadPacketPayload(0xBC, timeout)[0];
