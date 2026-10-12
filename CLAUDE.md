@@ -105,15 +105,21 @@ evidence in **issue #100**. This repo has prior `fix-ci-login-race-and-timeouts`
 dedicated pass (starting from #99's hang-dump artifacts if still downloadable) rather than
 something to re-chase piecemeal.
 
-**Confirmed green (2026-10-12, same session)**: the two most recent `main` CI runs after
-PR #99 merged both passed cleanly (no hang, no flaky failure). One stale run from before
-the fix landed was still stuck at 4h20m+ - cancelled, not a new problem. At pause time,
-no runs are pending/in-progress and the latest commit's check is ✅ success. This is a
-point-in-time confirmation, not a guarantee against #100's documented intermittent
-flakiness recurring on a future run - re-verify before relying on it if much time passes.
+**Confirmed green, but it took a retry (2026-10-12)**: after PR #99 merged, checked
+several `main` runs - 2 passed cleanly, then the push with this very CLAUDE.md note hit
+*another* real hang (`--blame-hang` caught it correctly again, this time mid-
+`PetCommandTestsA`, a third different test class than the first two hangs). `gh run
+rerun` on that same commit then passed clean. **The hang is real, intermittent
+(roughly 1 in 3 runs today), and strikes a different test class each time** - strongly
+suggests CI-runner resource contention (shared 2-core GitHub-hosted runner, `moriaengine`
+spawns 2 real child processes per test collection, dozens of collections per run) rather
+than a bug in any one test. Current `main` HEAD's check is ✅ green as of this pause, but
+expect to possibly need another `gh run rerun` next time, not a guarantee. Full detail
+and this is tracked as the thing to actually fix in **issue #100** - don't re-investigate
+from scratch, start there.
 
-**Paused here per explicit user request** right after confirming CI is green - see
-"Right now" below for where V-10 itself stands.
+**Paused here per explicit user request** right after getting a green run for the
+current `main` HEAD - see "Right now" below for where V-10 itself stands.
 
 ## Right now: mid V-10 — movement sub-scenario done, 6 more to go
 
