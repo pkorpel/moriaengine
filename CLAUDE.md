@@ -31,14 +31,13 @@ Phases V-0 through V-10, each its own sub-issue under #67.
 | V-5 Notoriety & region enforcement | #73 | 🟡 open (intentionally) | Criminal-flag/murderer-threshold part done & merged (#89). Region-enforcement sub-part (`Notoriety.IsAttackBlockedByRegion`) **deliberately deferred** — needs real static-region test data or an ad-hoc-region test helper; constructing one at runtime risked corrupting shared region state for other concurrently-running tests. Left open for whoever picks this back up. |
 | V-6 Housing | #74 | 🟡 open, should probably close | Deed placement, overlap rejection, co-owner/stranger access all tested & merged (#91). Surfaced bug #90 (now fixed, merged). **Gap**: issue's "GM release" checklist item not covered by any test yet. |
 | V-7 Taming/Mining/Lumberjacking | #75 | ✅ closed (PR #93, 2026-10-12) | `GatheringTests`: taming sets ControlMaster, mining yields ore, lumberjacking yields a log. Full suite 59/59 passing at merge time. |
-| V-8 Day/night & weather | #76 | 🔵 not started — **pick up here next** | |
-| V-9 Content-restoration sanity | #77 | ⬜ not started | |
+| V-8 Day/night & weather | #76 | ✅ closed (PR #95, 2026-10-12) | `DayNightWeatherTests`: shortened/re-anchored day cycle flips light level to night; season-change setter pushes the real packet. Surfaced bug #94. Full suite 61/61 passing at merge time. |
+| V-9 Content-restoration sanity | #77 | 🔵 not started — **pick up here next** | armor/movement capability |
 | V-10 Pre-existing systems benchmark | #78 | ⬜ not started | crafting, base skills, chat, movement, items/containers, GM tools, persistence |
 
 ### Bugs found by the verification pass (real defects in production code, not test bugs)
 
-All three below were already fixed and merged to main, and their issues are now closed
-(2026-10-12):
+All below were already fixed and merged to main, and their issues are now closed:
 
 - **#84** (closed) — Guild (and all non-allowlisted) `.` commands were unusable by any
   non-GM player (`CommandsAuthorization.cs` allowlist never included them). Fixed:
@@ -51,25 +50,32 @@ All three below were already fixed and merged to main, and their issues are now 
   whether the incoming parameter was non-null instead of whether the region's `Parent`
   was already set, so it threw on literally the first-ever placement. Fixed in
   `GameCore/Regions/DynamicRegion.cs:50`.
+- **#94** (closed) — `GameState.lastSentGlobalLightLevel`/`lastSentPersonalLightLevel`
+  defaulted to `0`, which collides with the real "full daylight"/"no personal light"
+  value, so the very first light packet on any daytime login was silently dropped
+  (`lastSentSeason` right below already used the correct `-1`-sentinel pattern). Also,
+  `SeasonalInformationOutPacket` was never sent at login at all. Fixed both in
+  `GameCore/Networking/GameState.cs` and `scripts/Basic/CharClasses/Player.cs`.
 
 These confirm the verification pass is doing its job — pre-existing, never-before-exercised
 code paths had real, 100%-reproducing bugs that no unit test ever caught.
 
-## Right now: between phases — V-7 done, V-8 not started
+## Right now: between phases — V-8 done, V-9 not started
 
-V-7 (#75) shipped via PR #93 and is merged to `main`. Working tree is clean, `main` is
+V-8 (#76) shipped via PR #95 and is merged to `main`. Working tree is clean, `main` is
 checked out, local is in sync with `origin/main`.
 
 **Next steps (in order):**
-1. Start V-8 (#76, day/night & weather scenario tests) — branch
-   `verify-v8-day-night-weather` off `main`, same `GameServerPairFixture` pattern as
-   V-0 through V-7.
+1. Start V-9 (#77, content-restoration sanity — armor/movement capability) — branch
+   `verify-v9-content-restoration` off `main`, same `GameServerPairFixture` pattern as
+   V-0 through V-8.
 2. Build, run the new scenario tests + full suite, commit → push → PR → self-merge →
    `git pull` main → delete branch (see Workflow below).
-3. Close issue #76 on green.
-4. Then V-9 (#77) and V-10 (#78), unless redirected. Also worth circling back to: the
-   #74 GM-release test gap, and the #73 region-enforcement deferral, whenever there's
-   a natural opening.
+3. Close issue #77 on green (and file+close any real bugs it surfaces, same pattern as
+   #84/#87/#90/#94).
+4. Then V-10 (#78), unless redirected. Also worth circling back to: the #74 GM-release
+   test gap, and the #73 region-enforcement deferral, whenever there's a natural
+   opening.
 
 **Environment notes for this sandbox** (needed every fresh session — not in PATH/profile
 by default):
