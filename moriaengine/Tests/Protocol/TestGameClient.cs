@@ -56,6 +56,7 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0x82, 1 },  // LoginDeniedOutPacket
 			{ 0x6E, 13 }, // CharacterAnimationOutPacket
 			{ 0x54, 11 }, // PlaySoundEffectOutPacket
+			{ 0x24, 6 },  // DrawContainerOutPacket (sent when a container is opened, e.g. our own backpack via SendDoubleClick)
 		};
 
 		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,
@@ -324,6 +325,115 @@ namespace SteamEngine.Tests.Protocol {
 			byte[] packet = new byte[5];
 			packet[0] = 0x06;
 			EncodeIntBigEndian((int) uid, packet, 1);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Sends PickUpItemInPacket (0x07) - id(1) + uid(4) + amount(2). Mirrors
+		/// GameCore/Networking/IncomingPackets.cs's PickUpItemInPacket.Read exactly.</summary>
+		public void SendPickUpItem(uint itemUid, ushort amount) {
+			byte[] packet = new byte[7];
+			packet[0] = 0x07;
+			EncodeIntBigEndian((int) itemUid, packet, 1);
+			EncodeUShortBigEndian(amount, packet, 5);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Sends DropItemInPacket (0x08) - id(1) + itemUid(4) + x(2) + y(2) + z(1) + contUid(4).
+		/// contUid of -1 means "drop on the ground at x/y/z"; any other uid can be a container
+		/// (puts the item inside, x/y are the slot position) or a character (not the dropper -
+		/// the classic UO gesture for starting/adding to a secure trade, see SecureTrade.cs).
+		/// Mirrors DropItemInPacket.Read exactly. Requires a prior SendPickUpItem for the same
+		/// itemUid - the server only honors a drop for an item it has already recorded this
+		/// connection as "holding" (AbstractCharacter.HasPickedUp).
+		/// </summary>
+		public void SendDropItem(uint itemUid, ushort x, ushort y, sbyte z, int contUid) {
+			byte[] packet = new byte[14];
+			packet[0] = 0x08;
+			EncodeIntBigEndian((int) itemUid, packet, 1);
+			EncodeUShortBigEndian(x, packet, 5);
+			EncodeUShortBigEndian(y, packet, 7);
+			packet[9] = (byte) z;
+			EncodeIntBigEndian(contUid, packet, 10);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Sends SecureTradeInPacket (0x6f) type 2 - toggle this side's accepted
+		/// checkbox. SecureTradeInPacket extends DynamicLenInPacket (same id(1) + length(2)
+		/// framing as the 0xBF packets above), then type(1) + tradeBoxUid(4) + state(4). The
+		/// server only ever expects type 1 (cancel) or 2 (accept toggle) from a real client, per
+		/// that class's own doc comment.</summary>
+		public void SendSecureTradeAccept(uint tradeBoxUid, bool accepted) {
+			byte[] packet = new byte[12];
+			packet[0] = 0x6f;
+			EncodeUShortBigEndian(12, packet, 1);
+			packet[3] = 2;
+			EncodeIntBigEndian((int) tradeBoxUid, packet, 4);
+			EncodeIntBigEndian(accepted ? 1 : 0, packet, 8);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Reads SecureTradeOutPacket (0x6f) type 0 - the "trade window opened" message every
+		/// participant gets exactly once, immediately and synchronously when a trade starts (see
+		/// SecureTrade's constructor), before any accepted-state/gold update. Returns this
+		/// client's own offered-items box uid (needed to send SendSecureTradeAccept later) and
+		/// the other side's box uid/name. Mirrors SecureTradeOutPacket.WriteDynamicPart's type-0
+		/// branch: type(1) + myBoxUid(4) + myBoxUid-again(4) + otherBoxUid(4) + hasName(1) +
+		/// [name, ASCII null-terminated].
+		/// </summary>
+		public (uint MyBoxUid, uint OtherBoxUid, string OtherName) ReadSecureTradeOpen(TimeSpan timeout) {
+			byte[] payload = this.ReadPacketPayload(0x6f, timeout);
+			byte type = payload[2];
+			if (type != 0) {
+				throw new InvalidOperationException("Expected SecureTradeOutPacket type 0 (open), got type " + type);
+			}
+			uint myBoxUid = (uint) ((payload[3] << 24) | (payload[4] << 16) | (payload[5] << 8) | payload[6]);
+			uint otherBoxUid = (uint) ((payload[11] << 24) | (payload[12] << 16) | (payload[13] << 8) | payload[14]);
+			bool hasName = payload[15] != 0;
+			string otherName = "";
+			if (hasName) {
+				string rest = Encoding.ASCII.GetString(payload, 16, payload.Length - 16);
+				int nul = rest.IndexOf('\0');
+				otherName = nul >= 0 ? rest.Substring(0, nul) : rest;
+			}
+			return (myBoxUid, otherBoxUid, otherName);
+		}
+
+		/// <summary>
+		/// Sends GeneralInformationInPacket (0xBF) subCmd 0x0006 (Party) sub-sub-command 0x01
+		/// (AddAPartyMember) - "I want to invite someone." No payload of its own; the server
+		/// responds by opening a target cursor on this client (see
+		/// PartyCommands.RequestAddMember -> self.Target(PartyAddTargetDef)), which the caller
+		/// then answers with SendTargetUid naming who to invite. Mirrors
+		/// GeneralInformationInPacket/PartySubPacket/AddAPartyMemberSubSubPacket.ReadSubPacket
+		/// exactly: id(1) + length(2) + subCmd(2) + subSubId(1).
+		/// </summary>
+		public void SendPartyAddMemberRequest() {
+			byte[] packet = new byte[6];
+			packet[0] = 0xBF;
+			EncodeUShortBigEndian(6, packet, 1);
+			EncodeUShortBigEndian(0x0006, packet, 3);
+			packet[5] = 0x01;
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Sends GeneralInformationInPacket (0xBF) subCmd 0x0006 (Party) sub-sub-command 0x08
+		/// (AcceptJoinPartyInvitation) - leaderUid names who invited this character (the client
+		/// already knows this from the PartyInvitationOutPacket/cliloc message it received when
+		/// invited; this harness learns it out-of-band via the inviter's own TestReportMyUid
+		/// instead, since gump/cliloc text isn't decoded here). Mirrors
+		/// AcceptJoinPartyInvitationSubSubPacket.ReadSubPacket exactly: id(1) + length(2) +
+		/// subCmd(2) + subSubId(1) + leaderUid(4).
+		/// </summary>
+		public void SendPartyAcceptInvite(uint leaderUid) {
+			byte[] packet = new byte[10];
+			packet[0] = 0xBF;
+			EncodeUShortBigEndian(10, packet, 1);
+			EncodeUShortBigEndian(0x0006, packet, 3);
+			packet[5] = 0x08;
+			EncodeIntBigEndian((int) leaderUid, packet, 6);
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
