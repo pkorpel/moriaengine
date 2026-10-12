@@ -33,7 +33,7 @@ Phases V-0 through V-10, each its own sub-issue under #67.
 | V-7 Taming/Mining/Lumberjacking | #75 | ✅ closed (PR #93, 2026-10-12) | `GatheringTests`: taming sets ControlMaster, mining yields ore, lumberjacking yields a log. Full suite 59/59 passing at merge time. |
 | V-8 Day/night & weather | #76 | ✅ closed (PR #95, 2026-10-12) | `DayNightWeatherTests`: shortened/re-anchored day cycle flips light level to night; season-change setter pushes the real packet. Surfaced bug #94. Full suite 61/61 passing at merge time. |
 | V-9 Content-restoration sanity | #77 | ✅ closed (PR #97, 2026-10-12) | `ContentRestorationTests`: flight-capable NPC crosses water a grounded one can't. **Armor half deliberately not covered** — surfaced bug #96 (significant, not auto-fixed, see below). Full suite 62/62 passing at merge time. |
-| V-10 Pre-existing systems benchmark | #78 | 🔵 not started — **pick up here next** | crafting, base skills, chat, movement, items/containers, GM tools, persistence |
+| V-10 Pre-existing systems benchmark | #78 | 🔵 in progress (part 1/N merged, 2026-10-12) | movement sub-scenario shipped via PR #98: `MovementSpeedTests.RealMoveRequestPacketUpdatesPosition`. Fixed a real bug (`MovementState.CanMoveAgain` always used `RunStepTime` regardless of the `running` flag). **"Running measurably faster than walking" not automated** — see PR #98/test file's own doc comment for why (first-packet reserve-banking artifact + per-tile terrain variance; needs a dedicated clear-terrain test region). Remaining sub-scenarios: crafting, base-skills sampler (Stealing/Hiding/Healing/Tracking), chat, items/containers, GM tools, persistence — not started. |
 
 ### Bugs found by the verification pass (real defects in production code, not test bugs)
 
@@ -83,24 +83,63 @@ that isn't mine to make unsupervised; #2 is an open mystery, not a clean fix. Le
 dedicated follow-up — same spirit as [[project_moriaengine_claude_md]]'s #73
 region-enforcement deferral.
 
-## Right now: between phases — V-9 done, V-10 not started
+## CI health (2026-10-12)
 
-V-9 (#77) shipped via PR #97 and is merged to `main` (movement scenario only — the armor
-scenario was investigated, found unreliable/genuinely buggy, and spun out to #96 rather
-than merged). Working tree is clean, `main` is checked out, local is in sync with
-`origin/main`.
+User flagged GitHub Actions CI as failing/stuck mid-session. Investigation found:
+- Two runs genuinely **hung** (not just slow) — one stuck `in_progress` for 2.5+ hours
+  (PR #92's check, long after that PR was merged and its branch deleted), another for
+  ~56 minutes with zero further test output after a connection-related test failure.
+  Neither got cleaned up automatically. **Fixed** via PR #99: added `timeout-minutes: 25`
+  at the job level plus `--blame-hang --blame-hang-timeout 5min` on the test step, so a
+  stuck run now fails fast with diagnostics instead of silently burning CI minutes toward
+  GitHub's 360-minute default.
+- The underlying flakiness itself (occasional connection-race test failures/hangs under
+  CI's shared runner — `EconomyTestsA`, `SocialTests`, `CombatScenarioTests` all seen
+  failing in different CI runs this session, not reproducing locally) is **not fixed** —
+  only contained so it fails visibly instead of hanging silently. Root cause not fully
+  tracked down (suspect an unbounded socket read with no timeout against a dead
+  connection in `TestGameClient`, surfacing as a retry-loop hang rather than a clean
+  failure) — this repo already has prior `fix-ci-login-race-and-timeouts`/
+  `fix-ci-combat-timing-flakiness` history, so this is a recurring category, not new.
+  Worth a dedicated follow-up pass if CI keeps failing intermittently.
+
+## Right now: mid V-10 — movement sub-scenario done, 6 more to go
+
+V-10 (#78) movement sub-scenario shipped via PR #98, merged to `main`. CI hang fix
+shipped via PR #99 (see "CI health" above) — merge that one once its own validation
+run comes back green (was in flight when this note was written). Working tree is
+clean, `main` is checked out, local is in sync with `origin/main`.
+
+**Remaining V-10 sub-scenarios (each its own small PR, same pattern as the movement
+one):**
+- Crafting: craft a basic item via the real craft-menu gump, confirm item created +
+  materials consumed.
+- Base-skills sampler: Stealing, Hiding, Healing/bandage, Tracking — one scenario each.
+- Chat: speech reaches nearby players, not beyond visibility range.
+- Items/containers: pick up (0x07), equip a weapon (0x13 `DropToWearItemInPacket`),
+  drop into a container (0x08); container-contents packet (0x3c, dynamic-length)
+  matches server state.
+- GM tools: teleport and remove, verified via protocol.
+- Persistence: real protocol-level save → process restart → reconnect → same
+  character/items still present. **Flagged highest-effort** in the issue itself.
+
+**Movement sub-scenario lessons worth remembering before touching terrain-dependent
+tests again**: this test map's terrain varies wildly tile to tile (dense static
+placement in spots, spawn tiles hemmed in on all 8 sides - also hit in V-7/V-9). No
+fixed pre-validation radius reliably guarantees enough consecutive open tiles - burned
+a lot of time tuning radius numbers before accepting a retry-until-success design
+instead. If a future sub-scenario also needs real multi-tile movement, start with that
+retry idiom rather than re-deriving it.
 
 **Next steps (in order):**
-1. Start V-10 (#78, pre-existing "solid" systems benchmark — crafting, base skills,
-   chat, movement, items/containers, GM tools, persistence) — branch
-   `verify-v10-pre-existing-systems` off `main`, same `GameServerPairFixture` pattern.
-2. Build, run the new scenario tests + full suite, commit → push → PR → self-merge →
-   `git pull` main → delete branch (see Workflow below).
-3. Close issue #78 on green (and file+close any real bugs it surfaces, same pattern as
-   #84/#87/#90/#94).
-4. #67's phase list will then be fully worked through. Worth circling back to: #96
-   (armor, needs design input), the #74 GM-release test gap, and the #73
-   region-enforcement deferral, whenever there's a natural opening.
+1. Merge PR #99 (CI hang fix) once its validation run is green.
+2. Pick up the next V-10 sub-scenario (suggest items/containers or chat - more
+   self-contained than crafting/persistence).
+3. Close issue #78 only once all sub-scenarios are done (and file+close any real bugs
+   surfaced, same pattern as #84/#87/#90/#94/#96).
+4. Worth circling back to eventually: #96 (armor, needs design input), the #74
+   GM-release test gap, the #73 region-enforcement deferral, and the CI flakiness
+   root-cause (see "CI health" above) if it keeps recurring.
 
 **Environment notes for this sandbox** (needed every fresh session — not in PATH/profile
 by default):
