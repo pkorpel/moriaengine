@@ -9,6 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Full suite normally takes ~9-11 minutes. Without this, a hung run (seen in practice -
+    # one got stuck for 2.5+ hours after a test failure, presumably a deadlock during test/
+    # fixture teardown) silently burns CI minutes for up to GitHub's 360-minute job default
+    # instead of failing fast.
+    timeout-minutes: 25
 
     steps:
       - uses: actions/checkout@v4
@@ -28,5 +33,9 @@ jobs:
         run: ./build.ps1 -Configuration Debug
         working-directory: moriaengine
 
+      # --blame-hang catches a stuck individual test (killing just that test process and
+      # dumping diagnostics) well before the job-level timeout-minutes above would have to
+      # kill the whole run blind - 5 minutes is generous against the slowest real test classes
+      # seen so far (~45s each).
       - name: Test
-        run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug
+        run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --blame-hang --blame-hang-timeout 5min
