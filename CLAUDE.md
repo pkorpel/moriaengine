@@ -32,8 +32,8 @@ Phases V-0 through V-10, each its own sub-issue under #67.
 | V-6 Housing | #74 | 🟡 open, should probably close | Deed placement, overlap rejection, co-owner/stranger access all tested & merged (#91). Surfaced bug #90 (now fixed, merged). **Gap**: issue's "GM release" checklist item not covered by any test yet. |
 | V-7 Taming/Mining/Lumberjacking | #75 | ✅ closed (PR #93, 2026-10-12) | `GatheringTests`: taming sets ControlMaster, mining yields ore, lumberjacking yields a log. Full suite 59/59 passing at merge time. |
 | V-8 Day/night & weather | #76 | ✅ closed (PR #95, 2026-10-12) | `DayNightWeatherTests`: shortened/re-anchored day cycle flips light level to night; season-change setter pushes the real packet. Surfaced bug #94. Full suite 61/61 passing at merge time. |
-| V-9 Content-restoration sanity | #77 | 🔵 not started — **pick up here next** | armor/movement capability |
-| V-10 Pre-existing systems benchmark | #78 | ⬜ not started | crafting, base skills, chat, movement, items/containers, GM tools, persistence |
+| V-9 Content-restoration sanity | #77 | ✅ closed (PR #97, 2026-10-12) | `ContentRestorationTests`: flight-capable NPC crosses water a grounded one can't. **Armor half deliberately not covered** — surfaced bug #96 (significant, not auto-fixed, see below). Full suite 62/62 passing at merge time. |
+| V-10 Pre-existing systems benchmark | #78 | 🔵 not started — **pick up here next** | crafting, base skills, chat, movement, items/containers, GM tools, persistence |
 
 ### Bugs found by the verification pass (real defects in production code, not test bugs)
 
@@ -60,22 +60,47 @@ All below were already fixed and merged to main, and their issues are now closed
 These confirm the verification pass is doing its job — pre-existing, never-before-exercised
 code paths had real, 100%-reproducing bugs that no unit test ever caught.
 
-## Right now: between phases — V-8 done, V-9 not started
+### #96 — open, NOT auto-fixed (needs a real design decision + more root-causing)
 
-V-8 (#76) shipped via PR #95 and is merged to `main`. Working tree is clean, `main` is
-checked out, local is in sync with `origin/main`.
+Found during V-9. Two layered problems in `CombatCalculator.CalculateArmorClassEffect`
+(`scripts/Basic/skills/Combat/CombatCalculator.cs`):
+1. The real `armorClass` argument (correctly derived from the defender's actual
+   `ArmorClassVsP/M`) is unconditionally **discarded for a random placeholder** unless
+   the attacker is a monster and the defender is a player (`isMvP`) — NPC-vs-NPC
+   (the literal #77 wording), player-vs-NPC, and PvP all ignore real armor entirely.
+   A commented-out `armorClass *= settings.armorClassMvP` (a dedicated, otherwise
+   totally unused `CombatSettings.armorClassMvP = 200` field) suggests this was meant
+   to be finished, not deliberate.
+2. Even in the one surviving case (MvP), a full equipped plate set moved measured
+   swing damage (via direct `DamageManager.GetWeaponSwingArgs` calls, 300 trials) by
+   under 1% — hand-calculating from `CombatSettings`'s own weights/multipliers predicts
+   ~20-25%. Reproduced across 5+ runs; not explained by #1 alone (MvP already uses the
+   real value) and not further root-caused.
+
+**Why not fixed autonomously**: #1 needs a real design call (what should PvP/MvM armor
+mitigation actually look like — a dedicated factor per case, same formula as MvP, etc.)
+that isn't mine to make unsupervised; #2 is an open mystery, not a clean fix. Left for a
+dedicated follow-up — same spirit as [[project_moriaengine_claude_md]]'s #73
+region-enforcement deferral.
+
+## Right now: between phases — V-9 done, V-10 not started
+
+V-9 (#77) shipped via PR #97 and is merged to `main` (movement scenario only — the armor
+scenario was investigated, found unreliable/genuinely buggy, and spun out to #96 rather
+than merged). Working tree is clean, `main` is checked out, local is in sync with
+`origin/main`.
 
 **Next steps (in order):**
-1. Start V-9 (#77, content-restoration sanity — armor/movement capability) — branch
-   `verify-v9-content-restoration` off `main`, same `GameServerPairFixture` pattern as
-   V-0 through V-8.
+1. Start V-10 (#78, pre-existing "solid" systems benchmark — crafting, base skills,
+   chat, movement, items/containers, GM tools, persistence) — branch
+   `verify-v10-pre-existing-systems` off `main`, same `GameServerPairFixture` pattern.
 2. Build, run the new scenario tests + full suite, commit → push → PR → self-merge →
    `git pull` main → delete branch (see Workflow below).
-3. Close issue #77 on green (and file+close any real bugs it surfaces, same pattern as
+3. Close issue #78 on green (and file+close any real bugs it surfaces, same pattern as
    #84/#87/#90/#94).
-4. Then V-10 (#78), unless redirected. Also worth circling back to: the #74 GM-release
-   test gap, and the #73 region-enforcement deferral, whenever there's a natural
-   opening.
+4. #67's phase list will then be fully worked through. Worth circling back to: #96
+   (armor, needs design input), the #74 GM-release test gap, and the #73
+   region-enforcement deferral, whenever there's a natural opening.
 
 **Environment notes for this sandbox** (needed every fresh session — not in PATH/profile
 by default):
