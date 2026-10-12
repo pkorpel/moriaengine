@@ -87,11 +87,15 @@ namespace SteamEngine {
 		}
 
 		public object TryRun(object self, ScriptArgs sa) {
+			this.lastRunSuccesful = false;
 			try {
-				return this.Run(self, sa);
+				object retVal = this.Run(self, sa);
+				this.lastRunSuccesful = true;
+				return retVal;
 			} catch (FatalException) {
 				throw;
 			} catch (Exception e) {
+				this.lastRunException = e;
 				this.Error(e);
 			}
 			return null;

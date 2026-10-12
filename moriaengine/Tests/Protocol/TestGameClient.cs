@@ -56,6 +56,7 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0x82, 1 },  // LoginDeniedOutPacket
 			{ 0x6E, 13 }, // CharacterAnimationOutPacket
 			{ 0x54, 11 }, // PlaySoundEffectOutPacket
+			{ 0x24, 6 },  // DrawContainerOutPacket (sent when a container is opened, e.g. our own backpack via SendDoubleClick)
 		};
 
 		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,
@@ -358,15 +359,17 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		/// <summary>Sends SecureTradeInPacket (0x6f) type 2 - toggle this side's accepted
-		/// checkbox. Mirrors SecureTradeInPacket.Read exactly (type(1) + tradeBoxUid(4) +
-		/// state(4)); the server only ever expects type 1 (cancel) or 2 (accept toggle) from a
-		/// real client, per that class's own doc comment.</summary>
+		/// checkbox. SecureTradeInPacket extends DynamicLenInPacket (same id(1) + length(2)
+		/// framing as the 0xBF packets above), then type(1) + tradeBoxUid(4) + state(4). The
+		/// server only ever expects type 1 (cancel) or 2 (accept toggle) from a real client, per
+		/// that class's own doc comment.</summary>
 		public void SendSecureTradeAccept(uint tradeBoxUid, bool accepted) {
-			byte[] packet = new byte[9];
+			byte[] packet = new byte[12];
 			packet[0] = 0x6f;
-			packet[1] = 2;
-			EncodeIntBigEndian((int) tradeBoxUid, packet, 2);
-			EncodeIntBigEndian(accepted ? 1 : 0, packet, 6);
+			EncodeUShortBigEndian(12, packet, 1);
+			packet[3] = 2;
+			EncodeIntBigEndian((int) tradeBoxUid, packet, 4);
+			EncodeIntBigEndian(accepted ? 1 : 0, packet, 8);
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
