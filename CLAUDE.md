@@ -83,32 +83,38 @@ that isn't mine to make unsupervised; #2 is an open mystery, not a clean fix. Le
 dedicated follow-up — same spirit as [[project_moriaengine_claude_md]]'s #73
 region-enforcement deferral.
 
-## CI health (2026-10-12)
+## CI health (2026-10-12) — contained, not root-caused; tracked in #100
 
-User flagged GitHub Actions CI as failing/stuck mid-session. Investigation found:
-- Two runs genuinely **hung** (not just slow) — one stuck `in_progress` for 2.5+ hours
-  (PR #92's check, long after that PR was merged and its branch deleted), another for
-  ~56 minutes with zero further test output after a connection-related test failure.
-  Neither got cleaned up automatically. **Fixed** via PR #99: added `timeout-minutes: 25`
-  at the job level plus `--blame-hang --blame-hang-timeout 5min` on the test step, so a
-  stuck run now fails fast with diagnostics instead of silently burning CI minutes toward
-  GitHub's 360-minute default.
-- The underlying flakiness itself (occasional connection-race test failures/hangs under
-  CI's shared runner — `EconomyTestsA`, `SocialTests`, `CombatScenarioTests` all seen
-  failing in different CI runs this session, not reproducing locally) is **not fixed** —
-  only contained so it fails visibly instead of hanging silently. Root cause not fully
-  tracked down (suspect an unbounded socket read with no timeout against a dead
-  connection in `TestGameClient`, surfacing as a retry-loop hang rather than a clean
-  failure) — this repo already has prior `fix-ci-login-race-and-timeouts`/
-  `fix-ci-combat-timing-flakiness` history, so this is a recurring category, not new.
-  Worth a dedicated follow-up pass if CI keeps failing intermittently.
+User flagged GitHub Actions CI as failing/stuck mid-session. Found two genuinely **hung**
+runs (one 2.5+ hours, one ~56 minutes, both with zero test output before being stuck) -
+**fixed** via PR #99 (merged): `timeout-minutes: 25` at the job level + `--blame-hang
+--blame-hang-timeout 5min` on the test step. Verified working on PR #99's own validation
+run - it hit the *same* real hang (during `InfrastructureSmokeTests.
+PacketScannerFindsBothWorldEntryMarkersAmongOtherTraffic`, per blame's "test running when
+it happened" report, not confirmed as the actual cause), but this time `--blame-hang`
+caught it after 5 minutes, captured 3 hang-dump files, and aborted cleanly at ~16 minutes
+instead of hanging for hours.
+
+**Not fixed**: the hang's actual root cause (suspect an unbounded socket read against a
+dead connection, under GitHub's shared-runner CPU contention - doesn't reproduce locally),
+and a cluster of separate intermittent connection-race failures in `EconomyTestsA/B`,
+`SocialTests`, and a stuck-NPC-pathing failure in `CombatScenarioTests` - none reproduce
+locally, all seen only on CI across different runs this session. Full writeup and repro
+evidence in **issue #100**. This repo has prior `fix-ci-login-race-and-timeouts`/
+`fix-ci-combat-timing-flakiness` branches, so it's a recurring category - worth a
+dedicated pass (starting from #99's hang-dump artifacts if still downloadable) rather than
+something to re-chase piecemeal.
+
+**Paused here per explicit user request** after landing the containment fix - see "Right
+now" below for where V-10 itself stands.
 
 ## Right now: mid V-10 — movement sub-scenario done, 6 more to go
 
 V-10 (#78) movement sub-scenario shipped via PR #98, merged to `main`. CI hang fix
-shipped via PR #99 (see "CI health" above) — merge that one once its own validation
-run comes back green (was in flight when this note was written). Working tree is
-clean, `main` is checked out, local is in sync with `origin/main`.
+shipped and merged via PR #99 (see "CI health" above) - its own validation run
+confirmed the fix works (caught a real hang via `--blame-hang` instead of hanging for
+hours). Working tree is clean, `main` is checked out, local is in sync with
+`origin/main`. Session paused here per explicit user request, right after the CI fix.
 
 **Remaining V-10 sub-scenarios (each its own small PR, same pattern as the movement
 one):**
