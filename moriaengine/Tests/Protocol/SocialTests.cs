@@ -65,6 +65,119 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Real UO rule: dropping an item on another player starts a secure trade;
+		/// nothing changes hands until BOTH sides check "accept" (checking just one side is not
+		/// enough), and once both have, the offered item actually moves into the other side's
+		/// backpack.</summary>
+		[Fact]
+		public void TwoPlayersCanCompleteASecureTrade() {
+			using (var clientA = this.ConnectLoginAndCreateCharacter(AccountA, "TraderOne")) {
+				clientA.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutput("AUTO_ACCOUNT_TEST: ENABLED", TimeSpan.FromSeconds(10)));
+
+				int markItem = this.fixture.GameOutputSnapshot().Length;
+				clientA.SendSpeech(".TestGrantTradeItem");
+				Assert.True(this.fixture.WaitForGameOutputSince("TRADE_SETUP:", markItem, TimeSpan.FromSeconds(10)));
+				(uint itemUid, uint backpackUidA) = ExtractTradeSetup(this.fixture.GameOutputSnapshot(), markItem);
+
+				clientA.SendDoubleClick(backpackUidA); // open own backpack - required for reachability, see EconomyTests' identical note
+				Thread.Sleep(300);
+				clientA.SendPickUpItem(itemUid, 1);
+				Thread.Sleep(300);
+
+				using (var clientB = this.ConnectLoginAndCreateCharacter(AccountB, "TraderTwo")) {
+					int markB = this.fixture.GameOutputSnapshot().Length;
+					clientB.SendSpeech(".TestReportMyUid");
+					Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", markB, TimeSpan.FromSeconds(10)));
+					uint traderBUid = ExtractUid(this.fixture.GameOutputSnapshot(), markB);
+
+					clientA.SendDropItem(itemUid, 0, 0, 0, (int) traderBUid);
+					Thread.Sleep(500);
+
+					var (myBoxUidA, _, _) = clientA.ReadSecureTradeOpen(TimeSpan.FromSeconds(10));
+					var (myBoxUidB, _, _) = clientB.ReadSecureTradeOpen(TimeSpan.FromSeconds(10));
+
+					clientA.SendSecureTradeAccept(myBoxUidA, true);
+					Thread.Sleep(300);
+					clientB.SendSecureTradeAccept(myBoxUidB, true);
+					Thread.Sleep(500);
+
+					int markCheckB = this.fixture.GameOutputSnapshot().Length;
+					clientB.SendSpeech(".TestCheckHasItem " + itemUid);
+					Assert.True(this.fixture.WaitForGameOutputSince("HAS_ITEM: uid=" + itemUid, markCheckB, TimeSpan.FromSeconds(10)));
+					Assert.Contains("has=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "HAS_ITEM: uid=" + itemUid));
+
+					int markCheckA = this.fixture.GameOutputSnapshot().Length;
+					clientA.SendSpeech(".TestCheckHasItem " + itemUid);
+					Assert.True(this.fixture.WaitForGameOutputSince("HAS_ITEM: uid=" + itemUid, markCheckA, TimeSpan.FromSeconds(10)));
+					Assert.Contains("has=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "HAS_ITEM: uid=" + itemUid));
+				}
+			}
+		}
+
+		/// <summary>Real UO rule: the party leader targets another player to invite them; once
+		/// that player accepts (naming the leader's uid), both report being in the same party
+		/// with the same leader.</summary>
+		[Fact]
+		public void TwoPlayersCanFormAParty() {
+			using (var clientA = this.ConnectLoginAndCreateCharacter(AccountA, "PartyLeader")) {
+				clientA.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutput("AUTO_ACCOUNT_TEST: ENABLED", TimeSpan.FromSeconds(10)));
+
+				int markA = this.fixture.GameOutputSnapshot().Length;
+				clientA.SendSpeech(".TestReportMyUid");
+				Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", markA, TimeSpan.FromSeconds(10)));
+				uint leaderUid = ExtractUid(this.fixture.GameOutputSnapshot(), markA);
+
+				using (var clientB = this.ConnectLoginAndCreateCharacter(AccountB, "PartyCandidate")) {
+					int markB = this.fixture.GameOutputSnapshot().Length;
+					clientB.SendSpeech(".TestReportMyUid");
+					Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", markB, TimeSpan.FromSeconds(10)));
+					uint candidateUid = ExtractUid(this.fixture.GameOutputSnapshot(), markB);
+
+					clientA.SendPartyAddMemberRequest();
+					Thread.Sleep(300);
+					clientA.SendTargetUid(candidateUid);
+					Thread.Sleep(500);
+					clientB.SendPartyAcceptInvite(leaderUid);
+					Thread.Sleep(500);
+
+					int markA2 = this.fixture.GameOutputSnapshot().Length;
+					clientA.SendSpeech(".TestCheckParty");
+					Assert.True(this.fixture.WaitForGameOutputSince("PARTY_CHECK: PartyLeader", markA2, TimeSpan.FromSeconds(10)));
+
+					int markB2 = this.fixture.GameOutputSnapshot().Length;
+					clientB.SendSpeech(".TestCheckParty");
+					Assert.True(this.fixture.WaitForGameOutputSince("PARTY_CHECK: PartyCandidate", markB2, TimeSpan.FromSeconds(10)));
+
+					string output = this.fixture.GameOutputSnapshot();
+					string leaderLine = LastLineContaining(output, "PARTY_CHECK: PartyLeader");
+					string candidateLine = LastLineContaining(output, "PARTY_CHECK: PartyCandidate");
+					Assert.Contains("inParty=True leader=PartyLeader members=2", leaderLine);
+					Assert.Contains("inParty=True leader=PartyLeader members=2", candidateLine);
+				}
+			}
+		}
+
+		private static (uint ItemUid, uint BackpackUid) ExtractTradeSetup(string output, int since) {
+			int idx = output.IndexOf("TRADE_SETUP: item=#", since, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find TRADE_SETUP after position " + since + " in:\n" + output);
+			string rest = output.Substring(idx + "TRADE_SETUP: item=#".Length);
+			uint itemUid = ParseLeadingUInt(rest);
+			int bpIdx = rest.IndexOf("backpack=#", StringComparison.Ordinal);
+			Assert.True(bpIdx >= 0, "Could not find backpack uid in:\n" + rest);
+			uint backpackUid = ParseLeadingUInt(rest.Substring(bpIdx + "backpack=#".Length));
+			return (itemUid, backpackUid);
+		}
+
+		private static uint ParseLeadingUInt(string text) {
+			int end = 0;
+			while (end < text.Length && char.IsDigit(text[end])) {
+				end++;
+			}
+			return uint.Parse(text.Substring(0, end), System.Globalization.CultureInfo.InvariantCulture);
+		}
+
 		private static string LastLineContaining(string output, string marker) {
 			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);
