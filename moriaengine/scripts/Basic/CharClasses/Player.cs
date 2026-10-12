@@ -243,6 +243,7 @@ namespace SteamEngine.CompiledScripts {
 				state.SyncUpdateRange();
 				state.SendPersonalLightLevel(this.personalLightLevel);
 				state.SendGlobalLightLevel(LightAndWeather.GetLightAt(this));
+				state.SendSeasonalInformation(LightAndWeather.CurrentSeason, CursorType.Normal);
 			}
 			return result;
 		}
