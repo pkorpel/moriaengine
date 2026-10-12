@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="AbilityDefLoc_AbilityActivated" xml:space="preserve">
+    <value>Abilita {0} aktivována.</value>
+  </data>
+  <data name="AbilityDefLoc_HasBeenSwitchedOff" xml:space="preserve">
+    <value>Abilita deaktivována.</value>
+  </data>
+  <data name="AbilityDefLoc_NotAllowedToHaveAbility" xml:space="preserve">
+    <value>Nejsi oprávněn mít tuto abilitu.</value>
+  </data>
+  <data name="AbilityDefLoc_NotEnoughResourcesPresent" xml:space="preserve">
+    <value>Nedostatek zdrojů pro aktivaci ability.</value>
+  </data>
+  <data name="AbilityDefLoc_NotEnoughResourcesToConsume" xml:space="preserve">
+    <value>Nedostatek zdrojů ke spotřebě pro aktivaci ability.</value>
+  </data>
+  <data name="AbilityDefLoc_NotYetCooledDown" xml:space="preserve">
+    <value>Abilitu nelze použít tak brzy po předchozím použití.</value>
+  </data>
+  <data name="AbilityDefLoc_YouDontHaveThisAbility" xml:space="preserve">
+    <value>O této abilitě nevíš vůbec nic.</value>
+  </data>
+  <data name="AnatomyLoc_ACanceled" xml:space="preserve">
+    <value>Anatomie byla přerušena.</value>
+  </data>
+  <data name="AnatomyLoc_AFailed" xml:space="preserve">
+    <value>Tvé zkoumání se nezdařilo.</value>
+  </data>
+  <data name="AnatomyLoc_ASuccess1" xml:space="preserve">
+    <value>Anatomie se ti povedla.</value>
+  </data>
+  <data name="AnatomyLoc_TargetOnlyHuman" xml:space="preserve">
+    <value>Zaměřuj pouze osoby!</value>
+  </data>
+  <data name="AnatomyLoc_TargetWho" xml:space="preserve">
+    <value>Koho chceš zkoumat?</value>
+  </data>
+  <data name="AnimalLoreLoc_ACanceled" xml:space="preserve">
+    <value>Animal Lore bylo přerušeno.</value>
+  </data>
+  <data name="AnimalLoreLoc_AFailed" xml:space="preserve">
+    <value>Tvé zkoumání se nezdařilo.</value>
+  </data>
+  <data name="AnimalLoreLoc_ASuccess1" xml:space="preserve">
+    <value>Animal Lore se ti povedlo.</value>
+  </data>
+  <data name="AnimalLoreLoc_TargetOnlyAnimals" xml:space="preserve">
+    <value>Zaměřuj pouze zvěř!</value>
+  </data>
+  <data name="AnimalLoreLoc_TargetWho" xml:space="preserve">
+    <value>Co chceš zkoumat?</value>
+  </data>
+  <data name="BandageSkillLoc_CantHealItems" xml:space="preserve">
+    <value>Předměty nelze léčit.</value>
+  </data>
+  <data name="BandageSkillLoc_SelectHealingTarget" xml:space="preserve">
+    <value>Koho chceš léčit?</value>
+  </data>
+  <data name="BandageSkillLoc_YouHaveNoBandages" xml:space="preserve">
+    <value>Nemáš u sebe bandáže!</value>
+  </data>
+  <data name="BleedingLoc_YourTargetIsBleeding" xml:space="preserve">
+    <value>{0} krvácí!</value>
+  </data>
+  <data name="BleedingLoc_YoureBleeding" xml:space="preserve">
+    <value>Krvácíš!</value>
+  </data>
+  <data name="CharacterLoc_TargetIsDead" xml:space="preserve">
+    <value>The target is dead.</value>
+  </data>
+  <data name="CharacterLoc_TargetIsInsubst" xml:space="preserve">
+    <value>The target is insubstantial.</value>
+  </data>
+  <data name="ColoredStaffLoc_manaInStaff" xml:space="preserve">
+    <value>Mana v holi</value>
+  </data>
+  <data name="ColoredStaffLoc_manaVanished" xml:space="preserve">
+    <value>Mana v holi je svázána s tvou myslí - odložením hole mana vyprchala.</value>
+  </data>
+  <data name="CommandLoc_CommandDoesNothing" xml:space="preserve">
+    <value>This code line does nothing</value>
+  </data>
+  <data name="CommandLoc_CommandFailed" xml:space="preserve">
+    <value>Command '{0}' failed - {1}</value>
+  </data>
+  <data name="CommandLoc_UnknownCommand" xml:space="preserve">
+    <value>Unknown method/function {0}</value>
+  </data>
+  <data name="CommandLoc_WrongCommandArgument" xml:space="preserve">
+    <value>Wrong argument for that method</value>
+  </data>
+  <data name="CommandLoc_WrongCommandFormat" xml:space="preserve">
+    <value>Unrecognized command format</value>
+  </data>
+  <data name="CommandLoc_XCommandPrompt" xml:space="preserve">
+    <value>Command who or what?</value>
+  </data>
+  <data name="ContainerLoc_itemsGenitiv" xml:space="preserve">
+    <value>items</value>
+  </data>
+  <data name="ContainerLoc_stonesGenitiv" xml:space="preserve">
+    <value>stones</value>
+  </data>
+  <data name="CraftSkillsLoc_CraftingAborted" xml:space="preserve">
+    <value>Crafting aborted</value>
+  </data>
+  <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
+    <value>Crafting is finished</value>
+  </data>
+  <data name="CraftSkillsLoc_ItemMadeAndPutInRecCont" xml:space="preserve">
+    <value>You create the {0} and put it in your {1}</value>
+  </data>
+  <data name="CraftSkillsLoc_ItemMakingFailed" xml:space="preserve">
+    <value>You have failed to make {0} and lost some of the resources</value>
+  </data>
+  <data name="CraftSkillsLoc_ResourcesLackingAndFinish" xml:space="preserve">
+    <value>Not enough resources to make {0}, crafting is finished.</value>
+  </data>
+  <data name="CraftSkillsLoc_ResourcesLackingButContinue" xml:space="preserve">
+    <value>Not enough resources to make {0}, continuing with other items.</value>
+  </data>
+  <data name="EffectDurationLoc_AbilityDeactivated" xml:space="preserve">
+    <value>Ability '{0}' deactivated.</value>
+  </data>
+  <data name="EffectDurationLoc_AbilityEffectEnded" xml:space="preserve">
+    <value>Effect of ability '{0}' ended.</value>
+  </data>
+  <data name="EffectDurationLoc_EvilAbilityEffectEnded" xml:space="preserve">
+    <value>The unpleasant effect of ability '{0}' ended.</value>
+  </data>
+  <data name="EffectDurationLoc_EvilSpellEffecEnded" xml:space="preserve">
+    <value>The unpleasant effect of spell '{0}' ended.</value>
+  </data>
+  <data name="EffectDurationLoc_GoodAbilityEffectEnded" xml:space="preserve">
+    <value>The pleasant effect of ability '{0}' ended.</value>
+  </data>
+  <data name="EffectDurationLoc_GoodSpellEffecEnded" xml:space="preserve">
+    <value>The pleasant effect of spell '{0}' ended.</value>
+  </data>
+  <data name="EffectDurationLoc_SpellEffecEnded" xml:space="preserve">
+    <value>Effect of spell '{0}' ended.</value>
+  </data>
+  <data name="EffectDurationLoc_UnspecifiedEffectEnded" xml:space="preserve">
+    <value>Effect of '{0}' ended.</value>
+  </data>
+  <data name="EnergyShieldLoc_cantMove" xml:space="preserve">
+    <value>Během trvání kouzla Energy shield se nemůžeš pohybovat</value>
+  </data>
+  <data name="EnergyShieldLoc_cantTeleport" xml:space="preserve">
+    <value>Během trvání kouzla Energy shield nemůžeš používat teleportační kouzla</value>
+  </data>
+  <data name="EnergyShieldLoc_shieldSavedYou" xml:space="preserve">
+    <value>Energy shield tě uchránil před zraněním</value>
+  </data>
+  <data name="EnergyShieldLoc_shieldSavedYouPartially" xml:space="preserve">
+    <value>Energy shield tě částečně ochránil před zraněním</value>
+  </data>
+  <data name="EnergyShieldLoc_shieldWasted" xml:space="preserve">
+    <value>Tvůj Energy shield se vyčerpal</value>
+  </data>
+  <data name="GmCommandsLoc_GMModeOff" xml:space="preserve">
+    <value>GM mode off (Plevel 1).</value>
+  </data>
+  <data name="GmCommandsLoc_GMModeOn" xml:space="preserve">
+    <value>GM mode on (Plevel {0}).</value>
+  </data>
+  <data name="GmCommandsLoc_InsubstOff" xml:space="preserve">
+    <value>Flag_Insubst off (you're visible)</value>
+  </data>
+  <data name="GmCommandsLoc_InsubstOn" xml:space="preserve">
+    <value>Flag_Insubst on (you're invisible and players can not interact with you)</value>
+  </data>
+  <data name="HealingLoc_HealerFailedToHealYou" xml:space="preserve">
+    <value>{0} selhal při pokusu tě ošetřit!</value>
+  </data>
+  <data name="HealingLoc_HealingAborted" xml:space="preserve">
+    <value>Léčení přerušeno</value>
+  </data>
+  <data name="HealingLoc_HealingFailed" xml:space="preserve">
+    <value>Léčení se ti nezdařilo!</value>
+  </data>
+  <data name="HealingLoc_HealingSkillNotApplicable" xml:space="preserve">
+    <value>Nelze léčit skillem Healing</value>
+  </data>
+  <data name="HealingLoc_HealingSucceeded" xml:space="preserve">
+    <value>Léčení se ti povedlo!</value>
+  </data>
+  <data name="HealingLoc_SuccessfullyStoppedBleeding" xml:space="preserve">
+    <value>Povedlo se ti zastavit krvácení</value>
+  </data>
+  <data name="HealingLoc_TargetIsAtMaxHitpoints" xml:space="preserve">
+    <value>{0} je zcela zdráv!</value>
+  </data>
+  <data name="HealingLoc_YoureAtMaxHitpoints" xml:space="preserve">
+    <value>Jsi zcela zdráv!</value>
+  </data>
+  <data name="HealingLoc_YoureStartingToHealTarget" xml:space="preserve">
+    <value>Začínáš léčit {0}.</value>
+  </data>
+  <data name="HealingLoc_YoureStartingToHealYourself" xml:space="preserve">
+    <value>Začínáš se léčit.</value>
+  </data>
+  <data name="HidingLoc_HidingAborted" xml:space="preserve">
+    <value>Hiding aborted.</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalCharsInName" xml:space="preserve">
+    <value>Illegal name - Contains something other than letters and spaces.</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalFacialHairColor" xml:space="preserve">
+    <value>Illegal facialHairColor={0}</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalFacialhair" xml:space="preserve">
+    <value>Illegal facialHair={0}</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalGender" xml:space="preserve">
+    <value>Illegal gender={0}</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalHairColor" xml:space="preserve">
+    <value>Illegal hairColor={0}</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalHairStyle" xml:space="preserve">
+    <value>Illegal hairStyle={0}</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalLongSpacesInName" xml:space="preserve">
+    <value>Illegal name - More than one space in a row.</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalPantsColor" xml:space="preserve">
+    <value>Illegal pantsColor={0}</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalShirtColor" xml:space="preserve">
+    <value>Illegal shirtColor={0}</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalSkinColor" xml:space="preserve">
+    <value>Illegal skinColor={0}</value>
+  </data>
+  <data name="IncomingPacketsLoc_IllegalTrailingSpacesInName" xml:space="preserve">
+    <value>Illegal name - Starts or ends with spaces.</value>
+  </data>
+  <data name="IncomingPacketsLoc_MaxAccCharsReached" xml:space="preserve">
+    <value>You already have the maximum number of characters in your account.</value>
+  </data>
+  <data name="IncomingPacketsLoc_NotANumber" xml:space="preserve">
+    <value>'{0}' is not a number!</value>
+  </data>
+  <data name="ItemIdLoc_ICanceled" xml:space="preserve">
+    <value>Identifikace předmětu přerušena.</value>
+  </data>
+  <data name="ItemIdLoc_IFailed" xml:space="preserve">
+    <value>Identifikace předmětu se nezdařila.</value>
+  </data>
+  <data name="ItemIdLoc_ISuccess" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemIdLoc_TargetWhat" xml:space="preserve">
+    <value>Co chceš identifikovat?</value>
+  </data>
+  <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Add" xml:space="preserve">
+    <value>Přidat</value>
+  </data>
+  <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Buy" xml:space="preserve">
+    <value>Koupit</value>
+  </data>
+  <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Change" xml:space="preserve">
+    <value>Změnit</value>
+  </data>
+  <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Color" xml:space="preserve">
+    <value>Barva</value>
+  </data>
+  <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Examine" xml:space="preserve">
+    <value>Projít</value>
+  </data>
+  <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Price" xml:space="preserve">
+    <value>Cena</value>
+  </data>
+  <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Recall" xml:space="preserve">
+    <value>Stáhnout</value>
+  </data>
+  <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Units" xml:space="preserve">
+    <value>Jednotek?</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_Buy" xml:space="preserve">
+    <value>kup</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_ChangeIcon" xml:space="preserve">
+    <value>Ikona</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_DeleteSection" xml:space="preserve">
+    <value>Odebrat sekci</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_Description" xml:space="preserve">
+    <value>Název zboží</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_NewStock" xml:space="preserve">
+    <value>Přidat dalši zboží</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_PriceInGp" xml:space="preserve">
+    <value>Cena (gp)</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_ReverseOrder" xml:space="preserve">
+    <value>Převrátit nabídku</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_TargetIconSource" xml:space="preserve">
+    <value>Target something to copy icon from.</value>
+  </data>
+  <data name="Loc_PlayerVendor_ListStock_YourAccount" xml:space="preserve">
+    <value>Vaše konto: {0} gp</value>
+  </data>
+  <data name="Loc_PlayerVendor_Stock_Header_Char" xml:space="preserve">
+    <value>Na prodej: {0}</value>
+  </data>
+  <data name="Loc_PlayerVendor_Stock_Header_Item" xml:space="preserve">
+    <value>Na prodej: {0} {1}</value>
+  </data>
+  <data name="Loc_PlayerVendor_Stock_InvalidPrice" xml:space="preserve">
+    <value>Cena musí být větší než 0</value>
+  </data>
+  <data name="Loc_PlayerVendor_Stock_Label_Description" xml:space="preserve">
+    <value>Popis</value>
+  </data>
+  <data name="Loc_PlayerVendor_Stock_Label_NewSection" xml:space="preserve">
+    <value>Nová sekce</value>
+  </data>
+  <data name="Loc_PlayerVendor_Stock_Label_Price" xml:space="preserve">
+    <value>Cena</value>
+  </data>
+  <data name="Loc_PlayerVendor_Stock_Label_Sell" xml:space="preserve">
+    <value>Prodej</value>
+  </data>
+  <data name="Loc_PlayerVendor_Stock_Label_SoldByUnits" xml:space="preserve">
+    <value>Jednotkový prodej</value>
+  </data>
+  <data name="LockpickLoc_abort" xml:space="preserve">
+    <value>Odemykání přerušeno.</value>
+  </data>
+  <data name="LockpickLoc_cantUseLockpick" xml:space="preserve">
+    <value>Na tohle nelze paklíč použít.</value>
+  </data>
+  <data name="LockpickLoc_fail" xml:space="preserve">
+    <value>Nepodařilo se ti odemknout zámek</value>
+  </data>
+  <data name="LockpickLoc_success" xml:space="preserve">
+    <value>Úspěšně jsi odemkl zámek</value>
+  </data>
+  <data name="LockpickLoc_successWoman" xml:space="preserve">
+    <value>Úspěšně jsi odemkla zámek</value>
+  </data>
+  <data name="LockpickLoc_whatToUseLockOn" xml:space="preserve">
+    <value>Na co chceš použít paklíč?</value>
+  </data>
+  <data name="LumberjackingLoc_abort" xml:space="preserve">
+    <value>You stop chopping.</value>
+  </data>
+  <data name="LumberjackingLoc_fail" xml:space="preserve">
+    <value>You hack at the tree for a while, but fail to produce any useable wood.</value>
+  </data>
+  <data name="LumberjackingLoc_notATree" xml:space="preserve">
+    <value>There is no wood to be gathered there.</value>
+  </data>
+  <data name="LumberjackingLoc_success" xml:space="preserve">
+    <value>You chop some logs.</value>
+  </data>
+  <data name="LumberjackingLoc_whatToChop" xml:space="preserve">
+    <value>What do you want to chop?</value>
+  </data>
+  <data name="MagicReflectionLoc_NextEvilSpellReflects" xml:space="preserve">
+    <value>Příští nepřátelské kouzlo se od tebe odrazí</value>
+  </data>
+  <data name="ManaShieldLoc_cantMeditateWithManaShield" xml:space="preserve">
+    <value>Soustředit se zároveň na meditaci i mana shield není v lidských silách.</value>
+  </data>
+  <data name="ManaShieldLoc_shieldSavedYou" xml:space="preserve">
+    <value>Mana shield tě uchránil před zraněním</value>
+  </data>
+  <data name="ManaShieldLoc_shieldSavedYouPartially" xml:space="preserve">
+    <value>Mana shield tě částečně ochránil před zraněním</value>
+  </data>
+  <data name="MiningLoc_abort" xml:space="preserve">
+    <value>You stop mining.</value>
+  </data>
+  <data name="MiningLoc_fail" xml:space="preserve">
+    <value>You loosen some rocks but fail to find any useable ore.</value>
+  </data>
+  <data name="MiningLoc_notAVein" xml:space="preserve">
+    <value>There is no ore to be found there.</value>
+  </data>
+  <data name="MiningLoc_success" xml:space="preserve">
+    <value>You dig some ore.</value>
+  </data>
+  <data name="MiningLoc_whereToMine" xml:space="preserve">
+    <value>Where do you want to mine?</value>
+  </data>
+  <data name="PacketSequencesLoc_WelcomeToShard" xml:space="preserve">
+    <value>Welcome to {0}.</value>
+  </data>
+  <data name="PlayerVendorLoc_CanOnlySellAnimals" xml:space="preserve">
+    <value>Prodávat lze jen zvířata</value>
+  </data>
+  <data name="PlayerVendorLoc_NoUnitAvailable" xml:space="preserve">
+    <value>Kontejner pro jednotkový prodej musíš mít otevřený a v něm alespoň 1 předmět.</value>
+  </data>
+  <data name="PlayerVendorLoc_PriceCalculationError" xml:space="preserve">
+    <value>Cenu nelze vypočítat.</value>
+  </data>
+  <data name="PlayerVendorLoc_StockedContainerTooFull" xml:space="preserve">
+    <value>Nemůžeš prodávat kontejner s více jak 500ks zboží</value>
+  </data>
+  <data name="PlayerVendorLoc_ThisNpcIsntYours" xml:space="preserve">
+    <value>Tento tvor ti nepatří.</value>
+  </data>
+  <data name="PlayerVendorLoc_VendorIsntYours" xml:space="preserve">
+    <value>Tento prodejce ti není podřízen.</value>
+  </data>
+  <data name="PlayerVendorLoc_VendorOffline" xml:space="preserve">
+    <value>Tento prodejce má zavřeno</value>
+  </data>
+  <data name="PlayerVendorLoc_YouCantStockMoney" xml:space="preserve">
+    <value>Nemůžeš prodávat hotovost</value>
+  </data>
+  <data name="PoisonedItemLoc_DosesLeft" xml:space="preserve">
+    <value>Poison Doses</value>
+  </data>
+  <data name="PoisonedItemLoc_Power" xml:space="preserve">
+    <value>Poison Power</value>
+  </data>
+  <data name="PoisoningLoc_AllProjectilesPoisoned" xml:space="preserve">
+    <value>All of the projectiles are already poisoned.</value>
+  </data>
+  <data name="PoisoningLoc_CantPoisonThat" xml:space="preserve">
+    <value>It's impossible to poison that. You can only poison infectious weapons or weapon projectiles.</value>
+  </data>
+  <data name="PoisoningLoc_CantPoisonThisProjectile" xml:space="preserve">
+    <value>It's impossible to poison this weapon projectile</value>
+  </data>
+  <data name="PoisoningLoc_CantPoisonThisWeapon" xml:space="preserve">
+    <value>It's impossible to poison this weapon</value>
+  </data>
+  <data name="PoisoningLoc_ProjectilesHaveDifferentPoisond" xml:space="preserve">
+    <value>These projectiles are already poisoned with a different poison.</value>
+  </data>
+  <data name="ProfessionPluginLoc_YouCantCastThis" xml:space="preserve">
+    <value>You can't cast this spell, being {0} of profession.</value>
+  </data>
+  <data name="RecallRuneLoc_ForbiddenEnemyTeleportingIn" xml:space="preserve">
+    <value>Zde je nepřátelům zakázáno kouzlit teleportovací kouzla</value>
+  </data>
+  <data name="RecallRuneLoc_ForbiddenEnemyTeleportingOut" xml:space="preserve">
+    <value>Odtud je nepřátelům zakázáno kouzlit teleportovací kouzla</value>
+  </data>
+  <data name="RecallRuneLoc_ForbiddenTeleportingIn" xml:space="preserve">
+    <value>Zde je zakázáno kouzlit teleportovací kouzla</value>
+  </data>
+  <data name="RecallRuneLoc_ForbiddenTeleportingOut" xml:space="preserve">
+    <value>Odtud je zakázáno kouzlit teleportovací kouzla</value>
+  </data>
+  <data name="RecallRuneLoc_anUnknownDestination" xml:space="preserve">
+    <value>an unknown destination</value>
+  </data>
+  <data name="RecallRuneLoc_target" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="ResListLoc_AbilityTooLow" xml:space="preserve">
+    <value>Schopnost {0} ovládáš příliš špatně</value>
+  </data>
+  <data name="ResListLoc_DexTooLow" xml:space="preserve">
+    <value>Nejsi dost obratný</value>
+  </data>
+  <data name="ResListLoc_HitsTooLow" xml:space="preserve">
+    <value>Jsi příliš zraněný (málo hitpointů)</value>
+  </data>
+  <data name="ResListLoc_IntTooLow" xml:space="preserve">
+    <value>Nejsi dost inteligentní</value>
+  </data>
+  <data name="ResListLoc_LevelTooLow" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ResListLoc_ManaTooLow" xml:space="preserve">
+    <value>Máš málo many</value>
+  </data>
+  <data name="ResListLoc_NotEnoughItems" xml:space="preserve">
+    <value>Máš málo {0}</value>
+  </data>
+  <data name="ResListLoc_NotEnoughItemsOfType" xml:space="preserve">
+    <value>Máš málo předmětů typu {0}</value>
+  </data>
+  <data name="ResListLoc_SkillTooLow" xml:space="preserve">
+    <value>Umení {0} ovládáš příliš špatně</value>
+  </data>
+  <data name="ResListLoc_StamTooLow" xml:space="preserve">
+    <value>Jsi příliš vyčerpaný (málo staminy)</value>
+  </data>
+  <data name="ResListLoc_StrTooLow" xml:space="preserve">
+    <value>Nejsi dost silný</value>
+  </data>
+  <data name="ResListLoc_VitTooLow" xml:space="preserve">
+    <value>Nejsi dost vitální</value>
+  </data>
+  <data name="ResurrectionLoc_GhostCantReachTheBody" xml:space="preserve">
+    <value>Duch nedosáhne na své tělo.</value>
+  </data>
+  <data name="ResurrectionLoc_ThisIsntBody" xml:space="preserve">
+    <value>Toto není tělo!</value>
+  </data>
+  <data name="ResurrectionLoc_ThisIsntPlayersBody" xml:space="preserve">
+    <value>Toto není tělo hráčské postavy.</value>
+  </data>
+  <data name="SpellBookLoc_TargetBookToEmpty" xml:space="preserve">
+    <value>Ze které knihy chceš vysypat svitky?</value>
+  </data>
+  <data name="SpellDefLoc_ForbiddenBeneficialMagicIn" xml:space="preserve">
+    <value>Zde je zakázáno kouzlit přínosná kouzla</value>
+  </data>
+  <data name="SpellDefLoc_ForbiddenBeneficialMagicOut" xml:space="preserve">
+    <value>Odtud je zakázáno kouzlit přínosná kouzla</value>
+  </data>
+  <data name="SpellDefLoc_ForbiddenHarmfulMagicIn" xml:space="preserve">
+    <value>Zde je zakázáno kouzlit škodlivá kouzla</value>
+  </data>
+  <data name="SpellDefLoc_ForbiddenHarmfulMagicOut" xml:space="preserve">
+    <value>Odtud je zakázáno kouzlit škodlivá kouzla</value>
+  </data>
+  <data name="SpellDefLoc_ForbiddenMagicIn" xml:space="preserve">
+    <value>Zde je zakázáno kouzlit</value>
+  </data>
+  <data name="SpellDefLoc_ForbiddenMagicOut" xml:space="preserve">
+    <value>Odtud je zakázáno kouzlit</value>
+  </data>
+  <data name="SpellDefLoc_TargetResistedSpell" xml:space="preserve">
+    <value>Cíl odolal kouzlu!</value>
+  </data>
+  <data name="TamingLoc_abort" xml:space="preserve">
+    <value>You stop trying to tame the creature.</value>
+  </data>
+  <data name="TamingLoc_cantTameThat" xml:space="preserve">
+    <value>You can't tame that.</value>
+  </data>
+  <data name="TamingLoc_fail" xml:space="preserve">
+    <value>You fail to tame the creature.</value>
+  </data>
+  <data name="TamingLoc_success" xml:space="preserve">
+    <value>You have tamed the creature.</value>
+  </data>
+  <data name="TamingLoc_whatToTame" xml:space="preserve">
+    <value>What would you like to tame?</value>
+  </data>
+  <data name="ThrowingLoc_onlyWorksWhenFighting" xml:space="preserve">
+    <value>Házecí nože lze použít jen během boje.</value>
+  </data>
+  <data name="ThrowingLoc_youNeedThrowingKnife" xml:space="preserve">
+    <value>Nemáš žádný házecí nůž.</value>
+  </data>
+  <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
+    <value>Nemáš střelivo.</value>
+  </data>
+  <data name="loc_ability_functions_NoSuchAbility" xml:space="preserve">
+    <value>There's no such ability</value>
+  </data>
+  <data name="loc_kick_Kicks" xml:space="preserve">
+    <value>kicks</value>
+  </data>
+  <data name="loc_longrange_LongrangeFailed" xml:space="preserve">
+    <value>Nepovedlo se</value>
+  </data>
+  <data name="loc_mage_ResurrectionTalentMissing" xml:space="preserve">
+    <value>To cast the resurrection spell, you need the corresponding talent</value>
+  </data>
+  <data name="loc_playervendor_NothingToSell" xml:space="preserve">
+    <value>Nemám nic na prodej</value>
+  </data>
+  <data name="loc_playervendor_OneMomentPlease" xml:space="preserve">
+    <value>Okamžíček</value>
+  </data>
+  <data name="loc_playervendor_TargetThingToStock" xml:space="preserve">
+    <value>Zaměř věc nebo zvíře na prodej</value>
+  </data>
+  <data name="loc_silence_YouHaveBeenSilenced" xml:space="preserve">
+    <value>You have been silenced for {0} seconds</value>
+  </data>
+  <data name="loc_silence_YourTargetIsSilenced" xml:space="preserve">
+    <value>You have silenced {0} for {1} seconds</value>
+  </data>
+  <data name="loc_silence_YoureSilenced" xml:space="preserve">
+    <value>You're silenced so you can't cast any spells</value>
+  </data>
+</root>

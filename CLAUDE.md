@@ -74,48 +74,124 @@ agents) before touching any code:
    same as #84's bug class) is the actual scope for Part A now — supersedes the earlier
    narrow 5-command list.
 
-### Part B — localization: migrate scattered `*Loc`/txt files to .resx
+### Part B — localization: migrate scattered `*Loc`/txt files to .resx — IN PROGRESS
 
-User's complaint: today's ~38 `*Loc` classes (one per feature file, e.g. `TamingLoc`,
-`HidingLoc`) + 129 per-language `.txt` override files under `Languages/<Lang>/...` are
+User's complaint: today's `*Loc` classes (one per feature file, e.g. `TamingLoc`,
+`HidingLoc`) + per-language `.txt` override files under `Languages/<Lang>/...` are
 scattered everywhere. Wants .resx instead — "one big file with everything" per language —
 loaded via a new steamengine.ini setting. **Confirmed with user directly**: the ini
 setting sets the server-wide *default* only; a player's own in-client language switch
 (existing `SetLanguageInPacket` mechanism) must keep overriding it exactly as today.
+User also said (2026-10-12, after `.usehand` shipped): don't scope-creep Part A further,
+move straight to this — "we just adding more word for future rework" if we keep going.
+
+**Re-grounded 2026-10-12 — note on a self-caught mistake**: a first pass here said "18
+classes not ~38" — that was WRONG, caused by plain `grep -r` silently dropping files with
+legacy non-UTF8 bytes (no warning, just missing matches — e.g. `ResListLoc.cs`'s Czech
+literal defaults). Re-ran everything with `--binary-files=text` and got different,
+verified numbers below. Lesson: this codebase has several `.cs` files with legacy
+non-UTF-8 byte sequences in string literals (same ones already flagged as an encoding
+risk for the migration tool itself) — **always pass `--binary-files=text` when grepping
+this repo for anything Loc-related**, plain `grep -r` undercounts silently.
+- Actual count: **39** C# `CompiledLocStringCollection<T>` subclasses (full file:line
+  list re-derived, matches the original ~38 estimate closely after all).
+- **A second, separate localization mechanism exists**: LScript blocks defined inline in
+  `.scp`/`.def` game-content files, loaded by `ScriptedLocStringCollection`
+  (`GameCore/LScript/ScriptedLoc.cs`, assemblyName `"LScript"`) via any of several header
+  aliases `ScriptLoader.cs` treats as equivalent (`[Loc ...]`, `[ScriptedLoc ...]`,
+  `[Localisation ...]`, etc. — all route to the same `ScriptedLocStringCollection.Load()`,
+  confirmed `GameCore/ScriptLoader.cs:206-218`). **6** confirmed live by reference search:
+  `loc_ability_functions` (`playerFunctions.scp`), `loc_kick` (`kick.scp`), `loc_longrange`
+  (`longRange.scp`), `loc_silence` (`silence.scp`), `loc_mage` (`mage.def`),
+  `loc_playervendor` (`playerVendor.scp`, uses the `[Loc ...]` alias specifically — this
+  one was missed on the first grep pass too). **User decision: fold these into the same
+  resx files too** — same flat-key scheme, inline blocks in those 6 files get removed
+  once migrated so content doesn't stay duplicated in two places.
+- **10 orphaned ScriptedLoc-style `.txt` files** (not the earlier wrong ~14) — 9
+  `loc_MENU_*` + `loc_menu_scripted`, confirmed zero references anywhere in code/scripts
+  even with the binary-safe grep. The 3 `Loc_PlayerVendor_*`-named ones are **NOT**
+  orphaned (that was the grep bug too) — `scripts/Optional/PlayerVendor/
+  D_PlayerVendor_*.cs` are real, live classes. Per the migration tool's own rule: flag,
+  don't import the genuinely-orphaned 10 — dead data shouldn't get carried into resx.
+- **`Languages/Default/` vs `Languages/English/` quirk**: `Language` enum has `Default`
+  and `English` as literal aliases of the same value (0) — `Enum.GetName` resolves to
+  "Default" (declared first), so **`Languages/Default/` is the folder real running code
+  actually reads/writes for English**, not `Languages/English/`. `Languages/Default/` is
+  gitignored (confirmed, `.gitignore:12`) and only has whatever this session's own test
+  runs happened to touch (5 Scripts classes + all 5 live LScript ones) — incomplete by
+  construction. `Languages/English/` is git-tracked but appears to be a **stale snapshot
+  frozen at the initial commit**, never actually read by current code. Net effect: for
+  English specifically, the C# class's own hardcoded literal field defaults (and the
+  LScript blocks' own inline defaults) are the actually-correct source, not either .txt
+  folder — use those for English, not `Languages/English/*.txt`.
+- **Czech translations are real but partial**: spot-checked — 25 of 54 `Languages/Czech/*`
+  files contain genuine accented-Czech text (real translation work happened), but 29 are
+  byte-for-byte identical to the English/code defaults (never actually translated, just
+  auto-generated placeholders). Migrate verbatim either way — not this migration's job to
+  backfill missing translations, just to carry forward whatever's actually there today.
 
 **Design** (full detail + staged PR sequence in the plan file — this is the condensed
-version): keep all ~90+ call sites (`Loc<TamingLoc>.Get(lang).fieldName`) completely
-unchanged — only `CompiledLocStringCollection<T>.SetFieldsFromContents()`
+version, corrected post-PR1 — see "design correction" below): keep all ~90+ call sites
+(`Loc<TamingLoc>.Get(lang).fieldName`) completely unchanged — only
+`CompiledLocStringCollection<T>.SetFieldsFromContents()`
 (`Common/Localisation/CompiledLocStringCollection.cs:22-28`, confirmed by direct read:
 it's a single `fi.SetValue(this, string.Intern(this.GetEntry(fi.Name)))` loop) needs to
-change what `GetEntry` reads from. New backing store: `Common/Localisation/Resources/
-GameText.resx` (English/neutral, fully populated) + `GameText.cs-CZ.resx` (Czech, also
-fully populated, not sparse overrides), flat keys `{OldClassName}_{OldFieldName}`, looked
-up via `ResourceManager.GetString(key, CultureInfo)` with an **explicit** CultureInfo per
-call (not ambient `CurrentUICulture` — this is a multi-connection server, many players,
-many simultaneous languages). No `ResXFileCodeGenerator` designer class — we're not
+change what `GetEntry` reads from. No `ResXFileCodeGenerator` designer class — we're not
 replacing the call-site shape, so generated properties add nothing.
 
-Migrate FROM the `.txt` files (not the `.cs` literals — some `.cs` files have legacy
-non-UTF-8 bytes in Czech defaults, confirmed e.g. `scripts/Basic/Resources/
-ResourceListEntries/ResListLoc.cs`; the `.txt` files are the actually-live, fully-resolved
-content and already have a working parser to reuse). `Languages/English/` and
-`Languages/Czech/` are checked into git (confirmed via `git log`); `Languages/Default/`
-and `steamengine.ini` itself are gitignored/runtime-generated, not source of truth.
+**Migration source — corrected from the original plan**: NOT the `.txt` files directly.
+Instead, PR1 added a throwaway diagnostic (`scripts/Tests/LocMigrationDump.cs` +
+`Tests/Protocol/ZZZLocMigrationDumpRunner.cs`, both deleted again before PR1 merged) that
+dumped the **actual resolved value** for every live class/field and every live
+ScriptedLoc defname/entry, for both languages, straight from the running engine (via
+`Loc<T>.Get(language)` and `LocManager.GetLoc(defname, language)` — i.e. whatever the
+engine's OWN existing resolution logic already produces today). This sidesteps needing
+to re-derive values by parsing `.cs` literals or `.txt` overlays by hand (which risks
+subtly reproducing encoding/parsing bugs) and guarantees the resx content matches
+*exactly* today's live behavior, bugs and all — e.g. `ResListLoc`'s "English/Default"
+values are confirmed **themselves garbled Czech text** (legacy encoding issue baked into
+the class's own literal defaults, carried forward faithfully — not something to silently
+"fix" as part of a migration; flag it to the user separately if ever worth fixing).
+
+**Design correction found while building PR1 — don't use `ResourceManager`+`CultureInfo`
+at all**: originally planned `ResourceManager.GetString(key, CultureInfo)` with a
+`GameText.cs-CZ.resx` satellite-culture-named file. Building PR1 revealed two problems:
+(1) this sandbox's `dotnet` CLI itself requires
+`DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1` just to run at all (no ICU installed) — meaning
+MSBuild's own culture-splitting logic for `*.cs-CZ.resx` can't be exercised/validated
+locally, and behaved inconsistently (silently fell back to embedding it as a *plain*
+non-culture resource under a literal manifest name, not a real satellite assembly) when
+tested; (2) there's no need for general multi-culture fallback machinery anyway — this
+server has exactly 2 known languages via the `Language` enum. **Fix**: renamed to
+`GameText.Czech.resx` (deliberately NOT culture-pattern-shaped, so MSBuild treats both
+resx files as plain embedded resources every time, in any environment) and PR2 will look
+up via two explicit resources keyed directly off the `Language` enum — no
+`CultureInfo`/`ResourceManager.GetString(..., CultureInfo)` involved at all, sidestepping
+the ICU risk entirely rather than defending against it.
+
+Files (both committed in PR1, unused so far): `Common/Localisation/Resources/
+GameText.resx` (English/Default, 194 entries) + `GameText.Czech.resx` (Czech, 194
+entries) — flat keys `{Defname}_{FieldOrEntryName}` (e.g. `TamingLoc_whatToTame`,
+`loc_kick_Kicks`), covering all 38 non-empty C# classes (39 total classes exist;
+`CommonLoc`/`BloodritualLoc` have zero fields, nothing to carry) + 6 live ScriptedLoc
+defnames. The 10 genuinely-orphaned ScriptedLoc `.txt` files were NOT imported.
 
 Staged rollout (5 PRs, each independently safe — see plan file for full detail):
-1. Migration tool (throwaway) + generated resx files, committed but unused yet.
-2. Swap `SetFieldsFromContents()`'s storage backend + `LocManager` gets a `Language →
-   CultureInfo` map (wrap defensively — this sandbox needs
-   `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1` for unrelated ICU reasons, and invariant
-   mode can break non-invariant `CultureInfo` lookups if a real deployment ever sets it
-   too) + remove now-dead txt-overlay code. Add a permanent regression test here
-   (enumerate every `*Loc` class/field via reflection, assert real values both languages).
+1. **Shipped.** Migration tool (throwaway, deleted) + generated resx files, committed
+   but unused — zero behavior change.
+2. Swap `SetFieldsFromContents()` (+ `ScriptedLocStringCollection.Load()`) to read from
+   the two resx-backed resources, keyed by `Language` directly (see design correction
+   above — no CultureInfo). Remove the 6 inline `[ScriptedLoc ...]`/`[Loc ...]` blocks
+   now that their content lives in the resx (`playerFunctions.scp`, `kick.scp`,
+   `longRange.scp`, `silence.scp`, `mage.def`, `playerVendor.scp`). Remove now-dead
+   txt-overlay code. Add a permanent regression test (enumerate every live class/field +
+   defname/entry via reflection — same approach as the throwaway dump tool — assert real
+   values both languages).
 3. `Globals.cs` new `defaultLanguage` ini setting (reuses existing `text` section + the
    already-enum-aware `GetValue<T>`/`ConvertTools`) + `GameState`'s `language` field
    initializer reads `Globals.DefaultLanguage` instead of a hardcoded literal.
 4. (later) delete the now-dead `.txt` files, once 2-3 have run clean for a while.
-5. (optional cleanup) strip vestigial literal defaults from the ~38 class bodies.
+5. (optional cleanup) strip vestigial literal defaults from the ~39 class bodies.
 
 ### Erebor Sphere reference (pulled for this AND for later skills comparison work)
 
