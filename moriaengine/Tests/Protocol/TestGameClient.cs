@@ -57,6 +57,9 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0x6E, 13 }, // CharacterAnimationOutPacket
 			{ 0x54, 11 }, // PlaySoundEffectOutPacket
 			{ 0x24, 6 },  // DrawContainerOutPacket (sent when a container is opened, e.g. our own backpack via SendDoubleClick)
+			{ 0x22, 2 },  // CharacterMoveAcknowledgeOutPacket
+			{ 0x21, 7 },  // CharMoveRejectionOutPacket
+			{ 0x27, 1 },  // RejectMoveItemRequestOutPacket
 		};
 
 		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,
@@ -597,6 +600,56 @@ namespace SteamEngine.Tests.Protocol {
 		/// (0 = full daylight, higher = darker).</summary>
 		public byte ReadOverallLightLevel(TimeSpan timeout) {
 			return this.ReadPacketPayload(0x4f, timeout)[0];
+		}
+
+		/// <summary>Sends MoveRequestInPacket (0x02) - a real client step request. Mirrors its
+		/// Read() exactly: dir-with-running-flag(1) + sequence(1) + 4 bytes of fastwalk key the
+		/// server skips unconditionally. direction is 0-7 (SteamEngine.Direction's own numbering,
+		/// not referenced by type here to avoid pulling in a GameCore using just for this).</summary>
+		public void SendMoveRequest(int direction, bool running, byte sequence) {
+			byte[] packet = new byte[7];
+			packet[0] = 0x02;
+			byte dirByte = (byte) (direction & 0x07);
+			if (running) {
+				dirByte |= 0x80;
+			}
+			packet[1] = dirByte;
+			packet[2] = sequence;
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Reads either CharacterMoveAcknowledgeOutPacket (0x22, move accepted) or
+		/// CharMoveRejectionOutPacket (0x21, move denied - carries the server's real position)
+		/// in response to a move request - whichever one actually arrives. Same discard-until-
+		/// match loop as ReadPacketPayload, just matching against two ids instead of one, since
+		/// neither packet's arrival can be predicted ahead of time.</summary>
+		public (bool Accepted, ushort X, ushort Y, sbyte Z) ReadMoveResult(TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (true) {
+				if (this.packetQueue.Count > 0) {
+					var (id, payload) = this.packetQueue.Peek();
+					if (id == 0x22) {
+						this.packetQueue.Dequeue();
+						return (true, 0, 0, 0);
+					}
+					if (id == 0x21) {
+						this.packetQueue.Dequeue();
+						ushort x = (ushort) ((payload[1] << 8) | payload[2]);
+						ushort y = (ushort) ((payload[3] << 8) | payload[4]);
+						sbyte z = (sbyte) payload[6];
+						return (false, x, y, z);
+					}
+					this.packetQueue.Dequeue();
+					continue;
+				}
+				TimeSpan remaining = deadline - DateTime.UtcNow;
+				if (remaining <= TimeSpan.Zero) {
+					throw new TimeoutException("Did not see packet 0x22 or 0x21 within " + timeout +
+						". Ids actually seen: " + string.Join(",", this.seenIds.ConvertAll(b => "0x" + b.ToString("x2"))));
+				}
+				this.stream.ReadTimeout = Math.Max(1, (int) remaining.TotalMilliseconds);
+				this.FillQueueFromOneFrame();
+			}
 		}
 
 		public void Dispose() {
