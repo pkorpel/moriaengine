@@ -55,6 +55,7 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0x4f, 1 },  // OverallLightLevelOutPacket
 			{ 0x82, 1 },  // LoginDeniedOutPacket
 			{ 0x6E, 13 }, // CharacterAnimationOutPacket
+			{ 0x54, 11 }, // PlaySoundEffectOutPacket
 		};
 
 		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,
@@ -314,6 +315,15 @@ namespace SteamEngine.Tests.Protocol {
 			packet[0] = 0x6c;
 			packet[1] = 0; // targGround = false
 			EncodeIntBigEndian((int) uid, packet, 7);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Sends DoubleClickInPacket (0x06) - id(1) + uid(4). Used for e.g. opening a
+		/// bankbox or a deed, the same packet a real client sends on a double-click.</summary>
+		public void SendDoubleClick(uint uid) {
+			byte[] packet = new byte[5];
+			packet[0] = 0x06;
+			EncodeIntBigEndian((int) uid, packet, 1);
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
