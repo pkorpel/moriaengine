@@ -14,8 +14,10 @@ don't wait until end of session.
 ## CURRENT TOP PRIORITY (2026-10-12): basic functionality + localization architecture
 
 User explicitly paused the #67 verification pass (V-10 and beyond) to prioritize two
-things first. **Full plan written up and saved to the plan file content below** — read
-this section before touching V-10/skills work again.
+things first. **Tracking issue #101**, sub-issues **#102** (.usehand + allowlist), **#103**
+(weapon double-click), **#104** (resx localization migration) — all filed, read those for
+full detail. Plan approved by user; implementation itself is gated on a separate explicit
+go-ahead (not yet given as of this note) — don't start Part A/B code changes until asked.
 
 ### Part A — basic functionality fixes ("must fix", small/low-risk)
 
