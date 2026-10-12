@@ -328,6 +328,19 @@ namespace SteamEngine.Tests.Protocol {
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
+		/// <summary>Sends RequestAttackInPacket (0x05) - id(1) + uid(4). Mirrors
+		/// GameCore/Networking/IncomingPackets.cs's RequestAttackInPacket.Read exactly - the
+		/// same packet a real client sends on a war-mode double-click/F1 target of another
+		/// character. Triggers Character.Trigger_PlayerAttackRequest, which queues real
+		/// auto-combat swings against the target (same WeaponSkillTargetQueuePlugin mechanism
+		/// V-1's NPC melee tests already proved lands/misses for real).</summary>
+		public void SendRequestAttack(uint targetUid) {
+			byte[] packet = new byte[5];
+			packet[0] = 0x05;
+			EncodeIntBigEndian((int) targetUid, packet, 1);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
 		/// <summary>Sends PickUpItemInPacket (0x07) - id(1) + uid(4) + amount(2). Mirrors
 		/// GameCore/Networking/IncomingPackets.cs's PickUpItemInPacket.Read exactly.</summary>
 		public void SendPickUpItem(uint itemUid, ushort amount) {
