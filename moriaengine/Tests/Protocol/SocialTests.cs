@@ -71,7 +71,7 @@ namespace SteamEngine.Tests.Protocol {
 		/// backpack.</summary>
 		[Fact]
 		public void TwoPlayersCanCompleteASecureTrade() {
-			using (var clientA = this.ConnectLoginAndCreateCharacter(AccountA, "Trader1")) {
+			using (var clientA = this.ConnectLoginAndCreateCharacter(AccountA, "TraderOne")) {
 				clientA.SendSpeech(".TestEnableAutoAccountCreation");
 				Assert.True(this.fixture.WaitForGameOutput("AUTO_ACCOUNT_TEST: ENABLED", TimeSpan.FromSeconds(10)));
 
@@ -85,7 +85,7 @@ namespace SteamEngine.Tests.Protocol {
 				clientA.SendPickUpItem(itemUid, 1);
 				Thread.Sleep(300);
 
-				using (var clientB = this.ConnectLoginAndCreateCharacter(AccountB, "Trader2")) {
+				using (var clientB = this.ConnectLoginAndCreateCharacter(AccountB, "TraderTwo")) {
 					int markB = this.fixture.GameOutputSnapshot().Length;
 					clientB.SendSpeech(".TestReportMyUid");
 					Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", markB, TimeSpan.FromSeconds(10)));
