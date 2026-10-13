@@ -16,21 +16,25 @@ argo.text 70 150 3 7
 argo.text 250 150 85 8
 argo.text 70 170 3 9
 argo.text 250 170 85 10
-//text 70 190 3 11
-//text 200 190 85 12
-//text 70 210 3 13
-//text 200 210 85 14
+argo.text 70 190 3 11
+argo.text 250 190 85 12
+argo.text 70 210 3 13
+argo.text 250 210 85 14
 
 [DIALOG d_explevel TEXT]
 <Name>
-Obranné èíslo (P, M):
+Obrannï¿½ ï¿½ï¿½slo (P, M):
 <ArmorClassVsP>, <ArmorClassVsM>
 Obrana mysli (P, M):
 <MindDefenseVsP>, <MindDefenseVsM>
-Útoèné èíslo/Piercing (P, M): 
+ï¿½toï¿½nï¿½ ï¿½ï¿½slo/Piercing (P, M):
 <WeaponAttackVsP>/<WeaponPiercing>, <WeaponAttackVsM>/<WeaponPiercing>
-Prodleva úderu:
+Prodleva ï¿½deru:
 <WeaponDelay>
-Síla mysli (P, M):
+Sï¿½la mysli (P, M):
 <MindPowerVsP>, <MindPowerVsM>
+Level:
+<Level>
+Experience:
+<Experience> / <NextLevelExperienceThreshold>
 
