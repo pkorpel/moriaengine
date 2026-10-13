@@ -54,6 +54,21 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
+		public void KillingNpcGrantsExperienceToKiller() {
+			using (var client = this.ConnectLoginAndCreateCharacter("LevelNpcKiller")) {
+				client.SendSpeech(".TestSetLevelAndExperience 0 0");
+				Assert.True(this.fixture.WaitForGameOutput("LEVELING_TEST_SETUP:", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestKillNpcGrantsExperience 50 50");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_KILL_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_KILL_TEST_RESULT:");
+				Assert.Contains("level=0", line);
+				Assert.Contains("experience=50", line);
+			}
+		}
+
+		[Fact]
 		public void ExpLevelDialogOpensWithoutError() {
 			using (var client = this.ConnectLoginAndCreateCharacter("LevelDialogChecker")) {
 				client.SendSpeech(".explevel");
