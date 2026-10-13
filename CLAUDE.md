@@ -78,11 +78,13 @@ session) plus a full Q&A pass with the user. **Everything below is final design,
 confirmed by the user** — don't re-derive or re-litigate, just read #125 and its
 5 phase sub-issues (#126-#130) for the complete writeup. Short version:
 
-- **Formula**: threshold for level N = `N * 330` (330 confirmed as Erebor's own
-  real constant, `nextlevel=330` in `scripts/experiences.scp` — not invented).
-  Level-up check is a loop, not a single `if` — handles one exp gain spanning
-  multiple levels, carries the remainder (e.g. level 1/600 exp +100 → level 2/40
-  exp, not clamped to 0). No level cap.
+- **Formula**: threshold for level N = `N * coefficient` (coefficient default
+  **330**, confirmed as Erebor's own real constant, `nextlevel=330` in
+  `scripts/experiences.scp` — not invented; now a GM-tunable setting, see "Level
+  System settings category" below, not a hardcoded literal). Level-up check is
+  a loop, not a single `if` — handles one exp gain spanning multiple levels,
+  carries the remainder (e.g. level 1/600 exp +100 → level 2/40 exp, not
+  clamped to 0). No level cap.
 - **`Player.Level`/`Player.Experience` already exist** (`Player.cs:34-56`) as
   pure unwired TODO stubs — fields + persistence work, formula/trigger don't
   exist. This is Phase 1's (#126) starting point.
@@ -90,12 +92,25 @@ confirmed by the user** — don't re-derive or re-litigate, just read #125 and i
   pattern: `tag.experience={min max}`, NOT derived from stats — monster content
   is ~55-60% incomplete per #12 anyway) — Phase 2, #127.
 - **Death (user's final call, deliberately diverges from Erebor's actual ~5%-
-  capped-loss mechanic)**: player's exp resets fully to **0**, level unchanged.
-  Killer(s) get **10%** of what the player had (not Erebor's partial-drain
-  formula) — percentage must be GM-configurable without redeploy, see #124
-  below. Safe zones/arenas exempt from loss entirely; 5-minute post-death
-  immunity (mirrors Erebor's `i_checkstats_timer`). Multi-killer split method
-  not decided (default even split) — Phase 3, #128.
+  capped-loss mechanic)**: player's exp loss and the killer's cut are now both
+  GM-tunable percentages (see settings category below) — **defaults**:
+  experience-loss-percentage **100%** (full reset), PK-gain-percentage **10%**
+  of the *lost* amount (not of the original total) paid to the killer(s). At
+  defaults this nets out to the originally-stated behavior: dying player loses
+  everything, killer(s) collectively get 10% of what was lost. Safe zones/
+  arenas exempt from loss entirely; 5-minute post-death immunity (mirrors
+  Erebor's `i_checkstats_timer`). Multi-killer split method not decided
+  (default even split) — Phase 3, #128.
+- **"Level System" settings category (added 2026-10-13)**: using the
+  `.settings` framework confirmed to already exist (see correction note
+  further below) — a new `LevelingSettings : SettingsMetaCategory` class
+  (template: `scripts/Basic/skills/Combat/CombatSettings.cs`, registered via a
+  new `[InfoField("Level System")]` property on `SettingsCategories`,
+  `scripts/Basic/administration/Settings/MetaSettings.cs`) with exactly 3
+  fields for now: `nextLevelCoefficient` (default 330, created in #126),
+  `experienceLossPercentage` (default 100, created in #128),
+  `pkGainPercentage` (default 10, created in #128 — same `LevelingSettings`
+  class, don't create a second category).
 - **Level-up rewards — three separate point pools, user confirmed keeping
   Erebor's exact structure** (numbers below are final, verified twice against
   the reference scripts):
