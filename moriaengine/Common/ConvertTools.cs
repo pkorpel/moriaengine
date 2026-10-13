@@ -139,6 +139,13 @@ namespace SteamEngine.Common {
 						if (asString != null) {
 							return Enum.Parse(type, asString.Replace('|', ','), true);
 						}
+					} catch (FormatException) {
+						//a symbolic name like "Czech" (not a number) - Convert.ToInt64 throws
+						//FormatException for this, not InvalidCastException, so it needs its
+						//own catch to reach the same Enum.Parse fallback above.
+						if (asString != null) {
+							return Enum.Parse(type, asString.Replace('|', ','), true);
+						}
 					}
 				}
 			} else if (IsNumberType(type)) {
