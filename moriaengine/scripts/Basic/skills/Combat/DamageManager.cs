@@ -81,6 +81,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Cause damage to defender. Returns number of hitpoints that was actually removed. Runs @Damage triggers.</summary>
 		public static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage) {
+			if (defender.Flag_Invulnerable) {
+				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
+				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists
+				//in this codebase, and this one is already an established "your attack had no effect"
+				//visual language here, so reuse it rather than invent a new effect id.
+				EffectFactory.StationaryEffect(defender, 0x37B9, 10, 5);
+				return 0;
+			}
+
 			if (!defender.IsDeleted && !defender.Flag_Dead && !defender.Flag_Insubst) {
 				defender.Trigger_HostileAction(attacker);
 				defender.Trigger_Disrupt();//nebo jen pri damage > 0 ?
