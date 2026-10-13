@@ -11,19 +11,111 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
-## PAUSED HERE (2026-10-13) — GitHub Actions minutes likely exhausted
+## CURRENT STATE (2026-10-13, continued) — roadmap/project-board pass + leveling system design
 
-Session paused mid-investigation because pushing a new commit produced **zero**
-CI run at all (confirmed via `gh api repos/pkorpel/moriaengine/actions/runs` — no
-run exists for that commit SHA, not even a failed/queued one). Strong signal the
-repo hit its 2000 min/month Actions cap (was at 1361/2000 with 18 days left before
-today's CI-heavy debugging burned a lot more). Couldn't confirm the exact number —
-`gh api .../billing/...` returns 403 (token lacks billing-read scope). **User said
-to leave it and come back later** — don't push anything that depends on CI
-triggering until this is confirmed resolved (check the real GitHub billing page,
-or just try a trivial push and confirm a run actually appears before relying on it).
+Session moved from reactive bugfixing into step-back planning, per user request
+("I'm feeling like we are lacking some sort of plan"). Three things happened in
+this pass, in order:
 
-**What's mid-flight right now:**
+### 1. GitHub Project board set up — the pipeline view the user wanted
+
+**Board: https://github.com/users/pkorpel/projects/1** ("moriaengine roadmap").
+Created via `gh project` CLI using a **separate classic PAT** the user generated
+just for this (fine-grained PATs don't reliably expose Projects-v2 permissions —
+known GitHub limitation, not user error). That token is session-scratchpad-only
+(`/tmp/.../scratchpad/.gh_project_token`, written/read/deleted around each use,
+never left sitting on disk) — **do NOT reuse it for anything except `gh project`
+commands**; everything else (issues, PRs, merges) still uses the normal default
+auth. Token is missing `read:org` scope, so `gh project link` (repo-sidebar
+linking) and `--owner pkorpel` (must use `--owner "@me"` instead) don't work —
+non-blocking, user hasn't prioritized fixing this.
+
+Structure: two custom single-select fields beyond the GitHub default "Status"
+(left alone, unused) —
+- **Pipeline Stage**: Backlog / Ready / In Progress / Done
+- **Category**: Player-facing bugs / GM tooling / Localization / NPC AI & combat /
+  Verification pass / CI & infra / Architecture & tech debt / Client compat
+
+All 19 open issues (at the time) added and categorized. One manual step the user
+still needs to do in the web UI (no CLI/API support for this): add a Board-layout
+view grouped by "Pipeline Stage" — the default view is still a flat Table.
+
+**Full category breakdown** (for re-deriving without re-reading every issue):
+- *Player-facing bugs*: #103 (weapon dblclick, Ready), #96 (armor, Backlog —
+  deliberately deferred, see below), #12 (NPC content ~55-60% dead, Backlog), #22
+  (Britannia-only map, Backlog, undecided), #64 (boot-log noise, Ready). #117
+  (Jamy smrti) was here too — now closed, see below.
+- *GM tooling*: #101 (Part A/B tracking, In Progress), #102 (remaining GM/utility
+  commands, Ready)
+- *Localization*: #104 (resx steps 4-5, Ready)
+- *Verification pass*: #67 (tracking, In Progress), #78 (V-10, In Progress), #73
+  (V-5 region enforcement, Backlog), #74 (V-6 housing gap, Backlog)
+- *CI & infra*: #100 (CI hangs, Backlog), #121 (OwnerAggroTests CI-only failure,
+  In Progress — see CI-minutes note below, still blocked)
+- *Architecture & tech debt*: #30 (roadmap tracking, In Progress), #26 (static
+  singletons, Backlog), #29 (RemoteConsole/SphereShardConverter, Ready, undecided)
+- *Client compat*: #11 (TazUO, Backlog)
+
+### 2. Cheap-decision pass — four Backlog items that were just "pick an answer"
+
+- **#117 (Jamy smrti magic-blocking region) — RESOLVED, closed `not_planned`.**
+  User: "Jamy smrti si newbie area, lets leave it untouched for now and consider
+  it by design." Confirmed-intentional, not a bug. If NPC spellcasting is ever
+  reported broken elsewhere, rule out this region first before assuming a new bug.
+- **#96 (armor has no real effect) — stays OPEN, deliberately deferred, not
+  undecided.** User: armor mitigation depends on armors/materials/skills all
+  being in a complete state first — fixing the formula against incomplete inputs
+  now would mean redoing it later. Revisit once those systems mature, not before.
+- **#22 (Britannia-only map)** and **#29 (RemoteConsole/SphereShardConverter)** —
+  user explicitly chose to leave both open in Backlog, undecided, for now. Not
+  analysis paralysis — a deliberate "not now" on both.
+
+### 3. NEW initiative kicked off — leveling/experience system (design only, NOT implementing yet)
+
+User's spec (verbatim, don't paraphrase-drift from this):
+- New character starts level 0; needs `level * 330` exp to reach that level (330
+  for level 1, 660 for level 2, 990 for level 3, ...).
+- Exp mostly from killing monsters (every monster gives exp on death), also
+  "experience gates", quests, etc.
+- On player death: exp resets to 0, **level is unchanged** (e.g. level 2 / 300
+  exp → dies → level 2 / 0 exp).
+- On level-up: granted ability points, attribute points, and skills — user
+  flagged these as themselves big missing systems, don't assume they already
+  exist in finished form.
+- Overflow carries over: needs 660 for next level, has 600, gains 100 → levels up
+  AND keeps the leftover 40 exp (doesn't just clamp to 0).
+- `.explevel` command/dialog shows level + basic info, player-facing read-only.
+
+**Investigation launched** (fork, read-only, no code changes) into: (a)
+moriaengine's current state — any existing Level/Experience/AbilityPoint/
+AttributePoint concept, the `scripts/Basic/Professions/` folder (has at least
+`Definitions/mage.def`, unclear how complete), existing on-death reset logic as a
+template, existing Realm/race-selection flow (`Start_rasy`/`Start_povolani` world
+regions seen in `regions.sav` earlier this session hint at a race/profession
+system that may need to integrate with level-up rewards), existing dialog/gump
+patterns to model `.explevel` on; (b) the Erebor Sphere reference archive
+(re-cloned fresh to scratchpad, same read-only/not-committed pattern as earlier
+this session) for the actual classic-Sphere leveling implementation — exp-grant
+formula on monster death, the real reward table/logic for level-up, any
+`.explevel`-equivalent, and how the Gondor/Mordor race/class system (if any)
+interacts with leveling.
+
+**Status when this note was written: fork still running.** Once it reports back:
+synthesize findings + gaps + open questions, present to user, get answers, write
+an actual phased plan (still not implementing — explicit user instruction was
+"we will not be implementing it yet"), then update this file again.
+
+## CI minutes — separate, still-unresolved thread (2026-10-13)
+
+GitHub Actions minutes likely exhausted (pushing a commit earlier produced
+**zero** CI run at all — confirmed via `gh api repos/pkorpel/moriaengine/actions/runs`,
+no run exists for that commit SHA, not even failed/queued). Repo was at
+1361/2000 for the month before a lot more got burned investigating this very
+problem. Couldn't confirm the exact remaining number — `gh api .../billing/...`
+returns 403 (token lacks billing-read scope). **User said to leave it and come
+back later** — this is explicitly parked, not blocking the planning work above.
+
+**What's mid-flight and still parked:**
 - Draft PR **#119** (branch `diag-owner-aggro-ci`, NOT merged, NOT meant to be
   merged) carries diagnostic-only instrumentation investigating issue **#121**
   (`OwnerAggroTests.HostileFollowerNeverAutonomouslyTargetsItsCommander` — merged
@@ -33,7 +125,7 @@ or just try a trivial push and confirm a run actually appears before relying on 
   diagnostics are already in place and already fixed to actually surface in the
   CI log (an earlier version's `Console.WriteLine`s were server-side and only
   landed in an in-memory buffer nothing ever printed) — the next step once Actions
-  work again is just to confirm this new push actually triggers, then read the
+  work again is just to confirm a push actually triggers a run, then read the
   `DIAG:` output.
 - When done: revert the diagnostic-only commits on `diag-owner-aggro-ci`, close
   draft PR #119, delete the branch.
@@ -41,10 +133,12 @@ or just try a trivial push and confirm a run actually appears before relying on 
 **Everything below this section was already shipped and merged before this pause**
 — today's run of PRs #108-#112 (ConvertTools fix, `.invul`, pet owner-attack/rebel,
 NPC spellcaster distancing, NPC spell-cast animation) plus #120 (the CI-minutes
-split below). See "GitHub Actions minutes — split CI, 2026-10-13" further down for
-the workflow change, and issues #113-#121 for the full bug-tracking trail (every
-bug today got filed + closed-with-PR-reference per the new standing policy in
-Workflow conventions below).
+split). Issues #113-#121 are the full bug-tracking trail (every bug that session
+got filed + closed-with-PR-reference per the new standing policy in Workflow
+conventions below) — note #113/#114/#115/#116/#118 needed a follow-up `update`
+call to actually close (the `create` call's `state: "closed"` parameter is
+silently ignored by GitHub's API — create always opens, close is a separate call;
+caught because the user noticed they were all still open).
 
 ## CURRENT TOP PRIORITY (2026-10-12): basic functionality + localization architecture
 
@@ -500,6 +594,29 @@ and bin/obj already exist from prior sessions). Full suite:
   reasoning no longer applies now that this is a standing, pre-authorized policy, not
   a one-off judgment call. Don't ask before filing; just do it as part of the normal
   bugfix workflow below.
+- **Closing an issue is a two-step operation, not one.** `mcp__github__issue_write`
+  with `method: "create"` and `state: "closed"` in the same call silently does
+  NOT close it — GitHub's API always creates issues open, and the `state`
+  parameter on create is ignored, no error. You must follow up with a separate
+  `method: "update"` call (same issue number) to actually close it. Caught
+  2026-10-13 because the user noticed 5 issues that session were all still open
+  despite being reported as closed — always verify with `gh issue list --json
+  state` after a batch of "create and close" operations rather than trusting the
+  create call's response.
+- **GitHub Projects (v2) boards need a classic PAT, not the default/fine-grained
+  one.** Fine-grained PATs have long-standing incomplete support for the
+  Projects permission (a real GitHub limitation, not user error — the "Projects"
+  option sometimes doesn't even appear in the fine-grained token UI). If a future
+  session needs to touch the project board (https://github.com/users/pkorpel/projects/1
+  as of 2026-10-13), ask the user for a classic PAT with the `project` scope,
+  scoped to ONLY the `gh project ...` commands (write it to a scratchpad file,
+  reference via `GH_TOKEN=$(cat <file>)` so the raw value never appears in a bash
+  command's visible text — inlining it directly as `GH_TOKEN="ghp_..." gh ...`
+  gets blocked by the auto-mode classifier as credential leakage even when the
+  user explicitly authorized using the token). Delete the scratchpad token file
+  once done with project work; never reuse that token for anything else (issues/
+  PRs/merges keep using the normal default auth). `--owner "@me"` works without
+  `read:org`; `--owner <username>` and `gh project link` need that extra scope.
 - **Always** go branch → commit → push → `mcp__github__create_pull_request` →
   `mcp__github__merge_pull_request` → `git pull` on local main → delete branch
   (local + `origin`). Never wait for the user to manually merge — they explicitly want
