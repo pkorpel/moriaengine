@@ -77,6 +77,13 @@ namespace SteamEngine.CompiledScripts {
 
 		public AIState LastState { get; private set; }
 
+		/// <summary>Read-only introspection for tests - this NPC's current combat target, if any (null otherwise). See FollowTarget/ControlMaster on Character for the analogous already-public state.</summary>
+		public Character Target {
+			get {
+				return this.target;
+			}
+		}
+
 		[LoadingInitializer]
 		public NPCAiTimer() {
 		}
@@ -240,6 +247,9 @@ namespace SteamEngine.CompiledScripts {
 		private bool IsValidTarget(NPC self, Character candidate) {
 			if (!candidate.IsAliveAndValid || (candidate.M != self.M)) {
 				return false;
+			}
+			if (candidate == (self.FollowTarget ?? self.ControlMaster)) {
+				return false; //never keep fighting our own current owner/commander, however the target was originally set - catches the explicit "kill"/guard-duty paths (NPCAiTimer.EngageTarget/AlertGuardiansOf), which bypass NPC.ShouldAggroOn's own exclusion entirely since they're explicit orders, not autonomous aggro. A legitimate "rebel" (owner attacks pet) clears ControlMaster/FollowTarget first (see NPC.On_HostileAction), so this doesn't block genuine self-defense after that.
 			}
 			return Point2D.GetSimpleDistance(self, candidate) <= GiveUpRange;
 		}
