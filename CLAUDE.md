@@ -273,7 +273,37 @@ Tinkering, Inscription (mostly crafting/gathering). User: "we can figure out
 logic for upskilling when we focus on those" — #140 is explicitly deferred
 until crafting/gathering content becomes the focus, not needed now.
 
-**Next action: start implementing Leveling Phase 1 (#126).**
+**Leveling Phase 1 (#126) — SHIPPED (PR #142, merged 2026-10-13).** Core
+pieces: `scripts/Basic/Leveling/LevelingSettings.cs` (new `SettingsMetaCategory`,
+`nextLevelCoefficient` field default 330, registered as "Level System" in
+`MetaSettings.cs`), `scripts/Basic/Leveling/LevelingSystem.cs`
+(`LevelingSystem.AddExperience(Player, int)` — the one shared entry point other
+systems should call, while loop not a single `if` so one big gain can cross
+several levels and carry the remainder), `Player.cs`'s `Level`/`Experience`
+properties wired for real (were pure TODO stubs) + new
+`NextLevelExperienceThreshold` computed property. `.explevel`
+(`scripts/Basic/dialogs/explevel.scp`) turned out to **already exist** (user
+caught this, see the `.settings`-style correction note above — same lesson,
+don't assume missing without reading the whole file/folder first) — extended
+its existing layout/TEXT sections with two new Level/Experience lines rather
+than building a new dialog. Covered by 3 protocol tests
+(`Tests/Protocol/LevelingTests.cs`): single-level-up with overflow carry,
+multi-level cascade from one big gain, and `.explevel` opening without error.
+Issue #126 closed referencing #142.
+
+**Still open**: moving #126's project-board item to Done needs the classic
+PAT again (scratchpad copy was deleted after the last project-board session,
+per the "always delete after use" rule above) — ask the user for it next time
+project-board bookkeeping is worth batching, not urgent enough to interrupt
+Phase 2+ implementation for.
+
+**Next action: implementing Leveling Phase 2 (#127) — monster-kill experience
+grant.** Design (already settled, see #127): add a flat experience "worth"
+field to `NPCDef` (Erebor pattern: `tag.experience={min max}` random range, not
+derived from stats), hook into the NPC death path to grant it to the killer via
+`LevelingSystem.AddExperience` when the killer is a `Player` (Erebor itself
+only runs its level-up logic `if (isplayer)` — mirror that, monsters/NPCs don't
+level).
 
 ## CI minutes — separate, still-unresolved thread (2026-10-13)
 
