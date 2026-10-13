@@ -1,19 +1,26 @@
 name: .NET Build
 
+# Split into two jobs to control GitHub Actions minute spend (2000/month limit):
+# - build-and-unit-test runs on every push/PR against main - build + the fast tier only
+#   (SteamEngine.Tests / SteamEngine.Tests.Fixtures namespaces: no real server processes,
+#   seconds to run). This is what "did I break something" should cost on every push.
+# - full-regression is manual only (workflow_dispatch, the Actions tab's "Run workflow"
+#   button) - build + the ENTIRE suite, including the full-boot tier
+#   (SteamEngine.Tests.Protocol: spawns real AuxiliaryServer/GameCore processes per test
+#   class, ~9-11 minutes). Run this deliberately before/after something that could affect
+#   protocol-level behavior, not automatically on every commit.
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-unit-test:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
-    # Full suite normally takes ~9-11 minutes. Without this, a hung run (seen in practice -
-    # one got stuck for 2.5+ hours after a test failure, presumably a deadlock during test/
-    # fixture teardown) silently burns CI minutes for up to GitHub's 360-minute job default
-    # instead of failing fast.
-    timeout-minutes: 25
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -33,9 +40,37 @@ jobs:
         run: ./build.ps1 -Configuration Debug
         working-directory: moriaengine
 
+      # Fast tier only - excludes SteamEngine.Tests.Protocol (the full-boot tier, see
+      # full-regression below). No real server processes spawned here, so no hang risk
+      # worth a --blame-hang safety net the way the full suite needs one.
+      - name: Test (fast tier)
+        run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "FullyQualifiedName!~SteamEngine.Tests.Protocol"
+
+  full-regression:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    # Full suite normally takes ~9-11 minutes. Without this, a hung run (seen in practice -
+    # one got stuck for 2.5+ hours after a test failure, presumably a deadlock during test/
+    # fixture teardown) silently burns CI minutes for up to GitHub's 360-minute job default
+    # instead of failing fast.
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build
+        shell: pwsh
+        run: ./build.ps1 -Configuration Debug
+        working-directory: moriaengine
+
       # --blame-hang catches a stuck individual test (killing just that test process and
       # dumping diagnostics) well before the job-level timeout-minutes above would have to
       # kill the whole run blind - 5 minutes is generous against the slowest real test classes
       # seen so far (~45s each).
-      - name: Test
+      - name: Test (full suite)
         run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --blame-hang --blame-hang-timeout 5min
