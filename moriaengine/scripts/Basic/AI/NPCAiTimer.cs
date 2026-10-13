@@ -364,6 +364,12 @@ namespace SteamEngine.CompiledScripts {
 			self.Mana -= (short) spell.ManaUse;
 			this.CastAttempts++;
 
+			//Same visible cue the normal player-cast flow plays (Magery.cs's On_Start calls this
+			//right after deducting mana, before the cast-time delay) - without it, an NPC casting
+			//a spell looks like it's just standing there doing nothing, since TryCastSpell bypasses
+			//that whole On_Start/SkillSequenceArgs flow entirely (see this method's own doc comment).
+			AnimCalculator.PerformAnim(self, GenericAnim.Cast);
+
 			//GM-level power (700, the classic 0-1000 permille max) rather than deriving from a Magery
 			//skill value - NPCs don't have meaningful skill points set up for this, and "this monster
 			//is an expert at its own signature spell" is a reasonable assumption for a first pass.
