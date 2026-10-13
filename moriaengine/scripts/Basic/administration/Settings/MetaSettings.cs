@@ -82,12 +82,19 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 		[InfoField("Abilities")]
 		public AllAbilitiesMassSetting allAbilities = new AllAbilitiesMassSetting();
+
+		[InfoField("Level System")]
+		public LevelingSettings LevelingSettings {
+			get {
+				return LevelingSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {
 
 		public override string Name {
-			get { return "Seznam všech abilit"; }
+			get { return "Seznam vï¿½ech abilit"; }
 		}
 	}
 }
