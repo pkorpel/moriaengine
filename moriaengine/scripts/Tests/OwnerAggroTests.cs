@@ -37,6 +37,9 @@ namespace SteamEngine.CompiledScripts {
 			titan.Name = "TestHostileFollower";
 			titan.FollowTarget = self;
 			titan.ShouldFollowOwner = true;
+			Console.WriteLine("DIAG: setup self=" + self.Name + "#" + self.Uid + " titan.FollowTarget readback=" +
+				(titan.FollowTarget != null ? titan.FollowTarget.Name + "#" + titan.FollowTarget.Uid : "null") +
+				" sameRef=" + ReferenceEquals(titan.FollowTarget, self));
 			Console.WriteLine("OWNER_AGGRO_SETUP: STARTED (uid=" + titan.Uid + ") ownerHitsBaseline=" + self.Hits);
 		}
 

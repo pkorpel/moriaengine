@@ -259,9 +259,21 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private Character FindTarget(NPC self) {
+			Character followTargetDiag = self.FollowTarget;
+			Character controlMasterDiag = self.ControlMaster;
+			System.Console.WriteLine("DIAG: FindTarget self=" + self.Name + "#" + self.Uid +
+				" FollowTarget=" + (followTargetDiag != null ? followTargetDiag.Name + "#" + followTargetDiag.Uid : "null") +
+				" ControlMaster=" + (controlMasterDiag != null ? controlMasterDiag.Name + "#" + controlMasterDiag.Uid : "null"));
 			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, AggroRange)) {
 				Character candidate = ch as Character;
-				if ((candidate != null) && self.ShouldAggroOn(candidate) && self.CanInteractWith(candidate).Allow) {
+				if (candidate == null) {
+					continue;
+				}
+				bool shouldAggro = self.ShouldAggroOn(candidate);
+				bool sameRefAsFollowTarget = ReferenceEquals(candidate, followTargetDiag);
+				System.Console.WriteLine("DIAG:   candidate=" + candidate.Name + "#" + candidate.Uid +
+					" IsPlayer=" + candidate.IsPlayer + " shouldAggro=" + shouldAggro + " sameRefAsFollowTarget=" + sameRefAsFollowTarget);
+				if (shouldAggro && self.CanInteractWith(candidate).Allow) {
 					return candidate;
 				}
 			}
