@@ -135,6 +135,11 @@ namespace SteamEngine.Tests.Protocol {
 		public void ArcherKeepsItsDistanceInsteadOfRushingToMelee() {
 			this.RunScenario("ArcherWatcher", ".TestArcherStandsOff", "ARCHER_STANDOFF_TEST: PASS", TimeSpan.FromSeconds(65));
 		}
+
+		[Fact]
+		public void SpellcasterKeepsItsDistanceInsteadOfRushingToMelee() {
+			this.RunScenario("SpellcasterWatcher", ".TestSpellcasterStandsOff", "SPELLCASTER_STANDOFF_TEST: PASS", TimeSpan.FromSeconds(65));
+		}
 	}
 
 	[Collection(CombatDepthCollectionB.Name)]
