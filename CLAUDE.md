@@ -120,21 +120,47 @@ confirmed by the user** — don't re-derive or re-litigate, just read #125 and i
 - **`.explevel`**: read-only player dialog (level/exp/exp-to-next), direct
   template exists (Erebor's `d_explevel`, `scripts/experiences.scp:286-338`).
 
-### 4. New prerequisite: `.settings` GM dialog framework — tracked as #124, build BEFORE leveling
+### 4. CORRECTED (2026-10-13): `.settings` dialog already exists — #124 closed, not a prerequisite
 
-Came up specifically because leveling's 10% death-exp-cut needs to be GM-tunable
-without redeploy. Confirmed nothing like this exists today — the only precedent
-is `Globals.PaymentSource` (`GameCore/Globals.cs:432`, one tag-backed value, one
-dedicated command, `.PaymentSource <value>`), not a dialog listing/editing
-multiple settings. **User's explicit call: design this as a generic, reusable
-framework (not a one-off for the 10% value) and build it before starting on
-leveling**, since it's the foundation future tunable-settings work should sit on.
-See #124 for scope. Not a hard blocker for #128 (Phase 3/death-exp) specifically
-— ship with a hardcoded 10% default if #124 isn't done yet, swap to the
-settings-backed value once it lands.
+**My original investigation was wrong — missed a whole folder.** First grep for
+a settings-dialog framework came up empty and #124 was filed as "build this from
+scratch, before leveling." User tried `.settings` in-game and it already worked.
+Re-investigated properly this time (read every file in the folder, not just
+grepped narrow patterns) and confirmed it's fully built:
 
-**Issues filed for this whole pass**: #124 (`.settings`), #125 (leveling
-tracking), #126-#130 (leveling phases 1-5). All added to the project board.
+- `.settings` → `SettingsCategories.Settings`
+  (`scripts/Basic/administration/Settings/MetaSettings.cs:34`) → opens a `D_Info`
+  dialog listing every `[InfoField("Category Name")]`-tagged property on
+  `SettingsCategories` — each points at a `SettingsMetaCategory` subclass
+  singleton. Existing categories: `CombatSettings`, `MagerySettings`,
+  `PoisoningSettings`, `DbManager.Config`.
+- Fields marked `[SaveableData]` are **live-editable in the dialog**
+  (`SettingsProvider.AssertSettings`, reflection-based) and **persist across
+  restarts automatically** (`[SaveableClass][HasSavedMembers]` on the class +
+  `[SavedMember]` on the singleton — the same generic save pipeline everything
+  else in this engine uses, nothing special-cased).
+- **Template to copy for any new setting** (e.g. leveling's PK-exp-cut %, #128):
+  `scripts/Basic/skills/Combat/CombatSettings.cs` is the cleanest example —
+  `[SaveableClass][HasSavedMembers][ViewableClass] class XSettings :
+  SettingsMetaCategory`, `[SavedMember] static XSettings instance`,
+  `[LoadingInitializer]` ctor, `[SaveableData]` fields. Then register it with
+  one new `[InfoField("...")]` property on `SettingsCategories`
+  (`MetaSettings.cs`). That's the entire recipe — no framework work needed.
+
+**#124 closed** (`not_planned` — nothing to build) and moved to Done on the
+board. **#128 corrected** — the "soft-depends on #124" framing is gone; adding
+the PK-exp-cut % setting is now just a small, normal part of implementing that
+phase, using the template above.
+
+**Lesson for next time a "does X exist" question comes up**: grep narrowly
+missing a whole folder is a repeat mistake pattern this session (same root
+cause as the `--binary-files=text` encoding gotcha, different symptom) — when a
+user reports something already works that an investigation said didn't exist,
+re-investigate by reading entire relevant directories, not just re-running
+slightly different grep patterns, before concluding the user is mistaken.
+
+**Issues filed for this whole pass**: #125 (leveling tracking), #126-#130
+(leveling phases 1-5) — #124 closed per above. All added to the project board.
 Categorized under existing "Player-facing bugs"/"GM tooling" categories as a
 pragmatic fit — there's no dedicated "Gameplay systems" bucket yet, and adding
 one risks disrupting existing item categorization (GitHub's single-select-field
