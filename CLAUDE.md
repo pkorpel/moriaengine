@@ -11,6 +11,41 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## PAUSED HERE (2026-10-13) — GitHub Actions minutes likely exhausted
+
+Session paused mid-investigation because pushing a new commit produced **zero**
+CI run at all (confirmed via `gh api repos/pkorpel/moriaengine/actions/runs` — no
+run exists for that commit SHA, not even a failed/queued one). Strong signal the
+repo hit its 2000 min/month Actions cap (was at 1361/2000 with 18 days left before
+today's CI-heavy debugging burned a lot more). Couldn't confirm the exact number —
+`gh api .../billing/...` returns 403 (token lacks billing-read scope). **User said
+to leave it and come back later** — don't push anything that depends on CI
+triggering until this is confirmed resolved (check the real GitHub billing page,
+or just try a trivial push and confirm a run actually appears before relying on it).
+
+**What's mid-flight right now:**
+- Draft PR **#119** (branch `diag-owner-aggro-ci`, NOT merged, NOT meant to be
+  merged) carries diagnostic-only instrumentation investigating issue **#121**
+  (`OwnerAggroTests.HostileFollowerNeverAutonomouslyTargetsItsCommander` — merged
+  in #110 — fails reproducibly on CI only, titan acquires its own commander as
+  target, never reproduces locally). Full writeup, root-cause theories, and exact
+  next steps are in #121 — read that first, don't re-derive. Short version: the
+  diagnostics are already in place and already fixed to actually surface in the
+  CI log (an earlier version's `Console.WriteLine`s were server-side and only
+  landed in an in-memory buffer nothing ever printed) — the next step once Actions
+  work again is just to confirm this new push actually triggers, then read the
+  `DIAG:` output.
+- When done: revert the diagnostic-only commits on `diag-owner-aggro-ci`, close
+  draft PR #119, delete the branch.
+
+**Everything below this section was already shipped and merged before this pause**
+— today's run of PRs #108-#112 (ConvertTools fix, `.invul`, pet owner-attack/rebel,
+NPC spellcaster distancing, NPC spell-cast animation) plus #120 (the CI-minutes
+split below). See "GitHub Actions minutes — split CI, 2026-10-13" further down for
+the workflow change, and issues #113-#121 for the full bug-tracking trail (every
+bug today got filed + closed-with-PR-reference per the new standing policy in
+Workflow conventions below).
+
 ## CURRENT TOP PRIORITY (2026-10-12): basic functionality + localization architecture
 
 User explicitly paused the #67 verification pass (V-10 and beyond) to prioritize two
@@ -198,9 +233,25 @@ Staged rollout (5 PRs, each independently safe — see plan file for full detail
    unrelated tests (`DayNightWeatherTests`, `CombatDepthTestsB`, etc.) before a clean
    run; also found 4GB of accumulated hang-dump files from the retries themselves adding
    I/O pressure — worth deleting `Tests/TestResults/` before retrying if this recurs).
-3. `Globals.cs` new `defaultLanguage` ini setting (reuses existing `text` section + the
-   already-enum-aware `GetValue<T>`/`ConvertTools`) + `GameState`'s `language` field
-   initializer reads `Globals.DefaultLanguage` instead of a hardcoded literal.
+3. **Shipped (PR #108, 2026-10-13).** `Globals.cs` new `defaultLanguage` ini setting
+   (`text` section, default `English`) + `GameState`'s `language` field initializer now
+   reads `Globals.DefaultLanguage` instead of a hardcoded literal. Surfaced and fixed a
+   real bug while wiring this up: `ConvertTools.ConvertTo`'s enum branch only caught
+   `InvalidCastException` as the signal to fall back to `Enum.Parse` on the string form;
+   a symbolic value like `"English"`/`"Czech"` makes `ConvertTools.ToInt64` throw
+   `FormatException` instead (uncaught) — would have crashed on every boot after the
+   first, since a missing ini key gets written out as its default's `ToString()` (a
+   symbolic name, not a number) the first time. Added `Tests/ConvertToolsTests.cs`
+   (pure-logic, no engine boot) covering both the symbolic and numeric enum-string
+   paths. **Note**: shipped on `dotnet build` + the new targeted unit test only, NOT a
+   full-suite run — the local full suite hit the known intermittent full-boot-tier hang
+   (see "CI health"/#100 below) partway through `CombatDepthTestsB`, and the auto-mode
+   classifier blocked killing the stuck process (matched the stored "don't kill
+   dotnet/msbuild zombies" guidance even though this was a live stuck process, not a
+   post-run zombie) — user explicitly opted to ship without chasing it given how small
+   and self-contained this change is. Worth running the full suite next session to
+   confirm nothing regressed, and worth refining that memory/classifier distinction
+   (finished-run zombies vs. a live hung process you started) if it recurs.
 4. (later) delete the now-dead `.txt` files, once 2-3 have run clean for a while.
 5. (optional cleanup) strip vestigial literal defaults from the ~39 class bodies.
 
@@ -359,6 +410,28 @@ from scratch, start there.
 **Paused here per explicit user request** right after getting a green run for the
 current `main` HEAD - see "Right now" below for where V-10 itself stands.
 
+## GitHub Actions minutes — split CI, 2026-10-13 (PR #120)
+
+User flagged the 2000 min/month Actions cap (was at 1361/2000, 18 days left) —
+the ~9-11 minute full-boot-tier suite (spawns real `AuxiliaryServer`/`GameCore`
+processes per test class, `SteamEngine.Tests.Protocol` namespace) running on
+**every single push/PR** was the overwhelming majority of that spend.
+
+`.github/workflows/dotnet.yml` is now two jobs on the same `on:` triggers
+(`push`/`pull_request`/`workflow_dispatch`), gated by `if: github.event_name`:
+- `build-and-unit-test` (runs for push/PR, skipped for manual dispatch): build +
+  `--filter "FullyQualifiedName!~SteamEngine.Tests.Protocol"` — fast tier only,
+  no real server processes. Verified locally: 23 tests, ~0.1s. Verified on CI:
+  1m42s including build/restore/setup overhead (vs. ~9-11 min before).
+- `full-regression` (runs ONLY for manual dispatch, skipped for push/PR): build +
+  the complete suite, unchanged otherwise (`--blame-hang` etc.) — trigger this
+  deliberately via the Actions tab's "Run workflow" button before/after anything
+  that could affect protocol-level behavior, not automatically on every commit.
+
+**This shipped too late to avoid exhausting the month's minutes** — see "PAUSED
+HERE" at the top of this file. The split itself is done and merged; what's
+blocked is everything downstream of it needing a NEW CI run to validate.
+
 ## Right now: mid V-10 — movement sub-scenario done, 6 more to go
 
 V-10 (#78) movement sub-scenario shipped via PR #98, merged to `main`. CI hang fix
@@ -416,6 +489,17 @@ and bin/obj already exist from prior sessions). Full suite:
 
 ## Workflow conventions for this repo (don't re-derive each session)
 
+- **File a GitHub issue for every bug** — whether the user reports it in chat or you
+  discover it yourself while working on something else — even if you fix it
+  immediately in the same session. File it, then close it referencing the PR that
+  fixed it (or leave it open if unfixed/deferred). This is an explicit standing
+  instruction from the user (2026-10-13): "every bug raised by either me or found
+  during your work... needs to have issue raised for tracking purposes." Earlier in
+  that same session the auto-mode classifier blocked an issue-filing attempt with
+  "the user described the bugs in chat... not to publish as an issue" — that
+  reasoning no longer applies now that this is a standing, pre-authorized policy, not
+  a one-off judgment call. Don't ask before filing; just do it as part of the normal
+  bugfix workflow below.
 - **Always** go branch → commit → push → `mcp__github__create_pull_request` →
   `mcp__github__merge_pull_request` → `git pull` on local main → delete branch
   (local + `origin`). Never wait for the user to manually merge — they explicitly want
