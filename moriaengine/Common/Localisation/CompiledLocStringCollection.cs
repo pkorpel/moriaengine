@@ -27,11 +27,16 @@ namespace SteamEngine.Common {
 			}
 		}
 
+		//Values now come straight from GameTextResources (#104, Part B) keyed by
+		//{ClassName}_{FieldName}, not from the field's own (not-yet-initialized at this
+		//point in construction) value - this used to read `fi.GetValue(this)`, but that ran
+		//before this class's own field initializers in the ctor chain anyway.
 		protected override IEnumerable<KeyValuePair<string, string>> GetEntriesFromCode() {
 			foreach (FieldInfo fi in typeof(T).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				if (fi.FieldType == typeof(string) && !fi.DeclaringType.IsAbstract) {
+					string flatKey = typeof(T).Name + "_" + fi.Name;
 					yield return new KeyValuePair<string, string>(fi.Name,
-						(string) fi.GetValue(this));
+						GameTextResources.GetEntry(flatKey, this.Language));
 				}
 			}
 		}
