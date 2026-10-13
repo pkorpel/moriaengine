@@ -242,6 +242,39 @@ its 4 sub-issues (#135-#138) for the complete writeup — short version:
   the minimum viable path for #135; a real selection stone/dialog is a stretch
   goal, not required.
 
+## Implementation sequencing decided (2026-10-13): leveling system first, starting with Phase 1 (#126)
+
+With both leveling (#125-130) and professions (#134-138) fully designed, user
+asked which to build first. **Decision: leveling, starting with Phase 1** (core
+formula + `.explevel` + shared add-experience function) — it's a fully
+self-contained vertical slice with zero dependencies, demoable end-to-end
+immediately (grant exp via a test command, watch a level-up, check
+`.explevel`), unlike professions' #135 whose main payoff (cap enforcement) is
+undercut by a gap found while scoping this (see next paragraph) and whose
+other payoff (content authoring, #136) isn't demoable until `.def` files exist.
+
+**Real finding while scoping this, now filed as #140 (Backlog, deliberately
+deferred)**: `Skill.Cap` (`scripts/Basic/skills/Skill.cs:97-106`) computes the
+right profession-based cap, but it's only ever READ in one place —
+`GameCore/Networking/OutgoingPackets.cs:1069,1084`, purely for the client's
+skill-list UI display. **Nothing enforces it.** There is no organic
+"use-a-skill-to-gain-it" mechanic anywhere in the engine at all (the obvious
+`tkSkillGain` trigger, `SkillDef.cs:202`, is commented out, dead).
+
+**User's clarification resolves this cleanly, not a blocker for either
+system**: most skills are meant to be raised via leveling's skill-point pool
+(flat +5/level, #129) spent through a dialog — **that dialog is where
+profession caps (#134/#135) actually need to be consulted** (validate against
+`player.Profession.GetSkillCap(...)` when spending a point), not via any
+use-based gain check. Only a smaller specific list of skills are meant to be
+trained through actual use instead: Mining, Lumberjacking, Fishing, Cooking,
+Taming, Lockpicking, Blacksmithing, Carpentry, Bowcraft, Alchemy, Tailoring,
+Tinkering, Inscription (mostly crafting/gathering). User: "we can figure out
+logic for upskilling when we focus on those" — #140 is explicitly deferred
+until crafting/gathering content becomes the focus, not needed now.
+
+**Next action: start implementing Leveling Phase 1 (#126).**
+
 ## CI minutes — separate, still-unresolved thread (2026-10-13)
 
 GitHub Actions minutes likely exhausted (pushing a commit earlier produced
