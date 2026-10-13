@@ -26,7 +26,3 @@ if (<arg.a>)
 else
 	Echo(LocManager.GetEntry("loc_ability_functions", "NoSuchAbility", Globals.SrcLanguage))
 endif
-
-
-[ScriptedLoc loc_ability_functions]
-NoSuchAbility = There's no such ability

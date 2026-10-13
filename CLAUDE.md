@@ -179,14 +179,25 @@ defnames. The 10 genuinely-orphaned ScriptedLoc `.txt` files were NOT imported.
 Staged rollout (5 PRs, each independently safe — see plan file for full detail):
 1. **Shipped.** Migration tool (throwaway, deleted) + generated resx files, committed
    but unused — zero behavior change.
-2. Swap `SetFieldsFromContents()` (+ `ScriptedLocStringCollection.Load()`) to read from
-   the two resx-backed resources, keyed by `Language` directly (see design correction
-   above — no CultureInfo). Remove the 6 inline `[ScriptedLoc ...]`/`[Loc ...]` blocks
-   now that their content lives in the resx (`playerFunctions.scp`, `kick.scp`,
-   `longRange.scp`, `silence.scp`, `mage.def`, `playerVendor.scp`). Remove now-dead
-   txt-overlay code. Add a permanent regression test (enumerate every live class/field +
-   defname/entry via reflection — same approach as the throwaway dump tool — assert real
-   values both languages).
+2. **Shipped.** `CompiledLocStringCollection<T>.GetEntriesFromCode()` now yields
+   `GameTextResources.GetEntry("{ClassName}_{FieldName}", this.Language)` per field
+   instead of reading the (not-yet-initialized-at-that-point) field value.
+   `LocStringCollection`'s txt-overlay/auto-append code is gone (both ctors just build
+   `entriesByName` straight from `entriesFromCode` now) — `valueRE` itself stayed though,
+   `GameCore/PropsFileParser.cs` reuses it for unrelated general script-file parsing.
+   New `GameCore/LScript/ScriptedLocResxBridge.cs` registers the 6 ScriptedLoc defnames
+   directly from resx (hardcoded defname/entry-name list, called once from `Main.cs`
+   right after `ClassManager.InitScripts()`) since their inline `[ScriptedLoc ...]`/
+   `[Loc ...]` blocks are now deleted from `playerFunctions.scp`, `kick.scp`,
+   `longRange.scp`, `silence.scp`, `mage.def`, `playerVendor.scp`. Permanent regression
+   test added (`scripts/Tests/LocalizationVerificationTests.cs` +
+   `Tests/Protocol/LocalizationVerificationTests.cs`): enumerates every live class/field
+   + defname/entry, asserts a real (non-sentinel) value for both languages — passing,
+   388/388 checked, 0 missing. Full suite: 65/65 passing (needed several reruns — this
+   sandbox hit #100's pre-existing intermittent hang 4 times in a row on completely
+   unrelated tests (`DayNightWeatherTests`, `CombatDepthTestsB`, etc.) before a clean
+   run; also found 4GB of accumulated hang-dump files from the retries themselves adding
+   I/O pressure — worth deleting `Tests/TestResults/` before retrying if this recurs).
 3. `Globals.cs` new `defaultLanguage` ini setting (reuses existing `text` section + the
    already-enum-aware `GetValue<T>`/`ConvertTools`) + `GameState`'s `language` field
    initializer reads `Globals.DefaultLanguage` instead of a hardcoded literal.

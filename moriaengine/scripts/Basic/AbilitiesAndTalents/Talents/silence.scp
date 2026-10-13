@@ -53,10 +53,3 @@ return 0
 [PassiveAbilityDef a_silence_bonus]
 Name="Silence duration bonus"
 EffectPower=1 //seconds per point
-
-
-[ScriptedLoc loc_silence]
-YouHaveBeenSilenced = You have been silenced for {0} seconds
-YourTargetIsSilenced = You have silenced {0} for {1} seconds
-
-YoureSilenced = You're silenced so you can't cast any spells
