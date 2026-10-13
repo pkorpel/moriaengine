@@ -16,7 +16,3 @@ on=@activate
 
 
 [LongRangePluginDef p_longrange]
-
-
-[ScriptedLoc loc_longrange]
-LongrangeFailed = Nepovedlo se

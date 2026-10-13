@@ -2,17 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SteamEngine.Common {
 
 	public abstract class LocStringCollection : IEnumerable<KeyValuePair<string, string>> {
-		const string servLocDir = "Languages";
 		internal const string defaultText = "<LocalisationEntryNotAvailable>";
 
-		//name=value //comment
+		//Not used by this class anymore (#104, Part B removed the txt-overlay parsing this
+		//was originally for) - kept because GameCore/PropsFileParser.cs reuses it as the
+		//shared "name = value //comment" regex for general script-file parsing.
 		[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Member")]
 		public static readonly Regex valueRE = new Regex(@"^\s*(?<name>.*?)((\s*=\s*)|(\s+))(?<value>.*?)\s*(//(?<comment>.*))?$",
 			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -24,7 +24,7 @@ namespace SteamEngine.Common {
 			this.Defname = defname;
 			this.AssemblyName = assemblyName;
 
-			this.entriesByName = this.LoadEntriesFromLanguageFile(entriesFromCode);
+			this.entriesByName = entriesFromCode.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
 
 			LocManager.RegisterLoc(this);
 		}
@@ -34,7 +34,7 @@ namespace SteamEngine.Common {
 			this.Defname = defname;
 			this.AssemblyName = assemblyName;
 
-			this.entriesByName = this.LoadEntriesFromLanguageFile(this.GetEntriesFromCode());
+			this.entriesByName = this.GetEntriesFromCode().ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
 
 			LocManager.RegisterLoc(this);
 		}
@@ -47,61 +47,6 @@ namespace SteamEngine.Common {
 
 		protected virtual IEnumerable<KeyValuePair<string, string>> GetEntriesFromCode() {
 			throw new NotImplementedException();
-		}
-
-		public Dictionary<string, string> LoadEntriesFromLanguageFile(IEnumerable<KeyValuePair<string, string>> entriesFromCode) {
-			var result = entriesFromCode.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
-			var helperList = new Dictionary<string,string>(result, StringComparer.OrdinalIgnoreCase);
-
-			string path = Tools.CombineMultiplePaths(".", servLocDir,
-				Enum.GetName(typeof(Language), this.Language),
-				this.AssemblyName,
-				string.Concat(this.Defname, ".txt"));
-
-			FileInfo file = new FileInfo(path);
-			if (file.Exists) {
-				using (StreamReader reader = file.OpenText()) {
-					string line;
-					int lineNum = 0;
-					while ((line = reader.ReadLine()) != null) {
-						lineNum++;
-						line = line.Trim();
-						if (string.IsNullOrEmpty(line) || line.StartsWith("//") || line.StartsWith("#")) {
-							continue;
-						}
-
-						Match m = valueRE.Match(line);
-						if (m.Success) {
-							GroupCollection gc = m.Groups;
-							string name = gc["name"].Value;
-							if (result.ContainsKey(name)) {
-								if (helperList.ContainsKey(name)) {
-									result[name] = gc["value"].Value;
-									helperList.Remove(name);
-								} else {
-									Logger.WriteWarning(path, lineNum, "Duplicate value name '" + name + "'. Ignoring.");
-								}
-							} else {
-								Logger.WriteWarning(path, lineNum, "Unknown value name '" + name + "'. Ignoring.");
-							}
-						} else {
-							Logger.WriteWarning(path, lineNum, "Unknown format of line");
-						}
-					}
-				}
-			}
-
-			//lines that are on the class but aren't in the text file, we append them to the file
-			if (helperList.Count > 0) {
-				Tools.EnsureDirectory(Path.GetDirectoryName(path));
-				using (StreamWriter writer = new StreamWriter(file.Open(FileMode.Append, FileAccess.Write))) {
-					foreach (KeyValuePair<string, string> pair in helperList) {
-						writer.WriteLine(pair.Key.PadRight(32) + "= " + pair.Value);
-					}
-				}
-			}
-
-			return result;
 		}
 
 		public string GetEntry(string entryName) {

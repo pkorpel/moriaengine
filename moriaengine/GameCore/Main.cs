@@ -182,8 +182,9 @@ namespace SteamEngine {
 				GameServer.Init();
 
 				//Region.ResolveLoadedRegions();
-				Map.Init();   //Sectors are created and items sorted on startup. 
+				Map.Init();   //Sectors are created and items sorted on startup.
 				ClassManager.InitScripts();
+				ScriptedLocResxBridge.RegisterAll();
 				PluginDef.Init();
 
 				//Globals.UnPauseServerTime();

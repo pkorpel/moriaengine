@@ -22,6 +22,3 @@ on=@beforeswing //params: attacker, defender, attack, piercing, armorClass, dama
 	endif
 
 	this.Delete() //a_kick.Deactivate(this.Cont)
-
-[ScriptedLoc loc_kick]
-Kicks = kicks

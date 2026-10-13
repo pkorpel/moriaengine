@@ -65,15 +65,9 @@ on=@targon_thing
 		targetted.Dialog(D_PlayerVendor_Stock, <argv[1]>)
 	endif
 
-[Loc loc_playervendor]
-OneMomentPlease=Okamžíèek
-TargetThingToStock=Zamìø vìc nebo zvíøe na prodej
-NothingToSell=Nemám nic na prodej
-
-
 [ContainerDef i_playervendor_stock_container]
 Model=i_backpack
-name=Nabídka
+name=Nabï¿½dka
 LAYER=60
 
 [PlayerVendorStockEntryDef i_playervendor_stock_entry]
