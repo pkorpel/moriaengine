@@ -413,7 +413,7 @@ namespace SteamEngine.Networking {
 
 		#region Language
 		private string languageString = "enu";
-		private Language language = Language.English;
+		private Language language = Globals.DefaultLanguage;
 
 		public string ClientLanguage {
 			get {

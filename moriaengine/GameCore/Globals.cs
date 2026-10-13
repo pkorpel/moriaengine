@@ -83,6 +83,15 @@ namespace SteamEngine {
 			get { return alternateCommandPrefix; }
 		}
 
+		//Server-wide default only (#104, Part B) - a player's own in-client language
+		//choice (GameState's SetLanguageInPacket handling) still overrides this per
+		//connection exactly as before; this just picks what a connection starts as
+		//before any such packet ever arrives.
+		private static Language defaultLanguage;
+		public static Language DefaultLanguage {
+			get { return defaultLanguage; }
+		}
+
 		private static string logPath;
 		public static string LogPath {
 			get { return logPath; }
@@ -515,6 +524,7 @@ namespace SteamEngine {
 				IniFileSection text = iniH.GetNewOrParsedSection("text");
 				commandPrefix = text.GetValue("commandPrefix", ".", "The command prefix. You can make it 'Computer, ' if you really want.");
 				alternateCommandPrefix = text.GetValue("alternateCommandPrefix", "[", "The command prefix. Defaults to [. In the god-client, . is treated as an internal client command, and anything starting with . is NOT sent to the server.");
+				defaultLanguage = text.GetValue("defaultLanguage", Language.English, "The default language for a connection, used until (and unless) the client sends its own language choice. Valid values: English, Czech.");
 				//supportUnicode = text.GetValue<bool>("supportUnicode", true, "If you turn this off, all messages, speech, etc sent TO clients will take less bandwidth, but nobody'll be able to speak in unicode (I.E. They can only speak using normal english characters, not russian, chinese, etc.)");
 				//asciiForNames = text.GetValue<bool>("asciiForNames", false, "If this is on, names are always sent in ASCII regardless of what supportUnicode is set to. NOTE: Names in paperdolls and status bars can only be shown in ASCII, and this ensures that name colors come out right.");
 				defaultAsciiMessageColor = text.GetValue<ushort>("serverMessageColor", 0x0000, "The color to use for server messages (Welcome to **, pause for worldsave, etc). Can be in hex, but it doesn't have to be.");
