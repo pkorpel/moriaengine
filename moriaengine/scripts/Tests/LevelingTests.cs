@@ -40,5 +40,25 @@ namespace SteamEngine.CompiledScripts {
 			LevelingSystem.AddExperience(player, amount);
 			Console.WriteLine("LEVELING_TEST_RESULT: level=" + player.Level + " experience=" + player.Experience);
 		}
+
+		/// <summary>Phase 2 (#127): kills a freshly-spawned NPC directly via CauseDeath (bypassing
+		/// real combat RNG/timing entirely - this is testing the experience-grant hook, not combat
+		/// itself) and reports the killer's resulting level/experience. c_a_jackrabbit is used
+		/// because it's a Calm animal (won't fight back) not used by any other test file sharing
+		/// this long-lived server process (see CombatDepthTests.cs's TestGuardsRealmAggro comment
+		/// for why that matters - mutating a shared NPCDef that no other scenario touches avoids
+		/// leaking state between tests).</summary>
+		[SteamFunction]
+		public static void TestKillNpcGrantsExperience(Character self, ScriptArgs sa) {
+			Player player = (Player) self;
+			int min = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			int max = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
+
+			NPCDef rabbitDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			rabbitDef.ExperienceWorth = new int[] { min, max };
+			NPC rabbit = (NPC) rabbitDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			rabbit.CauseDeath(player);
+			Console.WriteLine("LEVELING_KILL_TEST_RESULT: level=" + player.Level + " experience=" + player.Experience);
+		}
 	}
 }
