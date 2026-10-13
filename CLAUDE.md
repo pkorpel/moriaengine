@@ -182,6 +182,66 @@ one risks disrupting existing item categorization (GitHub's single-select-field
 update mutation replaces the whole option list, risky to do live) — worth adding
 properly if more big feature-design work like this keeps coming.
 
+## Professions (Povolání) system — design SETTLED (2026-10-13), tracked as #134, NOT implemented yet
+
+Source: live Erebor wiki (https://wiki.uoerebor.cz/docs/povolani/povolani/ + 9
+per-profession sub-pages), cross-referenced against moriaengine's existing
+`ProfessionDef`/`Ability` code. Full Q&A pass done with the user. Read #134 and
+its 4 sub-issues (#135-#138) for the complete writeup — short version:
+
+- **9 professions**: Ranger (Hraničář), Priest (Kněz), Mage (Mág), Mystic
+  (Mystik), Necromancer (Nekromant), Craftsman (Řemeslník), Shaman (Šaman),
+  Warrior (Válečník), Thief (Zloděj).
+- **The mechanism is more built than it looks, but totally unused**:
+  `ProfessionDef` already has per-skill `(min,cap)` pairs, an `AllowedSpells`
+  list, 3 talent-tree-branch slots, ability-point caps — and skill/ability cap
+  enforcement + Magery-only spell-cast restriction are all genuinely LIVE
+  today. But `ProfessionPlugin.On_Assign()` is dead code (grants nothing), and
+  **nothing anywhere ever assigns a profession to a character** — confirmed
+  zero callers via grep. The enforcement layer exists with nothing feeding it.
+- **Content status**: only Mage and Thief have a `.def` file. Mage is a
+  faithful wiki port (3 small numeric divergences found + filed, #137) —
+  everything else matches exactly once you account for the ×10 scale
+  difference (wiki is 0-100, moriaengine is 0-1000). Thief's skill table is
+  correct; its talent trees are ~50% real shared abilities, ~50% Czech design
+  notes with a point cost decided but no `AbilityDef` ever created (Backstab
+  bonuses, Blind, Disarm, Taunt, several named strike-finishers like
+  "Probodnuti"/"Smrst"/"Presny zasah"). The other 7 professions have nothing.
+- **Confirmed decisions**:
+  1. **Abilities/talent-trees are OUT of scope for ALL 9 professions**,
+     including not touching Mage's/Thief's existing half-finished trees. User:
+     might want a proper ability-tree redesign later, don't build on the
+     current half-done shape in the meantime.
+  2. **Race (`Realm`) is completely independent of profession** — any race,
+     any profession, zero interaction to model.
+  3. **Craftsman is wanted.** Some crafting-adjacent skills (Fishing, Mining)
+     can be raised by OTHER professions too — just means authoring each
+     profession's `.def` with the right individual skill caps, not a new
+     mechanic (the existing per-skill-cap model already supports this).
+  4. **Reuse the existing `.def`/`ProfessionDef` pattern** — don't invent a
+     new format. Extend `LoadScriptLine` with new data-only line-types
+     (`allowedWeaponTypes`, `allowedArmorMaterials`, `strRange`/`dexRange`/
+     `intRange`/`vitRange`) the same way `aggromode`/`combatspell` got added to
+     `NPCDef` earlier this session.
+  5. **STR/DEX/INT/VIT is a SHARED subsystem with leveling's Phase 4 (#129)**
+     — professions need per-profession stat ranges/caps, leveling needs
+     attribute-point grants/spending. Design and build together, don't
+     duplicate (#129 updated with this cross-reference).
+  6. **Profession assignment should immediately grant starting skill values**
+     from the `.def` (the dead `On_Assign` code's original intent) — don't
+     gate this on stats/weapons/armor being ready too.
+- **Sub-issues**: #135 (extend `ProfessionDef` format + wire up assignment,
+  including a minimum-viable GM command since nothing calls assignment at all
+  today), #136 (author the 7 missing `.def` files from the wiki's skill
+  tables), #137 (fix Mage's 3 known divergences — Cooking/Fishing starting
+  value, Detecting Hidden cap), #138 (enforce weapon/armor restrictions,
+  depends on #135's new data fields).
+- **No player-facing profession-selection flow exists** — the orphaned
+  `Start_rasy`/`Start_povolani` world regions found earlier this session are
+  likely leftover geography for one that was never scripted. A GM command is
+  the minimum viable path for #135; a real selection stone/dialog is a stretch
+  goal, not required.
+
 ## CI minutes — separate, still-unresolved thread (2026-10-13)
 
 GitHub Actions minutes likely exhausted (pushing a commit earlier produced
