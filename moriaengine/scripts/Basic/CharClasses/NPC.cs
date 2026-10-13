@@ -166,6 +166,34 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey experienceWorthTK = TagKey.Acquire("_experienceWorth_");
+
+		/// <summary>Experience range {min, max} granted to the player who kills an NPC of this
+		/// type - a flat hand-tuned value, not derived from stats (Erebor's own pattern,
+		/// tag.experience={min max} - see LevelingSystem.AddExperience / #127). Null (the
+		/// default) means this NPC type grants no experience - most NPC content doesn't have
+		/// this configured yet (see #12, NPC content is ~55-60% incomplete).</summary>
+		public int[] ExperienceWorth {
+			get {
+				return this.GetTag(experienceWorthTK) as int[];
+			}
+			set {
+				this.SetTag(experienceWorthTK, value);
+			}
+		}
+
+		/// <summary>Rolls a random value in [min, max] (inclusive) from ExperienceWorth, or 0 if unset.</summary>
+		public int RollExperienceReward() {
+			int[] range = this.ExperienceWorth;
+			if (range == null) {
+				return 0;
+			}
+			if (range[0] >= range[1]) {
+				return range[0];
+			}
+			return Globals.dice.Next(range[0], range[1] + 1);
+		}
+
 		private static readonly TagKey defaultMovementTK = TagKey.Acquire("_defaultMovementCapability_");
 
 		/// <summary>The movement capability template new NPCs of this type get on creation (see NPC.On_Create) - each instance gets its own deep copy, not this shared object, so runtime effects can mutate one NPC's capability without affecting every other NPC of the same type.</summary>
@@ -213,6 +241,18 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return;
 			}
+			if (param == "experience") {
+				string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+				if (parts.Length == 1) {
+					int value = ConvertTools.ParseInt32(parts[0]);
+					this.ExperienceWorth = new int[] { value, value };
+				} else if (parts.Length == 2) {
+					this.ExperienceWorth = new int[] { ConvertTools.ParseInt32(parts[0]), ConvertTools.ParseInt32(parts[1]) };
+				} else {
+					Logger.WriteWarning(filename, line, "experience '" + args + "' must be either a single value or 'min max'.");
+				}
+				return;
+			}
 			base.LoadScriptLine(filename, line, param, args);
 		}
 
@@ -247,6 +287,21 @@ namespace SteamEngine.CompiledScripts {
 			IMovementSettings template = ((NPCDef) this.Def).DefaultMovementSettings;
 			if (template != null) {
 				this.MovementSettings = (IMovementSettings) DeepCopyFactory.GetCopy(template);
+			}
+		}
+
+		/// <summary>Grants monster-kill experience to a player killer - see
+		/// NPCDef.ExperienceWorth/RollExperienceReward and LevelingSystem.AddExperience (#127).
+		/// NPCs themselves never level (Erebor's own level-up logic only ever runs "if
+		/// (isplayer)") so there's nothing else to do here for the NPC side.</summary>
+		public override void On_Death(Character killedBy) {
+			base.On_Death(killedBy);
+			Player player = killedBy as Player;
+			if (player != null) {
+				int reward = ((NPCDef) this.Def).RollExperienceReward();
+				if (reward != 0) {
+					LevelingSystem.AddExperience(player, reward);
+				}
 			}
 		}
 
