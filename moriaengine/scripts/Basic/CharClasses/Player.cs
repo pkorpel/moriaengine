@@ -37,7 +37,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 			set {
 				this.level = (short) value;
-				//TODO - cokoliv co se muze stat pri gainu levelu - patrne budeme mit trigger atd
 			}
 		}
 
@@ -48,13 +47,20 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Direct set - does not run the level-up check. Use LevelingSystem.AddExperience to grant experience through the normal gameplay path (monster kills, etc).</summary>
 		public int Experience {
 			get {
 				return this.experience;
 			}
 			set {
 				this.experience = value;
-				//TODO - cokoliv co se muze stat pri gainu levelu - patrne budeme mit trigger atd
+			}
+		}
+
+		/// <summary>How much total experience is needed to reach the next level - see LevelingSystem.AddExperience for the formula this mirrors.</summary>
+		public int NextLevelExperienceThreshold {
+			get {
+				return (this.Level + 1) * LevelingSettings.instance.nextLevelCoefficient;
 			}
 		}
 
