@@ -102,6 +102,40 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>
+		/// Spellcaster stand-off: a caster (c_liche, combatspell=s_fireball, no explicit
+		/// WeaponRange override - defaults to 1/melee) placed non-adjacent to its target should
+		/// hold that distance rather than closing to melee range between casts -
+		/// NPCAiTimer.Fight's effectiveRange used to fall through to the melee weapon-range
+		/// default for any NPC with a CombatSpell, so this walked right up next to the target on
+		/// every tick its spell was on cooldown (4s cooldown vs. a 1.5s think-tick). Checked the
+		/// same way as TestArcherStandsOff: comparing position before/after. Verifies the caster
+		/// actually attempted to cast (NPCAiTimer.CastAttempts, which only requires mana spent/
+		/// cooldown started) rather than whether the spell's damage landed - this test's spawn
+		/// point sits inside "Jamy smrti", a real content-defined FlaggedRegion with
+		/// NoHarmfulMagicIn covering a huge swath of the map (confirmed separately, not a test
+		/// bug), which silently blocks ALL harmful NPC spellcasting here independent of distance.
+		/// TestSpellcasterDamage's own adjacent placement never noticed because melee fallback
+		/// damage (WeaponSkillTargetQueuePlugin) carries it instead - worth a dedicated look since
+		/// NPC spellcasting is presumably non-functional across this whole region, but that's a
+		/// separate, pre-existing issue from the distancing behavior under test here.
+		/// </summary>
+		[SteamFunction]
+		public static void TestSpellcasterStandsOff(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			NPCDef licheDef = ThingDef.GetByDefname("c_liche") as NPCDef;
+			NPCDef dummyDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
+			NPC liche = (NPC) licheDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			NPC dummy = (NPC) dummyDef.Create(self.X + 3, self.Y, self.Z, self.M); // 2 tiles from the liche (same geometry as TestArcherStandsOff) - beyond melee range, within its 10-tile spell range
+
+			NPCAiTimer.GetFor(liche).EngageTarget(dummy);
+			// Attached to self, not liche - see TestSpellcasterDamage's comment just above.
+			self.AddTimer(SpellcasterStandoffCheckTimer.TimerKey,
+				new SpellcasterStandoffCheckTimer(liche, liche.X, liche.Y))
+				.DueInSeconds = CheckDelaySeconds;
+			Console.WriteLine("SPELLCASTER_STANDOFF_TEST: STARTED");
+		}
+
+		/// <summary>
 		/// Archer stand-off (#56): with a real WeaponRange (10, from #56's content fix) instead of
 		/// the melee default (1), NPCAiTimer.Fight's effectiveRange check (this verification
 		/// pass's own V-0-adjacent fix, see NPCAiTimer.Fight's comment) should mean the archer
@@ -285,6 +319,38 @@ namespace SteamEngine.CompiledScripts {
 					(this.archer.IsDeleted ? -1 : this.archer.X) + "," + (this.archer.IsDeleted ? -1 : this.archer.Y) + "))");
 			} else {
 				Console.WriteLine("ARCHER_STANDOFF_TEST: FAIL (stayed at range but dealt no damage)");
+			}
+		}
+	}
+
+	[SaveableClass]
+	public class SpellcasterStandoffCheckTimer : BoundTimer {
+		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_spellcasterStandoffCheckTimer_");
+
+		private NPC liche;
+		private int startX, startY;
+
+		[LoadingInitializer]
+		public SpellcasterStandoffCheckTimer() {
+		}
+
+		public SpellcasterStandoffCheckTimer(NPC liche, int startX, int startY) {
+			this.liche = liche;
+			this.startX = startX;
+			this.startY = startY;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			bool stayedPut = !this.liche.IsDeleted && (this.liche.X == this.startX) && (this.liche.Y == this.startY);
+			int castAttempts = this.liche.IsDeleted ? 0 : NPCAiTimer.GetFor(this.liche).CastAttempts;
+
+			if (stayedPut && (castAttempts > 0)) {
+				Console.WriteLine("SPELLCASTER_STANDOFF_TEST: PASS (caster stayed at range and attempted " + castAttempts + " cast(s))");
+			} else if (!stayedPut) {
+				Console.WriteLine("SPELLCASTER_STANDOFF_TEST: FAIL (caster moved from (" + this.startX + "," + this.startY + ") to (" +
+					(this.liche.IsDeleted ? -1 : this.liche.X) + "," + (this.liche.IsDeleted ? -1 : this.liche.Y) + "))");
+			} else {
+				Console.WriteLine("SPELLCASTER_STANDOFF_TEST: FAIL (stayed at range but never attempted a cast)");
 			}
 		}
 	}

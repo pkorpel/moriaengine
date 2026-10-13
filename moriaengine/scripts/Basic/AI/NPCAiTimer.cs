@@ -275,20 +275,39 @@ namespace SteamEngine.CompiledScripts {
 				return; //cast instead of swinging this tick - don't also touch the weapon-skill queue below
 			}
 
-			//WeaponStrikeStartRange (default 5) is only about when WeaponSkillDef transitions its
-			//own Drawing->Striking phase - it's NOT the range a stroke can actually land at. That
-			//real range is WeaponRangeVsM/VsP (default 1 for melee - i.e. adjacent), checked by
-			//WeaponSkillDef.On_Stroke's own "distance <= range" gate. Using StrikeStartRange here
-			//(as earlier versions of this method did) meant any melee NPC relying on the engine's
-			//defaults - anything that, unlike the #56 archer content, never got an explicit
-			//WeaponRange/StrikeStartRange pair in its .def - stopped approaching 4 tiles short of
-			//actual hit range and swung forever without ever connecting. Mirror On_Stroke's own
-			//formula instead, so "close enough to stop walking" and "close enough to hit" always
-			//agree.
-			int effectiveRange = Math.Min(target.IsPlayerForCombat ? self.WeaponRangeVsP : self.WeaponRangeVsM, self.VisionRange);
+			int effectiveRange;
+			bool hasLineOfSight;
+			SpellDef combatSpell = ((NPCDef) self.Def).CombatSpell;
+			if (combatSpell != null) {
+				//A spellcaster holds its distance rather than closing to melee range between
+				//casts. Without this branch, effectiveRange fell through to WeaponRangeVsM/VsP
+				//below, which defaults to 1 (melee) for a caster that never actually swings a
+				//weapon - so on every tick the spell was on cooldown (SpellCastCooldownSeconds=4
+				//vs. a 1.5s think-tick, i.e. most ticks), this method walked the caster right up
+				//next to a target it had just hit from range a moment earlier. Only close in if
+				//genuinely out of spell range or LOS-blocked, not after every single cast.
+				effectiveRange = SpellCastRange;
+				hasLineOfSight = self.CanInteractWith(target).Allow;
+			} else {
+				//WeaponStrikeStartRange (default 5) is only about when WeaponSkillDef transitions
+				//its own Drawing->Striking phase - it's NOT the range a stroke can actually land
+				//at. That real range is WeaponRangeVsM/VsP (default 1 for melee - i.e. adjacent),
+				//checked by WeaponSkillDef.On_Stroke's own "distance <= range" gate. Using
+				//StrikeStartRange here (as earlier versions of this method did) meant any melee
+				//NPC relying on the engine's defaults - anything that, unlike the #56 archer
+				//content, never got an explicit WeaponRange/StrikeStartRange pair in its .def -
+				//stopped approaching 4 tiles short of actual hit range and swung forever without
+				//ever connecting. Mirror On_Stroke's own formula instead, so "close enough to stop
+				//walking" and "close enough to hit" always agree. (Ranged weapon users - e.g.
+				//archers - already hold their own configured range the same way, via a larger
+				//WeaponRangeVsM/VsP from their .def; no separate branch needed for them.)
+				effectiveRange = Math.Min(target.IsPlayerForCombat ? self.WeaponRangeVsP : self.WeaponRangeVsM, self.VisionRange);
+				hasLineOfSight = true;
+			}
+
 			int distance = Point2D.GetSimpleDistance(self, target);
-			if (distance > effectiveRange) {
-				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", effectiveRange=" + effectiveRange + ")");
+			if ((distance > effectiveRange) || !hasLineOfSight) {
+				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", effectiveRange=" + effectiveRange + ", hasLineOfSight=" + hasLineOfSight + ")");
 				this.StepTowardsSmart(self, target);
 			}
 
@@ -307,6 +326,13 @@ namespace SteamEngine.CompiledScripts {
 		private double nextSpellCastTime;
 		private const double SpellCastCooldownSeconds = 4;
 		private const int SpellCastRange = 10;
+
+		/// <summary>Read-only introspection for tests - how many times this NPC has committed to
+		/// a spell cast (mana spent, cooldown started) via TryCastSpell. Decoupled from whether
+		/// the resulting SpellDef.Trigger_EffectChar actually lands damage (which can depend on
+		/// unrelated factors like a FlaggedRegion's NoHarmfulMagicIn, not a concern of this AI
+		/// timer), so this is the right signal for "did the caster try to use its spell" alone.</summary>
+		public int CastAttempts { get; private set; }
 
 		/// <summary>
 		/// Casts NPCDef.CombatSpell directly at `target`, bypassing SpellDef's targeting flow
@@ -336,6 +362,7 @@ namespace SteamEngine.CompiledScripts {
 
 			this.nextSpellCastTime = Globals.TimeInSeconds + Math.Max(SpellCastCooldownSeconds, spell.CastTime);
 			self.Mana -= (short) spell.ManaUse;
+			this.CastAttempts++;
 
 			//GM-level power (700, the classic 0-1000 permille max) rather than deriving from a Magery
 			//skill value - NPCs don't have meaningful skill points set up for this, and "this monster
