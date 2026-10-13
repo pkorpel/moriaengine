@@ -268,6 +268,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Classic UO "rebel" rule: a creature never attacks its own owner/commander
+		/// (see ShouldAggroOn/NPCAiTimer.IsValidTarget) UNLESS that owner attacks it first, at
+		/// which point ownership drops immediately so the creature is free to defend itself.
+		/// No separate "attack the ex-owner" logic is needed - once ControlMaster/FollowTarget
+		/// are cleared, the normal autonomous-aggro path (ShouldAggroOn) is free to pick the
+		/// former owner on its own, same as any other AggroMode.Hostile target.</summary>
+		public override void On_HostileAction(Character enemy) {
+			base.On_HostileAction(enemy);
+			if ((enemy != null) && ((enemy == this.ControlMaster) || (enemy == this.FollowTarget))) {
+				Logger.WriteDebug("NPC.On_HostileAction: " + this.Name + "#" + this.Uid + " rebels against its own owner/commander " + enemy.Name + " - dropping ControlMaster/FollowTarget");
+				this.ControlMaster = null;
+				this.FollowTarget = null;
+				this.IsGuarding = false;
+				this.ShouldFollowOwner = true; //reset to the default, matching PetCommands.cs's "release" verb cleanup
+			}
+		}
+
 		public override short MaxHits {
 			get {
 				return this.maxHitpoints;

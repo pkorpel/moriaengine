@@ -90,6 +90,16 @@ namespace SteamEngine.CompiledScripts {
 				return 0;
 			}
 
+			//Defense in depth: a creature can never damage its own current owner/commander,
+			//however the attack got triggered - target selection (NPC.ShouldAggroOn,
+			//NPCAiTimer.IsValidTarget) already keeps this from happening in practice, but this
+			//is the one choke point everything routes through, so it's the right place for a
+			//hard backstop too. A legitimate "rebel" (owner attacks pet first) clears
+			//ControlMaster/FollowTarget before this could ever trigger - see NPC.On_HostileAction.
+			if ((attacker != null) && (defender == (attacker.FollowTarget ?? attacker.ControlMaster))) {
+				return 0;
+			}
+
 			if (!defender.IsDeleted && !defender.Flag_Dead && !defender.Flag_Insubst) {
 				defender.Trigger_HostileAction(attacker);
 				defender.Trigger_Disrupt();//nebo jen pri damage > 0 ?
