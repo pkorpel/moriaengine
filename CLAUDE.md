@@ -70,40 +70,76 @@ view grouped by "Pipeline Stage" — the default view is still a flat Table.
   user explicitly chose to leave both open in Backlog, undecided, for now. Not
   analysis paralysis — a deliberate "not now" on both.
 
-### 3. NEW initiative kicked off — leveling/experience system (design only, NOT implementing yet)
+### 3. Leveling/experience system — design SETTLED (2026-10-13), tracked as #125, NOT implemented yet
 
-User's spec (verbatim, don't paraphrase-drift from this):
-- New character starts level 0; needs `level * 330` exp to reach that level (330
-  for level 1, 660 for level 2, 990 for level 3, ...).
-- Exp mostly from killing monsters (every monster gives exp on death), also
-  "experience gates", quests, etc.
-- On player death: exp resets to 0, **level is unchanged** (e.g. level 2 / 300
-  exp → dies → level 2 / 0 exp).
-- On level-up: granted ability points, attribute points, and skills — user
-  flagged these as themselves big missing systems, don't assume they already
-  exist in finished form.
-- Overflow carries over: needs 660 for next level, has 600, gains 100 → levels up
-  AND keeps the leftover 40 exp (doesn't just clamp to 0).
-- `.explevel` command/dialog shows level + basic info, player-facing read-only.
+Full investigation (moriaengine current state + Erebor Sphere reference archive,
+re-cloned read-only to scratchpad, same not-committed pattern as earlier this
+session) plus a full Q&A pass with the user. **Everything below is final design,
+confirmed by the user** — don't re-derive or re-litigate, just read #125 and its
+5 phase sub-issues (#126-#130) for the complete writeup. Short version:
 
-**Investigation launched** (fork, read-only, no code changes) into: (a)
-moriaengine's current state — any existing Level/Experience/AbilityPoint/
-AttributePoint concept, the `scripts/Basic/Professions/` folder (has at least
-`Definitions/mage.def`, unclear how complete), existing on-death reset logic as a
-template, existing Realm/race-selection flow (`Start_rasy`/`Start_povolani` world
-regions seen in `regions.sav` earlier this session hint at a race/profession
-system that may need to integrate with level-up rewards), existing dialog/gump
-patterns to model `.explevel` on; (b) the Erebor Sphere reference archive
-(re-cloned fresh to scratchpad, same read-only/not-committed pattern as earlier
-this session) for the actual classic-Sphere leveling implementation — exp-grant
-formula on monster death, the real reward table/logic for level-up, any
-`.explevel`-equivalent, and how the Gondor/Mordor race/class system (if any)
-interacts with leveling.
+- **Formula**: threshold for level N = `N * 330` (330 confirmed as Erebor's own
+  real constant, `nextlevel=330` in `scripts/experiences.scp` — not invented).
+  Level-up check is a loop, not a single `if` — handles one exp gain spanning
+  multiple levels, carries the remainder (e.g. level 1/600 exp +100 → level 2/40
+  exp, not clamped to 0). No level cap.
+- **`Player.Level`/`Player.Experience` already exist** (`Player.cs:34-56`) as
+  pure unwired TODO stubs — fields + persistence work, formula/trigger don't
+  exist. This is Phase 1's (#126) starting point.
+- **Monster kills** grant a flat hand-tuned exp "worth" per monster (Erebor
+  pattern: `tag.experience={min max}`, NOT derived from stats — monster content
+  is ~55-60% incomplete per #12 anyway) — Phase 2, #127.
+- **Death (user's final call, deliberately diverges from Erebor's actual ~5%-
+  capped-loss mechanic)**: player's exp resets fully to **0**, level unchanged.
+  Killer(s) get **10%** of what the player had (not Erebor's partial-drain
+  formula) — percentage must be GM-configurable without redeploy, see #124
+  below. Safe zones/arenas exempt from loss entirely; 5-minute post-death
+  immunity (mirrors Erebor's `i_checkstats_timer`). Multi-killer split method
+  not decided (default even split) — Phase 3, #128.
+- **Level-up rewards — three separate point pools, user confirmed keeping
+  Erebor's exact structure** (numbers below are final, verified twice against
+  the reference scripts):
+  - Skill points: flat **+5/level**, uncapped forever.
+  - Ability points: total budget **`level * 2`**, uncapped forever.
+  - Attribute points (STR/DEX/INT/VIT): total budget **`300 (flat base) +
+    f_levelstatbonus(level)`**, where `f_levelstatbonus` is `level*4` through
+    level 9, `40+(level-10)*3` through level 29, `100+(level-30)*2` through
+    level 39, then flat `120` forever from level 40 on (level 40 is the LAST
+    level that adds any attribute points — matches user's own description
+    exactly). Per-level delta: 1-9→+4, 10-29→+3, 30-39→+2, 40→+2(last), 41+→+0.
+  - Earning is profession-agnostic (same for every class); only *spending*
+    differs per profession. This phase (#129) is explicitly its own sub-project
+    — moriaengine's existing `Ability`/`Profession` system
+    (`scripts/Basic/AbilitiesAndTalents/`, `scripts/Basic/Professions/`) is
+    direct-set today, not earn-and-spend, and retrofitting that is a real design
+    question deferred until professions functionality gets looked at properly.
+- **Experience gates/quests are explicitly OUT of scope** (#130) — user: "just
+  leave us function which handles adding experiences... called from different
+  places" — that shared function is Phase 1's job; actual gate/quest content is
+  deferred indefinitely, tracked only so the idea isn't lost.
+- **`.explevel`**: read-only player dialog (level/exp/exp-to-next), direct
+  template exists (Erebor's `d_explevel`, `scripts/experiences.scp:286-338`).
 
-**Status when this note was written: fork still running.** Once it reports back:
-synthesize findings + gaps + open questions, present to user, get answers, write
-an actual phased plan (still not implementing — explicit user instruction was
-"we will not be implementing it yet"), then update this file again.
+### 4. New prerequisite: `.settings` GM dialog framework — tracked as #124, build BEFORE leveling
+
+Came up specifically because leveling's 10% death-exp-cut needs to be GM-tunable
+without redeploy. Confirmed nothing like this exists today — the only precedent
+is `Globals.PaymentSource` (`GameCore/Globals.cs:432`, one tag-backed value, one
+dedicated command, `.PaymentSource <value>`), not a dialog listing/editing
+multiple settings. **User's explicit call: design this as a generic, reusable
+framework (not a one-off for the 10% value) and build it before starting on
+leveling**, since it's the foundation future tunable-settings work should sit on.
+See #124 for scope. Not a hard blocker for #128 (Phase 3/death-exp) specifically
+— ship with a hardcoded 10% default if #124 isn't done yet, swap to the
+settings-backed value once it lands.
+
+**Issues filed for this whole pass**: #124 (`.settings`), #125 (leveling
+tracking), #126-#130 (leveling phases 1-5). All added to the project board.
+Categorized under existing "Player-facing bugs"/"GM tooling" categories as a
+pragmatic fit — there's no dedicated "Gameplay systems" bucket yet, and adding
+one risks disrupting existing item categorization (GitHub's single-select-field
+update mutation replaces the whole option list, risky to do live) — worth adding
+properly if more big feature-design work like this keeps coming.
 
 ## CI minutes — separate, still-unresolved thread (2026-10-13)
 
@@ -583,6 +619,14 @@ and bin/obj already exist from prior sessions). Full suite:
 
 ## Workflow conventions for this repo (don't re-derive each session)
 
+- **Keep this file updated continuously, without being asked each time.**
+  Explicit standing instruction from the user (2026-10-13): "keep claude.md
+  updated (do this all the time without my reminder) to keep context clean."
+  Update it as design decisions land / features get scoped / issues get filed —
+  not just at session pause points. If a planning conversation produces a
+  decision (a feature gets scoped, a question gets answered, an issue gets
+  filed), write it into this file in the same turn, before moving to the next
+  thing — don't batch it up for "later."
 - **File a GitHub issue for every bug** — whether the user reports it in chat or you
   discover it yourself while working on something else — even if you fix it
   immediately in the same session. File it, then close it referencing the PR that
