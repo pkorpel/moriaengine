@@ -38,6 +38,17 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestCheckOwnerAggroState " + titanUid);
 				Assert.True(this.fixture.WaitForGameOutputSince("OWNER_AGGRO_CHECK:", markCheck, TimeSpan.FromSeconds(10)));
 				string checkLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "OWNER_AGGRO_CHECK:");
+
+				// DIAGNOSTIC: dump every DIAG line from the server's own stdout to THIS
+				// process's stdout - GameOutputSnapshot() is only ever an in-memory buffer
+				// otherwise, so none of it reaches the CI console log unless explicitly
+				// printed here.
+				foreach (string line in this.fixture.GameOutputSnapshot().Split('\n')) {
+					if (line.Contains("DIAG")) {
+						Console.WriteLine(line);
+					}
+				}
+
 				Assert.Contains("target=none", checkLine);
 			}
 		}

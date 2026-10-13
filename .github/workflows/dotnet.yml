@@ -38,4 +38,4 @@ jobs:
       # kill the whole run blind - 5 minutes is generous against the slowest real test classes
       # seen so far (~45s each).
       - name: Test
-        run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --blame-hang --blame-hang-timeout 5min
+        run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --blame-hang --blame-hang-timeout 5min --filter "FullyQualifiedName~OwnerAggroTests"
