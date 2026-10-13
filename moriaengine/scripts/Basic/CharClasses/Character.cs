@@ -236,6 +236,16 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>GM-only: while true, blocks ALL incoming damage outright (see DamageManager.CauseDamage) - toggled by the "invul" command. Not reflected in any outgoing visibility/status bit; classic UO doesn't expose this to clients either, it's purely a server-side rule enforced at the damage choke point.</summary>
+		public bool Flag_Invulnerable {
+			get {
+				return this.ProtectedFlag8;
+			}
+			set {
+				this.ProtectedFlag8 = value;
+			}
+		}
+
 		//use these counter methods to properly set the greenhealthbar flag from multiple sources
 
 		private static TagKey poisonCounterTK = TagKey.Acquire("_poison_counter_");

@@ -78,6 +78,20 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>GM-only toggle: while on, nothing can damage this character at all (see
+		/// DamageManager.CauseDamage) - a would-be attacker's hit plays a "no effect" animation
+		/// instead of landing.</summary>
+		[SteamFunction]
+		public static void Invul(Character self) {
+			if (self.Flag_Invulnerable) {
+				self.Flag_Invulnerable = false;
+				Globals.SrcWriteLine(Loc<GmCommandsLoc>.Get(Globals.SrcLanguage).InvulOff);
+			} else {
+				self.Flag_Invulnerable = true;
+				Globals.SrcWriteLine(Loc<GmCommandsLoc>.Get(Globals.SrcLanguage).InvulOn);
+			}
+		}
+
 		/// <summary>Views or changes where purchases draw gold from, live, no restart needed -
 		/// see Globals.PaymentSource's own remarks for why this is tag-backed rather than .ini.</summary>
 		[SteamFunction]
@@ -299,5 +313,7 @@ namespace SteamEngine.CompiledScripts {
 		public string GMModeOff = "GM mode off (Plevel 1).";
 		public string InsubstOn = "Flag_Insubst on (you're invisible and players can not interact with you)";
 		public string InsubstOff = "Flag_Insubst off (you're visible)";
+		public string InvulOn = "Flag_Invulnerable on (nothing can damage you)";
+		public string InvulOff = "Flag_Invulnerable off (you can be damaged normally)";
 	}
 }
