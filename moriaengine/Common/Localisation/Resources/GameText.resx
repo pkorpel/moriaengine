@@ -175,6 +175,12 @@
   <data name="GmCommandsLoc_InsubstOn" xml:space="preserve">
     <value>Flag_Insubst on (you're invisible and players can not interact with you)</value>
   </data>
+  <data name="GmCommandsLoc_InvulOff" xml:space="preserve">
+    <value>Flag_Invulnerable off (you can be damaged normally)</value>
+  </data>
+  <data name="GmCommandsLoc_InvulOn" xml:space="preserve">
+    <value>Flag_Invulnerable on (nothing can damage you)</value>
+  </data>
   <data name="HealingLoc_HealerFailedToHealYou" xml:space="preserve">
     <value>{0} selhal p�i pokusu t� o�et�it!</value>
   </data>

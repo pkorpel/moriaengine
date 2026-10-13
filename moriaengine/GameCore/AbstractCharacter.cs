@@ -68,7 +68,8 @@ namespace SteamEngine {
 			DirFlag4 = 0x0100,
 			DirFlag5 = 0x0200,
 			DirFlag6 = 0x0400,
-			DirFlag7 = 0x0800
+			DirFlag7 = 0x0800,
+			DirFlag8 = 0x1000
 		}
 
 		private AbstractAccount account;
@@ -330,6 +331,19 @@ namespace SteamEngine {
 					this.directionAndFlags |= DirectionAndFlag.DirFlag7;
 				} else {
 					this.directionAndFlags &= ~DirectionAndFlag.DirFlag7;
+				}
+			}
+		}
+
+		protected bool ProtectedFlag8 {
+			get {
+				return ((this.directionAndFlags & DirectionAndFlag.DirFlag8) == DirectionAndFlag.DirFlag8);
+			}
+			set {
+				if (value) {
+					this.directionAndFlags |= DirectionAndFlag.DirFlag8;
+				} else {
+					this.directionAndFlags &= ~DirectionAndFlag.DirFlag8;
 				}
 			}
 		}
