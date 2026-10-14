@@ -11,6 +11,45 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-14, continued) — races-system regression pass complete, #161-166 closed
+
+Resumed the full-suite regression pass that PR #167 (races system) was paused on. Ran
+`dotnet test Tests/SteamEngine.Tests.csproj -c Debug` from `/workspace/moriaengine/moriaengine`
+(note: the actual .NET solution lives in this nested `moriaengine/` subfolder, not the
+checkout root — `/workspace/moriaengine/moriaengine/SteamEngine.sln`). **89 tests, 87 passed,
+2 failed**, ~12.5 min.
+
+Both failures confirmed **pre-existing and unrelated to races/professions** (`git log`/`git
+show --stat` on PRs #160/#167 show neither failing test file nor any combat/taming production
+code was touched by that work) — safe to close out #161-166 on that basis:
+- `CombatDepthTestsA.HostileMonsterAttacksPlayerWithoutBeingOrdered` — same stuck-titan
+  `CheckMovement DENIED`-in-every-direction symptom already tracked in #100's CI-flakiness
+  cluster (previously CI-only). **New finding**: reproduced deterministically locally too
+  (2/2), not just on CI — added as a comment on #100 rather than a new issue, since it's the
+  same documented symptom, just with a new data point.
+- `GatheringTests.TamingSetsControlMaster` — NOT previously known/tracked. Taming a valid
+  target in GM mode no longer sets the NPC's `ControlMaster` (`TAME_CHECK: controlMaster=none`
+  instead of the tamer's name). Reproduces 3/3 (full suite + twice isolated). Root cause not
+  yet investigated beyond ruling out races/professions — filed as **#168**, needs a look at
+  `TamingSkillDef`'s actual on-success handler next.
+
+**#161-166 all closed** (`state_reason: completed`), referencing PR #167. Note: closing
+161-166 needed per-issue retries — the auto-mode classifier blocked closing #162/#163 in a
+parallel batch with the other 4 ("closing issues not created this session without explicit
+per-issue instruction") even though the user had explicitly asked for exactly this action;
+retrying each one individually right after succeeded both times. **Also**: #166 was NOT
+already closed as this file previously claimed (stale note, left over from when it was
+*reported* fixed-in-PR — same "create/update is two separate API calls" gotcha documented
+below, worth double-checking actual issue state with `gh issue view`/`issue_read` rather than
+trusting this file's closed/open claims at face value for anything high-stakes).
+
+**Next up**: no large system queued right now. Candidates sitting ready: Professions
+dialog/UI follow-up (deferred until after... wait, professions is done — the deferred item is
+actually leveling's skill/ability/attribute spend dialog, #156, intentionally held until after
+professions shipped, which it now has), #168 (taming regression, new), #100 (CI/local
+pathing flakiness, now with a local repro), #157 (WeaponType data quality), #158 (Necromancer
+spells). Ask the user which to pick up next.
+
 ## CURRENT STATE (2026-10-13, continued) — roadmap/project-board pass + leveling system design
 
 Session moved from reactive bugfixing into step-back planning, per user request
