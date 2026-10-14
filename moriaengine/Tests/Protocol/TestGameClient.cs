@@ -60,6 +60,9 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0x22, 2 },  // CharacterMoveAcknowledgeOutPacket
 			{ 0x21, 7 },  // CharMoveRejectionOutPacket
 			{ 0x27, 1 },  // RejectMoveItemRequestOutPacket
+			{ 0xC0, 35 }, // GraphicalEffectOutPacket (type/sourceUid/targetUid/effect/sourceX/sourceY/
+			              // sourceZ/targetX/targetY/targetZ/speed/duration/unk/fixedDirection/explodes/
+			              // hue/renderMode = 1+4+4+2+2+2+1+2+2+1+1+1+2+1+1+4+4 = 35)
 		};
 
 		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,
@@ -529,6 +532,22 @@ namespace SteamEngine.Tests.Protocol {
 				layoutText = layoutText.Substring(0, nul);
 			}
 			return (gumpUid, layoutText);
+		}
+
+		/// <summary>Reads UnicodeSpeechOutPacket (0xAE) - the packet behind both
+		/// AbstractCharacter.SysMessage and the plain-string overload of ClilocSysMessage's
+		/// sibling methods, confirming the player actually received a given line of text (e.g.
+		/// the leveling system's "You have gained N experience"/"You have advanced to level N!"
+		/// messages, #129). Field layout: flaggedUid(4)/model(2)/type(1)/color(2)/font(2)/
+		/// language ascii(4)/sourceName ascii(30)/message utf16-be(variable)/2 zero bytes (see
+		/// UnicodeSpeechOutPacket.WriteDynamicPart in GameCore/Networking/OutgoingPackets.cs) -
+		/// the trailing 2 zero bytes are the unicode string's own null terminator, not part of
+		/// the message text.</summary>
+		public string ReadSystemMessage(TimeSpan timeout) {
+			byte[] payload = this.ReadPacketPayload(0xAE, timeout);
+			const int prefixLen = 2 + 4 + 2 + 1 + 2 + 2 + 4 + 30;
+			int messageByteLen = payload.Length - prefixLen - 2;
+			return Encoding.BigEndianUnicode.GetString(payload, prefixLen, messageByteLen);
 		}
 
 		/// <summary>

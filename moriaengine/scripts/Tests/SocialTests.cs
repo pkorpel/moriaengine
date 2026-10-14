@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Reflection;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -33,6 +34,26 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestEnableAutoAccountCreation(Character self) {
 			Globals.AutoAccountCreation = true;
 			Console.WriteLine("AUTO_ACCOUNT_TEST: ENABLED");
+		}
+
+		/// <summary>Promotes self's account straight to the server's maximal plevel, bypassing
+		/// AbstractAccount.MaxPLevel's normal get-only public surface via reflection on its
+		/// private backing field. Real finding: AbstractAccount.HandleLoginAttempt only ever
+		/// auto-elevates the literal FIRST account ever created on a fresh server
+		/// (accounts.Count == 1 at creation) - every test needing a GM-only command (e.g. the
+		/// pre-existing .info dialog, Dialogs.D_Info.Info) was otherwise at the mercy of
+		/// xUnit's execution order deciding which account happened to connect first. "Test"
+		/// commands are already exempt from CommandsAuthorization entirely (see on_Command's
+		/// own StartsWith("Test") check), so this doesn't bypass anything a real player could
+		/// ever reach - it's purely a test harness convenience, same spirit as this file's
+		/// other account-setup helpers.</summary>
+		[SteamFunction]
+		public static void TestPromoteToGM(Character self) {
+			AbstractAccount account = self.Account;
+			FieldInfo maxPlevelField = typeof(AbstractAccount).GetField("maxPlevel", BindingFlags.NonPublic | BindingFlags.Instance);
+			maxPlevelField.SetValue(account, Globals.MaximalPlevel);
+			account.PLevel = Globals.MaximalPlevel;
+			Console.WriteLine("PROMOTE_TO_GM: maxPlevel=" + account.MaxPLevel + " plevel=" + account.PLevel);
 		}
 
 		/// <summary>Logs this character's own uid so a DIFFERENT, simultaneously-connected
