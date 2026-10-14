@@ -307,7 +307,7 @@ experience everywhere until values get authored per monster (consistent with
 #12, NPC content ~55-60% incomplete). Test kills a `c_a_jackrabbit` directly
 via `CauseDeath` and asserts the exact grant.
 
-**Leveling Phase 3 (#128) — SHIPPED, merging now.** Death's experience-loss/
+**Leveling Phase 3 (#128) — SHIPPED (PR #145, merged 2026-10-14).** Death's experience-loss/
 pay-the-killer mechanic: `LevelingSystem.ApplyDeathExperienceLoss(Player
 victim, Character killedBy)`, hooked into `Player.On_Death`. Two new
 `LevelingSettings` fields (same class as Phase 1's `nextLevelCoefficient`):
