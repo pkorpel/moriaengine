@@ -57,7 +57,7 @@ namespace SteamEngine.CompiledScripts {
 			//from this allowlist meant it silently required GM (plevel>=4) by the default-deny
 			//fallback. Only ever worked by accident for whichever account happened to be the
 			//very first one created on a fresh server (AbstractAccount.HandleLoginAttempt grants
-			//that one account MaximalPlevel) - every other player was silently denied (#145).
+			//that one account MaximalPlevel) - every other player was silently denied (#146).
 			this.commands["explevel"] = PLEVEL_PLAYER;
 			//explevel.scp's own body calls these two bare (no explicit receiver) as its first two
 			//lines, to refresh self's cached combat stat values before displaying them - a bare

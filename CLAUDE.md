@@ -326,7 +326,7 @@ mechanism exists anywhere in this engine to split credit from; the user's
 not invented speculatively here.
 
 **Three real bugs found and fixed while building/testing Phase 3 (all filed,
-see issue #145 for the full writeup):**
+see issue #146 for the full writeup):**
 1. **`Character.CauseDeath` is a no-op once `Flag_Dead` is already true** —
    not itself a bug (working as designed), but a real TEST-correctness trap:
    the first version of the post-death-immunity test killed the same victim
