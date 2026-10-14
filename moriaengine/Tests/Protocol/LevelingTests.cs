@@ -4,15 +4,26 @@ using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
-	/// Leveling system Phase 1 (#126): the level * coefficient threshold formula (with
-	/// overflow carry across multiple levels in one gain), and the .explevel dialog actually
-	/// opening without error (scripts/Basic/dialogs/explevel.scp - LScript content isn't
-	/// checked by `dotnet build` at all, so this is the only thing that would catch a syntax
-	/// or token-resolution error in it).
+	/// Leveling system Phases 1-3 (#126-#128): the level * coefficient threshold formula (with
+	/// overflow carry across multiple levels in one gain), monster-kill experience grants, and
+	/// death's experience-loss/pay-the-killer mechanic (including the post-death immunity
+	/// window). The .explevel dialog itself is covered separately in ExpLevelDialogTests.cs -
+	/// real finding while building this file: it needs full isolation in its own
+	/// GameServerPairFixture/collection, not shared with these Facts (see that file's own doc
+	/// comment for why).
 	/// </summary>
 	[Collection(LevelingCollection.Name)]
 	public class LevelingTests {
 		private const string Account = "protocoltest";
+		private const string AccountB = "protocoltest2";
+		// Separate account for the Phase 3 tests' victim characters - AbstractAccount caps each
+		// account at maxCharactersPerGameAccount (5), and Account above already creates 4 other
+		// characters across this file's other Facts, so a 5th+6th here would intermittently fail
+		// to create (silently closes the connection - see CreateCharacterInPacket.Handle's
+		// HasFreeSlot check) depending on xUnit's test execution order. Real bug found while
+		// debugging exactly this: 3 of 6 Facts failed with 10s timeouts whenever they happened to
+		// run after the account's 5 slots were already used up by other Facts.
+		private const string AccountC = "protocoltest3";
 		private const string Password = "protocoltest";
 
 		private readonly GameServerPairFixture fixture;
@@ -23,7 +34,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		[Fact]
 		public void SingleLevelUpCarriesOverflowExperience() {
-			using (var client = this.ConnectLoginAndCreateCharacter("LevelOneUpper")) {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "LevelOneUpper")) {
 				client.SendSpeech(".TestSetLevelAndExperience 1 600");
 				Assert.True(this.fixture.WaitForGameOutput("LEVELING_TEST_SETUP:", TimeSpan.FromSeconds(10)));
 
@@ -39,7 +50,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		[Fact]
 		public void OneLargeGainCascadesThroughMultipleLevels() {
-			using (var client = this.ConnectLoginAndCreateCharacter("LevelMultiUpper")) {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "LevelMultiUpper")) {
 				client.SendSpeech(".TestSetLevelAndExperience 0 0");
 				Assert.True(this.fixture.WaitForGameOutput("LEVELING_TEST_SETUP:", TimeSpan.FromSeconds(10)));
 
@@ -55,7 +66,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		[Fact]
 		public void KillingNpcGrantsExperienceToKiller() {
-			using (var client = this.ConnectLoginAndCreateCharacter("LevelNpcKiller")) {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "LevelNpcKiller")) {
 				client.SendSpeech(".TestSetLevelAndExperience 0 0");
 				Assert.True(this.fixture.WaitForGameOutput("LEVELING_TEST_SETUP:", TimeSpan.FromSeconds(10)));
 
@@ -65,18 +76,106 @@ namespace SteamEngine.Tests.Protocol {
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_KILL_TEST_RESULT:");
 				Assert.Contains("level=0", line);
 				Assert.Contains("experience=50", line);
+
+				// Leaves a corpse behind - clean it up now, while still connected near it, rather
+				// than letting it accumulate for whichever connection happens to spawn nearby next
+				// (see ExpLevelDialogOpensWithoutError's own real finding on why that matters).
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCleanupNearbyDebris");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_CLEANUP:", mark, TimeSpan.FromSeconds(10)));
 			}
 		}
 
+		/// <summary>Phase 3 (#128): the default-settings case - victim loses 100% of experience
+		/// (full reset), killer gets 10% of what was LOST (not of the victim's original total).
+		/// Needs two real, simultaneously-connected characters (same pattern as SocialTests.cs,
+		/// including its real finding that a second real account needs
+		/// Globals.AutoAccountCreation flipped on first) since CauseDeath's killer attribution is
+		/// a real Character reference, not something a single connection can fake.</summary>
 		[Fact]
-		public void ExpLevelDialogOpensWithoutError() {
-			using (var client = this.ConnectLoginAndCreateCharacter("LevelDialogChecker")) {
-				client.SendSpeech(".explevel");
-				// If Construct() threw (e.g. a bad <Token> in the TEXT section, or an LScript
-				// syntax error at load time), no gump packet would ever arrive at all and this
-				// would time out/throw - that's the real signal here, not a log-string match.
-				var (gumpUid, layoutText) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				Assert.True(gumpUid != 0 || layoutText.Length > 0, "Expected a real gump dialog to open for .explevel.");
+		public void DeathCausesExperienceLossAndPaysTheKiller() {
+			using (var victimClient = this.ConnectLoginAndCreateCharacter(AccountC, "DeathLossVictim")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				victimClient.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST: ENABLED", mark, TimeSpan.FromSeconds(10)));
+
+				using (var killerClient = this.ConnectLoginAndCreateCharacter(AccountB, "DeathLossKiller")) {
+					mark = this.fixture.GameOutputSnapshot().Length;
+					victimClient.SendSpeech(".TestReportMyUid");
+					Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", mark, TimeSpan.FromSeconds(10)));
+					uint victimUid = ExtractUid(this.fixture.GameOutputSnapshot(), mark);
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					victimClient.SendSpeech(".TestSetLevelAndExperience 1 1000");
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_SETUP:", mark, TimeSpan.FromSeconds(10)));
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					killerClient.SendSpeech(".TestSetLevelAndExperience 0 0");
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_SETUP:", mark, TimeSpan.FromSeconds(10)));
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					killerClient.SendSpeech(".TestKillPlayerAndReportResult " + victimUid);
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_DEATH_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+					string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_DEATH_TEST_RESULT:");
+					// victim: level 1, 1000 exp, loses 100% -> 0. killer: gets 10% of the 1000 lost = 100 (still level 0, 100 < 330).
+					Assert.Contains("victimLevel=1", line);
+					Assert.Contains("victimExperience=0", line);
+					Assert.Contains("killerLevel=0", line);
+					Assert.Contains("killerExperience=100", line);
+
+					// Leaves a corpse behind - clean it up now (see KillingNpcGrantsExperienceToKiller's
+					// identical comment for why).
+					mark = this.fixture.GameOutputSnapshot().Length;
+					killerClient.SendSpeech(".TestCleanupNearbyDebris");
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_CLEANUP:", mark, TimeSpan.FromSeconds(10)));
+				}
+			}
+		}
+
+		/// <summary>Phase 3 (#128): mirrors Erebor's i_checkstats_timer - within 5 minutes of a
+		/// previous death, a second death loses NO further experience (and so pays the killer
+		/// nothing either), even though the victim has plenty of experience to lose at the time
+		/// of the second death.</summary>
+		[Fact]
+		public void PostDeathImmunityPreventsASecondLossWithinFiveMinutes() {
+			using (var victimClient = this.ConnectLoginAndCreateCharacter(AccountC, "ImmunityVictim")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				victimClient.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST: ENABLED", mark, TimeSpan.FromSeconds(10)));
+
+				using (var killerClient = this.ConnectLoginAndCreateCharacter(AccountB, "ImmunityKiller")) {
+					mark = this.fixture.GameOutputSnapshot().Length;
+					victimClient.SendSpeech(".TestReportMyUid");
+					Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", mark, TimeSpan.FromSeconds(10)));
+					uint victimUid = ExtractUid(this.fixture.GameOutputSnapshot(), mark);
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					victimClient.SendSpeech(".TestSetLevelAndExperience 1 1000");
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_SETUP:", mark, TimeSpan.FromSeconds(10)));
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					killerClient.SendSpeech(".TestSetLevelAndExperience 0 0");
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_SETUP:", mark, TimeSpan.FromSeconds(10)));
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					killerClient.SendSpeech(".TestKillPlayerAndReportResult " + victimUid);
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_DEATH_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+					// first death: victim 1000 -> 0, killer 0 -> 100. Sets the victim's immunity timer.
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					victimClient.SendSpeech(".TestSetLevelAndExperience 5 2000"); // victim has plenty to lose again
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_SETUP:", mark, TimeSpan.FromSeconds(10)));
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					killerClient.SendSpeech(".TestKillPlayerAndReportResult " + victimUid);
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_DEATH_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+					string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_DEATH_TEST_RESULT:");
+					// within 5 minutes of the first death - immunity suppresses the loss entirely, killer gets nothing more.
+					Assert.Contains("victimLevel=5", line);
+					Assert.Contains("victimExperience=2000", line);
+					Assert.Contains("killerLevel=0", line);
+					Assert.Contains("killerExperience=100", line);
+				}
 			}
 		}
 
@@ -90,15 +189,26 @@ namespace SteamEngine.Tests.Protocol {
 			return output.Substring(idx, end - idx);
 		}
 
+		private static uint ExtractUid(string output, int since) {
+			int idx = output.IndexOf("MY_UID: ", since, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find MY_UID after position " + since + " in:\n" + output);
+			string rest = output.Substring(idx + "MY_UID: ".Length);
+			int end = 0;
+			while (end < rest.Length && char.IsDigit(rest[end])) {
+				end++;
+			}
+			return uint.Parse(rest.Substring(0, end), System.Globalization.CultureInfo.InvariantCulture);
+		}
+
 		/// <summary>See CombatDepthTestBase's identical helper for why this retries - the same
 		/// account-reuse/connection race applies here.</summary>
-		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+		private TestGameClient ConnectLoginAndCreateCharacter(string account, string charName) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(Account, Password);
+					game.SendLogin(account, Password);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					return game;
@@ -111,12 +221,12 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
 		}
 
-		private int WaitForServerListingAndGetRedirectPort() {
+		private int WaitForServerListingAndGetRedirectPort(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(Account, Password);
+						login.SendLogin(account, Password);
 
 						int serverCount = login.ReadServersList();
 						if (serverCount < 1) {

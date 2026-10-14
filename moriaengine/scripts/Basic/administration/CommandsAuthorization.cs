@@ -52,6 +52,24 @@ namespace SteamEngine.CompiledScripts {
 			//equipped hand1 item (falling back to hand2) via the real Trigger_DClick path.
 			this.commands["UseHand"] = PLEVEL_PLAYER;
 
+			//Same default-deny gap as the Guild commands below - a real player-facing command
+			//(level/experience/combat-stats dialog, scripts/Basic/dialogs/explevel.scp) missing
+			//from this allowlist meant it silently required GM (plevel>=4) by the default-deny
+			//fallback. Only ever worked by accident for whichever account happened to be the
+			//very first one created on a fresh server (AbstractAccount.HandleLoginAttempt grants
+			//that one account MaximalPlevel) - every other player was silently denied (#146).
+			this.commands["explevel"] = PLEVEL_PLAYER;
+			//explevel.scp's own body calls these two bare (no explicit receiver) as its first two
+			//lines, to refresh self's cached combat stat values before displaying them - a bare
+			//LScript call like this ALSO goes through this same authorization gate (via
+			//OpNode_Lazy_Expression, same mechanism as the explevel entry above), checked against
+			//ITS OWN name, separately from the "explevel" command name itself. Missing from this
+			//list meant the explevel fix above alone wasn't enough - every non-GM player's first
+			//.explevel ever actually attempted would still be denied one line in. Purely a
+			//self-targeted cache refresh, safe for any player to trigger on themselves.
+			this.commands["InvalidateCombatWeaponValues"] = PLEVEL_PLAYER;
+			this.commands["InvalidateCombatArmorValues"] = PLEVEL_PLAYER;
+
 			//Guild commands - gated by their own internal leader/member checks, not plevel;
 			//missing from this allowlist meant they silently required GM (plevel>=4) by the
 			//default-deny fallback below, so no ordinary player could ever use them
