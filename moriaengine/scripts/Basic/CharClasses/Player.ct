@@ -30,5 +30,14 @@ Vars:	//vars defined in the class, so they basically do what tags do, but better
 	internal List<Thing> targMem = null
 	
 	//players in-game level and experience
-	private short level = 0	
+	private short level = 0
 	private int experience = 0
+
+	//leveling system (#129): unspent point pools granted on level-up, spent via LevelingSystem.TrySpendSkillPoints/TrySpendAbilityPoints
+	private int unspentSkillPoints = 0
+	private int unspentAbilityPoints = 0
+	//leveling system (#129): how many attribute points have been spent into each stat so far - used to compute the remaining attribute-point budget, see Player.AttributePointBudget
+	private int strPointsAllocated = 0
+	private int dexPointsAllocated = 0
+	private int intPointsAllocated = 0
+	private int vitPointsAllocated = 0

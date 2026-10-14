@@ -40,14 +40,30 @@ namespace SteamEngine.CompiledScripts {
 		/// shapes, since which account happens to be "first" depends on test execution order
 		/// across the whole file, not just within one Fact.</summary>
 		private static void ParseTwoInts(ScriptArgs sa, out int first, out int second) {
-			if (sa.Argv.Length >= 2) {
-				first = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
-				second = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
-			} else {
-				string[] parts = ((string) sa.Argv[0]).Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
-				first = Convert.ToInt32(parts[0], CultureInfo.InvariantCulture);
-				second = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
+			string[] parts = SplitArgs(sa);
+			first = Convert.ToInt32(parts[0], CultureInfo.InvariantCulture);
+			second = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
+		}
+
+		/// <summary>General-purpose version of the same ScriptArgs dual-shape problem described
+		/// above - handles any number of space-separated tokens, string or numeric, regardless
+		/// of which command-parsing path the sender's account plevel routes through. Real bug
+		/// found while adding TestLevelStatBonus (a single-argument command): the original
+		/// version of this method assumed Argv.Length == 1 always meant "the whole un-split
+		/// remainder as one string" - true for the primitive parser's multi-token case, but NOT
+		/// true for a genuinely single numeric argument reaching here via the full LScript
+		/// parser (elevated accounts), where Argv[0] is a boxed int, not a string, and casting
+		/// it to string threw an InvalidCastException. Only treat Argv[0] as a combined string
+		/// to split if it actually IS one.</summary>
+		private static string[] SplitArgs(ScriptArgs sa) {
+			if ((sa.Argv.Length == 1) && (sa.Argv[0] is string combined)) {
+				return combined.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 			}
+			string[] parts = new string[sa.Argv.Length];
+			for (int i = 0; i < sa.Argv.Length; i++) {
+				parts[i] = Convert.ToString(sa.Argv[i], CultureInfo.InvariantCulture);
+			}
+			return parts;
 		}
 
 		/// <summary>Cleans up leftover NPCs/corpses near self - call before any scenario that opens
@@ -78,7 +94,8 @@ namespace SteamEngine.CompiledScripts {
 			Player player = (Player) self;
 			int amount = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
 			LevelingSystem.AddExperience(player, amount);
-			Console.WriteLine("LEVELING_TEST_RESULT: level=" + player.Level + " experience=" + player.Experience);
+			Console.WriteLine("LEVELING_TEST_RESULT: level=" + player.Level + " experience=" + player.Experience +
+				" unspentSkillPoints=" + player.UnspentSkillPoints + " unspentAbilityPoints=" + player.UnspentAbilityPoints);
 		}
 
 		/// <summary>Phase 2 (#127): kills a freshly-spawned NPC directly via CauseDeath (bypassing
@@ -141,6 +158,53 @@ namespace SteamEngine.CompiledScripts {
 			victim.CauseDeath(killer);
 			Console.WriteLine("LEVELING_DEATH_TEST_RESULT: victimLevel=" + victim.Level + " victimExperience=" + victim.Experience +
 				" killerLevel=" + killer.Level + " killerExperience=" + killer.Experience);
+		}
+
+		/// <summary>Phase 4 (#129): assigns (or clears, with "none") self's profession directly -
+		/// there's no real assignment flow yet (#135, professions implementation not started),
+		/// this is the minimum viable path to exercise the profession-gated spend checks.</summary>
+		[SteamFunction]
+		public static void TestSetProfession(Character self, ScriptArgs sa) {
+			Player player = (Player) self;
+			string defname = SplitArgs(sa)[0];
+			player.Profession = defname.Equals("none", StringComparison.OrdinalIgnoreCase)
+				? null
+				: ProfessionDef.GetByDefname(defname);
+			Console.WriteLine("LEVELING_PROFESSION_SET: profession=" + (player.Profession != null ? player.Profession.Defname : "none"));
+		}
+
+		/// <summary>Phase 4 (#129): reports LevelingSystem.LevelStatBonus(level) for the given
+		/// level - this formula has no pure in-process unit test (LevelingSystem lives in the
+		/// Scripts assembly, which Tests.csproj doesn't reference), so it's verified this way
+		/// like everything else this session.</summary>
+		[SteamFunction]
+		public static void TestLevelStatBonus(Character self, ScriptArgs sa) {
+			int level = Convert.ToInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
+			Console.WriteLine("LEVEL_STAT_BONUS: " + LevelingSystem.LevelStatBonus(level));
+		}
+
+		[SteamFunction]
+		public static void TestSpendSkillPoint(Character self, ScriptArgs sa) {
+			Player player = (Player) self;
+			string[] parts = SplitArgs(sa);
+			SkillName skill = (SkillName) Enum.Parse(typeof(SkillName), parts[0], true);
+			int points = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
+			bool success = LevelingSystem.TrySpendSkillPoints(player, skill, points);
+			Console.WriteLine("LEVELING_SPEND_SKILL_RESULT: success=" + success +
+				" unspentSkillPoints=" + player.UnspentSkillPoints +
+				" skillValue=" + player.GetRealSkillValue(skill));
+		}
+
+		[SteamFunction]
+		public static void TestSpendAttributePoint(Character self, ScriptArgs sa) {
+			Player player = (Player) self;
+			string[] parts = SplitArgs(sa);
+			AttributeStat stat = (AttributeStat) Enum.Parse(typeof(AttributeStat), parts[0], true);
+			int points = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
+			bool success = LevelingSystem.TrySpendAttributePoints(player, stat, points);
+			Console.WriteLine("LEVELING_SPEND_ATTRIBUTE_RESULT: success=" + success +
+				" attributePointBudget=" + player.AttributePointBudget +
+				" str=" + player.Str + " dex=" + player.Dex + " int=" + player.Int + " vit=" + player.Vit);
 		}
 	}
 
