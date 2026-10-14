@@ -179,6 +179,51 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Phase 4 (#129): skill points (+5/level) and ability points (+2/level) are flat
+		/// per-level grants, added to the running UnspentSkillPoints/UnspentAbilityPoints pools
+		/// on every level-up inside LevelingSystem.AddExperience's loop.</summary>
+		[Fact]
+		public void LevelUpGrantsSkillAndAbilityPoints() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "LevelPointsGrantee")) {
+				client.SendSpeech(".TestSetLevelAndExperience 0 0");
+				Assert.True(this.fixture.WaitForGameOutput("LEVELING_TEST_SETUP:", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestAddExperience 2000");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_TEST_RESULT:");
+				// level 0->3 (same cascade as OneLargeGainCascadesThroughMultipleLevels) = 3 level-ups.
+				Assert.Contains("level=3", line);
+				Assert.Contains("unspentSkillPoints=15", line); // 3 * 5
+				Assert.Contains("unspentAbilityPoints=6", line); // 3 * 2
+			}
+		}
+
+		/// <summary>Phase 4 (#129): LevelingSystem.LevelStatBonus's tiered formula at its own
+		/// boundaries - verified against Erebor's f_levelstatbonus. This formula takes a level as
+		/// a plain parameter (not self's own level), so a single connection is enough.</summary>
+		[Fact]
+		public void AttributePointBudgetFollowsLevelTieredFormula() {
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "StatBonusChecker")) {
+				AssertLevelStatBonus(client, 0, 0);
+				AssertLevelStatBonus(client, 9, 36); // 9 * 4
+				AssertLevelStatBonus(client, 10, 40); // 40 + (10-10)*3 - continuous with the level-9 tier
+				AssertLevelStatBonus(client, 29, 97); // 40 + (29-10)*3
+				AssertLevelStatBonus(client, 30, 100); // 100 + (30-30)*2 - continuous with the level-29 tier
+				AssertLevelStatBonus(client, 39, 118); // 100 + (39-30)*2
+				AssertLevelStatBonus(client, 40, 120); // flat from here on
+				AssertLevelStatBonus(client, 60, 120);
+			}
+		}
+
+		private void AssertLevelStatBonus(TestGameClient client, int level, int expectedBonus) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestLevelStatBonus " + level);
+			Assert.True(this.fixture.WaitForGameOutputSince("LEVEL_STAT_BONUS:", mark, TimeSpan.FromSeconds(10)));
+			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVEL_STAT_BONUS:");
+			Assert.Equal("LEVEL_STAT_BONUS: " + expectedBonus, line);
+		}
+
 		private static string LastLineContaining(string output, string marker) {
 			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);
