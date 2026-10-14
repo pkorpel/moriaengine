@@ -1,0 +1,79 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+// Priest (#136) - skill minimums/caps cross-verified against the original Sphere source
+// (newbie_portals.scp's [profession 3]/zaklad_skilly blocks, re-fetched to scratchpad from
+// gitlab.com/erebor/sphere-public-archive), weapons/armor/stats/spells from
+// https://wiki.uoerebor.cz/docs/povolani/knez/. STR/DEX/INT/VIT stay native scale, not x10.
+// No ttb1/ttb2/ttb3 talent-tree content - abilities are out of scope per #134.
+
+[ProfessionDef profession_priest]
+Defname = class_priest //class_ as alternate prefix
+Name = "priest"
+professionPluginDef = p_profession_default
+
+//SkillNameOrDefname = starting value, cap value
+//not listed skills are considered 0, 0
+Alchemy=300, 1000
+Anatomy=300, 1000
+AnimalLore=0, 250
+ArmsLore=0, 500
+Begging=0, 1000
+Camping=0, 750
+Cooking=300, 1000
+DetectingHidden=0, 1000
+EvaluatingIntel=300, 1000
+Fishing=300, 1000
+Forensics=0, 1000
+Healing=300, 1000
+Herding=0, 500
+Hiding=0, 750
+Inscription=300, 1000
+ItemID=0, 750
+Lumberjacking=0, 1000
+Macefighting=300, 750
+Magery=300, 1000
+MagicResistance=0, 750
+Meditation=300, 750
+Mining=0, 1000
+Musicianship=300, 1000
+Parrying=0, 750
+Peacemaking=300, 1000
+RemoveTrap=0, 500
+SpiritSpeak=0, 1000
+Stealth=0, 500
+Tactics=0, 750
+TasteID=0, 1000
+Tracking=0, 500
+Veterinary=0, 500
+Wrestling=0, 750
+
+//weapon/armor restrictions (#135/#138) - blunt weapons and staves only, per the wiki's weapon
+//list ("mace, war mace, hammerpick, war hammer, maul, nebo magicke hole"); any armor material
+//except bone, per the wiki ("all other armor types allowed except bone armor")
+allowedWeaponTypes=OneHandBlunt, TwoHandBlunt
+allowedArmorMaterials=Leather, Studded, Chain, Ring, Plate
+
+//STR/DEX/INT/VIT ranges {minimum, startingMax, hardCap} (#135/#134, native 0-100+ scale, NOT x10)
+strRange=60, 90, 130
+dexRange=70, 100, 120
+intRange=60, 90, 120
+vitRange=70, 120, 160
+
+//list allowed spells, per the wiki. Reactive Armor is omitted - not implemented in this engine
+//(scripts/Basic/skills/Magery/Spells/unimplementedSpells.def), same precedent as mage.def's
+//own commented-out summon spells.
+allowedSpells=s_magic_arrow, s_nightsight, s_heal, s_agility, s_cunning, s_cure, s_protection, s_strength, s_harm, s_bless, s_teleport, s_archcure, s_archprotection, s_greater_heal, s_recall, s_magic_reflection, s_dispel_field, s_dispel, s_mark, s_gate_travel, s_resurrection
+//s_reactive_armor - not implemented in this engine

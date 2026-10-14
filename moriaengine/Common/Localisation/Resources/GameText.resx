@@ -451,6 +451,12 @@
   <data name="ProfessionPluginLoc_YouCantCastThis" xml:space="preserve">
     <value>You can't cast this spell, being {0} of profession.</value>
   </data>
+  <data name="ProfessionPluginLoc_WeaponNotAllowedForProfession" xml:space="preserve">
+    <value>Your profession does not allow you to use this weapon.</value>
+  </data>
+  <data name="ProfessionPluginLoc_ArmorNotAllowedForProfession" xml:space="preserve">
+    <value>Your profession does not allow you to wear this armor.</value>
+  </data>
   <data name="RecallRuneLoc_ForbiddenEnemyTeleportingIn" xml:space="preserve">
     <value>Zde je nep��tel�m zak�z�no kouzlit teleportovac� kouzla</value>
   </data>

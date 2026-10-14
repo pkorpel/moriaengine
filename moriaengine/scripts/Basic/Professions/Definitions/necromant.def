@@ -1,0 +1,87 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+// Necromancer (#136) - skill minimums/caps cross-verified against the original Sphere source
+// (newbie_portals.scp's [profession 1]/zaklad_skilly blocks, re-fetched to scratchpad from
+// gitlab.com/erebor/sphere-public-archive), weapons/armor/stats/spells from
+// https://wiki.uoerebor.cz/docs/povolani/nekromant/. STR/DEX/INT/VIT stay native scale, not x10.
+// No ttb1/ttb2/ttb3 talent-tree content - abilities are out of scope per #134.
+//
+// Real finding while authoring this: most of this profession's signature "Black Magic" spells
+// (Animate Dead, Bone Armor, Summon Undead, Fire Bolt, Light, Mana Drain, Mana Vampire, Energy
+// Vortex, Summon Creature, Reveal) are NOT implemented in this engine at all
+// (scripts/Basic/skills/Magery/Spells/unimplementedSpells.def has them all as commented-out
+// stubs) - a bigger gap than mage.def's own handful of missing summon spells. Flagged in
+// #158, not fixed here (implementing 10 spells is well beyond this profession-authoring pass).
+
+[ProfessionDef profession_necromant]
+Defname = class_necromant //class_ as alternate prefix
+Name = "necromancer"
+professionPluginDef = p_profession_default
+
+//SkillNameOrDefname = starting value, cap value
+//not listed skills are considered 0, 0
+Alchemy=300, 1000
+AnimalLore=0, 250
+Anatomy=0, 750
+Begging=0, 500
+Camping=0, 500
+Cooking=300, 1000
+DetectingHidden=0, 1000
+EvaluatingIntel=300, 1000
+Fishing=300, 1000
+Forensics=0, 1000
+Healing=0, 500
+Herding=0, 500
+Hiding=0, 500
+Inscription=300, 1000
+ItemID=0, 750
+Lumberjacking=0, 1000
+Macefighting=0, 500
+Magery=300, 1000
+MagicResistance=300, 1000
+Meditation=300, 1000
+Mining=0, 1000
+Musicianship=0, 750
+Necromancy=300, 1000
+Poisoning=0, 750
+Provocation=0, 500
+RemoveTrap=0, 500
+SpiritSpeak=0, 1000
+Stealth=0, 500
+Tactics=0, 500
+TasteID=0, 1000
+Tracking=0, 250
+Veterinary=0, 500
+Wrestling=0, 500
+
+//weapon/armor restrictions (#135/#138) - magical staves only, per the wiki ("primarily use
+//[magical staves]"); reinforced bone armor only, per the wiki ("only reinforced bone armor
+//permitted")
+allowedWeaponTypes=OneHandBlunt, TwoHandBlunt
+allowedArmorMaterials=Bone
+
+//STR/DEX/INT/VIT ranges {minimum, startingMax, hardCap} (#135/#134, native 0-100+ scale, NOT x10)
+strRange=60, 90, 100
+dexRange=60, 90, 100
+intRange=80, 130, 220
+vitRange=60, 90, 110
+
+//list allowed spells, per the wiki - only the Magery-circle subset that's actually implemented
+//in this engine (see the file-level comment above for the large chunk of Necromancer-specific
+//"Black Magic" spells this excludes, all unimplemented, not a deliberate restriction).
+allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_harm, s_fireball, s_poison, s_teleport, s_wall_of_stone, s_curse, s_recall, s_paralyze, s_magic_reflection, s_dispel_field, s_dispel, s_mark, s_mass_curse, s_flamestrike, s_mass_dispel, s_gate_travel, s_resurrection, s_mana_shield
+//s_mana_drain, s_summon_creature, s_mana_vampire, s_energy_vortex, s_animate_dead,
+//s_bone_armor, s_fire_bolt, s_light, s_summon_undead, s_reveal - not implemented in this engine

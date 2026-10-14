@@ -63,6 +63,10 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0xC0, 35 }, // GraphicalEffectOutPacket (type/sourceUid/targetUid/effect/sourceX/sourceY/
 			              // sourceZ/targetX/targetY/targetZ/speed/duration/unk/fixedDirection/explodes/
 			              // hue/renderMode = 1+4+4+2+2+2+1+2+2+1+1+1+2+1+1+4+4 = 35)
+			{ 0x23, 25 }, // DraggingOfItemOutPacket (sent on pickup, drag-to-cursor animation -
+			              // payload excludes the id byte: model/zeros/amount/sourceUid/sourceX/
+			              // sourceY/sourceZ/targetUid/targetX/targetY/targetZ =
+			              // 2+3+2+4+2+2+1+4+2+2+1 = 25)
 		};
 
 		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,
@@ -84,6 +88,8 @@ namespace SteamEngine.Tests.Protocol {
 			0xBD, // ClientVersionOutPacket (server requesting the client report its version)
 			0x89, // CorpseClothingOutPacket (sent for a nearby corpse with equipped items - first
 			      // exercised by Phase 3's real player deaths, #128)
+			0xC1, // ClilocMessageOutPacket (seen alongside the #138 weapon/armor deny message -
+			      // some other cliloc-based notice arrives in the same stream, not decoded here)
 		};
 
 		/// <summary>
@@ -396,6 +402,21 @@ namespace SteamEngine.Tests.Protocol {
 			EncodeUShortBigEndian(y, packet, 7);
 			packet[9] = (byte) z;
 			EncodeIntBigEndian(contUid, packet, 10);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
+		/// Sends DropToWearItemInPacket (0x13) - id(1) + itemUid(4) + layer(1, ignored by the
+		/// server - see DropToWearItemInPacket.Read's own comment) + contUid(4). Requires a
+		/// prior SendPickUpItem for the same itemUid, same as SendDropItem. contUid is normally
+		/// the wearer's own uid (equipping on self via the paperdoll).
+		/// </summary>
+		public void SendDropToWearItem(uint itemUid, uint contUid) {
+			byte[] packet = new byte[10];
+			packet[0] = 0x13;
+			EncodeIntBigEndian((int) itemUid, packet, 1);
+			packet[5] = 0;
+			EncodeIntBigEndian((int) contUid, packet, 6);
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
