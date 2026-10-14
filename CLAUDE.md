@@ -475,12 +475,30 @@ the tests themselves):**
   isolated test) are now the two files for this system's protocol tests — 7
   Facts in the shared fixture, 2 in the isolated one.
 
-**Next action: Phase 5 (#130) is just confirming no separate work is needed**
-(experience gates/quests are out of scope, #130's only job was making sure
-Phase 1's shared `AddExperience` entry point satisfies it - it does, nothing
-further to build). Once Phase 4 ships and Phase 5 is closed out, the full
-leveling system (#125) is complete. Professions (#134) is the next large
-system after that, per the sequencing decision above.
+**LEVELING SYSTEM (#125) COMPLETE — all 5 phases shipped 2026-10-13/14.**
+#126 (PR #142), #127 (PR #144), #128 (PR #145), #129 (PR #148) all merged and
+closed. #130 (gates/quests) confirmed satisfied by Phase 1's shared
+`AddExperience` entry point - left open as a deliberately-deferred backlog
+item (actual gate/quest content, not blocking), same treatment as #96/#22/#29.
+Tracking issue #125 itself closed.
+
+**What's still genuinely open/deferred within leveling, for whenever it comes
+back up**:
+- A real player-facing dialog to spend skill/ability/attribute points (the
+  user's own "we will be using new dialog to upgrade skills") - only a
+  `[SteamFunction]` test harness exists today (Phase 4).
+- Per-profession attribute RANGES (not just the overall point budget) once
+  #135 (professions' `strRange`/`dexRange`/etc. fields) ships.
+- Ability-point spending has no profession-based gating yet (abilities/
+  talent-trees are still out of scope entirely, per the Professions section
+  below).
+- Skill-gain-through-use for the smaller crafting/gathering skill list
+  (#140, explicitly deferred until that content area is the focus).
+
+**Next action: Professions (#134) is the next large system, per the
+sequencing decision above** - fully designed already (read #134 and
+#135-#138), not started. No further leveling work is planned right now
+unless the user asks for the dialog/UI follow-up above.
 
 ## CI minutes — separate, still-unresolved thread (2026-10-13)
 
