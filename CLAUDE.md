@@ -297,13 +297,114 @@ per the "always delete after use" rule above) — ask the user for it next time
 project-board bookkeeping is worth batching, not urgent enough to interrupt
 Phase 2+ implementation for.
 
-**Next action: implementing Leveling Phase 2 (#127) — monster-kill experience
-grant.** Design (already settled, see #127): add a flat experience "worth"
-field to `NPCDef` (Erebor pattern: `tag.experience={min max}` random range, not
-derived from stats), hook into the NPC death path to grant it to the killer via
-`LevelingSystem.AddExperience` when the killer is a `Player` (Erebor itself
-only runs its level-up logic `if (isplayer)` — mirror that, monsters/NPCs don't
-level).
+**Leveling Phase 2 (#127) — SHIPPED (PR #144, merged 2026-10-13).**
+`NPCDef.ExperienceWorth` {min,max} range (new `"experience"` LoadScriptLine
+case on `NPCDef`, single value or `"min max"`) + `RollExperienceReward()`.
+`NPC.On_Death` grants that roll to the killer via `LevelingSystem.AddExperience`
+when the killer is a `Player` — NPCs never level, mirrors Erebor's own
+`if (isplayer)` guard. No existing `.def` content touched — defaults to no
+experience everywhere until values get authored per monster (consistent with
+#12, NPC content ~55-60% incomplete). Test kills a `c_a_jackrabbit` directly
+via `CauseDeath` and asserts the exact grant.
+
+**Leveling Phase 3 (#128) — SHIPPED, merging now.** Death's experience-loss/
+pay-the-killer mechanic: `LevelingSystem.ApplyDeathExperienceLoss(Player
+victim, Character killedBy)`, hooked into `Player.On_Death`. Two new
+`LevelingSettings` fields (same class as Phase 1's `nextLevelCoefficient`):
+`experienceLossPercentage` (default 100 — full reset) and `pkGainPercentage`
+(default 10 — of the *lost* amount, not the victim's original total, matching
+the user's exact stated design). 5-minute post-death immunity (own tag in
+`LevelingSystem`, mirrors Erebor's `i_checkstats_timer`) suppresses a SECOND
+death's loss entirely if within that window of the first. Safe-zone/arena
+exemption via new `Notoriety.IsExemptFromExperienceLoss` (narrower than
+`IsAttackBlockedByRegion` — only `Flag_Safe`/`Flag_Arena`, not `Flag_Guarded`/
+`Flag_NoPvp`, per the user's own "safe zones and arenas" wording).
+Multi-killer credit-splitting is explicitly OUT of scope — `CauseDeath` only
+ever identifies one `killedBy` Character, no damage-contribution-list
+mechanism exists anywhere in this engine to split credit from; the user's
+"default even split" note applies only if/when such a mechanism gets built,
+not invented speculatively here.
+
+**Three real bugs found and fixed while building/testing Phase 3 (all filed,
+see issue #145 for the full writeup):**
+1. **`Character.CauseDeath` is a no-op once `Flag_Dead` is already true** —
+   not itself a bug (working as designed), but a real TEST-correctness trap:
+   the first version of the post-death-immunity test killed the same victim
+   twice without resurrecting between, so the second `CauseDeath` call did
+   literally nothing — the test was "passing" for a completely unrelated
+   reason. Fixed by having the test's kill helper
+   (`TestKillPlayerAndReportResult`) resurrect the victim first if already
+   dead. Worth remembering for any future test that re-kills the same
+   character.
+2. **Lazy `.def`-expression fields evaluated synchronously inside a chat
+   command get denied for non-GM accounts.** Every animal `.def`'s
+   `DeathSound = snd_X + N` is an LScript expression, evaluated lazily on
+   first access. `OpNode_Lazy_Expression.Run` calls
+   `Commands.AuthorizeCommandThrow(Globals.Src, this.name)` for that
+   evaluation — fine when nothing is "running" as a command, but if
+   `CauseDeath` happens *synchronously inside* a chat command's own call
+   stack (`Commands.commandRunning == true`), the symbol name gets
+   authorization-checked as if it were a command, and `"snd_ANIMALS_RABBIT3"`
+   obviously isn't allowlisted → denied. Can't happen in real gameplay (real
+   monster death from weapon/spell damage is always async, via combat
+   timers) — only surfaced because `TestKillNpcGrantsExperience` called
+   `CauseDeath` directly from a `[SteamFunction]` invoked as a command. Fixed
+   in the TEST (not the engine) by deferring the actual kill to a
+   near-immediate `BoundTimer` (`DeferredNpcKillTimer`,
+   `scripts/Tests/LevelingTests.cs`) so it runs after the command finishes —
+   this is also a more accurate model of how a real death happens, not just
+   a workaround.
+3. **`.explevel` was completely broken for every real player except the
+   server's lucky first-ever account — a genuine production bug, not a test
+   artifact.** Same root mechanism as #2, but hit via a *different*, much
+   more consequential path: `explevel.scp`'s own first two lines call
+   `InvalidateCombatWeaponValues()`/`InvalidateCombatArmorValues()` bare (no
+   explicit receiver) — ordinary LScript calls, not test code, used by real
+   players every time they'd open this dialog. Both names were missing from
+   `CommandsAuthorization.cs`'s allowlist (same default-deny gap/precedent as
+   the Guild commands already documented there), so they got silently
+   denied for any account except the one `AbstractAccount.HandleLoginAttempt`
+   happens to auto-elevate (`accounts.Count == 1` at creation — ONLY the
+   very first account ever, not just "any auto-created" one). This had been
+   invisible all session because every single test so far only ever used
+   that one lucky first account (`"protocoltest"`). **Actually fixed in
+   production code**: `this.commands["explevel"]`,
+   `["InvalidateCombatWeaponValues"]`, `["InvalidateCombatArmorValues"]` all
+   added as `PLEVEL_PLAYER` in `CommandsAuthorization.cs`.
+
+**Test-infrastructure lesson learned the hard way (worth remembering for any
+future multi-Fact protocol test file in this repo):**
+- `AbstractAccount.maxCharactersPerGameAccount` caps each account at 5
+  character slots — a test file that accumulates more than 5 character
+  creations under one shared account name will intermittently fail
+  (`CreateCharacterInPacket.Handle`'s `HasFreeSlot` check silently closes the
+  connection) depending on xUnit's execution order. Give later Facts their
+  own dedicated account name once a shared one is getting crowded.
+- `Commands.InvokeCommand` routes a chat command through either
+  `SimpleCommandParser` (ONE combined string argument, no splitting at all)
+  or the full LScript parser (real multi-argument splitting), gated purely on
+  `commandSrc.MaxPlevel >= Globals.PlevelForLscriptCommands` (default 2) —
+  and only the server's very first-ever account gets auto-elevated past that
+  threshold. Any test SteamFunction taking 2+ space-separated numeric
+  arguments needs to tolerate BOTH shapes (`sa.Argv.Length >= 2` vs. a single
+  combined string in `sa.Argv[0]` needing manual splitting) unless it's
+  certain to always run from that one lucky elevated account.
+- **A Fact that triggers a real player/NPC death and a LATER, unrelated Fact
+  that just needs a clean dialog/packet check should NOT share a
+  `GameServerPairFixture`/collection**, even with generous timeouts and
+  fresh-connection retries — this was tried extensively and never fully
+  fixed the symptom, it was genuinely deterministic once the earlier Facts
+  had run. The clean fix is a dedicated `[CollectionDefinition]` +
+  `ICollectionFixture<GameServerPairFixture>` for that one Fact (see
+  `Tests/Protocol/ExpLevelDialogTests.cs`), not more retries/timeouts/corpse
+  cleanup. Corpse cleanup (`VerificationTestUtils.CleanupNearbyCorpses`, now
+  also in that file alongside the existing `CleanupNearbyNpcs`) is still
+  worth keeping as general hygiene for Facts that DO legitimately share a
+  fixture, just wasn't the actual fix for this specific case.
+
+**Next action: implementing Leveling Phase 4 (#129) + the shared stat system**
+(point pools: skill/ability/attribute — see the design already settled
+earlier in this file, "Level-up rewards" bullet under Phase 1's section).
 
 ## CI minutes — separate, still-unresolved thread (2026-10-13)
 

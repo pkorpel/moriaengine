@@ -48,5 +48,28 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 		}
+
+		/// <summary>Deletes every Corpse within `range` tiles of `self` - a real player/NPC death
+		/// (#128/#127) leaves one of these behind, unlike plain NPC deletion. Needed once a
+		/// scenario that spawns many real deaths (Phase 3's two-account death tests) shares a
+		/// fixture with a later scenario connecting fresh near the same spawn point - an
+		/// accumulating pile of nearby corpses otherwise means a new connection's normal
+		/// nearby-object sync burst (DrawObject/health/ObjectInfo/CorpseClothing/ItemsInContainer
+		/// per corpse) can grow large enough to push a later, unrelated packet past a test's
+		/// timeout.</summary>
+		public static void CleanupNearbyCorpses(Character self, int range) {
+			List<Corpse> toDelete = new List<Corpse>();
+			foreach (Thing thing in self.GetMap().GetThingsInRange(self.X, self.Y, range)) {
+				Corpse corpse = thing as Corpse;
+				if (corpse != null) {
+					toDelete.Add(corpse);
+				}
+			}
+			foreach (Corpse corpse in toDelete) {
+				if (!corpse.IsDeleted) {
+					corpse.Delete();
+				}
+			}
+		}
 	}
 }

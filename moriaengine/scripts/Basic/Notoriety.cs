@@ -180,6 +180,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 			return region.Flag_Safe || region.Flag_Guarded || region.Flag_NoPvp;
 		}
+
+		/// <summary>True if `self` should be exempt from the leveling system's death-experience-loss
+		/// (#128) - safe zones and arenas, matching the user's own stated design (deliberately a
+		/// narrower set of flags than RegionBarsCombat above - a guarded town isn't meant to grant
+		/// exp-loss immunity, only true safe zones and arenas are).</summary>
+		public static bool IsExemptFromExperienceLoss(Character self) {
+			FlaggedRegion region = self.Region as FlaggedRegion;
+			if (region == null) {
+				return false;
+			}
+			return region.Flag_Safe || region.Flag_Arena;
+		}
 	}
 
 	[SaveableClass]
