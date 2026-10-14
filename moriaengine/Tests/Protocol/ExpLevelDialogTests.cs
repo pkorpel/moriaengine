@@ -17,7 +17,7 @@ namespace SteamEngine.Tests.Protocol {
 	/// bug this test originally caught - explevel.scp's own body calling
 	/// InvalidateCombatWeaponValues()/InvalidateCombatArmorValues() bare, which was missing from
 	/// CommandsAuthorization.cs's allowlist and so got silently denied for every non-GM account
-	/// (#145, fixed there) - is unrelated to and already fixed independently of this isolation;
+	/// (#146, fixed there) - is unrelated to and already fixed independently of this isolation;
 	/// giving this test its own fixture is purely about not fighting whatever specific
 	/// cross-Fact server-state interaction causes the remaining symptom, rather than continuing
 	/// to chase it indefinitely.

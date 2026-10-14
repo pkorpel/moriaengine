@@ -101,7 +101,7 @@ namespace SteamEngine.CompiledScripts {
 		/// happen in real gameplay (a monster's real death from weapon/spell damage happens via
 		/// async combat timers, never synchronously nested inside a player's own command
 		/// dispatch) - it only surfaces here because this test deliberately calls CauseDeath
-		/// directly from within a SteamFunction invoked AS a chat command. Filed as #145 (real,
+		/// directly from within a SteamFunction invoked AS a chat command. Filed as #146 (real,
 		/// narrow-scope latent engine quirk - not fixed here, same deferral precedent as #96/#73).
 		/// Worked around by deferring the actual kill to a near-immediate timer, so it runs after
 		/// the command has finished (commandRunning back to false) - which also more accurately
@@ -144,7 +144,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>See TestKillNpcGrantsExperience's doc comment (#145) for why this exists - runs
+	/// <summary>See TestKillNpcGrantsExperience's doc comment (#146) for why this exists - runs
 	/// the kill outside the chat command's own call stack.</summary>
 	[SaveableClass]
 	public class DeferredNpcKillTimer : BoundTimer {
