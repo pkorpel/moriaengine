@@ -11,6 +11,48 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-14, continued) — #168 root-caused: engine-level Def-tag save/reload bug
+
+Root-caused #168 (the `GatheringTests.TamingSetsControlMaster` regression found while resuming
+the races-system regression pass, see section below). **Not a Taming bug and not caused by
+races/professions** — a genuine, previously-undiscovered engine-level persistence bug. Full
+writeup is in #168 itself; condensed version:
+
+- `NPCDef.TamingDifficulty` (and the same-pattern `AggroMode`/`CombatSpell`/`ExperienceWorth`/
+  `DefaultMovementSettings`) is a custom tag-backed property. Loading it from a `.def` file at
+  boot correctly stores a `double` — but `FieldValue.CurrentValue`'s setter
+  (`GameCore/FieldValue.cs`) unconditionally marks the field `isChangedManually = true`
+  regardless of whether the value came from static `.def` content or a live GM edit. That makes
+  `ShouldBeSaved()` treat ordinary baseline content as save-worthy state, so every server save
+  (`AbstractDef.SaveAll`) writes e.g. `tag._tamingDifficulty_=0` into `globals.sav`.
+- On the **next boot**, the save-path manager loads the most recent save folder under
+  `./saves/` (not the committed `.def` baseline), and that save's `tag._tamingDifficulty_` line
+  gets reparsed through the **generic** `"tag."`-prefix path in `AbstractDef.LoadScriptLine`
+  (not `NPCDef`'s own typed `"tamingdifficulty"` branch, since the saved key is a different
+  string) — resolving `"0"` via `ConvertTools.TryParseAnyNumber`, which prefers `int` over
+  `double`. The property's getter does a strict `tag is double` check, silently fails on the
+  re-typed `int`, and falls back to the "unconfigured" sentinel (`-1`, meaning "not tameable").
+  **Self-perpetuating** once it starts (every later save re-persists the now-`int` value).
+- Confirmed root cause directly: instrumented the flow with temporary diagnostics (fully
+  reverted, not shipped), observed the exact `double`→`int` flip via `RuntimeHelpers.GetHashCode`-
+  confirmed same-object tracing, and found the actual corrupted untracked `saves/2026-10-14/*`
+  folders on disk containing the generically-dumped tag text. Deleting those untracked folders
+  (leaving only the clean, committed `saves/2000-01-01/00_00_00` baseline) made all 3
+  `GatheringTests` pass clean again with **zero code change** — confirms diagnosis, is NOT a
+  real fix (the bug reproduces again the next time any save/reload cycle happens, e.g. the next
+  full-regression run).
+- **Why this didn't surface before**: the committed baseline save has no corrupted tags, so a
+  genuinely fresh checkout/CI runner (no accumulated local `saves/`) wouldn't hit this. It only
+  shows up in a long-lived local sandbox (like this one) that accumulates save folders across
+  sessions — consistent with never having been caught on CI.
+- **Not fixed** — this needs a design decision from the user before touching shared
+  `FieldValue`/`AbstractDef` code (several directions sketched in #168: stop marking
+  script-loaded values as manually-changed, make `ShouldBeSaved()` smarter, make the affected
+  getters coerce more permissively, or just operationally clear stale `saves/<date>/` folders
+  periodically as a non-fix mitigation). Deleted this session's stale `saves/2026-10-14/*`
+  folders locally as a stopgap so the repo's test state stays green for now — the underlying
+  engine bug is still live.
+
 ## CURRENT STATE (2026-10-14, continued) — races-system regression pass complete, #161-166 closed
 
 Resumed the full-suite regression pass that PR #167 (races system) was paused on. Ran
