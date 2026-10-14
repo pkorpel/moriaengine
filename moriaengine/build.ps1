@@ -103,13 +103,35 @@ function Invoke-ScriptGeneration {
 
 	Set-MulPathToCheckedInUoFiles
 
-	if ((Test-Path 'steamengine.ini') -and (Test-Path $generatedMarker)) {
-		Write-Host '==> scripts/Generated already present, skipping script generation'
+	# Real bug found 2026-10-14: checking only whether the marker file EXISTS (not
+	# whether it's still current) meant editing a .ct template - e.g. adding a new
+	# persisted field to Player.ct - left every *.Generated.cs file on disk silently
+	# stale, with this function skipping regeneration entirely on every subsequent
+	# build until something else happened to force a fresh one. Compare timestamps
+	# instead: if any .ct template anywhere in the repo is newer than the marker, the
+	# generated output no longer reflects the current templates and must be redone.
+	$newestTemplate = Get-ChildItem -Path . -Filter '*.ct' -Recurse -File -ErrorAction SilentlyContinue |
+		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+	function Test-GeneratedUpToDate {
+		if (-not (Test-Path $generatedMarker)) {
+			return $false
+		}
+		if (-not $newestTemplate) {
+			return $true
+		}
+		return $newestTemplate.LastWriteTimeUtc -le (Get-Item $generatedMarker).LastWriteTimeUtc
+	}
+
+	if ((Test-Path 'steamengine.ini') -and (Test-GeneratedUpToDate)) {
+		Write-Host '==> scripts/Generated already present and up to date, skipping script generation'
 		return
+	}
+	if ((Test-Path $generatedMarker) -and -not (Test-GeneratedUpToDate)) {
+		Write-Host "==> scripts/Generated is stale ($($newestTemplate.FullName) was edited after the last generation) - regenerating"
 	}
 
 	for ($run = 1; $run -le 2; $run++) {
-		if ($run -eq 2 -and (Test-Path $generatedMarker)) {
+		if ($run -eq 2 -and (Test-GeneratedUpToDate)) {
 			break
 		}
 
