@@ -402,9 +402,85 @@ future multi-Fact protocol test file in this repo):**
   worth keeping as general hygiene for Facts that DO legitimately share a
   fixture, just wasn't the actual fix for this specific case.
 
-**Next action: implementing Leveling Phase 4 (#129) + the shared stat system**
-(point pools: skill/ability/attribute — see the design already settled
-earlier in this file, "Level-up rewards" bullet under Phase 1's section).
+**Leveling Phase 4 (#129) + shared stat system — implemented 2026-10-14, about
+to ship.** Point pools, all on `Player`:
+- `UnspentSkillPoints`/`UnspentAbilityPoints` (new persisted `Player.ct`
+  fields) — flat +5/+2 per level-up, granted directly inside
+  `LevelingSystem.AddExperience`'s level-up loop (same loop Phase 1 built).
+- `StrPointsAllocated`/`DexPointsAllocated`/`IntPointsAllocated`/
+  `VitPointsAllocated` (new persisted fields) + `Player.AttributePointBudget`
+  (computed, not stored — `300 + LevelingSystem.LevelStatBonus(Level)` minus
+  the 4 allocated fields summed). `LevelStatBonus(level)` is the tiered
+  formula from the original design (level*4 / 40+(level-10)*3 /
+  100+(level-30)*2 / flat 120 from level 40 on), verified at its own tier
+  boundaries.
+- Spend API, all in `LevelingSystem`: `TrySpendSkillPoints`/
+  `TrySpendAbilityPoints`/`TrySpendAttributePoints` (new `AttributeStat` enum:
+  Str/Dex/Int/Vit). Skill spend validates against `player.Profession.
+  GetSkillCap(skill)` (0 if no profession — Skill.Cap's own existing
+  precedent). Attribute spend requires `Profession != null` explicitly (no
+  existing "no profession" guard for attributes the way skills have one) —
+  the user's own stated design, not an oversight: no profession assigned
+  means no attribute points can be spent at all. Ability spend has no
+  profession gating at all yet (abilities/talent-trees are explicitly
+  deferred per the Professions section below) — just spends the existing,
+  previously-unused `Character.ModifyAbilityPoints` mechanism.
+- No real spend DIALOG yet — only a minimum-viable `[SteamFunction]` test
+  harness (`TestSpendSkillPoint`/`TestSpendAttributePoint`/
+  `TestSetProfession`/`TestLevelStatBonus` in `scripts/Tests/LevelingTests.cs`).
+  A real player-facing dialog (the user's own "we will be using new dialog to
+  upgrade skills") is a follow-up, not blocking — same deferred-UI pattern as
+  professions' own GM-command-first sequencing.
+
+**Real findings while building/testing this (none needed a production fix —
+this time ALL of them were test-infrastructure issues, caught and fixed in
+the tests themselves):**
+- `ScriptArgs`'s dual-shape problem (documented under Phase 3 above) has a
+  THIRD shape, not just two: a genuinely single numeric argument reaching an
+  elevated account via the full LScript parser is a boxed `int` in
+  `Argv[0]`, not a string — the original `SplitArgs` helper's `Argv.Length
+  == 1` check wrongly assumed that always meant "an un-split multi-token
+  string," and crashed trying to cast an `int` to `string`. Fixed by also
+  checking `Argv[0] is string` before treating it as something to split.
+- `mage.def`'s real registered `Defname` is `profession_mage` (the `[ProfessionDef
+  profession_mage]` header) — confirmed correct by checking real production
+  callers (`scripts/Basic/Professions/Professions.cs`) and by this exact
+  string working when `SpendingPointsRequiresAProfession` runs standalone.
+  **Do not confuse this with the separate `Defname = class_mage` line inside
+  the block** — that's an unrelated field also happening to be named
+  "Defname" on the `ProfessionDef` class itself (a legacy/alternate class
+  identifier), not the script-registry lookup key. A wrong guess here
+  produced a real lesson, not a real fix.
+- **The actual root cause of that test's remaining flakiness was account
+  sharing, not defname or anything profession-specific**: running
+  `SpendingPointsRequiresAProfession` on the SAME account as
+  `ExpLevelDialogOpensWithoutError` (a second character on an account that
+  already has one connected) made `ProfessionDef.GetByDefname` return null —
+  reproduced deterministically every time those two Facts shared a fixture,
+  regardless of which ran first, and disappeared completely once given a
+  dedicated account. Never root-caused exactly why (something about a second
+  character's profession-plugin installation path interacting with an
+  already-active connection on the same account) — flagged here rather than
+  chased further, since the account-isolation fix is clean and this is now
+  the THIRD time this session that "give the new Fact its own account" has
+  been the right call for an unexplained cross-Fact interaction (see Phase
+  3's AccountB/AccountC notes, and `ExpLevelDialogOpensWithoutError`'s own
+  full-fixture-isolation story above). **Pattern worth internalizing**: when
+  two Facts in the same `GameServerPairFixture` collection show a
+  deterministic (not transient) interaction neither one's own logic
+  explains, suspect account-sharing first before chasing the specific
+  symptom further.
+- `LevelingTests.cs` and `LevelingIsolatedTests.cs` (the latter renamed from
+  `ExpLevelDialogTests.cs` once it gained a second, unrelated-but-equally-
+  isolated test) are now the two files for this system's protocol tests — 7
+  Facts in the shared fixture, 2 in the isolated one.
+
+**Next action: Phase 5 (#130) is just confirming no separate work is needed**
+(experience gates/quests are out of scope, #130's only job was making sure
+Phase 1's shared `AddExperience` entry point satisfies it - it does, nothing
+further to build). Once Phase 4 ships and Phase 5 is closed out, the full
+leveling system (#125) is complete. Professions (#134) is the next large
+system after that, per the sequencing decision above.
 
 ## CI minutes — separate, still-unresolved thread (2026-10-13)
 
