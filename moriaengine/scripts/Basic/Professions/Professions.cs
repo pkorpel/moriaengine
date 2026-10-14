@@ -112,5 +112,15 @@ namespace SteamEngine.CompiledScripts {
                 return profession_mystic;
             }
         }
+
+        static ProfessionDef profession_craftsman;
+        public static ProfessionDef Craftsman {
+            get {
+                if (profession_craftsman == null) {
+                    profession_craftsman = ProfessionDef.GetByDefname("profession_craftsman");
+                }
+                return profession_craftsman;
+            }
+        }
 	}
 }

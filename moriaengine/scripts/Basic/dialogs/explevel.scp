@@ -4,7 +4,7 @@ InvalidateCombatArmorValues()
 Dialog(d_explevel)
 
 [Dialog d_explevel]
-argo.resizepic 50 50 2620 400 250
+argo.resizepic 50 50 2620 400 270
 argo.text 70 70 37 0
 argo.text 70 90 3 1
 argo.text 250 90 85 2
@@ -20,6 +20,8 @@ argo.text 70 190 3 11
 argo.text 250 190 85 12
 argo.text 70 210 3 13
 argo.text 250 210 85 14
+argo.text 70 230 3 15
+argo.text 250 230 85 16
 
 [DIALOG d_explevel TEXT]
 <Name>
@@ -37,4 +39,6 @@ Level:
 <Level>
 Experience:
 <Experience> / <NextLevelExperienceThreshold>
+Profession:
+<ProfessionName>
 

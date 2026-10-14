@@ -20,6 +20,14 @@ professionPluginDef = p_profession_default
 
 //SkillNameOrDefname = starting value, cap value
 //not listed skills are considered 0, 0
+//
+//Real finding while touching this file for #135/#138: Cooking/Fishing below were both missing
+//their 300 starting value (same systematic conversion-tool bug found in mage.def, #137 -
+//confirmed via the original Sphere source's zaklad_skilly block, base_thief_Cooking/Fishing=
+//300). Also removed Stealing (previously 300,1000) entirely - the original source's own
+//[profession 7] block caps Stealing at 0 (and even comments out its zaklad_skilly starting
+//grant), consistent with stealing being disabled shard-wide on this engine (confirmed
+//elsewhere this session) - granting it here was a bug, not a deliberate exception.
 
 AnimalLore=0, 250
 Alchemy=300, 1000
@@ -28,12 +36,12 @@ ArmsLore=0, 750
 Parrying=0, 750
 Begging=0, 1000
 Camping=0, 750
-Cooking=0, 1000
+Cooking=300, 1000
 DetectingHidden=0, 1000
 Discordance=0, 1000
 EvaluatingIntel=0, 500
 Healing=300, 750
-Fishing=0, 1000
+Fishing=300, 1000
 Forensics=0, 750
 Hiding=300, 1000
 Provocation=300, 1000
@@ -47,7 +55,6 @@ Musicianship=0, 1000
 Poisoning=0, 1000
 Archery=300, 750
 SpiritSpeak=0, 250
-Stealing=300, 1000
 TasteID=0, 1000
 Tracking=0, 500
 Swordsmanship=0, 1000
@@ -82,6 +89,18 @@ a_bleeding_strike = 11, 10
 
 //list allowed spells
 allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark
+
+//weapon/armor restrictions (#135/#138) - kryss/war fork (Fencing-mapped spikes), cutlass/
+//scimitar (Swords-mapped), and bows, per the wiki; chainmail and metal shields, per the wiki
+//("Chainmail and metal shield types permitted")
+allowedWeaponTypes=OneHandSpike, TwoHandSpike, OneHandSword, Bow
+allowedArmorMaterials=Chain
+
+//STR/DEX/INT/VIT ranges {minimum, startingMax, hardCap} (#135/#134, native 0-100+ scale, NOT x10)
+strRange=60, 90, 120
+dexRange=80, 120, 200
+intRange=50, 80, 90
+vitRange=70, 100, 140
 
 ////3 talent tree branches
 ttb1 = ttb_thief_assassin
@@ -142,22 +161,22 @@ a_swordsmanship_bonus = 0, 3, 5
 a_swordsmanship_delayspeedup = 1, 2, 5
 //Disarm +15 sekund efekt	5
 //Odrazeni kouzla stit.	5
-// + zkraceni CD	5
+//ï¿½+ zkraceni CD	5
 //	
 //Swordmastery +5%	5
-//Vykrytí štítem + 5%	5
+//Vykrytï¿½ ï¿½tï¿½tem + 5%	5
 //Melee +10% dmg	5
-//Oslabeni +25% 	5
+//Oslabeni +25%ï¿½	5
 //Poisoning efekt +25%	5
 //	
 //Odrazeni uderu zpet	5
-// + zkraceni CD	5
+//ï¿½+ zkraceni CD	5
 //Smrst - uder	5
 //Smrst +15% dmg	5
 //Smrst -20% SP	5
 //	
-//Pøesný zásah - uder	5
-//Pøesný zásah +25%	5
+//Pï¿½esnï¿½ zï¿½sah - uder	5
+//Pï¿½esnï¿½ zï¿½sah +25%	5
 //Cleave/bounce - uder	5
 //Cleave/bounce +25%	5
 //	
