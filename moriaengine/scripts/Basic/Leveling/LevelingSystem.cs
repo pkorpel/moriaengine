@@ -23,6 +23,14 @@ namespace SteamEngine.CompiledScripts {
 	/// formula + overflow carry) in one place instead of duplicated at every call site.
 	/// </summary>
 	public static class LevelingSystem {
+		private static readonly TagKey lastDeathTimeTK = TagKey.Acquire("_levelingLastDeathTime_");
+
+		/// <summary>How long after a death a player is immune to losing MORE experience from a
+		/// subsequent death - mirrors Erebor's own i_checkstats_timer (5 real minutes,
+		/// experiences.scp), there to stop death-chaining (e.g. corpse-camping) from draining a
+		/// player repeatedly. Not a GM setting (unlike the two percentages below) - the user's
+		/// design only called out those two as needing in-game tuning.</summary>
+		private static readonly System.TimeSpan PostDeathExperienceLossImmunity = System.TimeSpan.FromSeconds(300);
 
 		/// <summary>
 		/// Grants (or removes, if negative) experience and runs the level-up check - a while
@@ -45,6 +53,56 @@ namespace SteamEngine.CompiledScripts {
 				player.Experience -= player.Level * coefficient;
 				//Phase 4 (#129) will hook level-up point-pool rewards (skill/ability/attribute points) here.
 			}
+		}
+
+		/// <summary>
+		/// Death's experience-loss/pay-the-killer mechanic (#128) - the user's own stated
+		/// design, deliberately diverging from Erebor's actual partial-drain formula: at the
+		/// default settings (experienceLossPercentage=100, pkGainPercentage=10) the dying
+		/// player loses everything and killer(s) collectively get 10% of what was lost (not
+		/// 10% of the original total). Level never changes here - only Experience.
+		///
+		/// Exemptions (lose nothing, pay nothing): standing in a safe zone/arena
+		/// (Notoriety.IsExemptFromExperienceLoss), or within 5 minutes of a previous death
+		/// (PostDeathExperienceLossImmunity, mirrors Erebor's i_checkstats_timer).
+		///
+		/// Multi-killer credit splitting is explicitly OUT of scope for this phase - CauseDeath
+		/// only ever identifies a single `killedBy` Character (there is no damage-contribution
+		/// list anywhere in this engine to split credit from), so only that one killer (if a
+		/// Player) is paid. The user's "default even split" note applies if/when a real
+		/// multi-killer attribution mechanism gets built - not invented here speculatively.
+		/// </summary>
+		public static void ApplyDeathExperienceLoss(Player victim, Character killedBy) {
+			if (victim == null) {
+				return;
+			}
+
+			int lost = 0;
+			if (!IsWithinPostDeathImmunity(victim) && !Notoriety.IsExemptFromExperienceLoss(victim)) {
+				int lossPercentage = LevelingSettings.instance.experienceLossPercentage;
+				lost = (int) ((long) victim.Experience * lossPercentage / 100);
+				if (lost > 0) {
+					victim.Experience -= lost;
+				}
+			}
+			victim.SetTag(lastDeathTimeTK, Globals.TimeAsSpan);
+
+			if (lost > 0) {
+				Player killerPlayer = killedBy as Player;
+				if ((killerPlayer != null) && (killerPlayer != victim)) {
+					int gainPercentage = LevelingSettings.instance.pkGainPercentage;
+					int gained = (int) ((long) lost * gainPercentage / 100);
+					AddExperience(killerPlayer, gained);
+				}
+			}
+		}
+
+		private static bool IsWithinPostDeathImmunity(Player victim) {
+			object tag = victim.GetTag(lastDeathTimeTK);
+			if (tag is System.TimeSpan lastDeath) {
+				return (Globals.TimeAsSpan - lastDeath) < PostDeathExperienceLossImmunity;
+			}
+			return false;
 		}
 	}
 }

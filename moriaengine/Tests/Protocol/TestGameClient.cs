@@ -79,6 +79,8 @@ namespace SteamEngine.Tests.Protocol {
 			0xAE, // UnicodeSpeechOutPacket
 			0xBF, // GeneralInformationOutPacket (party, etc. - sub-command inside the payload)
 			0xBD, // ClientVersionOutPacket (server requesting the client report its version)
+			0x89, // CorpseClothingOutPacket (sent for a nearby corpse with equipped items - first
+			      // exercised by Phase 3's real player deaths, #128)
 		};
 
 		/// <summary>
