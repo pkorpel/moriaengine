@@ -112,6 +112,49 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>GM-only minimum-viable profession-assignment command (#135) - confirmed via
+		/// grep that nothing anywhere ever calls SetProfessionOfChar/sets player.Profession, so
+		/// without this the entire enforcement layer (skill caps, spell restriction, and now
+		/// weapon/armor restriction, #138) has nothing feeding it. A real player-facing
+		/// selection flow (stone/dialog) is a stretch goal per #134, not required here. Accepts
+		/// either the profession's Name ("mag") or Defname ("profession_mage"), same
+		/// dual-lookup pattern ProfessionDef.LoadScriptLine itself already uses for abilities/
+		/// skills.</summary>
+		[SteamFunction]
+		public static void Profession(Player self, ScriptArgs sa) {
+			object[] argv = sa.Argv;
+			if (argv.Length == 0 || argv[0] == null) {
+				string current = (self.Profession != null) ? self.Profession.Name : "none";
+				self.SysMessage("Your current profession: " + current + ". Usage: Profession <name>, then target a character.");
+				return;
+			}
+
+			string name = Convert.ToString(argv[0]);
+			ProfessionDef profession = ProfessionDef.GetByDefname(name) ?? ProfessionDef.GetByName(name);
+			if (profession == null) {
+				self.SysMessage("Unknown profession '" + name + "'.");
+				return;
+			}
+
+			self.SysMessage("Target the character to assign profession '" + profession.Name + "' to.");
+			self.Target(SingletonScript<Targ_Profession>.Instance, profession);
+		}
+
+		public class Targ_Profession : CompiledTargetDef {
+			protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
+				Player targetPlayer = targetted as Player;
+				if (targetPlayer == null) {
+					self.SysMessage("That is not a player character.");
+					return TargetResult.Done;
+				}
+
+				ProfessionDef profession = (ProfessionDef) parameter;
+				targetPlayer.Profession = profession;
+				self.SysMessage("Assigned profession '" + profession.Name + "' to " + targetPlayer.Name + ".");
+				return TargetResult.Done;
+			}
+		}
+
 		//public static void DragonTileTargon(GameConn c, IPoint3D point, object targData) {
 		//    AbstractCharacter cre = c.CurCharacter;
 		//    Map map = cre.GetMap();

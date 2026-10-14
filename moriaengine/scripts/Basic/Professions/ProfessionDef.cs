@@ -35,12 +35,21 @@ namespace SteamEngine.CompiledScripts {
 
 		private FieldValue professionPluginDef;
 		private FieldValue allowedSpells;
+		private FieldValue allowedWeaponTypes;
+		private FieldValue allowedArmorMaterials;
+
+		private FieldValue strRange; //each is {minimum, startingMax, hardCap} - see #135/#134
+		private FieldValue dexRange;
+		private FieldValue intRange;
+		private FieldValue vitRange;
 
 		private FieldValue ttb1; //ttb = TalentTreeBranch
 		private FieldValue ttb2;
 		private FieldValue ttb3;
 
 		private HashSet<SpellDef> cachedSpells;
+		private HashSet<WeaponType> cachedWeaponTypes;
+		private HashSet<WearableType> cachedArmorMaterials;
 
 		private ProfessionAbilityEntry[] sortedAbilityCache;
 		private Dictionary<AbilityDef, ProfessionAbilityEntry> abilityCache = new Dictionary<AbilityDef, ProfessionAbilityEntry>();
@@ -82,6 +91,78 @@ namespace SteamEngine.CompiledScripts {
 
 		public bool CanCastSpell(SpellDef spell) {
 			return this.GetCachedSpells().Contains(spell);
+		}
+
+		private HashSet<WeaponType> GetCachedWeaponTypes() {
+			if (this.cachedWeaponTypes == null) {
+				HashSet<WeaponType> hs = new HashSet<WeaponType>();
+				foreach (WeaponType t in (WeaponType[]) this.allowedWeaponTypes.CurrentValue) {
+					hs.Add(t);
+				}
+				this.cachedWeaponTypes = hs;
+			}
+			return this.cachedWeaponTypes;
+		}
+
+		public ICollection<WeaponType> AllowedWeaponTypes {
+			get {
+				return this.GetCachedWeaponTypes();
+			}
+		}
+
+		/// <summary>Whether this profession may equip a weapon of the given type - see #138.
+		/// An empty allowedWeaponTypes list means the profession's weapon restriction was never
+		/// configured (unrestricted), not that nothing is allowed - matches the "incomplete
+		/// content defaults to permissive" pattern already used elsewhere (e.g. Skill.Cap with
+		/// no profession assigned).</summary>
+		public bool CanUseWeaponType(WeaponType weaponType) {
+			HashSet<WeaponType> allowed = this.GetCachedWeaponTypes();
+			return (allowed.Count == 0) || allowed.Contains(weaponType);
+		}
+
+		private HashSet<WearableType> GetCachedArmorMaterials() {
+			if (this.cachedArmorMaterials == null) {
+				HashSet<WearableType> hs = new HashSet<WearableType>();
+				foreach (WearableType t in (WearableType[]) this.allowedArmorMaterials.CurrentValue) {
+					hs.Add(t);
+				}
+				this.cachedArmorMaterials = hs;
+			}
+			return this.cachedArmorMaterials;
+		}
+
+		public ICollection<WearableType> AllowedArmorMaterials {
+			get {
+				return this.GetCachedArmorMaterials();
+			}
+		}
+
+		/// <summary>Whether this profession may wear armor of the given material - see #138.
+		/// Same "empty = unrestricted" convention as CanUseWeaponType. Plain Clothing is never
+		/// restricted by this (checked by the caller, not here) - this only governs real armor
+		/// materials (Leather/Studded/Bone/Chain/Ring/Plate).</summary>
+		public bool CanWearArmorMaterial(WearableType material) {
+			HashSet<WearableType> allowed = this.GetCachedArmorMaterials();
+			return (allowed.Count == 0) || allowed.Contains(material);
+		}
+
+		/// <summary>{minimum, startingMax, hardCap} for the given attribute - data only for now
+		/// (#135); shared with leveling's attribute-point system (#129) once a real spend
+		/// dialog consumes per-profession ranges (#156). An empty array means this profession's
+		/// range was never configured.</summary>
+		public int[] GetStatRange(AttributeStat stat) {
+			switch (stat) {
+				case AttributeStat.Str:
+					return (int[]) this.strRange.CurrentValue;
+				case AttributeStat.Dex:
+					return (int[]) this.dexRange.CurrentValue;
+				case AttributeStat.Int:
+					return (int[]) this.intRange.CurrentValue;
+				case AttributeStat.Vit:
+					return (int[]) this.vitRange.CurrentValue;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(stat));
+			}
 		}
 
 		public TalentTreeBranchDef TTB1 {
@@ -222,6 +303,13 @@ namespace SteamEngine.CompiledScripts {
 
 			this.professionPluginDef = this.InitTypedField("professionPluginDef", null, typeof(PluginDef));
 			this.allowedSpells = this.InitTypedField("allowedSpells", new SpellDef[0], typeof(SpellDef[]));
+			this.allowedWeaponTypes = this.InitTypedField("allowedWeaponTypes", new WeaponType[0], typeof(WeaponType[]));
+			this.allowedArmorMaterials = this.InitTypedField("allowedArmorMaterials", new WearableType[0], typeof(WearableType[]));
+
+			this.strRange = this.InitTypedField("strRange", new int[0], typeof(int[]));
+			this.dexRange = this.InitTypedField("dexRange", new int[0], typeof(int[]));
+			this.intRange = this.InitTypedField("intRange", new int[0], typeof(int[]));
+			this.vitRange = this.InitTypedField("vitRange", new int[0], typeof(int[]));
 
 			this.ttb1 = this.InitTypedField("ttb1", null, typeof(TalentTreeBranchDef));
 			this.ttb2 = this.InitTypedField("ttb2", null, typeof(TalentTreeBranchDef));
@@ -311,6 +399,8 @@ namespace SteamEngine.CompiledScripts {
 
 		public void ClearCache() {
 			this.cachedSpells = null;
+			this.cachedWeaponTypes = null;
+			this.cachedArmorMaterials = null;
 
 			this.abilityCache.Clear();
 			this.sortedAbilityCache = null;

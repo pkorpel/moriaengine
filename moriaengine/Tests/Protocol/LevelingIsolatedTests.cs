@@ -101,10 +101,13 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestSpendSkillPoint Alchemy 10");
 				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
 				string profSkillLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:");
-				// mage's Alchemy cap is 1000 (0-1000 scale) - 10 points easily fits.
+				// mage's Alchemy cap is 1000 (0-1000 scale) - 10 points easily fits. Starts at
+				// 300, not 0 - ProfessionPlugin.On_Assign (#135) grants mage.def's Alchemy
+				// minimum (300) immediately on profession assignment above, before any points
+				// are even spent.
 				Assert.Contains("success=True", profSkillLine);
 				Assert.Contains("unspentSkillPoints=5", profSkillLine); // 15 - 10
-				Assert.Contains("skillValue=10", profSkillLine);
+				Assert.Contains("skillValue=310", profSkillLine); // 300 (granted) + 10 (spent)
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestSpendAttributePoint Str 5");

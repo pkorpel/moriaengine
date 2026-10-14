@@ -1,0 +1,74 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+// Mystic (#136) - skill minimums/caps cross-verified against the original Sphere source
+// (newbie_portals.scp's [profession 9]/zaklad_skilly blocks, re-fetched to scratchpad from
+// gitlab.com/erebor/sphere-public-archive - that source zeroes Stealing's cap entirely,
+// unlike the live wiki page, which is why it's omitted here), weapons/armor/stats/spells from
+// https://wiki.uoerebor.cz/docs/povolani/mystik/. STR/DEX/INT/VIT stay native scale, not x10.
+// No ttb1/ttb2/ttb3 talent-tree content - abilities are out of scope per #134.
+
+[ProfessionDef profession_mystic]
+Defname = class_mystic //class_ as alternate prefix
+Name = "mystic"
+professionPluginDef = p_profession_default
+
+//SkillNameOrDefname = starting value, cap value
+//not listed skills are considered 0, 0
+AnimalLore=0, 1000
+Anatomy=0, 750
+ArmsLore=0, 250
+Begging=0, 1000
+Camping=0, 500
+Cooking=300, 1000
+DetectingHidden=0, 1000
+EvaluatingIntel=300, 1000
+Fishing=300, 1000
+Forensics=0, 1000
+Healing=0, 500
+Herding=0, 500
+Hiding=0, 500
+ItemID=0, 750
+Lumberjacking=0, 1000
+Magery=300, 750
+MagicResistance=0, 1000
+Meditation=300, 1000
+Mining=0, 1000
+Musicianship=0, 750
+RemoveTrap=0, 500
+Snooping=0, 500
+SpiritSpeak=300, 1000
+Stealth=0, 500
+TasteID=0, 500
+Tracking=0, 500
+Wrestling=300, 1000
+
+//weapon/armor restrictions (#135/#138) - magical staves exclusively, per the wiki ("Mystik
+//pouziva k boji magicke hole"); bone or leather armor, per the wiki
+allowedWeaponTypes=OneHandBlunt, TwoHandBlunt
+allowedArmorMaterials=Bone, Leather
+
+//STR/DEX/INT/VIT ranges {minimum, startingMax, hardCap} (#135/#134, native 0-100+ scale, NOT x10)
+strRange=50, 80, 90
+dexRange=50, 90, 100
+intRange=90, 140, 230
+vitRange=50, 80, 100
+
+//list allowed spells, per the wiki. The wiki also notes offensive/support spells (besides
+//Magic Arrow/Feeblemind) can only be cast on self - not enforced here, this engine's
+//ProfessionPlugin only gates spell ACCESS, not targeting; flagged as a known gap, not silently
+//dropped. Reveal is omitted - not implemented in this engine (unimplementedSpells.def).
+allowedSpells=s_feeblemind, s_magic_arrow, s_heal, s_cunning, s_cure, s_protection, s_harm, s_bless, s_teleport, s_greater_heal, s_recall, s_magic_reflection, s_dispel, s_mark, s_gate_travel
+//s_reveal - not implemented in this engine

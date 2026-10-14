@@ -89,6 +89,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return LevelingSettings.instance;
 			}
 		}
+
+		[InfoField("Profession System")]
+		public ProfessionSettings ProfessionSettings {
+			get {
+				return ProfessionSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {

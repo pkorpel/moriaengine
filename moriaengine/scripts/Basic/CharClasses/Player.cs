@@ -277,6 +277,15 @@ namespace SteamEngine.CompiledScripts {
 				ProfessionDef.SetProfessionOfChar(this, value);
 			}
 		}
+
+		/// <summary>Plain display name for .explevel (#134) - ProfessionDef's own ToString()
+		/// returns a debug-style "[name Type]" form, not suitable for a player-facing dialog.</summary>
+		public string ProfessionName {
+			get {
+				ProfessionDef profession = this.Profession;
+				return (profession != null) ? profession.Name : "None";
+			}
+		}
 		#endregion Profession
 
 		/// <summary>Every step is monitored by the ScriptSector system</summary>
