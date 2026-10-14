@@ -66,6 +66,11 @@ dexRange=50, 90, 100
 intRange=90, 140, 230
 vitRange=50, 80, 100
 
+//title ladder by level, male/female (#165, ported from the original Sphere source's
+//titul_mystik/titul_mystik_f)
+titles=poutnik, blouznivec, vizionar, tusitel, vestec, hypnotizer, hvezdopravec, telepat, jasnovidec, prorok
+titlesFemale=poutnicka, blouznivkyne, vizionarka, tusitelka, vestkyne, hypnotizerka, hvezdopravkyne, telepatka, jasnovidkyne, prorokyne
+
 //list allowed spells, per the wiki. The wiki also notes offensive/support spells (besides
 //Magic Arrow/Feeblemind) can only be cast on self - not enforced here, this engine's
 //ProfessionPlugin only gates spell ACCESS, not targeting; flagged as a known gap, not silently

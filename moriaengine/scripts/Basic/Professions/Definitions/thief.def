@@ -102,6 +102,11 @@ dexRange=80, 120, 200
 intRange=50, 80, 90
 vitRange=70, 100, 140
 
+//title ladder by level, male/female (#165, ported from the original Sphere source's
+//titul_thief/titul_thief_f)
+titles=lump, chmatak, tichoslapek, kapsar, lapka, lupic, zbojnik, hrdlorez, vrah, zabijak
+titlesFemale=lump, chmatak, tichoslapka, kapsarka, lapka, lupicka, zbojnice, hrdlorezkyne, vrazedkyne, zabijak
+
 ////3 talent tree branches
 ttb1 = ttb_thief_assassin
 ttb2 = ttb_thief_samurai

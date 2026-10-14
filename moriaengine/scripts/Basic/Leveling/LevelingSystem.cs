@@ -83,6 +83,7 @@ namespace SteamEngine.CompiledScripts {
 				player.SysMessage("You have advanced to level " + player.Level + "!");
 				EffectFactory.StationaryEffect(player, LevelUpEffectGraphic, 10, 20);
 				player.Sound((int) LevelUpSound);
+				player.RefreshTitle(); //#165 - title ladder tier may have changed
 			}
 		}
 

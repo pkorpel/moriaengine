@@ -35,21 +35,24 @@ namespace SteamEngine.CompiledScripts {
 		/// skill to the profession's minimum, never lowers an already-higher value - this is a
 		/// grant, not a reset, so reassigning/testing professions on a character that already
 		/// has progress doesn't destroy it. Gated by ProfessionSettings.grantSkillsOnAssign so a
-		/// GM can disable this for testing profession-switching without the skill side effect.</summary>
+		/// GM can disable this for testing profession-switching without the skill side effect.
+		/// Also refreshes the title (#165) - NOT gated by that setting, a title change has no
+		/// gameplay side effect worth suppressing.</summary>
 		public virtual void On_Assign() {
 			Sanity.IfTrueThrow(this.profession == null, "this.def == null on ProfessionPlugin assigning");
 
-			if (!ProfessionSettings.instance.grantSkillsOnAssign) {
-				return;
-			}
-
 			Player player = (Player) this.Cont;
-			foreach (SkillDef skillDef in SkillDef.AllSkillDefs) {
-				int minimum = this.profession.GetSkillMinimum(skillDef);
-				if ((minimum > 0) && (player.GetRealSkillValue(skillDef) < minimum)) {
-					player.SetRealSkillValue(skillDef, minimum);
+
+			if (ProfessionSettings.instance.grantSkillsOnAssign) {
+				foreach (SkillDef skillDef in SkillDef.AllSkillDefs) {
+					int minimum = this.profession.GetSkillMinimum(skillDef);
+					if ((minimum > 0) && (player.GetRealSkillValue(skillDef) < minimum)) {
+						player.SetRealSkillValue(skillDef, minimum);
+					}
 				}
 			}
+
+			player.RefreshTitle();
 		}
 
 		public ProfessionDef ProfessionDef {
