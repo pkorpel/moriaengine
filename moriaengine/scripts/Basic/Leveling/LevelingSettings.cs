@@ -40,5 +40,13 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The multiplier in the level threshold formula: level N needs N * this many experience points. Erebor's own real constant (nextlevel=330 in its experiences.scp) is the default.</summary>
 		[SaveableData]
 		public int nextLevelCoefficient = 330;
+
+		/// <summary>Percentage (0-100) of a dying player's experience that is lost on death - see LevelingSystem.ApplyDeathExperienceLoss (#128). Default 100 means a full reset to 0, the user's own stated design.</summary>
+		[SaveableData]
+		public int experienceLossPercentage = 100;
+
+		/// <summary>Percentage (0-100) of the *lost* amount (not the victim's original total) that gets paid to the killer, when the killer is a player - see LevelingSystem.ApplyDeathExperienceLoss (#128).</summary>
+		[SaveableData]
+		public int pkGainPercentage = 10;
 	}
 }

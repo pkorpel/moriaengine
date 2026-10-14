@@ -266,9 +266,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 
-		/// <summary>@Death trigger - check if none of the skills goes above the maximal limit</summary>
+		/// <summary>@Death trigger - check if none of the skills goes above the maximal limit, and
+		/// apply the leveling system's death-experience-loss/pay-the-killer mechanic (#128).</summary>
 		public override void On_Death(Character killedBy) {
 			this.CheckSkillMaxima();
+			LevelingSystem.ApplyDeathExperienceLoss(this, killedBy);
 			base.On_Death(killedBy);
 		}
 
