@@ -40,6 +40,16 @@ namespace SteamEngine.CompiledScripts {
 		/// design only called out those two as needing in-game tuning.</summary>
 		private static readonly System.TimeSpan PostDeathExperienceLossImmunity = System.TimeSpan.FromSeconds(300);
 
+		/// <summary>Stationary effect graphic + sound played at the player on every level-up -
+		/// best-effort aesthetic choice (no canonical "level up" effect exists in either this
+		/// codebase or the Erebor reference archive to port), easy to retune: 0x375A is a
+		/// golden upward swirl already used elsewhere in this engine for a positive magical
+		/// effect (see Magery.cs's Fizzle for the sibling "negative" example, 0x3735), paired
+		/// with a short musical "success" sound since no dedicated fanfare/ding sound exists in
+		/// SoundNames either.</summary>
+		private const int LevelUpEffectGraphic = 0x375A;
+		private const SoundNames LevelUpSound = SoundNames.DrumSuccess;
+
 		/// <summary>
 		/// Grants (or removes, if negative) experience and runs the level-up check - a while
 		/// loop, not a single if, so one large gain can correctly cross several level
@@ -55,6 +65,11 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			player.Experience += amount;
+			if (amount > 0) {
+				player.SysMessage("You have gained " + amount + " experience.");
+			} else {
+				player.SysMessage("You have lost " + (-amount) + " experience.");
+			}
 			int coefficient = LevelingSettings.instance.nextLevelCoefficient;
 			while (player.Experience > (player.Level + 1) * coefficient) {
 				player.Level += 1;
@@ -65,6 +80,9 @@ namespace SteamEngine.CompiledScripts {
 				//of the absolute level, not a simple running total.
 				player.UnspentSkillPoints += 5;
 				player.UnspentAbilityPoints += 2;
+				player.SysMessage("You have advanced to level " + player.Level + "!");
+				EffectFactory.StationaryEffect(player, LevelUpEffectGraphic, 10, 20);
+				player.Sound((int) LevelUpSound);
 			}
 		}
 

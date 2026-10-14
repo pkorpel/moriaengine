@@ -24,6 +24,11 @@ namespace SteamEngine.Tests.Protocol {
 		// debugging exactly this: 3 of 6 Facts failed with 10s timeouts whenever they happened to
 		// run after the account's 5 slots were already used up by other Facts.
 		private const string AccountC = "protocoltest3";
+		// Dedicated account for LevelUpSendsMessagesAndPlaysEffect - Account above was already at
+		// its 5-slot cap (LevelOneUpper/LevelMultiUpper/LevelNpcKiller/TitanExperienceChecker/
+		// LevelPointsGrantee), and a 6th character creation under it intermittently fails the
+		// same way the AccountC doc comment above describes.
+		private const string AccountD = "protocoltest4";
 		private const string Password = "protocoltest";
 
 		private readonly GameServerPairFixture fixture;
@@ -45,6 +50,36 @@ namespace SteamEngine.Tests.Protocol {
 				// level 1, threshold to level 2 is 660 - 600+100=700 crosses it, 40 carries over.
 				Assert.Contains("level=2", line);
 				Assert.Contains("experience=40", line);
+			}
+		}
+
+		/// <summary>Requested directly: players should see a system message both for gaining
+		/// experience and for leveling up, plus a celebratory effect/sound on the level-up
+		/// itself. All three happen inside LevelingSystem.AddExperience's existing loop, so this
+		/// covers every call site (monster kills, the killer's cut of a PK death) uniformly.</summary>
+		[Fact]
+		public void LevelUpSendsMessagesAndPlaysEffect() {
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountD, "LevelCelebrant")) {
+				client.SendSpeech(".TestSetLevelAndExperience 1 600");
+				Assert.True(this.fixture.WaitForGameOutput("LEVELING_TEST_SETUP:", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestAddExperience 100");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+
+				// Same cascade as SingleLevelUpCarriesOverflowExperience: level 1/600 exp + 100 ->
+				// level 2/40 exp - exactly one gain message, then one level-up message/effect/sound.
+				string gainMessage = client.ReadSystemMessage(TimeSpan.FromSeconds(10));
+				Assert.Equal("You have gained 100 experience.", gainMessage);
+
+				string levelUpMessage = client.ReadSystemMessage(TimeSpan.FromSeconds(10));
+				Assert.Equal("You have advanced to level 2!", levelUpMessage);
+
+				// If the effect/sound calls never fired, these would time out - that's the real
+				// signal here, the exact payload content is already covered by the fixed-size
+				// registration matching the real packets' own Write() methods.
+				client.ReadPacketPayload(0xC0, TimeSpan.FromSeconds(10)); // GraphicalEffectOutPacket
+				client.ReadPacketPayload(0x54, TimeSpan.FromSeconds(10)); // PlaySoundEffectOutPacket
 			}
 		}
 
@@ -198,6 +233,49 @@ namespace SteamEngine.Tests.Protocol {
 					Assert.Contains("killerLevel=0", line);
 					Assert.Contains("killerExperience=100", line);
 				}
+			}
+		}
+
+		/// <summary>Requested directly: Level/Experience should show up in the .info dialog
+		/// "alongside other attributes". Real finding while scoping this: a working ".info"
+		/// chat command already existed (Dialogs.D_Info.Info, scripts/Basic/administration/
+		/// InfoDialog/D_Info.cs) - an earlier pass missed it entirely (same "grep missed a
+		/// whole folder" mistake flagged elsewhere this session) and mistook the unrelated,
+		/// fully-commented-out legacy OldInfo in Commands.cs for the only candidate, nearly
+		/// shipping a duplicate SteamFunction named "Info" that collided with the real one at
+		/// the generated-code level (CS0101 in Generated/CompiledScriptHolders.Generated.cs).
+		/// No production code needed to change at all: D_Info's own ViewableClassGenerator
+		/// already auto-discovers every public property on a [ViewableClass]-marked type via
+		/// reflection with no per-property opt-in needed (see ViewableClassAttributes.cs's own
+		/// doc comment, "all other attributes will be displayed") - Player already carries
+		/// [ViewableClass], so Level/Experience/the point-pool properties already show up here
+		/// with zero wiring. TestPromoteToGM sidesteps this file's established "which account
+		/// happened to be first" plevel fragility, since .info is GM-only (unlisted in
+		/// CommandsAuthorization, so it falls to the default-deny-below-plevel-4
+		/// fallback).</summary>
+		[Fact]
+		public void InfoCommandShowsLevelAndExperience() {
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "InfoChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestPromoteToGM");
+				Assert.True(this.fixture.WaitForGameOutputSince("PROMOTE_TO_GM:", mark, TimeSpan.FromSeconds(10)));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetLevelAndExperience 5 123");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_SETUP:", mark, TimeSpan.FromSeconds(10)));
+
+				// .info already exists (Dialogs.D_Info.Info, scripts/Basic/administration/
+				// InfoDialog/D_Info.cs) - with no arguments it opens the caller's own info
+				// dialog immediately, no target cursor involved. Player.Level/Experience are
+				// plain public properties on a [ViewableClass]-tagged type, so they show up
+				// here automatically via ViewableClassGenerator - no new command was needed,
+				// just confirming the existing one surfaces them.
+				client.SendSpeech(".Info");
+				// If Construct() threw, no gump packet would ever arrive at all - that's the real
+				// signal here (same reasoning as ExpLevelDialogOpensWithoutError), not a
+				// field-by-field decode of the dialog's text-strings list.
+				var (gumpUid, layoutText) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.True(gumpUid != 0 || layoutText.Length > 0, "Expected a real gump dialog to open for .info.");
 			}
 		}
 
