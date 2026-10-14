@@ -1,0 +1,76 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+// Warrior (#136) - skill minimums/caps cross-verified against the original Sphere source
+// (newbie_portals.scp's [profession 4]/zaklad_skilly blocks, re-fetched to scratchpad from
+// gitlab.com/erebor/sphere-public-archive), weapons/armor/stats/spells from
+// https://wiki.uoerebor.cz/docs/povolani/valecnik/. STR/DEX/INT/VIT stay native scale, not x10.
+// No ttb1/ttb2/ttb3 talent-tree content - abilities are out of scope per #134.
+
+[ProfessionDef profession_warrior]
+Defname = class_warrior //class_ as alternate prefix
+Name = "warrior"
+professionPluginDef = p_profession_default
+
+//SkillNameOrDefname = starting value, cap value
+//not listed skills are considered 0, 0
+AnimalLore=0, 250
+Anatomy=300, 1000
+ArmsLore=300, 1000
+Cooking=300, 1000
+DetectingHidden=0, 1000
+EvaluatingIntel=0, 250
+Fencing=300, 1000
+Fishing=300, 1000
+Forensics=0, 500
+Healing=300, 750
+Herding=0, 500
+Hiding=0, 500
+ItemID=0, 500
+Lumberjacking=0, 1000
+Macefighting=300, 1000
+Magery=0, 250
+MagicResistance=0, 750
+Meditation=0, 250
+Mining=0, 1000
+Parrying=300, 1000
+Poisoning=0, 500
+RemoveTrap=0, 500
+SpiritSpeak=0, 250
+Stealth=0, 500
+Swordsmanship=300, 1000
+Tactics=300, 1000
+TasteID=0, 250
+Tracking=0, 500
+Veterinary=0, 500
+Wrestling=300, 1000
+
+//weapon/armor restrictions (#135/#138) - the wiki grants one/two-handed melee (swords, axes,
+//hammers, spears) and bans bows/crossbows plus "rogue"/"clerical" weapons; this engine's
+//WeaponType enum can't separate "spear" from "kryss" (both Fencing-mapped) without also
+//excluding the spears the wiki explicitly grants (and the profession's own nonzero Fencing
+//skill cap above confirms spears are intended) - only the unambiguous
+//archery/crossbow ban is excluded. Armor: "all armor types permitted" - left unconfigured
+//(empty = unrestricted), truly no restriction, not an oversight.
+allowedWeaponTypes=OneHandSword, TwoHandSword, OneHandAxe, TwoHandAxe, OneHandBlunt, TwoHandBlunt, OneHandSpike, TwoHandSpike
+
+//STR/DEX/INT/VIT ranges {minimum, startingMax, hardCap} (#135/#134, native 0-100+ scale, NOT x10)
+strRange=80, 120, 180
+dexRange=60, 90, 110
+intRange=20, 50, 60
+vitRange=80, 130, 180
+
+//list allowed spells, per the wiki - same small utility set as Thief/Craftsman
+allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark

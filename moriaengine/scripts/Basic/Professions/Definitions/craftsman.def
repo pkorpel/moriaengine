@@ -1,0 +1,82 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+// Craftsman (#136) - skill minimums/caps cross-verified against the original Sphere source
+// (newbie_portals.scp's [profession 6]/zaklad_skilly blocks, re-fetched to scratchpad from
+// gitlab.com/erebor/sphere-public-archive), weapons/armor/stats/spells from
+// https://wiki.uoerebor.cz/docs/povolani/remeslnik/. STR/DEX/INT/VIT stay native scale, not x10.
+// No ttb1/ttb2/ttb3 talent-tree content - abilities are out of scope per #134. Per #134's own
+// decision #3: some crafting-adjacent skills here (Fishing, Mining, Lumberjacking, Cooking) are
+// NOT exclusive to Craftsman - several other professions in this folder also grant them.
+
+[ProfessionDef profession_craftsman]
+Defname = class_craftsman //class_ as alternate prefix
+Name = "craftsman"
+professionPluginDef = p_profession_default
+
+//SkillNameOrDefname = starting value, cap value
+//not listed skills are considered 0, 0
+AnimalLore=0, 250
+Anatomy=0, 500
+Archery=0, 500
+ArmsLore=300, 1000
+Begging=0, 500
+Blacksmithing=300, 1000
+Bowcraft=300, 1000
+Camping=0, 500
+Carpentry=300, 1000
+Cooking=300, 1000
+DetectingHidden=0, 1000
+Fencing=0, 500
+Fishing=300, 1000
+Forensics=0, 250
+Healing=0, 500
+Herding=0, 500
+Hiding=0, 500
+ItemID=300, 1000
+LockPicking=0, 1000
+Lumberjacking=300, 1000
+Macefighting=300, 750
+Magery=0, 250
+MagicResistance=0, 500
+Meditation=0, 500
+Mining=300, 1000
+Parrying=0, 750
+RemoveTrap=0, 500
+Stealth=0, 500
+Swordsmanship=0, 500
+Tactics=0, 500
+Tailoring=300, 1000
+TasteID=0, 500
+Tinkering=300, 1000
+Wrestling=0, 500
+
+//weapon/armor restrictions (#135/#138) - the wiki bans thief weapons (kryss/cutlass) and
+//longbows but allows "all other weapon types", most effective with hammers; this engine's
+//WeaponType enum can't separate "mage staff" from "war hammer" (both OneHandBlunt/
+//TwoHandBlunt), so excluding staves here would also wrongly exclude the hammers the wiki
+//explicitly calls out - only the unambiguous longbow ban (Bow) is excluded. Armor: "any armor
+//type permitted" - left unconfigured (empty = unrestricted), truly no restriction, not an
+//oversight.
+allowedWeaponTypes=OneHandBlunt, TwoHandBlunt, OneHandSword, TwoHandSword, OneHandAxe, TwoHandAxe, OneHandSpike, TwoHandSpike, XBow
+
+//STR/DEX/INT/VIT ranges {minimum, startingMax, hardCap} (#135/#134, native 0-100+ scale, NOT x10)
+strRange=100, 130, 180
+dexRange=50, 80, 130
+intRange=20, 50, 110
+vitRange=100, 130, 150
+
+//list allowed spells, per the wiki - same small utility set as Thief/Warrior
+allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark

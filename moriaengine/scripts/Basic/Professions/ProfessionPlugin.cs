@@ -29,18 +29,27 @@ namespace SteamEngine.CompiledScripts {
 	public partial class ProfessionPlugin {
 		internal static PluginKey professionKey = PluginKey.Acquire("_profession_");
 
-		/// <summary>Initialize the profession on the character</summary>
+		/// <summary>Initialize the profession on the character - grants the .def's starting
+		/// skill values immediately (#135). User: "it should just grant it now - that way once
+		/// we implement specific skill, it will simply start working for player." Only RAISES a
+		/// skill to the profession's minimum, never lowers an already-higher value - this is a
+		/// grant, not a reset, so reassigning/testing professions on a character that already
+		/// has progress doesn't destroy it. Gated by ProfessionSettings.grantSkillsOnAssign so a
+		/// GM can disable this for testing profession-switching without the skill side effect.</summary>
 		public virtual void On_Assign() {
 			Sanity.IfTrueThrow(this.profession == null, "this.def == null on ProfessionPlugin assigning");
 
-			//maybe we should do this on the first use of said skill/spell/ability...? Or maybe just in the startroom stone script?
-			//changing of profession should be available for testing on players, without messing them up right away...
+			if (!ProfessionSettings.instance.grantSkillsOnAssign) {
+				return;
+			}
 
-			//SkillName oneName;
-			//foreach (ISkill skill in ((Player) Cont).Skills) {//the Cont of the Profession is always Player...
-			//    oneName = (SkillName) skill.Id;
-			//    skill.RealValue = Math.Min(def.BasicSkill(oneName), def.MaxSkill(oneName));
-			//}
+			Player player = (Player) this.Cont;
+			foreach (SkillDef skillDef in SkillDef.AllSkillDefs) {
+				int minimum = this.profession.GetSkillMinimum(skillDef);
+				if ((minimum > 0) && (player.GetRealSkillValue(skillDef) < minimum)) {
+					player.SetRealSkillValue(skillDef, minimum);
+				}
+			}
 		}
 
 		public ProfessionDef ProfessionDef {
@@ -71,6 +80,44 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
+		/// <summary>Weapon/armor-by-profession restriction (#138) - hooks the same denyEquip
+		/// trigger every equip attempt already goes through (ThingManipulationTriggers.cs's
+		/// TryEquipItemOnChar), mirroring CheckCancelSkill's existing Magery-restriction
+		/// pattern above. No prior content ever overrode On_DenyEquip at all - this is the
+		/// first user of that extension point. Plain Clothing (WearableType.Clothing) is never
+		/// restricted, only real armor materials - nobody should be blocked from wearing a
+		/// shirt. Gated by ProfessionSettings.enforceWeaponArmorRestrictions and skipped for
+		/// GMs, same spirit as CheckCancelSkill's own IsGM bypass.</summary>
+		public virtual TriggerResult On_DenyEquip(DenyEquipArgs args) {
+			if (!ProfessionSettings.instance.enforceWeaponArmorRestrictions) {
+				return TriggerResult.Continue;
+			}
+
+			Player player = this.Cont as Player;
+			if ((player == null) || player.IsGM) {
+				return TriggerResult.Continue;
+			}
+
+			Weapon weapon = args.ManipulatedItem as Weapon;
+			if (weapon != null) {
+				if (!this.profession.CanUseWeaponType(weapon.WeaponType)) {
+					args.Result = DenyResultMessages_ProfessionPlugin.Deny_WeaponNotAllowedForProfession;
+					return TriggerResult.Cancel;
+				}
+				return TriggerResult.Continue;
+			}
+
+			Wearable wearable = args.ManipulatedItem as Wearable;
+			if (wearable != null) {
+				WearableType material = ((WearableDef) wearable.Def).WearableType;
+				if ((material != WearableType.Clothing) && !this.profession.CanWearArmorMaterial(material)) {
+					args.Result = DenyResultMessages_ProfessionPlugin.Deny_ArmorNotAllowedForProfession;
+					return TriggerResult.Cancel;
+				}
+			}
+			return TriggerResult.Continue;
+		}
+
 		public static ProfessionPlugin GetInstalledPlugin(Player player) {
 			return (ProfessionPlugin) player.GetPlugin(professionKey);
 		}
@@ -92,5 +139,15 @@ namespace SteamEngine.CompiledScripts {
 
 	public class ProfessionPluginLoc : CompiledLocStringCollection<ProfessionPluginLoc> {
 		public string YouCantCastThis = "You can't cast this spell, being {0} of profession.";
+		public string WeaponNotAllowedForProfession = "Your profession does not allow you to use this weapon.";
+		public string ArmorNotAllowedForProfession = "Your profession does not allow you to wear this armor.";
+	}
+
+	public static class DenyResultMessages_ProfessionPlugin {
+		public static readonly DenyResult Deny_WeaponNotAllowedForProfession =
+			new CompiledLocDenyResult<ProfessionPluginLoc>("WeaponNotAllowedForProfession");
+
+		public static readonly DenyResult Deny_ArmorNotAllowedForProfession =
+			new CompiledLocDenyResult<ProfessionPluginLoc>("ArmorNotAllowedForProfession");
 	}
 }
