@@ -72,6 +72,11 @@ dexRange=70, 100, 120
 intRange=60, 90, 120
 vitRange=70, 120, 160
 
+//title ladder by level, male/female (#165, ported from the original Sphere source's
+//titul_priest/titul_priest_f)
+titles=verici, ranhojic, lecitel, mnich, duchovni, knez, veleknez, kardinal, spasitel, avatar
+titlesFemale=verici, ranhojicka, lecitelka, mnich, duchovni, knezka, veleknezka, kardinal, spasitelka, avatar
+
 //list allowed spells, per the wiki. Reactive Armor is omitted - not implemented in this engine
 //(scripts/Basic/skills/Magery/Spells/unimplementedSpells.def), same precedent as mage.def's
 //own commented-out summon spells.

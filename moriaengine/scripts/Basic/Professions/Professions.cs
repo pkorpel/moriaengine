@@ -15,10 +15,24 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System.Collections.Generic;
+
 namespace SteamEngine.CompiledScripts {
 
 	//utility class for scripts dealing with moria professions
 	public static class Professions {
+
+		/// <summary>The 9 real, selectable professions, in a stable display order - used by the
+		/// race-selection flow's profession picker (#162/#165). Druid is deliberately excluded -
+		/// never activated as a real profession (#134).</summary>
+		public static IReadOnlyList<ProfessionDef> AllReal {
+			get {
+				return new[] {
+					Mage, Priest, Ranger, Warrior, Thief,
+					Craftsman, Shaman, Necromant, Mystic
+				};
+			}
+		}
 
 		public static bool HasProfession(Character ch, ProfessionDef prof) {
 			if (prof != null) {

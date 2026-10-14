@@ -129,7 +129,23 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 
-			//TODO realms, etc.
+			//Realm-based baseline (#163): Gondor=blue/Innocent, Mordor=red. Deliberately a clean,
+			//direct check - NOT a port of the original Sphere source's own mechanism, which
+			//fakes Mordor-red by giving every Mordor character a starting kill-count of 30000 to
+			//trip the real murderer threshold (confirmed via newbie_portals.scp's startnation
+			//function). Using HighlightColor.Murderer here is purely a rendering choice, fully
+			//decoupled from the actual IsMurderer/murder-count mechanic above - a Mordor
+			//character who's never killed anyone still renders red by design, same as a real
+			//murderer of either realm (already handled above, before this point is ever
+			//reached). Outcast variants (MordorOutcast/GondorOutcast) are a separate, pre-
+			//existing mechanic this feature doesn't touch - they fall through to NoColor,
+			//unchanged from before.
+			switch (self.Realm) {
+				case Realm.Mordor:
+					return HighlightColor.Murderer;
+				case Realm.Gondor:
+					return HighlightColor.Innocent;
+			}
 			return HighlightColor.NoColor;
 		}
 
@@ -155,6 +171,21 @@ namespace SteamEngine.CompiledScripts {
 				if (Guild.AreInWar(guildA, guildB)) {
 					return CharRelation.AlwaysHostile;
 				}
+			}
+
+			//Realm-based baseline (#163) - opposing realms are always hostile (same semantic
+			//slot CharRelation's own doc comments already anticipated: "AlwaysHostile... Another
+			//realm"/"Allied... same realm"), same realm are allied. Checked after guild
+			//relations above so an explicit guild alliance/war between same-realm or cross-realm
+			//characters still wins - this is only the fallback when guilds don't already decide it.
+			if ((a.Realm == Realm.Gondor) && (b.Realm == Realm.Mordor)) {
+				return CharRelation.AlwaysHostile;
+			}
+			if ((a.Realm == Realm.Mordor) && (b.Realm == Realm.Gondor)) {
+				return CharRelation.AlwaysHostile;
+			}
+			if ((a.Realm == b.Realm) && (a.Realm == Realm.Gondor || a.Realm == Realm.Mordor)) {
+				return CharRelation.Allied;
 			}
 			return CharRelation.Unknown;
 		}

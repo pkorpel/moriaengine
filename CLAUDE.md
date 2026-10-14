@@ -182,6 +182,162 @@ one risks disrupting existing item categorization (GitHub's single-select-field
 update mutation replaces the whole option list, risky to do live) — worth adding
 properly if more big feature-design work like this keeps coming.
 
+## Races (Rasy) system — IMPLEMENTED (2026-10-14), tracked as #161
+
+Third "basic character creation" pillar alongside Leveling and Professions.
+Source: live Erebor wiki (https://wiki.uoerebor.cz/docs/herni-system/rasu/ +
+the one real sub-page, .../clovek/ - every other race page 404s, confirmed)
+cross-referenced against the full original pre-conversion Sphere source
+(`newbie_portals.scp`, same file already used for the Professions pass, just
+read further into it this time - the race/nation/stats dialog flow lives
+past where the earlier read stopped). Full Q&A pass done with the user. Read
+#161 and its 4 sub-issues (#162-#165) for the complete writeup — short
+version:
+
+- **6 races**: Člověk (Human), Elf, Trpaslík (Dwarf), Hobit (Hobbit), Skřet
+  (Orc), Skuruthai (Uruk-hai) — the wiki's thin overview page only clearly
+  documents 5 (conflates Orc/Uruk-hai); the source data is authoritative.
+- **12 nations**, each with its own `Realm` (Gondor=blue/Mordor=red) and home
+  coordinate. Human/Elf/Orc get a real choice among their nations (7/2/2
+  respectively); Dwarf/Hobbit/Uruk-hai are each locked to exactly one.
+- **Confirmed decisions** (all direct user Q&A):
+  1. All 6 races, faithfully — not simplified to the wiki's apparent 5.
+  2. **Race has zero mechanical stat effect** — the source's own point-buy
+     dialog (sum=300, bounded by the chosen *profession's* range, already
+     built via #135) never references race. Don't invent racial stat
+     modifiers the wiki's prose vaguely gestures at but never numbers.
+  3. **Realm-based notoriety uses a clean, direct override** — Erebor itself
+     fakes Mordor-red by giving every Mordor character a starting
+     `kills=30000` to trip the murder-counter threshold. moriaengine should
+     instead have `Notoriety.GetHighlightColor` (already has a literal
+     `//TODO realms, etc.`) consult `Character.Realm` directly, with
+     existing murderer/criminal escalation still layered on top.
+  4. **Race and profession stay fully independent** — no race-gating
+     profession choice. The wiki claims otherwise, but even Erebor's own
+     source has the enforcement (`canbeclass`) commented out with its data
+     never defined — dead even in the reference implementation. Confirms
+     the already-shipped Professions decision #2, not a reversal.
+  5. **Full 12-nation granularity**, not collapsed to race+realm-only.
+  6. **Per-profession title ladders are bundled into this pass** (not a
+     separate Professions follow-up) — `titul_<profession>[0-9]` (10 ranks
+     per profession, tied to level) exist in the source but were never
+     ported anywhere; `Character.Title` is a plain settable string today
+     with nothing ever setting it.
+  7. **Selection UX matches Erebor exactly**: a post-creation stone/gump
+     flow (touch a stone → race gump → nation gump → point-buy stats gump),
+     not an attempt to fold this into the real UO client's native
+     character-creation screen.
+- **Current moriaengine state** (same shape as pre-Professions): a `Realm`
+  enum already exists (`scripts/Basic/Enums.cs:436`, 5 values — more
+  granular than Erebor's plain blue/red) but is wired to exactly one
+  consumer (NPC guard-aggro) — never set on a player, no race-to-realm
+  mapping. No race/nation selection exists anywhere in the real
+  character-creation flow (the only trace, `newbie_portals.def`'s dialogs,
+  is entirely commented out by the converter). No `Home`/hometown concept
+  on `Player` at all.
+- **Minor source oddities, not actionable**: `fixnation`'s branch list
+  references `Nurn_man` (one of Human's nations) as if it were a 7th
+  selectable race — dead/unreachable leftover code, not a real race. Erebor
+  has two near-duplicate nation-selection dialogs (first-time creation vs a
+  later "fix my nation" reset flow) — not a distinct feature worth
+  separately porting.
+- **Sub-issues**: #162 (data model + selection stone/gump flow), #163
+  (realm-based notoriety, depends on #162), #164 (Home location property,
+  depends on #162), #165 (per-profession title ladders).
+- **#164 scope correction (2026-10-14)**: Home is a static property only -
+  "home is basic home location which doesn't change for recall - for that I
+  was thinking of different functionality, lets leave recall away from
+  this" (user). Don't build Erebor's own `gohome`-on-portal-step recall
+  mechanism or any other recall trigger as part of #164 - the user has a
+  separate, not-yet-designed recall mechanism in mind for later.
+
+### What actually got built (2026-10-14)
+
+**All 4 sub-issues implemented in one pass** (branch `races-system`,
+#162-#165). Design section above is kept as-is for historical context — this
+is what actually shipped, real findings, and what's still open.
+
+- **#162 (data model + selection flow)**: `Race` enum (6 values) +
+  `RaceData` static class (`scripts/Basic/Races/Race.cs`); `Nation` enum (12
+  values) + `NationData` static class mapping each nation to its
+  `{Realm, home coordinate, display name}` (`scripts/Basic/Races/Nation.cs`).
+  `Player` gained tag-backed `Race`/`Nation`/`Home` properties (deliberately
+  NOT `.ct`-declared — avoids the `Generated.cs` regeneration pipeline for a
+  simple persisted value, same choice already made for `Character.Realm`).
+  Selection flow: a reusable `D_OptionPicker` gump (`scripts/Basic/Races/
+  D_OptionPicker.cs`, generic "pick one of N labeled options", reused for
+  all 3 steps instead of writing near-identical gump classes) driven by
+  `RaceSelection.cs`'s `.ChooseRace` command → race picker → profession
+  picker → nation picker (skipped for the 3 races locked to one nation) →
+  `Finish()`, which is the single place that actually commits Race/
+  Profession/Nation/Realm/Home/starting-stats to the player. Starting
+  STR/DEX/INT/VIT are auto-allocated (scaled from the chosen profession's
+  own `startingMax` values to sum 300) rather than the original design's
+  interactive point-buy dialog — flagged as a known simplification, not a
+  silent deviation (see `RaceSelection.ApplyStartingStats`'s own doc comment).
+  Likewise the selection trigger is a plain command (`.ChooseRace`) instead
+  of a physical in-world stone item — avoids a new `ItemDef`/`.ct` subclass
+  for a cosmetic trigger mechanism; flagged in code if the stone flavor is
+  wanted later.
+- **#163 (realm-based notoriety)**: `Notoriety.GetHighlightColor`/
+  `GetCharRelation` now consult `Character.Realm` directly (Gondor→blue/
+  Innocent, Mordor→red/`HighlightColor.Murderer` used purely as a rendering
+  choice, decoupled from the real murder-count mechanic) — a clean override
+  layered UNDER the existing murderer/criminal escalation, not Erebor's own
+  `kills=30000` hack. Verified via a pure-logic protocol test
+  (`RealmDrivesNotoriety`) that never involves a gump at all.
+- **#164 (Home)**: static `Player.Home` property only, set once at
+  `Finish()` and used for a one-time placement — no recall mechanism of any
+  kind, per the explicit scope correction above.
+- **#165 (title ladders)**: `ProfessionDef` gained `titles`/`titlesFemale`
+  string-array fields (reusing the exact generic `FieldValue` array-of-
+  typed-value mechanism already proven by `allowedSpells`/
+  `allowedWeaponTypes` — no new `.def`-parsing code needed) + `GetTitle(int
+  level, bool female)`. All 9 profession `.def` files got `titles=`/
+  `titlesFemale=` lines ported from the Sphere source's `titul_<profession>
+  [0-9]` data (10 ranks each, 11 for Craftsman). `Player.RefreshTitle()`
+  wired into both profession assignment (`ProfessionPlugin.On_Assign`) and
+  every level-up (`LevelingSystem.AddExperience`'s loop) so the title always
+  reflects current level + profession + gender.
+
+**One real engine-level bug found and fixed as part of this pass, filed as
+#166 (closed, fixed in this same PR)**: a `[SteamFunction("Name")]` command
+string that collides with an instance property/method name on the type it's
+invoked against (here, `[SteamFunction("Race")]` vs. the new `Player.Race`
+property) gets silently resolved by LScript's member-resolution path
+(`GameCore/LScript/OpNode_Lazy_Expression.cs`) as a property *read* on
+`self` instead of ever invoking the actual command method — no exception,
+`'account' commands 'Race'. OK` logged, nothing happens. Spent a long time
+chasing a "gump construction throws and gets swallowed" theory (plausible
+given `CompiledGumpDef.InternalConstruct`'s real try/catch-and-log-only
+behavior) before a literal first-line `Console.WriteLine` diagnostic proved
+the command method was never entered at all. **Not fully fixed at the
+engine level** — just renamed the command string (`"Race"` → `"ChooseRace"`)
+to sidestep it; the underlying silent-shadowing behavior in LScript's
+resolution order is still there for the next person who picks a colliding
+command name. See
+[[feedback_moriaengine_lscript_command_property_collision]] (session memory)
+for the full mechanism if this resurfaces.
+
+**Test coverage**: 3 protocol tests (`Tests/Protocol/RaceTests.cs`) — full
+human flow through all 3 gump steps with real button-response packets,
+fixed-nation race skipping the nation picker, and the pure-logic notoriety
+check. All green, plus the existing Leveling/Professions suites (18 tests
+total across Race/Profession/Leveling filters) re-run clean after this
+change.
+
+**Still open/deferred** (flagged in code, not silently dropped): no
+interactive point-buy stats dialog (auto-allocated instead); no physical
+selection-stone item (command-triggered instead); the LScript command/
+property shadowing footgun itself is unfixed at the engine level (#166
+closed by workaround, not a root-cause fix).
+
+**Shipping note (2026-10-14)**: user asked to ship this PR now (wants to
+test the dialog in-game personally) but explicitly said **don't close
+issues #161-165 yet** — hold off until after a full-suite regression pass,
+which was paused mid-run for this same reason. Resume full regression next
+session (or later this session) before closing any of #161-166.
+
 ## Professions (Povolání) system — IMPLEMENTED (2026-10-14), tracked as #134
 
 **All 4 sub-issues shipped in one PR** (branch `professions-system`, #135-#138).

@@ -72,6 +72,11 @@ dexRange=60, 80, 110
 intRange=90, 110, 200
 vitRange=70, 90, 120
 
+//title ladder by level, male/female (#165, ported from the original Sphere source's
+//titul_shaman/titul_shaman_f)
+titles=pohan, bezverec, myslitel, kacir, heretik, mastickar, okultista, zarikavac, zaklinac, vymitac
+titlesFemale=pohanka, bezverkyne, myslitelka, kacirka, hereticka, mastickarka, okultistka, zarikavacka, zaklinacka, vymitacka
+
 //list allowed spells, per the wiki - Reactive Armor and Mana Drain are omitted, not
 //implemented in this engine (unimplementedSpells.def); Frost Bolt isn't implemented at all
 //(no SpellDef exists for it anywhere in this engine, not even as a commented-out stub).

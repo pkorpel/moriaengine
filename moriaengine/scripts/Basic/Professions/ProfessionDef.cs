@@ -43,6 +43,9 @@ namespace SteamEngine.CompiledScripts {
 		private FieldValue intRange;
 		private FieldValue vitRange;
 
+		private FieldValue titles; //title ladder, male forms - index = tier, see #165
+		private FieldValue titlesFemale; //same ladder, female forms (same length as titles)
+
 		private FieldValue ttb1; //ttb = TalentTreeBranch
 		private FieldValue ttb2;
 		private FieldValue ttb3;
@@ -292,6 +295,25 @@ namespace SteamEngine.CompiledScripts {
 		}
 		#endregion Abilities
 
+		#region Titles
+		/// <summary>The title for the given level/gender (#165) - ported from the original
+		/// Sphere source's titul_&lt;profession&gt;[0-9] (titul_&lt;profession&gt;_f for female)
+		/// ladders. Level-to-tier mapping is a judgment call, not sourced: the original data has
+		/// no code anywhere that actually reads these ladders by level (dead data even in the
+		/// reference implementation, same class of gap as #161's canbeclass finding) - one tier
+		/// per level, capping at the ladder's last entry, is the simplest defensible choice given
+		/// this engine's leveling system has no level cap to evenly divide tiers across. Returns
+		/// "" if this profession has no title data (e.g. none authored yet) or level is negative.</summary>
+		public string GetTitle(int level, bool female) {
+			string[] ladder = (string[]) (female ? this.titlesFemale.CurrentValue : this.titles.CurrentValue);
+			if ((ladder.Length == 0) || (level < 0)) {
+				return "";
+			}
+			int tier = Math.Min(level, ladder.Length - 1);
+			return ladder[tier];
+		}
+		#endregion Titles
+
 		public override string ToString() {
 			return string.Concat("[", this.Name, " ", Tools.TypeToString(this.GetType()), "]");
 		}
@@ -310,6 +332,9 @@ namespace SteamEngine.CompiledScripts {
 			this.dexRange = this.InitTypedField("dexRange", new int[0], typeof(int[]));
 			this.intRange = this.InitTypedField("intRange", new int[0], typeof(int[]));
 			this.vitRange = this.InitTypedField("vitRange", new int[0], typeof(int[]));
+
+			this.titles = this.InitTypedField("titles", new string[0], typeof(string[]));
+			this.titlesFemale = this.InitTypedField("titlesFemale", new string[0], typeof(string[]));
 
 			this.ttb1 = this.InitTypedField("ttb1", null, typeof(TalentTreeBranchDef));
 			this.ttb2 = this.InitTypedField("ttb2", null, typeof(TalentTreeBranchDef));
