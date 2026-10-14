@@ -323,13 +323,14 @@ CAN = MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
 WeaponAttack = 80
 ArmorVsP = 95
 ArmorVsM = 95
-//moverate = 3 // commented out by Converter 
-//RESOURCES = 10 i_ribs_raw // commented out by Converter 
-//FOODTYPE =  // commented out by Converter 
-//BLOODCOLOR = 020 // commented out by Converter 
-//TEVENTS = e_monster // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
-//TEVENTS = e_npc_knockback // commented out by Converter 
+experience 110 120
+//moverate = 3 // commented out by Converter
+//RESOURCES = 10 i_ribs_raw // commented out by Converter
+//FOODTYPE =  // commented out by Converter
+//BLOODCOLOR = 020 // commented out by Converter
+//TEVENTS = e_monster // commented out by Converter
+//TEVENTS = e_character // commented out by Converter
+//TEVENTS = e_npc_knockback // commented out by Converter
 
 [NPCDef c_titan_mage]
 CATEGORY = Monsters
@@ -350,13 +351,14 @@ WeaponAttack = 75
 ArmorVsP = 105
 ArmorVsM = 105
 combatspell = s_lightning
-//moverate = 3 // commented out by Converter 
-//RESOURCES = 10 i_ribs_raw // commented out by Converter 
-//FOODTYPE =  // commented out by Converter 
-//BLOODCOLOR = 020 // commented out by Converter 
-//TEVENTS = e_monster // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
-//TEVENTS = e_npc_knockback // commented out by Converter 
+experience 130 145
+//moverate = 3 // commented out by Converter
+//RESOURCES = 10 i_ribs_raw // commented out by Converter
+//FOODTYPE =  // commented out by Converter
+//BLOODCOLOR = 020 // commented out by Converter
+//TEVENTS = e_monster // commented out by Converter
+//TEVENTS = e_character // commented out by Converter
+//TEVENTS = e_npc_knockback // commented out by Converter
 
 [NPCDef c_titan_lord]
 CATEGORY = Monsters
@@ -376,10 +378,11 @@ CAN = MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
 WeaponAttack = 95
 ArmorVsP = 105
 ArmorVsM = 105
-//moverate = 3 // commented out by Converter 
-//RESOURCES = 10 i_ribs_raw // commented out by Converter 
-//FOODTYPE =  // commented out by Converter 
-//BLOODCOLOR = 020 // commented out by Converter 
-//TEVENTS = e_monster // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+experience 160 180
+//moverate = 3 // commented out by Converter
+//RESOURCES = 10 i_ribs_raw // commented out by Converter
+//FOODTYPE =  // commented out by Converter
+//BLOODCOLOR = 020 // commented out by Converter
+//TEVENTS = e_monster // commented out by Converter
+//TEVENTS = e_character // commented out by Converter
 //TEVENTS = e_npc_knockback // commented out by Converter 

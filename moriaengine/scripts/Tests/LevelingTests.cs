@@ -66,6 +66,28 @@ namespace SteamEngine.CompiledScripts {
 			return parts;
 		}
 
+		/// <summary>Reports the real .def-content-authored ExperienceWorth for the three titan
+		/// variants (ogres.def) - requested directly for the user's own testing, see #12's note
+		/// that NPC content is otherwise ~55-60% incomplete (no other monster has this set yet).
+		/// Unlike TestKillNpcGrantsExperience's c_a_jackrabbit (which sets ExperienceWorth
+		/// programmatically in C#), this exercises the "experience min max" LoadScriptLine
+		/// parsing path from REAL .def text for the first time - that path had no test
+		/// coverage before.</summary>
+		[SteamFunction]
+		public static void TestReportTitanExperience(Character self) {
+			ReportTitanExperience("c_titan");
+			ReportTitanExperience("c_titan_mage");
+			ReportTitanExperience("c_titan_lord");
+		}
+
+		private static void ReportTitanExperience(string defname) {
+			NPCDef def = (NPCDef) ThingDef.GetByDefname(defname);
+			int[] range = def.ExperienceWorth;
+			Console.WriteLine("TITAN_EXPERIENCE: defname=" + defname +
+				" min=" + (range != null ? range[0].ToString(CultureInfo.InvariantCulture) : "null") +
+				" max=" + (range != null ? range[1].ToString(CultureInfo.InvariantCulture) : "null"));
+		}
+
 		/// <summary>Cleans up leftover NPCs/corpses near self - call before any scenario that opens
 		/// a dialog or otherwise waits on a specific packet, since this file's Phase 2/3 scenarios
 		/// (real NPC and player deaths) leave corpses behind that a later, unrelated connection's

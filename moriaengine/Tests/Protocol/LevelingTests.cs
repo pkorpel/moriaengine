@@ -86,6 +86,28 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Requested directly for the user's own testing: the three titan variants
+		/// (ogres.def) now have real .def-content-authored experience values, anchored to the
+		/// Erebor reference archive's own c_titan (tag.experience={110.0 120.0}, confirmed by an
+		/// exact WeaponAttack=80 stat match) and scaled proportionally for the mage/lord variants
+		/// using moriaengine's own relative WeaponAttack/ArmorVsP/M stats (no exact 1:1 name
+		/// match exists in the reference for those two - Erebor names its variants differently,
+		/// e.g. c_titan_overlord/c_titan_archmage). This is also the first real test coverage of
+		/// the "experience min max" LoadScriptLine parsing path from actual .def text - every
+		/// other leveling test sets ExperienceWorth programmatically in C#.</summary>
+		[Fact]
+		public void TitanVariantsHaveExperienceValuesAuthored() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "TitanExperienceChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportTitanExperience");
+				Assert.True(this.fixture.WaitForGameOutputSince("TITAN_EXPERIENCE: defname=c_titan_lord", mark, TimeSpan.FromSeconds(10)));
+				string output = this.fixture.GameOutputSnapshot().Substring(mark);
+				Assert.Contains("TITAN_EXPERIENCE: defname=c_titan min=110 max=120", output);
+				Assert.Contains("TITAN_EXPERIENCE: defname=c_titan_mage min=130 max=145", output);
+				Assert.Contains("TITAN_EXPERIENCE: defname=c_titan_lord min=160 max=180", output);
+			}
+		}
+
 		/// <summary>Phase 3 (#128): the default-settings case - victim loses 100% of experience
 		/// (full reset), killer gets 10% of what was LOST (not of the victim's original total).
 		/// Needs two real, simultaneously-connected characters (same pattern as SocialTests.cs,
