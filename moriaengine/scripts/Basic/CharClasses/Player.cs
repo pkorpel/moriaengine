@@ -64,6 +64,60 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Unspent skill points granted on level-up (+5/level) - spend via LevelingSystem.TrySpendSkillPoints.</summary>
+		public int UnspentSkillPoints {
+			get {
+				return this.unspentSkillPoints;
+			}
+			set {
+				this.unspentSkillPoints = value;
+			}
+		}
+
+		/// <summary>Unspent ability points granted on level-up (+2/level) - spend via LevelingSystem.TrySpendAbilityPoints.</summary>
+		public int UnspentAbilityPoints {
+			get {
+				return this.unspentAbilityPoints;
+			}
+			set {
+				this.unspentAbilityPoints = value;
+			}
+		}
+
+		public int StrPointsAllocated {
+			get { return this.strPointsAllocated; }
+			set { this.strPointsAllocated = value; }
+		}
+
+		public int DexPointsAllocated {
+			get { return this.dexPointsAllocated; }
+			set { this.dexPointsAllocated = value; }
+		}
+
+		public int IntPointsAllocated {
+			get { return this.intPointsAllocated; }
+			set { this.intPointsAllocated = value; }
+		}
+
+		public int VitPointsAllocated {
+			get { return this.vitPointsAllocated; }
+			set { this.vitPointsAllocated = value; }
+		}
+
+		/// <summary>Remaining attribute points available to spend across STR/DEX/INT/VIT - total
+		/// budget is 300 (flat base) + LevelingSystem.LevelStatBonus(Level), minus whatever's
+		/// already been allocated. Computed from Level on every access rather than stored,
+		/// since the budget formula is a function of the player's current level, not a simple
+		/// per-level increment (unlike skill/ability points).</summary>
+		public int AttributePointBudget {
+			get {
+				int totalGranted = 300 + LevelingSystem.LevelStatBonus(this.Level);
+				int totalAllocated = this.strPointsAllocated + this.dexPointsAllocated +
+					this.intPointsAllocated + this.vitPointsAllocated;
+				return totalGranted - totalAllocated;
+			}
+		}
+
 		public short Vit {
 			get {
 				return this.vitality;
