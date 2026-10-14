@@ -286,7 +286,77 @@ namespace SteamEngine.CompiledScripts {
 				return (profession != null) ? profession.Name : "None";
 			}
 		}
+
+		/// <summary>Recomputes Character.Title from the current Profession+Level+gender (#165) -
+		/// call whenever either of those changes (ProfessionPlugin.On_Assign, LevelingSystem.
+		/// AddExperience's level-up loop). Does nothing if no profession is assigned (Title is
+		/// left as whatever it already was, same "incomplete content stays permissive" pattern
+		/// used elsewhere - a title-less character isn't an error).</summary>
+		public void RefreshTitle() {
+			ProfessionDef profession = this.Profession;
+			if (profession != null) {
+				this.Title = profession.GetTitle(this.Level, this.IsFemale);
+			}
+		}
 		#endregion Profession
+
+		#region Race
+		private static readonly TagKey raceTK = TagKey.Acquire("_race_");
+
+		/// <summary>Which of the 6 playable races (#161/#162) this character chose - tag-backed,
+		/// same storage pattern as Character.Realm. Defaults to Race.None (not yet chosen, e.g.
+		/// a freshly-created character that hasn't used the race-selection stone yet).</summary>
+		public Race Race {
+			get {
+				object tag = this.GetTag(raceTK);
+				if (tag is Race race) {
+					return race;
+				}
+				return Race.None;
+			}
+			set {
+				this.SetTag(raceTK, value);
+			}
+		}
+
+		private static readonly TagKey nationTK = TagKey.Acquire("_nation_");
+
+		/// <summary>Which nation within the chosen race (#161/#162) - setting this also derives
+		/// and sets Realm (Character.Realm) and Home from NationData, since every nation
+		/// implies exactly one of each. Defaults to Nation.None.</summary>
+		public Nation Nation {
+			get {
+				object tag = this.GetTag(nationTK);
+				if (tag is Nation nation) {
+					return nation;
+				}
+				return Nation.None;
+			}
+			set {
+				this.SetTag(nationTK, value);
+				if (value != Nation.None) {
+					this.Realm = NationData.GetRealm(value);
+					this.Home = NationData.GetHome(value);
+				}
+			}
+		}
+
+		private static readonly TagKey homeTK = TagKey.Acquire("_home_");
+
+		/// <summary>Static hometown location (#164) - set once via Nation's setter above, NOT a
+		/// recall mechanism (deliberately excluded from #164's scope per the user - "home is
+		/// basic home location which doesn't change for recall... lets leave recall away from
+		/// this"). Settable directly too, for test-harness convenience (same pattern as
+		/// LevelingTests.cs's TestSetProfession bypassing the real assignment flow).</summary>
+		public Point4D Home {
+			get {
+				return this.GetTag(homeTK) as Point4D;
+			}
+			set {
+				this.SetTag(homeTK, value);
+			}
+		}
+		#endregion Race
 
 		/// <summary>Every step is monitored by the ScriptSector system</summary>
 		public override TriggerResult On_Step(Direction direction, bool running) {
