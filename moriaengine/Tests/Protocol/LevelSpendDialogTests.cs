@@ -149,9 +149,11 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		/// <summary>.explevel's new button 2 opens D_LevelSpendSkills; clicking the "+1" row
-		/// button for Alchemy (a Mage-configured skill, minimum 300 per mage.def, cap 1000)
+		/// button for Magery (a Mage-configured skill, minimum 300 per mage.def, cap 1000)
 		/// raises it to 350 - each point is worth 50 raw units (5.0%), matching Erebor's own
-		/// rate rather than this engine's original 1 raw unit (0.1%) - #199.</summary>
+		/// rate rather than this engine's original 1 raw unit (0.1%) - #199. Magery (not
+		/// Alchemy, used before #204) because Alchemy is a crafting skill - #204 restricts
+		/// point-spending to Erebor's combat_skills allowlist, which Alchemy isn't in.</summary>
 		[Fact]
 		public void SkillsButtonOpensDialogAndSpendsPoints() {
 			using (var client = this.ConnectLoginAndCreateCharacter("SkillSpender")) {
@@ -164,16 +166,16 @@ namespace SteamEngine.Tests.Protocol {
 				var (skillsUid, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
 				Assert.True(layout.Length > 0, "Expected the Skills dialog to open with a real layout.");
 
-				// Alchemy = SkillName value 0 (scripts/Basic/skills/SkillName.cs) - button id is
+				// Magery = SkillName value 25 (scripts/Basic/skills/SkillName.cs) - button id is
 				// SkillButtonIdBase(1000) + id. Hardcoded rather than referencing the SkillName
 				// enum directly since Tests.csproj doesn't reference the Scripts assembly.
-				const int alchemySkillId = 0;
-				int alchemyButtonId = 1000 + alchemySkillId;
-				client.SendGumpResponse(skillsUid, alchemyButtonId);
+				const int magerySkillId = 25;
+				int mageryButtonId = 1000 + magerySkillId;
+				client.SendGumpResponse(skillsUid, mageryButtonId);
 				Thread.Sleep(300);
 
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestCheckSkillValue \"Alchemy\"");
+				client.SendSpeech(".TestCheckSkillValue \"Magery\"");
 				Assert.True(this.fixture.WaitForGameOutputSince("PROFESSION_SKILL_VALUE:", mark, TimeSpan.FromSeconds(10)));
 				Assert.Contains("value=350", LastLineContaining(this.fixture.GameOutputSnapshot(), "PROFESSION_SKILL_VALUE:"));
 			}
@@ -248,6 +250,30 @@ namespace SteamEngine.Tests.Protocol {
 	[Collection(LevelSpendDialogCollectionB.Name)]
 	public class LevelSpendDialogTestsB : LevelSpendDialogTestBase {
 		public LevelSpendDialogTestsB(GameServerPairFixture servers) : base(servers) {
+		}
+
+		/// <summary>#204: craft/gathering skills (the user's own example was Fishing, but that
+		/// specific skill turned out to have no loadable AbstractSkillDef at all in this
+		/// engine's content - a pre-existing, unrelated gap; Alchemy is a reliably-loadable
+		/// crafting skill that's equally excluded from LevelingSystem.SpendableSkills) can't be
+		/// bought with points at all, even via a raw button click bypassing the UI's own "no
+		/// button for this row" treatment - TrySpendSkillPoints itself must reject it. Quoted -
+		/// same reason .TestSetProfession/.TestCheckSkillValue are quoted elsewhere in this file:
+		/// a bare word on this elevated/first-ever account gets resolved as a live object
+		/// reference by the LScript parser instead of staying literal text - confirmed by that
+		/// exact failure mode here unquoted (a NullReferenceException deep in
+		/// Character.GetSkillObject, since Convert.ToString() on a resolved SkillDef object
+		/// doesn't round-trip back to a name Enum.Parse recognizes).</summary>
+		[Fact]
+		public void CraftSkillCannotBeSpentOnEvenDirectly() {
+			using (var client = this.ConnectLoginAndCreateCharacter("CraftSkillRejecter")) {
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSpendSkillPoint \"Alchemy\" 1");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("success=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:"));
+			}
 		}
 
 		/// <summary>Right-clicking to close a gump sends button 0 (not this dialog's own Close

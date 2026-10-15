@@ -35,8 +35,9 @@ namespace SteamEngine.CompiledScripts {
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Player player = (Player) sendTo;
 
+			const int width = 400;
 			this.SetLocation(50, 50);
-			this.AddBackground(0, 0, 400, 300, 2620);
+			this.AddBackground(0, 0, width, 300, 2620);
 			this.AddLabel(20, 20, 37, "Attributes - Level " + player.Level);
 			this.AddLabel(20, 45, 3, "Unspent budget: " + player.AttributePointBudget);
 
@@ -59,11 +60,14 @@ namespace SteamEngine.CompiledScripts {
 				y += 32;
 			}
 
-			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202).
+			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202) -
+			// Back pinned to the left edge, Close to the right edge (#204: they overlapped when
+			// both sat near the left edge only ~100px apart - the 2445 graphic renders wider
+			// than that).
 			this.AddButton(20, y + 10, 2445, 2445, BackButtonId, GumpButtonType.Reply, 0);
 			this.AddLabel(25, y + 12, 3, "Back");
-			this.AddButton(120, y + 10, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
-			this.AddLabel(125, y + 12, 3, "Close");
+			this.AddButton(width - 120, y + 10, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(width - 115, y + 12, 3, "Close");
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {

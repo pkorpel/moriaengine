@@ -116,15 +116,45 @@ namespace SteamEngine.CompiledScripts {
 		/// point rate being wrong, not these extra mechanics.</summary>
 		public const int SkillPointGain = 50;
 
+		/// <summary>Combat/magic/social skills a player can raise by spending points (#204) -
+		/// everything else (crafting: Blacksmith/Fletching/Carpentry/Cooking/Tailoring/Tinkering/
+		/// Inscribe/Alchemy; gathering: Lumberjacking/Mining/Fishing; Cartography/Discordance/
+		/// Lockpicking/AnimalTaming) must be trained by actual use instead - the user's own
+		/// example was Fishing. Ported verbatim from Erebor's "[defnames combat_skills]"
+		/// allowlist (scripts/experiences.scp lines ~1277-1312, the "combskill_&lt;name&gt;"
+		/// tags its own d_levelbonus button handler gates on) rather than inventing a new rule.
+		/// One entry in Erebor's list ("Enticement") has no equivalent in this engine's
+		/// SkillName enum at all and is simply omitted.</summary>
+		private static readonly System.Collections.Generic.HashSet<SkillName> SpendableSkills = new System.Collections.Generic.HashSet<SkillName> {
+			SkillName.Anatomy, SkillName.AnimalLore, SkillName.ItemID, SkillName.ArmsLore,
+			SkillName.Parry, SkillName.Begging, SkillName.Peacemaking, SkillName.Camping,
+			SkillName.DetectHidden, SkillName.EvalInt, SkillName.Healing, SkillName.Forensics,
+			SkillName.Herding, SkillName.Hiding, SkillName.Provocation, SkillName.Magery,
+			SkillName.MagicResist, SkillName.Tactics, SkillName.Snooping, SkillName.Musicianship,
+			SkillName.Poisoning, SkillName.Archery, SkillName.SpiritSpeak, SkillName.Stealing,
+			SkillName.TasteID, SkillName.Tracking, SkillName.Veterinary, SkillName.Swords,
+			SkillName.Macing, SkillName.Fencing, SkillName.Wrestling, SkillName.Meditation,
+			SkillName.Stealth, SkillName.RemoveTrap,
+		};
+
+		/// <summary>True iff `skill` can be raised by spending points at all (#204) - see
+		/// SpendableSkills. Exposed separately from TrySpendSkillPoints so D_LevelSpendSkills can
+		/// decide whether to even show a "+1" button for a given row.</summary>
+		public static bool IsSkillPointSpendable(SkillName skill) {
+			return SpendableSkills.Contains(skill);
+		}
+
 		/// <summary>Spends `pointsToSpend` unspent skill points (#129) into `skill`, validated
 		/// against the player's profession skill cap - mirrors Skill.Cap's own precedent of
 		/// returning 0 when no profession is assigned, so a player with no profession can never
 		/// spend a skill point at all (not an oversight - this is the user's own stated design,
 		/// "no-profession-assigned = can't spend attribute points", applied the same way here).
-		/// Returns false (no partial spend) if the player lacks the points or the cap would be
-		/// exceeded.</summary>
+		/// Returns false (no partial spend) if the player lacks the points, the skill isn't
+		/// spendable at all (#204 - craft/gathering skills must be trained by use), or the cap
+		/// would be exceeded.</summary>
 		public static bool TrySpendSkillPoints(Player player, SkillName skill, int pointsToSpend) {
-			if ((player == null) || (pointsToSpend <= 0) || (player.UnspentSkillPoints < pointsToSpend)) {
+			if ((player == null) || (pointsToSpend <= 0) || (player.UnspentSkillPoints < pointsToSpend) ||
+				!IsSkillPointSpendable(skill)) {
 				return false;
 			}
 			ProfessionDef profession = player.Profession;
