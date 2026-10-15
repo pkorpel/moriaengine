@@ -20,9 +20,9 @@ using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
-	/// <summary>Parameters for D_OptionPicker (#162) - a generic "pick one of these labeled
-	/// options" gump, reused for the race/profession/nation steps of the race-selection flow
-	/// rather than writing 3 near-identical gump classes.</summary>
+	/// <summary>Parameters for D_OptionPicker (#162/#175) - a generic "pick one of these labeled
+	/// options, laid out in two columns" gump, reused for the profession/race/nation steps of the
+	/// race-selection flow rather than writing 3 near-identical gump classes.</summary>
 	public class OptionPickerArgs {
 		public readonly string Title;
 		public readonly IReadOnlyList<string> OptionLabels;
@@ -35,33 +35,44 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>Generic single-column "pick one" gump (#162) - one row per option, a text
-	/// label paired with a button, same layout convention D_Info/Input.cs already use
-	/// (ImprovedDialog/GUTATable/GUTAButton). Button ids start at 10, matching D_Info's own
-	/// "start counting buttons from 10" convention.</summary>
+	/// <summary>Two-column "pick one" gump (#175) - visually matches Erebor's own
+	/// `D_RACEclass_classes`/`D_RACEclass_races` layout (`newbie_portals.scp`): background art
+	/// 2200, up to 5 options per column as 2151/2152 checkbox-style buttons with an HTML label
+	/// column beside each, rather than the single-column generic list the original #162 pass
+	/// used (D_Info/GUTATable's "modern dialog" look, which the user didn't want here).</summary>
 	public class D_OptionPicker : CompiledGumpDef {
-		private const int FirstOptionButtonId = 10;
+		private const int FirstOptionButtonId = 1;
+		private const int MaxPerColumn = 5;
+		private const int Column1X = 170;
+		private const int Column2X = 325;
+		private const int FirstRowY = 210;
+		private const int RowHeight = 36;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			OptionPickerArgs picker = (OptionPickerArgs) args[0];
 
-			ImprovedDialog dlg = new ImprovedDialog(this.GumpInstance);
-			dlg.CreateBackground(300);
-			dlg.SetLocation(300, 200);
+			this.SetLocation(0, 0);
+			this.AddImage(140, 200, 2200);
+			this.AddHtml(170, 180, 280, 24, "<CENTER>" + picker.Title + "</CENTER>", false, false);
 
-			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline(picker.Title).Build();
-			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
-			dlg.MakeLastTableTransparent();
-
+			string column1 = "";
+			string column2 = "";
 			for (int i = 0; i < picker.OptionLabels.Count; i++) {
-				dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-				dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel(picker.OptionLabels[i]).Build();
-				dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(FirstOptionButtonId + i).Build();
-				dlg.MakeLastTableTransparent();
-			}
+				int column = i / MaxPerColumn;
+				int row = i % MaxPerColumn;
+				int x = (column == 0) ? Column1X : Column2X;
+				int y = FirstRowY + (row * RowHeight);
+				this.AddButton(x, y, 2151, 2152, FirstOptionButtonId + i, GumpButtonType.Reply, 0);
 
-			dlg.WriteOut();
+				string entry = picker.OptionLabels[i] + "<br>";
+				if (column == 0) {
+					column1 += entry;
+				} else {
+					column2 += entry;
+				}
+			}
+			this.AddHtml(210, 215, 110, 160, column1, false, false);
+			this.AddHtml(365, 215, 110, 160, column2, false, false);
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
