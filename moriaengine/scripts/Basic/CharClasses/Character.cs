@@ -1218,8 +1218,12 @@ namespace SteamEngine.CompiledScripts {
 		#endregion regenerace
 
 		#region Death/Resurrection
-		public void Kill() {
-			//TODO effect?
+		/// <summary>Not named "Kill" - a chat command of that exact name (the GM ".kill" command,
+		/// scripts/Basic/administration/Commands.cs) would otherwise silently resolve to THIS
+		/// instance method instead of the SteamFunction-registered command (LScript's member
+		/// resolution on self takes priority over the global function table - see
+		/// CommandsAuthorization's "Test*" prefix note and #190's own finding).</summary>
+		public void InstaKill() {
 			this.CauseDeath((Character) Globals.SrcCharacter);
 		}
 

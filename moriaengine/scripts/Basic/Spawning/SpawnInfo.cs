@@ -49,5 +49,26 @@ namespace SteamEngine.CompiledScripts {
 			this.MaxTime = maxTime;
 			this.Homedist = homedist;
 		}
+
+		/// <summary>Null-safe display name for the spawn dialog's Baseid field - SpawnDef is null
+		/// whenever the GM typed a chardef name that doesn't resolve (AbstractDef.GetByDefname
+		/// returning null), which the dialog must still be able to redisplay without a NRE.</summary>
+		public string SpawnDefDisplayName {
+			get {
+				ThingDef def = this.SpawnDef as ThingDef;
+				return def == null ? "" : def.PrettyDefname;
+			}
+		}
+
+		/// <summary>True iff SpawnDef resolved to an actual chardef - checked here (short-circuit
+		/// in plain C#) rather than as "SpawnDef == 0 || !SpawnDef.IsCharDef" in LScript, since
+		/// LScript's "||" evaluates both operands unconditionally and a null SpawnDef would throw
+		/// a NullReferenceException on the second operand.</summary>
+		public bool HasValidCharDef {
+			get {
+				ThingDef def = this.SpawnDef as ThingDef;
+				return def != null && def.IsCharDef;
+			}
+		}
 	}
 }

@@ -11,6 +11,42 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — GM tooling: .spawn fixed, .kill + .flip added (#191-193)
+
+User's 4-part GM-tooling request, items 1/2/4 done this pass (item 3, floor-item decay
+timers, explicitly deferred — user said "skip it for now... we need to look into that
+properly", not implemented):
+
+- **`.spawn` (#191)**: already existed as data model + dialog (`SpawnInfo.cs`,
+  `scripts/Basic/Spawning/spawn.scp`) but had never actually worked — 4 separate bugs found
+  via real protocol tests (wrong `ImprovedDialog` API calls, wrong argv indexing since raw-
+  LScript dialogs only get a 2-element ScriptArgs and custom DialogArgs live on
+  `argv(0).InputArgs[i]` not a 3rd argv slot, `AbstractDef.Get` → should be `GetByDefname`,
+  and a NullReferenceException on invalid-chardef redisplay since LScript's `||` doesn't
+  short-circuit — fixed via two new null-safe `SpawnInfo` properties). Also translated
+  remaining Czech error strings. Full dialog→gem→spawn flow now verified end-to-end
+  (`Tests/Protocol/SpawnCommandTests.cs`).
+- **`.kill` (#192)**: new GM command, target cursor + `EffectFactory.LightningEffect` +
+  `SoundNames.lightningstrike`, then kills outright. **Real finding**: naming the command
+  method `Kill` collided with the pre-existing `Character.Kill()` instance method — for
+  GM-plevel accounts, commands dispatch as LScript source, whose member resolution on self
+  wins over the SteamFunction table, so `.kill` silently called `self.Kill()` (the GM killed
+  themselves, zero error anywhere). Exact same root-cause class as #166 (closed, worked
+  around, never root-caused). Fixed by renaming the instance method to `Character.InstaKill()`
+  rather than renaming the command, since ".kill" is the expected text.
+- **`.flip` (#193)**: new GM command cycling a targeted item's Model through its Sphere-style
+  `DUPEITEM` flip group. The underlying mechanism (`AbstractItem.Flip()` /
+  `AbstractItemDef.GetNextFlipModel()`) already existed in the engine, carried over from the
+  converter — just had no command exposing it. Not every converted item kept its original
+  flip group (converter only preserved `DUPEITEM` where the Sphere source had it uncommented).
+
+All three have permanent protocol-test coverage (`Tests/Protocol/SpawnCommandTests.cs`,
+`Tests/Protocol/GmCommandsTests.cs`). Shipped without waiting on the full-suite regression
+run (user asked to ship now and build/test locally themselves) — a prior full-suite run hung
+for ~30 min with zero output (likely self-inflicted: a second `dotnet test` invocation against
+the same fixed `GameServerPairFixture` ports while the first was still in flight), see
+Workflow conventions below for the retry-not-kill lesson.
+
 ## CURRENT STATE (2026-10-15, continued) — .explevel reordered (#188, PR #189)
 
 Another small follow-up: `.explevel`'s row order is now `<Name>, <Profession>` (first row,
@@ -1671,6 +1707,14 @@ and bin/obj already exist from prior sessions). Full suite:
   not a real leak** — they consume ~0 resources and can't be killed (nothing to
   signal). If a full-boot test times out, it's sandbox scheduling contention, not
   these zombies — just retry once rather than hunting for "cleanup."
+- **Never run two `dotnet test` invocations against `GameServerPairFixture` concurrently**
+  (fixed ports) — found 2026-10-15 when a full-suite run looked hung (~30 min, near-zero
+  CPU, all threads idle on listening sockets, zero output) right after a second `dotnet test`
+  for a different test class was run against the same ports while the first was still going.
+  The auto-mode classifier blocks killing/inspecting-to-kill the resulting live process pair
+  too (same "don't touch these processes" policy as the zombie note above, not limited to
+  actual zombies) — the fix is the same either way: don't go hunting, just avoid the
+  concurrent invocation in the first place, and retry serially if it happens.
 - If delegating research to a sub-agent/fork mid-implementation-session, be explicit
   that it's read-only ("do NOT write/commit/push, report back only") — forks inherit
   full conversation context and have previously gone ahead and implemented/merged
