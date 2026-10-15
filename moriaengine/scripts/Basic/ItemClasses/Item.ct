@@ -23,4 +23,13 @@ Def:	//vars on the def
 	//how hard it is to craft this item (value compared against the skill (1000=100.0)
 	public int difficulty = 1000
 	public LightType light = (LightType) 0
+	//#215/#217 - Sphere-style ATTR bitflags, template default ("ATTR = attr_x|attr_y" .def
+	//line, see AbstractItemDef.LoadScriptLine's "attr"->"attributesdefault" alias) - copied
+	//into each new instance's own independently-overridable "attributes" (see Vars: below)
+	//at creation time (Item.On_Create), not read live from here.
+	public ItemAttributes attributesDefault = ItemAttributes.none
 Vars:	//vars defined in the class, so they basically do what tags do, but better
+	//#215/#217 - per-instance Sphere-style ATTR bitflags, independent of attributesDefault
+	//above once seeded - lets a GM lock down/make invisible/etc. ONE specific item without
+	//changing every other item created from the same ItemDef.
+	private ItemAttributes attributes = ItemAttributes.none

@@ -1,0 +1,8 @@
+// #215/#217 - test-only ItemDef exercising the real ".def" "ATTR = x|y" parsing path
+// (AbstractItemDef.LoadScriptLine's "attr"->"attributesdefault" alias + the generic
+// FieldValue/ConvertTools.ConvertTo pipe-separated [Flags]-enum pipeline), not just the
+// C# property setter directly.
+[ItemDef 0x9999]
+DEFNAME = i_attr_flag_test
+NAME = Attr Flag Test Item
+ATTR = attr_static|attr_magic
