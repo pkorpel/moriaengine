@@ -278,12 +278,22 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Plain display name for .explevel (#134) - ProfessionDef's own ToString()
-		/// returns a debug-style "[name Type]" form, not suitable for a player-facing dialog.</summary>
+		/// <summary>Plain display name for .explevel (#134/#186) - ProfessionDef's own
+		/// ToString() returns a debug-style "[name Type]" form, not suitable for a
+		/// player-facing dialog. ProfessionDef.Name itself is stored all-lowercase ("mag",
+		/// "necromancer", ...) - this capitalizes the first letter for display, since every
+		/// profession name is a single word (UpperCamelCase reduces to that here).</summary>
 		public string ProfessionName {
 			get {
 				ProfessionDef profession = this.Profession;
-				return (profession != null) ? profession.Name : "None";
+				if (profession == null) {
+					return "None";
+				}
+				string name = profession.Name;
+				if (string.IsNullOrEmpty(name)) {
+					return name;
+				}
+				return char.ToUpperInvariant(name[0]) + name.Substring(1);
 			}
 		}
 
