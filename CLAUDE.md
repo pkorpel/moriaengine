@@ -11,6 +11,16 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — .explevel translated to English (#185, PR #186)
+
+Small follow-up: `.explevel`'s TEXT section mixed Czech and English labels (also garbled by
+legacy non-UTF8 encoding in the committed file - same encoding risk class flagged during the
+Part B localization work). Translated to plain English, matching the already-English property
+names each line displays (ArmorClassVsP/VsM -> "Armor Class", MindDefenseVsP/VsM -> "Mind
+Defense", WeaponAttackVsP/VsM+WeaponPiercing -> "Weapon Attack/Piercing", WeaponDelay ->
+"Weapon Delay", MindPowerVsP/VsM -> "Mind Power"). No functional change - the new #156
+Attributes/Skills/Abilities buttons still work (verified via LevelSpendDialogTests).
+
 ## CURRENT STATE (2026-10-15, continued) — beginner's equipment on race selection (#182, PR #183)
 
 Follow-up to the races UX rework below: `RaceSelection.Finish()` now grants 2000 starting gold
