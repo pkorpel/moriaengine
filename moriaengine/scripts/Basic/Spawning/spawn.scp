@@ -1,4 +1,17 @@
 [triggergroup t_spawn_char]
+//#208 - lets a GM double-click an already-placed spawn gem to reopen d_spawn pre-filled
+//with its current settings, instead of only being able to configure a gem at creation time
+//via .spawn. Editing updates the gem's stored settings going forward only - no retroactive
+//changes to already-spawned NPCs or an already-pending SpawnTimer's rolled delay.
+on=@dclick
+if(<src.IsGM>)
+ src.tag._spawnEditGem_ = this
+ src.dialog(d_spawn,tag.spawnInfo)
+else
+ src.sysmessage("You cannot do that.")
+endif
+return 1
+
 //trigger called when the timer is up
 on=@spawnNow
 //baseobject - spawn gem
@@ -38,7 +51,7 @@ dlg.SetLocation(60,80)
 
 //headline
 dlg.AddTable(GUTATable(1,0,ButtonMetrics.D_BUTTON_WIDTH))
-dlg.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Creation of a new spawn").Build())
+dlg.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Spawn settings").Build())
 dlg.LastTable.AddToCell(0,1,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build()) //exit button
 dlg.MakeLastTableTransparent()
 
@@ -66,14 +79,29 @@ dlg.WriteOut()
 
 [DIALOG d_spawn button]
 ON=0
-sysmessage("Spawning Cancelled")
+arg editGem = src.tag._spawnEditGem_
+if (editGem != null)
+  src.tag.remove(_spawnEditGem_)
+  sysmessage("Editing Cancelled")
+else
+  sysmessage("Spawning Cancelled")
+endif
 return 0
 
 ON=1
 arg spawnData = SpawnInfo(<argnum[10]>,<AbstractDef.GetByDefname(<argtxt[11]>)>,<argnum[12]>,<argnum[13]>,<argnum[14]>)
 if (spawnValuesMakeSense(spawnData))
   src.tag._spawndialog_data_ = spawnData //store the info for future creating of new spawns...
-  f_spawninit(spawnData)
+  //#208 - double-clicking an existing gem sets _spawnEditGem_ before opening this dialog;
+  //a plain .spawn never does, so its absence is how we tell "editing" from "creating new".
+  arg editGem = src.tag._spawnEditGem_
+  if (editGem != null)
+    editGem.tag.spawnInfo = spawnData
+    src.tag.remove(_spawnEditGem_)
+    src.sysmessage("Spawn settings updated.")
+  else
+    f_spawninit(spawnData)
+  endif
 else
   src.tag._spawndialog_data_ = spawnData //store the info for future creating of new spawns...
   src.redmessage(tag._responseMessage_)

@@ -88,6 +88,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Console.WriteLine("GEM_STATE_TEST: no gem found");
 		}
+
+		/// <summary>Reports the nearby spawn gem's uid (so a test can double-click it) and its
+		/// current SpawnInfo fields - used to verify the double-click-to-edit flow (#208).</summary>
+		[SteamFunction]
+		public static void TestReportSpawnGemUidAndInfo(Character self) {
+			foreach (AbstractItem item in self.GetMap().GetItemsInRange(self.X, self.Y, 20)) {
+				if (item.Def.Altdefname != null &&
+					item.Def.Altdefname.Equals("i_worldgem_bit", StringComparison.OrdinalIgnoreCase)) {
+					SpawnInfo info = item.GetTag(TagKey.Acquire("spawnInfo")) as SpawnInfo;
+					Console.WriteLine("GEM_INFO_TEST: uid=" + item.Uid + " amount=" + (info == null ? -1 : info.Amount) +
+						" minTime=" + (info == null ? -1 : info.MinTime) + " maxTime=" + (info == null ? -1 : info.MaxTime) +
+						" homedist=" + (info == null ? -1 : info.Homedist));
+					return;
+				}
+			}
+			Console.WriteLine("GEM_INFO_TEST: no gem found");
+		}
 	}
 
 	/// <summary>See SpawnCommandTests.TestKillNearbySpawnedNpc's doc comment (#206) for why this
