@@ -11,6 +11,44 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — dialog spacing/ordering + skill-spend restriction (#204)
+
+4 more findings from real testing, all fixed:
+
+1. **explevel spacing**: pushed every row after Name/Profession down 20px, grew background
+   320→340, shifted bottom buttons to match.
+2. **Spend dialogs' Back/Close buttons overlapped**: both sat near the left edge only ~100px
+   apart - not enough clearance for the 2445 graphic. Back now pinned to each dialog's left
+   edge, Close to its right edge (computed from each dialog's own width, dynamic for Skills).
+3. **Skills list now sorted alphabetically** by display name, not SkillName enum id order.
+4. **Skill point-spending restricted to combat/magic skills**: ported Erebor's exact
+   `[defnames combat_skills]` allowlist (`experiences.scp`'s `combskill_<name>` tags) into
+   `LevelingSystem.SpendableSkills` - 34 of 35 entries map onto this engine's `SkillName` enum
+   (`Enticement` has no equivalent, omitted). `TrySpendSkillPoints` rejects anything not in the
+   set; the dialog shows "(trained)" instead of a button for those rows. Excludes all crafting
+   (Blacksmith/Fletching/Carpentry/Cooking/Tailoring/Tinkering/Inscribe/**Alchemy**) and
+   gathering (Lumberjacking/Mining/**Fishing**) skills, plus Cartography/Discordance/
+   Lockpicking/AnimalTaming.
+
+**Two real findings while testing #4**: the user's own example (Fishing) has **no loadable
+`AbstractSkillDef` at all** in this engine's content - `AbstractSkillDef.GetById` returns null
+for it, a pre-existing, unrelated content gap (not caused by #204) - tests use Alchemy instead
+(equally excluded, reliably loadable). Also broke a pre-existing #199 test
+(`LevelingIsolatedTests.SpendingPointsRequiresAProfession`) that used Alchemy as its "any
+spendable skill" example - switched to Magery (same 300/1000 minimum/cap in mage.def, so the
+math stayed identical). See [[project_moriaengine_lscript_elevated_bareword_args]] (new memory)
+for an unrelated bug hit while writing a new test: unquoted word-like command args on the
+elevated test account can get LScript-resolved to a live object instead of staying literal
+text - quote them.
+
+All 25 tests (LevelingTests/LevelingIsolatedTests/RaceTests/LevelSpendDialogTests) pass.
+
+**Full-boot test runs stalled 2 of 3 times this pass** (frozen at "Starting: SteamEngine.Tests"
+with near-zero CPU for minutes, no test ever starting) - user authorized killing each time;
+clean retries both times resolved it. Not root-caused; see [[project_moriaengine_sandbox_zombie_processes]]
+for the general "don't go hunting, just retry" guidance - this matches that pattern, just a
+higher stall rate than usual this session.
+
 ## CURRENT STATE (2026-10-15, continued) — more dialog UX findings from real testing (#202)
 
 Follow-up to #199, 5 more items from the user's in-game testing:
