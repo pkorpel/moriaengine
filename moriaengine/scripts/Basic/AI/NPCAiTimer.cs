@@ -53,7 +53,7 @@ namespace SteamEngine.CompiledScripts {
 		private const int AggroRange = 8;
 		private const int GiveUpRange = 12; //target got too far away (e.g. it fled or teleported) - drop it and go back to wandering
 		private const double FleeHealthFraction = 0.2;
-		private const int WanderLeash = 6; //max tiles from home while wandering
+		private const int DefaultWanderLeash = 6; //max tiles from home while wandering, for any NPC not spawned via a configured Homedist (#206)
 
 		private static readonly TimerKey aiTimerTK = TimerKey.Acquire("_npcAiTimer_");
 
@@ -62,6 +62,12 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData] public sbyte homeZ;
 		[SaveableData] public byte homeM;
 		[SaveableData] public bool hasHome;
+
+		/// <summary>Max tiles from home while wandering (#206) - was a hardcoded constant for
+		/// every NPC, completely ignoring SpawnInfo.Homedist (stored on the spawn gem but never
+		/// read anywhere). spawn.scp's @spawnNow now sets this on each newly-spawned character's
+		/// AI timer right after creation.</summary>
+		[SaveableData] public int WanderLeash = DefaultWanderLeash;
 
 		//transient - not saved. Re-acquired from scratch on the next think tick after a reload, which is fine for a live combat/aggro target.
 		private Character target;

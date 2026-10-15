@@ -868,8 +868,16 @@ namespace SteamEngine {
 			if (this.IsDeleted) {
 				return;
 			}
-			base.Delete();
+			// #206 - this used to call base.Delete() (PluginHolder.Delete(): DeletePlugins() +
+			// ClearTriggerGroups() + DeleteTimers()) BEFORE Trigger_Destroy(), silently wiping
+			// out any per-instance plugin/trigger-group/timer that was supposed to handle
+			// @destroy itself (e.g. spawn.scp's e_spawned_char, added via
+			// char.AddTriggerGroup() - its own "on=@destroy" handler never ran because the
+			// trigger group had already been cleared by the time @destroy fired). The doc
+			// comment on Trigger_Destroy() below already says the intent is "fires @destroy,
+			// after that removes the item" - base.Delete() is cleanup, so it must run after.
 			this.Trigger_Destroy();
+			base.Delete();
 
 			things.RemoveAt(this.uid);
 			this.uid = -1;

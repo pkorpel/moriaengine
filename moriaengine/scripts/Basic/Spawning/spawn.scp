@@ -6,11 +6,17 @@ arg gem = this
 arg char = <tag.spawnInfo.SpawnDef.Create(this.x, this.y, this.z, this.m)>
 char.tag.spawnGem = gem //link to his spawn
 char.AddTriggerGroup(e_spawned_char)
+// #206 - Homedist was stored on the gem but never actually applied anywhere; NPCAiTimer's
+// wander leash defaulted to a hardcoded 6 tiles for every NPC regardless of this setting.
+NPCAiTimer.GetFor(char).WanderLeash = <tag.spawnInfo.Homedist>
 tag.spawnedCount = <tag.spawnedCount> + 1
 
 //check if there are more chars to be spawned
 if(<tag.spawnedCount> < <tag.spawnInfo.Amount> )
- AddTimer(%SpawnTimer, {tag.spawnInfo.MinTime,tag.spawnInfo.MaxTime}*10, @spawnNow) //next possible spawns will appear in the given time interval
+ //#206 - MinTime/MaxTime are minutes (per the dialog's own "[min]" label); AddTimer's delay
+ //is in seconds, so this needs *60, not *10 (which made a "1-2 minute" respawn delay actually
+ //10-20 seconds).
+ AddTimer(%SpawnTimer, {tag.spawnInfo.MinTime,tag.spawnInfo.MaxTime}*60, @spawnNow) //next possible spawns will appear in the given time interval
 endif
 
 [function spawn] //argv(0) - chardef which to create
@@ -109,5 +115,5 @@ on=@destroy
 arg gem = tag.spawnGem
 gem.tag.spawnedCount = <gem.tag.spawnedCount> - 1
 if(!gem.HasTimer(%SpawnTimer)) //add a new timer only if the older one is not present
- gem.AddTimer(%SpawnTimer, {gem.tag.spawnInfo.MinTime, gem.tag.spawnInfo.MaxTime}*10,@spawnNow) //initialize a new timer
+ gem.AddTimer(%SpawnTimer, {gem.tag.spawnInfo.MinTime, gem.tag.spawnInfo.MaxTime}*60,@spawnNow) //initialize a new timer - #206, see @spawnNow's own comment on *60 vs *10
 endif

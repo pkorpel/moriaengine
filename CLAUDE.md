@@ -11,7 +11,102 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
-## CURRENT STATE (2026-10-15, continued) — dialog spacing/ordering + skill-spend restriction (#204)
+## CURRENT STATE (2026-10-15, continued) — spawn over-pop/Homedist/.flip + a real engine deletion-order bug (#206)
+
+User's 3-item follow-up on the shipped #191-193 GM tooling, plus a 4th finding surfaced
+mid-pass by the user's own re-testing. Issue #206 raised first (per standing workflow),
+findings commented as they landed, not yet closed (full regression suite running before
+ship - see below).
+
+1. **Spawn respawn-timer units bug**: `spawn.scp`'s `{MinTime,MaxTime}*10` → `*60` -
+   `AddTimer`'s delay argument is seconds (confirmed via `OpNode_Lazy_AddTimer`'s own
+   `secondsNode` field name), but the dialog labels Min/MaxTime as "[min]" (minutes) - a
+   "1-2 minute" respawn was actually happening in 10-20 seconds.
+2. **Homedist completely unwired**: `SpawnInfo.Homedist` was stored on the spawn gem but
+   never read anywhere. The actual "stay near home" mechanism already existed
+   (`NPCAiTimer.WanderLeash`, `scripts/Basic/AI/NPCAiTimer.cs`) but was a hardcoded
+   `const int = 6` for every NPC regardless of its spawn's configured value. Converted to
+   a `[SaveableData] public int WanderLeash` instance field; `spawn.scp`'s `@spawnNow` now
+   sets `NPCAiTimer.GetFor(char).WanderLeash = <tag.spawnInfo.Homedist>` right after
+   creating each spawned character.
+3. **`.flip` silent no-op**: confirmed the command's underlying mechanism (DUPEITEM-group
+   cycling) is faithful to real Sphere's `.xFLIP` (per the user's own research - DUPEITEM
+   is the *only* mechanism, no documented fallback). The user's test item, `i_wall_stone`,
+   genuinely has zero DUPEITEM siblings in this engine's converted content (a pre-existing
+   content gap, same class as #157/#182's auto-converter data loss) - not a logic bug.
+   Added a clear `"This item has no flip variants."` SysMessage in `Targ_Flip` instead of
+   a silent no-op (`scripts/Basic/administration/Commands.cs`).
+4. **Real engine-level bug, found via the user's follow-up report that killing the one
+   spawned NPC (Amount=1) never produced a replacement at all**, even after fixes 1-2
+   landed. Root-caused to `GameCore/Thing.cs`'s `Thing.InternalDeleteNoRFV()`: it called
+   `base.Delete()` (which clears ALL per-instance plugins/trigger-groups/timers via
+   `PluginHolder.Delete()`) **before** `Trigger_Destroy()` (which fires `@destroy`) - so
+   any per-instance trigger group relying on `@destroy` was already wiped out by the time
+   the trigger fired, and silently never ran. Specifically broke `spawn.scp`'s
+   `e_spawned_char` triggergroup (attached dynamically via `char.AddTriggerGroup(...)`,
+   whose `on=@destroy` handler decrements the gem's `spawnedCount` and reschedules the next
+   spawn timer). **This is a general engine bug, not spawn-specific** - confirmed via
+   `grep` that `char.AddTriggerGroup(e_spawned_char)` is the ONLY dynamic per-instance
+   `AddTriggerGroup` call anywhere in the entire codebase, which is exactly why it was
+   never caught before - every other `@destroy`/etc. handler in this codebase is defined
+   at the Def level (`[ItemDef foo] on=@destroy ...`), which is unaffected (Def-level
+   trigger dispatch doesn't go through the per-instance `tags`/`firstTGListNode` list that
+   `ClearTriggerGroups()` empties). Fixed by swapping the order in
+   `InternalDeleteNoRFV()` (`Trigger_Destroy()` now runs first, matching the method's own
+   pre-existing doc comment: "fires the @destroy trigger... after that removes the item").
+   Found and verified via a disposable diagnostic protocol test before being converted
+   into permanent coverage.
+
+**All 4 verified via new permanent regression tests**: `Tests/Protocol/
+SpawnCommandTests.cs` gained collections C (`SpawnedNpcWanderLeashMatchesConfiguredHomedist`)
+and D (`KillingSpawnedNpcReschedulesReplacement`); `Tests/Protocol/GmCommandsTests.cs`
+gained `FlipCommandOnNonFlippableItemShowsMessage`. Diagnostic SteamFunctions backing
+these (`TestVerifySpawnedNpcWanderLeash`, `TestKillNearbySpawnedNpc`,
+`TestVerifySpawnGemState`, `TestSetupNonFlippableItem`) kept as permanent test
+infrastructure in `scripts/Tests/SpawnCommandTests.cs`/`GmCommandsTests.cs` - the original
+throwaway investigation files (`SpawnBehaviorTests.cs` in both `scripts/Tests/` and
+`Tests/Protocol/`) were deleted once their findings were folded into permanent coverage
+or ruled out (item #1's original "over-spawning while alive" theory was NOT reproduced in
+isolation with Amount=1 over a 40s window - the real explanation turned out to be items
+2+4 compounding: a monster wandering off far due to the Homedist bug, or appearing to never
+get replaced due to the deletion-order bug, both of which look like "spawn behaving oddly"
+from the outside without actually being "spawns while the old one is alive").
+
+**Regenerating `Generated/*.Generated.cs` manually this session** (no `pwsh` in this
+sandbox, so `build.ps1`'s `Invoke-ScriptGeneration` can't run as-is): deleted the 6
+`Generated/*.Generated.cs` files, then ran `dotnet GameCore/bin/Debug/net8.0/
+SteamEngine.GameCore.dll` twice in the background, waiting for `Init done.`/`Getting
+started` in its stdout each time before killing it - exactly what `build.ps1` itself does
+under the hood. Needed twice this session: once after deleting the throwaway
+`SpawnBehaviorTests.cs` files (their removal left `CompiledScriptHolders.Generated.cs`
+referencing a now-missing type, `CS0234`), and again after adding the new diagnostic
+`[SteamFunction]`s (new methods need to be in the generated dispatch table too - `dotnet
+build` succeeding is NOT sufficient confirmation that a new/renamed `[SteamFunction]` is
+actually reachable at runtime, only that the stale generated file still happens to
+compile against current source).
+
+**Full regression run status - noisy, but root-caused and resolved**: two full-suite runs
+(run1: 27 failed/82 passed, 13m54s; run2, immediately after, same code: 80 failed/29
+passed, 22m51s) showed an escalating failure trend that smelled like a real regression at
+first. Ruled that out with a clean A/B test: temporarily reverted ONLY the `Thing.cs`
+change (`git stash push -- GameCore/Thing.cs`), reran the ~30 tests that had failed in both
+full runs - **all 30 failed even with the fix reverted**, proving the fix wasn't the cause.
+Root cause turned out to be test-infra hygiene, not sandbox load: one of the two huge runs
+left a `saves/2026-10-15/<time>/` snapshot on disk whose `accounts.sav` only contains
+`defpersistencetest` (from a `DefPersistenceRegressionTests`-style test that deliberately
+triggers a real save) - and since `BackupsManager` always auto-loads the single
+most-recently-written snapshot, EVERY subsequent full-boot test that depends on
+`"protocoltest"` being auto-created (`accounts.Count==0` only fires once, ever) started
+failing with a `LoginDeniedReason=0` (NoAccount) cascade - the exact same mechanism
+already documented for #197, just triggered by a different session's own heavy test load
+this time instead of a single leftover test. Deleted the stale `saves/2026-10-15/`
+directory (gitignored-in-spirit scratch, zero product value, same remediation already used
+for #168) - `SpawnCommandTests`/`GmCommandsTests` (7/7) came back clean immediately after.
+**Lesson for next time**: if a NoAccount-style cascade suddenly affects many unrelated
+tests after a heavy local testing day, check `saves/<today's date>/` for a stale
+non-`protocoltest` snapshot before suspecting the actual code change under test - this is
+now the SECOND time this exact mechanism has produced a misleading signal this session
+(see #168's CLAUDE.md section above for the first).
 
 4 more findings from real testing, all fixed:
 
