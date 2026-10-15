@@ -192,8 +192,11 @@ namespace SteamEngine.Tests.Protocol {
 			byte[] decoded = ReadOneCompressedFrame();
 
 			if (decoded.Length < 3 || decoded[0] != 0xA9) {
-				throw new InvalidOperationException("Expected CharactersListOutPacket (0xA9), got " +
-					(decoded.Length == 0 ? "no data" : "0x" + decoded[0].ToString("x2")));
+				string detail = decoded.Length == 0 ? "no data" : "0x" + decoded[0].ToString("x2");
+				if (decoded.Length >= 2 && decoded[0] == 0x82) {
+					detail += " (LoginDeniedReason=" + decoded[1] + ")";
+				}
+				throw new InvalidOperationException("Expected CharactersListOutPacket (0xA9), got " + detail);
 			}
 
 			const int maxCharacters = 5; // AbstractAccount.maxCharactersPerGameAccount
