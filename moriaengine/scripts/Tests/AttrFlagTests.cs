@@ -50,5 +50,43 @@ namespace SteamEngine.CompiledScripts {
 			Item instance = (Item) Thing.UidGetItem(uid);
 			Console.WriteLine("ATTR_ITEM_REPORT: attributes=" + instance.Attributes);
 		}
+
+		/// <summary>#218 - drops 5 plain items into self's own backpack, one per death-drop
+		/// ATTR flag (plus one plain control item with none), then kills self via a freshly
+		/// spawned throwaway NPC and reports whether each item stayed in the backpack (did NOT
+		/// fall to the corpse) or moved elsewhere (fell). Calling CauseDeath directly and
+		/// synchronously (not deferred via a timer) matches Phase 3's own
+		/// TestKillPlayerAndReportResult precedent - a PLAYER's death sound resolves fine
+		/// synchronously inside this command's call stack, unlike an NPC's (see
+		/// DeferredNpcKillTimer's own doc comment for why that one needed deferring).</summary>
+		[SteamFunction]
+		public static void TestDeathDropAttrItems(Character self) {
+			Player victim = (Player) self;
+			Container backpack = victim.Backpack;
+			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
+
+			Item newbieItem = (Item) plainDef.Create(backpack);
+			newbieItem.SetAttribute(ItemAttributes.attr_newbie, true);
+			Item blessedItem = (Item) plainDef.Create(backpack);
+			blessedItem.SetAttribute(ItemAttributes.attr_blessed, true);
+			Item cursedItem = (Item) plainDef.Create(backpack);
+			cursedItem.SetAttribute(ItemAttributes.attr_cursed, true);
+			Item insuredItem = (Item) plainDef.Create(backpack);
+			insuredItem.SetAttribute(ItemAttributes.attr_insured, true);
+			Item plainItem = (Item) plainDef.Create(backpack);
+
+			NPCDef killerDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC killer = (NPC) killerDef.Create(victim.P());
+
+			victim.CauseDeath(killer);
+
+			Console.WriteLine("ATTR_DEATH_RESULT:" +
+				" newbieStayed=" + (newbieItem.Cont == backpack) +
+				" blessedStayed=" + (blessedItem.Cont == backpack) +
+				" cursedStayed=" + (cursedItem.Cont == backpack) +
+				" insuredStayed=" + (insuredItem.Cont == backpack) +
+				" plainStayed=" + (plainItem.Cont == backpack) +
+				" insuredConsumed=" + !insuredItem.HasAttribute(ItemAttributes.attr_insured));
+		}
 	}
 }
