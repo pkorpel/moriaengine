@@ -11,6 +11,44 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — full-suite run after #194: 5 failures, 3 real (#197)
+
+Ran the full regression suite post-#194/#196 (100 tests, ~14 min). 95 passed, including every
+new SpawnCommandTests/GmCommandsTests Fact. 5 failed:
+
+- **2 pre-existing, already-tracked, unrelated to this session's work**: `OwnerAggroTests.
+  HostileFollowerNeverAutonomouslyTargetsItsCommander` (#121, CI-only flake that reproduced
+  here) and `InfrastructureSmokeTests.PacketScannerFindsBothWorldEntryMarkersAmongOtherTraffic`
+  (#100, known hang-prone test).
+- **3 real, root-caused, filed as #197** (`BasicCommandsTests.
+  UseHandTriggersDoubleClickOnOffhandItem`, `NotorietyTests.
+  HostileActionFlagsAttackerCriminalThenExpires`, `NotorietyTests.
+  RepeatedUnjustifiedKillsMakeAMurderer`): all three failed with a login denial for account
+  `"protocoltest"` even in complete isolation - **a test-infrastructure bug, not a product
+  regression, and unrelated to #191-193**. Root cause: `GameServerPairFixture` intentionally
+  shares the real repo's `saves/` directory across every full-boot-tier test run (not isolated
+  per fixture, see its own doc comment); `BackupsManager.cs`'s before-save/before-load hooks
+  always load the single most-recent `saves/<date>/<time>/` snapshot and always write a fresh
+  one. Dozens of test classes rely on an undocumented, fragile convention - login as
+  `"protocoltest"` and assume it's literally the very first account ever
+  (`AbstractAccount.HandleLoginAttempt` only auto-creates + grants MaxPlevel when
+  `accounts.Count == 0`). `DefPersistenceRegressionTests` uses a *different* account name
+  (`"defpersistencetest"`), and once ITS snapshot became "latest", every subsequent
+  `"protocoltest"`-reliant test (in any later collection, even in a future session) permanently
+  fails with NoAccount - `Globals.AutoAccountCreation` defaults false, so there's no recovery
+  without manual intervention. **Workaround applied**: deleted the stale `defpersistencetest`-
+  only snapshot (gitignored test scratch data, zero product value) so the next load falls back
+  to the empty baseline - restored all 3 to passing, verified. **Not a real fix** - the same
+  thing will recur the next time a differently-named test account's snapshot becomes latest.
+  See #197 for fix options (isolate saves/ per fixture, a `Test*` force-bootstrap command, or
+  standardize one shared reserved account across all full-boot tests) - not evaluated/decided
+  yet, left for a dedicated pass.
+
+Small unrelated diagnostic improvement from the same investigation, shipped alongside: `Tests/
+Protocol/TestGameClient.cs`'s `ReadCharacterList()` now includes the raw `LoginDeniedReason`
+byte in its exception message on a 0x82 denial, instead of just the bare packet id - needed to
+actually prove this was `NoAccount` (reason=0) rather than guessing.
+
 ## CURRENT STATE (2026-10-15, continued) — GM tooling: .spawn fixed, .kill + .flip added (#191-193)
 
 User's 4-part GM-tooling request, items 1/2/4 done this pass (item 3, floor-item decay
