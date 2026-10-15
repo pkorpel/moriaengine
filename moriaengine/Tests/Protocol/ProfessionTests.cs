@@ -153,6 +153,42 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#177: a level-10 character must get the real level-10 title tier (1), not
+		/// the ladder's last entry (9, meant for level 200+) - the exact real-world symptom
+		/// reported ("level-10 Thief shows 'zabijak', the 200+ title").</summary>
+		[Fact]
+		public void Level10GetsRealTierNotTheLadderLastEntry() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "TitleTierChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestLevelToTitleTier 10 10");
+				Assert.True(this.fixture.WaitForGameOutputSince("TITLE_TIER:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("TITLE_TIER: 1", LastLineContaining(this.fixture.GameOutputSnapshot(), "TITLE_TIER:"));
+			}
+		}
+
+		/// <summary>#177: PaperdollName now leads with "The Good "/"The Evil " based on Realm,
+		/// ahead of "Name, Title" - Neutral gets no prefix at all.</summary>
+		[Fact]
+		public void PaperdollNameGetsAlignmentPrefixFromRealm() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "AlignTester")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckPaperdollNameForRealm Gondor");
+				Assert.True(this.fixture.WaitForGameOutputSince("PAPERDOLL_NAME:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("PAPERDOLL_NAME: The Good AlignTester", LastLineContaining(this.fixture.GameOutputSnapshot(), "PAPERDOLL_NAME:"));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckPaperdollNameForRealm Mordor");
+				Assert.True(this.fixture.WaitForGameOutputSince("PAPERDOLL_NAME:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("PAPERDOLL_NAME: The Evil AlignTester", LastLineContaining(this.fixture.GameOutputSnapshot(), "PAPERDOLL_NAME:"));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckPaperdollNameForRealm \"Neutral\"");
+				Assert.True(this.fixture.WaitForGameOutputSince("PAPERDOLL_NAME:", mark, TimeSpan.FromSeconds(10)),
+					"Did not see PAPERDOLL_NAME after sending Neutral. Output:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
+				Assert.Contains("PAPERDOLL_NAME: AlignTester", LastLineContaining(this.fixture.GameOutputSnapshot(), "PAPERDOLL_NAME:"));
+			}
+		}
+
 		private TestGameClient ConnectLoginAndCreateCharacter(string account, string charName) {
 			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
 			InvalidOperationException lastFailure = null;
