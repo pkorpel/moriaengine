@@ -82,6 +82,16 @@ namespace SteamEngine.Tests.Protocol {
 		public const string Name = "SpawnCommandPairB";
 	}
 
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class SpawnCommandCollectionC : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "SpawnCommandPairC";
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class SpawnCommandCollectionD : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "SpawnCommandPairD";
+	}
+
 	[Collection(SpawnCommandCollectionA.Name)]
 	public class SpawnCommandTestsA : SpawnCommandTestBase {
 		public SpawnCommandTestsA(GameServerPairFixture servers) : base(servers) {
@@ -137,6 +147,70 @@ namespace SteamEngine.Tests.Protocol {
 
 				client.SendSpeech(".TestVerifySpawnResult");
 				this.AssertSeen("SPAWN_TEST: gem=False npc=False", TimeSpan.FromSeconds(10));
+			}
+		}
+	}
+
+	[Collection(SpawnCommandCollectionC.Name)]
+	public class SpawnCommandTestsC : SpawnCommandTestBase {
+		public SpawnCommandTestsC(GameServerPairFixture servers) : base(servers) {
+		}
+
+		/// <summary>Submitting Homedist=1 in the ".spawn" dialog (#206) must actually constrain
+		/// the spawned NPC's wander leash to 1 tile, not the old hardcoded default of 6 - the
+		/// gap the user found by setting Homedist=1 in-game and watching the NPC walk off anyway.</summary>
+		[Fact]
+		public void SpawnedNpcWanderLeashMatchesConfiguredHomedist() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SpawnGmC")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				client.SendSpeech(".spawn");
+				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
+					{ 10, "1" }, { 11, "c_a_jackrabbit" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+				});
+				Thread.Sleep(3000);
+
+				client.SendSpeech(".TestVerifySpawnedNpcWanderLeash");
+				this.AssertSeen("WANDER_LEASH_TEST: 1", TimeSpan.FromSeconds(10));
+			}
+		}
+	}
+
+	[Collection(SpawnCommandCollectionD.Name)]
+	public class SpawnCommandTestsD : SpawnCommandTestBase {
+		public SpawnCommandTestsD(GameServerPairFixture servers) : base(servers) {
+		}
+
+		/// <summary>#206 - killing the one spawned NPC (Amount=1) must decrement the gem's
+		/// spawnedCount and reschedule a new SpawnTimer, so a replacement can eventually appear -
+		/// the user's "it did not spawn a new one" report. Root cause was a genuine engine-level
+		/// bug, not spawn.scp: Thing.InternalDeleteNoRFV() called base.Delete() (which clears all
+		/// per-instance plugins/trigger-groups/timers) BEFORE Trigger_Destroy() (which fires
+		/// "@destroy") - so e_spawned_char's own "on=@destroy" handler, added dynamically via
+		/// char.AddTriggerGroup(), was already gone by the time @destroy fired and never ran.
+		/// Fixed by firing Trigger_Destroy() before base.Delete() (GameCore/Thing.cs).</summary>
+		[Fact]
+		public void KillingSpawnedNpcReschedulesReplacement() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SpawnGmD")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				client.SendSpeech(".spawn");
+				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
+					{ 10, "1" }, { 11, "c_a_jackrabbit" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+				});
+				Thread.Sleep(3000);
+
+				client.SendSpeech(".TestKillNearbySpawnedNpc");
+				this.AssertSeen("SPAWN_KILL_TEST: killed", TimeSpan.FromSeconds(10));
+				Thread.Sleep(1000);
+
+				client.SendSpeech(".TestVerifySpawnGemState");
+				this.AssertSeen("GEM_STATE_TEST: spawnedCount=0 hasTimer=True", TimeSpan.FromSeconds(10));
 			}
 		}
 	}
