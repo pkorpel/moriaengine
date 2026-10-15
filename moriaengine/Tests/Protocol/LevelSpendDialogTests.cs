@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using Xunit;
 
@@ -9,45 +8,21 @@ namespace SteamEngine.Tests.Protocol {
 	/// on .explevel. Own isolated fixture/collection (deliberately away from LevelingTests.cs's
 	/// shared one) - same reasoning as LevelingIsolatedTests.cs's own doc comment, these drive
 	/// real dialog interactions that don't need to interleave with the death/kill-heavy Facts
-	/// over there.
+	/// over there. Split across two collections/server processes for the same reason as
+	/// CombatDepthTestsA/B (#69) and PetCommandTestsA/B (#70) - the account's 5-character-slot
+	/// cap, since each Fact creates its own new character on the same shared account.
 	/// </summary>
-	[Collection(LevelSpendDialogCollection.Name)]
-	public class LevelSpendDialogTests {
-		private const string Account = "protocoltest";
+	public abstract class LevelSpendDialogTestBase {
+		protected const string Account = "protocoltest";
 		private const string Password = "protocoltest";
 
-		private readonly GameServerPairFixture fixture;
+		protected readonly GameServerPairFixture fixture;
 
-		public LevelSpendDialogTests(GameServerPairFixture servers) {
+		protected LevelSpendDialogTestBase(GameServerPairFixture servers) {
 			this.fixture = servers;
 		}
 
-		/// <summary>.explevel's new button 1 opens D_LevelSpendAttributes; submitting a valid
-		/// Str spend (+5, well inside Mage's strRange hard cap of 90) increases the real stat and
-		/// consumes the budget - confirmed via .explevel's own display reflecting the new value.</summary>
-		[Fact]
-		public void AttributesButtonOpensDialogAndSpendsPoints() {
-			using (var client = this.ConnectLoginAndCreateCharacter("AttrSpender")) {
-				SetProfessionAndLevelUp(client, "profession_mage");
-
-				int baselineStr = CheckStr(client);
-
-				client.SendSpeech(".explevel");
-				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				client.SendGumpResponse(explevelUid, 1); // "Attributes" button
-
-				var (attrUid, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				Assert.True(attrUid != 0 || layout.Length > 0, "Expected the Attributes dialog to open.");
-
-				client.SendGumpResponse(attrUid, 1, new Dictionary<int, string> { { 10, "5" } }); // Str entry=10, button=1
-				Thread.Sleep(300);
-
-				int afterStr = CheckStr(client);
-				Assert.Equal(baselineStr + 5, afterStr);
-			}
-		}
-
-		private int CheckStr(TestGameClient client) {
+		internal int CheckStr(TestGameClient client) {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".TestCheckRaceState");
 			Assert.True(this.fixture.WaitForGameOutputSince("RACE_STATE:", mark, TimeSpan.FromSeconds(10)));
@@ -62,52 +37,7 @@ namespace SteamEngine.Tests.Protocol {
 			return int.Parse(line.Substring(start, end - start), System.Globalization.CultureInfo.InvariantCulture);
 		}
 
-		/// <summary>.explevel's new button 2 opens D_LevelSpendSkills; clicking the "+1" row
-		/// button for Alchemy (a Mage-configured skill, minimum 300 per mage.def, cap 1000)
-		/// raises it to 301.</summary>
-		[Fact]
-		public void SkillsButtonOpensDialogAndSpendsPoints() {
-			using (var client = this.ConnectLoginAndCreateCharacter("SkillSpender")) {
-				SetProfessionAndLevelUp(client, "profession_mage");
-
-				client.SendSpeech(".explevel");
-				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				client.SendGumpResponse(explevelUid, 2); // "Skills" button
-
-				var (skillsUid, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				Assert.True(layout.Length > 0, "Expected the Skills dialog to open with a real layout.");
-
-				// Alchemy = SkillName value 0 (scripts/Basic/skills/SkillName.cs) - button id is
-				// SkillButtonIdBase(1000) + id. Hardcoded rather than referencing the SkillName
-				// enum directly since Tests.csproj doesn't reference the Scripts assembly.
-				const int alchemySkillId = 0;
-				int alchemyButtonId = 1000 + alchemySkillId;
-				client.SendGumpResponse(skillsUid, alchemyButtonId);
-				Thread.Sleep(300);
-
-				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestCheckSkillValue \"Alchemy\"");
-				Assert.True(this.fixture.WaitForGameOutputSince("PROFESSION_SKILL_VALUE:", mark, TimeSpan.FromSeconds(10)));
-				Assert.Contains("value=301", LastLineContaining(this.fixture.GameOutputSnapshot(), "PROFESSION_SKILL_VALUE:"));
-			}
-		}
-
-		/// <summary>.explevel's new button 3 opens D_LevelSpendAbilities - deliberately empty
-		/// per the user's explicit instruction, just confirms it opens without error and shows
-		/// the "not implemented" placeholder.</summary>
-		[Fact]
-		public void AbilitiesButtonOpensPlaceholderDialog() {
-			using (var client = this.ConnectLoginAndCreateCharacter("AbilityChecker")) {
-				client.SendSpeech(".explevel");
-				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				client.SendGumpResponse(explevelUid, 3); // "Abilities" button
-
-				var (abilitiesUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				Assert.True(abilitiesUid != 0, "Expected the Abilities placeholder dialog to open.");
-			}
-		}
-
-		private void SetProfessionAndLevelUp(TestGameClient client, string professionDefname) {
+		internal void SetProfessionAndLevelUp(TestGameClient client, string professionDefname) {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			// Quoted - "protocoltest" is this fixture's first-ever (GM-elevated, full-LScript-
 			// parser) account, so a bare defname-shaped word would get resolved to the live
@@ -121,7 +51,7 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
 		}
 
-		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
+		internal TestGameClient ConnectLoginAndCreateCharacter(string charName) {
 			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
@@ -165,7 +95,7 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Game server never appeared in AuxiliaryServer's list.", lastFailure);
 		}
 
-		private static string LastLineContaining(string output, string marker) {
+		protected static string LastLineContaining(string output, string marker) {
 			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);
 			int end = output.IndexOf('\n', idx);
@@ -176,8 +106,155 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
-	[CollectionDefinition(LevelSpendDialogCollection.Name, DisableParallelization = true)]
-	public class LevelSpendDialogCollection : ICollectionFixture<GameServerPairFixture> {
-		public const string Name = "LevelSpendDialogPair";
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class LevelSpendDialogCollectionA : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "LevelSpendDialogPairA";
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class LevelSpendDialogCollectionB : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "LevelSpendDialogPairB";
+	}
+
+	[Collection(LevelSpendDialogCollectionA.Name)]
+	public class LevelSpendDialogTestsA : LevelSpendDialogTestBase {
+		public LevelSpendDialogTestsA(GameServerPairFixture servers) : base(servers) {
+		}
+
+		/// <summary>.explevel's new button 1 opens D_LevelSpendAttributes; each click of the Str
+		/// "+1" button (well inside Mage's strRange hard cap of 90) increases the real stat by
+		/// exactly 1 and consumes 1 budget point - matching D_LevelSpendSkills' flat-+1-per-click
+		/// pattern (#199 - the original text-entry-then-click design defaulted to "0" and showed
+		/// an error on a bare click, a real-world-testing finding).</summary>
+		[Fact]
+		public void AttributesButtonOpensDialogAndSpendsPoints() {
+			using (var client = this.ConnectLoginAndCreateCharacter("AttrSpender")) {
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				int baselineStr = this.CheckStr(client);
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 1); // "Attributes" button
+
+				var (attrUid, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.True(attrUid != 0 || layout.Length > 0, "Expected the Attributes dialog to open.");
+
+				client.SendGumpResponse(attrUid, 1); // Str "+1" button, no text entry needed
+				Thread.Sleep(300);
+
+				int afterStr = this.CheckStr(client);
+				Assert.Equal(baselineStr + 1, afterStr);
+			}
+		}
+
+		/// <summary>.explevel's new button 2 opens D_LevelSpendSkills; clicking the "+1" row
+		/// button for Alchemy (a Mage-configured skill, minimum 300 per mage.def, cap 1000)
+		/// raises it to 350 - each point is worth 50 raw units (5.0%), matching Erebor's own
+		/// rate rather than this engine's original 1 raw unit (0.1%) - #199.</summary>
+		[Fact]
+		public void SkillsButtonOpensDialogAndSpendsPoints() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SkillSpender")) {
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 2); // "Skills" button
+
+				var (skillsUid, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.True(layout.Length > 0, "Expected the Skills dialog to open with a real layout.");
+
+				// Alchemy = SkillName value 0 (scripts/Basic/skills/SkillName.cs) - button id is
+				// SkillButtonIdBase(1000) + id. Hardcoded rather than referencing the SkillName
+				// enum directly since Tests.csproj doesn't reference the Scripts assembly.
+				const int alchemySkillId = 0;
+				int alchemyButtonId = 1000 + alchemySkillId;
+				client.SendGumpResponse(skillsUid, alchemyButtonId);
+				Thread.Sleep(300);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckSkillValue \"Alchemy\"");
+				Assert.True(this.fixture.WaitForGameOutputSince("PROFESSION_SKILL_VALUE:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("value=350", LastLineContaining(this.fixture.GameOutputSnapshot(), "PROFESSION_SKILL_VALUE:"));
+			}
+		}
+
+		/// <summary>The Skills dialog must show a real skill name ("Alchemy") and a percent-
+		/// formatted value ("30.0%"), not SkillDef.PrettyDefname's raw "skill_0" or the raw
+		/// *10-scaled internal int ("300") - #199. AddLabel embeds only a numeric textId in the
+		/// layout grammar (Gump.AddTextLine) - the literal text lives in the packet's separate
+		/// strings list, hence ReadGumpDialogWithStrings rather than the plain layout text.</summary>
+		[Fact]
+		public void SkillsDialogShowsReadableNameAndPercent() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SkillDisplayChecker")) {
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 2); // "Skills" button
+
+				var (_, _, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+				Assert.Contains(strings, s => s.Contains("Alchemy"));
+				Assert.Contains(strings, s => s.Contains("30.0%"));
+				Assert.DoesNotContain(strings, s => s.Contains("skill_0"));
+			}
+		}
+	}
+
+	[Collection(LevelSpendDialogCollectionB.Name)]
+	public class LevelSpendDialogTestsB : LevelSpendDialogTestBase {
+		public LevelSpendDialogTestsB(GameServerPairFixture servers) : base(servers) {
+		}
+
+		/// <summary>Right-clicking to close a gump sends button 0 (not this dialog's own Close
+		/// button id) - OnResponse must not reopen the dialog in that case, or the dialog
+		/// becomes impossible to actually close this way (#199, a real-world-testing finding:
+		/// both OnResponse methods only special-cased their own Close button and unconditionally
+		/// reopened for anything else, including 0).</summary>
+		[Fact]
+		public void RightClickClosingSkillsDialogDoesNotReopenIt() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SkillsRightClickCloser")) {
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 2); // "Skills" button
+				var (skillsUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				client.SendGumpResponse(skillsUid, 0); // simulates a real right-click close
+				Assert.Throws<TimeoutException>(() => client.ReadGumpDialog(TimeSpan.FromSeconds(3)));
+			}
+		}
+
+		/// <summary>Same right-click-close regression as above, for the Attributes dialog.</summary>
+		[Fact]
+		public void RightClickClosingAttributesDialogDoesNotReopenIt() {
+			using (var client = this.ConnectLoginAndCreateCharacter("AttributesRightClickCloser")) {
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 1); // "Attributes" button
+				var (attrUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				client.SendGumpResponse(attrUid, 0); // simulates a real right-click close
+				Assert.Throws<TimeoutException>(() => client.ReadGumpDialog(TimeSpan.FromSeconds(3)));
+			}
+		}
+
+		/// <summary>.explevel's new button 3 opens D_LevelSpendAbilities - deliberately empty
+		/// per the user's explicit instruction, just confirms it opens without error and shows
+		/// the "not implemented" placeholder.</summary>
+		[Fact]
+		public void AbilitiesButtonOpensPlaceholderDialog() {
+			using (var client = this.ConnectLoginAndCreateCharacter("AbilityChecker")) {
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 3); // "Abilities" button
+
+				var (abilitiesUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.True(abilitiesUid != 0, "Expected the Abilities placeholder dialog to open.");
+			}
+		}
 	}
 }

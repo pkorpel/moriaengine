@@ -18,7 +18,10 @@
 namespace SteamEngine.CompiledScripts {
 	/// <summary>Attribute point-spend dialog (#156), opened from .explevel's new "Attributes"
 	/// button - same plain parchment style as explevel.scp itself (background 2620) rather than
-	/// the C# ImprovedDialog framework. One text-entry + spend button per STR/DEX/INT/VIT,
+	/// the C# ImprovedDialog framework. One "+1" spend button per STR/DEX/INT/VIT (matching
+	/// D_LevelSpendSkills' flat-+1-per-click pattern - a real-world-testing finding, #199: the
+	/// original text-entry-then-click design defaulted the entry to "0", so clicking without
+	/// first typing a number always hit "enter a positive whole number of points to spend"),
 	/// validated by LevelingSystem.TrySpendAttributePoints against both the overall
 	/// AttributePointBudget and the profession's own per-stat hard cap.</summary>
 	public class D_LevelSpendAttributes : CompiledGumpDef {
@@ -26,10 +29,6 @@ namespace SteamEngine.CompiledScripts {
 		private const int DexButtonId = 2;
 		private const int IntButtonId = 3;
 		private const int VitButtonId = 4;
-		private const int StrEntryId = 10;
-		private const int DexEntryId = 11;
-		private const int IntEntryId = 12;
-		private const int VitEntryId = 13;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Player player = (Player) sendTo;
@@ -43,7 +42,6 @@ namespace SteamEngine.CompiledScripts {
 			string[] names = { "STR", "DEX", "INT", "VIT" };
 			AttributeStat[] attrs = { AttributeStat.Str, AttributeStat.Dex, AttributeStat.Int, AttributeStat.Vit };
 			int[] current = { player.Str, player.Dex, player.Int, player.Vit };
-			int[] entryIds = { StrEntryId, DexEntryId, IntEntryId, VitEntryId };
 			int[] buttonIds = { StrButtonId, DexButtonId, IntButtonId, VitButtonId };
 
 			int y = 75;
@@ -55,7 +53,6 @@ namespace SteamEngine.CompiledScripts {
 					capText = "cap " + hardCap;
 				}
 				this.AddLabel(20, y, 3, names[i] + ": " + current[i] + " (" + capText + ")");
-				this.AddTextEntry(220, y - 2, 60, 20, 0, entryIds[i], "0");
 				this.AddButton(290, y - 2, 2151, 2152, buttonIds[i], GumpButtonType.Reply, 0);
 				y += 32;
 			}
@@ -66,24 +63,24 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
 			Player player = (Player) gi.Cont;
-			if (gr.PressedButton == 99) {
+			// Button 0 is the real UO client signal for "closed via right-click" (not this
+			// dialog's own explicit Close button) - must also return without reopening, or a
+			// right-click just silently gets trapped back into the same dialog (#199).
+			if ((gr.PressedButton == 99) || (gr.PressedButton == 0)) {
 				return;
 			}
 
 			AttributeStat stat;
-			int entryId;
 			switch (gr.PressedButton) {
-				case StrButtonId: stat = AttributeStat.Str; entryId = StrEntryId; break;
-				case DexButtonId: stat = AttributeStat.Dex; entryId = DexEntryId; break;
-				case IntButtonId: stat = AttributeStat.Int; entryId = IntEntryId; break;
-				case VitButtonId: stat = AttributeStat.Vit; entryId = VitEntryId; break;
+				case StrButtonId: stat = AttributeStat.Str; break;
+				case DexButtonId: stat = AttributeStat.Dex; break;
+				case IntButtonId: stat = AttributeStat.Int; break;
+				case VitButtonId: stat = AttributeStat.Vit; break;
 				default: return;
 			}
 
-			if (!int.TryParse(gr.GetTextResponse(entryId), out int pointsToSpend) || (pointsToSpend <= 0)) {
-				player.RedMessage("Enter a positive whole number of points to spend.");
-			} else if (!LevelingSystem.TrySpendAttributePoints(player, stat, pointsToSpend)) {
-				player.RedMessage("Could not spend that many points - check your remaining budget and this stat's cap.");
+			if (!LevelingSystem.TrySpendAttributePoints(player, stat, 1)) {
+				player.RedMessage("Could not spend a point there - check your remaining budget and this stat's cap.");
 			}
 			player.Dialog(player, this, args);
 		}

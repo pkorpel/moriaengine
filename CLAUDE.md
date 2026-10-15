@@ -11,6 +11,44 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — leveling/race dialog UX fixes from real testing (#199)
+
+User tested the race-selection and `.explevel`/level-spend dialogs in-game and reported 5 bugs,
+all fixed:
+
+1. **Race/profession picker row misalignment** (`D_OptionPicker.cs`): buttons were positioned
+   per-row (fixed 36px spacing) but all labels in a column were batched into one `<br>`-joined
+   HTML block, whose natural line height didn't match - text drifted from its button row by
+   row. Fixed: one `AddHtml` per row, same y as its button.
+2. **`.explevel` bottom buttons**: swapped graphic 2151/2152 (checkbox-style) for Erebor's own
+   2445/2445 ("paper tab" look, `scripts/experiences.scp`'s `d_explevel`), matching its exact
+   offsets too.
+3. **Skills dialog showed `skill_0` and `1000`**: `AbstractSkillDef.PrettyDefname` always
+   returns the primary Defname, which is always `"skill_" + id` (`ParseDefnames` derives it
+   from the script header number - the readable `DEFNAME=` name becomes the Altdefname
+   instead, same pattern as `i_worldgem_bit` found earlier). Fixed: display name now built from
+   the `SkillName` enum (already clean, e.g. `AnimalLore` → "Animal Lore"); values formatted as
+   `(raw/10.0):F1 + "%"` (skill values are stored ×10 internally).
+4. **Skill point-spend rate was 0.1%/point, should be 5%**: verified against Erebor's own
+   `d_levelbonus` button handler - each point is +50 raw units (5.0%), not +1 (0.1%). New
+   `LevelingSystem.SkillPointGain = 50` constant. Erebor additionally has escalating point cost
+   and "needs a master trainer" gates at 25/50/75% - deliberately NOT ported, user only flagged
+   the flat rate.
+5. **Attributes dialog button always errored**: required typing a number into a text field
+   first (defaulted to `"0"`, so a bare click always hit "enter a positive whole number").
+   Simplified to flat +1-per-click, matching Skills dialog's already-working pattern.
+6. **Skills/Attributes dialogs couldn't close via right-click**: `OnResponse` only special-cased
+   each dialog's own Close button id and unconditionally reopened for anything else - including
+   `0`, the real UO client signal for right-click-close (not a custom button id). Fixed: also
+   return early on `PressedButton == 0`. (Abilities dialog was already fine - unconditional
+   no-op `OnResponse`.)
+
+All six covered by tests in `Tests/Protocol/LevelSpendDialogTests.cs` (split A/B - now 6 Facts,
+over the account's 5-character-slot cap in one collection) and `LevelingIsolatedTests.cs`.
+`TestGameClient` gained `ReadGumpDialogWithStrings` - `AddLabel`/`AddText(string)` only embeds a
+numeric textId in the gump layout grammar (`Gump.AddTextLine`); the literal text lives in the
+packet's separate strings list, which the plain `ReadGumpDialog` deliberately skips.
+
 ## CURRENT STATE (2026-10-15, continued) — full-suite run after #194: 5 failures, 3 real (#197)
 
 Ran the full regression suite post-#194/#196 (100 tests, ~14 min). 95 passed, including every
