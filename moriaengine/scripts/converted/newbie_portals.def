@@ -267,7 +267,10 @@ ITEM = i_dagger_copper
 ITEM = i_potion_nightsight, 3
 
 [TemplateDef tm_necronewbie]
-item = i_spellbook_necro
+// Erebor's own i_spellbook_necro doesn't exist as a converted item here, and necromancy
+// spells aren't implemented in this engine at all yet (#158) - a plain spellbook is a
+// reasonable stand-in, same as every other profession's newbie kit.
+item = i_spellbook_3
 ITEM = i_robe
 ITEM = i_staff_gnarled_copper
 ITEM = i_dagger_copper
@@ -285,14 +288,17 @@ item = i_spellbook_3
 ITEM = i_robe
 item = i_bandage, 100
 ITEM = i_hammer_pick_copper
+ITEM = i_mace_copper
 ITEM = i_dagger_copper
 ITEM = i_potion_nightsight, 3
 
 [TemplateDef tm_warnewbie]
 item = i_spellbook_3
 ITEM = i_shirt_plain
-ITEM = random_pants
+ITEM = i_pants_long
 ITEM = i_sword_viking_copper
+ITEM = i_mace_war_copper
+ITEM = i_axe_exec_copper
 ITEM = i_COPPER_HEATER_SHIELD
 item = i_bandage, 50
 ITEM = i_potion_nightsight, 3
@@ -300,17 +306,17 @@ ITEM = i_potion_nightsight, 3
 [TemplateDef tm_rangernewbie]
 item = i_spellbook_3
 ITEM = i_shirt_plain
-ITEM = random_pants
+ITEM = i_pants_long
 item = i_bandage, 50
 item = i_xbolt_piercing_copper, 100
-ITEM = i_crossbolt_heavy_copper
+ITEM = i_crossbow_heavy_copper
 ITEM = i_dagger_copper
 ITEM = i_potion_nightsight, 3
 
 [TemplateDef tm_thiefnewbie]
 item = i_spellbook_3
 ITEM = i_shirt_plain
-ITEM = random_pants
+ITEM = i_pants_long
 item = i_bandage, 50
 ITEM = i_kryss_copper
 ITEM = i_COPPER_metal_SHIELD
@@ -319,8 +325,15 @@ ITEM = i_potion_nightsight, 3
 [TemplateDef tm_craftnewbie]
 item = i_spellbook_3
 ITEM = i_shirt_plain
-ITEM = random_pants
+ITEM = i_pants_long
 ITEM = i_sword_viking_copper
+ITEM = i_mace_war_copper
+ITEM = i_axe_exec_copper
+ITEM = i_tinker_tools
+ITEM = i_saw
+ITEM = i_pickaxe
+ITEM = i_sewing_kit
+ITEM = i_hammer_smith
 ITEM = i_COPPER_HEATER_SHIELD
 item = i_bandage, 50
 ITEM = i_potion_nightsight, 3

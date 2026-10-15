@@ -72,6 +72,20 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("dex=70", line);
 				Assert.Contains("int=120", line);
 				Assert.Contains("vit=50", line);
+
+				// Beginner's equipment (RaceSelection.GiveStartingEquipment) - Mage's own
+				// tm_magnewbie template: spellbook, robe, staff, dagger, nightsight potions,
+				// plus 2000 starting gold.
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckStartingEquipment");
+				Assert.True(this.fixture.WaitForGameOutputSince("STARTING_EQUIPMENT:", mark, TimeSpan.FromSeconds(10)));
+				string equipLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "STARTING_EQUIPMENT:");
+				Assert.Contains("gold=2000", equipLine);
+				Assert.Contains("i_spellbook_3", equipLine);
+				Assert.Contains("i_robe", equipLine);
+				Assert.Contains("i_staff_gnarled_copper", equipLine);
+				Assert.Contains("i_dagger_copper", equipLine);
+				Assert.Contains("i_potion_nightsight", equipLine);
 			}
 		}
 
@@ -123,6 +137,32 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("gondorSeenByMordor=Innocent", line);
 				Assert.Contains("crossRelation=AlwaysHostile", line);
 				Assert.Contains("sameRealmRelation=Allied", line);
+			}
+		}
+
+		/// <summary>Exercises all 9 profession newbie-equipment templates directly (#182) - the
+		/// end-to-end flow tests above only cover Mage; this catches a bad item reference in
+		/// ANY of the other 8 (several needed fixing - the auto-converter had silently dropped
+		/// or mistyped items, e.g. Craftsman's tools, Warrior's extra weapons, Ranger's
+		/// crossbow) without needing to drive the full gump flow 9 times.</summary>
+		[Fact]
+		public void AllNineProfessionTemplatesGrantRealItems() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "TemplateChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckAllNewbieTemplates");
+				Assert.True(this.fixture.WaitForGameOutputSince("NEWBIE_TEMPLATE_CHECK:", mark, TimeSpan.FromSeconds(10)));
+				string output = this.fixture.GameOutputSnapshot().Substring(mark);
+
+				string[] suffixes = { "mag", "ranger", "necro", "craft", "priest", "war", "thief", "shaman", "Mystik" };
+				foreach (string suffix in suffixes) {
+					string marker = "tm_" + suffix + "newbie";
+					Assert.True(output.IndexOf(marker, StringComparison.OrdinalIgnoreCase) >= 0,
+						"Missing result for " + marker + ". Output:\n" + output);
+					string resultLine = LastLineContaining(output, marker);
+					Assert.DoesNotContain("MISSING", resultLine);
+					Assert.DoesNotContain("EXCEPTION", resultLine);
+					Assert.DoesNotContain("items=0", resultLine);
+				}
 			}
 		}
 
