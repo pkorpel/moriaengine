@@ -210,7 +210,13 @@ namespace SteamEngine.CompiledScripts {
 					return TargetResult.Done;
 				}
 
+				int modelBeforeFlip = item.Model;
 				item.Flip();
+				if (item.Model == modelBeforeFlip) {
+					// #206 - DUPEITEM group is empty/missing for this item, Flip() was a silent
+					// no-op. Give the GM a clear signal instead of leaving them guessing.
+					self.SysMessage("This item has no flip variants.");
+				}
 				return TargetResult.Done;
 			}
 		}
