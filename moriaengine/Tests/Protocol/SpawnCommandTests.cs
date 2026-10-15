@@ -111,7 +111,7 @@ namespace SteamEngine.Tests.Protocol {
 				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
 
 				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
-					{ 10, "1" }, { 11, "c_a_jackrabbit" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+					{ 10, "1" }, { 100, "c_a_jackrabbit" }, { 101, "1" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
 				});
 				Thread.Sleep(3000);
 
@@ -139,7 +139,7 @@ namespace SteamEngine.Tests.Protocol {
 				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
 
 				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
-					{ 10, "1" }, { 11, "c_this_chardef_does_not_exist" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+					{ 10, "1" }, { 100, "c_this_chardef_does_not_exist" }, { 101, "1" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
 				});
 				// Rejection re-opens [dialog d_spawn] - confirms the request was rejected rather
 				// than silently creating a non-functional spawn gem.
@@ -169,7 +169,7 @@ namespace SteamEngine.Tests.Protocol {
 				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
 
 				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
-					{ 10, "1" }, { 11, "c_a_jackrabbit" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+					{ 10, "1" }, { 100, "c_a_jackrabbit" }, { 101, "1" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
 				});
 				Thread.Sleep(3000);
 
@@ -201,7 +201,7 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".spawn");
 				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
 				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
-					{ 10, "1" }, { 11, "c_a_jackrabbit" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+					{ 10, "1" }, { 100, "c_a_jackrabbit" }, { 101, "1" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
 				});
 				Thread.Sleep(3000);
 
@@ -237,7 +237,7 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".spawn");
 				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
 				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
-					{ 10, "1" }, { 11, "c_a_jackrabbit" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+					{ 10, "1" }, { 100, "c_a_jackrabbit" }, { 101, "1" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
 				});
 				Thread.Sleep(2000);
 
@@ -253,7 +253,7 @@ namespace SteamEngine.Tests.Protocol {
 
 				// Edit: Amount 1->2, MinTime/MaxTime 1/2 -> 3/4, Homedist 1->5.
 				client.SendGumpResponse(editGumpUid, 1, new Dictionary<int, string> {
-					{ 10, "2" }, { 11, "c_a_jackrabbit" }, { 12, "3" }, { 13, "4" }, { 14, "5" },
+					{ 10, "2" }, { 100, "c_a_jackrabbit" }, { 101, "1" }, { 12, "3" }, { 13, "4" }, { 14, "5" },
 				});
 				Thread.Sleep(500);
 
@@ -290,6 +290,91 @@ namespace SteamEngine.Tests.Protocol {
 		private void AssertSeen(string marker, int since, TimeSpan timeout) {
 			bool saw = this.fixture.WaitForGameOutputSince(marker, since, timeout);
 			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
+		}
+	}
+
+	[CollectionDefinition(SpawnCommandCollectionF.Name, DisableParallelization = true)]
+	public class SpawnCommandCollectionF : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "SpawnCommandPairF";
+	}
+
+	[Collection(SpawnCommandCollectionF.Name)]
+	public class SpawnCommandTestsF : SpawnCommandTestBase {
+		public SpawnCommandTestsF(GameServerPairFixture servers) : base(servers) {
+		}
+
+		/// <summary>#210 - a GM can configure multiple possible monster types on one spawn gem,
+		/// each with its own relative weight: clicking "+" (id 2) adds a second blank row without
+		/// losing the first row's already-typed values, and the final submission's weighted pick
+		/// (RollSpawnDef) actually respects each entry's relative Probability rather than e.g.
+		/// always picking the first entry or splitting evenly regardless of weight.</summary>
+		[Fact]
+		public void WeightedMultiMonsterListRoundTripsAndRespectsProbability() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SpawnGmF")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				client.SendSpeech(".spawn");
+				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				// Default dialog already has one row (c_a_jackrabbit, prob 1) at ids 100/101.
+				// Click "+" (id 2) - preserves that row, adds a blank second row at ids 102/103.
+				client.SendGumpResponse(gumpUid, 2, new Dictionary<int, string> {
+					{ 10, "1" }, { 100, "c_a_jackrabbit" }, { 101, "1" }, { 12, "0.5" }, { 13, "2" }, { 14, "1" },
+				});
+				var (gumpUid2, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				// Confirm with both rows filled in - jackrabbit heavily favored (weight 10) over
+				// the rare mountain goat (weight 1), ~10:1.
+				client.SendGumpResponse(gumpUid2, 1, new Dictionary<int, string> {
+					{ 10, "1" },
+					{ 100, "c_a_jackrabbit" }, { 101, "10" },
+					{ 102, "c_a_mountain_goat" }, { 103, "1" },
+					{ 12, "0.5" }, { 13, "2" }, { 14, "1" },
+				});
+				Thread.Sleep(2000);
+
+				client.SendSpeech(".TestReportSpawnGemEntries");
+				this.AssertSeen("GEM_ENTRIES_TEST:", TimeSpan.FromSeconds(10));
+				string entriesLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "GEM_ENTRIES_TEST:");
+				Assert.Contains("count=2", entriesLine);
+				Assert.Contains("[0]=c_a_jackrabbit:10", entriesLine);
+				Assert.Contains("[1]=c_a_mountain_goat:1", entriesLine);
+
+				// #210 - decimal MinTime (0.5) round-trips correctly too.
+				client.SendSpeech(".TestReportSpawnGemUidAndInfo");
+				this.AssertSeen("GEM_INFO_TEST:", TimeSpan.FromSeconds(10));
+				string infoLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "GEM_INFO_TEST:");
+				Assert.Contains("minTime=0.5", infoLine);
+
+				client.SendSpeech(".TestSampleRollSpawnDefDistribution");
+				this.AssertSeen("ROLL_DIST_TEST:", TimeSpan.FromSeconds(10));
+				string distLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ROLL_DIST_TEST:");
+				int jackrabbitCount = ExtractIntAfter(distLine, "c_a_jackrabbit=");
+				int goatCount = ExtractIntAfter(distLine, "c_a_mountain_goat=");
+				Assert.True(jackrabbitCount > goatCount * 5, "Expected Jackrabbit (weight 10) to heavily outnumber Mountain Goat (weight 1) over 2000 rolls, got jackrabbit=" + jackrabbitCount + " goat=" + goatCount);
+			}
+		}
+
+		private static string LastLineContaining(string output, string marker) {
+			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);
+			int end = output.IndexOf('\n', idx);
+			if (end < 0) {
+				end = output.Length;
+			}
+			return output.Substring(idx, end - idx);
+		}
+
+		private static int ExtractIntAfter(string line, string marker) {
+			int idx = line.IndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + line);
+			string rest = line.Substring(idx + marker.Length);
+			int end = 0;
+			while (end < rest.Length && char.IsDigit(rest[end])) {
+				end++;
+			}
+			return int.Parse(rest.Substring(0, end), System.Globalization.CultureInfo.InvariantCulture);
 		}
 	}
 }
