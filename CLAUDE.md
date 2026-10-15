@@ -11,7 +11,67 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
-## Item ATTR flag system — gap analysis complete (2026-10-15), tracked as #215, NOT implemented yet
+## Item ATTR flag system — implementation IN PROGRESS (2026-10-15), tracked as #215
+
+User said "do the whole thing" on the full #215 gap-analysis scope (all 21 flags, not
+the recommended-skip subset; full decay subsystem with GM-tunable `.settings` interval;
+full house-lockdown mechanic; GM tooling this pass). Sub-issues #217-#225 filed under
+#215, one per batch from the original phasing writeup below (kept as historical
+context - phasing numbers/skip-recommendations in that writeup are superseded by "do
+all 21", only the technical analysis itself still applies).
+
+**#217 (core infrastructure) - DONE, PR #226, merged.** `ItemAttributes` `[Flags]` enum
+(21 real Sphere bits) + `ItemDef.AttributesDefault`/`Item.Attributes` (template default /
+per-instance override, seeded at creation) + `HasAttribute`/`SetAttribute`. `.def` `ATTR =
+attr_x|attr_y` parsing needed ZERO new parser code - `AbstractItemDef.LoadScriptLine`
+just aliases `"attr"` -> `"attributesdefault"`, then the existing generic `FieldValue`/
+`ConvertTools.ConvertTo` pipe-separated-`[Flags]`-enum pipeline (already used by every
+other `[Flags]` `.def` field in this engine) does the rest. Fixed the real
+`attr_stolen`/`attr_identified` bit-0x01 conflict from the gap analysis (real Sphere's
+0x01 is `attr_identified`; the old non-standard `attr_stolen` constant had zero real
+content, safe to drop).
+
+**Design pivot mid-pass (important for #218-225's own GM-visibility work)**: first draft
+put 22 individual public boolean properties on `Item` (e.g. `AttrNewbie`) meant to
+auto-surface via the generic reflection-based `.info` field list (same mechanism
+`Player.Level`/`Experience` use). User's explicit follow-up: "I like the idea of having
+entire separate dialog (just as we have timers, plugins, tags) with all the possible
+attributes and checkbox next to them." Rebuilt as a **dedicated checkbox dialog**
+(`D_AttrList`, `scripts/Basic/administration/attributes/D_AttrList.cs`) modeled directly
+on the existing `D_TagList`/`D_PluginList` pattern - one `GUTACheckBox` row per flag,
+`OnResponse` writes every checkbox's state back via `SetAttribute`. Reachable two ways:
+a new `.AttrList` target-cursor command (`CompiledTargetDef`, matches `.flip`/`.kill`'s
+shape - NOT `.TagList`'s self-referential `TagHolder self` signature, since an item has
+no "self" context to invoke a command as, a GM always targets one externally - an early
+draft got this wrong, `AttrList(Item self)`, and had to be corrected), and a new
+"Attributes" button added to the existing generic `.info` dialog via
+`ItemDescriptor.cs`'s `[ViewDescriptor(typeof(Item),...)]` (same place `FixWeight`
+already lived). **Lesson for #218-225's own future GM-toggle needs**: prefer this
+dedicated-dialog-with-checkboxes shape over scattered reflection-surfaced booleans,
+matching the user's established mental model for this engine's GM tooling, unless told
+otherwise.
+
+**Verified via 3 real protocol tests** (`Tests/Protocol/AttrFlagTests.cs`), including a
+full dialog round-trip: target an item, open `.AttrList`, submit the checkbox gump with
+two specific boxes checked via a real `GumpMenuSelectionInPacket` (0xB1), confirm exactly
+those two flags land on the item (no more, no less). Needed a new switches-aware
+`TestGameClient.SendGumpResponse` overload (`int[] selectedSwitches` param) - no existing
+test harness could drive a checkbox/switch dialog before this; read
+`GumpMenuSelectionInPacket.ReadDynamicPart` directly to get the wire layout right (switches
+array sits BEFORE the text-entries array, so all entry offsets shift dynamically by
+`4 * switchCount`). **Real test-authoring gotcha, not a product bug**: `[Flags]` enum
+`ToString()` lists flags in **enum declaration order**, not the order they were OR'd
+together or appeared in a `.def` line - `ATTR = attr_static|attr_magic` prints as
+`"attr_magic, attr_static"` (magic declared earlier in the enum), not
+`"attr_static, attr_magic"`. First test draft asserted the wrong order and failed; fixed
+the assertion, not the enum.
+
+**Next up**: #218 (death & corpse-drop: newbie/blessed/cursed/insured), then #219-225 in
+order, each following the same raise-issue-first/implement/test/ship/close workflow.
+
+---
+
+### Original gap analysis (2026-10-15) - historical context, see above for current status
 
 User asked for a full investigation into item attributes (`attr_static`, `attr_newbie`,
 etc.) across three angles: moriaengine's own implementation, Erebor's real converted
