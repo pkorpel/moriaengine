@@ -29,17 +29,21 @@ namespace SteamEngine.CompiledScripts {
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Player player = (Player) sendTo;
 
+			const int width = 350;
 			this.SetLocation(50, 50);
-			this.AddBackground(0, 0, 350, 150, 2620);
+			this.AddBackground(0, 0, width, 150, 2620);
 			this.AddLabel(20, 20, 37, "Abilities");
 			this.AddLabel(20, 50, 3, "Unspent ability points: " + player.UnspentAbilityPoints);
 			this.AddLabel(20, 75, 3, "Ability spending isn't implemented yet.");
 
-			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202).
+			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202) -
+			// Back pinned to the left edge, Close to the right edge (#204: they overlapped when
+			// both sat near the left edge only ~100px apart - the 2445 graphic renders wider
+			// than that).
 			this.AddButton(20, 110, 2445, 2445, BackButtonId, GumpButtonType.Reply, 0);
 			this.AddLabel(25, 112, 3, "Back");
-			this.AddButton(120, 110, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
-			this.AddLabel(125, 112, 3, "Close");
+			this.AddButton(width - 120, 110, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(width - 115, 112, 3, "Close");
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
