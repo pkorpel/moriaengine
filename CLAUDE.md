@@ -11,6 +11,63 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## Item ATTR flag system — gap analysis complete (2026-10-15), tracked as #215, NOT implemented yet
+
+User asked for a full investigation into item attributes (`attr_static`, `attr_newbie`,
+etc.) across three angles: moriaengine's own implementation, Erebor's real converted
+content, and official SphereServer documentation. Full writeup with the flag-by-flag
+table and recommended phasing is in #215 - short version:
+
+- **Real Sphere has 21 `attr_*` bitflags** (canonical source: `sphere_defs.scp`'s
+  `[DEFNAME attr_flags]` block, cross-checked against wiki.spherecommunity.net) covering
+  death-handling (newbie/blessed/cursed/insured), decay, placement (static/lockeddown/
+  secure/move_never/move_always), magic/crafting quality (magic/exceptional/enchanted/
+  imbued/reforged), ownership/trade (owned/nodroptrade/norepair), visibility/ID (invis/
+  identified), and door state (opened).
+- **moriaengine implements essentially none of them end-to-end.** No C# enum (just
+  LScript numeric constants in `scripts/Basic/defs.scp` covering 9/21, several real ones
+  explicitly commented out as unimplemented), no generic `Flags` bitmask property (a
+  commented-out stub in `Item.cs` is all that exists), no `.def` `ATTR = x|y|z` parsing
+  path anywhere. A few individual booleans (`Flag_Invisible`, `Flag_NonMovable`,
+  `Flag_DisplayAsMovable`, `Flag_Newbied`) exist and ARE read by real logic, but have
+  **zero write path** - nothing anywhere ever sets them. `spawn.scp` and `Item.cs` both
+  have pre-existing TODOs flagging exactly this gap.
+- **Zero real content uses this** - checked all 114 files under `scripts/converted/`,
+  not a single `ATTR =` line survives, not even as a converter-commented remnant (unlike
+  other unconvertible fields). Either Erebor's original source never used it, or the
+  converter silently dropped it since the engine had nothing to parse it into.
+- **Found a real bit-mapping conflict**: moriaengine's constants use bit `0x01` for a
+  non-standard `attr_stolen` - real Sphere uses that bit for `attr_identified` and
+  doesn't define `attr_stolen` as an ATTR bit at all. Safe to clean up, zero real content
+  uses either value today.
+- **Two flags depend on subsystems that don't exist yet, not just a flag**: `attr_decay`
+  needs a brand-new generic item-decay-timer mechanism (currently nothing - only a
+  region-level `flag_nodecay` *toggle* that assumes a decay mechanism exists elsewhere,
+  which it doesn't); `attr_lockeddown`/`attr_secure` need a new house-lockdown mechanic on
+  top of the existing Housing system (#74, already shipped) - House.cs has ownership/
+  placement/access control but no "items placed inside become protected" concept at all.
+- **Recommended phasing** (not yet decided/approved by user - this is a proposal in
+  #215, waiting for the user to pick up implementation): Phase 1 = the 6 cheap,
+  already-half-wired flags (`attr_invis`, `attr_move_never`, `attr_move_always`,
+  `attr_newbie`, `attr_blessed`, `attr_cursed`) - needs a real `[Flags]` enum + `.def`
+  parsing + wiring into existing dead property read-paths, no new subsystems required.
+  Phase 2 = `attr_decay`/`attr_lockeddown`/`attr_secure`/`attr_owned`/`attr_nodroptrade`/
+  `attr_norepair`, each its own small subsystem, needs a design decision first. Recommend
+  skipping entirely: `attr_identified` (Sphere's own source calls it obsolete),
+  `attr_questitem` (no quest system, #130), `attr_exceptional`/`attr_enchanted`/
+  `attr_imbued`/`attr_reforged`/`attr_insured` (cosmetic-only without a bonus system
+  behind them - same trap as the existing inert `attr_magic` constant), `attr_opened`
+  (likely redundant with existing door state, needs a quick check first).
+
+**Research method note**: used 3 parallel forks (own-engine code investigation,
+converted-content grep survey, web research against SphereServer's actual source) to
+avoid filling context with raw grep/search output - worked well for this kind of
+"survey 3 independent angles, then synthesize" task. One fork's first draft tried to
+`git clone` the Erebor reference archive from a fresh prompt with no explicit per-message
+user authorization in THIS conversation (even though the same URL had been used earlier
+in the session) - got blocked by the auto-mode classifier for exactly that reason; rescoped
+to use only moriaengine's own already-converted content instead, which was sufficient.
+
 ## CURRENT STATE (2026-10-15, continued) — decimal spawn timer + weighted multi-monster list (#210)
 
 Remaining items from #210's batch (starting position already shipped separately, see the
