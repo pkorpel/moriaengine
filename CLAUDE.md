@@ -11,6 +11,17 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — .explevel reordered (#188, PR #189)
+
+Another small follow-up: `.explevel`'s row order is now `<Name>, <Profession>` (first row,
+profession capitalized - `Player.ProfessionName` now does `char.ToUpperInvariant(name[0]) +
+name.Substring(1)` since every profession name is a single lowercase word, e.g. "mag"->"Mag"),
+then Level, then Experience, then the unchanged combat stats. The standalone "Profession:" row
+is gone, merged into the name line. Text/button indices in the `.scp` all had to shift down by
+2 to match the new row count - double check this file's own index numbers stay internally
+consistent (layout `argo.text` calls reference `[DIALOG d_explevel TEXT]` lines by 0-based
+position) if touching it again.
+
 ## CURRENT STATE (2026-10-15, continued) — .explevel translated to English (#185, PR #186)
 
 Small follow-up: `.explevel`'s TEXT section mixed Czech and English labels (also garbled by
