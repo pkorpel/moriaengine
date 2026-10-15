@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
 
@@ -104,6 +106,63 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			Console.WriteLine("GEM_INFO_TEST: no gem found");
+		}
+
+		/// <summary>Reports every configured entry's display name + probability for the nearby
+		/// gem - used to verify the weighted multi-monster list round-trips correctly (#210).</summary>
+		[SteamFunction]
+		public static void TestReportSpawnGemEntries(Character self) {
+			foreach (AbstractItem item in self.GetMap().GetItemsInRange(self.X, self.Y, 20)) {
+				if (item.Def.Altdefname != null &&
+					item.Def.Altdefname.Equals("i_worldgem_bit", StringComparison.OrdinalIgnoreCase)) {
+					SpawnInfo info = item.GetTag(TagKey.Acquire("spawnInfo")) as SpawnInfo;
+					if (info == null) {
+						Console.WriteLine("GEM_ENTRIES_TEST: no spawnInfo");
+						return;
+					}
+					StringBuilder sb = new StringBuilder("GEM_ENTRIES_TEST: count=" + info.EntryCount);
+					for (int i = 0; i < info.EntryCount; i++) {
+						SpawnEntry entry = info.GetEntry(i);
+						sb.Append(" [").Append(i).Append("]=").Append(entry.SpawnDefDisplayName).Append(":").Append(entry.Probability);
+					}
+					Console.WriteLine(sb.ToString());
+					return;
+				}
+			}
+			Console.WriteLine("GEM_ENTRIES_TEST: no gem found");
+		}
+
+		/// <summary>Samples RollSpawnDef 2000 times and tabulates the result per chardef, to
+		/// verify the weighted pick actually respects each entry's relative Probability (#210)
+		/// rather than e.g. always picking the first entry or an even split regardless of
+		/// weight.</summary>
+		[SteamFunction]
+		public static void TestSampleRollSpawnDefDistribution(Character self) {
+			foreach (AbstractItem item in self.GetMap().GetItemsInRange(self.X, self.Y, 20)) {
+				if (item.Def.Altdefname != null &&
+					item.Def.Altdefname.Equals("i_worldgem_bit", StringComparison.OrdinalIgnoreCase)) {
+					SpawnInfo info = item.GetTag(TagKey.Acquire("spawnInfo")) as SpawnInfo;
+					if (info == null) {
+						Console.WriteLine("ROLL_DIST_TEST: no spawnInfo");
+						return;
+					}
+					Dictionary<string, int> counts = new Dictionary<string, int>();
+					for (int i = 0; i < 2000; i++) {
+						IThingFactory picked = info.RollSpawnDef();
+						ThingDef pickedDef = picked as ThingDef;
+						string name = pickedDef == null ? "null" : pickedDef.PrettyDefname;
+						int existing;
+						counts[name] = counts.TryGetValue(name, out existing) ? existing + 1 : 1;
+					}
+					StringBuilder sb = new StringBuilder("ROLL_DIST_TEST:");
+					foreach (KeyValuePair<string, int> kv in counts) {
+						sb.Append(" ").Append(kv.Key).Append("=").Append(kv.Value);
+					}
+					Console.WriteLine(sb.ToString());
+					return;
+				}
+			}
+			Console.WriteLine("ROLL_DIST_TEST: no gem found");
 		}
 	}
 
