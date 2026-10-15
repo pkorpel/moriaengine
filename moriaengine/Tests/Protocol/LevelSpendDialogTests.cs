@@ -199,6 +199,50 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.DoesNotContain(strings, s => s.Contains("skill_0"));
 			}
 		}
+
+		/// <summary>#202: the Skills dialog no longer paginates - every one of Mage's 30
+		/// configured skills must be reachable (a button present) on the single page the dialog
+		/// sends, laid out in columns instead of Prev/Next pages. Meditation (id 46, scripts/
+		/// Basic/skills/SkillName.cs) is the highest-id skill Mage configures (mage.def), so its
+		/// button landing in the 3rd/last column proves the whole list made it onto one page,
+		/// not just column 1 - button id is SkillButtonIdBase(1000) + id, and the gump layout
+		/// grammar's button element is "{button x y downGfx upGfx isTrigger page triggerId}"
+		/// (GameCore/Gump.cs's AddElement) - the trailing " <id>}" anchors on the triggerId
+		/// specifically rather than risking a substring match against some other number.</summary>
+		[Fact]
+		public void SkillsDialogListsEverySkillOnOnePage() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SkillAllOnePage")) {
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 2); // "Skills" button
+				var (_, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				const int meditationSkillId = 46;
+				Assert.Contains(" " + (1000 + meditationSkillId) + "}", layout);
+			}
+		}
+
+		/// <summary>#202: the Back button on the Skills dialog re-opens .explevel - confirmed by
+		/// seeing its "Attributes"/"Skills"/"Abilities" button labels again (explevel.scp's own
+		/// [DIALOG d_explevel TEXT] lines, carried in the packet's strings list same as
+		/// AddLabel/AddText - see ReadGumpDialogWithStrings's own doc comment).</summary>
+		[Fact]
+		public void BackButtonOnSkillsDialogReopensExplevel() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SkillsBackButton")) {
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 2); // "Skills" button
+				var (skillsUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				client.SendGumpResponse(skillsUid, 1); // "Back" button
+				var (_, _, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+				Assert.Contains(strings, s => s.Contains("Abilities"));
+			}
+		}
 	}
 
 	[Collection(LevelSpendDialogCollectionB.Name)]

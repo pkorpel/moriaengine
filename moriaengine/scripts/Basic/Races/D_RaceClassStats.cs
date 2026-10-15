@@ -48,7 +48,9 @@ namespace SteamEngine.CompiledScripts {
 
 			this.SetLocation(0, 0);
 			this.AddImage(140, 200, 2200);
-			this.AddHtml(170, 180, 280, 24, "<CENTER>Choose your starting stats (sum must be " + RequiredSum + ")</CENTER>", false, false);
+			// Same readability fix as D_OptionPicker (#202) - default black HTML text on the
+			// gump's plain backdrop above the book image was close to unreadable.
+			this.AddHtml(170, 180, 280, 24, "<CENTER><BASEFONT COLOR=#FFFFFF>Choose your starting stats (sum must be " + RequiredSum + ")</BASEFONT></CENTER>", false, false);
 
 			string[] names = { "STR", "DEX", "INT", "VIT" };
 			AttributeStat[] attrs = { AttributeStat.Str, AttributeStat.Dex, AttributeStat.Int, AttributeStat.Vit };
