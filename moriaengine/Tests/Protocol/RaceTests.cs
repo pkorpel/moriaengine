@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Xunit;
 
@@ -18,30 +19,44 @@ namespace SteamEngine.Tests.Protocol {
 			this.fixture = servers;
 		}
 
+		/// <summary>Mage's own strRange/dexRange/intRange/vitRange (mage.def): {50,80,90},
+		/// {60,90,100}, {100,150,230}, {50,80,100} - min/startingMax/hardCap. These 4 values sum
+		/// to exactly 300 and each sits inside its own [min, hardCap], so D_RaceClassStats (#176)
+		/// accepts them.</summary>
+		private static readonly Dictionary<int, string> MageValidStats = new Dictionary<int, string> {
+			{ 10, "60" }, // Str entry id
+			{ 11, "70" }, // Dex entry id
+			{ 12, "120" }, // Int entry id
+			{ 13, "50" }, // Vit entry id
+		};
+
 		/// <summary>Full end-to-end flow for a race with a REAL nation choice (Human: 7
-		/// nations) - drives all 3 gump steps via real button-response packets, picking the
-		/// first option at each step (Human -> Mage -> Gondoran), then confirms Race/Nation/
-		/// Realm/Home/Title/stats all landed correctly. Button ids are computed directly
-		/// (FirstOptionButtonId=10 + known index) rather than parsed from the gump layout text -
-		/// safe since this test controls D_OptionPicker's own button-id scheme.</summary>
+		/// nations) - drives the whole thing through the real i_stone_raceclass item (#174),
+		/// not a test-only command, confirming the dclick trigger itself works. Order matches
+		/// Erebor's own stone exactly: profession -> race -> nation -> stats (#173/#175/#176).
+		/// Button ids are computed directly (FirstOptionButtonId=1 + known index) rather than
+		/// parsed from the gump layout text - safe since this test controls D_OptionPicker's own
+		/// button-id scheme.</summary>
 		[Fact]
 		public void FullRaceSelectionFlowForHuman() {
 			using (var client = this.ConnectLoginAndCreateCharacter(Account, "HumanFlowTester")) {
-				// Warm-up round trip - confirms the connection is fully live before the real
-				// scenario starts (general hygiene, same idiom used elsewhere in this suite).
 				int mark0 = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportMyUid");
-				Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", mark0, TimeSpan.FromSeconds(10)));
+				client.SendSpeech(".TestSpawnRaceStone");
+				Assert.True(this.fixture.WaitForGameOutputSince("RACE_STONE_SPAWNED:", mark0, TimeSpan.FromSeconds(10)));
+				uint stoneUid = ExtractUid(this.fixture.GameOutputSnapshot(), mark0, "RACE_STONE_SPAWNED: uid=");
 
-				client.SendSpeech(".ChooseRace");
+				client.SendDoubleClick(stoneUid);
 				var (gumpUid1, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				client.SendGumpResponse(gumpUid1, 10); // race index 0 = Human
+				client.SendGumpResponse(gumpUid1, 1); // profession index 0 = Mage
 
 				var (gumpUid2, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				client.SendGumpResponse(gumpUid2, 10); // profession index 0 = Mage
+				client.SendGumpResponse(gumpUid2, 1); // race index 0 = Human
 
 				var (gumpUid3, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				client.SendGumpResponse(gumpUid3, 10); // nation index 0 = Gondoran (Human's first choice)
+				client.SendGumpResponse(gumpUid3, 1); // nation index 0 = Gondoran (Human's first choice)
+
+				var (gumpUid4, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(gumpUid4, 1, MageValidStats); // stats submit button id = 1
 
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestCheckRaceState");
@@ -53,26 +68,33 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("realm=Gondor", line);
 				Assert.Contains("home=5678,3871,-80", line);
 				Assert.Contains("title=ucen", line); // Mage's level-0 title
+				Assert.Contains("str=60", line);
+				Assert.Contains("dex=70", line);
+				Assert.Contains("int=120", line);
+				Assert.Contains("vit=50", line);
 			}
 		}
 
 		/// <summary>Sibling of the Human flow - Dwarf is locked to exactly one nation
-		/// (Ereboran), so the nation-picker gump should never appear at all; profession picker
-		/// is followed directly by the finish state.</summary>
+		/// (Ereboran), so the nation-picker gump should never appear at all; the race picker is
+		/// followed directly by the stats dialog.</summary>
 		[Fact]
 		public void FixedNationRaceSkipsNationPicker() {
 			using (var client = this.ConnectLoginAndCreateCharacter(Account, "DwarfFlowTester")) {
-				// Warm-up round trip - see FullRaceSelectionFlowForHuman's own doc comment.
 				int mark0 = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportMyUid");
-				Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", mark0, TimeSpan.FromSeconds(10)));
+				client.SendSpeech(".TestSpawnRaceStone");
+				Assert.True(this.fixture.WaitForGameOutputSince("RACE_STONE_SPAWNED:", mark0, TimeSpan.FromSeconds(10)));
+				uint stoneUid = ExtractUid(this.fixture.GameOutputSnapshot(), mark0, "RACE_STONE_SPAWNED: uid=");
 
-				client.SendSpeech(".ChooseRace");
+				client.SendDoubleClick(stoneUid);
 				var (gumpUid1, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				client.SendGumpResponse(gumpUid1, 12); // race index 2 = Dwarf
+				client.SendGumpResponse(gumpUid1, 1); // profession index 0 = Mage
 
 				var (gumpUid2, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
-				client.SendGumpResponse(gumpUid2, 10); // profession index 0 = Mage
+				client.SendGumpResponse(gumpUid2, 3); // race index 2 = Dwarf
+
+				var (gumpUid3, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(gumpUid3, 1, MageValidStats); // stats submit, Dwarf skipped nation picker
 
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestCheckRaceState");
@@ -156,6 +178,17 @@ namespace SteamEngine.Tests.Protocol {
 				end = output.Length;
 			}
 			return output.Substring(idx, end - idx);
+		}
+
+		private static uint ExtractUid(string output, int sincePosition, string marker) {
+			int idx = output.IndexOf(marker, Math.Max(0, sincePosition - marker.Length), StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);
+			int start = idx + marker.Length;
+			int end = start;
+			while ((end < output.Length) && char.IsDigit(output[end])) {
+				end++;
+			}
+			return uint.Parse(output.Substring(start, end - start), System.Globalization.CultureInfo.InvariantCulture);
 		}
 	}
 

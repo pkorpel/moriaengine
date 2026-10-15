@@ -20,6 +20,16 @@ using System;
 namespace SteamEngine.CompiledScripts {
 	/// <summary>Server-side helpers for the races system protocol tests (#161-165).</summary>
 	public static class RaceTests {
+		/// <summary>Spawns a real i_stone_raceclass item on the ground at self's own feet and
+		/// reports its uid, so a protocol test can double-click it for real (#174) rather than
+		/// invoking the flow through a test-only command.</summary>
+		[SteamFunction]
+		public static void TestSpawnRaceStone(Character self) {
+			ItemDef stoneDef = (ItemDef) ThingDef.GetByDefname("i_stone_raceclass");
+			AbstractItem stone = (AbstractItem) stoneDef.Create(self.P());
+			Console.WriteLine("RACE_STONE_SPAWNED: uid=" + stone.Uid);
+		}
+
 		[SteamFunction]
 		public static void TestCheckRaceState(Character self) {
 			Player player = (Player) self;
