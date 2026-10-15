@@ -217,16 +217,22 @@ namespace SteamEngine.CompiledScripts {
 				" skillValue=" + player.GetRealSkillValue(skill));
 		}
 
+		/// <summary>Defers the actual spend to a near-immediate timer (#156) - same reason as
+		/// DeferredNpcKillTimer below (#146): LevelingSystem.TrySpendAttributePoints now reads
+		/// ProfessionDef.GetStatRange, and a profession's strRange/dexRange/etc FieldValue is a
+		/// lazy, unresolved LScript expression until its first access. Resolving it
+		/// SYNCHRONOUSLY inside this chat command's own call stack hits the same
+		/// Commands.AuthorizeCommandThrow denial #146 already found (OpNode_Lazy_Expression.Run
+		/// treats the resolution as a command-authorization check) - harmless in real gameplay,
+		/// since a real player only reaches GetStatRange via D_LevelSpendAttributes' gump
+		/// response handling, not a chat command's call stack.</summary>
 		[SteamFunction]
 		public static void TestSpendAttributePoint(Character self, ScriptArgs sa) {
 			Player player = (Player) self;
 			string[] parts = SplitArgs(sa);
 			AttributeStat stat = (AttributeStat) Enum.Parse(typeof(AttributeStat), parts[0], true);
 			int points = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
-			bool success = LevelingSystem.TrySpendAttributePoints(player, stat, points);
-			Console.WriteLine("LEVELING_SPEND_ATTRIBUTE_RESULT: success=" + success +
-				" attributePointBudget=" + player.AttributePointBudget +
-				" str=" + player.Str + " dex=" + player.Dex + " int=" + player.Int + " vit=" + player.Vit);
+			player.AddTimer(DeferredAttributeSpendTimer.TimerKey, new DeferredAttributeSpendTimer(player, stat, points)).DueInSeconds = 0;
 		}
 	}
 
@@ -251,6 +257,34 @@ namespace SteamEngine.CompiledScripts {
 		protected override void OnTimeout(TagHolder cont) {
 			this.victim.CauseDeath(this.killer);
 			Console.WriteLine("LEVELING_KILL_TEST_RESULT: level=" + this.killer.Level + " experience=" + this.killer.Experience);
+		}
+	}
+
+	/// <summary>See LevelingTests.TestSpendAttributePoint's own doc comment (#156) for why this
+	/// exists - runs the actual spend outside the chat command's own call stack.</summary>
+	[SaveableClass]
+	public class DeferredAttributeSpendTimer : BoundTimer {
+		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_deferredAttributeSpendTimer_");
+
+		private Player player;
+		private AttributeStat stat;
+		private int points;
+
+		[LoadingInitializer]
+		public DeferredAttributeSpendTimer() {
+		}
+
+		public DeferredAttributeSpendTimer(Player player, AttributeStat stat, int points) {
+			this.player = player;
+			this.stat = stat;
+			this.points = points;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			bool success = LevelingSystem.TrySpendAttributePoints(this.player, this.stat, this.points);
+			Console.WriteLine("LEVELING_SPEND_ATTRIBUTE_RESULT: success=" + success +
+				" attributePointBudget=" + this.player.AttributePointBudget +
+				" str=" + this.player.Str + " dex=" + this.player.Dex + " int=" + this.player.Int + " vit=" + this.player.Vit);
 		}
 	}
 }
