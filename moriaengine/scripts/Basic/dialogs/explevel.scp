@@ -33,15 +33,15 @@ argo.text 315 272 3 19
 
 [DIALOG d_explevel TEXT]
 <Name>
-Obrann� ��slo (P, M):
+Armor Class (P, M):
 <ArmorClassVsP>, <ArmorClassVsM>
-Obrana mysli (P, M):
+Mind Defense (P, M):
 <MindDefenseVsP>, <MindDefenseVsM>
-�to�n� ��slo/Piercing (P, M):
+Weapon Attack/Piercing (P, M):
 <WeaponAttackVsP>/<WeaponPiercing>, <WeaponAttackVsM>/<WeaponPiercing>
-Prodleva �deru:
+Weapon Delay:
 <WeaponDelay>
-S�la mysli (P, M):
+Mind Power (P, M):
 <MindPowerVsP>, <MindPowerVsM>
 Level:
 <Level>
@@ -64,4 +64,3 @@ src.Dialog(d_levelspendskills)
 
 on=3
 src.Dialog(d_levelspendabilities)
-
