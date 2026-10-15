@@ -89,6 +89,9 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				this.attributes &= ~flag;
 			}
+			if ((flag == ItemAttributes.attr_decay) && value) {
+				ItemDecaySystem.EnsureSweepRunning(); //#219 - lazily self-installs on first real use
+			}
 		}
 
 		/// <summary>Seeds this instance's own Attributes (Item.ct's "attributes" Vars field,
@@ -98,6 +101,9 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_Create() {
 			base.On_Create();
 			this.attributes = this.TypeDef.AttributesDefault;
+			if (this.HasAttribute(ItemAttributes.attr_decay)) {
+				ItemDecaySystem.EnsureSweepRunning(); //#219
+			}
 		}
 
 		/// <summary>
