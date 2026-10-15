@@ -11,6 +11,44 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — new starting position (#210) + home-return now uses A* (#211)
+
+Two more small items from the same "small changes/improvements" batch as #210 (decimal
+spawn timer + weighted monster list items still pending in that issue, not done yet):
+
+- **`PlayerCreation.startingPosition`** moved to `(4763,1363,10,0)` (was `(5233,31,20,0)`).
+  **Confirmed intentional by the user**: this new spot is deliberately narrow/boxed-in
+  (verified directly - an NPC placed even 2 tiles away had zero legal moves in any of the
+  8 directions) - it's a character-creation antechamber where a player only interacts with
+  `i_stone_raceclass` before getting moved elsewhere, not a general-purpose area. Don't
+  flag the narrowness there as a bug again.
+- **#211 - NPC home-return now uses A\***: `NPCAiTimer.Wander()`'s "too far from home, head
+  back" branch now calls `StepTowardsSmart()` (the existing AStar-backed helper already
+  used by Follow/"come" and Fight/combat-approach) instead of a bare direct step. Confirmed
+  via code investigation that A* already existed in this engine
+  (`scripts/Basic/AI/PathFinding/AStar.cs`) but was never wired into return-home - it's the
+  only movement behavior that wasn't using it.
+
+**Terrain-fragility lesson (new, worth remembering)**: tried 3 times to build a live
+protocol test proving an NPC routes AROUND a placed obstacle on its way home (displacing an
+NPC a few tiles, placing a wall between it and home, polling distance) - all 3 attempts
+showed the NPC with **zero legal moves in any of the 8 directions**, regardless of whether
+any obstacle was even placed. Root cause: BOTH the old startingPosition AND a nearby
+reference point sit on the same tiny elevated platform already documented in this repo's
+own code comments (`CombatScenarioTests.cs`/`CombatDepthTests.cs`: "self.Z=20 while the raw
+land tiles right next to it are Z=0... anything placed more than ~1 tile out risks landing
+off the edge, unable to move at all") - confirmed this applies even ~2-3 tiles out, not
+just "a few tiles". **Gave up on a live multi-tile obstacle test for this specific fix** -
+shipped instead on: (a) the fix is a 1:1 reuse of `StepTowardsSmart`, an already-proven
+production helper (Follow/Fight already use it successfully), and (b) the existing
+regression suite (`SpawnCommandTests`/`GmCommandsTests` all green; the handful of
+`CombatDepthTests`/`PetCommandTestsB` failures in the same run were the SAME pre-existing
+timeout/resource-contention class already dismissed earlier this session, not new
+behavioral failures). **If a future session needs a genuine multi-tile-movement test
+location**: neither spawn point tested here works - would need to find/verify a wide-open
+flat area first (not just assume "near self" is safe), e.g. by running a surroundings probe
+(`Map.CheckMovement` in all 8 directions) BEFORE building the real test, not after.
+
 ## CURRENT STATE (2026-10-15, continued) — spawn gem double-click-to-edit (#208)
 
 Follow-up user request after #206 shipped: double-clicking an already-placed spawn gem
