@@ -107,7 +107,9 @@ namespace SteamEngine.Tests.Protocol {
 				// are even spent.
 				Assert.Contains("success=True", profSkillLine);
 				Assert.Contains("unspentSkillPoints=5", profSkillLine); // 15 - 10
-				Assert.Contains("skillValue=310", profSkillLine); // 300 (granted) + 10 (spent)
+				// 300 (granted) + 10 * LevelingSystem.SkillPointGain (50, i.e. 5.0% per point,
+				// matching Erebor's own rate - #199) = 800.
+				Assert.Contains("skillValue=800", profSkillLine);
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestSpendAttributePoint Str 5");

@@ -588,6 +588,34 @@ namespace SteamEngine.Tests.Protocol {
 			return (gumpUid, layoutText);
 		}
 
+		/// <summary>Same packet as ReadGumpDialog, but also decodes the strings list that
+		/// follows the layout text (SendGumpMenuDialogPacket.WriteDynamicPart: ushort count,
+		/// then per string a ushort char-count + that many big-endian UTF16 chars) - needed for
+		/// any dialog whose text is built via AddLabel/AddText(string) (Gump.AddTextLine), which
+		/// embeds only a numeric textId in the layout grammar itself, not the literal text.</summary>
+		public (int GumpUid, string LayoutText, List<string> Strings) ReadGumpDialogWithStrings(TimeSpan timeout) {
+			byte[] payload = this.ReadPacketPayload(0xb0, timeout);
+			int gumpUid = (payload[6] << 24) | (payload[7] << 16) | (payload[8] << 8) | payload[9];
+			int layoutByteLen = (payload[18] << 8) | payload[19];
+			string layoutText = Encoding.ASCII.GetString(payload, 20, layoutByteLen);
+			int nul = layoutText.IndexOf('\0');
+			if (nul >= 0) {
+				layoutText = layoutText.Substring(0, nul);
+			}
+
+			int pos = 20 + layoutByteLen;
+			int stringCount = (payload[pos] << 8) | payload[pos + 1];
+			pos += 2;
+			List<string> strings = new List<string>(stringCount);
+			for (int i = 0; i < stringCount; i++) {
+				int charCount = (payload[pos] << 8) | payload[pos + 1];
+				pos += 2;
+				strings.Add(Encoding.BigEndianUnicode.GetString(payload, pos, charCount * 2));
+				pos += charCount * 2;
+			}
+			return (gumpUid, layoutText, strings);
+		}
+
 		/// <summary>Reads UnicodeSpeechOutPacket (0xAE) - the packet behind both
 		/// AbstractCharacter.SysMessage and the plain-string overload of ClilocSysMessage's
 		/// sibling methods, confirming the player actually received a given line of text (e.g.
