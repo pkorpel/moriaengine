@@ -424,9 +424,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			if (Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) >= WanderLeash) {
-				//too far from home - head back instead of wandering further away
-				Direction homeDir = Point2D.GetDirFromTo(self, new Point2D(this.homeX, this.homeY));
-				this.TryStep(self, homeDir);
+				//too far from home - head back instead of wandering further away. #211 - route
+				//around obstacles via the same AStar-backed helper Follow/Fight already use,
+				//instead of a bare direct step that could get an NPC stuck pacing against a wall
+				//it could easily have walked around.
+				this.StepTowardsSmart(self, new Point3D(this.homeX, this.homeY, this.homeZ));
 				return;
 			}
 
