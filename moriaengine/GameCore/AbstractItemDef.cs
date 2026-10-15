@@ -260,6 +260,9 @@ namespace SteamEngine {
 			if ("isflippable".Equals(param)) {
 				param = "flippable";
 			}
+			if ("attr".Equals(param)) { //#215/#217 - real Sphere's own ATTR keyword
+				param = "attributesdefault";
+			}
 			//if ("cliloc".Equals(param)) {
 			//    param = "clilocname";
 			//}
