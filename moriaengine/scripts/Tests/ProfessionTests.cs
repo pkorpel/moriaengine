@@ -70,5 +70,24 @@ namespace SteamEngine.CompiledScripts {
 			SkillName skill = (SkillName) Enum.Parse(typeof(SkillName), Convert.ToString(sa.Argv[0]), true);
 			Console.WriteLine("PROFESSION_SKILL_VALUE: skill=" + skill + " value=" + self.GetRealSkillValue(skill));
 		}
+
+		/// <summary>Direct pure-logic check of ProfessionDef.LevelToTitleTier (#177) - same
+		/// direct-call spirit as LevelStatBonus's own test pattern, no live Def/character state
+		/// needed at all.</summary>
+		[SteamFunction]
+		public static void TestLevelToTitleTier(Character self, ScriptArgs sa) {
+			int level = Convert.ToInt32(sa.Argv[0], System.Globalization.CultureInfo.InvariantCulture);
+			int ladderLength = Convert.ToInt32(sa.Argv[1], System.Globalization.CultureInfo.InvariantCulture);
+			Console.WriteLine("TITLE_TIER: " + ProfessionDef.LevelToTitleTier(level, ladderLength));
+		}
+
+		/// <summary>Reports self's PaperdollName (#177 - "The Good/Evil Name, Title" format) for
+		/// the given Realm, after temporarily setting it.</summary>
+		[SteamFunction]
+		public static void TestCheckPaperdollNameForRealm(Character self, ScriptArgs sa) {
+			Realm realm = (Realm) Enum.Parse(typeof(Realm), Convert.ToString(sa.Argv[0]), true);
+			self.Realm = realm;
+			Console.WriteLine("PAPERDOLL_NAME: " + self.PaperdollName);
+		}
 	}
 }

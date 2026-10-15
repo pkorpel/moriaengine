@@ -296,21 +296,45 @@ namespace SteamEngine.CompiledScripts {
 		#endregion Abilities
 
 		#region Titles
-		/// <summary>The title for the given level/gender (#165) - ported from the original
+		/// <summary>Level breakpoints (ascending) for the 10-entry title ladder every profession
+		/// except Craftsman uses - tier 0-4 is one tier per 10 levels (0/10/20/30/40), then
+		/// tiers 5-9 at 50/75/100/150/200. Ported from Erebor's own experiences.scp
+		/// `titulnumber` function (#177) - the original GetTitle never actually matched this;
+		/// it was a one-tier-per-level guess that clamped to the ladder's LAST entry far too
+		/// early (e.g. a level-10 character already showing the 200+ title).</summary>
+		private static readonly int[] standardTierBreakpoints = { 0, 10, 20, 30, 40, 50, 75, 100, 150, 200 };
+
+		/// <summary>Craftsman's own 11-entry ladder uses different breakpoints (also from
+		/// `titulnumber`): one tier per 10 levels through level 60, then 70/85/100/200.</summary>
+		private static readonly int[] craftsmanTierBreakpoints = { 0, 10, 20, 30, 40, 50, 60, 70, 85, 100, 200 };
+
+		/// <summary>The title for the given level/gender (#165/#177) - ported from the original
 		/// Sphere source's titul_&lt;profession&gt;[0-9] (titul_&lt;profession&gt;_f for female)
-		/// ladders. Level-to-tier mapping is a judgment call, not sourced: the original data has
-		/// no code anywhere that actually reads these ladders by level (dead data even in the
-		/// reference implementation, same class of gap as #161's canbeclass finding) - one tier
-		/// per level, capping at the ladder's last entry, is the simplest defensible choice given
-		/// this engine's leveling system has no level cap to evenly divide tiers across. Returns
-		/// "" if this profession has no title data (e.g. none authored yet) or level is negative.</summary>
+		/// ladders, with the real level-to-tier breakpoints from Erebor's `titulnumber` function
+		/// (see standardTierBreakpoints/craftsmanTierBreakpoints above) rather than a guess.
+		/// Returns "" if this profession has no title data (e.g. none authored yet) or level is
+		/// negative.</summary>
 		public string GetTitle(int level, bool female) {
 			string[] ladder = (string[]) (female ? this.titlesFemale.CurrentValue : this.titles.CurrentValue);
 			if ((ladder.Length == 0) || (level < 0)) {
 				return "";
 			}
-			int tier = Math.Min(level, ladder.Length - 1);
+			int tier = LevelToTitleTier(level, ladder.Length);
 			return ladder[tier];
+		}
+
+		/// <summary>Pure level-to-tier calculation (#177), split out from GetTitle so it's
+		/// directly unit-testable without a live ProfessionDef/script-loaded ladder - same
+		/// pattern as LevelingSystem.LevelStatBonus.</summary>
+		public static int LevelToTitleTier(int level, int ladderLength) {
+			int[] breakpoints = (ladderLength == craftsmanTierBreakpoints.Length) ? craftsmanTierBreakpoints : standardTierBreakpoints;
+			int tier = 0;
+			for (int i = 0; i < breakpoints.Length; i++) {
+				if (level >= breakpoints[i]) {
+					tier = i;
+				}
+			}
+			return Math.Min(tier, ladderLength - 1);
 		}
 		#endregion Titles
 

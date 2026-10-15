@@ -1844,12 +1844,22 @@ namespace SteamEngine.CompiledScripts {
 		}
 		#endregion Spell cast / effect
 
+		/// <summary>"The &lt;Good/Evil&gt; &lt;Name&gt;, &lt;Title&gt;" (#177) - the alignment
+		/// word comes from Realm (Gondor-aligned = Good, Mordor-aligned = Evil, Neutral = no
+		/// word/prefix at all), independent of whether a Title is set.</summary>
 		public override string PaperdollName {
 			get {
-				if (!string.IsNullOrEmpty(this.title)) {
-					return string.Concat(this.Name, ", ", this.title);
+				string prefix = "";
+				int realm = (int) this.Realm;
+				if (realm > 0) {
+					prefix = "The Good ";
+				} else if (realm < 0) {
+					prefix = "The Evil ";
 				}
-				return this.Name;
+				if (!string.IsNullOrEmpty(this.title)) {
+					return string.Concat(prefix, this.Name, ", ", this.title);
+				}
+				return string.Concat(prefix, this.Name);
 			}
 		}
 
