@@ -53,7 +53,10 @@ namespace SteamEngine.CompiledScripts {
 
 			this.SetLocation(0, 0);
 			this.AddImage(140, 200, 2200);
-			this.AddHtml(170, 180, 280, 24, "<CENTER>" + picker.Title + "</CENTER>", false, false);
+			// Default HTML text color is black, and this title sits above the book image on
+			// the gump's plain (near-black) backdrop with no background art of its own - close
+			// to unreadable (#202). White via BASEFONT fixes it.
+			this.AddHtml(170, 180, 280, 24, "<CENTER><BASEFONT COLOR=#FFFFFF>" + picker.Title + "</BASEFONT></CENTER>", false, false);
 
 			for (int i = 0; i < picker.OptionLabels.Count; i++) {
 				int column = i / MaxPerColumn;

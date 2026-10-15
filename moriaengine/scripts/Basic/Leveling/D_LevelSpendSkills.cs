@@ -23,12 +23,16 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Skill point-spend dialog (#156), opened from .explevel's new "Skills" button -
 	/// same plain parchment style as explevel.scp itself. Lists every skill the player's
 	/// profession actually configures (GetSkillCap &gt; 0 - unconfigured skills stay hidden,
-	/// same "incomplete content stays permissive" spirit used elsewhere), one row per skill
-	/// with a "+1" button, paginated client-side (no server round-trip for page switching) since
-	/// a profession can configure 30+ skills - too many for one screen.</summary>
+	/// same "incomplete content stays permissive" spirit used elsewhere), one row per skill with
+	/// a "+1" button, laid out in fixed-count columns (not pagination - #202, user didn't like
+	/// having to click through pages) so every skill (professions configure up to ~36) is
+	/// visible on one page at once.</summary>
 	public class D_LevelSpendSkills : CompiledGumpDef {
-		private const int RowsPerPage = 8;
-		private const int CloseButtonId = 1;
+		private const int Columns = 3;
+		private const int ColumnWidth = 300;
+		private const int RowHeight = 26;
+		private const int BackButtonId = 1;
+		private const int CloseButtonId = 2;
 		// Per-skill "+1" buttons are identified by 1000 + skill id (SkillName values are all
 		// well under 1000), so no separate id-to-skill lookup table is needed in OnResponse.
 		private const int SkillButtonIdBase = 1000;
@@ -47,55 +51,51 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 
-			int pageCount = ((relevantSkills.Count - 1) / RowsPerPage) + 1;
-			if (pageCount < 1) {
-				pageCount = 1;
+			int rowsPerColumn = ((relevantSkills.Count - 1) / Columns) + 1;
+			if (rowsPerColumn < 1) {
+				rowsPerColumn = 1;
 			}
-			int height = 90 + (RowsPerPage * 26) + 40;
+			int width = 40 + (Columns * ColumnWidth);
+			int height = 90 + (rowsPerColumn * RowHeight) + 40;
 
-			this.AddPage(0);
-			this.AddBackground(0, 0, 420, height, 2620);
+			this.AddBackground(0, 0, width, height, 2620);
 			this.AddLabel(20, 20, 37, "Skills");
 			this.AddLabel(20, 45, 3, profession != null
 				? ("Unspent skill points: " + player.UnspentSkillPoints)
 				: "No profession assigned - nothing to spend on.");
-			this.AddButton(20, height - 30, 2151, 2152, CloseButtonId, GumpButtonType.Reply, 0);
-			this.AddLabel(55, height - 28, 3, "Close");
 
-			for (int p = 0; p < pageCount; p++) {
-				int navY = height - 30;
-				if (p > 0) {
-					this.AddButton(150, navY, 2151, 2152, 0, GumpButtonType.Page, p); // page is 1-based client-side
-					this.AddLabel(185, navY + 2, 3, "Prev");
-				}
-				if (p < (pageCount - 1)) {
-					this.AddButton(250, navY, 2151, 2152, 0, GumpButtonType.Page, p + 2);
-					this.AddLabel(285, navY + 2, 3, "Next");
-				}
-			}
+			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202).
+			this.AddButton(20, height - 30, 2445, 2445, BackButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(25, height - 28, 3, "Back");
+			this.AddButton(120, height - 30, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(125, height - 28, 3, "Close");
 
-			for (int p = 0; p < pageCount; p++) {
-				this.AddPage(p + 1);
-				int y = 70;
-				for (int i = p * RowsPerPage; (i < relevantSkills.Count) && (i < ((p + 1) * RowsPerPage)); i++) {
-					AbstractSkillDef skillDef = relevantSkills[i];
-					int current = player.GetRealSkillValue(skillDef.Id);
-					int cap = profession.GetSkillCap(skillDef.Id);
-					this.AddLabel(20, y, 3, SkillDisplayName(skillDef) + ": " + FormatSkillValue(current) + " / " + FormatSkillValue(cap));
-					this.AddButton(320, y - 2, 2151, 2152, SkillButtonIdBase + skillDef.Id, GumpButtonType.Reply, 0);
-					y += 26;
-				}
+			for (int i = 0; i < relevantSkills.Count; i++) {
+				AbstractSkillDef skillDef = relevantSkills[i];
+				int column = i / rowsPerColumn;
+				int row = i % rowsPerColumn;
+				int x = 20 + (column * ColumnWidth);
+				int y = 70 + (row * RowHeight);
+
+				int current = player.GetRealSkillValue(skillDef.Id);
+				int cap = profession.GetSkillCap(skillDef.Id);
+				this.AddLabel(x, y, 3, SkillDisplayName(skillDef) + ": " + FormatSkillValue(current) + " / " + FormatSkillValue(cap));
+				this.AddButton(x + ColumnWidth - 30, y - 2, 2151, 2152, SkillButtonIdBase + skillDef.Id, GumpButtonType.Reply, 0);
 			}
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
+			Player player = (Player) gi.Cont;
 			// Button 0 is the real UO client signal for "closed via right-click" (not this
 			// dialog's own explicit Close button) - must also return without reopening, or a
 			// right-click just silently gets trapped back into the same dialog (#199).
 			if ((gr.PressedButton == CloseButtonId) || (gr.PressedButton == 0)) {
 				return;
 			}
-			Player player = (Player) gi.Cont;
+			if (gr.PressedButton == BackButtonId) {
+				player.Dialog(player, GumpDef.GetByDefname("d_explevel"));
+				return;
+			}
 			int skillId = gr.PressedButton - SkillButtonIdBase;
 			if (skillId >= 0) {
 				if (!LevelingSystem.TrySpendSkillPoints(player, (SkillName) skillId, 1)) {
