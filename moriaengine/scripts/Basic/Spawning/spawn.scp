@@ -16,7 +16,9 @@ return 1
 on=@spawnNow
 //baseobject - spawn gem
 arg gem = this
-arg char = <tag.spawnInfo.SpawnDef.Create(this.x, this.y, this.z, this.m)>
+//#210 - RollSpawnDef picks one of possibly several configured monster types, weighted by
+//each entry's relative Probability (was a single fixed SpawnDef before).
+arg char = <tag.spawnInfo.RollSpawnDef().Create(this.x, this.y, this.z, this.m)>
 char.tag.spawnGem = gem //link to his spawn
 char.AddTriggerGroup(e_spawned_char)
 // #206 - Homedist was stored on the gem but never actually applied anywhere; NPCAiTimer's
@@ -27,9 +29,11 @@ tag.spawnedCount = <tag.spawnedCount> + 1
 //check if there are more chars to be spawned
 if(<tag.spawnedCount> < <tag.spawnInfo.Amount> )
  //#206 - MinTime/MaxTime are minutes (per the dialog's own "[min]" label); AddTimer's delay
- //is in seconds, so this needs *60, not *10 (which made a "1-2 minute" respawn delay actually
- //10-20 seconds).
- AddTimer(%SpawnTimer, {tag.spawnInfo.MinTime,tag.spawnInfo.MaxTime}*60, @spawnNow) //next possible spawns will appear in the given time interval
+ //is in seconds. #210 - MinTime/MaxTime are now decimal, and the roll must be genuinely
+ //continuous within that range, not just land on one of the two typed-in endpoints - LScript's
+ //own "{a,b}" random-range operator always truncates both ends to int before rolling, so the
+ //roll is computed in C# instead (SpawnInfo.RollRespawnDelaySeconds).
+ AddTimer(%SpawnTimer, tag.spawnInfo.RollRespawnDelaySeconds(), @spawnNow) //next possible spawns will appear in the given time interval
 endif
 
 [function spawn] //argv(0) - chardef which to create
@@ -44,7 +48,7 @@ dialog(d_spawn,tag(_spawndialog_data_))
 return 1
 
 [dialog d_spawn]
-arg width = 400
+arg width = 450
 arg dlg = ImprovedDialog(argv(0))
 dlg.CreateBackground(<width>)
 dlg.SetLocation(60,80)
@@ -55,18 +59,45 @@ dlg.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Spawn settings").Buil
 dlg.LastTable.AddToCell(0,1,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build()) //exit button
 dlg.MakeLastTableTransparent()
 
-dlg.AddTable(GUTATable(5,0,180))
+dlg.AddTable(GUTATable(4,0,180))
 dlg.LastTable.AddToCell(0,0,GUTAText.Builder.TextLabel("Amount").Build())
-dlg.LastTable.AddToCell(1,0,GUTAText.Builder.TextLabel("Baseid").Build())
-dlg.LastTable.AddToCell(2,0,GUTAText.Builder.TextLabel("Mintime [min]").Build())
-dlg.LastTable.AddToCell(3,0,GUTAText.Builder.TextLabel("Maxtime [min]").Build())
-dlg.LastTable.AddToCell(4,0,GUTAText.Builder.TextLabel("Homedist").Build())
+dlg.LastTable.AddToCell(1,0,GUTAText.Builder.TextLabel("Mintime [min]").Build())
+dlg.LastTable.AddToCell(2,0,GUTAText.Builder.TextLabel("Maxtime [min]").Build())
+dlg.LastTable.AddToCell(3,0,GUTAText.Builder.TextLabel("Homedist").Build())
 
 dlg.LastTable.AddToCell(0,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(10).Text("<argv(0).InputArgs[0].Amount>").Build())
-dlg.LastTable.AddToCell(1,1,GUTAInput.Builder.Id(11).Text("<argv(0).InputArgs[0].SpawnDefDisplayName>").Build())
-dlg.LastTable.AddToCell(2,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(12).Text("<argv(0).InputArgs[0].MinTime>").Build())
-dlg.LastTable.AddToCell(3,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(13).Text("<argv(0).InputArgs[0].MaxTime>").Build())
-dlg.LastTable.AddToCell(4,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(14).Text("<argv(0).InputArgs[0].Homedist>").Build())
+//#210 - MinTime/MaxTime now decimal (e.g. "0.5"), InputNumber already round-trips decimals
+//fine over the wire (ConvertTools.TryParseDecimal on submit) - just display with one decimal
+//place instead of raw ToString(), which could otherwise show long floating-point tails.
+dlg.LastTable.AddToCell(1,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(12).Text("<argv(0).InputArgs[0].MinTimeDisplay>").Build())
+dlg.LastTable.AddToCell(2,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(13).Text("<argv(0).InputArgs[0].MaxTimeDisplay>").Build())
+dlg.LastTable.AddToCell(3,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(14).Text("<argv(0).InputArgs[0].Homedist>").Build())
+dlg.MakeLastTableTransparent()
+
+//#210 - weighted multi-monster list: one row per currently configured entry (Baseid id
+//100+i*2, Probability id 100+i*2+1, "-" remove button id 300+i), plus a fixed "+" button
+//(id 2) to add a new blank row. Each row is its own 1-row table (GUTATable can't grow once
+//constructed) rather than one big table with an unknown-in-advance row count.
+dlg.AddTable(GUTATable(1,200,150,0))
+dlg.LastTable.AddToCell(0,0,GUTAText.Builder.TextLabel("Monster").Build())
+dlg.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Probability").Build())
+dlg.MakeLastTableTransparent()
+
+if(<argv(0).InputArgs[0].EntryCount> > 0)
+ for (arg.i, 0, argv(0).InputArgs[0].EntryCount-1)
+  arg entry = <argv(0).InputArgs[0].GetEntry(arg.i)>
+  dlg.AddTable(GUTATable(1,200,150,ButtonMetrics.D_BUTTON_WIDTH))
+  dlg.LastTable.AddToCell(0,0,GUTAInput.Builder.Id(100+arg.i*2).Text("<entry.SpawnDefDisplayName>").Build())
+  dlg.LastTable.AddToCell(0,1,GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(100+arg.i*2+1).Text("<entry.ProbabilityDisplay>").Build())
+  dlg.LastTable.AddToCell(0,2,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(300+arg.i).Build())
+  dlg.MakeLastTableTransparent()
+ endfor
+endif
+
+//"+" row - adds one blank monster row
+dlg.AddTable(GUTATable(1,ButtonMetrics.D_BUTTON_WIDTH,0))
+dlg.LastTable.AddToCell(0,0,GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(2).Build())
+dlg.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Add monster").Build())
 dlg.MakeLastTableTransparent()
 
 //last row with the confirm button
@@ -89,7 +120,20 @@ endif
 return 0
 
 ON=1
-arg spawnData = SpawnInfo(<argnum[10]>,<AbstractDef.GetByDefname(<argtxt[11]>)>,<argnum[12]>,<argnum[13]>,<argnum[14]>)
+//#210 - reads back every currently-rendered monster row from the just-submitted response,
+//skipping blank/unrendered slots (ArgTxtHolder/ArgNumHolder both return empty/zero for an id
+//that was never part of the response, rather than throwing - so this can just scan a fixed
+//generous upper bound instead of needing to separately track how many rows were rendered).
+//Inlined rather than factored into a shared [function] - a called [function]'s own argtxt/
+//argnum do NOT inherit the calling dialog-response trigger's ArgTxtHolder/ArgNumHolder (found
+//the hard way: every submission silently produced zero entries until this got inlined).
+arg spawnData = SpawnInfo(<argnum[10]>,<argnum[12]>,<argnum[13]>,<argnum[14]>)
+for (arg.i, 0, 49)
+  arg baseIdText = argtxt[100+arg.i*2]
+  if(arg.baseIdText != "")
+    spawnData.Entries.Add(SpawnEntry(AbstractDef.GetByDefname(arg.baseIdText),argnum[100+arg.i*2+1]))
+  endif
+endfor
 if (spawnValuesMakeSense(spawnData))
   src.tag._spawndialog_data_ = spawnData //store the info for future creating of new spawns...
   //#208 - double-clicking an existing gem sets _spawnEditGem_ before opening this dialog;
@@ -110,13 +154,47 @@ else
 endif
 return 0
 
+ON=2
+//#210 - "+" button: read back everything already typed in (same inlined read as ON=1 - see
+//its own comment for why this can't be factored into a shared function), add one new blank
+//monster row, reopen (does NOT validate - the GM is still mid-edit, not confirming).
+arg spawnData = SpawnInfo(<argnum[10]>,<argnum[12]>,<argnum[13]>,<argnum[14]>)
+for (arg.i, 0, 49)
+  arg baseIdText = argtxt[100+arg.i*2]
+  if(arg.baseIdText != "")
+    spawnData.Entries.Add(SpawnEntry(AbstractDef.GetByDefname(arg.baseIdText),argnum[100+arg.i*2+1]))
+  endif
+endfor
+spawnData.Entries.Add(SpawnEntry(null,1))
+src.tag._spawndialog_data_ = spawnData
+dialog(d_spawn,spawnData)
+return 0
+
+ON=300 399
+//#210 - "-" button for monster row (pressedButton - 300): read back everything already
+//typed in except that one row (same inlined read as ON=1), reopen.
+arg removedIndex = <argv(2)> - 300
+arg spawnData = SpawnInfo(<argnum[10]>,<argnum[12]>,<argnum[13]>,<argnum[14]>)
+for (arg.i, 0, 49)
+  arg baseIdText = argtxt[100+arg.i*2]
+  if(arg.baseIdText != "")
+    spawnData.Entries.Add(SpawnEntry(AbstractDef.GetByDefname(arg.baseIdText),argnum[100+arg.i*2+1]))
+  endif
+endfor
+if((<arg.removedIndex> >= 0) && (<arg.removedIndex> < <spawnData.EntryCount>))
+ spawnData.Entries.RemoveAt(<arg.removedIndex>)
+endif
+src.tag._spawndialog_data_ = spawnData
+dialog(d_spawn,spawnData)
+return 0
+
 [function spawnValuesMakeSense]//check if the values provided to the spawn dialog are wise :)
 //argv(0) - the SpawnInfo instance
 if(<argv(0).Amount> <= 0)
  tag._responseMessage_ = "Amount of spawns must be greater than 0"
  return 0
-elseif(!<argv(0).HasValidCharDef>)
- tag._responseMessage_ = "The given chardef doesn't exist"
+elseif(!<argv(0).HasAnyValidCharDef>)
+ tag._responseMessage_ = "At least one monster row needs a valid chardef"
  return 0
 elseif((<argv(0).MinTime>*<argv(0).MaxTime> < 0) || (<argv(0).MinTime> >= <argv(0).MaxTime>))
  tag._responseMessage_ = "Min and max time must be non-negative, and min time must be less than max time"
@@ -143,5 +221,5 @@ on=@destroy
 arg gem = tag.spawnGem
 gem.tag.spawnedCount = <gem.tag.spawnedCount> - 1
 if(!gem.HasTimer(%SpawnTimer)) //add a new timer only if the older one is not present
- gem.AddTimer(%SpawnTimer, {gem.tag.spawnInfo.MinTime, gem.tag.spawnInfo.MaxTime}*60,@spawnNow) //initialize a new timer - #206, see @spawnNow's own comment on *60 vs *10
+ gem.AddTimer(%SpawnTimer, gem.tag.spawnInfo.RollRespawnDelaySeconds(),@spawnNow) //initialize a new timer - #206/#210, see @spawnNow's own comment
 endif
