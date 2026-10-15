@@ -11,6 +11,50 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — beginner's equipment on race selection (#182, PR #183)
+
+Follow-up to the races UX rework below: `RaceSelection.Finish()` now grants 2000 starting gold
+(`GoldUtils.Grant`) plus the profession's own newbie-equipment kit, matching Erebor's
+`funkce.scp`/`newbie_portals.scp` `startclass` function (`newloot(tm_<class>newbie)`).
+
+- Erebor already has 9 per-profession `[template tm_<class>newbie]` blocks, and this repo's
+  auto-converter had ALREADY ported stub `[TemplateDef tm_<class>newbie]` equivalents into
+  `scripts/converted/newbie_portals.def` - same "converter already did the work, just needed
+  wiring" pattern as #174's `i_stone_raceclass` stub. Just needed `RaceSelection.Finish()` to
+  actually call `TemplateDef.GetByDefname("tm_" + suffix + "newbie").Create(player)` via an
+  explicit `ProfessionDef.Name -> Erebor template suffix` dictionary (the two naming schemes
+  don't match 1:1 - "warrior"->"war", "craftsman"->"craft", "mystic"->"Mystik", etc).
+- **Real content bugs found and fixed in the converted templates** (5 of 9 needed it) - the
+  auto-converter had silently dropped items it couldn't resolve or introduced typos, same
+  class of gap as #157's WeaponType guesses: Craftsman's template was missing ALL of
+  `i_tinker_tools`/`i_saw`/`i_pickaxe`/`i_sewing_kit`/`i_hammer_smith` (every craft tool);
+  Warrior/Craftsman were each missing 2 of their 3 weapons (`i_mace_war_copper`/
+  `i_axe_exec_copper`); Priest was missing `i_mace_copper`; Ranger's crossbow line referenced a
+  typo'd, nonexistent `i_crossbolt_heavy_copper` instead of the real `i_crossbow_heavy_copper`;
+  4 templates used a `random_pants` Sphere macro this engine doesn't support (replaced with a
+  concrete `i_pants_long`); Necromancer's `i_spellbook_necro` doesn't exist as a converted item
+  (necromancy spells aren't implemented at all yet, #158) - substituted the same plain
+  `i_spellbook_3` every other profession gets.
+- **Deliberately not ported**: `giveitem(i_rune_base)` (a recall rune - recall is a separate,
+  not-yet-designed feature per #164's own scope correction) and `giveitem(i_crystal_<class>)`
+  (a decorative per-class "soul crystal" item that was never converted into this engine's
+  content at all - confirmed via the same dead-reference-code caution used elsewhere this
+  session; flavor only, not gameplay-relevant).
+- **Found and ruled out as dead reference code**: Erebor's own `spellbook_Mage`/
+  `spellbook_Priest`/`spellbook_Necro`/etc functions (fully listing which spells each
+  profession's starting spellbook should contain) are never actually CALLED anywhere in
+  Erebor's own codebase either - same "dead data even in the reference implementation" pattern
+  already flagged for #161's `canbeclass`. Every profession (including non-casters) just gets
+  a plain, empty `i_spellbook_3` - this engine's own Magery cast-restriction is already handled
+  separately via `ProfessionPlugin.CheckCancelSkill`'s `AllowedSpells` list, independent of
+  spellbook contents, so this isn't a gap to fill.
+- **Test coverage**: `FullRaceSelectionFlowForHuman` extended to confirm Mage's real kit +
+  gold land after the full gump flow; new `AllNineProfessionTemplatesGrantRealItems` exercises
+  all 9 templates directly (not just Mage) via a throwaway container, catching any of the
+  item-reference fixes above that might not actually resolve. Full regression
+  (RaceTests/LevelSpendDialogTests/LevelingTests/ProfessionTests/LevelingIsolatedTests/
+  GatheringTests/EconomyTests): 33/33 passing.
+
 ## CURRENT STATE (2026-10-15) — races UX rework + leveling spend dialogs (#173, all closed)
 
 User tested the shipped races system (#161) in-game and asked for 6 changes plus unblocking
