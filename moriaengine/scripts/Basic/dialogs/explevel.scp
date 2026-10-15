@@ -4,22 +4,25 @@ InvalidateCombatArmorValues()
 Dialog(d_explevel)
 
 [Dialog d_explevel]
-argo.resizepic 50 50 2620 400 320
+// Widened from 400 to 560, and the value column moved from x=250 to x=340 - at x=70,
+// label text as long as "Weapon Attack/Piercing (P, M):" ran well past x=250, overlapping
+// the value column that started there (#202).
+argo.resizepic 50 50 2620 560 320
 argo.text 70 70 37 0
 argo.text 70 90 3 1
-argo.text 250 90 85 2
+argo.text 340 90 85 2
 argo.text 70 110 3 3
-argo.text 250 110 85 4
+argo.text 340 110 85 4
 argo.text 70 130 3 5
-argo.text 250 130 85 6
+argo.text 340 130 85 6
 argo.text 70 150 3 7
-argo.text 250 150 85 8
+argo.text 340 150 85 8
 argo.text 70 170 3 9
-argo.text 250 170 85 10
+argo.text 340 170 85 10
 argo.text 70 190 3 11
-argo.text 250 190 85 12
+argo.text 340 190 85 12
 argo.text 70 210 3 13
-argo.text 250 210 85 14
+argo.text 340 210 85 14
 
 // Buttons to the point-spend dialogs (#156) - each opens with no args needed, they read self directly.
 // Graphic 2445/2445 (flat "paper tab" look, same id for both up/down states) and offsets

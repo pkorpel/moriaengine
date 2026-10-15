@@ -11,6 +11,36 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — more dialog UX findings from real testing (#202)
+
+Follow-up to #199, 5 more items from the user's in-game testing:
+
+1. **Spend dialogs (Attributes/Skills/Abilities) Back/Close buttons**: replaced the single
+   "Close" button with a 2-button "paper tab" row (2445/2445, matching explevel.scp's own
+   buttons) - "Back" opens `.explevel` via `GumpDef.GetByDefname("d_explevel")`, "Close" just
+   closes.
+2. **Skills dialog pagination removed**: was 8 rows/page + Prev/Next; now a fixed 3-column
+   layout sized from the actual skill count, so every skill a profession configures (up to
+   ~36) fits on one page with no "paging" at all.
+3. **Skill-gain message % - not actionable**: traced to cliloc 3000260, generated entirely by
+   the real UO *client* when it receives the skill-update packet (0x3A) we already send with
+   correct values - wording/formatting is hardcoded client-side, not something our server
+   controls. Nothing in this codebase references that cliloc or builds that text. User agreed
+   to leave it.
+4. **Race dialog header readability**: `D_OptionPicker`/`D_RaceClassStats` draw their title
+   above the book image (`AddImage(140, 200, 2200)`) directly on the gump's plain backdrop -
+   no background art there, so default black HTML text had almost no contrast. Wrapped in
+   `<BASEFONT COLOR=#FFFFFF>`.
+5. **`.explevel` column overlap**: value column started at x=250, but label text like "Weapon
+   Attack/Piercing (P, M):" (31 chars) at x=70 ran well past that. Widened background 400→560,
+   moved value column to x=340.
+
+All covered by `Tests/Protocol/LevelSpendDialogTests.cs` (8 Facts now, all pass) plus the
+existing 16 leveling/race tests - no regressions. New workflow note (see Workflow conventions
+below): issues get raised BEFORE starting work now, with comments posted as findings land,
+not just create-then-close at the end - see #202's own comment thread for how this looked in
+practice.
+
 ## CURRENT STATE (2026-10-15, continued) — leveling/race dialog UX fixes from real testing (#199)
 
 User tested the race-selection and `.explevel`/level-spend dialogs in-game and reported 5 bugs,

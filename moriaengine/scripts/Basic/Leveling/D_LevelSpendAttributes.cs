@@ -29,6 +29,8 @@ namespace SteamEngine.CompiledScripts {
 		private const int DexButtonId = 2;
 		private const int IntButtonId = 3;
 		private const int VitButtonId = 4;
+		private const int BackButtonId = 98;
+		private const int CloseButtonId = 99;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Player player = (Player) sendTo;
@@ -57,8 +59,11 @@ namespace SteamEngine.CompiledScripts {
 				y += 32;
 			}
 
-			this.AddButton(20, y + 10, 2151, 2152, 99, GumpButtonType.Reply, 0);
-			this.AddLabel(55, y + 12, 3, "Close");
+			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202).
+			this.AddButton(20, y + 10, 2445, 2445, BackButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(25, y + 12, 3, "Back");
+			this.AddButton(120, y + 10, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(125, y + 12, 3, "Close");
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
@@ -66,7 +71,11 @@ namespace SteamEngine.CompiledScripts {
 			// Button 0 is the real UO client signal for "closed via right-click" (not this
 			// dialog's own explicit Close button) - must also return without reopening, or a
 			// right-click just silently gets trapped back into the same dialog (#199).
-			if ((gr.PressedButton == 99) || (gr.PressedButton == 0)) {
+			if ((gr.PressedButton == CloseButtonId) || (gr.PressedButton == 0)) {
+				return;
+			}
+			if (gr.PressedButton == BackButtonId) {
+				player.Dialog(player, GumpDef.GetByDefname("d_explevel"));
 				return;
 			}
 
