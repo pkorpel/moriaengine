@@ -11,6 +11,54 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — spawn gem double-click-to-edit (#208)
+
+Follow-up user request after #206 shipped: double-clicking an already-placed spawn gem
+should reopen the `.spawn` dialog (`[dialog d_spawn]`) pre-filled with that gem's own
+current settings, letting a GM edit Amount/Baseid/MinTime/MaxTime/Homedist without
+deleting and recreating the gem. **Scope confirmed with user**: editing only updates the
+gem's stored settings going forward - no retroactive changes to already-spawned NPCs'
+`WanderLeash` or an already-pending `SpawnTimer`'s already-rolled delay.
+
+- `[triggergroup t_spawn_char]` (`scripts/Basic/Spawning/spawn.scp`) gained an `on=@dclick`
+  trigger: GM-only (`src.IsGM`), stores the gem reference on `src.tag._spawnEditGem_` then
+  opens `d_spawn` with the gem's own `tag.spawnInfo`.
+- `[DIALOG d_spawn button]`'s `ON=1` (confirm) handler now checks for `_spawnEditGem_` -
+  if present, updates that gem's `tag.spawnInfo` in place and clears the tag (no second gem
+  created); if absent, falls through to the original `f_spawninit` (brand-new gem) path,
+  unchanged for the plain `.spawn` command flow. `ON=0` (cancel) also clears the tag so a
+  cancelled edit doesn't leak into a later unrelated `.spawn` call.
+- Dialog headline changed from "Creation of a new spawn" to "Spawn settings" - accurate for
+  both the create and edit paths now, not just the original create-only flow.
+- New test infra: `TestReportSpawnGemUidAndInfo` (`scripts/Tests/SpawnCommandTests.cs`)
+  reports the gem's own uid + live `SpawnInfo` fields; `SpawnCommandTestsE` (new collection
+  E, `Tests/Protocol/SpawnCommandTests.cs`) drives a real double-click (0x06) via
+  `TestGameClient.SendDoubleClick`, confirms the SAME gem uid afterward (not a second one)
+  with all 4 fields changed to new values.
+
+**Investigated and ruled out as a real bug, same pass**: user also asked whether the
+respawn timer's `{MinTime,MaxTime}` random range was actually randomizing or always
+picking the minimum (reported seeing "exactly min" twice in a row). Verified directly via
+a throwaway fast-tier unit test (`LScriptMain.GetNewSnippetRunner`+reused compiled AST
+across 2000 calls, mirroring how a real trigger's AST gets reused across a gem's
+lifetime) - the mechanism is genuinely unbiased (even ~220-240/9 hits across a 2-10 range,
+clean ~50/50 on a 1-2 range). Likely explanation: with the dialog's own default Min=1/
+Max=2 (minutes), there are only 2 possible outcomes - seeing the smaller one twice in a
+row is a mundane 25% coincidence, not a bias. No code change needed; told the user to
+retry with a wider Min/Max gap to visually confirm the spread.
+
+**Test-infra note from this pass**: a `dotnet test` invocation from several issues ago
+(PID 78425, the #206 confirmation run that stalled on `CombatDepthTestsA`) was discovered
+STILL RUNNING, un-killed, hours later - it had been silently holding the fixed
+`GameServerPairFixture` ports the whole time, causing THIS session's new test to produce
+zero output for 13+ minutes before a kill+retry fixed it. Reinforces the standing "never
+run two `dotnet test` invocations concurrently" rule from a new angle: it's not just about
+not STARTING a second one deliberately - a much earlier run that you believed was
+abandoned/moved past can still be alive in the background indefinitely once its own hang
+triggers, and will silently sabotage completely unrelated later test runs. Worth checking
+`/proc` for stray `dotnet test`/`testhost` processes before trusting "no output yet" at
+face value on anything that normally finishes in 1-3 minutes.
+
 ## CURRENT STATE (2026-10-15, continued) — spawn over-pop/Homedist/.flip + a real engine deletion-order bug (#206)
 
 User's 3-item follow-up on the shipped #191-193 GM tooling, plus a 4th finding surfaced

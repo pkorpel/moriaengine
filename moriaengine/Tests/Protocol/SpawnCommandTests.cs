@@ -16,7 +16,7 @@ namespace SteamEngine.Tests.Protocol {
 		protected const string Account = "protocoltest";
 		private const string Password = "protocoltest";
 
-		private readonly GameServerPairFixture fixture;
+		protected readonly GameServerPairFixture fixture;
 
 		protected SpawnCommandTestBase(GameServerPairFixture servers) {
 			this.fixture = servers;
@@ -212,6 +212,84 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestVerifySpawnGemState");
 				this.AssertSeen("GEM_STATE_TEST: spawnedCount=0 hasTimer=True", TimeSpan.FromSeconds(10));
 			}
+		}
+	}
+
+	[CollectionDefinition(SpawnCommandCollectionE.Name, DisableParallelization = true)]
+	public class SpawnCommandCollectionE : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "SpawnCommandPairE";
+	}
+
+	[Collection(SpawnCommandCollectionE.Name)]
+	public class SpawnCommandTestsE : SpawnCommandTestBase {
+		public SpawnCommandTestsE(GameServerPairFixture servers) : base(servers) {
+		}
+
+		/// <summary>#208 - double-clicking an already-placed spawn gem reopens d_spawn pre-filled
+		/// with its CURRENT settings, and submitting it updates the gem in place (no second gem
+		/// created, Amount/MinTime/MaxTime/Homedist all actually change).</summary>
+		[Fact]
+		public void DoubleClickingSpawnGemReopensDialogAndUpdatesSettings() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SpawnGmE")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				client.SendSpeech(".spawn");
+				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
+					{ 10, "1" }, { 11, "c_a_jackrabbit" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+				});
+				Thread.Sleep(2000);
+
+				client.SendSpeech(".TestReportSpawnGemUidAndInfo");
+				this.AssertSeen("GEM_INFO_TEST:", TimeSpan.FromSeconds(10));
+				string before = LastLineContaining(this.fixture.GameOutputSnapshot(), "GEM_INFO_TEST:");
+				uint gemUid = ExtractUidAfter(before, "GEM_INFO_TEST: uid=");
+				Assert.Contains("amount=1 minTime=1 maxTime=2 homedist=1", before);
+
+				client.SendDoubleClick(gemUid);
+				var (editGumpUid, editLayout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.Contains("10", editLayout); // the Amount InputNumber field id - confirms a real d_spawn reopened, not some other gump
+
+				// Edit: Amount 1->2, MinTime/MaxTime 1/2 -> 3/4, Homedist 1->5.
+				client.SendGumpResponse(editGumpUid, 1, new Dictionary<int, string> {
+					{ 10, "2" }, { 11, "c_a_jackrabbit" }, { 12, "3" }, { 13, "4" }, { 14, "5" },
+				});
+				Thread.Sleep(500);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportSpawnGemUidAndInfo");
+				this.AssertSeen("GEM_INFO_TEST:", mark, TimeSpan.FromSeconds(10));
+				string after = LastLineContaining(this.fixture.GameOutputSnapshot(), "GEM_INFO_TEST:");
+				Assert.Contains("uid=" + gemUid, after); // still the SAME gem - editing didn't create a second one
+				Assert.Contains("amount=2 minTime=3 maxTime=4 homedist=5", after);
+			}
+		}
+
+		private static string LastLineContaining(string output, string marker) {
+			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);
+			int end = output.IndexOf('\n', idx);
+			if (end < 0) {
+				end = output.Length;
+			}
+			return output.Substring(idx, end - idx);
+		}
+
+		private static uint ExtractUidAfter(string line, string marker) {
+			int idx = line.IndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + line);
+			string rest = line.Substring(idx + marker.Length);
+			int end = 0;
+			while (end < rest.Length && char.IsDigit(rest[end])) {
+				end++;
+			}
+			return uint.Parse(rest.Substring(0, end), System.Globalization.CultureInfo.InvariantCulture);
+		}
+
+		private void AssertSeen(string marker, int since, TimeSpan timeout) {
+			bool saw = this.fixture.WaitForGameOutputSince(marker, since, timeout);
+			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
 		}
 	}
 }
