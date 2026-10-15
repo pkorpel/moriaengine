@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>Server-side helpers for the races system protocol tests (#161-165).</summary>
@@ -41,6 +42,53 @@ namespace SteamEngine.CompiledScripts {
 				" home=" + homeStr +
 				" title=" + player.Title +
 				" str=" + player.Str + " dex=" + player.Dex + " int=" + player.Int + " vit=" + player.Vit);
+		}
+
+		/// <summary>Reports the player's gold (backpack + bank) and a comma-separated list of
+		/// distinct backpack item defnames, so a protocol test can confirm RaceSelection.
+		/// GiveStartingEquipment (newbie_portals.scp's own `startclass`/`tm_&lt;class&gt;newbie`
+		/// templates) actually landed real items.</summary>
+		[SteamFunction]
+		public static void TestCheckStartingEquipment(Character self) {
+			Player player = (Player) self;
+			long gold = GoldUtils.CountGoldIn(player.Backpack) + GoldUtils.CountGoldIn(player.Bank);
+			List<string> defnames = new List<string>();
+			foreach (AbstractItem item in player.Backpack) {
+				defnames.Add(item.Def.PrettyDefname);
+			}
+			Console.WriteLine("STARTING_EQUIPMENT: gold=" + gold + " items=" + string.Join(",", defnames));
+		}
+
+		/// <summary>Exercises ALL 9 profession newbie-equipment templates directly (not just
+		/// Mage, which the end-to-end flow tests cover) - creates a throwaway container per
+		/// template and reports how many items actually landed, catching any bad item
+		/// reference (e.g. the auto-converter's dropped/mistyped item lines fixed in
+		/// newbie_portals.def for #182) as a 0-item result or a thrown exception rather than
+		/// silently passing.</summary>
+		[SteamFunction]
+		public static void TestCheckAllNewbieTemplates(Character self) {
+			string[] suffixes = { "mag", "ranger", "necro", "craft", "priest", "war", "thief", "shaman", "Mystik" };
+			foreach (string suffix in suffixes) {
+				string defname = "tm_" + suffix + "newbie";
+				try {
+					TemplateDef template = TemplateDef.GetByDefname(defname);
+					if (template == null) {
+						Console.WriteLine("NEWBIE_TEMPLATE_CHECK: " + defname + " MISSING");
+						continue;
+					}
+					ItemDef bagDef = (ItemDef) ThingDef.GetByDefname("i_bag");
+					AbstractItem bag = (AbstractItem) bagDef.Create(self.P());
+					template.Create(bag);
+					int count = 0;
+					foreach (AbstractItem item in bag) {
+						count++;
+					}
+					Console.WriteLine("NEWBIE_TEMPLATE_CHECK: " + defname + " items=" + count);
+					bag.Delete();
+				} catch (Exception e) {
+					Console.WriteLine("NEWBIE_TEMPLATE_CHECK: " + defname + " EXCEPTION=" + e.Message);
+				}
+			}
 		}
 
 		/// <summary>Direct server-side check of Notoriety's realm-based rules (#163) - creates

@@ -83,9 +83,49 @@ namespace SteamEngine.CompiledScripts {
 			player.Profession = profession; //triggers ProfessionPlugin.On_Assign - starting skills + title (#135/#165/#177)
 			player.Nation = nation; //cascades Realm + Home (#163/#164)
 			player.P(player.Home); //one-time placement at the new home, NOT a reusable recall (#164 explicitly excludes recall)
+			GiveStartingEquipment(player, profession);
 
 			player.SysMessage("Welcome! You are now a " + RaceData.GetDisplayName(race) + " " +
 				profession.Name + " of " + NationData.GetDisplayName(nation) + ".");
+		}
+
+		/// <summary>Profession.Name (a short English key: "mag", "warrior", "necromancer", ...)
+		/// to Erebor's own newbie-template suffix (newbie_portals.scp's startclass:
+		/// `newloot(tm_&lt;tag.class&gt;newbie)`) - the two don't always match 1:1 (e.g.
+		/// "warrior" -> "war", "craftsman" -> "craft", "mystic" -> "Mystik"), so this is an
+		/// explicit table rather than a guessed string transform.</summary>
+		private static readonly Dictionary<string, string> professionToTemplateSuffix = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase) {
+			{ "mag", "mag" },
+			{ "ranger", "ranger" },
+			{ "necromancer", "necro" },
+			{ "craftsman", "craft" },
+			{ "priest", "priest" },
+			{ "warrior", "war" },
+			{ "thief", "thief" },
+			{ "shaman", "shaman" },
+			{ "mystic", "Mystik" },
+		};
+
+		/// <summary>Grants the beginner's equipment newbie_portals.scp's own `startclass`
+		/// function gives on first entering the real world: 2000 gold (`givegold(2000)`) plus
+		/// the profession-specific `tm_&lt;class&gt;newbie` TemplateDef (weapons/armor/potions/
+		/// bandages/spellbook - see scripts/converted/newbie_portals.def for the full per-
+		/// profession kit, restored to match the original Erebor source where the automated
+		/// converter had silently dropped items it couldn't resolve, e.g. Craftsman's tools).
+		/// Deliberately NOT ported: `giveitem(i_rune_base)` (a recall rune - recall is an
+		/// explicitly separate, not-yet-designed feature per #164's own scope correction) and
+		/// `giveitem(i_crystal_&lt;class&gt;)` (a decorative "class crystal" item that was never
+		/// converted into this engine's content at all - flavor only, not gameplay-relevant).</summary>
+		private static void GiveStartingEquipment(Player player, ProfessionDef profession) {
+			GoldUtils.Grant(player, 2000);
+
+			if (!professionToTemplateSuffix.TryGetValue(profession.Name, out string suffix)) {
+				return; //no newbie kit mapped for this profession - nothing to grant
+			}
+			TemplateDef template = TemplateDef.GetByDefname("tm_" + suffix + "newbie");
+			if (template != null) {
+				template.Create(player);
+			}
 		}
 	}
 
