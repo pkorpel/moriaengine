@@ -11,6 +11,73 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15, continued) — decimal spawn timer + weighted multi-monster list (#210)
+
+Remaining items from #210's batch (starting position already shipped separately, see the
+section right below this one):
+
+- **Decimal MinTime/MaxTime**: `SpawnInfo.MinTime`/`MaxTime` are now `double` (was `short`) -
+  the respawn dialog accepts e.g. "0.5" (30 seconds). The underlying roll had to move OUT of
+  LScript's own `{a,b}` random-range operator and into C# (`SpawnInfo.
+  RollRespawnDelaySeconds()`) - that operator's "Final" node (`OpNode_Final_RandomExpression_
+  Simple_Variable.Run`) hardcodes `Convert.ToInt32` on both ends before rolling, so it can
+  never produce a genuinely fractional result no matter what type the operands are. Verified
+  this was real (not assumed) by testing `{1,2}` directly 2000 times via `LScriptMain.
+  GetNewSnippetRunner` + reusing the compiled AST (mirrors how a real trigger's AST is reused
+  across a gem's lifetime) - clean 50/50 between exactly 1 and 2, confirming the earlier user
+  report ("always picks min or max") was genuine unbiased behavior on a 2-outcome range, not a
+  bug - but also confirming decimals need their own C# path.
+- **Weighted multi-monster spawn list**: a spawn gem can now have multiple possible monster
+  types, each with a relative `Probability` (`SpawnEntry` class, `SpawnInfo.Entries` -
+  replaces the old single `SpawnDef` field). `RollSpawnDef()` picks one per spawn event,
+  weighted by probability among entries with a valid chardef - weights don't need to sum to
+  anything, just relative to each other. Amount stays ONE shared population cap across all
+  configured types (confirmed with user). Dialog: one row per entry (Baseid id `100+i*2`,
+  Probability id `100+i*2+1`, "-" remove button id `300+i`, range-matched via `ON=300 399` -
+  confirmed this syntax is real and supported, `GameCore/LScript/ScriptedGumpDef.cs`'s
+  `ResponseTrigger` has always had `lowerBound`/`upperBound`, just never previously used in
+  this codebase), plus a fixed "+" button (id 2) to add a blank row. Each row is its own
+  1-row `GUTATable` (a table can't grow after construction) rather than one table with an
+  unknown-in-advance row count.
+
+**Real, non-obvious LScript engine quirks found while building this - worth remembering for
+any future raw-LScript dialog work in this codebase, all confirmed by direct isolated
+testing, not guessed**:
+1. **The local variable name `info` is reserved/conflicting in LScript's grammar.** `arg info
+   = SpawnInfo(...)` produces confusing cascading parse errors that APPEAR to point at
+   unrelated code much further down (a `for`/`endfor` several lines later) - the real problem
+   is the variable name itself. Renaming to `spawnData`/`result` fixed it instantly, with
+   zero other changes. Avoid `info` as an LScript arg/local name.
+2. **A separately-invoked `[function]` does NOT inherit the calling dialog-response
+   trigger's `argtxt`/`argnum`** (`ArgTxtHolder`/`ArgNumHolder`) - each function call gets its
+   own `ScriptArgs`. Factoring the gump-response-reading loop into a shared
+   `f_readSpawnRowsFromResponse` function silently read back ZERO entries every time (no
+   error, no exception - just empty data), because `argtxt[id]`/`argnum[id]` inside that
+   function resolved against an empty/different context, not the caller's real gump response.
+   Fixed by inlining the same loop directly into each `ON=` button handler instead. First
+   surfaced as "the gem never gets created even with valid input" with no error anywhere in
+   the log - a genuinely confusing silent-failure class, worth remembering before reaching for
+   a shared helper function around gump-response reading again.
+3. **LScript's `<...>` eval-bracket syntax can only wrap a `DottedExpressionChain`**
+   (property/method-access chains like `a.b.c()`), **not general arithmetic.** `<100+arg.i*2>`
+   is a parse error; `100+arg.i*2` (fully bare, no brackets at all - `arg.i` resolves fine
+   un-bracketed in an arithmetic position) is correct. Confirmed by bisecting a real parse
+   error down to this exact cause.
+4. **`for (name, start, end)` loop bounds DO accept full dotted expressions** (e.g. `for
+   (arg.i, 0, someObject.SomeProperty)`) - an initial debugging theory blamed THIS for the
+   same parse error #3 actually caused; isolated testing disproved it (dotted bounds work
+   fine on their own) before the real cause (#1, the `info` variable name) was found.
+
+**Test coverage**: existing `SpawnCommandTestsA-E` updated for the new field scheme (field 11
+"Baseid" removed from the top table, monster rows now at 100+/101+ per entry). New
+`SpawnCommandTestsF.WeightedMultiMonsterListRoundTripsAndRespectsProbability` - drives the
+real "+" button to add a second row without losing the first row's data, confirms both
+entries round-trip (uid, display name, probability) via a new `TestReportSpawnGemEntries`
+diagnostic, confirms decimal MinTime persists, and samples `RollSpawnDef` 2000 times via a
+new `TestSampleRollSpawnDefDistribution` diagnostic to confirm a 10:1 weight ratio actually
+produces roughly a 10:1 pick ratio (asserts >5x, not an exact match - inherently a random
+sample). All 9 spawn/GM-command protocol tests green.
+
 ## CURRENT STATE (2026-10-15, continued) — new starting position (#210) + home-return now uses A* (#211)
 
 Two more small items from the same "small changes/improvements" batch as #210 (decimal
