@@ -22,12 +22,15 @@ argo.text 70 210 3 13
 argo.text 250 210 85 14
 
 // Buttons to the point-spend dialogs (#156) - each opens with no args needed, they read self directly.
-argo.button 70 270 2151 2152 1 0 1
-argo.text 95 272 3 15
-argo.button 180 270 2151 2152 1 0 2
-argo.text 205 272 3 16
-argo.button 290 270 2151 2152 1 0 3
-argo.text 315 272 3 17
+// Graphic 2445/2445 (flat "paper tab" look, same id for both up/down states) and offsets
+// match Erebor's own d_explevel bottom row exactly (scripts/experiences.scp) - the previous
+// 2151/2152 checkbox-style graphic looked like a toggle, not an action button.
+argo.button 70 260 2445 2445 1 0 1
+argo.text 75 262 3 15
+argo.button 185 260 2445 2445 1 0 2
+argo.text 190 262 3 16
+argo.button 300 260 2445 2445 1 0 3
+argo.text 305 262 3 17
 
 [DIALOG d_explevel TEXT]
 <Name>, <ProfessionName>

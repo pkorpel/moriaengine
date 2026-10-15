@@ -105,6 +105,17 @@ namespace SteamEngine.CompiledScripts {
 			return 120;
 		}
 
+		/// <summary>Each unspent skill point raises the skill by 5.0% (50 raw units - skill
+		/// values are stored *10, see FormatSkillValue/D_LevelSpendSkills) - verified against
+		/// Erebor's own f_skillbutton handler (experiences.scp's [DIALOG d_levelbonus BUTTON]
+		/// on=@anybutton: "&lt;arg(skillname)&gt;=&lt;eval arg(skillvalue)+50&gt;"), not the 1
+		/// raw unit (0.1%) this used before - a real-world-testing finding (#199).
+		/// Erebor additionally gates training behind escalating cost (1/2/3 points per click
+		/// above 50/75%) and hard "needs a master trainer" milestones at exactly 25/50/75% -
+		/// deliberately NOT ported here, since the user only flagged the flat percentage-per-
+		/// point rate being wrong, not these extra mechanics.</summary>
+		public const int SkillPointGain = 50;
+
 		/// <summary>Spends `pointsToSpend` unspent skill points (#129) into `skill`, validated
 		/// against the player's profession skill cap - mirrors Skill.Cap's own precedent of
 		/// returning 0 when no profession is assigned, so a player with no profession can never
@@ -119,10 +130,11 @@ namespace SteamEngine.CompiledScripts {
 			ProfessionDef profession = player.Profession;
 			int cap = (profession != null) ? profession.GetSkillCap(skill) : 0;
 			int current = player.GetRealSkillValue(skill);
-			if ((current + pointsToSpend) > cap) {
+			int gain = pointsToSpend * SkillPointGain;
+			if ((current + gain) > cap) {
 				return false;
 			}
-			player.ModifySkillValue((int) skill, pointsToSpend);
+			player.ModifySkillValue((int) skill, gain);
 			player.UnspentSkillPoints -= pointsToSpend;
 			return true;
 		}
