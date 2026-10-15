@@ -11,6 +11,50 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-14, continued) — #168 FIXED and shipped (PR #171)
+
+User picked the real engine fix (not the narrower getter-coercion option, not an operational
+saves/-cleanup-only mitigation): `GameCore/AbstractDef.cs` gained a per-instance
+`isLoadingFromScript` flag, set around `LoadScriptLines`/`LoadPostponedScriptLines` (the two
+entry points for applying a Def's own `.def`/postponed script content). `SetTag` now checks it:
+while loading, the value goes through a new `FieldValue.SetFromCode` path (made `internal`,
+previously private) that sets BOTH current and default to the same value without touching
+`isChangedManually` - mirroring how the generic `"tag."`-regex script path (`SetFromScripts`)
+already correctly avoided this; outside loading (genuine runtime/GM edits), the original
+`CurrentValue = value` path is unchanged. Net effect: `ShouldBeSaved()` now correctly sees
+baseline `.def` content as unchanged-from-default and skips persisting it, so the corrupting
+write this bug depended on never happens in the first place - confirmed the LOAD-side mechanism
+is actually `AbstractDef.LoadField_Delayed`/`ObjectSaver.Load` (not the `LoadScriptLine` tag-regex
+branch guessed in the root-cause writeup below; same end effect either way, correction noted here
+for accuracy).
+
+**New regression test**: `Tests/Protocol/DefPersistenceRegressionTests.cs` (own isolated
+collection, like `LevelingIsolatedTests`) + `scripts/Tests/DefPersistenceTests.cs`'s
+`TestTriggerGlobalSave` - triggers a real `Globals.Save()` and asserts `tag._tamingDifficulty_`
+no longer appears in the resulting `globals.sav`. **Real finding while building this test**:
+its first draft used the shared `"protocoltest"` account (copied from `GatheringTests.cs`) -
+since this test deliberately performs a REAL save, that persisted a leftover `"SaveTrigger"`
+character into the shared `./saves/` directory, which a LATER-booting fixture in the same
+full-suite run auto-loaded, breaking `CombatScenarioTests`/`LoginHandshakeTests`'s own
+`Assert.All(characters, name => Assert.Null(name))` "fresh account" assumption - classic
+instance of the already-documented "give a test needing real isolation its own dedicated
+account" lesson, just surfacing through a persisted save file instead of a live shared
+connection. Fixed by using a unique account name (`defpersistencetest`); this fixture's own
+first-ever login auto-creates regardless of name (`accounts.Count==0`), so no
+`.TestEnableAutoAccountCreation` dance was needed.
+
+**Verification performed** (full detail in PR #171): isolated `GatheringTests` (3/3) pass,
+including right after a real save produced by the new test gets reloaded into a FRESH boot -
+confirms taming survives an actual save/reload cycle under the fix. Two full-suite runs (48
+then 17 failures) were investigated and confirmed to be **entirely** the pre-existing,
+already-documented `maxCharactersPerGameAccount`-cap flakiness (same "more than 5 characters on
+one shared account, intermittent, depends on xUnit's execution order" class already noted
+earlier in this file) - confirmed unrelated to this fix by reproducing the same flakiness class
+with the fix temporarily `git stash`ed away too, and by which specific tests failed changing
+between the two runs. No new/different failure types appeared in either run.
+
+**Shipped**: PR #171, merged to `main`, branch deleted. #168 closed referencing it.
+
 ## CURRENT STATE (2026-10-14, continued) — #168 root-caused: engine-level Def-tag save/reload bug
 
 Root-caused #168 (the `GatheringTests.TamingSetsControlMaster` regression found while resuming
