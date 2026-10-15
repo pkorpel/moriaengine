@@ -19,7 +19,7 @@ using SteamEngine.Networking;
 
 namespace SteamEngine.CompiledScripts {
 	public static class PlayerCreation {
-		public static readonly Point4D startingPosition = new Point4D(5233, 31, 20, 0);
+		public static readonly Point4D startingPosition = new Point4D(4763, 1363, 10, 0);
 
 		private static PlayerDef c_woman;
 		public static PlayerDef FemaleDef {
