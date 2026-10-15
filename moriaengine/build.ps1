@@ -110,16 +110,34 @@ function Invoke-ScriptGeneration {
 	# build until something else happened to force a fresh one. Compare timestamps
 	# instead: if any .ct template anywhere in the repo is newer than the marker, the
 	# generated output no longer reflects the current templates and must be redone.
+	#
+	# Real bug found 2026-10-15: that fix only covered .ct -> CompiledTriggerGroups.
+	# Generated/CompiledScriptHolders.Generated.cs is a SEPARATE generated output,
+	# produced from reflection over [SteamFunction]-attributed plain C# methods under
+	# scripts/ (GameCore/CompiledScripts/CompiledScriptHolder.cs's
+	# CompiledScriptHolderGenerator) - not from .ct templates at all. Renaming/adding a
+	# [SteamFunction] method (e.g. #190-193's Kill->InstaKill rename) doesn't touch any
+	# .ct file, so the old check alone would report "up to date" and skip regeneration,
+	# leaving a stale CompiledScriptHolders.Generated.cs (referencing an OLDER method
+	# name from whatever session last ran the generator) to fail the final solution
+	# build with a confusing CS0117 on an unrelated-looking class. Also compare against
+	# the newest plain .cs source file (excluding the *.Generated.cs outputs
+	# themselves, and bin/obj) anywhere in the repo.
 	$newestTemplate = Get-ChildItem -Path . -Filter '*.ct' -Recurse -File -ErrorAction SilentlyContinue |
+		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+	$newestSource = Get-ChildItem -Path . -Filter '*.cs' -Recurse -File -ErrorAction SilentlyContinue |
+		Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' -and $_.Name -notlike '*.Generated.cs' } |
+		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+	$newestInput = @($newestTemplate, $newestSource) | Where-Object { $_ } |
 		Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
 	function Test-GeneratedUpToDate {
 		if (-not (Test-Path $generatedMarker)) {
 			return $false
 		}
-		if (-not $newestTemplate) {
+		if (-not $newestInput) {
 			return $true
 		}
-		return $newestTemplate.LastWriteTimeUtc -le (Get-Item $generatedMarker).LastWriteTimeUtc
+		return $newestInput.LastWriteTimeUtc -le (Get-Item $generatedMarker).LastWriteTimeUtc
 	}
 
 	if ((Test-Path 'steamengine.ini') -and (Test-GeneratedUpToDate)) {
@@ -127,7 +145,7 @@ function Invoke-ScriptGeneration {
 		return
 	}
 	if ((Test-Path $generatedMarker) -and -not (Test-GeneratedUpToDate)) {
-		Write-Host "==> scripts/Generated is stale ($($newestTemplate.FullName) was edited after the last generation) - regenerating"
+		Write-Host "==> scripts/Generated is stale ($($newestInput.FullName) was edited after the last generation) - regenerating"
 	}
 
 	for ($run = 1; $run -le 2; $run++) {
