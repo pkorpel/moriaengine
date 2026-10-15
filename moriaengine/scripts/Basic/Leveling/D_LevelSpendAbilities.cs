@@ -23,7 +23,8 @@ namespace SteamEngine.CompiledScripts {
 	/// and a close button so the navigation from .explevel is already wired up for whenever
 	/// abilities get designed.</summary>
 	public class D_LevelSpendAbilities : CompiledGumpDef {
-		private const int CloseButtonId = 1;
+		private const int BackButtonId = 1;
+		private const int CloseButtonId = 2;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Player player = (Player) sendTo;
@@ -33,12 +34,20 @@ namespace SteamEngine.CompiledScripts {
 			this.AddLabel(20, 20, 37, "Abilities");
 			this.AddLabel(20, 50, 3, "Unspent ability points: " + player.UnspentAbilityPoints);
 			this.AddLabel(20, 75, 3, "Ability spending isn't implemented yet.");
-			this.AddButton(20, 110, 2151, 2152, CloseButtonId, GumpButtonType.Reply, 0);
-			this.AddLabel(55, 112, 3, "Close");
+
+			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202).
+			this.AddButton(20, 110, 2445, 2445, BackButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(25, 112, 3, "Back");
+			this.AddButton(120, 110, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(125, 112, 3, "Close");
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
-			//nothing to do - the only button just closes.
+			if (gr.PressedButton == BackButtonId) {
+				Player player = (Player) gi.Cont;
+				player.Dialog(player, GumpDef.GetByDefname("d_explevel"));
+			}
+			// Close (or right-click, button 0) - nothing to do.
 		}
 	}
 }
