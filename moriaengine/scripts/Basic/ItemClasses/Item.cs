@@ -340,9 +340,22 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Sphere-style ATTR death-drop rules (#217/#218). Only ever evaluated from
+		/// Corpse's own "move items off a dying character" pass, so consuming attr_insured
+		/// here (it protects exactly once, then clears itself) is safe - this getter has no
+		/// other caller that could burn it accidentally.</summary>
 		public virtual bool CanFallToCorpse {
 			get {
-				//TODO newbie flag etc.
+				if (this.HasAttribute(ItemAttributes.attr_cursed)) {
+					return true; //cursed always drops, overrides newbie/blessed/insured
+				}
+				if (this.HasAttribute(ItemAttributes.attr_newbie) || this.HasAttribute(ItemAttributes.attr_blessed)) {
+					return false;
+				}
+				if (this.HasAttribute(ItemAttributes.attr_insured)) {
+					this.SetAttribute(ItemAttributes.attr_insured, false); //consumed - protects once
+					return false;
+				}
 				return true;
 			}
 		}

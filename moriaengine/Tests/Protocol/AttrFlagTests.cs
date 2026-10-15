@@ -42,6 +42,20 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#218: attr_newbie/attr_blessed items stay on the body (no fall), attr_cursed
+		/// forces a fall even though it co-exists with nothing else protective here, attr_insured
+		/// also protects but is consumed by the one death that used it, and a plain item with no
+		/// flags falls normally.</summary>
+		[Fact]
+		public void DeathDropRespectsAttrFlags() {
+			using (var client = this.ConnectLoginAndCreateCharacter("AttrDeathTester")) {
+				client.SendSpeech(".TestDeathDropAttrItems");
+				this.AssertSeen(
+					"ATTR_DEATH_RESULT: newbieStayed=True blessedStayed=True cursedStayed=False insuredStayed=True plainStayed=False insuredConsumed=True",
+					TimeSpan.FromSeconds(10));
+			}
+		}
+
 		/// <summary>Real end-to-end flow: ".AttrList" target cursor opens D_AttrList, submitting
 		/// it with attr_newbie's and attr_static's checkboxes selected (and nothing else) must
 		/// leave exactly those two set on the targeted item, no others.</summary>
