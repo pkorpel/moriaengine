@@ -96,6 +96,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return ProfessionSettings.instance;
 			}
 		}
+
+		[InfoField("Item Decay")]
+		public DecaySettings DecaySettings {
+			get {
+				return DecaySettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {
