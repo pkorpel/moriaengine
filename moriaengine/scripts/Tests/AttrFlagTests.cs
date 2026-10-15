@@ -88,5 +88,45 @@ namespace SteamEngine.CompiledScripts {
 				" plainStayed=" + (plainItem.Cont == backpack) +
 				" insuredConsumed=" + !insuredItem.HasAttribute(ItemAttributes.attr_insured));
 		}
+
+		/// <summary>#219 - shrinks both the configured decay interval and the sweep's own check
+		/// cadence to a test-practical speed (same SpeedUpClockForTest precedent as
+		/// LightAndWeather/#76), then creates 4 ground/contained items covering every exemption
+		/// case: plain attr_decay (should eventually decay), attr_decay+attr_questitem (exempt),
+		/// no attr_decay at all (never eligible), and attr_decay but sitting inside a backpack
+		/// (exempt while contained). Reports their uids so a protocol test can poll each one.</summary>
+		[SteamFunction]
+		public static void TestSetupDecayItems(Character self) {
+			DecaySettings.instance.decayIntervalMinutes = 0.01; //0.6 real seconds
+			ItemDecaySystem.SpeedUpSweepForTest(1, 1); //check every 1 real second
+
+			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
+
+			Item decayPlain = (Item) plainDef.Create(self.P());
+			decayPlain.SetAttribute(ItemAttributes.attr_decay, true);
+
+			Item decayQuestItem = (Item) plainDef.Create(self.P());
+			decayQuestItem.SetAttribute(ItemAttributes.attr_decay, true);
+			decayQuestItem.SetAttribute(ItemAttributes.attr_questitem, true);
+
+			Item noDecayFlag = (Item) plainDef.Create(self.P());
+
+			Item decayButContained = (Item) plainDef.Create(((Player) self).Backpack);
+			decayButContained.SetAttribute(ItemAttributes.attr_decay, true);
+
+			Console.WriteLine("ATTR_DECAY_SETUP: decayPlain=" + decayPlain.Uid +
+				" decayQuestItem=" + decayQuestItem.Uid +
+				" noDecayFlag=" + noDecayFlag.Uid +
+				" decayButContained=" + decayButContained.Uid);
+		}
+
+		/// <summary>Reports whether the item at the given uid still exists - 0 if it decayed
+		/// away (Thing.UidGetItem resolves nothing for a uid no object owns anymore).</summary>
+		[SteamFunction]
+		public static void TestReportDecayItemExists(Character self, ScriptArgs sa) {
+			uint uid = Convert.ToUInt32(sa.Argv[0], System.Globalization.CultureInfo.InvariantCulture);
+			bool exists = Thing.UidGetItem(uid) != null;
+			Console.WriteLine("ATTR_DECAY_EXISTS: uid=" + uid + " exists=" + exists);
+		}
 	}
 }
