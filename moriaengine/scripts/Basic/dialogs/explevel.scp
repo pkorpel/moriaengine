@@ -4,7 +4,7 @@ InvalidateCombatArmorValues()
 Dialog(d_explevel)
 
 [Dialog d_explevel]
-argo.resizepic 50 50 2620 400 270
+argo.resizepic 50 50 2620 400 320
 argo.text 70 70 37 0
 argo.text 70 90 3 1
 argo.text 250 90 85 2
@@ -22,6 +22,14 @@ argo.text 70 210 3 13
 argo.text 250 210 85 14
 argo.text 70 230 3 15
 argo.text 250 230 85 16
+
+// Buttons to the point-spend dialogs (#156) - each opens with no args needed, they read self directly.
+argo.button 70 270 2151 2152 1 0 1
+argo.text 95 272 3 17
+argo.button 180 270 2151 2152 1 0 2
+argo.text 205 272 3 18
+argo.button 290 270 2151 2152 1 0 3
+argo.text 315 272 3 19
 
 [DIALOG d_explevel TEXT]
 <Name>
@@ -41,4 +49,19 @@ Experience:
 <Experience> / <NextLevelExperienceThreshold>
 Profession:
 <ProfessionName>
+Attributes
+Skills
+Abilities
+
+[DIALOG d_explevel Button]
+on=0
+
+on=1
+src.Dialog(d_levelspendattributes)
+
+on=2
+src.Dialog(d_levelspendskills)
+
+on=3
+src.Dialog(d_levelspendabilities)
 

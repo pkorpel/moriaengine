@@ -111,7 +111,8 @@ namespace SteamEngine.Tests.Protocol {
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestSpendAttributePoint Str 5");
-				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_ATTRIBUTE_RESULT:", mark, TimeSpan.FromSeconds(10)));
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_ATTRIBUTE_RESULT:", mark, TimeSpan.FromSeconds(10)),
+					"Output since mark:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
 				string profAttrLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_ATTRIBUTE_RESULT:");
 				Assert.Contains("success=True", profAttrLine);
 			}
