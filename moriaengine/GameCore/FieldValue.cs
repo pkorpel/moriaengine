@@ -335,7 +335,7 @@ namespace SteamEngine {
 			throw new SEException("this.fvType out of range. This should not happen.");
 		}
 
-		private void SetFromCode(object value) {
+		internal void SetFromCode(object value) {
 			Sanity.IfTrueThrow((this.isChangedManually || this.unloaded), "SetFromCode after change/unload? This should never happen.");
 
 			this.defaultValue = this.GetFittingValueImpl();

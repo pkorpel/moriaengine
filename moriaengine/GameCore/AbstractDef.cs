@@ -38,6 +38,12 @@ namespace SteamEngine {
 		private string altdefname;
 		private bool alreadySaved;
 
+		/// <summary>True while this def's own script/.def content (including postponed lines) is
+		/// being applied - lets SetTag distinguish "this value is baseline content, loaded the
+		/// same way on every boot" from "a GM or other runtime code just changed this live",
+		/// so only genuine live edits get treated as save-worthy (see SetTag).</summary>
+		private bool isLoadingFromScript;
+
 		#region Accessors
 		public string Filename {
 			get {
@@ -517,23 +523,28 @@ namespace SteamEngine {
 
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public virtual void LoadScriptLines(PropsSection ps) {
-			foreach (PropsLine p in ps.PropsLines) {
-				try {
-					string name = p.Name.ToLowerInvariant();
+			this.isLoadingFromScript = true;
+			try {
+				foreach (PropsLine p in ps.PropsLines) {
+					try {
+						string name = p.Name.ToLowerInvariant();
 
-					if (name.StartsWith("tag.") || (this.fieldValues.ContainsKey(name))) {
-						this.LoadScriptLine(ps.Filename, p.Line, name, p.Value);
-					} else {
-						if (this.postponedLines == null) {
-							this.postponedLines = new List<PropsLine>();
+						if (name.StartsWith("tag.") || (this.fieldValues.ContainsKey(name))) {
+							this.LoadScriptLine(ps.Filename, p.Line, name, p.Value);
+						} else {
+							if (this.postponedLines == null) {
+								this.postponedLines = new List<PropsLine>();
+							}
+							this.postponedLines.Add(p);
 						}
-						this.postponedLines.Add(p);
+					} catch (FatalException) {
+						throw;
+					} catch (Exception ex) {
+						Logger.WriteWarning(ps.Filename, p.Line, ex);
 					}
-				} catch (FatalException) {
-					throw;
-				} catch (Exception ex) {
-					Logger.WriteWarning(ps.Filename, p.Line, ex);
 				}
+			} finally {
+				this.isLoadingFromScript = false;
 			}
 		}
 
@@ -588,14 +599,19 @@ namespace SteamEngine {
 
 		private void LoadPostponedScriptLines() {
 			if (this.postponedLines != null) {
-				foreach (PropsLine p in this.postponedLines) {
-					try {
-						this.LoadScriptLine(this.filename, p.Line, p.Name.ToLowerInvariant(), p.Value);
-					} catch (FatalException) {
-						throw;
-					} catch (Exception ex) {
-						Logger.WriteWarning(this.filename, p.Line, ex);
+				this.isLoadingFromScript = true;
+				try {
+					foreach (PropsLine p in this.postponedLines) {
+						try {
+							this.LoadScriptLine(this.filename, p.Line, p.Name.ToLowerInvariant(), p.Value);
+						} catch (FatalException) {
+							throw;
+						} catch (Exception ex) {
+							Logger.WriteWarning(this.filename, p.Line, ex);
+						}
 					}
+				} finally {
+					this.isLoadingFromScript = false;
 				}
 				this.postponedLines = null;
 			}
@@ -701,7 +717,14 @@ namespace SteamEngine {
 				this.fieldValues[tk] = fv;
 				this.fieldValues[tagName] = fv;
 			}
-			fv.CurrentValue = value;
+			if (this.isLoadingFromScript) {
+				//baseline content loaded the same way on every boot - not a live edit, so it
+				//shouldn't be treated as save-worthy state (see isLoadingFromScript's own doc
+				//comment, and #168)
+				fv.SetFromCode(value);
+			} else {
+				fv.CurrentValue = value;
+			}
 		}
 
 		public bool HasTag(TagKey tk) {
