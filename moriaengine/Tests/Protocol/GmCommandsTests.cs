@@ -74,6 +74,29 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>GM targets i_wall_stone with ".flip" (#206) - a plain wall piece nothing
+		/// else's DUPEITEM points back at, so Flip() is a genuine no-op. Must get a clear
+		/// SysMessage instead of silently doing nothing.</summary>
+		[Fact]
+		public void FlipCommandOnNonFlippableItemShowsMessage() {
+			using (var client = this.ConnectLoginAndCreateCharacter("GmFlipNoopTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetupNonFlippableItem");
+				this.AssertSeen("FLIP_SETUP:", mark, TimeSpan.FromSeconds(10));
+				uint itemUid = ExtractUidAfter(this.fixture.GameOutputSnapshot(), mark, "FLIP_SETUP: uid=");
+
+				client.SendSpeech(".Flip");
+				client.ReadSystemMessage(TimeSpan.FromSeconds(10)); // "Target the item to flip."
+				client.SendTargetUid(itemUid);
+
+				string message = client.ReadSystemMessage(TimeSpan.FromSeconds(10));
+				Assert.Equal("This item has no flip variants.", message);
+			}
+		}
+
 		private void AssertSeen(string marker, int since, TimeSpan timeout) {
 			bool saw = this.fixture.WaitForGameOutputSince(marker, since, timeout);
 			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());

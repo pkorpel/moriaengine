@@ -54,5 +54,15 @@ namespace SteamEngine.CompiledScripts {
 			AbstractItem item = (AbstractItem) wallDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			Console.WriteLine("FLIP_SETUP: uid=" + item.Uid + " model=" + item.Model);
 		}
+
+		/// <summary>i_wall_stone (scripts/converted/itemb1.def, [ItemDef 0x1a]) is the plain
+		/// wall piece nothing else's DUPEITEM points back at - a real content gap (#206), used
+		/// here to cover .flip's "nothing to flip to" feedback message.</summary>
+		[SteamFunction]
+		public static void TestSetupNonFlippableItem(Character self) {
+			ItemDef wallDef = (ItemDef) ThingDef.GetByDefname("i_wall_stone");
+			AbstractItem item = (AbstractItem) wallDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			Console.WriteLine("FLIP_SETUP: uid=" + item.Uid + " model=" + item.Model);
+		}
 	}
 }
