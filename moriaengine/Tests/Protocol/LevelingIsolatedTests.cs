@@ -80,7 +80,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSpendSkillPoint Alchemy 10");
+				client.SendSpeech(".TestSpendSkillPoint Magery 10");
 				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
 				string noProfSkillLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:");
 				Assert.Contains("success=False", noProfSkillLine); // no profession -> cap 0
@@ -98,13 +98,15 @@ namespace SteamEngine.Tests.Protocol {
 					LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_PROFESSION_SET:"));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSpendSkillPoint Alchemy 10");
+				client.SendSpeech(".TestSpendSkillPoint Magery 10");
 				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
 				string profSkillLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:");
-				// mage's Alchemy cap is 1000 (0-1000 scale) - 10 points easily fits. Starts at
-				// 300, not 0 - ProfessionPlugin.On_Assign (#135) grants mage.def's Alchemy
+				// mage's Magery cap is 1000 (0-1000 scale) - 10 points easily fits. Starts at
+				// 300, not 0 - ProfessionPlugin.On_Assign (#135) grants mage.def's Magery
 				// minimum (300) immediately on profession assignment above, before any points
-				// are even spent.
+				// are even spent. Magery, not Alchemy (used before #204) - Alchemy is a
+				// crafting skill, excluded from LevelingSystem.SpendableSkills regardless of
+				// profession/cap.
 				Assert.Contains("success=True", profSkillLine);
 				Assert.Contains("unspentSkillPoints=5", profSkillLine); // 15 - 10
 				// 300 (granted) + 10 * LevelingSystem.SkillPointGain (50, i.e. 5.0% per point,

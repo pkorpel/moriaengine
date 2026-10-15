@@ -50,6 +50,8 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 			}
+			// #204 - was in SkillName enum id order, which has no obvious logic to a player.
+			relevantSkills.Sort((a, b) => string.CompareOrdinal(SkillDisplayName(a), SkillDisplayName(b)));
 
 			int rowsPerColumn = ((relevantSkills.Count - 1) / Columns) + 1;
 			if (rowsPerColumn < 1) {
@@ -64,11 +66,14 @@ namespace SteamEngine.CompiledScripts {
 				? ("Unspent skill points: " + player.UnspentSkillPoints)
 				: "No profession assigned - nothing to spend on.");
 
-			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202).
+			// Back/Close bottom row, same "paper tab" style as explevel.scp's own buttons (#202) -
+			// Back pinned to the left edge, Close to the right edge (#204: they overlapped when
+			// both sat near the left edge only ~100px apart - the 2445 graphic renders wider
+			// than that).
 			this.AddButton(20, height - 30, 2445, 2445, BackButtonId, GumpButtonType.Reply, 0);
 			this.AddLabel(25, height - 28, 3, "Back");
-			this.AddButton(120, height - 30, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
-			this.AddLabel(125, height - 28, 3, "Close");
+			this.AddButton(width - 120, height - 30, 2445, 2445, CloseButtonId, GumpButtonType.Reply, 0);
+			this.AddLabel(width - 115, height - 28, 3, "Close");
 
 			for (int i = 0; i < relevantSkills.Count; i++) {
 				AbstractSkillDef skillDef = relevantSkills[i];
@@ -80,7 +85,13 @@ namespace SteamEngine.CompiledScripts {
 				int current = player.GetRealSkillValue(skillDef.Id);
 				int cap = profession.GetSkillCap(skillDef.Id);
 				this.AddLabel(x, y, 3, SkillDisplayName(skillDef) + ": " + FormatSkillValue(current) + " / " + FormatSkillValue(cap));
-				this.AddButton(x + ColumnWidth - 30, y - 2, 2151, 2152, SkillButtonIdBase + skillDef.Id, GumpButtonType.Reply, 0);
+				// #204 - craft/gathering skills (e.g. Fishing) can't be bought with points at
+				// all, only trained by use - no button for those rows, just a note instead.
+				if (LevelingSystem.IsSkillPointSpendable((SkillName) skillDef.Id)) {
+					this.AddButton(x + ColumnWidth - 30, y - 2, 2151, 2152, SkillButtonIdBase + skillDef.Id, GumpButtonType.Reply, 0);
+				} else {
+					this.AddLabel(x + ColumnWidth - 90, y, 3, "(trained)");
+				}
 			}
 		}
 
