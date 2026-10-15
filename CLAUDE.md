@@ -1720,9 +1720,7 @@ and bin/obj already exist from prior sessions). Full suite:
   filed), write it into this file in the same turn, before moving to the next
   thing — don't batch it up for "later."
 - **File a GitHub issue for every bug** — whether the user reports it in chat or you
-  discover it yourself while working on something else — even if you fix it
-  immediately in the same session. File it, then close it referencing the PR that
-  fixed it (or leave it open if unfixed/deferred). This is an explicit standing
+  discover it yourself while working on something else. This is an explicit standing
   instruction from the user (2026-10-13): "every bug raised by either me or found
   during your work... needs to have issue raised for tracking purposes." Earlier in
   that same session the auto-mode classifier blocked an issue-filing attempt with
@@ -1730,6 +1728,13 @@ and bin/obj already exist from prior sessions). Full suite:
   reasoning no longer applies now that this is a standing, pre-authorized policy, not
   a one-off judgment call. Don't ask before filing; just do it as part of the normal
   bugfix workflow below.
+  - **Ordering, updated 2026-10-15**: raise the issue FIRST, before starting any
+    work on it — not after, not "fix it then file it for the record." Then do the
+    work. While working, post comments on the issue capturing reasoning/findings as
+    they happen (root cause, design decisions, why something was or wasn't ported
+    from Erebor, etc.) — not just a single create-then-close with no narrative in
+    between. Close the issue at the very end, referencing the PR that fixed it (or
+    leave it open if unfixed/deferred).
 - **Closing an issue is a two-step operation, not one.** `mcp__github__issue_write`
   with `method: "create"` and `state: "closed"` in the same call silently does
   NOT close it — GitHub's API always creates issues open, and the `state`
