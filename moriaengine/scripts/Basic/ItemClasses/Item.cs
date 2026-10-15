@@ -26,36 +26,82 @@ namespace SteamEngine.CompiledScripts {
 
 
 
-	/* sphere Flags:
-	 * 0x0001: Stolen (Drop on death)
-	 * 0x0002: Decay
-	 * 0x0004: Newbied
-	 * 0x0008: Always Movable
-	 * 0x0010: Never Movable
-	 * 0x0020: Magic
-	 * 0x0040: Static (For moving stuff to the statics MULs, perhaps?)
-	 * 0x0080: Invisible
-	 * 0x0100: Ignored by NearbyItems
-	 * 0x0200: Blocks LOS
-	 * 0x0400: Provides partial cover (Doesn't block LOS but does assess combat penalties)
-	 * */
-
-	//public enum ItemFlags : byte {
-	//    None = 0x00,
-	//    Disconnecned = 0x01, //reserved by core
-
-	//    Newbied = 0x04,
-
-	//    DisplayAsMovable = 0x08, AlwaysMovable = DisplayAsMovable,
-	//    NonMovable = 0x10, NeverMovable = NonMovable,
-
-	//    Invisible = 0x80,
-	//}
+	/// <summary>Sphere-style item ATTR bitflags (#215/#217) - real hex values, confirmed against
+	/// SphereServer's own sphere_defs.scp ([DEFNAME attr_flags]) and wiki.spherecommunity.net.
+	/// Named exactly as Sphere names them (snake_case, "attr_" prefix) for direct 1:1 .def-content
+	/// compatibility rather than C#-idiomatic PascalCase. Set via a ".def" "ATTR = attr_x|attr_y"
+	/// line (parsed through the same generic FieldValue/ConvertTools.ConvertTo pipeline already
+	/// used for every other [Flags]-enum .def field in this engine - that pipeline already
+	/// replaces '|' with ',' before Enum.Parse, so no custom parsing code was needed here).
+	///
+	/// Real moriaengine bit-mapping note (#215): this engine's old LScript constants
+	/// (scripts/Basic/defs.scp) had a non-standard "attr_stolen" at bit 0x01, where real Sphere
+	/// defines "attr_identified" instead and doesn't define attr_stolen as an ATTR bit at all.
+	/// Fixed here - attr_identified correctly occupies 0x01, attr_stolen is gone (zero real
+	/// content used either value).</summary>
+	[Flags]
+	public enum ItemAttributes {
+		none             = 0x00000000,
+		attr_identified  = 0x00000001,
+		attr_decay       = 0x00000002,
+		attr_newbie      = 0x00000004,
+		attr_move_always = 0x00000008,
+		attr_move_never  = 0x00000010,
+		attr_magic       = 0x00000020,
+		attr_owned       = 0x00000040,
+		attr_invis       = 0x00000080,
+		attr_cursed      = 0x00000100,
+		attr_blessed     = 0x00000400,
+		attr_static      = 0x00008000,
+		attr_exceptional = 0x00010000,
+		attr_enchanted   = 0x00020000,
+		attr_imbued      = 0x00040000,
+		attr_questitem   = 0x00080000,
+		attr_insured     = 0x00100000,
+		attr_nodroptrade = 0x00200000,
+		attr_norepair    = 0x00400000,
+		attr_lockeddown  = 0x00800000,
+		attr_secure      = 0x01000000,
+		attr_reforged    = 0x02000000,
+		attr_opened      = 0x04000000,
+	}
 
 	[ViewableClass]
 	public partial class Item : AbstractItem {
+		/// <summary>Sphere-style ATTR bitflags (#215/#217), per-instance and independently
+		/// overridable from the ItemDef's own AttributesDefault once seeded (see On_Create).</summary>
+		public ItemAttributes Attributes {
+			get {
+				return this.attributes;
+			}
+			set {
+				this.attributes = value;
+			}
+		}
+
+		public bool HasAttribute(ItemAttributes flag) {
+			return (this.attributes & flag) == flag;
+		}
+
+		public void SetAttribute(ItemAttributes flag, bool value) {
+			if (value) {
+				this.attributes |= flag;
+			} else {
+				this.attributes &= ~flag;
+			}
+		}
+
+		/// <summary>Seeds this instance's own Attributes (Item.ct's "attributes" Vars field,
+		/// per-instance and independently overridable afterwards) from its ItemDef's configured
+		/// default (#217) - same "copy a Def-level default into the instance once at creation"
+		/// pattern NPC.On_Create already uses for DefaultMovementSettings.</summary>
+		public override void On_Create() {
+			base.On_Create();
+			this.attributes = this.TypeDef.AttributesDefault;
+		}
+
 		/// <summary>
-		/// Consume desired amount of this item, amount cannot go below zero. If resulting amount is 0 
+		/// Consume desired amount of this item, amount cannot go below zero. If resulting amount is 0
 		///  then the item will be deleted. Method returns the actually consumed amount.
 		///  </summary>
 		public long Consume(long howMany) {

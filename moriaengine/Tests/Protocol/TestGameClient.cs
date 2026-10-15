@@ -532,6 +532,17 @@ namespace SteamEngine.Tests.Protocol {
 		/// ReadDynamicPart's own entry format: per entry, id(ushort) + char-count(ushort) +
 		/// that many UTF16-BE characters (NOT bytes - the server multiplies by 2 itself).</summary>
 		public void SendGumpResponse(int gumpUid, int buttonId, IReadOnlyDictionary<int, string> textEntries) {
+			this.SendGumpResponse(gumpUid, buttonId, null, textEntries);
+		}
+
+		/// <summary>Full form - also carries selected checkbox/switch ids (#217, D_AttrList's
+		/// attribute checkboxes) - GumpMenuSelectionInPacket.ReadDynamicPart's own layout:
+		/// focusUid(4, unused)/gumpUid(4)/buttonId(4)/switchesCount(4)/switchId(4) each/
+		/// entriesCount(4)/entries. The switches array sits BEFORE the text entries, so its
+		/// size shifts every offset after it - computed explicitly below rather than assuming
+		/// the previous overload's fixed offset 19 for entryCount.</summary>
+		public void SendGumpResponse(int gumpUid, int buttonId, int[] selectedSwitches, IReadOnlyDictionary<int, string> textEntries) {
+			int switchCount = (selectedSwitches != null) ? selectedSwitches.Length : 0;
 			int entryCount = (textEntries != null) ? textEntries.Count : 0;
 			byte[][] entryTextBytes = new byte[entryCount][];
 			int entriesSize = 0;
@@ -543,15 +554,23 @@ namespace SteamEngine.Tests.Protocol {
 					i++;
 				}
 			}
-			byte[] packet = new byte[23 + entriesSize];
+			int switchesSize = 4 * switchCount;
+			byte[] packet = new byte[23 + switchesSize + entriesSize];
 			packet[0] = 0xB1;
 			EncodeUShortBigEndian(packet.Length, packet, 1);
 			// bytes 3-6: focus uid, skipped by the server, left zero.
 			EncodeIntBigEndian(gumpUid, packet, 7);
 			EncodeIntBigEndian(buttonId, packet, 11);
-			EncodeIntBigEndian(0, packet, 15); // switchesCount
-			EncodeIntBigEndian(entryCount, packet, 19);
-			int offset = 23;
+			EncodeIntBigEndian(switchCount, packet, 15);
+			int offset = 19;
+			if (selectedSwitches != null) {
+				foreach (int switchId in selectedSwitches) {
+					EncodeIntBigEndian(switchId, packet, offset);
+					offset += 4;
+				}
+			}
+			EncodeIntBigEndian(entryCount, packet, offset);
+			offset += 4;
 			if (textEntries != null) {
 				int i = 0;
 				foreach (KeyValuePair<int, string> entry in textEntries) {
