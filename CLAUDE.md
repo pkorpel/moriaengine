@@ -11,6 +11,88 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## CURRENT STATE (2026-10-15) — races UX rework + leveling spend dialogs (#173, all closed)
+
+User tested the shipped races system (#161) in-game and asked for 6 changes plus unblocking
+#156, tracked as [Tracking] #173 with sub-issues #174-#177 + #156. **All shipped and closed**,
+4 PRs (#179, #178, #180 + the earlier #171/#172 from the #168 session above):
+
+- **#177 (PR #178)**: `ProfessionDef.GetTitle`'s level-to-tier mapping was genuinely wrong -
+  `Math.Min(level, ladder.Length-1)` instead of real breakpoints, so e.g. a level-10 Thief
+  showed the ladder's LAST entry ("zabijak", meant for 200+) instead of the real level-10 title
+  ("chmatak"). Fixed with the real breakpoints ported from Erebor's `experiences.scp`
+  `titulnumber` function: `ProfessionDef.LevelToTitleTier(level, ladderLength)` is now a pure,
+  directly-testable static helper - one tier per 10 levels through level ~40-70 (differs for
+  Craftsman's 11-entry ladder vs everyone else's 10-entry one), then fixed breakpoints at
+  50/75/100/150/200 (standard) or 70/85/100/200 (Craftsman). Also changed
+  `Character.PaperdollName` to `"The Good/Evil Name, Title"` - alignment word from `Realm`
+  (Gondor-aligned=Good, Mordor-aligned=Evil, Neutral=no prefix).
+- **#174/#175/#176 (PR #179, one combined PR since they all touch the same flow)**:
+  - Race selection now triggers ONLY by double-clicking `i_stone_raceclass` ("Stone of the
+    Beginning") - already had a converted stub in `scripts/converted/newbie_portals.def`
+    (`model = i_grave_stone_4`), just needed an `on=@dclick` trigger
+    (`src.Dialog(d_raceclassentry)`) added to it. The `.ChooseRace` command is gone entirely.
+  - `D_OptionPicker` (`scripts/Basic/Races/D_OptionPicker.cs`) redesigned to match Erebor's own
+    `D_RACEclass_classes`/`D_RACEclass_races` layout: background art (gump 2200) + two-column
+    checkbox-style buttons (2151/2152) with HTML label columns, instead of the generic
+    single-column list from the original #162 pass. `D_RaceClassEntry : D_OptionPicker`
+    (in `RaceSelection.cs`) is the dialog-openable entry point the stone's bare `Dialog()` call
+    needs - it builds its own `OptionPickerArgs` internally (a bare `Dialog()` call from LScript
+    can't construct a C# closure) and forwards to the shared rendering/response logic.
+  - Flow order now matches Erebor exactly: **profession -> race -> nation -> stats** (was
+    race -> profession -> nation).
+  - New `D_RaceClassStats` (`scripts/Basic/Races/D_RaceClassStats.cs`) replaces the old
+    `RaceSelection.ApplyStartingStats` auto-allocation with a real point-buy dialog: one
+    text-entry field per STR/DEX/INT/VIT showing the chosen profession's own `(min - max)`
+    range, validated on submit against both the per-stat range and the sum-must-equal-300 rule
+    - matches Erebor's own `D_RACEclass_stats` validation exactly.
+  - `TestGameClient.SendGumpResponse` gained a text-entries overload (`Tests/Protocol/
+    TestGameClient.cs`) to drive text-entry gumps from protocol tests - needed for both this and
+    #156's dialogs.
+  - **Correction for next time**: an earlier pass here had claimed the engine was missing a
+    plain (non-tiled) `GumpPic` primitive - **wrong**, it already exists
+    (`Gump.AddGumpPic`/`CompiledGumpDef.AddImage`, `GameCore/Gump.cs`) - a bad `grep` on that one
+    file just didn't match. Only the raw-LScript-facing `ScriptedGump.IsMethodName` list is
+    missing a "gumppic" case; `CompiledGumpDef`-based C# gumps (what all the new dialogs use)
+    already had full access the whole time.
+- **#156 (PR #180)**: leveling point-spend dialogs, unblocked now that both leveling and
+  professions are live. 3 new gumps in the SAME plain-parchment style as `.explevel` itself
+  (background 2620), opened via 3 new `<Attributes> <Skills> <Abilities>` buttons added to the
+  bottom of `.explevel` (`scripts/Basic/dialogs/explevel.scp`):
+  - `D_LevelSpendAttributes`: text-entry + spend button per STR/DEX/INT/VIT.
+    `LevelingSystem.TrySpendAttributePoints` now ALSO enforces the profession's per-stat hard
+    cap (`ProfessionDef.GetStatRange`'s 3rd element), not just the overall
+    `AttributePointBudget` - matches Erebor's own `newbie_portals.scp` range check, previously
+    not implemented (see #156's own body - it was explicitly waiting on this).
+  - `D_LevelSpendSkills`: lists every skill the profession actually configures (`GetSkillCap >
+    0`), one "+1" button per skill, paginated **client-side** (no server round-trip - uses the
+    gump protocol's own page-switching button type) since a profession can configure 30+
+    skills, too many for one screen.
+  - `D_LevelSpendAbilities`: deliberately empty per explicit user instruction - abilities/
+    talent-trees are still out of scope (same standing deferral as Professions' own).
+  - **Real bug found while testing this** (filed nowhere separately, fixed inline since it was
+    a test-only symptom): `LevelingSystem.TrySpendAttributePoints`'s new `GetStatRange` call
+    resolves a profession's lazy `strRange`/`dexRange`/etc FieldValue for the first time -
+    doing that from INSIDE a chat command's own call stack hits the exact same
+    `Commands.AuthorizeCommandThrow` denial as #146's `explevel`/`CauseDeath` findings
+    (`OpNode_Lazy_Expression.Run` treats lazy-expression resolution as a command-authorization
+    check). Harmless for real players (the dialog's own gump-response handling isn't a
+    "command" context), but broke the pre-existing `TestSpendAttributePoint` test helper -
+    fixed the same way #146 was, by deferring the actual spend to a near-immediate
+    `BoundTimer` (`DeferredAttributeSpendTimer`, `scripts/Tests/LevelingTests.cs`).
+
+**Known limitation flagged to the user**: none of the new gump layouts/art IDs have been
+visually verified (I can only drive them over the wire protocol, not render them) - told the
+user explicitly to check in-game and report back if anything looks off, especially the
+Erebor-matched background/button art IDs (2200, 2151/2152) in the race dialogs.
+
+**Test coverage this pass**: `RaceTests` (3/3, including a REAL end-to-end stone
+double-click, not a test shortcut), `LevelSpendDialogTests` (3/3, new), plus full
+RaceTests/LevelingTests/ProfessionTests/LevelingIsolatedTests/GatheringTests regression
+(26/26) after each PR. `newbie_portals.def`'s stone stub, `Alchemy` skill id, and `profession_
+mage` defname are all real, pre-existing content - nothing new authored there besides the one
+`on=@dclick` trigger line.
+
 ## CURRENT STATE (2026-10-14, continued) — #168 FIXED and shipped (PR #171)
 
 User picked the real engine fix (not the narrower getter-coercion option, not an operational
