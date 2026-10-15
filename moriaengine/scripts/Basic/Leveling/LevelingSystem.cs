@@ -143,31 +143,47 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>Spends `pointsToSpend` attribute points (#129) into one of STR/DEX/INT/VIT,
-		/// validated against Player.AttributePointBudget. Requires a profession to be assigned at
-		/// all - mirrors Skill.Cap's own "no profession = cap 0" precedent, the user's own stated
-		/// design for this phase. Per-profession attribute RANGES (#135's planned strRange/
-		/// dexRange/intRange/vitRange ProfessionDef fields) aren't implemented yet - once they
-		/// are, this is the place to also validate the resulting stat value against them.</summary>
+		/// <summary>Spends `pointsToSpend` attribute points (#129/#156) into one of
+		/// STR/DEX/INT/VIT, validated against BOTH Player.AttributePointBudget (the overall pool)
+		/// AND the profession's own per-stat hard cap (ProfessionDef.GetStatRange's 3rd element) -
+		/// a player can have unspent budget left but still be unable to push one specific stat
+		/// any higher, same as Erebor's own `<eval tag.basestr>><basestats_<tag.class>_str_max>`
+		/// check in newbie_portals.scp. Requires a profession to be assigned at all - mirrors
+		/// Skill.Cap's own "no profession = cap 0" precedent, the user's own stated design for
+		/// this phase.</summary>
 		public static bool TrySpendAttributePoints(Player player, AttributeStat stat, int pointsToSpend) {
 			if ((player == null) || (pointsToSpend <= 0) || (player.Profession == null) ||
 				(player.AttributePointBudget < pointsToSpend)) {
 				return false;
 			}
+			int[] range = player.Profession.GetStatRange(stat);
+			int hardCap = (range.Length == 3) ? range[2] : short.MaxValue;
 			switch (stat) {
 				case AttributeStat.Str:
+					if ((player.Str + pointsToSpend) > hardCap) {
+						return false;
+					}
 					player.Str += (short) pointsToSpend;
 					player.StrPointsAllocated += pointsToSpend;
 					break;
 				case AttributeStat.Dex:
+					if ((player.Dex + pointsToSpend) > hardCap) {
+						return false;
+					}
 					player.Dex += (short) pointsToSpend;
 					player.DexPointsAllocated += pointsToSpend;
 					break;
 				case AttributeStat.Int:
+					if ((player.Int + pointsToSpend) > hardCap) {
+						return false;
+					}
 					player.Int += (short) pointsToSpend;
 					player.IntPointsAllocated += pointsToSpend;
 					break;
 				case AttributeStat.Vit:
+					if ((player.Vit + pointsToSpend) > hardCap) {
+						return false;
+					}
 					player.Vit += (short) pointsToSpend;
 					player.VitPointsAllocated += pointsToSpend;
 					break;
