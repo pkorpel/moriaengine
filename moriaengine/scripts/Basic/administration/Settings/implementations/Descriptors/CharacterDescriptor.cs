@@ -34,7 +34,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 		[Button("Kill")]
 		public static void Kill(object target) {
-			((Character) target).Kill();
+			((Character) target).InstaKill();
 		}
 
 		[Button("Resurrect")]

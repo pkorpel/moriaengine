@@ -155,6 +155,66 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>GM-only instant kill via target cursor (#192, matching Erebor's GM ".kill"):
+		/// asks who to kill, then kills the targeted character outright with a lightning visual
+		/// effect and sound - reuses Character.InstaKill() (scripts/Basic/CharClasses/
+		/// Character.cs), which already had a "//TODO effect?" placeholder for exactly this.
+		/// Real finding while building this: naming this command method "Kill" (matching
+		/// Character's own pre-existing "Kill" instance method 1:1) made ".kill" silently resolve
+		/// to self.Kill() directly - a GM typing ".kill" killed THEMSELVES with no target cursor
+		/// and no error of any kind, because GM-plevel commands are dispatched as LScript source
+		/// (Commands.InvokeCommand), whose member resolution on self takes priority over the
+		/// SteamFunction global-function table. Renamed Character's method to InstaKill to free
+		/// up the "Kill" command name rather than picking a different command name.</summary>
+		[SteamFunction]
+		public static void Kill(Player self) {
+			self.SysMessage("Target the character to kill.");
+			self.Target(SingletonScript<Targ_Kill>.Instance);
+		}
+
+		public class Targ_Kill : CompiledTargetDef {
+			protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
+				Character targetChar = targetted as Character;
+				if (targetChar == null) {
+					self.SysMessage("That is not a character.");
+					return TargetResult.Done;
+				}
+
+				EffectFactory.LightningEffect(targetChar);
+				targetChar.Sound((int) SoundNames.lightningstrike);
+				targetChar.InstaKill();
+				self.SysMessage("Killed " + targetChar.Name + ".");
+				return TargetResult.Done;
+			}
+		}
+
+		/// <summary>GM-only item orientation cycling via target cursor (#193, matching Erebor's GM
+		/// ".flip" - a native Sphere command, not a script): cycles the targeted item's Model
+		/// through its DUPEITEM group (AbstractItem.Flip -> AbstractItemDef.GetNextFlipModel), e.g.
+		/// a corner wall piece to its north-facing variant, for any item whose ItemDef content has
+		/// DUPEITEM entries wired up. Items with no DUPEITEM group simply don't change (Flip() is a
+		/// no-op in that case) - not every converted item in this engine's content still has its
+		/// original Sphere flip group, since the auto-converter preserved DUPEITEM only where
+		/// present in the source.</summary>
+		[SteamFunction]
+		public static void Flip(Player self) {
+			self.SysMessage("Target the item to flip.");
+			self.Target(SingletonScript<Targ_Flip>.Instance);
+		}
+
+		public class Targ_Flip : CompiledTargetDef {
+			protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
+				AbstractItem item = targetted as AbstractItem;
+				if (item == null) {
+					self.SysMessage("That is not an item.");
+					return TargetResult.Done;
+				}
+
+				item.Flip();
+				return TargetResult.Done;
+			}
+		}
+
 		//public static void DragonTileTargon(GameConn c, IPoint3D point, object targData) {
 		//    AbstractCharacter cre = c.CurCharacter;
 		//    Map map = cre.GetMap();
