@@ -23,6 +23,14 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 		public static void FixWeight(object target) {
 			((Item) target).FixWeight();
 		}
+
+		//#215/#217 - opens the dedicated attribute checkbox dialog (D_AttrList), same "button
+		//in .info opens a separate dialog" pattern TagHolderDescriptor already uses for
+		//Taglist/Timerlist, per explicit user request for a consistent shape.
+		[Button("Attributes")]
+		public static void Attributes(object target) {
+			D_AttrList.ShowFor((Player) Globals.SrcCharacter, (Item) target);
+		}
 	}
 
 	[ViewDescriptor(typeof(Container), "Container")]
