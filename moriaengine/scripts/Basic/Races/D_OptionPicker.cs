@@ -55,8 +55,6 @@ namespace SteamEngine.CompiledScripts {
 			this.AddImage(140, 200, 2200);
 			this.AddHtml(170, 180, 280, 24, "<CENTER>" + picker.Title + "</CENTER>", false, false);
 
-			string column1 = "";
-			string column2 = "";
 			for (int i = 0; i < picker.OptionLabels.Count; i++) {
 				int column = i / MaxPerColumn;
 				int row = i % MaxPerColumn;
@@ -64,15 +62,12 @@ namespace SteamEngine.CompiledScripts {
 				int y = FirstRowY + (row * RowHeight);
 				this.AddButton(x, y, 2151, 2152, FirstOptionButtonId + i, GumpButtonType.Reply, 0);
 
-				string entry = picker.OptionLabels[i] + "<br>";
-				if (column == 0) {
-					column1 += entry;
-				} else {
-					column2 += entry;
-				}
+				// One AddHtml per row, at the same y as its button - a single batched HTML
+				// block per column (<br>-joined) rendered each line shorter than RowHeight,
+				// so text visibly drifted upward relative to its button row by row.
+				int textX = (column == 0) ? Column1X + 40 : Column2X + 40;
+				this.AddHtml(textX, y, 110, RowHeight, picker.OptionLabels[i], false, false);
 			}
-			this.AddHtml(210, 215, 110, 160, column1, false, false);
-			this.AddHtml(365, 215, 110, 160, column2, false, false);
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {

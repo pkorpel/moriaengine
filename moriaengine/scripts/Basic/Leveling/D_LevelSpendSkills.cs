@@ -16,6 +16,8 @@
 */
 
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>Skill point-spend dialog (#156), opened from .explevel's new "Skills" button -
@@ -79,7 +81,7 @@ namespace SteamEngine.CompiledScripts {
 					AbstractSkillDef skillDef = relevantSkills[i];
 					int current = player.GetRealSkillValue(skillDef.Id);
 					int cap = profession.GetSkillCap(skillDef.Id);
-					this.AddLabel(20, y, 3, skillDef.PrettyDefname + ": " + current + " / " + cap);
+					this.AddLabel(20, y, 3, SkillDisplayName(skillDef) + ": " + FormatSkillValue(current) + " / " + FormatSkillValue(cap));
 					this.AddButton(320, y - 2, 2151, 2152, SkillButtonIdBase + skillDef.Id, GumpButtonType.Reply, 0);
 					y += 26;
 				}
@@ -87,7 +89,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
-			if (gr.PressedButton == CloseButtonId) {
+			// Button 0 is the real UO client signal for "closed via right-click" (not this
+			// dialog's own explicit Close button) - must also return without reopening, or a
+			// right-click just silently gets trapped back into the same dialog (#199).
+			if ((gr.PressedButton == CloseButtonId) || (gr.PressedButton == 0)) {
 				return;
 			}
 			Player player = (Player) gi.Cont;
@@ -98,6 +103,32 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			player.Dialog(player, this, args);
+		}
+
+		/// <summary>SkillDef.PrettyDefname is useless for display here - its primary Defname is
+		/// always "skill_&lt;id&gt;" (AbstractSkillDef.ParseDefnames always derives it from the
+		/// script header number; the readable "Skill_Anatomy" etc. from the script's own
+		/// DEFNAME= line becomes the Altdefname instead, same convention as other converted
+		/// content this session already hit, e.g. i_worldgem_bit). SkillName's own enum member
+		/// names are already clean ("AnimalLore") - just need a space before each internal
+		/// capital.</summary>
+		private static string SkillDisplayName(AbstractSkillDef skillDef) {
+			string raw = ((SkillName) skillDef.Id).ToString();
+			StringBuilder sb = new StringBuilder(raw.Length + 4);
+			for (int i = 0; i < raw.Length; i++) {
+				if ((i > 0) && char.IsUpper(raw[i]) && char.IsLower(raw[i - 1])) {
+					sb.Append(' ');
+				}
+				sb.Append(raw[i]);
+			}
+			return sb.ToString();
+		}
+
+		/// <summary>Skill values are stored internally *10 (classic UO convention - a trainable
+		/// skill can gain 0.1 at a time, max 1000 = 100.0%), so the raw int must never be shown
+		/// to the player directly.</summary>
+		private static string FormatSkillValue(int rawValue) {
+			return (rawValue / 10.0).ToString("F1", CultureInfo.InvariantCulture) + "%";
 		}
 	}
 }
