@@ -66,7 +66,45 @@ together or appeared in a `.def` line - `ATTR = attr_static|attr_magic` prints a
 `"attr_static, attr_magic"`. First test draft asserted the wrong order and failed; fixed
 the assertion, not the enum.
 
-**Next up**: #218 (death & corpse-drop: newbie/blessed/cursed/insured), then #219-225 in
+**#218 (death & corpse-drop: newbie/blessed/cursed/insured) - DONE, PR #227, merged.**
+Wired into `Item.CanFallToCorpse` (the exact `//TODO newbie flag etc.` hook already marked).
+`attr_newbie`/`attr_blessed` -> never falls. `attr_cursed` -> always falls, overrides the
+others. `attr_insured` -> protects once, consumed inside the same getter (safe to mutate
+state there - confirmed via grep that `Corpse.InitFromChar`'s death-handling pass is the
+ONLY other caller). Verified via a real `CauseDeath` end-to-end test with 5 backpack items,
+one per flag + a plain control.
+
+**#219 (generic item-decay system + attr_decay/attr_questitem) - DONE, PR #228, merged.**
+Built from scratch - `FlaggedRegion`'s own `flag_nodecay` was a toggle with nothing to
+toggle before this. `ItemDecaySystem` (`scripts/Basic/ItemClasses/ItemDecaySystem.cs`) is a
+single recurring `BoundTimer` on `Globals.Instance` (same idiom as `LightAndWeather.
+WorldClockTimer`) that sweeps `Thing.AllThings` each tick looking for `attr_decay`-flagged
+items currently lying loose on the ground (`Cont == null`); once
+`DecaySettings.decayIntervalMinutes` (new GM-tunable `.settings` category, "Item Decay")
+has elapsed since an item was first observed there, it's deleted. **Deliberate design
+choice**: a full periodic scan rather than a live per-item add/remove registry - avoids
+needing a separate re-registration hook for items reloaded from a save file mid-decay
+(a registry would silently "forget" them across a restart); cheap enough at this engine's
+scale. **Default policy (explicitly decided, not guessed per the issue's own ask)**:
+`attr_decay` is OFF by default for every item unless a `.def` `ATTR=` line or a GM
+explicitly sets it - matches the existing "incomplete config defaults to permissive"
+convention used elsewhere (empty `allowedWeaponTypes` = unrestricted, etc.) - nothing
+already in the world starts decaying just because this feature now exists.
+`attr_questitem` and a region's `flag_nodecay` (needed adding `RegionFlags.NoDecay`/
+`FlaggedRegion.Flag_NoDecay` - the raw bit was already parsed by `LoadLine` but never
+exposed as a readable property before this) both fully exempt an item - checked fresh
+every sweep, so removing either exemption later starts the clock cleanly from that point,
+it doesn't retroactively "owe" elapsed time. Verified with a real end-to-end test (shrunk
+interval/sweep cadence via a `SpeedUpSweepForTest` test hook, same precedent as
+`LightAndWeather.SpeedUpClockForTest`): a plain decay-flagged ground item actually
+disappears, while a quest-item-exempt one, a never-flagged one, and a decay-flagged one
+sitting in a backpack all survive the same wait. **Known gap, not covered by a test**: the
+`flag_nodecay` region exemption itself - constructing an ad-hoc region at runtime in a
+shared test fixture was already flagged as risky by the V-5 region-enforcement work (#73,
+deliberately deferred for the same reason) - the check is a straightforward 3-line
+conditional, left unverified by an automated test on the same reasoning, not overlooked.
+
+**Next up**: #220 (movement & placement: move_never/move_always/static), then #221-225 in
 order, each following the same raise-issue-first/implement/test/ship/close workflow.
 
 ---

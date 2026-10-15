@@ -39,6 +39,8 @@ namespace SteamEngine.Regions {
 
 		Underground = 0x0800, Dungeon = Underground,
 
+		NoDecay = 0x1000,
+
 		Safe = 0x02000,
 		Guarded = 0x04000,
 		NoPvp = 0x08000,
@@ -125,6 +127,11 @@ namespace SteamEngine.Regions {
 		/// <summary>Explicitly overrides Safe/Guarded/NoPvp to allow consensual PvP (e.g. a dueling pit).</summary>
 		public bool Flag_Arena {
 			get { return this.HasInheritedFlag(RegionFlags.Arena); }
+		}
+
+		/// <summary>Items inside this region never decay, regardless of their own attr_decay flag (#219).</summary>
+		public bool Flag_NoDecay {
+			get { return this.HasInheritedFlag(RegionFlags.NoDecay); }
 		}
 
 		public override TriggerResult On_Enter(AbstractCharacter ch, bool forced) {

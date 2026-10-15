@@ -56,6 +56,41 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#219: a plain attr_decay ground item actually decays away after the
+		/// configured interval elapses, while attr_questitem (exempt), no-flag (never eligible),
+		/// and attr_decay-but-contained (paused while in a backpack) items all survive the same
+		/// wait. Uses TestSetupDecayItems' own speed-up (0.6s decay interval, 1s sweep cadence)
+		/// so this doesn't need to wait out the real 60-minute production defaults.</summary>
+		[Fact]
+		public void OnlyEligibleGroundItemDecaysAway() {
+			using (var client = this.ConnectLoginAndCreateCharacter("AttrDecayTester")) {
+				client.SendSpeech(".TestSetupDecayItems");
+				this.AssertSeen("ATTR_DECAY_SETUP:", TimeSpan.FromSeconds(10));
+				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_DECAY_SETUP:");
+				uint decayPlain = ExtractUidAfter(setupLine, "decayPlain=");
+				uint decayQuestItem = ExtractUidAfter(setupLine, "decayQuestItem=");
+				uint noDecayFlag = ExtractUidAfter(setupLine, "noDecayFlag=");
+				uint decayButContained = ExtractUidAfter(setupLine, "decayButContained=");
+
+				//2 sweep ticks (1s cadence) after the 0.6s decay interval - comfortably enough
+				//for the sweep to both notice the ground items and then delete the eligible one.
+				Thread.Sleep(3000);
+
+				Assert.False(this.ReportDecayItemExists(client, decayPlain), "decayPlain should have decayed away.");
+				Assert.True(this.ReportDecayItemExists(client, decayQuestItem), "decayQuestItem (exempt) should still exist.");
+				Assert.True(this.ReportDecayItemExists(client, noDecayFlag), "noDecayFlag (never eligible) should still exist.");
+				Assert.True(this.ReportDecayItemExists(client, decayButContained), "decayButContained (paused while contained) should still exist.");
+			}
+		}
+
+		private bool ReportDecayItemExists(TestGameClient client, uint uid) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestReportDecayItemExists " + uid);
+			this.AssertSeenSince("ATTR_DECAY_EXISTS: uid=" + uid, mark, TimeSpan.FromSeconds(10));
+			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_DECAY_EXISTS: uid=" + uid);
+			return line.EndsWith("exists=True", StringComparison.Ordinal);
+		}
+
 		/// <summary>Real end-to-end flow: ".AttrList" target cursor opens D_AttrList, submitting
 		/// it with attr_newbie's and attr_static's checkboxes selected (and nothing else) must
 		/// leave exactly those two set on the targeted item, no others.</summary>
