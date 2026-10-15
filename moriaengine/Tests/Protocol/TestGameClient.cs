@@ -521,14 +521,44 @@ namespace SteamEngine.Tests.Protocol {
 		/// confirmation dialog in this codebase actually needs from a response.
 		/// </summary>
 		public void SendGumpResponse(int gumpUid, int buttonId) {
-			byte[] packet = new byte[23];
+			this.SendGumpResponse(gumpUid, buttonId, null);
+		}
+
+		/// <summary>Same as the 2-arg overload, but also carries text-entry responses (e.g. for
+		/// D_RaceClassStats's #176 STR/DEX/INT/VIT fields) - GumpMenuSelectionInPacket.
+		/// ReadDynamicPart's own entry format: per entry, id(ushort) + char-count(ushort) +
+		/// that many UTF16-BE characters (NOT bytes - the server multiplies by 2 itself).</summary>
+		public void SendGumpResponse(int gumpUid, int buttonId, IReadOnlyDictionary<int, string> textEntries) {
+			int entryCount = (textEntries != null) ? textEntries.Count : 0;
+			byte[][] entryTextBytes = new byte[entryCount][];
+			int entriesSize = 0;
+			if (textEntries != null) {
+				int i = 0;
+				foreach (string text in textEntries.Values) {
+					entryTextBytes[i] = Encoding.BigEndianUnicode.GetBytes(text);
+					entriesSize += 4 + entryTextBytes[i].Length; // id(2) + charCount(2) + text bytes
+					i++;
+				}
+			}
+			byte[] packet = new byte[23 + entriesSize];
 			packet[0] = 0xB1;
-			EncodeUShortBigEndian(23, packet, 1);
+			EncodeUShortBigEndian(packet.Length, packet, 1);
 			// bytes 3-6: focus uid, skipped by the server, left zero.
 			EncodeIntBigEndian(gumpUid, packet, 7);
 			EncodeIntBigEndian(buttonId, packet, 11);
 			EncodeIntBigEndian(0, packet, 15); // switchesCount
-			EncodeIntBigEndian(0, packet, 19); // entriesCount
+			EncodeIntBigEndian(entryCount, packet, 19);
+			int offset = 23;
+			if (textEntries != null) {
+				int i = 0;
+				foreach (KeyValuePair<int, string> entry in textEntries) {
+					EncodeUShortBigEndian(entry.Key, packet, offset);
+					EncodeUShortBigEndian(entryTextBytes[i].Length / 2, packet, offset + 2);
+					Array.Copy(entryTextBytes[i], 0, packet, offset + 4, entryTextBytes[i].Length);
+					offset += 4 + entryTextBytes[i].Length;
+					i++;
+				}
+			}
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
