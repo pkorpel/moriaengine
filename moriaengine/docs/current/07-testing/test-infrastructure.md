@@ -101,6 +101,27 @@ registration (`SendGumpResponse`'s switches-aware overload, `ReadSystemMessage`,
 test. If a new test needs to decode or send a packet shape that doesn't exist yet, add
 it here rather than hand-rolling bytes inline in the test itself.
 
+**Both clients' sockets have a 15-second default `ReadTimeout`**, set once in each
+constructor. Real bug found and fixed here: this was missing entirely until it was - every
+read in `TestGameClient.ReadPacketPayload` computes its own per-call deadline and sets
+`ReadTimeout` accordingly, but the *earlier* login/character-list phase
+(`TestGameClient.ReadOneCompressedFrame`/`ReadCharacterList`, and every read helper in
+`TestLoginClient`) called `stream.Read()`/`ReadByte()` directly with no timeout at all,
+relying on `NetworkStream`'s own default of `Timeout.Infinite`. Since
+`ConnectLoginAndCreateCharacter`'s retry loop creates a fresh client (and so a fresh
+stream) on every attempt, this unbounded wait was re-armed on every single retry too - if
+the server was ever slow/unresponsive during exactly that window, the read blocked
+forever, not just a long time. This caused two separate multi-minute test "hangs" in one
+session that had no explanation anywhere else, since every *other* wait in the suite was
+already correctly bounded. The resulting `IOException` on timeout is converted to
+`InvalidOperationException` at the call sites the existing `ConnectLoginAndCreateCharacter`/
+`WaitForServerListingAndGetRedirectPort` retry loops already catch - deliberately **not**
+inside the shared `ReadOneCompressedFrame`/`FillQueueFromOneFrame` primitive itself, since
+that's also used by `ReadPacketPayload` deep inside real test assertions, which already has
+its own `IOException` -> `TimeoutException` conversion that some tests explicitly
+`Assert.Throws` against (converting inside the shared primitive shadowed that and broke
+those assertions - a real regression caught by a full-suite run before this shipped).
+
 ## Account and character conventions
 
 - `"protocoltest"` is the conventional account name most full-boot tests log in as -

@@ -20,10 +20,27 @@ namespace SteamEngine.Tests.Protocol {
 		private readonly Queue<(byte Id, byte[] Payload)> packetQueue = new Queue<(byte, byte[])>();
 		private readonly List<byte> seenIds = new List<byte>();
 
+		/// <summary>Default read timeout for any socket read that doesn't compute its own
+		/// deadline (currently just ReadOneCompressedFrame, used by ReadCharacterList during
+		/// the connect-and-create-character handshake). Real bug found and fixed here: this
+		/// stream previously had NO read timeout at all until the first ReadPacketPayload call
+		/// set one - a fresh client's very first read (login -> character list, before
+		/// ReadPacketPayload ever runs) relied on NetworkStream's own default of
+		/// Timeout.Infinite. If the server was ever slow/unresponsive during exactly that
+		/// window (sandbox CPU contention, a slow boot), the read blocked forever, not just a
+		/// long time - and since ConnectLoginAndCreateCharacter's own retry loop creates a
+		/// brand-new TestGameClient (and so a brand-new NetworkStream) on every attempt, this
+		/// same unbounded wait was re-armed on every single retry too. Confirmed as the real
+		/// cause of two separate multi-minute test "hangs" this session that had no other
+		/// explanation (every other wait in the test code itself was already correctly
+		/// bounded).</summary>
+		private const int DefaultReadTimeoutMillis = 15000;
+
 		public TestGameClient(string host, int port) {
 			this.tcp = new TcpClient();
 			this.tcp.Connect(host, port);
 			this.stream = this.tcp.GetStream();
+			this.stream.ReadTimeout = DefaultReadTimeoutMillis;
 		}
 
 		/// <summary>
@@ -192,7 +209,22 @@ namespace SteamEngine.Tests.Protocol {
 
 		/// <summary>Reads one Huffman-compressed frame and returns the decoded character names (nulls for empty slots).</summary>
 		public string[] ReadCharacterList() {
-			byte[] decoded = ReadOneCompressedFrame();
+			byte[] decoded;
+			try {
+				decoded = ReadOneCompressedFrame();
+			} catch (IOException e) {
+				// InvalidOperationException, not TimeoutException, deliberately - every
+				// existing ConnectLoginAndCreateCharacter retry loop across the test suite only
+				// catches InvalidOperationException (matching the "connection closed" throw just
+				// below). This conversion lives HERE, not inside ReadOneCompressedFrame itself,
+				// since that method is also called via FillQueueFromOneFrame/ReadPacketPayload
+				// (deep inside real test assertions, after a connection is already established)
+				// - THAT path already has its own existing IOException -> TimeoutException
+				// conversion that some tests explicitly assert on (Assert.Throws<TimeoutException>)
+				// and must keep seeing a raw, unconverted IOException to keep working.
+				throw new InvalidOperationException("Did not receive a full character-list frame within " +
+					DefaultReadTimeoutMillis + "ms.", e);
+			}
 
 			if (decoded.Length < 3 || decoded[0] != 0xA9) {
 				string detail = decoded.Length == 0 ? "no data" : "0x" + decoded[0].ToString("x2");
@@ -213,6 +245,14 @@ namespace SteamEngine.Tests.Protocol {
 			return names;
 		}
 
+		/// <summary>Deliberately does NOT catch/convert IOException (the ReadTimeout firing) -
+		/// this method is shared by two callers with DIFFERENT exception-type expectations:
+		/// ReadCharacterList (the login/retry phase, wants InvalidOperationException - see its
+		/// own catch) and FillQueueFromOneFrame/ReadPacketPayload (deep inside real test
+		/// assertions, which already converts IOException -> TimeoutException itself, and
+		/// which some tests explicitly Assert.Throws against). Converting here would have
+		/// shadowed that existing conversion for the second caller - a real regression caught
+		/// by a full-suite run after an earlier version of this fix did exactly that.</summary>
 		private byte[] ReadOneCompressedFrame() {
 			var buffer = new List<byte>();
 			while (true) {
