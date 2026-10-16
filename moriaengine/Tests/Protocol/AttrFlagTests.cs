@@ -66,8 +66,10 @@ namespace SteamEngine.Tests.Protocol {
 		/// <summary>#219: a plain attr_decay ground item actually decays away after the
 		/// configured interval elapses, while attr_questitem (exempt), no-flag (never eligible),
 		/// and attr_decay-but-contained (paused while in a backpack) items all survive the same
-		/// wait. Uses TestSetupDecayItems' own speed-up (0.6s decay interval, 1s sweep cadence)
-		/// so this doesn't need to wait out the real 60-minute production defaults.</summary>
+		/// wait. TestSetupDecayItems shrinks DecaySettings.itemDecayMinutes to 0.6 real seconds
+		/// so this doesn't need to wait out the real 5-minute production default - each item's
+		/// own per-item timer reads that setting the moment it's scheduled (#219, redesigned
+		/// away from a global sweep).</summary>
 		[Fact]
 		public void OnlyEligibleGroundItemDecaysAway() {
 			using (var client = this.ConnectLoginAndCreateCharacter("AttrDecayTester")) {
@@ -79,9 +81,9 @@ namespace SteamEngine.Tests.Protocol {
 				uint noDecayFlag = ExtractUidAfter(setupLine, "noDecayFlag=");
 				uint decayButContained = ExtractUidAfter(setupLine, "decayButContained=");
 
-				//2 sweep ticks (1s cadence) after the 0.6s decay interval - comfortably enough
-				//for the sweep to both notice the ground items and then delete the eligible one.
-				Thread.Sleep(3000);
+				//#219 (redesigned) - each item's own real-time timer fires at exactly 0.6s now
+				//(no sweep cadence to wait out), a short margin is plenty.
+				Thread.Sleep(1500);
 
 				Assert.False(this.ReportDecayItemExists(client, decayPlain), "decayPlain should have decayed away.");
 				Assert.True(this.ReportDecayItemExists(client, decayQuestItem), "decayQuestItem (exempt) should still exist.");
@@ -95,6 +97,55 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendSpeech(".TestReportDecayItemExists " + uid);
 			this.AssertSeenSince("ATTR_DECAY_EXISTS: uid=" + uid, mark, TimeSpan.FromSeconds(10));
 			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_DECAY_EXISTS: uid=" + uid);
+			return line.EndsWith("exists=True", StringComparison.Ordinal);
+		}
+
+		/// <summary>#219 (redesigned, per explicit user request): a player's own corpse and an
+		/// NPC's corpse must decay at two independently-configurable rates (Corpse.Owner is
+		/// non-null only for a player's death - see Corpse.InitFromChar). Uses deliberately
+		/// different tiny rates (NPC 0.6s, player 1.8s) and checks existence at an intermediate
+		/// checkpoint (after the NPC rate elapsed, before the player rate did) to prove the
+		/// RIGHT rate was picked for each, not just that corpses decay at all.</summary>
+		[Fact]
+		public void PlayerAndNpcCorpsesDecayAtDifferentRates() {
+			using (var killer = this.ConnectLoginAndCreateCharacter(AccountC, "CorpseRateKiller")) {
+				//no .TestSetGmOn needed here, unlike #224's .Reveal test - every command used
+				//below is "Test"-prefixed, which bypasses CommandsAuthorization entirely
+				//regardless of plevel (CauseDeath itself needs no special authority either).
+				int markRates = this.fixture.GameOutputSnapshot().Length;
+				killer.SendSpeech(".TestSetupCorpseDecayRates 0.01,0.03"); //npc=0.6s, player=1.8s
+				this.AssertSeenSince("ATTR_CORPSE_RATES_SET", markRates, TimeSpan.FromSeconds(10));
+
+				int markNpc = this.fixture.GameOutputSnapshot().Length;
+				killer.SendSpeech(".TestKillNpcAndReportCorpse");
+				this.AssertSeenSince("ATTR_CORPSE_SETUP:", markNpc, TimeSpan.FromSeconds(10));
+				uint npcCorpseUid = ExtractUidAfter(LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_CORPSE_SETUP:"), "uid=");
+
+				using (var victim = this.ConnectLoginAndCreateCharacter(AccountD, "CorpseRateVictim")) {
+					uint victimUid = this.ReportMyUid(victim);
+
+					int markPlayer = this.fixture.GameOutputSnapshot().Length;
+					killer.SendSpeech(".TestKillPlayerAndReportCorpse " + victimUid);
+					this.AssertSeenSince("ATTR_CORPSE_SETUP:", markPlayer, TimeSpan.FromSeconds(10));
+					uint playerCorpseUid = ExtractUidAfter(LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_CORPSE_SETUP:"), "uid=");
+
+					//past the NPC's 0.6s rate, well before the player's 1.8s rate
+					Thread.Sleep(1100);
+					Assert.False(this.ReportThingExists(killer, npcCorpseUid), "NPC corpse should have decayed by its own (shorter) rate.");
+					Assert.True(this.ReportThingExists(killer, playerCorpseUid), "Player corpse should still be here - not yet past its own (longer) rate.");
+
+					//now past the player's 1.8s rate too
+					Thread.Sleep(1200);
+					Assert.False(this.ReportThingExists(killer, playerCorpseUid), "Player corpse should have decayed by now.");
+				}
+			}
+		}
+
+		private bool ReportThingExists(TestGameClient client, uint uid) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestReportThingExists " + uid);
+			this.AssertSeenSince("ATTR_THING_EXISTS: uid=" + uid, mark, TimeSpan.FromSeconds(10));
+			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_THING_EXISTS: uid=" + uid);
 			return line.EndsWith("exists=True", StringComparison.Ordinal);
 		}
 

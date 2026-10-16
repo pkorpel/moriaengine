@@ -104,8 +104,8 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				this.attributes &= ~flag;
 			}
-			if ((flag == ItemAttributes.attr_decay) && value) {
-				ItemDecaySystem.EnsureSweepRunning(); //#219 - lazily self-installs on first real use
+			if ((flag == ItemAttributes.attr_decay) || (flag == ItemAttributes.attr_questitem)) {
+				ItemDecaySystem.ScheduleOrCancel(this); //#219 - re-evaluate the per-item decay timer
 			}
 			if ((flag == ItemAttributes.attr_static) || (flag == ItemAttributes.attr_move_never) || (flag == ItemAttributes.attr_move_always)) {
 				this.RecomputeNonMovable(); //#220
@@ -263,13 +263,36 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_Create() {
 			base.On_Create();
 			this.attributes = this.TypeDef.AttributesDefault;
-			if (this.HasAttribute(ItemAttributes.attr_decay)) {
-				ItemDecaySystem.EnsureSweepRunning(); //#219
-			}
+			//#219 - re-evaluate now that attributes are seeded. On_EnterRegion (fired earlier,
+			//during ThingDef.Create's own PutOnGround step, BEFORE Trigger_Create/On_Create
+			//runs) already tried once and found nothing eligible yet, since this.attributes
+			//was still its zero default at that point - this call is what actually catches a
+			//".def"-configured attr_decay default for an item created directly on the ground.
+			ItemDecaySystem.ScheduleOrCancel(this);
 			this.RecomputeNonMovable(); //#220
 			if (this.HasAttribute(ItemAttributes.attr_invis)) {
 				this.Flag_Invisible = true; //#224
 			}
+		}
+
+		/// <summary>#219 - the real "item placed on the ground" hook (fires for creation
+		/// directly onto the ground, drops, monster-death loot, anything that lands Cont at
+		/// null) - starts the decay clock if eligible. Confirmed via direct reading of
+		/// ThingDef.Create/AbstractItem.Cont/MakeLimbo that every ground-landing path goes
+		/// through this, not just the common ones.</summary>
+		public override void On_EnterRegion(ItemOnGroundArgs args) {
+			base.On_EnterRegion(args);
+			ItemDecaySystem.ScheduleOrCancel(this);
+		}
+
+		/// <summary>#219 - the real "item just left the ground" hook (about to enter a
+		/// container/character). Cancels unconditionally rather than re-evaluating eligibility -
+		/// at the point this fires, this.Cont is still null (Trigger_LeaveGround's own
+		/// precondition), so ScheduleOrCancel's own "is this on the ground" check can't be
+		/// trusted yet; this item is leaving the ground no matter what, full stop.</summary>
+		public override void On_LeaveRegion(ItemOnGroundArgs args) {
+			base.On_LeaveRegion(args);
+			ItemDecaySystem.Cancel(this);
 		}
 
 		/// <summary>

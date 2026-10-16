@@ -108,6 +108,12 @@ namespace SteamEngine.CompiledScripts {
 					this.equippedItems[equipped] = equipped;
 				}
 			}
+
+			//#219 - re-evaluate now that Owner is known. On_EnterRegion already fired once
+			//during this corpse's own Create() call (before InitFromChar ever ran, so before
+			//this.owner was set above) and scheduled an NPC-rate timer by default - this call
+			//corrects that to the player rate when the corpse turns out to be a player's.
+			ItemDecaySystem.ScheduleOrCancel(this);
 		}
 
 		public void ReturnStuffToChar(Character resurrectedChar) {
