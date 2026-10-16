@@ -248,8 +248,51 @@ possibly-sequential Facts; this one's about concurrent connections regardless of
 count. Fixed by spreading simultaneous connections within one Fact across different account
 constants (reusing the same constants across different, non-overlapping Facts is still fine).
 
-**Next up**: #224 (visibility & identification: attr_invis/attr_identified), then #225 in
-order, each following the same raise-issue-first/implement/test/ship/close workflow.
+**#224 (visibility & identification: attr_invis/attr_identified) - DONE, PR #234, merged.**
+`attr_invis` writes to the pre-existing `Flag_Invisible` (its only write path ever, exactly
+as the issue said). The actual per-viewer exception list lives in `Character.
+CanSeeVisibility(Item target)` (`scripts/Basic/CharClasses/Character.cs`, already existed,
+already had a blanket "only GMs see invisible items" rule) - extended to `this.IsGM ||
+target.IsSeenBy(this)`, where `Item.IsSeenBy`/`GrantVisibilityTo`/`RevokeVisibilityFrom` use
+a dynamically-keyed `TagKey.Acquire("_seenBy_" + viewerUid)` per viewer, matching real
+Sphere's own `TAG.SeenBy_[CharUID]` pattern exactly (per the issue's explicit instruction
+not to invent a different one). New player-facing `.Reveal` command (item-then-character
+2-step target chain, `scripts/Basic/ItemClasses/ItemVisibilityCommands.cs`) grants a
+specific character visibility - first-ever 2-step target chain in this codebase (one
+`On_TargonThing` calling `self.Target(...)` again itself to arm a second step), confirmed
+safe by reading `CompiledTargetDef`'s/`GameState.HandleTarget`'s own dispatch code directly
+rather than assuming.
+
+`attr_identified` ties into #222's name-prefix mechanism (per the issue's own "ties loosely
+into whatever magic/quality display #222 builds... keep this shallow" instruction, not a
+new Identification-skill mechanic): `attr_exceptional`'s prefix always shows (a visible
+craftsmanship mark, not a hidden magical property - matches real UO); the other 4 quality
+flags' prefixes now stay hidden until `attr_identified` is also set. Updated #222's own
+existing test to also set `attr_identified` on its magic/enchanted/imbued/reforged cases
+(this is an intentional behavior change from #222, not a regression) and added a new
+unidentified-magic-item case confirming the prefix really does stay hidden without it.
+
+**Two real test-authoring bugs found and fixed, both worth remembering**:
+1. **`HandleTarget` (`GameCore/Networking/GameState.cs`) checks `self.CanSeeForUpdate(thing)`
+   BEFORE invoking any target handler at all** - a non-GM character literally cannot target
+   their own invisible item (or anything else they can't see) via the real target-cursor
+   protocol, confirmed by reading the dispatch code directly rather than assuming the
+   handler would at least get CALLED. The item's own OWNER needed to be a real GM
+   themselves to even initiate `.Reveal` on their own invisible creation.
+2. **`TestSetGmOn`'s `PLevel = MaxPLevel` only reaches real GM level on the server's
+   literal first-ever account** - `MaxPLevel` is auto-elevated ONLY for that one account
+   (confirmed earlier this session for #223 too, re-surfaced here since this was the first
+   time a NON-first account needed genuine GM authority for a command-authorization check,
+   not just an `IsGM`-flag-based gameplay check). `SocialTests.TestPromoteToGM` (its own
+   `maxPlevel` field override via reflection) is the account-order-independent fix - use
+   that, not `TestSetGmOn`, whenever a non-first-account test character needs to pass a
+   REAL `CommandsAuthorization` check (as opposed to just `Character.IsGM` reads elsewhere,
+   which `TestSetGmOn` is sufficient for).
+
+**Next up**: #225 (door state attr_opened) - the issue itself flags this as "likely
+redundant" with existing door tracking, needs investigating BEFORE building anything; may
+end up closed as not-planned with an explanatory comment if genuinely redundant. This is
+the last ATTR sub-issue - #215 (tracking) should close once #225 resolves either way.
 
 ---
 
