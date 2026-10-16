@@ -121,31 +121,45 @@ namespace SteamEngine.CompiledScripts {
 	public partial class NPCDef {
 		private static readonly TagKey aggroModeTK = TagKey.Acquire("_aggroMode_");
 
+		/// <summary>#265: a save/reload cycle can retype this tag from the real AggroMode enum
+		/// to a plain boxed int (same root-cause class as #168's TamingDifficulty double->int
+		/// retyping) - #168's own fix (AbstractDef.isLoadingFromScript, PR #171) prevents NEW
+		/// corruption from being written going forward, but can't retroactively fix an ALREADY-
+		/// corrupted snapshot already sitting in a long-lived server's saves/ history, which
+		/// then keeps getting faithfully reloaded (save-recovery runs AFTER .def loading, so it
+		/// overwrites the correct freshly-parsed value). Coercing a numerically-valid int back
+		/// into the enum here fixes this regardless of what's sitting in old save data, instead
+		/// of requiring every affected server operator to go hunt down and delete a stale
+		/// snapshot file.</summary>
 		public AggroMode AggroMode {
 			get {
 				object tag = this.GetTag(aggroModeTK);
 				if (tag is AggroMode mode) {
 					return mode;
 				}
-				Console.WriteLine("AGGRO_DIAG[NPCDef.get_AggroMode FALLBACK]: def=" + this.Defname +
-					" tag=" + (tag ?? "null") + " tagType=" + (tag?.GetType().FullName ?? "null") +
-					" -> defaulting to Calm");
+				if ((tag is int intTag) && Enum.IsDefined(typeof(AggroMode), intTag)) {
+					return (AggroMode) intTag;
+				}
 				return AggroMode.Calm;
 			}
 			set {
-				Console.WriteLine("AGGRO_DIAG[NPCDef.set_AggroMode]: def=" + this.Defname + " -> " + value);
 				this.SetTag(aggroModeTK, value);
 			}
 		}
 
 		private static readonly TagKey tamingDifficultyTK = TagKey.Acquire("_tamingDifficulty_");
 
-		/// <summary>Minimum effective AnimalTaming skill needed to tame this NPC type (see TamingSkillDef), on the classic 0-1000 permille scale matching CheckSuccess's difficulty parameter. Negative (the default) means not tameable at all.</summary>
+		/// <summary>Minimum effective AnimalTaming skill needed to tame this NPC type (see TamingSkillDef), on the classic 0-1000 permille scale matching CheckSuccess's difficulty parameter. Negative (the default) means not tameable at all.
+		/// Also coerces a plain int tag (#265 - same vulnerability as AggroMode above, for the
+		/// exact property #168 originally found this bug on) instead of silently discarding it.</summary>
 		public double TamingDifficulty {
 			get {
 				object tag = this.GetTag(tamingDifficultyTK);
 				if (tag is double difficulty) {
 					return difficulty;
+				}
+				if (tag is int intTag) {
+					return intTag;
 				}
 				return -1;
 			}
@@ -237,14 +251,11 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (param == "aggromode") {
-				Console.WriteLine("AGGRO_DIAG[NPCDef.LoadScriptLine]: def=" + this.Defname + " filename=" + filename + " line=" + line + " args='" + args + "'");
 				AggroMode mode;
 				if (Enum.TryParse(args, true, out mode)) {
 					this.AggroMode = mode;
-					Console.WriteLine("AGGRO_DIAG[NPCDef.LoadScriptLine]: def=" + this.Defname + " parsed OK -> " + mode + " readback=" + this.AggroMode);
 				} else {
 					Logger.WriteWarning(filename, line, "aggromode '" + args + "' is not a known AggroMode value.");
-					Console.WriteLine("AGGRO_DIAG[NPCDef.LoadScriptLine]: def=" + this.Defname + " FAILED to parse '" + args + "'");
 				}
 				return;
 			}
@@ -303,13 +314,12 @@ namespace SteamEngine.CompiledScripts {
 				if (tag is AggroMode mode) {
 					return mode;
 				}
-				Console.WriteLine("AGGRO_DIAG[NPC.get_AggroMode FALLBACK]: uid=" + this.Uid + " defname=" + this.Def.Defname +
-					" tag=" + (tag ?? "null") + " tagType=" + (tag?.GetType().FullName ?? "null") +
-					" -> defaulting to Calm");
+				if ((tag is int intTag) && Enum.IsDefined(typeof(AggroMode), intTag)) {
+					return (AggroMode) intTag; //defensive coercion, see NPCDef.AggroMode's own doc comment (#265)
+				}
 				return AggroMode.Calm;
 			}
 			set {
-				Console.WriteLine("AGGRO_DIAG[NPC.set_AggroMode]: uid=" + this.Uid + " defname=" + this.Def.Defname + " -> " + value);
 				this.SetTag(instanceAggroModeTK, value);
 			}
 		}
@@ -338,9 +348,7 @@ namespace SteamEngine.CompiledScripts {
 			NPCAiTimer.EnsureInstalled(this);
 
 			NPCDef def = (NPCDef) this.Def;
-			Console.WriteLine("AGGRO_DIAG[NPC.On_Create before seed]: uid=" + this.Uid + " defname=" + def.Defname + " def.AggroMode=" + def.AggroMode);
 			this.AggroMode = def.AggroMode;
-			Console.WriteLine("AGGRO_DIAG[NPC.On_Create after seed]: uid=" + this.Uid + " defname=" + def.Defname + " this.AggroMode=" + this.AggroMode);
 			this.ExperienceReward = def.RollExperienceReward();
 
 			IMovementSettings template = def.DefaultMovementSettings;
