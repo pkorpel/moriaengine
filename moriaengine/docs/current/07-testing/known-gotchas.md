@@ -132,6 +132,20 @@ above) and a quoted literal would arrive containing the quote characters themsel
 Whether a given test command needs quoting depends on which parser its caller's account
 routes through, not on the command itself.
 
+## A literal negative-number argument fails to parse on an elevated account
+
+`.SomeCommand -1` on an elevated (GM-plevel) account - the full-LScript-parser path -
+fails outright with a parse error (`unexpected token " -" <OP_SUB>, expected <COMEOL>`),
+not a silent misbehavior like the two gotchas above. Found while writing a test that
+passed a `Realm` enum's own underlying value (`Mordor = -1`) as a bare command argument.
+`SimpleCommandParser` (below-GM-plevel accounts) has no such problem - this is specific
+to the full parser's bareword-call-without-parens grammar not accepting a leading unary
+minus in that position.
+
+Fix: don't pass a literal negative number as a GM command argument in a test. Pass a
+short word instead (e.g. `"G"`/`"M"` rather than `1`/`-1`) - single letters are also safe
+from the bareword-defname-collision gotcha above, no need to quote them.
+
 ## A command string colliding with a property/method name silently no-ops
 
 A `[SteamFunction("Name")]` command string that happens to match an instance property or

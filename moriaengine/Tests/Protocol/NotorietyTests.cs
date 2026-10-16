@@ -89,6 +89,77 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Regression for a real user-reported bug: the health-bar/status-overlay
+		/// notoriety color (DrawObjectOutPacket's highlight byte, GetHighlightColorFor) was
+		/// already correctly rendering blue/red for Gondor/Mordor, but the SEPARATE floating
+		/// overhead NAME text from a single click (a different packet, with its own explicit
+		/// hue field the client does NOT derive from notoriety itself) stayed uncolored -
+		/// Thing.On_Click/On_AosClick always hardcoded hue 0. Fixed by Character.On_Click/
+		/// On_AosClick overrides using the same GetHighlightColorFor result, converted to the
+		/// separate hue value via Notoriety.GetNameHue. Covers both the real OSI hue values
+		/// (0x0059 blue/Innocent, 0x0022 red/Murderer, matching ServUO's own reference Notoriety
+		/// hue table) and both possible response packets (0xAE/0xC1 - see
+		/// TestGameClient.ReadNameMessageHue).</summary>
+		[Fact]
+		public void SingleClickNameTextMatchesRealmNotoriety() {
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountA, "NameHueChecker")) {
+				int markGondor = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSpawnRealmNpc G"); // Realm.Gondor
+				this.AssertSeenSince("REALM_NPC_SPAWNED:", markGondor, TimeSpan.FromSeconds(10));
+				uint gondorUid = ExtractNpcUid(this.fixture.GameOutputSnapshot(), markGondor);
+
+				client.SendSingleClick(gondorUid);
+				int gondorHue = client.ReadNameMessageHue(TimeSpan.FromSeconds(10));
+				Assert.Equal(0x0059, gondorHue);
+
+				int markMordor = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSpawnRealmNpc M"); // Realm.Mordor
+				this.AssertSeenSince("REALM_NPC_SPAWNED:", markMordor, TimeSpan.FromSeconds(10));
+				uint mordorUid = ExtractNpcUid(this.fixture.GameOutputSnapshot(), markMordor);
+
+				client.SendSingleClick(mordorUid);
+				int mordorHue = client.ReadNameMessageHue(TimeSpan.FromSeconds(10));
+				Assert.Equal(0x0022, mordorHue);
+			}
+		}
+
+		/// <summary>User-requested feature (deliberately not real OSI behavior - see
+		/// Notoriety.GetHighlightColor's own comment): a wild monster (AggroMode.Hostile)
+		/// renders orange (HighlightColor.Enemy, hue 0x0090), distinct from a Mordor player's
+		/// red, on both the health bar and the single-click name text.</summary>
+		[Fact]
+		public void SingleClickNameTextShowsHostileMonsterAsOrange() {
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountA, "MonsterColorChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSpawnHostileMonster");
+				Assert.True(this.fixture.WaitForGameOutputSince("HOSTILE_MONSTER_SPAWNED:", mark, TimeSpan.FromSeconds(10)));
+				uint monsterUid = ExtractNpcUid(this.fixture.GameOutputSnapshot(), mark, "HOSTILE_MONSTER_SPAWNED: uid=");
+
+				byte highlightByte = client.ReadHighlightColor(monsterUid, TimeSpan.FromSeconds(10));
+				Assert.Equal((byte) 5, highlightByte); // HighlightColor.Enemy
+
+				client.SendSingleClick(monsterUid);
+				int nameHue = client.ReadNameMessageHue(TimeSpan.FromSeconds(10));
+				Assert.Equal(0x0090, nameHue);
+			}
+		}
+
+		private void AssertSeenSince(string marker, int since, TimeSpan timeout) {
+			bool saw = this.fixture.WaitForGameOutputSince(marker, since, timeout);
+			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
+		}
+
+		private static uint ExtractNpcUid(string output, int since, string marker = "REALM_NPC_SPAWNED: uid=") {
+			int idx = output.IndexOf(marker, since, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' after position " + since + " in:\n" + output);
+			string rest = output.Substring(idx + marker.Length);
+			int end = 0;
+			while (end < rest.Length && char.IsDigit(rest[end])) {
+				end++;
+			}
+			return uint.Parse(rest.Substring(0, end), System.Globalization.CultureInfo.InvariantCulture);
+		}
+
 		/// <summary>Resends <paramref name="command"/> every couple seconds until
 		/// <paramref name="truePattern"/> shows up in the game output, or the budget runs out -
 		/// needed because the exact moment a real auto-combat swing lands/misses (and so the

@@ -365,6 +365,31 @@ namespace SteamEngine.Tests.Protocol {
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
+		/// <summary>Sends SingleClickInPacket (0x09) - id(1) + uid(4). The real client packet
+		/// behind the floating overhead name text (Thing.On_Click/Character.On_Click, or
+		/// On_AosClick depending on Globals.UseAosToolTips/the negotiated client version -
+		/// ReadNameMessageHue below handles either).</summary>
+		public void SendSingleClick(uint uid) {
+			byte[] packet = new byte[5];
+			packet[0] = 0x09;
+			EncodeIntBigEndian((int) uid, packet, 1);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Reads whichever of UnicodeSpeechOutPacket (0xAE, the plain On_Click name
+		/// path) or ClilocMessageOutPacket (0xC1, the AOS-tooltip-client On_AosClick path)
+		/// actually arrives in response to a single click - which one the server sends depends
+		/// on Globals.UseAosToolTips and the client version this harness negotiated at login,
+		/// not something a test controls directly. Both packets share the identical field
+		/// layout up to the color field (flaggedUid(4)/model(2)/type(1)/color(2)) and both carry
+		/// the same 2-byte dynamic-length prefix ahead of that in this harness's stored payload
+		/// convention (see ReadHighlightColor's own note on 0x78 vs 0x77), so one offset covers
+		/// both. Returns the hue (0 = no color/default).</summary>
+		public int ReadNameMessageHue(TimeSpan timeout) {
+			byte[] payload = this.TryReadEither(0xAE, 0xC1, timeout, out byte whichId);
+			return (payload[9] << 8) | payload[10];
+		}
+
 		/// <summary>Sends RequestAttackInPacket (0x05) - id(1) + uid(4). Mirrors
 		/// GameCore/Networking/IncomingPackets.cs's RequestAttackInPacket.Read exactly - the
 		/// same packet a real client sends on a war-mode double-click/F1 target of another

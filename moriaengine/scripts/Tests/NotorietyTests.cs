@@ -56,6 +56,42 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MURDER_SIM: killedBy=" + self.Name + " isMurderer=" + Notoriety.IsMurderer(self));
 		}
 
+		/// <summary>Spawns a throwaway NPC with the given Realm ("G"=Gondor, "M"=Mordor) - for the
+		/// real single-click name-text-hue regression test (Tests/Protocol/NotorietyTests.cs),
+		/// which needs an actual packet round trip, not just a direct Notoriety.GetHighlightColor
+		/// logic check like TestCheckRealmNotoriety already does.
+		///
+		/// A real bug found building this: a literal negative-number argument (the Realm enum's
+		/// own underlying value for Mordor is -1) does NOT parse as a GM-command argument at all
+		/// - "unexpected token ' -' <OP_SUB>, expected <COMEOL>" - the full LScript parser's
+		/// bareword-call-without-parens grammar apparently can't start an ArgsList item with a
+		/// unary minus in this position. Single-letter words sidestep both that and the separate
+		/// bareword-vs-live-object-defname collision risk (see CLAUDE.md's elevated-account-
+		/// bareword-args note) - "G"/"M" are in no danger of matching a real registered
+		/// AbstractScript defname.</summary>
+		[SteamFunction]
+		public static void TestSpawnRealmNpc(Character self, ScriptArgs sa) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			string realmCode = Convert.ToString(sa.Argv[0], CultureInfo.InvariantCulture);
+			Realm realm = string.Equals(realmCode, "G", StringComparison.OrdinalIgnoreCase) ? Realm.Gondor : Realm.Mordor;
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC npc = (NPC) npcDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			npc.Realm = realm;
+			Console.WriteLine("REALM_NPC_SPAWNED: uid=" + npc.Uid);
+		}
+
+		/// <summary>Spawns a real wild-monster-content NPC (c_skeleton_archer_nb, AggroMode =
+		/// Hostile in nb_monsters.def) for the monster-notoriety-color regression test - reusing
+		/// real content rather than forcing AggroMode onto a throwaway NPCDef, since AggroMode is
+		/// a per-TYPE (NPCDef) property, not a per-instance one.</summary>
+		[SteamFunction]
+		public static void TestSpawnHostileMonster(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_skeleton_archer_nb");
+			NPC npc = (NPC) npcDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			Console.WriteLine("HOSTILE_MONSTER_SPAWNED: uid=" + npc.Uid);
+		}
+
 		/// <summary>Stops self's queued auto-combat against the named target - real auto-combat
 		/// keeps re-triggering Trigger_HostileAction (and so re-arming the criminal-flag expiry
 		/// timer) on every swing for as long as the fight continues, so a criminal-expiry
