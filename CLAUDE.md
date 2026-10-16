@@ -300,6 +300,66 @@ LESS reliable than the existing derived property) would both be worse than doing
 The enum value itself stays defined (#217) for `.def`-compatibility completeness, just
 unused - same precedent as `attr_norepair` (#223).
 
+## Item decay redesign (#236) - per-item timers + split corpse/item rates, 2026-10-16
+
+User follow-up on #219 (shipped as part of #215, see below), three explicit requests:
+
+1. **Replaced the global periodic sweep with a real per-item timer.** `ItemDecaySystem.
+   ScheduleOrCancel(Item)` is the one function everything calls - always clears any existing
+   timer and re-derives eligibility from scratch (on the ground? exempt region? a corpse, or
+   attr_decay-flagged?). Hooked into the real "item placed on/removed from the ground" engine
+   events - `AbstractItem.On_EnterRegion`/`On_LeaveRegion` - confirmed via direct reading of
+   `ThingDef.Create`/`AbstractItem.Cont`/`MakeLimbo` that every ground-landing/-leaving path
+   (creation, drop, pickup, monster-death loot) goes through these; they existed already but
+   had zero overrides anywhere in this codebase before this. Also re-evaluated from
+   `SetAttribute` (attr_decay/attr_questitem toggling - the OLD code only hooked attr_decay,
+   a real gap: toggling attr_questitem alone after attr_decay was already set wouldn't cancel
+   the running timer), `Item.On_Create` (needs a SEPARATE re-evaluate call after `this.
+   attributes` is seeded, since `On_EnterRegion` fires BEFORE `On_Create` during `ThingDef.
+   Create`'s own call order, so the first attempt during creation always sees unseeded/zero
+   attributes), and `Corpse.InitFromChar` (re-evaluates after `Owner` is set, for the same
+   ordering reason - a corpse's own `Create()` call fires `On_EnterRegion` before
+   `InitFromChar` ever runs, so the clock always starts once at the generic/NPC rate first,
+   then gets corrected to the player rate if applicable).
+   **Persistence verified directly, not assumed**: triggered a real save and read the
+   resulting file - the timer serializes as a real referenced object (`%_itemdecay_=
+   (ItemDecayTimer)N` + a separate `[ItemDecayTimer N]` block with its own absolute `fireAt=`
+   tick), confirming the SAME generic `TagHolder.tags`-Hashtable save mechanism already
+   proven for `NPCAiTimer`/`SpawnTimer` picks this up with zero special-casing. New permanent
+   test (`Tests/Protocol/ItemDecayPersistenceTests.cs`, own isolated fixture, same pattern as
+   `DefPersistenceRegressionTests.cs`) asserts this shape stays true.
+2. **`DecaySettings` now has 3 independent rates** instead of one generic interval:
+   `playerCorpseDecayMinutes` (10), `npcCorpseDecayMinutes` (5), `itemDecayMinutes` (5).
+   `Corpse.Owner != null` (already existed, set only for player deaths - see `Corpse.
+   InitFromChar`) picks between the first two; `attr_decay`-flagged non-corpse items use the
+   third. Corpses decay unconditionally once on the ground (no flag gates corpse decay at
+   all, matching real UO - nothing has to opt a corpse into decaying).
+3. **`flag_nodecay` on every player-house region - investigated, already satisfied, no
+   action needed.** All 256 "dum N" house regions (`a_dum_1`..`a_dum_258`, the real player
+   houses on this map) already have the bit set in the committed save data, confirmed via a
+   direct bitwise check across every single one - it was there from the original Sphere
+   conversion, just unreadable until #219's own `FlaggedRegion.Flag_NoDecay` property made it
+   so. Nothing needed changing.
+
+**New test** (`PlayerAndNpcCorpsesDecayAtDifferentRates`) proves the RIGHT rate gets picked
+per corpse type (deliberately different tiny rates, checks existence at an intermediate
+checkpoint between the two), not just that corpses decay at all.
+
+**Real process-hygiene lesson from shipping this**: two `dotnet test` invocations against
+`GameServerPairFixture`'s fixed ports ended up running concurrently (a stale/empty
+background-task notification made it look like an earlier run had finished when it hadn't,
+and a second run got started on top of it) - both hung indefinitely rather than erroring on
+the port conflict. Per this repo's own standing guidance killing these isn't the default
+move, but after they didn't resolve on their own after several minutes of waiting, the user
+explicitly authorized killing both process trees and retrying serially - that single retry
+then failed too, but for a DIFFERENT, already-documented reason: the killed run had gotten
+far enough to auto-create and save under a non-"protocoltest" account name
+(`decaypersisttest`, from the new persistence test), leaving a stale `saves/2026-10-16/`
+snapshot where `protocoltest` was no longer the literal first account - the exact
+"NoAccount cascade after a stale snapshot" class already documented multiple times
+elsewhere in this file. Deleting that snapshot (same remediation as every prior occurrence)
+finally produced a clean, fully green run (16/16).
+
 ## ITEM ATTR FLAG SYSTEM (#215) COMPLETE - all 9 sub-issues resolved 2026-10-15/16
 
 #217-#224 shipped (9 PRs: #226-#234, each with its own real end-to-end protocol test,

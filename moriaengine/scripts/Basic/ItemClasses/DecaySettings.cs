@@ -20,9 +20,14 @@ using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
-	/// GM-tunable settings for the generic item-decay system (#215/#219), shown as an "Item
-	/// Decay" category in the .settings dialog - same pattern as LevelingSettings/CombatSettings.
-	/// Persists across restarts via the generic SaveableClass/HasSavedMembers pipeline.
+	/// GM-tunable settings for the generic decay system (#215/#219, redesigned per user
+	/// follow-up request), shown as an "Item Decay" category in the .settings dialog - same
+	/// pattern as LevelingSettings/CombatSettings. Persists across restarts via the generic
+	/// SaveableClass/HasSavedMembers pipeline.
+	///
+	/// Three separate rates, not one - a player's corpse, an NPC's corpse, and a loose
+	/// attr_decay item are three different real-world defaults (per explicit user request),
+	/// not one generic "decay interval" the way the first pass had it.
 	/// </summary>
 	[SaveableClass]
 	[HasSavedMembers]
@@ -36,11 +41,19 @@ namespace SteamEngine.CompiledScripts {
 		public DecaySettings() {
 		}
 
-		/// <summary>How long (real minutes) an attr_decay-flagged item survives once it's found
-		/// lying loose on the ground (ItemDecaySystem). Default 60 (1 hour) - a reasonable
-		/// generic default, GM-adjustable in-game per explicit request rather than a hardcoded
-		/// literal.</summary>
+		/// <summary>How long (real minutes) a player's own corpse survives on the ground
+		/// before decaying away (ItemDecaySystem) - distinguished from an NPC's corpse via
+		/// Corpse.Owner being non-null (set only for player deaths, see Corpse.InitFromChar).</summary>
 		[SaveableData]
-		public double decayIntervalMinutes = 60;
+		public double playerCorpseDecayMinutes = 10;
+
+		/// <summary>Same as above, for an NPC's corpse (Corpse.Owner == null).</summary>
+		[SaveableData]
+		public double npcCorpseDecayMinutes = 5;
+
+		/// <summary>How long (real minutes) a plain attr_decay-flagged item survives once it's
+		/// found lying loose on the ground.</summary>
+		[SaveableData]
+		public double itemDecayMinutes = 5;
 	}
 }
