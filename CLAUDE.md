@@ -11,6 +11,45 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## Documentation: `moriaengine/docs/current/` (2026-10-16)
+
+Full reference documentation for the engine and every gameplay/tooling system now lives
+under `moriaengine/docs/current/` (33 pages, indexed from `docs/current/README.md`) —
+written at a "middle ground" depth: how each system actually works and *why* it's built
+the way it is (real bugs found, alternatives rejected, open gaps), with file:line
+references into the real code, without reproducing exact signatures the code itself
+already states better. It is **not** the same thing as the legacy `docs/` folder one
+level up (original SteamEngine project material — LScript notes, CVS history, old Erebor
+planning pages — useful background, not maintained, not guaranteed accurate against
+current code).
+
+This file (`CLAUDE.md`) stays the session-continuity log — "what's being worked on right
+now and why." `docs/current/` is the permanent reference — "how the system works and why
+it's built that way," written so it stays correct as the code evolves rather than
+accumulating session-by-session the way this file does. `docs/current/08-history/
+design-decisions-log.md` and `known-gaps-and-tech-debt.md` already distill a lot of this
+file's own accumulated reasoning into that permanent form — when adding a new durable
+design decision or gap here, consider whether it belongs there too, not just here.
+
+**Standing workflow rule, effective now**: any code change that touches a system already
+documented under `docs/current/` must update the relevant page(s) in the **same
+change** (same PR) — not as a follow-up, not deferred to "later." This mirrors the
+existing "file an issue before starting work" discipline below: documentation drift is
+the same kind of debt as an unfiled bug, and is cheapest to fix at the moment the change
+is made, while the reasoning is still fresh. Concretely, before merging any PR:
+- If the change adds/removes/changes behavior in a system with an existing page (e.g.
+  touching `ItemDecaySystem.cs` → update `docs/current/04-gameplay-systems/item-decay.md`),
+  update that page as part of the PR, not a separate one.
+- If the change adds a wholly new gameplay/tooling system with no existing page, add one
+  under the appropriate numbered section and link it from `docs/current/README.md`'s
+  table of contents, matching the existing pages' depth/style.
+- If the change is purely a bugfix with no durable "why" worth recording beyond the
+  commit message/issue, no doc update is needed — don't pad pages with changelog noise.
+- Session-log-only entries (this file's own `## CURRENT STATE (...)` sections) do **not**
+  need a matching `docs/current/` update by themselves — only promote something from here
+  into the permanent docs if it's a durable design decision or gap, not an in-progress
+  status update.
+
 ## Item ATTR flag system — implementation IN PROGRESS (2026-10-15), tracked as #215
 
 User said "do the whole thing" on the full #215 gap-analysis scope (all 21 flags, not
@@ -2473,6 +2512,12 @@ and bin/obj already exist from prior sessions). Full suite:
 
 ## Workflow conventions for this repo (don't re-derive each session)
 
+- **Keep `docs/current/` updated in the same change, not as a follow-up.** Any code
+  change touching a system that already has a page there must update that page in the
+  same PR — see the "Documentation" section near the top of this file for the full rule
+  and what counts as "touching a documented system." Treat this the same way as the
+  issue-filing rule immediately below: a standing, pre-authorized policy, not a judgment
+  call to re-litigate each time.
 - **Keep this file updated continuously, without being asked each time.**
   Explicit standing instruction from the user (2026-10-13): "keep claude.md
   updated (do this all the time without my reminder) to keep context clean."

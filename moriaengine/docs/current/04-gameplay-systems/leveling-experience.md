@@ -1,0 +1,170 @@
+# Leveling & experience
+
+Core level/experience system (#125), built in 5 phases (#126-#130, all shipped). The one
+shared entry point every other system (monster kills, death, future quests) should use to
+grant or remove experience is `LevelingSystem.AddExperience`
+(`scripts/Basic/Leveling/LevelingSystem.cs:63-88`) - keeping the level-up formula and
+overflow-carry logic in one place instead of duplicated at every caller.
+
+## Threshold formula and level-up
+
+Level `N` requires `N * nextLevelCoefficient` total experience to reach (default
+coefficient **330** - Erebor's own real constant, `nextlevel=330` in its
+`experiences.scp`, not an invented number). The level-up check is a `while` loop, not a
+single `if`, so one large experience gain can cross several level thresholds in a row,
+carrying the leftover experience forward each time rather than clamping it to zero (e.g.
+a level-1 character sitting at 600 experience who gains 100 ends up at level 2 with 40
+experience left over, not 0). There is no level cap.
+
+Each level-up inside that loop:
+- Grants `+5` unspent skill points and `+2` unspent ability points (flat, uncapped).
+- Sends a system message and plays a level-up effect/sound (`0x375A` stationary effect +
+  `SoundNames.DrumSuccess` - a best-effort aesthetic choice; no canonical "level up"
+  effect exists in either this codebase or the Erebor reference to port).
+- Calls `player.RefreshTitle()` since a profession's title-ladder tier may have changed -
+  see [Professions](professions.md).
+
+`Player.Level`/`Player.Experience` existed before this system as pure unwired TODO
+stubs (fields + persistence only) - this system is what actually wires them up.
+
+## `.explevel` - the read-only player dialog
+
+`.explevel` (`scripts/Basic/dialogs/explevel.scp`) already existed in some form before
+this system (a pre-existing dialog this session's own earlier investigation initially
+missed - see [Known gotchas](../07-testing/known-gotchas.md) for the "grep missed a whole
+folder" lesson that recurred a few times this session). It shows Level/Experience plus
+combat stats, and was extended with Attributes/Skills/Abilities spend buttons (see below)
+and Profession display (see [Professions](professions.md)).
+
+## Three point pools
+
+Every level-up grants points into three independent pools, all stored on `Player`:
+
+| Pool | Granted | Spent via |
+|---|---|---|
+| Unspent skill points | flat +5/level | `LevelingSystem.TrySpendSkillPoints` |
+| Unspent ability points | flat +2/level | `LevelingSystem.TrySpendAbilityPoints` |
+| Attribute point budget | tiered formula (below), computed, not stored | `LevelingSystem.TrySpendAttributePoints` |
+
+Earning is profession-agnostic - every class gains points the same way; only *spending*
+differs per profession (skill caps, attribute ranges).
+
+### Attribute point budget
+
+`Player.AttributePointBudget` is **computed**, not a stored running total:
+`300 (flat base) + LevelingSystem.LevelStatBonus(Level)`, minus whatever's already been
+allocated into `StrPointsAllocated`/`DexPointsAllocated`/`IntPointsAllocated`/
+`VitPointsAllocated`. `LevelStatBonus` (`LevelingSystem.cs:95-106`) is a tiered formula
+ported from and verified against Erebor's own `f_levelstatbonus`:
+
+| Level range | Bonus |
+|---|---|
+| 1-9 | `level * 4` |
+| 10-29 | `40 + (level-10) * 3` |
+| 30-39 | `100 + (level-30) * 2` |
+| 40+ | flat `120` (level 40 is the *last* level that grants any further attribute points) |
+
+### Spending
+
+`TrySpendSkillPoints` (`LevelingSystem.cs:155-170`) validates against
+`player.Profession.GetSkillCap(skill)` (0 if no profession is assigned - the same
+"no profession = cap 0" precedent `Skill.Cap` already established) **and** against a
+fixed allowlist of spendable skills (`SpendableSkills`, `LevelingSystem.cs:128-138`) -
+only combat/magic/social skills can be raised this way. Crafting (Blacksmith, Fletching,
+Carpentry, Cooking, Tailoring, Tinkering, Inscribe, Alchemy) and gathering
+(Lumberjacking, Mining, Fishing), plus Cartography/Discordance/Lockpicking/AnimalTaming,
+must be trained through actual use instead - deferred as #140 until that content area is
+the focus. Each point raises the skill by a flat `SkillPointGain = 50` raw units (5.0%) -
+verified against Erebor's own `f_skillbutton` handler, not the `1` raw unit (0.1%) an
+earlier pass had before real-world testing caught it (#199). Erebor additionally gates
+training behind escalating point cost and "needs a master trainer" milestones at
+25/50/75% - deliberately not ported, since only the flat rate itself was flagged as wrong.
+
+`TrySpendAttributePoints` (`LevelingSystem.cs:196-234`) requires a profession to be
+assigned at all (mirrors the skill-cap precedent, the user's own explicit design: "no
+profession assigned = can't spend attribute points"), and validates against **both** the
+overall `AttributePointBudget` and the profession's own per-stat hard cap
+(`ProfessionDef.GetStatRange(stat)`'s third element) - a player can have budget left but
+still be unable to push one specific stat any higher.
+
+`TrySpendAbilityPoints` (`LevelingSystem.cs:178-186`) has no profession-based gating at
+all yet - it just spends the existing `Character.ModifyAbilityPoints` mechanism. See
+[Abilities & talents](abilities-and-talents.md) for why that's still a deliberately
+incomplete area.
+
+No real player-facing spend *dialog* exists yet for any of the three pools beyond the
+`.explevel` buttons wired directly to these methods - a fuller dialog redesign is a known
+open item, not started.
+
+## Monster kills grant experience
+
+`NPCDef.ExperienceWorth` ({min,max} range, a new `"experience"` `.def` line) +
+`RollExperienceReward()`. `NPC.On_Death` grants the roll to the killer via
+`AddExperience` only when the killer is a `Player` - NPCs never level, mirroring Erebor's
+own `if (isplayer)` guard. No existing `.def` content was touched by this - monster
+experience defaults to zero everywhere until values get authored per monster (consistent
+with the broader "NPC content ~55-60% incomplete" gap tracked elsewhere).
+
+## Death: experience loss and the killer's cut
+
+`LevelingSystem.ApplyDeathExperienceLoss(Player victim, Character killedBy)`
+(`LevelingSystem.cs:253-276`), hooked into `Player.On_Death`. This deliberately
+**diverges** from Erebor's actual ~5%-capped-loss mechanic, per the user's own explicit
+final design:
+
+- `experienceLossPercentage` (default **100** - full reset) - percentage of the dying
+  player's experience that's lost.
+- `pkGainPercentage` (default **10**) - percentage of the *lost* amount (not the victim's
+  original total) paid to the killer, if the killer is a player.
+
+Both are GM-tunable via the "Level System" `.settings` category
+(`scripts/Basic/Leveling/LevelingSettings.cs` - see
+[The .settings dialog framework](../03-admin-tooling/settings-dialog.md)). At the
+defaults, this nets out to: the dying player loses everything, the killer gets 10% of
+what was lost.
+
+**Exemptions** (lose nothing, pay nothing):
+- Standing in a safe zone or arena (`Notoriety.IsExemptFromExperienceLoss` - narrower than
+  the general region-based attack-blocking check, only `Flag_Safe`/`Flag_Arena`, not
+  `Flag_Guarded`/`Flag_NoPvp`).
+- Within 5 minutes of a previous death (`PostDeathExperienceLossImmunity`, mirrors
+  Erebor's `i_checkstats_timer`) - stops death-chaining (e.g. corpse-camping) from
+  draining a player repeatedly.
+
+**Multi-killer credit splitting is explicitly out of scope** - `CauseDeath` only ever
+identifies one `killedBy` Character; there's no damage-contribution-list mechanism
+anywhere in this engine to split credit from. The "default even split" idea in the
+original design only applies if such a mechanism is ever built - not invented
+speculatively here.
+
+## Gates and quests - explicitly out of scope
+
+Experience-gated content (quests, milestone gates) is deliberately not built - the user's
+own framing was "just leave us a function which handles adding experiences... called from
+different places," which `AddExperience` already satisfies. Actual gate/quest content is
+deferred indefinitely, tracked only so the idea isn't lost (#130).
+
+## Real bugs found while building this (all fixed)
+
+- **`Character.CauseDeath` is a no-op once already dead** - not itself a bug, but caused
+  a test to silently "pass" for the wrong reason when it re-killed a victim without
+  resurrecting first. See [Corpses & death](corpses-and-death.md) and
+  [Known gotchas](../07-testing/known-gotchas.md).
+- **Lazy `.def` expression fields evaluated synchronously inside a chat command's own
+  call stack get authorization-checked as if they were commands** - `OpNode_Lazy_
+  Expression.Run` calls `Commands.AuthorizeCommandThrow` for first-access lazy-expression
+  resolution. Can't happen in real gameplay (real monster death is always async via
+  combat timers); only surfaced via test code calling `CauseDeath` directly from a command
+  handler. Worked around in tests via a near-immediate `BoundTimer` deferring the kill.
+- **`.explevel` was completely broken for every real player except the server's literal
+  first-ever account - a genuine production bug.** The dialog's own first lines called
+  `InvalidateCombatWeaponValues()`/`InvalidateCombatArmorValues()` bare, and both names
+  were missing from `CommandsAuthorization.cs`'s allowlist - silently denied for every
+  account except the one account `AbstractAccount.HandleLoginAttempt` auto-elevates
+  (`accounts.Count == 1` at creation, the very first account ever). Invisible all session
+  because every test so far happened to use that one lucky account. Fixed by adding both
+  names to the allowlist at `PLEVEL_PLAYER`.
+
+See [Known gotchas](../07-testing/known-gotchas.md) for the fuller test-infrastructure
+lessons from this pass (the 5-character-account-slot cap, the `ScriptArgs` dual/triple
+shape problem, the account-sharing interactions between unrelated Facts).
