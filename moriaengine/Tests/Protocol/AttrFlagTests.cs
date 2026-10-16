@@ -13,6 +13,7 @@ namespace SteamEngine.Tests.Protocol {
 		private const string Account = "protocoltest";
 		private const string AccountB = "protocoltest2";
 		private const string AccountC = "protocoltest3";
+		private const string AccountD = "protocoltest4";
 		private const string Password = "protocoltest";
 
 		private readonly GameServerPairFixture fixture;
@@ -198,6 +199,139 @@ namespace SteamEngine.Tests.Protocol {
 			string rest = line.Substring(idx + marker.Length);
 			System.Text.RegularExpressions.Match m = System.Text.RegularExpressions.Regex.Match(rest, @"^.*?(?=\s+\w+=|$)");
 			return m.Value.TrimEnd('\r');
+		}
+
+		/// <summary>#223: an attr_owned item (claimed by its creator) can only be picked up by
+		/// its owner or a GM - a plain, unrelated character is denied. Teleports the stranger
+		/// to the item's own position first - same CanReach-after-deny-chain trap already
+		/// documented for #221 (a too-far-away denial and an attr_owned denial look identical).</summary>
+		[Fact]
+		public void OwnedItemOnlyPickupableByOwnerOrGM() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var owner = this.ConnectLoginAndCreateCharacter(AccountC, "OwnedOwnerTester")) {
+				owner.SendSpeech(".TestSetupOwnedItem");
+				this.AssertSeen("ATTR_OWNED_SETUP:", TimeSpan.FromSeconds(10));
+				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_OWNED_SETUP:");
+				uint itemUid = ExtractUidAfter(setupLine, "uid=");
+				int x = ExtractSignedIntAfter(setupLine, "x=");
+				int y = ExtractSignedIntAfter(setupLine, "y=");
+				int z = ExtractSignedIntAfter(setupLine, "z=");
+
+				//must be a different account than owner - only one connection per account at a time
+				using (var stranger = this.ConnectLoginAndCreateCharacter(AccountD, "OwnedStrangerTester")) {
+					this.TeleportTo(stranger, x, y, z);
+					Assert.True(this.AttemptPickupAndReportStillOnGround(stranger, itemUid), "Stranger should NOT be able to pick up another player's owned item.");
+				}
+
+				//owner is already standing at the item's own creation point
+				Assert.False(this.AttemptPickupAndReportStillOnGround(owner, itemUid), "Owner should be able to pick up their own owned item.");
+			}
+		}
+
+		/// <summary>#223: attr_nodroptrade denies dropping the item back onto the ground -
+		/// picks it up first (that part is unrestricted), then confirms the drop attempt
+		/// leaves it still held (Cont stays the character, never becomes the ground/null).</summary>
+		[Fact]
+		public void NoDropTradeItemCannotBeDroppedOnGround() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountD, "NoDropGroundTester")) {
+				client.SendSpeech(".TestSetupNoDropTradeItem");
+				this.AssertSeen("ATTR_NODROPTRADE_SETUP:", TimeSpan.FromSeconds(10));
+				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_NODROPTRADE_SETUP:");
+				uint itemUid = ExtractUidAfter(setupLine, "uid=");
+				int x = ExtractSignedIntAfter(setupLine, "x=");
+				int y = ExtractSignedIntAfter(setupLine, "y=");
+				int z = ExtractSignedIntAfter(setupLine, "z=");
+
+				client.SendPickUpItem(itemUid, 1);
+				Thread.Sleep(300);
+				client.SendDropItem(itemUid, (ushort) x, (ushort) y, (sbyte) z, -1);
+				Thread.Sleep(300);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportItemOnGround " + itemUid);
+				this.AssertSeenSince("ATTR_MOVE_RESULT: uid=" + itemUid, mark, TimeSpan.FromSeconds(10));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_MOVE_RESULT: uid=" + itemUid);
+				Assert.False(line.EndsWith("stillOnGround=True", StringComparison.Ordinal), "Item should still be held, not back on the ground.");
+			}
+		}
+
+		/// <summary>#223: attr_nodroptrade also denies adding the item to a secure-trade
+		/// window - that path (SecureTrade.AddItem) deliberately bypasses the normal
+		/// deny-trigger chain, so this specifically verifies the explicit check added there,
+		/// not just the On_DenyPutOnGround path the other Fact above already covers.</summary>
+		[Fact]
+		public void NoDropTradeItemCannotBeAddedToSecureTrade() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var initiator = this.ConnectLoginAndCreateCharacter(AccountC, "NoDropTradeInitiator")) {
+				initiator.SendSpeech(".TestSetupNoDropTradeItem");
+				this.AssertSeen("ATTR_NODROPTRADE_SETUP:", TimeSpan.FromSeconds(10));
+				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_NODROPTRADE_SETUP:");
+				uint itemUid = ExtractUidAfter(setupLine, "uid=");
+				int x = ExtractSignedIntAfter(setupLine, "x=");
+				int y = ExtractSignedIntAfter(setupLine, "y=");
+				int z = ExtractSignedIntAfter(setupLine, "z=");
+
+				//must be a different account than initiator - only one connection per account at a time
+				using (var target = this.ConnectLoginAndCreateCharacter(AccountD, "NoDropTradeTarget")) {
+					this.TeleportTo(target, x, y, z);
+					uint targetUid = this.ReportMyUid(target);
+
+					initiator.SendPickUpItem(itemUid, 1);
+					Thread.Sleep(300);
+					//classic UO gesture: dropping a held item onto another player starts/adds to a secure trade
+					initiator.SendDropItem(itemUid, 0xFFFF, 0xFFFF, 0, (int) targetUid);
+					Thread.Sleep(500);
+
+					int mark = this.fixture.GameOutputSnapshot().Length;
+					initiator.SendSpeech(".TestReportItemOnGround " + itemUid);
+					this.AssertSeenSince("ATTR_MOVE_RESULT: uid=" + itemUid, mark, TimeSpan.FromSeconds(10));
+					string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_MOVE_RESULT: uid=" + itemUid);
+					//denied - the item never left the initiator's own dragging layer, so it's
+					//neither on the ground nor (obviously) inside the trade box.
+					Assert.False(line.EndsWith("stillOnGround=True", StringComparison.Ordinal), "Item should not have been added to the trade (and not dropped either).");
+				}
+			}
+		}
+
+		/// <summary>Shared by the attr_owned Fact above - sends a real pickup packet and reports
+		/// whether the item is still sitting loose on the ground afterward.</summary>
+		private bool AttemptPickupAndReportStillOnGround(TestGameClient client, uint itemUid) {
+			client.SendPickUpItem(itemUid, 1);
+			Thread.Sleep(300);
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestReportItemOnGround " + itemUid);
+			this.AssertSeenSince("ATTR_MOVE_RESULT: uid=" + itemUid, mark, TimeSpan.FromSeconds(10));
+			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_MOVE_RESULT: uid=" + itemUid);
+			return line.EndsWith("stillOnGround=True", StringComparison.Ordinal);
+		}
+
+		private uint ReportMyUid(TestGameClient client) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestReportMyUid");
+			this.AssertSeenSince("MY_UID:", mark, TimeSpan.FromSeconds(10));
+			return ExtractUidAfter(LastLineContaining(this.fixture.GameOutputSnapshot(), "MY_UID:"), "MY_UID: ");
+		}
+
+		/// <summary>Same CanReach-after-deny-chain trap already documented for #221 - a fresh
+		/// character spawns far from any item a previous connection set up, so tests that need
+		/// a second character to interact with an already-placed item must move it there first.</summary>
+		private void TeleportTo(TestGameClient client, int x, int y, int z) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestTeleportTo " + x + "," + y + "," + z);
+			this.AssertSeenSince("HOUSE_LOCKDOWN_SETUP: teleported", mark, TimeSpan.FromSeconds(10));
+		}
+
+		/// <summary>z coordinates can be negative - unlike every other marker this file parses.</summary>
+		private static int ExtractSignedIntAfter(string text, string marker) {
+			int idx = text.IndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + text);
+			string rest = text.Substring(idx + marker.Length);
+			int end = (rest.Length > 0 && rest[0] == '-') ? 1 : 0;
+			while (end < rest.Length && char.IsDigit(rest[end])) {
+				end++;
+			}
+			return int.Parse(rest.Substring(0, end), System.Globalization.CultureInfo.InvariantCulture);
 		}
 
 		private void AssertSeen(string marker, TimeSpan timeout) {

@@ -118,6 +118,17 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 
+			//#223 - attr_nodroptrade. This path deliberately bypasses the normal deny-trigger
+			//chain entirely (see this method's own pre-existing comment below), so there's no
+			//Item.On_Deny* hook that would otherwise catch this - must check explicitly here.
+			//Returning true (not false) claims "handled" so the caller doesn't fall through to
+			//the generic container-drop path, which could still physically place the item.
+			Item asItem = item as Item;
+			if ((asItem != null) && asItem.HasAttribute(ItemAttributes.attr_nodroptrade)) {
+				who.SysMessage("That item cannot be traded.");
+				return true;
+			}
+
 			Container box = (who == this.initiator) ? this.initiatorBox : this.otherBox;
 			who.PutItemInItem(box, 0, 0, false); //no permission/reach checks - the box has no real reachable position, and we've already established who is a legitimate trade party above
 
