@@ -251,6 +251,20 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>GM-only manual world save (#258): synchronously calls `Globals.Save()`, the
+		/// same mechanism shutdown/recompile already use internally - there was previously no
+		/// way to force a save on demand (world state only otherwise persists on shutdown or
+		/// script recompile, confirmed via grep - no periodic auto-save exists either). No
+		/// target needed. Deliberately unlisted in `CommandsAuthorization.cs`, so it's GM-only
+		/// (plevel >= 4) by the existing default-deny fallback - same precedent as .kill/.flip/
+		/// .profession, and matches the user's explicit "plevel 4 and above only" request.</summary>
+		[SteamFunction]
+		public static void Save(Player self) {
+			self.SysMessage("Saving world...");
+			Globals.Save();
+			self.SysMessage("Save complete.");
+		}
+
 		//public static void DragonTileTargon(GameConn c, IPoint3D point, object targData) {
 		//    AbstractCharacter cre = c.CurCharacter;
 		//    Map map = cre.GetMap();
