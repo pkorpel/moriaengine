@@ -377,6 +377,9 @@ namespace SteamEngine.CompiledScripts {
 			if ((candidate == null) || !candidate.IsPlayer || !candidate.IsAliveAndValid || (candidate == this)) {
 				return false;
 			}
+			if (candidate.Flag_Invulnerable) {
+				return false; //#267 - nobody autonomously targets an invulnerable character, even one otherwise immune to the resulting damage
+			}
 			if (this.ControlMaster != null) {
 				return false; //tamed pets don't pick fights on their own - no "guard me"/"kill" command system yet (follow-up)
 			}

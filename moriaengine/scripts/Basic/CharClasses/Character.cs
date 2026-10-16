@@ -2201,6 +2201,11 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
+			if (((Character) target).Flag_Invulnerable) {
+				this.SysMessage("You may not attack an invulnerable target."); //#267
+				return;
+			}
+
 			//TODO? triggers
 
 			WeaponSkillTargetQueuePlugin.AddTarget(this, (Character) target);
