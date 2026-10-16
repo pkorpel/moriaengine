@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
@@ -18,10 +19,17 @@ namespace SteamEngine.Tests.Protocol {
 		private readonly TcpClient tcp;
 		private readonly NetworkStream stream;
 
+		/// <summary>See TestGameClient.DefaultReadTimeoutMillis's own doc comment - this
+		/// stream had the identical gap (no read timeout at all, relying on NetworkStream's
+		/// default of Timeout.Infinite) across every read helper below, covering the entire
+		/// AuxiliaryServer login-stage handshake every protocol test goes through first.</summary>
+		private const int DefaultReadTimeoutMillis = 15000;
+
 		public TestLoginClient(string host, int port) {
 			this.tcp = new TcpClient();
 			this.tcp.Connect(host, port);
 			this.stream = this.tcp.GetStream();
+			this.stream.ReadTimeout = DefaultReadTimeoutMillis;
 		}
 
 		public void SendLogin(string account, string password) {
@@ -74,7 +82,18 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		internal static byte ReadByte(NetworkStream stream) {
-			int b = stream.ReadByte();
+			int b;
+			try {
+				b = stream.ReadByte();
+			} catch (IOException e) {
+				// InvalidOperationException, not TimeoutException, deliberately - matches the
+				// "connection closed" throw right below, which is what every
+				// WaitForServerListingAndGetRedirectPort retry loop across the test suite
+				// already catches. See TestGameClient.ReadOneCompressedFrame's own identical
+				// note for the full reasoning.
+				throw new InvalidOperationException("Did not receive a packet ID byte within " +
+					DefaultReadTimeoutMillis + "ms.", e);
+			}
 			if (b < 0) {
 				throw new InvalidOperationException("Connection closed while expecting a packet ID byte.");
 			}
@@ -90,7 +109,13 @@ namespace SteamEngine.Tests.Protocol {
 			byte[] buffer = new byte[count];
 			int totalRead = 0;
 			while (totalRead < count) {
-				int read = stream.Read(buffer, totalRead, count - totalRead);
+				int read;
+				try {
+					read = stream.Read(buffer, totalRead, count - totalRead);
+				} catch (IOException e) {
+					throw new InvalidOperationException("Did not receive the remaining " + (count - totalRead) +
+						" of " + count + " expected bytes within " + DefaultReadTimeoutMillis + "ms.", e);
+				}
 				if (read == 0) {
 					throw new InvalidOperationException("Connection closed after reading " + totalRead + " of " + count + " expected bytes.");
 				}
