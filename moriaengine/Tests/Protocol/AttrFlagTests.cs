@@ -11,6 +11,7 @@ namespace SteamEngine.Tests.Protocol {
 	[Collection(AttrFlagTestCollection.Name)]
 	public class AttrFlagTests {
 		private const string Account = "protocoltest";
+		private const string AccountB = "protocoltest2";
 		private const string Password = "protocoltest";
 
 		private readonly GameServerPairFixture fixture;
@@ -33,10 +34,14 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		/// <summary>SetAttribute/HasAttribute (the programmatic API #218-225's real behaviors
-		/// will consume) correctly read/write the same underlying bitmask.</summary>
+		/// will consume) correctly read/write the same underlying bitmask. Runs on AccountB (not
+		/// the shared Account, which is already at its own 5-character cap from the other Facts
+		/// in this file) - also doubles as the thing that ensures auto-account-creation is on,
+		/// since every AccountB-using Fact (including #220's Theory below) needs it.</summary>
 		[Fact]
 		public void ProgrammaticToggleWorks() {
-			using (var client = this.ConnectLoginAndCreateCharacter("AttrBoolTester")) {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "AttrBoolTester")) {
 				client.SendSpeech(".TestAttrProgrammaticToggle");
 				this.AssertSeen("ATTR_BOOL_TEST: beforeAny=False afterToggle=True afterUntoggle=True", TimeSpan.FromSeconds(10));
 			}
@@ -89,6 +94,44 @@ namespace SteamEngine.Tests.Protocol {
 			this.AssertSeenSince("ATTR_DECAY_EXISTS: uid=" + uid, mark, TimeSpan.FromSeconds(10));
 			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_DECAY_EXISTS: uid=" + uid);
 			return line.EndsWith("exists=True", StringComparison.Ordinal);
+		}
+
+		/// <summary>#220: attr_static and attr_move_never both deny a real pickup attempt
+		/// (0x07) via the newly-added On_DenyPickup -> Flag_NonMovable path; attr_move_always
+		/// overrides attr_static on the same item (pickup succeeds); a plain item with neither
+		/// flag also picks up normally (control case, confirms the new deny path doesn't
+		/// over-trigger).</summary>
+		[Theory]
+		[InlineData("static", true)]
+		[InlineData("movenever", true)]
+		[InlineData("movealwaysoverride", false)]
+		[InlineData("plain", false)]
+		public void PickupRespectsMovementAttrFlags(string mode, bool expectDenied) {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "AttrMove" + mode)) {
+				//AccountB is a plain (non-elevated) account, routed through SimpleCommandParser,
+				//which does NOT strip quotes - quoting here would arrive as the literal string
+				//"\"static\"" and never match the switch below. Unquoted is correct for this
+				//account; only elevated/first-account commands need the opposite workaround.
+				//AssertSeen (not AssertSeenSince) would be satisfied instantly by a PREVIOUS
+				//Theory case's own "ATTR_MOVE_SETUP:" line already sitting in the shared log
+				//buffer, racing ahead of this iteration's actual command - mark first.
+				int setupMark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetupMovementAttrItem " + mode);
+				this.AssertSeenSince("ATTR_MOVE_SETUP:", setupMark, TimeSpan.FromSeconds(10));
+				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_MOVE_SETUP:");
+				uint uid = ExtractUidAfter(setupLine, "uid=");
+
+				client.SendPickUpItem(uid, 1);
+				Thread.Sleep(300);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportItemOnGround " + uid);
+				this.AssertSeenSince("ATTR_MOVE_RESULT: uid=" + uid, mark, TimeSpan.FromSeconds(10));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_MOVE_RESULT: uid=" + uid);
+				bool stillOnGround = line.EndsWith("stillOnGround=True", StringComparison.Ordinal);
+				Assert.True(expectDenied == stillOnGround, "setup=" + setupLine + " result=" + line); //includes setupLine for a quick nonMovable= sanity check on failure
+			}
 		}
 
 		/// <summary>Real end-to-end flow: ".AttrList" target cursor opens D_AttrList, submitting
@@ -154,12 +197,21 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+			return this.ConnectLoginAndCreateCharacter(Account, charName);
+		}
+
+		/// <summary>#220 - AccountB (needs EnsureAutoAccountCreationEnabled called once first,
+		/// same pattern as ProfessionTests.cs/SocialTests.cs/LevelingTests.cs) - the shared
+		/// Account above already hits AbstractAccount.maxCharactersPerGameAccount's 5-slot cap
+		/// from the Facts above, so PickupRespectsMovementAttrFlags' 4 Theory cases need their
+		/// own account rather than overflowing it.</summary>
+		private TestGameClient ConnectLoginAndCreateCharacter(string account, string charName) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(Account, Password);
+					game.SendLogin(account, Password);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					return game;
@@ -172,12 +224,33 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
 		}
 
-		private int WaitForServerListingAndGetRedirectPort() {
+		private static bool autoAccountCreationEnabled;
+
+		/// <summary>Flips Globals.AutoAccountCreation on (server-wide, via the already-existing
+		/// first account) so AccountB's first-ever login can succeed - same pattern as
+		/// ProfessionTests.cs. Guarded by a static flag so repeated calls (one per AccountB-using
+		/// Fact/Theory case) create the "AutoAccountEnabler" character on Account only once -
+		/// ConnectLoginAndCreateCharacter always creates a NEW character slot per call, so
+		/// without this guard every call would burn another of Account's 5 slots (safe under
+		/// DisableParallelization=true, Facts in this collection never run concurrently).</summary>
+		private void EnsureAutoAccountCreationEnabled() {
+			if (autoAccountCreationEnabled) {
+				return;
+			}
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "AutoAccountEnabler")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST:", mark, TimeSpan.FromSeconds(10)));
+			}
+			autoAccountCreationEnabled = true;
+		}
+
+		private int WaitForServerListingAndGetRedirectPort(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(Account, Password);
+						login.SendLogin(account, Password);
 						int serverCount = login.ReadServersList();
 						if (serverCount < 1) {
 							throw new InvalidOperationException("No identified game server yet (server count 0).");
