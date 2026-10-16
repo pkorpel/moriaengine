@@ -54,6 +54,9 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0x4E, 5 },  // PersonalLightLevelOutPacket
 			{ 0x4f, 1 },  // OverallLightLevelOutPacket
 			{ 0x82, 1 },  // LoginDeniedOutPacket
+			{ 0x2c, 1 },  // ResurrectionMenuOutPacket (action byte) - sent on a real character
+			              // death (Character.CauseDeath), e.g. via InfoDialogTests' own
+			              // TestSetupCorpseForInfo helper killing self to produce a real corpse.
 			{ 0x6E, 13 }, // CharacterAnimationOutPacket
 			{ 0x54, 11 }, // PlaySoundEffectOutPacket
 			{ 0x24, 6 },  // DrawContainerOutPacket (sent when a container is opened, e.g. our own backpack via SendDoubleClick)
