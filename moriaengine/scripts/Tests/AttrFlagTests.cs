@@ -128,5 +128,42 @@ namespace SteamEngine.CompiledScripts {
 			bool exists = Thing.UidGetItem(uid) != null;
 			Console.WriteLine("ATTR_DECAY_EXISTS: uid=" + uid + " exists=" + exists);
 		}
+
+		/// <summary>#220 - creates one plain ground item configured per "mode" (quoted since
+		/// this is a bareword-sensitive elevated-account command, see the "sa" arg note on
+		/// other Test* functions in this file): "static"/"movenever" should end up
+		/// Flag_NonMovable, "movealwaysoverride" sets both attr_static AND attr_move_always to
+		/// confirm the override wins, "plain" sets nothing (control case, stays movable).</summary>
+		[SteamFunction]
+		public static void TestSetupMovementAttrItem(Character self, ScriptArgs sa) {
+			string mode = sa.Argv[0].ToString();
+			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
+			Item item = (Item) plainDef.Create(self.P());
+			switch (mode) {
+				case "static":
+					item.SetAttribute(ItemAttributes.attr_static, true);
+					break;
+				case "movenever":
+					item.SetAttribute(ItemAttributes.attr_move_never, true);
+					break;
+				case "movealwaysoverride":
+					item.SetAttribute(ItemAttributes.attr_static, true);
+					item.SetAttribute(ItemAttributes.attr_move_always, true);
+					break;
+				case "plain":
+					break;
+			}
+			Console.WriteLine("ATTR_MOVE_SETUP: uid=" + item.Uid + " nonMovable=" + item.Flag_NonMovable);
+		}
+
+		/// <summary>Reports whether the item at the given uid is still sitting loose on the
+		/// ground (Cont == null) - a real client pickup attempt denied by Flag_NonMovable never
+		/// changes Cont away from that.</summary>
+		[SteamFunction]
+		public static void TestReportItemOnGround(Character self, ScriptArgs sa) {
+			uint uid = Convert.ToUInt32(sa.Argv[0], System.Globalization.CultureInfo.InvariantCulture);
+			Item item = (Item) Thing.UidGetItem(uid);
+			Console.WriteLine("ATTR_MOVE_RESULT: uid=" + uid + " stillOnGround=" + (item.Cont == null));
+		}
 	}
 }

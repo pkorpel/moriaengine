@@ -104,7 +104,57 @@ shared test fixture was already flagged as risky by the V-5 region-enforcement w
 deliberately deferred for the same reason) - the check is a straightforward 3-line
 conditional, left unverified by an automated test on the same reasoning, not overlooked.
 
-**Next up**: #220 (movement & placement: move_never/move_always/static), then #221-225 in
+**#220 (movement & placement: move_never/move_always/static) - DONE, PR #229, merged.**
+Real finding while scoping this: the issue's own framing ("Flag_NonMovable already exists
+and is read by real movement/pickup checks, just has zero write path") was only half
+right - confirmed via grep that `Flag_NonMovable` had ZERO consumers anywhere, not even a
+read path (`AbstractItem.On_DenyPickup`'s default implementation just returns `Continue`
+unconditionally, nothing ever checked the flag). Added BOTH halves: a `RecomputeNonMovable`
+helper (called from `SetAttribute` whenever `attr_static`/`attr_move_never`/
+`attr_move_always` change, and from `On_Create`) derives `Flag_NonMovable` from the 3 ATTR
+flags (`attr_move_always` is an explicit override, wins if somehow combined with
+`attr_static`/`attr_move_never` on the same item), and a new `Item.On_DenyPickup` override
+denies pickup when `Flag_NonMovable` is true, using the real pre-existing-but-unused
+`DenyResultMessages.Deny_YouCannotPickThatUp` cliloc (3000267, already defined, never
+referenced anywhere before this). Deliberately skipped per the issue's own scoping note:
+real Sphere's separate "world static" save-pass optimization - no player-visible behavior,
+not worth replicating; this is "can't be picked up" only. Verified with a real `[Theory]`
+driving an actual 0x07 pickup packet against 4 ground items (static/move_never denied,
+move_always-overriding-static and a plain control both succeed).
+
+**Two real test-authoring bugs found and fixed while building this Theory test, both
+worth remembering for any future multi-case parametrized test in this file/pattern**:
+1. **Character names can't contain underscores** - the server's name validator rejects
+   anything but letters and spaces (`"Illegal name - Contains something other than
+   letters and spaces"`), so `"AttrMove_" + mode`-style names fail outright. Use plain
+   concatenation instead (`"AttrMove" + mode`).
+2. **`EnsureAutoAccountCreationEnabled()` (ProfessionTests.cs's established pattern) is
+   NOT actually idempotent on the character-slot side** - every call creates a brand new
+   "AutoAccountEnabler" character via `ConnectLoginAndCreateCharacter`, consuming one of
+   the account's 5 slots EVERY time, not just the first. ProfessionTests.cs only gets away
+   with calling it twice because its own slot math happens to land exactly at the cap;
+   calling it once per `[Theory]` `InlineData` case (5 times total in this file) blew
+   through the cap immediately (`"Tried to create more chars than allowed"`). Fixed by
+   adding a `static bool` guard so the actual character-creation/command-send only ever
+   happens once per test process (safe under `DisableParallelization=true` - Facts in the
+   collection never run concurrently). **Worth fixing in ProfessionTests.cs too if that
+   file's own slot math ever gets tighter** - not fixed there in this pass since it's not
+   broken today, just fragile.
+3. **A `[Theory]`'s repeated "same marker, different value" setup command racing against
+   `AssertSeen` (not `AssertSeenSince`)** - `AssertSeen("ATTR_MOVE_SETUP:", ...)` is already
+   satisfied on the 2nd+ `InlineData` case by a PREVIOUS case's own leftover line sitting in
+   the shared log buffer, so it returns instantly without actually waiting for the new
+   command to run - then `LastLineContaining` can grab the stale previous line, silently
+   testing the wrong item. Symptom was confusing: results looked shifted/mismatched between
+   mode and expected outcome, not an obvious race at first glance. Fixed by capturing
+   `GameOutputSnapshot().Length` before sending the command and using `AssertSeenSince` -
+   the SAME idiom already used elsewhere in this file for a single-marker-reused-by-value
+   case, just hadn't been applied to this NEW marker since it looked like a "new, first use"
+   at the time. **General lesson**: any marker string that a test sends more than once
+   within a shared-fixture collection needs `AssertSeenSince`, not `AssertSeen`, even the
+   FIRST time it's introduced if the Fact/Theory itself will reuse it.
+
+**Next up**: #221 (house lockdown mechanic + attr_lockeddown/attr_secure), then #222-225 in
 order, each following the same raise-issue-first/implement/test/ship/close workflow.
 
 ---
