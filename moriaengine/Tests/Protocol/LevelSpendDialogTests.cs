@@ -52,12 +52,20 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		internal TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+			return this.ConnectLoginAndCreateCharacter(Account, Password, charName);
+		}
+
+		/// <summary>Overload accepting an explicit account/password, for a Fact that needs a
+		/// SECOND, non-first account (e.g. to exercise genuine non-GM-elevated authorization
+		/// paths - see LevelSpendDialogTestsC) rather than the shared, always-GM-elevated
+		/// `Account`/`Password` constants above.</summary>
+		internal TestGameClient ConnectLoginAndCreateCharacter(string account, string password, string charName) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account, password);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(Account, Password);
+					game.SendLogin(account, password);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					return game;
@@ -71,11 +79,15 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		private int WaitForServerListingAndGetRedirectPort() {
+			return this.WaitForServerListingAndGetRedirectPort(Account, Password);
+		}
+
+		private int WaitForServerListingAndGetRedirectPort(string account, string password) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(Account, Password);
+						login.SendLogin(account, password);
 
 						int serverCount = login.ReadServersList();
 						if (serverCount < 1) {
@@ -243,6 +255,65 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendGumpResponse(skillsUid, 1); // "Back" button
 				var (_, _, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
 				Assert.Contains(strings, s => s.Contains("Abilities"));
+			}
+		}
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class LevelSpendDialogCollectionC : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "LevelSpendDialogPairC";
+	}
+
+	[Collection(LevelSpendDialogCollectionC.Name)]
+	public class LevelSpendDialogTestsC : LevelSpendDialogTestBase {
+		private const string SecondAccount = "protocoltest2";
+		private const string SecondPassword = "protocoltest2";
+
+		public LevelSpendDialogTestsC(GameServerPairFixture servers) : base(servers) {
+		}
+
+		/// <summary>#256: explevel.scp's on=1/2/3 button handlers open the point-spend dialogs via
+		/// bare (unquoted) dialog-name symbols (src.Dialog(d_levelspendattributes)/etc), which go
+		/// through the SAME authorization gate as a real command, checked against the symbol's
+		/// own name - separately from the "explevel" command name itself. Every OTHER Fact in this
+		/// file runs under "protocoltest" (the server's one auto-elevated first-ever account),
+		/// which passes any authorization check regardless of the allowlist - so this is the only
+		/// test in the suite that actually proves these buttons work for a genuinely ordinary
+		/// (non-first-account, MaxPlevel==1) player, the exact account shape a real new player
+		/// has. Own dedicated collection/account (not protocoltest) specifically so this isn't
+		/// hidden by the same blind spot that let #256 ship unnoticed in the first place.</summary>
+		[Fact]
+		public void ExplevelButtonsWorkForAGenuinelyOrdinaryPlayer() {
+			using (var firstAccountClient = this.ConnectLoginAndCreateCharacter("AutoAccountEnabler")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				firstAccountClient.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST:", mark, TimeSpan.FromSeconds(10)));
+			}
+
+			using (var client = this.ConnectLoginAndCreateCharacter(SecondAccount, SecondPassword, "OrdinaryPlayer")) {
+				// Test* commands bypass CommandsAuthorization entirely (see
+				// E_CommandsAuthorization_Global.on_Command's "Test" prefix exemption), so setup
+				// works regardless of this account's real MaxPlevel.
+				this.SetProfessionAndLevelUp(client, "profession_mage");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				client.SendGumpResponse(explevelUid, 1); // "Attributes" button
+				var (attrUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.True(attrUid != 0, "Expected the Attributes dialog to open for an ordinary player.");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid2, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid2, 2); // "Skills" button
+				var (skillsUid, skillsLayout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.True(skillsLayout.Length > 0, "Expected the Skills dialog to open for an ordinary player.");
+
+				client.SendSpeech(".explevel");
+				var (explevelUid3, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid3, 3); // "Abilities" button
+				var (abilitiesUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.True(abilitiesUid != 0, "Expected the Abilities placeholder dialog to open for an ordinary player.");
 			}
 		}
 	}
