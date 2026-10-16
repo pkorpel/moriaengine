@@ -63,6 +63,37 @@ parallel allowlist entry for every throwaway test helper (#72). No production co
 uses this prefix - if you're naming a real player-facing or GM command, don't start it
 with "Test" by accident, it would silently never be authorization-checked.
 
+## `alwaysRawArgCommands`: opting a command out of the full parser entirely
+
+A real user-reported bug: `.go edoras` (one word) worked, but `.go jamy smrti` (two
+words, a region name) failed with `"jamy is not a function"`. Root cause is in the full
+LScript parser's own grammar (`GameCore/LScript/LScript_strict.grammar`), used for every
+GM-plevel command per the split above: a bare word followed by whitespace can start its
+own function-call-without-parens (`SimpleExpression`'s optional `WhiteSpaceAssigner ->
+ArgsList`). That binds the *second* word to the *first* word's own argument list rather
+than leaving it as a sibling argument to `go` - `"go jamy smrti"` parses as
+`go(jamy(smrti))`, not `go(jamy, smrti)` or `go("jamy smrti")`. `Go(Character self,
+string s)` (`scripts/Utils/LegacyUtils.cs:30`) expects the whole region name (or
+`"x y"`/`"x y z"`/`"x y z m"` coordinate string) as one argument, so this broke any
+multi-token call outright - a quoted argument (`.go "jamy smrti"`) always worked, since a
+quoted string is one atomic grammar token, but requiring GMs to know to quote region
+names is a real UX papercut, not just a documentation footnote.
+
+This is a general LScript ambiguity (any unquoted multi-word bareword argument to any GM
+command can hit it), not fixable from inside `Go` itself - by the time the generated
+SteamFunction wrapper runs, the (mis-)parsed argument list already exists. The fix instead
+bypasses the ambiguity at the dispatch level: `Commands.InvokeCommand`
+(`GameCore/Commands.cs`) now checks `SimpleCommandParser.IsAlwaysRawArgCommand(code)`
+*before* picking a parser, and routes any command name in the `alwaysRawArgCommands`
+set (currently just `"go"`) through `SimpleCommandParser` unconditionally, regardless of
+the sender's plevel - the exact same raw-rest-of-line-as-one-string parsing a below-GM
+account already got for free. Authorization semantics are unchanged either way:
+`SimpleCommandParser.TryRunSnippet` calls `Commands.AuthorizeCommand(commandSrc, name)`
+with the same `name` the full parser's own `OpNode_Lazy_Expression.Run` would have
+authorized via `AuthorizeCommandThrow`. Adding a future command to this set is the right
+move whenever its argument is naturally free-form text (a name, a sentence) rather than a
+small number of discrete LScript values.
+
 ## Historical bug: the default-deny gap (#84)
 
 Early in this engine's life, **every** non-explicitly-listed command below plevel 4 was

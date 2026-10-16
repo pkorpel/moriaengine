@@ -74,6 +74,47 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Regression for a real user-reported bug: ".go" with a two-token argument
+		/// (originally reported as a region name, "jamy smrti") failed outright, while a
+		/// one-token argument ("edoras") worked - root-caused to the full LScript parser's
+		/// bareword-call-without-parens grammar nesting the second word into the first word's
+		/// own argument list instead of leaving it as a sibling arg to "go" (see
+		/// CommandDispatchTests.cs and GameCore/Commands.cs's alwaysRawArgCommands). This test
+		/// uses the coordinate form rather than a named region, since no multi-word-named
+		/// region exists in this test world's data: before the fix, the generated SteamFunction
+		/// wrapper only ever reads argv[0], so even the old (accidentally correct for numbers)
+		/// 2-sibling-args parse would have silently dropped the second coordinate and thrown
+		/// trying to resolve the first number as a constant - the position would not change.</summary>
+		[Fact]
+		public void GoCommandAcceptsTwoTokenCoordinateArgument() {
+			using (var client = this.ConnectLoginAndCreateCharacter("GmGoTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportPosition");
+				this.AssertSeen("POSITION_REPORT:", mark, TimeSpan.FromSeconds(10));
+				string preLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "POSITION_REPORT:");
+				int preX = ExtractIntAfter(preLine, "x=");
+				int preY = ExtractIntAfter(preLine, "y=");
+
+				int targetX = preX + 5;
+				int targetY = preY + 5;
+				client.SendSpeech(".go " + targetX + " " + targetY);
+				Thread.Sleep(300);
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportPosition");
+				this.AssertSeen("POSITION_REPORT:", mark, TimeSpan.FromSeconds(10));
+				string postLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "POSITION_REPORT:");
+				int postX = ExtractIntAfter(postLine, "x=");
+				int postY = ExtractIntAfter(postLine, "y=");
+
+				Assert.Equal(targetX, postX);
+				Assert.Equal(targetY, postY);
+			}
+		}
+
 		/// <summary>GM targets i_wall_stone with ".flip" (#206) - a plain wall piece nothing
 		/// else's DUPEITEM points back at, so Flip() is a genuine no-op. Must get a clear
 		/// SysMessage instead of silently doing nothing.</summary>
