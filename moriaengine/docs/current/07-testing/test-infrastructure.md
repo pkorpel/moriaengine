@@ -27,13 +27,24 @@ collection uses. Its constructor:
 1. Resolves the real repo root from `AppContext.BaseDirectory` (not the fast tier's
    isolated temp dir - these are separate OS processes with their own independent static
    state, there's no isolation to inherit).
-2. Starts `AuxiliaryServer.dll`, waits 2 seconds for it to bind its ports before starting
+2. **Deletes every `saves/` snapshot except the git-tracked `saves/2000-01-01/00_00_00`
+   bootstrap skeleton**, before starting either child process. A process killed mid-run
+   (a hung/duplicate `dotnet test` invocation, or an earlier collection's own fixture
+   being torn down mid-save) can leave behind a snapshot whose only account isn't
+   `"protocoltest"` - GameCore auto-loads the most recent snapshot on boot, and since the
+   first-account auto-creation check above only fires when `accounts.Count == 0`, a stale
+   leftover account silently breaks every `"protocoltest"`-dependent test in the run with
+   `LoginDeniedReason=0` (NoAccount) cascades that have nothing to do with whatever's
+   actually being tested. Wiping *only* the non-bootstrap snapshots (never the whole
+   `saves/` tree - `WorldSaver.Load()` fails outright with nothing to load at all
+   otherwise) guarantees every fixture boot starts from that known-clean world.
+3. Starts `AuxiliaryServer.dll`, waits 2 seconds for it to bind its ports before starting
    `GameCore.dll` (mirrors `build.ps1`'s own "-Run Both" sequencing).
-3. Both child processes get a dedicated stdin pipe held open for the fixture's whole
+4. Both child processes get a dedicated stdin pipe held open for the fixture's whole
    lifetime - each one's `Main()` blocks on `Console.ReadLine()` in a background thread
    and shuts down the instant that returns, so an un-redirected stdin would make the
    child inherit whatever the *test process's* own stdin happens to be.
-4. Blocks until `GameCore`'s stdout contains the literal marker `"Init done."` (60s
+5. Blocks until `GameCore`'s stdout contains the literal marker `"Init done."` (60s
    timeout) before returning - a test that starts running before this returns would be
    racing the server's own boot sequence.
 
