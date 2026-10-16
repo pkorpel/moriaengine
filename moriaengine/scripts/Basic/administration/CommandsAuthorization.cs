@@ -70,6 +70,19 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["InvalidateCombatWeaponValues"] = PLEVEL_PLAYER;
 			this.commands["InvalidateCombatArmorValues"] = PLEVEL_PLAYER;
 
+			//Same gap, recurring a second time (#254): explevel.scp's own "on=1/2/3" button
+			//handlers (#156) open the point-spend dialogs via bare (unquoted) dialog-name
+			//symbols - src.Dialog(d_levelspendattributes)/etc - which go through this exact
+			//same OpNode_Lazy_Expression authorization gate, checked against the symbol's own
+			//name. Missing from this list meant every non-first-account player's Attributes/
+			//Skills/Abilities button click was silently denied - invisible in this repo's own
+			//LevelSpendDialogTests.cs because every Fact there runs under "protocoltest", the
+			//server's one auto-elevated first-ever account, which always passes regardless of
+			//this allowlist.
+			this.commands["d_levelspendattributes"] = PLEVEL_PLAYER;
+			this.commands["d_levelspendskills"] = PLEVEL_PLAYER;
+			this.commands["d_levelspendabilities"] = PLEVEL_PLAYER;
+
 			//Guild commands - gated by their own internal leader/member checks, not plevel;
 			//missing from this allowlist meant they silently required GM (plevel>=4) by the
 			//default-deny fallback below, so no ordinary player could ever use them
