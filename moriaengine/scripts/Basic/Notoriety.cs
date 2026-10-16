@@ -121,33 +121,48 @@ namespace SteamEngine.CompiledScripts {
 			return nameHues[index];
 		}
 
+		/// <summary>Redesigned per explicit user priority order (2026-10-16), replacing the
+		/// original #163 realm-based pass. Checked in this exact order, first match wins:
+		/// 1. Party (unchanged) - checked even for self (viewer==self has no special-case
+		///    shortcut anymore - self goes through the exact same logic as anyone else would
+		///    see them, including a partied self correctly showing Yellow to themselves).
+		/// 2. Mordor is ALWAYS red, unconditionally - a real murder-count/criminal-flag check
+		///    never applies to a Mordor character at all, since they're already "the worst"
+		///    by realm alone.
+		/// 3. Criminal (temp flag) -> grey - only reachable for non-Mordor characters, so only
+		///    Gondor (or unaligned) players can show this.
+		/// 4. IsMurderer is DELIBERATELY NOT checked anywhere in this method anymore - the user
+		///    explicitly did not want a Gondor player who racks up a murder count to render
+		///    identically to a real Mordor citizen (both would have shown HighlightColor.
+		///    Murderer/red under the old logic, erasing the realm distinction). A Gondor
+		///    murderer still falls through to the ordinary Gondor-blue/guild-green logic below
+		///    - murder count no longer has ANY rendering effect, full stop.
+		/// 5. Guild: same guild or an allied guild -> green. The old "guild at war -> grey"
+		///    branch is gone entirely per explicit request - an at-war guild member now just
+		///    falls through to whatever their realm/default color would otherwise be.
+		/// 6. Wild monsters (AggroMode.Hostile) -> orange, unchanged from before.
+		/// 7. Gondor -> blue.
+		/// 8. Default (grey) - every NPC/pet/wildlife with no realm and no hostile AggroMode
+		///    (a deer, a bird, a tamed pet, an Outcast realm variant, etc), and also the
+		///    catch-all for any future Realm value this switch doesn't know about yet.</summary>
 		public static HighlightColor GetHighlightColor(Character viewer, Character self) {
-			if (viewer == self) {
-				return HighlightColor.NoColor;
-			}
-			if (IsMurderer(self)) {
-				return HighlightColor.Murderer;
-			}
-			if (IsCriminal(self)) {
-				return HighlightColor.Criminal;
-			}
 			if (Party.AreInOneParty(viewer, self)) {
 				return HighlightColor.Yellow;
 			}
+
+			if (self.Realm == Realm.Mordor) {
+				return HighlightColor.Murderer;
+			}
+
+			if (IsCriminal(self)) {
+				return HighlightColor.Criminal;
+			}
+
 			Guild viewerGuild = Guild.GetGuild(viewer);
 			if (viewerGuild != null) {
 				Guild myGuild = Guild.GetGuild(self);
-				if (myGuild == viewerGuild) {
+				if ((myGuild == viewerGuild) || ((myGuild != null) && Guild.AreAllied(myGuild, viewerGuild))) {
 					return HighlightColor.Allied;
-				}
-				if (myGuild != null)
-				{
-					if (Guild.AreAllied(myGuild, viewerGuild)) {
-						return HighlightColor.Allied;
-					}
-					if (Guild.AreInWar(myGuild, viewerGuild)) {
-						return HighlightColor.Attackable;
-					}
 				}
 			}
 
@@ -155,13 +170,9 @@ namespace SteamEngine.CompiledScripts {
 			//dedicated "monster" notoriety color, hostile NPCs just render via the same
 			//blue/gray/orange/red logic as players). AggroMode.Hostile ("attacks any valid
 			//player regardless of realm/notoriety" - NPC.ShouldAggroOn/NPC.cs) is the existing
-			//signal this reuses: a wild monster is, almost by definition, the one NPC category
-			//with no realm/guild side to render by, and conflating it with Mordor-red would make
-			//every wild-monster encounter look like a Mordor player. HighlightColor.Enemy (real
-			//orange) is otherwise only reached via an at-war guild relationship above, so this
-			//never collides with that case - a guild-enemy player is still caught earlier.
-			//GM-tunable via NotorietySettings.wildMonstersRenderOrange, for a GM who wants
-			//strict OSI-accurate notoriety (monsters falling through to NoColor instead).
+			//signal this reuses - GM-tunable via NotorietySettings.wildMonstersRenderOrange,
+			//for a GM who wants strict OSI-accurate notoriety (monsters falling through to the
+			//default grey instead).
 			if (NotorietySettings.instance.wildMonstersRenderOrange) {
 				NPC npc = self as NPC;
 				if ((npc != null) && (((NPCDef) npc.Def).AggroMode == AggroMode.Hostile)) {
@@ -169,24 +180,11 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 
-			//Realm-based baseline (#163): Gondor=blue/Innocent, Mordor=red. Deliberately a clean,
-			//direct check - NOT a port of the original Sphere source's own mechanism, which
-			//fakes Mordor-red by giving every Mordor character a starting kill-count of 30000 to
-			//trip the real murderer threshold (confirmed via newbie_portals.scp's startnation
-			//function). Using HighlightColor.Murderer here is purely a rendering choice, fully
-			//decoupled from the actual IsMurderer/murder-count mechanic above - a Mordor
-			//character who's never killed anyone still renders red by design, same as a real
-			//murderer of either realm (already handled above, before this point is ever
-			//reached). Outcast variants (MordorOutcast/GondorOutcast) are a separate, pre-
-			//existing mechanic this feature doesn't touch - they fall through to NoColor,
-			//unchanged from before.
-			switch (self.Realm) {
-				case Realm.Mordor:
-					return HighlightColor.Murderer;
-				case Realm.Gondor:
-					return HighlightColor.Innocent;
+			if (self.Realm == Realm.Gondor) {
+				return HighlightColor.Innocent;
 			}
-			return HighlightColor.NoColor;
+
+			return HighlightColor.Attackable;
 		}
 
 		public static CharRelation GetCharRelation(Character a, Character b) {
