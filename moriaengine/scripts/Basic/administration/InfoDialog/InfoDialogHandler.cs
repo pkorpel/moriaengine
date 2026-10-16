@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using SteamEngine.Common;
 using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts.Dialogs {
@@ -136,13 +137,34 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//first column holds the type information in brackets() and the name of the field
 			this.actualFieldTable[this.actualFieldRow, 0] = GUTAText.Builder.TextLabel(GetFieldName(field, target)).Build();
 
-			object fieldValue = field.GetValue(target);
+			object fieldValue;
+			bool fieldThrew;
+			try {
+				fieldValue = field.GetValue(target);
+				fieldThrew = false;
+			} catch (FatalException) {
+				throw;
+			} catch (Exception e) {
+				//a field whose getter legitimately throws for this particular target (e.g. a
+				//property that's only meaningful on some subclasses) used to crash the WHOLE
+				//dialog - one bad field aborted every other field's rendering too, with no
+				//indication to the GM of which field was the problem. Render a clear "<error>"
+				//placeholder for just this one row instead and keep going; the real exception
+				//still reaches the server log either way.
+				Logger.WriteError(e);
+				fieldValue = null;
+				fieldThrew = true;
+			}
 			Type fieldValueType = null;
 			string thirdColumnText = "";
 			bool thirdColumnIsText; //third column is editable or just simple text
 			bool secondColIsButton; //second column is with or without button
 
-			if (fieldValue == null) {
+			if (fieldThrew) {
+				thirdColumnText = "<error>";
+				thirdColumnIsText = true;
+				secondColIsButton = false;
+			} else if (fieldValue == null) {
 				thirdColumnText = "null";
 				if (ObjectSaver.IsSimpleSaveableType(field.FieldType)) {
 					thirdColumnIsText = field.ReadOnly;
@@ -262,12 +284,12 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 			//MakeLastTableTransparent(); //the row where we added the navigating column
 			//add a navigating bar to the bottom (editable field for jumping to the selected page)
-			//it looks like this: "Stránka |__| / 23. <GOPAGE>  where |__| is editable field
+			//it looks like this: "Strï¿½nka |__| / 23. <GOPAGE>  where |__| is editable field
 			//and <GOPAGE> is confirming button that jumps to the written page.
 			GUTATable storedLastTable = this.LastTable; //store this one :)
 
 			this.AddTable(new GUTATable(1, 0));
-			this.LastTable[0, 0] = GUTAText.Builder.TextLabel("Stránka").Build();
+			this.LastTable[0, 0] = GUTAText.Builder.TextLabel("Strï¿½nka").Build();
 			//type if input,x,y,ID, width, height, prescribed text
 			this.LastTable[0, 0] = GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).XPos(65).Id(ID_PAGE_NO_INPUT).Width(30).Text(actualPage.ToString()).Build();
 			this.LastTable[0, 0] = GUTAText.Builder.TextLabel("/" + pagesCount).XPos(95).Build();
@@ -305,7 +327,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					int selectedPage = (int) gr.GetNumberResponse(ID_PAGE_NO_INPUT);
 					if (selectedPage < 1) {
 						//idiot proof adjustment
-						gi.Cont.WriteLine("Nepovolené èíslo stránky - povoleny jen kladné hodnoty");
+						gi.Cont.WriteLine("Nepovolenï¿½ ï¿½ï¿½slo strï¿½nky - povoleny jen kladnï¿½ hodnoty");
 						selectedPage = 1;
 					}
 					//count the index of the first item
@@ -334,7 +356,6 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 		/// <summary>Return the fields name accompanied with the type information (but sometimes we dont need the type info...)</summary>
 		private static string GetFieldName(IDataFieldView field, object target) {
-			object fieldVal = field.GetValue(target);
 			string retName = field.GetName(target);
 			if (typeof(Enum).IsAssignableFrom(target.GetType())) { } //target is Enum (e.g when infoizing the Enum itself and displaying its items)
 			 else if (typeof(Enum).IsAssignableFrom(field.FieldType)) { }//field is of type Enum
