@@ -92,6 +92,33 @@ namespace SteamEngine.CompiledScripts {
 			if ((flag == ItemAttributes.attr_decay) && value) {
 				ItemDecaySystem.EnsureSweepRunning(); //#219 - lazily self-installs on first real use
 			}
+			if ((flag == ItemAttributes.attr_static) || (flag == ItemAttributes.attr_move_never) || (flag == ItemAttributes.attr_move_always)) {
+				this.RecomputeNonMovable(); //#220
+			}
+		}
+
+		/// <summary>#220 - Flag_NonMovable had no write path at all before this (confirmed via
+		/// grep: zero consumers anywhere, not even a read path - the issue's own "already read
+		/// by real movement/pickup checks" framing didn't hold up, see On_DenyPickup below,
+		/// newly added in the same pass). attr_move_always is an explicit override and wins over
+		/// attr_static/attr_move_never if somehow both are set on the same item.</summary>
+		private void RecomputeNonMovable() {
+			bool nonMovable = this.HasAttribute(ItemAttributes.attr_static) || this.HasAttribute(ItemAttributes.attr_move_never);
+			if (this.HasAttribute(ItemAttributes.attr_move_always)) {
+				nonMovable = false;
+			}
+			this.Flag_NonMovable = nonMovable;
+		}
+
+		/// <summary>#220 - the actual read path for Flag_NonMovable (none existed before this).
+		/// DenyResultMessages.Deny_YouCannotPickThatUp is the real Sphere/UO cliloc (3000267,
+		/// "You cannot pick that up."), already defined but unused anywhere in this engine.</summary>
+		public override TriggerResult On_DenyPickup(DenyPickupArgs args) {
+			if (this.Flag_NonMovable) {
+				args.Result = DenyResultMessages.Deny_YouCannotPickThatUp;
+				return TriggerResult.Cancel;
+			}
+			return base.On_DenyPickup(args);
 		}
 
 		/// <summary>Seeds this instance's own Attributes (Item.ct's "attributes" Vars field,
@@ -104,6 +131,7 @@ namespace SteamEngine.CompiledScripts {
 			if (this.HasAttribute(ItemAttributes.attr_decay)) {
 				ItemDecaySystem.EnsureSweepRunning(); //#219
 			}
+			this.RecomputeNonMovable(); //#220
 		}
 
 		/// <summary>
