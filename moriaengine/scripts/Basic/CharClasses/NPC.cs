@@ -280,25 +280,71 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public partial class NPC : Character {
 
+		private static readonly TagKey instanceAggroModeTK = TagKey.Acquire("_npcAggroMode_");
+
+		/// <summary>Per-instance AggroMode (#260) - seeded from this NPC's own NPCDef.AggroMode
+		/// at creation, then lives independently from there on. All live aggro/notoriety logic
+		/// (ShouldAggroOn, Notoriety.GetHighlightColor) reads THIS, not the Def-level value -
+		/// NPCDef.AggroMode remains only the species-level default new spawns start from.
+		/// Deliberately a plain public property (not Def-level) so .info's existing reflection-
+		/// based editable-field support (confirmed to handle enums via a button picker) surfaces
+		/// and lets a GM fix one specific monster's aggro behavior without needing to touch - or
+		/// re-author - its whole species' .def content.</summary>
+		public AggroMode AggroMode {
+			get {
+				object tag = this.GetTag(instanceAggroModeTK);
+				if (tag is AggroMode mode) {
+					return mode;
+				}
+				return AggroMode.Calm;
+			}
+			set {
+				this.SetTag(instanceAggroModeTK, value);
+			}
+		}
+
+		private static readonly TagKey instanceExperienceRewardTK = TagKey.Acquire("_npcExperienceReward_");
+
+		/// <summary>Per-instance experience reward (#260) - rolled ONCE from this NPC's own
+		/// NPCDef.ExperienceWorth {min,max} range at creation, then fixed for this instance's
+		/// lifetime (not re-rolled on every death-grant) so a GM can see and manually adjust
+		/// exactly what THIS monster is worth via .info, same reasoning as AggroMode above.</summary>
+		public int ExperienceReward {
+			get {
+				object tag = this.GetTag(instanceExperienceRewardTK);
+				if (tag is int reward) {
+					return reward;
+				}
+				return 0;
+			}
+			set {
+				this.SetTag(instanceExperienceRewardTK, value);
+			}
+		}
+
 		public override void On_Create() {
 			base.On_Create();
 			NPCAiTimer.EnsureInstalled(this);
 
-			IMovementSettings template = ((NPCDef) this.Def).DefaultMovementSettings;
+			NPCDef def = (NPCDef) this.Def;
+			this.AggroMode = def.AggroMode;
+			this.ExperienceReward = def.RollExperienceReward();
+
+			IMovementSettings template = def.DefaultMovementSettings;
 			if (template != null) {
 				this.MovementSettings = (IMovementSettings) DeepCopyFactory.GetCopy(template);
 			}
 		}
 
-		/// <summary>Grants monster-kill experience to a player killer - see
-		/// NPCDef.ExperienceWorth/RollExperienceReward and LevelingSystem.AddExperience (#127).
-		/// NPCs themselves never level (Erebor's own level-up logic only ever runs "if
+		/// <summary>Grants monster-kill experience to a player killer - see ExperienceReward
+		/// (#260, rolled once at creation, not re-rolled here) and LevelingSystem.AddExperience
+		/// (#127). NPCs themselves never level (Erebor's own level-up logic only ever runs "if
 		/// (isplayer)") so there's nothing else to do here for the NPC side.</summary>
 		public override void On_Death(Character killedBy) {
 			base.On_Death(killedBy);
 			Player player = killedBy as Player;
 			if (player != null) {
-				int reward = ((NPCDef) this.Def).RollExperienceReward();
+				int reward = this.ExperienceReward;
 				if (reward != 0) {
 					LevelingSystem.AddExperience(player, reward);
 				}
@@ -313,7 +359,7 @@ namespace SteamEngine.CompiledScripts {
 			if (this.ControlMaster != null) {
 				return false; //tamed pets don't pick fights on their own - no "guard me"/"kill" command system yet (follow-up)
 			}
-			switch (((NPCDef) this.Def).AggroMode) {
+			switch (this.AggroMode) {
 				case AggroMode.Hostile:
 					return true;
 				case AggroMode.GuardsRealm:
