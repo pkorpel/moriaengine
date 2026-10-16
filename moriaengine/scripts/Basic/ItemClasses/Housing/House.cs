@@ -17,6 +17,7 @@
 
 using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -130,6 +131,38 @@ namespace SteamEngine.CompiledScripts {
 				list.Add(ch);
 			}
 			return list;
+		}
+
+		/// <summary>#221 - the house whose region contains the given point, or null if the
+		/// point isn't inside any house. Dynamic regions (which includes every MultiRegion, a
+		/// house's own region) are always checked before static ones by Sector.GetRegionFor, so
+		/// this correctly finds the house regardless of what static region (town, wilderness)
+		/// surrounds it.</summary>
+		public static House FindHouseAt(IPoint4D point) {
+			MultiRegion multiRegion = point.GetMap().GetRegionFor(point) as MultiRegion;
+			if (multiRegion != null) {
+				return multiRegion.multiItem as House;
+			}
+			return null;
+		}
+
+		/// <summary>#221 - who may pick up/move an attr_lockeddown or attr_secure item inside
+		/// this house. Deliberately narrower than HasAccess: friends can enter and use a house
+		/// but, per real UO's own lockdown rules, cannot move another player's locked-down
+		/// belongings - only the owner and co-owners can.</summary>
+		public bool CanMoveLockedItems(Character ch) {
+			if (ch == null) {
+				return false;
+			}
+			if (ch.IsGM || (ch == this.Owner)) {
+				return true;
+			}
+			foreach (Character coOwner in this.CoOwners) {
+				if (coOwner == ch) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public override void On_DClick(AbstractCharacter clicker) {
