@@ -19,6 +19,21 @@ all gameplay-system verification in this codebase lives - a protocol test is the
 standard of proof for "this actually works," not just a passing unit test against
 isolated logic.
 
+## Telling "slow" from "stuck": `xunit.runner.json`'s long-running-test heartbeat
+
+A full-boot `dotnet test` run can go several minutes between visible console lines even
+when perfectly healthy - a single AI-combat test can legitimately take 40-60+ seconds. With
+no intermediate output, a long silent stretch is genuinely ambiguous: slow, or actually
+hung (same fixed-port concurrent-invocation hang class covered in
+[Known gotchas](known-gotchas.md#never-run-two-full-boot-test-invocations-concurrently))?
+`Tests/xunit.runner.json` (`diagnosticMessages: true`, `longRunningTestSeconds: 30`) fixes
+this with xUnit's own built-in feature - any test still running past 30 seconds gets a
+periodic `[Long Running Test] '<full test name>', Elapsed: <time>` line printed to the
+normal console output, repeated while it keeps running. Confirmed: a real 40-second test
+printed exactly one clean heartbeat line, no other noise added. The file must stay at
+`Tests/xunit.runner.json` and ship with `CopyToOutputDirectory` in the `.csproj` - xUnit
+reads it from next to the compiled test assembly at runtime, not from the source tree.
+
 ## `GameServerPairFixture`
 
 `Tests/Protocol/GameServerPairFixture.cs` is the shared fixture every full-boot test
@@ -47,6 +62,17 @@ collection uses. Its constructor:
 5. Blocks until `GameCore`'s stdout contains the literal marker `"Init done."` (60s
    timeout) before returning - a test that starts running before this returns would be
    racing the server's own boot sequence.
+
+Steps 3-5 are wrapped in a `try`/`catch` that kills both child processes before
+rethrowing on ANY failure (most commonly the step-5 boot timeout, when GameCore's own
+nested script-compile step stalls under sandbox CPU contention). This isn't cosmetic -
+without it, a failed constructor returns no object for xUnit to `Dispose()`, so the
+already-spawned processes were silently abandoned, still running, still holding the
+fixed ports. A real run was observed leaking 9 separate orphaned pairs this way over its
+lifetime - each failed collection left its own pair behind while `dotnet test` moved on
+to the next collection, whose own compile step then had to compete with an ever-growing
+pile of already-stuck prior attempts for the same limited CPU, turning one transient
+hiccup into a self-reinforcing whole-run cascade instead of an isolated failure.
 
 **Fixed ports** (`LoginPort = 2593`, `GamePort = 2595`) - this is the single most
 important constraint to know about this fixture. See

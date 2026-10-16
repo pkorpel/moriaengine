@@ -28,4 +28,13 @@
     <ProjectReference Include="..\ThirdParty\SteamEngine.ThirdParty.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- xunit.runner.json must sit next to the test assembly at runtime - xUnit reads it
+         from there, not from the source tree. diagnosticMessages+longRunningTestSeconds give
+         a periodic "still running" heartbeat for any full-boot test exceeding the threshold,
+         so a long `dotnet test` run's own console output distinguishes "slow" from "stuck"
+         without having to inspect /proc CPU deltas by hand. -->
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
