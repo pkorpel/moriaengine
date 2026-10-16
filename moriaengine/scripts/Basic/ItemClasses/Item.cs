@@ -110,15 +110,43 @@ namespace SteamEngine.CompiledScripts {
 			this.Flag_NonMovable = nonMovable;
 		}
 
-		/// <summary>#220 - the actual read path for Flag_NonMovable (none existed before this).
-		/// DenyResultMessages.Deny_YouCannotPickThatUp is the real Sphere/UO cliloc (3000267,
-		/// "You cannot pick that up."), already defined but unused anywhere in this engine.</summary>
+		/// <summary>#220/#221 - the actual read path for Flag_NonMovable (none existed before
+		/// #220) plus attr_lockeddown/attr_secure's own, narrower "owner/co-owner only" pickup
+		/// restriction inside a house (#221) - friends can use the house but, per real UO's own
+		/// lockdown rules, can't move another player's locked-down belongings.
+		/// DenyResultMessages.Deny_YouCannotPickThatUp/Deny_ThatIsLocked are both real, already
+		/// pre-existing Sphere/UO clilocs that had never been referenced anywhere in this engine
+		/// before #220/#221.</summary>
 		public override TriggerResult On_DenyPickup(DenyPickupArgs args) {
 			if (this.Flag_NonMovable) {
 				args.Result = DenyResultMessages.Deny_YouCannotPickThatUp;
 				return TriggerResult.Cancel;
 			}
+			if (this.HasAttribute(ItemAttributes.attr_lockeddown) || this.HasAttribute(ItemAttributes.attr_secure)) {
+				House house = House.FindHouseAt(this);
+				if ((house != null) && !house.CanMoveLockedItems(args.PickingChar as Character)) {
+					args.Result = DenyResultMessages.Deny_ThatIsLocked;
+					return TriggerResult.Cancel;
+				}
+			}
 			return base.On_DenyPickup(args);
+		}
+
+		/// <summary>#221 - attr_secure's "access restricted to owner/co-owners/friends" half
+		/// (attr_lockeddown alone does NOT restrict access/viewing, only movement - see
+		/// On_DenyPickup above). Called on the CONTAINER when someone tries to take an item OUT
+		/// of it, so this only matters for secure items that are themselves containers.
+		/// DenyResultMessages.Deny_ContainerClosed is a real, already pre-existing cliloc that
+		/// fits this denial well ("You cannot peek into the container.").</summary>
+		public override void On_DenyPickupItemFrom(DenyPickupArgs args) {
+			if (this.HasAttribute(ItemAttributes.attr_secure)) {
+				House house = House.FindHouseAt(this);
+				if ((house != null) && !house.HasAccess(args.PickingChar as Character)) {
+					args.Result = DenyResultMessages.Deny_ContainerClosed;
+					return;
+				}
+			}
+			base.On_DenyPickupItemFrom(args);
 		}
 
 		/// <summary>Seeds this instance's own Attributes (Item.ct's "attributes" Vars field,
