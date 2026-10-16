@@ -165,5 +165,40 @@ namespace SteamEngine.CompiledScripts {
 			Item item = (Item) Thing.UidGetItem(uid);
 			Console.WriteLine("ATTR_MOVE_RESULT: uid=" + uid + " stillOnGround=" + (item.Cont == null));
 		}
+
+		/// <summary>#222 - creates one plain item per quality flag (plus a no-flag control) and
+		/// reports each one's Name, to confirm the name-prefix display effect. Also confirms
+		/// the precedence order (reforged beats everything) on a single item carrying both
+		/// attr_reforged and attr_magic at once.</summary>
+		[SteamFunction]
+		public static void TestSetupQualityDisplayItems(Character self) {
+			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
+
+			Item magicItem = (Item) plainDef.Create(self.P());
+			magicItem.SetAttribute(ItemAttributes.attr_magic, true);
+
+			Item exceptionalItem = (Item) plainDef.Create(self.P());
+			exceptionalItem.SetAttribute(ItemAttributes.attr_exceptional, true);
+
+			Item enchantedItem = (Item) plainDef.Create(self.P());
+			enchantedItem.SetAttribute(ItemAttributes.attr_enchanted, true);
+
+			Item imbuedItem = (Item) plainDef.Create(self.P());
+			imbuedItem.SetAttribute(ItemAttributes.attr_imbued, true);
+
+			Item reforgedAndMagicItem = (Item) plainDef.Create(self.P());
+			reforgedAndMagicItem.SetAttribute(ItemAttributes.attr_reforged, true);
+			reforgedAndMagicItem.SetAttribute(ItemAttributes.attr_magic, true);
+
+			Item plainItem = (Item) plainDef.Create(self.P());
+
+			Console.WriteLine("ATTR_QUALITY_TEST:" +
+				" magic=" + magicItem.Name +
+				" exceptional=" + exceptionalItem.Name +
+				" enchanted=" + enchantedItem.Name +
+				" imbued=" + imbuedItem.Name +
+				" reforgedAndMagic=" + reforgedAndMagicItem.Name +
+				" plain=" + plainItem.Name);
+		}
 	}
 }

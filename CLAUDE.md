@@ -206,8 +206,21 @@ footprint nearby at all. Confirmed via direct reproduction with zero `House.cs`/
 own new test file sidesteps it by reusing `TestTeleportToOpenGround` instead of a hardcoded
 offset; the same fix would resolve #230 too, left for whoever picks that up.
 
-**Next up**: #222 (magic/crafting-quality display flags), then #223-225 in order, each
-following the same raise-issue-first/implement/test/ship/close workflow.
+**#222 (magic/crafting-quality display: magic/exceptional/enchanted/imbued/reforged) -
+DONE, PR #232, merged.** Flags+display only, no mechanical stat/combat effect, exactly as
+explicitly scoped (no crafting-bonus/item-upgrade system exists to attach a real effect
+to). `Item.Name` override prepends a quality-word prefix (e.g. "exceptional Dagger") when
+any of the 5 flags are set, falling back to `base.Name` otherwise - reuses the EXISTING
+name/cliloc pipeline (`GetNameCliloc` already reads `this.Name`) rather than building a new
+tooltip/property mechanism. Precedence order for an item carrying more than one flag at
+once (shouldn't normally happen with real content): reforged > imbued > enchanted >
+exceptional > magic - reforged implies the most rework, so it wins. Verified server-side
+(pure property logic, no network-specific behavior to round-trip) against the plain
+control item's own reported base name rather than a hardcoded literal, since `i_rock_plain`
+has no `Name=` line of its own (falls back to client tiledata).
+
+**Next up**: #223 (ownership & trade restriction: owned/nodroptrade/norepair), then #224-225
+in order, each following the same raise-issue-first/implement/test/ship/close workflow.
 
 ---
 
