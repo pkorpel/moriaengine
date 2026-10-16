@@ -221,6 +221,36 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>GM-only diagnostic (#254): reports a targeted NPC's live `AggroMode` (an
+		/// `NPCDef`-level property `.info` never surfaces at all, since `.info`'s reflection
+		/// only walks the NPC instance's own type, not its Def) plus `Realm` and the notoriety
+		/// color the issuing GM would actually see for it - lets a GM directly confirm in-game
+		/// whether a spawned monster really got the AggroMode/color its .def content claims,
+		/// without needing a code change/rebuild each time this comes up.</summary>
+		[SteamFunction]
+		public static void CheckAggro(Player self) {
+			self.SysMessage("Target the NPC to check.");
+			self.Target(SingletonScript<Targ_CheckAggro>.Instance);
+		}
+
+		public class Targ_CheckAggro : CompiledTargetDef {
+			protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
+				NPC npc = targetted as NPC;
+				if (npc == null) {
+					self.SysMessage("That is not an NPC.");
+					return TargetResult.Done;
+				}
+
+				AggroMode aggroMode = ((NPCDef) npc.Def).AggroMode;
+				HighlightColor color = Notoriety.GetHighlightColor(self, npc);
+				self.SysMessage(npc.Name + "#" + npc.Uid + ": AggroMode=" + aggroMode +
+					" Realm=" + npc.Realm +
+					" WildMonstersRenderOrange=" + NotorietySettings.instance.wildMonstersRenderOrange +
+					" HighlightColorAsSeenByYou=" + color);
+				return TargetResult.Done;
+			}
+		}
+
 		//public static void DragonTileTargon(GameConn c, IPoint3D point, object targData) {
 		//    AbstractCharacter cre = c.CurCharacter;
 		//    Map map = cre.GetMap();
