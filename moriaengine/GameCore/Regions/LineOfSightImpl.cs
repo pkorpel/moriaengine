@@ -54,11 +54,19 @@ namespace SteamEngine.Regions {
 		}
 
 		/// <summary>
-		/// Checks terrain and static/multi map data for something solid enough to block sight at
-		/// this single point. Deliberately does NOT check dynamic Things/Items yet (e.g. a
-		/// player-placed crate or a future house wall) - there's no real placeable-blocking
-		/// content in the game yet to validate that against (see the housing gap, issue #19);
-		/// this covers the actual common case today, which is terrain and building statics.
+		/// Checks terrain, static/multi map data, AND real dynamically-placed ground items
+		/// (e.g. a GM-placed i_wall_stone) for something solid enough to block sight at this
+		/// single point.
+		///
+		/// Real bug found and fixed here: this used to deliberately skip dynamic Things/Items
+		/// ("there's no real placeable-blocking content in the game yet to validate that
+		/// against") - but i_wall_stone IS real, already-placeable content (confirmed working
+		/// content elsewhere, e.g. HousingTests), and a user reported a titan mage caster
+		/// walled in with it could still cast spells at (and damage) a target outside the
+		/// walls. Real Item blocking already works correctly for MOVEMENT (see
+		/// MapCalculations.IsOk's own `items` loop, using the exact same
+		/// ItemDispidInfo.GetByModel(item.Model).Flags pattern mirrored below) - walking into a
+		/// placed wall was never broken, only sight THROUGH one was.
 		/// </summary>
 		private bool IsLosBlockedAt(int x, int y, int z) {
 			if (!this.IsValidPos(x, y)) {
@@ -74,6 +82,14 @@ namespace SteamEngine.Regions {
 			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
 				if (TileData.HasFlag(s.Flags, TileFlag.Impassable) &&
 					(z >= s.Z) && (z < s.Z + Math.Max(s.Height, 1))) {
+					return true;
+				}
+			}
+
+			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
+				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
+				if (TileData.HasFlag(idi.Flags, TileFlag.Impassable) &&
+					(z >= item.Z) && (z < item.Z + Math.Max((int) idi.Height, 1))) {
 					return true;
 				}
 			}
