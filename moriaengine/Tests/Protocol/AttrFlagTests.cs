@@ -187,7 +187,67 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Equal("enchanted " + plainName, ExtractValueAfter(line, "enchanted="));
 				Assert.Equal("imbued " + plainName, ExtractValueAfter(line, "imbued="));
 				Assert.Equal("reforged " + plainName, ExtractValueAfter(line, "reforgedAndMagic="));
+				//#224 - same attr_magic flag as the "magic=" item above, but NOT identified -
+				//its prefix must stay hidden, showing the plain name instead.
+				Assert.Equal(plainName, ExtractValueAfter(line, "unidentifiedMagic="));
 			}
+		}
+
+		/// <summary>#224: an attr_invis item is invisible to an unrelated character, but a GM
+		/// always sees it, and an explicitly-granted non-GM character sees it too (real
+		/// Sphere's own "TAG.SeenBy_[CharUID]" exception list, via the new .Reveal command's
+		/// item-then-character target chain). Teleports the stranger to the item first - same
+		/// CanReach-after-deny-chain-style trap as #221/#223, except here it's about targeting
+		/// range for the .Reveal command itself, not pickup.</summary>
+		[Fact]
+		public void InvisItemHiddenUnlessExplicitlyRevealed() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var owner = this.ConnectLoginAndCreateCharacter(AccountC, "InvisOwnerTester")) {
+				//GMs see every invisible item unconditionally - needed here so the owner can
+				//even TARGET their own invis item for the .Reveal flow below. HandleTarget
+				//checks self.CanSeeForUpdate(thing) before invoking the target handler at all,
+				//so a non-GM owner couldn't target their own invisible creation either.
+				//TestSetGmOn's "PLevel = MaxPLevel" only reaches real GM level on the server's
+				//first-ever account (the only one with MaxPLevel auto-elevated) - AccountC
+				//isn't that account, so this needs TestPromoteToGM's own maxPlevel override
+				//instead (same account-order-independent promotion SocialTests.cs itself uses).
+				owner.SendSpeech(".TestPromoteToGM");
+				Thread.Sleep(500);
+
+				owner.SendSpeech(".TestSetupInvisItem");
+				this.AssertSeen("ATTR_INVIS_SETUP:", TimeSpan.FromSeconds(10));
+				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_INVIS_SETUP:");
+				uint itemUid = ExtractUidAfter(setupLine, "uid=");
+				int x = ExtractSignedIntAfter(setupLine, "x=");
+				int y = ExtractSignedIntAfter(setupLine, "y=");
+				int z = ExtractSignedIntAfter(setupLine, "z=");
+
+				//must be a different account than owner - only one connection per account at a time
+				using (var stranger = this.ConnectLoginAndCreateCharacter(AccountD, "InvisStrangerTester")) {
+					this.TeleportTo(stranger, x, y, z);
+					uint strangerUid = this.ReportMyUid(stranger);
+
+					Assert.False(this.CheckCanSee(stranger, itemUid), "Stranger should not see the invisible item yet.");
+
+					//owner (acting as the revealer) targets the item, then the stranger
+					owner.SendSpeech(".Reveal");
+					Thread.Sleep(300);
+					owner.SendTargetUid(itemUid);
+					Thread.Sleep(300);
+					owner.SendTargetUid(strangerUid);
+					Thread.Sleep(300);
+
+					Assert.True(this.CheckCanSee(stranger, itemUid), "Stranger should see the item after being explicitly revealed to.");
+				}
+			}
+		}
+
+		private bool CheckCanSee(TestGameClient client, uint itemUid) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestCheckCanSeeItem " + itemUid);
+			this.AssertSeenSince("ATTR_INVIS_CHECK:", mark, TimeSpan.FromSeconds(10));
+			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_INVIS_CHECK:");
+			return line.EndsWith("canSee=True", StringComparison.Ordinal);
 		}
 
 		/// <summary>Extracts the value for "key=" up to the next " <word>=" field or end of

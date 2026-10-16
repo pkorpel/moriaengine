@@ -110,6 +110,29 @@ namespace SteamEngine.CompiledScripts {
 			if ((flag == ItemAttributes.attr_static) || (flag == ItemAttributes.attr_move_never) || (flag == ItemAttributes.attr_move_always)) {
 				this.RecomputeNonMovable(); //#220
 			}
+			if (flag == ItemAttributes.attr_invis) {
+				this.Flag_Invisible = value; //#224 - the only write path Flag_Invisible ever gets
+			}
+		}
+
+		/// <summary>#224 - attr_invis's own per-viewer exception list, matching real Sphere's
+		/// own "TAG.SeenBy_[CharUID]" pattern exactly rather than inventing a different one (per
+		/// the issue's explicit instruction) - a dynamically-keyed TagKey per viewer UID, same
+		/// mechanism every other tag in this engine already uses, just computed instead of a
+		/// static literal.</summary>
+		public bool IsSeenBy(Character viewer) {
+			if (viewer == null) {
+				return false;
+			}
+			return this.GetTag(TagKey.Acquire("_seenBy_" + viewer.Uid)) != null;
+		}
+
+		public void GrantVisibilityTo(Character viewer) {
+			this.SetTag(TagKey.Acquire("_seenBy_" + viewer.Uid), true);
+		}
+
+		public void RevokeVisibilityFrom(Character viewer) {
+			this.RemoveTag(TagKey.Acquire("_seenBy_" + viewer.Uid));
 		}
 
 		/// <summary>#220 - Flag_NonMovable had no write path at all before this (confirmed via
@@ -183,29 +206,37 @@ namespace SteamEngine.CompiledScripts {
 			base.On_DenyPickupItemFrom(args);
 		}
 
-		/// <summary>#222 - magic/crafting-quality flags are flags+display only for now (no
+		/// <summary>#222/#224 - magic/crafting-quality flags are flags+display only for now (no
 		/// crafting-bonus/item-upgrade system exists to attach a real mechanical effect to,
 		/// confirmed with the user as acceptable scope) - a name prefix is the same "sensible
 		/// minimal display effect" a real UO client already shows for "exceptional" crafted
 		/// items, reusing the existing name/cliloc pipeline rather than a new one. Precedence
 		/// (highest first) matters only for an item carrying more than one of these flags at
 		/// once, which real content shouldn't normally do - reforged implies the most rework,
-		/// so it wins.</summary>
+		/// so it wins.
+		///
+		/// #224's own shallow tie-in: attr_exceptional is a visible craftsmanship mark, shown
+		/// regardless (matches real UO - exceptional quality is visible without identifying
+		/// anything). The other 4 are magical-property markers, hidden until attr_identified is
+		/// set - this IS attr_identified's entire "reveals more detail" effect for this pass,
+		/// deliberately not a new Identification-skill mechanic (per the issue's own scoping
+		/// note).</summary>
 		private string QualityPrefix {
 			get {
-				if (this.HasAttribute(ItemAttributes.attr_reforged)) {
+				bool identified = this.HasAttribute(ItemAttributes.attr_identified);
+				if (identified && this.HasAttribute(ItemAttributes.attr_reforged)) {
 					return "reforged";
 				}
-				if (this.HasAttribute(ItemAttributes.attr_imbued)) {
+				if (identified && this.HasAttribute(ItemAttributes.attr_imbued)) {
 					return "imbued";
 				}
-				if (this.HasAttribute(ItemAttributes.attr_enchanted)) {
+				if (identified && this.HasAttribute(ItemAttributes.attr_enchanted)) {
 					return "enchanted";
 				}
 				if (this.HasAttribute(ItemAttributes.attr_exceptional)) {
 					return "exceptional";
 				}
-				if (this.HasAttribute(ItemAttributes.attr_magic)) {
+				if (identified && this.HasAttribute(ItemAttributes.attr_magic)) {
 					return "magic";
 				}
 				return null;
@@ -236,6 +267,9 @@ namespace SteamEngine.CompiledScripts {
 				ItemDecaySystem.EnsureSweepRunning(); //#219
 			}
 			this.RecomputeNonMovable(); //#220
+			if (this.HasAttribute(ItemAttributes.attr_invis)) {
+				this.Flag_Invisible = true; //#224
+			}
 		}
 
 		/// <summary>
