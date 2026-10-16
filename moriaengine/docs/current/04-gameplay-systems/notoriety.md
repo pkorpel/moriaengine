@@ -17,6 +17,14 @@ Murderers (`IsMurderer`, `GetMurderCount(self) >= MurdererThreshold` where
 `MurdererThreshold = 5`, the classic UO value) never get criminal-flagged on top - already
 the worst notoriety tier, flagging would add nothing (line 58).
 
+Both `MurdererThreshold` and `CriminalFlagSeconds` are backed by `NotorietySettings`
+(`scripts/Basic/NotorietySettings.cs`) - GM-tunable via the `.settings` dialog's
+"Notoriety" category (cross-link [settings-dialog.md](../03-admin-tooling/settings-dialog.md)),
+same pattern as `DecaySettings`/`ProfessionSettings`. `Notoriety.MurdererThreshold`/
+`CriminalFlagSeconds` are thin pass-through properties onto
+`NotorietySettings.instance`'s fields, kept so existing call sites didn't need to change
+when `MurdererThreshold` stopped being a compile-time `const`.
+
 `OnHostileAction(victim, enemy)` (line 64) is the entry point that actually flags someone
 criminal - called whenever `enemy` commits a hostile act against `victim`. It no-ops unless
 both parties are players (**"no AI/monster notoriety yet"**, line 69, a stated scope
@@ -55,6 +63,54 @@ same-realm or cross-realm characters still overrides the realm default.
 
 `Realm` itself, and race-to-realm/nation assignment, are covered in
 [races-and-nations.md](races-and-nations.md).
+
+## Wild monsters render orange (user-requested, not real OSI behavior)
+
+Real UO has no dedicated "monster" notoriety color - hostile NPCs render via the exact
+same blue/gray/orange/red logic as players. This engine deliberately deviates: a wild
+monster (`NPCDef.AggroMode.Hostile` - "attacks any valid player regardless of
+realm/notoriety," see `NPC.ShouldAggroOn`/`NPC.cs`) renders `HighlightColor.Enemy`
+(orange), checked in `GetHighlightColor` right before the realm switch above. Reusing
+`AggroMode.Hostile` as the signal avoids inventing a new flag - it's already, almost by
+definition, the one NPC category with no realm/guild side to render by, and without this
+check a wild-monster encounter would otherwise fall through to `NoColor` (no realm set)
+rather than looking visually distinct from a Mordor player's red. `AggroMode.GuardsRealm`
+NPCs (town guards) are untouched by this - they DO have a `Realm` set, so the existing
+realm switch already colors them correctly as their own side's blue/red.
+
+GM-tunable: `NotorietySettings.wildMonstersRenderOrange` (default on) - a GM who wants
+strict OSI-accurate notoriety instead can turn this off via the `.settings` dialog's
+"Notoriety" category, falling back to the real-UO-matching `NoColor` behavior.
+
+## Two separate color mechanisms: health bar vs. name text
+
+A real, user-reported bug (2026-10-16): the health-bar/status overlay was already
+correctly blue/red for Gondor/Mordor, but the separate floating overhead NAME text (the
+response to a single click) stayed a generic uncolored gray. These are genuinely two
+different client-rendered things driven by two different packets:
+
+- **Health bar** - `DrawObjectOutPacket`'s highlight byte, set via
+  `AbstractCharacter.GetHighlightColorFor`/`Character.GetHighlightColorFor` ->
+  `Notoriety.GetHighlightColor`. The client derives the bar's actual color client-side
+  from this byte automatically - this part was already correct.
+- **Overhead name text** - an ordinary speech-type message (`UnicodeSpeechOutPacket`
+  0xAE for `On_Click`, or `ClilocMessageOutPacket` 0xC1 for `On_AosClick`, depending on
+  `Globals.UseAosToolTips`/client version) with its own explicit hue field. The client
+  does **not** derive this hue from notoriety itself - the server has to set it
+  explicitly, same as a real OSI server does (confirmed against ServUO's own
+  `Mobile.OnAosSingleClick`, which computes `Notoriety.GetHue(Notoriety.Compute(...))` for
+  exactly this field). `Thing.On_Click`/`On_AosClick`'s base implementation always hardcoded
+  hue 0 (correct for a plain item, wrong for a character) - `Character.On_Click`/
+  `On_AosClick` now override this, calling `Notoriety.GetNameHue(this.GetHighlightColorFor(clicker))`.
+
+`Notoriety.GetNameHue(HighlightColor)` is a small lookup table (`nameHues`, matching
+ServUO's own `m_Hues` index-for-index against this engine's `HighlightColor` enum - both
+run `NoColor=0` through `Invulnerable=7`): `0x0059` blue/Innocent, `0x003F` green/Allied,
+`0x03B2` gray/Attackable-or-Criminal, `0x0090` orange/Enemy, `0x0022` red/Murderer,
+`0x0035` yellow/Invulnerable. `Corpse.On_Click`/`On_AosClick` (`scripts/Basic/ItemClasses/
+Corpse.cs`) had the identical gap (a long-standing `//TODO notoriety hue stuff` comment)
+- fixed the same way, deriving the hue from `Corpse.Owner`'s notoriety color as seen by
+the clicker (null `Owner` - an NPC's corpse - has nothing to color by, same as a plain item).
 
 ## Region-based combat/exp-loss exemptions
 

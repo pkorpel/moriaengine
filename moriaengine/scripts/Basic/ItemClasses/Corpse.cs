@@ -59,16 +59,24 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Only a player's own corpse has an Owner (see InitFromChar) to derive a
+		/// notoriety color from - an NPC's corpse (Owner null) has nothing to color by, same
+		/// as a plain item.</summary>
+		private int GetNameHue(AbstractCharacter clicker) {
+			if (this.owner == null) {
+				return 0;
+			}
+			return Notoriety.GetNameHue(this.owner.GetHighlightColorFor(clicker));
+		}
+
 		public override void On_Click(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
-			//TODO notoriety hue stuff
-			PacketSequences.SendNameFrom(clickerConn, this, this.Name, 0);
+			PacketSequences.SendNameFrom(clickerConn, this, this.Name, this.GetNameHue(clicker));
 		}
 
 		public override void On_AosClick(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
-			//TODO notoriety hue stuff
 			AosToolTips toolTips = this.GetAosToolTips(clicker.Language);
 			PacketSequences.SendClilocNameFrom(clickerConn, this,
-				toolTips.FirstId, 0, toolTips.FirstArgument);
+				toolTips.FirstId, this.GetNameHue(clicker), toolTips.FirstArgument);
 		}
 
 		public void InitFromChar(Character dieingChar) {

@@ -103,6 +103,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return DecaySettings.instance;
 			}
 		}
+
+		[InfoField("Notoriety")]
+		public NotorietySettings NotorietySettings {
+			get {
+				return NotorietySettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {

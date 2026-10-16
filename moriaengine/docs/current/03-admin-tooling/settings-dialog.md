@@ -67,6 +67,7 @@ Read straight off `SettingsCategories`'s own `[InfoField(...)]` properties
 | Level System | `LevelingSettings` | `nextLevelCoefficient`, `experienceLossPercentage`, `pkGainPercentage` |
 | Profession System | `ProfessionSettings` | `enforceWeaponArmorRestrictions`, `grantSkillsOnAssign` |
 | Item Decay | `DecaySettings` | see below |
+| Notoriety | `NotorietySettings` | `murdererThreshold`, `criminalFlagSeconds`, `wildMonstersRenderOrange` - see [Notoriety & murder counts](../04-gameplay-systems/notoriety.md) |
 
 ## Worked example: `DecaySettings`
 

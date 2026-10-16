@@ -24,18 +24,21 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey murderCountTK = TagKey.Acquire("_murderCount_");
 		private static readonly TimerKey criminalTimerTK = TimerKey.Acquire("_criminalTimer_");
 
-		/// <summary>Classic UO threshold at which a player's title turns from innocent to "murderer" (red).</summary>
-		public const int MurdererThreshold = 5;
-
-		private static double criminalFlagSeconds = 120;
+		/// <summary>Classic UO threshold at which a player's title turns from innocent to
+		/// "murderer" (red) - GM-tunable via the .settings dialog's "Notoriety" category
+		/// (NotorietySettings.murdererThreshold), was a compile-time const before that.</summary>
+		public static int MurdererThreshold {
+			get { return NotorietySettings.instance.murdererThreshold; }
+		}
 
 		/// <summary>How long a criminal flag lasts after a single hostile act, in seconds - the
-		/// real 2-minute classic-UO default. Settable (mirrors LightAndWeather.DayLengthSeconds's
-		/// own pattern) so a verification test can shorten it to confirm the flag actually expires
-		/// without waiting out 2 real minutes.</summary>
+		/// real 2-minute classic-UO default. GM-tunable via the .settings dialog's "Notoriety"
+		/// category (NotorietySettings.criminalFlagSeconds). Also settable directly (mirrors
+		/// LightAndWeather.DayLengthSeconds's own pattern) so a verification test can shorten it
+		/// to confirm the flag actually expires without waiting out 2 real minutes.</summary>
 		public static double CriminalFlagSeconds {
-			get { return criminalFlagSeconds; }
-			set { criminalFlagSeconds = value; }
+			get { return NotorietySettings.instance.criminalFlagSeconds; }
+			set { NotorietySettings.instance.criminalFlagSeconds = value; }
 		}
 
 		public static int GetMurderCount(Character self) {
@@ -99,6 +102,25 @@ namespace SteamEngine.CompiledScripts {
 			killedBy.SetTag(murderCountTK, GetMurderCount(killedBy) + 1);
 		}
 
+		/// <summary>The real UO client colors the health-bar/status overlay from the
+		/// notoriety flag byte automatically (see GetHighlightColorFor/DrawObjectOutPacket),
+		/// but the separate floating overhead NAME text (single-click response) is just an
+		/// ordinary speech-type message with its own explicit hue field - the client does NOT
+		/// derive that hue from notoriety itself, the server has to set it. Matches ServUO's
+		/// own Notoriety.m_Hues table index-for-index against this engine's HighlightColor
+		/// enum (both run NoColor=0 through Invulnerable/Yellow=7) - same real hue values a
+		/// classic OSI client expects, since HighlightColor's own numbering already mirrors
+		/// the wire-protocol notoriety byte.</summary>
+		private static readonly int[] nameHues = { 0x0000, 0x0059, 0x003F, 0x03B2, 0x03B2, 0x0090, 0x0022, 0x0035 };
+
+		public static int GetNameHue(HighlightColor color) {
+			int index = (int) color;
+			if ((index < 0) || (index >= nameHues.Length)) {
+				return 0;
+			}
+			return nameHues[index];
+		}
+
 		public static HighlightColor GetHighlightColor(Character viewer, Character self) {
 			if (viewer == self) {
 				return HighlightColor.NoColor;
@@ -126,6 +148,24 @@ namespace SteamEngine.CompiledScripts {
 					if (Guild.AreInWar(myGuild, viewerGuild)) {
 						return HighlightColor.Attackable;
 					}
+				}
+			}
+
+			//Wild monsters (user-requested, deliberately NOT real OSI behavior - real UO has no
+			//dedicated "monster" notoriety color, hostile NPCs just render via the same
+			//blue/gray/orange/red logic as players). AggroMode.Hostile ("attacks any valid
+			//player regardless of realm/notoriety" - NPC.ShouldAggroOn/NPC.cs) is the existing
+			//signal this reuses: a wild monster is, almost by definition, the one NPC category
+			//with no realm/guild side to render by, and conflating it with Mordor-red would make
+			//every wild-monster encounter look like a Mordor player. HighlightColor.Enemy (real
+			//orange) is otherwise only reached via an at-war guild relationship above, so this
+			//never collides with that case - a guild-enemy player is still caught earlier.
+			//GM-tunable via NotorietySettings.wildMonstersRenderOrange, for a GM who wants
+			//strict OSI-accurate notoriety (monsters falling through to NoColor instead).
+			if (NotorietySettings.instance.wildMonstersRenderOrange) {
+				NPC npc = self as NPC;
+				if ((npc != null) && (((NPCDef) npc.Def).AggroMode == AggroMode.Hostile)) {
+					return HighlightColor.Enemy;
 				}
 			}
 
