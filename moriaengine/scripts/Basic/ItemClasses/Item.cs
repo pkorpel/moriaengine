@@ -83,6 +83,21 @@ namespace SteamEngine.CompiledScripts {
 			return (this.attributes & flag) == flag;
 		}
 
+		/// <summary>#223 - attr_owned's own owner-UID link. Named OwnedBy, not Owner - House and
+		/// Corpse (both Item subclasses) already each have their own, semantically different
+		/// "Owner" (who owns the house / whose body is this), and a same-named property here
+		/// would silently shadow both (confirmed by the CS0108 warnings this caused on a first
+		/// attempt named Owner - fixed by picking a distinct name instead of hiding theirs).</summary>
+		private static readonly TagKey ownedByTK = TagKey.Acquire("_itemOwner_");
+		public Character OwnedBy {
+			get {
+				return this.GetTag(ownedByTK) as Character;
+			}
+			set {
+				this.SetTag(ownedByTK, value);
+			}
+		}
+
 		public void SetAttribute(ItemAttributes flag, bool value) {
 			if (value) {
 				this.attributes |= flag;
@@ -129,7 +144,26 @@ namespace SteamEngine.CompiledScripts {
 					return TriggerResult.Cancel;
 				}
 			}
+			if (this.HasAttribute(ItemAttributes.attr_owned) && (this.OwnedBy != null)) {
+				Character picker = args.PickingChar as Character;
+				if ((picker != this.OwnedBy) && ((picker == null) || !picker.IsGM)) {
+					args.Result = DenyResultMessages.Deny_ThatDoesNotBelongToYou;
+					return TriggerResult.Cancel;
+				}
+			}
 			return base.On_DenyPickup(args);
+		}
+
+		/// <summary>#223 - attr_nodroptrade's "can't be dropped on the ground" half. The other
+		/// half (can't be placed into a secure-trade window) is a separate check inside
+		/// SecureTrade.AddItem - that path deliberately bypasses the normal deny-trigger chain
+		/// entirely (see its own doc comment), so this hook alone wouldn't have caught it.</summary>
+		public override TriggerResult On_DenyPutOnGround(DenyPutOnGroundArgs args) {
+			if (this.HasAttribute(ItemAttributes.attr_nodroptrade)) {
+				args.Result = new DenyResult_StringSysMessage("You cannot drop this item.");
+				return TriggerResult.Cancel;
+			}
+			return base.On_DenyPutOnGround(args);
 		}
 
 		/// <summary>#221 - attr_secure's "access restricted to owner/co-owners/friends" half

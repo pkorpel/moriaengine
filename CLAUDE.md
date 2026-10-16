@@ -219,8 +219,37 @@ exceptional > magic - reforged implies the most rework, so it wins. Verified ser
 control item's own reported base name rather than a hardcoded literal, since `i_rock_plain`
 has no `Name=` line of its own (falls back to client tiledata).
 
-**Next up**: #223 (ownership & trade restriction: owned/nodroptrade/norepair), then #224-225
-in order, each following the same raise-issue-first/implement/test/ship/close workflow.
+**#223 (ownership & trade restriction: attr_owned/attr_nodroptrade/attr_norepair) - DONE,
+PR #233, merged.** Confirmed via grep before adding anything: no parallel "item owner"
+concept existed to reuse/conflict with (`Corpse.Owner`/`House.Owner` are unrelated,
+same-name-different-meaning concepts on other `Item` subclasses - naming the new property
+`Item.OwnedBy` instead of `Owner` avoided silently shadowing both, caught via the CS0108
+warnings a first attempt produced). `attr_owned` + the new `Item.OwnedBy` (tag-backed,
+settable via a new player-facing `.ClaimOwnership` target-cursor command) denies pickup to
+anyone but the owner/a GM, extending `On_DenyPickup` again. `attr_nodroptrade` has TWO
+separate enforcement points, because they're genuinely different code paths: a new
+`Item.On_DenyPutOnGround` override (the normal deny-trigger hook) for the ground-drop half,
+and an EXPLICIT check inside `SecureTrade.AddItem` for the trade-window half - that path
+deliberately bypasses the whole deny-trigger chain already (per its own pre-existing doc
+comment, "no permission/reach checks"), so `On_DenyPutOnGround` alone would never have
+caught it; confirmed by reading `SecureTrade.cs` directly rather than assuming the generic
+hook would cover it. `attr_norepair` - confirmed via grep that **no repair system exists
+anywhere in this engine at all**, so this is genuinely a flag with no current consumer,
+exactly as the issue itself anticipated as an acceptable outcome - no code added for it
+beyond the core flag infrastructure #217 already provides.
+
+**Real test-authoring bug hit while building this, worth remembering**: a test needing TWO
+simultaneous character connections (e.g. owner + stranger both connected at once to test a
+pickup denial) must put them on DIFFERENT accounts - a UO account only supports one active
+connection at a time, and reusing the same account for both produced `LoginDeniedReason=1`
+on the second connection attempt. This is a DIFFERENT constraint than the already-documented
+"5 characters per account" cap - that one's about cumulative character creation across
+possibly-sequential Facts; this one's about concurrent connections regardless of character
+count. Fixed by spreading simultaneous connections within one Fact across different account
+constants (reusing the same constants across different, non-overlapping Facts is still fine).
+
+**Next up**: #224 (visibility & identification: attr_invis/attr_identified), then #225 in
+order, each following the same raise-issue-first/implement/test/ship/close workflow.
 
 ---
 
