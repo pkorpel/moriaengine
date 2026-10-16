@@ -35,6 +35,35 @@ namespace SteamEngine.Tests.Protocol {
 			// ran in this same process) already changed.
 			this.RepoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
 
+			// A process killed mid-run (e.g. a hung/duplicate `dotnet test` invocation, or this
+			// fixture's own previous collection being torn down mid-save) can leave behind a
+			// save snapshot under saves/ whose only account isn't "protocoltest" - GameCore
+			// auto-loads the most recent snapshot on boot, and the account-auto-creation login
+			// flow (TestEnableAutoAccountCreation) only actually creates "protocoltest" when it
+			// would be the very first account ever, not on any missing-account login attempt.
+			// A stale leftover account from an unrelated test run silently breaks every test in
+			// THIS run with LoginDeniedReason=0 (NoAccount) cascades that have nothing to do with
+			// whatever's actually being tested. Delete every snapshot EXCEPT the git-tracked
+			// "2000-01-01/00_00_00" bootstrap skeleton (saves/2000-01-01/00_00_00/*.sav) before
+			// every fixture boot, so each test collection's GameCore process always starts from
+			// that known-clean world - NOT by wiping saves/ outright, which removes the
+			// bootstrap skeleton itself and makes WorldSaver.Load() fail after 3 attempts with
+			// nothing at all to load (confirmed the hard way: don't repeat this).
+			string savesDir = Path.Combine(this.RepoRoot, "saves");
+			if (Directory.Exists(savesDir)) {
+				foreach (string snapshotDateDir in Directory.GetDirectories(savesDir)) {
+					if (Path.GetFileName(snapshotDateDir) == "2000-01-01") {
+						foreach (string snapshotTimeDir in Directory.GetDirectories(snapshotDateDir)) {
+							if (Path.GetFileName(snapshotTimeDir) != "00_00_00") {
+								Directory.Delete(snapshotTimeDir, true);
+							}
+						}
+					} else {
+						Directory.Delete(snapshotDateDir, true);
+					}
+				}
+			}
+
 			string auxDll = Path.Combine(this.RepoRoot, "AuxiliaryServer", "bin", "Debug", "net8.0", "SteamEngine.AuxiliaryServer.dll");
 			string gameDll = Path.Combine(this.RepoRoot, "GameCore", "bin", "Debug", "net8.0", "SteamEngine.GameCore.dll");
 
