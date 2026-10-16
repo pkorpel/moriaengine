@@ -1,4 +1,7 @@
 using System;
+using System.Globalization;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>Verification harness for the item ATTR flag core infrastructure (#215/#217) -
@@ -97,8 +100,10 @@ namespace SteamEngine.CompiledScripts {
 		/// (exempt while contained). Reports their uids so a protocol test can poll each one.</summary>
 		[SteamFunction]
 		public static void TestSetupDecayItems(Character self) {
-			DecaySettings.instance.decayIntervalMinutes = 0.01; //0.6 real seconds
-			ItemDecaySystem.SpeedUpSweepForTest(1, 1); //check every 1 real second
+			//#219 (redesigned) - no more global sweep to speed up; each item's own timer reads
+			//this setting at the moment it's scheduled (when created/flagged below), so setting
+			//it first is all a test needs to do.
+			DecaySettings.instance.itemDecayMinutes = 0.01; //0.6 real seconds
 
 			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
 
@@ -118,6 +123,23 @@ namespace SteamEngine.CompiledScripts {
 				" decayQuestItem=" + decayQuestItem.Uid +
 				" noDecayFlag=" + noDecayFlag.Uid +
 				" decayButContained=" + decayButContained.Uid);
+		}
+
+		/// <summary>#219 (redesigned) - creates a decay-eligible item and immediately triggers
+		/// a real Globals.Save(), so a protocol test can inspect the resulting things.sav and
+		/// confirm the per-item ItemDecayTimer actually got serialized (proving the per-item-
+		/// timer design is genuinely persistent, which was the user's own explicit motivation
+		/// for this redesign - not just assumed because the generic mechanism "should" work).
+		/// A long interval (5 real minutes) so it's still pending, not already fired, at the
+		/// moment the save happens.</summary>
+		[SteamFunction]
+		public static void TestSetupPersistentDecayItemAndSave(Character self) {
+			DecaySettings.instance.itemDecayMinutes = 5;
+			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
+			Item item = (Item) plainDef.Create(self.P());
+			item.SetAttribute(ItemAttributes.attr_decay, true);
+			Globals.Save();
+			Console.WriteLine("ATTR_DECAY_PERSIST_SETUP: uid=" + item.Uid);
 		}
 
 		/// <summary>Reports whether the item at the given uid still exists - 0 if it decayed
@@ -256,6 +278,91 @@ namespace SteamEngine.CompiledScripts {
 			uint uid = Convert.ToUInt32(sa.Argv[0], System.Globalization.CultureInfo.InvariantCulture);
 			Item item = (Item) Thing.UidGetItem(uid);
 			Console.WriteLine("ATTR_INVIS_CHECK: canSee=" + self.CanSeeVisibility(item));
+		}
+
+		/// <summary>#219 (redesigned) - sets deliberately different, tiny npc-vs-player corpse
+		/// decay rates so a protocol test can confirm Corpse.Owner (set only for player deaths)
+		/// really does pick a different rate, not just that corpses decay at all. A single
+		/// combined string argument ("npcMinutes,playerMinutes") sidesteps ScriptArgs' usual
+		/// dual-shape ambiguity the same way other multi-value Test* commands in this session
+		/// already do.</summary>
+		[SteamFunction]
+		public static void TestSetupCorpseDecayRates(Character self, ScriptArgs sa) {
+			string[] parts = sa.Argv[0].ToString().Split(',');
+			DecaySettings.instance.npcCorpseDecayMinutes = Convert.ToDouble(parts[0], CultureInfo.InvariantCulture);
+			DecaySettings.instance.playerCorpseDecayMinutes = Convert.ToDouble(parts[1], CultureInfo.InvariantCulture);
+			Console.WriteLine("ATTR_CORPSE_RATES_SET");
+		}
+
+		/// <summary>Kills a freshly-spawned, nearby NPC and reports its corpse's uid. Deferred
+		/// to a near-immediate timer rather than calling CauseDeath synchronously - same #146
+		/// lazy-DeathSound-expression/command-authorization trap LevelingTests.
+		/// DeferredNpcKillTimer already works around (a monster's DeathSound ".def" expression
+		/// gets treated as a command-authorization check if resolved synchronously inside a
+		/// chat command's own call stack) - that class's own OnTimeout is hardcoded to report
+		/// leveling-specific results, not reusable here, so this is its own small equivalent.</summary>
+		[SteamFunction]
+		public static void TestKillNpcAndReportCorpse(Character self) {
+			NPCDef rabbitDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC rabbit = (NPC) rabbitDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			self.AddTimer(DeferredCorpseKillTimer.TimerKey, new DeferredCorpseKillTimer(rabbit, self)).DueInSeconds = 0;
+		}
+
+		/// <summary>Kills the player identified by sa.Argv[0]'s uid and reports its corpse's
+		/// uid. Unlike the NPC case above, a player's own CauseDeath resolves synchronously
+		/// fine from within a chat command (confirmed already, #218's own TestDeathDropAttrItems) -
+		/// no deferral needed.</summary>
+		[SteamFunction]
+		public static void TestKillPlayerAndReportCorpse(Character self, ScriptArgs sa) {
+			uint victimUid = Convert.ToUInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			Player victim = (Player) Thing.UidGetCharacter(victimUid);
+			if (victim.Flag_Dead) {
+				victim.Resurrect();
+			}
+			victim.CauseDeath((Character) self);
+			Corpse corpse = FindNearbyCorpse(victim);
+			Console.WriteLine("ATTR_CORPSE_SETUP: uid=" + (corpse != null ? corpse.Uid.ToString(CultureInfo.InvariantCulture) : "none"));
+		}
+
+		private static Corpse FindNearbyCorpse(Character self) {
+			foreach (AbstractItem item in self.GetMap().GetItemsInRange(self.X, self.Y, 10)) {
+				Corpse corpse = item as Corpse;
+				if (corpse != null) {
+					return corpse;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>Reports whether the item/corpse at the given uid still exists.</summary>
+		[SteamFunction]
+		public static void TestReportThingExists(Character self, ScriptArgs sa) {
+			uint uid = Convert.ToUInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			bool exists = Thing.UidGetThing(uid) != null;
+			Console.WriteLine("ATTR_THING_EXISTS: uid=" + uid + " exists=" + exists);
+		}
+
+		[SaveableClass]
+		public class DeferredCorpseKillTimer : BoundTimer {
+			internal static readonly TimerKey TimerKey = TimerKey.Acquire("_deferredCorpseKillTimer_");
+
+			private NPC victim;
+			private Character killer;
+
+			[LoadingInitializer]
+			public DeferredCorpseKillTimer() {
+			}
+
+			public DeferredCorpseKillTimer(NPC victim, Character killer) {
+				this.victim = victim;
+				this.killer = killer;
+			}
+
+			protected override void OnTimeout(TagHolder cont) {
+				this.victim.CauseDeath(this.killer);
+				Corpse corpse = FindNearbyCorpse(this.killer);
+				Console.WriteLine("ATTR_CORPSE_SETUP: uid=" + (corpse != null ? corpse.Uid.ToString(CultureInfo.InvariantCulture) : "none"));
+			}
 		}
 	}
 }

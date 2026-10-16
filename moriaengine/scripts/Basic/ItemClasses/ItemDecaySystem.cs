@@ -15,109 +15,107 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
-using System.Collections.Generic;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
-	/// <summary>Generic item-decay sweep (#215/#219) - no such mechanism existed in moriaengine
-	/// before this; FlaggedRegion's own "flag_nodecay" was a toggle with nothing to toggle.
+	/// <summary>Generic decay system (#215/#219) - redesigned per explicit user follow-up
+	/// request away from the original periodic-full-world-scan design, to a real per-item
+	/// BoundTimer created the moment an item (or corpse) actually lands on the ground.
 	///
-	/// Periodically scans every live Item for attr_decay-flagged ones currently lying loose on
-	/// the ground (Cont == null), and deletes them once DecaySettings.decayIntervalMinutes has
-	/// elapsed since they were first observed there. attr_questitem-flagged items and items
-	/// inside a flag_nodecay region are exempt - the decay clock simply never starts for them
-	/// (re-checked every sweep, so removing either exemption later lets the clock start normally
-	/// from that point on, it doesn't retroactively "owe" decay time).
+	/// Why this is better than the sweep it replaces: no global per-tick scan cost at all (a
+	/// decaying item just has its own ordinary timer, exactly like every other per-instance
+	/// timer in this engine - NPCAiTimer, SpawnTimer, etc.) - the scan's own CPU cost scaled
+	/// with total world item count every tick regardless of how many were actually decaying;
+	/// this scales with only the currently-eligible count, at zero steady-state cost otherwise.
+	/// It's also genuinely simpler to reason about: eligibility is decided once, at the exact
+	/// moment it could have changed (landing on the ground, being picked up, the flag being
+	/// toggled, a corpse's ownership becoming known) - not re-derived from scratch every tick.
 	///
-	/// Default policy decision (#219 explicitly asked for one, not a silent guess): attr_decay
-	/// is OFF by default for every item unless a ".def" "ATTR=" line or a GM explicitly sets it -
-	/// matches this engine's existing "incomplete/unconfigured content defaults to the
-	/// permissive, nothing-happens behavior" convention (e.g. an empty allowedWeaponTypes list
-	/// means unrestricted, not restricted-to-nothing). Nothing already placed in the world starts
-	/// decaying just because this feature now exists.
-	///
-	/// Uses a periodic full Thing.AllThings scan (same recurring-BoundTimer-on-Globals.Instance
-	/// idiom as LightAndWeather.WorldClockTimer) rather than a live add/remove registry - avoids
-	/// needing a separate re-registration hook for items reloaded from a save file (the registry
-	/// approach would silently "forget" any item that was mid-decay across a restart), at the
-	/// cost of a full-world scan each tick. Fine at this engine's scale.</summary>
+	/// Persistence comes for free: BoundTimer instances live in the same TagHolder.tags
+	/// Hashtable as ordinary tags (TagHolder.AddTimer), which the generic item-save pipeline
+	/// already serializes - a scheduled ItemDecayTimer survives a save/reload exactly like any
+	/// other per-item timer already does (confirmed precedent: NPCAiTimer's WanderLeash,
+	/// SpawnTimer's own rescheduling). No explicit save/load code needed here at all.</summary>
 	public static class ItemDecaySystem {
-		private static readonly TagKey decayDeadlineTK = TagKey.Acquire("_decayDeadline_");
-		private static readonly TimerKey sweepTK = TimerKey.Acquire("_itemDecaySweep_");
-		private const double DefaultSweepIntervalSeconds = 60;
+		private static readonly TimerKey decayTimerTK = TimerKey.Acquire("_itemDecay_");
 
-		/// <summary>Starts the recurring sweep on first use - no reliable compiled-trigger hook
-		/// for "@startup" was found (same situation LightAndWeather.EnsureClockRunning already
-		/// documented), so this lazily self-installs instead, called from every place an item's
-		/// attr_decay flag can become set (Item.On_Create's def-default seeding, Item.
-		/// SetAttribute).</summary>
-		public static void EnsureSweepRunning() {
-			if (!Globals.Instance.HasTimer(sweepTK)) {
-				DecaySweepTimer timer = new DecaySweepTimer();
-				Globals.Instance.AddTimer(sweepTK, timer);
-				timer.DueInSeconds = DefaultSweepIntervalSeconds;
-				timer.PeriodInSeconds = DefaultSweepIntervalSeconds;
+		/// <summary>Re-evaluates whether `item` should currently be on a decay clock, and
+		/// (re)schedules or cancels its own per-item timer to match. Always clears any existing
+		/// timer first and re-derives from scratch, so calling this more than once in a row (or
+		/// before all the relevant state is known yet - see Corpse.InitFromChar's own call,
+		/// made after Owner is set, correcting an earlier call made during creation before it
+		/// was) is always safe and self-correcting, never additive.</summary>
+		public static void ScheduleOrCancel(Item item) {
+			item.DeleteTimer(decayTimerTK);
+			double? minutes = GetDecayMinutesIfEligible(item);
+			if (minutes.HasValue) {
+				ItemDecayTimer timer = new ItemDecayTimer();
+				item.AddTimer(decayTimerTK, timer);
+				timer.DueInSeconds = minutes.Value * 60;
 			}
 		}
 
-		/// <summary>Test-only hook (#219, same precedent as LightAndWeather.SpeedUpClockForTest)
-		/// - re-arms the already-running sweep timer to a short, test-practical cadence instead
-		/// of the real 60-second production interval.</summary>
-		public static void SpeedUpSweepForTest(double dueInSeconds, double periodInSeconds) {
-			EnsureSweepRunning();
-			DecaySweepTimer timer = (DecaySweepTimer) Globals.Instance.GetTimer(sweepTK);
-			timer.DueInSeconds = dueInSeconds;
-			timer.PeriodInSeconds = periodInSeconds;
+		/// <summary>Unconditional cancel - used from Item.On_LeaveRegion, which fires exactly
+		/// when an item stops being on the ground (about to enter a container/character) but
+		/// BEFORE its own Cont is actually updated to the new value (Trigger_LeaveGround's own
+		/// precondition is Cont still being null) - so ScheduleOrCancel's own "is this on the
+		/// ground" check can't be trusted at that exact moment; this skips straight to "no,
+		/// cancel it" instead.</summary>
+		public static void Cancel(Item item) {
+			item.DeleteTimer(decayTimerTK);
 		}
 
-		private static void PerformSweep() {
-			double now = Globals.TimeInSeconds;
-
-			//snapshot first - PerformSweep can delete items (mutating Thing.AllThings) while
-			//iterating, which a live enumerator over the same collection wouldn't tolerate.
-			List<Item> candidates = new List<Item>();
-			foreach (Thing thing in Thing.AllThings) {
-				Item item = thing as Item;
-				if ((item != null) && item.HasAttribute(ItemAttributes.attr_decay)) {
-					candidates.Add(item);
-				}
+		/// <summary>Null if not currently eligible (not on the ground, exempt, or not flagged);
+		/// otherwise the real minutes to use, from DecaySettings.
+		///
+		/// Default policy decided here, same as the original pass: attr_decay is OFF by
+		/// default for every non-corpse item unless a ".def" line or a GM/script explicitly
+		/// sets it - matches this engine's existing "incomplete config defaults permissive"
+		/// convention. Corpses, by contrast, ALWAYS decay by default once on the ground -
+		/// there's no flag gating corpse decay at all, matching real UO (every corpse
+		/// eventually disappears, no content author has to opt a corpse into it).</summary>
+		private static double? GetDecayMinutesIfEligible(Item item) {
+			if (item.Cont != null) {
+				return null; //not on the ground - nothing decays while held/contained/equipped
+			}
+			if (IsInNoDecayRegion(item)) {
+				return null;
 			}
 
-			foreach (Item item in candidates) {
-				if (item.IsDeleted) {
-					continue;
-				}
-				if (item.Cont != null) {
-					item.RemoveTag(decayDeadlineTK); //picked up/contained - clock pauses
-					continue;
-				}
-				if (item.HasAttribute(ItemAttributes.attr_questitem)) {
-					continue; //exempt, no clock at all
-				}
-				FlaggedRegion region = item.GetMap().GetRegionFor(item) as FlaggedRegion;
-				if ((region != null) && region.Flag_NoDecay) {
-					continue; //exempt while in this region
-				}
-
-				object deadlineTag = item.GetTag(decayDeadlineTK);
-				if (deadlineTag == null) {
-					item.SetTag(decayDeadlineTK, now + (DecaySettings.instance.decayIntervalMinutes * 60));
-				} else if (now >= (double) deadlineTag) {
-					item.Delete();
-				}
+			Corpse corpse = item as Corpse;
+			if (corpse != null) {
+				return (corpse.Owner != null)
+					? DecaySettings.instance.playerCorpseDecayMinutes
+					: DecaySettings.instance.npcCorpseDecayMinutes;
 			}
+
+			if (!item.HasAttribute(ItemAttributes.attr_decay)) {
+				return null;
+			}
+			if (item.HasAttribute(ItemAttributes.attr_questitem)) {
+				return null; //exempt, no clock at all
+			}
+			return DecaySettings.instance.itemDecayMinutes;
+		}
+
+		private static bool IsInNoDecayRegion(Item item) {
+			FlaggedRegion region = item.GetMap().GetRegionFor(item) as FlaggedRegion;
+			return (region != null) && region.Flag_NoDecay;
 		}
 
 		[SaveableClass]
-		public class DecaySweepTimer : BoundTimer {
+		public class ItemDecayTimer : BoundTimer {
 			[LoadingInitializer]
-			public DecaySweepTimer() {
+			public ItemDecayTimer() {
 			}
 
 			protected override void OnTimeout(TagHolder cont) {
-				PerformSweep();
+				Item item = (Item) cont;
+				if (!item.IsDeleted) {
+					item.Delete();
+				}
 			}
 		}
 	}
