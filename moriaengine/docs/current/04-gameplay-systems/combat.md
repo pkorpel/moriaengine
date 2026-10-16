@@ -99,6 +99,22 @@ animation call didn't exist before a documented fix - previously an attacker onl
 sound, never visibly swung), then runs the deny-able `@beforeSwing`/`@beforeGetSwing`
 trigger pair before calling `CauseDamage` with the pre-computed `DamageAfterAC`.
 
+## Fixed bug: NPC spellcasting ignored walls made of real placed items
+
+User-reported: an NPC spellcaster walled in with `i_wall_stone` could still cast at and
+damage a target outside the walls. `NPCAiTimer.TryCastSpell`'s own `self.CanInteractWith(
+target).Allow` check (`NPCAiTimer.cs`) was correct - the bug was one level deeper, in
+`Map.IsLosBlockedAt` (`GameCore/Regions/LineOfSightImpl.cs`), which deliberately checked
+only terrain and pre-baked map statics, explicitly skipping real dynamically-placed Items
+("there's no real placeable-blocking content in the game yet to validate that against" -
+no longer true, `i_wall_stone` is real content used elsewhere). Movement already correctly
+blocked on a placed wall (`MapCalculations.IsOk`'s own `items` loop) - only sight through
+one was broken. Fixed by extending `IsLosBlockedAt` to also check real ground items along
+the LOS ray, mirroring the exact `ItemDispidInfo.GetByModel(item.Model).Flags`/
+`TileFlag.Impassable` pattern the movement check already used. This affects every caller
+of `CanInteractWith`/`CanSeeLOS`, not just spellcasting - any LOS-gated interaction now
+correctly respects a real placed wall.
+
 ## Open gap: armor mitigation is largely inert (#96)
 
 Tracked as issue #96, **deliberately left open, not fixed** - the user wants armor
