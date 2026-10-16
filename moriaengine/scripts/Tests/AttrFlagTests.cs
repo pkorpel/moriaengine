@@ -174,21 +174,33 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestSetupQualityDisplayItems(Character self) {
 			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
 
+			//#224 - magic/enchanted/imbued/reforged all need attr_identified to show their
+			//prefix; attr_exceptional doesn't (a visible craftsmanship mark, not a hidden
+			//magical property) - see exceptionalItem below, deliberately left unidentified.
 			Item magicItem = (Item) plainDef.Create(self.P());
 			magicItem.SetAttribute(ItemAttributes.attr_magic, true);
+			magicItem.SetAttribute(ItemAttributes.attr_identified, true);
 
 			Item exceptionalItem = (Item) plainDef.Create(self.P());
 			exceptionalItem.SetAttribute(ItemAttributes.attr_exceptional, true);
 
 			Item enchantedItem = (Item) plainDef.Create(self.P());
 			enchantedItem.SetAttribute(ItemAttributes.attr_enchanted, true);
+			enchantedItem.SetAttribute(ItemAttributes.attr_identified, true);
 
 			Item imbuedItem = (Item) plainDef.Create(self.P());
 			imbuedItem.SetAttribute(ItemAttributes.attr_imbued, true);
+			imbuedItem.SetAttribute(ItemAttributes.attr_identified, true);
 
 			Item reforgedAndMagicItem = (Item) plainDef.Create(self.P());
 			reforgedAndMagicItem.SetAttribute(ItemAttributes.attr_reforged, true);
 			reforgedAndMagicItem.SetAttribute(ItemAttributes.attr_magic, true);
+			reforgedAndMagicItem.SetAttribute(ItemAttributes.attr_identified, true);
+
+			//#224 - same magic flag as magicItem above, but deliberately left UNidentified -
+			//its prefix must stay hidden.
+			Item unidentifiedMagicItem = (Item) plainDef.Create(self.P());
+			unidentifiedMagicItem.SetAttribute(ItemAttributes.attr_magic, true);
 
 			Item plainItem = (Item) plainDef.Create(self.P());
 
@@ -198,6 +210,7 @@ namespace SteamEngine.CompiledScripts {
 				" enchanted=" + enchantedItem.Name +
 				" imbued=" + imbuedItem.Name +
 				" reforgedAndMagic=" + reforgedAndMagicItem.Name +
+				" unidentifiedMagic=" + unidentifiedMagicItem.Name +
 				" plain=" + plainItem.Name);
 		}
 
@@ -223,6 +236,26 @@ namespace SteamEngine.CompiledScripts {
 			Item item = (Item) plainDef.Create(self.P());
 			item.SetAttribute(ItemAttributes.attr_nodroptrade, true);
 			Console.WriteLine("ATTR_NODROPTRADE_SETUP: uid=" + item.Uid + " x=" + item.X + " y=" + item.Y + " z=" + item.Z);
+		}
+
+		/// <summary>#224 - a plain ground item flagged attr_invis, reporting its position too
+		/// so a protocol test can teleport a second character there before checking
+		/// visibility.</summary>
+		[SteamFunction]
+		public static void TestSetupInvisItem(Character self) {
+			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
+			Item item = (Item) plainDef.Create(self.P());
+			item.SetAttribute(ItemAttributes.attr_invis, true);
+			Console.WriteLine("ATTR_INVIS_SETUP: uid=" + item.Uid + " x=" + item.X + " y=" + item.Y + " z=" + item.Z);
+		}
+
+		/// <summary>Reports whether self can currently see the given item - the real,
+		/// per-viewer check (Character.CanSeeVisibility(Item)), not just the raw flag.</summary>
+		[SteamFunction]
+		public static void TestCheckCanSeeItem(Character self, ScriptArgs sa) {
+			uint uid = Convert.ToUInt32(sa.Argv[0], System.Globalization.CultureInfo.InvariantCulture);
+			Item item = (Item) Thing.UidGetItem(uid);
+			Console.WriteLine("ATTR_INVIS_CHECK: canSee=" + self.CanSeeVisibility(item));
 		}
 	}
 }

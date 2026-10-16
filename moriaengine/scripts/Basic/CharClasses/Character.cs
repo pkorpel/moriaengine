@@ -533,7 +533,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (target.IsNotVisible) {
 				if (!target.Flag_Disconnected) {
-					return this.IsGM;
+					//#224 - attr_invis's per-viewer exception list (real Sphere's own
+					//"TAG.SeenBy_[CharUID]" pattern) - a GM always sees it regardless; anyone
+					//else needs to have been explicitly granted visibility (Item.GrantVisibilityTo).
+					return this.IsGM || target.IsSeenBy(this);
 				}
 				return false;
 			}
