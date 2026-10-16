@@ -12,6 +12,7 @@ namespace SteamEngine.Tests.Protocol {
 	public class AttrFlagTests {
 		private const string Account = "protocoltest";
 		private const string AccountB = "protocoltest2";
+		private const string AccountC = "protocoltest3";
 		private const string Password = "protocoltest";
 
 		private readonly GameServerPairFixture fixture;
@@ -163,6 +164,40 @@ namespace SteamEngine.Tests.Protocol {
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_ITEM_REPORT:");
 				Assert.Equal("ATTR_ITEM_REPORT: attributes=attr_newbie, attr_static", line);
 			}
+		}
+
+		/// <summary>#222: each magic/crafting-quality flag prepends its own name - flags+display
+		/// only, no mechanical effect (confirmed scope, see CLAUDE.md). Also confirms the
+		/// precedence rule (reforged beats magic) on one item carrying both at once. Compares
+		/// against the plain control item's own reported base name rather than a hardcoded
+		/// literal, since i_rock_plain's real display name comes from client tiledata, not a
+		/// "Name=" line in its own .def.</summary>
+		[Fact]
+		public void QualityFlagsPrependNamePrefix() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "QualityTester")) {
+				client.SendSpeech(".TestSetupQualityDisplayItems");
+				this.AssertSeen("ATTR_QUALITY_TEST:", TimeSpan.FromSeconds(10));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_QUALITY_TEST:");
+
+				string plainName = ExtractValueAfter(line, "plain=");
+				Assert.Equal("magic " + plainName, ExtractValueAfter(line, "magic="));
+				Assert.Equal("exceptional " + plainName, ExtractValueAfter(line, "exceptional="));
+				Assert.Equal("enchanted " + plainName, ExtractValueAfter(line, "enchanted="));
+				Assert.Equal("imbued " + plainName, ExtractValueAfter(line, "imbued="));
+				Assert.Equal("reforged " + plainName, ExtractValueAfter(line, "reforgedAndMagic="));
+			}
+		}
+
+		/// <summary>Extracts the value for "key=" up to the next " <word>=" field or end of
+		/// line - needed since the values themselves (item display names) can contain spaces,
+		/// unlike every other marker line in this file.</summary>
+		private static string ExtractValueAfter(string line, string marker) {
+			int idx = line.IndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + line);
+			string rest = line.Substring(idx + marker.Length);
+			System.Text.RegularExpressions.Match m = System.Text.RegularExpressions.Regex.Match(rest, @"^.*?(?=\s+\w+=|$)");
+			return m.Value.TrimEnd('\r');
 		}
 
 		private void AssertSeen(string marker, TimeSpan timeout) {

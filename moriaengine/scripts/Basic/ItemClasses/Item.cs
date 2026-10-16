@@ -149,6 +149,48 @@ namespace SteamEngine.CompiledScripts {
 			base.On_DenyPickupItemFrom(args);
 		}
 
+		/// <summary>#222 - magic/crafting-quality flags are flags+display only for now (no
+		/// crafting-bonus/item-upgrade system exists to attach a real mechanical effect to,
+		/// confirmed with the user as acceptable scope) - a name prefix is the same "sensible
+		/// minimal display effect" a real UO client already shows for "exceptional" crafted
+		/// items, reusing the existing name/cliloc pipeline rather than a new one. Precedence
+		/// (highest first) matters only for an item carrying more than one of these flags at
+		/// once, which real content shouldn't normally do - reforged implies the most rework,
+		/// so it wins.</summary>
+		private string QualityPrefix {
+			get {
+				if (this.HasAttribute(ItemAttributes.attr_reforged)) {
+					return "reforged";
+				}
+				if (this.HasAttribute(ItemAttributes.attr_imbued)) {
+					return "imbued";
+				}
+				if (this.HasAttribute(ItemAttributes.attr_enchanted)) {
+					return "enchanted";
+				}
+				if (this.HasAttribute(ItemAttributes.attr_exceptional)) {
+					return "exceptional";
+				}
+				if (this.HasAttribute(ItemAttributes.attr_magic)) {
+					return "magic";
+				}
+				return null;
+			}
+		}
+
+		public override string Name {
+			get {
+				string prefix = this.QualityPrefix;
+				if (prefix == null) {
+					return base.Name;
+				}
+				return prefix + " " + base.Name;
+			}
+			set {
+				base.Name = value;
+			}
+		}
+
 		/// <summary>Seeds this instance's own Attributes (Item.ct's "attributes" Vars field,
 		/// per-instance and independently overridable afterwards) from its ItemDef's configured
 		/// default (#217) - same "copy a Def-level default into the instance once at creation"
