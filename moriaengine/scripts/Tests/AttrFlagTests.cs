@@ -200,5 +200,29 @@ namespace SteamEngine.CompiledScripts {
 				" reforgedAndMagic=" + reforgedAndMagicItem.Name +
 				" plain=" + plainItem.Name);
 		}
+
+		/// <summary>#223 - creates an attr_owned item claimed by self, reporting its position
+		/// too so a protocol test can teleport a second (non-owner) character there before
+		/// attempting pickup - same "CanReach is checked after the deny-trigger chain, so a
+		/// too-far-away picker looks identically denied either way" trap already documented for
+		/// #221.</summary>
+		[SteamFunction]
+		public static void TestSetupOwnedItem(Character self) {
+			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
+			Item item = (Item) plainDef.Create(self.P());
+			item.OwnedBy = self;
+			item.SetAttribute(ItemAttributes.attr_owned, true);
+			Console.WriteLine("ATTR_OWNED_SETUP: uid=" + item.Uid + " x=" + item.X + " y=" + item.Y + " z=" + item.Z);
+		}
+
+		/// <summary>#223 - a plain ground item flagged attr_nodroptrade, for both the "can't
+		/// drop on the ground" and "can't be added to a secure trade" halves.</summary>
+		[SteamFunction]
+		public static void TestSetupNoDropTradeItem(Character self) {
+			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
+			Item item = (Item) plainDef.Create(self.P());
+			item.SetAttribute(ItemAttributes.attr_nodroptrade, true);
+			Console.WriteLine("ATTR_NODROPTRADE_SETUP: uid=" + item.Uid + " x=" + item.X + " y=" + item.Y + " z=" + item.Z);
+		}
 	}
 }
