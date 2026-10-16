@@ -144,6 +144,29 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Regression for the 2026-10-16 GetHighlightColor redesign - see
+		/// NotorietyTests.TestCheckHighlightColorRedesign (script side) for the full scenario
+		/// setup. Confirms, in one real server-side check: Mordor stays red even while
+		/// criminal-flagged (Mordor is checked before criminal status at all); a Gondor
+		/// character DOES still show the ordinary criminal grey; self-view now follows the
+		/// exact same logic as viewing anyone else (no more special-cased NoColor); and an
+		/// at-war guild member no longer renders the old Attackable/grey, falling through to
+		/// their own realm color instead.</summary>
+		[Fact]
+		public void HighlightColorRedesignMatchesNewPriorityOrder() {
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountA, "RedesignChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckHighlightColorRedesign");
+				this.AssertSeenSince("HIGHLIGHT_REDESIGN_TEST:", mark, TimeSpan.FromSeconds(10));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "HIGHLIGHT_REDESIGN_TEST:");
+
+				Assert.Contains("mordorCriminalSeenBySelf=Murderer", line);
+				Assert.Contains("gondorCriminalSeenBySelf=Criminal", line);
+				Assert.Contains("selfViewingSelf=Innocent", line);
+				Assert.Contains("warEnemySeenBySelf=Innocent", line);
+			}
+		}
+
 		private void AssertSeenSince(string marker, int since, TimeSpan timeout) {
 			bool saw = this.fixture.WaitForGameOutputSince(marker, since, timeout);
 			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
