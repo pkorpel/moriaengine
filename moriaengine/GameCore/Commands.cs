@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -171,7 +172,8 @@ namespace SteamEngine {
 			Globals.SetSrc(commandSrc);
 			try {
 				commandRunning = true;
-				if (commandSrc.MaxPlevel < Globals.PlevelForLscriptCommands) {
+				if ((commandSrc.MaxPlevel < Globals.PlevelForLscriptCommands)
+						|| SimpleCommandParser.IsAlwaysRawArgCommand(code)) {
 					string errText;
 					bool success = SimpleCommandParser.TryRunSnippet(commandSrc, self, code, out errText);
 					LogCommand(commandSrc, code, success, errText);
@@ -244,9 +246,24 @@ namespace SteamEngine {
 		static Regex commandRE = new Regex(@"(?<name>\w+)(\s+(?<arg>.+))?",
 			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+		/// <summary>Commands that always take the rest of the line as one literal string
+		/// argument, even at GM plevel. The full LScript parser's bareword-call-without-parens
+		/// grammar binds a space to the PRECEDING word's own argument list (SimpleExpression's
+		/// optional WhiteSpaceAssigner), so an unquoted multi-word argument like "jamy smrti"
+		/// parses as a nested call go(jamy(smrti)) instead of a single two-word string - these
+		/// commands bypass that ambiguity entirely by always going through the regex-based
+		/// SimpleCommandParser instead.</summary>
+		static readonly HashSet<string> alwaysRawArgCommands = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+			"go",
+		};
+
+		public static bool IsAlwaysRawArgCommand(string code) {
+			Match m = commandRE.Match(code);
+			return m.Success && alwaysRawArgCommands.Contains(m.Groups["name"].Value);
+		}
 
 		/// <summary>
-		/// Runs a method or function of the object self, given by name, and possible 
+		/// Runs a method or function of the object self, given by name, and possible
 		/// one argument of numeric or string type, separated by space from the name
 		/// </summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
