@@ -157,9 +157,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>A corpse never emits light - this used to throw ("Light property is not
+		/// valid for corpses"), which crashed the whole .info dialog outright whenever a GM
+		/// opened one, since the generic reflection-based field renderer calls every viewable
+		/// property's getter unconditionally (InfoDialogHandler.WriteDataField/GetFieldName).
+		/// LightType.Empty is the real Sphere/UO "no light shape" sentinel - the correct answer
+		/// to "what's this corpse's light," not an invalid question to throw on.</summary>
 		public override LightType Light {
 			get {
-				throw new SEException("Light property is not valid for corpses");
+				return LightType.Empty;
 			}
 		}
 
