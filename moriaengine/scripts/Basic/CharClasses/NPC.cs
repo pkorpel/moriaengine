@@ -127,9 +127,13 @@ namespace SteamEngine.CompiledScripts {
 				if (tag is AggroMode mode) {
 					return mode;
 				}
+				Console.WriteLine("AGGRO_DIAG[NPCDef.get_AggroMode FALLBACK]: def=" + this.Defname +
+					" tag=" + (tag ?? "null") + " tagType=" + (tag?.GetType().FullName ?? "null") +
+					" -> defaulting to Calm");
 				return AggroMode.Calm;
 			}
 			set {
+				Console.WriteLine("AGGRO_DIAG[NPCDef.set_AggroMode]: def=" + this.Defname + " -> " + value);
 				this.SetTag(aggroModeTK, value);
 			}
 		}
@@ -233,11 +237,14 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (param == "aggromode") {
+				Console.WriteLine("AGGRO_DIAG[NPCDef.LoadScriptLine]: def=" + this.Defname + " filename=" + filename + " line=" + line + " args='" + args + "'");
 				AggroMode mode;
 				if (Enum.TryParse(args, true, out mode)) {
 					this.AggroMode = mode;
+					Console.WriteLine("AGGRO_DIAG[NPCDef.LoadScriptLine]: def=" + this.Defname + " parsed OK -> " + mode + " readback=" + this.AggroMode);
 				} else {
 					Logger.WriteWarning(filename, line, "aggromode '" + args + "' is not a known AggroMode value.");
+					Console.WriteLine("AGGRO_DIAG[NPCDef.LoadScriptLine]: def=" + this.Defname + " FAILED to parse '" + args + "'");
 				}
 				return;
 			}
@@ -296,9 +303,13 @@ namespace SteamEngine.CompiledScripts {
 				if (tag is AggroMode mode) {
 					return mode;
 				}
+				Console.WriteLine("AGGRO_DIAG[NPC.get_AggroMode FALLBACK]: uid=" + this.Uid + " defname=" + this.Def.Defname +
+					" tag=" + (tag ?? "null") + " tagType=" + (tag?.GetType().FullName ?? "null") +
+					" -> defaulting to Calm");
 				return AggroMode.Calm;
 			}
 			set {
+				Console.WriteLine("AGGRO_DIAG[NPC.set_AggroMode]: uid=" + this.Uid + " defname=" + this.Def.Defname + " -> " + value);
 				this.SetTag(instanceAggroModeTK, value);
 			}
 		}
@@ -327,7 +338,9 @@ namespace SteamEngine.CompiledScripts {
 			NPCAiTimer.EnsureInstalled(this);
 
 			NPCDef def = (NPCDef) this.Def;
+			Console.WriteLine("AGGRO_DIAG[NPC.On_Create before seed]: uid=" + this.Uid + " defname=" + def.Defname + " def.AggroMode=" + def.AggroMode);
 			this.AggroMode = def.AggroMode;
+			Console.WriteLine("AGGRO_DIAG[NPC.On_Create after seed]: uid=" + this.Uid + " defname=" + def.Defname + " this.AggroMode=" + this.AggroMode);
 			this.ExperienceReward = def.RollExperienceReward();
 
 			IMovementSettings template = def.DefaultMovementSettings;
