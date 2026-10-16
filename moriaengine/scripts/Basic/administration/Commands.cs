@@ -241,10 +241,11 @@ namespace SteamEngine.CompiledScripts {
 					return TargetResult.Done;
 				}
 
-				AggroMode aggroMode = ((NPCDef) npc.Def).AggroMode;
 				HighlightColor color = Notoriety.GetHighlightColor(self, npc);
-				self.SysMessage(npc.Name + "#" + npc.Uid + ": AggroMode=" + aggroMode +
+				self.SysMessage(npc.Name + "#" + npc.Uid + ": AggroMode=" + npc.AggroMode +
+					" (species default=" + ((NPCDef) npc.Def).AggroMode + ")" +
 					" Realm=" + npc.Realm +
+					" ExperienceReward=" + npc.ExperienceReward +
 					" WildMonstersRenderOrange=" + NotorietySettings.instance.wildMonstersRenderOrange +
 					" HighlightColorAsSeenByYou=" + color);
 				return TargetResult.Done;

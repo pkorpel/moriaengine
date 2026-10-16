@@ -172,10 +172,11 @@ namespace SteamEngine.CompiledScripts {
 			//player regardless of realm/notoriety" - NPC.ShouldAggroOn/NPC.cs) is the existing
 			//signal this reuses - GM-tunable via NotorietySettings.wildMonstersRenderOrange,
 			//for a GM who wants strict OSI-accurate notoriety (monsters falling through to the
-			//default grey instead).
+			//default grey instead). Reads the per-instance NPC.AggroMode (#260), not the
+			//NPCDef-level default, so a GM's per-monster override is reflected here too.
 			if (NotorietySettings.instance.wildMonstersRenderOrange) {
 				NPC npc = self as NPC;
-				if ((npc != null) && (((NPCDef) npc.Def).AggroMode == AggroMode.Hostile)) {
+				if ((npc != null) && (npc.AggroMode == AggroMode.Hostile)) {
 					return HighlightColor.Enemy;
 				}
 			}

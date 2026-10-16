@@ -108,7 +108,7 @@ intentionally independent, answering different questions.
 
 Real UO has no dedicated "monster" notoriety color - hostile NPCs render via the exact
 same blue/gray/orange/red logic as players. This engine deliberately deviates: a wild
-monster (`NPCDef.AggroMode.Hostile` - "attacks any valid player regardless of
+monster (`NPC.AggroMode.Hostile` - "attacks any valid player regardless of
 realm/notoriety," see `NPC.ShouldAggroOn`/`NPC.cs`) renders `HighlightColor.Enemy`
 (orange), checked in `GetHighlightColor` right before the realm switch above. Reusing
 `AggroMode.Hostile` as the signal avoids inventing a new flag - it's already, almost by
@@ -117,6 +117,17 @@ check a wild-monster encounter would otherwise fall through to `NoColor` (no rea
 rather than looking visually distinct from a Mordor player's red. `AggroMode.GuardsRealm`
 NPCs (town guards) are untouched by this - they DO have a `Realm` set, so the existing
 realm switch already colors them correctly as their own side's blue/red.
+
+**`AggroMode` is per-NPC-instance, not per-species (#260)** - `NPC.AggroMode` is a
+tag-backed instance property, seeded from `NPCDef.AggroMode` (the species-level default
+from `.def` content) once at creation, then lives independently from there on. Both
+`ShouldAggroOn` and this notoriety check read the instance value. This exists so a GM
+can view and fix one specific spawned monster's aggro behavior via `.info` (it's a plain
+public property on `NPC`, which `.info`'s reflection already surfaces as an editable
+enum field) without needing to re-author that monster's whole species `.def` content -
+real motivating case: `c_titan_mage`/`c_titan_lord` have no `AggroMode=` line at all and
+default to `Calm`, unlike plain `c_titan`. `NPCDef.AggroMode` itself is untouched and
+still drives what a *newly spawned* NPC of that type starts with.
 
 GM-tunable: `NotorietySettings.wildMonstersRenderOrange` (default on) - a GM who wants
 strict OSI-accurate notoriety instead can turn this off via the `.settings` dialog's
