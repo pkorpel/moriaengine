@@ -289,10 +289,54 @@ unidentified-magic-item case confirming the prefix really does stay hidden witho
    REAL `CommandsAuthorization` check (as opposed to just `Character.IsGM` reads elsewhere,
    which `TestSetGmOn` is sufficient for).
 
-**Next up**: #225 (door state attr_opened) - the issue itself flags this as "likely
-redundant" with existing door tracking, needs investigating BEFORE building anything; may
-end up closed as not-planned with an explanatory comment if genuinely redundant. This is
-the last ATTR sub-issue - #215 (tracking) should close once #225 resolves either way.
+**#225 (door state attr_opened) - CLOSED NOT-PLANNED, no PR.** Investigated before
+building anything, per the issue's own instruction. `Door.cs`'s `IsOpen` is already a
+complete, working mechanism - but derived DIRECTLY from the door's own `Model` value
+(`RD = Model - baseModel`, odd=open/even=closed), not backed by any separate boolean.
+Adding `attr_opened` as either a new source of truth (reinvents working model-swap logic
+for no benefit) or a "compatibility alias" (a mirror flag that could drift out of sync if
+`Model` is ever set through some path other than `SetOpen`/`SetClose`, making it STRICTLY
+LESS reliable than the existing derived property) would both be worse than doing nothing.
+The enum value itself stays defined (#217) for `.def`-compatibility completeness, just
+unused - same precedent as `attr_norepair` (#223).
+
+## ITEM ATTR FLAG SYSTEM (#215) COMPLETE - all 9 sub-issues resolved 2026-10-15/16
+
+#217-#224 shipped (9 PRs: #226-#234, each with its own real end-to-end protocol test,
+clean `dotnet build` before every merge), #225 closed not-planned after investigation.
+Tracking issue #215 itself closed. Full real Sphere-compatible item ATTR flag system now
+exists: the `ItemAttributes` `[Flags]` enum (21 bits, `attr_stolen`/`attr_identified` bit
+conflict fixed), `.def` `ATTR=` parsing (zero new parser code - reused the existing
+generic pipe-separated-`[Flags]`-enum `FieldValue` pipeline), a dedicated `D_AttrList`
+GM checkbox dialog + matching player-facing commands per mechanic (`.AttrList`/
+`.LockDown`/`.Secure`/`.ClaimOwnership`/`.Reveal`), a from-scratch generic item-decay
+system, a from-scratch house-lockdown mechanic on top of #74's Housing, and real
+enforcement wired into death/corpse-drop, movement/pickup, ownership, trade, and
+visibility code paths that had either zero write path or (in two cases - `Flag_NonMovable`
+and `On_DenyPickupItemFrom`'s secure-container half) zero consumer at all before this pass.
+
+**Recurring lessons from this whole pass, worth remembering for any future multi-Fact
+protocol-test work in this codebase**:
+- A denied-for-the-right-reason and a denied-for-an-unrelated-reason (too far away,
+  container not open, wrong GM-elevation path) produce the IDENTICAL "nothing changed"
+  observable symptom. Every new deny-check added this pass needed its test character
+  standing at the right place, with the right container already open, and with REAL
+  (not just flag-level) GM authority before trusting a "denied" result meant what the
+  test intended. `MovementSpeedTests.TestTeleportToOpenGround`/`SocialTests.
+  TestPromoteToGM` are the two existing reusable fixes for the "wrong place"/"wrong
+  authority" versions of this trap - reach for those first instead of re-deriving.
+- Two simultaneous character connections for one Fact need two DIFFERENT accounts (one
+  connection per account at a time) - a separate constraint from the already-documented
+  5-characters-per-account cap, which is about cumulative count across possibly-sequential
+  Facts, not concurrent connections.
+- `AssertSeen` (not `AssertSeenSince`) is unsafe for ANY marker a Fact/Theory will send
+  more than once in a shared-fixture collection, even the first time it's introduced -
+  satisfied instantly by a later-reused marker's own earlier occurrence, silently racing
+  ahead of the current command.
+- When adding a same-named property to a shared base class (`Item`), check for existing
+  same-named-but-different-meaning properties on subclasses first (`House.Owner`/
+  `Corpse.Owner` both predated and would have been silently shadowed by a naive
+  `Item.Owner` - caught via the CS0108 warning, fixed by picking `OwnedBy` instead).
 
 ---
 
