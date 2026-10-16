@@ -154,8 +154,60 @@ worth remembering for any future multi-case parametrized test in this file/patte
    within a shared-fixture collection needs `AssertSeenSince`, not `AssertSeen`, even the
    FIRST time it's introduced if the Fact/Theory itself will reuse it.
 
-**Next up**: #221 (house lockdown mechanic + attr_lockeddown/attr_secure), then #222-225 in
-order, each following the same raise-issue-first/implement/test/ship/close workflow.
+**#221 (house lockdown mechanic + attr_lockeddown/attr_secure) - DONE, PR #231, merged.**
+Built entirely on top of the existing #74 Housing system (`House.cs`). New `House.
+FindHouseAt(IPoint4D)` (dynamic regions are always checked before static ones by `Sector.
+GetRegionFor`, so this reliably finds the containing house's `MultiRegion` regardless of
+what static region surrounds it) + `House.CanMoveLockedItems(Character)` (owner/co-owner/
+GM only - deliberately narrower than `HasAccess`, since friends can use a house but, per
+real UO's own rules, can't move another player's locked-down belongings). Wired into two
+separate hooks on `Item`: `On_DenyPickup` (extended from #220 - denies `attr_lockeddown`/
+`attr_secure` items unless the picker passes `CanMoveLockedItems`) and a NEW
+`On_DenyPickupItemFrom` override (`attr_secure`'s own, stronger "restricts ACCESS too, not
+just movement" half - gates taking an item OUT of a secure container to `house.HasAccess`,
+i.e. owner/co-owners/friends; `attr_lockeddown` alone never touches this hook at all, so it
+correctly leaves viewing/access completely unrestricted per the issue's own wording).
+Player-facing (not GM-only) `.LockDown`/`.Secure` target-cursor commands toggle the
+respective flag, gated by the same `CanMoveLockedItems` check - real player-facing
+functionality per the issue's explicit request, matching `.flip`'s target-cursor shape
+rather than `D_AttrList`'s GM-only checkbox dialog (which still also works, since it's just
+the generic `SetAttribute` API underneath either way). `Secure` requires the target to be a
+real container (`IsContainer`) - nothing to "restrict access to" on a non-container.
+Deliberately out of scope, not silently dropped: a secure container's own double-click/
+OPEN action is NOT restricted, only taking items OUT of it once already open - matches a
+reasonable, defensible reading of "restricts access" without touching the separate
+container-open trigger chain; flagged here if the user wants stricter scope later.
+
+**Real finding while building this - a genuinely confusing one, worth remembering for any
+future pickup/container test in this codebase**: a correctly-ALLOWED pickup and a
+correctly-DENIED one that's merely "too far away"/"container not open" produce the
+IDENTICAL observable symptom (item just stays where it was) - `AbstractCharacter.
+CanPickup` checks `CanReach` (distance/LOS/container-open-state) strictly AFTER the full
+deny-trigger chain passes, so a test character that spawns far from the action and never
+"opens" the right container can silently validate the WRONG thing while still reporting
+"denied" as if the feature under test did its job. Two distinct instances of this hit while
+building #221's own test: (1) every fresh test character spawns at its own far-away default
+position - fixed by reusing `MovementSpeedTests.TestTeleportToOpenGround` to actually stand
+at the house before any pickup attempt; (2) taking an item OUT of a container (even one the
+picker legitimately has access to) requires that connection to have already explicitly
+double-clicked/opened the container first (`OpenedContainers.HasContainerOpenFromAt`) -
+unlike a lone deny-chain Result (void `On_DenyPickupItemFrom` never sets `TriggerResult.
+Cancel` itself, only `args.Result` - which is what short-circuits `CanReach` for an
+ACTUALLY-denied picker, but does nothing to skip the container-open check for an
+ALLOWED one). Also reconfirmed the existing #210-caused regression below while
+investigating this (unrelated, filed separately as #230, not fixed here to keep scope).
+
+**Also found, unrelated to #221's own logic, filed separately as #230**: `HousingTests.cs`'s
+two existing Facts (`DeedPlacementRejectsOverlap`, `CoOwnerGetsAccessButStrangerDoesNot`)
+both now fail - #210's starting-position change (the new narrow, boxed-in antechamber) left
+that file's own hardcoded "+5,+5 from spawn" house-placement offset with no passable
+footprint nearby at all. Confirmed via direct reproduction with zero `House.cs`/
+`HousingTests.cs` changes - a genuine pre-existing regression, not caused by #221. #221's
+own new test file sidesteps it by reusing `TestTeleportToOpenGround` instead of a hardcoded
+offset; the same fix would resolve #230 too, left for whoever picks that up.
+
+**Next up**: #222 (magic/crafting-quality display flags), then #223-225 in order, each
+following the same raise-issue-first/implement/test/ship/close workflow.
 
 ---
 
