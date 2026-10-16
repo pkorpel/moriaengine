@@ -74,29 +74,45 @@ namespace SteamEngine.Tests.Protocol {
 				throw new FileNotFoundException("GameCore not built - run build.ps1 first.", gameDll);
 			}
 
-			this.auxProcess = StartHeldOpenStdin("dotnet", auxDll, this.RepoRoot);
-			// Drain aux's stdout/stderr unconditionally - redirecting a stream and never
-			// reading it risks the OS pipe buffer filling and blocking the child process.
-			this.auxProcess.OutputDataReceived += (s, e) => { };
-			this.auxProcess.ErrorDataReceived += (s, e) => { };
-			this.auxProcess.BeginOutputReadLine();
-			this.auxProcess.BeginErrorReadLine();
-			System.Threading.Thread.Sleep(2000); // let it bind its ports/pipe before GameCore tries to connect
+			// Real bug found and fixed here: if anything from this point on throws (most
+			// commonly the boot-timeout a few lines down, when GameCore's own nested script
+			// compile stalls under sandbox CPU contention), the constructor never returns an
+			// object for xUnit to Dispose() - so without this try/catch, the already-spawned
+			// auxProcess/gameProcess were silently abandoned, still running, still holding
+			// the fixed ports. Observed directly: a single run leaked 9 separate orphaned
+			// pairs this way over its lifetime, each one making every SUBSEQUENT collection's
+			// own compile step slower (more sandbox CPU contention from the growing pile of
+			// already-stuck processes), cascading one transient hiccup into a pathological
+			// whole-run spiral instead of one isolated failure.
+			try {
+				this.auxProcess = StartHeldOpenStdin("dotnet", auxDll, this.RepoRoot);
+				// Drain aux's stdout/stderr unconditionally - redirecting a stream and never
+				// reading it risks the OS pipe buffer filling and blocking the child process.
+				this.auxProcess.OutputDataReceived += (s, e) => { };
+				this.auxProcess.ErrorDataReceived += (s, e) => { };
+				this.auxProcess.BeginOutputReadLine();
+				this.auxProcess.BeginErrorReadLine();
+				System.Threading.Thread.Sleep(2000); // let it bind its ports/pipe before GameCore tries to connect
 
-			this.gameProcess = StartHeldOpenStdin("dotnet", gameDll, this.RepoRoot);
-			this.gameProcess.OutputDataReceived += (s, e) => {
-				if (e.Data != null) {
-					lock (this.gameOutputLock) {
-						this.gameOutput.AppendLine(e.Data);
+				this.gameProcess = StartHeldOpenStdin("dotnet", gameDll, this.RepoRoot);
+				this.gameProcess.OutputDataReceived += (s, e) => {
+					if (e.Data != null) {
+						lock (this.gameOutputLock) {
+							this.gameOutput.AppendLine(e.Data);
+						}
 					}
-				}
-			};
-			this.gameProcess.ErrorDataReceived += (s, e) => { };
-			this.gameProcess.BeginOutputReadLine();
-			this.gameProcess.BeginErrorReadLine();
+				};
+				this.gameProcess.ErrorDataReceived += (s, e) => { };
+				this.gameProcess.BeginOutputReadLine();
+				this.gameProcess.BeginErrorReadLine();
 
-			if (!this.WaitForGameOutput("Init done.", TimeSpan.FromSeconds(60))) {
-				throw new TimeoutException("GameCore did not reach 'Init done.' in time. Output so far:\n" + this.gameOutput);
+				if (!this.WaitForGameOutput("Init done.", TimeSpan.FromSeconds(60))) {
+					throw new TimeoutException("GameCore did not reach 'Init done.' in time. Output so far:\n" + this.gameOutput);
+				}
+			} catch {
+				TryKill(this.gameProcess);
+				TryKill(this.auxProcess);
+				throw;
 			}
 		}
 

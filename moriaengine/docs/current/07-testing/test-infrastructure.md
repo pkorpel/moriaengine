@@ -63,6 +63,17 @@ collection uses. Its constructor:
    timeout) before returning - a test that starts running before this returns would be
    racing the server's own boot sequence.
 
+Steps 3-5 are wrapped in a `try`/`catch` that kills both child processes before
+rethrowing on ANY failure (most commonly the step-5 boot timeout, when GameCore's own
+nested script-compile step stalls under sandbox CPU contention). This isn't cosmetic -
+without it, a failed constructor returns no object for xUnit to `Dispose()`, so the
+already-spawned processes were silently abandoned, still running, still holding the
+fixed ports. A real run was observed leaking 9 separate orphaned pairs this way over its
+lifetime - each failed collection left its own pair behind while `dotnet test` moved on
+to the next collection, whose own compile step then had to compete with an ever-growing
+pile of already-stuck prior attempts for the same limited CPU, turning one transient
+hiccup into a self-reinforcing whole-run cascade instead of an isolated failure.
+
 **Fixed ports** (`LoginPort = 2593`, `GamePort = 2595`) - this is the single most
 important constraint to know about this fixture. See
 [Known gotchas](known-gotchas.md#never-run-two-full-boot-test-invocations-concurrently)
