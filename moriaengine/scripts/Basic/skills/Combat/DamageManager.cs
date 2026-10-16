@@ -90,6 +90,13 @@ namespace SteamEngine.CompiledScripts {
 				return 0;
 			}
 
+			//#267: symmetric with the defender check above - an invulnerable character deals no
+			//damage either, not just takes none. No extra visual cue here (the normal swing/cast
+			//animation already plays regardless of the resulting damage amount).
+			if ((attacker != null) && attacker.Flag_Invulnerable) {
+				return 0;
+			}
+
 			//Defense in depth: a creature can never damage its own current owner/commander,
 			//however the attack got triggered - target selection (NPC.ShouldAggroOn,
 			//NPCAiTimer.IsValidTarget) already keeps this from happening in practice, but this
