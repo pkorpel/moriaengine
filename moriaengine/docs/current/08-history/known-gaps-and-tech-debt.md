@@ -7,6 +7,12 @@ deliberate scope choice (not a bug) or a genuine gap worth picking up.
 
 ## Deliberately deferred, not bugs
 
+- **A Nazgûl-specific "shade of black" notoriety color** (user-requested, 2026-10-16) -
+  deferred until Nazgûl creatures themselves actually exist in this codebase (check
+  Erebor's original Sphere source for them when that work starts). No OSI precedent for
+  this at all (real UO has no black notoriety hue) - same spirit as the wild-monster
+  orange color already added, a deliberate lore-flavor house rule, not a restoration of a
+  real mechanic. See [Notoriety & murder counts](../04-gameplay-systems/notoriety.md).
 - **No real player-facing dialog to spend skill/ability/attribute points** beyond the
   `.explevel` buttons wired directly to `LevelingSystem`'s spend methods - a fuller
   redesign is a known follow-up, not started. See

@@ -2108,6 +2108,23 @@ namespace SteamEngine.CompiledScripts {
 			return Notoriety.GetHighlightColor(viewerChar, this);
 		}
 
+		/// <summary>The base Thing.On_Click always sends the overhead name text with hue 0
+		/// (no color) - fine for items, but for a character this left the floating name text
+		/// permanently uncolored even though the health-bar/status overlay (GetHighlightColorFor,
+		/// above) was already rendering the correct notoriety color. Both need to agree, so this
+		/// uses the exact same GetHighlightColorFor result, just converted to the separate hue
+		/// value the name-text packet needs (Notoriety.GetNameHue).</summary>
+		public override void On_Click(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
+			int hue = Notoriety.GetNameHue(this.GetHighlightColorFor(clicker));
+			PacketSequences.SendNameFrom(clickerConn, this, this.Name, hue);
+		}
+
+		public override void On_AosClick(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
+			int hue = Notoriety.GetNameHue(this.GetHighlightColorFor(clicker));
+			AosToolTips toolTips = this.GetAosToolTips(clicker.Language);
+			PacketSequences.SendClilocNameFrom(clickerConn, this, toolTips.FirstId, hue, toolTips.FirstArgument);
+		}
+
 		#region Weight
 
 		float weight;
