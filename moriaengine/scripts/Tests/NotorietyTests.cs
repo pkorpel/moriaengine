@@ -92,6 +92,51 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HOSTILE_MONSTER_SPAWNED: uid=" + npc.Uid);
 		}
 
+		/// <summary>Regression coverage for the 2026-10-16 GetHighlightColor redesign (user's
+		/// own explicit priority order) - the parts not already covered by
+		/// RaceTests.TestCheckRealmNotoriety (plain realm blue/red) or the monster-orange/
+		/// name-hue tests elsewhere:
+		/// - Mordor stays red even while criminal-flagged (Mordor is checked, and returns,
+		///   before the criminal check ever runs - criminal status simply never applies to
+		///   Mordor at all).
+		/// - Gondor + criminal-flagged DOES show the criminal grey (criminal only mattered for
+		///   non-Mordor characters to begin with).
+		/// - Self-view now follows the exact same logic as viewing anyone else - no more
+		///   special-cased NoColor shortcut. Uses a dedicated throwaway character (not `self`)
+		///   so the result isn't muddied by the guild membership `self` picks up a few lines
+		///   below for the war check.
+		/// - An at-war guild member no longer renders the old Attackable/grey - falls through
+		///   to their own ordinary realm color instead (Gondor-blue here, chosen specifically
+		///   so it's visibly distinct from the grey this used to produce).</summary>
+		[SteamFunction]
+		public static void TestCheckHighlightColorRedesign(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+
+			NPC mordorCriminal = (NPC) npcDef.Create(self.P());
+			mordorCriminal.Realm = Realm.Mordor;
+			Notoriety.FlagCriminal(mordorCriminal);
+
+			NPC gondorCriminal = (NPC) npcDef.Create(self.P());
+			gondorCriminal.Realm = Realm.Gondor;
+			Notoriety.FlagCriminal(gondorCriminal);
+
+			NPC selfViewStandin = (NPC) npcDef.Create(self.P());
+			selfViewStandin.Realm = Realm.Gondor;
+
+			Guild guildA = GuildDef.NewGuild(self, "TestWarGuildA" + self.Uid);
+			NPC warEnemyGondor = (NPC) npcDef.Create(self.P());
+			warEnemyGondor.Realm = Realm.Gondor;
+			Guild guildB = GuildDef.NewGuild(warEnemyGondor, "TestWarGuildB" + self.Uid);
+			guildA.DeclareWarOn(guildB);
+
+			Console.WriteLine("HIGHLIGHT_REDESIGN_TEST: " +
+				"mordorCriminalSeenBySelf=" + Notoriety.GetHighlightColor(self, mordorCriminal) +
+				" gondorCriminalSeenBySelf=" + Notoriety.GetHighlightColor(self, gondorCriminal) +
+				" selfViewingSelf=" + Notoriety.GetHighlightColor(selfViewStandin, selfViewStandin) +
+				" warEnemySeenBySelf=" + Notoriety.GetHighlightColor(self, warEnemyGondor));
+		}
+
 		/// <summary>Stops self's queued auto-combat against the named target - real auto-combat
 		/// keeps re-triggering Trigger_HostileAction (and so re-arming the criminal-flag expiry
 		/// timer) on every swing for as long as the fight continues, so a criminal-expiry
