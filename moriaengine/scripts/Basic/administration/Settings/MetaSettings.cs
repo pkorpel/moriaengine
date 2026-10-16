@@ -110,6 +110,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return NotorietySettings.instance;
 			}
 		}
+
+		[InfoField("Logout")]
+		public LogoutSettings LogoutSettings {
+			get {
+				return LogoutSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {

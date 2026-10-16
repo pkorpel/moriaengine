@@ -15,6 +15,37 @@ Protocol tests in this repo (`Tests/Protocol/`) drive both legs explicitly - `Te
 for the AuxiliaryServer leg, `TestGameClient` for the GameCore leg - because a real client
 never skips either step.
 
+## Disconnect, lingering, and the logout delay (#261)
+
+A TCP close (abrupt network loss or a client-initiated `0x01` disconnect packet) only
+tears down the `GameState`/connection - `GameState.On_Close` nulls its `character`/
+`account` refs and fires `Trigger_LogOut()` (the `@logout` script trigger plus the
+overridable `On_LogOut()`), but by itself does **not** remove the character from the
+world. `AbstractCharacter.Flag_Disconnected` is the actual "not present in the world"
+flag (`Map.Disconnected`/`Map.Reconnected` move a character into/out of a special per-
+sector list, and `CanSeeImplementation` filters out anything `Flag_Disconnected`) - and
+nothing sets it at disconnect time, only at full removal. `AbstractCharacter.IsLingering`
+(`IsPlayer && !Flag_Disconnected && GameState == null`) describes exactly this in-between
+state: fully present, fully visible/interactable, just orphaned from any connection.
+
+`Player.On_LogOut()` closes that gap with a classic UO-style logout delay: a
+`CharLingeringTimer` (`Player.cs`) starts for `LogoutSettings.logoutDelaySeconds` (default
+60, GM-tunable via `.settings`'s "Logout" category) - its `OnTimeout` calls `Disconnect()`
+if the character `IsLingering` still, which sets `Flag_Disconnected` and actually removes
+it from view. A visual effect (gated by `LogoutSettings.showLogoutEffect`, default on)
+plays immediately at disconnect/timer-start, not at the delayed removal - it signals to
+nearby players that someone is in the process of logging out, not that someone randomly
+vanished. `Player.On_LogIn()` deletes the pending timer unconditionally (a no-op if none
+exists) - this fires for both a brand-new login and a reconnect to an already-lingering
+character (`GameState.cs`'s `GetLingeringCharacter()` check), so reconnecting within the
+window just resumes the same still-standing body with no further effect.
+
+Real finding while building this: a complete, correct implementation of this
+(`CharLingeringTimer` itself, checking `IsLingering` before calling `Disconnect()`) already
+existed in `Player.cs`, just never wired up - it sat commented out with a hardcoded 5s
+delay, no settings, no effect. The only work needed was wiring it to `LogoutSettings` and
+adding the effect call.
+
 ## `GameState`: the per-connection session object
 
 `GameState` (`GameCore/Networking/GameState.cs:36`) is a `TagHolder` representing one live

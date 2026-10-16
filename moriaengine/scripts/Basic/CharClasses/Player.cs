@@ -374,11 +374,22 @@ namespace SteamEngine.CompiledScripts {
 			return base.On_Step(direction, running);
 		}
 
+		/// <summary>Classic UO-style logout delay (#261) - the character stays fully standing/
+		/// visible/interactable for LogoutSettings.logoutDelaySeconds (default 60s) after
+		/// disconnect, then actually disappears (CharLingeringTimer.OnTimeout -> Disconnect() ->
+		/// Flag_Disconnected, the same removal-from-view mechanism Map.Disconnected already
+		/// provides elsewhere - nothing destroyed/deleted, a reconnect within the window cancels
+		/// this cleanly via On_LogIn below). The effect plays HERE, at disconnect/timer-start,
+		/// not at the delayed removal - signals to nearby players that this character is in the
+		/// process of logging out, not a random disappearance.</summary>
 		private static TimerKey charLingeringTimerTK = TimerKey.Acquire("_charLingeringTimer_");
 		public override void On_LogOut() {
 			//TODO: In safe/nonsafe areas, settings, etc.
 
-			//this.AddTimer(charLingeringTimerTK, new CharLingeringTimer()).DueInSeconds = 5;
+			if (LogoutSettings.instance.showLogoutEffect) {
+				EffectFactory.StationaryEffect(this, 0x376A, 10, 16);
+			}
+			this.AddTimer(charLingeringTimerTK, new CharLingeringTimer()).DueInSeconds = LogoutSettings.instance.logoutDelaySeconds;
 
 			//if (DbManager.Config.useDb) {
 			//    DbMethods.loginLogs.GameLogout(this.Conn);
@@ -391,6 +402,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override TriggerResult On_LogIn() {
+			this.DeleteTimer(charLingeringTimerTK); //cancel any pending logout-delay removal - reconnecting resumes this body in place
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {
 				//if (DbManager.Config.useDb) {
