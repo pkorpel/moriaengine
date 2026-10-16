@@ -37,29 +37,69 @@ increments `killedBy`'s murder count tag unless the victim was already
 criminal/murderer (killing a criminal isn't a murder). Same player-only scope restriction as
 `OnHostileAction`.
 
-## Realm-based coloring (#163)
+## Realm-based coloring (#163, redesigned 2026-10-16)
 
-`GetHighlightColor(viewer, self)` (line 102) is what actually drives the in-client nameplate
-color. Order of checks: self-view is colorless, then murderer (red) / criminal (gray-ish
-"Criminal" color) take priority over everything else, then party (yellow), then guild
-relation (allied/attackable via `Guild.AreAllied`/`AreInWar`) - and only after all of that,
-a **realm-based baseline** (lines 132-149): Gondor renders `HighlightColor.Innocent`
-(blue), Mordor renders `HighlightColor.Murderer` (red) purely as a rendering choice,
-completely decoupled from the real murder-count mechanic above (a Mordor character who's
-never killed anyone still renders red, by design - the same visual slot a *real* murderer
-of either realm already occupies, which is always checked first and wins).
+`GetHighlightColor(viewer, self)` is what actually drives the in-client nameplate color.
+**Redesigned per an explicit user priority order** - the original pass (self-view
+colorless, murderer-red checked globally, guild-at-war rendering grey) didn't hold up once
+the user actually looked at the logic in detail. Current order, first match wins:
 
-This is a deliberate, confirmed-with-the-user departure from how the original Sphere
-reference (Erebor) did it: Erebor's own source fakes Mordor-red by seeding every
-Mordor-aligned character with a starting `kills=30000` to trip the real murderer threshold
-(confirmed via `newbie_portals.scp`'s `startnation` function). moriaengine instead checks
-`Character.Realm` directly as an independent rendering layer, leaving the real murder-count
-mechanic honest (a Mordor character's actual `GetMurderCount` stays 0 until they really
-commit one). `GetCharRelation(a, b)` (line 152) carries the same realm logic into the
-non-visual "are these two hostile" question used by area-spell targeting (see
-[magery-spells.md](magery-spells.md)) - opposing realms are `AlwaysHostile`, same realm is
-`Allied`, checked after guild relations so an explicit guild war/alliance between
-same-realm or cross-realm characters still overrides the realm default.
+1. **Party** (`Party.AreInOneParty`) -> `HighlightColor.Yellow`. Unchanged from before, and
+   now genuinely checked even for self-view (see point 3) - a partied character viewing
+   themselves correctly sees their own name as Yellow too, since
+   `AreInOneParty(self, self)` is trivially true whenever `self` is in any party at all.
+2. **Mordor is always red, unconditionally** - checked here, *before* the criminal check,
+   specifically so a Mordor character's criminal-flag status (or lack of it) never
+   matters. A Mordor character who's never committed a hostile act in their life still
+   renders exactly the same red as one mid-criminal-flag.
+3. **Criminal** (`IsCriminal`) -> `HighlightColor.Criminal` (grey). Only reachable for a
+   non-Mordor character now, since Mordor already returned at step 2 - in practice this
+   means only Gondor (or unaligned) players can ever show this.
+4. **Murderer status (`IsMurderer`) is deliberately NOT checked anywhere in this method
+   at all anymore.** The previous design rendered *any* murderer red, regardless of realm
+   - meaning a Gondor player who racked up a murder count would render visually identical
+   to a real Mordor citizen, erasing the realm distinction the user explicitly wants kept
+   intact ("gondor could become murderer and pretend he's mordor, we don't want that").
+   `Notoriety.IsMurderer`/`GetMurderCount` still exist and still gate other things (e.g.
+   `FlagCriminal` still skips an already-murderer character) - they just have zero effect
+   on rendered color now. A Gondor murderer falls through this method exactly like an
+   ordinary Gondor player: Gondor-blue, or guild-green if they're in a guild, same as
+   anyone else of their realm.
+5. **Guild**: same guild, or an allied guild -> `HighlightColor.Allied` (green). The old
+   "at-war guild -> grey (`Attackable`)" branch is gone entirely, per explicit request - an
+   at-war guild member now simply falls through to whatever their realm/default color
+   would otherwise be (Gondor-blue, Mordor-red via step 2, or the default grey).
+6. **Wild monsters** (`AggroMode.Hostile`) -> `HighlightColor.Enemy` (orange) - unchanged,
+   see its own section below.
+7. **Gondor** -> `HighlightColor.Innocent` (blue).
+8. **Default** -> `HighlightColor.Attackable` (grey) - every NPC/pet/wildlife with no realm
+   and no hostile `AggroMode` (a deer, a bird, a tamed pet), any `Realm` value this method
+   doesn't otherwise special-case (`None`/`Neutral`/the `MordorOutcast`/`GondorOutcast`
+   variants), and the general fallback once nothing else above matched.
+
+**Self-view no longer short-circuits to `NoColor`** - removed entirely, per explicit user
+request ("it should still follow the standard logic"). Viewing yourself now runs through
+the exact same 8-step chain as viewing anyone else - a Gondor player sees their own name
+rendered blue, a partied character sees themselves Yellow, a guild member sees themselves
+Green, etc. The one deliberate exception in the *tests* (not the method itself): a
+same-guild self-view would trivially satisfy step 5 before ever reaching step 7's realm
+check, so the regression test for "self-view follows the realm baseline" uses a dedicated
+character with no guild/party to isolate that specific claim - see
+`NotorietyTests.TestCheckHighlightColorRedesign`.
+
+Mordor-red (step 2) is still a deliberate, confirmed-with-the-user departure from how the
+original Sphere reference (Erebor) did it: Erebor's own source fakes Mordor-red by seeding
+every Mordor-aligned character with a starting `kills=30000` to trip the real murderer
+threshold (confirmed via `newbie_portals.scp`'s `startnation` function). moriaengine
+instead checks `Character.Realm` directly as an independent rendering layer, leaving the
+real murder-count mechanic completely disconnected from rendering now (point 4 above).
+
+`GetCharRelation(a, b)` is a **separate** method for the non-visual "are these two hostile"
+question used by area-spell targeting (see [magery-spells.md](magery-spells.md)) - it was
+NOT part of this redesign and still uses its own older realm/guild logic (opposing realms
+are `AlwaysHostile`, same realm is `Allied`, guild relations checked first). Don't assume
+a change to `GetHighlightColor`'s priority order also changed `GetCharRelation` - they're
+intentionally independent, answering different questions.
 
 `Realm` itself, and race-to-realm/nation assignment, are covered in
 [races-and-nations.md](races-and-nations.md).
