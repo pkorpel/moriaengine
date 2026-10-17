@@ -11,6 +11,57 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## Skill-gain-through-use research (2026-10-17) — #140, 13 sub-issues filed, NOT implemented
+
+User asked for a research-only pass (no code) on the 13 skills meant to be trained by
+actual use rather than leveling points (from #140's original list): Mining,
+Lumberjacking, Fishing, Cooking, Taming, Lockpicking, Blacksmithing, Carpentry,
+Bowcraft, Alchemy, Tailoring, Tinkering, Inscription. #140 is now the tracking/parent
+issue; one sub-issue per skill (#269-281), each with Erebor wiki findings (mostly thin -
+the wiki's specific skill pages 404'd, and a richer `moria.uoerebor.cz/wiki` exists but
+sits behind a Cloudflare Access login nothing here could reach), Erebor Sphere source
+findings (the real, authoritative source throughout - `gitlab.com/erebor/sphere-public-
+archive`, cloned read-only to scratchpad, not committed, same pattern as earlier
+sessions), moriaengine's current state, and a proposed approach. Research done via 4
+parallel forks (grouped: gathering, 2x crafting, misc) to avoid filling context with
+raw research output.
+
+**Confirmed via direct code reading, independent of the Erebor research**: no skill-
+gain-through-use mechanism exists anywhere in moriaengine today, for ANY skill, not just
+these 13. `SkillUtils.GetSCurve`/`CheckSuccess` (used broadly - combat, magic, abilities,
+and these 13 skills alike) is only the success/fail chance roll; it has zero connection
+to skill gain despite its own comment's claim ("chance of skill gain is inverse to
+chance of success"). `SkillDef.cs`'s `tkSkillGain` trigger and `Character.cs`'s
+`On_SkillGain` are both commented-out, dead. The real Erebor `skillgain` formula
+(quadratic diminishing returns, per-skill `advrate` constant, profession-cap-gated,
+anti-macro-excluded, found in `funkce.scp`) is a separate, distinct roll that doesn't
+exist in moriaengine at all - don't derive it by inverting `GetSCurve`, implement the
+sourced formula as its own function.
+
+**Major cross-cutting finding, confirmed independently by two of the four forks**: 8 of
+the 13 skills (Blacksmithing #272, Carpentry #273, Tinkering #275, Tailoring #278,
+Bowcraft #280, Inscription #281, Alchemy #277, Cooking #279) share one base class,
+`CraftingSkillDef` (`scripts/Basic/skills/Crafting/CraftingSkillDef.cs`). It already has
+a complete, correct crafting pipeline (resource checks, success-chance rolls, stroke
+animation) - the only gap, identical across all 8, is that `On_Success`/`On_Fail` never
+touch the skill value at all. **Wiring the real `funkce.scp` gain formula into this ONE
+file likely fixes all 8 skills at once**, not 8 separate implementations, when this is
+picked up for real. The remaining 5 (Mining #269, Lumberjacking #270, Fishing #271,
+Taming #274, Lockpicking #276) each need their own separate wiring - Mining/
+Lumberjacking/Fishing share a different generic resource-node mechanic (material-tier
+downgrades, cave-ins, monster ambushes, anti-macro delay scaling, from `miningfix.scp`);
+Taming and Lockpicking are each standalone (Taming's own difficulty-check is already
+correct in moriaengine - `TamingSkillDef` - only the gain call itself is missing).
+
+**Also found and filed separately, not a skill-gain gap**: #282, a real pre-existing
+functional bug in Lockpicking - `Targ_Lockpick.On_TargonItem`'s locked-check is inverted
+(`!ItemLockPlugin.IsLocked(targetted)` gates the skill attempt), so lockpicking currently
+only "works" on items that are already unlocked, and silently re-targets forever on an
+actually-locked item.
+
+**Status: research only, nothing implemented.** #140 and all 14 issues (#140, #269-282)
+are open, waiting to be picked up for real implementation work.
+
 ## Documentation: `moriaengine/docs/current/` (2026-10-16)
 
 Full reference documentation for the engine and every gameplay/tooling system now lives
