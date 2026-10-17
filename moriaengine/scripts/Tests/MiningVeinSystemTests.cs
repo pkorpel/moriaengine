@@ -128,6 +128,44 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("CAVE_IN_CHANCE_SAMPLE: attempts=" + attempts + " caveIns=" + caveIns);
 		}
 
+		/// <summary>#335 - samples `attempts` ambush rolls at self's own location, reporting
+		/// the overall trigger count plus a per-monster breakdown (by NPCDef identity, so the
+		/// two deliberate content-substitution overlaps - rock elemental sharing earth
+		/// elemental's defname, random-golem sharing copper spirit's - collapse into the same
+		/// counted bucket, which is fine for confirming relative weighting direction). Same
+		/// statistical-sampling precedent as TestSampleVeinOreDistribution/
+		/// TestSampleCaveInChance above.</summary>
+		[SteamFunction]
+		public static void TestSampleAmbushChance(Character self, ScriptArgs sa) {
+			int attempts = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+
+			for (int i = 0; i < attempts; i++) {
+				MonsterAmbushSystem.TryAmbush(self.P());
+			}
+
+			NPCDef ratDef = (NPCDef) ThingDef.GetByDefname(MonsterAmbushSystem.RatDefname);
+			NPCDef golemDef = (NPCDef) ThingDef.GetByDefname(MonsterAmbushSystem.GolemDefname);
+			int total = 0;
+			int ratCount = 0;
+			int golemCount = 0;
+			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, 10)) {
+				NPC npc = ch as NPC;
+				if (npc == null) {
+					continue;
+				}
+				total++;
+				if (npc.Def == ratDef) {
+					ratCount++;
+				}
+				if (npc.Def == golemDef) {
+					golemCount++;
+				}
+			}
+			Console.WriteLine("AMBUSH_CHANCE_SAMPLE: attempts=" + attempts + " total=" + total +
+				" rat=" + ratCount + " golem=" + golemCount);
+		}
+
 		[SteamFunction]
 		public static void TestForceVeinRegenReady(Character self, ScriptArgs sa) {
 			int x = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
