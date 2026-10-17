@@ -340,6 +340,21 @@
   <data name="Loc_PlayerVendor_Stock_Label_SoldByUnits" xml:space="preserve">
     <value>Jednotkový prodej</value>
   </data>
+  <data name="FishingLoc_whereToFish" xml:space="preserve">
+    <value>Where do you want to fish?</value>
+  </data>
+  <data name="FishingLoc_notWater" xml:space="preserve">
+    <value>There is no fish to be found there.</value>
+  </data>
+  <data name="FishingLoc_fail" xml:space="preserve">
+    <value>You feel a tug, but your line comes up empty.</value>
+  </data>
+  <data name="FishingLoc_success" xml:space="preserve">
+    <value>You catch a fish.</value>
+  </data>
+  <data name="FishingLoc_abort" xml:space="preserve">
+    <value>You stop fishing.</value>
+  </data>
   <data name="LockpickLoc_abort" xml:space="preserve">
     <value>Odemykání přerušeno.</value>
   </data>
