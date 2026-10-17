@@ -81,6 +81,31 @@ anti-macro-excluded, found in `funkce.scp`) is a separate, distinct roll that do
 exist in moriaengine at all - don't derive it by inverting `GetSCurve`, implement the
 sourced formula as its own function.
 
+**CORRECTION (2026-10-17, later same day) - the real per-skill `advrate` numbers were
+wrong, found the actual authoritative mechanism.** User asked to dig specifically into
+the gain logic + whether difficulty feeds into it. Direct re-read of
+`scripts/spheretables.scp` (not relying on the forks' earlier summaries) found that
+`ADVRATE` is a **native Sphere engine field** on every `[SKILL N]` block - a 3-point
+curve (successes-needed-to-gain-0.1 at 0%/50%/100% of the skill's own current value
+relative to its cap, per the source's own comment), not something bespoke per skill the
+way #272/#273/#275/#278 each reported (170/180/160 - **those specific numbers are
+wrong**, superseded by this correction). Real values: Alchemy/Cooking 10/200/750;
+Blacksmithing/Bowcraft/Carpentry/Tailoring/Tinkering/Lumberjacking (all six identical)
+10/400/1600; Fishing 10/250/800; Inscription 10/300/1050; **Mining 1010/400/1600** - the
+1010 at the 0% point is far higher than every other skill, confirmed directly in source,
+likely a deliberate anti-macro-bot measure (not a transcription error, don't silently
+"fix" it to match the others). 11 of 13 skills use this native curve directly. Only
+Lockpicking and Taming show the sentinel `ADVRATE=0fffffff` ("native auto-gain disabled,
+manual growth" per the source's own comment) - those two alone use the separate custom
+LScript `skillgain()` function with their own `advrate_lockpicking=600`/
+`advrate_taming=600` override. **Difficulty of the specific attempted action does NOT
+feed into gain chance anywhere** - only current skill level does (the 3-point curve);
+difficulty only matters for the entirely separate success/fail roll. Full detail,
+including a minor unresolved loose end (dead/vestigial `advrate_cooking`/
+`advrate_tailoring` constants in `skillgains.scp` that nothing calls), is in #140's
+latest comment - this file keeps the superseded numbers above for history, don't use
+them when implementing, use this correction's table instead.
+
 **Major cross-cutting finding, confirmed independently by two of the four forks**: 8 of
 the 13 skills (Blacksmithing #272, Carpentry #273, Tinkering #275, Tailoring #278,
 Bowcraft #280, Inscription #281, Alchemy #277, Cooking #279) share one base class,
