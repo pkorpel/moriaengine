@@ -42,11 +42,13 @@ namespace SteamEngine.CompiledScripts {
 
 			//TODO
 
+			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.Lockpicking, SkillGainSystem.LockpickingAdvRate); //#329
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			skillSeqArgs.Self.SysMessage(Loc<LockpickLoc>.Get(self.Language).fail);
+			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.Lockpicking, SkillGainSystem.LockpickingAdvRate); //#329 - real Erebor gains on fail too
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
