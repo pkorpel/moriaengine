@@ -349,6 +349,9 @@
   <data name="LockpickLoc_fail" xml:space="preserve">
     <value>Nepoda�ilo se ti odemknout z�mek</value>
   </data>
+  <data name="LockpickLoc_notLocked" xml:space="preserve">
+    <value>That isn't locked.</value>
+  </data>
   <data name="LockpickLoc_success" xml:space="preserve">
     <value>�sp�n� jsi odemkl z�mek</value>
   </data>
