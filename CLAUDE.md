@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## Skill-gain + Mining implementation IN PROGRESS (2026-10-17) — #327 done, #333 done, #334 next
+## Skill-gain + Mining implementation COMPLETE (2026-10-17) — #282→#337 backlog all shipped
 
 Autonomous implementation pass through the #282→#328→#329→#330→#333→#334→#335→#336→#337
 backlog (plans fully settled earlier, see the "Skill-gain implementation PLANNED" and
@@ -213,9 +213,49 @@ specifically for this and future GM-tunability).
 and spaces only, same already-documented rule, just newly triggered by a numeric Theory
 parameter this time instead of an explicit literal.
 
-**Next up: #337** (Mining Phase E, `.settings` category covering all of #333-336's
-tunable constants) - the LAST Mining sub-issue, completing the full #332 implementation
-pass.
+**#337 (Mining Phase E, GM-tunable `.settings` category) - DONE, PR #355, merged,
+closed.** New `MiningSettings` (`.settings` → "Mining", 54 fields) covering everything
+#333-336 built: 40 ore-tier fields (4 each - skill threshold, min/max amount, regen
+minutes), 4 cave-in fields, 7 ambush fields (chance + all 6 monster-tier defnames, so
+#335's content substitutions can be swapped later without a code change), 3 delay
+fields. Same `SkillAdvancementSettings` (#330) pass-through-property pattern - made
+`OreTier`'s fields mutable (were `readonly`) and promoted `MiningVeinSystem`/
+`MonsterAmbushSystem`'s private `const`s to public mutable static fields so these
+properties write through to the real live state directly. Scoped down from the
+original 50-ore-field estimate to the real 40 (the actual `fixresource` gating logic
+uses a single skill threshold per ore, not a range, as #333 already confirmed) -
+`#337`'s own text explicitly allowed "exact shape to be finalized" once the earlier
+phases landed. Deliberately left out: ore item defnames (tied to real content, not a
+tunable number) and the ambush table's per-tier weights (the real mechanic uses fixed
+`rand(128)` bucket boundaries, not a generic weighted table - restructuring that into
+something GM-editable was judged out of scope for this integration pass).
+
+**#332 (the Mining design/tracking issue) - CLOSED**, all 5 phases shipped (#333-337).
+Mining now has the full real Erebor mechanic set: per-tile ore-tier veins with weighted
+rolls and skill-gated downgrade, cave-ins, monster ambush, anti-macro delay scaling,
+all GM-tunable. #338 (mine-region restriction) stays explicitly deferred to backlog,
+per the original design decision - not part of this pass.
+
+---
+
+**BACKLOG COMPLETE.** The full autonomous implementation pass through
+#282→#328→#329→#330→#333→#334→#335→#336→#337 (9 issues, 9 PRs: #340-341, #343, #345,
+#347, #349, #351, #353, #355) is done - every issue shipped, tested (targeted + full
+suite before every merge), and closed with a progress comment referencing its PR.
+Skill-gain-through-use (#140) is fully implemented for all 13 skills; Mining has its
+complete real-Erebor mechanic set. Recurring themes worth remembering for the next
+multi-PR autonomous pass in this codebase: (1) full-suite runs under this sandbox's
+real resource constraints reliably surface the SAME `LoginDeniedReason=1`
+cross-collection concurrent-connection flakiness class on completely unrelated,
+untouched files - always confirm via an isolated/targeted rerun of the ACTUALLY-touched
+files before trusting a full-suite failure as a real regression; (2) adding Facts to
+an existing shared-fixture test file can silently push it over the 5-character-slot
+account cap - check the running total whenever a PR adds new Facts to a file that
+already has some; (3) several "reuse the existing curve-based mechanism" instincts
+(`SkillDef.Delay`, `SkillDef.AdvRate`) turned out to need genuinely separate
+implementations once checked against the real source's own math - checking first
+(per each issue's own suggestion) and documenting the mismatch when found was the
+right call both times, not forcing a fit.
 
 
 This file is kept up to date across sessions so a fresh Claude Code session (after
