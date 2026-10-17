@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GameCore\SteamEngine.GameCore.csproj" />
     <ProjectReference Include="..\ThirdParty\SteamEngine.ThirdParty.csproj" />
+    <ProjectReference Include="..\scripts\SteamEngine.Scripts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

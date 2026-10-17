@@ -1,0 +1,39 @@
+# Git hooks for everyone who works in this repo, people and agents alike.
+#   pre-commit install        (installs all three hook types listed below)
+# Process: docs/wiki/Process/Dev-Process.md.
+default_install_hook_types: [pre-commit, commit-msg, pre-push]
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: detect-private-key
+      # main and the integration branch take changes only through pull requests
+      - id: no-commit-to-branch
+        args: [--branch, main, --branch, agent-kit-trial]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      - id: commit-msg-check
+        name: commit message (no attribution trailers, subject ≤ 72)
+        entry: scripts/commit-msg-check.sh
+        language: script
+        stages: [commit-msg]
+      - id: test-fast
+        name: build + fast test tier
+        entry: scripts/test-fast.sh
+        language: script
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true

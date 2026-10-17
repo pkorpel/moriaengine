@@ -163,6 +163,12 @@ namespace SteamEngine.CompiledScripts {
 						Logger.WriteWarning(pi.DeclaringType.Name, pi.Name, "The property must be both writable and readable to be saved and loaded.");
 						return;
 					}
+				} else if (mi.MemberType == MemberTypes.Field) {
+					FieldInfo fi = (FieldInfo) mi;
+					if (fi.IsInitOnly) {
+						Logger.WriteWarning(fi.DeclaringType.Name, fi.Name, "The field must not be readonly to be saved and loaded.");
+						return;
+					}
 				}
 				registeredMembers.Add(mi);
 			}

@@ -56,7 +56,12 @@ $StandaloneProjects = @(
 	'GameCore/SteamEngine.GameCore.csproj'
 	'AuxiliaryServer/SteamEngine.AuxiliaryServer.csproj'
 	'ProcessRestarter/SteamEngine.ProcessRestarter.csproj'
-	'Tests/SteamEngine.Tests.csproj'
+	# Tests/SteamEngine.Tests.csproj is NOT standalone anymore (issue #358 gave it a
+	# ProjectReference on scripts/SteamEngine.Scripts.csproj, to test StaticMemberSaver
+	# against a real [HasSavedMembers] type) - building it this early, before
+	# Invoke-ScriptGeneration has produced Generated/*.Generated.cs, fails. The final
+	# "Building full solution" step below already builds it, by which point script
+	# generation has run.
 )
 
 function Invoke-Dotnet {

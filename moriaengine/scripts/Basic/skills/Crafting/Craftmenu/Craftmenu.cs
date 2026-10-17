@@ -27,6 +27,10 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	[HasSavedMembers]
 	public static class CraftmenuContents {
+		// [SavedMember] is a harmless no-op here, kept for historical clarity rather than
+		// removed: this field is readonly, so StaticMemberSaver.TryRegisterMember's
+		// readonly-field guard always skips it (issue #358) - it's rebuilt lazily from
+		// AbstractSkillDef/CraftingSkillDef content below anyway, not save-game state.
 		[SavedMember]
 		private static readonly Dictionary<SkillName, CraftmenuCategory> mainCategories = new Dictionary<SkillName, CraftmenuCategory>();
 
@@ -301,7 +305,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Target for targetting single items or containers containing items to be added to the craftmenu (to the selected category)</summary>
 	public class Targ_Craftmenu : CompiledTargetDef {
 		protected override void On_Start(Player self, object parameter) {
-			self.SysMessage("Zamìø pøedmìt pøípadnì konejner s pøedmìty pro pøidání do craftmenu.");
+			self.SysMessage("Zamï¿½ï¿½ pï¿½edmï¿½t pï¿½ï¿½padnï¿½ konejner s pï¿½edmï¿½ty pro pï¿½idï¿½nï¿½ do craftmenu.");
 			base.On_Start(self, parameter);
 		}
 

@@ -269,6 +269,34 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## Workflow (agent kit)
+
+Wiki: `docs/wiki/` (start at `docs/wiki/Home.md`). It changes in the same branch as
+the code it describes.
+
+Issue → branch `<n>-<slug>` in worktree `../moria-<n>` → PR into `main` → merge on
+green CI → verified on a local boot → issue closed. Commands:
+`/task-new`, `/task-refine`, `/task-pick`, `/task-run`, `/task-ship`,
+`/status-weekly`; role agents in `.claude/agents/`. Details:
+`docs/wiki/Process/Agent-Workflow.md`, labels in `docs/wiki/Process/Tasks.md`.
+
+- Every bug gets an issue before work starts.
+- Only the maintainer (pkorpel) moves an issue to `status:ready`.
+- `main` takes changes only through PRs. The gate is `/task-ship` (merges only on a
+  green CI run of the PR head) plus the local hooks and the deny rules in
+  `.claude/settings.json`.
+- Hooks: `pre-commit install` once per clone. Never `--no-verify`.
+- Commits: `area: what changed`, ≤ 72 chars, imperative.
+- Build, test, run: `scripts/test-fast.sh`, `scripts/test-full.sh` (one at a time,
+  fixed ports 2593/2595), `scripts/run-local.sh start|status|logs|stop`.
+- GitHub access for agents: MCP server `github` (`scripts/mcp-github.sh`).
+
+Adopted 2026-10-17 after a trial on the `agent-kit-trial` branch (now merged) - see
+`docs/wiki/Process/Agent-Kit-Trial.md` for the trial's full history and Phase 4
+evaluation. Every reference to `agent-kit-trial` as a target/gate branch in the wiki
+pages below means `main` now that the trial is adopted; pages get updated to say so
+directly as they're next touched, not retroactively rewritten in this same change.
+
 ## Skill-mechanics audit vs Erebor (2026-10-17) — #284, 40 sub-issues filed, NOT implemented
 
 Follow-up to the skill-gain research below: user asked for a similar research-only pass

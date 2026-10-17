@@ -9,16 +9,37 @@ name: .NET Build
 #   (SteamEngine.Tests.Protocol: spawns real AuxiliaryServer/GameCore processes per test
 #   class, ~9-11 minutes). Run this deliberately before/after something that could affect
 #   protocol-level behavior, not automatically on every commit.
+# `paths-ignore` (doc-only-paths below) skips the whole workflow for pushes/PRs that only
+# touch *.md/docs/issue-template content - found 2026-10-17 that these were burning a full
+# fast-tier run (restore+build+test) for zero code risk, a real contributor to the monthly
+# Actions-minutes budget running low with ~14 days left. A push mixing doc and code changes
+# still runs normally - this only skips when EVERY changed file matches.
 on:
   push:
     branches: [main]
+    paths-ignore: &doc-only-paths
+      - '**/*.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
   pull_request:
     branches: [main]
+    paths-ignore: *doc-only-paths
   workflow_dispatch:
+    inputs:
+      tier:
+        description: fast (build + fast tier) or full (entire suite)
+        type: choice
+        options: [fast, full]
+        default: fast
+
+# A newer push to the same PR or branch cancels the run still going for the older one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-unit-test:
-    if: github.event_name != 'workflow_dispatch'
+    if: github.event_name != 'workflow_dispatch' || inputs.tier == 'fast'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -47,7 +68,7 @@ jobs:
         run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "FullyQualifiedName!~SteamEngine.Tests.Protocol"
 
   full-regression:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.tier == 'full'
     runs-on: ubuntu-latest
     # Full suite normally takes ~9-11 minutes. Without this, a hung run (seen in practice -
     # one got stuck for 2.5+ hours after a test failure, presumably a deadlock during test/
