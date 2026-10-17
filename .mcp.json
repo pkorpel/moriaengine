@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "sh",
+      "args": ["scripts/mcp-github.sh"]
+    }
+  }
+}

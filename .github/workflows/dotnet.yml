@@ -11,14 +11,25 @@ name: .NET Build
 #   protocol-level behavior, not automatically on every commit.
 on:
   push:
-    branches: [main]
+    branches: [main, agent-kit-trial]
   pull_request:
-    branches: [main]
+    branches: [main, agent-kit-trial]
   workflow_dispatch:
+    inputs:
+      tier:
+        description: fast (build + fast tier) or full (entire suite)
+        type: choice
+        options: [fast, full]
+        default: fast
+
+# A newer push to the same PR or branch cancels the run still going for the older one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-unit-test:
-    if: github.event_name != 'workflow_dispatch'
+    if: github.event_name != 'workflow_dispatch' || inputs.tier == 'fast'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -47,7 +58,7 @@ jobs:
         run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "FullyQualifiedName!~SteamEngine.Tests.Protocol"
 
   full-regression:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.tier == 'full'
     runs-on: ubuntu-latest
     # Full suite normally takes ~9-11 minutes. Without this, a hung run (seen in practice -
     # one got stuck for 2.5+ hours after a test failure, presumably a deadlock during test/
