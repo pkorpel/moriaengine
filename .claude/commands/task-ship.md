@@ -21,10 +21,14 @@ commit (a private repo on GitHub Free has no branch protection or required check
 5. Run `scripts/test-full.sh` (fast tier + every full-boot class, ~15 min) before
    opening the PR - standing rule (2026-10-17), not just for branches that look
    risky. Skip it only if the user explicitly says to skip it for this one case; a
-   missing full-boot result is not a silent default. A `FAIL` in a class the branch
-   didn't touch that passes on a rerun of that class alone is a known flake (wiki
-   `Process/Dev-Process.md`) - note it in the PR, don't block on it. A real failure:
-   fix and rerun before opening the PR.
+   missing full-boot result is not a silent default. If a wave of unrelated classes
+   suddenly fails, check `moriaengine/saves/` for a stale dated snapshot FIRST (wiki
+   `Process/Dev-Process.md`, "Flaky full-boot tests") before suspecting this branch -
+   a stale non-baseline snapshot causes a misleading login-denial cascade, a known
+   mechanism predating this kit. A `FAIL` in a class the branch didn't touch that
+   passes on a rerun of that class alone (after ruling out a stale snapshot) is a
+   known flake - note it in the PR, don't block on it. A real failure: fix and rerun
+   before opening the PR.
 6. If a PR for this branch is already open, go to step 9. Otherwise open one
    (`create_pull_request`): base `agent-kit-trial`; title = what the squashed commit should
    say, in the commit style; body from `.github/pull_request_template.md`:
