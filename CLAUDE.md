@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## Skill-gain + Mining implementation IN PROGRESS (2026-10-17) — #327 (all 3 phases) done, #333 next
+## Skill-gain + Mining implementation IN PROGRESS (2026-10-17) — #327 done, #333 done, #334 next
 
 Autonomous implementation pass through the #282→#328→#329→#330→#333→#334→#335→#336→#337
 backlog (plans fully settled earlier, see the "Skill-gain implementation PLANNED" and
@@ -98,9 +98,41 @@ oversight.
 **#327 (the full skill-gain-through-use design/tracking issue) - CLOSED**, all 3 phases
 shipped. Skill-gain-through-use (#140) is now fully implemented for all 13 skills.
 
-**Next up: #333** (Mining Phase A, core vein/ore-tier system) - starts the Mining
-implementation pass (#332, phases #333-337, design already settled, see the "Mining
-full implementation PLANNED" section below).
+**#333 (Mining Phase A, core per-tile ore-tier vein system) - DONE, PR #347, merged,
+closed.** New `MiningVeinSystem` - lazy per-tile vein state (no pre-authored vein
+registry, matching #332's confirmed design), all 10 real Erebor ore tiers straight from
+`sphereregion.scp`'s own `[RegionResource o_X]` blocks (copper through mithril, exact
+skill/amount/regen data). Untouched vein's first hit rolls one ore type weighted by the
+real `AMOUNT` ranges as a commonness proxy, seeds the pool from that ore's range.
+Insufficient skill downgrades the yield to copper rather than failing (real
+`fixresource` logic). Pool depletes by 1/extraction; once exhausted, regenerates with a
+**fresh** ore roll once its timer elapses (per the user's own confirmed "veins vary over
+time" decision). Wired into `MiningSkillDef.On_Success`, replacing the old hardcoded
+`i_ore_iron` placeholder.
+
+**Known, deliberate simplification** (documented in `MiningVeinSystem.cs`'s own doc
+comment): vein state is in-memory only, not persisted across a server restart - building
+real persistence for an arbitrary per-tile dictionary would need a new generic
+keyed-state save mechanism this engine doesn't have; not required by #333's own scope
+text, lower-stakes than the already-deferred region-restriction (#338).
+
+**Real pre-existing test fix found along the way**: `GatheringTests.MiningYieldsOre`
+(and its server-side `TestCheckHasOre` helper) hardcoded "mining always yields
+`i_ore_iron`" - true under the old always-iron placeholder, not true under the real
+weighted-random system. Fixed to check for `i_ore_copper` instead - a brand-new miner
+(skill 0) always ends up with copper regardless of which ore the vein itself rolls,
+since copper's own real threshold is 0 (the only tier a 0-skill miner ever qualifies
+for) - keeps the test fully deterministic despite the underlying roll being random.
+
+**Test-authoring gotcha worth remembering**: `ItemDef.Defname` returns the raw header
+defname (e.g. `"0x19b7"`), not the real `DEFNAME=i_ore_iron` alt-name registered inside
+the block - same already-documented Defname-vs-PrettyDefname class as
+`AbstractSkillDef.PrettyDefname` elsewhere in this file. Compare by object identity
+against a known table instead of string-matching a defname when this might bite.
+
+**Next up: #334** (Mining Phase B, cave-ins) - continuing the Mining implementation pass
+(#332, phases #334-337 remaining, design already settled, see the "Mining full
+implementation PLANNED" section below).
 
 
 This file is kept up to date across sessions so a fresh Claude Code session (after
