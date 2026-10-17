@@ -54,6 +54,45 @@ bearing ones, in case this file gets read before that comment:
 
 **Status: research only, nothing implemented.** All 41 issues (#284, #285-324) are open.
 
+## Skill-gain implementation PLANNED, not started (2026-10-17) — #327, 3 phase sub-issues
+
+Follow-up to the ADVRATE-mechanism correction below: user asked for an issue covering
+the full mechanism write-up plus an implementation plan, since this is a prerequisite
+for actually implementing #140's 13 skills. Filed as #327 (design/tracking), split into
+3 phase sub-issues since each is independently implementable:
+
+- **#328 Phase 1** - the generic native-curve gain system. Covers 11 of 13 skills
+  directly (the ones using Erebor's real 3-point `ADVRATE` curve). New shared
+  `SkillGainSystem.TryGainSkill` entry point (profession-cap/NPC/safe-region gated,
+  matching `funkce.scp`'s own gates), fixing each skill's `.def` `ADVRATE=` data to the
+  real Erebor numbers (currently generic classic-UO placeholder values - `2.5,50,200` or
+  `10,200,800` - not Erebor's real per-skill-tuned ones; Alchemy's own entry is
+  additionally broken, only 1 of its 3 values is live, the rest are commented out), and
+  wiring `CraftingSkillDef.On_Success`/`On_Fail` (covers 8 of the 11 at once - Alchemy/
+  Blacksmithing/Bowcraft/Carpentry/Cooking/Tailoring/Tinkering/Inscription all share this
+  one base class) plus Mining/Lumberjacking/Fishing's own hooks.
+- **#329 Phase 2** - the separate custom-formula path for Lockpicking/Taming (the 2 of
+  13 that Erebor's own source disables the native curve for, `ADVRATE=0fffffff`,
+  replaced by a quadratic formula with a flat per-skill constant instead of a 3-point
+  curve). **Blocked on #282** (Lockpicking's inverted locked-check - the whole use-flow
+  is broken regardless of skill gain, fix that first).
+- **#330 Phase 3** - GM-tunable `.settings` category, `SkillAdvancementSettings`. **User-
+  confirmed scope: exactly these 13 skills, no more** (not the other 40 from #284 -
+  those stay leveling-point-only by design, nothing to tune there). 3 scalar fields
+  (low/mid/high) per skill for the 11 native-curve ones + 1 each for Lockpicking/Taming
+  - 35 fields total, matching the established flat-scalar `.settings` pattern (no
+  existing category has an array-typed editable field). Needs a write-through mechanism
+  so an edit actually updates the live `SkillDef.AdvRate`, not just a standalone stored
+  value nobody reads - model on Erebor's own `nastaveni_uplatni_skills` GM-settings-sync
+  function, which does exactly this.
+
+**Two explicit user decisions, already resolved, don't re-litigate**: Mining's 0%-point
+ADVRATE value is **10** (matching every other skill), not Erebor's literal `1010` found
+in source - "easy to adjust later since it's GM-tunable anyway." Settings use 3 full
+scalar fields per curve-based skill (not a single rate-multiplier simplification).
+
+**Status: planned, nothing implemented yet.** #327-330 all open.
+
 ## Skill-gain-through-use research (2026-10-17) — #140, 13 sub-issues filed, NOT implemented
 
 User asked for a research-only pass (no code) on the 13 skills meant to be trained by
