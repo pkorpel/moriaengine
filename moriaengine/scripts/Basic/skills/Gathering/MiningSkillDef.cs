@@ -51,6 +51,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			//#336 - PhaseStart already set the generic curve-based delay just before this
+			//trigger fired; overwrite it with the real anti-macro formula (flat 20s, reduced
+			//above skill 100.0%, matches funkce.scp's own real behavior exactly).
+			skillSeqArgs.DelayInSeconds = GatheringDelaySystem.GetDelaySeconds(skillSeqArgs.Self, SkillName.Mining);
 			return TriggerResult.Continue;
 		}
 

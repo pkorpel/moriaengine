@@ -56,6 +56,11 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestSetGmOn");
 				Assert.True(this.fixture.WaitForGameOutput("GM_MODE_TEST: SET to GM (IsGM=True)", TimeSpan.FromSeconds(10)));
 
+				// #336 - Mining's real anti-macro delay is a 20-second base, far longer than
+				// this test's own short wait below; speed it up for this fixture.
+				client.SendSpeech(".TestSpeedUpGatheringDelayForTest");
+				Assert.True(this.fixture.WaitForGameOutput("GATHERING_DELAY_SPED_UP:", TimeSpan.FromSeconds(10)));
+
 				var (x, y, z) = client.ReadSpawnPosition(TimeSpan.FromSeconds(10));
 
 				client.SendSkillUse(45); // Mining
