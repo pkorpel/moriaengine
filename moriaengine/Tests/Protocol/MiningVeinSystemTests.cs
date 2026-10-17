@@ -181,6 +181,28 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
+		public void AmbushTriggersAtRoughlyTheRealRateAndFavorsRatOverGolem() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "AmbushChecker")) {
+				this.PromoteToGm(client);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSampleAmbushChance 40000");
+				Assert.True(this.fixture.WaitForGameOutputSince("AMBUSH_CHANCE_SAMPLE:", mark, TimeSpan.FromSeconds(30)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "AMBUSH_CHANCE_SAMPLE:");
+				int total = ExtractInt(line, "total=");
+				int rat = ExtractInt(line, "rat=");
+				int golem = ExtractInt(line, "golem=");
+				// Expected ~53 total ambushes over 40000 attempts at 1/750 - generous bounds
+				// (>0, <10%) catch a completely broken roll without being flaky on the real one.
+				Assert.True(total > 0 && total < 4000, "Expected roughly 1/750 of 40000 attempts to ambush: " + line);
+				// Rat is ~49% of triggers, golem+copper-spirit (same substituted defname,
+				// counted together) only ~7% combined - rat should clearly dominate.
+				Assert.True(rat > golem * 3, "Expected rat ambushes to be rolled far more often than golem/copper-spirit: " + line);
+			}
+		}
+
+		[Fact]
 		public void CaveInTriggersAtRoughlyTheRealOneIn120Rate() {
 			this.EnsureAutoAccountCreationEnabled();
 			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "CaveInChanceChecker")) {

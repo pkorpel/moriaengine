@@ -110,6 +110,7 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				self.SysMessage(Loc<MiningLoc>.Get(self.Language).veinExhausted);
 			}
+			MonsterAmbushSystem.TryAmbush(self.P()); //#335
 			SkillGainSystem.TryGainSkill(self, SkillName.Mining); //#328
 		}
 
@@ -123,6 +124,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			self.SysMessage(Loc<MiningLoc>.Get(self.Language).fail);
+			MonsterAmbushSystem.TryAmbush(self.P()); //#335 - real fixresource rolls this on every gather action, not just success
 			SkillGainSystem.TryGainSkill(self, SkillName.Mining); //#328 - real Erebor gains on fail too
 		}
 
