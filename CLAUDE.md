@@ -54,6 +54,48 @@ bearing ones, in case this file gets read before that comment:
 
 **Status: research only, nothing implemented.** All 41 issues (#284, #285-324) are open.
 
+## Mining full implementation PLANNED, not started (2026-10-17) — #332, 6 phase sub-issues
+
+Follow-up to #269's own research: a deeper dig into `scripts/sphereregion.scp`/
+`scripts/systems/miningfix.scp` (Erebor archive) found a much bigger real system than
+#269's first pass surfaced. Filed as #332 (design/tracking), split into 6 phase
+sub-issues. **Skill-gain itself is NOT part of this - already covered by #328** (Mining
+is one of #327's 11 native-curve skills); this issue is everything else - what you
+actually find when you mine, and the mechanics around that.
+
+**The real mechanism**: 10 ore tiers (not the 7 originally recalled - gold/silver/shadow
+are real, already exist as moriaengine items), each with an exact skill range/pool-
+amount/regen-timer from `[RegionResource o_X]` blocks (copper 0-40/50-75/30min through
+mithril 105-145/3-4/30min - skill ranges exceeding 100 confirm Erebor really does allow
+Mining past the classic cap). A vein has ONE fixed assigned ore type; insufficient skill
+doesn't fail the attempt, it downgrades the result to copper instead (`fixresource`'s
+real logic). Plus cave-ins (~1/120 chance, blocks the vein, needs a separate skill-roll
+to clear), monster ambush (1/750 chance, weighted rat→troll→earth elemental→rock
+elemental→copper spirit→golem), and anti-macro delay scaling above skill 100.
+
+**User-confirmed design decisions, don't re-litigate**:
+- **Mine-region restriction ("Dul"/"Doly") is explicitly deferred** (#338, backlog) -
+  moriaengine has zero region data for this (confirmed, no "Dul"/"Doly"-named regions
+  exist anywhere) - authoring real mine-region boundaries is its own content project.
+- **Full per-vein pool fidelity, scoped to individual tiles, not named regions** (since
+  region data doesn't exist) - each mineable tile is its own lazily-created "vein," not
+  pre-authored/curated the way real Erebor's named-region allocations are.
+- **Vein material varies over time**: rolled (weighted by rarity via the real `AMOUNT`
+  ranges) on the first hit into an untouched (fresh or freshly-regenerated) vein, fixed
+  until the pool fully depletes and regens, then rerolled fresh.
+
+**Real content gap found, flagged not resolved**: the monster-ambush table's "rock
+elemental"/"copper spirit" tiers have no moriaengine equivalent at all, and "earth
+elemental" only exists as a mage-summon variant (`c_elem_earth_m`) - #335 proposes
+substitutions (reusing `c_elem_earth_m`/`c_golem_copper` at multiple tiers) as an open
+question rather than deciding unilaterally.
+
+Sub-issues: #333 (Phase A, core vein/ore-tier system) · #334 (Phase B, cave-ins) · #335
+(Phase C, monster ambush) · #336 (Phase D, anti-macro delay) · #337 (Phase E, `.settings`
+covering all of A-D) · #338 (Phase F, deferred mine-region restriction, backlog).
+
+**Status: planned, nothing implemented yet.** #332-338 all open.
+
 ## Skill-gain implementation PLANNED, not started (2026-10-17) — #327, 3 phase sub-issues
 
 Follow-up to the ADVRATE-mechanism correction below: user asked for an issue covering
