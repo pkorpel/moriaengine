@@ -11,6 +11,49 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## Skill-mechanics audit vs Erebor (2026-10-17) — #284, 40 sub-issues filed, NOT implemented
+
+Follow-up to the skill-gain research below: user asked for a similar research-only pass
+(no code) on the remaining 40 skills (every `SkillName` enum value except the 13 already
+covered by #140) - NOT about gain-through-use (these are correctly leveling-point-only
+by design), but whether each skill's actual formula/effect matches the real Erebor
+Sphere shard. #284 is the tracking issue; one sub-issue per skill (#285-324), same
+Erebor-wiki + Sphere-source-archive method as #140, via 7 parallel forks grouped by
+category. Full headline findings are in #284's own consolidating comment - the load-
+bearing ones, in case this file gets read before that comment:
+
+- **`effect=` combat-weighting values (Tactics/Anatomy/ArmsLore/EvalInt/SpiritSpeak)
+  are never set in ANY `.def` content anywhere** (confirmed repo-wide grep, #309) - the
+  shared damage formula's *structure* in `CombatCalculator.cs` is correct and several
+  individual skills "matched" Erebor's formula shape, but with zero `effect=` data behind
+  any of them, all five currently contribute exactly zero to real combat damage. Matching
+  the formula's shape isn't the same as the skill doing anything today.
+- **Real Erebor melee combat has no hit/miss roll at all - every swing connects** (#287
+  Swords/#289 Macing/#291 Fencing/#292 Wrestling); weapon skill only decides which skill
+  gains XP from a landed hit, not whether it lands. moriaengine's `WeaponSkillDef.
+  On_Stroke` currently runs a fabricated `CheckSuccess` roll with no basis in the source.
+  **Needs the user's explicit confirmation before anyone touches it** - this changes how
+  combat feels, not just a tuning constant.
+- **Veterinary (#297) and Musicianship (#310) both have zero implementation anywhere** -
+  no `SkillDef` registered for either. Bandaging an animal companion currently does
+  nothing; Discordance (#307)/Peacemaking (#311)/Provocation (#315) all depend on
+  Musicianship resolving, so the whole bard skill line may be silently non-functional.
+- **Correction to the #140 section below**: `SkillDef.AdvRate`/`AdvRateForValue`/
+  `AdvRateOfChar` already exist and correctly parse/evaluate real Erebor `ADVRATE=` data
+  - confirmed independently by two of the seven forks (#285, #314) - they just have zero
+  callers anywhere. "No skill-gain mechanism exists at all" (below) is slightly
+  overstated: the rate-*lookup* plumbing already exists, fed by real data; only the
+  roll-and-increment step is missing. Worth reusing directly when #140 gets implemented.
+- Confirmed genuinely out of scope, not gaps: Camping/Forensics/Herding/Begging are
+  unimplemented on BOTH sides (Erebor's own source has no mechanic for any of them
+  either); Chivalry/Bushido/Ninjitsu confirmed not part of Erebor's design at all,
+  recommended to never implement; Stealing/Snooping have no recoverable source formula
+  (native/closed-source, same class as Alchemy/Cooking from #140).
+- Open question, not resolved: Cartography's own Erebor `ADVRATE` suggests it may
+  actually belong with #140's 13 use-trained skills, not this points-only audit.
+
+**Status: research only, nothing implemented.** All 41 issues (#284, #285-324) are open.
+
 ## Skill-gain-through-use research (2026-10-17) — #140, 13 sub-issues filed, NOT implemented
 
 User asked for a research-only pass (no code) on the 13 skills meant to be trained by
