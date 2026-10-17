@@ -349,6 +349,9 @@
   <data name="LockpickLoc_fail" xml:space="preserve">
     <value>Nepodařilo se ti odemknout zámek</value>
   </data>
+  <data name="LockpickLoc_notLocked" xml:space="preserve">
+    <value>To není zamčené.</value>
+  </data>
   <data name="LockpickLoc_success" xml:space="preserve">
     <value>Úspěšně jsi odemkl zámek</value>
   </data>
