@@ -160,11 +160,34 @@ full-suite-only sandbox-flakiness class seen in prior runs this session (e.g. #3
 own precedent), since the same file passed cleanly in isolation, 3x repeated, and in a
 25-test combined run.
 
-**Next up: #335** (Mining Phase C, monster ambush) - continuing the Mining
-implementation pass (#332, phases #335-337 remaining, design already settled, see the
-"Mining full implementation PLANNED" section below). Note #335's own already-flagged
-open question: the real ambush table's "rock elemental"/"copper spirit" tiers have no
-moriaengine equivalent - will need a content-substitution judgment call.
+**#335 (Mining Phase C, monster ambush) - DONE, PR #351, merged, closed.** New
+`MonsterAmbushSystem` - real `miningfix.scp` `randompotvora` mechanic: 1/750 chance per
+gather action (success or fail) spawns one monster near the miner, weighted via the
+real `rand(128)` bucket boundaries (`>64`/`>32`/`>16`/`>8`/`>2`/else,
+~49/25/12.5/6/4.7/2.3%). Wired into `MiningSkillDef.On_Success`/`On_Fail`, skipped
+during a cave-in-clear attempt (matching the real `@Pickaxed` handler's own separation).
+
+**Resolved #335's own explicitly-flagged open question** (content substitution for the
+missing rock-elemental/copper-spirit tiers): went with the issue's own first proposed
+option - ship functional content now (`c_elem_earth_m` substituted for both
+earth-elemental and rock-elemental; `c_golem_copper` substituted for both copper-spirit
+and random-golem) rather than treating this as a blocking content-authoring gap. All 6
+monster-tier defnames are plain mutable static fields, ready for #337's `.settings`
+category to expose for GM override without a code change later.
+
+**Deliberate simplification**: didn't replicate the real mutual exclusivity between the
+cave-in roll and the ambush roll on the same swing (independent here, ~1/90000 chance of
+both firing on one swing) - judged not worth a signature change to
+`MiningVeinSystem.Mine`'s existing callers for a nearly imperceptible edge case.
+
+Applied #334's own account-slot-cap lesson proactively this time - the new statistical
+test went straight onto `AccountB` from the start, no flakiness hit while building this.
+Full suite clean except unrelated pre-existing flakiness - notably no
+`MiningVeinSystemTests` failures this run, confirming #334's fix holds under full load.
+
+**Next up: #336** (Mining Phase D, anti-macro delay scaling) - continuing the Mining
+implementation pass (#332, phases #336-337 remaining, design already settled, see the
+"Mining full implementation PLANNED" section below).
 
 
 This file is kept up to date across sessions so a fresh Claude Code session (after
