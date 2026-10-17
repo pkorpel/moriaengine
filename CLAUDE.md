@@ -185,9 +185,37 @@ test went straight onto `AccountB` from the start, no flakiness hit while buildi
 Full suite clean except unrelated pre-existing flakiness - notably no
 `MiningVeinSystemTests` failures this run, confirming #334's fix holds under full load.
 
-**Next up: #336** (Mining Phase D, anti-macro delay scaling) - continuing the Mining
-implementation pass (#332, phases #336-337 remaining, design already settled, see the
-"Mining full implementation PLANNED" section below).
+**#336 (Mining Phase D, anti-macro delay scaling) - DONE, PR #353, merged, closed.** New
+`GatheringDelaySystem` - real `f_mine_checkDelayer`/`f_return_delay_bonus`/
+`f_count_delay_bonus` formula: flat 20-second base delay, reduced once skill exceeds
+100.0% ("1% above 100 = 0.03s less delay"). Wired into `MiningSkillDef.On_Start`,
+overwriting the generic curve-based delay `PhaseStart` already sets just before this
+trigger fires.
+
+**Real architecture finding, worth remembering for any future "reuse the existing curve
+mechanism" temptation**: the issue's own suggestion to check `SkillDef.Delay`/
+`GetDelayForChar` first (the same `EvalRangePermille` shape #328 reused for `AdvRate`)
+turned out NOT to fit. `EvalRangePermille` always divides by a fixed 1000 (the skill's
+own 0-100.0% scale), so the curve's own "100%" endpoint IS skill value 1000 - there's no
+way to express "flat below 100%, decreasing ABOVE 100%, uncapped" using a bounded curve
+whose domain ends exactly at that same threshold. Implemented as its own direct formula
+instead (split into a pure skill-percent function, unit-testable without a live
+`Character`, plus a thin Character-wrapper).
+
+**Real test fix found while shipping this**: `GatheringTests.MiningYieldsOre`'s own
+hardcoded 1.5-second wait assumed the OLD short generic delay - once the real 20-second
+anti-macro delay was correctly wired in, the stroke no longer completed within that
+window. Added a test-only speed-up hook (`BaseDelaySeconds` is a mutable static field
+specifically for this and future GM-tunability).
+
+**Also found and fixed**: Theory `InlineData` case names embedding digits (e.g.
+`"DelayFormulaChecker150"`) silently fail character creation - names must be letters
+and spaces only, same already-documented rule, just newly triggered by a numeric Theory
+parameter this time instead of an explicit literal.
+
+**Next up: #337** (Mining Phase E, `.settings` category covering all of #333-336's
+tunable constants) - the LAST Mining sub-issue, completing the full #332 implementation
+pass.
 
 
 This file is kept up to date across sessions so a fresh Claude Code session (after
