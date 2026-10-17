@@ -16,13 +16,13 @@ name: .NET Build
 # still runs normally - this only skips when EVERY changed file matches.
 on:
   push:
-    branches: [main, agent-kit-trial]
+    branches: [main]
     paths-ignore: &doc-only-paths
       - '**/*.md'
       - 'docs/**'
       - '.github/ISSUE_TEMPLATE/**'
   pull_request:
-    branches: [main, agent-kit-trial]
+    branches: [main]
     paths-ignore: *doc-only-paths
   workflow_dispatch:
     inputs:

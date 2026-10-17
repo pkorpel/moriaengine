@@ -8,7 +8,7 @@ Create one issue in `pkorpel/moriaengine` from this request: $ARGUMENTS
 1. Pick the template from `.github/ISSUE_TEMPLATE/`: feature, bug or chore. A spike
    or docs task uses chore with `type:spike` / `type:docs`.
 2. Fill it in, in English. Acceptance criteria must be things someone can check on a
-   local boot of `agent-kit-trial` (a test or the console log); write "Done when" items the
+   local boot of `main` (a test or the console log); write "Done when" items the
    same way for a chore.
 3. Labels: exactly one `type:`, one `prio:` (`prio:1` urgent, `prio:2` next,
    `prio:3` some day) and the `area:` labels that apply (`combat`, `skills`,

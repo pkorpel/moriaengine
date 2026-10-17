@@ -1,5 +1,263 @@
 # moriaengine — working state
 
+## Skill-gain + Mining implementation COMPLETE (2026-10-17) — #282→#337 backlog all shipped
+
+Autonomous implementation pass through the #282→#328→#329→#330→#333→#334→#335→#336→#337
+backlog (plans fully settled earlier, see the "Skill-gain implementation PLANNED" and
+"Mining full implementation PLANNED" sections below). #282 (Lockpicking inverted
+locked-check) already shipped via PR #340 before this pass started.
+
+**#328 (generic native-curve skill-gain system) - DONE, PR #341, merged, closed.**
+`SkillGainSystem.TryGainSkill(Character, SkillName)` is the missing roll-and-increment
+step on top of `SkillDef.AdvRateOfChar`'s pre-existing (zero-caller) curve lookup -
+gated by profession skill cap, NPC exclusion, safe-region anti-macro exclusion. Fixed
+real `ADVRATE=` data for all 11 native-curve skills (was generic classic-UO placeholder
+values; Alchemy's own entry was additionally broken). Wired into `CraftingSkillDef`
+(covers 8 skills at once) plus Mining/Lumberjacking/Fishing's own hooks. Fishing had
+zero implementation anywhere before this - added a minimal shell mirroring Mining's
+shape (target cursor, stroke/success/fail/abort, loc strings).
+
+**Real production bug found and fixed while testing**: `TryGainSkill`'s first draft used
+`Character.GetSkillObject`, which returns `null` for any skill a character has never
+explicitly had set - the common case for most players on most skills (a `Skill` instance
+is only materialized on first write, not eagerly for every possible skill). This would
+have crashed with a `NullReferenceException` the very first time any player attempted a
+skill they'd never touched before. Fixed by switching to the null-safe
+`GetRealSkillValue`/`SetRealSkillValue` pair and reproducing `Skill.Cap`'s profession-cap
+logic inline (via `Player.Profession.GetSkillCap(id)` directly - it doesn't actually need
+an existing `Skill` instance). Same null-safety fix applied to the test helpers that had
+the identical pattern (`TestSetSkillValue`/`TestSampleSkillGainOnNpc`/
+`TestSampleSkillGainAtCap` in `scripts/Tests/SkillGainSystemTests.cs`).
+
+**Test-infra lessons from building `Tests/Protocol/SkillGainSystemTests.cs` (both already
+individually documented elsewhere in this file, re-confirmed here)**: this file needs 7
+character creations (4 Theory cases + 3 Facts) in one collection, over the shared
+account's 5-slot cap - split via a second `AccountB` + `EnsureAutoAccountCreationEnabled`
+(exact pattern from `AttrFlagTests.cs`). AccountB's characters are never the server's
+literal first-ever account, so they stay below `Globals.PlevelForLscriptCommands` and
+every chat command routes through `SimpleCommandParser` (no real argument splitting) -
+multi-argument `Test*` commands silently fail to parse there; fixed by promoting each
+AccountB character to GM first (`SocialTests.TestPromoteToGM`) so commands route through
+the full LScript parser instead. A sed-based mechanical quoting fix (applying the
+"quote bareword args" lesson) also introduced an unescaped-quote C# syntax bug on 4
+lines - caught by the next build, fixed by hand with proper `\"..\"` escaping.
+
+Full suite run **twice** to satisfy "fully test before merge" (user's explicit
+requirement for this pass) - 20 failures first run, 14 second run, different sets both
+times, zero overlap with the changed code surface, all matching already-documented
+pre-existing flaky classes (#100 CombatDepthTests/CI-flakiness, #121 OwnerAggroTests,
+#230 HousingTests). Targeted `SkillGainSystemTests`/`GatheringTests`/`LockpickingTests`
+all green in both runs.
+
+**#329 (Lockpicking/Taming custom-formula skill-gain path) - DONE, PR #343, merged,
+closed.** `SkillGainSystem.TryGainSkillCustomFormula(Character, SkillName, double advRate)`
+- the real Erebor `[function skillgain]` LScript mechanism for the 2 of #140's 13 skills
+whose `.def` disables the native curve (`ADVRATE=0fffffff`): `chance = skillValue² ×
+advrate / (10000 × chanceModifier)`, fed by flat `SkillGainSystem.LockpickingAdvRate`/
+`TamingAdvRate` constants (600 each, matching real Erebor's `advrate_lockpicking`/
+`advrate_taming`) instead of a 3-point curve. Wired into both skills' `On_Success`/
+`On_Fail`.
+
+**Deviation from the issue's own scope text, worth remembering**: #329 said Taming only
+needed its "success path" wired. Re-checked the real Erebor source (`taming.scp`)
+directly and found `SKILLGAIN` is called on BOTH outcomes there, same as Lockpicking -
+wired both for fidelity to the real mechanic rather than following the issue's slightly
+simplified summary. Also found and deliberately skipped Taming's real "GainBonus"
+multiplier (500-600/300-400 for repeatedly taming high-skill scripted spawns) - tied to
+an anti-macro mount-stats system moriaengine doesn't have at all; flat 100 (no modifier)
+used throughout instead, matching every real content call site's own default.
+
+Full suite run showed some `SkillGainSystemTests` failures (`LoginDeniedReason=1`,
+concurrent-connection race) in a file #329 doesn't touch at all - confirmed as pure
+sandbox flakiness (not a regression) by rerunning that file in isolation immediately
+after: 7/7 clean.
+
+**#330 (GM-tunable Skill Advancement settings category) - DONE, PR #345, merged,
+closed.** `SkillAdvancementSettings` (`.settings` → "Skill Advancement", 35 fields). The
+11 native-curve skills' 33 fields (3 each) are pass-through PROPERTIES, not stored
+fields - each getter/setter reads/writes the live `SkillDef.AdvRate` array directly, so
+an edit takes effect immediately with zero extra sync step and persists for free via
+`AbstractDef`'s existing `FieldValue` save mechanism. Confirmed via direct reading of
+`ViewableClassGenerator`'s own codegen (not assumed) that a plain C# property works
+identically to a field for this engine's generic settings-dialog mechanism - no
+per-skill custom `MassSettings`-style field view class needed. Lockpicking/Taming's 2
+fields are real `[SaveableData]` storage (there's no other backing store to write
+through to) - these replace the plain static fields #329 added on `SkillGainSystem`
+(removed in this PR); `Lockpicking.cs`/`TamingSkillDef.cs` now read
+`SkillAdvancementSettings.instance.lockpickingAdvRate`/`tamingAdvRate` directly.
+
+**Scope note, worth remembering for any future `.settings`-category work**: did NOT
+build a protocol test driving a real `.settings` gump round-trip (button clicks,
+text-entry submission) - confirmed via grep that no existing test in this codebase does
+this for ANY settings category, and the generic editing mechanism underneath is already
+proven in production by every other category. Verified the write-through mechanism via
+direct source reading of the generator instead of building new dialog-protocol test
+infrastructure from scratch for one category - a deliberate scope decision, not an
+oversight.
+
+**#327 (the full skill-gain-through-use design/tracking issue) - CLOSED**, all 3 phases
+shipped. Skill-gain-through-use (#140) is now fully implemented for all 13 skills.
+
+**#333 (Mining Phase A, core per-tile ore-tier vein system) - DONE, PR #347, merged,
+closed.** New `MiningVeinSystem` - lazy per-tile vein state (no pre-authored vein
+registry, matching #332's confirmed design), all 10 real Erebor ore tiers straight from
+`sphereregion.scp`'s own `[RegionResource o_X]` blocks (copper through mithril, exact
+skill/amount/regen data). Untouched vein's first hit rolls one ore type weighted by the
+real `AMOUNT` ranges as a commonness proxy, seeds the pool from that ore's range.
+Insufficient skill downgrades the yield to copper rather than failing (real
+`fixresource` logic). Pool depletes by 1/extraction; once exhausted, regenerates with a
+**fresh** ore roll once its timer elapses (per the user's own confirmed "veins vary over
+time" decision). Wired into `MiningSkillDef.On_Success`, replacing the old hardcoded
+`i_ore_iron` placeholder.
+
+**Known, deliberate simplification** (documented in `MiningVeinSystem.cs`'s own doc
+comment): vein state is in-memory only, not persisted across a server restart - building
+real persistence for an arbitrary per-tile dictionary would need a new generic
+keyed-state save mechanism this engine doesn't have; not required by #333's own scope
+text, lower-stakes than the already-deferred region-restriction (#338).
+
+**Real pre-existing test fix found along the way**: `GatheringTests.MiningYieldsOre`
+(and its server-side `TestCheckHasOre` helper) hardcoded "mining always yields
+`i_ore_iron`" - true under the old always-iron placeholder, not true under the real
+weighted-random system. Fixed to check for `i_ore_copper` instead - a brand-new miner
+(skill 0) always ends up with copper regardless of which ore the vein itself rolls,
+since copper's own real threshold is 0 (the only tier a 0-skill miner ever qualifies
+for) - keeps the test fully deterministic despite the underlying roll being random.
+
+**Test-authoring gotcha worth remembering**: `ItemDef.Defname` returns the raw header
+defname (e.g. `"0x19b7"`), not the real `DEFNAME=i_ore_iron` alt-name registered inside
+the block - same already-documented Defname-vs-PrettyDefname class as
+`AbstractSkillDef.PrettyDefname` elsewhere in this file. Compare by object identity
+against a known table instead of string-matching a defname when this might bite.
+
+**#334 (Mining Phase B, cave-ins) - DONE, PR #349, merged, closed.** Extends
+`MiningVeinSystem` with the real cave-in mechanic (`miningfix.scp`'s `fixresource`/
+`dozaval`/`t_zavalTriggers`): ~1/120 chance per successful extraction blocks the vein
+with rubble; clearing needs a separate roll (`{1000,1300} < player.mining` - skill
+below 1000/100.0% can never clear it at all, a genuine high-skill gate, not watered
+down). 20-hour safety-net auto-clear timer matches the real rubble item's own (not a
+meaningful regen mechanic - the real trigger group has no `@timer` handler at all).
+Deliberately skips the real source's Tutorial-region 1/10 odds reduction - no
+tutorial-region equivalent here, per the issue's own explicit scope.
+`MiningSkillDef.On_Stroke` checks `IsCaveInBlocked` first and routes a blocked tile's
+entire stroke into the clear-check instead of the normal ore roll - a separate
+mini-game, no skill gain either way (matches the real `@Pickaxed` handler).
+
+**Two real test-infra bugs found and fixed while building this**:
+1. Adding 2 new Facts pushed this test file to 6 character creations on one shared
+   account, over the 5-slot cap - same already-documented class of bug from earlier in
+   this session. Split onto a dedicated AccountB (+ GM-promotion for multi-arg
+   commands), confirmed via 3x repeated clean isolated runs.
+2. #333's own `UntouchedVeinRollFavorsCommonOresOverRareOnes` distribution test had a
+   genuine statistical flake at 500 samples (mithril's small expected count had enough
+   binomial variance to occasionally violate the 5x-ratio bound) - confirmed via
+   isolated reruns this was pure statistics, not caused by #334, before widening to
+   2000 samples for a much safer margin.
+
+Full suite showed the `MiningVeinSystemTests` failing with the already-documented
+`LoginDeniedReason=1` (concurrent-connection) signature - confirmed as the SAME
+full-suite-only sandbox-flakiness class seen in prior runs this session (e.g. #329's
+own precedent), since the same file passed cleanly in isolation, 3x repeated, and in a
+25-test combined run.
+
+**#335 (Mining Phase C, monster ambush) - DONE, PR #351, merged, closed.** New
+`MonsterAmbushSystem` - real `miningfix.scp` `randompotvora` mechanic: 1/750 chance per
+gather action (success or fail) spawns one monster near the miner, weighted via the
+real `rand(128)` bucket boundaries (`>64`/`>32`/`>16`/`>8`/`>2`/else,
+~49/25/12.5/6/4.7/2.3%). Wired into `MiningSkillDef.On_Success`/`On_Fail`, skipped
+during a cave-in-clear attempt (matching the real `@Pickaxed` handler's own separation).
+
+**Resolved #335's own explicitly-flagged open question** (content substitution for the
+missing rock-elemental/copper-spirit tiers): went with the issue's own first proposed
+option - ship functional content now (`c_elem_earth_m` substituted for both
+earth-elemental and rock-elemental; `c_golem_copper` substituted for both copper-spirit
+and random-golem) rather than treating this as a blocking content-authoring gap. All 6
+monster-tier defnames are plain mutable static fields, ready for #337's `.settings`
+category to expose for GM override without a code change later.
+
+**Deliberate simplification**: didn't replicate the real mutual exclusivity between the
+cave-in roll and the ambush roll on the same swing (independent here, ~1/90000 chance of
+both firing on one swing) - judged not worth a signature change to
+`MiningVeinSystem.Mine`'s existing callers for a nearly imperceptible edge case.
+
+Applied #334's own account-slot-cap lesson proactively this time - the new statistical
+test went straight onto `AccountB` from the start, no flakiness hit while building this.
+Full suite clean except unrelated pre-existing flakiness - notably no
+`MiningVeinSystemTests` failures this run, confirming #334's fix holds under full load.
+
+**#336 (Mining Phase D, anti-macro delay scaling) - DONE, PR #353, merged, closed.** New
+`GatheringDelaySystem` - real `f_mine_checkDelayer`/`f_return_delay_bonus`/
+`f_count_delay_bonus` formula: flat 20-second base delay, reduced once skill exceeds
+100.0% ("1% above 100 = 0.03s less delay"). Wired into `MiningSkillDef.On_Start`,
+overwriting the generic curve-based delay `PhaseStart` already sets just before this
+trigger fires.
+
+**Real architecture finding, worth remembering for any future "reuse the existing curve
+mechanism" temptation**: the issue's own suggestion to check `SkillDef.Delay`/
+`GetDelayForChar` first (the same `EvalRangePermille` shape #328 reused for `AdvRate`)
+turned out NOT to fit. `EvalRangePermille` always divides by a fixed 1000 (the skill's
+own 0-100.0% scale), so the curve's own "100%" endpoint IS skill value 1000 - there's no
+way to express "flat below 100%, decreasing ABOVE 100%, uncapped" using a bounded curve
+whose domain ends exactly at that same threshold. Implemented as its own direct formula
+instead (split into a pure skill-percent function, unit-testable without a live
+`Character`, plus a thin Character-wrapper).
+
+**Real test fix found while shipping this**: `GatheringTests.MiningYieldsOre`'s own
+hardcoded 1.5-second wait assumed the OLD short generic delay - once the real 20-second
+anti-macro delay was correctly wired in, the stroke no longer completed within that
+window. Added a test-only speed-up hook (`BaseDelaySeconds` is a mutable static field
+specifically for this and future GM-tunability).
+
+**Also found and fixed**: Theory `InlineData` case names embedding digits (e.g.
+`"DelayFormulaChecker150"`) silently fail character creation - names must be letters
+and spaces only, same already-documented rule, just newly triggered by a numeric Theory
+parameter this time instead of an explicit literal.
+
+**#337 (Mining Phase E, GM-tunable `.settings` category) - DONE, PR #355, merged,
+closed.** New `MiningSettings` (`.settings` → "Mining", 54 fields) covering everything
+#333-336 built: 40 ore-tier fields (4 each - skill threshold, min/max amount, regen
+minutes), 4 cave-in fields, 7 ambush fields (chance + all 6 monster-tier defnames, so
+#335's content substitutions can be swapped later without a code change), 3 delay
+fields. Same `SkillAdvancementSettings` (#330) pass-through-property pattern - made
+`OreTier`'s fields mutable (were `readonly`) and promoted `MiningVeinSystem`/
+`MonsterAmbushSystem`'s private `const`s to public mutable static fields so these
+properties write through to the real live state directly. Scoped down from the
+original 50-ore-field estimate to the real 40 (the actual `fixresource` gating logic
+uses a single skill threshold per ore, not a range, as #333 already confirmed) -
+`#337`'s own text explicitly allowed "exact shape to be finalized" once the earlier
+phases landed. Deliberately left out: ore item defnames (tied to real content, not a
+tunable number) and the ambush table's per-tier weights (the real mechanic uses fixed
+`rand(128)` bucket boundaries, not a generic weighted table - restructuring that into
+something GM-editable was judged out of scope for this integration pass).
+
+**#332 (the Mining design/tracking issue) - CLOSED**, all 5 phases shipped (#333-337).
+Mining now has the full real Erebor mechanic set: per-tile ore-tier veins with weighted
+rolls and skill-gated downgrade, cave-ins, monster ambush, anti-macro delay scaling,
+all GM-tunable. #338 (mine-region restriction) stays explicitly deferred to backlog,
+per the original design decision - not part of this pass.
+
+---
+
+**BACKLOG COMPLETE.** The full autonomous implementation pass through
+#282→#328→#329→#330→#333→#334→#335→#336→#337 (9 issues, 9 PRs: #340-341, #343, #345,
+#347, #349, #351, #353, #355) is done - every issue shipped, tested (targeted + full
+suite before every merge), and closed with a progress comment referencing its PR.
+Skill-gain-through-use (#140) is fully implemented for all 13 skills; Mining has its
+complete real-Erebor mechanic set. Recurring themes worth remembering for the next
+multi-PR autonomous pass in this codebase: (1) full-suite runs under this sandbox's
+real resource constraints reliably surface the SAME `LoginDeniedReason=1`
+cross-collection concurrent-connection flakiness class on completely unrelated,
+untouched files - always confirm via an isolated/targeted rerun of the ACTUALLY-touched
+files before trusting a full-suite failure as a real regression; (2) adding Facts to
+an existing shared-fixture test file can silently push it over the 5-character-slot
+account cap - check the running total whenever a PR adds new Facts to a file that
+already has some; (3) several "reuse the existing curve-based mechanism" instincts
+(`SkillDef.Delay`, `SkillDef.AdvRate`) turned out to need genuinely separate
+implementations once checked against the real source's own math - checking first
+(per each issue's own suggestion) and documenting the mismatch when found was the
+right call both times, not forcing a fit.
+
+
 This file is kept up to date across sessions so a fresh Claude Code session (after
 a kill/restart) can pick up exactly where the last one left off without re-deriving
 context from scratch. Update it whenever the current task/branch/plan changes —
@@ -16,15 +274,15 @@ don't wait until end of session.
 Wiki: `docs/wiki/` (start at `docs/wiki/Home.md`). It changes in the same branch as
 the code it describes.
 
-Issue → branch `<n>-<slug>` in worktree `../moria-<n>` → PR into `agent-kit-trial` → merge on
-green CI → verified on a local boot of `agent-kit-trial` → issue closed. Commands:
+Issue → branch `<n>-<slug>` in worktree `../moria-<n>` → PR into `main` → merge on
+green CI → verified on a local boot → issue closed. Commands:
 `/task-new`, `/task-refine`, `/task-pick`, `/task-run`, `/task-ship`,
 `/status-weekly`; role agents in `.claude/agents/`. Details:
 `docs/wiki/Process/Agent-Workflow.md`, labels in `docs/wiki/Process/Tasks.md`.
 
 - Every bug gets an issue before work starts.
 - Only the maintainer (pkorpel) moves an issue to `status:ready`.
-- `agent-kit-trial` takes changes only through PRs. The gate is `/task-ship` (merges only on a
+- `main` takes changes only through PRs. The gate is `/task-ship` (merges only on a
   green CI run of the PR head) plus the local hooks and the deny rules in
   `.claude/settings.json`.
 - Hooks: `pre-commit install` once per clone. Never `--no-verify`.
@@ -32,6 +290,212 @@ green CI → verified on a local boot of `agent-kit-trial` → issue closed. Com
 - Build, test, run: `scripts/test-fast.sh`, `scripts/test-full.sh` (one at a time,
   fixed ports 2593/2595), `scripts/run-local.sh start|status|logs|stop`.
 - GitHub access for agents: MCP server `github` (`scripts/mcp-github.sh`).
+
+Adopted 2026-10-17 after a trial on the `agent-kit-trial` branch (now merged) - see
+`docs/wiki/Process/Agent-Kit-Trial.md` for the trial's full history and Phase 4
+evaluation. Every reference to `agent-kit-trial` as a target/gate branch in the wiki
+pages below means `main` now that the trial is adopted; pages get updated to say so
+directly as they're next touched, not retroactively rewritten in this same change.
+
+## Skill-mechanics audit vs Erebor (2026-10-17) — #284, 40 sub-issues filed, NOT implemented
+
+Follow-up to the skill-gain research below: user asked for a similar research-only pass
+(no code) on the remaining 40 skills (every `SkillName` enum value except the 13 already
+covered by #140) - NOT about gain-through-use (these are correctly leveling-point-only
+by design), but whether each skill's actual formula/effect matches the real Erebor
+Sphere shard. #284 is the tracking issue; one sub-issue per skill (#285-324), same
+Erebor-wiki + Sphere-source-archive method as #140, via 7 parallel forks grouped by
+category. Full headline findings are in #284's own consolidating comment - the load-
+bearing ones, in case this file gets read before that comment:
+
+- **`effect=` combat-weighting values (Tactics/Anatomy/ArmsLore/EvalInt/SpiritSpeak)
+  are never set in ANY `.def` content anywhere** (confirmed repo-wide grep, #309) - the
+  shared damage formula's *structure* in `CombatCalculator.cs` is correct and several
+  individual skills "matched" Erebor's formula shape, but with zero `effect=` data behind
+  any of them, all five currently contribute exactly zero to real combat damage. Matching
+  the formula's shape isn't the same as the skill doing anything today.
+- **Real Erebor melee combat has no hit/miss roll at all - every swing connects** (#287
+  Swords/#289 Macing/#291 Fencing/#292 Wrestling); weapon skill only decides which skill
+  gains XP from a landed hit, not whether it lands. moriaengine's `WeaponSkillDef.
+  On_Stroke` currently runs a fabricated `CheckSuccess` roll with no basis in the source.
+  **Needs the user's explicit confirmation before anyone touches it** - this changes how
+  combat feels, not just a tuning constant.
+- **Veterinary (#297) and Musicianship (#310) both have zero implementation anywhere** -
+  no `SkillDef` registered for either. Bandaging an animal companion currently does
+  nothing; Discordance (#307)/Peacemaking (#311)/Provocation (#315) all depend on
+  Musicianship resolving, so the whole bard skill line may be silently non-functional.
+- **Correction to the #140 section below**: `SkillDef.AdvRate`/`AdvRateForValue`/
+  `AdvRateOfChar` already exist and correctly parse/evaluate real Erebor `ADVRATE=` data
+  - confirmed independently by two of the seven forks (#285, #314) - they just have zero
+  callers anywhere. "No skill-gain mechanism exists at all" (below) is slightly
+  overstated: the rate-*lookup* plumbing already exists, fed by real data; only the
+  roll-and-increment step is missing. Worth reusing directly when #140 gets implemented.
+- Confirmed genuinely out of scope, not gaps: Camping/Forensics/Herding/Begging are
+  unimplemented on BOTH sides (Erebor's own source has no mechanic for any of them
+  either); Chivalry/Bushido/Ninjitsu confirmed not part of Erebor's design at all,
+  recommended to never implement; Stealing/Snooping have no recoverable source formula
+  (native/closed-source, same class as Alchemy/Cooking from #140).
+- Open question, not resolved: Cartography's own Erebor `ADVRATE` suggests it may
+  actually belong with #140's 13 use-trained skills, not this points-only audit.
+
+**Status: research only, nothing implemented.** All 41 issues (#284, #285-324) are open.
+
+## Mining full implementation PLANNED, not started (2026-10-17) — #332, 6 phase sub-issues
+
+Follow-up to #269's own research: a deeper dig into `scripts/sphereregion.scp`/
+`scripts/systems/miningfix.scp` (Erebor archive) found a much bigger real system than
+#269's first pass surfaced. Filed as #332 (design/tracking), split into 6 phase
+sub-issues. **Skill-gain itself is NOT part of this - already covered by #328** (Mining
+is one of #327's 11 native-curve skills); this issue is everything else - what you
+actually find when you mine, and the mechanics around that.
+
+**The real mechanism**: 10 ore tiers (not the 7 originally recalled - gold/silver/shadow
+are real, already exist as moriaengine items), each with an exact skill range/pool-
+amount/regen-timer from `[RegionResource o_X]` blocks (copper 0-40/50-75/30min through
+mithril 105-145/3-4/30min - skill ranges exceeding 100 confirm Erebor really does allow
+Mining past the classic cap). A vein has ONE fixed assigned ore type; insufficient skill
+doesn't fail the attempt, it downgrades the result to copper instead (`fixresource`'s
+real logic). Plus cave-ins (~1/120 chance, blocks the vein, needs a separate skill-roll
+to clear), monster ambush (1/750 chance, weighted rat→troll→earth elemental→rock
+elemental→copper spirit→golem), and anti-macro delay scaling above skill 100.
+
+**User-confirmed design decisions, don't re-litigate**:
+- **Mine-region restriction ("Dul"/"Doly") is explicitly deferred** (#338, backlog) -
+  moriaengine has zero region data for this (confirmed, no "Dul"/"Doly"-named regions
+  exist anywhere) - authoring real mine-region boundaries is its own content project.
+- **Full per-vein pool fidelity, scoped to individual tiles, not named regions** (since
+  region data doesn't exist) - each mineable tile is its own lazily-created "vein," not
+  pre-authored/curated the way real Erebor's named-region allocations are.
+- **Vein material varies over time**: rolled (weighted by rarity via the real `AMOUNT`
+  ranges) on the first hit into an untouched (fresh or freshly-regenerated) vein, fixed
+  until the pool fully depletes and regens, then rerolled fresh.
+
+**Real content gap found, flagged not resolved**: the monster-ambush table's "rock
+elemental"/"copper spirit" tiers have no moriaengine equivalent at all, and "earth
+elemental" only exists as a mage-summon variant (`c_elem_earth_m`) - #335 proposes
+substitutions (reusing `c_elem_earth_m`/`c_golem_copper` at multiple tiers) as an open
+question rather than deciding unilaterally.
+
+Sub-issues: #333 (Phase A, core vein/ore-tier system) · #334 (Phase B, cave-ins) · #335
+(Phase C, monster ambush) · #336 (Phase D, anti-macro delay) · #337 (Phase E, `.settings`
+covering all of A-D) · #338 (Phase F, deferred mine-region restriction, backlog).
+
+**Status: planned, nothing implemented yet.** #332-338 all open.
+
+## Skill-gain implementation PLANNED, not started (2026-10-17) — #327, 3 phase sub-issues
+
+Follow-up to the ADVRATE-mechanism correction below: user asked for an issue covering
+the full mechanism write-up plus an implementation plan, since this is a prerequisite
+for actually implementing #140's 13 skills. Filed as #327 (design/tracking), split into
+3 phase sub-issues since each is independently implementable:
+
+- **#328 Phase 1** - the generic native-curve gain system. Covers 11 of 13 skills
+  directly (the ones using Erebor's real 3-point `ADVRATE` curve). New shared
+  `SkillGainSystem.TryGainSkill` entry point (profession-cap/NPC/safe-region gated,
+  matching `funkce.scp`'s own gates), fixing each skill's `.def` `ADVRATE=` data to the
+  real Erebor numbers (currently generic classic-UO placeholder values - `2.5,50,200` or
+  `10,200,800` - not Erebor's real per-skill-tuned ones; Alchemy's own entry is
+  additionally broken, only 1 of its 3 values is live, the rest are commented out), and
+  wiring `CraftingSkillDef.On_Success`/`On_Fail` (covers 8 of the 11 at once - Alchemy/
+  Blacksmithing/Bowcraft/Carpentry/Cooking/Tailoring/Tinkering/Inscription all share this
+  one base class) plus Mining/Lumberjacking/Fishing's own hooks.
+- **#329 Phase 2** - the separate custom-formula path for Lockpicking/Taming (the 2 of
+  13 that Erebor's own source disables the native curve for, `ADVRATE=0fffffff`,
+  replaced by a quadratic formula with a flat per-skill constant instead of a 3-point
+  curve). **Blocked on #282** (Lockpicking's inverted locked-check - the whole use-flow
+  is broken regardless of skill gain, fix that first).
+- **#330 Phase 3** - GM-tunable `.settings` category, `SkillAdvancementSettings`. **User-
+  confirmed scope: exactly these 13 skills, no more** (not the other 40 from #284 -
+  those stay leveling-point-only by design, nothing to tune there). 3 scalar fields
+  (low/mid/high) per skill for the 11 native-curve ones + 1 each for Lockpicking/Taming
+  - 35 fields total, matching the established flat-scalar `.settings` pattern (no
+  existing category has an array-typed editable field). Needs a write-through mechanism
+  so an edit actually updates the live `SkillDef.AdvRate`, not just a standalone stored
+  value nobody reads - model on Erebor's own `nastaveni_uplatni_skills` GM-settings-sync
+  function, which does exactly this.
+
+**Two explicit user decisions, already resolved, don't re-litigate**: Mining's 0%-point
+ADVRATE value is **10** (matching every other skill), not Erebor's literal `1010` found
+in source - "easy to adjust later since it's GM-tunable anyway." Settings use 3 full
+scalar fields per curve-based skill (not a single rate-multiplier simplification).
+
+**Status: planned, nothing implemented yet.** #327-330 all open.
+
+## Skill-gain-through-use research (2026-10-17) — #140, 13 sub-issues filed, NOT implemented
+
+User asked for a research-only pass (no code) on the 13 skills meant to be trained by
+actual use rather than leveling points (from #140's original list): Mining,
+Lumberjacking, Fishing, Cooking, Taming, Lockpicking, Blacksmithing, Carpentry,
+Bowcraft, Alchemy, Tailoring, Tinkering, Inscription. #140 is now the tracking/parent
+issue; one sub-issue per skill (#269-281), each with Erebor wiki findings (mostly thin -
+the wiki's specific skill pages 404'd, and a richer `moria.uoerebor.cz/wiki` exists but
+sits behind a Cloudflare Access login nothing here could reach), Erebor Sphere source
+findings (the real, authoritative source throughout - `gitlab.com/erebor/sphere-public-
+archive`, cloned read-only to scratchpad, not committed, same pattern as earlier
+sessions), moriaengine's current state, and a proposed approach. Research done via 4
+parallel forks (grouped: gathering, 2x crafting, misc) to avoid filling context with
+raw research output.
+
+**Confirmed via direct code reading, independent of the Erebor research**: no skill-
+gain-through-use mechanism exists anywhere in moriaengine today, for ANY skill, not just
+these 13. `SkillUtils.GetSCurve`/`CheckSuccess` (used broadly - combat, magic, abilities,
+and these 13 skills alike) is only the success/fail chance roll; it has zero connection
+to skill gain despite its own comment's claim ("chance of skill gain is inverse to
+chance of success"). `SkillDef.cs`'s `tkSkillGain` trigger and `Character.cs`'s
+`On_SkillGain` are both commented-out, dead. The real Erebor `skillgain` formula
+(quadratic diminishing returns, per-skill `advrate` constant, profession-cap-gated,
+anti-macro-excluded, found in `funkce.scp`) is a separate, distinct roll that doesn't
+exist in moriaengine at all - don't derive it by inverting `GetSCurve`, implement the
+sourced formula as its own function.
+
+**CORRECTION (2026-10-17, later same day) - the real per-skill `advrate` numbers were
+wrong, found the actual authoritative mechanism.** User asked to dig specifically into
+the gain logic + whether difficulty feeds into it. Direct re-read of
+`scripts/spheretables.scp` (not relying on the forks' earlier summaries) found that
+`ADVRATE` is a **native Sphere engine field** on every `[SKILL N]` block - a 3-point
+curve (successes-needed-to-gain-0.1 at 0%/50%/100% of the skill's own current value
+relative to its cap, per the source's own comment), not something bespoke per skill the
+way #272/#273/#275/#278 each reported (170/180/160 - **those specific numbers are
+wrong**, superseded by this correction). Real values: Alchemy/Cooking 10/200/750;
+Blacksmithing/Bowcraft/Carpentry/Tailoring/Tinkering/Lumberjacking (all six identical)
+10/400/1600; Fishing 10/250/800; Inscription 10/300/1050; **Mining 1010/400/1600** - the
+1010 at the 0% point is far higher than every other skill, confirmed directly in source,
+likely a deliberate anti-macro-bot measure (not a transcription error, don't silently
+"fix" it to match the others). 11 of 13 skills use this native curve directly. Only
+Lockpicking and Taming show the sentinel `ADVRATE=0fffffff` ("native auto-gain disabled,
+manual growth" per the source's own comment) - those two alone use the separate custom
+LScript `skillgain()` function with their own `advrate_lockpicking=600`/
+`advrate_taming=600` override. **Difficulty of the specific attempted action does NOT
+feed into gain chance anywhere** - only current skill level does (the 3-point curve);
+difficulty only matters for the entirely separate success/fail roll. Full detail,
+including a minor unresolved loose end (dead/vestigial `advrate_cooking`/
+`advrate_tailoring` constants in `skillgains.scp` that nothing calls), is in #140's
+latest comment - this file keeps the superseded numbers above for history, don't use
+them when implementing, use this correction's table instead.
+
+**Major cross-cutting finding, confirmed independently by two of the four forks**: 8 of
+the 13 skills (Blacksmithing #272, Carpentry #273, Tinkering #275, Tailoring #278,
+Bowcraft #280, Inscription #281, Alchemy #277, Cooking #279) share one base class,
+`CraftingSkillDef` (`scripts/Basic/skills/Crafting/CraftingSkillDef.cs`). It already has
+a complete, correct crafting pipeline (resource checks, success-chance rolls, stroke
+animation) - the only gap, identical across all 8, is that `On_Success`/`On_Fail` never
+touch the skill value at all. **Wiring the real `funkce.scp` gain formula into this ONE
+file likely fixes all 8 skills at once**, not 8 separate implementations, when this is
+picked up for real. The remaining 5 (Mining #269, Lumberjacking #270, Fishing #271,
+Taming #274, Lockpicking #276) each need their own separate wiring - Mining/
+Lumberjacking/Fishing share a different generic resource-node mechanic (material-tier
+downgrades, cave-ins, monster ambushes, anti-macro delay scaling, from `miningfix.scp`);
+Taming and Lockpicking are each standalone (Taming's own difficulty-check is already
+correct in moriaengine - `TamingSkillDef` - only the gain call itself is missing).
+
+**Also found and filed separately, not a skill-gain gap**: #282, a real pre-existing
+functional bug in Lockpicking - `Targ_Lockpick.On_TargonItem`'s locked-check is inverted
+(`!ItemLockPlugin.IsLocked(targetted)` gates the skill attempt), so lockpicking currently
+only "works" on items that are already unlocked, and silently re-targets forever on an
+actually-locked item.
+
+**Status: research only, nothing implemented.** #140 and all 14 issues (#140, #269-282)
+are open, waiting to be picked up for real implementation work.
 
 ## Documentation: `moriaengine/docs/current/` (2026-10-16)
 

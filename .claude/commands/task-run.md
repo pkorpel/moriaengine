@@ -20,7 +20,7 @@ end. Don't retry a stopped step another way.
    included). The plan comment lists numbered steps, each small enough for one
    developer run, and names the test each criterion gets. The worktree is
    `../moria-<n>`; give every agent its absolute path and check the branch each one
-   reports back. An agent that worked on `agent-kit-trial`: stop.
+   reports back. An agent that worked on `main`: stop.
 2. **Red.** `tester` agent, mode `red`. It commits failing tests. No criterion
    testable at all and the issue isn't a chore/docs: stop.
 3. **Build.** For each plan step, a fresh `developer` agent with: the issue text,

@@ -14,11 +14,11 @@ Content, each item as `#n title`:
 - **Blocked**: `status:blocked`, with the reason from the latest comment.
 - **Next**: `status:ready`, by `prio:`.
 - **Triage**: open issues with no `status:` label, count and the three oldest.
-- **CI**: last `.NET Build` run on `agent-kit-trial` (result, date); Actions minutes used this
+- **CI**: last `.NET Build` run on `main` (result, date); Actions minutes used this
   month if the API shows them.
 
 Facts only; no commentary. Show the page to the user, then ship it as a docs change:
-a worktree from `origin/agent-kit-trial` on branch `status-<YYYY-Www>`, commit
+a worktree from `origin/main` on branch `status-<YYYY-Www>`, commit
 `docs: weekly status <YYYY-Www>`, PR, merge when CI is green (task-ship's step 8
 rule). Link it from `docs/wiki/Home.md` under Status (keep the four newest weeks).
 

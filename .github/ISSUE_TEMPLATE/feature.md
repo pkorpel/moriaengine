@@ -10,7 +10,7 @@ As **<role: player, GM, shard admin>** I want **<capability>** so that **<outcom
 
 ## Acceptance criteria
 
-Checked on a local boot of `agent-kit-trial` before the issue closes. One line each:
+Checked on a local boot of `main` before the issue closes. One line each:
 Given … When … Then …
 
 - [ ] Given … when … then …

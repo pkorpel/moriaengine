@@ -1,6 +1,6 @@
 #!/bin/sh
 # Session banner and status line: where this checkout stands in the
-# issue → PR → agent-kit-trial → verified flow, and the one next step.
+# issue → PR → main → verified flow, and the one next step.
 #
 #   scripts/motd.sh           # banner as text
 #   scripts/motd.sh --hook    # SessionStart JSON (systemMessage + additionalContext)
@@ -34,7 +34,7 @@ branch=n/a dirty=0 ahead=n/a common=
 if git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
   branch=$(git -C "$dir" branch --show-current); [ -n "$branch" ] || branch=detached
   dirty=$(git -C "$dir" status --porcelain --untracked-files=no | wc -l | tr -d ' ')
-  ahead=$(git -C "$dir" rev-list --count origin/agent-kit-trial..HEAD 2>/dev/null || echo n/a)
+  ahead=$(git -C "$dir" rev-list --count origin/main..HEAD 2>/dev/null || echo n/a)
   common=$(git -C "$dir" rev-parse --path-format=absolute --git-common-dir)
 fi
 iid=; case "$branch" in [0-9]*-*) iid=${branch%%-*} ;; esac
@@ -90,15 +90,15 @@ eval "$(remote 2>/dev/null)"
 
 next="/task-pick to start a status:ready issue, or /task-new to file one"
 case "$branch" in
-  agent-kit-trial|main) [ "$dirty" -gt 0 ] && next="uncommitted changes on agent-kit-trial: move them to an issue branch" ;;
+  main) [ "$dirty" -gt 0 ] && next="uncommitted changes on main: move them to an issue branch" ;;
   [0-9]*-*)
     if [ -n "$pr" ]; then next="PR #$pr is open: /task-ship waits for CI and merges it"
     elif [ "$ahead" != n/a ] && [ "$ahead" -gt 0 ]; then next="$ahead commit(s) on #$iid: /task-ship when done"
     else next="work on #$iid, then /task-ship"; fi ;;
 esac
 
-text="$PREFIX · issue → branch → PR → agent-kit-trial → verified locally → closed
-  checkout  $branch$( [ "$dirty" -gt 0 ] && echo " ($dirty changed)")$( [ "$ahead" != n/a ] && echo ", $ahead ahead of origin/agent-kit-trial")
+text="$PREFIX · issue → branch → PR → main → verified locally → closed
+  checkout  $branch$( [ "$dirty" -gt 0 ] && echo " ($dirty changed)")$( [ "$ahead" != n/a ] && echo ", $ahead ahead of origin/main")
   issue     $( [ -n "$iid" ] && echo "#$iid ${issue_status:-?} ${issue_title:-}" || echo none)
   board     ${board:-n/a (no GitHub token, or no access to $REPO)}
   next      $next"

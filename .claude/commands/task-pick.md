@@ -1,5 +1,5 @@
 ---
-description: Claim a ready issue, comment the plan and make its worktree from agent-kit-trial
+description: Claim a ready issue, comment the plan and make its worktree from main
 argument-hint: [issue number]
 ---
 
@@ -15,7 +15,7 @@ and ask.
 
 1. Read the issue and its comments (`issue_read`, methods `get` and
    `get_comments`).
-2. `git fetch origin`. The main checkout stays on `agent-kit-trial`; work happens in a
+2. `git fetch origin`. The main checkout stays on `main`; work happens in a
    worktree.
 3. Read the code the issue touches and write a short plan: numbered steps, each
    small enough for one developer run; which files; which test covers each
@@ -27,7 +27,7 @@ and ask.
      (`update` replaces the whole label list — send all of them);
    - comment the plan, starting with "Plan:".
 5. `scripts/worktree-add.sh <n>-<slug>` → `../moria-<n>` on branch `<n>-<slug>`
-   from `origin/agent-kit-trial` (sparse: no Cruncher/OldUpdater). Slug: lowercase ASCII, words
+   from `origin/main` (sparse: no Cruncher/OldUpdater). Slug: lowercase ASCII, words
    joined by `-`, from the title, at most ~40 characters (`12-poison-tick-damage`).
    Don't push yet; `/task-ship` does that.
 

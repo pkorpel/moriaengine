@@ -340,6 +340,21 @@
   <data name="Loc_PlayerVendor_Stock_Label_SoldByUnits" xml:space="preserve">
     <value>Jednotkov� prodej</value>
   </data>
+  <data name="FishingLoc_whereToFish" xml:space="preserve">
+    <value>Where do you want to fish?</value>
+  </data>
+  <data name="FishingLoc_notWater" xml:space="preserve">
+    <value>There is no fish to be found there.</value>
+  </data>
+  <data name="FishingLoc_fail" xml:space="preserve">
+    <value>You feel a tug, but your line comes up empty.</value>
+  </data>
+  <data name="FishingLoc_success" xml:space="preserve">
+    <value>You catch a fish.</value>
+  </data>
+  <data name="FishingLoc_abort" xml:space="preserve">
+    <value>You stop fishing.</value>
+  </data>
   <data name="LockpickLoc_abort" xml:space="preserve">
     <value>Odemyk�n� p�eru�eno.</value>
   </data>
@@ -348,6 +363,9 @@
   </data>
   <data name="LockpickLoc_fail" xml:space="preserve">
     <value>Nepoda�ilo se ti odemknout z�mek</value>
+  </data>
+  <data name="LockpickLoc_notLocked" xml:space="preserve">
+    <value>That isn't locked.</value>
   </data>
   <data name="LockpickLoc_success" xml:space="preserve">
     <value>�sp�n� jsi odemkl z�mek</value>
@@ -399,6 +417,15 @@
   </data>
   <data name="MiningLoc_whereToMine" xml:space="preserve">
     <value>Where do you want to mine?</value>
+  </data>
+  <data name="MiningLoc_veinExhausted" xml:space="preserve">
+    <value>This vein seems to be exhausted.</value>
+  </data>
+  <data name="MiningLoc_caveInCleared" xml:space="preserve">
+    <value>You clear away the rubble blocking the vein.</value>
+  </data>
+  <data name="MiningLoc_caveInNotCleared" xml:space="preserve">
+    <value>You fail to clear the rubble blocking the vein.</value>
   </data>
   <data name="PacketSequencesLoc_WelcomeToShard" xml:space="preserve">
     <value>Welcome to {0}.</value>

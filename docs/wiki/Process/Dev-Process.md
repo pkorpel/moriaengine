@@ -4,9 +4,9 @@ Last reviewed: 2026-10-17
 
 ## Branches
 
-- `agent-kit-trial` is the only long-lived branch. It takes changes only through pull requests.
+- `main` is the only long-lived branch. It takes changes only through pull requests.
 - Issue branches: `<n>-<slug>` (e.g. `12-poison-tick-damage`), made from
-  `origin/agent-kit-trial` in their own worktree `../moria-<n>` by `scripts/worktree-add.sh`
+  `origin/main` in their own worktree `../moria-<n>` by `scripts/worktree-add.sh`
   (sparse: no `Cruncher/`, `OldUpdater/`, ~230 MB instead of ~660 MB).
 - PRs are squash-merged; the remote branch is deleted after merge.
 
@@ -17,9 +17,9 @@ branch protection or required checks (if yours has them, they apply on top). So:
 
 - `/task-ship` merges a PR only after the `.NET Build` run on the PR's head commit is
   green.
-- Locally, `pre-commit` refuses commits on `agent-kit-trial`, and `.claude/settings.json`
-  denies pushes to `main` and `agent-kit-trial`, force pushes and `--no-verify` for Claude.
-- A person can still push to `agent-kit-trial` directly — don't.
+- Locally, `pre-commit` refuses commits on `main`, and `.claude/settings.json`
+  denies pushes to `main`, force pushes and `--no-verify` for Claude.
+- A person can still push to `main` directly — don't.
 
 ## Hooks (`.pre-commit-config.yaml`)
 
@@ -27,13 +27,13 @@ Install once per clone: `pre-commit install`.
 
 | Stage | Checks |
 |---|---|
-| pre-commit | merge conflicts, YAML/JSON syntax, files > 1 MB, private keys, gitleaks, no commit on `agent-kit-trial` |
+| pre-commit | merge conflicts, YAML/JSON syntax, files > 1 MB, private keys, gitleaks, no commit on `main` |
 | commit-msg | `scripts/commit-msg-check.sh`: no `Co-Authored-By`/session trailers, subject ≤ 72 |
 | pre-push | `scripts/test-fast.sh`: build + fast test tier (~30 s) |
 
 ## CI (`.github/workflows/dotnet.yml`)
 
-- Push / PR to `agent-kit-trial`: build (`build.ps1`) + fast tier on `ubuntu-latest`, ~2–3 min.
+- Push / PR to `main`: build (`build.ps1`) + fast tier on `ubuntu-latest`, ~2–3 min.
   A newer push to the same branch or PR cancels the older run (`concurrency`).
 - Manual runs (`workflow_dispatch`, Actions → ".NET Build" → Run workflow) take a
   `tier`: `fast` (default, same job as push/PR) or `full` (entire suite incl.

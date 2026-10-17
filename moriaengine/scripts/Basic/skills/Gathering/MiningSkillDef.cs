@@ -51,6 +51,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			//#336 - PhaseStart already set the generic curve-based delay just before this
+			//trigger fired; overwrite it with the real anti-macro formula (flat 20s, reduced
+			//above skill 100.0%, matches funkce.scp's own real behavior exactly).
+			skillSeqArgs.DelayInSeconds = GatheringDelaySystem.GetDelaySeconds(skillSeqArgs.Self, SkillName.Mining);
 			return TriggerResult.Continue;
 		}
 
@@ -63,7 +67,17 @@ namespace SteamEngine.CompiledScripts {
 				return TriggerResult.Cancel;
 			}
 
-			skillSeqArgs.Success = this.CheckSuccess(self, Globals.dice.Next(700));
+			//#334 - a cave-in-blocked vein redirects this entire stroke into a completely
+			//separate clear-the-rubble roll instead of the normal ore-extraction check.
+			//Param1 remembers which kind of stroke this was for On_Success/On_Fail below.
+			byte mapPlane = self.GetMap().M;
+			if (MiningVeinSystem.IsCaveInBlocked(mapPlane, targetted.X, targetted.Y)) {
+				skillSeqArgs.Param1 = true;
+				skillSeqArgs.Success = MiningVeinSystem.TryClearCaveIn(self, mapPlane, targetted.X, targetted.Y);
+			} else {
+				skillSeqArgs.Param1 = null;
+				skillSeqArgs.Success = this.CheckSuccess(self, Globals.dice.Next(700));
+			}
 			return TriggerResult.Continue;
 		}
 
@@ -78,28 +92,44 @@ namespace SteamEngine.CompiledScripts {
 			return TileData.HasFlag(TileData.GetTileFlags(landTile), TileFlag.Impassable);
 		}
 
-		private static ItemDef oreDef;
-		private static ItemDef OreDef {
-			get {
-				if (oreDef == null) {
-					oreDef = (ItemDef) ThingDef.GetByDefname("i_ore_iron");
-				}
-				return oreDef;
-			}
-		}
-
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			ItemDef def = OreDef;
+
+			//#334 - a cleared cave-in isn't an extraction - no ore, no skill gain (the real
+			//rubble-clear roll is its own separate mini-game, funkce.scp's skillgain() is never
+			//called from t_zavalTriggers' @Pickaxed handler either).
+			if (skillSeqArgs.Param1 is bool && (bool) skillSeqArgs.Param1) {
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).caveInCleared);
+				return;
+			}
+
+			IPoint3D targetted = skillSeqArgs.Target1;
+
+			//#333 - real per-vein ore-tier system (lazy per-tile veins, weighted roll on an
+			//untouched vein, skill-gated downgrade to copper, depletion/regen)
+			ItemDef def = MiningVeinSystem.Mine(self, self.GetMap().M, targetted.X, targetted.Y);
 			if (def != null) {
 				def.Create(self.Backpack);
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).success);
+			} else {
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).veinExhausted);
 			}
-			self.SysMessage(Loc<MiningLoc>.Get(self.Language).success);
+			MonsterAmbushSystem.TryAmbush(self.P()); //#335
+			SkillGainSystem.TryGainSkill(self, SkillName.Mining); //#328
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
+
+			//#334 - a failed cave-in-clear attempt gets its own message and no skill gain.
+			if (skillSeqArgs.Param1 is bool && (bool) skillSeqArgs.Param1) {
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).caveInNotCleared);
+				return;
+			}
+
 			self.SysMessage(Loc<MiningLoc>.Get(self.Language).fail);
+			MonsterAmbushSystem.TryAmbush(self.P()); //#335 - real fixresource rolls this on every gather action, not just success
+			SkillGainSystem.TryGainSkill(self, SkillName.Mining); //#328 - real Erebor gains on fail too
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
@@ -137,5 +167,8 @@ namespace SteamEngine.CompiledScripts {
 		public string fail = "You loosen some rocks but fail to find any useable ore.";
 		public string success = "You dig some ore.";
 		public string abort = "You stop mining.";
+		public string veinExhausted = "This vein seems to be exhausted."; //#333
+		public string caveInCleared = "You clear away the rubble blocking the vein."; //#334
+		public string caveInNotCleared = "You fail to clear the rubble blocking the vein."; //#334
 	}
 }

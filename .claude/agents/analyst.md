@@ -26,7 +26,7 @@ reads only the issue can build it and a tester can check it.
    (`.github/ISSUE_TEMPLATE/feature.md`, `bug.md` or `chore.md`):
    - **Who and why** — one sentence, a real role (player, GM, shard admin).
    - **Acceptance criteria** — `Given … When … Then …`, each checkable on a local
-     boot of `agent-kit-trial`: through a test (fast tier, or full-boot with the scripted
+     boot of `main`: through a test (fast tier, or full-boot with the scripted
      `TestGameClient`/`TestLoginClient` in `moriaengine/Tests/Protocol/`), or the
      server console log. Mark a criterion `(needs a real client)` only if neither
      can reach it.

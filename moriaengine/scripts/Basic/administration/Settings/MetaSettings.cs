@@ -117,6 +117,20 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return LogoutSettings.instance;
 			}
 		}
+
+		[InfoField("Skill Advancement")]
+		public SkillAdvancementSettings SkillAdvancementSettings {
+			get {
+				return SkillAdvancementSettings.instance;
+			}
+		}
+
+		[InfoField("Mining")]
+		public MiningSettings MiningSettings {
+			get {
+				return MiningSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {

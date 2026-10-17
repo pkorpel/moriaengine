@@ -10,5 +10,5 @@ Part of #
 
 ## Before merge
 
-- [ ] Rebased on agent-kit-trial
+- [ ] Rebased on main
 - [ ] Wiki (`docs/wiki/`) updated, if a script, CI, hooks, commands or a component changed (pages: )

@@ -89,11 +89,16 @@ namespace SteamEngine.CompiledScripts {
 			targetted.ControlMaster = self;
 			targetted.Flag_WarMode = false;
 			self.SysMessage(Loc<TamingLoc>.Get(self.Language).success);
+			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.AnimalTaming, SkillAdvancementSettings.instance.tamingAdvRate); //#329
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			self.SysMessage(Loc<TamingLoc>.Get(self.Language).fail);
+			//#329 - real Erebor source (taming.scp) calls SKILLGAIN on both outcomes, not just
+			//success as #329's own issue text summarized - matching the real mechanic here since
+			//every other skill in this pass (Lockpicking included) also gains on both outcomes.
+			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.AnimalTaming, SkillAdvancementSettings.instance.tamingAdvRate);
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {

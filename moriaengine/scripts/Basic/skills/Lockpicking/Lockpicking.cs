@@ -42,11 +42,13 @@ namespace SteamEngine.CompiledScripts {
 
 			//TODO
 
+			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.Lockpicking, SkillAdvancementSettings.instance.lockpickingAdvRate); //#329
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			skillSeqArgs.Self.SysMessage(Loc<LockpickLoc>.Get(self.Language).fail);
+			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.Lockpicking, SkillAdvancementSettings.instance.lockpickingAdvRate); //#329 - real Erebor gains on fail too
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
@@ -88,11 +90,14 @@ namespace SteamEngine.CompiledScripts {
 
 			//nevidi na cil
 			if (self.CanReachWithMessage(targetted)) {
-				if (!ItemLockPlugin.IsLocked(targetted)) {
+				//#282 - was inverted (!IsLocked), so lockpicking only ever "worked" on items that
+				//were already unlocked, and silently re-targeted forever on an actually-locked one.
+				if (ItemLockPlugin.IsLocked(targetted)) {
 					skillSeq.Target1 = targetted;
 					skillSeq.PhaseStart();
 					return TargetResult.Done;
 				}
+				self.SysMessage(Loc<LockpickLoc>.Get(self.Language).notLocked);
 			}
 			return TargetResult.RestartTargetting;
 		}
@@ -104,11 +109,12 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class LockpickLoc : CompiledLocStringCollection<LockpickLoc> {
-		public string cantUseLockpick = "Na tohle nelze paklíè použít.";
-		public string whatToUseLockOn = "Na co chceš použít paklíè?";
-		public string abort = "Odemykání pøerušeno.";
-		public string fail = "Nepodaøilo se ti odemknout zámek";
-		public string success = "Úspìšnì jsi odemkl zámek";
-		public string successWoman = "Úspìšnì jsi odemkla zámek";
+		public string cantUseLockpick = "Na tohle nelze paklï¿½ï¿½ pouï¿½ï¿½t.";
+		public string whatToUseLockOn = "Na co chceï¿½ pouï¿½ï¿½t paklï¿½ï¿½?";
+		public string abort = "Odemykï¿½nï¿½ pï¿½eruï¿½eno.";
+		public string fail = "Nepodaï¿½ilo se ti odemknout zï¿½mek";
+		public string success = "ï¿½spï¿½nï¿½ jsi odemkl zï¿½mek";
+		public string successWoman = "ï¿½spï¿½nï¿½ jsi odemkla zï¿½mek";
+		public string notLocked = "That isn't locked."; //#282
 	}
 }

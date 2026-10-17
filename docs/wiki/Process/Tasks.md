@@ -27,5 +27,5 @@ issue before work on it starts.
 | blocked | `status:blocked` | stop rule of `/task-run`, with a comment saying what's needed |
 | closed | — | `/task-run` after a local verify with every criterion `met` |
 
-PRs say `Part of #<n>`, not `Closes`: the issue closes only after the merged `agent-kit-trial`
+PRs say `Part of #<n>`, not `Closes`: the issue closes only after the merged `main`
 is verified locally.

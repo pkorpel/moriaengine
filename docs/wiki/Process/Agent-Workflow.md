@@ -4,7 +4,7 @@ Last reviewed: 2026-10-17
 
 Claude Code drives issues from idea to closed with slash commands
 (`.claude/commands/`) and role agents (`.claude/agents/`). Installed from the
-moria-agent-kit; "dev" is a local boot of `agent-kit-trial`.
+moria-agent-kit; "dev" is a local boot of `main`.
 
 ## Flow
 
@@ -15,7 +15,7 @@ moria-agent-kit; "dev" is a local boot of `agent-kit-trial`.
                                               │
  claim → worktree → red tests → build → full suite → review → PR → green CI → merge
                                               │
-                    verify on a local boot of agent-kit-trial → closed (or left in review)
+                    verify on a local boot of main → closed (or left in review)
 ```
 
 ## Commands

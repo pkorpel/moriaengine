@@ -1,6 +1,6 @@
 ---
 name: tester
-description: Tester for pkorpel/moriaengine. Mode "red" turns an issue's acceptance criteria into failing tests before any code is written; mode "verify" checks each criterion on a local boot of merged agent-kit-trial and returns the evidence. Use from /task-run.
+description: Tester for pkorpel/moriaengine. Mode "red" turns an issue's acceptance criteria into failing tests before any code is written; mode "verify" checks each criterion on a local boot of merged main and returns the evidence. Use from /task-run.
 tools: Read, Grep, Glob, Edit, Write, Bash, mcp__github__issue_read
 model: opus
 effort: high
@@ -49,14 +49,14 @@ Runs in the issue's worktree, on its branch.
 Return: test names → criterion, which fail as expected, which criteria are "verify
 with a real client".
 
-## Mode `verify` — on a local boot of merged agent-kit-trial
+## Mode `verify` — on a local boot of merged main
 
-The caller gives a verify worktree checked out at the merge commit on `agent-kit-trial`.
+The caller gives a verify worktree checked out at the merge commit on `main`.
 
 1. `scripts/test-full.sh "<filter for the issue's tests>"` — every issue test passes.
 2. `scripts/run-local.sh start --build`, then `status`: 2593 and 2595 listen, and
    `moriaengine/logs/gamecore.console.log` has no new exception or ERROR line
-   compared with the same boot of the previous `agent-kit-trial` (say if you didn't compare).
+   compared with the same boot of the previous `main` (say if you didn't compare).
    `scripts/run-local.sh stop` when done — always, also on failure.
 3. For each criterion: `met` (which test or log line shows it), `not met` (what
    differed) or `not checkable` (why — e.g. needs a real client).

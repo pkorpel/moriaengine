@@ -15,7 +15,7 @@ yours, and the failing tests that define done.
 ## Where you work
 
 Every Bash call starts with `cd <worktree> && …` (or uses `git -C <worktree>`): the
-shell returns to the main checkout after each call, and that checkout is on `agent-kit-trial`.
+shell returns to the main checkout after each call, and that checkout is on `main`.
 Read, Edit and Write take absolute paths inside the worktree. Put the output of
 `git -C <worktree> rev-parse --abbrev-ref HEAD` in your return as proof.
 
@@ -39,7 +39,7 @@ Read, Edit and Write take absolute paths inside the worktree. Put the output of
 ## Rules
 
 - Work only in the worktree you were given, on its branch. Never switch branches,
-  push, merge or touch `agent-kit-trial`.
+  push, merge or touch `main`.
 - Don't edit the tester's tests to make them pass. A test you think is wrong:
   return why. A hook enforces this: a denied write to a `Tests/` path
   (`moriaengine/Tests/`, `moriaengine/scripts/Tests/`) means ask the orchestrator,

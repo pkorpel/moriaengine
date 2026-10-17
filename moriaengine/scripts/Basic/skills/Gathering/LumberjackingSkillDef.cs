@@ -89,11 +89,13 @@ namespace SteamEngine.CompiledScripts {
 				def.Create(self.Backpack);
 			}
 			self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).success);
+			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking); //#328
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).fail);
+			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking); //#328 - real Erebor gains on fail too
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
