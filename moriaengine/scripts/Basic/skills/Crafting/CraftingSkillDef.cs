@@ -135,6 +135,7 @@ namespace SteamEngine.CompiledScripts {
 								Loc<CraftSkillsLoc>.Get(self.Language).ItemMadeAndPutInRecCont,
 								iDefToMake.Name, self.ReceivingContainer.Name));
 					this.DoSuccess(skillSeqArgs, newItem);
+					SkillGainSystem.TryGainSkill(self, (SkillName) this.Id); //#328
 
 					CraftingProcessPlugin.MakeFinished(skillSeqArgs, true);
 				}
@@ -182,6 +183,10 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(string.Format(
 						Loc<CraftSkillsLoc>.Get(self.Language).ItemMakingFailed,
 						iDefToMake.Name));
+				//#328 - real Erebor gains on a genuine failed attempt too (not just success), but
+				//not on a "couldn't even try" case (missing resources/material - canMake/hasMaterial
+				//false above skips this block entirely).
+				SkillGainSystem.TryGainSkill(self, (SkillName) this.Id);
 			}
 			CraftingProcessPlugin.MakeFinished(skillSeqArgs, canMake && hasMaterial);
 			//the rest will be decided by the CraftingProcessPlugin
