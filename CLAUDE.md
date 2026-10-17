@@ -11,6 +11,28 @@ don't wait until end of session.
 - Local checkout: `/workspace/moriaengine`
 - `main` tracks `origin/main` 1:1 — this repo gets no direct pushes to main, see Workflow below.
 
+## Workflow (agent kit)
+
+Wiki: `docs/wiki/` (start at `docs/wiki/Home.md`). It changes in the same branch as
+the code it describes.
+
+Issue → branch `<n>-<slug>` in worktree `../moria-<n>` → PR into `agent-kit-trial` → merge on
+green CI → verified on a local boot of `agent-kit-trial` → issue closed. Commands:
+`/task-new`, `/task-refine`, `/task-pick`, `/task-run`, `/task-ship`,
+`/status-weekly`; role agents in `.claude/agents/`. Details:
+`docs/wiki/Process/Agent-Workflow.md`, labels in `docs/wiki/Process/Tasks.md`.
+
+- Every bug gets an issue before work starts.
+- Only the maintainer (pkorpel) moves an issue to `status:ready`.
+- `agent-kit-trial` takes changes only through PRs. The gate is `/task-ship` (merges only on a
+  green CI run of the PR head) plus the local hooks and the deny rules in
+  `.claude/settings.json`.
+- Hooks: `pre-commit install` once per clone. Never `--no-verify`.
+- Commits: `area: what changed`, ≤ 72 chars, imperative.
+- Build, test, run: `scripts/test-fast.sh`, `scripts/test-full.sh` (one at a time,
+  fixed ports 2593/2595), `scripts/run-local.sh start|status|logs|stop`.
+- GitHub access for agents: MCP server `github` (`scripts/mcp-github.sh`).
+
 ## Documentation: `moriaengine/docs/current/` (2026-10-16)
 
 Full reference documentation for the engine and every gameplay/tooling system now lives
