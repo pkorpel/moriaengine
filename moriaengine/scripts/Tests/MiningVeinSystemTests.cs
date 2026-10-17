@@ -78,6 +78,56 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("VEIN_FORCED: x=" + x + " y=" + y + " ore=" + oreName + " pool=" + pool);
 		}
 
+		/// <summary>#334 - forces a cave-in onto a tile (bypassing the real 1/120 roll) for
+		/// deterministic clear-roll testing.</summary>
+		[SteamFunction]
+		public static void TestForceCaveIn(Character self, ScriptArgs sa) {
+			int x = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			int y = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
+			byte mapPlane = self.GetMap().M;
+			MiningVeinSystem.ForceCaveInForTest(mapPlane, x, y);
+			Console.WriteLine("CAVE_IN_FORCED: x=" + x + " y=" + y);
+		}
+
+		[SteamFunction]
+		public static void TestCheckCaveInBlocked(Character self, ScriptArgs sa) {
+			int x = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			int y = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
+			byte mapPlane = self.GetMap().M;
+			bool blocked = MiningVeinSystem.IsCaveInBlocked(mapPlane, x, y);
+			Console.WriteLine("CAVE_IN_BLOCKED_CHECK: blocked=" + blocked);
+		}
+
+		[SteamFunction]
+		public static void TestTryClearCaveIn(Character self, ScriptArgs sa) {
+			int x = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			int y = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
+			byte mapPlane = self.GetMap().M;
+			bool cleared = MiningVeinSystem.TryClearCaveIn(self, mapPlane, x, y);
+			Console.WriteLine("CAVE_IN_CLEAR_ATTEMPT: cleared=" + cleared);
+		}
+
+		/// <summary>Samples `attempts` fresh tiles, each mined once with a high enough skill to
+		/// always succeed against copper's own 0 threshold, counting how many trigger the real
+		/// 1/120 cave-in roll - same statistical-sampling precedent as
+		/// TestSampleVeinOreDistribution above.</summary>
+		[SteamFunction]
+		public static void TestSampleCaveInChance(Character self, ScriptArgs sa) {
+			int attempts = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			int baseX = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
+			byte mapPlane = self.GetMap().M;
+			self.SetRealSkillValue((int) SkillName.Mining, 1200);
+
+			int caveIns = 0;
+			for (int i = 0; i < attempts; i++) {
+				MiningVeinSystem.Mine(self, mapPlane, baseX + i, 1);
+				if (MiningVeinSystem.IsCaveInBlocked(mapPlane, baseX + i, 1)) {
+					caveIns++;
+				}
+			}
+			Console.WriteLine("CAVE_IN_CHANCE_SAMPLE: attempts=" + attempts + " caveIns=" + caveIns);
+		}
+
 		[SteamFunction]
 		public static void TestForceVeinRegenReady(Character self, ScriptArgs sa) {
 			int x = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);

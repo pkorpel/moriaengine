@@ -14,6 +14,7 @@ namespace SteamEngine.Tests.Protocol {
 	[Collection(MiningVeinSystemCollection.Name)]
 	public class MiningVeinSystemTests {
 		private const string Account = "protocoltest";
+		private const string AccountB = "protocoltestb";
 		private const string Password = "protocoltest";
 
 		private readonly GameServerPairFixture fixture;
@@ -112,12 +113,87 @@ namespace SteamEngine.Tests.Protocol {
 		public void UntouchedVeinRollFavorsCommonOresOverRareOnes() {
 			using (var client = this.ConnectLoginAndCreateCharacter("VeinDistributionChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSampleVeinOreDistribution 500 5000");
+				// 2000 samples, not 500 - mithril's own expected count at 500 samples (~8) has
+				// enough binomial variance to occasionally violate a 5x-ratio bound by pure
+				// chance (confirmed by reproducing a flake, then rerunning the same assertion
+				// in isolation clean) - 2000 pushes the margin from ~2.5 sigma to ~6+ sigma.
+				client.SendSpeech(".TestSampleVeinOreDistribution 2000 5000");
 				Assert.True(this.fixture.WaitForGameOutputSince("VEIN_DISTRIBUTION_SAMPLE:", mark, TimeSpan.FromSeconds(15)));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "VEIN_DISTRIBUTION_SAMPLE:");
 				int copper = ExtractInt(line, "copper=");
 				int mithril = ExtractInt(line, "mithril=");
 				Assert.True(copper > mithril * 5, "Expected copper to be rolled far more often than mithril: " + line);
+			}
+		}
+
+		[Fact]
+		public void CaveInBlocksMiningUntilSuccessfullyCleared() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "CaveInChecker")) {
+				this.PromoteToGm(client);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestForceVein 3000 4000 \"copper\" 20");
+				Assert.True(this.fixture.WaitForGameOutputSince("VEIN_FORCED:", mark, TimeSpan.FromSeconds(10)));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestForceCaveIn 3000 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("CAVE_IN_FORCED:", mark, TimeSpan.FromSeconds(10)));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckCaveInBlocked 3000 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("CAVE_IN_BLOCKED_CHECK:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("blocked=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "CAVE_IN_BLOCKED_CHECK:"));
+
+				// Mining a cave-in-blocked tile never yields ore, blocked or not.
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestMineAtTile 3000 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("MINE_RESULT:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("ore=null", LastLineContaining(this.fixture.GameOutputSnapshot(), "MINE_RESULT:"));
+
+				// Real clear-roll needs skill >= 1000 (100.0%) to have ANY chance at all - a
+				// brand-new character (skill 0) must always fail.
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestTryClearCaveIn 3000 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("CAVE_IN_CLEAR_ATTEMPT:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("cleared=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "CAVE_IN_CLEAR_ATTEMPT:"));
+
+				// Set skill to the maximum of the real clear-roll range - guaranteed success.
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetSkillValue \"Mining\" 1300");
+				Assert.True(this.fixture.WaitForGameOutputSince("SKILL_VALUE_SET:", mark, TimeSpan.FromSeconds(10)));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestTryClearCaveIn 3000 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("CAVE_IN_CLEAR_ATTEMPT:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("cleared=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "CAVE_IN_CLEAR_ATTEMPT:"));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckCaveInBlocked 3000 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("CAVE_IN_BLOCKED_CHECK:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("blocked=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "CAVE_IN_BLOCKED_CHECK:"));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestMineAtTile 3000 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("MINE_RESULT:", mark, TimeSpan.FromSeconds(10)));
+				Assert.DoesNotContain("ore=null", LastLineContaining(this.fixture.GameOutputSnapshot(), "MINE_RESULT:"));
+			}
+		}
+
+		[Fact]
+		public void CaveInTriggersAtRoughlyTheRealOneIn120Rate() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "CaveInChanceChecker")) {
+				this.PromoteToGm(client);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSampleCaveInChance 3000 10000");
+				Assert.True(this.fixture.WaitForGameOutputSince("CAVE_IN_CHANCE_SAMPLE:", mark, TimeSpan.FromSeconds(15)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "CAVE_IN_CHANCE_SAMPLE:");
+				int caveIns = ExtractInt(line, "caveIns=");
+				// Expected ~25 over 3000 attempts at 1/120 - generous bounds (>0, <10%) catch a
+				// completely broken roll in either direction without being flaky on the real one.
+				Assert.True(caveIns > 0 && caveIns < 300, "Expected roughly 1/120 of 3000 attempts to cave in: " + line);
 			}
 		}
 
@@ -143,12 +219,20 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+			return this.ConnectLoginAndCreateCharacter(Account, charName);
+		}
+
+		/// <summary>AccountB (needs EnsureAutoAccountCreationEnabled called once first, same
+		/// pattern as AttrFlagTests.cs/SkillGainSystemTests.cs) - this file's 6 Facts each
+		/// create their own character on the shared Account, over the 5-slot cap, so the 2
+		/// cave-in Facts get their own account.</summary>
+		private TestGameClient ConnectLoginAndCreateCharacter(string account, string charName) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(Account, Password);
+					game.SendLogin(account, Password);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					return game;
@@ -161,12 +245,32 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
 		}
 
-		private int WaitForServerListingAndGetRedirectPort() {
+		private void PromoteToGm(TestGameClient client) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestPromoteToGM");
+			Assert.True(this.fixture.WaitForGameOutputSince("PROMOTE_TO_GM:", mark, TimeSpan.FromSeconds(10)));
+		}
+
+		private static bool autoAccountCreationEnabled;
+
+		private void EnsureAutoAccountCreationEnabled() {
+			if (autoAccountCreationEnabled) {
+				return;
+			}
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "AutoAccountEnabler")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST:", mark, TimeSpan.FromSeconds(10)));
+			}
+			autoAccountCreationEnabled = true;
+		}
+
+		private int WaitForServerListingAndGetRedirectPort(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(Account, Password);
+						login.SendLogin(account, Password);
 
 						int serverCount = login.ReadServersList();
 						if (serverCount < 1) {

@@ -103,19 +103,44 @@ namespace SteamEngine.CompiledScripts {
 			public int RemainingPool;
 			public double RegenReadyAtSeconds;
 			public bool Untouched = true;
+			public bool CaveInBlocked;
+			public double CaveInAutoClearAtSeconds;
 		}
+
+		/// <summary>Real Erebor's own cave-in roll (#334, Phase B of #332): ~1/120 chance per
+		/// successful extraction (`{1 120}==43` in miningfix.scp's fixresource). Deliberately
+		/// skips the real source's separate Tutorial-region 1/10 reduction - moriaengine has no
+		/// tutorial-region equivalent to condition on, per #334's own explicit scope.</summary>
+		private const int CaveInChanceDenominator = 120;
+
+		/// <summary>Real Erebor's own rubble-clearing roll range (#334): `{1000 1300} <
+		/// player.mining` - a roll in this range must be BELOW the miner's skill to succeed,
+		/// meaning skill below 1000 (100.0%) can never clear a cave-in at all (a genuine
+		/// high-skill gate, not a transcription error).</summary>
+		private const int CaveInClearRollMin = 1000;
+		private const int CaveInClearRollMax = 1300;
+
+		/// <summary>Real Erebor's own rubble item timer (60*60*20) - a 20-hour safety-net
+		/// auto-clear in case nobody ever bothers to dig it out, not a meaningful regen
+		/// mechanic from the player's own perspective (confirmed: the rubble item's own trigger
+		/// group has no @timer handler at all, just creation/destroy triggers).</summary>
+		private const int CaveInAutoClearSeconds = 60 * 60 * 20;
 
 		private static readonly Dictionary<(byte, int, int), Vein> veins = new Dictionary<(byte, int, int), Vein>();
 
 		/// <summary>Mines one extraction at the given tile for `miner`. Returns the ItemDef to
 		/// grant (already skill-gated-downgraded to copper if under-skilled for the vein's real
-		/// assigned ore), or null if the vein is currently exhausted and hasn't regenerated yet.</summary>
+		/// assigned ore), or null if the vein is currently exhausted (hasn't regenerated yet) or
+		/// blocked by an unleared cave-in (#334) - callers should check IsCaveInBlocked first to
+		/// route a cave-in-affected attempt through TryClearCaveIn instead of this method.</summary>
 		public static ItemDef Mine(Character miner, byte mapPlane, int x, int y) {
-			(byte, int, int) key = (mapPlane, x, y);
-			Vein vein;
-			if (!veins.TryGetValue(key, out vein)) {
-				vein = new Vein();
-				veins[key] = vein;
+			Vein vein = GetOrCreateVein(mapPlane, x, y);
+
+			if (vein.CaveInBlocked) {
+				if (Globals.TimeInSeconds < vein.CaveInAutoClearAtSeconds) {
+					return null;
+				}
+				vein.CaveInBlocked = false; //20-hour safety-net auto-clear elapsed
 			}
 
 			if (vein.Untouched || (vein.RemainingPool <= 0 && Globals.TimeInSeconds >= vein.RegenReadyAtSeconds)) {
@@ -136,7 +161,53 @@ namespace SteamEngine.CompiledScripts {
 				vein.RegenReadyAtSeconds = Globals.TimeInSeconds + (vein.AssignedOre.RegenMinutes * 60);
 			}
 
+			if (Globals.dice.Next(CaveInChanceDenominator) == 0) { //real fixresource {1 120}==43 roll
+				vein.CaveInBlocked = true;
+				vein.CaveInAutoClearAtSeconds = Globals.TimeInSeconds + CaveInAutoClearSeconds;
+			}
+
 			return yieldOre.ItemDef;
+		}
+
+		/// <summary>#334 - is this tile currently blocked by an uncleared cave-in? Callers
+		/// should check this BEFORE calling Mine, and route a blocked attempt through
+		/// TryClearCaveIn instead (a completely separate roll, not a normal extraction).</summary>
+		public static bool IsCaveInBlocked(byte mapPlane, int x, int y) {
+			Vein vein;
+			if (!veins.TryGetValue((mapPlane, x, y), out vein)) {
+				return false;
+			}
+			if (vein.CaveInBlocked && Globals.TimeInSeconds >= vein.CaveInAutoClearAtSeconds) {
+				vein.CaveInBlocked = false; //20-hour safety-net auto-clear elapsed
+			}
+			return vein.CaveInBlocked;
+		}
+
+		/// <summary>#334 - the real Erebor rubble-clearing roll: `{1000 1300} < player.mining`.
+		/// Skill below 1000 (100.0%) can never succeed - a genuine high-skill gate, not a bug.
+		/// Returns false (does nothing) if the tile isn't actually blocked.</summary>
+		public static bool TryClearCaveIn(Character miner, byte mapPlane, int x, int y) {
+			Vein vein;
+			if (!veins.TryGetValue((mapPlane, x, y), out vein) || !vein.CaveInBlocked) {
+				return false;
+			}
+
+			int roll = Globals.dice.Next(CaveInClearRollMin, CaveInClearRollMax + 1);
+			if (roll < miner.GetRealSkillValue(SkillName.Mining)) {
+				vein.CaveInBlocked = false;
+				return true;
+			}
+			return false;
+		}
+
+		private static Vein GetOrCreateVein(byte mapPlane, int x, int y) {
+			(byte, int, int) key = (mapPlane, x, y);
+			Vein vein;
+			if (!veins.TryGetValue(key, out vein)) {
+				vein = new Vein();
+				veins[key] = vein;
+			}
+			return vein;
 		}
 
 		/// <summary>Test-only override (#333): forces a specific tile's vein to a known
@@ -153,6 +224,15 @@ namespace SteamEngine.CompiledScripts {
 			if (veins.TryGetValue((mapPlane, x, y), out vein)) {
 				vein.RegenReadyAtSeconds = 0; //already elapsed relative to any real Globals.TimeInSeconds
 			}
+		}
+
+		/// <summary>Test-only override (#334): forces a cave-in onto a tile without needing the
+		/// real 1/120 roll to land - needed for deterministic tests of the clear-roll/blocking
+		/// behavior.</summary>
+		internal static void ForceCaveInForTest(byte mapPlane, int x, int y) {
+			Vein vein = GetOrCreateVein(mapPlane, x, y);
+			vein.CaveInBlocked = true;
+			vein.CaveInAutoClearAtSeconds = Globals.TimeInSeconds + CaveInAutoClearSeconds;
 		}
 
 		private static void AssignFreshOre(Vein vein) {
