@@ -42,7 +42,7 @@ namespace SteamEngine.CompiledScripts {
 	/// change to MiningVeinSystem.Mine's existing callers for a nearly imperceptible edge case.
 	/// </summary>
 	public static class MonsterAmbushSystem {
-		public const int AmbushChanceDenominator = 750;
+		public static int AmbushChanceDenominator = 750; //#337 - mutable so MiningSettings can expose it as GM-tunable
 
 		public static string RatDefname = "c_rat";
 		public static string TrollDefname = "c_troll";
