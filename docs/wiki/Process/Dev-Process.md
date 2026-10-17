@@ -96,6 +96,21 @@ entries in state `Z` - these are zombies, not a leak**, consume ~0 resources, an
 be killed (nothing to signal). A genuinely hung/timed-out run is sandbox scheduling
 contention, not these zombies - retry once, don't go hunting for "cleanup."
 
+**A different, real class of failure found 2026-10-17 (#364): a LIVE (not zombie)
+`AuxiliaryServer`/`GameCore` pair from one full-boot class can survive into the next
+one** - `GameServerPairFixture`'s own teardown doesn't reliably kill its server pair on
+every exit path (confirmed: not just the hang case `test-full.sh` already guarded
+against, but plain non-hang failures and even ordinary passes). A lingering pair squats
+ports 2593/2595, and every LATER class then fails with a misleading
+`SocketException: Connection timed out` instead of its real result - once it starts,
+it cascades across most of the rest of a run, not a one-off. `test-full.sh` now sweeps
+(`lsof -t ... | xargs kill`) before every class, not just after a detected hang, so this
+self-heals automatically - no manual intervention should be needed anymore. If it
+somehow still is: check process start times (`stat -c '%y' /proc/<pid>`) against the
+current class's own pair - anything meaningfully older is the leftover, not the zombies
+note above (that one's about dead `Z`-state entries that can't interfere; this one is
+about live listeners that genuinely do).
+
 ## Commits
 
 `area: what changed`, imperative, ≤ 72 chars, no attribution of any kind. A body
