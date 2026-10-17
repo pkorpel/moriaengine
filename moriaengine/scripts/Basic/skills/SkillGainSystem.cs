@@ -77,16 +77,6 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>Lockpicking's custom-formula advrate (#329) - the real Erebor flat
-		/// `advrate_lockpicking` constant. Public/mutable so #330's .settings category can
-		/// write through to it, same pattern as every other GM-tunable value in this system.</summary>
-		public static double LockpickingAdvRate = 600;
-
-		/// <summary>Taming's custom-formula advrate (#329) - the real Erebor flat
-		/// `advrate_taming` constant. Public/mutable so #330's .settings category can write
-		/// through to it.</summary>
-		public static double TamingAdvRate = 600;
-
 		/// <summary>Lockpicking/Taming's own gain path (#329) - the 2 of #140's 13 skills whose
 		/// real Erebor .def disables the native ADVRATE curve (`ADVRATE=0fffffff`) in favor of
 		/// this LScript-side `[function skillgain]`: chance = skillValue² × advrate / (10000 ×
