@@ -48,6 +48,18 @@ pwsh ./build.ps1 -Configuration Debug >/dev/null 2>&1 || { echo "test-full: buil
 cd "$root"
 HANG="${HANG_TIMEOUT:-3min}"
 run() {  # filter → exit 0 pass, 1 fail, 2 hang/crash; output to $out
+  # Defensive sweep before every class, not just after a detected hang: found 2026-10-17
+  # (issue #364) that GameServerPairFixture's own teardown doesn't reliably kill its
+  # AuxiliaryServer/GameCore pair on every exit path - a plain (non-hang) failure or even
+  # an ordinary pass can still leave one behind. A lingering pair from a PREVIOUS class
+  # squats the ports, and every LATER class then fails with a misleading
+  # "SocketException: Connection timed out" instead of its real result - cascades across
+  # most of a run once it starts, not a one-off. Cheap and safe to always do: by the time
+  # we're inside this loop, anything still on these ports is this script's own leftover
+  # (the "is something else using them" check already ran once, at the top, before the
+  # loop started).
+  lsof -t -nP -iTCP:2593 -iTCP:2595 -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null
+  sleep 1
   dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug \
     --blame-hang --blame-hang-timeout "$HANG" --blame-hang-dump-type none \
     --filter "$1" >"$out" 2>&1 && return 0

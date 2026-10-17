@@ -1,6 +1,6 @@
 # Dev process
 
-Last reviewed: 2026-10-16
+Last reviewed: 2026-10-17
 
 ## Branches
 
@@ -76,6 +76,40 @@ Rule for a PR: a `FAIL` in a class the branch didn't touch that passes when reru
 alone (`scripts/test-full.sh "FullyQualifiedName~<Class>."`) is a flake; note it in
 the PR. Fails again: it's real. Never let a dump run: a full hang dump of testhost +
 servers is many GB.
+
+**Before chasing a sudden wave of unrelated failures, check `moriaengine/saves/` for a
+stale dated snapshot first.** `BackupsManager` always loads the single most-recently
+written `saves/<date>/<time>/` snapshot, not the committed `saves/2000-01-01/00_00_00/`
+baseline. Many full-boot test classes assume their login account (commonly
+`"protocoltest"`) is literally the server's first-ever account
+(`accounts.Count == 0` grants auto-creation + max plevel) - once any OTHER test's save
+(a different account name, e.g. a persistence-regression test) becomes "latest", every
+`protocoltest`-reliant class in every later run fails with a login denial
+(`LoginDeniedReason=0`, NoAccount), looking exactly like a real regression. Recurred
+several times before the kit existed, same mechanism every time. Fix: delete the stale
+`saves/<date>/` directory (gitignored-in-spirit scratch, zero product value, never the
+tracked `2000-01-01` baseline) and rerun - don't spend time on the test/code under
+inspection until this is ruled out.
+
+**After any full-boot run, `/proc` fills with leftover dotnet/msbuild/VBCSCompiler
+entries in state `Z` - these are zombies, not a leak**, consume ~0 resources, and can't
+be killed (nothing to signal). A genuinely hung/timed-out run is sandbox scheduling
+contention, not these zombies - retry once, don't go hunting for "cleanup."
+
+**A different, real class of failure found 2026-10-17 (#364): a LIVE (not zombie)
+`AuxiliaryServer`/`GameCore` pair from one full-boot class can survive into the next
+one** - `GameServerPairFixture`'s own teardown doesn't reliably kill its server pair on
+every exit path (confirmed: not just the hang case `test-full.sh` already guarded
+against, but plain non-hang failures and even ordinary passes). A lingering pair squats
+ports 2593/2595, and every LATER class then fails with a misleading
+`SocketException: Connection timed out` instead of its real result - once it starts,
+it cascades across most of the rest of a run, not a one-off. `test-full.sh` now sweeps
+(`lsof -t ... | xargs kill`) before every class, not just after a detected hang, so this
+self-heals automatically - no manual intervention should be needed anymore. If it
+somehow still is: check process start times (`stat -c '%y' /proc/<pid>`) against the
+current class's own pair - anything meaningfully older is the leftover, not the zombies
+note above (that one's about dead `Z`-state entries that can't interfere; this one is
+about live listeners that genuinely do).
 
 ## Commits
 
