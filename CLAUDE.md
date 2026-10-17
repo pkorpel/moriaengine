@@ -130,9 +130,41 @@ the block - same already-documented Defname-vs-PrettyDefname class as
 `AbstractSkillDef.PrettyDefname` elsewhere in this file. Compare by object identity
 against a known table instead of string-matching a defname when this might bite.
 
-**Next up: #334** (Mining Phase B, cave-ins) - continuing the Mining implementation pass
-(#332, phases #334-337 remaining, design already settled, see the "Mining full
-implementation PLANNED" section below).
+**#334 (Mining Phase B, cave-ins) - DONE, PR #349, merged, closed.** Extends
+`MiningVeinSystem` with the real cave-in mechanic (`miningfix.scp`'s `fixresource`/
+`dozaval`/`t_zavalTriggers`): ~1/120 chance per successful extraction blocks the vein
+with rubble; clearing needs a separate roll (`{1000,1300} < player.mining` - skill
+below 1000/100.0% can never clear it at all, a genuine high-skill gate, not watered
+down). 20-hour safety-net auto-clear timer matches the real rubble item's own (not a
+meaningful regen mechanic - the real trigger group has no `@timer` handler at all).
+Deliberately skips the real source's Tutorial-region 1/10 odds reduction - no
+tutorial-region equivalent here, per the issue's own explicit scope.
+`MiningSkillDef.On_Stroke` checks `IsCaveInBlocked` first and routes a blocked tile's
+entire stroke into the clear-check instead of the normal ore roll - a separate
+mini-game, no skill gain either way (matches the real `@Pickaxed` handler).
+
+**Two real test-infra bugs found and fixed while building this**:
+1. Adding 2 new Facts pushed this test file to 6 character creations on one shared
+   account, over the 5-slot cap - same already-documented class of bug from earlier in
+   this session. Split onto a dedicated AccountB (+ GM-promotion for multi-arg
+   commands), confirmed via 3x repeated clean isolated runs.
+2. #333's own `UntouchedVeinRollFavorsCommonOresOverRareOnes` distribution test had a
+   genuine statistical flake at 500 samples (mithril's small expected count had enough
+   binomial variance to occasionally violate the 5x-ratio bound) - confirmed via
+   isolated reruns this was pure statistics, not caused by #334, before widening to
+   2000 samples for a much safer margin.
+
+Full suite showed the `MiningVeinSystemTests` failing with the already-documented
+`LoginDeniedReason=1` (concurrent-connection) signature - confirmed as the SAME
+full-suite-only sandbox-flakiness class seen in prior runs this session (e.g. #329's
+own precedent), since the same file passed cleanly in isolation, 3x repeated, and in a
+25-test combined run.
+
+**Next up: #335** (Mining Phase C, monster ambush) - continuing the Mining
+implementation pass (#332, phases #335-337 remaining, design already settled, see the
+"Mining full implementation PLANNED" section below). Note #335's own already-flagged
+open question: the real ambush table's "rock elemental"/"copper spirit" tiers have no
+moriaengine equivalent - will need a content-substitution judgment call.
 
 
 This file is kept up to date across sessions so a fresh Claude Code session (after
