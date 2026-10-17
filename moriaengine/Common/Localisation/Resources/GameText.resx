@@ -418,6 +418,9 @@
   <data name="MiningLoc_whereToMine" xml:space="preserve">
     <value>Where do you want to mine?</value>
   </data>
+  <data name="MiningLoc_veinExhausted" xml:space="preserve">
+    <value>This vein seems to be exhausted.</value>
+  </data>
   <data name="PacketSequencesLoc_WelcomeToShard" xml:space="preserve">
     <value>Welcome to {0}.</value>
   </data>
