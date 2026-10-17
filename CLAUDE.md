@@ -1,5 +1,59 @@
 # moriaengine — working state
 
+## Skill-gain + Mining implementation IN PROGRESS (2026-10-17) — #328 shipped, #329 next
+
+Autonomous implementation pass through the #282→#328→#329→#330→#333→#334→#335→#336→#337
+backlog (plans fully settled earlier, see the "Skill-gain implementation PLANNED" and
+"Mining full implementation PLANNED" sections below). #282 (Lockpicking inverted
+locked-check) already shipped via PR #340 before this pass started.
+
+**#328 (generic native-curve skill-gain system) - DONE, PR #341, merged, closed.**
+`SkillGainSystem.TryGainSkill(Character, SkillName)` is the missing roll-and-increment
+step on top of `SkillDef.AdvRateOfChar`'s pre-existing (zero-caller) curve lookup -
+gated by profession skill cap, NPC exclusion, safe-region anti-macro exclusion. Fixed
+real `ADVRATE=` data for all 11 native-curve skills (was generic classic-UO placeholder
+values; Alchemy's own entry was additionally broken). Wired into `CraftingSkillDef`
+(covers 8 skills at once) plus Mining/Lumberjacking/Fishing's own hooks. Fishing had
+zero implementation anywhere before this - added a minimal shell mirroring Mining's
+shape (target cursor, stroke/success/fail/abort, loc strings).
+
+**Real production bug found and fixed while testing**: `TryGainSkill`'s first draft used
+`Character.GetSkillObject`, which returns `null` for any skill a character has never
+explicitly had set - the common case for most players on most skills (a `Skill` instance
+is only materialized on first write, not eagerly for every possible skill). This would
+have crashed with a `NullReferenceException` the very first time any player attempted a
+skill they'd never touched before. Fixed by switching to the null-safe
+`GetRealSkillValue`/`SetRealSkillValue` pair and reproducing `Skill.Cap`'s profession-cap
+logic inline (via `Player.Profession.GetSkillCap(id)` directly - it doesn't actually need
+an existing `Skill` instance). Same null-safety fix applied to the test helpers that had
+the identical pattern (`TestSetSkillValue`/`TestSampleSkillGainOnNpc`/
+`TestSampleSkillGainAtCap` in `scripts/Tests/SkillGainSystemTests.cs`).
+
+**Test-infra lessons from building `Tests/Protocol/SkillGainSystemTests.cs` (both already
+individually documented elsewhere in this file, re-confirmed here)**: this file needs 7
+character creations (4 Theory cases + 3 Facts) in one collection, over the shared
+account's 5-slot cap - split via a second `AccountB` + `EnsureAutoAccountCreationEnabled`
+(exact pattern from `AttrFlagTests.cs`). AccountB's characters are never the server's
+literal first-ever account, so they stay below `Globals.PlevelForLscriptCommands` and
+every chat command routes through `SimpleCommandParser` (no real argument splitting) -
+multi-argument `Test*` commands silently fail to parse there; fixed by promoting each
+AccountB character to GM first (`SocialTests.TestPromoteToGM`) so commands route through
+the full LScript parser instead. A sed-based mechanical quoting fix (applying the
+"quote bareword args" lesson) also introduced an unescaped-quote C# syntax bug on 4
+lines - caught by the next build, fixed by hand with proper `\"..\"` escaping.
+
+Full suite run **twice** to satisfy "fully test before merge" (user's explicit
+requirement for this pass) - 20 failures first run, 14 second run, different sets both
+times, zero overlap with the changed code surface, all matching already-documented
+pre-existing flaky classes (#100 CombatDepthTests/CI-flakiness, #121 OwnerAggroTests,
+#230 HousingTests). Targeted `SkillGainSystemTests`/`GatheringTests`/`LockpickingTests`
+all green in both runs.
+
+**Next up: #329** (Lockpicking/Taming's separate custom-formula skill-gain path,
+`ADVRATE=0fffffff` sentinel skills) - blocked-on-#282 dependency already satisfied.
+Then #330 (`.settings` category), then the Mining phases #333-337.
+
+
 This file is kept up to date across sessions so a fresh Claude Code session (after
 a kill/restart) can pick up exactly where the last one left off without re-deriving
 context from scratch. Update it whenever the current task/branch/plan changes —
