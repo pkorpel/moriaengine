@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## Skill-gain + Mining implementation IN PROGRESS (2026-10-17) — #328 shipped, #329 next
+## Skill-gain + Mining implementation IN PROGRESS (2026-10-17) — #328/#329 shipped, #330 next
 
 Autonomous implementation pass through the #282→#328→#329→#330→#333→#334→#335→#336→#337
 backlog (plans fully settled earlier, see the "Skill-gain implementation PLANNED" and
@@ -49,9 +49,32 @@ pre-existing flaky classes (#100 CombatDepthTests/CI-flakiness, #121 OwnerAggroT
 #230 HousingTests). Targeted `SkillGainSystemTests`/`GatheringTests`/`LockpickingTests`
 all green in both runs.
 
-**Next up: #329** (Lockpicking/Taming's separate custom-formula skill-gain path,
-`ADVRATE=0fffffff` sentinel skills) - blocked-on-#282 dependency already satisfied.
-Then #330 (`.settings` category), then the Mining phases #333-337.
+**#329 (Lockpicking/Taming custom-formula skill-gain path) - DONE, PR #343, merged,
+closed.** `SkillGainSystem.TryGainSkillCustomFormula(Character, SkillName, double advRate)`
+- the real Erebor `[function skillgain]` LScript mechanism for the 2 of #140's 13 skills
+whose `.def` disables the native curve (`ADVRATE=0fffffff`): `chance = skillValue² ×
+advrate / (10000 × chanceModifier)`, fed by flat `SkillGainSystem.LockpickingAdvRate`/
+`TamingAdvRate` constants (600 each, matching real Erebor's `advrate_lockpicking`/
+`advrate_taming`) instead of a 3-point curve. Wired into both skills' `On_Success`/
+`On_Fail`.
+
+**Deviation from the issue's own scope text, worth remembering**: #329 said Taming only
+needed its "success path" wired. Re-checked the real Erebor source (`taming.scp`)
+directly and found `SKILLGAIN` is called on BOTH outcomes there, same as Lockpicking -
+wired both for fidelity to the real mechanic rather than following the issue's slightly
+simplified summary. Also found and deliberately skipped Taming's real "GainBonus"
+multiplier (500-600/300-400 for repeatedly taming high-skill scripted spawns) - tied to
+an anti-macro mount-stats system moriaengine doesn't have at all; flat 100 (no modifier)
+used throughout instead, matching every real content call site's own default.
+
+Full suite run showed some `SkillGainSystemTests` failures (`LoginDeniedReason=1`,
+concurrent-connection race) in a file #329 doesn't touch at all - confirmed as pure
+sandbox flakiness (not a regression) by rerunning that file in isolation immediately
+after: 7/7 clean.
+
+**Next up: #330** (GM-tunable `.settings` category covering all of #328/#329's advance-
+rate data - 35 fields for the 11 native-curve skills + 1 each for Lockpicking/Taming).
+Then the Mining phases #333-337.
 
 
 This file is kept up to date across sessions so a fresh Claude Code session (after
