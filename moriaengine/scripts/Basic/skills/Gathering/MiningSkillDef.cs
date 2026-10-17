@@ -78,23 +78,19 @@ namespace SteamEngine.CompiledScripts {
 			return TileData.HasFlag(TileData.GetTileFlags(landTile), TileFlag.Impassable);
 		}
 
-		private static ItemDef oreDef;
-		private static ItemDef OreDef {
-			get {
-				if (oreDef == null) {
-					oreDef = (ItemDef) ThingDef.GetByDefname("i_ore_iron");
-				}
-				return oreDef;
-			}
-		}
-
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			ItemDef def = OreDef;
+			IPoint3D targetted = skillSeqArgs.Target1;
+
+			//#333 - real per-vein ore-tier system (lazy per-tile veins, weighted roll on an
+			//untouched vein, skill-gated downgrade to copper, depletion/regen)
+			ItemDef def = MiningVeinSystem.Mine(self, (byte) self.GetMap().M, targetted.X, targetted.Y);
 			if (def != null) {
 				def.Create(self.Backpack);
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).success);
+			} else {
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).veinExhausted);
 			}
-			self.SysMessage(Loc<MiningLoc>.Get(self.Language).success);
 			SkillGainSystem.TryGainSkill(self, SkillName.Mining); //#328
 		}
 
@@ -139,5 +135,6 @@ namespace SteamEngine.CompiledScripts {
 		public string fail = "You loosen some rocks but fail to find any useable ore.";
 		public string success = "You dig some ore.";
 		public string abort = "You stop mining.";
+		public string veinExhausted = "This vein seems to be exhausted."; //#333
 	}
 }

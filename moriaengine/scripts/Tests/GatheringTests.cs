@@ -74,9 +74,15 @@ namespace SteamEngine.CompiledScripts {
 		/// so a single generic "check for item X" helper can't take the item type as an
 		/// argument the way TestCheckHasItem (uid, a plain number) could in V-4. Two dedicated,
 		/// no-argument functions instead - the only two item types this phase needs.</summary>
+		/// <summary>#333 - mining now rolls a real weighted ore tier per vein instead of
+		/// always "i_ore_iron"; checks for "i_ore_copper" instead, since a brand-new character
+		/// (Mining skill 0) always ends up with copper regardless of which ore the vein itself
+		/// rolled - copper's own real skill threshold is 0, the only tier a 0-skill miner ever
+		/// qualifies for, so this stays fully deterministic despite the underlying roll being
+		/// random.</summary>
 		[SteamFunction]
 		public static void TestCheckHasOre(Character self) {
-			CheckBackpackCount(self, "i_ore_iron");
+			CheckBackpackCount(self, "i_ore_copper");
 		}
 
 		[SteamFunction]
