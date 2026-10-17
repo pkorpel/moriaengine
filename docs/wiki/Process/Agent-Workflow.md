@@ -1,6 +1,6 @@
 # Agent workflow
 
-Last reviewed: 2026-10-16
+Last reviewed: 2026-10-17
 
 Claude Code drives issues from idea to closed with slash commands
 (`.claude/commands/`) and role agents (`.claude/agents/`). Installed from the
@@ -25,7 +25,7 @@ moria-agent-kit; "dev" is a local boot of `agent-kit-trial`.
 | `/task-new <idea>` | issue from a template, labels, analyst pass | creating it without your OK |
 | `/task-refine <n>` | analyst rewrites a triage issue into criteria | marking it ready (only you do) |
 | `/task-pick [n]` | claims a ready issue, plan comment, worktree | pushing |
-| `/task-ship` | push, PR, waits for CI, squash-merges on green | merging on red / no CI run |
+| `/task-ship` | push, full suite locally, PR, waits for CI, squash-merges on green | opening a PR without a full-suite run (standing rule, 2026-10-17 - skip only if the user says so for that one case) / merging on red / no CI run |
 | `/task-run <n>` | all of the above with agents, plus local verify and close | any stop rule |
 | `/status-weekly` | status page in `docs/wiki/Status/Weekly/` via a docs PR | — |
 
