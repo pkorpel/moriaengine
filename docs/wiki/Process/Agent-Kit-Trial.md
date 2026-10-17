@@ -99,3 +99,55 @@ start of the next phase-3 session.
   issue if a second SDK ever lands in this environment.
 - `saves/` gitignore status is still unresolved — don't touch without the maintainer's
   answer.
+
+## Phase 2 blocker resolved, backfill shipped (2026-10-17)
+
+The sandbox's `pre-commit` was rebuilt to a newer pip-installed version (4.0.1, confirmed
+via `pre-commit --version`) in the Dockerfile — `pre-commit run --all-files` no longer hits
+`InvalidConfigError` on the kit's `stages: [pre-push]` hook. One extra wrinkle found on top
+of that: the previously-installed git hook scripts (`.git/hooks/pre-commit` etc.) hardcode
+`INSTALL_PYTHON=/usr/bin/python3` from when the OLD apt-installed pre-commit wrote them —
+the new pip/pipx install lives in a separate venv, so the stale hook script failed with
+`No module named pre_commit` even though `pre-commit` itself worked fine from the shell.
+Fixed with `pre-commit install -f` (regenerates the hook scripts pointing at the correct
+interpreter) — needed once per worktree/checkout whose hooks predate the Dockerfile rebuild.
+
+With that confirmed working, committed and shipped the back-filled trial log + label
+record: branch `backfill-agent-kit-trial-log` → PR #357 → merged into `agent-kit-trial`
+(squash, green CI, `don't commit to branch` hook observed passing on a non-main branch).
+
+## Phase 3 — pilot decision and first pilot issue (2026-10-17)
+
+Asked the maintainer explicitly (per the open item above): use the save-isolation gap as a
+sanctioned full-boot-tier exception, or pick a different small fast-tier bug and leave
+save-isolation as a regular follow-up. **Decision: pick a different bug.** Save isolation's
+re-confirmation + the tracked-baseline-skeleton wrinkle (`saves/2000-01-01/00_00_00/*.sav`)
+was added as a comment on the existing #197 (same root cause, filed earlier this project
+under a different symptom) rather than a new duplicate issue — not fixed.
+
+**Pilot chosen: #358** — `StaticMemberSaver.TryRegisterMember` guards properties for
+read/write-ability before registering them but had no equivalent guard for fields, so the
+readonly `CraftmenuContents.mainCategories` field (marked `[SavedMember]`) got registered,
+saved fine, then threw `FieldAccessException` on every subsequent boot's load — the exact
+boot-log noise from #64 item 4, split off into its own issue since it's a self-contained
+engine bug, not a content/data judgment call like #64's other 3 items. Fits the pilot
+criteria well: small (one guard clause + one dead-attribute comment), pure reflection logic
+with zero full-boot dependency, confirmed by direct code reading before touching anything.
+
+Ran the full kit workflow end to end: issue #358 (labels `type:bug`/`prio:2`/`area:infra`,
+`status:doing` — see the issue's own comment for why `status:ready` was skipped, this
+session had the maintainer's live go-ahead already) → worktree `../moria-358` via
+`scripts/worktree-add.sh` → fix + new fast-tier test (`Tests/StaticMemberSaverTests.cs`,
+reflects into the real `StaticMemberSaver`/`CraftmenuContents` to prove the readonly guard
+works — manually confirmed it fails without the fix, passes with it) → PR #359 into
+`agent-kit-trial`.
+
+**Real build-pipeline snag found while building the pilot**: the new test needed a
+`ProjectReference` from `Tests.csproj` to `scripts/SteamEngine.Scripts.csproj` (to reach
+the real `CraftmenuContents`/`StaticMemberSaver` types) — but `build.ps1`'s
+`$StandaloneProjects` list built `Tests.csproj` standalone *before*
+`Invoke-ScriptGeneration` ran, which fails once Tests depends on Scripts (Scripts needs the
+not-yet-generated `Generated/*.Generated.cs` partial classes). Fixed by dropping
+`Tests/SteamEngine.Tests.csproj` from that early list — the final "Building full solution"
+step (which runs after script generation) already builds it. Confirmed by a full
+`pwsh ./build.ps1` run end to end plus `scripts/test-fast.sh` (28/28 fast-tier tests green).
