@@ -63,7 +63,17 @@ namespace SteamEngine.CompiledScripts {
 				return TriggerResult.Cancel;
 			}
 
-			skillSeqArgs.Success = this.CheckSuccess(self, Globals.dice.Next(700));
+			//#334 - a cave-in-blocked vein redirects this entire stroke into a completely
+			//separate clear-the-rubble roll instead of the normal ore-extraction check.
+			//Param1 remembers which kind of stroke this was for On_Success/On_Fail below.
+			byte mapPlane = self.GetMap().M;
+			if (MiningVeinSystem.IsCaveInBlocked(mapPlane, targetted.X, targetted.Y)) {
+				skillSeqArgs.Param1 = true;
+				skillSeqArgs.Success = MiningVeinSystem.TryClearCaveIn(self, mapPlane, targetted.X, targetted.Y);
+			} else {
+				skillSeqArgs.Param1 = null;
+				skillSeqArgs.Success = this.CheckSuccess(self, Globals.dice.Next(700));
+			}
 			return TriggerResult.Continue;
 		}
 
@@ -80,11 +90,20 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
+
+			//#334 - a cleared cave-in isn't an extraction - no ore, no skill gain (the real
+			//rubble-clear roll is its own separate mini-game, funkce.scp's skillgain() is never
+			//called from t_zavalTriggers' @Pickaxed handler either).
+			if (skillSeqArgs.Param1 is bool && (bool) skillSeqArgs.Param1) {
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).caveInCleared);
+				return;
+			}
+
 			IPoint3D targetted = skillSeqArgs.Target1;
 
 			//#333 - real per-vein ore-tier system (lazy per-tile veins, weighted roll on an
 			//untouched vein, skill-gated downgrade to copper, depletion/regen)
-			ItemDef def = MiningVeinSystem.Mine(self, (byte) self.GetMap().M, targetted.X, targetted.Y);
+			ItemDef def = MiningVeinSystem.Mine(self, self.GetMap().M, targetted.X, targetted.Y);
 			if (def != null) {
 				def.Create(self.Backpack);
 				self.SysMessage(Loc<MiningLoc>.Get(self.Language).success);
@@ -96,6 +115,13 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
+
+			//#334 - a failed cave-in-clear attempt gets its own message and no skill gain.
+			if (skillSeqArgs.Param1 is bool && (bool) skillSeqArgs.Param1) {
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).caveInNotCleared);
+				return;
+			}
+
 			self.SysMessage(Loc<MiningLoc>.Get(self.Language).fail);
 			SkillGainSystem.TryGainSkill(self, SkillName.Mining); //#328 - real Erebor gains on fail too
 		}
@@ -136,5 +162,7 @@ namespace SteamEngine.CompiledScripts {
 		public string success = "You dig some ore.";
 		public string abort = "You stop mining.";
 		public string veinExhausted = "This vein seems to be exhausted."; //#333
+		public string caveInCleared = "You clear away the rubble blocking the vein."; //#334
+		public string caveInNotCleared = "You fail to clear the rubble blocking the vein."; //#334
 	}
 }

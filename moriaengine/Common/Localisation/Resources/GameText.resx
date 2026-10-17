@@ -421,6 +421,12 @@
   <data name="MiningLoc_veinExhausted" xml:space="preserve">
     <value>This vein seems to be exhausted.</value>
   </data>
+  <data name="MiningLoc_caveInCleared" xml:space="preserve">
+    <value>You clear away the rubble blocking the vein.</value>
+  </data>
+  <data name="MiningLoc_caveInNotCleared" xml:space="preserve">
+    <value>You fail to clear the rubble blocking the vein.</value>
+  </data>
   <data name="PacketSequencesLoc_WelcomeToShard" xml:space="preserve">
     <value>Welcome to {0}.</value>
   </data>
