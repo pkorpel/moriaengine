@@ -25,10 +25,13 @@ namespace SteamEngine.CompiledScripts {
 	/// storage), pool-size range, and regen time.</summary>
 	public class OreTier {
 		public readonly string ItemDefname;
-		public readonly int SkillThreshold;
-		public readonly int MinAmount;
-		public readonly int MaxAmount;
-		public readonly int RegenMinutes;
+
+		//#337 - mutable (not readonly) so MiningSettings' pass-through properties can write
+		//through to these directly, same GM-tunable pattern as every other Mining constant.
+		public int SkillThreshold;
+		public int MinAmount;
+		public int MaxAmount;
+		public int RegenMinutes;
 
 		public OreTier(string itemDefname, int skillThreshold, int minAmount, int maxAmount, int regenMinutes) {
 			this.ItemDefname = itemDefname;
@@ -110,21 +113,22 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Real Erebor's own cave-in roll (#334, Phase B of #332): ~1/120 chance per
 		/// successful extraction (`{1 120}==43` in miningfix.scp's fixresource). Deliberately
 		/// skips the real source's separate Tutorial-region 1/10 reduction - moriaengine has no
-		/// tutorial-region equivalent to condition on, per #334's own explicit scope.</summary>
-		private const int CaveInChanceDenominator = 120;
+		/// tutorial-region equivalent to condition on, per #334's own explicit scope.
+		/// Public/mutable (#337) so MiningSettings can expose it as GM-tunable.</summary>
+		public static int CaveInChanceDenominator = 120;
 
 		/// <summary>Real Erebor's own rubble-clearing roll range (#334): `{1000 1300} <
 		/// player.mining` - a roll in this range must be BELOW the miner's skill to succeed,
 		/// meaning skill below 1000 (100.0%) can never clear a cave-in at all (a genuine
 		/// high-skill gate, not a transcription error).</summary>
-		private const int CaveInClearRollMin = 1000;
-		private const int CaveInClearRollMax = 1300;
+		public static int CaveInClearRollMin = 1000;
+		public static int CaveInClearRollMax = 1300;
 
 		/// <summary>Real Erebor's own rubble item timer (60*60*20) - a 20-hour safety-net
 		/// auto-clear in case nobody ever bothers to dig it out, not a meaningful regen
 		/// mechanic from the player's own perspective (confirmed: the rubble item's own trigger
 		/// group has no @timer handler at all, just creation/destroy triggers).</summary>
-		private const int CaveInAutoClearSeconds = 60 * 60 * 20;
+		public static int CaveInAutoClearSeconds = 60 * 60 * 20;
 
 		private static readonly Dictionary<(byte, int, int), Vein> veins = new Dictionary<(byte, int, int), Vein>();
 
