@@ -111,5 +111,71 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("SKILL_GAIN_CAP_SAMPLE: skill=" + skill + " cap=" + cap +
 				" valueAfter=" + self.GetRealSkillValue(skill) + " gains=" + gains + " attempts=" + attempts);
 		}
+
+		/// <summary>Lockpicking/Taming's own custom-formula gain path (#329) - same sampling
+		/// approach as TestSampleSkillGain above, just calling TryGainSkillCustomFormula
+		/// instead.</summary>
+		[SteamFunction]
+		public static void TestSampleSkillGainCustomFormula(Character self, ScriptArgs sa) {
+			SkillName skill = (SkillName) Enum.Parse(typeof(SkillName), Convert.ToString(sa.Argv[0], CultureInfo.InvariantCulture), true);
+			double advRate = Convert.ToDouble(sa.Argv[1], CultureInfo.InvariantCulture);
+			int attempts = Convert.ToInt32(sa.Argv[2], CultureInfo.InvariantCulture);
+
+			int before = self.GetRealSkillValue(skill);
+			int gains = 0;
+			for (int i = 0; i < attempts; i++) {
+				if (SkillGainSystem.TryGainSkillCustomFormula(self, skill, advRate)) {
+					gains++;
+				}
+			}
+			int after = self.GetRealSkillValue(skill);
+			Console.WriteLine("SKILL_GAIN_CUSTOM_SAMPLE: skill=" + skill + " before=" + before + " after=" + after +
+				" gains=" + gains + " attempts=" + attempts);
+		}
+
+		/// <summary>Confirms NPCs never organically gain skill through the custom-formula path
+		/// either (#329, same gate as #328's native-curve path).</summary>
+		[SteamFunction]
+		public static void TestSampleSkillGainCustomFormulaOnNpc(Character self, ScriptArgs sa) {
+			SkillName skill = (SkillName) Enum.Parse(typeof(SkillName), Convert.ToString(sa.Argv[0], CultureInfo.InvariantCulture), true);
+			double advRate = Convert.ToDouble(sa.Argv[1], CultureInfo.InvariantCulture);
+			int attempts = Convert.ToInt32(sa.Argv[2], CultureInfo.InvariantCulture);
+
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC npc = (NPC) npcDef.Create(self.P());
+			npc.SetRealSkillValue((int) skill, 200);
+
+			int gains = 0;
+			for (int i = 0; i < attempts; i++) {
+				if (SkillGainSystem.TryGainSkillCustomFormula(npc, skill, advRate)) {
+					gains++;
+				}
+			}
+			Console.WriteLine("SKILL_GAIN_CUSTOM_NPC_SAMPLE: skill=" + skill + " gains=" + gains + " attempts=" + attempts);
+		}
+
+		/// <summary>Confirms a character already at their profession's cap never gains further
+		/// through the custom-formula path either (#329, same gate as #328's native-curve
+		/// path).</summary>
+		[SteamFunction]
+		public static void TestSampleSkillGainCustomFormulaAtCap(Character self, ScriptArgs sa) {
+			SkillName skill = (SkillName) Enum.Parse(typeof(SkillName), Convert.ToString(sa.Argv[0], CultureInfo.InvariantCulture), true);
+			double advRate = Convert.ToDouble(sa.Argv[1], CultureInfo.InvariantCulture);
+			int attempts = Convert.ToInt32(sa.Argv[2], CultureInfo.InvariantCulture);
+
+			Player player = (Player) self;
+			int cap = (player.Profession != null) ? player.Profession.GetSkillCap((int) skill) : 0;
+			self.SetRealSkillValue((int) skill, cap);
+
+			int gains = 0;
+			for (int i = 0; i < attempts; i++) {
+				if (SkillGainSystem.TryGainSkillCustomFormula(self, skill, advRate)) {
+					gains++;
+				}
+			}
+			Console.WriteLine("SKILL_GAIN_CUSTOM_CAP_SAMPLE: skill=" + skill + " cap=" + cap +
+				" valueAfter=" + self.GetRealSkillValue(skill) + " gains=" + gains + " attempts=" + attempts);
+		}
 	}
 }

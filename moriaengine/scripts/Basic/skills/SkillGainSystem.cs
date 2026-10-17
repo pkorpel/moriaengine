@@ -76,5 +76,50 @@ namespace SteamEngine.CompiledScripts {
 			self.SetRealSkillValue(def, currentValue + 1); //+0.1 displayed - skills are stored x10 internally
 			return true;
 		}
+
+		/// <summary>Lockpicking's custom-formula advrate (#329) - the real Erebor flat
+		/// `advrate_lockpicking` constant. Public/mutable so #330's .settings category can
+		/// write through to it, same pattern as every other GM-tunable value in this system.</summary>
+		public static double LockpickingAdvRate = 600;
+
+		/// <summary>Taming's custom-formula advrate (#329) - the real Erebor flat
+		/// `advrate_taming` constant. Public/mutable so #330's .settings category can write
+		/// through to it.</summary>
+		public static double TamingAdvRate = 600;
+
+		/// <summary>Lockpicking/Taming's own gain path (#329) - the 2 of #140's 13 skills whose
+		/// real Erebor .def disables the native ADVRATE curve (`ADVRATE=0fffffff`) in favor of
+		/// this LScript-side `[function skillgain]`: chance = skillValue² × advrate / (10000 ×
+		/// chanceModifier), same {0,N}-roll/gain-on-zero shape as TryGainSkill above, but fed by
+		/// a flat per-skill advrate constant instead of a 3-point curve. chanceModifier matches
+		/// every real content call site (`skillgain(skill_X, 100)` - always 100, "without
+		/// change") - not exposed as a per-call argument since nothing in this engine's content
+		/// needs a different value.</summary>
+		public static bool TryGainSkillCustomFormula(Character self, SkillName skillName, double advRate) {
+			if (!(self is Player)) {
+				return false;
+			}
+			if ((self.Region as FlaggedRegion)?.Flag_Safe == true) {
+				return false;
+			}
+
+			SkillDef def = SkillDef.GetBySkillName(skillName);
+			ProfessionDef profession = ((Player) self).Profession;
+			int cap = (profession != null) ? profession.GetSkillCap(def.Id) : 0;
+			int currentValue = self.GetRealSkillValue(def);
+			if (cap <= 0 || currentValue >= cap) {
+				return false;
+			}
+
+			const double chanceModifier = 100;
+			double chance = (currentValue * currentValue * advRate) / (10000 * chanceModifier);
+			int roll = Globals.dice.Next((int) chance + 1);
+			if (roll != 0) {
+				return false;
+			}
+
+			self.SetRealSkillValue(def, currentValue + 1);
+			return true;
+		}
 	}
 }
