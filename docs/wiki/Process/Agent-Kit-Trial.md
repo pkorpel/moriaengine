@@ -151,3 +151,96 @@ not-yet-generated `Generated/*.Generated.cs` partial classes). Fixed by dropping
 `Tests/SteamEngine.Tests.csproj` from that early list — the final "Building full solution"
 step (which runs after script generation) already builds it. Confirmed by a full
 `pwsh ./build.ps1` run end to end plus `scripts/test-fast.sh` (28/28 fast-tier tests green).
+
+Issue #358 closed after verifying on a real local boot (`scripts/run-local.sh start`/
+`stop`, two full boot+shutdown-save cycles): zero `"Error while loading static members"`
+lines in the log, the unrelated pre-existing #64 items 1-3 (unresolved-resource content
+gaps) still present exactly as before - confirms the fix landed without touching anything
+else. Branch and worktree cleaned up after merge (`git worktree remove`, local + `origin`
+branch deletion).
+
+## Phase 4 — evaluation and recommendation (2026-10-17)
+
+One pilot cycle (#358/PR #359) isn't a large sample, but it's a real one: a genuine
+production bug, found via direct code reading (not guessed), fixed, tested, shipped, and
+verified through every stage of the kit's designed lifecycle without skipping or faking
+any step. Combined with the Phase 0-2 install/backfill experience, that's enough signal
+for a real recommendation, not just "needs more data."
+
+### Recommendation: **adopt** — merge `agent-kit-trial` into `main`
+
+The install itself is additive and low-risk (process/tooling/CI config, zero game-code
+changes), the guardrails that matter are real and independently verified (not just
+configured), and the one real pilot delivered genuine value through the full intended
+loop. The friction found along the way was real but each instance falls into one of three
+low-severity buckets (sandbox-specific and already fixed, an install-checklist gap this
+same trial caught and closed, or a soft process mismatch with an easy local workaround) -
+none of it is a reason to abandon the kit itself. Detail below.
+
+### What worked, with evidence (not just "seems fine")
+
+- **The guardrails are real, not paper policy.** Directly tested (not assumed) that the
+  `no-commit-to-branch` pre-commit hook actually blocks a commit attempted straight on
+  `agent-kit-trial` in the main checkout (`exit code 1`, "don't commit to branch" failed) -
+  this matters because partway through Phase 3 this session nearly committed directly to
+  `agent-kit-trial` out of habit before catching itself; the hook would have caught it
+  regardless, confirmed by deliberately reproducing the scenario afterward (change staged,
+  blocked, reverted, zero actual commit).
+- **The full lifecycle works end to end on a real case.** Issue #358 → worktree (`scripts/
+  worktree-add.sh`, sparse-checkout skips the ~800MB of dead `Cruncher`/`OldUpdater`
+  weight) → fix + fast-tier test → PR #359 into `agent-kit-trial` → merged only after a
+  green CI run → verified on a real local boot → issue closed → branch/worktree cleaned
+  up. Every step actually happened, nothing was skipped or simulated.
+- **SETUP.md's own "ask before touching `saves/`'s gitignore status" caution did its job.**
+  It successfully routed a real, confirmed gap (`GameServerPairFixture` save-dir isolation)
+  to a maintainer decision instead of letting an agent quietly reach for `.gitignore` as a
+  shortcut - exactly the failure mode that caution exists to prevent.
+- **Running a real pilot surfaced a real, unrelated repo fragility that nothing else
+  would have caught**: `build.ps1`'s implicit "`Tests.csproj` never depends on `Scripts`"
+  assumption, broken the moment a fast-tier test needed to reach a real `[HasSavedMembers]`
+  type. Not a kit defect - a demonstration of the pilot methodology's actual value: a
+  single genuine end-to-end case exercises assumptions that installing-and-reading never
+  would.
+- **Labels/issue taxonomy (`type`/`prio`/`area`/`status`) is lightweight and held up fine**
+  in practice for both the backfill and the pilot - no awkward cases, no missing category.
+
+### Friction found, and why none of it changes the recommendation
+
+- **Sandbox pre-commit version incompatibility** (apt-pinned 3.0.4 couldn't parse the
+  kit's `stages: [pre-push]` syntax, blocking every commit) - purely an environment gap,
+  already fixed via the Dockerfile rebuild ([[project_moriaengine_dockerfile_precommit_gap]]).
+  Worth noting for the kit's own docs/SETUP.md though: nothing in the install flow checks
+  the host's `pre-commit` version up front, so this exact failure mode will recur for the
+  next person with an old pre-commit - a version check (or minimum-version note in
+  SETUP.md) would have caught it in minutes instead of blocking an entire session.
+- **Install-checklist steps aren't self-verifying.** The labels step and the trial-log-file
+  step were both silently skipped during the original Phase 2 install - nothing in the kit
+  flagged this, it only surfaced because a later backfill pass went looking. SETUP.md's
+  steps need either an end-of-install verification pass or idempotent re-run safety with a
+  clear "did this actually happen" signal, not just "the command was invoked once."
+- **The `status:ready`-only-the-maintainer lifecycle rule assumes an async, multi-agent
+  dispatch model that doesn't fully fit how this repo is actually used** (one maintainer,
+  one agent, synchronous chat sessions). Phase 3 worked around this by jumping straight to
+  `status:doing` with an explicit documented deviation rather than waiting on a label the
+  maintainer had already approved out loud in the same conversation. Recommend treating
+  `status:ready` as a soft convention/paper-trail marker in synchronous sessions rather
+  than a hard gate the agent must stall on - it adds no safety here, since the real
+  approval already happened in the chat; it only adds value for a genuinely async
+  hand-off (maintainer approves something, walks away, a different agent session picks it
+  up later).
+- **`global.json` SDK pinning gap** - unrelated to the kit, low-risk today, already
+  tracked, not a reason to hold up this recommendation either way.
+
+### What this trial did NOT exercise, worth knowing before leaning on it too hard
+
+Only one pilot ran, and it was deliberately chosen to be small, fast-tier-provable, and
+infra-only (a reflection-level persistence bug, zero gameplay-system code touched) -
+precisely because that was the right first pilot, not because it's representative of the
+kit's full range. It did not exercise: a pilot that fails CI and needs a real fix-and-retry
+cycle, a pilot landing on the full-boot tier, or two pilots/worktrees in flight at once
+(the concurrent-`dotnet test`-port-conflict hazard already documented elsewhere in this
+repo's `CLAUDE.md` is exactly the kind of thing that would show up there). None of this
+changes the recommendation - the mechanics that matter (guardrails, worktrees, PR gating,
+issue lifecycle) are all independent of which kind of pilot runs through them - but it's
+honest to flag that confidence here is "the pipe works," not "every pipe shape has been
+run through it."
