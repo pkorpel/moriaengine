@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## Skill-gain + Mining implementation IN PROGRESS (2026-10-17) — #328/#329 shipped, #330 next
+## Skill-gain + Mining implementation IN PROGRESS (2026-10-17) — #327 (all 3 phases) done, #333 next
 
 Autonomous implementation pass through the #282→#328→#329→#330→#333→#334→#335→#336→#337
 backlog (plans fully settled earlier, see the "Skill-gain implementation PLANNED" and
@@ -72,9 +72,35 @@ concurrent-connection race) in a file #329 doesn't touch at all - confirmed as p
 sandbox flakiness (not a regression) by rerunning that file in isolation immediately
 after: 7/7 clean.
 
-**Next up: #330** (GM-tunable `.settings` category covering all of #328/#329's advance-
-rate data - 35 fields for the 11 native-curve skills + 1 each for Lockpicking/Taming).
-Then the Mining phases #333-337.
+**#330 (GM-tunable Skill Advancement settings category) - DONE, PR #345, merged,
+closed.** `SkillAdvancementSettings` (`.settings` → "Skill Advancement", 35 fields). The
+11 native-curve skills' 33 fields (3 each) are pass-through PROPERTIES, not stored
+fields - each getter/setter reads/writes the live `SkillDef.AdvRate` array directly, so
+an edit takes effect immediately with zero extra sync step and persists for free via
+`AbstractDef`'s existing `FieldValue` save mechanism. Confirmed via direct reading of
+`ViewableClassGenerator`'s own codegen (not assumed) that a plain C# property works
+identically to a field for this engine's generic settings-dialog mechanism - no
+per-skill custom `MassSettings`-style field view class needed. Lockpicking/Taming's 2
+fields are real `[SaveableData]` storage (there's no other backing store to write
+through to) - these replace the plain static fields #329 added on `SkillGainSystem`
+(removed in this PR); `Lockpicking.cs`/`TamingSkillDef.cs` now read
+`SkillAdvancementSettings.instance.lockpickingAdvRate`/`tamingAdvRate` directly.
+
+**Scope note, worth remembering for any future `.settings`-category work**: did NOT
+build a protocol test driving a real `.settings` gump round-trip (button clicks,
+text-entry submission) - confirmed via grep that no existing test in this codebase does
+this for ANY settings category, and the generic editing mechanism underneath is already
+proven in production by every other category. Verified the write-through mechanism via
+direct source reading of the generator instead of building new dialog-protocol test
+infrastructure from scratch for one category - a deliberate scope decision, not an
+oversight.
+
+**#327 (the full skill-gain-through-use design/tracking issue) - CLOSED**, all 3 phases
+shipped. Skill-gain-through-use (#140) is now fully implemented for all 13 skills.
+
+**Next up: #333** (Mining Phase A, core vein/ore-tier system) - starts the Mining
+implementation pass (#332, phases #333-337, design already settled, see the "Mining
+full implementation PLANNED" section below).
 
 
 This file is kept up to date across sessions so a fresh Claude Code session (after
