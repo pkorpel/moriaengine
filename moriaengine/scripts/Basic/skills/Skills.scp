@@ -86,7 +86,7 @@ Effect=0, 100
 ON=@Fail
 	src.message "You cannot seem to judge the creature correctly."
 
-[SCRIPTEDSKILLDEF 18]
+[FishingSkillDef 18]
 DEFNAME=Skill_Fishing
 KEY="Fishing"
 //TITLE="Fisher%s"
@@ -99,7 +99,7 @@ KEY="Fishing"
 //BONUS_DEX=90
 //BONUS_INT=0
 //BONUSSTATS=25
-ADVRATE=2.5,50.0,200.0
+ADVRATE=10.0,250.0,800.0 //#328 - real Erebor curve
 //VALUES=1,30,200
 
 ON=@Fail
@@ -290,7 +290,7 @@ StartByMacroEnabled = true
 //BONUS_DEX=10
 //BONUS_INT=0
 //BONUSSTATS=20
-ADVRATE=2.5,50.0,200.0
+ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,10,50
 
 [MiningSkillDef 45]
@@ -307,7 +307,8 @@ StartByMacroEnabled = true
 //BONUS_DEX=30
 //BONUS_INT=0
 //BONUSSTATS=20
-ADVRATE=2.5,50.0,200.0
+ADVRATE=10.0,400.0,1600.0 //#328 - Mining (user-confirmed: 10 at the 0% point, not Erebor's
+//literal 1010 - GM-tunable via #330 regardless)
 //VALUES=1,10,80
 
 [SCRIPTEDSKILLDEF 48]

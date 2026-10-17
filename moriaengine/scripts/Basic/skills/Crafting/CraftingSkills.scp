@@ -2,7 +2,7 @@
 DEFNAME=Skill_Alchemy
 KEY=Alchemy
 DELAY=3, 1 // per stroke.
-ADVRATE=10.0 //,200.0,800.0
+ADVRATE=10.0,200.0,750.0 //#328 - real Erebor curve, was a broken 1-element array
 
 //ON=@Fail
 //	src.message "You toss the failed mixture from the mortar, unable to create a //potion from it."
@@ -11,7 +11,7 @@ ADVRATE=10.0 //,200.0,800.0
 DEFNAME=Skill_Blacksmith
 KEY="Blacksmithing"
 DELAY=3, 1 //per stroke
-ADVRATE=2.5,50.0,200.0
+ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,20,100
 
 //ON=@Fail
@@ -21,7 +21,7 @@ ADVRATE=2.5,50.0,200.0
 DEFNAME=Skill_Bowcraft
 KEY="Bowcraft"
 DELAY=3, 1 //per stroke
-ADVRATE=10.0,200.0,800.0
+ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,30,200
 
 //ON=@Fail
@@ -31,7 +31,7 @@ ADVRATE=10.0,200.0,800.0
 DEFNAME=Skill_Carpentry
 KEY="Carpentry"
 DELAY=3, 1 //per stroke
-ADVRATE=2.5,50.0,200.0
+ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,20,80
 
 //ON=@Fail
@@ -42,7 +42,7 @@ DEFNAME=Skill_Cooking
 KEY="Cooking"
 //PROMPTMSG="What would you like to cook?"
 DELAY=3, 1 //per stroke
-ADVRATE=2.5,50.0,200.0
+ADVRATE=10.0,200.0,750.0 //#328 - real Erebor curve
 //VALUES=1,20,80
 
 //ON=@Fail
@@ -62,7 +62,7 @@ DELAY=3, 1 //per stroke
 //BONUS_DEX=0
 //BONUS_INT=100
 //BONUSSTATS=10
-ADVRATE=10.0,200.0,800.0
+ADVRATE=10.0,300.0,1050.0 //#328 - real Erebor curve
 //VALUES=1,30,200
 
 //ON=@Fail
@@ -81,7 +81,7 @@ DELAY=3, 1 //per stroke
 //BONUS_DEX=75
 //BONUS_INT=20
 //BONUSSTATS=25
-ADVRATE=2.5,50.0,200.0
+ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,20,80
 
 //ON=@Fail
@@ -100,7 +100,7 @@ DELAY=3, 1 //per stroke
 //BONUS_DEX=20
 //BONUS_INT=60
 //BONUSSTATS=10
-ADVRATE=2.5,50.0,200.0
+ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,10,20
 
 //ON=@Fail
