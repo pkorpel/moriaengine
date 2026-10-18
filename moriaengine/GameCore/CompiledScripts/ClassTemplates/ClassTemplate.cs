@@ -226,7 +226,11 @@ namespace SteamEngine.CompiledScripts.ClassTemplates {
 
 
 		private CodeStatement LoadFieldStatement(ClassTemplateInstanceField field) {
+			//#411 - enums must go through the generic delayed-load dispatch, not a direct
+			//ConvertTools.ParseX(valueString): Save always writes the type-preserving
+			//"(Enum:Name)value" format (#407), which a bare numeric parser can't read back.
 			if ((field.type != null) &&
+					!field.type.IsEnum &&
 					ObjectSaver.IsSimpleSaveableType(field.type)) {
 
 				return new CodeAssignStatement(
