@@ -276,6 +276,24 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#392 - the exact reported design gap: dclicking a plain axe that has NEVER
+		/// had any associatedskill=/tooltype= tag (i_axe_copper, unlike i_hatchet) must still
+		/// start Lumberjacking, derived automatically from its own WeaponType.TwoHandAxe.</summary>
+		[Fact]
+		public void EquippingAnyAxeAutomaticallyStartsLumberjacking() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountD, "PlainAxeWielder")) {
+				int markSetup = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantAndEquipPlainAxe");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markSetup, TimeSpan.FromSeconds(10)));
+				uint axeUid = ExtractUidAfter(this.fixture.GameOutputSnapshot(), markSetup, "TOOL_SETUP: uid=");
+
+				client.SendDoubleClick(axeUid); //already equipped; must still start Lumberjacking
+				string prompt = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("What do you want to chop?", prompt);
+			}
+		}
+
 		/// <summary>#390 - the exact reported bug: equipping a hatchet while already holding a
 		/// one-handed weapon must displace the old weapon, not leave both equipped at once.
 		/// Reproduces with i_axe_battle_copper (real, non-guessed layer=1/Hand1) + i_hatchet

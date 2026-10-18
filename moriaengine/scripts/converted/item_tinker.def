@@ -1457,7 +1457,7 @@ layer = 1
 TwoHanded = false
 WeaponType = WeaponType.OneHandSpike //#378 - corrected from this entry's own type=/TwoHanded data (was WeaponType.Bow, same mismatch)
 WeaponAnimType = WeaponAnimType.HeldInRightHand //#378 - corrected (was WeaponAnimType.Bow)
-associatedskill = Mining //#370/#378 - dclick/.usehand starts Mining; moved here from the duplicate entry #370 mistakenly created
+tooltype = Pickaxe //#392 - derives AssociatedSkill=Mining automatically (was associatedskill=Mining, #370/#378)
 DEFNAME = i_pickaxe
 attackVsP = 8
 attackVsM = 8
