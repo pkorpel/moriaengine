@@ -45,6 +45,11 @@ namespace SteamEngine.CompiledScripts {
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
 			Player self = skillSeqArgs.Self as Player;
 			if (self != null) {
+				//#370 - mandatory tool, same consistency decision as Mining's own pickaxe gate.
+				if (!Equippable.IsHoldingToolFor(self, SkillName.Fishing)) {
+					self.SysMessage(Loc<FishingLoc>.Get(self.Language).needFishingPole);
+					return TriggerResult.Cancel;
+				}
 				self.SysMessage(Loc<FishingLoc>.Get(self.Language).whereToFish);
 				self.Target(SingletonScript<Targ_Fish>.Instance, skillSeqArgs);
 			}
@@ -140,5 +145,6 @@ namespace SteamEngine.CompiledScripts {
 		public string fail = "You feel a tug, but your line comes up empty.";
 		public string success = "You catch a fish.";
 		public string abort = "You stop fishing.";
+		public string needFishingPole = "You must be holding a fishing pole to do that."; //#370
 	}
 }

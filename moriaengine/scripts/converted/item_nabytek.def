@@ -2123,18 +2123,20 @@ DEFNAME = i_pegbaord
 [ItemDef 0xc3a]
 DUPEITEM = i_pegbaord
 
-[ItemDef 0xdbf]
+[EquippableDef 0xdbf]
 CATEGORY = Items by Professions
 SUBSECTION = Fisherman
 DESCRIPTION = Fishing Pole
 
 TYPE = T_FISH_POLE
-//DUPELIST = 0dc0 // commented out by Converter 
+//DUPELIST = 0dc0 // commented out by Converter
 WEIGHT = 20
-RESOURCES = 5 i_cloth //some resources were fixed by converter 
-RESOURCES2 = 1 i_log, 1 i_thread //some resources were fixed by converter 
-SKILLMAKE = 35.0 carpentry, 30.0 tailoring,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 5 i_cloth //some resources were fixed by converter
+RESOURCES2 = 1 i_log, 1 i_thread //some resources were fixed by converter
+SKILLMAKE = 35.0 carpentry, 30.0 tailoring,  t_carpentry //some resources were fixed by converter
 DEFNAME = i_fishing_pole
+layer = 1 //#370 - was never equippable at all (converter dropped this); real content needs a hand layer to be usable
+associatedskill = Fishing //#370 - dclick/.usehand starts Fishing
 
 [ItemDef 0xe34]
 CATEGORY = Provisions - Alchemy & Magic
