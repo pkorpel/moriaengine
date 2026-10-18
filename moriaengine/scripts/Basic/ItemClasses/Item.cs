@@ -69,7 +69,19 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public partial class Item : AbstractItem {
 		/// <summary>Sphere-style ATTR bitflags (#215/#217), per-instance and independently
-		/// overridable from the ItemDef's own AttributesDefault once seeded (see On_Create).</summary>
+		/// overridable from the ItemDef's own AttributesDefault once seeded (see On_Create).
+		///
+		/// [NoShow] (#387): the generic reflection-based .info field list would otherwise
+		/// auto-surface this as a SECOND, independently-editable raw text field alongside the
+		/// dedicated "Attributes" button (which opens D_AttrList) - its generated SetValue does
+		/// a direct property assignment, bypassing SetAttribute/ItemDecaySystem.ScheduleOrCancel
+		/// entirely. Since the outer .info gump stays open underneath while D_AttrList is used,
+		/// its own Attributes text field keeps showing the STALE pre-edit value - submitting the
+		/// outer dialog afterward silently reverted a GM's just-made D_AttrList change (e.g.
+		/// re-setting attr_decay right after unchecking it to preserve a corpse) with no
+		/// matching timer re-evaluation. D_AttrList is the one intended edit path for this
+		/// bitmask (per #215's own design history); NoShow keeps it that way.</summary>
+		[NoShow]
 		public ItemAttributes Attributes {
 			get {
 				return this.attributes;
