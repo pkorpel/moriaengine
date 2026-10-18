@@ -34,6 +34,13 @@ namespace SteamEngine {
 
 		internal static bool commandRunning;
 
+		//#406 - cleared on the very first bare-symbol resolution reached after commandRunning
+		//goes true, i.e. the literal command word the player typed. Everything resolved after
+		//that (nested property reads, helper calls, a dialog/triggergroup's own compiled body
+		//triggered as a side effect, etc) is internal plumbing, not a command invocation, and
+		//must not be gated by CommandsAuthorization.cs's allowlist.
+		internal static bool topLevelCommandPending;
+
 		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 		public static void PlayerCommand(GameState state, string command) {
 			string lower = command.ToLowerInvariant();
@@ -151,7 +158,10 @@ namespace SteamEngine {
 		}
 
 		public static void AuthorizeCommandThrow(ISrc commandSrc, string name) {
-			if (commandRunning) {
+			if (commandRunning && topLevelCommandPending) {
+				//#406 - only the literal command word gets gated; clear BEFORE the check so a
+				//later, nested resolution is exempt even if this one throws.
+				topLevelCommandPending = false;
 				ScriptArgs sa = new ScriptArgs(commandSrc, name);
 				if (TriggerResult.Cancel == Globals.Instance.TryCancellableTrigger(TriggerKey.command, sa)) {
 					throw new SEException(commandAuthorisationFailed);
@@ -172,6 +182,7 @@ namespace SteamEngine {
 			Globals.SetSrc(commandSrc);
 			try {
 				commandRunning = true;
+				topLevelCommandPending = true;
 				if ((commandSrc.MaxPlevel < Globals.PlevelForLscriptCommands)
 						|| SimpleCommandParser.IsAlwaysRawArgCommand(code)) {
 					string errText;
@@ -209,6 +220,7 @@ namespace SteamEngine {
 				}
 			} finally {
 				commandRunning = false;
+				topLevelCommandPending = false;
 			}
 
 			////performance test
