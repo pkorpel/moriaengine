@@ -1,5 +1,60 @@
 # moriaengine — working state
 
+## #404/#407 explevel-permission + enum-persistence — BOTH SHIPPED — 2026-10-18
+
+**#404 (PR #405, merged).** `.explevel` threw "No permission to run that command"
+for ordinary (plevel 1) players. Root cause: `OpNode_Lazy_Expression.Run` calls
+`Commands.AuthorizeCommandThrow` for EVERY bare-symbol resolution during LScript
+execution (dialog defs included), not just top-level command dispatch — so each
+bareword inside the `.explevel` gump's dialog/text (`Dialog`, `d_explevel`,
+`AddString`, `Name`, stat/combat-stat tokens, etc.) independently needed a
+plevel-0 allowlist entry in `CommandsAuthorization.cs`. Added 17 entries at
+`PLEVEL_PLAYER`. Fixed for the reported scenario (fresh, unleveled character).
+A deeper layer of the same bareword-gate problem surfaces for leveled/professioned
+characters — filed separately as **#406** (open, needs an architectural fix to the
+gate itself, not another allowlist entry — deliberately not chased further this
+session).
+
+**#407 (PR #408, merged).** Race/Nation/Realm all showed "None" after a real
+save/reload, even though the save file had real data. Root cause (same bug class
+as the earlier #168 double/int issue): `ObjectSaver.Save` serialized any enum as a
+bare, type-erased number; on load, `ConvertTools.TryParseAnyNumber` always
+re-typed it as a plain `int`, so every `tag is SomeEnum` getter silently fell
+back to its default. Fixed generically (not per-property, per explicit user
+request since this could recur for any future enum-typed tag): `Save` now embeds
+the enum's own type name as `(Enum:TypeName)rawValue`; `Load` resolves the type
+name across `ClassManager`/loaded assemblies (same pattern as
+`GenericListSaver.ParseType`) and reconstructs the exact original enum via
+`Enum.ToObject`. Verified via a real end-to-end save/reload test
+(`EnumTagPersistenceTests.cs`) plus a pure-logic round-trip test
+(`ObjectSaverEnumTests.cs`) and full regression (`RaceTests`/`NotorietyTests`/
+`ProfessionTests`).
+
+**Both merged after local-only verification, not CI.** The repo's GitHub
+Actions minutes were exhausted for this billing period, so PR checks failed
+instantly with no runner allocated (`runner_id: 0`), unrelated to the code.
+The user explicitly confirmed the minutes-exhaustion cause and explicitly asked
+to verify locally and merge rather than wait on CI. Confirmed locally (fast
+tier + real protocol-level tests) and merged with `gh pr merge --admin` for
+these two PRs specifically. This was a one-off call for this situation, made
+with the user in the loop — it is not a general policy to bypass CI; if the
+same "no runner allocated" symptom recurs, confirm with the user again before
+merging without green CI.
+
+**Next (explicitly requested by the user, not yet started):** rework
+Race+Nation into one combined Plugin and Realm into a separate Plugin (mirror
+`ProfessionPlugin`'s install/read/delete-via-PluginKey pattern, but the simpler
+single-registered-instance shape from `RegenerationPlugin`/`SingletonScript<T>`
+since there's no per-race/per-nation `.def` content file like Profession has).
+User's exact design call: Race+Nation combined (one plugin), Realm separate
+(because Realm may need to change independently later — e.g. a renegade
+mechanic). Must preserve existing public property signatures on `Player`/
+`Character` (Realm is used on plain NPCs too, e.g. `guard.Realm = Realm.Gondor`
+in Notoriety-related tests) so existing call sites keep working unchanged.
+Current Race/Nation/Realm/Home have zero `.ct`-template involvement (plain
+tag-backed C# properties in `Player.cs`/`Character.cs`) — this will be a
+from-scratch Plugin addition, not a migration of existing templated fields.
+
 ## #399/#400 logging improvements — BOTH SHIPPED — 2026-10-18
 
 User asked for two things after a local freeze/crash with no useful log output: (1)
