@@ -1,9 +1,10 @@
 # Item decay
 
 Tracking issues: #219 (original build, part of #215), #236 (redesign to per-item
-timers). The system described below is the **current** (#236) design - the original
-global periodic sweep it replaced is mentioned only for context, it no longer exists in
-the codebase.
+timers), #371 (flipped the non-corpse default from off to on). The system described
+below is the **current** (#236 + #371) design - the original global periodic sweep and
+the original decay-off-by-default policy are mentioned only for context, neither exists
+in the codebase anymore.
 
 ## Why a per-item timer, not a periodic sweep
 
@@ -57,7 +58,7 @@ what."
 
 ## Eligibility
 
-`GetDecayMinutesIfEligible` (`ItemDecaySystem.cs:79-101`):
+`GetDecayMinutesIfEligible` (`ItemDecaySystem.cs:79-107`):
 
 ```csharp
 private static double? GetDecayMinutesIfEligible(Item item) {
@@ -73,11 +74,11 @@ private static double? GetDecayMinutesIfEligible(Item item) {
             ? DecaySettings.instance.playerCorpseDecayMinutes
             : DecaySettings.instance.npcCorpseDecayMinutes;
     }
-    if (!item.HasAttribute(ItemAttributes.attr_decay)) {
-        return null;
-    }
     if (item.HasAttribute(ItemAttributes.attr_questitem)) {
         return null; //exempt, no clock at all
+    }
+    if (item.HasAttribute(ItemAttributes.attr_lockeddown) || item.HasAttribute(ItemAttributes.attr_secure)) {
+        return null; //player-secured house items are never trash
     }
     return DecaySettings.instance.itemDecayMinutes;
 }
@@ -85,9 +86,16 @@ private static double? GetDecayMinutesIfEligible(Item item) {
 
 Corpses decay **unconditionally** once on the ground - no flag gates corpse decay at
 all, matching real UO (nothing has to opt a corpse into decaying). Non-corpse items
-default to `attr_decay` **off** unless a `.def` line or a GM/script explicitly sets it -
-matches this engine's existing "incomplete config defaults permissive" convention.
-`attr_questitem` fully exempts a non-corpse item (quest items don't decay).
+loose on the ground decay **by default** (#371, flipped from the original #219 policy)
+- this matches real Sphere, where the global `DECAYTIMER` ini setting decays virtually
+everything loose by default and `attr_decay` is only ever used by real content as a
+forcing/override flag on specific authored items, never as a default-off master gate.
+`attr_decay` itself no longer gates anything here - setting it explicitly (old content,
+a GM, a script) is harmless and changes nothing, since decay already applies without it.
+Exempt from the new default: `attr_questitem` (quest items never decay), and
+`attr_lockeddown`/`attr_secure` (added in #371 - a player's intentionally-secured house
+items must not start vanishing just because they're sitting on the floor rather than in
+a container).
 
 `IsInNoDecayRegion` (`ItemDecaySystem.cs:103-106`) checks the item's current
 `FlaggedRegion.Flag_NoDecay` - see [Regions](../02-engine-core/regions.md). This is
@@ -101,10 +109,12 @@ retroactively.
   "item placed on/removed from the ground" events, confirmed via direct reading of
   `ThingDef.Create`/`AbstractItem.Cont`/`MakeLimbo` to fire for every ground-landing
   path: creation directly onto the ground, drops, pickup, monster-death loot.
-- **`SetAttribute`** (`Item.cs:107-109`) - re-evaluates when `attr_decay` or
-  `attr_questitem` toggle. Real gap found and fixed during #236: the original code only
-  hooked `attr_decay`, so toggling `attr_questitem` alone (after `attr_decay` was
-  already set) wouldn't cancel the running timer.
+- **`SetAttribute`** (`Item.cs:101-116`) - re-evaluates when `attr_decay`,
+  `attr_questitem`, `attr_lockeddown`, or `attr_secure` toggle (the last two added in
+  #371, so `.LockDown`/`.Secure`/`D_AttrList` immediately pause/resume decay rather than
+  waiting for the item to next leave/re-enter the ground). Real gap found and fixed
+  during #236: the original code only hooked `attr_decay`, so toggling `attr_questitem`
+  alone (after `attr_decay` was already set) wouldn't cancel the running timer.
 - **`Item.On_Create`** (`Item.cs:263-276`) - needs its own re-evaluate call because
   `On_EnterRegion` fires **before** `On_Create` during `ThingDef.Create`'s own call
   order. The first attempt (from `On_EnterRegion`) always sees unseeded/zero attributes;
