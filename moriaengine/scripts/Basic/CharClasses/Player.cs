@@ -311,39 +311,35 @@ namespace SteamEngine.CompiledScripts {
 		#endregion Profession
 
 		#region Race
-		private static readonly TagKey raceTK = TagKey.Acquire("_race_");
-
-		/// <summary>Which of the 6 playable races (#161/#162) this character chose - tag-backed,
-		/// same storage pattern as Character.Realm. Defaults to Race.None (not yet chosen, e.g.
-		/// a freshly-created character that hasn't used the race-selection stone yet).</summary>
+		/// <summary>Which of the 6 playable races (#161/#162) this character chose - backed by
+		/// RaceNationPlugin (#410, reworked from a tag to fix the #407 enum-persistence bug
+		/// class generically for this property, and per the user's explicit request to move
+		/// Race/Nation to the Plugin architecture Profession already uses). Defaults to
+		/// Race.None (not yet chosen, e.g. a freshly-created character that hasn't used the
+		/// race-selection stone yet, or the plugin was never installed at all).</summary>
 		public Race Race {
 			get {
-				object tag = this.GetTag(raceTK);
-				if (tag is Race race) {
-					return race;
-				}
-				return Race.None;
+				RaceNationPlugin plugin = RaceNationPlugin.GetInstalledPlugin(this);
+				return (plugin != null) ? plugin.Race : Race.None;
 			}
 			set {
-				this.SetTag(raceTK, value);
+				RaceNationPlugin.GetOrInstallPlugin(this).Race = value;
 			}
 		}
 
-		private static readonly TagKey nationTK = TagKey.Acquire("_nation_");
-
-		/// <summary>Which nation within the chosen race (#161/#162) - setting this also derives
-		/// and sets Realm (Character.Realm) and Home from NationData, since every nation
-		/// implies exactly one of each. Defaults to Nation.None.</summary>
+		/// <summary>Which nation within the chosen race (#161/#162) - backed by
+		/// RaceNationPlugin (#410, same reasoning as Race above). Setting this also derives
+		/// and sets Realm (Character.Realm, its own separate RealmPlugin - per the user's
+		/// explicit design call, Realm may need to change independently later, e.g. a
+		/// renegade mechanic) and Home from NationData, since every nation implies exactly
+		/// one of each. Defaults to Nation.None.</summary>
 		public Nation Nation {
 			get {
-				object tag = this.GetTag(nationTK);
-				if (tag is Nation nation) {
-					return nation;
-				}
-				return Nation.None;
+				RaceNationPlugin plugin = RaceNationPlugin.GetInstalledPlugin(this);
+				return (plugin != null) ? plugin.Nation : Nation.None;
 			}
 			set {
-				this.SetTag(nationTK, value);
+				RaceNationPlugin.GetOrInstallPlugin(this).Nation = value;
 				if (value != Nation.None) {
 					this.Realm = NationData.GetRealm(value);
 					this.Home = NationData.GetHome(value);
