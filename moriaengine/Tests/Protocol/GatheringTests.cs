@@ -16,6 +16,7 @@ namespace SteamEngine.Tests.Protocol {
 		private const string Account = "protocoltest";
 		private const string AccountB = "protocoltest2"; //#370 - protocoltest itself is already at its safe headroom (3 pre-existing Facts)
 		private const string AccountC = "protocoltest3";
+		private const string AccountD = "protocoltest4";
 		private const string Password = "protocoltest";
 
 		private static bool autoAccountCreationEnabled;
@@ -241,6 +242,37 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSkillUse(18); // Fishing
 				string prompt = ReadSystemMessageSkippingWelcome(client);
 				Assert.Equal("Where do you want to fish?", prompt);
+			}
+		}
+
+		/// <summary>#391 - the exact reported bug: targeting an invalid spot for Lumberjacking
+		/// shows the "no wood here" message but must then STOP, not keep the target cursor
+		/// active waiting for another attempt. Proven by counting real TargetCursorCommandsOutPacket
+		/// (0x6c) packets - the skill-select itself sends exactly one to arm the cursor; before
+		/// the #391 fix, an invalid target's own TargetResult.RestartTargetting re-armed a SECOND
+		/// one (via AbstractTargetDef.On_Start -> GameState.Target -> SendTargettingCursor). A
+		/// ground point is always invalid for Lumberjacking (valid targets are static foliage
+		/// items only, never a bare ground point), so no terrain lookup is needed here.</summary>
+		[Fact]
+		public void InvalidLumberjackingTargetStopsCursorInsteadOfLooping() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountD, "LumberjackMisses")) {
+				int markSetup = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantAndEquipHatchet");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markSetup, TimeSpan.FromSeconds(10)));
+
+				var (x, y, z) = client.ReadSpawnPosition(TimeSpan.FromSeconds(10));
+
+				client.SendSkillUse(44); // Lumberjacking
+				string prompt = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("What do you want to chop?", prompt);
+				client.ReadPacketPayload(0x6c, TimeSpan.FromSeconds(10)); // the real, first cursor arm
+
+				client.SendTargetGround(x, y, z); // always invalid for Lumberjacking
+				string invalidTargetMessage = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("There is no wood to be gathered there.", invalidTargetMessage);
+
+				Assert.Throws<TimeoutException>(() => client.ReadPacketPayload(0x6c, TimeSpan.FromSeconds(2)));
 			}
 		}
 
