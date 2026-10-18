@@ -1,5 +1,62 @@
 # moriaengine — working state
 
+## #157 (WeaponType data quality) in progress, #378 (duplicate i_pickaxe regression) shipped — 2026-10-18
+
+Picked up #157 via `/task-pick` (branch `157-fix-weapon-type-data`, worktree `/workspace/moria-157`):
+fixed `WeaponSkillTargetQueuePlugin.GetSkillNameByWeaponType`'s switch (Sword+Axe families
+both map to `SkillName.Swords`, was wrongly routing axes to Fencing) and corrected 131
+`WeaponType=` lines across `scripts/converted/zbrane/*.def` that were blanket
+`//guessed by Converter` noise (mostly defaulted to `OneHandSpike`) — derived the real value
+from each entry's own `type=`/`TwoHanded=` fields instead (axe-vs-sword decided by an
+`AXE_WORDS` keyword match against the description). New fast-tier suite
+`Tests/WeaponSkillMappingTests.cs` (20 tests) verifies both the switch logic and a sample of
+real converted content read directly from the `.def` files (fast tier has no loaded content,
+so `ThingDef.GetByDefname` isn't available there).
+
+**While verifying #157's regression suite, found a real pre-existing #370 regression (not a
+#157 bug) and fixed it separately, per the repo's own "stay inside the issue's scope"
+convention**: #370 (the dclick/equip-and-use framework) had incorrectly assumed `i_pickaxe`
+never existed and added a brand-new duplicate entry in `scripts/converted/zbrane/others.def`
+at hex id `0x0e85` — a REAL `i_pickaxe` already existed at that exact same hex id in
+`scripts/converted/item_tinker.def`, just mislabeled as a bow (`TYPE = t_weapon_bow_run`,
+`WeaponType.Bow`, bow-only `ProjectileType`/`ProjectileAnim` fields) due to a converter
+template mismatch (`SUBSECTION = Axes` — a melee tool, not a bow). This caused a genuine boot
+ERROR (`pickaxe: i_0xe85//i_pickaxe (3717) defined multiple times`) that was destabilizing
+`CombatDepthTests` under this sandbox's load — the failure rate (71%, 5/8) was unusually high
+even for the documented #100 flake class, which is what prompted digging into the actual boot
+log instead of trusting the flake-dismissal reflex. **Shipped as #378, PR #379, merged** — same
+branch+worktree→PR→merge workflow, its own issue filed first. Fix: deleted the duplicate block
+from `others.def`; corrected the real entry's category (`t_weapon_fence`/
+`WeaponType.OneHandSpike`/`WeaponAnimType.HeldInRightHand`, matching real Erebor's "OSI insists
+skill is Fencing with this axe"), removed the bow-only fields, and moved `associatedskill =
+Mining` (#370's own feature) onto the corrected real entry.
+
+**Worktree setup gotcha, worth remembering for any future `/task-pick` worktree**: a freshly
+created worktree has NONE of the `*.Generated.cs` files (not just the top-level `Generated/`
+folder — ~60 more are scattered under `scripts/**/*.Generated.cs`, one per `[Compiled...]`
+partial class) and no `steamengine.ini`/`steamaux.ini` — building fails with ~130 confusing
+`CS0311`/`CS0115` errors that look like a real type-hierarchy problem but are just stale/missing
+generated code. Fix: `tar` all `*.Generated.cs` files out of the main checkout and extract into
+the new worktree, copy both `.ini` files from the main checkout root. **Also recorded a fresh
+instance of the known "wrong directory" trap**: ran the `tar -c`+`tar -x` round-trip from inside
+the main checkout itself the first time (no-op, extracted over files already there) instead of
+`cd`-ing into the target worktree first — always `pwd` before a `tar -x`/`dotnet build` into a
+worktree, don't trust that an earlier `cd` in the same turn's command chain stuck.
+
+**Confirmed via this exact scenario that #100's sandbox-flake class is real and separate from
+#378's fix**: after fixing #378, `CombatDepthTests` as a filtered batch still showed the same
+"Game server never appeared"/crash-mid-run signature (a `TcpConnection` `NullReferenceException`
++ unexpected "Shutdown" appears in the embedded boot log right before the cascade) — but a
+single isolated test from that same batch passed clean on a bare retry, and the direct GameCore
+boot log confirmed zero `i_pickaxe`-related errors. Don't let a still-flaky `CombatDepthTests`
+batch block shipping a fix whose own specific symptom (the duplicate-definition boot ERROR) is
+verifiably gone — isolate and retry the specific failing test before concluding a fix didn't
+work.
+
+**Next**: re-run #157's full regression (`CombatDepthTests|CombatScenarioTests|
+ProfessionTests|GatheringTests`) now that #378's boot-time instability is gone, for a clean
+signal, then ship #157 via the same branch→PR→merge→close workflow.
+
 ## Skill-gain + Mining implementation COMPLETE (2026-10-17) — #282→#337 backlog all shipped
 
 Autonomous implementation pass through the #282→#328→#329→#330→#333→#334→#335→#336→#337
