@@ -14,7 +14,11 @@ namespace SteamEngine.Tests.Protocol {
 	[Collection(GatheringCollection.Name)]
 	public class GatheringTests {
 		private const string Account = "protocoltest";
+		private const string AccountB = "protocoltest2"; //#370 - protocoltest itself is already at its safe headroom (3 pre-existing Facts)
+		private const string AccountC = "protocoltest3";
 		private const string Password = "protocoltest";
+
+		private static bool autoAccountCreationEnabled;
 
 		private readonly GameServerPairFixture fixture;
 
@@ -56,6 +60,11 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestSetGmOn");
 				Assert.True(this.fixture.WaitForGameOutput("GM_MODE_TEST: SET to GM (IsGM=True)", TimeSpan.FromSeconds(10)));
 
+				// #370 - Mining now requires a pickaxe equipped; without this the skill-select
+				// below would be denied before ever reaching the real vein-mining logic.
+				client.SendSpeech(".TestGrantAndEquipPickaxe");
+				Assert.True(this.fixture.WaitForGameOutput("TOOL_SETUP:", TimeSpan.FromSeconds(10)));
+
 				// #336 - Mining's real anti-macro delay is a 20-second base, far longer than
 				// this test's own short wait below; speed it up for this fixture.
 				client.SendSpeech(".TestSpeedUpGatheringDelayForTest");
@@ -84,6 +93,11 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestSetGmOn");
 				Assert.True(this.fixture.WaitForGameOutput("GM_MODE_TEST: SET to GM (IsGM=True)", TimeSpan.FromSeconds(10)));
 
+				// #370 - Lumberjacking now requires a hatchet equipped, same consistency
+				// decision as Mining's own pickaxe gate.
+				client.SendSpeech(".TestGrantAndEquipHatchet");
+				Assert.True(this.fixture.WaitForGameOutput("TOOL_SETUP:", TimeSpan.FromSeconds(10)));
+
 				int markFind = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestGoToNearbyFoliage");
 				Assert.True(this.fixture.WaitForGameOutputSince("FOLIAGE_FOUND:", markFind, TimeSpan.FromSeconds(10)));
@@ -103,6 +117,133 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#370 - mandatory-tool gate: selecting Mining with nothing equipped is denied
+		/// with a real system message, before the real vein-targeting flow ever starts.</summary>
+		[Fact]
+		public void MiningDeniedWithoutPickaxeEquipped() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "MinerNoTool")) {
+				client.SendSkillUse(45); // Mining
+				string message = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("You must be holding a pickaxe to do that.", message);
+			}
+		}
+
+		/// <summary>#370 - the real gap this issue was filed over: dclicking a pickaxe sitting in
+		/// the backpack (not yet equipped) must equip it AND immediately start Mining's own
+		/// target-cursor flow in one step, not just equip and stop. Proven end-to-end (not just
+		/// "a system message appeared") by actually completing the mine and checking for real
+		/// ore afterward, reusing MiningYieldsOre's own verification shape.</summary>
+		[Fact]
+		public void DclickPickaxeInBackpackEquipsAndStartsMining() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "MinerDclickPack")) {
+				//#370 - AccountB is never the server's first-ever account, so .TestSetGmOn's own
+				//"PLevel = MaxPLevel" is a no-op here (MaxPLevel only auto-elevates for account
+				//#1) - .TestPromoteToGM's reflection-based maxPlevel override is the
+				//account-order-independent fix, same precedent as AttrFlagTests.cs/this
+				//session's own earlier findings.
+				client.SendSpeech(".TestPromoteToGM");
+				Assert.True(this.fixture.WaitForGameOutput("PROMOTE_TO_GM:", TimeSpan.FromSeconds(10)));
+				client.SendSpeech(".TestSpeedUpGatheringDelayForTest");
+				Assert.True(this.fixture.WaitForGameOutput("GATHERING_DELAY_SPED_UP:", TimeSpan.FromSeconds(10)));
+
+				int markSetup = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantPickaxeToBackpack");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markSetup, TimeSpan.FromSeconds(10)));
+				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "TOOL_SETUP:");
+				uint pickaxeUid = ExtractUidAfter(this.fixture.GameOutputSnapshot(), markSetup, "TOOL_SETUP: uid=");
+				uint backpackUid = ParseLabelledUInt(setupLine, "backpack=");
+
+				var (x, y, z) = client.ReadSpawnPosition(TimeSpan.FromSeconds(10));
+
+				//real client behavior: a container must be "open" before anything inside it can
+				//be targeted/dclicked (OpenedContainers.HasContainerOpenFromAt) - a real client
+				//auto-opens its own backpack on login, this minimal test client has to do it
+				//explicitly (same precedent as EconomyTestsB.VendorSellGrantsGoldForItem).
+				client.SendDoubleClick(backpackUid);
+				Thread.Sleep(300);
+
+				client.SendDoubleClick(pickaxeUid); //#370 - equip + start Mining in one dclick
+				string prompt = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("Where do you want to mine?", prompt);
+
+				int markEquip = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckEquipped " + pickaxeUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_EQUIP_CHECK:", markEquip, TimeSpan.FromSeconds(10)));
+				Assert.Contains("equipped=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "TOOL_EQUIP_CHECK:"));
+
+				client.SendTargetGround(x, y, z);
+				Thread.Sleep(1500);
+
+				int markCheck = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckHasOre");
+				Assert.True(this.fixture.WaitForGameOutputSince("BACKPACK_CHECK:", markCheck, TimeSpan.FromSeconds(10)));
+				Assert.Contains("count=1", LastLineContaining(this.fixture.GameOutputSnapshot(), "BACKPACK_CHECK:"));
+			}
+		}
+
+		/// <summary>#370 - the other real gap: dclicking a pickaxe that's ALREADY equipped must
+		/// still start Mining - previously Equippable.On_DClick was a silent no-op once equipped,
+		/// exactly the symptom originally reported (".usehand"/dclick on an in-hand tool does
+		/// nothing).</summary>
+		[Fact]
+		public void DclickPickaxeWhileEquippedStartsMining() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "MinerDclickWorn")) {
+				//#370 - no GM/success-roll needed here at all; this only proves the dclick
+				//itself reaches the skill-select prompt, it never completes a mine attempt.
+				int markSetup = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantAndEquipPickaxe");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markSetup, TimeSpan.FromSeconds(10)));
+				uint pickaxeUid = ExtractUidAfter(this.fixture.GameOutputSnapshot(), markSetup, "TOOL_SETUP: uid=");
+
+				client.SendDoubleClick(pickaxeUid); //#370 - already equipped; must still start Mining
+				string prompt = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("Where do you want to mine?", prompt);
+			}
+		}
+
+		/// <summary>#370 - same mandatory-tool gate as Mining, applied to Lumberjacking for
+		/// consistency.</summary>
+		[Fact]
+		public void LumberjackingDeniedWithoutHatchetEquipped() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "LumberjackNoTool")) {
+				client.SendSkillUse(44); // Lumberjacking
+				string message = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("You must be holding a hatchet to do that.", message);
+			}
+		}
+
+		/// <summary>#370 - same mandatory-tool gate as Mining, applied to Fishing for
+		/// consistency. Lighter than Mining/Lumberjacking's own tests - no existing "yields a
+		/// real fish" end-to-end scenario to extend (Fishing has none), so this only proves the
+		/// gate itself denies/allows correctly, not a full catch.</summary>
+		[Fact]
+		public void FishingDeniedWithoutFishingPoleEquipped() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "FisherNoTool")) {
+				client.SendSkillUse(18); // Fishing
+				string message = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("You must be holding a fishing pole to do that.", message);
+			}
+		}
+
+		[Fact]
+		public void FishingAllowedWithFishingPoleEquipped() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "FisherWithTool")) {
+				int markSetup = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantAndEquipFishingPole");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markSetup, TimeSpan.FromSeconds(10)));
+
+				client.SendSkillUse(18); // Fishing
+				string prompt = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("Where do you want to fish?", prompt);
+			}
+		}
+
 		private static uint ExtractUidAfter(string output, int since, string marker) {
 			int idx = output.IndexOf(marker, since, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' after position " + since + " in:\n" + output);
@@ -116,6 +257,25 @@ namespace SteamEngine.Tests.Protocol {
 			int z = ParseLabelledInt(line, "z=");
 			int model = ParseLabelledInt(line, "model=");
 			return (x, y, z, model);
+		}
+
+		private static uint ParseLabelledUInt(string line, string label) {
+			return (uint) ParseLabelledInt(line, label);
+		}
+
+		/// <summary>#370 - same race as ProfessionTests.cs's identical helper: the
+		/// DelayedResyncTimer's "Welcome to {shard}." broadcast can land ahead of this test's own
+		/// expected message depending on exactly when its timer fires relative to this test's own
+		/// commands - skip any such unrelated message rather than asserting on whichever one
+		/// happens to arrive first.</summary>
+		private static string ReadSystemMessageSkippingWelcome(TestGameClient client) {
+			for (int attempt = 0; attempt < 3; attempt++) {
+				string message = client.ReadSystemMessage(TimeSpan.FromSeconds(10));
+				if (!message.StartsWith("Welcome to", StringComparison.Ordinal)) {
+					return message;
+				}
+			}
+			throw new TimeoutException("Only ever saw welcome-shard messages, never the expected message.");
 		}
 
 		private static int ParseLabelledInt(string line, string label) {
@@ -153,12 +313,22 @@ namespace SteamEngine.Tests.Protocol {
 		/// <summary>See CombatDepthTestBase's identical helper for why this retries - the same
 		/// account-reuse/connection race applies here.</summary>
 		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+			return this.ConnectLoginAndCreateCharacter(Account, charName);
+		}
+
+		/// <summary>#370 - account-parameterized overload. The original 3 Facts in this file
+		/// (TamingSetsControlMaster/MiningYieldsOre/LumberjackingYieldsWood) already used all 3
+		/// of the shared "protocoltest" account's safe headroom under the 5-character-slot cap;
+		/// #370's 6 new Facts need to spread across AccountB/AccountC instead of pushing
+		/// "protocoltest" over the cap (the exact already-documented class of flakiness - see
+		/// EnsureAutoAccountCreationEnabled below for the account that needs it first).</summary>
+		private TestGameClient ConnectLoginAndCreateCharacter(string account, string charName) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(Account, Password);
+					game.SendLogin(account, Password);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					return game;
@@ -171,12 +341,33 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
 		}
 
+		/// <summary>#370 - AccountB/AccountC are never the server's literal first-ever account,
+		/// so they need auto-account-creation explicitly enabled first (same precedent as
+		/// AttrFlagTests.cs's identical helper) - guarded by a static bool so this only actually
+		/// runs once per test process, not once per Fact (creating "AutoAccountEnabler" itself
+		/// consumes one of protocoltest's own slots every call, not just the first).</summary>
+		private void EnsureAutoAccountCreationEnabled() {
+			if (autoAccountCreationEnabled) {
+				return;
+			}
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "AutoAccountEnabler")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST:", mark, TimeSpan.FromSeconds(10)));
+			}
+			autoAccountCreationEnabled = true;
+		}
+
 		private int WaitForServerListingAndGetRedirectPort() {
+			return this.WaitForServerListingAndGetRedirectPort(Account);
+		}
+
+		private int WaitForServerListingAndGetRedirectPort(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(Account, Password);
+						login.SendLogin(account, Password);
 
 						int serverCount = login.ReadServersList();
 						if (serverCount < 1) {

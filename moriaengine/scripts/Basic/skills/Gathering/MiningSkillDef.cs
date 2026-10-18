@@ -44,6 +44,14 @@ namespace SteamEngine.CompiledScripts {
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
 			Player self = skillSeqArgs.Self as Player;
 			if (self != null) {
+				//#370 - mandatory tool, user-confirmed design (real Erebor source has no such
+				//gate - miningfix.scp never checks for a held pickaxe at all - this is a
+				//deliberate moriaengine-only decision, applied consistently to Lumberjacking/
+				//Fishing's own tools too).
+				if (!Equippable.IsHoldingToolFor(self, SkillName.Mining)) {
+					self.SysMessage(Loc<MiningLoc>.Get(self.Language).needPickaxe);
+					return TriggerResult.Cancel;
+				}
 				self.SysMessage(Loc<MiningLoc>.Get(self.Language).whereToMine);
 				self.Target(SingletonScript<Targ_Mine>.Instance, skillSeqArgs);
 			}
@@ -170,5 +178,6 @@ namespace SteamEngine.CompiledScripts {
 		public string veinExhausted = "This vein seems to be exhausted."; //#333
 		public string caveInCleared = "You clear away the rubble blocking the vein."; //#334
 		public string caveInNotCleared = "You fail to clear the rubble blocking the vein."; //#334
+		public string needPickaxe = "You must be holding a pickaxe to do that."; //#370
 	}
 }

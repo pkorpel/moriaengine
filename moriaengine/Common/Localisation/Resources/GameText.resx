@@ -355,6 +355,9 @@
   <data name="FishingLoc_abort" xml:space="preserve">
     <value>You stop fishing.</value>
   </data>
+  <data name="FishingLoc_needFishingPole" xml:space="preserve">
+    <value>You must be holding a fishing pole to do that.</value>
+  </data>
   <data name="LockpickLoc_abort" xml:space="preserve">
     <value>Odemyk�n� p�eru�eno.</value>
   </data>
@@ -391,6 +394,9 @@
   <data name="LumberjackingLoc_whatToChop" xml:space="preserve">
     <value>What do you want to chop?</value>
   </data>
+  <data name="LumberjackingLoc_needHatchet" xml:space="preserve">
+    <value>You must be holding a hatchet to do that.</value>
+  </data>
   <data name="MagicReflectionLoc_NextEvilSpellReflects" xml:space="preserve">
     <value>P��t� nep��telsk� kouzlo se od tebe odraz�</value>
   </data>
@@ -426,6 +432,9 @@
   </data>
   <data name="MiningLoc_caveInNotCleared" xml:space="preserve">
     <value>You fail to clear the rubble blocking the vein.</value>
+  </data>
+  <data name="MiningLoc_needPickaxe" xml:space="preserve">
+    <value>You must be holding a pickaxe to do that.</value>
   </data>
   <data name="PacketSequencesLoc_WelcomeToShard" xml:space="preserve">
     <value>Welcome to {0}.</value>
