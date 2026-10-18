@@ -26,6 +26,15 @@ namespace SteamEngine.AuxiliaryServer {
 			//name the console window for better recognizability
 			Console.Title = "SE Auxiliary Server - " + Assembly.GetExecutingAssembly().Location;
 
+			//backstop for any exception that escapes a background thread's own try/catch -
+			//without this, such an exception crashes the process with nothing written to
+			//the structured log file, only a raw runtime dump to stderr.
+			AppDomain.CurrentDomain.UnhandledException += (sender, e) => {
+				Common.Logger.WriteFatal("Unhandled exception on thread '" + Thread.CurrentThread.Name +
+					"' (IsTerminating=" + e.IsTerminating + ")",
+					e.ExceptionObject as Exception ?? new Exception(e.ExceptionObject?.ToString()));
+			};
+
 			Tools.ExitBinDirectory();
 
 			try {

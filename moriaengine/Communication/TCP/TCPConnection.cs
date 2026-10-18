@@ -80,8 +80,16 @@ namespace SteamEngine.Communication.TCP {
 						this.BeginReceive();
 					}
 				}
-			} catch (Exception e) {
+			} catch (FatalException e) {
+				Logger.WriteFatal("TcpConnection.OnReceieve", e);
+				this.Close(e.Message);
+			} catch (SocketException e) {
+				//expected churn - client disconnects/resets/times out constantly, not a bug
 				Logger.WriteDebug(e);
+				this.Close(e.Message);
+			} catch (Exception e) {
+				//anything else here is unexpected - a real bug, not routine network churn
+				Logger.WriteError("TcpConnection.OnReceieve", e);
 				this.Close(e.Message);
 			}
 		}
@@ -112,7 +120,14 @@ namespace SteamEngine.Communication.TCP {
 				if (err != SocketError.Success) {
 					this.Close(err.ToString());
 				}
+			} catch (FatalException e) {
+				Logger.WriteFatal("TcpConnection.OnSend", e);
+				this.Close(e.Message);
+			} catch (SocketException e) {
+				Logger.WriteDebug(e);
+				this.Close(e.Message);
 			} catch (Exception e) {
+				Logger.WriteError("TcpConnection.OnSend", e);
 				this.Close(e.Message);
 			} finally {
 				toDispose.Dispose();

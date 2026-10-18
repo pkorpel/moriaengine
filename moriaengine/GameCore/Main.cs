@@ -98,6 +98,16 @@ namespace SteamEngine {
 			//name the console window for better recognizability
 			Console.Title = "SE Game Server - " + Assembly.GetExecutingAssembly().Location;
 
+			//backstop for any exception that escapes a background thread's own try/catch
+			//(e.g. the timer thread, a socket callback) - without this, such an exception
+			//crashes the process with nothing written to the structured log file, only a
+			//raw runtime dump to stderr.
+			AppDomain.CurrentDomain.UnhandledException += (sender, e) => {
+				Logger.WriteFatal("Unhandled exception on thread '" + Thread.CurrentThread.Name +
+					"' (IsTerminating=" + e.IsTerminating + ")",
+					e.ExceptionObject as Exception ?? new Exception(e.ExceptionObject?.ToString()));
+			};
+
 			try {
 				DynamicAssemblyResolver.Register();
 				HighPerformanceTimer.Init();
