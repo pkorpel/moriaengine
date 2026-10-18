@@ -244,6 +244,48 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#390 - the exact reported bug: equipping a hatchet while already holding a
+		/// one-handed weapon must displace the old weapon, not leave both equipped at once.
+		/// Reproduces with i_axe_battle_copper (real, non-guessed layer=1/Hand1) + i_hatchet
+		/// (corrected by #390 from layer=2 to layer=1, matching its own real TwoHanded=false) -
+		/// before the fix both ended up simultaneously equipped since they targeted different,
+		/// non-conflicting hand slots.</summary>
+		[Fact]
+		public void EquippingHatchetDisplacesMismatchedOneHandedWeapon() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "AxeSwapper")) {
+				int markAxe = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantAndEquipMismatchedAxe");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markAxe, TimeSpan.FromSeconds(10)));
+				uint axeUid = ExtractUidAfter(this.fixture.GameOutputSnapshot(), markAxe, "TOOL_SETUP: uid=");
+				uint backpackUid = ParseLabelledUInt(LastLineContaining(this.fixture.GameOutputSnapshot(), "TOOL_SETUP:"), "backpack=");
+
+				int markHatchet = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantHatchetToBackpack");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markHatchet, TimeSpan.FromSeconds(10)));
+				uint hatchetUid = ExtractUidAfter(this.fixture.GameOutputSnapshot(), markHatchet, "TOOL_SETUP: uid=");
+
+				//real client behavior: the backpack must be "open" before anything inside it can
+				//be dclicked, same precedent as DclickPickaxeInBackpackEquipsAndStartsMining.
+				client.SendDoubleClick(backpackUid);
+				Thread.Sleep(300);
+
+				client.SendDoubleClick(hatchetUid); //equip + start Lumberjacking in one dclick
+				string prompt = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("What do you want to chop?", prompt);
+
+				int markCheck = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckEquipped " + axeUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_EQUIP_CHECK:", markCheck, TimeSpan.FromSeconds(10)));
+				Assert.Contains("equipped=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "TOOL_EQUIP_CHECK:"));
+
+				int markCheck2 = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckEquipped " + hatchetUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_EQUIP_CHECK:", markCheck2, TimeSpan.FromSeconds(10)));
+				Assert.Contains("equipped=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "TOOL_EQUIP_CHECK:"));
+			}
+		}
+
 		private static uint ExtractUidAfter(string output, int since, string marker) {
 			int idx = output.IndexOf(marker, since, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' after position " + since + " in:\n" + output);
