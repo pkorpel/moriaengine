@@ -54,6 +54,47 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#404 - this file's own ExpLevelDialogOpensWithoutError above always ran on
+		/// `Account` ("protocoltest"), the server's literal first-ever account in a fresh test
+		/// boot and therefore auto-elevated to GM (AbstractAccount.HandleLoginAttempt's
+		/// accounts.Count==0 check) - the exact same blind spot already documented twice in this
+		/// file's history (#146, #254). A genuinely non-elevated (MaxPlevel=1) account was never
+		/// actually exercised against this command before this test. Root cause: explevel.scp's
+		/// own `[function explevel]` body's `Dialog(d_explevel)` line is a bare (no self./src.
+		/// receiver) call - same shape as the InvalidateCombatWeaponValues()/
+		/// InvalidateCombatArmorValues() calls #146 already had to allowlist - and neither
+		/// "d_explevel" (the dialog symbol passed as the argument) nor "Dialog" (the bare
+		/// function name itself) were ever added to CommandsAuthorization.cs, so every ordinary
+		/// player's first .explevel ever attempted was silently denied one line into the
+		/// function, even though "explevel" itself IS allowlisted at PLEVEL_PLAYER.</summary>
+		[Fact]
+		public void ExpLevelAllowedForOrdinaryNonFirstAccountPlayer() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "OrdinaryLevelChecker")) {
+				client.SendSpeech(".explevel");
+				var (gumpUid, layoutText) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				Assert.True(gumpUid != 0 || layoutText.Length > 0,
+					"Expected a real gump dialog to open for .explevel on an ordinary (non-GM) player.");
+			}
+		}
+
+		private static bool autoAccountCreationEnabled;
+
+		/// <summary>Same guarded pattern as AttrFlagTests.cs/GatheringTests.cs - flips
+		/// Globals.AutoAccountCreation on (server-wide, via the already-existing first account)
+		/// so AccountB's first-ever login can succeed.</summary>
+		private void EnsureAutoAccountCreationEnabled() {
+			if (autoAccountCreationEnabled) {
+				return;
+			}
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "AutoAccountEnablerF")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST: ENABLED", mark, TimeSpan.FromSeconds(10)));
+			}
+			autoAccountCreationEnabled = true;
+		}
+
 		/// <summary>Phase 4 (#129): the user's own stated design - a player with no profession
 		/// assigned can't spend EITHER skill or attribute points (Skill.Cap already returns 0
 		/// with no profession; attribute spending needs its own explicit check, since there's no
