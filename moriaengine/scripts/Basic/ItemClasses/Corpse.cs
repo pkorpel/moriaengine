@@ -122,6 +122,17 @@ namespace SteamEngine.CompiledScripts {
 			//this.owner was set above) and scheduled an NPC-rate timer by default - this call
 			//corrects that to the player rate when the corpse turns out to be a player's.
 			ItemDecaySystem.ScheduleOrCancel(this);
+
+			//#383 - attr_decay is set here purely for GM-mental-model consistency ("it is
+			//decaying, the flag should say so" - confirmed design choice over leaving it
+			//unset). It is COSMETIC ONLY for a corpse: ItemDecaySystem.
+			//GetDecayMinutesIfEligible branches on `corpse != null` before it ever looks at
+			//this flag, so a GM unchecking attr_decay via D_AttrList on a corpse has no
+			//actual effect - the corpse keeps decaying unconditionally regardless. Don't
+			//"fix" that by making the corpse branch respect the flag - real corpses decaying
+			//unconditionally (matching real UO) is the correct behavior, not a bug this flag
+			//should be able to override.
+			this.SetAttribute(ItemAttributes.attr_decay, true);
 		}
 
 		public void ReturnStuffToChar(Character resurrectedChar) {

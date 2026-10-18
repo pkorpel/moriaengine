@@ -347,6 +347,16 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("ATTR_THING_EXISTS: uid=" + uid + " exists=" + exists);
 		}
 
+		/// <summary>#383 - reports whether the corpse at the given uid carries attr_decay
+		/// (cosmetic-only on a corpse, see Corpse.InitFromChar's own doc comment - real corpse
+		/// decay is unconditional regardless of this flag).</summary>
+		[SteamFunction]
+		public static void TestReportCorpseHasAttrDecay(Character self, ScriptArgs sa) {
+			uint uid = Convert.ToUInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			Corpse corpse = (Corpse) Thing.UidGetThing(uid);
+			Console.WriteLine("ATTR_CORPSE_DECAY_TEST: hasAttrDecay=" + corpse.HasAttribute(ItemAttributes.attr_decay));
+		}
+
 		[SaveableClass]
 		public class DeferredCorpseKillTimer : BoundTimer {
 			internal static readonly TimerKey TimerKey = TimerKey.Acquire("_deferredCorpseKillTimer_");
