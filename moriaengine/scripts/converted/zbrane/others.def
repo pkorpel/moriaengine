@@ -160,39 +160,6 @@ associatedskill = Lumberjacking //#370 - dclick/.usehand starts Lumberjacking
 [ItemDef 0xf44]
 DUPEITEM = i_hatchet
 
-//#370 - new content, not auto-converted (i_pickaxe never existed in moriaengine before this -
-//only a commented-out loot reference). Stats modeled on i_hatchet above (same class of
-//one-handed edged implement) rather than a literal port of real Erebor's own i_pickaxe
-//(DAM=1,15 SPEED=40 REQSTR=25, scripts/sphereitem_tinker.scp) - this engine has no REQSTR/
-//native-DAM-range fields to map those onto (confirmed via grep: nothing reads REQSTR anywhere,
-//same as every other converted weapon's own commented-out REQSTR line), so an exact numeric
-//port isn't meaningful here; attackVsP/M/piercing/speed/range instead match hatchet's own
-//already-converted shape. Real Erebor source: "OSI insists skill is Fencing with this axe" -
-//WeaponType.OneHandSpike matches (same type already used by i_dagger_copper, a real Fencing
-//weapon).
-[WeaponDef 0x0e85]
-CATEGORY = Provisions - Weapons
-SUBSECTION = Axes
-DESCRIPTION = Pickaxe
-
-TYPE = T_WEAPON_FENCE
-WEIGHT = 40
-RESOURCES = 4 i_ingot_iron
-SKILLMAKE = 33.9 tinkering, t_tinker_tools
-TwoHanded = false
-layer = 1
-WeaponType = WeaponType.OneHandSpike
-WeaponAnimType = WeaponAnimType.HeldInRightHand
-DEFNAME = i_pickaxe
-attackVsP = 6
-attackVsM = 6
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
-associatedskill = Mining //#370 - dclick/.usehand starts Mining
-
 [WeaponDef 0x13b7]
 CATEGORY = Provisions - Weapons
 SUBSECTION = Swords
