@@ -104,8 +104,9 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				this.attributes &= ~flag;
 			}
-			if ((flag == ItemAttributes.attr_decay) || (flag == ItemAttributes.attr_questitem)) {
-				ItemDecaySystem.ScheduleOrCancel(this); //#219 - re-evaluate the per-item decay timer
+			if ((flag == ItemAttributes.attr_decay) || (flag == ItemAttributes.attr_questitem) ||
+					(flag == ItemAttributes.attr_lockeddown) || (flag == ItemAttributes.attr_secure)) {
+				ItemDecaySystem.ScheduleOrCancel(this); //#219/#371 - re-evaluate the per-item decay timer
 			}
 			if ((flag == ItemAttributes.attr_static) || (flag == ItemAttributes.attr_move_never) || (flag == ItemAttributes.attr_move_always)) {
 				this.RecomputeNonMovable(); //#220
