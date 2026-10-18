@@ -1,5 +1,94 @@
 # moriaengine — working state
 
+## #101 Part A follow-up: #103 verified fixed, #102 only partly done — 2026-10-18
+
+Resumed #101 (basic-functionality tracking issue) after the session that shipped #389's
+3 sub-issues died mid-verification. Found an uncommitted diagnostic test (`scripts/Tests/
+GatheringTests.cs`/`Tests/Protocol/GatheringTests.cs`, a `Diag*`-prefixed command +
+test) left over from checking whether #103 is now fixed as a side effect of the #370/
+#389 tool-equip work. First run failed with no server output at all — not a real repro,
+a test-authoring bug: `CommandsAuthorization.cs:130` only allowlists commands whose name
+starts with `"Test"` for non-GM test accounts (#72's own convention); the diagnostic's
+`Diag*` name never matched, so the command silently never ran. Renamed to
+`TestGrantDaggerToBackpack`/`VerifyPlainWeaponDclickEquips`, reran — passes. **#103
+confirmed fixed**: double-clicking an ordinary weapon (`i_dagger_copper`, zero
+`associatedskill=`/`tooltype=` tag) now equips it, via the same generic `Equippable.
+On_DClick` path #389's work already exercised for tools. Diagnostic test reverted
+(uncommitted, never meant to ship, per its own comment) — closed #103 with this finding.
+
+**#102 is NOT the same as #103** — only `.usehand` itself shipped (back on 2026-10-12,
+see "CURRENT TOP PRIORITY" section below); the bulk of #102's own scope (Group 1 GM
+tooling — `Jail`/`Pardon`/`Props`/`Tweak`/`NewNpc`/`Fix`/`GoUid`/real `Info`/`Kill`, Group
+2 utility beyond UseHand — `WhoAmI`/`Stats`/`AFK`/`UseRing`/etc.) was explicitly deferred
+pending a fresh explicit ask and confirmed via grep still doesn't exist anywhere in the
+codebase. Left open, commented on GitHub to correct the record.
+
+**#104 (localization resx migration) is mostly done** — steps 1-3 of its 5-step staged
+rollout shipped 2026-10-13 (resx files live, lookup wired, ini default-language setting).
+Only steps 4-5 remain, both low-priority cleanup (delete now-dead `.txt` files; strip
+vestigial literal defaults from the ~39 `*Loc` class bodies) — not blocking anything.
+
+**#101 itself stays open**: #103 closed, #102 and #104 remain (#102 substantially,
+#104 only cleanup). Also cleaned up a stale worktree (`moria-368/moriaengine`,
+branch `368-run-local-stop-reliability`) left over from #368 — its one commit was
+already squash-merged to `main` as `6720bc7` (PR #397); worktree removed, local+origin
+branch deleted after confirming zero diff between the two commits.
+
+## #389 (tool equip/targeting follow-up, 3 sub-issues) — ALL SHIPPED — 2026-10-18
+
+User tested the #370/#378/#385 tool-equip framework in-game and found 3 issues, tracked
+as #389 with sub-issues #390/#391/#392. All three shipped this pass, each its own
+worktree/branch/PR, each PR merged on green CI:
+
+**#390 (hand-slot displacement bug) — PR #394.** Equipping a hatchet while already
+holding a different one-handed weapon left both equipped simultaneously, instead of
+displacing the old one. Root-caused to `i_hatchet`'s `layer=2` being the converter's
+tiledata-fallback guess, not real source data — its own `TwoHanded=false` (real,
+non-guessed) is consistent with one-handed Hand1 (`layer=1`), not Hand2. Investigation
+found ~70 OTHER converted weapon entries share the same `layer=`/`TwoHanded=`
+reliability gap (confirmed via both the converter's own source code AND the real Erebor
+archive — neither has a recoverable authoritative value for these, both fall back to
+the same tiledata-based heuristic) — **deliberately narrowed to just `i_hatchet`'s fix**
+per explicit user decision, rather than a blanket content rewrite with no reliable
+grounding. The broader ~70-entry uncertainty is filed separately as #393 (backlog, not
+blocking). New regression test reproduces the exact reported scenario (equip
+`i_axe_battle_copper`, dclick-equip `i_hatchet`, confirm proper displacement).
+
+**#391 (target cursor loops forever) — PR #395.** Mining/Lumberjacking/Fishing's
+`Targ_*` classes all returned `TargetResult.RestartTargetting` on every invalid target
+type, re-arming the cursor indefinitely instead of stopping after showing the error
+message once — confirmed consistent across all three, not a one-off bug, but
+explicitly unwanted per user ask. Changed to `TargetResult.Done` after the message,
+consistently across all three. New test proves this by counting real
+`TargetCursorCommandsOutPacket` (0x6c) packets — exactly one (the skill-select's own
+cursor arm) should ever arrive, not two; confirmed the test genuinely fails against the
+old `RestartTargetting` behavior before verifying it passes with the fix.
+
+**#392 (tool skill-use should be type-driven) — PR #396.** Only `i_hatchet`/`i_pickaxe`/
+`i_fishing_pole` specifically granted their gathering skill on dclick via a literal
+`associatedskill=` tag — every other axe (~15-20 across 7 material tiers) did nothing.
+`EquippableDef.AssociatedSkill`'s getter now falls back automatically when no explicit
+override tag is set: any `WeaponDef` with `WeaponType.OneHandAxe`/`TwoHandAxe` (an
+exclusively-axe category per #157) grants Lumberjacking; a new `EquippableDef.ToolType`
+field (`.def` line `tooltype=Pickaxe`/`FishingPole`, independent of `WeaponType` since
+`WeaponType.OneHandSpike` is shared with real Fencing weapons like daggers) grants
+Mining/Fishing. `i_hatchet`'s now-redundant `associatedskill=` line removed;
+`i_pickaxe`/`i_fishing_pole` switched to `tooltype=`. `Equippable.IsHoldingToolFor`
+needed zero changes (already reads `AssociatedSkill`). New test confirms a
+never-tagged plain axe (`i_axe_copper`) now auto-starts Lumberjacking.
+
+**Sandbox flakiness note from this pass**: hit the documented boot-timeout flake class
+(`GameServerPairFixture` "did not reach Init done" within 60s) 3x in a row in the #392
+worktree specifically, correlating with genuinely high sandbox load at the time
+(`loadavg` ~7-8 on an 8-core box, <700MB free) — confirmed not code-related by an
+isolated single-test retry passing clean once load settled, then the full file passing
+12/12 on the next full retry. Consistent with the already-documented class, just a
+higher-than-usual repro rate this time.
+
+**#393 (backlog, deliberately deferred)**: the ~70-entry `layer=`/`TwoHanded=`
+uncertainty surfaced while investigating #390 — stays open, not blocking, same
+treatment as #96/#12/#22/#29.
+
 ## #157 (WeaponType data quality) and #378 (duplicate i_pickaxe regression) — BOTH SHIPPED — 2026-10-18
 
 Picked up #157 via `/task-pick` (branch `157-fix-weapon-type-data`, worktree `/workspace/moria-157`):
