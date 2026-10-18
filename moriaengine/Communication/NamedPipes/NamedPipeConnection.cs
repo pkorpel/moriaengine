@@ -88,8 +88,16 @@ namespace SteamEngine.Communication.NamedPipes {
 						this.BeginReceive();
 					}
 				}
-			} catch (Exception e) {
+			} catch (FatalException e) {
+				Logger.WriteFatal("NamedPipeConnection.OnReceieve", e);
+				this.Close(e.Message);
+			} catch (System.IO.IOException e) {
+				//expected churn - the other end closing/breaking the pipe, not a bug
 				Logger.WriteDebug(e);
+				this.Close(e.Message);
+			} catch (Exception e) {
+				//anything else here is unexpected - a real bug, not routine pipe churn
+				Logger.WriteError("NamedPipeConnection.OnReceieve", e);
 				this.Close(e.Message);
 			}
 		}
@@ -112,7 +120,14 @@ namespace SteamEngine.Communication.NamedPipes {
 
 			try {
 				this.pipe.EndWrite(asyncResult);
+			} catch (FatalException e) {
+				Logger.WriteFatal("NamedPipeConnection.OnSend", e);
+				this.Close(e.Message);
+			} catch (System.IO.IOException e) {
+				Logger.WriteDebug(e);
+				this.Close(e.Message);
 			} catch (Exception e) {
+				Logger.WriteError("NamedPipeConnection.OnSend", e);
 				this.Close(e.Message);
 			} finally {
 				toDispose.Dispose();
