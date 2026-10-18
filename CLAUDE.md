@@ -1,5 +1,44 @@
 # moriaengine — working state
 
+## #410 (Race/Nation/Realm reworked as plugins) — SHIPPED — 2026-10-18
+
+Final piece of the user's original #407 follow-up request ("rework race,
+nation and realm into plugins", alongside the generic enum-persistence fix
+shipped as #407/#408/#411). `Player.Race`/`Player.Nation`/`Character.Realm`
+were plain tag-backed properties - reworked into the Plugin architecture
+`ProfessionPlugin` already uses, per the user's exact design call captured
+earlier: **Race+Nation combined into ONE plugin** (`RaceNationPlugin`,
+installed on `Player`), **Realm as a SEPARATE plugin** (`RealmPlugin`,
+installed on `Character` - not just `Player`, since NPCs/guards use Realm
+too) - because Realm may need to change independently of Race/Nation later
+(e.g. a renegade mechanic).
+
+Both plugins (`scripts/Basic/Races/RaceNationPlugin.cs`/`.ct`,
+`RealmPlugin.cs`/`.ct`) use the simpler single-registered-instance pattern
+(`RegenerationPlugin`'s own `defInstance` + `.Create()` shape), not
+Profession's multi-content-file pattern - there's no per-race/per-nation
+authored `.def` content to back a Plugin per value. `Player.Race`/
+`Player.Nation`/`Character.Realm` keep their exact public getter/setter
+signatures (just read/write through `GetInstalledPlugin`/
+`GetOrInstallPlugin` instead of `GetTag`/`SetTag`), so every existing call
+site compiles and works unchanged - confirmed by the full pre-existing
+`RaceTests`/`NotorietyTests`/`ProfessionTests`/`LevelingTests`/
+`LevelingIsolatedTests` suite (29 tests) passing with zero other changes
+needed. `Player.Home` deliberately left untouched (still a plain tag) - the
+user's request was specifically Race+Nation and Realm, not Home.
+
+`EnumTagPersistenceTests.cs` updated (an intentional consequence of this
+rework, not a regression) - Race/Nation/Realm no longer appear as
+`tag._race_=`/etc lines at all, since they're no longer tags. Confirmed via
+a real save file that they now show as a typed plugin reference instead
+(`@@_racenation_=(RaceNationPlugin)N`/`@@_realmplugin_=(RealmPlugin)N`,
+each with its own `[RaceNationPlugin N]`/`[RealmPlugin N]` block whose own
+`race=`/`nation=`/`realm=` fields still carry the `(Enum:Name)value` format
+from #407/#411).
+
+Shipped as PR #414, merged after local-only verification (same
+CI-minutes-exhausted situation as #404/#407/#411 above).
+
 ## #411 (enum LoadLine regression from #407) — SHIPPED — 2026-10-18
 
 Found while auditing #407/#408 before starting #410's Part 2 work (the
