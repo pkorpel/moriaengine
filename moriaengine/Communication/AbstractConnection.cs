@@ -174,6 +174,9 @@ namespace SteamEngine.Communication {
 						CommunicationUtils.OutputPacketLog(bytes, offset, length);
 					}
 
+					string packetLabel = "0x" + id.ToString("x") +
+						(packet == null ? "" : " (" + packet.GetType().Name + ")");
+
 					switch (result) {
 						case ReadPacketResult.NeedMoreData:
 							length++;
@@ -182,18 +185,18 @@ namespace SteamEngine.Communication {
 							break;
 						case ReadPacketResult.Success:
 							if (discardAfterReading) {
-								Logger.WriteDebug("Discarding packet 0x" + id.ToString("x"));
+								Logger.WriteDebug("Discarding packet " + packetLabel);
 							} else {
-								Logger.WriteDebug("Handling packet 0x" + id.ToString("x"));
+								Logger.WriteDebug("Handling packet " + packetLabel);
 								this.core.HandlePacket((TConnection) this, this.state, packet);
 							}
 							goto default;
 						case ReadPacketResult.DiscardAll:
-							Logger.WriteDebug("Discarding packet 0x" + id.ToString("x") + " (and all following)");
+							Logger.WriteDebug("Discarding packet " + packetLabel + " (and all following)");
 							read = length;
 							goto default;
 						case ReadPacketResult.DiscardSingle:
-							Logger.WriteDebug("Discarding packet 0x" + id.ToString("x"));
+							Logger.WriteDebug("Discarding packet " + packetLabel);
 							goto default;
 						default:
 							Sanity.IfTrueThrow(read < 0, "read bytes can't be negative!");
