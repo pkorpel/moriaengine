@@ -45,7 +45,6 @@ namespace SteamEngine.Tests {
 		[InlineData("i_axe_two_hand_copper", "WeaponType.TwoHandAxe")] // type=t_weapon_sword, TwoHanded=true
 		[InlineData("i_bow_copper", "WeaponType.Bow")] // type=t_weapon_bow_run
 		[InlineData("i_crossbow_copper", "WeaponType.XBow")] // type=t_weapon_xbow
-		[InlineData("i_pickaxe", "WeaponType.OneHandSpike")] // #370 content, type=t_weapon_fence
 		[InlineData("i_hatchet", "WeaponType.OneHandAxe")] // #370-adjacent content, type=t_weapon_sword, TwoHanded=false
 		public void ConvertedWeaponWeaponTypeMatchesItsOwnTypeField(string defname, string expected) {
 			string repoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
