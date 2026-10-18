@@ -31,9 +31,12 @@ content hooks into).
 
 ## Gathering
 
-Gathering skills (Mining, Lumberjacking - and Fishing, though it has no loadable content
-in this engine, see below) follow a simpler shape than crafting: target a tile or object,
-run a stroke check, produce or fail.
+Gathering skills (Mining, Lumberjacking, Fishing) follow a simpler shape than crafting:
+target a tile or object, run a stroke check, produce or fail. **All three now require
+their matching tool equipped** (`#370`, a moriaengine-only design decision, not ported
+from Erebor) - see [Item double-click & the "use" action
+framework](item-use-and-dclick.md) for the shared `Equippable.IsHoldingToolFor` gate and
+how dclicking the tool itself equips it and starts the skill in one step.
 
 ### Mining (#21)
 
@@ -50,20 +53,30 @@ the closest real signal this engine actually has for "rocky terrain." There is n
 per-tile depletion/respawn system - the skill's own stroke delay is the only throttle
 against spamming the same spot, the same simplification basis used for Lumberjacking.
 
+Requires `i_pickaxe` equipped (`#370`) - new content, didn't exist in moriaengine before
+this issue; also a real `WeaponType.OneHandSpike` weapon, matching real Erebor's own
+dual-purpose item.
+
 ### Lumberjacking
 
 Shares the gathering shape above (target -> stroke -> yield a log) - verified via the
-same end-to-end `GatheringTests` suite as Mining and Taming.
+same end-to-end `GatheringTests` suite as Mining and Taming. Requires `i_hatchet`
+equipped (`#370`).
 
-### Fishing - a real pre-existing content gap, not a code bug
+### Fishing
 
-`AbstractSkillDef.GetById` returns `null` for Fishing - **there is no loadable skill
-definition for it at all** in this engine's current content, confirmed while working on
-an unrelated system ([Leveling & experience](leveling-experience.md)'s spendable-skills
-list originally used Fishing as its example, matching Erebor's own source, and had to be
-switched to Alchemy once this gap was found). This is a pre-existing content gap, not
-caused by any pass documented in these docs - flagged here rather than silently worked
-around everywhere it's hit.
+Requires `i_fishing_pole` equipped (`#370` - the pole itself was a plain, non-equippable
+`ItemDef` before this, a real content gap, fixed alongside the tool requirement).
+
+**Historical note, now resolved**: this page previously said Fishing had no loadable
+skill definition at all (`AbstractSkillDef.GetById` returning `null`) - that was true
+before `#328` added `FishingSkillDef`'s minimal shell, but the claim was never corrected
+here afterward. Confirmed current: `[FishingSkillDef 18]` is a real, loadable
+registration in `scripts/Basic/skills/Skills.scp`. A real but narrower gap was still
+found and fixed while building `#370`'s test coverage: that same block was missing
+`StartByMacroEnabled = true` (unlike Mining/Lumberjacking's own blocks), so the real
+client's skill-list/macro packet for Fishing was silently rejected server-side
+(`#375`).
 
 ## Test coverage
 

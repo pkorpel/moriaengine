@@ -100,5 +100,46 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Console.WriteLine("BACKPACK_CHECK: " + defname + " count=" + count);
 		}
+
+		//#370 - dclick-equips-and-uses / mandatory-tool-gate test helpers. One dedicated
+		//no-arg function per item type, same established reason as the comment above this
+		//class (a defname string argument gets auto-resolved to the live ThingDef object by
+		//the elevated-account LScript parser instead of staying literal text).
+
+		[SteamFunction]
+		public static void TestGrantPickaxeToBackpack(Character self) {
+			Item pickaxe = (Item) ThingDef.GetByDefname("i_pickaxe").Create(self.Backpack);
+			Console.WriteLine("TOOL_SETUP: uid=" + pickaxe.Uid + " backpack=" + self.Backpack.Uid);
+		}
+
+		[SteamFunction]
+		public static void TestGrantAndEquipPickaxe(Character self) {
+			Equippable pickaxe = self.NewEquip(ThingDef.GetByDefname("i_pickaxe"));
+			Console.WriteLine("TOOL_SETUP: uid=" + pickaxe.Uid + " backpack=" + self.Backpack.Uid);
+		}
+
+		[SteamFunction]
+		public static void TestGrantAndEquipHatchet(Character self) {
+			Equippable hatchet = self.NewEquip(ThingDef.GetByDefname("i_hatchet"));
+			Console.WriteLine("TOOL_SETUP: uid=" + hatchet.Uid + " backpack=" + self.Backpack.Uid);
+		}
+
+		[SteamFunction]
+		public static void TestGrantAndEquipFishingPole(Character self) {
+			Equippable pole = self.NewEquip(ThingDef.GetByDefname("i_fishing_pole"));
+			Console.WriteLine("TOOL_SETUP: uid=" + pole.Uid + " backpack=" + self.Backpack.Uid);
+		}
+
+		/// <summary>Reports whether the item at the given uid is currently equipped on self
+		/// (Cont==self and sitting at its own TypeDef.Layer, matching Equippable.On_DClick's own
+		/// "already equipped" check) - lets a protocol test confirm the #370 dclick flow really
+		/// did equip a backpack item, not just that SOME skill got selected afterward.</summary>
+		[SteamFunction]
+		public static void TestCheckEquipped(Character self, ScriptArgs sa) {
+			uint uid = Convert.ToUInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			Item item = (Item) Thing.UidGetItem(uid);
+			bool equipped = (item != null) && (item.Cont == self) && (item.Z == item.Layer);
+			Console.WriteLine("TOOL_EQUIP_CHECK: uid=" + uid + " equipped=" + equipped);
+		}
 	}
 }
