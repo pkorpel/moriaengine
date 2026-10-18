@@ -1,5 +1,43 @@
 # moriaengine — working state
 
+## #416 (GM immediate logout) — SHIPPED — 2026-10-18
+
+Follow-up to #261 (the 60-second classic-UO logout-lingering delay before a
+disconnected character actually disappears, `Player.On_LogOut`/
+`CharLingeringTimer`). User request: for GMs (plevel >= `Globals.PlevelOfGM`,
+default 4), this should be immediate instead.
+
+**Fixed (PR #417, merged).** `Player.On_LogOut` now uses `DueInSeconds = 0`
+on the SAME `CharLingeringTimer` for GMs, instead of
+`LogoutSettings.instance.logoutDelaySeconds` - the timer still fires through
+the exact same `OnTimeout` path (checks `IsLingering`, then calls
+`Disconnect()`), just on the very next tick instead of 60 seconds later.
+
+**Real bug found and avoided while testing**: a first draft skipped the
+timer entirely and called `this.Disconnect()` directly inside `On_LogOut`
+for GMs. This caused an infinite reentrant cascade ("Disconnect called."
+logged hundreds of times in the log) - `On_LogOut` runs while
+`this.GameState` is STILL set (the connection's own close sequence hasn't
+nulled it out yet at the point this trigger fires), so `IsLingering` is
+still false at that moment, and `Disconnect()` took its "still connected"
+branch, calling `Conn.Close()` a SECOND time from inside the very close
+handler that's already running this trigger. The timer-based fix avoids
+this entirely since `CharLingeringTimer.OnTimeout` only ever checks
+`IsLingering` on a LATER tick, once that state transition has actually
+completed - confirmed by reading `GameState.On_Close`'s real call order
+directly rather than assuming.
+
+Verified with a new real end-to-end test
+(`Tests/Protocol/LogoutLingeringTests.cs`): an ordinary player and a
+GM-promoted player both disconnect; a separate still-connected observer
+character confirms the ordinary player is still `IsLingering=True` shortly
+after, while the GM is already `IsLingering=False`/`Flag_Disconnected=True`.
+Hit one transient connection-timeout flake on the first run (passed clean
+on an immediate retry, no stale server process found holding the port -
+treated as sandbox flakiness, not a regression). Fast tier (50/50) and
+existing `SocialTests`/`EconomyTests` (9/9, both exercise multiple
+connect/disconnect cycles) show no regressions.
+
 ## #410 (Race/Nation/Realm reworked as plugins) — SHIPPED — 2026-10-18
 
 Final piece of the user's original #407 follow-up request ("rework race,
