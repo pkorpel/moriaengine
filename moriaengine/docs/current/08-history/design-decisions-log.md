@@ -25,6 +25,27 @@ save-time bookkeeping to track "how long has this item already been sitting here
 
 See [Item decay](../04-gameplay-systems/item-decay.md).
 
+## Non-corpse item decay defaults ON, not off (#371, supersedes the original #219 policy)
+
+**Decision**: a non-corpse item loose on the ground is decay-eligible by default -
+`attr_decay` no longer gates anything in `ItemDecaySystem.GetDecayMinutesIfEligible`.
+Exempt: `attr_questitem`, `attr_lockeddown`, `attr_secure`, and a `Flag_NoDecay` region.
+
+**Why**: the original #219 pass deliberately chose decay-OFF-by-default, matching this
+engine's general "incomplete config defaults permissive" convention - but real
+gameplay testing showed this meant nothing dropped by a player, and no non-corpse loot,
+ever decayed at all, since nothing anywhere ever sets `attr_decay`. Real Sphere's own
+model is the opposite: a global `DECAYTIMER` ini setting decays virtually everything
+loose by default, and `attr_decay` is only ever used by authored content as a
+forcing/override flag on specific items, never as the master on/off switch. User
+explicitly confirmed flipping to match that real default. `attr_lockeddown`/
+`attr_secure` were added as new exemptions alongside the flip (not present in #219) -
+without them, a player's intentionally-secured house belongings sitting loose on a
+house floor (not in a container) would have started vanishing the moment this shipped,
+which would have been a severe regression, not the intended behavior.
+
+See [Item decay](../04-gameplay-systems/item-decay.md).
+
 ## Three separate decay rates, not one generic interval
 
 **Decision**: `DecaySettings` has `playerCorpseDecayMinutes`/`npcCorpseDecayMinutes`/

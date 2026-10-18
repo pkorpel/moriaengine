@@ -63,31 +63,34 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
-		/// <summary>#219: a plain attr_decay ground item actually decays away after the
-		/// configured interval elapses, while attr_questitem (exempt), no-flag (never eligible),
-		/// and attr_decay-but-contained (paused while in a backpack) items all survive the same
-		/// wait. TestSetupDecayItems shrinks DecaySettings.itemDecayMinutes to 0.6 real seconds
-		/// so this doesn't need to wait out the real 5-minute production default - each item's
-		/// own per-item timer reads that setting the moment it's scheduled (#219, redesigned
-		/// away from a global sweep).</summary>
+		/// <summary>#371: a plain ground item with NO attributes set at all now decays away by
+		/// default (the behavior #371 flipped - previously it would have needed an explicit
+		/// attr_decay to be eligible), while attr_questitem, attr_lockeddown, and attr_secure
+		/// (all exempt) and a plain contained item (exempt while contained regardless of the
+		/// flag default) all survive the same wait. TestSetupDecayItems shrinks
+		/// DecaySettings.itemDecayMinutes to 0.6 real seconds so this doesn't need to wait out
+		/// the real 5-minute production default - each item's own per-item timer reads that
+		/// setting the moment it's scheduled (#219, redesigned away from a global sweep).</summary>
 		[Fact]
 		public void OnlyEligibleGroundItemDecaysAway() {
 			using (var client = this.ConnectLoginAndCreateCharacter("AttrDecayTester")) {
 				client.SendSpeech(".TestSetupDecayItems");
 				this.AssertSeen("ATTR_DECAY_SETUP:", TimeSpan.FromSeconds(10));
 				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_DECAY_SETUP:");
-				uint decayPlain = ExtractUidAfter(setupLine, "decayPlain=");
+				uint plainNoFlags = ExtractUidAfter(setupLine, "plainNoFlags=");
 				uint decayQuestItem = ExtractUidAfter(setupLine, "decayQuestItem=");
-				uint noDecayFlag = ExtractUidAfter(setupLine, "noDecayFlag=");
+				uint lockeddownItem = ExtractUidAfter(setupLine, "lockeddownItem=");
+				uint secureItem = ExtractUidAfter(setupLine, "secureItem=");
 				uint decayButContained = ExtractUidAfter(setupLine, "decayButContained=");
 
 				//#219 (redesigned) - each item's own real-time timer fires at exactly 0.6s now
 				//(no sweep cadence to wait out), a short margin is plenty.
 				Thread.Sleep(1500);
 
-				Assert.False(this.ReportDecayItemExists(client, decayPlain), "decayPlain should have decayed away.");
+				Assert.False(this.ReportDecayItemExists(client, plainNoFlags), "plainNoFlags should have decayed away by default (#371).");
 				Assert.True(this.ReportDecayItemExists(client, decayQuestItem), "decayQuestItem (exempt) should still exist.");
-				Assert.True(this.ReportDecayItemExists(client, noDecayFlag), "noDecayFlag (never eligible) should still exist.");
+				Assert.True(this.ReportDecayItemExists(client, lockeddownItem), "lockeddownItem (exempt, #371) should still exist.");
+				Assert.True(this.ReportDecayItemExists(client, secureItem), "secureItem (exempt, #371) should still exist.");
 				Assert.True(this.ReportDecayItemExists(client, decayButContained), "decayButContained (paused while contained) should still exist.");
 			}
 		}

@@ -92,12 +92,15 @@ namespace SteamEngine.CompiledScripts {
 				" insuredConsumed=" + !insuredItem.HasAttribute(ItemAttributes.attr_insured));
 		}
 
-		/// <summary>#219 - shrinks both the configured decay interval and the sweep's own check
-		/// cadence to a test-practical speed (same SpeedUpClockForTest precedent as
-		/// LightAndWeather/#76), then creates 4 ground/contained items covering every exemption
-		/// case: plain attr_decay (should eventually decay), attr_decay+attr_questitem (exempt),
-		/// no attr_decay at all (never eligible), and attr_decay but sitting inside a backpack
-		/// (exempt while contained). Reports their uids so a protocol test can poll each one.</summary>
+		/// <summary>#371 - shrinks the configured decay interval to a test-practical speed (same
+		/// SpeedUpClockForTest precedent as LightAndWeather/#76), then creates 5 ground/contained
+		/// items covering decay-by-default plus every exemption case: a plain item with NO
+		/// attributes at all (should decay anyway now - proves the new default-on behavior,
+		/// superseding #219's original default-off "noDecayFlag" case), attr_questitem (exempt),
+		/// attr_lockeddown (exempt - new #371 exemption), attr_secure (exempt - new #371
+		/// exemption), and a plain item sitting inside a backpack (exempt while contained,
+		/// regardless of the flag default). Reports their uids so a protocol test can poll each
+		/// one.</summary>
 		[SteamFunction]
 		public static void TestSetupDecayItems(Character self) {
 			//#219 (redesigned) - no more global sweep to speed up; each item's own timer reads
@@ -107,21 +110,23 @@ namespace SteamEngine.CompiledScripts {
 
 			ItemDef plainDef = (ItemDef) ThingDef.GetByDefname("i_rock_plain");
 
-			Item decayPlain = (Item) plainDef.Create(self.P());
-			decayPlain.SetAttribute(ItemAttributes.attr_decay, true);
+			Item plainNoFlags = (Item) plainDef.Create(self.P());
 
 			Item decayQuestItem = (Item) plainDef.Create(self.P());
-			decayQuestItem.SetAttribute(ItemAttributes.attr_decay, true);
 			decayQuestItem.SetAttribute(ItemAttributes.attr_questitem, true);
 
-			Item noDecayFlag = (Item) plainDef.Create(self.P());
+			Item lockeddownItem = (Item) plainDef.Create(self.P());
+			lockeddownItem.SetAttribute(ItemAttributes.attr_lockeddown, true);
+
+			Item secureItem = (Item) plainDef.Create(self.P());
+			secureItem.SetAttribute(ItemAttributes.attr_secure, true);
 
 			Item decayButContained = (Item) plainDef.Create(((Player) self).Backpack);
-			decayButContained.SetAttribute(ItemAttributes.attr_decay, true);
 
-			Console.WriteLine("ATTR_DECAY_SETUP: decayPlain=" + decayPlain.Uid +
+			Console.WriteLine("ATTR_DECAY_SETUP: plainNoFlags=" + plainNoFlags.Uid +
 				" decayQuestItem=" + decayQuestItem.Uid +
-				" noDecayFlag=" + noDecayFlag.Uid +
+				" lockeddownItem=" + lockeddownItem.Uid +
+				" secureItem=" + secureItem.Uid +
 				" decayButContained=" + decayButContained.Uid);
 		}
 
