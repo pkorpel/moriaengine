@@ -124,6 +124,25 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TOOL_SETUP: uid=" + hatchet.Uid + " backpack=" + self.Backpack.Uid);
 		}
 
+		/// <summary>#390 - equips a one-handed Hand1-layer weapon directly (bypassing the
+		/// dclick/deny-trigger path, matching NewEquip's own "already equipped at creation"
+		/// shape) so a following hatchet dclick can be checked for proper hand-slot
+		/// displacement.</summary>
+		[SteamFunction]
+		public static void TestGrantAndEquipMismatchedAxe(Character self) {
+			Equippable axe = self.NewEquip(ThingDef.GetByDefname("i_axe_battle_copper"));
+			Console.WriteLine("TOOL_SETUP: uid=" + axe.Uid + " backpack=" + self.Backpack.Uid);
+		}
+
+		/// <summary>#390 - leaves the hatchet in the backpack (not auto-equipped) so a real
+		/// dclick exercises the actual equip-collision path (Equippable.On_DClick ->
+		/// TryPickupItem + TryEquipItemOnChar), not just NewEquip's creation-time path.</summary>
+		[SteamFunction]
+		public static void TestGrantHatchetToBackpack(Character self) {
+			Item hatchet = (Item) ThingDef.GetByDefname("i_hatchet").Create(self.Backpack);
+			Console.WriteLine("TOOL_SETUP: uid=" + hatchet.Uid + " backpack=" + self.Backpack.Uid);
+		}
+
 		[SteamFunction]
 		public static void TestGrantAndEquipFishingPole(Character self) {
 			Equippable pole = self.NewEquip(ThingDef.GetByDefname("i_fishing_pole"));

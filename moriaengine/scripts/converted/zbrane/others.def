@@ -144,9 +144,9 @@ SKILLMAKE = 33.9 tinkering, t_tinker_tools //some resources were fixed by conver
 //REQSTR = 15 // commented out by Converter 
 //SKILL = fencing // commented out by Converter 
 TwoHanded = false
-layer = 2 //Set by Converter 
+layer = 1 //#390 - corrected; this entry's own TwoHanded=false is real (no guess-comment), but the old layer=2 was the converter's tiledata-Quality-byte fallback, not real per-item source data - one-handed Hand1 is consistent with TwoHanded=false
 WeaponType = WeaponType.OneHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 DEFNAME = i_hatchet
 attackVsP = 6
 attackVsM = 6
