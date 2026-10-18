@@ -143,19 +143,21 @@ namespace SteamEngine.CompiledScripts {
 			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 		}
 
-		private static TagKey realmTK = TagKey.Acquire("_realm_");
-
-		/// <summary>Which side of the Gondor/Mordor conflict this character belongs to - used by guard-type NPC aggro (see NPCAiTimer.ShouldAggroOn). Defaults to Realm.None (no side), so untouched characters are left alone by realm-reactive guards.</summary>
+		/// <summary>Which side of the Gondor/Mordor conflict this character belongs to - used by
+		/// guard-type NPC aggro (see NPCAiTimer.ShouldAggroOn). Backed by RealmPlugin (#410,
+		/// reworked from a tag to fix the #407 enum-persistence bug class generically for this
+		/// property, and kept as its own separate plugin from RaceNationPlugin per the user's
+		/// explicit design call - Realm may need to change independently of Race/Nation later,
+		/// e.g. a renegade mechanic). Installed on Character (not just Player) since plain NPCs
+		/// use this too. Defaults to Realm.None (no side), so untouched characters are left
+		/// alone by realm-reactive guards.</summary>
 		public Realm Realm {
 			get {
-				object tag = this.GetTag(realmTK);
-				if (tag is Realm realm) {
-					return realm;
-				}
-				return Realm.None;
+				RealmPlugin plugin = RealmPlugin.GetInstalledPlugin(this);
+				return (plugin != null) ? plugin.Realm : Realm.None;
 			}
 			set {
-				this.SetTag(realmTK, value);
+				RealmPlugin.GetOrInstallPlugin(this).Realm = value;
 			}
 		}
 

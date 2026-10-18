@@ -6,15 +6,18 @@ using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
-	/// Regression test for #407: Player.Race/Nation (and Character.Realm, via Nation's own
-	/// cascade) all showed "None" after a real save/reload, even though the save file had
-	/// real data - ObjectSaver saved any enum as a bare, type-erased number, so the next load
-	/// re-typed it as a plain int, failing the properties' own "tag is SomeEnum" check. This
-	/// confirms the real save path (TagHolder.Save -> ObjectSaver.Save) now writes the
-	/// type-preserving format in an actual save file, not just via the direct pure-logic
-	/// round-trip already covered by Tests/ObjectSaverEnumTests.cs. Own isolated fixture,
-	/// same reasoning as DefPersistenceRegressionTests.cs - this deliberately triggers a real
-	/// Globals.Save().
+	/// Regression test for #407, UPDATED for #410: Player.Race/Nation (and Character.Realm,
+	/// via Nation's own cascade) originally showed "None" after a real save/reload - a
+	/// tag-based enum round-trip bug, fixed generically in ObjectSaver (#407/#408). #410 then
+	/// reworked Race/Nation into a combined RaceNationPlugin and Realm into its own
+	/// RealmPlugin (mirroring ProfessionPlugin's architecture), per the user's explicit
+	/// request - so these three properties are no longer tags at all. This test now confirms
+	/// the real save path produces a typed plugin reference
+	/// (@@_racenation_=(RaceNationPlugin)N / @@_realmplugin_=(RealmPlugin)N, each with its own
+	/// [RaceNationPlugin N]/[RealmPlugin N] block) rather than a tag line - the plugin's own
+	/// internal enum fields still benefit from #407's "(Enum:Name)value" format, confirmed via
+	/// the same literal substring check. Own isolated fixture, same reasoning as
+	/// DefPersistenceRegressionTests.cs - this deliberately triggers a real Globals.Save().
 	/// </summary>
 	[Collection(EnumTagPersistenceCollection.Name)]
 	public class EnumTagPersistenceTests {
@@ -45,9 +48,11 @@ namespace SteamEngine.Tests.Protocol {
 					.First();
 				string thingsSav = File.ReadAllText(Path.Combine(latestDir, "things.sav"));
 
-				Assert.Contains("tag._race_=(Enum:Race)", thingsSav, StringComparison.Ordinal);
-				Assert.Contains("tag._nation_=(Enum:Nation)", thingsSav, StringComparison.Ordinal);
-				Assert.Contains("tag._realm_=(Enum:Realm)", thingsSav, StringComparison.Ordinal);
+				Assert.Contains("@@_racenation_=(RaceNationPlugin)", thingsSav, StringComparison.Ordinal);
+				Assert.Contains("@@_realmplugin_=(RealmPlugin)", thingsSav, StringComparison.Ordinal);
+				Assert.Contains("race=(Enum:Race)", thingsSav, StringComparison.Ordinal);
+				Assert.Contains("nation=(Enum:Nation)", thingsSav, StringComparison.Ordinal);
+				Assert.Contains("realm=(Enum:Realm)", thingsSav, StringComparison.Ordinal);
 			}
 		}
 
