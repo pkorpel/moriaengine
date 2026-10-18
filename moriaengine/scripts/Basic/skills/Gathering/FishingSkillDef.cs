@@ -121,7 +121,7 @@ namespace SteamEngine.CompiledScripts {
 			SkillSequenceArgs skillSeq = (SkillSequenceArgs) parameter;
 			if (!FishingSkillDef.IsValidWater(self, targetted)) {
 				self.SysMessage(Loc<FishingLoc>.Get(self.Language).notWater);
-				return TargetResult.RestartTargetting;
+				return TargetResult.Done; //#391 - show the message once and stop, don't loop
 			}
 			skillSeq.Target1 = targetted;
 			skillSeq.PhaseStart();
@@ -130,12 +130,12 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			self.SysMessage(Loc<FishingLoc>.Get(self.Language).notWater);
-			return TargetResult.RestartTargetting;
+			return TargetResult.Done; //#391
 		}
 
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
 			self.SysMessage(Loc<FishingLoc>.Get(self.Language).notWater);
-			return TargetResult.RestartTargetting;
+			return TargetResult.Done; //#391
 		}
 	}
 
