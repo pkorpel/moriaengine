@@ -2136,7 +2136,7 @@ RESOURCES2 = 1 i_log, 1 i_thread //some resources were fixed by converter
 SKILLMAKE = 35.0 carpentry, 30.0 tailoring,  t_carpentry //some resources were fixed by converter
 DEFNAME = i_fishing_pole
 layer = 1 //#370 - was never equippable at all (converter dropped this); real content needs a hand layer to be usable
-associatedskill = Fishing //#370 - dclick/.usehand starts Fishing
+tooltype = FishingPole //#392 - derives AssociatedSkill=Fishing automatically (was associatedskill=Fishing, #370)
 
 [ItemDef 0xe34]
 CATEGORY = Provisions - Alchemy & Magic

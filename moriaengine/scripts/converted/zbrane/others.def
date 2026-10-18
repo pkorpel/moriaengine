@@ -155,7 +155,8 @@ speed = 100
 range = 1
 strikeStartRange = 5
 strikeStopRange = 10
-associatedskill = Lumberjacking //#370 - dclick/.usehand starts Lumberjacking
+//#392 - associatedskill removed; Lumberjacking is now derived automatically from
+//WeaponType.OneHandAxe above, no per-item tag needed
 
 [ItemDef 0xf44]
 DUPEITEM = i_hatchet

@@ -143,6 +143,15 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TOOL_SETUP: uid=" + hatchet.Uid + " backpack=" + self.Backpack.Uid);
 		}
 
+		/// <summary>#392 - a plain converted axe that has NEVER had any associatedskill=/
+		/// tooltype= tag (unlike i_hatchet, which used to need one) - its own WeaponType.
+		/// TwoHandAxe is what should now automatically grant Lumberjacking on dclick.</summary>
+		[SteamFunction]
+		public static void TestGrantAndEquipPlainAxe(Character self) {
+			Equippable axe = self.NewEquip(ThingDef.GetByDefname("i_axe_copper"));
+			Console.WriteLine("TOOL_SETUP: uid=" + axe.Uid + " backpack=" + self.Backpack.Uid);
+		}
+
 		[SteamFunction]
 		public static void TestGrantAndEquipFishingPole(Character self) {
 			Equippable pole = self.NewEquip(ThingDef.GetByDefname("i_fishing_pole"));

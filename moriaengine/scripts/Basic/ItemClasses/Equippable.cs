@@ -20,16 +20,53 @@ using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
+	/// <summary>#392 - a tool-category tag independent of WeaponType (pickaxe/fishing pole
+	/// aren't safely derivable from WeaponType - OneHandSpike is shared with real Fencing
+	/// weapons like daggers, and a fishing pole isn't even a WeaponDef). Any equippable tool
+	/// just needs one ".def" "tooltype=" line to automatically grant its gathering skill -
+	/// see EquippableDef.AssociatedSkill.</summary>
+	public enum ToolType {
+		None,
+		Pickaxe,
+		FishingPole
+	}
+
 	[ViewableClass]
 	public partial class EquippableDef {
 		private static readonly TagKey associatedSkillTK = TagKey.Acquire("_associatedSkill_");
+		private static readonly TagKey toolTypeTK = TagKey.Acquire("_toolType_");
+
+		/// <summary>#392 - independent of AssociatedSkill's own explicit-override tag; see
+		/// that property's own fallback logic for how this feeds into it.</summary>
+		public ToolType ToolType {
+			get {
+				object tag = this.GetTag(toolTypeTK);
+				if (tag is ToolType toolType) {
+					return toolType;
+				}
+				if ((tag is int intTag) && Enum.IsDefined(typeof(ToolType), intTag)) {
+					return (ToolType) intTag; //defensive coercion - same save/reload retyping class as AggroMode/TamingDifficulty (#168/#265)
+				}
+				return ToolType.None;
+			}
+			set {
+				this.SetTag(toolTypeTK, value);
+			}
+		}
 
 		/// <summary>#370 - the skill a dclick/`.usehand` "use" action on this equippable
 		/// should start (e.g. a pickaxe's Mining, a hatchet's Lumberjacking). SkillName.None
 		/// (the default) means this item has no "use" action - dclicking it only equips,
 		/// matching every plain weapon/armor's existing behavior. Data-driven on purpose, so
 		/// wiring a new tool to its skill is a one-line ".def" change, no new C# class needed -
-		/// see Equippable.OnUse.</summary>
+		/// see Equippable.OnUse.
+		///
+		/// #392 - when no explicit "associatedskill=" override tag is set, this is now derived
+		/// automatically from type-level data instead of needing a per-item tag: any weapon
+		/// whose WeaponType is OneHandAxe/TwoHandAxe (an exclusively-axe category, #157) grants
+		/// Lumberjacking, and any item tagged with ToolType.Pickaxe/FishingPole grants Mining/
+		/// Fishing - so a brand-new axe or tool item works automatically, no per-item tagging
+		/// needed (a future quest-reward "golden pickaxe" just needs tooltype=Pickaxe).</summary>
 		public SkillName AssociatedSkill {
 			get {
 				object tag = this.GetTag(associatedSkillTK);
@@ -38,6 +75,18 @@ namespace SteamEngine.CompiledScripts {
 				}
 				if ((tag is int intTag) && Enum.IsDefined(typeof(SkillName), intTag)) {
 					return (SkillName) intTag; //defensive coercion - same save/reload retyping class as AggroMode/TamingDifficulty (#168/#265)
+				}
+				if (this is WeaponDef weaponDef) {
+					WeaponType wt = weaponDef.WeaponType;
+					if ((wt == WeaponType.OneHandAxe) || (wt == WeaponType.TwoHandAxe)) {
+						return SkillName.Lumberjacking;
+					}
+				}
+				switch (this.ToolType) {
+					case ToolType.Pickaxe:
+						return SkillName.Mining;
+					case ToolType.FishingPole:
+						return SkillName.Fishing;
 				}
 				return SkillName.None;
 			}
@@ -53,6 +102,15 @@ namespace SteamEngine.CompiledScripts {
 					this.AssociatedSkill = skill;
 				} else {
 					Logger.WriteWarning(filename, line, "associatedskill '" + args + "' is not a known SkillName value.");
+				}
+				return;
+			}
+			if (param == "tooltype") {
+				ToolType toolType;
+				if (Enum.TryParse(args, true, out toolType)) {
+					this.ToolType = toolType;
+				} else {
+					Logger.WriteWarning(filename, line, "tooltype '" + args + "' is not a known ToolType value.");
 				}
 				return;
 			}
