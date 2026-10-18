@@ -64,16 +64,32 @@ case "$cmd" in
     exec tail -f "$logs/aux.console.log" "$logs/gamecore.console.log"
     ;;
   stop)
-    [ -f "$pids" ] || die "not running (no pid file)"
-    while read -r p; do
-      pkill -P "$p" 2>/dev/null || true; kill "$p" 2>/dev/null || true
-    done < "$pids"
-    rm -f "$pids"
-    sleep 2
+    [ -f "$pids" ] || listening 2593 || listening 2595 || die "not running"
+    # Kill by the port's real listening pid, not the launch() subshell pid - that
+    # subshell's own children (tail/dotnet) just get reparented to init if the
+    # subshell itself dies without them, and pkill -P (the previous approach) is
+    # not guaranteed to be installed. Poll + escalate to -9, then verify both
+    # ports are actually free before claiming success.
+    ok=1
     for p in 2593 2595; do
-      listening $p && lsof -t -nP -iTCP:$p -sTCP:LISTEN | xargs kill 2>/dev/null || true
+      pid=$(lsof -t -nP -iTCP:"$p" -sTCP:LISTEN 2>/dev/null) || true
+      [ -n "${pid:-}" ] || continue
+      kill $pid 2>/dev/null || true
+      waited=0
+      while listening "$p" && [ "$waited" -lt 10 ]; do sleep 1; waited=$((waited + 1)); done
+      if listening "$p"; then
+        pid=$(lsof -t -nP -iTCP:"$p" -sTCP:LISTEN 2>/dev/null) || true
+        [ -n "${pid:-}" ] && kill -9 $pid 2>/dev/null || true
+        sleep 1
+      fi
+      listening "$p" && ok=0
     done
-    echo "run-local: stopped"
+    rm -f "$pids"
+    if [ "$ok" -eq 1 ]; then
+      echo "run-local: stopped"
+    else
+      die "port(s) still listening after SIGKILL - check manually (lsof -iTCP:2593,2595)"
+    fi
     ;;
   *) sed -n '2,9p' "$0"; exit 2 ;;
 esac
