@@ -106,6 +106,15 @@ namespace SteamEngine.CompiledScripts {
 			this.Delete();//also aborts the skill
 		}
 
+		/// <summary>#157 - corrected: real converted weapon content's own `type=` field (e.g.
+		/// `t_weapon_sword`/`t_weapon_fence`/`t_weapon_mace_*`) covers both sword- and
+		/// axe-named weapons under the same "sword" category - Sphere's real Swordsmanship
+		/// skill governs both, not axes alone needing TwoHand to count. Previously
+		/// OneHandSword/OneHandAxe both fell through to Fencing (presumably a placeholder
+		/// never audited, since no real content had ever populated WeaponType correctly
+		/// before #157) - fixed so the 1h/2h split no longer changes which skill a
+		/// sword-or-axe-category weapon trains, only spike (Fencing) and blunt (Macing)
+		/// weapons are unaffected by this change.</summary>
 		public static SkillName GetSkillNameByWeaponType(WeaponType weapType) {
 			switch (weapType) {
 				case WeaponType.BareHands:
@@ -114,11 +123,11 @@ namespace SteamEngine.CompiledScripts {
 					return SkillName.Marksmanship;
 				case WeaponType.Bow:
 					return SkillName.Archery;
-				case WeaponType.TwoHandAxe:
-				case WeaponType.TwoHandSword:
-					return SkillName.Swords;
 				case WeaponType.OneHandSword:
+				case WeaponType.TwoHandSword:
 				case WeaponType.OneHandAxe:
+				case WeaponType.TwoHandAxe:
+					return SkillName.Swords;
 				case WeaponType.OneHandSpike:
 				case WeaponType.TwoHandSpike:
 					return SkillName.Fencing;

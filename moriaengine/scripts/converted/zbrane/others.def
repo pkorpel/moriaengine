@@ -145,7 +145,7 @@ SKILLMAKE = 33.9 tinkering, t_tinker_tools //some resources were fixed by conver
 //SKILL = fencing // commented out by Converter 
 TwoHanded = false
 layer = 2 //Set by Converter 
-WeaponType = WeaponType.OneHandSword //guessed by Converter 
+WeaponType = WeaponType.OneHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_hatchet
 attackVsP = 6
@@ -201,7 +201,7 @@ RESOURCES = 4 i_ingot_iron //some resources were fixed by converter
 SKILLMAKE = 54.1 tinkering, t_tinker_tools //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
 layer = 1 //Set by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_hammer_sledge
 
@@ -219,7 +219,7 @@ WEIGHT = 40
 RESOURCES = 4 i_ingot_iron //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
 layer = 1 //Set by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_hammer
 
@@ -242,7 +242,7 @@ SKILLMAKE = 10.0 blacksmithing //some resources were fixed by converter
 //SKILL = Mace Fighting // commented out by Converter 
 TwoHanded = false
 layer = 1 //Set by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_hammer_smith
 attackVsP = 5
