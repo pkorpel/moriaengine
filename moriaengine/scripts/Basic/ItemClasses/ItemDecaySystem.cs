@@ -67,15 +67,23 @@ namespace SteamEngine.CompiledScripts {
 			item.DeleteTimer(decayTimerTK);
 		}
 
-		/// <summary>Null if not currently eligible (not on the ground, exempt, or not flagged);
-		/// otherwise the real minutes to use, from DecaySettings.
+		/// <summary>Null if not currently eligible (not on the ground or exempt); otherwise the
+		/// real minutes to use, from DecaySettings.
 		///
-		/// Default policy decided here, same as the original pass: attr_decay is OFF by
-		/// default for every non-corpse item unless a ".def" line or a GM/script explicitly
-		/// sets it - matches this engine's existing "incomplete config defaults permissive"
-		/// convention. Corpses, by contrast, ALWAYS decay by default once on the ground -
-		/// there's no flag gating corpse decay at all, matching real UO (every corpse
-		/// eventually disappears, no content author has to opt a corpse into it).</summary>
+		/// Default policy (#371, flipped from the original #219 pass): a non-corpse item loose
+		/// on the ground decays BY DEFAULT now, matching real Sphere (where the global
+		/// DECAYTIMER ini setting decays virtually everything loose by default - attr_decay
+		/// itself is only ever used by real content as a forcing/override flag on specific
+		/// authored items, never as the default-off master gate the original pass modeled it
+		/// as). attr_decay therefore no longer gates anything here - it's vestigial-safe, not
+		/// removed from the enum, since real/future content setting it explicitly changes
+		/// nothing (decay already applies). Exemptions: attr_questitem (unchanged),
+		/// attr_lockeddown/attr_secure (new - a player's intentionally-secured house items must
+		/// not start vanishing just because they're sitting on the floor instead of in a
+		/// container), and a Flag_NoDecay region (unchanged). Corpses, by contrast, ALWAYS decay
+		/// by default once on the ground - there's no flag gating corpse decay at all, matching
+		/// real UO (every corpse eventually disappears, no content author has to opt a corpse
+		/// into it).</summary>
 		private static double? GetDecayMinutesIfEligible(Item item) {
 			if (item.Cont != null) {
 				return null; //not on the ground - nothing decays while held/contained/equipped
@@ -91,11 +99,11 @@ namespace SteamEngine.CompiledScripts {
 					: DecaySettings.instance.npcCorpseDecayMinutes;
 			}
 
-			if (!item.HasAttribute(ItemAttributes.attr_decay)) {
-				return null;
-			}
 			if (item.HasAttribute(ItemAttributes.attr_questitem)) {
 				return null; //exempt, no clock at all
+			}
+			if (item.HasAttribute(ItemAttributes.attr_lockeddown) || item.HasAttribute(ItemAttributes.attr_secure)) {
+				return null; //player-secured house items are never trash, regardless of attr_decay
 			}
 			return DecaySettings.instance.itemDecayMinutes;
 		}
