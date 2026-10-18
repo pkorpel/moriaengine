@@ -347,14 +347,46 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("ATTR_THING_EXISTS: uid=" + uid + " exists=" + exists);
 		}
 
-		/// <summary>#383 - reports whether the corpse at the given uid carries attr_decay
-		/// (cosmetic-only on a corpse, see Corpse.InitFromChar's own doc comment - real corpse
-		/// decay is unconditional regardless of this flag).</summary>
+		/// <summary>#383/#385 - reports whether the corpse at the given uid carries attr_decay
+		/// AND whether it currently has a real decay timer scheduled (ItemDecaySystem.
+		/// HasActiveTimer) - the two are expected to always agree for a corpse since #385 made
+		/// the flag a real gate, not just cosmetic.</summary>
 		[SteamFunction]
 		public static void TestReportCorpseHasAttrDecay(Character self, ScriptArgs sa) {
 			uint uid = Convert.ToUInt32(sa.Argv[0], CultureInfo.InvariantCulture);
 			Corpse corpse = (Corpse) Thing.UidGetThing(uid);
-			Console.WriteLine("ATTR_CORPSE_DECAY_TEST: hasAttrDecay=" + corpse.HasAttribute(ItemAttributes.attr_decay));
+			Console.WriteLine("ATTR_CORPSE_DECAY_TEST: hasAttrDecay=" + corpse.HasAttribute(ItemAttributes.attr_decay) +
+				" hasActiveTimer=" + ItemDecaySystem.HasActiveTimer(corpse));
+		}
+
+		/// <summary>#385 - toggles attr_decay on the corpse at the given uid to the given value
+		/// ("true"/"false" - same SetAttribute path a GM's D_AttrList checkbox submit uses), then
+		/// reports the same hasAttrDecay/hasActiveTimer pair as TestReportCorpseHasAttrDecay
+		/// above, so a test can confirm the toggle actually cancels/restores the real timer, not
+		/// just the flag's own stored value. Uses the same ScriptArgs dual-shape handling as
+		/// LevelingTests.SplitArgs (not shared across files - this account isn't the server's
+		/// elevated first one, so the 2 args arrive as one un-split string via
+		/// SimpleCommandParser).</summary>
+		[SteamFunction]
+		public static void TestSetCorpseAttrDecayAndReport(Character self, ScriptArgs sa) {
+			string[] parts = SplitArgs(sa);
+			uint uid = Convert.ToUInt32(parts[0], CultureInfo.InvariantCulture);
+			bool value = Convert.ToBoolean(parts[1], CultureInfo.InvariantCulture);
+			Corpse corpse = (Corpse) Thing.UidGetThing(uid);
+			corpse.SetAttribute(ItemAttributes.attr_decay, value);
+			Console.WriteLine("ATTR_CORPSE_DECAY_TEST: hasAttrDecay=" + corpse.HasAttribute(ItemAttributes.attr_decay) +
+				" hasActiveTimer=" + ItemDecaySystem.HasActiveTimer(corpse));
+		}
+
+		private static string[] SplitArgs(ScriptArgs sa) {
+			if ((sa.Argv.Length == 1) && (sa.Argv[0] is string combined)) {
+				return combined.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+			}
+			string[] parts = new string[sa.Argv.Length];
+			for (int i = 0; i < sa.Argv.Length; i++) {
+				parts[i] = Convert.ToString(sa.Argv[i], CultureInfo.InvariantCulture);
+			}
+			return parts;
 		}
 
 		[SaveableClass]

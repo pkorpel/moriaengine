@@ -67,6 +67,13 @@ namespace SteamEngine.CompiledScripts {
 			item.DeleteTimer(decayTimerTK);
 		}
 
+		/// <summary>#385 - test-support only: reports whether `item` currently has its decay
+		/// timer scheduled, so a test can confirm a GM toggling attr_decay off/on a corpse via
+		/// D_AttrList actually cancels/restores the real timer, not just the flag's own value.</summary>
+		public static bool HasActiveTimer(Item item) {
+			return item.HasTimer(decayTimerTK);
+		}
+
 		/// <summary>Null if not currently eligible (not on the ground or exempt); otherwise the
 		/// real minutes to use, from DecaySettings.
 		///
@@ -80,10 +87,12 @@ namespace SteamEngine.CompiledScripts {
 		/// nothing (decay already applies). Exemptions: attr_questitem (unchanged),
 		/// attr_lockeddown/attr_secure (new - a player's intentionally-secured house items must
 		/// not start vanishing just because they're sitting on the floor instead of in a
-		/// container), and a Flag_NoDecay region (unchanged). Corpses, by contrast, ALWAYS decay
-		/// by default once on the ground - there's no flag gating corpse decay at all, matching
-		/// real UO (every corpse eventually disappears, no content author has to opt a corpse
-		/// into it).</summary>
+		/// container), and a Flag_NoDecay region (unchanged). Corpses, by contrast, decay by
+		/// default once on the ground (#383 sets attr_decay = true on every corpse at creation
+		/// for exactly this) - but unlike non-corpse items, a corpse's attr_decay IS a real gate
+		/// (#385): a GM can explicitly disable it via D_AttrList (e.g. to preserve a corpse as a
+		/// monument/evidence), and SetAttribute's existing ScheduleOrCancel re-evaluation means
+		/// re-checking it later resumes the normal corpse-rate timer.</summary>
 		private static double? GetDecayMinutesIfEligible(Item item) {
 			if (item.Cont != null) {
 				return null; //not on the ground - nothing decays while held/contained/equipped
@@ -94,6 +103,9 @@ namespace SteamEngine.CompiledScripts {
 
 			Corpse corpse = item as Corpse;
 			if (corpse != null) {
+				if (!corpse.HasAttribute(ItemAttributes.attr_decay)) {
+					return null; //#385 - a GM explicitly disabled decay on this specific corpse
+				}
 				return (corpse.Owner != null)
 					? DecaySettings.instance.playerCorpseDecayMinutes
 					: DecaySettings.instance.npcCorpseDecayMinutes;
