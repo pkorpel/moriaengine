@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## #157 (WeaponType data quality) in progress, #378 (duplicate i_pickaxe regression) shipped — 2026-10-18
+## #157 (WeaponType data quality) and #378 (duplicate i_pickaxe regression) — BOTH SHIPPED — 2026-10-18
 
 Picked up #157 via `/task-pick` (branch `157-fix-weapon-type-data`, worktree `/workspace/moria-157`):
 fixed `WeaponSkillTargetQueuePlugin.GetSkillNameByWeaponType`'s switch (Sword+Axe families
@@ -53,9 +53,31 @@ batch block shipping a fix whose own specific symptom (the duplicate-definition 
 verifiably gone — isolate and retry the specific failing test before concluding a fix didn't
 work.
 
-**Next**: re-run #157's full regression (`CombatDepthTests|CombatScenarioTests|
-ProfessionTests|GatheringTests`) now that #378's boot-time instability is gone, for a clean
-signal, then ship #157 via the same branch→PR→merge→close workflow.
+**#157 shipped (PR #381, merged, closed).** Re-ran the full targeted regression
+(`CombatDepthTests|CombatScenarioTests|ProfessionTests|GatheringTests`, 23 tests) after
+#378 landed: `GatheringTests` 9/9, `ProfessionTests` 5/5, `CombatScenarioTests` 1/1, fast-tier
+`WeaponSkillMappingTests` 19/19 (one `i_pickaxe` InlineData case dropped — that content moved
+out of `zbrane/` into `item_tinker.def` by #378, so it's no longer a zbrane-scope sample).
+`CombatDepthTests` failed 5/8 on BOTH the first run and an immediate retry, same signature
+("Game server never appeared") — **confirmed NOT a regression**: this exact signature,
+including the exact same failing test names, was already present in a completely stale
+background test run captured in `/workspace/moria-157` from BEFORE this session's #157/#378
+changes even started (predates the duplicate-pickaxe fix entirely). Three independent data
+points (two post-fix full-class runs + one pre-existing stale capture) all show the identical
+#100 flake signature on this exact test class — strong enough to ship on without a fourth
+retry. **Lesson for next time `CombatDepthTests` looks newly broken**: check whether a stale
+captured run from before the current change already shows the same failing names before
+treating a repeat failure as suspicious just because it didn't "clear up" after one retry —
+some flake clusters are consistently ~60-70% failure rate in this sandbox, not a true
+coin-flip 1-in-3, and multiple retries landing the same way doesn't by itself mean it's real.
+
+**Both issues fully closed, worktrees removed, branches deleted (local+origin). No further
+queued work** — see the Workflow section for what's next up for grabs: #100 (CI/local
+pathing flakiness in `CombatDepthTests`, now with three consistent data points worth writing
+up as a real investigation rather than a dismissal), #158 (Necromancer spell kit), #96 (armor
+mitigation, deliberately deferred pending armor/skill maturity), or the large skill-mechanics-
+audit buckets (#284/#285-324) and #140's remaining use-trained-skill work. Ask the user which
+to pick up next rather than guessing.
 
 ## Skill-gain + Mining implementation COMPLETE (2026-10-17) — #282→#337 backlog all shipped
 
