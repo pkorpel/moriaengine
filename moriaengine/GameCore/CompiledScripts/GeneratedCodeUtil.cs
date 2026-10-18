@@ -214,9 +214,13 @@ namespace SteamEngine.CompiledScripts {
 				return inputObjectExpression;
 			}
 			if (ConvertTools.IsNumberType(dataType)) {
+				//#411 - this enum branch was dead code until IsSimpleSaveableType started
+				//excluding enums from the direct-parse path: Convert has no "ToXyzEnum"
+				//method, only "To" + the enum's UNDERLYING numeric type's name.
+				Type numberType = dataType.IsEnum ? Enum.GetUnderlyingType(dataType) : dataType;
 				CodeMethodInvokeExpression toNumberExp = new CodeMethodInvokeExpression(
 					new CodeTypeReferenceExpression(typeof(Convert)),
-					"To" + dataType.Name,
+					"To" + numberType.Name,
 					inputObjectExpression);
 				if (dataType.IsEnum) {
 					return new CodeCastExpression(
