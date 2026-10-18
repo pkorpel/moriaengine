@@ -1,5 +1,63 @@
 # moriaengine — working state
 
+## #411 (enum LoadLine regression from #407) — SHIPPED — 2026-10-18
+
+Found while auditing #407/#408 before starting #410's Part 2 work (the
+Race+Nation/Realm plugin rework below). #407 changed `ObjectSaver.Save` to
+always embed an enum's type name as `(Enum:TypeName)rawValue` - correct for
+`TagHolder`'s generic `object`-typed tag storage, but `output.WriteValue`
+always boxes to `object` and calls this SAME `Save` method regardless of the
+caller's static field type, so this also silently changed the save format
+for every statically-typed `.ct` Var and `[SaveableData]` enum field, not
+just tags. Two codegen decision points (`ClassTemplate.LoadFieldStatement`,
+`DecoratedClassesSaveImplementor`'s matching logic) still routed enum fields
+through a direct `ConvertTools.ParseByte`/`ParseInt32(valueString)` call
+assuming a bare number - broken by #407's new format. Confirmed two real
+instances already in the codebase: `Corpse.direction` (a `.ct` Var) and
+`DelayedMsg.color` (`[SaveableData]`) - either would throw `FormatException`
+on load after a real save under #407/#408's merged state.
+
+**Fixed (PR #412, merged)**: excluded enums from the "simple direct-parse"
+codegen decision at exactly those two call sites (not
+`ObjectSaver.IsSimpleSaveableType` itself - that helper has other consumers,
+e.g. the `.info` dialog's enum-edit-button UX, that needed to keep their
+current behavior unchanged). Forces enum fields through the generic
+`ObjectSaver.Load` dispatch, which already correctly round-trips the
+`(Enum:Name)value` format via #407's own `TryLoadEnum`.
+
+**Second bug found and fixed along the way**: `GeneratedCodeUtil.
+GenerateDelayedLoadExpression`'s own enum branch had ALWAYS been dead code
+(never exercised until this fix started routing enum fields through it) -
+it called `Convert.ToDirection(...)` (the enum's own type name) instead of
+`Convert.ToByte(...)` (the enum's underlying numeric type) - `Convert` has
+no `"ToXyzEnum"` methods, so this would have thrown immediately the first
+time it ever ran. Fixed to resolve the underlying type via
+`Enum.GetUnderlyingType` before building the `Convert.ToX` call.
+
+Verified by fully regenerating all 72 `*.Generated.cs` files (delete-all +
+boot `GameCore.dll` twice, the established sandbox workaround) and
+confirming `Corpse.Generated.cs`'s `LoadLine` now calls `ObjectSaver.Load`
+for `"direction"`, not `ConvertTools.ParseByte`. New real end-to-end test
+(`CorpseDirectionPersistenceTests.cs`) confirms a corpse's non-default
+Direction actually saves as `direction=(Enum:Direction)5` in a real
+`things.sav`. Full targeted regression (fast tier 50/50,
+`EnumTagPersistenceTests`/`CorpseDirectionPersistenceTests`/`RaceTests`/
+`NotorietyTests`/`ProfessionTests`/`LevelingTests`/`LevelingIsolatedTests`/
+`InfoDialogTests`/`AttrFlagTests`) all pass - one `AttrFlagTests` timeout and
+one false-fail hit when all 9 protocol-test files ran together in one
+9-way-parallel batch, both confirmed as sandbox resource contention (not a
+regression) by passing clean when retried in isolation/smaller batches.
+
+**Lesson for any future change to `ObjectSaver.Save`'s per-type dispatch**:
+a change to the generic `Save(object)` path can silently break a
+STATICALLY-TYPED codegen path that assumed the old format, since
+`output.WriteValue` always routes through the same boxed-object `Save` call
+regardless of the caller's real field type. Before merging any such change,
+grep the `*.Generated.cs` files for every codegen shape (`ClassTemplate`'s
+`.ct` Vars AND `DecoratedClassesSaveImplementor`'s `[SaveableData]` fields)
+that type could appear as, not just the one path the original bug report
+came through.
+
 ## #404/#407 explevel-permission + enum-persistence — BOTH SHIPPED — 2026-10-18
 
 **#404 (PR #405, merged).** `.explevel` threw "No permission to run that command"
