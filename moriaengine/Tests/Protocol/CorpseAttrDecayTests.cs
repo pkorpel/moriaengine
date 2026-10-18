@@ -3,11 +3,12 @@ using System.Threading;
 using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
-	/// <summary>#383 - a GM-visibility follow-up to #236's corpse-decay design: an NPC's corpse
-	/// now carries attr_decay cosmetically (it was already decaying unconditionally regardless of
-	/// the flag; this just makes the flag reflect that for anyone checking .AttrList/.info).
-	/// Shares AttrFlagTests.cs's existing TestKillNpcAndReportCorpse helper (#218) rather than
-	/// re-deriving an NPC-kill/corpse-lookup path from scratch.</summary>
+	/// <summary>#383/#385 - an NPC's corpse carries attr_decay by default (matching real UO's
+	/// unconditional corpse decay), and #385 made the flag a REAL gate on top of that default: a
+	/// GM can explicitly disable it via D_AttrList to preserve a specific corpse (monument/
+	/// evidence use case), and re-enabling it resumes the normal timer. Shares AttrFlagTests.cs's
+	/// existing TestKillNpcAndReportCorpse helper (#218) rather than re-deriving an NPC-kill/
+	/// corpse-lookup path from scratch.</summary>
 	[Collection(CorpseAttrDecayCollection.Name)]
 	public class CorpseAttrDecayTests {
 		private const string Account = "corpsedecaytest";
@@ -34,6 +35,37 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("ATTR_CORPSE_DECAY_TEST:", mark, TimeSpan.FromSeconds(10)));
 				string decayLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_CORPSE_DECAY_TEST:");
 				Assert.Contains("hasAttrDecay=True", decayLine);
+				Assert.Contains("hasActiveTimer=True", decayLine);
+			}
+		}
+
+		/// <summary>#385 - the actual new behavior: a GM explicitly unchecking attr_decay on a
+		/// corpse (same SetAttribute path D_AttrList's checkbox submit uses) cancels its real
+		/// decay timer, not just the flag's own stored value - and re-checking it resumes the
+		/// normal corpse-rate timer.</summary>
+		[Fact]
+		public void GmCanDisableAndReenableDecayOnASpecificCorpse() {
+			using (var client = this.ConnectLoginAndCreateCharacter("CorpsePreserveTester")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestKillNpcAndReportCorpse");
+				Assert.True(this.fixture.WaitForGameOutputSince("ATTR_CORPSE_SETUP:", mark, TimeSpan.FromSeconds(10)));
+				string setupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_CORPSE_SETUP:");
+				string uid = ExtractAfter(setupLine, "uid=");
+				Assert.NotEqual("none", uid);
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetCorpseAttrDecayAndReport " + uid + " false");
+				Assert.True(this.fixture.WaitForGameOutputSince("ATTR_CORPSE_DECAY_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string disabledLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_CORPSE_DECAY_TEST:");
+				Assert.Contains("hasAttrDecay=False", disabledLine);
+				Assert.Contains("hasActiveTimer=False", disabledLine);
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetCorpseAttrDecayAndReport " + uid + " true");
+				Assert.True(this.fixture.WaitForGameOutputSince("ATTR_CORPSE_DECAY_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string reenabledLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ATTR_CORPSE_DECAY_TEST:");
+				Assert.Contains("hasAttrDecay=True", reenabledLine);
+				Assert.Contains("hasActiveTimer=True", reenabledLine);
 			}
 		}
 
