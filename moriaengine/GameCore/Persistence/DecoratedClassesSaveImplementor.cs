@@ -658,7 +658,11 @@ namespace SteamEngine.Persistence {
 						new CodeVariableReferenceExpression(propsLineName),
 						"Line")));
 
-				if (ObjectSaver.IsSimpleSaveableType(type)) {
+				//#411 - same reasoning as ClassTemplate.LoadFieldStatement: enums must go
+				//through the generic delayed-load dispatch, not a direct ConvertTools.
+				//ParseX(value), since Save always writes the type-preserving "(Enum:Name)value"
+				//format from #407.
+				if (!type.IsEnum && ObjectSaver.IsSimpleSaveableType(type)) {
 					//we directly assign the value to the field/property
 					assignment.Right = GeneratedCodeUtil.GenerateSimpleLoadExpression(
 						type,
