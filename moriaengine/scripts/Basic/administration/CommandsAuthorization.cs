@@ -83,6 +83,46 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["d_levelspendskills"] = PLEVEL_PLAYER;
 			this.commands["d_levelspendabilities"] = PLEVEL_PLAYER;
 
+			//Same gap, recurring a THIRD time (#404): explevel.scp's own "[function explevel]"
+			//body opens the dialog via a bare (no self./src. receiver) `Dialog(d_explevel)` call
+			//- both the bare "Dialog" function name and its "d_explevel" argument independently
+			//go through this same OpNode_Lazy_Expression authorization gate, each checked
+			//against its own name. Missing from this list meant EVERY non-first-account player's
+			//very first .explevel attempt was denied on this one line, before ever reaching the
+			//InvalidateCombatWeaponValues()/InvalidateCombatArmorValues() calls #146 already
+			//fixed above - invisible in this file's own ExpLevelDialogOpensWithoutError for the
+			//same reason as #146/#254: it only ever ran on "protocoltest", the server's
+			//auto-elevated first-ever account.
+			this.commands["Dialog"] = PLEVEL_PLAYER;
+			this.commands["d_explevel"] = PLEVEL_PLAYER;
+			//Same gap again, one level deeper: ScriptedGumpDef compiles every line of a raw-
+			//LScript [DIALOG ... TEXT] section into a bare `AddString("...")` call (see
+			//GameCore/LScript/ScriptedGumpDef.cs's TEXT-section parser) - explevel.scp's own
+			//TEXT section is this engine's only LIVE (non-"converted"-legacy) consumer of that
+			//mechanism, so this was invisible until a genuinely ordinary account's .explevel
+			//was driven all the way through a real value-populated render. AddString itself
+			//was only the OUTER gate - every <Token> placeholder embedded inside an AddString
+			//string is ALSO independently evaluated as its own bare symbol at render time
+			//(same OpNode_Lazy_Expression path), so every token explevel.scp's TEXT section
+			//actually references needs its own entry too - the complete, fixed set, from the
+			//script's own TEXT section (`grep -oE '<[A-Za-z][A-Za-z0-9]*>' explevel.scp`).
+			this.commands["AddString"] = PLEVEL_PLAYER;
+			this.commands["Name"] = PLEVEL_PLAYER;
+			this.commands["ProfessionName"] = PLEVEL_PLAYER;
+			this.commands["Level"] = PLEVEL_PLAYER;
+			this.commands["Experience"] = PLEVEL_PLAYER;
+			this.commands["NextLevelExperienceThreshold"] = PLEVEL_PLAYER;
+			this.commands["ArmorClassVsP"] = PLEVEL_PLAYER;
+			this.commands["ArmorClassVsM"] = PLEVEL_PLAYER;
+			this.commands["MindDefenseVsP"] = PLEVEL_PLAYER;
+			this.commands["MindDefenseVsM"] = PLEVEL_PLAYER;
+			this.commands["WeaponAttackVsP"] = PLEVEL_PLAYER;
+			this.commands["WeaponPiercing"] = PLEVEL_PLAYER;
+			this.commands["WeaponAttackVsM"] = PLEVEL_PLAYER;
+			this.commands["WeaponDelay"] = PLEVEL_PLAYER;
+			this.commands["MindPowerVsP"] = PLEVEL_PLAYER;
+			this.commands["MindPowerVsM"] = PLEVEL_PLAYER;
+
 			//Guild commands - gated by their own internal leader/member checks, not plevel;
 			//missing from this allowlist meant they silently required GM (plevel>=4) by the
 			//default-deny fallback below, so no ordinary player could ever use them
