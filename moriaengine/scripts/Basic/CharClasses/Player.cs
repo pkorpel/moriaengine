@@ -377,7 +377,17 @@ namespace SteamEngine.CompiledScripts {
 		/// provides elsewhere - nothing destroyed/deleted, a reconnect within the window cancels
 		/// this cleanly via On_LogIn below). The effect plays HERE, at disconnect/timer-start,
 		/// not at the delayed removal - signals to nearby players that this character is in the
-		/// process of logging out, not a random disappearance.</summary>
+		/// process of logging out, not a random disappearance.
+		///
+		/// #416 - GMs (plevel >= Globals.PlevelOfGM) skip the lingering delay - the timer is
+		/// still used (DueInSeconds = 0, firing on the very next tick) rather than calling
+		/// Disconnect() directly here: On_LogOut runs while this.GameState is still set (the
+		/// connection's own close sequence hasn't nulled it out yet at this point), so
+		/// IsLingering is still false and Disconnect() would take its "still connected" branch
+		/// and call Conn.Close() a second time, re-entering the very close handler that's
+		/// already running this trigger. CharLingeringTimer.OnTimeout's own IsLingering check
+		/// only sees the correct, already-lingering state because it runs on a LATER tick, once
+		/// that transition has actually completed.</summary>
 		private static TimerKey charLingeringTimerTK = TimerKey.Acquire("_charLingeringTimer_");
 		public override void On_LogOut() {
 			//TODO: In safe/nonsafe areas, settings, etc.
@@ -385,7 +395,10 @@ namespace SteamEngine.CompiledScripts {
 			if (LogoutSettings.instance.showLogoutEffect) {
 				EffectFactory.StationaryEffect(this, 0x376A, 10, 16);
 			}
-			this.AddTimer(charLingeringTimerTK, new CharLingeringTimer()).DueInSeconds = LogoutSettings.instance.logoutDelaySeconds;
+
+			AbstractAccount acc = this.Account;
+			double delay = ((acc != null) && (acc.PLevel >= Globals.PlevelOfGM)) ? 0 : LogoutSettings.instance.logoutDelaySeconds;
+			this.AddTimer(charLingeringTimerTK, new CharLingeringTimer()).DueInSeconds = delay;
 
 			//if (DbManager.Config.useDb) {
 			//    DbMethods.loginLogs.GameLogout(this.Conn);
