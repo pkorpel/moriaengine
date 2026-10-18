@@ -1,5 +1,48 @@
 # moriaengine — working state
 
+## #406 (command authorization scoped to top-level word only) — SHIPPED — 2026-10-18
+
+The architectural issue flagged while fixing #404: `OpNode_Lazy_Expression.
+Run` called `Commands.AuthorizeCommandThrow` for EVERY bare-symbol
+resolution during LScript execution, not just the literal word a player
+typed as a command - any nested property read, helper call, or symbol
+resolved while that command's own body (or anything it triggers, e.g. a
+dialog) ran got swept into the same check. Had bitten `.explevel` three
+times (#146, #254, #404), with no way to know how many layers deep the
+problem went short of allowlisting one symbol at a time and re-testing.
+
+**User's decision**: scope the authorization check to only the literal
+top-level command word, not every nested resolution.
+
+**Fixed (PR #419, merged).** New `Commands.topLevelCommandPending` flag -
+set `true` once per `InvokeCommand` call (right alongside the existing
+`commandRunning` flag) and cleared the moment `AuthorizeCommandThrow` is
+first entered. Since execution is synchronous and single-threaded, the
+very FIRST bare-symbol resolution reached after a command starts running
+is always the literal command word itself; everything resolved after that
+point in the same call chain - nested property reads, a dialog's own TEXT
+section, `InvalidateCombatWeaponValues()`-style helper calls, etc - is no
+longer gated at all. This also naturally exempts bareword command
+ARGUMENTS from the check, which was never the allowlist's actual intent
+either. The ~17 existing allowlist entries from #404/#146/#254 were left
+in place rather than pruned (harmless, keeps the change minimal).
+
+**Verified**: the previously-failing `LevelSpendDialogTestsC.
+ExplevelButtonsWorkForAGenuinelyOrdinaryPlayer` (exercises `.explevel` on a
+leveled, professioned character - the exact scenario #406 was filed from)
+now passes. Fast tier 50/50. A full-suite run (210 tests, 28 min -
+unusually long, heavy sandbox contention that run) showed 26 failures, but
+confirmed via grep that ZERO contain "No permission to run that command" -
+every single one is a connection-timeout/server-not-responding symptom
+(`LoginDeniedReason=1`, "Game server never appeared", `SocketException`),
+matching already-documented pre-existing flaky classes (#100
+`CombatDepthTests`, #121 `OwnerAggroTests`, #230 `HousingTests`,
+concurrent-connection races) - not caused by this change. A focused,
+isolated re-run of the command-heaviest test files
+(`SpawnCommandTests`/`GmCommandsTests`/`SocialTests`/`RaceTests`/
+`NotorietyTests`/`ProfessionTests` - covering both GM and ordinary-player
+command-dispatch paths) came back clean: 27/27.
+
 ## #416 (GM immediate logout) — SHIPPED — 2026-10-18
 
 Follow-up to #261 (the 60-second classic-UO logout-lingering delay before a
