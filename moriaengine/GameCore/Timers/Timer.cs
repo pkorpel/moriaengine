@@ -46,7 +46,18 @@ namespace SteamEngine.Timers {
 
 		private static void TimerThread() {
 			while (manualResetEvent.WaitOne()) {
-				Cycle();
+				try {
+					Cycle();
+				} catch (Exception e) {
+					//this dedicated thread has no other protection - an exception escaping
+					//here (e.g. a rethrown FatalException from ProcessTimingOut) kills it
+					//silently otherwise, taking down every timer-driven system (decay,
+					//regen, skill-gain delays, NPC AI...) with nothing in the log to explain
+					//why. Log loudly, then let it keep propagating - same end behavior,
+					//just no longer silent.
+					Logger.WriteFatal("Timer thread dying, CurrentTimer=" + currentTimer, e);
+					throw;
+				}
 
 				if ((priorityQueue.Count == 0) && (changes.Count == 0)) {
 					manualResetEvent.Reset();

@@ -127,6 +127,13 @@ namespace SteamEngine.Communication {
 					}
 				}
 			} catch (OperationCanceledException) { }
+			catch (Exception e) {
+				//this is the ONE thread that sends every outgoing packet for every
+				//connection - losing it silently would freeze every connected client at
+				//once with nothing in the log to explain why.
+				Logger.WriteFatal("Outgoing-packet worker thread dying", e);
+				throw;
+			}
 		}
 	}
 }
