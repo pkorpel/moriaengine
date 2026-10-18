@@ -1445,20 +1445,19 @@ CATEGORY = Provisions - Weapons
 SUBSECTION = Axes
 DESCRIPTION = PickAxe
 
-TYPE = t_weapon_bow_run
-//DUPELIST = 0e86 // commented out by Converter 
+TYPE = t_weapon_fence //#378 - was t_weapon_bow_run, a converter template mismatch (SUBSECTION=Axes/a melee tool mislabeled as a bow); matches real Erebor source ("OSI insists skill is Fencing with this axe")
+//DUPELIST = 0e86 // commented out by Converter
 WEIGHT = 110
-RESOURCES = 4 i_ingot_iron //some resources were fixed by converter 
-SKILLMAKE = 42.1 tinkering, t_tinker_tools //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
-//REQSTR = 25 // commented out by Converter 
-//SPEED = 40 // commented out by Converter 
+RESOURCES = 4 i_ingot_iron //some resources were fixed by converter
+SKILLMAKE = 42.1 tinkering, t_tinker_tools //some resources were fixed by converter
+//FLIP = 1 // commented out by Converter
+//REQSTR = 25 // commented out by Converter
+//SPEED = 40 // commented out by Converter
 layer = 1
 TwoHanded = false
-ProjectileType = ProjectileType.Arrow //guessed by Converter 
-ProjectileAnim = 0xf42 //guessed by Converter 
-WeaponType = WeaponType.Bow //guessed by Converter 
-WeaponAnimType = WeaponAnimType.Bow //guessed by Converter 
+WeaponType = WeaponType.OneHandSpike //#378 - corrected from this entry's own type=/TwoHanded data (was WeaponType.Bow, same mismatch)
+WeaponAnimType = WeaponAnimType.HeldInRightHand //#378 - corrected (was WeaponAnimType.Bow)
+associatedskill = Mining //#370/#378 - dclick/.usehand starts Mining; moved here from the duplicate entry #370 mistakenly created
 DEFNAME = i_pickaxe
 attackVsP = 8
 attackVsM = 8
