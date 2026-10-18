@@ -1,5 +1,48 @@
 # moriaengine — working state
 
+## #399/#400 logging improvements — BOTH SHIPPED — 2026-10-18
+
+User asked for two things after a local freeze/crash with no useful log output: (1)
+better error logging so a future crash/freeze is actually investigable, (2) an
+explanation of the frequent `Handling packet 0x2`/`Discarding packet 0x73` debug lines.
+
+**#400 (PR #401, merged).** Those two lines are harmless - 0x2 is `MoveRequestInPacket`
+(every player step), 0x73 is `PingPongInPacket` (a deliberate no-op by design, see
+`PingPongInPacket.Read()` - server just consumes the byte, `Handle()` is never called).
+They're just the two busiest packet types, logged with a bare hex id. Fixed: `Handling`/
+`Discarding` debug lines now include the resolved packet's type name too, e.g.
+`Handling packet 0x02 (MoveRequestInPacket)`.
+
+**#399 (PR #402, merged) - the real investigation.** Traced exception handling across
+every background thread and found moriaengine has **no safety net outside the main
+thread** - an exception escaping any of them crashes the whole process (or just kills
+that one thread) with nothing written to the structured per-day log file, only a raw
+runtime dump to console (if even that's captured). Fixed:
+- No `AppDomain.UnhandledException` hook anywhere - added one in both `GameCore/Main.cs`
+  and `AuxiliaryServer/MainClass.cs`, logs via `Logger.WriteFatal` before the process
+  dies.
+- `Timer.TimerThread()`'s loop had zero outer protection - a `FatalException` from any
+  timer callback (deliberately rethrown, per this repo's own "FatalException must
+  escalate" convention) killed the dedicated timer thread with nothing logged first.
+  This thread drives decay/regen/skill-gain delays/NPC AI/anti-macro timers - losing it
+  silently would look exactly like "the game froze" while sockets might stay open.
+- `TcpConnection`/`NamedPipeConnection`'s `OnSend` logged **nothing at all** on
+  exception; `OnReceieve` only logged at `WriteDebug` (easy to miss, compiled out
+  entirely in a Release build via `[Conditional("DEBUG")]`). Both now split by severity:
+  `FatalException` → `WriteFatal`, expected churn (`SocketException`/`IOException`) →
+  stays `WriteDebug`, anything else unexpected → `WriteError`.
+- `AsyncCore.WorkerThreadMethod` (the ONE thread that sends every outgoing packet for
+  every connection) only caught `OperationCanceledException` - anything else died
+  unlogged. Now logs via `WriteFatal` first.
+
+Pure visibility improvement, no behavior change - a `FatalException` still escalates
+exactly the same way, just loud now. Verified via fast tier + a real `GatheringTests`
+full-boot run (client/server protocol flow end to end) on each PR.
+
+**Explicitly NOT covered**: a true hang/deadlock (process alive, unresponsive) rather
+than a crash - that needs a separate watchdog/heartbeat mechanism, not just better
+exception logging. Flagged to the user as a possible follow-up, not built.
+
 ## #101 Part A follow-up: #103 verified fixed, #102 only partly done — 2026-10-18
 
 Resumed #101 (basic-functionality tracking issue) after the session that shipped #389's
