@@ -309,12 +309,7 @@ namespace SteamEngine.CompiledScripts {
 			{
 				if (this.maxSavesSize < 0) {//disk free space limit
 					if (OperatingSystem.IsWindows()) {
-						string deviceName = Path.GetPathRoot(Path.GetFullPath(path));
-						deviceName = deviceName.Substring(0, deviceName.Length - 1);
-						ManagementObject disk = new ManagementObject(
-							"win32_logicaldisk.deviceid=\"" + deviceName + "\"");
-						disk.Get();
-						long bytesFree = Convert.ToInt64(disk["FreeSpace"]);
+						long bytesFree = WindowsDiskSpace.GetFreeBytes(path);
 						return (bytesFree < (-this.maxSavesSize));
 					}
 
@@ -332,6 +327,26 @@ namespace SteamEngine.CompiledScripts {
 					return (this.size > this.maxSavesSize);
 				}
 				return false;
+			}
+
+			// Split out from SizeIsOverLimit (issue #369): the CLR resolves every type
+			// referenced anywhere in a method body before JIT-compiling it, regardless of
+			// which branch actually runs - so merely referencing ManagementObject inside
+			// SizeIsOverLimit made every call to that method throw on Linux (no
+			// System.Management/WMI there), even though this path is only reachable when
+			// OperatingSystem.IsWindows() is also true. Isolating it in its own method/
+			// class means the JIT only needs to resolve System.Management when THIS method
+			// is actually called, which only happens on Windows.
+			[System.Runtime.Versioning.SupportedOSPlatform("windows")]
+			private static class WindowsDiskSpace {
+				internal static long GetFreeBytes(string path) {
+					string deviceName = Path.GetPathRoot(Path.GetFullPath(path));
+					deviceName = deviceName.Substring(0, deviceName.Length - 1);
+					ManagementObject disk = new ManagementObject(
+						"win32_logicaldisk.deviceid=\"" + deviceName + "\"");
+					disk.Get();
+					return Convert.ToInt64(disk["FreeSpace"]);
+				}
 			}
 
 			private bool CountIsOverLimit() {
