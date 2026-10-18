@@ -222,6 +222,9 @@ namespace SteamEngine.Persistence {
 			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 		private static readonly Regex genericUidRE = new Regex(@"^\s*\((?<name>.*)\s*\)\s*(?<uid>\d+)\s*$",
 			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+		//#407 - type-preserving enum save format, see Save()'s own comment on its enum branch.
+		private static readonly Regex enumValueRE = new Regex(@"^\s*\(Enum:(?<type>[\w.+]+)\)\s*(?<value>\d+)\s*$",
+			RegexOptions.CultureInvariant | RegexOptions.Compiled);
 		//public static Regex dateTimeRE = new Regex(@"^\s*\((?<name>.*)\s*\)\s*(?<uid>\d+)\s*$",
 		//RegexOptions.IgnoreCase|RegexOptions.CultureInvariant|RegexOptions.Compiled);
 
@@ -283,7 +286,16 @@ namespace SteamEngine.Persistence {
 			Type t = value.GetType();
 
 			if (t.IsEnum) {
-				return Convert.ToUInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
+				//#407 - a bare number here loses the enum's own type on load (ConvertTools.
+				//TryParseAnyNumber always resolves it back to a plain int/long), so every
+				//tag-backed enum property using the "tag is SomeEnum" pattern silently falls
+				//back to its default value after a save/reload. Embedding the type's own name
+				//lets LoadSimple's matching check (below) resolve it back to the exact right
+				//enum type - deliberately NOT reusing the "(TypeName)uid" shape ObjectSaver's
+				//own generic reference-coordinator fallback (genericUidRE) already claims,
+				//to avoid colliding with that unrelated meaning.
+				return "(Enum:" + GetEnumTypeName(t) + ")" +
+					Convert.ToUInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
 			}
 			if (ConvertTools.IsNumberType(t)) {
 				return ((IConvertible) value).ToString(CultureInfo.InvariantCulture.NumberFormat);
@@ -460,6 +472,9 @@ namespace SteamEngine.Persistence {
 			if (TryLoadString(input, ref retVal)) {
 				return true;
 			}
+			if (TryLoadEnum(input, ref retVal)) {
+				return true;
+			}
 			if (ConvertTools.TryParseAnyNumber(input, out retVal)) {
 				return true;
 			}
@@ -515,6 +530,52 @@ namespace SteamEngine.Persistence {
 				return true;
 			}
 			return false;
+		}
+
+		//#407 - see Save()'s own comment on its enum branch for why this format exists.
+		private static bool TryLoadEnum(string input, ref object retVal) {
+			Match m = enumValueRE.Match(input);
+			if (m.Success) {
+				Type enumType = ResolveTypeByName(m.Groups["type"].Value);
+				if (enumType == null) {
+					throw new InsufficientDataException("The enum type '" +
+						LogStr.Ident(m.Groups["type"].Value) + "' is not known.");
+				}
+				ulong rawValue = ConvertTools.ParseUInt64(m.Groups["value"].Value);
+				retVal = Enum.ToObject(enumType, rawValue);
+				return true;
+			}
+			return false;
+		}
+
+		//#407 - the name an enum type was saved under (GetEnumTypeName) needs to resolve back
+		//to a real Type on load, even though it's defined in the dynamically-compiled Scripts
+		//assembly, not this one - same "search every loaded assembly" fallback already proven
+		//by GenericListSaver.ParseType for the identical problem (a generic list's element
+		//type, saved by bare name).
+		private static Type ResolveTypeByName(string name) {
+			Type type = ClassManager.GetType(name) ?? Type.GetType(name, throwOnError: false, ignoreCase: true);
+			if (type != null) {
+				return type;
+			}
+			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+				type = assembly.GetType(name, throwOnError: false, ignoreCase: true);
+				if (type != null) {
+					return type;
+				}
+			}
+			return null;
+		}
+
+		//#407 - the save-side counterpart of ResolveTypeByName: prefer the short, stable
+		//ClassManager-registered name (same convention GenericListSaver.GetTypeName already
+		//uses) over a full namespace-qualified name, since this engine's own script-defined
+		//enums (Race, Nation, Realm, ...) are already guaranteed-unique by that registry.
+		private static string GetEnumTypeName(Type type) {
+			if (ClassManager.GetType(type.Name) == type) {
+				return type.Name;
+			}
+			return type.FullName;
 		}
 
 		/// <summary>

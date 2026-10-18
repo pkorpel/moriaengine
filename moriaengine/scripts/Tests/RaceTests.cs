@@ -31,6 +31,18 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("RACE_STONE_SPAWNED: uid=" + stone.Uid);
 		}
 
+		/// <summary>#407 - sets Race/Nation (which cascades Realm/Home) directly, bypassing the
+		/// real selection gump flow, so a protocol test can trigger a real save right after and
+		/// inspect the resulting save file for the enum-tag persistence fix.</summary>
+		[SteamFunction]
+		public static void TestSetRaceAndNation(Character self) {
+			Player player = (Player) self;
+			player.Race = Race.Dwarf;
+			player.Nation = Nation.Ereboran;
+			Console.WriteLine("RACE_NATION_SET: race=" + player.Race + " nation=" + player.Nation +
+				" realm=" + player.Realm);
+		}
+
 		[SteamFunction]
 		public static void TestCheckRaceState(Character self) {
 			Player player = (Player) self;
