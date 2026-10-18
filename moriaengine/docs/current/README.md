@@ -92,6 +92,8 @@ file whose job is session continuity, not permanent reference.
 - [Spawning](04-gameplay-systems/spawning.md)
 - [Pets & NPC AI](04-gameplay-systems/pets-and-npc-ai.md)
 - [Crafting & gathering](04-gameplay-systems/crafting-gathering.md)
+- [Item double-click & the "use" action framework](04-gameplay-systems/item-use-and-dclick.md) -
+  how dclick/`.usehand` decide what an item does, and the data-driven equip-and-use hook.
 - [Day/night cycle & weather](04-gameplay-systems/day-night-weather.md)
 
 ### 5. Localization

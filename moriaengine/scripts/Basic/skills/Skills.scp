@@ -89,6 +89,7 @@ ON=@Fail
 [FishingSkillDef 18]
 DEFNAME=Skill_Fishing
 KEY="Fishing"
+StartByMacroEnabled = true //#375 - was missing, unlike Mining/Lumberjacking's own blocks; silently blocked the real skill-list/macro packet
 //TITLE="Fisher%s"
 //PROMPTMSG="What water do you want to fish in?"
 //DELAY=2.0

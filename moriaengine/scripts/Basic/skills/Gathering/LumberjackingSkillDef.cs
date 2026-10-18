@@ -38,6 +38,11 @@ namespace SteamEngine.CompiledScripts {
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
 			Player self = skillSeqArgs.Self as Player;
 			if (self != null) {
+				//#370 - mandatory tool, same consistency decision as Mining's own pickaxe gate.
+				if (!Equippable.IsHoldingToolFor(self, SkillName.Lumberjacking)) {
+					self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).needHatchet);
+					return TriggerResult.Cancel;
+				}
 				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).whatToChop);
 				self.Target(SingletonScript<Targ_Lumberjack>.Instance, skillSeqArgs);
 			}
@@ -138,5 +143,6 @@ namespace SteamEngine.CompiledScripts {
 		public string fail = "You hack at the tree for a while, but fail to produce any useable wood.";
 		public string success = "You chop some logs.";
 		public string abort = "You stop chopping.";
+		public string needHatchet = "You must be holding a hatchet to do that."; //#370
 	}
 }
