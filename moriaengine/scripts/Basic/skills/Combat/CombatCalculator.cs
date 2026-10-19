@@ -480,6 +480,23 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 
+			// #447 follow-up - a Mystic's real attack reach is their own mind power, not
+			// whatever weapon they happen to have equipped (confirmed from the Erebor source:
+			// mystikrangepvp/pvm is a profession-level constant, not a per-staff stat) - this
+			// overrides the weapon-/bare-hands-derived range above outright, same spirit as the
+			// damage-type override in DamageManager.ProcessSwing. strikeStartRange is raised to
+			// match so the attacker doesn't needlessly walk closer than the real range before
+			// WeaponSkillDef's Drawing phase will let it strike; strikeStopRange gets a small
+			// buffer above that so a target's minor repositioning doesn't immediately abort the
+			// whole engagement (see WeaponSkillDef.On_Stroke's own give-up check).
+			if (self.IsPlayerForCombat && Professions.HasProfession(self, Professions.Mystic)) {
+				int mysticRange = RangesSettings.instance.mystic;
+				retVal.rangeVsM = mysticRange;
+				retVal.rangeVsP = mysticRange;
+				retVal.strikeStartRange = mysticRange;
+				retVal.strikeStopRange = mysticRange + 2;
+			}
+
 			int rangeModifier = self.WeaponRangeModifier;
 			retVal.rangeVsM += rangeModifier;
 			retVal.rangeVsP += rangeModifier;
