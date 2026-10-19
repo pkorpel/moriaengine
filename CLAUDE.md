@@ -1,5 +1,54 @@
 # moriaengine — working state
 
+## #421 Phase C / #431 (Lumberjacking monster ambush) — SHIPPED — 2026-10-19
+
+New `LumberjackingAmbushSystem`, mirroring Mining's `MonsterAmbushSystem`
+(#335) shape exactly: unconditional 1/750-per-swing roll, fired from both
+`On_Success` and `On_Fail`. Different, tree-specific monster table per
+#421/#423's framing: wolf/grizzly-bear/forest-elemental/forest-spirit,
+occasionally a wood-tier-keyed Reaper.
+
+**Content research** (direct grep against `scripts/converted/chars/*.def`
+- neither #270 nor #423/#431 gave a skill-range table): every category has
+real, exact content - `c_wolf`, `c_bear_grizzly`, `c_elem_forrest` (no
+substitution needed, unlike Mining's own earth-elemental/golem
+duplicates). "Forest spirit" has no exact match - substituted the generic
+`c_spirit_copper`, same judgment-call precedent as #335's own
+substitutions. The "wood-tier-keyed Reaper" turned out to be a genuinely
+exact 1:1 match: `c_reaper_spruce`..`c_reaper_elven`, one per
+`WoodTiers.All` entry - better content coverage than Mining got for its
+own substitutions.
+
+**Bucket weights**: no real table exists for this (same open-question
+framing #335 itself had), so shipped a judgment call - 5-bucket
+`rand(128)` roll (wolf ~49% / grizzly bear ~25% / forest elemental ~12.5%
+/ forest spirit ~9.4% / Reaper ~3.1%), with Reaper deliberately the
+rarest tier to match the issue's "occasionally" wording.
+
+**Reaper tier-keying**: the Reaper variant is picked from the wood tier
+the triggering chop actually yielded (new `WoodTiers.ByItemDef` reverse
+lookup), not a flat roll - a genuine mechanical difference from Mining's
+flat table. Falls back to the baseline spruce Reaper when no tier is
+available (`On_Fail`, or an exhausted vein).
+
+No settings class yet (Phase E/#425 still open) - `AmbushChanceDenominator`
+and all monster defnames are plain mutable public static fields, same
+pre-#337 pattern Mining itself used before its own settings integration.
+
+**Verified** (PR #432, merged): fast tier 50/50, `GatheringTests` 12/12,
+and a new statistical-sampling protocol Fact
+(`AmbushTriggersAtRoughlyTheRealRateAndFavorsWolfOverReaper`, mirroring
+Mining's own ambush Fact) passed 3/3 isolated runs plus clean in the full
+file. One unrelated pre-existing Fact in the same file
+(`UntouchedVeinRollFavorsCommonWoodOverRareOnes`) hit its own
+already-documented binomial-variance flakiness once, passed clean on
+immediate retry - not a regression from this change.
+
+**Still open in #421**: Phase D (anti-macro delay wiring - trivial,
+`GatheringDelaySystem`'s formula already supports this generically, just
+needs `LumberjackingSkillDef.On_Start` wired like Mining's), Phase E
+(GM-tunable `.settings` category mirroring `MiningSettings`).
+
 ## #421 Phase A / #422 (Lumberjacking real wood-tier vein system) — SHIPPED — 2026-10-19
 
 Tracking issue #421 brings Lumberjacking up to Mining's mechanical depth
