@@ -1,5 +1,62 @@
 # moriaengine — working state
 
+## Combat system initiative, profession #1 - Mystic (#447) — SHIPPED, all 5 phases — 2026-10-19
+
+Implemented the full design from #447's own research (see that entry further below for the
+design/research writeup - not duplicated here). All 5 phases merged this session:
+
+- **#448/#449 (PR #461)**: core finding was that `mindPowerVsP/VsM` (attacker) and
+  `mindDefenseVsP/VsM` (defender) were ALREADY fully computed in `CombatCalculator` and exposed
+  as real `Character` properties (`MindPowerVsP/VsM`, `MindDefenseVsP/VsM`) - just never read by
+  `DamageManager`. Wired a Mystic attacker's swing (`DamageManager.GetWeaponSwingArgs`/
+  `ProcessSwing`, gated on `Professions.HasProfession(attacker, Professions.Mystic)`) to that
+  dead plumbing: `CombatCalculator.CalculateMindPowerEffect` computes `mindPower - mindDefense`
+  (confirmed subtractive from the Erebor source) before the normal `GetResistModifier` %
+  layer, tagged `DamageType.MagicMystical` - this engine's own pre-existing, purpose-built flag
+  for exactly this attack (`Enums.cs` comment: "Mystikuv utok" = Mystic's attack). Also fixed a
+  copy-paste typo at `CombatCalculator.cs:144` (`mindDefVsPLegs` was reading from `mindDefVsM`)
+  that had been dead until this PR gave it a real consumer. Shipped A+B together rather than as
+  separate PRs - the formula pieces were too small/coupled to split without an interim state
+  where magic resist had zero effect against a Mystic.
+- **#450 (PR #462)**: `Character.WeaponDelay` already had a `//TODO: mana-dependant for mystic`
+  comment sitting on it - branched `CombatCalculator.CalculateCombatWeaponValues`'s delay
+  formula for a Mystic to `sqrt(mana/2) * weaponSpeed * MagerySettings.mysticWeaponSpeedModifier`
+  instead of the normal `sqrt(Dex)`-based one, and drains `MagerySettings.mysticManaLossPermille`
+  of current mana per landed swing. Found and fixed two invalidation gaps along the way, both
+  silent until this PR gave them a real consumer: `Character.Mana`'s setter never called
+  `InvalidateCombatWeaponValues()` (unlike `Str`/`Dex`/`Int`), and `ProfessionDef.
+  SetProfessionOfChar` never invalidated the cache either (harmless before - no cached combat
+  value depended on profession until this).
+- **#451 (PR #463)**: confirmed, not assumed, that `WeaponSkillDef`'s existing Drawing->Striking
+  swing loop needed ZERO code changes to support a ranged Mystic attack - it already handles
+  this generically for any weapon, players included. The only real gap is content (staff
+  `RangeVsP/VsM` is still the converter's placeholder `range=1`, same pre-existing issue
+  `i_bow_copper` itself has) - proved the mechanism via a real `Trigger_PlayerAttackRequest`
+  attack with the range applied live through `CombatSettings`, same judgment call as below.
+- **#452**: closed with NO new code - every tunable this feature introduced already has a live
+  `.settings` home via pre-existing `MagerySettings`/`CombatSettings` by-material/by-model
+  mass-settings (`mindPowerVsM`/`VsP`, `weaponRangesVsM`/`VsP`), confirmed by code reading. The
+  two genuinely new Phase C constants were added as plain fields directly on the already-
+  registered `MagerySettings` class, automatically picked up by the same reflection-based
+  `D_Info` dialog every other field on that class already uses.
+
+**Standing judgment call worth remembering for future professions**: don't hand-author
+placeholder tuning numbers into dozens of `.def` content entries when a by-material/by-model
+mass-setting already exists for that exact field - set up the live wiring + a test that proves
+the mechanism, and let the GM tune real numbers via `.settings` (several of these numbers are
+confirmed to only exist as live-shard GM config in the real Erebor, not in any public source).
+
+All 6 new regression tests (`Tests/Protocol/MysticCombatTests.cs` + server-side
+`scripts/Tests/MysticCombatTests.cs`, split across 2 fixtures/accounts to stay under the
+5-character-per-account cap) confirmed red-without-fix / green-with-fix at each phase. Full
+Protocol-tier sweep during this work surfaced only the same pre-existing `CombatDepthTestsA`
+sandbox-contention flakes already documented elsewhere in this file - confirmed unrelated by
+reproducing them with each Mystic fix reverted.
+
+**Not done, deliberately out of scope** (per #447's own research): the cold/energy damage-type
+toggle (ability content, #134), paralyze/lightning procs, and all other professions besides
+Mystic. Ranger (#454) is designed but not yet implemented - next.
+
 ## Combat system initiative, profession #2 - Ranger (#454) — DESIGNED, not implemented — 2026-10-19
 
 Second profession researched for the combat-system initiative (see Mystic/#447 below for #1).
