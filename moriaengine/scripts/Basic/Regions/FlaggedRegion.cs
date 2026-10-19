@@ -227,7 +227,12 @@ namespace SteamEngine.Regions {
 
 				case "flag":
 				case "flags":
-					this.flags = (RegionFlags) ConvertTools.ParseInt32(valueString);
+					//#438 - same regression as AbstractCharacter's "directionandflags" and
+					//AbstractItem's "flags": #407 made Save() embed this as "(Enum:RegionFlags)N",
+					//but this naive ConvertTools.ParseInt32(valueString) still expected a bare
+					//number - confirmed as a real, already-occurring FormatException in logs
+					//("The input string '(Enum:RegionFlags)4498' was not in a correct format").
+					this.flags = (RegionFlags) ObjectSaver.Load(valueString);
 					break;
 				default:
 					base.LoadLine(filename, line, valueName, valueString);//the Region Loadline

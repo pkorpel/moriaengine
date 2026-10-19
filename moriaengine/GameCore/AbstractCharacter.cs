@@ -532,7 +532,14 @@ namespace SteamEngine {
 					this.name = ConvertTools.LoadSimpleQuotedString(valueString);
 					break;
 				case "directionandflags":
-					this.directionAndFlags = (DirectionAndFlag) ConvertTools.ParseInt16(valueString);
+					//#438 - #407 made Save() embed this as "(Enum:DirectionAndFlag)N" (WriteValue
+					//boxes to object and always calls the same ObjectSaver.Save regardless of the
+					//field's static type), but this hand-written case (outside the .ct/[SaveableData]
+					//codegen paths #411/#412 already audited for the same regression) still did a
+					//naive ConvertTools.ParseInt16(valueString) expecting a bare number - silently
+					//left directionAndFlags at its zero default on load (GM .invul/.invis flags,
+					//packed into this same field, reset to off after every real restart).
+					this.directionAndFlags = (DirectionAndFlag) ObjectSaver.Load(valueString);
 					break;
 				default:
 					base.LoadLine(filename, line, valueName, valueString);
