@@ -16,6 +16,8 @@
 */
 
 using System;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -169,6 +171,93 @@ namespace SteamEngine.CompiledScripts {
 			int manaAfter = self.Mana;
 
 			Console.WriteLine("MYSTIC_MANADRAIN_TEST: manaBefore=" + manaBefore + " manaAfter=" + manaAfter);
+		}
+
+		/// <summary>#451 - confirms WeaponSkillDef's existing Drawing->Striking loop (already
+		/// generic, no code change needed - see #451's own research) works end-to-end for a
+		/// REAL player attack (Trigger_PlayerAttackRequest, the same path a live client's
+		/// "attack" uses), not just a direct formula call like the other tests in this file.
+		/// Uses CombatSettings.instance.bareHandsRange rather than real staff content (still
+		/// placeholder range=1, same judgment call Phase A made for mindPowerVsM/VsP - a GM can
+		/// already retune real weapon range live via the existing WeaponRangeVsPMassSetting/
+		/// WeaponRangeVsMMassSetting .settings dialog) - mutates it directly for this one test
+		/// and restores it in the check timer, same spirit as TestGuardsRealmAggro's direct
+		/// NPCDef mutation elsewhere in this test suite.</summary>
+		[SteamFunction]
+		public static void TestMysticStandsOffAtRange(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			((Player) self).Profession = Professions.Mystic;
+			self.DisArm();
+			self.Int = 300;
+			self.Mana = 200;
+
+			int originalRange = CombatSettings.instance.bareHandsRange;
+			int originalStartRange = CombatSettings.instance.bareHandsStrikeStartRange;
+			int originalStopRange = CombatSettings.instance.bareHandsStrikeStopRange;
+			CombatSettings.instance.bareHandsRange = 8;
+			CombatSettings.instance.bareHandsStrikeStartRange = 8;
+			CombatSettings.instance.bareHandsStrikeStopRange = 10;
+
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(self.X + 5, self.Y, self.Z, self.M); // beyond melee (1), within the new range (8)
+
+			int startX = self.X;
+			int startY = self.Y;
+			int startingHits = dummy.Hits;
+
+			self.Trigger_PlayerAttackRequest(dummy);
+
+			self.AddTimer(MysticStandoffCheckTimer.TimerKey,
+				new MysticStandoffCheckTimer(self, dummy, startX, startY, startingHits, originalRange, originalStartRange, originalStopRange))
+				.DueInSeconds = 15;
+			Console.WriteLine("MYSTIC_STANDOFF_TEST: STARTED");
+		}
+	}
+
+	/// <summary>Mirrors ArcherStandoffCheckTimer's pattern (CombatDepthTests.cs) for a player
+	/// attacker instead of an NPC, and restores the CombatSettings mutation
+	/// TestMysticStandsOffAtRange made before reporting.</summary>
+	[SaveableClass]
+	public class MysticStandoffCheckTimer : BoundTimer {
+		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_mysticStandoffCheckTimer_");
+
+		private Character attacker;
+		private NPC dummy;
+		private int startX, startY, startingHits;
+		private int originalRange, originalStartRange, originalStopRange;
+
+		[LoadingInitializer]
+		public MysticStandoffCheckTimer() {
+		}
+
+		public MysticStandoffCheckTimer(Character attacker, NPC dummy, int startX, int startY, int startingHits,
+				int originalRange, int originalStartRange, int originalStopRange) {
+			this.attacker = attacker;
+			this.dummy = dummy;
+			this.startX = startX;
+			this.startY = startY;
+			this.startingHits = startingHits;
+			this.originalRange = originalRange;
+			this.originalStartRange = originalStartRange;
+			this.originalStopRange = originalStopRange;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			CombatSettings.instance.bareHandsRange = this.originalRange;
+			CombatSettings.instance.bareHandsStrikeStartRange = this.originalStartRange;
+			CombatSettings.instance.bareHandsStrikeStopRange = this.originalStopRange;
+
+			bool stayedPut = !this.attacker.IsDeleted && (this.attacker.X == this.startX) && (this.attacker.Y == this.startY);
+			bool dealtDamage = this.dummy.IsDeleted || (this.dummy.Hits < this.startingHits);
+
+			if (stayedPut && dealtDamage) {
+				Console.WriteLine("MYSTIC_STANDOFF_TEST: PASS (mystic stayed at range and landed damage)");
+			} else if (!stayedPut) {
+				Console.WriteLine("MYSTIC_STANDOFF_TEST: FAIL (mystic moved from (" + this.startX + "," + this.startY + ") to (" +
+					(this.attacker.IsDeleted ? -1 : this.attacker.X) + "," + (this.attacker.IsDeleted ? -1 : this.attacker.Y) + "))");
+			} else {
+				Console.WriteLine("MYSTIC_STANDOFF_TEST: FAIL (stayed at range but dealt no damage)");
+			}
 		}
 	}
 }
