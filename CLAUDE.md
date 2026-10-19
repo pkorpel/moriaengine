@@ -1,76 +1,62 @@
 # moriaengine — working state
 
-## PLAN (not yet built) - dedicated RangerSettings page, #456/#457, stand-still toggle — 2026-10-19
+## RangerSettings page, #456/#457, run/stand archery — SHIPPED (PR #473) — 2026-10-19
 
-Session may get reset mid-work - this is the agreed plan before any code was written, so it can
-resume cleanly. Addresses #456 (damage numbers), #457 (arrow-tier bonus), and three explicit user
-asks: (1) damage/speed numbers should live in `.settings`, NOT hand-authored into `.def` content
-- user is planning a full content rework later using newer Erebor def items, so touching the
-21 bow/crossbow `.def` entries now would just be thrown away; (2) run/stand archery should be
-real default weapon-type behavior (not a deferred ability, contradicting #454's own earlier
-framing) with a GM toggle, default crossbow=stand-still, bow=free; (3) one consolidated
-`RangerSettings` page rather than scattering fields across `CombatSettings`/`CombatSettings.
-Ranges`/elsewhere.
+Shipped the plan recorded earlier this same day (see git history for this file if the original
+plan writeup is needed - condensed here instead of kept verbatim). New `RangerSettings` class
+(`.settings` → "Ranger Settings", registered via `[InfoField("Ranger Settings")]` on
+`SettingsCategories` - note the final label differs slightly from the plan's `[InfoField
+("Ranger")]`, not functionally significant): range fields are pass-through properties wrapping
+the existing `RangesSettings.bow/crossbow/heavyCrossbow` (no new storage); `bowDamage`=5/
+`lightCrossbowDamage`=7/`heavyCrossbowDamage`=13 and matching speed fields (`bowSpeed`=100/
+`lightCrossbowSpeed`=100/`heavyCrossbowSpeed`=90) override weapon content entirely via
+`CombatCalculator.CalculateCombatWeaponValues`, deliberately NOT written into the 21 bow/
+crossbow `.def` entries per the user's explicit call (a content rework using newer Erebor def
+items is planned later). `arrowDamageBonusPerTier`=0.05 (#457) is an explicit, clearly-
+documented placeholder multiplier per material tier above copper - NOT a faithful Erebor port,
+since the real `nastaveni_arrowdamage_N` per-tier index mapping isn't recoverable from the
+public archive. `bowMustStandStill`=`false`/`crossbowMustStandStill`=`true` are the stand-still
+toggles.
 
-### 1. New `RangerSettings` class, registered `[InfoField("Ranger")]` under `SettingsCategories`
-Mirrors `MysticSettings`-style single-page consolidation (which never ended up needing its own
-class - this is genuinely the first profession that does). Fields:
-- **Range** (pass-through properties wrapping the EXISTING `CombatSettings.Ranges.bow/crossbow/
-  heavyCrossbow` fields, NOT new storage - avoids duplicating data and avoids the Generated-code
-  field-removal landmine documented above by not touching `RangesSettings` at all).
-- **Damage** (new, settings-only, overrides weapon content entirely rather than editing it):
-  `bowDamage` = 5, `lightCrossbowDamage` = 7, `heavyCrossbowDamage` = 13 - confirmed real Erebor
-  `DAM` ratio (#456's own research), not a placeholder guess, but deliberately NOT written into
-  `.def` content per the user's explicit call above.
-- **Speed** (new, settings-only, same reasoning): `bowSpeed`, `lightCrossbowSpeed`,
-  `heavyCrossbowSpeed` - real Erebor values confirmed 58/58/52 (heavy slowest) - need to convert
-  to moriaengine's own speed convention (confirmed inverse of Erebor's in #454's research) when
-  wiring, not copy the raw numbers directly.
-- **Stand-still toggles**: `bowMustStandStill` (default `false`) and `crossbowMustStandStill`
-  (default `true`) - two independent toggles per user's explicit ask, not one shared flag.
-- **Arrow-tier bonus (#457)**: see open question below - likely skip real-number fidelity.
+**Real bug found and fixed while building the stand-still mechanic, the main surprise of this
+piece of work.** `WeaponSkillTargetQueuePlugin`'s "keep fighting" loop re-adds the current
+target after every landed hit (`AddTarget`/`FightCurrentTarget` → `PhaseSelect` → `On_Start` →
+`self.AbortSkill()` → fresh `Drawing` phase) - this re-enters the Drawing→Striking transition on
+EVERY single swing, not just once at the start of combat. A first implementation that stored the
+attacker's position "once, on entering Striking" was silently useless beyond the very first
+shot: the anchor got re-captured fresh at wherever the attacker currently stood on every restart,
+including right after a deliberate mid-fight displacement - confirmed via a live repro (temporary
+diagnostic logging showed the anchor tracking the disturbed position, not the original one, and
+the character never snapping back across 8+ swings). **Fixed**: the anchor-set in `WeaponSkillDef.
+On_Stroke` is now idempotent (`if (RequiresStandingStill(self) && (GetTag(...) == null))`) so a
+restart doesn't overwrite an anchor that's already tracking the ongoing engagement, and the
+anchor is cleared only at the real "stop attacking" call sites (target gone, LOS lost, out of
+range, no ammo) - NOT in the generic `On_Abort`, since that trigger fires on both a genuine stop
+and this per-swing restart artifact and can't tell them apart. The snap-back check itself runs at
+the top of every `On_Stroke` call (before computing `distance`), so a displaced attacker is
+restored before any range check that tick, not just before the next shot fires.
 
-### 2. CombatCalculator wiring
-Same override pattern already established for Mystic/Ranger range (`SetRangedWeaponRange`-style):
-when `weapon.WeaponType == Bow`, override `attackVsP/VsM` and `Speed` with `RangerSettings.
-bowDamage`/`bowSpeed`; when `XBow`, branch light-vs-heavy by defname (`"heavy"` substring, same
-mechanism #454's range fix already uses) and apply the matching Damage/Speed pair. Applies to
-ANY wielder, not profession-gated (same reasoning the range override already uses - it's a
-property of the weapon, not the profession).
+**Str/draw-strength gate (point 5 of the original request)**: confirmed no such gate exists in
+Erebor's real design (the `//REQSTR` lines in converted content are auto-converter noise, not
+real source data) - filed as a tiny backlog issue (#474) per the user's explicit "leave it as
+possible backlog" call, no implementation.
 
-### 3. Stand-still mechanic (WeaponSkillDef)
-Confirmed real Erebor mechanic (`combat_storepos`/`restorepos`, already found during #454's
-research): when a weapon category's stand-still toggle is on, record the attacker's position
-when entering the Striking phase; each time a shot is about to fire, if current position !=
-recorded position, snap them back to the recorded position before firing (faithful "yanked back
-if you try to walk" behavior, not just aborting the attack). Bow defaults to no restriction at
-all (free movement, matches the enum's own `//luky - run archery` comment, confirmed this is
-already the engine's default/unrestricted behavior - no code needed for the off case). Both
-toggles apply symmetrically if a GM flips them (e.g. turning `bowMustStandStill` on would apply
-the same snap-back to bows too, for experimentation).
+**Tests** (`Tests/Protocol/RangerSettingsTests.cs` + server-side `scripts/Tests/
+RangerSettingsTests.cs`, own dedicated collection/account): `BowDamageSettingDrivesWeaponAttack`
+(changing `RangerSettings.bowDamage` 10x scales `Character.WeaponAttackVsP` ~10x, proving it's a
+real settings override not a content read), `HigherTierArrowGrantsDamageBonus` (valorite arrows,
+tier rank 3, land ~15% more than copper at the default 0.05/tier bonus),
+`CrossbowSnapsBackToStartingPositionIfMovedMidAttack` and `BowDoesNotSnapBackIfMovedMidAttack`
+(both drive a REAL attack, inject a one-shot manual displacement mid-fight via a timer, and
+assert the opposite final-position outcome for each weapon category - this is the test that
+caught the per-swing-restart bug above, failing reliably before the idempotent-anchor fix and
+passing reliably after). All 4 new + the existing `RangerCombatTests`/`ArmorEffectTests`/
+`MysticCombatTests` (9) + `GatheringTests`/`ProfessionTests` (included in a 30-test sweep) are
+green; fast tier 50/50. Confirmed `CombatDepthTestsA`'s "Game server never appeared" failures
+(#100's documented sandbox-contention flake class) reproduce identically with this PR's changes
+stashed out - unrelated, not a regression.
 
-### 4. #457 (arrow-tier damage bonus) - open question, leaning skip
-Re-checked the Erebor archive: `nastaveni_arrowdamage_N` settings in the public save DO have
-real, varied values (0 up to 1500 across ~40 indices) - corrects #454's own earlier research,
-which wrongly characterized these as flat/placeholder. BUT the mapping from arrow material tier
-(copper/iron/.../mithril) to the specific index `N` is NOT recoverable from the public archive -
-the base `i_arrow` item definition has no `tdata1` set in what's available; the real per-tier
-mapping likely only exists in private/live-shard-only content. Recommend NOT attempting a
-faithful port (would just be guessing which index means what) - either skip #457 entirely, or
-if the user still wants some arrow-tier differentiation, add a simple non-Erebor-faithful
-placeholder multiplier, clearly labeled as such. Not yet decided which - ask before building
-this specific piece.
-
-### 5. Str/draw-strength gate (point 5 of the request) - explicitly backlog, no code
-Confirmed Erebor has no such gate on any bow/crossbow (not a gap, a real design absence). User
-said leave as possible future backlog, not now. File a tiny backlog issue for it, no implementation.
-
-### Test plan (once built)
-Regression tests for: damage/speed values actually override weapon content for all 3 categories;
-stand-still toggle default state (crossbow locks position, bow doesn't); toggling either flag
-flips the behavior; light-vs-heavy crossbow still correctly distinguished. Follow the same
-real-equip-via-client-protocol + direct-formula-call-where-deterministic patterns already
-established in `RangerCombatTests.cs`/`ArmorEffectTests.cs`.
+Closed #456 and #457, both referencing PR #473.
 
 ## IMPORTANT infra gotcha: Generated/*.Generated.cs is not checked into git — 2026-10-19
 
