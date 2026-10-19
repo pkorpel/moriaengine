@@ -141,7 +141,7 @@ namespace SteamEngine.CompiledScripts {
 								case LayerNames.Skirt:
 								case LayerNames.HalfApron:
 									armorVsPLegs = Math.Max(armorVsPLegs, armorVsP);
-									mindDefVsPLegs = Math.Max(mindDefVsPLegs, mindDefVsM);
+									mindDefVsPLegs = Math.Max(mindDefVsPLegs, mindDefVsP);
 									armorVsMLegs = Math.Max(armorVsMLegs, armorVsM);
 									mindDefVsMLegs = Math.Max(mindDefVsMLegs, mindDefVsM);
 									materialLegs = Math.Max(materialLegs, material);
@@ -505,10 +505,36 @@ namespace SteamEngine.CompiledScripts {
 			damageMod = Math.Max(0, damageMod);
 
 			//!!TODO!! ruznej vzorec pro pvm a pvm
-			//if (defenderIsPlayer && !attackerIsPlayer) { //damagecust_MvP 
-			//	armorClass *= settings.armorClassMvP; 
+			//if (defenderIsPlayer && !attackerIsPlayer) { //damagecust_MvP
+			//	armorClass *= settings.armorClassMvP;
 			//}
 			return (attack - armor) * damageMod;
+		}
+
+		/// <summary>Mystic's mind-power attack (#447/#448/#449) - subtractive mindPower-minus-
+		/// mindDefense, confirmed from the Erebor source (magie.scp: "finalPower = spellpower -
+		/// spelldefense"). Deliberately does NOT replicate CalculateArmorClassEffect's #96
+		/// isMvP-placeholder override - that bug is specific to the physical armorClass path;
+		/// mindDefense is a separate, never-before-exercised value with no equivalent override,
+		/// so the defender's real mind defense is always used here.</summary>
+		public static double CalculateMindPowerEffect(Character attacker, Character defender, double mindPower, double mindDefense) {
+			bool defenderIsPlayer = defender.IsPlayerForCombat;
+			bool attackerIsPlayer = attacker.IsPlayerForCombat;
+			CombatSettings settings = CombatSettings.instance;
+
+			double damageMod;
+			if (defenderIsPlayer) {
+				damageMod = attackerIsPlayer ? settings.swingDamagePvP
+					: ScriptUtil.GetRandInRange(settings.swingDamageRandMvPMin, settings.swingDamageRandMvPMax);
+			} else {
+				damageMod = settings.swingDamageM;
+			}
+
+			mindPower = Math.Max(0, mindPower);
+			mindDefense = Math.Max(0, mindDefense);
+			damageMod = Math.Max(0, damageMod);
+
+			return (mindPower - mindDefense) * damageMod;
 		}
 	}
 }
