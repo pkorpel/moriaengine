@@ -1,5 +1,31 @@
 # moriaengine — working state
 
+## Combat system initiative kickoff - Mystic first (#447) — DESIGNED, not implemented — 2026-10-19
+
+User is starting a new initiative: a real combat system broken down per-profession (9 total -
+Mage/Mystic/Necromant/Priest/Ranger/Shaman/Thief/Warrior/Craftsman, each physical or magic
+damage, Priest/Craftsman low-damage support/non-combat roles). Starting with **Mystic only**.
+Dispatched an Opus research agent (research-only, no code/issues) to dig into this engine's
+existing combat code + the Erebor wiki/script archive; findings written up and filed as #447
+(parent design doc) with phase sub-issues #448-452 (A: core damage path, B: mind-defense wiring
++ a suspected `CombatCalculator.cs:144` typo, C: mana-driven swing speed, D: range/LOS, E:
+`MysticSettings` GM category) - see #447 itself for the full formula/mechanic writeup, don't
+duplicate it here.
+
+**Why this matters architecturally**: this is the FIRST profession-specific *combat* mechanic.
+Every profession hook built so far (#134) only gated stats/skills/spells/weapons - never changed
+how damage is dealt. Key reusable finding: `CombatCalculator.cs` already computes `mindPowerVsP/
+VsM` and `mindDefenseVsP/VsM` for every character (EvalInt/SpiritSpeak/Int on offense,
+MagicResist+worn gear on defense) - **neither has ever had a consumer**. Mystic's attack is
+mostly about activating dead plumbing, not inventing new vocabulary. The other 8 professions
+aren't researched yet - Ranger (bow/crossbow) should be straightforward since `WeaponSkillDef`
+already handles ranged weapons generically; Mage/Necromant/Shaman already have Magery spellcasting
+to lean on; Warrior/Thief are physical (existing path); Craftsman is explicitly near-zero-damage.
+
+**Not started**: no code written, no branch beyond this CLAUDE.md docs commit. Next session
+picking this up should start with #448 (Phase A) once the user confirms the design in #447,
+or research the next profession if the user wants to survey more before implementing any of them.
+
 ## #436/#444 (RegenerationPlugin/TrackingPlugins def registration) — SHIPPED — 2026-10-19
 
 Session resumed after a crash mid-work on #436 (the audit backlog item #421 left behind -
