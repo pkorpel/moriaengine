@@ -174,6 +174,13 @@ namespace SteamEngine.CompiledScripts {
 
 				swingArgs.InternalSetFinalDamage(actualDamage);
 
+				// Testing combat messages (CombatSettings.showCombatMessages) - the only
+				// existing feedback for a landed hit was the defender's own anonymous "-N"
+				// overhead message (still unconditional, see CauseDamage above); neither side
+				// got a named, chat-log-visible line saying who hit whom for how much.
+				CombatMessages.Send(attacker, "[Combat] You hit " + defender.Name + " for " + actualDamage + " damage.");
+				CombatMessages.Send(defender, "[Combat] " + attacker.Name + " hits you for " + actualDamage + " damage.");
+
 				// #450 - confirmed from the Erebor source: every Mystic swing drains a fraction
 				// of current mana (the natural throttle instead of a hard mana gate - see
 				// CalculateCombatWeaponValues's mana-driven WeaponDelay, which slows down as
@@ -181,7 +188,10 @@ namespace SteamEngine.CompiledScripts {
 				// missed one - WeaponSkillDef has no separate "cast attempt" step to hook for a
 				// Mystic the way Erebor's own single dospellcustom_donesrc call would.
 				if (attackerIsMystic) {
+					int manaBefore = attacker.Mana;
 					attacker.Mana = (short) Math.Round(attacker.Mana * MagerySettings.instance.mysticManaLossPermille / 1000.0);
+					CombatMessages.Send(attacker, "[Combat] Your attack channels " + (manaBefore - attacker.Mana) +
+						" mana (" + attacker.Mana + " left).");
 				}
 
 				Trigger_AfterSwing(swingArgs);
