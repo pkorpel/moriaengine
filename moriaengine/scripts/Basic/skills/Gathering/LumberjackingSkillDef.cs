@@ -50,6 +50,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			//#424 - PhaseStart already set the generic curve-based delay just before this
+			//trigger fired; overwrite it with the real anti-macro formula (flat 20s, reduced
+			//above skill 100.0%), same wiring as MiningSkillDef.On_Start (#336) - the formula
+			//itself is shared/generic in GatheringDelaySystem, just needed this call site.
+			skillSeqArgs.DelayInSeconds = GatheringDelaySystem.GetDelaySeconds(skillSeqArgs.Self, SkillName.Lumberjacking);
 			return TriggerResult.Continue;
 		}
 
