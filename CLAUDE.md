@@ -1,5 +1,42 @@
 # moriaengine — working state
 
+## Combat system initiative, profession #2 - Ranger (#454) — DESIGNED, not implemented — 2026-10-19
+
+Second profession researched for the combat-system initiative (see Mystic/#447 below for #1).
+Dispatched another Opus research agent (research-only, no code/issues) - findings filed as
+#454 (parent design doc) with phase sub-issues #455-459 - see #454 for the full writeup,
+don't duplicate it here.
+
+**Different shape of problem than Mystic.** Mystic's magic mechanic was almost entirely dead
+plumbing; Ranger's physical ranged-combat framework is already LIVE - the generic
+`WeaponSkillDef` swing loop already handles projectile weapons end-to-end (range, ammo,
+projectile effects), proven by an existing NPC-archer test. This issue is mostly "confirm the
+real gaps + author faithful weapon content," not "build a mechanic." Two headline findings, in
+opposite directions from what you'd expect:
+
+1. **#96 (the known ArmorVsP/M bug) is a HARD blocker for Ranger** - unlike Mystic (confirmed
+   immune, separate mind-defense path), Ranger's damage is physical and routes through
+   `CalculateArmorClassEffect`, which discards the defender's real armor for a random
+   placeholder in every case except monster-attacks-player - i.e. every case a player Ranger
+   actually fights in. A shippable Ranger (fires, damages unarmored targets) doesn't need #96
+   fixed; resistance-*correct* Ranger damage does. Phase D (#458) is explicitly gated on it.
+2. **The bow-vs-crossbow "run archery"/"stand archery" distinction is real** (confirmed from
+   source: `combat_storepos`/`restorepos` literally teleports a stand-mode shooter back to
+   its spot after each shot) but its actual implementation is a profession-gated ability/toggle
+   (weapon-item-swap, damage/fizzle penalty, shorter range) - deferred per #134, same treatment
+   as Mystic's cold/energy toggle. Base attack = stand archery for all three weapons.
+
+Also confirmed: real `DAM` ratio is bow 5 / light xbow 7 / heavy xbow 13 (converted content has
+these wrongly clustered ~18-23, overlaps #157/#393's weapon-data-quality backlog); light/heavy
+crossbow correctly share `WeaponType.XBow` as separate items (no new enum needed); **no**
+Str/draw-strength gate exists for crossbows in Erebor's real design (converter `//REQSTR`
+comments are noise, not a missing feature).
+
+**Not started**: no code written. Phases A/B (#455/#456) are the natural starting point if this
+gets picked up before a 3rd profession - A confirms player-bow usage end-to-end (currently
+zero test coverage), B authors the real weapon stats. Phase E (#459) may turn out to be a no-op
+once A-C land - don't assume a `RangerSettings` category is needed, check first.
+
 ## Combat system initiative kickoff - Mystic first (#447) — DESIGNED, not implemented — 2026-10-19
 
 User is starting a new initiative: a real combat system broken down per-profession (9 total -
