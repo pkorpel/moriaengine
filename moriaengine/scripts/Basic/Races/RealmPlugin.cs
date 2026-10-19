@@ -59,5 +59,15 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class RealmPluginDef {
+		/// <summary>#434 - same fix/reasoning as RaceNationPluginDef's own static cctor (see
+		/// RaceNationPlugin.cs): forces RealmPlugin's static cctor (defInstance.Register(),
+		/// which registers "p_realm") to run during ClassManager.InitClasses's early
+		/// Bootstrap-method scan, not lazily on first GetOrInstallPlugin call - otherwise
+		/// "p_realm" is still unregistered when WorldSaver.Load() needs to resolve an existing
+		/// RealmPlugin's "def=#p_realm" reference on a cold boot, and the plugin gets silently
+		/// deleted as "orphaned".</summary>
+		static RealmPluginDef() {
+			System.GC.KeepAlive(RealmPlugin.defInstance);
+		}
 	}
 }

@@ -57,7 +57,7 @@ namespace SteamEngine.Tests.Protocol {
 				}
 			} // fixture1 disposed here - kills the process pair, saves/ is left on disk.
 
-			using (var fixture2 = new GameServerPairFixture(preserveSaves: true)) {
+			using (var fixture2 = GameServerPairFixture.BootPreservingSaves()) {
 				int redirectPort = WaitForServerListingAndGetRedirectPort(fixture2, Account);
 				using (var client = new TestGameClient("127.0.0.1", redirectPort)) {
 					client.SendLogin(Account, Password);
