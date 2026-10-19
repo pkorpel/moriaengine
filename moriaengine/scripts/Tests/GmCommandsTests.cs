@@ -64,5 +64,13 @@ namespace SteamEngine.CompiledScripts {
 			AbstractItem item = (AbstractItem) wallDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			Console.WriteLine("FLIP_SETUP: uid=" + item.Uid + " model=" + item.Model);
 		}
+
+		/// <summary>#438 - reports the live state of the two GM flags (".invul"/".invis") packed
+		/// into AbstractCharacter.directionAndFlags, to confirm whether they survive a real
+		/// save -> restart -> reload round trip.</summary>
+		[SteamFunction]
+		public static void TestCheckGmFlags(Character self) {
+			Console.WriteLine("GM_FLAGS_STATE: invul=" + self.Flag_Invulnerable + " insubst=" + self.Flag_Insubst);
+		}
 	}
 }
