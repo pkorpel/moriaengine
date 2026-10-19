@@ -1,5 +1,46 @@
 # moriaengine — working state
 
+## #438 (enum-flag fields on Character/Item/Region reset after real reload) — SHIPPED — 2026-10-19
+
+Found while the user was retesting #434's fix: GM `.invul`/`.invis` flags reset to off after a
+real server restart, and the user couldn't find them represented in the save file at all.
+
+**Root cause**: the SAME bug class as #407/#411/#412, a THIRD time. `ObjectSaver.Save` always
+embeds an enum as `(Enum:TypeName)rawValue` (since #407), but THREE hand-written `LoadLine`
+switch-cases - outside the `.ct`/`[SaveableData]` codegen pipeline #411/#412 already audited -
+still did a naive direct-parse expecting a bare number:
+- `AbstractCharacter.LoadLine` `"directionandflags"` (packs Flag_Invulnerable/Flag_Insubst and
+  others) - this report's exact symptom. Confirmed the save side was actually fine
+  (`directionAndFlags=(Enum:DirectionAndFlag)4168` decodes exactly to Invul+Insubst+Disconnected)
+  - it was purely a load-side bug.
+- `AbstractItem.LoadLine` `"flags"` (item-level `InternalFlag`s) - found during the audit, same
+  exposure, not yet reported by the user.
+- `FlaggedRegion.LoadLine` `"flag"`/`"flags"` - found ALREADY visibly throwing in the server log
+  independent of this investigation (`WARNING: The input string '(Enum:RegionFlags)4498' was
+  not in a correct format`) - a real, silent-ish FormatException that doesn't crash the boot but
+  also never restores the region's flags.
+
+**Fixed (PR #439, merged).** All three routed through `ObjectSaver.Load(valueString)` - the same
+enum-aware generic dispatcher #411/#412 used for the codegen paths - instead of
+`ConvertTools.ParseInt16`/`ParseByte`/`ParseInt32`.
+
+**Verification methodology note**: when the user reported #434's fix "still not working" after a
+fresh pull+rebuild+new-character retest, I didn't just re-read code - verified my own fix was
+still causally real by temporarily disabling it and confirming the test failed again (it did),
+then asked the user for their exact repro steps. Turned out their FIRST retest used a character
+that already had its RaceNationPlugin/RealmPlugin deleted by the OLD bug (data genuinely gone,
+no load-time fix can resurrect it) - a second clean-room retest (new pull, clean build, brand
+new character) confirmed #434's fix does work. Worth remembering: a user "it's still broken"
+report can be stale pre-existing data, not a failed fix - but verify the fix's own causality
+directly (disable/re-enable) rather than assuming that's the explanation.
+
+Added `GmFlagsReloadTests.InvulAndInsubstSurviveARealServerRestart`, same real
+save->restart->reload pattern as #434's `RaceNationRealmReloadTests`. Verified: new test stable
+across repeated runs; InvulTests/GmCommandsTests/HidingTests/LoginHandshakeTests/
+CombatScenarioTests - 8/8, no regressions; fast tier 50/50. HousingTests failed during this pass
+but confirmed via `git stash` to fail identically on unmodified `main` - pre-existing, matches
+the already-documented #230 flaky-class note, not caused by this change.
+
 ## #434 (RaceNationPlugin/RealmPlugin orphaned on cold-boot reload) — SHIPPED — 2026-10-19
 
 User-reported regression from #410/#414 (Race+Nation and Realm reworked into plugins): a real
