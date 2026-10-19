@@ -1,5 +1,44 @@
 # moriaengine — working state
 
+## #421 (Lumberjacking full implementation) — ALL PHASES SHIPPED — 2026-10-19
+
+Final two phases of the Lumberjacking rework (mirrors Mining #332/#333-337) landed, closing out
+the whole #421 epic. Phase A (#422, vein system) and Phase C (#431, ambush) shipped earlier this
+same day - see their own CLAUDE.md entries below.
+
+**Phase D (#424, PR #441)**: trivial, exactly as the issue itself predicted - `LumberjackingSkillDef.
+On_Start` now wires `GatheringDelaySystem.GetDelaySeconds(self, SkillName.Lumberjacking)`, the
+same shared formula/wrapper `MiningSkillDef.On_Start` already uses. No new logic, one call site.
+Added a matching wrapper test in its own isolated fixture/account -
+`GatheringDelaySystemTests.cs`'s shared `Account` was already exactly at the 5-character-slot
+cap from its own existing Facts, so a 6th Fact there would have broken it (caught this the hard
+way mid-implementation, same class of mistake Mining's own test file already had to work around
+with its own AccountB).
+
+**Phase E (#425, PR #442)**: new `LumberjackingSettings` GM-tunable `.settings` category, same
+pass-through-property shape as `MiningSettings` - per-tier fields for all 7 wood tiers, ambush
+chance + all 11 monster-tier defnames (including every Reaper variant), and the shared anti-macro
+delay fields. Registered via a new `[InfoField("Lumberjacking")]` property on `SettingsCategories`
+(`scripts/Basic/administration/Settings/MetaSettings.cs`) - settings categories need this explicit
+registration, they're not auto-discovered via `[ViewableClass]` alone. Noted explicitly in the
+class doc comment: the `gatherDelay*` fields point at `GatheringDelaySystem`'s SHARED static
+fields (one real formula across Mining/Fishing/Lumberjacking) - editing them on either settings
+page affects both. Same characteristic `MiningSettings` already has, not something new.
+
+Phase B (cave-ins) confirmed N/A for Lumberjacking back at Phase A time - no tree equivalent in
+the real source.
+
+**Verified**: fast tier 50/50, new tests stable across repeated runs (hit one sandbox-contention
+flake running 3 fixture boots back-to-back in one `dotnet test` invocation - isolated/retried
+clean, same documented precedent as other full-boot flakiness in this file). `MiningSettingsTests`
+4/4, `LumberjackingVeinSystemTests` (incl. ambush) 5/5, `GatheringTests` 12/12 - all unaffected by
+the shared `MetaSettings.cs` edit.
+
+**#421 closed** - all 5 phases (A/C/D/E shipped, B confirmed N/A) complete. Deferred/backlog
+items (forest-region restriction #426, elven-bonus tier #427, and a found-along-the-way follow-up
+auditing other plugin types for #434's same lazy-defname-registration risk, #436) remain open,
+not blocking.
+
 ## #438 (enum-flag fields on Character/Item/Region reset after real reload) — SHIPPED — 2026-10-19
 
 Found while the user was retesting #434's fix: GM `.invul`/`.invis` flags reset to off after a
