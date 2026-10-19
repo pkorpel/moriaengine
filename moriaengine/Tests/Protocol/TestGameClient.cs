@@ -318,6 +318,25 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		/// <summary>
+		/// Sends LoginCharacterInPacket (0x5D, fixed 73 bytes incl. opcode - see
+		/// GameCore/Networking/IncomingPackets.cs's LoginCharacterInPacket.Read: SeekFromStart(67)
+		/// + DecodeByte(charIndex) + SeekFromCurrent(4) = 72 content bytes after the opcode).
+		/// `charIndex` is the slot in the array ReadCharacterList() returned (0-based) - selects
+		/// an EXISTING character rather than creating a new one, e.g. after reconnecting post-
+		/// restart. The server synchronously logs the character in as part of handling this
+		/// packet (GameState.LoginCharacter), same as SendCreateCharacter's own doc comment
+		/// notes for the creation path - no separate packet needed afterward.
+		/// </summary>
+		public void SendSelectCharacter(int charIndex) {
+			byte[] packet = new byte[73];
+			packet[0] = 0x5D;
+			// bytes 1-67: unused/pattern, left zero (not validated by Handle beyond charIndex).
+			packet[68] = (byte) charIndex;
+			// bytes 69-72: unused, left zero.
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>
 		/// Sends TalkRequestInPacket (0x03) - plain ASCII speech, interpreted server-side as a
 		/// "." command if it starts with Globals.CommandPrefix (the default), same as any
 		/// player typing in their chat bar. Requires a character to already be selected/created

@@ -29,7 +29,28 @@ namespace SteamEngine.Tests.Protocol {
 
 		public string RepoRoot { get; }
 
-		public GameServerPairFixture() {
+		/// <summary>Must stay the ONLY public constructor - xunit's ICollectionFixture DI
+		/// requires exactly one with zero (or DI-resolvable) parameters, used by every other
+		/// test file's parameterless `new GameServerPairFixture()` via that mechanism. Both a
+		/// second public constructor overload AND a default-valued `bool` parameter on this one
+		/// broke ALL of them, caught the hard way when adding this (xunit's activation tries to
+		/// DI-resolve every parameter, including ones with a C# default value, and fails since
+		/// `bool` isn't a fixture type). See BootPreservingSaves() below for the non-DI path.</summary>
+		public GameServerPairFixture() : this(false) {
+		}
+
+		/// <summary>Skips the snapshot-wiping below entirely, so this boot loads whatever a
+		/// PRIOR fixture instance (in the same test, already Dispose()d) left behind in saves/ -
+		/// needed to test a real save -> restart -> reload round trip (#434), which every other
+		/// fixture usage deliberately avoids (see the wipe's own reasoning just below). Only for
+		/// a SECOND fixture instance, manually constructed (not via ICollectionFixture DI) in
+		/// the same test, after a first default-constructed one has already produced the save
+		/// being reloaded.</summary>
+		public static GameServerPairFixture BootPreservingSaves() {
+			return new GameServerPairFixture(true);
+		}
+
+		private GameServerPairFixture(bool preserveSaves) {
 			// Tests/bin/Debug/net8.0 -> up 4 levels -> the moriaengine/moriaengine repo root,
 			// regardless of whatever Environment.CurrentDirectory the fast-tier fixture (if it
 			// ran in this same process) already changed.
@@ -50,7 +71,7 @@ namespace SteamEngine.Tests.Protocol {
 			// bootstrap skeleton itself and makes WorldSaver.Load() fail after 3 attempts with
 			// nothing at all to load (confirmed the hard way: don't repeat this).
 			string savesDir = Path.Combine(this.RepoRoot, "saves");
-			if (Directory.Exists(savesDir)) {
+			if (!preserveSaves && Directory.Exists(savesDir)) {
 				foreach (string snapshotDateDir in Directory.GetDirectories(savesDir)) {
 					if (Path.GetFileName(snapshotDateDir) == "2000-01-01") {
 						foreach (string snapshotTimeDir in Directory.GetDirectories(snapshotDateDir)) {
