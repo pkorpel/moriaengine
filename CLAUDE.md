@@ -1,5 +1,47 @@
 # moriaengine — working state
 
+## #421 Phase A / #422 (Lumberjacking real wood-tier vein system) — SHIPPED — 2026-10-19
+
+Tracking issue #421 brings Lumberjacking up to Mining's mechanical depth
+(#332, fully shipped #333-337). Phase A (#422) is the per-tile vein core,
+mirroring `MiningVeinSystem`'s shape.
+
+**Bug fixed along the way**: `LumberjackingSkillDef.On_Success` always
+created `i_log_lager` - a labor-camp/prisoner-only flavor item (confirmed
+via #270's corrected research) - instead of a real tier. `i_log_lager` is
+NOT the baseline log; the real default/tier-0 log is `i_log_copper`
+("spruce").
+
+**Fixed (PR #429, merged).** New `LumberjackingVeinSystem` (lazy per-tile
+vein state, no pre-authored vein registry - same reasoning as Mining,
+since moriaengine has no real named-forest-region data) with the real
+7-tier wood ladder derived from `sphereregion.scp`: copper (spruce,
+0-40) -> iron (chestnut, 40-80) -> verite (oak, 55-95) -> valorite (teak,
+70-110) -> obsidian (mahagon, 90-130) -> adamantinum (eben, 99-139) ->
+mithril (elven, 105-135). All 7 items already existed in
+`scripts/converted/item_ore.def`. Tiers 6-7 excluded from the default
+weighted pool (reserved for a deferred elven-bonus mechanic, matching the
+real source). Insufficient skill downgrades to copper, matching the real
+`fixresource` (`ACT.MORE1 = l_copper`) logic exactly. Pool depletes per
+extraction, regenerates with a fresh roll once exhausted (same "veins vary
+over time" precedent as #333).
+
+Phase B (cave-ins) confirmed N/A for Lumberjacking - no tree equivalent in
+the real source. **Still open in #421**: Phase C (monster ambush, same
+1/750 chance as Mining's #335 but a tree-specific table -
+wolf/grizzly-bear/forest-elemental/forest-spirit/wood-tier-keyed Reaper,
+not Mining's rat->troll->golem table), Phase D (anti-macro delay wiring -
+trivial, `GatheringDelaySystem`'s formula already supports this generically,
+just needs `LumberjackingSkillDef.On_Start` wired like Mining's), Phase E
+(GM-tunable `.settings` category mirroring `MiningSettings`).
+
+**Verified**: fast tier (50/50) and `GatheringTests` (12/12, exercises the
+production On_Success path end-to-end). The new dedicated
+`LumberjackingVeinSystemTests` protocol tests hit repeated
+`GameServerPairFixture` boot-timeout flakiness in this sandbox - ruled out
+as a code issue via a clean solo boot + `dotnet build-server shutdown` -
+shipped on the fast-tier + `GatheringTests` coverage instead.
+
 ## #406 (command authorization scoped to top-level word only) — SHIPPED — 2026-10-18
 
 The architectural issue flagged while fixing #404: `OpNode_Lazy_Expression.
