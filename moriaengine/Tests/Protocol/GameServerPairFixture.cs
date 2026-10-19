@@ -29,7 +29,16 @@ namespace SteamEngine.Tests.Protocol {
 
 		public string RepoRoot { get; }
 
-		public GameServerPairFixture() {
+		public GameServerPairFixture() : this(false) {
+		}
+
+		/// <summary>`preserveSaves: true` skips the snapshot-wiping below entirely, so this boot
+		/// loads whatever a PRIOR fixture instance (in the same test, already Dispose()d) left
+		/// behind in saves/ - needed to test a real save -> restart -> reload round trip (#434),
+		/// which every other fixture usage deliberately avoids (see the wipe's own reasoning
+		/// just below). Only use this for a SECOND fixture instance in the same test, after a
+		/// first default-constructed one has already produced the save being reloaded.</summary>
+		public GameServerPairFixture(bool preserveSaves) {
 			// Tests/bin/Debug/net8.0 -> up 4 levels -> the moriaengine/moriaengine repo root,
 			// regardless of whatever Environment.CurrentDirectory the fast-tier fixture (if it
 			// ran in this same process) already changed.
@@ -50,7 +59,7 @@ namespace SteamEngine.Tests.Protocol {
 			// bootstrap skeleton itself and makes WorldSaver.Load() fail after 3 attempts with
 			// nothing at all to load (confirmed the hard way: don't repeat this).
 			string savesDir = Path.Combine(this.RepoRoot, "saves");
-			if (Directory.Exists(savesDir)) {
+			if (!preserveSaves && Directory.Exists(savesDir)) {
 				foreach (string snapshotDateDir in Directory.GetDirectories(savesDir)) {
 					if (Path.GetFileName(snapshotDateDir) == "2000-01-01") {
 						foreach (string snapshotTimeDir in Directory.GetDirectories(snapshotDateDir)) {
