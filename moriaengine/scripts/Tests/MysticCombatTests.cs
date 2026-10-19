@@ -177,12 +177,11 @@ namespace SteamEngine.CompiledScripts {
 		/// generic, no code change needed - see #451's own research) works end-to-end for a
 		/// REAL player attack (Trigger_PlayerAttackRequest, the same path a live client's
 		/// "attack" uses), not just a direct formula call like the other tests in this file.
-		/// Uses CombatSettings.instance.bareHandsRange rather than real staff content (still
-		/// placeholder range=1, same judgment call Phase A made for mindPowerVsM/VsP - a GM can
-		/// already retune real weapon range live via the existing WeaponRangeVsPMassSetting/
-		/// WeaponRangeVsMMassSetting .settings dialog) - mutates it directly for this one test
-		/// and restores it in the check timer, same spirit as TestGuardsRealmAggro's direct
-		/// NPCDef mutation elsewhere in this test suite.</summary>
+		/// Uses CombatSettings.Ranges.mystic (CombatCalculator's own profession-level range
+		/// override, not a per-weapon-model one - a Mystic's real reach is their mind power, not
+		/// whatever staff they happen to hold) - mutates it directly for this one test and
+		/// restores it in the check timer, same spirit as TestGuardsRealmAggro's direct NPCDef
+		/// mutation elsewhere in this test suite.</summary>
 		[SteamFunction]
 		public static void TestMysticStandsOffAtRange(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
@@ -191,15 +190,15 @@ namespace SteamEngine.CompiledScripts {
 			self.Int = 300;
 			self.Mana = 200;
 
-			int originalRange = CombatSettings.instance.bareHandsRange;
-			int originalStartRange = CombatSettings.instance.bareHandsStrikeStartRange;
-			int originalStopRange = CombatSettings.instance.bareHandsStrikeStopRange;
-			CombatSettings.instance.bareHandsRange = 8;
-			CombatSettings.instance.bareHandsStrikeStartRange = 8;
-			CombatSettings.instance.bareHandsStrikeStopRange = 10;
+			// Real mechanism now (CombatSettings.Ranges.mystic, CombatCalculator's own
+			// profession-level range override) rather than the old bareHandsRange workaround -
+			// explicitly set here (even though the default is already 8) so this test doesn't
+			// depend on whatever a GM happens to have it configured to at the time.
+			int originalRange = RangesSettings.instance.mystic;
+			RangesSettings.instance.mystic = 8;
 
 			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
-			NPC dummy = (NPC) dummyDef.Create(self.X + 5, self.Y, self.Z, self.M); // beyond melee (1), within the new range (8)
+			NPC dummy = (NPC) dummyDef.Create(self.X + 5, self.Y, self.Z, self.M); // beyond melee (1), within the Mystic range setting (8)
 
 			int startX = self.X;
 			int startY = self.Y;
@@ -208,7 +207,7 @@ namespace SteamEngine.CompiledScripts {
 			self.Trigger_PlayerAttackRequest(dummy);
 
 			self.AddTimer(MysticStandoffCheckTimer.TimerKey,
-				new MysticStandoffCheckTimer(self, dummy, startX, startY, startingHits, originalRange, originalStartRange, originalStopRange))
+				new MysticStandoffCheckTimer(self, dummy, startX, startY, startingHits, originalRange))
 				.DueInSeconds = 15;
 			Console.WriteLine("MYSTIC_STANDOFF_TEST: STARTED");
 		}
@@ -257,7 +256,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>Mirrors ArcherStandoffCheckTimer's pattern (CombatDepthTests.cs) for a player
-	/// attacker instead of an NPC, and restores the CombatSettings mutation
+	/// attacker instead of an NPC, and restores the RangesSettings.mystic override
 	/// TestMysticStandsOffAtRange made before reporting.</summary>
 	[SaveableClass]
 	public class MysticStandoffCheckTimer : BoundTimer {
@@ -266,28 +265,23 @@ namespace SteamEngine.CompiledScripts {
 		private Character attacker;
 		private NPC dummy;
 		private int startX, startY, startingHits;
-		private int originalRange, originalStartRange, originalStopRange;
+		private int originalMysticRange;
 
 		[LoadingInitializer]
 		public MysticStandoffCheckTimer() {
 		}
 
-		public MysticStandoffCheckTimer(Character attacker, NPC dummy, int startX, int startY, int startingHits,
-				int originalRange, int originalStartRange, int originalStopRange) {
+		public MysticStandoffCheckTimer(Character attacker, NPC dummy, int startX, int startY, int startingHits, int originalMysticRange) {
 			this.attacker = attacker;
 			this.dummy = dummy;
 			this.startX = startX;
 			this.startY = startY;
 			this.startingHits = startingHits;
-			this.originalRange = originalRange;
-			this.originalStartRange = originalStartRange;
-			this.originalStopRange = originalStopRange;
+			this.originalMysticRange = originalMysticRange;
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
-			CombatSettings.instance.bareHandsRange = this.originalRange;
-			CombatSettings.instance.bareHandsStrikeStartRange = this.originalStartRange;
-			CombatSettings.instance.bareHandsStrikeStopRange = this.originalStopRange;
+			RangesSettings.instance.mystic = this.originalMysticRange;
 
 			bool stayedPut = !this.attacker.IsDeleted && (this.attacker.X == this.startX) && (this.attacker.Y == this.startY);
 			bool dealtDamage = this.dummy.IsDeleted || (this.dummy.Hits < this.startingHits);

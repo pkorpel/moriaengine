@@ -145,6 +145,41 @@ namespace SteamEngine.CompiledScripts {
 		public WeaponProjectileType weaponProjectileTypes = new WeaponProjectileType();
 		public ProjectilePiercingMassSetting projectilePiercings = new ProjectilePiercingMassSetting();
 		public ProjectileTypeMassSetting projectileTypes = new ProjectileTypeMassSetting();
+
+		/// <summary>Attack ranges that are a property of the attacker (profession/combat style),
+		/// not of whatever weapon happens to be equipped - the existing weaponRangesVsM/VsP mass
+		/// settings above are by weapon MODEL, which doesn't fit Mystic's mind-power attack:
+		/// its real reach is the attacker's own mind power, confirmed from the Erebor source as
+		/// a profession-level constant (mystikrangepvp/pvm), not a per-staff-model stat. Mystic
+		/// is the only entry for now (#447 follow-up) - more profession-specific ranges can be
+		/// added here later as they come up, same shape, rather than inventing a new page.</summary>
+		[InfoField("Ranges")]
+		public RangesSettings Ranges {
+			get {
+				return RangesSettings.instance;
+			}
+		}
+	}
+
+	[SaveableClass]
+	[HasSavedMembers]
+	[ViewableClass]
+	public class RangesSettings : SettingsMetaCategory {
+
+		[SavedMember]
+		public static RangesSettings instance = new RangesSettings();
+
+		[LoadingInitializer]
+		public RangesSettings() {
+		}
+
+		/// <summary>#447 follow-up - placeholder default (Erebor's real mystikrangepvp/pvm
+		/// values are live-shard GM config, not in the public script archive, same situation
+		/// every other Mystic tuning number hit). Used for both RangeVsP and RangeVsM - Erebor's
+		/// source actually has separate pvp/pvm range constants, but a single shared value is
+		/// enough for now; split into two fields here if that distinction ever matters.</summary>
+		[SaveableData]
+		public int mystic = 8;
 	}
 
 	public class WeaponTypeMassSetting : MassSettings_ByModel<WeaponDef, WeaponType> {
