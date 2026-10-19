@@ -131,6 +131,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return MiningSettings.instance;
 			}
 		}
+
+		[InfoField("Lumberjacking")]
+		public LumberjackingSettings LumberjackingSettings {
+			get {
+				return LumberjackingSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {
