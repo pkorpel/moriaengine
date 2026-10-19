@@ -1,5 +1,51 @@
 # moriaengine — working state
 
+## Combat system: live testing + real attack ranges for Mystic and Ranger — 2026-10-19 (continued)
+
+Follow-up to the Mystic shipment below, done live with the user testing in-game. Three more
+PRs, all merged:
+
+1. **Opt-in combat diagnostic system messages** (no tracking issue - small testing utility,
+   requested directly) - `CombatSettings.showCombatMessages` (default `false`). Surfaces
+   combat-flow events that otherwise have zero player-facing feedback: starting an attack,
+   needing to close distance / still too far / giving up out of range, losing LOS, missing,
+   and - the one gap on both sides - landing a hit now tells both attacker and defender who hit
+   whom for how much (the defender's existing overhead "-N" message was always anonymous). New
+   `CombatMessages` static helper. The attack sequence re-enters `On_Start` on every single
+   swing (`WeaponSkillTargetQueuePlugin.FightCurrentTarget`'s restart), so "You start attacking
+   X" needed a per-target dedup tag or it would've spammed every hit - found by reading the
+   code, not assumed. Also fixed a real test-harness gap: `TestGameClient` didn't know
+   `DisplayDeathActionOutPacket`'s (0xAF) payload size, hit for the first time by a test whose
+   attack happened to kill its dummy.
+2. **Real Mystic attack range** - the user found their Mystic was still melee-range after the
+   initial shipment, because Phase D (#451) only ever proved the range mechanism with a
+   test-only `CombatSettings.bareHandsRange` override that got restored afterward - no
+   persistent setting actually existed. Added `CombatSettings.Ranges` (new `RangesSettings`
+   class, registered as a nested `.settings` page under Combat Settings) with `mystic` (default
+   8) - `CombatCalculator.CalculateCombatWeaponValues` now overrides a Mystic's
+   range/strikeStartRange/strikeStopRange with this setting outright, regardless of weapon.
+   #451's own test updated to use the real mechanism instead of its old workaround.
+3. **Ranger's attack confirmed + given the same treatment** - #454's Phase A (#455, "does
+   player-side bow usage actually work") confirmed TRUE via a real equip (actual pickup/
+   drop-to-wear packets) + real attack: the existing WeaponSkillDef/DamageManager path already
+   handles it, no damage-code gap. `CombatSettings.Ranges` gained `bow`/`crossbow`/
+   `heavyCrossbow` (default 8 each, same shared page as `mystic`) - applies to ANY player
+   wielding one of these, NOT profession-gated (unlike Mystic - a bow's range is a property of
+   the weapon, not the wielder). Light/heavy crossbow share `WeaponType.XBow` (confirmed
+   correct, no new enum needed) - distinguished by defname (`i_crossbow_heavy_*`, a 100%-
+   consistent naming convention across all 7 material tiers, confirmed via grep - no dedicated
+   field exists for this, and adding one felt like more content-schema work than this needed).
+   Closed #455 and #459 (no separate `RangerSettings` needed - this shared page covers it).
+
+**Still open for Ranger**: #456 (author real bow/crossbow damage-content numbers - DAM ratio
+bow 5/light-xbow 7/heavy-xbow 13, still showing converter-placeholder ~18-23 clustered values),
+#457 (optional per-arrow-tier damage bonus), #458 (resistance correctness, blocked on #96).
+
+**Pattern now established across both professions, worth repeating for future ones**: put new
+GM-tunable combat-range values in the shared `CombatSettings.Ranges` page (not a per-profession
+settings class) when the value is a simple flat number, not a mass-setting-by-model/material
+shape.
+
 ## Combat system initiative, profession #1 - Mystic (#447) — SHIPPED, all 5 phases — 2026-10-19
 
 Implemented the full design from #447's own research (see that entry further below for the
