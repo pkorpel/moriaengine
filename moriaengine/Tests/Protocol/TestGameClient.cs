@@ -87,6 +87,9 @@ namespace SteamEngine.Tests.Protocol {
 			              // payload excludes the id byte: model/zeros/amount/sourceUid/sourceX/
 			              // sourceY/sourceZ/targetUid/targetX/targetY/targetZ =
 			              // 2+3+2+4+2+2+1+4+2+2+1 = 25)
+			{ 0xAF, 12 }, // DisplayDeathActionOutPacket (charUid/corpseUid/zeros = 4+4+4 = 12) -
+			              // first hit by a combat-messages test (#447 follow-up) whose damage
+			              // happened to kill the dummy NPC mid-test.
 		};
 
 		/// <summary>Wire ids whose payload is self-length-prefixed (2-byte big-endian total size,

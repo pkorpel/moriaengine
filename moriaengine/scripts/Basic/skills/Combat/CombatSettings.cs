@@ -34,6 +34,13 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double secondsToRememberTargets = 300;
 
+		/// <summary>Opt-in diagnostic combat messages (too far, lost LOS/interaction, hit/miss,
+		/// damage + who caused it) - surfaces combat-flow events that otherwise have zero
+		/// player-facing feedback today, for live-testing new combat mechanics. Off by default -
+		/// this is a debug aid, not a shipped UX feature.</summary>
+		[SaveableData]
+		public bool showCombatMessages = false;
+
 		[SaveableData]
 		public double bareHandsAttackVsP = 10;
 
@@ -143,7 +150,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponTypeMassSetting : MassSettings_ByModel<WeaponDef, WeaponType> {
 		public override string Name {
 			get {
-				return "Typy zbraní";
+				return "Typy zbranï¿½";
 			}
 		}
 
@@ -188,7 +195,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponRangeVsMMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Dostøely/dosahy zbraní vs M";
+				return "Dostï¿½ely/dosahy zbranï¿½ vs M";
 			}
 		}
 
@@ -214,7 +221,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponRangeVsPMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Dostøely/dosahy zbraní vs P";
+				return "Dostï¿½ely/dosahy zbranï¿½ vs P";
 			}
 		}
 
@@ -240,7 +247,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponStrikeStartRangeMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Dostøely/dosahy zbraní - minimum pro zaèátek nápøahu";
+				return "Dostï¿½ely/dosahy zbranï¿½ - minimum pro zaï¿½ï¿½tek nï¿½pï¿½ahu";
 			}
 		}
 
@@ -266,7 +273,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponStrikeStopRangeMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Dostøely/dosahy zbraní - maximum pro trvání nápøahu";
+				return "Dostï¿½ely/dosahy zbranï¿½ - maximum pro trvï¿½nï¿½ nï¿½pï¿½ahu";
 			}
 		}
 
@@ -292,7 +299,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponSpeedMassSetting : MassSettings_ByModel<WeaponDef, double> {
 		public override string Name {
 			get {
-				return "Rychlosti zbraní";
+				return "Rychlosti zbranï¿½";
 			}
 		}
 
@@ -318,7 +325,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponAnimTypeSetting : MassSettings_ByModel<WeaponDef, WeaponAnimType> {
 		public override string Name {
 			get {
-				return "Typy animace zbraní";
+				return "Typy animace zbranï¿½";
 			}
 		}
 
@@ -376,7 +383,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponMaterialTypeMassSetting : MassSettings_ByModel<ColoredWeaponDef, MaterialType> {
 		public override string Name {
 			get {
-				return "Typ materiálu zbraní";
+				return "Typ materiï¿½lu zbranï¿½";
 			}
 		}
 
@@ -402,7 +409,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponAttackVsPMassSetting : MassSettingByMaterial<ColoredWeaponDef, double> {
 
 		public override string Name {
-			get { return "Útok proti hráèùm"; }
+			get { return "ï¿½tok proti hrï¿½ï¿½ï¿½m"; }
 		}
 
 		protected class WeaponAttackVsPFieldView : FieldView_ByModel {
@@ -427,7 +434,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponAttackVsMMassSetting : MassSettingByMaterial<ColoredWeaponDef, double> {
 
 		public override string Name {
-			get { return "Útok proti monstrùm"; }
+			get { return "ï¿½tok proti monstrï¿½m"; }
 		}
 
 		protected class WeaponAttackVsMFieldView : FieldView_ByModel {
@@ -452,7 +459,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WearableLayerMassSetting : MassSettings_ByModel<WearableDef, LayerNames> {
 		public override string Name {
 			get {
-				return "Layery brnìní/obleèení";
+				return "Layery brnï¿½nï¿½/obleï¿½enï¿½";
 			}
 		}
 
@@ -478,7 +485,7 @@ namespace SteamEngine.CompiledScripts {
 	public class ArmorVsPMassSetting : MassSettings_ByWearableTypeAndMaterial<ColoredArmorDef, int> {
 
 		public override string Name {
-			get { return "Armor proti hráèùm"; }
+			get { return "Armor proti hrï¿½ï¿½ï¿½m"; }
 		}
 
 		protected class ArmorVsPFieldView : FieldView_ByWearableTypeAndMaterial {
@@ -503,7 +510,7 @@ namespace SteamEngine.CompiledScripts {
 	public class ArmorVsMMassSetting : MassSettings_ByWearableTypeAndMaterial<ColoredArmorDef, int> {
 
 		public override string Name {
-			get { return "Armor proti monstrùm"; }
+			get { return "Armor proti monstrï¿½m"; }
 		}
 
 		protected class ArmorVsMFieldView : FieldView_ByWearableTypeAndMaterial {
@@ -528,7 +535,7 @@ namespace SteamEngine.CompiledScripts {
 	public class MindDefenseVsPMassSetting : MassSettings_ByWearableTypeAndMaterial<ColoredArmorDef, int> {
 
 		public override string Name {
-			get { return "Obrana mysli hráèùm"; }
+			get { return "Obrana mysli hrï¿½ï¿½ï¿½m"; }
 		}
 
 		protected class MindDefenseVsPFieldView : FieldView_ByWearableTypeAndMaterial {
@@ -553,7 +560,7 @@ namespace SteamEngine.CompiledScripts {
 	public class MindDefenseVsMMassSetting : MassSettings_ByWearableTypeAndMaterial<ColoredArmorDef, int> {
 
 		public override string Name {
-			get { return "Obrana mysli monstrùm"; }
+			get { return "Obrana mysli monstrï¿½m"; }
 		}
 
 		protected class MindDefenseVsMFieldView : FieldView_ByWearableTypeAndMaterial {
@@ -578,7 +585,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponProjectileType : MassSettings_ByModel<WeaponDef, ProjectileType> {
 		public override string Name {
 			get {
-				return "Typ projektilù pro zbranì";
+				return "Typ projektilï¿½ pro zbranï¿½";
 			}
 		}
 
@@ -604,7 +611,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponProjectileAnimMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Animace projektilù pro zbranì";
+				return "Animace projektilï¿½ pro zbranï¿½";
 			}
 		}
 
@@ -630,7 +637,7 @@ namespace SteamEngine.CompiledScripts {
 	public class ProjectileTypeMassSetting : MassSettings_ByModel<ProjectileDef, ProjectileType> {
 		public override string Name {
 			get {
-				return "Typ projektilù";
+				return "Typ projektilï¿½";
 			}
 		}
 
@@ -656,7 +663,7 @@ namespace SteamEngine.CompiledScripts {
 	public class ProjectilePiercingMassSetting : MassSettings_ByClass_ThingDef<ProjectileDef, double> {
 		public override string Name {
 			get {
-				return "Piercing projektilù";
+				return "Piercing projektilï¿½";
 			}
 		}
 
