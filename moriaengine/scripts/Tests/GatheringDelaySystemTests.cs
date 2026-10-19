@@ -48,5 +48,13 @@ namespace SteamEngine.CompiledScripts {
 			double delay = GatheringDelaySystem.GetDelaySeconds(self, SkillName.Mining);
 			Console.WriteLine("MINING_DELAY_FOR_CHAR: skillValue=" + self.GetRealSkillValue(SkillName.Mining) + " delay=" + delay);
 		}
+
+		/// <summary>#424 - same wrapper-extraction check as TestReportMiningDelayForChar, for
+		/// Lumberjacking's own On_Start wiring.</summary>
+		[SteamFunction]
+		public static void TestReportLumberjackingDelayForChar(Character self) {
+			double delay = GatheringDelaySystem.GetDelaySeconds(self, SkillName.Lumberjacking);
+			Console.WriteLine("LUMBERJACKING_DELAY_FOR_CHAR: skillValue=" + self.GetRealSkillValue(SkillName.Lumberjacking) + " delay=" + delay);
+		}
 	}
 }
