@@ -1,5 +1,39 @@
 # moriaengine — working state
 
+## Combat system initiative, profession #3 - Thief (#476) — DESIGNED, not implemented — 2026-10-19
+
+Third profession researched for the combat-system initiative (see Mystic/#447 and Ranger/#454
+further below, both fully shipped). Dispatched another Opus research agent (research-only, no
+code/issues) - findings filed as #476 (parent design doc) with phase sub-issues #477-481 - see
+#476 for the full writeup, don't duplicate it here.
+
+**Core finding: Thief is a hybrid, leaning Mystic-shape** - NOT "just a Warrior with different
+skills." Erebor gives it a real, distinctive identity: a stealth-opener backstab (hidden +
+adjacent + facing, ×1.5 vP/×2.0 vM bonus, reveals on success), a passive from-behind damage
+bonus (`f_isBackslash` facing check) with a "podříznutí" toggle that amplifies it further, and a
+Thief-specific higher bleed cap on top of the engine's already-existing generic bleed mechanism.
+Plus two NPC-only (per source) defensive talents (a damage-reduction stance, a weapon-specific
+reflect chance) and a niche shield-strike paralyze. All of it is ordinary PhysicalStabbing/
+Slashing damage underneath - **no new `DamageType` enum work needed**, unlike nothing here
+needing Mystic's dedicated `MagicMystical` treatment.
+
+**Verified, not just carried forward**: the earlier #134 Professions-pass finding ("~50% of
+thief.def's talent-tree comments are Czech design notes with no real AbilityDef") is confirmed
+correct AND now fully resolved - the real mechanics (backstab, from-behind, podříznutí, bleed,
+vigilance stance, rebound, shield-strike) all trace to real Erebor source functions. But several
+named "samurai tree" finishers in the `.def` comments (Blind/Disarm/Taunt/Smršť/Přesný zásah/
+Finesa/Cleave/Assassin-strike) are confirmed **NOT real shipped Erebor thief abilities** - either
+other classes' abilities or pure design aspirations never implemented even in the reference
+shard. Recommended to skip - building them would be inventing mechanics, not porting them.
+
+**Not started**: no code written. #477 (Phase A, backstab) is the natural starting point - the
+headline mechanic, and the only one requiring a brand-new cross-cutting decision (profession-
+gated swing modification, same shape as Mystic's own `ProcessSwing` hook). #478 (Phase B,
+from-behind + podříznutí) depends on a new "is attacker behind defender" helper but otherwise
+ports cleanly. #479 (Phase C, bleed cap) is lower-risk, closer to Ranger-shape (wiring a
+Thief-specific number into an already-built mechanism). #480/#481 (Phases D/E, defensive
+talents + shield strike) are genuinely optional, flagged lowest priority by the research itself.
+
 ## RangerSettings page, #456/#457, run/stand archery — SHIPPED (PR #473) — 2026-10-19
 
 Shipped the plan recorded earlier this same day (see git history for this file if the original
