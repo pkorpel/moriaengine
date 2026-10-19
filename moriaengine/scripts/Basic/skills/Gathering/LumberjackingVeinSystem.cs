@@ -84,6 +84,21 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly WoodTier[] All = {
 			Copper, Iron, Verite, Valorite, Obsidian, Adamantinum, Mithril
 		};
+
+		/// <summary>Reverse lookup from a yielded ItemDef back to its WoodTier - used by
+		/// LumberjackingAmbushSystem (#431) to key its Reaper variant off the wood tier a chop
+		/// actually produced. Returns null for a null/unrecognised ItemDef.</summary>
+		public static WoodTier ByItemDef(ItemDef itemDef) {
+			if (itemDef == null) {
+				return null;
+			}
+			foreach (WoodTier tier in All) {
+				if (tier.ItemDef == itemDef) {
+					return tier;
+				}
+			}
+			return null;
+		}
 	}
 
 	/// <summary>

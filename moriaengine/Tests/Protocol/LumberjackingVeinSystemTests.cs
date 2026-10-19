@@ -7,13 +7,14 @@ namespace SteamEngine.Tests.Protocol {
 	/// Lumberjacking's per-tile vein system (#421/#422) - real Erebor wood-tier mechanics: a
 	/// vein has one assigned wood type, insufficient skill downgrades to copper rather than
 	/// failing, the pool depletes per extraction, and regenerates (with a fresh wood roll)
-	/// once its timer elapses. Mirrors MiningVeinSystemTests.cs - no cave-in/ambush
-	/// equivalents here (cave-ins are confirmed Mining-specific; ambush is tracked separately
-	/// as #423).
+	/// once its timer elapses. Mirrors MiningVeinSystemTests.cs - no cave-in equivalent here
+	/// (confirmed Mining-specific). The monster ambush mechanic (#431, Phase C of #421) is
+	/// also covered here, mirroring Mining's own ambush Fact.
 	/// </summary>
 	[Collection(LumberjackingVeinSystemCollection.Name)]
 	public class LumberjackingVeinSystemTests {
 		private const string Account = "protocoltest";
+		private const string AccountB = "protocoltestb";
 		private const string Password = "protocoltest";
 
 		private readonly GameServerPairFixture fixture;
@@ -122,6 +123,27 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		[Fact]
+		public void AmbushTriggersAtRoughlyTheRealRateAndFavorsWolfOverReaper() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "LumberjackAmbushChecker")) {
+				this.PromoteToGm(client);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSampleLumberjackAmbushChance 40000");
+				Assert.True(this.fixture.WaitForGameOutputSince("LUMBERJACK_AMBUSH_CHANCE_SAMPLE:", mark, TimeSpan.FromSeconds(30)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LUMBERJACK_AMBUSH_CHANCE_SAMPLE:");
+				int total = ExtractInt(line, "total=");
+				int wolf = ExtractInt(line, "wolf=");
+				int reaperSpruce = ExtractInt(line, "reaperSpruce=");
+				// Expected ~53 total ambushes over 40000 attempts at 1/750 - generous bounds
+				// (>0, <10%) catch a completely broken roll without being flaky on the real one.
+				Assert.True(total > 0 && total < 4000, "Expected roughly 1/750 of 40000 attempts to ambush: " + line);
+				// Wolf is ~49% of triggers, the Reaper bucket only ~3% - wolf should clearly dominate.
+				Assert.True(wolf > reaperSpruce * 3, "Expected wolf ambushes to be rolled far more often than Reaper: " + line);
+			}
+		}
+
 		private static int ExtractInt(string line, string marker) {
 			int idx = line.IndexOf(marker, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' in: " + line);
@@ -144,12 +166,20 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+			return this.ConnectLoginAndCreateCharacter(Account, charName);
+		}
+
+		/// <summary>AccountB (needs EnsureAutoAccountCreationEnabled called once first, same
+		/// pattern as Mining's own MiningVeinSystemTests.cs) - the ambush Fact gets its own
+		/// account rather than sharing the other Facts' character-slot usage on the shared
+		/// Account.</summary>
+		private TestGameClient ConnectLoginAndCreateCharacter(string account, string charName) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(Account, Password);
+					game.SendLogin(account, Password);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					return game;
@@ -162,12 +192,36 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
 		}
 
+		private void PromoteToGm(TestGameClient client) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestPromoteToGM");
+			Assert.True(this.fixture.WaitForGameOutputSince("PROMOTE_TO_GM:", mark, TimeSpan.FromSeconds(10)));
+		}
+
+		private static bool autoAccountCreationEnabled;
+
+		private void EnsureAutoAccountCreationEnabled() {
+			if (autoAccountCreationEnabled) {
+				return;
+			}
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "AutoAccountEnabler")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestEnableAutoAccountCreation");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST:", mark, TimeSpan.FromSeconds(10)));
+			}
+			autoAccountCreationEnabled = true;
+		}
+
 		private int WaitForServerListingAndGetRedirectPort() {
+			return this.WaitForServerListingAndGetRedirectPort(Account);
+		}
+
+		private int WaitForServerListingAndGetRedirectPort(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(Account, Password);
+						login.SendLogin(account, Password);
 
 						int serverCount = login.ReadServersList();
 						if (serverCount < 1) {
