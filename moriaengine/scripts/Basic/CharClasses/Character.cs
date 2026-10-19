@@ -763,6 +763,7 @@ namespace SteamEngine.CompiledScripts {
 			set {
 				if (value != this.mana) {
 					CharSyncQueue.AboutToChangeMana(this);
+					this.InvalidateCombatWeaponValues(); //#450 - a Mystic's WeaponDelay is mana-dependent
 					this.mana = value;
 
 					//regeneration...
