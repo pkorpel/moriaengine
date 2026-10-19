@@ -188,4 +188,81 @@ namespace SteamEngine.Tests.Protocol {
 	public class MysticCombatCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "MysticCombatPair";
 	}
+
+	/// <summary>Separate fixture/account from MysticCombatTests above, purely to stay under
+	/// AbstractAccount.maxCharactersPerGameAccount (a hard 5) - MysticCombatTests' own account
+	/// is already exactly at that cap from its own 5 Facts (same class of mistake #421's own
+	/// GatheringDelaySystemTests hit, per CLAUDE.md).</summary>
+	[Collection(MysticCombatRangeCollection.Name)]
+	public class MysticCombatRangeTests {
+		private const string Account = "mystictestb";
+		private const string Password = "mystictestb";
+
+		private readonly GameServerPairFixture fixture;
+
+		public MysticCombatRangeTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		/// <summary>#451 - end-to-end real-attack version of the range check (not a direct
+		/// formula call like the other Mystic tests), confirming WeaponSkillDef's existing
+		/// Drawing->Striking loop works for a real Mystic player attack.</summary>
+		[Fact]
+		public void StandsOffAtRange() {
+			using (var client = this.ConnectLoginAndCreateCharacter("MysticRangeChecker")) {
+				client.SendSpeech(".TestMysticStandsOffAtRange");
+				Assert.True(this.fixture.WaitForGameOutput("MYSTIC_STANDOFF_TEST: PASS", TimeSpan.FromSeconds(30)),
+					"Expected the Mystic to stay at range and land damage. Game output:\n" + this.fixture.GameOutputSnapshot());
+			}
+		}
+
+		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+			InvalidOperationException lastFailure = null;
+			for (int attempt = 0; attempt < 40; attempt++) {
+				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
+				try {
+					game.SendLogin(Account, Password);
+					game.ReadCharacterList();
+					game.SendCreateCharacter(charName);
+					return game;
+				} catch (InvalidOperationException e) {
+					game.Dispose();
+					lastFailure = e;
+					Thread.Sleep(300);
+				}
+			}
+			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
+		}
+
+		private int WaitForServerListingAndGetRedirectPort() {
+			Exception lastFailure = null;
+			for (int attempt = 0; attempt < 40; attempt++) {
+				try {
+					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
+						login.SendLogin(Account, Password);
+
+						int serverCount = login.ReadServersList();
+						if (serverCount < 1) {
+							throw new InvalidOperationException("No identified game server yet (server count 0).");
+						}
+
+						login.SendServerSelect(0);
+						var (redirectPort, _) = login.ReadRedirect();
+						Assert.True(redirectPort > 0, "Expected a real port in the login redirect.");
+						return redirectPort;
+					}
+				} catch (InvalidOperationException e) {
+					lastFailure = e;
+					Thread.Sleep(300);
+				}
+			}
+			throw new TimeoutException("Game server never appeared in AuxiliaryServer's list.", lastFailure);
+		}
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class MysticCombatRangeCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "MysticCombatRangePair";
+	}
 }
