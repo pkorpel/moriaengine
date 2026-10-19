@@ -216,6 +216,76 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Testing combat messages: off by default - attacking produces no [Combat]
+		/// system messages at all. Reads several system-message packets directly off the wire
+		/// (not server-console markers - SysMessage has no console-log equivalent) and asserts
+		/// none of them are combat-diagnostic lines.</summary>
+		[Fact]
+		public void MessagesAreSilentByDefault() {
+			using (var client = this.ConnectLoginAndCreateCharacter("CombatMsgSilent")) {
+				client.SendSpeech(".TestCombatMessagesSetup False");
+				Assert.True(this.fixture.WaitForGameOutput("COMBAT_MESSAGES_TEST: STARTED", TimeSpan.FromSeconds(10)));
+
+				bool sawCombatMessage = false;
+				try {
+					for (int i = 0; i < 5; i++) {
+						string message = client.ReadSystemMessage(TimeSpan.FromSeconds(2));
+						if (message.StartsWith("[Combat]", StringComparison.Ordinal)) {
+							sawCombatMessage = true;
+							break;
+						}
+					}
+				} catch (TimeoutException) {
+					// Expected once the (short) stream of unrelated messages, if any, runs dry.
+				}
+
+				Assert.False(sawCombatMessage, "Expected no [Combat] system messages with showCombatMessages left at its default (false).");
+			}
+		}
+
+		/// <summary>Testing combat messages: enabled - both the attack-start and landed-hit
+		/// lines appear, plus the Mystic-specific mana-drain line.</summary>
+		[Fact]
+		public void MessagesShowWhenEnabled() {
+			using (var client = this.ConnectLoginAndCreateCharacter("CombatMsgEnabled")) {
+				client.SendSpeech(".TestCombatMessagesSetup True");
+				Assert.True(this.fixture.WaitForGameOutput("COMBAT_MESSAGES_TEST: STARTED", TimeSpan.FromSeconds(10)));
+
+				string startMessage = ReadMessageContaining(client, "start attacking");
+				Assert.StartsWith("[Combat]", startMessage);
+
+				string hitMessage = ReadMessageContaining(client, "You hit");
+				Assert.Contains("damage", hitMessage);
+
+				string manaMessage = ReadMessageContaining(client, "channels");
+				Assert.Contains("mana", manaMessage);
+			}
+		}
+
+		/// <summary>Testing combat messages: the Drawing-phase "still too far, come closer"
+		/// line, throttled to avoid spamming once per second while the attacker fails to close
+		/// distance (players don't auto-path toward a target the way NPCs do).</summary>
+		[Fact]
+		public void TooFarMessageShowsWhenEnabled() {
+			using (var client = this.ConnectLoginAndCreateCharacter("CombatMsgTooFar")) {
+				client.SendSpeech(".TestCombatMessagesTooFarSetup");
+				Assert.True(this.fixture.WaitForGameOutput("COMBAT_MESSAGES_TOOFAR_TEST: STARTED", TimeSpan.FromSeconds(10)));
+
+				string message = ReadMessageContaining(client, "get closer");
+				Assert.Contains("get closer", message);
+			}
+		}
+
+		private static string ReadMessageContaining(TestGameClient client, string expectedSubstring) {
+			for (int attempt = 0; attempt < 10; attempt++) {
+				string message = client.ReadSystemMessage(TimeSpan.FromSeconds(10));
+				if (message.IndexOf(expectedSubstring, StringComparison.Ordinal) >= 0) {
+					return message;
+				}
+			}
+			throw new TimeoutException("Never saw a system message containing '" + expectedSubstring + "'.");
+		}
+
 		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
 			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
 			InvalidOperationException lastFailure = null;

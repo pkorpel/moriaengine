@@ -53,12 +53,25 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
+		// Testing combat messages (CombatSettings.showCombatMessages): FightCurrentTarget
+		// re-runs PhaseSelect -> On_Start on literally every successful swing (that's how the
+		// attack "keeps going" - see WeaponSkillTargetQueuePlugin.FightCurrentTarget), not just
+		// on a genuinely new engagement. Without this dedup tag, "You start attacking X" would
+		// print on every single hit instead of once per engagement.
+		static TagKey lastAttackedTargetTK = TagKey.Acquire("_combatMessagesLastTarget_");
+
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			Character target = (Character) skillSeqArgs.Target1;
 			self.AbortSkill(); //abort previous skill
 
 			WeaponSkillTargetTrackerPlugin.InstallTargetTracker(target, self);
+
+			if (!ReferenceEquals(self.GetTag(lastAttackedTargetTK), target)) {
+				self.SetTag(lastAttackedTargetTK, target);
+				CombatMessages.Send(self, "[Combat] You start attacking " + target.Name + ".");
+			}
+
 			skillSeqArgs.Param1 = WeaponSkillPhase.Drawing;
 			skillSeqArgs.DelayInSeconds = 0;
 			skillSeqArgs.DelayStroke();
@@ -67,6 +80,24 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		static TimerKey animTk = TimerKey.Acquire("_weaponAnimDelay_");
+
+		// Throttles the Drawing/Striking "still too far" retry messages below (the loop that
+		// emits them can tick every second while the attacker is walking into range) to avoid
+		// spamming the client once per second.
+		static TagKey tooFarMessageTimeTK = TagKey.Acquire("_combatMessagesTooFarTime_");
+		const double tooFarMessageThrottleSeconds = 3;
+
+		static void SendThrottledTooFarMessage(Character self, string message) {
+			if (!CombatSettings.instance.showCombatMessages) {
+				return;
+			}
+			object lastShown = self.GetTag(tooFarMessageTimeTK);
+			TimeSpan now = Globals.TimeAsSpan;
+			if ((lastShown == null) || ((now - (TimeSpan) lastShown).TotalSeconds >= tooFarMessageThrottleSeconds)) {
+				self.SetTag(tooFarMessageTimeTK, now);
+				self.SysMessage(message);
+			}
+		}
 
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
@@ -80,11 +111,13 @@ namespace SteamEngine.CompiledScripts {
 			//check first rather than let that throw.
 			if (target.IsDeleted) {
 				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
+				CombatMessages.Send(self, "[Combat] Your target is gone. You stop attacking.");
 				self.AbortSkill();
 				return TriggerResult.Cancel;
 			}
 			if (!self.CanInteractWith(target).Allow) {
 				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
+				CombatMessages.Send(self, "[Combat] You lose sight of " + target.Name + ". You stop attacking.");
 				self.AbortSkill();
 				return TriggerResult.Cancel;
 			}
@@ -100,8 +133,10 @@ namespace SteamEngine.CompiledScripts {
 					self.AddTimer(animTk, new WeaponAnimTimer()).DueInSeconds = delay.TotalSeconds / 2;
 					return TriggerResult.Cancel;
 				}
+				SendThrottledTooFarMessage(self, "[Combat] You need to get closer to " + target.Name + " to attack.");
 			} else {
 				if (distance > self.WeaponStrikeStopRange) {
+					CombatMessages.Send(self, "[Combat] " + target.Name + " is too far away. You stop attacking.");
 					self.AbortSkill();
 				} else if (((TimeSpan) skillSeqArgs.Param2) <= Globals.TimeAsSpan) {
 					int range = Math.Min(target.IsPlayerForCombat ? self.WeaponRangeVsP : self.WeaponRangeVsM, self.VisionRange);
@@ -152,6 +187,7 @@ namespace SteamEngine.CompiledScripts {
 
 						return TriggerResult.Continue;
 					}
+					SendThrottledTooFarMessage(self, "[Combat] " + target.Name + " is still too far to hit.");
 				}
 			}
 
@@ -193,6 +229,8 @@ namespace SteamEngine.CompiledScripts {
 
 			target.Trigger_HostileAction(self);
 			SoundCalculator.PlayMissSound(self);
+			CombatMessages.Send(self, "[Combat] You miss " + target.Name + ".");
+			CombatMessages.Send(target, "[Combat] " + self.Name + " misses you.");
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
@@ -202,6 +240,9 @@ namespace SteamEngine.CompiledScripts {
 				Character self = skillSeqArgs.Self;
 				//WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
 				WeaponSkillTargetTrackerPlugin.UnInstallTargetTracker(target, self);
+				// Testing combat messages: let "You start attacking X" fire again next time,
+				// now that this engagement has genuinely ended (see On_Start's own comment).
+				self.RemoveTag(lastAttackedTargetTK);
 			}
 		}
 	}
