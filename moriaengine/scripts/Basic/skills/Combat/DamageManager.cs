@@ -163,7 +163,15 @@ namespace SteamEngine.CompiledScripts {
 			AnimCalculator.PerformAnim(attacker, GetSwingAnim(attacker.WeaponType));
 
 			if (TriggerResult.Cancel != Trigger_BeforeSwing(swingArgs)) {
-				int actualDamage = CauseDamage(attacker, defender, attacker.WeaponDamageType, swingArgs.DamageAfterAC);
+				// #447/#448: a Mystic's swing deals mind-power magic damage (DamageType.
+				// Mystical, confirmed as this engine's own purpose-built flag for exactly this -
+				// see Enums.cs's "Mystikuv utok" comment) instead of the weapon's normal
+				// physical damage type, even though the weapon itself (a staff) is a plain
+				// OneHandBlunt/TwoHandBlunt per mystic.def.
+				DamageType damageType = Professions.HasProfession(attacker, Professions.Mystic)
+					? DamageType.MagicMystical
+					: attacker.WeaponDamageType;
+				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC);
 
 				swingArgs.InternalSetFinalDamage(actualDamage);
 
@@ -194,6 +202,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static WeaponSwingArgs GetWeaponSwingArgs(Character attacker, Character defender) {
+			// #447/#448/#449: a Mystic's attack diverts entirely to the mind-power path -
+			// confirmed from Erebor source, "combat_main_mystik" replaces the normal physical
+			// attack function outright rather than adding to it. mindPower(attacker) and
+			// mindDefense(defender) are already-computed Character properties
+			// (CombatCalculator.CalculateCombatWeaponValues/CalculateCombatArmorValues) that
+			// had zero consumers before this.
+			if (Professions.HasProfession(attacker, Professions.Mystic)) {
+				return GetMindPowerSwingArgs(attacker, defender);
+			}
+
 			CombatSettings settings = CombatSettings.instance;
 			double attack = settings.weapAttack;
 			double piercing = attacker.WeaponPiercing;
@@ -225,6 +243,19 @@ namespace SteamEngine.CompiledScripts {
 			return new WeaponSwingArgs(attacker, defender, attack, piercing, armorClass, damageAfterAC);
 		}
 
+		/// <summary>#447/#448/#449 - Mystic's mind-power swing. `piercing` has no equivalent in
+		/// this formula (mind defense isn't reduced by anything matching a weapon/ammo's
+		/// physical piercing stat per the Erebor source), so it's always 0 here - kept in the
+		/// WeaponSwingArgs shape only because that type is shared with the physical path.</summary>
+		private static WeaponSwingArgs GetMindPowerSwingArgs(Character attacker, Character defender) {
+			bool defenderIsPlayer = defender.IsPlayerForCombat;
+			double mindPower = defenderIsPlayer ? attacker.MindPowerVsP : attacker.MindPowerVsM;
+			double mindDefense = defenderIsPlayer ? defender.MindDefenseVsP : defender.MindDefenseVsM;
+
+			double damageAfterMD = CombatCalculator.CalculateMindPowerEffect(attacker, defender, mindPower, mindDefense);
+
+			return new WeaponSwingArgs(attacker, defender, mindPower, 0, mindDefense, damageAfterMD);
+		}
 
 		static TriggerKey beforeSwingTK = TriggerKey.Acquire("beforeSwing");
 		static TriggerKey beforeGetSwingTK = TriggerKey.Acquire("beforeGetSwing");
