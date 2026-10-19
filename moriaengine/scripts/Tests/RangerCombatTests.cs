@@ -41,6 +41,12 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestGrantBowAndArrows(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			// #96 fix follow-up: the dummy sheep's real ArmorVsP (6) used to be unconditionally
+			// discarded by #96's bug, so any attack value landed damage regardless. Now that
+			// real armor applies, a default-Str test character's bare attack value can come out
+			// below 6 and net to zero/negative damage - bump Str so this test's own baseline
+			// attack reliably clears real armor, same as #96's own ArmorEffectTests do.
+			self.Str = 300;
 
 			ThingDef bowDef = ThingDef.GetByDefname("i_bow_copper");
 			AbstractItem bow = (AbstractItem) bowDef.Create(self.P());
