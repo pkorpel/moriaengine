@@ -73,6 +73,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Ranger Settings")]
+		public RangerSettings RangerSettings {
+			get {
+				return RangerSettings.instance;
+			}
+		}
+
 		[InfoField("Poisons Settings")]
 		public PoisoningSettings PoisoningSettings {
 			get {
