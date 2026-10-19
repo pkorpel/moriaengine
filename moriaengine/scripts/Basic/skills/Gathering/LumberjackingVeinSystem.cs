@@ -1,0 +1,188 @@
+/*
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	Or visit http://www.gnu.org/copyleft/gpl.html
+*/
+
+using System.Collections.Generic;
+
+namespace SteamEngine.CompiledScripts {
+
+	/// <summary>One of the 7 real Erebor wood tiers (sphereregion.scp's [RegionResource l_X]
+	/// blocks) - skill threshold (the real `fixresource` check's single-value SKILL compare,
+	/// using the range's own lower bound, x10-scaled to match this engine's internal skill
+	/// storage), pool-size range, and regen time. NOT i_log_lager - that item is exclusively
+	/// the output of a separate labor-camp/prisoner-punishment region-type (r_lagr_tree,
+	/// tag.trestanec), confirmed via direct source cross-reference (#270's corrected comment),
+	/// not a normal wood tier at all.</summary>
+	public class WoodTier {
+		public readonly string ItemDefname;
+
+		//mutable (not readonly), matching OreTier's own precedent, so a future .settings
+		//category (#425) can write through to these directly.
+		public int SkillThreshold;
+		public int MinAmount;
+		public int MaxAmount;
+		public int RegenMinutes;
+
+		public WoodTier(string itemDefname, int skillThreshold, int minAmount, int maxAmount, int regenMinutes) {
+			this.ItemDefname = itemDefname;
+			this.SkillThreshold = skillThreshold;
+			this.MinAmount = minAmount;
+			this.MaxAmount = maxAmount;
+			this.RegenMinutes = regenMinutes;
+		}
+
+		/// <summary>Rarity weight for the untouched-vein roll - same "real AMOUNT range's own
+		/// midpoint as a commonness proxy" precedent as Mining's OreTier.Weight. The real
+		/// source's own region-type distribution comments out adamantinum/mithril entirely
+		/// (reserved for the separate elven-bonus mechanic, #427) - matching Mining's OWN
+		/// already-shipped OreTiers.All (which likewise includes Adamantinum/Mithril in its
+		/// weighted pool despite the identical real-source comment on the ore side), this
+		/// deliberately does NOT exclude them - their tiny amount ranges already make them
+		/// naturally rare without needing a hard exclusion, consistent with the sibling
+		/// system's own precedent.</summary>
+		public double Weight {
+			get { return (this.MinAmount + this.MaxAmount) / 2.0; }
+		}
+
+		private ItemDef itemDef;
+		public ItemDef ItemDef {
+			get {
+				if (this.itemDef == null) {
+					this.itemDef = (ItemDef) ThingDef.GetByDefname(this.ItemDefname);
+				}
+				return this.itemDef;
+			}
+		}
+	}
+
+	/// <summary>The 7 real Erebor wood tiers (#422), confirmed directly against
+	/// sphereregion.scp's own [RegionResource l_X] blocks after correcting an earlier wrong
+	/// assumption that i_log_lager was the baseline (see WoodTier's own doc comment and
+	/// #270's corrected comment for the full story).</summary>
+	public static class WoodTiers {
+		public static readonly WoodTier Copper = new WoodTier("i_log_copper", 0, 5, 20, 30);
+		public static readonly WoodTier Iron = new WoodTier("i_log_iron", 400, 4, 15, 30);
+		public static readonly WoodTier Verite = new WoodTier("i_log_verite", 550, 3, 11, 30);
+		public static readonly WoodTier Valorite = new WoodTier("i_log_valorite", 700, 2, 8, 30);
+		public static readonly WoodTier Obsidian = new WoodTier("i_log_obsidian", 900, 1, 5, 30);
+		public static readonly WoodTier Adamantinum = new WoodTier("i_log_adamantinum", 990, 1, 4, 30);
+		public static readonly WoodTier Mithril = new WoodTier("i_log_mithril", 1050, 1, 3, 30);
+
+		public static readonly WoodTier[] All = {
+			Copper, Iron, Verite, Valorite, Obsidian, Adamantinum, Mithril
+		};
+	}
+
+	/// <summary>
+	/// Lumberjacking's per-tile vein system (#422, Phase A of #421) - mirrors Mining's
+	/// MiningVeinSystem (#333) exactly: lazily-created vein state per chopped tree tile, no
+	/// pre-authored vein registry (same reasoning as Mining - real named-forest-region data
+	/// doesn't exist in moriaengine, see #426's deferral). A vein has ONE assigned wood type
+	/// at a time; insufficient skill doesn't fail the attempt, it downgrades the yield to
+	/// copper (real `fixresource` logic: `ACT.MORE1 = l_copper`); the pool depletes by 1 per
+	/// successful extraction and regenerates (with a fresh wood roll) once its timer elapses.
+	///
+	/// No cave-in equivalent - confirmed Mining-specific in the real source, not ported here.
+	///
+	/// Same known, deliberate simplification as Mining: vein state is in-memory only, not
+	/// persisted across a server restart.
+	/// </summary>
+	public static class LumberjackingVeinSystem {
+
+		private class Vein {
+			public WoodTier AssignedWood;
+			public int RemainingPool;
+			public double RegenReadyAtSeconds;
+			public bool Untouched = true;
+		}
+
+		private static readonly Dictionary<(byte, int, int), Vein> veins = new Dictionary<(byte, int, int), Vein>();
+
+		/// <summary>Chops one extraction at the given tree tile for `chopper`. Returns the
+		/// ItemDef to grant (already skill-gated-downgraded to copper if under-skilled for the
+		/// vein's real assigned wood), or null if the vein is currently exhausted (hasn't
+		/// regenerated yet).</summary>
+		public static ItemDef Chop(Character chopper, byte mapPlane, int x, int y) {
+			Vein vein = GetOrCreateVein(mapPlane, x, y);
+
+			if (vein.Untouched || (vein.RemainingPool <= 0 && Globals.TimeInSeconds >= vein.RegenReadyAtSeconds)) {
+				AssignFreshWood(vein);
+			}
+
+			if (vein.RemainingPool <= 0) {
+				return null; //still exhausted, regen hasn't elapsed yet
+			}
+
+			WoodTier realWood = vein.AssignedWood;
+			WoodTier yieldWood = (chopper.GetRealSkillValue(SkillName.Lumberjacking) >= realWood.SkillThreshold)
+				? realWood
+				: WoodTiers.Copper; //real fixresource logic - under-skilled never fails outright, just downgrades
+
+			vein.RemainingPool--;
+			if (vein.RemainingPool <= 0) {
+				vein.RegenReadyAtSeconds = Globals.TimeInSeconds + (vein.AssignedWood.RegenMinutes * 60);
+			}
+
+			return yieldWood.ItemDef;
+		}
+
+		private static Vein GetOrCreateVein(byte mapPlane, int x, int y) {
+			(byte, int, int) key = (mapPlane, x, y);
+			Vein vein;
+			if (!veins.TryGetValue(key, out vein)) {
+				vein = new Vein();
+				veins[key] = vein;
+			}
+			return vein;
+		}
+
+		/// <summary>Test-only override (#422): forces a specific tile's vein to a known
+		/// wood/pool state, bypassing the random roll - same precedent as Mining's
+		/// ForceVeinForTest.</summary>
+		internal static void ForceVeinForTest(byte mapPlane, int x, int y, WoodTier wood, int poolAmount) {
+			veins[(mapPlane, x, y)] = new Vein { AssignedWood = wood, RemainingPool = poolAmount, Untouched = false, RegenReadyAtSeconds = 0 };
+		}
+
+		internal static void ForceVeinRegenReadyForTest(byte mapPlane, int x, int y) {
+			Vein vein;
+			if (veins.TryGetValue((mapPlane, x, y), out vein)) {
+				vein.RegenReadyAtSeconds = 0; //already elapsed relative to any real Globals.TimeInSeconds
+			}
+		}
+
+		private static void AssignFreshWood(Vein vein) {
+			double totalWeight = 0;
+			foreach (WoodTier tier in WoodTiers.All) {
+				totalWeight += tier.Weight;
+			}
+
+			double roll = Globals.dice.NextDouble() * totalWeight;
+			WoodTier picked = WoodTiers.All[WoodTiers.All.Length - 1];
+			double accumulated = 0;
+			foreach (WoodTier tier in WoodTiers.All) {
+				accumulated += tier.Weight;
+				if (roll < accumulated) {
+					picked = tier;
+					break;
+				}
+			}
+
+			vein.AssignedWood = picked;
+			vein.RemainingPool = Globals.dice.Next(picked.MinAmount, picked.MaxAmount + 1);
+			vein.Untouched = false;
+		}
+	}
+}
