@@ -397,6 +397,26 @@ namespace SteamEngine.CompiledScripts {
 					weapAttackVsM = weapon.AttackVsM;
 					weapMindPowerVsP = weapon.MindPowerVsP;
 					weapMindPowerVsM = weapon.MindPowerVsM;
+
+					// #454 follow-up - Ranger's bow/crossbow range is a GM-tunable settings
+					// lookup (CombatSettings.Ranges) rather than per-weapon-content RangeVsP/
+					// VsM, which is still the converter's placeholder 1 for every bow/crossbow
+					// today (confirmed in #454's own research) - same "wire the mechanism, let
+					// the GM tune via .settings instead of hand-editing placeholder content"
+					// pattern Mystic used. Applies to ANY player wielding one of these, not
+					// profession-gated - unlike Mystic's mind-power attack, a bow/crossbow's
+					// range is a property of the weapon itself, not the wielder's profession.
+					// Light and heavy crossbow deliberately share WeaponType.XBow (confirmed
+					// correct, no new enum value needed - see #454) - distinguished here by
+					// defname, since this engine's content consistently names every heavy
+					// crossbow item "i_crossbow_heavy_<material>" across all 7 material tiers
+					// and there's no dedicated field for the distinction.
+					if (retVal.weaponType == WeaponType.Bow) {
+						SetRangedWeaponRange(retVal, RangesSettings.instance.bow);
+					} else if (retVal.weaponType == WeaponType.XBow) {
+						bool isHeavy = weapon.TypeDef.Defname.IndexOf("heavy", StringComparison.OrdinalIgnoreCase) >= 0;
+						SetRangedWeaponRange(retVal, isHeavy ? RangesSettings.instance.heavyCrossbow : RangesSettings.instance.crossbow);
+					}
 				} else {
 					retVal.weaponType = WeaponType.BareHands;
 					retVal.weaponAnimType = WeaponAnimType.BareHands;
@@ -490,11 +510,7 @@ namespace SteamEngine.CompiledScripts {
 			// buffer above that so a target's minor repositioning doesn't immediately abort the
 			// whole engagement (see WeaponSkillDef.On_Stroke's own give-up check).
 			if (self.IsPlayerForCombat && Professions.HasProfession(self, Professions.Mystic)) {
-				int mysticRange = RangesSettings.instance.mystic;
-				retVal.rangeVsM = mysticRange;
-				retVal.rangeVsP = mysticRange;
-				retVal.strikeStartRange = mysticRange;
-				retVal.strikeStopRange = mysticRange + 2;
+				SetRangedWeaponRange(retVal, RangesSettings.instance.mystic);
 			}
 
 			int rangeModifier = self.WeaponRangeModifier;
@@ -506,6 +522,17 @@ namespace SteamEngine.CompiledScripts {
 			return retVal;
 		}
 
+		/// <summary>Shared by the Mystic (#447) and Ranger (#454) range overrides above -
+		/// raises strikeStartRange to match so the attacker doesn't needlessly close distance
+		/// before WeaponSkillDef's Drawing phase will let it strike, and gives strikeStopRange
+		/// a small buffer above that so a target's minor repositioning doesn't immediately abort
+		/// the whole engagement.</summary>
+		private static void SetRangedWeaponRange(CombatWeaponValues retVal, int range) {
+			retVal.rangeVsM = range;
+			retVal.rangeVsP = range;
+			retVal.strikeStartRange = range;
+			retVal.strikeStopRange = range + 2;
+		}
 
 		public static double CalculateArmorClassEffect(Character attacker, Character defender, double attack, double piercing, double armorClass) {
 			bool defenderIsPlayer = defender.IsPlayerForCombat;
