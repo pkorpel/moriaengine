@@ -534,38 +534,43 @@ namespace SteamEngine.CompiledScripts {
 			retVal.strikeStopRange = range + 2;
 		}
 
+		/// <summary>#96 fix: `armor` used to be computed correctly from the real `armorClass`
+		/// argument, then unconditionally thrown away and replaced with a near-meaningless
+		/// random +-5% placeholder (the old armorRandEffectMin/Max settings, now removed) for
+		/// every case except "monster attacks player" - i.e. real armor had zero effect on
+		/// NPC-vs-NPC, player-vs-NPC (every Ranger fight, #458), and PvP combat. A dedicated
+		/// "MvP armor factor" setting (armorClassMvP = 200) existed with nothing left to apply
+		/// it to, and a `//!!TODO!! different formula for PvM and MvP` comment sat right above
+		/// the override - this was unfinished work, not deliberate design (confirmed in #96's
+		/// own investigation). Empirically verified via a real equip (actual client protocol,
+		/// not a shortcut) that the "real armor" branch already in use for MvP produces
+		/// correctly-proportional damage reduction - so the fix is simply to stop discarding it
+		/// for the other three cases, not to invent a new formula. armorClassMvP is left
+		/// deliberately unused - its intended semantics (200 as what unit?) were never
+		/// confirmed anywhere, and guessing wrong here would make things worse, not better;
+		/// revisit as its own follow-up if ever needed.</summary>
 		public static double CalculateArmorClassEffect(Character attacker, Character defender, double attack, double piercing, double armorClass) {
 			bool defenderIsPlayer = defender.IsPlayerForCombat;
 			bool attackerIsPlayer = attacker.IsPlayerForCombat;
 			CombatSettings settings = CombatSettings.instance;
 
 			double damageMod;
-
-			bool isMvP = false;
 			if (defenderIsPlayer) {
 				if (attackerIsPlayer) {
 					damageMod = settings.swingDamagePvP;
 				} else {
 					damageMod = ScriptUtil.GetRandInRange(settings.swingDamageRandMvPMin, settings.swingDamageRandMvPMax);
-					isMvP = true;
 				}
 			} else {
 				damageMod = settings.swingDamageM;
 			}
 
 			double armor = armorClass * (1000 - piercing) / 1000;
-			if (!isMvP) {
-				armor = ScriptUtil.GetRandInRange(settings.armorRandEffectMin, settings.armorRandEffectMax);
-			}
 
 			armor = Math.Max(0, armor);
 			attack = Math.Max(0, attack);
 			damageMod = Math.Max(0, damageMod);
 
-			//!!TODO!! ruznej vzorec pro pvm a pvm
-			//if (defenderIsPlayer && !attackerIsPlayer) { //damagecust_MvP
-			//	armorClass *= settings.armorClassMvP;
-			//}
 			return (attack - armor) * damageMod;
 		}
 
