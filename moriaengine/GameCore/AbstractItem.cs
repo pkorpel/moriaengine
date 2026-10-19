@@ -566,7 +566,11 @@ namespace SteamEngine {
 					this.amount = ConvertTools.ParseInt32(valueString);
 					break;
 				case "flags":
-					this.flags = (InternalFlag) ConvertTools.ParseByte(valueString);
+					//#438 - same regression as AbstractCharacter's own "directionandflags" case
+					//(and FlaggedRegion's "flags"): #407 made Save() embed this as
+					//"(Enum:InternalFlag)N", but this naive ConvertTools.ParseByte(valueString)
+					//still expected a bare number - silently left flags at its zero default.
+					this.flags = (InternalFlag) ObjectSaver.Load(valueString);
 					break;
 				case "type":
 					this.type = TriggerGroup.GetByDefname(valueString);
