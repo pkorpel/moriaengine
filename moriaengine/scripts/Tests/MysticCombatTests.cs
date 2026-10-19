@@ -121,5 +121,54 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MYSTIC_DAMAGETYPE_TEST: physicalResistDamage=" + physicalResistDamage +
 				" magicResistDamage=" + magicResistDamage);
 		}
+
+		/// <summary>#450 - confirms WeaponDelay is mana-driven for a Mystic (shorter delay =
+		/// faster swings at higher mana) rather than the normal Dex-based formula every other
+		/// profession uses - and that a non-Mystic's delay is completely unaffected by mana,
+		/// as a regression guard on the branch added to CalculateCombatWeaponValues.</summary>
+		[SteamFunction]
+		public static void TestMysticSwingSpeedScalesWithMana(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			((Player) self).Profession = Professions.Mystic;
+			self.DisArm();
+			self.Int = 300; // MaxMana == Int for players (Player.cs) - gives Mana plenty of headroom
+
+			self.Mana = 10;
+			double delayLowManaMs = self.WeaponDelay.TotalMilliseconds;
+
+			self.Mana = 200;
+			double delayHighManaMs = self.WeaponDelay.TotalMilliseconds;
+
+			((Player) self).Profession = null;
+			self.Mana = 10;
+			double nonMysticDelayLowManaMs = self.WeaponDelay.TotalMilliseconds;
+			self.Mana = 200;
+			double nonMysticDelayHighManaMs = self.WeaponDelay.TotalMilliseconds;
+
+			Console.WriteLine("MYSTIC_SWINGSPEED_TEST: delayLowMana=" + delayLowManaMs +
+				" delayHighMana=" + delayHighManaMs +
+				" nonMysticDelayLowMana=" + nonMysticDelayLowManaMs +
+				" nonMysticDelayHighMana=" + nonMysticDelayHighManaMs);
+		}
+
+		/// <summary>#450 - confirms a landed Mystic swing actually drains mana (the natural
+		/// throttle - no hard mana gate on this attack per #447's research).</summary>
+		[SteamFunction]
+		public static void TestMysticSwingDrainsMana(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			((Player) self).Profession = Professions.Mystic;
+			self.DisArm();
+			self.Int = 300;
+			self.Mana = 200;
+
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(self.X + 1, self.Y, self.Z, self.M);
+
+			int manaBefore = self.Mana;
+			DamageManager.ProcessSwing(self, dummy);
+			int manaAfter = self.Mana;
+
+			Console.WriteLine("MYSTIC_MANADRAIN_TEST: manaBefore=" + manaBefore + " manaAfter=" + manaAfter);
+		}
 	}
 }

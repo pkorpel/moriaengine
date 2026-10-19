@@ -40,13 +40,27 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double mindPowerIntModifier = 0.700;
 
+		/// <summary>#450 - Mystic's swing speed is mana-driven (sqrt(mana/2) * weapon speed *
+		/// this), not the normal sqrt(Dex)-based formula every other profession uses. Placeholder
+		/// default - Erebor's real nastaveni_weapspeed_mystik value is a live-shard GM config
+		/// constant, not present in the public script archive (same situation #447's own research
+		/// flagged for every other Mystic tuning number).</summary>
+		[SaveableData]
+		public double mysticWeaponSpeedModifier = 1.000; //nastaveni_weapspeed_mystik
+
+		/// <summary>#450 - fraction of current mana retained after each Mystic swing (970 =
+		/// retain 97%, i.e. lose 3% per swing). Placeholder default, same reason as
+		/// mysticWeaponSpeedModifier above.</summary>
+		[SaveableData]
+		public double mysticManaLossPermille = 970; //nastaveni_mystik_manaloss
+
 		public MetaMassSetting<WeaponMindPowerVsMMassSetting, ColoredWeaponDef, double> mindPowerVsM = new MetaMassSetting<WeaponMindPowerVsMMassSetting, ColoredWeaponDef, double>();
 
 		public MetaMassSetting<WeaponMindPowerVsPMassSetting, ColoredWeaponDef, double> mindPowerVsP = new MetaMassSetting<WeaponMindPowerVsPMassSetting, ColoredWeaponDef, double>();
 
 		public SpellsSettings spells = new SpellsSettings();
 
-		[InfoField("Maxmana holí")]
+		[InfoField("Maxmana holï¿½")]
 		public StaffMaxManaMassSetting allSpells = new StaffMaxManaMassSetting();
 	}
 
@@ -58,14 +72,14 @@ namespace SteamEngine.CompiledScripts {
 		[InfoField("typ damage kouzel")]
 		public SpellDamageTypeMassSetting damageType = new SpellDamageTypeMassSetting();
 
-		[InfoField("všechny kouzla")]
+		[InfoField("vï¿½echny kouzla")]
 		public AllSpellsMassSetting allSpells = new AllSpellsMassSetting();
 	}
 
 	public class WeaponMindPowerVsPMassSetting : MassSettingByMaterial<ColoredWeaponDef, double> {
 
 		public override string Name {
-			get { return "Síla mysli proti hráèùm"; }
+			get { return "Sï¿½la mysli proti hrï¿½ï¿½ï¿½m"; }
 		}
 
 		protected class WeaponvVsPFieldView : FieldView_ByModel {
@@ -90,7 +104,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponMindPowerVsMMassSetting : MassSettingByMaterial<ColoredWeaponDef, double> {
 
 		public override string Name {
-			get { return "Síla mysli proti monstrùm"; }
+			get { return "Sï¿½la mysli proti monstrï¿½m"; }
 		}
 
 		protected class WeaponMindPowerVsMFieldView : FieldView_ByModel {
@@ -167,14 +181,14 @@ namespace SteamEngine.CompiledScripts {
 	public class AllSpellsMassSetting : MassSettings_ByClass_List<SpellDef> {
 		
 		public override string Name {
-			get { return "Seznam všech kouzel"; }
+			get { return "Seznam vï¿½ech kouzel"; }
 		}
 	}
 
 	public class StaffMaxManaMassSetting : MassSettings_ByClass_SingleField<ColoredStaffDef, int> {
 
 		public override string Name {
-			get { return "Maxmana holí"; }
+			get { return "Maxmana holï¿½"; }
 		}
 
 		protected class StaffMaxManaFieldView : FieldView_ByClass_SingleField {

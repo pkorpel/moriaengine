@@ -496,6 +496,12 @@ namespace SteamEngine.CompiledScripts {
 
 		public static void SetProfessionOfChar(Player player, ProfessionDef value) {
 			ProfessionPlugin.InstallProfessionPlugin(player, value);
+			// #450 - Mystic's WeaponDelay formula branches on current profession
+			// (CombatCalculator.CalculateCombatWeaponValues), so a profession change has to
+			// invalidate the cache or a freshly-(re)assigned character keeps using whichever
+			// delay formula was cached before the change until something else unrelated (e.g.
+			// equipping a weapon) happens to invalidate it first.
+			player.InvalidateCombatWeaponValues();
 		}
 		#endregion Static utility methods
 	}

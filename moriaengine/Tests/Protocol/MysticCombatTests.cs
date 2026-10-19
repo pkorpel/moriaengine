@@ -83,6 +83,40 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		[Fact]
+		public void SwingSpeedScalesWithMana() {
+			using (var client = this.ConnectLoginAndCreateCharacter("MysticSpeedChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestMysticSwingSpeedScalesWithMana");
+				Assert.True(this.fixture.WaitForGameOutputSince("MYSTIC_SWINGSPEED_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MYSTIC_SWINGSPEED_TEST:");
+
+				double delayLowMana = ExtractDouble(line, "delayLowMana");
+				double delayHighMana = ExtractDouble(line, "delayHighMana");
+				double nonMysticDelayLowMana = ExtractDouble(line, "nonMysticDelayLowMana");
+				double nonMysticDelayHighMana = ExtractDouble(line, "nonMysticDelayHighMana");
+
+				Assert.True(delayHighMana < delayLowMana,
+					"Expected higher mana to mean a shorter (faster) swing delay for a Mystic. Line: " + line);
+				Assert.Equal(nonMysticDelayLowMana, nonMysticDelayHighMana, 3);
+			}
+		}
+
+		[Fact]
+		public void SwingDrainsMana() {
+			using (var client = this.ConnectLoginAndCreateCharacter("MysticManaChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestMysticSwingDrainsMana");
+				Assert.True(this.fixture.WaitForGameOutputSince("MYSTIC_MANADRAIN_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MYSTIC_MANADRAIN_TEST:");
+
+				double manaBefore = ExtractDouble(line, "manaBefore");
+				double manaAfter = ExtractDouble(line, "manaAfter");
+
+				Assert.True(manaAfter < manaBefore, "Expected a landed Mystic swing to drain mana. Line: " + line);
+			}
+		}
+
 		private static double ExtractDouble(string line, string key) {
 			string marker = key + "=";
 			int idx = line.IndexOf(marker, StringComparison.Ordinal);
