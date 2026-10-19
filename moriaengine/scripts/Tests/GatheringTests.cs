@@ -85,9 +85,16 @@ namespace SteamEngine.CompiledScripts {
 			CheckBackpackCount(self, "i_ore_copper");
 		}
 
+		/// <summary>#422 - lumberjacking now rolls a real weighted wood tier per vein instead
+		/// of always "i_log_lager" (which was never the real default to begin with - that item
+		/// is exclusively a labor-camp/prisoner-punishment flavor item, confirmed via #270's
+		/// corrected comment); checks for "i_log_copper" instead, since a brand-new character
+		/// (Lumberjacking skill 0) always ends up with copper regardless of which wood the vein
+		/// itself rolled - copper's own real skill threshold is 0, the only tier a 0-skill
+		/// chopper ever qualifies for, same reasoning as TestCheckHasOre's own #333 fix.</summary>
 		[SteamFunction]
 		public static void TestCheckHasLog(Character self) {
-			CheckBackpackCount(self, "i_log_lager");
+			CheckBackpackCount(self, "i_log_copper");
 		}
 
 		private static void CheckBackpackCount(Character self, string defname) {

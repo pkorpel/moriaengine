@@ -77,23 +77,22 @@ namespace SteamEngine.CompiledScripts {
 			return TileData.HasFlag(s.Flags, TileFlag.Foliage);
 		}
 
-		private static ItemDef logDef;
-		private static ItemDef LogDef {
-			get {
-				if (logDef == null) {
-					logDef = (ItemDef) ThingDef.GetByDefname("i_log_lager");
-				}
-				return logDef;
-			}
-		}
-
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			ItemDef def = LogDef;
+			IPoint3D targetted = skillSeqArgs.Target1;
+
+			//#422 - real per-tile wood-tier vein system (lazy per-tile veins, weighted roll on
+			//an untouched vein, skill-gated downgrade to copper, depletion/regen). Replaces the
+			//old hardcoded i_log_lager placeholder, which was never the real default to begin
+			//with - confirmed via #270's corrected comment that item is exclusively a labor-
+			//camp/prisoner-punishment flavor item, not normal lumberjacking output.
+			ItemDef def = LumberjackingVeinSystem.Chop(self, self.GetMap().M, targetted.X, targetted.Y);
 			if (def != null) {
 				def.Create(self.Backpack);
+				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).success);
+			} else {
+				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).veinExhausted);
 			}
-			self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).success);
 			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking); //#328
 		}
 
@@ -144,5 +143,6 @@ namespace SteamEngine.CompiledScripts {
 		public string success = "You chop some logs.";
 		public string abort = "You stop chopping.";
 		public string needHatchet = "You must be holding a hatchet to do that."; //#370
+		public string veinExhausted = "This tree seems to have no more wood to give."; //#422
 	}
 }
