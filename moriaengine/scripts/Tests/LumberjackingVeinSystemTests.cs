@@ -105,5 +105,42 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Console.WriteLine("WOOD_DISTRIBUTION_SAMPLE: attempts=" + attempts + " copper=" + copperCount + " mithril=" + mithrilCount);
 		}
+
+		/// <summary>#431 - samples `attempts` ambush rolls at self's own location, reporting the
+		/// overall trigger count plus a per-monster breakdown (by NPCDef identity). Same
+		/// statistical-sampling precedent as Mining's own TestSampleAmbushChance - always rolls
+		/// with no wood tier (as On_Fail would), so a hit on the rarest bucket always resolves to
+		/// the baseline ReaperSpruceDefname, giving a single well-known defname to count against
+		/// wolf.</summary>
+		[SteamFunction]
+		public static void TestSampleLumberjackAmbushChance(Character self, ScriptArgs sa) {
+			int attempts = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+
+			for (int i = 0; i < attempts; i++) {
+				LumberjackingAmbushSystem.TryAmbush(self.P(), null);
+			}
+
+			NPCDef wolfDef = (NPCDef) ThingDef.GetByDefname(LumberjackingAmbushSystem.WolfDefname);
+			NPCDef reaperSpruceDef = (NPCDef) ThingDef.GetByDefname(LumberjackingAmbushSystem.ReaperSpruceDefname);
+			int total = 0;
+			int wolfCount = 0;
+			int reaperSpruceCount = 0;
+			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, 10)) {
+				NPC npc = ch as NPC;
+				if (npc == null) {
+					continue;
+				}
+				total++;
+				if (npc.Def == wolfDef) {
+					wolfCount++;
+				}
+				if (npc.Def == reaperSpruceDef) {
+					reaperSpruceCount++;
+				}
+			}
+			Console.WriteLine("LUMBERJACK_AMBUSH_CHANCE_SAMPLE: attempts=" + attempts + " total=" + total +
+				" wolf=" + wolfCount + " reaperSpruce=" + reaperSpruceCount);
+		}
 	}
 }
