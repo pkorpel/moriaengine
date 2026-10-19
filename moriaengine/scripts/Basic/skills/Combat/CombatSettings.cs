@@ -180,6 +180,23 @@ namespace SteamEngine.CompiledScripts {
 		/// enough for now; split into two fields here if that distinction ever matters.</summary>
 		[SaveableData]
 		public int mystic = 8;
+
+		/// <summary>#454 follow-up - placeholder default (same situation as mystic above -
+		/// Erebor's real range constants are live-shard GM config). Applies to any weapon with
+		/// WeaponType.Bow, regardless of profession.</summary>
+		[SaveableData]
+		public int bow = 8;
+
+		/// <summary>#454 follow-up - placeholder default. Applies to WeaponType.XBow weapons
+		/// whose defname does NOT contain "heavy" (see CombatCalculator.CalculateCombatWeaponValues
+		/// for why defname, not a dedicated field, distinguishes light from heavy crossbow).</summary>
+		[SaveableData]
+		public int crossbow = 8;
+
+		/// <summary>#454 follow-up - placeholder default. Applies to WeaponType.XBow weapons
+		/// whose defname contains "heavy" (i_crossbow_heavy_* across all 7 material tiers).</summary>
+		[SaveableData]
+		public int heavyCrossbow = 8;
 	}
 
 	public class WeaponTypeMassSetting : MassSettings_ByModel<WeaponDef, WeaponType> {
