@@ -82,6 +82,37 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("RANGER_STANDOFF_TEST: STARTED");
 		}
 
+		/// <summary>#458 - now that #96 is fixed, confirms a real bow attack's damage is
+		/// measurably reduced by the target's real ArmorVsP. Direct GetWeaponSwingArgs calls
+		/// (not a real swing sequence) for determinism, same style as #96's own ArmorEffectTests
+		/// and this session's other combat-formula tests. Call only after the client has
+		/// equipped the bow granted by TestGrantBowAndArrows.</summary>
+		[SteamFunction]
+		public static void TestRangerArmorReducesDamage(Character self) {
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			int originalArmorVsP = dummyDef.ArmorVsP;
+
+			dummyDef.ArmorVsP = 0;
+			dummy.InvalidateCombatArmorValues(); // mutating the shared Def's raw field has no trigger path to invalidate this instance's cache
+			double totalUnarmored = 0;
+			for (int i = 0; i < 500; i++) {
+				totalUnarmored += DamageManager.GetWeaponSwingArgs(self, dummy).DamageAfterAC;
+			}
+
+			dummyDef.ArmorVsP = 20;
+			dummy.InvalidateCombatArmorValues();
+			double totalArmored = 0;
+			for (int i = 0; i < 500; i++) {
+				totalArmored += DamageManager.GetWeaponSwingArgs(self, dummy).DamageAfterAC;
+			}
+
+			dummyDef.ArmorVsP = originalArmorVsP; // restore the shared Def
+
+			Console.WriteLine("RANGER_ARMOREFFECT_TEST: avgUnarmored=" + (totalUnarmored / 500) +
+				" avgArmored=" + (totalArmored / 500));
+		}
+
 		internal static int CountArrows(Character self) {
 			int total = 0;
 			foreach (Item i in self.Backpack.EnumShallow()) {
