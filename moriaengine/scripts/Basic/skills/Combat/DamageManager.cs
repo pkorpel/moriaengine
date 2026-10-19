@@ -168,12 +168,21 @@ namespace SteamEngine.CompiledScripts {
 				// see Enums.cs's "Mystikuv utok" comment) instead of the weapon's normal
 				// physical damage type, even though the weapon itself (a staff) is a plain
 				// OneHandBlunt/TwoHandBlunt per mystic.def.
-				DamageType damageType = Professions.HasProfession(attacker, Professions.Mystic)
-					? DamageType.MagicMystical
-					: attacker.WeaponDamageType;
+				bool attackerIsMystic = Professions.HasProfession(attacker, Professions.Mystic);
+				DamageType damageType = attackerIsMystic ? DamageType.MagicMystical : attacker.WeaponDamageType;
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC);
 
 				swingArgs.InternalSetFinalDamage(actualDamage);
+
+				// #450 - confirmed from the Erebor source: every Mystic swing drains a fraction
+				// of current mana (the natural throttle instead of a hard mana gate - see
+				// CalculateCombatWeaponValues's mana-driven WeaponDelay, which slows down as
+				// this drains). Only on a landed swing (On_Success -> ProcessSwing), not a
+				// missed one - WeaponSkillDef has no separate "cast attempt" step to hook for a
+				// Mystic the way Erebor's own single dospellcustom_donesrc call would.
+				if (attackerIsMystic) {
+					attacker.Mana = (short) Math.Round(attacker.Mana * MagerySettings.instance.mysticManaLossPermille / 1000.0);
+				}
 
 				Trigger_AfterSwing(swingArgs);
 			}

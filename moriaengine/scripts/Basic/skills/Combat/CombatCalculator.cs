@@ -412,9 +412,23 @@ namespace SteamEngine.CompiledScripts {
 					weapMindPowerVsP = MagerySettings.instance.bareHandsMindPowerVsP;
 					weapMindPowerVsM = MagerySettings.instance.bareHandsMindPowerVsP;
 				}
-				double delay = Math.Sqrt(self.Dex);
-				delay *= weapSpeed;
-				delay *= CombatSettings.instance.weaponSpeedGlobal;
+				double delay;
+				if (Professions.HasProfession(self, Professions.Mystic)) {
+					// #450 - confirmed from the Erebor source: a Mystic's swing speed is driven
+					// by current mana, not Dex - "the longer you fight, the slower you get" as
+					// mana drains (DamageManager.ProcessSwing drains it after each swing). Mana
+					// can legitimately hit 0 in sustained combat (no hard mana gate on this
+					// attack per #447's research) - Math.Max guards the same division-by-zero
+					// the existing Dex-based formula below would also hit at Dex=0, just far
+					// more likely to actually occur here.
+					delay = Math.Sqrt(Math.Max(self.Mana, (short) 1) / 2.0);
+					delay *= weapSpeed;
+					delay *= MagerySettings.instance.mysticWeaponSpeedModifier;
+				} else {
+					delay = Math.Sqrt(self.Dex);
+					delay *= weapSpeed;
+					delay *= CombatSettings.instance.weaponSpeedGlobal;
+				}
 				retVal.delay = TimeSpan.FromSeconds((0xfffff / 1000.0) / delay);//dedictvi z morie. funguje to tak proc to menit :)
 
 				double tacticsAttack = SkillDef.GetBySkillName(SkillName.Tactics).GetEffectForChar(self);
