@@ -1,5 +1,39 @@
 # moriaengine — working state
 
+## #436/#444 (RegenerationPlugin/TrackingPlugins def registration) — SHIPPED — 2026-10-19
+
+Session resumed after a crash mid-work on #436 (the audit backlog item #421 left behind -
+"other plugin types that might share #434's lazy-defname-registration cold-boot bug").
+
+**#436 audit** (posted as issue comments): checked every plugin on the list. Distinguishing
+rule found: vulnerability depends on whether `defInstance`/`instance` is declared on the
+**Plugin** class or the **Def** class - `ClassManager.InitClasses`'s early Bootstrap scan
+only force-runs the Def class's static cctor (via its generated `Bootstrap()` method), so a
+registration field on the separate Plugin class only ever runs lazily, same as #434's
+RaceNationPlugin/RealmPlugin. Only `RegenerationPlugin` confirmed vulnerable this way -
+Hiding, PoisonedItemPlugin, CraftingProcessPlugin, WeaponSkillTarget{Tracker,Queue}Plugin,
+IgnitionActivatedPlugin are all safe (instance on their own Def class, or content-authored).
+Fixed `RegenerationPlugin` with the same static-cctor early-touch pattern as #434/#435.
+
+**#444** (separate bug found along the way, filed and fixed alongside): `PlayerTrackingPlugin`/
+`NPCTrackingPlugin` never called `.Register()` on their `defInstance` at all - not a timing
+race like #434/#436, a standing gap, confirmed via grep ("p_tracking"/"p_NPCtracking" appear
+nowhere else). Added the missing `.Register()` plus the same early-touch fix.
+
+**Tests**: real save → restart → reload regression tests for both (`RegenerationPluginReloadTests`,
+`TrackingPluginsRegistrationTests`), same pattern as #434/#438. Confirmed red without the fix,
+green with it.
+
+**Full Protocol-tier run** (49m30s, 174 tests): 32 pre-existing failures, all combat/aggro
+timing flakiness under sustained sandbox contention (matches #100/#121's documented
+signature) - confirmed unrelated by reverting just this fix and re-running the same failing
+classes, which reproduced identically without it.
+
+Shipped via PR #445. Cleanup from the same session: closed #428 and #423 as duplicates of
+#434/#431 respectively (both already shipped, just never cross-linked when filed). Also
+removed a stale `moria-428/moriaengine` worktree (pre-#434 exploratory branch, 22 commits
+behind main, investigating the same bug #434 already fixed).
+
 ## #421 (Lumberjacking full implementation) — ALL PHASES SHIPPED — 2026-10-19
 
 Final two phases of the Lumberjacking rework (mirrors Mining #332/#333-337) landed, closing out
