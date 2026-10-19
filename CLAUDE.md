@@ -1,5 +1,61 @@
 # moriaengine — working state
 
+## #434 (RaceNationPlugin/RealmPlugin orphaned on cold-boot reload) — SHIPPED — 2026-10-19
+
+User-reported regression from #410/#414 (Race+Nation and Realm reworked into plugins): a real
+save file correctly showed `@@_racenation_=(RaceNationPlugin)874`/`@@_realmplugin_=(RealmPlugin)875`
+with real enum values, but after a server restart `.info` showed Race/Nation as None and Realm
+as Neutral - and the plugin list didn't show either plugin at all (only ProfessionPlugin).
+
+**Root cause**, confirmed directly in the server log during a real reload:
+```
+WARNING: The AbstractScript 'p_racenation' is not known.
+ERROR: No PluginDef reference loaded for this RaceNationPlugin. Deleting.
+```
+`RaceNationPlugin.defInstance`/`RealmPlugin.defInstance` register their defnames
+(`p_racenation`/`p_realm`) **lazily** - only the first time something calls
+`GetOrInstallPlugin`/`GetInstalledPlugin` (which references `defInstance`, triggering that
+class's static cctor). `ProfessionPlugin` never had this problem since its def
+(`p_profession_default`) is authored in a `.def` content file, loaded eagerly by
+`ScriptLoader.Load()` before the world ever loads. On a cold boot, nothing touches
+RaceNationPlugin/RealmPlugin early enough, so `WorldSaver.Load()` can't resolve the save
+file's `def=#p_racenation` reference for the already-installed plugin, and
+`Plugin.LoadingFinished()` silently deletes the "orphaned" plugin (logged as an ERROR, not a
+crash - easy to miss). The very next in-session `GetOrInstallPlugin` call then works fine,
+which is exactly why the existing same-session test (`RaceTests.FullRaceSelectionFlowForHuman`)
+never caught this - **there was no test anywhere in the suite that actually reloaded a
+character from a real save and re-read a property**, only ones inspecting save file contents.
+
+**Fixed (PR #435, merged).** A static constructor on each hand-written `RaceNationPluginDef`/
+`RealmPluginDef` partial class that force-touches `XxxPlugin.defInstance`. `ClassManager.
+InitClasses` already invokes every `[ViewableClass]`'s generated `Bootstrap()` early (before
+`WorldSaver.Load()`), and `Bootstrap()` is itself a static method on these Def classes -
+invoking it forces the new static cctor (and thus `defInstance.Register()`) to run first,
+before the world ever needs to resolve the reference.
+
+Also built the regression-test infrastructure needed to catch this class of bug at all:
+`TestGameClient.SendSelectCharacter` (reselect an EXISTING character after reconnecting - no
+prior test needed this, only character creation) and `GameServerPairFixture.
+BootPreservingSaves()` (boot a second server instance against a save a prior instance just
+wrote, instead of the default's always-wipe-old-snapshots behavior). Caught a real regression
+in my own first attempt at this: a second public constructor overload (even with a C# default
+parameter value) breaks xunit's `ICollectionFixture` DI for every OTHER test using
+`GameServerPairFixture` ("may only define a single public constructor" / "unresolved
+constructor arguments") - fixed by keeping the public ctor parameterless and adding a private
+ctor + static factory method instead.
+
+**Verified**: new restart-based reload test (`RaceNationRealmReloadTests.
+RaceNationAndRealmSurviveARealServerRestart`) passes, stable across repeated runs. Full related
+surface (RaceTests/EnumTagPersistenceTests/ProfessionTests/NotorietyTests/
+DefPersistenceRegressionTests/LevelingTests/LevelingIsolatedTests) - 30/30, no regressions. Fast
+tier 50/50.
+
+Filed #436 (not fixed here) - the same lazy-`defInstance`-registration pattern exists on
+several OTHER C#-only plugin types (RegenerationPlugin, Hiding, PoisonedItemPlugin,
+TrackingPlugins, CraftingProcessPlugin, WeaponSkillTarget{Tracker,Queue}Plugin,
+IgnitionActivatedPlugin) - unconfirmed whether any are actually affected (depends on whether
+they ever persist a player-saved instance the same way), needs a per-plugin audit.
+
 ## #421 Phase C / #431 (Lumberjacking monster ambush) — SHIPPED — 2026-10-19
 
 New `LumberjackingAmbushSystem`, mirroring Mining's `MonsterAmbushSystem`
