@@ -1,5 +1,77 @@
 # moriaengine — working state
 
+## PLAN (not yet built) - dedicated RangerSettings page, #456/#457, stand-still toggle — 2026-10-19
+
+Session may get reset mid-work - this is the agreed plan before any code was written, so it can
+resume cleanly. Addresses #456 (damage numbers), #457 (arrow-tier bonus), and three explicit user
+asks: (1) damage/speed numbers should live in `.settings`, NOT hand-authored into `.def` content
+- user is planning a full content rework later using newer Erebor def items, so touching the
+21 bow/crossbow `.def` entries now would just be thrown away; (2) run/stand archery should be
+real default weapon-type behavior (not a deferred ability, contradicting #454's own earlier
+framing) with a GM toggle, default crossbow=stand-still, bow=free; (3) one consolidated
+`RangerSettings` page rather than scattering fields across `CombatSettings`/`CombatSettings.
+Ranges`/elsewhere.
+
+### 1. New `RangerSettings` class, registered `[InfoField("Ranger")]` under `SettingsCategories`
+Mirrors `MysticSettings`-style single-page consolidation (which never ended up needing its own
+class - this is genuinely the first profession that does). Fields:
+- **Range** (pass-through properties wrapping the EXISTING `CombatSettings.Ranges.bow/crossbow/
+  heavyCrossbow` fields, NOT new storage - avoids duplicating data and avoids the Generated-code
+  field-removal landmine documented above by not touching `RangesSettings` at all).
+- **Damage** (new, settings-only, overrides weapon content entirely rather than editing it):
+  `bowDamage` = 5, `lightCrossbowDamage` = 7, `heavyCrossbowDamage` = 13 - confirmed real Erebor
+  `DAM` ratio (#456's own research), not a placeholder guess, but deliberately NOT written into
+  `.def` content per the user's explicit call above.
+- **Speed** (new, settings-only, same reasoning): `bowSpeed`, `lightCrossbowSpeed`,
+  `heavyCrossbowSpeed` - real Erebor values confirmed 58/58/52 (heavy slowest) - need to convert
+  to moriaengine's own speed convention (confirmed inverse of Erebor's in #454's research) when
+  wiring, not copy the raw numbers directly.
+- **Stand-still toggles**: `bowMustStandStill` (default `false`) and `crossbowMustStandStill`
+  (default `true`) - two independent toggles per user's explicit ask, not one shared flag.
+- **Arrow-tier bonus (#457)**: see open question below - likely skip real-number fidelity.
+
+### 2. CombatCalculator wiring
+Same override pattern already established for Mystic/Ranger range (`SetRangedWeaponRange`-style):
+when `weapon.WeaponType == Bow`, override `attackVsP/VsM` and `Speed` with `RangerSettings.
+bowDamage`/`bowSpeed`; when `XBow`, branch light-vs-heavy by defname (`"heavy"` substring, same
+mechanism #454's range fix already uses) and apply the matching Damage/Speed pair. Applies to
+ANY wielder, not profession-gated (same reasoning the range override already uses - it's a
+property of the weapon, not the profession).
+
+### 3. Stand-still mechanic (WeaponSkillDef)
+Confirmed real Erebor mechanic (`combat_storepos`/`restorepos`, already found during #454's
+research): when a weapon category's stand-still toggle is on, record the attacker's position
+when entering the Striking phase; each time a shot is about to fire, if current position !=
+recorded position, snap them back to the recorded position before firing (faithful "yanked back
+if you try to walk" behavior, not just aborting the attack). Bow defaults to no restriction at
+all (free movement, matches the enum's own `//luky - run archery` comment, confirmed this is
+already the engine's default/unrestricted behavior - no code needed for the off case). Both
+toggles apply symmetrically if a GM flips them (e.g. turning `bowMustStandStill` on would apply
+the same snap-back to bows too, for experimentation).
+
+### 4. #457 (arrow-tier damage bonus) - open question, leaning skip
+Re-checked the Erebor archive: `nastaveni_arrowdamage_N` settings in the public save DO have
+real, varied values (0 up to 1500 across ~40 indices) - corrects #454's own earlier research,
+which wrongly characterized these as flat/placeholder. BUT the mapping from arrow material tier
+(copper/iron/.../mithril) to the specific index `N` is NOT recoverable from the public archive -
+the base `i_arrow` item definition has no `tdata1` set in what's available; the real per-tier
+mapping likely only exists in private/live-shard-only content. Recommend NOT attempting a
+faithful port (would just be guessing which index means what) - either skip #457 entirely, or
+if the user still wants some arrow-tier differentiation, add a simple non-Erebor-faithful
+placeholder multiplier, clearly labeled as such. Not yet decided which - ask before building
+this specific piece.
+
+### 5. Str/draw-strength gate (point 5 of the request) - explicitly backlog, no code
+Confirmed Erebor has no such gate on any bow/crossbow (not a gap, a real design absence). User
+said leave as possible future backlog, not now. File a tiny backlog issue for it, no implementation.
+
+### Test plan (once built)
+Regression tests for: damage/speed values actually override weapon content for all 3 categories;
+stand-still toggle default state (crossbow locks position, bow doesn't); toggling either flag
+flips the behavior; light-vs-heavy crossbow still correctly distinguished. Follow the same
+real-equip-via-client-protocol + direct-formula-call-where-deterministic patterns already
+established in `RangerCombatTests.cs`/`ArmorEffectTests.cs`.
+
 ## IMPORTANT infra gotcha: Generated/*.Generated.cs is not checked into git — 2026-10-19
 
 Discovered the hard way while fixing #96 (below). `Generated/*.Generated.cs` (the reflection-
