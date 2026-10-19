@@ -212,6 +212,48 @@ namespace SteamEngine.CompiledScripts {
 				.DueInSeconds = 15;
 			Console.WriteLine("MYSTIC_STANDOFF_TEST: STARTED");
 		}
+
+		/// <summary>Testing combat messages (CombatSettings.showCombatMessages) - the feature
+		/// itself is profession-agnostic, Mystic is just reused test setup here since it's
+		/// already wired up and conveniently also exercises the mana-drain message. Sets up a
+		/// real adjacent attack (Trigger_PlayerAttackRequest) and lets it run - the xUnit test
+		/// reads the resulting system-message packets directly off the wire rather than relying
+		/// on server-console markers, since SysMessage has no console-log equivalent.</summary>
+		[SteamFunction]
+		public static void TestCombatMessagesSetup(Character self, ScriptArgs sa) {
+			bool enabled = bool.Parse(Convert.ToString(sa.Argv[0]));
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			CombatSettings.instance.showCombatMessages = enabled;
+			((Player) self).Profession = Professions.Mystic;
+			self.DisArm();
+			self.Int = 300;
+			self.Mana = 200;
+
+			// Calm c_sheep_woolly, not a Hostile monster - this runs a real sustained multi-
+			// second fight (Trigger_PlayerAttackRequest), unlike the other direct ProcessSwing-
+			// call tests in this file, so the dummy must not be able to aggro/retaliate.
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(self.X + 1, self.Y, self.Z, self.M);
+
+			self.Trigger_PlayerAttackRequest(dummy);
+			Console.WriteLine("COMBAT_MESSAGES_TEST: STARTED");
+		}
+
+		/// <summary>Same feature, the "too far" branch specifically - target placed far beyond
+		/// bareHandsStrikeStartRange (5) and never moved, so the Drawing-phase retry loop keeps
+		/// finding it out of range (players don't auto-path toward a target the way NPCs do).</summary>
+		[SteamFunction]
+		public static void TestCombatMessagesTooFarSetup(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			CombatSettings.instance.showCombatMessages = true;
+			self.DisArm();
+
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(self.X + 20, self.Y, self.Z, self.M); // well beyond bareHandsStrikeStartRange (5)
+
+			self.Trigger_PlayerAttackRequest(dummy);
+			Console.WriteLine("COMBAT_MESSAGES_TOOFAR_TEST: STARTED");
+		}
 	}
 
 	/// <summary>Mirrors ArcherStandoffCheckTimer's pattern (CombatDepthTests.cs) for a player
