@@ -192,6 +192,27 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGERY_DISPEL_TEST: DISPEL_CAST_STARTED");
 		}
 
+		/// <summary>#488 - defensive test-only cleanup for a Hostile summon (Blade Spirits).
+		/// TestCastGroundTargetedSpellNearSelf's own `distance` parameter already keeps it
+		/// outside NPCAiTimer.AggroRange (8) so it never actually engages the test caster in the
+		/// first place - this is belt-and-suspenders on top of that, not the primary defense.
+		/// Deliberately a plain property set (AggroMode), nothing that touches the NPC's
+		/// lifecycle: both outright Thing.Delete() and CauseDeath were tried against an
+		/// ACTIVELY-ENGAGED NPC (back when distance wasn't yet used to avoid engagement at all)
+		/// and both hung the whole server with no further output at all - a real NPCAiTimer-tick-
+		/// thread-vs-command-thread concurrency hazard, flagged not fixed here. AggroMode.Calm
+		/// alone never showed that hang even then - this just also stops it from threatening
+		/// anyone in the rare case something else wanders into range later.</summary>
+		[SteamFunction]
+		public static void TestNeutralizeCharacterByUid(Character self, ScriptArgs sa) {
+			uint targetUid = Convert.ToUInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
+			NPC target = Thing.UidGetCharacter(targetUid) as NPC;
+			if (target != null) {
+				target.AggroMode = AggroMode.Calm;
+			}
+			Console.WriteLine("MAGERY_NEUTRALIZE_TEST: neutralized=" + (target != null));
+		}
+
 		private static SpellBook FindBook(Character self) {
 			SpellBook book = self.FindLayer(1) as SpellBook;
 			if (book == null) {
@@ -227,10 +248,13 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#485 - scans for a nearby summoned creature owned by self. Reports "none"
 		/// rather than throwing if it's already despawned, so the same command can confirm both
-		/// "it appeared" (shortly after casting) and "it's gone" (after the duration elapses).</summary>
+		/// "it appeared" (shortly after casting) and "it's gone" (after the duration elapses).
+		/// Range widened from 5 to 20 for #488's own Blade Spirits test, which deliberately
+		/// summons well outside NPCAiTimer.AggroRange (8) - see
+		/// TestCastGroundTargetedSpellNearSelf's own doc comment for why.</summary>
 		[SteamFunction]
 		public static void TestReportNearbySummon(Character self) {
-			foreach (AbstractCharacter ac in self.GetMap().GetCharsInRange(self.X, self.Y, 5)) {
+			foreach (AbstractCharacter ac in self.GetMap().GetCharsInRange(self.X, self.Y, 20)) {
 				Character candidate = ac as Character;
 				if ((candidate != null) && SummonSpellDef.IsSummonedCreature(candidate)) {
 					Console.WriteLine("MAGERY_SUMMON_TEST: FOUND uid=" + candidate.Uid +
@@ -240,6 +264,78 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			Console.WriteLine("MAGERY_SUMMON_TEST: NONE");
+		}
+
+		/// <summary>#488 - casts any REAL (spellbook-slotted, id 1-64) ground-targeted spell at a
+		/// point `distance` tiles from self, via the spellbook TestGrantFullSpellbook already
+		/// granted - unlike TestCastSummonSpell's test-only s_test_summon (id 9000, deliberately
+		/// outside the spellbook's slot range), Blade Spirits/Summon Creature are real content
+		/// with real ids, so no dedicated scroll workaround is needed here. `distance` matters
+		/// specifically for a Hostile summon (Blade Spirits) - anything beyond
+		/// NPCAiTimer.AggroRange (8) from self never autonomously engages its own caster at all,
+		/// which matters because deleting (or even CauseDeath-ing) an ACTIVELY-ENGAGED NPC was
+		/// confirmed directly to hang the whole server (a real NPCAiTimer-tick-thread-vs-command-
+		/// thread concurrency hazard, flagged not fixed here) - an idle, never-engaged NPC has no
+		/// such risk, so this sidesteps the hazard rather than relying on cleanup timing.</summary>
+		[SteamFunction]
+		public static void TestCastGroundTargetedSpellNearSelf(Character self, ScriptArgs sa) {
+			string[] parts = SplitArgs(sa);
+			string defname = parts[0];
+			int distance = (parts.Length > 1) ? Convert.ToInt32(parts[1], CultureInfo.InvariantCulture) : 1;
+			SpellDef spell = SpellDef.GetByDefname(defname);
+			SpellBook book = FindBook(self);
+
+			// Real terrain Z (Map.GetTileZ), not self.Z blindly reused - fine for distance=1
+			// (terrain height rarely differs tile-to-tile) but confirmed directly to fail
+			// CanInteractWithMessage's LOS check at distance=15 (self.Z no longer matches the
+			// actual ground there, so the LOS ray treats the point as embedded/floating).
+			int groundX = self.X + distance;
+			int groundZ = self.GetMap().GetTileZ(groundX, self.Y);
+			Point4D groundTarget = new Point4D(groundX, self.Y, groundZ, self.M);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, groundTarget, null, book, spell, null);
+			magery.PhaseSelect();
+			Console.WriteLine("MAGERY_GROUNDCAST_TEST: STARTED defname=" + defname);
+		}
+
+		/// <summary>#488 - casts s_mana_drain at a dummy NPC with a real mana pool (c_sheep_woolly
+		/// has none by default - NPC.MaxMana is a plain stored field, not Int-derived, so it must
+		/// be set explicitly here). Reports both starting manas so the protocol test can confirm
+		/// the target lost mana AND the caster's own mana never went up (the "does not transfer"
+		/// distinguishing feature vs. the not-yet-built Mana Vampire).</summary>
+		[SteamFunction]
+		public static void TestCastManaDrainAtDummy(Character self) {
+			SpellDef spell = SpellDef.GetByDefname("s_mana_drain");
+
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			dummy.MaxMana = 500;
+			dummy.Mana = 500;
+			// Confirmed directly (intermittent test failures, ~1 in 3-4 runs): RegenerationPlugin
+			// ticks every ~1s (MIN_TIMER/MAX_TIMER=1.0) - the test's own margin for CASTTIME+stroke
+			// delay is comfortably long enough for several regen ticks to fully restore the drain
+			// before the result gets checked, racing the assertion rather than the spell itself
+			// being unreliable. Removing the dummy's own regen makes the drain's effect
+			// deterministic to observe, matching this file's established "pin down the one
+			// variable that would otherwise make a result racy" pattern (e.g. TestGrantFullSpellbook
+			// maxing Magery skill for exactly this reason).
+			dummy.DeletePlugin(RegenerationPlugin.regenerationsPluginKey);
+
+			SpellBook book = FindBook(self);
+			int startCasterMana = self.Mana;
+			int startTargetMana = dummy.Mana;
+
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, dummy, null, book, spell, null);
+			magery.PhaseSelect();
+
+			Console.WriteLine("MAGERY_MANADRAIN_TEST: STARTED dummyUid=" + dummy.Uid +
+				" startCasterMana=" + startCasterMana + " startTargetMana=" + startTargetMana);
+		}
+
+		[SteamFunction]
+		public static void TestReportManaDrainResult(Character self, ScriptArgs sa) {
+			uint targetUid = Convert.ToUInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
+			Character target = (Character) Thing.UidGetCharacter(targetUid);
+			Console.WriteLine("MAGERY_MANADRAIN_TEST: RESULT casterMana=" + self.Mana + " targetMana=" + target.Mana);
 		}
 
 		/// <summary>Same ScriptArgs dual-shape handling already established elsewhere this

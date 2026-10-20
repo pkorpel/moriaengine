@@ -1,0 +1,28 @@
+// #483/#488 - Summon Creature was previously dead commented-out stub content (unimplementedSpells
+// .def, old pre-port SPELLFLAG_* syntax). summonChars is the "random creature" pool - the
+// mage-tier animal summons already in summons.def (c_rat_giant_mage/c_bear_brown_mage/
+// c_bear_black_mage/c_bear_grizzly_mage/c_bear_polar_mage/c_scorpion_giant_mage/
+// c_horse_brown_mage), distinct from the bigger Circle VIII daemon/elemental summons each of
+// which is its own dedicated spell - confirmed none of these are used by any already-shipped
+// spell. Hostile left at its false default - a normal controlled pet, same as Phase 1's own test
+// summon, dispellable via #486's existing fix. RUNES/CASTTIME/MANAUSE/Requirements/DURATION
+// carried over from the stub - Requirements=50.0 already matches this circle's real non-damage
+// siblings. SOUND left at 0, same reasoning as Mana Drain/Blade Spirits.
+[SummonSpellDef 40]
+DEFNAME=s_summon_creature
+NAME=Summon
+SOUND=0
+RUNES=KX
+CASTTIME=2.5
+RUNEITEM=i_rune_summon_creature
+SCROLLITEM=i_scroll_summon_creature
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=2*60.0,5*60.0
+MANAUSE=16
+Requirements=50.0 Magery
+summonChars=c_rat_giant_mage,c_bear_brown_mage,c_bear_black_mage,c_bear_grizzly_mage,c_bear_polar_mage,c_scorpion_giant_mage,c_horse_brown_mage
+
+on=@effectGround
+	// #488 - same StationaryEffect->StationaryEffectAt fix as bladeSpirits.def, see its own comment.
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 20)

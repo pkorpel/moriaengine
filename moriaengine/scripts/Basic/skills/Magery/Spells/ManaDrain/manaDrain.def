@@ -1,0 +1,23 @@
+// #483/#488 - Mana Drain was previously dead commented-out stub content (unimplementedSpells.def,
+// old pre-port SPELLFLAG_* syntax) - real Erebor mechanic: drains the target's mana without
+// transferring it to the caster (weaker than Circle VII's Mana Vampire, not yet built). RUNES/
+// CASTTIME/MANAUSE/Requirements carried over from the old stub - they already match this
+// circle's real siblings (Fire Field's Requirements=40.0, Lightning's MANAUSE=11). SOUND left at
+// 0 (silent) rather than guessing a hex id - the old stub's snd_SPELL_MANA_DRAIN token doesn't
+// resolve to anything real (same unresolvable-constant class as Fire/Paralyze Field's FLAGS
+// tokens), and no source confirms a real value.
+[ManaDrainSpellDef 31]
+DEFNAME=s_mana_drain
+NAME=Mana Drain
+SOUND=0
+RUNES=OR
+CASTTIME=2.0
+RUNEITEM=i_rune_mana_drain
+SCROLLITEM=i_scroll_mana_drain
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+EFFECT=0,10
+MANAUSE=11
+Requirements=40.0 Magery
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x374A, 10, 15)

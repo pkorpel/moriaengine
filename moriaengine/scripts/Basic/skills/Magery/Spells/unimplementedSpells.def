@@ -132,40 +132,12 @@
 //
 //////////////////////////////////////////////// 4 kruh
 //
-//[SpellDef 31]
-//DEFNAME=s_mana_drain
-//NAME=Mana Drain
-//SOUND=snd_SPELL_MANA_DRAIN
-//RUNES=OR
-//CASTTIME=2.0
-////RESOURCES=i_reag_black_pearl,i_reag_mandrake_root,i_reag_spider_silk
-//RUNEITEM=i_rune_MANA_DRAIN
-//SCROLLITEM=i_scroll_MANA_DRAIN
-//FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FX_TARG|spellflag_evil|spellflag_SM|spellflag_harm//SPELLFLAG_TARG_CHAR
-////EFFECTID=i_fx_curse
-//EFFECT=0,10
-//DURATION=0.0
-//MANAUSE=11
-//Requirements=40.0 Magery
+//#488 - s_mana_drain built for real, see scripts/Basic/skills/Magery/Spells/ManaDrain/manaDrain.def
 //
 /////////////////////////////////////////////////// 5kruh
 //
-//[SpellDef 33]
-//// NOTE: Blade Spirits is a popular kill-all, basically a loot gatherer with little to no reprecusions to the player, keep summon time a bit low to counter that a bit.
-//DEFNAME=s_blade_spirits
-//NAME=Blade Spirit
-//SOUND=snd_SPELL_BLADE_SPIRITS
-//RUNES=IHJY
-//CASTTIME=2.5
-//RESOURCES=i_reag_black_pearl,i_reag_mandrake_root,i_reag_nightshade
-//RUNEITEM=i_rune_BLADE_SPIRITS
-//SCROLLITEM=i_scroll_BLADE_SPIRITS
-//FLAGS=SPELLFLAG_SUMMON|SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=1*60.0,3*60.0
-//MANAUSE=14
-//Requirements=50.0 Magery
+//#488 - s_blade_spirits built for real, see
+//scripts/Basic/skills/Magery/Spells/SummonSpells/bladeSpirits.def
 //
 //[SpellDef 35]
 //// NOTE: This spell is used primarily for roleplaying purposes or for avoiding being killed if red. The longer duration would not unbalance gameplay in any way I could see.
@@ -184,22 +156,8 @@
 //MANAUSE=20
 //Requirements=50.0 Magery
 //
-//[SpellDef 40]
-//// NOTE: This spell is the mages first true form of combat at low levels. One of the main uses is summoning a horse to travel. Don't set to low.
-//DEFNAME=s_summon_creature
-//NAME=Summon
-//SOUND=snd_SPELL_SUMMON_CREATURE
-//RUNES=KX
-//CASTTIME=2.5
-//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk
-//RUNEITEM=i_rune_SUMMON_CREATURE
-//SCROLLITEM=i_scroll_SUMMON_CREATURE
-//FLAGS=SPELLFLAG_SUMMON|SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=2*60.0,5*60.0
-//MANAUSE=16
-//Requirements=50.0 Magery
+//#488 - s_summon_creature built for real, see
+//scripts/Basic/skills/Magery/Spells/SummonSpells/summonCreature.def
 //
 //[SpellDef 44]
 //// NOTE: Used primarily to regain mana while fighting or cast helpful spells without incurring attack. Duration should reflect the non-offensive use of this spell

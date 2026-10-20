@@ -79,8 +79,10 @@ a_energy_shield = 9, 30
 //were left active despite being unimplemented stubs (unimplementedSpells.def) - same class of
 //issue as the already-correctly-commented-out summon spells below, just missed. Moved both
 //down to the commented list.
-allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_harm, s_protection, s_fireball, s_teleport, s_wall_of_stone, s_lightning, s_recall, s_dispel_field, s_mind_blast, s_paralyze, s_dispel, s_energy_bolt, s_explosion, s_chain_lightning, s_energy_field, s_flamestrike, s_gate_travel, s_mass_dispel, s_meteor_swarm, s_mana_shield, s_resurrection, s_magic_reflection, s_mark, s_fire_field, s_paralyzation_field
-//s_mana_drain, s_blade_spirits, s_summon_creature, s_energy_vortex, s_summon_air_elemental, s_summon_daemon, s_summon_earth_elemental, s_summon_fire_elemental, s_summon_water_elemental, s_invisibility, s_reveal - not implemented in this engine
+//#488 - s_mana_drain/s_blade_spirits/s_summon_creature built (Phase 4); moved up from the
+//not-implemented list below.
+allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_harm, s_protection, s_fireball, s_teleport, s_wall_of_stone, s_lightning, s_recall, s_dispel_field, s_mind_blast, s_paralyze, s_dispel, s_energy_bolt, s_explosion, s_chain_lightning, s_energy_field, s_flamestrike, s_gate_travel, s_mass_dispel, s_meteor_swarm, s_mana_shield, s_resurrection, s_magic_reflection, s_mark, s_fire_field, s_paralyzation_field, s_mana_drain, s_blade_spirits, s_summon_creature
+//s_energy_vortex, s_summon_air_elemental, s_summon_daemon, s_summon_earth_elemental, s_summon_fire_elemental, s_summon_water_elemental, s_invisibility, s_reveal - not implemented in this engine
 
 //weapon/armor restrictions (#135/#138) - magical staves only, per the wiki
 //(https://wiki.uoerebor.cz/docs/povolani/mag/); unprepared/reinforced leather armor only
