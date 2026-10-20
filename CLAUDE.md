@@ -7,9 +7,19 @@ work. If a session gets reset mid-work, read THIS entry first - it's kept update
 shipped piece, not batched at the end. Current status line is always right below this paragraph;
 update it in the same turn a PR merges, don't defer.
 
-**CURRENT STATUS (update this line continuously)**: Phase 0 (#484) SHIPPED (PR #493). Phase 1
-(#485) SHIPPED (PR #495) - generic `SummonSpellDef` summon-pet infrastructure, closed. Now
-starting Phase 2 (#486, `Character`/`Item.On_Dispell` fix).
+**CURRENT STATUS (update this line continuously)**: Phases 0 (#484, PR #493), 1 (#485, PR #495),
+2 (#486, PR #497) all SHIPPED and closed. All 3 infrastructure prerequisites are now done. Now
+starting Phase 3 (#487, Circle I-III verification + 2 fixes).
+
+**Phase 2 (#486) added a real test-design lesson, worth remembering for any future despawn-vs-
+removal test**: the first draft of the summon-dispel test used the SAME 5s-duration test summon
+as Phase 1's despawn test - its own natural despawn timer raced the dispel-check timing closely
+enough that the test PASSED even with the fix reverted (caught only by the red/green sanity
+check, not by the test passing normally). Fixed by bumping the test-only summon's duration to
+10s and keeping the dispel-check well inside that window. Lesson: when a test proves "X actively
+removes a thing" and that thing ALSO has its own independent removal path (a timer, in this
+case), the test's timing must put enough margin between the two to be unambiguous - a passing
+test alone doesn't prove this, only a red/green check does.
 
 **Gotchas hit and worth remembering for any future live-cast test in this file**:
 - A spell defname (e.g. `s_magic_arrow`) is a registered `AbstractScript` defname - on a
@@ -92,8 +102,8 @@ earlier ones)
 |---|---|---|---|
 | 0 | #484 | Fizzle/difficulty fix + skill-gain-on-cast decision + reagent-less-casting doc note + test infra foundation | **SHIPPED (PR #493)** |
 | 1 | #485 | Generic summon-pet infrastructure (prerequisite for Phase 4's 2 summons + Phase 6's 6 summons) | **SHIPPED (PR #495)** |
-| 2 | #486 | `Character`/`Item.On_Dispell` fix (prerequisite for Phase 1's summon-dispel integration) | In progress |
-| 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | Not started |
+| 2 | #486 | `Character`/`Item.On_Dispell` fix (prerequisite for Phase 1's summon-dispel integration) | **SHIPPED (PR #497)** |
+| 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | In progress |
 | 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | Not started |
 | 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | Not started |
 | 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | Not started |
