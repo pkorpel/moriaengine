@@ -1,5 +1,57 @@
 # moriaengine — working state
 
+## Live-testing bug/feature batch (2026-10-20) — 7 issues filed (#509-515), ANALYSIS ONLY, none implemented yet
+
+User tested banker access, Ranger, and Warrior and reported 7 items in one batch. Per explicit
+request, each was root-caused/analyzed and filed as its own issue, but **nothing has been
+implemented** - waiting on discussion/go-ahead before touching code. Read each issue for full
+detail; condensed findings below so a future session doesn't have to re-derive them.
+
+- **#509 - Banker dialog access** (feature): no code today actually opens a player's bank box UI
+  - `BankerSpeech` (`scripts/Basic/Economy/BankerSpeech.cs`) only does gold math (balance/
+  deposit/withdraw), never shows the container; `BankBox.On_DClick` explicitly refuses non-GMs.
+  Want: double-click banker OR say "bank" within range 6 opens own bank box. Open design
+  question: no existing helper to ask "is this NPC a banker" from a dclick handler (speech side
+  ties in via `TSPEECH = spk_jobbanker`, dclick side has nothing equivalent yet).
+- **#510 - .info "Bank" button** (feature): trivial once scoped - `CharacterDescriptor`
+  (`scripts/Basic/administration/Settings/implementations/Descriptors/CharacterDescriptor.cs`)
+  already has the exact `[Button("...")]` pattern (Dismount/Disarm/Kill/Resurrect); add
+  `[Button("Bank")] ... ((Character)target).Bank.OpenTo(Globals.SrcCharacter);` - `Bank` and
+  `OpenTo` both already exist and do exactly what's needed.
+- **#511/#514 - Negative damage heals the target instead of damaging it** (bug, reported on both
+  Ranger and Warrior - same root cause, one fix should close both): TWO unclamped subtractions
+  in the physical path, neither floors its own output at 0 even though both already clamp their
+  *inputs*: `CombatCalculator.CalculateArmorClassEffect`'s `(attack - armor) * damageMod` (line
+  ~621) and `DamageManager.GetResistModifier`'s two-phase resist subtraction (used
+  multiplicatively in `CauseDamage`). `CalculateMindPowerEffect` (Mystic path) has the identical
+  unclamped-output shape - likely a latent 3rd instance, not yet reported.
+- **#512 - Crossbow stand-still rework** (behavior change): current mechanic
+  (`WeaponSkillDef.On_Stroke`, `scripts/Basic/skills/Combat/WeaponSkillDef.cs:157-163`) hard-
+  teleports (`self.P(standStillAnchor)`) the attacker back to their engagement-start position
+  every stroke if they've moved. Wanted instead: moving just fails/stops the attack, no
+  teleport; standing still again re-enables attacking (not a leash back to a fixed point).
+- **#513 - Ranger "ported closer to monster" on attack** (bug): very likely the *same* mechanism
+  as #512 (the anchor snap-back) - if reproduced on heavy crossbow (`crossbowMustStandStill`
+  defaults true), #512's fix resolves this too. If reproduced on a plain bow
+  (`bowMustStandStill` defaults false), that's a separate unexplained bug (stale tag? wrong
+  weapon-type read?). **Needs the user to confirm which weapon** before deciding if this is a
+  duplicate of #512 or its own root cause.
+- **#515 - Attack speed formula review** (tuning, not a clean bug): `WeaponDelay`
+  (`CombatCalculator.CalculateCombatWeaponValues`, lines 460-477) is an un-rederived legacy
+  Sphere/Moria formula (`delay = sqrt(Dex) * weapSpeed * weaponSpeedGlobal`, final
+  `TimeSpan = 1048.575 / delay` seconds) that assumes Dex capped ~100-125 like classic UO. This
+  engine's leveling system allows Dex well beyond that, and since delay shrinks with
+  `sqrt(Dex)` in the denominator with no floor, attack speed collapses toward near-instant at
+  high stats - that's the "extremely fast" the user is seeing. Also found: every converted
+  weapon's real SPEED tag was stripped by the old content converter, so `weapSpeed` is
+  currently uniformly the class default (100) for everything. Needs a design decision (floor on
+  delay? diminishing-returns curve instead of sqrt? author real per-weapon speeds now that
+  `weaponSpeedGlobal` already exists as a GM lever?) - not just a fix.
+
+**Next steps**: discuss all 7 with the user (especially #513's weapon-type question and #515's
+desired formula shape), then implement per the usual one-issue-per-PR flow once there's a
+go-ahead.
+
 ## Combat system initiative, profession #4 - Mage/Spellcasting (#483) — SHIPPED, all 8 phases — 2026-10-20
 
 **Session continuity note**: this entry is the authoritative plan/progress tracker for the Mage
