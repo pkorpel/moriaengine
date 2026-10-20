@@ -1,5 +1,36 @@
 # moriaengine — working state
 
+## Fishing full implementation SHIPPED (2026-10-20) — #271 closed, PR #531 merged
+
+Built out the #328 Fishing shell into a full implementation (parent epic #140), mirroring the
+Mining (#332-337) / Lumberjacking (#421) precedent but scoped to real moriaengine content. New
+files under `scripts/Basic/skills/Gathering/`: `FishingCatchSystem.cs` (fish-variety roll over
+the real catchable fish `i_fish_raw_whole`/`i_fish_small`/`i_fish_big_1..4` + the fishing-unique
+junk-fish crate mechanic with a tunable embedded treasure-map sub-chance), `FishingAmbushSystem.cs`
+(water-monster ambush `c_bullfrog`/`c_sea_serpent`/`c_kraken`/`c_elem_water_m`, 1/750-per-cast like
+#335/#431), `FishingSettings.cs` (GM `.settings`). Edited `FishingSkillDef.cs` (wired the shared
+generic `GatheringDelaySystem` anti-macro delay + the new catch/ambush paths) and `MetaSettings.cs`
+(added the `[InfoField("Fishing")]`). Tests: `Tests/Protocol/FishingCatchSystemTests.cs` +
+`scripts/Tests/FishingCatchSystemTests.cs`, mirroring the Lumberjacking test shape.
+
+Key scoping decisions (both deliberate, documented in-code):
+- **No fake fish-tier ladder** — unlike Mining's/Lumberjacking's per-tile ore/wood veins. The fish
+  that exist are equal-value cosmetic graphic variants; a skill-gated rarity ladder would mean
+  inventing unconfirmed tuning numbers, against repo convention. So it's an honest fish-variety roll.
+- **Treasure-map payoff deferred to #530** (new follow-up issue) — moriaengine has no treasure-map
+  decode/dig/loot system at all (only blank `i_map`/`i_MAP_ROLLED` craftables + a spawn-point
+  `i_treasureChest`). The junk-crate mechanism, rolls and GM-tunable chances are all real/wired now;
+  a "map-bearing" crate grants a placeholder `i_MAP_ROLLED` (GM-tunable defname so the swap needs no
+  code change). Mirrors Mining deferring region-restriction to #338.
+
+Verification note: all 7 Fishing tests pass in isolation / small groups; the full 7-test class only
+trips the documented sandbox-contention flake class under serial load (commands execute + log
+correctly, login/waits starve after the heavy 40000-iteration ambush-sampling test). Shared
+`GatheringDelaySystemTests` stayed green (confirms the `MetaSettings`/delay edits didn't regress
+Mining/Lumberjacking). Worktree-build gotcha confirmed again: `Generated/*.cs` and the 68
+`scripts/**/*.Generated.cs` + `steamengine.ini` are gitignored and absent in a fresh git worktree —
+had to copy them from the shared checkout for the full solution to build / tests to boot a server.
+
 ## DEFERRED (2026-10-20): #509 banker bank-access doesn't work in real play — user says leave for later
 
 **Explicitly deferred by the user (2026-10-20) - do not pick this back up proactively.** Wait for
