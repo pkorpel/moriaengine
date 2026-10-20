@@ -8,8 +8,8 @@ shipped piece, not batched at the end. Current status line is always right below
 update it in the same turn a PR merges, don't defer.
 
 **CURRENT STATUS (update this line continuously)**: Phases 0 (#484, PR #493), 1 (#485, PR #495),
-2 (#486, PR #497) all SHIPPED and closed. All 3 infrastructure prerequisites are now done. Now
-starting Phase 3 (#487, Circle I-III verification + 2 fixes).
+2 (#486, PR #497), 3 (#487, PR #499) all SHIPPED and closed. Now starting Phase 4 (#488, Circle
+IV-V verify + build Mana Drain + Blade Spirits/Summon Creature).
 
 **Phase 2 (#486) added a real test-design lesson, worth remembering for any future despawn-vs-
 removal test**: the first draft of the summon-dispel test used the SAME 5s-duration test summon
@@ -44,10 +44,18 @@ test alone doesn't prove this, only a red/green check does.
 MagerySpellTests.cs`): `TestGrantFullSpellbook`/`TestCastSpellAtDummy`/`TestReportCastResult`/
 `TestReportSpellDifficulty`/`TestSampleFizzleRate` - reuse these for later phases' own live-cast
 tests rather than rebuilding. Phase 1 added `TestCastSummonSpell`/`TestReportNearbySummon` to
-the same file.
+the same file. Phase 3 added `TestReportSpellCastTime`/`TestReportSpellDamageType`.
 
 #484 stays open only for the Requirements/difficulty scale-inconsistency follow-up (deferred to
 #487-490) - everything else in it shipped.
+
+**Phase 3 (#487) shipped two fixes, both verified with a red/green check (not just "test
+passes")**: Cunning's `CASTTIME=8` -> 1.5s (matched to Strength's identical shape/flags/effect -
+every sibling buff/debuff spell in this circle range is 1.0-2.0s). Harm's `DamageType=MagicAcid`
+-> `MagicCold` (no source backed Acid; Erebor doesn't rescript Harm's damage type and classic
+Harm is cold-based). The other 9 spells in this phase's scope were confirmed already correct, no
+action needed - see #487 for the full per-spell breakdown. `TestReportSpellCastTime`/
+`TestReportSpellDamageType` added to the reusable test infra below.
 
 ### Research summary (full detail in #483, don't duplicate here)
 
@@ -103,8 +111,8 @@ earlier ones)
 | 0 | #484 | Fizzle/difficulty fix + skill-gain-on-cast decision + reagent-less-casting doc note + test infra foundation | **SHIPPED (PR #493)** |
 | 1 | #485 | Generic summon-pet infrastructure (prerequisite for Phase 4's 2 summons + Phase 6's 6 summons) | **SHIPPED (PR #495)** |
 | 2 | #486 | `Character`/`Item.On_Dispell` fix (prerequisite for Phase 1's summon-dispel integration) | **SHIPPED (PR #497)** |
-| 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | In progress |
-| 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | Not started |
+| 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | **SHIPPED (PR #499)** |
+| 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | In progress |
 | 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | Not started |
 | 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | Not started |
 | 7 | #491 | Special abilities epic (Concentration/Magic Charge/Standcast build; Energy Shield/Silence audit) | Not started |
