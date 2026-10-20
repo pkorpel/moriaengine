@@ -16,18 +16,37 @@
 */
 
 using System;
+using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
 	/// Mining's anti-macro delay scaling (#336, Phase D of #332) - real Erebor's own
 	/// `f_mine_checkDelayer`/`f_return_delay_bonus`/`f_count_delay_bonus` (miningfix.scp): a
-	/// flat 20-second base delay between gather attempts, reduced once skill exceeds 100.0% -
+	/// flat base delay between gather attempts, reduced once skill exceeds 100.0% -
 	/// "1% above 100 = 0.03s less delay" (the real source's own comment). The real function
 	/// applies the identical formula to Fishing and Lumberjacking too (`f_return_delay_bonus`
 	/// branches on all three skills) - built as a reusable, skill-name-parameterized utility
-	/// for that reason, but #336's own scope is Mining only; wiring Fishing/Lumberjacking is a
-	/// trivial follow-up, not done here.
+	/// for that reason.
+	///
+	/// Base delay default changed 20.0 -> 2.0 (#533) per direct user request - this engine's
+	/// own gameplay feel, not a faithfulness claim about real Erebor's actual 20s value.
+	///
+	/// Persistence (#533): this used to be a plain `static class` with bare mutable static
+	/// fields - a live `.settings` edit took effect immediately but was never actually saved,
+	/// silently resetting to the hardcoded default on every restart (unlike CombatSettings/
+	/// RangerSettings/DecaySettings, which DO use this same [SaveableClass] pipeline). Converted
+	/// to a real persisted singleton; the original static field/method API is kept unchanged as
+	/// pass-through wrappers so every existing call site (MiningSkillDef/LumberjackingSkillDef/
+	/// FishingSkillDef's On_Start, the 3 sibling *Settings classes' pass-through properties, and
+	/// the test suite) needed zero changes. Doesn't need to inherit SettingsMetaCategory/
+	/// [ViewableClass] itself - it's not its own dialog category, Mining/Fishing/Lumberjacking's
+	/// settings categories already expose it via their own pass-through properties.
+	///
+	/// Known broader gap, NOT fixed here (flagging, not silently dropping, same convention as
+	/// MiningVeinSystem's own per-tile-state note): OreTiers/AmbushSystem defnames+chances/
+	/// FishingCatchSystem's junk-chances have the identical unpersisted-static-field problem -
+	/// out of this issue's scope, which was specifically about gather delay.
 	///
 	/// Architecture note, worth remembering if this pattern looks reusable for something else:
 	/// `SkillDef.Delay`/`GetDelayForChar`'s existing `EvalRangePermille` 2/3-point curve
@@ -39,10 +58,42 @@ namespace SteamEngine.CompiledScripts {
 	/// curve whose own domain ends exactly at that same threshold. Implemented as its own small
 	/// direct formula instead.
 	/// </summary>
-	public static class GatheringDelaySystem {
-		public static double BaseDelaySeconds = 20.0;
-		public static double AntiMacroThresholdPercent = 100.0;
-		public static double DelayReductionPerPercentAboveThreshold = 0.03;
+	[SaveableClass]
+	[HasSavedMembers]
+	public class GatheringDelaySystem {
+
+		[SavedMember]
+		public static GatheringDelaySystem instance = new GatheringDelaySystem();
+
+		[LoadingInitializer]
+		public GatheringDelaySystem() {
+		}
+
+		[SaveableData]
+		public double baseDelaySeconds = 2.0; //#533 - was 20.0, changed per user request
+
+		[SaveableData]
+		public double antiMacroThresholdPercent = 100.0;
+
+		[SaveableData]
+		public double delayReductionPerPercentAboveThreshold = 0.03;
+
+		//Backward-compatible static API - unchanged signatures, now backed by the persisted
+		//instance above instead of bare static fields.
+		public static double BaseDelaySeconds {
+			get { return instance.baseDelaySeconds; }
+			set { instance.baseDelaySeconds = value; }
+		}
+
+		public static double AntiMacroThresholdPercent {
+			get { return instance.antiMacroThresholdPercent; }
+			set { instance.antiMacroThresholdPercent = value; }
+		}
+
+		public static double DelayReductionPerPercentAboveThreshold {
+			get { return instance.delayReductionPerPercentAboveThreshold; }
+			set { instance.delayReductionPerPercentAboveThreshold = value; }
+		}
 
 		/// <summary>The real delay (seconds) between gather attempts for `self` at `skillName`
 		/// - thin wrapper around the pure formula below, extracting the skill's own display
