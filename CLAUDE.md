@@ -1,5 +1,26 @@
 # moriaengine — working state
 
+## Gathering delay fixed: 20s->2s default + actually persists (2026-10-20) — #533 closed, PR #534 merged
+
+User reported changing Mining's gather delay live via `.settings` didn't survive a restart.
+Root cause: `GatheringDelaySystem` (scripts/Basic/skills/Gathering/GatheringDelaySystem.cs, shared
+by Mining/Fishing/Lumberjacking) was a plain static class with bare mutable static fields - no
+`[SaveableClass]`/`[SaveableData]`, unlike `CombatSettings`/`RangerSettings`/`DecaySettings` which
+do use that pipeline. A live edit took effect immediately but reset to the hardcoded default on
+every restart. Converted to a real `[SaveableClass]` singleton (static field/method API unchanged,
+zero call-site edits needed); added `GatheringDelayPersistenceTests` which triggers a real
+`Globals.Save()` and reads the resulting `globals.sav` off disk to prove it. Also changed the
+default base delay 20.0 -> 2.0 per direct user request. Along the way fixed two tests whose
+hardcoded expectations assumed the old 20s default (pinned explicitly instead of relying on the
+live default) and a real pre-existing gap in `LumberjackingYieldsWood` (missing the delay speed-up
+call its `MiningYieldsOre` sibling already had).
+
+**Known broader gap, explicitly NOT fixed** (flagged in `GatheringDelaySystem`'s own doc comment,
+not silently dropped): `OreTiers`/`*AmbushSystem` defnames+chances/`FishingCatchSystem`'s junk-
+chances have the identical unpersisted-static-field problem - only gather delay was in scope here
+since that's what the user specifically hit. Worth a dedicated follow-up if every gathering-skill
+GM-tunable should actually survive a restart, not just delay.
+
 ## Fishing full implementation SHIPPED (2026-10-20) — #271 closed, PR #531 merged
 
 Built out the #328 Fishing shell into a full implementation (parent epic #140), mirroring the
