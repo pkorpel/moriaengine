@@ -8,8 +8,42 @@ shipped piece, not batched at the end. Current status line is always right below
 update it in the same turn a PR merges, don't defer.
 
 **CURRENT STATUS (update this line continuously)**: Phases 0 (#484, PR #493), 1 (#485, PR #495),
-2 (#486, PR #497), 3 (#487, PR #499), 4 (#488, PR #501) all SHIPPED and closed. Now starting
-Phase 5 (#489, Circle VI-VII verify + fixes + build Invisibility/Reveal).
+2 (#486, PR #497), 3 (#487, PR #499), 4 (#488, PR #501), 5 (#489, PR #503) all SHIPPED and
+closed. Now starting Phase 6 (#490, Circle VIII verify Resurrection + 6 summon spells).
+
+**Phase 5 (#489) fixed 2 bugs and built 2 new spells, plus a real per-tile-paralyze mechanism
+not previously possible**: Energy Bolt's DamageType MagicFire -> MagicElectric (lightning-
+based in source); Gate Travel's gate DURATION was 3-4 SECONDS against the spell's own header
+comment's "one minute" intent, a unit bug, fixed to 60s. Paralyze Field was a dead stub
+(legacy unparseable flags, no ItemDef - casting it would have crashed) - rebuilt with real
+flags/ItemDef, plus a new `WallSpellDef.OnWallItemCreated` extension point (a subclass can
+attach per-tile behavior without touching every other wall spell - Wall of Stone/Fire Field/
+Energy Field all unaffected) backing a recurring per-tile paralyze timer that reuses Circle
+V's shipped ParalyzeEffectPlugin. Built Invisibility (toggles the already-existing-but-never-
+set `Character.Flag_InvisByMagic`) and Reveal (area spell - unconditional invisibility clear
++ a Magery-vs-Hiding skill contest for Flag_Hidden targets).
+
+**Two real debugging lessons from Phase 5, worth remembering for any future WallSpellDef or
+lazily-resolved-field work**:
+- `SpellEffectItem.CheckPositionForItem`'s occupancy/surface check can fail for a
+  height>0 item EVERYWHERE near this engine's default test-character spawn point, even well
+  outside the already-documented cramped antechamber radius (confirmed directly: canFit=False
+  at every one of 5 candidate tiles, at both distance=3 AND distance=15 along the same axis an
+  already-working ground-targeted CHARACTER-spawn test uses successfully - NPC/character
+  placement and item placement go through entirely different fit-checking logic, so "a
+  creature can be summoned there" does NOT imply "an item can be placed there"). Fix: call the
+  established `TestTeleportToOpenGround` helper (#78) first, THEN cast/place - don't just
+  increase distance along the same axis.
+- A `DurableSpellDef`'s `double[]`-typed `Duration`/`Effect` fields are lazily resolved by
+  running their `.def` expression as a real LScript snippet the FIRST time anything reads
+  them - and that lazy resolution is gated behind `Commands.AuthorizeCommandThrow` if it
+  happens to be the first touch inside ANY player command's call stack, which fails for a
+  non-GM commandSrc ("No permission to run that command", confirmed directly on both
+  `s_gate_travel` and the test-only `s_test_invisibility`). The resolved value then caches on
+  the SpellDef singleton forever, so warming the field once under a GM test account (in
+  `EnsureAutoAccountCreationEnabled`, no extra character-slot cost) before any non-GM test
+  reads it fixes this reliably - a pre-existing engine quirk, not fixed at the root (out of
+  scope for a spell-content fix), just documented and worked around in the test suite.
 
 **Phase 4 (#488) shipped Fire Field's crash fix + 3 built spells, and surfaced a genuine
 pre-existing engine bug along the way (verified with a real red/green check, not just "test
@@ -70,7 +104,14 @@ AggroMode-only cleanup for a live hostile NPC - do NOT use `Thing.Delete()`/`Cau
 an actively-engaged NPC, confirmed to hang the server). A third test account (`AccountC`,
 "magerytest3") now exists in `Tests/Protocol/MagerySpellTests.cs` since `Account`/`AccountB`
 were already at their 5-character-slot caps - check the running total before adding new
-character-creating Facts to this file.
+character-creating Facts to this file. Phase 5 added `TestReportSpellDuration`,
+`TestCastParalyzeFieldNearSelf`/`TestSpawnDummyAt`/`TestReportIsParalyzed`,
+`TestCastInvisibilityOnSelf`/`TestReportVisibilityFlags`/`TestCastRevealNearSelf`, plus a
+4th test account (`AccountD`, "magerytest4") - AccountB/AccountC were both already full by
+Phase 5. **Double-check the per-account character count by grep, don't just read the most
+recent comment** - Phase 5 itself found a real miscount (two new Facts both accidentally
+assigned to AccountB, pushing it to 6/5) that only surfaced as an intermittent full-suite
+flake, not an immediate failure.
 
 #484 stays open only for the Requirements/difficulty scale-inconsistency follow-up (deferred to
 #487-490) - everything else in it shipped.
@@ -139,8 +180,8 @@ earlier ones)
 | 2 | #486 | `Character`/`Item.On_Dispell` fix (prerequisite for Phase 1's summon-dispel integration) | **SHIPPED (PR #497)** |
 | 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | **SHIPPED (PR #499)** |
 | 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | **SHIPPED (PR #501)** |
-| 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | In progress |
-| 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | Not started |
+| 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | **SHIPPED (PR #503)** |
+| 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | In progress |
 | 7 | #491 | Special abilities epic (Concentration/Magic Charge/Standcast build; Energy Shield/Silence audit) | Not started |
 
 Phases 0-2 are infrastructure prerequisites - do these first even though they touch zero spell
