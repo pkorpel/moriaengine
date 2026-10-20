@@ -16,6 +16,7 @@
 */
 
 using System;
+using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
@@ -46,6 +47,15 @@ namespace SteamEngine.CompiledScripts {
 		protected override SpeechResult TryHandle(AbstractCharacter listener, SpeechArgs speechArgs) {
 			Character speaker = speechArgs.Speaker as Character;
 			string msg = speechArgs.Speech;
+			// TEMPORARY diagnostic logging (#509 live-testing - nothing happened for the user
+			// when saying "bank"/double-clicking/using .info's Bank button; this confirms
+			// whether BankerSpeech.TryHandle is even being reached at all). Remove once root-
+			// caused.
+			Logger.WriteWarning("[BANKDEBUG] BankerSpeech.TryHandle: listener=" + listener +
+				" speaker=" + speaker + " msg='" + msg + "'");
+			if (speaker != null) {
+				speaker.SysMessage("[DEBUG] Banker heard: '" + msg + "'");
+			}
 			if (speaker == null || string.IsNullOrEmpty(msg)) {
 				return SpeechResult.IgnoredOrActedUpon;
 			}
@@ -70,8 +80,17 @@ namespace SteamEngine.CompiledScripts {
 			// consistently regardless of the (global, speech-type-wide) SpeechDistance setting.
 			if (msg.IndexOf("bank", StringComparison.OrdinalIgnoreCase) >= 0) {
 				Character banker = listener as Character;
+				int distance = banker == null ? -1 : Point2D.GetSimpleDistance(speaker, banker);
+				speaker.SysMessage("[DEBUG] 'bank' matched. banker=" + banker + " distance=" + distance +
+					" maxDistance=" + BankerRange.MaxDistance);
 				if ((banker != null) && BankerRange.IsWithinRange(speaker, banker)) {
-					speaker.Bank.OpenTo(speaker);
+					try {
+						speaker.Bank.OpenTo(speaker);
+						speaker.SysMessage("[DEBUG] Bank.OpenTo succeeded.");
+					} catch (Exception e) {
+						Logger.WriteError("[BANKDEBUG] Bank.OpenTo threw: " + e);
+						speaker.SysMessage("[DEBUG] Bank.OpenTo THREW: " + e.Message);
+					}
 				} else {
 					speaker.SysMessage("Thou must stand closer to the banker to do that.");
 				}
