@@ -112,6 +112,12 @@ namespace SteamEngine.CompiledScripts {
 				defender.Trigger_Disrupt();//nebo jen pri damage > 0 ?
 
 				damage *= GetResistModifier(defender, flags);
+				// #511/#514: GetResistModifier's two-phase subtraction (physical/magic resist,
+				// then elemental/weapon-subtype resist) is never clamped at 0 - high stacked
+				// resist can drive it negative, which would otherwise flip this multiplication
+				// into a heal. Floored here, before the @damage trigger below, so a future
+				// script-level heal-via-negative-damage hook (none exists yet) still has a path.
+				damage = Math.Max(0, damage);
 
 				int previousHits = defender.Hits;
 

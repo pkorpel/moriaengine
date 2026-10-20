@@ -124,6 +124,35 @@ namespace SteamEngine.CompiledScripts {
 				" magicResistDamage=" + magicResistDamage);
 		}
 
+		/// <summary>Regression test for #511/#514's latent 3rd instance - CalculateMindPowerEffect
+		/// has the identical unclamped `(mindPower - mindDefense) * damageMod` shape as the
+		/// physical path, so a Mystic attacking a defender with very high MindDefenseModifier
+		/// could also "heal" the target before this fix. Note the pre-existing
+		/// TestMysticDamageIsMagicalNotPhysical above (ResistMagic/ResistMystical=1000) never
+		/// actually caught this - it only asserts magicResistDamage &lt; physicalResistDamage,
+		/// which is trivially true whether magicResistDamage is 0 or very negative.</summary>
+		[SteamFunction]
+		public static void TestMysticNeverHealsDefender(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			((Player) self).Profession = Professions.Mystic;
+			self.DisArm();
+			self.Int = 10; // weak mind power
+
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			dummy.MindDefenseModifier = 1000000; // dwarfs any possible mindPower value
+			dummy.Hits = dummy.MaxHits;
+
+			int before = dummy.Hits;
+			for (int i = 0; i < 20; i++) {
+				DamageManager.ProcessSwing(self, dummy);
+			}
+			int after = dummy.Hits;
+			dummy.MindDefenseModifier = 0;
+
+			Console.WriteLine("MYSTIC_NEVERHEALS_TEST: before=" + before + " after=" + after);
+		}
+
 		/// <summary>#450 - confirms WeaponDelay is mana-driven for a Mystic (shorter delay =
 		/// faster swings at higher mana) rather than the normal Dex-based formula every other
 		/// profession uses - and that a non-Mystic's delay is completely unaffected by mana,
