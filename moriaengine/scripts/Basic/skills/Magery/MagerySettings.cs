@@ -54,6 +54,14 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double mysticManaLossPermille = 970; //nastaveni_mystik_manaloss
 
+		/// <summary>#483/#484 - multiplier applied to a spell's own Magery skill-requirement
+		/// threshold when it's used as a fallback fizzle difficulty (see SpellDef.Difficulty's
+		/// own doc comment) for the many spells that never set an explicit difficulty=. Default
+		/// 1.0 means "fizzle chance is ~50% exactly at the spell's stated skill requirement" -
+		/// tune globally here rather than editing every spell's difficulty individually.</summary>
+		[SaveableData]
+		public double spellDifficultyFallbackMultiplier = 1.0;
+
 		public MetaMassSetting<WeaponMindPowerVsMMassSetting, ColoredWeaponDef, double> mindPowerVsM = new MetaMassSetting<WeaponMindPowerVsMMassSetting, ColoredWeaponDef, double>();
 
 		public MetaMassSetting<WeaponMindPowerVsPMassSetting, ColoredWeaponDef, double> mindPowerVsP = new MetaMassSetting<WeaponMindPowerVsPMassSetting, ColoredWeaponDef, double>();

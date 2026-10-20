@@ -174,11 +174,28 @@ namespace SteamEngine.CompiledScripts {
 		public int Difficulty {
 			get {
 				object current = this.difficulty.CurrentValue;
-				if ((current == null) || Convert.ToInt32(current) < 0) {
-					//TODO extract from requirement ResList
-					return 0;
+				if ((current != null) && (Convert.ToInt32(current) >= 0)) {
+					return (int) current;
 				}
-				return (int) current;
+				// #483/#484 - most spell .def entries never set difficulty at all (this was a
+				// standing //TODO extract from requirement ResList) - CheckSuccess's roll was
+				// fed 0 for them, meaning the real, correctly-wired fizzle mechanism essentially
+				// never fires once mana is sufficient. Fall back to the spell's own Magery
+				// skill-requirement threshold (Requirements=X Magery) instead of 0 - at the exact
+				// skill level the spell requires, this gives the same ~50% fizzle chance every
+				// other skill's own difficulty model gives at its own threshold, scaling
+				// naturally as skill rises above/falls below it. GM-tunable multiplier in case
+				// this needs global tuning without touching every .def individually.
+				ResourcesList requirements = this.Requirements;
+				if (requirements != null) {
+					foreach (IResourceListEntry_Simple entry in requirements.NonMultiplicablesSublist) {
+						SkillResource skillResource = entry as SkillResource;
+						if ((skillResource != null) && (skillResource.SkillDef.Id == (int) SkillName.Magery)) {
+							return (int) Math.Round(skillResource.DesiredCount * MagerySettings.instance.spellDifficultyFallbackMultiplier);
+						}
+					}
+				}
+				return 0;
 			}
 			set {
 				this.difficulty.CurrentValue = value;
@@ -261,11 +278,11 @@ namespace SteamEngine.CompiledScripts {
 				case 'd': return "Curu";	//dovednost
 				case 'e': return "Dol";		//hlava
 				case 'f': return "Ruin";	//plamen
-				case 'g': return "Esgal";	//zástìna
+				case 'g': return "Esgal";	//zÃ¡stÄ›na
 				case 'h': return "Sul";		//vitr
 				case 'i': return "Anna";	//dar
 				case 'j': return "Del";		//hruza
-				case 'k': return "Heru";	//pán
+				case 'k': return "Heru";	//pÃ¡n
 				case 'l': return "Fuin";	//temnota
 				case 'm': return "Aina";	//svaty
 				case 'n': return "Sereg";	//krev
@@ -277,7 +294,7 @@ namespace SteamEngine.CompiledScripts {
 				case 't': return "Barad";	//vez
 				case 'u': return "Ril";		//trpit
 				case 'v': return "Beleg";	//Mohutny
-				case 'w': return "Loth";	//magickýkvìt
+				case 'w': return "Loth";	//magickï¿½kvï¿½t
 				case 'x': return "Val";		//mocnost
 				case 'y': return "Kemen";	//zeme
 				case 'z': return "Fea";		//duch
@@ -918,7 +935,7 @@ namespace SteamEngine.CompiledScripts {
 	public sealed class SpellTargetDef : CompiledTargetDef {
 		//better without message?
 		//protected override void On_Start(Player self, object parameter) {
-		//    self.SysMessage("Vyber cíl kouzla");
+		//    self.SysMessage("Vyber cï¿½l kouzla");
 		//    base.On_Start(self, parameter);
 		//}
 
@@ -979,13 +996,13 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class SpellDefLoc : CompiledLocStringCollection<SpellDefLoc> {
-		internal string TargetResistedSpell = "Cíl odolal kouzlu!";
-		internal string ForbiddenMagicIn = "Zde je zakázáno kouzlit";
-		internal string ForbiddenMagicOut = "Odtud je zakázáno kouzlit";
-		internal string ForbiddenHarmfulMagicIn = "Zde je zakázáno kouzlit škodlivá kouzla";
-		internal string ForbiddenHarmfulMagicOut = "Odtud je zakázáno kouzlit škodlivá kouzla";
-		internal string ForbiddenBeneficialMagicIn = "Zde je zakázáno kouzlit pøínosná kouzla";
-		internal string ForbiddenBeneficialMagicOut = "Odtud je zakázáno kouzlit pøínosná kouzla";
+		internal string TargetResistedSpell = "Cï¿½l odolal kouzlu!";
+		internal string ForbiddenMagicIn = "Zde je zakï¿½zï¿½no kouzlit";
+		internal string ForbiddenMagicOut = "Odtud je zakï¿½zï¿½no kouzlit";
+		internal string ForbiddenHarmfulMagicIn = "Zde je zakï¿½zï¿½no kouzlit ï¿½kodlivï¿½ kouzla";
+		internal string ForbiddenHarmfulMagicOut = "Odtud je zakï¿½zï¿½no kouzlit ï¿½kodlivï¿½ kouzla";
+		internal string ForbiddenBeneficialMagicIn = "Zde je zakï¿½zï¿½no kouzlit pï¿½ï¿½nosnï¿½ kouzla";
+		internal string ForbiddenBeneficialMagicOut = "Odtud je zakï¿½zï¿½no kouzlit pï¿½ï¿½nosnï¿½ kouzla";
 	}
 }
 
