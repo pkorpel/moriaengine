@@ -159,38 +159,8 @@
 //#488 - s_summon_creature built for real, see
 //scripts/Basic/skills/Magery/Spells/SummonSpells/summonCreature.def
 //
-//[SpellDef 44]
-//// NOTE: Used primarily to regain mana while fighting or cast helpful spells without incurring attack. Duration should reflect the non-offensive use of this spell
-//DEFNAME=s_invisibility
-//NAME=Invisibility
-//SOUND=snd_SPELL_INVISIBILITY
-//RUNES=ALX
-//CASTTIME=3.0
-////RESOURCES=i_reag_blood_moss,i_reag_nightshade
-//RUNEITEM=i_rune_INVISIBILITY
-//SCROLLITEM=i_scroll_INVISIBILITY
-//FLAGS=SPELLFLAG_GOOD//SPELLFLAG_TARG_CHAR
-////EFFECTID=0
-//EFFECT=0
-//DURATION=1*60.0,5*60.0
-//MANAUSE=20
-//Requirements=60.0 Magery
-//
-//[SpellDef 48]
-//DEFNAME=s_reveal
-//NAME=Reveal
-//SOUND=snd_SPELL_REVEAL
-//RUNES=WQ
-//CASTTIME=3.0
-////RESOURCES=i_reag_blood_moss,i_reag_sulfur_ash
-//RUNEITEM=i_rune_REVEAL
-//SCROLLITEM=i_scroll_REVEAL
-//FLAGS=SPELLFLAG_DIR_ANIM//|spellflag_evil//|spellflag_harm
-////EFFECTID=0
-//EFFECT=0,0
-//DURATION=0.0
-//MANAUSE=20
-//Requirements=60.0 Magery
+//#489 - s_invisibility/s_reveal built for real, see
+//scripts/Basic/skills/Magery/Spells/Invisibility/invisibility.def and reveal.def
 //
 ///////////////////////////////////////////// 7 kruh
 //

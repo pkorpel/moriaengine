@@ -28,6 +28,13 @@ namespace SteamEngine.Tests.Protocol {
 		// Phase 1 test - when run together in the shared collection). New tests needing a fresh
 		// character go on this 3rd account instead of overloading Account/AccountB further.
 		private const string AccountC = "magerytest3";
+		// #489 - same account-slot-cap lesson as AccountC's own comment above, applied again: by
+		// the end of Phase 4, AccountB sat at 4/5 and AccountC at 3/5 - between them only 3 free
+		// slots remained, not enough for Phase 5's 5 new character-creating Facts
+		// (EnergyBoltDamageTypeChecker/GateTravelDurationChecker/ParalyzeFieldChecker fit in
+		// those 3; Invisibility/Reveal's checkers go on this 4th account instead of pushing
+		// either existing account over its cap).
+		private const string AccountD = "magerytest4";
 		private const string Password = "magerytest";
 
 		private readonly GameServerPairFixture fixture;
@@ -96,6 +103,182 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DAMAGETYPE_TEST:", mark, TimeSpan.FromSeconds(10)));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_DAMAGETYPE_TEST:");
 				Assert.Contains("damageType=MagicCold", line);
+			}
+		}
+
+		/// <summary>#489 - Energy Bolt's DamageType was MagicFire. Erebor's Energy Bolt is
+		/// lightning-based (dam_magic|dam_lightning in source), not fire. Fixed to
+		/// MagicElectric.</summary>
+		[Fact]
+		public void EnergyBoltDamageTypeIsFixedToElectricNotFire() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "MageEnergyBoltDamageTypeChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportSpellDamageType s_energy_bolt");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DAMAGETYPE_TEST:", mark, TimeSpan.FromSeconds(10)),
+					"Output since command:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_DAMAGETYPE_TEST:");
+				Assert.Contains("damageType=MagicElectric", line);
+			}
+		}
+
+		/// <summary>#489 - Gate Travel's conjured-gate DURATION was 3,4 (3-4 SECONDS) while the
+		/// spell header's own comment says "one minute should suffice" - a unit bug. Fixed to a
+		/// flat 60s,60s.</summary>
+		[Fact]
+		public void GateTravelDurationIsFixedToOneMinuteNotSeconds() {
+			this.EnsureAutoAccountCreationEnabled();
+			// AccountC, not AccountB - AccountB already had 4 characters before Phase 5
+			// (FizzleChecker/CunningCastTimeChecker/HarmDamageTypeChecker/FizzleEvenChecker)
+			// and EnergyBoltDamageTypeIsFixedToElectricNotFire above already took the 5th
+			// (last) slot - putting this one on AccountB too would have been a 6th
+			// character, over the account's 5-character-slot hard cap (confirmed directly:
+			// reproduced reliably as a WaitForGameOutputSince timeout once both ran
+			// together, the same silent-server-wedge class Phase 4's own account-cap
+			// lesson already documented).
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "MageGateTravelDurationChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportSpellDuration s_gate_travel");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DURATION_TEST:", mark, TimeSpan.FromSeconds(10)),
+					"Output since command:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_DURATION_TEST:");
+				Assert.Contains("min=60", line);
+				Assert.Contains("max=60", line);
+			}
+		}
+
+		/// <summary>#489 - Paralyze Field was a dead stub before this (old pre-port flag tokens
+		/// that parse to nothing, no ItemDef at all - casting it crashed). Now a real field: a
+		/// dummy spawned AFTER the field already exists, exactly on the field's own center tile
+		/// (see TestCastParalyzeFieldNearSelf's own doc comment for why cast-then-spawn order
+		/// matters), actually gets paralyzed after the field's first tick - reusing Circle V's
+		/// already-shipped ParalyzeEffectPlugin.</summary>
+		[Fact]
+		public void ParalyzeFieldActuallyParalyzesACharacterStandingInIt() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "MageParalyzeFieldChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+
+				// The default spawn point's surrounding terrain is too cramped/irregular for
+				// SpellEffectItem.CheckPositionForItem to ever place a real (height>0) item
+				// anywhere nearby (confirmed directly: canFit=False at every one of the 5
+				// candidate tiles, at both distance=3 and distance=15 along the same axis an
+				// already-working ground-targeted character-spawn test uses successfully -
+				// NPC/character placement and item placement go through entirely different
+				// fit-checking logic, so "a creature can be summoned there" doesn't imply "an
+				// item can be placed there"). TestTeleportToOpenGround (#78's own established
+				// helper) finds real open ground with no static items within 7 tiles first.
+				client.SendSpeech(".TestTeleportToOpenGround");
+				Assert.True(this.fixture.WaitForGameOutput("OPEN_GROUND_FOUND:", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastParalyzeFieldNearSelf");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_PARAFIELD_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+				string startLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_PARAFIELD_TEST: STARTED");
+				int targetX = ExtractInt(startLine, "targetX");
+				int targetY = ExtractInt(startLine, "targetY");
+				int targetZ = ExtractInt(startLine, "targetZ");
+				int targetM = ExtractInt(startLine, "targetM");
+
+				Thread.Sleep(9000); // CASTTIME is 5.0s; generous margin (matching this file's own
+				// ~2x-CASTTIME convention elsewhere) for the field item to definitely exist
+				// before the dummy spawns - too little margin here would race the field's own
+				// creation, and if the dummy already occupied the target tile by the time the
+				// field item actually gets created, CheckPositionForItem's occupancy check would
+				// skip placing an item on that exact tile (the original bug this spawn-after-
+				// cast ordering was designed to avoid in the first place).
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSpawnDummyAt " + targetX + " " + targetY + " " + targetZ + " " + targetM);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SPAWN_TEST:", mark, TimeSpan.FromSeconds(10)));
+				uint dummyUid = ExtractMarkedUid(LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SPAWN_TEST:"), "dummyUid=");
+
+				Thread.Sleep(3000); // field's own tick fires every paralyzeFieldTickIntervalSeconds
+				// (default 1.0s) relative to the field's own creation time, not the dummy's spawn
+				// time - generous margin covers at least one full tick cycle after the dummy
+				// exists, regardless of where in that cycle the dummy happened to spawn.
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportIsParalyzed " + dummyUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_PARALYZE_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_PARALYZE_TEST:");
+				Assert.True(resultLine.Contains("paralyzed=True"), "FULL:\n" + this.fixture.GameOutputSnapshot());
+			}
+		}
+
+		/// <summary>#489 - Invisibility: Character.Flag_InvisByMagic already existed and was
+		/// already wired into IsNotVisible/CanSeeVisibility, but nothing set it anywhere before
+		/// this. Casts the test-only s_test_invisibility (flat 3s duration) and confirms the flag
+		/// goes true immediately, then false again once the duration expires.</summary>
+		[Fact]
+		public void InvisibilitySetsAndClearsFlagInvisByMagic() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountD, "MageInvisibilityChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+				uint selfUid = SelfUidOf(client);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastInvisibilityOnSelf");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_INVIS_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+
+				Thread.Sleep(3500); // CASTTIME is 1.0s; wide margin for the stroke delay -
+				// widened after an intermittent flake under sandbox load (same class of
+				// full-boot-tier timing contention already documented throughout this
+				// repo's CLAUDE.md), confirmed not a logic bug by re-running clean
+				// immediately after with no code change
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportVisibilityFlags " + selfUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_VISIBILITY_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string duringLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
+				Assert.True(duringLine.Contains("invisByMagic=True"), "FULL:\n" + this.fixture.GameOutputSnapshot());
+
+				Thread.Sleep(3000); // DURATION is a flat 3s; 2s elapsed already above, this covers the rest plus margin
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportVisibilityFlags " + selfUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_VISIBILITY_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string afterLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
+				Assert.Contains("invisByMagic=False", afterLine);
+			}
+		}
+
+		/// <summary>#489 - Reveal: unconditionally clears Flag_InvisByMagic (no skill contest -
+		/// classic Reveal strips magical invisibility outright) and, for a Flag_Hidden target,
+		/// only clears it after winning a Magery-vs-Hiding skill contest. AccountC's caster has
+		/// max Magery (via TestGrantFullSpellbook) against a Hiding-0 dummy, so the contest is as
+		/// close to deterministic as SkillUtils' bell curve allows (same bell-curve shape already
+		/// confirmed elsewhere in this file - skill 1000 vs. difficulty 0 lands far into the
+		/// near-certain-success tail).</summary>
+		[Fact]
+		public void RevealClearsInvisibilityAlwaysAndHidingOnSkillContestSuccess() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountD, "MageRevealChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastRevealNearSelf");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_REVEAL_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+				string startLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_REVEAL_TEST: STARTED");
+				uint hiddenUid = ExtractMarkedUid(startLine, "hiddenUid=");
+				uint invisUid = ExtractMarkedUid(startLine, "invisUid=");
+
+				Thread.Sleep(5000); // CASTTIME is 3.0s; generous margin for the stroke + area-effect dispatch
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportVisibilityFlags " + invisUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_VISIBILITY_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string invisLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
+				Assert.Contains("invisByMagic=False", invisLine);
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportVisibilityFlags " + hiddenUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_VISIBILITY_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string hiddenLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
+				Assert.Contains("hidden=False", hiddenLine);
 			}
 		}
 
@@ -439,7 +622,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		// Guards against the established "EnsureAutoAccountCreationEnabled creates a brand new
 		// character every call" trap (AttrFlagTests.cs/ProfessionTests.cs hit this too) - each
-		// call otherwise burns one of Account's 5 character slots, and this file has 7 Facts
+		// call otherwise burns one of Account's 5 character slots, and this file has 12 Facts
 		// that call it (count grows - update when adding more). Safe under this collection's
 		// DisableParallelization=true.
 		private static bool autoAccountCreationEnabled;
@@ -453,6 +636,37 @@ namespace SteamEngine.Tests.Protocol {
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestEnableAutoAccountCreation");
 				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST:", mark, TimeSpan.FromSeconds(10)));
+
+				// #489 - a double[]-typed FieldValue (Duration/Effect) is lazily resolved on
+				// first access by running its stored expression as a real LScript snippet
+				// (FieldValue.ResolveSingleValue -> LScriptMain.RunSnippet), which gates itself
+				// behind Commands.AuthorizeCommandThrow the FIRST time this happens inside any
+				// player command's execution - and that check fails for a non-GM commandSrc
+				// (confirmed directly: GateTravelDurationIsFixedToOneMinuteNotSeconds threw "No
+				// permission to run that command" when s_gate_travel's never-yet-resolved
+				// Duration field was read from AccountB). The resolved value is cached on the
+				// SpellDef singleton forever after, so "warming" it once here under GM (this
+				// account's own auto-elevation) on this already-open connection - no new
+				// character slot spent - makes every later non-GM read a cache hit that skips
+				// the gated lazy path entirely. Pre-existing engine quirk, not fixed at the
+				// root here (out of scope for a Duration-unit-bug fix) - this is a documented
+				// workaround for this test suite specifically. Quoted defname - this runs on
+				// Account's own elevated/full-LScript-parser session, where an unquoted bareword
+				// like s_gate_travel gets silently resolved to the live SpellDef's own ToString()
+				// instead of staying literal text (the same established bareword-resolution
+				// footgun as TestCastSpellAtDummy's own doc comment describes).
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportSpellDuration \"s_gate_travel\"");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DURATION_TEST:", mark, TimeSpan.FromSeconds(10)),
+					"Output since command:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
+
+				// Same lazy-resolve mechanism as s_gate_travel above - warm
+				// s_test_invisibility's own Duration field too (InvisibilitySpellDef.
+				// On_EffectChar reads it via GetDurationForValue).
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportSpellDuration \"s_test_invisibility\"");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DURATION_TEST:", mark, TimeSpan.FromSeconds(10)),
+					"Output since command:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
 			}
 		}
 

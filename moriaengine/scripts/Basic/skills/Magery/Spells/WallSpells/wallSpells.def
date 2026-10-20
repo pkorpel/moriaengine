@@ -76,22 +76,37 @@ MANAUSE=40
 Requirements=80.0 Magery
 
 
-[WallSpellDef 47]
+// #483/#489 - was a dead stub: old pre-port SPELLFLAG_*/spellflag_* tokens (none resolve to real
+// SpellFlag values, parses to SpellFlag.None) AND no ItemDef/ItemDefWestEast/ItemDefNorthSouth
+// at all (WallSpellDef.On_EffectGround dereferences wallDef.Height unconditionally - casting
+// this was a guaranteed crash, same as Fire Field's pre-Phase-4 state). Fixed: real SpellFlag
+// syntax and ItemDef (both matching Energy Field's shape above), header class changed to
+// ParalyzeFieldSpellDef (see ParalyzeFieldSpellDef.cs) which adds the actual per-tile paralyze
+// mechanism on top of WallSpellDef's otherwise-passive blocking wall - reuses
+// ParalyzeEffectPluginDef.Paralyze from Circle V's already-shipped Paralyze spell. ItemDef
+// points at i_fx_field_paralyze (0x3967, "Paralyze Field" - confirmed real, already-converted
+// classic UO graphic, scripts/converted/itemb7.def). SOUND left at 0 for the same reason as
+// Mana Drain/Blade Spirits/Summon Creature (Phase 4) - snd_SPELL_PARALYZE_FIELD doesn't resolve
+// to anything real.
+[ParalyzeFieldSpellDef 47]
 DEFNAME=s_paralyzation_field
 NAME=Paralyze Field
-SOUND=snd_SPELL_PARALYZE_FIELD
+SOUND=0
 RUNES=IEG
 CASTTIME=5.0
 //RESOURCES=i_reag_black_pearl,i_reag_ginseng,i_reag_spider_silk
 RUNEITEM=i_rune_PARALYZE_FIELD
 SCROLLITEM=i_scroll_PARALYZE_FIELD
-FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_TARG_XYZ|SPELLFLAG_FIELD|spellflag_evil//|spellflag_harm
-//FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FX_TARG|SPELLFLAG_FIELD|spellflag_evil//|spellflag_harm
-//EFFECTID=i_fx_curse
-EFFECT=0,0
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
 DURATION=30.0,2*60.0
 MANAUSE=40
 Requirements=60.0 Magery
+ItemDef = i_wall_paralyze_spellEffect
+
+[WallSpellItemDef i_wall_paralyze_spellEffect]
+Model = 0x3967
+TYPE = T_WALL
 
 
 [WallSpellDef 50]
