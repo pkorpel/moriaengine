@@ -1,5 +1,48 @@
 # moriaengine — working state
 
+## OPEN INVESTIGATION (2026-10-20, continued): #509 banker bank-access doesn't work in real play
+
+**Read this first if resuming #509 work.** All three bank-access mechanisms shipped in #509/#510
+(say "bank", double-click banker, `.info`'s Bank button - see the batch summary below for what
+shipped) pass every automated protocol-level test on `main` (`Tests/Protocol/
+BankerDialogTests.cs`, 4/4 green) - **but the user reports none of the three do anything in real
+live play**, even after confirming a pull + rebuild + full server restart. This is NOT reproduced
+by this session's own testing (including manually driving a real gump-button click for the
+`.info` path via raw protocol packets, which proved button id 28 → "Bank" → `OpenedContainers.
+HasContainerOpen` becomes true) - so either something real-client-specific, or something about
+the user's specific character/world state, that the automated test harness's fresh-character/
+synthetic-client setup doesn't reproduce. Not yet root-caused.
+
+**Current state**: PRs #522 (added diagnostics) + #523 (follow-up, same session) landed
+server-log-only diagnostics at every decision point in all three handlers - look for lines
+starting `[BANKDEBUG]` in the server console/log:
+- `BankerSpeech.TryHandle` (`scripts/Basic/Economy/BankerSpeech.cs`): logs on EVERY speech line
+  near a banker (confirms whether `Trigger_Hear` reaches this handler at all), then again inside
+  the `"bank"` branch with the computed distance and `BankerRange.MaxDistance`, then
+  success/exception around `Bank.OpenTo`.
+- `BankerDClick.TryRun` (`scripts/Basic/Economy/BankerDClick.cs`): logs on every `TryRun` call
+  (any trigger key, not just dclick - confirms the TriggerGroup is attached to the Def at all),
+  then again once `TriggerKey.dClick` is confirmed matched with distance, then success/exception.
+- `CharacterDescriptor.Bank` (`scripts/Basic/administration/Settings/implementations/
+  Descriptors/CharacterDescriptor.cs`): logs `target`/`Globals.SrcCharacter` on every click, then
+  success/exception around `OpenTo`.
+- **Player-visible `[DEBUG]` SysMessage lines were tried first (PR #522) then deliberately
+  removed (PR #523)** - the user suspects their client isn't reliably rendering journal/system
+  messages, so those weren't a trustworthy signal. Server-log-only now.
+
+**Next step**: user is going to test again (say "bank", double-click, `.info`→Bank) and report
+back exactly which `[BANKDEBUG]` lines appear in their server console for each attempt (or
+confirm NONE appear at all, which would itself be a huge clue - e.g. TEVENTS not actually wired
+in their running world, or speech/dclick genuinely not reaching these handlers). Until that
+report comes back, don't guess further or revert the diagnostics - they're deliberately left in
+place pending that data. Hypotheses already considered and NOT yet confirmed/ruled out: stale
+Def/TEVENTS wiring in their specific world save, a pre-existing incompatible item on the
+Bankbox equip layer for their specific character (`Character.Bank`'s cast to `BankBox` could
+throw for that one case), something real-UO-client-specific this session's minimal
+`TestGameClient` doesn't replicate. Session ended here at the user's request (restarting the
+container to reduce crash risk) - this is a genuinely open, unresolved thread, pick it up from
+the user's next report.
+
 ## Live-testing bug/feature batch (2026-10-20) — 6 of 7 SHIPPED (#509-514), #515 deferred
 
 User tested banker access, Ranger, and Warrior and reported 7 items in one batch. Each was
