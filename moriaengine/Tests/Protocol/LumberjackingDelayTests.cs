@@ -26,6 +26,12 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void WrapperCorrectlyExtractsDisplayPercentFromInternalSkillValue() {
 			using (var client = this.ConnectLoginAndCreateCharacter("DelayLumberjackWrapperChecker")) {
+				// #533 - pin the base delay to 20 (its pre-#533 value) so this test checks the
+				// WIRING, not the live default (now 2.0, and live-tunable/persisted).
+				int baseMark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetGatherDelayBaseViaSettings 20");
+				Assert.True(this.fixture.WaitForGameOutputSince("MINING_SETTINGS_DELAY_SET:", baseMark, TimeSpan.FromSeconds(10)));
+
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				// Same 1500 internal = 150.0% display -> 18.5s case as Mining's own wrapper
 				// check (GatheringDelaySystemTests.cs) - confirms LumberjackingSkillDef.On_Start
