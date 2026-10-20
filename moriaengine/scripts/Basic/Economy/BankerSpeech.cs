@@ -62,6 +62,21 @@ namespace SteamEngine.CompiledScripts {
 				HandleWithdraw(speaker, msg);
 				return SpeechResult.ActedUponExclusively;
 			}
+			// #509 - "bank" opens the real bank box dialog (unlike balance/deposit/withdraw
+			// above, which only ever did the gold math and never showed a container). Kept to
+			// its own tighter BankerRange.MaxDistance (6) rather than whatever Globals.
+			// SpeechDistance happens to be configured to - same range enforced by BankerDClick
+			// for the double-click path, so both ways of asking a banker for the dialog behave
+			// consistently regardless of the (global, speech-type-wide) SpeechDistance setting.
+			if (msg.IndexOf("bank", StringComparison.OrdinalIgnoreCase) >= 0) {
+				Character banker = listener as Character;
+				if ((banker != null) && BankerRange.IsWithinRange(speaker, banker)) {
+					speaker.Bank.OpenTo(speaker);
+				} else {
+					speaker.SysMessage("Thou must stand closer to the banker to do that.");
+				}
+				return SpeechResult.ActedUponExclusively;
+			}
 
 			return SpeechResult.IgnoredOrActedUpon;
 		}

@@ -117,5 +117,43 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestGetBankUid(Character self) {
 			Console.WriteLine("BANK_UID: " + self.Bank.Uid);
 		}
+
+		/// <summary>#509 - a banker within BankerRange.MaxDistance (6), for the "double-click
+		/// opens the dialog" and "say 'bank' opens the dialog" happy-path tests. Reports the
+		/// banker's own uid so the protocol test can double-click it directly.</summary>
+		[SteamFunction]
+		public static void TestSetupNearbyBankerForDialogCheck(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			NPCDef bankerDef = ThingDef.GetByDefname("C_H_BANKER") as NPCDef;
+			NPC banker = (NPC) bankerDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			Console.WriteLine("ECONOMY_SETUP: STARTED (nearby banker for dialog check, uid=" + banker.Uid + ")");
+		}
+
+		/// <summary>#509 - a banker at distance 8: inside Globals.SpeechDistance's own default
+		/// (10, so ordinary banker speech like "balance" still reaches it) but outside
+		/// BankerRange.MaxDistance (6) - the "too far for the dialog specifically" case for both
+		/// the speech keyword and the double-click path.</summary>
+		[SteamFunction]
+		public static void TestSetupFarBankerForDialogCheck(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			// This test map's default spawn point has dense static placement nearby (same
+			// cramped-antechamber terrain documented elsewhere in CLAUDE.md, e.g. V-7/V-9/V-10's
+			// own movement lessons and MagerySpellTests' ground-targeted casts) - a banker placed
+			// a naive 8 tiles away can end up with no LOS back to self, so Trigger_Hear never
+			// fires and this scenario silently tests nothing. Move to confirmed open ground first.
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			NPCDef bankerDef = ThingDef.GetByDefname("C_H_BANKER") as NPCDef;
+			NPC banker = (NPC) bankerDef.Create(self.X + 8, self.Y, self.Z, self.M);
+			Console.WriteLine("ECONOMY_SETUP: STARTED (far banker for dialog check, uid=" + banker.Uid +
+				", distance=" + Point2D.GetSimpleDistance(self, banker) +
+				", los=" + banker.CanSeeLOS(self).Allow + ")");
+		}
+
+		/// <summary>#509 - queries the real OpenedContainers state (not just "did OpenTo throw")
+		/// to confirm the player's bank box is actually open to them.</summary>
+		[SteamFunction]
+		public static void TestReportBankOpenToMe(Character self) {
+			Console.WriteLine("BANK_OPEN_TEST: open=" + OpenedContainers.HasContainerOpen(self, self.Bank).Allow);
+		}
 	}
 }
