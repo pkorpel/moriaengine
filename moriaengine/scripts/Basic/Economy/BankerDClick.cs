@@ -52,22 +52,18 @@ namespace SteamEngine.CompiledScripts {
 			Character banker = self as Character;
 			Character dclicker = sa.Argv[0] as Character;
 			Logger.WriteWarning("[BANKDEBUG] BankerDClick.TryRun: dClick matched, banker=" + banker + " dclicker=" + dclicker);
-			if (dclicker != null) {
-				dclicker.SysMessage("[DEBUG] BankerDClick fired. banker=" + banker);
-			}
 			if ((banker == null) || (dclicker == null)) {
 				return TriggerResult.Continue;
 			}
 
 			int distance = Point2D.GetSimpleDistance(banker, dclicker);
-			dclicker.SysMessage("[DEBUG] distance=" + distance + " maxDistance=" + BankerRange.MaxDistance);
+			Logger.WriteWarning("[BANKDEBUG] distance=" + distance + " maxDistance=" + BankerRange.MaxDistance);
 			if (BankerRange.IsWithinRange(banker, dclicker)) {
 				try {
 					dclicker.Bank.OpenTo(dclicker);
-					dclicker.SysMessage("[DEBUG] Bank.OpenTo succeeded.");
+					Logger.WriteWarning("[BANKDEBUG] Bank.OpenTo succeeded.");
 				} catch (Exception e) {
 					Logger.WriteError("[BANKDEBUG] Bank.OpenTo threw: " + e);
-					dclicker.SysMessage("[DEBUG] Bank.OpenTo THREW: " + e.Message);
 				}
 				return TriggerResult.Cancel;
 			}
