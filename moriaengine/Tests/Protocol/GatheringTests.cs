@@ -99,6 +99,14 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestGrantAndEquipHatchet");
 				Assert.True(this.fixture.WaitForGameOutput("TOOL_SETUP:", TimeSpan.FromSeconds(10)));
 
+				// #533 - same speed-up this test's MiningYieldsOre sibling already has (line 71)
+				// but this test was missing - at the current 2.0s base delay (#533) the stroke
+				// doesn't land within this test's 1.5s sleep below without it. Confirmed as a
+				// real gap, not speculation: MiningYieldsOre has this call, LumberjackingYields-
+				// Wood did not.
+				client.SendSpeech(".TestSpeedUpGatheringDelayForTest");
+				Assert.True(this.fixture.WaitForGameOutput("GATHERING_DELAY_SPED_UP:", TimeSpan.FromSeconds(10)));
+
 				int markFind = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestGoToNearbyFoliage");
 				Assert.True(this.fixture.WaitForGameOutputSince("FOLIAGE_FOUND:", markFind, TimeSpan.FromSeconds(10)));

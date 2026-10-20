@@ -30,6 +30,13 @@ namespace SteamEngine.Tests.Protocol {
 			// silently fail creation and produce a confusing "command never ran" timeout
 			// instead of a clear denial, same failure class already hit once this session.
 			using (var client = this.ConnectLoginAndCreateCharacter("DelayFormulaChecker" + caseName)) {
+				// #533 - these expected values assume a 20s base delay, but BaseDelaySeconds is
+				// now a shared, live-tunable, persisted default (currently 2.0, not 20.0) - pin
+				// it explicitly so this test checks the FORMULA's shape, not the live default.
+				int baseMark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetGatherDelayBaseViaSettings 20");
+				Assert.True(this.fixture.WaitForGameOutputSince("MINING_SETTINGS_DELAY_SET:", baseMark, TimeSpan.FromSeconds(10)));
+
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestReportDelayForSkillPercent " + skillPercent);
 				Assert.True(this.fixture.WaitForGameOutputSince("DELAY_FOR_PERCENT:", mark, TimeSpan.FromSeconds(10)));
@@ -41,6 +48,11 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void CharacterWrapperCorrectlyExtractsDisplayPercentFromInternalSkillValue() {
 			using (var client = this.ConnectLoginAndCreateCharacter("DelayCharWrapperChecker")) {
+				// #533 - pin the base delay to 20 for the same reason as the Theory above.
+				int baseMark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetGatherDelayBaseViaSettings 20");
+				Assert.True(this.fixture.WaitForGameOutputSince("MINING_SETTINGS_DELAY_SET:", baseMark, TimeSpan.FromSeconds(10)));
+
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				// Internal skill values are x10 - 1500 internal = 150.0% display, matching one
 				// of the pure-formula cases above (expected delay 18.5s) - confirms the wrapper's
