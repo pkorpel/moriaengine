@@ -112,15 +112,7 @@ namespace SteamEngine.CompiledScripts {
 			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
 			NPC dummy = (NPC) dummyDef.Create(self.X + 1, self.Y, self.Z, self.M);
 
-			SpellBook book = self.FindLayer(1) as SpellBook;
-			if (book == null) {
-				foreach (Item i in self.Backpack.EnumShallow()) {
-					book = i as SpellBook;
-					if (book != null) {
-						break;
-					}
-				}
-			}
+			SpellBook book = FindBook(self);
 
 			// Mana is deducted synchronously inside On_Start (Magery.cs), BEFORE the delayed
 			// Stroke is even scheduled - capture it here, before PhaseSelect runs the whole
@@ -142,6 +134,57 @@ namespace SteamEngine.CompiledScripts {
 			bool deleted = (target == null) || target.IsDeleted;
 			Console.WriteLine("MAGERY_CAST_RESULT: casterMana=" + self.Mana +
 				" targetDeleted=" + deleted + " targetHits=" + (deleted ? -1 : target.Hits));
+		}
+
+		/// <summary>#486 - casts a real beneficial buff (s_bless, a DurableCharEffectSpellDef)
+		/// on self, via spellbook - sets EffectFlag.FromSpellBook, the exact flag
+		/// EffectDurationPlugin.Dispellable checks for (potion effects are deliberately not
+		/// dispellable - see that property's own doc comment, unaffected by this test).</summary>
+		[SteamFunction]
+		public static void TestCastBuffOnSelf(Character self) {
+			SpellDef spell = SpellDef.GetByDefname("s_bless");
+			SpellBook book = FindBook(self);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, self, null, book, spell, null);
+			magery.PhaseSelect();
+			Console.WriteLine("MAGERY_DISPEL_TEST: BUFF_CAST_STARTED");
+		}
+
+		[SteamFunction]
+		public static void TestReportDispellablePluginCount(Character self) {
+			int count = 0;
+			foreach (Plugin plugin in self.GetAllPlugins()) {
+				EffectDurationPlugin durationPlugin = plugin as EffectDurationPlugin;
+				if ((durationPlugin != null) && durationPlugin.Dispellable) {
+					count++;
+				}
+			}
+			Console.WriteLine("MAGERY_DISPEL_TEST: dispellablePluginCount=" + count);
+		}
+
+		/// <summary>#486 - casts s_dispel at the given target (by uid) - self for the buffed-
+		/// character case, a summoned creature's uid for the summon-removal case.</summary>
+		[SteamFunction]
+		public static void TestCastDispelOnTarget(Character self, ScriptArgs sa) {
+			uint targetUid = Convert.ToUInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
+			Character target = (Character) Thing.UidGetCharacter(targetUid);
+			SpellDef spell = SpellDef.GetByDefname("s_dispel");
+			SpellBook book = FindBook(self);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, target, null, book, spell, null);
+			magery.PhaseSelect();
+			Console.WriteLine("MAGERY_DISPEL_TEST: DISPEL_CAST_STARTED");
+		}
+
+		private static SpellBook FindBook(Character self) {
+			SpellBook book = self.FindLayer(1) as SpellBook;
+			if (book == null) {
+				foreach (Item i in self.Backpack.EnumShallow()) {
+					book = i as SpellBook;
+					if (book != null) {
+						break;
+					}
+				}
+			}
+			return book;
 		}
 
 		/// <summary>#485 - casts the test-only s_test_summon spell at a point adjacent to self.

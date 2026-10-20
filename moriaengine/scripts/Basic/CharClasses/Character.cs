@@ -2631,7 +2631,35 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#483/#486 - was an empty no-op, so casting Dispel/Mass Dispel directly on a
+		/// character never actually removed any of their buffs/debuffs (only WallSpellItem's own
+		/// override, for fields, and EffectDurationPlugin.On_Dispell itself, which nothing ever
+		/// called since a plugin can't be a spell's direct target) did anything. Now removes
+		/// every dispellable EffectDurationPlugin the character is carrying - book-sourced spell
+		/// effects (EffectDurationPlugin.Dispellable is keyed off EffectFlag.FromBook), not
+		/// potion effects, matching that property's own existing, pre-established rule. Snapshots
+		/// the dispellable plugins into a list BEFORE calling On_Dispell on each - On_Dispell
+		/// deletes the plugin, and GetAllPlugins() enumerates the live backing tags dictionary,
+		/// so deleting while still iterating it directly would throw.</summary>
 		public virtual void On_Dispell(SpellEffectArgs spellEffectArgs) {
+			// #485's own summon-pet infrastructure tags its creatures specifically so this check
+			// could be added once this method actually did something - dispelling a summoned
+			// creature removes the whole creature, not just a buff on it.
+			if (SummonSpellDef.IsSummonedCreature(this)) {
+				this.Delete();
+				return;
+			}
+
+			List<EffectDurationPlugin> dispellablePlugins = new List<EffectDurationPlugin>();
+			foreach (Plugin plugin in this.GetAllPlugins()) {
+				EffectDurationPlugin durationPlugin = plugin as EffectDurationPlugin;
+				if ((durationPlugin != null) && durationPlugin.Dispellable) {
+					dispellablePlugins.Add(durationPlugin);
+				}
+			}
+			foreach (EffectDurationPlugin durationPlugin in dispellablePlugins) {
+				durationPlugin.On_Dispell(spellEffectArgs);
+			}
 		}
 	}
 
