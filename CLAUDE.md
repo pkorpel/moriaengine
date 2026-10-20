@@ -1,5 +1,81 @@
 # moriaengine — working state
 
+## Combat system initiative, profession #4 - Mage/Spellcasting (#483) — IN PROGRESS — 2026-10-20
+
+**Session continuity note**: this entry is the authoritative plan/progress tracker for the Mage
+work. If a session gets reset mid-work, read THIS entry first - it's kept updated after every
+shipped piece, not batched at the end. Current status line is always right below this paragraph;
+update it in the same turn a PR merges, don't defer.
+
+**CURRENT STATUS (update this line continuously)**: Issues filed (#483 parent + #484-491 phases).
+Implementation not yet started - about to begin Phase 0 (#484).
+
+### Research summary (full detail in #483, don't duplicate here)
+
+5 parallel Opus research agents (much bigger scope than Mystic/Ranger/Thief - full spellbook, not
+one mechanic). **Headline finding: NOT a blank slate.** Magery already has a mature casting engine
+(991-line `SpellDef.cs` - mana cost, cast time, LOS, area-targeting, spellbook/scroll casting all
+genuinely working) and 44 of the real ~41-spell Erebor Mage list (confirmed via the live wiki,
+matching `mage.def`'s own `allowedSpells=`) already have real content. Closer to Ranger-shape
+than Mystic-shape, except for:
+
+- **The one fix that matters most**: `SpellDef.Difficulty` returns 0 when unset (most spells never
+  set it) → the real, correctly-wired fizzle mechanism never actually fires once mana is
+  sufficient. Fix once, centrally (Phase 0/#484) - benefits every spell.
+- **Confirmed real bugs** (not just unverified numbers): Energy Bolt's damage type is wrong
+  (MagicFire should be MagicElectric); Paralyze Field is a dead stub (old pre-port flag syntax
+  that doesn't even parse, missing ItemDef, no per-tile paralyze logic); Gate Travel's gate
+  duration is 3-4 SECONDS when the code's own comment says "one minute should suffice"; Cunning's
+  8-second cast time looks like a typo; `Character`/`Item.On_Dispell` are both empty, so Dispel/
+  Mass Dispel don't actually do anything to a buffed character.
+- **Confirmed-faithful, no rebuild needed**: reagent-less casting (Erebor's own casting really is
+  mana-only), the shared area-spell targeting path, Magic Reflection/Paralyze/Protection/Night
+  Sight/Teleport/Resurrection (all genuinely complete, not stubs).
+- **The numbers caveat**: unlike Ranger, most exact per-spell numbers (damage/mana/duration) are
+  NOT recoverable from the public Erebor archive - they live in SphereServer's closed native
+  spell table; the archive's own scripts read them back via accessors, never hardcode them. Keep
+  current `.def` numbers as GM-tunable placeholders, don't hand-guess replacements.
+- **Missing, real build work**: Invisibility/Reveal (cheap - `Flag_InvisByMagic` already exists,
+  unused; `HidingSkillDef.UnHide` already exists), Mana Drain (buildable now, no new infra), and
+  8 summon-shaped spells (Blade Spirits, Summon Creature, Energy Vortex, 4 elementals, Summon
+  Daemon) that all need one missing generic "summon a temporary controlled creature" mechanism -
+  confirmed buildable on existing pieces (`ControlMaster`, pet AI, `DurableSpellDef`'s duration,
+  `SpellEffectItem`'s despawn-timer pattern), and the actual monster content already exists in
+  `summons.def`. Build once - also unblocks Necromancer's future Animate Dead/Summon Undead (#158).
+- **Special abilities** (separate epic, Phase 7): Energy Shield and Silence already substantially
+  implemented (Silence has 2 confirmed divergences from source); Concentration and Standcast are
+  stubs; "Magic Charge" is a real, separate, unbuilt mechanic - don't confuse with the already-
+  working staff-mana-storage feature.
+
+### User's explicit settings instruction
+
+"Use .settings for any numeric variable which could be used for settings of magic spells." A
+`SpellsSettings` category **already exists**, nested under `MagerySettings` → "Spells" (mass-
+settings for damage-spell `Effect`/`DamageType` across every `DamageSpellDef`, plus an all-spells
+list view) - extend THIS rather than creating a competing category, unless a phase's needs
+genuinely don't fit (e.g. summon-specific settings may warrant their own nested page under the
+same `MagerySettings` umbrella, decide per-phase).
+
+### Phase plan (sub-issues under #483, implement roughly in this order - later phases depend on
+earlier ones)
+
+| Phase | Issue | What | Status |
+|---|---|---|---|
+| 0 | #484 | Fizzle/difficulty fix + skill-gain-on-cast decision + reagent-less-casting doc note + test infra foundation | Not started |
+| 1 | #485 | Generic summon-pet infrastructure (prerequisite for Phase 4's 2 summons + Phase 6's 6 summons) | Not started |
+| 2 | #486 | `Character`/`Item.On_Dispell` fix (prerequisite for Phase 1's summon-dispel integration) | Not started |
+| 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | Not started |
+| 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | Not started |
+| 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | Not started |
+| 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | Not started |
+| 7 | #491 | Special abilities epic (Concentration/Magic Charge/Standcast build; Energy Shield/Silence audit) | Not started |
+
+Phases 0-2 are infrastructure prerequisites - do these first even though they touch zero spell
+content directly, since Phases 3-6 either depend on them (fizzle affects every spell; summon
+infra blocks 8 spells; dispel fix blocks summon cleanup) or benefit uniformly from them (test
+infra). Phase 7 is lowest priority - can be deferred indefinitely without blocking the spellbook
+work, pick it up last or skip if time runs out.
+
 ## Combat system initiative, profession #3 - Thief (#476) — DESIGNED, not implemented — 2026-10-19
 
 Third profession researched for the combat-system initiative (see Mystic/#447 and Ranger/#454
