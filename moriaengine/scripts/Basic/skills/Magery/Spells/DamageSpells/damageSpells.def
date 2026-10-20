@@ -28,7 +28,10 @@ CASTTIME=1.2
 RUNEITEM=i_rune_HARM
 SCROLLITEM=i_scroll_HARM
 FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
-DamageType = DamageType.MagicAcid
+// #483/#487 - was DamageType.MagicAcid, unverified and unusual (Erebor's own source doesn't
+// rescript Harm's damage type, and classic Harm is cold-based) - no source backs Acid, so
+// matched to the classic/faithful value instead.
+DamageType = DamageType.MagicCold
 EFFECT=6,12
 MANAUSE=6 
 Requirements=200 Magery 

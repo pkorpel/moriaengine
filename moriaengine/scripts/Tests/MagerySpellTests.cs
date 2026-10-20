@@ -68,6 +68,24 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGERY_DIFFICULTY_TEST: defname=" + defname + " difficulty=" + spell.Difficulty);
 		}
 
+		/// <summary>#487 - reports SpellDef.CastTime for a given spell defname (e.g. confirming
+		/// s_Cunning's fixed 1.5s, not the old 8s typo).</summary>
+		[SteamFunction]
+		public static void TestReportSpellCastTime(Character self, ScriptArgs sa) {
+			string defname = SplitArgs(sa)[0];
+			SpellDef spell = SpellDef.GetByDefname(defname);
+			Console.WriteLine("MAGERY_CASTTIME_TEST: defname=" + defname + " castTime=" + spell.CastTime.ToString(CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>#487 - reports a DamageSpellDef's DamageType for a given spell defname (e.g.
+		/// confirming s_harm's fixed MagicCold, not the old unbacked MagicAcid).</summary>
+		[SteamFunction]
+		public static void TestReportSpellDamageType(Character self, ScriptArgs sa) {
+			string defname = SplitArgs(sa)[0];
+			DamageSpellDef spell = (DamageSpellDef) SpellDef.GetByDefname(defname);
+			Console.WriteLine("MAGERY_DAMAGETYPE_TEST: defname=" + defname + " damageType=" + spell.DamageType);
+		}
+
 		/// <summary>#484 - the real regression test for the fizzle fix. Temporarily sets self's
 		/// raw Magery skill value, then samples SkillDef.CheckSuccess (the exact same roll
 		/// MagerySkillDef.On_Stroke uses) `sampleCount` times against the given spell's real
