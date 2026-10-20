@@ -21,13 +21,19 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
-	/// Fishing (#328) - had no implementation at all before this (unlike Mining/Lumberjacking,
-	/// which were already minimal shells). Minimal shell only, modeled directly on
-	/// MiningSkillDef's shape - just enough to have a real On_Success/On_Fail hook for
-	/// skill-gain-through-use (#140/#328) to attach to. The real resource-node system (material
-	/// tiering, junk-fish/treasure-map sub-mechanic) is explicitly out of scope here - Mining's
-	/// own equivalent full system is tracked separately (#332-338), nobody's asked for the same
-	/// for Fishing yet.
+	/// Fishing (#328 shell, now built out under #271) - modeled directly on MiningSkillDef /
+	/// LumberjackingSkillDef's shape (On_Select -> target -> On_Stroke check -> On_Success/
+	/// On_Fail). Full implementation now wires in: the shared anti-macro delay (#271, via the
+	/// generic GatheringDelaySystem - same formula as Mining #336 / Lumberjacking #424), the
+	/// fish-variety + junk-fish/treasure-map catch system (FishingCatchSystem), and a
+	/// water-monster ambush (FishingAmbushSystem). Skill-gain-through-use (#140/#328) was already
+	/// wired.
+	///
+	/// Deliberately NOT a skill-gated fish-tier ladder (unlike Mining's/Lumberjacking's per-tile
+	/// ore/wood veins): moriaengine has no fish-tier content to gate on - see FishingCatchSystem's
+	/// own doc comment for the full reasoning. The treasure-map payoff of the junk-fish mechanic
+	/// is a placeholder pending the real treasure-map system (#530), mirroring how Mining shipped
+	/// functional-now and deferred region-restriction to #338.
 	///
 	/// Simplification: targets any nearby land tile flagged TileFlag.Wet ("Water? Or mud?...
 	/// probably the first" per that flag's own doc comment) - this engine has no per-tile water-
@@ -57,6 +63,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			//#271 - PhaseStart already set the generic curve-based delay just before this trigger
+			//fired; overwrite it with the real anti-macro formula (flat 20s, reduced above skill
+			//100.0%), same wiring as MiningSkillDef.On_Start (#336) / LumberjackingSkillDef (#424)
+			//- the formula itself is shared/generic in GatheringDelaySystem, just needed this call
+			//site.
+			skillSeqArgs.DelayInSeconds = GatheringDelaySystem.GetDelaySeconds(skillSeqArgs.Self, SkillName.Fishing);
 			return TriggerResult.Continue;
 		}
 
@@ -84,29 +96,38 @@ namespace SteamEngine.CompiledScripts {
 			return TileData.HasFlag(TileData.GetTileFlags(landTile), TileFlag.Wet);
 		}
 
-		private static ItemDef fishDef;
-		private static ItemDef FishDef {
-			get {
-				if (fishDef == null) {
-					fishDef = (ItemDef) ThingDef.GetByDefname("i_fish_raw_whole");
-				}
-				return fishDef;
-			}
-		}
-
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			ItemDef def = FishDef;
-			if (def != null) {
-				def.Create(self.Backpack);
+
+			//#271 - fish-variety roll, with the fishing-unique junk-fish/treasure-map sub-mechanic.
+			FishingCatchSystem.CatchResult result = FishingCatchSystem.Catch(self);
+			if (result.ItemDef != null) {
+				result.ItemDef.Create(self.Backpack);
 			}
-			self.SysMessage(Loc<FishingLoc>.Get(self.Language).success);
+
+			switch (result.Kind) {
+				case FishingCatchSystem.CatchKind.JunkCrateWithMap:
+					if (result.BonusMapDef != null) {
+						result.BonusMapDef.Create(self.Backpack);
+					}
+					self.SysMessage(Loc<FishingLoc>.Get(self.Language).junkCrateWithMap);
+					break;
+				case FishingCatchSystem.CatchKind.JunkCrate:
+					self.SysMessage(Loc<FishingLoc>.Get(self.Language).junkCrate);
+					break;
+				default:
+					self.SysMessage(Loc<FishingLoc>.Get(self.Language).success);
+					break;
+			}
+
+			FishingAmbushSystem.TryAmbush(self.P()); //#271
 			SkillGainSystem.TryGainSkill(self, SkillName.Fishing); //#328
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			self.SysMessage(Loc<FishingLoc>.Get(self.Language).fail);
+			FishingAmbushSystem.TryAmbush(self.P()); //#271 - real fixresource rolls this on every gather action, not just success
 			SkillGainSystem.TryGainSkill(self, SkillName.Fishing); //#328 - real Erebor gains on fail too
 		}
 
@@ -146,5 +167,7 @@ namespace SteamEngine.CompiledScripts {
 		public string success = "You catch a fish.";
 		public string abort = "You stop fishing.";
 		public string needFishingPole = "You must be holding a fishing pole to do that."; //#370
+		public string junkCrate = "You haul up a soggy crate of junk."; //#271
+		public string junkCrateWithMap = "You haul up a soggy crate of junk - and find a tattered map inside!"; //#271
 	}
 }
