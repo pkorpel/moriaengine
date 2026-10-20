@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 
 				bool isFromScroll = skillSeqArgs.Tool is SpellScroll;
 
-				int manaUse = spell.GetManaUse(isFromScroll);
+				int manaUse = ApplyConcentrationDiscount(self, spell.GetManaUse(isFromScroll));
 				int mana = self.Mana;
 				if (mana >= manaUse) {
 					if (!isFromScroll) {
@@ -193,13 +193,67 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
+		private static readonly SpellDef[] magicChargeTriggerSpells = new SpellDef[3];
+
+		private static void AddMagicChargeIfTriggerSpell(Character self, SpellDef spell) {
+			if (magicChargeTriggerSpells[0] == null) {
+				magicChargeTriggerSpells[0] = SpellDef.GetByDefname("s_fireball");
+				magicChargeTriggerSpells[1] = SpellDef.GetByDefname("s_harm");
+				magicChargeTriggerSpells[2] = SpellDef.GetByDefname("s_lightning");
+			}
+			if (spell == magicChargeTriggerSpells[0]) {
+				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Fire);
+			} else if (spell == magicChargeTriggerSpells[1]) {
+				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Mind);
+			} else if (spell == magicChargeTriggerSpells[2]) {
+				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Energy);
+			}
+		}
+
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
+			Character self = skillSeqArgs.Self;
 			SpellDef spell = (SpellDef) skillSeqArgs.Param1;
 			spell.Trigger_Success(skillSeqArgs);
+			// #483/#491 - consume Standcast's toggle (if active) only AFTER Trigger_Success has
+			// resolved - that's where SpellDef.GetSpellPowerAgainstChar/AgainstNonChar reads the
+			// boosted spellPower for every target of this cast (possibly more than one, for an
+			// area spell); consuming any earlier would silently drop the boost for later targets
+			// of the same cast.
+			StandcastHelper.ConsumeIfActive(self);
+			// #483/#491 - Magic Charge: successfully casting Fire Ball/Harm/Lightning stacks a
+			// charge in that spell's own school (fire/mind/energy respectively).
+			AddMagicChargeIfTriggerSpell(self, spell);
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Fizzle(skillSeqArgs.Self);
+		}
+
+		private static AbilityDef concentrationDef;
+		private static AbilityDef ConcentrationDef {
+			get {
+				if (concentrationDef == null) {
+					concentrationDef = AbilityDef.GetByDefname("a_concentration");
+				}
+				return concentrationDef;
+			}
+		}
+
+		/// <summary>#483/#491 - Concentration: mananeed = mananeed * nastaveni_ability_concentration
+		/// / 1000 in source, i.e. a flat per-point mana-cost discount. No-op (returns manaUse
+		/// unchanged) for any caster without the ability, which is every pre-existing test -
+		/// critical regression-safety property for this phase's own cross-cutting changes.</summary>
+		internal static int ApplyConcentrationDiscount(Character self, int manaUse) {
+			AbilityDef def = ConcentrationDef;
+			if (def == null) {
+				return manaUse;
+			}
+			int points = self.GetAbility(def);
+			if (points <= 0) {
+				return manaUse;
+			}
+			double discount = System.Math.Min(points * MagerySettings.instance.concentrationDiscountPerPoint, 0.9);
+			return System.Math.Max(1, (int) System.Math.Round(manaUse * (1.0 - discount)));
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {

@@ -1,7 +1,3 @@
-[ActivableAbilityDef a_standcast]
-Name = "(Standcast)"
-EffectPower=0.0005 // 0.5% per level at 10 points
-
 [PassiveAbilityDef a_weapon_dodge]
 Name = "(Weapon dodging)"
 EffectPower=0.01 //1% per point

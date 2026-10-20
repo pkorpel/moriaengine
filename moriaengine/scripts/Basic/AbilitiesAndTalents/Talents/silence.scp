@@ -1,8 +1,11 @@
+// #483/#491 - two confirmed divergences from real Erebor source: this is "MindBlast Silence"
+// (procs off Mind Blast, not Lightning), and the base duration is 1.5s (up to 2.5s with
+// a_silence_bonus), not the old 10s.
 [StatDrainingAbilityDef a_silence]
 Name="Silence"
 ManaDrain=1
 EffectPower=1
-EffectDuration=10
+EffectDuration=1.5
 chance=0.1
 
 PluginKey = @@silence
@@ -10,7 +13,7 @@ PluginDef = p_silence
 
 [StatDrainingEffectDurationPluginDef p_silence]
 on=@CauseSpellEffect
-if (argv[0].SpellDef == s_lightning)
+if (argv[0].SpellDef == s_mind_blast)
 	arg.self = this.Cont
 	if (a_silence.CheckSuccess(<arg.self>))
 		arg.span = a_silence.EffectDuration + arg.self.GetAbility(a_silence_bonus) * a_silence_bonus.EffectDuration

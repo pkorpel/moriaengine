@@ -1,0 +1,24 @@
+// #483/#491 - Standcast was a bare, unimplemented stub (unimplementedAbilities.scp). NOT "cast
+// without interruption" (a misleading surface reading of the name) - the real Erebor mechanic is
+// a toggle that multiplies the caster's next successful Magery cast's spell power by their own
+// level (consumed after that cast - see SpellDef.GetSpellPowerAgainstChar/AgainstNonChar +
+// Magery.On_Success), at the cost of being unable to move during that cast. Mage/Necromancer/
+// Shaman only (enforced the same way other profession-gated abilities are - via mage.def's own
+// ability listing, not a runtime check here). Blocked while Energy Shield is active
+// (StandcastAbilityDef.On_DenyActivate), matching source. EffectPower=0.0005 (0.5% bonus per
+// level, per ability point, at the 10-point cap) is the one real Erebor number this stub already
+// carried - kept as-is, not a placeholder.
+[StandcastAbilityDef a_standcast]
+Name="Standcast"
+EffectPower=0.0005
+
+PluginKey = @@standcast
+PluginDef = p_standcast
+
+[StandcastPluginDef p_standcast]
+
+[function standcast]
+a_standcast.Activate(this)
+
+[function cancelstandcast]
+a_standcast.Deactivate(this)

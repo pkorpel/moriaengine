@@ -80,6 +80,26 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double paralyzeFieldParalyzeDurationSeconds = 4.0;
 
+		/// <summary>#483/#491 - Concentration: fraction of casting mana cost discounted per
+		/// ability point (real formula confirmed from source - mananeed = mananeed *
+		/// nastaveni_ability_concentration / 1000 - but the live-shard per-point value itself
+		/// isn't recoverable from the public archive). Default 0.02 (2% per point, 20% at this
+		/// ability's own 10-point cap) is a placeholder, same situation as every other
+		/// unconfirmable number this initiative has left GM-tunable.</summary>
+		[SaveableData]
+		public double concentrationDiscountPerPoint = 0.02;
+
+		/// <summary>#483/#491 - Magic Charge: spell-power bonus fraction per stacked charge point
+		/// (max 10) in the charge's own school, applied to that school's other spells. Live-shard
+		/// value unconfirmable from the public archive - placeholder, same as above.</summary>
+		[SaveableData]
+		public double magicChargeBonusPerPoint = 0.02;
+
+		/// <summary>#483/#491 - Magic Charge: seconds between each -1 decay tick once a school has
+		/// at least 1 charge. Placeholder default.</summary>
+		[SaveableData]
+		public double magicChargeDecayIntervalSeconds = 10.0;
+
 		public MetaMassSetting<WeaponMindPowerVsMMassSetting, ColoredWeaponDef, double> mindPowerVsM = new MetaMassSetting<WeaponMindPowerVsMMassSetting, ColoredWeaponDef, double>();
 
 		public MetaMassSetting<WeaponMindPowerVsPMassSetting, ColoredWeaponDef, double> mindPowerVsP = new MetaMassSetting<WeaponMindPowerVsPMassSetting, ColoredWeaponDef, double>();

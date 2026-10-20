@@ -70,6 +70,8 @@ a_leech_mana = 7, 10
 
 a_standcast = 8, 10
 a_energy_shield = 9, 30
+//#491 - Concentration built (Phase 7): flat casting-mana-cost discount, see Magery.cs On_Start.
+a_concentration = 10, 10
 
 
 

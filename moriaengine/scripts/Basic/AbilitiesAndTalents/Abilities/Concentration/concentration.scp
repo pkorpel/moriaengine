@@ -1,0 +1,9 @@
+// #483/#491 - Concentration was entirely missing before this ("genuinely missing" per #491).
+// Real Erebor mechanic: mananeed = (mananeed * nastaveni_ability_concentration)/1000, a flat
+// casting-mana-cost discount scaled by ability points - see Magery.cs's On_Start, which applies
+// MagerySettings.instance.concentrationDiscountPerPoint per point (GM-tunable; the live-shard
+// per-point discount isn't recoverable from the public archive, same class of unconfirmable
+// number as every other phase's placeholder settings - default 0.02, i.e. 2% per point, 20% at
+// this ability's own 10-point cap).
+[PassiveAbilityDef a_concentration]
+Name="Concentration"
