@@ -1,0 +1,28 @@
+// #483/#485 - test-only content for the generic summon-pet infrastructure. Deliberately NOT a
+// real Erebor spell - spell id 9000 is a sentinel well outside the real 0-88 range used by
+// actual content, to guarantee no collision. Summons a harmless c_sheep_woolly with a short
+// (5s) duration so the despawn-timer regression test doesn't need to wait long.
+//
+// Cast via a scroll, not a spellbook - SpellBook.AddSpell silently refuses any spell id outside
+// [FirstSpellId, FirstSpellId+64) (SpellBook.ct's firstSpellId default is 1, so only ids 1-64
+// can ever be slotted into a plain i_spellbook_3), and 9000 is deliberately far outside that
+// range precisely to avoid colliding with real spell ids. A scroll has no such restriction.
+[SummonSpellDef 9000]
+DEFNAME=s_test_summon
+NAME=Test Summon
+SOUND=0
+RUNES=
+CASTTIME=1.0
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=5.0,5.0
+MANAUSE=1
+Requirements=0.0 Magery
+SCROLLITEM=i_scroll_test_summon
+summonChar=c_sheep_woolly
+
+[SpellScrollDef 0x9998]
+DEFNAME=i_scroll_test_summon
+DESCRIPTION = Test Summon Scroll
+TYPE = T_SCROLL
+WEIGHT = 10

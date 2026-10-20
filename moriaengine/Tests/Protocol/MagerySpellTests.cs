@@ -119,6 +119,45 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#485 - the generic summon-pet infrastructure: casting the test-only
+		/// s_test_summon spell produces a real NPC, controlled by the caster, non-aggressive,
+		/// tagged as a summoned creature - and it actually despawns once its 5-second duration
+		/// elapses (not just a decoration that sits there forever).</summary>
+		[Fact]
+		public void SummonedCreatureAppearsControlledThenDespawns() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "MageSummonChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportMyUid");
+				Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", mark, TimeSpan.FromSeconds(10)));
+				uint selfUid = ExtractMarkedUid(LastLineContaining(this.fixture.GameOutputSnapshot(), "MY_UID:"), "MY_UID: ");
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastSummonSpell");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+
+				Thread.Sleep(2500); // CASTTIME is 1.0s; generous margin for the stroke + effect dispatch
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportNearbySummon");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+				Assert.True(foundLine.Contains("FOUND"), "Expected the summon to exist shortly after casting. line: " + foundLine);
+				Assert.Contains("controlMasterUid=" + selfUid, foundLine);
+				Assert.Contains("warMode=False", foundLine);
+
+				Thread.Sleep(4000); // duration is a flat 5s; 2.5s elapsed already above, this covers the rest plus margin
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportNearbySummon");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string goneLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+				Assert.True(goneLine.Contains("NONE"), "Expected the summon to have despawned after its duration. line: " + goneLine);
+			}
+		}
+
 		private int ReportDifficulty(TestGameClient client, string spellDefname) {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".TestReportSpellDifficulty " + spellDefname);
