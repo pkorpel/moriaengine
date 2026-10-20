@@ -102,11 +102,33 @@ code needed) and `Flag_WarMode = false`, then attaches a `SummonDespawnTimer` (m
 `SpellEffectItem.SpellEffectTimer`'s own "delete on timeout" shape) for
 `GetDurationForValue(spellPower)` seconds.
 
-**Deliberately NOT done here**: Dispel integration. `Character.On_Dispell`/`Item.On_Dispell`
-being empty virtuals is a separate issue (#486, not yet shipped) - a summoned creature is
-tagged (`SummonSpellDef.IsSummonedCreature`) so #486's fix has something to check once it
-lands, but until then a summon can only go away via its own timer or normal death, not by
-casting Dispel on it.
+**Dispel integration, #486 (shipped)**: see the next section - `Character.On_Dispell` now
+deletes a summoned creature outright (checked via `SummonSpellDef.IsSummonedCreature`) rather
+than only being removable by its own timer or normal death.
+
+## Dispel actually affects characters now (#483/#486)
+
+`Character.On_Dispell` and `Item.On_Dispell` were both empty virtuals. `DispellDef` (`s_dispel`/
+`s_mass_dispel`/`s_dispel_field`, `scripts/Basic/skills/Magery/Spells/Dispell/Dispell.cs`)
+correctly calls `target.On_Dispell(...)` on whatever it hits, but only `WallSpellItem.
+On_Dispell` (deletes the field/wall item) and `EffectDurationPlugin.On_Dispell` (removes a
+book-sourced buff, but only if the PLUGIN itself is the target - which nothing could ever
+arrange, since a plugin can't be a spell's direct target) did anything. Casting Dispel
+directly on a buffed character removed nothing.
+
+Fixed: `Character.On_Dispell` now (1) deletes the character outright if it's a summoned
+creature (`SummonSpellDef.IsSummonedCreature`, #485) - dispelling a summon means the whole
+creature goes away, not a buff on it - or (2) otherwise snapshots every dispellable
+`EffectDurationPlugin` the character is carrying into a list FIRST, then calls `On_Dispell` on
+each from that snapshot - `On_Dispell` deletes the plugin, and `GetAllPlugins()` enumerates the
+live backing tags dictionary directly, so deleting while still iterating it would throw.
+`Dispellable` is unchanged - still keyed off `EffectFlag.FromBook` (potion effects stay
+non-dispellable, matching that property's own pre-existing rule).
+
+`Item.On_Dispell` investigated and left as-is - confirmed no item currently ever receives an
+`EffectDurationPlugin`-based effect (only characters do, via `DurableCharEffectSpellDef`), so
+there's genuinely nothing to dispel on an item yet beyond `WallSpellItem`'s own existing
+override.
 
 ## Fizzle/difficulty (#483/#484)
 

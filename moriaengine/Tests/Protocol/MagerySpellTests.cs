@@ -148,7 +148,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("controlMasterUid=" + selfUid, foundLine);
 				Assert.Contains("warMode=False", foundLine);
 
-				Thread.Sleep(4000); // duration is a flat 5s; 2.5s elapsed already above, this covers the rest plus margin
+				Thread.Sleep(9000); // duration is a flat 10s; 2.5s elapsed already above, this covers the rest plus margin
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestReportNearbySummon");
@@ -156,6 +156,88 @@ namespace SteamEngine.Tests.Protocol {
 				string goneLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
 				Assert.True(goneLine.Contains("NONE"), "Expected the summon to have despawned after its duration. line: " + goneLine);
 			}
+		}
+
+		/// <summary>#486 - Character.On_Dispell used to be an empty no-op, so casting Dispel on
+		/// a buffed character removed nothing. Casts a real beneficial buff (s_bless) on self,
+		/// confirms a dispellable plugin is really there, casts Dispel on self, confirms it's
+		/// gone.</summary>
+		[Fact]
+		public void DispelRemovesABuffFromACharacter() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "MageDispelBuffChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastBuffOnSelf");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DISPEL_TEST: BUFF_CAST_STARTED", mark, TimeSpan.FromSeconds(10)));
+
+				Thread.Sleep(2500); // s_bless CASTTIME is 2.0s; generous margin
+
+				int beforeCount = this.ReportDispellablePluginCount(client);
+				Assert.True(beforeCount > 0, "Expected a real dispellable plugin after casting Bless on self.");
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastDispelOnTarget " + SelfUidOf(client));
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DISPEL_TEST: DISPEL_CAST_STARTED", mark, TimeSpan.FromSeconds(10)));
+
+				Thread.Sleep(3500); // s_dispel CASTTIME is 2.5s; generous margin
+
+				int afterCount = this.ReportDispellablePluginCount(client);
+				Assert.True(afterCount < beforeCount,
+					"Expected Dispel to remove the Bless plugin. beforeCount=" + beforeCount + " afterCount=" + afterCount);
+			}
+		}
+
+		/// <summary>#486 - a summoned creature (#485) is tagged specifically so Character.
+		/// On_Dispell's fix can remove the whole creature, not just a buff on it. Uses a longer-
+		/// lived summon (TestCastSummonSpell's own 5s duration is enough margin) and dispels it
+		/// well before it would naturally despawn.</summary>
+		[Fact]
+		public void DispelRemovesASummonedCreature() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "MageDispelSummonChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastSummonSpell");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+
+				Thread.Sleep(2500);
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportNearbySummon");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+				Assert.True(foundLine.Contains("FOUND"), "Expected the summon to exist. line: " + foundLine);
+				uint summonUid = ExtractMarkedUid(foundLine, "uid=");
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastDispelOnTarget " + summonUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DISPEL_TEST: DISPEL_CAST_STARTED", mark, TimeSpan.FromSeconds(10)));
+
+				Thread.Sleep(3500); // well before the summon's own 5s despawn timer would fire anyway
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportCastResult " + summonUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_CAST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_CAST_RESULT:");
+				Assert.Contains("targetDeleted=True", resultLine);
+			}
+		}
+
+		private int ReportDispellablePluginCount(TestGameClient client) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestReportDispellablePluginCount");
+			Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DISPEL_TEST: dispellablePluginCount=", mark, TimeSpan.FromSeconds(10)));
+			return ExtractInt(LastLineContaining(this.fixture.GameOutputSnapshot(), "dispellablePluginCount="), "dispellablePluginCount");
+		}
+
+		private uint SelfUidOf(TestGameClient client) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestReportMyUid");
+			Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", mark, TimeSpan.FromSeconds(10)));
+			return ExtractMarkedUid(LastLineContaining(this.fixture.GameOutputSnapshot(), "MY_UID:"), "MY_UID: ");
 		}
 
 		private int ReportDifficulty(TestGameClient client, string spellDefname) {
@@ -205,7 +287,17 @@ namespace SteamEngine.Tests.Protocol {
 			return output.Substring(idx, end - idx);
 		}
 
+		// Guards against the established "EnsureAutoAccountCreationEnabled creates a brand new
+		// character every call" trap (AttrFlagTests.cs/ProfessionTests.cs hit this too) - each
+		// call otherwise burns one of Account's 5 character slots, and this file has 2 Facts
+		// that call it. Safe under this collection's DisableParallelization=true.
+		private static bool autoAccountCreationEnabled;
+
 		private void EnsureAutoAccountCreationEnabled() {
+			if (autoAccountCreationEnabled) {
+				return;
+			}
+			autoAccountCreationEnabled = true;
 			using (var client = this.ConnectLoginAndCreateCharacter(Account, "AutoAccountEnabler")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestEnableAutoAccountCreation");
