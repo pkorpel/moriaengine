@@ -8,8 +8,21 @@ shipped piece, not batched at the end. Current status line is always right below
 update it in the same turn a PR merges, don't defer.
 
 **CURRENT STATUS (update this line continuously)**: Phases 0 (#484, PR #493), 1 (#485, PR #495),
-2 (#486, PR #497), 3 (#487, PR #499), 4 (#488, PR #501), 5 (#489, PR #503) all SHIPPED and
-closed. Now starting Phase 6 (#490, Circle VIII verify Resurrection + 6 summon spells).
+2 (#486, PR #497), 3 (#487, PR #499), 4 (#488, PR #501), 5 (#489, PR #503), 6 (#490, PR #505) all
+SHIPPED and closed. Now starting Phase 7 (#491, special abilities epic - lowest priority, can be
+deferred/skipped per the original plan if time runs out).
+
+**Phase 6 (#490) built Circle VIII's 6 summon spells** (Energy Vortex, the 4 elementals, Summon
+Daemon) via Phase 1's generic `SummonSpellDef` against their real mage-tier chardefs in
+summons.def - all normal controlled pets, no AI/brain override (Energy Vortex keeps its more
+aggressive `brain_beserk`/`roundattack` vs the docile elementals, since the summon mechanism
+never touches those fields). Resurrection confirmed already real/complete, no action needed.
+Checked the NAME=/DEFNAME= off-by-one alignment concern flagged during #483's research - none
+found. **Real gotcha hit while testing**: `AbstractScript.Defname` reports an object's own
+PRIMARY name (the auto-generated `c_<hex>` from its `.def` header), not whichever `DEFNAME=`
+alias was used to look it up - a later `DEFNAME=` line registers an additional lookup alias
+without renaming the object. Don't string-compare `.Defname` against an alias; resolve via
+`GetByDefname` and compare by reference instead (see `TestReportNearbySummonMatchesDefname`).
 
 **Phase 5 (#489) fixed 2 bugs and built 2 new spells, plus a real per-tile-paralyze mechanism
 not previously possible**: Energy Bolt's DamageType MagicFire -> MagicElectric (lightning-
@@ -111,7 +124,14 @@ character-creating Facts to this file. Phase 5 added `TestReportSpellDuration`,
 Phase 5. **Double-check the per-account character count by grep, don't just read the most
 recent comment** - Phase 5 itself found a real miscount (two new Facts both accidentally
 assigned to AccountB, pushing it to 6/5) that only surfaced as an intermittent full-suite
-flake, not an immediate failure.
+flake, not an immediate failure. Phase 6 added `TestReportNearbySummonMatchesDefname` (reference-
+equality defname check, see Phase 6's own note above) and `TestCleanupNearbySummons`, and put all
+6 of its new summons through ONE shared character on `AccountD` (its 3rd of 5 slots - 2 remain)
+rather than one Fact per summon, specifically because every other account was already full.
+**Test-character names must not contain digits** - confirmed directly that a digit in the name
+(e.g. "MageCircle8SummonsChecker") breaks character creation silently (no exception, but the
+resulting session never produces output for any command sent to it) - spell out numbers instead
+("MageCircleEightSummonsChecker").
 
 #484 stays open only for the Requirements/difficulty scale-inconsistency follow-up (deferred to
 #487-490) - everything else in it shipped.
@@ -181,8 +201,8 @@ earlier ones)
 | 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | **SHIPPED (PR #499)** |
 | 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | **SHIPPED (PR #501)** |
 | 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | **SHIPPED (PR #503)** |
-| 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | In progress |
-| 7 | #491 | Special abilities epic (Concentration/Magic Charge/Standcast build; Energy Shield/Silence audit) | Not started |
+| 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | **SHIPPED (PR #505)** |
+| 7 | #491 | Special abilities epic (Concentration/Magic Charge/Standcast build; Energy Shield/Silence audit) | In progress |
 
 Phases 0-2 are infrastructure prerequisites - do these first even though they touch zero spell
 content directly, since Phases 3-6 either depend on them (fizzle affects every spell; summon
