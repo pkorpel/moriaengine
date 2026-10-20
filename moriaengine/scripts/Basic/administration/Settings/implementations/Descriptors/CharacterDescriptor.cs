@@ -42,6 +42,11 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			((Character) target).Resurrect();
 		}
 
+		[Button("Bank")]
+		public static void Bank(object target) {
+			((Character) target).Bank.OpenTo(Globals.SrcCharacter);
+		}
+
 		[GetMethod("Edit", typeof(ContainerView.ThingAsContainer))]
 		public static object Edit(object target) {
 			return new ContainerView.ThingAsContainer((Thing) target);
