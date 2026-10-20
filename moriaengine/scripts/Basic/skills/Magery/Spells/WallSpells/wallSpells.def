@@ -19,21 +19,44 @@ ItemDef = i_wall_stone_spellEffect
 Model = 0x80
 TYPE = T_WALL
 
+// #483/#488 - Fire Field used old pre-port SPELLFLAG_*/spellflag_* tokens (none resolve to real
+// SpellFlag values - same unresolvable-constant class already found in Paralyze Field's FLAGS)
+// AND had no ItemDef/ItemDefWestEast/ItemDefNorthSouth set at all, so casting it threw a
+// NullReferenceException in WallSpellDef.On_EffectGround (InitWallItem dereferences wallDef.Height
+// unconditionally) - this was NOT "field placement/dispel works" as originally assumed, it was a
+// hard crash on cast. Fixed: real SpellFlag syntax (matching Wall of Stone/Energy Field's own
+// shape - CanTargetAnything/CanEffectGround/EffectNeedsLOS, not a harmful-targeted-char spell),
+// and a real ItemDef pointing at i_fx_field_fire (0x398c, "Fire Field 1" - confirmed real,
+// already-converted classic UO fire-field graphic, scripts/converted/itemb7.def). SOUND left at
+// 0 for the same reason as Mana Drain/Blade Spirits/Summon Creature - snd_SPELL_FIRE_FIELD
+// doesn't resolve to anything real.
+//
+// Cross-cutting finding, NOT fixed here (no existing pattern to build on - flagging per #488's
+// own "reuse the pattern if one exists" scoping, not inventing a new mechanism): NO field spell
+// in this engine deals periodic tick damage to a character standing in it - WallSpellItem is a
+// pure blocking wall (BlocksFit=true, On_Dispell removes it), nothing more. This affects every
+// field spell equally (Fire/Poison/Paralyze Field, Energy Field), not just this one - filed
+// separately rather than building a brand-new damage-tick mechanism as a side effect of a
+// verification pass.
 [WallSpellDef 28]
 DEFNAME=s_fire_field
 NAME=Fire Field
-SOUND=snd_SPELL_FIRE_FIELD
+SOUND=0
 RUNES=IFG
 CASTTIME=6.0
 //RESOURCES=i_reag_black_pearl,i_reag_spider_silk,i_reag_sulfur_ash
 RUNEITEM=i_rune_FIRE_FIELD
 SCROLLITEM=i_scroll_FIRE_FIELD
-FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FIELD|spellflag_evil|SPELLFLAG_TARG_XYZ|spellflag_SM//|spellflag_harm
-//EFFECTID=0
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
 EFFECT=0,10
 DURATION=30.0,2*60.0
 MANAUSE=40
 Requirements=40.0 Magery
+ItemDef = i_wall_fire_spellEffect
+
+[WallSpellItemDef i_wall_fire_spellEffect]
+Model = 0x398C
+TYPE = T_WALL
 
 
 [WallSpellDef 39]

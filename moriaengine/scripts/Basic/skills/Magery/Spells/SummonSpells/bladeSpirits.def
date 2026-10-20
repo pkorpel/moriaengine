@@ -1,0 +1,32 @@
+// #483/#488 - Blade Spirits was previously dead commented-out stub content (unimplementedSpells.
+// def, old pre-port SPELLFLAG_* syntax). c_blade_spirit (summons.def) is the real, dedicated
+// Erebor monster content for this spell - confirmed not reused by anything else shipped so far.
+// Hostile=true: per the old stub's own comment ("popular kill-all, basically a loot gatherer
+// with little to no repercussions to the player, keep summon time a bit low to counter that a
+// bit"), this is a real Erebor design note, not converter noise - the spell is deliberately
+// NOT a leashed pet. RUNES/CASTTIME/MANAUSE/Requirements/DURATION carried over from the stub -
+// Requirements=50.0 already matches this circle's real non-damage siblings (Paralyze/Magic
+// Reflection/Dispel Field, all Requirements=50.0 Magery). SOUND left at 0, same reasoning as
+// Mana Drain's own .def comment - the old snd_SPELL_BLADE_SPIRITS token doesn't resolve.
+[SummonSpellDef 33]
+DEFNAME=s_blade_spirits
+NAME=Blade Spirits
+SOUND=0
+RUNES=IHJY
+CASTTIME=2.5
+RUNEITEM=i_rune_blade_spirits
+SCROLLITEM=i_scroll_blade_spirits
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=1*60.0,3*60.0
+MANAUSE=14
+Requirements=50.0 Magery
+summonChar=c_blade_spirit
+Hostile=true
+
+on=@effectGround
+	// #488 - was StationaryEffect(this,...), which requires a Thing - "this" in an @effectGround
+	// trigger is the target point, not a Thing (confirmed via the cast exception this threw at
+	// runtime: "Unable to cast ClassNameRef to Thing"). teleportingSpells.def's own working
+	// @effectGround trigger uses StationaryEffectAt(this,...) for exactly this reason.
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 20)
