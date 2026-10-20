@@ -16,6 +16,7 @@
 */
 
 using System;
+using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
@@ -41,18 +42,33 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override object TryRun(object self, TriggerKey tk, ScriptArgs sa) {
+			// TEMPORARY diagnostic logging (#509 live-testing - double-clicking a banker did
+			// nothing for the user). Remove once root-caused.
+			Logger.WriteWarning("[BANKDEBUG] BankerDClick.TryRun: tk=" + tk + " self=" + self);
 			if (TriggerKey.dClick.Uid != tk.Uid) {
 				return TriggerResult.Continue;
 			}
 
 			Character banker = self as Character;
 			Character dclicker = sa.Argv[0] as Character;
+			Logger.WriteWarning("[BANKDEBUG] BankerDClick.TryRun: dClick matched, banker=" + banker + " dclicker=" + dclicker);
+			if (dclicker != null) {
+				dclicker.SysMessage("[DEBUG] BankerDClick fired. banker=" + banker);
+			}
 			if ((banker == null) || (dclicker == null)) {
 				return TriggerResult.Continue;
 			}
 
+			int distance = Point2D.GetSimpleDistance(banker, dclicker);
+			dclicker.SysMessage("[DEBUG] distance=" + distance + " maxDistance=" + BankerRange.MaxDistance);
 			if (BankerRange.IsWithinRange(banker, dclicker)) {
-				dclicker.Bank.OpenTo(dclicker);
+				try {
+					dclicker.Bank.OpenTo(dclicker);
+					dclicker.SysMessage("[DEBUG] Bank.OpenTo succeeded.");
+				} catch (Exception e) {
+					Logger.WriteError("[BANKDEBUG] Bank.OpenTo threw: " + e);
+					dclicker.SysMessage("[DEBUG] Bank.OpenTo THREW: " + e.Message);
+				}
 				return TriggerResult.Cancel;
 			}
 			// Out of range: unlike the "bank" speech keyword (which gets explicit feedback -
