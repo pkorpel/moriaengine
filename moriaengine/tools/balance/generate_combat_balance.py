@@ -124,8 +124,8 @@ MATERIALS = [
     (9, "Mithril", "Elven", True, True),
     (10, "Sand", None, False, False),
 ]
-METAL_TIERS = [m for m in MATERIALS if m[3]]  # has_armor - covers all 9 real craftable tiers
-WEAPON_TIERS = [m for m in MATERIALS if m[2]]  # the 7 tiers with weapon content
+METAL_TIERS = [m for m in MATERIALS if m[4]]  # has_armor (index 4) - covers all 9 real craftable tiers
+WEAPON_TIERS = [m for m in MATERIALS if m[3]]  # has_weapons (index 3) - the 7 tiers with weapon content
 
 # Weapon archetypes: (archetype, display-name-root, WeaponType, Skill, MaterialType, notes)
 # scripts/converted/zbrane/*.def, cross-checked against WeaponSkillTargetQueuePlugin.cs
