@@ -200,22 +200,6 @@
 //
 ////////////////////////////////////////////////////////////////////// 8 kruh
 //
-//[SpellDef 58]
-//DEFNAME=s_energy_vortex
-//NAME=Energy Vortex
-//SOUND=snd_SPELL_ENERGY_VORTEX
-//RUNES=VCP
-//CASTTIME=4.0
-//RESOURCES=i_reag_black_pearl,i_reag_blood_moss,i_reag_mandrake_root,i_reag_nightshade
-//RUNEITEM=i_rune_ENERGY_VORTEX
-//SCROLLITEM=i_scroll_ENERGY_VORTEX
-//FLAGS=SPELLFLAG_SUMMON|SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=1*60.0,3*60.0
-//MANAUSE=50
-//Requirements=80.0 Magery
-//
 //[SpellDef 59]
 //DEFNAME=s_resurrection
 //NAME=Resurrection
@@ -231,86 +215,6 @@
 //DURATION=0.0
 //MANAUSE=100
 //Requirements=99.0 Magery
-//
-//[SpellDef 60]
-//DEFNAME=s_summon_elem_air
-//NAME=Air Elemental
-//SOUND=snd_SPELL_SUMMON_elem_air
-//RUNES=KVXH
-//CASTTIME=4.0
-//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk
-//RUNEITEM=i_rune_SUMMON_elem_air
-//SCROLLITEM=i_scroll_SUMMON_elem_air
-//FLAGS=SPELLFLAG_SUMMON|SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=2*60.0,4*60.0
-//MANAUSE=50
-//Requirements=80.0 Magery
-//
-//[SpellDef 61]
-//DEFNAME=s_summon_daemon
-//NAME=Daemon
-//SOUND=snd_SPELL_SUMMON_DAEMON
-//RUNES=KVXC
-//CASTTIME=4.0
-//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk,i_reag_sulfur_ash
-//RUNEITEM=i_rune_SUMMON_DAEMON
-//SCROLLITEM=i_scroll_SUMMON_DAEMON
-//FLAGS=SPELLFLAG_SUMMON|SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=2*60.0,4*60.0
-//MANAUSE=50
-//Requirements=80.0 Magery
-//
-//[SpellDef 62]
-//DEFNAME=s_summon_elem_earth
-//NAME=Earth Elemental
-//SOUND=snd_SPELL_SUMMON_elem_earth
-//RUNES=KVXY
-//CASTTIME=4.0
-//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk
-//RUNEITEM=i_rune_SUMMON_elem_earth
-//SCROLLITEM=i_scroll_SUMMON_elem_earth
-//FLAGS=SPELLFLAG_SUMMON|SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=2*60.0,4*60.0
-//MANAUSE=50
-//Requirements=80.0 Magery
-//
-//[SpellDef 63]
-//DEFNAME=s_summon_elem_fire
-//NAME=Fire Elemental
-//SOUND=snd_SPELL_SUMMON_elem_fire
-//RUNES=KVXF
-//CASTTIME=4.0
-//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk,i_reag_sulfur_ash
-//RUNEITEM=i_rune_SUMMON_elem_fire
-//SCROLLITEM=i_scroll_SUMMON_elem_fire
-//FLAGS=SPELLFLAG_SUMMON|SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=2*60.0,4*60.0
-//MANAUSE=50
-//Requirements=80.0 Magery
-//
-//[SpellDef 64]
-//DEFNAME=s_summon_elem_water
-//NAME=Water Elemental
-//SOUND=snd_SPELL_SUMMON_elem_water
-//RUNES=KVXAF
-//CASTTIME=4.0
-//RESOURCES=i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk
-//RUNEITEM=i_rune_SUMMON_elem_water
-//SCROLLITEM=i_scroll_SUMMON_elem_water
-//FLAGS=SPELLFLAG_SUMMON|SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=2*60.0,4*60.0
-//MANAUSE=50
-//Requirements=80.0 Magery
 //
 //necrospells  - necrobook.scp...
 //s_animate_dead
