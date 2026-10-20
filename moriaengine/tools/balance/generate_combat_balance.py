@@ -881,6 +881,7 @@ def build_overview(wb):
         ("Weapons Reference", "Full weapon archetype x material matrix"),
         ("Armor Reference", "Full armor piece x material matrix + shields"),
         ("Warrior / Ranger / Mage / Mystic / Thief", "Calculator + reference matrix per profession"),
+        ("Fight Simulator", "Any Attacker vs any Defender - Player of any profession or a cataloged Monster, full stats/skills/weapon/armor/resists"),
     ]:
         row = data_rows(ws, row, 1, [r])
     autosize(ws, {1: 34, 2: 110})
@@ -1810,6 +1811,384 @@ def build_mystic(wb, monsters_info):
     autosize(ws, {1: 44, 2: 18, 3: 18, 4: 18})
 
 
+# Armor picker slots for the Fight Simulator: (zone label, Armor Reference Layer value, weight).
+# "Chest & Back" combines the Chest(0.30)+Back(0.10) weights from Core Formulas' body-zone table
+# since every Chest/Tunic piece in this catalog feeds BOTH zones with the same value (no separate
+# Back-only item exists) - see CombatCalculator.cs body-zone note. Feet (0.05 weight) has NO
+# selectable piece at all in this 39-piece catalog (no boots/shoes item) - always contributes 0,
+# not shown as a slot. Shield is handled completely separately (additive, Parrying-scaled), not a
+# body zone - see Core Formulas.
+ARMOR_SLOTS = [("Head", 6, 0.10), ("Neck", 10, 0.05), ("Chest & Back", 13, 0.40),
+               ("Arms", 19, 0.10), ("Hands", 7, 0.10), ("Legs", 4, 0.20)]
+SHIELD_PIECES = [p[0] for p in ARMOR_PIECES if p[4]]
+
+
+def build_fight_simulator(wb, weapons_info, armor_info, monsters_info):
+    ws = wb.create_sheet("Fight Simulator")
+    row = h1(ws, 1, 1, "Fight Simulator", span=8)
+    row = note(ws, row, 1,
+               "Pick ANY combatant (Player of any profession, or a cataloged Monster) as Attacker "
+               "and Defender. Computes ONE direction - Attacker's real damage pipeline (melee/"
+               "ranged/Mystic mind-power/Mage spell/Monster-flat, whichever matches what you picked) "
+               "against the Defender's real mitigation. To see the reverse (Defender hits back), "
+               "swap which combatant you fill into Attacker vs Defender.", span=8)
+    row += 1
+    row = note(ws, row, 1,
+               "Armor picker simplifications (flagged, not silently assumed): one shared Material "
+               "applies to a combatant's whole outfit (not per-piece); a character's own innate "
+               "chardef/race base ArmorClass (DefForCombat.ArmorVsP/VsM in the real formula) is "
+               "assumed 0 - no base-race AC data was gathered; Feet has no selectable piece in this "
+               "content. Mind-power pipelines (Mystic attacker) always use the bare-hands MindPower "
+               "default per the engine's current content (see Mystic tab) regardless of weapon/armor "
+               "picked here.", span=8)
+    row += 1
+
+    def combatant_block(label):
+        nonlocal row
+        c = {}
+        row = h2(ws, row, 1, f"{label}", span=2)
+        ws.cell(row=row, column=1, value="Combatant type")
+        input_cell(ws, row, 2, "Player")
+        c["type"] = f"$B${row}"
+        dv = DataValidation(type="list", formula1='"Player,Monster"')
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+
+        ws.cell(row=row, column=1, value="Monster (used if type=Monster)")
+        input_cell(ws, row, 2, "(manual)")
+        c["monster_pick"] = f"$B${row}"
+        dv = DataValidation(type="list",
+                             formula1=f"='Monsters Reference'!$A${monsters_info['data_start']}:$A${monsters_info['data_end']}")
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+        m = monsters_info
+        match = f"MATCH({c['monster_pick']},'Monsters Reference'!$A${m['data_start']}:$A${m['data_end']},0)"
+        ws.cell(row=row, column=1, value="Monster WeaponAttack (avg of catalog min/max)")
+        output_cell(ws, row, 2, f"=AVERAGE(INDEX('Monsters Reference'!$C${m['data_start']}:$C${m['data_end']},{match}),"
+                                f"INDEX('Monsters Reference'!$D${m['data_start']}:$D${m['data_end']},{match}))")
+        c["monster_weapon_attack"] = f"$B${row}"
+        row += 1
+        ws.cell(row=row, column=1, value="Monster ArmorVsM (avg of catalog min/max)")
+        output_cell(ws, row, 2, f"=AVERAGE(INDEX('Monsters Reference'!$G${m['data_start']}:$G${m['data_end']},{match}),"
+                                f"INDEX('Monsters Reference'!$H${m['data_start']}:$H${m['data_end']},{match}))")
+        c["monster_armor"] = f"$B${row}"
+        row += 1
+        ws.cell(row=row, column=1, value=f"Monster HP (flat default {MONSTER_DEFAULTS['max_hits']}) / WeaponDelay (flat default {MONSTER_DEFAULTS['weapon_delay']}s)")
+        output_cell(ws, row, 2, str(MONSTER_DEFAULTS["max_hits"]))
+        output_cell(ws, row, 3, str(MONSTER_DEFAULTS["weapon_delay"]))
+        c["monster_hp"] = f"$B${row}"
+        c["monster_delay"] = f"$C${row}"
+        row += 1
+
+        ws.cell(row=row, column=1, value="Profession (used if type=Player)")
+        input_cell(ws, row, 2, "Warrior")
+        c["profession"] = f"$B${row}"
+        dv = DataValidation(type="list", formula1='"Warrior,Ranger,Mage,Mystic,Thief"')
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+
+        for lbl, default in [("Str", 100), ("Dex", 100), ("Int", 100), ("Vit", 100), ("Mana (current)", 100),
+                              ("HP", 100)]:
+            ws.cell(row=row, column=1, value=lbl)
+            input_cell(ws, row, 2, default)
+            c[lbl] = f"$B${row}"
+            row += 1
+        for lbl in ["Tactics", "Anatomy", "ArmsLore", "EvalInt", "SpiritSpeak", "Magery", "Parrying", "MagicResist"]:
+            label_text = f"{lbl} skill (0-1000)"
+            ws.cell(row=row, column=1, value=label_text)
+            input_cell(ws, row, 2, 1000)
+            c[lbl] = f"$B${row}"
+            row += 1
+
+        row = note(ws, row, 1, "Offense (used depending on Profession): Warrior/Thief->melee weapon, "
+                                "Ranger->bow/crossbow+ammo, Mage->spell. Mystic always uses the bare-hands "
+                                "MindPower default (no weapon input needed).", span=6)
+        row += 1
+        wi = weapons_info
+        ws.cell(row=row, column=1, value="Melee weapon archetype (Warrior/Thief)")
+        input_cell(ws, row, 2, MELEE_ARCHETYPES[0][0])
+        c["weapon"] = f"$B${row}"
+        dv = DataValidation(type="list", formula1=f'"{",".join(a[0] for a in MELEE_ARCHETYPES)}"')
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+        ws.cell(row=row, column=1, value="Weapon/ammo material (melee material, or Ranger ammo material)")
+        input_cell(ws, row, 2, MATERIAL_NAMES_FOR_WEAPONS[0])
+        c["weapon_material"] = f"$B${row}"
+        dv = DataValidation(type="list", formula1=f'"{",".join(MATERIAL_NAMES_FOR_WEAPONS)}"')
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+        ws.cell(row=row, column=1, value="Weapon durability % (melee)")
+        input_cell(ws, row, 2, 100)
+        c["durability"] = f"$B${row}"
+        row += 1
+        ws.cell(row=row, column=1, value="Ranged weapon (Ranger)")
+        input_cell(ws, row, 2, "Bow")
+        c["ranged_weapon"] = f"$B${row}"
+        dv = DataValidation(type="list", formula1='"Bow,LightCrossbow,HeavyCrossbow"')
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+        ws.cell(row=row, column=1, value="Spell (Mage)")
+        spell_names = [s[0] for s in SPELLS]
+        input_cell(ws, row, 2, spell_names[0])
+        c["spell"] = f"$B${row}"
+        dv = DataValidation(type="list", formula1=f'"{",".join(spell_names)}"')
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+        ws.cell(row=row, column=1, value="Standcast / Magic Charge bonus fraction (Mage, 0+ each)")
+        input_cell(ws, row, 2, 0)
+        input_cell(ws, row, 3, 0)
+        c["standcast"] = f"$B${row}"
+        c["magiccharge"] = f"$C${row}"
+        row += 1
+
+        row = note(ws, row, 1, "Defense (armor) - one shared Material for the whole outfit, pick \"None\" "
+                                "on any slot to leave it bare.", span=6)
+        row += 1
+        ws.cell(row=row, column=1, value="Armor material (whole outfit)")
+        input_cell(ws, row, 2, MATERIAL_NAMES_FOR_ARMOR[0])
+        c["armor_material"] = f"$B${row}"
+        dv = DataValidation(type="list", formula1=f'"{",".join(MATERIAL_NAMES_FOR_ARMOR)}"')
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+        ai = armor_info
+        slot_value_cells = []
+        mind_value_cells = []
+        for zone, layer, weight in ARMOR_SLOTS:
+            piece_names = [p[0] for p in ARMOR_PIECES if p[1] == layer and not p[4]]
+            ws.cell(row=row, column=1, value=f"{zone} piece (weight {weight})")
+            input_cell(ws, row, 2, "None")
+            piece_cell = f"$B${row}"
+            dv = DataValidation(type="list", formula1=f'"{",".join(["None"] + piece_names)}"')
+            ws.add_data_validation(dv)
+            dv.add(ws.cell(row=row, column=2))
+            row += 1
+            lookup = (f"IF({piece_cell}=\"None\",0,INDEX('Armor Reference'!$E${ai['data_start']}:$M${ai['data_end']},"
+                      f"MATCH({piece_cell},'Armor Reference'!$A${ai['data_start']}:$A${ai['data_end']},0),"
+                      f"MATCH({c['armor_material']},'Armor Reference'!$E${ai['header_row']}:$M${ai['header_row']},0)))")
+            ws.cell(row=row, column=1, value=f"  -> {zone} AR/MindDefense value (looked up)")
+            output_cell(ws, row, 2, f"={lookup}")
+            slot_value_cells.append((f"$B${row}", weight))
+            mind_value_cells.append((f"$B${row}", weight))
+            row += 1
+        ws.cell(row=row, column=1, value="Shield")
+        input_cell(ws, row, 2, "None")
+        shield_cell = f"$B${row}"
+        dv = DataValidation(type="list", formula1=f'"{",".join(["None"] + SHIELD_PIECES)}"')
+        ws.add_data_validation(dv)
+        dv.add(ws.cell(row=row, column=2))
+        row += 1
+        shield_lookup = (f"IF({shield_cell}=\"None\",0,INDEX('Armor Reference'!$E${ai['data_start']}:$M${ai['data_end']},"
+                         f"MATCH({shield_cell},'Armor Reference'!$A${ai['data_start']}:$A${ai['data_end']},0),"
+                         f"MATCH({c['armor_material']},'Armor Reference'!$E${ai['header_row']}:$M${ai['header_row']},0)))")
+        ws.cell(row=row, column=1, value="  -> Shield's own ArmorVsP value (looked up)")
+        output_cell(ws, row, 2, f"={shield_lookup}")
+        shield_value_cell = f"$B${row}"
+        row += 1
+        zone_sum = "+".join(f"{cell}*{weight}" for cell, weight in slot_value_cells)
+        ws.cell(row=row, column=1, value="Zone-weighted body AC/MindDefense (no shield, no innate base - see note above)")
+        output_cell(ws, row, 2, f"={zone_sum}")
+        c["body_ac"] = f"$B${row}"
+        row += 1
+        ws.cell(row=row, column=1, value=f"Shield contribution (shield.ArmorVsP * Parrying/1000 - real engine quirk, "
+                                          f"VsM reuses ArmorVsP too, not a typo)")
+        output_cell(ws, row, 2, f"={shield_value_cell}*{c['Parrying']}/1000")
+        c["shield_contrib"] = f"$B${row}"
+        row += 1
+        ws.cell(row=row, column=1, value="Total ArmorClass (zone-weighted body + shield)")
+        output_cell(ws, row, 2, f"={c['body_ac']}+{c['shield_contrib']}")
+        c["total_armor"] = f"$B${row}"
+        row += 1
+        ws.cell(row=row, column=1, value="Total MindDefense (zone-weighted body only, shield excluded per engine)")
+        output_cell(ws, row, 2, f"={c['body_ac']}")
+        c["total_minddef"] = f"$B${row}"
+        row += 1
+
+        row = h2(ws, row, 1, "Resist profile (all 15, 0-1 each, default 0 matching live content today)", span=4)
+        for name, _, _ in RESIST_TYPES:
+            ws.cell(row=row, column=1, value=name)
+            input_cell(ws, row, 2, 0)
+            c[name] = f"$B${row}"
+            row += 1
+        row += 1
+        return c
+
+    attacker = combatant_block("ATTACKER")
+    defender = combatant_block("DEFENDER")
+
+    row = h2(ws, row, 1, "Results", span=2)
+    wi = weapons_info
+
+    pipeline = (f'IF({attacker["type"]}="Monster","Monster",'
+                f'IF(OR({attacker["profession"]}="Warrior",{attacker["profession"]}="Thief"),"Melee",'
+                f'IF({attacker["profession"]}="Ranger","Ranged",'
+                f'IF({attacker["profession"]}="Mystic","MindPower","Spell"))))')
+    ws.cell(row=row, column=1, value="Attacker's pipeline (derived)")
+    output_cell(ws, row, 2, f"={pipeline}")
+    pipeline_cell = f"$B${row}"
+    row += 1
+
+    attacker_is_player = f'IF({attacker["type"]}="Player",1,0)'
+    defender_is_player = f'IF({defender["type"]}="Player",1,0)'
+
+    # --- Weapon-based pipeline (Melee/Ranged/Monster share this shape) ---
+    weapon_lookup = (f"INDEX('Weapons Reference'!$F${wi['data_start']}:$L${wi['data_end']},"
+                     f"MATCH({attacker['weapon']},'Weapons Reference'!$A${wi['data_start']}:$A${wi['data_end']},0),"
+                     f"MATCH({attacker['weapon_material']},'Weapons Reference'!$F${wi['header_row']}:$L${wi['header_row']},0))")
+    ws.cell(row=row, column=1, value="Melee: weapon base value (looked up, durability-scaled)")
+    output_cell(ws, row, 2, f"=({weapon_lookup}/2)+({weapon_lookup}/2)*({attacker['durability']}/100)")
+    melee_base_row = f"$B${row}"
+    row += 1
+    ranged_base = (f'IF({attacker["ranged_weapon"]}="Bow",C_bowDamage,'
+                   f'IF({attacker["ranged_weapon"]}="LightCrossbow",C_lightCrossbowDamage,C_heavyCrossbowDamage))')
+    ammo_tier = (f'MATCH({attacker["weapon_material"]},'
+                 f'{{"Copper";"Iron";"Verite";"Valorite";"Obsidian";"Adamantinum";"Mithril"}},0)-1')
+    ws.cell(row=row, column=1, value="Ranged: base damage * ammo tier bonus")
+    output_cell(ws, row, 2, f"=({ranged_base})*(1+({ammo_tier})*C_arrowDamageBonusPerTier)")
+    ranged_base_row = f"$B${row}"
+    row += 1
+    skill_sum = (f"(({attacker['Tactics']}/1000*C_Tactics_EffectMax)+({attacker['Anatomy']}/1000*C_Anatomy_EffectMax)"
+                 f"+({attacker['ArmsLore']}/1000*C_ArmsLore_EffectMax)+({attacker['Str']}*C_attackStrModifier))/1000")
+    ws.cell(row=row, column=1, value="Skill sum (Tactics+Anatomy+ArmsLore+Str)")
+    output_cell(ws, row, 2, f"={skill_sum}")
+    skill_sum_row = f"$B${row}"
+    row += 1
+    weapon_offense = (f'IF({pipeline_cell}="Melee",{melee_base_row}*{skill_sum_row},'
+                      f'IF({pipeline_cell}="Ranged",{ranged_base_row}*{skill_sum_row},{attacker["monster_weapon_attack"]}))')
+    ws.cell(row=row, column=1, value="Weapon-based offense value (Melee/Ranged/Monster, whichever applies)")
+    output_cell(ws, row, 2, f"={weapon_offense}")
+    offense_row = f"$B${row}"
+    row += 1
+    speed = (f'IF({pipeline_cell}="Ranged",'
+             f'IF({attacker["ranged_weapon"]}="Bow",C_bowSpeed,IF({attacker["ranged_weapon"]}="LightCrossbow",C_lightCrossbowSpeed,C_heavyCrossbowSpeed)),100)')
+    ws.cell(row=row, column=1, value="Delay (Melee/Ranged: sqrt(Dex)-based; Monster: flat catalog value)")
+    output_cell(ws, row, 2, f'=IF({pipeline_cell}="Monster",{attacker["monster_delay"]},'
+                            f'1048.575/(SQRT({attacker["Dex"]})*({speed})*C_weaponSpeedGlobal))')
+    delay_row = f"$B${row}"
+    row += 1
+
+    # --- MindPower pipeline (Mystic) ---
+    mp_sum = (f"(({attacker['EvalInt']}/1000*C_EvalInt_EffectMax)+({attacker['SpiritSpeak']}/1000*C_SpiritSpeak_EffectMax)"
+              f"+({attacker['Int']}*C_mindPowerIntModifier))/1000")
+    ws.cell(row=row, column=1, value="MindPower sum / value (weapon always falls back to bare-hands default)")
+    output_cell(ws, row, 2, f"=C_bareHandsMindPowerVsP*({mp_sum})")
+    mindpower_row = f"$B${row}"
+    row += 1
+    ws.cell(row=row, column=1, value="MindPower delay (mana-driven)")
+    output_cell(ws, row, 2, f"=1048.575/(SQRT(MAX({attacker['Mana (current)']},1)/2)*100*C_mysticWeaponSpeedModifier)")
+    mp_delay_row = f"$B${row}"
+    row += 1
+
+    # --- Spell pipeline (Mage) ---
+    spell_table_ref = ("'Mage'!$A$32:$A$42", "'Mage'!$C$32:$C$42", "'Mage'!$D$32:$D$42", "'Mage'!$F$32:$F$42", "'Mage'!$B$32:$B$42")
+    spell_match = f"MATCH({attacker['spell']},{spell_table_ref[0]},0)"
+    ws.cell(row=row, column=1, value="Spell cast time / EFFECT min / EFFECT max / DamageType (looked up from Mage tab)")
+    output_cell(ws, row, 2, f"=INDEX({spell_table_ref[3]},{spell_match})")
+    output_cell(ws, row, 3, f"=INDEX({spell_table_ref[1]},{spell_match})")
+    output_cell(ws, row, 4, f"=INDEX({spell_table_ref[2]},{spell_match})")
+    output_cell(ws, row, 5, f"=INDEX({spell_table_ref[4]},{spell_match})")
+    spell_casttime, spell_effmin, spell_effmax, spell_dtype = f"$B${row}", f"$C${row}", f"$D${row}", f"$E${row}"
+    row += 1
+    spell_power0 = f"({mindpower_row}-{defender['total_minddef']})*10"
+    ws.cell(row=row, column=1, value="Spell power (MindPower-based, then Standcast then Magic Charge multipliers)")
+    output_cell(ws, row, 2, f"=ROUND(ROUND({spell_power0}*(1+{attacker['standcast']}),0)*(1+{attacker['magiccharge']}),0)")
+    spell_power_row = f"$B${row}"
+    row += 1
+    ws.cell(row=row, column=1, value="Raw spell damage (EFFECT curve, not clamped past max)")
+    output_cell(ws, row, 2, f"={spell_effmin}+({spell_effmax}-{spell_effmin})*({spell_power_row}/1000)")
+    spell_damage_row = f"$B${row}"
+    row += 1
+
+    row += 1
+    row = h2(ws, row, 1, "Final result", span=2)
+    ws.cell(row=row, column=1, value="Attack value (pre-AC) - weapon-based pipelines only")
+    attack_val = (f'C_weapAttack*{offense_row}*IF({defender_is_player},1,C_weapAttackVsM)'
+                  f'*IF({attacker_is_player},IF(AND({attacker_is_player}=1,{defender_is_player}=1),C_weapAttackPvP,1),C_weapAttackM)')
+    output_cell(ws, row, 2, f"={attack_val}")
+    attack_val_row = f"$B${row}"
+    row += 1
+    ws.cell(row=row, column=1, value="Defender's ArmorClass (own gear if Player, flat catalog avg if Monster)")
+    output_cell(ws, row, 2, f'=IF({defender["type"]}="Player",{defender["total_armor"]},{defender["monster_armor"]})')
+    def_armor_row = f"$B${row}"
+    row += 1
+    armor_mult = f'IF({defender_is_player},C_armorClassP,C_armorClassM)'
+    ws.cell(row=row, column=1, value="Armor Class effective")
+    output_cell(ws, row, 2, f"={def_armor_row}*({armor_mult})")
+    ac_eff_row = f"$B${row}"
+    row += 1
+    damage_mod = (f'IF({defender_is_player},IF({attacker_is_player},C_swingDamagePvP,'
+                  f'AVERAGE(C_swingDamageRandMvPMin,C_swingDamageRandMvPMax)),C_swingDamageM)')
+    ws.cell(row=row, column=1, value="damageMod (MvP shown at its AVERAGE - see profession tabs for Min/Max range)")
+    output_cell(ws, row, 2, f"={damage_mod}")
+    dmgmod_row = f"$B${row}"
+    row += 1
+    ws.cell(row=row, column=1, value="Damage after AC (weapon-based pipelines)")
+    output_cell(ws, row, 2, f"=MAX(0,(MAX(0,{attack_val_row})-MAX(0,{ac_eff_row}))*MAX(0,{dmgmod_row}))")
+    after_ac_row = f"$B${row}"
+    row += 1
+    ws.cell(row=row, column=1, value="Damage after MindDefense (Mystic pipeline)")
+    output_cell(ws, row, 2, f"=MAX(0,({mindpower_row}-{defender['total_minddef']})*{dmgmod_row})")
+    after_md_row = f"$B${row}"
+    row += 1
+    pre_resist = (f'IF({pipeline_cell}="Spell",{spell_damage_row},'
+                  f'IF({pipeline_cell}="MindPower",{after_md_row},{after_ac_row}))')
+    ws.cell(row=row, column=1, value="Pre-resist damage (whichever pipeline applies)")
+    output_cell(ws, row, 2, f"={pre_resist}")
+    pre_resist_row = f"$B${row}"
+    row += 1
+    # Resist type: Melee uses Physical+weapon's narrow (archetype lookup); Ranged uses Physical+Archery;
+    # MindPower uses Magic+Mystical; Spell uses Magic+its own narrow (from DamageType column); Monster
+    # attackers have no tracked weapon sub-type in the catalog, so only the broad ResistPhysical applies
+    # (narrow term omitted rather than guessing a sub-type) - flagged, not a silent assumption.
+    narrow_melee = (f"INDEX({{\"Slashing\";\"Stabbing\";\"Blunt\"}},"
+                    f"MATCH(INDEX('Weapons Reference'!$B${wi['data_start']}:$B${wi['data_end']},"
+                    f"MATCH({attacker['weapon']},'Weapons Reference'!$A${wi['data_start']}:$A${wi['data_end']},0)),"
+                    f"{{\"Swords\";\"Fencing\";\"Macing\"}},0))")
+    resist_pick = (f'IF({pipeline_cell}="Spell",'
+                   f'(1-{defender["ResistMagic"]})-IF(ISNUMBER(SEARCH("Fire",{spell_dtype})),{defender["ResistFire"]},'
+                   f'IF(ISNUMBER(SEARCH("Electric",{spell_dtype})),{defender["ResistElectric"]},'
+                   f'IF(ISNUMBER(SEARCH("Cold",{spell_dtype})),{defender["ResistCold"]},'
+                   f'IF(ISNUMBER(SEARCH("Poison",{spell_dtype})),{defender["ResistPoison"]},0)))),'
+                   f'IF({pipeline_cell}="MindPower",(1-{defender["ResistMagic"]})-{defender["ResistMystical"]},'
+                   f'IF({pipeline_cell}="Ranged",(1-{defender["ResistPhysical"]})-{defender["ResistArchery"]},'
+                   f'IF({pipeline_cell}="Monster",(1-{defender["ResistPhysical"]}),'
+                   f'(1-{defender["ResistPhysical"]})-CHOOSE(MATCH({narrow_melee},{{"Slashing";"Stabbing";"Blunt"}},0),'
+                   f'{defender["ResistSlashing"]},{defender["ResistStabbing"]},{defender["ResistBlunt"]})))))')
+    ws.cell(row=row, column=1, value="Resist modifier (type-matched to the attacker's pipeline/weapon/spell)")
+    output_cell(ws, row, 2, f"={resist_pick}")
+    resist_row = f"$B${row}"
+    row += 1
+    ws.cell(row=row, column=1, value="Final damage per hit")
+    output_cell(ws, row, 2, f"=MAX(0,{pre_resist_row}*{resist_row})")
+    final_row = f"$B${row}"
+    row += 1
+    final_delay = f'IF({pipeline_cell}="Spell",{spell_casttime},IF({pipeline_cell}="MindPower",{mp_delay_row},{delay_row}))'
+    ws.cell(row=row, column=1, value="Delay between hits/casts (seconds)")
+    output_cell(ws, row, 2, f"={final_delay}")
+    final_delay_row = f"$B${row}"
+    row += 1
+    ws.cell(row=row, column=1, value="DPS")
+    output_cell(ws, row, 2, f"={final_row}/{final_delay_row}")
+    dps_row = f"$B${row}"
+    row += 1
+    target_hp = f'IF({defender["type"]}="Player",{defender["HP"]},{defender["monster_hp"]})'
+    ws.cell(row=row, column=1, value="Defender HP")
+    output_cell(ws, row, 2, f"={target_hp}")
+    hp_row = f"$B${row}"
+    row += 1
+    ws.cell(row=row, column=1, value="Time to kill (seconds)")
+    output_cell(ws, row, 2, f'=IF({dps_row}=0,"never",{hp_row}/{dps_row})')
+
+    autosize(ws, {1: 54, 2: 16, 3: 16, 4: 16, 5: 16})
+
+
 def build_mage(wb):
     ws = wb.create_sheet("Mage")
     row = _profession_header(ws, "Mage")
@@ -1964,7 +2343,7 @@ def main():
     build_materials(wb)
     build_core_formulas(wb)
     weapons_info = build_weapons_ref(wb)
-    build_armor_ref(wb)
+    armor_info = build_armor_ref(wb)
     monsters_info = build_monsters_ref(wb)
     build_melee_profession(wb, "Warrior", weapons_info, monsters_info)
     build_ranger(wb, weapons_info, monsters_info)
@@ -1976,6 +2355,7 @@ def main():
                                         "This calculator covers Thief's allowed melee weapons (OneHandSpike, "
                                         "TwoHandSpike, OneHandSword) only.")
     add_thief_ability_table(wb)
+    build_fight_simulator(wb, weapons_info, armor_info, monsters_info)
 
     import os
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
