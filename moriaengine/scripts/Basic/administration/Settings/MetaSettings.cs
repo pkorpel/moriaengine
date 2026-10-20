@@ -145,6 +145,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return LumberjackingSettings.instance;
 			}
 		}
+
+		[InfoField("Fishing")]
+		public FishingSettings FishingSettings {
+			get {
+				return FishingSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {
