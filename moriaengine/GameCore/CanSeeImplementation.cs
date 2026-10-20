@@ -255,8 +255,17 @@ namespace SteamEngine {
 				if (Point2D.GetSimpleDistance(this, targetTop) > this.VisionRange) {
 					return DenyResultMessages.Deny_ThatIsTooFarAway;
 				}
-				if (map.CanSeeLosFromTo(this, targetTop)) {
-					//if it's really an IPoint3D, we assume it exists on all mapplanes. 
+				// #488 - was inverted (denied when CanSeeLosFromTo returned true/clear, allowed
+				// when it returned false/blocked) - backwards from the Thing-branch above, which
+				// correctly negates the same call. Confirmed via a non-GM ground-targeted spell
+				// cast at an adjacent, clearly unobstructed tile: CanInteractWithMessage returned
+				// false purely because of this inversion (GMs never hit this path at all - see
+				// CanInteractWith's own `!this.IsGM` guard - which is why this went unnoticed:
+				// nothing non-GM exercised a raw-point LOS check before this phase's ground-
+				// targeted summon spell tests). Affects every non-GM ground-targeted interaction
+				// in the engine, not just spells - a real, previously-silent gameplay bug.
+				if (!map.CanSeeLosFromTo(this, targetTop)) {
+					//if it's really an IPoint3D, we assume it exists on all mapplanes.
 					//TODO? Could be wrong with statics on multiple facets, but we'll get there when we get there
 					return DenyResultMessages.Deny_ThatIsOutOfLOS;
 				}

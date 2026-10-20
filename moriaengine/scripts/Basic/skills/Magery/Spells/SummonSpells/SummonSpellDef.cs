@@ -57,6 +57,8 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 
 			this.summonChar = this.InitTypedField("summonChar", null, typeof(NPCDef));
+			this.summonChars = this.InitTypedField("summonChars", new NPCDef[0], typeof(NPCDef[]));
+			this.hostile = this.InitTypedField("hostile", false, typeof(bool));
 		}
 
 		/// <summary>The real monster content to summon - e.g. c_vortex_mage/c_elem_fire_m (the
@@ -72,6 +74,46 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private FieldValue summonChars;
+
+		/// <summary>#483/#488 - Summon Creature's "random creature" pool (the mage-tier animal
+		/// summons in summons.def - c_rat_giant_mage/c_bear_*_mage/c_scorpion_giant_mage/
+		/// c_horse_brown_mage - distinct from the Circle VIII elemental/daemon summons, which are
+		/// each their own dedicated single-SummonChar spell). Comma-separated list, same `Def[]`
+		/// syntax ProfessionDef.AllowedSpells already establishes for this engine's .def parser.
+		/// Takes priority over the singular SummonChar when non-empty; a spell with only one
+		/// fixed creature (Blade Spirits) just uses SummonChar instead and leaves this empty.</summary>
+		public NPCDef[] SummonChars {
+			get {
+				return (NPCDef[]) this.summonChars.CurrentValue;
+			}
+			set {
+				this.summonChars.CurrentValue = value;
+			}
+		}
+
+		private FieldValue hostile;
+
+		/// <summary>#483/#488 - distinguishes Blade Spirits-shaped summons (false default's
+		/// opposite) from Summon Creature-shaped ones. False (default, what Summon Creature
+		/// uses): a normal controlled pet - ControlMaster set, same Taming-proven Following AI
+		/// Phase 1 already relied on, won't fight until its owner gives a "kill"/"guard" order
+		/// (NPC.ShouldAggroOn's own `this.ControlMaster != null` exclusion - tamed pets never
+		/// pick fights on their own, by design, same as any real tamed animal in this engine).
+		/// True (Blade Spirits): no ControlMaster at all, and AggroMode.Hostile is force-set on
+		/// the instance - the existing autonomous-aggro path (NPCAiTimer.FindTarget ->
+		/// ShouldAggroOn) then attacks any player it notices with no leash and no owner able to
+		/// call it off, matching the "popular kill-all" warning in this spell's own old pre-port
+		/// script comment.</summary>
+		public bool Hostile {
+			get {
+				return (bool) this.hostile.CurrentValue;
+			}
+			set {
+				this.hostile.CurrentValue = value;
+			}
+		}
+
 		/// <summary>True for any character this mechanism created - checked (once #486 lands) so
 		/// Dispel knows this NPC is removable, and usable generally to distinguish a real
 		/// player/monster from a conjured one.</summary>
@@ -82,7 +124,8 @@ namespace SteamEngine.CompiledScripts {
 		protected override void On_EffectGround(IPoint3D target, SpellEffectArgs spellEffectArgs) {
 			base.On_EffectGround(target, spellEffectArgs);
 
-			NPCDef npcDef = this.SummonChar;
+			NPCDef[] pool = this.SummonChars;
+			NPCDef npcDef = (pool.Length > 0) ? pool[new Random().Next(pool.Length)] : this.SummonChar;
 			if (npcDef == null) {
 				return;
 			}
@@ -91,8 +134,12 @@ namespace SteamEngine.CompiledScripts {
 			Point4D summonPoint = new Point4D(target.X, target.Y, target.Z, caster.M);
 			NPC summon = (NPC) npcDef.Create(summonPoint);
 
-			summon.ControlMaster = caster;
-			summon.Flag_WarMode = false;
+			if (this.Hostile) {
+				summon.AggroMode = AggroMode.Hostile; //no ControlMaster - autonomous aggro, see Hostile's own doc comment
+			} else {
+				summon.ControlMaster = caster;
+				summon.Flag_WarMode = false;
+			}
 			summon.SetTag(isSummonedCreatureTK, true);
 
 			int spellPower = spellEffectArgs.SpellPower;

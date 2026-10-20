@@ -17,6 +17,17 @@ namespace SteamEngine.Tests.Protocol {
 	public class MagerySpellTests {
 		private const string Account = "magerytest";
 		private const string AccountB = "magerytest2";
+		// #488 - Account was already at its own hard cap (AbstractAccount.maxCharactersPerGameAccount
+		// = 5: AutoAccountEnabler/MagePipelineChecker/MageSummonChecker/MageDispelBuffChecker/
+		// MageDispelSummonChecker) and AccountB at 4/5 before this phase. A 6th character-creation
+		// attempt on an already-full account makes AbstractCharacter.MakeBePlayer throw
+		// SEException("account is already full") server-side, unhandled - which doesn't just fail
+		// that one test, it wedges the whole shared single-threaded server for every OTHER test
+		// still to run in this fixture (confirmed: all 3 new Phase 4 tests passed individually in
+		// isolation, but crashed everything after them - including an untouched pre-existing
+		// Phase 1 test - when run together in the shared collection). New tests needing a fresh
+		// character go on this 3rd account instead of overloading Account/AccountB further.
+		private const string AccountC = "magerytest3";
 		private const string Password = "magerytest";
 
 		private readonly GameServerPairFixture fixture;
@@ -256,6 +267,115 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#488 - Mana Drain reduces the target's mana and does NOT transfer any of it
+		/// to the caster (the distinguishing feature vs. Circle VII's not-yet-built Mana
+		/// Vampire, which does transfer). The caster's own mana should only ever go down (by the
+		/// spell's own MANAUSE cast cost), never up.</summary>
+		[Fact]
+		public void ManaDrainReducesTargetManaWithoutTransferringToCaster() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "MageManaDrainChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastManaDrainAtDummy");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_MANADRAIN_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+				string startLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_MANADRAIN_TEST: STARTED");
+				uint dummyUid = ExtractMarkedUid(startLine, "dummyUid=");
+				int startCasterMana = ExtractInt(startLine, "startCasterMana");
+				int startTargetMana = ExtractInt(startLine, "startTargetMana");
+
+				Thread.Sleep(4500); // s_mana_drain's CASTTIME is 2.0s; generous margin for the stroke delay too
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportManaDrainResult " + dummyUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_MANADRAIN_TEST: RESULT", mark, TimeSpan.FromSeconds(10)));
+				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_MANADRAIN_TEST: RESULT");
+				int casterMana = ExtractInt(resultLine, "casterMana");
+				int targetMana = ExtractInt(resultLine, "targetMana");
+
+				Assert.True(targetMana < startTargetMana,
+					"Expected s_mana_drain to reduce the target's mana. startTargetMana=" + startTargetMana + " line: " + resultLine);
+				Assert.True(casterMana <= startCasterMana,
+					"Expected casting Mana Drain to never INCREASE the caster's own mana (no transfer, unlike Mana Vampire). " +
+					"startCasterMana=" + startCasterMana + " line: " + resultLine);
+			}
+		}
+
+		/// <summary>#488 - Blade Spirits summons a creature with NO ControlMaster (unlike Summon
+		/// Creature below) - the "popular kill-all" the old pre-port script comment warned
+		/// about, not a leashed pet.</summary>
+		[Fact]
+		public void BladeSpiritsSummonsAnUncontrolledCreature() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "MageBladeSpiritsChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				// AccountC is non-elevated (SimpleCommandParser) - unlike Account's GM/full-LScript
+				// parser, quoting a bareword here is wrong, not just unnecessary: SimpleCommandParser
+				// doesn't strip quote characters, so a quoted defname fails SpellDef.GetByDefname,
+				// leaving Param1 null and crashing MagerySkillDef.On_Select's SpellBook.HasSpell with
+				// a NullReferenceException (confirmed directly - silent, logged server-side, the cast
+				// just never starts). See TestCastSpellAtDummy for the opposite (GM/Account) case.
+				//
+				// distance=15 (beyond NPCAiTimer.AggroRange=8) is deliberate, not arbitrary - a
+				// Hostile summon with nobody else around WILL autonomously engage the only nearby
+				// character it can find (its own caster, absent any other target), and an
+				// actively-engaged NPC hanging the whole server on later cleanup was confirmed
+				// directly (see TestNeutralizeCharacterByUid's own doc comment) - keeping it out
+				// of aggro range entirely avoids that whole class of problem instead of trying to
+				// recover from it after the fact.
+				client.SendSpeech(".TestCastGroundTargetedSpellNearSelf s_blade_spirits 15");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+
+				Thread.Sleep(4000); // CASTTIME is 2.5s; generous margin for the stroke + effect dispatch
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportNearbySummon");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+				Assert.True(foundLine.Contains("FOUND"), "Expected Blade Spirits to summon a creature. line: " + foundLine);
+				Assert.Contains("controlMasterUid=null", foundLine);
+				Assert.Contains("warMode=False", foundLine); // out of aggro range - confirms it never engaged
+
+				uint summonUid = ExtractMarkedUid(foundLine, "uid=");
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestNeutralizeCharacterByUid " + summonUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_NEUTRALIZE_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string cleanupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_NEUTRALIZE_TEST:");
+				Assert.Contains("neutralized=True", cleanupLine);
+			}
+		}
+
+		/// <summary>#488 - Summon Creature summons a real controlled pet (ControlMaster set to
+		/// the caster) from the random mage-tier animal pool, unlike Blade Spirits above.</summary>
+		[Fact]
+		public void SummonCreatureSummonsAControlledPet() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountC, "MageSummonCreatureChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+
+				uint selfUid = SelfUidOf(client);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCastGroundTargetedSpellNearSelf s_summon_creature"); // non-elevated AccountC, see BladeSpirits test's own comment above
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+
+				Thread.Sleep(4000);
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportNearbySummon");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+				Assert.True(foundLine.Contains("FOUND"), "Expected Summon Creature to summon a pet. line: " + foundLine);
+				Assert.Contains("controlMasterUid=" + selfUid, foundLine);
+			}
+		}
+
 		private int ReportDispellablePluginCount(TestGameClient client) {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".TestReportDispellablePluginCount");
@@ -319,8 +439,9 @@ namespace SteamEngine.Tests.Protocol {
 
 		// Guards against the established "EnsureAutoAccountCreationEnabled creates a brand new
 		// character every call" trap (AttrFlagTests.cs/ProfessionTests.cs hit this too) - each
-		// call otherwise burns one of Account's 5 character slots, and this file has 2 Facts
-		// that call it. Safe under this collection's DisableParallelization=true.
+		// call otherwise burns one of Account's 5 character slots, and this file has 7 Facts
+		// that call it (count grows - update when adding more). Safe under this collection's
+		// DisableParallelization=true.
 		private static bool autoAccountCreationEnabled;
 
 		private void EnsureAutoAccountCreationEnabled() {
