@@ -38,6 +38,16 @@ namespace SteamEngine.CompiledScripts {
 			this.realPoints = 0;
 			this.cont = cont;
 			this.def = def;
+			// #483/#491 - found while building Standcast's "blocked while Energy Shield active"
+			// test: TimeSpan's own default (Zero) means a brand-new Ability looks like it was
+			// "last used" at server-uptime 0 - On_DenyActivate's cooldown check
+			// (Globals.TimeAsSpan - LastUsage <= CooldownAsSpan) then wrongly denies ANY non-GM
+			// character's first-ever activation of a Cooldown-bearing ability for as long as the
+			// server has been up less than that ability's own cooldown (masked everywhere else
+			// this session only because every other test happened to run on a GM-elevated
+			// account, where IsGM bypasses this check entirely). MinValue means "never used",
+			// never within cooldown range of "now".
+			this.lastUsage = TimeSpan.MinValue;
 		}
 
 		//copying constructor
@@ -46,6 +56,7 @@ namespace SteamEngine.CompiledScripts {
 			this.modification = copyFrom.modification;
 			this.def = copyFrom.def;
 			this.cont = cont;
+			this.lastUsage = copyFrom.lastUsage;
 		}
 
 		/// <summary>Character's ability points. This is the real value, i.e. unmodified by temporary effect, equipped magic items, etc.</summary>

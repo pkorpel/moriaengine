@@ -625,6 +625,8 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				spellPower = caster.GetSkill(SkillName.Magery);
 			}
+			spellPower = StandcastHelper.ApplyMultiplier(caster, spellPower);
+			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower);
 
 			if (sea == null) {
 				sea = SpellEffectArgs.Acquire(caster, mainTarget, currentTarget, this, spellPower, effectFlag);
@@ -643,6 +645,8 @@ namespace SteamEngine.CompiledScripts {
 
 		private void GetSpellPowerAgainstNonChar(Character caster, IPoint3D target, IPoint3D currentTarget, EffectFlag effectFlag, ref SpellEffectArgs sea) {
 			int spellPower = caster.GetSkill(SkillName.Magery);
+			spellPower = StandcastHelper.ApplyMultiplier(caster, spellPower);
+			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower);
 			if (sea == null) {
 				sea = SpellEffectArgs.Acquire(caster, target, currentTarget, this, spellPower, effectFlag);
 			} else {
