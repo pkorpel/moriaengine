@@ -559,6 +559,72 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#490 - Circle VIII's 6 summon spells, each wired to Phase 1's generic
+		/// SummonSpellDef against its own real mage-tier chardef (summons.def) - confirmed
+		/// correct NPCDef via the reported defname, and confirmed a normal controlled pet
+		/// (ControlMaster set, unlike Blade Spirits' Hostile=true shape). All 6 share one
+		/// character/connection (AccountD's 3rd and last available slot - see this file's
+		/// account-budget comments elsewhere; Account/AccountB/AccountC are all already at their
+		/// 5-character cap) and TestCleanupNearbySummons deletes each summon before the next
+		/// cast so TestReportNearbySummon's "first match in range" scan can't see a stale one
+		/// from an earlier iteration - safe because these are idle, non-hostile, never-engaged
+		/// pets (the server-hang hazard is specific to actively-engaged NPCs, confirmed
+		/// elsewhere in this file, and doesn't apply to a pet with no ControlMaster order and no
+		/// autonomous aggro).</summary>
+		[Fact]
+		public void AllSixCircleEightSummonsAppearAsControlledPetsWithCorrectChardef() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountD, "MageCircleEightSummonsChecker")) {
+				client.SendSpeech(".TestGrantFullSpellbook");
+				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
+				uint selfUid = SelfUidOf(client);
+
+				(string defname, string expectedChardef)[] summons = new[] {
+					("s_energy_vortex", "c_vortex_mage"),
+					("s_summon_elem_air", "c_elem_air_m"),
+					("s_summon_elem_earth", "c_elem_earth_m"),
+					("s_summon_elem_fire", "c_elem_fire_m"),
+					("s_summon_elem_water", "c_elem_water_m"),
+					("s_summon_daemon", "c_daemon_mage1"),
+				};
+
+				for (int i = 0; i < summons.Length; i++) {
+					(string defname, string expectedChardef) = summons[i];
+					int mark = this.fixture.GameOutputSnapshot().Length;
+					// AccountD is non-elevated (SimpleCommandParser), same as AccountC's own
+					// summon tests above - unquoted defname is correct here, not optional.
+					// distance = 2 + i: a distinct target tile per iteration (not the same spot
+					// every time) - avoids any possible leftover-tile-state ambiguity from the
+					// previous iteration's just-deleted summon.
+					client.SendSpeech(".TestCastGroundTargetedSpellNearSelf " + defname + " " + (2 + i));
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+
+					Thread.Sleep(9000); // CASTTIME is 4.0s for every Circle VIII summon; wide margin - confirmed via two
+					// different intermittent failures (at two different iteration indices across two runs,
+					// never the same one twice) under this sandbox's heavy background dotnet-process load that
+					// 6s wasn't consistently enough, same class of full-boot-tier timing contention already
+					// documented throughout this repo's CLAUDE.md - not a logic bug.
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestReportNearbySummon");
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
+					string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+					Assert.True(foundLine.Contains("FOUND"), "Expected " + defname + " to summon a creature. line: " + foundLine);
+					Assert.Contains("controlMasterUid=" + selfUid, foundLine);
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestReportNearbySummonMatchesDefname " + expectedChardef);
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_DEFNAME_TEST:", mark, TimeSpan.FromSeconds(10)));
+					string defnameLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_DEFNAME_TEST:");
+					Assert.Contains("matches=True", defnameLine);
+
+					mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestCleanupNearbySummons");
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_CLEANUP_TEST: DONE", mark, TimeSpan.FromSeconds(10)));
+				}
+			}
+		}
+
 		private int ReportDispellablePluginCount(TestGameClient client) {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".TestReportDispellablePluginCount");

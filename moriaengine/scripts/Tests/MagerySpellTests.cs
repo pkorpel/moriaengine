@@ -394,6 +394,43 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGERY_SUMMON_TEST: NONE");
 		}
 
+		/// <summary>#490 - reports whether the nearby summoned creature's actual NPCDef matches
+		/// the one looked up by `expectedDefname`, by object reference rather than by comparing
+		/// `.Defname` strings - confirmed directly that AbstractScript.Defname reports the
+		/// object's own PRIMARY name (the auto-generated "c_&lt;hex&gt;" derived from its `.def`
+		/// header, e.g. "c_0x23d" for Energy Vortex's `[NPCDef 0x23d]` block), NOT whichever
+		/// `DEFNAME=` alias was used to look it up - a later `DEFNAME=` property line registers
+		/// an additional lookup alias in the global by-defname table without renaming the
+		/// object's own primary identity string. Comparing by resolved reference sidesteps that
+		/// aliasing entirely and is the actually-correct check anyway (what matters is "the right
+		/// NPCDef got used", not which of its names strings happens to match).</summary>
+		[SteamFunction]
+		public static void TestReportNearbySummonMatchesDefname(Character self, ScriptArgs sa) {
+			string expectedDefname = SplitArgs(sa)[0];
+			NPCDef expectedDef = (NPCDef) ThingDef.GetByDefname(expectedDefname);
+			foreach (AbstractCharacter ac in self.GetMap().GetCharsInRange(self.X, self.Y, 20)) {
+				Character candidate = ac as Character;
+				if ((candidate != null) && SummonSpellDef.IsSummonedCreature(candidate)) {
+					Console.WriteLine("MAGERY_SUMMON_DEFNAME_TEST: matches=" + (candidate.Def == expectedDef));
+					return;
+				}
+			}
+			Console.WriteLine("MAGERY_SUMMON_DEFNAME_TEST: matches=False");
+		}
+
+		/// <summary>#490 - deletes every nearby non-player Character (VerificationTestUtils'
+		/// established, already-proven-safe cleanup helper) so a test iterating several
+		/// different controlled, non-hostile summons in sequence always sees exactly the summon
+		/// it just cast, not a leftover from a previous cast in the same test. Safe specifically
+		/// because these summons are idle/non-engaged (Flag_WarMode=false, no autonomous
+		/// aggro) - deleting an ACTIVELY-ENGAGED hostile NPC is the one case confirmed to hang
+		/// the server (see Phase 4's Blade Spirits test comment), which doesn't apply here.</summary>
+		[SteamFunction]
+		public static void TestCleanupNearbySummons(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			Console.WriteLine("MAGERY_SUMMON_CLEANUP_TEST: DONE");
+		}
+
 		/// <summary>#488 - casts any REAL (spellbook-slotted, id 1-64) ground-targeted spell at a
 		/// point `distance` tiles from self, via the spellbook TestGrantFullSpellbook already
 		/// granted - unlike TestCastSummonSpell's test-only s_test_summon (id 9000, deliberately

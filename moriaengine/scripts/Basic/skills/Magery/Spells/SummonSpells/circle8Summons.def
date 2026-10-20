@@ -1,0 +1,139 @@
+// #483/#490 - Circle VIII's 6 summon spells. All previously dead commented-out stub content
+// (unimplementedSpells.def, old pre-port SPELLFLAG_* syntax) - header numbers (58, 60-64) carried
+// over unchanged from that stub so history/numbering stays traceable. Target NPCDef content
+// already exists in summons.def (confirmed real, mage-tier variants - NOT the overpowered wild
+// monster chardefs that happen to share a similar name): c_vortex_mage, c_elem_air_m,
+// c_elem_earth_m, c_elem_fire_m, c_elem_water_m, c_daemon_mage1. Checked each chardef's own
+// NAME=/DEFNAME= pairing for the off-by-one alignment glitch flagged during #483's research -
+// none found, every NAME= matches its own DEFNAME= correctly (Vortex/c_vortex_mage, Elemental
+// Vzduchu["air" in Czech]/c_elem_air_m, Elemental Zeme["earth"]/c_elem_earth_m, Elemental
+// Ohne["fire"]/c_elem_fire_m, Elemental Vody["water"]/c_elem_water_m, Summon/c_daemon_mage1).
+//
+// All Hostile left at its false default (normal controlled pet, same as Phase 4's Summon
+// Creature) - these are classic leashed mage pets, not Blade Spirits-shaped autonomous hostiles.
+// SummonSpellDef.On_EffectGround only sets ControlMaster/Flag_WarMode/the summoned-creature tag/
+// the despawn timer - it never touches AI/brain/ability fields, so each chardef's own AI comes
+// through unmodified: Energy Vortex keeps its more aggressive brain_beserk + roundattack (a
+// pet/creature with a periodic AoE melee ability, NOT an AoE damage field despite the spell's
+// name), while the 4 elementals keep their plain/docile AI - no extra wiring needed to preserve
+// that distinction, it's already a property of the chardef itself.
+//
+// RUNES/CASTTIME/MANAUSE/Requirements/DURATION all carried over unchanged from the stub -
+// explicitly NOT confirmed live-Erebor values (same caveat as every other Circle VIII number),
+// GM-tunable via .settings like every other summon this session, kept as placeholders rather than
+// hand-guessed. RUNEITEM/SCROLLITEM point at real pre-existing converted content (itemb7.def/
+// scrolls.def) - confirmed present, not newly authored. SOUND left at 0, same reasoning as every
+// other summon spell this phase/session - none of the old snd_SPELL_* tokens resolve to anything
+// real (confirmed: no .def/.cs file defines any of them).
+//
+// Optional Erebor mechanic (staff-tier gating: teak for the elementals/vortex, mahogany for
+// Daemon) explicitly DEFERRED here, same treatment as every other optional per-weapon-tier gate
+// this session (overlaps the known #157/#393 weapon-staff-tier-data-quality gaps) - not built.
+
+[SummonSpellDef 58]
+DEFNAME=s_energy_vortex
+NAME=Energy Vortex
+SOUND=0
+RUNES=VCP
+CASTTIME=4.0
+RUNEITEM=i_rune_energy_vortex
+SCROLLITEM=i_scroll_energy_vortex
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=1*60.0,3*60.0
+MANAUSE=50
+Requirements=80.0 Magery
+summonChar=c_vortex_mage
+
+on=@effectGround
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 20)
+
+[SummonSpellDef 60]
+DEFNAME=s_summon_elem_air
+NAME=Air Elemental
+SOUND=0
+RUNES=KVXH
+CASTTIME=4.0
+RUNEITEM=i_rune_summon_elem_air
+SCROLLITEM=i_scroll_summon_elem_air
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=2*60.0,4*60.0
+MANAUSE=50
+Requirements=80.0 Magery
+summonChar=c_elem_air_m
+
+on=@effectGround
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 20)
+
+[SummonSpellDef 61]
+DEFNAME=s_summon_daemon
+NAME=Daemon
+SOUND=0
+RUNES=KVXC
+CASTTIME=4.0
+RUNEITEM=i_rune_summon_daemon
+SCROLLITEM=i_scroll_summon_daemon
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=2*60.0,4*60.0
+MANAUSE=50
+Requirements=80.0 Magery
+summonChar=c_daemon_mage1
+
+on=@effectGround
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 20)
+
+[SummonSpellDef 62]
+DEFNAME=s_summon_elem_earth
+NAME=Earth Elemental
+SOUND=0
+RUNES=KVXY
+CASTTIME=4.0
+RUNEITEM=i_rune_summon_elem_earth
+SCROLLITEM=i_scroll_summon_elem_earth
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=2*60.0,4*60.0
+MANAUSE=50
+Requirements=80.0 Magery
+summonChar=c_elem_earth_m
+
+on=@effectGround
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 20)
+
+[SummonSpellDef 63]
+DEFNAME=s_summon_elem_fire
+NAME=Fire Elemental
+SOUND=0
+RUNES=KVXF
+CASTTIME=4.0
+RUNEITEM=i_rune_summon_elem_fire
+SCROLLITEM=i_scroll_summon_elem_fire
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=2*60.0,4*60.0
+MANAUSE=50
+Requirements=80.0 Magery
+summonChar=c_elem_fire_m
+
+on=@effectGround
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 20)
+
+[SummonSpellDef 64]
+DEFNAME=s_summon_elem_water
+NAME=Water Elemental
+SOUND=0
+RUNES=KVXAF
+CASTTIME=4.0
+RUNEITEM=i_rune_summon_elem_water
+SCROLLITEM=i_scroll_summon_elem_water
+FLAGS=SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=2*60.0,4*60.0
+MANAUSE=50
+Requirements=80.0 Magery
+summonChar=c_elem_water_m
+
+on=@effectGround
+	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 20)
