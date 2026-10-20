@@ -1,6 +1,10 @@
 # moriaengine — working state
 
-## OPEN INVESTIGATION (2026-10-20, continued): #509 banker bank-access doesn't work in real play
+## DEFERRED (2026-10-20): #509 banker bank-access doesn't work in real play — user says leave for later
+
+**Explicitly deferred by the user (2026-10-20) - do not pick this back up proactively.** Wait for
+the user to bring it up again, ideally with their `[BANKDEBUG]` log report from re-testing. Detail
+below kept as-is for whenever that happens.
 
 **Read this first if resuming #509 work.** All three bank-access mechanisms shipped in #509/#510
 (say "bank", double-click banker, `.info`'s Bank button - see the batch summary below for what
