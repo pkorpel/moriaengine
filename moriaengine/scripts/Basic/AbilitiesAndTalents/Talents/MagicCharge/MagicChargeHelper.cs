@@ -1,0 +1,58 @@
+/*
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	Or visit http://www.gnu.org/copyleft/gpl.html
+*/
+
+namespace SteamEngine.CompiledScripts {
+
+	/// <summary>#483/#491 - reads (never consumes, charges decay on their own timer rather than
+	/// being spent per-cast) the caster's Magic Charge bonus for whichever school a given spell
+	/// belongs to: Fire school boosts spells whose DamageType has the Fire bit set, Energy school
+	/// boosts the Electric bit, Mind school boosts any spell flagged UseMindPower (Harm's own
+	/// casting already uses mind power, which is exactly why Harm is this session's mind-charge
+	/// trigger - not an arbitrary choice). A caster with no MagicChargePlugin (the overwhelming
+	/// majority - every pre-existing Phase 0-6 test included) is a guaranteed no-op, same
+	/// regression-safety shape as StandcastHelper.</summary>
+	internal static class MagicChargeHelper {
+		internal static int ApplyBonus(Character caster, SpellDef spell, int spellPower) {
+			MagicChargePlugin plugin = MagicChargePlugin.Get(caster);
+			if (plugin == null) {
+				return spellPower;
+			}
+
+			double perPoint = MagerySettings.instance.magicChargeBonusPerPoint;
+			double bonus = 0;
+
+			DamageSpellDef damageSpell = spell as DamageSpellDef;
+			if (damageSpell != null) {
+				DamageType dt = damageSpell.DamageType;
+				if ((dt & DamageType.Fire) == DamageType.Fire) {
+					bonus += plugin.GetCharge(MagicChargeSchool.Fire) * perPoint;
+				}
+				if ((dt & DamageType.Electric) == DamageType.Electric) {
+					bonus += plugin.GetCharge(MagicChargeSchool.Energy) * perPoint;
+				}
+			}
+			if ((spell.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower) {
+				bonus += plugin.GetCharge(MagicChargeSchool.Mind) * perPoint;
+			}
+
+			if (bonus <= 0) {
+				return spellPower;
+			}
+			return (int) System.Math.Round(spellPower * (1.0 + bonus));
+		}
+	}
+}
