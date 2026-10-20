@@ -99,25 +99,35 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		// #454 point 3 - run/stand archery as default weapon-type behavior (RangerSettings.
-		// bowMustStandStill/crossbowMustStandStill), confirmed real Erebor mechanic
-		// (combat_storepos/restorepos): a stand-still weapon locks the attacker to the spot
-		// they were standing in when the engagement began, snapping them back if they try to
-		// walk away. Bow is free to move by default (false).
-		//
-		// Real finding while building this: WeaponSkillTargetQueuePlugin.AddTarget's "re-add
-		// the target" restart (every successful swing, via FightCurrentTarget -> PhaseSelect
-		// -> On_Start -> self.AbortSkill()) re-enters On_Start/On_Stroke's Drawing phase on
-		// EVERY single swing, not just once at the start of combat - confirmed directly via a
-		// temporary diagnostic, see PR history. A naive "set once when entering Striking"
-		// anchor gets silently re-captured at wherever the attacker currently stands on every
-		// one of those restarts, making it useless beyond the current swing. Fixed by making
-		// the set idempotent (only set if not already present) and clearing it ONLY at the
-		// genuine "stop attacking" call sites below (target gone/LOS lost/out of range/no
-		// ammo) - NOT in the generic On_Abort, which fires on both a real stop and this
-		// per-swing restart artifact and can't tell them apart.
-		static TagKey standStillAnchorTK = TagKey.Acquire("_weaponStandStillAnchor_");
+		// #512 - separate tag/throttle from the "too far" one above so the two messages (which
+		// can both legitimately apply close together - e.g. moving away while already out of
+		// strike-stop range) don't suppress each other.
+		static TagKey standStillMessageTimeTK = TagKey.Acquire("_combatMessagesStandStillTime_");
+		const double standStillMessageThrottleSeconds = 3;
 
+		static void SendThrottledStandStillMessage(Character self, string message) {
+			if (!CombatSettings.instance.showCombatMessages) {
+				return;
+			}
+			object lastShown = self.GetTag(standStillMessageTimeTK);
+			TimeSpan now = Globals.TimeAsSpan;
+			if ((lastShown == null) || ((now - (TimeSpan) lastShown).TotalSeconds >= standStillMessageThrottleSeconds)) {
+				self.SetTag(standStillMessageTimeTK, now);
+				self.SysMessage(message);
+			}
+		}
+
+		// #454 point 3 / reworked per #512 - run/stand archery as default weapon-type behavior
+		// (RangerSettings.bowMustStandStill/crossbowMustStandStill), confirmed real Erebor
+		// mechanic. Originally ported as a hard position-snap-back ("combat_storepos/
+		// restorepos"), which the user asked to rework after testing (#512/#513) - moving while
+		// using a stand-still weapon used to teleport the attacker back to a fixed point
+		// instead of just failing the attack. Reworked to check Character.Flag_Moving fresh on
+		// every stroke instead of tracking a fixed anchor position at all: moving simply skips
+		// this stroke (no hit, no teleport, same "retry in 1s" path already used for the
+		// Drawing-phase "too far" case below); standing still on a later stroke lets it proceed
+		// normally. No per-engagement state to set/clear/leak across restarts anymore - simpler
+		// than the anchor approach and symmetric in both directions by construction.
 		static bool RequiresStandingStill(Character self) {
 			switch (self.WeaponType) {
 				case WeaponType.Bow:
@@ -142,24 +152,24 @@ namespace SteamEngine.CompiledScripts {
 			if (target.IsDeleted) {
 				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
 				CombatMessages.Send(self, "[Combat] Your target is gone. You stop attacking.");
-				self.RemoveTag(standStillAnchorTK);
 				self.AbortSkill();
 				return TriggerResult.Cancel;
 			}
 			if (!self.CanInteractWith(target).Allow) {
 				WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
 				CombatMessages.Send(self, "[Combat] You lose sight of " + target.Name + ". You stop attacking.");
-				self.RemoveTag(standStillAnchorTK);
 				self.AbortSkill();
 				return TriggerResult.Cancel;
 			}
 
-			// Snap back BEFORE computing distance below, so every range check this tick uses
-			// the corrected (anchored) position, not wherever the attacker just walked to.
-			Point4D standStillAnchor = (Point4D) self.GetTag(standStillAnchorTK);
-			if ((standStillAnchor != null) && !standStillAnchor.Equals(self)) {
-				self.P(standStillAnchor);
-				CombatMessages.Send(self, "[Combat] You must stand still to use this weapon.");
+			// #512 - a stand-still weapon just fails this stroke while the attacker is moving
+			// (no teleport) - falls through to the same "retry in 1s" tail this method already
+			// uses for the Drawing-phase "too far" case, so the next stroke re-checks fresh.
+			if (RequiresStandingStill(self) && self.Flag_Moving) {
+				SendThrottledStandStillMessage(self, "[Combat] You must stand still to use this weapon.");
+				skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
+				skillSeqArgs.DelayStroke();
+				return TriggerResult.Cancel;
 			}
 
 			int distance = Point2D.GetSimpleDistance(self, target);
@@ -167,12 +177,6 @@ namespace SteamEngine.CompiledScripts {
 			if (phase == WeaponSkillPhase.Drawing) {
 				if (distance <= self.WeaponStrikeStartRange) {
 					skillSeqArgs.Param1 = WeaponSkillPhase.Striking;
-					// Idempotent - a restarted swing re-enters Drawing->Striking every single
-					// time (see this class's own doc comment above), so only capture a fresh
-					// anchor when one isn't already tracking this ongoing engagement.
-					if (RequiresStandingStill(self) && (self.GetTag(standStillAnchorTK) == null)) {
-						self.SetTag(standStillAnchorTK, self.P());
-					}
 					TimeSpan delay = self.WeaponDelay;
 					skillSeqArgs.Param2 = Globals.TimeAsSpan + delay;
 					skillSeqArgs.DelaySpan = delay;
@@ -184,7 +188,6 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				if (distance > self.WeaponStrikeStopRange) {
 					CombatMessages.Send(self, "[Combat] " + target.Name + " is too far away. You stop attacking.");
-					self.RemoveTag(standStillAnchorTK);
 					self.AbortSkill();
 				} else if (((TimeSpan) skillSeqArgs.Param2) <= Globals.TimeAsSpan) {
 					int range = Math.Min(target.IsPlayerForCombat ? self.WeaponRangeVsP : self.WeaponRangeVsM, self.VisionRange);
@@ -212,7 +215,6 @@ namespace SteamEngine.CompiledScripts {
 							}
 						} else if (self.WeaponProjectileType != ProjectileType.None) {
 							self.SysMessage(Loc<WeaponSkillDefLoc>.Get(self.Language).YouHaveNoAmmo);
-							self.RemoveTag(standStillAnchorTK);
 							self.AbortSkill();
 							return TriggerResult.Cancel;
 						}
@@ -292,10 +294,6 @@ namespace SteamEngine.CompiledScripts {
 				// Testing combat messages: let "You start attacking X" fire again next time,
 				// now that this engagement has genuinely ended (see On_Start's own comment).
 				self.RemoveTag(lastAttackedTargetTK);
-				// Stand-still anchor (RangerSettings) is deliberately NOT cleared here - On_Abort
-				// fires on every per-swing restart too (see this class's own top-of-file comment),
-				// not just a genuine stop. It's cleared directly at the real stop call sites in
-				// On_Stroke instead (target gone/LOS lost/out of range/no ammo).
 			}
 		}
 	}

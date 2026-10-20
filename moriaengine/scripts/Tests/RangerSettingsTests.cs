@@ -97,120 +97,193 @@ namespace SteamEngine.CompiledScripts {
 			self.InvalidateCombatWeaponValues();
 		}
 
-		/// <summary>#454 point 3 - starts a real ranged attack and schedules a mid-fight
-		/// "disturb" that manually displaces the attacker 3 tiles towards the target (still well
-		/// within range either way, so a failure to snap back doesn't show up as a stalled/
-		/// aborted attack instead of a real behavioral difference), then a final check mirroring
-		/// RangerStandoffCheckTimer's own pattern. expectReverted selects which outcome counts as
-		/// a pass (crossbow should end up back at startX/startY; bow should end up at the
-		/// disturbed position instead) - two separate no-arg commands rather than one taking a
-		/// bool, matching this codebase's existing "typed SteamFunction params beyond Character
-		/// self aren't a supported shape" convention (see LevelingTests.cs's own manually-parsed-
-		/// ScriptArgs commands for the same reasoning).</summary>
+		/// <summary>#512 - reworked from the original snap-back mechanic (see git history for
+		/// the old version) after the user found the teleport-back itself was the bug (#513).
+		/// New behavior: a stand-still weapon fails the stroke (no damage, no ammo spent) for as
+		/// long as Character.Flag_Moving is true, with no position change at all; standing still
+		/// again lets the attack resume. Starts a real ranged attack, flips Flag_Moving true for
+		/// a window long enough to span several stroke attempts, samples Hits/ammo mid-window
+		/// (proves nothing landed WHILE moving - the thing the old mechanic got wrong, since it
+		/// let the swing complete right after silently repositioning the attacker), then flips
+		/// Flag_Moving back to false and samples again (proves the attack resumes on its own,
+		/// no re-target needed). expectBlockedWhileMoving selects which outcome counts as a pass
+		/// (crossbow should show zero damage/ammo-use during the moving window; bow should keep
+		/// landing hits throughout, unaffected) - two separate no-arg commands rather than one
+		/// taking a bool, matching this codebase's existing "typed SteamFunction params beyond
+		/// Character self aren't a supported shape" convention (see LevelingTests.cs's own
+		/// manually-parsed-ScriptArgs commands for the same reasoning). Flag_Moving is toggled
+		/// directly rather than via a real walk request - confirmed safe: the property's only
+		/// background writer (CharSyncQueue's post-movement-sync reset) is driven off the
+		/// movement-queue pipeline, which a direct property set never enters, so nothing resets
+		/// it out from under this test between the two timers below.</summary>
 		[SteamFunction]
 		public static void TestRangerCrossbowStandStillCheck(Character self) {
-			RunStandStillCheck(self, expectReverted: true);
+			RunStandStillCheck(self, expectBlockedWhileMoving: true);
 		}
 
 		[SteamFunction]
 		public static void TestRangerBowStandStillCheck(Character self) {
-			RunStandStillCheck(self, expectReverted: false);
+			RunStandStillCheck(self, expectBlockedWhileMoving: false);
 		}
 
-		private static void RunStandStillCheck(Character self, bool expectReverted) {
+		private static void RunStandStillCheck(Character self, bool expectBlockedWhileMoving) {
 			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
 			NPC dummy = (NPC) dummyDef.Create(self.X + 5, self.Y, self.Z, self.M);
 
-			int startX = self.X;
-			int startY = self.Y;
 			int startingHits = dummy.Hits;
 			int startingArrowCount = RangerCombatTests.CountArrows(self);
 
 			self.Trigger_PlayerAttackRequest(dummy);
 
-			self.AddTimer(RangerDisturbPositionTimer.TimerKey, new RangerDisturbPositionTimer(self, 3, 0))
+			self.AddTimer(RangerStartMovingTimer.TimerKey, new RangerStartMovingTimer(self))
 				.DueInSeconds = 1;
 
-			self.AddTimer(RangerStandStillCheckTimer.TimerKey,
-				new RangerStandStillCheckTimer(self, dummy, startX, startY, startingHits, startingArrowCount, expectReverted))
-				.DueInSeconds = 15;
+			self.AddTimer(RangerMidMoveCheckTimer.TimerKey,
+				new RangerMidMoveCheckTimer(self, dummy, startingHits, startingArrowCount, expectBlockedWhileMoving))
+				.DueInSeconds = 6;
+
+			self.AddTimer(RangerStopMovingTimer.TimerKey, new RangerStopMovingTimer(self))
+				.DueInSeconds = 6.5;
+
+			self.AddTimer(RangerFinalStandStillCheckTimer.TimerKey,
+				new RangerFinalStandStillCheckTimer(self, dummy, startingArrowCount))
+				.DueInSeconds = 12;
 			Console.WriteLine("RANGER_STANDSTILL_TEST: STARTED");
 		}
 	}
 
-	/// <summary>One-shot mid-fight displacement - simulates the player trying to walk away
-	/// while using a weapon whose stand-still toggle is being tested.</summary>
+	/// <summary>#512 - flips Flag_Moving on, simulating the player starting to walk away while
+	/// using a weapon whose stand-still toggle is being tested. No position change at all -
+	/// the whole point of the rework is that movement fails the attack without teleporting
+	/// anyone anywhere.</summary>
 	[SaveableClass]
-	public class RangerDisturbPositionTimer : BoundTimer {
-		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_rangerDisturbPositionTimer_");
+	public class RangerStartMovingTimer : BoundTimer {
+		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_rangerStartMovingTimer_");
 
 		private Character self;
-		private int dx, dy;
 
 		[LoadingInitializer]
-		public RangerDisturbPositionTimer() {
+		public RangerStartMovingTimer() {
 		}
 
-		public RangerDisturbPositionTimer(Character self, int dx, int dy) {
+		public RangerStartMovingTimer(Character self) {
 			this.self = self;
-			this.dx = dx;
-			this.dy = dy;
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
 			if (!this.self.IsDeleted) {
-				this.self.P(this.self.X + this.dx, this.self.Y + this.dy, this.self.Z, this.self.M);
-				Console.WriteLine("RANGER_STANDSTILL_TEST: DISTURBED to (" + this.self.X + "," + this.self.Y + ")");
+				this.self.Flag_Moving = true;
+				Console.WriteLine("RANGER_STANDSTILL_TEST: STARTED_MOVING");
 			}
 		}
 	}
 
-	/// <summary>Mirrors RangerStandoffCheckTimer, plus the expectReverted branch needed to tell
-	/// a stand-still weapon (should be back at startX/startY despite the disturbance above) from
-	/// a free-moving one (should still be at the disturbed position).</summary>
+	/// <summary>#512 - sampled while Flag_Moving is still true (set by RangerStartMovingTimer
+	/// above, cleared later by RangerStopMovingTimer) - proves a stand-still weapon lands zero
+	/// damage/spends no ammo WHILE moving (the thing the old snap-back mechanic got wrong: it
+	/// let the swing complete right after silently repositioning the attacker back into place).
+	/// A free-moving weapon (bow) should show the opposite - damage/ammo already moving by now.</summary>
 	[SaveableClass]
-	public class RangerStandStillCheckTimer : BoundTimer {
-		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_rangerStandStillCheckTimer_");
+	public class RangerMidMoveCheckTimer : BoundTimer {
+		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_rangerMidMoveCheckTimer_");
 
 		private Character attacker;
 		private NPC dummy;
-		private int startX, startY, startingHits, startingArrowCount;
-		private bool expectReverted;
+		private int startingHits, startingArrowCount;
+		private bool expectBlockedWhileMoving;
 
 		[LoadingInitializer]
-		public RangerStandStillCheckTimer() {
+		public RangerMidMoveCheckTimer() {
 		}
 
-		public RangerStandStillCheckTimer(Character attacker, NPC dummy, int startX, int startY,
-				int startingHits, int startingArrowCount, bool expectReverted) {
+		public RangerMidMoveCheckTimer(Character attacker, NPC dummy, int startingHits, int startingArrowCount, bool expectBlockedWhileMoving) {
 			this.attacker = attacker;
 			this.dummy = dummy;
-			this.startX = startX;
-			this.startY = startY;
 			this.startingHits = startingHits;
 			this.startingArrowCount = startingArrowCount;
-			this.expectReverted = expectReverted;
+			this.expectBlockedWhileMoving = expectBlockedWhileMoving;
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
-			bool isAtStart = !this.attacker.IsDeleted && (this.attacker.X == this.startX) && (this.attacker.Y == this.startY);
-			bool positionMatchesExpectation = this.expectReverted ? isAtStart : !isAtStart;
 			bool dealtDamage = this.dummy.IsDeleted || (this.dummy.Hits < this.startingHits);
 			int currentArrowCount = this.attacker.IsDeleted ? 0 : RangerCombatTests.CountArrows(this.attacker);
 			bool ammoConsumed = currentArrowCount < this.startingArrowCount;
 
-			if (positionMatchesExpectation && dealtDamage && ammoConsumed) {
-				Console.WriteLine("RANGER_STANDSTILL_TEST: PASS (expectReverted=" + this.expectReverted +
-					", landed damage, consumed ammo)");
-			} else if (!positionMatchesExpectation) {
-				Console.WriteLine("RANGER_STANDSTILL_TEST: FAIL (expectReverted=" + this.expectReverted +
-					" but attacker ended at (" + (this.attacker.IsDeleted ? -1 : this.attacker.X) + "," +
-					(this.attacker.IsDeleted ? -1 : this.attacker.Y) + "), started at (" + this.startX + "," + this.startY + "))");
-			} else if (!dealtDamage) {
-				Console.WriteLine("RANGER_STANDSTILL_TEST: FAIL (position matched expectation but dealt no damage)");
+			if (this.expectBlockedWhileMoving) {
+				if (!dealtDamage && !ammoConsumed) {
+					Console.WriteLine("RANGER_STANDSTILL_TEST: MIDMOVE_PASS (blocked while moving, as expected)");
+				} else {
+					Console.WriteLine("RANGER_STANDSTILL_TEST: MIDMOVE_FAIL (expected no damage/ammo-use while moving, " +
+						"but dealtDamage=" + dealtDamage + " ammoConsumed=" + ammoConsumed + ")");
+				}
 			} else {
-				Console.WriteLine("RANGER_STANDSTILL_TEST: FAIL (dealt damage but never consumed ammo - startingArrowCount=" +
-					this.startingArrowCount + " currentArrowCount=" + currentArrowCount + ")");
+				if (dealtDamage && ammoConsumed) {
+					Console.WriteLine("RANGER_STANDSTILL_TEST: MIDMOVE_PASS (free-moving weapon unaffected by moving)");
+				} else {
+					Console.WriteLine("RANGER_STANDSTILL_TEST: MIDMOVE_FAIL (expected damage/ammo-use despite moving, " +
+						"but dealtDamage=" + dealtDamage + " ammoConsumed=" + ammoConsumed + ")");
+				}
+			}
+		}
+	}
+
+	/// <summary>#512 - clears Flag_Moving, simulating the player standing still again.</summary>
+	[SaveableClass]
+	public class RangerStopMovingTimer : BoundTimer {
+		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_rangerStopMovingTimer_");
+
+		private Character self;
+
+		[LoadingInitializer]
+		public RangerStopMovingTimer() {
+		}
+
+		public RangerStopMovingTimer(Character self) {
+			this.self = self;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			if (!this.self.IsDeleted) {
+				this.self.Flag_Moving = false;
+				Console.WriteLine("RANGER_STANDSTILL_TEST: STOPPED_MOVING");
+			}
+		}
+	}
+
+	/// <summary>#512 - sampled after standing still again (RangerStopMovingTimer above) - proves
+	/// a stand-still weapon's attack resumes on its own once the attacker stops moving, with no
+	/// need to re-target/re-issue the attack.</summary>
+	[SaveableClass]
+	public class RangerFinalStandStillCheckTimer : BoundTimer {
+		internal static readonly TimerKey TimerKey = TimerKey.Acquire("_rangerFinalStandStillCheckTimer_");
+
+		private Character attacker;
+		private NPC dummy;
+		private int startingArrowCount;
+
+		[LoadingInitializer]
+		public RangerFinalStandStillCheckTimer() {
+		}
+
+		public RangerFinalStandStillCheckTimer(Character attacker, NPC dummy, int startingArrowCount) {
+			this.attacker = attacker;
+			this.dummy = dummy;
+			this.startingArrowCount = startingArrowCount;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			bool dealtDamage = this.dummy.IsDeleted;
+			int currentArrowCount = this.attacker.IsDeleted ? 0 : RangerCombatTests.CountArrows(this.attacker);
+			bool ammoConsumed = currentArrowCount < this.startingArrowCount;
+			if (!this.dummy.IsDeleted) {
+				dealtDamage = this.dummy.Hits < this.dummy.MaxHits;
+			}
+
+			if (dealtDamage && ammoConsumed) {
+				Console.WriteLine("RANGER_STANDSTILL_TEST: PASS (resumed and landed damage after standing still again)");
+			} else {
+				Console.WriteLine("RANGER_STANDSTILL_TEST: FAIL (expected the attack to have landed by now - dealtDamage=" +
+					dealtDamage + " ammoConsumed=" + ammoConsumed + ")");
 			}
 		}
 	}
