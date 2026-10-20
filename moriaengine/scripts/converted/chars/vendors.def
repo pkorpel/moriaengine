@@ -159,6 +159,7 @@ TSPEECH = spk_shopkeep
 NAME = "Banker"
 model = C_MAN
 TSPEECH = spk_jobbanker
+TEVENTS = e_banker
 //TEVENTS = e_character // commented out by Converter
 //TEVENTS = e_item_refuser // commented out by Converter
 
@@ -167,6 +168,7 @@ NAME = "Bankerka"
 model = C_WOMAN
 //TSPEECH = spk_human_prime // commented out by Converter
 TSPEECH = spk_jobbanker
+TEVENTS = e_banker
 //TEVENTS = e_character // commented out by Converter
 //TEVENTS = e_item_refuser // commented out by Converter
 

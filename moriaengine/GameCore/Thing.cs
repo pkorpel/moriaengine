@@ -1016,10 +1016,17 @@ namespace SteamEngine {
 					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 				}
 
-				this.TryTrigger(TriggerKey.dClick, sa);
-				try {
-					this.On_DClick(dclicker);
-				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				// #509 - cancellable (was a fire-and-forget TryTrigger before) so a TriggerGroup
+				// attached to this Thing's Def (via TEVENTS/TSPEECH, e.g. a shared per-job
+				// handler like BankerDClick) can fully replace the default On_DClick behavior
+				// for specific NPCs/items instead of always running alongside it - mirrors the
+				// existing Trigger_Hear pattern (SpeechResult.ActedUponExclusively gates the
+				// fallback On_Hear the same way).
+				if (TriggerResult.Cancel != this.TryCancellableTrigger(TriggerKey.dClick, sa)) {
+					try {
+						this.On_DClick(dclicker);
+					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+				}
 			}
 		}
 
