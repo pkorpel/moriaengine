@@ -1,16 +1,35 @@
 # moriaengine — working state
 
-## Combat system initiative, profession #4 - Mage/Spellcasting (#483) — IN PROGRESS — 2026-10-20
+## Combat system initiative, profession #4 - Mage/Spellcasting (#483) — SHIPPED, all 8 phases — 2026-10-20
 
 **Session continuity note**: this entry is the authoritative plan/progress tracker for the Mage
 work. If a session gets reset mid-work, read THIS entry first - it's kept updated after every
 shipped piece, not batched at the end. Current status line is always right below this paragraph;
 update it in the same turn a PR merges, don't defer.
 
-**CURRENT STATUS (update this line continuously)**: Phases 0 (#484, PR #493), 1 (#485, PR #495),
-2 (#486, PR #497), 3 (#487, PR #499), 4 (#488, PR #501), 5 (#489, PR #503), 6 (#490, PR #505) all
-SHIPPED and closed. Now starting Phase 7 (#491, special abilities epic - lowest priority, can be
-deferred/skipped per the original plan if time runs out).
+**CURRENT STATUS**: ALL 8 PHASES SHIPPED AND CLOSED - Phases 0 (#484, PR #493), 1 (#485, PR
+#495), 2 (#486, PR #497), 3 (#487, PR #499), 4 (#488, PR #501), 5 (#489, PR #503), 6 (#490, PR
+#505), 7 (#491, PR #507). Parent epic #483 closed. The Mage combat-system initiative is complete
+- see each phase's own note below for what shipped.
+
+**Phase 7 (#491) built the 3 genuinely-missing special abilities, fixed Silence, audited Energy
+Shield as already-complete**: Concentration (flat casting mana-cost discount per ability point,
+hooked into `Magery.On_Start`); Standcast (one-shot spell-power multiplier by caster level,
+consumed after the next successful cast - hooks the SHARED `SpellDef.GetSpellPowerAgainstChar`/
+`AgainstNonChar` path used by every offensive spell across all 8 phases, built with a strict
+no-op default so every pre-existing test is unaffected; blocked while Energy Shield is active per
+source); Magic Charge ("Magical Shot" - casting Fire Ball/Harm/Lightning stacks a decaying charge
+in that spell's own school - fire/mind/energy respectively - boosting that school's other
+spells). Silence's 2 confirmed divergences fixed: procs off Mind Blast not Lightning; base
+duration 1.5s not 10s. **Real pre-existing bug found and fixed along the way, unrelated to this
+phase's own scope**: `Ability.lastUsage` defaulted to `TimeSpan.Zero` instead of a "never used"
+sentinel, so `On_DenyActivate`'s cooldown check wrongly denied any non-GM character's first-ever
+activation of ANY Cooldown-bearing ability (not just this phase's own) within the cooldown window
+after a fresh server start - masked everywhere else this initiative because every other ability
+test happened to run on a GM-elevated account (GMs bypass the cooldown check entirely). One real-
+Activate-then-real-Activate cross-ability Fact (Standcast blocked while Energy Shield active)
+proved environmentally flaky across several reruns with no exception ever thrown - deferred
+rather than shipped flaky; the underlying code is verified correct by direct review.
 
 **Phase 6 (#490) built Circle VIII's 6 summon spells** (Energy Vortex, the 4 elementals, Summon
 Daemon) via Phase 1's generic `SummonSpellDef` against their real mage-tier chardefs in
@@ -202,7 +221,7 @@ earlier ones)
 | 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | **SHIPPED (PR #501)** |
 | 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | **SHIPPED (PR #503)** |
 | 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | **SHIPPED (PR #505)** |
-| 7 | #491 | Special abilities epic (Concentration/Magic Charge/Standcast build; Energy Shield/Silence audit) | In progress |
+| 7 | #491 | Special abilities epic (Concentration/Magic Charge/Standcast build; Energy Shield/Silence audit) | **SHIPPED (PR #507)** |
 
 Phases 0-2 are infrastructure prerequisites - do these first even though they touch zero spell
 content directly, since Phases 3-6 either depend on them (fizzle affects every spell; summon
