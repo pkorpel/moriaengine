@@ -91,7 +91,10 @@ DEFNAME=s_Cunning
 NAME=Cunning
 SOUND=0x1EB
 RUNES=UW
-CASTTIME=8
+// #483/#487 - was CASTTIME=8 (8 full seconds), far outside every sibling buff's 1.0-2.0s
+// range (compare Strength below: same shape, same flags, CASTTIME=1.5) - a near-certain typo,
+// not a deliberate Erebor value (no source confirms either number). Matched to Strength's.
+CASTTIME=1.5
 //RESOURCES=i_reag_mandrake_root,i_reag_nightshade
 RUNEITEM=i_rune_CUNNING
 SCROLLITEM=i_scroll_CUNNING

@@ -58,6 +58,36 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#487 - Cunning's CASTTIME was 8 (full seconds) - far outside every sibling
+		/// buff spell's 1.0-2.0s range, a near-certain typo. Fixed to 1.5s, matching Strength
+		/// (same shape/flags/effect).</summary>
+		[Fact]
+		public void CunningCastTimeIsFixedNotTheOldTypo() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "MageCunningCastTimeChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportSpellCastTime s_Cunning");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_CASTTIME_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_CASTTIME_TEST:");
+				Assert.Contains("castTime=1.5", line);
+			}
+		}
+
+		/// <summary>#487 - Harm's DamageType was MagicAcid, unverified and unusual (classic Harm
+		/// is cold-based, and Erebor's source doesn't rescript it). Fixed to MagicCold, matching
+		/// the classic/faithful value instead of the unbacked moriaengine-only choice.</summary>
+		[Fact]
+		public void HarmDamageTypeIsFixedNotTheUnbackedAcidChoice() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "MageHarmDamageTypeChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportSpellDamageType s_harm");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DAMAGETYPE_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_DAMAGETYPE_TEST:");
+				Assert.Contains("damageType=MagicCold", line);
+			}
+		}
+
 		/// <summary>Sanity check that the Phase 0 fix doesn't swing the other way either - a
 		/// caster exactly AT the spell's own stated skill requirement should land close to the
 		/// documented ~50% (GetSCurve's own 0-difference midpoint), not near 0% or 100%.</summary>
