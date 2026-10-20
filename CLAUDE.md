@@ -8,8 +8,26 @@ shipped piece, not batched at the end. Current status line is always right below
 update it in the same turn a PR merges, don't defer.
 
 **CURRENT STATUS (update this line continuously)**: Phases 0 (#484, PR #493), 1 (#485, PR #495),
-2 (#486, PR #497), 3 (#487, PR #499) all SHIPPED and closed. Now starting Phase 4 (#488, Circle
-IV-V verify + build Mana Drain + Blade Spirits/Summon Creature).
+2 (#486, PR #497), 3 (#487, PR #499), 4 (#488, PR #501) all SHIPPED and closed. Now starting
+Phase 5 (#489, Circle VI-VII verify + fixes + build Invisibility/Reveal).
+
+**Phase 4 (#488) shipped Fire Field's crash fix + 3 built spells, and surfaced a genuine
+pre-existing engine bug along the way (verified with a real red/green check, not just "test
+passes")**: Fire Field's legacy FLAGS tokens didn't resolve and it had no ItemDef at all -
+casting it threw a NullReferenceException (a hard crash, not the "cosmetic" issue originally
+assumed) - fixed with real SpellFlag syntax + a real ItemDef. Built Mana Drain (drains target
+mana, no transfer to caster), Blade Spirits (hostile, uncontrolled summon), Summon Creature
+(controlled pet from a random animal pool) - all via Phase 1's generic summon infra.
+**Side finding, worth remembering for ANY future ground-targeted-casting work**:
+`GameCore/CanSeeImplementation.cs`'s raw-point LOS branch (`CanInteractWith`) had an inverted
+condition - denied when LOS was clear, allowed when blocked - silently breaking every non-GM
+ground-targeted interaction in the engine, not just spells (GMs bypass this check entirely, so
+nothing non-GM had ever exercised this path before this phase's own tests). Fixed. Also found:
+`@effectGround` triggers need `EffectFactory.StationaryEffectAt`, not `StationaryEffect` ("this"
+isn't a `Thing` in that context); and a separate, **unresolved** NPCAiTimer-vs-command-thread
+concurrency hazard - deleting or killing a live, actively-engaged NPC hangs the server with no
+exception logged - worked around (kept the test's hostile summon outside its own aggro range)
+rather than root-caused. Flag this hazard for anyone touching NPC lifecycle/combat code later.
 
 **Phase 2 (#486) added a real test-design lesson, worth remembering for any future despawn-vs-
 removal test**: the first draft of the summon-dispel test used the SAME 5s-duration test summon
@@ -44,7 +62,15 @@ test alone doesn't prove this, only a red/green check does.
 MagerySpellTests.cs`): `TestGrantFullSpellbook`/`TestCastSpellAtDummy`/`TestReportCastResult`/
 `TestReportSpellDifficulty`/`TestSampleFizzleRate` - reuse these for later phases' own live-cast
 tests rather than rebuilding. Phase 1 added `TestCastSummonSpell`/`TestReportNearbySummon` to
-the same file. Phase 3 added `TestReportSpellCastTime`/`TestReportSpellDamageType`.
+the same file. Phase 3 added `TestReportSpellCastTime`/`TestReportSpellDamageType`. Phase 4
+added `TestCastGroundTargetedSpellNearSelf` (takes a `distance` param - keep a Hostile summon
+beyond `NPCAiTimer.AggroRange`=8 to avoid the engagement/deletion hazard noted above),
+`TestCastManaDrainAtDummy`/`TestReportManaDrainResult`, `TestNeutralizeCharacterByUid` (safe,
+AggroMode-only cleanup for a live hostile NPC - do NOT use `Thing.Delete()`/`CauseDeath()` on
+an actively-engaged NPC, confirmed to hang the server). A third test account (`AccountC`,
+"magerytest3") now exists in `Tests/Protocol/MagerySpellTests.cs` since `Account`/`AccountB`
+were already at their 5-character-slot caps - check the running total before adding new
+character-creating Facts to this file.
 
 #484 stays open only for the Requirements/difficulty scale-inconsistency follow-up (deferred to
 #487-490) - everything else in it shipped.
@@ -112,8 +138,8 @@ earlier ones)
 | 1 | #485 | Generic summon-pet infrastructure (prerequisite for Phase 4's 2 summons + Phase 6's 6 summons) | **SHIPPED (PR #495)** |
 | 2 | #486 | `Character`/`Item.On_Dispell` fix (prerequisite for Phase 1's summon-dispel integration) | **SHIPPED (PR #497)** |
 | 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | **SHIPPED (PR #499)** |
-| 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | In progress |
-| 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | Not started |
+| 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | **SHIPPED (PR #501)** |
+| 5 | #489 | Circle VI-VII verify + fixes (Energy Bolt type, Paralyze Field rebuild, Gate Travel duration) + build Invisibility/Reveal | In progress |
 | 6 | #490 | Circle VIII verify Resurrection + (blocked on #485) 6 summon spells | Not started |
 | 7 | #491 | Special abilities epic (Concentration/Magic Charge/Standcast build; Energy Shield/Silence audit) | Not started |
 
