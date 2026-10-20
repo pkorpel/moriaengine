@@ -82,11 +82,59 @@ spellbook item happens to be in a character's pack (every profession, including 
 is given the same plain empty `i_spellbook_3` at creation - see
 [professions.md](professions.md) and [races-and-nations.md](races-and-nations.md) for why).
 
+## Fizzle/difficulty (#483/#484)
+
+`SpellDef.Difficulty` used to return `0` whenever a spell's `difficulty` field wasn't
+explicitly set in its `.def` - true for every spell except the ones in `DamageSpells/
+damageSpells.def` (the only file that ever sets `difficulty=` directly). `CheckSuccess`
+(the same S-curve roll every other skill uses) was correctly wired but fed `0`, meaning
+casting essentially never fizzled once mana was sufficient - a standing `//TODO extract
+from requirement ResList` sat on the getter. Fixed: when `difficulty` is unset, it falls
+back to the spell's own `Requirements=X Magery` skill threshold (if present) via
+`ResourcesList.NonMultiplicablesSublist`/`SkillResource`, scaled by a GM-tunable
+`MagerySettings.spellDifficultyFallbackMultiplier` (default `1.0`). At exactly that skill
+threshold, `CheckSuccess` now gives the same ~50% chance every other skill's own difficulty
+model gives at its own threshold - scaling naturally as skill rises above/falls below it,
+instead of being unconditionally guaranteed.
+
+**Known follow-up, not fixed here**: the `Requirements=`/`difficulty=` numbers themselves
+are inconsistently authored across spell `.def` files (e.g. Harm's `Requirements=200`
+vs Fireball's `Requirements=30.0` for a lower circle) - likely converter noise, not real
+Erebor data. This affects the ABSOLUTE difficulty each spell now derives, not whether the
+mechanism itself works. Left for the per-circle verification phases (#487-490) to clean up
+spell-by-spell, not addressed centrally.
+
+## Skill-gain-on-cast - confirmed not wired, by design
+
+`MagerySkillDef` never calls `SkillGainSystem.TryGainSkill` anywhere in its trigger chain -
+casting a spell does not raise Magery skill through use. Confirmed intentional: Magery is a
+leveling-point skill under the profession model (`LevelingSystem.TrySpendSkillPoints`), not
+one of #140's 13 use-trained skills (Mining/Lumberjacking/Fishing/Cooking/Taming/Lockpicking/
+Blacksmithing/Carpentry/Bowcraft/Alchemy/Tailoring/Tinkering/Inscription). No code change
+needed or planned here.
+
+## Reagent-less casting - confirmed intentional, not a gap
+
+Every `RESOURCES=` line across every spell `.def` is commented out, so `spell.Resources` is
+always `null` and `On_Start`'s `ConsumeResourcesOnce` call never actually consumes anything -
+only `spell.Requirements` (a skill-threshold gate, not a consumable) is checked. Confirmed
+against the real Erebor source (`magie.scp`): casting there is mana-only too, no reagent
+check at all. This is a faithful port, not something to "fix" by wiring reagent consumption
+back in.
+
 ## Settings and known content gaps
 
 `MagerySettings` (referenced from `CombatCalculator`/`Magery.cs` as `mindPowerIntModifier`/
 `bareHandsMindPowerVsP`) is the matching `.settings` category for the mind-power side of
-spellcasting math - see [settings-dialog.md](../03-admin-tooling/settings-dialog.md).
+spellcasting math - see [settings-dialog.md](../03-admin-tooling/settings-dialog.md). A
+nested `SpellsSettings` page (`MagerySettings.spells`) covers damage-spell `Effect`/
+`DamageType` mass-editing and the new `spellDifficultyFallbackMultiplier` above.
+
+**Combat-system initiative, Mage/spellcasting (#483)**: a much larger follow-up than the
+content gaps below - full spell-by-spell analysis against the real Erebor source/wiki,
+covering fixes, missing spells (Invisibility/Reveal/Mana Drain/8 summon-shaped spells), and
+a generic summon-pet infrastructure. See #483 and CLAUDE.md's own tracking entry for the
+full phase breakdown - this page will get further updates as each phase ships.
 
 Two real, already-fixed content bugs (both closed under #159, found while authoring
 profession `.def` files): `mage.def`'s `allowedSpells` had a typo
