@@ -7,8 +7,25 @@ work. If a session gets reset mid-work, read THIS entry first - it's kept update
 shipped piece, not batched at the end. Current status line is always right below this paragraph;
 update it in the same turn a PR merges, don't defer.
 
-**CURRENT STATUS (update this line continuously)**: Issues filed (#483 parent + #484-491 phases).
-Implementation not yet started - about to begin Phase 0 (#484).
+**CURRENT STATUS (update this line continuously)**: Phase 0 (#484) SHIPPED (PR #493) - fizzle/
+difficulty fallback fix + first-ever Magery test infra (`Tests/Protocol/MagerySpellTests.cs` +
+`scripts/Tests/MagerySpellTests.cs`, reusable `TestGrantFullSpellbook`/`TestCastSpellAtDummy`/
+`TestReportCastResult`/`TestReportSpellDifficulty`/`TestSampleFizzleRate` SteamFunctions - reuse
+these for later phases' own live-cast tests rather than rebuilding). Skill-gain/reagent items
+resolved as documentation-only decisions, no code. #484 left open only for the Requirements/
+difficulty scale-inconsistency follow-up (deferred to #487-490). Now starting Phase 1 (#485,
+generic summon-pet infrastructure).
+
+**Gotcha hit and worth remembering for any future live-cast test in this file**: a spell
+defname (e.g. `s_magic_arrow`) is a registered `AbstractScript` defname - on a GM-elevated
+account (full LScript parser), an UNQUOTED bareword argument gets silently resolved to the live
+object's own `ToString()` instead of staying literal text (same established footgun class as
+elsewhere this session). Quote spell defname arguments in `SendSpeech` calls on elevated
+accounts; not needed on non-elevated `SimpleCommandParser` accounts (confirmed via `AccountB`'s
+fizzle tests working unquoted). Also: `On_Start`'s `Requirements` check is a HARD gate, not just
+a fizzle-chance input - a caster below a spell's own skill requirement never reaches Stroke at
+all regardless of mana, so `TestGrantFullSpellbook` sets Magery to max (1000) for exactly this
+reason.
 
 ### Research summary (full detail in #483, don't duplicate here)
 
@@ -61,8 +78,8 @@ earlier ones)
 
 | Phase | Issue | What | Status |
 |---|---|---|---|
-| 0 | #484 | Fizzle/difficulty fix + skill-gain-on-cast decision + reagent-less-casting doc note + test infra foundation | Not started |
-| 1 | #485 | Generic summon-pet infrastructure (prerequisite for Phase 4's 2 summons + Phase 6's 6 summons) | Not started |
+| 0 | #484 | Fizzle/difficulty fix + skill-gain-on-cast decision + reagent-less-casting doc note + test infra foundation | **SHIPPED (PR #493)** |
+| 1 | #485 | Generic summon-pet infrastructure (prerequisite for Phase 4's 2 summons + Phase 6's 6 summons) | In progress |
 | 2 | #486 | `Character`/`Item.On_Dispell` fix (prerequisite for Phase 1's summon-dispel integration) | Not started |
 | 3 | #487 | Circle I-III verify + fixes (Cunning cast-time, Harm damage-type) | Not started |
 | 4 | #488 | Circle IV-V verify + build Mana Drain + (blocked on #485) Blade Spirits/Summon Creature | Not started |
