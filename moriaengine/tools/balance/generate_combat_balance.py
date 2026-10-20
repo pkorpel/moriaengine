@@ -380,9 +380,440 @@ PROFESSION_STATS = {
                   source="scripts/Basic/Professions/Definitions/thief.def"),
 }
 
+# Monster catalog - deduplicated (one row per distinct base creature, weapon/color variants
+# collapsed) from scripts/converted/chars/*.def (excludes vendors.def/guards.def/mounts.def/
+# ucitele.def - confirmed non-monster content). Columns: (Name, Category, WeaponAttack min,
+# WeaponAttack max, ArmorVsP min, ArmorVsP max, ArmorVsM min, ArmorVsM max). min==max when every
+# merged variant had the same value. HP and WeaponDelay are NOT per-monster (see MONSTER_DEFAULTS).
+MONSTERS = [
+    ('Bily vlk', 'Animal', 4.0, 4.0, 16.0, 16.0, 16.0, 16.0),
+    ('Byk', 'Animal', 5.0, 5.0, 14.0, 14.0, 14.0, 14.0),
+    ('Delfin', 'Animal', 3.0, 3.0, 16.0, 16.0, 16.0, 16.0),
+    ('Gorila', 'Animal', 6.0, 6.0, 20.0, 20.0, 20.0, 20.0),
+    ('Grizzly', 'Animal', 8.0, 8.0, 24.0, 24.0, 24.0, 24.0),
+    ('Had', 'Animal', 4.0, 4.0, 16.0, 16.0, 16.0, 16.0),
+    ('Horska koza', 'Animal', 4.0, 4.0, 16.0, 16.0, 16.0, 16.0),
+    ('Horsky lev', 'Animal', 15.0, 15.0, 8.0, 8.0, 8.0, 8.0),
+    ('Jaguar', 'Animal', 21.0, 21.0, 16.0, 16.0, 16.0, 16.0),
+    ('Jelen', 'Animal', 5.0, 5.0, 24.0, 24.0, 24.0, 24.0),
+    ('Kocka', 'Animal', 1.0, 1.0, 4.0, 4.0, 4.0, 4.0),
+    ('Koza', 'Animal', 2.0, 2.0, 16.0, 16.0, 16.0, 16.0),
+    ('Kralik', 'Animal', 1.0, 1.0, 6.0, 6.0, 6.0, 6.0),
+    ('Krava', 'Animal', 2.0, 2.0, 10.0, 10.0, 10.0, 10.0),
+    ('Krysa', 'Animal', 2.0, 2.0, 6.0, 6.0, 6.0, 6.0),
+    ('Lavovy had', 'Animal', 4.0, 4.0, 24.0, 24.0, 24.0, 24.0),
+    ('Ledovy had', 'Animal', 7.0, 7.0, 30.0, 30.0, 30.0, 30.0),
+    ('Lity vlk', 'Animal', 11.0, 11.0, 22.0, 22.0, 22.0, 22.0),
+    ('Medved', 'Animal', 6.0, 6.0, 8.0, 12.0, 8.0, 12.0),
+    ('Mroz', 'Animal', 3.0, 3.0, 18.0, 18.0, 18.0, 18.0),
+    ('Orel', 'Animal', 5.0, 5.0, 22.0, 22.0, 22.0, 22.0),
+    ('Ovce', 'Animal', 2.0, 2.0, 6.0, 6.0, 6.0, 6.0),
+    ('Panter', 'Animal', 15.0, 15.0, 16.0, 16.0, 16.0, 16.0),
+    ('Pes', 'Animal', 4.0, 4.0, 12.0, 12.0, 12.0, 12.0),
+    ('Prase', 'Animal', 2.0, 3.0, 5.0, 12.0, 5.0, 12.0),
+    ('Ptacek', 'Animal', 1.0, 1.0, 0.0, 0.0, 0.0, 0.0),
+    ('Sedy vlk', 'Animal', 4.0, 4.0, 18.0, 18.0, 18.0, 18.0),
+    ('Slepice', 'Animal', 1.0, 1.0, 2.0, 2.0, 2.0, 2.0),
+    ('Snezny leopard', 'Animal', 15.0, 15.0, 12.0, 12.0, 12.0, 12.0),
+    ('Srnec', 'Animal', 2.0, 2.0, 8.0, 8.0, 8.0, 8.0),
+    ('Velkej potkan', 'Animal', 5.0, 5.0, 18.0, 18.0, 18.0, 18.0),
+    ('Vlk', 'Animal', 5.0, 5.0, 18.0, 18.0, 18.0, 18.0),
+    ('Zajic', 'Animal', 5.0, 5.0, 4.0, 4.0, 4.0, 4.0),
+    ('ostrihana ovce', 'Animal', 2.0, 2.0, 6.0, 6.0, 6.0, 6.0),
+    ('Arboreal Mongbat', 'Cave', 32.0, 32.0, 5.0, 5.0, 5.0, 5.0),
+    ('Blody Hellcat', 'Cave', 35.0, 35.0, 65.0, 65.0, 65.0, 65.0),
+    ('Blood Vampire', 'Cave', 45.0, 45.0, 70.0, 70.0, 70.0, 70.0),
+    ('Corpser', 'Cave', 20.0, 20.0, 19.0, 19.0, 19.0, 19.0),
+    ('Corpser Older', 'Cave', 40.0, 40.0, 35.0, 35.0, 35.0, 35.0),
+    ('Drapac', 'Cave', 55.0, 55.0, 60.0, 60.0, 60.0, 60.0),
+    ('Gargoyle', 'Cave', 28.0, 28.0, 26.0, 26.0, 26.0, 26.0),
+    ('Great Vampire', 'Cave', 75.0, 75.0, 90.0, 90.0, 90.0, 90.0),
+    ('Harpy', 'Cave', 29.0, 29.0, 24.0, 24.0, 24.0, 24.0),
+    ('Hell Hound', 'Cave', 35.0, 35.0, 30.0, 30.0, 30.0, 30.0),
+    ('Kentaur', 'Cave', 120.0, 120.0, 80.0, 80.0, 80.0, 80.0),
+    ('Krvavy Drapac', 'Cave', 65.0, 65.0, 65.0, 65.0, 65.0, 65.0),
+    ('Nightmare', 'Cave', 60.0, 60.0, 80.0, 80.0, 80.0, 80.0),
+    ('Phoenix', 'Cave', 55.0, 55.0, 65.0, 65.0, 65.0, 65.0),
+    ('Poison Phoenix', 'Cave', 65.0, 65.0, 65.0, 65.0, 65.0, 65.0),
+    ('Predator Hellcat', 'Cave', 50.0, 50.0, 15.0, 15.0, 15.0, 15.0),
+    ('Stone Gargoyle', 'Cave', 40.0, 40.0, 60.0, 60.0, 60.0, 60.0),
+    ('Stone Harpy', 'Cave', 28.0, 28.0, 70.0, 70.0, 70.0, 70.0),
+    ('Swamp Tentacles', 'Cave', 30.0, 30.0, 15.0, 15.0, 15.0, 15.0),
+    ('Vampire', 'Cave', 38.0, 38.0, 60.0, 60.0, 60.0, 60.0),
+    ('Vlkodav', 'Cave', 45.0, 45.0, 60.0, 60.0, 60.0, 60.0),
+    ('(unnamed unique NPC, orcs.def)', 'Daemon', 9.0, 120.0, 20.0, 150.0, 20.0, 150.0),
+    ('Balrogh', 'Daemon', 120.0, 120.0, 180.0, 180.0, 180.0, 180.0),
+    ('Blood Daemon', 'Daemon', 90.0, 90.0, 100.0, 100.0, 100.0, 100.0),
+    ('Daemon Swordsman', 'Daemon', 120.0, 120.0, 74.0, 74.0, 90.0, 90.0),
+    ('Demon smrti', 'Daemon', 100.0, 100.0, 150.0, 150.0, 150.0, 150.0),
+    ('Gold Daemon', 'Daemon', 70.0, 70.0, 100.0, 100.0, 120.0, 120.0),
+    ('Gold Daemon Swordsman', 'Daemon', 90.0, 90.0, 110.0, 110.0, 130.0, 130.0),
+    ('Ice Fiend', 'Daemon', 95.0, 95.0, 110.0, 110.0, 130.0, 130.0),
+    ('the Black Daemon', 'Daemon', 110.0, 110.0, 100.0, 100.0, 120.0, 120.0),
+    ('the Daemon', 'Daemon', 60.0, 60.0, 100.0, 100.0, 100.0, 100.0),
+    ('(unnamed unique NPC, dragons_tmp.def)', 'Dragon/Boss', 120.0, 155.0, 120.0, 180.0, 120.0, 200.0),
+    ('Bahnak', 'Dragon/Boss', 120.0, 120.0, 140.0, 140.0, 150.0, 150.0),
+    ('Black Dragon', 'Dragon/Boss', 120.0, 155.0, 135.0, 140.0, 145.0, 150.0),
+    ('Black Drake', 'Dragon/Boss', 95.0, 95.0, 100.0, 100.0, 110.0, 110.0),
+    ('Blue Dragon', 'Dragon/Boss', 145.0, 145.0, 110.0, 110.0, 120.0, 120.0),
+    ('Blue Drake', 'Dragon/Boss', 95.0, 95.0, 70.0, 70.0, 80.0, 80.0),
+    ('Copper Dragon', 'Dragon/Boss', 150.0, 150.0, 115.0, 115.0, 125.0, 125.0),
+    ('Copper Drake', 'Dragon/Boss', 85.0, 85.0, 80.0, 80.0, 90.0, 90.0),
+    ('Dragon', 'Dragon/Boss', 7.0, 7.0, 46.0, 46.0, 46.0, 46.0),
+    ('Gold Drake', 'Dragon/Boss', 87.0, 87.0, 100.0, 100.0, 120.0, 120.0),
+    ('Green Dragon', 'Dragon/Boss', 135.0, 135.0, 100.0, 100.0, 110.0, 110.0),
+    ('Green Drake', 'Dragon/Boss', 90.0, 90.0, 50.0, 50.0, 60.0, 60.0),
+    ('Ice Drake', 'Dragon/Boss', 115.0, 115.0, 95.0, 95.0, 105.0, 105.0),
+    ('Red Dragon', 'Dragon/Boss', 10.0, 10.0, 60.0, 60.0, 60.0, 60.0),
+    ('Red Dragon', 'Dragon/Boss', 140.0, 140.0, 105.0, 105.0, 115.0, 115.0),
+    ('Red Drake', 'Dragon/Boss', 90.0, 90.0, 60.0, 60.0, 70.0, 70.0),
+    ('Silver Dragon', 'Dragon/Boss', 145.0, 145.0, 120.0, 120.0, 130.0, 130.0),
+    ('Silver Drake', 'Dragon/Boss', 105.0, 105.0, 85.0, 85.0, 95.0, 95.0),
+    ('Wyrm', 'Dragon/Boss', 130.0, 130.0, 160.0, 160.0, 170.0, 170.0),
+    ('Wyrm', 'Dragon/Boss', 175.0, 175.0, 140.0, 140.0, 150.0, 150.0),
+    ('Wyvern', 'Dragon/Boss', 125.0, 125.0, 95.0, 95.0, 105.0, 105.0),
+    ('the Gold Dragon', 'Dragon/Boss', 150.0, 150.0, 125.0, 125.0, 135.0, 135.0),
+    ('the Ice Dragon', 'Dragon/Boss', 165.0, 165.0, 130.0, 130.0, 140.0, 140.0),
+    ('Acid Elemental', 'Elemental', 45.0, 120.0, 15.0, 75.0, 15.0, 75.0),
+    ('Air Elemental', 'Elemental', 55.0, 135.0, 20.0, 85.0, 20.0, 85.0),
+    ('Blood Elemental', 'Elemental', 60.0, 120.0, 20.0, 80.0, 20.0, 80.0),
+    ('Earth Elemental', 'Elemental', 50.0, 100.0, 20.0, 80.0, 20.0, 80.0),
+    ('Efreet', 'Elemental', 40.0, 40.0, 40.0, 40.0, 40.0, 40.0),
+    ('Fire Elemental', 'Elemental', 50.0, 120.0, 20.0, 70.0, 20.0, 70.0),
+    ('Forrest Elemental', 'Elemental', 50.0, 50.0, 60.0, 60.0, 60.0, 60.0),
+    ('Ice Elemental', 'Elemental', 50.0, 120.0, 0.0, 90.0, 0.0, 90.0),
+    ('Poison Elemental', 'Elemental', 45.0, 120.0, 15.0, 75.0, 15.0, 75.0),
+    ('Rock Elemental', 'Elemental', 50.0, 50.0, 150.0, 150.0, 150.0, 150.0),
+    ('Shadow Elemental', 'Elemental', 65.0, 65.0, 80.0, 80.0, 80.0, 80.0),
+    ('Snow Elemental', 'Elemental', 40.0, 120.0, 25.0, 90.0, 25.0, 90.0),
+    ('Water Elemental', 'Elemental', 45.0, 120.0, 20.0, 80.0, 20.0, 80.0),
+    ('Ent', 'Ent', 55.0, 55.0, 20.0, 20.0, 20.0, 20.0),
+    ('Arghelior', 'Evil Race (humanoid)', 45.0, 45.0, 28.0, 28.0, 28.0, 28.0),
+    ('Carodejnice', 'Evil Race (humanoid)', 25.0, 30.0, 20.0, 20.0, 20.0, 20.0),
+    ('Gurg Ath', 'Evil Race (humanoid)', 33.0, 33.0, 25.0, 40.0, 25.0, 40.0),
+    ('Necromancer', 'Evil Race (humanoid)', 25.0, 80.0, 20.0, 80.0, 20.0, 80.0),
+    ('Nurn Man', 'Evil Race (humanoid)', 20.0, 40.0, 25.0, 40.0, 25.0, 40.0),
+    ('Pirat', 'Evil Race (humanoid)', 50.0, 50.0, 40.0, 40.0, 40.0, 40.0),
+    ('Pirat chief', 'Evil Race (humanoid)', 90.0, 90.0, 90.0, 90.0, 90.0, 90.0),
+    ('Piratka', 'Evil Race (humanoid)', 60.0, 60.0, 50.0, 50.0, 50.0, 50.0),
+    ('Saur Hat', 'Evil Race (humanoid)', 25.0, 33.0, 25.0, 40.0, 25.0, 40.0),
+    ('Skurut Hai', 'Evil Race (humanoid)', 33.0, 33.0, 25.0, 40.0, 25.0, 40.0),
+    ('Tulak', 'Evil Race (humanoid)', 20.0, 38.0, 20.0, 20.0, 20.0, 20.0),
+    ('Golem', 'Golem', 40.0, 180.0, 100.0, 180.0, 100.0, 180.0),
+    ('Reaper', 'Golem', 30.0, 100.0, 60.0, 130.0, 60.0, 130.0),
+    ('Spirit', 'Golem', 22.0, 72.0, 20.0, 80.0, 20.0, 80.0),
+    ('Ancient Ooze', 'Insect', 40.0, 40.0, 150.0, 150.0, 150.0, 150.0),
+    ('Black Serpent', 'Insect', 45.0, 45.0, 30.0, 30.0, 30.0, 30.0),
+    ('Bull Frog', 'Insect', 30.0, 30.0, 8.0, 8.0, 8.0, 8.0),
+    ('Cerna vdova', 'Insect', 55.0, 55.0, 100.0, 100.0, 100.0, 100.0),
+    ('Frost Ooze', 'Insect', 25.0, 25.0, 150.0, 150.0, 150.0, 150.0),
+    ('Giant Scorpion', 'Insect', 22.0, 22.0, 40.0, 40.0, 40.0, 40.0),
+    ('Giant Serpent', 'Insect', 22.0, 22.0, 15.0, 15.0, 15.0, 15.0),
+    ('Giant Toad', 'Insect', 25.0, 25.0, 12.0, 12.0, 12.0, 12.0),
+    ('Gold Serpent', 'Insect', 40.0, 40.0, 20.0, 20.0, 20.0, 20.0),
+    ('Ice Serpent', 'Insect', 50.0, 50.0, 30.0, 30.0, 30.0, 30.0),
+    ('Lava Serpent', 'Insect', 40.0, 40.0, 20.0, 20.0, 20.0, 20.0),
+    ('Magic Ooze', 'Insect', 25.0, 25.0, 150.0, 150.0, 150.0, 150.0),
+    ('Poison Ooze', 'Insect', 25.0, 25.0, 150.0, 150.0, 150.0, 150.0),
+    ('Poison Serpent', 'Insect', 35.0, 35.0, 20.0, 20.0, 20.0, 20.0),
+    ('Scorpion King', 'Insect', 45.0, 45.0, 40.0, 40.0, 40.0, 40.0),
+    ('Scorpion Prince', 'Insect', 35.0, 35.0, 40.0, 40.0, 40.0, 40.0),
+    ('Scorpion Queen', 'Insect', 40.0, 40.0, 30.0, 30.0, 30.0, 30.0),
+    ('Sea Serpent', 'Insect', 25.0, 25.0, 40.0, 40.0, 40.0, 40.0),
+    ('Silver Serpent', 'Insect', 30.0, 30.0, 20.0, 20.0, 20.0, 20.0),
+    ('Slime', 'Insect', 20.0, 20.0, 80.0, 80.0, 80.0, 80.0),
+    ('Smaragd Ooze', 'Insect', 35.0, 35.0, 150.0, 150.0, 150.0, 150.0),
+    ('Spider', 'Insect', 25.0, 60.0, 5.0, 21.0, 5.0, 21.0),
+    ('Spider King', 'Insect', 60.0, 60.0, 33.0, 33.0, 33.0, 33.0),
+    ('Spider Queen', 'Insect', 50.0, 50.0, 33.0, 33.0, 33.0, 33.0),
+    ('Tarantule', 'Insect', 55.0, 55.0, 120.0, 120.0, 120.0, 120.0),
+    ('Water Serpent', 'Insect', 33.0, 33.0, 20.0, 20.0, 20.0, 20.0),
+    ('c_spider_elder', 'Insect', 100.0, 100.0, 150.0, 150.0, 150.0, 150.0),
+    ('Headless', 'Misc Monster', 16.0, 16.0, 9.0, 9.0, 9.0, 9.0),
+    ('Hellcat', 'Misc Monster', 11.0, 31.0, 15.0, 15.0, 15.0, 15.0),
+    ('Imp', 'Misc Monster', 20.0, 20.0, 15.0, 15.0, 15.0, 15.0),
+    ('Subterranean Mongbat', 'Misc Monster', 17.0, 27.0, 10.0, 10.0, 10.0, 10.0),
+    ('Cyclop', 'Ogre', 60.0, 60.0, 70.0, 90.0, 70.0, 90.0),
+    ('Cyclops King', 'Ogre', 75.0, 75.0, 140.0, 140.0, 140.0, 140.0),
+    ('Ettin', 'Ogre', 30.0, 45.0, 25.0, 25.0, 25.0, 25.0),
+    ('Ettin Lord', 'Ogre', 65.0, 65.0, 45.0, 45.0, 45.0, 45.0),
+    ('Titan', 'Ogre', 80.0, 80.0, 95.0, 95.0, 95.0, 95.0),
+    ('Titan Lord', 'Ogre', 95.0, 95.0, 105.0, 105.0, 105.0, 105.0),
+    ('Titan Mage', 'Ogre', 75.0, 75.0, 105.0, 105.0, 105.0, 105.0),
+    ('Troll', 'Ogre', 20.0, 45.0, 20.0, 35.0, 20.0, 35.0),
+    ('Zlobr', 'Ogre', 40.0, 50.0, 50.0, 60.0, 50.0, 60.0),
+    ('Zlobr Valecnik', 'Ogre', 60.0, 60.0, 85.0, 85.0, 85.0, 85.0),
+    ('Jestirek', 'Orc', 15.0, 40.0, 15.0, 15.0, 15.0, 15.0),
+    ('Krysak', 'Orc', 10.0, 30.0, 10.0, 10.0, 10.0, 10.0),
+    ('Lizard King', 'Orc', 70.0, 70.0, 60.0, 60.0, 60.0, 60.0),
+    ('Morijsky jeskynni obr', 'Orc', 100.0, 100.0, 145.0, 145.0, 145.0, 145.0),
+    ('Orc', 'Orc', 25.0, 80.0, 20.0, 95.0, 20.0, 95.0),
+    ('Frost Golem', 'Snow Monster', 130.0, 130.0, 120.0, 120.0, 120.0, 120.0),
+    ('Ice Archer', 'Snow Monster', 60.0, 60.0, 40.0, 40.0, 40.0, 40.0),
+    ('Ice Skeleton', 'Snow Monster', 75.0, 75.0, 70.0, 70.0, 70.0, 70.0),
+    ('Ledovy Drapac', 'Snow Monster', 65.0, 65.0, 65.0, 65.0, 65.0, 65.0),
+    ('Llama', 'Snow Monster', 4.0, 4.0, 3.0, 3.0, 3.0, 3.0),
+    ('Menivec', 'Snow Monster', 140.0, 140.0, 120.0, 120.0, 120.0, 120.0),
+    ('Poustevnik', 'Snow Monster', 30.0, 30.0, 40.0, 40.0, 40.0, 40.0),
+    ('Slizoun', 'Snow Monster', 50.0, 50.0, 150.0, 150.0, 150.0, 150.0),
+    ('Snehovy Drapac', 'Snow Monster', 65.0, 65.0, 65.0, 65.0, 65.0, 65.0),
+    ('Snow Craft', 'Snow Monster', 50.0, 50.0, 40.0, 40.0, 40.0, 40.0),
+    ('Snow Finger', 'Snow Monster', 25.0, 25.0, 60.0, 60.0, 60.0, 60.0),
+    ('Snow Gargoyle', 'Snow Monster', 95.0, 95.0, 90.0, 90.0, 90.0, 90.0),
+    ('Snow Gladiator', 'Snow Monster', 125.0, 125.0, 140.0, 140.0, 140.0, 140.0),
+    ('Snow Guard', 'Snow Monster', 140.0, 140.0, 120.0, 120.0, 120.0, 120.0),
+    ('Snow Harpy', 'Snow Monster', 68.0, 68.0, 70.0, 70.0, 70.0, 70.0),
+    ('Snow Inscripter', 'Snow Monster', 60.0, 60.0, 40.0, 40.0, 40.0, 40.0),
+    ('Snow King', 'Snow Monster', 100.0, 100.0, 100.0, 100.0, 100.0, 100.0),
+    ('Snow Mage', 'Snow Monster', 70.0, 70.0, 40.0, 40.0, 40.0, 40.0),
+    ('Snow Miner', 'Snow Monster', 70.0, 70.0, 40.0, 40.0, 40.0, 40.0),
+    ('Snow Skeleton', 'Snow Monster', 75.0, 75.0, 70.0, 70.0, 70.0, 70.0),
+    ('Snow Smith', 'Snow Monster', 70.0, 70.0, 20.0, 20.0, 20.0, 20.0),
+    ('Snow Tamer', 'Snow Monster', 50.0, 50.0, 40.0, 40.0, 40.0, 40.0),
+    ('Snow Tarantule', 'Snow Monster', 70.0, 70.0, 100.0, 100.0, 100.0, 100.0),
+    ('Snow Titan', 'Snow Monster', 100.0, 100.0, 140.0, 140.0, 140.0, 140.0),
+    ('Snow Troll', 'Snow Monster', 55.0, 55.0, 25.0, 25.0, 25.0, 25.0),
+    ('Snow Warrior', 'Snow Monster', 90.0, 100.0, 50.0, 50.0, 50.0, 50.0),
+    ('Snow spirit', 'Snow Monster', 82.0, 82.0, 88.0, 88.0, 88.0, 88.0),
+    ('Strazce Ledu', 'Snow Monster', 110.0, 110.0, 100.0, 100.0, 100.0, 100.0),
+    ('Strazce Snehu', 'Snow Monster', 110.0, 110.0, 100.0, 100.0, 100.0, 100.0),
+    ('Strazce studny', 'Snow Monster', 30.0, 30.0, 40.0, 40.0, 40.0, 40.0),
+    ('Zostrich', 'Snow Monster', 22.0, 22.0, 30.0, 30.0, 30.0, 30.0),
+    ('Admantinum Mummy', 'Special', 85.0, 85.0, 130.0, 130.0, 130.0, 130.0),
+    ('Beholder', 'Special', 9.0, 9.0, 18.0, 18.0, 18.0, 18.0),
+    ('Blood Mummy', 'Special', 75.0, 75.0, 120.0, 120.0, 120.0, 120.0),
+    ('Cajun', 'Special', 40.0, 60.0, 60.0, 95.0, 60.0, 95.0),
+    ('Cajun Lord', 'Special', 145.0, 145.0, 100.0, 100.0, 100.0, 100.0),
+    ('Elder Gazer', 'Special', 21.0, 21.0, 35.0, 35.0, 35.0, 35.0),
+    ('Evil', 'Special', 120.0, 120.0, 150.0, 150.0, 150.0, 150.0),
+    ('Excelent', 'Special', 140.0, 140.0, 140.0, 140.0, 140.0, 140.0),
+    ('Eye', 'Special', 16.0, 30.0, 20.0, 50.0, 20.0, 50.0),
+    ('Gazer', 'Special', 11.0, 11.0, 28.0, 28.0, 28.0, 28.0),
+    ('Gladiator', 'Special', 80.0, 80.0, 130.0, 130.0, 130.0, 130.0),
+    ('Gladiator Lord', 'Special', 120.0, 120.0, 140.0, 140.0, 140.0, 140.0),
+    ('Minotaur', 'Special', 90.0, 90.0, 65.0, 65.0, 65.0, 65.0),
+    ('Stone Mummy', 'Special', 60.0, 60.0, 110.0, 110.0, 110.0, 110.0),
+    ('Strazce', 'Special', 100.0, 100.0, 70.0, 70.0, 70.0, 70.0),
+    ('Wisp', 'Special', 25.0, 25.0, 20.0, 20.0, 20.0, 20.0),
+    ('c_strazce_ohne', 'Special', 80.0, 80.0, 110.0, 110.0, 110.0, 110.0),
+    ('Cerny Medved', 'Summon', 16.0, 16.0, 13.0, 13.0, 13.0, 13.0),
+    ('Elemental Ohne', 'Summon', 20.0, 20.0, 20.0, 20.0, 20.0, 20.0),
+    ('Elemental Smrti', 'Summon', 120.0, 120.0, 5.0, 5.0, 5.0, 5.0),
+    ('Elemental Vody', 'Summon', 50.0, 50.0, 50.0, 50.0, 50.0, 50.0),
+    ('Elemental Vzduchu', 'Summon', 55.0, 55.0, 60.0, 60.0, 60.0, 60.0),
+    ('Elemental Zeme', 'Summon', 50.0, 50.0, 80.0, 80.0, 80.0, 80.0),
+    ('Hnedy Medved', 'Summon', 15.0, 15.0, 20.0, 20.0, 20.0, 20.0),
+    ('Kostej', 'Summon', 20.0, 20.0, 15.0, 15.0, 15.0, 15.0),
+    ('Kostlivec', 'Summon', 9.0, 15.0, 4.0, 13.0, 4.0, 13.0),
+    ('Kostlivy Lucistnik', 'Summon', 17.0, 17.0, 8.0, 8.0, 8.0, 8.0),
+    ('Kostlivy Mag', 'Summon', 15.0, 15.0, 7.0, 7.0, 7.0, 7.0),
+    ('Kostlivy Sekernik', 'Summon', 16.0, 16.0, 10.0, 10.0, 10.0, 10.0),
+    ('Kun', 'Summon', 4.0, 4.0, 10.0, 10.0, 10.0, 10.0),
+    ('Ledni Medved', 'Summon', 8.0, 28.0, 18.0, 30.0, 18.0, 30.0),
+    ('Lich', 'Summon', 16.0, 16.0, 20.0, 20.0, 20.0, 20.0),
+    ('Lord Lich', 'Summon', 30.0, 30.0, 40.0, 40.0, 40.0, 40.0),
+    ('Medved Grizzly', 'Summon', 20.0, 20.0, 15.0, 15.0, 15.0, 15.0),
+    ('Mumie', 'Summon', 30.0, 30.0, 80.0, 80.0, 80.0, 80.0),
+    ('Obri Krysa', 'Summon', 10.0, 10.0, 5.0, 5.0, 5.0, 5.0),
+    ('Obri Skorpion', 'Summon', 22.0, 22.0, 15.0, 15.0, 15.0, 15.0),
+    ('Prizrak', 'Summon', 20.0, 20.0, 60.0, 60.0, 60.0, 60.0),
+    ('Satan', 'Summon', 50.0, 80.0, 60.0, 70.0, 60.0, 70.0),
+    ('Temny Kun', 'Summon', 4.0, 4.0, 10.0, 10.0, 10.0, 10.0),
+    ('Temny Vampir', 'Summon', 20.0, 20.0, 40.0, 40.0, 40.0, 40.0),
+    ('Vampir', 'Summon', 25.0, 25.0, 25.0, 25.0, 25.0, 25.0),
+    ('Vortex', 'Summon', 70.0, 70.0, 50.0, 50.0, 50.0, 50.0),
+    ('Zombik', 'Summon', 10.0, 10.0, 6.0, 6.0, 6.0, 6.0),
+    ('c_blade_spirit', 'Summon', 40.0, 40.0, 40.0, 40.0, 40.0, 40.0),
+    ('c_daemon_mage1', 'Summon', 65.0, 65.0, 70.0, 70.0, 70.0, 70.0),
+    ('c_daemon_sword1', 'Summon', 65.0, 65.0, 60.0, 60.0, 60.0, 60.0),
+    ('Beetle Giant', 'T2A Dungeon', 40.0, 40.0, 40.0, 40.0, 40.0, 40.0),
+    ('Fireant Daemon', 'T2A Dungeon', 60.0, 60.0, 100.0, 100.0, 100.0, 100.0),
+    ('Fireant Mage', 'T2A Dungeon', 40.0, 40.0, 40.0, 40.0, 40.0, 40.0),
+    ('Fireant Queen', 'T2A Dungeon', 100.0, 100.0, 100.0, 100.0, 100.0, 100.0),
+    ('Fireant Warrior', 'T2A Dungeon', 60.0, 60.0, 80.0, 80.0, 80.0, 80.0),
+    ('Fireant Worker', 'T2A Dungeon', 40.0, 40.0, 60.0, 60.0, 60.0, 60.0),
+    ('Giant Bug', 'T2A Dungeon', 71.0, 71.0, 140.0, 140.0, 140.0, 140.0),
+    ('Ophidian Archmage', 'T2A Dungeon', 60.0, 60.0, 32.0, 32.0, 32.0, 32.0),
+    ('Ophidian King', 'T2A Dungeon', 90.0, 90.0, 80.0, 80.0, 80.0, 80.0),
+    ('Ophidian Knight', 'T2A Dungeon', 80.0, 80.0, 30.0, 30.0, 30.0, 30.0),
+    ('Ophidian Mage', 'T2A Dungeon', 40.0, 40.0, 35.0, 35.0, 35.0, 35.0),
+    ('Ophidian Queen', 'T2A Dungeon', 80.0, 80.0, 35.0, 35.0, 35.0, 35.0),
+    ('Ophidian Warrior', 'T2A Dungeon', 50.0, 50.0, 60.0, 60.0, 60.0, 60.0),
+    ('Terathan Avenger', 'T2A Dungeon', 30.0, 30.0, 25.0, 25.0, 25.0, 25.0),
+    ('Terathan Drone', 'T2A Dungeon', 40.0, 40.0, 35.0, 35.0, 35.0, 35.0),
+    ('Terathan Matriarch', 'T2A Dungeon', 30.0, 30.0, 35.0, 35.0, 35.0, 35.0),
+    ('Terathan Warrior', 'T2A Dungeon', 50.0, 50.0, 25.0, 25.0, 25.0, 25.0),
+    ('Bone Dragon', 'Undead', 140.0, 140.0, 140.0, 140.0, 140.0, 140.0),
+    ('Death Elemental', 'Undead', 35.0, 35.0, 20.0, 20.0, 20.0, 20.0),
+    ('Elder Shadow', 'Undead', 110.0, 110.0, 80.0, 80.0, 80.0, 80.0),
+    ('Fext', 'Undead', 40.0, 40.0, 20.0, 20.0, 20.0, 20.0),
+    ('Ghost', 'Undead', 13.0, 13.0, 20.0, 20.0, 20.0, 20.0),
+    ('Ghoul', 'Undead', 26.0, 26.0, 15.0, 15.0, 15.0, 15.0),
+    ('Kostlivec Carodej', 'Undead', 12.0, 45.0, 10.0, 60.0, 10.0, 60.0),
+    ('Kostlivec Lucistnik', 'Undead', 10.0, 45.0, 10.0, 60.0, 10.0, 60.0),
+    ('Kostlivec Nesmrtelny', 'Undead', 100.0, 100.0, 110.0, 110.0, 110.0, 110.0),
+    ('Kostlivec Rytir', 'Undead', 25.0, 40.0, 25.0, 45.0, 25.0, 45.0),
+    ('Kostlivec Sekernik', 'Undead', 10.0, 60.0, 10.0, 60.0, 10.0, 60.0),
+    ('Kostlivec Valecnik', 'Undead', 11.0, 16.0, 14.0, 18.0, 14.0, 18.0),
+    ('Kostlivec Velmistr', 'Undead', 75.0, 75.0, 70.0, 70.0, 70.0, 70.0),
+    ('Kral Nemrtvych', 'Undead', 110.0, 110.0, 80.0, 80.0, 80.0, 80.0),
+    ('Liche', 'Undead', 24.0, 24.0, 20.0, 20.0, 20.0, 20.0),
+    ('Liche King', 'Undead', 60.0, 60.0, 60.0, 60.0, 60.0, 60.0),
+    ('Liche Lord', 'Undead', 35.0, 35.0, 40.0, 40.0, 40.0, 40.0),
+    ('Mummy', 'Undead', 28.0, 38.0, 40.0, 40.0, 40.0, 40.0),
+    ('Skull head', 'Undead', 12.0, 12.0, 20.0, 25.0, 20.0, 25.0),
+    ('Spectre', 'Undead', 22.0, 52.0, 10.0, 10.0, 10.0, 10.0),
+    ('Undead Horse', 'Undead', 35.0, 35.0, 50.0, 50.0, 50.0, 50.0),
+    ('Wraith', 'Undead', 9.0, 9.0, 15.0, 15.0, 15.0, 15.0),
+    ('Zombie', 'Undead', 16.0, 16.0, 15.0, 15.0, 15.0, 15.0),
+    ('(unnamed unique NPC, specNPCVerbatim.def)', 'Unique/Boss (named NPC)', 18.0, 45.0, 25.0, 60.0, 25.0, 60.0),
+    ('(unnamed unique NPC, specNPCVypravec.def)', 'Unique/Boss (named NPC)', 19.0, 19.0, 60.0, 60.0, 60.0, 60.0),
+    ('(unnamed unique NPC, specNPCqv2.def)', 'Unique/Boss (named NPC)', 100.0, 100.0, 110.0, 110.0, 110.0, 110.0),
+    ('(unnamed unique NPC, specNPCmandos.def)', 'Unique/Boss (named NPC)', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+    ('Acid Phoenix', 'Unique/Boss (named NPC)', 100.0, 100.0, 55.0, 55.0, 55.0, 55.0),
+    ('Ajda', 'Unique/Boss (named NPC)', 7.0, 7.0, 40.0, 40.0, 40.0, 40.0),
+    ('Ant', 'Unique/Boss (named NPC)', 80.0, 80.0, 90.0, 90.0, 90.0, 90.0),
+    ('Ant Daemon', 'Unique/Boss (named NPC)', 60.0, 60.0, 100.0, 100.0, 100.0, 100.0),
+    ('Ant Elder', 'Unique/Boss (named NPC)', 60.0, 60.0, 70.0, 70.0, 70.0, 70.0),
+    ('Ant Lord', 'Unique/Boss (named NPC)', 110.0, 110.0, 100.0, 100.0, 100.0, 100.0),
+    ('Aresion', 'Unique/Boss (named NPC)', 120.0, 120.0, 150.0, 150.0, 150.0, 150.0),
+    ('Blood Eye', 'Unique/Boss (named NPC)', 60.0, 60.0, 0.0, 0.0, 0.0, 0.0),
+    ('Blood King', 'Unique/Boss (named NPC)', 100.0, 100.0, 150.0, 150.0, 150.0, 150.0),
+    ('Blood spirit', 'Unique/Boss (named NPC)', 35.0, 35.0, 38.0, 38.0, 38.0, 38.0),
+    ('Bloody Eye', 'Unique/Boss (named NPC)', 60.0, 60.0, 20.0, 20.0, 20.0, 20.0),
+    ('Carodejka Strachu', 'Unique/Boss (named NPC)', 120.0, 120.0, 40.0, 40.0, 40.0, 40.0),
+    ('Caveant', 'Unique/Boss (named NPC)', 80.0, 80.0, 90.0, 90.0, 90.0, 90.0),
+    ('Caveant Daemon', 'Unique/Boss (named NPC)', 60.0, 60.0, 100.0, 100.0, 100.0, 100.0),
+    ('Caveant Elder', 'Unique/Boss (named NPC)', 60.0, 60.0, 70.0, 70.0, 70.0, 70.0),
+    ('Caveant Lord', 'Unique/Boss (named NPC)', 110.0, 110.0, 100.0, 100.0, 100.0, 100.0),
+    ('Cernokneznik Hruzy', 'Unique/Boss (named NPC)', 120.0, 120.0, 80.0, 90.0, 80.0, 90.0),
+    ('Chrozountar', 'Unique/Boss (named NPC)', 10.0, 10.0, 10.0, 10.0, 10.0, 10.0),
+    ('Chrozountar Nicitel', 'Unique/Boss (named NPC)', 10.0, 10.0, 10.0, 10.0, 10.0, 10.0),
+    ('Chrozountar starsi', 'Unique/Boss (named NPC)', 10.0, 10.0, 10.0, 10.0, 10.0, 10.0),
+    ('Detheanorus, smutny bard', 'Unique/Boss (named NPC)', 60.0, 60.0, 80.0, 80.0, 80.0, 80.0),
+    ('Divoka Kocka', 'Unique/Boss (named NPC)', 1.0, 1.0, 4.0, 4.0, 4.0, 4.0),
+    ('Drone', 'Unique/Boss (named NPC)', 20.0, 20.0, 85.0, 85.0, 85.0, 85.0),
+    ('Duch Runy', 'Unique/Boss (named NPC)', 70.0, 150.0, 90.0, 100.0, 90.0, 100.0),
+    ('Elder Drone', 'Unique/Boss (named NPC)', 135.0, 135.0, 85.0, 85.0, 85.0, 85.0),
+    ('Etheria Warrior', 'Unique/Boss (named NPC)', 17.0, 17.0, 25.0, 25.0, 25.0, 25.0),
+    ('Etherijsky strazce', 'Unique/Boss (named NPC)', 120.0, 120.0, 150.0, 150.0, 150.0, 150.0),
+    ('Eye', 'Unique/Boss (named NPC)', 25.0, 120.0, 20.0, 100.0, 20.0, 100.0),
+    ('Eye - Invisible Eye', 'Unique/Boss (named NPC)', 80.0, 80.0, 40.0, 40.0, 40.0, 40.0),
+    ('Falesna Kocka', 'Unique/Boss (named NPC)', 80.0, 80.0, 35.0, 35.0, 35.0, 35.0),
+    ('Falesna Koza', 'Unique/Boss (named NPC)', 45.0, 45.0, 60.0, 60.0, 60.0, 60.0),
+    ('Falesna Krava', 'Unique/Boss (named NPC)', 55.0, 55.0, 100.0, 120.0, 100.0, 120.0),
+    ('Falesna Krysa', 'Unique/Boss (named NPC)', 60.0, 60.0, 32.0, 32.0, 32.0, 32.0),
+    ('Falesna Llama', 'Unique/Boss (named NPC)', 40.0, 160.0, 100.0, 160.0, 100.0, 160.0),
+    ('Falesna Slepice', 'Unique/Boss (named NPC)', 110.0, 110.0, 150.0, 150.0, 180.0, 180.0),
+    ('Falesna Srnka', 'Unique/Boss (named NPC)', 110.0, 110.0, 80.0, 80.0, 80.0, 80.0),
+    ('Falesna Zaba', 'Unique/Boss (named NPC)', 60.0, 60.0, 85.0, 85.0, 85.0, 85.0),
+    ('Falesne Prase', 'Unique/Boss (named NPC)', 120.0, 120.0, 140.0, 140.0, 140.0, 140.0),
+    ('Falesnej Medved', 'Unique/Boss (named NPC)', 90.0, 90.0, 65.0, 65.0, 65.0, 65.0),
+    ('Falesnej Mroz', 'Unique/Boss (named NPC)', 140.0, 140.0, 140.0, 140.0, 140.0, 140.0),
+    ('Falesnej Pes', 'Unique/Boss (named NPC)', 90.0, 90.0, 80.0, 80.0, 80.0, 80.0),
+    ('Falesnej Sob', 'Unique/Boss (named NPC)', 80.0, 120.0, 130.0, 150.0, 130.0, 150.0),
+    ('Falesnej Tygr', 'Unique/Boss (named NPC)', 80.0, 80.0, 30.0, 30.0, 30.0, 30.0),
+    ('Falesnej Vul', 'Unique/Boss (named NPC)', 30.0, 30.0, 22.0, 22.0, 22.0, 22.0),
+    ('Falesny Papousek', 'Unique/Boss (named NPC)', 90.0, 90.0, 110.0, 110.0, 130.0, 130.0),
+    ('Fanatik', 'Unique/Boss (named NPC)', 155.0, 155.0, 60.0, 60.0, 60.0, 60.0),
+    ('Fire Lord', 'Unique/Boss (named NPC)', 145.0, 145.0, 100.0, 100.0, 100.0, 100.0),
+    ('Fire Phoenix', 'Unique/Boss (named NPC)', 100.0, 100.0, 55.0, 55.0, 55.0, 55.0),
+    ('Forrest Elemental', 'Unique/Boss (named NPC)', 18.0, 18.0, 30.0, 30.0, 30.0, 30.0),
+    ('Had', 'Unique/Boss (named NPC)', 140.0, 140.0, 70.0, 70.0, 70.0, 70.0),
+    ('Had', 'Unique/Boss (named NPC)', 140.0, 140.0, 70.0, 70.0, 70.0, 70.0),
+    ('Harfan', 'Unique/Boss (named NPC)', 60.0, 60.0, 85.0, 85.0, 85.0, 85.0),
+    ('Harfan', 'Unique/Boss (named NPC)', 130.0, 170.0, 110.0, 160.0, 110.0, 160.0),
+    ('Hejkal', 'Unique/Boss (named NPC)', 25.0, 25.0, 85.0, 85.0, 85.0, 85.0),
+    ('Hejkal', 'Unique/Boss (named NPC)', 42.0, 132.0, 35.0, 80.0, 35.0, 80.0),
+    ('Hornicky predak', 'Unique/Boss (named NPC)', 30.0, 30.0, 40.0, 40.0, 40.0, 40.0),
+    ('Imp', 'Unique/Boss (named NPC)', 50.0, 50.0, 25.0, 25.0, 25.0, 25.0),
+    ('Imp', 'Unique/Boss (named NPC)', 50.0, 50.0, 25.0, 25.0, 25.0, 25.0),
+    ('Infikovana krysa', 'Unique/Boss (named NPC)', 75.0, 75.0, 45.0, 45.0, 45.0, 45.0),
+    ('Kouzelnik Strachu', 'Unique/Boss (named NPC)', 140.0, 140.0, 40.0, 40.0, 40.0, 40.0),
+    ('Kracejici hruza', 'Unique/Boss (named NPC)', 180.0, 180.0, 25.0, 25.0, 25.0, 25.0),
+    ('Kralovsky zrizenec', 'Unique/Boss (named NPC)', 60.0, 60.0, 80.0, 80.0, 80.0, 80.0),
+    ('Krvavy Drapac', 'Unique/Boss (named NPC)', 60.0, 60.0, 80.0, 80.0, 80.0, 80.0),
+    ('Krvavy prisluhovac', 'Unique/Boss (named NPC)', 73.0, 73.0, 72.0, 72.0, 72.0, 72.0),
+    ('Lady Velera', 'Unique/Boss (named NPC)', 121.0, 121.0, 120.0, 120.0, 120.0, 120.0),
+    ('Lord Merxis', 'Unique/Boss (named NPC)', 100.0, 100.0, 150.0, 150.0, 150.0, 150.0),
+    ('Lost Soul', 'Unique/Boss (named NPC)', 60.0, 60.0, 90.0, 90.0, 90.0, 90.0),
+    ('Maarg', 'Unique/Boss (named NPC)', 150.0, 150.0, 100.0, 100.0, 100.0, 100.0),
+    ('Marghuluv zmocnenec', 'Unique/Boss (named NPC)', 60.0, 60.0, 80.0, 80.0, 80.0, 80.0),
+    ('Menivec', 'Unique/Boss (named NPC)', 70.0, 140.0, 80.0, 100.0, 80.0, 100.0),
+    ('Micka', 'Unique/Boss (named NPC)', 5.0, 5.0, 20.0, 20.0, 20.0, 20.0),
+    ('Midnight Elemental', 'Unique/Boss (named NPC)', 55.0, 55.0, 60.0, 60.0, 60.0, 60.0),
+    ('Mitabref', 'Unique/Boss (named NPC)', 40.0, 50.0, 50.0, 50.0, 50.0, 50.0),
+    ('Nemrtvy Strazce', 'Unique/Boss (named NPC)', 150.0, 150.0, 90.0, 90.0, 90.0, 90.0),
+    ('Nexmirias Archer', 'Unique/Boss (named NPC)', 60.0, 60.0, 40.0, 40.0, 40.0, 40.0),
+    ('Nexmirias Mage', 'Unique/Boss (named NPC)', 70.0, 70.0, 40.0, 40.0, 40.0, 40.0),
+    ('Nexmirias Warrior', 'Unique/Boss (named NPC)', 50.0, 90.0, 60.0, 60.0, 60.0, 60.0),
+    ('Ohnivy Fanatik', 'Unique/Boss (named NPC)', 150.0, 150.0, 70.0, 70.0, 70.0, 70.0),
+    ('Osoba', 'Unique/Boss (named NPC)', 35.0, 35.0, 20.0, 20.0, 20.0, 20.0),
+    ('Pachnouci krysa', 'Unique/Boss (named NPC)', 75.0, 75.0, 45.0, 45.0, 45.0, 45.0),
+    ('Phantom', 'Unique/Boss (named NPC)', 6.0, 9.0, 20.0, 20.0, 20.0, 20.0),
+    ('Prevoznik', 'Unique/Boss (named NPC)', 60.0, 60.0, 80.0, 80.0, 80.0, 80.0),
+    ('Reaper', 'Unique/Boss (named NPC)', 100.0, 100.0, 100.0, 100.0, 100.0, 100.0),
+    ('Reznik', 'Unique/Boss (named NPC)', 85.0, 85.0, 45.0, 45.0, 45.0, 45.0),
+    ('Rock Elemental', 'Unique/Boss (named NPC)', 18.0, 18.0, 50.0, 50.0, 50.0, 50.0),
+    ('Ropucha', 'Unique/Boss (named NPC)', 10.0, 10.0, 18.0, 18.0, 18.0, 18.0),
+    ('Shagar Guardian', 'Unique/Boss (named NPC)', 60.0, 60.0, 89.0, 89.0, 89.0, 89.0),
+    ('Shagar Guardian', 'Unique/Boss (named NPC)', 90.0, 90.0, 99.0, 99.0, 99.0, 99.0),
+    ('Shagar elemental', 'Unique/Boss (named NPC)', 49.0, 49.0, 99.0, 99.0, 99.0, 99.0),
+    ('Shagarsky Bojovnik - Shagar (archer)', 'Unique/Boss (named NPC)', 70.0, 70.0, 70.0, 70.0, 70.0, 70.0),
+    ('Shagarsky Bojovnik - Shagar (mage)', 'Unique/Boss (named NPC)', 60.0, 60.0, 70.0, 70.0, 70.0, 70.0),
+    ('Shagarsky Bojovnik - Shagar (war)', 'Unique/Boss (named NPC)', 85.0, 85.0, 70.0, 70.0, 70.0, 70.0),
+    ('Shagarsky bojovnik', 'Unique/Boss (named NPC)', 70.0, 95.0, 70.0, 80.0, 70.0, 80.0),
+    ('Silvanie', 'Unique/Boss (named NPC)', 75.0, 75.0, 85.0, 85.0, 85.0, 85.0),
+    ('Skull head', 'Unique/Boss (named NPC)', 25.0, 25.0, 20.0, 20.0, 20.0, 20.0),
+    ('Sluzebnice Kristalu', 'Unique/Boss (named NPC)', 80.0, 80.0, 140.0, 140.0, 140.0, 140.0),
+    ('Sluzebnik Kristalu', 'Unique/Boss (named NPC)', 80.0, 80.0, 140.0, 140.0, 140.0, 140.0),
+    ('Smoke Elemental', 'Unique/Boss (named NPC)', 60.0, 60.0, 80.0, 80.0, 80.0, 80.0),
+    ('Snow Mairacle', 'Unique/Boss (named NPC)', 70.0, 70.0, 40.0, 40.0, 40.0, 40.0),
+    ('Snuffer', 'Unique/Boss (named NPC)', 50.0, 50.0, 22.0, 22.0, 22.0, 22.0),
+    ('Spirit', 'Unique/Boss (named NPC)', 22.0, 22.0, 65.0, 65.0, 65.0, 65.0),
+    ('Spirit', 'Unique/Boss (named NPC)', 80.0, 80.0, 80.0, 80.0, 80.0, 80.0),
+    ('Strazce Mrtvich', 'Unique/Boss (named NPC)', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+    ('Strazce pracovniho tabora', 'Unique/Boss (named NPC)', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+    ('Strazny golem', 'Unique/Boss (named NPC)', 55.0, 55.0, 60.0, 60.0, 300.0, 300.0),
+    ('Summon golem', 'Unique/Boss (named NPC)', 55.0, 55.0, 60.0, 60.0, 300.0, 300.0),
+    ('Sun Archer', 'Unique/Boss (named NPC)', 60.0, 60.0, 40.0, 40.0, 40.0, 40.0),
+    ('Sun Mage', 'Unique/Boss (named NPC)', 70.0, 70.0, 40.0, 40.0, 40.0, 40.0),
+    ('Sun Warrior', 'Unique/Boss (named NPC)', 100.0, 100.0, 20.0, 20.0, 20.0, 20.0),
+    ('Supporter maga', 'Unique/Boss (named NPC)', 50.0, 50.0, 85.0, 85.0, 85.0, 85.0),
+    ('Supporter necra', 'Unique/Boss (named NPC)', 50.0, 50.0, 85.0, 85.0, 85.0, 85.0),
+    ('SwARPUS', 'Unique/Boss (named NPC)', 50.0, 50.0, 180.0, 180.0, 180.0, 180.0),
+    ('Tearus', 'Unique/Boss (named NPC)', 10.0, 10.0, 15.0, 15.0, 15.0, 15.0),
+    ('Troll', 'Unique/Boss (named NPC)', 18.0, 18.0, 50.0, 50.0, 50.0, 50.0),
+    ('Uhlir', 'Unique/Boss (named NPC)', 5.0, 5.0, 5.0, 5.0, 5.0, 5.0),
+    ('VAMPIRE', 'Unique/Boss (named NPC)', 100.0, 155.0, 60.0, 110.0, 60.0, 110.0),
+    ('Vladce Run', 'Unique/Boss (named NPC)', 100.0, 100.0, 140.0, 140.0, 140.0, 140.0),
+    ('Vodni ropucha', 'Unique/Boss (named NPC)', 75.0, 75.0, 55.0, 55.0, 55.0, 55.0),
+    ('Water Eye', 'Unique/Boss (named NPC)', 60.0, 60.0, 0.0, 0.0, 0.0, 0.0),
+    ('Water man', 'Unique/Boss (named NPC)', 110.0, 110.0, 130.0, 130.0, 130.0, 130.0),
+    ('Water spirit', 'Unique/Boss (named NPC)', 35.0, 35.0, 38.0, 38.0, 38.0, 38.0),
+    ('Xillyon', 'Unique/Boss (named NPC)', 160.0, 160.0, 160.0, 160.0, 160.0, 160.0),
+    ('Zivy Pisek', 'Unique/Boss (named NPC)', 25.0, 25.0, 100.0, 100.0, 100.0, 100.0),
+    ('Zkuseny balzamovac', 'Unique/Boss (named NPC)', 20.0, 20.0, 40.0, 40.0, 40.0, 40.0),
+    ('cerv', 'Unique/Boss (named NPC)', 14.0, 14.0, 15.0, 15.0, 15.0, 15.0),
+    ('serpent druid', 'Unique/Boss (named NPC)', 75.0, 75.0, 80.0, 80.0, 80.0, 80.0),
+    ('the Almighty', 'Unique/Boss (named NPC)', 100.0, 100.0, 135.0, 135.0, 135.0, 135.0),
+    ('the Blockerka', 'Unique/Boss (named NPC)', 100.0, 100.0, 135.0, 135.0, 135.0, 135.0),
+    ('the Knihovnik', 'Unique/Boss (named NPC)', 100.0, 100.0, 135.0, 135.0, 135.0, 135.0),
+    ('the Owner', 'Unique/Boss (named NPC)', 110.0, 110.0, 135.0, 135.0, 135.0, 135.0),
+    ('the Pan Noci', 'Unique/Boss (named NPC)', 100.0, 100.0, 135.0, 135.0, 135.0, 135.0),
+    ('the Player Killer', 'Unique/Boss (named NPC)', 100.0, 100.0, 135.0, 135.0, 135.0, 135.0),
+    ('vezen Brinbor', 'Unique/Boss (named NPC)', 100.0, 100.0, 95.0, 95.0, 95.0, 95.0),
+]
+
+MONSTER_DEFAULTS = dict(
+    max_hits=100,  # scripts/Basic/CharClasses/NPC.Generated.cs:151 (Int16 maxHitpoints = 100) - flat for every monster, no .def override found
+    weapon_delay=2.0,  # scripts/Basic/CharClasses/NPC.Generated.cs:44 (InitTypedField("weaponDelay", 2.0, ...)) - flat for every monster, no .def override found
+)
+
 WEAPON_NAMES = [w[0] for w in WEAPON_ARCHETYPES]
 MATERIAL_NAMES_FOR_WEAPONS = [m[1] for m in WEAPON_TIERS]
 MATERIAL_NAMES_FOR_ARMOR = [m[1] for m in METAL_TIERS]
+
 
 
 def sheet_ref(title):
@@ -642,6 +1073,48 @@ def build_armor_ref(wb):
     return dict(header_row=header_r, data_start=data_start, data_end=data_end)
 
 
+def build_monsters_ref(wb):
+    ws = wb.create_sheet("Monsters Reference")
+    row = h1(ws, 1, 1, "Monsters Reference", span=8)
+    row = note(ws, row, 1,
+               f"HP (MaxHits) = {MONSTER_DEFAULTS['max_hits']} and WeaponDelay = "
+               f"{MONSTER_DEFAULTS['weapon_delay']} seconds are FLAT for every single monster - no "
+               f".def file sets either field, confirmed via scripts/Basic/CharClasses/"
+               f"NPC.Generated.cs:151 (MaxHits) and :44 (WeaponDelay). Not shown as per-monster "
+               f"columns below since there's no real per-monster variation - a GM can override "
+               f"either live per-spawn, which this table can't reflect.", span=8)
+    row += 1
+    row = note(ws, row, 1,
+               "417 distinct base creatures, deduplicated from ~761 raw NPCDef blocks across "
+               "scripts/converted/chars/*.def (weapon/color variants of the same creature collapsed "
+               "into one row; vendors.def/guards.def/mounts.def/ucitele.def excluded as non-monster "
+               "content). Where merged variants had different WeaponAttack/ArmorVsP/ArmorVsM, Min "
+               "and Max columns differ instead of silently picking one value - use the profession "
+               "tabs' monster-picker to auto-fill the AVERAGE of min/max, or look up the specific "
+               "variant's real number directly in the source .def if you need the exact figure.",
+               span=8)
+    row += 1
+    header_r = row
+    row = header_row(ws, row, 1, ["Name", "Category", "WeaponAttack Min", "WeaponAttack Max",
+                                   "ArmorVsP Min", "ArmorVsP Max", "ArmorVsM Min", "ArmorVsM Max"])
+    data_start = row
+    data_rows(ws, row, 1, [["(manual)", "(manual)", 0, 0, 0, 0, 0, 0]])
+    row += 1
+    for m in sorted(MONSTERS, key=lambda x: (x[1], x[0])):
+        data_rows(ws, row, 1, [list(m)])
+        row += 1
+    data_end = row - 1
+    row += 1
+    row = note(ws, row, 1, "Source: scripts/converted/chars/*.def (32 files). How to change: edit "
+                            "the WeaponAttack/ArmorVsP/ArmorVsM fields on the relevant NPCDef, "
+                            "restart server - or use a GM .settings/live command to override a "
+                            "specific spawned instance.", span=8)
+    autosize(ws, {1: 34, 2: 22})
+    for c in range(3, 9):
+        ws.column_dimensions[get_column_letter(c)].width = 15
+    return dict(header_row=header_r, data_start=data_start, data_end=data_end)
+
+
 MELEE_ARCHETYPES = [w for w in WEAPON_ARCHETYPES if w[2] not in ("Bow", "XBow")]
 RANGED_ARCHETYPES = [w for w in WEAPON_ARCHETYPES if w[2] in ("Bow", "XBow")]
 
@@ -649,6 +1122,50 @@ SKILL_TO_RESIST = {
     "Swords": "ResistSlashing", "Fencing": "ResistStabbing", "Macing": "ResistBlunt",
     "Archery": "ResistArchery", "Marksmanship": "ResistArchery",
 }
+
+
+def add_monster_picker(ws, row, mi, kind, manual_cells, prefix):
+    """Adds a monster-name dropdown (sourced from the Monsters Reference sheet, '(manual)' as the
+    first/default option) plus one resolved output cell per stat. kind='defense' resolves
+    ArmorClassVsM (average of the catalog's Min/Max) + HP (flat MONSTER_DEFAULTS default).
+    kind='offense' resolves WeaponAttack (average of Min/Max) + WeaponDelay (flat default).
+    Falls back to the corresponding manual_cells entry when '(manual)' is selected.
+    Returns (new_row, {stat_name: resolved_cell_ref})."""
+    ws.cell(row=row, column=1,
+            value=f"{prefix}: pick a cataloged monster (optional, overrides manual values below)")
+    ws.cell(row=row, column=2, value="(manual)").fill = INPUT_FILL
+    picker_cell = f"$B${row}"
+    dv = DataValidation(type="list",
+                         formula1=f"='Monsters Reference'!$A${mi['data_start']}:$A${mi['data_end']}")
+    ws.add_data_validation(dv)
+    dv.add(ws.cell(row=row, column=2))
+    row += 1
+
+    def avg_lookup(col_min, col_max):
+        m = (f"MATCH({picker_cell},'Monsters Reference'!$A${mi['data_start']}:$A${mi['data_end']},0)")
+        return (f"AVERAGE(INDEX('Monsters Reference'!${col_min}${mi['data_start']}:${col_min}${mi['data_end']},{m}),"
+                f"INDEX('Monsters Reference'!${col_max}${mi['data_start']}:${col_max}${mi['data_end']},{m}))")
+
+    resolved = {}
+    if kind == "defense":
+        ws.cell(row=row, column=1, value=f"{prefix}: resolved ArmorClassVsM")
+        output_cell(ws, row, 2, f'=IF({picker_cell}="(manual)",{manual_cells["armor"]},{avg_lookup("G","H")})')
+        resolved["armor"] = f"$B${row}"
+        row += 1
+        ws.cell(row=row, column=1, value=f"{prefix}: resolved HP")
+        output_cell(ws, row, 2, f'=IF({picker_cell}="(manual)",{manual_cells["hp"]},{MONSTER_DEFAULTS["max_hits"]})')
+        resolved["hp"] = f"$B${row}"
+        row += 1
+    else:
+        ws.cell(row=row, column=1, value=f"{prefix}: resolved WeaponAttack")
+        output_cell(ws, row, 2, f'=IF({picker_cell}="(manual)",{manual_cells["weapon_attack"]},{avg_lookup("C","D")})')
+        resolved["weapon_attack"] = f"$B${row}"
+        row += 1
+        ws.cell(row=row, column=1, value=f"{prefix}: resolved WeaponDelay")
+        output_cell(ws, row, 2, f'=IF({picker_cell}="(manual)",{manual_cells["weapon_delay"]},{MONSTER_DEFAULTS["weapon_delay"]})')
+        resolved["weapon_delay"] = f"$B${row}"
+        row += 1
+    return row, resolved
 
 
 def _profession_header(ws, profession):
@@ -662,7 +1179,7 @@ def _profession_header(ws, profession):
     return row
 
 
-def build_melee_profession(wb, profession, weapons_info, ranged_note=None):
+def build_melee_profession(wb, profession, weapons_info, monsters_info, ranged_note=None):
     """Warrior/Thief shape: generic melee formula, no profession-specific damage path."""
     ws = wb.create_sheet(profession)
     row = _profession_header(ws, profession)
@@ -706,6 +1223,9 @@ def build_melee_profession(wb, profession, weapons_info, ranged_note=None):
         input_cell(ws, row, 2, default)
         cells[label] = f"$B${row}"
         row += 1
+    row, pvm_resolved = add_monster_picker(ws, row, monsters_info, "defense",
+                                            {"armor": cells["Monster ArmorClassVsM"], "hp": cells["Monster HP"]},
+                                            "PvM target")
     row += 1
 
     row = h2(ws, row, 1, "PvP target - another Player you're attacking", span=2)
@@ -727,8 +1247,12 @@ def build_melee_profession(wb, profession, weapons_info, ranged_note=None):
         input_cell(ws, row, 2, default)
         cells[label] = f"$B${row}"
         row += 1
+    row, mvp_resolved = add_monster_picker(ws, row, monsters_info, "offense",
+                                            {"weapon_attack": cells["Monster attacker WeaponAttack (flat)"],
+                                             "weapon_delay": cells["Monster attacker WeaponDelay (sec, flat)"]},
+                                            "MvP attacker")
     row = note(ws, row, 1, "Monster WeaponAttack/WeaponDelay are flat NPCDef stats with no formula behind them - "
-                            "look up the specific monster's chardef, or leave the defaults as a rough placeholder.",
+                            "pick a monster above to auto-fill, or leave on '(manual)' to type your own.",
                span=8)
     row += 1
     row = note(ws, row, 1, "'Resist<narrow>' is the ONE sub-type stat matching your weapon's skill category - "
@@ -782,14 +1306,14 @@ def build_melee_profession(wb, profession, weapons_info, ranged_note=None):
     ws.cell(row=row, column=1, value="Attack value (pre-AC)")
     output_cell(ws, row, 2, f"=C_weapAttack*$B${weapon_attack_row}*C_weapAttackVsM")
     output_cell(ws, row, 3, f"=C_weapAttack*C_weapAttackPvP*$B${weapon_attack_row}")
-    mvp_attack = f"=C_weapAttack*C_weapAttackM*{cells['Monster attacker WeaponAttack (flat)']}"
+    mvp_attack = f"=C_weapAttack*C_weapAttackM*{mvp_resolved['weapon_attack']}"
     for col in (4, 5, 6):
         output_cell(ws, row, col, mvp_attack)
     row += 1
 
     r_ac = row
     ws.cell(row=row, column=1, value="Armor Class effective")
-    output_cell(ws, row, 2, f"={cells['Monster ArmorClassVsM']}*C_armorClassM")
+    output_cell(ws, row, 2, f"={pvm_resolved['armor']}*C_armorClassM")
     output_cell(ws, row, 3, f"={cells['Enemy ArmorClassVsP']}*C_armorClassP")
     mvp_ac = f"={cells['Your ArmorClassVsP']}*C_armorClassP"
     for col in (4, 5, 6):
@@ -833,7 +1357,7 @@ def build_melee_profession(wb, profession, weapons_info, ranged_note=None):
     output_cell(ws, row, 2, f"=$B${delay_row}")
     output_cell(ws, row, 3, f"=$B${delay_row}")
     for col in (4, 5, 6):
-        output_cell(ws, row, col, f"={cells['Monster attacker WeaponDelay (sec, flat)']}")
+        output_cell(ws, row, col, f"={mvp_resolved['weapon_delay']}")
     row += 1
 
     r_dps = row
@@ -845,7 +1369,7 @@ def build_melee_profession(wb, profession, weapons_info, ranged_note=None):
 
     r_hp = row
     ws.cell(row=row, column=1, value="Target HP")
-    output_cell(ws, row, 2, f"={cells['Monster HP']}")
+    output_cell(ws, row, 2, f"={pvm_resolved['hp']}")
     output_cell(ws, row, 3, f"={cells['Enemy HP']}")
     for col in (4, 5, 6):
         output_cell(ws, row, col, f"={cells['Your HP']}")
@@ -902,7 +1426,7 @@ def add_thief_ability_table(wb):
         row += 1
 
 
-def build_ranger(wb, weapons_info):
+def build_ranger(wb, weapons_info, monsters_info):
     ws = wb.create_sheet("Ranger")
     row = _profession_header(ws, "Ranger")
     row = note(ws, row, 1,
@@ -947,6 +1471,9 @@ def build_ranger(wb, weapons_info):
         input_cell(ws, row, 2, default)
         cells[label] = f"$B${row}"
         row += 1
+    row, pvm_resolved = add_monster_picker(ws, row, monsters_info, "defense",
+                                            {"armor": cells["Monster ArmorClassVsM"], "hp": cells["Monster HP"]},
+                                            "PvM target")
     row += 1
     row = h2(ws, row, 1, "PvP target - another Player you're attacking", span=2)
     for label, default in [("Enemy ArmorClassVsP", 0), ("Enemy ResistPhysical (0-1)", 0),
@@ -964,6 +1491,10 @@ def build_ranger(wb, weapons_info):
         input_cell(ws, row, 2, default)
         cells[label] = f"$B${row}"
         row += 1
+    row, mvp_resolved = add_monster_picker(ws, row, monsters_info, "offense",
+                                            {"weapon_attack": cells["Monster attacker WeaponAttack (flat)"],
+                                             "weapon_delay": cells["Monster attacker WeaponDelay (sec, flat)"]},
+                                            "MvP attacker")
     row += 2
 
     base_row = row
@@ -1011,13 +1542,13 @@ def build_ranger(wb, weapons_info):
     ws.cell(row=row, column=1, value="Attack value (pre-AC)")
     output_cell(ws, row, 2, f"=C_weapAttack*$B${weapon_attack_row}*C_weapAttackVsM")
     output_cell(ws, row, 3, f"=C_weapAttack*C_weapAttackPvP*$B${weapon_attack_row}")
-    mvp_attack = f"=C_weapAttack*C_weapAttackM*{cells['Monster attacker WeaponAttack (flat)']}"
+    mvp_attack = f"=C_weapAttack*C_weapAttackM*{mvp_resolved['weapon_attack']}"
     for col in (4, 5, 6):
         output_cell(ws, row, col, mvp_attack)
     row += 1
     r_ac = row
     ws.cell(row=row, column=1, value="Armor Class effective")
-    output_cell(ws, row, 2, f"={cells['Monster ArmorClassVsM']}*C_armorClassM")
+    output_cell(ws, row, 2, f"={pvm_resolved['armor']}*C_armorClassM")
     output_cell(ws, row, 3, f"={cells['Enemy ArmorClassVsP']}*C_armorClassP")
     mvp_ac = f"={cells['Your ArmorClassVsP']}*C_armorClassP"
     for col in (4, 5, 6):
@@ -1056,7 +1587,7 @@ def build_ranger(wb, weapons_info):
     output_cell(ws, row, 2, f"=$B${delay_row}")
     output_cell(ws, row, 3, f"=$B${delay_row}")
     for col in (4, 5, 6):
-        output_cell(ws, row, col, f"={cells['Monster attacker WeaponDelay (sec, flat)']}")
+        output_cell(ws, row, col, f"={mvp_resolved['weapon_delay']}")
     row += 1
     r_dps = row
     ws.cell(row=row, column=1, value="DPS")
@@ -1066,7 +1597,7 @@ def build_ranger(wb, weapons_info):
     row += 1
     r_hp = row
     ws.cell(row=row, column=1, value="Target HP")
-    output_cell(ws, row, 2, f"={cells['Monster HP']}")
+    output_cell(ws, row, 2, f"={pvm_resolved['hp']}")
     output_cell(ws, row, 3, f"={cells['Enemy HP']}")
     for col in (4, 5, 6):
         output_cell(ws, row, col, f"={cells['Your HP']}")
@@ -1096,7 +1627,7 @@ def build_ranger(wb, weapons_info):
     ws.column_dimensions["B"].width = 16
 
 
-def build_mystic(wb):
+def build_mystic(wb, monsters_info):
     ws = wb.create_sheet("Mystic")
     row = _profession_header(ws, "Mystic")
     row = note(ws, row, 1,
@@ -1146,6 +1677,10 @@ def build_mystic(wb):
         input_cell(ws, row, 2, default)
         cells[label] = f"$B${row}"
         row += 1
+    row, mvp_resolved = add_monster_picker(ws, row, monsters_info, "offense",
+                                            {"weapon_attack": cells["Monster attacker WeaponAttack (flat)"],
+                                             "weapon_delay": cells["Monster attacker WeaponDelay (sec, flat)"]},
+                                            "MvP attacker")
     row += 2
 
     sum_row = row
@@ -1225,7 +1760,7 @@ def build_mystic(wb):
     row = header_row(ws, row, 1, ["", "MvP (Min)", "MvP (Avg)", "MvP (Max)"])
     r_attack = row
     ws.cell(row=row, column=1, value="Attack value (pre-AC)")
-    mvp_attack = f"=C_weapAttack*C_weapAttackM*{cells['Monster attacker WeaponAttack (flat)']}"
+    mvp_attack = f"=C_weapAttack*C_weapAttackM*{mvp_resolved['weapon_attack']}"
     for col in (2, 3, 4):
         output_cell(ws, row, col, mvp_attack)
     row += 1
@@ -1264,7 +1799,7 @@ def build_mystic(wb):
     ws.cell(row=row, column=1, value="DPS")
     for col in (2, 3, 4):
         cl = get_column_letter(col)
-        output_cell(ws, row, col, f"={cl}{r_final2}/{cells['Monster attacker WeaponDelay (sec, flat)']}")
+        output_cell(ws, row, col, f"={cl}{r_final2}/{mvp_resolved['weapon_delay']}")
     row += 1
     r_ttk2 = row
     ws.cell(row=row, column=1, value="Time to kill YOU (seconds)")
@@ -1430,11 +1965,12 @@ def main():
     build_core_formulas(wb)
     weapons_info = build_weapons_ref(wb)
     build_armor_ref(wb)
-    build_melee_profession(wb, "Warrior", weapons_info)
-    build_ranger(wb, weapons_info)
+    monsters_info = build_monsters_ref(wb)
+    build_melee_profession(wb, "Warrior", weapons_info, monsters_info)
+    build_ranger(wb, weapons_info, monsters_info)
     build_mage(wb)
-    build_mystic(wb)
-    build_melee_profession(wb, "Thief", weapons_info,
+    build_mystic(wb, monsters_info)
+    build_melee_profession(wb, "Thief", weapons_info, monsters_info,
                             ranged_note="Thief is also allowed Bow (per thief.def) - a Thief using a Bow follows "
                                         "the SAME RangerSettings override as the Ranger tab (not profession-gated). "
                                         "This calculator covers Thief's allowed melee weapons (OneHandSpike, "
