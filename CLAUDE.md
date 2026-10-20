@@ -1,42 +1,57 @@
 # moriaengine — working state
 
-## Live-testing bug/feature batch (2026-10-20) — 7 issues filed (#509-515), ANALYSIS ONLY, none implemented yet
+## Live-testing bug/feature batch (2026-10-20) — 6 of 7 SHIPPED (#509-514), #515 deferred
 
-User tested banker access, Ranger, and Warrior and reported 7 items in one batch. Per explicit
-request, each was root-caused/analyzed and filed as its own issue, but **nothing has been
-implemented** - waiting on discussion/go-ahead before touching code. Read each issue for full
-detail; condensed findings below so a future session doesn't have to re-derive them.
+User tested banker access, Ranger, and Warrior and reported 7 items in one batch. Each was
+root-caused/analyzed first, filed as its own issue, discussed with the user, then implemented -
+6 of 7 shipped same session (PRs #517-520, one PR per logical fix, all closed): #511/#514
+(damage-clamp fix, closed together), #512/#513 (crossbow stand-still rework, closed together,
+confirmed by the user to be heavy crossbow), #510 (.info Bank button), #509 (banker dialog
+access). **#515 (attack speed formula) explicitly deferred** - user said "let's leave this for
+later," not implemented, issue left open. Condensed per-issue findings below (superseding the
+original analysis-only notes, kept for the "why" - see each closed issue/PR for full detail).
 
-- **#509 - Banker dialog access** (feature): no code today actually opens a player's bank box UI
-  - `BankerSpeech` (`scripts/Basic/Economy/BankerSpeech.cs`) only does gold math (balance/
-  deposit/withdraw), never shows the container; `BankBox.On_DClick` explicitly refuses non-GMs.
-  Want: double-click banker OR say "bank" within range 6 opens own bank box. Open design
-  question: no existing helper to ask "is this NPC a banker" from a dclick handler (speech side
-  ties in via `TSPEECH = spk_jobbanker`, dclick side has nothing equivalent yet).
-- **#510 - .info "Bank" button** (feature): trivial once scoped - `CharacterDescriptor`
-  (`scripts/Basic/administration/Settings/implementations/Descriptors/CharacterDescriptor.cs`)
-  already has the exact `[Button("...")]` pattern (Dismount/Disarm/Kill/Resurrect); add
-  `[Button("Bank")] ... ((Character)target).Bank.OpenTo(Globals.SrcCharacter);` - `Bank` and
-  `OpenTo` both already exist and do exactly what's needed.
-- **#511/#514 - Negative damage heals the target instead of damaging it** (bug, reported on both
-  Ranger and Warrior - same root cause, one fix should close both): TWO unclamped subtractions
-  in the physical path, neither floors its own output at 0 even though both already clamp their
-  *inputs*: `CombatCalculator.CalculateArmorClassEffect`'s `(attack - armor) * damageMod` (line
-  ~621) and `DamageManager.GetResistModifier`'s two-phase resist subtraction (used
-  multiplicatively in `CauseDamage`). `CalculateMindPowerEffect` (Mystic path) has the identical
-  unclamped-output shape - likely a latent 3rd instance, not yet reported.
-- **#512 - Crossbow stand-still rework** (behavior change): current mechanic
-  (`WeaponSkillDef.On_Stroke`, `scripts/Basic/skills/Combat/WeaponSkillDef.cs:157-163`) hard-
-  teleports (`self.P(standStillAnchor)`) the attacker back to their engagement-start position
-  every stroke if they've moved. Wanted instead: moving just fails/stops the attack, no
-  teleport; standing still again re-enables attacking (not a leash back to a fixed point).
-- **#513 - Ranger "ported closer to monster" on attack** (bug): very likely the *same* mechanism
-  as #512 (the anchor snap-back) - if reproduced on heavy crossbow (`crossbowMustStandStill`
-  defaults true), #512's fix resolves this too. If reproduced on a plain bow
-  (`bowMustStandStill` defaults false), that's a separate unexplained bug (stale tag? wrong
-  weapon-type read?). **Needs the user to confirm which weapon** before deciding if this is a
-  duplicate of #512 or its own root cause.
-- **#515 - Attack speed formula review** (tuning, not a clean bug): `WeaponDelay`
+- **#509 - Banker dialog access - SHIPPED (PR #520)**: two ways to open your own bank box via a
+  banker, both gated to a fixed `BankerRange.MaxDistance=6` (new, `scripts/Basic/Economy/
+  BankerRange.cs`) rather than the global `SpeechDistance`: double-click (`BankerDClick.cs`, new)
+  or say "bank" (`BankerSpeech.cs`, extended). Required a real architecture change, per the
+  user's explicit request ("create an on-double-click event for NPCs, with every specific NPC
+  able to override it"): `Thing.Trigger_DClick`'s `@dclick` trigger (`GameCore/Thing.cs`) was
+  fire-and-forget (`TryTrigger`) - changed to cancellable (`TryCancellableTrigger`, mirrors the
+  existing `Trigger_Hear`/`SpeechResult.ActedUponExclusively` pattern) so any NPCDef's attached
+  TriggerGroup (via `TEVENTS`/`TSPEECH`) can now fully replace the default `On_DClick` instead of
+  just observing it alongside it. `BankerDClick` is the first consumer, wired via `TEVENTS =
+  e_banker` on `C_H_BANKER`/`C_H_BANKER_F` in `vendors.def`. Confirmed `Container.OpenTo` sends
+  the container packets directly and is NOT subject to the #71-documented `sentLayers`/
+  `CanSeeForUpdate` limitation that blocks double-clicking a bank box AS AN EQUIPPED ITEM - a
+  genuinely different, viable path, not a repeat of that old dead end.
+- **#510 - .info "Bank" button - SHIPPED (PR #519)**: `[Button("Bank")]` added to
+  `CharacterDescriptor`, same pattern as Dismount/Disarm/Kill/Resurrect, reusing `Character.Bank`/
+  `Container.OpenTo` (both already proven by #509's tests).
+- **#511/#514 - Negative damage heals the target - SHIPPED (PR #517), closed together (same root
+  cause, Ranger+Warrior both just hit the generic physical path)**: floored the previously-
+  unclamped subtraction *outputs* (inputs were already clamped) in both
+  `CombatCalculator.CalculateArmorClassEffect` and `CauseDamage`'s `GetResistModifier`
+  multiplication. Proactively fixed the identical unclamped shape in `CalculateMindPowerEffect`
+  (Mystic path) too, per the user's "fix even mystic's damage" - confirmed via a new regression
+  test (`MysticCombatRangeTests.NeverHealsDefender`) that the PRE-EXISTING
+  `TestMysticDamageIsMagicalNotPhysical` test never actually caught this class of bug (its own
+  assertion `magicResistDamage < physicalResistDamage` holds whether magicResistDamage is 0 or
+  deeply negative).
+- **#512/#513 - Crossbow stand-still rework - SHIPPED (PR #518), closed together (user confirmed
+  #513 was reproduced on heavy crossbow, same mechanism as #512)**: replaced the old hard
+  position-snap-back (`self.P(standStillAnchor)` in `WeaponSkillDef.On_Stroke`, deleted entirely)
+  with a `Character.Flag_Moving` check done fresh every stroke - moving fails that stroke (no
+  damage, no ammo spent, NO teleport anywhere), standing still resumes on its own next stroke. No
+  more per-engagement anchor state to leak across the engine's own restart-every-swing behavior.
+  Test rework note: the old test's "disturb" simulated movement via a one-shot `self.P()` jump,
+  which does NOT set `Flag_Moving` (confirmed: that's a raw position write, not a real movement
+  packet) - replaced with directly toggling `Flag_Moving` via timers (confirmed safe: its only
+  background writer, `CharSyncQueue`'s post-movement-sync reset, is driven off the movement-queue
+  pipeline, which a direct property set never enters).
+- **#515 - Attack speed formula review - DEFERRED, user said "let's leave this for later"
+  (2026-10-20)**: NOT implemented, issue left open, no code touched. Root cause already
+  identified for whenever this gets picked back up: `WeaponDelay`
   (`CombatCalculator.CalculateCombatWeaponValues`, lines 460-477) is an un-rederived legacy
   Sphere/Moria formula (`delay = sqrt(Dex) * weapSpeed * weaponSpeedGlobal`, final
   `TimeSpan = 1048.575 / delay` seconds) that assumes Dex capped ~100-125 like classic UO. This
@@ -46,10 +61,15 @@ detail; condensed findings below so a future session doesn't have to re-derive t
   weapon's real SPEED tag was stripped by the old content converter, so `weapSpeed` is
   currently uniformly the class default (100) for everything. Needs a design decision (floor on
   delay? diminishing-returns curve instead of sqrt? author real per-weapon speeds now that
-  `weaponSpeedGlobal` already exists as a GM lever?) - not just a fix.
+  `weaponSpeedGlobal` already exists as a GM lever?) - not just a fix - before picking this up.
 
-**Next steps**: discuss all 7 with the user (especially #513's weapon-type question and #515's
-desired formula shape), then implement per the usual one-issue-per-PR flow once there's a
+**Process note**: a combined `dotnet test` sweep across all 7 touched test classes in one
+invocation showed 3 failures (2 `EconomyTestsA` facts + 1 `BankerDialogTests` fact) purely from
+running that many server-booting collections concurrently in this sandbox - all 3 passed cleanly
+when re-run in isolation immediately after. Matches the documented sandbox-contention flake
+class; don't chase failures like this without an isolated re-run first.
+
+**Next steps**: pick up #515 whenever the user wants to revisit attack speed tuning.
 go-ahead.
 
 ## Combat system initiative, profession #4 - Mage/Spellcasting (#483) — SHIPPED, all 8 phases — 2026-10-20
