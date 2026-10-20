@@ -144,6 +144,43 @@ namespace SteamEngine.CompiledScripts {
 				" targetDeleted=" + deleted + " targetHits=" + (deleted ? -1 : target.Hits));
 		}
 
+		/// <summary>#485 - casts the test-only s_test_summon spell at a point adjacent to self.
+		/// Via a scroll, not the spellbook TestGrantFullSpellbook already granted -
+		/// SpellBook.AddSpell silently refuses spell id 9000 (outside the book's valid
+		/// [FirstSpellId, FirstSpellId+64) slot range by design, see MagerySummonTest.def's own
+		/// comment), so a dedicated test scroll is created here instead. Ground-targeted (not a
+		/// character), so Target1 is preset to a real Point4D the same way TestCastSpellAtDummy
+		/// presets a Character - skips the live target-cursor step.</summary>
+		[SteamFunction]
+		public static void TestCastSummonSpell(Character self) {
+			SpellDef spell = SpellDef.GetByDefname("s_test_summon");
+
+			ThingDef scrollDef = ThingDef.GetByDefname("i_scroll_test_summon");
+			SpellScroll scroll = (SpellScroll) scrollDef.Create(self.Backpack);
+
+			Point4D groundTarget = new Point4D(self.X + 1, self.Y, self.Z, self.M);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, groundTarget, null, scroll, spell, null);
+			magery.PhaseSelect();
+			Console.WriteLine("MAGERY_SUMMON_TEST: STARTED startMana=" + self.Mana);
+		}
+
+		/// <summary>#485 - scans for a nearby summoned creature owned by self. Reports "none"
+		/// rather than throwing if it's already despawned, so the same command can confirm both
+		/// "it appeared" (shortly after casting) and "it's gone" (after the duration elapses).</summary>
+		[SteamFunction]
+		public static void TestReportNearbySummon(Character self) {
+			foreach (AbstractCharacter ac in self.GetMap().GetCharsInRange(self.X, self.Y, 5)) {
+				Character candidate = ac as Character;
+				if ((candidate != null) && SummonSpellDef.IsSummonedCreature(candidate)) {
+					Console.WriteLine("MAGERY_SUMMON_TEST: FOUND uid=" + candidate.Uid +
+						" controlMasterUid=" + (candidate.ControlMaster != null ? candidate.ControlMaster.Uid.ToString() : "null") +
+						" warMode=" + candidate.Flag_WarMode);
+					return;
+				}
+			}
+			Console.WriteLine("MAGERY_SUMMON_TEST: NONE");
+		}
+
 		/// <summary>Same ScriptArgs dual-shape handling already established elsewhere this
 		/// session (LevelingTests.cs/AttrFlagTests.cs) - copied rather than shared, matching
 		/// this codebase's existing per-file convention.</summary>

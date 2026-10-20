@@ -82,6 +82,32 @@ spellbook item happens to be in a character's pack (every profession, including 
 is given the same plain empty `i_spellbook_3` at creation - see
 [professions.md](professions.md) and [races-and-nations.md](races-and-nations.md) for why).
 
+## Generic summon-pet infrastructure (#483/#485)
+
+`SummonSpellDef : DurableSpellDef` (`scripts/Basic/skills/Magery/Spells/SummonSpells/
+SummonSpellDef.cs`) is the one shared mechanism every summon-shaped spell needs - Blade
+Spirits/Summon Creature (Circle V, not yet authored), Energy Vortex/the 4 elementals/Summon
+Daemon (Circle VIII, not yet authored), and eventually Necromancer's Animate Dead/Summon
+Undead (#158). A `.def` entry just needs a `summonChar=<NPCDef>` line (e.g. the real
+mage-tier summon content already in `scripts/converted/chars/summons.def` - `c_vortex_mage`/
+`c_elem_fire_m`/etc, NOT the overpowered wild monster chardefs of a similar name) plus the
+usual `DurableSpellDef` `DURATION=`.
+
+`On_EffectGround` creates the NPC at the target point (`NPCDef.Create`, no fit-check -
+follows `MonsterAmbushSystem.TryAmbush`'s own simpler established precedent for spawning a
+monster near a point rather than `SpellEffectItem.CheckPositionForItem`'s item-height-based
+check), sets `ControlMaster` to the caster (reusing exactly what Taming already proved
+works - `NPCAiTimer`'s Following AI state, `ShouldFollowOwner` defaulting true, no new pet-AI
+code needed) and `Flag_WarMode = false`, then attaches a `SummonDespawnTimer` (mirrors
+`SpellEffectItem.SpellEffectTimer`'s own "delete on timeout" shape) for
+`GetDurationForValue(spellPower)` seconds.
+
+**Deliberately NOT done here**: Dispel integration. `Character.On_Dispell`/`Item.On_Dispell`
+being empty virtuals is a separate issue (#486, not yet shipped) - a summoned creature is
+tagged (`SummonSpellDef.IsSummonedCreature`) so #486's fix has something to check once it
+lands, but until then a summon can only go away via its own timer or normal death, not by
+casting Dispel on it.
+
 ## Fizzle/difficulty (#483/#484)
 
 `SpellDef.Difficulty` used to return `0` whenever a spell's `difficulty` field wasn't
