@@ -84,5 +84,35 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("ARMOREFFECT_MVP_TEST: avgUnarmored=" + (totalUnarmored / 500) +
 				" avgArmored=" + (totalArmored / 500));
 		}
+
+		/// <summary>Regression test for #511/#514 - CalculateArmorClassEffect's
+		/// `(attack - armor) * damageMod` was never floored at 0, so a defender whose armor
+		/// exceeds the attacker's attack value got a negative DamageAfterAC, which CauseDamage
+		/// then applied as `Hits -= (negative)` - i.e. the "attack" healed the defender instead
+		/// of damaging it (reported directly by the user on both Ranger and Warrior). Drives a
+		/// real swing through the full ProcessSwing/CauseDamage pipeline (not just
+		/// GetWeaponSwingArgs) so this also exercises GetResistModifier's own independent
+		/// floor-at-0 fix in CauseDamage. ArmorClassModifier is set absurdly high specifically
+		/// to guarantee armor &gt; attack regardless of self's own stats.</summary>
+		[SteamFunction]
+		public static void TestArmorNeverHealsDefender(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			self.DisArm();
+			self.Str = 10;
+
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(self.X + 1, self.Y, self.Z, self.M);
+			dummy.ArmorClassModifier = 1000000; // dwarfs any possible attack value
+			dummy.Hits = dummy.MaxHits;
+
+			int before = dummy.Hits;
+			for (int i = 0; i < 20; i++) {
+				DamageManager.ProcessSwing(self, dummy);
+			}
+			int after = dummy.Hits;
+			dummy.ArmorClassModifier = 0;
+
+			Console.WriteLine("ARMOREFFECT_NEVERHEALS_TEST: before=" + before + " after=" + after);
+		}
 	}
 }

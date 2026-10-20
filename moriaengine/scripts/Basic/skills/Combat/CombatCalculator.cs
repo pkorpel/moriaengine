@@ -618,7 +618,9 @@ namespace SteamEngine.CompiledScripts {
 			attack = Math.Max(0, attack);
 			damageMod = Math.Max(0, damageMod);
 
-			return (attack - armor) * damageMod;
+			// #511/#514: armor exceeding attack must floor at 0, not go negative - a negative
+			// result here reads as a HEAL to CauseDamage's "Hits -= damage", not a reduced hit.
+			return Math.Max(0, (attack - armor) * damageMod);
 		}
 
 		/// <summary>Mystic's mind-power attack (#447/#448/#449) - subtractive mindPower-minus-
@@ -644,7 +646,9 @@ namespace SteamEngine.CompiledScripts {
 			mindDefense = Math.Max(0, mindDefense);
 			damageMod = Math.Max(0, damageMod);
 
-			return (mindPower - mindDefense) * damageMod;
+			// #511/#514: same floor-at-0 fix as CalculateArmorClassEffect - mindDefense
+			// exceeding mindPower must not go negative (would heal, not damage).
+			return Math.Max(0, (mindPower - mindDefense) * damageMod);
 		}
 	}
 }

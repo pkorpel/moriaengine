@@ -53,6 +53,27 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Regression test for #511/#514 - CalculateArmorClassEffect's
+		/// `(attack - armor) * damageMod` was never floored at 0, so a defender whose armor
+		/// exceeds the attacker's attack value got a negative DamageAfterAC, which CauseDamage
+		/// then applied as `Hits -= (negative)` - i.e. the "attack" healed the defender instead
+		/// of damaging it (reported directly by the user on both Ranger and Warrior).</summary>
+		[Fact]
+		public void ArmorNeverHealsDefender() {
+			using (var client = this.ConnectLoginAndCreateCharacter("ArmorNeverHealsChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestArmorNeverHealsDefender");
+				Assert.True(this.fixture.WaitForGameOutputSince("ARMOREFFECT_NEVERHEALS_TEST:", mark, TimeSpan.FromSeconds(15)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ARMOREFFECT_NEVERHEALS_TEST:");
+
+				double before = ExtractDouble(line, "before");
+				double after = ExtractDouble(line, "after");
+
+				Assert.True(after <= before,
+					"Expected overwhelming armor to clamp damage at 0, never heal the defender. Line: " + line);
+			}
+		}
+
 		private static double ExtractDouble(string line, string key) {
 			string marker = key + "=";
 			int idx = line.IndexOf(marker, StringComparison.Ordinal);

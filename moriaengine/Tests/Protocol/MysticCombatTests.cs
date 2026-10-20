@@ -276,6 +276,27 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Regression test for #511/#514's latent 3rd instance - see
+		/// scripts/Tests/MysticCombatTests.cs's TestMysticNeverHealsDefender for full detail. An
+		/// extreme MindDefenseModifier used to flip CalculateMindPowerEffect negative, which
+		/// CauseDamage would then apply as a heal. Placed in this class (not MysticCombatTests
+		/// above) purely for the account-character-slot-cap reason documented on this class.</summary>
+		[Fact]
+		public void NeverHealsDefender() {
+			using (var client = this.ConnectLoginAndCreateCharacter("MysticNeverHealsChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestMysticNeverHealsDefender");
+				Assert.True(this.fixture.WaitForGameOutputSince("MYSTIC_NEVERHEALS_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MYSTIC_NEVERHEALS_TEST:");
+
+				double before = ExtractDouble(line, "before");
+				double after = ExtractDouble(line, "after");
+
+				Assert.True(after <= before,
+					"Expected overwhelming mind defense to clamp damage at 0, never heal the defender. Line: " + line);
+			}
+		}
+
 		private static string ReadMessageContaining(TestGameClient client, string expectedSubstring) {
 			for (int attempt = 0; attempt < 10; attempt++) {
 				string message = client.ReadSystemMessage(TimeSpan.FromSeconds(10));
@@ -284,6 +305,28 @@ namespace SteamEngine.Tests.Protocol {
 				}
 			}
 			throw new TimeoutException("Never saw a system message containing '" + expectedSubstring + "'.");
+		}
+
+		private static double ExtractDouble(string line, string key) {
+			string marker = key + "=";
+			int idx = line.IndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in: " + line);
+			int start = idx + marker.Length;
+			int end = line.IndexOf(' ', start);
+			if (end < 0) {
+				end = line.Length;
+			}
+			return double.Parse(line.Substring(start, end - start), CultureInfo.InvariantCulture);
+		}
+
+		private static string LastLineContaining(string output, string marker) {
+			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);
+			int end = output.IndexOf('\n', idx);
+			if (end < 0) {
+				end = output.Length;
+			}
+			return output.Substring(idx, end - idx);
 		}
 
 		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
