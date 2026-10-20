@@ -116,7 +116,10 @@ RUNEITEM=i_rune_GATE_TRAVEL
 SCROLLITEM=i_scroll_GATE_TRAVEL
 FLAGS=SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
 EFFECT=0
-DURATION=3, 4
+// #483/#489 - was DURATION=3, 4 (3-4 SECONDS), while the header comment above literally says
+// "one minute should suffice" - a unit bug (seconds instead of the intended ~1 minute). Fixed to
+// a flat 60s, matching the comment's own recommendation.
+DURATION=60.0,60.0
 MANAUSE=80
 Requirements=70.0 Magery
 

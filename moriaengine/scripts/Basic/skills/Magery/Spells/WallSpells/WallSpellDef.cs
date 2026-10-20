@@ -107,14 +107,21 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static void InitWallItem(SpellEffectArgs spellEffectArgs, ItemDef wallDef, int spellPower, TimeSpan duration, int x, int y, int z, Map map) {
+		private void InitWallItem(SpellEffectArgs spellEffectArgs, ItemDef wallDef, int spellPower, TimeSpan duration, int x, int y, int z, Map map) {
 			if (SpellEffectItem.CheckPositionForItem(x, y, ref z, map, wallDef.Height, true)) {
 				Thing t = wallDef.Create((ushort) x, (ushort) y, (sbyte) z, map.M);
 				SpellEffectItem asWallitem = t as SpellEffectItem;
 				if (asWallitem != null) {
 					asWallitem.Init(spellPower, duration, true);
+					this.OnWallItemCreated(asWallitem, spellEffectArgs.Caster);
 				}
 			}
+		}
+
+		/// <summary>#483/#489 - extension point for a subclass that needs to attach extra
+		/// per-tile behavior to each wall-item instance as it's created (e.g. Paralyze Field's
+		/// per-tick paralyze check) without affecting every other wall spell. No-op by default.</summary>
+		protected virtual void OnWallItemCreated(SpellEffectItem item, Character caster) {
 		}
 
 		//load "itemdef" as both n-s and w-e variants
