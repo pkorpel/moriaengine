@@ -70,36 +70,41 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
-		/// <summary>#454 point 3 - crossbow defaults to RangerSettings.crossbowMustStandStill=true:
-		/// a real mid-fight attempt to walk away gets snapped back to where the attacker was
-		/// standing when the attack began.</summary>
+		/// <summary>#512 - crossbow defaults to RangerSettings.crossbowMustStandStill=true:
+		/// reworked from the old snap-back-teleport mechanic (see git history) after the user
+		/// found the teleport itself was a bug (#513). Now: moving fails the attack (no damage,
+		/// no ammo spent, no position change) for as long as the attacker keeps moving; standing
+		/// still again resumes it on its own.</summary>
 		[Fact]
-		public void CrossbowSnapsBackToStartingPositionIfMovedMidAttack() {
+		public void CrossbowBlocksAttackWhileMovingThenResumes() {
 			using (var client = this.ConnectLoginAndCreateCharacter("RangerStandStillCrossbowChecker")) {
 				this.EquipRealCrossbow(client);
 
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestRangerCrossbowStandStillCheck");
 				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_STANDSTILL_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
-				Assert.True(this.fixture.WaitForGameOutput("RANGER_STANDSTILL_TEST: PASS", TimeSpan.FromSeconds(30)),
-					"Expected a crossbow user to be snapped back to their starting position after trying to walk mid-fight. " +
-					"Game output:\n" + this.fixture.GameOutputSnapshot());
+				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_STANDSTILL_TEST: STARTED_MOVING", mark, TimeSpan.FromSeconds(10)));
+				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_STANDSTILL_TEST: MIDMOVE_PASS", mark, TimeSpan.FromSeconds(10)),
+					"Expected a crossbow user to land zero damage/spend no ammo while moving. Game output:\n" + this.fixture.GameOutputSnapshot());
+				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_STANDSTILL_TEST: STOPPED_MOVING", mark, TimeSpan.FromSeconds(10)));
+				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_STANDSTILL_TEST: PASS", mark, TimeSpan.FromSeconds(15)),
+					"Expected the attack to resume and land damage once standing still again. Game output:\n" + this.fixture.GameOutputSnapshot());
 			}
 		}
 
-		/// <summary>#454 point 3 - bow defaults to RangerSettings.bowMustStandStill=false: the
-		/// same mid-fight displacement should NOT get reverted.</summary>
+		/// <summary>#512 - bow defaults to RangerSettings.bowMustStandStill=false: the same
+		/// mid-fight movement should NOT block the attack at all.</summary>
 		[Fact]
-		public void BowDoesNotSnapBackIfMovedMidAttack() {
+		public void BowIsUnaffectedByMovingMidAttack() {
 			using (var client = this.ConnectLoginAndCreateCharacter("RangerStandStillBowChecker")) {
 				this.EquipRealBow(client);
 
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestRangerBowStandStillCheck");
 				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_STANDSTILL_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
-				Assert.True(this.fixture.WaitForGameOutput("RANGER_STANDSTILL_TEST: PASS", TimeSpan.FromSeconds(30)),
-					"Expected a bow user to stay at the displaced position (free movement is the default for bows). " +
-					"Game output:\n" + this.fixture.GameOutputSnapshot());
+				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_STANDSTILL_TEST: STARTED_MOVING", mark, TimeSpan.FromSeconds(10)));
+				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_STANDSTILL_TEST: MIDMOVE_PASS", mark, TimeSpan.FromSeconds(10)),
+					"Expected a bow user to keep landing damage/spending ammo despite moving. Game output:\n" + this.fixture.GameOutputSnapshot());
 			}
 		}
 
