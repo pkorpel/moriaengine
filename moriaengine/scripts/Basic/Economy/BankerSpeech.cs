@@ -53,9 +53,6 @@ namespace SteamEngine.CompiledScripts {
 			// caused.
 			Logger.WriteWarning("[BANKDEBUG] BankerSpeech.TryHandle: listener=" + listener +
 				" speaker=" + speaker + " msg='" + msg + "'");
-			if (speaker != null) {
-				speaker.SysMessage("[DEBUG] Banker heard: '" + msg + "'");
-			}
 			if (speaker == null || string.IsNullOrEmpty(msg)) {
 				return SpeechResult.IgnoredOrActedUpon;
 			}
@@ -81,15 +78,14 @@ namespace SteamEngine.CompiledScripts {
 			if (msg.IndexOf("bank", StringComparison.OrdinalIgnoreCase) >= 0) {
 				Character banker = listener as Character;
 				int distance = banker == null ? -1 : Point2D.GetSimpleDistance(speaker, banker);
-				speaker.SysMessage("[DEBUG] 'bank' matched. banker=" + banker + " distance=" + distance +
+				Logger.WriteWarning("[BANKDEBUG] 'bank' matched. banker=" + banker + " distance=" + distance +
 					" maxDistance=" + BankerRange.MaxDistance);
 				if ((banker != null) && BankerRange.IsWithinRange(speaker, banker)) {
 					try {
 						speaker.Bank.OpenTo(speaker);
-						speaker.SysMessage("[DEBUG] Bank.OpenTo succeeded.");
+						Logger.WriteWarning("[BANKDEBUG] Bank.OpenTo succeeded.");
 					} catch (Exception e) {
 						Logger.WriteError("[BANKDEBUG] Bank.OpenTo threw: " + e);
-						speaker.SysMessage("[DEBUG] Bank.OpenTo THREW: " + e.Message);
 					}
 				} else {
 					speaker.SysMessage("Thou must stand closer to the banker to do that.");
