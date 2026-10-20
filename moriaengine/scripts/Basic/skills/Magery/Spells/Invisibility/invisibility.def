@@ -1,0 +1,20 @@
+// #483/#489 - built for real (Phase 5); Character.Flag_InvisByMagic already existed and was
+// already fully wired into IsNotVisible/CanSeeVisibility, but nothing set it anywhere. SOUND
+// left at 0 for the same reason as Mana Drain/Blade Spirits/Summon Creature (Phase 4) -
+// snd_SPELL_INVISIBILITY doesn't resolve to anything real. RUNEITEM/SCROLLITEM point at
+// already-converted real content (i_rune_invisibility/i_scroll_invisibility in
+// scripts/converted/itemb7.def and scrolls.def respectively - case-insensitive match).
+[InvisibilitySpellDef 44]
+DEFNAME=s_invisibility
+NAME=Invisibility
+SOUND=0
+RUNES=ALX
+CASTTIME=3.0
+//RESOURCES=i_reag_blood_moss,i_reag_nightshade
+RUNEITEM=i_rune_INVISIBILITY
+SCROLLITEM=i_scroll_INVISIBILITY
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=1*60.0,5*60.0
+MANAUSE=20
+Requirements=60.0 Magery

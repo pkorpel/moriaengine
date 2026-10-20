@@ -62,6 +62,24 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double spellDifficultyFallbackMultiplier = 1.0;
 
+		/// <summary>#483/#489 - Paralyze Field: how often (in seconds) each field tile re-checks
+		/// for standing characters and (re-)applies the paralyze effect. No real Erebor value is
+		/// recoverable from the public archive (same situation as every other GM-tunable
+		/// placeholder this initiative has left as-is) - 1.0s is a simple, testable default.</summary>
+		[SaveableData]
+		public double paralyzeFieldTickIntervalSeconds = 1.0;
+
+		/// <summary>#483/#489 - Paralyze Field: chance (0.0-1.0) that a given tick actually
+		/// paralyzes a character standing in the field. Default 1.0 (always triggers) for
+		/// deterministic testing; tune down for difficulty balancing.</summary>
+		[SaveableData]
+		public double paralyzeFieldParalyzeChance = 1.0;
+
+		/// <summary>#483/#489 - Paralyze Field: duration (in seconds) of the paralyze effect each
+		/// tick applies.</summary>
+		[SaveableData]
+		public double paralyzeFieldParalyzeDurationSeconds = 4.0;
+
 		public MetaMassSetting<WeaponMindPowerVsMMassSetting, ColoredWeaponDef, double> mindPowerVsM = new MetaMassSetting<WeaponMindPowerVsMMassSetting, ColoredWeaponDef, double>();
 
 		public MetaMassSetting<WeaponMindPowerVsPMassSetting, ColoredWeaponDef, double> mindPowerVsP = new MetaMassSetting<WeaponMindPowerVsPMassSetting, ColoredWeaponDef, double>();

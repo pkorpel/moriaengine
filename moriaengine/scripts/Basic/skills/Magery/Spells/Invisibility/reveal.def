@@ -1,0 +1,20 @@
+// #483/#489 - built for real (Phase 5), as a genuine area spell via SpellDef's own existing
+// IsAreaSpell/EffectRange dispatch mechanism (same path Explosion/Mass Dispel use), not a flat
+// single-target reveal. SOUND left at 0 for the same reason as Mana Drain/Blade Spirits/Summon
+// Creature (Phase 4) - snd_SPELL_REVEAL doesn't resolve to anything real. RUNEITEM/SCROLLITEM
+// point at already-converted real content (i_rune_reveal/i_scroll_reveal, case-insensitive
+// match).
+[RevealSpellDef 48]
+DEFNAME=s_reveal
+NAME=Reveal
+SOUND=0
+RUNES=WQ
+CASTTIME=3.0
+//RESOURCES=i_reag_blood_moss,i_reag_sulfur_ash
+RUNEITEM=i_rune_REVEAL
+SCROLLITEM=i_scroll_REVEAL
+FLAGS=SpellFlag.CanTargetGround | SpellFlag.CanEffectChar | SpellFlag.IsAreaSpell | SpellFlag.EffectNeedsLOS
+EFFECT=0
+EffectRange=5 //range of the area effect
+MANAUSE=20
+Requirements=60.0 Magery

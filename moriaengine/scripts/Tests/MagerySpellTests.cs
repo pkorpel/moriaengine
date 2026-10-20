@@ -86,6 +86,69 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGERY_DAMAGETYPE_TEST: defname=" + defname + " damageType=" + spell.DamageType);
 		}
 
+		/// <summary>#489 - reports a DurableSpellDef's raw Duration range (min,max in seconds)
+		/// for a given spell defname (e.g. confirming s_gate_travel's fixed 60s,60s, not the old
+		/// 3,4 SECONDS unit bug).</summary>
+		[SteamFunction]
+		public static void TestReportSpellDuration(Character self, ScriptArgs sa) {
+			string defname = SplitArgs(sa)[0];
+			DurableSpellDef spell = (DurableSpellDef) SpellDef.GetByDefname(defname);
+			double[] duration = spell.Duration;
+			Console.WriteLine("MAGERY_DURATION_TEST: defname=" + defname +
+				" min=" + duration[0].ToString(CultureInfo.InvariantCulture) +
+				" max=" + duration[1].ToString(CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>#489 - casts the test-only s_test_invisibility (flat 3s duration, see
+		/// MageryInvisibilityTest.def) on self via scroll, same reasoning as s_test_summon -
+		/// SpellBook.AddSpell refuses ids outside [FirstSpellId, FirstSpellId+64).</summary>
+		[SteamFunction]
+		public static void TestCastInvisibilityOnSelf(Character self) {
+			SpellDef spell = SpellDef.GetByDefname("s_test_invisibility");
+			ThingDef scrollDef = ThingDef.GetByDefname("i_scroll_test_invisibility");
+			SpellScroll scroll = (SpellScroll) scrollDef.Create(self.Backpack);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, self, null, scroll, spell, null);
+			magery.PhaseSelect();
+			Console.WriteLine("MAGERY_INVIS_TEST: STARTED");
+		}
+
+		/// <summary>#489 - reports the given character's Flag_Hidden/Flag_InvisByMagic - reused
+		/// by both the Invisibility test (self's own uid) and the Reveal test (its two dummy
+		/// targets).</summary>
+		[SteamFunction]
+		public static void TestReportVisibilityFlags(Character self, ScriptArgs sa) {
+			uint targetUid = Convert.ToUInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
+			Character target = (Character) Thing.UidGetCharacter(targetUid);
+			Console.WriteLine("MAGERY_VISIBILITY_TEST: hidden=" + target.Flag_Hidden + " invisByMagic=" + target.Flag_InvisByMagic);
+		}
+
+		/// <summary>#489 - spawns a hidden dummy (Hiding skill 0, so the Magery-vs-Hiding contest
+		/// is as deterministic as the bell curve allows at max Magery) and a magically-invisible
+		/// dummy near the ground target, then casts the real s_reveal at that point - proving
+		/// both of Reveal's two paths (unconditional Flag_InvisByMagic clear, and the skill-
+		/// contest-gated Flag_Hidden clear).</summary>
+		[SteamFunction]
+		public static void TestCastRevealNearSelf(Character self) {
+			SpellDef spell = SpellDef.GetByDefname("s_reveal");
+			SpellBook book = FindBook(self);
+
+			int targetX = self.X + 2;
+			int targetZ = self.GetMap().GetTileZ(targetX, self.Y);
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+
+			NPC hiddenDummy = (NPC) dummyDef.Create(targetX, self.Y, targetZ, self.M);
+			hiddenDummy.Flag_Hidden = true;
+			hiddenDummy.SetRealSkillValue((int) SkillName.Hiding, 0);
+
+			NPC invisDummy = (NPC) dummyDef.Create(targetX + 1, self.Y, targetZ, self.M);
+			invisDummy.Flag_InvisByMagic = true;
+
+			Point4D groundTarget = new Point4D(targetX, self.Y, targetZ, self.M);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, groundTarget, null, book, spell, null);
+			magery.PhaseSelect();
+			Console.WriteLine("MAGERY_REVEAL_TEST: STARTED hiddenUid=" + hiddenDummy.Uid + " invisUid=" + invisDummy.Uid);
+		}
+
 		/// <summary>#484 - the real regression test for the fizzle fix. Temporarily sets self's
 		/// raw Magery skill value, then samples SkillDef.CheckSuccess (the exact same roll
 		/// MagerySkillDef.On_Stroke uses) `sampleCount` times against the given spell's real
@@ -211,6 +274,71 @@ namespace SteamEngine.CompiledScripts {
 				target.AggroMode = AggroMode.Calm;
 			}
 			Console.WriteLine("MAGERY_NEUTRALIZE_TEST: neutralized=" + (target != null));
+		}
+
+		/// <summary>#489 - casts Paralyze Field at a ground point near self - WallSpellDef.
+		/// On_EffectGround always places one wall tile exactly at the target point itself (the
+		/// "offset 0" tile, before the +/-1/+/-2 spread). Deliberately casts at an EMPTY point
+		/// first (no dummy there yet) rather than spawning the dummy before casting -
+		/// SpellEffectItem.CheckPositionForItem's own checkCharacters=true occupancy check would
+		/// otherwise refuse to place that one center tile exactly where a character already
+		/// stands, silently leaving a "hole" in the field at the one spot the test cares about
+		/// most (confirmed directly: a dummy pre-placed there before casting never got
+		/// paralyzed, while the field's other 4 tiles - never occupied - were created fine and
+		/// blocked the dummy's own idle-wander movement). Reports the target point so the caller
+		/// can spawn a dummy there AFTER the field item already exists.</summary>
+		[SteamFunction]
+		public static void TestCastParalyzeFieldNearSelf(Character self) {
+			SpellDef spell = SpellDef.GetByDefname("s_paralyzation_field");
+			SpellBook book = FindBook(self);
+
+			// Caller teleports to confirmed open ground (TestTeleportToOpenGround, no static
+			// items within 7 tiles) before calling this - distance=3 stays safely inside that
+			// guarantee. The default spawn point's own terrain is too cramped/irregular for
+			// SpellEffectItem.CheckPositionForItem to place a real item anywhere nearby
+			// (confirmed directly: canFit=False at every candidate tile there, even at
+			// distance=15 and even reusing Fire Field's own already-shipped model).
+			int targetX = self.X + 3;
+			int targetZ = self.GetMap().GetTileZ(targetX, self.Y);
+			Point4D groundTarget = new Point4D(targetX, self.Y, targetZ, self.M);
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, groundTarget, null, book, spell, null);
+			magery.PhaseSelect();
+			Console.WriteLine("MAGERY_PARAFIELD_TEST: STARTED targetX=" + targetX + " targetY=" + self.Y +
+				" targetZ=" + targetZ + " targetM=" + self.M);
+		}
+
+		/// <summary>#489 - spawns a dummy NPC at an exact point (by X/Y/Z/M) - used to place it
+		/// on Paralyze Field's already-created center tile (see TestCastParalyzeFieldNearSelf's
+		/// own doc comment for why spawn order matters here).</summary>
+		[SteamFunction]
+		public static void TestSpawnDummyAt(Character self, ScriptArgs sa) {
+			string[] parts = SplitArgs(sa);
+			int x = Convert.ToInt32(parts[0], CultureInfo.InvariantCulture);
+			int y = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
+			int z = Convert.ToInt32(parts[2], CultureInfo.InvariantCulture);
+			byte m = Convert.ToByte(parts[3], CultureInfo.InvariantCulture);
+			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_sheep_woolly");
+			NPC dummy = (NPC) dummyDef.Create(x, y, z, m);
+			Console.WriteLine("MAGERY_SPAWN_TEST: dummyUid=" + dummy.Uid);
+		}
+
+		/// <summary>#489 - reports whether the given character currently carries a real
+		/// ParalyzeEffectPlugin (the same plugin Circle V's shipped Paralyze spell uses) - a
+		/// direct check of the actual paralyze effect, not an indirect proxy like movement.</summary>
+		[SteamFunction]
+		public static void TestReportIsParalyzed(Character self, ScriptArgs sa) {
+			uint targetUid = Convert.ToUInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
+			Character target = (Character) Thing.UidGetCharacter(targetUid);
+			bool paralyzed = false;
+			if (target != null) {
+				foreach (Plugin plugin in target.GetAllPlugins()) {
+					if (plugin is ParalyzeEffectPlugin) {
+						paralyzed = true;
+						break;
+					}
+				}
+			}
+			Console.WriteLine("MAGERY_PARALYZE_TEST: paralyzed=" + paralyzed);
 		}
 
 		private static SpellBook FindBook(Character self) {
