@@ -21,11 +21,11 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
-		public void CopperAmountRangeEditWritesThroughToLiveWoodTier() {
+		public void SpruceAmountRangeEditWritesThroughToLiveWoodTier() {
 			using (var client = this.ConnectLoginAndCreateCharacter("LumberSettingsWoodChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSetCopperAmountRangeViaLumberjackingSettings 5 6");
-				Assert.True(this.fixture.WaitForGameOutputSince("LUMBERJACKING_SETTINGS_COPPER_SET:", mark, TimeSpan.FromSeconds(10)));
+				client.SendSpeech(".TestSetSpruceAmountRangeViaLumberjackingSettings 5 6");
+				Assert.True(this.fixture.WaitForGameOutputSince("LUMBERJACKING_SETTINGS_SPRUCE_SET:", mark, TimeSpan.FromSeconds(10)));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestReportWoodTierDirectly");
@@ -60,7 +60,7 @@ namespace SteamEngine.Tests.Protocol {
 		public void GatherDelayBaseEditWritesThroughToLiveSystem() {
 			using (var client = this.ConnectLoginAndCreateCharacter("LumberSettingsDelayChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSetGatherDelayBaseViaLumberjackingSettings 5");
+				client.SendSpeech(".TestSetSharedGatherDelayBaseViaLumberjackingSettings 5");
 				Assert.True(this.fixture.WaitForGameOutputSince("LUMBERJACKING_SETTINGS_DELAY_SET:", mark, TimeSpan.FromSeconds(10)));
 				Assert.Contains("baseSeconds=5", LastLineContaining(this.fixture.GameOutputSnapshot(), "LUMBERJACKING_SETTINGS_DELAY_SET:"));
 			}

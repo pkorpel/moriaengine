@@ -45,41 +45,45 @@ namespace SteamEngine.CompiledScripts {
 		public static LumberjackingSettings instance = new LumberjackingSettings();
 
 		// ---- Per-wood tiers (#422) - skill threshold / pool amount range / regen minutes ----
+		// Renamed from metal to wood names (#536) - the item defnames are unchanged (i_log_copper
+		// really is "spruce log" in content), only these C#/dialog-facing names changed, so they
+		// no longer collide (visually, in the settings dialog) with Mining's identically-shaped
+		// copperSkillThreshold/etc. properties on the SAME material tier.
 
-		public int copperSkillThreshold { get { return WoodTiers.Copper.SkillThreshold; } set { WoodTiers.Copper.SkillThreshold = value; } }
-		public int copperMinAmount { get { return WoodTiers.Copper.MinAmount; } set { WoodTiers.Copper.MinAmount = value; } }
-		public int copperMaxAmount { get { return WoodTiers.Copper.MaxAmount; } set { WoodTiers.Copper.MaxAmount = value; } }
-		public int copperRegenMinutes { get { return WoodTiers.Copper.RegenMinutes; } set { WoodTiers.Copper.RegenMinutes = value; } }
+		public int spruceSkillThreshold { get { return WoodTiers.Spruce.SkillThreshold; } set { WoodTiers.Spruce.SkillThreshold = value; } }
+		public int spruceMinAmount { get { return WoodTiers.Spruce.MinAmount; } set { WoodTiers.Spruce.MinAmount = value; } }
+		public int spruceMaxAmount { get { return WoodTiers.Spruce.MaxAmount; } set { WoodTiers.Spruce.MaxAmount = value; } }
+		public int spruceRegenMinutes { get { return WoodTiers.Spruce.RegenMinutes; } set { WoodTiers.Spruce.RegenMinutes = value; } }
 
-		public int ironSkillThreshold { get { return WoodTiers.Iron.SkillThreshold; } set { WoodTiers.Iron.SkillThreshold = value; } }
-		public int ironMinAmount { get { return WoodTiers.Iron.MinAmount; } set { WoodTiers.Iron.MinAmount = value; } }
-		public int ironMaxAmount { get { return WoodTiers.Iron.MaxAmount; } set { WoodTiers.Iron.MaxAmount = value; } }
-		public int ironRegenMinutes { get { return WoodTiers.Iron.RegenMinutes; } set { WoodTiers.Iron.RegenMinutes = value; } }
+		public int chestnutSkillThreshold { get { return WoodTiers.Chestnut.SkillThreshold; } set { WoodTiers.Chestnut.SkillThreshold = value; } }
+		public int chestnutMinAmount { get { return WoodTiers.Chestnut.MinAmount; } set { WoodTiers.Chestnut.MinAmount = value; } }
+		public int chestnutMaxAmount { get { return WoodTiers.Chestnut.MaxAmount; } set { WoodTiers.Chestnut.MaxAmount = value; } }
+		public int chestnutRegenMinutes { get { return WoodTiers.Chestnut.RegenMinutes; } set { WoodTiers.Chestnut.RegenMinutes = value; } }
 
-		public int veriteSkillThreshold { get { return WoodTiers.Verite.SkillThreshold; } set { WoodTiers.Verite.SkillThreshold = value; } }
-		public int veriteMinAmount { get { return WoodTiers.Verite.MinAmount; } set { WoodTiers.Verite.MinAmount = value; } }
-		public int veriteMaxAmount { get { return WoodTiers.Verite.MaxAmount; } set { WoodTiers.Verite.MaxAmount = value; } }
-		public int veriteRegenMinutes { get { return WoodTiers.Verite.RegenMinutes; } set { WoodTiers.Verite.RegenMinutes = value; } }
+		public int oakSkillThreshold { get { return WoodTiers.Oak.SkillThreshold; } set { WoodTiers.Oak.SkillThreshold = value; } }
+		public int oakMinAmount { get { return WoodTiers.Oak.MinAmount; } set { WoodTiers.Oak.MinAmount = value; } }
+		public int oakMaxAmount { get { return WoodTiers.Oak.MaxAmount; } set { WoodTiers.Oak.MaxAmount = value; } }
+		public int oakRegenMinutes { get { return WoodTiers.Oak.RegenMinutes; } set { WoodTiers.Oak.RegenMinutes = value; } }
 
-		public int valoriteSkillThreshold { get { return WoodTiers.Valorite.SkillThreshold; } set { WoodTiers.Valorite.SkillThreshold = value; } }
-		public int valoriteMinAmount { get { return WoodTiers.Valorite.MinAmount; } set { WoodTiers.Valorite.MinAmount = value; } }
-		public int valoriteMaxAmount { get { return WoodTiers.Valorite.MaxAmount; } set { WoodTiers.Valorite.MaxAmount = value; } }
-		public int valoriteRegenMinutes { get { return WoodTiers.Valorite.RegenMinutes; } set { WoodTiers.Valorite.RegenMinutes = value; } }
+		public int teakSkillThreshold { get { return WoodTiers.Teak.SkillThreshold; } set { WoodTiers.Teak.SkillThreshold = value; } }
+		public int teakMinAmount { get { return WoodTiers.Teak.MinAmount; } set { WoodTiers.Teak.MinAmount = value; } }
+		public int teakMaxAmount { get { return WoodTiers.Teak.MaxAmount; } set { WoodTiers.Teak.MaxAmount = value; } }
+		public int teakRegenMinutes { get { return WoodTiers.Teak.RegenMinutes; } set { WoodTiers.Teak.RegenMinutes = value; } }
 
-		public int obsidianSkillThreshold { get { return WoodTiers.Obsidian.SkillThreshold; } set { WoodTiers.Obsidian.SkillThreshold = value; } }
-		public int obsidianMinAmount { get { return WoodTiers.Obsidian.MinAmount; } set { WoodTiers.Obsidian.MinAmount = value; } }
-		public int obsidianMaxAmount { get { return WoodTiers.Obsidian.MaxAmount; } set { WoodTiers.Obsidian.MaxAmount = value; } }
-		public int obsidianRegenMinutes { get { return WoodTiers.Obsidian.RegenMinutes; } set { WoodTiers.Obsidian.RegenMinutes = value; } }
+		public int mahagonSkillThreshold { get { return WoodTiers.Mahagon.SkillThreshold; } set { WoodTiers.Mahagon.SkillThreshold = value; } }
+		public int mahagonMinAmount { get { return WoodTiers.Mahagon.MinAmount; } set { WoodTiers.Mahagon.MinAmount = value; } }
+		public int mahagonMaxAmount { get { return WoodTiers.Mahagon.MaxAmount; } set { WoodTiers.Mahagon.MaxAmount = value; } }
+		public int mahagonRegenMinutes { get { return WoodTiers.Mahagon.RegenMinutes; } set { WoodTiers.Mahagon.RegenMinutes = value; } }
 
-		public int adamantinumSkillThreshold { get { return WoodTiers.Adamantinum.SkillThreshold; } set { WoodTiers.Adamantinum.SkillThreshold = value; } }
-		public int adamantinumMinAmount { get { return WoodTiers.Adamantinum.MinAmount; } set { WoodTiers.Adamantinum.MinAmount = value; } }
-		public int adamantinumMaxAmount { get { return WoodTiers.Adamantinum.MaxAmount; } set { WoodTiers.Adamantinum.MaxAmount = value; } }
-		public int adamantinumRegenMinutes { get { return WoodTiers.Adamantinum.RegenMinutes; } set { WoodTiers.Adamantinum.RegenMinutes = value; } }
+		public int ebenSkillThreshold { get { return WoodTiers.Eben.SkillThreshold; } set { WoodTiers.Eben.SkillThreshold = value; } }
+		public int ebenMinAmount { get { return WoodTiers.Eben.MinAmount; } set { WoodTiers.Eben.MinAmount = value; } }
+		public int ebenMaxAmount { get { return WoodTiers.Eben.MaxAmount; } set { WoodTiers.Eben.MaxAmount = value; } }
+		public int ebenRegenMinutes { get { return WoodTiers.Eben.RegenMinutes; } set { WoodTiers.Eben.RegenMinutes = value; } }
 
-		public int mithrilSkillThreshold { get { return WoodTiers.Mithril.SkillThreshold; } set { WoodTiers.Mithril.SkillThreshold = value; } }
-		public int mithrilMinAmount { get { return WoodTiers.Mithril.MinAmount; } set { WoodTiers.Mithril.MinAmount = value; } }
-		public int mithrilMaxAmount { get { return WoodTiers.Mithril.MaxAmount; } set { WoodTiers.Mithril.MaxAmount = value; } }
-		public int mithrilRegenMinutes { get { return WoodTiers.Mithril.RegenMinutes; } set { WoodTiers.Mithril.RegenMinutes = value; } }
+		public int elvenSkillThreshold { get { return WoodTiers.Elven.SkillThreshold; } set { WoodTiers.Elven.SkillThreshold = value; } }
+		public int elvenMinAmount { get { return WoodTiers.Elven.MinAmount; } set { WoodTiers.Elven.MinAmount = value; } }
+		public int elvenMaxAmount { get { return WoodTiers.Elven.MaxAmount; } set { WoodTiers.Elven.MaxAmount = value; } }
+		public int elvenRegenMinutes { get { return WoodTiers.Elven.RegenMinutes; } set { WoodTiers.Elven.RegenMinutes = value; } }
 
 		// ---- Monster ambush (#431) ----
 
@@ -96,10 +100,12 @@ namespace SteamEngine.CompiledScripts {
 		public string ambushReaperEbenDefname { get { return LumberjackingAmbushSystem.ReaperEbenDefname; } set { LumberjackingAmbushSystem.ReaperEbenDefname = value; } }
 		public string ambushReaperElvenDefname { get { return LumberjackingAmbushSystem.ReaperElvenDefname; } set { LumberjackingAmbushSystem.ReaperElvenDefname = value; } }
 
-		// ---- Anti-macro delay (#424) - shared with Mining/Fishing, see class doc comment ----
+		// ---- Anti-macro delay (#424) - SHARED with Mining/Fishing (#536: renamed with a
+		// "shared" prefix so this is unmistakable in the dialog - editing this on ANY of the
+		// three skills' pages changes what the other two show too, by design, one real formula). ----
 
-		public double gatherDelayBaseSeconds { get { return GatheringDelaySystem.BaseDelaySeconds; } set { GatheringDelaySystem.BaseDelaySeconds = value; } }
-		public double gatherDelayThresholdPercent { get { return GatheringDelaySystem.AntiMacroThresholdPercent; } set { GatheringDelaySystem.AntiMacroThresholdPercent = value; } }
-		public double gatherDelayReductionPerPercent { get { return GatheringDelaySystem.DelayReductionPerPercentAboveThreshold; } set { GatheringDelaySystem.DelayReductionPerPercentAboveThreshold = value; } }
+		public double sharedGatherDelayBaseSeconds { get { return GatheringDelaySystem.BaseDelaySeconds; } set { GatheringDelaySystem.BaseDelaySeconds = value; } }
+		public double sharedGatherDelayThresholdPercent { get { return GatheringDelaySystem.AntiMacroThresholdPercent; } set { GatheringDelaySystem.AntiMacroThresholdPercent = value; } }
+		public double sharedGatherDelayReductionPerPercent { get { return GatheringDelaySystem.DelayReductionPerPercentAboveThreshold; } set { GatheringDelaySystem.DelayReductionPerPercentAboveThreshold = value; } }
 	}
 }

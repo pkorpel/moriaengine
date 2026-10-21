@@ -25,22 +25,24 @@ namespace SteamEngine.CompiledScripts {
 	/// decision as MiningSettingsTests (#337).</summary>
 	public static class LumberjackingSettingsTests {
 
+		/// <summary>#536 - renamed from "Copper" to "Spruce" (the real wood name - i_log_copper
+		/// displays as "spruce log", see WoodTiers' own doc comment).</summary>
 		[SteamFunction]
-		public static void TestSetCopperAmountRangeViaLumberjackingSettings(Character self, ScriptArgs sa) {
+		public static void TestSetSpruceAmountRangeViaLumberjackingSettings(Character self, ScriptArgs sa) {
 			int min = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
 			int max = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
-			LumberjackingSettings.instance.copperMinAmount = min;
-			LumberjackingSettings.instance.copperMaxAmount = max;
-			Console.WriteLine("LUMBERJACKING_SETTINGS_COPPER_SET: min=" + min + " max=" + max);
+			LumberjackingSettings.instance.spruceMinAmount = min;
+			LumberjackingSettings.instance.spruceMaxAmount = max;
+			Console.WriteLine("LUMBERJACKING_SETTINGS_SPRUCE_SET: min=" + min + " max=" + max);
 		}
 
-		/// <summary>Reads WoodTiers.Copper's own fields directly, bypassing LumberjackingSettings
+		/// <summary>Reads WoodTiers.Spruce's own fields directly, bypassing LumberjackingSettings
 		/// entirely - confirms the settings property wrote through to the real shared singleton
 		/// instance, not a local copy (same TestReportCopperTierDirectly-style independent-
 		/// reader precedent as #337).</summary>
 		[SteamFunction]
 		public static void TestReportWoodTierDirectly(Character self) {
-			Console.WriteLine("WOOD_TIER_REPORT: min=" + WoodTiers.Copper.MinAmount + " max=" + WoodTiers.Copper.MaxAmount);
+			Console.WriteLine("WOOD_TIER_REPORT: min=" + WoodTiers.Spruce.MinAmount + " max=" + WoodTiers.Spruce.MaxAmount);
 		}
 
 		[SteamFunction]
@@ -57,10 +59,13 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("LUMBERJACKING_SETTINGS_AMBUSH_WOLF_SET: wolfDefname=" + LumberjackingAmbushSystem.WolfDefname);
 		}
 
+		/// <summary>#536 - renamed to "Shared" to make the cross-skill sharing with Mining/
+		/// Fishing explicit in the dialog (was a source of real GM confusion - editing one
+		/// skill's delay silently changed what the OTHER skills' pages showed too).</summary>
 		[SteamFunction]
-		public static void TestSetGatherDelayBaseViaLumberjackingSettings(Character self, ScriptArgs sa) {
+		public static void TestSetSharedGatherDelayBaseViaLumberjackingSettings(Character self, ScriptArgs sa) {
 			double seconds = Convert.ToDouble(sa.Argv[0], CultureInfo.InvariantCulture);
-			LumberjackingSettings.instance.gatherDelayBaseSeconds = seconds;
+			LumberjackingSettings.instance.sharedGatherDelayBaseSeconds = seconds;
 			Console.WriteLine("LUMBERJACKING_SETTINGS_DELAY_SET: baseSeconds=" + GatheringDelaySystem.BaseDelaySeconds);
 		}
 	}
