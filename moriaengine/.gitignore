@@ -15,3 +15,7 @@
 /logs/
 /scripts/defaults/chardefs/newCharDefsFromMuls.def
 /Tests/TestResults/
+
+# Third-party Erebor archive input for SphereShardConverter - not vendored,
+# see docs/current/06-tooling/sphere-shard-converter.md for the clone command.
+/SphereShardConverter/convert/

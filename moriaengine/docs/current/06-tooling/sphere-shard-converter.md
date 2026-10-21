@@ -51,7 +51,35 @@ copy) before trusting it, the same pattern that resolved several of the gaps abo
 
 ## Current status
 
-Not actively maintained or re-run - the conversion already happened, and
-`scripts/converted/` is now just ordinary (if imperfect) game content like any other
-`.def`/`.scp` file under `scripts/`. This project would only be touched again if a
-wholesale re-conversion from fresh Sphere source were ever needed.
+Dormant between uses, but buildable - retargeted to SDK-style/net8.0 and added to
+`SteamEngine.sln` (#543) so it no longer silently bit-rots the way the original legacy
+.NET Framework 4.6.1 project did for years. `scripts/converted/` is ordinary (if
+imperfect) game content like any other `.def`/`.scp` file under `scripts/` - this tool
+is only run again deliberately, to recover specific missing/stale content from a fresh
+Sphere source, not as part of any normal build/test/boot flow.
+
+## I/O contract
+
+`ConverterMain.Main()` (`SphereShardConverter/Main.cs`) takes no CLI arguments:
+
+- **Input**: recursively scans `SphereShardConverter/convert/` for `.scp` files. This
+  folder is gitignored - the third-party Erebor archive is never vendored into this
+  repo. To populate it:
+  ```
+  git clone --depth 1 https://gitlab.com/erebor/sphere-public-archive.git SphereShardConverter/convert
+  ```
+- **Output**: writes converted files into `scripts/converted` by default - **the real,
+  tracked content directory the live engine loads**. `ConvertedFile.Flush()` uses
+  unconditional `FileMode.Create` with no skip-if-exists/merge logic anywhere in the call
+  chain, so a careless run would silently overwrite every file it produces output for,
+  including the files that carry hand-fix comments referencing issues like #157/#536/#539.
+
+**Always redirect output away from `scripts/converted` for any exploratory or trial run**
+via the `MORIA_CONVERTER_OUTPUT_DIR` environment variable, which overrides the hardcoded
+default:
+```
+MORIA_CONVERTER_OUTPUT_DIR=/path/to/scratch dotnet run --project SphereShardConverter
+```
+Only point this at the real `scripts/converted` intentionally, once a diff against the
+scratch output has already been reviewed - see #544 for the trial-run/diff/report
+workflow this safety rail exists for.
