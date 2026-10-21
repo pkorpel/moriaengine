@@ -1,5 +1,43 @@
 # moriaengine — working state
 
+## SphereShardConverter engine work: #563 SHIPPED (PR #577), 2026-10-21 — fifth of #558's 6 sub-issues
+
+`NPCDef` gained `StartingEquipment` (a `List<StartingEquipmentEntry>` - defname +
+optional amount/range), applied once in `NPC.On_Create` via `ThingDef.Create(this)` -
+already equips an equippable item automatically (via its own layer) or drops it into
+the backpack otherwise (ammo), confirmed via direct reading of `ThingDef.Create(Thing
+cont)` - no separate equip call was needed. `.def` syntax: `Equip = defname[, amount
+or min max]`; multiple `Equip =` lines per NPCDef all append (`ConvertedDef.Set` never
+dedupes by key, confirmed).
+
+**Also fixed the converter bug #563 flagged alongside the feature**:
+`ConvertedThingDef.ThirdStage()`'s `@Create`-trigger reader used to `break` on the
+FIRST `item`/`itemnewbie`-prefixed line, silently dropping every subsequent line in
+the trigger. Narrowed the break condition to only bare `item ` / `item=` / `item(`
+lines (the real inline-loot-section marker) - `itemnewbie` lines now fall through to
+normal dispatch like everything else. Confirmed against real archive content:
+`c_titan_ranger` now emits BOTH `Equip = i_bow` and `Equip = i_arrow, 50 75`
+(previously only the first survived) - this was the exact reported regression.
+
+**Re-confirms the issue's own already-settled finding**: no new `CAN=MT_SHOOTBOW`
+flag was needed - the engine's combat system already handles ranged weapons
+generically once equipped + the Archery skill is set (#562). `c_titan_ranger` now
+fights with a bow automatically with #562+#563 both live, same answer the #558 survey
+gave the user originally.
+
+Verified: a real protocol test (`Tests/Protocol/NpcStartingEquipmentTests.cs`, boots a
+real server, ~20s - confirmed genuine) creates a test NPC with a real equippable
+weapon + real ammo with a `{min,max}` amount and confirms both land in the right
+place (equipped vs. backpack); fast tier 50/50; the scratch converter regen above
+showed zero changes to real tracked content, and also confirmed #559-563's fields all
+compose correctly on the same real `c_titan_ranger` NPC (Fame/Karma/Str/Dex/Int/
+MaxHits-Stam-Mana/Experience/skills/Equip, all in one block). Issue #563 closed
+referencing PR #577.
+
+**Next in the #558 sequence**: #564 (NPC multi-spell casting, lowest priority - the
+last of #559-564). **#565 (AggroMode derivation) stays explicitly blocked on the
+user's own design call** - do not auto-implement it.
+
 ## SphereShardConverter engine work: #562 SHIPPED (PR #575), 2026-10-21 — fourth of #558's 6 sub-issues
 
 `NPCDef` gained `SkillValueRanges` - a tag-backed `Dictionary<SkillName, int[]>`, keyed
