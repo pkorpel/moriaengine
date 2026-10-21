@@ -1,5 +1,80 @@
 # moriaengine — working state
 
+## SphereShardConverter: #558 survey done (9 engine issues filed) + #566 SHIPPED (PR #567), 2026-10-21
+
+Follow-up to #555 (below): while spot-checking the converter's own output on the
+`c_titan` family (`c_titan_ranger`'s Archery/bow, `c_titan_mage`'s Magery/spellbook),
+user asked 6 questions that led to a much bigger finding than #551's original top-level-
+field survey captured, plus one isolated pure-converter fix that shipped immediately.
+
+**#566 SHIPPED (PR #567)**: `tag.experience=<eval {min max}>` - the REAL archive field,
+embedded inside the `ON=@Create` trigger body (~76% of chardefs, e.g. `c_titan:
+tag.experience=<eval {110.0 120.0}>`) - is now mapped to the top-level `Experience = min
+max` field #127/#555 already support. `ConvertedCharDef.ProcessCreateTriggerLine`
+(previously only handled `"color"`) gained a `"tag.experience"` case, extracting the two
+numbers from the `<eval {...}>` wrapper. Verified: `c_titan` now shows `Experience = 110
+120` in a scratch regeneration run, matching the raw source exactly; zero changes to real
+tracked content.
+
+**#558 (tracking) - full-archive survey, 9 engine-level sub-issues filed, NOTHING ELSE
+implemented yet.** The real gap: moriaengine's own `.def`/`ConvertedThingDef.
+ProcessCreateTriggerLine` pipeline already has an extension point for content embedded
+inside the `ON=@Create` trigger body - but it was only ever used for `"color"`. A fresh
+survey of all 1,502 `[CHARDEF]` blocks in the archive found this trigger body is where
+almost ALL of a monster's real identity actually lives, and none of it reaches the
+engine today:
+
+| Field | % of chardefs | Engine support |
+|---|---|---|
+| `str`/`dex`/`int` | ~99% each | **None** |
+| `wrestling`/`tactics`/`resist`/`parrying`/`spiritspeak` (skills) | 58-87% each | **None** |
+| `maxhits`/`maxstam`/`maxmana` (HP/Stam/Mana pools) | 71-76% each | **None** |
+| `karma`/`fame` | 81%/65% | **None** |
+| ~20 more individual skill names | 1-33% each | **None** |
+| `ITEMNEWBIE=...` (equip something at creation) | 5,482 lines | **None** |
+| `addspell=...` (grant an NPC multiple castable spells) | 900 lines | **None** - `NPCDef.CombatSpell` is one fixed spell always cast the same way |
+
+**Confirmed, directly answers the user's original "add a CAN=MT_SHOOTBOW flag" idea**:
+NOT needed. The engine's combat system (`WeaponSkillDef`/`DamageManager`) already
+handles ranged weapons for ANY character generically, gated only on what's equipped +
+the Archery skill value (`NPCAiTimer.cs`'s own comment confirms this). Once #561
+(starting skills) and #563 (starting equipment) ship, `c_titan_ranger` fights with a bow
+automatically - no new CAN flag or AI branch required.
+
+Sub-issues filed under #558 (all open, nothing implemented - each needs its own
+engine-side design/build before the converter can usefully emit the field):
+- **#559** - NPCDef starting Str/Dex/Int template.
+- **#560** - NPCDef starting Fame/Karma template.
+- **#561** - NPCDef starting MaxHits/MaxStam/MaxMana template (also corrected a wrong
+  claim I made initially about `Character.MaxMana` always throwing - that's only true on
+  the dead abstract-base fallback, `NPC`/`Player` both already override it properly).
+- **#562** - NPCDef starting-skill-values mechanism (~25 skill names, the biggest piece).
+- **#563** - NPCDef starting-equipment mechanism (`ITEMNEWBIE` -> equip at creation) -
+  also flags a converter-side bug to fix alongside it: `ConvertedThingDef`'s `@Create`
+  reader stops entirely at the FIRST `item`/`itemnewbie` line, silently dropping any
+  additional `ITEMNEWBIE=` lines that follow in the same trigger (e.g. the ranger's bow
+  THEN its arrows).
+- **#564** - NPC multi-spell casting (`addspell` grants a list; engine only supports one
+  fixed `CombatSpell`).
+- **#565** - AggroMode derivation **needs the user's explicit design call, not an
+  autonomous pick** - no `aggromode`/`aggressive` field exists anywhere in the raw
+  source at all (it's not data to pass through, it has to be derived). Two plausible
+  signals found that can disagree: Karma sign/magnitude (the user's own suggestion,
+  blocked on #560) vs. the NPC's `NPC=brain_xxx` AI-brain assignment (brain_monster/
+  brain_dragon/brain_daemon/brain_beserk -> likely Hostile; brain_vendor/brain_banker/
+  brain_animal -> likely Calm; brain_human is genuinely ambiguous, covers both passive
+  townsfolk and hostile bandits in the source). Getting this wrong silently flips
+  monster behavior project-wide - don't guess, wait for the user.
+- `moverate`/`resources` (death loot)/`bloodcolor` - re-confirmed still genuinely
+  unsupported anywhere (same finding as #551/#555), not re-filed as new issues.
+
+**Not yet decided/scoped**: which of #559-564 to build first, or whether to tackle them
+as one combined "NPC starting-template" engine epic vs. separately. #565 (AggroMode)
+is explicitly blocking on the user, not sequencing. No implementation started on any of
+#559-565 - purely the survey + issue-filing pass, per the user's own "treat this as a
+full work task... please analyze all of it" framing (the analysis itself was the
+deliverable this pass; #566 was the one immediately-buildable piece that fell out of it).
+
 ## SphereShardConverter revival (#542) — #555 SHIPPED (PR #556), 2026-10-21. Next: scope the chardef content merge.
 
 **#555 shipped** - implemented the field mappings #551 surveyed and the two user
