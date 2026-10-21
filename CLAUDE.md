@@ -1,5 +1,37 @@
 # moriaengine — working state
 
+## SphereShardConverter engine work: #561 SHIPPED (PR #573), 2026-10-21 — third of #558's 6 sub-issues
+
+`NPCDef` gained `MaxHitsRange`/`MaxStamRange`/`MaxManaRange` (tag-backed `int[]`
+ranges, same shape as #559's `StrRange`/`DexRange`/`IntRange`), applied once in
+`NPC.On_Create`. Reused #559's simple `-1` "unconfigured" sentinel rather than #560's
+nullable approach - confirmed safe by scanning the real archive for negative/`-1`
+maxhits/maxstam/maxmana values (none found; `maxmana=0` is a real, common configured
+value, not a sentinel collision - `NPC.cs`'s own `>= 0` check treats it correctly).
+
+**New behavior not present in #559/#560, worth remembering for any future NPCDef range
+field with a "current value" counterpart**: when a max pool is actually configured,
+current `Hits`/`Stam`/`Mana` are ALSO raised to match the new max (`this.Hits =
+this.MaxHits`, etc., right after the max is set) - otherwise a freshly-seeded NPC would
+spawn at the old 100-point `Character.ct` default against a much larger new max pool
+(e.g. 100/1700 HP instead of 1500-1700/1700). `Str`/`Dex`/`Int`/`Fame`/`Karma` have no
+such "current vs max" split, so #559/#560 never needed this.
+
+Converter now maps the real archive `maxhits=`/`maxstam=`/`maxmana=` lines (embedded
+inside `@Create`) onto these fields, NPCDef-only, same guard as `str`/`dex`/`int`/
+`fame`/`karma`. Verified: a real protocol test (`Tests/Protocol/NpcHpPoolTests.cs`,
+boots a real server, ~17s - confirmed genuine, not a cached false-pass) creates a test
+NPC and confirms both the max-pool seeding and the current-value full-heal sync; fast
+tier 50/50; a scratch converter regen confirmed all 9 `c_titan` variants in `ogres.def`
+now emit `MaxHits`/`MaxStam`/`MaxMana` matching the raw archive exactly (both the
+ranged and single-value forms - `MaxMana = 0`, `= 2250`, `= 4000`), zero changes to
+real tracked content. Issue #561 closed referencing PR #573.
+
+**Next in the #558 sequence**: #562 (starting-skill-values, the biggest piece), #563
+(starting-equipment/`ITEMNEWBIE`, plus fixing the converter's break-on-first-item bug),
+#564 (NPC multi-spell casting, lowest priority). **#565 (AggroMode derivation) stays
+explicitly blocked on the user's own design call** - do not auto-implement it.
+
 ## SphereShardConverter engine work: #560 SHIPPED (PR #571), 2026-10-21 — second of #558's 6 sub-issues
 
 `Character` gained real `Fame`/`Karma` stats (confirmed via grep neither existed
