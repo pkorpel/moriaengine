@@ -1,5 +1,51 @@
 # moriaengine — working state
 
+## #558 FULLY COMPLETE (7 of 7 sub-issues) — #565 SHIPPED (PR #581), 2026-10-21
+
+The last sub-issue under #558. `AggroMode` has no literal field in the real archive at
+all (confirmed via grep - zero `AGGROMODE=` lines anywhere) - it has to be **derived**,
+not passed through, from two signals that don't always agree.
+
+**User approved a specific formula before implementation**, grounded in a real data
+analysis (698 chardefs with Karma, cross-tabbed against `NPC=brain_xxx`) done first:
+3-tier priority - `brain_vendor`/`brain_banker`/`brain_animal_trainer` always `Calm`;
+`brain_monster`/`brain_dragon`/`brain_beserk`/`brain_daemon` always `Hostile` (confirmed
+this catches real undead-boss chardefs - liche/vampire/satan - that set `Karma=0`
+explicitly, which a pure-Karma reading would miss); everything else (`brain_human`,
+`brain_animal`, no/unrecognized brain) falls back to Karma - `Hostile` if the midpoint
+is strictly below -1000, else `Calm` (same default when Karma is unconfigured). Real
+data that justified the -1000 threshold specifically: 26/37 real `brain_vendor` entries
+sit at exactly Karma=-1000 as flavor text, never meant hostile; `brain_human` is
+genuinely bimodal (57% at exactly +10000 townsfolk, 31% at -5000/-6000/-10000 bandits) -
+the threshold correctly splits that distribution.
+
+Purely converter-side (`SphereShardConverter/ConvertedCharDef.cs`) - `AggroMode=` was
+already a fully live `.def` field since #555, just had nothing feeding it. `ProcessCreateTriggerLine`
+captures `pendingKarmaMidpoint`/`pendingBrainType` as the `@Create` trigger body is read
+(karma/npc lines can appear in either order in real content - confirmed), then
+`ThirdStage` derives and emits `AggroMode` once the whole trigger is known. `GuardsRealm`
+(the enum's 3rd value) gets no derivation at all - no source signal exists for it, stays
+reachable only via the existing per-instance `NPC.AggroMode` override (#260).
+
+Verified against real archive content, not just logic: spot-checked `c_dragon_v1`
+(brain_dragon, Karma=-4500) → Hostile, `C_m_WEAPONSMITH` (brain_vendor, no Karma at all)
+→ Calm, `necro_liche_lord` (brain_monster, Karma=0) → Hostile, `c_gurg_ath_archer`
+(brain_human, Karma=-6000) → Hostile, `c_ocs_citizen_fork` (brain_human, Karma=+10000)
+→ Calm, and all 9 real `c_titan*` variants (the family that originally surfaced this
+whole #558 investigation) → Hostile, matching their real Karma=-1500 to -5999. Fast
+tier 50/50; scratch converter regen showed zero changes to real tracked content. Issue
+#565 closed referencing PR #581.
+
+**#558 itself closed too** - GitHub's own sub-issue tracking confirmed 7/7 complete.
+The full engine-level sequence (#559-565) composes correctly on one real NPC: `c_titan_ranger`
+now has real Fame/Karma/Str/Dex/Int/HP-Stam-Mana pools/starting skills/equipment/AggroMode
+all live, fights with a bow automatically (no new `CAN` flag needed, as originally
+confirmed), and `c_titan_mage` casts a random pick among its 3 granted spells. Nothing
+left under #558 - the whole "upgrade the converter so chars are 1:1 with Erebor" work
+the user asked for is done, modulo the still-unsupported `moverate`/`resources`/
+`bloodcolor`/etc fields noted in #551/#555 (those need genuinely new subsystems, not
+just a mapping - not re-raised as new issues, already tracked there).
+
 ## #558 engine-level sequence COMPLETE (6 of 7 sub-issues) — #564 SHIPPED (PR #579), 2026-10-21
 
 `NPCDef` gained `Spells` (a tag-backed `List<SpellDef>`, `addspell=` in the real archive,
