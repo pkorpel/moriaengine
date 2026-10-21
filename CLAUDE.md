@@ -1,5 +1,52 @@
 # moriaengine — working state
 
+## Mystic MindPower now scales by weapon material — SHIPPED (PR #540) — 2026-10-21, #539 closed
+
+Follow-up to the combat-balance Excel workbook work (separate thread from #536's settings-
+persistence investigation below - found while the user was testing the workbook, not part of
+that bug). User reported 3 things while testing the Fight Simulator: (1) Mystic's staff/material
+wasn't settable at all, (2) in-game testing showed spruce vs elven gnarled staff dealt identical
+damage, (3) current Stamina wasn't settable (lower priority).
+
+**Root cause**: no weapon `.def` entry anywhere ever set `MindPowerVsP`/`MindPowerVsM` -
+`Weapon.Generated.cs` defaults both to `-1`, and `Weapon.CalculateMPDurabilty` treats a negative
+`defValue` as "unset", always returning the flat bare-hands default (`MagerySettings.
+bareHandsMindPowerVsP/VsM = 700`) regardless of weapon/material. Confirmed real (not a mass-
+setting gap): `MassSettingByMaterial`-style GM tuning can't represent this anyway, since real
+`AttackVsP` varies per archetype even within one material tier - needed a real content fix, not
+a `.settings` change.
+
+**Fix, confirmed with the user via numeric comparison against real Erebor source data (`c_titan`
+HP 1500-1700) before implementing - "scaled" approach, not a literal copy**: set real
+`MindPowerVsP`/`MindPowerVsM` on the 9 OneHandBlunt/TwoHandBlunt archetypes (club, mace, mace_war,
+hammer_pick, hammer_war, maul, staff_black, staff_quarter, staff_gnarled) across all 7 material
+tiers in `scripts/converted/zbrane/*.def`: `MindPowerVsX(material) = 700 * AttackVsX(material) /
+AttackVsX(Copper)` for that same archetype - Copper always stays at 700 (matches the old
+universal fallback exactly), better materials scale up using that weapon's own real AttackVsP/VsM
+progression. A literal copy of AttackVsP/VsM (the first idea considered) was rejected - those raw
+numbers (4-35) are far below 700, so copying them would make every staff WORSE than bare hands.
+Every other weapon archetype still has no MindPowerVsP/VsM and correctly falls back to the flat
+700 default, unchanged.
+
+**Workbook updated to match** (`tools/balance/generate_combat_balance.py`/`docs/balance/
+combat-balance.xlsx`): added a weapon archetype + material + durability selector to the Mystic
+tab (previously missing entirely - the user's bug #1), a matching MindPower lookup table on the
+Weapons Reference tab (new columns N-T, `-1` sentinel for every non-blunt archetype), and
+propagated the SAME real lookup into Mage's spell-power calculator and the Fight Simulator -
+both read the identical underlying `Character.MindPowerVsP`/`VsM` Mystic's melee path uses, so a
+Mage holding a mace/staff also benefits from this fix, not just Mystic. Added a Stamina input for
+completeness (user's bug #3) - not wired into any formula, since no combat formula found so far
+uses it.
+
+Issue #539 filed (separate from #536, unrelated subsystem - just found during the same general
+combat-balance thread) and closed via PR #540. Verified: `dotnet build` clean, booted
+`GameCore.dll` directly and confirmed the edited `.def` content loads with zero new
+errors/warnings, `MysticCombatTests`/`MysticCombatRangeTests` 10/10 (2 initial failures were the
+documented sandbox connection-timeout flake class, confirmed clean on isolated rerun). Merged via
+`gh pr merge --admin` - PR checks returned a GraphQL permissions error on `statusCheckRollup`
+(same CI-minutes-exhausted class documented below, not a new issue) after already-thorough local
+verification.
+
 ## CORRECTION (2026-10-21) to the #533/PR #534 entry below: "actually persists" was WRONG
 
 The entry below claims PR #534 made GatheringDelaySystem's settings "actually persist" across a
