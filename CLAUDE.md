@@ -1,56 +1,42 @@
 # moriaengine — working state
 
-## PAUSED HERE (2026-10-21): revive SphereShardConverter for NPC/item data recovery — #542, planned not started
+## SphereShardConverter revival (#542) — #543 and #544 BOTH DONE, 2026-10-21. Next: scope the chardef merge.
 
-User asked (after the #539 Mystic MindPower fix, same session) whether we could regenerate
-`scripts/converted/` from a fresher Erebor source instead of continuing to hand-port individual
-gaps one at a time. Investigated, designed a full phased plan, got it approved - then the user
-asked to pause and restart the session/container BEFORE any implementation started. **Nothing has
-been touched yet** - no csproj edits, no `.gitignore` change, no archive clone kept, no worktree
-(one was created then removed again, cleanly, before any file in it was edited). Read this entry
-plus #542/#543/#544 first if resuming - don't re-derive the investigation below, it's already done.
+Full plan (#543 retarget + #544 trial-run/report) is complete. **#543 shipped** (PR #546,
+then a correction PR #547 after #546's merge turned out to only contain a 3-line
+`app.config` deletion due to a `git add` pathspec error - re-verified this time by
+confirming `SteamEngine.SphereShardConverter` actually appears in a full
+`dotnet build SteamEngine.sln` output before trusting the commit). **#544 shipped** as a
+GitHub comment report (no PR - investigation-only per its own scope), after also finding
+and fixing a real converter bug along the way: one malformed archive header crashed the
+*entire* 527-file run with zero output (#548, PR #549, merged) - `ConverterMain.Main()`'s
+3 stage loops had no per-def exception handling, unlike `ConvertFile()`'s own parsing
+loop which already has it.
 
-**Headline finding**: diffing a fresh clone of `gitlab.com/erebor/sphere-public-archive` against
-`scripts/converted/chars/` found **347 real, named NPCs with zero moriaengine equivalent**
-(confirms/quantifies the already-tracked #12 finding, "~55-60% of NPC content incomplete").
-Separately, 339 of the archive's 527 files (`questy/`, `systems/`, `dobyvani/`, `gump_system/`,
-`vypravec/`, `tim/`) have no converted counterpart at all - but NOT from staleness. They're
-`[function]`/`[dialog]`/`[events]`/`[speech]`/`[book]` blocks; `SphereShardConverter`'s own
-dispatch only ever handles `itemdef`/`chardef`/`area`/`template`/`defname` blocks, so it
-structurally can never recover that logic content - that's a separate, permanent hand-porting
-effort (already happening piecemeal - `funkce.scp`/`miningfix.scp`/`skillgains.scp` formulas
-hand-ported into real C# across several past sessions), **explicitly out of scope** for this
-whole thread. This plan is ONLY about the data-recoverable slice (chardef/itemdef/area/
-template/defname blocks).
+**#544's real numbers** (named/reliable defs only - see the report for why hex-only
+positional headers aren't trustworthy to diff by): **723 new chardefs** (557 different),
+**1,771 new itemdefs** (891 different, 99 identical), **146 new templates** (6
+different, 45 identical). Cross-checked the chardef "new" count against the original
+347-NPC baseline by restricting to `scripts/chars/` only - got **352**, closely matching
+(confirms the original finding wasn't a fluke). The other 371 new chardefs are
+quest/tutorial/special-boss NPCs from outside that folder, including the confirmed
+cyclops boss family (`c_cyclop_archmag`/`gladiator`/`mag`/`strazce`/`valecnik`/`velitel`).
+**Checked every one of the 12 hand-fixed files' ~140 defnames against the fresh archive
+directly - all still show the exact same already-disproven converter guesses the hand-
+fixes already corrected, confirming nothing needs reconciling there, ever.** Real
+unexpected finding: **areas/regions are not recoverable via this tool at all** - zero
+`[Region]`/`[FlaggedRegion]` output in either the fresh run or the already-tracked
+content, not investigated further (out of scope for this pass). Full report: GitHub
+comment on #544 (https://github.com/pkorpel/moriaengine/issues/544#issuecomment-6321959690).
 
-**Why the converter itself needs work first**: `SphereShardConverter/` is a legacy non-SDK-style
-csproj targeting .NET Framework 4.6.1, not referenced anywhere in `SteamEngine.sln`/CI/any
-script - fully orphaned, which is why it silently bit-rotted. It's otherwise a pure static
-text-in/text-out tool (confirmed: zero .NET-Framework-only APIs, zero live engine instantiation -
-its references to `WeaponType`/etc. are static enum values only) - retargeting to SDK-style/
-net8.0 should be a pure project-file change, no C# source fixes needed. `ConvertedFile.Flush()`
-uses unconditional `FileMode.Create` with no skip-if-exists/merge logic anywhere - a careless
-rerun against the real checkout would blindly overwrite all 12 files that currently carry
-hand-fix comments (`#157`, `#536`, `#539`, etc.) with zero warning.
-
-**Plan, approved by the user, filed as sub-issues under #542** (full detail/rationale in each
-issue, not duplicated here):
-- **#543** - retarget the csproj to SDK-style/net8.0, add it to `SteamEngine.sln` (so it stops
-  silently bit-rotting), add a `MORIA_CONVERTER_OUTPUT_DIR` env var safety rail in
-  `SphereShardConverter/Main.cs` (output path is otherwise hardcoded to the real
-  `scripts/converted`), gitignore the input folder `SphereShardConverter/convert/` (don't vendor
-  the third-party archive), update `docs/current/06-tooling/sphere-shard-converter.md`.
-- **#544** (depends on #543) - clone the archive into `convert/`, run the retargeted converter
-  with output redirected via the new env var into a SCRATCH directory (never touching the real
-  tracked `scripts/converted/`), diff the scratch output against tracked content per defname
-  block (new / identical / different), cross-reference every "different" hit against the 12
-  hand-fixed files for manual review (never auto-apply), produce a per-category count/list report
-  split by content kind. **Deliberately stops at the report** - 347+ new NPCs alone is too large
-  to merge sight-unseen in one pass; the actual content-merge work (chardefs first since already
-  quantified, then areas/items/templates, each its own issue/branch/PR) is scoped only AFTER the
-  user has seen the real numbers from #544's report.
-
-**Next step when resuming**: start with #543 (nothing else is unblocked without it).
+**Recommendation given to the user, not yet decided/scoped**: chardefs first (352 in
+`scripts/chars/`, matches the known baseline, cleanest category), then separately decide
+on the 371 outside that folder; templates are small and clean as a good 2nd/3rd target
+(146 new, only 6 different); itemdefs are the biggest by volume (1,771 new) but need more
+per-item triage before merging, no clean folder boundary. **#542/#543/#544 all stay open
+for now** pending the user's decision on what to scope next - don't start any actual
+content-merge PR without that explicit go-ahead, per #544's own "deliberately stops at
+the report" instruction.
 
 ## Mystic MindPower now scales by weapon material — SHIPPED (PR #540) — 2026-10-21, #539 closed
 
