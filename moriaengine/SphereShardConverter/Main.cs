@@ -101,7 +101,7 @@ namespace SteamEngine.Converter {
 				foreach (ConvertedFile file in filesList) {
 					//Logger.WriteDebug("Working on file "+file.origPath);
 					foreach (ConvertedDef def in file.defs) {
-						def.FirstStage();
+						def.RunStageSafely(def.FirstStage);
 					}
 				}
 				InvokeStaticMethodOnDefClasses("FirstStageFinished");
@@ -110,7 +110,7 @@ namespace SteamEngine.Converter {
 				foreach (ConvertedFile file in filesList) {
 					//Logger.WriteDebug("Working on file "+file.origPath);
 					foreach (ConvertedDef def in file.defs) {
-						def.SecondStage();
+						def.RunStageSafely(def.SecondStage);
 					}
 				}
 				InvokeStaticMethodOnDefClasses("SecondStageFinished");
@@ -119,7 +119,7 @@ namespace SteamEngine.Converter {
 				foreach (ConvertedFile file in filesList) {
 					//Logger.WriteDebug("Working on file "+file.origPath);
 					foreach (ConvertedDef def in file.defs) {
-						def.ThirdStage();
+						def.RunStageSafely(def.ThirdStage);
 					}
 				}
 				InvokeStaticMethodOnDefClasses("ThirdStageFinished");
