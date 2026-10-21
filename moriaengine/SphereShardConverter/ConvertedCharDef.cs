@@ -247,6 +247,18 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#564 - the real archive grants multiple spells via addspell= lines inside @Create
+			//(e.g. c_titan_mage: "addspell=s_lightning" then "addspell=s_fireball" then
+			//"addspell=s_magic_reflection"), one line per spell - maps directly onto
+			//NPCDef.Spells' "AddSpell = defname" syntax, no numeric parsing needed (unlike
+			//str/fame/skills). NPCDef-only, same guard as the other @Create fields above.
+			if (name == "addspell") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				this.Set("AddSpell", value.Trim(), comment);
+				return;
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
 

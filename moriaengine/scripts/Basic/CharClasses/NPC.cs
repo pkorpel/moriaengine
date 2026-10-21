@@ -185,6 +185,25 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey instanceSpellsTK = TagKey.Acquire("_npcSpells_");
+
+		/// <summary>#564 - the full set of spells this NPC species can cast (addspell= in the real
+		/// archive, often 2-4 per mage-type NPC), as opposed to CombatSpell (a single, always-the-
+		/// same spell). When non-empty, NPCAiTimer.TryCastSpell picks uniformly at random from THIS
+		/// list each cast attempt instead of always using CombatSpell - a simple, source-faithful-
+		/// enough interim policy (the issue itself flags "random per cast" as a reasonable option;
+		/// no situational/weighted targeting data exists in the public archive to justify anything
+		/// fancier). CombatSpell stays the fallback when this list is empty/unconfigured, so nothing
+		/// regresses for any existing single-spell-only NPCDef.</summary>
+		public List<SpellDef> Spells {
+			get {
+				return this.GetTag(instanceSpellsTK) as List<SpellDef>;
+			}
+			set {
+				this.SetTag(instanceSpellsTK, value);
+			}
+		}
+
 		private static readonly TagKey experienceWorthTK = TagKey.Acquire("_experienceWorth_");
 
 		/// <summary>Experience range {min, max} granted to the player who kills an NPC of this
@@ -406,6 +425,18 @@ namespace SteamEngine.CompiledScripts {
 					Logger.WriteWarning(filename, line, "combatspell '" + args + "' is not a known SpellDef.");
 				}
 				this.CombatSpell = spell;
+				return;
+			}
+			if (param == "addspell") {
+				SpellDef spell = SpellDef.GetByDefname(args);
+				if (spell == null) {
+					Logger.WriteWarning(filename, line, "addspell '" + args + "' is not a known SpellDef.");
+					return;
+				}
+				if (this.Spells == null) {
+					this.Spells = new List<SpellDef>();
+				}
+				this.Spells.Add(spell);
 				return;
 			}
 			if (param == "aggromode") {
