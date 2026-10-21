@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.Tests", "Tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.ProcessRestarter", "ProcessRestarter\SteamEngine.ProcessRestarter.csproj", "{0A6BEB83-CF08-4946-BA88-2A74480F9777}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamEngine.SphereShardConverter", "SphereShardConverter\SteamEngine.SphereShardConverter.csproj", "{56E0D551-7D1D-4529-B355-B1C70B063526}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,5 +68,9 @@ Global
 		{0A6BEB83-CF08-4946-BA88-2A74480F9777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A6BEB83-CF08-4946-BA88-2A74480F9777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A6BEB83-CF08-4946-BA88-2A74480F9777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56E0D551-7D1D-4529-B355-B1C70B063526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56E0D551-7D1D-4529-B355-B1C70B063526}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56E0D551-7D1D-4529-B355-B1C70B063526}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56E0D551-7D1D-4529-B355-B1C70B063526}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
