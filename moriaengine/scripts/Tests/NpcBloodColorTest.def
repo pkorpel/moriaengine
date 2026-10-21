@@ -1,0 +1,13 @@
+// New GitHub issue (#583 - "NPCDef needs a BloodColor field, define now, no consumer
+// yet") - test-only content proving NPCDef.BloodColor actually parses both real archive
+// forms: a leading-zero hex-style number (BLOODCOLOR=020 in source) and a symbolic
+// color constant already defined in scripts/Basic/defs.scp (BLOODCOLOR=colors_green).
+[NPCDef npc_test_blood_color_hex]
+NAME = "Blood Color Hex Test"
+ANIM = 0x1fff
+BloodColor = 020
+
+[NPCDef npc_test_blood_color_symbolic]
+NAME = "Blood Color Symbolic Test"
+ANIM = 0x1fff
+BloodColor = colors_green
