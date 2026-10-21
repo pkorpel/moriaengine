@@ -71,18 +71,28 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>The 7 real Erebor wood tiers (#422), confirmed directly against
 	/// sphereregion.scp's own [RegionResource l_X] blocks after correcting an earlier wrong
 	/// assumption that i_log_lager was the baseline (see WoodTier's own doc comment and
-	/// #270's corrected comment for the full story).</summary>
+	/// #270's corrected comment for the full story).
+	///
+	/// Renamed from metal to wood names (#536, user-reported confusion - "even if log id is
+	/// i_copper_log, it's named Spruce"). The item DEFNAMEs are unchanged (i_log_copper really
+	/// is the spruce log - confirmed: scripts/converted/item_ore.def's own NAME="spruce log%s"
+	/// on i_log_copper, chestnut/oak/teak/mahagon/eben/elven likewise on iron/verite/valorite/
+	/// obsidian/adamantinum/mithril respectively - same material-tier aliasing as Mining's ore
+	/// tiers, metal and wood are literally the same numeric tier with two display names) - only
+	/// the C# identifiers/settings-dialog property names change, so a GM looking at the
+	/// Lumberjacking settings page sees real wood names instead of metal names that collided
+	/// (both visually and in spirit) with Mining's own identically-named ore-tier properties.</summary>
 	public static class WoodTiers {
-		public static readonly WoodTier Copper = new WoodTier("i_log_copper", 0, 5, 20, 30);
-		public static readonly WoodTier Iron = new WoodTier("i_log_iron", 400, 4, 15, 30);
-		public static readonly WoodTier Verite = new WoodTier("i_log_verite", 550, 3, 11, 30);
-		public static readonly WoodTier Valorite = new WoodTier("i_log_valorite", 700, 2, 8, 30);
-		public static readonly WoodTier Obsidian = new WoodTier("i_log_obsidian", 900, 1, 5, 30);
-		public static readonly WoodTier Adamantinum = new WoodTier("i_log_adamantinum", 990, 1, 4, 30);
-		public static readonly WoodTier Mithril = new WoodTier("i_log_mithril", 1050, 1, 3, 30);
+		public static readonly WoodTier Spruce = new WoodTier("i_log_copper", 0, 5, 20, 30);
+		public static readonly WoodTier Chestnut = new WoodTier("i_log_iron", 400, 4, 15, 30);
+		public static readonly WoodTier Oak = new WoodTier("i_log_verite", 550, 3, 11, 30);
+		public static readonly WoodTier Teak = new WoodTier("i_log_valorite", 700, 2, 8, 30);
+		public static readonly WoodTier Mahagon = new WoodTier("i_log_obsidian", 900, 1, 5, 30);
+		public static readonly WoodTier Eben = new WoodTier("i_log_adamantinum", 990, 1, 4, 30);
+		public static readonly WoodTier Elven = new WoodTier("i_log_mithril", 1050, 1, 3, 30);
 
 		public static readonly WoodTier[] All = {
-			Copper, Iron, Verite, Valorite, Obsidian, Adamantinum, Mithril
+			Spruce, Chestnut, Oak, Teak, Mahagon, Eben, Elven
 		};
 
 		/// <summary>Reverse lookup from a yielded ItemDef back to its WoodTier - used by
@@ -144,7 +154,7 @@ namespace SteamEngine.CompiledScripts {
 			WoodTier realWood = vein.AssignedWood;
 			WoodTier yieldWood = (chopper.GetRealSkillValue(SkillName.Lumberjacking) >= realWood.SkillThreshold)
 				? realWood
-				: WoodTiers.Copper; //real fixresource logic - under-skilled never fails outright, just downgrades
+				: WoodTiers.Spruce; //real fixresource logic - under-skilled never fails outright, just downgrades
 
 			vein.RemainingPool--;
 			if (vein.RemainingPool <= 0) {
