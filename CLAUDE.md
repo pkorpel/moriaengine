@@ -1,5 +1,52 @@
 # moriaengine — working state
 
+## Remaining converter gaps, batch 1 of 4: BloodColor SHIPPED (PR #584), 2026-10-21 — #583 closed
+
+Follow-up to #558 (fully closed below): after the full `.def` field survey, 8 fields
+remained genuinely unsupported anywhere - `moverate`, `resources`, `bloodcolor`,
+`foodtype`, `desires`, `aversions`, `shelter`, `reslevel`. A fresh research pass found
+all 8 are **top-level** chardef fields (never embedded inside `ON=@Create`, unlike
+#559-565's fields) - so the converter-side fix for any of them is a `LineImplTask`
+entry, not a `ProcessCreateTriggerLine` case. `desires`/`aversions`/`shelter`/
+`reslevel` are confirmed vestigial (<1% real usage, legacy Sphere-AI signals this
+engine already replaced with `NPCAiTimer`) and are being skipped. `bloodcolor`,
+`resources`, `moverate`, and `foodtype`+hunger are being implemented, in that order.
+
+**`BloodColor` (this entry) shipped first - the cheapest of the 4.** `NPCDef.BloodColor`
+is a generic `Defs:` field (`scripts/Basic/CharClasses/NPC.ct`), **not** a hand-parsed
+tag-backed property like #559-565's fields - this matters because the real archive's
+`BLOODCOLOR=` field has two genuinely different shapes: a plain leading-zero hex number
+(`BLOODCOLOR=020`) and a symbolic color constant (`BLOODCOLOR=colors_green`) that itself
+expands to a Sphere `{1401 1447}` random range via this engine's own
+`scripts/Basic/defs.scp`. A hand-written `int.Parse`-based `LoadScriptLine` case (the
+first draft) would have thrown on the symbolic case - caught during real-boot
+verification before shipping, not assumed. The generic `Defs:`/`FieldValue` mechanism
+resolves BOTH shapes for free (same lazy-LScript-expression pipeline `armorVsM`/
+`weaponAttack` already use), with zero hand-written parsing code. Converter maps the
+real top-level `BLOODCOLOR=` field (confirmed NOT inside `@Create`) via a plain
+NPCDef-only pass-through, same guard as `aggromode`/`combatspell`.
+
+No engine consumer yet, as explicitly scoped - no blood-splat visual effect exists in
+this engine today. Ready for whenever that gets built, same precedent as `attr_norepair`
+from the earlier ATTR-flags work (#223).
+
+Verified: a real protocol test (`Tests/Protocol/NpcBloodColorTests.cs`, boots a real
+server, ~19s - confirmed genuine) confirms both the hex form (`020` → `32`) and the
+symbolic form (`colors_green` → a value in `[1401, 1447]`) resolve correctly; fast tier
+50/50; a scratch converter regen confirmed zero changes to real tracked content, with
+`c_dragon_v1`'s real output now showing `BLOODCOLOR = 020` live (previously commented
+out). Issue #583 closed referencing PR #584.
+
+**Next in this batch**: `resources` (data-template only - the real mechanic is corpse
+BUTCHERING via a knife + `.usehand`/double-click + target, confirmed by the user; that
+interaction doesn't exist yet and is explicitly out of scope for this pass, only the
+NPCDef-side data needs to be ready for it), `moverate` (NPC movement speed - user
+confirmed build now, `moverate=3` is baseline/default, higher=faster, lower=slower),
+`foodtype` + a **full** hunger/feeding/decay system (user explicitly chose the bigger
+scope over a minimal stub) - real, fully-recoverable Sphere mechanics found in
+`funkce.scp`'s `nakrmho` feeding formula and `jezditka.scp`'s mount-hunger decay/
+dismount-when-starving timer, scoped to tamed pets/ridden mounts per the source.
+
 ## #558 FULLY COMPLETE (7 of 7 sub-issues) — #565 SHIPPED (PR #581), 2026-10-21
 
 The last sub-issue under #558. `AggroMode` has no literal field in the real archive at
