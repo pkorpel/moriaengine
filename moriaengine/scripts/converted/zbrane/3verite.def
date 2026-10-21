@@ -40,6 +40,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 7
 attackVsM = 7
+MindPowerVsP = 1225.0 //#539 - scaled: 700 * 7.0/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 1225.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1
@@ -109,6 +111,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 10
 attackVsM = 10
+MindPowerVsP = 1000.0 //#539 - scaled: 700 * 10.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 1000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1
@@ -205,6 +209,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 12.5
 attackVsM = 12.5
+MindPowerVsP = 1093.75 //#539 - scaled: 700 * 12.5/8.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 1093.75 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1
@@ -321,6 +327,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 16
 attackVsM = 16
+MindPowerVsP = 1120.0 //#539 - scaled: 700 * 16.0/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 1120.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1
@@ -392,6 +400,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 16.5
 attackVsM = 16.5
+MindPowerVsP = 1050.0 //#539 - scaled: 700 * 16.5/11.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 1050.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1
@@ -439,6 +449,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 17.5
 attackVsM = 17.5
+MindPowerVsP = 1020.83 //#539 - scaled: 700 * 17.5/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 1020.83 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1
@@ -534,6 +546,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 21
 attackVsM = 21
+MindPowerVsP = 1050.0 //#539 - scaled: 700 * 21.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 1050.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1
@@ -606,6 +620,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 22
 attackVsM = 22
+MindPowerVsP = 993.55 //#539 - scaled: 700 * 22.0/15.5 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 993.55 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1
@@ -702,6 +718,8 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 25
 attackVsM = 25
+MindPowerVsP = 972.22 //#539 - scaled: 700 * 25.0/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 972.22 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100
 speed = 100
 range = 1

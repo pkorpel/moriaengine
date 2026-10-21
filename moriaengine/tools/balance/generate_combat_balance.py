@@ -814,6 +814,26 @@ WEAPON_NAMES = [w[0] for w in WEAPON_ARCHETYPES]
 MATERIAL_NAMES_FOR_WEAPONS = [m[1] for m in WEAPON_TIERS]
 MATERIAL_NAMES_FOR_ARMOR = [m[1] for m in METAL_TIERS]
 
+# #539 (shipped): the 9 OneHandBlunt/TwoHandBlunt archetypes now have a real
+# MindPowerVsP/VsM set in content for every material tier, scaled off that same archetype's own
+# real AttackVsP/VsM progression: MindPowerVsX(material) = 700 (bare-hands baseline) *
+# AttackVsX(material) / AttackVsX(Copper). Every other archetype still has no MindPowerVsP/VsM in
+# content at all - Weapon.CalculateMPDurabilty treats a negative defValue as "unset" and returns
+# the flat bareHandsMindPowerVsP/VsM default (700) regardless of material; -1 here is that same
+# sentinel, not a real value.
+MINDPOWER_ARCHETYPES = {"club", "mace", "mace_war", "hammer_pick", "hammer_war", "maul",
+                         "staff_black", "staff_quarter", "staff_gnarled"}
+BARE_HANDS_MINDPOWER = 700.0
+WEAPON_MINDPOWER = {}
+for _arche in WEAPON_NAMES:
+    _vals = WEAPON_ATTACK[_arche]
+    if _arche in MINDPOWER_ARCHETYPES:
+        _copper = _vals[0]
+        WEAPON_MINDPOWER[_arche] = [round(BARE_HANDS_MINDPOWER * v / _copper, 2) for v in _vals]
+    else:
+        WEAPON_MINDPOWER[_arche] = [-1] * len(_vals)
+del _arche, _vals
+
 
 
 def sheet_ref(title):
@@ -858,9 +878,11 @@ def build_overview(wb):
         "Bows and crossbows IGNORE their own material for damage - RangerSettings flatly overrides bow/crossbow "
         "AttackVsP/VsM regardless of tier. Only the loaded ammo's material changes ranged damage (a small per-tier "
         "bonus). See the Ranger tab.",
-        "No weapon .def sets a MindPowerVsP/VsM value, so every staff a Mystic wields currently falls back to the "
-        "same bare-hands default (700) - materials don't currently differentiate Mystic weapon damage either. See "
-        "the Mystic tab.",
+        "MindPowerVsP/VsM (#539, shipped): the 9 OneHandBlunt/TwoHandBlunt archetypes (maces/hammers/"
+        "staves) now have a real, material-scaled value in content, anchored so Copper == the 700 bare-hands "
+        "default and scaling up with that archetype's own real AttackVsP/VsM progression. Every other weapon type "
+        "still has no MindPowerVsP/VsM set and falls back to the flat 700 default regardless of material. See the "
+        "Mystic tab and Weapons Reference's MindPower columns.",
         "Resisting Spells (MagicResist)'s EFFECT curve is commented out in content, so its contribution to Mystic's "
         "mind-defense is 0 regardless of skill level today - only worn armor's MindDefense stat does anything.",
         "MvP (Monster attacks Player) uses a random 0.85-1.00 damage multiplier per real swing, unlike the other "
@@ -1008,8 +1030,14 @@ def build_weapons_ref(wb):
                "no real variation to compare yet.", span=12)
     row += 1
     header_r = row
+    mindpower_col0 = 14  # N - leave M (13) as a spacer column between the two tables
     headers = ["Archetype", "WeaponType", "Skill", "MaterialType", "Notes"] + MATERIAL_NAMES_FOR_WEAPONS
     row = header_row(ws, row, 1, headers)
+    ws.cell(row=header_r, column=mindpower_col0 - 1, value="")
+    for i, mat in enumerate(MATERIAL_NAMES_FOR_WEAPONS):
+        c = ws.cell(row=header_r, column=mindpower_col0 + i, value=f"MindPower: {mat}")
+        c.font = HEADER_FONT
+        c.fill = HEADER_FILL
     data_start = row
     for arche, disp, wtype, skill, mtype, wnote in WEAPON_ARCHETYPES:
         vals = WEAPON_ATTACK[arche]
@@ -1020,10 +1048,21 @@ def build_weapons_ref(wb):
         ws.cell(row=row, column=5, value=wnote)
         for i, v in enumerate(vals):
             ws.cell(row=row, column=6 + i, value=v)
+        for i, v in enumerate(WEAPON_MINDPOWER[arche]):
+            ws.cell(row=row, column=mindpower_col0 + i, value=v)
         row += 1
     data_end = row - 1
     row += 1
     row = note(ws, row, 1, "Source: scripts/converted/zbrane/*.def (one file per material). How to change: edit the AttackVsP/AttackVsM field on the relevant material's .def entry, restart server (no rebuild needed for content changes).", span=12)
+    row += 1
+    row = note(ws, row, 1,
+               "MindPower columns (#539, shipped): only the 9 OneHandBlunt/TwoHandBlunt archetypes "
+               "(club/mace/mace_war/hammer_pick/hammer_war/maul/staff_black/staff_quarter/staff_gnarled) have a "
+               "real MindPowerVsP/VsM in content - scaled off that archetype's own AttackVsP/VsM progression, "
+               "anchored so Copper == the 700 bare-hands baseline. '-1' for every other archetype means content "
+               "never sets it there; Weapon.CalculateMPDurabilty treats that as 'unset' and a Mystic wielding one "
+               "of those still gets the flat bare-hands 700 default regardless of material (see Mystic tab).",
+               span=12)
     row += 1
     row = h2(ws, row, 1, "Ammo tier bonus (bow/crossbow damage multiplier from arrow/bolt material)", span=4)
     row = header_row(ws, row, 1, ["Material", "Tier rank", "Bonus = 1 + tier*arrowDamageBonusPerTier(0.05)"])
@@ -1035,7 +1074,9 @@ def build_weapons_ref(wb):
     autosize(ws, {1: 16, 2: 14, 3: 14, 4: 12, 5: 50})
     for c in range(6, 13):
         ws.column_dimensions[get_column_letter(c)].width = 11
-    return dict(header_row=header_r, data_start=data_start, data_end=data_end)
+    for c in range(mindpower_col0, mindpower_col0 + len(MATERIAL_NAMES_FOR_WEAPONS)):
+        ws.column_dimensions[get_column_letter(c)].width = 14
+    return dict(header_row=header_r, data_start=data_start, data_end=data_end, mindpower_col0=mindpower_col0)
 
 
 def build_armor_ref(wb):
@@ -1628,30 +1669,44 @@ def build_ranger(wb, weapons_info, monsters_info):
     ws.column_dimensions["B"].width = 16
 
 
-def build_mystic(wb, monsters_info):
+def build_mystic(wb, weapons_info, monsters_info):
     ws = wb.create_sheet("Mystic")
     row = _profession_header(ws, "Mystic")
     row = note(ws, row, 1,
                "Mystic's melee swing is forcibly DamageType.MagicMystical regardless of equipped weapon - a "
                "completely separate damage path (mindPower - mindDefense, subtractive) from every other profession's "
-               "armor-based physical path. No weapon .def sets MindPowerVsP/VsM, so every staff currently falls back "
-               "to the same bare-hands default (700) - material doesn't differentiate Mystic damage today. "
+               "armor-based physical path. #539 (shipped): the 9 OneHandBlunt/TwoHandBlunt archetypes "
+               "(maces/hammers/staves) now have a real, material-scaled MindPowerVsP/VsM in content - pick one "
+               "below. Every other weapon type still has none set and falls back to the flat bare-hands default "
+               "(700) regardless of material - same as before for those. "
                "Resisting Spells (MagicResist)'s contribution to mind-defense is currently 0 (EFFECT line commented "
                "out in Skills.scp) - only worn armor's MindDefense stat matters today.", span=8)
     row += 1
 
     row = h2(ws, row, 1, "Calculator - mind-power attack (PvM/PvP)", span=6)
     row += 1
-    labels = [("Int", 150), ("Mana (current)", 100), ("EvalInt skill (0-1000)", 1000),
-              ("SpiritSpeak skill (0-1000)", 1000)]
+    labels = [("Int", 150), ("Mana (current)", 100), ("Stamina (current)", 100),
+              ("EvalInt skill (0-1000)", 1000), ("SpiritSpeak skill (0-1000)", 1000),
+              ("Weapon archetype", "staff_gnarled"), ("Material", MATERIAL_NAMES_FOR_WEAPONS[0]),
+              ("Weapon durability %", 100)]
     cells = {}
     for label, default in labels:
         ws.cell(row=row, column=1, value=label)
         input_cell(ws, row, 2, default)
         cells[label] = f"$B${row}"
         row += 1
-    row = note(ws, row, 1, "Weapon/material has NO effect on mind-power today (every staff falls back to the "
-                            "bare-hands MindPower default) - not shown as an input for that reason.", span=8)
+    dv_weapon = DataValidation(type="list", formula1=f'"{",".join(WEAPON_NAMES)}"')
+    ws.add_data_validation(dv_weapon)
+    dv_weapon.add(ws[cells["Weapon archetype"]])
+    dv_mat = DataValidation(type="list", formula1=f'"{",".join(MATERIAL_NAMES_FOR_WEAPONS)}"')
+    ws.add_data_validation(dv_mat)
+    dv_mat.add(ws[cells["Material"]])
+    row = note(ws, row, 1, "Stamina has no effect on any combat formula found so far - shown for completeness, "
+                            "not wired into any calculation below.", span=8)
+    row += 1
+    row = note(ws, row, 1, "Pick any weapon archetype above (not just maces/staves) - choosing one with no real "
+                            "MindPowerVsP/VsM in content (-1 on the Weapons Reference tab) correctly falls back to "
+                            "the flat bare-hands default below, matching the real engine.", span=8)
     row += 1
 
     row = h2(ws, row, 1, "PvM target - a Monster you're attacking", span=2)
@@ -1684,6 +1739,13 @@ def build_mystic(wb, monsters_info):
                                             "MvP attacker")
     row += 2
 
+    wi = weapons_info
+    weapon_cell, material_cell, durability_cell = cells["Weapon archetype"], cells["Material"], cells["Weapon durability %"]
+    mp_c0, mp_c1 = get_column_letter(wi["mindpower_col0"]), get_column_letter(wi["mindpower_col0"] + len(MATERIAL_NAMES_FOR_WEAPONS) - 1)
+    mp_lookup = (f"INDEX('Weapons Reference'!${mp_c0}${wi['data_start']}:${mp_c1}${wi['data_end']},"
+                 f"MATCH({weapon_cell},'Weapons Reference'!$A${wi['data_start']}:$A${wi['data_end']},0),"
+                 f"MATCH({material_cell},'Weapons Reference'!${mp_c0}${wi['header_row']}:${mp_c1}${wi['header_row']},0))")
+
     sum_row = row
     ws.cell(row=row, column=1, value="Mind-power sum (EvalInt+SpiritSpeak+Int contributions)")
     output_cell(ws, row, 2,
@@ -1691,9 +1753,15 @@ def build_mystic(wb, monsters_info):
                 f"+({cells['SpiritSpeak skill (0-1000)']}/1000*C_SpiritSpeak_EffectMax)"
                 f"+({cells['Int']}*C_mindPowerIntModifier))/1000")
     row += 1
+    weapon_mp_row = row
+    ws.cell(row=row, column=1, value="Weapon MindPowerVsP/VsM (looked up, durability-scaled; -1=unset falls back to bare hands)")
+    output_cell(ws, row, 2,
+                f"=IF({mp_lookup}<0,C_bareHandsMindPowerVsP,"
+                f"C_bareHandsMindPowerVsP+(({mp_lookup}-C_bareHandsMindPowerVsP)/2)*(1+{durability_cell}/100))")
+    row += 1
     mp_row = row
-    ws.cell(row=row, column=1, value="Your MindPowerVsP/VsM (weapon falls back to bare-hands default)")
-    output_cell(ws, row, 2, f"=C_bareHandsMindPowerVsP*$B${sum_row}")
+    ws.cell(row=row, column=1, value="Your MindPowerVsP/VsM (weapon value x mind-power sum)")
+    output_cell(ws, row, 2, f"=$B${weapon_mp_row}*$B${sum_row}")
     row += 1
     delay_row = row
     ws.cell(row=row, column=1, value="Your swing delay (seconds, MANA-driven, weapSpeed=100)")
@@ -1838,9 +1906,11 @@ def build_fight_simulator(wb, weapons_info, armor_info, monsters_info):
                "applies to a combatant's whole outfit (not per-piece); a character's own innate "
                "chardef/race base ArmorClass (DefForCombat.ArmorVsP/VsM in the real formula) is "
                "assumed 0 - no base-race AC data was gathered; Feet has no selectable piece in this "
-               "content. Mind-power pipelines (Mystic attacker) always use the bare-hands MindPower "
-               "default per the engine's current content (see Mystic tab) regardless of weapon/armor "
-               "picked here.", span=8)
+               "content. Mind-power pipelines (Mystic attacker) now use the SAME Melee weapon archetype/material/"
+               "durability inputs below (#539, shipped) - only the 9 OneHandBlunt/TwoHandBlunt "
+               "archetypes (maces/hammers/staves) have a real, material-scaled MindPowerVsP/VsM in content; any "
+               "other archetype still falls back to the flat bare-hands default (700), see Mystic tab/Weapons "
+               "Reference for detail.", span=8)
     row += 1
 
     def combatant_block(label):
@@ -1891,7 +1961,7 @@ def build_fight_simulator(wb, weapons_info, armor_info, monsters_info):
         row += 1
 
         for lbl, default in [("Str", 100), ("Dex", 100), ("Int", 100), ("Vit", 100), ("Mana (current)", 100),
-                              ("HP", 100)]:
+                              ("Stamina (current)", 100), ("HP", 100)]:
             ws.cell(row=row, column=1, value=lbl)
             input_cell(ws, row, 2, default)
             c[lbl] = f"$B${row}"
@@ -1903,19 +1973,23 @@ def build_fight_simulator(wb, weapons_info, armor_info, monsters_info):
             c[lbl] = f"$B${row}"
             row += 1
 
-        row = note(ws, row, 1, "Offense (used depending on Profession): Warrior/Thief->melee weapon, "
-                                "Ranger->bow/crossbow+ammo, Mage->spell. Mystic always uses the bare-hands "
-                                "MindPower default (no weapon input needed).", span=6)
+        row = note(ws, row, 1, "Stamina has no effect on any combat formula found so far - shown for completeness, "
+                                "not wired into any calculation below.", span=6)
+        row += 1
+        row = note(ws, row, 1, "Offense (used depending on Profession): Warrior/Thief/Mystic->melee weapon "
+                                "(Mystic's MindPowerVsP/VsM is looked up from the SAME weapon/material/durability "
+                                "inputs below - only maces/hammers/staves have a real value in content, see "
+                                "Mystic tab), Ranger->bow/crossbow+ammo, Mage->spell.", span=6)
         row += 1
         wi = weapons_info
-        ws.cell(row=row, column=1, value="Melee weapon archetype (Warrior/Thief)")
+        ws.cell(row=row, column=1, value="Weapon archetype (Warrior/Thief melee; also feeds Mystic/Mage MindPower)")
         input_cell(ws, row, 2, MELEE_ARCHETYPES[0][0])
         c["weapon"] = f"$B${row}"
         dv = DataValidation(type="list", formula1=f'"{",".join(a[0] for a in MELEE_ARCHETYPES)}"')
         ws.add_data_validation(dv)
         dv.add(ws.cell(row=row, column=2))
         row += 1
-        ws.cell(row=row, column=1, value="Weapon/ammo material (melee material, or Ranger ammo material)")
+        ws.cell(row=row, column=1, value="Weapon/ammo material (melee material, Ranger ammo material, or Mystic/Mage weapon material)")
         input_cell(ws, row, 2, MATERIAL_NAMES_FOR_WEAPONS[0])
         c["weapon_material"] = f"$B${row}"
         dv = DataValidation(type="list", formula1=f'"{",".join(MATERIAL_NAMES_FOR_WEAPONS)}"')
@@ -2075,10 +2149,21 @@ def build_fight_simulator(wb, weapons_info, armor_info, monsters_info):
     row += 1
 
     # --- MindPower pipeline (Mystic) ---
+    mp_mc0 = get_column_letter(wi["mindpower_col0"])
+    mp_mc1 = get_column_letter(wi["mindpower_col0"] + len(MATERIAL_NAMES_FOR_WEAPONS) - 1)
+    mp_weapon_lookup = (f"INDEX('Weapons Reference'!${mp_mc0}${wi['data_start']}:${mp_mc1}${wi['data_end']},"
+                        f"MATCH({attacker['weapon']},'Weapons Reference'!$A${wi['data_start']}:$A${wi['data_end']},0),"
+                        f"MATCH({attacker['weapon_material']},'Weapons Reference'!${mp_mc0}${wi['header_row']}:${mp_mc1}${wi['header_row']},0))")
+    ws.cell(row=row, column=1, value="Weapon MindPowerVsP/VsM (looked up, durability-scaled; -1=unset falls back to bare hands)")
+    output_cell(ws, row, 2,
+                f"=IF({mp_weapon_lookup}<0,C_bareHandsMindPowerVsP,"
+                f"C_bareHandsMindPowerVsP+(({mp_weapon_lookup}-C_bareHandsMindPowerVsP)/2)*(1+{attacker['durability']}/100))")
+    weapon_mindpower_row = f"$B${row}"
+    row += 1
     mp_sum = (f"(({attacker['EvalInt']}/1000*C_EvalInt_EffectMax)+({attacker['SpiritSpeak']}/1000*C_SpiritSpeak_EffectMax)"
               f"+({attacker['Int']}*C_mindPowerIntModifier))/1000")
-    ws.cell(row=row, column=1, value="MindPower sum / value (weapon always falls back to bare-hands default)")
-    output_cell(ws, row, 2, f"=C_bareHandsMindPowerVsP*({mp_sum})")
+    ws.cell(row=row, column=1, value="MindPower sum / value (weapon value x mind-power sum)")
+    output_cell(ws, row, 2, f"={weapon_mindpower_row}*({mp_sum})")
     mindpower_row = f"$B${row}"
     row += 1
     ws.cell(row=row, column=1, value="MindPower delay (mana-driven)")
@@ -2189,16 +2274,20 @@ def build_fight_simulator(wb, weapons_info, armor_info, monsters_info):
     autosize(ws, {1: 54, 2: 16, 3: 16, 4: 16, 5: 16})
 
 
-def build_mage(wb):
+def build_mage(wb, weapons_info):
     ws = wb.create_sheet("Mage")
     row = _profession_header(ws, "Mage")
     row = note(ws, row, 1,
                "Every shipped damage spell has SpellFlag.UseMindPower set, so spell power uses the SAME "
                "MindPowerVsX-minus-MindDefenseVsX formula Mystic's melee uses (x10 scaled), NOT the caster's raw "
-               "Magery skill. Spell damage BYPASSES armor/AC entirely - only the spell's own DamageType-matched "
-               "Resist* stat(s) mitigate it. The power-to-EFFECT-curve mapping is NOT clamped at the curve's own max "
-               "in the real engine (EvalRangeDouble extrapolates linearly past ratio=1) - a high-Int caster's spells "
-               "can legitimately exceed the EFFECT=min,max range shown per spell below.", span=8)
+               "Magery skill - including the SAME weapon-derived MindPowerVsP/VsM a currently-held weapon "
+               "contributes (#539, shipped - only maces/hammers/staves have a real, material-scaled "
+               "value in content, see Mystic tab/Weapons Reference; any other held weapon, or none, falls back "
+               "to the flat bare-hands default). Spell damage BYPASSES armor/AC entirely - only the spell's own "
+               "DamageType-matched Resist* stat(s) mitigate it. The power-to-EFFECT-curve mapping is NOT clamped "
+               "at the curve's own max in the real engine (EvalRangeDouble extrapolates linearly past ratio=1) - "
+               "a high-Int caster's spells can legitimately exceed the EFFECT=min,max range shown per spell below.",
+               span=8)
     row += 1
 
     row = h2(ws, row, 1, "Calculator", span=6)
@@ -2206,7 +2295,9 @@ def build_mage(wb):
     spell_names = [s[0] for s in SPELLS]
     labels = [("Int", 150), ("EvalInt skill (0-1000)", 1000), ("SpiritSpeak skill (0-1000)", 1000),
               ("Spell", spell_names[0]), ("Standcast bonus fraction (0+, e.g. 0.10 = +10%)", 0),
-              ("Magic Charge bonus fraction (0+, matching-school stacks)", 0)]
+              ("Magic Charge bonus fraction (0+, matching-school stacks)", 0),
+              ("Held weapon archetype", "none (bare hands)"), ("Weapon material", MATERIAL_NAMES_FOR_WEAPONS[0]),
+              ("Weapon durability %", 100)]
     cells = {}
     for label, default in labels:
         ws.cell(row=row, column=1, value=label)
@@ -2216,6 +2307,12 @@ def build_mage(wb):
     dv_spell = DataValidation(type="list", formula1=f'"{",".join(spell_names)}"')
     ws.add_data_validation(dv_spell)
     dv_spell.add(ws[cells["Spell"]])
+    dv_weapon = DataValidation(type="list", formula1=f'"{",".join(["none (bare hands)"] + WEAPON_NAMES)}"')
+    ws.add_data_validation(dv_weapon)
+    dv_weapon.add(ws[cells["Held weapon archetype"]])
+    dv_mat = DataValidation(type="list", formula1=f'"{",".join(MATERIAL_NAMES_FOR_WEAPONS)}"')
+    ws.add_data_validation(dv_mat)
+    dv_mat.add(ws[cells["Weapon material"]])
     row = note(ws, row, 1, "Standcast/Magic Charge are entered as a direct bonus fraction here - the exact "
                             "per-point scaling constants (ability EffectPower, caster.Level derivation) weren't "
                             "pinned down in this research pass; enter 0 to ignore, or your own estimate.", span=8)
@@ -2255,6 +2352,13 @@ def build_mage(wb):
                 f"MATCH({cells['Spell']},'Mage'!$A${spell_data_start}:$A${spell_data_end},0))")
 
     row += 1
+    wi = weapons_info
+    weapon_cell, material_cell, durability_cell = cells["Held weapon archetype"], cells["Weapon material"], cells["Weapon durability %"]
+    mage_mp_c0, mage_mp_c1 = get_column_letter(wi["mindpower_col0"]), get_column_letter(wi["mindpower_col0"] + len(MATERIAL_NAMES_FOR_WEAPONS) - 1)
+    mage_mp_lookup = (f'IF({weapon_cell}="none (bare hands)",-1,'
+                      f"INDEX('Weapons Reference'!${mage_mp_c0}${wi['data_start']}:${mage_mp_c1}${wi['data_end']},"
+                      f"MATCH({weapon_cell},'Weapons Reference'!$A${wi['data_start']}:$A${wi['data_end']},0),"
+                      f"MATCH({material_cell},'Weapons Reference'!${mage_mp_c0}${wi['header_row']}:${mage_mp_c1}${wi['header_row']},0)))")
     sum_row = row
     ws.cell(row=row, column=1, value="Mind-power sum (EvalInt+SpiritSpeak+Int contributions)")
     output_cell(ws, row, 2,
@@ -2262,9 +2366,15 @@ def build_mage(wb):
                 f"+({cells['SpiritSpeak skill (0-1000)']}/1000*C_SpiritSpeak_EffectMax)"
                 f"+({cells['Int']}*C_mindPowerIntModifier))/1000")
     row += 1
+    weapon_mp_row = row
+    ws.cell(row=row, column=1, value="Held weapon MindPowerVsP/VsM (looked up, durability-scaled; -1/none=unset falls back to bare hands)")
+    output_cell(ws, row, 2,
+                f"=IF({mage_mp_lookup}<0,C_bareHandsMindPowerVsP,"
+                f"C_bareHandsMindPowerVsP+(({mage_mp_lookup}-C_bareHandsMindPowerVsP)/2)*(1+{durability_cell}/100))")
+    row += 1
     mp_row = row
-    ws.cell(row=row, column=1, value="Your MindPowerVsP/VsM (weapon falls back to bare-hands default)")
-    output_cell(ws, row, 2, f"=C_bareHandsMindPowerVsP*$B${sum_row}")
+    ws.cell(row=row, column=1, value="Your MindPowerVsP/VsM (weapon value x mind-power sum)")
+    output_cell(ws, row, 2, f"=$B${weapon_mp_row}*$B${sum_row}")
     row += 1
     casttime_row = row
     ws.cell(row=row, column=1, value="Spell cast time (seconds, looked up)")
@@ -2347,8 +2457,8 @@ def main():
     monsters_info = build_monsters_ref(wb)
     build_melee_profession(wb, "Warrior", weapons_info, monsters_info)
     build_ranger(wb, weapons_info, monsters_info)
-    build_mage(wb)
-    build_mystic(wb, monsters_info)
+    build_mage(wb, weapons_info)
+    build_mystic(wb, weapons_info, monsters_info)
     build_melee_profession(wb, "Thief", weapons_info, monsters_info,
                             ranged_note="Thief is also allowed Bow (per thief.def) - a Thief using a Bow follows "
                                         "the SAME RangerSettings override as the Ranger tab (not profession-gated). "
