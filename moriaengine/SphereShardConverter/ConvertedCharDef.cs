@@ -215,6 +215,38 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#563 - the real archive grants starting equipment via ITEMNEWBIE lines inside
+			//@Create (e.g. c_titan_ranger: "ITEMNEWBIE=i_bow" then "ITEMNEWBIE=i_arrow,{50
+			//75}"), one line per item - a chardef commonly has several in a row. Confirmed real
+			//forms in source: bare defname, "defname,amount" (plain number), and
+			//"defname,{min max}" (Sphere range) - all three map onto NPCDef.StartingEquipment's
+			//"Equip = defname[, amount or min max]" syntax. NPCDef-only, same guard as the
+			//other @Create fields above.
+			if (name == "itemnewbie") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				int comma = value.IndexOf(',');
+				if (comma < 0) {
+					this.Set("Equip", value.Trim(), comment);
+				} else {
+					string itemDefname = value.Substring(0, comma).Trim();
+					string amountPart = value.Substring(comma + 1);
+					MatchCollection amountMatches = numberRE.Matches(amountPart);
+					if (amountMatches.Count > 0) {
+						int min = (int) Math.Round(double.Parse(amountMatches[0].Value, CultureInfo.InvariantCulture));
+						if (amountMatches.Count > 1) {
+							int max = (int) Math.Round(double.Parse(amountMatches[1].Value, CultureInfo.InvariantCulture));
+							this.Set("Equip", itemDefname + ", " + min + " " + max, comment);
+						} else {
+							this.Set("Equip", itemDefname + ", " + min, comment);
+						}
+					} else {
+						this.Set("Equip", itemDefname, comment);
+					}
+				}
+				return;
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
 
