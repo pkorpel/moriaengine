@@ -67,6 +67,12 @@ namespace SteamEngine.Converter {
 		//guards against both "attack" and "dam" showing up on the same def
 		private bool attackHandled;
 
+		//#565 - captured from the "karma"/"npc" @Create lines as they're seen (possibly in
+		//either order - confirmed real archive content has both orders), then consulted
+		//together in ThirdStage once the whole trigger body has been read, to derive AggroMode.
+		private double? pendingKarmaMidpoint;
+		private string pendingBrainType;
+
 		public ConvertedCharDef(PropsSection input, ConvertedFile convertedFile)
 			: base(input, convertedFile) {
 			this.byModel = charsByModel;
@@ -97,7 +103,43 @@ namespace SteamEngine.Converter {
 				this.headerType = "PlayerDef";
 			} else {
 				this.headerType = "NPCDef";
+				//#565 - derive AggroMode now that the whole @Create trigger body has been
+				//read (karma/npc can appear in either order), since there's no literal
+				//AGGROMODE= field anywhere in the real archive to pass through instead.
+				this.Set("AggroMode", DeriveAggroMode(this.pendingBrainType, this.pendingKarmaMidpoint), "");
 			}
+		}
+
+		//#565 - brain types that are never meant to be hostile regardless of their often
+		//mildly-negative "flavor" karma (confirmed against real archive data: 26/37 real
+		//brain_vendor chardefs sit at exactly Karma=-1000).
+		private static readonly HashSet<string> calmBrains = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+			"brain_vendor", "brain_banker", "brain_animal_trainer"
+		};
+		//#565 - brain types that are always hostile regardless of karma magnitude -
+		//confirmed this also catches real undead-boss chardefs (liche/vampire/satan
+		//families) that set Karma=0 explicitly, which a pure-Karma reading would miss.
+		private static readonly HashSet<string> hostileBrains = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+			"brain_monster", "brain_dragon", "brain_beserk", "brain_daemon"
+		};
+
+		//#565 - 3-tier priority formula, derived from real archive data (698 chardefs with
+		//Karma, cross-tabbed against NPC=brain_xxx): brain-type override first (vendor/
+		//banker/trainer always Calm, monster/dragon/beserk/daemon always Hostile), then
+		//Karma as the fallback for everything else (brain_human, brain_animal, no/
+		//unrecognized brain) - Hostile only if the configured Karma midpoint is strictly
+		//below -1000 (also the default when Karma isn't configured at all).
+		private static string DeriveAggroMode(string brainType, double? karmaMidpoint) {
+			if ((brainType != null) && calmBrains.Contains(brainType)) {
+				return "Calm";
+			}
+			if ((brainType != null) && hostileBrains.Contains(brainType)) {
+				return "Hostile";
+			}
+			if (karmaMidpoint.HasValue && (karmaMidpoint.Value < -1000)) {
+				return "Hostile";
+			}
+			return "Calm";
 		}
 
 		private static void WriteAsIsLine(ConvertedDef def, PropsLine line) {
@@ -112,6 +154,16 @@ namespace SteamEngine.Converter {
 		//handlers above already cover. NPCDef.ExperienceWorth (#127) already understands the
 		//"min max" shape this emits, so this is a pure converter fix - #566.
 		protected override void ProcessCreateTriggerLine(string name, string value, string comment, int lineNum) {
+			//#565 - the real archive brain assignment lives inside @Create too (e.g.
+			//c_dragon_v1: "NPC=brain_dragon"), right alongside karma/fame - captured here,
+			//consulted together with pendingKarmaMidpoint in ThirdStage once the whole
+			//trigger body has been read (the two lines can appear in either order).
+			if (name == "npc") {
+				if (!this.IsPlayerDefByName) {
+					this.pendingBrainType = value.Trim().ToLowerInvariant();
+				}
+				return;
+			}
 			if (name == "tag.experience") {
 				MatchCollection matches = numberRE.Matches(value);
 				if (matches.Count > 0) {
@@ -162,8 +214,15 @@ namespace SteamEngine.Converter {
 					if (matches.Count > 1) {
 						int max = (int) Math.Round(double.Parse(matches[1].Value, CultureInfo.InvariantCulture));
 						this.Set(fieldName, min + " " + max, comment);
+						//#565 - stash the karma midpoint for the AggroMode derivation in ThirdStage
+						if (name == "karma") {
+							this.pendingKarmaMidpoint = (min + max) / 2.0;
+						}
 					} else {
 						this.Set(fieldName, min.ToString(), comment);
+						if (name == "karma") {
+							this.pendingKarmaMidpoint = (double) min;
+						}
 					}
 				}
 				return;
