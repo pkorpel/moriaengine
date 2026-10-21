@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
@@ -283,8 +284,11 @@ namespace SteamEngine.CompiledScripts {
 
 			int effectiveRange;
 			bool hasLineOfSight;
-			SpellDef combatSpell = ((NPCDef) self.Def).CombatSpell;
-			if (combatSpell != null) {
+			NPCDef def = (NPCDef) self.Def;
+			//#564 - a caster with ONLY an addspell-granted Spells list (no CombatSpell) must still
+			//hold spell range rather than closing to melee, same as a CombatSpell-only caster
+			bool isCaster = (def.CombatSpell != null) || ((def.Spells != null) && (def.Spells.Count > 0));
+			if (isCaster) {
 				//A spellcaster holds its distance rather than closing to melee range between
 				//casts. Without this branch, effectiveRange fell through to WeaponRangeVsM/VsP
 				//below, which defaults to 1 (melee) for a caster that never actually swings a
@@ -348,8 +352,24 @@ namespace SteamEngine.CompiledScripts {
 		/// doesn't have the mana, is still on cooldown, or the target is out of spell range -
 		/// callers should fall back to normal weapon combat in that case.
 		/// </summary>
+		/// <summary>#564 - picks uniformly at random among def.Spells (addspell=) when that list
+		/// is configured, falling back to the single def.CombatSpell otherwise. Returns null if
+		/// neither is configured (this NPC has no spell at all). Internal (not private) so a
+		/// test can sample the distribution directly without needing real combat timing/cooldowns
+		/// - TryCastSpell's 4-second cooldown makes a 200+-sample live-combat test impractically
+		/// slow, and this method is pure/deterministic-enough logic that's fine to test directly,
+		/// same precedent as other pure static helpers elsewhere in this codebase
+		/// (ProfessionDef.LevelToTitleTier, etc).</summary>
+		internal static SpellDef PickSpell(NPCDef def) {
+			List<SpellDef> spells = def.Spells;
+			if ((spells != null) && (spells.Count > 0)) {
+				return spells[Globals.dice.Next(spells.Count)];
+			}
+			return def.CombatSpell;
+		}
+
 		private bool TryCastSpell(NPC self, Character target) {
-			SpellDef spell = ((NPCDef) self.Def).CombatSpell;
+			SpellDef spell = PickSpell((NPCDef) self.Def);
 			if (spell == null) {
 				return false;
 			}
