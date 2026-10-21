@@ -190,8 +190,70 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#562 - the real archive sets skill starting values inside @Create too (e.g.
+			//c_titan_ranger: "PARRYING={40.0 50.0} WRESTLING={70.0 80.0} ARCHERY={90.0 95.0}
+			//resist=100.0 SpiritSpeak=60.0"), as a plain percentage or a Sphere {min max}
+			//percentage range. Skills are stored x10 internally in this engine (confirmed
+			//elsewhere - 70.0% is raw value 700), so the parsed number(s) are scaled by 10
+			//before being emitted. The archive's own field names don't all match the
+			//SkillName enum member names NPCDef.LoadScriptLine matches against (#562) -
+			//skillNameAliases translates the archive's name to the canonical one to emit.
+			string skillFieldName;
+			if (skillNameAliases.TryGetValue(name, out skillFieldName)) {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				MatchCollection skillMatches = numberRE.Matches(value);
+				if (skillMatches.Count > 0) {
+					int min = (int) Math.Round(double.Parse(skillMatches[0].Value, CultureInfo.InvariantCulture) * 10);
+					if (skillMatches.Count > 1) {
+						int max = (int) Math.Round(double.Parse(skillMatches[1].Value, CultureInfo.InvariantCulture) * 10);
+						this.Set(skillFieldName, min + " " + max, comment);
+					} else {
+						this.Set(skillFieldName, min.ToString(), comment);
+					}
+				}
+				return;
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
+
+		//#562 - archive field name (lowercased) -> canonical SkillName enum member name to
+		//emit in the .def field, for the ~29 skill names real chardefs set inside @Create.
+		//NPCDef.LoadScriptLine's own fallback matches against the literal enum member name
+		//(case-insensitive), so most of these map 1:1 - only the handful below actually need
+		//translating (archive vocabulary vs. this engine's SkillName naming).
+		private static readonly Dictionary<string, string> skillNameAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
+			{ "wrestling", "Wrestling" },
+			{ "tactics", "Tactics" },
+			{ "resist", "MagicResist" },
+			{ "parrying", "Parry" },
+			{ "spiritspeak", "SpiritSpeak" },
+			{ "peacemaking", "Peacemaking" },
+			{ "provocation", "Provocation" },
+			{ "swordsmanship", "Swords" },
+			{ "magery", "Magery" },
+			{ "fencing", "Fencing" },
+			{ "macefighting", "Macing" },
+			{ "evalint", "EvalInt" },
+			{ "taming", "AnimalTaming" },
+			{ "archery", "Archery" },
+			{ "poisoning", "Poisoning" },
+			{ "animallore", "AnimalLore" },
+			{ "forensics", "Forensics" },
+			{ "anatomy", "Anatomy" },
+			{ "healing", "Healing" },
+			{ "detectinghidden", "DetectHidden" },
+			{ "hiding", "Hiding" },
+			{ "stealth", "Stealth" },
+			{ "meditation", "Meditation" },
+			{ "inscription", "Inscribe" },
+			{ "armslore", "ArmsLore" },
+			{ "cooking", "Cooking" },
+			{ "lumberjacking", "Lumberjacking" },
+			{ "blacksmithing", "Blacksmith" },
+			{ "veterinary", "Veterinary" }
+		};
 
 		//can/aggromode/combatspell/experience/tamingdifficulty are all NPCDef-only fields
 		//(confirmed live in NPC.cs/AbstractCharacterDef.cs, #551) - comment them out rather
