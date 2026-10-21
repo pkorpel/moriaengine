@@ -50,9 +50,20 @@ namespace SteamEngine.Converter {
 			new LineImplTask("sound", HandleSound),
 			new LineImplTask("mountid", HandleMountId),
 			new LineImplTask("mountitem", HandleMountId),
-			new LineImplTask("tag.mountid", HandleMountId)
-																			  
+			new LineImplTask("tag.mountid", HandleMountId),
+			new LineImplTask("icon", WriteAsIsLine),
+			new LineImplTask("can", PassThroughUnlessPlayerDef),
+			new LineImplTask("aggromode", PassThroughUnlessPlayerDef),
+			new LineImplTask("combatspell", PassThroughUnlessPlayerDef),
+			new LineImplTask("experience", PassThroughUnlessPlayerDef),
+			new LineImplTask("tamingdifficulty", PassThroughUnlessPlayerDef),
+			new LineImplTask("attack", HandleAttack),
+			new LineImplTask("dam", HandleAttack),
+			new LineImplTask("armor", HandleArmor)
 		};
+
+		//guards against both "attack" and "dam" showing up on the same def
+		private bool attackHandled;
 
 		public ConvertedCharDef(PropsSection input, ConvertedFile convertedFile)
 			: base(input, convertedFile) {
@@ -63,19 +74,86 @@ namespace SteamEngine.Converter {
 			this.thirdStageImplementations.Add(thirdStageImpl);
 		}
 
+		//TEVENTS/aggromode/etc are only valid on NPCDef - a PlayerDef (c_man/c_woman) can't
+		//carry them, so PrettyDefname must already be resolved (it is, by ThirdStage time)
+		private bool IsPlayerDefByName {
+			get {
+				switch (this.PrettyDefname.ToLowerInvariant()) {
+					case "c_man":
+					case "c_woman":
+						return true;
+					default:
+						return false;
+				}
+			}
+		}
+
 		public override void ThirdStage() {
 			base.ThirdStage();
 
-			switch (this.PrettyDefname.ToLowerInvariant()) {
-				//case "c_man_gm":
-				case "c_man":
-				case "c_woman":
-					this.headerType = "PlayerDef";
-					break;
-				default:
-					this.headerType = "NPCDef";
-					break;
+			if (this.IsPlayerDefByName) {
+				this.headerType = "PlayerDef";
+			} else {
+				this.headerType = "NPCDef";
 			}
+		}
+
+		private static void WriteAsIsLine(ConvertedDef def, PropsLine line) {
+			def.Set(line);
+		}
+
+		//can/aggromode/combatspell/experience/tamingdifficulty are all NPCDef-only fields
+		//(confirmed live in NPC.cs/AbstractCharacterDef.cs, #551) - comment them out rather
+		//than emit them on a PlayerDef, where they'd produce an "Invalid data" load warning
+		private static void PassThroughUnlessPlayerDef(ConvertedDef d, PropsLine line) {
+			ConvertedCharDef def = (ConvertedCharDef) d;
+			if (def.IsPlayerDefByName) {
+				WriteAsComment(def, line);
+			} else {
+				def.Set(line);
+			}
+		}
+
+		//attack/dam -> WeaponAttack, averaged the same way ConvertedItemDef.HandleArmorOrDam
+		//averages weapon attack ranges - NPCDef-only, matches #44's own hand-edit precedent
+		private static void HandleAttack(ConvertedDef d, PropsLine line) {
+			ConvertedCharDef def = (ConvertedCharDef) d;
+			if (def.IsPlayerDefByName) {
+				WriteAsComment(def, line);
+				return;
+			}
+			if (def.attackHandled) {
+				return;
+			}
+			def.attackHandled = true;
+			def.Set("WeaponAttack", AverageSphereNumberList(line.Value), line.Comment);
+		}
+
+		//ARMOR -> ArmorVsP/ArmorVsM, averaged and duplicated across both - Character-level,
+		//safe for PlayerDef too (unlike attack/dam, which are NPCDef-only weapon fields)
+		private static void HandleArmor(ConvertedDef d, PropsLine line) {
+			ConvertedCharDef def = (ConvertedCharDef) d;
+			string value = AverageSphereNumberList(line.Value);
+			def.Set("armorVsP", value, line.Comment);
+			def.Set("armorVsM", value, "");
+		}
+
+		private static string AverageSphereNumberList(string rawValue) {
+			string[] values = Utility.SplitSphereString(rawValue, true);
+			int n = values.Length;
+			if (n == 0) {
+				return rawValue;
+			}
+			double sum = 0;
+			for (int i = 0; i < n; i++) {
+				int number;
+				if (ConvertTools.TryParseInt32(values[i], out number)) {
+					sum += number;
+				} else {
+					return rawValue;
+				}
+			}
+			return Math.Round(sum / n).ToString();
 		}
 
 		private static void HandleMountId(ConvertedDef def, PropsLine line) {
