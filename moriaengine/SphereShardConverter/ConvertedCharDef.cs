@@ -17,6 +17,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using SteamEngine.Common;
 
 //
@@ -100,6 +102,29 @@ namespace SteamEngine.Converter {
 
 		private static void WriteAsIsLine(ConvertedDef def, PropsLine line) {
 			def.Set(line);
+		}
+
+		private static readonly Regex numberRE = new Regex(@"[-+]?\d+(\.\d+)?",
+			RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+		//the real archive field is tag.experience=<eval {min max}>, embedded inside the
+		//ON=@Create trigger body - NOT the top-level "experience" line the base LineImplTask
+		//handlers above already cover. NPCDef.ExperienceWorth (#127) already understands the
+		//"min max" shape this emits, so this is a pure converter fix - #566.
+		protected override void ProcessCreateTriggerLine(string name, string value, string comment, int lineNum) {
+			if (name == "tag.experience") {
+				MatchCollection matches = numberRE.Matches(value);
+				if (matches.Count > 0) {
+					int min = (int) Math.Round(double.Parse(matches[0].Value, CultureInfo.InvariantCulture));
+					int max = min;
+					if (matches.Count > 1) {
+						max = (int) Math.Round(double.Parse(matches[1].Value, CultureInfo.InvariantCulture));
+					}
+					this.Set("Experience", min + " " + max, comment);
+				}
+				return;
+			}
+			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
 
 		//can/aggromode/combatspell/experience/tamingdifficulty are all NPCDef-only fields
