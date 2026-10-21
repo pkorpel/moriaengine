@@ -850,6 +850,27 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		//#560 - Fame/Karma, brand-new concepts (confirmed via grep they never existed
+		//anywhere before this) - plain properties, no CharSyncQueue/combat-cache
+		//invalidation needed since neither feeds any combat formula.
+		public short Fame {
+			get {
+				return this.fame;
+			}
+			set {
+				this.fame = value;
+			}
+		}
+
+		public short Karma {
+			get {
+				return this.karma;
+			}
+			set {
+				this.karma = value;
+			}
+		}
+
 		public override short TithingPoints {
 			get {
 				return this.tithingPoints;

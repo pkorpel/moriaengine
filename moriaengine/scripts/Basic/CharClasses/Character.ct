@@ -58,6 +58,8 @@ Vars:	//vars defined in the class, so they basically do what tags do, but better
 	short strength=15
 	short dexterity=15
 	short intelligence=15
+	short fame=0
+	short karma=0
 	double hitsRegenSpeed=0.0
 	double manaRegenSpeed=0.0
 	double stamRegenSpeed=0.0

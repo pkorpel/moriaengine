@@ -1,0 +1,9 @@
+// #560 - test-only content proving NPCDef.FameRange/KarmaRange actually apply on
+// NPC.On_Create. A single-value Fame (no roll ambiguity) and a {min,max} NEGATIVE
+// Karma range (to prove the nullable-rolled-value path handles negatives correctly,
+// unlike #559's -1 sentinel, which a real negative Karma would collide with).
+[NPCDef npc_test_fame_karma]
+NAME = "Fame Karma Test"
+ANIM = 0x1fff
+Fame = 500
+Karma = -300 -200
