@@ -26,15 +26,17 @@ namespace SteamEngine.CompiledScripts {
 	/// wood roll - same precedent as MiningVeinSystemTests.cs.</summary>
 	public static class LumberjackingVeinSystemTests {
 
+		/// <summary>#536 - takes real wood names now (spruce/chestnut/oak/teak/mahagon/eben/
+		/// elven), not the metal aliases - matches the renamed WoodTiers fields.</summary>
 		private static WoodTier GetWoodByName(string name) {
 			switch (name.ToLowerInvariant()) {
-				case "copper": return WoodTiers.Copper;
-				case "iron": return WoodTiers.Iron;
-				case "verite": return WoodTiers.Verite;
-				case "valorite": return WoodTiers.Valorite;
-				case "obsidian": return WoodTiers.Obsidian;
-				case "adamantinum": return WoodTiers.Adamantinum;
-				case "mithril": return WoodTiers.Mithril;
+				case "spruce": return WoodTiers.Spruce;
+				case "chestnut": return WoodTiers.Chestnut;
+				case "oak": return WoodTiers.Oak;
+				case "teak": return WoodTiers.Teak;
+				case "mahagon": return WoodTiers.Mahagon;
+				case "eben": return WoodTiers.Eben;
+				case "elven": return WoodTiers.Elven;
 				default: throw new ArgumentException("Unknown wood tier: " + name);
 			}
 		}
@@ -92,18 +94,18 @@ namespace SteamEngine.CompiledScripts {
 			byte mapPlane = self.GetMap().M;
 			self.SetRealSkillValue((int) SkillName.Lumberjacking, 1200);
 
-			int copperCount = 0;
-			int mithrilCount = 0;
+			int spruceCount = 0;
+			int elvenCount = 0;
 			for (int i = 0; i < attempts; i++) {
 				ItemDef result = LumberjackingVeinSystem.Chop(self, mapPlane, baseX + i, 0);
-				if (ReferenceEquals(result, WoodTiers.Copper.ItemDef)) {
-					copperCount++;
+				if (ReferenceEquals(result, WoodTiers.Spruce.ItemDef)) {
+					spruceCount++;
 				}
-				if (ReferenceEquals(result, WoodTiers.Mithril.ItemDef)) {
-					mithrilCount++;
+				if (ReferenceEquals(result, WoodTiers.Elven.ItemDef)) {
+					elvenCount++;
 				}
 			}
-			Console.WriteLine("WOOD_DISTRIBUTION_SAMPLE: attempts=" + attempts + " copper=" + copperCount + " mithril=" + mithrilCount);
+			Console.WriteLine("WOOD_DISTRIBUTION_SAMPLE: attempts=" + attempts + " spruce=" + spruceCount + " elven=" + elvenCount);
 		}
 
 		/// <summary>#431 - samples `attempts` ambush rolls at self's own location, reporting the

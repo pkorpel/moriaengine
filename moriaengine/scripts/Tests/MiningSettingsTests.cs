@@ -57,10 +57,17 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MINING_SETTINGS_AMBUSH_SET: ratDefname=" + MonsterAmbushSystem.RatDefname);
 		}
 
+		/// <summary>#536 - read-only report, for the real save -> restart -> reload check
+		/// (GmFlagsReloadTests/#438-style, not just "is it written to the save file").</summary>
+		[SteamFunction]
+		public static void TestReportAmbushRatDefname(Character self) {
+			Console.WriteLine("MINING_AMBUSH_RAT_REPORT: ratDefname=" + MonsterAmbushSystem.RatDefname);
+		}
+
 		[SteamFunction]
 		public static void TestSetGatherDelayBaseViaSettings(Character self, ScriptArgs sa) {
 			double seconds = Convert.ToDouble(sa.Argv[0], CultureInfo.InvariantCulture);
-			MiningSettings.instance.gatherDelayBaseSeconds = seconds;
+			MiningSettings.instance.sharedGatherDelayBaseSeconds = seconds;
 			Console.WriteLine("MINING_SETTINGS_DELAY_SET: baseSeconds=" + GatheringDelaySystem.BaseDelaySeconds);
 		}
 	}

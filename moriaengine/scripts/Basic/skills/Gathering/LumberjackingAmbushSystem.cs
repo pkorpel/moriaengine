@@ -93,25 +93,25 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static string ReaperDefnameForTier(WoodTier tier) {
-			if (tier == WoodTiers.Iron) {
+			if (tier == WoodTiers.Chestnut) {
 				return ReaperChestnutDefname;
 			}
-			if (tier == WoodTiers.Verite) {
+			if (tier == WoodTiers.Oak) {
 				return ReaperOakDefname;
 			}
-			if (tier == WoodTiers.Valorite) {
+			if (tier == WoodTiers.Teak) {
 				return ReaperTeakDefname;
 			}
-			if (tier == WoodTiers.Obsidian) {
+			if (tier == WoodTiers.Mahagon) {
 				return ReaperMahaganDefname;
 			}
-			if (tier == WoodTiers.Adamantinum) {
+			if (tier == WoodTiers.Eben) {
 				return ReaperEbenDefname;
 			}
-			if (tier == WoodTiers.Mithril) {
+			if (tier == WoodTiers.Elven) {
 				return ReaperElvenDefname;
 			}
-			return ReaperSpruceDefname; //Copper, null (On_Fail/exhausted vein), or anything unresolvable
+			return ReaperSpruceDefname; //Spruce, null (On_Fail/exhausted vein), or anything unresolvable
 		}
 	}
 }

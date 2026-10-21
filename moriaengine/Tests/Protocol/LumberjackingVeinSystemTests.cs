@@ -5,7 +5,7 @@ using Xunit;
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// Lumberjacking's per-tile vein system (#421/#422) - real Erebor wood-tier mechanics: a
-	/// vein has one assigned wood type, insufficient skill downgrades to copper rather than
+	/// vein has one assigned wood type, insufficient skill downgrades to spruce rather than
 	/// failing, the pool depletes per extraction, and regenerates (with a fresh wood roll)
 	/// once its timer elapses. Mirrors MiningVeinSystemTests.cs - no cave-in equivalent here
 	/// (confirmed Mining-specific). The monster ambush mechanic (#431, Phase C of #421) is
@@ -27,13 +27,13 @@ namespace SteamEngine.Tests.Protocol {
 		public void UntouchedVeinYieldsTheSameWoodTypeUntilDepleted() {
 			using (var client = this.ConnectLoginAndCreateCharacter("WoodVeinSameChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				// Iron's real skill threshold is 400 (x10-scaled) - set above it so the
+				// Chestnut's real skill threshold is 400 (x10-scaled) - set above it so the
 				// skill-gated downgrade never fires, isolating the "same wood every time" check.
 				client.SendSpeech(".TestSetSkillValue \"Lumberjacking\" 500");
 				Assert.True(this.fixture.WaitForGameOutputSince("SKILL_VALUE_SET:", mark, TimeSpan.FromSeconds(10)));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestForceWoodVein 1000 2000 \"iron\" 3");
+				client.SendSpeech(".TestForceWoodVein 1000 2000 \"chestnut\" 3");
 				Assert.True(this.fixture.WaitForGameOutputSince("WOOD_VEIN_FORCED:", mark, TimeSpan.FromSeconds(10)));
 
 				for (int i = 0; i < 3; i++) {
@@ -58,9 +58,9 @@ namespace SteamEngine.Tests.Protocol {
 		public void UnderSkilledChopperGetsCopperInsteadOfTheRealAssignedWood() {
 			using (var client = this.ConnectLoginAndCreateCharacter("WoodVeinDowngradeChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				// Mithril's real skill threshold is 1050 (x10-scaled) - a brand new character's
+				// Elven's real skill threshold is 1050 (x10-scaled) - a brand new character's
 				// Lumberjacking skill (0) is nowhere close, so the extraction must downgrade.
-				client.SendSpeech(".TestForceWoodVein 1100 2200 \"mithril\" 5");
+				client.SendSpeech(".TestForceWoodVein 1100 2200 \"elven\" 5");
 				Assert.True(this.fixture.WaitForGameOutputSince("WOOD_VEIN_FORCED:", mark, TimeSpan.FromSeconds(10)));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
@@ -79,7 +79,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("SKILL_VALUE_SET:", mark, TimeSpan.FromSeconds(10)));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestForceWoodVein 1200 2300 \"iron\" 1");
+				client.SendSpeech(".TestForceWoodVein 1200 2300 \"chestnut\" 1");
 				Assert.True(this.fixture.WaitForGameOutputSince("WOOD_VEIN_FORCED:", mark, TimeSpan.FromSeconds(10)));
 
 				// Drain the forced single-unit pool.
@@ -112,14 +112,14 @@ namespace SteamEngine.Tests.Protocol {
 			using (var client = this.ConnectLoginAndCreateCharacter("WoodVeinDistributionChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				// 2000 samples - same margin reasoning as Mining's own UntouchedVeinRollFavors
-				// CommonOresOverRareOnes (mithril's small expected count has enough binomial
+				// CommonOresOverRareOnes (elven's small expected count has enough binomial
 				// variance at 500 samples to occasionally violate a 5x-ratio bound by chance).
 				client.SendSpeech(".TestSampleWoodVeinDistribution 2000 5000");
 				Assert.True(this.fixture.WaitForGameOutputSince("WOOD_DISTRIBUTION_SAMPLE:", mark, TimeSpan.FromSeconds(15)));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "WOOD_DISTRIBUTION_SAMPLE:");
-				int copper = ExtractInt(line, "copper=");
-				int mithril = ExtractInt(line, "mithril=");
-				Assert.True(copper > mithril * 5, "Expected copper to be rolled far more often than mithril: " + line);
+				int spruce = ExtractInt(line, "spruce=");
+				int elven = ExtractInt(line, "elven=");
+				Assert.True(spruce > elven * 5, "Expected spruce to be rolled far more often than elven: " + line);
 			}
 		}
 

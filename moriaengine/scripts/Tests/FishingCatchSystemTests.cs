@@ -169,7 +169,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestSetGatherDelayBaseViaFishingSettings(Character self, ScriptArgs sa) {
 			double seconds = Convert.ToDouble(sa.Argv[0], CultureInfo.InvariantCulture);
-			FishingSettings.instance.gatherDelayBaseSeconds = seconds;
+			FishingSettings.instance.sharedGatherDelayBaseSeconds = seconds;
 			Console.WriteLine("FISHING_SETTINGS_DELAY_SET: baseSeconds=" + GatheringDelaySystem.BaseDelaySeconds);
 		}
 	}
