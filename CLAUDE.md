@@ -1,5 +1,44 @@
 # moriaengine — working state
 
+## SphereShardConverter engine work: #560 SHIPPED (PR #571), 2026-10-21 — second of #558's 6 sub-issues
+
+`Character` gained real `Fame`/`Karma` stats (confirmed via grep neither existed
+anywhere in the engine before this - plain properties backed by new `.ct` Vars, no
+combat-cache invalidation needed since neither feeds any formula). `NPCDef` gained
+`FameRange`/`KarmaRange` (tag-backed `int[]` ranges, mirroring #559's `StrRange`/
+`DexRange`/`IntRange`), applied once in `NPC.On_Create`.
+
+**Deliberate deviation from #559's own sentinel, worth remembering for any future
+NPCDef range field**: #559's `-1` ("unconfigured") works for Str/Dex/Int because those
+never go negative in source. Karma genuinely CAN be negative (`c_titan: KARMA={-5000
+-5999}`), so `-1` would collide with a real roll. `RollFame`/`RollKarma` return a
+nullable `int?` instead (`null` = unconfigured, any other value including negative is
+applied) - check which shape fits before copying #559's `-1` pattern onto a new field.
+
+**Worth remembering for any future `.ct` Var addition**: unlike `Generated/*.Generated.cs`'s
+reflection-based `[SaveableData]`/`[ViewableClass]` codegen (which "self-heals" the
+first time a protocol test boots, per the standing infra-gotcha note below), a NEW
+`.ct` Var's backing field also only appears in the SAME `*.Generated.cs` file after a
+real boot - but if hand-written C# already references the new field (e.g. a property
+wrapping it) BEFORE that first boot, the top-level build fails outright (chicken-and-
+egg). Fix: add only the `.ct` Var first, confirm `dotnet build` still succeeds, boot
+once (any cheap protocol test) to regenerate the file with the new field, THEN add the
+C# code that references it, rebuild.
+
+Converter now maps the real archive `FAME=`/`KARMA=` lines (embedded inside
+`@Create`) onto these fields, NPCDef-only, same guard as `str`/`dex`/`int`. Verified: a
+real protocol test (`Tests/Protocol/NpcFameKarmaTests.cs`, boots a real server) creates
+a test NPC with `Fame=500`/`Karma=-300 -200` and confirms both apply, including the
+negative range; fast tier 50/50; a scratch converter regen confirmed `c_titan` now
+emits `Fame = 100 2000`/`Karma = -5000 -5999` matching the raw archive exactly, zero
+changes to real tracked content. Issue #560 closed referencing PR #571.
+
+**Next in the #558 sequence**: #561 (MaxHits/MaxStam/MaxMana template, in progress),
+#562 (starting-skill-values, the biggest piece), #563 (starting-equipment/
+`ITEMNEWBIE`, plus fixing the converter's break-on-first-item bug), #564 (NPC
+multi-spell casting, lowest priority). **#565 (AggroMode derivation) stays explicitly
+blocked on the user's own design call** - do not auto-implement it.
+
 ## SphereShardConverter engine work: #559 SHIPPED (PR #569), 2026-10-21 — first of #558's 6 sub-issues
 
 User said "start doing this work" on #559-564 (the engine-level sub-issues under #558,
