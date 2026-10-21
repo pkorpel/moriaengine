@@ -38,6 +38,48 @@ for now** pending the user's decision on what to scope next - don't start any ac
 content-merge PR without that explicit go-ahead, per #544's own "deliberately stops at
 the report" instruction.
 
+**Follow-up, same day**: user spotted a real gap while manually inspecting `c_titan` -
+asked "why isn't there a plain `c_titan`?" (there is, keyed by hex header `0x4c` with
+`DEFNAME = c_titan` - my earlier diff only indexed by the primary bracket header, missed
+DEFNAME aliases on hex-keyed blocks; a real methodology gap in #544's own tooling, not
+yet corrected since this follow-up pivoted straight into a bigger question before going
+back to fix that). While explaining why `c_titan`'s real `WeaponAttack`/`ArmorVsP`/
+`ArmorVsM`/`AggroMode`/`experience` values aren't reproduced by a fresh converter run,
+confirmed via `git blame` that they were added across 4 separate HAND-EDIT commits
+(Oct 10-14) layered on top of the original converter output - not something the
+converter itself has ever produced. Led to two new sub-issues under #542, **research/
+survey only, nothing implemented**:
+- **#551** - `ConvertedCharDef`'s `LineImplTask` field-mapping covers almost nothing
+  (`name`/`category`/`subsection`/`description`/`anim`/`sound`/`mountid` only) - everything
+  else falls through `ConvertedDef.ThirdStage()`'s generic "not tag.* -> comment it out"
+  fallback, confirmed with real frequency data across 1,422 fresh chardef blocks:
+  `tevents` 99.7%, `armor`/`can` 79.7%, `attack` 75.6%, `icon` 72.3%, `moverate` 57.0%,
+  `bloodcolor` 49.4%, `resources` 48.5%, `tspeech` 29.0%, `foodtype` 28.5% of ALL chardefs
+  hit this fallback. Itemdefs are a much smaller opportunity by comparison (armor/dam
+  already mapped via `HandleArmorOrDam`; remaining gaps under ~8% each). Also found
+  `ConvertedTemplateDef` has NO comment fallback at all - unmatched content inside a
+  template's trigger body is silently dropped, not even logged. Proposes `attack`→
+  `WeaponAttack`/`armor`→`ArmorVsP`/`VsM` as the safest first mapping to actually build
+  (dozens of already-hand-fixed monsters to validate against) - flags `CAN`→`MT_*` and
+  `TEVENTS`→real-trigger-group-reference as much riskier, needing real semantic
+  translation not just a rename.
+- **#552** - surveyed the archive's remaining "logic" folders by file count +
+  content sample. `questy/`/`gump_system/`/`vypravec/`/`dobyvani/` confirmed pure
+  dialog/gump/quest-trigger scripting - permanently out of scope for any converter work,
+  a from-scratch design exercise if ever wanted at all. **Real finding**:
+  `systems/skills/`'s 12 files (`discordance`/`healing`/`hiding`/`lockpicking`/
+  `meditation`/`peacemaking`/`poisoning`/`provocation`/`removetrap`/`repairing`/`taming`/
+  `tracking.scp`) are real skill-mechanic formulas that map directly onto the ALREADY-
+  RUNNING #284 skill-mechanics-audit / #140 skill-gain-through-use backlog - same
+  hand-port-into-C# precedent as `funkce.scp`/`miningfix.scp`/`skillgains.scp`, not a
+  converter task at all. `systems/administrace/`/`events_npc/`/`craftmenu/` and several
+  smaller folders (`Aen/`/`scarabeus/`/`web/`) not yet characterized - flagged open.
+
+**Still nothing implemented from either #551 or #552** - pure research/survey, waiting
+for the user's review before any mapping-table or hand-port implementation work starts.
+The DEFNAME-alias indexing gap in #544's own diff tooling (found via this same `c_titan`
+conversation) is also still uncorrected - note it if #544's numbers are ever recomputed.
+
 ## Mystic MindPower now scales by weapon material — SHIPPED (PR #540) — 2026-10-21, #539 closed
 
 Follow-up to the combat-balance Excel workbook work (separate thread from #536's settings-
