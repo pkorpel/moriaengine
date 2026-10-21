@@ -168,6 +168,28 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#561 - the real archive maxhits/maxstam/maxmana lines live inside @Create too
+			//(e.g. c_titan: "maxhits={1500 1700} maxstam={350 400} maxmana=0"), as either a
+			//plain number or a Sphere {min max} range - NPCDef.MaxHitsRange/MaxStamRange/
+			//MaxManaRange (#561) understands the same shape. NPCDef-only, same guard as
+			//str/dex/int/fame/karma.
+			if (name == "maxhits" || name == "maxstam" || name == "maxmana") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				string hpFieldName = name == "maxhits" ? "MaxHits" : (name == "maxstam" ? "MaxStam" : "MaxMana");
+				MatchCollection hpMatches = numberRE.Matches(value);
+				if (hpMatches.Count > 0) {
+					int min = (int) Math.Round(double.Parse(hpMatches[0].Value, CultureInfo.InvariantCulture));
+					if (hpMatches.Count > 1) {
+						int max = (int) Math.Round(double.Parse(hpMatches[1].Value, CultureInfo.InvariantCulture));
+						this.Set(hpFieldName, min + " " + max, comment);
+					} else {
+						this.Set(hpFieldName, min.ToString(), comment);
+					}
+				}
+				return;
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
 

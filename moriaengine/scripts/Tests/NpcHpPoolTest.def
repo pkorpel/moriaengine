@@ -1,0 +1,10 @@
+// #561 - test-only content proving NPCDef.MaxHitsRange/MaxStamRange/MaxManaRange
+// actually apply on NPC.On_Create, including the current-value-sync-to-full behavior.
+// A single-value MaxMana=0 (matches the real archive's own c_titan, no roll ambiguity)
+// and {min,max} ranges for MaxHits/MaxStam (to prove the ranged-roll path too).
+[NPCDef npc_test_hp_pool]
+NAME = "HP Pool Test"
+ANIM = 0x1fff
+MaxHits = 500 500
+MaxStam = 200 300
+MaxMana = 0
