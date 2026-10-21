@@ -283,6 +283,34 @@ namespace SteamEngine.CompiledScripts {
 		public int? RollFame() { return RollNullableStatRange(this.FameRange); }
 		public int? RollKarma() { return RollNullableStatRange(this.KarmaRange); }
 
+		private static readonly TagKey maxHitsRangeTK = TagKey.Acquire("_maxHitsRange_");
+		private static readonly TagKey maxStamRangeTK = TagKey.Acquire("_maxStamRange_");
+		private static readonly TagKey maxManaRangeTK = TagKey.Acquire("_maxManaRange_");
+
+		/// <summary>Starting MaxHits/MaxStam/MaxMana {min, max} range for a fresh NPC of this
+		/// type (#561), rolled once at creation by NPC.On_Create - same shape as StrRange/
+		/// DexRange/IntRange (#559). Unlike Fame/Karma, these can only ever be a non-negative
+		/// quantity in real source (confirmed - e.g. c_titan's own maxmana=0 is the lowest real
+		/// value seen, never negative), so #559's simple -1 "unconfigured" sentinel (via
+		/// RollStatRange, not the nullable RollNullableStatRange #560 needed) is safe to reuse
+		/// here.</summary>
+		public int[] MaxHitsRange {
+			get { return this.GetTag(maxHitsRangeTK) as int[]; }
+			set { this.SetTag(maxHitsRangeTK, value); }
+		}
+		public int[] MaxStamRange {
+			get { return this.GetTag(maxStamRangeTK) as int[]; }
+			set { this.SetTag(maxStamRangeTK, value); }
+		}
+		public int[] MaxManaRange {
+			get { return this.GetTag(maxManaRangeTK) as int[]; }
+			set { this.SetTag(maxManaRangeTK, value); }
+		}
+
+		public int RollMaxHits() { return RollStatRange(this.MaxHitsRange); }
+		public int RollMaxStam() { return RollStatRange(this.MaxStamRange); }
+		public int RollMaxMana() { return RollStatRange(this.MaxManaRange); }
+
 		private static int[] ParseStatRange(string filename, int line, string param, string args) {
 			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1) {
@@ -373,6 +401,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "karma") {
 				this.KarmaRange = ParseStatRange(filename, line, "karma", args);
+				return;
+			}
+			if (param == "maxhits") {
+				this.MaxHitsRange = ParseStatRange(filename, line, "maxhits", args);
+				return;
+			}
+			if (param == "maxstam") {
+				this.MaxStamRange = ParseStatRange(filename, line, "maxstam", args);
+				return;
+			}
+			if (param == "maxmana") {
+				this.MaxManaRange = ParseStatRange(filename, line, "maxmana", args);
 				return;
 			}
 			base.LoadScriptLine(filename, line, param, args);
@@ -479,6 +519,27 @@ namespace SteamEngine.CompiledScripts {
 			int? karma = def.RollKarma();
 			if (karma.HasValue) {
 				this.Karma = (short) karma.Value;
+			}
+
+			//#561 - only override the live default (100, see NPC.ct) when configured; -1 means
+			//unconfigured, same sentinel as #559's Str/Dex/Int (MaxHits/MaxStam/MaxMana can
+			//only ever be non-negative in real source, unlike Fame/Karma). Current Hits/Mana/
+			//Stam are ALSO raised to match so a freshly-seeded NPC spawns fully healed, not at
+			//the old 100-point default against its new, much larger max pool.
+			int maxHits = def.RollMaxHits();
+			if (maxHits >= 0) {
+				this.MaxHits = (short) maxHits;
+				this.Hits = this.MaxHits;
+			}
+			int maxStam = def.RollMaxStam();
+			if (maxStam >= 0) {
+				this.MaxStam = (short) maxStam;
+				this.Stam = this.MaxStam;
+			}
+			int maxMana = def.RollMaxMana();
+			if (maxMana >= 0) {
+				this.MaxMana = (short) maxMana;
+				this.Mana = this.MaxMana;
 			}
 
 			IMovementSettings template = def.DefaultMovementSettings;
