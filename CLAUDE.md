@@ -1,5 +1,35 @@
 # moriaengine — working state
 
+## SphereShardConverter engine work: #559 SHIPPED (PR #569), 2026-10-21 — first of #558's 6 sub-issues
+
+User said "start doing this work" on #559-564 (the engine-level sub-issues under #558,
+see the survey entry right below this one). **#559 (NPCDef starting Str/Dex/Int
+template) is the first one shipped.**
+
+`NPCDef` gained `StrRange`/`DexRange`/`IntRange` (tag-backed `int[]` ranges, same shape
+as the existing `ExperienceWorth`) + `RollStr`/`RollDex`/`RollInt`, applied once in
+`NPC.On_Create` - deliberately uses `-1` as the "unconfigured" sentinel (not
+`ExperienceWorth`'s `0`), since `0` would be a genuinely harmful value to apply to a
+stat (zeroing it) whereas `0` exp is harmless; unconfigured leaves the live
+`Character` default (15, see `Character.ct`) untouched. New `.def` `Str`/`Dex`/`Int`
+LoadScriptLine cases accept either a single value or `"min max"`.
+`ConvertedCharDef.ProcessCreateTriggerLine` now maps the real archive `STR=`/`DEX=`/
+`INT=` lines (embedded inside `@Create`, e.g. `c_titan`'s `STR=1500 DEX=350 INT=60`)
+onto these fields - NPCDef-only, same guard as `attack`/`dam`.
+
+Verified: a real protocol test (`Tests/Protocol/NpcStatRangeTests.cs`, boots a real
+server) creates a test NPC with `Str=777`/`Dex=100 100`/`Int=50 60` and confirms the
+applied Character stats match; fast tier 50/50; a scratch converter regen confirmed
+`c_titan` now emits `Str = 1500`/`Dex = 350`/`Int = 60` matching the raw archive
+exactly (plus the `{min max}` range form via `elementals.def`), zero changes to real
+tracked content. Issue #559 closed referencing PR #569.
+
+**Next in the #558 sequence** (not yet started): #560 (Fame/Karma template), #561
+(MaxHits/MaxStam/MaxMana template), #562 (starting-skill-values, the biggest piece),
+#563 (starting-equipment/`ITEMNEWBIE`, plus fixing the converter's break-on-first-item
+bug), #564 (NPC multi-spell casting, lowest priority). **#565 (AggroMode derivation)
+stays explicitly blocked on the user's own design call** - do not auto-implement it.
+
 ## SphereShardConverter: #558 survey done (9 engine issues filed) + #566 SHIPPED (PR #567), 2026-10-21
 
 Follow-up to #555 (below): while spot-checking the converter's own output on the
