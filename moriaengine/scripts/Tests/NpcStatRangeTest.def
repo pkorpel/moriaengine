@@ -1,0 +1,9 @@
+// #559 - test-only content proving NPCDef.StrRange/DexRange/IntRange actually apply on
+// NPC.On_Create. Deliberately not real Erebor content - a single-value Str (no roll
+// ambiguity) and a {min,max} range for Dex/Int (to prove the ranged-roll path too).
+[NPCDef npc_test_stat_range]
+NAME = "Stat Range Test"
+ANIM = 0x1fff
+Str = 777
+Dex = 100 100
+Int = 50 60

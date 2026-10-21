@@ -124,6 +124,28 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#559 - the real archive STR/DEX/INT lines live inside @Create too (e.g. c_titan:
+			//"STR=1500 DEX=350 INT=60"), as either a plain number or a Sphere {min max} range -
+			//NPCDef.StrRange/DexRange/IntRange (#559) understands the same "value"/"min max"
+			//shape ExperienceWorth already uses. NPCDef-only (no PlayerDef in the archive ever
+			//sets these - c_man/c_woman have no STR/DEX/INT line at all), same guard as attack/dam.
+			if (name == "str" || name == "dex" || name == "int") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				string fieldName = name == "str" ? "Str" : (name == "dex" ? "Dex" : "Int");
+				MatchCollection matches = numberRE.Matches(value);
+				if (matches.Count > 0) {
+					int min = (int) Math.Round(double.Parse(matches[0].Value, CultureInfo.InvariantCulture));
+					if (matches.Count > 1) {
+						int max = (int) Math.Round(double.Parse(matches[1].Value, CultureInfo.InvariantCulture));
+						this.Set(fieldName, min + " " + max, comment);
+					} else {
+						this.Set(fieldName, min.ToString(), comment);
+					}
+				}
+				return;
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
 
