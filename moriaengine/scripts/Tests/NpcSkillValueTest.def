@@ -1,0 +1,10 @@
+// #562 - test-only content proving NPCDef.SkillValueRanges actually apply on
+// NPC.On_Create via Character.SetRealSkillValue. Deliberately not real Erebor content -
+// a single-value Wrestling (no roll ambiguity) and a {min,max} range for MagicResist
+// (to prove the ranged-roll path too). Field names are the canonical SkillName enum
+// member names the converter emits (ConvertedCharDef's skillNameAliases, #562).
+[NPCDef npc_test_skill_values]
+NAME = "Skill Value Test"
+ANIM = 0x1fff
+Wrestling = 700
+MagicResist = 800 900
