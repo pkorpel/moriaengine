@@ -49,6 +49,44 @@ couldn't do a faithful job for that specific piece - worth cross-checking agains
 original pre-conversion Sphere source (not just the wiki or this engine's own converted
 copy) before trusting it, the same pattern that resolved several of the gaps above.
 
+## Chardef field mapping (#555)
+
+`ConvertedCharDef`'s own `LineImplTask` list used to cover almost nothing - `name`/
+`category`/`subsection`/`description`/`anim`/`sound`/`mountid` only - so a fresh
+conversion run silently commented out the vast majority of every chardef's real content
+(#551 measured this at 1,422 fresh chardef blocks: `tevents` hit the fallback on 99.7% of
+them, `armor`/`can` on 79.7%, `attack` on 75.6%, `icon` on 72.3%). #555 closed most of
+that gap:
+
+- **`icon`/`can`/`aggromode`/`combatspell`/`experience`/`tamingdifficulty`** - plain
+  pass-through. `can`/`aggromode`/`combatspell`/`experience`/`tamingdifficulty` are
+  NPCDef-only fields (confirmed live in `NPC.cs`/`AbstractCharacterDef.cs`) - emitting
+  them on a PlayerDef (`c_man`/`c_woman`) would produce an "Invalid data" load warning, so
+  `ConvertedCharDef` comments them out instead whenever `PrettyDefname` resolves to one of
+  those two. `icon` is Character-level and always safe, PlayerDef included.
+- **`attack`/`dam` -> `WeaponAttack`** - averaged via the same Sphere range/list-parsing
+  logic `ConvertedItemDef.HandleArmorOrDam` already uses for weapon attack ranges
+  (`Utility.SplitSphereString` + a plain arithmetic mean). NPCDef-only, same reasoning as
+  above - commented out on a PlayerDef.
+- **`ARMOR` -> `armorVsP`/`armorVsM`** - averaged the same way, then written to BOTH
+  fields (not the old #44 hand-edit's tuple-split guess) - this is Character-level, safe
+  on a PlayerDef too.
+- **TEVENTS (`event`/`events`/`tevent`/`tevents`/`speech`/`tspeech`/`triggergroup`/
+  `triggergroups`)** - moved from `ConvertedCharDef` into the shared `ConvertedThingDef`
+  (benefits itemdefs too) as a plain pass-through. The engine's own
+  `AbstractDefTriggerGroupHolder.LoadScriptLine` already recognizes these field names
+  directly (same mechanism wiring `e_banker` onto bankers, #509) - no renaming needed,
+  unlike the converter's old dead `WriteAsTG` handler which incorrectly renamed the field
+  to a nonexistent `"triggerGroup"` key. Every TEVENTS field is converted and assigned
+  regardless of whether the referenced `[TRIGGERGROUP ...]` content exists - a missing
+  group just logs a warning and no-ops rather than crashing - deliberate future-proofing
+  (#551 decision #2) so implementing a hook later automatically "lights up" every monster
+  already tagged with it.
+
+**Still genuinely unsupported** (need real new subsystems before a mapping would mean
+anything, confirmed unchanged by this pass): `moverate`, `resources` (loot), `bloodcolor`,
+`foodtype`, `desires`, `aversions`, `shelter`, `reslevel`.
+
 ## Current status
 
 Dormant between uses, but buildable - retargeted to SDK-style/net8.0 and added to
