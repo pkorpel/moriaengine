@@ -1,5 +1,41 @@
 # moriaengine — working state
 
+## SphereShardConverter revival (#542) — #555 SHIPPED (PR #556), 2026-10-21. Next: scope the chardef content merge.
+
+**#555 shipped** - implemented the field mappings #551 surveyed and the two user
+decisions recorded below. `ConvertedCharDef` now has real `LineImplTask` handlers for
+`icon`/`can`/`aggromode`/`combatspell`/`experience`/`tamingdifficulty` (plain pass-
+through, commented out on `c_man`/`c_woman` since they're NPCDef-only fields),
+`attack`/`dam` → `WeaponAttack` (averaged via the same `Utility.SplitSphereString`-based
+logic `ConvertedItemDef.HandleArmorOrDam` already uses, NPCDef-only), and `ARMOR` →
+`armorVsP`/`armorVsM` (averaged, written to both, Character-level so safe on PlayerDef
+too). TEVENTS (`event`/`events`/`tevent`/`tevents`/`speech`/`tspeech`/`triggergroup`/
+`triggergroups`) moved into the shared `ConvertedThingDef` as a plain pass-through
+(benefits itemdefs too), replacing the old dead `WriteAsTG` handler that incorrectly
+renamed the field to a nonexistent `"triggerGroup"` key - converts/assigns every TEVENTS
+field regardless of whether the referenced trigger group exists yet (deliberate future-
+proofing, decision #2 below). Verified end-to-end: re-cloned the fresh archive into
+`SphereShardConverter/convert/` (gitignored), ran the converter with
+`MORIA_CONVERTER_OUTPUT_DIR` pointed at a scratch dir, confirmed `git status --porcelain
+scripts/converted` showed zero changes throughout, and spot-checked `c_titan` (NPCDef -
+`WeaponAttack`/`armorVsP`/`armorVsM` now live at 80, matching the raw archive's
+`attack=80`/`ARMOR=80` exactly; `TEVENTS`/`ICON`/`CAN` all live) and `c_man` (PlayerDef -
+`CAN`/`attack` correctly commented out, `ICON`/`armorVsP`/`armorVsM`/`TEVENTS` live).
+`docs/current/06-tooling/sphere-shard-converter.md` updated in the same PR. Issue #555
+closed referencing PR #556.
+
+**Still genuinely unsupported, confirmed unchanged by #555** (need real new subsystems
+before a mapping would mean anything): `moverate`, `resources` (loot), `bloodcolor`,
+`foodtype`, `desires`, `aversions`, `shelter`, `reslevel`.
+
+**Not yet scoped**: actually merging real chardef CONTENT (the 352 new NPCs in
+`scripts/chars/` from #544's report) into tracked `scripts/converted/` - #555 only
+upgraded the converter's own field-mapping code, it was run against a scratch directory
+only, nothing from the fresh archive has been merged into real tracked content yet. That
+merge work still needs its own scoping pass whenever the user wants to pick it up.
+
+---
+
 ## SphereShardConverter revival (#542) — #543 and #544 BOTH DONE, 2026-10-21. Next: scope the chardef merge.
 
 Full plan (#543 retarget + #544 trial-run/report) is complete. **#543 shipped** (PR #546,
