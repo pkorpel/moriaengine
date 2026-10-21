@@ -109,6 +109,19 @@ namespace SteamEngine.Converter {
 			this.dontDump = true;
 		}
 
+		public void RunStageSafely(Action stage) {
+			try {
+				stage();
+			} catch (FatalException) {
+				throw;
+			} catch (SEException se) {
+				se.TryAddFileLineInfo(this.origData.Filename, this.origData.HeaderLine);
+				Logger.WriteError(se.NiceMessage);
+			} catch (Exception e) {
+				Logger.WriteError(this.origData.Filename, this.origData.HeaderLine, e);
+			}
+		}
+
 		public virtual void FirstStage() {
 			bool needspace = false;
 			PropsLine line = this.origData.TryPopPropsLine("category");
