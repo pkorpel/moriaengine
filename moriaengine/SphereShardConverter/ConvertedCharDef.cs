@@ -146,6 +146,28 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#560 - the real archive FAME/KARMA lines live inside @Create too (e.g. c_titan:
+			//"FAME={100 2000} KARMA={-5000 -5999}"), always a Sphere {min max} range in source -
+			//NPCDef.FameRange/KarmaRange (#560) understands the same shape. numberRE already
+			//matches a leading sign, so KARMA's negative values parse correctly. NPCDef-only,
+			//same guard as str/dex/int.
+			if (name == "fame" || name == "karma") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				string fieldName = name == "fame" ? "Fame" : "Karma";
+				MatchCollection matches = numberRE.Matches(value);
+				if (matches.Count > 0) {
+					int min = (int) Math.Round(double.Parse(matches[0].Value, CultureInfo.InvariantCulture));
+					if (matches.Count > 1) {
+						int max = (int) Math.Round(double.Parse(matches[1].Value, CultureInfo.InvariantCulture));
+						this.Set(fieldName, min + " " + max, comment);
+					} else {
+						this.Set(fieldName, min.ToString(), comment);
+					}
+				}
+				return;
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
 
