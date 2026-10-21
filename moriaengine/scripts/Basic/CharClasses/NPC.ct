@@ -23,8 +23,9 @@ Defs:
 	int strikeStartRange = 5
 	int strikeStopRange = 10
 	int projectileAnim = -1
-	double mindPower = 1	
-	
+	double mindPower = 1
+	int bloodColor = -1
+
 Vars:	//vars defined in the class, so they basically do what tags do, but better
 	private IMovementSettings movementSettings = null 
 
