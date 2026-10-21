@@ -1,5 +1,33 @@
 # moriaengine — working state
 
+## #558 engine-level sequence COMPLETE (6 of 7 sub-issues) — #564 SHIPPED (PR #579), 2026-10-21
+
+`NPCDef` gained `Spells` (a tag-backed `List<SpellDef>`, `addspell=` in the real archive,
+often 2-4 per mage-type NPC) alongside the existing single `CombatSpell`. **Design
+decision made** (the issue itself asked for one): `NPCAiTimer.PickSpell` picks uniformly
+at random among `Spells` each cast attempt when that list is configured, falling back to
+`CombatSpell` unchanged otherwise - zero regression for any existing single-spell NPCDef.
+`Fight`'s caster-vs-melee range branch now also treats a non-empty `Spells` list as "this
+NPC is a caster". Converter maps the real archive's `addspell=` lines onto `AddSpell =
+defname` - the simplest case in the whole sequence, no numeric parsing needed.
+
+Verified: a real protocol test (boots a real server, ~19s, confirmed genuine) sampled
+`PickSpell` 400 times against a 2-spell test NPCDef and confirmed BOTH granted spells get
+picked (proving real randomness, not always-first), plus a regression test confirming the
+single-`CombatSpell`-only path is unaffected; fast tier 50/50; a scratch converter regen
+confirmed `c_titan_mage` now emits all 3 real `AddSpell = s_lightning/s_fireball/
+s_magic_reflection` lines, composing correctly with every other #559-563 field (Fame/
+Karma/Str/Dex/Int/HP-Stam-Mana pools/starting skills/equipment) on the same real NPC -
+zero changes to real tracked content. Issue #564 closed referencing PR #579.
+
+**#558's engine-level sequence is now 6 of 7 done**: #559 (PR #569), #560 (PR #571), #561
+(PR #573), #562 (PR #575), #563 (PR #577), #564 (PR #579) all shipped. **Only #565
+(AggroMode derivation) remains, explicitly blocked on the user's own design call** - two
+plausible signals (Karma sign/magnitude vs. the NPC's `brain_xxx` AI-brain assignment) can
+disagree, and picking wrong would silently flip monster behavior project-wide. #558 itself
+stays open pending #565 (posted a status comment rather than closing it, since its own body
+lists #565 as a required sub-issue) - don't auto-implement #565 without the user's input.
+
 ## SphereShardConverter engine work: #563 SHIPPED (PR #577), 2026-10-21 — fifth of #558's 6 sub-issues
 
 `NPCDef` gained `StartingEquipment` (a `List<StartingEquipmentEntry>` - defname +
