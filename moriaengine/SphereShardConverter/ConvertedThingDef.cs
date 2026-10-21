@@ -56,10 +56,20 @@ namespace SteamEngine.Converter {
 		}
 
 		private static LineImplTask[] firstStageImpl = {
-//				new LineImplTask("event", new LineImpl(WriteAsTG)), 
-//				new LineImplTask("events", new LineImpl(WriteAsTG)), 
-//				new LineImplTask("tevent", new LineImpl(WriteAsTG)), 
-//				new LineImplTask("tevents", new LineImpl(WriteAsTG)), 
+				//the engine's own AbstractDefTriggerGroupHolder.LoadScriptLine already
+				//recognizes these field names directly (same mechanism wiring e_banker
+				//onto bankers, #509) - a plain pass-through is correct, not a rename.
+				//Convert/assign every TEVENTS field regardless of whether the referenced
+				//trigger group exists yet (#551 decision #2) - a missing group just logs
+				//a warning and no-ops, so this is deliberate future-proofing.
+				new LineImplTask("event", WriteAsIsLine),
+				new LineImplTask("events", WriteAsIsLine),
+				new LineImplTask("tevent", WriteAsIsLine),
+				new LineImplTask("tevents", WriteAsIsLine),
+				new LineImplTask("speech", WriteAsIsLine),
+				new LineImplTask("tspeech", WriteAsIsLine),
+				new LineImplTask("triggergroup", WriteAsIsLine),
+				new LineImplTask("triggergroups", WriteAsIsLine),
 				new LineImplTask("name", WriteInQuotes)
 			};
 
@@ -68,10 +78,9 @@ namespace SteamEngine.Converter {
 			this.firstStageImplementations.Add(firstStageImpl);
 		}
 
-		private static void WriteAsTG(ConvertedDef def, PropsLine line) {
-			def.Set("triggerGroup", line.Value, line.Comment);
+		private static void WriteAsIsLine(ConvertedDef def, PropsLine line) {
+			def.Set(line);
 		}
-
 
 
 		public override void FirstStage() {
