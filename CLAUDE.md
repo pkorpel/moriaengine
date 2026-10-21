@@ -1,5 +1,43 @@
 # moriaengine — working state
 
+## SphereShardConverter engine work: #562 SHIPPED (PR #575), 2026-10-21 — fourth of #558's 6 sub-issues
+
+`NPCDef` gained `SkillValueRanges` - a tag-backed `Dictionary<SkillName, int[]>`, keyed
+by the literal `SkillName` enum member name (e.g. `Wrestling = 700 800`), applied once
+in `NPC.On_Create` via `Character.SetRealSkillValue`. **Deliberately ONE generic
+mechanism, not one property per skill** (unlike `StrRange`/`FameRange`/`MaxHitsRange`)
+- real chardefs set any of ~25-29 different skills, an open-ended subset per monster,
+not a small fixed set like Str/Dex/Int.
+
+**x10 scaling - confirmed against real archive content, not assumed**: skill values
+are stored x10 internally in this engine (already well-established elsewhere this
+session), but the real archive writes plain percentages
+(`c_titan_ranger`: `PARRYING={40.0 50.0} WRESTLING={70.0 80.0} ARCHERY={90.0 95.0}
+resist=100.0 SpiritSpeak=60.0`). A scratch converter regen confirmed these become
+`Parry = 400 500`, `Wrestling = 700 800`, `Archery = 900 950`, `MagicResist = 1000`,
+`SpiritSpeak = 600` exactly - the ×10 scale checked out cleanly against real data
+before shipping, not guessed.
+
+Converter (`ConvertedCharDef.ProcessCreateTriggerLine`) maps the archive's own skill
+vocabulary onto the canonical `SkillName` member names via an explicit alias table -
+most match 1:1, but 8 don't: `resist`→`MagicResist`, `parrying`→`Parry`,
+`swordsmanship`→`Swords`, `macefighting`→`Macing`, `taming`→`AnimalTaming`,
+`detectinghidden`→`DetectHidden`, `inscription`→`Inscribe`, `blacksmithing`→
+`Blacksmith`. The `.def`-side `LoadScriptLine` fallback itself needs no alias table at
+all - it matches the literal `SkillName` enum member name case-insensitively, so the
+alias translation only happens once, on the converter side.
+
+Verified: a real protocol test (`Tests/Protocol/NpcSkillValueTests.cs`, boots a real
+server - confirmed genuine: 17.5s run, 470ms test execution, 281 discovered test cases,
+not a cached/instant false-pass) creates a test NPC with `Wrestling = 700`/
+`MagicResist = 800 900` and confirms both apply; fast tier 50/50; zero changes to real
+tracked content. Issue #562 closed referencing PR #575.
+
+**Next in the #558 sequence**: #563 (starting-equipment/`ITEMNEWBIE`, plus fixing the
+converter's break-on-first-item bug), #564 (NPC multi-spell casting, lowest priority).
+**#565 (AggroMode derivation) stays explicitly blocked on the user's own design call**
+- do not auto-implement it.
+
 ## SphereShardConverter engine work: #561 SHIPPED (PR #573), 2026-10-21 — third of #558's 6 sub-issues
 
 `NPCDef` gained `MaxHitsRange`/`MaxStamRange`/`MaxManaRange` (tag-backed `int[]`
