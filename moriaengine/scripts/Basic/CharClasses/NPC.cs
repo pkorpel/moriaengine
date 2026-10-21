@@ -16,6 +16,7 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
 using System;
+using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Networking;
@@ -311,6 +312,31 @@ namespace SteamEngine.CompiledScripts {
 		public int RollMaxStam() { return RollStatRange(this.MaxStamRange); }
 		public int RollMaxMana() { return RollStatRange(this.MaxManaRange); }
 
+		private static readonly TagKey skillValueRangesTK = TagKey.Acquire("_skillValueRanges_");
+
+		/// <summary>Starting skill-value {min, max} ranges for a fresh NPC of this type (#562),
+		/// keyed by SkillName, rolled once at creation by NPC.On_Create via Character.
+		/// SetRealSkillValue. A generic dictionary rather than one property per skill (unlike
+		/// StrRange/FameRange/etc) since real chardefs set any of ~25-29 different skills, not a
+		/// small fixed set - the .def field name for a skill line is the literal SkillName enum
+		/// member name (e.g. "Wrestling = 700 800"), matched case-insensitively in
+		/// LoadScriptLine's fallback below.</summary>
+		public Dictionary<SkillName, int[]> SkillValueRanges {
+			get { return this.GetTag(skillValueRangesTK) as Dictionary<SkillName, int[]>; }
+			set { this.SetTag(skillValueRangesTK, value); }
+		}
+
+		/// <summary>Rolls the configured range for `skill`, or -1 if this NPCDef never
+		/// configured a starting value for it.</summary>
+		public int RollSkillValue(SkillName skill) {
+			Dictionary<SkillName, int[]> ranges = this.SkillValueRanges;
+			int[] range;
+			if ((ranges == null) || !ranges.TryGetValue(skill, out range)) {
+				return -1;
+			}
+			return RollStatRange(range);
+		}
+
 		private static int[] ParseStatRange(string filename, int line, string param, string args) {
 			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1) {
@@ -413,6 +439,19 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "maxmana") {
 				this.MaxManaRange = ParseStatRange(filename, line, "maxmana", args);
+				return;
+			}
+			//#562 - a .def field name matching a SkillName enum member (case-insensitive) is a
+			//starting skill-value range, e.g. "Wrestling = 700 800" or "MagicResist = 900"
+			SkillName skillName;
+			if (Enum.TryParse(param, true, out skillName)) {
+				int[] range = ParseStatRange(filename, line, param, args);
+				if (range != null) {
+					if (this.SkillValueRanges == null) {
+						this.SkillValueRanges = new Dictionary<SkillName, int[]>();
+					}
+					this.SkillValueRanges[skillName] = range;
+				}
 				return;
 			}
 			base.LoadScriptLine(filename, line, param, args);
@@ -540,6 +579,17 @@ namespace SteamEngine.CompiledScripts {
 			if (maxMana >= 0) {
 				this.MaxMana = (short) maxMana;
 				this.Mana = this.MaxMana;
+			}
+
+			//#562 - starting skill values, any subset of SkillName the NPCDef configured
+			Dictionary<SkillName, int[]> skillRanges = def.SkillValueRanges;
+			if (skillRanges != null) {
+				foreach (SkillName skillName in skillRanges.Keys) {
+					int rolled = def.RollSkillValue(skillName);
+					if (rolled >= 0) {
+						this.SetRealSkillValue((int) skillName, rolled);
+					}
+				}
 			}
 
 			IMovementSettings template = def.DefaultMovementSettings;
