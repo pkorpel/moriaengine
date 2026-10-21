@@ -55,29 +55,76 @@ survey only, nothing implemented**:
   fallback, confirmed with real frequency data across 1,422 fresh chardef blocks:
   `tevents` 99.7%, `armor`/`can` 79.7%, `attack` 75.6%, `icon` 72.3%, `moverate` 57.0%,
   `bloodcolor` 49.4%, `resources` 48.5%, `tspeech` 29.0%, `foodtype` 28.5% of ALL chardefs
-  hit this fallback. Itemdefs are a much smaller opportunity by comparison (armor/dam
-  already mapped via `HandleArmorOrDam`; remaining gaps under ~8% each). Also found
-  `ConvertedTemplateDef` has NO comment fallback at all - unmatched content inside a
-  template's trigger body is silently dropped, not even logged. Proposes `attack`→
-  `WeaponAttack`/`armor`→`ArmorVsP`/`VsM` as the safest first mapping to actually build
-  (dozens of already-hand-fixed monsters to validate against) - flags `CAN`→`MT_*` and
-  `TEVENTS`→real-trigger-group-reference as much riskier, needing real semantic
-  translation not just a rename.
+  hit this fallback. A first-pass fork investigation got two things importantly wrong,
+  corrected after direct code verification (own comment on #551 superseding the earlier
+  one) - see "field-coverage corrections" below, don't trust the original comment's
+  framing.
 - **#552** - surveyed the archive's remaining "logic" folders by file count +
-  content sample. `questy/`/`gump_system/`/`vypravec/`/`dobyvani/` confirmed pure
-  dialog/gump/quest-trigger scripting - permanently out of scope for any converter work,
-  a from-scratch design exercise if ever wanted at all. **Real finding**:
+  content sample. `questy/`/`gump_system/`/`vypravec/`/`dobyvani/`/`web/`/`Aen/`/
+  `scarabeus/` all confirmed pure dialog/gump/quest-trigger scripting or trivial
+  one-offs - permanently out of scope for any converter work. **Real finds**:
   `systems/skills/`'s 12 files (`discordance`/`healing`/`hiding`/`lockpicking`/
   `meditation`/`peacemaking`/`poisoning`/`provocation`/`removetrap`/`repairing`/`taming`/
-  `tracking.scp`) are real skill-mechanic formulas that map directly onto the ALREADY-
-  RUNNING #284 skill-mechanics-audit / #140 skill-gain-through-use backlog - same
-  hand-port-into-C# precedent as `funkce.scp`/`miningfix.scp`/`skillgains.scp`, not a
-  converter task at all. `systems/administrace/`/`events_npc/`/`craftmenu/` and several
-  smaller folders (`Aen/`/`scarabeus/`/`web/`) not yet characterized - flagged open.
+  `tracking.scp`) map directly onto the ALREADY-RUNNING #284/#140 skill-mechanics backlog
+  - same hand-port-into-C# precedent as `funkce.scp`/`miningfix.scp`/`skillgains.scp`, not
+  a converter task. `systems/craftmenu/` is superseded - moriaengine already has a full
+  850+-line `Craftmenu`/`CraftmenuDialog`, not a port target. `systems/administrace/` is
+  likely the real source behind some already-tracked #101/#102 GM-command gaps - reference
+  material, not new scope. `dobyvani/` (5 files) is a genuinely new, real, but OPTIONAL
+  find - a Gondor-vs-Mordor Realm war-declaration mechanic, zero existing issue coverage;
+  worth its own issue only if RvR content is ever wanted. `systems/events_npc/Damage/`
+  (NPC special-attack effects) and the ~92 root `systems/*.scp` files are still mostly
+  uncharacterized. **Verdict: nothing here outranks the already-scoped chardef/itemdef
+  work.** Both surveys' findings are posted as GitHub comments on #551/#552 respectively,
+  nothing implemented, issues left open.
 
-**Still nothing implemented from either #551 or #552** - pure research/survey, waiting
-for the user's review before any mapping-table or hand-port implementation work starts.
-The DEFNAME-alias indexing gap in #544's own diff tooling (found via this same `c_titan`
+**Field-coverage corrections (2026-10-21, after direct code verification in `NPC.cs`/
+`AbstractCharacterDef.cs`/`AbstractDefTriggerGroupHolder.cs`/`Character.Generated.cs`) -
+use THIS, not the original #551 comment's framing**:
+- **Confirmed live right now, zero new work**: `icon`, `can` (only `MT_WALK`/`MT_RUN`/
+  `MT_SWIM`/`MT_FLY` tracked - `MT_USEHANDS`/`MT_FIRE_IMMUNE`/`MT_EQUIP`/`MT_NONMOVER`
+  would be silently dropped even if converted), `aggromode`, `combatspell`, `experience`,
+  `tamingdifficulty`.
+- **NOT a live mechanism, corrected** - `attack`/`dam`→`WeaponAttack` and `ARMOR`→
+  `ArmorVsP`/`ArmorVsM` turned out to be a ONE-TIME MANUAL TEXT REWRITE: commit `3a0c297d`
+  ("Restore combat stats...", #44, Oct 10) hand-edited 33 `.def` files, averaging Sphere
+  range/tuples into scalars and splitting `ARMOR` tuples (X assumed vsP, "a documented
+  guess... easy to flip later if wrong" per that commit). Never automated anywhere - new
+  chardefs since then (including all of #544's finds) never got this treatment. Also
+  corrected the earlier "not safe, likely deliberately rebalanced" claim - checked
+  `c_titan` specifically, its raw `attack=65`/`ARMOR=55` are plain numbers not
+  ranges/tuples, so the averaging/splitting rule doesn't explain the mismatch against
+  tracked `WeaponAttack=80`/`ArmorVsP/VsM=95` - the cause (archive staleness vs. real
+  rebalancing) is NOT proven either way from code alone.
+- **Still genuinely unsupported anywhere, confirmed unchanged since Oct 10**: `moverate`,
+  `resources` (loot), `bloodcolor`, `foodtype`, `desires`, `aversions`, `shelter`,
+  `reslevel` - need real new subsystems before a mapping would mean anything.
+- **TEVENTS - the wiring mechanism IS fully live** (confirmed in
+  `AbstractDefTriggerGroupHolder.LoadScriptLine`, same mechanism already wiring `e_banker`
+  onto bankers, #509) - resolves against real `TriggerGroup.GetByDefname()`, logs a
+  warning and no-ops (doesn't crash) if the group doesn't exist. The actual gap: 99.7% of
+  chardefs reference legacy Sphere LScript monster-AI hook names (`e_monster`,
+  `e_character`, `e_dragon_brain`, etc.) that don't exist as real `[TRIGGERGROUP ...]`
+  content - this engine deliberately replaced that whole AI approach with its own C#
+  `NPCAiTimer` system instead of porting those hooks (#44's own commit says this
+  explicitly).
+
+**Two explicit user decisions from this same conversation, to honor whenever the actual
+chardef-merge/converter-upgrade implementation work gets scoped**:
+1. **Treat Erebor's raw archive values as correct going forward** for fields like
+   `attack`/`ARMOR` - the existing #44-era hand-typed numbers were themselves originally
+   just read off Erebor source once; when the real merge happens, prefer re-deriving from
+   the current archive (via the average/split transform) over preserving old hand-typed
+   numbers where they conflict.
+2. **Convert and assign `TEVENTS` for every chardef anyway**, accepting the current
+   silent-no-op-with-warning behavor for trigger groups that don't exist yet - deliberate
+   future-proofing, so implementing a group later (e.g. a real `e_dragon_brain`
+   equivalent) automatically "lights up" every monster already tagged with it, with zero
+   further content changes needed.
+
+**Still nothing implemented from #551 or #552** - pure research/survey + these two design
+decisions recorded, waiting for the user to scope real implementation work next. The
+DEFNAME-alias indexing gap in #544's own diff tooling (found via this same `c_titan`
 conversation) is also still uncorrected - note it if #544's numbers are ever recomputed.
 
 ## Mystic MindPower now scales by weapon material — SHIPPED (PR #540) — 2026-10-21, #539 closed
