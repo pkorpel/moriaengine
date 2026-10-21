@@ -198,10 +198,13 @@ namespace SteamEngine.Converter {
 					string line;
 					while ((line = reader.ReadLine()) != null) {
 						string lowered = line.ToLowerInvariant();
-						if (lowered.StartsWith("item ") || lowered.StartsWith("item=") || lowered.StartsWith("item(") ||
-							lowered.StartsWith("itemnewbie ") || lowered.StartsWith("itemnewbie=") || lowered.StartsWith("itemnewbie(")) {
+						if (lowered.StartsWith("item ") || lowered.StartsWith("item=") || lowered.StartsWith("item(")) {
 							break; //start of loot section, probably
 						}
+						//#563 - itemnewbie lines (starting-equipment grants) are NOT the loot
+						//section - a chardef often has several of these in a row (e.g. a
+						//ranger's bow THEN its arrows), all of which need to reach
+						//ProcessCreateTriggerLine, not just the first one
 						lineNum++;
 						Match m = nameValueRE.Match(line);
 						if (m.Success) {

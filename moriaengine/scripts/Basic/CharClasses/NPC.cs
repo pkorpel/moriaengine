@@ -236,7 +236,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Rolls a value in [min, max] (inclusive) from `range`, or -1 if `range` is unset
 		/// (unconfigured) - the sentinel NPC.On_Create checks before overwriting the live default.</summary>
-		private static int RollStatRange(int[] range) {
+		internal static int RollStatRange(int[] range) {
 			if (range == null) {
 				return -1;
 			}
@@ -335,6 +335,26 @@ namespace SteamEngine.CompiledScripts {
 				return -1;
 			}
 			return RollStatRange(range);
+		}
+
+		/// <summary>One "Equip = defname[, amount or {min max}]" line (#563) - the real archive's
+		/// ITEMNEWBIE grants. AmountRange is null when the line didn't specify one (just equip
+		/// one of the item).</summary>
+		public class StartingEquipmentEntry {
+			public string Defname;
+			public int[] AmountRange;
+		}
+
+		private static readonly TagKey instanceStartingEquipmentTK = TagKey.Acquire("_npcStartingEquipment_");
+
+		/// <summary>Starting-equipment list for a fresh NPC of this type (#563) - each entry
+		/// created and handed to ThingDef.Create(this) once at creation by NPC.On_Create, which
+		/// equips it automatically if it's equippable (a bow, a spellbook) or drops it into the
+		/// backpack otherwise (ammo like arrows). Multiple entries are normal - a real chardef
+		/// can have several `Equip =` lines (e.g. a ranger's bow THEN its arrows).</summary>
+		public List<StartingEquipmentEntry> StartingEquipment {
+			get { return this.GetTag(instanceStartingEquipmentTK) as List<StartingEquipmentEntry>; }
+			set { this.SetTag(instanceStartingEquipmentTK, value); }
 		}
 
 		private static int[] ParseStatRange(string filename, int line, string param, string args) {
@@ -439,6 +459,20 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "maxmana") {
 				this.MaxManaRange = ParseStatRange(filename, line, "maxmana", args);
+				return;
+			}
+			if (param == "equip") {
+				//#563 - "Equip = defname" or "Equip = defname, amount" or "Equip = defname, min max"
+				string[] parts = args.Split(',');
+				string defname = parts[0].Trim();
+				int[] amountRange = null;
+				if (parts.Length > 1) {
+					amountRange = ParseStatRange(filename, line, "equip amount", parts[1].Trim());
+				}
+				if (this.StartingEquipment == null) {
+					this.StartingEquipment = new List<StartingEquipmentEntry>();
+				}
+				this.StartingEquipment.Add(new StartingEquipmentEntry { Defname = defname, AmountRange = amountRange });
 				return;
 			}
 			//#562 - a .def field name matching a SkillName enum member (case-insensitive) is a
@@ -588,6 +622,32 @@ namespace SteamEngine.CompiledScripts {
 					int rolled = def.RollSkillValue(skillName);
 					if (rolled >= 0) {
 						this.SetRealSkillValue((int) skillName, rolled);
+					}
+				}
+			}
+
+			//#563 - starting equipment (real archive's ITEMNEWBIE grants). ThingDef.Create(this)
+			//already equips the item automatically if it's equippable (a bow, a spellbook) or
+			//drops it into the backpack otherwise (ammo like arrows) - no separate equip call
+			//needed here.
+			List<NPCDef.StartingEquipmentEntry> equipment = def.StartingEquipment;
+			if (equipment != null) {
+				foreach (NPCDef.StartingEquipmentEntry entry in equipment) {
+					ItemDef itemDef = ThingDef.GetByDefname(entry.Defname) as ItemDef;
+					if (itemDef == null) {
+						Logger.WriteWarning("NPC.On_Create (NPCDef " + def.PrettyDefname + ")",
+							"starting equipment item '" + entry.Defname + "' is not a known ItemDef.");
+						continue;
+					}
+					Thing created = itemDef.Create(this);
+					if (entry.AmountRange != null) {
+						AbstractItem item = created as AbstractItem;
+						if (item != null) {
+							int amount = NPCDef.RollStatRange(entry.AmountRange);
+							if (amount > 0) {
+								item.Amount = amount;
+							}
+						}
 					}
 				}
 			}

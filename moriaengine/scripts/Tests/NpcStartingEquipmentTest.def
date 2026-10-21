@@ -1,0 +1,9 @@
+// #563 - test-only content proving NPCDef.StartingEquipment actually applies on
+// NPC.On_Create. i_bow_copper is a real equippable weapon (ThingDef.Create should equip
+// it automatically) - i_arrow_copper is real ammo (not equippable, should land in the
+// backpack instead), with an explicit {min,max} amount range to prove that path too.
+[NPCDef npc_test_starting_equipment]
+NAME = "Starting Equipment Test"
+ANIM = 0x1fff
+Equip = i_bow_copper
+Equip = i_arrow_copper, 50 75
