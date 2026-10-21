@@ -212,6 +212,56 @@ namespace SteamEngine.CompiledScripts {
 			return Globals.dice.Next(range[0], range[1] + 1);
 		}
 
+		private static readonly TagKey strRangeTK = TagKey.Acquire("_strRange_");
+		private static readonly TagKey dexRangeTK = TagKey.Acquire("_dexRange_");
+		private static readonly TagKey intRangeTK = TagKey.Acquire("_intRange_");
+
+		/// <summary>Starting Str/Dex/Int {min, max} range for a fresh NPC of this type (#559),
+		/// rolled once at creation by NPC.On_Create - mirrors ExperienceWorth's own shape.
+		/// Null (the default) means unconfigured - On_Create leaves the Character's own
+		/// stat-default (15, see Character.ct) untouched rather than zeroing it.</summary>
+		public int[] StrRange {
+			get { return this.GetTag(strRangeTK) as int[]; }
+			set { this.SetTag(strRangeTK, value); }
+		}
+		public int[] DexRange {
+			get { return this.GetTag(dexRangeTK) as int[]; }
+			set { this.SetTag(dexRangeTK, value); }
+		}
+		public int[] IntRange {
+			get { return this.GetTag(intRangeTK) as int[]; }
+			set { this.SetTag(intRangeTK, value); }
+		}
+
+		/// <summary>Rolls a value in [min, max] (inclusive) from `range`, or -1 if `range` is unset
+		/// (unconfigured) - the sentinel NPC.On_Create checks before overwriting the live default.</summary>
+		private static int RollStatRange(int[] range) {
+			if (range == null) {
+				return -1;
+			}
+			if (range[0] >= range[1]) {
+				return range[0];
+			}
+			return Globals.dice.Next(range[0], range[1] + 1);
+		}
+
+		public int RollStr() { return RollStatRange(this.StrRange); }
+		public int RollDex() { return RollStatRange(this.DexRange); }
+		public int RollInt() { return RollStatRange(this.IntRange); }
+
+		private static int[] ParseStatRange(string filename, int line, string param, string args) {
+			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+			if (parts.Length == 1) {
+				int value = ConvertTools.ParseInt32(parts[0]);
+				return new int[] { value, value };
+			}
+			if (parts.Length == 2) {
+				return new int[] { ConvertTools.ParseInt32(parts[0]), ConvertTools.ParseInt32(parts[1]) };
+			}
+			Logger.WriteWarning(filename, line, param + " '" + args + "' must be either a single value or 'min max'.");
+			return null;
+		}
+
 		private static readonly TagKey defaultMovementTK = TagKey.Acquire("_defaultMovementCapability_");
 
 		/// <summary>The movement capability template new NPCs of this type get on creation (see NPC.On_Create) - each instance gets its own deep copy, not this shared object, so runtime effects can mutate one NPC's capability without affecting every other NPC of the same type.</summary>
@@ -269,6 +319,18 @@ namespace SteamEngine.CompiledScripts {
 				} else {
 					Logger.WriteWarning(filename, line, "experience '" + args + "' must be either a single value or 'min max'.");
 				}
+				return;
+			}
+			if (param == "str") {
+				this.StrRange = ParseStatRange(filename, line, "str", args);
+				return;
+			}
+			if (param == "dex") {
+				this.DexRange = ParseStatRange(filename, line, "dex", args);
+				return;
+			}
+			if (param == "int") {
+				this.IntRange = ParseStatRange(filename, line, "int", args);
 				return;
 			}
 			base.LoadScriptLine(filename, line, param, args);
@@ -350,6 +412,21 @@ namespace SteamEngine.CompiledScripts {
 			NPCDef def = (NPCDef) this.Def;
 			this.AggroMode = def.AggroMode;
 			this.ExperienceReward = def.RollExperienceReward();
+
+			//#559 - only override the live Character default (15, see Character.ct) when this
+			//NPCDef actually configured a range; -1 means unconfigured, leave the default alone
+			int str = def.RollStr();
+			if (str >= 0) {
+				this.Str = (short) str;
+			}
+			int dex = def.RollDex();
+			if (dex >= 0) {
+				this.Dex = (short) dex;
+			}
+			int intel = def.RollInt();
+			if (intel >= 0) {
+				this.Int = (short) intel;
+			}
 
 			IMovementSettings template = def.DefaultMovementSettings;
 			if (template != null) {
