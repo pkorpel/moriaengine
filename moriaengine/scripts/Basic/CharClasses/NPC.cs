@@ -249,6 +249,40 @@ namespace SteamEngine.CompiledScripts {
 		public int RollDex() { return RollStatRange(this.DexRange); }
 		public int RollInt() { return RollStatRange(this.IntRange); }
 
+		private static readonly TagKey fameRangeTK = TagKey.Acquire("_fameRange_");
+		private static readonly TagKey karmaRangeTK = TagKey.Acquire("_karmaRange_");
+
+		/// <summary>Starting Fame/Karma {min, max} range for a fresh NPC of this type (#560),
+		/// rolled once at creation by NPC.On_Create - same shape as StrRange/DexRange/IntRange
+		/// (#559), EXCEPT Fame/Karma can legitimately roll to a real negative value in source
+		/// (e.g. c_titan's KARMA={-5000 -5999}) - #559's "-1 means unconfigured" sentinel would
+		/// collide with a real negative roll, so RollFame/RollKarma return a nullable int?
+		/// instead (null = unconfigured, leave the Character default of 0 untouched).</summary>
+		public int[] FameRange {
+			get { return this.GetTag(fameRangeTK) as int[]; }
+			set { this.SetTag(fameRangeTK, value); }
+		}
+		public int[] KarmaRange {
+			get { return this.GetTag(karmaRangeTK) as int[]; }
+			set { this.SetTag(karmaRangeTK, value); }
+		}
+
+		/// <summary>Rolls a value in [min, max] (inclusive) from `range`, or null if `range` is
+		/// unset (unconfigured). Unlike RollStatRange, this can genuinely return a negative
+		/// rolled value - use the null check, not a sentinel value, to detect "unconfigured".</summary>
+		private static int? RollNullableStatRange(int[] range) {
+			if (range == null) {
+				return null;
+			}
+			if (range[0] >= range[1]) {
+				return range[0];
+			}
+			return Globals.dice.Next(range[0], range[1] + 1);
+		}
+
+		public int? RollFame() { return RollNullableStatRange(this.FameRange); }
+		public int? RollKarma() { return RollNullableStatRange(this.KarmaRange); }
+
 		private static int[] ParseStatRange(string filename, int line, string param, string args) {
 			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1) {
@@ -331,6 +365,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "int") {
 				this.IntRange = ParseStatRange(filename, line, "int", args);
+				return;
+			}
+			if (param == "fame") {
+				this.FameRange = ParseStatRange(filename, line, "fame", args);
+				return;
+			}
+			if (param == "karma") {
+				this.KarmaRange = ParseStatRange(filename, line, "karma", args);
 				return;
 			}
 			base.LoadScriptLine(filename, line, param, args);
@@ -426,6 +468,17 @@ namespace SteamEngine.CompiledScripts {
 			int intel = def.RollInt();
 			if (intel >= 0) {
 				this.Int = (short) intel;
+			}
+
+			//#560 - Fame/Karma can legitimately roll negative, so use the nullable
+			//RollFame/RollKarma (null means unconfigured) rather than #559's -1 sentinel
+			int? fame = def.RollFame();
+			if (fame.HasValue) {
+				this.Fame = (short) fame.Value;
+			}
+			int? karma = def.RollKarma();
+			if (karma.HasValue) {
+				this.Karma = (short) karma.Value;
 			}
 
 			IMovementSettings template = def.DefaultMovementSettings;
