@@ -37,7 +37,9 @@ namespace SteamEngine.Converter {
 
 			//convertToPath = Path.Combine("SphereShardConverter", "converted");
 
-			convertToPath = Path.Combine("scripts", "converted");
+			string outputDirOverride = Environment.GetEnvironmentVariable("MORIA_CONVERTER_OUTPUT_DIR");
+			convertToPath = string.IsNullOrEmpty(outputDirOverride) ?
+				Path.Combine("scripts", "converted") : outputDirOverride;
 			Tools.EnsureDirectory(convertToPath, true);
 
 			//foreach (string path in Directory.GetFileSystemEntries(convertToPath)) {
