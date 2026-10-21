@@ -1,5 +1,46 @@
 # moriaengine — working state
 
+## CORRECTION (2026-10-21) to the #533/PR #534 entry below: "actually persists" was WRONG
+
+The entry below claims PR #534 made GatheringDelaySystem's settings "actually persist" across a
+restart. **That has since been disproven by a real save -> kill process -> reboot -> reload test**
+(see the #536 entry just below this one) - `CombatSettings` itself, the pattern PR #534 copied,
+also fails the same test. The DEFAULT VALUE change (20.0 -> 2.0) is real and shipped correctly;
+the PERSISTENCE claim is not confirmed and is probably still broken. Don't trust "#534 fixed
+persistence" without re-verifying - read the #536 entry first.
+
+## Settings persistence: naming-collision part FIXED, deep restart-persistence bug still OPEN (2026-10-21) — #536, PR #537 merged
+
+User asked for a full audit of `.settings` to make sure everything saves correctly. Found two
+separate things:
+
+1. **FIXED (PR #537)**: the user's own manual testing found the real cause of "Mining and
+   Lumberjacking pages override each other" - not a deep bug. `MiningSettings`/
+   `LumberjackingSettings` had literally-identical property names (`copperSkillThreshold` etc.)
+   for different backing data, AND `WoodTiers` used METAL names for tiers that actually display
+   as WOOD names (`i_log_copper` displays as "spruce log" - confirmed in `item_ore.def`). Renamed
+   `WoodTiers`/`LumberjackingSettings` to real wood names (Spruce/Chestnut/Oak/Teak/Mahagon/Eben/
+   Elven - item defnames unchanged, only C#/dialog identifiers). Also confirmed the anti-macro
+   gather-delay fields are GENUINELY shared across Mining/Lumberjacking/Fishing by design (one
+   real formula) - renamed those properties with a `shared` prefix on all three categories so
+   that's unmistakable in the dialog instead of looking like cross-page interference.
+
+2. **STILL OPEN, not pursued further per user's direction** (they're verifying manually
+   themselves first): rigorous automated testing (real save -> kill -> reboot -> reload, mirroring
+   issue #438's exact precedent) proved `CombatSettings` itself - the "known good" pattern every
+   settings category was modeled on, totally unrelated to any Mining/Lumberjacking naming - does
+   NOT survive a real restart either. Traced precisely: the save file genuinely has everything
+   correct (`tag.SavedStaticMembersTable=(Hashtable)0` -> a well-formed `[Hashtable 0]` section
+   with 52 real entries, each pointing to a fully-populated object section) but on reload
+   `Globals.Instance.GetTag(tkSavedStaticMembersTable)` comes back null before
+   `StaticMemberSaver.LoadMembers()` can use it - a likely object-reference-resolution timing gap
+   between `WorldSaver.Load()` and `ClassManager.InitScripts()` (`GameCore/Main.cs`/
+   `ClassManager.cs:374`), not proven to the same rigor as everything else here. **This means
+   PR #534's gather-delay fix almost certainly does NOT survive a real restart either** - only its
+   default-value change (20.0->2.0) is confirmed correct. See
+   [[project_moriaengine_settings_persistence_536]] (memory) for the full trace and how to resume.
+   Issue #536 deliberately left OPEN pending the user's own CombatSettings verification.
+
 ## Gathering delay fixed: 20s->2s default + actually persists (2026-10-20) — #533 closed, PR #534 merged
 
 User reported changing Mining's gather delay live via `.settings` didn't survive a restart.
