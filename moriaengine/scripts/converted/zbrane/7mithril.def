@@ -6,8 +6,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Dagger
 
 NAME = "mithril dagger"
-RESOURCES = 2 i_ingot_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 tinkering //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_mithril
+SKILLMAKE = 1000 blacksmithing, 950 tinkering //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_dagger
 Layer = 1 //guessed from base def by Converter 
 type = t_weapon_fence //guessed from base def by Converter 
@@ -17,11 +18,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 8
 attackVsM = 8
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_club_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -29,8 +30,9 @@ SUBSECTION = mithril Maces & Hammers
 DESCRIPTION = club
 
 NAME = "elven club"
-RESOURCES = 1 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_log_mithril
+SKILLMAKE = 975 carpentry, 1 t_carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_club
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -42,11 +44,11 @@ attackVsP = 11.5
 attackVsM = 11.5
 MindPowerVsP = 2012.5 //#539 - scaled: 700 * 11.5/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 2012.5 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_kryss_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -54,8 +56,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Kryss
 
 NAME = "mithril kryss"
-RESOURCES = 8 i_ingot_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 tinkering //some resources were fixed by converter 
+RESOURCES = 8 i_ingot_mithril
+SKILLMAKE = 1000 blacksmithing, 950 tinkering //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_kryss
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -65,11 +68,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 11.5
 attackVsM = 11.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_cutlass_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -77,8 +80,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Cutlass
 
 NAME = "mithril cutlass"
-RESOURCES = 10 i_ingot_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 tinkering //some resources were fixed by converter 
+RESOURCES = 10 i_ingot_mithril
+SKILLMAKE = 1000 blacksmithing, 950 tinkering //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_cutlass
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -88,11 +92,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 13.5
 attackVsM = 13.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_mace_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -100,8 +104,9 @@ SUBSECTION = mithril Maces & Hammers
 DESCRIPTION = Mace
 
 NAME = "mithril mace"
-RESOURCES = 10 i_ingot_mithril,  2 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 10 i_ingot_mithril, 2 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_mace
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -113,11 +118,11 @@ attackVsP = 18
 attackVsM = 18
 MindPowerVsP = 1800.0 //#539 - scaled: 700 * 18.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 1800.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_scimitar_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -125,8 +130,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Scimitar
 
 NAME = "mithril scimitar"
-RESOURCES = 14 i_ingot_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 tinkering //some resources were fixed by converter 
+RESOURCES = 14 i_ingot_mithril
+SKILLMAKE = 1000 blacksmithing, 950 tinkering //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_scimitar
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -136,11 +142,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 17.5
 attackVsM = 17.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -148,8 +154,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Axe
 
 NAME = "mithril axe"
-RESOURCES = 8 i_ingot_mithril,  2 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 8 i_ingot_mithril, 2 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_axe
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -160,11 +167,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 16
 attackVsM = 16
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_shepherds_crook_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -172,8 +179,9 @@ SUBSECTION = mithril Staves
 DESCRIPTION = Sheperd's Crook
 
 NAME = "elven crook"
-RESOURCES = 12 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 12 i_log_mithril
+SKILLMAKE = 975 carpentry, 1 t_carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_shepherds_crook
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_crook //guessed from base def by Converter 
@@ -184,11 +192,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 18
 attackVsM = 18
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredStaffDef i_staff_black_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -196,8 +204,8 @@ SUBSECTION = mithril Staves
 DESCRIPTION = Black Staff
 
 NAME = "elven black staff"
-RESOURCES = 14 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 14 i_log_mithril
+SKILLMAKE = 975 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 7 // commented out by Converter 
 model = i_staff_black
 TwoHanded = true //guessed from base def by Converter 
@@ -211,11 +219,11 @@ attackVsP = 22
 attackVsM = 22
 MindPowerVsP = 1925.0 //#539 - scaled: 700 * 22.0/8.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 1925.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_katana_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -223,8 +231,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Katana
 
 NAME = "mithril katana"
-RESOURCES = 16 i_ingot_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 tinkering //some resources were fixed by converter 
+RESOURCES = 16 i_ingot_mithril
+SKILLMAKE = 1000 blacksmithing, 950 tinkering //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_katana
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -234,11 +243,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 22
 attackVsM = 22
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_spear_short_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -246,8 +255,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Short Spear
 
 NAME = "mithril short spear"
-RESOURCES = 6 i_ingot_mithril,  10 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 6 i_ingot_mithril, 10 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_spear_short
 Layer = 1 //guessed from base def by Converter 
 type = t_weapon_fence //guessed from base def by Converter 
@@ -257,11 +267,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 22
 attackVsM = 22
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_war_fork_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -269,23 +279,23 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = War Fork
 
 NAME = "mithril war fork"
-RESOURCES = 14 i_ingot_mithril,  4 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 14 i_ingot_mithril, 4 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_war_fork
-TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandSpike //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 23
 attackVsM = 23
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_sword_broad_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -293,8 +303,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Broadsword
 
 NAME = "mithril broad sword"
-RESOURCES = 18 i_ingot_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 tinkering //some resources were fixed by converter 
+RESOURCES = 18 i_ingot_mithril
+SKILLMAKE = 1000 blacksmithing, 950 tinkering //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_sword_broad
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -304,11 +315,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 23
 attackVsM = 23
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_mace_war_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -316,8 +327,9 @@ SUBSECTION = mithril Maces & Hammers
 DESCRIPTION = War Mace
 
 NAME = "mithril war mace"
-RESOURCES = 16 i_ingot_mithril,  4 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 16 i_ingot_mithril, 4 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_mace_war
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -329,11 +341,11 @@ attackVsP = 26.5
 attackVsM = 26.5
 MindPowerVsP = 1855.0 //#539 - scaled: 700 * 26.5/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 1855.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_sword_long_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -341,8 +353,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Longsword
 
 NAME = "mithril long sword"
-RESOURCES = 22 i_ingot_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 tinkering //some resources were fixed by converter 
+RESOURCES = 22 i_ingot_mithril
+SKILLMAKE = 1000 blacksmithing, 950 tinkering //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_sword_long
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -352,11 +365,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 28
 attackVsM = 28
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_sword_viking_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -364,8 +377,9 @@ SUBSECTION = mithril Onehanded
 DESCRIPTION = Viking Sword
 
 NAME = "mithril viking sword"
-RESOURCES = 24 i_ingot_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 tinkering //some resources were fixed by converter 
+RESOURCES = 24 i_ingot_mithril
+SKILLMAKE = 1000 blacksmithing, 950 tinkering //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_sword_viking
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -375,11 +389,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 32
 attackVsM = 32
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredStaffDef i_staff_quarter_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -387,8 +401,8 @@ SUBSECTION = mithril Staves
 DESCRIPTION = Quarter Staff
 
 NAME = "elven quarter staff"
-RESOURCES = 18 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 18 i_log_mithril
+SKILLMAKE = 975 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 7 // commented out by Converter 
 model = i_staff_quarter
 TwoHanded = true //guessed from base def by Converter 
@@ -402,11 +416,11 @@ attackVsP = 28
 attackVsM = 28
 MindPowerVsP = 1781.82 //#539 - scaled: 700 * 28.0/11.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 1781.82 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_battle_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -414,8 +428,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Battle Axe
 
 NAME = "mithril battle axe"
-RESOURCES = 15 i_ingot_mithril,  3 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 15 i_ingot_mithril, 3 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_axe_battle
 Layer = 1 //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -425,11 +440,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 28
 attackVsM = 28
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_hammer_pick_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -437,25 +452,25 @@ SUBSECTION = mithril Maces & Hammers
 DESCRIPTION = Hammer Pick
 
 NAME = "mithril hammer pick"
-RESOURCES = 16 i_ingot_mithril,  4 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 16 i_ingot_mithril, 4 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_hammer_pick
-TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 28
 attackVsM = 28
 MindPowerVsP = 1633.33 //#539 - scaled: 700 * 28.0/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 1633.33 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_pitchfork_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -463,8 +478,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Pitchfork
 
 NAME = "mithril pitchfork"
-RESOURCES = 16 i_ingot_mithril,  4 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 16 i_ingot_mithril, 4 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_pitchfork
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_fence //guessed from base def by Converter 
@@ -475,11 +491,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 28
 attackVsM = 28
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_exec_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -487,8 +503,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Executioner's Axe
 
 NAME = "mithril executioners axe"
-RESOURCES = 18 i_ingot_mithril,  4 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 18 i_ingot_mithril, 4 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_axe_exec
 Layer = 1 //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -498,11 +515,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 34
 attackVsM = 34
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_double_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -510,8 +527,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Double Axe
 
 NAME = "mithril double axe"
-RESOURCES = 18 i_ingot_mithril,  4 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 18 i_ingot_mithril, 4 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_axe_double
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -522,11 +540,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 33
 attackVsM = 33
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_hammer_war_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -534,8 +552,9 @@ SUBSECTION = mithril Maces & Hammers
 DESCRIPTION = War Hammer
 
 NAME = "mithril war hammer"
-RESOURCES = 19 i_ingot_mithril,  5 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 19 i_ingot_mithril, 5 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_hammer_war
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_smith //guessed from base def by Converter 
@@ -548,11 +567,11 @@ attackVsP = 34
 attackVsM = 34
 MindPowerVsP = 1700.0 //#539 - scaled: 700 * 34.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 1700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_two_hand_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -560,8 +579,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Two Handed Axe
 
 NAME = "mithril two handed axe"
-RESOURCES = 19 i_ingot_mithril,  5 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 19 i_ingot_mithril, 5 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_axe_two_hand
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -572,11 +592,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 34
 attackVsM = 34
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_spear_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -584,8 +604,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Spear
 
 NAME = "mithril spear"
-RESOURCES = 11 i_ingot_mithril,  15 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 11 i_ingot_mithril, 15 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_spear
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 2 //Set by Converter 
@@ -595,11 +616,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 32
 attackVsM = 32
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredStaffDef i_staff_gnarled_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -607,8 +628,8 @@ SUBSECTION = mithril Staves
 DESCRIPTION = Gnarled Staff
 
 NAME = "elven gnarled staff"
-RESOURCES = 26 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 26 i_log_mithril
+SKILLMAKE = 975 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 7 // commented out by Converter 
 model = i_staff_gnarled
 TwoHanded = true //guessed from base def by Converter 
@@ -622,11 +643,11 @@ attackVsP = 35
 attackVsM = 35
 MindPowerVsP = 1580.65 //#539 - scaled: 700 * 35.0/15.5 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 1580.65 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_war_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -634,8 +655,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = War Axe
 
 NAME = "mithril war axe"
-RESOURCES = 20 i_ingot_mithril,  6 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 20 i_ingot_mithril, 6 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_axe_war
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -646,11 +668,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 36
 attackVsM = 36
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_battle_large_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -658,8 +680,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Large Battle Axe
 
 NAME = "mithril battle large axe"
-RESOURCES = 21 i_ingot_mithril,  7 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 21 i_ingot_mithril, 7 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_axe_battle_large
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -670,11 +693,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 38
 attackVsM = 38
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_bardiche_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -682,8 +705,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Bardiche
 
 NAME = "mithril bardiche"
-RESOURCES = 23 i_ingot_mithril,  7 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 23 i_ingot_mithril, 7 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_bardiche
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -694,11 +718,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 41
 attackVsM = 41
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_maul_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -706,25 +730,25 @@ SUBSECTION = mithril Maces & Hammers
 DESCRIPTION = Maul
 
 NAME = "mithril maul"
-RESOURCES = 23 i_ingot_mithril,  7 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 23 i_ingot_mithril, 7 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_maul
-TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 37
 attackVsM = 37
 MindPowerVsP = 1438.89 //#539 - scaled: 700 * 37.0/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
 MindPowerVsM = 1438.89 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_halberd_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -732,8 +756,9 @@ SUBSECTION = mithril Twohanded
 DESCRIPTION = Halberd
 
 NAME = "mithril halberd"
-RESOURCES = 24 i_ingot_mithril,  8 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 blacksmithing, 95.0 carpentry //some resources were fixed by converter 
+RESOURCES = 24 i_ingot_mithril, 8 i_log_mithril
+SKILLMAKE = 1000 blacksmithing, 950 carpentry //some resources were fixed by converter 
+//tdata1 = 7 // commented out by Converter 
 model = i_halberd
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -744,11 +769,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 42.5
 attackVsM = 42.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_bow_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -757,8 +782,9 @@ DESCRIPTION = Bow
 
 NAME = "elven bow"
 type = t_weapon_bow_run
-RESOURCES = 8 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 bowcraft //some resources were fixed by converter 
+RESOURCES = 8 i_log_mithril
+SKILLMAKE = 975 bowcraft
+//tdata1 = 7 // commented out by Converter 
 model = i_bow
 TwoHanded = true //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -770,11 +796,11 @@ WeaponAnimType = WeaponAnimType.Bow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 13.5
 attackVsM = 13.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_crossbow_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -782,8 +808,9 @@ SUBSECTION = mithril Bows
 DESCRIPTION = Crossbow
 
 NAME = "elven crossbow"
-RESOURCES = 18 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 bowcraft //some resources were fixed by converter 
+RESOURCES = 18 i_log_mithril
+SKILLMAKE = 975 bowcraft
+//tdata1 = 7 // commented out by Converter 
 model = i_crossbow
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_xbow //guessed from base def by Converter 
@@ -796,11 +823,11 @@ WeaponAnimType = WeaponAnimType.XBow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 23
 attackVsM = 23
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_crossbow_heavy_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -808,8 +835,9 @@ SUBSECTION = mithril Bows
 DESCRIPTION = Heavy Crossbow
 
 NAME = "elven heavy crossbow"
-RESOURCES = 26 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 bowcraft //some resources were fixed by converter 
+RESOURCES = 26 i_log_mithril
+SKILLMAKE = 975 bowcraft
+//tdata1 = 7 // commented out by Converter 
 model = i_crossbow_heavy
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_xbow //guessed from base def by Converter 
@@ -822,11 +850,11 @@ WeaponAnimType = WeaponAnimType.XBow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 34
 attackVsM = 34
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_bow_mithril_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -835,8 +863,9 @@ DESCRIPTION = Bow RUN
 
 NAME = "Run elven bow"
 type = t_weapon_bow_run
-RESOURCES = 8 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 bowcraft //some resources were fixed by converter 
+RESOURCES = 8 i_log_mithril
+SKILLMAKE = 975 bowcraft
+//tdata1 = 7 // commented out by Converter 
 model = i_bow
 TwoHanded = true //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -848,11 +877,11 @@ WeaponAnimType = WeaponAnimType.Bow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 0
 attackVsM = 0
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_crossbow_mithril_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -861,8 +890,9 @@ DESCRIPTION = Crossbow RUN
 
 NAME = "Run elven crossbow"
 type = t_weapon_bow_run
-RESOURCES = 18 i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 97.5 bowcraft //some resources were fixed by converter 
+RESOURCES = 18 i_log_mithril
+SKILLMAKE = 975 bowcraft
+//tdata1 = 7 // commented out by Converter 
 model = i_crossbow
 TwoHanded = true //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -874,8 +904,8 @@ WeaponAnimType = WeaponAnimType.Bow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 0
 attackVsM = 0
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
