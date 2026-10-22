@@ -65,8 +65,92 @@ namespace SteamEngine.Converter {
 			new LineImplTask("foodtype", PassThroughUnlessPlayerDef),
 			new LineImplTask("attack", HandleAttack),
 			new LineImplTask("dam", HandleAttack),
-			new LineImplTask("armor", HandleArmor)
+			new LineImplTask("armor", HandleArmor),
+			//#606 - the real archive's tag.resist_X fields usually live inside the ON=@Create
+			//trigger body (see ProcessCreateTriggerLine's own "tag.resist_" case below), but a
+			//rare few chardefs (e.g. c_strazce_golem in specNPCVypravec.scp) set them as plain
+			//TOP-LEVEL lines instead - these never reach ProcessCreateTriggerLine at all, so
+			//they need their own LineImplTask entries, one per real alias name found in source.
+			new LineImplTask("tag.resist_poison", HandleResistTag),
+			new LineImplTask("tag.resist_para", HandleResistTag),
+			new LineImplTask("tag.resist_bleed", HandleResistTag),
+			new LineImplTask("tag.resist_fire", HandleResistTag),
+			new LineImplTask("tag.resist_summon", HandleResistTag),
+			new LineImplTask("tag.resist_sumon", HandleResistTag),
+			new LineImplTask("tag.resist_elect", HandleResistTag),
+			new LineImplTask("tag.resist_pierce", HandleResistTag),
+			new LineImplTask("tag.resist_slash", HandleResistTag),
+			new LineImplTask("tag.resist_cold", HandleResistTag),
+			new LineImplTask("tag.resist_sharp", HandleResistTag),
+			new LineImplTask("tag.resist_blunt", HandleResistTag),
+			new LineImplTask("tag.resist_phys", HandleResistTag),
+			new LineImplTask("tag.resist_magic", HandleResistTag),
+			new LineImplTask("tag.resist_acid", HandleResistTag),
+			new LineImplTask("tag.resist_dragon", HandleResistTag)
 		};
+
+		//#606 - real archive resist-tag suffix -> this engine's existing Character.ct
+		//ResistX field name(s) (already a fully live, consumed-in-combat mechanic via
+		//DamageManager.GetResistModifier - just starved of content until now). "sharp" has
+		//no dedicated property - DamageType.Sharp = Slashing|Stabbing is already a combined
+		//flag in this engine's own enum, so the faithful mapping writes the same value to
+		//both. "sumon" is a confirmed real typo variant of "summon" in the source archive.
+		//Deliberately NOT mapped here (flagged as a known gap, not silently invented): curse/
+		//silence/taunt/working - all real tags, but none has any matching resist/defense
+		//mechanic anywhere in moriaengine today (no Curse/Silence/Taunt system exists).
+		private static readonly Dictionary<string, string[]> resistFieldAliases =
+			new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase) {
+				{ "poison", new[] { "ResistPoison" } },
+				{ "para", new[] { "ResistParalyse" } },
+				{ "bleed", new[] { "ResistBleed" } },
+				{ "fire", new[] { "ResistFire" } },
+				{ "summon", new[] { "ResistSummon" } },
+				{ "sumon", new[] { "ResistSummon" } },
+				{ "elect", new[] { "ResistElectric" } },
+				{ "pierce", new[] { "ResistStabbing" } },
+				{ "slash", new[] { "ResistSlashing" } },
+				{ "cold", new[] { "ResistCold" } },
+				{ "sharp", new[] { "ResistSlashing", "ResistStabbing" } },
+				{ "blunt", new[] { "ResistBlunt" } },
+				{ "phys", new[] { "ResistPhysical" } },
+				{ "magic", new[] { "ResistMagic" } },
+				{ "acid", new[] { "ResistAcid" } },
+				{ "dragon", new[] { "ResistDragon" } }
+			};
+
+		//shared by both placements (top-level LineImplTask above, @Create-body
+		//ProcessCreateTriggerLine case below) - parses the numeric value (a single number or
+		//a Sphere {min max}/<eval {min max}> range, averaged+rounded since the real engine
+		//field is a single int, same precedent as HandleArmor's averaging) and emits the
+		//mapped field(s). NPCDef-only - no PlayerDef in the archive ever sets these.
+		private static void EmitResistFields(ConvertedDef def, string resistKind, string value, string comment) {
+			string[] fieldNames;
+			if (!resistFieldAliases.TryGetValue(resistKind, out fieldNames)) {
+				return; //curse/silence/taunt/working/etc - no matching mechanic, leave unmapped
+			}
+			MatchCollection resistMatches = numberRE.Matches(value);
+			if (resistMatches.Count == 0) {
+				return;
+			}
+			double sum = 0;
+			for (int i = 0; i < resistMatches.Count; i++) {
+				sum += double.Parse(resistMatches[i].Value, CultureInfo.InvariantCulture);
+			}
+			string averaged = Math.Round(sum / resistMatches.Count).ToString(CultureInfo.InvariantCulture);
+			foreach (string fieldName in fieldNames) {
+				def.Set(fieldName, averaged, comment);
+			}
+		}
+
+		private static void HandleResistTag(ConvertedDef d, PropsLine line) {
+			ConvertedCharDef def = (ConvertedCharDef) d;
+			if (def.IsPlayerDefByName) {
+				WriteAsComment(def, line);
+				return;
+			}
+			string resistKind = line.Name.Substring("tag.resist_".Length);
+			EmitResistFields(def, resistKind, line.Value, line.Comment);
+		}
 
 		//guards against both "attack" and "dam" showing up on the same def
 		private bool attackHandled;
@@ -178,6 +262,18 @@ namespace SteamEngine.Converter {
 					}
 					this.Set("Experience", min + " " + max, comment);
 				}
+				return;
+			}
+			//#606 - the real archive's tag.resist_X lines overwhelmingly live inside @Create
+			//(confirmed: 8576 of 8587 sampled occurrences across scripts/chars/*.scp), where
+			//the base ProcessCreateTriggerLine's bare switch has no default case and silently
+			//drops anything it doesn't recognize - these were never reaching the engine at
+			//all before this. See resistFieldAliases/EmitResistFields above for the mapping.
+			if (name.StartsWith("tag.resist_", StringComparison.OrdinalIgnoreCase)) {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				EmitResistFields(this, name.Substring("tag.resist_".Length), value, comment);
 				return;
 			}
 			//#559 - the real archive STR/DEX/INT lines live inside @Create too (e.g. c_titan:
