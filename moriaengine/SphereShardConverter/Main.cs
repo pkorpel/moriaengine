@@ -154,10 +154,15 @@ namespace SteamEngine.Converter {
 				CreateFileList(subfolder, list);
 			}
 
-			string[] filenames = Directory.GetFiles(folder, "*.scp");
-			foreach (string filename in filenames) {
-				ConvertedFile file = new ConvertedFile(filename);
-				list.Add(file);
+			//#612 - Directory.GetFiles' "*.scp" pattern is case-SENSITIVE on Linux (unlike
+			//Windows, where the original converter was written/run) - a handful of real
+			//archive files have an uppercase ".SCP" extension (e.g. DRAGONS.SCP, INSECTS.SCP)
+			//and were being silently skipped entirely on this platform, never even attempted.
+			foreach (string filename in Directory.EnumerateFiles(folder)) {
+				if (filename.EndsWith(".scp", StringComparison.OrdinalIgnoreCase)) {
+					ConvertedFile file = new ConvertedFile(filename);
+					list.Add(file);
+				}
 			}
 		}
 

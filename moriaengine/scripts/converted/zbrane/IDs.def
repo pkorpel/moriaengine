@@ -16,7 +16,7 @@ RESOURCES2 = 1 i_log
 //SPEED = 60 // commented out by Converter 
 TwoHanded = false
 layer = 1 //Set by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_club
 attackVsP = 1

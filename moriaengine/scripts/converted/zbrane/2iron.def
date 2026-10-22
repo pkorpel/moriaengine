@@ -37,11 +37,13 @@ model = i_club
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 6
 attackVsM = 6
+MindPowerVsP = 1050.0 //#539 - scaled: 700 * 6.0/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 1050.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -109,11 +111,13 @@ model = i_mace
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 9
 attackVsM = 9
+MindPowerVsP = 900.0 //#539 - scaled: 700 * 9.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 900.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -158,7 +162,7 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandAxe //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 8
@@ -208,11 +212,13 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 10.5
 attackVsM = 10.5
+MindPowerVsP = 918.75 //#539 - scaled: 700 * 10.5/8.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 918.75 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -328,11 +334,13 @@ model = i_mace_war
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 13.5
 attackVsM = 13.5
+MindPowerVsP = 945.0 //#539 - scaled: 700 * 13.5/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 945.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -402,11 +410,13 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 14
 attackVsM = 14
+MindPowerVsP = 890.91 //#539 - scaled: 700 * 14.0/11.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 890.91 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -450,11 +460,13 @@ model = i_hammer_pick
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 15
 attackVsM = 15
+MindPowerVsP = 875.0 //#539 - scaled: 700 * 15.0/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 875.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -475,7 +487,7 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.TwoHandSpike //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 15
@@ -524,7 +536,7 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandAxe //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 16.5
@@ -548,11 +560,13 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 18
 attackVsM = 18
+MindPowerVsP = 900.0 //#539 - scaled: 700 * 18.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 900.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -573,7 +587,7 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandAxe //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 18
@@ -622,11 +636,13 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 19
 attackVsM = 19
+MindPowerVsP = 858.06 //#539 - scaled: 700 * 19.0/15.5 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 858.06 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -647,7 +663,7 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandAxe //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 19.5
@@ -672,7 +688,7 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandAxe //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 21
@@ -697,7 +713,7 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSword //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 22
@@ -721,11 +737,13 @@ model = i_maul
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 22.5
 attackVsM = 22.5
+MindPowerVsP = 875.0 //#539 - scaled: 700 * 22.5/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
+MindPowerVsM = 875.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
@@ -746,7 +764,7 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Iron //guessed by Converter 
-WeaponType = WeaponType.OneHandSword //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 24
