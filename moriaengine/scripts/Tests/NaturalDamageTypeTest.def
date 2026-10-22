@@ -1,0 +1,21 @@
+// #607 - "Converter: map tag.weapflag (monster natural-attack damage type)" - test-only
+// content proving NPCDef.NaturalDamageType applies to a real NPC's weapon damage type
+// when no weapon is equipped, including the real archive's multi-flag combo shape
+// (e.g. tag.weapflag=dam_physical|dam_fire -> DamageType.Physical|DamageType.Fire).
+[NPCDef npc_test_natural_damage_type]
+NAME = "Natural Damage Type Test"
+ANIM = 0x1fff
+NaturalDamageType = DamageType.Physical|DamageType.Fire
+
+// A real 3-flag combo shape (e.g. dam_physical|dam_sharp|dam_summon, seen 32x in the
+// real archive) - confirms a chain longer than 2 flags also loads correctly.
+[NPCDef npc_test_natural_damage_type_triple]
+NAME = "Natural Damage Type Triple Test"
+ANIM = 0x1fff
+NaturalDamageType = DamageType.Physical|DamageType.Sharp|DamageType.Summon
+
+// Control: never configures NaturalDamageType - must keep today's exact
+// WeaponType-driven default (PhysicalBlunt for bare hands), zero regression.
+[NPCDef npc_test_natural_damage_type_unconfigured]
+NAME = "Natural Damage Type Unconfigured Test"
+ANIM = 0x1fff
