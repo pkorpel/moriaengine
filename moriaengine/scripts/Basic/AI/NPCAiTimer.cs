@@ -56,18 +56,18 @@ namespace SteamEngine.CompiledScripts {
 		private const double FleeHealthFraction = 0.2;
 		private const int DefaultWanderLeash = 6; //max tiles from home while wandering, for any NPC not spawned via a configured Homedist (#206)
 
-		//#590 - NPCDef.MoveRate's own baseline ("moverate=3" in the real archive, confirmed by
-		//the user as the default). At this value, RefillMoveBudget below always grants exactly
-		//1 move per think-tick with zero fractional carry - i.e. identical to this engine's
-		//pre-existing fixed "one tile per 1.5s tick" behavior for any NPCDef that never
-		//configures MoveRate at all. Zero regression for existing content.
+		//#590/#603 - NPCDef.MoveRate's own baseline ("moverate=3" in the real archive,
+		//confirmed by the user as the default). At this value, RescheduleForMoveRate below
+		//computes an interval of exactly ThinkIntervalSeconds - i.e. identical to this
+		//engine's pre-existing fixed "one tile per 1.5s tick" behavior for any NPCDef that
+		//never configures MoveRate at all. Zero regression for existing content.
 		private const double BaselineMoveRate = 3.0;
 
-		//Safety cap on how many tiles a single think-tick can cover, regardless of how high
-		//MoveRate is configured - without this, an extreme value would let one 1.5s tick cover
-		//an unbounded distance in a tight loop (StepTowardsSmart recomputes AStar every step,
-		//so this is also a crude CPU-cost bound, not just a gameplay one).
-		private const int MaxStepsPerTick = 4;
+		//#603 - safety floor on the think-tick interval, regardless of how high MoveRate is
+		//configured - without this, an extreme value would make the tick loop fire
+		//pathologically often (StepTowardsSmart recomputes AStar every step, so this is also
+		//a crude CPU-cost bound, not just a gameplay one).
+		private const double MinThinkIntervalSeconds = 0.3;
 
 		private static readonly TimerKey aiTimerTK = TimerKey.Acquire("_npcAiTimer_");
 
@@ -95,15 +95,6 @@ namespace SteamEngine.CompiledScripts {
 		//almost every time). This was the real cause of "NPC swings but never actually hits."
 		private Character lastEngagedTarget;
 
-		//#590 - transient, not saved (same precedent as nextSpellCastTime below) - a missed
-		//fractional carry after a reload just means one tick's worth of sub-tile "debt" is
-		//lost, harmless. moveAccumulator carries fractional step budget across ticks (so e.g.
-		//MoveRate=1.5, half of baseline, nets out to one step every other tick on average);
-		//movesRemainingThisTick is how many more tile-steps THIS Think() call is still allowed
-		//to spend, decremented by TryStep only on an actual successful move.
-		private double moveAccumulator;
-		private int movesRemainingThisTick;
-
 		public AIState LastState { get; private set; }
 
 		/// <summary>Read-only introspection for tests - this NPC's current combat target, if any (null otherwise). See FollowTarget/ControlMaster on Character for the analogous already-public state.</summary>
@@ -117,18 +108,39 @@ namespace SteamEngine.CompiledScripts {
 		public NPCAiTimer() {
 		}
 
-		/// <summary>Attaches the AI think-timer to this NPC if it doesn't have one yet. Safe to call repeatedly.</summary>
+		/// <summary>Attaches the AI think-timer to this NPC if it doesn't have one yet. Safe to
+		/// call repeatedly. Must run AFTER NPC.MoveRate has already been seeded from
+		/// NPCDef.MoveRate (see NPC.On_Create's own ordering) so the very first schedule is
+		/// correct from tick one, not just corrected on the next MoveRate change.</summary>
 		public static void EnsureInstalled(NPC self) {
 			if (!self.HasTimer(aiTimerTK)) {
 				NPCAiTimer timer = new NPCAiTimer();
 				self.AddTimer(aiTimerTK, timer);
-				timer.DueInSeconds = ThinkIntervalSeconds;
-				timer.PeriodInSeconds = ThinkIntervalSeconds;
+				timer.RescheduleForMoveRate(self.MoveRate);
 			}
 		}
 
 		public static NPCAiTimer GetFor(NPC self) {
 			return self.GetTimer(aiTimerTK) as NPCAiTimer;
+		}
+
+		/// <summary>#603 - recomputes this NPC's own AI think-tick cadence from `moveRate`: a
+		/// faster NPC thinks (and so takes its one tile-step - see TryStep) more OFTEN in real
+		/// time, rather than taking several tile-steps within a single tick (the #590 "step
+		/// budget" design this replaces, which looked like skipping/teleporting on the client
+		/// since several movement packets landed with no real-world delay between them).
+		/// Call whenever MoveRate might have changed - see EnsureInstalled (seeded from the
+		/// NPCDef default) and NPC.MoveRate's setter (a live .info edit).</summary>
+		public void RescheduleForMoveRate(double moveRate) {
+			if (moveRate <= 0) {
+				moveRate = BaselineMoveRate; //defend against a bad/zero .def value permanently freezing this NPC
+			}
+			double interval = ThinkIntervalSeconds * BaselineMoveRate / moveRate;
+			if (interval < MinThinkIntervalSeconds) {
+				interval = MinThinkIntervalSeconds;
+			}
+			this.PeriodInSeconds = interval;
+			this.DueInSeconds = interval;
 		}
 
 		/// <summary>Directly sets this NPC's current combat target, bypassing ShouldAggroOn - used by the "kill" pet command and by guard duty (AlertGuardiansOf), both of which are explicit orders rather than autonomous aggro decisions.</summary>
@@ -210,29 +222,7 @@ namespace SteamEngine.CompiledScripts {
 			this.hasHome = true;
 		}
 
-		/// <summary>#590/#599 - refills this tick's step budget from this NPC's own per-
-		/// instance MoveRate (seeded from NPCDef.MoveRate at creation, then independently GM-
-		/// editable via .info - see NPC.MoveRate's own doc comment for why this reads the
-		/// instance, not the Def, directly). Called once per Think() call, before any state
-		/// branching, so it applies uniformly whether this tick ends up fighting/fleeing/
-		/// following/wandering. See BaselineMoveRate's own comment for why MoveRate=3 (or
-		/// unset) always yields exactly 1, matching old behavior exactly.</summary>
-		private void RefillMoveBudget(NPC self) {
-			double rate = self.MoveRate;
-			if (rate <= 0) {
-				rate = BaselineMoveRate; //defend against a bad/zero .def value permanently freezing this NPC
-			}
-			this.moveAccumulator += rate / BaselineMoveRate;
-			if (this.moveAccumulator > MaxStepsPerTick) {
-				this.moveAccumulator = MaxStepsPerTick; //cap backlog - a long-idle fast NPC shouldn't "catch up" in one burst
-			}
-			this.movesRemainingThisTick = (int) this.moveAccumulator;
-			this.moveAccumulator -= this.movesRemainingThisTick;
-		}
-
 		private void Think(NPC self) {
-			this.RefillMoveBudget(self);
-
 			if ((this.target != null) && !this.IsValidTarget(self, this.target)) {
 				Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " dropped target " + this.target.Name + " (no longer valid - dead, map mismatch, or out of GiveUpRange)");
 				this.target = null;
@@ -262,18 +252,7 @@ namespace SteamEngine.CompiledScripts {
 					self.PetGoalPoint = null; //arrived
 				} else {
 					this.LastState = AIState.GoingToPoint;
-					//#590 - loop while this tick's MoveRate-driven budget allows another step,
-					//same shape as Follow/Fight/Wander/Flee below.
-					while ((this.movesRemainingThisTick > 0) && (Point2D.GetSimpleDistance(self, goal) > 1)) {
-						int beforeX = self.X, beforeY = self.Y;
-						this.StepTowardsSmart(self, goal);
-						if ((self.X == beforeX) && (self.Y == beforeY)) {
-							break; //blocked - don't keep retrying the same tick
-						}
-					}
-					if (Point2D.GetSimpleDistance(self, goal) <= 1) {
-						self.PetGoalPoint = null; //arrived mid-tick after a multi-step burst
-					}
+					this.StepTowardsSmart(self, goal);
 					return;
 				}
 			}
@@ -301,17 +280,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void Follow(NPC self, Character master) {
-			//#590 - loop while this tick's MoveRate-driven budget allows another step AND we
-			//haven't caught up yet; StepTowardsSmart recomputes a fresh path each iteration
-			//(matches its own existing doc comment), and TryStep's own budget gate (not
-			//re-checked here) is what actually stops a baseline (MoveRate=3) NPC after one step,
-			//exactly as before.
-			while ((this.movesRemainingThisTick > 0) && (Point2D.GetSimpleDistance(self, master) > 1)) {
-				int beforeX = self.X, beforeY = self.Y;
+			if (Point2D.GetSimpleDistance(self, master) > 1) {
 				this.StepTowardsSmart(self, master);
-				if ((self.X == beforeX) && (self.Y == beforeY)) {
-					break; //blocked - don't keep retrying the same tick
-				}
 			}
 		}
 
@@ -382,22 +352,7 @@ namespace SteamEngine.CompiledScripts {
 			int distance = Point2D.GetSimpleDistance(self, target);
 			if ((distance > effectiveRange) || !hasLineOfSight) {
 				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", effectiveRange=" + effectiveRange + ", hasLineOfSight=" + hasLineOfSight + ")");
-				//#590 - loop while budget remains and we're still out of range/LOS - lets a
-				//faster-than-baseline (MoveRate > 3) NPC close distance by more than one tile in
-				//a single think-tick; TryStep's own gate (not re-checked here) stops a baseline
-				//NPC after exactly one step, same as before this change.
-				while (this.movesRemainingThisTick > 0) {
-					int beforeX = self.X, beforeY = self.Y;
-					this.StepTowardsSmart(self, target);
-					if ((self.X == beforeX) && (self.Y == beforeY)) {
-						break; //blocked - don't keep retrying the same tick
-					}
-					distance = Point2D.GetSimpleDistance(self, target);
-					hasLineOfSight = isCaster ? self.CanInteractWith(target).Allow : true;
-					if ((distance <= effectiveRange) && hasLineOfSight) {
-						break; //close enough now
-					}
-				}
+				this.StepTowardsSmart(self, target);
 			}
 
 			//AddTarget must only be called ONCE per engagement - see lastEngagedTarget's comment. The
@@ -491,15 +446,9 @@ namespace SteamEngine.CompiledScripts {
 			self.Flag_WarMode = false;
 			WeaponSkillTargetQueuePlugin.RemoveTarget(self, target);
 
-			//#590 - loop while budget remains, recomputing "away" each step since the target
-			//(and thus the opposite direction) can shift as both sides move.
-			while (this.movesRemainingThisTick > 0) {
-				Direction towardsTarget = Point2D.GetDirFromTo(self, target);
-				Direction away = (Direction) (((int) towardsTarget + 4) % 8);
-				if (!this.TryStep(self, away)) {
-					break; //blocked that direction - don't keep retrying the same tick
-				}
-			}
+			Direction towardsTarget = Point2D.GetDirFromTo(self, target);
+			Direction away = (Direction) (((int) towardsTarget + 4) % 8);
+			this.TryStep(self, away);
 		}
 
 		private void StepTowards(NPC self, IPoint2D target) {
@@ -525,35 +474,23 @@ namespace SteamEngine.CompiledScripts {
 
 		private void Wander(NPC self) {
 			if (!this.hasHome || (Globals.dice.Next(3) != 0)) {
-				return; //don't wander every single tick - keep it leisurely (unrelated to MoveRate - this 1-in-3 gate decides WHETHER to wander at all this tick, MoveRate only affects how far once it does)
+				return; //don't wander every single tick - keep it leisurely
 			}
 
-			//#590 - loop while budget remains, same shape as Follow/Fight/Flee above.
-			while (this.movesRemainingThisTick > 0) {
-				int beforeX = self.X, beforeY = self.Y;
-				if (Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) >= WanderLeash) {
-					//too far from home - head back instead of wandering further away. #211 - route
-					//around obstacles via the same AStar-backed helper Follow/Fight already use,
-					//instead of a bare direct step that could get an NPC stuck pacing against a wall
-					//it could easily have walked around.
-					this.StepTowardsSmart(self, new Point3D(this.homeX, this.homeY, this.homeZ));
-				} else {
-					Direction dir = (Direction) Globals.dice.Next(8);
-					this.TryStep(self, dir);
-				}
-				if ((self.X == beforeX) && (self.Y == beforeY)) {
-					break; //blocked - don't keep retrying the same tick
-				}
+			if (Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) >= WanderLeash) {
+				//too far from home - head back instead of wandering further away. #211 - route
+				//around obstacles via the same AStar-backed helper Follow/Fight already use,
+				//instead of a bare direct step that could get an NPC stuck pacing against a wall
+				//it could easily have walked around.
+				this.StepTowardsSmart(self, new Point3D(this.homeX, this.homeY, this.homeZ));
+				return;
 			}
+
+			Direction dir = (Direction) Globals.dice.Next(8);
+			this.TryStep(self, dir);
 		}
 
 		private bool TryStep(NPC self, Direction dir) {
-			//#590 - out of step budget for this tick (either MoveRate < baseline hasn't accrued
-			//a full step yet, or a faster NPC already spent its whole burst earlier this same
-			//tick). Doesn't consume anything - there's nothing left to consume.
-			if (this.movesRemainingThisTick <= 0) {
-				return false;
-			}
 			int x, y, z;
 			if (!self.GetMap().CheckMovement(self, self.MovementSettings, dir, false, out x, out y, out z)) {
 				Logger.WriteDebug("NPCAiTimer.TryStep: " + self.Name + "#" + self.Uid + " CheckMovement DENIED dir=" + dir + " from (" + self.X + "," + self.Y + "," + self.Z + ") settings=" + self.MovementSettings);
@@ -562,11 +499,7 @@ namespace SteamEngine.CompiledScripts {
 			if (self.Direction != dir) {
 				self.Direction = dir;
 			}
-			bool moved = self.WalkRunOrFly(dir, false, false);
-			if (moved) {
-				this.movesRemainingThisTick--; //only a REAL move spends budget - a blocked/failed attempt above returned before this point
-			}
-			return moved;
+			return self.WalkRunOrFly(dir, false, false);
 		}
 	}
 }
