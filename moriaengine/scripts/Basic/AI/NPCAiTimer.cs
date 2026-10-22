@@ -210,12 +210,15 @@ namespace SteamEngine.CompiledScripts {
 			this.hasHome = true;
 		}
 
-		/// <summary>#590 - refills this tick's step budget from NPCDef.MoveRate. Called once per
-		/// Think() call, before any state branching, so it applies uniformly whether this tick
-		/// ends up fighting/fleeing/following/wandering. See BaselineMoveRate's own comment for
-		/// why MoveRate=3 (or unset) always yields exactly 1, matching old behavior exactly.</summary>
+		/// <summary>#590/#599 - refills this tick's step budget from this NPC's own per-
+		/// instance MoveRate (seeded from NPCDef.MoveRate at creation, then independently GM-
+		/// editable via .info - see NPC.MoveRate's own doc comment for why this reads the
+		/// instance, not the Def, directly). Called once per Think() call, before any state
+		/// branching, so it applies uniformly whether this tick ends up fighting/fleeing/
+		/// following/wandering. See BaselineMoveRate's own comment for why MoveRate=3 (or
+		/// unset) always yields exactly 1, matching old behavior exactly.</summary>
 		private void RefillMoveBudget(NPC self) {
-			double rate = ((NPCDef) self.Def).MoveRate;
+			double rate = self.MoveRate;
 			if (rate <= 0) {
 				rate = BaselineMoveRate; //defend against a bad/zero .def value permanently freezing this NPC
 			}
