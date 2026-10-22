@@ -1,5 +1,37 @@
 # moriaengine — working state
 
+## ⚠️ main currently has 4 known-red fast tests, 2026-10-22 — PR #597, see #596
+
+**Read this before trusting a green/red fast-test result.** `scripts/converted/` was
+regenerated from a fresh Erebor archive copy (101 files, only ones already tracked -
+not the archive's hundreds of brand-new files/folders, that's a separate unscoped
+question) and merged into `main` via PR #597 **with explicit user sign-off on known
+regressions**, not by accident:
+
+- `WeaponSkillMappingTests.ConvertedWeaponWeaponTypeMatchesItsOwnTypeField` fails for
+  `i_axe_two_hand_copper`/`i_axe_copper`/`i_hatchet`/`i_mace_copper` (4 of 50 fast-tier
+  tests) - the fresh regen reverted #157's real per-item `WeaponType` fixes back to the
+  converter's blanket tiledata-based guess (mostly `OneHandSpike`, sometimes a wrong
+  category entirely, e.g. `i_hatchet` → `OneHandSword`).
+- `i_hatchet`'s `layer` also reverted 1→2, reintroducing the original #390 equip-
+  displacement bug (no test currently catches this one - `WeaponSkillMappingTests`
+  only asserts `WeaponType`, not `layer`).
+- `MindPowerVsP`/`MindPowerVsM` (Mystic/Mage material-scaled staff damage, #539) are
+  now **completely absent** from all 7 `zbrane/*material*.def` files - the converter
+  has no mechanism to produce these at all, so this isn't a wrong-value revert, it's a
+  silent total loss of that feature's data. No test currently catches this either.
+- `c_titan`'s `ArmorVsP`/`ArmorVsM` changed 95→80 and lost the `MT_FIRE_IMMUNE` `CAN`
+  flag - cause (archive staleness vs. a deliberate past rebalance) not resolved.
+
+**Full before/after diffs and the complete affected-file list are in issue #596** -
+read that before attempting to fix any of this, don't re-derive the comparison from
+scratch. This was a deliberate "see what we're missing" exploratory pass the user
+asked for, explicitly accepting the known-red state as a tradeoff for having the fresh
+content in `main` to keep inspecting - **not an accidental regression**, but it IS a
+real regression that needs its own fix-or-reapply pass whenever picked up. Until then:
+a `WeaponSkillMappingTests` failure on these 4 specific defnames is expected, not a new
+bug to chase - but treat any *other* fast-test failure as real.
+
 ## Remaining converter gaps batch COMPLETE: FoodType + real hunger system SHIPPED (PR #594), 2026-10-22 — #593 closed, whole batch of 4 done
 
 Last of the 4-item batch (BloodColor/Resources/MoveRate all shipped first, see entries
