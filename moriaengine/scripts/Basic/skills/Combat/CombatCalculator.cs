@@ -512,13 +512,39 @@ namespace SteamEngine.CompiledScripts {
 					retVal.rangeVsP = retVal.rangeVsM;
 					retVal.strikeStartRange = npcDef.StrikeStartRange;
 					retVal.strikeStopRange = npcDef.StrikeStopRange;
+					retVal.piercing = npcDef.WeaponPiercing;
+					self.weaponProjectile = null;
+
+					// #600 - npcDef.WeaponRange's own unconfigured default (1, NPC.ct) left
+					// every NPC wielding a real bow/crossbow stuck at melee range - this branch
+					// never consulted the equipped weapon's own WeaponType at all, unlike the
+					// player branch above. Only kicks in when WeaponRange was never explicitly
+					// hand-authored (the #56/#60 archer-stat NPCs that already set a real
+					// WeaponRange, e.g. 10, are completely unaffected) - reuses the SAME
+					// GM-tunable CombatSettings.Ranges override players get for the identical
+					// WeaponType, rather than inventing a separate NPC-only range mechanism; a
+					// bow's range is a property of the weapon, not the wielder.
+					if ((npcDef.WeaponRange <= 1) && (weapon != null) &&
+							((weapon.WeaponType == WeaponType.Bow) || (weapon.WeaponType == WeaponType.XBow))) {
+						if (weapon.WeaponType == WeaponType.Bow) {
+							SetRangedWeaponRange(retVal, RangesSettings.instance.bow);
+						} else {
+							bool isHeavy = weapon.TypeDef.Defname.IndexOf("heavy", StringComparison.OrdinalIgnoreCase) >= 0;
+							SetRangedWeaponRange(retVal, isHeavy ? RangesSettings.instance.heavyCrossbow : RangesSettings.instance.crossbow);
+						}
+						retVal.projectileType = weapon.ProjectileType;
+						self.weaponProjectile = TryFindProjectile(self, weapon.ProjectileType);
+						if (self.weaponProjectile != null) {
+							retVal.piercing += self.weaponProjectile.Piercing;
+							retVal.projectileAnim = weapon.ProjectileAnim;
+						}
+					}
+
 					retVal.delay = TimeSpan.FromSeconds(npcDef.WeaponDelay);
 					retVal.attackVsM = npcDef.WeaponAttack;
 					retVal.attackVsP = retVal.attackVsM;
 					retVal.mindPowerVsM = npcDef.MindPower;
 					retVal.mindPowerVsP = retVal.mindPowerVsM;
-					retVal.piercing = npcDef.WeaponPiercing;
-					self.weaponProjectile = null;
 				} else {
 					//else ?!
 					Logger.WriteError("Can't calculate combat values for '" + self + "'. It says it's a NPC but has no NPCDef.");
