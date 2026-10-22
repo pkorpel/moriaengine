@@ -1,5 +1,81 @@
 # moriaengine — working state
 
+## Remaining converter gaps, batch 1 of 4: MoveRate SHIPPED (PR #591), 2026-10-22 — #590 closed
+
+Third of the 4-item batch (BloodColor and Resources both shipped first, see the entries
+below). **User-confirmed semantics**: `moverate=3` is the real baseline/default (matches
+this engine's pre-existing fixed one-tile-per-1.5s-tick behavior exactly), higher = faster,
+lower = slower.
+
+**Needed real engine work, not just a data mapping** - `NPCAiTimer` had no per-NPC speed
+concept at all before this; it runs on a single fixed 1.5s think-tick shared with aggro/
+combat/spell-cooldown decisions, and every movement call site took exactly one tile-step
+per tick. `NPCDef.MoveRate` (tag-backed double, default 3.0) + a new `MoveRate =` `.def`
+field, plus a fractional step-budget accumulator on `NPCAiTimer` (`RefillMoveBudget`,
+called once per `Think()` tick - adds `rate / 3.0`, floors to an integer "moves allowed
+this tick", capped at 4 as a safety/CPU bound). `TryStep` consumes one unit of budget only
+on an actual successful move (never on a blocked attempt). The 5 movement call sites
+(`Fight`'s approach-step, `Follow`, `Wander`, the `PetGoalPoint`/`GoingToPoint` branch,
+`Flee`) each loop while budget remains and real progress is being made, instead of a
+single call - this is what lets `MoveRate > 3` cover more than one tile in a single tick.
+**Zero regression for existing content**: MoveRate=3/unset always yields exactly 1 step
+per tick with zero fractional carry, identical to the old fixed behavior.
+
+**Real bug caught before shipping, worth remembering for any future NPCAiTimer movement
+work**: the first pass looped 4 of the 5 call sites but missed the `PetGoalPoint`/
+`GoingToPoint` branch living directly inside `Think()` itself (not inside a named helper
+method like the other 4) - exactly the path the new protocol test exercises via a GM
+"go"-style goal point. First run showed a MoveRate=6 NPC and an unconfigured-baseline one
+covering IDENTICAL ground (3 tiles each over 3 ticks) - the bug was invisible from reading
+the other 4 call sites in isolation, only caught by actually running the real-boot test
+and seeing the numbers not differ.
+
+**Tooling scare during this work, resolved, zero impact on the shipped code**: mid-
+regression-testing, a stray `git stash pop` (chasing an A/B check) accidentally grabbed
+one of two OLD pre-existing stashes already sitting in this repo since before this session
+(`verify-v3-economy`/`WIP on main ea4865a`, unrelated ancient work) instead of nothing,
+causing a merge conflict in `CommandsAuthorization.cs`/`EconomyTests.cs` unrelated to this
+PR. Confirmed via diff these were genuinely ancient unrelated content, discarded with the
+user's explicit go-ahead; both old stashes themselves are still intact in `git stash list`
+untouched. Lesson: always verify a `git stash` actually created a new entry (check `git
+stash list` length) before trusting a later `git stash pop` to restore YOUR changes,
+especially right after a blocked/denied command that might not have actually run the
+`git stash` part of a chained command at all.
+
+Verified: a real protocol test (`Tests/Protocol/NpcMoveRateTests.cs`, boots a real server)
+spawns two otherwise-identical NPCs - one `MoveRate=6`, one left at the unconfigured
+baseline - sends both toward the same distant goal point, waits several real AI ticks, and
+confirms the faster one covers strictly more ground over the same window (retries on a
+fresh open-ground spot up to 3x, matching this repo's own established terrain-variance
+idiom). Targeted regression (`RangerSettingsTests`/`SpawnCommandTests`/`MysticCombatTests`,
+15/15, including tests that already exercise real multi-tile NPC movement) all green.
+**A/B-verified 4 initially-suspicious failures from a broader run are pre-existing, not
+caused by this change**: swapped in `origin/main`'s unmodified `NPCAiTimer.cs`, reran each
+failing test individually - all 4 (`OwnerAggroTests.HostileFollowerNeverAutonomouslyTargetsItsCommander`/
+`OwnerAttackingOwnedPetMakesItRebel`, `PetCommandTestsA.GmCanOrderAnUnownedNpcToKill`,
+`PetCommandTestsB.GoCommandSetsGoalPointFromTargetCursor`) reproduced identically against
+the unmodified file - `HostileFollowerNeverAutonomouslyTargetsItsCommander` is the already-
+tracked, still-open #121 (same exact symptom, confirmed CI-only-but-now-also-local-flaky).
+Converter: `LineImplTask("moverate", PassThroughUnlessPlayerDef)`, same shape as `bloodcolor`/
+`resources` - **NOT verified against a real archive scratch regen this pass** (the local
+clone was empty this session, re-cloning got blocked by the auto-mode classifier with no
+per-message URL authorization) - flagged as a low-risk gap, not silently skipped, since the
+mapping itself is identical in shape to the already-verified `bloodcolor`/`resources` lines.
+Issue #590 closed referencing PR #591.
+
+**Next in this batch**: `foodtype` + a **full** hunger/feeding/decay system (user
+explicitly chose the bigger scope over a minimal stub) - real, fully-recoverable Sphere
+mechanics already found in `funkce.scp`'s `nakrmho` feeding formula (foodWeight =
+item.weight/item.amount, min 10, consumes matching food from the feeder's pack, raises
+food up to maxfood) and `jezditka.scp`'s mount-hunger decay (-1 every 1000s normally, -1
+every 3600s when not ridden, dismounts rider once food < 3, checked every 60s while
+critical; GMs' mounts never starve) - scoped to tamed pets (`ControlMaster` set) /
+currently-ridden mounts per the source, not every wild monster in the world. Starvation
+(`food == 0`) kills the NPC outright, confirmed in `taming.scp`. This is the last item in
+the batch - once it ships, all 4 of `bloodcolor`/`resources`/`moverate`/`foodtype` are done
+(the other 4 originally-surveyed fields - `desires`/`aversions`/`shelter`/`reslevel` - are
+confirmed vestigial/too-low-usage and are being skipped per the earlier research pass).
+
 ## Remaining converter gaps, batch 1 of 4: Resources (butcher-yield template) SHIPPED (PR #588), 2026-10-22 — #586 closed
 
 Second of the 4-item batch below (BloodColor shipped first, see the next entry down).
