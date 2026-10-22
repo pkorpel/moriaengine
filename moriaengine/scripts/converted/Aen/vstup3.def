@@ -13,6 +13,7 @@ DESCRIPTION = dlazka otevirajici dvere
 
 Name = "dlazdice otevirajici dvere"
 model = i_rune_alchem_11
+Color = 044D
 
 [ItemDef i_Cardolanske_pohrebiste_dlazdicenazamknutidveri12]
 CATEGORY = Dungy
@@ -21,3 +22,4 @@ DESCRIPTION = dlazdice na zamykani dveri
 
 Name = "dlazdice12"
 model = i_rune_alchem_11
+Color = 00995

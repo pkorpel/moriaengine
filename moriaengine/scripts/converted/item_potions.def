@@ -89,6 +89,33 @@ type = t_custom_spell
 layer = 44
 model = i_rune_agility
 
+[PotionDef i_potion_CureLess]
+NAME = "Lesser Cure"
+TYPE = t_speedpotions
+RESOURCES = 2 i_reag_garlic, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 200 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02d
+
+[PotionDef i_potion_Cure]
+NAME = "Cure"
+TYPE = t_allpotions
+RESOURCES = 3 i_reag_garlic, 1 i_reag_ginseng, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02b
+
+[PotionDef i_potion_CureGreat]
+NAME = "Greater Cure"
+TYPE = t_allpotions
+RESOURCES = 4 i_reag_garlic, 2 i_reag_ginseng, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 650 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 08e
+
 [PotionDef i_potion_HealLess]
 NAME = "Lesser Heal"
 TYPE = t_allpotions
@@ -131,6 +158,102 @@ SKILLMAKE = 50 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 0980
+
+[PoisonPotionDef i_potion_Poison_para]
+NAME = "Paralyze poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0314
+PoisonType = p_poison_para
+
+[PoisonPotionDef i_potion_Poison_fizz]
+NAME = "Fizzle poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 022d
+PoisonType = p_poison_fizz
+
+[PoisonPotionDef i_potion_Poison_stamina]
+NAME = "Stamina poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02f
+PoisonType = p_poison_stamina
+
+[PoisonPotionDef i_potion_Poison_weaken]
+NAME = "Weaken poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02e6
+PoisonType = p_poison_weaken
+
+[PoisonPotionDef i_potion_Poison_clumsy]
+NAME = "Clumsy poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02ed
+PoisonType = p_poison_clumsy
+
+[PoisonPotionDef i_potion_Poison_feeblemind]
+NAME = "Feeblemind poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 02c9
+PoisonType = p_poison_feeblemind
+
+[PotionDef i_potion_PoisonLess]
+NAME = "Lesser Poison"
+TYPE = T_POTION
+RESOURCES = 2 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 300 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0b0
+
+[PotionDef i_potion_Poison]
+NAME = "Poison"
+TYPE = T_POTION
+RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0b2
+
+[PotionDef i_potion_PoisonGreat]
+NAME = "Greater Poison"
+TYPE = T_POTION
+RESOURCES = 7 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 700 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0179
+
+[PotionDef i_potion_PoisonDeadly]
+NAME = "Deadly Poison"
+TYPE = T_POTION
+RESOURCES = 13 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+SKILLMAKE = 999 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_bottle_empty
+Color = 0593
 
 [PotionDef i_potion_RefreshLess]
 NAME = "Lesser Refresh"
@@ -273,7 +396,7 @@ Color = 0999
 
 [EquippableDef i_a_steelskin_potion]
 type = t_spell
-layer = LAYER_FLAG_Potion //layer_stoneskin 
+layer = layer_stoneskin //LAYER_FLAG_Potion 
 model = i_rune_alchem_3
 
 [PotionDef i_potion_Stoneskin]
@@ -287,7 +410,7 @@ Color = 0999
 
 [EquippableDef i_a_stoneskin_potion]
 type = t_spell
-layer = LAYER_FLAG_Potion //layer_stoneskin 
+layer = layer_stoneskin //LAYER_FLAG_Potion 
 model = i_rune_alchem_3
 
 [PotionDef i_potion_mobility]
@@ -361,7 +484,7 @@ RESOURCES = 2 i_reag_blood_moss, 1 i_bottle_empty //some resources were fixed by
 SKILLMAKE = 01 alchemy //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
-Color = 0985
+Color = 00a82
 
 [PotionDef i_potion_Shieldelixir]
 NAME = "Elixir Spell Shield"
@@ -386,6 +509,44 @@ name = "Shield"
 type = t_custom_spell
 layer = 44
 model = i_rune_energy_field
+
+[PotionDef i_potion_dragon_poison]
+NAME = "Protijed na draci jed"
+TYPE = t_speedpotions
+SKILLMAKE = 2000 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_flask1_blue
+Color = 097f
+
+[PotionDef i_potion_dragon_fire]
+NAME = "Lek na popaleniny"
+TYPE = t_speedpotions
+SKILLMAKE = 2000 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_flask1_blue
+Color = 098e
+
+[PotionDef i_potion_dragon_white]
+NAME = "Ochrana mysli"
+TYPE = t_speedpotions
+SKILLMAKE = 2000 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_flask1_blue
+Color = 0481
+
+[PotionDef i_potion_dragon_resist]
+NAME = "Lektvar ochrany proti drakum"
+TYPE = t_speedpotions
+SKILLMAKE = 2000 alchemy //some resources were fixed by converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_flask1_blue
+Color = 09ce
+
+[EquippableDef i_a_dragon_resist_potion]
+name = "dragon resist"
+type = t_custom_spell
+layer = 44
+model = i_rune_create_food
 
 [PotionDef 0xf06]
 CATEGORY = Provisions - Alchemy & Magic
@@ -472,7 +633,7 @@ DESCRIPTION = Potion (Purple)(Explosion)
 TYPE = T_POTION
 WEIGHT = 10
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
-EmptyFlask = 0 //converted from 'TDATA1' 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_purple
 
 [ItemDef 0xfa9]
@@ -851,3 +1012,31 @@ WEIGHT = 10
 DEFNAME = i_oil_flask
 //RESOURCES3 = 1 i_OIL, 1 i_FLASK // commented out by Converter 
 //VALUE = 3 // commented out by Converter 
+
+[PotionDef i_potion_HPsightLess]
+NAME = "Slaby odvar vnimani"
+TYPE = t_allpotions
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = 0xf03
+Color = 08AB
+
+[PotionDef i_potion_HPsight]
+NAME = "Lektvar vnimani"
+TYPE = t_allpotions
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = 0xf03
+Color = 08AE
+
+[PotionDef i_potion_HPsightGreat]
+NAME = "Silny odvar vnimani"
+TYPE = t_allpotions
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = 0xf03
+Color = 08B0
+
+[PotionDef i_potion_HPsightElixir]
+NAME = "Elixir vnimani"
+TYPE = t_allpotions
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+model = i_flask1_blue_anim
+Color = 08AF

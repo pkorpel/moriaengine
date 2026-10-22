@@ -166,8 +166,9 @@ DEFNAME = i_cotton
 
 [ItemDef I_EGG]
 model = i_fruit_coconut
-type = t_food //guessed from base def by Converter 
+type = t_fruit //guessed from base def by Converter 
 //VALUE = 1 // commented out by Converter 
+Color = colors_white
 
 [ItemDef 0x1e15]
 CATEGORY = Items by Professions
@@ -355,7 +356,7 @@ DESCRIPTION = Sack of Flour
 
 //DUPELIST = 01045 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = 4 i_wheat_sheaf,  1 i_cloth //some resources were fixed by converter 
+RESOURCES = 4 i_wheat_sheaf, 1 i_cloth
 DEFNAME = i_flour_sack
 
 [ItemDef 0x1045]
@@ -377,7 +378,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Banana (Unpeeled)
 
-TYPE = T_FOOD
+TYPE = T_FRUIT
 //DUPELIST = 01720 // commented out by Converter 
 WEIGHT = 10
 DEFNAME = i_fruit_banana
@@ -388,7 +389,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Coconut
 
-TYPE = T_FOOD
+TYPE = T_FRUIT
 WEIGHT = 20
 DEFNAME = i_fruit_coconut
 //VALUE = 2 // commented out by Converter 
@@ -398,7 +399,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Lemon
 
-TYPE = T_FOOD
+TYPE = T_FRUIT
 WEIGHT = 1
 DEFNAME = i_fruit_lemon
 //VALUE = 1 // commented out by Converter 
@@ -409,7 +410,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Lime
 
-TYPE = T_FOOD
+TYPE = T_FRUIT
 WEIGHT = 1
 DEFNAME = i_fruit_lime
 //VALUE = 1 // commented out by Converter 
@@ -421,9 +422,9 @@ DESCRIPTION = French Bread
 
 TYPE = T_FOOD
 WEIGHT = 5
-RESOURCES = 1 i_flour_sack //some resources were fixed by converter 
-RESOURCES2 = 1 i_bowl_dough, 1 i_water, 2 i_egg, 1 i_pot //some resources were fixed by converter 
-SKILLMAKE = 15.0 cooking //some resources were fixed by converter 
+RESOURCES = 1 i_flour_sack
+RESOURCES2 = 1 i_bowl_dough, 1 i_water, 2 i_egg, 1 i_pot
+SKILLMAKE = 150 cooking //some resources were fixed by converter 
 DEFNAME = i_bread_french
 //VALUE = {4 8} // commented out by Converter 
 
@@ -434,8 +435,8 @@ DESCRIPTION = Cake
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 3 i_flour_sack //some resources were fixed by converter 
-SKILLMAKE = 30.0 cooking //some resources were fixed by converter 
+RESOURCES = 3 i_flour_sack
+SKILLMAKE = 300 cooking //some resources were fixed by converter 
 DEFNAME = i_cake
 //VALUE = {8 12} // commented out by Converter 
 
@@ -445,9 +446,9 @@ SUBSECTION = Baker
 DESCRIPTION = Muffins
 
 WEIGHT = 5
-RESOURCES = 1 i_flour_sack //some resources were fixed by converter 
-RESOURCES2 = 1 i_bowl_dough, 1 i_tray //some resources were fixed by converter 
-SKILLMAKE = 10.0 cooking //some resources were fixed by converter 
+RESOURCES = 1 i_flour_sack
+RESOURCES2 = 1 i_bowl_dough, 1 i_tray
+SKILLMAKE = 100 cooking //some resources were fixed by converter 
 DEFNAME = i_muffins
 
 [ItemDef 0x103b]
@@ -457,9 +458,9 @@ DESCRIPTION = Bread Loaf
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_flour_sack //some resources were fixed by converter 
-RESOURCES2 = 1 i_dough,  1 i_water,  1 i_egg,  1 i_pot //some resources were fixed by converter 
-SKILLMAKE = 1 cooking //some resources were fixed by converter 
+RESOURCES = 1 i_flour_sack
+RESOURCES2 = 1 i_dough, 1 i_water, 1 i_egg, 1 i_pot
+SKILLMAKE = 1 cooking
 DEFNAME = i_bread_loaf
 
 [ItemDef 0x103c]
@@ -470,8 +471,8 @@ DESCRIPTION = Bread Loaf
 NAME = "Wonder Bread"
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_flour_sack //some resources were fixed by converter 
-RESOURCES2 = 1 i_dough, 1 i_water, 1 i_egg, 1 i_pot //some resources were fixed by converter 
+RESOURCES = 1 i_flour_sack
+RESOURCES2 = 1 i_dough, 1 i_water, 1 i_egg, 1 i_pot
 SKILLMAKE = 1 cooking //some resources were fixed by converter 
 DEFNAME = i_bread_wonder
 
@@ -482,7 +483,7 @@ DESCRIPTION = Dough
 
 TYPE = T_FOOD_RAW
 WEIGHT = 10
-RESOURCES = 1 i_water,  1 i_egg,  2 i_flour_bowl //some resources were fixed by converter 
+RESOURCES = 1 i_water, 1 i_egg, 2 i_flour_bowl
 //TDATA1 = i_bread_loaf // commented out by Converter 
 DEFNAME = i_dough
 
@@ -492,7 +493,7 @@ SUBSECTION = Baker
 DESCRIPTION = Flour Sifter
 
 WEIGHT = 10
-RESOURCES = 1 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron
 DEFNAME = i_flour_sifter
 
 [ItemDef 0x103f]
@@ -502,7 +503,7 @@ DESCRIPTION = Cookie Mix
 
 TYPE = T_FOOD_RAW
 WEIGHT = 10
-RESOURCES = 1 i_bowl_dough,  1 i_pot //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_dough, 1 i_pot
 //TDATA1 = i_pan_cookies // commented out by Converter 
 DEFNAME = i_cookie_mix
 
@@ -513,9 +514,9 @@ DESCRIPTION = Pizza
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 3 i_flour_sack //some resources were fixed by converter 
-RESOURCES2 = 1 i_pizza_uncooked, 1 i_pot //some resources were fixed by converter 
-SKILLMAKE = 20.0 cooking //some resources were fixed by converter 
+RESOURCES = 3 i_flour_sack
+RESOURCES2 = 1 i_pizza_uncooked, 1 i_pot
+SKILLMAKE = 200 cooking //some resources were fixed by converter 
 DEFNAME = i_pizza
 
 [ItemDef 0x1041]
@@ -525,9 +526,9 @@ DESCRIPTION = Baked Pie
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 3 i_flour_sack //some resources were fixed by converter 
-RESOURCES2 = 1 i_pie_unbaked //some resources were fixed by converter 
-SKILLMAKE = 20.0 cooking //some resources were fixed by converter 
+RESOURCES = 3 i_flour_sack
+RESOURCES2 = 1 i_pie_unbaked
+SKILLMAKE = 200 cooking //some resources were fixed by converter 
 DEFNAME = i_pie_baked
 
 [ItemDef 0x1042]
@@ -537,7 +538,7 @@ DESCRIPTION = Unbaked Pie
 
 TYPE = T_FOOD_RAW
 WEIGHT = 10
-RESOURCES = 1 i_bowl_dough,  1 t_fruit,  1 i_pot,  i_lard //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_dough, 1 t_fruit, 1 i_pot, 1 i_lard //some resources were fixed by converter 
 //TDATA1 = i_pie_baked // commented out by Converter 
 DEFNAME = i_pie_unbaked
 
@@ -547,7 +548,7 @@ SUBSECTION = Baker
 DESCRIPTION = Rolling Pin
 
 WEIGHT = 20
-RESOURCES = 1 i_board,  1 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 1 i_board, 1 i_ingot_iron
 DEFNAME = i_rolling_pin
 
 [ItemDef 0x1044]
@@ -557,7 +558,7 @@ DESCRIPTION = Spam
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_ham,  1 i_pot //some resources were fixed by converter 
+RESOURCES = 1 i_ham, 1 i_pot
 DEFNAME = i_spam
 
 [ItemDef 0x15f8]
@@ -566,7 +567,7 @@ SUBSECTION = Cook
 DESCRIPTION = Wooden Bowl
 
 WEIGHT = 10
-RESOURCES = 1 i_board //some resources were fixed by converter 
+RESOURCES = 1 i_board
 DEFNAME = i_bowl_wood
 
 [ItemDef 0x15f9]
@@ -576,7 +577,7 @@ DESCRIPTION = Bowl of Carrots
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_bowl_wood,  3 i_fruit_carrot //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_wood, 3 i_fruit_carrot
 DEFNAME = i_bowl_wood_carrots
 
 [ItemDef 0x15fa]
@@ -586,7 +587,7 @@ DESCRIPTION = Bowl of Corn
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_bowl_wood,  1 i_fruit_corn //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_wood, 1 i_fruit_corn
 DEFNAME = i_bowl_wood_corn
 
 [ItemDef 0x15fb]
@@ -595,7 +596,7 @@ SUBSECTION = Cook
 DESCRIPTION = Bowl of Lettuce
 
 WEIGHT = 10
-RESOURCES = 1 i_bowl_wood,  1 i_fruit_lettuce //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_wood, 1 i_fruit_lettuce
 DEFNAME = i_bowl_wood_lettuce
 
 [ItemDef 0x15fc]
@@ -615,27 +616,27 @@ SUBSECTION = Cook
 DESCRIPTION = Pewter Bowl
 
 WEIGHT = 10
-RESOURCES = 1 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron
 DEFNAME = i_bowl_pewter
 
 [ItemDef 0x15fe]
 WEIGHT = 10
-RESOURCES = 1 i_bowl_pewter,  3 i_fruit_carrot //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_pewter, 3 i_fruit_carrot
 DEFNAME = i_bowl_pewter_carrots
 
 [ItemDef 0x15ff]
 WEIGHT = 10
-RESOURCES = 1 i_bowl_pewter,  1 i_fruit_corn //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_pewter, 1 i_fruit_corn
 DEFNAME = i_bowl_pewter_corn
 
 [ItemDef 0x1600]
 WEIGHT = 10
-RESOURCES = 1 i_bowl_pewter,  1 i_fruit_lettuce //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_pewter, 1 i_fruit_lettuce
 DEFNAME = i_bowl_pewter_lettuce
 
 [ItemDef 0x1601]
 WEIGHT = 10
-RESOURCES = 1 i_bowl_pewter //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_pewter
 DEFNAME = i_bowl_pewter_peas
 //RESOURCES3 = 1 i_bowl_pewter, 1 i_PEAS // commented out by Converter 
 
@@ -656,7 +657,7 @@ SUBSECTION = Cook
 DESCRIPTION = Pewter Bowl (Lg.)
 
 WEIGHT = 10
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_bowl_pewter_lg
 
 [ItemDef 0x1604]
@@ -666,7 +667,7 @@ DESCRIPTION = Bowl of Stew
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_bowl_wood_lg,  1 i_water,  1 i_flour_sack,  1 i_ribs_raw //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_wood_lg, 1 i_water, 1 i_flour_sack, 1 i_ribs_raw
 DEFNAME = i_bowl_stew_lg
 //VALUE = 6 // commented out by Converter 
 
@@ -676,7 +677,7 @@ SUBSECTION = Cook
 DESCRIPTION = Wooden Bowl (Lg.)
 
 WEIGHT = 10
-RESOURCES = 2 i_board //some resources were fixed by converter 
+RESOURCES = 2 i_board
 DEFNAME = i_bowl_wood_lg
 
 [ItemDef 0x1606]
@@ -697,7 +698,7 @@ DESCRIPTION = Chicken Leg (Cooked)
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = i_chicken_leg_raw //some resources were fixed by converter 
+RESOURCES = 1 i_chicken_leg_raw //some resources were fixed by converter 
 DEFNAME = i_chicken_leg
 
 [ItemDef 0x1609]
@@ -718,8 +719,8 @@ DESCRIPTION = Lamb of Leg (Cooked)
 
 TYPE = T_FOOD
 WEIGHT = 20
-RESOURCES = i_lamb_leg_raw //some resources were fixed by converter 
-SKILLMAKE = 10.0 cooking //some resources were fixed by converter 
+RESOURCES = 1 i_lamb_leg_raw //some resources were fixed by converter 
+SKILLMAKE = 100 cooking //some resources were fixed by converter 
 DEFNAME = i_lamb_leg
 
 [ItemDef 0x160b]
@@ -729,9 +730,9 @@ DESCRIPTION = Pan of Cookies
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_flour_sack //some resources were fixed by converter 
-RESOURCES2 = 1 i_cookie_mix, 1 i_pot, 1 i_water //some resources were fixed by converter 
-SKILLMAKE = 10.0 cooking //some resources were fixed by converter 
+RESOURCES = 1 i_flour_sack
+RESOURCES2 = 1 i_cookie_mix, 1 i_pot, 1 i_water
+SKILLMAKE = 100 cooking //some resources were fixed by converter 
 DEFNAME = i_pan_cookies
 
 [ItemDef 0x160c]
@@ -739,7 +740,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Baker
 DESCRIPTION = Plate of Cookies
 
-RESOURCES = 1 i_cookie_mix,  1 i_plate,  1 i_water //some resources were fixed by converter 
+RESOURCES = 1 i_cookie_mix, 1 i_plate, 1 i_water
 DEFNAME = i_plate_cookies
 
 [ItemDef 0x171d]
@@ -750,7 +751,7 @@ DESCRIPTION = Banana (1/2 Peeled)
 TYPE = T_FOOD
 //DUPELIST = 0171e // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 1 i_fruit_banana //some resources were fixed by converter 
+RESOURCES = 1 i_fruit_banana
 DEFNAME = i_banana_unpeeled
 
 [ItemDef 0x171e]
@@ -767,7 +768,7 @@ DESCRIPTION = Bananas (Many)
 TYPE = T_FOOD
 //DUPELIST = 01722 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = 4 i_banana_unpeeled //some resources were fixed by converter 
+RESOURCES = 4 i_banana_unpeeled
 DEFNAME = i_banana_bunch
 
 [ItemDef 0x1722]
@@ -780,7 +781,7 @@ DESCRIPTION = Coconut
 
 TYPE = T_FOOD
 WEIGHT = 20
-RESOURCES = 1 i_fruit_coconut //some resources were fixed by converter 
+RESOURCES = 1 i_fruit_coconut
 DEFNAME = i_coconut_unpeeled
 
 [ItemDef 0x1724]
@@ -798,7 +799,7 @@ DESCRIPTION = Coconut (Halved)
 
 TYPE = T_FOOD
 WEIGHT = 20
-RESOURCES = 1 i_fruit_coconut //some resources were fixed by converter 
+RESOURCES = 1 i_fruit_coconut
 DEFNAME = i_coconut_halved
 
 [ItemDef 0x1727]
@@ -817,7 +818,7 @@ DESCRIPTION = Lemons (1/2 Peeled)
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 1 i_fruit_lemon //was "i_lemon" - no such item anywhere; i_fruit_lemon (defined earlier in this file) is the real one
+RESOURCES = 1 i_lemon
 DEFNAME = i_lemon_halved
 
 [ItemDef 0x172b]
@@ -827,7 +828,7 @@ DESCRIPTION = Limes (1/2 Peeled)
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 1 i_fruit_lime //some resources were fixed by converter 
+RESOURCES = 1 i_fruit_lime
 DEFNAME = i_lime_halved
 
 [ItemDef 0x172c]
@@ -848,7 +849,7 @@ DESCRIPTION = Slab of Bacon
 TYPE = T_FOOD_RAW
 //DUPELIST = 0977 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 1 i_ham,  1 i_board //some resources were fixed by converter 
+RESOURCES = 1 i_ham, 1 i_board
 //TDATA1 = i_bacon_slice // commented out by Converter 
 DEFNAME = i_bacon_slab
 
@@ -863,7 +864,7 @@ DESCRIPTION = Slice of Bacon
 TYPE = T_FOOD
 //DUPELIST = 0979 // commented out by Converter 
 WEIGHT = 1
-RESOURCES = 1 i_ham //some resources were fixed by converter 
+RESOURCES = 1 i_ham
 DEFNAME = i_bacon_slice
 //VALUE = {2 4} // commented out by Converter 
 
@@ -888,7 +889,7 @@ DESCRIPTION = Fish Steak (Cooked)
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 1 i_fish_small //some resources were fixed by converter 
+RESOURCES = 1 i_fish_small
 DEFNAME = i_fish_cut_cooked
 //VALUE = 3 // commented out by Converter 
 
@@ -899,7 +900,7 @@ DESCRIPTION = Wedge of Cheese
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 5 i_pitcher_milk,  1 i_reag_fertile_dirt //some resources were fixed by converter 
+RESOURCES = 5 i_pitcher_milk, 1 i_reag_fertile_dirt
 DEFNAME = i_cheese_wedge
 //VALUE = {3 5} // commented out by Converter 
 
@@ -910,7 +911,7 @@ DESCRIPTION = Cut Cheese
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 4 i_pitcher_milk,  1 i_reag_fertile_dirt //some resources were fixed by converter 
+RESOURCES = 4 i_pitcher_milk, 1 i_reag_fertile_dirt
 DEFNAME = i_cheese_cut
 //VALUE = {6 10} // commented out by Converter 
 
@@ -921,7 +922,7 @@ DESCRIPTION = Wheel of Cheese
 
 TYPE = T_FOOD
 WEIGHT = 2
-RESOURCES = 5 i_pitcher_milk,  1 i_reag_fertile_dirt //some resources were fixed by converter 
+RESOURCES = 5 i_pitcher_milk, 1 i_reag_fertile_dirt
 DEFNAME = i_cheese_wheel
 //VALUE = {22 28} // commented out by Converter 
 
@@ -932,7 +933,7 @@ DESCRIPTION = Fruit Basket
 
 TYPE = T_FOOD
 WEIGHT = 50
-RESOURCES = 3 i_straw //some resources were fixed by converter 
+RESOURCES = 3 i_straw
 DEFNAME = i_basket_fruit
 //VALUE = {4 7} // commented out by Converter 
 
@@ -943,7 +944,7 @@ DESCRIPTION = Bottle of Liquor
 
 TYPE = T_BOOZE
 WEIGHT = 10
-RESOURCES = 1 i_reag_fertile_dirt,  1 i_water,  1 i_wheat_sheaf,  1 i_bottle_empty //some resources were fixed by converter 
+RESOURCES = 1 i_reag_fertile_dirt, 1 i_water, 1 i_wheat_sheaf, 1 i_bottle_empty
 DEFNAME = i_bottle_liquor
 //VALUE = {6 10} // commented out by Converter 
 
@@ -963,7 +964,7 @@ DESCRIPTION = Bottle of Ale
 
 TYPE = T_BOOZE
 WEIGHT = 10
-RESOURCES = 1 i_reag_fertile_dirt,  1 i_water,  1 i_wheat_sheaf,  1 i_bottle //some resources were fixed by converter 
+RESOURCES = 1 i_reag_fertile_dirt, 1 i_water, 1 i_wheat_sheaf, 1 i_bottle
 DEFNAME = i_bottle_ale
 //VALUE = {6 10} // commented out by Converter 
 
@@ -995,7 +996,7 @@ DESCRIPTION = Jug of Cider
 TYPE = T_BOOZE
 //DUPELIST = 098d,098e // commented out by Converter 
 WEIGHT = 110
-RESOURCES = 1 i_bottle,  1 i_fruit_apple,  1 i_water,  1 i_reag_fertile_dirt //some resources were fixed by converter 
+RESOURCES = 1 i_bottle, 1 i_fruit_apple, 1 i_water, 1 i_reag_fertile_dirt
 DEFNAME = i_jug_cider
 //VALUE = {12 18} // commented out by Converter 
 
@@ -1005,7 +1006,7 @@ DUPEITEM = i_jug_cider
 [ItemDef 0x98e]
 DUPEITEM = i_jug_cider
 
-[ItemDef 0x9ad]
+[PotionDef 0x9ad]
 CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Milk (Pitcher)
@@ -1013,10 +1014,10 @@ DESCRIPTION = Milk (Pitcher)
 TYPE = T_DRINK
 //DUPELIST = 09f0 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = i_pitcher_glass //some resources were fixed by converter 
-RESOURCES2 = i_pitcher_glass,  1 i_milk //some resources were fixed by converter 
+RESOURCES = 1 i_pitcher_glass //some resources were fixed by converter 
+RESOURCES2 = 1 i_pitcher_glass, 1 i_milk //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
-//TDATA1 = i_pitcher_glass // commented out by Converter 
+EmptyFlask = i_pitcher_glass //converted from 'TDATA1' 
 DEFNAME = i_pitcher_milk
 
 [ItemDef 0x9ae]
@@ -1024,7 +1025,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Dirty Plate
 
-RESOURCES = 1 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron
 DEFNAME = i_plate_dirty
 
 [ItemDef 0x9af]
@@ -1033,7 +1034,7 @@ SUBSECTION = Cook
 DESCRIPTION = Plate of Food
 
 //DUPELIST = 09d8,09d9,09db // commented out by Converter 
-RESOURCES = 1 i_ingot_iron,  1 t_food //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron, 1 t_food
 DEFNAME = i_plate_food
 
 [ItemDef 0x9b6]
@@ -1043,7 +1044,7 @@ DESCRIPTION = Fried Eggs
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 1 i_eggs_fresh //some resources were fixed by converter 
+RESOURCES = 1 i_eggs_fresh
 DEFNAME = i_eggs_fried
 //VALUE = {5 9} // commented out by Converter 
 
@@ -1055,7 +1056,7 @@ DESCRIPTION = Cooked Bird
 TYPE = T_FOOD
 //DUPELIST = 09b8 // commented out by Converter 
 WEIGHT = 5
-RESOURCES = 1 i_bird_raw //some resources were fixed by converter 
+RESOURCES = 1 i_bird_raw
 DEFNAME = i_bird_cooked
 
 [ItemDef 0x9b8]
@@ -1075,7 +1076,7 @@ DESCRIPTION = Sausages
 TYPE = T_FOOD
 //DUPELIST = 09c1 // commented out by Converter 
 WEIGHT = 1
-RESOURCES = 1 i_reag_garlic,  1 i_ham //some resources were fixed by converter 
+RESOURCES = 1 i_reag_garlic, 1 i_ham
 DEFNAME = i_sausages
 //VALUE = {12 16} // commented out by Converter 
 
@@ -1088,7 +1089,7 @@ SUBSECTION = Cook
 DESCRIPTION = Spoon
 
 //DUPELIST = 09c3 // commented out by Converter 
-RESOURCES = 1 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron
 DEFNAME = i_spoon
 
 [ItemDef 0x9c3]
@@ -1100,7 +1101,7 @@ SUBSECTION = BarKeep
 DESCRIPTION = Bottles of Wine
 
 //DUPELIST = 09c5,09c6 // commented out by Converter 
-RESOURCES = 1 i_bottle,  1 i_fruit_grapes,  1 i_reag_fertile_dirt //some resources were fixed by converter 
+RESOURCES = 1 i_bottle, 1 i_fruit_grapes, 1 i_reag_fertile_dirt
 DEFNAME = i_bottles_wine
 
 [ItemDef 0x9c5]
@@ -1116,7 +1117,7 @@ DESCRIPTION = Bottle of Wine
 
 TYPE = T_BOOZE
 WEIGHT = 10
-RESOURCES = 1 i_bottle,  1 i_fruit_grapes,  1 i_reag_fertile_dirt //some resources were fixed by converter 
+RESOURCES = 1 i_bottle, 1 i_fruit_grapes, 1 i_reag_fertile_dirt
 DEFNAME = i_bottle_wine
 //VALUE = {6 10} // commented out by Converter 
 
@@ -1143,7 +1144,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Dirty Plate
 
-RESOURCES = 1 i_plate,  1 i_dirt //some resources were fixed by converter 
+RESOURCES = 1 i_plate, 1 i_dirt
 DEFNAME = i_plate_dirty_2
 
 [ItemDef 0x9ea]
@@ -1153,7 +1154,7 @@ DESCRIPTION = Muffin
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 1 i_bowl_dough,  1 i_tray //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_dough, 1 i_tray
 DEFNAME = i_muffin
 //VALUE = {2 4} // commented out by Converter 
 
@@ -1203,7 +1204,7 @@ DESCRIPTION = Ribs (Cooked)
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_ribs_raw //some resources were fixed by converter 
+RESOURCES = 1 i_ribs_raw
 DEFNAME = i_ribs_cooked
 //VALUE = {12 24} // commented out by Converter 
 
@@ -1213,7 +1214,7 @@ SUBSECTION = Baker
 DESCRIPTION = Muffins
 
 WEIGHT = 5
-RESOURCES = 1 i_bowl_dough,  1 i_tray //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_dough, 1 i_tray
 DEFNAME = i_muffins_2
 
 [ItemDef 0xa1e]
@@ -1223,7 +1224,7 @@ DESCRIPTION = Bowl of Flour
 
 TYPE = T_FOOD
 WEIGHT = 40
-RESOURCES = 1 i_bowl_wood,  1 i_flour_sack //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_wood, 1 i_flour_sack
 DEFNAME = i_flour_bowl
 
 [ItemDef 0xc5c]
@@ -1297,7 +1298,7 @@ DESCRIPTION = Onion
 TYPE = T_FRUIT
 //DUPELIST = 0c6e // commented out by Converter 
 WEIGHT = 10
-RESOURCES = i_crop_onion //some resources were fixed by converter 
+RESOURCES = 1 i_crop_onion //some resources were fixed by converter 
 //TDATA1 = i_crop_onion // commented out by Converter 
 DEFNAME = i_fruit_onion
 //VALUE = {2 4} // commented out by Converter 
@@ -1357,7 +1358,7 @@ DESCRIPTION = Carrot
 TYPE = T_FRUIT
 //DUPELIST = 0c78 // commented out by Converter 
 WEIGHT = 1
-RESOURCES = 1 i_crop_carrot //some resources were fixed by converter 
+RESOURCES = 1 i_crop_carrot
 //TDATA1 = i_crop_carrot // commented out by Converter 
 DEFNAME = i_fruit_carrot
 //VALUE = {2 4} // commented out by Converter 
@@ -1399,10 +1400,10 @@ CATEGORY = Vegetation
 SUBSECTION = Fruits and Vegetables
 DESCRIPTION = Ear of Corn
 
-TYPE = T_FOOD
+TYPE = T_FRUIT
 //DUPELIST = 0c80,0c81,0c82 // commented out by Converter 
 WEIGHT = 2
-RESOURCES = i_crop_corn //some resources were fixed by converter 
+RESOURCES = 1 i_crop_corn //some resources were fixed by converter 
 DEFNAME = i_fruit_corn
 //VALUE = {2 4} // commented out by Converter 
 
@@ -1422,7 +1423,7 @@ DESCRIPTION = Uncooked Pizza
 
 TYPE = T_FOOD_RAW
 WEIGHT = 10
-RESOURCES = 1 i_bowl_dough,  1 i_cheese_wheel,  1 i_pot,  i_lard,  i_tomato_sauce //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_dough, 1 i_cheese_wheel, 1 i_pot, 1 i_lard, 1 i_tomato_sauce //some resources were fixed by converter 
 //TDATA1 = i_pizza // commented out by Converter 
 DEFNAME = i_pizza_uncooked
 
@@ -1433,7 +1434,7 @@ DESCRIPTION = Beeswax
 
 //DUPELIST = 01423,01424,01425,01426,01427 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = i_beehive //some resources were fixed by converter 
+RESOURCES = 1 i_beehive //some resources were fixed by converter 
 DEFNAME = i_beeswax
 
 [ItemDef 0x1423]
@@ -1466,7 +1467,7 @@ DESCRIPTION = Donuts
 
 TYPE = T_FOOD
 WEIGHT = 10
-RESOURCES = 1 i_bowl_dough //some resources were fixed by converter 
+RESOURCES = 1 i_bowl_dough
 DEFNAME = i_donuts
 
 [ItemDef 0x1e1c]
@@ -1477,7 +1478,7 @@ DESCRIPTION = Fish (Cooked)
 TYPE = T_FOOD
 //DUPELIST = 01e1d,01e1e,01e1f // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 1 i_fish_raw //some resources were fixed by converter 
+RESOURCES = 1 i_fish_raw
 DEFNAME = i_fish_cooked
 
 [ItemDef 0x1e1d]
@@ -1527,7 +1528,7 @@ DESCRIPTION = Glass
 
 //DUPELIST = 01f82,01f83,01f84 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 4 i_sand //some resources were fixed by converter 
+RESOURCES = 4 i_sand
 DEFNAME = i_glass
 
 [ItemDef 0x1f82]
@@ -1560,7 +1561,7 @@ DUPEITEM = i_glass_of_liquor
 [ItemDef 0x1f88]
 DUPEITEM = i_glass_of_liquor
 
-[ItemDef 0x1f89]
+[PotionDef 0x1f89]
 CATEGORY = Items by Professions
 SUBSECTION = BarKeep
 DESCRIPTION = Glass of Milk
@@ -1568,9 +1569,9 @@ DESCRIPTION = Glass of Milk
 TYPE = T_DRINK
 //DUPELIST = 01f8a,01f8b,01f8c // commented out by Converter 
 WEIGHT = 10
-RESOURCES = i_glass //some resources were fixed by converter 
-RESOURCES2 = i_glass,  i_milk //some resources were fixed by converter 
-//TDATA1 = I_GLASS // commented out by Converter 
+RESOURCES = 1 i_glass //some resources were fixed by converter 
+RESOURCES2 = 1 i_glass, 1 i_milk //some resources were fixed by converter 
+EmptyFlask = I_GLASS //converted from 'TDATA1' 
 DEFNAME = i_glass_of_milk
 
 [ItemDef 0x1f8a]
@@ -1603,7 +1604,7 @@ DUPEITEM = i_glass_of_wine
 [ItemDef 0x1f90]
 DUPEITEM = i_glass_of_wine
 
-[ItemDef 0x1f91]
+[PotionDef 0x1f91]
 CATEGORY = Items by Professions
 SUBSECTION = BarKeep
 DESCRIPTION = Glass of Water
@@ -1611,8 +1612,8 @@ DESCRIPTION = Glass of Water
 TYPE = T_DRINK
 //DUPELIST = 01f92,01f93,01f94 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 1 i_water,  i_glass //some resources were fixed by converter 
-//TDATA1 = I_GLASS // commented out by Converter 
+RESOURCES = 1 i_water, 1 i_glass //some resources were fixed by converter 
+EmptyFlask = I_GLASS //converted from 'TDATA1' 
 DEFNAME = i_glass_of_water
 
 [ItemDef 0x1f92]
@@ -1632,7 +1633,7 @@ DESCRIPTION = Pitcher of Ale
 TYPE = T_BOOZE
 //DUPELIST = 01f96 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_hay_sheaf,  i_pitcher_glass //some resources were fixed by converter 
+RESOURCES = 1 i_hay_sheaf, 1 i_pitcher_glass //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
 //TDATA1 = i_pitcher_glass // commented out by Converter 
 DEFNAME = i_pitcher_ale
@@ -1649,7 +1650,7 @@ DESCRIPTION = Pitcher of Cider
 TYPE = T_BOOZE
 //DUPELIST = 01f98 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_fruit_apple,  i_pitcher_glass //some resources were fixed by converter 
+RESOURCES = 1 i_fruit_apple, 1 i_pitcher_glass //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
 //TDATA1 = i_pitcher_glass // commented out by Converter 
 DEFNAME = i_pitcher_cider
@@ -1666,7 +1667,7 @@ DESCRIPTION = Pitcher of Liquor
 TYPE = T_BOOZE
 //DUPELIST = 01f9a // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_fruit_corn,  i_pitcher_glass //some resources were fixed by converter 
+RESOURCES = 1 i_fruit_corn, 1 i_pitcher_glass //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
 //TDATA1 = i_pitcher_glass // commented out by Converter 
 DEFNAME = i_pitcher_liquor
@@ -1683,7 +1684,7 @@ DESCRIPTION = Pitcher of Wine
 TYPE = T_BOOZE
 //DUPELIST = 01f9c // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_fruit_grapes,  i_pitcher_glass //some resources were fixed by converter 
+RESOURCES = 1 i_fruit_grapes, 1 i_pitcher_glass //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
 //TDATA1 = i_pitcher_glass // commented out by Converter 
 DEFNAME = i_pitcher_wine

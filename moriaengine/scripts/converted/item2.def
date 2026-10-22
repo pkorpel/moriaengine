@@ -21,9 +21,10 @@ model = i_fx_explode
 [WeaponDef I_BARDICHE_SA]
 NAME = "Supremely Accurate Bardiche"
 TYPE = T_WEAPON_SWORD
-RESOURCES = i_bardiche, i_enchant_weapon, i_scroll_bless //some resources were fixed by converter 
+RESOURCES = 1 i_bardiche, 1 i_enchant_weapon, 1 i_scroll_bless //some resources were fixed by converter 
 model = i_bardiche
 TwoHanded = true //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 WeaponType = WeaponType.OneHandSword //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+Color = color_magic_weap

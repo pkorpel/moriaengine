@@ -3,14 +3,16 @@
 [ItemDef i_cardolanske_pohrebiste_vybuch]
 Name = "Vybuch"
 model = i_fx_explode
+type = t_fire //guessed from base def by Converter 
 
 [ItemDef i_cardolanske_pohrebiste_dlazdice_spoustejicivybuch]
 CATEGORY = Dungy
 SUBSECTION = Cardolanske pohrebiste
 DESCRIPTION = dlazka spoustejici vybuch
 
-Name = "dlazdice spoustejici bybuch"
+Name = "dlazdice spoustejici vybuch"
 model = i_rune_alchem_11
+Color = 0044C
 
 //[DIALOG d_Cardolanske_pohrebiste_dlazdice_spoustejicivybuch] //(commented out by Converter) 
 
@@ -25,6 +27,7 @@ DESCRIPTION = zakladni dvere
 
 Name = "dvere"
 model = i_door_metal_bar
+type = t_door //guessed from base def by Converter 
 
 [ItemDef i_Cardolanske_pohrebiste_dvere12_tajne]
 CATEGORY = Dungy
@@ -33,6 +36,7 @@ DESCRIPTION = tajne dvere
 
 Name = "kamen"
 model = i_door_secret_stone_3
+type = t_door //guessed from base def by Converter 
 
 [EquippableDef i_Cardolanske_pohrebiste_packa12]
 CATEGORY = Dungy
@@ -41,11 +45,13 @@ DESCRIPTION = packa jako svicka
 
 Name = "packa"
 model = I_sconce
+type = t_light_out //guessed from base def by Converter 
 layer = 0 //Set by Converter 
 
 [EquippableDef i_Cardolanske_pohrebiste_packa12rozsvicena]
 Name = "packa rozsvicena"
 model = I_sconce_lit
+type = t_light_lit //guessed from base def by Converter 
 layer = 19 //Set by Converter 
 
 //[DIALOG d_Cardolanske_pohrebiste_nastavenipacky] //(commented out by Converter) 

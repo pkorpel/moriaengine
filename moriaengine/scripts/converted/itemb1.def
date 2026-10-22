@@ -21,7 +21,7 @@ SUBSECTION = Statues
 DESCRIPTION = Ankh (w) 1/2
 
 //DUPELIST = 03,04,05 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_ankh
 
 [ItemDef 0x3]
@@ -46,7 +46,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 07,08,09,0a,0b,0c,0d,0e,0f,010,011,012,013,014,015,016,017,018,019 // commented out by Converter 
-RESOURCES = 100 i_log //some resources were fixed by converter 
+RESOURCES = 100 i_log
 DEFNAME = i_WALL_WOOD
 
 [ItemDef 0x7]
@@ -112,7 +112,7 @@ SUBSECTION = Stone Wall 1
 DESCRIPTION = @
 
 TYPE = T_WALL
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_stone
 
 [ItemDef 0x1b]
@@ -140,7 +140,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 023 // commented out by Converter 
-RESOURCES = 50 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 50 i_rock_plain
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_stone_2
 
@@ -184,7 +184,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 034,035,036,037,038,039,03a,03d,03e,03f,040,041,042,043,044,045,046,047,048,049,04a,04b,04c,04d,04e,04f,050,051,052,053,054,055,056 // commented out by Converter 
-RESOURCES = 50 i_clay,  50 i_straw //some resources were fixed by converter 
+RESOURCES = 50 i_clay, 50 i_straw
 DEFNAME = i_wall_brick
 
 [ItemDef 0x34]
@@ -215,7 +215,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 03c // commented out by Converter 
-RESOURCES = 50 i_clay,  50 i_straw //some resources were fixed by converter 
+RESOURCES = 50 i_clay, 50 i_straw
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_brick_2
 
@@ -307,7 +307,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 058,059,05a,05b,05c,05f,060,061,062,063,064,065,066,067,068,069,06a,06b,06c,06d,06e,06f,070,071,072,073,074,075,076,077,078,079,07d9 // commented out by Converter 
-RESOURCES = 50 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 50 i_rock_plain
 DEFNAME = i_wall_stone_4
 
 [ItemDef 0x58]
@@ -332,7 +332,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 05e // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_stone_5
 
@@ -427,7 +427,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 07b,07c,07d,07e,07f,080,081,082,083,084,085,086,087,088,089,08a,08b,08c,08d,08e,08f,0364,0365 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_stone_7
 //CAN = 08 //block commented out by Converter 
 
@@ -507,7 +507,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 091,092,093,094,095,096,097,09a,09b,09c,09d,09e,09f,0a0,0a1,0a2,0a3,0a4,0a5,0145,0146,0147,0148 // commented out by Converter 
-RESOURCES = 100 i_log //some resources were fixed by converter 
+RESOURCES = 100 i_log
 DEFNAME = i_wall_log
 
 [ItemDef 0x91]
@@ -538,7 +538,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 099 // commented out by Converter 
-RESOURCES = 100 i_log,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_log, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_log_2
 
@@ -588,7 +588,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0a7,0a8,0a9,0aa,0ab,0ac,0ad,0ae,0af,0b0,0b1,0b2,0b3,0b4,0b5,0b6,0b7,0b8,0bd,0be,0bf,0c0,0c1,0c2 // commented out by Converter 
-RESOURCES = 100 i_board //some resources were fixed by converter 
+RESOURCES = 100 i_board
 DEFNAME = i_wall_wood_2
 
 [ItemDef 0xa7]
@@ -652,7 +652,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 0ba,0bb,0bc // commented out by Converter 
-RESOURCES = 100 i_board //some resources were fixed by converter 
+RESOURCES = 100 i_board
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_wood_3
 
@@ -690,7 +690,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0c6,0c7,0c8,0c9,0ca,0cb,0cc,0cd,0ce,0cf,0d0,0d1,0d2,0d3,0d4,0d5,0d6,0d7,0d8,0d9,0da,0db,0dc,0dd,0de,0df,0e0,0e1,0e2,0e3,0e4,0e5,0e6,0e7 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_stone_8
 
 [ItemDef 0xc6]
@@ -802,7 +802,7 @@ DESCRIPTION = @ (secret door)
 
 TYPE = T_DOOR
 //DUPELIST = 0ea,0ec,0ee,0f0,0f2,0f4,0f6 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_door_secret_stone_1
 
 [ItemDef 0xe9]
@@ -812,7 +812,7 @@ DESCRIPTION = @ (secret door)
 
 TYPE = T_DOOR_OPEN
 //DUPELIST = 0eb,0ed,0ef,0f1,0f3,0f5,0f7 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_door_secret_stone_1_O
 
 [ItemDef 0xea]
@@ -864,7 +864,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0f9,0fa,0fb,0fe,0ff,0100,0101,0104,0105,0106,0107,010a,010b,010c,010d,010e,010f,0110,0111,0112,0113,0114,0115,0116,0117,0118,0119,011a,011b,011c,011d,011e,011f,0120,0121,0122,0123,0124,0125,0126,0438,0439,043a,043b,043c,043d,043e,043f,0440,0441,0442,0443,0444,0445,0446,0447,0448,0449,044a,044b,044c,044d,044e,044f,0450,0451,0452,0453 // commented out by Converter 
-RESOURCES = 100 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 100 i_stone_marble
 DEFNAME = i_wall_marble
 
 [ItemDef 0xf9]
@@ -883,7 +883,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 0fd // commented out by Converter 
-RESOURCES = 100 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 100 i_stone_marble
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_marble_2
 
@@ -909,7 +909,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 0103 // commented out by Converter 
-RESOURCES = 100 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 100 i_stone_marble
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_marble_4
 
@@ -935,7 +935,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 0109 // commented out by Converter 
-RESOURCES = 100 i_stone_marble,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_stone_marble, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_marble_6
 
@@ -1036,7 +1036,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0128,0129,012a,012b,012c,012d,012e,012f,0130,0131,0132,0133,0134,0135,0136,0137,0138,0139,013c,013d,013e,013f,0140,0141,0142,0143,0144 // commented out by Converter 
-RESOURCES = 50 i_sand,  50 i_straw //some resources were fixed by converter 
+RESOURCES = 50 i_sand, 50 i_straw
 DEFNAME = i_wall_plaster
 
 [ItemDef 0x128]
@@ -1100,7 +1100,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 013b // commented out by Converter 
-RESOURCES = 50 i_sand,  50 i_straw,  1 i_window //some resources were fixed by converter 
+RESOURCES = 50 i_sand, 50 i_straw, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_plaster_2
 
@@ -1153,7 +1153,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 014a,014b,014c,014d,014e,014f,0150,0151,0152,0153 // commented out by Converter 
-RESOURCES = 50 i_sand,  50 i_straw //some resources were fixed by converter 
+RESOURCES = 50 i_sand, 50 i_straw
 DEFNAME = i_wall_plaster_4
 
 [ItemDef 0x14a]
@@ -1193,7 +1193,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 0155,0156,0157 // commented out by Converter 
-RESOURCES = 50 i_sand,  50 i_straw,  1 i_window //some resources were fixed by converter 
+RESOURCES = 50 i_sand, 50 i_straw, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_plaster_5
 
@@ -1213,7 +1213,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0159,015a,015b,015e,015f,0160,0161,0164,0165,0166,0167,0168,0169,016a,016b,016c,016d,016e,016f,0170,0171,0172,0173,0174,0175,0176,0177,0178,0179,017a,017b,017c,017d,017e,017f,0180,0181,0182,0183,0184,0185,0186,0187,0188,0189,018a,018b,018c,018d,018e,018f,0190,0191,0192,0193,0194,0195,0196,0197,0198,0199,019a,01a4,01b1,01b2,01b3,01b4,01ca,01ec,01ed,01ee,01ef // commented out by Converter 
-RESOURCES = 100 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 100 i_stone_sand
 DEFNAME = i_wall_sandstone
 
 [ItemDef 0x159]
@@ -1232,7 +1232,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 015d // commented out by Converter 
-RESOURCES = 100 i_stone_sand,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_stone_sand, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_sandstone_2
 
@@ -1258,7 +1258,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 0163 // commented out by Converter 
-RESOURCES = 100 i_stone_sand,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_stone_sand, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_sandstone_4
 
@@ -1437,7 +1437,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 019c,019d,019e,019f,01a0,01a1,01a2,01a3,01b5,01b9,01cb,01cc,01cd,01ce // commented out by Converter 
-RESOURCES = 100 i_board //some resources were fixed by converter 
+RESOURCES = 100 i_board
 DEFNAME = i_wall_primitivewood
 
 [ItemDef 0x19c]
@@ -1474,7 +1474,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 01a6,01a7,01a8,01a9,01aa,01ab,01ac,01ad,01ae,01af,01b0 // commented out by Converter 
-RESOURCES = 50 i_plant_grasses,  50 i_straw //some resources were fixed by converter 
+RESOURCES = 50 i_plant_grasses, 50 i_straw
 DEFNAME = i_wall_rattan
 
 [ItemDef 0x1a6]
@@ -1532,7 +1532,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 01b7,01b8,01ba,01bb,01bc,01bd,01be,01bf,01c0,01c1,01c2,01c3,01c8,01c9 // commented out by Converter 
-RESOURCES = 100 i_hide //some resources were fixed by converter 
+RESOURCES = 100 i_hide
 DEFNAME = i_wall_hide
 
 [ItemDef 0x1b7]
@@ -1581,7 +1581,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 01c5 // commented out by Converter 
-RESOURCES = 100 i_hide,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_hide, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_hide_2
 
@@ -1595,7 +1595,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 01c7 // commented out by Converter 
-RESOURCES = 100 i_hide,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_hide, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_hide_4
 
@@ -1630,7 +1630,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 01d0,01d1,01d2,01d5,01d6,01d7,01d8,01d9,01da,01db,01dc,01dd,01de,01df,01e0,01e1,01e2,01e3,01e4,01e5,01e6,01e7,01e8,01e9,01ea,01eb // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_stone_9
 
 [ItemDef 0x1d0]
@@ -1649,7 +1649,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 01d4 // commented out by Converter 
-RESOURCES = 50 i_rock_plain,  1 i_window //some resources were fixed by converter 
+RESOURCES = 50 i_rock_plain, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_stone_WINDOW
 
@@ -1744,7 +1744,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 01f1,01f2,01f3,01f4,01f5,01f6,01f7,01f8,01f9 // commented out by Converter 
-RESOURCES = 50 i_canvas //some resources were fixed by converter 
+RESOURCES = 50 i_canvas
 DEFNAME = i_wall_tent_10
 
 [ItemDef 0x1f1]
@@ -1781,7 +1781,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0200,0201,0202,0203,0204,0205,0206,020b,020c // commented out by Converter 
-RESOURCES = 50 i_straw,  50 i_sand //some resources were fixed by converter 
+RESOURCES = 50 i_straw, 50 i_sand
 DEFNAME = i_wall_plaster_9
 
 [ItemDef 0x200]
@@ -1812,7 +1812,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 0208,0209,020a // commented out by Converter 
-RESOURCES = 50 i_straw,  50 i_sand,  1 i_window //some resources were fixed by converter 
+RESOURCES = 50 i_straw, 50 i_sand, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_plaster_10
 
@@ -1838,7 +1838,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0210,0211,0212,0213,0214,0215,0216,0217,0218,0219,021a // commented out by Converter 
-RESOURCES = 50 i_bamboo //some resources were fixed by converter 
+RESOURCES = 50 i_bamboo
 DEFNAME = i_wall_bamboo
 
 [ItemDef 0x210]
@@ -1881,7 +1881,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 021e,021f,0220,0221,0222,0223,0226,0227,0228,0229,022a,022b // commented out by Converter 
-RESOURCES = 50 i_board //some resources were fixed by converter 
+RESOURCES = 50 i_board
 DEFNAME = i_wall_wood_7
 
 [ItemDef 0x21e]
@@ -1922,12 +1922,12 @@ DUPEITEM = i_wall_wood_7
 
 [ItemDef 0x22c]
 //DUPELIST = 022f // commented out by Converter 
-RESOURCES = 10 i_canvas //some resources were fixed by converter 
+RESOURCES = 10 i_canvas
 DEFNAME = i_door_tent
 
 [ItemDef 0x22d]
 //DUPELIST = 022e // commented out by Converter 
-RESOURCES = 10 i_canvas //some resources were fixed by converter 
+RESOURCES = 10 i_canvas
 DEFNAME = i_door_tent_o
 
 [ItemDef 0x22e]
@@ -1943,7 +1943,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0231,0232,0233,0234,0235,0236,0237,0238,0239 // commented out by Converter 
-RESOURCES = 100 i_canvas //some resources were fixed by converter 
+RESOURCES = 100 i_canvas
 DEFNAME = i_wall_tent
 
 [ItemDef 0x231]
@@ -1980,7 +1980,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0242,0243,0244,0245,0246,0247,0248,0249,024a,02f9,02fa,02fb,02fc,02fd,02fe,02ff,0300 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_dungeon
 
 [ItemDef 0x242]
@@ -2017,7 +2017,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 024d,024e,024f,0250,0251,0252,0253,0254,0255,0256,0257,0258,0259,025a,025b // commented out by Converter 
-RESOURCES = 100 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 100 i_stone_sand
 DEFNAME = i_wall_sandstone_1
 
 [ItemDef 0x24d]
@@ -2072,7 +2072,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 025d,025e,025f,0260,0261,0262,0263,0264,0265,0266,0267,0268,0269,026a,026b,026c,026d,026e,026f,0270,0271,0272,0273,0274,0275,0276,027d,027e,027f,0280 // commented out by Converter 
-RESOURCES = 10 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 10 i_rock_plain
 DEFNAME = i_wall_sandstone_6
 
 [ItemDef 0x25d]
@@ -2160,7 +2160,7 @@ DESCRIPTION = Ruined Wall
 
 TYPE = T_WALL
 //DUPELIST = 0278,0279,027a,027b,027c,0281,0282 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_sandstone_7
 
 [ItemDef 0x278]
@@ -2203,7 +2203,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0292,0293,0294,0297,0298,0299,029a,029d,029e,029f,02a0,02a1,02a2,02a3,02a4,02a5,02a6,02a7,02a8,02a9,02aa,02ab,02ac,02b0,02b1,02b2,02b3,02b4,02b5,02b6,02b7,02b8,02b9,02ba,02bb,02bc,02bd,02be,02bf,02c0 // commented out by Converter 
-RESOURCES = 100 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 100 i_stone_marble
 DEFNAME = i_wall_marble_1
 
 [ItemDef 0x292]
@@ -2222,7 +2222,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 0296 // commented out by Converter 
-RESOURCES = 100 i_stone_marble,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_stone_marble, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_marble_8
 
@@ -2248,7 +2248,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 029c // commented out by Converter 
-RESOURCES = 100 i_stone_marble,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_stone_marble, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_marble_10
 
@@ -2310,7 +2310,7 @@ DESCRIPTION = @
 
 TYPE = t_window
 //DUPELIST = 02ae // commented out by Converter 
-RESOURCES = 100 i_stone_marble,  1 i_window //some resources were fixed by converter 
+RESOURCES = 100 i_stone_marble, 1 i_window
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_wall_marble_12
 
@@ -2375,7 +2375,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 02c8,02c9,02ca,02cb,02cc,02cd,02ce,02cf,02d0,02d1,02d2,02d3,02d4,02d5,02d6,02d7,02d8,02d9 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_stone_11
 
 [ItemDef 0x2c8]
@@ -2439,7 +2439,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 02df,02e0,02e1,02e2,02e3,02e4,02e5,02e6,02e7 // commented out by Converter 
-RESOURCES = 100 i_canvas //some resources were fixed by converter 
+RESOURCES = 100 i_canvas
 DEFNAME = i_wall_tent_2
 
 [ItemDef 0x2df]
@@ -2476,7 +2476,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 02e9,02ea,02eb,02ec // commented out by Converter 
-RESOURCES = 100 i_canvas //some resources were fixed by converter 
+RESOURCES = 100 i_canvas
 DEFNAME = i_wall_tent_3
 
 [ItemDef 0x2e9]
@@ -2498,7 +2498,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 02f0,02f1,02f2,02f3,02f4,0372,0373,0374,0375,0376,0377 // commented out by Converter 
-RESOURCES = 5 i_canvas //some resources were fixed by converter 
+RESOURCES = 5 i_canvas
 DEFNAME = i_wall_tent_4
 
 [ItemDef 0x2f0]
@@ -2547,7 +2547,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 0316,0318,031a,031c,031e,0320,0322 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_door_secret_stone_2
 
 [ItemDef 0x315]
@@ -2557,7 +2557,7 @@ DESCRIPTION = @ (n / sw) open
 
 TYPE = T_DOOR_OPEN
 //DUPELIST = 0317,0319,031b,031d,031f,0321,0323 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_door_secret_stone_2_O
 
 [ItemDef 0x316]
@@ -2637,7 +2637,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 0326,0328,032a,032c,032e,0330,0332 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_door_secret_stone_3
 
 [ItemDef 0x325]
@@ -2647,7 +2647,7 @@ DESCRIPTION = @ (n / sw) open
 
 TYPE = T_DOOR_OPEN
 //DUPELIST = 0327,0329,032b,032d,032f,0331,0333 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_door_secret_stone_3_O
 
 [ItemDef 0x326]
@@ -2727,7 +2727,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 0336,0338,033a,033c,033e,0340,0342 // commented out by Converter 
-RESOURCES = 100 i_board //some resources were fixed by converter 
+RESOURCES = 100 i_board
 DEFNAME = i_door_secret_wood_1
 
 [ItemDef 0x335]
@@ -2737,7 +2737,7 @@ DESCRIPTION = @ (n / sw) open
 
 TYPE = T_DOOR_OPEN
 //DUPELIST = 0337,0339,033b,033d,033f,0341,0343 // commented out by Converter 
-RESOURCES = 100 i_board //some resources were fixed by converter 
+RESOURCES = 100 i_board
 DEFNAME = i_door_secret_wood_1_o
 
 [ItemDef 0x336]
@@ -2817,7 +2817,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 0346,0348,034a,034c,034e,0350,0352 // commented out by Converter 
-RESOURCES = 100 i_board //some resources were fixed by converter 
+RESOURCES = 100 i_board
 DEFNAME = i_door_secret_wood_2
 
 [ItemDef 0x345]
@@ -2827,7 +2827,7 @@ DESCRIPTION = @ (n / sw) open
 
 TYPE = T_DOOR_OPEN
 //DUPELIST = 0347,0349,034b,034d,034f,0351,0353 // commented out by Converter 
-RESOURCES = 100 i_board //some resources were fixed by converter 
+RESOURCES = 100 i_board
 DEFNAME = i_door_secret_wood_2_o
 
 [ItemDef 0x346]
@@ -2907,7 +2907,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 0356,0358,035a,035c,035e,0360,0362 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_door_secret_stone_4
 
 [ItemDef 0x355]
@@ -2917,7 +2917,7 @@ DESCRIPTION = @ (n / sw) open
 
 TYPE = T_DOOR_OPEN
 //DUPELIST = 0357,0359,035b,035d,035f,0361,0363 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_door_secret_stone_4_O
 
 [ItemDef 0x356]
@@ -3003,7 +3003,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0369,036a,036b,036c,036d,036e,036f,0370,0371 // commented out by Converter 
-RESOURCES = 100 i_canvas //some resources were fixed by converter 
+RESOURCES = 100 i_canvas
 DEFNAME = i_wall_tent_5
 
 [ItemDef 0x369]
@@ -3057,7 +3057,7 @@ SUBSECTION = Tent Dagges
 DESCRIPTION = @
 
 //DUPELIST = 0379,037a,037b,037c,037d // commented out by Converter 
-RESOURCES = 5 i_canvas //some resources were fixed by converter 
+RESOURCES = 5 i_canvas
 DEFNAME = i_TENT_DAGGES
 
 [ItemDef 0x379]
@@ -3082,7 +3082,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 0380,0381,0382,0383,0384,0385,0386,0387,0388,0389,038a,038b,038c,038d,038e,038f,0390,0391,0392,0393,0394,0395,0396,0397,0398,0399,039a,039b,039c,039d,039e,039f,03a0 // commented out by Converter 
-RESOURCES = 50 i_straw,  50 i_sand //some resources were fixed by converter 
+RESOURCES = 50 i_straw, 50 i_sand
 DEFNAME = i_wall_plaster_14
 
 [ItemDef 0x380]
@@ -3190,7 +3190,7 @@ SUBSECTION = Pier
 DESCRIPTION = @
 
 //DUPELIST = 03aa,03ab,03ac,03ad,03ae,03af,03b0 // commented out by Converter 
-RESOURCES = 50 i_log //some resources were fixed by converter 
+RESOURCES = 50 i_log
 DEFNAME = i_PIER_1
 
 [ItemDef 0x3a6]
@@ -3199,7 +3199,7 @@ SUBSECTION = Rope
 DESCRIPTION = @
 
 //DUPELIST = 03a7,03a8,03a9 // commented out by Converter 
-RESOURCES = 50 i_cloth //some resources were fixed by converter 
+RESOURCES = 50 i_cloth
 DEFNAME = i_PIER_2
 
 [ItemDef 0x3a7]
@@ -3238,7 +3238,7 @@ SUBSECTION = Wooden Fence 1
 DESCRIPTION = @
 
 //DUPELIST = 03b4,03b5,03b6,0835,0836,0837,0838 // commented out by Converter 
-RESOURCES = 100 i_log //some resources were fixed by converter 
+RESOURCES = 100 i_log
 DEFNAME = i_fence_wood
 
 [ItemDef 0x3b4]
@@ -3256,7 +3256,7 @@ SUBSECTION = Stone Ruins
 DESCRIPTION = @
 
 //DUPELIST = 03b8,03b9,03ba,03bb,03bc,03bd,03bf,03c3,03c4,03c5,03c6 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_STONE_RUIN
 
 [ItemDef 0x3b8]
@@ -3284,7 +3284,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 03c0,03c1,03c2,03c7,03c8,03c9,03ca // commented out by Converter 
-RESOURCES = 100 i_canvas //some resources were fixed by converter 
+RESOURCES = 100 i_canvas
 DEFNAME = i_wall_stone_12
 
 [ItemDef 0x3bf]
@@ -3330,7 +3330,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 03cc,03cd,03ce,03d3,03d4,03d5,03d6,03d7,03d8,03d9,03da,03db,03dc // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_stone_13
 
 [ItemDef 0x3cc]
@@ -3349,7 +3349,7 @@ DESCRIPTION = @
 
 TYPE = T_WALL
 //DUPELIST = 03d0,03d1,03d2,03dd,03de,03df,03e0,03e1,03e2 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_wall_stone_14
 
 [ItemDef 0x3d0]
@@ -3415,7 +3415,7 @@ SUBSECTION = Stone Stairs 1
 DESCRIPTION = @
 
 //DUPELIST = 03ef,03f0,03f1,03f2,03f3,03f4,03f5,03f6,03f7,03f8,03f9,03fa,03fb,03fc,03fd,03fe,03ff,0400,0401,0402 // commented out by Converter 
-RESOURCES = 100 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain
 DEFNAME = i_stairs_stone
 
 [ItemDef 0x3ef]
@@ -3548,7 +3548,7 @@ SUBSECTION = Orc Camp Decor
 DESCRIPTION = Gruesome Standard
 
 //DUPELIST = 0428 // commented out by Converter 
-RESOURCES = 10 i_log,  10 i_bone //some resources were fixed by converter 
+RESOURCES = 10 i_log, 10 i_bone
 DEFNAME = i_GRUESOMESTANDARD
 
 [ItemDef 0x420]
@@ -3556,7 +3556,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Orc Camp Decor
 DESCRIPTION = Gruesome Standard 2
 
-RESOURCES = 10 i_log,  10 i_bone //some resources were fixed by converter 
+RESOURCES = 10 i_log, 10 i_bone
 DEFNAME = i_GRUESOMESTANDARD_2
 
 [ItemDef 0x421]
@@ -3566,7 +3566,7 @@ DESCRIPTION = Palisade
 
 TYPE = T_WALL
 //DUPELIST = 0422,0423,0424,0425,0430,0431 // commented out by Converter 
-RESOURCES = 50 i_log //some resources were fixed by converter 
+RESOURCES = 50 i_log
 DEFNAME = i_PALISADE
 
 [ItemDef 0x422]
@@ -3587,7 +3587,7 @@ SUBSECTION = Orc Camp Decor
 DESCRIPTION = Tattered Banner
 
 //DUPELIST = 0427,0429,042a,042b,042c,042d,042e,042f // commented out by Converter 
-RESOURCES = 1 i_log,  5 i_cloth //some resources were fixed by converter 
+RESOURCES = 1 i_log, 5 i_cloth
 DEFNAME = i_BANNER_TATTERED
 
 [ItemDef 0x427]
@@ -3629,7 +3629,7 @@ SUBSECTION = Orc Camp Decor
 DESCRIPTION = Curtain
 
 //DUPELIST = 0435 // commented out by Converter 
-RESOURCES = 10 i_cloth //some resources were fixed by converter 
+RESOURCES = 10 i_cloth
 DEFNAME = i_CURTAIN
 
 [ItemDef 0x433]
@@ -3638,7 +3638,7 @@ SUBSECTION = Orc Camp Decor
 DESCRIPTION = Curtain Rod
 
 //DUPELIST = 0434 // commented out by Converter 
-RESOURCES = 1 i_log //some resources were fixed by converter 
+RESOURCES = 1 i_log
 DEFNAME = i_CURTAINROD
 
 [ItemDef 0x434]
@@ -3739,7 +3739,7 @@ DESCRIPTION = Marble Bench 1 (n)
 TYPE = T_CHAIR
 //DUPELIST = 045a // commented out by Converter 
 WEIGHT = 40
-RESOURCES = 50 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 50 i_stone_marble
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_BENCH_MARBLE
 
@@ -3756,7 +3756,7 @@ DESCRIPTION = Marble Bench 2 (n)
 TYPE = T_CHAIR
 //DUPELIST = 045c // commented out by Converter 
 WEIGHT = 40
-RESOURCES = 50 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 50 i_stone_sand
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_bench_sandstone
 
@@ -3771,7 +3771,7 @@ SUBSECTION = Sandstone Fireplace
 DESCRIPTION = @ (empty)
 
 //DUPELIST = 045e,045f,0460 // commented out by Converter 
-RESOURCES = 20 i_ingot_iron,  300 i_stone_sand,  25 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 20 i_ingot_iron, 300 i_stone_sand, 25 i_stone_marble
 DEFNAME = i_fireplace_sandstone
 
 [ItemDef 0x45e]
@@ -3790,7 +3790,7 @@ DESCRIPTION = @
 
 TYPE = T_FIRE
 //DUPELIST = 0462,0463,0464,0465,0466,046a,046b,046c,046d,046e,046f // commented out by Converter 
-RESOURCES = 20 i_ingot_iron,  300 i_stone_sand,  25 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 20 i_ingot_iron, 300 i_stone_sand, 25 i_stone_marble
 DEFNAME = i_oven_sandstone
 
 [ItemDef 0x462]
@@ -3833,7 +3833,7 @@ DESCRIPTION = @ (lit)
 
 TYPE = T_FIRE
 //DUPELIST = 0476,0477,0478,0479,047a,047b,047c,047d,047e,047f,0480,0482,0483,0484,0485,0486,0487,0489,048a,048b,048c,048d,048e // commented out by Converter 
-RESOURCES = 20 i_ingot_iron,  300 i_stone_sand,  25 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 20 i_ingot_iron, 300 i_stone_sand, 25 i_stone_marble
 DEFNAME = i_fireplace_sandstone_2
 
 [ItemDef 0x476]
@@ -3911,7 +3911,7 @@ SUBSECTION = Blue Floor
 DESCRIPTION = @
 
 //DUPELIST = 0492,0493,0494,049b,04ea,04eb,04ec,04ed,04ee,04ef,04f0,04f1,04f2 // commented out by Converter 
-RESOURCES = 25 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 25 i_rock_plain
 DEFNAME = i_floor_blue
 
 [ItemDef 0x492]
@@ -3929,7 +3929,7 @@ SUBSECTION = Marble Floor 1
 DESCRIPTION = @
 
 //DUPELIST = 0496,0497,0498 // commented out by Converter 
-RESOURCES = 25 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 25 i_stone_marble
 DEFNAME = i_floor_marble
 
 [ItemDef 0x496]
@@ -3949,7 +3949,7 @@ CATEGORY = Buildings - Floors
 SUBSECTION = Gray Slate Floor
 DESCRIPTION = @
 
-RESOURCES = 25 i_stone_slate //some resources were fixed by converter 
+RESOURCES = 25 i_stone_slate
 DEFNAME = i_FLOOR_SLATE_GREY
 
 [ItemDef 0x49d]
@@ -3958,7 +3958,7 @@ SUBSECTION = Sandstone Pavers
 DESCRIPTION = @
 
 //DUPELIST = 049e,049f,04a0 // commented out by Converter 
-RESOURCES = 25 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 25 i_stone_sand
 DEFNAME = i_paver_sandstone
 
 [ItemDef 0x49e]
@@ -3976,7 +3976,7 @@ SUBSECTION = Wooden Planks (light)
 DESCRIPTION = @
 
 //DUPELIST = 04a2,04a3,04a4,04c6,04c7,04c8,04c9,04ca,04cb,04cc,04cd,04ce,04cf,04d0,04d1,04d2,04d3,04d4,04d5,04d6,04d7,04d8,04d9,04da,04db,04dc,04dd,04de,04df,04e0,04e1 // commented out by Converter 
-RESOURCES = 25 i_board //some resources were fixed by converter 
+RESOURCES = 25 i_board
 DEFNAME = i_WOOD_PLANK
 
 [ItemDef 0x4a2]
@@ -3994,7 +3994,7 @@ SUBSECTION = Wooden Boards
 DESCRIPTION = @
 
 //DUPELIST = 04a6,04a7,04a8,04a9,04aa,04ab,04ac,04ad,04ae,04af,04b0,04b1,04b2,04b3,04b4,04b5,04b6,04b7,04b8,04b9,04ba,04bb,04bc,04bd,04be,04bf,04c0 // commented out by Converter 
-RESOURCES = 25 i_board //some resources were fixed by converter 
+RESOURCES = 25 i_board
 DEFNAME = i_floor_wood
 
 [ItemDef 0x4a6]
@@ -4084,7 +4084,7 @@ SUBSECTION = Primitive Wooden Logs (green)
 DESCRIPTION = @
 
 //DUPELIST = 04c2,04c3,04c4,04c5,0504,0505,0506,0507,0508,0509,050a // commented out by Converter 
-RESOURCES = 25 i_log //some resources were fixed by converter 
+RESOURCES = 25 i_log
 DEFNAME = i_floor_wood_primitive
 
 [ItemDef 0x4c2]
@@ -4189,7 +4189,7 @@ SUBSECTION = Flagstones (Dark Red)
 DESCRIPTION = @
 
 //DUPELIST = 04e3,04e4,04e5,04e6,04e7,04e8,04e9,0537,0538,0539,053a // commented out by Converter 
-RESOURCES = 25 i_flagstone_red //some resources were fixed by converter 
+RESOURCES = 25 i_flagstone_red
 DEFNAME = i_floor_flagstone_red
 
 [ItemDef 0x4e3]
@@ -4246,7 +4246,7 @@ SUBSECTION = Red Floor
 DESCRIPTION = @
 
 //DUPELIST = 04f4,04f5,04f6,04f7,04f8,04f9,04fa,04fb // commented out by Converter 
-RESOURCES = 25 i_stone_red //some resources were fixed by converter 
+RESOURCES = 25 i_stone_red
 DEFNAME = i_FLOOR_STONE_RED
 
 [ItemDef 0x4f4]
@@ -4279,7 +4279,7 @@ SUBSECTION = Flagstones (gray)
 DESCRIPTION = @
 
 //DUPELIST = 04fd,04fe,04ff // commented out by Converter 
-RESOURCES = 25 i_flagstone_gray //some resources were fixed by converter 
+RESOURCES = 25 i_flagstone_gray
 DEFNAME = i_FLOOR_FLAGSTONE_GRAY
 
 [ItemDef 0x4fd]
@@ -4297,7 +4297,7 @@ SUBSECTION = Flagstones (sandstone)
 DESCRIPTION = @
 
 //DUPELIST = 0501,0502,0503 // commented out by Converter 
-RESOURCES = 25 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 25 i_stone_sand
 DEFNAME = i_FLOOR_SANDSTONE
 
 [ItemDef 0x501]
@@ -4336,7 +4336,7 @@ SUBSECTION = Primitive Logs (gray)
 DESCRIPTION = @
 
 //DUPELIST = 050c // commented out by Converter 
-RESOURCES = 25 i_log //some resources were fixed by converter 
+RESOURCES = 25 i_log
 DEFNAME = i_FLOOR_WOOD_LOG
 
 [ItemDef 0x50c]
@@ -4348,7 +4348,7 @@ SUBSECTION = Marble Floor 2
 DESCRIPTION = @
 
 //DUPELIST = 050e // commented out by Converter 
-RESOURCES = 25 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 25 i_stone_marble
 DEFNAME = i_floor_marble_2
 
 [ItemDef 0x50e]
@@ -4360,7 +4360,7 @@ SUBSECTION = Marble Floor 3
 DESCRIPTION = @
 
 //DUPELIST = 0510 // commented out by Converter 
-RESOURCES = 25 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 25 i_stone_marble
 DEFNAME = i_floor_marble_3
 
 [ItemDef 0x510]
@@ -4372,7 +4372,7 @@ SUBSECTION = Marble Floor 4
 DESCRIPTION = @
 
 //DUPELIST = 0512 // commented out by Converter 
-RESOURCES = 25 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 25 i_stone_marble
 DEFNAME = i_floor_marble_4
 
 [ItemDef 0x512]
@@ -4384,7 +4384,7 @@ SUBSECTION = Marble Floor 5
 DESCRIPTION = @
 
 //DUPELIST = 0514 // commented out by Converter 
-RESOURCES = 25 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 25 i_stone_marble
 DEFNAME = i_floor_marble_5
 
 [ItemDef 0x514]
@@ -4396,7 +4396,7 @@ SUBSECTION = Cobblestones
 DESCRIPTION = @
 
 //DUPELIST = 0516,0517,0518 // commented out by Converter 
-RESOURCES = 25 i_stone_cobble //some resources were fixed by converter 
+RESOURCES = 25 i_stone_cobble
 DEFNAME = i_FLOOR_COBBLESTONE
 
 [ItemDef 0x516]
@@ -4414,7 +4414,7 @@ SUBSECTION = Stone Pavers
 DESCRIPTION = @
 
 //DUPELIST = 051a,051b,051c,051d,051e,051f,0520,0521,0522,0523,0524 // commented out by Converter 
-RESOURCES = 25 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 25 i_rock_plain
 DEFNAME = i_PAVER_STONE
 
 [ItemDef 0x51a]
@@ -4456,7 +4456,7 @@ SUBSECTION = Sandstone Floor (light)
 DESCRIPTION = @
 
 //DUPELIST = 0526,0527,0528,0529,052a,052b,052c // commented out by Converter 
-RESOURCES = 25 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 25 i_stone_sand
 DEFNAME = i_FLOOR_SANDSTONE_2
 
 [ItemDef 0x526]
@@ -4486,7 +4486,7 @@ SUBSECTION = Sandstone Floor (dark)
 DESCRIPTION = @
 
 //DUPELIST = 0530,0531,0532,0533,0534,0535,0536 // commented out by Converter 
-RESOURCES = 25 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 25 i_stone_sand
 DEFNAME = i_FLOOR_SANDSTONE_3
 
 [ItemDef 0x530]
@@ -4602,7 +4602,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 0558,0559,055a,055b,056b,056c,056d,056e,056f,0570,0571,0572,0573,0574,0575,0576,0577,0578,05ef,062b,062c,062d,062e,0637,0638,0639,063a,0652,0653,065a,065b,065c,065d // commented out by Converter 
-RESOURCES = 25 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 25 i_rock_plain
 DEFNAME = i_ROOF_STONE
 
 [ItemDef 0x551]
@@ -4621,7 +4621,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 0555,0556,0557,055c,055d,055e,055f,0560,0561,0562,0563,0564,0565,0566,0567,0568,0569,062f,0630,0631,0632,0656,0657 // commented out by Converter 
-RESOURCES = 25 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 25 i_rock_plain
 DEFNAME = i_ROOF_STONE_2
 
 [ItemDef 0x555]
@@ -4739,7 +4739,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 057a,057b,057c,057d,057e,063b,063c,063d,063e,0654,0655 // commented out by Converter 
-RESOURCES = 25 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 25 i_rock_plain
 DEFNAME = i_ROOF_STONE_3
 
 [ItemDef 0x57a]
@@ -4764,7 +4764,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 0580,0581,0582,0583,0584,0585,0658,0659 // commented out by Converter 
-RESOURCES = 25 i_stone_slate //some resources were fixed by converter 
+RESOURCES = 25 i_stone_slate
 DEFNAME = i_ROOF_SLATE
 
 [ItemDef 0x580]
@@ -4844,7 +4844,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 0596,0597,0598,0599,059a,059b,059c,059d,059e,059f,05a0,05a1,05a2,05a3 // commented out by Converter 
-RESOURCES = 25 i_stone_slate //some resources were fixed by converter 
+RESOURCES = 25 i_stone_slate
 DEFNAME = i_ROOF_SLATE_2
 
 [ItemDef 0x596]
@@ -4896,7 +4896,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 05a5,05a6,05a7,05a8,05a9,05aa,05ab,05ac,05ad,05ae,05af,05b0,05b1,05b2 // commented out by Converter 
-RESOURCES = 25 i_hay //some resources were fixed by converter 
+RESOURCES = 25 i_hay
 DEFNAME = i_ROOF_THATCH
 
 [ItemDef 0x5a5]
@@ -4948,7 +4948,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 05b4,05b5,05b6,05b7,05b8,05b9,05ba,05bb,05bc,05bd,05be,05bf,05c0,05c1,06fd,06fe,06ff,0700 // commented out by Converter 
-RESOURCES = 25 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 25 i_rock_plain
 DEFNAME = i_ROOF_TILE
 
 [ItemDef 0x5b4]
@@ -4999,7 +4999,7 @@ SUBSECTION = Wooden Shingles
 DESCRIPTION = @
 
 //DUPELIST = 05c3,05c4,05c5,05c6,05c7,05c8,05c9,05ca,05cb,05cc,05cd,05ce,05cf,05d0 // commented out by Converter 
-RESOURCES = 25 i_board //some resources were fixed by converter 
+RESOURCES = 25 i_board
 DEFNAME = i_SHINGLE_WOODEN
 
 [ItemDef 0x5c3]
@@ -5135,7 +5135,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 05f1,05f2,05f3,05f4,05f5,05f6,05f7,05f8,05f9,05fa,05fb,05fc,05fd,05fe // commented out by Converter 
-RESOURCES = 25 i_log //some resources were fixed by converter 
+RESOURCES = 25 i_log
 DEFNAME = i_ROOF_LOG
 
 [ItemDef 0x5f1]
@@ -5187,7 +5187,7 @@ DESCRIPTION = @
 
 TYPE = t_roof
 //DUPELIST = 0600,0601,0602,0603,0604,0605,0606,0607,0608,0609,060a,060b,060c,060d,060e,060f,0610,0611,0612,0613,0614,0615,0616,0617,0618,0619,061a,061b,061c,061d,061e,061f,0620,0621,0622,0623,0624,0625,0626,0627,0628,0629,062a,0633,0634,0635,0636,0648,0649,064a,064b,064c,064d,064e,064f,0650,0651,065e,065f,0660,0661,0662,0663,0664,0665,0666,0667,0668,0669,066a,066b,066c,066d,066e,066f,0670,0671,0672,0673,0674 // commented out by Converter 
-RESOURCES = 25 i_canvas //some resources were fixed by converter 
+RESOURCES = 25 i_canvas
 DEFNAME = i_ROOF_TENT
 
 [ItemDef 0x600]
@@ -5521,7 +5521,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 0677,0679,067b,067d,067f,0681,0683 // commented out by Converter 
-RESOURCES = 40 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 40 i_ingot_iron
 DEFNAME = i_door_metal
 
 [ItemDef 0x676]
@@ -5607,7 +5607,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 0687,0689,068b,068d,068f,0691,0693 // commented out by Converter 
-RESOURCES = 30 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 30 i_ingot_iron
 DEFNAME = i_door_metal_bar
 
 [ItemDef 0x686]
@@ -5693,7 +5693,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 0697,0699,069b,069d,069f,06a1,06a3 // commented out by Converter 
-RESOURCES = 15 i_plant_grasses,  15 i_straw //some resources were fixed by converter 
+RESOURCES = 15 i_plant_grasses, 15 i_straw
 DEFNAME = i_door_rattan
 
 [ItemDef 0x696]
@@ -5779,7 +5779,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 06a7,06a9,06ab,06ad,06af,06b1,06b3 // commented out by Converter 
-RESOURCES = 25 i_board //some resources were fixed by converter 
+RESOURCES = 25 i_board
 DEFNAME = i_door_wood
 
 [ItemDef 0x6a6]
@@ -5863,7 +5863,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 06b7,06b9,06bb,06bd,06bf,06c1,06c3 // commented out by Converter 
-RESOURCES = 25 i_board //some resources were fixed by converter 
+RESOURCES = 25 i_board
 DEFNAME = i_door_wood_4
 
 [ItemDef 0x6b6]
@@ -5949,7 +5949,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 06c7,06c9,06cb,06cd,06cf,06d1,06d3 // commented out by Converter 
-RESOURCES = 45 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 45 i_ingot_iron
 DEFNAME = i_door_metal_2
 
 [ItemDef 0x6c6]
@@ -6035,7 +6035,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 06d7,06d9,06db,06dd,06df,06e1,06e3 // commented out by Converter 
-RESOURCES = 25 i_board //some resources were fixed by converter 
+RESOURCES = 25 i_board
 DEFNAME = i_door_wood_2
 
 [ItemDef 0x6d6]
@@ -6121,7 +6121,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 06e7,06e9,06eb,06ed,06ef,06f1,06f3 // commented out by Converter 
-RESOURCES = 25 i_board //some resources were fixed by converter 
+RESOURCES = 25 i_board
 DEFNAME = i_door_wood_3
 
 [ItemDef 0x6e6]
@@ -6207,7 +6207,7 @@ DESCRIPTION = @
 
 TYPE = T_PORTCULIS
 //DUPELIST = 06f6 // commented out by Converter 
-RESOURCES = 50 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 50 i_ingot_iron
 DEFNAME = i_DOOR_PORTCULIS
 
 [ItemDef 0x6f6]
@@ -6230,7 +6230,7 @@ CATEGORY = Buildings - Stairs
 SUBSECTION = Marble Stairs
 DESCRIPTION = @
 
-RESOURCES = 50 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 50 i_stone_marble
 DEFNAME = i_STAIRS_MARBLE
 
 [ItemDef 0x70a]
@@ -6239,7 +6239,7 @@ SUBSECTION = Marble Stairs
 DESCRIPTION = @
 
 //DUPELIST = 070b,070c,070d // commented out by Converter 
-RESOURCES = 50 i_stone_marble //some resources were fixed by converter 
+RESOURCES = 50 i_stone_marble
 DEFNAME = i_STAIRS_MARBLE_2
 
 [ItemDef 0x70b]
@@ -6300,7 +6300,7 @@ CATEGORY = Buildings - Stairs
 SUBSECTION = Stone Stairs 2
 DESCRIPTION = @
 
-RESOURCES = 50 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 50 i_rock_plain
 DEFNAME = i_stairs_stone_2
 
 [ItemDef 0x71f]
@@ -6311,7 +6311,7 @@ SUBSECTION = Wooden Stairs (light)
 DESCRIPTION = @
 
 //DUPELIST = 0721 // commented out by Converter 
-RESOURCES = 50 i_board //some resources were fixed by converter 
+RESOURCES = 50 i_board
 DEFNAME = i_STAIRS_WOOD
 
 [ItemDef 0x721]
@@ -6367,7 +6367,7 @@ SUBSECTION = Wooden Stairs (dark)
 DESCRIPTION = @
 
 //DUPELIST = 0739,073a,073b,073c,073d,073e,073f,0740,0741,0742,0743,0744,0745,0746,0747,0748,07b3,07b4,07b5,07b6 // commented out by Converter 
-RESOURCES = 50 i_board //some resources were fixed by converter 
+RESOURCES = 50 i_board
 DEFNAME = i_STAIRS_WOOD_2
 
 [ItemDef 0x739]
@@ -6437,7 +6437,7 @@ CATEGORY = Buildings - Stairs
 SUBSECTION = Stone Stairs 3
 DESCRIPTION = @
 
-RESOURCES = 50 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 50 i_rock_plain
 DEFNAME = i_stairs_stone_5
 
 [ItemDef 0x751]
@@ -6518,7 +6518,7 @@ SUBSECTION = Sandstone Stairs
 DESCRIPTION = @
 
 //DUPELIST = 076a,076b,076c,076d,076e,076f,0770,0771,0772,0773,0774,0775,0776,0777,0778,0779,077a,077b,077c,077d,077e,077f,0780,0781 // commented out by Converter 
-RESOURCES = 50 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 50 i_stone_sand
 DEFNAME = i_STAIRS_SANDSTONE
 
 [ItemDef 0x76a]
@@ -6599,7 +6599,7 @@ SUBSECTION = Stone Stairs 4
 DESCRIPTION = @
 
 //DUPELIST = 0783,0784,0785,0786,0787,0788,0789,078a,078b,078c,078d,078e,078f,0790,0791,0792,0793,0794,0795,0796,0797,0798,0799,079a,079b,079c // commented out by Converter 
-RESOURCES = 50 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 50 i_rock_plain
 DEFNAME = i_stairs_stone_3
 
 [ItemDef 0x783]
@@ -6686,7 +6686,7 @@ SUBSECTION = Cave Steps
 DESCRIPTION = @
 
 //DUPELIST = 079e,079f,07b0,07b1,07b2,07b7,07b8,07b9 // commented out by Converter 
-RESOURCES = 50 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 50 i_rock_plain
 DEFNAME = i_CAVE_STEP
 
 [ItemDef 0x79e]
@@ -6707,7 +6707,7 @@ SUBSECTION = Stone Stairs 5
 DESCRIPTION = @
 
 //DUPELIST = 07a4,07a5,07a6,07a7,07a8,07a9,07aa,07ab,07ac,07ad,07ae,07af // commented out by Converter 
-RESOURCES = 50 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 50 i_rock_plain
 DEFNAME = i_stairs_stone_4
 
 [ItemDef 0x7a4]
@@ -6782,7 +6782,7 @@ SUBSECTION = Carpeted Rostrum
 DESCRIPTION = @
 
 //DUPELIST = 07bb,07bc,07c7,07c8 // commented out by Converter 
-RESOURCES = 50 i_board,  10 i_wool //some resources were fixed by converter 
+RESOURCES = 50 i_board, 10 i_wool
 DEFNAME = i_CARPET_ROSTRUM
 
 [ItemDef 0x7bb]
@@ -6797,7 +6797,7 @@ SUBSECTION = Platform
 DESCRIPTION = @
 
 //DUPELIST = 07be,07bf,07c0,07c1,07c2,07c3,07c4,07c5,07c6 // commented out by Converter 
-RESOURCES = 20 i_board //some resources were fixed by converter 
+RESOURCES = 20 i_board
 DEFNAME = i_PLATFORM
 
 [ItemDef 0x7be]
@@ -6839,7 +6839,7 @@ SUBSECTION = Wooden Planks (dark)
 DESCRIPTION = @
 
 //DUPELIST = 07ca,07cb,07cc,07cd,07ce,07cf,07d0 // commented out by Converter 
-RESOURCES = 25 i_board //some resources were fixed by converter 
+RESOURCES = 25 i_board
 DEFNAME = i_WOOD_PLANK_2
 
 [ItemDef 0x7ca]
@@ -6869,7 +6869,7 @@ SUBSECTION = Stone Rail 3
 DESCRIPTION = @
 
 //DUPELIST = 07d7,07d8 // commented out by Converter 
-RESOURCES = 15 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 15 i_rock_plain
 DEFNAME = i_POST_STONE
 
 [ItemDef 0x7d7]
