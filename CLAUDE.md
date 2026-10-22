@@ -1,5 +1,78 @@
 # moriaengine — working state
 
+## Remaining converter gaps batch COMPLETE: FoodType + real hunger system SHIPPED (PR #594), 2026-10-22 — #593 closed, whole batch of 4 done
+
+Last of the 4-item batch (BloodColor/Resources/MoveRate all shipped first, see entries
+below). **User chose the full scope**: a real hunger METER + decay/feeding/starvation
+system, not a minimal stub - broader than the real source (applies to every
+`ControlMaster`-owned NPC, not just actively-ridden mounts; the real archive's own
+mechanism is mount-only, no equivalent exists anywhere for a tamed-but-never-ridden pet).
+
+**Research correction, confirmed by direct source reading (`funkce.scp`/`systems/
+jezditka.scp`/`systems/skills/taming.scp`), not guessed**: real `typedef.maxfood` is a
+native Sphere engine constant, never assigned anywhere in the public archive - **user
+decision: derive `NPCDef.MaxFood` from FOODTYPE's own leading numbers instead** (sum of
+every entry's `SatiationValue`) rather than inventing an unrelated flat default. The
+real `FOODTYPE=` field is a comma-separated `[amount] category-or-itemdef` list (e.g.
+`FOODTYPE=8000 i_gold` for gold-eating dragons, `FOODTYPE=15 t_meat_raw` for daemons,
+some entries bare with no amount at all) - the `t_*` tokens are food CATEGORIES that
+don't exist as real moriaengine content, so real category support needed a hand-authored
+category→real-itemdef mapping (`FoodCategories`: meat_raw→`i_ribs_raw`, fruit→
+`i_fruit_apple`/`i_fruit_carrot`, crops/grain→`i_crop_wheat*`/`i_crop_carrot`/
+`i_crop_hay*`, grass→`i_plant_grass*`/`i_hay*`, fish→`i_fish_raw*`) - rarer categories
+(gem/coin/ore/ingot/spell/water_wash) left unmapped, flagged as a follow-up gap rather
+than invented.
+
+`PetHungerTimer` (new `BoundTimer`, same architecture as `NPCAiTimer`) ports the real
+decay/critical/dismount/starvation cadence (1000s ridden / 3600s unridden / 60s-critical-
+check-but-10x-slower-actual-decay, dismount nag every critical check, GM pets exempt) -
+installed/removed automatically via `Character.ControlMaster`'s own setter (one hook
+covers taming/release/rebel-drop), only for NPCDefs with real `FoodTypes` configured
+(no config = never gets hungry, matching this engine's established "incomplete content
+defaults permissive" convention). A new player-facing `.Feed` target-cursor command,
+explicitly allowlisted in `CommandsAuthorization.cs` (not left to the default-deny GM
+fallback this repo has hit repeatedly before), ports the real `nakrmho` feeding formula.
+
+**Real engine quirk found and worked around, worth remembering for any future variable-
+interval `BoundTimer`**: the base `BoundTimer.OnTimeout()` wrapper auto-deletes a timer
+whose `PeriodInSeconds`/`DueInSeconds` both read as "disabled" at the moment it fires -
+true for ANY timer only ever driven by explicit `DueInSeconds` reassignment with no
+fixed period, since the trigger condition reads the just-elapsed `fireAt`, not a before-
+firing snapshot. Fixed with a placeholder non-negative `PeriodInSeconds` (the real
+variable-cadence rescheduling still happens via `DueInSeconds` inside `OnTimeout`,
+unaffected). Separately - and NOT fully root-caused, deep in the shared static `Timer`
+engine's cross-thread scheduling - externally mutating a SECOND or THIRD such timer's
+`DueInSeconds` from the command-processing thread (simulating "fast-forward" for a test)
+reliably failed to trigger a subsequent real fire, once one such timer had already fired
+once for real in the same process. Worked around architecturally: extracted the tick
+logic into an `internal Tick(NPC)` method (same "pure-enough, directly testable" shape as
+`NPCAiTimer.PickSpell`) that both `OnTimeout` and a test call directly - sidesteps the
+background timer thread's own scheduling entirely for verification, which is also simply
+better test design regardless of the underlying cause. If a future BoundTimer needs
+test-driven "fast forward", prefer this `Tick()`-extraction pattern over mutating
+`DueInSeconds` externally from a different thread.
+
+Verified: a real protocol test (4 Facts, boots a real server) proves install/release,
+real decay, real feeding (consumes a real `i_ribs_raw` item matching `t_meat_raw`), and
+starvation-death via the real `Hits=0` → `CauseDeath` path - all stable across repeated
+runs. A/B-verified (swapped in `origin/main`'s unmodified `Character.cs`) that 4 failures
+from a broader regression run are pre-existing - the SAME exact 4 already proven
+unrelated during the earlier MoveRate work this same session (`OwnerAggroTests` x2,
+`PetCommandTestsA.GmCanOrderAnUnownedNpcToKill`, `PetCommandTestsB.
+GoCommandSetsGoalPointFromTargetCursor`) - not caused by this change. Converter:
+`LineImplTask("foodtype", PassThroughUnlessPlayerDef)`, same shape as `bloodcolor`/
+`resources`/`moverate` - **not verified against a real archive scratch regen this pass**
+(local clone empty, re-cloning blocked by the auto-mode classifier, same gap already
+flagged on the MoveRate PR) - low risk given the identical mapping shape. Issue #593
+closed referencing PR #594.
+
+**Whole 4-item "remaining converter gaps" batch is now complete**: BloodColor (#583),
+Resources (#586), MoveRate (#590), FoodType+hunger (#593) all shipped. The other 4
+originally-surveyed fields (`desires`/`aversions`/`shelter`/`reslevel`) were confirmed
+vestigial/too-low-real-usage and are being skipped per the earlier research pass - no
+further work queued in this specific batch. Next session: ask the user what to pick up
+next (no large system currently queued).
+
 ## Remaining converter gaps, batch 1 of 4: MoveRate SHIPPED (PR #591), 2026-10-22 — #590 closed
 
 Third of the 4-item batch (BloodColor and Resources both shipped first, see the entries
