@@ -570,6 +570,20 @@ namespace SteamEngine.CompiledScripts {
 
 			retVal.damageType = GetWeaponDamageType(retVal.weaponType);
 
+			// #607 - the real archive's tag.weapflag field encodes a monster's own NATURAL
+			// (bare claws/bite/etc) attack damage type - distinct from WeaponType, which can
+			// only express a FIXED physical sub-type (PhysicalBlunt for BareHands) and has no
+			// way to represent an elemental/multi-flag combo like "physical+fire". Only applies
+			// when the NPC has no real weapon item equipped - a weapon's own WeaponType-derived
+			// damage type (e.g. a bow's PhysicalArchery) always takes priority, matching how
+			// #600's real-weapon range override is similarly gated on "weapon != null".
+			if (!self.IsPlayerForCombat && (weapon == null)) {
+				NPCDef naturalDamageDef = self.DefForCombat as NPCDef;
+				if ((naturalDamageDef != null) && (naturalDamageDef.NaturalDamageType != DamageType.Irresistable)) {
+					retVal.damageType = naturalDamageDef.NaturalDamageType;
+				}
+			}
+
 			return retVal;
 		}
 

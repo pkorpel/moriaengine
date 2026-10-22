@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using SteamEngine.Common;
+using SteamEngine.CompiledScripts;
 
 //
 namespace SteamEngine.Converter {
@@ -418,8 +419,53 @@ namespace SteamEngine.Converter {
 				this.Set("AddSpell", value.Trim(), comment);
 				return;
 			}
+			//#607 - the real archive's tag.weapflag field (always inside @Create, confirmed
+			//140/140 sampled occurrences) encodes a monster's own NATURAL attack damage type
+			//(claws/bite/etc, not a worn weapon item) as pipe-separated dam_* tokens, e.g.
+			//"tag.weapflag=dam_physical|dam_fire". Maps onto NPCDef.NaturalDamageType (#607) -
+			//a new field, since WeaponType alone can't express a multi-flag elemental combo.
+			if (name == "tag.weapflag") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				string[] tokens = value.Split('|');
+				//build the output as an explicit "DamageType.X|DamageType.Y" list of only the
+				//matched flag names - NOT combined.ToString(), which for a value that doesn't
+				//exactly match one declared named combo (e.g. Physical|Sharp|Summon) falls back
+				//to a bare, non-"DamageType."-qualified comma list ("PhysicalSharp, Summon") -
+				//a different, untested shape from the confirmed-working qualified-pipe syntax.
+				List<string> matchedNames = new List<string>();
+				foreach (string token in tokens) {
+					DamageType flag;
+					if (weapflagAliases.TryGetValue(token.Trim(), out flag)) {
+						matchedNames.Add("DamageType." + flag);
+					}
+				}
+				if (matchedNames.Count > 0) {
+					this.Set("NaturalDamageType", string.Join("|", matchedNames), comment);
+				}
+				return;
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
+
+		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum
+		//member (Enums.cs) - all map cleanly, no new enum values needed. "lightning" and
+		//"elect" are two different real spellings for the same thing in source.
+		private static readonly System.Collections.Generic.Dictionary<string, DamageType> weapflagAliases =
+			new System.Collections.Generic.Dictionary<string, DamageType>(StringComparer.OrdinalIgnoreCase) {
+				{ "dam_physical", DamageType.Physical },
+				{ "dam_blunt", DamageType.Blunt },
+				{ "dam_slashing", DamageType.Slashing },
+				{ "dam_sharp", DamageType.Sharp },
+				{ "dam_piercing", DamageType.Stabbing },
+				{ "dam_magic", DamageType.Magic },
+				{ "dam_fire", DamageType.Fire },
+				{ "dam_cold", DamageType.Cold },
+				{ "dam_lightning", DamageType.Electric },
+				{ "dam_elect", DamageType.Electric },
+				{ "dam_summon", DamageType.Summon }
+			};
 
 		//#562 - archive field name (lowercased) -> canonical SkillName enum member name to
 		//emit in the .def field, for the ~29 skill names real chardefs set inside @Create.

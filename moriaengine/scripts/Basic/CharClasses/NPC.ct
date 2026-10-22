@@ -19,6 +19,7 @@ Defs:
 	double weaponPiercing = 0
 	double weaponDelay = 2.0
 	WeaponType weaponType = WeaponType.Undefined
+	DamageType naturalDamageType = DamageType.Irresistable
 	int weaponRange = 1
 	int strikeStartRange = 5
 	int strikeStopRange = 10
