@@ -376,6 +376,25 @@ namespace SteamEngine.CompiledScripts {
 			set { this.SetTag(instanceStartingEquipmentTK, value); }
 		}
 
+		/// <summary>One "Resources = amount defname" entry (#586) - the real archive's
+		/// RESOURCES= butcher-yield list (what a player gets by chopping this NPC's corpse
+		/// with a sharp weapon, a real UO/Erebor mechanic). The butchering INTERACTION itself
+		/// (double-click/.usehand + target corpse + chop) doesn't exist in this engine yet -
+		/// see the separate deferred follow-up issue. This is purely the data template.</summary>
+		public class ResourceEntry {
+			public string Defname;
+			public int Amount;
+		}
+
+		private static readonly TagKey instanceButcherResourcesTK = TagKey.Acquire("_npcButcherResources_");
+
+		/// <summary>Butcher-yield data for a fresh NPC of this type (#586) - defined here,
+		/// consumed nowhere yet. Ready for whenever the corpse-butchering mechanic gets built.</summary>
+		public List<ResourceEntry> ButcherResources {
+			get { return this.GetTag(instanceButcherResourcesTK) as List<ResourceEntry>; }
+			set { this.SetTag(instanceButcherResourcesTK, value); }
+		}
+
 		private static int[] ParseStatRange(string filename, int line, string param, string args) {
 			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1) {
@@ -504,6 +523,23 @@ namespace SteamEngine.CompiledScripts {
 					this.StartingEquipment = new List<StartingEquipmentEntry>();
 				}
 				this.StartingEquipment.Add(new StartingEquipmentEntry { Defname = defname, AmountRange = amountRange });
+				return;
+			}
+			if (param == "resources") {
+				//#586 - "Resources = amount defname, amount defname, ..." - the real archive's
+				//butcher-yield list (corpse-chopping data, not death loot - the butchering
+				//interaction itself is a separate, not-yet-built mechanic, see #587).
+				List<ResourceEntry> entries = new List<ResourceEntry>();
+				string[] resourceParts = args.Split(',');
+				foreach (string part in resourceParts) {
+					string[] tokens = part.Trim().Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+					if (tokens.Length == 2) {
+						entries.Add(new ResourceEntry { Amount = ConvertTools.ParseInt32(tokens[0]), Defname = tokens[1] });
+					} else {
+						Logger.WriteWarning(filename, line, "resources entry '" + part + "' must be 'amount defname'.");
+					}
+				}
+				this.ButcherResources = entries;
 				return;
 			}
 			//#562 - a .def field name matching a SkillName enum member (case-insensitive) is a

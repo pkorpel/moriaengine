@@ -1,0 +1,7 @@
+// #586 - test-only content proving NPCDef.ButcherResources actually parses and round-trips.
+// This is data-template-only - no butchering interaction exists yet to consume it (see the
+// separate deferred follow-up issue), so this just confirms the two entries land correctly.
+[NPCDef npc_test_resources]
+NAME = "Resources Test"
+ANIM = 0x1fff
+Resources = 50 i_bag, 20 i_dagger_copper
