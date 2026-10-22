@@ -52,6 +52,7 @@ DESCRIPTION = Exit brana
 
 NAME = "Exit Brana"
 model = i_FLOOR_STONE_RED
+Color = 00980
 
 [EquippableDef i_hulka_na_zavody]
 CATEGORY = Kvesty
@@ -253,59 +254,74 @@ ITEM = i_svitek_brany
 [ItemDef i_darken_dlazdicesmrti]
 NAME = "Smrt"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicex]
 NAME = "Ostatni pismena"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicet]
 NAME = "T"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicea]
 NAME = "A"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicej]
 NAME = "J"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicee]
 NAME = "E"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicem]
 NAME = "M"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdices]
 NAME = "S"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicev]
 NAME = "V"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicei]
 NAME = "I"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdice2]
 NAME = "-2"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdice01]
 NAME = "-1"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdice0]
 NAME = "0"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdice1]
 NAME = "1"
 model = i_floor_marble
+Color = 0985
 
 [ItemDef i_darken_dlazdicepryc]
 NAME = "Cesta ven"
 model = i_floor_marble
+Color = 0985

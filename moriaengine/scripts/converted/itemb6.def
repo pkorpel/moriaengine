@@ -7,7 +7,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01c61,01c62,01c63,01c64,01c65,01c66,01c67,01c68,01c69,01c6a,01c6b,01c6c,01c6d,01c6e,01c70,01c71,01c72,01c73,01c74,01c75,01c76,01c77,01c78,01c79,01c7a,01c7b,01c7c,01c7d,01c7e,01c7f,01c80,01c81,01c82,01c83,01c84,01c85,01c86,01c87,01c88,01c89,01c8a,01c8b,01c8c,01c8d,01c8e,01c8f,01c90,01c91,01c92,01c93,01c94,01c95,01c96,01c97,01c98,01c99,01c9a,01c9b,01c9c,01c9d,01c9e,01c9f,01ca0,01ca1,01ca2,01ca3,01ca4,01ca5,01ca6,01ca7,01ca8,01ca9,01caa,01cab,01cac,01cad,01cae,01caf,01cb0,01cb1,01cb2,01cb3,01cb4,01cb5,01cb6,01cb7,01cb8,01cb9,01cba,01cbb,01cbc,01cbd,01cbe,01cbf // commented out by Converter 
 WEIGHT = 420
-RESOURCES = 42 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 42 i_stone_sand
 DEFNAME = i_sarcophagus
 
 [ItemDef 0x1c61]
@@ -489,7 +489,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01d14,01d15,01d16,01d17,01d18,01d19,01d1a,01d1b,01d1c,01d1d,01d1e,01d1f,01d20,01d21,01d22,01d23,01d24,01d25,01d26,01d27,01d28,01d29,01d2a,01d2b,01d2c,01d2d,01d2e,01d2f,01d30,01d31,01d32,01d33,01d34,01d35,01d36,01d37,01d38,01d39,01d3a,01d3b,01d3c,01d3d,01d3e,01d3f,01d40,01d41,01d42,01d43,01d44,01d45,01d46,01d47,01d48,01d49,01d4a,01d4b // commented out by Converter 
 WEIGHT = 320
-RESOURCES = 32 i_board,  2 i_nails,  i_body_shrouded //some resources were fixed by converter 
+RESOURCES = 32 i_board, 2 i_nails, 1 i_body_shrouded //some resources were fixed by converter 
 DEFNAME = i_casket_wood_2_with_body
 
 [ItemDef 0x1d14]
@@ -667,7 +667,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01d4d,01d4e,01d4f,01d50,01d51,01d52,01d53,01d54,01d55,01d56,01d57,01d58,01d59,01d5a,01d5b,01d5c,01d5d,01d5e,01d5f,01d60,01d61,01d62,01d63,01d64,01d65,01d66,01d67,01d68,01d69,01d6a,01d6b,01d6c,01d6d,01d6e,01d6f,01d70,01d71,01d72,01d73,01d74,01d75,01d76,01d77,01d78,01d79,01d7a,01d7b,01d7c,01d7d,01d7e,01d7f,01d80,01d81,01d82,01d83,01d84,01d85,01d86,01d87,01d88,01d89 // commented out by Converter 
 WEIGHT = 320
-RESOURCES = 32 i_board,  2 i_nails,  i_skeleton //some resources were fixed by converter 
+RESOURCES = 32 i_board, 2 i_nails, 1 i_skeleton //some resources were fixed by converter 
 DEFNAME = i_casket_wood_2_with_skeleton
 
 [ItemDef 0x1d4d]
@@ -859,7 +859,7 @@ SUBSECTION = Body in wrappings
 DESCRIPTION = @
 
 //DUPELIST = 01d8b,01d8c,01d8d // commented out by Converter 
-RESOURCES = 7 i_cloth,  i_corpse_blank //some resources were fixed by converter 
+RESOURCES = 7 i_cloth, 1 i_corpse_blank //some resources were fixed by converter 
 DEFNAME = i_BODY_SHROUDED
 
 [ItemDef 0x1d8b]
@@ -878,7 +878,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01d8f,01d90,01d91 // commented out by Converter 
 WEIGHT = 180
-RESOURCES = i_bone_skull,  i_bone_jaw,  16 i_bone,  i_bone_pelvis,  i_bone_ribcage,  10 i_bone_shards,  i_bone_spine //some resources were fixed by converter 
+RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 16 i_bone, 1 i_bone_pelvis, 1 i_bone_ribcage, 10 i_bone_shards, 1 i_bone_spine //some resources were fixed by converter 
 DEFNAME = i_skeleton
 
 [ItemDef 0x1d8f]
@@ -923,7 +923,7 @@ DESCRIPTION = Ankh of Sacrifice
 TYPE = t_light_lit
 //DUPELIST = 01d98,01e5c,01e5d // commented out by Converter 
 WEIGHT = 300
-RESOURCES = 10 i_rock_plain,  3 i_blood //some resources were fixed by converter 
+RESOURCES = 10 i_rock_plain, 3 i_blood
 layer = 0 //Set by Converter 
 DEFNAME = i_ankh_sacrifice
 //TDATA4 = i_ankh_sacrifice // commented out by Converter 
@@ -938,7 +938,7 @@ DESCRIPTION = Spike Trap
 
 //DUPELIST = 01d9a,01d9b,01d9c,01d9d,01d9e // commented out by Converter 
 WEIGHT = 200
-RESOURCES = 20 i_ingot_iron,  2 i_blood //some resources were fixed by converter 
+RESOURCES = 20 i_ingot_iron, 2 i_blood
 DEFNAME = i_TRAP_SPIKE_LARGE
 
 [ItemDef 0x1d9a]
@@ -981,7 +981,7 @@ DESCRIPTION = Broken Barrel
 
 //DUPELIST = 01db4,01db5,01db6 // commented out by Converter 
 WEIGHT = 210
-RESOURCES = 16 i_board,  2 i_barrel_hoop,  i_barrel //some resources were fixed by converter 
+RESOURCES = 16 i_board, 2 i_barrel_hoop, 1 i_barrel //some resources were fixed by converter 
 DEFNAME = i_barrel_broken
 
 [ItemDef 0x1db4]
@@ -1016,7 +1016,7 @@ DESCRIPTION = Sandstone Table
 TYPE = t_table
 //DUPELIST = 01dbc,01dbe,01dbf // commented out by Converter 
 WEIGHT = 600
-RESOURCES = 30 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 30 i_stone_sand
 DEFNAME = i_table_sandstone_end
 
 [ItemDef 0x1dbc]
@@ -1043,7 +1043,7 @@ DESCRIPTION = Marble Table
 TYPE = t_table
 //DUPELIST = 01dc2,01dc4,01dc5 // commented out by Converter 
 WEIGHT = 600
-RESOURCES = 30 i_marble //some resources were fixed by converter 
+RESOURCES = 30 i_marble
 DEFNAME = i_table_marble_end
 
 [ItemDef 0x1dc2]
@@ -1070,7 +1070,7 @@ DESCRIPTION = Sandstone Bench
 TYPE = T_CHAIR
 //DUPELIST = 01dc8,01dca,01dcb // commented out by Converter 
 WEIGHT = 120
-RESOURCES = 6 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 6 i_stone_sand
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_bench_sandstone_end
 
@@ -1099,7 +1099,7 @@ DESCRIPTION = Marble Bench
 TYPE = T_CHAIR
 //DUPELIST = 01dce,01dd0,01dd1 // commented out by Converter 
 WEIGHT = 120
-RESOURCES = 6 i_marble //some resources were fixed by converter 
+RESOURCES = 6 i_marble
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_bench_marble_end
 
@@ -1127,7 +1127,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01dd4,01dd5,01dd6,01dd7,01dd8,01dd9,01dda,01ddb,01ddc,01ddd,01dde,01ddf,01de0,01de1,01de2,01de3,01de4,01de5,01de6,01de7,01de8,01de9,01dea,01deb,01dec,01ded,01dee // commented out by Converter 
 WEIGHT = 20
-RESOURCES = 2 i_cloth //some resources were fixed by converter 
+RESOURCES = 2 i_cloth
 DEFNAME = i_rug_worn
 
 [ItemDef 0x1dd4]
@@ -1272,7 +1272,7 @@ SUBSECTION = Mud and Footprints
 DESCRIPTION = Mud
 
 WEIGHT = 10
-RESOURCES = 1 i_dirt,  i_water //some resources were fixed by converter 
+RESOURCES = 1 i_dirt, 1 i_water //some resources were fixed by converter 
 DEFNAME = i_mud
 
 [ItemDef 0x1e02]
@@ -1339,7 +1339,7 @@ SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 1
 
 WEIGHT = 80
-RESOURCES = i_pot,  i_plant_cactus //some resources were fixed by converter 
+RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED
 
 [ItemDef 0x1e10]
@@ -1348,7 +1348,7 @@ SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 2
 
 WEIGHT = 80
-RESOURCES = i_pot,  i_plant_cactus //some resources were fixed by converter 
+RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_2
 
 [ItemDef 0x1e11]
@@ -1357,7 +1357,7 @@ SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 3
 
 WEIGHT = 80
-RESOURCES = i_pot,  i_plant_cactus //some resources were fixed by converter 
+RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_3
 
 [ItemDef 0x1e12]
@@ -1366,7 +1366,7 @@ SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 4
 
 WEIGHT = 80
-RESOURCES = i_pot,  i_plant_cactus //some resources were fixed by converter 
+RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_4
 
 [ItemDef 0x1e13]
@@ -1375,7 +1375,7 @@ SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 5
 
 WEIGHT = 80
-RESOURCES = i_pot,  i_plant_cactus //some resources were fixed by converter 
+RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_5
 
 [ItemDef 0x1e14]
@@ -1384,7 +1384,7 @@ SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 6
 
 WEIGHT = 80
-RESOURCES = i_pot,  i_plant_cactus //some resources were fixed by converter 
+RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_6
 
 [ItemDef 0x1e16]
@@ -1403,7 +1403,7 @@ DESCRIPTION = Red Book (Open and Face Down)
 
 TYPE = T_BOOK
 WEIGHT = 20
-RESOURCES = 20 i_paper,  i_thread,  i_hide //some resources were fixed by converter 
+RESOURCES = 20 i_paper, 1 i_thread, 1 i_hide //some resources were fixed by converter 
 DEFNAME = i_BOOK_OPEN_red
 
 [ItemDef 0x1e21]
@@ -1412,7 +1412,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Brown Books (Open and Face Down)
 
 WEIGHT = 40
-RESOURCES = 2 i_book_open //some resources were fixed by converter 
+RESOURCES = 2 i_book_open
 DEFNAME = i_BOOK_OPEN_two_brown
 
 [ItemDef 0x1e22]
@@ -1421,7 +1421,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Red Books (Open and Face Up)
 
 WEIGHT = 40
-RESOURCES = 2 i_book_open //some resources were fixed by converter 
+RESOURCES = 2 i_book_open
 DEFNAME = i_BOOK_OPEN_two_red
 
 [ItemDef 0x1e23]
@@ -1430,7 +1430,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Blue Books (Open and Face Up)
 
 WEIGHT = 40
-RESOURCES = 2 i_book_open //some resources were fixed by converter 
+RESOURCES = 2 i_book_open
 DEFNAME = i_BOOK_OPEN_two_blue
 
 [ItemDef 0x1e24]
@@ -1439,7 +1439,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Stack of Books
 
 WEIGHT = 40
-RESOURCES = 2 i_book_open //some resources were fixed by converter 
+RESOURCES = 2 i_book_open
 DEFNAME = i_BOOK_OPEN_3_red
 
 [ItemDef 0x1e25]
@@ -1448,7 +1448,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Stack of Books
 
 WEIGHT = 120
-RESOURCES = 6 i_book_open //some resources were fixed by converter 
+RESOURCES = 6 i_book_open
 DEFNAME = i_BOOK_OPEN_two_green
 
 [ItemDef 0x1e26]
@@ -1458,7 +1458,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01e28 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = 2 i_log //some resources were fixed by converter 
+RESOURCES = 2 i_log
 DEFNAME = i_oar_part_1
 
 [ItemDef 0x1e27]
@@ -1468,7 +1468,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01e29 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = 1 i_log,  i_board //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board //some resources were fixed by converter 
 DEFNAME = i_oar_part_2
 
 [ItemDef 0x1e28]
@@ -1512,7 +1512,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Chicken on a Spit
 
-RESOURCES = 1 i_chicken_plucked,  i_spit //some resources were fixed by converter 
+RESOURCES = 1 i_chicken_plucked, 1 i_spit //some resources were fixed by converter 
 DEFNAME = i_CHICKEN_SPITTED
 
 [ItemDef 0x1e95]
@@ -1520,7 +1520,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Rabbit on a Spit
 
-RESOURCES = 1 i_rabbit_skinned,  i_spit //some resources were fixed by converter 
+RESOURCES = 1 i_rabbit_skinned, 1 i_spit //some resources were fixed by converter 
 DEFNAME = i_RABBIT_SPITTED
 
 [ItemDef 0x1e96]
@@ -1529,7 +1529,7 @@ SUBSECTION = Cook
 DESCRIPTION = Spit
 
 WEIGHT = 30
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_spit
 
 [ItemDef 0x1e97]
@@ -1538,7 +1538,7 @@ SUBSECTION = Cook
 DESCRIPTION = Chicken on a Spit
 
 WEIGHT = 50
-RESOURCES = 1 i_chicken_plucked,  i_spit //some resources were fixed by converter 
+RESOURCES = 1 i_chicken_plucked, 1 i_spit //some resources were fixed by converter 
 DEFNAME = i_CHICKEN_SPITTED_2
 
 [ItemDef 0x1e98]
@@ -1547,7 +1547,7 @@ SUBSECTION = Cook
 DESCRIPTION = Rabbit on a Spit
 
 WEIGHT = 50
-RESOURCES = 1 i_rabbit_skinned,  i_spit //some resources were fixed by converter 
+RESOURCES = 1 i_rabbit_skinned, 1 i_spit //some resources were fixed by converter 
 DEFNAME = i_RABBIT_SPITTED_2
 
 [ItemDef 0x1e99]
@@ -1556,7 +1556,7 @@ SUBSECTION = Cook
 DESCRIPTION = Spit
 
 WEIGHT = 30
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_spit_2
 
 [ItemDef 0x1e9a]
@@ -1596,7 +1596,7 @@ DESCRIPTION = Rope
 
 //DUPELIST = 01ea1,01ea2 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 1 i_rope //some resources were fixed by converter 
+RESOURCES = 1 i_rope
 DEFNAME = i_rope_bundle
 
 [ItemDef 0x1ea1]
@@ -1621,7 +1621,7 @@ DESCRIPTION = Winch
 
 //DUPELIST = 01ea9,01eaa,01eab,01eac,01ead,01eae,01eaf // commented out by Converter 
 WEIGHT = 170
-RESOURCES = 5 i_rope,  2 i_gears,  20 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 5 i_rope, 2 i_gears, 20 i_ingot_iron
 DEFNAME = i_winch
 
 [ItemDef 0x1ea9]
@@ -1651,7 +1651,7 @@ SUBSECTION = Cook
 DESCRIPTION = Burned Food
 
 WEIGHT = 10
-RESOURCES = 1 i_ribs_raw //some resources were fixed by converter 
+RESOURCES = 1 i_ribs_raw
 DEFNAME = i_ribs_BURNED
 
 [ItemDef 0x1eb1]
@@ -1661,7 +1661,7 @@ DESCRIPTION = Barrel Staves
 
 //DUPELIST = 01eb2,01eb3,01eb4 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = 5 i_board //some resources were fixed by converter 
+RESOURCES = 5 i_board
 DEFNAME = i_barrel_staves
 
 [ItemDef 0x1eb2]
@@ -1746,7 +1746,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Stone Pylon
 DESCRIPTION = Dark @
 
-RESOURCES = 1 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 1 i_rock_plain
 DEFNAME = i_PYLON_STONE
 
 [ItemDef 0x1ecb]
@@ -1754,7 +1754,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Stone Pylon
 DESCRIPTION = Light @
 
-RESOURCES = 1 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 1 i_rock_plain
 DEFNAME = i_PYLON_STONE_LIGHT
 
 [ItemDef 0x1ecc]
@@ -1762,7 +1762,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Stone Pylon
 DESCRIPTION = Sandstone Pylon
 
-RESOURCES = 1 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 1 i_stone_sand
 DEFNAME = i_PYLON_STONE_SAND
 
 [ItemDef 0x1ecd]
@@ -1773,7 +1773,7 @@ DESCRIPTION = Communication Crystal (green)
 NAME = "Communication Crystal"
 TYPE = T_COMM_CRYSTAL
 //DUPELIST = 01ece,01ecf // commented out by Converter 
-RESOURCES = 10 i_gem_emerald //some resources were fixed by converter 
+RESOURCES = 10 i_gem_emerald
 DEFNAME = i_crystal_green
 
 [ItemDef 0x1ece]
@@ -1790,7 +1790,7 @@ DESCRIPTION = Communication Crystal (red)
 NAME = "Communication Crystal"
 TYPE = T_COMM_CRYSTAL
 //DUPELIST = 01ed1,01ed2 // commented out by Converter 
-RESOURCES = 10 i_gem_ruby //some resources were fixed by converter 
+RESOURCES = 10 i_gem_ruby
 DEFNAME = i_crystal_red
 
 [ItemDef 0x1ed1]
@@ -1958,8 +1958,9 @@ DEFNAME = i_worldgem_lg
 name = "neaktivni runa"
 type = t_normal
 model = i_rune_marker
+Color = color_gray_lt
 
-[RecallRuneDef 0x1f14]
+[ItemDef 0x1f14]
 CATEGORY = Provisions - Alchemy & Magic
 SUBSECTION = Magical Items
 DESCRIPTION = Recall Rune
@@ -2056,7 +2057,7 @@ DESCRIPTION = Blank sign
 TYPE = T_SIGN_GUMP
 //DUPELIST = 01f29 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = 2 i_board,  i_ingot_iron,  i_nails //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_ingot_iron, 1 i_nails //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
 //TDATA2 = 067 // commented out by Converter 
 DEFNAME = i_sign_blank
@@ -2070,7 +2071,7 @@ SUBSECTION = Pedestal
 DESCRIPTION = @
 
 WEIGHT = 120
-RESOURCES = 6 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 6 i_rock_plain
 DEFNAME = i_pedestal
 
 [ItemDef 0x1f2b]
@@ -2080,8 +2081,714 @@ DESCRIPTION = Brazier
 
 TYPE = T_FIRE
 WEIGHT = 150
-RESOURCES = 10 i_ember,  12 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 10 i_ember, 12 i_ingot_iron
 DEFNAME = i_brazier
+
+[ItemDef 0x1f2d]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Reactive Armor
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 100 inscription, 50 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_reactive_armor
+
+[ItemDef 0x1f2e]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Clumsy Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 100 inscription, 50 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_clumsy
+
+[ItemDef 0x1f2f]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Create Food Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 100 inscription, 50 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_create_food
+
+[ItemDef 0x1f30]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Feeblemind Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 100 inscription, 50 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_feeblemind
+
+[ItemDef 0x1f31]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Heal Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 100 inscription, 50 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_heal
+
+[ItemDef 0x1f32]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Magic Arrow Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 49 inscription, 50 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_magic_arrow
+
+[ItemDef 0x1f33]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Night Sight Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 49 inscription, 50 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_night_sight
+
+[ItemDef 0x1f34]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 1st Circle
+DESCRIPTION = Weaken Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 100 inscription, 50 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_weaken
+
+[ItemDef 0x1f35]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Agility Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 200 inscription, 100 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_agility
+
+[ItemDef 0x1f36]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Cunning Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 220 inscription, 100 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_cunning
+
+[ItemDef 0x1f37]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Cure Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 260 inscription, 100 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_cure
+
+[ItemDef 0x1f38]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Harm Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 280 inscription, 100 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_harm
+
+[ItemDef 0x1f39]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Magic Trap Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 210 inscription, 100 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_magic_trap
+
+[ItemDef 0x1f3a]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Magic Remove Trap Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 230 inscription, 100 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_magic_untrap
+
+[ItemDef 0x1f3b]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Protection Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 270 inscription, 100 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_protection
+
+[ItemDef 0x1f3c]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 2nd Circle
+DESCRIPTION = Strength Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 250 inscription, 100 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_strength
+
+[ItemDef 0x1f3d]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Bless Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 340 inscription, 200 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_bless
+
+[ItemDef 0x1f3e]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Fireball Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 350 inscription, 200 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_fireball
+
+[ItemDef 0x1f3f]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Magic Lock Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 320 inscription, 200 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_magic_lock
+
+[ItemDef 0x1f40]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Poison Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 370 inscription, 200 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_poison
+
+[ItemDef 0x1f41]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = telekinesis Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 310 inscription, 200 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_telekinesis
+
+[ItemDef 0x1f42]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Teleport Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 330 inscription, 200 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_teleport
+
+[ItemDef 0x1f43]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Unlock Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 300 inscription, 200 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_unlock
+
+[ItemDef 0x1f44]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 3rd Circle
+DESCRIPTION = Wall of Stone Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 380 inscription, 200 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_wall_of_stone
+
+[ItemDef 0x1f45]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Archcure Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 450 inscription, 300 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_archcure
+
+[ItemDef 0x1f46]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Arch Protection Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 440 inscription, 300 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_archprotection
+
+[ItemDef 0x1f47]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Curse Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 400 inscription, 300 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_curse
+
+[ItemDef 0x1f48]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Fire Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 470 inscription, 300 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_fire_field
+
+[ItemDef 0x1f49]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Greater Heal Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 460 inscription, 300 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_greater_heal
+
+[ItemDef 0x1f4a]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Lightning Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 430 inscription, 300 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_lightning
+
+[ItemDef 0x1f4b]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Mana Drain Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 410 inscription, 300 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_mana_drain
+
+[ItemDef 0x1f4c]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 4th Circle
+DESCRIPTION = Recall Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 480 inscription, 300 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_recall
+
+[ItemDef 0x1f4d]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Blade Spirits Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 530 inscription, 400 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_blade_spirits
+
+[ItemDef 0x1f4e]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Dispel Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 500 inscription, 400 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_dispel_field
+
+[ItemDef 0x1f4f]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Incognito Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 510 inscription, 400 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_incognito
+
+[ItemDef 0x1f50]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Magic Reflection Scroll
+
+NAME = "Magic Reflection"
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 570 inscription, 400 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_magic_reflection
+
+[ItemDef 0x1f51]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Mind Blast Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 540 inscription, 400 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_mind_blast
+
+[ItemDef 0x1f52]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Paralyze Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 580 inscription, 400 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_paralyze
+
+[ItemDef 0x1f53]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Poison Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 550 inscription, 400 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_poison_field
+
+[ItemDef 0x1f54]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 5th Circle
+DESCRIPTION = Summon Creature Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 560 inscription, 400 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_summon_creature
+
+[ItemDef 0x1f55]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Dispel Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 615 inscription, 500 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_dispel
+
+[ItemDef 0x1f56]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Energy Bolt Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 630 inscription, 500 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_energy_bolt
+
+[ItemDef 0x1f57]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Explosion Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 650 inscription, 500 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_explosion
+//VALUE = {60 64} // commented out by Converter 
+
+[ItemDef 0x1f58]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Invisibility Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 680 inscription, 500 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_invisibility
+
+[ItemDef 0x1f59]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Mark Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 670 inscription, 500 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_mark
+
+[ItemDef 0x1f5a]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Mass Curse Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 640 inscription, 500 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_mass_curse
+
+[ItemDef 0x1f5b]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Paralyze Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 660 inscription, 500 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_paralyze_field
+
+[ItemDef 0x1f5c]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 6th Circle
+DESCRIPTION = Reveal Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 600 inscription, 500 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_reveal
+
+[ItemDef 0x1f5d]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Chain Lightning Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 740 inscription, 600 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_chain_lightning
+
+[ItemDef 0x1f5e]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Energy Field Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 750 inscription, 600 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_energy_field
+
+[ItemDef 0x1f5f]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Flame Strike Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 780 inscription, 600 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_flamestrike
+
+[ItemDef 0x1f60]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Gate Travel Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 770 inscription, 600 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_gate_travel
+
+[ItemDef 0x1f61]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Mana Vampire Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 740 inscription, 600 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_mana_vampire
+
+[ItemDef 0x1f62]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Mass Dispel Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 720 inscription, 600 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_mass_dispel
+
+[ItemDef 0x1f63]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Meteor Storm Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 760 inscription, 600 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_meteor_swarm
+
+[ItemDef 0x1f64]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 7th Circle
+DESCRIPTION = Polymorph Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 700 inscription, 600 magery //some resources were fixed by converter 
+DEFNAME = i_scroll_polymorph
+
+[ItemDef 0x1f65]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Earthquake Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 900 inscription, 700 magery, 1 t_book_inscription //some resources were fixed by converter 
+DEFNAME = i_scroll_earthquake
+
+[ItemDef 0x1f66]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Energy Vortex Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 930 inscription, 700 magery, 1 t_book_inscription //some resources were fixed by converter 
+DEFNAME = i_scroll_energy_vortex
+
+[ItemDef 0x1f67]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Resurrection Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 999 inscription, 700 magery, 1 t_book_inscription //some resources were fixed by converter 
+DEFNAME = i_scroll_resurrection
+
+[ItemDef 0x1f68]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Elemental Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 870 inscription, 700 magery, 1 t_book_inscription //some resources were fixed by converter 
+DEFNAME = i_scroll_summon_elem_air
+
+[ItemDef 0x1f69]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Deamon Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 960 inscription, 700 magery, 1 t_book_inscription //some resources were fixed by converter 
+DEFNAME = i_scroll_summon_daemon
+
+[ItemDef 0x1f6a]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Earth Elemental Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 840 inscription, 700 magery, 1 t_book_inscription //some resources were fixed by converter 
+DEFNAME = i_scroll_summon_elem_earth
+
+[ItemDef 0x1f6b]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Fire Elemental Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 810 inscription, 700 magery, 1 t_book_inscription //some resources were fixed by converter 
+DEFNAME = i_scroll_summon_elem_fire
+
+[ItemDef 0x1f6c]
+CATEGORY = Provisions - Alchemy & Magic
+SUBSECTION = Scrolls - 8th Circle
+DESCRIPTION = Summon Water Elemental Scroll
+
+TYPE = T_SCROLL
+WEIGHT = 10
+RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+SKILLMAKE = 870 inscription, 700 magery, 1 t_book_inscription //some resources were fixed by converter 
+DEFNAME = i_scroll_summon_elem_water
 
 [ItemDef 0x1f6d]
 CATEGORY = Provisions - Alchemy & Magic
@@ -2373,7 +3080,7 @@ DESCRIPTION = @ (n / sw)
 TYPE = T_DOOR
 //DUPELIST = 01fef,01ff1,01ff3,01ff5,01ff7,01ff9,01ffb // commented out by Converter 
 WEIGHT = 100
-RESOURCES = 10 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 10 i_ingot_iron
 DEFNAME = i_door_metal_bar_2
 
 [ItemDef 0x1fee]

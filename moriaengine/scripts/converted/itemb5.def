@@ -6,7 +6,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 01
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_1_part_1
 
 [ItemDef 0x1587]
@@ -15,7 +15,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 01
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  2 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 2 i_cloth, 1 i_thread
 DEFNAME = i_banner_1_part_2
 
 [ItemDef 0x1588]
@@ -24,7 +24,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 01
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_1_part_3
 
 [ItemDef 0x1589]
@@ -33,7 +33,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 02
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_2_part_1
 
 [ItemDef 0x158a]
@@ -42,7 +42,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 02
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  2 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 2 i_cloth, 1 i_thread
 DEFNAME = i_banner_2_part_2
 
 [ItemDef 0x158b]
@@ -51,7 +51,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 02
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_2_part_3
 
 [ItemDef 0x158c]
@@ -60,7 +60,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 03
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_3_part_1
 
 [ItemDef 0x158d]
@@ -69,7 +69,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 03
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  2 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 2 i_cloth, 1 i_thread
 DEFNAME = i_banner_3_part_2
 
 [ItemDef 0x158e]
@@ -78,7 +78,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 03
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_3_part_3
 
 [ItemDef 0x158f]
@@ -87,7 +87,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner Hanger
 
 WEIGHT = 10
-RESOURCES = 1 i_board,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_board, 1 i_nails
 DEFNAME = i_banner_hanger_ne
 
 [ItemDef 0x1590]
@@ -96,7 +96,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 04
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_4_part_1
 
 [ItemDef 0x1591]
@@ -105,7 +105,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 04
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  2 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 2 i_cloth, 1 i_thread
 DEFNAME = i_banner_4_part_2
 
 [ItemDef 0x1592]
@@ -114,7 +114,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 05
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_5_part_1
 
 [ItemDef 0x1593]
@@ -123,7 +123,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 05
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  2 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 2 i_cloth, 1 i_thread
 DEFNAME = i_banner_5_part_2
 
 [ItemDef 0x1594]
@@ -132,7 +132,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 06
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_6_part_1
 
 [ItemDef 0x1595]
@@ -141,7 +141,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 06
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  2 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 2 i_cloth, 1 i_thread
 DEFNAME = i_banner_6_part_2
 
 [ItemDef 0x1596]
@@ -150,7 +150,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 06
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_6_part_3
 
 [ItemDef 0x1598]
@@ -159,7 +159,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 07
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_7_part_1
 
 [ItemDef 0x1599]
@@ -168,7 +168,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 08
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_8_part_1
 
 [ItemDef 0x159a]
@@ -177,7 +177,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 08
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_8_part_2
 
 [ItemDef 0x159b]
@@ -186,7 +186,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 07
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_7_part_2
 
 [ItemDef 0x159c]
@@ -195,7 +195,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 07
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_7_part_3
 
 [ItemDef 0x159d]
@@ -204,7 +204,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 08
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_8_part_3
 
 [ItemDef 0x159e]
@@ -214,7 +214,7 @@ DESCRIPTION = @
 
 //DUPELIST = 0159f // commented out by Converter 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_curtain_banner_nw
 
 [ItemDef 0x159f]
@@ -227,7 +227,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 09
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_9_part_1
 
 [ItemDef 0x15a1]
@@ -236,7 +236,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 09
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_9_part_2
 
 [ItemDef 0x15a2]
@@ -245,7 +245,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 10
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_10_part_1
 
 [ItemDef 0x15a3]
@@ -254,7 +254,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 10
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_10_part_2
 
 [ItemDef 0x15a4]
@@ -263,7 +263,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 11
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_11_part_1
 
 [ItemDef 0x15a5]
@@ -272,7 +272,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 11
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_11_part_2
 
 [ItemDef 0x15a6]
@@ -281,7 +281,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 12
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_12_part_1
 
 [ItemDef 0x15a7]
@@ -290,7 +290,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 12
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_12_part_2
 
 [ItemDef 0x15a8]
@@ -299,7 +299,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 13
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_13_part_1
 
 [ItemDef 0x15a9]
@@ -308,7 +308,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 13
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_13_part_2
 
 [ItemDef 0x15aa]
@@ -317,7 +317,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 14
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_14_part_1
 
 [ItemDef 0x15ab]
@@ -326,7 +326,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 14
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_14_part_2
 
 [ItemDef 0x15ac]
@@ -335,7 +335,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 15
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_15_part_1
 
 [ItemDef 0x15ad]
@@ -344,7 +344,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 15
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_15_part_2
 
 [ItemDef 0x15ae]
@@ -353,7 +353,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 01
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_1_ne
 
 [ItemDef 0x15af]
@@ -362,7 +362,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 01
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_1_nw
 
 [ItemDef 0x15b0]
@@ -371,7 +371,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 02
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_2_ne
 
 [ItemDef 0x15b1]
@@ -380,7 +380,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 02
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_2_nw
 
 [ItemDef 0x15b2]
@@ -389,7 +389,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 03
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_3_ne
 
 [ItemDef 0x15b3]
@@ -398,7 +398,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 03
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_3_nw
 
 [ItemDef 0x15b4]
@@ -407,7 +407,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 04
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_4_ne
 
 [ItemDef 0x15b5]
@@ -416,7 +416,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 04
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_4_nw
 
 [ItemDef 0x15b6]
@@ -425,7 +425,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 05
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_5_ne
 
 [ItemDef 0x15b7]
@@ -434,7 +434,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 05
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_5_nw
 
 [ItemDef 0x15b8]
@@ -443,7 +443,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 06
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_6_ne
 
 [ItemDef 0x15b9]
@@ -452,7 +452,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 06
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_6_nw
 
 [ItemDef 0x15ba]
@@ -461,7 +461,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 07
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_7_ne
 
 [ItemDef 0x15bb]
@@ -470,7 +470,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 07
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_7_nw
 
 [ItemDef 0x15bc]
@@ -479,7 +479,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 08
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_8_ne
 
 [ItemDef 0x15bd]
@@ -488,7 +488,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 08
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_8_nw
 
 [ItemDef 0x15be]
@@ -497,7 +497,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 09
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_9_ne
 
 [ItemDef 0x15bf]
@@ -506,7 +506,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 09
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_9_nw
 
 [ItemDef 0x15c0]
@@ -515,7 +515,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 10
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_10_ne
 
 [ItemDef 0x15c1]
@@ -524,7 +524,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 10
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_10_nw
 
 [ItemDef 0x15c2]
@@ -533,7 +533,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 11
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_11_ne
 
 [ItemDef 0x15c3]
@@ -542,7 +542,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 11
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_11_nw
 
 [ItemDef 0x15c4]
@@ -551,7 +551,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 12
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_12_ne
 
 [ItemDef 0x15c5]
@@ -560,7 +560,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 12
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_12_nw
 
 [ItemDef 0x15c6]
@@ -569,7 +569,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 13
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_13_ne
 
 [ItemDef 0x15c7]
@@ -578,7 +578,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 13
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_13_nw
 
 [ItemDef 0x15c8]
@@ -587,7 +587,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 14
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_14_ne
 
 [ItemDef 0x15c9]
@@ -596,7 +596,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 14
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_14_nw
 
 [ItemDef 0x15ca]
@@ -605,7 +605,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 15
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_15_ne
 
 [ItemDef 0x15cb]
@@ -614,7 +614,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 15
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_15_nw
 
 [ItemDef 0x15cc]
@@ -623,7 +623,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 16
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_16_ne
 
 [ItemDef 0x15cd]
@@ -632,7 +632,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 16
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_16_nw
 
 [ItemDef 0x15ce]
@@ -641,7 +641,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 17
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_17_ne
 
 [ItemDef 0x15cf]
@@ -650,7 +650,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 17
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_17_nw
 
 [ItemDef 0x15d0]
@@ -659,7 +659,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 18
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_18_ne
 
 [ItemDef 0x15d1]
@@ -668,7 +668,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 18
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_18_nw
 
 [ItemDef 0x15d2]
@@ -677,7 +677,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 19
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_19_ne
 
 [ItemDef 0x15d3]
@@ -686,7 +686,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 19
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_19_nw
 
 [ItemDef 0x15d4]
@@ -695,7 +695,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 20
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_20_ne
 
 [ItemDef 0x15d5]
@@ -704,7 +704,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 20
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_20_nw
 
 [ItemDef 0x15d6]
@@ -713,7 +713,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 21
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_21_ne
 
 [ItemDef 0x15d7]
@@ -722,7 +722,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 21
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_21_nw
 
 [ItemDef 0x15d8]
@@ -731,7 +731,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 22
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_22_ne
 
 [ItemDef 0x15d9]
@@ -740,7 +740,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 22
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_22_nw
 
 [ItemDef 0x15da]
@@ -749,7 +749,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 23
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_23_ne
 
 [ItemDef 0x15db]
@@ -758,7 +758,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 23
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_23_nw
 
 [ItemDef 0x15dc]
@@ -767,7 +767,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 24
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_24_ne
 
 [ItemDef 0x15dd]
@@ -776,7 +776,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 24
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_24_nw
 
 [ItemDef 0x15de]
@@ -785,7 +785,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 25
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_25_ne
 
 [ItemDef 0x15df]
@@ -794,7 +794,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 25
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_25_nw
 
 [ItemDef 0x15e0]
@@ -803,7 +803,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 26
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_26_ne
 
 [ItemDef 0x15e1]
@@ -812,7 +812,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 26
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_26_nw
 
 [ItemDef 0x15e2]
@@ -821,7 +821,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 27
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_27_ne
 
 [ItemDef 0x15e3]
@@ -830,7 +830,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 27
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_27_nw
 
 [ItemDef 0x15e4]
@@ -839,7 +839,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 28
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_28_ne
 
 [ItemDef 0x15e5]
@@ -848,7 +848,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 28
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_28_nw
 
 [ItemDef 0x15e6]
@@ -857,7 +857,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 29
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_29_ne
 
 [ItemDef 0x15e7]
@@ -866,7 +866,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 29
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_29_nw
 
 [ItemDef 0x15e8]
@@ -875,7 +875,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 30
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_30_ne
 
 [ItemDef 0x15e9]
@@ -884,7 +884,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 30
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_30_nw
 
 [ItemDef 0x15ea]
@@ -893,7 +893,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 31
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_31_ne
 
 [ItemDef 0x15eb]
@@ -902,7 +902,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 31
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_31_nw
 
 [ItemDef 0x15ec]
@@ -911,7 +911,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 32
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_32_ne
 
 [ItemDef 0x15ed]
@@ -920,7 +920,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 32
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_32_nw
 
 [ItemDef 0x15ee]
@@ -929,7 +929,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 33
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_33_ne
 
 [ItemDef 0x15ef]
@@ -938,7 +938,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 33
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_33_nw
 
 [ItemDef 0x15f0]
@@ -947,7 +947,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 34
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_34_ne
 
 [ItemDef 0x15f1]
@@ -956,7 +956,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 34
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_34_nw
 
 [ItemDef 0x15f2]
@@ -965,7 +965,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 35
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_35_ne
 
 [ItemDef 0x15f3]
@@ -974,7 +974,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 35
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_35_nw
 
 [ItemDef 0x15f4]
@@ -983,7 +983,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 36
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_36_ne
 
 [ItemDef 0x15f5]
@@ -992,7 +992,7 @@ SUBSECTION = Post Banners
 DESCRIPTION = Post Banner 36
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_ingot_iron,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_ingot_iron, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_post_36_nw
 
 [ItemDef 0x15f6]
@@ -1002,7 +1002,7 @@ DESCRIPTION = @
 
 //DUPELIST = 015f7 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 1 i_cloth //some resources were fixed by converter 
+RESOURCES = 1 i_cloth
 DEFNAME = i_plain_white_curtain
 
 [ItemDef 0x15f7]
@@ -1015,7 +1015,7 @@ DESCRIPTION = @
 
 //DUPELIST = 0160e // commented out by Converter 
 WEIGHT = 20
-RESOURCES = 2 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 2 i_cloth, 1 i_thread
 DEFNAME = i_single_red_curtain
 
 [ItemDef 0x160e]
@@ -1027,7 +1027,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 16
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_16_part_1
 
 [ItemDef 0x1610]
@@ -1036,7 +1036,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 16
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_16_part_2
 
 [ItemDef 0x1611]
@@ -1045,7 +1045,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 17
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_17_part_1
 
 [ItemDef 0x1612]
@@ -1054,7 +1054,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 17
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_17_part_2
 
 [ItemDef 0x1613]
@@ -1063,7 +1063,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 18
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_18_part_1
 
 [ItemDef 0x1614]
@@ -1072,7 +1072,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 18
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_18_part_2
 
 [ItemDef 0x1615]
@@ -1081,7 +1081,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 19
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_19_part_1
 
 [ItemDef 0x1616]
@@ -1090,7 +1090,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 19
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_19_part_2
 
 [ItemDef 0x1617]
@@ -1099,7 +1099,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 20
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_20_part_1
 
 [ItemDef 0x1618]
@@ -1108,7 +1108,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 20
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_20_part_2
 
 [ItemDef 0x1619]
@@ -1117,7 +1117,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 21
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_21_part_1
 
 [ItemDef 0x161a]
@@ -1126,7 +1126,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 21
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_21_part_2
 
 [ItemDef 0x161b]
@@ -1135,7 +1135,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 22
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_22_part_1
 
 [ItemDef 0x161c]
@@ -1144,7 +1144,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 22
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_22_part_2
 
 [ItemDef 0x161d]
@@ -1153,7 +1153,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 23
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_23_part_1
 
 [ItemDef 0x161e]
@@ -1162,7 +1162,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 23
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_23_part_2
 
 [ItemDef 0x161f]
@@ -1171,7 +1171,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 23
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_23_part_3
 
 [ItemDef 0x1620]
@@ -1180,7 +1180,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 24
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_24_part_1
 
 [ItemDef 0x1621]
@@ -1189,7 +1189,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 24
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_24_part_2
 
 [ItemDef 0x1622]
@@ -1198,7 +1198,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 24
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_24_part_3
 
 [ItemDef 0x1623]
@@ -1207,7 +1207,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 25
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_25_part_1
 
 [ItemDef 0x1624]
@@ -1216,7 +1216,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 25
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_25_part_2
 
 [ItemDef 0x1625]
@@ -1225,7 +1225,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 25
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_25_part_3
 
 [ItemDef 0x1626]
@@ -1234,7 +1234,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner Hanger
 
 WEIGHT = 10
-RESOURCES = 1 i_board,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_board, 1 i_nails
 DEFNAME = i_banner_hanger_nw
 
 [ItemDef 0x1627]
@@ -1243,7 +1243,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 26
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_26_part_1
 
 [ItemDef 0x1628]
@@ -1252,7 +1252,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 26
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_26_part_2
 
 [ItemDef 0x1629]
@@ -1261,7 +1261,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 27
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_27_part_1
 
 [ItemDef 0x162a]
@@ -1270,7 +1270,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 27
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_27_part_2
 
 [ItemDef 0x162b]
@@ -1279,7 +1279,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 28
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_28_part_1
 
 [ItemDef 0x162c]
@@ -1288,7 +1288,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 28
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_28_part_2
 
 [ItemDef 0x162d]
@@ -1297,7 +1297,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 28
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_28_part_3
 
 [ItemDef 0x162e]
@@ -1306,7 +1306,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 29
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_29_part_1
 
 [ItemDef 0x162f]
@@ -1315,7 +1315,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 30
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_30_part_1
 
 [ItemDef 0x1630]
@@ -1324,7 +1324,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 30
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_30_part_2
 
 [ItemDef 0x1631]
@@ -1333,7 +1333,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 29
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_cloth,  1 i_thread //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_cloth, 1 i_thread
 DEFNAME = i_banner_29_part_2
 
 [ItemDef 0x1632]
@@ -1342,7 +1342,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 29
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_29_part_3
 
 [ItemDef 0x1633]
@@ -1351,7 +1351,7 @@ SUBSECTION = Banners
 DESCRIPTION = Banner 30
 
 WEIGHT = 30
-RESOURCES = 1 i_log,  1 i_board,  1 i_cloth,  1 i_thread,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_banner_30_part_3
 
 [ItemDef 0x1634]
@@ -1360,7 +1360,7 @@ SUBSECTION = Shields
 DESCRIPTION = Shield
 
 WEIGHT = 170
-RESOURCES = 8 i_ingot_iron,  2 i_ingot_silver,  1 i_board //some resources were fixed by converter 
+RESOURCES = 8 i_ingot_iron, 2 i_ingot_silver, 1 i_board
 DEFNAME = i_decorative_shield_12_sword_over_nw
 
 [ItemDef 0x1635]
@@ -1369,7 +1369,7 @@ SUBSECTION = Shields
 DESCRIPTION = Shield
 
 WEIGHT = 170
-RESOURCES = 8 i_ingot_iron,  2 i_ingot_silver,  1 i_board //some resources were fixed by converter 
+RESOURCES = 8 i_ingot_iron, 2 i_ingot_silver, 1 i_board
 DEFNAME = i_decorative_shield_12_sword_under_nw
 
 [ItemDef 0x1636]
@@ -1378,7 +1378,7 @@ SUBSECTION = Shields
 DESCRIPTION = Shield
 
 WEIGHT = 160
-RESOURCES = 6 i_ingot_gold,  4 i_ingot_iron,  1 i_board //some resources were fixed by converter 
+RESOURCES = 6 i_ingot_gold, 4 i_ingot_iron, 1 i_board
 DEFNAME = i_decorative_shield_13_sword_over_nw
 
 [ItemDef 0x1637]
@@ -1387,7 +1387,7 @@ SUBSECTION = Shields
 DESCRIPTION = Shield
 
 WEIGHT = 160
-RESOURCES = 6 i_ingot_gold,  4 i_ingot_iron,  1 i_board //some resources were fixed by converter 
+RESOURCES = 6 i_ingot_gold, 4 i_ingot_iron, 1 i_board
 DEFNAME = i_decorative_shield_13_sword_under_nw
 
 [ItemDef 0x1638]
@@ -1397,7 +1397,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01639 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 1 i_cloth //some resources were fixed by converter 
+RESOURCES = 1 i_cloth
 DEFNAME = i_CURTAIN_PLAIN_RED
 
 [ItemDef 0x1639]
@@ -1410,7 +1410,7 @@ DESCRIPTION = @
 
 //DUPELIST = 0163e,0163f // commented out by Converter 
 WEIGHT = 70
-RESOURCES = 6 i_board,  1 i_nails,  20 i_reag_blood_moss,  1 i_glass //some resources were fixed by converter 
+RESOURCES = 6 i_board, 1 i_nails, 20 i_reag_blood_moss, 1 i_glass
 DEFNAME = i_SIGN_NINOS
 
 [ItemDef 0x163e]
@@ -1426,18 +1426,18 @@ DESCRIPTION = @
 
 name = "krev"
 TYPE = T_BLOOD
-RESOURCES = 1 i_blood //some resources were fixed by converter 
+RESOURCES = 1 i_blood
 DEFNAME = i_blood_spatter
 
 [EquippableDef 0x1646]
 WEIGHT = 0
-LAYER = 9
+layer = 9
 DEFNAME = i_dark_source
 
 [EquippableDef 0x1647]
 TYPE = T_LIGHT_LIT
 WEIGHT = 0
-LAYER = 9
+layer = 9
 DEFNAME = i_light_source
 //TDATA4 = i_light_source // commented out by Converter 
 
@@ -1448,7 +1448,7 @@ DESCRIPTION = Catapult 01
 
 //DUPELIST = 01649,0164a,0164b,0164c,0164d,0164e,0164f,01650,01651,01652,01653,01654,01655,01656,01657,01658,01659,0165a,0165b,0165c,0165d,0165e,0165f,01660,01661,01662 // commented out by Converter 
 WEIGHT = 400
-RESOURCES = 28 i_board,  5 i_log,  2 i_nails,  1 i_ingot_iron,  2 i_rope //some resources were fixed by converter 
+RESOURCES = 28 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 2 i_rope
 DEFNAME = i_catapult_1
 
 [ItemDef 0x1649]
@@ -1548,7 +1548,7 @@ DESCRIPTION = Catapult 02
 
 //DUPELIST = 01673,01674,01675,01676,01677,01678,01679,0167a,0167b,0167c,0167d,0167e,0167f,01680,01681,01682,01683,01684,01685,01686,01687,01688,01689,0168a,0168b,0168c // commented out by Converter 
 WEIGHT = 400
-RESOURCES = 28 i_board,  5 i_log,  2 i_nails,  1 i_ingot_iron,  2 i_rope //some resources were fixed by converter 
+RESOURCES = 28 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 2 i_rope
 DEFNAME = i_catapult_2
 
 [ItemDef 0x1673]
@@ -1648,7 +1648,7 @@ DESCRIPTION = Catapult 03
 
 //DUPELIST = 01695,01696,01697,01698,01699,0169a,0169b,0169c,0169d,0169e,0169f,016a0,016a1,016a2,016a3,016a4,016a5,016a6,016a7,016a8,016a9,016aa,016ab,016ac,016ad,016ae,016af,016b0,016b4 // commented out by Converter 
 WEIGHT = 400
-RESOURCES = 28 i_board,  5 i_log,  2 i_nails,  1 i_ingot_iron,  2 i_rope //some resources were fixed by converter 
+RESOURCES = 28 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 2 i_rope
 DEFNAME = i_catapult_3
 
 [ItemDef 0x1695]
@@ -1754,7 +1754,7 @@ DESCRIPTION = Catapult 04
 
 //DUPELIST = 016ba,016bb,016bc,016bd,016be,016bf,016c0,016c1,016c2,016c3,016c4,016c5,016c6,016c7,016c8,016c9,016ca,016cb,016cc,016cd,016ce,016cf,016d0,016d1,016d2,016d3,016d4,016d5,016d9 // commented out by Converter 
 WEIGHT = 400
-RESOURCES = 28 i_board,  5 i_log,  2 i_nails,  1 i_ingot_iron,  2 i_rope //some resources were fixed by converter 
+RESOURCES = 28 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 2 i_rope
 DEFNAME = i_catapult_4
 
 [ItemDef 0x16ba]
@@ -1860,7 +1860,7 @@ DESCRIPTION = Ballista 2
 
 //DUPELIST = 016f9,016fa,016fb,016fc,016fd,016fe,016ff,01700,01701,01702,01703,01704,01705,01706,01707,01708 // commented out by Converter 
 WEIGHT = 400
-RESOURCES = 18 i_board,  5 i_log,  2 i_nails,  1 i_ingot_iron,  8 i_rope //some resources were fixed by converter 
+RESOURCES = 18 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 8 i_rope
 DEFNAME = i_ballista_1
 
 [ItemDef 0x16f9]
@@ -1918,7 +1918,7 @@ DESCRIPTION = Fountain 01
 
 //DUPELIST = 01732,01733,01734,01735,01736,01737,01738,01739,0173a,0173b,0173c,0173d,0173e,0173f,01740,01741,01742,01743,01744,01745,01746,01747,01748,01749,0174a,0174b,0174c,0174d,0174e,0174f,01750,01751,01752,01753,01754,01755,01756,01757,01758,01759,0175a // commented out by Converter 
 WEIGHT = 1400
-RESOURCES = 100 i_rock_plain,  40 i_water,  1 i_springs //some resources were fixed by converter 
+RESOURCES = 100 i_rock_plain, 40 i_water, 1 i_springs
 DEFNAME = i_fountain_1
 
 [ItemDef 0x1732]
@@ -2076,7 +2076,7 @@ DESCRIPTION = Cut Cloth
 TYPE = T_CLOTH
 //DUPELIST = 01768 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 1 i_cloth //some resources were fixed by converter 
+RESOURCES = 1 i_cloth
 DEFNAME = i_cloth_cut_1
 
 [ItemDef 0x1767]
@@ -2086,7 +2086,7 @@ DESCRIPTION = Cloth
 
 TYPE = T_CLOTH
 WEIGHT = 10
-RESOURCES = 1 i_cloth //some resources were fixed by converter 
+RESOURCES = 1 i_cloth
 DEFNAME = i_cloth_cut_2
 
 [ItemDef 0x1768]
@@ -2268,7 +2268,7 @@ SUBSECTION = Snow
 DESCRIPTION = @
 
 //DUPELIST = 017be,017bf,017c0,017c1,017c2,017c3,017c4,017c5,017c6,017c7,017c8,017c9,017ca,017cb,017cc,017cd,017ce // commented out by Converter 
-RESOURCES = 1 i_water //some resources were fixed by converter 
+RESOURCES = 1 i_water
 DEFNAME = i_snow
 
 [ItemDef 0x17be]
@@ -2330,7 +2330,7 @@ DESCRIPTION = @
 TYPE = T_TELEPAD
 //DUPELIST = 017d0,017d1,017d2,017d3,017d4,017d5,017d6,017d7,017d8,017d9,017da,017db,017dc,017dd,017de,017df,017e0,017e1,017e2,017e3,017e4,017e5,017e6,017e7,017e8,017e9,017ea,017eb,017ec,017ed,017ee,017ef,017f0,017f1,017f2,017fc,017fd,017fe,017ff,01800,01801,01802,01803,01804,01805,01806,01807,01808,01809,0180a,0180b,0180c,0180d // commented out by Converter 
 WEIGHT = 600
-RESOURCES = 60 i_board,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 60 i_board, 1 i_nails
 DEFNAME = i_teleporter
 
 [ItemDef 0x17d0]
@@ -2498,7 +2498,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Alchemical Symbol
 
 WEIGHT = 20
-RESOURCES = 1 i_stone_sand //some resources were fixed by converter 
+RESOURCES = 1 i_stone_sand
 DEFNAME = i_rune_alchem_1
 
 [ItemDef 0x181e]
@@ -2542,7 +2542,7 @@ DESCRIPTION = Heating stand
 TYPE = t_light_lit
 //DUPELIST = 0184b,0184c,0184e,0184f,01850 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = i_heating_stand //some resources were fixed by converter 
+RESOURCES = 1 i_heating_stand //some resources were fixed by converter 
 //TDATA3 = i_heating_stand // commented out by Converter 
 layer = 2 //Set by Converter 
 DEFNAME = i_heating_stand_lit
@@ -2574,7 +2574,7 @@ DESCRIPTION = Skull Candle (Lit)
 TYPE = T_LIGHT_LIT
 //DUPELIST = 01855,01856,01858,01859,0185a // commented out by Converter 
 WEIGHT = 40
-RESOURCES = i_skull_candle //some resources were fixed by converter 
+RESOURCES = 1 i_skull_candle //some resources were fixed by converter 
 //TDATA3 = i_skull_candle // commented out by Converter 
 layer = 2 //Set by Converter 
 DEFNAME = i_skull_candle_lit
@@ -2605,7 +2605,7 @@ DESCRIPTION = Dishing Stump
 
 //DUPELIST = 01866 // commented out by Converter 
 WEIGHT = 100
-RESOURCES = 1 i_tree_stump //some resources were fixed by converter 
+RESOURCES = 1 i_tree_stump
 DEFNAME = i_dishing_stump
 
 [ItemDef 0x1866]
@@ -2736,7 +2736,7 @@ DESCRIPTION = Millstone
 
 //DUPELIST = 01884,01885,01886,01887,01888,01889,0188a // commented out by Converter 
 WEIGHT = 100
-RESOURCES = 10 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 10 i_rock_plain
 DEFNAME = i_millstone
 
 [ItemDef 0x1884]
@@ -2923,7 +2923,7 @@ DESCRIPTION = Flour Mill
 
 //DUPELIST = 01921,01922,01923,01925,01926,01927,0192c,0192d,0192e,0192f,01931,01932,01933 // commented out by Converter 
 WEIGHT = 400
-RESOURCES = 1 i_millstone,  4 i_log,  2 i_nails,  20 i_board,  20 i_grain_loose,  1 i_flour_mill_crank //some resources were fixed by converter 
+RESOURCES = 1 i_millstone, 4 i_log, 2 i_nails, 20 i_board, 20 i_grain_loose, 1 i_flour_mill_crank
 DEFNAME = i_flour_mill
 
 [ItemDef 0x1921]
@@ -2941,7 +2941,7 @@ SUBSECTION = Baker
 DESCRIPTION = Flour Mill (Crank)
 
 WEIGHT = 20
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_flour_mill_crank
 
 [ItemDef 0x1925]
@@ -2959,7 +2959,7 @@ SUBSECTION = Baker
 DESCRIPTION = Flour Mill (Crank)
 
 WEIGHT = 20
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_flour_mill_crank_2
 
 [ItemDef 0x1929]
@@ -2968,7 +2968,7 @@ SUBSECTION = Baker
 DESCRIPTION = Flour Mill (Crank)
 
 WEIGHT = 20
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_flour_mill_crank_3
 
 [ItemDef 0x192a]
@@ -2977,7 +2977,7 @@ SUBSECTION = Baker
 DESCRIPTION = Flour Mill (Crank)
 
 WEIGHT = 20
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_flour_mill_crank_4
 
 [ItemDef 0x192b]
@@ -2986,7 +2986,7 @@ SUBSECTION = Baker
 DESCRIPTION = Flour Mill (Crank)
 
 WEIGHT = 20
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_flour_mill_crank_5
 
 [ItemDef 0x192c]
@@ -3008,7 +3008,7 @@ DESCRIPTION = Flour Mill (Crank)
 
 //DUPELIST = 01934,01935,01936,01937 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = 2 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron
 DEFNAME = i_flour_mill_crank_6
 
 [ItemDef 0x1931]
@@ -3040,7 +3040,7 @@ DESCRIPTION = @
 TYPE = t_roof
 //DUPELIST = 0193a,0193b,0193c,0193d,0193e // commented out by Converter 
 WEIGHT = 50
-RESOURCES = 5 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 5 i_rock_plain
 DEFNAME = i_ROOF_STONE_tile
 
 [ItemDef 0x193a]
@@ -3082,7 +3082,7 @@ SUBSECTION = BarKeep
 DESCRIPTION = Tankards
 
 WEIGHT = 130
-RESOURCES = 9 i_mug_pewter,  1 i_bar_piece //some resources were fixed by converter 
+RESOURCES = 9 i_mug_pewter, 1 i_bar_piece
 DEFNAME = i_TANKARDS_PEWTER_BARTOP
 
 [ItemDef 0x1964]
@@ -3135,7 +3135,7 @@ DESCRIPTION = Forge 2 (01/03) (W)
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_w
 
 [ItemDef 0x197b]
@@ -3145,7 +3145,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_w_2
 
 [ItemDef 0x197c]
@@ -3155,7 +3155,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_w_3
 
 [ItemDef 0x197d]
@@ -3165,7 +3165,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_w_4
 
 [ItemDef 0x197e]
@@ -3175,7 +3175,7 @@ DESCRIPTION = Forge 2 (02/03) (W)
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_w
 
 [ItemDef 0x197f]
@@ -3185,7 +3185,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_w_2
 
 [ItemDef 0x1980]
@@ -3195,7 +3195,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_w_3
 
 [ItemDef 0x1981]
@@ -3205,7 +3205,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_w_4
 
 [ItemDef 0x1982]
@@ -3215,7 +3215,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_w
 
 [ItemDef 0x1983]
@@ -3225,7 +3225,7 @@ DESCRIPTION = Forge 2 (03/03) (W)
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_w_2
 
 [ItemDef 0x1984]
@@ -3235,7 +3235,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_w_3
 
 [ItemDef 0x1985]
@@ -3245,7 +3245,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_w_4
 
 [ItemDef 0x1986]
@@ -3255,7 +3255,7 @@ DESCRIPTION = Forge 2 (01/03) (N)
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_n
 
 [ItemDef 0x1987]
@@ -3265,7 +3265,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_n_2
 
 [ItemDef 0x1988]
@@ -3275,7 +3275,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_n_3
 
 [ItemDef 0x1989]
@@ -3285,7 +3285,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_n_4
 
 [ItemDef 0x198a]
@@ -3295,7 +3295,7 @@ DESCRIPTION = Forge 2 (02/03) (N)
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_n
 
 [ItemDef 0x198b]
@@ -3305,7 +3305,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_n_2
 
 [ItemDef 0x198c]
@@ -3315,7 +3315,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_n_3
 
 [ItemDef 0x198d]
@@ -3325,7 +3325,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_n_4
 
 [ItemDef 0x198e]
@@ -3335,7 +3335,7 @@ DESCRIPTION = Forge 2 (03/03) (N)
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_n
 
 [ItemDef 0x198f]
@@ -3345,7 +3345,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_n_2
 
 [ItemDef 0x1990]
@@ -3355,7 +3355,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_n_3
 
 [ItemDef 0x1991]
@@ -3365,7 +3365,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_n_4
 
 [ItemDef 0x1992]
@@ -3375,7 +3375,7 @@ DESCRIPTION = Forge 2 (01/03) (S)
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_s
 
 [ItemDef 0x1993]
@@ -3385,7 +3385,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_s_2
 
 [ItemDef 0x1994]
@@ -3395,7 +3395,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_s_3
 
 [ItemDef 0x1995]
@@ -3405,7 +3405,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_s_4
 
 [ItemDef 0x1996]
@@ -3415,7 +3415,7 @@ DESCRIPTION = Forge 2 (02/03) (S)
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_s
 
 [ItemDef 0x1997]
@@ -3425,7 +3425,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_s_2
 
 [ItemDef 0x1998]
@@ -3435,7 +3435,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_s_3
 
 [ItemDef 0x1999]
@@ -3445,7 +3445,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_s_4
 
 [ItemDef 0x199a]
@@ -3455,7 +3455,7 @@ DESCRIPTION = Forge 2 (03/03) (S)
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_s
 
 [ItemDef 0x199b]
@@ -3465,7 +3465,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_s_2
 
 [ItemDef 0x199c]
@@ -3475,7 +3475,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_s_3
 
 [ItemDef 0x199d]
@@ -3485,7 +3485,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_s_4
 
 [ItemDef 0x199e]
@@ -3495,7 +3495,7 @@ DESCRIPTION = Forge 2 (01/03) (E)
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_e
 
 [ItemDef 0x199f]
@@ -3505,7 +3505,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_e_2
 
 [ItemDef 0x19a0]
@@ -3515,7 +3515,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_e_3
 
 [ItemDef 0x19a1]
@@ -3525,7 +3525,7 @@ DESCRIPTION = Bellows
 
 TYPE = T_FORGE
 WEIGHT = 180
-RESOURCES = 2 i_board,  1 i_nails,  1 i_springs,  1 i_log,  8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 2 i_board, 1 i_nails, 1 i_springs, 1 i_log, 8 i_rock_plain
 DEFNAME = i_FORGE_BELLOWS_2_part_1_of_3_e_4
 
 [ItemDef 0x19a2]
@@ -3535,7 +3535,7 @@ DESCRIPTION = Forge 2 (02/03) (E)
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_e
 
 [ItemDef 0x19a3]
@@ -3545,7 +3545,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_e_2
 
 [ItemDef 0x19a4]
@@ -3555,7 +3555,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_e_3
 
 [ItemDef 0x19a5]
@@ -3565,7 +3565,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_2_of_3_e_4
 
 [ItemDef 0x19a6]
@@ -3575,7 +3575,7 @@ DESCRIPTION = Forge 2 (03/03) (E)
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_e
 
 [ItemDef 0x19a7]
@@ -3585,7 +3585,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_e_2
 
 [ItemDef 0x19a8]
@@ -3595,7 +3595,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_e_3
 
 [ItemDef 0x19a9]
@@ -3605,7 +3605,7 @@ DESCRIPTION = Forge
 
 TYPE = T_FORGE
 WEIGHT = 160
-RESOURCES = 8 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 8 i_rock_plain
 DEFNAME = i_forge_2_part_3_of_3_e_4
 
 [ItemDef 0x19aa]
@@ -3615,7 +3615,7 @@ DESCRIPTION = Brazier
 
 TYPE = T_FIRE
 WEIGHT = 160
-RESOURCES = 8 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 8 i_ingot_iron
 DEFNAME = i_BRAZIER_TALL
 
 [ItemDef 0x19ac]
@@ -3679,7 +3679,7 @@ DESCRIPTION = Brazier
 
 TYPE = T_FIRE
 WEIGHT = 60
-RESOURCES = 3 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 3 i_ingot_iron
 DEFNAME = i_brazier_small
 
 [ItemDef 0x19c3]
@@ -3689,7 +3689,7 @@ DESCRIPTION = Fountain 02
 
 //DUPELIST = 019c4,019c5,019c6,019c7,019c8,019c9,019ca,019cb,019cc,019cd,019ce,019cf,019d0,019d1,019d2,019d3,019d4,019d5,019d6,019d7,019d8,019d9,019da,019db,019dc,019dd,019de,019df,019e0,019e1,019e2,019e3,019e4,019e5,019e6,019e7,019e8,019e9,019ea,019eb,019ec // commented out by Converter 
 WEIGHT = 1400
-RESOURCES = 100 i_stone_sand,  40 i_water,  1 i_springs //some resources were fixed by converter 
+RESOURCES = 100 i_stone_sand, 40 i_water, 1 i_springs
 DEFNAME = i_fountain_2
 
 [ItemDef 0x19c4]
@@ -3822,7 +3822,7 @@ DESCRIPTION = Skeleton (Boots)
 
 //DUPELIST = 01a02,01b7c,01b7d,01b7f,01b80 // commented out by Converter 
 WEIGHT = 420
-RESOURCES = i_skeleton_hang,  i_boots_calf //some resources were fixed by converter 
+RESOURCES = 1 i_skeleton_hang, 1 i_boots_calf //some resources were fixed by converter 
 //TDATA1 = i_skeleton_hang // commented out by Converter 
 DEFNAME = i_skeleton_boots
 
@@ -3835,7 +3835,7 @@ SUBSECTION = Skeletons
 DESCRIPTION = Skeleton
 
 //DUPELIST = 01a04 // commented out by Converter 
-RESOURCES = i_shackles_hanging,  i_skeleton //some resources were fixed by converter 
+RESOURCES = 1 i_shackles_hanging, 1 i_skeleton //some resources were fixed by converter 
 DEFNAME = i_skeleton_hang
 
 [ItemDef 0x1a04]
@@ -3843,7 +3843,7 @@ DUPEITEM = i_skeleton_hang
 
 [ItemDef 0x1a05]
 //DUPELIST = 01a06 // commented out by Converter 
-RESOURCES = i_shackles_hanging //some resources were fixed by converter 
+RESOURCES = 1 i_shackles_hanging //some resources were fixed by converter 
 DEFNAME = i_skeleton_hang2
 
 [ItemDef 0x1a06]
@@ -3857,7 +3857,7 @@ DUPEITEM = i_SHACKLES_HANGING
 
 [ItemDef 0x1a09]
 //DUPELIST = 01a0a // commented out by Converter 
-RESOURCES = i_shackles_hanging //some resources were fixed by converter 
+RESOURCES = 1 i_shackles_hanging //some resources were fixed by converter 
 DEFNAME = i_skeleton_hang3
 
 [ItemDef 0x1a0a]
@@ -4157,7 +4157,7 @@ DESCRIPTION = Ore Cart
 
 //DUPELIST = 01a83,01a86,01a87,01a88,01a8b // commented out by Converter 
 WEIGHT = 60
-RESOURCES = 2 i_log,  2 i_board,  1 i_nails //some resources were fixed by converter 
+RESOURCES = 2 i_log, 2 i_board, 1 i_nails
 DEFNAME = i_CART_ORE_ne_1
 
 [ItemDef 0x1a83]
@@ -4309,7 +4309,7 @@ DESCRIPTION = Lighthouse
 
 //DUPELIST = 01aa5,01aa6,01aa7,01aa8,01aa9,01aaa,01aab,01aac,01aad,01aae,01aaf,01ab0,01ab1,01ab2,01ab3,01ab4,01ab5,01ab6,01ab7,01ab8,01ab9,01aba,01abb,01abc,01abd,01abe,01abf,01ac0,01ac1,01ac2,01ac3,01ac4,01ac5,01ac6,01ac7,01ac8,01ac9,01aca,01acb,01acc,01acd,01ace,01acf,01ad0,01ad1,01ad2 // commented out by Converter 
 WEIGHT = 1560
-RESOURCES = 66 i_stone_sand,  24 i_glass //some resources were fixed by converter 
+RESOURCES = 66 i_stone_sand, 24 i_glass
 DEFNAME = i_lighthouse
 
 [ItemDef 0x1aa5]
@@ -4457,7 +4457,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01ad5 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = 8 i_straw,  3 i_egg //some resources were fixed by converter 
+RESOURCES = 8 i_straw, 3 i_egg
 DEFNAME = i_nest_with_eggs
 
 [ItemDef 0x1ad5]
@@ -4483,7 +4483,7 @@ DESCRIPTION = Pile of Skulls
 TYPE = T_BONE
 //DUPELIST = 01ad9,01ada,01adb,01adc,01add,01ade,01adf // commented out by Converter 
 WEIGHT = 1800
-RESOURCES = 45 i_bone_skull //some resources were fixed by converter 
+RESOURCES = 45 i_bone_skull
 DEFNAME = i_SKULL_PILE
 
 [ItemDef 0x1ad9]
@@ -4623,7 +4623,7 @@ DESCRIPTION = Bone Pile
 TYPE = T_BONE
 //DUPELIST = 01b0a,01b0b,01b0c,01b0d,01b0e,01b0f,01b10 // commented out by Converter 
 WEIGHT = 170
-RESOURCES = 12 i_bone,  5 i_bone_shards //some resources were fixed by converter 
+RESOURCES = 12 i_bone, 5 i_bone_shards
 DEFNAME = i_bone_pile
 
 [ItemDef 0x1b0a]
@@ -4696,7 +4696,7 @@ DESCRIPTION = Skeleton (Meat)
 
 //DUPELIST = 01b1e // commented out by Converter 
 WEIGHT = 500
-RESOURCES = i_skeleton_boots,  i_flesh_torso,  i_flesh_right_leg,  i_flesh_left_leg //some resources were fixed by converter 
+RESOURCES = 1 i_skeleton_boots, 1 i_flesh_torso, 1 i_flesh_right_leg, 1 i_flesh_left_leg //some resources were fixed by converter 
 //TDATA1 = i_skeleton_boots // commented out by Converter 
 DEFNAME = i_skeleton_flesh
 
@@ -4800,7 +4800,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01b40,01b41,01b42,01b43,01b44,01b45,01b46,01b47,01b48,01b4a,01b4b,01b4c,01b4d,01b4e,01b4f,01b50,01b51,01b53,01b54,01b55,01b56,01b57,01b58,01b59,01b5a,01b5b,01b5c,01b5d,01b5f,01b60,01b61,01b62,01b63,01b64,01b65,01b66,01b67,01b68,01b69,01b6a,01b6b // commented out by Converter 
 WEIGHT = 2000
-RESOURCES = 15000 i_gold,  50 t_gem //some resources were fixed by converter 
+RESOURCES = 15000 i_gold, 50 t_gem
 DEFNAME = i_treasure
 
 [ItemDef 0x1b40]
@@ -5197,7 +5197,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01bc0,01bc1 // commented out by Converter 
 WEIGHT = 150
-RESOURCES = 3 i_rock_plain //some resources were fixed by converter 
+RESOURCES = 3 i_rock_plain
 DEFNAME = i_TRIGGER_STONE_PLAIN
 
 [ItemDef 0x1bc0]
@@ -5221,7 +5221,7 @@ DESCRIPTION = Chaos Shield
 
 TYPE = t_shield
 WEIGHT = 10
-RESOURCES = 4 i_ingot_silver,  10 i_ingot_obsidian //some resources were fixed by converter 
+RESOURCES = 4 i_ingot_silver, 10 i_ingot_obsidian
 //FLIP = 1 // commented out by Converter 
 //REQSTR = 0 // commented out by Converter 
 layer = 2 //Set by Converter 
@@ -5240,7 +5240,7 @@ DESCRIPTION = Order Shield
 TYPE = t_shield
 //DUPELIST = 01bc5 // commented out by Converter 
 WEIGHT = 10
-RESOURCES = 4 i_ingot_silver,  8 i_ingot_obsidian,  2 i_ingot_gold //some resources were fixed by converter 
+RESOURCES = 4 i_ingot_silver, 8 i_ingot_obsidian, 2 i_ingot_gold
 //FLIP = 1 // commented out by Converter 
 //REQSTR = 0 // commented out by Converter 
 layer = 2 //Set by Converter 
@@ -5391,8 +5391,8 @@ DESCRIPTION = Book of Truth
 
 TYPE = T_BOOK
 WEIGHT = 50
-RESOURCES = 15 i_log_copper //some resources were fixed by converter 
-SKILLMAKE = 60.0 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 15 i_log_copper
+SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
 DEFNAME = i_book_of_truth
 //VALUE = 500 // commented out by Converter 
 
@@ -5404,7 +5404,7 @@ DESCRIPTION = Candle of Love
 TYPE = t_light_lit
 //DUPELIST = 01c15,01c16 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_candle,  i_ingot_adamantinum //some resources were fixed by converter 
+RESOURCES = 1 i_candle, 1 i_ingot_adamantinum //some resources were fixed by converter 
 layer = 2 //Set by Converter 
 DEFNAME = i_candle_of_love
 //TDATA4 = i_candle_of_love // commented out by Converter 
@@ -5448,7 +5448,7 @@ DESCRIPTION = @
 
 //DUPELIST = 01c23,01c24,01c25,01c26,01c27,01c28,01c29,01c2a,01c2b,01c2c,01c2d,01c2e,01c2f,01c30,01c31,01c32,01c33,01c34,01c35,01c36,01c37,01c38,01c39,01c3a // commented out by Converter 
 WEIGHT = 320
-RESOURCES = 32 i_board,  2 i_nails,  3 i_cloth //some resources were fixed by converter 
+RESOURCES = 32 i_board, 2 i_nails, 3 i_cloth
 DEFNAME = i_casket_wood
 
 [ItemDef 0x1c23]

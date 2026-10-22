@@ -28,7 +28,11 @@
 
 //[SPAWN s_golem_weak] //(commented out by Converter) 
 
+//[SPAWN s_golem_medium] //(commented out by Converter) 
+
 //[SPAWN s_golem_strong] //(commented out by Converter) 
+
+//[SPAWN s_golem_mithril_reaper_elven] //(commented out by Converter) 
 
 //[SPAWN s_skeletons_lvl_1] //(commented out by Converter) 
 
@@ -50,6 +54,8 @@
 
 //[SPAWN s_elem_snow] //(commented out by Converter) 
 
+//[SPAWN s_elem_ledovky] //(commented out by Converter) 
+
 //[SPAWN s_strazci_zimy] //(commented out by Converter) 
 
 //[SPAWN s_snow_npc] //(commented out by Converter) 
@@ -58,11 +64,7 @@
 
 //[SPAWN s_sun_npc] //(commented out by Converter) 
 
-//[SPAWN s_shagar_special] //(commented out by Converter) 
-
 //[SPAWN s_nexmirias_vesnicane] //(commented out by Converter) 
-
-//[SPAWN s_qv1_drapaci] //(commented out by Converter) 
 
 //[SPAWN s_jezditka_low_les1] //(commented out by Converter) 
 
@@ -103,3 +105,11 @@
 //[SPAWN s_jezditka_obcasny_pisek] //(commented out by Converter) 
 
 //[SPAWN s_jezditka_obcasny_prales] //(commented out by Converter) 
+
+//[SPAWN s_shadow_quest_low] //(commented out by Converter) 
+
+//[SPAWN s_shadow_quest_middle] //(commented out by Converter) 
+
+//[SPAWN s_shadow_quest_top] //(commented out by Converter) 
+
+//[SPAWN s_hm_prisluhovac] //(commented out by Converter) 

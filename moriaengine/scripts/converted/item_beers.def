@@ -10,6 +10,7 @@ TYPE = T_BOOZE
 WEIGHT = 10
 model = i_bottle_ale
 //VALUE = {25 55} // commented out by Converter 
+Color = COLOR_RED2
 
 [ItemDef i_ale_honey]
 CATEGORY = Ales
@@ -21,6 +22,7 @@ TYPE = T_BOOZE
 WEIGHT = 10
 model = i_bottle_ale
 //VALUE = {18 25} // commented out by Converter 
+Color = COLOR_O_GOLD
 
 [ItemDef i_ale_brown]
 CATEGORY = Ales
@@ -32,6 +34,7 @@ TYPE = T_BOOZE
 WEIGHT = 10
 model = i_bottle_ale
 //VALUE = {4 99} // commented out by Converter 
+Color = COLORS_BROWN
 
 [ItemDef i_ale_spiced]
 CATEGORY = Ales
@@ -43,6 +46,7 @@ TYPE = T_BOOZE
 WEIGHT = 10
 model = i_bottle_ale
 //VALUE = {35 80} // commented out by Converter 
+Color = 02c
 
 [ItemDef i_ale_smoked]
 CATEGORY = Ales
@@ -54,6 +58,7 @@ TYPE = T_BOOZE
 WEIGHT = 10
 model = i_bottle_ale
 //VALUE = {70 98} // commented out by Converter 
+Color = COLOR_GRAY_DK
 
 [ItemDef i_ale_stout]
 CATEGORY = Ales
@@ -65,6 +70,7 @@ TYPE = T_BOOZE
 WEIGHT = 10
 model = i_bottle_ale
 //VALUE = {4 5} // commented out by Converter 
+Color = COLOR_O_BLACKROCK
 
 [ItemDef i_ale_oktoberfest]
 CATEGORY = Ales
@@ -76,6 +82,7 @@ TYPE = T_BOOZE
 WEIGHT = 10
 model = i_bottle_ale
 //VALUE = {38 42} // commented out by Converter 
+Color = COLORS_ORANGE
 
 [ItemDef Pulitr_piva]
 CATEGORY = Ales

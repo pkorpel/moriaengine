@@ -6,8 +6,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Dagger
 
 NAME = "verite dagger"
-RESOURCES = 2 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 tinkering //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_verite
+SKILLMAKE = 700 blacksmithing, 500 tinkering //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_dagger
 Layer = 1 //guessed from base def by Converter 
 type = t_weapon_fence //guessed from base def by Converter 
@@ -17,11 +18,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 4
 attackVsM = 4
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_club_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -29,24 +30,23 @@ SUBSECTION = verite Maces & Hammers
 DESCRIPTION = club
 
 NAME = "oak club"
-RESOURCES = 1 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_log_verite
+SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_club
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 7
 attackVsM = 7
-MindPowerVsP = 1225.0 //#539 - scaled: 700 * 7.0/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1225.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_kryss_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -54,8 +54,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Kryss
 
 NAME = "verite kryss"
-RESOURCES = 8 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 tinkering //some resources were fixed by converter 
+RESOURCES = 8 i_ingot_verite
+SKILLMAKE = 700 blacksmithing, 500 tinkering //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_kryss
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -65,11 +66,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 7
 attackVsM = 7
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_cutlass_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -77,8 +78,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Cutlass
 
 NAME = "verite cutlass"
-RESOURCES = 10 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 tinkering //some resources were fixed by converter 
+RESOURCES = 10 i_ingot_verite
+SKILLMAKE = 700 blacksmithing, 500 tinkering //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_cutlass
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -88,11 +90,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 8
 attackVsM = 8
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_mace_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -100,24 +102,23 @@ SUBSECTION = verite Maces & Hammers
 DESCRIPTION = Mace
 
 NAME = "verite mace"
-RESOURCES = 10 i_ingot_verite,  2 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 10 i_ingot_verite, 2 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_mace
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 10
 attackVsM = 10
-MindPowerVsP = 1000.0 //#539 - scaled: 700 * 10.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_scimitar_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -125,8 +126,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Scimitar
 
 NAME = "verite scimitar"
-RESOURCES = 14 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 tinkering //some resources were fixed by converter 
+RESOURCES = 14 i_ingot_verite
+SKILLMAKE = 700 blacksmithing, 500 tinkering //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_scimitar
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -136,11 +138,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 11
 attackVsM = 11
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -148,23 +150,24 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Axe
 
 NAME = "verite axe"
-RESOURCES = 8 i_ingot_verite,  2 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 8 i_ingot_verite, 2 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_axe
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandAxe //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 9.5
 attackVsM = 9.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_shepherds_crook_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -172,8 +175,9 @@ SUBSECTION = verite Staves
 DESCRIPTION = Sheperd's Crook
 
 NAME = "oak crook"
-RESOURCES = 12 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 12 i_log_verite
+SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_shepherds_crook
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_crook //guessed from base def by Converter 
@@ -184,11 +188,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 10
 attackVsM = 10
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredStaffDef i_staff_black_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -196,26 +200,24 @@ SUBSECTION = verite Staves
 DESCRIPTION = Black Staff
 
 NAME = "oak black staff"
-RESOURCES = 14 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 14 i_log_verite
+SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 3 // commented out by Converter 
 model = i_staff_black
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 12.5
 attackVsM = 12.5
-MindPowerVsP = 1093.75 //#539 - scaled: 700 * 12.5/8.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1093.75 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_katana_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -223,8 +225,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Katana
 
 NAME = "verite katana"
-RESOURCES = 16 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 tinkering //some resources were fixed by converter 
+RESOURCES = 16 i_ingot_verite
+SKILLMAKE = 700 blacksmithing, 500 tinkering //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_katana
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -234,11 +237,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 12.5
 attackVsM = 12.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_spear_short_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -246,8 +249,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Short Spear
 
 NAME = "verite short spear"
-RESOURCES = 6 i_ingot_verite,  10 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 6 i_ingot_verite, 10 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_spear_short
 Layer = 1 //guessed from base def by Converter 
 type = t_weapon_fence //guessed from base def by Converter 
@@ -257,11 +261,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 12.5
 attackVsM = 12.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_war_fork_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -269,23 +273,23 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = War Fork
 
 NAME = "verite war fork"
-RESOURCES = 14 i_ingot_verite,  4 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 14 i_ingot_verite, 4 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_war_fork
-TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandSpike //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 14
 attackVsM = 14
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_sword_broad_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -293,8 +297,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Broadsword
 
 NAME = "verite broad sword"
-RESOURCES = 18 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 tinkering //some resources were fixed by converter 
+RESOURCES = 18 i_ingot_verite
+SKILLMAKE = 700 blacksmithing, 500 tinkering //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_sword_broad
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -304,11 +309,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 14
 attackVsM = 14
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_mace_war_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -316,24 +321,23 @@ SUBSECTION = verite Maces & Hammers
 DESCRIPTION = War Mace
 
 NAME = "verite war mace"
-RESOURCES = 16 i_ingot_verite,  4 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 16 i_ingot_verite, 4 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_mace_war
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 16
 attackVsM = 16
-MindPowerVsP = 1120.0 //#539 - scaled: 700 * 16.0/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1120.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_sword_long_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -341,8 +345,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Longsword
 
 NAME = "verite long sword"
-RESOURCES = 22 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 tinkering //some resources were fixed by converter 
+RESOURCES = 22 i_ingot_verite
+SKILLMAKE = 700 blacksmithing, 500 tinkering //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_sword_long
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -352,11 +357,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 16.5
 attackVsM = 16.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_sword_viking_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -364,8 +369,9 @@ SUBSECTION = verite Onehanded
 DESCRIPTION = Viking Sword
 
 NAME = "verite viking sword"
-RESOURCES = 24 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 tinkering //some resources were fixed by converter 
+RESOURCES = 24 i_ingot_verite
+SKILLMAKE = 700 blacksmithing, 500 tinkering //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_sword_viking
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -375,11 +381,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 19
 attackVsM = 19
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredStaffDef i_staff_quarter_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -387,26 +393,24 @@ SUBSECTION = verite Staves
 DESCRIPTION = Quarter Staff
 
 NAME = "oak quarter staff"
-RESOURCES = 18 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 18 i_log_verite
+SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 3 // commented out by Converter 
 model = i_staff_quarter
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 16.5
 attackVsM = 16.5
-MindPowerVsP = 1050.0 //#539 - scaled: 700 * 16.5/11.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1050.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_battle_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -414,8 +418,9 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Battle Axe
 
 NAME = "verite battle axe"
-RESOURCES = 15 i_ingot_verite,  3 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 15 i_ingot_verite, 3 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_axe_battle
 Layer = 1 //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -425,11 +430,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 17.5
 attackVsM = 17.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_hammer_pick_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -437,25 +442,23 @@ SUBSECTION = verite Maces & Hammers
 DESCRIPTION = Hammer Pick
 
 NAME = "verite hammer pick"
-RESOURCES = 16 i_ingot_verite,  4 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 16 i_ingot_verite, 4 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_hammer_pick
-TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 17.5
 attackVsM = 17.5
-MindPowerVsP = 1020.83 //#539 - scaled: 700 * 17.5/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1020.83 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_pitchfork_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -463,23 +466,24 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Pitchfork
 
 NAME = "verite pitchfork"
-RESOURCES = 16 i_ingot_verite,  4 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 16 i_ingot_verite, 4 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_pitchfork
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandSpike //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 17.5
 attackVsM = 17.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_exec_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -487,8 +491,9 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Executioner's Axe
 
 NAME = "verite executioners axe"
-RESOURCES = 18 i_ingot_verite,  4 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 18 i_ingot_verite, 4 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_axe_exec
 Layer = 1 //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
@@ -498,11 +503,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 20
 attackVsM = 20
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_double_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -510,23 +515,24 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Double Axe
 
 NAME = "verite double axe"
-RESOURCES = 18 i_ingot_verite,  4 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 18 i_ingot_verite, 4 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_axe_double
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandAxe //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 19.5
 attackVsM = 19.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_hammer_war_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -534,25 +540,24 @@ SUBSECTION = verite Maces & Hammers
 DESCRIPTION = War Hammer
 
 NAME = "verite war hammer"
-RESOURCES = 19 i_ingot_verite,  5 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 19 i_ingot_verite, 5 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_hammer_war
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 21
 attackVsM = 21
-MindPowerVsP = 1050.0 //#539 - scaled: 700 * 21.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1050.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_two_hand_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -560,23 +565,24 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Two Handed Axe
 
 NAME = "verite two handed axe"
-RESOURCES = 19 i_ingot_verite,  5 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 19 i_ingot_verite, 5 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_axe_two_hand
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandAxe //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 21
 attackVsM = 21
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_spear_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -584,8 +590,9 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Spear
 
 NAME = "verite spear"
-RESOURCES = 11 i_ingot_verite,  15 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 11 i_ingot_verite, 15 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_spear
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 2 //Set by Converter 
@@ -595,11 +602,11 @@ WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 19
 attackVsM = 19
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredStaffDef i_staff_gnarled_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -607,26 +614,24 @@ SUBSECTION = verite Staves
 DESCRIPTION = Gnarled Staff
 
 NAME = "oak gnarled staff"
-RESOURCES = 26 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 carpentry,  t_carpentry //some resources were fixed by converter 
+RESOURCES = 26 i_log_verite
+SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 3 // commented out by Converter 
 model = i_staff_gnarled
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 22
 attackVsM = 22
-MindPowerVsP = 993.55 //#539 - scaled: 700 * 22.0/15.5 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 993.55 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_war_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -634,23 +639,24 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = War Axe
 
 NAME = "verite war axe"
-RESOURCES = 20 i_ingot_verite,  6 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 20 i_ingot_verite, 6 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_axe_war
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandAxe //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 22.5
 attackVsM = 22.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_axe_battle_large_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -658,23 +664,24 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Large Battle Axe
 
 NAME = "verite battle large axe"
-RESOURCES = 21 i_ingot_verite,  7 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 21 i_ingot_verite, 7 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_axe_battle_large
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandAxe //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 24.5
 attackVsM = 24.5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_bardiche_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -682,23 +689,24 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Bardiche
 
 NAME = "verite bardiche"
-RESOURCES = 23 i_ingot_verite,  7 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 23 i_ingot_verite, 7 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_bardiche
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSword //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 26
 attackVsM = 26
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_maul_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -706,25 +714,23 @@ SUBSECTION = verite Maces & Hammers
 DESCRIPTION = Maul
 
 NAME = "verite maul"
-RESOURCES = 23 i_ingot_verite,  7 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 23 i_ingot_verite, 7 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_maul
-TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 25
 attackVsM = 25
-MindPowerVsP = 972.22 //#539 - scaled: 700 * 25.0/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 972.22 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_halberd_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -732,23 +738,24 @@ SUBSECTION = verite Twohanded
 DESCRIPTION = Halberd
 
 NAME = "verite halberd"
-RESOURCES = 24 i_ingot_verite,  8 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 70.0 blacksmithing, 50.0 carpentry //some resources were fixed by converter 
+RESOURCES = 24 i_ingot_verite, 8 i_log_verite
+SKILLMAKE = 700 blacksmithing, 500 carpentry //some resources were fixed by converter 
+//tdata1 = 3 // commented out by Converter 
 model = i_halberd
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Verite //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandSword //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 27
 attackVsM = 27
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_bow_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -757,8 +764,9 @@ DESCRIPTION = Bow
 
 NAME = "oak bow"
 type = t_weapon_bow_run
-RESOURCES = 8 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 8 i_log_verite
+SKILLMAKE = 600 bowcraft
+//tdata1 = 3 // commented out by Converter 
 model = i_bow
 TwoHanded = true //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -770,11 +778,11 @@ WeaponAnimType = WeaponAnimType.Bow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 8
 attackVsM = 8
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_crossbow_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -782,8 +790,9 @@ SUBSECTION = verite Bows
 DESCRIPTION = Crossbow
 
 NAME = "oak crossbow"
-RESOURCES = 18 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 18 i_log_verite
+SKILLMAKE = 600 bowcraft
+//tdata1 = 3 // commented out by Converter 
 model = i_crossbow
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_xbow //guessed from base def by Converter 
@@ -796,11 +805,11 @@ WeaponAnimType = WeaponAnimType.XBow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 14
 attackVsM = 14
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_crossbow_heavy_verite]
 CATEGORY = Provisions - Weapons - Colored
@@ -808,8 +817,9 @@ SUBSECTION = verite Bows
 DESCRIPTION = Heavy Crossbow
 
 NAME = "oak heavy crossbow"
-RESOURCES = 26 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 26 i_log_verite
+SKILLMAKE = 600 bowcraft
+//tdata1 = 3 // commented out by Converter 
 model = i_crossbow_heavy
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_xbow //guessed from base def by Converter 
@@ -822,11 +832,11 @@ WeaponAnimType = WeaponAnimType.XBow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 21
 attackVsM = 21
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_bow_verite_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -835,8 +845,9 @@ DESCRIPTION = Bow RUN
 
 NAME = "Run oak bow"
 type = t_weapon_bow_run
-RESOURCES = 8 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 8 i_log_verite
+SKILLMAKE = 600 bowcraft
+//tdata1 = 3 // commented out by Converter 
 model = i_bow
 TwoHanded = true //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -848,11 +859,11 @@ WeaponAnimType = WeaponAnimType.Bow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 0
 attackVsM = 0
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [ColoredWeaponDef i_crossbow_verite_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -861,8 +872,9 @@ DESCRIPTION = Crossbow RUN
 
 NAME = "Run oak crossbow"
 type = t_weapon_bow_run
-RESOURCES = 18 i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 18 i_log_verite
+SKILLMAKE = 600 bowcraft
+//tdata1 = 3 // commented out by Converter 
 model = i_crossbow
 TwoHanded = true //guessed from base def by Converter 
 layer = 1 //Set by Converter 
@@ -874,8 +886,8 @@ WeaponAnimType = WeaponAnimType.Bow //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 0
 attackVsM = 0
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 

@@ -14,17 +14,21 @@ model = i_memory
 
 //[function dospellcustom_donesrc] //(commented out by Converter) 
 
+//[function f_spellResistedMsg] //(commented out by Converter) 
+
 //[function randfakt] //faktor, r0, r1 //(commented out by Converter) 
 
-//[function dospell_final] //pro prime zadani spelleffectu //(commented out by Converter) 
+//[function spellHasSideEffect] //(commented out by Converter) 
+
+//[function dospell_final] // pro prime zadani spelleffectu //(commented out by Converter) 
 
 //[function f_spellchecklos] //(commented out by Converter) 
 
-//[function iscomputed] //jestli se pocita effekt (pouziva SM) //(commented out by Converter) 
+//[function iscomputed] // jestli se pocita efekt (pouziva SM) //(commented out by Converter) 
 
-//[function canharmcaster] //muze ublizit i mne (hromadne) //(commented out by Converter) 
+//[function canharmcaster] // muze ublizit i mne (hromadne) //(commented out by Converter) 
 
-//[function isevil] //jestli je kouzlo odrazitelne etc., jestli ponici hul pri kouzleni. //(commented out by Converter) 
+//[function isevil] // jestli je kouzlo odrazitelne etc., jestli ponici hul pri kouzleni. //(commented out by Converter) 
 
 //[function spellisgood] //(commented out by Converter) 
 
@@ -94,3 +98,5 @@ model = i_rune_explosion
 //[typedef t_allpotions] //(commented out by Converter) 
 
 //[typedef t_speedpotions] //(commented out by Converter) 
+
+//[function f_sound_DrinkPoiton] //(commented out by Converter) 
