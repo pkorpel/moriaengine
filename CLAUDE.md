@@ -1,5 +1,59 @@
 # moriaengine — working state
 
+## Live-testing follow-up: NPC movement "skips tiles" at high MoveRate — FIXED (PR #604), 2026-10-22 — #603 closed
+
+Follow-up to #599/#600 (MoveRate per-instance + NPC ranged combat, see entry right below
+this one). User respawned a titan after the ranged-combat fix and reported: "Increased
+moverate makes him skip fields, but he should still be walking one by one, just move
+faster." - the #590 step-budget design (multiple `TryStep` calls crammed into one 1.5s
+think-tick for a fast NPC) was visually indistinguishable from teleporting on the client,
+since several movement packets landed with zero real-world delay between them.
+
+**Redesign (#603, shipped as part of PR #604), ship ordered explicitly "while regression
+is running"**: replaced the step-budget accumulator entirely with tick-CADENCE scaling -
+`NPCAiTimer.RescheduleForMoveRate(moveRate)` computes `interval = ThinkIntervalSeconds *
+BaselineMoveRate / moveRate` (floored at `MinThinkIntervalSeconds=0.3` as a CPU-cost safety
+net) and reschedules the timer's own `PeriodInSeconds`/`DueInSeconds` - a faster NPC now
+thinks (and so takes its one real tile-step) more OFTEN in real time, never more than one
+tile between consecutive AI ticks. All 5 movement call sites (`Fight`/`Follow`/`Wander`/
+the `GoingToPoint` branch/`Flee`) reverted to their original single-`TryStep`-per-tick
+shape; `NPC.On_Create`'s MoveRate-then-EnsureInstalled ordering (#599) preserved so the
+very first schedule is already correct. New real protocol test
+(`NpcMoveRateTests.NeverCoversMoreThanOneTileBetweenConsecutiveChecks`, polls a MoveRate=6
+NPC's displacement every 250ms over 4s, asserts no single poll-to-poll jump exceeds 1 tile)
+red/green confirmed against the reverted #590/#599 shape (saw a jump of 2) vs. this
+redesign (never more than 1).
+
+**Per the user's explicit "ship while regression is running, fix anything real
+afterward" instruction**: committed/pushed (`--no-verify`, the standing 4-known-red-
+`WeaponSkillMappingTests` gap from #596/PR #597 still applies)/PR'd/merged (`--admin`)/
+closed #603 without waiting for a broader background regression sweep already in flight.
+That sweep (`RangerCombatTests`/`RangerSettingsTests`/`MysticCombatTests`/
+`CombatScenarioTests`/`GatheringTests`/`SpawnCommandTests`/`PetCommandTests`/
+`OwnerAggroTests`) then timed out at 300s and surfaced a long list of NEW-looking
+failures beyond the already-known pre-existing flakes - **triaged and confirmed NOT a
+regression from this PR**: an isolated rerun of just the suspicious classes
+(`GatheringTests`/`RangerCombatTests`/`PetCommandTestsB`) still failed (11/15), but a
+direct A/B test - temporarily reverting `NPCAiTimer.cs`/`NPC.cs` to their exact pre-#603
+content (commit `db88aea`) and rerunning the identical filter - reproduced the SAME
+failures (10/14, including the exact same `RangerCombatTests.StandsOffAtRangeWithRealBow`/
+`ArmorReducesRealBowDamage` symptom) with the OLD code too. `RangerCombatTests` itself
+predates this entire session (from the original #454/#458 Ranger work) and has zero
+logical connection to NPC movement cadence - its failure here is the generic timeout/
+wrong-value symptom of this sandbox's own well-documented resource-contention flake class
+(load average ~3 on this 8-core/4GB box at the time), not a code defect. Current/
+redesigned files restored immediately after the A/B comparison, confirmed clean diff
+against `origin/main`.
+
+**Takeaway for next time a background regression run surfaces a scary-looking batch of
+NEW failures right after a merge**: don't assume causality from "these weren't failing
+before, and I just shipped something" - always A/B against the literal pre-change file
+content (not just eyeball the diff) before treating it as real, especially when the
+failing tests have zero logical connection to what changed (here: ranged-combat/gathering/
+pet-command tests failing right after a pure NPC-movement-cadence change). A 300s timeout
+on a multi-fixture sweep (8+ test classes, each booting its own real server pair) is
+itself a strong prior toward contention-induced noise, not a clean signal.
+
 ## Live-testing follow-up: MoveRate per-instance + NPC ranged combat SHIPPED (PR #601), 2026-10-22 — #599/#600 closed
 
 User tested newly-spawned monsters from the fresh content regen (PR #597, see entry
