@@ -723,6 +723,31 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey instanceMoveRateTK = TagKey.Acquire("_npcMoveRate_");
+
+		/// <summary>Per-instance MoveRate (#599) - seeded from this NPC's own NPCDef.MoveRate
+		/// at creation, then lives independently from there on. NPCAiTimer's own move-budget
+		/// accumulator reads THIS, not the Def-level value - NPCDef.MoveRate remains only the
+		/// species-level default new spawns start from. Same "plain public property, not
+		/// Def-level, so .info's reflection-based editor surfaces it" reasoning as AggroMode/
+		/// ExperienceReward above - #590 shipped MoveRate without this per-instance mirror,
+		/// which is exactly why a GM couldn't retune one specific spawned monster's speed.</summary>
+		public double MoveRate {
+			get {
+				object tag = this.GetTag(instanceMoveRateTK);
+				if (tag is double rate) {
+					return rate;
+				}
+				if (tag is int intTag) {
+					return intTag;
+				}
+				return 3.0;
+			}
+			set {
+				this.SetTag(instanceMoveRateTK, value);
+			}
+		}
+
 		public override void On_Create() {
 			base.On_Create();
 			NPCAiTimer.EnsureInstalled(this);
@@ -730,6 +755,7 @@ namespace SteamEngine.CompiledScripts {
 			NPCDef def = (NPCDef) this.Def;
 			this.AggroMode = def.AggroMode;
 			this.ExperienceReward = def.RollExperienceReward();
+			this.MoveRate = def.MoveRate;
 
 			//#559 - only override the live Character default (15, see Character.ct) when this
 			//NPCDef actually configured a range; -1 means unconfigured, leave the default alone
