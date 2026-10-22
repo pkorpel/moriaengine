@@ -1,0 +1,8 @@
+// #593 - test-only content proving NPCDef.FoodTypes/MaxFood and the real hunger/decay/
+// feeding pipeline actually work end to end. "5 t_meat_raw" exercises the CATEGORY-matching
+// path (resolved against FoodCategories' real i_ribs_raw mapping), not just a literal
+// itemdef - the harder, more valuable case to verify.
+[NPCDef npc_test_hunger]
+NAME = "Hunger Test"
+ANIM = 0x1fff
+FoodType = 5 t_meat_raw
