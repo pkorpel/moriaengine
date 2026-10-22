@@ -37,13 +37,14 @@ DESCRIPTION = podstavec pro element
 Name = "podstavec"
 model = i_stairs_marble
 
-[EquippableDef i_Cardolanske_pohrebiste_truhlickaselementem]
+[ContainerDef i_Cardolanske_pohrebiste_truhlickaselementem]
 CATEGORY = Dungy
 SUBSECTION = Cardolanske pohrebiste
 DESCRIPTION = truhlicka s elementem
 
 Name = "truhlice"
 model = i_basket_square
+type = t_container //guessed from base def by Converter 
 layer = 0 //Set by Converter 
 
 [ItemDef i_Cardolanske_pohrebiste_element]
@@ -51,13 +52,14 @@ Name = "element"
 type = t_script
 model = i_virtstone_1
 
-[EquippableDef i_Cardolanske_pohrebiste_truhlickaskrystalem]
+[ContainerDef i_Cardolanske_pohrebiste_truhlickaskrystalem]
 CATEGORY = Dungy
 SUBSECTION = Cardolanske pohrebiste
 DESCRIPTION = trulicka s krystalem
 
 Name = "truhlice"
 model = i_basket_square
+type = t_container //guessed from base def by Converter 
 layer = 0 //Set by Converter 
 
 [ItemDef i_Cardolanske_pohrebiste_bazensrybou]
@@ -71,15 +73,19 @@ model = 0x173e
 [ItemDef i_Cardolanske_pohrebiste_rybazfontany]
 Name = "Ryba"
 model = i_chicken_leg
+type = t_food //guessed from base def by Converter 
+Color = 0615
 
 [ItemDef i_Cardolanske_pohrebiste_krystal12]
 Name = "krystal"
 Type = t_script
 model = i_crystal_red
+Color = 00989
 
 [ItemDef i_Cardolanske_pohrebiste_klic12]
 Name = "Klic"
 model = i_key_gold
+type = t_key //guessed from base def by Converter 
 
 [ItemDef i_Cardolanske_pohrebiste_nastavenikockyamagaagaty]
 CATEGORY = Dungy
@@ -120,3 +126,4 @@ model = i_moongate_blue
 Name = "pergamen pro bugera, ktery se snazil nepoctive projit expgatou na konci dungu"
 TYPE = t_script
 model = i_DEED
+Color = 0044C
