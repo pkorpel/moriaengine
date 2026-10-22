@@ -417,6 +417,53 @@ namespace SteamEngine.CompiledScripts {
 			set { this.SetTag(instanceButcherResourcesTK, value); }
 		}
 
+		/// <summary>One "FoodType = [amount] category-or-itemdef" entry (#593) - the real
+		/// archive's FOODTYPE= field. CategoryOrDefname is either a "t_"-prefixed food
+		/// category (resolved against FoodCategories' real-item mapping - see PetHungerSystem)
+		/// or a literal itemdef (e.g. dragons eating "i_gold" directly). SatiationValue is the
+		/// entry's own leading number - real Sphere's `typedef.maxfood` has no recoverable
+		/// value anywhere in the public archive, so (per explicit user decision) this engine
+		/// derives MaxFood from these numbers instead, rather than inventing an unrelated flat
+		/// default.</summary>
+		public class FoodTypeEntry {
+			public string CategoryOrDefname;
+			public int SatiationValue;
+		}
+
+		//Real Sphere's nakrmho formula floors a food item's own per-unit weight at 10 before
+		//computing nutrition - reused here as the default SatiationValue for a bare FOODTYPE
+		//entry with no explicit leading number (e.g. "FOODTYPE = t_coin,t_ore,t_ingot").
+		private const int DefaultFoodSatiationValue = 10;
+
+		private static readonly TagKey instanceFoodTypesTK = TagKey.Acquire("_npcFoodTypes_");
+
+		/// <summary>Acceptable food list for a fresh NPC of this type (#593). Null (the
+		/// default, most NPCDefs) means this species was never configured with real food
+		/// data - PetHungerSystem deliberately never starts tracking hunger for it at all,
+		/// same "incomplete content defaults permissive" precedent used throughout this
+		/// engine (ExperienceWorth, attr_decay, etc).</summary>
+		public List<FoodTypeEntry> FoodTypes {
+			get { return this.GetTag(instanceFoodTypesTK) as List<FoodTypeEntry>; }
+			set { this.SetTag(instanceFoodTypesTK, value); }
+		}
+
+		/// <summary>Sum of every configured FoodTypes entry's own SatiationValue (0 if
+		/// FoodTypes is unset) - see FoodTypeEntry's own doc comment for why this engine
+		/// derives MaxFood this way instead of a native Sphere constant.</summary>
+		public int MaxFood {
+			get {
+				List<FoodTypeEntry> types = this.FoodTypes;
+				if (types == null) {
+					return 0;
+				}
+				int sum = 0;
+				foreach (FoodTypeEntry entry in types) {
+					sum += entry.SatiationValue;
+				}
+				return sum;
+			}
+		}
+
 		private static int[] ParseStatRange(string filename, int line, string param, string args) {
 			string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1) {
@@ -566,6 +613,29 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 				this.ButcherResources = entries;
+				return;
+			}
+			if (param == "foodtype") {
+				//#593 - "FoodType = [amount] category-or-itemdef, ..." - the real archive's
+				//FOODTYPE= field. Unlike "resources" above, an entry's leading amount is
+				//OPTIONAL (bare category entries like "t_coin" are real, confirmed in archive
+				//content) - falls back to DefaultFoodSatiationValue when omitted.
+				List<FoodTypeEntry> entries = new List<FoodTypeEntry>();
+				foreach (string part in args.Split(',')) {
+					string trimmed = part.Trim();
+					if (trimmed.Length == 0) {
+						continue;
+					}
+					string[] tokens = trimmed.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+					if (tokens.Length == 2) {
+						entries.Add(new FoodTypeEntry { SatiationValue = ConvertTools.ParseInt32(tokens[0]), CategoryOrDefname = tokens[1] });
+					} else if (tokens.Length == 1) {
+						entries.Add(new FoodTypeEntry { SatiationValue = DefaultFoodSatiationValue, CategoryOrDefname = tokens[0] });
+					} else {
+						Logger.WriteWarning(filename, line, "foodtype entry '" + part + "' must be '[amount] category'.");
+					}
+				}
+				this.FoodTypes = entries;
 				return;
 			}
 			//#562 - a .def field name matching a SkillName enum member (case-insensitive) is a

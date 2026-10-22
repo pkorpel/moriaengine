@@ -163,13 +163,25 @@ namespace SteamEngine.CompiledScripts {
 
 		private static readonly TagKey controlMasterTK = TagKey.Acquire("_controlMaster_");
 
-		/// <summary>The player who tamed/owns this pet, if any (see TamingSkillDef, NPCAiTimer's follow behavior). Null for everything that isn't someone's pet.</summary>
+		/// <summary>The player who tamed/owns this pet, if any (see TamingSkillDef, NPCAiTimer's follow behavior). Null for everything that isn't someone's pet.
+		/// #593 - single choke point for every assignment path (taming success, release,
+		/// rebel-drop) to start/stop PetHungerTimer, rather than hunting down each call site
+		/// individually.</summary>
 		public Character ControlMaster {
 			get {
 				return this.GetTag(controlMasterTK) as Character;
 			}
 			set {
+				Character previous = this.ControlMaster;
 				this.SetTag(controlMasterTK, value);
+				NPC npc = this as NPC;
+				if (npc != null) {
+					if (value != null) {
+						PetHungerTimer.EnsureInstalled(npc);
+					} else if (previous != null) {
+						PetHungerTimer.Remove(npc);
+					}
+				}
 			}
 		}
 
