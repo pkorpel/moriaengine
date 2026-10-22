@@ -1,5 +1,67 @@
 # moriaengine — working state
 
+## Converter: tag.resist_X damage-resist mapping — SHIPPED (PR #608), 2026-10-22 — #606 closed
+
+User asked to look into two real converter gaps visible via a live monster's `.info`:
+real resist properties available on `Character` but never populated, and `tag.weapflag`
+(monster natural-attack damage type) being silently ignored. Re-cloned the reference
+archive (`gitlab.com/erebor/sphere-public-archive`, read-only, scratchpad-only, same as
+every prior session) to find the real vocabulary before mapping either - don't trust a
+narrow grep of already-converted content alone, it undersampled badly here (see below).
+
+**Resist (this entry) - the simpler of the two, shipped first.** The engine already has a
+full, live damage-resistance mechanic - `Character.ResistFire`/`ResistPoison`/
+`ResistElectric`/`ResistAcid`/`ResistCold`/`ResistMagic`/`ResistMystical`/
+`ResistPhysical`/`ResistSlashing`/`ResistStabbing`/`ResistBlunt`/`ResistArchery`/
+`ResistBleed`/`ResistSummon`/`ResistDragon`/`ResistParalyse` (`Character.ct`'s `Defs:`,
+already consumed in `DamageManager.GetResistModifier`) - with zero `.def` content setting
+any of them, anywhere, before this. Real archive vocabulary (re-cloned and sampled
+properly this time, not just grepped against the narrow already-converted subset which
+badly undersampled - see "lesson" below): `poison`/`para`/`bleed`/`fire`/`summon`/`elect`/
+`pierce`/`slash`/`cold`/`sharp`/`blunt`/`phys`/`magic`/`acid`/`dragon` all map cleanly 1:1
+(pierce→Stabbing, confirmed by the engine's own code comment "formerly piercing, renamed
+to not confuse with armor-piercing"; `sharp` dual-writes both Slashing+Stabbing since
+`DamageType.Sharp` is already that combined flag, no dedicated `ResistSharp` property
+exists). `curse`/`silence`/`taunt`/`working` are real tags too but have zero matching
+mechanic anywhere in moriaengine - left unmapped, flagged as a gap, not invented.
+
+**Real structural finding, not just a vocabulary list**: most `tag.resist_X` lines live
+*inside* a chardef's `on=@Create` trigger body (confirmed: 8576 of 8587 sampled
+occurrences across `scripts/chars/*.scp`) - `ConvertedCharDef`/`ConvertedThingDef`'s
+`ProcessCreateTriggerLine` dispatcher has no default case for unrecognized names, so these
+were being **silently dropped with zero trace**, not even a comment. A rare top-level
+placement (e.g. `c_strazce_golem` in `specNPCVypravec.scp`) already passed through today
+via the generic `ConvertedDef.ThirdStage()` "any top-level PropsLine starting with `tag.`
+→ WriteAsIs" fallback - visible as an inert, unconnected `tag.resist_poison = 1000`-style
+line in already-converted content (this is the ONLY form the narrow grep against already-
+converted content found initially, which is exactly why the vocabulary looked much smaller
+before re-cloning the real archive - a real instance of the "grep missed a whole
+category" mistake class documented elsewhere in this file). Fixed both placements:
+`ConvertedCharDef.ProcessCreateTriggerLine` gained a `tag.resist_` prefix case (the
+@Create-body path), and matching `LineImplTask` entries cover the rare top-level
+placement - both route through one shared `EmitResistFields` helper (parses a single
+number or a Sphere `{min max}`/`<eval {...}>` range, averaged+rounded since the engine
+field is a plain scalar int, same precedent as `HandleArmor`'s averaging).
+
+No new engine code needed at all - purely a converter-mapping fix, same shape as
+`bloodcolor`/`resources`/`moverate`/`foodtype` before it. Verified: a real protocol test
+(`Tests/Protocol/NpcResistTests.cs`, boots a real server) creates a test NPCDef with
+`ResistPoison`/`ResistFire`/`ResistElectric`/`ResistSlashing`/`ResistStabbing` set and
+confirms a live `NPC`'s properties match exactly; a scratch converter regen against the
+real cloned archive confirmed the mapping fires correctly on real monsters (`animals.def`/
+`ogres.def`/`specNPCVypravec.def` etc - both the @Create-body and top-level placements),
+zero unexpected diffs anywhere else, player defs (`c_man`/`c_woman`) correctly untouched.
+Fast tier 46/50 (the 4 known-red `WeaponSkillMappingTests` from #596/PR #597, unrelated).
+Issue #606 closed referencing PR #608.
+
+**Next in this pair**: #607 (`tag.weapflag`, monster natural-attack damage type) - needs
+real NPCDef/CombatCalculator engine work (a new `NPCDef.NaturalDamageType` override field),
+not just a converter mapping, since nothing today lets an NPC's own bare-attack damage
+type differ from the fixed `WeaponType`-driven default. See #607 for the full real-
+vocabulary writeup (`dam_physical`/`dam_blunt`/`dam_slashing`/`dam_sharp`/`dam_piercing`/
+`dam_magic`/`dam_fire`/`dam_cold`/`dam_lightning`/`dam_elect`, all map cleanly onto the
+existing `DamageType` enum) - not started yet.
+
 ## Live-testing follow-up: NPC movement "skips tiles" at high MoveRate — FIXED (PR #604), 2026-10-22 — #603 closed
 
 Follow-up to #599/#600 (MoveRate per-instance + NPC ranged combat, see entry right below
