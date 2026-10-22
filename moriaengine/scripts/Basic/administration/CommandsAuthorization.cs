@@ -52,6 +52,11 @@ namespace SteamEngine.CompiledScripts {
 			//equipped hand1 item (falling back to hand2) via the real Trigger_DClick path.
 			this.commands["UseHand"] = PLEVEL_PLAYER;
 
+			//New command (#593): feed a tamed pet/mount from the player's own backpack.
+			//Explicitly allowlisted rather than relying on the default-deny fallback - this
+			//is a genuine player-facing pet-care command, not a GM tool.
+			this.commands["Feed"] = PLEVEL_PLAYER;
+
 			//Same default-deny gap as the Guild commands below - a real player-facing command
 			//(level/experience/combat-stats dialog, scripts/Basic/dialogs/explevel.scp) missing
 			//from this allowlist meant it silently required GM (plevel>=4) by the default-deny
