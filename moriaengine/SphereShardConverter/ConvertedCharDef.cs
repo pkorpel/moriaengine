@@ -60,6 +60,7 @@ namespace SteamEngine.Converter {
 			new LineImplTask("experience", PassThroughUnlessPlayerDef),
 			new LineImplTask("tamingdifficulty", PassThroughUnlessPlayerDef),
 			new LineImplTask("bloodcolor", PassThroughUnlessPlayerDef),
+			new LineImplTask("resources", PassThroughUnlessPlayerDef),
 			new LineImplTask("attack", HandleAttack),
 			new LineImplTask("dam", HandleAttack),
 			new LineImplTask("armor", HandleArmor)
