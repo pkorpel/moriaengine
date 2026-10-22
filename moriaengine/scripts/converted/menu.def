@@ -30,7 +30,7 @@
 NAME = "Delay Teleport"
 TYPE = T_EQ_SCRIPT
 WEIGHT = 0
-LAYER = layer_special
+layer = layer_special
 model = i_handr_1
 
 //[MENU MENU_TOWN_MAYOR] //(commented out by Converter) 
@@ -227,7 +227,7 @@ model = i_handr_1
 NAME = "Delay Teleport"
 TYPE = T_EQ_SCRIPT
 WEIGHT = 0
-LAYER = layer_special
+layer = layer_special
 model = i_handr_1
 
 //[MENU M_ADDI_SHIELDS] //(commented out by Converter) 

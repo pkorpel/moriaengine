@@ -5,398 +5,967 @@ CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Anatomie
 
-NAME = "Mistr anatomy"
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
+NAME = "Mistr Anatomy"
 model = C_MAN
 DEFNAME = c_m_anatomy
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Anatomy = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_AnimalLore]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = AnimalLore
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr AnimalLore"
 model = C_MAN
 DEFNAME = c_m_AnimalLore
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+AnimalLore = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Archery]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Archery
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Archery"
 model = C_MAN
 DEFNAME = c_m_Archery
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Archery = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_ArmsLore]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = ArmsLore
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr ArmsLore"
 model = C_MAN
 DEFNAME = c_m_ArmsLore
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+ArmsLore = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Begging]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Begging
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Begging"
 model = C_MAN
 DEFNAME = c_m_Begging
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Camping]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Camping
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Camping"
 model = C_MAN
 DEFNAME = c_m_Camping
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Cartography]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Cartography
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Cartography"
 model = C_MAN
 DEFNAME = c_m_Cartography
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_DetectingHidden]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = DetectingHidden
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr DetectingHidden"
 model = C_MAN
 DEFNAME = c_m_DetectingHidden
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+DetectHidden = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Enticement]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Enticement
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Enticement"
 model = C_MAN
 DEFNAME = c_m_Enticement
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Forensics]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Forensics
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Forensics"
 model = C_MAN
 DEFNAME = c_m_Forensics
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Forensics = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Healing]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Healing
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Healing"
 model = C_MAN
 DEFNAME = c_m_Healing
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Healing = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Herding]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Herding
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Herding"
 model = C_MAN
 DEFNAME = c_m_Herding
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Hiding]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Hiding
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Hiding"
 model = C_MAN
 DEFNAME = c_m_Hiding
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Hiding = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_ItemID]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = ItemID
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr ItemID"
 model = C_MAN
 DEFNAME = c_m_ItemID
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Magery]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Magery
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Magery"
 model = C_MAN
 DEFNAME = c_m_Magery
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Magery = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Meditation]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Meditation
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Meditation"
 model = C_MAN
 DEFNAME = c_m_Meditation
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Meditation = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Musicianship]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Musicianship
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Musicianship"
 model = C_MAN
 DEFNAME = c_m_Musicianship
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Parrying]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Parrying
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Parrying"
 model = C_MAN
 DEFNAME = c_m_Parrying
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Parry = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Peacemaking]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Peacemaking
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Peacemaking"
 model = C_MAN
 DEFNAME = c_m_Peacemaking
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Poisoning]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Poisoning
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Poisoning"
 model = C_MAN
 DEFNAME = c_m_Poisoning
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Poisoning = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Provocation]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Provocation
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Provocation"
 model = C_MAN
 DEFNAME = c_m_Provocation
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Provocation = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Snooping]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Snooping
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Snooping"
 model = C_MAN
 DEFNAME = c_m_Snooping
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_SpiritSpeak]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = SpiritSpeak
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr SpiritSpeak"
 model = C_MAN
 DEFNAME = c_m_SpiritSpeak
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+SpiritSpeak = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Stealing]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Stealing
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Stealing"
 model = C_MAN
 DEFNAME = c_m_Stealing
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Stealth]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Stealth
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Stealth"
 model = C_MAN
 DEFNAME = c_m_Stealth
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Stealth = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Tactics]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Tactics
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Tactics"
 model = C_MAN
 DEFNAME = c_m_Tactics
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Provocation = 1000
+Peacemaking = 1000
+Tactics = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_TasteID]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = TasteID
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr TasteID"
 model = C_MAN
 DEFNAME = c_m_TasteID
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Tracking]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Tracking
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Tracking"
 model = C_MAN
 DEFNAME = c_m_Tracking
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Veterinary]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Veterinary
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Veterinary"
 model = C_MAN
 DEFNAME = c_m_Veterinary
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Veterinary = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Wrestling]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Wrestling
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Wrestling"
 model = C_MAN
 DEFNAME = c_m_Wrestling
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Wrestling = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_RemoveTrap]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = RemoveTrap
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr RemoveTrap"
 model = C_MAN
 DEFNAME = c_m_RemoveTrap
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Swordsmanship]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Two Hand Sharps
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Two Hand Sharps"
 model = C_MAN
 DEFNAME = c_m_Swordsmanship
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Swords = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Resist]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Magic Resistance
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Magic Resistance"
 model = C_MAN
 DEFNAME = c_m_Resist
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+MagicResist = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Macefighting]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Crushing
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Crushing"
 model = C_MAN
 DEFNAME = c_m_Macefighting
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Macing = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_Fencing]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Sharps
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Sharps"
 model = C_MAN
 DEFNAME = c_m_Fencing
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Fencing = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef mistr_EI]
 CATEGORY = Moria
 SUBSECTION = Mistri (ucitele)
 DESCRIPTION = Evalution Inteligence
 
+TEVENTS = e_character
+TEVENTS = e_monster
+TSPEECH = spk_mistr
 NAME = "Mistr Evalution Inteligence"
 model = C_MAN
 DEFNAME = c_m_EI
-//TSPEECH = spk_mistr // commented out by Converter 
-//TEVENTS = e_character // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
 
 [NPCDef c_mistr_craft]
+TEVENTS = e_mistr_craft
+TEVENTS = e_monster
 NAME = "Mistr Remesel"
 model = C_MAN
-//tevents = e_mistr_craft // commented out by Converter 
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = random_male_hair
+Color = 0481
+Equip = random_facial_hair
+Color = 0481
+Equip = i_hat_wizards
+Color = 0481
+Equip = i_sandals
+Equip = i_robe
+Color = 0481
+Equip = i_hammer_sledge
+Color = 0481
+Equip = i_monster_create
+AggroMode = Calm
+
+[NPCDef c_mistr_craft_log_gondor]
+TEVENTS = e_mistr_craft
+TEVENTS = e_monster
+NAME = "Stavitel Lodi"
+model = C_MAN
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = i_hair_long
+Color = 0743
+Equip = i_beard_long_med
+Color = 0743
+Equip = i_hat_tricorne
+Color = 034
+Equip = i_boots_thigh
+Equip = i_pants_short
+Color = 035c
+Equip = i_shirt_plain
+Color = 0be
+Equip = i_jester_suit
+Equip = i_bracelet_gold
+Equip = i_necklace_silver
+Equip = i_apron_half
+Equip = i_hammer_sledge
+Equip = i_monster_create
+AggroMode = Calm
+
+[NPCDef c_mistr_craft_log_mordor]
+TEVENTS = e_mistr_craft
+TEVENTS = e_monster
+NAME = "Stavitel Lodi"
+model = C_MAN
+Color = color_human
+Str = 1000
+Dex = 1000
+Int = 1000
+Provocation = 1000
+Peacemaking = 1000
+Equip = i_hair_long
+Color = 0760
+Equip = i_beard_long_med
+Color = 0760
+Equip = i_bandana
+Color = 0733
+Equip = i_boots_thigh
+Equip = i_pants_short
+Color = 0772
+Equip = i_shirt_plain
+Color = 0772
+Equip = i_bracelet_gold
+Equip = i_necklace_silver
+Equip = i_apron_full
+Equip = i_hammer_sledge
+Equip = i_monster_create
+AggroMode = Calm

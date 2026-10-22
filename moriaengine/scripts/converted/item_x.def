@@ -2,8 +2,8 @@
 
 [WearableDef i_wizards_hat_plus_int]
 Name = "Mage Hat"
-RESOURCES = i_hat_wizards,  i_scroll_cunning //some resources were fixed by converter 
-SKILLMAKE = 60.0 tailoring,  60.0 magery,  t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 1 i_hat_wizards, 1 i_scroll_cunning //some resources were fixed by converter 
+SKILLMAKE = 600 tailoring, 600 magery, 1 t_sewing_kit //some resources were fixed by converter 
 model = i_hat_wizards
 type = t_clothing //guessed from base def by Converter 
 WearableType = WearableType.Clothing //guessed by Converter 
@@ -45,14 +45,14 @@ model = I_CRYSTAL_GREEN
 [EquippableDef i_beard_NONE]
 NAME = "No Beard"
 TYPE = T_BEARD
-LAYER = layer_beard
+layer = layer_beard
 model = I_EQ_MARKER
 //VALUE = 10 // commented out by Converter 
 
 [EquippableDef i_hair_NONE]
 NAME = "No Hair"
 TYPE = T_HAIR
-LAYER = layer_hair
+layer = layer_hair
 model = I_EQ_MARKER
 //VALUE = 10 // commented out by Converter 
 
@@ -70,6 +70,7 @@ armorVsP = 500
 mindDefenseVsP = 500
 armorVsM = 500
 mindDefenseVsM = 500
+Color = 021
 
 [WearableDef i_robe_seer]
 CATEGORY = Provisions - GM Items
@@ -85,6 +86,7 @@ armorVsP = 500
 mindDefenseVsP = 500
 armorVsM = 500
 mindDefenseVsM = 500
+Color = 01D3
 
 [WearableDef i_robe_counselor]
 CATEGORY = Provisions - GM Items
@@ -100,6 +102,7 @@ armorVsP = 500
 mindDefenseVsP = 500
 armorVsM = 500
 mindDefenseVsM = 500
+Color = 003
 
 [ItemDef i_CHECKERBOARD]
 CATEGORY = Items by Professions
@@ -108,8 +111,8 @@ DESCRIPTION = Checkerboard
 
 NAME = "Checkerboard"
 TYPE = T_GAME_BOARD
-RESOURCES = 3 i_board,  3 i_log //some resources were fixed by converter 
-SKILLMAKE = 40.0 tinkering, 40.0 carpentry //some resources were fixed by converter 
+RESOURCES = 3 i_board, 3 i_log
+SKILLMAKE = 400 tinkering, 400 carpentry //some resources were fixed by converter 
 model = i_game_board
 
 [ItemDef i_CHESSBOARD]
@@ -119,8 +122,8 @@ DESCRIPTION = Chessboard
 
 NAME = "Chessboard"
 TYPE = T_GAME_BOARD
-RESOURCES = 3 i_board,  4 i_log //some resources were fixed by converter 
-SKILLMAKE = 60.0 tinkering, 60.0 carpentry //some resources were fixed by converter 
+RESOURCES = 3 i_board, 4 i_log
+SKILLMAKE = 600 tinkering, 600 carpentry //some resources were fixed by converter 
 model = i_game_board
 
 [WeaponDef I_BOW_SUP]
@@ -130,8 +133,8 @@ DESCRIPTION = Superior Bow
 
 NAME = "Superior Bow"
 WEIGHT = 60
-RESOURCES = 8 i_log //some resources were fixed by converter 
-SKILLMAKE = 45.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 8 i_log
+SKILLMAKE = 450 bowcraft
 //REQSTR = 30 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -144,11 +147,11 @@ WeaponType = WeaponType.Bow //guessed by Converter
 WeaponAnimType = WeaponAnimType.Bow //guessed by Converter 
 attackVsP = 18
 attackVsM = 18
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [WeaponDef I_XBOW_SUP]
 CATEGORY = Provisions - Weapons
@@ -157,8 +160,8 @@ DESCRIPTION = Superior Crossbow
 
 NAME = "Superior Crossbow"
 WEIGHT = 70
-RESOURCES = 8 i_log //some resources were fixed by converter 
-SKILLMAKE = 55.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 8 i_log
+SKILLMAKE = 550 bowcraft
 //REQSTR = 30 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -169,13 +172,13 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 ProjectileAnim = 0x1bfe //guessed by Converter 
 WeaponType = WeaponType.XBow //guessed by Converter 
 WeaponAnimType = WeaponAnimType.XBow //guessed by Converter 
-attackVsP = 17,5
-attackVsM = 17,5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+attackVsP = 17.5
+attackVsM = 17.5
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [WeaponDef I_HXBOW_SUP]
 CATEGORY = Provisions - Weapons
@@ -184,8 +187,8 @@ DESCRIPTION = Superior Heavy Crossbow
 
 NAME = "Superior Heavy Crossbow"
 WEIGHT = 70
-RESOURCES = 11 i_log //some resources were fixed by converter 
-SKILLMAKE = 65.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 11 i_log
+SKILLMAKE = 650 bowcraft
 //REQSTR = 30 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -196,13 +199,13 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 ProjectileAnim = 0x1bfe //guessed by Converter 
 WeaponType = WeaponType.XBow //guessed by Converter 
 WeaponAnimType = WeaponAnimType.XBow //guessed by Converter 
-attackVsP = 21,5
-attackVsM = 21,5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+attackVsP = 21.5
+attackVsM = 21.5
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [WeaponDef I_BOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -211,8 +214,8 @@ DESCRIPTION = Exceptional Bow
 
 NAME = "Exceptional Bow"
 WEIGHT = 60
-RESOURCES = 9 i_log //some resources were fixed by converter 
-SKILLMAKE = 75.5 bowcraft //some resources were fixed by converter 
+RESOURCES = 9 i_log
+SKILLMAKE = 755 bowcraft
 //REQSTR = 30 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -223,13 +226,13 @@ ProjectileType = ProjectileType.Arrow //guessed by Converter
 ProjectileAnim = 0xf42 //guessed by Converter 
 WeaponType = WeaponType.Bow //guessed by Converter 
 WeaponAnimType = WeaponAnimType.Bow //guessed by Converter 
-attackVsP = 19,5
-attackVsM = 19,5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+attackVsP = 19.5
+attackVsM = 19.5
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [WeaponDef I_XBOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -238,8 +241,8 @@ DESCRIPTION = Exceptional Crossbow
 
 NAME = "Exceptional Crossbow"
 WEIGHT = 70
-RESOURCES = 10 i_log //some resources were fixed by converter 
-SKILLMAKE = 85.5 bowcraft //some resources were fixed by converter 
+RESOURCES = 10 i_log
+SKILLMAKE = 855 bowcraft
 //REQSTR = 30 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -250,13 +253,13 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 ProjectileAnim = 0x1bfe //guessed by Converter 
 WeaponType = WeaponType.XBow //guessed by Converter 
 WeaponAnimType = WeaponAnimType.XBow //guessed by Converter 
-attackVsP = 18,5
-attackVsM = 18,5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+attackVsP = 18.5
+attackVsM = 18.5
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [WeaponDef I_HXBOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -265,8 +268,8 @@ DESCRIPTION = Exceptional Heavy Crossbow
 
 NAME = "Exceptional Heavy Crossbow"
 WEIGHT = 70
-RESOURCES = 13 i_log //some resources were fixed by converter 
-SKILLMAKE = 95.5 bowcraft //some resources were fixed by converter 
+RESOURCES = 13 i_log
+SKILLMAKE = 955 bowcraft
 //REQSTR = 30 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -279,11 +282,11 @@ WeaponType = WeaponType.XBow //guessed by Converter
 WeaponAnimType = WeaponAnimType.XBow //guessed by Converter 
 attackVsP = 23
 attackVsM = 23
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 [WeaponDef i_Bow_Elven]
 CATEGORY = Provisions - Weapons
@@ -292,8 +295,8 @@ DESCRIPTION = Elven Bow
 
 NAME = "Elven Bow"
 WEIGHT = 30
-RESOURCES = 8 i_log //some resources were fixed by converter 
-SKILLMAKE = 99.5 bowcraft,  50.0 magery //some resources were fixed by converter 
+RESOURCES = 8 i_log
+SKILLMAKE = 995 bowcraft, 500 magery
 //REQSTR = 30 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -304,10 +307,11 @@ ProjectileType = ProjectileType.Arrow //guessed by Converter
 ProjectileAnim = 0xf42 //guessed by Converter 
 WeaponType = WeaponType.Bow //guessed by Converter 
 WeaponAnimType = WeaponAnimType.Bow //guessed by Converter 
-attackVsP = 19,5
-attackVsM = 19,5
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+attackVsP = 19.5
+attackVsM = 19.5
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
+Color = 237

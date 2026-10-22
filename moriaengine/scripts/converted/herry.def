@@ -15,11 +15,11 @@ WeaponType = WeaponType.TwoHandSpike //guessed by Converter
 WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 attackVsP = 200
 attackVsM = 200
-piercing = 100
-speed = 100
-range = 1
-strikeStartRange = 5
-strikeStopRange = 10
+piercing = 100 //default value set by Converter 
+speed = 100 //default value set by Converter 
+range = 1 //default value set by Converter 
+strikeStartRange = 5 //default value set by Converter 
+strikeStopRange = 10 //default value set by Converter 
 
 //[function gmove] //(commented out by Converter) 
 
@@ -27,5 +27,5 @@ strikeStopRange = 10
 Name = "Gmove pomoc"
 TYPE = T_EQ_SCRIPT
 WEIGHT = 0
-LAYER = layer_special
+layer = layer_special
 model = i_memory

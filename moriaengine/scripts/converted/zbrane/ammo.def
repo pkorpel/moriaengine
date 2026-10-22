@@ -2,8 +2,8 @@
 
 [ColoredProjectileDef i_arrow_copper]
 NAME = "spruce arrow%s"
-RESOURCES = 1 i_arrow_shaft_copper,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 30.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_copper, 1 i_feather
+SKILLMAKE = 300 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 1 // commented out by Converter 
 model = i_arrow
@@ -12,11 +12,12 @@ Material = Material.Copper //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ColoredProjectileDef i_arrow_iron]
 NAME = "chestnut arrow%s"
-RESOURCES = 1 i_arrow_shaft_iron,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 38.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_iron, 1 i_feather
+SKILLMAKE = 380 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 2 // commented out by Converter 
 model = i_arrow
@@ -25,11 +26,12 @@ Material = Material.Iron //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ColoredProjectileDef i_arrow_verite]
 NAME = "oak arrow%s"
-RESOURCES = 1 i_arrow_shaft_verite,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_verite, 1 i_feather
+SKILLMAKE = 600 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 3 // commented out by Converter 
 model = i_arrow
@@ -38,11 +40,12 @@ Material = Material.Verite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ColoredProjectileDef i_arrow_valorite]
 NAME = "teak arrow%s"
-RESOURCES = 1 i_arrow_shaft_valorite,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 68.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_valorite, 1 i_feather
+SKILLMAKE = 680 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 4 // commented out by Converter 
 model = i_arrow
@@ -51,11 +54,12 @@ Material = Material.Valorite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ColoredProjectileDef i_arrow_obsidian]
 NAME = "mahagon arrow%s"
-RESOURCES = 1 i_arrow_shaft_obsidian,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 73.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_obsidian, 1 i_feather
+SKILLMAKE = 730 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 5 // commented out by Converter 
 model = i_arrow
@@ -64,11 +68,12 @@ Material = Material.Obsidian //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ColoredProjectileDef i_arrow_adamantinum]
 NAME = "eben arrow%s"
-RESOURCES = 1 i_arrow_shaft_adamantinum,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 88.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_adamantinum, 1 i_feather
+SKILLMAKE = 880 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 6 // commented out by Converter 
 model = i_arrow
@@ -77,11 +82,12 @@ Material = Material.Adamantinum //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ColoredProjectileDef i_arrow_mithril]
 NAME = "elven arrow%s"
-RESOURCES = 1 i_arrow_shaft_mithril,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 98.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_mithril, 1 i_feather
+SKILLMAKE = 980 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 7 // commented out by Converter 
 model = i_arrow
@@ -90,11 +96,12 @@ Material = Material.Mithril //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ColoredProjectileDef i_bolt_jagged_copper]
-NAME = "copper jagged bold%s"
-RESOURCES = 1 i_arrow_shaft_copper,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 30.0 bowcraft //some resources were fixed by converter 
+NAME = "spruce jagged bold%s"
+RESOURCES = 1 i_arrow_shaft_copper, 1 i_feather
+SKILLMAKE = 300 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 11 // commented out by Converter 
 //tdata2 = 25 // commented out by Converter 
@@ -104,11 +111,12 @@ Material = Material.Copper //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_o_copper
 
 [ColoredProjectileDef i_bolt_jagged_iron]
-NAME = "iron jagged bolt%s"
-RESOURCES = 1 i_arrow_shaft_iron,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 38.0 bowcraft //some resources were fixed by converter 
+NAME = "chesnut jagged bolt%s"
+RESOURCES = 1 i_arrow_shaft_iron, 1 i_feather
+SKILLMAKE = 380 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 12 // commented out by Converter 
 //tdata2 = 26 // commented out by Converter 
@@ -118,11 +126,12 @@ Material = Material.Iron //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_o_iron
 
 [ColoredProjectileDef i_bolt_jagged_verite]
-NAME = "verite jagged bolt%s"
-RESOURCES = 1 i_arrow_shaft_verite,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+NAME = "oak jagged bolt%s"
+RESOURCES = 1 i_arrow_shaft_verite, 1 i_feather
+SKILLMAKE = 600 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 13 // commented out by Converter 
 //tdata2 = 27 // commented out by Converter 
@@ -132,11 +141,12 @@ Material = Material.Verite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_o_verite
 
 [ColoredProjectileDef i_bolt_jagged_valorite]
-NAME = "valorite jagged bolt%s"
-RESOURCES = 1 i_arrow_shaft_valorite,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 68.0 bowcraft //some resources were fixed by converter 
+NAME = "teak jagged bolt%s"
+RESOURCES = 1 i_arrow_shaft_valorite, 1 i_feather
+SKILLMAKE = 680 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 14 // commented out by Converter 
 //tdata2 = 28 // commented out by Converter 
@@ -146,11 +156,12 @@ Material = Material.Valorite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_o_valorite
 
 [ColoredProjectileDef i_bolt_jagged_obsidian]
-NAME = "obsidian jagged bolt%s"
-RESOURCES = 1 i_arrow_shaft_obsidian,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 73.0 bowcraft //some resources were fixed by converter 
+NAME = "mahagon jagged bolt%s"
+RESOURCES = 1 i_arrow_shaft_obsidian, 1 i_feather
+SKILLMAKE = 730 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 15 // commented out by Converter 
 //tdata2 = 29 // commented out by Converter 
@@ -160,11 +171,12 @@ Material = Material.Obsidian //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_o_obsidian
 
 [ColoredProjectileDef i_bolt_jagged_adamantinum]
-NAME = "adamantinum jagged bolt%s"
-RESOURCES = 1 i_arrow_shaft_adamantinum,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 88.0 bowcraft //some resources were fixed by converter 
+NAME = "eben jagged bolt%s"
+RESOURCES = 1 i_arrow_shaft_adamantinum, 1 i_feather
+SKILLMAKE = 880 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 16 // commented out by Converter 
 //tdata2 = 30 // commented out by Converter 
@@ -174,11 +186,12 @@ Material = Material.Adamantinum //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_o_adamantinum
 
 [ColoredProjectileDef i_bolt_jagged_mithril]
-NAME = "mithril jagged bolt%s"
-RESOURCES = 1 i_arrow_shaft_mithril,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 98.0 bowcraft //some resources were fixed by converter 
+NAME = "elven jagged bolt%s"
+RESOURCES = 1 i_arrow_shaft_mithril, 1 i_feather
+SKILLMAKE = 980 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 17 // commented out by Converter 
 //tdata2 = 31 // commented out by Converter 
@@ -188,11 +201,12 @@ Material = Material.Mithril //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_o_mithril
 
 [ColoredProjectileDef i_xbolt_copper]
 NAME = "spruce bolt%s"
-RESOURCES = 1 i_arrow_shaft_copper,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 30.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_copper, 1 i_feather
+SKILLMAKE = 300 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 1 // commented out by Converter 
 model = i_xbolt
@@ -201,11 +215,12 @@ Material = Material.Copper //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ColoredProjectileDef i_xbolt_iron]
 NAME = "chestnut bolt%s"
-RESOURCES = 1 i_arrow_shaft_iron,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 38.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_iron, 1 i_feather
+SKILLMAKE = 380 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 2 // commented out by Converter 
 model = i_xbolt
@@ -214,11 +229,12 @@ Material = Material.Iron //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ColoredProjectileDef i_xbolt_verite]
 NAME = "oak bolt%s"
-RESOURCES = 1 i_arrow_shaft_verite,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_verite, 1 i_feather
+SKILLMAKE = 600 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 3 // commented out by Converter 
 model = i_xbolt
@@ -227,11 +243,12 @@ Material = Material.Verite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ColoredProjectileDef i_xbolt_valorite]
 NAME = "teak bolt%s"
-RESOURCES = 1 i_arrow_shaft_valorite,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 68.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_valorite, 1 i_feather
+SKILLMAKE = 680 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 4 // commented out by Converter 
 model = i_xbolt
@@ -240,11 +257,12 @@ Material = Material.Valorite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ColoredProjectileDef i_xbolt_obsidian]
 NAME = "mahagon bolt%s"
-RESOURCES = 1 i_arrow_shaft_obsidian,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 73.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_obsidian, 1 i_feather
+SKILLMAKE = 730 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 5 // commented out by Converter 
 model = i_xbolt
@@ -253,11 +271,12 @@ Material = Material.Obsidian //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ColoredProjectileDef i_xbolt_adamantinum]
 NAME = "eben bolt%s"
-RESOURCES = 1 i_arrow_shaft_adamantinum,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 88.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_adamantinum, 1 i_feather
+SKILLMAKE = 880 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 6 // commented out by Converter 
 model = i_xbolt
@@ -266,11 +285,12 @@ Material = Material.Adamantinum //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ColoredProjectileDef i_xbolt_mithril]
 NAME = "elven bolt%s"
-RESOURCES = 1 i_arrow_shaft_mithril,  1 i_feather //some resources were fixed by converter 
-SKILLMAKE = 98.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_shaft_mithril, 1 i_feather
+SKILLMAKE = 980 bowcraft
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 7 // commented out by Converter 
 model = i_xbolt
@@ -279,10 +299,11 @@ Material = Material.Mithril //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ColoredProjectileDef i_arrow_piercing_copper_poison]
 NAME = "poison spruce piercing arrow%s"
-RESOURCES = 1 i_arrow_copper,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_copper, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 1 // commented out by Converter 
 //tdata2 = 25 // commented out by Converter 
@@ -292,10 +313,11 @@ Material = Material.Copper //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_spruce
 
 [ColoredProjectileDef i_arrow_piercing_iron_poison]
 NAME = "poison chestnut piercing arrow%s"
-RESOURCES = 1 i_arrow_iron,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_iron], 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 2 // commented out by Converter 
 //tdata2 = 26 // commented out by Converter 
@@ -305,10 +327,11 @@ Material = Material.Iron //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ColoredProjectileDef i_arrow_piercing_verite_poison]
 NAME = "poison oak piercing arrow%s"
-RESOURCES = 1 i_arrow_verite,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_verite, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 3 // commented out by Converter 
 //tdata2 = 27 // commented out by Converter 
@@ -318,10 +341,11 @@ Material = Material.Verite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_oak
 
 [ColoredProjectileDef i_arrow_piercing_valorite_poison]
 NAME = "poison teak piercing arrow%s"
-RESOURCES = 1 i_arrow_valorite,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_valorite, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 4 // commented out by Converter 
 //tdata2 = 28 // commented out by Converter 
@@ -331,10 +355,11 @@ Material = Material.Valorite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_teak
 
 [ColoredProjectileDef i_arrow_piercing_obsidian_poison]
 NAME = "poison mahagon piercing arrow%s"
-RESOURCES = 1 i_arrow_obsidian,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_obsidian, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 5 // commented out by Converter 
 //tdata2 = 29 // commented out by Converter 
@@ -344,10 +369,11 @@ Material = Material.Obsidian //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ColoredProjectileDef i_arrow_piercing_adamantinum_poison]
 NAME = "poison eben piercing arrow%s"
-RESOURCES = 1 i_arrow_adamantinum,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_adamantinum, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 6 // commented out by Converter 
 //tdata2 = 30 // commented out by Converter 
@@ -357,10 +383,11 @@ Material = Material.Adamantinum //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_eben
 
 [ColoredProjectileDef i_arrow_piercing_mithril_poison]
 NAME = "poison elven piercing arrow%s"
-RESOURCES = 1 i_arrow_mithril,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_mithril, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 7 // commented out by Converter 
 //tdata2 = 31 // commented out by Converter 
@@ -370,10 +397,11 @@ Material = Material.Mithril //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_elven
 
 [ColoredProjectileDef i_arrow_piercing_copper]
 NAME = "spruce piercing arrow%s"
-RESOURCES = 1 i_arrow_copper,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_copper, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 1 // commented out by Converter 
 //tdata2 = 25 // commented out by Converter 
@@ -382,10 +410,11 @@ type = t_weapon_arrow //guessed from base def by Converter
 Material = Material.Copper //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
+Color = color_spruce
 
 [ColoredProjectileDef i_arrow_piercing_iron]
 NAME = "chestnut piercing arrow%s"
-RESOURCES = 1 i_arrow_iron,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_iron], 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 2 // commented out by Converter 
 //tdata2 = 26 // commented out by Converter 
@@ -394,10 +423,11 @@ type = t_weapon_arrow //guessed from base def by Converter
 Material = Material.Iron //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
+Color = color_chestnut
 
 [ColoredProjectileDef i_arrow_piercing_verite]
 NAME = "oak piercing arrow%s"
-RESOURCES = 1 i_arrow_verite,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_verite, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 3 // commented out by Converter 
 //tdata2 = 27 // commented out by Converter 
@@ -406,10 +436,11 @@ type = t_weapon_arrow //guessed from base def by Converter
 Material = Material.Verite //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
+Color = color_oak
 
 [ColoredProjectileDef i_arrow_piercing_valorite]
 NAME = "teak piercing arrow%s"
-RESOURCES = 1 i_arrow_valorite,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_valorite, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 4 // commented out by Converter 
 //tdata2 = 28 // commented out by Converter 
@@ -418,10 +449,11 @@ type = t_weapon_arrow //guessed from base def by Converter
 Material = Material.Valorite //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
+Color = color_teak
 
 [ColoredProjectileDef i_arrow_piercing_obsidian]
 NAME = "mahagon piercing arrow%s"
-RESOURCES = 1 i_arrow_obsidian,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_obsidian, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 5 // commented out by Converter 
 //tdata2 = 29 // commented out by Converter 
@@ -430,10 +462,11 @@ type = t_weapon_arrow //guessed from base def by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
+Color = color_mahagon
 
 [ColoredProjectileDef i_arrow_piercing_adamantinum]
 NAME = "eben piercing arrow%s"
-RESOURCES = 1 i_arrow_adamantinum,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_adamantinum, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 6 // commented out by Converter 
 //tdata2 = 30 // commented out by Converter 
@@ -442,10 +475,11 @@ type = t_weapon_arrow //guessed from base def by Converter
 Material = Material.Adamantinum //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
+Color = color_eben
 
 [ColoredProjectileDef i_arrow_piercing_mithril]
 NAME = "elven piercing arrow%s"
-RESOURCES = 1 i_arrow_mithril,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_arrow_mithril, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 7 // commented out by Converter 
 //tdata2 = 31 // commented out by Converter 
@@ -454,10 +488,11 @@ type = t_weapon_arrow //guessed from base def by Converter
 Material = Material.Mithril //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
+Color = color_elven
 
 [ColoredProjectileDef i_xbolt_piercing_copper_poison]
 NAME = "poison spruce piercing bolt%s"
-RESOURCES = 1 i_xbolt_copper,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_copper, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 1 // commented out by Converter 
 //tdata2 = 25 // commented out by Converter 
@@ -467,10 +502,11 @@ Material = Material.Copper //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_spruce
 
 [ColoredProjectileDef i_xbolt_piercing_iron_poison]
 NAME = "poison chestnut piercing bolt%s"
-RESOURCES = 1 i_xbolt_iron,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_iron, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 2 // commented out by Converter 
 //tdata2 = 26 // commented out by Converter 
@@ -480,10 +516,11 @@ Material = Material.Iron //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ColoredProjectileDef i_xbolt_piercing_verite_poison]
 NAME = "poison oak piercing bolt%s"
-RESOURCES = 1 i_xbolt_verite,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_verite, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 3 // commented out by Converter 
 //tdata2 = 27 // commented out by Converter 
@@ -493,10 +530,11 @@ Material = Material.Verite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_oak
 
 [ColoredProjectileDef i_xbolt_piercing_valorite_poison]
 NAME = "poison teak piercing bolt%s"
-RESOURCES = 1 i_xbolt_valorite,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_valorite, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 4 // commented out by Converter 
 //tdata2 = 28 // commented out by Converter 
@@ -506,10 +544,11 @@ Material = Material.Valorite //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_teak
 
 [ColoredProjectileDef i_xbolt_piercing_obsidian_poison]
 NAME = "poison mahagon piercing bolt%s"
-RESOURCES = 1 i_xbolt_obsidian,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_obsidian, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 5 // commented out by Converter 
 //tdata2 = 29 // commented out by Converter 
@@ -519,10 +558,11 @@ Material = Material.Obsidian //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ColoredProjectileDef i_xbolt_piercing_adamantinum_poison]
 NAME = "poison eben piercing bolt%s"
-RESOURCES = 1 i_xbolt_adamantinum,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_adamantinum, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 6 // commented out by Converter 
 //tdata2 = 30 // commented out by Converter 
@@ -532,10 +572,11 @@ Material = Material.Adamantinum //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_eben
 
 [ColoredProjectileDef i_xbolt_piercing_mithril_poison]
 NAME = "poison elven piercing bolt%s"
-RESOURCES = 1 i_xbolt_mithril,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_mithril, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 7 // commented out by Converter 
 //tdata2 = 31 // commented out by Converter 
@@ -545,10 +586,11 @@ Material = Material.Mithril //guessed by Converter
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
 //tdata4 = 1 // commented out by Converter 
+Color = color_elven
 
 [ColoredProjectileDef i_xbolt_piercing_copper]
 NAME = "spruce piercing bolt%s"
-RESOURCES = 1 i_xbolt_copper,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_copper, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 1 // commented out by Converter 
 //tdata2 = 25 // commented out by Converter 
@@ -557,10 +599,11 @@ type = t_weapon_bolt //guessed from base def by Converter
 Material = Material.Copper //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
+Color = color_spruce
 
 [ColoredProjectileDef i_xbolt_piercing_iron]
 NAME = "chestnut piercing bolt%s"
-RESOURCES = 1 i_xbolt_iron,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_iron, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 2 // commented out by Converter 
 //tdata2 = 26 // commented out by Converter 
@@ -569,10 +612,11 @@ type = t_weapon_bolt //guessed from base def by Converter
 Material = Material.Iron //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
+Color = color_chestnut
 
 [ColoredProjectileDef i_xbolt_piercing_verite]
 NAME = "oak piercing bolt%s"
-RESOURCES = 1 i_xbolt_verite,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_verite, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 3 // commented out by Converter 
 //tdata2 = 27 // commented out by Converter 
@@ -581,10 +625,11 @@ type = t_weapon_bolt //guessed from base def by Converter
 Material = Material.Verite //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
+Color = color_oak
 
 [ColoredProjectileDef i_xbolt_piercing_valorite]
 NAME = "teak piercing bolt%s"
-RESOURCES = 1 i_xbolt_valorite,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_valorite, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 4 // commented out by Converter 
 //tdata2 = 28 // commented out by Converter 
@@ -593,10 +638,11 @@ type = t_weapon_bolt //guessed from base def by Converter
 Material = Material.Valorite //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
+Color = color_teak
 
 [ColoredProjectileDef i_xbolt_piercing_obsidian]
 NAME = "mahagon piercing bolt%s"
-RESOURCES = 1 i_xbolt_obsidian,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_obsidian, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 5 // commented out by Converter 
 //tdata2 = 29 // commented out by Converter 
@@ -605,10 +651,11 @@ type = t_weapon_bolt //guessed from base def by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
+Color = color_mahagon
 
 [ColoredProjectileDef i_xbolt_piercing_adamantinum]
 NAME = "eben piercing bolt%s"
-RESOURCES = 1 i_xbolt_adamantinum,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_adamantinum, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 6 // commented out by Converter 
 //tdata2 = 30 // commented out by Converter 
@@ -617,10 +664,11 @@ type = t_weapon_bolt //guessed from base def by Converter
 Material = Material.Adamantinum //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
+Color = color_eben
 
 [ColoredProjectileDef i_xbolt_piercing_mithril]
 NAME = "elven piercing bolt%s"
-RESOURCES = 1 i_xbolt_mithril,  1 i_ingot_verite //some resources were fixed by converter 
+RESOURCES = 1 i_xbolt_mithril, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 7 // commented out by Converter 
 //tdata2 = 31 // commented out by Converter 
@@ -629,584 +677,641 @@ type = t_weapon_bolt //guessed from base def by Converter
 Material = Material.Mithril //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
+Color = color_elven
 
 [ItemDef i_arrow_shaft_copper]
 name = "spruce shaft%s"
-RESOURCES = i_log_copper //some resources were fixed by converter 
-SKILLMAKE = 5.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_copper //some resources were fixed by converter 
+SKILLMAKE = 50 bowcraft
 model = i_arrow_shaft
 type = t_shaft //guessed from base def by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ItemDef i_arrow_shaft_iron]
 name = "chestnut shaft%s"
-RESOURCES = i_log_iron //some resources were fixed by converter 
-SKILLMAKE = 20.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_iron //some resources were fixed by converter 
+SKILLMAKE = 200 bowcraft
 model = i_arrow_shaft
 type = t_shaft //guessed from base def by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ItemDef i_arrow_shaft_verite]
 name = "oak shaft%s"
-RESOURCES = i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 35.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_verite //some resources were fixed by converter 
+SKILLMAKE = 350 bowcraft
 model = i_arrow_shaft
 type = t_shaft //guessed from base def by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ItemDef i_arrow_shaft_valorite]
 name = "teak shaft%s"
-RESOURCES = i_log_valorite //some resources were fixed by converter 
-SKILLMAKE = 50.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_valorite //some resources were fixed by converter 
+SKILLMAKE = 500 bowcraft
 model = i_arrow_shaft
 type = t_shaft //guessed from base def by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ItemDef i_arrow_shaft_obsidian]
 name = "mahagon shaft%s"
-RESOURCES = i_log_obsidian //some resources were fixed by converter 
-SKILLMAKE = 65.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_obsidian //some resources were fixed by converter 
+SKILLMAKE = 650 bowcraft
 model = i_arrow_shaft
 type = t_shaft //guessed from base def by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ItemDef i_arrow_shaft_adamantinum]
 name = "eben shaft%s"
-RESOURCES = i_log_adamantinum //some resources were fixed by converter 
-SKILLMAKE = 80.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_adamantinum //some resources were fixed by converter 
+SKILLMAKE = 800 bowcraft
 model = i_arrow_shaft
 type = t_shaft //guessed from base def by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ItemDef i_arrow_shaft_mithril]
 name = "elven shaft%s"
-RESOURCES = i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 95.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_mithril //some resources were fixed by converter 
+SKILLMAKE = 950 bowcraft
 model = i_arrow_shaft
 type = t_shaft //guessed from base def by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ItemDef i_arrow_shafts_copper_2]
 name = "2 spruce shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = i_log_copper //some resources were fixed by converter 
-SKILLMAKE = 25.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_copper //some resources were fixed by converter 
+SKILLMAKE = 250 bowcraft
 //tdata1 = i_arrow_shaft_copper // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ItemDef i_arrow_shafts_copper_3]
 name = "3 spruce shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = i_log_copper //some resources were fixed by converter 
-SKILLMAKE = 45.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_copper //some resources were fixed by converter 
+SKILLMAKE = 450 bowcraft
 //tdata1 = i_arrow_shaft_copper // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ItemDef i_arrow_shafts_copper_4]
 name = "4 spruce shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = i_log_copper //some resources were fixed by converter 
-SKILLMAKE = 65.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_copper //some resources were fixed by converter 
+SKILLMAKE = 650 bowcraft
 //tdata1 = i_arrow_shaft_copper // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ItemDef i_arrow_shafts_copper_5]
 name = "5 spruce shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_log_copper //some resources were fixed by converter 
-SKILLMAKE = 85.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_copper //some resources were fixed by converter 
+SKILLMAKE = 850 bowcraft
 //tdata1 = i_arrow_shaft_copper // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ItemDef i_arrow_shafts_iron_2]
 name = "2 chestnut shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = i_log_iron //some resources were fixed by converter 
-SKILLMAKE = 38.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_iron //some resources were fixed by converter 
+SKILLMAKE = 380 bowcraft
 //tdata1 = i_arrow_shaft_iron // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ItemDef i_arrow_shafts_iron_3]
 name = "3 chestnut shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = i_log_iron //some resources were fixed by converter 
-SKILLMAKE = 56.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_iron //some resources were fixed by converter 
+SKILLMAKE = 560 bowcraft
 //tdata1 = i_arrow_shaft_iron // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ItemDef i_arrow_shafts_iron_4]
 name = "4 chestnut shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = i_log_iron //some resources were fixed by converter 
-SKILLMAKE = 74.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_iron //some resources were fixed by converter 
+SKILLMAKE = 740 bowcraft
 //tdata1 = i_arrow_shaft_iron // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ItemDef i_arrow_shafts_iron_5]
 name = "5 chestnut shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_log_iron //some resources were fixed by converter 
-SKILLMAKE = 90.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_iron //some resources were fixed by converter 
+SKILLMAKE = 900 bowcraft
 //tdata1 = i_arrow_shaft_iron // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ItemDef i_arrow_shafts_verite_2]
 name = "2 oak shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 50.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_verite //some resources were fixed by converter 
+SKILLMAKE = 500 bowcraft
 //tdata1 = i_arrow_shaft_verite // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ItemDef i_arrow_shafts_verite_3]
 name = "3 oak shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 67.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_verite //some resources were fixed by converter 
+SKILLMAKE = 670 bowcraft
 //tdata1 = i_arrow_shaft_verite // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ItemDef i_arrow_shafts_verite_4]
 name = "4 oak shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 83.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_verite //some resources were fixed by converter 
+SKILLMAKE = 830 bowcraft
 //tdata1 = i_arrow_shaft_verite // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ItemDef i_arrow_shafts_verite_5]
 name = "5 oak shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_log_verite //some resources were fixed by converter 
-SKILLMAKE = 95.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_verite //some resources were fixed by converter 
+SKILLMAKE = 950 bowcraft
 //tdata1 = i_arrow_shaft_verite // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ItemDef i_arrow_shafts_valorite_2]
 name = "2 teak shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = i_log_valorite //some resources were fixed by converter 
-SKILLMAKE = 63.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_valorite //some resources were fixed by converter 
+SKILLMAKE = 630 bowcraft
 //tdata1 = i_arrow_shaft_valorite // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ItemDef i_arrow_shafts_valorite_3]
 name = "3 teak shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = i_log_valorite //some resources were fixed by converter 
-SKILLMAKE = 78.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_valorite //some resources were fixed by converter 
+SKILLMAKE = 780 bowcraft
 //tdata1 = i_arrow_shaft_valorite // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ItemDef i_arrow_shafts_valorite_4]
 name = "4 teak shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = i_log_valorite //some resources were fixed by converter 
-SKILLMAKE = 91.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_valorite //some resources were fixed by converter 
+SKILLMAKE = 910 bowcraft
 //tdata1 = i_arrow_shaft_valorite // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ItemDef i_arrow_shafts_valorite_5]
 name = "5 teak shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_log_valorite //some resources were fixed by converter 
-SKILLMAKE = 100.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_valorite //some resources were fixed by converter 
+SKILLMAKE = 1000 bowcraft
 //tdata1 = i_arrow_shaft_valorite // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ItemDef i_arrow_shafts_obsidian_2]
 name = "2 mahagon shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = i_log_obsidian //some resources were fixed by converter 
-SKILLMAKE = 75.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_obsidian //some resources were fixed by converter 
+SKILLMAKE = 750 bowcraft
 //tdata1 = i_arrow_shaft_obsidian // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ItemDef i_arrow_shafts_obsidian_3]
 name = "3 mahagon shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = i_log_obsidian //some resources were fixed by converter 
-SKILLMAKE = 89.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_obsidian //some resources were fixed by converter 
+SKILLMAKE = 890 bowcraft
 //tdata1 = i_arrow_shaft_obsidian // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ItemDef i_arrow_shafts_obsidian_4]
 name = "4 mahagon shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = i_log_obsidian //some resources were fixed by converter 
-SKILLMAKE = 100.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_obsidian //some resources were fixed by converter 
+SKILLMAKE = 1000 bowcraft
 //tdata1 = i_arrow_shaft_obsidian // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ItemDef i_arrow_shafts_obsidian_5]
 name = "5 mahagon shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_log_obsidian //some resources were fixed by converter 
-SKILLMAKE = 105.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_obsidian //some resources were fixed by converter 
+SKILLMAKE = 1050 bowcraft
 //tdata1 = i_arrow_shaft_obsidian // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ItemDef i_arrow_shafts_adamantinum_2]
 name = "2 eben shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = i_log_adamantinum //some resources were fixed by converter 
-SKILLMAKE = 88.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_adamantinum //some resources were fixed by converter 
+SKILLMAKE = 880 bowcraft
 //tdata1 = i_arrow_shaft_adamantinum // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ItemDef i_arrow_shafts_adamantinum_3]
 name = "3 eben shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = i_log_adamantinum //some resources were fixed by converter 
-SKILLMAKE = 100.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_adamantinum //some resources were fixed by converter 
+SKILLMAKE = 1000 bowcraft
 //tdata1 = i_arrow_shaft_adamantinum // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ItemDef i_arrow_shafts_adamantinum_4]
 name = "4 eben shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = i_log_adamantinum //some resources were fixed by converter 
-SKILLMAKE = 109.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_adamantinum //some resources were fixed by converter 
+SKILLMAKE = 1090 bowcraft
 //tdata1 = i_arrow_shaft_adamantinum // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ItemDef i_arrow_shafts_adamantinum_5]
 name = "5 eben shafts"
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_log_adamantinum //some resources were fixed by converter 
-SKILLMAKE = 110.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_adamantinum //some resources were fixed by converter 
+SKILLMAKE = 1100 bowcraft
 //tdata1 = i_arrow_shaft_adamantinum // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
 type = t_shaft //guessed from base def by Converter 
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ItemDef i_arrow_shafts_mithril_2]
 name = "2 elven shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 20
-RESOURCES = i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 100.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_mithril //some resources were fixed by converter 
+SKILLMAKE = 1000 bowcraft
 //tdata1 = i_arrow_shaft_mithril // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ItemDef i_arrow_shafts_mithril_3]
 name = "3 elven shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 30
-RESOURCES = i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 111.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_mithril //some resources were fixed by converter 
+SKILLMAKE = 1110 bowcraft
 //tdata1 = i_arrow_shaft_mithril // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ItemDef i_arrow_shafts_mithril_4]
 name = "4 elven shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 40
-RESOURCES = i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 118.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_mithril //some resources were fixed by converter 
+SKILLMAKE = 1180 bowcraft
 //tdata1 = i_arrow_shaft_mithril // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ItemDef i_arrow_shafts_mithril_5]
 name = "5 elven shafts"
 type = t_shaft_multi
 //DUPELIST = 01025 // commented out by Converter 
 WEIGHT = 50
-RESOURCES = i_log_mithril //some resources were fixed by converter 
-SKILLMAKE = 120.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 1 i_log_mithril //some resources were fixed by converter 
+SKILLMAKE = 1200 bowcraft
 //tdata1 = i_arrow_shaft_mithril // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ItemDef i_arrow_piercing_multi_copper]
 NAME = "x20 spruce piercing arrows"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_arrow_copper,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 30.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_arrow_copper, 3 i_ingot_verite
+SKILLMAKE = 300 bowcraft
 //tdata1 = i_arrow_piercing_copper // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ItemDef i_arrow_piercing_multi_iron]
 NAME = "x20 chestnut piercing arrows"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_arrow_iron,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 38.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_arrow_iron, 3 i_ingot_verite
+SKILLMAKE = 380 bowcraft
 //tdata1 = i_arrow_piercing_iron // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ItemDef i_arrow_piercing_multi_verite]
 NAME = "x20 oak piercing arrows"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_arrow_verite,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_arrow_verite, 3 i_ingot_verite
+SKILLMAKE = 600 bowcraft
 //tdata1 = i_arrow_piercing_verite // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ItemDef i_arrow_piercing_multi_valorite]
 NAME = "x20 teak piercing arrows"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_arrow_valorite,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 68.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_arrow_valorite, 3 i_ingot_verite
+SKILLMAKE = 680 bowcraft
 //tdata1 = i_arrow_piercing_valorite // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ItemDef i_arrow_piercing_multi_obsidian]
 NAME = "x20 mahagon piercing arrows"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_arrow_obsidian,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 73.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_arrow_obsidian, 3 i_ingot_verite
+SKILLMAKE = 730 bowcraft
 //tdata1 = i_arrow_piercing_obsidian // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ItemDef i_arrow_piercing_multi_adamantinum]
 NAME = "x20 eben piercing arrows"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_arrow_adamantinum,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 88.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_arrow_adamantinum, 3 i_ingot_verite
+SKILLMAKE = 880 bowcraft
 //tdata1 = i_arrow_piercing_adamantinum // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ItemDef i_arrow_piercing_multi_mithril]
 NAME = "x20 elven piercing arrows"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_arrow_mithril,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 98.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_arrow_mithril, 3 i_ingot_verite
+SKILLMAKE = 980 bowcraft
 //tdata1 = i_arrow_piercing_mithril // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ItemDef i_bolt_jagged_multi_copper]
 NAME = "x20 spruce jagged bolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_copper,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 30.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_copper, 3 i_ingot_verite
+SKILLMAKE = 300 bowcraft
 //tdata1 = i_bolt_jagged_copper // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ItemDef i_bolt_jagged_multi_iron]
 NAME = "x20 chestnut jagged bolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_iron,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 38.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_iron, 3 i_ingot_verite
+SKILLMAKE = 380 bowcraft
 //tdata1 = i_bolt_jagged_iron // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ItemDef i_bolt_jagged_multi_verite]
 NAME = "x20 oak jagged bolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_verite,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_verite, 3 i_ingot_verite
+SKILLMAKE = 600 bowcraft
 //tdata1 = i_bolt_jagged_verite // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ItemDef i_bolt_jagged_multi_valorite]
 NAME = "x20 teak jagged bolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_valorite,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 68.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_valorite, 3 i_ingot_verite
+SKILLMAKE = 680 bowcraft
 //tdata1 = i_bolt_jagged_valorite // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ItemDef i_bolt_jagged_multi_obsidian]
 NAME = "x20 mahagon jagged bolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_obsidian,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 73.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_obsidian, 3 i_ingot_verite
+SKILLMAKE = 730 bowcraft
 //tdata1 = i_bolt_jagged_obsidian // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ItemDef i_bolt_jagged_multi_adamantinum]
 NAME = "x20 eben jagged bolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_adamantinum,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 88.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_adamantinum, 3 i_ingot_verite
+SKILLMAKE = 880 bowcraft
 //tdata1 = i_bolt_jagged_adamantinum // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ItemDef i_bolt_jagged_multi_mithril]
 NAME = "x20 elven jagged bolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_mithril,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 98.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_mithril, 3 i_ingot_verite
+SKILLMAKE = 980 bowcraft
 //tdata1 = i_bolt_jagged_mithril // commented out by Converter 
 model = 0xf41
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven
 
 [ItemDef i_xbolt_piercing_multi_copper]
 NAME = "x20 spruce piercing xbolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_copper,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 30.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_copper, 3 i_ingot_verite
+SKILLMAKE = 300 bowcraft
 //tdata1 = i_xbolt_piercing_copper // commented out by Converter 
 model = 0x1bfd
 //REPLICATE = 1 // commented out by Converter 
+Color = color_spruce
 
 [ItemDef i_xbolt_piercing_multi_iron]
 NAME = "x20 chestnut piercing xbolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_iron,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 38.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_iron, 3 i_ingot_verite
+SKILLMAKE = 380 bowcraft
 //tdata1 = i_xbolt_piercing_iron // commented out by Converter 
 model = 0x1bfd
 //REPLICATE = 1 // commented out by Converter 
+Color = color_chestnut
 
 [ItemDef i_xbolt_piercing_multi_verite]
 NAME = "x20 oak piercing xbolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_verite,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 60.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_verite, 3 i_ingot_verite
+SKILLMAKE = 600 bowcraft
 //tdata1 = i_xbolt_piercing_verite // commented out by Converter 
 model = 0x1bfd
 //REPLICATE = 1 // commented out by Converter 
+Color = color_oak
 
 [ItemDef i_xbolt_piercing_multi_valorite]
 NAME = "x20 teak piercing xbolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_valorite,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 68.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_valorite, 3 i_ingot_verite
+SKILLMAKE = 680 bowcraft
 //tdata1 = i_xbolt_piercing_valorite // commented out by Converter 
 model = 0x1bfd
 //REPLICATE = 1 // commented out by Converter 
+Color = color_teak
 
 [ItemDef i_xbolt_piercing_multi_obsidian]
 NAME = "x20 mahagon piercing xbolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_obsidian,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 73.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_obsidian, 3 i_ingot_verite
+SKILLMAKE = 730 bowcraft
 //tdata1 = i_xbolt_piercing_obsidian // commented out by Converter 
 model = 0x1bfd
 //REPLICATE = 1 // commented out by Converter 
+Color = color_mahagon
 
 [ItemDef i_xbolt_piercing_multi_adamantinum]
 NAME = "x20 eben piercing xbolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_adamantinum,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 88.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_adamantinum, 3 i_ingot_verite
+SKILLMAKE = 880 bowcraft
 //tdata1 = i_xbolt_piercing_adamantinum // commented out by Converter 
 model = 0x1bfd
 //REPLICATE = 1 // commented out by Converter 
+Color = color_eben
 
 [ItemDef i_xbolt_piercing_multi_mithril]
 NAME = "x20 elven piercing xbolts"
 type = t_arrow_piercing_multi
-RESOURCES = 20 i_xbolt_mithril,  3 i_ingot_verite //some resources were fixed by converter 
-SKILLMAKE = 98.0 bowcraft //some resources were fixed by converter 
+RESOURCES = 20 i_xbolt_mithril, 3 i_ingot_verite
+SKILLMAKE = 980 bowcraft
 //tdata1 = i_xbolt_piercing_mithril // commented out by Converter 
 model = 0x1bfd
 //REPLICATE = 1 // commented out by Converter 
+Color = color_elven

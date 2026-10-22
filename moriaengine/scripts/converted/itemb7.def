@@ -19,7 +19,7 @@ SUBSECTION = Bad Tiles
 DESCRIPTION = NonGen (Memory) Object
 
 TYPE = T_EQ_MEMORY_OBJ
-LAYER = layer_special
+layer = layer_special
 DEFNAME = i_memory
 
 [ItemDef 0x2008]
@@ -722,6 +722,8 @@ SUBSECTION = Fifth Circle
 NAME = "Summon Creature"
 TYPE = T_SPELLICON
 DEFNAME = i_rune_summon_creature
+
+//[typedef t_summon_rune] //(commented out by Converter) 
 
 [ItemDef 0x20a8]
 CATEGORY = Spell Icons
@@ -1637,6 +1639,126 @@ TYPE = T_FIGURINE
 //TDATA3 = c_elem_water // commented out by Converter 
 DEFNAME = i_pet_elem_water
 
+[ItemDef 0x210c]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Roan
+
+NAME = "Roan"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_ROAN // commented out by Converter 
+DEFNAME = i_pet_must_roan
+
+[ItemDef 0x210d]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Wilimate
+
+NAME = "Wilimate"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_WIMMIMATE // commented out by Converter 
+DEFNAME = i_pet_must_wilimate
+
+[ItemDef 0x210e]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = RedRoan
+
+NAME = "RedRoan"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_REDROAN // commented out by Converter 
+DEFNAME = i_pet_must_redroan
+
+[ItemDef 0x210f]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Chocolate
+
+NAME = "Chocolate"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_CHOCOLATE // commented out by Converter 
+DEFNAME = i_pet_must_chocolate
+
+[ItemDef 0x2110]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Palomino
+
+NAME = "Palomino"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_PAMAMINO // commented out by Converter 
+DEFNAME = i_pet_must_palomino
+
+[ItemDef 0x2111]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Sky
+
+NAME = "Sky"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_SKY // commented out by Converter 
+DEFNAME = i_pet_must_sky
+
+[ItemDef 0x2112]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Grey
+
+NAME = "Grey"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_GREY // commented out by Converter 
+DEFNAME = i_pet_must_grey
+
+[ItemDef 0x2113]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = SkyGrey
+
+NAME = "SkyGrey"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_SKYGRAY // commented out by Converter 
+DEFNAME = i_pet_must_skygrey
+
+[ItemDef 0x2114]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Crimson
+
+NAME = "Crimson"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_CRIMSON // commented out by Converter 
+DEFNAME = i_pet_must_crimson
+
+[ItemDef 0x2115]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Ridgeback
+
+NAME = "Ridgeback"
+TYPE = T_FIGURINE
+//TDATA3 = c_m_ridgeback // commented out by Converter 
+DEFNAME = i_pet_ridgeback
+
+[ItemDef 0x2116]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = Mount PolarBear
+
+NAME = "PolarBear"
+TYPE = T_FIGURINE
+//TDATA3 = c_mount_polar_bear // commented out by Converter 
+DEFNAME = i_pet_mount_polarbear
+
+[ItemDef 0x2117]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = UnknownMountPolarBear
+
+Name = "UnknownPolarBear"
+TYPE = T_FIGURINE
+//TDATA3 = c_mount_polar_bear // commented out by Converter 
+DEFNAME = i_pet_unknown_mount_polarbear
+
 [ItemDef 0x2118]
 CATEGORY = Miscellaneous
 SUBSECTION = Character Icons
@@ -1721,7 +1843,7 @@ DESCRIPTION = Horse (gray)
 
 NAME = "Gray Horse"
 TYPE = T_FIGURINE
-SKILLMAKE = 35.0 magery //some resources were fixed by converter 
+SKILLMAKE = 350 magery //some resources were fixed by converter 
 //TDATA3 = c_horse_gray // commented out by Converter 
 DEFNAME = i_pet_horse_gray
 //VALUE = {280 400} // commented out by Converter 
@@ -1956,6 +2078,75 @@ TYPE = T_FIGURINE
 //TDATA3 = c_OSTARD_Forest // commented out by Converter 
 DEFNAME = i_pet_ostard_forest
 //VALUE = {280 400} // commented out by Converter 
+
+[ItemDef 0x2138]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = UnknownHorse
+
+Name = "UnknownHorse"
+TYPE = T_FIGURINE
+DEFNAME = i_pet_unknown_horse
+
+[ItemDef 0x2139]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = UnknownLama
+
+Name = "UnknownLama"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_WIMMIMATE // commented out by Converter 
+DEFNAME = i_pet_unknown_lama
+
+[ItemDef 0x213a]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = UnknownOclock
+
+Name = "UnknownOclock"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_WIMMIMATE // commented out by Converter 
+DEFNAME = i_pet_unknown_oclock
+
+[ItemDef 0x213b]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = UnknownOrn
+
+Name = "UnknownOrn"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_WIMMIMATE // commented out by Converter 
+DEFNAME = i_pet_unkown_orn
+
+[ItemDef 0x213c]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = UnknownMustang
+
+Name = "UnknownMustang"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_WIMMIMATE // commented out by Converter 
+DEFNAME = i_pet_unknown_mustang
+
+[ItemDef 0x213d]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = UnknownZostrich
+
+Name = "UnknownZostrich"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_WIMMIMATE // commented out by Converter 
+DEFNAME = i_pet_unknown_zostrich
+
+[ItemDef 0x213e]
+CATEGORY = Miscellaneous
+SUBSECTION = Character Icons
+DESCRIPTION = UnknownRidgeback
+
+Name = "UnknownRidgeback"
+TYPE = T_FIGURINE
+//TDATA3 = C_A_MUSTANG_WIMMIMATE // commented out by Converter 
+DEFNAME = i_pet_unknown_ridgeback
 
 [ItemDef 0x213f]
 NAME = "stars"
@@ -3924,6 +4115,51 @@ DUPEITEM = i_fire_column
 [ItemDef 0x3727]
 DUPEITEM = i_fire_column
 
+[ItemDef 0x2eb2]
+CATEGORY = Animations
+SUBSECTION = Meteor swarm
+DESCRIPTION = @
+
+TYPE = t_fire
+//DUPELIST = 02EB3,02EB4,02EB5,02EB6,02EB7,02EB8,02EB9,02EBA,02EBB,02EBC,02EBD,02EBE // commented out by Converter 
+DEFNAME = i_fx_meteor_swarm
+
+[ItemDef 0x2eb3]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2eb4]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2eb5]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2eb6]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2eb7]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2eb8]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2eb9]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2eba]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2ebb]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2ebc]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2ebd]
+DUPEITEM = i_fx_meteor_swarm
+
+[ItemDef 0x2ebe]
+DUPEITEM = i_fx_meteor_swarm
+
 [ItemDef 0x3728]
 CATEGORY = Animations
 SUBSECTION = Smoke
@@ -4880,12 +5116,6 @@ TYPE = t_spell
 //DUPELIST = 03968,03969,0396a,0396b,0396c,0396d,0396e,0396f,03970,03971,03972,03973,03974,03975,03976,03977,03978,03979,0397a,0397b,0397c,0397d,0397e,0397f,03980,03981,03982,03983,03984,03985,03986,03987,03988,03989,0398a // commented out by Converter 
 DEFNAME = i_fx_field_paralyze
 
-[EquippableDef i_parafield_delay]
-name = "odparni"
-type = t_eq_script
-layer = 30
-model = i_memory
-
 [ItemDef 0x3968]
 DUPEITEM = i_fx_field_paralyze
 
@@ -5180,11 +5410,13 @@ SUBSECTION = Gang Plank
 DESCRIPTION = Gang Plank
 
 TYPE = T_SHIP_PLANK
+
+[ItemDef 0x3e41] //(sail tip and side piece)
+CATEGORY = Ship Parts
+SUBSECTION = Ship Side
+DESCRIPTION = Ship Side
+
 TYPE = T_SHIP_SIDE_LOCKED
-//[ITEMDEF = 03e41] (sail tip and side piece) // commented out by Converter 
-//CATEGORY = Ship Parts // commented out by Converter 
-//SUBSECTION = Ship Side // commented out by Converter 
-//DESCRIPTION = Ship Side // commented out by Converter 
 
 [ItemDef 0x3e42]
 CATEGORY = Ship Parts
@@ -5502,62 +5734,62 @@ model = i_rune_summon_creature
 
 //[EquippableDef 0x3e9f] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_horse_tan // commented out by Converter 
-//LAYER = layer_horse
 //DEFNAME = i_mt_horse_tan
 
 //[EquippableDef 0x3ea0] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_horse_gray // commented out by Converter 
-//LAYER = layer_horse
 //DEFNAME = i_mt_horse_gray
 
 //[EquippableDef 0x3ea1] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_horse_brown_lt // commented out by Converter 
-//LAYER = layer_horse
 //DEFNAME = i_mt_horse_brown_lt
 
 //[EquippableDef 0x3ea2] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_horse_brown_dk // commented out by Converter 
-//LAYER = layer_horse
 //DEFNAME = i_mt_horse_brown_dk
 
 //[EquippableDef 0x3ea3] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_ostard_desert // commented out by Converter 
-//LAYER = layer_horse
 //DEFNAME = i_mt_ostard_desert
 
 //[EquippableDef 0x3ea4] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_ostard_zostrich // commented out by Converter 
-//LAYER = layer_horse
 //DEFNAME = i_mt_ostard_zostrich
 
 //[EquippableDef 0x3ea5] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_OSTARD_Forest // commented out by Converter 
-//LAYER = layer_horse
 //DEFNAME = i_mt_ostard_forest
 
 //[EquippableDef i_mt_llama_pack] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_LLAMA // commented out by Converter 
-//LAYER = layer_horse
 //model = i_mt_llama
 
 //[EquippableDef i_mt_horse_pack] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_horse_tan // commented out by Converter 
-//LAYER = layer_horse
 //model = i_mt_horse_tan
 
 //[EquippableDef 0x3ea6] //(commented out by Converter) 
 //TYPE = T_EQ_HORSE
+//layer = layer_horse
 ////TDATA3 = c_LLAMA // commented out by Converter 
-//LAYER = layer_horse
 //DEFNAME = i_mt_llama
 
 [ItemDef 0x3ea7]
@@ -5604,8 +5836,8 @@ DESCRIPTION = @
 
 //[EquippableDef 0x3eb4] //(commented out by Converter) 
 //type = t_eq_horse
-////tdata3 = c_m_unicorn // commented out by Converter 
 //layer = layer_horse
+////tdata3 = c_m_unicorn // commented out by Converter 
 //defname = i_mt_unicorn
 
 [ItemDef 0x3eb5]
@@ -5616,8 +5848,8 @@ DESCRIPTION = @
 
 //[EquippableDef 0x3eb8] //(commented out by Converter) 
 //type = t_eq_horse
-////tdata3 = c_m_ridgeback_savage // commented out by Converter 
 //layer = layer_horse
+////tdata3 = c_m_ridgeback_savage // commented out by Converter 
 //defname = i_mt_ridgeback_savage
 
 [ItemDef 0x3eb9]
@@ -5626,32 +5858,32 @@ DUPEITEM = i_ship_hatch_e
 
 //[EquippableDef 0x3eba] //(commented out by Converter) 
 //type = t_eq_horse
-////tdata3 = c_m_ridgeback // commented out by Converter 
 //layer = layer_horse
+////tdata3 = c_m_ridgeback // commented out by Converter 
 //defname = i_mt_ridgeback
 
 //[EquippableDef 0x3ebb] //(commented out by Converter) 
 //type = t_eq_horse
-////tdata3 = c_m_skeletal_mount // commented out by Converter 
 //layer = layer_horse
+////tdata3 = c_m_skeletal_mount // commented out by Converter 
 //defname = i_mt_skeletal_mount
 
 //[EquippableDef 0x3ebc] //(commented out by Converter) 
 //type = t_eq_horse
-////tdata3 = c_m_giant_beetle // commented out by Converter 
 //layer = layer_horse
+////tdata3 = c_m_giant_beetle // commented out by Converter 
 //defname = i_mt_giant_beetle
 
 //[EquippableDef 0x3ebd] //(commented out by Converter) 
 //type = t_eq_horse
-////tdata3 = c_m_swamp_dragon // commented out by Converter 
 //layer = layer_horse
+////tdata3 = c_m_swamp_dragon // commented out by Converter 
 //defname = i_mt_swamp_dragon
 
 //[EquippableDef 0x3ebe] //(commented out by Converter) 
 //type = t_eq_horse
-////tdata3 = c_m_swamp_dragon_armored // commented out by Converter 
 //layer = layer_horse
+////tdata3 = c_m_swamp_dragon_armored // commented out by Converter 
 //defname = i_mt_swamp_dragon_armored
 
 [ItemDef 0x3ebf]
@@ -5826,9 +6058,209 @@ DEFNAME = i_fx_yellow_dot
 
 [ItemDef 0x3f0d]
 
-[ItemDef 0x3f0e]
+[ItemDef 0x1387]
+CATEGORY = Miscellaneous
+SUBSECTION = Weirdness
+DESCRIPTION = Big dark cloud
 
-[ItemDef 0x3f0f]
+NAME = "Dark Cloud"
+//DUPELIST = 01388,01389,0138A,0138B,0138C // commented out by Converter 
+DEFNAME = i_fx_dark_cloud
+
+[ItemDef 0x1388]
+DUPEITEM = i_fx_dark_cloud
+
+[ItemDef 0x1389]
+DUPEITEM = i_fx_dark_cloud
+
+[ItemDef 0x138a]
+DUPEITEM = i_fx_dark_cloud
+
+[ItemDef 0x138b]
+DUPEITEM = i_fx_dark_cloud
+
+[ItemDef 0x138c]
+DUPEITEM = i_fx_dark_cloud
+
+[ItemDef 0x1a75]
+CATEGORY = Miscellaneous
+SUBSECTION = Weirdness
+DESCRIPTION = Lava Explosion
+
+NAME = "Lava"
+//DUPELIST = 01A76,01A77,01A78,01A79,01A7A,01A7B // commented out by Converter 
+DEFNAME = i_fx_lava_explosion
+
+[ItemDef 0x1a76]
+DUPEITEM = i_fx_lava_explosion
+
+[ItemDef 0x1a77]
+DUPEITEM = i_fx_lava_explosion
+
+[ItemDef 0x1a78]
+DUPEITEM = i_fx_lava_explosion
+
+[ItemDef 0x1a79]
+DUPEITEM = i_fx_lava_explosion
+
+[ItemDef 0x1a7a]
+DUPEITEM = i_fx_lava_explosion
+
+[ItemDef 0x1a7b]
+DUPEITEM = i_fx_lava_explosion
+
+[ItemDef 0x3934]
+CATEGORY = Miscellaneous
+SUBSECTION = Weirdness
+DESCRIPTION = Energy Twister
+
+NAME = "Energy Twister"
+//DUPELIST = 03935,03936,03937,03938,03939,0393A,0393B,0393C,0393D,0393E,0393F,03940,03941 // commented out by Converter 
+DEFNAME = i_fx_energy_twister
+
+[ItemDef 0x3935]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x3936]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x3937]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x3938]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x3939]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x393a]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x393b]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x393c]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x393d]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x393e]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x393f]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x3940]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x3941]
+DUPEITEM = i_fx_energy_twister
+
+[ItemDef 0x39c4]
+CATEGORY = Miscellaneous
+SUBSECTION = Weirdness
+DESCRIPTION = Tornado
+
+NAME = "Tornado"
+//DUPELIST = 039C5,039C6,039C7,039C8,039C9,039CA,039CB,039CC,039CD,039CE,039CF // commented out by Converter 
+DEFNAME = i_fx_tornado
+
+[ItemDef 0x39c5]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39c6]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39c7]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39c8]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39c9]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39ca]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39cb]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39cc]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39cd]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39ce]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x39cf]
+DUPEITEM = i_fx_tornado
+
+[ItemDef 0x3105]
+CATEGORY = Miscellaneous
+SUBSECTION = Weirdness
+DESCRIPTION = Sleeping Effect
+
+NAME = "Sleeping Effect"
+//DUPELIST = 03106,03107,03108,03109,0310A,0310B,0310C // commented out by Converter 
+DEFNAME = i_fx_sleeping
+
+[ItemDef 0x3106]
+DUPEITEM = i_fx_sleeping
+
+[ItemDef 0x3107]
+DUPEITEM = i_fx_sleeping
+
+[ItemDef 0x3108]
+DUPEITEM = i_fx_sleeping
+
+[ItemDef 0x3109]
+DUPEITEM = i_fx_sleeping
+
+[ItemDef 0x310a]
+DUPEITEM = i_fx_sleeping
+
+[ItemDef 0x310b]
+DUPEITEM = i_fx_sleeping
+
+[ItemDef 0x310c]
+DUPEITEM = i_fx_sleeping
+
+[ItemDef 0x310d]
+CATEGORY = Miscellaneous
+SUBSECTION = Weirdness
+DESCRIPTION = Roots Catch
+
+NAME = "Roots"
+//DUPELIST = 0310E,0310F,03110,03111 // commented out by Converter 
+DEFNAME = i_fx_roots_catch
+
+[ItemDef 0x310e]
+DUPEITEM = i_fx_roots_catch
+
+[ItemDef 0x310f]
+DUPEITEM = i_fx_roots_catch
+
+[ItemDef 0x3110]
+DUPEITEM = i_fx_roots_catch
+
+[ItemDef 0x3111]
+DUPEITEM = i_fx_roots_catch
+
+//[EquippableDef 0x3f0e] //(commented out by Converter) 
+//TYPE = T_EQ_HORSE
+//layer = 25
+////TDATA3 = 01ba // commented out by Converter 
+//DEFNAME = i_mt_drake
+
+//[EquippableDef 0x3f0f] //(commented out by Converter) 
+//TYPE = T_EQ_HORSE
+//layer = 25
+////TDATA3 = c_bear_polar // commented out by Converter 
+//DEFNAME = i_mt_bear
 
 [ItemDef 0x3f1a]
 
@@ -6396,5 +6828,37 @@ DUPEITEM = 0x3f3f
 [ItemDef 0x3fe4]
 DUPEITEM = 0x3f3f
 
-[ItemDef 0x3ffe]
-NAME = "horse"
+[ItemDef 0x388f]
+NAME = "sud"
+
+[ItemDef 0x390a]
+NAME = "stojan"
+
+[ItemDef 0x25ea]
+CATEGORY = Miscellaneous
+SUBSECTION = Farm
+DESCRIPTION = Seno
+
+NAME = "seno"
+//DUPELIST = 025EB,025EC,025ED // commented out by Converter 
+
+[ItemDef 0x25eb]
+DUPEITEM = 0x25ea
+
+[ItemDef 0x25ec]
+DUPEITEM = 0x25ea
+
+[ItemDef 0x25ed]
+DUPEITEM = 0x25ea
+
+[ItemDef i_ress_ankh]
+CATEGORY = GM
+SUBSECTION = Ozivovaci kameny
+DESCRIPTION = univerzalni
+
+NAME = "Kamen oziveni"
+TYPE = t_ress_ankh
+model = i_ankh
+Color = 00
+
+//[typedef t_ress_ankh] //(commented out by Converter) 
