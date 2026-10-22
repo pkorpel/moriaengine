@@ -57,6 +57,38 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MOVERATE_TEST_SPAWNED: fastUid=" + fast.Uid + " baselineUid=" + baseline.Uid);
 		}
 
+		/// <summary>#599 - simulates a GM editing MoveRate on one specific already-spawned
+		/// NPC via .info (which reflects over the live NPC instance, not its NPCDef) - sets
+		/// the per-instance override directly and resets the displacement baseline so the
+		/// test can measure movement under the NEW rate cleanly, not polluted by whatever
+		/// ground was already covered under the old one.</summary>
+		[SteamFunction]
+		public static void TestOverrideNpcMoveRate(Character self, ScriptArgs sa) {
+			string[] parts = SplitArgs(sa);
+			uint uid = Convert.ToUInt32(parts[0], CultureInfo.InvariantCulture);
+			double newRate = Convert.ToDouble(parts[1], CultureInfo.InvariantCulture);
+			NPC npc = Thing.UidGetThing(uid) as NPC;
+			npc.MoveRate = newRate;
+			npc.SetTag(startXTK, npc.X);
+			npc.SetTag(startYTK, npc.Y);
+			Console.WriteLine("MOVERATE_TEST_OVERRIDDEN: uid=" + uid + " newInstanceRate=" + npc.MoveRate);
+		}
+
+		//Same dual-shape ScriptArgs problem documented elsewhere in this codebase - a
+		//genuinely single numeric argument reaching an elevated account via the full LScript
+		//parser is a boxed value in Argv[0], not a pre-split string; only a multi-token
+		//un-split string needs splitting here.
+		private static string[] SplitArgs(ScriptArgs sa) {
+			if ((sa.Argv.Length == 1) && (sa.Argv[0] is string single)) {
+				return single.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+			}
+			string[] result = new string[sa.Argv.Length];
+			for (int i = 0; i < sa.Argv.Length; i++) {
+				result[i] = Convert.ToString(sa.Argv[i], CultureInfo.InvariantCulture);
+			}
+			return result;
+		}
+
 		[SteamFunction]
 		public static void TestReportNpcDisplacement(Character self, ScriptArgs sa) {
 			uint uid = Convert.ToUInt32(sa.Argv[0], CultureInfo.InvariantCulture);

@@ -74,6 +74,67 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#599 - proves a per-instance MoveRate override (what .info's reflection-
+		/// based editor would do to one specific spawned monster) actually takes effect,
+		/// instead of NPCAiTimer silently continuing to read the species-level NPCDef default.
+		/// Deliberately SWAPS the two NPCs' effective speeds via instance overrides (the
+		/// MoveRate=6-by-Def one gets overridden down to 1.5, the baseline one gets overridden
+		/// up to 6) - if the override were a no-op, the original (Def-driven) ordering would
+		/// still hold; only a real instance-level override reverses it.</summary>
+		[Fact]
+		public void PerInstanceOverrideActuallyChangesSpeed() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "MoveRateOverride")) {
+				int defDrivenFastDisplacement = -1;
+				int defDrivenBaselineDisplacement = -1;
+				Exception lastFailure = null;
+				for (int attempt = 0; attempt < 3; attempt++) {
+					try {
+						int mark = this.fixture.GameOutputSnapshot().Length;
+						client.SendSpeech(".TestTeleportToOpenGround");
+						Assert.True(this.fixture.WaitForGameOutputSince("OPEN_GROUND_FOUND:", mark, TimeSpan.FromSeconds(10)));
+						Assert.DoesNotContain("none", LastLineContaining(this.fixture.GameOutputSnapshot(), "OPEN_GROUND_FOUND:"));
+
+						mark = this.fixture.GameOutputSnapshot().Length;
+						client.SendSpeech(".TestSpawnMoveRateNpcs");
+						Assert.True(this.fixture.WaitForGameOutputSince("MOVERATE_TEST_SPAWNED:", mark, TimeSpan.FromSeconds(10)));
+						string spawnLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MOVERATE_TEST_SPAWNED:");
+						uint defDrivenFastUid = ExtractUidAfter(spawnLine, "fastUid=");
+						uint defDrivenBaselineUid = ExtractUidAfter(spawnLine, "baselineUid=");
+
+						//Swap: the MoveRate=6-by-Def NPC gets overridden down to 1.5; the
+						//MoveRate=3-by-Def (baseline) NPC gets overridden up to 6.
+						mark = this.fixture.GameOutputSnapshot().Length;
+						client.SendSpeech(".TestOverrideNpcMoveRate " + defDrivenFastUid + " 1.5");
+						Assert.True(this.fixture.WaitForGameOutputSince("MOVERATE_TEST_OVERRIDDEN: uid=" + defDrivenFastUid, mark, TimeSpan.FromSeconds(10)));
+
+						mark = this.fixture.GameOutputSnapshot().Length;
+						client.SendSpeech(".TestOverrideNpcMoveRate " + defDrivenBaselineUid + " 6");
+						Assert.True(this.fixture.WaitForGameOutputSince("MOVERATE_TEST_OVERRIDDEN: uid=" + defDrivenBaselineUid, mark, TimeSpan.FromSeconds(10)));
+
+						Thread.Sleep(4500);
+
+						defDrivenFastDisplacement = this.ReportDisplacement(client, defDrivenFastUid);
+						defDrivenBaselineDisplacement = this.ReportDisplacement(client, defDrivenBaselineUid);
+
+						//Reversed from HigherMoveRateCoversMoreGroundThanBaselineOverTheSameWindow
+						//on purpose - this is the whole point of the swap.
+						if ((defDrivenFastDisplacement > 0) && (defDrivenBaselineDisplacement > defDrivenFastDisplacement)) {
+							return; //success
+						}
+						lastFailure = null;
+					} catch (Exception e) {
+						lastFailure = e;
+					}
+				}
+
+				Assert.True(defDrivenFastDisplacement > 0, "Expected the overridden-to-slow NPC to have moved at all.");
+				Assert.True(defDrivenBaselineDisplacement > defDrivenFastDisplacement,
+					"Expected the instance override to reverse which NPC moves faster (overridden-to-slow=" +
+					defDrivenFastDisplacement + ", overridden-to-fast=" + defDrivenBaselineDisplacement + ")." +
+					(lastFailure != null ? " Last attempt threw: " + lastFailure : ""));
+			}
+		}
+
 		private int ReportDisplacement(TestGameClient client, uint uid) {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".TestReportNpcDisplacement " + uid);
