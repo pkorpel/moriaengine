@@ -1,0 +1,13 @@
+// #590 - test-only content proving NPCDef.MoveRate actually drives real per-tick movement
+// speed via NPCAiTimer's step-budget accumulator. Two otherwise-identical NPCs - one at
+// double the real baseline (MoveRate=6), one left unconfigured (defaults to the 3.0
+// baseline) - so a live side-by-side comparison proves "higher = faster" against the
+// actual engine, not just the data field round-tripping.
+[NPCDef npc_test_moverate_fast]
+NAME = "MoveRate Fast Test"
+ANIM = 0x1fff
+MoveRate = 6
+
+[NPCDef npc_test_moverate_baseline]
+NAME = "MoveRate Baseline Test"
+ANIM = 0x1fff

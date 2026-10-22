@@ -169,6 +169,28 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey moveRateTK = TagKey.Acquire("_moveRate_");
+
+		/// <summary>Per-species movement speed (#590) - the real archive's `MOVERATE=` field.
+		/// `3.0` is the real baseline/default (matches this engine's pre-existing fixed
+		/// one-tile-per-AI-tick behavior exactly) - higher moves faster, lower moves slower.
+		/// See `NPCAiTimer`'s move-budget accumulator for how this actually drives speed.</summary>
+		public double MoveRate {
+			get {
+				object tag = this.GetTag(moveRateTK);
+				if (tag is double rate) {
+					return rate;
+				}
+				if (tag is int intTag) {
+					return intTag;
+				}
+				return 3.0;
+			}
+			set {
+				this.SetTag(moveRateTK, value);
+			}
+		}
+
 		private static readonly TagKey combatSpellTK = TagKey.Acquire("_combatSpell_");
 
 		/// <summary>
@@ -436,6 +458,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "tamingdifficulty") {
 				this.TamingDifficulty = ConvertTools.ParseDouble(args);
+				return;
+			}
+			if (param == "moverate") {
+				this.MoveRate = ConvertTools.ParseDouble(args);
 				return;
 			}
 			if (param == "combatspell") {
