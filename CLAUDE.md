@@ -1,5 +1,48 @@
 # moriaengine — working state
 
+## Live-testing follow-up: MoveRate per-instance + NPC ranged combat SHIPPED (PR #601), 2026-10-22 — #599/#600 closed
+
+User tested newly-spawned monsters from the fresh content regen (PR #597, see entry
+below) and found two real gaps:
+
+**#599 - MoveRate couldn't be edited on a live spawned monster via `.info`.** Root
+cause: `NPCDef.MoveRate` (#590) only ever existed at the species-template level - it was
+shipped without the established per-instance-override mirror every other GM-tunable-
+per-monster field has (`AggroMode`/`ExperienceReward`, #260's epic: a Def-level default
+seeded into a matching instance property at `On_Create`, with all live behavior reading
+the instance so `.info`'s reflection-based editor - which reflects the live `NPC`, never
+its `Def` - can surface it). Fixed: added `NPC.MoveRate` (same shape), seeded from
+`def.MoveRate`, and `NPCAiTimer.RefillMoveBudget` now reads `self.MoveRate` instead of
+the Def directly.
+
+**#600 - `c_titan_ranger` melees instead of shooting its real equipped bow.** Traced to
+`CombatCalculator.CalculateCombatWeaponValues`'s NPC branch reading `npcDef.WeaponRange`
+(a separate `NPC.ct` field, default **1**) with zero connection to the equipped weapon's
+own `WeaponType` - the PLAYER branch already overrides Bow/XBow range via the GM-tunable
+`CombatSettings.Ranges` (built for #454-459's Ranger work), but this was never extended
+to NPCs. Two parallel, never-unified ranged-combat mechanisms existed: #56/#60's old
+hand-authored `WeaponRange=10`-style archer NPCs (`undeads.def` etc, still works, left
+untouched) vs #558-563's newer `Equip = i_bow` real-equipment NPCs (fell through to the
+unconfigured melee default, never worked). Fix: when `WeaponRange` is still at its
+unconfigured default AND the equipped weapon is Bow/XBow, apply the same
+`CombatSettings.Ranges` override players get - also resolves `WeaponProjectile`/
+`WeaponProjectileType` for NPCs the same way (previously unconditionally nulled for
+every NPC in this branch; `WeaponSkillDef.On_Stroke` already reads these unconditionally
+for any character, so this was purely a missing-population bug, not a missing
+mechanism - the user's own "maybe weaponProjectile should be used" instinct was right).
+
+Both verified with new real protocol tests, each **red/green confirmed** (reverted the
+fix, reran the test, saw the exact reported symptom - range stuck at 1, speed override a
+no-op - then restored and confirmed green). A batch of `MysticCombatTests`/
+`RangerSettingsTests` failures seen in a broader regression run were A/B-verified as
+pre-existing sandbox flakiness unrelated to this change (identical failures reproduced
+against unmodified `CombatCalculator.cs`). Issues #599/#600 closed referencing PR #601.
+
+**Worth remembering**: this is a good example of why #260's "Def-level default + per-
+instance mirror, instance always wins" pattern matters - any NEW per-monster NPCDef
+field meant to be GM-tunable on a live spawn needs the SAME mirror from day one, or it
+silently can't be edited. Check for this whenever adding a new `NPCDef`-level tunable.
+
 ## ⚠️ main currently has 4 known-red fast tests, 2026-10-22 — PR #597, see #596
 
 **Read this before trusting a green/red fast-test result.** `scripts/converted/` was
