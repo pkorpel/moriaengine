@@ -4,13 +4,15 @@ using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
-	/// #590 - proves NPCDef.MoveRate actually drives real movement speed through
-	/// NPCAiTimer's step-budget accumulator, not just that the `.def` field parses. Spawns
-	/// two otherwise-identical NPCs side by side - one with MoveRate=6 (double the real
-	/// baseline of 3), one left unconfigured (defaults to that same baseline) - sends both
-	/// toward the same distant goal point, waits several real AI ticks, and confirms the
-	/// faster one covered strictly more ground than the baseline one over the same wall-clock
-	/// window.
+	/// #590/#603 - proves NPCDef.MoveRate actually drives real movement speed through
+	/// NPCAiTimer's own per-NPC think-tick cadence, not just that the `.def` field parses.
+	/// Spawns two otherwise-identical NPCs side by side - one with MoveRate=6 (double the
+	/// real baseline of 3), one left unconfigured (defaults to that same baseline) - sends
+	/// both toward the same distant goal point, waits several real AI ticks, and confirms
+	/// the faster one covered strictly more ground than the baseline one over the same
+	/// wall-clock window. A separate Fact confirms it does this by ticking (and thus
+	/// stepping) MORE OFTEN, one tile at a time - never by covering more than one tile in a
+	/// single tick, which is what #603 found looked like skipping/teleporting on the client.
 	/// </summary>
 	[Collection(NpcMoveRateCollection.Name)]
 	public class NpcMoveRateTests {
@@ -132,6 +134,48 @@ namespace SteamEngine.Tests.Protocol {
 					"Expected the instance override to reverse which NPC moves faster (overridden-to-slow=" +
 					defDrivenFastDisplacement + ", overridden-to-fast=" + defDrivenBaselineDisplacement + ")." +
 					(lastFailure != null ? " Last attempt threw: " + lastFailure : ""));
+			}
+		}
+
+		/// <summary>#603 - the actual regression this issue reported: a fast NPC must never
+		/// cover more than one tile within a single real-time snapshot-to-snapshot window,
+		/// even though it covers MORE ground overall (verified by the Fact above) - it does
+		/// so by ticking more often, each tick still only a single tile-step. Polls a
+		/// MoveRate=6 NPC's displacement tightly (every ~250ms, well under its own ~0.75s
+		/// tick interval) over several seconds and asserts no single poll-to-poll delta ever
+		/// exceeds 1 tile - a burst (the old #590 behavior) would show jumps of 2+ in one
+		/// poll.</summary>
+		[Fact]
+		public void NeverCoversMoreThanOneTileBetweenConsecutiveChecks() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "MoveRateNoBurst")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestTeleportToOpenGround");
+				Assert.True(this.fixture.WaitForGameOutputSince("OPEN_GROUND_FOUND:", mark, TimeSpan.FromSeconds(10)));
+				Assert.DoesNotContain("none", LastLineContaining(this.fixture.GameOutputSnapshot(), "OPEN_GROUND_FOUND:"));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSpawnMoveRateNpcs");
+				Assert.True(this.fixture.WaitForGameOutputSince("MOVERATE_TEST_SPAWNED:", mark, TimeSpan.FromSeconds(10)));
+				string spawnLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MOVERATE_TEST_SPAWNED:");
+				uint fastUid = ExtractUidAfter(spawnLine, "fastUid=");
+
+				int previous = 0;
+				int maxSingleStepJump = 0;
+				for (int i = 0; i < 16; i++) {
+					Thread.Sleep(250);
+					int current = this.ReportDisplacement(client, fastUid);
+					int jump = current - previous;
+					if (jump > maxSingleStepJump) {
+						maxSingleStepJump = jump;
+					}
+					previous = current;
+				}
+
+				Assert.True(previous > 0, "Expected the fast NPC to have moved at all over 4 seconds.");
+				Assert.True(maxSingleStepJump <= 1,
+					"Expected no single ~250ms poll-to-poll window to cover more than 1 tile (saw a jump of " +
+					maxSingleStepJump + ") - a bigger jump means it's bursting multiple tile-steps into one " +
+					"tick again instead of ticking more often.");
 			}
 		}
 
