@@ -1,5 +1,41 @@
 # moriaengine — working state
 
+## Remaining converter gaps, batch 1 of 4: Resources (butcher-yield template) SHIPPED (PR #588), 2026-10-22 — #586 closed
+
+Second of the 4-item batch below (BloodColor shipped first, see the next entry down).
+**Session continuity note**: this exact piece of work (#586) was the one in flight when
+a prior session crashed mid-work, uncommitted in a worktree - resumed and shipped
+cleanly on the next session with zero rework needed (build was already clean, the new
+protocol test already passed). Confirms the worktree-based workflow survives a crash
+without losing in-progress work, as long as it gets picked back up before the worktree
+itself is cleaned away.
+
+`NPCDef.ButcherResources` (tag-backed `List<ResourceEntry>`, each `{Defname, Amount}`) +
+a new `Resources = amount defname, amount defname, ...` `.def` field
+(`scripts/Basic/CharClasses/NPC.cs`). Converter: `ConvertedCharDef` gained
+`LineImplTask("resources", PassThroughUnlessPlayerDef)` for the real archive's top-level
+`RESOURCES=` field - same NPCDef-only guard as `bloodcolor`/`aggromode`/`combatspell`.
+**Data-template only, exactly as #586 scoped** - the real mechanic is corpse
+BUTCHERING (knife + `.usehand`/double-click + target), which doesn't exist in this
+engine at all yet; that interaction is tracked separately as #587, not built here.
+
+Verified: a real protocol test (`Tests/Protocol/NpcResourcesTests.cs`, boots a real
+server) creates `npc_test_resources` (`Resources = 50 i_bag, 20 i_dagger_copper`) and
+confirms both entries parse and round-trip correctly; 15/15 across the related NPC-
+template test set (`NpcResourcesTests`/`NpcBloodColorTests`/`NpcStartingEquipmentTests`/
+`GatheringTests`); a scratch converter regen against the real archive showed zero
+changes to tracked `scripts/converted` content, with `c_dragon_v1`'s real
+`RESOURCES=99 i_ribs_raw,28 i_reag_dragon_blood` line converting to
+`RESOURCES = 99 i_ribs_raw,28 i_reag_dragon_blood` exactly. Issue #586 closed
+referencing PR #588.
+
+**Next in this batch**: `moverate` (NPC movement speed - user confirmed build now,
+`moverate=3` is baseline/default, higher=faster, lower=slower), `foodtype` + a **full**
+hunger/feeding/decay system (user explicitly chose the bigger scope over a minimal
+stub) - real, fully-recoverable Sphere mechanics found in `funkce.scp`'s `nakrmho`
+feeding formula and `jezditka.scp`'s mount-hunger decay/dismount-when-starving timer,
+scoped to tamed pets/ridden mounts per the source.
+
 ## Remaining converter gaps, batch 1 of 4: BloodColor SHIPPED (PR #584), 2026-10-21 — #583 closed
 
 Follow-up to #558 (fully closed below): after the full `.def` field survey, 8 fields
