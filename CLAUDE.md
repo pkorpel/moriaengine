@@ -1,5 +1,69 @@
 # moriaengine — working state
 
+## Converter: tag.weapflag → NaturalDamageType — SHIPPED (PR #610), 2026-10-22 — #607 closed
+
+Second half of the resist/weapflag pair (see the #606 entry right below this one for
+the first half + the shared background). `tag.weapflag` is a monster's own NATURAL
+attack damage type (claws/bite/etc, not a worn weapon item) - confirmed 140/140 sampled
+occurrences always live inside a chardef's `on=@Create` body, as pipe-separated
+`dam_*` tokens (e.g. `tag.weapflag=dam_physical|dam_fire`). Real vocabulary:
+`dam_physical`/`dam_blunt`/`dam_slashing`/`dam_sharp`/`dam_piercing`/`dam_magic`/
+`dam_fire`/`dam_cold`/`dam_lightning`/`dam_elect`/`dam_summon` - all map cleanly onto
+the engine's existing `DamageType` [Flags] enum (`Enums.cs`), no new enum values
+needed (`dam_piercing`→`Stabbing`, confirmed by the engine's own code comment
+"formerly piercing, renamed to not confuse with armor-piercing"; `dam_lightning`/
+`dam_elect` are two real spellings for the same `Electric` thing in source).
+
+**Needed real engine work, not just a mapping - same shape as MoveRate/FoodType
+before it.** `CombatCalculator.GetWeaponDamageType(WeaponType)` is a fixed switch
+purely on `WeaponType`, applied unconditionally to every character - every bare-
+handed NPC (no weapon equipped) gets `PhysicalBlunt` regardless of what it actually
+is; there was no field anywhere for an NPC to override this for its own natural
+attack. New `NPCDef.NaturalDamageType` (a `Defs:` field, same mechanism as the
+existing `WeaponType` - `DamageType.Irresistable` as the "unconfigured" sentinel,
+same convention as `WeaponType.Undefined`) overrides `CombatCalculator`'s computed
+`retVal.damageType` right after it's set, gated on `!self.IsPlayerForCombat &&
+(weapon == null)` - only applies to NPCs with no weapon item equipped, so a real
+equipped weapon's own `WeaponType`-derived damage type (e.g. a bow's
+`PhysicalArchery`) always takes priority, matching #600's own "weapon != null"
+gating precedent.
+
+**Real bug found and fixed while verifying against the real archive's own multi-
+flag combos, worth remembering for any future converter field building a `.def`
+value from an enum variable**: the first draft built the output as
+`"DamageType." + combined` where `combined` is the OR'd-together `DamageType`
+value - this relies on `combined.ToString()`, which for a [Flags] value that
+doesn't exactly match one declared NAMED combo (e.g. `Physical|Sharp|Summon` -
+`PhysicalSharp` is a named combo but adding `Summon` breaks the exact match) falls
+back to a bare, NON-type-qualified comma list (`"PhysicalSharp, Summon"`) - a
+different, untested syntax shape from the confirmed-working `"DamageType.X|
+DamageType.Y"` form the engine's `Defs:`/LScript-dotted-expression pipeline
+actually parses (confirmed empirically: a scratch `.def` test file with
+`NaturalDamageType = DamageType.Physical|DamageType.Fire` loaded and resolved to
+exactly `Physical, Fire` with zero parse error - the qualified form is genuinely
+supported, unlike the bare `[Flags]`-field convention used by `CAN=`/`ATTR=`,
+which take a different, more direct `ConvertTools.ConvertTo` code path). Fixed by
+building the output explicitly from the matched flag names
+(`string.Join("|", matchedNames)`, each already `"DamageType."`-prefixed) instead
+of relying on enum `ToString()` at all - confirmed via a full scratch regen that
+every real combo shape in the archive (single/2-flag/3-flag, the 3-flag shape
+being the most common at 32 occurrences: `Physical|Sharp|Summon`) now produces a
+clean, loadable pipe-joined qualified list.
+
+Verified: a real protocol test (`Tests/Protocol/NaturalDamageTypeTests.cs`, boots
+a real server), **red/green confirmed** (reverted the `CombatCalculator.cs`
+override, confirmed the test fails back to `PhysicalBlunt`; restored, confirmed
+green) - covers a 2-flag combo, the real 3-flag shape, and an unconfigured-NPC
+control (exact pre-existing default, zero regression). Fast tier 46/50 (the 4
+known-red `WeaponSkillMappingTests`, unrelated); `NpcResistTests`/
+`NpcBloodColorTests`/`NaturalDamageTypeTests` isolated 3/3. A scratch converter
+regen against the real cloned archive confirmed the mapping fires correctly
+across every real combo shape, zero unexpected diffs elsewhere. Issue #607 closed
+referencing PR #610.
+
+**Both halves of this pair are now complete** - resist (#606, PR #608) and
+weapflag (#607, PR #610). No further work queued in this specific pair.
+
 ## Converter: tag.resist_X damage-resist mapping — SHIPPED (PR #608), 2026-10-22 — #606 closed
 
 User asked to look into two real converter gaps visible via a live monster's `.info`:
