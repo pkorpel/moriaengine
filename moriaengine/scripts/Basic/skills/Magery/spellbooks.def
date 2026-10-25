@@ -76,8 +76,11 @@ this.Contents = 0xff
 [SpellBookDef 0x2253]
 name = "Book of necromancy"
 defname = i_spellbook_necro
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
 FirstSpellId = 101
+//#625 - ported from systems/NecroBook.def's now-dead stub (same defname, lost the
+//class-change collision) - this color was silently missing from the real entry.
+Color = 038d
 
 on=@create
 this.Contents = 0x1FFFF //17 spells
