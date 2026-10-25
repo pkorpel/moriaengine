@@ -65,11 +65,24 @@ trivial single-field placeholder body, costs nothing to drop either way. Verifie
 direct `GameCore.dll` boot (not just `dotnet build`) confirming all 3 error strings gone
 and `Init done.` still reached cleanly.
 
+**#622 (PR #623, closed, 2026-10-25)** - `systems/uniques.def` removed (the second
+whole-file duplicate flagged in #618/#619). User asked to see the full side-by-side
+content comparison first, not just the defname list - confirmed for all 4 weapon/
+equippable entries that the losing copy was strictly BROKEN relative to the winner
+(generic `ItemDef` with zero weapon stats - no `attackVsP/VsM`, no `WeaponType` - where
+the winning `uniques.def` has a real `WeaponDef`/`EquippableDef` with actual combat
+values), not just a redundant identical copy. Confirmed via direct `GameCore.dll` boot
+that none of the 6 defnames (`i_sword_dancing`/`i_dancing_sword_memory`/`c_sword_dancing`/
+`i_Deguarianova_roba`/`i_sword_blood`/`i_krvavy_mec` - Targolan's dancing sword, Ragnarog,
+Deguarian's robe, all real quest/artifact content) throw a collision error anymore, and
+that the real functional versions (already the winning side pre-removal) are unaffected.
+
 **Still open / not yet decided**: whether to comment out the 83 confirmed #618 stub
-entries (same treatment as #615's own fix) and whether to remove `systems/uniques.def` -
-both pending explicit user go-ahead, not actioned unilaterally. #616 (ArmorEffectTests)
-untouched. The 4 unexplained #618 collisions need a live boot-time trace, not more
-static grepping.
+entries (same treatment as #615's own fix) - pending explicit user go-ahead, not actioned
+unilaterally. #616 (ArmorEffectTests) untouched. The 4 unexplained #618 collisions
+(`item_tinker.def:33`/`itemb2.def:1395`/`specabilities-items.def:15`/`regbox.def:3,26`)
+need a live boot-time trace, not more static grepping. Both whole-file duplicates
+(`guards_old.def` via #619, `systems/uniques.def` via #622) are now resolved.
 
 ## Converter: tag.weapflag → NaturalDamageType — SHIPPED (PR #610), 2026-10-22 — #607 closed
 
