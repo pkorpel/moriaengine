@@ -1,5 +1,76 @@
 # moriaengine — working state
 
+## Full content merge (#612) + collision cleanup — ongoing, 2026-10-22 through 2026-10-25
+
+**CLAUDE.md gap note**: this section backfills work that happened across a session that
+crashed mid-stream without updating this file - #612/#615/#616/#618 landed without a
+CLAUDE.md entry until this pass. Read this section first if picking up collision/boot-
+log cleanup work; #618's own GitHub comments have more granular detail than fits here.
+
+**#612 (PR #614, merged)**: full content merge - brought in every new chardef/itemdef/
+template from the Erebor archive, not just the 101 files already tracked (452 files
+total). Pure content merge, no engine code.
+
+**#615 (PR #617, closed)**: the merge introduced 3 live-combat-crashing hex-id
+collisions (`tim/avatarveci.def` vs `itemb7.def`'s real `i_deathshroud`/`i_robe_gm`
+WearableDefs - the `i_robe_gm` one is what broke a live `c_drapac` vs `c_titan` fight
+the user hit directly, `CombatSettings`'s static ctor threw `FormatException` on
+`'i_robe_gm' was not in a correct format"`). Root cause (same mechanism documented
+below for #618): `ThingDef.ParseDefnames` keys any numeric `[ClassDef 0xHEX]` header by
+item/char *family*, not exact class - two different files/classes reusing the same raw
+hex fight over one slot, loser's entire block (DEFNAME included) is silently dropped
+(`AbstractDef.cs`, `"You can not change the class of a Def while resync... Ignoring"`).
+Confirmed via direct code reading (not guessed) this is inherent to the archive content
+itself, not a converter bug - `SphereShardConverter` translates each file independently
+with zero cross-file awareness.
+
+**#616 (open, NOT fixed)** - `ArmorEffectTests` fails on `Color = { colors_white 9
+color_gray_lt 1 }`-style weighted-brace-list syntax when resolved at runtime
+(`c_sheep_woolly` dummy). Likely pre-existing/unrelated to #612 (byte-identical line
+pre/post-merge, same brace-list parse limitation already seen elsewhere as a non-fatal
+warning), not fully proven. Deferred - fix #615 first, file separately, don't block
+shipping on it (this was the user's explicit instruction at the time).
+
+**#618 (open)** - the "pre-existing" bucket: hand-authored `scripts/Basic/`/
+`scripts/Optional/` systems (which load first and win) vs. generic auto-converted
+archive stubs at the same hex/defname (which load second and silently lose). Re-counted
+precisely from a real local boot log the user shared - **83 confirmed with a located
+winner** (64 `itemb6.def` vs `scrolls.def`, 9 `itemb3.def` vs `spellbooks.def`, 4
+`item_potions.def` vs `poisonPotions.def`, 2 `vendors.def` vs `playerVendor.scp`, 1 each
+`magie_custom.def`/`NecroBook.def`/`poklady.def`/`zbrane/others.def` vs their respective
+hand-authored winners), plus a second whole-file duplicate (`systems/uniques.def` vs the
+top-level `uniques.def`, same shape as `guards_old.def` below) **flagged but not yet
+removed** (not explicitly named by the user, unlike `guards_old.def`), plus **4 still
+unexplained** (`item_tinker.def:33`/`itemb2.def:1395`/`specabilities-items.def:15`/
+`regbox.def:3,26` - no textual collision partner found via grep, needs a live boot-time
+check instead). Nothing in this bucket has been removed/commented-out yet except via
+#619 below - the user wants to see the full list before deciding what to simply delete.
+
+**#619 (PR #620, closed, 2026-10-25)** - triaged the user's own real local boot-log dump
+(deduplicated via `sort -u`) end to end before touching anything. Confirmed NOT bugs:
+the hundreds of `'e_monster'/'e_character' is not a valid TriggerGroup` warnings (already
+documented further down this file, under "SphereShardConverter revival" - these are
+legacy Sphere AI-hook names this engine deliberately never built, replaced by
+`NPCAiTimer`; converter correctly passes `TEVENTS=` through as-is). Fixed 3 real,
+isolated bugs: removed `chars/guards_old.def` (a complete stale duplicate of
+`guards.def` - both defined the same ~70 `c_vguard_*` defnames, confirmed via direct
+header diff, zero references anywhere); fixed a literal typo in `zbrane/ammo.def`'s
+`RESOURCES` lines (`i_arrow_iron]` → `i_arrow_iron`, a stray `]` character - confirmed
+NOT a converter bug, `HandleResourcesList` is a plain comma-split pass-through that
+doesn't synthesize brackets, so this is archive-authored); dropped a malformed 9-hex-
+digit header in `events.def` (`0A2000EB0`) that overflowed `ConvertTools.TryParseInt32`'s
+32-bit path (`Convert.ToInt32(uint)` throwing `OverflowException`) - root cause (mangled
+archive id vs. converter artifact) not confirmed, would need the raw archive source;
+trivial single-field placeholder body, costs nothing to drop either way. Verified via a
+direct `GameCore.dll` boot (not just `dotnet build`) confirming all 3 error strings gone
+and `Init done.` still reached cleanly.
+
+**Still open / not yet decided**: whether to comment out the 83 confirmed #618 stub
+entries (same treatment as #615's own fix) and whether to remove `systems/uniques.def` -
+both pending explicit user go-ahead, not actioned unilaterally. #616 (ArmorEffectTests)
+untouched. The 4 unexplained #618 collisions need a live boot-time trace, not more
+static grepping.
+
 ## Converter: tag.weapflag → NaturalDamageType — SHIPPED (PR #610), 2026-10-22 — #607 closed
 
 Second half of the resist/weapflag pair (see the #606 entry right below this one for
