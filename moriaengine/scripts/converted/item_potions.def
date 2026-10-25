@@ -219,41 +219,44 @@ model = i_bottle_empty
 Color = 02c9
 PoisonType = p_poison_feeblemind
 
-[PotionDef i_potion_PoisonLess]
-NAME = "Lesser Poison"
-TYPE = T_POTION
-RESOURCES = 2 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
-SKILLMAKE = 300 alchemy //some resources were fixed by converter 
-EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
-model = i_bottle_empty
-Color = 0b0
+//#628 - 4 dead stub poison-potion entries, confirmed superseded by the real
+//PoisonPotionDef entries in scripts/Basic/skills/Poisoning/poisonPotions.def (#618,
+//#625 checked all 4 for data missing from the winner - none found).
+//[PotionDef i_potion_PoisonLess]
+//NAME = "Lesser Poison"
+//TYPE = T_POTION
+//RESOURCES = 2 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+//SKILLMAKE = 300 alchemy //some resources were fixed by converter 
+//EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+//model = i_bottle_empty
+//Color = 0b0
 
-[PotionDef i_potion_Poison]
-NAME = "Poison"
-TYPE = T_POTION
-RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
-SKILLMAKE = 400 alchemy //some resources were fixed by converter 
-EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
-model = i_bottle_empty
-Color = 0b2
+//[PotionDef i_potion_Poison]
+//NAME = "Poison"
+//TYPE = T_POTION
+//RESOURCES = 4 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+//SKILLMAKE = 400 alchemy //some resources were fixed by converter 
+//EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+//model = i_bottle_empty
+//Color = 0b2
 
-[PotionDef i_potion_PoisonGreat]
-NAME = "Greater Poison"
-TYPE = T_POTION
-RESOURCES = 7 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
-SKILLMAKE = 700 alchemy //some resources were fixed by converter 
-EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
-model = i_bottle_empty
-Color = 0179
+//[PotionDef i_potion_PoisonGreat]
+//NAME = "Greater Poison"
+//TYPE = T_POTION
+//RESOURCES = 7 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+//SKILLMAKE = 700 alchemy //some resources were fixed by converter 
+//EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+//model = i_bottle_empty
+//Color = 0179
 
-[PotionDef i_potion_PoisonDeadly]
-NAME = "Deadly Poison"
-TYPE = T_POTION
-RESOURCES = 13 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
-SKILLMAKE = 999 alchemy //some resources were fixed by converter 
-EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
-model = i_bottle_empty
-Color = 0593
+//[PotionDef i_potion_PoisonDeadly]
+//NAME = "Deadly Poison"
+//TYPE = T_POTION
+//RESOURCES = 13 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by converter 
+//SKILLMAKE = 999 alchemy //some resources were fixed by converter 
+//EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
+//model = i_bottle_empty
+//Color = 0593
 
 [PotionDef i_potion_RefreshLess]
 NAME = "Lesser Refresh"

@@ -278,18 +278,23 @@ DEFNAME = i_kindling
 [ItemDef 0xde2]
 DUPEITEM = i_kindling
 
-[EquippableDef 0xf64]
-CATEGORY = Decoration - Lightsources
-SUBSECTION = Torches
-DESCRIPTION = Torch (Unlit)
+//#628 - dead stub torch EquippableDef (hex 0xf64), confirmed superseded by the real
+//ShiningItemDef entry in scripts/Basic/ItemClasses/ShiningItem/ShiningItem.def
+//(#618, #625 checked for data missing from the winner - none found). NOT touching
+//the separate 0xf6b DUPEITEM entry right after this block - that's a different,
+//unrelated same-class collision outside #618's 83-entry scope.
+//[EquippableDef 0xf64]
+//CATEGORY = Decoration - Lightsources
+//SUBSECTION = Torches
+//DESCRIPTION = Torch (Unlit)
 
-TYPE = T_LIGHT_OUT
-//DUPELIST = 0f6b // commented out by Converter 
-WEIGHT = 10
-RESOURCES = 1 i_log
-//TDATA3 = i_torch_lit // commented out by Converter 
-layer = 2 //Set by Converter 
-DEFNAME = i_torch
+//TYPE = T_LIGHT_OUT
+////DUPELIST = 0f6b // commented out by Converter 
+//WEIGHT = 10
+//RESOURCES = 1 i_log
+////TDATA3 = i_torch_lit // commented out by Converter 
+//layer = 2 //Set by Converter 
+//DEFNAME = i_torch
 
 [ItemDef 0xf6b]
 DUPEITEM = i_torch

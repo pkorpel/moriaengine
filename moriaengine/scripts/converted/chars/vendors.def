@@ -38,43 +38,49 @@ armorVsP = 0
 armorVsM = 0
 Color = colors_skin
 
-[NPCDef c_h_vendor_f]
-CATEGORY = Civilized
-SUBSECTION = Tradesmen
-DESCRIPTION = Vendor female
+//#628 - 2 dead stub player-vendor NPCDef entries, confirmed superseded by the real
+//PlayerVendorDef entries in scripts/Optional/PlayerVendor/playerVendor.scp (#618,
+//#625 - the Str/Dex/Int/AggroMode/Color/Provocation fields were ported forward into
+//the winner before this removal, see playerVendor.scp; the can=/tevents=/tspeech=
+//fields here were confirmed either dead-by-design or aliased on the winner's side,
+//no further porting needed).
+//[NPCDef c_h_vendor_f]
+//CATEGORY = Civilized
+//SUBSECTION = Tradesmen
+//DESCRIPTION = Vendor female
 
-tevents = e_vendor_custom
-TEVENTS = e_monster
-TSPEECH = spk_vendor_custom
-NAME = "Vendor"
-model = c_woman
-can = MT_NONMOVER|MT_EQUIP|MT_FEMALE
-//maxfood = 04fff // commented out by Converter 
-Provocation = 10
-Color = colors_skin
-Str = 100
-Dex = 0
-Int = 100
-AggroMode = Calm
+//tevents = e_vendor_custom
+//TEVENTS = e_monster
+//TSPEECH = spk_vendor_custom
+//NAME = "Vendor"
+//model = c_woman
+//can = MT_NONMOVER|MT_EQUIP|MT_FEMALE
+////maxfood = 04fff // commented out by Converter 
+//Provocation = 10
+//Color = colors_skin
+//Str = 100
+//Dex = 0
+//Int = 100
+//AggroMode = Calm
 
-[NPCDef c_h_vendor]
-CATEGORY = Civilized
-SUBSECTION = Tradesmen
-DESCRIPTION = Vendor
+//[NPCDef c_h_vendor]
+//CATEGORY = Civilized
+//SUBSECTION = Tradesmen
+//DESCRIPTION = Vendor
 
-tevents = e_vendor_custom
-TEVENTS = e_monster
-TSPEECH = spk_vendor_custom
-NAME = "Vendor"
-model = c_man
-can = MT_NONMOVER|MT_EQUIP|MT_MALE
-//maxfood = 04fff // commented out by Converter 
-Provocation = 10
-Color = colors_skin
-Str = 100
-Dex = 0
-Int = 100
-AggroMode = Calm
+//tevents = e_vendor_custom
+//TEVENTS = e_monster
+//TSPEECH = spk_vendor_custom
+//NAME = "Vendor"
+//model = c_man
+//can = MT_NONMOVER|MT_EQUIP|MT_MALE
+////maxfood = 04fff // commented out by Converter 
+//Provocation = 10
+//Color = colors_skin
+//Str = 100
+//Dex = 0
+//Int = 100
+//AggroMode = Calm
 
 [NPCDef 0x192]
 CATEGORY = Vendori

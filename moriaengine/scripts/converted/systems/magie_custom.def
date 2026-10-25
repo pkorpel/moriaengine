@@ -227,11 +227,15 @@ model = i_rune_summon_creature
 
 //[function nastaveni_elixir] //(commented out by Converter) 
 
-[ItemDef i_moongate_blue_realm]
-TYPE = t_telepad2
-model = i_moongate_blue
+//#628 - dead stub moongate ItemDef, confirmed superseded by the real
+//SpellEffectItemDef entry in
+//scripts/Basic/skills/Magery/Spells/TeleportingSpells/teleportingSpells.def (#618,
+//#625 checked for data missing from the winner - none found).
+//[ItemDef i_moongate_blue_realm]
+//TYPE = t_telepad2
+//model = i_moongate_blue
 
-//[function switchmagic] //(commented out by Converter) 
+////[function switchmagic] //(commented out by Converter) 
 
 [Constants dispel_spells]
 dispel_spells_amount 17
