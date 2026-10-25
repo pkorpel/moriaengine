@@ -1392,17 +1392,6 @@ DEFNAME = i_wood_board
 [ItemDef 0x98b]
 DUPEITEM = i_curtain_2
 
-//#618 - dead stub ContainerDef (hex 0x9b2), confirmed superseded by the real
-//BankBoxDef entry in scripts/Basic/ItemClasses/Bank/bankBox.def (registered as
-//'i_bankBox' - mixed-case, matches case-insensitively, a second originally-
-//unexplained #618 collision resolved the same way as item_tinker.def above).
-//[ContainerDef 0x9b2]
-//NAME = "Bank Box"
-//TYPE = T_EQ_BANK_BOX
-//layer = layer_bankbox
-////TDATA2 = 04a // commented out by Converter 
-//DEFNAME = i_bankbox
-
 [EquippableDef 0x9fd]
 CATEGORY = Decoration - Lightsources
 SUBSECTION = Torches
