@@ -137,17 +137,27 @@ cluster touched so far; not a hardcoded guarantee, re-verify per file.
   engine-parsing fix was needed, the field was never actually broken, just resolved too
   early as a side effect of a collision that shouldn't exist.
 
+- **All 4 originally-"unexplained" #618 collisions - FOUND and FIXED, both sides**
+  (moriaengine PR #635 merged `b00e1de`; archive PR #5 merged `ec65ed2`). Turned out to be
+  the exact same #618 pattern as everything else, just missed by the original narrow grep
+  for two reasons: the winner sometimes lives in an unexpected directory
+  (`scripts/Optional/StorageBoxes/storageBoxes.def`'s `RegBoxDef`/`GemBoxDef`/
+  `PotionKegDef`, or `scripts/Basic/AbilitiesAndTalents/Abilities/Throwing/throwing.scp`'s
+  `ColoredProjectileDef`), or a case-sensitivity mismatch (`i_bankBox`, mixed case, vs a
+  lowercase grep for `i_bankbox`). **Root-caused with a reusable technique, not more
+  guessing**: added a temporary one-line diagnostic directly inside `AbstractDef.cs`'s
+  actual collision-detection code (printed the colliding winner's own type/defname at the
+  exact moment of the "class change" throw), built, booted once, got the definitive answer
+  for all 5 entries (regbox.def has 2) in one pass, then fully reverted the diagnostic
+  (confirmed via `git diff` showing zero changes) before shipping anything - EreborNext
+  wasn't actually needed for this specific investigation, a real local boot with a
+  targeted diagnostic was more direct. **All of #618's originally-tracked collisions are
+  now resolved on BOTH sides**: the 83 confirmed stub entries, the 2 newly-found clusters
+  (NecroBook's tm_reagbag, item_potions.def's 9 potions), and these 4 (5 entries) - nothing
+  outstanding in the #618 bucket itself anymore.
+
 ### Not yet started
 
-- **The 4 still-unexplained #618 collisions** (`item_tinker.def:33`/`itemb2.def:1395`/
-  `specabilities-items.def:15`/`regbox.def:3,26`) - plan is to use `EreborNext` plus a
-  live boot-time trace to finally root-cause these, now that a real C# reference
-  implementation is available (wasn't, for any prior attempt at these 4). **Given the
-  `item_potions.def` finding above, re-check first whether any of these 4 are ALSO
-  secondary symptoms of a plain #618-style duplicate** (a confusing crash/message masking
-  a simple "entry X collides with winner Y") before assuming they need a deep engine-level
-  investigation - that pattern just repeated twice in one pass (NecroBook's tm_reagbag,
-  item_potions.def's 9 potions), worth checking as the FIRST hypothesis each time now.
 - Building the actual regenerate-and-diff pipeline: point `SphereShardConverter` at the
   fixed fork (replacing the ad-hoc gitignored `convert/` manual-clone step) via
   `MORIA_CONVERTER_OUTPUT_DIR` pointed at a scratch dir, regenerate `scripts/converted/`,
@@ -276,11 +286,13 @@ already-known gap) - ported all 8 forward before commenting out. Verified via a 
 untouched: the separate `0xf6b` same-class duplicate in `zbrane/others.def` right after
 the `0xf64` block - a different collision class outside #618's 83-entry scope.
 
-**Still open**: #616 (ArmorEffectTests) untouched. The 4 unexplained #618 collisions
-(`item_tinker.def:33`/`itemb2.def:1395`/`specabilities-items.def:15`/`regbox.def:3,26`)
-need a live boot-time trace, not more static grepping - #618 itself stays open for
-these. Both whole-file duplicates (`guards_old.def` via #619, `systems/uniques.def` via
-#622) and all 83 stub entries (#628) are now resolved.
+**Still open**: #616 (ArmorEffectTests) untouched. **#618 itself is now fully resolved** -
+both whole-file duplicates (`guards_old.def` via #619, `systems/uniques.def` via #622),
+all 83 stub entries (#628), the 2 newly-found clusters (NecroBook's tm_reagbag,
+item_potions.def's 9 potions), and the 4 originally-unexplained collisions (5 entries,
+root-caused via a temporary `AbstractDef.cs` diagnostic - see the architecture section at
+the top of this file) are all fixed on both the moriaengine-output side and the
+archive-source fork side.
 
 ## Converter: tag.weapflag → NaturalDamageType — SHIPPED (PR #610), 2026-10-22 — #607 closed
 
