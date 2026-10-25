@@ -5,10 +5,19 @@ DESCRIPTION = Vendor female
 
 NAME = "Vendor"
 model = c_woman
-//can = MT_NONMOVER|MT_EQUIP|MT_FEMALE // commented out by Converter 
-//maxfood = 04fff // commented out by Converter 
-//tevents = e_vendor_custom // commented out by Converter 
+//can = MT_NONMOVER|MT_EQUIP|MT_FEMALE // commented out by Converter
+//maxfood = 04fff // commented out by Converter
+//tevents = e_vendor_custom // commented out by Converter
 EVENTS = spk_vendor_custom
+//#625 - ported from chars/vendors.def's now-dead NPCDef stub (same defname, lost the
+//class-change collision, its block never loaded at all) - these 6 fields were silently
+//missing from the real PlayerVendorDef entry.
+Provocation = 10
+Color = colors_skin
+Str = 100
+Dex = 0
+Int = 100
+AggroMode = Calm
 
 [PlayerVendorDef c_h_vendor]
 CATEGORY = Civilized
@@ -17,10 +26,17 @@ DESCRIPTION = Vendor
 
 NAME = "Vendor"
 model = c_man
-//can = MT_NONMOVER|MT_EQUIP|MT_MALE // commented out by Converter 
-//maxfood = 04fff // commented out by Converter 
-//tevents = e_vendor_custom // commented out by Converter 
+//can = MT_NONMOVER|MT_EQUIP|MT_MALE // commented out by Converter
+//maxfood = 04fff // commented out by Converter
+//tevents = e_vendor_custom // commented out by Converter
 EVENTS = spk_vendor_custom
+//#625 - same port as c_h_vendor_f above.
+Provocation = 10
+Color = colors_skin
+Str = 100
+Dex = 0
+Int = 100
+AggroMode = Calm
 
 [SPEECH spk_vendor_custom]
 ON=*stock* 
