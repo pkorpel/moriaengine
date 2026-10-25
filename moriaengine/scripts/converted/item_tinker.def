@@ -30,19 +30,24 @@ SKILLMAKE = 990 tinkering, 1 t_tinker_tools //some resources were fixed by conve
 model = i_rune_marker //i_rune_marker 
 //VALUE = {16 20} // commented out by Converter 
 
-[EquippableDef i_keg_potion]
-CATEGORY = Unique Items
-SUBSECTION = Tinker
-DESCRIPTION = empty potion Keg
+//#618 - dead stub EquippableDef, confirmed superseded by the real PotionKegDef
+//entry in scripts/Optional/StorageBoxes/storageBoxes.def - one of the 4
+//originally-unexplained #618 collisions, found via a temporary diagnostic in
+//AbstractDef.cs (reverted, not shipped) that printed the colliding winner's
+//own class/defname at the moment of the 'class change' error.
+//[EquippableDef i_keg_potion]
+//CATEGORY = Unique Items
+//SUBSECTION = Tinker
+//DESCRIPTION = empty potion Keg
 
-NAME = "potion keg"
-TYPE = t_keg_potion
-WEIGHT = 400
-RESOURCES = 8 i_board, 1 i_barrel_tap, 1 i_barrel_hoops
-SKILLMAKE = 650 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
-model = i_KEG_WOOD
-layer = 0 //Set by Converter 
-//VALUE = {200 300} // commented out by Converter 
+//NAME = "potion keg"
+//TYPE = t_keg_potion
+//WEIGHT = 400
+//RESOURCES = 8 i_board, 1 i_barrel_tap, 1 i_barrel_hoops
+//SKILLMAKE = 650 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+//model = i_KEG_WOOD
+//layer = 0 //Set by Converter 
+////VALUE = {200 300} // commented out by Converter 
 
 [ItemDef 0x995]
 CATEGORY = Items by Professions

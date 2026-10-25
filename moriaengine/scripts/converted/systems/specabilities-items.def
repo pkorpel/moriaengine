@@ -12,23 +12,30 @@ Color = 0480
 
 //[Dialog d_hypnotizerBall button] //(commented out by Converter) 
 
-[WeaponDef i_kudla]
-CATEGORY = Provisions - Weapons - Special
-SUBSECTION = iron
-DESCRIPTION = Vrhaci nuz
+//#618 - dead stub WeaponDef, confirmed superseded by the real ColoredProjectileDef
+//entry in scripts/Basic/AbilitiesAndTalents/Abilities/Throwing/throwing.scp - a
+//third originally-unexplained #618 collision. The loser's weapon combat stats
+//(attackVsP/VsM etc) are confirmed irrelevant dead data: ColoredProjectileDef has
+//no such fields at all, and the real Throwing ability (ThrowingAbilityDef) has
+//zero damage-dealing logic - i_kudla is thrown for its poisoning/immunity effect,
+//never for weapon damage, confirmed by direct code reading.
+//[WeaponDef i_kudla]
+//CATEGORY = Provisions - Weapons - Special
+//SUBSECTION = iron
+//DESCRIPTION = Vrhaci nuz
 
-NAME = "vrhaci nuz"
-RESOURCES = 2 i_ingot_iron
-SKILLMAKE = 650 blacksmithing, 450 tinkering //some resources were fixed by converter 
-model = i_dagger
-Layer = 1 //guessed from base def by Converter 
-type = t_weapon_fence //guessed from base def by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
-attackVsP = 3
-attackVsM = 3
-piercing = 100 //default value set by Converter 
-speed = 100 //default value set by Converter 
-range = 1 //default value set by Converter 
-strikeStartRange = 5 //default value set by Converter 
-strikeStopRange = 10 //default value set by Converter 
+//NAME = "vrhaci nuz"
+//RESOURCES = 2 i_ingot_iron
+//SKILLMAKE = 650 blacksmithing, 450 tinkering //some resources were fixed by converter 
+//model = i_dagger
+//Layer = 1 //guessed from base def by Converter 
+//type = t_weapon_fence //guessed from base def by Converter 
+//WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+//WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+//attackVsP = 3
+//attackVsM = 3
+//piercing = 100 //default value set by Converter 
+//speed = 100 //default value set by Converter 
+//range = 1 //default value set by Converter 
+//strikeStartRange = 5 //default value set by Converter 
+//strikeStopRange = 10 //default value set by Converter 
