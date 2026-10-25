@@ -1267,11 +1267,19 @@ name = "xbow n pack"
 [ItemDef 0x8ac]
 name = "war bow n pack"
 
-[ItemDef 0x204e]
-name = "tattered robe"
+//#615 - commented out: this ItemDef collides with itemb7.def's real [WearableDef 0x204e]
+//(DEFNAME = i_deathshroud). ThingDef.ParseDefnames keys numeric headers by item-family,
+//not by exact class, so these two fought over the same slot - whichever loaded first won
+//outright and the other's whole block (including the loser's own DEFNAME) was silently
+//dropped. i_deathshroud is the real, feature-bearing item; this bare one-line rename is not.
+//[ItemDef 0x204e]
+//name = "tattered robe"
 
-[ItemDef 0x204f]
-name = "gold robe"
+//#615 - same collision, against itemb7.def's real [WearableDef 0x204f] (DEFNAME = i_robe_gm,
+//"GM Robe") - this is the exact collision that broke CombatSettings's static ctor at runtime
+//(AbstractScript.GetByDefname("i_robe_gm") returned null) and crashed live NPC combat.
+//[ItemDef 0x204f]
+//name = "gold robe"
 
 [ItemDef 0x8fe]
 name = "bone tunic"
