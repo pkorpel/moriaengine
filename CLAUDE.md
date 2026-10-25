@@ -77,12 +77,27 @@ that none of the 6 defnames (`i_sword_dancing`/`i_dancing_sword_memory`/`c_sword
 Deguarian's robe, all real quest/artifact content) throw a collision error anymore, and
 that the real functional versions (already the winning side pre-removal) are unaffected.
 
+**#625 (PR #626, closed, 2026-10-25)** - before trusting any of the 83 confirmed #618
+stubs as pure dead duplicates, checked whether any held data genuinely missing from
+their real winner (the class-change rejection drops the loser's whole block, no field-
+level merge happens). 6 of 8 clusters confirmed safe (winner is a strict superset, or
+the loser's own description literally says "don't use"). 2 were not: `chars/vendors.def`'s
+dead `c_h_vendor`/`c_h_vendor_f` NPCDef stub set `Str=100`/`Dex=0`/`Int=100`/
+`AggroMode=Calm`/`Color=colors_skin`/`Provocation=10` - real inherited fields
+(`PlayerVendorDef : NPCDef`) the winning `playerVendor.scp` entries never set, so live
+player vendors were running on NPCDef's bare defaults; `systems/NecroBook.def`'s dead
+`i_spellbook_necro` stub set `Color = 038d`, missing from the real `spellbooks.def`
+entry (cosmetic only). Both ported forward into the real winners. Verified via a direct
+`GameCore.dll` boot - zero new errors around either file's load window.
+
 **Still open / not yet decided**: whether to comment out the 83 confirmed #618 stub
 entries (same treatment as #615's own fix) - pending explicit user go-ahead, not actioned
-unilaterally. #616 (ArmorEffectTests) untouched. The 4 unexplained #618 collisions
-(`item_tinker.def:33`/`itemb2.def:1395`/`specabilities-items.def:15`/`regbox.def:3,26`)
-need a live boot-time trace, not more static grepping. Both whole-file duplicates
-(`guards_old.def` via #619, `systems/uniques.def` via #622) are now resolved.
+unilaterally. All 83 have now been checked for data missing from their winner (#625) -
+safe to remove wholesale once approved, no further per-entry data-loss risk. #616
+(ArmorEffectTests) untouched. The 4 unexplained #618 collisions (`item_tinker.def:33`/
+`itemb2.def:1395`/`specabilities-items.def:15`/`regbox.def:3,26`) need a live boot-time
+trace, not more static grepping. Both whole-file duplicates (`guards_old.def` via #619,
+`systems/uniques.def` via #622) are now resolved.
 
 ## Converter: tag.weapflag → NaturalDamageType — SHIPPED (PR #610), 2026-10-22 — #607 closed
 
