@@ -93,43 +93,61 @@ cluster touched so far; not a hardcoded guarantee, re-verify per file.
   with the converter's own "functions/events aren't converted" limitation) - so this is
   currently inert either way, not urgent, but worth fixing properly rather than papering
   over.
-- **#622's `systems/uniques.scp` fix PORTED to the fork** (branch `622-remove-systems-
-  uniques-dupe` → PR #1 → merged, squash commit `7296dba`). Confirmed at the source level
-  too (not just in moriaengine's conversion) that this is a genuinely-inferior duplicate,
-  not byte-identical: e.g. `i_sword_dancing`'s two copies differ in `DAM=32`+real combat
-  dblclick-summon trigger logic (top-level `uniques.scp`, the winner) vs `DAM=70`+
-  crafting `RESOURCES`/`SKILLMAKE` fields with no functional combat identity (`systems/
-  uniques.scp`, now removed).
-- **Archive-source locations for #628's 83-entry stub bucket - partially located, NOT
-  yet removed.** Exact `[ITEMDEF ...]` line ranges confirmed via `grep --binary-files=text`
-  for 3 of 8 clusters so far: `scripts/sphereitemb6.scp` lines 2474-3483 (64 scroll
-  entries, `01f2d`-`01f6c`), `scripts/sphereitemb3.scp` lines 632-758 (`0efa` +
-  `i_spellbook_1`-`8`, next real entry `i_spellbook_pvp` at 759), `scripts/zbrane/
-  others.scp` lines 297-310 (`0f64` only - NOT touching the adjacent `0f6b` entry at line
-  311, confirmed separately out of #618's 83-entry scope, same as the moriaengine-side
-  decision). Still need to locate+confirm exact boundaries for the other 5 clusters
-  (`scripts/sphereitem_potions.scp` 4 potions, `scripts/chars/vendors.scp` 2 vendors,
-  `scripts/systems/magie_custom.scp` 1 moongate, `scripts/systems/NecroBook.scp` 1
-  `i_spellbook_necro`, `scripts/systems/poklady.scp` 1 treasure chest) before deleting -
-  rough header line numbers already found (`item_potions.scp` block starts ~483/502/521/
-  540, `vendors.scp` 83/113, `magie_custom.scp` 701, `NecroBook.scp` 13, `poklady.scp`
-  446) but exact end-of-block boundaries not yet confirmed the way the first 3 were.
-- **2 new findings from the #618/#625/#628 follow-up, not yet root-caused**:
-  `systems/NecroBook.scp` ALSO independently defines `tm_reagbag` (line 456, a
-  `[TEMPLATE tm_reagbag]`) that collides with another definition elsewhere - need to find
-  the other source and decide which wins. `item_potions.def`'s "input string
-  'i_bottle_empty' was not in a correct format" error (9 occurrences, lines 92-212, all
-  BEFORE the already-commented 222-257 potion-duplicate block so unrelated to that fix) -
-  not yet investigated at all, likely an `EmptyFlask=`/`model=` field type-coercion bug,
-  plan was to check `EreborNext`'s real field semantics before deciding whether it's an
-  archive bug or an engine-side gap.
+- **#622's `systems/uniques.scp` fix PORTED to the fork** (PR #1, merged, squash commit
+  `7296dba`). Confirmed at the source level too (not just in moriaengine's conversion)
+  that this is a genuinely-inferior duplicate, not byte-identical: e.g. `i_sword_dancing`'s
+  two copies differ in `DAM=32`+real combat dblclick-summon trigger logic (top-level
+  `uniques.scp`, the winner) vs `DAM=70`+crafting `RESOURCES`/`SKILLMAKE` fields with no
+  functional combat identity (`systems/uniques.scp`, now removed).
+- **All 83 of #628's stub entries removed from the fork** (PR #2, merged, squash commit
+  `b44f9ad`). All 8 clusters' exact `[ITEMDEF ...]` boundaries located via a reliable
+  header-parsing Python script (`find_block.py` in the scratchpad - manual `sed`/`grep`
+  line-counting on this archive is NOT trustworthy, see the CRLF/encoding gotchas above),
+  every adjacent real entry confirmed to survive via the same tool after deletion. Same
+  `0f6b`-stays-untouched exception as the moriaengine-side fix.
+- **`systems/NecroBook.scp`'s `tm_reagbag` TemplateDef duplicate - FOUND and FIXED, both
+  sides** (archive PR #3 merged `34dcef7`; moriaengine PR #632 merged `6364326`). Turned
+  out to be an 84th instance of the exact same #618 pattern, not a separate bug - the
+  archive's own copy collides with moriaengine's hand-authored `scripts/Basic/skills/
+  Magery/spellbooks.def`. The only field difference (`CONTAINER=i_bag`) is a genuine
+  **converter bug** (the raw archive source DOES have this field; `ConvertedTemplateDef`
+  just drops it) but since the hand-authored winner already has it correctly, nothing
+  needed porting - just removed the duplicate, both at the source and in moriaengine's
+  `scripts/converted/systems/NecroBook.def`. This converter-capability gap (CONTAINER= not
+  supported for TEMPLATE blocks) is NOT itself fixed - flagged in case another TemplateDef
+  ever needs it.
+- **`item_potions.def`'s "i_bottle_empty not in correct format" error - ROOT-CAUSED and
+  FIXED, both sides** (archive PR #4 merged `f28d337`; moriaengine PR #633 merged
+  `49d6158`). **Not a parse bug at all** - 9 MORE `item_potions.def` entries
+  (`i_potion_CureLess`/`Cure`/`CureGreat`, `i_potion_Poison_para`/`fizz`/`stamina`/
+  `weaken`/`clumsy`/`feeblemind`) collide with the real winners in `scripts/Basic/skills/
+  Poisoning/poisonPotions.def` - same #618 pattern, just never counted in the original
+  83 because the symptom looked nothing like "defined multiple times". **Real mechanism,
+  worth remembering for any future mysterious parse-exception during a content-collision
+  investigation**: `ThingDef.ToString()` (called to build the "X defined multiple times"
+  error message) reads `model.CurrentValue`, which EAGERLY triggers
+  `FieldValue.ResolveTemporaryState()` for the winner's own `model = i_bottle_empty` field
+  (a real, working, intentional "mirror this other item's model" self-reference
+  convention, confirmed via `ModelValueImpl.Value`'s setter checking `value as ThingDef`
+  first) - if the referenced item (`i_bottle_empty`, defined in `item_tinker.def`) hasn't
+  loaded yet at that specific moment (load-order dependent), the resolution falls through
+  to `ConvertTools.ToInt32(string)`, which throws a plain .NET `FormatException` with
+  *that* confusing message instead of ever reaching the real "defined multiple times"
+  line. **Removing the duplicate removes the trigger entirely** - no model-field or
+  engine-parsing fix was needed, the field was never actually broken, just resolved too
+  early as a side effect of a collision that shouldn't exist.
 
 ### Not yet started
 
-- The 4 still-unexplained #618 collisions (`item_tinker.def:33`/`itemb2.def:1395`/
+- **The 4 still-unexplained #618 collisions** (`item_tinker.def:33`/`itemb2.def:1395`/
   `specabilities-items.def:15`/`regbox.def:3,26`) - plan is to use `EreborNext` plus a
   live boot-time trace to finally root-cause these, now that a real C# reference
-  implementation is available (wasn't, for any prior attempt at these 4).
+  implementation is available (wasn't, for any prior attempt at these 4). **Given the
+  `item_potions.def` finding above, re-check first whether any of these 4 are ALSO
+  secondary symptoms of a plain #618-style duplicate** (a confusing crash/message masking
+  a simple "entry X collides with winner Y") before assuming they need a deep engine-level
+  investigation - that pattern just repeated twice in one pass (NecroBook's tm_reagbag,
+  item_potions.def's 9 potions), worth checking as the FIRST hypothesis each time now.
 - Building the actual regenerate-and-diff pipeline: point `SphereShardConverter` at the
   fixed fork (replacing the ad-hoc gitignored `convert/` manual-clone step) via
   `MORIA_CONVERTER_OUTPUT_DIR` pointed at a scratch dir, regenerate `scripts/converted/`,
@@ -153,6 +171,8 @@ cluster touched so far; not a hardcoded guarantee, re-verify per file.
   `scripts/converted/`'s hand-commented patches for the genuinely-clean regenerated
   output (functionally identical, just cleaner - no commented-out dead text sitting in
   tracked content).
+- `events.def`'s engine-level hex-parser fix (widen `ConvertTools`'s hex path to full
+  `uint`/`long` range, see the explanation further up) - not started.
 
 ## Full content merge (#612) + collision cleanup — ongoing, 2026-10-22 through 2026-10-25
 
