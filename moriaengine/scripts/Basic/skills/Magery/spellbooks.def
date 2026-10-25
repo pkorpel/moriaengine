@@ -12,7 +12,10 @@ DEFNAME = i_spellbook
 [SpellBookDef i_spellbook_1]
 name = "spellbook 1"
 model = i_spellbook
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
+//#628 - ported from itemb3.def's now-dead stub (same defname, lost the class-change
+//collision) - this color was silently missing from the real entry.
+Color = 038
 
 on=@create
 this.Contents = 0xff
@@ -20,7 +23,9 @@ this.Contents = 0xff
 [SpellBookDef i_spellbook_2]
 name = "spellbook 2"
 model = i_spellbook
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
+//#628 - same port as i_spellbook_1 above.
+Color = 096
 
 on=@create
 this.Contents = 0xffff
@@ -28,7 +33,9 @@ this.Contents = 0xffff
 [SpellBookDef i_spellbook_3]
 name = "spellbook 3"
 model = i_spellbook
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
+//#628 - same port as i_spellbook_1 above.
+Color = 02c
 
 on=@create
 this.Contents = 0xffffff
@@ -36,7 +43,9 @@ this.Contents = 0xffffff
 [SpellBookDef i_spellbook_4]
 name = "spellbook 4"
 model = i_spellbook
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
+//#628 - same port as i_spellbook_1 above.
+Color = 02a
 
 on=@create
 this.Contents = 0xffffffff
@@ -44,7 +53,9 @@ this.Contents = 0xffffffff
 [SpellBookDef i_spellbook_5]
 name = "spellbook 5"
 model = i_spellbook
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
+//#628 - same port as i_spellbook_1 above.
+Color = 028
 
 on=@create
 this.Contents = 0xffffffffff
@@ -52,7 +63,9 @@ this.Contents = 0xffffffffff
 [SpellBookDef i_spellbook_6]
 name = "spellbook 6"
 model = i_spellbook
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
+//#628 - same port as i_spellbook_1 above.
+Color = 026
 
 on=@create
 this.Contents = 0xffffffffffff
@@ -60,7 +73,9 @@ this.Contents = 0xffffffffffff
 [SpellBookDef i_spellbook_7]
 name = "spellbook 7"
 model = i_spellbook
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
+//#628 - same port as i_spellbook_1 above.
+Color = 020
 
 on=@create
 this.Contents = 0xffffffffffffff
@@ -68,7 +83,9 @@ this.Contents = 0xffffffffffffff
 [SpellBookDef i_spellbook_8]
 name = "spellbook 8"
 model = i_spellbook
-layer = 1 //Set by Converter 
+layer = 1 //Set by Converter
+//#628 - same port as i_spellbook_1 above.
+Color = 0481
 
 on=@create
 this.Contents = 0xff
