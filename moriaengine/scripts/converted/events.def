@@ -135,8 +135,15 @@ type = t_eq_script
 model = i_memory
 Layer = layer_special //guessed from base def by Converter 
 
-[ItemDef 0A2000EB0]
-model = i_dialog_context
+//#619 - commented out: this numeric header ("0A2000EB0") is 9 hex digits, far beyond
+//the 32-bit signed range ThingDef.ParseDefnames/ConvertTools.TryParseInt32 can handle -
+//loading it throws "Value was either too large or too small for an Int32" and aborts
+//this entry. Root cause not confirmed (could be a mangled/malformed id in the raw
+//archive itself, or a converter text-generation artifact - needs the raw source to be
+//sure, not re-derived here). The body is a trivial single-field placeholder
+//(model = i_dialog_context, no other data), so dropping it costs nothing either way.
+//[ItemDef 0A2000EB0]
+//model = i_dialog_context
 
 //[events e_splend] //(commented out by Converter) 
 
