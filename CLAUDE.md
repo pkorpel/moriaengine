@@ -90,14 +90,23 @@ player vendors were running on NPCDef's bare defaults; `systems/NecroBook.def`'s
 entry (cosmetic only). Both ported forward into the real winners. Verified via a direct
 `GameCore.dll` boot - zero new errors around either file's load window.
 
-**Still open / not yet decided**: whether to comment out the 83 confirmed #618 stub
-entries (same treatment as #615's own fix) - pending explicit user go-ahead, not actioned
-unilaterally. All 83 have now been checked for data missing from their winner (#625) -
-safe to remove wholesale once approved, no further per-entry data-loss risk. #616
-(ArmorEffectTests) untouched. The 4 unexplained #618 collisions (`item_tinker.def:33`/
-`itemb2.def:1395`/`specabilities-items.def:15`/`regbox.def:3,26`) need a live boot-time
-trace, not more static grepping. Both whole-file duplicates (`guards_old.def` via #619,
-`systems/uniques.def` via #622) are now resolved.
+**#628 (PR #629, closed, 2026-10-25)** - user gave explicit go-ahead; all 83 confirmed
+#618 stub entries commented out, same `//`-per-line treatment as #615's own fix, each
+cluster with one explanatory comment block referencing #618/#625/#628. While re-checking
+every stub field against its winner systematically this pass (not just spot samples),
+found one more real gap #625 missed: `itemb3.def`'s `i_spellbook_1`-`8` stubs each set a
+`Color` missing from the real `spellbooks.def` entries (same class as NecroBook's
+already-known gap) - ported all 8 forward before commenting out. Verified via a direct
+`GameCore.dll` boot: all 83 "defined multiple times"/"class change" error lines gone,
+`Init done.` still reached, the real winner content unaffected. Deliberately left
+untouched: the separate `0xf6b` same-class duplicate in `zbrane/others.def` right after
+the `0xf64` block - a different collision class outside #618's 83-entry scope.
+
+**Still open**: #616 (ArmorEffectTests) untouched. The 4 unexplained #618 collisions
+(`item_tinker.def:33`/`itemb2.def:1395`/`specabilities-items.def:15`/`regbox.def:3,26`)
+need a live boot-time trace, not more static grepping - #618 itself stays open for
+these. Both whole-file duplicates (`guards_old.def` via #619, `systems/uniques.def` via
+#622) and all 83 stub entries (#628) are now resolved.
 
 ## Converter: tag.weapflag → NaturalDamageType — SHIPPED (PR #610), 2026-10-22 — #607 closed
 
