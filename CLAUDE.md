@@ -1,5 +1,159 @@
 # moriaengine — working state
 
+## ARCHITECTURE CHANGE IN PROGRESS (2026-10-25): fix the Erebor source, not the converted output
+
+**Read this section first if picking up any #618-adjacent work.** User's own words:
+"we are fixing the output, but if we decide to add some functionality from source files,
+we will have to reapply those fixes... fix our clone of erebor repo files and be able to
+regenerate fully clear set." Every #619/#622/#625/#628 fix so far hand-patched
+`scripts/converted/*.def` (the SphereShardConverter's generated output) - correct for
+getting a clean boot NOW, but any future converter re-run (to pull in new Erebor content)
+would silently reintroduce every one of them, since they'd never been fixed where they
+actually originate: the raw Sphere source archive itself.
+
+**New standing architecture, user-confirmed**: maintain our OWN fixed fork of the Erebor
+archive, fix duplicate/malformed raw content there (not in moriaengine's generated
+output), and make `scripts/converted/` a true, reproducible regeneration of that fixed
+source - so pulling in new Erebor functionality later is just "re-run the converter
+against our already-fixed fork," not "redo this whole triage."
+
+**Two new external repos, both already set up**:
+- **`github.com/pkorpel/erebor-sphere-archive`** (private) - the fixed fork. Full
+  upstream history of `gitlab.com/erebor/sphere-public-archive` pushed as baseline
+  (commit `cb625ff`), then fixes applied as real commits on top. **User-confirmed
+  workflow: branch + PR, same discipline as moriaengine itself** - NOT direct pushes to
+  master (the first 2 commits landed direct, before this was clarified - not retroactively
+  redone, but every fix from here on goes through a branch+PR). No MCP GitHub tool access
+  for repo creation on this token (`403 Resource not accessible` - same class of scope gap
+  as the earlier project-board PAT issue) - the user created the empty repo manually;
+  everything else (branches/PRs/merges) works fine via the normal `mcp__github__*` tools
+  with `owner: "pkorpel", repo: "erebor-sphere-archive"`.
+- **`gitlab.com/erebor/EreborNext`** (user's own, private/access-gated) - a real, in-
+  progress C# port of the native SphereServer binary (extremely literal, decompiled-
+  binary-accurate - see its own `docs/porting/` writeups), used as an authoritative
+  reference for root-causing *why* something behaves a certain way, not just *what* the
+  raw script says. Needs a GitLab access token to clone - **handle any token the user
+  shares as a secret**: write to a scratchpad file, use via `$(cat file)` embedded in the
+  clone URL so the raw value never appears in visible command text, delete the file
+  immediately after cloning, scrub the credential out of the resulting clone's
+  `git remote` config (`git remote set-url origin <bare-url>`). Cloned once already to
+  `<scratchpad>/EreborNext` (shallow, `--depth 1`) - if a future session needs to `git
+  pull` it again, a fresh token will be needed (the one used wasn't saved anywhere, per
+  standard secret-handling practice).
+
+**Critical gotcha for ANY grep/diff against the raw archive content** (both repos above,
+not just `erebor-sphere-archive`): the archive has files with legacy non-UTF-8 byte
+sequences in them (e.g. a literal `©` byte in `sphereitemb3.scp`'s header comment) -
+**plain `grep -r` silently returns zero matches on these files with no warning**. This is
+the SAME gotcha already documented elsewhere in this file for the localization work and
+for the "#618 stub entries" investigation - **always pass `--binary-files=text`** when
+grepping either archive clone, or you will wrongly conclude content doesn't exist.
+
+**Second gotcha**: the archive's own hex headers use a **leading-zero format with no
+`0x` prefix** - `[ITEMDEF 01f2d]`, `[ITEMDEF 0f64]`, NOT `[ItemDef 0x1f2d]`/`[ItemDef
+0xf64]` (that's moriaengine's own `.def` convention, applied by the converter). Grepping
+the archive for `0x1f2d` finds nothing even though the exact same logical entry exists as
+`01f2d`.
+
+**Filename mapping, confirmed close but verify each time**: the converter strips Sphere's
+`sphere`/`sphere_d_` filename prefix (`ConvertedFile.GetNewFilename`) - so
+`scripts/sphereitemb6.scp` → `itemb6.def`, `scripts/chars/vendors.scp` → (same name,
+no prefix to strip) `chars/vendors.def`, etc. Confirmed by direct lookup for every
+cluster touched so far; not a hardcoded guarantee, re-verify per file.
+
+### Progress so far (this pass)
+
+- **#619's `guards_old.scp`/`ammo.scp` fixes PORTED to the fork** (PR #1-equivalent,
+  commit on `master` - see fork's own history): `chars/guards_old.scp` deleted entirely
+  (confirmed via direct header-diff against `guards.scp` that it's genuinely duplicate at
+  the SOURCE level too, not just in moriaengine's conversion); `zbrane/ammo.scp`'s two
+  `RESOURCES=1 i_arrow_iron], 1 i_ingot_verite` lines had the exact same stray `]` typo
+  in the raw source - fixed directly.
+- **#619's `events.def` malformed-header fix is explicitly NOT being ported to the
+  archive - this one needs an ENGINE fix instead, found while investigating.** The raw
+  `sphereevents.scp:2227`'s `[itemdef 0A2000EB0]` (9 hex digits, `0xa2000eb0` =
+  2,718,435,504 > `0x7FFFFFFF`) is NOT a typo/mangled id - it's a real, intentionally-used
+  Sphere resource id, confirmed via a live reference in `systems/dungeon_bonusy.scp:1630-
+  1631`'s `findid(#0A2000EB0)` (a context-menu-open detection check for a dungeon-bonus
+  mechanic). Real Sphere resource/item ids are naturally unsigned 32-bit values with no
+  reason to stay under `0x7FFFFFFF` - moriaengine's own `ConvertTools.TryParseInt32` →
+  `Convert.ToInt32(uint)` hex-parsing path is what actually can't handle this range, not
+  the archive content. **Recommended fix** (not yet implemented): widen moriaengine's own
+  numeric-header hex parsing to the full `uint`/`long` range instead of truncating to
+  `Int32` - this would make the archive's `0A2000EB0` header load correctly with ZERO
+  archive changes needed, and would also fix any OTHER similarly-out-of-range hex header
+  anywhere else in the whole 450+-file archive that might currently be silently failing
+  the same way without ever having been noticed (we only found this ONE instance because
+  it happened to throw a boot-time exception on a header we were already looking at -
+  there could be more that fail more quietly). If this engine fix lands, it should also
+  REVERT the `#619` comment-out patch in `scripts/converted/events.def`, restoring the
+  real `i_dialog_context` placeholder item. `dungeon_bonusy.scp`'s own LScript functions/
+  events that would actually USE this id are confirmed NOT ported to moriaengine at all
+  (all commented out in `scripts/converted/systems/dungeon_bonusy.def` already, consistent
+  with the converter's own "functions/events aren't converted" limitation) - so this is
+  currently inert either way, not urgent, but worth fixing properly rather than papering
+  over.
+- **#622's `systems/uniques.scp` fix PORTED to the fork** (branch `622-remove-systems-
+  uniques-dupe` → PR #1 → merged, squash commit `7296dba`). Confirmed at the source level
+  too (not just in moriaengine's conversion) that this is a genuinely-inferior duplicate,
+  not byte-identical: e.g. `i_sword_dancing`'s two copies differ in `DAM=32`+real combat
+  dblclick-summon trigger logic (top-level `uniques.scp`, the winner) vs `DAM=70`+
+  crafting `RESOURCES`/`SKILLMAKE` fields with no functional combat identity (`systems/
+  uniques.scp`, now removed).
+- **Archive-source locations for #628's 83-entry stub bucket - partially located, NOT
+  yet removed.** Exact `[ITEMDEF ...]` line ranges confirmed via `grep --binary-files=text`
+  for 3 of 8 clusters so far: `scripts/sphereitemb6.scp` lines 2474-3483 (64 scroll
+  entries, `01f2d`-`01f6c`), `scripts/sphereitemb3.scp` lines 632-758 (`0efa` +
+  `i_spellbook_1`-`8`, next real entry `i_spellbook_pvp` at 759), `scripts/zbrane/
+  others.scp` lines 297-310 (`0f64` only - NOT touching the adjacent `0f6b` entry at line
+  311, confirmed separately out of #618's 83-entry scope, same as the moriaengine-side
+  decision). Still need to locate+confirm exact boundaries for the other 5 clusters
+  (`scripts/sphereitem_potions.scp` 4 potions, `scripts/chars/vendors.scp` 2 vendors,
+  `scripts/systems/magie_custom.scp` 1 moongate, `scripts/systems/NecroBook.scp` 1
+  `i_spellbook_necro`, `scripts/systems/poklady.scp` 1 treasure chest) before deleting -
+  rough header line numbers already found (`item_potions.scp` block starts ~483/502/521/
+  540, `vendors.scp` 83/113, `magie_custom.scp` 701, `NecroBook.scp` 13, `poklady.scp`
+  446) but exact end-of-block boundaries not yet confirmed the way the first 3 were.
+- **2 new findings from the #618/#625/#628 follow-up, not yet root-caused**:
+  `systems/NecroBook.scp` ALSO independently defines `tm_reagbag` (line 456, a
+  `[TEMPLATE tm_reagbag]`) that collides with another definition elsewhere - need to find
+  the other source and decide which wins. `item_potions.def`'s "input string
+  'i_bottle_empty' was not in a correct format" error (9 occurrences, lines 92-212, all
+  BEFORE the already-commented 222-257 potion-duplicate block so unrelated to that fix) -
+  not yet investigated at all, likely an `EmptyFlask=`/`model=` field type-coercion bug,
+  plan was to check `EreborNext`'s real field semantics before deciding whether it's an
+  archive bug or an engine-side gap.
+
+### Not yet started
+
+- The 4 still-unexplained #618 collisions (`item_tinker.def:33`/`itemb2.def:1395`/
+  `specabilities-items.def:15`/`regbox.def:3,26`) - plan is to use `EreborNext` plus a
+  live boot-time trace to finally root-cause these, now that a real C# reference
+  implementation is available (wasn't, for any prior attempt at these 4).
+- Building the actual regenerate-and-diff pipeline: point `SphereShardConverter` at the
+  fixed fork (replacing the ad-hoc gitignored `convert/` manual-clone step) via
+  `MORIA_CONVERTER_OUTPUT_DIR` pointed at a scratch dir, regenerate `scripts/converted/`,
+  diff against currently-tracked content, confirm the ONLY differences are the expected
+  ones (genuinely-absent vs previously-hand-commented-out, for every fix above).
+  `docs/current/06-tooling/sphere-shard-converter.md` still references the OLD upstream
+  clone URL (`gitlab.com/erebor/sphere-public-archive`) - needs updating to the fork once
+  this pipeline is proven.
+  **Rebuild gotcha already hit this session, don't repeat it**: a fresh git worktree has
+  none of `Generated/*.Generated.cs`/`scripts/**/*.Generated.cs`/`steamengine.ini`/
+  `steamaux.ini` (all gitignored) - `dotnet build` fails with ~130 confusing CS0311/CS0115
+  errors that look like a real problem. Fix: `tar` these out of the main checkout and
+  extract into the new worktree before building (exact file list: 74 files matched
+  `find . -name "*.Generated.cs"` in the main checkout at time of writing). Also: a
+  worktree's stale generated dispatch table can reference OTHER sessions' uncommitted
+  test files (e.g. `CombatSettingsRestartProbeTests`) - if `dotnet build` fails with a
+  missing-type error referencing an unfamiliar test class, check the main checkout's own
+  `git status` for untracked files with that name and copy them in too, don't assume it's
+  a real problem with your own change.
+- Once the regen+diff pipeline is proven, decide with the user whether to actually swap
+  `scripts/converted/`'s hand-commented patches for the genuinely-clean regenerated
+  output (functionally identical, just cleaner - no commented-out dead text sitting in
+  tracked content).
+
 ## Full content merge (#612) + collision cleanup — ongoing, 2026-10-22 through 2026-10-25
 
 **CLAUDE.md gap note**: this section backfills work that happened across a session that
