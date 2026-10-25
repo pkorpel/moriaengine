@@ -53,32 +53,19 @@ TYPE = t_eq_script
 layer = layer_special
 model = i_memory
 
-//#628 - dead stub treasure-chest ContainerDef, confirmed superseded by the real
-//TreasureChestDef entry in scripts/Optional/Treasures/treasures.def (#618, #625 -
-//the stub's own DESCRIPTION literally said "generated treasure, don't use").
-//[ContainerDef i_treasureChest]
-//category = poklady
-//subsection = truhly_s_poklady
-//description = vygenerovany poklad nepouzivat
+//[function f_treasure_generate] //(commented out by Converter) 
 
-//name = "poklad"
-//model = i_chest_metal
-//type = t_container //guessed from base def by Converter 
-//layer = 0 //Set by Converter 
+//[function f_treasure_processItemRecord] //(commented out by Converter) 
 
-////[function f_treasure_generate] //(commented out by Converter) 
+//[function f_treasure_generate_item] //(commented out by Converter) 
 
-////[function f_treasure_processItemRecord] //(commented out by Converter) 
+//[function f_treasure_generate_gold] //(commented out by Converter) 
 
-////[function f_treasure_generate_item] //(commented out by Converter) 
+//[function f_treasure_throwGuards] //(commented out by Converter) 
 
-////[function f_treasure_generate_gold] //(commented out by Converter) 
+//[function f_initGuardSpawn] //argv(0) - uid pokladu //(commented out by Converter) 
 
-////[function f_treasure_throwGuards] //(commented out by Converter) 
-
-////[function f_initGuardSpawn] //argv(0) - uid pokladu //(commented out by Converter) 
-
-////[typedef t_treasure_guarded] //(commented out by Converter) 
+//[typedef t_treasure_guarded] //(commented out by Converter) 
 
 [ContainerDef i_treasureChest_fake]
 category = poklady

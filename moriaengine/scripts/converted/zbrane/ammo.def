@@ -317,9 +317,6 @@ Color = color_spruce
 
 [ColoredProjectileDef i_arrow_piercing_iron_poison]
 NAME = "poison chestnut piercing arrow%s"
-//#619 - stray "]" character hand-fixed; this is a literal typo in the raw archive's
-//own RESOURCES line (confirmed: SphereShardConverter's HandleResourcesList is a plain
-//comma-split pass-through, it doesn't introduce brackets), not a converter bug.
 RESOURCES = 1 i_arrow_iron, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 2 // commented out by Converter 
@@ -417,7 +414,6 @@ Color = color_spruce
 
 [ColoredProjectileDef i_arrow_piercing_iron]
 NAME = "chestnut piercing arrow%s"
-//#619 - same stray "]" typo fix as i_arrow_piercing_iron_poison above.
 RESOURCES = 1 i_arrow_iron, 1 i_ingot_verite
 //FLIP = 1 // commented out by Converter 
 //tdata1 = 2 // commented out by Converter 
