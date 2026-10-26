@@ -118,13 +118,18 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Combat/magic/social skills a player can raise by spending points (#204) -
 		/// everything else (crafting: Blacksmith/Fletching/Carpentry/Cooking/Tailoring/Tinkering/
-		/// Inscribe/Alchemy; gathering: Lumberjacking/Mining/Fishing; Cartography/Discordance/
-		/// Lockpicking/AnimalTaming) must be trained by actual use instead - the user's own
-		/// example was Fishing. Ported verbatim from Erebor's "[defnames combat_skills]"
-		/// allowlist (scripts/experiences.scp lines ~1277-1312, the "combskill_&lt;name&gt;"
-		/// tags its own d_levelbonus button handler gates on) rather than inventing a new rule.
-		/// One entry in Erebor's list ("Enticement") has no equivalent in this engine's
-		/// SkillName enum at all and is simply omitted.</summary>
+		/// Inscribe/Alchemy; gathering: Lumberjacking/Mining/Fishing; Cartography/Lockpicking/
+		/// AnimalTaming) must be trained by actual use instead - the user's own example was
+		/// Fishing. Ported verbatim from Erebor's "[defnames combat_skills]" allowlist
+		/// (scripts/experiences.scp lines ~1277-1312, the "combskill_&lt;name&gt;" tags its own
+		/// d_levelbonus button handler gates on) rather than inventing a new rule. One entry in
+		/// Erebor's list ("Enticement") has no equivalent in this engine's SkillName enum at all
+		/// and is simply omitted.
+		///
+		/// Discordance was originally excluded too (omitted from Erebor's own list), but the user
+		/// corrected this - it belongs alongside its bard-skill siblings Peacemaking/Provocation/
+		/// Musicianship, all of which were already spendable; excluding only Discordance was an
+		/// inconsistent port, not a deliberate design choice.</summary>
 		private static readonly System.Collections.Generic.HashSet<SkillName> SpendableSkills = new System.Collections.Generic.HashSet<SkillName> {
 			SkillName.Anatomy, SkillName.AnimalLore, SkillName.ItemID, SkillName.ArmsLore,
 			SkillName.Parry, SkillName.Begging, SkillName.Peacemaking, SkillName.Camping,
@@ -134,7 +139,7 @@ namespace SteamEngine.CompiledScripts {
 			SkillName.Poisoning, SkillName.Archery, SkillName.SpiritSpeak, SkillName.Stealing,
 			SkillName.TasteID, SkillName.Tracking, SkillName.Veterinary, SkillName.Swords,
 			SkillName.Macing, SkillName.Fencing, SkillName.Wrestling, SkillName.Meditation,
-			SkillName.Stealth, SkillName.RemoveTrap,
+			SkillName.Stealth, SkillName.RemoveTrap, SkillName.Discordance,
 		};
 
 		/// <summary>True iff `skill` can be raised by spending points at all (#204) - see
@@ -164,7 +169,10 @@ namespace SteamEngine.CompiledScripts {
 			if ((current + gain) > cap) {
 				return false;
 			}
-			player.ModifySkillValue((int) skill, gain);
+			//real-user-reported: ModifySkillValue only ever stacked a TEMPORARY Skill.modification
+			//(the same mechanism equipment/potion buffs use), never the permanent RealValue a
+			//point-spend is supposed to grant - SetRealSkillValue is the correct call here.
+			player.SetRealSkillValue((int) skill, current + gain);
 			player.UnspentSkillPoints -= pointsToSpend;
 			return true;
 		}

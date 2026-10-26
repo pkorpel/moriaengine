@@ -140,7 +140,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void DisposeIfEmpty() {
-			if (this.realValue == 0 && this.modification == 1000 && this.lockType == SkillLockType.Up) {
+			//real-user-reported: this compared modification to 1000 instead of 0 - the intent is
+			//clearly "dispose only when truly empty" (zero real value, zero temp modifier,
+			//default lock), not a magic number tied to any particular skill-change amount. The
+			//1000 typo meant any skill driven from a real value of 0 up to EXACTLY a +1000
+			//(100.0%) temporary modifier got silently deleted outright - hit directly by the
+			//leveling skill-spend dialog's own bug (ModifySkillValue stacking +50 per click into
+			//modification, landing exactly on 1000 after 20 clicks from a 0 starting value).
+			if (this.realValue == 0 && this.modification == 0 && this.lockType == SkillLockType.Up) {
 				this.cont.InternalRemoveSkill(this.id);
 			}
 		}

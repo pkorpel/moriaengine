@@ -163,6 +163,131 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Real-user-reported regression: repeatedly clicking a skill's "+1" button in
+		/// the Skills dialog used to stack a TEMPORARY Skill.modification (via the old
+		/// Character.ModifySkillValue call) instead of permanently raising RealValue, fed by a
+		/// separate Character.GetRealSkillValue bug that returned ModifiedValue instead of
+		/// RealValue - together these meant clicking never actually raised the skill at all,
+		/// right up until a THIRD, independent Skill.DisposeIfEmpty typo (modification==1000
+		/// instead of ==0) silently deleted the Skill object entirely once enough clicks landed
+		/// a modifier of exactly 1000, snapping the displayed value straight to 0%. Warrior's
+		/// own DetectHidden (warrior.def: "DetectingHidden=0, 1000") starts at exactly 0 with a
+		/// 1000 cap - the exact shape that reproduced this live (user's own words: "begging and
+		/// detect hidden... went from 95% to 0%"). 20 one-point spends (20*50=1000 raw) must
+		/// land on a real, permanent 100.0% - every intermediate value checked along the way,
+		/// not just the final one, since the old bug could in principle have mis-fired earlier
+		/// too. Also covers the OTHER real-user-reported request: once DetectHidden is capped,
+		/// its own "+1" button must disappear from the real dialog layout, while Anatomy's (not
+		/// maxed, same profession, points still remain) stays visible - proving it's really the
+		/// per-skill cap driving this, not just "no points left anywhere".</summary>
+		[Fact]
+		public void RepeatedSkillSpendingReachesCapPermanentlyWithoutResetting() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "RepeatedSkillSpender")) {
+				client.SendSpeech(".TestSetLevelAndExperience 0 0");
+				Assert.True(this.fixture.WaitForGameOutput("LEVELING_TEST_SETUP:", TimeSpan.FromSeconds(10)));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestAddExperience 10000"); // plenty of levels - unspent points are never the limiter here
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetProfession profession_warrior");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_PROFESSION_SET:", mark, TimeSpan.FromSeconds(10)));
+
+				for (int i = 1; i <= 20; i++) {
+					mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestSpendSkillPoint DetectHidden 1");
+					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_SPEND_SKILL_RESULT:", mark, TimeSpan.FromSeconds(10)));
+					string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_SPEND_SKILL_RESULT:");
+					Assert.Contains("success=True", line);
+					Assert.Contains("skillValue=" + (i * 50), line);
+				}
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 2); // "Skills" button
+				var (_, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				// DetectHidden = SkillName value 14, Anatomy = 1 - button id is 1000 + id.
+				Assert.DoesNotContain(" 1014}", layout);
+				Assert.Contains(" 1001}", layout);
+			}
+		}
+
+		/// <summary>Real-user-reported, the root Skill.cs bug directly (independent of the
+		/// leveling dialog's own fix above, which no longer reaches this path at all - this
+		/// proves the general Skill-class fix itself, since ModifySkillValue is still a real,
+		/// reachable public API, e.g. for equipment/potion buffs): driving a fresh skill's
+		/// TEMPORARY modifier to exactly +1000 while its RealValue stays 0 used to silently
+		/// delete the Skill object outright (Skill.DisposeIfEmpty compared modification to 1000
+		/// instead of 0). A never-touched skill ("Tracking") on a brand new character is
+		/// guaranteed to start at real value 0.</summary>
+		[Fact]
+		public void ModifyingASkillByExactly1000DoesNotDeleteIt() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "SkillModifyChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestModifySkillValueByExactly1000 Tracking");
+				Assert.True(this.fixture.WaitForGameOutputSince("SKILL_MODIFY_TEST:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "SKILL_MODIFY_TEST:");
+				Assert.Contains("realValue=0", line);
+				Assert.Contains("modifiedValue=1000", line);
+			}
+		}
+
+		/// <summary>Real-user-reported: the Skills dialog's "+1" button must not be shown at all
+		/// once the player has no unspent skill points left - a fresh, unleveled character
+		/// (UnspentSkillPoints defaults to 0) with a profession assigned has real spendable rows
+		/// but zero budget, so NONE of them should offer a button, even though Back(1)/Close(2)
+		/// still do (proving the dialog itself rendered, not just that it failed to open).</summary>
+		[Fact]
+		public void NoUnspentPointsHidesEverySkillButton() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "NoPointsSkillChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetProfession profession_warrior");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_PROFESSION_SET:", mark, TimeSpan.FromSeconds(10)));
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 2); // "Skills" button
+				var (_, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				Assert.Contains(" 1}", layout); // Back button still there
+				Assert.Contains(" 2}", layout); // Close button still there
+				for (int skillId = 0; skillId <= 60; skillId++) {
+					Assert.DoesNotContain(" " + (1000 + skillId) + "}", layout);
+				}
+			}
+		}
+
+		/// <summary>Real-user-reported correction to #204's own original design: Discordance was
+		/// excluded from LevelingSystem.SpendableSkills, inconsistently with its bard-skill
+		/// siblings Peacemaking/Provocation/Musicianship (all 3 already spendable) - it should
+		/// show a real "+1" button, not "(trained)". Thief is the only profession that configures
+		/// Discordance at all (thief.def: "Discordance=0, 1000").</summary>
+		[Fact]
+		public void DiscordanceIsSpendableNotTrained() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "DiscordanceChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSetProfession profession_thief");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_PROFESSION_SET:", mark, TimeSpan.FromSeconds(10)));
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestAddExperience 2000");
+				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
+
+				client.SendSpeech(".explevel");
+				var (explevelUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(explevelUid, 2); // "Skills" button
+				var (_, layout) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				// Discordance = SkillName value 15 - button id is 1000 + id.
+				Assert.Contains(" 1015}", layout);
+			}
+		}
+
 		private static string LastLineContaining(string output, string marker) {
 			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);

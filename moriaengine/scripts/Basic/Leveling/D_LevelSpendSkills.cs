@@ -87,9 +87,15 @@ namespace SteamEngine.CompiledScripts {
 				this.AddLabel(x, y, 3, SkillDisplayName(skillDef) + ": " + FormatSkillValue(current) + " / " + FormatSkillValue(cap));
 				// #204 - craft/gathering skills (e.g. Fishing) can't be bought with points at
 				// all, only trained by use - no button for those rows, just a note instead.
-				if (LevelingSystem.IsSkillPointSpendable((SkillName) skillDef.Id)) {
+				// Real-user-reported: the button also needs to disappear once there's nothing
+				// left to spend it on - no unspent points at all, or this specific skill is
+				// already at its profession cap (spending would always fail silently otherwise).
+				bool canSpendHere = LevelingSystem.IsSkillPointSpendable((SkillName) skillDef.Id)
+					&& (player.UnspentSkillPoints > 0)
+					&& (current < cap);
+				if (canSpendHere) {
 					this.AddButton(x + ColumnWidth - 30, y - 2, 2151, 2152, SkillButtonIdBase + skillDef.Id, GumpButtonType.Reply, 0);
-				} else {
+				} else if (!LevelingSystem.IsSkillPointSpendable((SkillName) skillDef.Id)) {
 					this.AddLabel(x + ColumnWidth - 90, y, 3, "(trained)");
 				}
 			}

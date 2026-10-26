@@ -1629,22 +1629,33 @@ namespace SteamEngine.CompiledScripts {
 			return this.GetSkill(skillDef);
 		}
 
+		/// <summary>Real-user-reported: all 3 overloads used to return skl.ModifiedValue (the
+		/// temporarily-buffed value, same as GetModifiedSkillValue/GetSkill above) instead of
+		/// skl.RealValue - every real caller (skill-gain gating, profession skill-minimum
+		/// checks, gathering vein-tier thresholds, mastery abilities, and the leveling skill-
+		/// spend dialog) actually wants the permanent, unbuffed value its own name promises.
+		/// Confirmed via the leveling dialog's own spend path: it fed this wrong value into its
+		/// own cap check AND called ModifySkillValue (which stacks a TEMPORARY Skill.modification,
+		/// not RealValue) to apply a "point spend" - together these meant clicking the skill's
+		/// "+1" button never actually raised the skill at all, just a transient buff, until
+		/// Skill.DisposeIfEmpty's own separate typo (modification==1000, not 0) silently deleted
+		/// the Skill object entirely once enough clicks landed, snapping the display to 0%.</summary>
 		public int GetRealSkillValue(int id) {
 			ISkill skl = this.GetSkillObject(id);
 			if (skl != null) {
-				return skl.ModifiedValue;
+				return skl.RealValue;
 			}
 			return 0;
 		}
 
 		public int GetRealSkillValue(SkillName id) {
-			return this.GetSkill((int) id);
+			return this.GetRealSkillValue((int) id);
 		}
 
 		public int GetRealSkillValue(AbstractSkillDef skillDef) {
 			Skill skl = this.GetSkillObject(skillDef);
 			if (skl != null) {
-				return skl.ModifiedValue;
+				return skl.RealValue;
 			}
 			return 0;
 		}
