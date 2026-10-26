@@ -1,5 +1,70 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): GM .static command; spawn gems movenever/invis/no-decay (#697, PR #698)
+
+User request: a new `.static` GM command (`.add` + `attr_move_never`), and newly-created
+`.spawn` gems should be movenever+invisible+non-decaying. Researched against two real
+external sources per the user's own instruction, not just this repo's own content:
+`github.com/pkorpel/erebor-sphere-archive` (confirmed `attr_movenever` is widely used
+real content, but the archive doesn't carry the native engine's own command-dispatch
+logic - GM text commands like `.add`/`.static` are hardcoded in the real SphereServer
+binary, not script-definable) and the real, public, open-source Sphere 0.56b C++ engine
+(`github.com/necr0potenc3/Sphere`, found via search - didn't end up needing the private
+`EreborNext` C# port/GitLab token at all). Traced the exact mechanism: `graysvr/
+CClient.cpp`'s `CV_ADD`/`CV_STATIC` both call the same `Cmd_CreateItem(id, fStatic)` ->
+`graysvr/CClientTarg.cpp`'s `OnTarg_Item_Add`, whose ENTIRE difference for `fStatic` is
+one extra `pItem->SetAttr(ATTR_MOVE_NEVER)` line after creation - confirmed there is no
+separate placement/menu logic to port, just that one flag.
+
+**Implementation**: `Player.cs`'s pre-existing (but apparently never wired to a real
+`.add` usage before - see below) `Add(...)` overloads refactored to share their
+targeting-cursor plumbing via a new `fStatic` bool, with parallel `Static(...)`
+overloads calling `SetAttribute(attr_move_never, true)` on the created item. `.static
+<defname>` now works as a real text command the same way `.add <defname>` does, via
+this engine's own LScript bareword-command-argument resolution (confirmed empirically,
+not assumed - see test debugging below).
+
+**spawn.scp's own long-standing TODO** (`//spawnGem.Flags=attr_move_never|attr_invis
+//TODO - az to bude implementovany tak to tam dat.`) is finally resolved, now that
+`attr_move_never`/`attr_invis` are real (#220/#215 shipped a while back). The TODO's own
+original approach (direct `.Flags=` bitmask assignment) would never have worked right
+regardless - `Item.Attributes`'s setter is `[NoShow]`-gated specifically because it
+bypasses `SetAttribute`'s side effects (decay re-eval, `RecomputeNonMovable`,
+`Flag_Invisible` sync) - fixed with real `SetAttribute()` calls.
+
+**Real latent bug found and fixed in the same PR**: `ItemDecaySystem.
+GetDecayMinutesIfEligible` had zero awareness of `Flag_NonMovable` - since #371 made
+ground items decay by default, EVERY existing `attr_movenever` item (not just new ones -
+confirmed via an `erebor-sphere-archive` scan that dozens of real content fixtures/
+bookkeeping items already use this exact pattern) was silently eligible for the same
+default decay timer as anything else. Added `Flag_NonMovable` as a new exemption, and
+extended `SetAttribute`'s existing decay-re-evaluation trigger set to also cover
+`attr_static`/`attr_move_never`/`attr_move_always` (previously only `attr_decay`/
+`attr_questitem`/`attr_lockeddown`/`attr_secure` triggered a re-evaluation).
+
+**Debugging note worth remembering for any future GM-command test**: a `.static
+<defname>`/`.add <defname>` protocol test that creates nothing with no error logged is
+NOT necessarily a broken command - `AbstractDef.Defname` for a real dupe/variant-group
+item (e.g. `i_rock_plain`) is often an auto-generated hex id, with the human-readable
+name only available as `Altdefname` (same exact quirk `SpawnCommandTests.
+TestVerifySpawnResult` already documented for the spawn gem's own `i_worldgem_bit`) -
+`.Create()` on a grouped def can pick a hex-named sibling, so a test's own verification
+helper scanning for an exact `Defname` match silently finds nothing even though the
+command worked perfectly. Diagnosed by printing the SERVER's own log
+(`fixture.GameOutputSnapshot()`) from inside the test, not just the test process's own
+`Console.WriteLine` output (which only shows what the TEST code itself printed, not
+anything server-side) - confirmed `Add_OnTargon` fired and created the item correctly;
+the bug was purely in the test's own lookup, fixed by checking `Altdefname` instead.
+
+Broad regression sweep (37 tests across decay/attribute/economy/housing) after
+shipping - all 4 failures found confirmed pre-existing/unrelated via the same A/B
+methodology as every other fix this session (`HouseLockdownTests` x2 - same house-
+placement bug family as the already-known `HousingTests.DeedPlacementRejectsOverlap`;
+`AttrFlagTests.PlayerAndNpcCorpsesDecayAtDifferentRates` - a pre-existing comma-arg-
+parsing bug in the test's own setup command, nothing to do with decay logic;
+`AttrFlagTests.InvisItemHiddenUnlessExplicitlyRevealed` - a pre-existing account-
+auto-creation login-flow issue, unrelated to invisibility).
+
 ## DONE (2026-10-26): #692 fully closed - LOS honors Noshoot, not Impassable (PR #695)
 
 Follow-up to the #692 "left open" design question from earlier the same day (see the
