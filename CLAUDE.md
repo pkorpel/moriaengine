@@ -1,5 +1,45 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): i_hatchet/i_fishing_pole hand-slot displacement, a #390 regression (#684)
+
+Follow-up to the #677-680 batch right below - user retested and found a 5th issue: equipping
+`i_hatchet` or `i_fishing_pole` while already holding a weapon didn't displace it (both ended up
+equipped simultaneously), unlike `i_pickaxe` which worked. User's own hunch ("same layer as
+shield") was directionally right.
+
+**`i_hatchet` - a genuine REGRESSION, not a new bug.** #390/#394 (2026-10-18) already fixed this
+exact symptom once, correcting `layer=2`→`layer=1` (its own `TwoHanded=false` is real/non-guessed
+source data, only consistent with one-handed Hand1). That fix was a one-off HAND-PATCH directly on
+`scripts/converted/zbrane/others.def` - predating this repo's later (2026-10-25) "never hand-patch
+generated output, fix the converter instead" architecture rule. PR #640's subsequent full regen-
+and-diff pass silently reverted it back to `layer=2` (confirmed via `git blame` on the exact line) -
+output-only fixes don't survive a regen, by design, and #640 had no way to know this one existed.
+**Lesson, worth remembering for any future `git log`/CLAUDE.md archaeology**: a CLAUDE.md entry
+claiming a fix "shipped" doesn't mean it's still true on `main` today - always verify the actual
+current file content before trusting a historical note, especially for anything in the hand-patch-
+vs-regen danger zone this repo has flagged repeatedly. Fixed DURABLY this time: a defname-keyed
+`layerOverrides` table in `ConvertedItemDef.ThirdStage` (same shape as the existing
+`toolTypeOverrides` precedent from #677) - survives any future regen.
+
+**`i_fishing_pole` - a different, new root cause.** The real archive source has NO `TWOHANDS=`
+line for this item at all (confirmed genuinely absent, not a dropped/guessed value) - a real
+fishing pole is held with both hands, so it defaulted to one-handed and never triggered
+`GameCore/ThingManipulationTriggers.cs`'s `InternalItemEnter` eviction logic (which unconditionally
+evicts BOTH hand layers when the incoming item is itself `TwoHanded`, regardless of which specific
+layer value it lands on - confirmed by reading the displacement check directly, not assumed).
+`T_FISH_POLE` is used by exactly one archive entry, so `ConvertedItemDef.HandleType`'s
+`"t_fish_pole"` case (added in #678) now also unconditionally sets `TwoHanded=true` - safe for the
+whole TYPE, no defname-keyed table needed.
+
+Regenerated only `item_nabytek.def`/`zbrane/others.def` (confirmed via a full archive regen-and-
+diff these are the only 2 affected, besides the already-known `systems/aldaron.def` drift).
+Verified: `GatheringTests.EquippingHatchetDisplacesMismatchedOneHandedWeapon` (pre-existing, was
+failing on `main`) now passes; new `EquippingFishingPoleDisplacesMismatchedOneHandedWeapon` red/
+green confirmed (reverted just the content's `TwoHanded=true` line, reproduced the exact symptom;
+restored, green). Fast tier 53/53; `GatheringTests` 12/13 (the 1 remaining failure,
+`TamingSetsControlMaster`, pre-existing/unrelated, confirmed failing before this session started).
+Shipped as PR #685, closes #684.
+
 ## DONE (2026-10-26): 4-item live-testing batch - pickaxe/fishing-pole tools + healer NPC crash + ability overflow (#677-680)
 
 User reported 4 items from live testing, all raised as issues first then fixed, shipped as 2 PRs same day.
