@@ -43,6 +43,20 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Real-user-reported: a ranged NPC fired a few shots then stopped attacking
+		/// entirely, while a caster NPC in the same fight kept going. Root cause: On_Stroke's
+		/// own LOS-loss check (below) calls RemoveTarget, which - once this was the only queued
+		/// target - falls through FightCurrentTarget's empty-queue branch to this.Delete() (this
+		/// plugin, not just the target). NPCAiTimer's own "AddTarget exactly once per engagement"
+		/// guard (lastEngagedTarget) has no way to learn this plugin is now gone, so it never
+		/// re-adds the target on a later tick even though Fight() keeps running - the NPC just
+		/// stands there. Callers should re-add whenever this returns false, even if their own
+		/// "already engaged" bookkeeping still thinks otherwise.</summary>
+		public static bool IsActivelyEngaging(Character attacker, Character target) {
+			WeaponSkillTargetQueuePlugin p = attacker.GetPlugin(combatPluginPK) as WeaponSkillTargetQueuePlugin;
+			return (p != null) && p.targetQueue.Contains(target);
+		}
+
 		[SteamFunction]
 		public static void FightCurrentTarget(Character self) {
 			WeaponSkillTargetQueuePlugin p = self.GetPlugin(combatPluginPK) as WeaponSkillTargetQueuePlugin;
