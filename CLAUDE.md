@@ -1,5 +1,52 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): race picker used the WRONG SingletonScript instance (#674, also closed #671)
+
+**Read this section first if picking up any more `SingletonScript<T>`/race-selection work.**
+Immediately after #670's banker/raceclass-dclick fix shipped, user reported picking ANY
+profession (hit live with Warrior) in the race-selection dialog just reopened the SAME
+profession picker instead of advancing to the race picker.
+
+**Root cause, found via a LIVE STACK TRACE (temporary `Console.WriteLine`s + a
+`new System.Diagnostics.StackTrace(true)` dump inside `D_OptionPicker.Construct` -
+reasoning from code alone kept being wrong; empirical tracing settled it in one shot)**:
+`SingletonScript<T>.FindSingletonInstance()` (`scripts/Utils/SingletonScript.cs`) does a
+bare `script as T` scan over `AbstractScript.AllScripts` and returns the FIRST match -
+**this matches subclasses of T too, not just T itself**. `D_RaceClassEntry : D_OptionPicker`
+(the stone's own entry-point dialog, #174) is ALSO a valid `D_OptionPicker`, and is in fact
+the ONE instance `FindSingletonInstance` finds for `SingletonScript<D_OptionPicker>.Instance`.
+So `RaceSelection.ShowRacePicker`/`ShowNationPicker` were SECRETLY having their dialogs
+`Construct()`-ed by `D_RaceClassEntry`'s OWN override the whole time (since #175, this was
+NEVER actually a regression - a longstanding latent bug) - which ignores whatever `args` it's
+given and always rebuilds the PROFESSION picker from scratch (checking `player.Race`, still
+`None` at every intermediate step). This is the SAME bug as #671 (closed together) - the
+flow literally never escapes the profession-picker stage, so `D_RaceClassStats`/`Finish()`
+are never reached either.
+
+**Fix**: a genuine standalone `D_OptionPicker` instance DOES exist (`CompiledGumpDef`
+auto-registers one per CONCRETE subclass too, keyed by its own class name via
+`InternalFirstGetDefname`) - `GumpDef.GetByDefname("D_OptionPicker")` finds it directly,
+bypassing `SingletonScript<T>`'s subclass-unsafe lookup entirely. Added as a
+`RaceSelection.PlainOptionPicker` property, used at both call sites instead.
+
+**Swept every other `SingletonScript<T>` usage in the whole codebase** (dozens) checking
+each `T` for real subclasses - `D_OptionPicker` was the ONLY one with this problem right
+now. Did NOT fix `SingletonScript<T>`'s own underlying design gap (prefer-exact-type-match
+over any-assignable-match) - a broader, riskier change with no other live case needing it;
+**if `SingletonScript<T>` ever misbehaves again elsewhere, check for a subclass of T first**
+before assuming it's a new, different bug.
+
+**Previously-"passing" tests that were actually broken the whole time**: `RaceTests.
+FullRaceSelectionFlowForHuman`/`FixedNationRaceSkipsNationPicker` only ever sent scripted
+button responses WITHOUT checking intermediate dialog CONTENT (just a gump id) - they never
+actually caught this bug because they didn't verify they were clicking through the RIGHT
+dialogs at each step. **Lesson for any future gump-flow test**: always assert on the
+dialog's own title/strings at each intermediate step, not just that SOME gump came back.
+
+Shipped as PR #675 (new `WarriorProfessionAdvancesToRacePicker` test - the exact profession
+the user hit; the 2 previously-broken-but-passing tests now genuinely complete end to end
+with correct race/nation/realm/home/title/stats/equipment; fast tier 53/53).
+
 ## DONE (2026-10-26): banker/raceclass dclick hooks restored via archive, not hand-patch (#670)
 
 **Read this section first if picking up any more "a dialog stopped opening" reports, or any
@@ -42,15 +89,11 @@ to the fork, don't patch the output, even temporarily.
   `src.Dialog(...)`, never conditionals/loops/bracket-macro control flow) - don't widen this
   allowlist opportunistically.
 
-**A genuinely NEW, separate bug surfaced by this fix, filed as #671, NOT fixed here**: with
-the dclick trigger restored, `RaceTests`' full-flow tests now get all the way through the
-real 4-step dialog chain (previously timed out immediately, dclick never fired) - but
-`player.Race`/`Profession`/`Nation` still never end up set after a valid stats submission.
-`D_RaceClassStats.OnResponse`'s validation logic (entry ids 10-13, `SubmitButtonId=1`,
-min/max ranges, the `RequiredSum=300` check) all look correct by direct inspection for the
-exact values the test submits - not root-caused yet, needs its own dedicated investigation
-(likely targeted diagnostic logging in `OnResponse`/`RaceSelection.Finish`, same approach
-#509 originally used).
+**UPDATE 2026-10-26, same day**: #671 (filed below as "NOT fixed here") turned out to be the
+EXACT SAME bug as the one tracked in the next section down ("race picker used wrong
+SingletonScript instance", #674) - both closed together by PR #675. See that section for
+the real root cause; this one's own speculation about `D_RaceClassStats.OnResponse`
+validation logic was a dead end, not the actual cause.
 
 Shipped as PR #672 (`BankerDialogTests` 4/4 pass; full `scripts/converted/` regen-and-diff
 confirmed only `chars/vendors.def`/`newbie_portals.def` changed, exactly the expected new
