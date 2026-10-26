@@ -69,7 +69,9 @@ namespace SteamEngine {
 				if (this.tgName != "0") {	//"0" means nothing
 					TriggerGroup tg = TriggerGroup.GetByDefname(this.tgName);
 					if (tg == null) {
-						Logger.WriteWarning(LogStr.FileLine(this.filename, this.line) + "'" + LogStr.Ident(this.tgName) + "' is not a valid TriggerGroup (Event/Type).");
+						if (!this.cont.TryResolveUnknownTriggerGroupName(this.tgName)) {
+							Logger.WriteWarning(LogStr.FileLine(this.filename, this.line) + "'" + LogStr.Ident(this.tgName) + "' is not a valid TriggerGroup (Event/Type).");
+						}
 					} else {
 						this.cont.AddTriggerGroup(tg);
 					}
@@ -82,6 +84,21 @@ namespace SteamEngine {
 				resolver.Resolve();
 			}
 			tgResolvers = new List<TGResolver>();
+		}
+
+		/// <summary>Extension point (#4 of the 2026-10-26 monster-testing batch): called once,
+		/// at the same deferred point real TriggerGroup resolution happens, for a TEVENTS=
+		/// name that didn't resolve to a real TriggerGroup. Default implementation does
+		/// nothing and returns false (the caller then logs the usual warning) - NPCDef
+		/// overrides this to fall back to a stub AbilityDef for the ~99.7% of chardefs that
+		/// reference legacy Sphere AI-hook names (e_monster/e_character/etc) this engine
+		/// deliberately never built as real TriggerGroups, so they become inspectable
+		/// (via .info's now-fixed Abilities view, #651) instead of silently-dropped warning
+		/// noise. Kept here (not NPCDef-specific) since this class is also the generic base
+		/// for AbstractItemDef, which has no ability concept and keeps the old warn-only
+		/// behavior via the unmodified default.</summary>
+		protected internal virtual bool TryResolveUnknownTriggerGroupName(string tgName) {
+			return false;
 		}
 
 		public void AddTriggerGroup(TriggerGroup tg) {

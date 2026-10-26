@@ -398,6 +398,43 @@ namespace SteamEngine.CompiledScripts {
 			set { this.SetTag(instanceStartingEquipmentTK, value); }
 		}
 
+		private static readonly TagKey instanceStartingAbilitiesTK = TagKey.Acquire("_npcStartingAbilities_");
+
+		/// <summary>Stub abilities (#4 of the 2026-10-26 monster-testing batch) granted once at
+		/// creation by NPC.On_Create, one per legacy TEVENTS= name that didn't resolve to a
+		/// real TriggerGroup - see TryResolveUnknownTriggerGroupName below. Each is a real,
+		/// zero-effect PassiveAbilityDef (same shape as the pre-existing unimplementedAbilities.
+		/// scp stubs) so the monster's real intent is now inspectable via .info's Abilities view
+		/// (#651) instead of a silently-dropped load warning - ready for a genuine
+		/// implementation later without touching content again.</summary>
+		public List<AbilityDef> StartingAbilities {
+			get { return this.GetTag(instanceStartingAbilitiesTK) as List<AbilityDef>; }
+			set { this.SetTag(instanceStartingAbilitiesTK, value); }
+		}
+
+		/// <summary>The naming convention a legacy TEVENTS= name maps to its stub AbilityDef
+		/// under - deliberately NOT stripping/abbreviating the original name (e.g. "e_monster"
+		/// -&gt; "a_tevent_e_monster", not "a_monster") so the mapping is unambiguous, trivially
+		/// greppable back to its source, and can never collide with an unrelated real ability
+		/// that happens to share a short name.</summary>
+		private static string TeventAbilityDefname(string tgName) {
+			return "a_tevent_" + tgName;
+		}
+
+		protected override bool TryResolveUnknownTriggerGroupName(string tgName) {
+			AbilityDef stubDef = AbstractScript.GetByDefname(TeventAbilityDefname(tgName)) as AbilityDef;
+			if (stubDef == null) {
+				return false; //not one of our known stubs (e.g. a spk_* speech trigger) - warn as before
+			}
+			if (this.StartingAbilities == null) {
+				this.StartingAbilities = new List<AbilityDef>();
+			}
+			if (!this.StartingAbilities.Contains(stubDef)) {
+				this.StartingAbilities.Add(stubDef);
+			}
+			return true;
+		}
+
 		/// <summary>One "Resources = amount defname" entry (#586) - the real archive's
 		/// RESOURCES= butcher-yield list (what a player gets by chopping this NPC's corpse
 		/// with a sharp weapon, a real UO/Erebor mechanic). The butchering INTERACTION itself
@@ -860,6 +897,18 @@ namespace SteamEngine.CompiledScripts {
 					if (createdItem != null) {
 						createdItem.SetAttribute(ItemAttributes.attr_newbie, true);
 					}
+				}
+			}
+
+			//#4 of the 2026-10-26 monster-testing batch - stub abilities standing in for legacy
+			//TEVENTS= names that didn't resolve to a real TriggerGroup (see
+			//TryResolveUnknownTriggerGroupName above). 1 real point is enough for the ability to
+			//genuinely "exist" on this NPC (shows up in .info's Abilities view, #651) - these are
+			//all zero-effect PassiveAbilityDefs, so the exact point count has no gameplay effect.
+			List<AbilityDef> startingAbilities = def.StartingAbilities;
+			if (startingAbilities != null) {
+				foreach (AbilityDef abilityDef in startingAbilities) {
+					this.SetRealAbilityPoints(abilityDef, 1);
 				}
 			}
 
