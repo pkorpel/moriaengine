@@ -355,10 +355,22 @@ documented sandbox connection-timeout flake class, A/B-verified identical agains
 `main` with everything reverted. Shipped as moriaengine PR #640 (converter fixes + 21 content
 files) and archive PR #6 (the matching #615 source-side port).
 
-**Still open, not part of this pass**: the 6 genuinely-orphaned tracked files above (their source
-no longer exists upstream at all, not just renamed/recased) - no action taken, flagged for a
-future content-provenance pass if their continued presence in `scripts/converted/` ever needs
-justifying. `docs/current/06-tooling/sphere-shard-converter.md` still needs the corrected
+**Follow-up (same day): the 6 genuinely-orphaned files - RESOLVED, all deleted (PR #642).**
+Traced their provenance first rather than guessing: all 6 were added in moriaengine's OWN very
+first git commit (predating every tracked converter run in this repo's history), and their
+content never appears anywhere in the archive's own 1567-commit history either (not even its
+root commit) - confirmed via content-signature search (`git log --all -S"<marker>"`), not just
+filename search. This is pre-existing legacy data from before EITHER repo's git history began,
+not something any session broke. User's explicit call: delete all 6 (`map2.def`/`speech/
+questspeech.def` were already completely empty; the other 4 had real NPC content with no
+recoverable source). **Real bonus found via a careful before/after boot-log error-line diff**
+(first attempt used a truncated/incomplete boot log and gave a misleadingly small number - redo
+with a long-enough timeout and confirm `Init done` appears before trusting an error count):
+removing `chars/specNPCverbatim2.def` resolved 8 of the pre-existing 457 "defined multiple times"
+errors, not just its own - it was BOTH losing one collision itself AND causing 7 of
+`specNPCMarek.def`'s own real entries (Harfan/Lost Soul/3 Shagarsky variants/2 Drone variants) to
+lose their hex slots to this dead file. Zero new errors from the deletion. 457 -> 449.
+`docs/current/06-tooling/sphere-shard-converter.md` still needs the corrected
 clone-the-inner-scripts-folder procedure documented in the #9 writeup above applied for real.
 
 ## Full content merge (#612) + collision cleanup — ongoing, 2026-10-22 through 2026-10-25
