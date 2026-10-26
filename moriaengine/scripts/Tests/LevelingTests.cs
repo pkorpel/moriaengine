@@ -217,6 +217,20 @@ namespace SteamEngine.CompiledScripts {
 				" skillValue=" + player.GetRealSkillValue(skill));
 		}
 
+		/// <summary>Real-user-reported: drives Character.ModifySkillValue (a TEMPORARY buff,
+		/// same mechanism equipment/potions use - distinct from the leveling dialog's own fix
+		/// above, which stopped using this path entirely) straight to exactly a +1000 modifier
+		/// on a skill that starts at real value 0 - the precise shape that used to trigger
+		/// Skill.DisposeIfEmpty's "modification==1000" typo (should have been "==0") and
+		/// silently delete the Skill object outright.</summary>
+		[SteamFunction]
+		public static void TestModifySkillValueByExactly1000(Character self, ScriptArgs sa) {
+			SkillName skill = (SkillName) Enum.Parse(typeof(SkillName), SplitArgs(sa)[0], true);
+			self.ModifySkillValue(skill, 1000);
+			Console.WriteLine("SKILL_MODIFY_TEST: realValue=" + self.GetRealSkillValue(skill) +
+				" modifiedValue=" + self.GetModifiedSkillValue(skill));
+		}
+
 		/// <summary>Defers the actual spend to a near-immediate timer (#156) - same reason as
 		/// DeferredNpcKillTimer below (#146): LevelingSystem.TrySpendAttributePoints now reads
 		/// ProfessionDef.GetStatRange, and a profession's strRange/dexRange/etc FieldValue is a
