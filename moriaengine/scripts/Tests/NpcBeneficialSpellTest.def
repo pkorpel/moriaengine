@@ -1,0 +1,10 @@
+// real-user-reported: an NPC with a beneficial spell (e.g. Magic Reflection) configured used
+// to aim it straight at its enemy target instead of itself. npc_test_beneficial_caster's ONLY
+// spell is s_magic_reflection (beneficial, no randomness to account for) - deterministically
+// proves NPCAiTimer.TryCastSpell casts it on the caster itself, not the enemy.
+[NPCDef npc_test_beneficial_caster]
+NAME = "Beneficial Spell Test Caster"
+ANIM = 0x1fff
+CombatSpell = s_magic_reflection
+MaxMana = 1000
+CAN = MT_WALK|MT_USEHANDS|MT_RUN
