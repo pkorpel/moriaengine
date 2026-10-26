@@ -1781,10 +1781,14 @@ namespace SteamEngine.CompiledScripts {
 			aDef.Activate(this);
 		}
 
-		/// <summary>Enumerator of all character's abilities</summary>
+		/// <summary>All of this character's abilities. Materialized into a real
+		/// List&lt;Ability&gt; for the same reason Skills is (#645) - DataViewProvider only
+		/// has a registered IDataView for IList, and the lazy AbilitiesEnumerator doesn't
+		/// implement it, so .info's Abilities field hit the same "No DataView found" dead
+		/// end Skills did.</summary>
 		public IEnumerable<Ability> Abilities {
 			get {
-				return new AbilitiesEnumerator(this.skillsabilities);
+				return new List<Ability>(new AbilitiesEnumerator(this.skillsabilities));
 			}
 		}
 

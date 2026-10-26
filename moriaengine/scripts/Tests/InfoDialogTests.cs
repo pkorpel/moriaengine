@@ -73,6 +73,47 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("SKILLS_DATAVIEW: found DataView, real skill count=" + skillCount);
 		}
 
+		/// <summary>Same bug class as TestCheckTitanSkillsDataView above, for Character.Abilities
+		/// (#651, found while investigating #4). Grants self a real ability (a_weapon_dodge,
+		/// the existing unimplementedAbilities.scp stub) then checks the Abilities field the
+		/// same way.</summary>
+		[SteamFunction]
+		public static void TestCheckAbilitiesDataView(Character self) {
+			AbilityDef dodgeDef = (AbilityDef) AbstractScript.GetByDefname("a_weapon_dodge");
+			self.SetRealAbilityPoints(dodgeDef, 10);
+
+			IDataView viewCls = DataViewProvider.FindDataViewByType(self.GetType());
+			if (viewCls == null) {
+				Console.WriteLine("ABILITIES_DATAVIEW: no top-level DataView for " + self.GetType());
+				return;
+			}
+
+			object abilitiesValue = null;
+			foreach (IDataFieldView field in viewCls.GetDataFieldsPage(0, self)) {
+				if (string.Equals(field.GetName(self), "Abilities", StringComparison.Ordinal)) {
+					abilitiesValue = field.GetValue(self);
+					break;
+				}
+			}
+
+			if (abilitiesValue == null) {
+				Console.WriteLine("ABILITIES_DATAVIEW: Abilities field not found or null value");
+				return;
+			}
+
+			IDataView abilitiesViewCls = DataViewProvider.FindDataViewByType(abilitiesValue.GetType());
+			if (abilitiesViewCls == null) {
+				Console.WriteLine("ABILITIES_DATAVIEW: no DataView for Abilities value type " + abilitiesValue.GetType());
+				return;
+			}
+
+			int abilityCount = 0;
+			foreach (Ability ability in self.Abilities) {
+				abilityCount++;
+			}
+			Console.WriteLine("ABILITIES_DATAVIEW: found DataView, real ability count=" + abilityCount);
+		}
+
 		/// <summary>Kills and immediately resurrects self (same pattern as AttrFlagTests'/
 		/// NotorietyTests' own self-death helpers) to produce a real Corpse at self's own
 		/// position - the real-user-reported ".info on a corpse" crash needs an actual Corpse
