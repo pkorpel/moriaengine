@@ -114,6 +114,33 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("ABILITIES_DATAVIEW: found DataView, real ability count=" + abilityCount);
 		}
 
+		/// <summary>#4 of the 2026-10-26 monster-testing batch - a titan's TEVENTS lines
+		/// (e_monster/e_character/e_npc_knockback) never resolve to real TriggerGroups (this
+		/// engine deliberately never built those legacy Sphere AI-hook names). Confirms each
+		/// one now grants a real, inspectable stub ability instead of just logging a warning.</summary>
+		[SteamFunction]
+		public static void TestCheckTitanTeventAbilities(Character self) {
+			NPCDef titanDef = (NPCDef) ThingDef.GetByDefname("c_titan");
+			NPC titan = (NPC) titanDef.Create(self.P());
+
+			bool hasMonster = false, hasCharacter = false, hasKnockback = false;
+			int totalAbilities = 0;
+			foreach (Ability ability in titan.Abilities) {
+				totalAbilities++;
+				string defname = ((AbilityDef) ability.Def).Defname;
+				if (string.Equals(defname, "a_tevent_e_monster", StringComparison.OrdinalIgnoreCase)) {
+					hasMonster = true;
+				} else if (string.Equals(defname, "a_tevent_e_character", StringComparison.OrdinalIgnoreCase)) {
+					hasCharacter = true;
+				} else if (string.Equals(defname, "a_tevent_e_npc_knockback", StringComparison.OrdinalIgnoreCase)) {
+					hasKnockback = true;
+				}
+			}
+
+			Console.WriteLine("TEVENT_ABILITIES: total=" + totalAbilities +
+				" hasMonster=" + hasMonster + " hasCharacter=" + hasCharacter + " hasKnockback=" + hasKnockback);
+		}
+
 		/// <summary>Kills and immediately resurrects self (same pattern as AttrFlagTests'/
 		/// NotorietyTests' own self-death helpers) to produce a real Corpse at self's own
 		/// position - the real-user-reported ".info on a corpse" crash needs an actual Corpse
