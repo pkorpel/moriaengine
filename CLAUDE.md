@@ -1,5 +1,31 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): converter resist-tag bugs found while user re-verified batch item #2
+
+**Read this section first if picking up resist-tag or `tag(...)`-parsing work.** While
+independently re-verifying item #2 below (the "skill-range regression" claim), user spotted
+`c_titan`'s resists directly: a duplicate/conflicting `ResistStabbing` line and a missing
+`ResistBleed`, compared against the real archive source. Both root-caused and fixed, PR
+pending merge, closes #655:
+
+- **Duplicate `ResistStabbing`/`ResistSlashing`** - `resist_sharp` maps to both fields (no
+  dedicated engine property - `DamageType.Sharp` combines both flags, #606), and a chardef
+  that also sets the more specific `resist_slash`/`resist_pierce` got two competing `Set()`
+  calls for the same scalar `Int32` field, relying on undefined "last line wins" `.def` load
+  order (happened to match the specific tag today only because the archive always lists
+  `sharp` first - not a real guarantee). Fixed: `ConvertedCharDef` now accumulates resist
+  writes per chardef (same ThirdStage-deferred pattern #565 uses for AggroMode) and flushes
+  exactly one deterministic value per field, specific-always-wins-over-general.
+- **Missing `ResistBleed`** (and any other commented `tag(...)` line, ~1843 archive-wide) -
+  `ConvertedThingDef`'s `@Create`-body reader tried the generic `nameValueRE` before the
+  dedicated `tagRE`; a trailing inline comment (`tag(resist_bleed,300)  //krvaci`, the
+  archive's standard convention on this tag) let `nameValueRE`'s "any whitespace" separator
+  swallow the whole call as one opaque name, silently dropping it. Fixed: `tagRE` now tried
+  first (safe - only ever matches a real `tag(`/`tag.` line).
+
+Verified against a real regen of `scripts/chars/ogres.scp` - `ResistBleed` now present for
+every monster, no more duplicate resist lines.
+
 ## DONE (2026-10-26): 4-item live-testing batch on the new monsters (titan/titan_ranger/titan_mage)
 
 **Read this section first if picking up new-monster-testing work.** User tested the recently-

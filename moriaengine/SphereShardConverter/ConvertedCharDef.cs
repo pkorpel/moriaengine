@@ -138,8 +138,17 @@ namespace SteamEngine.Converter {
 				sum += double.Parse(resistMatches[i].Value, CultureInfo.InvariantCulture);
 			}
 			string averaged = Math.Round(sum / resistMatches.Count).ToString(CultureInfo.InvariantCulture);
+			//#656 - "specific" (a single-field alias, e.g. slash/pierce) always wins over
+			//"general" (a multi-field alias - currently only "sharp") for a given field,
+			//regardless of which one this chardef happens to list first.
+			bool specific = fieldNames.Length == 1;
+			ConvertedCharDef charDef = (ConvertedCharDef) def;
 			foreach (string fieldName in fieldNames) {
-				def.Set(fieldName, averaged, comment);
+				PendingResist existing;
+				if (charDef.pendingResistFields.TryGetValue(fieldName, out existing) && existing.Specific && !specific) {
+					continue; //a specific tag already claimed this field - the general tag defers to it
+				}
+				charDef.pendingResistFields[fieldName] = new PendingResist { Value = averaged, Comment = comment, Specific = specific };
 			}
 		}
 
@@ -161,6 +170,27 @@ namespace SteamEngine.Converter {
 		//together in ThirdStage once the whole trigger body has been read, to derive AggroMode.
 		private double? pendingKarmaMidpoint;
 		private string pendingBrainType;
+
+		//#656 - same ThirdStage-deferred precedent as pendingKarmaMidpoint/pendingBrainType
+		//above: a chardef's resist tags arrive one line at a time (possibly from either the
+		//rare top-level LineImplTask path or the @Create-body ProcessCreateTriggerLine path,
+		//in either order), but "sharp" maps to BOTH ResistSlashing and ResistStabbing (no
+		//dedicated property exists - DamageType.Sharp combines both flags) while "slash"/
+		//"pierce" each map to exactly one of those same fields. A chardef that sets a general
+		//"sharp" AND a specific "slash"/"pierce" (very common in the real archive) must not
+		//emit two competing Set() calls for the same field - the engine field is a plain
+		//scalar Int32, so the real .def loader just applies whichever line happens to come
+		//last, silently discarding the other and making the effective value depend on the
+		//archive's own line order (sharp-before-slash/pierce, by accident, not by design).
+		//Accumulated here instead, with the more specific tag always winning regardless of
+		//order, then flushed exactly once per field in ThirdStage.
+		private sealed class PendingResist {
+			public string Value;
+			public string Comment;
+			public bool Specific;
+		}
+		private readonly Dictionary<string, PendingResist> pendingResistFields =
+			new Dictionary<string, PendingResist>(StringComparer.OrdinalIgnoreCase);
 
 		public ConvertedCharDef(PropsSection input, ConvertedFile convertedFile)
 			: base(input, convertedFile) {
@@ -192,6 +222,12 @@ namespace SteamEngine.Converter {
 				this.headerType = "PlayerDef";
 			} else {
 				this.headerType = "NPCDef";
+				//#656 - flush the accumulated resist fields exactly once each, now that both the
+				//rare top-level LineImplTask path and the @Create-body path have had their chance
+				//to populate pendingResistFields (both run inside base.ThirdStage() above).
+				foreach (KeyValuePair<string, PendingResist> pending in this.pendingResistFields) {
+					this.Set(pending.Key, pending.Value.Value, pending.Value.Comment);
+				}
 				//#565 - derive AggroMode now that the whole @Create trigger body has been
 				//read (karma/npc can appear in either order), since there's no literal
 				//AGGROMODE= field anywhere in the real archive to pass through instead.
