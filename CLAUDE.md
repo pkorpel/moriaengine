@@ -79,9 +79,11 @@ resist-tag fixes above (plus harmless Set()-call reordering) - zero `ArmorVsP`/`
 `CAN=` diffs (the #596 category, would have been a real regression) and zero itemdef files
 touched at all (the #640 WeaponType/Layer/MindPower generalized fixes untouched). Fast tier
 53/53 - notably ALL GREEN, not the historical 4-known-red `WeaponSkillMappingTests` state
-documented below under #596/PR #597 - worth re-checking whether #596 can finally be closed,
-since PR #640's generalized WeaponType fix may have already resolved the test failures
-without the issue itself ever being closed.
+documented below under #596/PR #597.
+
+**Update, same day**: re-checked and confirmed - #596 is now CLOSED (see the dedicated
+"RESOLVED 2026-10-26" entry below). All 4 of its original categories verified resolved live
+on `main`.
 
 ## DONE (2026-10-26): 4-item live-testing batch on the new monsters (titan/titan_ranger/titan_mage)
 
@@ -839,37 +841,29 @@ instance mirror, instance always wins" pattern matters - any NEW per-monster NPC
 field meant to be GM-tunable on a live spawn needs the SAME mirror from day one, or it
 silently can't be edited. Check for this whenever adding a new `NPCDef`-level tunable.
 
-## ⚠️ main currently has 4 known-red fast tests, 2026-10-22 — PR #597, see #596
+## RESOLVED 2026-10-26: the former "4 known-red fast tests" state (#596) is fully closed
 
-**Read this before trusting a green/red fast-test result.** `scripts/converted/` was
-regenerated from a fresh Erebor archive copy (101 files, only ones already tracked -
-not the archive's hundreds of brand-new files/folders, that's a separate unscoped
-question) and merged into `main` via PR #597 **with explicit user sign-off on known
-regressions**, not by accident:
+**Superseded - no longer a live concern, kept only as history for anyone who finds a stale
+reference to #596 elsewhere in this file.** Originally (PR #597, 2026-10-22) a full converter
+regen landed on `main` with 4 explicitly-accepted known-red `WeaponSkillMappingTests` plus 2
+more uncaught regressions (`i_hatchet` layer, `MindPowerVsP`/`VsM` total loss) and an unresolved
+`c_titan` `ArmorVsP`/`ArmorVsM`/`CAN=MT_FIRE_IMMUNE` divergence (31-file category, #44) - full
+details were in issue #596.
 
-- `WeaponSkillMappingTests.ConvertedWeaponWeaponTypeMatchesItsOwnTypeField` fails for
-  `i_axe_two_hand_copper`/`i_axe_copper`/`i_hatchet`/`i_mace_copper` (4 of 50 fast-tier
-  tests) - the fresh regen reverted #157's real per-item `WeaponType` fixes back to the
-  converter's blanket tiledata-based guess (mostly `OneHandSpike`, sometimes a wrong
-  category entirely, e.g. `i_hatchet` → `OneHandSword`).
-- `i_hatchet`'s `layer` also reverted 1→2, reintroducing the original #390 equip-
-  displacement bug (no test currently catches this one - `WeaponSkillMappingTests`
-  only asserts `WeaponType`, not `layer`).
-- `MindPowerVsP`/`MindPowerVsM` (Mystic/Mage material-scaled staff damage, #539) are
-  now **completely absent** from all 7 `zbrane/*material*.def` files - the converter
-  has no mechanism to produce these at all, so this isn't a wrong-value revert, it's a
-  silent total loss of that feature's data. No test currently catches this either.
-- `c_titan`'s `ArmorVsP`/`ArmorVsM` changed 95→80 and lost the `MT_FIRE_IMMUNE` `CAN`
-  flag - cause (archive staleness vs. a deliberate past rebalance) not resolved.
+**All of it is now resolved, re-verified directly against `main` on 2026-10-26, issue closed:**
+- `WeaponSkillMappingTests` is 19/19 green (PR #640 generalized the converter's own
+  `WeaponType`-derivation logic instead of relying on one-off hand-patches - this also fixed
+  the `i_hatchet` layer regression and the `MindPowerVsP`/`VsM` total-loss, since #640's
+  MindPower formula was reimplemented generically for every real blunt weapon).
+- The 31-file `ArmorVsP`/`ArmorVsM`/`CAN=MT_FIRE_IMMUNE` category - re-diffed every file in
+  the original list against a fresh archive regen: **zero remaining divergence** anywhere (3
+  of the 31 - `specNPCqv1`/`specNPCqv2`/`specNPCverbatim2` - no longer exist in tracked
+  content at all, confirmed orphaned/no-source, not a regression). Resolved during PR #640's
+  "clean regen swap" - the original hand-fix was apparently a stale archive snapshot, not a
+  deliberate rebalance, since nothing's regressed or been reported since.
 
-**Full before/after diffs and the complete affected-file list are in issue #596** -
-read that before attempting to fix any of this, don't re-derive the comparison from
-scratch. This was a deliberate "see what we're missing" exploratory pass the user
-asked for, explicitly accepting the known-red state as a tradeoff for having the fresh
-content in `main` to keep inspecting - **not an accidental regression**, but it IS a
-real regression that needs its own fix-or-reapply pass whenever picked up. Until then:
-a `WeaponSkillMappingTests` failure on these 4 specific defnames is expected, not a new
-bug to chase - but treat any *other* fast-test failure as real.
+No more special-casing needed: a `WeaponSkillMappingTests` failure (or any other fast-test
+failure) going forward is a real, new bug, not an expected/accepted one.
 
 ## Remaining converter gaps batch COMPLETE: FoodType + real hunger system SHIPPED (PR #594), 2026-10-22 — #593 closed, whole batch of 4 done
 
