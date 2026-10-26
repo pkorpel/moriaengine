@@ -315,7 +315,7 @@ Wrestling = 390 540
 Fame = 40
 Karma = -300 -2500
 Equip = i_monster_create
-ResistPoison = 99
+ResistPoison = 99 100
 AggroMode = Hostile
 
 [NPCDef c_divoka_kocka]

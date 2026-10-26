@@ -79,9 +79,9 @@ ResistBleed = 950
 ResistParalyse = 1000
 ResistStabbing = 700
 ResistSummon = 800
-ResistFire = 625
-ResistElectric = 625
-ResistCold = 625
+ResistFire = 500 750
+ResistElectric = 500 750
+ResistCold = 500 750
 AggroMode = Hostile
 
 [NPCDef 0x3d]
