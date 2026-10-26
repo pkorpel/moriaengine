@@ -138,6 +138,8 @@ Equip = i_beard_short
 EquipColor = 00758
 Equip = i_bonnet
 EquipColor = 020
+MountItem = 0x3ea2
+//tag.mountcolor = 0729 //no independent mount-color field in this engine yet, see #700
 AggroMode = Calm
 
 [NPCDef c_darkmoon_poskok_m]
@@ -157,4 +159,6 @@ Equip = i_beard_short
 EquipColor = 00758
 Equip = i_bonnet
 EquipColor = 020
+MountItem = 0x3ea2
+//tag.mountcolor = 0729 //no independent mount-color field in this engine yet, see #700
 AggroMode = Calm

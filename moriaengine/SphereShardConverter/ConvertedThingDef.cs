@@ -198,10 +198,19 @@ namespace SteamEngine.Converter {
 				using (StringReader reader = new StringReader(createTrigger.Code.ToString())) {
 					string line;
 					while ((line = reader.ReadLine()) != null) {
-						string lowered = line.ToLowerInvariant();
-						if (lowered.StartsWith("item ") || lowered.StartsWith("item=") || lowered.StartsWith("item(")) {
-							break; //start of loot section, probably
-						}
+						//#700 - this used to break out of the WHOLE loop on any bare "item "/
+						//"item="/"item(" line, guessing it was "probably" the start of a loot
+						//section - but real loot sections live in a completely different
+						//trigger (ON=@NPCRestock, confirmed via an archive-wide search: every
+						//single "ITEM=" line actually found inside @Create across the whole
+						//archive is the mount marker below, never a loot entry), so this never
+						//had anything real to protect against and only ever misfired on real
+						//content: a guard/NPC with BOTH a mount AND starting equipment (e.g.
+						//c_vguard_rohan_hala_jezdec) had everything after "ITEM=i_npc_mount"
+						//silently discarded - ring mail, helm, halberd, all of it - leaving the
+						//spawned NPC naked. Now falls through to the normal per-line dispatch
+						//below, same as any other line - see ProcessCreateTriggerLine's own
+						//"item"/"tag.mount" cases for what actually happens with it.
 						//#563 - itemnewbie lines (starting-equipment grants) are NOT the loot
 						//section - a chardef often has several of these in a row (e.g. a
 						//ranger's bow THEN its arrows), all of which need to reach

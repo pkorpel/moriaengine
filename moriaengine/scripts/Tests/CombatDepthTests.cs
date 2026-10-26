@@ -206,12 +206,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>
-		/// GuardsRealm (Phase 16): no real "town guard" content exists anywhere in this codebase
-		/// (confirmed - no c_guard defname), so this directly configures an ordinary monster's
+		/// GuardsRealm (Phase 16): at the time this was written, no real "town guard" content
+		/// existed anywhere in this codebase, so this directly configures an ordinary monster's
 		/// def with AggroMode.GuardsRealm + a Realm for this one test, rather than needing real
-		/// guard content to exist first. Mutates c_orc's shared NPCDef - deliberately NOT a
-		/// defname used by any other scenario in this verification pass, so this doesn't leak
-		/// into other tests sharing the same long-lived server process.
+		/// guard content to exist first. Real c_vguard_* guard content (converted from
+		/// tag.guard, see NpcGuardContentTests.cs/#700) now exists and exercises this exact
+		/// mechanism too - kept as-is anyway since mutating c_orc's shared NPCDef here is still
+		/// deliberately isolated from any defname used by another scenario in this verification
+		/// pass, so this doesn't leak into other tests sharing the same long-lived server process.
 		/// </summary>
 		[SteamFunction]
 		public static void TestGuardsRealmAggro(Character self) {
