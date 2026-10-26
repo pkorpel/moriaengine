@@ -54,9 +54,9 @@ ResistBleed = 800
 ResistParalyse = 900
 ResistStabbing = 600
 ResistSummon = 800
-ResistFire = 625
-ResistElectric = 625
-ResistCold = 625
+ResistFire = 500 750
+ResistElectric = 500 750
+ResistCold = 500 750
 AggroMode = Hostile
 
 [NPCDef c_wyrm_v1]
@@ -113,9 +113,9 @@ ResistBleed = 800
 ResistParalyse = 900
 ResistStabbing = 600
 ResistSummon = 800
-ResistFire = 625
-ResistElectric = 625
-ResistCold = 625
+ResistFire = 500 750
+ResistElectric = 500 750
+ResistCold = 500 750
 AggroMode = Hostile
 
 [NPCDef c_dragon_lord_v1]
@@ -172,9 +172,9 @@ ResistBleed = 800
 ResistParalyse = 900
 ResistStabbing = 600
 ResistSummon = 800
-ResistFire = 625
-ResistElectric = 625
-ResistCold = 625
+ResistFire = 500 750
+ResistElectric = 500 750
+ResistCold = 500 750
 AggroMode = Hostile
 
 [NPCDef c_dragon_bahnak]
@@ -230,7 +230,7 @@ ResistBleed = 800
 ResistParalyse = 900
 ResistStabbing = 600
 ResistSummon = 800
-ResistFire = 625
-ResistElectric = 625
-ResistCold = 625
+ResistFire = 500 750
+ResistElectric = 500 750
+ResistCold = 500 750
 AggroMode = Hostile

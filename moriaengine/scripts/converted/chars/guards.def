@@ -3436,7 +3436,7 @@ Magery = 1200
 Equip = i_spellbook
 AddSpell = s_fireball
 Equip = i_monster_create
-ResistParalyse = 850
+ResistParalyse = 750 950
 ResistPoison = 850
 AggroMode = Calm
 
@@ -3478,7 +3478,7 @@ Magery = 1500
 Equip = i_spellbook
 AddSpell = s_fireball
 Equip = i_monster_create
-ResistParalyse = 850
+ResistParalyse = 750 950
 ResistPoison = 850
 AggroMode = Calm
 
@@ -3520,7 +3520,7 @@ Magery = 1500
 Equip = i_spellbook
 AddSpell = s_fireball
 Equip = i_monster_create
-ResistParalyse = 850
+ResistParalyse = 750 950
 ResistPoison = 850
 AggroMode = Calm
 
@@ -3563,7 +3563,7 @@ Macing = 900 1000
 MagicResist = 800 1000
 Equip = i_monster_create
 Equip = i_bow_rock
-ResistParalyse = 850
+ResistParalyse = 750 950
 ResistPoison = 850
 AggroMode = Calm
 
@@ -3607,7 +3607,7 @@ Swords = 900 1000
 Macing = 900 1000
 MagicResist = 800 1000
 Equip = i_monster_create
-ResistParalyse = 850
+ResistParalyse = 750 950
 ResistPoison = 850
 AggroMode = Calm
 
@@ -3652,6 +3652,6 @@ Swords = 900 1000
 Macing = 900 1000
 MagicResist = 800 1000
 Equip = i_monster_create
-ResistParalyse = 850
+ResistParalyse = 750 950
 ResistPoison = 850
 AggroMode = Calm

@@ -61,9 +61,9 @@ ResistBleed = 600
 ResistParalyse = 1000
 ResistStabbing = 600
 ResistSummon = 800
-ResistFire = 325
-ResistElectric = 475
-ResistCold = 950
+ResistFire = 200 450
+ResistElectric = 400 550
+ResistCold = 900 999
 AggroMode = Hostile
 
 [ItemDef i_crunch_indicie1]
