@@ -1,5 +1,50 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): resist ranges were flattened, resist_curse was dropped entirely (#659)
+
+**Read this section first if picking up any more resist-tag work.** Immediately after
+shipping #655/#656/#657 below, user spotted two MORE real gaps in `c_titan`'s resists, both
+root-caused and fixed, content shipped (PR #660 engine fix + PR #661 content regen, closes
+#659):
+
+1. **Resist ranges were silently averaged into a flat value.** `c_titan`'s real source
+   (`tag.resist_para=<eval {700 800}>`) is a genuine Sphere range meant to roll a different
+   value per spawn, same semantics as `Str`/`MaxHits`/skill values (#559/#561/#562) - the
+   converter's `EmitResistFields` was averaging it into one flat `750` instead. Fixed
+   generically for **all 17** resist fields, not just paralyse: `NPCDef` gained a
+   `ResistRanges` dictionary (same shape as `SkillValueRanges`), `NPC.On_Create` rolls +
+   applies each one onto the live `Character` via reflection (property name only known as a
+   string), and the converter emits the real `"N1 N2"` range text instead of averaging.
+2. **`tag(resist_curse,-100)` had no field to land in at all.** Originally (#606) deliberately
+   left unmapped because "no Curse mechanic exists" - that's now stale, since a real Curse
+   spell (`CurseSpellEffectPlugin`) has since shipped. Added the 17th resist field,
+   `ResistCurse` (`Character.ct` + `Character.cs` wrapper, same shape as the already-existing,
+   already-unconsumed `ResistParalyse` - no `DamageManager` consumer yet for either, since
+   neither Curse nor Paralyze is a `DamageType`; wiring real curse-effect consumption is a
+   future design decision, not attempted here).
+
+**Infra gotcha hit while fixing this, worth remembering**: adding a `.ct` `Def:` field
+(`resistCurse`) breaks the top-level `dotnet build` immediately once hand-written code
+references the new property (`Character.cs`'s `TypeDef.ResistCurse`) - unlike `[SaveableData]`/
+`[ViewableClass]` fields in `Generated/`, which "self-heal" on any real server boot,
+`scripts/**/*.Generated.cs` (the `.ct`→`.cs` `ClassTemplateParser` output) has the SAME
+chicken-and-egg problem removing/renaming already causes (`Tests.csproj` references
+`Scripts.csproj`, which won't compile until the property exists, so `dotnet test` can't
+self-heal it). **Fix that worked**: run the ALREADY-BUILT `GameCore.dll` directly as a
+standalone process (`dotnet GameCore/bin/Debug/net8.0/SteamEngine.GameCore.dll`, piped from
+`/dev/null` stdin, backgrounded with a short sleep then killed) - `GameCore.csproj` doesn't
+reference `Scripts.csproj` at all, so it's completely unaffected by the Scripts-side compile
+break, and its `Main()` calls `ClassTemplateParser.Init()` (which only reads `.ct` text, no
+Scripts dependency) before anything else - confirmed this alone is enough to rewrite
+`Character.Generated.cs` with the new field, after which the normal top-level build succeeds.
+
+Verified: new `ResistRangeRollsDifferentValuesAcrossSpawns` protocol test confirms real
+per-spawn variation (not just in-range by coincidence) across 20 rolls; content shipped via
+PR #661 (49 chardef files) - confirmed every diff line across all 49 is explained by these two
+fixes applied archive-wide (Fire/Electric/Cold/Stabbing/Bleed/Physical/Poison/Summon/Paralyse
+ranges + Curse), zero `ArmorVsP`/`ArmorVsM`/`CAN=`/`WeaponType` diffs, zero itemdef files
+touched.
+
 ## DONE (2026-10-26): converter resist-tag bugs found while user re-verified batch item #2
 
 **Read this section first if picking up resist-tag or `tag(...)`-parsing work.** While
