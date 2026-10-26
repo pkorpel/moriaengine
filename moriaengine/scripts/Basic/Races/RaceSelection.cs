@@ -33,6 +33,21 @@ namespace SteamEngine.CompiledScripts {
 	/// spirit as the original design's own "only commit at the very end".
 	/// </summary>
 	public static class RaceSelection {
+		/// <summary>Real root cause of a live-reported regression: picking ANY profession/race
+		/// option just reopened the profession picker again instead of advancing. `SingletonScript
+		/// &lt;D_OptionPicker&gt;.Instance` does a plain `as T` scan over every registered script -
+		/// since `D_RaceClassEntry : D_OptionPicker`, it's ALSO a valid match, and is in fact the
+		/// one `FindSingletonInstance` finds (confirmed via a live stack trace) - so every "plain"
+		/// D_OptionPicker dialog opened from here was actually being Construct()-ed by
+		/// D_RaceClassEntry's own override, which ignores whatever args it's given and always
+		/// rebuilds the profession picker from scratch. A genuine standalone D_OptionPicker
+		/// instance DOES exist (CompiledGumpDef auto-registers one per concrete subclass, keyed by
+		/// its own class name) - looked up directly by defname instead, bypassing SingletonScript's
+		/// subclass-unsafe lookup entirely.</summary>
+		private static D_OptionPicker PlainOptionPicker {
+			get { return (D_OptionPicker) GumpDef.GetByDefname("D_OptionPicker"); }
+		}
+
 		/// <summary>Builds the profession-picker args - called both by D_RaceClassEntry (the
 		/// i_stone_raceclass entry point, which needs no external args to open) and could be
 		/// reused by any other future entry point.</summary>
@@ -53,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Race race in races) {
 				labels.Add(RaceData.GetDisplayName(race));
 			}
-			player.Dialog(player, SingletonScript<D_OptionPicker>.Instance, new DialogArgs(
+			player.Dialog(player, PlainOptionPicker, new DialogArgs(
 				new OptionPickerArgs("Choose your race", labels, (p, index) => ShowNationPicker(p, races[index], profession))));
 		}
 
@@ -67,7 +82,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Nation nation in nations) {
 				labels.Add(NationData.GetDisplayName(nation));
 			}
-			player.Dialog(player, SingletonScript<D_OptionPicker>.Instance, new DialogArgs(
+			player.Dialog(player, PlainOptionPicker, new DialogArgs(
 				new OptionPickerArgs("Choose your nation", labels, (p, index) => ShowStatsPicker(p, race, profession, nations[index]))));
 		}
 
