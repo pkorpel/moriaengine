@@ -1,5 +1,23 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): .info List rows showed "[0](Obj)" instead of a real name (#664)
+
+User-requested UX fix, unrelated to the resist-tag thread above/below. Opening a `List`
+property in `.info` (Skills, Abilities - both only openable at all since #645/#651) labeled
+every row as a generic `[0](Obj)`, `[1](Obj)`, etc, forcing it open one at a time to find
+anything. Root cause: `ListDataView.IndexField.FieldType` is hardcoded to `typeof(object)`
+(a list slot can be set to anything via `SetValue`), so `SettingsProvider.GetTypePrefix`
+always produced the generic `"(Obj)"` suffix no matter what was actually in the slot.
+
+Fixed in `IndexField.GetName` (not `FieldType` - kept that as-is since `SetValue` genuinely
+needs to accept anything): tries, in order, `ISkill` (→ `SkillName` via `Id`), `Ability`
+(→ `Def.Defname`), any other `AbstractScript`-derived item (→ its own `Defname`) - falls back
+to the original bare `"[index]"` for lists of plain/unnamed objects, so this also covers any
+future `List<AbstractScript-subclass>` property without extra work, not just Skills/
+Abilities specifically. PR #665, closes #664. Verified via a new protocol test confirming a
+titan's Skills list row reads `"[0] Wrestling"` (or similar) and a granted ability's row
+contains its real `Defname`, not a bare index.
+
 ## DONE (2026-10-26): resist ranges were flattened, resist_curse was dropped entirely (#659)
 
 **Read this section first if picking up any more resist-tag work.** Immediately after
