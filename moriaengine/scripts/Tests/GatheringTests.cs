@@ -165,6 +165,15 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TOOL_SETUP: uid=" + pole.Uid + " backpack=" + self.Backpack.Uid);
 		}
 
+		/// <summary>Real-user-reported: same hand-slot displacement bug as #390's hatchet, this
+		/// time on the fishing pole - leaves it in the backpack (not auto-equipped) so a real
+		/// dclick exercises the actual equip-collision path.</summary>
+		[SteamFunction]
+		public static void TestGrantFishingPoleToBackpack(Character self) {
+			Item pole = (Item) ThingDef.GetByDefname("i_fishing_pole").Create(self.Backpack);
+			Console.WriteLine("TOOL_SETUP: uid=" + pole.Uid + " backpack=" + self.Backpack.Uid);
+		}
+
 		/// <summary>Reports whether the item at the given uid is currently equipped on self
 		/// (Cont==self and sitting at its own TypeDef.Layer, matching Equippable.On_DClick's own
 		/// "already equipped" check) - lets a protocol test confirm the #370 dclick flow really

@@ -344,6 +344,47 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Real-user-reported: same hand-slot displacement bug as #390's hatchet, this
+		/// time hit on the fishing pole - it has no TWOHANDS= line anywhere in the real archive
+		/// source at all (confirmed), so it defaulted to one-handed and never displaced whatever
+		/// weapon was already equipped. A real fishing pole is held with both hands - fixed by
+		/// marking it TwoHanded in the converter, which (per the engine's own hand-slot
+		/// displacement logic, ThingManipulationTriggers.InternalItemEnter) evicts BOTH hands
+		/// unconditionally regardless of which specific layer the item itself sits at.</summary>
+		[Fact]
+		public void EquippingFishingPoleDisplacesMismatchedOneHandedWeapon() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountD, "PoleSwapper")) {
+				int markAxe = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantAndEquipMismatchedAxe");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markAxe, TimeSpan.FromSeconds(10)));
+				uint axeUid = ExtractUidAfter(this.fixture.GameOutputSnapshot(), markAxe, "TOOL_SETUP: uid=");
+				uint backpackUid = ParseLabelledUInt(LastLineContaining(this.fixture.GameOutputSnapshot(), "TOOL_SETUP:"), "backpack=");
+
+				int markPole = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestGrantFishingPoleToBackpack");
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_SETUP:", markPole, TimeSpan.FromSeconds(10)));
+				uint poleUid = ExtractUidAfter(this.fixture.GameOutputSnapshot(), markPole, "TOOL_SETUP: uid=");
+
+				client.SendDoubleClick(backpackUid);
+				Thread.Sleep(300);
+
+				client.SendDoubleClick(poleUid); //equip + start Fishing in one dclick
+				string prompt = ReadSystemMessageSkippingWelcome(client);
+				Assert.Equal("Where do you want to fish?", prompt);
+
+				int markCheck = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckEquipped " + axeUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_EQUIP_CHECK:", markCheck, TimeSpan.FromSeconds(10)));
+				Assert.Contains("equipped=False", LastLineContaining(this.fixture.GameOutputSnapshot(), "TOOL_EQUIP_CHECK:"));
+
+				int markCheck2 = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckEquipped " + poleUid);
+				Assert.True(this.fixture.WaitForGameOutputSince("TOOL_EQUIP_CHECK:", markCheck2, TimeSpan.FromSeconds(10)));
+				Assert.Contains("equipped=True", LastLineContaining(this.fixture.GameOutputSnapshot(), "TOOL_EQUIP_CHECK:"));
+			}
+		}
+
 		private static uint ExtractUidAfter(string output, int since, string marker) {
 			int idx = output.IndexOf(marker, since, StringComparison.Ordinal);
 			Assert.True(idx >= 0, "Could not find '" + marker + "' after position " + since + " in:\n" + output);
