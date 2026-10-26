@@ -473,9 +473,14 @@ namespace SteamEngine {
 		}
 
 		private static string DeNumerizeDefname(string typeName, string defname, out bool isNumeric) {
-			int defnum;
 			isNumeric = false;
-			if (ConvertTools.TryParseInt32(defname, out defnum)) {
+			//#11 - real Sphere resource/item ids are naturally unsigned 32-bit and can exceed
+			//Int32.MaxValue - parse as uint first, then reinterpret the same 32 bits as an int
+			//rather than letting Convert.ToInt32 throw OverflowException. ToString("x") on the
+			//reinterpreted (possibly negative) int produces the identical hex digits either way,
+			//since the "x" format shows the raw bit pattern, not a signed value.
+			if (ConvertTools.TryParseUInt32(defname, out uint defnumU)) {
+				int defnum = unchecked((int) defnumU);
 				defname = defnum.ToString("x", CultureInfo.InvariantCulture);
 				defname = string.Concat("_", typeName, "_0x", defname, "_");
 				isNumeric = true;
