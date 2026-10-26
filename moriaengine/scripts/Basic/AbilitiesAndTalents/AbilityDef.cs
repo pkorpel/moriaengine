@@ -266,8 +266,18 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>C# based @denyUse trigger method, implementation of common checks</summary>
 		protected virtual void On_DenyActivate(DenyAbilityArgs args) {
 			Ability ab = args.ranAbility;
-			//check cooldown
-			if (((Globals.TimeAsSpan - ab.LastUsage) <= this.CooldownAsSpan) && !args.abiliter.IsGM) { //check the timing if OK
+			//check cooldown - Ability's own ctor comment explains why LastUsage's "never used"
+			//sentinel is TimeSpan.MinValue, not Zero. That sentinel must never reach the
+			//subtraction below: Globals.TimeAsSpan - TimeSpan.MinValue always throws
+			//OverflowException (MinValue has no positive counterpart, same class as
+			//int.MinValue negation) - confirmed as the real cause of a repeating "TimeSpan
+			//overflowed" error spam on any never-yet-activated ability with a real Cooldown
+			//(e.g. the stub abilities the 2026-10-26 monster-testing batch grants NPCs).
+			//Short-circuits via && so the overflow-prone subtraction is never evaluated at all
+			//when nothing has been recorded yet - "never used" is never on cooldown, period.
+			if (ab.LastUsage != TimeSpan.MinValue
+				&& ((Globals.TimeAsSpan - ab.LastUsage) <= this.CooldownAsSpan)
+				&& !args.abiliter.IsGM) { //check the timing if OK
 				args.Result = DenyResultMessages_Abilities.Deny_NotYetCooledDown;
 				return;
 			}
@@ -308,7 +318,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>This method implements the assigning of the first point to the Ability</summary>
 		protected virtual void On_Assign(Character ch, Ability ab) {
-			//ch.SysMessage("Abilita " + Name + " nemá implementaci trigger metody On_Assign");
+			//ch.SysMessage("Abilita " + Name + " nemï¿½ implementaci trigger metody On_Assign");
 		}
 
 		//this is not a character trigger. I think for them the @valuechanged should be enough
@@ -321,7 +331,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>This method implements the assigning of the first point to the Ability</summary>
 		protected virtual void On_UnAssign(Character ch, Ability ab) {
-			//ch.SysMessage("Abilita " + Name + " nemá implementaci trigger metody On_Assign");
+			//ch.SysMessage("Abilita " + Name + " nemï¿½ implementaci trigger metody On_Assign");
 		}
 
 		internal void Trigger_ValueChanged(Character chr, Ability ab, int previousValue) {
@@ -431,12 +441,12 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class AbilityDefLoc : CompiledLocStringCollection<AbilityDefLoc> {
-		public string AbilityActivated = "Abilita {0} aktivována.";
-		public string YouDontHaveThisAbility = "O této abilitì nevíš vùbec nic.";
-		public string NotYetCooledDown = "Abilitu nelze použít tak brzy po pøedchozím použití.";
-		public string HasBeenSwitchedOff = "Abilita deaktivována.";
-		public string NotEnoughResourcesToConsume = "Nedostatek zdrojù ke spotøebì pro aktivaci ability.";
-		public string NotEnoughResourcesPresent = "Nedostatek zdrojù pro aktivaci ability.";
-		public string NotAllowedToHaveAbility = "Nejsi oprávnìn mít tuto abilitu.";
+		public string AbilityActivated = "Abilita {0} aktivovï¿½na.";
+		public string YouDontHaveThisAbility = "O tï¿½to abilitï¿½ nevï¿½ vï¿½bec nic.";
+		public string NotYetCooledDown = "Abilitu nelze pouï¿½ï¿½t tak brzy po pï¿½edchozï¿½m pouï¿½itï¿½.";
+		public string HasBeenSwitchedOff = "Abilita deaktivovï¿½na.";
+		public string NotEnoughResourcesToConsume = "Nedostatek zdrojï¿½ ke spotï¿½ebï¿½ pro aktivaci ability.";
+		public string NotEnoughResourcesPresent = "Nedostatek zdrojï¿½ pro aktivaci ability.";
+		public string NotAllowedToHaveAbility = "Nejsi oprï¿½vnï¿½n mï¿½t tuto abilitu.";
 	}
 }

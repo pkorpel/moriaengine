@@ -15,9 +15,9 @@ Str = 1000
 Dex = 1000
 Int = 1000
 Equip = random_male_hair
-Color = colors_hair
+EquipColor = colors_hair
 Equip = i_robe
-Color = colors_yellow
+EquipColor = colors_yellow
 Equip = i_sandals
 AggroMode = Calm
 
@@ -36,12 +36,12 @@ Str = 1000
 Dex = 1000
 Int = 1000
 Equip = random_female_hair
-Color = color_none
+EquipColor = color_none
 Equip = i_robe
-Color = color_gray_dk
+EquipColor = color_gray_dk
 Equip = i_sandals
 Equip = i_hat_wizards
-Color = colors_black
+EquipColor = colors_black
 Equip = i_staff_black_copper
 AggroMode = Calm
 

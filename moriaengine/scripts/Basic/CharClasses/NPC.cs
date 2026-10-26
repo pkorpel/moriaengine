@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.LScript;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
 
@@ -414,6 +415,15 @@ namespace SteamEngine.CompiledScripts {
 		public class StartingEquipmentEntry {
 			public string Defname;
 			public int[] AmountRange;
+
+			/// <summary>Raw, unresolved "EquipColor = ..." text (null = no per-item color
+			/// override) - the real archive's own "ITEMNEWBIE=.../COLOR=..." pairing, which
+			/// colors THIS item, not the character itself (see the converter's own
+			/// "pendingEquipColorTarget" comment). Resolved at creation time in NPC.On_Create -
+			/// either a plain color expression (hex/symbolic range, same text a top-level
+			/// Color= line would carry) or the literal "match_hair" keyword, meaning "use
+			/// whatever color the most recently equipped hair/facial-hair item got."</summary>
+			public string Color;
 		}
 
 		private static readonly TagKey instanceStartingEquipmentTK = TagKey.Acquire("_npcStartingEquipment_");
@@ -427,6 +437,26 @@ namespace SteamEngine.CompiledScripts {
 			get { return this.GetTag(instanceStartingEquipmentTK) as List<StartingEquipmentEntry>; }
 			set { this.SetTag(instanceStartingEquipmentTK, value); }
 		}
+
+		/// <summary>Real archive content rolls starting hair/beard via 3 magic "Equip ="
+		/// keywords instead of a literal defname - "random_male_hair"/"random_female_hair"/
+		/// "random_facial_hair" (confirmed widespread, e.g. c_m_HEALER/c_f_HEALER) - a native
+		/// Sphere random-pick mechanism, not a real ItemDef, so "ThingDef.GetByDefname" always
+		/// failed for them (silently dropped with a warning, never actually equipped). Pools
+		/// are every real converted T_HAIR/T_BEARD EquippableDef (itemb7.def) - this engine has
+		/// no gendered-hairstyle data, so male/female share one pool, matching how the real
+		/// client lets either gender wear any hairstyle. Plain mutable public static fields
+		/// (not yet GM-tunable via .settings - add a category later if ever worth it).</summary>
+		public static string[] MaleOrFemaleHairPool = {
+			"i_hair_short", "i_hair_long", "i_hair_ponytail", "i_hair_mohawk",
+			"i_hair_pageboy", "i_hair_buns", "i_hair_afro", "i_hair_receding",
+			"i_hair_2_pigtails", "i_hair_krisna"
+		};
+
+		public static string[] FacialHairPool = {
+			"i_beard_long", "i_beard_short", "i_beard_goatee", "i_beard_mustache",
+			"i_beard_short_med", "i_beard_long_med", "i_beard_vandyke"
+		};
 
 		private static readonly TagKey instanceStartingAbilitiesTK = TagKey.Acquire("_npcStartingAbilities_");
 
@@ -665,6 +695,15 @@ namespace SteamEngine.CompiledScripts {
 				this.StartingEquipment.Add(new StartingEquipmentEntry { Defname = defname, AmountRange = amountRange });
 				return;
 			}
+			if (param == "equipcolor") {
+				//the real archive's "COLOR=..." line immediately following an "ITEMNEWBIE="
+				//line colors THAT item, not the character - see StartingEquipmentEntry.Color's
+				//own doc comment. Always belongs to whichever "Equip =" entry was just added.
+				if (this.StartingEquipment != null && this.StartingEquipment.Count > 0) {
+					this.StartingEquipment[this.StartingEquipment.Count - 1].Color = args.Trim();
+				}
+				return;
+			}
 			if (param == "resources") {
 				//#586 - "Resources = amount defname, amount defname, ..." - the real archive's
 				//butcher-yield list (corpse-chopping data, not death loot - the butchering
@@ -842,6 +881,53 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static bool IsHairRandomizerKeyword(string defname) {
+			return string.Equals(defname, "random_male_hair", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(defname, "random_female_hair", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(defname, "random_facial_hair", StringComparison.OrdinalIgnoreCase);
+		}
+
+		/// <summary>Resolves a "StartingEquipment" entry's Defname - either a real ItemDef, or
+		/// (if it's one of the 3 real archive hair-randomizer keywords) a random real pick from
+		/// NPCDef.MaleOrFemaleHairPool/FacialHairPool instead.</summary>
+		private static ItemDef ResolveStartingEquipmentItemDef(string defname, bool isHairKeyword) {
+			if (isHairKeyword) {
+				string[] pool = string.Equals(defname, "random_facial_hair", StringComparison.OrdinalIgnoreCase)
+					? NPCDef.FacialHairPool
+					: NPCDef.MaleOrFemaleHairPool;
+				if (pool != null && pool.Length > 0) {
+					defname = pool[Globals.dice.Next(pool.Length)];
+				}
+			}
+			return ThingDef.GetByDefname(defname) as ItemDef;
+		}
+
+		/// <summary>Resolves a StartingEquipmentEntry.Color's raw text to a concrete color
+		/// value. "match_hair" (the real archive's own pseudo-color, meaning "same color as
+		/// the hair/facial-hair item equipped just before this one") has no fixed value at all -
+		/// copies lastHairColor instead of ever reaching the generic expression evaluator, which
+		/// has nothing to resolve it to and would otherwise throw (the real #<issue> crash:
+		/// ConvertTools.ParseAnyNumber("match_hair") inside Thing's own constructor, aborting
+		/// NPC creation entirely). Anything else (a plain hex value, or a symbolic range like
+		/// "colors_hair") is resolved the exact same way a top-level "Color =" field already
+		/// would be - a real LScript snippet, so symbolic defs.scp constants and Sphere
+		/// {min,max} ranges both just work, no separate parsing needed.</summary>
+		private static int? ResolveStartingEquipmentColor(string rawColor, int? lastHairColor, string npcDefName) {
+			if (string.Equals(rawColor, "match_hair", StringComparison.OrdinalIgnoreCase)) {
+				return lastHairColor;
+			}
+			try {
+				object resolved = LScriptMain.RunSnippet("<equipcolor>", 0, Globals.Instance, "return(" + rawColor + ")");
+				return ConvertTools.ToInt32(resolved);
+			} catch (FatalException) {
+				throw;
+			} catch (Exception e) {
+				Logger.WriteWarning("NPC.On_Create (NPCDef " + npcDefName + ")",
+					"equipcolor '" + rawColor + "' could not be resolved: " + e.Message);
+				return null;
+			}
+		}
+
 		public override void On_Create() {
 			base.On_Create();
 
@@ -940,8 +1026,17 @@ namespace SteamEngine.CompiledScripts {
 			//needed here.
 			List<NPCDef.StartingEquipmentEntry> equipment = def.StartingEquipment;
 			if (equipment != null) {
+				//real-user-reported: creating c_f_HEALER/c_m_HEALER logged "starting equipment
+				//item 'random_female_hair' is not a known ItemDef" and, worse, crashed entirely
+				//on a later "Color = match_hair" line (ConvertTools.ParseAnyNumber throwing
+				//uncaught inside Thing's own constructor) - neither is a real ItemDef/color
+				//value, both are native Sphere "roll me something"/"color THIS like THAT"
+				//directives. lastHairColor tracks whichever hair/facial-hair item was most
+				//recently rolled+colored in this same loop, for a later "match_hair" line to copy.
+				int? lastHairColor = null;
 				foreach (NPCDef.StartingEquipmentEntry entry in equipment) {
-					ItemDef itemDef = ThingDef.GetByDefname(entry.Defname) as ItemDef;
+					bool isHairKeyword = IsHairRandomizerKeyword(entry.Defname);
+					ItemDef itemDef = ResolveStartingEquipmentItemDef(entry.Defname, isHairKeyword);
 					if (itemDef == null) {
 						Logger.WriteWarning("NPC.On_Create (NPCDef " + def.PrettyDefname + ")",
 							"starting equipment item '" + entry.Defname + "' is not a known ItemDef.");
@@ -954,6 +1049,15 @@ namespace SteamEngine.CompiledScripts {
 							int amount = NPCDef.RollStatRange(entry.AmountRange);
 							if (amount > 0) {
 								item.Amount = amount;
+							}
+						}
+					}
+					if (entry.Color != null) {
+						int? resolvedColor = ResolveStartingEquipmentColor(entry.Color, lastHairColor, def.PrettyDefname);
+						if (resolvedColor != null) {
+							created.Color = resolvedColor.Value;
+							if (isHairKeyword) {
+								lastHairColor = resolvedColor.Value;
 							}
 						}
 					}
