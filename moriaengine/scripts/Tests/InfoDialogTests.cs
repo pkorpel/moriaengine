@@ -16,6 +16,7 @@
 */
 
 using System;
+using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
@@ -25,6 +26,53 @@ namespace SteamEngine.CompiledScripts {
 	/// Tests/Protocol/InfoDialogTests.cs.
 	/// </summary>
 	public static class InfoDialogTests {
+
+		/// <summary>Real user-reported bug: a monster's Skills field in `.info` shows as
+		/// empty/unusable even though the monster genuinely has skills set (e.g. a titan's
+		/// real Wrestling/Parry values). Root cause: Character.Skills used to return a bare
+		/// SkillsEnumerator (IEnumerable&lt;ISkill&gt;, not IList) - DataViewProvider only has
+		/// a registered IDataView for IList (ListDataView, HandleSubclasses=true), so clicking
+		/// the field always hit "No DataView found for the given type" regardless of how many
+		/// real skills were set. Spawns a titan (real content, real skill ranges), finds the
+		/// Skills field via the same reflection path D_Info itself uses, and reports whether a
+		/// DataView now resolves for its value plus how many skill entries it holds.</summary>
+		[SteamFunction]
+		public static void TestCheckTitanSkillsDataView(Character self) {
+			NPCDef titanDef = (NPCDef) ThingDef.GetByDefname("c_titan");
+			NPC titan = (NPC) titanDef.Create(self.P());
+
+			IDataView viewCls = DataViewProvider.FindDataViewByType(titan.GetType());
+			if (viewCls == null) {
+				Console.WriteLine("SKILLS_DATAVIEW: no top-level DataView for " + titan.GetType());
+				return;
+			}
+
+			object skillsValue = null;
+			foreach (IDataFieldView field in viewCls.GetDataFieldsPage(0, titan)) {
+				if (string.Equals(field.GetName(titan), "Skills", StringComparison.Ordinal)) {
+					skillsValue = field.GetValue(titan);
+					break;
+				}
+			}
+
+			if (skillsValue == null) {
+				Console.WriteLine("SKILLS_DATAVIEW: Skills field not found or null value");
+				return;
+			}
+
+			IDataView skillsViewCls = DataViewProvider.FindDataViewByType(skillsValue.GetType());
+			if (skillsViewCls == null) {
+				Console.WriteLine("SKILLS_DATAVIEW: no DataView for Skills value type " + skillsValue.GetType());
+				return;
+			}
+
+			int skillCount = 0;
+			foreach (ISkill skill in titan.Skills) {
+				skillCount++;
+			}
+			Console.WriteLine("SKILLS_DATAVIEW: found DataView, real skill count=" + skillCount);
+		}
+
 		/// <summary>Kills and immediately resurrects self (same pattern as AttrFlagTests'/
 		/// NotorietyTests' own self-death helpers) to produce a real Corpse at self's own
 		/// position - the real-user-reported ".info on a corpse" crash needs an actual Corpse
