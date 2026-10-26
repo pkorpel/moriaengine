@@ -1561,7 +1561,7 @@ WEIGHT = 20
 RESOURCES = 2 i_ingot_iron
 //FLIP = 1 // commented out by Converter 
 layer = 0 //Set by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
+WeaponType = WeaponType.OneHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_tongs
 

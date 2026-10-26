@@ -6054,14 +6054,6 @@ DEFNAME = i_fx_yellow_dot
 
 [ItemDef 0x3f0b]
 
-//#615 - commented out: this ItemDef was already completely empty (no fields, no DEFNAME,
-//just a bare placeholder among this run of unused hex slots) and it collided with
-//tim/new.def's real [WearableDef 0x3f0c] (DEFNAME = i_kridla, "Kridla" wings armor, marked
-//"// funkcni 16140" by the original author - i.e. verified working). Same ThingDef.ParseDefnames
-//shared-key collision as 0x204e/0x204f, just with this file on the losing/discarded side -
-//dropping this empty entry costs nothing and lets the real item load.
-//[ItemDef 0x3f0c]
-
 [ItemDef 0x3f0d]
 
 [ItemDef 0x1387]

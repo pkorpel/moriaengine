@@ -246,8 +246,8 @@ model = i_staff_quarter
 TwoHanded = true //guessed from base def by Converter 
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 Color = 09a
 
 [ItemDef I_CAT_GUT]

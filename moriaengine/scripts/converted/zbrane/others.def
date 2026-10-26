@@ -142,8 +142,8 @@ SKILLMAKE = 339 tinkering, 1 t_tinker_tools //some resources were fixed by conve
 //REQSTR = 15 // commented out by Converter 
 //SKILL = fencing // commented out by Converter 
 TwoHanded = false
-layer = 1 //#390 - corrected; this entry's own TwoHanded=false is real (no guess-comment), but the old layer=2 was the converter's tiledata-Quality-byte fallback, not real per-item source data - one-handed Hand1 is consistent with TwoHanded=false
-WeaponType = WeaponType.OneHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
+layer = 2 //Set by Converter 
+WeaponType = WeaponType.OneHandAxe //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_hatchet
 attackVsP = 6
@@ -201,7 +201,7 @@ SKILLMAKE = 541 tinkering, 1 t_tinker_tools //some resources were fixed by conve
 //REQSTR = 80 // commented out by Converter 
 TwoHanded = true
 layer = 1 //Set by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.TwoHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 DEFNAME = i_hammer_sledge
 attackVsP = 13
@@ -248,7 +248,7 @@ SKILLMAKE = 100 blacksmithing //some resources were fixed by converter
 //SKILL = Mace Fighting // commented out by Converter 
 TwoHanded = false
 layer = 1 //Set by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_hammer_smith
 attackVsP = 5
@@ -279,4 +279,4 @@ DEFNAME = i_kindling
 DUPEITEM = i_kindling
 
 [ItemDef 0xf6b]
-DUPEITEM = i_torch
+DUPEITEM = 0xf64
