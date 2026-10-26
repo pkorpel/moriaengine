@@ -138,10 +138,10 @@ Equip = i_hair_long
 Color = 083a
 Equip = i_beard_long_med
 Color = color_o_obsidian
-ResistPoison = 922
-ResistParalyse = 725
-ResistSummon = 800
-ResistFire = 550
+ResistPoison = 850 995
+ResistParalyse = 700 750
+ResistSummon = 750 850
+ResistFire = 350 750
 AggroMode = Calm
 
 [NPCDef c_divous]
