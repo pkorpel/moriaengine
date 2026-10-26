@@ -198,6 +198,15 @@ namespace SteamEngine.Converter {
 				case "t_potion_bomba":
 					def.headerType = "PotionDef";
 					break;
+				case "t_fish_pole":
+					//the archive's fishing pole falls through to a plain, non-equippable
+					//ItemDef without this - T_FISH_POLE has no other handling anywhere in
+					//this switch. tooltype=FishingPole (EquippableDef.AssociatedSkill,
+					//#392) is what makes dclicking it actually start the Fishing skill.
+					def.headerType = "EquippableDef";
+					def.isEquippable = true;
+					def.Set("tooltype", "FishingPole", "guessed by Converter");
+					break;
 				default:
 					if (args.StartsWith("t_weapon")) {
 						def.isWeapon = true;
@@ -414,7 +423,26 @@ namespace SteamEngine.Converter {
 			this.isEquippable = true;
 		}
 
+		//defname -> ToolType - items whose archive TYPE= is shared with an unrelated
+		//weapon category (so WeaponType-based/generic detection can't identify them as a
+		//gathering tool), confirmed case by case. i_pickaxe carries TYPE=t_weapon_bow_run
+		//in the raw source (the same type real bow "run" variants use - a pre-existing
+		//archive-authoring quirk, not a converter bug), which makes it compute as a
+		//WeaponDef with WeaponType.Bow - tooltype=Pickaxe (EquippableDef.AssociatedSkill,
+		//#392) is what actually makes dclicking it start the Mining skill, independent of
+		//whatever WeaponType it happens to compute as. Add a defname here ONLY after
+		//confirming its own TYPE= doesn't already map to a real tool category above.
+		private static readonly Dictionary<string, string> toolTypeOverrides =
+			new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
+				{ "i_pickaxe", "Pickaxe" }
+			};
+
 		public override void ThirdStage() {
+			string toolTypeOverride;
+			if (toolTypeOverrides.TryGetValue(this.PrettyDefname, out toolTypeOverride)) {
+				this.Set("tooltype", toolTypeOverride, "guessed by Converter");
+			}
+
 			if (this.isEquippable && !this.layerSet) {
 				int model = this.Model;
 				ItemDispidInfo info = ItemDispidInfo.GetByModel(model);

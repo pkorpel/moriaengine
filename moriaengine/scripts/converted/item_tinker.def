@@ -1471,6 +1471,7 @@ SKILLMAKE = 421 tinkering, 1 t_tinker_tools //some resources were fixed by conve
 //SPEED = 40 // commented out by Converter 
 layer = 1
 TwoHanded = false
+tooltype = Pickaxe //guessed by Converter 
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
 ProjectileAnim = 0xf42 //guessed by Converter 
 WeaponType = WeaponType.Bow //guessed by Converter 
