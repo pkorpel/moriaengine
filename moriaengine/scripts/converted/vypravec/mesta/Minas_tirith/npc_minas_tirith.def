@@ -273,13 +273,14 @@ TSPEECH = spk_guard
 TSPEECH = spk_strazce_knihovny
 NAME = "Dante"
 model = C_MAN
+tag.guard = 1
 CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
 WeaponAttack = 90
 armorVsP = 60
 armorVsM = 60
-tag.guard = 1
 tag.guardopposite = c_m_guard_red_pesak
 tag.guardhire = 500000
+//tag.mountcolor = 0482 //no independent mount-color field in this engine yet, see #700
 Color = colors_skin
 Karma = 1000
 Str = 1000
@@ -313,7 +314,8 @@ Equip = i_cape
 EquipColor = 0481
 Equip = i_halberd
 EquipColor = 0
-AggroMode = Calm
+AggroMode = GuardsRealm
+Realm = Gondor
 
 [NPCDef 0x3de]
 CATEGORY = Moria

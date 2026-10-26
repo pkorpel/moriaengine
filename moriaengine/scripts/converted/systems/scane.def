@@ -41,6 +41,8 @@ Color = color_clovek
 Str = 1000
 Dex = 1000
 Int = 1000
+MountItem = 0x3ea0
+//tag.mountcolor = 0ac5 //no independent mount-color field in this engine yet, see #700
 AggroMode = Calm
 
 //[function f_copyitemplayer] //(commented out by Converter) 
@@ -140,6 +142,8 @@ EquipColor = 00a82
 Equip = i_hair_long
 EquipColor = 070c
 Equip = i_staff_gnarled_mithril
+MountItem = 0x3ea2
+//tag.mountcolor = 0729 //no independent mount-color field in this engine yet, see #700
 AggroMode = Calm
 
 //[EVENTS e_miniq_kun] //(commented out by Converter) 
