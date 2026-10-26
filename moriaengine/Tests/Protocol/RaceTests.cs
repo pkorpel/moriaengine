@@ -37,6 +37,27 @@ namespace SteamEngine.Tests.Protocol {
 		/// Button ids are computed directly (FirstOptionButtonId=1 + known index) rather than
 		/// parsed from the gump layout text - safe since this test controls D_OptionPicker's own
 		/// button-id scheme.</summary>
+		/// <summary>Real user-reported regression: picking ANY profession other than the first
+		/// one listed (Mage) just reopened the profession picker instead of advancing - root
+		/// cause explained on RaceSelection.PlainOptionPicker's own doc comment. Warrior (the
+		/// 4th profession) is the exact one the user hit live.</summary>
+		[Fact]
+		public void WarriorProfessionAdvancesToRacePicker() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "WarriorAdvanceChecker")) {
+				int mark0 = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSpawnRaceStone");
+				Assert.True(this.fixture.WaitForGameOutputSince("RACE_STONE_SPAWNED:", mark0, TimeSpan.FromSeconds(10)));
+				uint stoneUid = ExtractUid(this.fixture.GameOutputSnapshot(), mark0, "RACE_STONE_SPAWNED: uid=");
+
+				client.SendDoubleClick(stoneUid);
+				var (gumpUid1, _, _) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(gumpUid1, 4); // profession index 3 = Warrior
+				var (_, _, strings2) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+				Assert.Contains("Choose your race", strings2[0]);
+				Assert.DoesNotContain("warrior", strings2);
+			}
+		}
+
 		[Fact]
 		public void FullRaceSelectionFlowForHuman() {
 			using (var client = this.ConnectLoginAndCreateCharacter(Account, "HumanFlowTester")) {
