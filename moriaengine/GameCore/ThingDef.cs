@@ -75,8 +75,10 @@ namespace SteamEngine {
 			this.model = this.InitModelField("model", 0);
 			this.weight = this.InitTypedField("weight", 0, typeof(float));
 			this.height = this.InitTypedField("height", 0, typeof(int));
-			int modelNum;
-			if (ConvertTools.TryParseInt32(defname.Substring(2), out modelNum)) {
+			//#11 - same uint32-range widening as ParseDefnames/LoadScriptLines below, needed
+			//again here since the ctor re-derives a default model number from the defname.
+			if (ConvertTools.TryParseUInt32(defname.Substring(2), out uint modelNumU)) {
+				int modelNum = unchecked((int) modelNumU);
 				this.model.SetFromScripts(filename, headerLine, modelNum.ToString(CultureInfo.InvariantCulture));
 			} else if (this is AbstractItemDef) {
 				this.model.SetFromScripts(filename, headerLine, Globals.DefaultItemModel.ToString(CultureInfo.InvariantCulture));
@@ -400,9 +402,18 @@ namespace SteamEngine {
 				throw new SEException("Type " + LogStr.Ident(typeName) + " does not exist.");
 			}
 
-			int defnum;
 			defname = section.HeaderName.ToLowerInvariant();
-			if (ConvertTools.TryParseInt32(defname, out defnum)) {
+			//#11 - real Sphere resource/item ids are naturally unsigned 32-bit and can exceed
+			//Int32.MaxValue (e.g. a dialog-context placeholder id like 0xa2000eb0, confirmed a
+			//genuine Sphere resource id via a real cross-reference in the Erebor archive, not
+			//archive corruption) - parse as uint first, then reinterpret the same 32 bits as an
+			//int rather than letting Convert.ToInt32 throw OverflowException. ToString("x") on
+			//the reinterpreted (possibly negative) int produces the identical hex digits either
+			//way, since the "x" format shows the raw bit pattern, not a signed value. No real
+			//tiledata-based item/char model is anywhere near this range, so a wrapped/negative
+			//key here can never collide with or be mistaken for a real one.
+			if (ConvertTools.TryParseUInt32(defname, out uint defnumU)) {
+				int defnum = unchecked((int) defnumU);
 				if (thingDefType.IsSubclassOf(typeof(AbstractItemDef))) {
 					defname = "i_0x" + defnum.ToString("x", CultureInfo.InvariantCulture);
 				} else if (thingDefType.IsSubclassOf(typeof(AbstractCharacterDef))) {
@@ -426,9 +437,11 @@ namespace SteamEngine {
 		}
 
 		public override void LoadScriptLines(PropsSection ps) {
-			int defnum;
 			string defname = this.Defname;
-			if (ConvertTools.TryParseInt32(defname.Substring(2), out defnum)) {
+			//#11 - same uint32-range widening as ParseDefnames above, needed again here since
+			//this re-derives defnum from the already-built "i_0x.../c_0x..." defname string.
+			if (ConvertTools.TryParseUInt32(defname.Substring(2), out uint defnumU)) {
+				int defnum = unchecked((int) defnumU);
 				if (this.IsCharDef && defname.StartsWith("c_")) {
 					if (defnum > highestCharModel) {
 						highestCharModel = defnum;

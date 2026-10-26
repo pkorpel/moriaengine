@@ -214,12 +214,56 @@ cluster touched so far; not a hardcoded guarantee, re-verify per file.
   missing-type error referencing an unfamiliar test class, check the main checkout's own
   `git status` for untracked files with that name and copy them in too, don't assume it's
   a real problem with your own change.
-- Once the regen+diff pipeline is proven, decide with the user whether to actually swap
-  `scripts/converted/`'s hand-commented patches for the genuinely-clean regenerated
-  output (functionally identical, just cleaner - no commented-out dead text sitting in
-  tracked content).
-- `events.def`'s engine-level hex-parser fix (widen `ConvertTools`'s hex path to full
-  `uint`/`long` range, see the explanation further up) - not started.
+- **Clean-regen swap - DONE (PR #638).** 11 of the 13 touched files swapped wholesale for
+  the regenerated output (zero functional diff, proven safe by the pipeline above);
+  `itemb3.def`/`zbrane/others.def` each got a surgical removal of just their dead #628
+  comment block, since both also carry unrelated hand-fixes (`i_spellbook_pvp`'s class
+  fix, #157/#390's WeaponType/layer corrections) not yet ported to the archive - swapping
+  those two wholesale would have regressed those other fixes. Verified via a direct
+  `GameCore.dll` boot: the pre-existing 457-count "defined multiple times" error total
+  (unrelated bucket, see below) is unchanged, zero mentions of any #618-touched defname.
+  Fast tier 50/50.
+- **`events.def`'s engine-level hex-parser fix - DONE (2026-10-26).** Widened 4 separate
+  call sites that all shared the exact same bug (`ConvertTools.TryParseInt32` on a hex
+  string whose value exceeds `Int32.MaxValue` throws an uncaught `OverflowException`,
+  aborting the whole def's load): `ThingDef`'s constructor (default model-number
+  derivation), `ThingDef.ParseDefnames` (numeric-header defname construction),
+  `ThingDef.LoadScriptLines` (re-deriving the model dictionary key from the already-built
+  defname), and `AbstractDef.DeNumerizeDefname` (the generic fallback used by every
+  OTHER `AbstractDef` subclass that doesn't register its own defname parser - found while
+  fixing the first 3, same bug, never previously hit because no non-ThingDef content has
+  needed a hex id this large yet). **Fix shape, deliberately narrow**: each site now
+  parses via `ConvertTools.TryParseUInt32` (already existed, already correctly handles
+  the full unsigned 32-bit range) then reinterprets the same 32 bits via
+  `unchecked((int) value)` instead of letting `Convert.ToInt32` throw - the two values
+  share an identical bit pattern, so `.ToString("x")` produces the exact same hex digits
+  either way (confirmed, not assumed: C#'s "x" format shows the raw two's-complement bit
+  pattern for a negative int, not a signed decimal). Deliberately did NOT touch
+  `ConvertTools.TryParseInt32`/`ParseInt32` themselves, which have dozens of unrelated
+  callers (uid parsing, amount fields, point coordinates, etc.) that may legitimately
+  want an overflow to stay a hard error - confining the widening to exactly the 4
+  model-id/defname call sites keeps the blast radius to what #11 actually asked for.
+  `scripts/converted/events.def`'s `#619` comment-out patch reverted - the real entry
+  (`[ItemDef 0A2000EB0] model = i_dialog_context`) now loads cleanly. **One new, harmless,
+  pre-existing warning surfaced by this fix** (previously invisible since the header
+  crash aborted the entry before reaching this point): `model = i_dialog_context` doesn't
+  resolve to any real registered item (confirmed via grep - that defname doesn't exist
+  anywhere in the archive), so `AbstractItemDef.GetDupeItem()`'s implicit-dupe-group
+  fallback logs a non-fatal format warning. This is dead reference data in the original
+  Sphere source, same class as other harmless placeholder gaps already documented
+  elsewhere in this archive - not something to invent a fix for, and not a regression
+  from this change (the entry would warn the same way on ANY successful load, this is
+  just the first time it's ever reached that code path). New pure-logic regression test
+  (`Tests/ConvertToolsTests.cs`'s `HexHeaderWideningTests`, no engine boot needed) proves
+  the uint32-parse + unchecked-reinterpret round-trips through `.ToString("x")`
+  correctly, plus a control case confirming small/normal-range hex ids are completely
+  unaffected. Verified via a direct `GameCore.dll` boot (zero `OverflowException`/"too
+  large or too small for an Int32" anywhere in the log, "defined multiple times" count
+  unchanged at 457) and an isolated A/B-verified protocol-tier sample (`AttrFlagTests`/
+  `DefPersistenceRegressionTests`) - the 2 failures seen there reproduce identically on
+  unmodified `main` with this fix fully reverted, confirmed pre-existing/unrelated. Fast
+  tier 53/53 (53 = the pre-existing 50 + 3 new).
+  **Both halves of the Erebor source-architecture pivot (tasks #9-11) are now complete.**
 
 ## Full content merge (#612) + collision cleanup — ongoing, 2026-10-22 through 2026-10-25
 
