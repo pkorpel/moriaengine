@@ -2136,6 +2136,7 @@ DESCRIPTION = Fishing Pole
 
 TYPE = T_FISH_POLE
 tooltype = FishingPole //guessed by Converter 
+TwoHanded = true //guessed by Converter 
 //DUPELIST = 0dc0 // commented out by Converter 
 WEIGHT = 20
 RESOURCES = 5 i_cloth

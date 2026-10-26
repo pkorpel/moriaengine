@@ -206,6 +206,17 @@ namespace SteamEngine.Converter {
 					def.headerType = "EquippableDef";
 					def.isEquippable = true;
 					def.Set("tooltype", "FishingPole", "guessed by Converter");
+					//real-user-reported: equipping a fishing pole didn't displace whatever
+					//weapon was already in hand. The raw archive source has no TWOHANDS= line
+					//at all for i_fishing_pole (confirmed - not a dropped/guessed value, just
+					//genuinely absent), but a real UO fishing pole IS held with both hands -
+					//same "archive has no recoverable data, use real-world knowledge" judgment
+					//call as #157/#390's WeaponType/layer corrections. T_FISH_POLE is used by
+					//exactly one archive entry (confirmed), so this is safe to apply
+					//unconditionally for the whole TYPE, not just a defname-keyed override.
+					def.Set("TwoHanded", "true", "guessed by Converter");
+					def.isTwoHanded = true;
+					def.twoHandedSet = true;
 					break;
 				default:
 					if (args.StartsWith("t_weapon")) {
@@ -437,10 +448,35 @@ namespace SteamEngine.Converter {
 				{ "i_pickaxe", "Pickaxe" }
 			};
 
+		//defname -> real Layer, for items whose own TwoHanded= is real/confirmed (not a
+		//converter guess) but whose Layer still falls back to the generic tiledata-Quality-
+		//byte guess below, which disagrees with that real data. i_hatchet's own TwoHanded=
+		//false is real (no guess-comment on it, confirmed via the raw archive source), which
+		//is only consistent with one-handed Hand1 (layer=1) - the tiledata fallback instead
+		//guesses layer=2 (Hand2, shared with shields/two-handed items), so equipping a hatchet
+		//never displaced whatever one-handed weapon was already in Hand1 (#390). Originally
+		//fixed as a one-off hand-patch of the OUTPUT file, which a later full regen (#640)
+		//silently reverted (output-only fixes don't survive a regen, by design) - this table
+		//is the durable fix, applied every regen from here on. Same ~70-entry layer/TwoHanded
+		//reliability gap as #393 affects other weapons, but only i_hatchet has directly-
+		//verifiable real TwoHanded data backing a confident correction (per #390's own
+		//scoping) - don't widen this table opportunistically.
+		private static readonly Dictionary<string, string> layerOverrides =
+			new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
+				{ "i_hatchet", "1" }
+			};
+
 		public override void ThirdStage() {
 			string toolTypeOverride;
 			if (toolTypeOverrides.TryGetValue(this.PrettyDefname, out toolTypeOverride)) {
 				this.Set("tooltype", toolTypeOverride, "guessed by Converter");
+			}
+
+			string layerOverride;
+			if (layerOverrides.TryGetValue(this.PrettyDefname, out layerOverride)) {
+				this.layer = layerOverride;
+				this.Set("layer", layerOverride, "#390 - corrected; this entry's own TwoHanded=false is real (no guess-comment), but the tiledata-Quality-byte fallback guess is layer=2 - one-handed Hand1 is consistent with TwoHanded=false");
+				this.layerSet = true;
 			}
 
 			if (this.isEquippable && !this.layerSet) {
