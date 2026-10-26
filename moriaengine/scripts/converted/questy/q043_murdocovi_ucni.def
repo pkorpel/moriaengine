@@ -187,7 +187,7 @@ DESCRIPTION = Murdocuv pergamen //staticka stranka
 
 NAME = "Murdocuv pergamen"
 TYPE = t_normal
-model = i_scroll_curse // grafika zmenit 
+model = 0x1f47 // grafika zmenit 
 Color = 0084d // barva zmenit 
 
 [EquippableDef i_q043_sud]

@@ -31,7 +31,8 @@ namespace SteamEngine.Converter {
 	//	*/
 	//	
 	public class ConvertedThingDef : ConvertedDef {
-		PropsLine idLine, defname1, defname2, dupeItemLine;
+		protected PropsLine idLine;
+		PropsLine defname1, defname2, dupeItemLine;
 		//bool ownModel = false;
 		bool hasNumericalHeader;
 		int modelNum = -1;
