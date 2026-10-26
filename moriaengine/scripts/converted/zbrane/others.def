@@ -142,7 +142,7 @@ SKILLMAKE = 339 tinkering, 1 t_tinker_tools //some resources were fixed by conve
 //REQSTR = 15 // commented out by Converter 
 //SKILL = fencing // commented out by Converter 
 TwoHanded = false
-layer = 2 //Set by Converter 
+layer = 1 //#390 - corrected; this entry's own TwoHanded=false is real (no guess-comment), but the tiledata-Quality-byte fallback guess is layer=2 - one-handed Hand1 is consistent with TwoHanded=false 
 WeaponType = WeaponType.OneHandAxe //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 DEFNAME = i_hatchet
