@@ -31,7 +31,15 @@ namespace SteamEngine.Regions {
 			}
 #endif
 			if ((from.X == to.X) && (from.Y == to.Y)) {
-				return true; //CreateLosPath can't handle a single column, and there's nothing horizontal to block
+				//CreateLosPath can't handle a single column (nothing horizontal to trace a path
+				//across) - but "nothing to block" doesn't follow: a FLOOR/roof is a HORIZONTAL
+				//plane that blocks a perfectly VERTICAL sightline at this exact column, unlike a
+				//wall (a vertical plane, which needs horizontal distance to intersect a
+				//horizontal sightline - that case is what this early return was actually
+				//guarding against). Real user-reported bug: an NPC directly above/below another
+				//(same real static building, different floor) could still attack straight
+				//through the floor between them.
+				return !this.IsVerticalLosBlockedBetween(from.X, from.Y, from.Z, to.Z);
 			}
 
 			// CreateLosPath returns a pooled PointsInLine under the IEnumerable<Point3D> interface -
@@ -90,6 +98,43 @@ namespace SteamEngine.Regions {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
 				if (TileData.HasFlag(idi.Flags, TileFlag.Impassable) &&
 					(z >= item.Z) && (z < item.Z + Math.Max((int) idi.Height, 1))) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>Same three data sources as IsLosBlockedAt (terrain, statics/multis, real
+		/// dynamic items), but for the same-column case: is anything impassable's Z-band
+		/// strictly between fromZ and toZ (exclusive of both - standing on your own floor, or
+		/// the target's, never self-blocks, same convention as CanSeeLosFromTo's main loop
+		/// skipping both endpoint columns), regardless of which one is higher.</summary>
+		private bool IsVerticalLosBlockedBetween(int x, int y, int fromZ, int toZ) {
+			if (!this.IsValidPos(x, y)) {
+				return true;
+			}
+
+			int zLow = Math.Min(fromZ, toZ);
+			int zHigh = Math.Max(fromZ, toZ);
+
+			int landZ = this.GetTileZ(x, y);
+			int landId = this.GetTileId(x, y);
+			if (TileData.HasFlag(TileData.GetTileFlags(landId), TileFlag.Impassable) && (landZ > zLow) && (landZ < zHigh)) {
+				return true;
+			}
+
+			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
+				if (TileData.HasFlag(s.Flags, TileFlag.Impassable) &&
+					(s.Z + Math.Max(s.Height, 1) > zLow) && (s.Z < zHigh)) {
+					return true;
+				}
+			}
+
+			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
+				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
+				if (TileData.HasFlag(idi.Flags, TileFlag.Impassable) &&
+					(item.Z + Math.Max((int) idi.Height, 1) > zLow) && (item.Z < zHigh)) {
 					return true;
 				}
 			}
