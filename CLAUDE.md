@@ -26,6 +26,18 @@ pending merge, closes #655:
 Verified against a real regen of `scripts/chars/ogres.scp` - `ResistBleed` now present for
 every monster, no more duplicate resist lines.
 
+**Content shipped too (PR #657, 80 chardef files).** Ran the fixed converter against the full
+archive fork, diffed file-by-file against tracked content before touching anything (not a
+blind delete+replace, per the still-open #596 caution about silently reverting un-ported
+hand-fixes). Confirmed every diff line across all 80 changed files is explained by the two
+resist-tag fixes above (plus harmless Set()-call reordering) - zero `ArmorVsP`/`ArmorVsM`/
+`CAN=` diffs (the #596 category, would have been a real regression) and zero itemdef files
+touched at all (the #640 WeaponType/Layer/MindPower generalized fixes untouched). Fast tier
+53/53 - notably ALL GREEN, not the historical 4-known-red `WeaponSkillMappingTests` state
+documented below under #596/PR #597 - worth re-checking whether #596 can finally be closed,
+since PR #640's generalized WeaponType fix may have already resolved the test failures
+without the issue itself ever being closed.
+
 ## DONE (2026-10-26): 4-item live-testing batch on the new monsters (titan/titan_ranger/titan_mage)
 
 **Read this section first if picking up new-monster-testing work.** User tested the recently-
