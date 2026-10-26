@@ -34,6 +34,13 @@ namespace SteamEngine.Tests.Protocol {
 
 				int arrowAmount = ParseIntField(line, "arrowAmount=");
 				Assert.InRange(arrowAmount, 50, 75);
+
+				//#648 - a monster's starting-equipment grants (a mage's spellbook, a ranger's
+				//bow) were lootable off the corpse; the real archive's own field name for this
+				//mechanism is literally ITEMNEWBIE= - every grant should carry attr_newbie so
+				//it disappears with the monster instead of becoming farmable loot.
+				Assert.Contains("equippedIsNewbie=True", line);
+				Assert.Contains("arrowsAreNewbie=True", line);
 			}
 		}
 

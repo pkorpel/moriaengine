@@ -849,6 +849,17 @@ namespace SteamEngine.CompiledScripts {
 							}
 						}
 					}
+					//real-user-reported: a monster's starting-equipment item (a mage's spellbook,
+					//a ranger's bow) was lootable off the corpse and could be farmed. The real
+					//archive's own field name for this whole mechanism is literally ITEMNEWBIE=
+					//("newbie item") - confirms every StartingEquipment grant across the whole
+					//archive is meant to carry attr_newbie, not just these two examples. Item.
+					//CanFallToCorpse already treats attr_newbie as "never falls to the corpse" -
+					//this makes the grant disappear with the monster instead of becoming loot.
+					Item createdItem = created as Item;
+					if (createdItem != null) {
+						createdItem.SetAttribute(ItemAttributes.attr_newbie, true);
+					}
 				}
 			}
 
