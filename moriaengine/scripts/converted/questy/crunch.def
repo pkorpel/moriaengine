@@ -20,7 +20,6 @@ Str = 300
 Dex = 200
 Int = 100
 Experience = 30 35
-ResistPoison = 1000
 Wrestling = 1200
 Fencing = 1000
 Tactics = 1000
@@ -41,6 +40,7 @@ Equip = i_platemail_leggings
 Color = color_o_obsidian
 Equip = i_boots_thigh
 Color = 001
+ResistPoison = 1000
 AggroMode = Calm
 
 [EquippableDef i_Crunch_bank]

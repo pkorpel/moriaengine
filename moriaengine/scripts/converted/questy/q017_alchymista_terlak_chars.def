@@ -29,13 +29,6 @@ Wrestling = 1000
 Swords = 1000
 Poisoning = 2500
 Experience = 150 200
-ResistPoison = 1000
-ResistParalyse = 560
-ResistSummon = 1000
-ResistBleed = 800
-ResistFire = 400
-ResistElectric = 400
-ResistCold = 200
 Wrestling = 1200
 Fencing = 1000
 Tactics = 1000
@@ -58,6 +51,13 @@ Equip = i_boots_thigh
 Color = 0982
 Equip = i_platemail_leggings
 Color = color_o_valorite
+ResistPoison = 1000
+ResistParalyse = 560
+ResistSummon = 1000
+ResistBleed = 800
+ResistFire = 400
+ResistElectric = 400
+ResistCold = 200
 AggroMode = Hostile
 
 [NPCDef c_q017_sberatel]

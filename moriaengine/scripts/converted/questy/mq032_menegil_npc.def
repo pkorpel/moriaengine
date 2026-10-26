@@ -27,8 +27,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_short
 Color = 0000
 Equip = i_sandals
@@ -41,6 +39,8 @@ Equip = i_tunic
 Color = 0228
 Equip = i_necklace_gold
 Equip = i_ring_gold
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_kapitan]
@@ -70,8 +70,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0710
 Equip = i_beard_short
@@ -84,6 +82,8 @@ Equip = i_leather_tunic
 Color = 0000
 Equip = i_leather_leggings
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_hospodsky]
@@ -113,8 +113,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0710
 Equip = i_beard_long
@@ -125,6 +123,8 @@ Equip = i_pants_long
 Color = 0008
 Equip = i_jester_suit
 Color = 0084
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_rybar]
@@ -154,8 +154,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0035
 Equip = i_boots_thigh
@@ -163,6 +161,8 @@ Color = 0000
 Equip = i_robe
 Color = 00FD
 Equip = i_fishing_pole
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_latkarka]
@@ -192,8 +192,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0035
 Equip = i_sandals
@@ -206,6 +204,8 @@ Equip = i_ring_gold
 Equip = i_bracelet_gold
 Equip = i_necklace_gold
 Equip = i_earrings_gold
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_latkarka_pomocnik]
@@ -235,8 +235,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_short
 Color = 015b
 Equip = i_beard_short
@@ -247,6 +245,8 @@ Equip = i_bonnet
 Color = 0025
 Equip = i_sandals
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_prevozca]
@@ -276,8 +276,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_short
 Color = 0747
 Equip = i_sandals
@@ -290,6 +288,8 @@ Equip = i_pants_long
 Color = 0000
 Equip = i_necklace_gold
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_prevozca_pomocnik]
@@ -319,8 +319,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0009a
 Equip = i_platemail_leggings
@@ -329,6 +327,8 @@ Equip = i_platemail_chest
 Color = 0000
 Equip = i_cape
 Color = 0025
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_skladnik]
@@ -358,8 +358,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0710
 Equip = i_sandals
@@ -371,6 +369,8 @@ Color = 0043
 Equip = i_cape
 Color = 047d
 Equip = i_ring_silver
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_mq032_skladnik_manzelka]
@@ -400,8 +400,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 009ce
 Equip = i_boots_thigh
@@ -414,4 +412,6 @@ Equip = i_cape
 Color = 009a
 Equip = i_necklace_gold
 Equip = i_ring_silver
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm

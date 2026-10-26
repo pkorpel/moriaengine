@@ -45,7 +45,6 @@ FOODTYPE = 15 t_arock,t_coin,t_ore,t_ingot
 WeaponAttack = 100
 armorVsP = 150
 armorVsM = 150
-ResistPoison = 65
 Color = color_snow
 Fame = 0
 Karma = -1000 -2500
