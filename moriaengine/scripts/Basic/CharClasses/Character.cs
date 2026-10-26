@@ -1501,10 +1501,17 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		#region Skills
-		/// <summary>Enumerator of all character's skills</summary>
+		/// <summary>All of this character's skills. Materialized into a real List&lt;ISkill&gt;
+		/// (not just a lazy SkillsEnumerator) so the generic .info dialog's reflection-based
+		/// field renderer can actually show it - DataViewProvider only has a registered
+		/// IDataView for IList (ListDataView, HandleSubclasses=true), and SkillsEnumerator
+		/// doesn't implement IList, so clicking the Skills field previously always fell
+		/// through to "No DataView found for the given type", even for a character with real
+		/// skills set. List&lt;ISkill&gt; satisfies the same IEnumerable&lt;ISkill&gt; contract
+		/// every existing caller already relies on.</summary>
 		public override IEnumerable<ISkill> Skills {
 			get {
-				return new SkillsEnumerator(this.skillsabilities);
+				return new List<ISkill>(new SkillsEnumerator(this.skillsabilities));
 			}
 		}
 

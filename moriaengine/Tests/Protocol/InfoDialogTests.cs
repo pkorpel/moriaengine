@@ -25,6 +25,25 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
+		public void TitanSkillsFieldHasARealDataView() {
+			using (var client = this.ConnectLoginAndCreateCharacter("InfoSkillsTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckTitanSkillsDataView");
+				this.AssertSeen("SKILLS_DATAVIEW:", mark, TimeSpan.FromSeconds(10));
+				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "SKILLS_DATAVIEW:");
+
+				Assert.DoesNotContain("no top-level DataView", resultLine);
+				Assert.DoesNotContain("Skills field not found", resultLine);
+				Assert.DoesNotContain("no DataView for Skills value type", resultLine);
+				Assert.Contains("found DataView", resultLine);
+				Assert.DoesNotContain("real skill count=0", resultLine);
+			}
+		}
+
+		[Fact]
 		public void InfoDialogOnCorpseDoesNotCrash() {
 			using (var client = this.ConnectLoginAndCreateCharacter("InfoCorpseTester")) {
 				client.SendSpeech(".TestSetGmOn");
