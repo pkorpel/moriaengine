@@ -1,5 +1,71 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): NPC ranged LOS check + beneficial-spell targeting (#689, PR #690)
+
+Two bugs found investigating combat, both in `NPCAiTimer`: (1) `Fight()`'s non-caster
+branch (melee/ranged) hardcoded `hasLineOfSight = true` unconditionally - unlike the
+caster branch right above it, which already called `self.CanInteractWith(target).Allow`.
+A ranged attacker nominally in flat X/Y range but with no real line of sight (wall, or a
+different floor/elevation) never re-triggered approach/repositioning - `WeaponSkillDef.
+On_Stroke`'s own real LOS check (which DOES account for height) just kept silently
+denying the shot forever. (2) `TryCastSpell` always cast at whatever the NPC was
+fighting, with no concept of offensive vs. defensive spells - a beneficial spell (e.g.
+Magic Reflection) landed on the enemy instead of the caster. Also fixed the `EffectFlag`
+source passed to `SpellEffectArgs` (`FromAbility` -> `FromSpellBook`), since `FromAbility`
+isn't a recognized source for `DurableCharEffectSpellDef`'s effect-plugin install path -
+any buff/debuff-shaped NPC spell silently never installed its effect at all, even once
+correctly targeted.
+
+New tests: `NpcRangedApproachTests` (real `i_wall_stone` between ranger and target, same
+mechanism as `LineOfSightBlockingTests`), `NpcBeneficialSpellTests` (dedicated
+single-spell NPC `npc_test_beneficial_caster`, verified via `TryCastSpell`'s own debug
+log line rather than the installed plugin - a separate, pre-existing, unrelated bug means
+`MagicReflectionPluginDef`'s lazy defname resolution throws on a cold boot regardless of
+targeting, filed separately, not fixed here).
+
+**Regression risk check, worth remembering for any future change this close to the AI
+tick loop**: a background sweep against the broader combat suite surfaced 8 failures
+beyond the 2 new tests (`MysticCombatTests`/`MageAbilityTests`/`CombatScenarioTests`/
+`RangerCombatTests`). Did a direct A/B (same pattern as #603's writeup above) - swapped in
+the original unmodified `NPCAiTimer.cs` logic (keeping only the `internal` visibility
+change so the new test files still compile) and reran the identical filters: every one of
+those 8 reproduced identically with the OLD code. `MysticCombatTests`/`MageAbilityTests`
+never even touch `NPCAiTimer` (player-caster scenarios only) - confirmed via grep before
+bothering with the A/B. `RangerCombatTests.StandsOffAtRangeWithRealBow`/
+`ArmorReducesRealBowDamage` match the exact already-documented #603 resource-contention
+flake. `CombatScenarioTests.TitanOrderedToKillAnotherTitanDealsDamage` matches the
+already-documented CI "stuck-NPC-pathing" flake (issue #100). No real regressions.
+
+**Found and deleted as dead scratch code**: a `TileFlagScanTemp` probe (roof-tile/height
+scan, `scripts/Tests/TileFlagScanTemp.cs` + its protocol test) from an earlier part of
+this same session, apparently the start of a follow-up investigation into real
+elevation-based LOS test setup - never run, no assertions beyond "did it produce output",
+superseded by the wall-placement approach actually shipped above. Removed before
+committing rather than left as permanent clutter.
+
+**`pwsh` IS available in this sandbox as of this session** (`/usr/bin/pwsh`) - the
+"Environment notes" section below claiming `build.ps1` can't be used directly is now
+stale. Running the real `./build.ps1` is what's actually needed to regenerate
+`Generated/*.Generated.cs` correctly (see next paragraph) - prefer it over plain `dotnet
+build` when a change adds/removes a `[SteamFunction]`-attributed method.
+
+**Real gotcha hit shipping this**: deleting a `[SteamFunction]` class's `.cs` file does
+NOT make `Generated/CompiledScriptHolders.Generated.cs` stale by build.ps1's own
+timestamp check (`Invoke-ScriptGeneration`'s `Test-GeneratedUpToDate`) - that check only
+compares mtimes against the marker, and a *deletion* doesn't bump any surviving file's
+mtime, so it still reports "up to date" and skips regeneration, leaving a dangling
+reference to the deleted class that fails the full solution build (and the push hook,
+which runs a real build). Fix: delete the `Generated/*.Generated.cs` outputs themselves
+(not `.ct`-templated ones specifically - `CompiledScriptHolders`/`CompiledTriggerGroups`/
+`DecoratedClassesSaveImplementors`/`DeepCopyImplementor`/`PluginTriggerGroups`, NOT
+`ViewableClasses.Generated.cs` which wasn't affected) and let `build.ps1` regenerate them
+from a real two-run GameCore boot. Also note: a plain `dotnet test` run that boots a real
+`GameServerPairFixture` server pair silently rewrites these same `Generated/*.cs` files
+as a side effect of normal server init - so their on-disk state can reflect whatever
+scripts existed at the time of the LAST test run that happened to boot a server, not
+necessarily the current working tree. Don't trust a clean `dotnet build`/`dotnet test`
+alone as proof nothing downstream (like the push hook's own build) will trip over this.
+
 ## DONE (2026-10-26): i_hatchet/i_fishing_pole hand-slot displacement, a #390 regression (#684)
 
 Follow-up to the #677-680 batch right below - user retested and found a 5th issue: equipping
