@@ -1,5 +1,51 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): item stacking - gold/bandages/arrows/bolts/scrolls didn't merge (#667)
+
+**Read this section first if picking up any more item-stacking/tiledata work.** User
+reported dropping one gold pile onto another (classic UO "combine stacks" gesture) didn't
+merge them. Investigated by reading the erebor-sphere-archive source, cross-referencing this
+engine's own `ThingManipulationTriggers`/`TileData` code (no access needed to EreborNext this
+time - the engine's own existing code plus direct empirical testing settled it).
+
+**The stacking MECHANISM was already complete and correctly wired** - `TryStackToAnyInside`/
+`Trigger_StackInCont`/`CouldBeStacked`/the real `DropItemInPacket` "drop item A onto item B"
+routing all already existed and worked exactly as they should. **Root cause, isolated via
+direct testing**: `AbstractItemDef.IsStackable` just returned the `stackable` `FieldValue`'s
+coded default (`false`) - NOTHING in tracked content, not even `i_gold` itself, ever sets
+`STACKABLE=1` explicitly, so `CouldBeStacked` (`a.IsStackable && b.IsStackable`) was always
+false for every item in the game, and the otherwise-correct merge logic never got a chance to
+run. Real Sphere/UO derives stackability from the item's own GRAPHIC's tiledata flag
+(`UFLAG2_STACKABLE`/`CAN_I_PILE`), not a per-itemdef script property - confirmed by the
+archive's own converter-dump comment on the equivalent field. This engine already had the
+exact lookup needed (`TileData.GetTileFlags`/`ItemDispidInfo.Flags`) - already correctly used
+by `TileData.GenerateMissingDefs`'s own auto-stub-itemdef fallback path - just never
+consulted for any real, script-authored itemdef. Fix: `IsStackable` now falls back to the
+real tiledata flag whenever the script never explicitly overrode it either way
+(`FieldValue.IsDefaultCodedValue`) - an explicit `STACKABLE=0`/`1` still always wins.
+
+**Pile-size icon switching (1 coin / small stack / big pile) needed ZERO new code** -
+confirmed via direct testing (setting `Amount` on one existing `i_gold` already displays
+correctly, no stacking-specific code path touched) that this is a pure CLIENT behavior, not
+server-driven. There's a chunk of long-abandoned, never-wired-up dead code in `TileData.cs`
+(written by "Kemoc" years ago, clearly trying to solve this exact question and giving up
+mid-way - look for "multipleModels"/"stackmodel=" if it resurfaces) - confirmed to be a red
+herring, unrelated to how the real client actually behaves.
+
+**Side-finding, NOT yet acted on**: `i_potion_heal` (and likely its siblings) is referenced
+all over tracked content (vendor sell lists, loot tables, `DEFNAMES` lists) but the real
+`[ITEMDEF i_potion_Heal]` itself is missing from `scripts/converted/` entirely - confirmed
+separately, a pre-existing content-completeness gap, NOT a stacking bug. No issue filed yet -
+flag this if picking up potion-related work.
+
+Shipped as PR #668 (engine fix + 2 new protocol tests - `DroppingOneGoldPileOnAnotherMergesThem`
+drives the real drop-on-item packet end to end; `StackableFlagGeneralizesBeyondGold` confirms
+gold/bandages/arrows/bolts/scrolls all correctly report stackable and a sword doesn't).
+**Two unrelated flaky protocol tests surfaced during this work** (`EconomyTestsB`'s vendor-
+dialog-timeout, `GatheringTests.MiningYieldsOre`) - A/B-verified both reproduce identically on
+unmodified `main`, confirmed pre-existing sandbox issues unrelated to this fix, not chased
+further.
+
 ## DONE (2026-10-26): .info List rows showed "[0](Obj)" instead of a real name (#664)
 
 User-requested UX fix, unrelated to the resist-tag thread above/below. Opening a `List`
