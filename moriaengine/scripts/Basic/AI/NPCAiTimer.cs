@@ -309,7 +309,12 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
-		private void Fight(NPC self, Character target) {
+		/// <summary>Internal (not private) so a test can call this directly and deterministically,
+		/// same precedent as PickSpell above - real-time AI-tick timing in this sandbox is
+		/// already documented elsewhere as flaky (see LineOfSightBlockingTests.cs's own doc
+		/// comment), so a real-user-reported LOS/approach bug is best proven with one direct,
+		/// synchronous call rather than waiting out live combat ticks.</summary>
+		internal void Fight(NPC self, Character target) {
 			self.Flag_WarMode = true;
 
 			if (this.TryCastSpell(self, target)) {
@@ -346,7 +351,16 @@ namespace SteamEngine.CompiledScripts {
 				//archers - already hold their own configured range the same way, via a larger
 				//WeaponRangeVsM/VsP from their .def; no separate branch needed for them.)
 				effectiveRange = Math.Min(target.IsPlayerForCombat ? self.WeaponRangeVsP : self.WeaponRangeVsM, self.VisionRange);
-				hasLineOfSight = true;
+				//real-user-reported: a non-caster (melee or ranged) NPC never actually checked
+				//real line-of-sight here - unlike the caster branch above, this was hardcoded
+				//true unconditionally. Point2D.GetSimpleDistance below is a flat X/Y check with
+				//no concept of Z, so a ranged attacker (e.g. an archer NPC) standing at a
+				//different height/floor than its target - nominally "in range" by X/Y alone, but
+				//with no real line of sight to actually land a shot - never re-triggered
+				//approach/repositioning: WeaponSkillDef.On_Stroke's own real LOS check (which DOES
+				//account for height) would just keep silently denying the shot forever, while
+				//this method kept reporting "already close enough, nothing to do" every tick.
+				hasLineOfSight = self.CanInteractWith(target).Allow;
 			}
 
 			int distance = Point2D.GetSimpleDistance(self, target);
@@ -413,11 +427,25 @@ namespace SteamEngine.CompiledScripts {
 			if (self.Mana < spell.ManaUse) {
 				return false;
 			}
-			if (Point2D.GetSimpleDistance(self, target) > SpellCastRange) {
-				return false;
-			}
-			if (!self.CanInteractWith(target).Allow) {
-				return false;
+
+			//real-user-reported: a beneficial spell (a self/protective buff, e.g. Magic
+			//Reflection - SpellFlag.IsBeneficial) was being aimed straight at the enemy target,
+			//same as an offensive one, since PickSpell picks uniformly among def.Spells with no
+			//concept of what a spell actually DOES. Only a harmful spell should ever be aimed at
+			//the enemy; a beneficial one targets the caster itself - mirrors exactly how the real
+			//player-cast flow (SpellDef.cs's own On_Start) derives this from the same flags.
+			bool isBeneficial = (spell.Flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial;
+			Character effectTarget = isBeneficial ? self : target;
+
+			if (!isBeneficial) {
+				//a self-targeted buff needs neither the enemy's distance nor a clear shot at it -
+				//only an offensive spell actually needs to reach the enemy.
+				if (Point2D.GetSimpleDistance(self, target) > SpellCastRange) {
+					return false;
+				}
+				if (!self.CanInteractWith(target).Allow) {
+					return false;
+				}
 			}
 
 			this.nextSpellCastTime = Globals.TimeInSeconds + Math.Max(SpellCastCooldownSeconds, spell.CastTime);
@@ -434,9 +462,18 @@ namespace SteamEngine.CompiledScripts {
 			//skill value - NPCs don't have meaningful skill points set up for this, and "this monster
 			//is an expert at its own signature spell" is a reasonable assumption for a first pass.
 			const int spellPower = 700;
-			Logger.WriteDebug("NPCAiTimer.TryCastSpell: " + self.Name + "#" + self.Uid + " casts " + spell.Name + " at " + target.Name);
-			SpellEffectArgs args = SpellEffectArgs.Acquire(self, target, target, spell, spellPower, EffectFlag.FromAbility | EffectFlag.HarmfulEffect);
-			spell.Trigger_EffectChar(target, args);
+			Logger.WriteDebug("NPCAiTimer.TryCastSpell: " + self.Name + "#" + self.Uid + " casts " + spell.Name + " at " + effectTarget.Name);
+			//real-user-reported, a second bug found testing the fix above: EffectFlag.FromAbility
+			//(the original flag here) isn't one of the two "source" flags DurableCharEffectSpellDef.
+			//On_EffectChar actually recognizes (FromPotion/FromSpellBook, needed to pick which
+			//EffectPluginKey to install under) - any buff/debuff-shaped spell (anything deriving
+			//from DurableCharEffectSpellDef, e.g. Magic Reflection) cast via this AI path always
+			//threw "Undefined source type" and silently never installed its effect plugin at all,
+			//even once correctly targeted. FromSpellBook matches the same "no other real source"
+			//assumption the normal player-cast flow already makes (SpellDef.cs's own On_Start).
+			EffectFlag effectFlag = EffectFlag.FromSpellBook | (isBeneficial ? EffectFlag.BeneficialEffect : EffectFlag.HarmfulEffect);
+			SpellEffectArgs args = SpellEffectArgs.Acquire(self, effectTarget, effectTarget, spell, spellPower, effectFlag);
+			spell.Trigger_EffectChar(effectTarget, args);
 			return true;
 		}
 
