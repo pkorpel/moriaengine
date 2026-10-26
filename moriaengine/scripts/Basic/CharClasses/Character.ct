@@ -46,6 +46,7 @@ Def:	//vars on the def
 	int resistSummon = 0
 	int resistDragon = 0
 	int resistParalyse = 0
+	int resistCurse = 0
 	int armorVsM = 0
 	int armorVsP = 0
 	

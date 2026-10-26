@@ -17,6 +17,7 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Networking;
@@ -378,6 +379,35 @@ namespace SteamEngine.CompiledScripts {
 			return RollStatRange(range);
 		}
 
+		//real archive resist tags are frequently a Sphere {min max}/<eval {min max}> range
+		//(e.g. c_titan's tag.resist_para=<eval {700 800}>, meant to roll a different value
+		//per spawn - UO precedent: a titan's paralyze resist genuinely varies instance to
+		//instance, not a fixed 750 every time) - these exact Character/CharacterDef property
+		//names (Character.cs's own ResistX wrapper properties), kept in sync by hand since
+		//Character.ct's Def: section has no reflection-friendly "list all resist fields"
+		//mechanism of its own.
+		private static readonly HashSet<string> knownResistFieldNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+			"ResistMagic", "ResistFire", "ResistElectric", "ResistAcid", "ResistCold",
+			"ResistPoison", "ResistMystical", "ResistPhysical", "ResistSlashing",
+			"ResistStabbing", "ResistBlunt", "ResistArchery", "ResistBleed", "ResistSummon",
+			"ResistDragon", "ResistParalyse", "ResistCurse"
+		};
+
+		private static readonly TagKey resistRangesTK = TagKey.Acquire("_resistRanges_");
+
+		/// <summary>Starting Resist* {min, max} ranges for a fresh NPC of this type, keyed by
+		/// the real Character property name (e.g. "ResistPoison") - same generic-dictionary
+		/// shape as SkillValueRanges above, since there are 17 resist fields, not a small fixed
+		/// set worth a dedicated property each. Rolled once at creation by NPC.On_Create, which
+		/// sets the rolled value directly on the live Character instance (via reflection, since
+		/// the property name is only known as a string) - Character's own ResistX setters
+		/// already store it as a delta against this NPCDef's own (now otherwise-unused) base
+		/// Resist* scalar, exactly like the Str/Dex/Int precedent (#559) above.</summary>
+		public Dictionary<string, int[]> ResistRanges {
+			get { return this.GetTag(resistRangesTK) as Dictionary<string, int[]>; }
+			set { this.SetTag(resistRangesTK, value); }
+		}
+
 		/// <summary>One "Equip = defname[, amount or {min max}]" line (#563) - the real archive's
 		/// ITEMNEWBIE grants. AmountRange is null when the line didn't specify one (just equip
 		/// one of the item).</summary>
@@ -675,6 +705,26 @@ namespace SteamEngine.CompiledScripts {
 				this.FoodTypes = entries;
 				return;
 			}
+			//a .def field name matching a real Character ResistX property (case-insensitive)
+			//is a starting resist {min max} range, e.g. "ResistParalyse = 700 800" or the
+			//single-value "ResistBlunt = 150" shape - same ParseStatRange helper and "never
+			//forward to base.LoadScriptLine" precedent as str/dex/int/fame/karma/maxhits
+			//above, so the NPCDef's own (otherwise redundant) base Resist* scalar never needs
+			//to be kept in sync - only the per-instance rolled value, set directly on the live
+			//Character by NPC.On_Create, actually matters.
+			if (knownResistFieldNames.Contains(param)) {
+				int[] resistRange = ParseStatRange(filename, line, param, args);
+				if (resistRange != null) {
+					if (this.ResistRanges == null) {
+						this.ResistRanges = new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase);
+					}
+					//stored key may not be in Character's exact PascalCase (the .def parser's
+					//own casing for `param` varies) - NPC.On_Create's roll step below looks the
+					//matching Character property up case-insensitively, so this is fine as-is.
+					this.ResistRanges[param] = resistRange;
+				}
+				return;
+			}
 			//#562 - a .def field name matching a SkillName enum member (case-insensitive) is a
 			//starting skill-value range, e.g. "Wrestling = 700 800" or "MagicResist = 900"
 			SkillName skillName;
@@ -860,6 +910,27 @@ namespace SteamEngine.CompiledScripts {
 					if (rolled >= 0) {
 						this.SetRealSkillValue((int) skillName, rolled);
 					}
+				}
+			}
+
+			//starting resist values, any subset of the 17 real Resist* properties the NPCDef
+			//configured - rolled once here (same as every other range above) and set directly
+			//on `this` (not def), via reflection since the property name is only known as a
+			//string. Character's own ResistX setters (Character.cs) already store this as a
+			//delta against TypeDef.ResistX, so the roll is correct regardless of whatever this
+			//NPCDef's own base Resist* scalar happens to be.
+			Dictionary<string, int[]> resistRanges = def.ResistRanges;
+			if (resistRanges != null) {
+				foreach (KeyValuePair<string, int[]> entry in resistRanges) {
+					PropertyInfo resistProperty = typeof(Character).GetProperty(entry.Key,
+						BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+					if (resistProperty == null) {
+						Logger.WriteWarning("NPC.On_Create (NPCDef " + def.PrettyDefname + ")",
+							"'" + entry.Key + "' is not a known Character resist property.");
+						continue;
+					}
+					int rolled = NPCDef.RollStatRange(entry.Value);
+					resistProperty.SetValue(this, rolled, null);
 				}
 			}
 

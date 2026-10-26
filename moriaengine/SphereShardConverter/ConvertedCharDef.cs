@@ -96,9 +96,10 @@ namespace SteamEngine.Converter {
 		//no dedicated property - DamageType.Sharp = Slashing|Stabbing is already a combined
 		//flag in this engine's own enum, so the faithful mapping writes the same value to
 		//both. "sumon" is a confirmed real typo variant of "summon" in the source archive.
-		//Deliberately NOT mapped here (flagged as a known gap, not silently invented): curse/
-		//silence/taunt/working - all real tags, but none has any matching resist/defense
-		//mechanic anywhere in moriaengine today (no Curse/Silence/Taunt system exists).
+		//"curse" maps to ResistCurse (added for this field specifically - a real, shipped
+		//Curse spell/effect exists, CurseSpellEffectPlugin, unlike silence/taunt/working
+		//below, which still have no matching mechanic anywhere in moriaengine and stay
+		//deliberately unmapped).
 		private static readonly Dictionary<string, string[]> resistFieldAliases =
 			new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase) {
 				{ "poison", new[] { "ResistPoison" } },
@@ -116,28 +117,37 @@ namespace SteamEngine.Converter {
 				{ "phys", new[] { "ResistPhysical" } },
 				{ "magic", new[] { "ResistMagic" } },
 				{ "acid", new[] { "ResistAcid" } },
-				{ "dragon", new[] { "ResistDragon" } }
+				{ "dragon", new[] { "ResistDragon" } },
+				{ "curse", new[] { "ResistCurse" } }
 			};
 
 		//shared by both placements (top-level LineImplTask above, @Create-body
-		//ProcessCreateTriggerLine case below) - parses the numeric value (a single number or
-		//a Sphere {min max}/<eval {min max}> range, averaged+rounded since the real engine
-		//field is a single int, same precedent as HandleArmor's averaging) and emits the
-		//mapped field(s). NPCDef-only - no PlayerDef in the archive ever sets these.
+		//ProcessCreateTriggerLine case below). Emits a SINGLE value ("N") or a real range
+		//("N1 N2") depending on how many numbers the source actually had - NOT averaged
+		//anymore. A Sphere {min max}/<eval {min max}> range (e.g. c_titan's own
+		//tag.resist_para=<eval {700 800}>) means "roll a different value per spawn", same
+		//semantics as every other ranged NPCDef field (Str/MaxHits/skill values/etc) -
+		//averaging into one flat number was silently discarding that per-instance
+		//randomization. NPCDef's own NPC.cs LoadScriptLine (engine side, not this converter)
+		//parses this "N1 N2" shape via the same ParseStatRange helper those other fields use.
+		//NPCDef-only - no PlayerDef in the archive ever sets these.
 		private static void EmitResistFields(ConvertedDef def, string resistKind, string value, string comment) {
 			string[] fieldNames;
 			if (!resistFieldAliases.TryGetValue(resistKind, out fieldNames)) {
-				return; //curse/silence/taunt/working/etc - no matching mechanic, leave unmapped
+				return; //silence/taunt/working/etc - no matching mechanic, leave unmapped
 			}
 			MatchCollection resistMatches = numberRE.Matches(value);
 			if (resistMatches.Count == 0) {
 				return;
 			}
-			double sum = 0;
-			for (int i = 0; i < resistMatches.Count; i++) {
-				sum += double.Parse(resistMatches[i].Value, CultureInfo.InvariantCulture);
+			int first = (int) Math.Round(double.Parse(resistMatches[0].Value, CultureInfo.InvariantCulture));
+			string emitted;
+			if (resistMatches.Count > 1) {
+				int second = (int) Math.Round(double.Parse(resistMatches[1].Value, CultureInfo.InvariantCulture));
+				emitted = first + " " + second;
+			} else {
+				emitted = first.ToString(CultureInfo.InvariantCulture);
 			}
-			string averaged = Math.Round(sum / resistMatches.Count).ToString(CultureInfo.InvariantCulture);
 			//#656 - "specific" (a single-field alias, e.g. slash/pierce) always wins over
 			//"general" (a multi-field alias - currently only "sharp") for a given field,
 			//regardless of which one this chardef happens to list first.
@@ -148,7 +158,7 @@ namespace SteamEngine.Converter {
 				if (charDef.pendingResistFields.TryGetValue(fieldName, out existing) && existing.Specific && !specific) {
 					continue; //a specific tag already claimed this field - the general tag defers to it
 				}
-				charDef.pendingResistFields[fieldName] = new PendingResist { Value = averaged, Comment = comment, Specific = specific };
+				charDef.pendingResistFields[fieldName] = new PendingResist { Value = emitted, Comment = comment, Specific = specific };
 			}
 		}
 

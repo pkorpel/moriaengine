@@ -36,7 +36,42 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("electric=100", line);
 				Assert.Contains("slashing=-100", line);
 				Assert.Contains("stabbing=-100", line);
+				//#(resist-ranges) - ResistParalyse is "700 800" in the .def, a real per-spawn
+				//roll, not a fixed value - assert it's in-range rather than an exact number.
+				Assert.InRange(ExtractIntValue(line, "paralyse="), 700, 800);
+				Assert.Contains("curse=-100", line);
 			}
+		}
+
+		[Fact]
+		public void ResistRangeRollsDifferentValuesAcrossSpawns() {
+			//proves ResistParalyse is actually ROLLED per spawn (not just clamped/validated
+			//to be in-range by coincidence) - creates several NPCs and checks the roll isn't
+			//the same single value every time. Statistically near-certain to see >1 distinct
+			//value across 20 rolls of a 101-wide range (700-800) if rolling for real.
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "ResistRangeChecker")) {
+				var seenValues = new System.Collections.Generic.HashSet<int>();
+				for (int i = 0; i < 20; i++) {
+					int markerLength = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestCreateResistNpcAndReport");
+					Assert.True(this.fixture.WaitForGameOutput("NPC_RESIST_TEST_RESULT:", TimeSpan.FromSeconds(10)));
+					string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "NPC_RESIST_TEST_RESULT:");
+					seenValues.Add(ExtractIntValue(line, "paralyse="));
+				}
+				Assert.True(seenValues.Count > 1,
+					"Expected ResistParalyse to vary across spawns (range 700-800), but every roll produced the same value - rolling is not actually happening.");
+			}
+		}
+
+		private static int ExtractIntValue(string line, string fieldPrefix) {
+			int idx = line.IndexOf(fieldPrefix, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find '" + fieldPrefix + "' in: " + line);
+			int start = idx + fieldPrefix.Length;
+			int end = start;
+			while ((end < line.Length) && (char.IsDigit(line[end]) || (line[end] == '-'))) {
+				end++;
+			}
+			return int.Parse(line.Substring(start, end - start));
 		}
 
 		private static string LastLineContaining(string output, string marker) {
