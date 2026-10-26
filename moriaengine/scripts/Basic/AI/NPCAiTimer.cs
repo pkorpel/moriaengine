@@ -373,7 +373,14 @@ namespace SteamEngine.CompiledScripts {
 			//skill sequence itself (WeaponSkillDef.On_Stroke) already retries on its own every second
 			//until it's close enough and lands a hit; re-adding every AI tick was aborting that
 			//in-progress sequence before it ever got the chance.
-			if (this.lastEngagedTarget != target) {
+			//
+			//real-user-reported: a ranged NPC fired a few shots then stopped attacking entirely
+			//(a caster NPC in the same fight kept going fine). lastEngagedTarget alone isn't
+			//enough - a transient LOS loss during On_Stroke silently deletes the whole
+			//WeaponSkillTargetQueuePlugin (see IsActivelyEngaging's own doc comment), and
+			//lastEngagedTarget has no way to notice that happened. Re-add whenever the plugin's
+			//own state disagrees with ours, not just on a target change.
+			if ((this.lastEngagedTarget != target) || !WeaponSkillTargetQueuePlugin.IsActivelyEngaging(self, target)) {
 				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " handing " + target.Name + " to WeaponSkillTargetQueuePlugin (new engagement)");
 				WeaponSkillTargetQueuePlugin.AddTarget(self, target);
 				this.lastEngagedTarget = target;
