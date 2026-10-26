@@ -2129,17 +2129,19 @@ DEFNAME = i_pegbaord
 [ItemDef 0xc3a]
 DUPEITEM = i_pegbaord
 
-[ItemDef 0xdbf]
+[EquippableDef 0xdbf]
 CATEGORY = Items by Professions
 SUBSECTION = Fisherman
 DESCRIPTION = Fishing Pole
 
 TYPE = T_FISH_POLE
+tooltype = FishingPole //guessed by Converter 
 //DUPELIST = 0dc0 // commented out by Converter 
 WEIGHT = 20
 RESOURCES = 5 i_cloth
 RESOURCES2 = 1 i_log, 1 i_thread
 SKILLMAKE = 350 carpentry, 300 tailoring, 1 t_carpentry //some resources were fixed by converter 
+layer = 2 //Set by Converter 
 DEFNAME = i_fishing_pole
 
 [ItemDef 0xe34]
