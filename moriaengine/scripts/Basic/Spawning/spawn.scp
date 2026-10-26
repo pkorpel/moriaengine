@@ -208,7 +208,12 @@ endif
 
 [function f_spawninit]//argv0 - info object
 arg spawnGem = i_worldgem_bit.Create(this)
-//spawnGem.Flags=attr_move_never|attr_invis //TODO - az to bude implementovany tak to tam dat.
+//#697 - movenever+invis so the gem doesn't show up on the ground or get accidentally
+//picked up/moved; SetAttribute (not a raw .Attributes= bitmask assignment, which was
+//this line's own original broken approach) also re-evaluates the per-item decay timer,
+//exempting the gem from #371's "ground items decay by default" policy.
+spawnGem.SetAttribute(attr_move_never,1)
+spawnGem.SetAttribute(attr_invis,1)
 spawnGem.tag.spawnInfo = argv(0) //store the spawn information (amounts, times, chardef/spawngroup, homedist)
 spawnGem.tag.spawnedCount = 0
 

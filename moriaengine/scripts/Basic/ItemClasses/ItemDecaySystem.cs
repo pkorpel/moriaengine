@@ -114,6 +114,15 @@ namespace SteamEngine.CompiledScripts {
 			if (item.HasAttribute(ItemAttributes.attr_questitem)) {
 				return null; //exempt, no clock at all
 			}
+			if (item.Flag_NonMovable) {
+				//#697 - a permanently-fixed item (attr_static/attr_move_never, e.g. a GM-placed
+				//.static fixture or a .spawn gem) is conceptually the same "never trash, meant to
+				//persist indefinitely" category as a locked-down house item below - #371's
+				//"everything loose on the ground decays by default" policy never accounted for
+				//this, so any such item (not just new ones - every attr_movenever item already in
+				//the real archive content) was silently at risk of decaying away once dropped.
+				return null;
+			}
 			if (item.HasAttribute(ItemAttributes.attr_lockeddown) || item.HasAttribute(ItemAttributes.attr_secure)) {
 				return null; //player-secured house items are never trash, regardless of attr_decay
 			}
