@@ -1,5 +1,71 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): 4-item live-testing batch - pickaxe/fishing-pole tools + healer NPC crash + ability overflow (#677-680)
+
+User reported 4 items from live testing, all raised as issues first then fixed, shipped as 2 PRs same day.
+
+**#677/#678 - i_pickaxe didn't trigger Mining, i_fishing_pole wasn't equippable - SHIPPED (PR #681).**
+Both are converter gaps in the TYPE→WeaponType/EquippableDef classification, same family as #157/#390's
+WeaponType-guessing work. `i_pickaxe`'s real archive `TYPE=t_weapon_bow_run` (the same TYPE real "running
+bow" variants use - a genuine archive-authoring quirk, not a converter bug) makes it compute as a
+`WeaponDef` with `WeaponType.Bow`, with zero connection to `EquippableDef.ToolType`/`AssociatedSkill`
+(#392) - fixed with a defname-keyed `tooltype=Pickaxe` override in `ConvertedItemDef.ThirdStage`, same
+shape as the existing `passthroughTriggers` allowlist precedent. `i_fishing_pole`'s TYPE (`T_FISH_POLE`)
+had NO case at all in the converter's `HandleType` switch, so it fell to the generic `default:` branch
+(which only recognizes `t_weapon*` prefixes) and stayed a plain non-equippable `ItemDef` - added a real
+case mapping it to `EquippableDef` + `tooltype=FishingPole`. Confirmed via the ALREADY-EXISTING protocol
+tests in `GatheringTests.cs` (`DclickPickaxeInBackpackEquipsAndStartsMining`/
+`DclickPickaxeWhileEquippedStartsMining`/`FishingAllowedWithFishingPoleEquipped`) - all 3 failed on `main`
+before this fix, now pass. Regenerated only `item_tinker.def`/`item_nabytek.def` (confirmed via a full
+archive regen-and-diff these are the only 2 files affected, besides the already-known pre-existing
+`systems/aldaron.def` resist-order drift noted under #670 above).
+
+**#679/#680 - adding c_f_healer/c_m_healer to the game: bogus warning + outright crash - SHIPPED (PR
+#682).** Much bigger than it looked - a genuine, widespread archive-wide converter gap, not healer-
+specific. The real archive's `ITEMNEWBIE=random_male_hair`/`random_female_hair`/`random_facial_hair` are
+native Sphere "roll me a random hairstyle" keywords, not real ItemDefs - passed through literally before
+this fix, so `ThingDef.GetByDefname` always failed (logged, not fatal - #679's first symptom). Far worse:
+a `COLOR=` line immediately following an `ITEMNEWBIE=` line colors THAT ITEM specifically (not the
+character's own base skin tone) - includes the `match_hair` pseudo-color, meaning "same color as the
+item equipped just before this one" (e.g. a beard matching its own head hair). The converter was
+collapsing EVERY such line into one generic, last-line-wins top-level `Character.Color` field - so
+`match_hair` (having no fixed value at all) reached `ConvertTools.ParseAnyNumber` as a literal string and
+threw, crashing `Thing`'s own constructor outright and aborting character creation entirely (#680's
+CRITICAL crash - `c_m_HEALER` specifically, since it's the one with 2+ `COLOR=` lines in its body, the
+2nd being `match_hair`). Confirmed via a full archive regen-and-diff this exact pattern appears on ~81
+chardefs across the WHOLE archive (guards, quest NPCs, vendors, not healer-specific) - fixed generically:
+a new per-equipment-entry `EquipColor` field (`NPCDef.StartingEquipmentEntry.Color`) pairs a `COLOR=`
+line with whichever `Equip=`/`ITEMNEWBIE=` entry precedes it (tracked via a `pendingEquipColorTarget`
+flag in `ConvertedCharDef.ProcessCreateTriggerLine`, reset on every OTHER line so it only ever pairs with
+the IMMEDIATELY preceding item line); `NPC.On_Create` now rolls a real item from
+`NPCDef.MaleOrFemaleHairPool`/`FacialHairPool` (real existing `i_hair_*`/`i_beard_*` EquippableDefs) for
+the 3 keywords, and resolves `match_hair` by copying `lastHairColor` (tracked across the loop) instead of
+ever reaching the generic LScript-snippet color-expression evaluator - a non-`match_hair` per-item color
+(plain hex, or a symbolic range like `colors_hair`) still resolves via that same evaluator
+(`LScriptMain.RunSnippet`), same mechanism a top-level `Color=` field already used, just now correctly
+scoped to the one item instead of the whole character.
+
+**Second, unrelated bug found via the same repro, fixed in the same PR**: the repeating `TimeSpan
+overflowed` ERROR spam in #679's log is `AbilityDef.On_DenyActivate`'s cooldown check
+(`Globals.TimeAsSpan - ab.LastUsage`) - `Ability`'s own ctor sets `lastUsage = TimeSpan.MinValue` as its
+"never used" sentinel (a deliberate, already-shipped fix from the Mage Phase 7 work, #483/#491), but
+nothing ever guarded the subtraction itself against that exact value - `TimeSpan.MinValue` has no
+positive counterpart (same class of bug as `int.MinValue` negation), so subtracting it from ANYTHING
+always throws, for literally any first-ever activation of any Cooldown-bearing ability (here: the real
+archive-wide stub abilities from the 2026-10-26 monster-testing batch, e.g. `c_f_healer`'s granted
+`a_tevent_e_healer`). Fixed by short-circuiting around the sentinel (`ab.LastUsage != TimeSpan.MinValue
+&& ...`) so the overflow-prone subtraction is never evaluated when nothing's been recorded yet.
+
+Verified: new `HealerNpcSpawnTests.SpawningBothHealersSucceedsAndMatchesHairColor` (spawns both healers
+directly, confirms real hair/beard items land and the beard's color matches the hair's - the actual
+point of `match_hair`) and `AbilityCooldownOverflowTests.ActivatingANeverUsedAbilityDoesNotThrow`
+(red/green confirmed - reverted the `AbilityDef.cs` fix, reproduced the exact `OverflowException`;
+restored, green). Fast tier 53/53 both PRs; a direct `GameCore.dll` boot shows zero `match_hair`/
+`is not a known ItemDef` warnings and the pre-existing "defined multiple times" baseline (449) unchanged.
+The 2 pre-existing unrelated `GatheringTests` failures (`EquippingHatchetDisplacesMismatchedOneHandedWeapon`,
+`TamingSetsControlMaster`) were confirmed present BEFORE any of this session's changes too - not a
+regression, not investigated further (out of scope for this batch).
+
 ## DONE (2026-10-26): race picker used the WRONG SingletonScript instance (#674, also closed #671)
 
 **Read this section first if picking up any more `SingletonScript<T>`/race-selection work.**
