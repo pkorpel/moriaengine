@@ -151,8 +151,21 @@ namespace SteamEngine {
 			}
 		}
 
+		//real stackability (potions, bandages, bolts, arrows, scrolls, gold, ...) is
+		//virtually never set explicitly by a script in real Sphere/UO content - the
+		//archive's own comment on the equivalent tiledata-dump field confirms it's
+		//sourced from the item's GRAPHIC's own tiledata flag ("CAN_I_PILE ... Can item
+		//be piled UFLAG2_STACKABLE (*.mul)"), not a per-itemdef property. `stackable`
+		//being left at its coded default (false) therefore does NOT mean "not
+		//stackable" - it means "ask tiledata instead", same fallback-to-tiledata
+		//precedent DispidInfo already provides for Name/PluralName below. An explicit
+		//script STACKABLE=0/1 (IsDefaultCodedValue false) still always wins.
 		public bool IsStackable {
 			get {
+				if (this.stackable.IsDefaultCodedValue) {
+					ItemDispidInfo idi = this.DispidInfo;
+					return (idi != null) && TileData.HasFlag(idi.Flags, TileFlag.Stackable);
+				}
 				return (bool) this.stackable.CurrentValue;
 			}
 			set {
