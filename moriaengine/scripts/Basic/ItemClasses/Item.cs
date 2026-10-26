@@ -116,12 +116,18 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				this.attributes &= ~flag;
 			}
-			if ((flag == ItemAttributes.attr_decay) || (flag == ItemAttributes.attr_questitem) ||
-					(flag == ItemAttributes.attr_lockeddown) || (flag == ItemAttributes.attr_secure)) {
-				ItemDecaySystem.ScheduleOrCancel(this); //#219/#371 - re-evaluate the per-item decay timer
-			}
 			if ((flag == ItemAttributes.attr_static) || (flag == ItemAttributes.attr_move_never) || (flag == ItemAttributes.attr_move_always)) {
 				this.RecomputeNonMovable(); //#220
+			}
+			if ((flag == ItemAttributes.attr_decay) || (flag == ItemAttributes.attr_questitem) ||
+					(flag == ItemAttributes.attr_lockeddown) || (flag == ItemAttributes.attr_secure) ||
+					(flag == ItemAttributes.attr_static) || (flag == ItemAttributes.attr_move_never) ||
+					(flag == ItemAttributes.attr_move_always)) {
+				//#697 - the last 3 flags are new here: Flag_NonMovable (just recomputed above) is
+				//now also a decay exemption (see ItemDecaySystem's own comment), so toggling any
+				//of the 3 attributes that feed it must re-evaluate the timer too, same as the
+				//pre-existing 4 decay-gating flags already did.
+				ItemDecaySystem.ScheduleOrCancel(this); //#219/#371/#697 - re-evaluate the per-item decay timer
 			}
 			if (flag == ItemAttributes.attr_invis) {
 				this.Flag_Invisible = value; //#224 - the only write path Flag_Invisible ever gets

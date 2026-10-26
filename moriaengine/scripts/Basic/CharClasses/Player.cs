@@ -595,6 +595,33 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void Add(IThingFactory addedDef, int amount) {
+			this.AddInternal(addedDef, amount, false);
+		}
+
+		/// <summary>#697 - the ".static" GM command: identical to Add in every respect (same
+		/// targeting-cursor placement flow) except the created item gets attr_move_never set
+		/// once placed. Confirmed against the real Sphere 0.56b engine source (CV_ADD/CV_STATIC
+		/// both funnel through the one shared Cmd_CreateItem(id, fStatic)/OnTarg_Item_Add path -
+		/// fStatic's only effect is one extra SetAttr(ATTR_MOVE_NEVER) call after creation, no
+		/// separate placement logic) - mirrored here the same way, as one extra bool through the
+		/// existing Add plumbing rather than a parallel implementation.</summary>
+		public void Static(int model) {
+			this.Static(ThingDef.GetByModel(model), 1);
+		}
+
+		public void Static(IThingFactory addedDef) {
+			this.Static(addedDef, 1);
+		}
+
+		public void Static(int model, int amount) {
+			this.Static(ThingDef.GetByModel(model), amount);
+		}
+
+		public void Static(IThingFactory addedDef, int amount) {
+			this.AddInternal(addedDef, amount, true);
+		}
+
+		private void AddInternal(IThingFactory addedDef, int amount, bool fStatic) {
 			GameState state = this.GameState;
 			if (state != null) {
 				if (addedDef != null) {
@@ -602,7 +629,7 @@ namespace SteamEngine.CompiledScripts {
 					this.SysMessage("Kam chce� um�stit '" + name + "' ?");
 
 					ItemDef idef = addedDef as ItemDef;
-					AddHelper addedH = new AddHelper(addedDef, amount);
+					AddHelper addedH = new AddHelper(addedDef, amount, fStatic);
 					if ((idef != null) && (idef.MultiData != null)) {
 						state.TargetForMultis(idef.Model, this.Add_OnTargon, null, addedH);
 					} else {
@@ -617,9 +644,11 @@ namespace SteamEngine.CompiledScripts {
 		private class AddHelper {
 			internal IThingFactory def;
 			internal int amount;
-			public AddHelper(IThingFactory def, int amount) {
+			internal bool fStatic;
+			public AddHelper(IThingFactory def, int amount, bool fStatic) {
 				this.def = def;
 				this.amount = amount;
+				this.fStatic = fStatic;
 			}
 		}
 
@@ -634,6 +663,9 @@ namespace SteamEngine.CompiledScripts {
 			Item i = t as Item;
 			if (i != null) {
 				i.Amount = addedH.amount;
+				if (addedH.fStatic) {
+					i.SetAttribute(ItemAttributes.attr_move_never, true);
+				}
 			}
 		}
 		#endregion Add

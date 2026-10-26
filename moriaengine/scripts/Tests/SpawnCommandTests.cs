@@ -53,6 +53,24 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("WANDER_LEASH_TEST: none found");
 		}
 
+		/// <summary>#697 - the spawn gem must be movenever/invisible/non-decaying (spawn.scp's
+		/// own long-standing TODO, finally resolved now that SetAttribute's real decay
+		/// re-evaluation covers these flags too - see ItemDecaySystem's own doc comment).</summary>
+		[SteamFunction]
+		public static void TestVerifySpawnGemAttrs(Character self) {
+			foreach (AbstractItem item in self.GetMap().GetItemsInRange(self.X, self.Y, 20)) {
+				if (item.Def.Altdefname != null &&
+					item.Def.Altdefname.Equals("i_worldgem_bit", StringComparison.OrdinalIgnoreCase)) {
+					Item asItem = (Item) item;
+					Console.WriteLine("GEM_ATTRS_TEST: nonMovable=" + asItem.Flag_NonMovable +
+						" invisible=" + asItem.Flag_Invisible +
+						" hasDecayTimer=" + ItemDecaySystem.HasActiveTimer(asItem));
+					return;
+				}
+			}
+			Console.WriteLine("GEM_ATTRS_TEST: no gem found");
+		}
+
 		private static readonly TagKey spawnGemTK = TagKey.Acquire("spawnGem");
 		private static readonly TagKey spawnedCountTK = TagKey.Acquire("spawnedCount");
 		private static readonly TimerKey spawnTimerTK = TimerKey.Acquire("SpawnTimer");

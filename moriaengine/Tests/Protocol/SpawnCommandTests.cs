@@ -119,6 +119,29 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertSeen("SPAWN_TEST: gem=True npc=True", TimeSpan.FromSeconds(10));
 			}
 		}
+
+		/// <summary>#697 - the spawn gem must be movenever/invisible/non-decaying. Same setup as
+		/// GmSpawnCommandCreatesGemAndSpawnsNpc above - safe to share collection A, since this
+		/// is a positive assertion on the newly-created gem's own state, not a negative
+		/// assertion a leftover object from another test could break.</summary>
+		[Fact]
+		public void SpawnGemIsMoveNeverInvisibleAndNonDecaying() {
+			using (var client = this.ConnectLoginAndCreateCharacter("SpawnGmAGem")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				client.SendSpeech(".spawn");
+				var (gumpUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+
+				client.SendGumpResponse(gumpUid, 1, new Dictionary<int, string> {
+					{ 10, "1" }, { 100, "c_a_jackrabbit" }, { 101, "1" }, { 12, "1" }, { 13, "2" }, { 14, "1" },
+				});
+				Thread.Sleep(3000);
+
+				client.SendSpeech(".TestVerifySpawnGemAttrs");
+				this.AssertSeen("GEM_ATTRS_TEST: nonMovable=True invisible=True hasDecayTimer=False", TimeSpan.FromSeconds(10));
+			}
+		}
 	}
 
 	[Collection(SpawnCommandCollectionB.Name)]
