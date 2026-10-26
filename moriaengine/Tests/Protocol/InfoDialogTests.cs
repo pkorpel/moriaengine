@@ -44,6 +44,25 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
+		public void AbilitiesFieldHasARealDataView() {
+			using (var client = this.ConnectLoginAndCreateCharacter("InfoAbilitiesTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckAbilitiesDataView");
+				this.AssertSeen("ABILITIES_DATAVIEW:", mark, TimeSpan.FromSeconds(10));
+				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "ABILITIES_DATAVIEW:");
+
+				Assert.DoesNotContain("no top-level DataView", resultLine);
+				Assert.DoesNotContain("Abilities field not found", resultLine);
+				Assert.DoesNotContain("no DataView for Abilities value type", resultLine);
+				Assert.Contains("found DataView", resultLine);
+				Assert.DoesNotContain("real ability count=0", resultLine);
+			}
+		}
+
+		[Fact]
 		public void InfoDialogOnCorpseDoesNotCrash() {
 			using (var client = this.ConnectLoginAndCreateCharacter("InfoCorpseTester")) {
 				client.SendSpeech(".TestSetGmOn");
