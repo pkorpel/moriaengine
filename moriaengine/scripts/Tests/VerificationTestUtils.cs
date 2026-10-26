@@ -71,5 +71,31 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 		}
+
+		/// <summary>Deletes every real dynamic Item of `itemDef`'s type within `range` tiles of
+		/// `self` - same leftover-content problem as CleanupNearbyNpcs/CleanupNearbyCorpses
+		/// above, just for ITEMS. Real finding (#692): LineOfSightBlockingTests/
+		/// VerticalLosBlockingTests place real i_wall_stone Items to test blocking, and - unlike
+		/// NPCs/Corpses - nothing ever cleaned those up. Three such tests sharing one
+		/// long-lived GameServerPairFixture meant a LATER test's own fresh "open ground" pick
+		/// could land close enough to an EARLIER test's leftover wall to report LOS already
+		/// blocked before that later test ever placed its own wall - a false failure with
+		/// nothing wrong in the actual LOS code being tested.</summary>
+		public static void CleanupNearbyItems(Character self, ItemDef itemDef, int range) {
+			List<Item> toDelete = new List<Item>();
+			foreach (AbstractItem item in self.GetMap().GetItemsInRange(self.X, self.Y, range)) {
+				if (item.Def == itemDef) {
+					Item asItem = item as Item;
+					if (asItem != null) {
+						toDelete.Add(asItem);
+					}
+				}
+			}
+			foreach (Item item in toDelete) {
+				if (!item.IsDeleted) {
+					item.Delete();
+				}
+			}
+		}
 	}
 }
