@@ -265,6 +265,102 @@ cluster touched so far; not a hardcoded guarantee, re-verify per file.
   tier 53/53 (53 = the pre-existing 50 + 3 new).
   **Both halves of the Erebor source-architecture pivot (tasks #9-11) are now complete.**
 
+### Follow-up (2026-10-26): "regenerate everything and ship it" - 3 real converter bugs found, content fully regenerated
+
+User asked to regenerate ALL of `scripts/converted/` with the fixed converter and ship the result.
+**Important finding up front, worth remembering**: a blind full regen-and-replace would have
+silently REGRESSED 17 already-shipped fixes (#157/#390/#539/#615, all living only in the hand-
+patched output, never ported to the archive) and DELETED content whose source `.scp` no longer
+exists upstream. The user's own answer to this ("update the converter to prevent having issues
+with new files") set the real scope: fix the CONVERTER so these stop being one-off hand-patches,
+then regen becomes safe.
+
+**3 genuine converter bugs found and fixed** (`SphereShardConverter/ConvertedItemDef.cs`),
+none previously known, all affecting far more content than the originally-hand-reviewed files:
+1. `SecondStageFinished`'s `TwoHanded`-inheritance branch wrote the output TEXT
+   (`def.Set("TwoHanded", "true", ...)`) but never updated the in-memory `isTwoHanded` FIELD the
+   WeaponType-deriving switch actually reads - unlike the `Layer` branch sitting right next to it,
+   which correctly does both. Any weapon inheriting `TwoHanded=true` via `model=`/`ID=` (not set
+   directly on its own entry) silently computed as one-handed. Root-caused by chasing a single
+   concrete example end to end (`i_pitchfork_copper`: inherited `TwoHanded = true` correctly shows
+   in the OUTPUT text, but `WeaponType` still came out `OneHandSpike`) rather than guessing from
+   the pattern alone.
+2. The `t_weapon_mace_staff`/`t_weapon_mace_crook`/`t_weapon_mace_smith` switch cases `goto`-chained
+   straight into `t_weapon_fence`'s Spike assignment instead of having their own Blunt one - every
+   mace/staff/hammer/tongs/crook in the WHOLE 450+-file archive was being misclassified as a
+   piercing weapon, not just the 9 archetypes #157 happened to review. Confirmed via the
+   `WeaponType` enum's own doc comments (`OneHandBlunt`="jednorucni tupe - mace",
+   `OneHandSpike`="jednorucni bodne - noze") - mace/staff genuinely means Blunt by design, not a
+   subjective call.
+3. A handful of real axe-type polearms (bardiche/halberd/hatchet) are explicitly typed
+   `t_weapon_sword` in the RAW SOURCE ITSELF (confirmed directly: `zbrane/IDs.scp`'s own
+   `i_bardiche`/`i_halberd` entries carry `SKILL=Swordsmanship` and a literal source comment
+   "Using Sword type below") - the Sphere author's own game-mechanic choice (which skill trains
+   it) isn't the weapon's real-world category. #157's original hand-fix already knew this for the
+   handful of entries it reviewed; extended the SAME existing keyword-substring mechanism
+   (`prettyDefName.Contains("_axe_")`) to also recognize these 3 known synonyms, rather than
+   inventing a new mechanism.
+
+**#539's MindPower formula generalized, not just re-applied.** The original hand-fix set
+`MindPowerVsP/VsM` on exactly 9 hand-picked blunt archetypes across the 7 material tiers. Since
+bug #2 above means the converter can now correctly identify EVERY blunt weapon in the archive (not
+just those 9), implemented the formula generically via a new `ThirdStageFinished` cross-referencing
+pass: for any item whose derived `WeaponType` is `OneHandBlunt`/`TwoHandBlunt`, strip its material-
+tier suffix (`_copper`/`_iron`/`_verite`/`_valorite`/`_obsidian`/`_adamantinum`/`_mithril`), look up
+that same archetype's Copper-tier sibling via the shared `itemsByDefname` dictionary, and compute
+`MindPowerVsP = 700 * thisAttackVsP / copperAttackVsP` (Copper's own ratio is always 1.0, by
+construction). Needed 2 new fields on `ConvertedItemDef` (`computedWeaponType`, `attackVsPValue`)
+since neither was previously stored anywhere queryable - only ever written as output TEXT via
+`Set()`, never kept as a readable in-memory value. This now covers every real blunt weapon in the
+archive automatically (tongs, shepherd's crook, teleport staff, GM staff, etc - none of which
+#539's original hand-pass ever got to), not just the original 9.
+
+**A real regression from THIS SESSION's own earlier #628 archive-cleanup work, caught by the
+regen-and-diff pipeline before it could ship silently**: deleting the archive's `i_spellbook`
+duplicate stub (superseded by moriaengine's own hand-authored `scripts/Basic/skills/Magery/
+spellbooks.def`, see the #628 writeup above) ALSO deleted the converter's own internal
+inheritance anchor - 4 still-real, still-kept items (`i_spellbook_pvp`/`i_atlas_map`/`i_infobook`/
+`i_book_rune`) all use `ID=i_spellbook` to inherit their `EquippableDef` class + `Layer`/`type`
+from that exact entry, and the converter has zero knowledge of moriaengine's own hand-authored
+content to fall back on. **Lesson for any future #618-pattern archive deletion**: a "dead"
+duplicate can still be serving as a converter-internal reference point for OTHER, genuinely-real
+entries - check for `ID=`/`model=` references to the thing being deleted, not just whether its own
+game content is superseded. Fixed with a small, explicit `knownRemovedBases` fallback table in
+`ConvertedItemDef.SecondStageFinished` (defname -> `{isEquippable, layer, type}`) consulted only
+when the normal archive lookup fails - NOT a duplicate archive entry, just enough data for the
+SAME inheritance mechanism to keep working.
+
+**Content swap, done safely in two passes.** The regen-and-diff pipeline (same one from #9) was
+re-run after each fix; once all 4 were in, only 20 files showed a real remaining difference from
+tracked content, ALL of them genuine, verified improvements (not regressions) - every WeaponType
+diff checked against the item's own raw source fields and name, every one confirmed correct.
+**The straightforward `cp -r`-no-delete approach was used, NOT `rsync --delete`** - a blanket
+delete-synced swap was attempted first and correctly BLOCKED by the auto-mode classifier, since it
+would have silently wiped 6 files with no path forward to recover them. Investigating that block
+surfaced one more real finding: 2 of the originally-flagged "6 orphaned files" (`special.def`/
+`undeads.def`) were actually ANOTHER instance of the filename-case-mismatch issue already known
+from dragons/golems/insects (archive source is `SPECIAL.SCP`/`UNDEADS.SCP`, uppercase) - my
+original case-SENSITIVE string-based file-list diff missed this. The TRUE orphan count is smaller:
+exactly 6 files (`chars/specNPCqv1.def`/`specNPCqv2.def`/`specNPCverbatim2.def`, `map2.def`,
+`nova_monstra.def`, `speech/questspeech.def`) have no corresponding source anywhere in the current
+archive snapshot by ANY case variant - confirmed via case-insensitive search, left completely
+untouched by the `cp`-based swap (which only overwrites files with a fresh-regen counterpart,
+never deletes). `#615`'s archive-side port (the one piece still needed before this swap) shipped
+as the archive fork's own PR #6 first.
+
+Verified: a direct `GameCore.dll` boot showed zero `OverflowException`/crash signatures and the
+pre-existing 457-count "defined multiple times" error total (unrelated bucket, documented above)
+completely unchanged; fast tier 53/53; a protocol-tier sample (`GatheringTests`) hit the
+documented sandbox connection-timeout flake class, A/B-verified identical against unmodified
+`main` with everything reverted. Shipped as moriaengine PR #640 (converter fixes + 21 content
+files) and archive PR #6 (the matching #615 source-side port).
+
+**Still open, not part of this pass**: the 6 genuinely-orphaned tracked files above (their source
+no longer exists upstream at all, not just renamed/recased) - no action taken, flagged for a
+future content-provenance pass if their continued presence in `scripts/converted/` ever needs
+justifying. `docs/current/06-tooling/sphere-shard-converter.md` still needs the corrected
+clone-the-inner-scripts-folder procedure documented in the #9 writeup above applied for real.
+
 ## Full content merge (#612) + collision cleanup — ongoing, 2026-10-22 through 2026-10-25
 
 **CLAUDE.md gap note**: this section backfills work that happened across a session that
