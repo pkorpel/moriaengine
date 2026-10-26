@@ -1,5 +1,70 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): banker/raceclass dclick hooks restored via archive, not hand-patch (#670)
+
+**Read this section first if picking up any more "a dialog stopped opening" reports, or any
+converter trigger-body work.** User reported `i_stone_raceclass` no longer opens the race
+picker, and bankers no longer open the bank box on double-click.
+
+**Root cause - the SAME failure mode as #596, just never caught by that investigation**:
+both `TEVENTS=e_banker` (attaches `BankerDClick.cs`, #509/#520) and `i_stone_raceclass`'s
+`on=@dclick` (calls `src.Dialog(d_raceclassentry)`, moriaengine's own #174 rework of the
+real archive's LScript race-selection dialogs) were hand-typed directly into
+`scripts/converted/` output at some point, with ZERO record in the archive source - so the
+big converter regen (PR #597, 2026-10-22) silently dropped both, and nobody noticed for 4
+days until the user tried them live.
+
+**User's explicit standing instruction, confirmed this session: do NOT hand-patch
+`scripts/converted/` output, ever - not even for moriaengine-specific hooks with no
+upstream equivalent.** Fix the real source (`erebor-sphere-archive` fork) and regenerate,
+full stop, even if that means extending the converter itself. This is now the hard rule for
+this whole class of problem - if a future regen ever drops a real custom hook again, add it
+to the fork, don't patch the output, even temporarily.
+
+**What this actually took**:
+- Banker: trivial - `TEVENTS=e_banker` added directly to `C_H_BANKER`/`C_H_BANKER_F` in the
+  archive fork (PR #7) - a plain field the converter already handles generically, works
+  immediately with zero converter changes.
+- Race-class stone: NOT trivial - `ConvertedThingDef` had no mechanism at all to emit any
+  item's trigger body except `@Create`'s (read specially, fully consumed line-by-line into
+  specific fields, never written back verbatim). Had to generalize it. **Important
+  guardrail added, not just a blanket fix**: resist the temptation to "just pass through
+  every trigger name found" - confirmed a DIFFERENT, unrelated item in the same archive
+  (`i_shooter_medkit`, `systems/aldaron.scp`) also has an `@dclick` body, but its body uses
+  real `if`/`endif` control flow and `<src.flags>` bracket expansion that this engine's own
+  LScript support has NO handling for at all (confirmed: grep `GameCore/LScript/` for
+  either keyword finds nothing) - a blanket pass-through would have silently resurrected
+  that as a real boot/parse risk, "fixing" one thing while quietly breaking another. Went
+  with a narrow, explicit `(defname -> trigger names)` allowlist instead
+  (`ConvertedThingDef.passthroughTriggers`) - currently just `i_stone_raceclass -> dclick`.
+  **Add a defname/trigger pair here ONLY after confirming its specific body is simple
+  enough for this engine to actually run** (plain single-statement calls like
+  `src.Dialog(...)`, never conditionals/loops/bracket-macro control flow) - don't widen this
+  allowlist opportunistically.
+
+**A genuinely NEW, separate bug surfaced by this fix, filed as #671, NOT fixed here**: with
+the dclick trigger restored, `RaceTests`' full-flow tests now get all the way through the
+real 4-step dialog chain (previously timed out immediately, dclick never fired) - but
+`player.Race`/`Profession`/`Nation` still never end up set after a valid stats submission.
+`D_RaceClassStats.OnResponse`'s validation logic (entry ids 10-13, `SubmitButtonId=1`,
+min/max ranges, the `RequiredSum=300` check) all look correct by direct inspection for the
+exact values the test submits - not root-caused yet, needs its own dedicated investigation
+(likely targeted diagnostic logging in `OnResponse`/`RaceSelection.Finish`, same approach
+#509 originally used).
+
+Shipped as PR #672 (`BankerDialogTests` 4/4 pass; full `scripts/converted/` regen-and-diff
+confirmed only `chars/vendors.def`/`newbie_portals.def` changed, exactly the expected new
+trigger lines; fast tier 53/53). Also removed leftover #509 debug logging from
+`BankerDClick.cs` now that the real cause is confirmed (the TriggerGroup itself was never
+the problem - it simply never ran, since nothing attached it).
+
+**Loose end spotted but NOT investigated, out of scope for #670**: a fresh regen of
+`systems/aldaron.def` shows a small, unrelated resist-range diff (`ResistParalyse = 800 850`
+newly appearing, some `ResistFire`/`ResistSummon`/`ResistPoison` lines reordered) compared
+to what #661 shipped - didn't chase this down, deliberately excluded `aldaron.def` from
+this PR's regen. Possibly a `Dictionary` iteration-order quirk in `#656`'s pending-resist
+merge logic; re-check if this file's resists ever come up again.
+
 ## DONE (2026-10-26): item stacking - gold/bandages/arrows/bolts/scrolls didn't merge (#667)
 
 **Read this section first if picking up any more item-stacking/tiledata work.** User
