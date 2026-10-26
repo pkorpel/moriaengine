@@ -16,8 +16,6 @@ FOODTYPE = 15 t_meat_raw
 WeaponAttack = 10
 armorVsP = 1
 armorVsM = 1
-ResistPoison = 1000
-ResistSummon = 1000
 //DESIRES = i_gold,t_reagent,t_bone // commented out by Converter 
 Str = 10 20
 Dex = 200 400
@@ -33,6 +31,8 @@ Fame = 0
 Karma = 9999
 Equip = random_male_hair
 Equip = random_facial_hair
+ResistPoison = 1000
+ResistSummon = 1000
 AggroMode = Calm
 
 [NPCDef c_jednorozec_prechod]

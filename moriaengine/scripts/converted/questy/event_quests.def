@@ -108,8 +108,8 @@ Wrestling = 557 801
 SpiritSpeak = 250
 AnimalTaming = 2000
 Experience = 5 10
-ResistPoison = 970
 Equip = i_monster_create
+ResistPoison = 970
 AggroMode = Hostile
 
 [NPCDef c_sberac_vajec]

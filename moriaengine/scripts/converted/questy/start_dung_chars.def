@@ -65,13 +65,13 @@ Int = 200
 Equip = random_male_hair
 Color = colors_hair
 Experience = 0 0
-ResistBleed = 1000
-ResistParalyse = 1000
-ResistPoison = 1000
 Tactics = 1000
 Wrestling = 1200
 MagicResist = 2500
 SpiritSpeak = 1500
+ResistBleed = 1000
+ResistParalyse = 1000
+ResistPoison = 1000
 AggroMode = Calm
 
 [NPCDef c_nb002]
@@ -91,13 +91,13 @@ Color = Colors_skin
 Equip = i_hair_long
 Color = 1
 Experience = 0 0
-ResistBleed = 1000
-ResistParalyse = 1000
-ResistPoison = 1000
 Tactics = 1000
 Wrestling = 1200
 MagicResist = 2500
 SpiritSpeak = 1500
+ResistBleed = 1000
+ResistParalyse = 1000
+ResistPoison = 1000
 AggroMode = Calm
 
 [NPCDef c_nb003]
@@ -116,13 +116,13 @@ Int = 200
 Equip = random_male_hair
 Color = colors_hair
 Experience = 0 0
-ResistBleed = 1000
-ResistParalyse = 1000
-ResistPoison = 1000
 Tactics = 1000
 Wrestling = 1200
 MagicResist = 2500
 SpiritSpeak = 1500
+ResistBleed = 1000
+ResistParalyse = 1000
+ResistPoison = 1000
 AggroMode = Calm
 
 [NPCDef c_nb004]
@@ -141,13 +141,13 @@ Int = 200
 Equip = random_male_hair
 Color = colors_hair
 Experience = 0 0
-ResistBleed = 1000
-ResistParalyse = 1000
-ResistPoison = 1000
 Tactics = 1000
 Wrestling = 1200
 MagicResist = 2500
 SpiritSpeak = 1500
+ResistBleed = 1000
+ResistParalyse = 1000
+ResistPoison = 1000
 AggroMode = Calm
 
 [NPCDef c_nb005]
@@ -166,13 +166,13 @@ Int = 200
 Equip = random_male_hair
 Color = colors_hair
 Experience = 0 0
-ResistBleed = 1000
-ResistParalyse = 1000
-ResistPoison = 1000
 Tactics = 1000
 Wrestling = 1200
 MagicResist = 2500
 SpiritSpeak = 1500
+ResistBleed = 1000
+ResistParalyse = 1000
+ResistPoison = 1000
 AggroMode = Calm
 
 [NPCDef c_nb006]
@@ -190,13 +190,13 @@ Int = 200
 Equip = random_male_hair
 Color = colors_hair
 Experience = 0 0
-ResistBleed = 1000
-ResistParalyse = 1000
-ResistPoison = 1000
 Tactics = 1000
 Wrestling = 1200
 MagicResist = 2500
 SpiritSpeak = 1500
+ResistBleed = 1000
+ResistParalyse = 1000
+ResistPoison = 1000
 AggroMode = Calm
 
 [NPCDef c_nb007]
@@ -215,13 +215,13 @@ Int = 200
 Equip = random_male_hair
 Color = colors_hair
 Experience = 0 0
-ResistBleed = 1000
-ResistParalyse = 1000
-ResistPoison = 1000
 Tactics = 1000
 Wrestling = 1200
 MagicResist = 2500
 SpiritSpeak = 1500
+ResistBleed = 1000
+ResistParalyse = 1000
+ResistPoison = 1000
 AggroMode = Calm
 
 [NPCDef c_nb_gatekeeper]
@@ -239,13 +239,13 @@ Int = 200
 Equip = random_male_hair
 Color = colors_hair
 Experience = 0 0
-ResistBleed = 1000
-ResistParalyse = 1000
-ResistPoison = 1000
 Tactics = 1000
 Wrestling = 1200
 MagicResist = 2500
 SpiritSpeak = 1500
+ResistBleed = 1000
+ResistParalyse = 1000
+ResistPoison = 1000
 AggroMode = Calm
 
 [NPCDef c_nb_healer]

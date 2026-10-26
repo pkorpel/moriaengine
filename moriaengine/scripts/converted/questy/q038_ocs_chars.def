@@ -25,8 +25,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0710
 Equip = i_beard_long
@@ -37,6 +35,8 @@ Equip = i_pants_long
 Color = 0008
 Equip = i_jester_suit
 Color = 0084
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_edgar]
@@ -64,14 +64,14 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0000
 Equip = i_beard_long
 Color = 0000
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_zalarnik]
@@ -99,10 +99,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_arnost]
@@ -130,10 +130,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_melichar]
@@ -161,10 +161,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_liecitelka]
@@ -192,10 +192,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_johana]
@@ -223,10 +223,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_baltazar]
@@ -254,10 +254,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_adrian]
@@ -285,10 +285,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_carodejnica]
@@ -316,10 +316,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_hungar]
@@ -348,10 +348,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_traig]
@@ -379,10 +379,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_sfenuk]
@@ -410,10 +410,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_umogon]
@@ -441,10 +441,10 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q038_ocs_kubrogin]
@@ -472,8 +472,8 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_robe
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm

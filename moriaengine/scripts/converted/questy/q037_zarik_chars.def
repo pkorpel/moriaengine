@@ -25,12 +25,12 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_short
 Color = 047D
 Equip = i_sandals
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q037_zarik_hospodsky]
@@ -58,8 +58,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0710
 Equip = i_boots_thigh
@@ -70,6 +68,8 @@ Equip = i_jester_suit
 Color = 0043
 Equip = i_cape
 Color = 0710
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q037_zarik_sabrina]
@@ -97,8 +97,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 047D
 Equip = i_dress_plain
@@ -107,6 +105,8 @@ Equip = i_sandals
 Color = 0000
 Equip = i_staff_black
 Color = 0000
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q037_zarik_urmughorg]
@@ -134,8 +134,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_short
 Color = 00
 Equip = i_platemail_leggings
@@ -148,6 +146,8 @@ Equip = i_platemail_arms
 Color = 099A
 Equip = i_sword_viking
 Color = 0989
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q037_zarik_wohy]
@@ -175,8 +175,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_short
 Color = 00
 Equip = i_pants_long
@@ -193,6 +191,8 @@ Equip = i_axe_two_hand
 Color = 00
 Equip = i_beard_short
 Color = 0710
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm
 
 [NPCDef c_q037_zarik_varjusa]
@@ -220,8 +220,6 @@ MagicResist = 300 400
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40
-ResistParalyse = 550
-ResistPoison = 650
 Equip = i_hair_long
 Color = 0710
 Equip = i_chainmail_tunic
@@ -232,4 +230,6 @@ Equip = i_boots_calf
 Color = 00
 Equip = i_cutlass
 Color = 00
+ResistParalyse = 550
+ResistPoison = 650
 AggroMode = Calm

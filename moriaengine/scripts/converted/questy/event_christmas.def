@@ -140,8 +140,8 @@ Wrestling = 557 801
 SpiritSpeak = 250
 AnimalTaming = 2000
 Experience = 10 30
-ResistPoison = 970
 Equip = i_monster_create
+ResistPoison = 970
 AggroMode = Hostile
 
 [NPCDef c_vanocni_sberac]
