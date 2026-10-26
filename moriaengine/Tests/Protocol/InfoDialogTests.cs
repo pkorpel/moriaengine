@@ -63,6 +63,23 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
+		public void TitanGetsStubAbilitiesForUnresolvedTevents() {
+			using (var client = this.ConnectLoginAndCreateCharacter("InfoTeventTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckTitanTeventAbilities");
+				this.AssertSeen("TEVENT_ABILITIES:", mark, TimeSpan.FromSeconds(10));
+				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "TEVENT_ABILITIES:");
+
+				Assert.Contains("hasMonster=True", resultLine);
+				Assert.Contains("hasCharacter=True", resultLine);
+				Assert.Contains("hasKnockback=True", resultLine);
+			}
+		}
+
+		[Fact]
 		public void InfoDialogOnCorpseDoesNotCrash() {
 			using (var client = this.ConnectLoginAndCreateCharacter("InfoCorpseTester")) {
 				client.SendSpeech(".TestSetGmOn");

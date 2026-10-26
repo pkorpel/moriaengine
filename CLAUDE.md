@@ -1,10 +1,12 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-26): 4-item live-testing batch on the new monsters (titan/titan_ranger/titan_mage)
+## DONE (2026-10-26): 4-item live-testing batch on the new monsters (titan/titan_ranger/titan_mage)
 
 **Read this section first if picking up new-monster-testing work.** User tested the recently-
-shipped monster content live and reported 4 items in one message. 3 of 4 are now resolved and
-shipped; #4 (the biggest, most architectural one) is next.
+shipped monster content live and reported 4 items in one message. All 4 are now resolved
+(3 shipped, 1 investigated-and-closed-not-planned, 1 shipped) - user is independently
+re-verifying item #2's "not a real bug" conclusion themselves; no action needed from this
+session unless they report back a concrete counterexample.
 
 **#1 - `.info`'s Skills list was empty for any character, even with real skills set - FIXED,
 SHIPPED (PR #647, closed #645).** Root cause: `Character.Skills` returned a bare
@@ -36,23 +38,17 @@ means "never falls to the corpse" (`Item.CanFallToCorpse`). `NPC.On_Create`'s st
 loop now sets `ItemAttributes.attr_newbie` unconditionally on every created instance. Verified
 red/green.
 
-**#4 - TEVENTS collisions/warnings redesign idea - NOT YET INVESTIGATED, up next.** 99.7% of
+**#4 - TEVENTS collisions/warnings redesign - FIXED, SHIPPED (PR #654, closes #653).** 99.7% of
 chardefs reference legacy Sphere LScript AI-hook TriggerGroup names (`e_monster`/`e_character`/
 etc) that this engine deliberately never built (replaced by the C# `NPCAiTimer` system) -
-`AbstractDefTriggerGroupHolder.LoadScriptLine` already handles a missing TriggerGroup gracefully
-(logs a warning, no-ops, never crashes), but the warning volume itself is noise. **User's
-proposed fix**: instead of a dangling TEVENTS reference that warns, create actual stub
-`AbilityDef`s for each of these legacy trigger/event names (one real `AbilityDef`, zero real
-implementation) and attach them to the monster the same way `NPCDef`/`Character` already expose
-a Skills list in `.info` (now fixed, see #1) - there's an analogous "Abilities" button/view in
-`.info` for characters, so these would become inspectable, organized, and structurally ready for
-a real implementation later, instead of silently-dropped text. **Not started** - need to first
-understand the existing `scripts/Basic/AbilitiesAndTalents/` system (`AbilityDef`, how an
-`Ability` gets granted to a `Character`, how `.info`'s Abilities view enumerates them,
-`AbilityDefDescriptor.cs`) before designing how legacy TEVENTS names would map onto it. This is
-the biggest, most architectural of the 4 items - bring a concrete design back to the user before
-implementing (this reshapes how ~450 files' worth of TEVENTS lines get interpreted, not a small
-tweak).
+`AbstractDefTriggerGroupHolder.LoadScriptLine` already handled a missing TriggerGroup gracefully
+(logs a warning, no-ops, never crashes), but the warning volume itself was noise. Implemented the
+user's proposed fix: `scripts/Basic/AbilitiesAndTalents/teventStubs.scp` now has one real,
+zero-effect `PassiveAbilityDef` per legacy name (generated from a full boot-log survey, lowercase-
+canonicalized); `AbstractDefTriggerGroupHolder` gained a `TryResolveUnknownTriggerGroupName`
+virtual extension point called before the old warning fires; `NPCDef` overrides it to grant the
+matching stub via a new `StartingAbilities` list, so the real intent now shows up in `.info`'s
+Abilities view (#651) instead of a silently-dropped warning. Verified red/green.
 
 ## ARCHITECTURE CHANGE IN PROGRESS (2026-10-25): fix the Erebor source, not the converted output
 

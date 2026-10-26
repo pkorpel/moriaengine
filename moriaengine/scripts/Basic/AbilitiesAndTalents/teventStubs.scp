@@ -1,0 +1,478 @@
+//#4 of the 2026-10-26 monster-testing batch - one real, zero-effect PassiveAbilityDef
+//stub per legacy Sphere AI-hook TriggerGroup name this engine never built (replaced by
+//NPCAiTimer). Auto-generated from a full boot-log survey of every 'is not a valid
+//TriggerGroup' warning's e_* name (see NPC.cs's TryResolveUnknownTriggerGroupName) -
+//granting one of these to an NPC on creation is what makes its real TEVENTS intent
+//inspectable via .info's Abilities view instead of a silently-dropped load warning.
+//Names are canonicalized to lowercase (defname lookup is case-insensitive throughout
+//this engine, AbstractScript.AllScriptsByDefname uses StringComparer.OrdinalIgnoreCase -
+//3 pairs in the raw survey, e.g. e_Acid_Damage/e_acid_damage, were the same name with
+//different casing and would have collided as separate stubs otherwise).
+//Same minimal shape as the pre-existing unimplementedAbilities.scp stubs - zero real
+//TriggerGroup/Plugin attached, so Activate() is a safe no-op; ready for a genuine
+//implementation later without touching content again.
+
+[PassiveAbilityDef a_tevent_e_acid_damage]
+Name = "(e_acid_damage)"
+
+[PassiveAbilityDef a_tevent_e_air]
+Name = "(e_air)"
+
+[PassiveAbilityDef a_tevent_e_aldaron_vamp]
+Name = "(e_aldaron_vamp)"
+
+[PassiveAbilityDef a_tevent_e_autoreflect]
+Name = "(e_autoreflect)"
+
+[PassiveAbilityDef a_tevent_e_backstub]
+Name = "(e_backstub)"
+
+[PassiveAbilityDef a_tevent_e_bahenny_drak_aura]
+Name = "(e_bahenny_drak_aura)"
+
+[PassiveAbilityDef a_tevent_e_bahenny_drak_krev]
+Name = "(e_bahenny_drak_krev)"
+
+[PassiveAbilityDef a_tevent_e_balrog]
+Name = "(e_balrog)"
+
+[PassiveAbilityDef a_tevent_e_beridornecro]
+Name = "(e_beridornecro)"
+
+[PassiveAbilityDef a_tevent_e_berserk_potvora]
+Name = "(e_berserk_potvora)"
+
+[PassiveAbilityDef a_tevent_e_berserkbrain_distance_fix]
+Name = "(e_berserkbrain_distance_fix)"
+
+[PassiveAbilityDef a_tevent_e_blood]
+Name = "(e_blood)"
+
+[PassiveAbilityDef a_tevent_e_bomba_boy]
+Name = "(e_bomba_boy)"
+
+[PassiveAbilityDef a_tevent_e_brinbor]
+Name = "(e_brinbor)"
+
+[PassiveAbilityDef a_tevent_e_cajun]
+Name = "(e_cajun)"
+
+[PassiveAbilityDef a_tevent_e_character]
+Name = "(e_character)"
+
+[PassiveAbilityDef a_tevent_e_craft_monster]
+Name = "(e_craft_monster)"
+
+[PassiveAbilityDef a_tevent_e_daemon]
+Name = "(e_daemon)"
+
+[PassiveAbilityDef a_tevent_e_darkmoon_boss]
+Name = "(e_darkmoon_boss)"
+
+[PassiveAbilityDef a_tevent_e_demon_lord]
+Name = "(e_demon_lord)"
+
+[PassiveAbilityDef a_tevent_e_dragon_brain]
+Name = "(e_dragon_brain)"
+
+[PassiveAbilityDef a_tevent_e_dragon_regeneration]
+Name = "(e_dragon_regeneration)"
+
+[PassiveAbilityDef a_tevent_e_drone_large]
+Name = "(e_drone_large)"
+
+[PassiveAbilityDef a_tevent_e_drop_egg]
+Name = "(e_drop_egg)"
+
+[PassiveAbilityDef a_tevent_e_duplicator]
+Name = "(e_duplicator)"
+
+[PassiveAbilityDef a_tevent_e_earth]
+Name = "(e_earth)"
+
+[PassiveAbilityDef a_tevent_e_elem_terror]
+Name = "(e_elem_terror)"
+
+[PassiveAbilityDef a_tevent_e_emotedmg]
+Name = "(e_emotedmg)"
+
+[PassiveAbilityDef a_tevent_e_explode]
+Name = "(e_explode)"
+
+[PassiveAbilityDef a_tevent_e_explosiondispell]
+Name = "(e_explosiondispell)"
+
+[PassiveAbilityDef a_tevent_e_explosionlava]
+Name = "(e_explosionlava)"
+
+[PassiveAbilityDef a_tevent_e_eye]
+Name = "(e_eye)"
+
+[PassiveAbilityDef a_tevent_e_fire]
+Name = "(e_fire)"
+
+[PassiveAbilityDef a_tevent_e_fire_dragon]
+Name = "(e_fire_dragon)"
+
+[PassiveAbilityDef a_tevent_e_fire_dragon_aura]
+Name = "(e_fire_dragon_aura)"
+
+[PassiveAbilityDef a_tevent_e_fire_dragon_bomb]
+Name = "(e_fire_dragon_bomb)"
+
+[PassiveAbilityDef a_tevent_e_fire_dragon_cage]
+Name = "(e_fire_dragon_cage)"
+
+[PassiveAbilityDef a_tevent_e_fire_dragon_round]
+Name = "(e_fire_dragon_round)"
+
+[PassiveAbilityDef a_tevent_e_fire_lord]
+Name = "(e_fire_lord)"
+
+[PassiveAbilityDef a_tevent_e_frosty_wave]
+Name = "(e_frosty_wave)"
+
+[PassiveAbilityDef a_tevent_e_getwpn]
+Name = "(e_getwpn)"
+
+[PassiveAbilityDef a_tevent_e_goblin_treasure]
+Name = "(e_goblin_treasure)"
+
+[PassiveAbilityDef a_tevent_e_golem]
+Name = "(e_golem)"
+
+[PassiveAbilityDef a_tevent_e_guard]
+Name = "(e_guard)"
+
+[PassiveAbilityDef a_tevent_e_guard_ent]
+Name = "(e_guard_ent)"
+
+[PassiveAbilityDef a_tevent_e_guard_ocs]
+Name = "(e_guard_ocs)"
+
+[PassiveAbilityDef a_tevent_e_guard_ranged]
+Name = "(e_guard_ranged)"
+
+[PassiveAbilityDef a_tevent_e_hatlend]
+Name = "(e_hatlend)"
+
+[PassiveAbilityDef a_tevent_e_hcn_madnessability]
+Name = "(e_hcn_madnessability)"
+
+[PassiveAbilityDef a_tevent_e_hcn_npcpoison]
+Name = "(e_hcn_npcpoison)"
+
+[PassiveAbilityDef a_tevent_e_hcn_teletotarget]
+Name = "(e_hcn_teletotarget)"
+
+[PassiveAbilityDef a_tevent_e_healdrinker]
+Name = "(e_healdrinker)"
+
+[PassiveAbilityDef a_tevent_e_healer]
+Name = "(e_healer)"
+
+[PassiveAbilityDef a_tevent_e_hm_pruvodce]
+Name = "(e_hm_pruvodce)"
+
+[PassiveAbilityDef a_tevent_e_hodici_bombak]
+Name = "(e_hodici_bombak)"
+
+[PassiveAbilityDef a_tevent_e_horses]
+Name = "(e_horses)"
+
+[PassiveAbilityDef a_tevent_e_humanoid]
+Name = "(e_humanoid)"
+
+[PassiveAbilityDef a_tevent_e_illusionist]
+Name = "(e_illusionist)"
+
+[PassiveAbilityDef a_tevent_e_inexhaustible]
+Name = "(e_inexhaustible)"
+
+[PassiveAbilityDef a_tevent_e_item_refuser]
+Name = "(e_item_refuser)"
+
+[PassiveAbilityDef a_tevent_e_kaloc_help]
+Name = "(e_kaloc_help)"
+
+[PassiveAbilityDef a_tevent_e_lifeleech]
+Name = "(e_lifeleech)"
+
+[PassiveAbilityDef a_tevent_e_lifeleech_vampire]
+Name = "(e_lifeleech_vampire)"
+
+[PassiveAbilityDef a_tevent_e_lightnings]
+Name = "(e_lightnings)"
+
+[PassiveAbilityDef a_tevent_e_lihe_sarfeos]
+Name = "(e_lihe_sarfeos)"
+
+[PassiveAbilityDef a_tevent_e_looter]
+Name = "(e_looter)"
+
+[PassiveAbilityDef a_tevent_e_malica_help]
+Name = "(e_malica_help)"
+
+[PassiveAbilityDef a_tevent_e_managain]
+Name = "(e_managain)"
+
+[PassiveAbilityDef a_tevent_e_menavec]
+Name = "(e_menavec)"
+
+[PassiveAbilityDef a_tevent_e_menavec_ledovka]
+Name = "(e_menavec_ledovka)"
+
+[PassiveAbilityDef a_tevent_e_menavec_powerful]
+Name = "(e_menavec_powerful)"
+
+[PassiveAbilityDef a_tevent_e_miniq_kun]
+Name = "(e_miniq_kun)"
+
+[PassiveAbilityDef a_tevent_e_mistr_craft]
+Name = "(e_mistr_craft)"
+
+[PassiveAbilityDef a_tevent_e_monster]
+Name = "(e_monster)"
+
+[PassiveAbilityDef a_tevent_e_necroslave]
+Name = "(e_necroslave)"
+
+[PassiveAbilityDef a_tevent_e_no_player_attack]
+Name = "(e_no_player_attack)"
+
+[PassiveAbilityDef a_tevent_e_noport]
+Name = "(e_noport)"
+
+[PassiveAbilityDef a_tevent_e_npc_bleed]
+Name = "(e_npc_bleed)"
+
+[PassiveAbilityDef a_tevent_e_npc_blow_up]
+Name = "(e_npc_blow_up)"
+
+[PassiveAbilityDef a_tevent_e_npc_critic]
+Name = "(e_npc_critic)"
+
+[PassiveAbilityDef a_tevent_e_npc_curse]
+Name = "(e_npc_curse)"
+
+[PassiveAbilityDef a_tevent_e_npc_curse_mana]
+Name = "(e_npc_curse_mana)"
+
+[PassiveAbilityDef a_tevent_e_npc_curse_stam]
+Name = "(e_npc_curse_stam)"
+
+[PassiveAbilityDef a_tevent_e_npc_detect]
+Name = "(e_npc_detect)"
+
+[PassiveAbilityDef a_tevent_e_npc_diamonddrop]
+Name = "(e_npc_diamonddrop)"
+
+[PassiveAbilityDef a_tevent_e_npc_golddrop]
+Name = "(e_npc_golddrop)"
+
+[PassiveAbilityDef a_tevent_e_npc_infinitemana]
+Name = "(e_npc_infinitemana)"
+
+[PassiveAbilityDef a_tevent_e_npc_knockback]
+Name = "(e_npc_knockback)"
+
+[PassiveAbilityDef a_tevent_e_npc_leaper]
+Name = "(e_npc_leaper)"
+
+[PassiveAbilityDef a_tevent_e_npc_mag]
+Name = "(e_npc_mag)"
+
+[PassiveAbilityDef a_tevent_e_npc_magicshield]
+Name = "(e_npc_magicshield)"
+
+[PassiveAbilityDef a_tevent_e_npc_manashield]
+Name = "(e_npc_manashield)"
+
+[PassiveAbilityDef a_tevent_e_npc_massleap]
+Name = "(e_npc_massleap)"
+
+[PassiveAbilityDef a_tevent_e_npc_multishot]
+Name = "(e_npc_multishot)"
+
+[PassiveAbilityDef a_tevent_e_npc_reactivearmor]
+Name = "(e_npc_reactivearmor)"
+
+[PassiveAbilityDef a_tevent_e_npc_reagdrop]
+Name = "(e_npc_reagdrop)"
+
+[PassiveAbilityDef a_tevent_e_npc_regeneration]
+Name = "(e_npc_regeneration)"
+
+[PassiveAbilityDef a_tevent_e_npc_roundattack]
+Name = "(e_npc_roundattack)"
+
+[PassiveAbilityDef a_tevent_e_npc_roundattack_pullall]
+Name = "(e_npc_roundattack_pullall)"
+
+[PassiveAbilityDef a_tevent_e_npc_sniper]
+Name = "(e_npc_sniper)"
+
+[PassiveAbilityDef a_tevent_e_npc_stam_dmg]
+Name = "(e_npc_stam_dmg)"
+
+[PassiveAbilityDef a_tevent_e_npc_stun]
+Name = "(e_npc_stun)"
+
+[PassiveAbilityDef a_tevent_e_npc_summoner]
+Name = "(e_npc_summoner)"
+
+[PassiveAbilityDef a_tevent_e_npc_summoning]
+Name = "(e_npc_summoning)"
+
+[PassiveAbilityDef a_tevent_e_npc_summonkiller]
+Name = "(e_npc_summonkiller)"
+
+[PassiveAbilityDef a_tevent_e_npc_warcry]
+Name = "(e_npc_warcry)"
+
+[PassiveAbilityDef a_tevent_e_ocs_boss_resser]
+Name = "(e_ocs_boss_resser)"
+
+[PassiveAbilityDef a_tevent_e_ocs_boss_resurrection_able]
+Name = "(e_ocs_boss_resurrection_able)"
+
+[PassiveAbilityDef a_tevent_e_ocs_capitan]
+Name = "(e_ocs_capitan)"
+
+[PassiveAbilityDef a_tevent_e_ocs_citizen]
+Name = "(e_ocs_citizen)"
+
+[PassiveAbilityDef a_tevent_e_ocs_freak]
+Name = "(e_ocs_freak)"
+
+[PassiveAbilityDef a_tevent_e_ocs_guard_npc]
+Name = "(e_ocs_guard_npc)"
+
+[PassiveAbilityDef a_tevent_e_ocs_town_guard]
+Name = "(e_ocs_town_guard)"
+
+[PassiveAbilityDef a_tevent_e_odinvis_krik]
+Name = "(e_odinvis_krik)"
+
+[PassiveAbilityDef a_tevent_e_ooze]
+Name = "(e_ooze)"
+
+[PassiveAbilityDef a_tevent_e_ostards]
+Name = "(e_ostards)"
+
+[PassiveAbilityDef a_tevent_e_ovinovac]
+Name = "(e_ovinovac)"
+
+[PassiveAbilityDef a_tevent_e_parakrik]
+Name = "(e_parakrik)"
+
+[PassiveAbilityDef a_tevent_e_phoenix]
+Name = "(e_phoenix)"
+
+[PassiveAbilityDef a_tevent_e_phoenix_25]
+Name = "(e_phoenix_25)"
+
+[PassiveAbilityDef a_tevent_e_phoenix_fire]
+Name = "(e_phoenix_fire)"
+
+[PassiveAbilityDef a_tevent_e_potiondrinker]
+Name = "(e_potiondrinker)"
+
+[PassiveAbilityDef a_tevent_e_ps_fanatik]
+Name = "(e_ps_fanatik)"
+
+[PassiveAbilityDef a_tevent_e_pushall]
+Name = "(e_pushall)"
+
+[PassiveAbilityDef a_tevent_e_q019_pocestny]
+Name = "(e_q019_pocestny)"
+
+[PassiveAbilityDef a_tevent_e_q026_hcnpoisoning_npc]
+Name = "(e_q026_hcnpoisoning_npc)"
+
+[PassiveAbilityDef a_tevent_e_q040_dragon_death]
+Name = "(e_q040_dragon_death)"
+
+[PassiveAbilityDef a_tevent_e_reaper]
+Name = "(e_reaper)"
+
+[PassiveAbilityDef a_tevent_e_resist_countdown]
+Name = "(e_resist_countdown)"
+
+[PassiveAbilityDef a_tevent_e_rinald]
+Name = "(e_rinald)"
+
+[PassiveAbilityDef a_tevent_e_rozdeleni]
+Name = "(e_rozdeleni)"
+
+[PassiveAbilityDef a_tevent_e_scales]
+Name = "(e_scales)"
+
+[PassiveAbilityDef a_tevent_e_scorpion]
+Name = "(e_scorpion)"
+
+[PassiveAbilityDef a_tevent_e_selfreser]
+Name = "(e_selfreser)"
+
+[PassiveAbilityDef a_tevent_e_serpent]
+Name = "(e_serpent)"
+
+[PassiveAbilityDef a_tevent_e_serpentdruid]
+Name = "(e_serpentdruid)"
+
+[PassiveAbilityDef a_tevent_e_shadow_weapon_brother]
+Name = "(e_shadow_weapon_brother)"
+
+[PassiveAbilityDef a_tevent_e_snowmonster]
+Name = "(e_snowmonster)"
+
+[PassiveAbilityDef a_tevent_e_spider]
+Name = "(e_spider)"
+
+[PassiveAbilityDef a_tevent_e_spirit]
+Name = "(e_spirit)"
+
+[PassiveAbilityDef a_tevent_e_strach_lord1]
+Name = "(e_strach_lord1)"
+
+[PassiveAbilityDef a_tevent_e_strach_lord2]
+Name = "(e_strach_lord2)"
+
+[PassiveAbilityDef a_tevent_e_summoneater]
+Name = "(e_summoneater)"
+
+[PassiveAbilityDef a_tevent_e_summoneater_vamp]
+Name = "(e_summoneater_vamp)"
+
+[PassiveAbilityDef a_tevent_e_summonfrenzy]
+Name = "(e_summonfrenzy)"
+
+[PassiveAbilityDef a_tevent_e_sumoner_strazce_spicich]
+Name = "(e_sumoner_strazce_spicich)"
+
+[PassiveAbilityDef a_tevent_e_terathan]
+Name = "(e_terathan)"
+
+[PassiveAbilityDef a_tevent_e_undead]
+Name = "(e_undead)"
+
+[PassiveAbilityDef a_tevent_e_undeads_ability_life]
+Name = "(e_undeads_ability_life)"
+
+[PassiveAbilityDef a_tevent_e_warniak_degrade]
+Name = "(e_warniak_degrade)"
+
+[PassiveAbilityDef a_tevent_e_warniak_drop]
+Name = "(e_warniak_drop)"
+
+[PassiveAbilityDef a_tevent_e_water]
+Name = "(e_water)"
+
+[PassiveAbilityDef a_tevent_e_wormdrop]
+Name = "(e_wormdrop)"
+
+[PassiveAbilityDef a_tevent_e_ztracene_mesto_druid_medved]
+Name = "(e_ztracene_mesto_druid_medved)"
+
+[PassiveAbilityDef a_tevent_e_ztracene_mesto_paladin_boss]
+Name = "(e_ztracene_mesto_paladin_boss)"
