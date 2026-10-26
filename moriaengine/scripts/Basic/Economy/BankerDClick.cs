@@ -42,28 +42,32 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override object TryRun(object self, TriggerKey tk, ScriptArgs sa) {
-			// TEMPORARY diagnostic logging (#509 live-testing - double-clicking a banker did
-			// nothing for the user). Remove once root-caused.
-			Logger.WriteWarning("[BANKDEBUG] BankerDClick.TryRun: tk=" + tk + " self=" + self);
 			if (TriggerKey.dClick.Uid != tk.Uid) {
 				return TriggerResult.Continue;
 			}
 
 			Character banker = self as Character;
 			Character dclicker = sa.Argv[0] as Character;
-			Logger.WriteWarning("[BANKDEBUG] BankerDClick.TryRun: dClick matched, banker=" + banker + " dclicker=" + dclicker);
 			if ((banker == null) || (dclicker == null)) {
 				return TriggerResult.Continue;
 			}
 
-			int distance = Point2D.GetSimpleDistance(banker, dclicker);
-			Logger.WriteWarning("[BANKDEBUG] distance=" + distance + " maxDistance=" + BankerRange.MaxDistance);
+			//root-caused (2026-10-26): this TriggerGroup was never the problem - the
+			//TEVENTS=e_banker line that attaches it to C_H_BANKER/C_H_BANKER_F was silently
+			//dropped by a full scripts/converted/ regen (PR #597) and never re-added, so this
+			//class simply never ran at all. Restored as a hand-patch directly in vendors.def -
+			//see that file's own comment.
 			if (BankerRange.IsWithinRange(banker, dclicker)) {
+				//Thing.Trigger_DClick calls TryCancellableTrigger with no surrounding
+				//try/catch of its own (unlike the On_DClick fallback right below it) - catch
+				//here directly, same convention as every other On_*Click override in this
+				//codebase.
 				try {
 					dclicker.Bank.OpenTo(dclicker);
-					Logger.WriteWarning("[BANKDEBUG] Bank.OpenTo succeeded.");
+				} catch (FatalException) {
+					throw;
 				} catch (Exception e) {
-					Logger.WriteError("[BANKDEBUG] Bank.OpenTo threw: " + e);
+					Logger.WriteError(e);
 				}
 				return TriggerResult.Cancel;
 			}

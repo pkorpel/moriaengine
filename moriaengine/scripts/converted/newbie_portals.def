@@ -727,6 +727,9 @@ type = t_script
 model = i_grave_stone_4
 Color = 0481
 
+ON=@dclick
+src.Dialog(d_raceclassentry)
+
 [ItemDef i_rune_base]
 name = "Newbie rune"
 model = i_rune_marker

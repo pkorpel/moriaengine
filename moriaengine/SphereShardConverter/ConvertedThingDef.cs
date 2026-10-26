@@ -229,6 +229,55 @@ namespace SteamEngine.Converter {
 						}
 					}
 				}
+
+				//#667-adjacent - this engine's own LScript interpreter can execute a SIMPLE
+				//ON=@X trigger body directly at runtime (confirmed: moriaengine's own race-
+				//selection dialog is wired up via exactly "on=@dclick / src.Dialog(
+				//d_raceclassentry)"), but this converter had no mechanism at all to emit ANY
+				//trigger's body except @Create's, which is read above and fully consumed into
+				//specific fields line by line - never written back out verbatim.
+				//
+				//Deliberately keyed by DEFNAME, not just trigger name - a blanket "pass
+				//through every @dclick body found" would ALSO resurrect e.g. aldaron.scp's
+				//i_shooter_medkit, whose @dclick body uses real if/endif control flow and
+				//<src.flags> bracket expansion this engine's own LScript support has no
+				//"if"/"endif" handling for at all (confirmed: grep GameCore/LScript/ for
+				//either keyword finds nothing) - dumping that verbatim would very likely
+				//reintroduce a real boot/parse error, not fix anything. Add a defname here
+				//ONLY after confirming its specific trigger body is simple enough for this
+				//engine to actually run (plain single-statement calls like src.Dialog(...),
+				//not conditionals/loops/bracket-macro control flow).
+				string[] passthroughNames;
+				if (passthroughTriggers.TryGetValue(this.PrettyDefname, out passthroughNames)) {
+					foreach (string passthroughName in passthroughNames) {
+						TriggerSection section = this.origData.GetTrigger(passthroughName);
+						if (section != null) {
+							this.EmitVerbatimTrigger(passthroughName, section);
+						}
+					}
+				}
+			}
+		}
+
+		//defname -> trigger names this engine's LScript support can actually run, verified
+		//simple enough case by case - see the long comment above. Currently just the #667
+		//race-class stone.
+		private static readonly Dictionary<string, string[]> passthroughTriggers =
+			new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase) {
+				{ "i_stone_raceclass", new[] { "dclick" } }
+			};
+
+		private void EmitVerbatimTrigger(string triggerName, TriggerSection section) {
+			this.writtenData.Add("");
+			this.writtenData.Add("ON=@" + triggerName);
+			using (StringReader reader = new StringReader(section.Code.ToString())) {
+				string line;
+				while ((line = reader.ReadLine()) != null) {
+					string trimmed = line.Trim();
+					if (trimmed.Length > 0) {
+						this.writtenData.Add(trimmed);
+					}
+				}
 			}
 		}
 
