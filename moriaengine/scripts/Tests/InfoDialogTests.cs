@@ -114,6 +114,43 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("ABILITIES_DATAVIEW: found DataView, real ability count=" + abilityCount);
 		}
 
+		/// <summary>#664 - a List's own entries (e.g. opening the Skills/Abilities field found
+		/// by TestCheckTitanSkillsDataView/TestCheckAbilitiesDataView above) used to label every
+		/// single row as a generic "[0](Obj)", "[1](Obj)", etc, with zero indication of what was
+		/// actually in that slot. Confirms a titan's real Skills list rows now show the real
+		/// SkillName (e.g. "[0] Wrestling") and a granted ability's row shows its real Defname
+		/// (e.g. "[0] a_weapon_dodge"), not just a bare index.</summary>
+		[SteamFunction]
+		public static void TestCheckListEntryLabels(Character self) {
+			NPCDef titanDef = (NPCDef) ThingDef.GetByDefname("c_titan");
+			NPC titan = (NPC) titanDef.Create(self.P());
+
+			IDataView skillsViewCls = DataViewProvider.FindDataViewByType(titan.Skills.GetType());
+			bool skillLabelHasName = false;
+			foreach (IDataFieldView field in skillsViewCls.GetDataFieldsPage(0, titan.Skills)) {
+				string name = field.GetName(titan.Skills);
+				if (name.StartsWith("[0] ", StringComparison.Ordinal) && !name.Contains("[0] [0]")) {
+					skillLabelHasName = true;
+					break;
+				}
+			}
+
+			AbilityDef dodgeDef = (AbilityDef) AbstractScript.GetByDefname("a_weapon_dodge");
+			self.SetRealAbilityPoints(dodgeDef, 10);
+			IDataView abilitiesViewCls = DataViewProvider.FindDataViewByType(self.Abilities.GetType());
+			bool abilityLabelHasDefname = false;
+			foreach (IDataFieldView field in abilitiesViewCls.GetDataFieldsPage(0, self.Abilities)) {
+				string name = field.GetName(self.Abilities);
+				if (name.Contains(dodgeDef.Defname)) {
+					abilityLabelHasDefname = true;
+					break;
+				}
+			}
+
+			Console.WriteLine("LIST_ENTRY_LABELS: skillLabelHasName=" + skillLabelHasName +
+				" abilityLabelHasDefname=" + abilityLabelHasDefname);
+		}
+
 		/// <summary>#4 of the 2026-10-26 monster-testing batch - a titan's TEVENTS lines
 		/// (e_monster/e_character/e_npc_knockback) never resolve to real TriggerGroups (this
 		/// engine deliberately never built those legacy Sphere AI-hook names). Confirms each

@@ -63,6 +63,22 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
+		public void ListEntryLabelsShowRealNamesNotJustAnIndex() {
+			using (var client = this.ConnectLoginAndCreateCharacter("InfoListLabelTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckListEntryLabels");
+				this.AssertSeen("LIST_ENTRY_LABELS:", mark, TimeSpan.FromSeconds(10));
+				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "LIST_ENTRY_LABELS:");
+
+				Assert.Contains("skillLabelHasName=True", resultLine);
+				Assert.Contains("abilityLabelHasDefname=True", resultLine);
+			}
+		}
+
+		[Fact]
 		public void TitanGetsStubAbilitiesForUnresolvedTevents() {
 			using (var client = this.ConnectLoginAndCreateCharacter("InfoTeventTester")) {
 				client.SendSpeech(".TestSetGmOn");

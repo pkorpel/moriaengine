@@ -93,8 +93,35 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				this.index = index;
 			}
 
+			//#664 - plain "[index]" (GetTypePrefix(FieldType) below always adds a generic
+			//"(Obj)" on top, since FieldType is hardcoded to object - a list slot can be set
+			//to anything via SetValue) gave zero indication of what's actually in that slot,
+			//forcing it open one at a time to find anything. Three cases cover everything
+			//`.info` actually lists today (Character.Skills/Abilities) plus any future
+			//AbstractScript-derived list without extra work - anything else keeps the
+			//original bare "[index]", no regression for lists of plain/unnamed objects.
 			public override string GetName(object target) {
-				return "[" + this.index + "]";
+				string label = DescribeItem(this.GetValue(target));
+				if (label.Length == 0) {
+					return "[" + this.index + "]";
+				}
+				return "[" + this.index + "] " + label;
+			}
+
+			private static string DescribeItem(object value) {
+				ISkill skill = value as ISkill;
+				if (skill != null) {
+					return Enum.GetName(typeof(SkillName), skill.Id) ?? "";
+				}
+				Ability ability = value as Ability;
+				if (ability != null) {
+					return ability.Def.Defname;
+				}
+				AbstractScript script = value as AbstractScript;
+				if (script != null) {
+					return script.Defname;
+				}
+				return "";
 			}
 
 			public override Type FieldType {
