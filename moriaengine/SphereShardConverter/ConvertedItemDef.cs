@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using SteamEngine.Common;
@@ -39,6 +40,11 @@ namespace SteamEngine.Converter {
 		bool isTwoHanded;
 		bool twoHandedSet;
 		bool wearableTypeSet;
+
+		//#539 - readable (not just output-text) copies of values the WeaponType/MindPower
+		//cross-referencing pass in ThirdStageFinished needs to read back after the fact.
+		WeaponType? computedWeaponType;
+		double? attackVsPValue;
 
 		private static LineImplTask[] firstStageImpl = {
 				new LineImplTask("type", HandleType), 
@@ -241,7 +247,8 @@ namespace SteamEngine.Converter {
 						break;
 					}
 				}
-				if (sum != 0) {
+				bool sumIsValid = sum != 0;
+				if (sumIsValid) {
 					sum = sum / n;
 					if (def.isWearable) {
 						sum = Math.Round(sum);
@@ -252,6 +259,11 @@ namespace SteamEngine.Converter {
 				}
 
 				if (def.isWeapon) {
+					if (sumIsValid) {
+						//#539 - readable copy for ThirdStageFinished's MindPower cross-
+						//referencing pass (Set() below only ever stores output text).
+						def.attackVsPValue = sum;
+					}
 					def.Set("attackVsP", value, line.Comment);
 					def.Set("attackVsM", value, line.Comment);
 					def.Set("piercing", "100", "default value set by Converter");
@@ -286,6 +298,22 @@ namespace SteamEngine.Converter {
 			WriteAsComment(def, line);
 		}
 
+		//#618/#628 - a handful of base items that real archive entries still reference via
+		//ID=/model= for their own Layer/class/type inheritance were themselves removed from
+		//the archive as superseded #618-pattern duplicates (the real moriaengine-authored
+		//winner lives elsewhere, e.g. i_spellbook -> scripts/Basic/skills/Magery/
+		//spellbooks.def). The converter has zero knowledge of moriaengine's own hand-authored
+		//content, so once the archive-side stub is gone, this inheritance silently stops
+		//working for every OTHER still-real entry that depended on it (i_spellbook_pvp,
+		//i_atlas_map, i_infobook, i_book_rune all lost their EquippableDef/Layer/type this
+		//way). This table is the fix: known base-item attributes to fall back to when the
+		//normal archive lookup fails, keyed by the literal ID=/model= name - NOT a duplicate
+		//archive entry, just enough data for the SAME inheritance mechanism to keep working.
+		private static readonly Dictionary<string, (bool isEquippable, string layer, string type)> knownRemovedBases =
+			new Dictionary<string, (bool isEquippable, string layer, string type)>(StringComparer.OrdinalIgnoreCase) {
+				{ "i_spellbook", (true, "1", "t_spellbook") },
+			};
+
 		public static void SecondStageFinished() {
 			HashSet<ConvertedItemDef> itemDefSet = new HashSet<ConvertedItemDef>();
 			foreach (ConvertedItemDef def in itemsByDefname.Values) {
@@ -294,24 +322,88 @@ namespace SteamEngine.Converter {
 
 			foreach (ConvertedItemDef def in itemDefSet) {
 				ConvertedItemDef baseDef = def.modelDef as ConvertedItemDef;
+				bool isEquippableBase, layerSetBase, isTwoHandedBase;
+				string layerBase, typeBase;
 				if (baseDef != null) {
-					if (baseDef.isEquippable) {
-						def.MakeEquippable();
+					isEquippableBase = baseDef.isEquippable;
+					layerSetBase = baseDef.layerSet;
+					isTwoHandedBase = baseDef.isTwoHanded;
+					layerBase = baseDef.layer;
+					typeBase = baseDef.type;
+				} else if ((def.idLine != null) && knownRemovedBases.TryGetValue(def.idLine.Value, out var known)) {
+					isEquippableBase = known.isEquippable;
+					layerSetBase = true;
+					isTwoHandedBase = false;
+					layerBase = known.layer;
+					typeBase = known.type;
+				} else {
+					continue;
+				}
 
-						if ((baseDef.isTwoHanded) && (!def.twoHandedSet)) {
-							def.Set("TwoHanded", "true", "guessed from base def by Converter");
-						}
-						if ((baseDef.layerSet) && (!def.layerSet)) {
-							def.Set("Layer", baseDef.layer, "guessed from base def by Converter");
-							def.layerSet = true;
-							def.layer = baseDef.layer;
-						}
+				if (isEquippableBase) {
+					def.MakeEquippable();
+
+					if (isTwoHandedBase && (!def.twoHandedSet)) {
+						def.Set("TwoHanded", "true", "guessed from base def by Converter");
+						def.twoHandedSet = true;
+						def.isTwoHanded = true;
 					}
-
-					if ((baseDef.type != null) && (def.type == null)) {
-						HandleType(def, new PropsLine("type", baseDef.type, -1, "guessed from base def by Converter"));
+					if (layerSetBase && (!def.layerSet)) {
+						def.Set("Layer", layerBase, "guessed from base def by Converter");
+						def.layerSet = true;
+						def.layer = layerBase;
 					}
 				}
+
+				if ((typeBase != null) && (def.type == null)) {
+					HandleType(def, new PropsLine("type", typeBase, -1, "guessed from base def by Converter"));
+				}
+			}
+		}
+
+		//#539 - the material tiers a blunt weapon's own defname gets suffixed with. Copper is
+		//always the baseline (ratio 1.0, MindPower stays flat 700) - every other tier scales
+		//up from it using that same archetype's own real AttackVsP progression. Order matters
+		//only in that "copper" must be tried last, since it's a substring-safe suffix of
+		//nothing else in this list - but there's no actual ambiguity here, this is just the
+		//known real tier list.
+		private static readonly string[] materialTierSuffixes = {
+			"_copper", "_iron", "_verite", "_valorite", "_obsidian", "_adamantinum", "_mithril"
+		};
+
+		public static void ThirdStageFinished() {
+			foreach (ConvertedItemDef def in itemsByDefname.Values) {
+				if (def.computedWeaponType != WeaponType.OneHandBlunt && def.computedWeaponType != WeaponType.TwoHandBlunt) {
+					continue;
+				}
+				if (def.attackVsPValue == null) {
+					continue;
+				}
+				string prettyDefName = def.PrettyDefname;
+				string baseName = null;
+				foreach (string suffix in materialTierSuffixes) {
+					if (prettyDefName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) {
+						baseName = prettyDefName.Substring(0, prettyDefName.Length - suffix.Length);
+						break;
+					}
+				}
+				if (baseName == null) {
+					continue; //not part of the material-tier system, nothing to scale against
+				}
+				if (!itemsByDefname.TryGetValue(baseName + "_copper", out ConvertedThingDef copperBaseThing)) {
+					continue;
+				}
+				ConvertedItemDef copperBase = copperBaseThing as ConvertedItemDef;
+				if ((copperBase == null) || (copperBase.attackVsPValue == null) || (copperBase.attackVsPValue == 0)) {
+					continue;
+				}
+				double mindPower = Math.Round(700.0 * def.attackVsPValue.Value / copperBase.attackVsPValue.Value, 2);
+				string mindPowerText = mindPower.ToString("0.0##", CultureInfo.InvariantCulture);
+				string comment = "#539 - scaled: 700 * " + def.attackVsPValue.Value.ToString("0.0##", CultureInfo.InvariantCulture)
+					+ "/" + copperBase.attackVsPValue.Value.ToString("0.0##", CultureInfo.InvariantCulture)
+					+ " (bare-hands baseline x this weapon's own real AttackVsP progression)";
+				def.Set("MindPowerVsP", mindPowerText, comment);
+				def.Set("MindPowerVsM", mindPowerText, "#539 - same scaling, AttackVsM==AttackVsP for every real weapon def");
 			}
 		}
 
@@ -350,7 +442,17 @@ namespace SteamEngine.Converter {
 				switch (this.type.ToLowerInvariant()) {
 					case "t_weapon_sword":
 						string prettyDefName = this.PrettyDefname.ToLowerInvariant();
-						if (prettyDefName.Contains("_axe_") || prettyDefName.EndsWith("_axe")) {
+						//#157 - a handful of real axe-type polearms are explicitly typed
+						//t_weapon_sword in the raw Sphere source (confirmed directly: e.g.
+						//i_bardiche/i_halberd carry "SKILL=Swordsmanship" and a source comment
+						//"Using Sword type below") - the source's own game-mechanic choice
+						//(which skill trains it) isn't the same as the weapon's real-world
+						//category, so these need a name-based override on top of the TYPE=
+						//field, same as the existing "_axe_" substring check right below.
+						bool isKnownAxeSynonym = prettyDefName.Contains("bardiche")
+							|| prettyDefName.Contains("halberd")
+							|| prettyDefName.Contains("hatchet");
+						if (isKnownAxeSynonym || prettyDefName.Contains("_axe_") || prettyDefName.EndsWith("_axe")) {
 							if (this.isTwoHanded) {
 								weaponType = WeaponType.TwoHandAxe;
 							} else {
@@ -380,10 +482,15 @@ namespace SteamEngine.Converter {
 						materialType = MaterialType.Wood;
 						goto case "t_weapon_mace_smith";
 					case "t_weapon_mace_smith":
+						//#157 - mace/staff/crook/smith are blunt weapons (real Sphere source
+						//comment: "jednorucni/dvourucni tupe" = one/two-handed BLUNT), not
+						//fencing/piercing weapons - this case used to fall all the way through
+						//to "t_weapon_fence"'s Spike assignment via the goto chain above, which
+						//was wrong for every mace/staff/hammer in the archive.
 						if (this.isTwoHanded) {
-							weaponType = WeaponType.TwoHandSpike;
+							weaponType = WeaponType.TwoHandBlunt;
 						} else {
-							weaponType = WeaponType.OneHandSpike;
+							weaponType = WeaponType.OneHandBlunt;
 						}
 						break;
 					case "t_weapon_bow":
@@ -412,6 +519,7 @@ namespace SteamEngine.Converter {
 						break;
 				}
 				this.Set("WeaponType", "WeaponType." + weaponType, "guessed by Converter");
+				this.computedWeaponType = weaponType;
 
 				WeaponAnimType animType = WeaponAnimTypeSetting.TranslateAnimType(weaponType);
 				if (animType != WeaponAnimType.Undefined) {

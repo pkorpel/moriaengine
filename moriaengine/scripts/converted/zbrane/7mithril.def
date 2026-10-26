@@ -37,18 +37,18 @@ model = i_club
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 11.5
 attackVsM = 11.5
-MindPowerVsP = 2012.5 //#539 - scaled: 700 * 11.5/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 2012.5 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 2012.5 //#539 - scaled: 700 * 11.5/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 2012.5 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_kryss_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -111,18 +111,18 @@ model = i_mace
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 18
 attackVsM = 18
-MindPowerVsP = 1800.0 //#539 - scaled: 700 * 18.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1800.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1800.0 //#539 - scaled: 700 * 18.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1800.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_scimitar_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -162,8 +162,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 16
 attackVsM = 16
@@ -187,8 +187,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_crook //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.OneHandSpike //guessed by Converter 
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 18
 attackVsM = 18
@@ -197,6 +197,8 @@ speed = 100 //default value set by Converter
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1800.0 //#539 - scaled: 700 * 18.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1800.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredStaffDef i_staff_black_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -212,18 +214,18 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 22
 attackVsM = 22
-MindPowerVsP = 1925.0 //#539 - scaled: 700 * 22.0/8.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1925.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1925.0 //#539 - scaled: 700 * 22.0/8.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1925.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_katana_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -334,18 +336,18 @@ model = i_mace_war
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 26.5
 attackVsM = 26.5
-MindPowerVsP = 1855.0 //#539 - scaled: 700 * 26.5/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1855.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1855.0 //#539 - scaled: 700 * 26.5/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1855.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_sword_long_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -409,18 +411,18 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 28
 attackVsM = 28
-MindPowerVsP = 1781.82 //#539 - scaled: 700 * 28.0/11.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1781.82 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1781.82 //#539 - scaled: 700 * 28.0/11.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1781.82 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_axe_battle_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -459,18 +461,18 @@ model = i_hammer_pick
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 28
 attackVsM = 28
-MindPowerVsP = 1633.33 //#539 - scaled: 700 * 28.0/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1633.33 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1633.33 //#539 - scaled: 700 * 28.0/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1633.33 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_pitchfork_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -486,8 +488,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandSpike //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandSpike //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 28
 attackVsM = 28
@@ -535,8 +537,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 33
 attackVsM = 33
@@ -560,18 +562,18 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 34
 attackVsM = 34
-MindPowerVsP = 1700.0 //#539 - scaled: 700 * 34.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1700.0 //#539 - scaled: 700 * 34.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_axe_two_hand_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -587,8 +589,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 34
 attackVsM = 34
@@ -636,18 +638,18 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_mace_staff //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandBlunt //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Wood //guessed by Converter 
 attackVsP = 35
 attackVsM = 35
-MindPowerVsP = 1580.65 //#539 - scaled: 700 * 35.0/15.5 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1580.65 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1580.65 //#539 - scaled: 700 * 35.0/15.5 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1580.65 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_axe_war_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -663,8 +665,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 36
 attackVsM = 36
@@ -688,8 +690,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 38
 attackVsM = 38
@@ -713,8 +715,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 41
 attackVsM = 41
@@ -737,18 +739,18 @@ model = i_maul
 type = t_weapon_mace_smith //guessed from base def by Converter 
 layer = 1 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.OneHandBlunt //#157 - corrected from this entry's own type=/TwoHanded data
+WeaponType = WeaponType.OneHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 37
 attackVsM = 37
-MindPowerVsP = 1438.89 //#539 - scaled: 700 * 37.0/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression)
-MindPowerVsM = 1438.89 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def
 piercing = 100 //default value set by Converter 
 speed = 100 //default value set by Converter 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+MindPowerVsP = 1438.89 //#539 - scaled: 700 * 37.0/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1438.89 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_halberd_mithril]
 CATEGORY = Provisions - Weapons - Colored
@@ -764,8 +766,8 @@ TwoHanded = true //guessed from base def by Converter
 type = t_weapon_sword //guessed from base def by Converter 
 layer = 2 //Set by Converter 
 Material = Material.Mithril //guessed by Converter 
-WeaponType = WeaponType.TwoHandAxe //#157 - corrected from this entry's own type=/TwoHanded data
-WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+WeaponType = WeaponType.TwoHandAxe //guessed by Converter 
+WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 attackVsP = 42.5
 attackVsM = 42.5
