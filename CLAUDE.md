@@ -1,5 +1,46 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): NPC attacks through floors + ranger stuck mid-fight (#692, PR #693) - partial, #2 still open
+
+Follow-up to #689, continuing the same c_titan/c_titan_mage/c_titan_ranger live-testing
+session. 3 observations, 2 fixed:
+
+1. **Attacking straight through a floor between levels** - `Map.CanSeeLosFromTo` had an
+   early return for same-column (X,Y match) pairs assuming "nothing horizontal to
+   block" - true for a wall, wrong for a floor/roof (blocks a vertical sightline at that
+   exact column). New `IsVerticalLosBlockedBetween` fixes it.
+2. **Attacking through the wall of an elevated static house - NOT fixed, left open.**
+   Isolated via synthetic tests: a wall at the SAME elevation as both endpoints blocks
+   fine (pre-existing test); a wall at a DIFFERENT elevation than the attacker does NOT
+   block; the same wall WITH a continuous "foundation" segment underneath (no Z gap)
+   DOES block. So the ray math itself is fine - the real building apparently has a gap
+   (solid wall starting at the platform's Z, nothing solid directly below it at that
+   column). Fixing this for real means deciding whether to synthesize "foundation"
+   collision for every elevated building's platform edge, derived from footprint data -
+   a broader design question, not a quick fix. Full writeup in issue #692's own comment.
+3. **Ranger stops attacking mid-fight, mage keeps going** - ruled out ammo exhaustion
+   first (confirmed 57 arrows granted, not the issue) before finding the real cause: a
+   transient LOS loss during `WeaponSkillDef.On_Stroke` deletes
+   `WeaponSkillTargetQueuePlugin` entirely (empty-queue fallback), and `NPCAiTimer`'s
+   own "add once per engagement" bookkeeping had no way to notice - never re-engaged
+   even once the obstruction cleared. New `WeaponSkillTargetQueuePlugin.
+   IsActivelyEngaging` lets `Fight()` detect this and re-add.
+
+Both fixes verified via direct A/B (revert just the fix, same test, confirm red) before
+shipping, same methodology as #603/#689. A broad regression sweep (26 tests across
+Combat/Ranger/Mystic/Mage/Housing/Economy/Gm) surfaced several failures beyond the new
+tests - all confirmed to reproduce identically against unmodified code (pre-existing,
+unrelated): `MysticCombatTests`/`MageAbilityTests` (player-caster only, never touch
+`NPCAiTimer`), `RangerCombatTests` x2 (already-documented #603 resource-contention
+flake), `CombatScenarioTests.TitanOrderedToKillAnotherTitanDealsDamage` (already-
+documented CI "stuck-NPC-pathing" flake, issue #100), `HousingTests` x2 and
+`MysticCombatTests.MindDefenseReducesDamage` (newly confirmed pre-existing this session).
+
+Also found while chasing #2: the player-housing deed/`MultiItem` placement system has
+its own separate, pre-existing bug (`HousingTests.DeedPlacementRejectsOverlap` fails on
+unmodified `main`) - unrelated to #2, not pursued, not filed as a new issue (already
+visible as a known-red test).
+
 ## DONE (2026-10-26): NPC ranged LOS check + beneficial-spell targeting (#689, PR #690)
 
 Two bugs found investigating combat, both in `NPCAiTimer`: (1) `Fight()`'s non-caster
