@@ -3,87 +3,56 @@
 ## IN PROGRESS (2026-10-26): 4-item live-testing batch on the new monsters (titan/titan_ranger/titan_mage)
 
 **Read this section first if picking up new-monster-testing work.** User tested the recently-
-shipped monster content live and reported 4 items in one message. None of these have issues
-filed yet - investigate fully first, file issues with accurate descriptions once root-caused
-(or confirmed-not-a-bug), per the standing "file before starting work, comment while working"
-convention. Nothing has shipped yet for any of these 4 - this section is a mid-investigation
-checkpoint, not a progress report.
+shipped monster content live and reported 4 items in one message. 3 of 4 are now resolved and
+shipped; #4 (the biggest, most architectural one) is next.
 
-**#1 - `.info`'s Skills list is empty for a titan, even though it clearly has skills set
-(e.g. Wrestling/Parry visible as real nonzero values elsewhere).** NOT YET INVESTIGATED - need
-to find the `.info` dialog's skill-list rendering code (likely in `scripts/Basic/administration/
-InfoDialog/` or similar) and check whether it reads from the right place. Possibly a generic
-reflection-based view that doesn't know how to enumerate `Character`'s skill dictionary, or a
-skill-list dialog that only works for `Player`/has an un-ported assumption about the account
-type. Start here next.
+**#1 - `.info`'s Skills list was empty for any character, even with real skills set - FIXED,
+SHIPPED (PR #647, closed #645).** Root cause: `Character.Skills` returned a bare
+`SkillsEnumerator` (`IEnumerable<ISkill>`, not `IList`) - `DataViewProvider.FindDataViewByType`
+only has a registered `IDataView` for `IList` (`ListDataView`, `HandleSubclasses=true`), so
+clicking the Skills field in `.info` always hit "No DataView found for the given type",
+regardless of real skill data. Fix: `Character.Skills` now materializes a real
+`List<ISkill>` instead - same contract, now picked up by `ListDataView` automatically (each
+entry is a `Skill`, which already has its own `[ViewableClass]`). Verified red/green.
 
-**#2 - user's claim: a skill with a real source range (e.g. 75-80%) shows as a single averaged
-value (77.5%) in the tracked `.def` content - "should be handled similar way as experiences"
-(i.e. #127's `NPCDef.ExperienceWorth` {min,max} + `RollExperienceReward()` pattern).** Investigated
-significantly, **NOT YET CONFIRMED AS A REAL BUG** - every concrete example checked so far shows
-the range correctly preserved already, both in current tracked `scripts/converted/chars/ogres.def`
-content AND in a freshly-regenerated-from-current-main-converter run:
-- `c_troll_mace` (raw: `WRESTLING={75.0 80.0}`) -> tracked+fresh both show `Wrestling = 750 800`. Correct.
-- `c_titan` (raw: `PARRYING={70.0 100.0}`/`WRESTLING={90.0 100.0}`) -> tracked shows `Parry = 700
-  1000`/`Wrestling = 900 1000`. Correct. (`resist=170.0`/`SpiritSpeak=60.0` are genuinely flat in
-  the raw source too - not a regression, nothing to fix there.)
-- `c_titan_ranger` (raw: `PARRYING={40.0 50.0}`/`WRESTLING={70.0 80.0}`/`ARCHERY={90.0 95.0}`) ->
-  tracked shows `Parry = 400 500`/`Wrestling = 700 800`/`Archery = 900 950`. Correct.
-  (`resist=100.0`/`SpiritSpeak=60.0` flat in source too, same as above.)
+**#2 - claimed skill-range regression (source 75-80% range showing as flat 77.5% in `.def`
+content) - INVESTIGATED, NOT A REAL BUG, closed not-planned (#646).** Ran a full systematic
+scan: every skill-range field (with the real alias table applied - `resist`->`MagicResist`,
+`parrying`->`Parry`, etc, 29 skill names) across every `[CHARDEF]`'s `@Create` body in the whole
+~450-file archive, cross-referenced against a fresh converter regen. **1558 chardefs
+cross-checked, 4067 individual skill-range field comparisons, zero mismatches.** Both the
+engine-side parser (`NPC.cs`'s `LoadScriptLine`/`ParseStatRange`) and the converter's skill
+code (`ConvertedCharDef.cs`, `numberRE.Matches` + `skillMatches.Count > 1`) already correctly
+handle 1-or-2-number values, and have since #562. Likely explanation: the user's observation
+came from a live `.info` view, not the raw `.def` text - pointing back at #1 (now fixed) as the
+probable real source of the confusion.
 
-The engine-side field parser (`NPC.cs`'s `LoadScriptLine` fallback, `ParseStatRange`) and the
-converter's own skill-value code (`ConvertedCharDef.cs` around line 361-373, `numberRE.Matches`
-+ `skillMatches.Count > 1` branch) both already correctly handle 1-or-2-number skill values and
-have for a while (#562) - this is NOT missing functionality, contrary to my first assumption
-reading the bug report. **Was mid-way through a full systematic scan (every chardef, every
-skill field, source-range-shape vs fresh-regen-output-shape, across the whole ~450-file archive)
-to either find a real counterexample or conclusively rule this out** when this checkpoint was
-requested - a freshly-rebuilt converter + fresh regen output already exists at
-`/tmp/.../scratchpad/converter-output` (paths are session-scratchpad, won't survive a session
-reset - rebuild via `SphereShardConverter/convert/` populated from a fresh
-`erebor-sphere-archive` clone's `scripts/` subfolder if resuming in a new session, see the
-Architecture section below for the exact procedure). **Next step**: finish that systematic
-scan - write a script that extracts, per chardef block, every skill field's raw source
-representation (1 number = flat, 2 numbers = range) and compares against the fresh regen
-output's shape for the same field; report any flat-when-source-is-range mismatches. If the
-scan comes back clean (no mismatches anywhere), this item is NOT a bug - likely the user's
-specific example came from live `.info`/in-game observation, not the `.def` text, which would
-point back at #1's "Skills list" bug instead (a *display* issue showing something misleading,
-not a data-loss issue) - worth checking #1's root cause before concluding #2 is a non-issue.
+**#3 - monster starting-equipment (titan_mage's spellbook, titan_ranger's bow) was lootable off
+the corpse - FIXED, SHIPPED (PR #649, closes #648).** The real archive's own field name for this
+mechanism is literally `ITEMNEWBIE=` ("newbie item") - confirms every single
+`NPCDef.StartingEquipment` grant across the whole archive is meant to carry `attr_newbie` (this
+engine's existing item-ATTR system, #215), not just these two examples. `attr_newbie` already
+means "never falls to the corpse" (`Item.CanFallToCorpse`). `NPC.On_Create`'s starting-equipment
+loop now sets `ItemAttributes.attr_newbie` unconditionally on every created instance. Verified
+red/green.
 
-**#3 - monster-granted starting equipment (titan_mage's spellbook, titan_ranger's bow) drops on
-death and is lootable - should be flagged so nobody can loot it and it eventually goes away.**
-NOT YET IMPLEMENTED, but the fix is clear and low-risk: this engine already has a full item ATTR
-flag system (#215, see the dedicated section below) - `attr_newbie` already means exactly "never
-falls to corpse" (`Item.CanFallToCorpse`, `scripts/Basic/ItemClasses/`). The real archive source
-itself confirms this is the RIGHT default for ALL `StartingEquipment`/`ITEMNEWBIE=` grants, not
-just these two examples - the raw Sphere field is literally named `ITEMNEWBIE=` (newbie item!),
-e.g. `c_titan_ranger`'s own source: `ITEMnewbie=i_monster_create` / `ITEMNEWBIE=i_bow` /
-`ITEMNEWBIE=i_arrow,{50 75}` - confirms every single `NPCDef.StartingEquipment` entry across the
-whole archive is meant to carry this flag, not something to special-case per-item. **Planned
-fix**: in `NPC.On_Create`'s starting-equipment-granting loop (`scripts/Basic/CharClasses/NPC.cs`,
-near where `ThingDef.Create(this)` is called per `StartingEquipmentEntry`), set
-`ItemAttributes.attr_newbie` on the freshly-created instance via the existing `Item.SetAttribute`
-API (#217) - unconditionally, for every granted starting-equipment item, matching the real
-source field name's own stated intent. Not started - next up after #1/#2 are resolved.
-
-**#4 - TEVENTS collisions/warnings redesign idea.** 99.7% of chardefs reference legacy Sphere
-LScript AI-hook TriggerGroup names (`e_monster`/`e_character`/etc) that this engine deliberately
-never built (replaced by the C# `NPCAiTimer` system) - `AbstractDefTriggerGroupHolder.
-LoadScriptLine` already handles a missing TriggerGroup gracefully (logs a warning, no-ops, never
-crashes), but the warning volume itself is noise. **User's proposed fix**: instead of a dangling
-TEVENTS reference that warns, create actual stub `AbilityDef`s for each of these legacy
-trigger/event names (one real `AbilityDef`, zero real implementation) and attach them to the
-monster the same way `NPCDef`/`Character` already expose a Skills list in `.info` - there's
-already an analogous "Abilities" button/view in `.info` for characters (same dialog family as
-the Skills one from #1), so these would become inspectable, organized, and structurally ready
-for a real implementation later, instead of silently-dropped text. **NOT YET INVESTIGATED AT
-ALL** - need to first understand the existing `scripts/Basic/AbilitiesAndTalents/` system
-(`AbilityDef`, how an `Ability` gets granted to a `Character`, how `.info`'s Abilities view
-enumerates them) before designing how legacy TEVENTS names would map onto it. This is the
-biggest, most architectural of the 4 items - tackle last, after 1-3 are resolved, and bring a
-concrete design back to the user before implementing (this reshapes how ~450 files' worth of
-TEVENTS lines get interpreted, not a small tweak).
+**#4 - TEVENTS collisions/warnings redesign idea - NOT YET INVESTIGATED, up next.** 99.7% of
+chardefs reference legacy Sphere LScript AI-hook TriggerGroup names (`e_monster`/`e_character`/
+etc) that this engine deliberately never built (replaced by the C# `NPCAiTimer` system) -
+`AbstractDefTriggerGroupHolder.LoadScriptLine` already handles a missing TriggerGroup gracefully
+(logs a warning, no-ops, never crashes), but the warning volume itself is noise. **User's
+proposed fix**: instead of a dangling TEVENTS reference that warns, create actual stub
+`AbilityDef`s for each of these legacy trigger/event names (one real `AbilityDef`, zero real
+implementation) and attach them to the monster the same way `NPCDef`/`Character` already expose
+a Skills list in `.info` (now fixed, see #1) - there's an analogous "Abilities" button/view in
+`.info` for characters, so these would become inspectable, organized, and structurally ready for
+a real implementation later, instead of silently-dropped text. **Not started** - need to first
+understand the existing `scripts/Basic/AbilitiesAndTalents/` system (`AbilityDef`, how an
+`Ability` gets granted to a `Character`, how `.info`'s Abilities view enumerates them,
+`AbilityDefDescriptor.cs`) before designing how legacy TEVENTS names would map onto it. This is
+the biggest, most architectural of the 4 items - bring a concrete design back to the user before
+implementing (this reshapes how ~450 files' worth of TEVENTS lines get interpreted, not a small
+tweak).
 
 ## ARCHITECTURE CHANGE IN PROGRESS (2026-10-25): fix the Erebor source, not the converted output
 
