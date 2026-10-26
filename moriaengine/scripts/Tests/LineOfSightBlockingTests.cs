@@ -38,6 +38,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestCheckLosThroughPlacedWall(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			VerificationTestUtils.CleanupNearbyItems(self, (ItemDef) ThingDef.GetByDefname("i_wall_stone"), 20);
 
 			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
 			NPC caster = (NPC) npcDef.Create(self.X, self.Y, self.Z, self.M);

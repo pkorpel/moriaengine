@@ -75,6 +75,23 @@ namespace SteamEngine.Regions {
 		/// MapCalculations.IsOk's own `items` loop, using the exact same
 		/// ItemDispidInfo.GetByModel(item.Model).Flags pattern mirrored below) - walking into a
 		/// placed wall was never broken, only sight THROUGH one was.
+		///
+		/// Second real bug found and fixed here (#692): statics/items were gated on `Impassable`
+		/// (a MOVEMENT flag - "can you walk here") rather than `Noshoot` (the real UO tiledata
+		/// flag for "can you see/shoot through this", confirmed populated on walls - and
+		/// confirmed absent on windows, which SHOULD be see-through despite being impassable to
+		/// movement - and never confused with `Impassable`-but-not-`Noshoot` content).
+		/// `Impassable`'s own Z-band [s.Z, s.Z+height) also let a ranged attacker standing BELOW
+		/// an elevated wall's own registered base (e.g. a wall on a raised platform, attacker at
+		/// true ground level outside) shoot/cast straight under it - the ray's interpolated Z at
+		/// that column never entered the wall's band. Real UO buildings achieve elevation purely
+		/// via static objects placed on unmodified, flat base terrain (confirmed by sampling real
+		/// map sectors - terrain under elevated platforms stays at the true low Z, only the
+		/// static's own Z is raised) - so a Noshoot-flagged static can safely be treated as
+		/// physically continuous all the way down to the real terrain at its own column, closing
+		/// that gap. (Terrain/land tiles themselves are NOT touched by this - confirmed via a
+		/// full scan that `Noshoot` is never set in the land-tile flag table, only in the
+		/// static/item dispid table, so the terrain check below must keep using `Impassable`.)
 		/// </summary>
 		private bool IsLosBlockedAt(int x, int y, int z) {
 			if (!this.IsValidPos(x, y)) {
@@ -88,16 +105,16 @@ namespace SteamEngine.Regions {
 			}
 
 			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
-				if (TileData.HasFlag(s.Flags, TileFlag.Impassable) &&
-					(z >= s.Z) && (z < s.Z + Math.Max(s.Height, 1))) {
+				if (TileData.HasFlag(s.Flags, TileFlag.Noshoot) &&
+					(z >= Math.Min(s.Z, landZ)) && (z < s.Z + Math.Max(s.Height, 1))) {
 					return true;
 				}
 			}
 
 			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
-				if (TileData.HasFlag(idi.Flags, TileFlag.Impassable) &&
-					(z >= item.Z) && (z < item.Z + Math.Max((int) idi.Height, 1))) {
+				if (TileData.HasFlag(idi.Flags, TileFlag.Noshoot) &&
+					(z >= Math.Min(item.Z, landZ)) && (z < item.Z + Math.Max((int) idi.Height, 1))) {
 					return true;
 				}
 			}
@@ -105,11 +122,11 @@ namespace SteamEngine.Regions {
 			return false;
 		}
 
-		/// <summary>Same three data sources as IsLosBlockedAt (terrain, statics/multis, real
-		/// dynamic items), but for the same-column case: is anything impassable's Z-band
-		/// strictly between fromZ and toZ (exclusive of both - standing on your own floor, or
-		/// the target's, never self-blocks, same convention as CanSeeLosFromTo's main loop
-		/// skipping both endpoint columns), regardless of which one is higher.</summary>
+		/// <summary>Same data sources and Noshoot/Impassable split as IsLosBlockedAt (see its own
+		/// doc comment for the full #692 writeup), but for the same-column case: is anything
+		/// blocking strictly between fromZ and toZ (exclusive of both - standing on your own
+		/// floor, or the target's, never self-blocks, same convention as CanSeeLosFromTo's main
+		/// loop skipping both endpoint columns), regardless of which one is higher.</summary>
 		private bool IsVerticalLosBlockedBetween(int x, int y, int fromZ, int toZ) {
 			if (!this.IsValidPos(x, y)) {
 				return true;
@@ -118,6 +135,19 @@ namespace SteamEngine.Regions {
 			int zLow = Math.Min(fromZ, toZ);
 			int zHigh = Math.Max(fromZ, toZ);
 
+			//real bug found verifying the fix above (#692): fromZ==toZ is a genuinely degenerate
+			//query (e.g. Character.CanReach on an item sitting in your OWN backpack - same exact
+			//point as yourself) - nothing can be "strictly between" a value and itself, so this
+			//must always be clear regardless of what's at this column. Without this, a Noshoot
+			//static whose band got extended down to a much lower landZ (the whole point of the
+			//fix above, for a real elevation gap) could wrongly report "blocked" for someone
+			//simply standing on TOP of it, since Z sits inside that wide extended band even
+			//though there's zero distance - and therefore nothing to see through - between the
+			//two query points.
+			if (zLow == zHigh) {
+				return false;
+			}
+
 			int landZ = this.GetTileZ(x, y);
 			int landId = this.GetTileId(x, y);
 			if (TileData.HasFlag(TileData.GetTileFlags(landId), TileFlag.Impassable) && (landZ > zLow) && (landZ < zHigh)) {
@@ -125,16 +155,16 @@ namespace SteamEngine.Regions {
 			}
 
 			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
-				if (TileData.HasFlag(s.Flags, TileFlag.Impassable) &&
-					(s.Z + Math.Max(s.Height, 1) > zLow) && (s.Z < zHigh)) {
+				if (TileData.HasFlag(s.Flags, TileFlag.Noshoot) &&
+					(s.Z + Math.Max(s.Height, 1) > zLow) && (Math.Min(s.Z, landZ) < zHigh)) {
 					return true;
 				}
 			}
 
 			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
-				if (TileData.HasFlag(idi.Flags, TileFlag.Impassable) &&
-					(item.Z + Math.Max((int) idi.Height, 1) > zLow) && (item.Z < zHigh)) {
+				if (TileData.HasFlag(idi.Flags, TileFlag.Noshoot) &&
+					(item.Z + Math.Max((int) idi.Height, 1) > zLow) && (Math.Min(item.Z, landZ) < zHigh)) {
 					return true;
 				}
 			}

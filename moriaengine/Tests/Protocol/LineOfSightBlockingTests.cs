@@ -67,6 +67,28 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>Regression for #692 observation 2 - see VerticalLosBlockingTests.cs's own
+		/// doc comment for the full root-cause writeup.</summary>
+		[Fact]
+		public void ElevatedWallBlocksLineOfSight() {
+			using (var client = this.ConnectLoginAndCreateCharacter("LosElevWallTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				client.SendSpeech(".TestTeleportToOpenGround");
+				this.AssertSeen("OPEN_GROUND_FOUND:", 0, TimeSpan.FromSeconds(10));
+				Assert.DoesNotContain("none", LastLineContaining(this.fixture.GameOutputSnapshot(), "OPEN_GROUND_FOUND:"));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckLosThroughElevatedWall");
+				this.AssertSeen("ELEVATED_WALL_LOS_TEST:", mark, TimeSpan.FromSeconds(10));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ELEVATED_WALL_LOS_TEST:");
+
+				Assert.Contains("openBeforeWall=True", line);
+				Assert.Contains("openAfterWall=False", line);
+			}
+		}
+
 		private void AssertSeen(string marker, int since, TimeSpan timeout) {
 			bool saw = this.fixture.WaitForGameOutputSince(marker, since, timeout);
 			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
