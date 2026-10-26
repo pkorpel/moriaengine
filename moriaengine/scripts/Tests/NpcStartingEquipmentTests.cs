@@ -35,16 +35,20 @@ namespace SteamEngine.CompiledScripts {
 
 			AbstractItem equipped = npc.FindLayer(LayerNames.Hand1) ?? npc.FindLayer(LayerNames.Hand2);
 			string equippedDefname = (equipped == null) ? "none" : ((ItemDef) equipped.Def).PrettyDefname;
+			bool equippedIsNewbie = (equipped is Item equippedItem) && equippedItem.HasAttribute(ItemAttributes.attr_newbie);
 
 			int arrowAmount = -1;
+			bool arrowsAreNewbie = false;
 			foreach (AbstractItem item in npc.Backpack) {
 				if (((ItemDef) item.Def).PrettyDefname == "i_arrow_copper") {
 					arrowAmount = item.Amount;
+					arrowsAreNewbie = (item is Item arrowItem) && arrowItem.HasAttribute(ItemAttributes.attr_newbie);
 					break;
 				}
 			}
 
-			Console.WriteLine("NPC_STARTING_EQUIPMENT_TEST_RESULT: equipped=" + equippedDefname + " arrowAmount=" + arrowAmount);
+			Console.WriteLine("NPC_STARTING_EQUIPMENT_TEST_RESULT: equipped=" + equippedDefname +
+				" arrowAmount=" + arrowAmount + " equippedIsNewbie=" + equippedIsNewbie + " arrowsAreNewbie=" + arrowsAreNewbie);
 		}
 	}
 }
