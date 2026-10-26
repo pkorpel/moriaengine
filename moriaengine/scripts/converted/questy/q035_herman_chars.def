@@ -15,13 +15,13 @@ Str = 1000
 Dex = 1000
 Int = 1000
 Equip = i_cape
-Color = 00989
+EquipColor = 00989
 Equip = i_surcoat
-Color = 00989
+EquipColor = 00989
 Equip = i_pants_long
-Color = 00989
+EquipColor = 00989
 Equip = i_hair_long
-Color = 00976
+EquipColor = 00976
 AggroMode = Calm
 
 //[speech spk_q035_herman] //(commented out by Converter) 

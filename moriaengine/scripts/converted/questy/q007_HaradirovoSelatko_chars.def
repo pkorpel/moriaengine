@@ -20,7 +20,7 @@ Wrestling = 100
 MagicResist = 100
 Tactics = 100
 Equip = i_hair_long
-Color = 0047
+EquipColor = 0047
 AggroMode = Calm
 
 [NPCDef c_hospod]
@@ -44,9 +44,9 @@ MagicResist = 100
 Tactics = 100
 Cooking = 1000
 Equip = i_hair_long
-Color = color_o_copper
+EquipColor = color_o_copper
 Equip = i_beard_mustache
-Color = color_o_copper
+EquipColor = color_o_copper
 AggroMode = Calm
 
 [NPCDef c_rachel]
@@ -69,7 +69,7 @@ Wrestling = 100
 MagicResist = 100
 Tactics = 100
 Equip = i_hair_long
-Color = 001
+EquipColor = 001
 AggroMode = Calm
 
 [NPCDef c_kovarskej]
@@ -135,9 +135,9 @@ AddSpell = s_paralyze
 AddSpell = s_flamestrike
 Equip = i_monster_create
 Equip = i_hair_long
-Color = 083a
+EquipColor = 083a
 Equip = i_beard_long_med
-Color = color_o_obsidian
+EquipColor = color_o_obsidian
 ResistPoison = 850 995
 ResistParalyse = 700 750
 ResistSummon = 750 850
@@ -184,19 +184,19 @@ Fencing = 1000
 Tactics = 1000
 Equip = i_monster_create
 Equip = random_male_hair
-Color = colors_hair
+EquipColor = colors_hair
 Equip = i_boots_thigh
-Color = 00
+EquipColor = 00
 Equip = i_pants_short
-Color = 00
+EquipColor = 00
 Equip = i_bracelet_gold
-Color = 00
+EquipColor = 00
 Equip = i_necklace_gold
-Color = 00
+EquipColor = 00
 Equip = i_skull_cap
-Color = 098c
+EquipColor = 098c
 Equip = i_shirt_plain
-Color = 098a
+EquipColor = 098a
 AggroMode = Calm
 
 [NPCDef c_Zla_Dryada]

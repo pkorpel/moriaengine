@@ -181,6 +181,13 @@ namespace SteamEngine.Converter {
 		private double? pendingKarmaMidpoint;
 		private string pendingBrainType;
 
+		//true right after an "itemnewbie=" line, cleared by whatever line comes next - used to
+		//tell whether an immediately-following "color=" line is colorizing the just-granted
+		//item (the real archive's "ITEMNEWBIE=x / COLOR=y" pairing, e.g. c_m_HEALER's facial
+		//hair matching its own just-equipped head hair) rather than setting the character's own
+		//base body color. See the "color" case in ProcessCreateTriggerLine below.
+		private bool pendingEquipColorTarget;
+
 		//#656 - same ThirdStage-deferred precedent as pendingKarmaMidpoint/pendingBrainType
 		//above: a chardef's resist tags arrive one line at a time (possibly from either the
 		//rare top-level LineImplTask path or the @Create-body ProcessCreateTriggerLine path,
@@ -289,6 +296,20 @@ namespace SteamEngine.Converter {
 		//handlers above already cover. NPCDef.ExperienceWorth (#127) already understands the
 		//"min max" shape this emits, so this is a pure converter fix - #566.
 		protected override void ProcessCreateTriggerLine(string name, string value, string comment, int lineNum) {
+			//the real archive's "COLOR=..." line right after an "ITEMNEWBIE=..." line colors
+			//THAT item (e.g. c_m_HEALER: "ITEMNEWBIE=random_facial_hair / COLOR=match_hair" -
+			//the beard matches the head hair equipped just before it), not the character's own
+			//base body color - captured as the pending flag BEFORE this call can reset it below,
+			//so an "itemnewbie" line 2+ calls back still correctly clears a STALE flag from a
+			//color-less item in between.
+			bool colorsPrecedingItem = this.pendingEquipColorTarget;
+			this.pendingEquipColorTarget = false;
+			if (name == "color" && colorsPrecedingItem) {
+				if (!this.IsPlayerDefByName) {
+					this.Set("EquipColor", value.Trim(), comment);
+				}
+				return;
+			}
 			//#565 - the real archive brain assignment lives inside @Create too (e.g.
 			//c_dragon_v1: "NPC=brain_dragon"), right alongside karma/fame - captured here,
 			//consulted together with pendingKarmaMidpoint in ThirdStage once the whole
@@ -432,6 +453,7 @@ namespace SteamEngine.Converter {
 				if (this.IsPlayerDefByName) {
 					return;
 				}
+				this.pendingEquipColorTarget = true;
 				int comma = value.IndexOf(',');
 				if (comma < 0) {
 					this.Set("Equip", value.Trim(), comment);
