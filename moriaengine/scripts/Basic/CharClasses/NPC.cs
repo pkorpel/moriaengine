@@ -150,6 +150,29 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey realmTK = TagKey.Acquire("_npcDefRealm_");
+
+		/// <summary>#700 - species-level default Realm for AggroMode.GuardsRealm NPCs (e.g. a
+		/// real archive guard's tag.guard=1/2), seeded onto each new instance's own
+		/// Character.Realm (RealmPlugin-backed, #410) in On_Create below. Same #265 boxed-int
+		/// coercion precedent as AggroMode above, for the same reason (a save/reload cycle can
+		/// retype an enum tag to a plain int).</summary>
+		public Realm Realm {
+			get {
+				object tag = this.GetTag(realmTK);
+				if (tag is Realm realm) {
+					return realm;
+				}
+				if ((tag is int intTag) && Enum.IsDefined(typeof(Realm), intTag)) {
+					return (Realm) intTag;
+				}
+				return Realm.None;
+			}
+			set {
+				this.SetTag(realmTK, value);
+			}
+		}
+
 		private static readonly TagKey tamingDifficultyTK = TagKey.Acquire("_tamingDifficulty_");
 
 		/// <summary>Minimum effective AnimalTaming skill needed to tame this NPC type (see TamingSkillDef), on the classic 0-1000 permille scale matching CheckSuccess's difficulty parameter. Negative (the default) means not tameable at all.
@@ -637,6 +660,15 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return;
 			}
+			if (param == "realm") {
+				Realm realm;
+				if (Enum.TryParse(args, true, out realm)) {
+					this.Realm = realm;
+				} else {
+					Logger.WriteWarning(filename, line, "realm '" + args + "' is not a known Realm value.");
+				}
+				return;
+			}
 			if (param == "experience") {
 				string[] parts = args.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
 				if (parts.Length == 1) {
@@ -933,6 +965,13 @@ namespace SteamEngine.CompiledScripts {
 
 			NPCDef def = (NPCDef) this.Def;
 			this.AggroMode = def.AggroMode;
+			//#700 - only override the live Character default (Realm.None, no RealmPlugin
+			//installed) when this NPCDef actually configured a real side via tag.guard -
+			//matches Character.Realm's own documented "untouched characters are left
+			//completely unaffected" intent instead of installing a RealmPlugin on every NPC.
+			if (def.Realm != Realm.None) {
+				this.Realm = def.Realm;
+			}
 			this.ExperienceReward = def.RollExperienceReward();
 			//#603 - MoveRate must be seeded BEFORE EnsureInstalled, so the AI timer's very
 			//first schedule already reflects it instead of falling back to the tag-unset

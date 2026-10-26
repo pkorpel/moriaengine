@@ -54,6 +54,7 @@ namespace SteamEngine.Converter {
 			new LineImplTask("mountid", HandleMountId),
 			new LineImplTask("mountitem", HandleMountId),
 			new LineImplTask("tag.mountid", HandleMountId),
+			new LineImplTask("tag.guard", HandleGuardTag),
 			new LineImplTask("icon", WriteAsIsLine),
 			new LineImplTask("can", PassThroughUnlessPlayerDef),
 			new LineImplTask("aggromode", PassThroughUnlessPlayerDef),
@@ -181,6 +182,14 @@ namespace SteamEngine.Converter {
 		private double? pendingKarmaMidpoint;
 		private string pendingBrainType;
 
+		//#700 - captured from the real archive's TOP-LEVEL "tag.guard=1/2" line (user-confirmed
+		//domain knowledge: 1 = Gondor-side guard, attacks Mordor; 2 = Mordor-side, attacks
+		//Gondor - not documented anywhere in this repo before now). Consulted in ThirdStage
+		//alongside pendingBrainType/pendingKarmaMidpoint to override the generic AggroMode
+		//derivation (#565) for guards specifically, and to also emit a Realm so
+		//NPCAiTimer.IsOppositeRealm has something real to compare against.
+		private int? pendingGuardSide;
+
 		//true right after an "itemnewbie=" line, cleared by whatever line comes next - used to
 		//tell whether an immediately-following "color=" line is colorizing the just-granted
 		//item (the real archive's "ITEMNEWBIE=x / COLOR=y" pairing, e.g. c_m_HEALER's facial
@@ -245,10 +254,29 @@ namespace SteamEngine.Converter {
 				foreach (KeyValuePair<string, PendingResist> pending in this.pendingResistFields) {
 					this.Set(pending.Key, pending.Value.Value, pending.Value.Comment);
 				}
-				//#565 - derive AggroMode now that the whole @Create trigger body has been
-				//read (karma/npc can appear in either order), since there's no literal
-				//AGGROMODE= field anywhere in the real archive to pass through instead.
-				this.Set("AggroMode", DeriveAggroMode(this.pendingBrainType, this.pendingKarmaMidpoint), "");
+				//#565/#700 - derive AggroMode now that the whole @Create trigger body AND the
+				//top-level tag.guard line (if any) have been read (karma/npc can appear in
+				//either order inside @Create; tag.guard is always top-level, but still only
+				//guaranteed populated once ALL of base.ThirdStage() above has run), since
+				//there's no literal AGGROMODE= field anywhere in the real archive to pass
+				//through instead.
+				if (this.pendingGuardSide.HasValue) {
+					this.Set("AggroMode", "GuardsRealm", "");
+					//#700 - user-confirmed domain knowledge: tag.guard=1 is the Gondor side
+					//(attacks Mordor), tag.guard=2 is the Mordor side (attacks Gondor) - not
+					//documented anywhere in the real archive's own comments, so not something
+					//the converter could have inferred without this. Any other value is left
+					//unmapped (no Realm emitted) rather than guessed.
+					if (this.pendingGuardSide.Value == 1) {
+						this.Set("Realm", "Gondor", "");
+					} else if (this.pendingGuardSide.Value == 2) {
+						this.Set("Realm", "Mordor", "");
+					} else {
+						this.Warning(this.origData.HeaderLine, "tag.guard value '" + this.pendingGuardSide.Value + "' is neither 1 (Gondor) nor 2 (Mordor) - Realm not set, GuardsRealm aggro will never trigger.");
+					}
+				} else {
+					this.Set("AggroMode", DeriveAggroMode(this.pendingBrainType, this.pendingKarmaMidpoint), "");
+				}
 			}
 		}
 
@@ -475,6 +503,53 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#700 - "ITEM=i_npc_mount" is a fixed marker the real archive always writes right
+			//before "tag.mount=.../tag.mountcolor=..." (confirmed archive-wide: every single
+			//"ITEM=" line inside @Create is this exact marker, never a loot entry - see
+			//ConvertedThingDef.ThirdStage's own doc comment for the full writeup of why this
+			//line used to abort the rest of @Create entirely). The marker itself carries no
+			//information beyond "the next 1-2 lines are a mount" - nothing to Set.
+			if ((name == "item") && value.Trim().Equals("i_npc_mount", StringComparison.OrdinalIgnoreCase)) {
+				return;
+			}
+			//#700 - resolves the same way HandleMountId already does for the OTHER real
+			//archive naming convention (mountid/mountitem/tag.mountid) - a bare defname or
+			//model number for the actual mount item, emitted as the same NPCDef.MountItem
+			//field so both conventions land on one engine-side mechanism.
+			if (name == "tag.mount") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				string mountValue = value.Trim();
+				int mountModel;
+				if (!ConvertTools.TryParseInt32(mountValue, out mountModel)) {
+					ConvertedThingDef mountDef;
+					if (ConvertedItemDef.itemsByDefname.TryGetValue(mountValue, out mountDef)) {
+						mountModel = mountDef.Model;
+					} else {
+						mountModel = -1;
+					}
+				}
+				if (mountModel != -1) {
+					this.Set("MountItem", "0x" + mountModel.ToString("x"), comment);
+				} else {
+					this.Warning(lineNum, "Unresolvable MountItem model '" + mountValue + "' (tag.mount)");
+				}
+				return;
+			}
+			//#700 - no engine equivalent exists: Character's own mount display reuses the
+			//character's OWN body color (Thing.ShortColor - there's no independent per-
+			//instance mount-color field), so this can't be mapped onto anything real without
+			//also recoloring the rider's own skin. Preserved as a comment (not silently
+			//dropped, not misapplied) in case mount-specific coloring gets added later.
+			if (name == "tag.mountcolor") {
+				if (!this.IsPlayerDefByName) {
+					this.writtenData.Add("//tag.mountcolor = " + value.Trim() +
+						" //no independent mount-color field in this engine yet, see #700" +
+						(string.IsNullOrEmpty(comment) ? "" : " //" + comment));
+				}
+				return;
+			}
 			//#564 - the real archive grants multiple spells via addspell= lines inside @Create
 			//(e.g. c_titan_mage: "addspell=s_lightning" then "addspell=s_fireball" then
 			//"addspell=s_magic_reflection"), one line per spell - maps directly onto
@@ -642,6 +717,21 @@ namespace SteamEngine.Converter {
 				def.Warning(line.Line, "Unresolvable MountItem model");
 			}
 			//return "";
+		}
+
+		//#700 - captures the TOP-LEVEL "tag.guard=1/2" line's raw value for ThirdStage's
+		//AggroMode/Realm derivation (see its own doc comment), while still passing the tag
+		//through unchanged - other systems (tag.guardopposite/tag.guardhire, both already
+		//passed through the same generic way) may still want to read the raw value directly.
+		private static void HandleGuardTag(ConvertedDef def, PropsLine line) {
+			ConvertedCharDef charDef = def as ConvertedCharDef;
+			if (charDef != null) {
+				int guardSide;
+				if (ConvertTools.TryParseInt32(line.Value, out guardSide)) {
+					charDef.pendingGuardSide = guardSide;
+				}
+			}
+			def.Set(line);
 		}
 
 

@@ -94,6 +94,9 @@ Color = 0003
 Str = 41 55
 Dex = 41 55
 Int = 41 55
+Equip = i_lantern
+Equip = i_robe
+EquipColor = 079C
 AggroMode = Calm
 
 //[SPEECH JOBCRYER] //(commented out by Converter) 
