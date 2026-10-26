@@ -207,14 +207,23 @@ namespace SteamEngine.Converter {
 						//ranger's bow THEN its arrows), all of which need to reach
 						//ProcessCreateTriggerLine, not just the first one
 						lineNum++;
-						Match m = nameValueRE.Match(line);
+						//#656 - tagRE tried FIRST, not as a fallback: tagRE only ever matches a real
+						//"tag(" / "tag." prefixed line, so trying it first never steals anything from
+						//nameValueRE. The old fallback order was backwards for exactly the lines tagRE
+						//is meant for - nameValueRE's separator is "=" OR any whitespace, so a tag-call
+						//line with a trailing inline comment (e.g. "tag(resist_bleed,300)  //krvaci", a
+						//near-universal archive convention) satisfies nameValueRE at the whitespace
+						//before "//" first, swallowing the entire "tag(resist_bleed,300)" call as one
+						//opaque name with an empty value - silently dropping the tag with no warning,
+						//before tagRE ever got a chance to parse it correctly.
+						Match m = tagRE.Match(line);
 						if (m.Success) {
-							this.ProcessCreateTriggerLine(m.Groups["name"].Value.ToLowerInvariant(),
+							this.ProcessCreateTriggerLine("tag."+m.Groups["name"].Value.ToLowerInvariant(),
 								m.Groups["value"].Value, m.Groups["comment"].Value, lineNum);
 						} else {
-							m = tagRE.Match(line);
+							m = nameValueRE.Match(line);
 							if (m.Success) {
-								this.ProcessCreateTriggerLine("tag."+m.Groups["name"].Value.ToLowerInvariant(),
+								this.ProcessCreateTriggerLine(m.Groups["name"].Value.ToLowerInvariant(),
 									m.Groups["value"].Value, m.Groups["comment"].Value, lineNum);
 							} //else ignore (?)
 						}
