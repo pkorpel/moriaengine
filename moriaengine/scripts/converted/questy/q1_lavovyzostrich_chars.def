@@ -15,13 +15,13 @@ Str = 1000
 Dex = 1000
 Int = 1000
 Equip = i_hair_long
-Color = colors_hair
+EquipColor = colors_hair
 Equip = i_shoes_plant
-Color = color_gray_lt
+EquipColor = color_gray_lt
 Equip = i_robe
-Color = 0989
+EquipColor = 0989
 Equip = i_hat_wizards
-Color = 0989
+EquipColor = 0989
 AggroMode = Calm
 
 [NPCDef c_q1_lavovyjester_lavovyjester]

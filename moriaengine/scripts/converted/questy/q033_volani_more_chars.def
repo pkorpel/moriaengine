@@ -14,7 +14,7 @@ Str = 100
 Dex = 100
 Int = 100
 Equip = random_male_hair
-Color = colors_hair
+EquipColor = colors_hair
 Experience = 0 0
 AggroMode = Calm
 
@@ -88,7 +88,7 @@ Str = 100
 Dex = 100
 Int = 100
 Equip = random_male_hair
-Color = colors_hair
+EquipColor = colors_hair
 Experience = 0 0
 AggroMode = Calm
 
@@ -106,6 +106,6 @@ Str = 100
 Dex = 100
 Int = 100
 Equip = random_male_hair
-Color = colors_hair
+EquipColor = colors_hair
 Experience = 0 0
 AggroMode = Calm

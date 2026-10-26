@@ -134,11 +134,11 @@ Str = 200
 Dex = 200
 Int = 1000
 Equip = i_cape
-Color = 00a82
+EquipColor = 00a82
 Equip = i_robe
-Color = 00a82
+EquipColor = 00a82
 Equip = i_hair_long
-Color = 070c
+EquipColor = 070c
 Equip = i_staff_gnarled_mithril
 AggroMode = Calm
 

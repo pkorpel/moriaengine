@@ -22,5 +22,5 @@ SpiritSpeak = 550 780
 Wrestling = 150 380
 Tactics = 150 350
 Equip = random_female_hair
-Color = colors_hair
+EquipColor = colors_hair
 AggroMode = Calm

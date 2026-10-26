@@ -129,11 +129,11 @@ Experience = 30 35
 Color = colors_skin
 Equip = 0efa
 Equip = i_surcoat
-Color = 029c
+EquipColor = 029c
 Equip = i_sandals
-Color = 01b6
+EquipColor = 01b6
 Equip = i_pants_long
-Color = 08f
+EquipColor = 08f
 AggroMode = Calm
 
 //[SPEECH crunch_Karenus] //(commented out by Converter) 

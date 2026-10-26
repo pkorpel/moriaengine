@@ -18,7 +18,7 @@ Wrestling = 400
 MagicResist = 300
 Tactics = 500
 Equip = random_male_hair
-Color = colors_hair
+EquipColor = colors_hair
 AggroMode = Calm
 
 [NPCDef c_alchymista]
@@ -39,6 +39,6 @@ Wrestling = 400
 MagicResist = 300
 Tactics = 500
 Equip = i_hair_long
-Color = 0455
+EquipColor = 0455
 Equip = i_beard_long
 AggroMode = Calm

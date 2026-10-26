@@ -17,13 +17,13 @@ Str = 1000
 Dex = 1000
 Int = 1000
 Equip = i_hair_afro
-Color = 047d
+EquipColor = 047d
 Equip = i_beard_mustache
-Color = 073e
+EquipColor = 073e
 Equip = i_shirt_plain
-Color = 05df
+EquipColor = 05df
 Equip = i_pants_short
-Color = 05f5
+EquipColor = 05f5
 AggroMode = Calm
 
 [NPCDef c_mq002_kovar]
@@ -43,7 +43,7 @@ Cooking = 550 780
 Wrestling = 150 380
 Tactics = 150 380
 Equip = random_male_hair
-Color = colors_hair
+EquipColor = colors_hair
 Equip = random_facial_hair
-Color = match_hair
+EquipColor = match_hair
 AggroMode = Calm

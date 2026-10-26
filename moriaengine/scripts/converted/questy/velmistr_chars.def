@@ -66,7 +66,7 @@ Peacemaking = 1000
 Fame = 10
 Karma = 500
 Equip = random_female_hair
-Color = colors_hair
+EquipColor = colors_hair
 AggroMode = Calm
 
 [NPCDef c_q000_elmira]
@@ -88,7 +88,7 @@ Karma = 500
 Provocation = 1000
 Peacemaking = 1000
 Equip = random_female_hair
-Color = colors_hair
+EquipColor = colors_hair
 AggroMode = Calm
 
 [NPCDef c_q000_elqira]
@@ -110,7 +110,7 @@ Karma = 500
 Provocation = 1000
 Peacemaking = 1000
 Equip = random_female_hair
-Color = 00
+EquipColor = 00
 AggroMode = Calm
 
 [NPCDef c_q000_rinald]
