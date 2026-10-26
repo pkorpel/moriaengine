@@ -1,5 +1,55 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): #692 fully closed - LOS honors Noshoot, not Impassable (PR #695)
+
+Follow-up to the #692 "left open" design question from earlier the same day (see the
+entry below this one): user flagged the elevated-wall gap as a likely major bug and
+asked for analysis + options before any more code got written. Presented 4 options
+(A: document as known limitation, B: honor the real `Noshoot` tiledata flag, C: extend
+`Wall`-flagged statics' band to ground as a heuristic, D: synthesize per-building
+foundation data in the converter) - user picked B.
+
+**Root cause, confirmed via real data rather than assumption**: `IsLosBlockedAt`/
+`IsVerticalLosBlockedBetween` gated statics/items on `TileFlag.Impassable` (a MOVEMENT
+flag) instead of `TileFlag.Noshoot` (the real UO tiledata flag for "can you see/shoot
+through this"). Scanned real tile data: walls carry both flags; windows carry
+`Impassable` but NOT `Noshoot` (confirms the flag choice - a window should be
+see/shoot-through despite blocking movement, which the old Impassable-only logic
+ALSO got wrong, just never surfaced as a report). Land/terrain tiles never carry
+`Noshoot` at all (0 of 16384) - terrain check unchanged, still uses `Impassable`.
+Real buildings achieve elevation purely via static objects on unmodified FLAT terrain
+(confirmed by sampling real map sectors - a platform's own column stays at true ground
+Z, only the static's own Z is raised) - so a `Noshoot` static can safely be treated as
+physically continuous down to the real terrain Z at its own column, closing the gap a
+ray starting below the wall's registered base used to slip through. This is why
+observation #1 (same-column floor) was a DIFFERENT bug (an early-return skipping the
+check entirely) while observation #2 (elevated wall) was this one (a wrong GATING
+flag) - related symptoms, unrelated root causes.
+
+**Two real regressions found and fixed while verifying this - both worth remembering
+for any future vertical-Z-band work**:
+1. `Character.CanReach` on an item in your OWN backpack (same exact point as yourself)
+   started reporting falsely blocked - the degenerate `fromZ==toZ` query has no real
+   "between" interval (nothing can be strictly between a value and itself), but the
+   newly-extended band still numerically overlapped it. Caught by a full regression
+   sweep surfacing `EconomyTestsB.VendorSellGrantsGoldForItem` failing, confirmed via
+   A/B it passed on unmodified code - NOT pre-existing, a real new bug from this
+   session's own change. Fixed with an explicit `zLow == zHigh -> return false`
+   short-circuit in `IsVerticalLosBlockedBetween`.
+2. None of the 3 scenarios in `LineOfSightBlockingTests.cs`/`VerticalLosBlockingTests.cs`
+   ever cleaned up their own placed `i_wall_stone` walls - harmless with 2 tests, but
+   adding a 3rd (`TestCheckLosThroughElevatedWall`) meant a LATER test's own fresh
+   `TestTeleportToOpenGround` pick could land close enough to an EARLIER test's leftover
+   wall to see "already blocked" before placing its own wall at all - a false failure
+   with nothing wrong in the LOS code under test. Same shape as this file's own
+   documented NPC/Corpse leftover-content problem (#69/#128) - extended
+   `VerificationTestUtils` with a matching `CleanupNearbyItems`.
+
+Broad regression sweep (33 tests across Combat/Ranger/Mystic/Mage/Housing/Economy/Gm/
+Movement) run twice (before and after the two fixes above) - final state: every
+remaining failure matches an already-documented pre-existing flake, zero unexplained
+failures.
+
 ## DONE (2026-10-26): NPC attacks through floors + ranger stuck mid-fight (#692, PR #693) - partial, #2 still open
 
 Follow-up to #689, continuing the same c_titan/c_titan_mage/c_titan_ranger live-testing
