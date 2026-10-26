@@ -1,5 +1,67 @@
 # moriaengine — working state
 
+## DONE (2026-10-26): converter dropped mounted-NPC equipment, guards defaulted to Calm (#700, PR #701)
+
+User tried spawning a real converted-content guard (`c_vguard_rohan_hala_jezdec`) and found
+two bugs: spawned naked despite being one of the NPCs meant to carry newbie equipment, and
+meant to be mounted; and had `AggroMode.Calm` instead of `AggroMode.GuardsRealm`. **User's own
+domain knowledge, given mid-investigation**: `tag.guard=1` means a Gondor guard (attacks
+Mordor), `tag.guard=2` means a Mordor guard (attacks Gondor) - this directly shaped the fix.
+
+**Root cause 1 (equipment/mount), found by actually running the converter locally, not
+guessing from static code reading** (two earlier hypotheses - `ConvertedDef.Set()`
+overwriting values, an uncaught exception - were both ruled out first by checking `Set()`'s
+real implementation and by observing zero exceptions in a real converter run):
+`ConvertedThingDef.ThirdStage()`'s `@Create`-trigger-body reader had a `break` on the first
+`item`/`itemnewbie`-prefixed line, meant as a "stop before the loot section" heuristic. A
+GitHub code search across the archive confirmed real loot sections live in a *different*
+trigger (`@NPCRestock`), never read by this loop at all - so the heuristic had zero
+protective value and only ever misfired on the real archive's own `ITEM=i_npc_mount` marker
+line, silently dropping every subsequent `ITEMNEWBIE=`/`tag.mount` line in the same trigger
+body, archive-wide (not just this one guard). Removed the `break` entirely.
+
+**Root cause 2 (AggroMode/Realm)**: `tag.guard` was never derived into anything - guards
+defaulted to the generic brain/karma-based `DeriveAggroMode` formula (#565), landing on Calm.
+New `NPCDef.Realm` property (mirrors the existing `AggroMode` tag-backed property exactly,
+`Realm.None` default) + `ConvertedCharDef` now maps `tag.guard=1`/`2` onto
+`AggroMode.GuardsRealm` + `Realm.Gondor`/`Mordor`, checked BEFORE falling back to #565's
+formula. Seeded onto the live `Character.Realm` in `NPC.On_Create` only when `def.Realm !=
+Realm.None` - matches `Character.Realm`'s own documented "untouched characters stay
+unaffected" intent, doesn't install a `RealmPlugin` on every NPC that never sets Realm.
+`tag.mount` resolves to `NPCDef.MountItem` via the same model-lookup `HandleMountId` already
+uses; `tag.mountcolor` is preserved as an explanatory comment (no independent mount-color
+field exists in this engine - a mounted character's display reuses its own body color),
+not silently dropped or misapplied onto the character's own skin color.
+
+**Enum-value gotcha worth remembering for any future converter field targeting a
+hand-written (non-`.ct`-templated) Def class**: the converter's first draft emitted
+`Realm = Realm.Gondor` (matching how `NaturalDamageType = DamageType.Physical` is written
+elsewhere) - but `NPCDef.LoadScriptLine` is a hand-written parser, not the reflection-based
+`Defs:`/`FieldValue` pipeline that supports the `"EnumType.Value"` prefixed syntax
+automatically. Fixed to emit the bare value (`Realm = Gondor`), matching the existing
+`AggroMode = Calm` field's own convention on the same class.
+
+Regenerated the full archive via the fixed converter and diffed against tracked
+`scripts/converted/` content: 17 files changed, every line explained by these two fixes
+(spot-checked several, all confirmed legitimate). `systems/aldaron.def` deliberately
+excluded from the swap - it carries its own unrelated, already-documented pre-existing
+resist-ordering drift (see the #670 entry further down this file), not something to touch
+here.
+
+Verified: new `NpcGuardContentTests` (protocol-tier) spawns the real
+`c_vguard_rohan_hala_jezdec` and asserts it's equipped (≥6 items), mounted
+(`MountItem != 0`), `AggroMode=GuardsRealm`, `Realm=Gondor`. Red/green confirmed directly -
+reverting just the content files reproduces the exact originally-reported symptom
+(`equipped=1 mountItem=0x0 aggroMode=Calm realm=Neutral`); restored, green. Fast tier
+53/53. A direct `GameCore.dll` boot reached `Init done.` cleanly with the pre-existing
+baseline warning/error counts unchanged (449 `defined multiple times` / 83 `resources
+entry` / 76 `spk_guard` not-a-valid-TriggerGroup). `CombatDepthTests` A/B-verified: the 5/8
+failures seen (`CalmAnimalNeverAttacksPlayer`/`NpcSpellcasterLandsDamageOnItsTarget`/
+`SpellcasterKeepsItsDistanceInsteadOfRushingToMelee`/
+`ArcherKeepsItsDistanceInsteadOfRushingToMelee`/`DragonBreathAoeQuestionIsAnswered`)
+reproduce identically on unmodified `main` - confirmed pre-existing sandbox-contention
+flakiness (#100), unrelated to this change.
+
 ## DONE (2026-10-26): GM .static command; spawn gems movenever/invis/no-decay (#697, PR #698)
 
 User request: a new `.static` GM command (`.add` + `attr_move_never`), and newly-created
