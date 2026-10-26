@@ -33,6 +33,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestCheckLosThroughSameColumnFloor(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			VerificationTestUtils.CleanupNearbyItems(self, (ItemDef) ThingDef.GetByDefname("i_wall_stone"), 20);
 
 			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
 			NPC lower = (NPC) npcDef.Create(self.X, self.Y, self.Z, self.M);
@@ -46,6 +47,32 @@ namespace SteamEngine.CompiledScripts {
 			bool openAfterFloor = lower.CanInteractWith(upper).Allow;
 
 			Console.WriteLine("VERTICAL_LOS_TEST: openBeforeFloor=" + openBeforeFloor + " openAfterFloor=" + openAfterFloor);
+		}
+
+		/// <summary>Real-user-reported (#692, observation 2): a ranged/caster NPC standing
+		/// outside and below a slightly-elevated static house (attacker Z=0, target+wall Z=2)
+		/// could attack straight through the wall. Root cause and fix: see
+		/// IsLosBlockedAt's own doc comment in GameCore/Regions/LineOfSightImpl.cs - the wall's
+		/// blocking Z-band now extends down to the real (flat, unmodified) terrain Z at its own
+		/// column, closing the gap a ray starting below the wall's registered base used to slip
+		/// through.</summary>
+		[SteamFunction]
+		public static void TestCheckLosThroughElevatedWall(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			VerificationTestUtils.CleanupNearbyItems(self, (ItemDef) ThingDef.GetByDefname("i_wall_stone"), 20);
+
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC outside = (NPC) npcDef.Create(self.X, self.Y, self.Z, self.M);
+			NPC inside = (NPC) npcDef.Create(self.X + 6, self.Y, self.Z + 2, self.M);
+
+			bool openBeforeWall = outside.CanInteractWith(inside).Allow;
+
+			ItemDef wallDef = (ItemDef) ThingDef.GetByDefname("i_wall_stone");
+			wallDef.Create(self.X + 3, self.Y, self.Z + 2, self.M);
+
+			bool openAfterWall = outside.CanInteractWith(inside).Allow;
+
+			Console.WriteLine("ELEVATED_WALL_LOS_TEST: openBeforeWall=" + openBeforeWall + " openAfterWall=" + openAfterWall);
 		}
 	}
 }
