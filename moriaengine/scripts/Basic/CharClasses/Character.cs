@@ -973,6 +973,7 @@ namespace SteamEngine.CompiledScripts {
 		private static TagKey resistSummonTK = TagKey.Acquire("_resist_summon_");
 		private static TagKey resistDragonTK = TagKey.Acquire("_resist_dragon_");
 		private static TagKey resistParalyseTK = TagKey.Acquire("_resist_paralyse_");
+		private static TagKey resistCurseTK = TagKey.Acquire("_resist_curse_");
 
 		public int ResistMagic {
 			get {
@@ -1210,6 +1211,31 @@ namespace SteamEngine.CompiledScripts {
 					this.SetTag(resistParalyseTK, dynamicPart);
 				} else {
 					this.RemoveTag(resistParalyseTK);
+				}
+			}
+		}
+
+		/// <summary>Resistance to the Curse spell/effect (real archive field: resist_curse,
+		/// e.g. c_titan's -100 - a NEGATIVE value, i.e. extra vulnerability, not resistance).
+		/// Same shape as ResistParalyse directly above - a real status-effect resist with no
+		/// damage-type counterpart in DamageManager.GetResistModifier (Curse isn't a
+		/// DamageType), so it has no consumer yet. CurseSpellEffectPlugin.On_Assign (#539-
+		/// adjacent, StatModSpellEffectPlugins.cs) is the natural place a future
+		/// implementation would read this from - its own commented-out TODO block already
+		/// shows the real Sphere source's class-conditional elemental-vulnerability logic for
+		/// the same spell, left unported for the same reason: a real design decision, not a
+		/// data-availability problem.</summary>
+		public int ResistCurse {
+			get {
+				int dynamicPart = Convert.ToInt32(this.GetTag(resistCurseTK));
+				return dynamicPart + this.TypeDef.ResistCurse;
+			}
+			set {
+				int dynamicPart = value - this.TypeDef.ResistCurse;
+				if (dynamicPart != 0) {
+					this.SetTag(resistCurseTK, dynamicPart);
+				} else {
+					this.RemoveTag(resistCurseTK);
 				}
 			}
 		}

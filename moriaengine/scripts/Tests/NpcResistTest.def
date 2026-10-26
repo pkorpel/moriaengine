@@ -4,6 +4,9 @@
 // .def file the same way the converter now emits them. ResistSlashing/ResistStabbing
 // both set here to cover the "sharp" dual-write case (DamageType.Sharp = Slashing|Stabbing,
 // no dedicated ResistSharp property exists).
+// ResistParalyse's "700 800" range covers the resist-range-rolling fix: proves a real
+// {min max} resist line rolls a per-spawn value instead of being pre-averaged into a flat
+// number. ResistCurse covers the new field added for the same investigation.
 [NPCDef npc_test_resist]
 NAME = "Resist Test"
 ANIM = 0x1fff
@@ -12,3 +15,5 @@ ResistFire = 200
 ResistElectric = 100
 ResistSlashing = -100
 ResistStabbing = -100
+ResistParalyse = 700 800
+ResistCurse = -100

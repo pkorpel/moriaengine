@@ -34,7 +34,8 @@ namespace SteamEngine.CompiledScripts {
 			NPC npc = (NPC) def.Create(self.X + 1, self.Y, self.Z, self.M);
 			Console.WriteLine("NPC_RESIST_TEST_RESULT: poison=" + npc.ResistPoison +
 				" fire=" + npc.ResistFire + " electric=" + npc.ResistElectric +
-				" slashing=" + npc.ResistSlashing + " stabbing=" + npc.ResistStabbing);
+				" slashing=" + npc.ResistSlashing + " stabbing=" + npc.ResistStabbing +
+				" paralyse=" + npc.ResistParalyse + " curse=" + npc.ResistCurse);
 		}
 	}
 }
