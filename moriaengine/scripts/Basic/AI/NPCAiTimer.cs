@@ -324,9 +324,15 @@ namespace SteamEngine.CompiledScripts {
 			int effectiveRange;
 			bool hasLineOfSight;
 			NPCDef def = (NPCDef) self.Def;
-			//#564 - a caster with ONLY an addspell-granted Spells list (no CombatSpell) must still
-			//hold spell range rather than closing to melee, same as a CombatSpell-only caster
-			bool isCaster = (def.CombatSpell != null) || ((def.Spells != null) && (def.Spells.Count > 0));
+			//#734 - only an NPC that actually knows an OFFENSIVE spell holds spell range between
+			//casts (see HasOffensiveSpell) - the old isCaster flag went true for ANY NPC with ANY
+			//spell at all, so a kit that's 100% beneficial/self-targeted (heal, magic reflection -
+			//ChooseSpellToCast below always redirects those to self, never the enemy) held at spell
+			//range forever with no way to ever actually engage: it never had an offensive reason to
+			//close in, and never got close enough to melee either. Such an NPC now falls into the
+			//melee branch below and weaves its support spells in opportunistically instead (see
+			//ChooseSpellToCast's per-spell scoring).
+			bool isCaster = HasOffensiveSpell(def);
 			if (isCaster) {
 				//A spellcaster holds its distance rather than closing to melee range between
 				//casts. Without this branch, effectiveRange fell through to WeaponRangeVsM/VsP
@@ -387,10 +393,26 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//transient, not saved - a missed cooldown window just means one skipped cast attempt after a reload, harmless
-		private double nextSpellCastTime;
+		//transient, not saved - a missed cooldown window just means one skipped cast attempt after a reload, harmless.
+		//#734 - per-SPELL now (was one single shared cooldown for every spell this NPC knows),
+		//so casting a self-heal doesn't also lock out an unrelated offensive spell for the same
+		//4 seconds - see IsSpellReady/CastSpell below.
+		private Dictionary<SpellDef, double> nextCastTimeBySpell;
 		private const double SpellCastCooldownSeconds = 4;
 		private const int DefaultSpellCastRange = 10;
+
+		//#734 - ChooseSpellToCast's utility-score weights. An offensive spell's baseline sits
+		//below a self-heal's max (so a caster drops everything to save itself once truly
+		//hurt) but above a self-buff's flat score (so, once buffed, a caster/hybrid spends its
+		//casts offensively rather than endlessly re-rolling the same buff) and above the melee
+		//branch's own implicit "nothing else to do" baseline (so a melee+support NPC still
+		//prefers an available heal/buff over just swinging blindly through them).
+		private const double OffensiveSpellBaseScore = 0.6;
+		private const double BuffSpellScore = 0.5;
+		private const double OtherBeneficialSpellScore = 0.3;
+		//a self-heal scores 0 (not worth the mana) once already this close to full - avoids
+		//topping off a 1-point scratch every time it's off cooldown.
+		private const double HealConsiderThreshold = 0.9;
 
 		/// <summary>#716 - NPCDef.SpellCastRange's own per-monster override, falling back to
 		/// DefaultSpellCastRange when unconfigured (the negative sentinel).</summary>
@@ -405,63 +427,155 @@ namespace SteamEngine.CompiledScripts {
 		/// timer), so this is the right signal for "did the caster try to use its spell" alone.</summary>
 		public int CastAttempts { get; private set; }
 
-		/// <summary>
-		/// Casts NPCDef.CombatSpell directly at `target`, bypassing SpellDef's targeting flow
-		/// entirely (On_TargonChar etc are all hardcoded to Player - see #57) since an NPC picks
-		/// its own target programmatically and has no client-side targeting cursor to drive that
-		/// flow anyway. Returns false (does nothing) if this NPC has no combat spell configured,
-		/// doesn't have the mana, is still on cooldown, or the target is out of spell range -
-		/// callers should fall back to normal weapon combat in that case.
-		/// </summary>
-		/// <summary>#564 - picks uniformly at random among def.Spells (addspell=) when that list
-		/// is configured, falling back to the single def.CombatSpell otherwise. Returns null if
-		/// neither is configured (this NPC has no spell at all). Internal (not private) so a
-		/// test can sample the distribution directly without needing real combat timing/cooldowns
-		/// - TryCastSpell's 4-second cooldown makes a 200+-sample live-combat test impractically
-		/// slow, and this method is pure/deterministic-enough logic that's fine to test directly,
-		/// same precedent as other pure static helpers elsewhere in this codebase
-		/// (ProfessionDef.LevelToTitleTier, etc).</summary>
-		internal static SpellDef PickSpell(NPCDef def) {
+		/// <summary>#734 - def.Spells (addspell=, #564) and def.CombatSpell are no longer
+		/// mutually exclusive pools the way PickSpell used to treat them (Spells OR CombatSpell,
+		/// whichever was configured) - every spell from either one is now a real candidate for
+		/// HasOffensiveSpell/ChooseSpellToCast, so a NPCDef that happens to configure both (e.g.
+		/// legacy CombatSpell content plus newer addspell= entries) gets the benefit of both
+		/// instead of one silently shadowing the other.</summary>
+		private static IEnumerable<SpellDef> CandidateSpells(NPCDef def) {
 			List<SpellDef> spells = def.Spells;
-			if ((spells != null) && (spells.Count > 0)) {
-				return spells[Globals.dice.Next(spells.Count)];
+			if (spells != null) {
+				for (int i = 0; i < spells.Count; i++) {
+					yield return spells[i];
+				}
 			}
-			return def.CombatSpell;
+			if (def.CombatSpell != null) {
+				yield return def.CombatSpell;
+			}
 		}
 
+		/// <summary>#734 - true only when this NPC knows at least one genuinely offensive
+		/// (SpellFlag.IsHarmful) spell. Used by Fight() above to decide whether to hold spell
+		/// range at all - a kit that's 100% beneficial/self-targeted has no such spell and so no
+		/// reason to ever hold range (see Fight's own comment on isCaster for the full story).</summary>
+		internal static bool HasOffensiveSpell(NPCDef def) {
+			foreach (SpellDef spell in CandidateSpells(def)) {
+				if ((spell.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// #734 - the utility-scored heart of this NPC's spellcasting, replacing the old
+		/// PickSpell's blind uniform-random choice among EVERY configured spell regardless of
+		/// need. Considers every spell this NPC knows (CandidateSpells) that's actually castable
+		/// right now - cooldown clear, mana available, and for an offensive spell, target in
+		/// range and LOS'd (a beneficial one needs neither, same precedent as before) - and
+		/// returns whichever one is most WORTH casting (see ScoreSpell), or null if nothing is
+		/// both castable and worth it, same "fall back to normal combat" contract TryCastSpell's
+		/// caller already expects. Internal (not private) so a test can call this directly and
+		/// deterministically, same precedent as Fight/CastAttempts above - real cooldown timing
+		/// makes a live-combat sampling test impractically slow for exercising more than one
+		/// scoring path per test.
+		/// </summary>
+		internal SpellDef ChooseSpellToCast(NPC self, Character target) {
+			NPCDef def = (NPCDef) self.Def;
+			SpellDef best = null;
+			double bestScore = 0; //0 is "not worth it" - a real candidate must score strictly above this
+			foreach (SpellDef spell in CandidateSpells(def)) {
+				if (!this.IsSpellReady(self, spell)) {
+					continue;
+				}
+				bool isBeneficial = (spell.Flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial;
+				if (!isBeneficial) {
+					//a self-targeted buff needs neither the enemy's distance nor a clear shot at
+					//it - only an offensive spell actually needs to reach the enemy.
+					if (Point2D.GetSimpleDistance(self, target) > GetSpellCastRange(def)) {
+						continue;
+					}
+					if (!self.CanInteractWith(target).Allow) {
+						continue;
+					}
+				}
+				double score = this.ScoreSpell(self, spell, isBeneficial);
+				if (score > bestScore) {
+					bestScore = score;
+					best = spell;
+				}
+			}
+			return best;
+		}
+
+		/// <summary>#734 - how worth casting `spell` is right now, on a roughly-comparable
+		/// scale across every spell shape this engine actually has. A self-heal (HealingSpellDef)
+		/// scores by how hurt `self` genuinely is - 0 (skip) above HealConsiderThreshold, ramping
+		/// up to 1.0 near death, so it outweighs even an offensive cast once things get dire. A
+		/// self-buff (DurableCharEffectSpellDef, e.g. Magic Reflection) scores a flat
+		/// BuffSpellScore, but only while it ISN'T already active - checked via its own real
+		/// EffectPluginKey_Spell (the exact plugin key this AI path always installs under, see
+		/// CastSpell below), not a guess, so a caster buffs once near the start of a fight and
+		/// then stops bothering, instead of wasting a cast re-rolling the same buff every time
+		/// it's off cooldown. An offensive spell scores a flat OffensiveSpellBaseScore plus a
+		/// small random tie-break, so a multi-offensive-spell caster varies which one it reaches
+		/// for when more than one is ready at once, without ignoring readiness the way the old
+		/// uniform-random PickSpell did (that picked among ALL configured spells regardless of
+		/// cooldown, silently no-op'ing whenever the roll landed on one still on cooldown).</summary>
+		private double ScoreSpell(NPC self, SpellDef spell, bool isBeneficial) {
+			if (!isBeneficial) {
+				return OffensiveSpellBaseScore + (Globals.dice.Next(100) / 1000.0);
+			}
+
+			HealingSpellDef heal = spell as HealingSpellDef;
+			if (heal != null) {
+				if (self.MaxHits <= 0) {
+					return 0;
+				}
+				double hpFraction = self.Hits / (double) self.MaxHits;
+				if (hpFraction >= HealConsiderThreshold) {
+					return 0;
+				}
+				return 1.0 - hpFraction;
+			}
+
+			DurableCharEffectSpellDef buff = spell as DurableCharEffectSpellDef;
+			if (buff != null) {
+				if (self.GetPlugin(buff.EffectPluginKey_Spell) != null) {
+					return 0; //already active - recasting now would just waste mana re-rolling it
+				}
+				return BuffSpellScore;
+			}
+
+			//some other beneficial spell shape with no stronger signal available - still worth
+			//considering, just with no real basis to prioritize it over anything else.
+			return OtherBeneficialSpellScore;
+		}
+
+		private bool IsSpellReady(NPC self, SpellDef spell) {
+			double nextTime;
+			if ((this.nextCastTimeBySpell != null) && this.nextCastTimeBySpell.TryGetValue(spell, out nextTime) && (Globals.TimeInSeconds < nextTime)) {
+				return false;
+			}
+			return self.Mana >= spell.ManaUse;
+		}
+
+		/// <summary>
+		/// Casts whichever spell ChooseSpellToCast picked, bypassing SpellDef's targeting flow
+		/// entirely (On_TargonChar etc are all hardcoded to Player - see #57) since an NPC picks
+		/// its own target programmatically and has no client-side targeting cursor to drive that
+		/// flow anyway. Returns false (does nothing) if nothing was worth/able to be cast this
+		/// tick - callers should fall back to normal weapon combat in that case.
+		/// </summary>
 		private bool TryCastSpell(NPC self, Character target) {
-			SpellDef spell = PickSpell((NPCDef) self.Def);
+			SpellDef spell = this.ChooseSpellToCast(self, target);
 			if (spell == null) {
-				return false;
-			}
-			if (Globals.TimeInSeconds < this.nextSpellCastTime) {
-				return false;
-			}
-			if (self.Mana < spell.ManaUse) {
 				return false;
 			}
 
 			//real-user-reported: a beneficial spell (a self/protective buff, e.g. Magic
 			//Reflection - SpellFlag.IsBeneficial) was being aimed straight at the enemy target,
-			//same as an offensive one, since PickSpell picks uniformly among def.Spells with no
-			//concept of what a spell actually DOES. Only a harmful spell should ever be aimed at
-			//the enemy; a beneficial one targets the caster itself - mirrors exactly how the real
-			//player-cast flow (SpellDef.cs's own On_Start) derives this from the same flags.
+			//same as an offensive one. Only a harmful spell should ever be aimed at the enemy; a
+			//beneficial one targets the caster itself - mirrors exactly how the real player-cast
+			//flow (SpellDef.cs's own On_Start) derives this from the same flags.
 			bool isBeneficial = (spell.Flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial;
 			Character effectTarget = isBeneficial ? self : target;
 
-			if (!isBeneficial) {
-				//a self-targeted buff needs neither the enemy's distance nor a clear shot at it -
-				//only an offensive spell actually needs to reach the enemy.
-				if (Point2D.GetSimpleDistance(self, target) > GetSpellCastRange((NPCDef) self.Def)) {
-					return false;
-				}
-				if (!self.CanInteractWith(target).Allow) {
-					return false;
-				}
+			if (this.nextCastTimeBySpell == null) {
+				this.nextCastTimeBySpell = new Dictionary<SpellDef, double>();
 			}
-
-			this.nextSpellCastTime = Globals.TimeInSeconds + Math.Max(SpellCastCooldownSeconds, spell.CastTime);
+			this.nextCastTimeBySpell[spell] = Globals.TimeInSeconds + Math.Max(SpellCastCooldownSeconds, spell.CastTime);
 			self.Mana -= (short) spell.ManaUse;
 			this.CastAttempts++;
 

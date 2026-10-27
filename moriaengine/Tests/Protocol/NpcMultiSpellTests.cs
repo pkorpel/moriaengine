@@ -4,11 +4,13 @@ using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
-	/// #564 - proves NPCAiTimer.PickSpell (scripts/Basic/AI/NPCAiTimer.cs) picks uniformly at
-	/// random among NPCDef.Spells (addspell=) when that list is configured, and falls back to
-	/// the single CombatSpell unchanged when it isn't. npc_test_multi_spell
-	/// (scripts/Tests/NpcMultiSpellTest.def) has two AddSpell entries; npc_test_single_combat_spell
-	/// has only the old CombatSpell field, no AddSpell at all.
+	/// #734 - see scripts/Tests/NpcMultiSpellTests.cs's own doc comment for why this replaced
+	/// #564's original "uniform random distribution" assertions: NPCAiTimer.ChooseSpellToCast
+	/// (which replaced PickSpell) is cooldown-aware, so "ignores all state, picks uniformly" is
+	/// no longer the real contract. Proves instead that once a spell is actually cast, it's
+	/// excluded from the next choice (its own per-spell cooldown, not the old single shared one)
+	/// and the remaining ready spell is picked both validly and stably (no flip-flopping with no
+	/// state change in between).
 	/// </summary>
 	[Collection(NpcMultiSpellCollection.Name)]
 	public class NpcMultiSpellTests {
@@ -22,41 +24,30 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
-		public void PicksRandomlyAmongBothGrantedSpells() {
-			using (var client = this.ConnectLoginAndCreateCharacter(Account, "SpellPickChecker")) {
-				client.SendSpeech(".TestSampleSpellPickDistribution");
-				Assert.True(this.fixture.WaitForGameOutput("NPC_SPELL_PICK_TEST_RESULT:", TimeSpan.FromSeconds(10)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "NPC_SPELL_PICK_TEST_RESULT:");
+		public void ExcludesWhicheverSpellWasJustCastAndStaysStable() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "MultiSpellCooldownChecker")) {
+				client.SendSpeech(".TestMultiOffensiveSpellCooldownExclusion");
+				Assert.True(this.fixture.WaitForGameOutput("MULTI_SPELL_COOLDOWN_TEST:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MULTI_SPELL_COOLDOWN_TEST:");
 
-				int magicArrow = ParseIntField(line, "magicArrow=");
-				int fireball = ParseIntField(line, "fireball=");
-
-				//proves it's genuinely random-among-the-list, not silently always picking the
-				//first entry - both spells must show up at least once across 400 samples
-				Assert.True(magicArrow > 0, "Expected magic arrow to be picked at least once: " + line);
-				Assert.True(fireball > 0, "Expected fireball to be picked at least once: " + line);
-				Assert.Equal(400, magicArrow + fireball);
+				Assert.Contains("beforeCastValid=True", line);
+				Assert.Contains("castAttempts=1", line);
+				Assert.Contains("afterCastValid=True", line);
+				Assert.Contains("stableAcrossCalls=True", line);
 			}
 		}
 
 		[Fact]
-		public void SingleCombatSpellOnlyPathStillWorksUnchanged() {
-			using (var client = this.ConnectLoginAndCreateCharacter(Account, "SingleSpellChecker")) {
-				client.SendSpeech(".TestSampleSingleCombatSpellPick");
-				Assert.True(this.fixture.WaitForGameOutput("NPC_SINGLE_SPELL_PICK_TEST_RESULT:", TimeSpan.FromSeconds(10)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "NPC_SINGLE_SPELL_PICK_TEST_RESULT:");
+		public void SingleSpellCasterGoesOnCooldownAfterCasting() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "SingleSpellCooldownChecker")) {
+				client.SendSpeech(".TestSingleSpellGoesOnCooldown");
+				Assert.True(this.fixture.WaitForGameOutput("SINGLE_SPELL_COOLDOWN_TEST:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "SINGLE_SPELL_COOLDOWN_TEST:");
 
-				Assert.Contains("matches=True", line);
+				Assert.Contains("readyBeforeIsSpell=True", line);
+				Assert.Contains("castAttempts=1", line);
+				Assert.Contains("readyAfterIsNull=True", line);
 			}
-		}
-
-		private static int ParseIntField(string line, string prefix) {
-			int start = line.IndexOf(prefix, StringComparison.Ordinal) + prefix.Length;
-			int end = start;
-			while (end < line.Length && (char.IsDigit(line[end]) || line[end] == '-')) {
-				end++;
-			}
-			return int.Parse(line.Substring(start, end - start));
 		}
 
 		private static string LastLineContaining(string output, string marker) {
