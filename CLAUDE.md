@@ -1,5 +1,52 @@
 # moriaengine — working state
 
+## DONE (2026-10-27): #724 - generalized the #721 Surface-floor LOS fix to the band's LOW bound too (PR #725)
+
+Follow-up to #721 (right below this entry) - user re-tested in a different house with
+different flooring, same symptom reproduced at a SECOND real location (`c_titan` at
+(4155,4018,0,0), `c_titan_ranger` at (4159,4022,0,0)). User's explicit framing, worth
+remembering for any future LOS-tiledata fix: "We cannot be modifying this script one by
+one" - asked for a fix covering the real tiledata FLAG category, not another per-model
+patch.
+
+**Root cause - the other half of the same mechanism, not a new bug class.** #721's first
+fix only stopped padding a zero-height `Surface` static's band UPPER bound. This second
+location's floor (model `0x503`, same `Background, Surface, Noshoot`, Height=0 shape)
+sits at Z=20 while both characters stand on raw ground at Z=0 - a raised platform/deck
+overhead. Its band's LOWER bound was still being extended all the way down to the ground
+via the #692 "wall on a raised platform" logic (`Math.Min(staticZ, landZ)`) - correct for
+a wall (no gap underneath, needs floor-to-ceiling blocking even elevated), wrong for a
+thin walkable surface floating above two characters who are both well below it.
+
+**Fix, generalized exactly as the user asked**: `GetNoshootBandLow`/`GetNoshootHeight`
+now share one `IsThinWalkableSurface(flags)` check (`Roof` OR `Surface`) - ANY static
+you stand ON (not walk into) uses its own literal Z range, never extended down to the
+ground, never padded up from zero - covering every real flooring/platform/pavement tile
+by its actual tiledata flag, not a specific model number. `Roof` was already special-
+cased this way since #708; this unifies `Surface` onto the identical rule rather than
+giving it its own separate, narrower treatment.
+
+Verified both real repros now show `hasLos=True`/`approached=False`: the original #721
+coordinates (same-level floor) AND this new one (raised platform overhead). New
+permanent regression test (`RoofLosTests.RaisedSurfaceFloorDoesNotBlockGroundLevelLineOfSight`
++ its server-side helper, same real model/flags/height via synthetic placement) alongside
+the already-passing #721 flat-floor test - full targeted LOS suite 8/8. Fast tier 53/53.
+
+**Process note - a real self-inflicted contamination caught and redone, worth
+remembering**: a first attempt at the broader `CombatDepthTests`/`CombatScenarioTests`/
+`MysticCombatTests`/`ArmorEffectTests`/`HousingTests` sweep ran a `GameCore.dll` boot
+(to regenerate the new `[SteamFunction]`'s dispatch entry) WHILE that background test
+run was still in flight against the same fixed ports/`saves/` directory - produced a
+scary-looking 13-failed/4-passed result that was actually just connection-cascade noise
+from the collision, not a real signal. Rerun cleanly (no concurrent process) came back
+to the exact same pre-existing `CombatDepthTestsA` 4-failure cluster ("Game server never
+appeared", the extensively pre-documented #100 sandbox-contention signature) - confirmed
+via a direct A/B (fix reverted, identical 4/5 failures) rather than trusted at face
+value, since the user had just caught a real gap in the previous fix and extra rigor was
+warranted. Never run a `GameCore.dll` regeneration boot concurrently with an in-flight
+`dotnet test` run - same fixed ports/save-state collision risk already documented
+elsewhere in this file for two `dotnet test` invocations, just a new trigger for it.
+
 ## DONE (2026-10-27): #721 - flat floor tiles were blocking ground-level ranged LOS, a SECOND distinct bug from #708 (PR #722)
 
 User re-tested the #708 roof-LOS fix live at specific real-map coordinates (c_titan at
