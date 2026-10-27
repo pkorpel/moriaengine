@@ -232,6 +232,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey mountCharDefTK = TagKey.Acquire("_npcMountCharDef_");
+
+		/// <summary>#700 - the mount creature species (e.g. c_horse_brown_dk) this NPC should
+		/// spawn and already be riding when created (tag.mount in the real archive). Null (the
+		/// default) means this NPC isn't pre-mounted - unaffected, same as before this field
+		/// existed. The spawned mount's own MountItem/Color (the latter overridable per-NPCDef
+		/// via MountColor below) drive what actually gets rendered - this field only says WHICH
+		/// creature to spawn, see NPC.On_Create.</summary>
+		public NPCDef MountCharDef {
+			get {
+				return this.GetTag(mountCharDefTK) as NPCDef;
+			}
+			set {
+				this.SetTag(mountCharDefTK, value);
+			}
+		}
+
 		private static readonly TagKey instanceSpellsTK = TagKey.Acquire("_npcSpells_");
 
 		/// <summary>#564 - the full set of spells this NPC species can cast (addspell= in the real
@@ -637,6 +654,14 @@ namespace SteamEngine.CompiledScripts {
 					Logger.WriteWarning(filename, line, "combatspell '" + args + "' is not a known SpellDef.");
 				}
 				this.CombatSpell = spell;
+				return;
+			}
+			if (param == "mountnpc") {
+				NPCDef mountDef = ThingDef.GetByDefname(args) as NPCDef;
+				if (mountDef == null) {
+					Logger.WriteWarning(filename, line, "mountnpc '" + args + "' is not a known NPCDef.");
+				}
+				this.MountCharDef = mountDef;
 				return;
 			}
 			if (param == "addspell") {
@@ -1129,6 +1154,20 @@ namespace SteamEngine.CompiledScripts {
 			IMovementSettings template = def.DefaultMovementSettings;
 			if (template != null) {
 				this.MovementSettings = (IMovementSettings) DeepCopyFactory.GetCopy(template);
+			}
+
+			//#700 - spawns the real mount creature (e.g. c_horse_brown_dk) and rides it, so a
+			//guard/NPC authored as "already mounted" (tag.mount in the real archive) actually
+			//renders that way - setting a raw MountItem number directly on THIS NPC's own def
+			//(the original, wrong first attempt) has zero visual effect, since
+			//DrawObjectOutPacket only ever reads a RIDDEN character's MountItem/Color
+			//(AbstractCharacter.Mount), never a non-ridden character's own MountItem.
+			if (def.MountCharDef != null) {
+				NPC mount = (NPC) def.MountCharDef.Create(this.X, this.Y, this.Z, this.M);
+				if (def.MountColor != -1) {
+					mount.Color = def.MountColor;
+				}
+				this.Mount = mount;
 			}
 		}
 

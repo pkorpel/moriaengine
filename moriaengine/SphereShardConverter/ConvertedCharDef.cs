@@ -512,41 +512,52 @@ namespace SteamEngine.Converter {
 			if ((name == "item") && value.Trim().Equals("i_npc_mount", StringComparison.OrdinalIgnoreCase)) {
 				return;
 			}
-			//#700 - resolves the same way HandleMountId already does for the OTHER real
-			//archive naming convention (mountid/mountitem/tag.mountid) - a bare defname or
-			//model number for the actual mount item, emitted as the same NPCDef.MountItem
-			//field so both conventions land on one engine-side mechanism.
+			//#700 (resolved) - tag.mount names a real T_EQ_HORSE item (e.g.
+			//i_mt_horse_brown_dk) whose OWN TDATA3 field is the real mount CREATURE chardef
+			//(e.g. c_horse_brown_dk) this NPC should spawn already riding - grabbing the
+			//item's own .Model here (the original, wrong first attempt at this) would only
+			//ever make the GUARD itself "mountable" (AbstractCharacter.IsMountable reads
+			//MountItem on the RIDDEN character, never the rider) - the guard would still
+			//render completely unmounted, since nothing ever creates the actual
+			//Character.Mount relationship. The real mount creature chardef already carries
+			//its own correct MountItem (c_horse_brown_dk's own MountItem=0x3ea2, set via the
+			//pre-existing HandleMountId mechanism on ITS OWN def) - NPCDef.MountCharDef here
+			//just needs to name WHICH creature to spawn and ride, nothing more.
 			if (name == "tag.mount") {
 				if (this.IsPlayerDefByName) {
 					return;
 				}
 				string mountValue = value.Trim();
-				int mountModel;
-				if (!ConvertTools.TryParseInt32(mountValue, out mountModel)) {
-					ConvertedThingDef mountDef;
-					if (ConvertedItemDef.itemsByDefname.TryGetValue(mountValue, out mountDef)) {
-						mountModel = mountDef.Model;
-					} else {
-						mountModel = -1;
+				string mountCharDefname = null;
+				ConvertedThingDef mountItemDef;
+				if (ConvertedItemDef.itemsByDefname.TryGetValue(mountValue, out mountItemDef)) {
+					ConvertedItemDef mountItem = mountItemDef as ConvertedItemDef;
+					if ((mountItem != null) && !string.IsNullOrEmpty(mountItem.TData3)) {
+						string tdata3 = mountItem.TData3.Trim();
+						int tdata3AsNumber;
+						if (!ConvertTools.TryParseInt32(tdata3, out tdata3AsNumber)) {
+							//a real defname (the common case, e.g. "c_horse_brown_dk") - a raw
+							//numeric TDATA3 (e.g. i_mt_drake's "01ba") has no defname to resolve
+							//to here and falls through to the warning below instead of guessing.
+							mountCharDefname = tdata3;
+						}
 					}
 				}
-				if (mountModel != -1) {
-					this.Set("MountItem", "0x" + mountModel.ToString("x"), comment);
+				if (mountCharDefname != null) {
+					this.Set("MountNpc", mountCharDefname, comment);
 				} else {
-					this.Warning(lineNum, "Unresolvable MountItem model '" + mountValue + "' (tag.mount)");
+					this.Warning(lineNum, "Unresolvable mount creature chardef for '" + mountValue + "' (tag.mount)");
 				}
 				return;
 			}
-			//#700 - no engine equivalent exists: Character's own mount display reuses the
-			//character's OWN body color (Thing.ShortColor - there's no independent per-
-			//instance mount-color field), so this can't be mapped onto anything real without
-			//also recoloring the rider's own skin. Preserved as a comment (not silently
-			//dropped, not misapplied) in case mount-specific coloring gets added later.
+			//#700 (resolved) - the real mount-color override, applied to the SPAWNED mount
+			//creature's own Color (NPCDef.MountColor, resolved the same generic Defs:/
+			//FieldValue lazy-LScript-expression pipeline BloodColor already uses - handles
+			//both a plain hex value and a symbolic color name/range for free, no hand-written
+			//parsing needed here).
 			if (name == "tag.mountcolor") {
 				if (!this.IsPlayerDefByName) {
-					this.writtenData.Add("//tag.mountcolor = " + value.Trim() +
-						" //no independent mount-color field in this engine yet, see #700" +
-						(string.IsNullOrEmpty(comment) ? "" : " //" + comment));
+					this.Set("MountColor", value.Trim(), comment);
 				}
 				return;
 			}
