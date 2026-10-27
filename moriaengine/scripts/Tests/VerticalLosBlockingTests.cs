@@ -240,5 +240,48 @@ namespace SteamEngine.CompiledScripts {
 
 			Console.WriteLine("RAISED_FLOOR_LOS_TEST: openBeforeFloor=" + openBeforeFloor + " openAfterFloor=" + openAfterFloor);
 		}
+
+		/// <summary>#728 - real-user-reported, reproduced at exact real-map coordinates: a ranged
+		/// NPC on an upper floor, just ONE tile over from (not directly above) a target on a
+		/// lower floor, shot straight through the real floor between them. Confirmed via a live
+		/// diagnostic that even a solid, unambiguously-tall synthetic wall placed at the exact
+		/// same spot was also invisible to the check - not a height-data problem at all. Root
+		/// cause #1: CreateLosPath's per-step sampling only ever produces ONE (x,y,z) sample per
+		/// horizontal step - when the total horizontal distance is a single tile, the only two
+		/// samples it can produce land exactly on the "from" and "to" columns, and
+		/// CanSeeLosFromTo's main loop discards BOTH of them via its "standing on your own tile
+		/// never self-blocks" skip - so nothing at all gets checked between two adjacent-but-
+		/// different-level columns. Root cause #2 (the other half, see IsVerticalLosBlockedBetween's
+		/// own doc comment): even after adding a vertical check at both endpoint columns, a real
+		/// zero-height Surface floor's own Z always exactly equals whichever character stands ON
+		/// TOP of it - the old fully-exclusive-both-ends "strictly between" formula never
+		/// classified a band starting exactly AT the upper character's own Z as being "in the
+		/// way." Fixed by (1) always running a vertical-separation check at both endpoint columns
+		/// in CanSeeLosFromTo (a no-op whenever both characters share the same Z) and (2) making
+		/// that check inclusive of the upper bound (a floor exactly at the upper character's feet
+		/// still separates them from anyone below) while staying exclusive of the lower bound (a
+		/// floor exactly at the lower character's own feet still doesn't block their own view
+		/// upward).</summary>
+		[SteamFunction]
+		public static void TestAdjacentColumnRealFloorBlocksCrossLevelLos(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			ItemDef floorDef = (ItemDef) ThingDef.FindItemDef(FlatFloorModel);
+			VerificationTestUtils.CleanupNearbyItems(self, floorDef, 20);
+
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC lower = (NPC) npcDef.Create(self.X, self.Y, self.Z, self.M);
+			NPC upper = (NPC) npcDef.Create(self.X, self.Y + 1, self.Z + BuildingHeight, self.M);
+
+			bool openBeforeFloor = lower.CanInteractWith(upper).Allow;
+
+			//the real floor the upper character stands on - same model/flags/zero height as the
+			//real one found at the reported coordinates, registered at the upper character's own
+			//column and own Z (standing ON a zero-height Surface tile means Z == the tile's Z).
+			floorDef.Create(self.X, self.Y + 1, self.Z + BuildingHeight, self.M);
+
+			bool openAfterFloor = lower.CanInteractWith(upper).Allow;
+
+			Console.WriteLine("ADJACENT_COLUMN_FLOOR_LOS_TEST: openBeforeFloor=" + openBeforeFloor + " openAfterFloor=" + openAfterFloor);
+		}
 	}
 }
