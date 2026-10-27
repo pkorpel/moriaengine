@@ -1,48 +1,45 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-27): about to plan a bigger NPC combat-AI overhaul - user is restarting the session fresh, read this FULLY first
+## SESSION HANDOFF (2026-10-27): #734 NPC combat-AI overhaul - ANALYSIS DONE, OPTIONS PRESENTED, AWAITING USER'S PICK - read this FULLY first
 
-**Where things stand:** #708/#721/#724 (ranged NPCs closing to melee through floors/roofs)
-and #728 (ranged NPC shooting through a floor between adjacent columns/levels) are all
-shipped, live-confirmed by the user, and closed - see their own DONE entries below if that
-symptom ever resurfaces. #730/#731/#732 (3 more real bugs found live-testing a single guard
-NPC, `c_vguard_mordor_hala_jezdec`) are also shipped (PR #733, merged) and closed - see that
-entry below for the full writeup. Nothing is broken or half-done right now.
+**Where things stand:** #708/#721/#724 (ranged NPCs closing to melee through floors/roofs),
+#728 (ranged NPC shooting through a floor between adjacent columns/levels), and #730/#731/#732
+(3 more real bugs found live-testing a single guard NPC, `c_vguard_mordor_hala_jezdec`, PR #733)
+are all shipped, live-confirmed, and closed - see their own DONE entries below if any of those
+symptoms ever resurface. Nothing from that batch is broken or half-done.
 
-**What's queued, NOT yet started:** while live-testing that same guard, the user found a 4th,
-more interesting issue (filed as **#734**, NOT yet investigated in depth beyond the root-cause
-sketch already in the issue): a melee NPC whose only spells are support/self-targeted (heal,
+**Current step (process step 1-2 of 4, done this restart):** read `NPCAiTimer.cs` in full
+(`Fight`/`TryCastSpell`/`PickSpell`/`Think`/`Flee`), `CombatCalculator.cs`, and `WeaponSkillDef.cs`
+(`On_Stroke`'s Drawing/Striking phases), plus `NPCDef`'s `CombatSpell`/`Spells`/`SpellCastRange`
+fields in `NPC.cs`, and did some external research on how other games (Elden Ring/FromSoft FSMs,
+utility-AI companion patterns) structure combat decision-making, per the user's own suggestion.
+Wrote up a 3-option strategy plan (quick role-fix only / role-based state machine / full
+utility-AI scorer) and presented it to the user via AskUserQuestion, recommending the
+role-based-FSM middle option. **Full writeup lives in this session's own chat response - if this
+session dies before the user answers, the options need to be re-presented (the analysis above
+is enough to reconstruct them from scratch, see the issue body too) rather than assumed answered.**
+
+**#734 itself, for context:** a melee NPC whose only spells are support/self-targeted (heal,
 magic reflection, no offensive spell at all) never closes in to attack - it just stands on its
-spawn spot forever. Root cause already identified: `NPCAiTimer.Fight`'s `isCaster` flag goes
-true for ANY NPC with ANY spell at all (`def.CombatSpell != null || def.Spells.Count > 0`),
-which makes it hold at spell range instead of melee range - but if 100% of its spells are
-beneficial/self-targeted (`TryCastSpell` always redirects those to self), it never has a reason
-to approach.
+spawn spot forever. Root cause: `NPCAiTimer.Fight`'s `isCaster` flag (line ~329) goes true for
+ANY NPC with ANY spell at all (`def.CombatSpell != null || def.Spells.Count > 0`), holding it at
+spell range instead of melee range - but since 100% of its spells are beneficial/self-targeted
+(`TryCastSpell`'s `isBeneficial` check always redirects those to self), it never has a reason to
+approach. `SpellFlag` already has a real `IsHarmful` flag (distinct from `!IsBeneficial`) that
+every real spell/role option below should key off instead of "has any spell at all."
 
-**The user's actual ask, explicitly**: don't just patch #734 narrowly. They want a genuine
-analysis of the whole NPC combat-AI decision loop (`NPCAiTimer.cs` - `Fight`/`TryCastSpell`/
-`PickSpell`, `CombatCalculator.cs`, `WeaponSkillDef.cs`) and a real PLAN with multiple concrete
-strategy options for making NPC combat meaningfully smarter/more dangerous - not just "fix the
-one flag." Their own framing: melee-only monsters closing-to-hit is fine as-is; spellcasters
-(and melee/ranged hybrids that also know spells) need real offense-vs-support spell awareness,
-sensible positioning, and smarter decision-making overall, not the current flat "cast something
-if off cooldown, otherwise swing" logic.
+**Explicit process gate, where we are in it:**
+1. ✅ Analyze the current system.
+2. ✅ Write a plan with distinct strategy OPTIONS, present them to the user.
+3. ⏳ **Waiting for the user to pick/approve an approach before writing any implementation
+   code** - hard gate, do not start implementing until they explicitly pick one.
+4. Not started - implementation.
+5. Keep documenting every real step here and in memory as it happens, not batched at the end.
 
-**Explicit process the user asked for, in order:**
-1. Analyze the current system (this session already has a head start - see the #734 issue body
-   and this entry's own root-cause sketch above; `NPCAiTimer.Fight`/`TryCastSpell`/`PickSpell`
-   are the core of it, already read once this session).
-2. Write up a plan with distinct, genuinely different STRATEGY OPTIONS (not just one path) -
-   present them to the user.
-3. **Wait for the user to pick/approve an approach before writing any implementation code.**
-   This is a hard gate - they were explicit about this ("once I approve your approach, you can
-   implement it").
-4. Only then implement.
-5. **Keep every step of this documented in CLAUDE.md (this file) and the memory system as you
-   go** - the user explicitly asked for this because they're restarting the session now and
-   want continuity to survive a session death. Don't batch the documentation up for the end -
-   update this file after each real step (research done, plan drafted, options presented, user's
-   choice, implementation progress), not just once at the very end.
+**If this session dies before the user picks:** re-derive the 3 options from this entry + the
+#734 issue body (root cause above) and this file's own research notes, re-present, and wait
+again - don't assume silence means approval, and don't skip straight to implementing the
+recommended option just because it was the recommendation.
 
 **Nothing else is queued.** If the user doesn't mention #734/the AI overhaul at all next
 session, ask what they want to pick up - don't assume it's still top of mind.
