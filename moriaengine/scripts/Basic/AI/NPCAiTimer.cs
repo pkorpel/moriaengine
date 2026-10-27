@@ -335,7 +335,7 @@ namespace SteamEngine.CompiledScripts {
 				//vs. a 1.5s think-tick, i.e. most ticks), this method walked the caster right up
 				//next to a target it had just hit from range a moment earlier. Only close in if
 				//genuinely out of spell range or LOS-blocked, not after every single cast.
-				effectiveRange = SpellCastRange;
+				effectiveRange = GetSpellCastRange(def);
 				hasLineOfSight = self.CanInteractWith(target).Allow;
 			} else {
 				//WeaponStrikeStartRange (default 5) is only about when WeaponSkillDef transitions
@@ -390,7 +390,13 @@ namespace SteamEngine.CompiledScripts {
 		//transient, not saved - a missed cooldown window just means one skipped cast attempt after a reload, harmless
 		private double nextSpellCastTime;
 		private const double SpellCastCooldownSeconds = 4;
-		private const int SpellCastRange = 10;
+		private const int DefaultSpellCastRange = 10;
+
+		/// <summary>#716 - NPCDef.SpellCastRange's own per-monster override, falling back to
+		/// DefaultSpellCastRange when unconfigured (the negative sentinel).</summary>
+		internal static int GetSpellCastRange(NPCDef def) {
+			return (def.SpellCastRange > 0) ? (int) def.SpellCastRange : DefaultSpellCastRange;
+		}
 
 		/// <summary>Read-only introspection for tests - how many times this NPC has committed to
 		/// a spell cast (mana spent, cooldown started) via TryCastSpell. Decoupled from whether
@@ -447,7 +453,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!isBeneficial) {
 				//a self-targeted buff needs neither the enemy's distance nor a clear shot at it -
 				//only an offensive spell actually needs to reach the enemy.
-				if (Point2D.GetSimpleDistance(self, target) > SpellCastRange) {
+				if (Point2D.GetSimpleDistance(self, target) > GetSpellCastRange((NPCDef) self.Def)) {
 					return false;
 				}
 				if (!self.CanInteractWith(target).Allow) {
