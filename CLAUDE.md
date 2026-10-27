@@ -1,48 +1,74 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-27): #734 NPC combat-AI overhaul - ANALYSIS DONE, OPTIONS PRESENTED, AWAITING USER'S PICK - read this FULLY first
+## SESSION HANDOFF (2026-10-27): #734 NPC combat-AI overhaul SHIPPED - nothing queued, read DONE entry below if picking this back up
 
 **Where things stand:** #708/#721/#724 (ranged NPCs closing to melee through floors/roofs),
-#728 (ranged NPC shooting through a floor between adjacent columns/levels), and #730/#731/#732
-(3 more real bugs found live-testing a single guard NPC, `c_vguard_mordor_hala_jezdec`, PR #733)
-are all shipped, live-confirmed, and closed - see their own DONE entries below if any of those
-symptoms ever resurface. Nothing from that batch is broken or half-done.
+#728 (ranged NPC shooting through a floor between adjacent columns/levels), #730/#731/#732 (3
+more real bugs found live-testing a single guard NPC, PR #733), and now #734's full combat-AI
+decision-loop overhaul (see its own DONE entry just below) are all shipped. Nothing from any of
+this is broken or half-done. **Nothing is queued right now** - if the user doesn't mention #734
+follow-ups (per-NPC mana/aggression tuning, group/pack coordination - both deliberately scoped
+out, see the DONE entry) next session, ask what they want to pick up.
 
-**Current step (process step 1-2 of 4, done this restart):** read `NPCAiTimer.cs` in full
-(`Fight`/`TryCastSpell`/`PickSpell`/`Think`/`Flee`), `CombatCalculator.cs`, and `WeaponSkillDef.cs`
-(`On_Stroke`'s Drawing/Striking phases), plus `NPCDef`'s `CombatSpell`/`Spells`/`SpellCastRange`
-fields in `NPC.cs`, and did some external research on how other games (Elden Ring/FromSoft FSMs,
-utility-AI companion patterns) structure combat decision-making, per the user's own suggestion.
-Wrote up a 3-option strategy plan (quick role-fix only / role-based state machine / full
-utility-AI scorer) and presented it to the user via AskUserQuestion, recommending the
-role-based-FSM middle option. **Full writeup lives in this session's own chat response - if this
-session dies before the user answers, the options need to be re-presented (the analysis above
-is enough to reconstruct them from scratch, see the issue body too) rather than assumed answered.**
+## DONE (2026-10-27): #734 - NPC combat-AI decision loop overhaul (utility-scored spell choice) (PR TBD)
 
-**#734 itself, for context:** a melee NPC whose only spells are support/self-targeted (heal,
-magic reflection, no offensive spell at all) never closes in to attack - it just stands on its
-spawn spot forever. Root cause: `NPCAiTimer.Fight`'s `isCaster` flag (line ~329) goes true for
-ANY NPC with ANY spell at all (`def.CombatSpell != null || def.Spells.Count > 0`), holding it at
-spell range instead of melee range - but since 100% of its spells are beneficial/self-targeted
-(`TryCastSpell`'s `isBeneficial` check always redirects those to self), it never has a reason to
-approach. `SpellFlag` already has a real `IsHarmful` flag (distinct from `!IsBeneficial`) that
-every real spell/role option below should key off instead of "has any spell at all."
+**Process followed exactly as the user asked**: analyzed the system, researched how other games
+structure combat AI (Elden Ring/FromSoft FSMs, industry utility-AI patterns) per the user's own
+suggestion, wrote 3 strategy options (narrow flag-fix only / role-based state machine / full
+utility-AI action scorer), presented via AskUserQuestion - **user picked the utility-AI scorer**,
+then implemented.
 
-**Explicit process gate, where we are in it:**
-1. ✅ Analyze the current system.
-2. ✅ Write a plan with distinct strategy OPTIONS, present them to the user.
-3. ⏳ **Waiting for the user to pick/approve an approach before writing any implementation
-   code** - hard gate, do not start implementing until they explicitly pick one.
-4. Not started - implementation.
-5. Keep documenting every real step here and in memory as it happens, not batched at the end.
+**Key design call, worth remembering if this area gets touched again**: a fully generic
+per-tick utility scorer (scoring "melee" as just another candidate action alongside spells)
+would have REGRESSED the proven #353/#564 fix that `CombatDepthTests.SpellcasterKeepsItsDistance
+InsteadOfRushingToMelee` pins down - a pure ranged caster with its one spell on cooldown would
+score "melee" as the only positive candidate and walk into melee between casts, the exact bug
+that fix originally existed to prevent. So the implementation is a deliberate hybrid: WHETHER to
+hold spell range vs. melee range is still a deterministic classification
+(`NPCAiTimer.HasOffensiveSpell` - true only if the NPC knows a genuinely harmful spell,
+`SpellFlag.IsHarmful`, replacing the old `isCaster`'s "has ANY spell at all"), but WHICH spell to
+actually cast each tick (`NPCAiTimer.ChooseSpellToCast`) is real utility-scored logic: a
+self-heal (`HealingSpellDef`) scores by how hurt the NPC genuinely is (0 above 90% HP, ramping to
+1.0 near death), a self-buff (`DurableCharEffectSpellDef`, e.g. Magic Reflection) scores a flat
+0.5 but only while NOT already active (checked via its real `EffectPluginKey_Spell` plugin, not
+a guess), and an offensive spell scores a flat 0.6 plus a small random tie-break. Cooldowns moved
+from one shared `nextSpellCastTime` to a per-spell `Dictionary<SpellDef, double>` so casting a
+heal no longer also blocks an unrelated offensive spell for the same 4 seconds. `def.Spells` and
+`def.CombatSpell` are no longer mutually exclusive pools (`CandidateSpells` now considers both).
 
-**If this session dies before the user picks:** re-derive the 3 options from this entry + the
-#734 issue body (root cause above) and this file's own research notes, re-present, and wait
-again - don't assume silence means approval, and don't skip straight to implementing the
-recommended option just because it was the recommendation.
+**#734 itself, fixed**: a melee NPC whose only spells are support/self-targeted (heal, magic
+reflection - no offensive spell) now correctly falls into the melee branch (`HasOffensiveSpell`
+is false) instead of holding uselessly at spell range forever, and weaves its support spells in
+opportunistically - buffs once near the start of a fight (then stops, since the buff's own score
+drops to 0 once active), heals itself when genuinely hurt, otherwise just closes in and fights
+like any other melee NPC.
 
-**Nothing else is queued.** If the user doesn't mention #734/the AI overhaul at all next
-session, ask what they want to pick up - don't assume it's still top of mind.
+**Tests**: `scripts/Tests/NpcSupportOnlySpellWeavingTest(s).cs`/`.def` (new) - the core #734
+regression (buffs once then closes to melee; heals instead of buffing/idling when hurt).
+`scripts/Tests/NpcMultiSpellTests.cs` rewritten - #564's old "uniform random distribution"
+contract is gone (no longer true under utility scoring), replaced with "excludes whichever spell
+was just cast, stays stable" + "a single-spell caster's only spell goes on cooldown after
+casting." `NpcBeneficialSpellTests`/`NpcRangeOverrideTests`/`CombatDepthTests`' existing
+spellcaster-stands-off/archer-stands-off contracts all still pass unchanged - verified via a real
+A/B (stashed the change, same 4 `CombatDepthTestsA` failures reproduced on the UNMODIFIED
+baseline too, confirming those are pre-existing sandbox/CPU-contention flakiness, nothing to do
+with this change - never got a clean non-flaky run of `CombatDepthTestsA`/`B` either direction,
+but the A/B match is conclusive). Fast tier still 53/53.
+
+**Landmine hit while writing new tests, worth remembering**: `c_sheep_woolly` (used as a dummy
+target elsewhere in `CombatDepthTests`) hits the pre-existing #616 lazy-FieldValue-parse bug on
+its `Color` field the FIRST time it's ever created in a fresh server boot - `NpcBeneficialSpellTests`
+already works around this with `c_a_jackrabbit` instead; any NEW test spawning a fresh dummy in
+its own dedicated collection needs the same `c_a_jackrabbit` substitution, not `c_sheep_woolly`.
+
+**Also confirmed empirically**: running more than one full-boot `[Collection]` in a single
+`dotnet test` invocation races on the fixed ports (2593/2595) even though each collection's own
+tests are serialized - xUnit parallelizes DIFFERENT collections against each other by default.
+Always filter to one collection/class at a time when verifying full-boot changes locally.
+
+**Deliberately scoped out, not forgotten**: group/pack coordination (NPCs still act 100%
+independently) and any kind of per-NPC "aggression profile" tuning - the user's own framing was
+about ONE NPC's offense-vs-support awareness and positioning, not multi-NPC tactics.
 
 ## DONE (2026-10-27): #728 - ranged NPC shot through a floor between adjacent columns/levels (PR #729)
 
