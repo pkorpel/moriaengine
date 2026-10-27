@@ -1,5 +1,54 @@
 # moriaengine — working state
 
+## DONE (2026-10-27): #721 - flat floor tiles were blocking ground-level ranged LOS, a SECOND distinct bug from #708 (PR #722)
+
+User re-tested the #708 roof-LOS fix live at specific real-map coordinates (c_titan at
+(2285,2557,20,0), c_titan_ranger at (2290,2557,20,0), 5 tiles apart - well within the
+default bow range of 8) and the ranger still closed to melee. Per the user's explicit
+instruction, built a live repro at those EXACT coordinates (a throwaway diagnostic
+`[SteamFunction]` dumping real static/tiledata state + `hasLos`/`distance`/
+`CanInteractWith` between the two NPCs) instead of guessing - confirmed `hasLos=False`
+at distance=5, immediately ruling out a range/config issue and pointing at a real LOS
+bug.
+
+**Root cause - a completely different static from #708's roof, not a residual case of
+the same bug.** The real column between the two NPCs carries a flat ground/floor
+decoration (model `0x4aa`, flags `Background, Surface, Noshoot`, Height=0) sitting at
+the EXACT same Z (20) both characters stand at - unrelated to the roof static (model
+`0x5a9`, `Roof` flag, Height=3, Z=44, well overhead, correctly NOT blocking after #708).
+`IsLosBlockedAt`/`IsVerticalLosBlockedBetween`'s Noshoot-blocking-band upper bound pads
+a zero-height static to occupy a full 1 Z-unit (`Math.Max(height, 1)`) - added
+originally so a height-0 WALL still blocks something despite messy source height data -
+but this floor tile is `Surface`-flagged (something a character stands ON TOP OF), so
+the padded band `[Z, Z+1)` always included the characters' own stand height, blocking
+every ordinary same-level shot across it. Not location-specific - ANY flat, walkable,
+Noshoot-flagged floor/pavement tile at ground level hits this, which is almost
+certainly why #708's synthetic-roof-only fix didn't fully resolve the user's real
+report (open courtyards/plazas with this kind of flooring are common).
+
+**Fix**: new `GetNoshootHeight(flags, height)` helper - a `Surface`-flagged static now
+uses its literal (possibly zero) height, never padded up; everything else (walls,
+roofs, anything without `Surface`) keeps the old minimum-1 padding. Verified the exact
+real repro now shows `hasLos=True`/`approached=False` (ranger holds at range and
+fires). New permanent regression test (`RoofLosTests.
+FlatSurfaceFloorDoesNotBlockGroundLevelLineOfSight` + its server-side
+`VerticalLosBlockingTests.TestFlatSurfaceFloorDoesNotBlockGroundLevelLos` helper) using
+the same real model/flags/height via synthetic placement. A/B-confirmed the 2
+`RangerCombatTests` failures seen in a broader targeted sweep (`StandsOffAtRangeWithRealBow`/
+`ArmorReducesRealBowDamage`) reproduce identically with this fix fully reverted -
+pre-existing, already tracked under #719, unrelated. Fast tier 53/53; targeted LOS
+suite (`RoofLosTests`/`VerticalLosBlockingTests`/`LineOfSightBlockingTests`) 7/7. PR
+#722 merged cleanly (first PR in a while where the GraphQL status-check call didn't
+even 403 - still verified locally first regardless, per standing practice).
+
+**Methodology note, reinforcing the pattern from #708's own investigation**: a
+synthetic/isolated test proving a FIX works is not the same as proving the ORIGINAL
+real-world report is resolved - always close the loop with a live repro at the user's
+own exact reported coordinates/scenario before considering a "still broken after the
+fix shipped" report closed. Two distinct LOS bugs both manifested as "ranged NPC walks
+to melee instead of standing at range" - the symptom alone doesn't tell you which
+static is actually at fault; dump the real tiledata at the real location every time.
+
 ## DONE (2026-10-27): per-monster ranged-attack/spellcast range override (#716, PR #717) — #719 filed, not yet fixed
 
 Follow-up feature request after the #708/#709/#711 combat investigation. User wanted a
