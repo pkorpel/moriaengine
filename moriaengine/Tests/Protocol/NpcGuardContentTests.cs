@@ -42,6 +42,21 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#705 - a mounted guard's horse used to survive the guard's own death as an
+		/// ordinary, free, tamable/lootable NPC - a real exploit risk (farming rare mount
+		/// species by repeatedly killing mounted guards), not just cosmetic.</summary>
+		[Fact]
+		public void KillingAMountedGuardAlsoRemovesItsMount() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "GuardKillChecker")) {
+				client.SendSpeech(".TestKillGuardAndReportMountState");
+				Assert.True(this.fixture.WaitForGameOutput("NPC_GUARD_KILL_TEST_RESULT:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "NPC_GUARD_KILL_TEST_RESULT:");
+
+				Assert.Contains("hadMount=True", line);
+				Assert.Contains("mountStillAlive=False", line);
+			}
+		}
+
 		private static int ParseIntField(string line, string prefix) {
 			int start = line.IndexOf(prefix, StringComparison.Ordinal) + prefix.Length;
 			int end = start;

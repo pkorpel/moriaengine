@@ -49,5 +49,26 @@ namespace SteamEngine.CompiledScripts {
 				" aggroMode=" + guard.AggroMode +
 				" realm=" + guard.Realm);
 		}
+
+		/// <summary>#705 - killing a mounted guard used to leave its horse behind as an
+		/// ordinary, free, tamable/lootable NPC (Character.CauseDeath already calls Dismount()
+		/// before On_Death ever runs, severing the relationship before the dying NPC could act
+		/// on it). Spawns the same real guard, kills it, and reports whether its auto-spawned
+		/// mount is gone too.</summary>
+		[SteamFunction]
+		public static void TestKillGuardAndReportMountState(Character self, ScriptArgs sa) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			NPCDef def = (NPCDef) ThingDef.GetByDefname("c_vguard_rohan_hala_jezdec");
+			NPC guard = (NPC) def.Create(self.X + 1, self.Y, self.Z, self.M);
+
+			AbstractCharacter mount = guard.Mount;
+			bool hadMount = mount != null;
+
+			guard.CauseDeath(null);
+
+			bool mountStillAlive = hadMount && !mount.IsDeleted;
+			Console.WriteLine("NPC_GUARD_KILL_TEST_RESULT: hadMount=" + hadMount +
+				" mountStillAlive=" + mountStillAlive);
+		}
 	}
 }
