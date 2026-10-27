@@ -13,7 +13,7 @@ else is queued** - if the user doesn't mention bleed or more `teventStubs` abili
 others still zero-effect, see the DONE entry's own frequency table) next session, ask what
 they want to pick up.
 
-## DONE (2026-10-27): monster special-attack abilities (stun/critic/roundattack+pullall) given real behavior (PR TBD)
+## DONE (2026-10-27): monster special-attack abilities (stun/critic/roundattack+pullall) given real behavior (PR #741, line-ending regression fixed in PR #742)
 
 **Where this came from:** #653's `teventStubs.scp` batch created 148 zero-effect
 `PassiveAbilityDef` stubs for legacy Sphere AI-hook names the converter found but this engine
@@ -91,6 +91,17 @@ stacking damage-over-time plugin (the archive applies a fresh DoT instance per h
 stacks, scaled off that hit's own damage) - a genuinely different, bigger shape than the other
 3's "roll a chance on a landed hit" pattern, worth its own dedicated pass. The other ~144
 lower-frequency stub abilities (named-boss mechanics, elemental auras, etc.) are untouched.
+
+**Real mistake made and fixed same session (PR #742)**: editing `NPC.cs` via a Python script
+(used because the `Edit` tool's exact-string matching kept failing on this file's tabs)
+silently converted the WHOLE file from CRLF to LF, producing a ~1478-line spurious diff for
+what should have been ~70 real added lines - not caught until after #741 merged. The `Edit`
+tool and hand-written `.cs` edits elsewhere in this same batch (`DamageManager.cs`,
+`ConvertedCharDef.cs`) preserved CRLF correctly; only the Python-script-based edits to this
+one legacy CRLF file broke it. **Lesson for next time**: before using a Python/shell script
+to edit any file (not just when `Edit` fails), check `python3 -c "data=open(path,'rb').read();
+print(data.count(b'\r\n'))"` first - if it's CRLF, write the replacement back with `\r\n`
+explicitly, don't let `str.replace()`/plain-text writes silently normalize to `\n`.
 
 ## DONE (2026-10-27): #734 - NPC combat-AI decision loop overhaul (utility-scored spell choice) (PR #737)
 
