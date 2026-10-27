@@ -23,17 +23,17 @@ namespace SteamEngine.CompiledScripts {
 	/// Server-side setup helper for #564/#734's protocol tests (Tests/Protocol/
 	/// NpcMultiSpellTests.cs). #564's original version of this file proved NPCAiTimer.PickSpell
 	/// picked uniformly at random among NPCDef.Spells (addspell=) with no concept of readiness -
-	/// #734 replaced PickSpell with NPCAiTimer.ChooseSpellToCast, a utility-scored choice that
-	/// EXCLUDES whatever's still on cooldown (see NPCAiTimer.cs's own doc comments), so "uniform
-	/// random regardless of state" is no longer the real contract to test. These now prove the
-	/// new one instead: once one spell has actually been cast (and so started its own per-spell
-	/// cooldown), ChooseSpellToCast reliably settles on whichever OTHER spell is still ready,
-	/// never the one just consumed, and never flip-flops between calls with no state change in
-	/// between.
+	/// #734 replaced PickSpell with NPCAiTimer.ChooseSpellToCast, a utility-scored choice, so
+	/// "uniform random regardless of state" is no longer the real contract to test. These now
+	/// prove the new one instead: ChooseSpellToCast still returns a valid candidate while nothing
+	/// has been cast yet, but once ANY spell is actually cast, EVERY spell this NPC knows (not
+	/// just the one just cast) is blocked until the shared cast cooldown clears - real-user-
+	/// reported follow-up: a caster can only ever have one spell "in flight" at a time, same as a
+	/// real spellcaster mid-channel, regardless of which spell started that channel.
 	/// </summary>
 	public static class NpcMultiSpellTests {
 		[SteamFunction]
-		public static void TestMultiOffensiveSpellCooldownExclusion(Character self) {
+		public static void TestCastingAnySpellBlocksEveryOtherSpellToo(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef casterDef = (NPCDef) ThingDef.GetByDefname("npc_test_multi_spell");
 			NPCDef dummyDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
@@ -57,18 +57,16 @@ namespace SteamEngine.CompiledScripts {
 			bool beforeCastValid = (beforeCast == magicArrow) || (beforeCast == fireball);
 
 			//a real cast - exercises Fight's own choice (with its small random tie-break between
-			//the two, since both are ready at this point) and starts whichever one gets picked on
-			//its OWN per-spell cooldown.
+			//the two, since both are ready at this point) and starts the SHARED cast cooldown,
+			//which must block BOTH spells now, not just whichever one actually got cast.
 			timer.Fight(caster, dummy);
 
 			SpellDef afterCast1 = timer.ChooseSpellToCast(caster, dummy);
 			SpellDef afterCast2 = timer.ChooseSpellToCast(caster, dummy);
-			bool afterCastValid = (afterCast1 == magicArrow) || (afterCast1 == fireball);
-			bool stableAcrossCalls = (afterCast1 == afterCast2);
 
-			Console.WriteLine("MULTI_SPELL_COOLDOWN_TEST: beforeCastValid=" + beforeCastValid +
+			Console.WriteLine("MULTI_SPELL_EXCLUSIVITY_TEST: beforeCastValid=" + beforeCastValid +
 				" castAttempts=" + timer.CastAttempts +
-				" afterCastValid=" + afterCastValid + " stableAcrossCalls=" + stableAcrossCalls);
+				" afterCastIsNull=" + (afterCast1 == null) + " stableAcrossCalls=" + (afterCast1 == afterCast2));
 		}
 
 		[SteamFunction]
