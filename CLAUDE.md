@@ -1,17 +1,124 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-27): user confirmed #724/#721 fix live, restarting session
+## SESSION HANDOFF (2026-10-27): about to plan a bigger NPC combat-AI overhaul - user is restarting the session fresh, read this FULLY first
 
-User tested PR #725 live after it shipped and confirmed "this is better now" - the
-ranged-NPC-closes-to-melee bug (originally #708, then #721, then #724) is resolved
-across both real locations they tried. No further repro reports as of this session's
-end. **If the user reports this symptom again at a THIRD location**, re-read the #721
-and #724 entries below first (same live-repro-at-exact-coordinates methodology, dump
-real static/tiledata along the path, check `hasLos`/`GetNoshootBandLow`/`GetNoshootHeight`)
-rather than assuming the fix is incomplete - but also don't rule out a genuinely new,
-different tiledata flag combination no one has hit yet (the fix is scoped to `Surface`/
-`Roof`, not every possible flag). Nothing else queued right now - ask the user what to
-pick up next.
+**Where things stand:** #708/#721/#724 (ranged NPCs closing to melee through floors/roofs)
+and #728 (ranged NPC shooting through a floor between adjacent columns/levels) are all
+shipped, live-confirmed by the user, and closed - see their own DONE entries below if that
+symptom ever resurfaces. #730/#731/#732 (3 more real bugs found live-testing a single guard
+NPC, `c_vguard_mordor_hala_jezdec`) are also shipped (PR #733, merged) and closed - see that
+entry below for the full writeup. Nothing is broken or half-done right now.
+
+**What's queued, NOT yet started:** while live-testing that same guard, the user found a 4th,
+more interesting issue (filed as **#734**, NOT yet investigated in depth beyond the root-cause
+sketch already in the issue): a melee NPC whose only spells are support/self-targeted (heal,
+magic reflection, no offensive spell at all) never closes in to attack - it just stands on its
+spawn spot forever. Root cause already identified: `NPCAiTimer.Fight`'s `isCaster` flag goes
+true for ANY NPC with ANY spell at all (`def.CombatSpell != null || def.Spells.Count > 0`),
+which makes it hold at spell range instead of melee range - but if 100% of its spells are
+beneficial/self-targeted (`TryCastSpell` always redirects those to self), it never has a reason
+to approach.
+
+**The user's actual ask, explicitly**: don't just patch #734 narrowly. They want a genuine
+analysis of the whole NPC combat-AI decision loop (`NPCAiTimer.cs` - `Fight`/`TryCastSpell`/
+`PickSpell`, `CombatCalculator.cs`, `WeaponSkillDef.cs`) and a real PLAN with multiple concrete
+strategy options for making NPC combat meaningfully smarter/more dangerous - not just "fix the
+one flag." Their own framing: melee-only monsters closing-to-hit is fine as-is; spellcasters
+(and melee/ranged hybrids that also know spells) need real offense-vs-support spell awareness,
+sensible positioning, and smarter decision-making overall, not the current flat "cast something
+if off cooldown, otherwise swing" logic.
+
+**Explicit process the user asked for, in order:**
+1. Analyze the current system (this session already has a head start - see the #734 issue body
+   and this entry's own root-cause sketch above; `NPCAiTimer.Fight`/`TryCastSpell`/`PickSpell`
+   are the core of it, already read once this session).
+2. Write up a plan with distinct, genuinely different STRATEGY OPTIONS (not just one path) -
+   present them to the user.
+3. **Wait for the user to pick/approve an approach before writing any implementation code.**
+   This is a hard gate - they were explicit about this ("once I approve your approach, you can
+   implement it").
+4. Only then implement.
+5. **Keep every step of this documented in CLAUDE.md (this file) and the memory system as you
+   go** - the user explicitly asked for this because they're restarting the session now and
+   want continuity to survive a session death. Don't batch the documentation up for the end -
+   update this file after each real step (research done, plan drafted, options presented, user's
+   choice, implementation progress), not just once at the very end.
+
+**Nothing else is queued.** If the user doesn't mention #734/the AI overhaul at all next
+session, ask what they want to pick up - don't assume it's still top of mind.
+
+## DONE (2026-10-27): #728 - ranged NPC shot through a floor between adjacent columns/levels (PR #729)
+
+User tested a THIRD scenario after #721/#724 shipped: `c_titan` at (2298,2536,20,0) one level
+down, `c_titan_ranger` at (2298,2535,40,0) one tile over on an upper floor - the ranger shot
+straight through the real floor between them. Live-repro'd at the exact real coordinates per
+the established methodology (a throwaway diagnostic `[SteamFunction]` dumping real
+statics/`hasLos` - confirmed `hasLos=True`, and confirmed even a solid stone wall placed at the
+same spot was ALSO invisible to the check, ruling out floor-height-data as the cause).
+
+**Root cause, two distinct bugs stacked together, both specific to this exact "adjacent
+column, big Z gap" shape:**
+1. `CreateLosPath`'s per-step sampling produces exactly ONE `(x,y,z)` sample per horizontal
+   step - with only 1 tile of total horizontal distance, both samples land exactly on the
+   "from"/"to" columns, which `CanSeeLosFromTo`'s main loop unconditionally skips ("standing on
+   your own tile never self-blocks") - so NOTHING ever got checked.
+2. Even after fixing that, a real zero-height `Surface` floor's own Z always equals exactly
+   whichever character stands ON TOP of it - the old fully-exclusive-both-ends "strictly
+   between" formula never classified a band starting exactly at the UPPER endpoint as blocking.
+
+**Fix**: always run a vertical-separation check at both endpoint columns in `CanSeeLosFromTo`
+(a no-op whenever both characters share the same Z, via the existing `zLow==zHigh` escape), and
+make that check INCLUSIVE of the upper bound while staying EXCLUSIVE of the lower bound - a
+floor at the upper character's own feet still separates them from anyone below, but a floor at
+the lower character's own feet doesn't block their own view upward. New permanent regression
+test alongside the existing #708/#721/#724 LOS suite, all passing; fast tier 53/53.
+
+## DONE (2026-10-27): #730/#731/#732 - 3 real bugs found live-testing a single guard NPC (PR #733)
+
+User spawned `c_vguard_mordor_hala_jezdec` (a Mordor melee guard with support spells) and hit 3
+distinct, unrelated real bugs in one go - all fixed, A/B-verified, and merged in one PR.
+
+**#730 - `random_pants` silently dropped.** `NPC.cs`'s random-equip-keyword resolver (#563) only
+recognized the 3 hair/beard keywords (`random_male_hair`/`random_female_hair`/
+`random_facial_hair`). The real converted content also uses `random_pants`/`random_shoes`/
+`random_skirt`/`random_woman_hair` - same mechanism, just missing pools. Added `NPCDef.
+PantsPool`/`ShoesPool`/`SkirtPool` (sourced from `defs.def`'s own real `RANDOM_PANTS`/
+`RANDOM_SHOES`/`RANDOM_SKIRT` `[Constants ITEMS_CLOTHING]` groups - confirmed this engine
+never parses `[Constants ...]` sections at all, so a flat uniform pick is the right-sized fix,
+not a new weighted-group parser) and `random_woman_hair` as a 4th hair alias.
+
+**#731 - the real killer: `Character.AddHits`/`AddMana`/`AddStamina`'s clamp was inverted since
+the INITIAL COMMIT.** `Math.Min(0, Math.Max(this.MaxHits, newCount))` always evaluates to `0`
+(`Math.Max(MaxHits, newCount)` is always positive for a living character, so `Math.Min(0,
+<positive>)` is always `0`) - every single call, heal OR damage, zeroed the stat outright. This
+is what actually killed the guard: it cast Greater Heal on itself and died a second later. Went
+unnoticed this whole time because natural regen (`RegenerationPlugin.cs`) and real combat
+damage (`DamageManager.cs`) both bypass these methods via DIRECT `Hits`/`Mana` assignment - the
+only real callers were `HealingSpellDef.On_EffectChar` (Heal/Greater Heal, cast by anyone,
+player or NPC) and the Hitpoints/Mana/Stamina `ResourceListEntries` (crafting-recipe costs).
+Fixed the clamp order (floor 0, ceiling Max). **A/B-verified against a worry this might affect
+`MysticCombatTests`** (that file's mana-drain mechanic looked related at a glance) - confirmed
+it's NOT: `DamageManager.ProcessSwing`'s own mana-drain line uses direct `attacker.Mana =`
+assignment too, never `AddMana`. 3 failures in that file (`MindPowerScalesWithInt`/
+`SwingDrainsMana`/one more) are real but **pre-existing and unrelated** - reproduce identically
+with this fix fully reverted back to the pre-#731 clamp, confirmed via two separate clean A/B
+runs. Not yet root-caused; worth a fresh look in some future session but NOT blocking
+anything from this one.
+
+**#732 - spellbook dropped on the ground instead of staying in the backpack.** `i_spellbook`
+and most one-handed weapons (e.g. `i_axe_exec`) both declare real `Layer=1` (Hand1) - the
+guard's `.def` equips the spellbook first, the axe later, and the axe correctly evicts the
+spellbook (same mechanic a real player swapping weapons relies on) straight onto the ground.
+Confirmed via a repo-wide scan this isn't guard-specific - ~30 other `NPCDef`s combine a
+spellbook with a one-handed weapon the same way. Fixed in `NPC.On_Create`'s `StartingEquipment`
+loop: track every item created across the whole list, then AFTER it fully applies, sweep any
+that ended up `IsOnGround` (evicted by a LATER entry, not its own) into the NPC's backpack -
+real player-driven equip/eviction behavior elsewhere in the engine is completely untouched,
+this only touches NPC-spawn-time cleanup.
+
+All three: new regression tests (`CharacterStatClampTests`, 2 new `NpcStartingEquipmentTests`
+facts), each fix individually A/B-reverted to confirm it reproduces the exact reported symptom,
+fast tier 53/53.
 
 ## DONE (2026-10-27): #724 - generalized the #721 Surface-floor LOS fix to the band's LOW bound too (PR #725)
 
