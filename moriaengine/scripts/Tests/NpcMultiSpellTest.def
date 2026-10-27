@@ -1,6 +1,7 @@
-// #564 - test-only content proving NPCDef.Spells (addspell=) actually gets consulted by
-// NPCAiTimer.PickSpell, picking uniformly at random among the granted list, and that the
-// single-CombatSpell-only path (no AddSpell at all) still works unchanged.
+// #564/#734 - test-only content proving NPCDef.Spells (addspell=) actually gets consulted by
+// NPCAiTimer.ChooseSpellToCast (picking whichever offensive spell is actually ready, excluding
+// one just put on cooldown), and that the single-CombatSpell-only path (no AddSpell at all)
+// still works unchanged.
 [NPCDef npc_test_multi_spell]
 NAME = "Multi Spell Test"
 ANIM = 0x1fff
