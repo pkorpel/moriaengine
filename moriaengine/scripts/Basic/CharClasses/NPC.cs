@@ -216,6 +216,29 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey spellCastRangeTK = TagKey.Acquire("_npcSpellCastRange_");
+
+		/// <summary>#716 - per-monster override for how far this NPC holds its distance while
+		/// casting (NPCAiTimer.Fight/TryCastSpell's own default is a flat constant, the same
+		/// GM-tunable-in-spirit shape as NPCDef.WeaponRange's own bow/crossbow default). Negative
+		/// (the default) means "use the engine's own default spell-cast range" - unaffected,
+		/// same as before this field existed.</summary>
+		public double SpellCastRange {
+			get {
+				object tag = this.GetTag(spellCastRangeTK);
+				if (tag is double range) {
+					return range;
+				}
+				if (tag is int intTag) {
+					return intTag;
+				}
+				return -1;
+			}
+			set {
+				this.SetTag(spellCastRangeTK, value);
+			}
+		}
+
 		private static readonly TagKey combatSpellTK = TagKey.Acquire("_combatSpell_");
 
 		/// <summary>
@@ -646,6 +669,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "moverate") {
 				this.MoveRate = ConvertTools.ParseDouble(args);
+				return;
+			}
+			if (param == "spellcastrange") {
+				this.SpellCastRange = ConvertTools.ParseDouble(args);
 				return;
 			}
 			if (param == "combatspell") {
