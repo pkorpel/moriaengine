@@ -106,7 +106,7 @@ namespace SteamEngine.Regions {
 
 			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
 				if (TileData.HasFlag(s.Flags, TileFlag.Noshoot) &&
-					(z >= GetNoshootBandLow(s.Flags, s.Z, landZ)) && (z < s.Z + Math.Max(s.Height, 1))) {
+					(z >= GetNoshootBandLow(s.Flags, s.Z, landZ)) && (z < s.Z + GetNoshootHeight(s.Flags, s.Height))) {
 					return true;
 				}
 			}
@@ -114,7 +114,7 @@ namespace SteamEngine.Regions {
 			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
 				if (TileData.HasFlag(idi.Flags, TileFlag.Noshoot) &&
-					(z >= GetNoshootBandLow(idi.Flags, item.Z, landZ)) && (z < item.Z + Math.Max((int) idi.Height, 1))) {
+					(z >= GetNoshootBandLow(idi.Flags, item.Z, landZ)) && (z < item.Z + GetNoshootHeight(idi.Flags, idi.Height))) {
 					return true;
 				}
 			}
@@ -156,7 +156,7 @@ namespace SteamEngine.Regions {
 
 			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
 				if (TileData.HasFlag(s.Flags, TileFlag.Noshoot) &&
-					(s.Z + Math.Max(s.Height, 1) > zLow) && (GetNoshootBandLow(s.Flags, s.Z, landZ) < zHigh)) {
+					(s.Z + GetNoshootHeight(s.Flags, s.Height) > zLow) && (GetNoshootBandLow(s.Flags, s.Z, landZ) < zHigh)) {
 					return true;
 				}
 			}
@@ -164,7 +164,7 @@ namespace SteamEngine.Regions {
 			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
 				if (TileData.HasFlag(idi.Flags, TileFlag.Noshoot) &&
-					(item.Z + Math.Max((int) idi.Height, 1) > zLow) && (GetNoshootBandLow(idi.Flags, item.Z, landZ) < zHigh)) {
+					(item.Z + GetNoshootHeight(idi.Flags, idi.Height) > zLow) && (GetNoshootBandLow(idi.Flags, item.Z, landZ) < zHigh)) {
 					return true;
 				}
 			}
@@ -188,6 +188,23 @@ namespace SteamEngine.Regions {
 				return staticZ;
 			}
 			return Math.Min(staticZ, landZ);
+		}
+
+		/// <summary>#721 - a walkable `Surface` static (an ordinary floor/ground decoration, not a
+		/// wall) with a tiledata `Height` of 0 was still treated as occupying a full 1-unit-tall
+		/// blocking slab (the `Math.Max(height, 1)` minimum below, originally meant so a height-0
+		/// WALL still blocks something despite messy source height data) - real-user-reported as
+		/// "two characters standing a few tiles apart on open, flat, paved ground still can't see
+		/// each other" once the floor tile they're both standing ON (same Z as their own feet)
+		/// counted as solid right at that exact Z. A `Surface` tile is something you stand ON TOP
+		/// of by definition - it should never block a sightline at its own real height when that
+		/// height is genuinely 0; a non-walkable (wall/other) static still gets the old minimum-1
+		/// floor so an all-zero-height obstacle still blocks at least something.</summary>
+		private static int GetNoshootHeight(TileFlag flags, int height) {
+			if (TileData.HasFlag(flags, TileFlag.Surface)) {
+				return height;
+			}
+			return Math.Max(height, 1);
 		}
 
 		public static double losPathWidth = 0.2; //can be 0..<0.5 - the closer to 0.5, the wider the path

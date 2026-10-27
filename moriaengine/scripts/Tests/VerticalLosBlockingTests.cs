@@ -159,5 +159,45 @@ namespace SteamEngine.CompiledScripts {
 
 			Console.WriteLine("SAME_FLOOR_LOS_TEST: openOnSameFloor=" + openOnSameFloor);
 		}
+
+		//a real flat ground/floor decoration (0x4aa) - confirmed via a live ItemDispidInfo scan
+		//to carry Background+Surface+Noshoot with Height=0 (no Wall/Impassable/Roof at all).
+		private const int FlatFloorModel = 0x4aa;
+
+		/// <summary>#721 - real-user-reported, reproduced at exact real-map coordinates: a
+		/// ranged NPC standing just 5 tiles from its target on open, flat, paved ground still
+		/// had to walk all the way to melee before firing - no wall, no roof overhead, nothing
+		/// a GM could see blocking the shot. Root cause: IsLosBlockedAt's Noshoot-blocking-band
+		/// upper bound padded a zero-height static to occupy at least 1 full Z unit
+		/// (Math.Max(height, 1), meant so a height-0 WALL still blocks something despite messy
+		/// source height data) - but this floor tile is Surface-flagged (something characters
+		/// stand ON TOP of) with a real Height of 0, and its own Z exactly equals the ground Z
+		/// both characters stand at - so the padded band always included the characters' own
+		/// stand height, blocking every ordinary same-level shot across it. Fixed via
+		/// GetNoshootHeight - a Surface-flagged static's band now uses its literal (possibly
+		/// zero) height, never padded up, since a walkable floor's own surface is never "inside"
+		/// itself for someone standing on top of it.</summary>
+		[SteamFunction]
+		public static void TestFlatSurfaceFloorDoesNotBlockGroundLevelLos(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			ItemDef floorDef = (ItemDef) ThingDef.FindItemDef(FlatFloorModel);
+			VerificationTestUtils.CleanupNearbyItems(self, floorDef, 20);
+
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC a = (NPC) npcDef.Create(self.X, self.Y, self.Z, self.M);
+			NPC b = (NPC) npcDef.Create(self.X + 5, self.Y, self.Z, self.M);
+
+			bool openBeforeFloor = a.CanInteractWith(b).Allow;
+
+			//same flat floor tile placed at every intermediate column, same Z as both
+			//characters' own feet - exactly the real-world layout that reproduced #721.
+			for (int x = self.X + 1; x < self.X + 5; x++) {
+				floorDef.Create(x, self.Y, self.Z, self.M);
+			}
+
+			bool openAfterFloor = a.CanInteractWith(b).Allow;
+
+			Console.WriteLine("FLAT_FLOOR_LOS_TEST: openBeforeFloor=" + openBeforeFloor + " openAfterFloor=" + openAfterFloor);
+		}
 	}
 }
