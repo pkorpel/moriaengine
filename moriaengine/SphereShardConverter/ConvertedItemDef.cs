@@ -46,6 +46,12 @@ namespace SteamEngine.Converter {
 		WeaponType? computedWeaponType;
 		double? attackVsPValue;
 
+		//#700 - readable copy of TDATA3, needed by ConvertedCharDef's own "tag.mount"
+		//handling to resolve a T_EQ_HORSE mount item (e.g. i_mt_horse_brown_dk) to the real
+		//mount creature chardef it actually represents (TDATA3=c_horse_brown_dk) - the item's
+		//own .Model is the WRONG thing to grab here, see HandleTData3's doc comment.
+		public string TData3;
+
 		private static LineImplTask[] firstStageImpl = {
 				new LineImplTask("type", HandleType), 
 				new LineImplTask("dupelist", WriteAsComment), 
@@ -314,7 +320,17 @@ namespace SteamEngine.Converter {
 			WriteAsComment(def, line);
 		}
 
+		//#700 - for a real T_EQ_HORSE mount item, TDATA3 names the actual mount creature
+		//chardef this item represents (e.g. i_mt_horse_brown_dk's TDATA3=c_horse_brown_dk) -
+		//needed by ConvertedCharDef's "tag.mount" handling. No engine field exists for this
+		//directly (TDATA3 has no general meaning outside mount items), so it's still written
+		//as a comment for visibility, but also kept in-memory on the item itself (same
+		//text-plus-queryable-value shape as #539's computedWeaponType/attackVsPValue).
 		private static void HandleTData3(ConvertedDef def, PropsLine line) {
+			ConvertedItemDef itemDef = def as ConvertedItemDef;
+			if (itemDef != null) {
+				itemDef.TData3 = line.Value;
+			}
 			WriteAsComment(def, line);
 		}
 

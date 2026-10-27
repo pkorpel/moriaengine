@@ -5,11 +5,14 @@ using Xunit;
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// #700 - proves the real converted-content guard c_vguard_rohan_hala_jezdec
-	/// (scripts/converted/chars/guards.def) now spawns fully equipped, mounted, and with
-	/// AggroMode.GuardsRealm + a real Realm - instead of the pre-fix naked/Calm guard, caused by
-	/// two separate converter bugs (a premature loot-section `break` dropping every ITEMNEWBIE/
-	/// tag.mount line after the first ITEM= marker, and tag.guard never being derived into
-	/// AggroMode/Realm at all).
+	/// (scripts/converted/chars/guards.def) now spawns fully equipped, ACTUALLY mounted (riding
+	/// a real c_horse_brown_dk with its own tag.mountcolor applied, not just carrying a dead
+	/// MountItem number on its own NPCDef with zero visual effect), and with
+	/// AggroMode.GuardsRealm + a real Realm - instead of the pre-fix naked/unmounted/Calm guard,
+	/// caused by three separate converter bugs (a premature loot-section `break` dropping every
+	/// ITEMNEWBIE/tag.mount line after the first ITEM= marker; tag.guard never being derived into
+	/// AggroMode/Realm at all; and tag.mount originally resolving to the WRONG value - the mount
+	/// ITEM's own raw .Model instead of the real mount CREATURE chardef its TDATA3 names).
 	/// </summary>
 	[Collection(NpcGuardContentCollection.Name)]
 	public class NpcGuardContentTests {
@@ -32,7 +35,8 @@ namespace SteamEngine.Tests.Protocol {
 				int equippedCount = ParseIntField(line, "equipped=");
 				Assert.True(equippedCount >= 6, "Expected the guard to be wearing real equipment, got: " + line);
 
-				Assert.DoesNotContain("mountItem=0x0", line);
+				Assert.DoesNotContain("mount=none", line);
+				Assert.Contains("mount=c_horse_brown_dk/0x3ea2/0x729", line);
 				Assert.Contains("aggroMode=GuardsRealm", line);
 				Assert.Contains("realm=Gondor", line);
 			}
