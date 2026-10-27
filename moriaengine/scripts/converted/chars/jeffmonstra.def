@@ -96,6 +96,7 @@ MaxStam = 600 750
 MaxMana = 100
 Experience = 120 170
 NaturalDamageType = DamageType.Stabbing|DamageType.Physical
+BleedChance = 300 //30.0% 
 Parry = 450 550
 MagicResist = 600 800
 Tactics = 800 900

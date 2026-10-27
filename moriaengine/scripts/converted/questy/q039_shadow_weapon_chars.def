@@ -72,6 +72,7 @@ MaxHits = 15000
 MaxStam = 250 300
 MaxMana = 0
 Experience = 250 255
+BleedChance = 700 //70.0% 
 CriticChance = 250 //25% chance 
 CriticDamage = 20 25 //dmg in between 
 Parry = 1000 1100

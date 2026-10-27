@@ -1098,6 +1098,7 @@ MaxStam = 910 940
 MaxMana = 0
 Experience = 1800 2200
 NaturalDamageType = DamageType.Blunt|DamageType.Physical
+BleedChance = 700 //70.0% 
 Poisoning = 5000
 Macing = 1000
 Tactics = 1000

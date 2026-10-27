@@ -1,0 +1,8 @@
+// real-user-reported follow-up to #653's teventStubs batch - test-only content for
+// scripts/Tests/NpcBleedTests.cs. Guaranteed (1000/1000) bleed chance so the test is
+// deterministic, not a statistical sample.
+[NPCDef npc_test_bleed_attacker]
+NAME = "Bleed Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_bleed
+BleedChance = 1000 1000

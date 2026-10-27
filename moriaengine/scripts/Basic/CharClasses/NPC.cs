@@ -365,6 +365,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey roundattackDamageTK = TagKey.Acquire("_npcRoundattackDamage_");
 		private static readonly TagKey roundattackCooldownTK = TagKey.Acquire("_npcRoundattackCooldown_");
 		private static readonly TagKey pullDistanceTK = TagKey.Acquire("_npcPullDistance_");
+		private static readonly TagKey bleedChanceTK = TagKey.Acquire("_npcBleedChance_");
 
 		/// <summary>Real-user-reported follow-up to #653's teventStubs batch - per-species
 		/// override {min, max} ranges for StunAbilityDef/CriticAbilityDef/
@@ -412,6 +413,16 @@ namespace SteamEngine.CompiledScripts {
 		public int[] PullDistance {
 			get { return this.GetTag(pullDistanceTK) as int[]; }
 			set { this.SetTag(pullDistanceTK, value); }
+		}
+		/// <summary>Real archive semantics (confirmed in Bleed.scp): unset means the chance
+		/// check never even runs, i.e. ALWAYS bleeds - BleedAbilityDef.Chance's own default is
+		/// already {1000,1000} (100%) to match, so null here (unconfigured) correctly falls
+		/// back to "always" via the normal two-layer precedent, nothing special needed. A
+		/// configured override only ever LOWERS it on specific species (real variance 10%-100%
+		/// confirmed in the archive).</summary>
+		public int[] BleedChance {
+			get { return this.GetTag(bleedChanceTK) as int[]; }
+			set { this.SetTag(bleedChanceTK, value); }
 		}
 
 		private static readonly TagKey fameRangeTK = TagKey.Acquire("_fameRange_");
@@ -856,6 +867,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "pulldistance") {
 				this.PullDistance = ParseStatRange(filename, line, "pulldistance", args);
+				return;
+			}
+			if (param == "bleedchance") {
+				this.BleedChance = ParseStatRange(filename, line, "bleedchance", args);
 				return;
 			}
 			if (param == "maxhits") {
