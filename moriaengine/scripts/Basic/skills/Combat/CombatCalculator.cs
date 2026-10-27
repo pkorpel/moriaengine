@@ -476,18 +476,11 @@ namespace SteamEngine.CompiledScripts {
 				}
 				retVal.delay = TimeSpan.FromSeconds((0xfffff / 1000.0) / delay);//dedictvi z morie. funguje to tak proc to menit :)
 
-				double tacticsAttack = SkillDef.GetBySkillName(SkillName.Tactics).GetEffectForChar(self);
-				double anatomyAttack = SkillDef.GetBySkillName(SkillName.Anatomy).GetEffectForChar(self);
-				double armsloreAttack = SkillDef.GetBySkillName(SkillName.ArmsLore).GetEffectForChar(self);
-				double strAttack = self.Str * CombatSettings.instance.attackStrModifier;
-				double sum = (tacticsAttack + anatomyAttack + armsloreAttack + strAttack) / 1000;
+				double sum = GetAttackStatMultiplier(self);
 				retVal.attackVsP = weapAttackVsP * sum;
 				retVal.attackVsM = weapAttackVsM * sum;
 
-				double evalIntMP = SkillDef.GetBySkillName(SkillName.EvalInt).GetEffectForChar(self);
-				double spiritSpeakMP = SkillDef.GetBySkillName(SkillName.SpiritSpeak).GetEffectForChar(self);
-				double intMP = self.Int * MagerySettings.instance.mindPowerIntModifier;
-				sum = (evalIntMP + spiritSpeakMP + intMP) / 1000;
+				sum = GetMindPowerStatMultiplier(self);
 				retVal.mindPowerVsM = weapMindPowerVsM * sum;
 				retVal.mindPowerVsP = weapMindPowerVsP * sum;
 			} else {
@@ -541,9 +534,25 @@ namespace SteamEngine.CompiledScripts {
 					}
 
 					retVal.delay = TimeSpan.FromSeconds(npcDef.WeaponDelay);
-					retVal.attackVsM = npcDef.WeaponAttack;
+
+					// #711 - real-user-reported: a ranged NPC (c_titan_ranger, WeaponAttack=40)
+					// dealt exactly 0 damage against a tougher-armored NPC (c_titan, ArmorVsM=80)
+					// across every one of ~28 landed shots in a live repro - not RNG, a hard
+					// wall. CalculateArmorClassEffect's formula is a subtractive floor
+					// (max(0, (attack-armor)*damageMod)) that the PLAYER branch above already
+					// defends against via this same Str/Tactics/Anatomy/ArmsLore scaling
+					// (confirmed real content never sets Tactics/Anatomy/ArmsLore's effect=, so
+					// in practice this is Str-driven) - NPCs never got it at all, just the bare
+					// .def WeaponAttack value. User's explicit call: apply the identical formula
+					// to NPCs too, accepting that this raises NPC damage output broadly (most
+					// monsters have far higher Str than a typical player) rather than inventing
+					// a separate, dampened NPC-only modifier.
+					double attackSum = GetAttackStatMultiplier(self);
+					retVal.attackVsM = npcDef.WeaponAttack * attackSum;
 					retVal.attackVsP = retVal.attackVsM;
-					retVal.mindPowerVsM = npcDef.MindPower;
+
+					double npcMindPowerSum = GetMindPowerStatMultiplier(self);
+					retVal.mindPowerVsM = npcDef.MindPower * npcMindPowerSum;
 					retVal.mindPowerVsP = retVal.mindPowerVsM;
 				} else {
 					//else ?!
@@ -585,6 +594,26 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			return retVal;
+		}
+
+		/// <summary>#711 - the Tactics/Anatomy/ArmsLore/Str attack-scaling formula, shared between
+		/// the player and NPC branches of CalculateCombatWeaponValues (previously player-only;
+		/// NPCs used their bare .def WeaponAttack value with zero stat scaling at all).</summary>
+		private static double GetAttackStatMultiplier(Character self) {
+			double tacticsAttack = SkillDef.GetBySkillName(SkillName.Tactics).GetEffectForChar(self);
+			double anatomyAttack = SkillDef.GetBySkillName(SkillName.Anatomy).GetEffectForChar(self);
+			double armsloreAttack = SkillDef.GetBySkillName(SkillName.ArmsLore).GetEffectForChar(self);
+			double strAttack = self.Str * CombatSettings.instance.attackStrModifier;
+			return (tacticsAttack + anatomyAttack + armsloreAttack + strAttack) / 1000;
+		}
+
+		/// <summary>#711 - the EvalInt/SpiritSpeak/Int mind-power-scaling formula, shared the
+		/// same way as GetAttackStatMultiplier above.</summary>
+		private static double GetMindPowerStatMultiplier(Character self) {
+			double evalIntMP = SkillDef.GetBySkillName(SkillName.EvalInt).GetEffectForChar(self);
+			double spiritSpeakMP = SkillDef.GetBySkillName(SkillName.SpiritSpeak).GetEffectForChar(self);
+			double intMP = self.Int * MagerySettings.instance.mindPowerIntModifier;
+			return (evalIntMP + spiritSpeakMP + intMP) / 1000;
 		}
 
 		/// <summary>Shared by the Mystic (#447) and Ranger (#454) range overrides above -
