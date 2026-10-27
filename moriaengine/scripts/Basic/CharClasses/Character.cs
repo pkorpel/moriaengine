@@ -1963,19 +1963,30 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		//real-user-reported: an NPC guard self-cast Greater Heal in combat and died a second
+		//later. Root cause: the clamp here was inverted since the original commit - Math.Min(0,
+		//Math.Max(this.MaxHits, newCount)) always evaluates to 0, because Math.Max(MaxHits,
+		//newCount) is always >= MaxHits (always positive for any living character), so
+		//Math.Min(0, <positive>) is always 0, regardless of the sign or size of howMany. Every
+		//single call - heal OR damage - zeroed the stat outright. The only real call sites were
+		//HealingSpellDef.On_EffectChar (Heal/Greater Heal, any caster) and the Hitpoints/Mana/
+		//Stamina ResourceListEntries (crafting-recipe costs) - natural regen and real combat
+		//damage both bypass these methods entirely via direct Hits assignment, which is why this
+		//went unnoticed since the initial commit until a live heal-spell cast actually exercised
+		//it. Correct clamp order: floor at 0, ceiling at Max.
 		public void AddHits(int howMany) {
 			int newCount = this.Hits + howMany;
-			this.Hits = (short) Math.Min(0, Math.Max(this.MaxHits, newCount));
+			this.Hits = (short) Math.Max(0, Math.Min(this.MaxHits, newCount));
 		}
 
 		public void AddMana(int howMany) {
 			int newCount = this.Mana + howMany;
-			this.Mana = (short) Math.Min(0, Math.Max(this.MaxMana, newCount));
+			this.Mana = (short) Math.Max(0, Math.Min(this.MaxMana, newCount));
 		}
 
 		public void AddStamina(int howMany) {
 			int newCount = this.Stam + howMany;
-			this.Stam = (short) Math.Min(0, Math.Max(this.MaxStam, newCount));
+			this.Stam = (short) Math.Max(0, Math.Min(this.MaxStam, newCount));
 		}
 
 		private static TriggerKey disruptionTK = TriggerKey.Acquire("disruption");

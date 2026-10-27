@@ -7,3 +7,21 @@ NAME = "Starting Equipment Test"
 ANIM = 0x1fff
 Equip = i_bow_copper
 Equip = i_arrow_copper, 50 75
+
+// #728 - real archive content ("Equip = random_pants"/"random_shoes"/"random_skirt") uses
+// the same native Sphere "roll me something" mechanism #563 only covered for hair/beard.
+[NPCDef npc_test_random_clothing_equip]
+NAME = "Random Clothing Equip Test"
+ANIM = 0x1fff
+Equip = random_pants
+Equip = random_shoes
+Equip = random_skirt
+
+// #728 - i_spellbook and most one-handed weapons (e.g. i_axe_exec) both declare real
+// Layer = 1 (Hand1) - mirrors the exact real-world c_vguard_mordor_hala_jezdec ordering
+// (spellbook equipped first, weapon equipped later, evicting it).
+[NPCDef npc_test_spellbook_weapon_collision]
+NAME = "Spellbook Weapon Collision Test"
+ANIM = 0x1fff
+Equip = i_spellbook
+Equip = i_axe_exec
