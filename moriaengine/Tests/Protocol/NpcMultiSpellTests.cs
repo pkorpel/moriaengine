@@ -7,10 +7,10 @@ namespace SteamEngine.Tests.Protocol {
 	/// #734 - see scripts/Tests/NpcMultiSpellTests.cs's own doc comment for why this replaced
 	/// #564's original "uniform random distribution" assertions: NPCAiTimer.ChooseSpellToCast
 	/// (which replaced PickSpell) is cooldown-aware, so "ignores all state, picks uniformly" is
-	/// no longer the real contract. Proves instead that once a spell is actually cast, it's
-	/// excluded from the next choice (its own per-spell cooldown, not the old single shared one)
-	/// and the remaining ready spell is picked both validly and stably (no flip-flopping with no
-	/// state change in between).
+	/// no longer the real contract. Proves instead that casting ANY spell blocks EVERY spell this
+	/// NPC knows (one shared "busy" window, not a per-spell one) - real-user-reported follow-up:
+	/// a caster can only have one spell "in flight" at a time, same as a real spellcaster
+	/// mid-channel, regardless of which spell started that channel.
 	/// </summary>
 	[Collection(NpcMultiSpellCollection.Name)]
 	public class NpcMultiSpellTests {
@@ -24,15 +24,15 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
-		public void ExcludesWhicheverSpellWasJustCastAndStaysStable() {
-			using (var client = this.ConnectLoginAndCreateCharacter(Account, "MultiSpellCooldownChecker")) {
-				client.SendSpeech(".TestMultiOffensiveSpellCooldownExclusion");
-				Assert.True(this.fixture.WaitForGameOutput("MULTI_SPELL_COOLDOWN_TEST:", TimeSpan.FromSeconds(10)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MULTI_SPELL_COOLDOWN_TEST:");
+		public void CastingAnySpellBlocksEveryOtherSpellToo() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "MultiSpellExclusivityChecker")) {
+				client.SendSpeech(".TestCastingAnySpellBlocksEveryOtherSpellToo");
+				Assert.True(this.fixture.WaitForGameOutput("MULTI_SPELL_EXCLUSIVITY_TEST:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MULTI_SPELL_EXCLUSIVITY_TEST:");
 
 				Assert.Contains("beforeCastValid=True", line);
 				Assert.Contains("castAttempts=1", line);
-				Assert.Contains("afterCastValid=True", line);
+				Assert.Contains("afterCastIsNull=True", line);
 				Assert.Contains("stableAcrossCalls=True", line);
 			}
 		}

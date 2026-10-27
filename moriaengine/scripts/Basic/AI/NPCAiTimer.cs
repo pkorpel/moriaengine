@@ -394,10 +394,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		//transient, not saved - a missed cooldown window just means one skipped cast attempt after a reload, harmless.
-		//#734 - per-SPELL now (was one single shared cooldown for every spell this NPC knows),
-		//so casting a self-heal doesn't also lock out an unrelated offensive spell for the same
-		//4 seconds - see IsSpellReady/CastSpell below.
-		private Dictionary<SpellDef, double> nextCastTimeBySpell;
+		//#734 real-user-reported follow-up: this NPC can only ever have ONE spell "in flight"
+		//at a time - like a real caster mid-channel, it cannot start casting something else
+		//while still resolving/recovering from its last cast, regardless of which spell that
+		//was. A per-spell cooldown dictionary (this field's own first #734 version) let a
+		//self-heal interrupt an unrelated offensive spell's cooldown window, which is wrong -
+		//this stays ONE shared timestamp across every spell this NPC knows, same as the
+		//original pre-#734 design, so ChooseSpellToCast's utility scoring only ever decides
+		//WHICH spell to use once casting is actually available again, never WHETHER two
+		//different spells can overlap.
+		private double nextCastTime;
 		private const double SpellCastCooldownSeconds = 4;
 		private const int DefaultSpellCastRange = 10;
 
@@ -544,9 +550,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private bool IsSpellReady(NPC self, SpellDef spell) {
-			double nextTime;
-			if ((this.nextCastTimeBySpell != null) && this.nextCastTimeBySpell.TryGetValue(spell, out nextTime) && (Globals.TimeInSeconds < nextTime)) {
-				return false;
+			if (Globals.TimeInSeconds < this.nextCastTime) {
+				return false; //still "in flight"/recovering from a previous cast - ANY spell, not just this one
 			}
 			return self.Mana >= spell.ManaUse;
 		}
@@ -572,10 +577,7 @@ namespace SteamEngine.CompiledScripts {
 			bool isBeneficial = (spell.Flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial;
 			Character effectTarget = isBeneficial ? self : target;
 
-			if (this.nextCastTimeBySpell == null) {
-				this.nextCastTimeBySpell = new Dictionary<SpellDef, double>();
-			}
-			this.nextCastTimeBySpell[spell] = Globals.TimeInSeconds + Math.Max(SpellCastCooldownSeconds, spell.CastTime);
+			this.nextCastTime = Globals.TimeInSeconds + Math.Max(SpellCastCooldownSeconds, spell.CastTime);
 			self.Mana -= (short) spell.ManaUse;
 			this.CastAttempts++;
 
