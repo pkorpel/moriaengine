@@ -356,6 +356,64 @@ namespace SteamEngine.CompiledScripts {
 		public int RollDex() { return RollStatRange(this.DexRange); }
 		public int RollInt() { return RollStatRange(this.IntRange); }
 
+		private static readonly TagKey stunChanceTK = TagKey.Acquire("_npcStunChance_");
+		private static readonly TagKey stunDurationTK = TagKey.Acquire("_npcStunDuration_");
+		private static readonly TagKey stunCooldownTK = TagKey.Acquire("_npcStunCooldown_");
+		private static readonly TagKey criticChanceTK = TagKey.Acquire("_npcCriticChance_");
+		private static readonly TagKey criticDamageTK = TagKey.Acquire("_npcCriticDamage_");
+		private static readonly TagKey roundattackChanceTK = TagKey.Acquire("_npcRoundattackChance_");
+		private static readonly TagKey roundattackDamageTK = TagKey.Acquire("_npcRoundattackDamage_");
+		private static readonly TagKey roundattackCooldownTK = TagKey.Acquire("_npcRoundattackCooldown_");
+		private static readonly TagKey pullDistanceTK = TagKey.Acquire("_npcPullDistance_");
+
+		/// <summary>Real-user-reported follow-up to #653's teventStubs batch - per-species
+		/// override {min, max} ranges for StunAbilityDef/CriticAbilityDef/
+		/// RoundattackAbilityDef's own default fields (same two-layer precedent as
+		/// SpellCastRange: an AbilityDef field is the engine-wide default, this is the
+		/// per-NPCDef override, confirmed real variance exists in the archive - e.g. stun
+		/// chance ranges from 3% on weak monsters to 100% on dragons). Null (the default)
+		/// means unconfigured - the consuming combat code falls back to the granted
+		/// AbilityDef's own field instead. Unlike StrRange/FameRange (rolled ONCE at
+		/// creation), these are rolled fresh every time the ability actually fires (e.g. a
+		/// fresh crit-damage roll on every landed hit) - see RollStatRange's own callers in
+		/// WeaponSkillDef/NPCAiTimer for where that happens.</summary>
+		public int[] StunChance {
+			get { return this.GetTag(stunChanceTK) as int[]; }
+			set { this.SetTag(stunChanceTK, value); }
+		}
+		public int[] StunDuration {
+			get { return this.GetTag(stunDurationTK) as int[]; }
+			set { this.SetTag(stunDurationTK, value); }
+		}
+		public int[] StunCooldown {
+			get { return this.GetTag(stunCooldownTK) as int[]; }
+			set { this.SetTag(stunCooldownTK, value); }
+		}
+		public int[] CriticChance {
+			get { return this.GetTag(criticChanceTK) as int[]; }
+			set { this.SetTag(criticChanceTK, value); }
+		}
+		public int[] CriticDamage {
+			get { return this.GetTag(criticDamageTK) as int[]; }
+			set { this.SetTag(criticDamageTK, value); }
+		}
+		public int[] RoundattackChance {
+			get { return this.GetTag(roundattackChanceTK) as int[]; }
+			set { this.SetTag(roundattackChanceTK, value); }
+		}
+		public int[] RoundattackDamage {
+			get { return this.GetTag(roundattackDamageTK) as int[]; }
+			set { this.SetTag(roundattackDamageTK, value); }
+		}
+		public int[] RoundattackCooldown {
+			get { return this.GetTag(roundattackCooldownTK) as int[]; }
+			set { this.SetTag(roundattackCooldownTK, value); }
+		}
+		public int[] PullDistance {
+			get { return this.GetTag(pullDistanceTK) as int[]; }
+			set { this.SetTag(pullDistanceTK, value); }
+		}
+
 		private static readonly TagKey fameRangeTK = TagKey.Acquire("_fameRange_");
 		private static readonly TagKey karmaRangeTK = TagKey.Acquire("_karmaRange_");
 
@@ -762,6 +820,42 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "karma") {
 				this.KarmaRange = ParseStatRange(filename, line, "karma", args);
+				return;
+			}
+			if (param == "stunchance") {
+				this.StunChance = ParseStatRange(filename, line, "stunchance", args);
+				return;
+			}
+			if (param == "stunduration") {
+				this.StunDuration = ParseStatRange(filename, line, "stunduration", args);
+				return;
+			}
+			if (param == "stuncooldown") {
+				this.StunCooldown = ParseStatRange(filename, line, "stuncooldown", args);
+				return;
+			}
+			if (param == "criticchance") {
+				this.CriticChance = ParseStatRange(filename, line, "criticchance", args);
+				return;
+			}
+			if (param == "criticdamage") {
+				this.CriticDamage = ParseStatRange(filename, line, "criticdamage", args);
+				return;
+			}
+			if (param == "roundattackchance") {
+				this.RoundattackChance = ParseStatRange(filename, line, "roundattackchance", args);
+				return;
+			}
+			if (param == "roundattackdamage") {
+				this.RoundattackDamage = ParseStatRange(filename, line, "roundattackdamage", args);
+				return;
+			}
+			if (param == "roundattackcooldown") {
+				this.RoundattackCooldown = ParseStatRange(filename, line, "roundattackcooldown", args);
+				return;
+			}
+			if (param == "pulldistance") {
+				this.PullDistance = ParseStatRange(filename, line, "pulldistance", args);
 				return;
 			}
 			if (param == "maxhits") {
