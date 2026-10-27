@@ -42,6 +42,26 @@ namespace SteamEngine.Regions {
 				return !this.IsVerticalLosBlockedBetween(from.X, from.Y, from.Z, to.Z);
 			}
 
+			//#728 - real-user-reported: a ranged NPC one tile over but on a different floor (e.g.
+			//(x,y,40) vs (x,y+1,20), well within an adjacent-ish column) shot straight through a
+			//real floor between them - confirmed even a solid stone wall placed at the exact same
+			//spot didn't block either, so this isn't about any particular static's height data.
+			//Root cause: CreateLosPath's per-step sampling produces exactly one (x,y,z) sample per
+			//horizontal step - when the TOTAL horizontal distance is only 1 tile, the only two
+			//samples it can produce land exactly on the "from" and "to" columns, and the skip
+			//below ("standing on your own tile never self-blocks", there for the ordinary case of a
+			//wall under your own feet not blocking your own sideways view) then discards BOTH of
+			//them - so nothing ever gets checked between two adjacent-but-different-level columns,
+			//regardless of what's really there. A genuine vertical separator between fromZ and toZ
+			//at either endpoint's own column must still block, exactly like the already-handled
+			//exact-same-column case right above - this check is a no-op whenever fromZ == toZ (the
+			//overwhelmingly common same-level case), since IsVerticalLosBlockedBetween's own
+			//zLow==zHigh guard always clears that immediately.
+			if (this.IsVerticalLosBlockedBetween(from.X, from.Y, from.Z, to.Z) ||
+				this.IsVerticalLosBlockedBetween(to.X, to.Y, from.Z, to.Z)) {
+				return false;
+			}
+
 			// CreateLosPath returns a pooled PointsInLine under the IEnumerable<Point3D> interface -
 			// it must be disposed (released back to its pool) however we leave this method.
 			IEnumerable<Point3D> path = CreateLosPath(from, to);
@@ -124,9 +144,22 @@ namespace SteamEngine.Regions {
 
 		/// <summary>Same data sources and Noshoot/Impassable split as IsLosBlockedAt (see its own
 		/// doc comment for the full #692 writeup), but for the same-column case: is anything
-		/// blocking strictly between fromZ and toZ (exclusive of both - standing on your own
-		/// floor, or the target's, never self-blocks, same convention as CanSeeLosFromTo's main
-		/// loop skipping both endpoint columns), regardless of which one is higher.</summary>
+		/// blocking between fromZ and toZ, regardless of which one is higher.
+		///
+		/// #728 - the lower and upper bounds are deliberately NOT symmetric. A real floor/roof's
+		/// own Z always coincides exactly with whichever character stands ON TOP of it (standing
+		/// on a zero-height Surface tile means Z == the tile's own Z) - so "blocking" must be
+		/// INCLUSIVE of zHigh (a floor exactly at the upper character's own feet still separates
+		/// them from anyone below - you can't shoot an arrow down through the floor you're
+		/// standing on) but stays EXCLUSIVE of zLow (a floor exactly at the LOWER character's own
+		/// feet does not block their own view upward - nothing from their own floor extends
+		/// further down to get in the way). Real-user-reported bug this fixed: a ranged NPC one
+		/// tile over but on a different floor (adjacent column, large Z gap) shot straight through
+		/// a real zero-height floor between the two levels - the floor's own Z exactly equalled
+		/// the shooter's own standing Z, which the old fully-exclusive-both-ends formula never
+		/// treated as "in the way" regardless of the static's real height (an empty-or-not
+		/// zero-height band simply never starts strictly below zHigh when it starts exactly AT
+		/// zHigh).</summary>
 		private bool IsVerticalLosBlockedBetween(int x, int y, int fromZ, int toZ) {
 			if (!this.IsValidPos(x, y)) {
 				return true;
@@ -156,7 +189,7 @@ namespace SteamEngine.Regions {
 
 			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
 				if (TileData.HasFlag(s.Flags, TileFlag.Noshoot) &&
-					(s.Z + GetNoshootHeight(s.Flags, s.Height) > zLow) && (GetNoshootBandLow(s.Flags, s.Z, landZ) < zHigh)) {
+					(s.Z + GetNoshootHeight(s.Flags, s.Height) > zLow) && (GetNoshootBandLow(s.Flags, s.Z, landZ) <= zHigh)) {
 					return true;
 				}
 			}
@@ -164,7 +197,7 @@ namespace SteamEngine.Regions {
 			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
 				if (TileData.HasFlag(idi.Flags, TileFlag.Noshoot) &&
-					(item.Z + GetNoshootHeight(idi.Flags, idi.Height) > zLow) && (GetNoshootBandLow(idi.Flags, item.Z, landZ) < zHigh)) {
+					(item.Z + GetNoshootHeight(idi.Flags, idi.Height) > zLow) && (GetNoshootBandLow(idi.Flags, item.Z, landZ) <= zHigh)) {
 					return true;
 				}
 			}

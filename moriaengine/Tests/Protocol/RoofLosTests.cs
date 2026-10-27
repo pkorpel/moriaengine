@@ -131,6 +131,29 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#728 - see VerticalLosBlockingTests.cs's own doc comment for the full
+		/// root-cause writeup (a ranged NPC one tile over, but on a different floor, shot
+		/// straight through the real floor between them).</summary>
+		[Fact]
+		public void AdjacentColumnRealFloorBlocksCrossLevelLineOfSight() {
+			using (var client = this.ConnectLoginAndCreateCharacter("LosAdjacentFloorTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				client.SendSpeech(".TestTeleportToOpenGround");
+				this.AssertSeen("OPEN_GROUND_FOUND:", 0, TimeSpan.FromSeconds(10));
+				Assert.DoesNotContain("none", LastLineContaining(this.fixture.GameOutputSnapshot(), "OPEN_GROUND_FOUND:"));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestAdjacentColumnRealFloorBlocksCrossLevelLos");
+				this.AssertSeen("ADJACENT_COLUMN_FLOOR_LOS_TEST:", mark, TimeSpan.FromSeconds(10));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ADJACENT_COLUMN_FLOOR_LOS_TEST:");
+
+				Assert.Contains("openBeforeFloor=True", line);
+				Assert.Contains("openAfterFloor=False", line);
+			}
+		}
+
 		private void AssertSeen(string marker, int since, TimeSpan timeout) {
 			bool saw = this.fixture.WaitForGameOutputSince(marker, since, timeout);
 			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
