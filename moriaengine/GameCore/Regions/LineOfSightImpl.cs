@@ -106,7 +106,7 @@ namespace SteamEngine.Regions {
 
 			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
 				if (TileData.HasFlag(s.Flags, TileFlag.Noshoot) &&
-					(z >= Math.Min(s.Z, landZ)) && (z < s.Z + Math.Max(s.Height, 1))) {
+					(z >= GetNoshootBandLow(s.Flags, s.Z, landZ)) && (z < s.Z + Math.Max(s.Height, 1))) {
 					return true;
 				}
 			}
@@ -114,7 +114,7 @@ namespace SteamEngine.Regions {
 			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
 				if (TileData.HasFlag(idi.Flags, TileFlag.Noshoot) &&
-					(z >= Math.Min(item.Z, landZ)) && (z < item.Z + Math.Max((int) idi.Height, 1))) {
+					(z >= GetNoshootBandLow(idi.Flags, item.Z, landZ)) && (z < item.Z + Math.Max((int) idi.Height, 1))) {
 					return true;
 				}
 			}
@@ -156,7 +156,7 @@ namespace SteamEngine.Regions {
 
 			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
 				if (TileData.HasFlag(s.Flags, TileFlag.Noshoot) &&
-					(s.Z + Math.Max(s.Height, 1) > zLow) && (Math.Min(s.Z, landZ) < zHigh)) {
+					(s.Z + Math.Max(s.Height, 1) > zLow) && (GetNoshootBandLow(s.Flags, s.Z, landZ) < zHigh)) {
 					return true;
 				}
 			}
@@ -164,7 +164,7 @@ namespace SteamEngine.Regions {
 			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
 				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
 				if (TileData.HasFlag(idi.Flags, TileFlag.Noshoot) &&
-					(item.Z + Math.Max((int) idi.Height, 1) > zLow) && (Math.Min(item.Z, landZ) < zHigh)) {
+					(item.Z + Math.Max((int) idi.Height, 1) > zLow) && (GetNoshootBandLow(idi.Flags, item.Z, landZ) < zHigh)) {
 					return true;
 				}
 			}
@@ -172,6 +172,23 @@ namespace SteamEngine.Regions {
 			return false;
 		}
 
+		/// <summary>#708 - a Noshoot-flagged static's blocking band normally extends down to the
+		/// real terrain Z at its own column (see IsLosBlockedAt's own #692 writeup) - correct for
+		/// a WALL (a vertical plane that should block floor-to-ceiling even when its own
+		/// registered base sits on a raised platform), but wrong for a ROOF (a thin horizontal
+		/// plane far overhead) - extending a roof's band down to the ground made it block an
+		/// ordinary ground-level ray between two characters both standing well below the actual
+		/// roof, real-user-reported as "a ranged NPC has to walk all the way to melee range to
+		/// attack a target standing under any roof, but not in the open". A Roof-flagged static
+		/// (the real, separate TileFlag.Roof - "Don't fall through me!") uses its own Z as the
+		/// lower bound instead, so it only blocks a sightline that actually tries to pass near its
+		/// own real height, never one far beneath it.</summary>
+		private static int GetNoshootBandLow(TileFlag flags, int staticZ, int landZ) {
+			if (TileData.HasFlag(flags, TileFlag.Roof)) {
+				return staticZ;
+			}
+			return Math.Min(staticZ, landZ);
+		}
 
 		public static double losPathWidth = 0.2; //can be 0..<0.5 - the closer to 0.5, the wider the path
 
