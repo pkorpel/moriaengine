@@ -1,15 +1,96 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-27): #734 NPC combat-AI overhaul SHIPPED (incl. a same-day follow-up fix) - nothing queued, read DONE entries below if picking this back up
+## SESSION HANDOFF (2026-10-27): monster special-attack abilities batch (stun/critic/roundattack) SHIPPED - bleed deferred as its own follow-up, read DONE entry below if picking this back up
 
-**Where things stand:** #708/#721/#724 (ranged NPCs closing to melee through floors/roofs),
-#728 (ranged NPC shooting through a floor between adjacent columns/levels), #730/#731/#732 (3
-more real bugs found live-testing a single guard NPC, PR #733), and now #734's full combat-AI
-decision-loop overhaul PLUS a same-day correctness fix the user caught by just asking a
-clarifying question (see the two DONE entries just below) are all shipped. Nothing from any of
-this is broken or half-done. **Nothing is queued right now** - if the user doesn't mention #734
-follow-ups (per-NPC mana/aggression tuning, group/pack coordination - both deliberately scoped
-out, see the DONE entry) next session, ask what they want to pick up.
+**Where things stand:** #708/#721/#724/#728/#730-732/#734(+follow-up) are all shipped (see
+their own DONE entries below). On top of that, this same session also shipped real behavior
+for 3 of #653's zero-effect `teventStubs.scp` placeholder abilities - `e_npc_stun`/
+`e_npc_critic`/`e_npc_roundattack`(`_pullall`) - see the DONE entry just below for the full
+writeup. **`e_npc_bleed` is explicitly NOT done** - it needs a real new stacking-DoT plugin
+(the archive's own bleed mechanism re-applies/stacks over time, unlike the other 3's simple
+"roll on hit" shape), deliberately scoped out of this batch as its own follow-up. **Nothing
+else is queued** - if the user doesn't mention bleed or more `teventStubs` abilities (145
+others still zero-effect, see the DONE entry's own frequency table) next session, ask what
+they want to pick up.
+
+## DONE (2026-10-27): monster special-attack abilities (stun/critic/roundattack+pullall) given real behavior (PR TBD)
+
+**Where this came from:** #653's `teventStubs.scp` batch created 148 zero-effect
+`PassiveAbilityDef` stubs for legacy Sphere AI-hook names the converter found but this engine
+never built behavior for. Frequency survey across the real converted content: `e_npc_stun`
+169 monsters, `e_looter` 146, `e_npc_bleed` 119, `e_item_refuser` 119, `e_npc_critic` 115,
+`e_parakrik` 105, `e_npc_leaper` 93, down to several dozen one-off boss-specific hooks used by
+a single monster each. User picked "top generic mechanics by frequency" as the starting
+scope, then explicitly added roundattack and asked for real per-species configurability.
+
+**Real mechanics** (pulled from `pkorpel/erebor-sphere-archive`'s own source, NOT the
+`gitlab.com/erebor/sphere-public-archive` upstream some old docs still cite - **the user has
+modified their own GitHub fork directly, so it's the only correct source now**, see
+`docs/current/06-tooling/sphere-shard-converter.md` and `[[reference_moriaengine_erebor_fork_source]]`):
+- `e_npc_stun`: on a landed melee swing, a chance to paralyze the target briefly, gated by its
+  own per-attacker cooldown so it can't stun-lock every hit.
+- `e_npc_critic`: on a landed melee swing against a PLAYER specifically, a chance to add bonus
+  damage to that same swing.
+- `e_npc_roundattack`/`_pullall`: a PERIODIC (not swing-triggered) AoE pulse around the
+  monster, on its own recharge timer - the pull variant also yanks nearby targets closer first.
+
+**Architecture**: `StunAbilityDef`/`CriticAbilityDef`/`RoundattackAbilityDef`/
+`RoundattackPullAbilityDef` (new, `scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs`)
+replace 4 of `teventStubs.scp`'s bare stub entries, same defnames (existing grant mechanism
+via `NPC.TryResolveUnknownTriggerGroupName` untouched) - each has real `FieldValue` fields for
+the engine-wide default chance/damage/duration/cooldown (GM-editable via `.info`'s existing
+Abilities "Def info" reflection-based editor, confirmed free - no new dialog code needed).
+**Real landmine hit here**: the base `AbilityDef` class already registers its OWN FieldValue
+keys literally named `"chance"`/`"cooldown"` (a different concept - single 0.0-1.0
+fraction/scalar seconds, not a `{min,max}` permille range) - reusing those exact key STRINGS
+in a subclass (even with a different C# property name via `new`) throws a silent
+`InitField_Typed` error at boot and the field never actually initializes, making every roll
+silently no-op. Fixed by giving every new field its own unique key (`stunChance`,
+`criticChance`, `roundattackChance`, etc.) - the `new` keyword alone (silencing the COMPILER
+warning) does NOT fix this runtime collision, they're two separate problems.
+
+**Per-species configurability (user's explicit ask)**: real archive variance confirmed (e.g.
+stun chance 3%-100% across species, critic damage (5,10) to (50,55)) - `NPCDef` gained
+matching override range properties (`StunChance`/`StunDuration`/`StunCooldown`/`CriticChance`/
+`CriticDamage`/`RoundattackChance`/`RoundattackDamage`/`RoundattackCooldown`/`PullDistance`,
+same `int[]`-range-or-null-sentinel shape as `StrRange`/`FameRange`), and
+`SphereShardConverter/ConvertedCharDef.cs`'s `ProcessCreateTriggerLine` got 10 new cases
+(modeled directly on the existing `str`/`dex`/`fame`/`resist_X` handlers) extracting the real
+archive's `tag.npc_stun_chance=`/etc values from inside `ON=@Create` bodies - previously
+silently dropped (confirmed: zero occurrences anywhere in checked-in `scripts/converted/`
+before this). Regenerated via a real converter run against the archive fork - diff reviewed
+by hand before applying; 31 `scripts/converted/*.def` files picked up real per-species
+values, 2 files (`special.def`'s `EquipColor` pairing, `aldaron.def`'s resist-field ordering)
+had OTHER, unrelated pre-existing staleness relative to already-merged converter fixes
+(#600-ish EquipColor pairing, #656 resist-flush ordering) - deliberately left untouched for
+THIS PR via a surgical patch (not a wholesale file swap), flagged as a separate, low-priority
+staleness cleanup for whenever `scripts/converted` next gets a full regen for its own reason.
+
+**Hook points**: stun/critic roll inside `DamageManager.ProcessSwing` (critic BEFORE
+`CauseDamage`, since it mutates `WeaponSwingArgs.DamageAfterAC`; stun AFTER, confirming the
+swing landed). Roundattack/pullall check once per `NPCAiTimer.Fight` think-tick while actively
+fighting (not swing-triggered in this engine, unlike the archive's own "fires on nearly every
+combat trigger, gated by its own recharge timer anyway" shape - checking once per tick while
+fighting is a faithful, much simpler equivalent).
+
+**Tests**: `MonsterSpecialAttacksTests` (new, both tiers) - deterministic, calls
+`MonsterSpecialAttacks`'s public methods directly (same "internal/public for direct test
+invocation" precedent as `NPCAiTimer`) rather than waiting out real combat RNG. Covers: stun
+lands with guaranteed chance, stun never lands on a high-`ResistParalyse` target, critic only
+adds damage vs. a player (not vs. another monster), roundattack damages nearby targets,
+pullall drags a distant target closer. The pull test needed the same "teleport to confirmed
+open ground" fix other tests in this session needed - `PullToward` correctly REFUSED to pull
+into an impassable tile right next to the default test spawn point on the first attempt,
+which was the logic working as designed, not a bug - the test's own geometry was the problem.
+Fast tier 53/53; `NpcMultiSpellTests`/`NpcSupportOnlySpellWeavingTests`/
+`NpcBeneficialSpellTests`/`NpcRangeOverrideTests` (adjacent NPC-combat contracts, all touch
+`DamageManager.ProcessSwing`/`NPCAiTimer.Fight`) all still pass unchanged.
+
+**Deliberately deferred, not forgotten**: `e_npc_bleed` (119 monsters) needs a real new
+stacking damage-over-time plugin (the archive applies a fresh DoT instance per hit, up to 10
+stacks, scaled off that hit's own damage) - a genuinely different, bigger shape than the other
+3's "roll a chance on a landed hit" pattern, worth its own dedicated pass. The other ~144
+lower-frequency stub abilities (named-boss mechanics, elemental auras, etc.) are untouched.
 
 ## DONE (2026-10-27): #734 - NPC combat-AI decision loop overhaul (utility-scored spell choice) (PR #737)
 

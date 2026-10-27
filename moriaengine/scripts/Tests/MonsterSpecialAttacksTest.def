@@ -1,0 +1,34 @@
+// real-user-reported follow-up to #653's teventStubs batch - test-only content for
+// scripts/Tests/MonsterSpecialAttacksTests.cs. Each NPC gets a guaranteed (1000/1000)
+// chance for its own ability so the test is deterministic, not a statistical sample.
+[NPCDef npc_test_stun_attacker]
+NAME = "Stun Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_stun
+StunChance = 1000 1000
+StunDuration = 20 20
+StunCooldown = 30 30
+
+[NPCDef npc_test_critic_attacker]
+NAME = "Critic Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_critic
+CriticChance = 1000 1000
+CriticDamage = 50 50
+
+[NPCDef npc_test_roundattack_attacker]
+NAME = "Roundattack Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_roundattack
+RoundattackChance = 1000 1000
+RoundattackDamage = 40 40
+RoundattackCooldown = 0 0
+
+[NPCDef npc_test_roundattack_pull_attacker]
+NAME = "Roundattack Pull Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_roundattack_pullall
+RoundattackChance = 1000 1000
+RoundattackDamage = 40 40
+RoundattackCooldown = 0 0
+PullDistance = 9 9

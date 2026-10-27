@@ -600,8 +600,59 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//real-user-reported follow-up to #653's teventStubs batch: e_npc_stun/e_npc_critic/
+			//e_npc_roundattack(_pullall) are getting real implementations instead of staying
+			//zero-effect stubs - these per-species tuning tags (confirmed real variance in the
+			//archive, e.g. stun chance 3%-100% across species) live inside @Create exactly like
+			//str/dex/fame/resist_X above, and were being silently dropped the same way those
+			//used to be before #559/#560/#606. NPCDef-only, same guard as the other @Create
+			//fields above - a single number emits as-is, a Sphere "{min max}" range emits as
+			//"min max" (NPCDef's own numeric-field loaders already understand both shapes, same
+			//precedent as Str/Fame/MaxHits). Units are passed through UNCONVERTED (raw archive
+			//deciseconds/permille/ticks) - NPCAiTimer's own consuming code documents and divides
+			//out the real-world units at the point of use, not here, so this stays a pure
+			//number-extraction step like every other @Create handler above.
+			if (name == "tag.npc_stun_chance" || name == "tag.npc_stun_time" || name == "tag.npc_stun_delay" ||
+					name == "tag.npc_critic_chance" || name == "tag.npc_critic_dmg" ||
+					name == "tag.roundattack_chance" || name == "tag.roundattack_damage" || name == "tag.roundattack_time" ||
+					name == "tag.pullall_distance") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				string fieldName;
+				if (!abilityTuningFieldNames.TryGetValue(name, out fieldName)) {
+					return;
+				}
+				MatchCollection tuningMatches = numberRE.Matches(value);
+				if (tuningMatches.Count > 0) {
+					int min = (int) Math.Round(double.Parse(tuningMatches[0].Value, CultureInfo.InvariantCulture));
+					if (tuningMatches.Count > 1) {
+						int max = (int) Math.Round(double.Parse(tuningMatches[1].Value, CultureInfo.InvariantCulture));
+						this.Set(fieldName, min + " " + max, comment);
+					} else {
+						this.Set(fieldName, min.ToString(CultureInfo.InvariantCulture), comment);
+					}
+				}
+				return;
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
 		}
+
+		//real archive tag name (@Create body) -> this engine's NPCDef override field name -
+		//see the tag.npc_stun_*/tag.npc_critic_*/tag.roundattack_*/tag.pullall_distance case
+		//in ProcessCreateTriggerLine above.
+		private static readonly Dictionary<string, string> abilityTuningFieldNames =
+			new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
+				{ "tag.npc_stun_chance", "StunChance" },
+				{ "tag.npc_stun_time", "StunDuration" },
+				{ "tag.npc_stun_delay", "StunCooldown" },
+				{ "tag.npc_critic_chance", "CriticChance" },
+				{ "tag.npc_critic_dmg", "CriticDamage" },
+				{ "tag.roundattack_chance", "RoundattackChance" },
+				{ "tag.roundattack_damage", "RoundattackDamage" },
+				{ "tag.roundattack_time", "RoundattackCooldown" },
+				{ "tag.pullall_distance", "PullDistance" }
+			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum
 		//member (Enums.cs) - all map cleanly, no new enum values needed. "lightning" and

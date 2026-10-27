@@ -102,9 +102,11 @@ Sphere source, not as part of any normal build/test/boot flow.
 
 - **Input**: recursively scans `SphereShardConverter/convert/` for `.scp` files. This
   folder is gitignored - the third-party Erebor archive is never vendored into this
-  repo. To populate it:
+  repo. To populate it, clone the project's own GitHub fork (NOT the gitlab.com
+  upstream - the user has made real modifications directly in the fork that upstream
+  doesn't have, confirmed 2026-10-27):
   ```
-  git clone --depth 1 https://gitlab.com/erebor/sphere-public-archive.git SphereShardConverter/convert
+  git clone --depth 1 https://github.com/pkorpel/erebor-sphere-archive.git SphereShardConverter/convert
   ```
 - **Output**: writes converted files into `scripts/converted` by default - **the real,
   tracked content directory the live engine loads**. `ConvertedFile.Flush()` uses

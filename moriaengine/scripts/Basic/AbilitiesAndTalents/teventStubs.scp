@@ -249,8 +249,11 @@ Name = "(e_npc_bleed)"
 [PassiveAbilityDef a_tevent_e_npc_blow_up]
 Name = "(e_npc_blow_up)"
 
-[PassiveAbilityDef a_tevent_e_npc_critic]
-Name = "(e_npc_critic)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//CriticAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - rolled on
+//a landed melee swing against a player, see WeaponSkillDef.On_Stroke.
+[CriticAbilityDef a_tevent_e_npc_critic]
+Name = "Critical Hit"
 
 [PassiveAbilityDef a_tevent_e_npc_curse]
 Name = "(e_npc_curse)"
@@ -303,11 +306,16 @@ Name = "(e_npc_reagdrop)"
 [PassiveAbilityDef a_tevent_e_npc_regeneration]
 Name = "(e_npc_regeneration)"
 
-[PassiveAbilityDef a_tevent_e_npc_roundattack]
-Name = "(e_npc_roundattack)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//RoundattackAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - a
+//periodic AoE pulse around this NPC, see NPCAiTimer's own roundattack check.
+[RoundattackAbilityDef a_tevent_e_npc_roundattack]
+Name = "Round Attack"
 
-[PassiveAbilityDef a_tevent_e_npc_roundattack_pullall]
-Name = "(e_npc_roundattack_pullall)"
+//same real behavior as e_npc_roundattack above, plus pulling nearby targets in first -
+//RoundattackPullAbilityDef adds PullDistance on top of RoundattackAbilityDef's own fields.
+[RoundattackPullAbilityDef a_tevent_e_npc_roundattack_pullall]
+Name = "Round Attack (Pull)"
 
 [PassiveAbilityDef a_tevent_e_npc_sniper]
 Name = "(e_npc_sniper)"
@@ -315,8 +323,11 @@ Name = "(e_npc_sniper)"
 [PassiveAbilityDef a_tevent_e_npc_stam_dmg]
 Name = "(e_npc_stam_dmg)"
 
-[PassiveAbilityDef a_tevent_e_npc_stun]
-Name = "(e_npc_stun)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//StunAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - rolled on a
+//landed melee swing, see WeaponSkillDef.On_Stroke.
+[StunAbilityDef a_tevent_e_npc_stun]
+Name = "Stunning Strike"
 
 [PassiveAbilityDef a_tevent_e_npc_summoner]
 Name = "(e_npc_summoner)"

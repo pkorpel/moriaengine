@@ -317,6 +317,14 @@ namespace SteamEngine.CompiledScripts {
 		internal void Fight(NPC self, Character target) {
 			self.Flag_WarMode = true;
 
+			//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_roundattack
+			//(_pullall) is a periodic AoE pulse independent of this tick's normal attack, not an
+			//alternative to it - see MonsterSpecialAttacks.TryRoundattack's own doc comment for
+			//why checking it here (once per think-tick while actively fighting) is a faithful
+			//equivalent of the real archive's own "recharge-gated, checked on nearly every
+			//combat trigger" behavior.
+			MonsterSpecialAttacks.TryRoundattack(self);
+
 			if (this.TryCastSpell(self, target)) {
 				return; //cast instead of swinging this tick - don't also touch the weapon-skill queue below
 			}

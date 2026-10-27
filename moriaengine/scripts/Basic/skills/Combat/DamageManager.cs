@@ -176,7 +176,17 @@ namespace SteamEngine.CompiledScripts {
 				// OneHandBlunt/TwoHandBlunt per mystic.def.
 				bool attackerIsMystic = Professions.HasProfession(attacker, Professions.Mystic);
 				DamageType damageType = attackerIsMystic ? DamageType.MagicMystical : attacker.WeaponDamageType;
+
+				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_critic
+				//(if the attacker has it) can still add bonus damage to THIS swing, so it must
+				//run before CauseDamage below, while swingArgs.DamageAfterAC is still mutable.
+				MonsterSpecialAttacks.TryApplyCritic(attacker, swingArgs);
+
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC);
+
+				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
+				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
+				MonsterSpecialAttacks.TryApplyStun(attacker, defender);
 
 				swingArgs.InternalSetFinalDamage(actualDamage);
 
