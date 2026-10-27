@@ -508,22 +508,38 @@ namespace SteamEngine.CompiledScripts {
 					retVal.piercing = npcDef.WeaponPiercing;
 					self.weaponProjectile = null;
 
-					// #600 - npcDef.WeaponRange's own unconfigured default (1, NPC.ct) left
+					// #600/#716 - npcDef.WeaponRange's own unconfigured default (1, NPC.ct) left
 					// every NPC wielding a real bow/crossbow stuck at melee range - this branch
 					// never consulted the equipped weapon's own WeaponType at all, unlike the
-					// player branch above. Only kicks in when WeaponRange was never explicitly
-					// hand-authored (the #56/#60 archer-stat NPCs that already set a real
-					// WeaponRange, e.g. 10, are completely unaffected) - reuses the SAME
-					// GM-tunable CombatSettings.Ranges override players get for the identical
-					// WeaponType, rather than inventing a separate NPC-only range mechanism; a
-					// bow's range is a property of the weapon, not the wielder.
-					if ((npcDef.WeaponRange <= 1) && (weapon != null) &&
+					// player branch above. Reuses the SAME GM-tunable CombatSettings.Ranges
+					// default players get for the identical WeaponType, rather than inventing a
+					// separate NPC-only range mechanism - UNLESS a specific monster's own
+					// WeaponRange is explicitly configured above the unconfigured sentinel (1),
+					// in which case that per-monster override wins outright (#716 - lets content
+					// give one specific archer/crossbowman a bigger - or smaller - range than
+					// every other bow/crossbow user gets by default).
+					//
+					// Always routes through SetRangedWeaponRange (never a raw field assignment)
+					// regardless of which value wins - #716 found that an EARLIER version of this
+					// override only applied SetRangedWeaponRange for the global-default case,
+					// silently skipping it whenever WeaponRange was explicitly configured. That
+					// left StrikeStartRange/StopRange at NPC.ct's own melee-shaped defaults
+					// (5/10) while WeaponRange sat at the content-authored value - WeaponSkillDef.
+					// On_Stroke's Drawing phase would then refuse to transition to Striking until
+					// within 5 tiles, while NPCAiTimer.Fight (reading the now-larger
+					// WeaponRangeVsM/VsP) considered itself already "close enough" and never
+					// approached past the bigger configured range - a real deadlock (never
+					// actually fires) for any override bigger than the unmatched StrikeStartRange,
+					// not just a missed convenience.
+					if ((weapon != null) &&
 							((weapon.WeaponType == WeaponType.Bow) || (weapon.WeaponType == WeaponType.XBow))) {
+						int configuredRange = npcDef.WeaponRange;
 						if (weapon.WeaponType == WeaponType.Bow) {
-							SetRangedWeaponRange(retVal, RangesSettings.instance.bow);
+							SetRangedWeaponRange(retVal, (configuredRange > 1) ? configuredRange : RangesSettings.instance.bow);
 						} else {
 							bool isHeavy = weapon.TypeDef.Defname.IndexOf("heavy", StringComparison.OrdinalIgnoreCase) >= 0;
-							SetRangedWeaponRange(retVal, isHeavy ? RangesSettings.instance.heavyCrossbow : RangesSettings.instance.crossbow);
+							int globalDefault = isHeavy ? RangesSettings.instance.heavyCrossbow : RangesSettings.instance.crossbow;
+							SetRangedWeaponRange(retVal, (configuredRange > 1) ? configuredRange : globalDefault);
 						}
 						retVal.projectileType = weapon.ProjectileType;
 						self.weaponProjectile = TryFindProjectile(self, weapon.ProjectileType);
