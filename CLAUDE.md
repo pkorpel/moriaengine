@@ -71,7 +71,7 @@ Always filter to one collection/class at a time when verifying full-boot changes
 independently) and any kind of per-NPC "aggression profile" tuning - the user's own framing was
 about ONE NPC's offense-vs-support awareness and positioning, not multi-NPC tactics.
 
-## DONE (2026-10-27): #734 follow-up - fixed a casting-exclusivity bug the user caught by asking a clarifying question
+## DONE (2026-10-27): #734 follow-up - fixed a casting-exclusivity bug the user caught by asking a clarifying question (PR #739)
 
 Right after #737 shipped, the user asked whether this engine's real rule ("can't start casting
 a new spell while still mid-cast/resolving a previous one - e.g. can't cast something else
