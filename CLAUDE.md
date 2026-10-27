@@ -1,16 +1,27 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-27): all 4 top-frequency teventStubs abilities SHIPPED (stun/critic/roundattack+pullall/bleed) - nothing queued, read DONE entries below if picking this back up
+## SESSION HANDOFF (2026-10-27): all 4 top-frequency teventStubs abilities SHIPPED (stun/critic/roundattack+pullall/bleed) - #745 (cure bleeding) QUEUED for later, read DONE entries below if picking this back up
 
 **Where things stand:** #708/#721/#724/#728/#730-732/#734(+follow-up) are all shipped (see
 their own DONE entries below). This same session also shipped real behavior for ALL 4 of the
 top-frequency `teventStubs.scp` placeholder abilities from #653 - `e_npc_stun`/`e_npc_critic`/
 `e_npc_roundattack`(`_pullall`) (PR #741) and now `e_npc_bleed` too (see the DONE entry just
 below for the full writeup) - the earlier "bleed deferred" note from this same handoff is
-resolved. **Nothing else is queued** - 144 other, lower-frequency `teventStubs` abilities are
-still zero-effect stubs (named-boss mechanics, elemental auras, etc. - see the #653 DONE
-entry's own frequency table). If the user doesn't mention picking more of those next session,
-ask what they want to pick up.
+resolved.
+
+**Queued, NOT started**: **#745** - while explaining how bleed works, confirmed there's
+currently NO way to cure/stop a bleed effect early for either bleed source (monster bite or
+the pre-existing player "Bleeding Strike" ability) - `BleedingEffectPluginDef.StopBleeding()`/
+`IsBleeding()` exist but nothing calls them, `Healing.cs` has zero plugin interaction. User
+explicitly said "raise an issue, we'll look into it later" - do NOT start implementing a cure
+mechanism unless the user actually asks to pick #745 up; it needs its own real design pass
+(which action cures it - Healing skill/bandage, a spell, both; should monster-bleed and
+player-ability-bleed share one cure path) per the issue body.
+
+**Nothing else is queued** - 144 other, lower-frequency `teventStubs` abilities are still
+zero-effect stubs (named-boss mechanics, elemental auras, etc. - see the #653 DONE entry's own
+frequency table). If the user doesn't mention #745 or picking more of those next session, ask
+what they want to pick up.
 
 ## DONE (2026-10-27): e_npc_bleed given real behavior (PR TBD)
 
