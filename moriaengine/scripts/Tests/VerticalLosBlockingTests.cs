@@ -199,5 +199,46 @@ namespace SteamEngine.CompiledScripts {
 
 			Console.WriteLine("FLAT_FLOOR_LOS_TEST: openBeforeFloor=" + openBeforeFloor + " openAfterFloor=" + openAfterFloor);
 		}
+
+		//a real raised floor/platform decoration (0x503) - confirmed via a live
+		//ItemDispidInfo scan to carry Background+Surface+Noshoot with Height=0, same shape as
+		//FlatFloorModel but placed ABOVE the characters standing on raw ground below it.
+		private const int RaisedFloorModel = 0x503;
+
+		/// <summary>#721 follow-up - a SECOND real location (different house, different
+		/// flooring) still reproduced the same symptom after the first #721 fix shipped. Root
+		/// cause: this floor's own Z (a raised platform/deck) sits well ABOVE the characters
+		/// standing on the raw ground below it - #721's first fix only touched the height-
+		/// padding (upper bound), but the band's LOWER bound still extended all the way DOWN to
+		/// that ground via the #692 wall-on-a-platform logic (Math.Min(staticZ, landZ)), which
+		/// is correct for a WALL (floor-to-ceiling, no gap underneath) but wrong for a thin
+		/// walkable floor/platform surface overhead - exactly the same category of mistake
+		/// #708 already fixed for Roof specifically. Generalized: GetNoshootBandLow/
+		/// GetNoshootHeight now treat ANY Surface-flagged static the same way Roof already was
+		/// - its own literal Z range, never extended down, never padded up - covering every
+		/// real flooring/platform tile by its real tiledata flag instead of one model at a
+		/// time.</summary>
+		[SteamFunction]
+		public static void TestRaisedSurfaceFloorDoesNotBlockGroundLevelLos(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			ItemDef floorDef = (ItemDef) ThingDef.FindItemDef(RaisedFloorModel);
+			VerificationTestUtils.CleanupNearbyItems(self, floorDef, 20);
+
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC a = (NPC) npcDef.Create(self.X, self.Y, self.Z, self.M);
+			NPC b = (NPC) npcDef.Create(self.X + 5, self.Y, self.Z, self.M);
+
+			bool openBeforeFloor = a.CanInteractWith(b).Allow;
+
+			//the raised floor sits well above both characters (a platform/deck overhead),
+			//same real-world shape as the second reported location.
+			for (int x = self.X + 1; x < self.X + 5; x++) {
+				floorDef.Create(x, self.Y, self.Z + BuildingHeight, self.M);
+			}
+
+			bool openAfterFloor = a.CanInteractWith(b).Allow;
+
+			Console.WriteLine("RAISED_FLOOR_LOS_TEST: openBeforeFloor=" + openBeforeFloor + " openAfterFloor=" + openAfterFloor);
+		}
 	}
 }
