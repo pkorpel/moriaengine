@@ -1,11 +1,12 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-27): #734 NPC combat-AI overhaul SHIPPED - nothing queued, read DONE entry below if picking this back up
+## SESSION HANDOFF (2026-10-27): #734 NPC combat-AI overhaul SHIPPED (incl. a same-day follow-up fix) - nothing queued, read DONE entries below if picking this back up
 
 **Where things stand:** #708/#721/#724 (ranged NPCs closing to melee through floors/roofs),
 #728 (ranged NPC shooting through a floor between adjacent columns/levels), #730/#731/#732 (3
 more real bugs found live-testing a single guard NPC, PR #733), and now #734's full combat-AI
-decision-loop overhaul (see its own DONE entry just below) are all shipped. Nothing from any of
+decision-loop overhaul PLUS a same-day correctness fix the user caught by just asking a
+clarifying question (see the two DONE entries just below) are all shipped. Nothing from any of
 this is broken or half-done. **Nothing is queued right now** - if the user doesn't mention #734
 follow-ups (per-NPC mana/aggression tuning, group/pack coordination - both deliberately scoped
 out, see the DONE entry) next session, ask what they want to pick up.
@@ -69,6 +70,38 @@ Always filter to one collection/class at a time when verifying full-boot changes
 **Deliberately scoped out, not forgotten**: group/pack coordination (NPCs still act 100%
 independently) and any kind of per-NPC "aggression profile" tuning - the user's own framing was
 about ONE NPC's offense-vs-support awareness and positioning, not multi-NPC tactics.
+
+## DONE (2026-10-27): #734 follow-up - fixed a casting-exclusivity bug the user caught by asking a clarifying question
+
+Right after #737 shipped, the user asked whether this engine's real rule ("can't start casting
+a new spell while still mid-cast/resolving a previous one - e.g. can't cast something else
+during a 3-second lightning bolt's cast time") was actually preserved. It wasn't - a real bug
+introduced by #737, caught in conversation before any live-testing, not by the user hitting it
+in-game.
+
+**What was wrong:** the first #734 version replaced the ORIGINAL single shared `nextSpellCastTime`
+field with a `Dictionary<SpellDef, double> nextCastTimeBySpell` - a PER-SPELL cooldown,
+deliberately so a self-heal wouldn't be blocked by an unrelated offensive spell's cooldown. That
+reasoning was wrong: a caster can only ever have ONE spell "in flight" at a time, regardless of
+which spell it was - the per-spell dictionary let the NPC cast spell A, then immediately cast
+spell B on the very next AI tick (1.5s later) since B had no cooldown entry yet, even though A's
+cast should still have been resolving.
+
+**Fix**: reverted `nextCastTimeBySpell` back to a single shared `double nextCastTime` -
+`IsSpellReady` now gates ALL spells on this one timestamp, and `TryCastSpell`'s executor sets it
+once per cast, same shape as the pre-#734 original. `ChooseSpellToCast`'s utility scoring is
+unaffected in spirit - it still decides WHICH spell is most worth casting once casting is
+available again, it just no longer gets to decide whether two different spells can overlap in
+time (they can't).
+
+**Tests**: `NpcMultiSpellTests`'s cooldown test was renamed/rewritten -
+`CastingAnySpellBlocksEveryOtherSpellToo` now asserts the OPPOSITE of what the first #734 version
+proved (after one cast, `ChooseSpellToCast` returns null for EVERYTHING, not "the other spell
+that's still ready"). The #734 regression tests (`NpcSupportOnlySpellWeavingTests`) needed no
+changes - their assertions (buffs once then closes to melee; heals when hurt) hold under either
+cooldown shape, since those tests never rely on two DIFFERENT spells being castable back-to-back.
+Fast tier 53/53; all 4 related protocol test collections (`NpcMultiSpellTests`,
+`NpcSupportOnlySpellWeavingTests`, `NpcBeneficialSpellTests`, `NpcRangeOverrideTests`) pass.
 
 ## DONE (2026-10-27): #728 - ranged NPC shot through a floor between adjacent columns/levels (PR #729)
 
