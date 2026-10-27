@@ -83,6 +83,30 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#721 - see VerticalLosBlockingTests.cs's own doc comment for the full
+		/// root-cause writeup. Reproduces the user's real-map symptom with a synthetic flat
+		/// floor (same model, same flags, same zero height as the real one found at the
+		/// reported coordinates).</summary>
+		[Fact]
+		public void FlatSurfaceFloorDoesNotBlockGroundLevelLineOfSight() {
+			using (var client = this.ConnectLoginAndCreateCharacter("LosFlatFloorTester")) {
+				client.SendSpeech(".TestSetGmOn");
+				Thread.Sleep(500);
+
+				client.SendSpeech(".TestTeleportToOpenGround");
+				this.AssertSeen("OPEN_GROUND_FOUND:", 0, TimeSpan.FromSeconds(10));
+				Assert.DoesNotContain("none", LastLineContaining(this.fixture.GameOutputSnapshot(), "OPEN_GROUND_FOUND:"));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestFlatSurfaceFloorDoesNotBlockGroundLevelLos");
+				this.AssertSeen("FLAT_FLOOR_LOS_TEST:", mark, TimeSpan.FromSeconds(10));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "FLAT_FLOOR_LOS_TEST:");
+
+				Assert.Contains("openBeforeFloor=True", line);
+				Assert.Contains("openAfterFloor=True", line);
+			}
+		}
+
 		private void AssertSeen(string marker, int since, TimeSpan timeout) {
 			bool saw = this.fixture.WaitForGameOutputSince(marker, since, timeout);
 			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
