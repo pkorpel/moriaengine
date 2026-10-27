@@ -74,5 +74,90 @@ namespace SteamEngine.CompiledScripts {
 
 			Console.WriteLine("ELEVATED_WALL_LOS_TEST: openBeforeWall=" + openBeforeWall + " openAfterWall=" + openAfterWall);
 		}
+
+		//a real roof-edge piece (0x18) - confirmed via a live ItemDispidInfo scan to carry both
+		//TileFlag.Roof and TileFlag.Noshoot, height=3.
+		private const int RoofModel = 0x18;
+		private const int BuildingHeight = 20; //roof sits well above head height, same order of magnitude as a real one-story building
+
+		/// <summary>#708 - real-user-reported: a ranged NPC had to walk all the way to melee
+		/// range to attack a target standing under ANY roof, even with plenty of open ground in
+		/// between and no walls at all - but the exact same attacker/target pair worked fine at
+		/// range in the open. Root cause: IsLosBlockedAt's Noshoot-blocking-band lower bound
+		/// (Math.Min(s.Z, landZ), from #692's wall fix) also applied to ROOF-flagged statics,
+		/// extending a roof's block all the way down to the ground - so an ordinary ground-level
+		/// ray between two characters both standing well below the actual roof got wrongly
+		/// blocked by it. Fixed via GetNoshootBandLow - a Roof-flagged static's band now starts
+		/// at its own real Z, never extended down to the ground.</summary>
+		[SteamFunction]
+		public static void TestRoofDoesNotBlockGroundLevelLosAtRange(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			ItemDef roofDef = (ItemDef) ThingDef.FindItemDef(RoofModel);
+			VerificationTestUtils.CleanupNearbyItems(self, roofDef, 20);
+
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC outside = (NPC) npcDef.Create(self.X, self.Y, self.Z, self.M);
+			NPC underRoof = (NPC) npcDef.Create(self.X + 6, self.Y, self.Z, self.M);
+
+			bool openBeforeRoof = outside.CanInteractWith(underRoof).Allow;
+
+			roofDef.Create(self.X + 3, self.Y, self.Z + BuildingHeight, self.M);
+
+			bool openAfterRoof = outside.CanInteractWith(underRoof).Allow;
+
+			Console.WriteLine("ROOF_LOS_TEST: openBeforeRoof=" + openBeforeRoof + " openAfterRoof=" + openAfterRoof);
+		}
+
+		/// <summary>#708 follow-up (user's own explicit ask - multi-floor buildings): confirms
+		/// the roof fix above does NOT also unblock a genuine cross-floor sightline - someone on
+		/// the ground floor still can't see straight through the floor/ceiling separator to
+		/// someone standing on top of it on the floor above. Same vertical same-column mechanism
+		/// as TestCheckLosThroughSameColumnFloor above, just using the real Roof-flagged model
+		/// instead of a plain wall, and placing the upper character realistically ON TOP of the
+		/// floor piece (Z = floor's own Z + height) rather than an arbitrary offset.</summary>
+		[SteamFunction]
+		public static void TestFloorBetweenLevelsStillBlocksCrossFloorLos(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			ItemDef roofDef = (ItemDef) ThingDef.FindItemDef(RoofModel);
+			VerificationTestUtils.CleanupNearbyItems(self, roofDef, 20);
+
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC groundFloor = (NPC) npcDef.Create(self.X, self.Y, self.Z, self.M);
+			NPC upperFloor = (NPC) npcDef.Create(self.X, self.Y, self.Z + BuildingHeight + 3, self.M);
+
+			bool openBeforeFloor = groundFloor.CanInteractWith(upperFloor).Allow;
+
+			roofDef.Create(self.X, self.Y, self.Z + BuildingHeight, self.M);
+
+			bool openAfterFloor = groundFloor.CanInteractWith(upperFloor).Allow;
+
+			Console.WriteLine("CROSS_FLOOR_LOS_TEST: openBeforeFloor=" + openBeforeFloor + " openAfterFloor=" + openAfterFloor);
+		}
+
+		/// <summary>#708 follow-up (multi-floor sanity check): two characters BOTH standing on
+		/// the SAME upper floor - with the very floor they're standing on (an intermediate
+		/// roof-flagged tile between them, same as the room below's own ceiling) directly on
+		/// their shared sightline - must see each other at range exactly like two characters on
+		/// open ground do. Confirms the fix's new band (starting at the floor's own Z, not
+		/// extended down) still correctly excludes anyone standing ON TOP of that same surface
+		/// (Z = floor's own Z + height, same convention used throughout this engine for "standing
+		/// on a surface").</summary>
+		[SteamFunction]
+		public static void TestRoofOverSameFloorDoesNotBlockLos(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			ItemDef roofDef = (ItemDef) ThingDef.FindItemDef(RoofModel);
+			VerificationTestUtils.CleanupNearbyItems(self, roofDef, 20);
+
+			int floorTopZ = self.Z + BuildingHeight + 3; //standing ON TOP of the floor piece below
+			NPCDef npcDef = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			NPC a = (NPC) npcDef.Create(self.X, self.Y, floorTopZ, self.M);
+			NPC b = (NPC) npcDef.Create(self.X + 6, self.Y, floorTopZ, self.M);
+
+			roofDef.Create(self.X + 3, self.Y, self.Z + BuildingHeight, self.M);
+
+			bool openOnSameFloor = a.CanInteractWith(b).Allow;
+
+			Console.WriteLine("SAME_FLOOR_LOS_TEST: openOnSameFloor=" + openOnSameFloor);
+		}
 	}
 }
