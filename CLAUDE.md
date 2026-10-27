@@ -1,5 +1,92 @@
 # moriaengine — working state
 
+## DONE (2026-10-27): 3 real NPC-combat bugs found via live testing of c_titan/c_titan_ranger/c_titan_mage (#709 PR #710, #711 PR #713, #708 PR #714) — #712 filed, not yet fixed
+
+User live-tested two scenarios ordering `c_titan_ranger`/`c_titan_mage` to kill a `c_titan`:
+(1) titan inside a house, rangers outside — correctly used A* to get in, but walked all the way
+to melee instead of standing off at range; (2) titan and ranger outside, 5 tiles apart — ranger
+fired twice then stopped attacking entirely. All three investigated live (real repro, not
+guessed) per the user's explicit "don't make assumptions" instruction, surfacing a THIRD,
+previously-unknown bug along the way.
+
+**#709 (PR #710) - ranged NPC gets permanently stuck mid-fight.** Root cause: `WeaponSkillDef.
+On_Stroke`'s "arrow appears in target's backpack" branch set a duped projectile's `Amount` AFTER
+moving it into the container via `.Cont =` — but `Cont`'s setter auto-merges a stackable item
+into an already-matching stack and **deletes the incoming item** as part of that merge
+(`AbstractItem.TryStackToAnyInside`/`Trigger_StackInCont`'s `toStack.InternalDelete()`). #667
+(2026-10-26) made arrows/bolts/scrolls stackable, so once the target's backpack already held one
+dropped arrow from an earlier shot, the NEXT shot's dupe got silently deleted mid-merge, then
+crashed on the very next line trying to set `Amount` on the now-deleted object — aborting the
+whole stroke uncaught and leaving the NPC's combat sequence permanently stuck (`CurrentSkill`
+cleared, never resumed, even though `WeaponSkillTargetQueuePlugin` still considered it "actively
+engaging"). Fixed by setting `Amount` before `Cont`/`.P()` on both projectile-drop branches.
+Confirmed via a real 60s sustained-fire test: crashes and stalls within ~15s pre-fix (8 shots),
+fires continuously post-fix (28+ shots, zero crashes).
+
+**#711 (PR #713) - NPC attack never scaled by stats, so a weak-attack NPC could deal exactly 0
+damage forever.** Found while verifying #709's fix — the titan's HP never moved across 28 real
+landed-looking shots. Root cause: `CombatCalculator.CalculateArmorClassEffect`'s formula is a
+hard subtractive floor (`max(0, (attack-armor)*damageMod)`). The player branch already defends
+against this via Tactics/Anatomy/ArmsLore/Str attack scaling (confirmed: Tactics/Anatomy/ArmsLore
+contribute 0 in practice, since no real content sets their `effect=` — this is really Str-driven)
+— NPCs never got it, just the bare `.def` `WeaponAttack` value. Direct numbers:
+`c_titan_ranger`'s computed attack (70.4) was LESS than `c_titan`'s flat `ArmorVsM` (80) —
+deterministic 0 damage, not RNG. **User's explicit choice, confirmed before implementing given
+the scale of the change**: apply the identical stat-scaling formula to NPCs too (not a dampened
+NPC-only modifier, not a softened armor formula) — accepting that most monsters have far higher
+Str than a player, so NPC damage output goes up broadly across the board (e.g. `c_titan`'s own
+attack on a weaker-armored target jumps from ~141 to ~670 per swing). A/B-verified a 27-test
+combat sweep (CombatDepthTests/CombatScenarioTests/RangerCombatTests/ArmorEffectTests) —
+all 10 failures seen reproduce identically with this change reverted, confirmed pre-existing.
+
+**#708 (PR #714) - a roof overhead blocked ground-level ranged sight at any distance beyond
+melee.** The user isolated this precisely via live testing (not something static code reading
+would have found): same walls, same attacker/defender — ranged attacks worked fine right up
+until the defender stepped from an open-sky area into a roofed area, at which point the attacker
+had to close to melee too. Root cause: `IsLosBlockedAt`/`IsVerticalLosBlockedBetween`'s Noshoot-
+static blocking band extends down to real terrain Z (`Math.Min(s.Z, landZ)`, #692's own wall fix
+— correct for a WALL, which should block floor-to-ceiling even sitting on a raised platform) —
+but this same treatment also applied to real `TileFlag.Roof`-flagged statics (confirmed via a
+live `ItemDispidInfo` scan — real roof-edge pieces carry both `Roof` and `Noshoot`), turning an
+overhead roof into a full-height blocker for an ordinary ground-level ray between two characters
+both standing well below it. This also explains why it only broke down at range, not adjacent:
+`CanSeeLosFromTo`'s main loop already skips both endpoints' own columns, so once adjacent there's
+no intermediate roofed column left to wrongly block the ray. Fixed: a Roof-flagged static's band
+now starts at its own real `s.Z`, never extended down to the ground. **Multi-floor buildings
+explicitly verified** (user's own follow-up ask, since the same fix touches the mechanism real
+floor/ceiling separators also use) — a genuine cross-floor sightline straight through the
+separator stays correctly blocked; two characters on the same upper floor (with that very
+floor's own roof-flagged tile on their shared sightline) still see each other at range, same as
+on open ground.
+
+**Investigation methodology notes, worth remembering for future NPC-AI/LOS work**:
+- A multi-tile synthetic wall-with-a-gap (to force a real A* detour over a longer distance)
+  reliably failed in this sandbox even at a `.TestTeleportToOpenGround`-selected "open" spot —
+  that helper only guarantees the immediate spawn tile is clear of statics within 7 tiles, not
+  that a path 10+ tiles out is free of real terrain obstacles. A single-tile wall (the shape
+  `NpcRangedApproachTests` already uses successfully) is reliable; longer synthetic structures
+  are not, in this sandbox.
+- `NPCAiTimer.GiveUpRange` (12 tiles) silently drops an explicit `EngageTarget` order on the
+  very next AI tick if the target is already farther than that when the order is given — before
+  the order ever gets a chance to drive any movement. A test placing its target too far away
+  will see the NPC switch to autonomous aggro against a nearby player instead, which looks
+  nothing like the intended scenario and cost real debugging time here.
+- `ThingDef.GetByModel(rawModelNumber)` can resolve to an `NPCDef` instead of the `ItemDef` you
+  want, for a raw dispid number — use `ThingDef.FindItemDef(model)` when you specifically need
+  the item side.
+- Adding new Facts to an existing shared-account/collection test file can push it over a
+  reconnect-race flake threshold even when each individual new Fact is logically sound (same
+  class of bug this repo has hit before) — confirmed by A/B: the 3 new roof-LOS Facts flaked
+  reliably when added to `LineOfSightBlockingTests.cs`'s existing shared account, and passed
+  reliably every time once moved to their own dedicated collection/account
+  (`RoofLosTests.cs`) instead of trying to fix the race itself.
+
+**#712 filed, NOT fixed** - `ArmorEffectTests.ArmorReducesPvMDamage`/`ArmorNeverHealsDefender`
+fail on plain unmodified `main` (confirmed via A/B, unrelated to #711's own change) - a real,
+unexplained regression in two #96/#511/#514 regression tests, found incidentally while
+A/B-verifying #711. Not yet investigated - needs a fresh session to dig into what `avgArmored`/
+`avgUnarmored`/`before`/`after` are actually coming out as.
+
 ## DONE (2026-10-27): tag.mount resolved to wrong value + mount survived rider's death (#703 PR #704, #705 PR #706)
 
 Resumed after a session crash - the uncommitted work in progress turned out to be deeper
