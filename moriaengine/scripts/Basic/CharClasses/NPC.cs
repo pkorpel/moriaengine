@@ -1168,15 +1168,41 @@ namespace SteamEngine.CompiledScripts {
 					mount.Color = def.MountColor;
 				}
 				this.Mount = mount;
+				this.AutoSpawnedMount = mount;
+			}
+		}
+
+		private static readonly TagKey autoSpawnedMountTK = TagKey.Acquire("_npcAutoSpawnedMount_");
+
+		/// <summary>#705 - the mount creature spawned for THIS NPC via NPCDef.MountCharDef
+		/// (#700/#703's tag.mount), captured separately from AbstractCharacter.Mount itself -
+		/// Character.CauseDeath already calls Dismount() before On_Death ever runs, so by the
+		/// time a dying NPC could check this.Mount here the rider/mount relationship is already
+		/// severed. Used by On_Death below to delete the mount along with its rider, instead of
+		/// leaving it behind as an ordinary, free, tamable/lootable creature - killing a mounted
+		/// guard should not be a way to farm a rare mount species.</summary>
+		private AbstractCharacter AutoSpawnedMount {
+			get {
+				return this.GetTag(autoSpawnedMountTK) as AbstractCharacter;
+			}
+			set {
+				this.SetTag(autoSpawnedMountTK, value);
 			}
 		}
 
 		/// <summary>Grants monster-kill experience to a player killer - see ExperienceReward
 		/// (#260, rolled once at creation, not re-rolled here) and LevelingSystem.AddExperience
 		/// (#127). NPCs themselves never level (Erebor's own level-up logic only ever runs "if
-		/// (isplayer)") so there's nothing else to do here for the NPC side.</summary>
+		/// (isplayer)") so there's nothing else to do here for the NPC side. Also deletes this
+		/// NPC's auto-spawned mount (#705), if any - see AutoSpawnedMount's own doc comment.</summary>
 		public override void On_Death(Character killedBy) {
 			base.On_Death(killedBy);
+
+			AbstractCharacter autoMount = this.AutoSpawnedMount;
+			if ((autoMount != null) && !autoMount.IsDeleted) {
+				autoMount.Delete();
+			}
+
 			Player player = killedBy as Player;
 			if (player != null) {
 				int reward = this.ExperienceReward;
