@@ -1,5 +1,59 @@
 # moriaengine — working state
 
+## DONE (2026-10-27): per-monster ranged-attack/spellcast range override (#716, PR #717) — #719 filed, not yet fixed
+
+Follow-up feature request after the #708/#709/#711 combat investigation. User wanted a
+monster's ranged-attack range overridable per-NPCDef, defaulting to the existing shared
+GM-tunable value but letting content give a specific monster a bigger (or smaller) range.
+
+**Weapon range (bow/crossbow)**: `NPCDef.WeaponRange` already existed and was already read by
+`CombatCalculator`'s NPC branch - but setting it explicitly used to **skip**
+`SetRangedWeaponRange` entirely (gated on `WeaponRange <= 1`), leaving `StrikeStartRange`/
+`StopRange` at NPC.ct's own melee-shaped defaults (5/10) while the real range sat at the
+configured value - confirmed via code reading (no real content sets this field today, so this
+was a latent, not yet triggered, deadlock) that this would make `NPCAiTimer.Fight` stop
+approaching at the bigger configured range while `WeaponSkillDef.On_Stroke`'s Drawing phase
+never transitions to Striking (still needs the stale, smaller `StrikeStartRange`) - the NPC
+would stand at the configured range forever, never actually firing. Fixed: any configured
+`WeaponRange > 1` now always flows through `SetRangedWeaponRange`, so `StrikeStartRange`/
+`StopRange` stay consistent regardless of whether the range came from the global default or a
+per-monster override.
+
+**Spellcaster range**: new `NPCDef.SpellCastRange`, replacing `NPCAiTimer`'s hardcoded
+`SpellCastRange = 10` constant as the one true default - consulted at both call sites
+(`Fight()`'s approach decision and `TryCastSpell`'s own range gate).
+
+**Set via plain `.def` content**, same mechanism as `MoveRate`/`TamingDifficulty` - no
+`.settings` GM-tunable needed, the existing shared defaults remain the baseline:
+```
+WeaponRange = 15        // bow/crossbow NPCs
+SpellCastRange = 15     // caster NPCs
+```
+
+**Test-reliability lessons from building this, worth remembering for any future NPC-movement-
+or-LOS-dependent test**: a long (15-tile) test distance from a `.TestTeleportToOpenGround` spot
+hit real, unrelated LOS-blocking terrain beyond that helper's own 7-tile-radius guarantee -
+first version of the caster-range test silently passed/failed for the wrong reason (LOS
+blocked regardless of range) until dumping the real `hasLos`/`distance`/`effectiveRange` values
+directly exposed it. Fixed by using a short (6-tile) distance instead - the same magnitude
+`NpcRangedApproachTests` already uses successfully - combined WITH the open-ground teleport
+(the bare default spawn point is its own narrow/boxed-in antechamber, #210, where even short
+movement can fail for unrelated reasons - neither extreme alone was reliable, needed both).
+Also: a careless two-file `mv` during an A/B comparison (same destination basename for two
+different source files) silently overwrote one real file with the other's content - recovered
+from conversation context rather than losing the work, but worth being more careful with
+distinct destination names next time.
+
+**Found via A/B-verifying this PR, NOT caused by it**: a 6-test combat sweep (`RangerCombatTests`/
+`MysticCombatTests`/`RangedCombatSustainTests`) showed failures that all reproduced identically
+with #716 reverted. One (`RangedCombatSustainTests.RangerKeepsAttackingAcrossManyShotsWithout
+GettingStuck`, #709's own regression test) was a real false-failure in the test itself - #711
+(shipped earlier the same day) made NPC damage real, so a 40s sustained fight can now
+legitimately kill the titan before the test's last checkpoint; fixed by only checking "still
+engaging" when the titan is still alive (PR #718). **The other 5 (`RangerCombatTests` x2,
+`MysticCombatTests` x3) are filed as #719, NOT yet root-caused** - likely connected to #711's
+timing but unconfirmed, left for a future session.
+
 ## DONE (2026-10-27): 3 real NPC-combat bugs found via live testing of c_titan/c_titan_ranger/c_titan_mage (#709 PR #710, #711 PR #713, #708 PR #714) — #712 filed, not yet fixed
 
 User live-tested two scenarios ordering `c_titan_ranger`/`c_titan_mage` to kill a `c_titan`:
