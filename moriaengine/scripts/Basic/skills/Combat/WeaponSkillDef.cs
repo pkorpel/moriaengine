@@ -197,13 +197,28 @@ namespace SteamEngine.CompiledScripts {
 							switch (Globals.dice.Next(3)) {
 								case 0://arrow appears on ground
 									Projectile onGround = (Projectile) projectile.Dupe();
-									onGround.P(target);
 									onGround.Amount = 1;
+									onGround.P(target);
 									break;
 								case 1://arrow appears in targets backpack
+									//#709 - real-user-reported: a ranged NPC fired a few shots then
+									//stopped attacking entirely. Root cause: Amount was set AFTER
+									//Cont, but the Cont setter auto-merges a stackable item into an
+									//already-matching stack in the destination container
+									//(AbstractItem.TryStackToAnyInside/Trigger_StackInCont) and
+									//DELETES the incoming item as part of that merge
+									//(toStack.InternalDelete()) - #667 made arrows/bolts/scrolls
+									//stackable, so once the target's backpack already held one
+									//dropped arrow from an earlier shot, every subsequent shot's
+									//dupe got silently deleted mid-merge, then crashed on the very
+									//next line trying to set Amount on the now-deleted object -
+									//aborting the whole stroke uncaught and leaving the NPC's combat
+									//sequence stuck. Setting Amount first means a merge (if any)
+									//operates on the already-correct value, and nothing after this
+									//line touches the (possibly now-deleted) reference.
 									Projectile inPack = (Projectile) projectile.Dupe();
-									inPack.Cont = target.Backpack;
 									inPack.Amount = 1;
+									inPack.Cont = target.Backpack;
 									break;
 								//else arrow disappears
 							}
