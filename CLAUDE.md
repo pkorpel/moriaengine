@@ -10,7 +10,7 @@ this is broken or half-done. **Nothing is queued right now** - if the user doesn
 follow-ups (per-NPC mana/aggression tuning, group/pack coordination - both deliberately scoped
 out, see the DONE entry) next session, ask what they want to pick up.
 
-## DONE (2026-10-27): #734 - NPC combat-AI decision loop overhaul (utility-scored spell choice) (PR TBD)
+## DONE (2026-10-27): #734 - NPC combat-AI decision loop overhaul (utility-scored spell choice) (PR #737)
 
 **Process followed exactly as the user asked**: analyzed the system, researched how other games
 structure combat AI (Elden Ring/FromSoft FSMs, industry utility-AI patterns) per the user's own
