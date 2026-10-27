@@ -1,5 +1,18 @@
 # moriaengine — working state
 
+## SESSION HANDOFF (2026-10-27): user confirmed #724/#721 fix live, restarting session
+
+User tested PR #725 live after it shipped and confirmed "this is better now" - the
+ranged-NPC-closes-to-melee bug (originally #708, then #721, then #724) is resolved
+across both real locations they tried. No further repro reports as of this session's
+end. **If the user reports this symptom again at a THIRD location**, re-read the #721
+and #724 entries below first (same live-repro-at-exact-coordinates methodology, dump
+real static/tiledata along the path, check `hasLos`/`GetNoshootBandLow`/`GetNoshootHeight`)
+rather than assuming the fix is incomplete - but also don't rule out a genuinely new,
+different tiledata flag combination no one has hit yet (the fix is scoped to `Surface`/
+`Roof`, not every possible flag). Nothing else queued right now - ask the user what to
+pick up next.
+
 ## DONE (2026-10-27): #724 - generalized the #721 Surface-floor LOS fix to the band's LOW bound too (PR #725)
 
 Follow-up to #721 (right below this entry) - user re-tested in a different house with
