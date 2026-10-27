@@ -1,5 +1,61 @@
 # moriaengine — working state
 
+## DONE (2026-10-27): tag.mount resolved to wrong value + mount survived rider's death (#703 PR #704, #705 PR #706)
+
+Resumed after a session crash - the uncommitted work in progress turned out to be deeper
+than just `tag.mountcolor` (which #700 below had left as "no engine field exists"). Two
+issues shipped same session, both found/fixed/tested/shipped following the normal
+issue-first workflow (crashed session had the code written but never got to branch/PR it).
+
+**#703 - `tag.mount` itself was resolving to the WRONG value.** The real archive's
+`tag.mount` names a `T_EQ_HORSE` ITEM (e.g. `i_mt_horse_brown_dk`), not a mount creature
+directly - the converter was grabbing that item's own `.Model` and writing it as the
+guard's own `NPCDef.MountItem`, which has zero visual effect (`AbstractCharacter.
+IsMountable`/the draw packet only ever read `MountItem` off a RIDDEN character, never off
+the rider itself). The item's `TDATA3` field names the real mount CREATURE chardef (e.g.
+`c_horse_brown_dk`) that should actually be spawned and ridden. Fixed: `ConvertedItemDef`
+tracks `TData3`; `ConvertedCharDef`'s `tag.mount` handling resolves through it to the real
+chardef and emits `MountNpc=`; new `NPCDef.MountCharDef` (`.def` field `mountnpc=`) spawns
+and rides the real creature in `NPC.On_Create`. `tag.mountcolor` now has a real place to
+land once this works - the SPAWNED mount's own `Color` (`NPCDef.MountColor`, same generic
+`Defs:`/`FieldValue` pipeline `BloodColor` already uses), not the guard's own skin tone.
+Regenerated archive: 15 files, `MountItem=0xHEX` -> `MountNpc=c_<realname>` plus previously
+comment-dropped `tag.mountcolor` lines now resolving to real `MountColor=` values.
+
+**Real bug caught while verifying, not shipped blind**: the test's reporting helper read
+`mount.Def.Defname` (returns the raw `c_0xHEX` header name for a hex-keyed block, here
+`mounts.def`'s `[NPCDef 0xcc]`) instead of `PrettyDefname` (resolves to the real
+`DEFNAME=c_horse_brown_dk` alias) - same already-documented Defname-vs-PrettyDefname class
+as `AbstractSkillDef`/item-dupe-group lookups elsewhere in this file. First test run failed
+with `mount=c_0xcc/0x3ea2/0x729` instead of the expected `c_horse_brown_dk/...` - everything
+else (MountItem, Color) was already correct, only the species name was wrong, and only in
+the test's OWN reporting code, not production.
+
+**#705 - found via the user's own live testing of #703/#704 the same day**: killed a
+mounted guard and its horse stayed behind, fully alive - tamable, killable, lootable like
+any other NPC. Real exploit risk, not cosmetic: would let players farm rare mount species
+(e.g. `c_horse_brown_dk`) for free by repeatedly killing mounted guards. Root cause:
+`Character.CauseDeath` already calls `this.Dismount()` BEFORE `Trigger_Death`/`On_Death`
+ever runs - by the time a dying NPC's `On_Death` could look at `this.Mount`, the
+relationship is already severed (nulled out, mount reconnected as an independent
+character). Fixed: new `NPC.AutoSpawnedMount` tag captures the mount reference separately
+at creation time (right where `NPCDef.MountCharDef` spawns it), independent of the
+`Mount`/`Dismount()` relationship - `NPC.On_Death` deletes it if still alive. Only affects
+mounts spawned via this exact mechanism, no other mount relationship (e.g. a player's own
+tamed/ridden pet) is touched.
+
+Both verified via `Tests/Protocol/NpcGuardContentTests.cs` against the real converted-
+content guard `c_vguard_rohan_hala_jezdec` - #705's fix in particular was red/green
+confirmed (reverting just the `NPC.cs` change reproduces the exact reported symptom, mount
+survives death). Fast tier 53/53 both times.
+
+**CI note**: both PRs (#704, #706) landed with `gh pr merge --admin` after the PR check
+showed zero runner allocated (`conclusion: null`, empty `steps`, instant "failure" with no
+log output) - same recurring minutes-exhausted signature documented elsewhere in this file.
+For #706 specifically, explicitly asked the user first rather than reusing the earlier
+#704 admin-merge as blanket precedent - the permission system flagged that each admin-merge
+decision needs its own authorization, not a standing policy derived from the last one.
+
 ## DONE (2026-10-26): converter dropped mounted-NPC equipment, guards defaulted to Calm (#700, PR #701)
 
 User tried spawning a real converted-content guard (`c_vguard_rohan_hala_jezdec`) and found
