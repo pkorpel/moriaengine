@@ -45,9 +45,16 @@ namespace SteamEngine.Tests.Protocol {
 
 				string lastCheck = LastLineContaining(output, "RANGED_SUSTAIN_TEST: check=4");
 				Assert.Contains("rangerDead=False", lastCheck);
-				Assert.Contains("titanDead=False", lastCheck);
-				Assert.Contains("engaging=True", lastCheck);
-				Assert.DoesNotContain("currentSkill=none", lastCheck);
+
+				//#711 (shipped after this test) made NPC damage output real/scaled-by-stats -
+				//a sustained 40s fight can now legitimately kill the titan before check=4, which
+				//is a sign combat is working, not evidence of the #709 stuck-sequence bug this
+				//test actually guards against. Only check "still actively engaging" when the
+				//titan is still alive to be engaged.
+				if (!lastCheck.Contains("titanDead=True")) {
+					Assert.Contains("engaging=True", lastCheck);
+					Assert.DoesNotContain("currentSkill=none", lastCheck);
+				}
 			}
 		}
 
