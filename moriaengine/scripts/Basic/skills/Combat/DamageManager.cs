@@ -188,6 +188,10 @@ namespace SteamEngine.CompiledScripts {
 				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
 				MonsterSpecialAttacks.TryApplyStun(attacker, defender);
 
+				//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
+				//the pre-armor swing value, so this must run after CauseDamage above.
+				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
+
 				swingArgs.InternalSetFinalDamage(actualDamage);
 
 				// Testing combat messages (CombatSettings.showCombatMessages) - the only

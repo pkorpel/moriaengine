@@ -243,8 +243,12 @@ Name = "(e_no_player_attack)"
 [PassiveAbilityDef a_tevent_e_noport]
 Name = "(e_noport)"
 
-[PassiveAbilityDef a_tevent_e_npc_bleed]
-Name = "(e_npc_bleed)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//BleedAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - rolled on
+//a landed melee swing, applies NpcBleedEffectPluginDef (scripts/Basic/AbilitiesAndTalents/
+//NpcBleedEffect.cs/.ct/.scp), see DamageManager.ProcessSwing's own TryApplyBleed call.
+[BleedAbilityDef a_tevent_e_npc_bleed]
+Name = "Bleeding Bite"
 
 [PassiveAbilityDef a_tevent_e_npc_blow_up]
 Name = "(e_npc_blow_up)"
