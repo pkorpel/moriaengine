@@ -172,36 +172,39 @@ namespace SteamEngine.Regions {
 			return false;
 		}
 
-		/// <summary>#708 - a Noshoot-flagged static's blocking band normally extends down to the
-		/// real terrain Z at its own column (see IsLosBlockedAt's own #692 writeup) - correct for
-		/// a WALL (a vertical plane that should block floor-to-ceiling even when its own
-		/// registered base sits on a raised platform), but wrong for a ROOF (a thin horizontal
-		/// plane far overhead) - extending a roof's band down to the ground made it block an
-		/// ordinary ground-level ray between two characters both standing well below the actual
-		/// roof, real-user-reported as "a ranged NPC has to walk all the way to melee range to
-		/// attack a target standing under any roof, but not in the open". A Roof-flagged static
-		/// (the real, separate TileFlag.Roof - "Don't fall through me!") uses its own Z as the
-		/// lower bound instead, so it only blocks a sightline that actually tries to pass near its
-		/// own real height, never one far beneath it.</summary>
+		/// <summary>#708/#721 - a Noshoot-flagged static's blocking band normally extends down
+		/// to the real terrain Z at its own column, and pads a zero-height static up to a full
+		/// 1-unit-tall slab (see IsLosBlockedAt's own #692 writeup) - both correct for a WALL (a
+		/// vertical obstacle that should block floor-to-ceiling even on a raised platform, and
+		/// still block something even with messy zero-height source data), but wrong for anything
+		/// that's really a THIN, WALKABLE, HORIZONTAL surface - a roof far overhead, or any one of
+		/// countless real floor/platform/pavement tiles (every one of which carries the real UO
+		/// tiledata `Surface` flag - "you can stand on this"). #708 first fixed this narrowly for
+		/// just `Roof`-flagged statics; #721 then found the SAME mechanism breaking ordinary floor
+		/// tiles at ground level (same Z as both characters - the padded-up band always covered
+		/// their own stand height) and fixed the height-padding half for `Surface` too, but missed
+		/// a second real-map case: a `Surface` floor/platform sitting ABOVE two characters standing
+		/// on the raw ground below it still had its band extended all the way DOWN to that ground
+		/// (the same "wall on a raised platform" extension #692 added), blocking an ordinary
+		/// same-level shot between them. Generalized: `Roof` OR `Surface` (i.e. anything you stand
+		/// ON rather than walk INTO) now uses its own literal Z range - no ground-extension, no
+		/// height-padding - so this covers every real flooring/platform/pavement tile by its real
+		/// tiledata flag instead of needing a per-model fix. Only a true wall/obstacle (Noshoot,
+		/// but not Surface/Roof) still gets the old ground-extension + minimum-1-height
+		/// treatment.</summary>
+		private static bool IsThinWalkableSurface(TileFlag flags) {
+			return TileData.HasFlag(flags, TileFlag.Roof) || TileData.HasFlag(flags, TileFlag.Surface);
+		}
+
 		private static int GetNoshootBandLow(TileFlag flags, int staticZ, int landZ) {
-			if (TileData.HasFlag(flags, TileFlag.Roof)) {
+			if (IsThinWalkableSurface(flags)) {
 				return staticZ;
 			}
 			return Math.Min(staticZ, landZ);
 		}
 
-		/// <summary>#721 - a walkable `Surface` static (an ordinary floor/ground decoration, not a
-		/// wall) with a tiledata `Height` of 0 was still treated as occupying a full 1-unit-tall
-		/// blocking slab (the `Math.Max(height, 1)` minimum below, originally meant so a height-0
-		/// WALL still blocks something despite messy source height data) - real-user-reported as
-		/// "two characters standing a few tiles apart on open, flat, paved ground still can't see
-		/// each other" once the floor tile they're both standing ON (same Z as their own feet)
-		/// counted as solid right at that exact Z. A `Surface` tile is something you stand ON TOP
-		/// of by definition - it should never block a sightline at its own real height when that
-		/// height is genuinely 0; a non-walkable (wall/other) static still gets the old minimum-1
-		/// floor so an all-zero-height obstacle still blocks at least something.</summary>
 		private static int GetNoshootHeight(TileFlag flags, int height) {
-			if (TileData.HasFlag(flags, TileFlag.Surface)) {
+			if (IsThinWalkableSurface(flags)) {
 				return height;
 			}
 			return Math.Max(height, 1);
