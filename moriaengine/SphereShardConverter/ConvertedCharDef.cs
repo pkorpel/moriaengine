@@ -615,7 +615,7 @@ namespace SteamEngine.Converter {
 			if (name == "tag.npc_stun_chance" || name == "tag.npc_stun_time" || name == "tag.npc_stun_delay" ||
 					name == "tag.npc_critic_chance" || name == "tag.npc_critic_dmg" ||
 					name == "tag.roundattack_chance" || name == "tag.roundattack_damage" || name == "tag.roundattack_time" ||
-					name == "tag.pullall_distance") {
+					name == "tag.pullall_distance" || name == "tag.npc_bleed") {
 				if (this.IsPlayerDefByName) {
 					return;
 				}
@@ -651,7 +651,11 @@ namespace SteamEngine.Converter {
 				{ "tag.roundattack_chance", "RoundattackChance" },
 				{ "tag.roundattack_damage", "RoundattackDamage" },
 				{ "tag.roundattack_time", "RoundattackCooldown" },
-				{ "tag.pullall_distance", "PullDistance" }
+				{ "tag.pullall_distance", "PullDistance" },
+				//#bleed - real archive unit is permille (0-1000) same as the other chance
+				//tags above, confirmed via Bleed.scp's own comment ("tag.npc_bleed=250 //
+				//25% chance ... | default ~ 100%").
+				{ "tag.npc_bleed", "BleedChance" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum

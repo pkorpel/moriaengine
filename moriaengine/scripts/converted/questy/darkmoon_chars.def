@@ -43,6 +43,7 @@ MaxHits = 30000 32000
 MaxStam = 376 450
 MaxMana = 1200
 Experience = 1550 2000
+BleedChance = 300 //30% 
 NaturalDamageType = DamageType.Slashing|DamageType.Physical|DamageType.Fire
 Parry = 1900 2000
 MagicResist = 1500

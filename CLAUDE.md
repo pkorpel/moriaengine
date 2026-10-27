@@ -1,17 +1,70 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-27): monster special-attack abilities batch (stun/critic/roundattack) SHIPPED - bleed deferred as its own follow-up, read DONE entry below if picking this back up
+## SESSION HANDOFF (2026-10-27): all 4 top-frequency teventStubs abilities SHIPPED (stun/critic/roundattack+pullall/bleed) - nothing queued, read DONE entries below if picking this back up
 
 **Where things stand:** #708/#721/#724/#728/#730-732/#734(+follow-up) are all shipped (see
-their own DONE entries below). On top of that, this same session also shipped real behavior
-for 3 of #653's zero-effect `teventStubs.scp` placeholder abilities - `e_npc_stun`/
-`e_npc_critic`/`e_npc_roundattack`(`_pullall`) - see the DONE entry just below for the full
-writeup. **`e_npc_bleed` is explicitly NOT done** - it needs a real new stacking-DoT plugin
-(the archive's own bleed mechanism re-applies/stacks over time, unlike the other 3's simple
-"roll on hit" shape), deliberately scoped out of this batch as its own follow-up. **Nothing
-else is queued** - if the user doesn't mention bleed or more `teventStubs` abilities (145
-others still zero-effect, see the DONE entry's own frequency table) next session, ask what
-they want to pick up.
+their own DONE entries below). This same session also shipped real behavior for ALL 4 of the
+top-frequency `teventStubs.scp` placeholder abilities from #653 - `e_npc_stun`/`e_npc_critic`/
+`e_npc_roundattack`(`_pullall`) (PR #741) and now `e_npc_bleed` too (see the DONE entry just
+below for the full writeup) - the earlier "bleed deferred" note from this same handoff is
+resolved. **Nothing else is queued** - 144 other, lower-frequency `teventStubs` abilities are
+still zero-effect stubs (named-boss mechanics, elemental auras, etc. - see the #653 DONE
+entry's own frequency table). If the user doesn't mention picking more of those next session,
+ask what they want to pick up.
+
+## DONE (2026-10-27): e_npc_bleed given real behavior (PR TBD)
+
+**Process followed exactly as the user asked**: full analysis (pulled the real archive
+mechanism - `i_krvaceni` memory item, `more1h`/`more1l`/`more2` stacking, quadratic taper,
+`bleedpower = actualDamage/3`), then found this engine ALREADY has a complete working bleed
+DoT built for the player "Bleeding Strike" ability (`BleedingEffectPluginDef`/
+`FadingEffectDurationPlugin`) - and confirmed `ResistBleed` is ALREADY wired in generically
+(`DamageManager.GetResistModifier` applies it automatically whenever damage carries the
+`Bleed` flag, e.g. `DamageType.PhysicalBleed`), directly answering the user's "incorporate
+bleeding resists" ask for free. Asked ONE real architecture question - reuse the player
+ability's shared DoT engine vs. build monster bleed as its own independent one - **user chose
+independent**, so monster bleed gets its own tuning (TickInterval=2s/MaxTicks=10/MaxPower=150,
+not shared with the thief ability's own TickInterval=5s/MaxTicks=20/MaxPower=100), built on
+the SAME generic `FadingEffectDurationPlugin`/`Def` base class (stacking/fading/resist/auto-
+remove-at-0-damage machinery reused, just a separate `.ct`/`.scp`/Plugin pair - new files
+`NpcBleedEffect.ct`/`.cs`/`.scp`).
+
+**Shipped**: `BleedAbilityDef` (default Chance {1000,1000} = 100%, matching the real archive's
+own "unset tag = always bleeds, the tag only ever LOWERS it" semantics) replaces the
+`a_tevent_e_npc_bleed` stub. `NPCDef.BleedChance` per-species override (same two-layer
+precedent as the other 3 abilities) + a new `tag.npc_bleed` `ProcessCreateTriggerLine` case in
+the converter recovered real per-species values (confirmed 10%-100% variance across ~119
+monsters) - 27 `scripts/converted/*.def` files picked up real `BleedChance` lines via a real
+converter run + hand-reviewed diff, same 2 files with OTHER unrelated pre-existing staleness
+(`special.def`/`aldaron.def`, see #653's own DONE entry) surgically skipped again.
+`DamageManager.ProcessSwing`'s `TryApplyBleed` hook runs AFTER `CauseDamage` (needs the real
+landed-damage amount to compute `effectPower = actualDamage/3`, not the pre-armor swing
+value) - same landed-hit-only gate the other 3 abilities use.
+
+**Real lessons from this pass** (both already in memory, both actually HIT again this time -
+confirmed the lessons are worth having):
+- Repeated the exact SAME CRLF-line-ending mistake on `SphereShardConverter/ConvertedCharDef.cs`
+  via a Python text-mode edit (the file was CRLF; the #653 batch had already taught this
+  lesson for `NPC.cs` specifically, but it didn't generalize to "check EVERY file before a
+  python script touches it" until it bit a second file). Caught immediately this time via the
+  habit of checking right after any python-based edit, before it could ship - diff stayed
+  minimal (6 insertions/2 deletions). All `NPC.cs` edits this pass used the `Edit` tool instead
+  (safe) and stayed clean.
+- Forgot `using SteamEngine.Common;` in the new `NpcBleedEffect.cs` (needed for `Loc<T>`) -
+  a trivial one-line fix, caught immediately by the first build.
+
+**Tests**: `NpcBleedTests` (both tiers) - deterministic, calls
+`MonsterSpecialAttacks.TryApplyBleed` directly with an explicit damage value (same precedent
+as stun/critic). Covers: bleed applies with the expected `effectPower` (damage/3), stacks
+across repeated hits, and a fully-resistant target's very next tick deals 0 damage and the
+effect self-removes (`On_FadingEffectTick` called directly, no need to wait out a real tick
+interval). Fast tier 53/53; `MonsterSpecialAttacksTests`/`NpcMultiSpellTests`/
+`NpcSupportOnlySpellWeavingTests`/`NpcBeneficialSpellTests`/`NpcRangeOverrideTests` all still
+pass unchanged.
+
+**All 4 top-frequency teventStubs abilities are now done.** The other ~144 lower-frequency
+stub abilities (named-boss mechanics, elemental auras, etc.) remain untouched zero-effect
+stubs - nothing queued for them unless the user asks.
 
 ## DONE (2026-10-27): monster special-attack abilities (stun/critic/roundattack+pullall) given real behavior (PR #741, line-ending regression fixed in PR #742)
 
