@@ -521,6 +521,17 @@ namespace SteamEngine.CompiledScripts {
 			"i_beard_short_med", "i_beard_long_med", "i_beard_vandyke"
 		};
 
+		/// <summary>#728 follow-up - the identical native Sphere "roll me something" mechanism
+		/// above also covers "random_pants"/"random_shoes"/"random_skirt" (confirmed widespread
+		/// across vendors.def/guards.def/etc - same silent "not a known ItemDef" drop the 3 hair
+		/// keywords had before #563). Pools mirror defs.def's own real RANDOM_PANTS/RANDOM_SHOES/
+		/// RANDOM_SKIRT Constants groups (unweighted - this engine doesn't parse weighted
+		/// Constants-group item lists at all, so a flat uniform pick is the closest real
+		/// equivalent without building that whole separate mechanism).</summary>
+		public static string[] PantsPool = { "i_pants_short", "i_pants_long" };
+		public static string[] ShoesPool = { "i_shoes_plain", "i_sandals", "i_boots_calf" };
+		public static string[] SkirtPool = { "i_skirt_long", "i_kilt", "i_skirt_short" };
+
 		private static readonly TagKey instanceStartingAbilitiesTK = TagKey.Acquire("_npcStartingAbilities_");
 
 		/// <summary>Stub abilities (#4 of the 2026-10-26 monster-testing batch) granted once at
@@ -968,20 +979,31 @@ namespace SteamEngine.CompiledScripts {
 		private static bool IsHairRandomizerKeyword(string defname) {
 			return string.Equals(defname, "random_male_hair", StringComparison.OrdinalIgnoreCase)
 				|| string.Equals(defname, "random_female_hair", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(defname, "random_woman_hair", StringComparison.OrdinalIgnoreCase) //a single real content use (specNPCSafira.def) - same pool, no separate gendered hair data
 				|| string.Equals(defname, "random_facial_hair", StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>Resolves a "StartingEquipment" entry's Defname - either a real ItemDef, or
-		/// (if it's one of the 3 real archive hair-randomizer keywords) a random real pick from
-		/// NPCDef.MaleOrFemaleHairPool/FacialHairPool instead.</summary>
+		/// (if it's one of the real archive's native Sphere "roll me something" random-pick
+		/// keywords) a random real pick from the matching pool instead. #563 covered the hair/
+		/// beard keywords only; #728 found the identical silent-drop symptom for
+		/// random_pants/random_shoes/random_skirt - same mechanism, just covering every real
+		/// keyword actually used across the converted content instead of hair alone.</summary>
 		private static ItemDef ResolveStartingEquipmentItemDef(string defname, bool isHairKeyword) {
+			string[] pool = null;
 			if (isHairKeyword) {
-				string[] pool = string.Equals(defname, "random_facial_hair", StringComparison.OrdinalIgnoreCase)
+				pool = string.Equals(defname, "random_facial_hair", StringComparison.OrdinalIgnoreCase)
 					? NPCDef.FacialHairPool
 					: NPCDef.MaleOrFemaleHairPool;
-				if (pool != null && pool.Length > 0) {
-					defname = pool[Globals.dice.Next(pool.Length)];
-				}
+			} else if (string.Equals(defname, "random_pants", StringComparison.OrdinalIgnoreCase)) {
+				pool = NPCDef.PantsPool;
+			} else if (string.Equals(defname, "random_shoes", StringComparison.OrdinalIgnoreCase)) {
+				pool = NPCDef.ShoesPool;
+			} else if (string.Equals(defname, "random_skirt", StringComparison.OrdinalIgnoreCase)) {
+				pool = NPCDef.SkirtPool;
+			}
+			if (pool != null && pool.Length > 0) {
+				defname = pool[Globals.dice.Next(pool.Length)];
 			}
 			return ThingDef.GetByDefname(defname) as ItemDef;
 		}
@@ -1125,6 +1147,19 @@ namespace SteamEngine.CompiledScripts {
 				//directives. lastHairColor tracks whichever hair/facial-hair item was most
 				//recently rolled+colored in this same loop, for a later "match_hair" line to copy.
 				int? lastHairColor = null;
+				//#728 follow-up - real-user-reported: a guard with BOTH a weapon and a spellbook
+				//in its StartingEquipment (Equip= i_spellbook then later Equip= i_axe_exec) spawned
+				//with the spellbook lying on the ground at its feet instead of in its backpack.
+				//Root cause: i_spellbook and most one-handed weapons both declare the same real
+				//Layer (Hand1) - InternalItemEnter's normal, correct-for-players equip-eviction
+				//logic (whatever already occupies a hand gets knocked loose and dropped on the
+				//ground, same as a player swapping weapons) fires here too, but a freshly-spawned
+				//NPC never asked for that swap - its whole StartingEquipment list is meant to all
+				//be carried at once. Track every item created in this loop and sweep for any that
+				//ended up IsOnGround (evicted by a LATER entry in this same loop, not its own) once
+				//the whole list has been applied, moving them into the backpack instead - keeps the
+				//real per-player ground-drop behavior on live equip actions completely untouched.
+				List<Item> createdStartingEquipment = new List<Item>();
 				foreach (NPCDef.StartingEquipmentEntry entry in equipment) {
 					bool isHairKeyword = IsHairRandomizerKeyword(entry.Defname);
 					ItemDef itemDef = ResolveStartingEquipmentItemDef(entry.Defname, isHairKeyword);
@@ -1162,6 +1197,13 @@ namespace SteamEngine.CompiledScripts {
 					Item createdItem = created as Item;
 					if (createdItem != null) {
 						createdItem.SetAttribute(ItemAttributes.attr_newbie, true);
+						createdStartingEquipment.Add(createdItem);
+					}
+				}
+
+				foreach (Item createdItem in createdStartingEquipment) {
+					if (createdItem.IsOnGround) {
+						createdItem.Cont = this.Backpack;
 					}
 				}
 			}

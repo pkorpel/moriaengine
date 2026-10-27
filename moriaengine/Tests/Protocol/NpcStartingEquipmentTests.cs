@@ -44,6 +44,38 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#728 - real archive content ("Equip = random_pants"/"random_shoes"/
+		/// "random_skirt") uses the same native Sphere "roll me something" mechanism #563 only
+		/// covered for hair/beard - see NPC.cs's ResolveStartingEquipmentItemDef for the fix.</summary>
+		[Fact]
+		public void RandomClothingKeywordsResolveAndEquip() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "RandomClothingChecker")) {
+				client.SendSpeech(".TestCreateRandomClothingEquipNpcAndReport");
+				Assert.True(this.fixture.WaitForGameOutput("RANDOM_CLOTHING_EQUIP_TEST_RESULT:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "RANDOM_CLOTHING_EQUIP_TEST_RESULT:");
+
+				Assert.Contains("pantsEquipped=True", line);
+				Assert.Contains("shoesEquipped=True", line);
+				Assert.Contains("skirtEquipped=True", line);
+			}
+		}
+
+		/// <summary>#728 - a StartingEquipment item evicted from its hand by a LATER entry in
+		/// the same list (i_spellbook then i_axe_exec, both real Layer=1/Hand1, same order as
+		/// the real-user-reported c_vguard_mordor_hala_jezdec) must end up in the NPC's
+		/// backpack, never left lying on the ground.</summary>
+		[Fact]
+		public void EvictedStartingEquipmentLandsInBackpackNotOnGround() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "SpellbookCollisionChecker")) {
+				client.SendSpeech(".TestCreateSpellbookWeaponCollisionNpcAndReport");
+				Assert.True(this.fixture.WaitForGameOutput("SPELLBOOK_WEAPON_COLLISION_TEST_RESULT:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "SPELLBOOK_WEAPON_COLLISION_TEST_RESULT:");
+
+				Assert.Contains("weaponEquipped=True", line);
+				Assert.Contains("spellbookInBackpack=True", line);
+			}
+		}
+
 		private static int ParseIntField(string line, string prefix) {
 			int start = line.IndexOf(prefix, StringComparison.Ordinal) + prefix.Length;
 			int end = start;

@@ -50,5 +50,47 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("NPC_STARTING_EQUIPMENT_TEST_RESULT: equipped=" + equippedDefname +
 				" arrowAmount=" + arrowAmount + " equippedIsNewbie=" + equippedIsNewbie + " arrowsAreNewbie=" + arrowsAreNewbie);
 		}
+
+		/// <summary>#728 - proves random_pants/random_shoes/random_skirt now resolve to a real
+		/// ItemDef (NPC.cs's ResolveStartingEquipmentItemDef) instead of silently dropping with
+		/// a "not a known ItemDef" warning. All 3 pools happen to equip into distinct real
+		/// layers (pants/shoes/skirt don't collide with each other), so all 3 should land
+		/// equipped on the NPC, never in the backpack and never missing.</summary>
+		[SteamFunction]
+		public static void TestCreateRandomClothingEquipNpcAndReport(Character self, ScriptArgs sa) {
+			NPCDef def = (NPCDef) ThingDef.GetByDefname("npc_test_random_clothing_equip");
+			NPC npc = (NPC) def.Create(self.X + 1, self.Y, self.Z, self.M);
+
+			bool pantsEquipped = npc.FindLayer(LayerNames.Pants) != null;
+			bool shoesEquipped = npc.FindLayer(LayerNames.Shoes) != null;
+			bool skirtEquipped = npc.FindLayer(LayerNames.Skirt) != null;
+
+			Console.WriteLine("RANDOM_CLOTHING_EQUIP_TEST_RESULT: pantsEquipped=" + pantsEquipped +
+				" shoesEquipped=" + shoesEquipped + " skirtEquipped=" + skirtEquipped);
+		}
+
+		/// <summary>#728 - proves a StartingEquipment item evicted from its hand by a LATER
+		/// entry in the same list (i_spellbook then i_axe_exec, both real Layer=1/Hand1, same
+		/// order as the real-user-reported c_vguard_mordor_hala_jezdec) ends up in the NPC's
+		/// backpack instead of lying on the ground.</summary>
+		[SteamFunction]
+		public static void TestCreateSpellbookWeaponCollisionNpcAndReport(Character self, ScriptArgs sa) {
+			NPCDef def = (NPCDef) ThingDef.GetByDefname("npc_test_spellbook_weapon_collision");
+			NPC npc = (NPC) def.Create(self.X + 1, self.Y, self.Z, self.M);
+
+			bool weaponEquipped = (npc.FindLayer(LayerNames.Hand1) is Item weaponItem) &&
+				(((ItemDef) weaponItem.Def).PrettyDefname == "i_axe_exec");
+
+			bool spellbookInBackpack = false;
+			foreach (AbstractItem item in npc.Backpack) {
+				if (((ItemDef) item.Def).PrettyDefname == "i_spellbook") {
+					spellbookInBackpack = true;
+					break;
+				}
+			}
+
+			Console.WriteLine("SPELLBOOK_WEAPON_COLLISION_TEST_RESULT: weaponEquipped=" + weaponEquipped +
+				" spellbookInBackpack=" + spellbookInBackpack);
+		}
 	}
 }
