@@ -18,7 +18,9 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Persistence;
 using SteamEngine.Regions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -196,6 +198,127 @@ namespace SteamEngine.CompiledScripts {
 		public new double[] Chance {
 			get { return (double[]) this.chance.CurrentValue; }
 			set { this.chance.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up to #653's teventStubs batch - e_npc_knockback. Real archive
+	/// unit is a 0-100 scale, NOT the 0-1000 permille the other abilities use (confirmed in
+	/// source: `{0 100} &lt; tag.npc_knockback`, default flat 1-in-3 when unset) - the converter
+	/// multiplies by 10 on the way in (see ConvertedCharDef.cs) so NPCDef.KnockbackChance stays
+	/// on the SAME 0-1000 scale as every other ability here, not a special case a future reader
+	/// has to remember.</summary>
+	[ViewableClass]
+	public class KnockbackAbilityDef : PassiveAbilityDef {
+		private FieldValue chance;
+
+		public KnockbackAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.chance = this.InitTypedField("knockbackChance", new double[] { 333, 333 }, typeof(double[]));
+		}
+
+		/// <summary>Permille (0-1000) {min,max} chance range to knock the target back on a
+		/// landed melee swing - deliberately shadows AbilityDef.Chance (different shape/scale)
+		/// rather than reusing it.</summary>
+		public new double[] Chance {
+			get { return (double[]) this.chance.CurrentValue; }
+			set { this.chance.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up to #653's teventStubs batch - e_selfreser. Default 60
+	/// seconds matches the real archive's own `tag(resstimer)` default. Deliberately does NOT
+	/// port the archive's "cancel if the corpse was butchered" check - butchering itself isn't
+	/// implemented in this engine yet (NPCDef.ButcherResources is data-only, see #586/#587) -
+	/// so the respawn always happens once armed, same simplification precedent as other
+	/// deliberately-trimmed archive mechanics this session.</summary>
+	[ViewableClass]
+	public class SelfReserAbilityDef : PassiveAbilityDef {
+		private FieldValue delay;
+
+		public SelfReserAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.delay = this.InitTypedField("selfresDelay", new double[] { 60, 60 }, typeof(double[]));
+		}
+
+		/// <summary>{min,max} seconds after death before a fresh instance of this NPC respawns
+		/// at the death location - deliberately shadows AbilityDef.Cooldown (different shape)
+		/// rather than reusing it.</summary>
+		public double[] Delay {
+			get { return (double[]) this.delay.CurrentValue; }
+			set { this.delay.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up to #653's teventStubs batch - e_npc_detect. Deliberately
+	/// simplified from the real archive's own ground-trap-item mechanic (drops an item that
+	/// reveals whoever steps near it) to a direct periodic area reveal while actively fighting -
+	/// functionally equivalent for the common case, no new ground-trap item type needed. No
+	/// real per-species tuning tag was found in the archive for this one (the pulse count/
+	/// interval look hardcoded there too) - no NPCDef override exists for this ability,
+	/// unlike the others in this batch, since there's no real per-species data to recover.
+	/// </summary>
+	[ViewableClass]
+	public class DetectAbilityDef : PassiveAbilityDef {
+		private FieldValue range;
+		private FieldValue interval;
+
+		public DetectAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.range = this.InitTypedField("detectRange", (double) 8, typeof(double));
+			this.interval = this.InitTypedField("detectInterval", (double) 5, typeof(double));
+		}
+
+		/// <summary>Radius (tiles) around this NPC that gets force-revealed each pulse.</summary>
+		public double Range {
+			get { return (double) this.range.CurrentValue; }
+			set { this.range.CurrentValue = value; }
+		}
+
+		/// <summary>Seconds between reveal pulses.</summary>
+		public double Interval {
+			get { return (double) this.interval.CurrentValue; }
+			set { this.interval.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up to #653's teventStubs batch - e_npc_leaper. User's explicit
+	/// choice: the real archive mechanic (short teleport hops toward the target, bypassing real
+	/// pathfinding) is deliberately simplified to a real speed boost instead - this NPC just
+	/// takes extra pathfinding steps per NPCAiTimer think-tick while closing distance, using the
+	/// SAME honest StepTowardsSmart A* movement every other NPC uses, never teleporting/
+	/// clipping through walls.</summary>
+	[ViewableClass]
+	public class LeaperAbilityDef : PassiveAbilityDef {
+		private FieldValue extraSteps;
+
+		public LeaperAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.extraSteps = this.InitTypedField("leaperExtraSteps", (double) 2, typeof(double));
+		}
+
+		/// <summary>How many EXTRA pathfinding steps (on top of the normal one) this NPC takes
+		/// per think-tick while approaching a target.</summary>
+		public double ExtraSteps {
+			get { return (double) this.extraSteps.CurrentValue; }
+			set { this.extraSteps.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up to #653's teventStubs batch - e_looter. User's explicit
+	/// choice: ported faithfully rather than simplified - reacts to stepping onto ANY lootable
+	/// corpse (not just ones this NPC personally killed), same as the real archive's own
+	/// `on=@ItemStep` trigger. No chance roll or per-species tag exists in the archive for this
+	/// one - it's unconditional. Consumed via Corpse.On_Step (see Corpse.cs), not from this
+	/// file's own Try* methods - a step-on-item trigger, not a swing/tick one.</summary>
+	[ViewableClass]
+	public class LooterAbilityDef : PassiveAbilityDef {
+		public LooterAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
 		}
 	}
 
@@ -502,6 +625,243 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void SetNextRoundattackTime(NPC self, double value) {
 			self.SetTag(nextRoundattackTimeTK, value);
+		}
+
+		private static KnockbackAbilityDef knockbackAbilityDef;
+		private static KnockbackAbilityDef KnockbackDef {
+			get {
+				if (knockbackAbilityDef == null) {
+					knockbackAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_knockback") as KnockbackAbilityDef;
+				}
+				return knockbackAbilityDef;
+			}
+		}
+
+		/// <summary>#knockback - on a landed melee swing, a chance to push the defender one
+		/// tile further away from the attacker - same tile-validity checks as PullToward
+		/// above, just the inverse direction (away from, not toward, the attacker).</summary>
+		public static void TryApplyKnockback(Character attacker, Character defender) {
+			KnockbackAbilityDef def = KnockbackDef;
+			if (def == null) {
+				return;
+			}
+			Ability ability;
+			if (!attacker.HasAbility(def, out ability)) {
+				return;
+			}
+
+			NPCDef npcDef = attacker.Def as NPCDef;
+			double chance = RollTunable(npcDef == null ? null : npcDef.KnockbackChance, def.Chance);
+			if (!RollChance(chance)) {
+				return;
+			}
+
+			PushAway(attacker, defender);
+		}
+
+		private static void PushAway(Character attacker, Character defender) {
+			Direction dir = Point2D.GetDirFromTo(attacker, defender);
+			int x = defender.X + directionDx[(int) dir];
+			int y = defender.Y + directionDy[(int) dir];
+			Map map = defender.GetMap();
+			if (!map.IsValidPos(x, y) || map.IsMapTileWater(x, y)) {
+				return; //no safe spot to land the push - skip it rather than clip into something
+			}
+			int tileId = map.GetTileId(x, y);
+			if (TileData.HasFlag(TileData.GetTileFlags(tileId), TileFlag.Impassable)) {
+				return;
+			}
+			int z = map.GetTileZ(x, y);
+			defender.Go(x, y, z, defender.M);
+		}
+
+		private static SelfReserAbilityDef selfReserAbilityDef;
+		private static SelfReserAbilityDef SelfReserDef {
+			get {
+				if (selfReserAbilityDef == null) {
+					selfReserAbilityDef = AbstractScript.GetByDefname("a_tevent_e_selfreser") as SelfReserAbilityDef;
+				}
+				return selfReserAbilityDef;
+			}
+		}
+
+		private static readonly TimerKey selfResTimerKey = TimerKey.Acquire("_npcSelfResTimer_");
+
+		/// <summary>#selfreser - a while after death, a fresh instance of this exact monster
+		/// respawns at the death location. Must be called AFTER corpse.InitFromChar(this),
+		/// while `dying`'s own position is still valid (Character.CauseDeath deletes a
+		/// non-player NPC right after this point). Attached to the freshly-created corpse
+		/// (one per death, no TagHolder.AddTimer key-collision risk) rather than to the
+		/// killer, who could in theory die to two self-resing monsters in quick succession -
+		/// see TagHolder.AddTimer's own one-timer-per-key-per-object semantics.</summary>
+		public static void TryApplySelfRes(Character dying, Corpse corpse) {
+			if (corpse == null) {
+				return;
+			}
+			SelfReserAbilityDef def = SelfReserDef;
+			if (def == null) {
+				return;
+			}
+			NPC npc = dying as NPC;
+			if (npc == null) {
+				return;
+			}
+			Ability ability;
+			if (!npc.HasAbility(def, out ability)) {
+				return;
+			}
+
+			NPCDef npcDef = (NPCDef) npc.Def;
+			double delay = RollTunable(npcDef.SelfresDelay, def.Delay);
+			NpcSelfResTimer timer = new NpcSelfResTimer(npcDef, dying.X, dying.Y, dying.Z, dying.M);
+			corpse.AddTimer(selfResTimerKey, timer).DueInSeconds = delay;
+		}
+
+		private static DetectAbilityDef detectAbilityDef;
+		private static DetectAbilityDef DetectDef {
+			get {
+				if (detectAbilityDef == null) {
+					detectAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_detect") as DetectAbilityDef;
+				}
+				return detectAbilityDef;
+			}
+		}
+
+		private static readonly TagKey nextDetectTimeTK = TagKey.Acquire("_npcNextDetectTime_");
+
+		/// <summary>#detect - periodically force-reveals any hidden/invisible character within
+		/// range, while this NPC is actively fighting (called from NPCAiTimer.Fight, which
+		/// already only runs then) - see DetectAbilityDef's own doc comment for why this is a
+		/// deliberate simplification of the real archive's ground-trap-item mechanic.</summary>
+		public static void TryApplyDetect(NPC self) {
+			DetectAbilityDef def = DetectDef;
+			if (def == null) {
+				return;
+			}
+			Ability ability;
+			if (!self.HasAbility(def, out ability)) {
+				return;
+			}
+			if (Globals.TimeInSeconds < NextDetectTime(self)) {
+				return;
+			}
+			SetNextDetectTime(self, Globals.TimeInSeconds + def.Interval);
+
+			int range = (int) def.Range;
+			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, range)) {
+				Character target = ch as Character;
+				if ((target != null) && (target != self) && !target.IsDeleted) {
+					target.Flag_Hidden = false;
+					target.Flag_InvisByMagic = false;
+				}
+			}
+		}
+
+		private static double NextDetectTime(NPC self) {
+			object tag = self.GetTag(nextDetectTimeTK);
+			return tag is double ? (double) tag : 0;
+		}
+
+		private static void SetNextDetectTime(NPC self, double value) {
+			self.SetTag(nextDetectTimeTK, value);
+		}
+
+		private static LeaperAbilityDef leaperAbilityDef;
+		private static LeaperAbilityDef LeaperDef {
+			get {
+				if (leaperAbilityDef == null) {
+					leaperAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_leaper") as LeaperAbilityDef;
+				}
+				return leaperAbilityDef;
+			}
+		}
+
+		/// <summary>#leaper (user-approved simplification - see LeaperAbilityDef's own doc
+		/// comment) - how many EXTRA honest StepTowardsSmart pathfinding steps this NPC should
+		/// take this think-tick while closing distance, on top of the normal one. 0 if `self`
+		/// was never granted a_tevent_e_npc_leaper.</summary>
+		public static int GetLeaperExtraSteps(NPC self) {
+			LeaperAbilityDef def = LeaperDef;
+			if (def == null) {
+				return 0;
+			}
+			Ability ability;
+			if (!self.HasAbility(def, out ability)) {
+				return 0;
+			}
+			return (int) def.ExtraSteps;
+		}
+
+		private static LooterAbilityDef looterAbilityDef;
+		private static LooterAbilityDef LooterDef {
+			get {
+				if (looterAbilityDef == null) {
+					looterAbilityDef = AbstractScript.GetByDefname("a_tevent_e_looter") as LooterAbilityDef;
+				}
+				return looterAbilityDef;
+			}
+		}
+
+		/// <summary>#looter (user-approved: ported faithfully) - an NPC with this ability that
+		/// steps onto any lootable corpse moves one item from it into its own backpack,
+		/// unconditionally (no chance roll, no per-species tag exists in the archive for this
+		/// one). Called from Corpse.On_Step.</summary>
+		public static void TryApplyLoot(NPC looter, Corpse corpse) {
+			if ((looter == null) || (corpse == null) || corpse.IsDeleted) {
+				return;
+			}
+			LooterAbilityDef def = LooterDef;
+			if (def == null) {
+				return;
+			}
+			Ability ability;
+			if (!looter.HasAbility(def, out ability)) {
+				return;
+			}
+
+			Item backpack = looter.Backpack;
+			if (backpack == null) {
+				return;
+			}
+			foreach (Item loot in corpse.EnumShallow()) {
+				loot.Cont = backpack;
+				return; //one item per step, matching the real archive's own single-grab shape
+			}
+		}
+	}
+
+	/// <summary>Companion timer for SelfReserAbilityDef/MonsterSpecialAttacks.TryApplySelfRes -
+	/// a plain BoundTimer (no .ct template needed, unlike a Plugin subclass) carrying just
+	/// enough state (which NPCDef, and where) to respawn a fresh instance of the monster once
+	/// it fires. Attached to the Corpse created by the death that armed it, not to any
+	/// Character - see TryApplySelfRes's own doc comment for why.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class NpcSelfResTimer : BoundTimer {
+		[SaveableData, CopyableData]
+		public NPCDef npcDef;
+		[SaveableData, CopyableData]
+		public int x;
+		[SaveableData, CopyableData]
+		public int y;
+		[SaveableData, CopyableData]
+		public int z;
+		[SaveableData, CopyableData]
+		public byte m;
+
+		[DeepCopyImplementation, LoadingInitializer]
+		public NpcSelfResTimer() {
+		}
+
+		public NpcSelfResTimer(NPCDef npcDef, int x, int y, int z, byte m) {
+			this.npcDef = npcDef;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.m = m;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			this.npcDef.Create(this.x, this.y, this.z, this.m);
 		}
 	}
 }

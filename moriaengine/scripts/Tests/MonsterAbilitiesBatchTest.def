@@ -1,0 +1,32 @@
+// real-user-reported follow-up to #653's teventStubs batch - test-only content for
+// scripts/Tests/MonsterAbilitiesBatchTests.cs (e_npc_knockback/e_selfreser/e_npc_detect/
+// e_npc_leaper/e_looter). Knockback gets a guaranteed (1000/1000) chance so the test is
+// deterministic; detect/leaper have no NPCDef override to begin with (see
+// DetectAbilityDef/LeaperAbilityDef's own doc comments), so their test NPCDefs just grant
+// the ability and rely on the AbilityDef's own default fields.
+[NPCDef npc_test_knockback_attacker]
+NAME = "Knockback Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_knockback
+KnockbackChance = 1000 1000
+
+[NPCDef npc_test_selfres_attacker]
+NAME = "Selfres Test Monster"
+ANIM = 0x1fff
+TEVENTS = e_selfreser
+SelfresDelay = 1 1
+
+[NPCDef npc_test_detect_attacker]
+NAME = "Detect Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_detect
+
+[NPCDef npc_test_leaper_attacker]
+NAME = "Leaper Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_leaper
+
+[NPCDef npc_test_looter_attacker]
+NAME = "Looter Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_looter
