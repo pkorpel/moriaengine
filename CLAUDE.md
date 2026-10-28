@@ -1,5 +1,61 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): "Monster Abilities" .settings page + configurable knockback distance (#758, PR #759)
+
+User reviewed the shipped teventStubs batches and asked for 3 things, plus a 4th follow-up
+mid-session - all shipped in one PR:
+
+1. **New "Monster Abilities" `.settings` category** - pass-through properties (no new
+   storage) wrapping every ability's engine-wide default across Stun/Critic/Roundattack+
+   Pull/Bleed/Knockback/SelfRes/Detect/Leaper/ParaKrik/NpcCurse/Summoner/Sniper (~27
+   fields) - same shape as `RangerSettings`/`FishingSettings`. Each property writes
+   straight through to the live `AbilityDef`'s own `FieldValue` (the exact value `.info`'s
+   generic Abilities editor already shows) - editing either place is the same operation.
+   **Real build gotcha hit shipping this**: a settings class with ZERO `[SaveableData]`
+   fields of its own can NOT be `[SaveableClass][HasSavedMembers]` - the
+   `DecoratedClassesSaveImplementor` generator throws ("No way to load members of this
+   class when autoloading") at boot. `FishingSettings.cs` was the precedent that showed
+   the fix: drop those 3 attributes entirely (plain `[ViewableClass]` + a bare static
+   `instance` field) whenever a settings class owns no storage of its own. Needed the
+   `XDef` lazy-lookup properties in each ability file (`MonsterSpecialAttacks.StunDef`
+   etc.) changed from `private` to `internal` so the new settings class (same assembly)
+   could reach them without duplicating the resolution logic.
+2. **Knockback gained a configurable `Distance` field** (default 3, was a hardcoded
+   single-tile push) - `PushAway` now walks outward tile-by-tile up to that distance,
+   stopping at the first blocked (water/impassable/map-edge) tile rather than all-or-
+   nothing. The actual "walk outward until blocked" decision is factored into a pure
+   `MonsterSpecialAttacks.ComputeMaxPushSteps(maxDistance, isStepOpen)` helper
+   (`Knockback.cs`) specifically so it's directly unit-testable without a live Map/
+   Character (`Tests/KnockbackPushDistanceTests.cs`, 5 fast-tier facts, no engine boot) -
+   same "extract a pure function for direct testability" precedent used elsewhere in
+   this codebase for terrain-dependent logic that's otherwise too fragile to test live.
+3. **Leaper's `extraSteps` default bumped 2 -> 7** - user asked "should make leapers as
+   fast as players, so maybe 6?" - did the math instead of just accepting the guess: the
+   NPC AI think-tick is 1.5s and ALL of a tick's extra steps fire in one burst, while a
+   real running player covers 1 tile per 0.18s (`MovementState.RunStepTime`) - 1 normal +
+   7 extra steps per 1.5s tick is the closest whole-step match (~5.33 tiles/sec vs. a
+   player's ~5.56), not 6 (~4.67 tiles/sec, noticeably under). Flagged the real caveat
+   this shortcut has: because the steps burst within one tick rather than being paced
+   smoothly, a fast Leaper will visibly hop rather than run fluidly (same class of
+   visual-burstiness issue the old `MoveRate` system had before #603's tick-cadence
+   redesign) - not fixed here, just documented, since it's a bigger separate change.
+4. **Follow-up question raised mid-session, turned out to need zero code fix**: "knockback
+   only works on melee, should work for ranger (bow/crossbow) monsters too." Confirmed via
+   code reading that `DamageManager.ProcessSwing` (where `TryApplyKnockback` is rolled) has
+   no weapon-type branching at all - `WeaponSkillDef.On_Success` calls it identically for a
+   landed ranged OR melee hit, single call site. Found real, already-existing proof this
+   combination works today: `c_troll_strelec` (`scripts/converted/chars/ogres.def`) is a
+   bow-equipped archer granted BOTH `e_npc_sniper` and `e_npc_knockback`. Added a
+   regression test using that exact real NPC at a non-adjacent distance as a durable
+   guard, and fixed two stale "landed melee swing" doc-comment spots that could mislead a
+   future reader into thinking it was weapon-restricted.
+
+**Verified**: fast tier 58/58, full monster-abilities protocol suite (`MonsterAbilitiesSettingsTests`/
+`MonsterAbilitiesBatchTests`/`MonsterSpecialAttacksTests`/`MonsterAbilitiesBatch2Tests`/
+`MonsterAbilitiesBatch3Tests`/`NpcBleedTests`) 22/22 green. A full-suite batch run showed 4
+unrelated failures (`SpawnCommandTests`/etc.) - confirmed pre-existing sandbox contention via
+an isolated `SpawnCommandTests`-only rerun (7/7 clean), not caused by this change.
+
 ## SESSION HANDOFF (2026-10-28): #751 command-auth gap FIXED (PR #755); MonsterSpecialAttacks.cs split into a per-ability folder (PR #756) - #745 (cure bleeding) still QUEUED
 
 **Where things stand:** picked up from the prior session's handoff (see the DONE entry
