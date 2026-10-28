@@ -26,6 +26,7 @@ namespace SteamEngine.Tests.Protocol {
 		private const int DefaultReadTimeoutMillis = 15000;
 
 		public TestLoginClient(string host, int port) {
+			ServerHealth.BeforeConnect(); //#785 - fail fast instead of retrying against a dead server pair
 			this.tcp = new TcpClient();
 			this.tcp.Connect(host, port);
 			this.stream = this.tcp.GetStream();
@@ -51,6 +52,9 @@ namespace SteamEngine.Tests.Protocol {
 			byte[] rest = ReadExactly(this.stream, length - 3);
 			// rest[0] = flag byte, rest[1..2] = server count (BE ushort)
 			int serverCount = (rest[1] << 8) | rest[2];
+			if (serverCount > 0) {
+				ServerHealth.MarkHealthy();
+			}
 			return serverCount;
 		}
 
