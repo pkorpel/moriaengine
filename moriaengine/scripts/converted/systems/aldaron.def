@@ -203,7 +203,6 @@ CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
 WeaponAttack = 55
 armorVsP = 20
 armorVsM = 20
-ResistPoison = 1000
 Karma = 1000
 Color = colors_skin
 Str = 1000
@@ -223,6 +222,8 @@ Tactics = 900 1000
 SpiritSpeak = 800
 Peacemaking = 1000
 Provocation = 1000
+ResistParalyse = 800 850
+ResistPoison = 1000
 AggroMode = Calm
 
 //[events e_ocs_freak] //(commented out by Converter) 
@@ -694,9 +695,6 @@ MaxHits = 1100 1300
 MaxStam = 180 240
 MaxMana = 0
 Experience = 40 60
-ResistFire = 1000
-ResistSummon = 800
-ResistPoison = 950
 Parry = 550 950
 MagicResist = 900
 Tactics = 900 1000
@@ -705,11 +703,14 @@ SpiritSpeak = 16500
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
+ResistFire = 1000
+ResistSummon = 800
+ResistPoison = 950
 AggroMode = Hostile
 
 //[function f_dragon_armor_create_kovar] //(commented out by Converter) 
-Loot = loot_DRAGON
-Loot = i_gold
 
 [EquippableDef i_zamerovatko_dragon_armor_kovar_acreate]
 name = "zamerovatko na vytvoreni dragon armor"

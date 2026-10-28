@@ -195,6 +195,9 @@ namespace SteamEngine.CompiledScripts {
 				//DamageAfterAC timing as critic above.
 				MonsterSpecialAttacks.TryApplySniper(attacker, swingArgs);
 
+				//#794 - an elite monster hits harder, and absorbs most of a player's swing
+				EliteMonster.ModifySwingDamage(attacker, defender, swingArgs);
+
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC);
 
 				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
@@ -211,6 +214,9 @@ namespace SteamEngine.CompiledScripts {
 
 				//#778 - a strangler vine holding someone lets go after enough landed hits
 				MonsterSpecialAttacks.CountEntangleHit(defender);
+
+				//#794 - a hit interrupts an elite's gate spell
+				EliteMonster.OnGotHit(defender);
 
 				swingArgs.InternalSetFinalDamage(actualDamage);
 

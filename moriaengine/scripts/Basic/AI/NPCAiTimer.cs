@@ -230,6 +230,10 @@ namespace SteamEngine.CompiledScripts {
 				this.CaptureHome(self);
 			}
 
+			if (EliteMonster.IsLeaving(self)) {
+				return; //#794 - casting its gate / leaving: frozen (Erebor's flag_freeze)
+			}
+
 			this.Think(self);
 		}
 
@@ -260,6 +264,7 @@ namespace SteamEngine.CompiledScripts {
 					this.Flee(self, this.target);
 				} else {
 					this.LastState = AIState.Fighting;
+					EliteMonster.OnFightingPlayer(self, this.target); //#794 - starts its escape countdown
 					this.Fight(self, this.target);
 				}
 				return;

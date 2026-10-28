@@ -164,6 +164,12 @@ MagicResist = 5000
 Tactics = 5000
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+EquipColor = 001
+Equip = i_sandals
+EquipColor = 001
+Equip = i_robe
+EquipColor = 001
 AggroMode = Calm
 
 //[SPEECH crunch_Bvutannus] //(commented out by Converter) 
@@ -220,6 +226,12 @@ MagicResist = 500
 Tactics = 500
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+EquipColor = color_o_obsidian
+Equip = i_sandals
+EquipColor = 001
+Equip = i_robe
+EquipColor = color_o_obsidian
 AggroMode = Calm
 
 //[SPEECH crunch_Hurtan] //(commented out by Converter) 

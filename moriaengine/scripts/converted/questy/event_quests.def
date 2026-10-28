@@ -134,6 +134,23 @@ Dex = 150
 Int = 200
 Fame = 1
 Karma = 100
+Equip = i_hat_straw
+EquipColor = 0638
+Equip = i_boots_calf
+EquipColor = 044F
+Equip = i_pants_short
+EquipColor = 0716
+Equip = i_shirt_plain
+EquipColor = 0484
+Equip = i_bracelet_silver
+EquipColor = 00
+Equip = i_necklace_silver_beads
+EquipColor = 00
+Equip = i_ring_silver
+EquipColor = 00
+Equip = i_pitchfork_obsidian
+EquipColor = 00
+EquipName = Vidle
 AggroMode = Calm
 
 //[SPEECH spk_sberac_vajec] //(commented out by Converter) 

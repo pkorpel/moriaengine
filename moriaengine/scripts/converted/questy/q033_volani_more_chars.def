@@ -16,6 +16,13 @@ Int = 100
 Equip = random_male_hair
 EquipColor = colors_hair
 Experience = 0 0
+Equip = 01f07
+Equip = i_robe
+EquipColor = 020
+Equip = 01f08
+Equip = 01713
+Equip = i_shoes_plain
+EquipColor = 030
 AggroMode = Calm
 
 [NPCDef c_q033_hirga]
@@ -96,6 +103,14 @@ Int = 100
 Equip = random_male_hair
 EquipColor = colors_hair
 Experience = 0 0
+Equip = 01f07
+Equip = 01f08
+Equip = 01713
+Equip = 01539
+Equip = i_shoes_plain
+EquipColor = 030
+Equip = i_shirt_plain
+EquipColor = 030
 AggroMode = Calm
 
 [NPCDef c_q033_rybarvolek]
@@ -114,4 +129,10 @@ Int = 100
 Equip = random_male_hair
 EquipColor = colors_hair
 Experience = 0 0
+Equip = 0153b
+Equip = 01530
+Equip = 0dca
+Equip = i_fishing_pole
+Equip = i_shoes_plain
+EquipColor = 030
 AggroMode = Calm

@@ -851,6 +851,7 @@ MaxHits = 30000
 MaxStam = 376 450
 MaxMana = 0
 Experience = 1050 1100
+IsBoss = 1
 BleedChance = 300 //30% 
 NpcCurseChance = 250 // 25% chance to trigger this event 
 NpcCurseCooldown = 15 20 // delay between another possible strike 

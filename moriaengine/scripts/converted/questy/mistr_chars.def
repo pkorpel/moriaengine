@@ -103,6 +103,12 @@ Fame = 1
 Karma = 100
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+EquipColor = 1153
+Equip = i_sandals
+EquipColor = 1153
+Equip = i_robe
+EquipColor = 1153
 AggroMode = Calm
 
 [NPCDef c_serpent_silver_mistr]

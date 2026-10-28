@@ -166,6 +166,22 @@ Dex = 150
 Int = 200
 Fame = 1
 Karma = 100
+Equip = i_mask_bear
+Equip = i_boots_calf
+EquipColor = 0021
+Equip = i_leather_leggings
+Equip = i_leather_gloves
+EquipColor = 0021
+Equip = i_sash
+EquipColor = 0021
+Equip = i_shirt_fancy
+EquipColor = 0994
+Equip = i_necklace_gold_beads
+EquipColor = 0995
+EquipName = Zlaty nahrdelnik
+Equip = i_wand_1
+EquipColor = 0021
+EquipName = Magicka hulka
 AggroMode = Calm
 
 //[SPEECH spk_vanocni_sberac] //(commented out by Converter) 

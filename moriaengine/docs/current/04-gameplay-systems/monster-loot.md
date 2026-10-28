@@ -29,15 +29,36 @@ Two template-engine fixes this needed:
   (`loot_cyclops`'s nested `tm_rocks`).
 
 Converter repairs: archive typos `i_gold{700 999}` (missing comma) and lines with a second
-`ITEM=` glued on. Not converted (not loot): vendor `SELL=` and the `ITEMNEWBIE=`/`COLOR=`
-clothing of 189 human NPCs (vendors, trainers, quest NPCs) that Erebor keeps in `@NPCRestock` -
-a known follow-up.
+`ITEM=` glued on. Not converted: vendor `SELL=`/`PRICE=` and axis `CATEGORY=`-style lines.
+
+### NPC gear in `@NPCRestock` (#793)
+
+Erebor keeps the clothing of its human NPCs (vendors, trainers, quest NPCs - about 190 chardefs)
+in `@NPCRestock` too, as `ITEMNEWBIE=` lines. The converter reads the block in order:
+
+- `ITEMNEWBIE=` -> `Equip =`, exactly as from `@Create`: worn, and `attr_newbie`, so it **never
+  falls to the corpse** (players can't loot it). A defname already given by `@Create` (e.g.
+  `i_hair_long`) is skipped.
+- `COLOR=` / `NAME=` belong to the latest item line, even with other lines in between (Sphere
+  applies them to the last created item): `EquipColor =` / `EquipName =` after an `ITEMNEWBIE`,
+  dropped after a loot `ITEM`.
+- `ADDSPELL=` -> `AddSpell =` (16 NPCs keep their spells here).
+
+825 `Equip`, 543 `EquipColor`, 13 `EquipName`, 23 `AddSpell` lines. The engine resolves two more
+Sphere forms in equip names: a hex graphic (`Equip = 01f07`, Sphere's leading-0 hex - the itemdef
+of that graphic) and a `random_*` pick-list constant (`Equip = RANDOM_LIGHT` - candle, torch or
+lantern), besides the hair/pants/shoes/skirt pools from #730. Three archive typos
+(`i_lire`, `i_hat_feathered`, `i_bear_short`) still log "not a known ItemDef" and are skipped.
 
 ## 2. `Equip = i_monster_create` - Erebor's `creaturestart`
 
-In Erebor, every monster gets an `i_monster_create` script item whose timer runs `creaturestart`
-once after creation. Here the item is no longer created; `NPC.On_Create` runs
-`MonsterLoot.ApplyCreatureStart` instead, after the loot:
+In Erebor, every monster gets an `i_monster_create` script item whose 0-second timer runs
+`creaturestart` once after creation. Here the item is no longer created; `NPC.On_Create` adds a
+`CreatureStartTimer` (also due at once, #794) that runs `MonsterLoot.ApplyCreatureStart` - after
+the loot, and after a spawn gem has tagged the new monster, which the elite roll needs. Code that
+needs the final state right after creating a monster calls `MonsterLoot.FlushCreatureStart(npc)`.
+
+- **Elite roll** (#794, outside dungeons, before the gold): see [Elite monsters](elite-monsters.md).
 
 - **Gold**: the `i_gold` marker's amount = `ExperienceReward × goldPermille / 1000` - 750 outside
   dungeons, 900 in them (map planes 2 and 10-15, Erebor's `isDung`). Experience is in Sphere's ×10
@@ -53,7 +74,7 @@ once after creation. Here the item is no longer created; `NPC.On_Create` runs
 - A **self-resurrected** monster (`e_selfreser`) gets its loot items again but no gold - its marker
   stays at 1, like Erebor's `isResurrectedNPC`.
 
-Not ported (not loot): the elite-monster transform, combat-type tags, spawn bookkeeping.
+Not ported (not loot): combat-type tags, spawn bookkeeping.
 
 ## Settings: `.settings` -> "Loot" (`LootSettings`)
 
@@ -69,4 +90,6 @@ Not ported (not loot): the elite-monster transform, combat-type tags, spawn book
 
 Tests: `Tests/MonsterLootFormulaTests.cs` (fast tier - formulas), `Tests/Protocol/MonsterLootTests.cs`
 (real `c_orc`/`c_cyclops`/`c_ogre`: gold matches the formula, loot reaches the corpse, nested
-templates keep the backpack, no zero-amount stacks).
+templates keep the backpack, no zero-amount stacks), `Tests/Protocol/NpcGearEliteTests.cs`
+(`c_h_banker` dressed, everything newbie, nothing on its corpse, `RANDOM_LIGHT` resolved;
+`c_alchymista`'s named robe).

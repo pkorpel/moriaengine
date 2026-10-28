@@ -133,6 +133,9 @@ Tactics = 100
 Equip = random_male_hair
 Equip = random_facial_hair
 Equip = i_monster_create
+Equip = i_hat_wizards
+Equip = i_sandals
+Equip = i_robe
 AggroMode = Calm
 
 [NPCDef c_zivy_pisek]

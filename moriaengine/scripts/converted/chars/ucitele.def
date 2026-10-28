@@ -23,6 +23,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_AnimalLore]
@@ -48,6 +53,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Archery]
@@ -73,6 +83,14 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
+Equip = i_bow
+EquipColor = 0481
+Equip = i_arrow_copper, 500
 AggroMode = Calm
 
 [NPCDef mistr_ArmsLore]
@@ -98,6 +116,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Begging]
@@ -122,6 +145,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Camping]
@@ -146,6 +174,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Cartography]
@@ -170,6 +203,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_DetectingHidden]
@@ -195,6 +233,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Enticement]
@@ -219,6 +262,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Forensics]
@@ -244,6 +292,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Healing]
@@ -269,6 +322,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Herding]
@@ -293,6 +351,13 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
+Equip = i_shepherds_crook_copper
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Hiding]
@@ -318,6 +383,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_ItemID]
@@ -342,6 +412,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Magery]
@@ -367,6 +442,13 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
+Equip = i_staff_gnarled_copper
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Meditation]
@@ -392,6 +474,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Musicianship]
@@ -416,6 +503,13 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
+Equip = i_lire
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Parrying]
@@ -441,6 +535,13 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
+Equip = i_copper_heater_shield
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Peacemaking]
@@ -466,6 +567,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Poisoning]
@@ -491,6 +597,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Provocation]
@@ -516,6 +627,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Snooping]
@@ -540,6 +656,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_SpiritSpeak]
@@ -565,6 +686,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Stealing]
@@ -589,6 +715,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Stealth]
@@ -614,6 +745,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Tactics]
@@ -638,6 +774,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_TasteID]
@@ -662,6 +803,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Tracking]
@@ -686,6 +832,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Veterinary]
@@ -711,6 +862,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Wrestling]
@@ -736,6 +892,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_RemoveTrap]
@@ -760,6 +921,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Swordsmanship]
@@ -785,6 +951,13 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
+Equip = i_axe_battle_large_copper
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Resist]
@@ -810,6 +983,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Macefighting]
@@ -835,6 +1013,13 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
+Equip = i_mace_war_copper
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_Fencing]
@@ -860,6 +1045,13 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
+Equip = i_sword_viking_copper
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef mistr_EI]
@@ -884,6 +1076,11 @@ EquipColor = 0481
 Equip = random_facial_hair
 EquipColor = 0481
 Equip = i_monster_create
+Equip = i_hat_wizards
+EquipColor = 0481
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0481
 AggroMode = Calm
 
 [NPCDef c_mistr_craft]

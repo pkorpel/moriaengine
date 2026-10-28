@@ -92,7 +92,9 @@ file whose job is session continuity, not permanent reference.
 - [Spawning](04-gameplay-systems/spawning.md)
 - [Pets & NPC AI](04-gameplay-systems/pets-and-npc-ai.md)
 - [Monster loot](04-gameplay-systems/monster-loot.md) - Erebor's @NPCRestock loot and
-  i_monster_create gold, ported (#791).
+  i_monster_create gold, ported (#791); human NPCs' @NPCRestock clothing as newbie gear (#793).
+- [Elite monsters](04-gameplay-systems/elite-monsters.md) - Erebor's rare elite form of spawned
+  high-experience monsters: stronger, absorbs player damage, richer loot, leaves after 20 min (#794).
 - [Movement & character collision](04-gameplay-systems/movement-and-collision.md) - the
   `WalkRunOrFly` pipeline and Sphere's stamina-gated shove past other characters (#767).
 - [Crafting & gathering](04-gameplay-systems/crafting-gathering.md)

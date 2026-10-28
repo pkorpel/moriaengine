@@ -325,32 +325,90 @@ namespace SteamEngine.Converter {
 		private static readonly Regex restockItemRE = new Regex(@"^\s*item\s*=\s*(?<value>.+?)\s*(//(?<comment>.*))?$",
 			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 		private static readonly Regex gluedItemRE = new Regex(@"item\s*=", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+		private bool HasEquipLine(string itemnewbieValue) {
+			int comma = itemnewbieValue.IndexOf(',');
+			string defname = (comma < 0 ? itemnewbieValue : itemnewbieValue.Substring(0, comma)).Trim();
+			string prefix = "Equip = " + defname;
+			foreach (string line in this.writtenData) {
+				if (line.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) &&
+						((line.Length == prefix.Length) || (line[prefix.Length] == ',') || (line[prefix.Length] == ' '))) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private static readonly Regex restockLineRE = new Regex(@"^\s*(?<name>itemnewbie|color|name|addspell)\s*=\s*(?<value>.+?)\s*(//(?<comment>.*))?$",
+			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 		private static readonly Regex nameGluedToAmountRE = new Regex(@"^(?<name>[A-Za-z_][A-Za-z0-9_]*)\s*\{", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-		/// <summary>#791 - Sphere runs ON=@NPCRestock when an NPC is created: its ITEM= lines put the
-		/// monster's loot into its backpack (which falls to the corpse on death). Each becomes a
-		/// "Loot = <item>[,<amount>]" line on the NPCDef - a plain itemdef, a RANDOM_* pick-list
-		/// constant or a loot_*/tm_* template, exactly what the engine's template ITEM op takes
-		/// (NPCDef.Loot / NPC.On_Create). The gold marker "ITEM=i_gold" is kept as is: its amount
-		/// comes from the i_monster_create logic (MonsterLoot). Other restock lines (vendor SELL,
-		/// human NPCs' ITEMNEWBIE clothing) aren't loot and stay unconverted for now.</summary>
+		/// <summary>#791/#793 - Sphere runs ON=@NPCRestock when an NPC is created:
+		/// - "ITEM=" puts the monster's loot into its backpack (which falls to the corpse on death):
+		///   each becomes "Loot = <item>[,<amount>]" - a plain itemdef, a RANDOM_* pick-list constant
+		///   or a loot_*/tm_* template, exactly what the engine's template ITEM op takes (NPCDef.Loot /
+		///   NPC.On_Create). The gold marker "ITEM=i_gold" is kept as is: its amount comes from the
+		///   i_monster_create logic (MonsterLoot).
+		/// - "ITEMNEWBIE=" is the NPC's own gear - mostly human NPCs' clothing (189 vendors, trainers,
+		///   quest NPCs): an "Equip =" line, the same as from @Create, so it's worn and newbie (never
+		///   falls to the corpse).
+		/// - "COLOR=" and "NAME=" belong to the latest item line, even with other lines in between
+		///   (Sphere applies them to the last created item - e.g. "ITEMNEWBIE=.../addspell=.../color=0036"):
+		///   "EquipColor"/"EquipName" after an ITEMNEWBIE, dropped after a loot ITEM (no per-loot color).
+		/// - "ADDSPELL=" (16 NPCs keep their spells here), as in @Create.
+		/// Vendor SELL/PRICE and axis CATEGORY/SUBSECTION/DESCRIPTION lines stay unconverted.</summary>
 		private void ConvertRestockLoot() {
 			TriggerSection restock = this.origData.GetTrigger("npcrestock");
 			if (restock == null) {
 				return;
 			}
+			bool lastItemIsGear = false; //what a following COLOR=/NAME= line belongs to
+			bool anyItem = false;
 			using (System.IO.StringReader reader = new System.IO.StringReader(restock.Code.ToString())) {
 				string line;
 				while ((line = reader.ReadLine()) != null) {
 					Match m = restockItemRE.Match(line);
+					if (m.Success) {
+						foreach (string part in gluedItemRE.Split(m.Groups["value"].Value)) {
+							string value = NormalizeRestockItem(part);
+							if (value.Length > 0) {
+								this.Set("Loot", value, m.Groups["comment"].Value);
+								lastItemIsGear = false;
+								anyItem = true;
+							}
+						}
+						continue;
+					}
+					m = restockLineRE.Match(line);
 					if (!m.Success) {
 						continue;
 					}
-					foreach (string part in gluedItemRE.Split(m.Groups["value"].Value)) {
-						string value = NormalizeRestockItem(part);
-						if (value.Length > 0) {
-							this.Set("Loot", value, m.Groups["comment"].Value);
-						}
+					string name = m.Groups["name"].Value.ToLowerInvariant();
+					string val = m.Groups["value"].Value.Trim();
+					string comment = m.Groups["comment"].Value;
+					switch (name) {
+						case "itemnewbie":
+							anyItem = true;
+							//a few chardefs give the same gear in both @Create and @NPCRestock (e.g.
+							//i_hair_long) - Sphere's second copy just lands in the pack; skip it, and
+							//its COLOR= with it (the @Create copy has its own)
+							lastItemIsGear = !this.HasEquipLine(val);
+							if (lastItemIsGear) {
+								this.ProcessCreateTriggerLine("itemnewbie", val, comment, restock.StartLine);
+							}
+							break;
+						case "color":
+							if (anyItem && lastItemIsGear) {
+								this.Set("EquipColor", val, comment);
+							}
+							break;
+						case "name":
+							if (anyItem && lastItemIsGear) {
+								this.Set("EquipName", val, comment);
+							}
+							break;
+						case "addspell":
+							this.Set("AddSpell", val, comment);
+							break;
 					}
 				}
 			}
@@ -699,6 +757,14 @@ namespace SteamEngine.Converter {
 				return;
 			}
 			if (name == "tag.npc_summoning_count") {
+				return;
+			}
+			//#794 - Erebor's "tag(isBoss,1)" (28 chardefs): bosses never turn into an elite
+			//monster (EliteNPC.scp's f_TransformToElite) - NPCDef.IsBoss
+			if (name == "tag.isboss") {
+				if (!this.IsPlayerDefByName && (value.Trim() != "0")) {
+					this.Set("IsBoss", "1", comment);
+				}
 				return;
 			}
 			if (name == "tag.npc_stun_chance" || name == "tag.npc_stun_time" || name == "tag.npc_stun_delay" ||
