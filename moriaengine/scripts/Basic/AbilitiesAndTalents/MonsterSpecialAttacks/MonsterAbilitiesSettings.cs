@@ -196,5 +196,11 @@ namespace SteamEngine.CompiledScripts {
 			get { return MonsterSpecialAttacks.SniperDef?.Damage; }
 			set { if (MonsterSpecialAttacks.SniperDef != null) { MonsterSpecialAttacks.SniperDef.Damage = value; } }
 		}
+
+		//#778/#783 - landed hits a strangler vine (e_ovinovac) takes before it lets go of whoever it entangled
+		public int StranglerVineHitsToBreak {
+			get { return MonsterSpecialAttacks.StranglerVineDef == null ? 0 : MonsterSpecialAttacks.StranglerVineDef.HitsToBreak; }
+			set { if (MonsterSpecialAttacks.StranglerVineDef != null) { MonsterSpecialAttacks.StranglerVineDef.HitsToBreak = value; } }
+		}
 	}
 }
