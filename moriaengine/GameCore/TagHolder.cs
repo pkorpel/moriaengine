@@ -428,7 +428,9 @@ namespace SteamEngine {
 			if (this.IsDeleted) {
 				throw new DeletedException("You can not manipulate a deleted object (" + this + ")");
 			}
-			if (this.IsLimbo && RunLevelManager.IsRunning) { //when loading, it's ok for stuff to be in limbo
+			//#786 - mid-delete, a Thing is in limbo on purpose and its own teardown (plugins, timers)
+			//still has to work with it - that's not the stray-limbo bug the check below is about
+			if (this.IsLimbo && RunLevelManager.IsRunning && !this.IsBeingDeleted) { //when loading, it's ok for stuff to be in limbo
 				try {
 					this.Delete();
 				} catch { }
@@ -437,6 +439,13 @@ namespace SteamEngine {
 		}
 
 		internal virtual bool IsLimbo {
+			get {
+				return false;
+			}
+		}
+
+		/// <summary>#786 - true while this object's own delete is in progress (see Thing.InternalDeleteNoRFV).</summary>
+		internal virtual bool IsBeingDeleted {
 			get {
 				return false;
 			}

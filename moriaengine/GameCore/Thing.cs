@@ -496,6 +496,15 @@ namespace SteamEngine {
 			}
 		}
 
+		//#786 - true from the start of InternalDeleteNoRFV until it's done (IsDeleted from then on)
+		private bool beingDeleted;
+
+		internal override bool IsBeingDeleted {
+			get {
+				return this.beingDeleted;
+			}
+		}
+
 		public override void Trigger(TriggerKey tk, ScriptArgs sa) {
 			this.ThrowIfDeleted();
 			for (int i = 0, n = registeredTGs.Count; i < n; i++) {
@@ -865,9 +874,15 @@ namespace SteamEngine {
 		}
 
 		internal void InternalDeleteNoRFV() {
-			if (this.IsDeleted) {
-				return;
+			if (this.IsDeleted || this.beingDeleted) {
+				return; //#786 - already gone, or a delete of this Thing is already under way further up the stack
 			}
+			//#786 - Trigger_Destroy below puts the Thing into limbo BEFORE base.Delete() tears down
+			//its plugins (the order #206 needs). A plugin's own teardown touching the Thing (e.g.
+			//WeaponSkillTargetQueuePlugin.On_UnAssign -> AbortSkill -> a trigger -> ThrowIfDeleted)
+			//saw "in limbo, not deleted" and called Delete() again, which restarted this whole method
+			//until the stack overflowed and took GameCore down (exit 134).
+			this.beingDeleted = true;
 			// #206 - this used to call base.Delete() (PluginHolder.Delete(): DeletePlugins() +
 			// ClearTriggerGroups() + DeleteTimers()) BEFORE Trigger_Destroy(), silently wiping
 			// out any per-instance plugin/trigger-group/timer that was supposed to handle
