@@ -7646,6 +7646,20 @@ and bin/obj already exist from prior sessions). Full suite:
   decision (a feature gets scoped, a question gets answered, an issue gets
   filed), write it into this file in the same turn, before moving to the next
   thing — don't batch it up for "later."
+- **Write the "what I'm about to do" entry BEFORE starting work, not after.**
+  Strengthened 2026-10-28, explicit standing instruction: "when I give you some
+  work, I want first thing to be to update claude.md with what you are going to
+  do, then start working" — sessions die mid-task often enough that a
+  post-hoc-only summary leaves no trail if that happens before you get to write
+  it. For any non-trivial task (not a one-line tweak): as the FIRST action, add
+  a `## IN PROGRESS (<date>): <short title>` section at the top of this file
+  stating what was asked, the plan, and which issue/branch it's tracked under
+  (even if the issue doesn't exist yet - add it once filed, a beat later).
+  Update that SAME section as the work proceeds (plan changes, real findings,
+  blockers) instead of leaving it stale. Once shipped, either fold it into the
+  normal `## DONE (...)` entry (rename the header, keep the content) or delete
+  it if it was fully superseded - don't leave both an IN PROGRESS and a DONE
+  entry for the same task sitting around after the fact.
 - **File a GitHub issue for every bug** — whether the user reports it in chat or you
   discover it yourself while working on something else. This is an explicit standing
   instruction from the user (2026-10-13): "every bug raised by either me or found
