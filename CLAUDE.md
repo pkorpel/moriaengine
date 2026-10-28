@@ -1,14 +1,31 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-28): teventStubs batch 2 SHIPPED (knockback/selfreser/detect/leaper/looter) - #745 (cure bleeding) still QUEUED for later
+## SESSION HANDOFF (2026-10-28): teventStubs batch 3 SHIPPED (summoneater/parakrik/npc_curse/summoning/sniper/infiniteMana) - #745 (cure bleeding) still QUEUED; #751 (command-auth quirk) filed, not fixed
 
-**Where things stand:** 9 of the 148 `teventStubs.scp` placeholder abilities from #653 now
-have real behavior - the original 4 (`e_npc_stun`/`e_npc_critic`/`e_npc_roundattack`(`_pullall`)/
-`e_npc_bleed`, PRs #741/#744) plus this session's 5 more (`e_npc_knockback`/`e_selfreser`/
-`e_npc_detect`/`e_npc_leaper`/`e_looter`, PR #748, closes #747) - see the DONE entry just below
-for the full writeup. `e_item_refuser` (119 monsters) was investigated and deliberately left
-untouched - no feasible hook exists in this engine yet for a give/drop-onto-character
-interaction (no `Trigger_ReceiveItem`/`On_ItemDropOn_Char` anywhere).
+**Where things stand:** 15 of the 148 `teventStubs.scp` placeholder abilities from #653 now
+have real behavior - batch 1 (`e_npc_stun`/`e_npc_critic`/`e_npc_roundattack`(`_pullall`)/
+`e_npc_bleed`, PRs #741/#744), batch 2 (`e_npc_knockback`/`e_selfreser`/`e_npc_detect`/
+`e_npc_leaper`/`e_looter`, PR #748), and batch 3 - `e_summoneater`/`e_parakrik`/`e_npc_curse`
+("Dark Curse")/`e_npc_summoning`("Summoner")/`e_npc_sniper`/`e_npc_infiniteMana` (PR #752,
+closes #750) - see the DONE entry just below for the full batch-3 writeup. `e_item_refuser`
+(119 monsters) stays deliberately untouched - no feasible hook exists in this engine yet for a
+give/drop-onto-character interaction (no `Trigger_ReceiveItem`/`On_ItemDropOn_Char` anywhere).
+
+**Filed, NOT fixed - #751**: a real, narrow pre-existing engine quirk found while building
+batch 3's tests. `#406`'s "only gate the literal top-level command word" fix only clears
+`Commands.topLevelCommandPending` from `AuthorizeCommandThrow`'s own call site (lazy-expression
+resolution) - `Commands.AuthorizeCommand` (the SEPARATE entry point `SimpleCommandParser` itself
+uses for a non-elevated account's top-level dispatch) never touches that flag at all. So on an
+account whose `MaxPlevel` is below `Globals.PlevelForLscriptCommands` (routes through
+`SimpleCommandParser`, not the full LScript parser - i.e. any account except the server's
+literal first-ever one), the flag stays true straight through the `Test`-prefix exemption, and
+the FIRST cold lazy `.def` FieldValue resolution triggered by a command's own body (e.g. a
+brand-new NPCDef's never-before-touched `ANIM=`/`WeaponType=` line) gets wrongly re-gated using
+its own internal expression name instead of being exempt - "No permission to run that command".
+Same deferral precedent as #96/#73/#146 - worked around in the TEST harness only (promote to GM
+first to route through the LScript parser, then demote back to a plain player before sending
+the real command - see `Tests/Protocol/MonsterAbilitiesBatch3Tests.cs`'s
+`PromoteThenDemoteToAvoidColdLazyFieldAuthBug` helper), not fixed in the engine itself.
 
 **Queued, NOT started**: **#745** - while explaining how bleed works, confirmed there's
 currently NO way to cure/stop a bleed effect early for either bleed source (monster bite or
@@ -19,10 +36,96 @@ mechanism unless the user actually asks to pick #745 up; it needs its own real d
 (which action cures it - Healing skill/bandage, a spell, both; should monster-bleed and
 player-ability-bleed share one cure path) per the issue body.
 
-**Nothing else is queued** - 139 other, lower-frequency `teventStubs` abilities are still
-zero-effect stubs (named-boss mechanics, elemental auras, etc. - see the #653 DONE entry's own
-frequency table), plus `e_item_refuser` (deferred, see above). If the user doesn't mention #745
-or picking more of those next session, ask what they want to pick up.
+**Nothing else is queued** - 133 other, lower-frequency `teventStubs` abilities are still
+zero-effect stubs (named-boss mechanics, elemental auras, etc.), plus `e_item_refuser`
+(deferred, see above). If the user doesn't mention #745 or picking more of those next session,
+ask what they want to pick up - a fresh frequency survey of what's left (same method as #653's
+original one) would be the natural next step if they want another batch.
+
+## DONE (2026-10-28): teventStubs batch 3 - e_summoneater/e_parakrik/e_npc_curse/e_npc_summoning/e_npc_sniper/e_npc_infiniteMana given real behavior (PR #752, closes #750)
+
+User asked "what are some other monster abilities we can implement?" - ran a fresh frequency
+survey across `scripts/converted/`'s real `TEVENTS=` lines for the ~139 still-untouched
+stubs (excluding `e_character`/`e_monster`, the already-confirmed-dead legacy AI hooks, and
+`e_item_refuser`, deferred) and pulled the real archive mechanics for the top 6 candidates via
+the GitHub fork. Presented a ranked table with real monster counts + mechanics + build-effort
+estimate; **user picked "all 6 top candidates"**. Architecture plan presented and approved
+before any code, same gate as every previous batch.
+
+**Shipped, one consumer method per ability** (all in `MonsterSpecialAttacks.cs` unless noted):
+- `e_summoneater` (177 monsters) - unconditional in the real archive (no chance tag at all) -
+  `TryApplySummonEater` hooked at the very TOP of `DamageManager.ProcessSwing`'s landed-swing
+  branch (before critic/stun/knockback/bleed) - if the defender is a summoned creature
+  (`SummonSpellDef.IsSummonedCreature`), deletes it outright and the caller bails out of the
+  whole swing immediately, nothing left to apply anything else to. New public
+  `SummonSpellDef.MarkAsSummonedCreature` exposes the existing private tag-set so OTHER
+  summon-shaped mechanisms (like this batch's own Summoner, see below) can mark their spawns
+  the same way.
+- `e_parakrik` ("Paralyzing Scream", 105 monsters) - `ParaKrikAbilityDef` (chance {70,70}
+  permille, cooldown {50,50} raw deciseconds - same convention as Stun, range 8 tiles
+  approximating the real archive's "same sector" scope, which this engine has no equivalent
+  query for). `TryApplyParaKrik` checked once per `NPCAiTimer.Fight` think-tick while fighting
+  (same precedent as roundattack/detect) - paralyzes every non-GM, living player within range
+  via the SAME `ParalyzeEffectPluginDef.Paralyze` call stun already uses (own dedicated
+  `PluginKey` though - a target can legitimately be both stunned AND screamed-at).
+- `e_npc_curse` ("Dark Curse", 71 combined case variants) - has the cleanest doc comment of any
+  ability in the whole archive: "hurts all the enemies in distance of 8 using dark and dirty
+  magic". `NpcCurseAbilityDef` (chance {110,110}, cooldown {12,15} real seconds, damage
+  {50,60}, range 8). `TryApplyNpcCurse`, same once-per-tick pattern - deals AoE damage to every
+  valid player-or-tamed-pet target (NOT other wild monsters, matching the archive's own
+  `isPlayer-or-isPet` filter) within range. Real finding mid-build: bare `DamageType.Magic` has
+  no phase-2 resist "subtype" bit and throws (`Sanity.IfTrueThrow`) - switched to
+  `DamageType.MagicMystical`, this engine's existing generic "magic damage, no specific
+  element" bucket (already used for the Mystic profession's own attack), which fits "dark and
+  dirty magic" as well as any other label would.
+- `e_npc_summoning` ("Summoner", 41 monsters) - `SummonerAbilityDef` (chance {50,50}, cooldown
+  {30,30}s, summon lifetime {7200,7200}s = 2h) + new `NPCDef.SummonedCreatures` (tag-backed
+  `List<NPCDef>`, same shape as the existing `Spells` from #564, real archive fields
+  `tag.npc_summoning_char[i]`/`_count`). `TryApplySummoning`, same once-per-tick pattern - spawns
+  ONE INSTANCE OF EVERY configured chardef per proc (not a random pick, matching the archive's
+  own loop-over-all-indices), autonomous `AggroMode.Hostile` (no ControlMaster, same choice
+  `SummonSpellDef`'s own Hostile branch makes), marked via the new `MarkAsSummonedCreature` and
+  despawned via the existing generic `SummonSpellDef.SummonDespawnTimer`.
+- `e_npc_sniper` (20 monsters) - `SniperAbilityDef` (chance {200,200}, damage {50,50}).
+  `TryApplySniper`, same call-site/shape as the existing `TryApplyCritic` (before `CauseDamage`,
+  mutates `swingArgs.DamageAfterAC`) but gated on the attacker's OWN weapon being ranged
+  (`WeaponType.Bow`/`XBow`) AND the defender being a player - strictly narrower than critic's
+  "vs player only, any weapon".
+- `e_npc_infiniteMana` (54 monsters) - `InfiniteManaAbilityDef` (no fields, unconditional).
+  `TryApplyInfiniteMana` checked once per `NPCAiTimer.Fight` think-tick - just
+  `self.Mana = self.MaxMana` when granted, so a caster never runs dry between casts.
+
+**Real engine bug found and worked around (NOT fixed), filed as #751** - see the SESSION
+HANDOFF section above for the full writeup. Found via exactly the "dump the real server log"
+technique this file already recommends: two of the new tests (on a second, non-elevated test
+account needed to stay under the account's 5-character-slot cap) failed with "No permission to
+run that command" even though the command itself was `Test`-prefixed and should be exempt -
+traced to `#406`'s own fix only covering the LScript-parser entry point
+(`AuthorizeCommandThrow`), not `SimpleCommandParser`'s separate one (`AuthorizeCommand`) used
+by non-elevated accounts. Worked around in the test harness (promote to GM, then demote back to
+a plain player before the real command - raises `MaxPlevel` so routing switches to the
+LScript parser, which clears the flag correctly, while the DEMOTE only touches `PLevel` so the
+character is still a genuine non-GM for the ability's own target-filtering logic).
+
+**Converter**: new `tag.parakrik_chance`/`_delay`, `tag.npc_curse_chance`/`_delay`/`_dmg`,
+`tag.npc_sniper_chance`/`_dmg`, `tag.npc_summoning_chance`/`_time`/`_removeTime` mappings
+(simple `{min,max}`-range cases, same shape as every prior ability batch) plus a dedicated
+prefix-matched case for `tag.npc_summoning_char[N]` (N varies per entry) → `AddSummon = defname`
+(same shape as the existing `addspell=` → `AddSpell` mapping from #564) -
+`tag.npc_summoning_count` is a deliberate no-op, since `NPCDef.SummonedCreatures`' own
+`List.Count` already IS "how many to spawn each proc" by construction. Regenerated via a real
+converter run against `github.com/pkorpel/erebor-sphere-archive` - 26 `scripts/converted` files
+picked up real per-species values, hand-reviewed diff confirmed purely additive -
+`systems/aldaron.def` excluded again (same already-documented pre-existing resist-ordering
+drift from every prior regen this cycle).
+
+**Tests**: `MonsterAbilitiesBatch3Tests` (new, both tiers) - deterministic, calls
+`MonsterSpecialAttacks`'s public methods directly. Split across TWO accounts (6 Facts would
+have pushed the shared account over its 5-character-slot cap) - the two on the second account
+needed the `#751` workaround described above. Fast tier 53/53;
+`MonsterSpecialAttacksTests`/`MonsterAbilitiesBatchTests`/`NpcBleedTests`/`NpcMultiSpellTests`/
+`NpcSupportOnlySpellWeavingTests`/`NpcBeneficialSpellTests`/`NpcRangeOverrideTests` all still
+pass unchanged.
 
 ## DONE (2026-10-28): teventStubs batch 2 - e_npc_knockback/e_selfreser/e_npc_detect/e_npc_leaper/e_looter given real behavior (PR #748, closes #747)
 
