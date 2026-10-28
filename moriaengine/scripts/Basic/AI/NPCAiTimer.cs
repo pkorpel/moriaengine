@@ -99,6 +99,9 @@ namespace SteamEngine.CompiledScripts {
 		//almost every time). This was the real cause of "NPC swings but never actually hits."
 		private Character lastEngagedTarget;
 
+		//#769 - transient, not saved: the path being walked by StepTowardsSmart. Re-planned from scratch after a reload.
+		private NpcPathCache pathCache;
+
 		public AIState LastState { get; private set; }
 
 		/// <summary>Read-only introspection for tests - this NPC's current combat target, if any (null otherwise). See FollowTarget/ControlMaster on Character for the analogous already-public state.</summary>
@@ -683,19 +686,42 @@ namespace SteamEngine.CompiledScripts {
 				this.TryStep(self, (Direction) (((int) dir - turn + 8) % 8));
 		}
 
-		/// <summary>Like StepTowards, but routes around obstacles via the real AStar pathfinder (scripts/Basic/AI/PathFinding/AStar.cs) instead of only ever trying the single direct-line direction. Used by Follow ("come") and the "go" goal-point order, where the user specifically wants NPCs to navigate around basic obstacles rather than getting stuck walking into a wall. Recomputes the path fresh every tick rather than caching it - correct for a moving follow-target, and simple; worth revisiting if profiling ever shows this is too hot with many pets following at once.</summary>
+		/// <summary>Like StepTowards, but routes around obstacles via the real AStar pathfinder (scripts/Basic/AI/PathFinding/AStar.cs) instead of only ever trying the single direct-line direction. Used by Follow, combat approach, the "go" goal point and home-return.
+		/// #769 - the path is cached (NpcPathCache) and walked step by step; it's only re-planned when a step fails, the target moved away from where it was planned to, or every few steps. A character target counts as reached when adjacent (its own tile is occupied), and a target that can't be reached still yields a partial path toward it.</summary>
 		private void StepTowardsSmart(NPC self, IPoint3D target) {
-			Direction[] path = AStar.GetPathFromTo(self, target, self.GetMap(), self.MovementSettings);
+			if (this.pathCache == null) {
+				this.pathCache = new NpcPathCache();
+			}
+			Direction dir;
+			if (this.pathCache.TryGetNextStep(self.X, self.Y, target.X, target.Y, out dir)) {
+				if (this.TryStep(self, dir)) {
+					this.pathCache.Advance(self.X, self.Y);
+					return;
+				}
+				this.pathCache.Invalidate(); //something moved into the way since the path was planned
+			}
+
+			Map map = self.GetMap();
+			AStar.Options options = new AStar.Options();
+			options.StopWithin = (target is Character) ? 1 : 0;
+			options.FirstStepBlocked = (x, y, z) => CharacterCollision.IsTileBlockedFor(self, map, x, y, z);
+			AStar.Result result = AStar.FindPathOnMap(self, target, map, self.MovementSettings, options);
+			Direction[] path = result.Path;
 			if (path == null) {
-				Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " found NO path to " + target + " - falling back to direct step");
+				Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " found NO path to " + target + " (" + result.Iterations + " iterations) - falling back to direct step");
+				this.pathCache.Invalidate();
 				this.StepTowards(self, target);
 			} else if (path.Length == 0) {
-				//already adjacent/at the target per AStar's own exact-tile check - nothing to step
-			} else if (!this.TryStep(self, path[0])) {
-				Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " path's first step (" + path[0] + ") failed CheckMovement - falling back to direct step");
-				//the first step didn't actually work (e.g. something else moved into the way since the path
-				//was computed) - fall back to a direct attempt rather than freezing in place
-				this.StepTowards(self, target);
+				this.pathCache.Invalidate(); //already there
+			} else {
+				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y);
+				if (this.TryStep(self, path[0])) {
+					this.pathCache.Advance(self.X, self.Y);
+				} else {
+					Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " path's first step (" + path[0] + ") failed - falling back to direct step");
+					this.pathCache.Invalidate();
+					this.StepTowards(self, target);
+				}
 			}
 		}
 
