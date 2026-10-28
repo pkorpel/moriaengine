@@ -1,14 +1,27 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-28): #763 c_sheep_woolly Color-parse crash (user-approved order: #763 -> #769 AStar -> #768 pets)
+## DONE (2026-10-28): #763 c_sheep_woolly crash - converter now comma-separates Color/model random lists
 
-User picked the order: fix #763 first, so the pet/ranger/magery tests that spawn c_sheep_woolly
-become runnable again, then the AStar fixes (#769), then the pet-command rework (#768). Plan:
-root-cause the `animals.def:1154` "unexpected token ' }'" Color parse. Fix it in the archive
-fork (pkorpel/erebor-sphere-archive) or the converter, NEVER by hand-patching scripts/converted/.
-Regenerate, prove with MagerySpellTests + PetCommandTests + RangerCombatTests.
-(#767 is still unmerged on branch feat-767-char-collision while its targeted run finishes. Do
-#763 on its own branch from main, and don't build while that run is in flight.)
+**Next up (user-approved order)**: #769 AStar fixes, then the #768 pet-command rework.
+**User instruction, same day: verify with FAST-TIER UNIT TESTS ONLY, no protocol runs** (the
+protocol suite cost about 2 hours of waiting in the #767 session).
+
+Root cause: Sphere's `COLOR={ colors_white 9 color_gray_lt 1 }` was converted verbatim. In
+LScript, `name value` is an assignment (`WhiteSpaceAssigner`), so a whitespace random list
+starting with an identifier collapses into one element and the RandomExpression rule fails
+("unexpected token ' }'") the first time the def is instantiated. Number-only lists
+(`{097f 1 099e 1}`) were fine. Fix in the CONVERTER, no hand-patching:
+`ConvertedThingDef` now runs the existing `ConvertedTemplateDef.FixRandomExpression` (comma
+insertion, previously only used for templates/constants) on `Color` and on `model` from `ID=`.
+Regenerated against the archive fork (copy the clone's inner `scripts/.` into
+`SphereShardConverter/convert/`): 10 files differ, 9 of them ONLY in `Color`/`model` brace lines,
+and those 9 were swapped wholesale. `systems/aldaron.def` was excluded again (its known
+unrelated resist drift; no brace changes in it).
+Tests: `Tests/RandomExpressionParseTests.cs` (fast tier, compiles both forms through LScript;
+the old form is asserted to FAIL). Fast tier 62/62. NOT verified end-to-end with the
+protocol tests that spawn c_sheep_woolly (Magery/PetCommands/Ranger), per the unit-tests-only
+instruction. Those should start passing again; #719's Ranger part likely had the same cause.
+Not covered: random lists in `Equip =` (parsed by `NPC.LoadScriptLine`, unsupported there).
 
 ## IN PROGRESS (2026-10-28): ANALYSIS ONLY, 2 parallel asks while the #767 targeted test run goes
 
