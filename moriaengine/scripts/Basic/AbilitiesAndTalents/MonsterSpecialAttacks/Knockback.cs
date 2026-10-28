@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
 
@@ -32,24 +33,39 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public class KnockbackAbilityDef : PassiveAbilityDef {
 		private FieldValue chance;
+		private FieldValue distance;
 
 		public KnockbackAbilityDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 			this.chance = this.InitTypedField("knockbackChance", new double[] { 333, 333 }, typeof(double[]));
+			//user-requested default (was a hardcoded single tile) - PushAway below walks this
+			//many tiles outward, stopping at the first blocked one, so a real obstacle still
+			//shortens the push rather than being skipped over.
+			this.distance = this.InitTypedField("knockbackDistance", (double) 3, typeof(double));
 		}
 
 		/// <summary>Permille (0-1000) {min,max} chance range to knock the target back on a
-		/// landed melee swing - deliberately shadows AbilityDef.Chance (different shape/scale)
-		/// rather than reusing it.</summary>
+		/// landed hit (melee OR ranged - DamageManager.ProcessSwing rolls this identically for
+		/// any weapon type, confirmed real content already combines both: c_troll_strelec has
+		/// a bow equipped alongside this ability) - deliberately shadows AbilityDef.Chance
+		/// (different shape/scale) rather than reusing it.</summary>
 		public new double[] Chance {
 			get { return (double[]) this.chance.CurrentValue; }
 			set { this.chance.CurrentValue = value; }
+		}
+
+		/// <summary>Tiles to push the defender away, in a straight line - PushAway stops early
+		/// (at the furthest still-open tile) if a wall/water/map-edge is hit before reaching
+		/// this many tiles.</summary>
+		public double Distance {
+			get { return (double) this.distance.CurrentValue; }
+			set { this.distance.CurrentValue = value; }
 		}
 	}
 
 	public static partial class MonsterSpecialAttacks {
 		private static KnockbackAbilityDef knockbackAbilityDef;
-		private static KnockbackAbilityDef KnockbackDef {
+		internal static KnockbackAbilityDef KnockbackDef {
 			get {
 				if (knockbackAbilityDef == null) {
 					knockbackAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_knockback") as KnockbackAbilityDef;
@@ -58,8 +74,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>#knockback - on a landed melee swing, a chance to push the defender one
-		/// tile further away from the attacker - same tile-validity checks as PullToward
+		/// <summary>#knockback - on a landed melee swing, a chance to push the defender away
+		/// from the attacker by up to KnockbackAbilityDef.Distance tiles (default 3, #758),
+		/// stopping early at the first blocked tile - same tile-validity checks as PullToward
 		/// (Roundattack.cs), just the inverse direction (away from, not toward, the attacker).</summary>
 		public static void TryApplyKnockback(Character attacker, Character defender) {
 			KnockbackAbilityDef def = KnockbackDef;
@@ -77,23 +94,49 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			PushAway(attacker, defender);
+			PushAway(attacker, defender, (int) def.Distance);
 		}
 
-		private static void PushAway(Character attacker, Character defender) {
+		/// <summary>Walks up to `maxDistance` tiles away from `attacker`, stopping at the
+		/// furthest tile that's still open (no water/impassable/map-edge) - a blocked tile
+		/// SHORTENS the push rather than cancelling it outright, unlike the old single-tile
+		/// version this replaced.</summary>
+		private static void PushAway(Character attacker, Character defender, int maxDistance) {
 			Direction dir = Point2D.GetDirFromTo(attacker, defender);
-			int x = defender.X + directionDx[(int) dir];
-			int y = defender.Y + directionDy[(int) dir];
 			Map map = defender.GetMap();
-			if (!map.IsValidPos(x, y) || map.IsMapTileWater(x, y)) {
-				return; //no safe spot to land the push - skip it rather than clip into something
+			int dx = directionDx[(int) dir];
+			int dy = directionDy[(int) dir];
+			int steps = ComputeMaxPushSteps(maxDistance, step => {
+				int x = defender.X + (dx * step);
+				int y = defender.Y + (dy * step);
+				if (!map.IsValidPos(x, y) || map.IsMapTileWater(x, y)) {
+					return false;
+				}
+				int tileId = map.GetTileId(x, y);
+				return !TileData.HasFlag(TileData.GetTileFlags(tileId), TileFlag.Impassable);
+			});
+			if (steps > 0) {
+				int x = defender.X + (dx * steps);
+				int y = defender.Y + (dy * steps);
+				int z = map.GetTileZ(x, y);
+				defender.Go(x, y, z, defender.M);
 			}
-			int tileId = map.GetTileId(x, y);
-			if (TileData.HasFlag(TileData.GetTileFlags(tileId), TileFlag.Impassable)) {
-				return;
+		}
+
+		/// <summary>Pure "walk outward until blocked" step counter, factored out of PushAway so
+		/// it's directly unit-testable without a live Map/Character (see
+		/// Tests/KnockbackPushDistanceTests.cs) - `isStepOpen(step)` answers "is the tile at
+		/// this many steps out still open" for steps 1..maxDistance in order; returns the
+		/// largest step reached before the first `false` (0 if even step 1 is blocked).</summary>
+		public static int ComputeMaxPushSteps(int maxDistance, Func<int, bool> isStepOpen) {
+			int reached = 0;
+			for (int step = 1; step <= maxDistance; step++) {
+				if (!isStepOpen(step)) {
+					break;
+				}
+				reached = step;
 			}
-			int z = map.GetTileZ(x, y);
-			defender.Go(x, y, z, defender.M);
+			return reached;
 		}
 	}
 }

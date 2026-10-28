@@ -49,7 +49,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static CriticAbilityDef criticAbilityDef;
-		private static CriticAbilityDef CriticDef {
+		internal static CriticAbilityDef CriticDef {
 			get {
 				if (criticAbilityDef == null) {
 					criticAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_critic") as CriticAbilityDef;

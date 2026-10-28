@@ -55,7 +55,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static SniperAbilityDef sniperAbilityDef;
-		private static SniperAbilityDef SniperDef {
+		internal static SniperAbilityDef SniperDef {
 			get {
 				if (sniperAbilityDef == null) {
 					sniperAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_sniper") as SniperAbilityDef;

@@ -73,7 +73,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static NpcCurseAbilityDef npcCurseAbilityDef;
-		private static NpcCurseAbilityDef NpcCurseDef {
+		internal static NpcCurseAbilityDef NpcCurseDef {
 			get {
 				if (npcCurseAbilityDef == null) {
 					npcCurseAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_curse") as NpcCurseAbilityDef;
