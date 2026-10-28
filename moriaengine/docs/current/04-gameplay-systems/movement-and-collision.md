@@ -74,6 +74,24 @@ dead player can't body-block monsters in a doorway.
 | `staminaLossAtWeight` | 150 | load percent at which a step costs 1 stamina half the time (Sphere's `STAMINALOSSATWEIGHT`; Erebor ran 150) |
 | `runningStaminaPenalty` | 50 | percent added to the load while running (Sphere's `RUNNINGPENALTY`) |
 
+## Forced moves: knockback and pull (#781)
+
+Knockback (`e_npc_knockback`, `PushAway`) and roundattack's pull (`e_npc_roundattack_pullall`,
+`PullToward`) move their victim by forced steps (`MonsterSpecialAttacks.ForceMove`). Each step
+has to pass `Map.CheckMovement` with the victim's own movement settings, the same check walking
+uses, so statics/walls, diagonal corners, water and climb height all count. A step onto a
+living character's tile (`CharacterCollision.FindObstacle`) is refused too. The move stops at the
+last tile reached, and the victim lands on that tile's real Z.
+
+- Knockback pushes up to `knockbackDistance` (3) tiles straight away from the attacker. Standing
+  right by a wall means no push; 2 tiles from one means exactly 2.
+- The pull drags the target toward the monster until adjacent, stopping at the first wall.
+
+Before #781, both only looked at the terrain tile under each step and ignored statics: a
+knockback could push someone into a house through its wall, and the pull teleported its victim
+straight next to the monster. The walk itself is the pure `MonsterSpecialAttacks.WalkForced`
+(step delegate), tested in `Tests/KnockbackPushDistanceTests.cs`.
+
 ## Fatigue and overload (#779)
 
 Ported from Sphere 0.99z8 (EreborNext `CheckMoveWalkDir`, `Calc_MaxCarryWeight`,
