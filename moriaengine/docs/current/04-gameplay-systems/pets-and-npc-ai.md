@@ -59,6 +59,13 @@ rather than a dedicated multi-tile-obstacle test - a future session building a g
 multi-tile-movement test should probe for open terrain first (`Map.CheckMovement` in all
 8 directions) rather than assuming "near an existing spawn point" is safe.
 
+### Characters block NPC steps (#767)
+
+NPCs can't step onto a tile another living character stands on. A refused direct step tries
+the two neighbouring directions, and `StepTowardsSmart`'s AStar routes around a character-occupied
+first step. Pets and summons follow the same rule. See
+[Movement & character collision](movement-and-collision.md).
+
 ## Taming and pet ownership
 
 Taming a valid target sets the NPC's `ControlMaster` to the tamer - verified via a real

@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
+using SteamEngine.Regions;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
@@ -654,12 +655,32 @@ namespace SteamEngine.CompiledScripts {
 
 			Direction towardsTarget = Point2D.GetDirFromTo(self, target);
 			Direction away = (Direction) (((int) towardsTarget + 4) % 8);
-			this.TryStep(self, away);
+			if (!this.TryStep(self, away)) {
+				this.TrySidestepCharacter(self, away);
+			}
 		}
 
 		private void StepTowards(NPC self, IPoint2D target) {
 			Direction dir = Point2D.GetDirFromTo(self, target);
-			this.TryStep(self, dir);
+			if (!this.TryStep(self, dir)) {
+				this.TrySidestepCharacter(self, dir);
+			}
+		}
+
+		/// <summary>#767 - NPCs can't shove past characters (CharacterCollision). When the step in
+		/// dir was refused only because someone stands there, try the two neighbouring directions
+		/// (random order first), like Sphere's NPC_WalkToPoint sidestep. Terrain-blocked steps are
+		/// left alone so wall-pacing behavior doesn't change.</summary>
+		private bool TrySidestepCharacter(NPC self, Direction dir) {
+			Map map = self.GetMap();
+			int x, y, z;
+			if (!map.CheckMovement(self, self.MovementSettings, dir, false, out x, out y, out z) ||
+					!CharacterCollision.IsTileBlockedFor(self, map, x, y, z)) {
+				return false;
+			}
+			int turn = (Globals.dice.Next(2) == 0) ? 1 : -1;
+			return this.TryStep(self, (Direction) (((int) dir + turn + 8) % 8)) ||
+				this.TryStep(self, (Direction) (((int) dir - turn + 8) % 8));
 		}
 
 		/// <summary>Like StepTowards, but routes around obstacles via the real AStar pathfinder (scripts/Basic/AI/PathFinding/AStar.cs) instead of only ever trying the single direct-line direction. Used by Follow ("come") and the "go" goal-point order, where the user specifically wants NPCs to navigate around basic obstacles rather than getting stuck walking into a wall. Recomputes the path fresh every tick rather than caching it - correct for a moving follow-target, and simple; worth revisiting if profiling ever shows this is too hot with many pets following at once.</summary>

@@ -723,6 +723,12 @@ namespace SteamEngine {
 					return false;
 				}
 
+				//#767 - another character standing on the destination tile. The actual rules
+				//(Sphere-style shove for players, hard block for NPCs) live in scripts.
+				if (!canMoveEverywhere && !this.CheckCharacterObstacles(map, newX, newY, newZ)) {
+					return false;
+				}
+
 				if (TriggerResult.Cancel == this.Trigger_Step(dir, running)) {
 					return false;
 				}
@@ -800,6 +806,13 @@ namespace SteamEngine {
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
 		public virtual TriggerResult On_Step(Direction direction, bool running) {
 			return TriggerResult.Continue;
+		}
+
+		/// <summary>Called by WalkRunOrFly once the terrain allows a step onto (x, y, z), before @step.
+		/// Return false to refuse the step because of other characters standing there (#767).
+		/// The default lets everyone walk through everyone.</summary>
+		public virtual bool CheckCharacterObstacles(Map map, int x, int y, int z) {
+			return true;
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]

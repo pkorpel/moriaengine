@@ -132,6 +132,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Movement")]
+		public CharCollisionSettings CharCollisionSettings {
+			get {
+				return CharCollisionSettings.instance;
+			}
+		}
+
 		[InfoField("Logout")]
 		public LogoutSettings LogoutSettings {
 			get {

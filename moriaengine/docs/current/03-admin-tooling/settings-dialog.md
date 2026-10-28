@@ -68,6 +68,7 @@ Read straight off `SettingsCategories`'s own `[InfoField(...)]` properties
 | Profession System | `ProfessionSettings` | `enforceWeaponArmorRestrictions`, `grantSkillsOnAssign` |
 | Item Decay | `DecaySettings` | see below |
 | Notoriety | `NotorietySettings` | `murdererThreshold`, `criminalFlagSeconds`, `wildMonstersRenderOrange` - see [Notoriety & murder counts](../04-gameplay-systems/notoriety.md) |
+| Movement | `CharCollisionSettings` | `requireFullStamina`, `flatPushCost`, `playersBlockedByCharacters`, `npcsBlockedByCharacters` - see [Movement & character collision](../04-gameplay-systems/movement-and-collision.md) |
 | Logout | `LogoutSettings` | `logoutDelaySeconds` (default 60), `showLogoutEffect` - see [Networking & the protocol layer](../02-engine-core/networking-protocol.md#disconnect-lingering-and-the-logout-delay-261) |
 
 ## Worked example: `DecaySettings`
