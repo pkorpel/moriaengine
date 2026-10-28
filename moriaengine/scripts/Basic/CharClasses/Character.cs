@@ -2058,6 +2058,16 @@ namespace SteamEngine.CompiledScripts {
 			return CharacterCollision.CheckStep(this, map, x, y, z);
 		}
 
+		//#778 strangler-vine hold, #779 Sphere's fatigue/overload refusals
+		public override bool CheckCanMove(bool running) {
+			return MonsterSpecialAttacks.CheckEntangledCanMove(this) && MovementStamina.CheckCanMove(this);
+		}
+
+		//#779 walking stamina drain
+		public override void On_StepTaken(bool running) {
+			MovementStamina.DrainForStep(this, running);
+		}
+
 		//#767 - Sphere's @PersonalSpace: someone just shoved past this character. As in Sphere
 		//0.99z8, it fires after the pusher paid the stamina and its return value is ignored.
 		private static TriggerKey personalSpaceTK = TriggerKey.Acquire("personalSpace");

@@ -719,6 +719,10 @@ namespace SteamEngine {
 				int newZ, newY, newX;
 
 				bool canMoveEverywhere = (this.IsPlayer && this.Plevel >= Globals.PlevelOfGM);
+				//#778/#779 - can this character take a step at all right now (held, exhausted, overloaded)
+				if (!canMoveEverywhere && !this.CheckCanMove(running)) {
+					return false;
+				}
 				if (!map.CheckMovement(oldPoint, this.MovementSettings, dir, canMoveEverywhere, out newX, out newY, out newZ)) {
 					return false;
 				}
@@ -757,6 +761,9 @@ namespace SteamEngine {
 
 				this.point4d.SetXYZ(newX, newY, newZ);
 				this.ChangedP(oldPoint, mt);
+				if (!canMoveEverywhere) {
+					this.On_StepTaken(running); //#779 - e.g. walking stamina drain
+				}
 			} else { //just changing direction, no steps
 				CharSyncQueue.AboutToChangeDirection(this, requested);
 				this.Direction = dir;
@@ -813,6 +820,17 @@ namespace SteamEngine {
 		/// The default lets everyone walk through everyone.</summary>
 		public virtual bool CheckCharacterObstacles(Map map, int x, int y, int z) {
 			return true;
+		}
+
+		/// <summary>Called by WalkRunOrFly before anything else about a step is checked: false refuses
+		/// the step outright (e.g. held in place, too exhausted or too overloaded to move - #778/#779).
+		/// Not called for GM players.</summary>
+		public virtual bool CheckCanMove(bool running) {
+			return true;
+		}
+
+		/// <summary>Called by WalkRunOrFly right after a step was actually taken (#779). Not called for GM players.</summary>
+		public virtual void On_StepTaken(bool running) {
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
