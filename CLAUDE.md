@@ -1,5 +1,11 @@
 # moriaengine — working state
 
+## QUEUED (2026-10-28): #788 - user said "leave it for a bit later, we will have more work around these things"
+
+The 6 pre-existing CombatDepthTestsA/MagerySpellTests failures uncovered by the #786 fix (NPC
+stand-off never attacks: effectiveRange=1 + no LOS at the spawn point; distant summons NONE;
+Reveal). Do NOT start on it unless the user picks it up - it'll come with related work.
+
 ## DONE (2026-10-28): #786 GameCore stack overflow deleting an NPC mid-swing - the real "#100 flake"
 
 Root cause: `Thing.InternalDeleteNoRFV` runs `Trigger_Destroy` (marks the Thing LIMBO) before
