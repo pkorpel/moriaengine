@@ -1,13 +1,14 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-27): all 4 top-frequency teventStubs abilities SHIPPED (stun/critic/roundattack+pullall/bleed) - #745 (cure bleeding) QUEUED for later, read DONE entries below if picking this back up
+## SESSION HANDOFF (2026-10-28): teventStubs batch 2 SHIPPED (knockback/selfreser/detect/leaper/looter) - #745 (cure bleeding) still QUEUED for later
 
-**Where things stand:** #708/#721/#724/#728/#730-732/#734(+follow-up) are all shipped (see
-their own DONE entries below). This same session also shipped real behavior for ALL 4 of the
-top-frequency `teventStubs.scp` placeholder abilities from #653 - `e_npc_stun`/`e_npc_critic`/
-`e_npc_roundattack`(`_pullall`) (PR #741) and now `e_npc_bleed` too (see the DONE entry just
-below for the full writeup) - the earlier "bleed deferred" note from this same handoff is
-resolved.
+**Where things stand:** 9 of the 148 `teventStubs.scp` placeholder abilities from #653 now
+have real behavior - the original 4 (`e_npc_stun`/`e_npc_critic`/`e_npc_roundattack`(`_pullall`)/
+`e_npc_bleed`, PRs #741/#744) plus this session's 5 more (`e_npc_knockback`/`e_selfreser`/
+`e_npc_detect`/`e_npc_leaper`/`e_looter`, PR #748, closes #747) - see the DONE entry just below
+for the full writeup. `e_item_refuser` (119 monsters) was investigated and deliberately left
+untouched - no feasible hook exists in this engine yet for a give/drop-onto-character
+interaction (no `Trigger_ReceiveItem`/`On_ItemDropOn_Char` anywhere).
 
 **Queued, NOT started**: **#745** - while explaining how bleed works, confirmed there's
 currently NO way to cure/stop a bleed effect early for either bleed source (monster bite or
@@ -18,10 +19,98 @@ mechanism unless the user actually asks to pick #745 up; it needs its own real d
 (which action cures it - Healing skill/bandage, a spell, both; should monster-bleed and
 player-ability-bleed share one cure path) per the issue body.
 
-**Nothing else is queued** - 144 other, lower-frequency `teventStubs` abilities are still
+**Nothing else is queued** - 139 other, lower-frequency `teventStubs` abilities are still
 zero-effect stubs (named-boss mechanics, elemental auras, etc. - see the #653 DONE entry's own
-frequency table). If the user doesn't mention #745 or picking more of those next session, ask
-what they want to pick up.
+frequency table), plus `e_item_refuser` (deferred, see above). If the user doesn't mention #745
+or picking more of those next session, ask what they want to pick up.
+
+## DONE (2026-10-28): teventStubs batch 2 - e_npc_knockback/e_selfreser/e_npc_detect/e_npc_leaper/e_looter given real behavior (PR #748, closes #747)
+
+Direct continuation of #653's frequency survey - user asked "what else abilities do we have
+there? Want to implement more of them," picked **"the high-frequency unresearched ones"**:
+`e_looter` (146 monsters), `e_item_refuser` (119), `e_npc_leaper` (93), `e_selfreser` (78),
+`e_npc_detect` (60), `e_npc_knockback` (40). Same AbilityDef+NPCDef-override+converter-mapping
+pattern as the first batch, applied to 5 structurally different hook shapes (swing, death,
+2 different AI-tick checks, item-step) instead of 4 similar ones.
+
+**Two genuine design-fork questions, both resolved via AskUserQuestion before implementing**:
+- `e_npc_leaper`'s real archive mechanic is teleport-assisted pursuit (short hops toward the
+  target, bypassing real pathfinding) - **user chose to simplify to a real speed boost**
+  instead: extra honest `StepTowardsSmart` pathfinding steps per `NPCAiTimer.Fight` think-tick
+  while closing distance (`LeaperAbilityDef.ExtraSteps`, default 2) - never teleports or clips
+  through walls.
+- `e_looter`'s real trigger is "steps onto a lootable corpse item" (`on=@ItemStep`) - **user
+  chose to port this faithfully**: reacts to stepping onto ANY lootable corpse (not just ones
+  this NPC personally killed), via `Corpse.On_Step` (an existing, already-generic "character
+  stepped onto this item" hook - `AbstractCharacter.Trigger_NewPosition` already calls
+  `itm.Trigger_Step` for every item on the landed-on tile, just never had an override before).
+- `e_item_refuser` was investigated and found genuinely blocked - no feasible hook exists in
+  this engine for a give/drop-onto-a-character interaction at all. Left as an untouched stub,
+  not implemented.
+
+**What shipped, one per hook shape**:
+- `e_npc_knockback` - `KnockbackAbilityDef` (default chance 333/1000 = 1-in-3, matching the real
+  archive's own unset-tag default), consumed via a new `MonsterSpecialAttacks.TryApplyKnockback`
+  hooked into `DamageManager.ProcessSwing` right after the existing stun hook - pushes the
+  defender one tile further away from the attacker, same tile-validity checks as the existing
+  `PullToward` helper (inverted direction). Real archive unit is 0-100 (not the usual 0-1000
+  permille) - the converter multiplies by 10 on the way in so `NPCDef.KnockbackChance` stays on
+  the same scale as every other ability.
+- `e_selfreser` - `SelfReserAbilityDef` (default delay {60,60} seconds), consumed via a new
+  `MonsterSpecialAttacks.TryApplySelfRes` hooked directly into `Character.CauseDeath` right
+  after `corpse.InitFromChar(this)` (the earliest point with both a valid corpse AND the dying
+  NPC's own still-valid position - `Trigger_Death`/`On_Death` fire too early, before the corpse
+  exists at all). A new plain `NpcSelfResTimer : BoundTimer` (no `.ct` template needed, unlike a
+  Plugin subclass) carries just `NPCDef`+x/y/z/m and calls `npcDef.Create(...)` on timeout -
+  attached to the freshly-created `Corpse`, not the killer, since `TagHolder.AddTimer`'s
+  one-timer-per-key-per-object semantics mean a shared key on a reused TagHolder (like the
+  killer, who could die to two self-resing monsters) would silently replace an earlier timer.
+- `e_npc_detect` - `DetectAbilityDef` (default range 8 tiles / interval 5s, no NPCDef override -
+  no real per-species tag found in the archive for this one), consumed via a new
+  `MonsterSpecialAttacks.TryApplyDetect` checked once per `NPCAiTimer.Fight` think-tick (same
+  "already only runs while actively fighting" precedent as the existing roundattack check) -
+  force-clears `Flag_Hidden`/`Flag_InvisByMagic` on every character within range. Deliberately
+  simplified from the real archive's own ground-trap-item mechanic (drops an item that reveals
+  whoever steps near it) - functionally equivalent for the common case, no new ground-trap item
+  type needed.
+- `e_npc_leaper` - `LeaperAbilityDef` (default 2 extra steps, no NPCDef override, same reasoning
+  as detect), consumed via a new `MonsterSpecialAttacks.GetLeaperExtraSteps` called from
+  `NPCAiTimer.Fight`'s existing approach branch - loops extra `StepTowardsSmart` calls (bailing
+  early once back in range) right after the normal single step.
+- `e_looter` - `LooterAbilityDef` (no tunable fields at all - the real archive mechanic is
+  unconditional, no chance roll, no per-species tag), consumed via a new
+  `Corpse.On_Step`/`MonsterSpecialAttacks.TryApplyLoot` - moves exactly one item per step from
+  the corpse into the looter's own backpack, matching the real archive's own single-grab shape.
+
+**Real bug caught before shipping, worth remembering for any future test killing a non-player
+NPC**: `Character.CauseDeath` calls `this.Delete()` for a non-player character - a deleted
+`Thing`'s own `X`/`Y` properties throw ("You can not manipulate a deleted object") the moment
+anything tries to read them afterward. The looter test's first draft read `dummy.X`/`dummy.Y`
+*after* `dummy.CauseDeath(null)` to locate the fresh corpse - fixed by capturing the position
+into plain local variables *before* calling `CauseDeath`.
+
+**Converter**: new `tag.npc_knockback` (0-100→0-1000 scale conversion, confirmed via
+`{0 100} < tag.npc_knockback` in the real archive source) and `tag.resstimer`→`SelfresDelay`
+mappings in `SphereShardConverter/ConvertedCharDef.cs`. Regenerated via a real converter run
+against `github.com/pkorpel/erebor-sphere-archive` - 9 `scripts/converted` files picked up real
+per-species values (`chars/nb_monsters.def`/`npc_evil_race.def`/`specNPCMarek.def`/
+`specNPCTotal.def`/`specNPC_HCN.def`/`specNPCaldaron.def`/`t2a.def`/`tutorial.def`,
+`questy/eq_001_craftMstitel_chars.def`), hand-reviewed diff confirmed purely additive (new
+`SelfresDelay=`/`KnockbackChance=` lines only, zero other changes) - `systems/aldaron.def`
+excluded again from this regen, same already-documented pre-existing unrelated resist-field-
+ordering drift from earlier sessions (not touched here either).
+
+**Tests**: `MonsterAbilitiesBatchTests` (new, both tiers, own dedicated account/collection since
+the existing `MonsterSpecialAttacksTests` collection was already at its 5-character-slot cap) -
+deterministic, calls `MonsterSpecialAttacks`'s public methods directly (knockback push,
+leaper's extra-step count with/without the ability, detect's hidden-target reveal, looter's
+item transfer) except self-res, which needs a real elapsed-time check (kill a monster with
+`SelfresDelay=1`, confirm 0 live matches immediately after, confirm 1 after a real 2.5s wait -
+`WaitForGameOutputSince` used for the second, reused "SELFRES_COUNT_TEST:" marker, matching the
+established "a marker sent more than once in one Fact needs the position-aware wait" lesson).
+Fast tier 53/53; `MonsterSpecialAttacksTests`/`NpcBleedTests`/`NpcMultiSpellTests`/
+`NpcSupportOnlySpellWeavingTests`/`NpcBeneficialSpellTests`/`NpcRangeOverrideTests` all still
+pass unchanged.
 
 ## DONE (2026-10-27): e_npc_bleed given real behavior (PR TBD)
 
