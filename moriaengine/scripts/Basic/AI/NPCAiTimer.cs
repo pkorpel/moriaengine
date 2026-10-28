@@ -330,6 +330,18 @@ namespace SteamEngine.CompiledScripts {
 			//fighting - same "once per think-tick while fighting" treatment as roundattack.
 			MonsterSpecialAttacks.TryApplyDetect(self);
 
+			//real-user-reported follow-up - a_tevent_e_parakrik/e_npc_curse/e_npc_summoning are
+			//all periodic, recharge-gated AoE/summon procs, same "once per think-tick while
+			//fighting" treatment as roundattack/detect above.
+			MonsterSpecialAttacks.TryApplyParaKrik(self);
+			MonsterSpecialAttacks.TryApplyNpcCurse(self);
+			MonsterSpecialAttacks.TryApplySummoning(self);
+
+			//real-user-reported follow-up - a_tevent_e_npc_infiniteMana just keeps this NPC's
+			//mana topped up every think-tick while fighting, so a caster granted it never runs
+			//dry between casts.
+			MonsterSpecialAttacks.TryApplyInfiniteMana(self);
+
 			if (this.TryCastSpell(self, target)) {
 				return; //cast instead of swinging this tick - don't also touch the weapon-skill queue below
 			}

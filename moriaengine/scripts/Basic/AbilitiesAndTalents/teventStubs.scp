@@ -262,8 +262,11 @@ Name = "(e_npc_blow_up)"
 [CriticAbilityDef a_tevent_e_npc_critic]
 Name = "Critical Hit"
 
-[PassiveAbilityDef a_tevent_e_npc_curse]
-Name = "(e_npc_curse)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//NpcCurseAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - periodic
+//ranged AoE magic damage pulse, see NPCAiTimer.Fight.
+[NpcCurseAbilityDef a_tevent_e_npc_curse]
+Name = "Dark Curse"
 
 [PassiveAbilityDef a_tevent_e_npc_curse_mana]
 Name = "(e_npc_curse_mana)"
@@ -283,8 +286,11 @@ Name = "(e_npc_diamonddrop)"
 [PassiveAbilityDef a_tevent_e_npc_golddrop]
 Name = "(e_npc_golddrop)"
 
-[PassiveAbilityDef a_tevent_e_npc_infinitemana]
-Name = "(e_npc_infinitemana)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//InfiniteManaAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - mana
+//always kept at max, see NPCAiTimer.Fight.
+[InfiniteManaAbilityDef a_tevent_e_npc_infinitemana]
+Name = "Infinite Mana"
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
 //KnockbackAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) -
@@ -333,8 +339,11 @@ Name = "Round Attack"
 [RoundattackPullAbilityDef a_tevent_e_npc_roundattack_pullall]
 Name = "Round Attack (Pull)"
 
-[PassiveAbilityDef a_tevent_e_npc_sniper]
-Name = "(e_npc_sniper)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//SniperAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - chance to add
+//bonus damage while fighting at range, vs players only, see DamageManager.ProcessSwing.
+[SniperAbilityDef a_tevent_e_npc_sniper]
+Name = "Sniper"
 
 [PassiveAbilityDef a_tevent_e_npc_stam_dmg]
 Name = "(e_npc_stam_dmg)"
@@ -348,8 +357,11 @@ Name = "Stunning Strike"
 [PassiveAbilityDef a_tevent_e_npc_summoner]
 Name = "(e_npc_summoner)"
 
-[PassiveAbilityDef a_tevent_e_npc_summoning]
-Name = "(e_npc_summoning)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//SummonerAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - periodic
+//chance to summon configured reinforcements, see NPCAiTimer.Fight.
+[SummonerAbilityDef a_tevent_e_npc_summoning]
+Name = "Summoner"
 
 [PassiveAbilityDef a_tevent_e_npc_summonkiller]
 Name = "(e_npc_summonkiller)"
@@ -390,8 +402,11 @@ Name = "(e_ostards)"
 [PassiveAbilityDef a_tevent_e_ovinovac]
 Name = "(e_ovinovac)"
 
-[PassiveAbilityDef a_tevent_e_parakrik]
-Name = "(e_parakrik)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//ParaKrikAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - periodic
+//chance to paralyze every nearby player, see NPCAiTimer.Fight.
+[ParaKrikAbilityDef a_tevent_e_parakrik]
+Name = "Paralyzing Scream"
 
 [PassiveAbilityDef a_tevent_e_phoenix]
 Name = "(e_phoenix)"
@@ -468,8 +483,11 @@ Name = "(e_strach_lord1)"
 [PassiveAbilityDef a_tevent_e_strach_lord2]
 Name = "(e_strach_lord2)"
 
-[PassiveAbilityDef a_tevent_e_summoneater]
-Name = "(e_summoneater)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//SummonEaterAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - instantly
+//deletes a summoned-creature target on a landed hit, see DamageManager.ProcessSwing.
+[SummonEaterAbilityDef a_tevent_e_summoneater]
+Name = "Summon Eater"
 
 [PassiveAbilityDef a_tevent_e_summoneater_vamp]
 Name = "(e_summoneater_vamp)"

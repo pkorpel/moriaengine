@@ -1,0 +1,46 @@
+// real-user-reported follow-up ("what are some other monster abilities we can implement?") -
+// test-only content for scripts/Tests/MonsterAbilitiesBatch3Tests.cs (e_summoneater/
+// e_parakrik/e_npc_curse/e_npc_summoning/e_npc_sniper/e_npc_infiniteMana). Each test NPCDef is
+// configured with a guaranteed (1000/1000) chance for its own ability, so these call
+// MonsterSpecialAttacks' public methods directly rather than waiting out real combat RNG.
+[NPCDef npc_test_summoneater_attacker]
+NAME = "Summon Eater Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_summoneater
+
+[NPCDef npc_test_parakrik_attacker]
+NAME = "Parakrik Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_parakrik
+ParaKrikChance = 1000 1000
+ParaKrikCooldown = 0 0
+
+[NPCDef npc_test_npccurse_attacker]
+NAME = "Npc Curse Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_curse
+NpcCurseChance = 1000 1000
+NpcCurseCooldown = 0 0
+NpcCurseDamage = 40 40
+
+[NPCDef npc_test_summoner_attacker]
+NAME = "Summoner Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_summoning
+SummoningChance = 1000 1000
+SummoningCooldown = 0 0
+SummoningLifetime = 1 1
+AddSummon = c_a_jackrabbit
+
+[NPCDef npc_test_sniper_attacker]
+NAME = "Sniper Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_sniper
+WeaponType = Bow
+SniperChance = 1000 1000
+SniperDamage = 50 50
+
+[NPCDef npc_test_infinitemana_attacker]
+NAME = "Infinite Mana Test Attacker"
+ANIM = 0x1fff
+TEVENTS = e_npc_infinitemana
