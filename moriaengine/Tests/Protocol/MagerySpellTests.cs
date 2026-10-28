@@ -504,14 +504,25 @@ namespace SteamEngine.Tests.Protocol {
 				// a NullReferenceException (confirmed directly - silent, logged server-side, the cast
 				// just never starts). See TestCastSpellAtDummy for the opposite (GM/Account) case.
 				//
-				// distance=15 (beyond NPCAiTimer.AggroRange=8) is deliberate, not arbitrary - a
-				// Hostile summon with nobody else around WILL autonomously engage the only nearby
-				// character it can find (its own caster, absent any other target), and an
-				// actively-engaged NPC hanging the whole server on later cleanup was confirmed
-				// directly (see TestNeutralizeCharacterByUid's own doc comment) - keeping it out
-				// of aggro range entirely avoids that whole class of problem instead of trying to
-				// recover from it after the fact.
-				client.SendSpeech(".TestCastGroundTargetedSpellNearSelf s_blade_spirits 15");
+				// distance=17 (beyond NpcAggroSettings.instance.aggroRange, default 14 - was
+				// AggroRange=8 and distance=15 before that setting shipped, #762) is deliberate,
+				// not arbitrary - a Hostile summon with nobody else around WILL autonomously
+				// engage the only nearby character it can find (its own caster, absent any other
+				// target), and an actively-engaged NPC hanging the whole server on later cleanup
+				// was confirmed directly (see TestNeutralizeCharacterByUid's own doc comment) -
+				// keeping it out of aggro range entirely avoids that whole class of problem
+				// instead of trying to recover from it after the fact.
+				//
+				// NOTE (#762): this exact Fact currently fails regardless of distance - confirmed
+				// via a clean isolated worktree at unmodified main (commit 8504712, before any
+				// of this change) that it ALSO fails there with "MAGERY_SUMMON_TEST: NONE",
+				// same symptom. Pre-existing, unrelated to this change - not root-caused here
+				// (filed as its own issue). An earlier theory blaming Globals.MaxUpdateRange=18
+				// (the real client vision-range ceiling CanInteractWith enforces for ground-
+				// targeted casts) was disproven the same way - distance=15 (the original,
+				// once-passing value) fails identically to distance=25, so the real cause is
+				// something else entirely.
+				client.SendSpeech(".TestCastGroundTargetedSpellNearSelf s_blade_spirits 17");
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
 
 				Thread.Sleep(4000); // CASTTIME is 2.5s; generous margin for the stroke + effect dispatch

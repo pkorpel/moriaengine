@@ -51,8 +51,11 @@ namespace SteamEngine.CompiledScripts {
 	[SaveableClass]
 	public class NPCAiTimer : BoundTimer {
 		private const double ThinkIntervalSeconds = 1.5;
-		private const int AggroRange = 8;
-		private const int GiveUpRange = 12; //target got too far away (e.g. it fled or teleported) - drop it and go back to wandering
+		//GM-tunable via NpcAggroSettings (.settings -> "NPC Aggro") - was a hardcoded const
+		//int (AggroRange=8/GiveUpRange=12) before, defaults bumped to 14/18 per explicit
+		//user request.
+		private static int AggroRange { get { return NpcAggroSettings.instance.aggroRange; } }
+		private static int GiveUpRange { get { return NpcAggroSettings.instance.giveUpRange; } } //target got too far away (e.g. it fled or teleported) - drop it and go back to wandering
 		private const double FleeHealthFraction = 0.2;
 		private const int DefaultWanderLeash = 6; //max tiles from home while wandering, for any NPC not spawned via a configured Homedist (#206)
 
