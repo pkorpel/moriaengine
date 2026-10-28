@@ -1,0 +1,72 @@
+/*
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	Or visit http://www.gnu.org/copyleft/gpl.html
+*/
+
+using System;
+
+namespace SteamEngine.CompiledScripts {
+	/// <summary>
+	/// #769 - remembers an NPC's last AStar path, so NPCAiTimer.StepTowardsSmart walks it instead
+	/// of searching from scratch every think-tick. The next step is only handed out while the path
+	/// still applies: the NPC is where the path expects it, the target hasn't moved more than
+	/// TargetDrift tiles from where it was when the path was planned, and fewer than ReplanEvery
+	/// steps were taken since. Anything else - or a step that fails - means plan again.
+	/// </summary>
+	public sealed class NpcPathCache {
+		public const int TargetDrift = 2;
+		public const int ReplanEvery = 8;
+
+		private Direction[] path;
+		private int index;
+		private int expectedX, expectedY;
+		private int plannedTargetX, plannedTargetY;
+
+		public bool HasPath {
+			get { return (this.path != null) && (this.index < this.path.Length); }
+		}
+
+		public void SetPath(Direction[] newPath, int moverX, int moverY, int targetX, int targetY) {
+			this.path = newPath;
+			this.index = 0;
+			this.expectedX = moverX;
+			this.expectedY = moverY;
+			this.plannedTargetX = targetX;
+			this.plannedTargetY = targetY;
+		}
+
+		public bool TryGetNextStep(int moverX, int moverY, int targetX, int targetY, out Direction dir) {
+			dir = Direction.North;
+			if (!this.HasPath || (this.index >= ReplanEvery) ||
+					(moverX != this.expectedX) || (moverY != this.expectedY) ||
+					(Math.Max(Math.Abs(targetX - this.plannedTargetX), Math.Abs(targetY - this.plannedTargetY)) > TargetDrift)) {
+				return false;
+			}
+			dir = this.path[this.index];
+			return true;
+		}
+
+		/// <summary>The step handed out by TryGetNextStep was taken and the mover now stands at (x, y).</summary>
+		public void Advance(int moverX, int moverY) {
+			this.index++;
+			this.expectedX = moverX;
+			this.expectedY = moverY;
+		}
+
+		public void Invalidate() {
+			this.path = null;
+		}
+	}
+}

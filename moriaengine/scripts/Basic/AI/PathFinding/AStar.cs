@@ -23,225 +23,221 @@ using SteamEngine.Regions;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
+	/// <summary>
+	/// A* over the 8-directional UO grid (#769). Every step costs 1, diagonals included, so the
+	/// heuristic is the Chebyshev distance. The search itself (FindPath) only knows a step
+	/// function, so it runs the same on the real map (Map.CheckMovement) and on synthetic grids
+	/// in unit tests. All search state is per call - nothing static, so it's reentrant.
+	/// </summary>
 	public static class AStar {
-		private static HashSet<AStarNode> closedAndOpenList = new HashSet<AStarNode>();
-		private static PriorityQueue<AStarNode, int> openList = new PriorityQueue<AStarNode, int>();
+		/// <summary>One step from (x, y, z) in dir: false if illegal, otherwise where it lands.</summary>
+		public delegate bool StepFunc(int x, int y, int z, Direction dir, out int newX, out int newY, out int newZ);
+
+		public const int DefaultMaxIterations = 1000;
+
+		/// <summary>Search tuning. The defaults suit NPC movement.</summary>
+		public sealed class Options {
+			/// <summary>Node expansions before giving up.</summary>
+			public int MaxIterations = DefaultMaxIterations;
+			/// <summary>Arrived once within this many tiles (Chebyshev) of the target - 1 for a
+			/// character target, since its own tile is occupied.</summary>
+			public int StopWithin;
+			/// <summary>Max Z difference that still counts as arrived. The target's Z often isn't the
+			/// exact walkable Z of its tile (standing on an item, a slope), and the old exact-Z goal
+			/// test then burned the whole iteration budget and failed.</summary>
+			public int ZTolerance = 10;
+			/// <summary>Tiles beyond the start/target bounding box the search may wander.</summary>
+			public int WindowMargin = 16;
+			/// <summary>On failure, return the path to the node that got closest to the target
+			/// instead of null, so the mover still makes progress.</summary>
+			public bool AllowPartial = true;
+			/// <summary>#767 - (x, y, z) of a first step that's blocked anyway (e.g. a character
+			/// stands there). Only the first step is checked - characters move, and callers replan.</summary>
+			public Func<int, int, int, bool> FirstStepBlocked;
+		}
+
+		public sealed class Result {
+			public Direction[] Path;
+			/// <summary>False when Path is a partial route toward the target (or null).</summary>
+			public bool ReachedGoal;
+			public int Iterations;
+		}
+
+		private static readonly Direction[] emptyArray = new Direction[0];
 
 		public static Direction[] GetPathFromTo(IPoint3D start, IPoint3D target, Map map, IMovementSettings settings) {
-			return GetPathFromTo(start, target, map, settings, 1000, null);
+			return GetPathFromTo(start, target, map, settings, DefaultMaxIterations);
 		}
 
-		/// <summary>#767 - with a mover, a first step onto a tile another character blocks (see
-		/// CharacterCollision) is treated as impassable, so the path routes around it. Only the
-		/// first step is checked - characters move, and the path is recomputed every step anyway.</summary>
-		public static Direction[] GetPathFromTo(Character mover, IPoint3D target, Map map, IMovementSettings settings) {
-			return GetPathFromTo(mover, target, map, settings, 1000, mover);
-		}
-
-		private static Direction[] emptyArray = new Direction[0];
-
+		/// <summary>Exact-tile path (or null). Kept for the old callers; NPC movement uses
+		/// FindPathOnMap with a mover.</summary>
 		public static Direction[] GetPathFromTo(IPoint3D start, IPoint3D target, Map map, IMovementSettings settings, int maxIterations) {
-			return GetPathFromTo(start, target, map, settings, maxIterations, null);
+			Options options = new Options { MaxIterations = maxIterations, AllowPartial = false };
+			return FindPathOnMap(start, target, map, settings, options).Path;
 		}
 
-		private static Direction[] GetPathFromTo(IPoint3D start, IPoint3D target, Map map, IMovementSettings settings, int maxIterations, Character mover) {
-#if DEBUG
-			long ticksStart = HighPerformanceTimer.TickCount;
-			long ticksEnd;
-			double seconds;
-#endif
-			int targetX = target.X;
-			int targetY = target.Y;
-			int targetZ = target.Z;
+		/// <summary>#767 - a first step onto a tile another character blocks (see CharacterCollision)
+		/// is treated as impassable, so the path routes around it.</summary>
+		public static Direction[] GetPathFromTo(Character mover, IPoint3D target, Map map, IMovementSettings settings) {
+			Options options = new Options { AllowPartial = false };
+			options.FirstStepBlocked = (x, y, z) => CharacterCollision.IsTileBlockedFor(mover, map, x, y, z);
+			return FindPathOnMap(mover, target, map, settings, options).Path;
+		}
 
-			if ((targetX == start.X) && (targetY == start.Y) && (targetZ == start.Z)) {
-				return emptyArray;
+		public static Result FindPathOnMap(IPoint3D start, IPoint3D target, Map map, IMovementSettings settings, Options options) {
+			MutablePoint probe = new MutablePoint();
+			StepFunc step = delegate (int x, int y, int z, Direction dir, out int newX, out int newY, out int newZ) {
+				probe.x = x;
+				probe.y = y;
+				probe.z = z;
+				return map.CheckMovement(probe, settings, dir, false, out newX, out newY, out newZ);
+			};
+			return FindPath(start.X, start.Y, start.Z, target.X, target.Y, target.Z, step, options);
+		}
+
+		public static Result FindPath(int startX, int startY, int startZ, int targetX, int targetY, int targetZ, StepFunc step, Options options) {
+			Result result = new Result();
+			Node start = new Node(startX, startY, startZ, 0, null, Direction.North);
+			if (IsGoal(start, targetX, targetY, targetZ, options)) {
+				result.Path = emptyArray;
+				result.ReachedGoal = true;
+				return result;
 			}
 
-			closedAndOpenList.Clear();
-			openList.Clear();
-			AStarNode.ReuseAll();
-			AStarNode parentNode = AStarNode.GetNew(null, Direction.North, 0, start.X, start.Y, start.Z);
+			int minX = Math.Min(startX, targetX) - options.WindowMargin;
+			int maxX = Math.Max(startX, targetX) + options.WindowMargin;
+			int minY = Math.Min(startY, targetY) - options.WindowMargin;
+			int maxY = Math.Max(startY, targetY) + options.WindowMargin;
 
-			closedAndOpenList.Add(parentNode);
-			openList.Enqueue(parentNode, Heuristic(start, target));
+			Dictionary<long, int> bestG = new Dictionary<long, int>();
+			PriorityQueue<Node, long> open = new PriorityQueue<Node, long>();
+			bestG[Key(startX, startY, startZ)] = 0;
+			int startH = Heuristic(startX, startY, targetX, targetY, options.StopWithin);
+			open.Enqueue(start, Priority(0, startH));
+			Node best = start;
+			int bestH = startH;
 
+			while ((open.Count > 0) && (result.Iterations < options.MaxIterations)) {
+				Node node = open.Dequeue();
+				int knownG;
+				if (bestG.TryGetValue(Key(node.x, node.y, node.z), out knownG) && (knownG < node.g)) {
+					continue; //stale queue entry - a cheaper route to this node was found after it was queued
+				}
+				result.Iterations++;
 
-			int iterations = 0, nodesUsed = 0;
-			while ((iterations < maxIterations) && (openList.Count > 0)) {
-				parentNode = openList.Dequeue();
-				int newStepsSoFar = parentNode.stepsSoFar + 1;
+				int newG = node.g + 1;
 				for (int d = 0; d < 8; d++) {
-					int newY, newX, newZ;
 					Direction dir = (Direction) d;
-					if (map.CheckMovement(parentNode, settings, dir, false, out newX, out newY, out newZ)) {
-						bool isTarget = (targetX == newX) && (targetY == newY) && (targetZ == newZ);
-						if ((mover != null) && (parentNode.stepsSoFar == 0) && !isTarget &&
-								CharacterCollision.IsTileBlockedFor(mover, map, newX, newY, newZ)) {
-							continue;
-						}
-
-						//we found the target
-						if (isTarget) {
-							Direction[] path = new Direction[newStepsSoFar];
-							int i = newStepsSoFar - 1;
-							path[i] = dir;
-							i--;
-							for (; i >= 0; i--) {
-								path[i] = parentNode.cameFrom;
-								parentNode = parentNode.parentNode;// vtipny :)
-							}
-#if DEBUG
-							ticksEnd = HighPerformanceTimer.TickCount;
-							seconds = HighPerformanceTimer.TicksToSeconds(ticksEnd - ticksStart);
-							Logger.WriteDebug("Astar success. iterations:" + iterations + " nodes used:" + nodesUsed + ", took " + seconds + " seconds.");
-#endif
-							return path;
-						}
-
-						AStarNode newNode = AStarNode.GetNew(parentNode, dir, newStepsSoFar, newX, newY, newZ);
-						if (!closedAndOpenList.Contains(newNode)) {
-							int f = newStepsSoFar + Heuristic(newNode, target);
-							closedAndOpenList.Add(newNode);
-							openList.Enqueue(newNode, f);
-
-							nodesUsed++;
-							//Item i = (Item) Def.Create((ushort) newX, (ushort) newY, (sbyte) newZ, map.m);
-							//new AStarDecayTimer(i, TimeSpan.FromSeconds(5))
-							//    .Enqueue();
-						}
+					int x, y, z;
+					if (!step(node.x, node.y, node.z, dir, out x, out y, out z)) {
+						continue;
 					}
+					if ((x < minX) || (x > maxX) || (y < minY) || (y > maxY)) {
+						continue;
+					}
+					bool isTargetTile = (x == targetX) && (y == targetY);
+					if ((node.parent == null) && !isTargetTile && (options.FirstStepBlocked != null) && options.FirstStepBlocked(x, y, z)) {
+						continue;
+					}
+					long key = Key(x, y, z);
+					int oldG;
+					if (bestG.TryGetValue(key, out oldG) && (oldG <= newG)) {
+						continue;
+					}
+					bestG[key] = newG;
+
+					Node next = new Node(x, y, z, newG, node, dir);
+					if (IsGoal(next, targetX, targetY, targetZ, options)) {
+						result.Path = BuildPath(next);
+						result.ReachedGoal = true;
+						return result;
+					}
+					int h = Heuristic(x, y, targetX, targetY, options.StopWithin);
+					if ((h < bestH) || ((h == bestH) && (newG < best.g))) {
+						best = next;
+						bestH = h;
+					}
+					open.Enqueue(next, Priority(newG, h));
 				}
-				iterations++;
 			}
-#if DEBUG
-			ticksEnd = HighPerformanceTimer.TickCount;
-			seconds = HighPerformanceTimer.TicksToSeconds(ticksEnd - ticksStart);
-			Logger.WriteDebug("Astar failed. iterations:" + iterations + " nodes used:" + nodesUsed + ", took " + seconds + " seconds.");
-#endif
-			return null;
+
+			if (options.AllowPartial && (best != start)) {
+				result.Path = BuildPath(best);
+			}
+			return result;
 		}
 
-		private static int Heuristic(IPoint3D start, IPoint3D target) {
-			//return Point2D.GetSimpleDistance(start, target);
-
-			//taken RunUO heuristic. Let's see how we're compatible ;)
-			int x = start.X - target.X;
-			int y = start.Y - target.Y;
-			int z = start.Z - target.Z;
-
-			x *= 11;
-			y *= 11;
-
-			return (x * x) + (y * y) + (z * z);
-			//works nicely ;)
+		private static bool IsGoal(Node node, int targetX, int targetY, int targetZ, Options options) {
+			return (Chebyshev(node.x, node.y, targetX, targetY) <= options.StopWithin) &&
+				(Math.Abs(node.z - targetZ) <= options.ZTolerance);
 		}
 
-		private class AStarNode : IPoint3D {
-			internal int x;
-			internal int y;
-			internal int z;
-			internal int stepsSoFar;
-			internal Direction cameFrom;
-			internal AStarNode parentNode;
+		private static int Chebyshev(int x1, int y1, int x2, int y2) {
+			return Math.Max(Math.Abs(x1 - x2), Math.Abs(y1 - y2));
+		}
 
-			private AStarNode nextInStack;
+		/// <summary>Admissible and consistent: every step, diagonal or not, costs 1 and changes the
+		/// Chebyshev distance by at most 1. Z is left out - it only limits which steps are legal.</summary>
+		private static int Heuristic(int x, int y, int targetX, int targetY, int stopWithin) {
+			return Math.Max(0, Chebyshev(x, y, targetX, targetY) - stopWithin);
+		}
 
-			//zasobnik instanci, ucelem je pouze setreni vykonu, 
-			//tj. aby se nevytvarely porad novy a novy instance kdyz se muzou pouzit stary
-			private static AStarNode unusedStack;
+		/// <summary>f = g + h, ties broken toward the node nearer the target (smaller h).</summary>
+		private static long Priority(int g, int h) {
+			return ((long) (g + h) << 16) | (long) Math.Min(h, 0xffff);
+		}
 
+		private static long Key(int x, int y, int z) {
+			return ((long) (x & 0xffff) << 24) | ((long) (y & 0xffff) << 8) | (long) ((z + 128) & 0xff);
+		}
 
-			private static AStarNode firstInUsedStack;
-			private static AStarNode lastInUsedStack;
+		private static Direction[] BuildPath(Node end) {
+			Direction[] path = new Direction[end.g];
+			for (Node n = end; n.parent != null; n = n.parent) {
+				path[n.g - 1] = n.cameFrom;
+			}
+			return path;
+		}
 
-			private AStarNode() {
+		private sealed class Node {
+			internal readonly int x, y, z, g;
+			internal readonly Node parent;
+			internal readonly Direction cameFrom;
+
+			internal Node(int x, int y, int z, int g, Node parent, Direction cameFrom) {
+				this.x = x;
+				this.y = y;
+				this.z = z;
+				this.g = g;
+				this.parent = parent;
+				this.cameFrom = cameFrom;
+			}
+		}
+
+		/// <summary>Reused probe point for Map.CheckMovement, so the map adapter doesn't allocate per step.</summary>
+		private sealed class MutablePoint : IPoint3D {
+			internal int x, y, z;
+
+			public int X {
+				get { return this.x; }
 			}
 
-			internal static AStarNode GetNew(AStarNode parentNode, Direction cameFrom, int stepsSoFar, int x, int y, int z) {
-				AStarNode retVal = null;
-				if (unusedStack != null) {
-					retVal = unusedStack;
-					unusedStack = retVal.nextInStack;
-				} else {
-					retVal = new AStarNode();
-				}
-				if (lastInUsedStack == null) {
-					lastInUsedStack = retVal;
-				}
-				retVal.nextInStack = firstInUsedStack;
-				firstInUsedStack = retVal;
-
-				retVal.x = x;
-				retVal.y = y;
-				retVal.z = z;
-				retVal.stepsSoFar = stepsSoFar;
-				retVal.cameFrom = cameFrom;
-				retVal.parentNode = parentNode;
-				return retVal;
+			public int Y {
+				get { return this.y; }
 			}
 
-			internal static void ReuseAll() {
-				if (lastInUsedStack != null) {
-					lastInUsedStack.nextInStack = unusedStack;
-					unusedStack = firstInUsedStack;
-
-					lastInUsedStack = null;
-					firstInUsedStack = null;
-				}
+			public int Z {
+				get { return this.z; }
 			}
 
-			public override int GetHashCode() {
-				return ((17 ^ this.x) ^ this.y) ^ this.z;
-			}
-
-			public override bool Equals(object obj) {
-				AStarNode node = obj as AStarNode;
-				if (node != null) {
-					return ((this.x == node.x) && (this.y == node.y) && (this.z == node.z));
-				}
-				return false;
-			}
-
-			int IPoint2D.X {
-				get {
-					return (ushort) this.x;
-				}
-			}
-
-			int IPoint2D.Y {
-				get {
-					return (ushort) this.y;
-				}
-			}
-
-			int IPoint3D.Z {
-				get {
-					return (sbyte) this.z;
-				}
-			}
-
-			#region IPoint3D Members
-
-
-			IPoint3D IPoint3D.TopPoint {
+			public IPoint3D TopPoint {
 				get { return this; }
 			}
-
-			#endregion
-
-			#region IPoint2D Members
-
 
 			IPoint2D IPoint2D.TopPoint {
 				get { return this; }
 			}
-
-			#endregion
 		}
-
-
-
 
 		#region Testing
 		//for demonstrating of the path
