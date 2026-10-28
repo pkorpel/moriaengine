@@ -17,12 +17,15 @@
 
 using System;
 using SteamEngine.Common;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// #791 - Erebor's i_monster_create (systems/spawns.scp): a one-shot script item every monster
-	/// gets, whose timer runs "creaturestart" right after the NPC is created - after its
-	/// ON=@NPCRestock loot (NPCDef.Loot) is already in the backpack. The loot-related part:
+	/// gets, whose 0-second timer runs "creaturestart" right after the NPC is created - after its
+	/// ON=@NPCRestock loot (NPCDef.Loot) is already in the backpack, and after a spawn gem has
+	/// tagged it (#794 needs that). Here a CreatureStartTimer, also due at once. The loot part:
 	/// - the gold marker ("Loot = i_gold") becomes ExperienceReward * goldPermille / 1000 gold
 	///   (750 outside dungeons, 900 in them) - unless the monster was resurrected;
 	/// - i_nofame: no experience, no gold;
@@ -30,7 +33,8 @@ namespace SteamEngine.CompiledScripts {
 	/// - gold-scaled rare extras: elemental coal (more likely for fire monsters), ebony crystal,
 	///   ebony bowstring, treasure map;
 	/// - an experience reward between 0 and 10 is raised to 10.
-	/// Not ported (not loot): the elite-monster transform, combat-type tags, spawn bookkeeping.
+	/// #794 - outside dungeons, right before the gold: the elite-monster roll (EliteMonster).
+	/// Not ported (not loot): combat-type tags, spawn bookkeeping.
 	/// Tunable on the .settings "Loot" page (LootSettings).
 	/// </summary>
 	public static class MonsterLoot {
@@ -50,7 +54,25 @@ namespace SteamEngine.CompiledScripts {
 			return string.Equals(defname, MonsterCreateDefname, StringComparison.OrdinalIgnoreCase);
 		}
 
-		public static void ApplyCreatureStart(NPC npc) {
+		internal static readonly TimerKey creatureStartTimerKey = TimerKey.Acquire("_creatureStart_");
+
+		/// <summary>Called by NPC.On_Create for "Equip = i_monster_create" monsters.</summary>
+		public static void ScheduleCreatureStart(NPC npc) {
+			npc.AddTimer(creatureStartTimerKey, new CreatureStartTimer(creatingResurrected)).DueInSeconds = 0;
+		}
+
+		/// <summary>Runs a still pending creaturestart right now (tests, or code that needs the final
+		/// gold/elite state of a monster it just created). False if there was none.</summary>
+		public static bool FlushCreatureStart(NPC npc) {
+			CreatureStartTimer timer = npc.RemoveTimer(creatureStartTimerKey) as CreatureStartTimer;
+			if (timer == null) {
+				return false;
+			}
+			ApplyCreatureStart(npc, timer.resurrected);
+			return true;
+		}
+
+		public static void ApplyCreatureStart(NPC npc, bool resurrected) {
 			LootSettings settings = LootSettings.instance;
 			AbstractItem pack = npc.FindLayer(LayerNames.Pack);
 
@@ -59,16 +81,20 @@ namespace SteamEngine.CompiledScripts {
 				npc.ExperienceReward = 0;
 				noFame.Delete();
 			} else {
+				bool dungeon = IsDungeonMapPlane(npc.M);
+				if (!dungeon && !resurrected) {
+					EliteMonster.TrySpawnElite(npc); //#794 - before the gold, which follows its raised experience
+				}
 				AbstractItem gold = FindByDefname(npc, pack, "i_gold");
-				if ((gold != null) && !creatingResurrected) {
-					int gp = GoldFromExperience(npc.ExperienceReward, IsDungeonMapPlane(npc.M),
+				if ((gold != null) && !resurrected) {
+					int gp = GoldFromExperience(npc.ExperienceReward, dungeon,
 						settings.goldPermilleSurface, settings.goldPermilleDungeon);
 					if (gp <= 0) {
 						gold.Delete();
 					} else {
 						gold.Amount = gp;
 						if (RollMagicItem(gp, settings, Globals.dice)) {
-							DropMagicItemPlaceholder(npc, gp);
+							DropMagicItemPlaceholder(npc, gp + " gold");
 						}
 						if (settings.rareExtras) {
 							GiveRareExtras(npc, gp, Globals.dice);
@@ -107,8 +133,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>PLACEHOLDER (#791) - magic items aren't designed yet. Erebor gave an i_mi_bag here;
 		/// for now the roll only logs, so the chance is in place for when the drop is.</summary>
-		public static void DropMagicItemPlaceholder(NPC npc, int gold) {
-			Logger.WriteDebug("MonsterLoot: " + npc.Name + "#" + npc.Uid + " (" + gold + " gold) rolled a magic item - not implemented yet");
+		public static void DropMagicItemPlaceholder(NPC npc, string why) {
+			Logger.WriteDebug("MonsterLoot: " + npc.Name + "#" + npc.Uid + " (" + why + ") rolled a magic item - not implemented yet");
 		}
 
 		/// <summary>Erebor's thresholds, each "gold &gt; a random roll" - the bigger the gold, the likelier.</summary>
@@ -171,6 +197,30 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			return null;
+		}
+	}
+
+	/// <summary>#791/#794 - Erebor's i_monster_create timer (timerd=0): creaturestart right after the
+	/// creation code - a spawn gem's tag included - has run.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class CreatureStartTimer : BoundTimer {
+		/// <summary>Re-created by SelfRes - like Erebor's isResurrectedNPC: no gold, no elite.</summary>
+		[SaveableData, CopyableData]
+		public bool resurrected;
+
+		[DeepCopyImplementation, LoadingInitializer]
+		public CreatureStartTimer() {
+		}
+
+		public CreatureStartTimer(bool resurrected) {
+			this.resurrected = resurrected;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			NPC npc = cont as NPC;
+			if ((npc != null) && !npc.IsDeleted) {
+				MonsterLoot.ApplyCreatureStart(npc, this.resurrected);
+			}
 		}
 	}
 }

@@ -55,6 +55,10 @@ Equip = random_male_hair
 EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
+Equip = RANDOM_LIGHT
+Equip = i_robe
+EquipColor = colors_yellow
+Equip = i_sandals
 AggroMode = Calm
 
 [NPCDef c_q021_koza]

@@ -568,6 +568,11 @@ Karma = -1000
 Magery = 900 1000
 Wrestling = 700 800
 Tactics = 400 600
+Equip = I_ROBE
+EquipColor = 084b
+Equip = i_spellbook
+AddSpell = s_flamestrike
+EquipColor = 0036
 AggroMode = Calm
 
 [NPCDef c_h_poskok_Baradske_kasarny]
@@ -589,6 +594,11 @@ Karma = -1000
 Magery = 900 1000
 Wrestling = 700 800
 Tactics = 400 600
+Equip = I_ROBE
+EquipColor = 084b
+Equip = i_spellbook
+AddSpell = s_flamestrike
+EquipColor = 0036
 AggroMode = Calm
 
 [NPCDef c_m_kvest001_Liche_Sarfeos]

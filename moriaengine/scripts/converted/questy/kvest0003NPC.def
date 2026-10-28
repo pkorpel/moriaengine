@@ -144,6 +144,12 @@ Equip = random_male_hair
 EquipColor = green
 Equip = random_facial_hair
 EquipColor = green
+Equip = i_hat_wizards
+EquipColor = green
+Equip = i_bow
+Equip = i_sandals
+Equip = i_robe
+EquipColor = green
 AggroMode = Calm
 
 [NPCDef Zlaty_mustang]
@@ -223,4 +229,9 @@ Karma = -1000
 Magery = 900 1000
 Wrestling = 700 800
 Tactics = 400 600
+Equip = I_ROBE
+EquipColor = 0036
+Equip = i_spellbook
+AddSpell = s_flamestrike
+EquipColor = 0036
 AggroMode = Calm

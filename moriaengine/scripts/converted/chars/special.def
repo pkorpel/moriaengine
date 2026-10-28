@@ -42,6 +42,7 @@ Tactics = 1200
 Parry = 1500
 SpiritSpeak = 600
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 500 //na humanoidy silny 
 ResistParalyse = 650 750
 ResistSummon = 600 //individualni 
@@ -54,7 +55,6 @@ ResistFire = 50
 ResistElectric = -250
 ResistCold = 100
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0xbd]
 CATEGORY = Monsters
@@ -103,6 +103,7 @@ Tactics = 1200
 Parry = 1500
 SpiritSpeak = 1000
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 100 //na humanoidy silny 
 ResistParalyse = 800 925
 ResistSummon = 700 //individualni 
@@ -115,7 +116,6 @@ ResistFire = 150
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x30c]
 CATEGORY = Monsters
@@ -156,6 +156,7 @@ Tactics = 1000
 MagicResist = 1000
 SpiritSpeak = 1100
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 925 980
 ResistSummon = 1000
@@ -168,7 +169,6 @@ ResistFire = 400
 ResistElectric = 600
 ResistCold = 200
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x4d]
 CATEGORY = Monsters
@@ -213,6 +213,7 @@ Tactics = 1500
 Wrestling = 1200
 SpiritSpeak = 350
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 800 950
 ResistSummon = 950
@@ -224,7 +225,6 @@ ResistFire = 400
 ResistElectric = 400
 ResistCold = 200
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x311]
 CATEGORY = Monsters
@@ -271,6 +271,7 @@ Parry = 1500
 Tactics = 1500
 SpiritSpeak = 800
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 500
 ResistParalyse = 800 900
 ResistSummon = 600 //individualni 
@@ -283,7 +284,6 @@ ResistFire = 150
 ResistElectric = 450
 ResistCold = -50
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef c_minotaur_strazce]
 CATEGORY = Monsters
@@ -332,6 +332,7 @@ Parry = 1500
 Tactics = 1500
 SpiritSpeak = 750
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 600
 ResistParalyse = 850 950
 ResistSummon = 600
@@ -344,7 +345,6 @@ ResistFire = 200
 ResistElectric = 150
 ResistCold = 250
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef c_strazce_ohne]
 CATEGORY = Monsters
@@ -395,6 +395,8 @@ Equip = i_spellbook
 AddSpell = s_harm
 AddSpell = s_summon_elem_fire
 Equip = i_monster_create
+Loot = i_gold
+Loot = i_reag_sulfur_ash,{30, 40}
 ResistPoison = 1000
 ResistParalyse = 700 850
 ResistSummon = 500
@@ -407,8 +409,6 @@ ResistFire = 1000
 ResistElectric = 400
 ResistCold = -500
 AggroMode = Hostile
-Loot = i_gold
-Loot = i_reag_sulfur_ash,{30, 40}
 
 [NPCDef c_strazce_vody]
 CATEGORY = Monsters
@@ -447,6 +447,9 @@ MaxHits = 15000 16000
 MaxStam = 200 260
 MaxMana = 1000
 Experience = 300 320
+SummoningChance = 500 //50% 
+SummoningCooldown = 60 //nezakouzli znovu 60 sek 
+AddSummon = c_spirit_water
 NaturalDamageType = DamageType.Cold|DamageType.Magic
 MagicResist = 2500
 Wrestling = 1000 1200
@@ -455,6 +458,8 @@ Provocation = 1000
 SpiritSpeak = 550
 Equip = i_light_source
 Equip = i_monster_create
+Loot = i_gold
+Loot = random_reagent,{25, 35}
 ResistPoison = 1000
 ResistParalyse = 1000
 ResistSummon = 550
@@ -467,8 +472,6 @@ ResistFire = 1000
 ResistElectric = -500
 ResistCold = -100
 AggroMode = Hostile
-Loot = i_gold
-Loot = random_reagent,{25, 35}
 
 [NPCDef c_strazce_vzduchu]
 CATEGORY = Monsters
@@ -507,6 +510,12 @@ MaxHits = 10000 10500
 MaxStam = 200 220
 MaxMana = 1000
 Experience = 350 380
+SummoningChance = 500 //50% 
+SummoningCooldown = 50 //nezakouzli znovu 50 sek 
+AddSummon = c_elem_air
+AddSummon = c_elem_air
+AddSummon = c_elem_air
+AddSummon = c_elem_air
 NaturalDamageType = DamageType.Electric|DamageType.Magic
 MagicResist = 1500
 Magery = 1200
@@ -519,6 +528,8 @@ Equip = i_spellbook
 AddSpell = s_harm
 AddSpell = s_lightning
 Equip = i_monster_create
+Loot = i_gold
+Loot = random_reagent,{55, 75}
 ResistPoison = 1000
 ResistParalyse = 1000
 ResistSummon = 850
@@ -531,8 +542,6 @@ ResistFire = 200
 ResistElectric = 1000
 ResistCold = -500
 AggroMode = Hostile
-Loot = i_gold
-Loot = random_reagent,{55, 75}
 
 [NPCDef c_strazce_zeme]
 CATEGORY = Monsters
@@ -560,7 +569,7 @@ moverate = 4
 WeaponAttack = 80
 armorVsP = 110
 armorVsM = 110
-Color = {0709 0751}
+Color = {0709, 0751}
 Fame = 250
 Karma = -5000
 Str = 2500
@@ -570,6 +579,12 @@ MaxHits = 15000 16000
 MaxStam = 100 120
 MaxMana = 0
 Experience = 320 330
+SummoningChance = 500 //50% 
+SummoningCooldown = 60 //nezakouzli znovu 30 sek 
+AddSummon = c_elem_earth
+AddSummon = c_elem_earth
+AddSummon = c_elem_earth
+AddSummon = c_elem_earth
 StunDuration = 10 //1 seconds of stun 
 StunChance = 300 //30%, defaultne 20% 
 NaturalDamageType = DamageType.Blunt|DamageType.Physical
@@ -580,6 +595,8 @@ Provocation = 1000
 SpiritSpeak = 650
 Equip = i_light_source
 Equip = i_monster_create
+Loot = i_gold
+Loot = random_reagent,{35, 55}
 ResistPoison = 1000
 ResistParalyse = 1000
 ResistSummon = 600
@@ -592,8 +609,6 @@ ResistFire = 500
 ResistElectric = -500
 ResistCold = 200
 AggroMode = Hostile
-Loot = i_gold
-Loot = random_reagent,{35, 55}
 
 [NPCDef c_strazce_krve]
 CATEGORY = Monsters
@@ -632,6 +647,10 @@ MaxHits = 15000 16000
 MaxStam = 400 600
 MaxMana = 0
 Experience = 300 330
+SummoningChance = 500 //50% 
+SummoningCooldown = 50 //nezakouzli znovu 50 sek 
+AddSummon = c_vampire_blood
+AddSummon = c_vampire_blood
 BleedChance = 700 //70% 
 NaturalDamageType = DamageType.Sharp|DamageType.Physical
 MagicResist = 2500
@@ -641,6 +660,8 @@ Provocation = 1000
 SpiritSpeak = 550
 Equip = i_light_source
 Equip = i_monster_create
+Loot = i_gold
+Loot = i_reag_blood_vial, {30, 55}
 ResistPoison = -250
 ResistParalyse = 1000
 ResistSummon = 450
@@ -653,8 +674,6 @@ ResistFire = -200
 ResistElectric = -300
 ResistCold = -300
 AggroMode = Hostile
-Loot = i_gold
-Loot = i_reag_blood_vial, {30, 55}
 
 [NPCDef c_strazce_snehu]
 CATEGORY = Dungy
@@ -702,6 +721,7 @@ Tactics = 1000
 Parry = 1000
 SpiritSpeak = 1000
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 800 950
 ResistSummon = 550
@@ -714,7 +734,6 @@ ResistFire = -500
 ResistElectric = 400
 ResistCold = 1000
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef c_strazce_ledu]
 CATEGORY = Dungy
@@ -763,6 +782,7 @@ Tactics = 1000
 Parry = 1000
 SpiritSpeak = 1000
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 800 950
 ResistSummon = 750
@@ -775,7 +795,6 @@ ResistFire = -500
 ResistElectric = 200
 ResistCold = 800
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef c_ophidian_mage_evil]
 CATEGORY = Monsters
@@ -826,6 +845,8 @@ AddSpell = s_lightning
 AddSpell = s_fireball
 AddSpell = s_flamestrike
 Equip = i_monster_create
+Loot = i_gold
+Loot = random_reagent,{45, 55}
 ResistPoison = -1000
 ResistParalyse = 1000
 ResistSummon = 550
@@ -838,8 +859,6 @@ ResistFire = 800
 ResistElectric = 350
 ResistCold = -500
 AggroMode = Hostile
-Loot = i_gold
-Loot = random_reagent,{45, 55}
 
 [NPCDef 0x31c]
 CATEGORY = Monsters
@@ -877,11 +896,17 @@ MaxHits = 20000 21000
 MaxStam = 380 395
 MaxMana = 0
 Experience = 600 650
+IsBoss = 1
 NaturalDamageType = DamageType.Physical|DamageType.Blunt
 MagicResist = 2500
 Wrestling = 1000
 SpiritSpeak = 850
 Equip = i_monster_create
+Loot = i_gold
+Loot = RANDOM_REAGENT_NECRO,{20, 30}
+Loot = RANDOM_REAGENT_NECRO,{20, 30}
+Loot = RANDOM_REAGENT_NECRO,{20, 30}
+Loot = i_mi_bag
 ResistPoison = 1000
 ResistParalyse = 850 950
 ResistSummon = 900
@@ -893,11 +918,6 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
-Loot = i_gold
-Loot = RANDOM_REAGENT_NECRO,{20, 30}
-Loot = RANDOM_REAGENT_NECRO,{20, 30}
-Loot = RANDOM_REAGENT_NECRO,{20, 30}
-Loot = i_mi_bag
 
 [NPCDef 0x31b]
 CATEGORY = Monsters
@@ -944,6 +964,8 @@ SpiritSpeak = 600
 Equip = i_spellbook
 AddSpell = s_lightning
 Equip = i_monster_create
+Loot = i_gold
+Loot = RANDOM_REAGENT_NECRO,{10, 30}
 ResistPoison = 1000
 ResistParalyse = 900
 ResistSummon = 900
@@ -955,8 +977,6 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
-Loot = i_gold
-Loot = RANDOM_REAGENT_NECRO,{10, 30}
 
 [NPCDef 0x308]
 CATEGORY = Monsters
@@ -1002,6 +1022,7 @@ Equip = i_monster_create
 Equip = i_spellbook
 AddSpell = s_greater_heal
 AddSpell = s_magic_reflection
+Loot = RANDOM_REAGENT,{5, 10}
 ResistPoison = 800
 ResistParalyse = 700
 ResistSummon = 700
@@ -1013,7 +1034,6 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
-Loot = RANDOM_REAGENT,{5, 10}
 
 [NPCDef c_cajun_child2]
 CATEGORY = Monsters
@@ -1057,6 +1077,7 @@ Swords = 600 800
 Archery = 1000 1200
 SpiritSpeak = 400
 Equip = i_monster_create
+Loot = RANDOM_REAGENT,{5, 10}
 ResistPoison = 800
 ResistParalyse = 700
 ResistSummon = 700
@@ -1068,7 +1089,6 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
-Loot = RANDOM_REAGENT,{5, 10}
 
 [NPCDef c_cajun_child3]
 CATEGORY = Monsters
@@ -1111,6 +1131,7 @@ MagicResist = 2000
 SpiritSpeak = 400
 Equip = i_bow
 Equip = i_monster_create
+Loot = RANDOM_REAGENT,{5, 10}
 ResistPoison = 650
 ResistParalyse = 700
 ResistSummon = 700
@@ -1122,7 +1143,6 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
-Loot = RANDOM_REAGENT,{5, 10}
 
 [NPCDef 0x310]
 CATEGORY = Monsters
@@ -1165,6 +1185,7 @@ Wrestling = 700 800
 Peacemaking = 1000
 SpiritSpeak = 400
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 600
 ResistParalyse = 700
 ResistSummon = 700
@@ -1176,7 +1197,6 @@ ResistFire = 900
 ResistElectric = 350
 ResistCold = -100
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef c_phantom]
 CATEGORY = Dungy
@@ -1219,14 +1239,14 @@ Wrestling = 1850 2000
 SpiritSpeak = 300
 Equip = i_monster_create
 Equip = i_deathrobe
-Color = 0849
+EquipColor = 0849
 Equip = i_cape
 Color = 0849
 Equip = i_lantern_lit
+Loot = i_gold,10
 ResistParalyse = 1000 //individualni 
 ResistStabbing = 800
 AggroMode = Hostile
-Loot = i_gold,10
 
 [NPCDef c_phantom_snow]
 CATEGORY = Dungy
@@ -1270,14 +1290,14 @@ Wrestling = 1850 2000
 SpiritSpeak = 250
 Equip = i_monster_create
 Equip = i_deathrobe
-Color = 0481
+EquipColor = 0481
 Equip = i_cape
 Color = 0481
 Equip = i_lantern_lit
+Loot = i_gold,10
 ResistParalyse = 1000 //individualni 
 ResistStabbing = 800
 AggroMode = Hostile
-Loot = i_gold,10
 
 [NPCDef c_phantom_gray]
 CATEGORY = Dungy
@@ -1321,14 +1341,14 @@ Wrestling = 1850 2000
 SpiritSpeak = 250
 Equip = i_monster_create
 Equip = i_deathrobe
-Color = 096a
+EquipColor = 096a
 Equip = i_cape
 Color = 096a
 Equip = i_lantern_lit
+Loot = i_gold,10
 ResistParalyse = 1000 //individualni 
 ResistStabbing = 800
 AggroMode = Hostile
-Loot = i_gold,10
 
 [NPCDef 0x26a] //mec
 CATEGORY = Monsters
@@ -1374,6 +1394,7 @@ Tactics = 1200
 Parry = 1500
 SpiritSpeak = 600
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 850 950
 ResistSummon = 1000
@@ -1385,7 +1406,6 @@ ResistFire = 50
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x3e1]
 CATEGORY = Monsters
@@ -1430,6 +1450,7 @@ Tactics = 1200
 Parry = 1500
 SpiritSpeak = 600
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 850 950
 ResistSummon = 1000
@@ -1441,7 +1462,6 @@ ResistFire = 250
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x286]
 CATEGORY = Monsters
@@ -1488,6 +1508,7 @@ Tactics = 1200
 Parry = 1500
 SpiritSpeak = 600
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 850 950
 ResistSummon = 1000
@@ -1499,7 +1520,6 @@ ResistFire = 50
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x263]
 CATEGORY = Monsters
@@ -1545,6 +1565,7 @@ Tactics = 1200
 Parry = 1500
 SpiritSpeak = 600
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 850 950
 ResistSummon = 1000
@@ -1556,7 +1577,6 @@ ResistFire = 50
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x3a1]
 CATEGORY = Monsters
@@ -1598,6 +1618,7 @@ Tactics = 1200
 Parry = 1500
 SpiritSpeak = 600
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 850 950
 ResistSummon = 1000
@@ -1609,7 +1630,6 @@ ResistFire = 250
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x268]
 CATEGORY = Monsters
@@ -1645,6 +1665,8 @@ MaxHits = 5000 6000
 MaxStam = 150 170
 MaxMana = 0
 Experience = 150 170
+SniperDamage = 15 //o 15 HP 
+SniperChance = 300 //30% Defaultne 20% 
 NaturalDamageType = DamageType.Stabbing|DamageType.Physical
 Peacemaking = 1000
 Wrestling = 1600
@@ -1655,6 +1677,7 @@ SpiritSpeak = 600
 Equip = i_monster_create
 Equip = i_bow
 Equip = i_arrow, 50 75
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 850 950
 ResistSummon = 1000
@@ -1666,7 +1689,6 @@ ResistFire = -500
 ResistElectric = 500
 ResistCold = 200
 AggroMode = Hostile
-Loot = i_gold
 
 [NPCDef 0x27f]
 CATEGORY = Monsters
@@ -1710,6 +1732,7 @@ Tactics = 1200
 Parry = 1500
 SpiritSpeak = 600
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 850 950
 ResistSummon = 1000
@@ -1721,4 +1744,3 @@ ResistFire = 50
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
-Loot = i_gold

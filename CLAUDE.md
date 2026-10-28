@@ -1,5 +1,35 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #793 human NPC clothing from @NPCRestock + #794 elite-monster transform
+
+**#793**: `ConvertedCharDef.ConvertRestockLoot` reads the whole @NPCRestock block in order -
+`ITEMNEWBIE=` -> `Equip =` (worn + attr_newbie = never on the corpse; a defname @Create already
+gave is skipped), `COLOR=`/`NAME=` -> `EquipColor`/new `EquipName` for the latest gear line,
+`ADDSPELL=` -> `AddSpell`. Engine: `StartingEquipmentEntry.Name`; equip names also resolve a hex
+graphic (`Equip = 01f07`, was silently skipped from @Create too) and a `random_*` pick-list
+constant (`RANDOM_LIGHT`). 825 Equip / 543 EquipColor / 13 EquipName / 23 AddSpell lines.
+**User rule set mid-task: never edit .def files, regenerate them WHOLE** (see Workflow conventions)
+- so the 6 long-"drifting" files (DRAGONS/Golems/INSECTS/SPECIAL/UNDEADS, aldaron) were swapped
+whole too; their drift was staleness vs merged converter features (they gain SelfresDelay/
+NpcCurse/Summoning/Sniper tuning). A fresh regen now diffs to ZERO files.
+**#794** (`scripts/Basic/Loot/EliteMonster.cs` + `EliteSettings`, .settings "Elite Monsters"):
+creaturestart moved onto a 0 s `CreatureStartTimer` (Erebor's timerd=0, so it sees the spawn gem
+tag; `MonsterLoot.FlushCreatureStart` runs it at once for tests). Surface + spawned + exp >= 1000
++ !IsBoss (converter: `tag(isBoss,1)` -> `IsBoss = 1`, 28 chardefs) -> 2-5% roll -> Transform:
+power 500-900, stats +25%, swing +20% (+power/3 % vs summons), players' swings absorbed by power
+permille, regen power/7 per 2 s, resists, exp x300-500% (gold follows), reagent/gem/diamond
+bundle, magic-item PLACEHOLDER. `EliteEscapeTimer`: 20 min after meeting a player -> 3 s gate
+cast (AI frozen, a hit interrupts, retry 5 s) -> leaves (deleted). **Open question for the user**:
+Erebor's level bonus starts at level 200 - nobody here reaches it; thresholds are settings.
+**Gotcha hit (caught by the protocol test)**: a one-shot `BoundTimer` (no PeriodInSeconds) is
+DELETED before its `OnTimeout` runs, so setting `DueInSeconds` inside OnTimeout does nothing -
+a self-re-arming timer must have a period (NPCAiTimer's pattern; set DueInSeconds per step).
+Both elite timers had this; no other timer in the codebase does.
+Verified: fast tier 190/190 (EliteMonsterFormulaTests); protocol: NpcGearEliteTests +
+MonsterLoot/NpcStartingEquipment/HealerNpcSpawn/NpcGuardContent/MonsterAbilitiesBatch/
+MonsterSpecialAttacks via test-full.sh. Docs: elite-monsters.md (new), monster-loot.md,
+sphere-shard-converter.md, settings-dialog.md.
+
 ## DONE (2026-10-28): #791 monster loot - Erebor @NPCRestock loot + i_monster_create gold
 
 Analysis is on #791. **Converter**: `ConvertedCharDef.ConvertRestockLoot` turns each @NPCRestock
@@ -7896,6 +7926,12 @@ and bin/obj already exist from prior sessions). Full suite:
   through MonsterSpecialAttacks' lazy `...Def` lookups. Give a new ability one too, or the test
   won't see it. Any other new tunable system gets its own settings category (see
   docs/current/03-admin-tooling/settings-dialog.md "Adding a new category").
+- **`scripts/converted/*.def` is never edited - only regenerated, WHOLE files (user rule
+  2026-10-28, #793).** Not even a "surgical" insert of lines the converter itself generated:
+  fix the converter or the erebor-sphere-archive fork, regenerate, and copy every changed file
+  whole over the tracked one (`DRAGONS.def` -> `dragons.def` etc.). A fresh regen must diff to
+  ZERO files against `scripts/converted/` (true since #793). Older entries in this file that
+  describe surgical inserts/skips (#653/#763/#791) describe the old, now-forbidden practice.
 - **Keep `docs/current/` updated in the same change, not as a follow-up.** Any code
   change touching a system that already has a page there must update that page in the
   same PR — see the "Documentation" section near the top of this file for the full rule

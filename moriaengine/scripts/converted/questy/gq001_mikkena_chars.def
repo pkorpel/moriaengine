@@ -46,6 +46,13 @@ Equip = random_male_hair
 EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = i_apron_half
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef c_gq001_charton]
@@ -66,4 +73,11 @@ Equip = random_male_hair
 EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = i_apron_half
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm

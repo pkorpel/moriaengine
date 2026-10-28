@@ -101,6 +101,7 @@ AddSpell = s_mind_blast
 AddSpell = s_magic_reflection
 AddSpell = s_flamestrike
 Equip = i_monster_create
+Equip = i_sandals
 ResistParalyse = 800 850
 ResistPoison = 1000
 AggroMode = GuardsRealm

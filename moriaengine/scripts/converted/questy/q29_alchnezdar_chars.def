@@ -11,6 +11,16 @@ Color = colors_skin
 Str = 36 50
 Dex = 36 50
 Int = 51 65
+Equip = i_shoes_plain
+EquipColor = 06
+Equip = i_pants_long
+EquipColor = 06
+Equip = i_tunic
+EquipColor = 06
+Equip = i_bonnet
+EquipColor = 025
+Equip = i_bear_short
+EquipColor = 0096f
 AggroMode = Calm
 
 [NPCDef c_qv1_slizoun]

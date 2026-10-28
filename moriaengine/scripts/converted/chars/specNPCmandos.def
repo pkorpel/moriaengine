@@ -23,6 +23,21 @@ Magery = 900 1000
 Wrestling = 700 800
 Tactics = 400 600
 Equip = i_monster_create
+Equip = i_armor_female_skirt
+EquipColor = 0999
+Equip = i_sash
+EquipColor = 0999
+Equip = i_beard_goatee
+EquipColor = 01b5
+Equip = i_hair_mohawk
+EquipColor = 01b5
+Equip = i_sandals
+EquipColor = 0455
+Equip = i_bracelet_gold
+Equip = i_necklace_gold
+Equip = i_earrings_gold
+Equip = i_club
+EquipColor = 05e5
 AggroMode = Calm
 
 [NPCDef c_erebor_opilec]
@@ -130,6 +145,14 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_bardiche_iron
+Equip = i_iron_platemail
+Equip = i_iron_plate_helm
+Equip = i_iron_platemail_gorget
+Equip = i_iron_platemail_leggings
+Equip = i_iron_platemail_arms
+Equip = i_iron_platemail_gauntlets
+Equip = i_boots_thigh
 AggroMode = Calm
 
 [NPCDef c_vendor_bloodhead_m]
@@ -163,6 +186,14 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_bardiche_iron
+Equip = i_iron_platemail
+Equip = i_iron_plate_helm
+Equip = i_iron_platemail_gorget
+Equip = i_iron_platemail_leggings
+Equip = i_iron_platemail_arms
+Equip = i_iron_platemail_gauntlets
+Equip = i_boots_thigh
 AggroMode = Calm
 
 [NPCDef c_prevoznik_imp]
@@ -278,4 +309,6 @@ Karma = 100
 Equip = random_male_hair
 Equip = random_facial_hair
 Equip = i_monster_create
+Equip = i_sandals
+Equip = i_robe
 AggroMode = Calm

@@ -125,6 +125,9 @@ MagicResist = 500
 Tactics = 500
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+Equip = i_sandals
+Equip = i_robe
 AggroMode = Calm
 
 //[SPEECH Crunch_Beau] //(commented out by Converter) 

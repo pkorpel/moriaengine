@@ -225,6 +225,16 @@ MaxMana = 0
 Wrestling = 1200
 Fencing = 1000
 Tactics = 1000
+Equip = i_robe
+EquipColor = 777
+Equip = i_cape
+EquipColor = 777
+Equip = i_shoes_plain
+EquipColor = 777
+Equip = i_hair_short
+EquipColor = 777
+Equip = i_beard_short
+EquipColor = 777
 AggroMode = Calm
 
 //[SPEECH spk_go_lorien] //(commented out by Converter) 

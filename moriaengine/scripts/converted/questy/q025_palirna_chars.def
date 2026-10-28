@@ -24,6 +24,8 @@ EquipColor = 084b
 Equip = i_necklace_metal_beads
 Equip = i_ring_gold
 Experience = 0 0
+Equip = i_hair_afro
+EquipColor = 06b7
 AggroMode = Calm
 
 [NPCDef c_q025_palic]
@@ -62,4 +64,10 @@ Equip = i_shoes_plain
 EquipColor = 072c
 Equip = i_crossbow_heavy_verite
 Experience = 0 0
+Equip = i_hair_long
+EquipColor = 047d
+Equip = i_beard_short_med
+EquipColor = 047d
+Equip = i_q025_ovladani
+Equip = i_monster_create
 AggroMode = Calm

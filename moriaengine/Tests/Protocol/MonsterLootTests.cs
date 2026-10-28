@@ -23,6 +23,7 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void OrcGetsGoldFromExperienceAndItsLootFallsToTheCorpse() {
 			string line = this.Run("LootOrc", ".TestOrcLoot", "MONSTER_LOOT:");
+			Assert.Contains("pending=True", line); //#794 - creaturestart waits for a 0 s timer, as in Erebor
 			int exp = Value(line, "exp=");
 			Assert.True(exp > 0, "c_orc should roll an experience reward: " + line);
 			Assert.Equal(Value(line, "expectedGold="), Value(line, "gold="));

@@ -57,6 +57,10 @@ Equip = random_male_hair
 EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
+Equip = i_robe
+EquipColor = 00000
+Equip = i_sandals
+EquipColor = 00000
 AggroMode = Calm
 
 [NPCDef c_q029_murlay_sevedia]
@@ -75,4 +79,10 @@ Wrestling = 150 380
 Tactics = 150 380
 Equip = random_female_hair
 EquipColor = colors_hair
+Equip = i_skirt_long
+EquipColor = 00000
+Equip = i_doublet
+EquipColor = 00000
+Equip = i_sandals
+EquipColor = 00201
 AggroMode = Calm

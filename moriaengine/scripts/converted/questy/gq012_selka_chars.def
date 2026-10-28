@@ -11,6 +11,18 @@ Color = colors_skin
 Str = 36 50
 Dex = 36 50
 Int = 51 65
+Equip = i_ring_silver
+EquipColor = 00
+Equip = i_kilt
+EquipColor = 083E
+Equip = i_apron_half
+EquipColor = 0746
+Equip = i_sandals
+EquipColor = 00
+Equip = i_hair_long
+EquipColor = 08A5
+Equip = i_shirt_plain
+EquipColor = 096D
 AggroMode = Calm
 
 [NPCDef c_gq012_selka_hrabos]

@@ -86,6 +86,17 @@ that gap:
 **Loot (#791).** A chardef's `ON=@NPCRestock` `ITEM=` lines become `Loot = item[,amount]` lines
 (`ConvertedCharDef.ConvertRestockLoot`), with the archive's `i_gold{700 999}` typo and glued-on
 second `ITEM=` repaired - see [Monster loot](../04-gameplay-systems/monster-loot.md).
+The rest of the block (#793): `ITEMNEWBIE=` -> `Equip =` (NPC gear, newbie), `COLOR=`/`NAME=` ->
+`EquipColor =`/`EquipName =` for the latest gear line, `ADDSPELL=` -> `AddSpell =`. `tag(isBoss,1)`
+in `@Create` -> `IsBoss = 1` (#794, bosses never turn [elite](../04-gameplay-systems/elite-monsters.md)).
+
+**Applying a regen: whole files only.** `scripts/converted/` is never edited by hand - not even a
+"surgical" insert of lines the converter generated. Copy every regenerated file whole over the
+tracked one (the converter's upper-case names like `DRAGONS.def` map onto the tracked lower-case
+paths). A fresh regen must diff to **zero** files against `scripts/converted/`; since #793 it does.
+Files that used to show "unrelated drift" (DRAGONS/Golems/INSECTS/SPECIAL/UNDEADS, aldaron) were
+simply stale vs converter features already merged - swapping them in added their missing
+SelfresDelay/NpcCurse/Summoning/Sniper tuning.
 
 **Random lists need commas (#763).** Sphere writes weighted random picks as
 `COLOR={ colors_white 9 color_gray_lt 1 }`. LScript can't read that form when an identifier

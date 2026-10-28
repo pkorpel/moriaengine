@@ -139,6 +139,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Elite Monsters")]
+		public EliteSettings EliteSettings {
+			get {
+				return EliteSettings.instance;
+			}
+		}
+
 		[InfoField("Movement")]
 		public CharCollisionSettings CharCollisionSettings {
 			get {

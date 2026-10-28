@@ -296,6 +296,14 @@ Equip = random_male_hair
 EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
+Equip = i_monster_create
 AggroMode = Calm
 
 [NPCDef C_f_CARPENTER]
@@ -315,6 +323,14 @@ Tactics = 450 680
 Lumberjacking = 500 700
 Equip = random_female_hair
 EquipColor = colors_hair
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
+Equip = i_monster_create
 AggroMode = Calm
 
 [NPCDef C_m_BARBER]
@@ -345,6 +361,12 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_m_PROVIS]
@@ -369,6 +391,13 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_f_PROVIS]
@@ -391,6 +420,13 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_H_BANKER]
@@ -471,6 +507,15 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = loot_human
+Equip = i_gold
+Equip = i_hat_wizards
+EquipColor = colors_all
+Equip = i_staff_black
+Equip = i_sandals
+Equip = i_robe
+EquipColor = colors_all
+Equip = random_upper_scroll
 AggroMode = Calm
 
 [NPCDef C_f_MAGESHOP]
@@ -493,6 +538,15 @@ Tactics = 150 380
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = loot_human
+Equip = i_gold
+Equip = i_hat_wizards
+EquipColor = colors_all
+Equip = i_staff_black
+Equip = i_sandals
+Equip = i_robe
+EquipColor = colors_all
+Equip = random_upper_scroll
 AggroMode = Calm
 
 [NPCDef C_m_HEALER]
@@ -519,6 +573,10 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_robe
+EquipColor = colors_yellow
+Equip = i_sandals
 AggroMode = Calm
 
 [NPCDef C_f_HEALER]
@@ -543,6 +601,10 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_robe
+EquipColor = color_trpaslik
+Equip = i_sandals
 AggroMode = Calm
 
 [NPCDef C_m_ARMORER]
@@ -569,6 +631,14 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_iron_platemail
+Equip = i_iron_plate_helm
+Equip = i_iron_platemail_gorget
+Equip = i_iron_platemail_leggings
+Equip = i_iron_platemail_arms
+Equip = i_iron_platemail_gauntlets
+Equip = i_boots_thigh
+Equip = i_iron_heater_shield
 AggroMode = Calm
 
 [NPCDef C_H_FARMER_F]
@@ -592,6 +662,11 @@ Veterinary = 250 450
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_dress_plain
+EquipColor = colors_all
+Equip = i_hat_wide_brim
+EquipColor = colors_neutral
+Equip = random_boots
 AggroMode = Calm
 
 [NPCDef C_H_ALCHEMIST]
@@ -613,6 +688,14 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = i_robe
+EquipColor = colors_red
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_H_COOK]
@@ -634,6 +717,13 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = i_apron_half
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_H_TAILOR_F]
@@ -652,6 +742,12 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_H_SHIPWRIGHT]
@@ -674,6 +770,12 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_H_ANIMALTRAINER]
@@ -696,6 +798,12 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_boots
+Equip = i_staff_quarter
 AggroMode = Calm
 
 [NPCDef C_H_ANIMALTRAINER_F]
@@ -716,6 +824,12 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_boots
+Equip = i_staff_quarter
 AggroMode = Calm
 
 [NPCDef C_H_PEASANT_F]
@@ -734,6 +848,10 @@ Tactics = 150 380
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
 AggroMode = Calm
 
 [NPCDef C_H_PEASANT]
@@ -754,6 +872,10 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
 AggroMode = Calm
 
 [NPCDef C_m_WEAPONSMITHa]
@@ -781,6 +903,14 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_iron_platemail
+Equip = i_iron_plate_helm
+Equip = i_iron_platemail_gorget
+Equip = i_iron_platemail_leggings
+Equip = i_iron_platemail_arms
+Equip = i_iron_platemail_gauntlets
+Equip = i_boots_thigh
+Equip = i_bardiche_iron
 AggroMode = Calm
 
 [NPCDef C_m_BOWYERa]
@@ -805,6 +935,14 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+Equip = i_leather_gorget
+EquipColor = colors_brown
 AggroMode = Calm
 
 [NPCDef C_f_BOWYERa]
@@ -827,6 +965,19 @@ Tactics = 350 550
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+Equip = i_arrow, 40 70
+Equip = i_boots_thigh
+EquipColor = color_npc_saur_hat
+Equip = i_cape
+EquipColor = color_npc_saur_hat
+Equip = i_sash
+EquipColor = 1
 AggroMode = Calm
 
 [NPCDef C_m_TINKERa]
@@ -852,6 +1003,23 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = loot_human
+Equip = i_gold
+Equip = i_studded_LEGGINGS
+EquipColor = color_npc_gurg_ath
+Equip = i_studded_TUNIC
+EquipColor = color_npc_gurg_ath
+Equip = i_studded_gorget
+EquipColor = color_npc_gurg_ath
+Equip = i_studded_sleeves
+EquipColor = color_npc_gurg_ath
+Equip = i_boots_thigh
+EquipColor = color_npc_gurg_ath
+Equip = i_cape
+EquipColor = color_npc_gurg_ath
+Equip = i_sash
+EquipColor = 1
+Equip = i_tinker_tools
 AggroMode = Calm
 
 [NPCDef C_F_TINKERa]
@@ -875,6 +1043,23 @@ Tactics = 350 580
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = loot_human
+Equip = i_gold
+Equip = i_studded_LEGGINGS
+EquipColor = color_npc_gurg_ath
+Equip = i_studded_TUNIC
+EquipColor = color_npc_gurg_ath
+Equip = i_studded_gorget
+EquipColor = color_npc_gurg_ath
+Equip = i_studded_sleeves
+EquipColor = color_npc_gurg_ath
+Equip = i_boots_thigh
+EquipColor = color_npc_gurg_ath
+Equip = i_cape
+EquipColor = color_npc_gurg_ath
+Equip = i_sash
+EquipColor = 1
+Equip = i_tinker_tools
 AggroMode = Calm
 
 [NPCDef C_m_CARPENTERa]
@@ -898,6 +1083,13 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_f_CARPENTERa]
@@ -919,6 +1111,13 @@ Lumberjacking = 500 700
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_m_BARBER_mordor]
@@ -950,6 +1149,12 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_m_PROVISa]
@@ -975,6 +1180,13 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_f_PROVISa]
@@ -998,6 +1210,13 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef c_m_butcher]
@@ -1020,6 +1239,13 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef c_m_butcher_mordor]
@@ -1043,6 +1269,13 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_m_MAGESHOPa]
@@ -1068,6 +1301,16 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = loot_human
+Equip = i_gold
+Equip = i_hat_wizards
+EquipColor = color_npc_maiar_dur
+Equip = i_staff_black
+Equip = i_sandals
+EquipColor = color_npc_maiar_dur
+Equip = i_robe
+EquipColor = color_npc_maiar_dur
+Equip = random_upper_scroll
 AggroMode = Calm
 
 [NPCDef C_f_MAGESHOPa]
@@ -1091,6 +1334,15 @@ Tactics = 150 380
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = loot_human
+Equip = i_hat_wizards
+EquipColor = color_npc_maiar_dur
+Equip = i_staff_black
+Equip = i_sandals
+EquipColor = color_npc_maiar_dur
+Equip = i_robe
+EquipColor = color_npc_maiar_dur
+Equip = random_upper_scroll
 AggroMode = Calm
 
 [NPCDef C_m_HEALERa]
@@ -1118,6 +1370,11 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_robe
+EquipColor = color_npc_nurn_man
+Equip = i_sandals
+EquipColor = color_npc_nurn_man
 AggroMode = Calm
 
 [NPCDef C_f_HEALERa]
@@ -1143,6 +1400,11 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = RANDOM_LIGHT
+Equip = i_robe
+EquipColor = color_npc_nurn_man
+Equip = i_sandals
+EquipColor = color_npc_nurn_man
 AggroMode = Calm
 
 [NPCDef C_m_ARMORERa]
@@ -1170,6 +1432,14 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_iron_platemail
+Equip = i_iron_plate_helm
+Equip = i_iron_platemail_gorget
+Equip = i_iron_platemail_leggings
+Equip = i_iron_platemail_arms
+Equip = i_iron_platemail_gauntlets
+Equip = i_boots_thigh
+Equip = i_iron_heater_shield
 AggroMode = Calm
 
 [NPCDef C_H_FARMERa_F]
@@ -1194,6 +1464,11 @@ Veterinary = 250 450
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_dress_plain
+EquipColor = colors_all
+Equip = i_hat_wide_brim
+EquipColor = colors_neutral
+Equip = random_boots
 AggroMode = Calm
 
 [NPCDef C_H_ALCHEMISTa]
@@ -1216,6 +1491,14 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = loot_human
+Equip = i_hat_straw
+EquipColor = color_npc_maiar_dur
+Equip = i_sandals
+EquipColor = color_npc_maiar_dur
+Equip = i_robe
+EquipColor = color_npc_maiar_dur
+Equip = random_upper_scroll
 AggroMode = Calm
 
 [NPCDef C_H_COOKa]
@@ -1238,6 +1521,13 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = i_apron_half
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_H_TAILOR_Fa]
@@ -1257,6 +1547,12 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_H_SHIPWRIGHTa]
@@ -1280,6 +1576,12 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef C_H_ANIMALTRAINER_mordor]
@@ -1303,6 +1605,12 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_boots
+Equip = i_staff_quarter
 AggroMode = Calm
 
 [NPCDef C_H_ANIMALTRAINER_Fa]
@@ -1324,6 +1632,12 @@ Tactics = 150 350
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_boots
+Equip = i_staff_quarter
 AggroMode = Calm
 
 [NPCDef C_H_PEASANT_Fa]
@@ -1343,6 +1657,10 @@ Tactics = 150 380
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
 AggroMode = Calm
 
 [NPCDef C_H_PEASANTa]
@@ -1364,6 +1682,10 @@ EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
 AggroMode = Calm
 
 [NPCDef c_tomcon_nuzky_g]
@@ -1388,6 +1710,12 @@ Tactics = 800 1000
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef c_tomcon_nuzky_m]
@@ -1412,6 +1740,12 @@ Tactics = 800 1000
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_monster_create
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [ItemDef i_newbie_scissors] //newbie nuzky//
@@ -1565,6 +1899,18 @@ Swords = 800 1000
 Wrestling = 800 1000
 MagicResist = 500 700
 Tactics = 800 1000
+Equip = i_sandals
+EquipColor = colors_all
+Equip = i_pants_long
+EquipColor = colors_all
+Equip = i_doublet
+EquipColor = colors_all
+Equip = i_studded_sleeves
+EquipColor = colors_all
+Equip = i_bracelet_gold
+Equip = i_monster_create
+Equip = random_male_hair
+EquipColor = colors_hair
 AggroMode = Calm
 
 [NPCDef c_diy_vendor_woman]
@@ -1599,4 +1945,16 @@ Swords = 800 1000
 Wrestling = 800 1000
 MagicResist = 500 700
 Tactics = 800 1000
+Equip = i_sandals
+EquipColor = colors_all
+Equip = i_pants_long
+EquipColor = colors_all
+Equip = i_doublet
+EquipColor = colors_all
+Equip = i_studded_sleeves
+EquipColor = colors_all
+Equip = i_bracelet_gold
+Equip = i_monster_create
+Equip = random_male_hair
+EquipColor = colors_hair
 AggroMode = Calm

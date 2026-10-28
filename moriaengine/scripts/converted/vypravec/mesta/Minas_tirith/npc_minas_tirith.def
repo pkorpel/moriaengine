@@ -86,6 +86,9 @@ Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
 Loot = random_coin_purse
+Equip = i_spellbook
+AddSpell = s_flamestrike
+EquipColor = 0036
 AggroMode = Calm
 
 [NPCDef c_hrobar_mt]
@@ -125,6 +128,8 @@ Equip = i_shirt_fancy
 Equip = i_boots_calf
 Equip = i_leather_gloves
 Loot = random_coin_purse
+Equip = i_spellbook
+AddSpell = s_flamestrike
 AggroMode = Calm
 
 [NPCDef c_pani_roouse_mt]
@@ -170,6 +175,8 @@ EquipColor = 096c
 Equip = i_leather_gloves
 EquipColor = 096c
 Loot = random_coin_purse
+Equip = i_spellbook
+AddSpell = s_flamestrike
 AggroMode = Calm
 
 [NPCDef 0x3df]
@@ -202,6 +209,8 @@ Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
 Loot = random_coin_purse
+Equip = i_spellbook
+AddSpell = s_flamestrike
 AggroMode = Calm
 
 [NPCDef knez_manweho]
@@ -233,6 +242,15 @@ Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
 Loot = random_coin_purse
+Equip = i_spellbook
+AddSpell = s_flamestrike
+Equip = i_hair_long
+EquipColor = colors_brown
+Equip = random_pants
+EquipColor = colors_all
+Equip = random_shoes
+Equip = i_leather_gorget
+EquipColor = colors_red
 AggroMode = Calm
 
 [NPCDef c_veleknez_manweho]
@@ -265,6 +283,8 @@ Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
 Loot = random_coin_purse
+Equip = i_spellbook
+AddSpell = s_flamestrike
 AggroMode = Calm
 
 [NPCDef c_strazce_knihovny]
@@ -371,6 +391,13 @@ Equip = random_male_hair
 EquipColor = colors_hair
 Equip = random_facial_hair
 EquipColor = match_hair
+Equip = RANDOM_LIGHT
+Equip = i_shirt_fancy
+EquipColor = colors_green
+Equip = i_pants_long
+EquipColor = colors_yellow
+Equip = random_shoes
+EquipColor = colors_neutral
 AggroMode = Calm
 
 [NPCDef c_minas_namestek_valky_g]
@@ -403,4 +430,7 @@ Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
 Loot = random_coin_purse
+Equip = i_spellbook
+AddSpell = s_flamestrike
+EquipColor = 0036
 AggroMode = Calm
