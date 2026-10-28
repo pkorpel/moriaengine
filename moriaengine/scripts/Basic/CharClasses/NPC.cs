@@ -1568,6 +1568,7 @@ namespace SteamEngine.CompiledScripts {
 				this.IsGuarding = false;
 				this.ShouldFollowOwner = true; //reset to the default, matching PetCommands.cs's "release" verb cleanup
 			}
+			NPCAiTimer.DefendAgainst(this, enemy); //#768 - fight back (a rebel now fights its ex-owner too, as in Sphere)
 		}
 
 		public override short MaxHits {

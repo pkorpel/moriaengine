@@ -2011,6 +2011,7 @@ namespace SteamEngine.CompiledScripts {
 		public void Trigger_HostileAction(Character enemy) {
 			Notoriety.OnHostileAction(this, enemy);
 			NPCAiTimer.AlertGuardiansOf(this, enemy);
+			NPCAiTimer.AlertPetsOf(enemy, this); //#768 - before On_HostileAction, so a pet hit by its own owner is still recognized as theirs
 			ScriptArgs sa = new ScriptArgs(enemy);
 			this.TryTrigger(hostileActionTK, sa);
 			this.On_HostileAction(enemy);

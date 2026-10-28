@@ -23,142 +23,159 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
-	/// Classic UO pet control via normal speech - "all come"/"all guard"/"all kill" (every pet
-	/// this character owns in range) or "&lt;petname&gt; come" etc (one specific pet). "drop" is
-	/// deliberately not implemented - pets don't carry any cargo at all right now (no pack-animal
-	/// concept exists), so there'd be nothing for it to act on, and the exact item-container
-	/// movement API wasn't worth guessing at for a command with nothing to drop yet.
+	/// Pet control via normal speech, parsed like Sphere 0.99z8 (#768, see PetCommandParser):
+	/// "all &lt;command&gt;" / "pets &lt;command&gt;" for every pet this character owns in range, or
+	/// "&lt;name or creature type&gt; &lt;command&gt;" for one. Commands: come / follow me, guard me /
+	/// defend me / guard, stay / stay here / stop, follow (target), go (target), kill / attack
+	/// (target), transfer (target), release / dismiss, status. Every order replaces what the pet
+	/// was doing, a fight included, and the pet answers "Yes Master" / "Sorry" (animals make
+	/// their idle/anger sound instead).
 	///
-	/// GMs bypass the ownership check entirely - "all come"/"<name> stop" from a GM affects any
-	/// NPC in range (wild monsters included), not just their own pets. See Character.FollowTarget
-	/// for how a GM can direct an unowned NPC without making it their permanent pet.
+	/// GMs bypass the ownership check - their commands reach any NPC in range, wild monsters
+	/// included (Sphere's NPC_IsOwnedBy does the same for a higher plevel). See
+	/// Character.FollowTarget for how a GM can direct an unowned NPC without making it their pet.
 	///
-	/// Parsed on the speaker's own On_Say (not per-pet On_Hear) so that "all go"/"all transfer"/
-	/// "all kill" can issue a single target request whose result applies to every matched pet - if
-	/// each pet independently called Player.Target, only the last one processed would actually
-	/// receive the click.
+	/// Parsed on the speaker's own On_Say (not per-pet On_Hear) so that "all go"/"all kill" issue
+	/// a single target request whose result applies to every matched pet.
+	///
+	/// Not here yet: "friend" (co-owners need a persisted friend list) and "drop" (pets carry nothing).
 	/// </summary>
 	public partial class Character {
-		private static readonly string[] petCommandVerbs = { "come", "go", "stop", "transfer", "guard", "kill", "attack", "release" };
-
 		public override TriggerResult On_Say(string speech, SpeechType type, int[] keywords) {
 			this.TryHandlePetCommand(speech);
 			return base.On_Say(speech, type, keywords);
 		}
 
 		private void TryHandlePetCommand(string speech) {
-			if (string.IsNullOrWhiteSpace(speech)) {
+			string addressee;
+			PetCommand command;
+			if (!PetCommandParser.TryParse(speech, out addressee, out command)) {
 				return;
 			}
-			string[] parts = speech.Trim().Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
-			if (parts.Length < 2) {
-				return;
-			}
-			string verb = parts[parts.Length - 1].ToLowerInvariant();
-			if (Array.IndexOf(petCommandVerbs, verb) < 0) {
-				return;
-			}
-			string targetName = string.Join(" ", parts, 0, parts.Length - 1);
 
-			List<NPC> pets = this.FindControllableNpcs(targetName);
-			Logger.WriteDebug("PetCommand: " + this.Name + " said '" + speech + "' (target='" + targetName + "', verb='" + verb + "') -> matched " + pets.Count + " NPC(s)" +
+			List<NPC> pets = this.FindControllableNpcs(addressee);
+			Logger.WriteDebug("PetCommand: " + this.Name + " said '" + speech + "' (target='" + addressee + "', verb='" + command + "') -> matched " + pets.Count + " NPC(s)" +
 				(pets.Count > 0 ? ": " + string.Join(", ", pets.ConvertAll(p => p.Name + "#" + p.Uid)) : ""));
 			if (pets.Count == 0) {
 				return;
 			}
+			string petsWord = "pet" + (pets.Count > 1 ? "s" : "");
 
-			foreach (NPC pet in pets) {
-				this.AcknowledgeCommand(pet);
-			}
-
-			switch (verb) {
-				case "come":
+			switch (command) {
+				case PetCommand.Come:
+				case PetCommand.GuardMe:
 					foreach (NPC pet in pets) {
+						BreakOffForNewOrder(pet);
 						pet.FollowTarget = this; //explicit, not just relying on ControlMaster - lets a GM direct an unowned NPC too
 						pet.ShouldFollowOwner = true;
 						pet.PetGoalPoint = null;
+						if (command == PetCommand.GuardMe) {
+							pet.IsGuarding = true;
+						}
+						PetResponse(pet, this, true);
 					}
-					this.SysMessage("Your pet" + (pets.Count > 1 ? "s" : "") + " will come to you.");
+					this.SysMessage(command == PetCommand.GuardMe ?
+						"Your " + petsWord + " will guard you." :
+						"Your " + petsWord + " will come to you.");
 					break;
-				case "stop":
+				case PetCommand.Stay:
 					foreach (NPC pet in pets) {
+						BreakOffForNewOrder(pet); //previously "stop" only touched Follow/wander state - an active fight kept running regardless
 						if (pet.ControlMaster == null) {
 							pet.FollowTarget = this; //mark a wild NPC as under control so it stands put instead of resuming autonomous wandering
 						}
 						pet.ShouldFollowOwner = false;
 						pet.PetGoalPoint = null;
-						NPCAiTimer timer = NPCAiTimer.GetFor(pet);
-						if (timer != null) {
-							timer.Disengage(); //previously "stop" only touched Follow/wander state - an active fight kept running regardless
-						}
+						pet.IsGuarding = false; //a staying pet no longer runs off to defend, then stays wherever that fight ended
+						PetResponse(pet, this, true);
 					}
-					this.SysMessage("Your pet" + (pets.Count > 1 ? "s" : "") + " will stay put.");
+					this.SysMessage("Your " + petsWord + " will stay put.");
 					break;
-				case "go": {
-						Player self = this as Player;
-						if (self != null) {
-							self.SysMessage("Where should your pet" + (pets.Count > 1 ? "s" : "") + " go?");
-							self.Target(SingletonScript<Targ_PetGo>.Instance, pets);
-						}
-						break;
-					}
-				case "transfer": {
-						Player self = this as Player;
-						if (self != null) {
-							self.SysMessage("Whom do you want to transfer your pet" + (pets.Count > 1 ? "s" : "") + " to?");
-							self.Target(SingletonScript<Targ_PetTransfer>.Instance, pets);
-						}
-						break;
-					}
-				case "guard":
-					foreach (NPC pet in pets) {
-						pet.IsGuarding = true;
-						pet.FollowTarget = this;
-						pet.ShouldFollowOwner = true;
-						pet.PetGoalPoint = null;
-					}
-					this.SysMessage("Your pet" + (pets.Count > 1 ? "s" : "") + " will guard you.");
+				case PetCommand.Follow:
+					this.TargetForPets(SingletonScript<Targ_PetFollow>.Instance, pets, "Whom should your " + petsWord + " follow?");
 					break;
-				case "kill":
-				case "attack": {
-						Player self = this as Player;
-						if (self != null) {
-							self.SysMessage("What do you want your pet" + (pets.Count > 1 ? "s" : "") + " to attack?");
-							self.Target(SingletonScript<Targ_PetKill>.Instance, pets);
-						}
-						break;
-					}
-				case "release":
+				case PetCommand.Go:
+					this.TargetForPets(SingletonScript<Targ_PetGo>.Instance, pets, "Where should your " + petsWord + " go?");
+					break;
+				case PetCommand.Kill:
+					this.TargetForPets(SingletonScript<Targ_PetKill>.Instance, pets, "What do you want your " + petsWord + " to attack?");
+					break;
+				case PetCommand.Transfer:
+					this.TargetForPets(SingletonScript<Targ_PetTransfer>.Instance, pets, "Whom do you want to transfer your " + petsWord + " to?");
+					break;
+				case PetCommand.Release:
 					foreach (NPC pet in pets) {
+						BreakOffForNewOrder(pet);
 						pet.ControlMaster = null;
 						pet.FollowTarget = null;
 						pet.IsGuarding = false;
 						pet.ShouldFollowOwner = true;
 						pet.PetGoalPoint = null;
-						NPCAiTimer timer = NPCAiTimer.GetFor(pet);
-						if (timer != null) {
-							timer.Disengage();
-						}
+						PetResponse(pet, this, true);
 					}
-					this.SysMessage("You release your pet" + (pets.Count > 1 ? "s" : "") + " into the wild.");
+					this.SysMessage("You release your " + petsWord + " into the wild.");
+					break;
+				case PetCommand.Status:
+					foreach (NPC pet in pets) {
+						this.SysMessage(pet.Name + ": health " + pet.Hits + "/" + pet.MaxHits + ", " + DescribeOrders(pet));
+					}
 					break;
 			}
 		}
 
-		/// <summary>Faces the pet toward its owner and gives a visible overhead acknowledgement - requested so a command's receipt is visually obvious even before the next AI think-tick actually acts on it (useful for telling "command wasn't heard" apart from "command was heard but the AI tick hasn't moved it yet").</summary>
-		private void AcknowledgeCommand(NPC pet) {
-			pet.Direction = Point2D.GetDirFromTo(pet, this);
-			pet.Emote("*looks at you, understanding*");
+		private void TargetForPets(CompiledTargetDef targetDef, List<NPC> pets, string prompt) {
+			Player self = this as Player;
+			if (self != null) {
+				self.SysMessage(prompt);
+				self.Target(targetDef, pets);
+			}
+		}
+
+		/// <summary>Every order replaces what the pet was doing, a fight included (Sphere's Skill_Start).</summary>
+		internal static void BreakOffForNewOrder(NPC pet) {
+			NPCAiTimer timer = NPCAiTimer.GetFor(pet);
+			if (timer != null) {
+				timer.Disengage();
+			}
+		}
+
+		/// <summary>Sphere's NPC_PetResponse: the pet turns to its master and says "Yes Master" or
+		/// "Sorry"; a pet that can't speak (anything not human) makes its idle or anger sound instead.</summary>
+		internal static void PetResponse(NPC pet, Character master, bool success) {
+			if (master != null) {
+				pet.Direction = Point2D.GetDirFromTo(pet, master);
+			}
+			if (pet.IsHuman) {
+				pet.Say(success ? "Yes Master" : "Sorry");
+			} else if (success) {
+				SoundCalculator.PlayIdleSound(pet);
+			} else {
+				SoundCalculator.PlayAngerSound(pet);
+			}
+		}
+
+		private static string DescribeOrders(NPC pet) {
+			NPCAiTimer timer = NPCAiTimer.GetFor(pet);
+			if ((timer != null) && (timer.Target != null)) {
+				return "fighting " + timer.Target.Name;
+			}
+			if (pet.PetGoalPoint != null) {
+				return "going to " + pet.PetGoalPoint;
+			}
+			if (pet.ShouldFollowOwner) {
+				return (pet.IsGuarding ? "guarding " : "following ") + ((pet.FollowTarget ?? pet.ControlMaster)?.Name ?? "nobody");
+			}
+			return "staying";
 		}
 
 		/// <summary>
-		/// "all" -> every matching NPC within speech range. Otherwise -> the one matching NPC
-		/// whose name matches (case-insensitive), if any. A GM's commands match ANY NPC; a
-		/// regular player's commands only match NPCs that NPC actually owns (ControlMaster == this).
+		/// "all"/"pets" -> every controllable NPC within speech range. Otherwise -> the first one
+		/// whose own name or creature type name matches. A GM's commands match ANY NPC; a regular
+		/// player's commands only match NPCs that player actually owns (ControlMaster == this).
 		/// </summary>
 		private List<NPC> FindControllableNpcs(string targetName) {
 			List<NPC> result = new List<NPC>();
-			bool wantsAll = string.Equals(targetName, "all", StringComparison.OrdinalIgnoreCase);
+			bool wantsAll = PetCommandParser.IsAllPets(targetName);
 			bool isGM = this.IsGM;
 			int npcsInRange = 0;
 			int npcsOwnedByMe = 0;
@@ -177,9 +194,9 @@ namespace SteamEngine.CompiledScripts {
 				}
 				if (wantsAll) {
 					result.Add(pet);
-				} else if (string.Equals(pet.Name, targetName, StringComparison.OrdinalIgnoreCase)) {
+				} else if (PetCommandParser.NameMatches(targetName, pet.Name) || PetCommandParser.NameMatches(targetName, pet.Def.Name)) {
 					result.Add(pet);
-					break; //names are expected to be unique enough for this purpose - first match wins
+					break; //first match wins, same as Sphere
 				}
 			}
 			Logger.WriteDebug("FindControllableNpcs: " + this.Name + " (GM=" + isGM + ") speech range=" + Globals.SpeechDistance +
@@ -188,12 +205,42 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	public class Targ_PetFollow : CompiledTargetDef {
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			List<NPC> pets = (List<NPC>) parameter;
+			foreach (NPC pet in pets) {
+				if (targetted == pet) {
+					Character.PetResponse(pet, self, false);
+					continue;
+				}
+				Character.BreakOffForNewOrder(pet);
+				pet.FollowTarget = targetted;
+				pet.ShouldFollowOwner = true;
+				pet.PetGoalPoint = null;
+				Character.PetResponse(pet, self, true);
+			}
+			return TargetResult.Done;
+		}
+
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			self.SysMessage("You must target someone to follow.");
+			return TargetResult.RestartTargetting;
+		}
+
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			self.SysMessage("You must target someone to follow.");
+			return TargetResult.RestartTargetting;
+		}
+	}
+
 	public class Targ_PetGo : CompiledTargetDef {
 		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
 			List<NPC> pets = (List<NPC>) parameter;
 			Point3D goal = new Point3D(targetted.X, targetted.Y, targetted.Z);
 			foreach (NPC pet in pets) {
+				Character.BreakOffForNewOrder(pet);
 				pet.PetGoalPoint = goal;
+				Character.PetResponse(pet, self, true);
 			}
 			Logger.WriteDebug("PetCommand 'go': " + self.Name + " sent " + pets.Count + " pet(s) to " + goal);
 			self.SysMessage("Your pet" + (pets.Count > 1 ? "s" : "") + " will go there.");
@@ -216,7 +263,21 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Your pet won't attack you.");
 				return TargetResult.Done;
 			}
+			NPC targettedNpc = targetted as NPC;
+			if ((targettedNpc != null) && (targettedNpc.ControlMaster == self)) {
+				//Sphere refuses targets the speaker owns - one pet of yours won't attack another
+				foreach (NPC pet in pets) {
+					Character.PetResponse(pet, self, false);
+				}
+				return TargetResult.Done;
+			}
 			foreach (NPC pet in pets) {
+				if (targetted == pet) {
+					Character.PetResponse(pet, self, false);
+					continue;
+				}
+				Character.PetResponse(pet, self, true);
+				pet.PetGoalPoint = null;
 				pet.Flag_WarMode = true;
 				NPCAiTimer timer = NPCAiTimer.GetFor(pet);
 				Logger.WriteDebug("PetCommand 'kill': " + pet.Name + "#" + pet.Uid + " engaging " + targetted.Name + " (timer found=" + (timer != null) + ")");
