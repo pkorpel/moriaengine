@@ -121,6 +121,14 @@ namespace SteamEngine.CompiledScripts {
 			return character.GetTag(isSummonedCreatureTK) is bool flag && flag;
 		}
 
+		/// <summary>Marks a character as "summoned" for IsSummonedCreature's own check, same tag
+		/// this spell's own On_EffectGround uses - exposed so OTHER summon-shaped mechanisms
+		/// (e.g. MonsterSpecialAttacks.TryApplySummoning's own reinforcements) mark their spawns
+		/// the same way, keeping them consistently recognizable to Dispel/e_summoneater too.</summary>
+		public static void MarkAsSummonedCreature(Character character) {
+			character.SetTag(isSummonedCreatureTK, true);
+		}
+
 		protected override void On_EffectGround(IPoint3D target, SpellEffectArgs spellEffectArgs) {
 			base.On_EffectGround(target, spellEffectArgs);
 

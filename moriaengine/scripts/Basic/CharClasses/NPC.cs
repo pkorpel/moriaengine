@@ -368,6 +368,16 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey bleedChanceTK = TagKey.Acquire("_npcBleedChance_");
 		private static readonly TagKey knockbackChanceTK = TagKey.Acquire("_npcKnockbackChance_");
 		private static readonly TagKey selfresDelayTK = TagKey.Acquire("_npcSelfresDelay_");
+		private static readonly TagKey parakrikChanceTK = TagKey.Acquire("_npcParakrikChance_");
+		private static readonly TagKey parakrikCooldownTK = TagKey.Acquire("_npcParakrikCooldown_");
+		private static readonly TagKey npcCurseChanceTK = TagKey.Acquire("_npcCurseChance_");
+		private static readonly TagKey npcCurseCooldownTK = TagKey.Acquire("_npcCurseCooldown_");
+		private static readonly TagKey npcCurseDamageTK = TagKey.Acquire("_npcCurseDamage_");
+		private static readonly TagKey sniperChanceTK = TagKey.Acquire("_npcSniperChance_");
+		private static readonly TagKey sniperDamageTK = TagKey.Acquire("_npcSniperDamage_");
+		private static readonly TagKey summoningChanceTK = TagKey.Acquire("_npcSummoningChance_");
+		private static readonly TagKey summoningCooldownTK = TagKey.Acquire("_npcSummoningCooldown_");
+		private static readonly TagKey summoningLifetimeTK = TagKey.Acquire("_npcSummoningLifetime_");
 
 		/// <summary>Real-user-reported follow-up to #653's teventStubs batch - per-species
 		/// override {min, max} ranges for StunAbilityDef/CriticAbilityDef/
@@ -439,6 +449,62 @@ namespace SteamEngine.CompiledScripts {
 		public int[] SelfresDelay {
 			get { return this.GetTag(selfresDelayTK) as int[]; }
 			set { this.SetTag(selfresDelayTK, value); }
+		}
+		/// <summary>Real archive fields are tag.parakrik_chance/tag.parakrik_delay.</summary>
+		public int[] ParaKrikChance {
+			get { return this.GetTag(parakrikChanceTK) as int[]; }
+			set { this.SetTag(parakrikChanceTK, value); }
+		}
+		public int[] ParaKrikCooldown {
+			get { return this.GetTag(parakrikCooldownTK) as int[]; }
+			set { this.SetTag(parakrikCooldownTK, value); }
+		}
+		/// <summary>Real archive fields are tag.npc_curse_chance/_delay/_dmg.</summary>
+		public int[] NpcCurseChance {
+			get { return this.GetTag(npcCurseChanceTK) as int[]; }
+			set { this.SetTag(npcCurseChanceTK, value); }
+		}
+		public int[] NpcCurseCooldown {
+			get { return this.GetTag(npcCurseCooldownTK) as int[]; }
+			set { this.SetTag(npcCurseCooldownTK, value); }
+		}
+		public int[] NpcCurseDamage {
+			get { return this.GetTag(npcCurseDamageTK) as int[]; }
+			set { this.SetTag(npcCurseDamageTK, value); }
+		}
+		/// <summary>Real archive fields are tag.npc_sniper_chance/_dmg.</summary>
+		public int[] SniperChance {
+			get { return this.GetTag(sniperChanceTK) as int[]; }
+			set { this.SetTag(sniperChanceTK, value); }
+		}
+		public int[] SniperDamage {
+			get { return this.GetTag(sniperDamageTK) as int[]; }
+			set { this.SetTag(sniperDamageTK, value); }
+		}
+		/// <summary>Real archive fields are tag.npc_summoning_chance/_time/_removeTime.</summary>
+		public int[] SummoningChance {
+			get { return this.GetTag(summoningChanceTK) as int[]; }
+			set { this.SetTag(summoningChanceTK, value); }
+		}
+		public int[] SummoningCooldown {
+			get { return this.GetTag(summoningCooldownTK) as int[]; }
+			set { this.SetTag(summoningCooldownTK, value); }
+		}
+		public int[] SummoningLifetime {
+			get { return this.GetTag(summoningLifetimeTK) as int[]; }
+			set { this.SetTag(summoningLifetimeTK, value); }
+		}
+
+		private static readonly TagKey summonedCreaturesTK = TagKey.Acquire("_npcSummonedCreatures_");
+
+		/// <summary>e_npc_summoning's own per-species reinforcement list (real archive fields
+		/// tag.npc_summoning_char[i]/_count) - same list-of-NPCDef shape as the already-shipped
+		/// Spells (#564). When non-empty, SummonerAbilityDef's consumer spawns ONE instance of
+		/// EVERY entry here per proc (matching the archive's own loop-over-all-indices), not a
+		/// random pick.</summary>
+		public List<NPCDef> SummonedCreatures {
+			get { return this.GetTag(summonedCreaturesTK) as List<NPCDef>; }
+			set { this.SetTag(summonedCreaturesTK, value); }
 		}
 
 		private static readonly TagKey fameRangeTK = TagKey.Acquire("_fameRange_");
@@ -895,6 +961,58 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "selfresdelay") {
 				this.SelfresDelay = ParseStatRange(filename, line, "selfresdelay", args);
+				return;
+			}
+			if (param == "parakrikchance") {
+				this.ParaKrikChance = ParseStatRange(filename, line, "parakrikchance", args);
+				return;
+			}
+			if (param == "parakrikcooldown") {
+				this.ParaKrikCooldown = ParseStatRange(filename, line, "parakrikcooldown", args);
+				return;
+			}
+			if (param == "npccursechance") {
+				this.NpcCurseChance = ParseStatRange(filename, line, "npccursechance", args);
+				return;
+			}
+			if (param == "npccursecooldown") {
+				this.NpcCurseCooldown = ParseStatRange(filename, line, "npccursecooldown", args);
+				return;
+			}
+			if (param == "npccursedamage") {
+				this.NpcCurseDamage = ParseStatRange(filename, line, "npccursedamage", args);
+				return;
+			}
+			if (param == "sniperchance") {
+				this.SniperChance = ParseStatRange(filename, line, "sniperchance", args);
+				return;
+			}
+			if (param == "sniperdamage") {
+				this.SniperDamage = ParseStatRange(filename, line, "sniperdamage", args);
+				return;
+			}
+			if (param == "summoningchance") {
+				this.SummoningChance = ParseStatRange(filename, line, "summoningchance", args);
+				return;
+			}
+			if (param == "summoningcooldown") {
+				this.SummoningCooldown = ParseStatRange(filename, line, "summoningcooldown", args);
+				return;
+			}
+			if (param == "summoninglifetime") {
+				this.SummoningLifetime = ParseStatRange(filename, line, "summoninglifetime", args);
+				return;
+			}
+			if (param == "addsummon") {
+				NPCDef summonDef = ThingDef.GetByDefname(args) as NPCDef;
+				if (summonDef == null) {
+					Logger.WriteWarning(filename, line, "addsummon '" + args + "' is not a known NPCDef.");
+					return;
+				}
+				if (this.SummonedCreatures == null) {
+					this.SummonedCreatures = new List<NPCDef>();
+				}
+				this.SummonedCreatures.Add(summonDef);
 				return;
 			}
 			if (param == "maxhits") {
