@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static ParaKrikAbilityDef paraKrikAbilityDef;
-		private static ParaKrikAbilityDef ParaKrikDef {
+		internal static ParaKrikAbilityDef ParaKrikDef {
 			get {
 				if (paraKrikAbilityDef == null) {
 					paraKrikAbilityDef = AbstractScript.GetByDefname("a_tevent_e_parakrik") as ParaKrikAbilityDef;
