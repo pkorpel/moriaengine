@@ -29,6 +29,13 @@ two-outcome range, but also confirming it can never produce `1.5`. Any feature t
 real decimal random range (e.g. the spawn-timer decimal-minutes feature, #210) has to roll
 in C# directly and cannot reuse this operator.
 
+**Separate the elements with commas when one is an identifier (#763).** Whitespace works as a
+separator only between numbers: `{097f 1 099e 1}` is fine. `{ colors_white 9 color_gray_lt 1 }`
+does not parse, because `name value` is LScript's whitespace assignment (`WhiteSpaceAssigner`
+in `LScript_strict.grammar`). The parser reads `colors_white = 9, color_gray_lt, 1` as one
+element, and the rule needs at least two. Write `{ colors_white, 9, color_gray_lt, 1 }`. See
+`Tests/RandomExpressionParseTests.cs`.
+
 ## Parser quirks found while building content this session
 
 - **The local variable/argument name `info` is reserved/conflicting in LScript's grammar.**
