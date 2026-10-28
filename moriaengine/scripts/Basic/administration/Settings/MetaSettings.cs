@@ -90,6 +90,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 		[InfoField("Abilities")]
 		public AllAbilitiesMassSetting allAbilities = new AllAbilitiesMassSetting();
 
+		[InfoField("Monster Abilities")]
+		public MonsterAbilitiesSettings MonsterAbilitiesSettings {
+			get {
+				return MonsterAbilitiesSettings.instance;
+			}
+		}
+
 		[InfoField("Level System")]
 		public LevelingSettings LevelingSettings {
 			get {

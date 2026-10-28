@@ -48,7 +48,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static BleedAbilityDef bleedAbilityDef;
-		private static BleedAbilityDef BleedDef {
+		internal static BleedAbilityDef BleedDef {
 			get {
 				if (bleedAbilityDef == null) {
 					bleedAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_bleed") as BleedAbilityDef;

@@ -84,7 +84,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static SelfReserAbilityDef selfReserAbilityDef;
-		private static SelfReserAbilityDef SelfReserDef {
+		internal static SelfReserAbilityDef SelfReserDef {
 			get {
 				if (selfReserAbilityDef == null) {
 					selfReserAbilityDef = AbstractScript.GetByDefname("a_tevent_e_selfreser") as SelfReserAbilityDef;
