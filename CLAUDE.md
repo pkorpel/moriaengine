@@ -1,5 +1,22 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #786 GameCore stack overflow deleting an NPC mid-swing - the real "#100 flake"
+
+Root cause: `Thing.InternalDeleteNoRFV` runs `Trigger_Destroy` (marks the Thing LIMBO) before
+`base.Delete()` tears down plugins - the order #206 needs. A plugin's teardown touching the Thing
+(WeaponSkillTargetQueuePlugin.On_UnAssign -> AbortSkill -> trigger -> `ThrowIfDeleted`) saw "limbo,
+not deleted" and called `Delete()` again, which restarted the whole delete forever -> stack
+overflow, exit 134. Fix: `Thing.beingDeleted` / `TagHolder.IsBeingDeleted`. A nested delete
+returns at once, and `ThrowIfDeleted` leaves a mid-delete Thing alone (throwing there would abort
+the delete halfway). #206's order is unchanged. Docs: thing-model.md "Deleting a Thing".
+Verified with protocol runs (user lifted unit-tests-only): the new `DeleteFightingNpcTests` is
+red without the fix ("Stack overflow" in GameCore stderr) and green with it. Then
+CombatDepthTests + MagerySpellTests through test-full.sh: zero crashes, 19/25 pass (CalmAnimal,
+NpcSpellcaster, Flee, DragonBreath, ParalyzeField, ManaDrain and DamageSpell back from long-broken).
+The 6 still failing were A/B-confirmed PRE-EXISTING (identical on 93a5757 + only #763 + #786) -
+filed as #788 (stand-off NPCs never attack: effectiveRange=1 + no LOS at the spawn point; distant
+summons NONE; Reveal).
+
 ## DONE (2026-10-28): #785 protocol test infra - live progress, fail fast, no collisions, no orphans
 
 User: "make sure tests are responsive and we know right away if they are stuck". Root causes
