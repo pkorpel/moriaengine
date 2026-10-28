@@ -54,6 +54,7 @@ ResistFire = 50
 ResistElectric = -250
 ResistCold = 100
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0xbd]
 CATEGORY = Monsters
@@ -114,6 +115,7 @@ ResistFire = 150
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x30c]
 CATEGORY = Monsters
@@ -166,6 +168,7 @@ ResistFire = 400
 ResistElectric = 600
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x4d]
 CATEGORY = Monsters
@@ -221,6 +224,7 @@ ResistFire = 400
 ResistElectric = 400
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x311]
 CATEGORY = Monsters
@@ -279,6 +283,7 @@ ResistFire = 150
 ResistElectric = 450
 ResistCold = -50
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_minotaur_strazce]
 CATEGORY = Monsters
@@ -339,6 +344,7 @@ ResistFire = 200
 ResistElectric = 150
 ResistCold = 250
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_strazce_ohne]
 CATEGORY = Monsters
@@ -401,6 +407,8 @@ ResistFire = 1000
 ResistElectric = 400
 ResistCold = -500
 AggroMode = Hostile
+Loot = i_gold
+Loot = i_reag_sulfur_ash,{30, 40}
 
 [NPCDef c_strazce_vody]
 CATEGORY = Monsters
@@ -459,6 +467,8 @@ ResistFire = 1000
 ResistElectric = -500
 ResistCold = -100
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{25, 35}
 
 [NPCDef c_strazce_vzduchu]
 CATEGORY = Monsters
@@ -521,6 +531,8 @@ ResistFire = 200
 ResistElectric = 1000
 ResistCold = -500
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{55, 75}
 
 [NPCDef c_strazce_zeme]
 CATEGORY = Monsters
@@ -580,6 +592,8 @@ ResistFire = 500
 ResistElectric = -500
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{35, 55}
 
 [NPCDef c_strazce_krve]
 CATEGORY = Monsters
@@ -639,6 +653,8 @@ ResistFire = -200
 ResistElectric = -300
 ResistCold = -300
 AggroMode = Hostile
+Loot = i_gold
+Loot = i_reag_blood_vial, {30, 55}
 
 [NPCDef c_strazce_snehu]
 CATEGORY = Dungy
@@ -698,6 +714,7 @@ ResistFire = -500
 ResistElectric = 400
 ResistCold = 1000
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_strazce_ledu]
 CATEGORY = Dungy
@@ -758,6 +775,7 @@ ResistFire = -500
 ResistElectric = 200
 ResistCold = 800
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_ophidian_mage_evil]
 CATEGORY = Monsters
@@ -820,6 +838,8 @@ ResistFire = 800
 ResistElectric = 350
 ResistCold = -500
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{45, 55}
 
 [NPCDef 0x31c]
 CATEGORY = Monsters
@@ -873,6 +893,11 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
+Loot = i_gold
+Loot = RANDOM_REAGENT_NECRO,{20, 30}
+Loot = RANDOM_REAGENT_NECRO,{20, 30}
+Loot = RANDOM_REAGENT_NECRO,{20, 30}
+Loot = i_mi_bag
 
 [NPCDef 0x31b]
 CATEGORY = Monsters
@@ -930,6 +955,8 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
+Loot = i_gold
+Loot = RANDOM_REAGENT_NECRO,{10, 30}
 
 [NPCDef 0x308]
 CATEGORY = Monsters
@@ -986,6 +1013,7 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
+Loot = RANDOM_REAGENT,{5, 10}
 
 [NPCDef c_cajun_child2]
 CATEGORY = Monsters
@@ -1040,6 +1068,7 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
+Loot = RANDOM_REAGENT,{5, 10}
 
 [NPCDef c_cajun_child3]
 CATEGORY = Monsters
@@ -1093,6 +1122,7 @@ ResistFire = 600
 ResistElectric = -150
 ResistCold = 100
 AggroMode = Hostile
+Loot = RANDOM_REAGENT,{5, 10}
 
 [NPCDef 0x310]
 CATEGORY = Monsters
@@ -1146,6 +1176,7 @@ ResistFire = 900
 ResistElectric = 350
 ResistCold = -100
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_phantom]
 CATEGORY = Dungy
@@ -1195,6 +1226,7 @@ Equip = i_lantern_lit
 ResistParalyse = 1000 //individualni 
 ResistStabbing = 800
 AggroMode = Hostile
+Loot = i_gold,10
 
 [NPCDef c_phantom_snow]
 CATEGORY = Dungy
@@ -1245,6 +1277,7 @@ Equip = i_lantern_lit
 ResistParalyse = 1000 //individualni 
 ResistStabbing = 800
 AggroMode = Hostile
+Loot = i_gold,10
 
 [NPCDef c_phantom_gray]
 CATEGORY = Dungy
@@ -1295,6 +1328,7 @@ Equip = i_lantern_lit
 ResistParalyse = 1000 //individualni 
 ResistStabbing = 800
 AggroMode = Hostile
+Loot = i_gold,10
 
 [NPCDef 0x26a] //mec
 CATEGORY = Monsters
@@ -1351,6 +1385,7 @@ ResistFire = 50
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x3e1]
 CATEGORY = Monsters
@@ -1406,6 +1441,7 @@ ResistFire = 250
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x286]
 CATEGORY = Monsters
@@ -1463,6 +1499,7 @@ ResistFire = 50
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x263]
 CATEGORY = Monsters
@@ -1519,6 +1556,7 @@ ResistFire = 50
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x3a1]
 CATEGORY = Monsters
@@ -1571,6 +1609,7 @@ ResistFire = 250
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x268]
 CATEGORY = Monsters
@@ -1627,6 +1666,7 @@ ResistFire = -500
 ResistElectric = 500
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x27f]
 CATEGORY = Monsters
@@ -1681,3 +1721,4 @@ ResistFire = 50
 ResistElectric = -500
 ResistCold = -200
 AggroMode = Hostile
+Loot = i_gold

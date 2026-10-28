@@ -35,6 +35,7 @@ Parry = 350 450
 Tactics = 990 990
 Wrestling = 250 400
 Equip = i_monster_create
+Loot = i_gold,{0, 1}
 AggroMode = Hostile
 
 [NPCDef c_Bombak_maniak]
@@ -71,6 +72,7 @@ Parry = 350 450
 Tactics = 990 990
 Wrestling = 250 400
 Equip = i_monster_create
+Loot = i_gold,{0, 1}
 AggroMode = Hostile
 
 [NPCDef c_Bombak_Nicitel]
@@ -107,6 +109,7 @@ Parry = 350 450
 Tactics = 990 990
 Wrestling = 250 400
 Equip = i_monster_create
+Loot = i_gold,{0, 1}
 AggroMode = Hostile
 
 [NPCDef c_Strazce_numerojcu]
@@ -201,6 +204,8 @@ Wrestling = 1200 1500
 Parry = 1500
 Tactics = 1500
 Equip = i_monster_create
+Loot = loot_elem
+Loot = i_gold
 ResistPoison = 1000
 ResistFire = 1000
 ResistSummon = 1000
@@ -249,6 +254,8 @@ AddSpell = s_fire_bolt
 AddSpell = s_paralyze
 AddSpell = s_mana_drain
 AddSpell = s_dispel
+Loot = loot_elem
+Loot = i_gold
 ResistPoison = 1000
 ResistFire = 1000
 ResistSummon = 1000

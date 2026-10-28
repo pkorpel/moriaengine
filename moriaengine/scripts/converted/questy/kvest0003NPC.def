@@ -202,6 +202,8 @@ Tactics = 900 1000
 Wrestling = 950 1000
 Equip = i_spellbook
 Equip = i_sword_broad_iron
+Loot = loot_DAEMON
+Loot = i_gold,{3000, 5000}
 AggroMode = Hostile
 
 [NPCDef c_h_strazce]

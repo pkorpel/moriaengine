@@ -248,6 +248,7 @@ namespace SteamEngine.Converter {
 				this.headerType = "PlayerDef";
 			} else {
 				this.headerType = "NPCDef";
+				this.ConvertRestockLoot();
 				//#656 - flush the accumulated resist fields exactly once each, now that both the
 				//rare top-level LineImplTask path and the @Create-body path have had their chance
 				//to populate pendingResistFields (both run inside base.ThirdStage() above).
@@ -318,6 +319,56 @@ namespace SteamEngine.Converter {
 
 		private static readonly Regex numberRE = new Regex(@"[-+]?\d+(\.\d+)?",
 			RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+		//#791 - one "ITEM=..." line of an ON=@NPCRestock body. Several archive lines carry a second
+		//"ITEM=" glued on (e.g. "ITEM=i_goldITEM=random_FOOD,{0 1}"), so values are split on it.
+		private static readonly Regex restockItemRE = new Regex(@"^\s*item\s*=\s*(?<value>.+?)\s*(//(?<comment>.*))?$",
+			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+		private static readonly Regex gluedItemRE = new Regex(@"item\s*=", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+		private static readonly Regex nameGluedToAmountRE = new Regex(@"^(?<name>[A-Za-z_][A-Za-z0-9_]*)\s*\{", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+		/// <summary>#791 - Sphere runs ON=@NPCRestock when an NPC is created: its ITEM= lines put the
+		/// monster's loot into its backpack (which falls to the corpse on death). Each becomes a
+		/// "Loot = <item>[,<amount>]" line on the NPCDef - a plain itemdef, a RANDOM_* pick-list
+		/// constant or a loot_*/tm_* template, exactly what the engine's template ITEM op takes
+		/// (NPCDef.Loot / NPC.On_Create). The gold marker "ITEM=i_gold" is kept as is: its amount
+		/// comes from the i_monster_create logic (MonsterLoot). Other restock lines (vendor SELL,
+		/// human NPCs' ITEMNEWBIE clothing) aren't loot and stay unconverted for now.</summary>
+		private void ConvertRestockLoot() {
+			TriggerSection restock = this.origData.GetTrigger("npcrestock");
+			if (restock == null) {
+				return;
+			}
+			using (System.IO.StringReader reader = new System.IO.StringReader(restock.Code.ToString())) {
+				string line;
+				while ((line = reader.ReadLine()) != null) {
+					Match m = restockItemRE.Match(line);
+					if (!m.Success) {
+						continue;
+					}
+					foreach (string part in gluedItemRE.Split(m.Groups["value"].Value)) {
+						string value = NormalizeRestockItem(part);
+						if (value.Length > 0) {
+							this.Set("Loot", value, m.Groups["comment"].Value);
+						}
+					}
+				}
+			}
+		}
+
+		/// <summary>#791 - "i_gold{700 999}" (an archive typo, the comma is missing) becomes
+		/// "i_gold,{700, 999}"; "{a b}" lists get LScript's commas (see FixRandomExpression).</summary>
+		internal static string NormalizeRestockItem(string value) {
+			value = value.Trim().TrimEnd(',').Trim();
+			if (value.Length == 0) {
+				return value;
+			}
+			Match m = nameGluedToAmountRE.Match(value);
+			if (m.Success) {
+				value = m.Groups["name"].Value + "," + value.Substring(m.Groups["name"].Length).TrimStart();
+			}
+			return ConvertedTemplateDef.FixRandomExpression(value);
+		}
 
 		//the real archive field is tag.experience=<eval {min max}>, embedded inside the
 		//ON=@Create trigger body - NOT the top-level "experience" line the base LineImplTask

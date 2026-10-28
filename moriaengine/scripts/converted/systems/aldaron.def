@@ -708,6 +708,8 @@ Equip = i_monster_create
 AggroMode = Hostile
 
 //[function f_dragon_armor_create_kovar] //(commented out by Converter) 
+Loot = loot_DRAGON
+Loot = i_gold
 
 [EquippableDef i_zamerovatko_dragon_armor_kovar_acreate]
 name = "zamerovatko na vytvoreni dragon armor"

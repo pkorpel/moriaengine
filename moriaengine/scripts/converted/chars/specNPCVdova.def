@@ -48,6 +48,7 @@ EquipColor = 0009
 Equip = 0153d // full apron 
 EquipColor = 0481
 Equip = i_monster_create
+Loot = i_gold,{700, 999}
 ResistParalyse = 500 750
 ResistBleed = 650
 ResistPoison = 150

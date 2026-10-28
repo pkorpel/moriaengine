@@ -745,6 +745,7 @@ Wrestling = 900 930
 AnimalTaming = 1250
 Fame = 1000 2000
 Karma = -5000 -5555
+Loot = loot_STEED
 AggroMode = Hostile
 
 [NPCDef c_steed_fire]
@@ -779,6 +780,7 @@ Wrestling = 900 930
 AnimalTaming = 1250
 Fame = 1000 2000
 Karma = -5000 -5555
+Loot = loot_STEED
 AggroMode = Hostile
 
 [NPCDef c_steed_ice]
@@ -813,6 +815,7 @@ Wrestling = 900 930
 AnimalTaming = 1250
 Fame = 1000 2000
 Karma = -5000 -5555
+Loot = loot_STEED
 AggroMode = Hostile
 
 [NPCDef c_steed_snow]
@@ -847,6 +850,7 @@ Wrestling = 900 930
 AnimalTaming = 1250
 Fame = 1000 2000
 Karma = -5000 -5555
+Loot = loot_STEED
 AggroMode = Hostile
 
 [NPCDef c_steed_midnight]
@@ -881,6 +885,7 @@ Wrestling = 900 930
 AnimalTaming = 1250
 Fame = 1000 2000
 Karma = -5000 -5555
+Loot = loot_STEED
 AggroMode = Hostile
 
 [NPCDef c_steed_dark]
@@ -915,6 +920,7 @@ Wrestling = 900 930
 AnimalTaming = 1250
 Fame = 1000 2000
 Karma = -5000 -5555
+Loot = loot_STEED
 AggroMode = Hostile
 
 [NPCDef c_shadowmare]

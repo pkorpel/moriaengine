@@ -52,6 +52,9 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 50
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_reag_executioners_cap, {3, 10}
 
 [NPCDef 0x38]
 CATEGORY = Monsters
@@ -107,6 +110,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 150
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_axe_lvl_2]
 CATEGORY = Monsters
@@ -165,6 +170,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 150
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_axe_lvl_3]
 CATEGORY = Monsters
@@ -223,6 +230,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 150
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_axe_lvl_4]
 CATEGORY = Monsters
@@ -287,6 +296,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 150
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_axe_lvl_5]
 CATEGORY = Monsters
@@ -352,6 +363,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 150
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef 0x39]
 CATEGORY = Monsters
@@ -408,6 +421,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 150
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_sword_lvl_2]
 CATEGORY = Monsters
@@ -464,6 +479,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 250
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_knight] /// asi pokracovani swordu???
 CATEGORY = Monsters
@@ -525,6 +542,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 250
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_knight_lvl_2]
 CATEGORY = Monsters
@@ -586,6 +605,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 250
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_knight_lvl_3]
 CATEGORY = Monsters
@@ -649,6 +670,8 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 250
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
 
 [NPCDef c_skeleton_knight_lvl_4]
 CATEGORY = Monsters
@@ -716,6 +739,9 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 450
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_reag_executioners_cap, {20, 25}
 
 [NPCDef c_skeleton_knight_lvl_5]
 CATEGORY = Monsters
@@ -781,6 +807,9 @@ ResistFire = -50
 ResistElectric = 50
 ResistCold = 550
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_reag_executioners_cap, {30, 45}
 
 [NPCDef c_skeleton_archer]
 CATEGORY = Monsters
@@ -836,6 +865,9 @@ ResistFire = -250
 ResistElectric = 50
 ResistCold = 350
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_arrow,{20, 30}
 
 [NPCDef c_skeleton_archer_lvl_2]
 CATEGORY = Monsters
@@ -891,6 +923,9 @@ ResistFire = -250
 ResistElectric = 50
 ResistCold = 350
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_arrow,{20, 30}
 
 [NPCDef c_skeleton_archer_lvl_3]
 CATEGORY = Monsters
@@ -949,6 +984,9 @@ ResistFire = -250
 ResistElectric = 50
 ResistCold = 350
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_arrow,{20, 40}
 
 [NPCDef c_skeleton_archer_lvl_4]
 CATEGORY = Monsters
@@ -1007,6 +1045,9 @@ ResistFire = -250
 ResistElectric = 50
 ResistCold = 350
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_arrow,{20, 50}
 
 [NPCDef c_skeleton_archer_lvl_5]
 CATEGORY = Monsters
@@ -1066,6 +1107,10 @@ ResistFire = -250
 ResistElectric = 50
 ResistCold = 350
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_arrow,{20, 50}
+Loot = i_reag_executioners_cap, {25, 30}
 
 [NPCDef c_skeleton_archer_lvl_6]
 CATEGORY = Monsters
@@ -1126,6 +1171,10 @@ ResistFire = -150
 ResistElectric = 50
 ResistCold = 350
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_arrow,{20, 50}
+Loot = i_reag_executioners_cap, {30, 35}
 
 [NPCDef c_skeleton_archer_lvl_7]
 CATEGORY = Monsters
@@ -1185,6 +1234,10 @@ ResistFire = -150
 ResistElectric = 50
 ResistCold = 350
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = i_arrow,{40, 50}
+Loot = i_reag_executioners_cap, {35, 40}
 
 [NPCDef 0x94]
 CATEGORY = Monsters
@@ -1248,6 +1301,9 @@ ResistFire = 150
 ResistElectric = 250
 ResistCold = 750
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = RANDOM_REAGENT,{5, 10}
 
 [NPCDef c_skeleton_mage_lvl_2]
 CATEGORY = Monsters
@@ -1311,6 +1367,9 @@ ResistFire = 150
 ResistElectric = 250
 ResistCold = 750
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = RANDOM_REAGENT,{10, 15}
 
 [NPCDef c_skeleton_mage_lvl_3]
 CATEGORY = Monsters
@@ -1375,6 +1434,9 @@ ResistFire = 150
 ResistElectric = 250
 ResistCold = 750
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = RANDOM_REAGENT,{20, 25}
 
 [NPCDef c_skeleton_mage_lvl_4]
 CATEGORY = Monsters
@@ -1441,6 +1503,9 @@ ResistFire = 150
 ResistElectric = 250
 ResistCold = 750
 AggroMode = Hostile
+Loot = loot_SKELETON
+Loot = i_gold
+Loot = RANDOM_REAGENT,{25, 30}
 
 [NPCDef 0x1a]
 CATEGORY = Monsters
@@ -1491,6 +1556,7 @@ ResistFire = -350
 ResistElectric = 50
 ResistCold = 350
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x3]
 CATEGORY = Monsters
@@ -1543,6 +1609,9 @@ ResistFire = -100
 ResistElectric = 100
 ResistCold = 100
 AggroMode = Hostile
+Loot = loot_undead_body
+Loot = random_reagent_necro,{0, 5}
+Loot = i_gold
 
 [NPCDef c_mummy]
 CATEGORY = Monsters
@@ -1596,6 +1665,8 @@ ResistFire = -500
 ResistElectric = 250
 ResistCold = 100
 AggroMode = Hostile
+Loot = random_reagent_necro,{0, 5}
+Loot = i_gold
 
 [NPCDef 0x9a]
 CATEGORY = Monsters
@@ -1650,6 +1721,8 @@ ResistFire = 200
 ResistElectric = 250
 ResistCold = 100
 AggroMode = Hostile
+Loot = random_reagent,{5, 10}
+Loot = i_gold
 
 [NPCDef c_mummy_blood]
 CATEGORY = Monsters
@@ -1705,6 +1778,8 @@ ResistFire = 200
 ResistElectric = -250
 ResistCold = 100
 AggroMode = Hostile
+Loot = i_reag_blood_vial,{10, 15}
+Loot = i_gold
 
 [NPCDef c_mummy_adamantinum]
 CATEGORY = Monsters
@@ -1761,6 +1836,8 @@ ResistFire = 100
 ResistElectric = -250
 ResistCold = 400
 AggroMode = Hostile
+Loot = random_reagent,{20, 30}
+Loot = i_gold
 
 [NPCDef c_ghoul]
 CATEGORY = Monsters
@@ -1814,6 +1891,8 @@ ResistFire = -100
 ResistElectric = 150
 ResistCold = 100
 AggroMode = Hostile
+Loot = random_reagent_necro,{5, 10}
+Loot = i_gold
 
 [NPCDef c_fext]
 CATEGORY = Monsters
@@ -1868,6 +1947,8 @@ ResistFire = -100
 ResistElectric = 150
 ResistCold = 100
 AggroMode = Hostile
+Loot = random_reagent_necro,{5, 10}
+Loot = i_gold
 
 [NPCDef c_wraith]
 CATEGORY = Monsters
@@ -1921,6 +2002,8 @@ ResistFire = -100
 ResistElectric = 150
 ResistCold = 100
 AggroMode = Hostile
+Loot = random_reagent_necro,{5, 10}
+Loot = i_gold
 
 [NPCDef 0x3ca]
 CATEGORY = Monsters
@@ -1975,6 +2058,8 @@ ResistFire = -100
 ResistElectric = 150
 ResistCold = 100
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent_necro,{5, 10}
 
 [NPCDef 0x92]
 CATEGORY = Monsters
@@ -2032,6 +2117,8 @@ ResistFire = -100
 ResistElectric = 150
 ResistCold = 100
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent_necro,{10, 15}
 
 [NPCDef c_shadow_lord]
 CATEGORY = Monsters
@@ -2089,6 +2176,8 @@ ResistFire = -100
 ResistElectric = 150
 ResistCold = 100
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent_necro,{20, 25}
 
 [NPCDef c_shadow_king]
 CATEGORY = Monsters
@@ -2148,6 +2237,8 @@ ResistFire = -200
 ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent_necro,{20, 25}
 
 [NPCDef c_shadow_king_undead]
 CATEGORY = Monsters
@@ -2211,6 +2302,9 @@ ResistFire = -200
 ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
+Loot = RANDOM_REAGENT,{35, 40}
+Loot = random_reagent_necro,{25, 30}
 
 [NPCDef 0x18]
 CATEGORY = Monsters
@@ -2257,6 +2351,9 @@ ResistFire = -300
 ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
+Loot = loot_undead
+Loot = i_gold
+Loot = random_reagent_necro, {10, 20}
 
 [NPCDef c_liche_lord]
 CATEGORY = Monsters
@@ -2317,6 +2414,8 @@ ResistFire = -200
 ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent_necro,{10, 20}
 
 [NPCDef c_liche_king]
 CATEGORY = Monsters
@@ -2379,6 +2478,8 @@ ResistFire = -200
 ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent_necro,{25, 40}
 
 [NPCDef c_liche_king_undead]
 CATEGORY = Monsters
@@ -2442,6 +2543,9 @@ ResistFire = -200
 ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
+Loot = RANDOM_REAGENT,{25, 30}
+Loot = random_reagent_necro,{25, 30}
 
 [NPCDef 0x319]
 CATEGORY = Monsters
@@ -2501,6 +2605,7 @@ ResistFire = -200
 ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_skeleton_horse_mage]
 CATEGORY = Monsters
@@ -2562,6 +2667,8 @@ ResistFire = -200
 ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent_necro,{15, 20}
 
 [NPCDef c_elem_death]
 CATEGORY = Monsters
@@ -2610,6 +2717,7 @@ ResistFire = -250
 ResistSlashing = -350
 ResistStabbing = -350
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x68]
 CATEGORY = Monsters
@@ -2665,6 +2773,8 @@ ResistFire = -100
 ResistElectric = 500
 ResistCold = 200
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef 0x6b]
 CATEGORY = Monsters
@@ -2724,6 +2834,8 @@ ResistFire = -100 // vetsina nemrtvych je nachylna na ohen
 ResistElectric = 300 //prumer 
 ResistCold = 500 //mraz nemrtvemu neublizi 
 AggroMode = Hostile
+Loot = i_gold
+Loot = i_reag_executioners_cap, {10, 15}
 
 [NPCDef 0x232]
 CATEGORY = Monsters
@@ -2772,6 +2884,7 @@ ResistFire = -100 // vetsina nemrtvych je nachylna na ohen
 ResistElectric = 300 //prumer 
 ResistCold = 500 //mraz nemrtvemu neublizi 
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_skull_head_mage]
 CATEGORY = Monsters
@@ -2825,6 +2938,7 @@ ResistFire = 500 // vetsina nemrtvych je nachylna na ohen
 ResistElectric = 150 //prumer 
 ResistCold = 400 //mraz nemrtvemu neublizi 
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_skull_head_fire]
 CATEGORY = Monsters
@@ -2876,6 +2990,7 @@ ResistFire = 200
 ResistElectric = 250
 ResistCold = -150
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_skull_head_fly]
 CATEGORY = Monsters
@@ -2927,6 +3042,7 @@ ResistFire = 200
 ResistElectric = 250
 ResistCold = -150
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef 0x25]
 CATEGORY = Monsters
@@ -2981,6 +3097,8 @@ ResistFire = -400
 ResistElectric = -250
 ResistCold = 200
 AggroMode = Hostile
+Loot = RANDOM_REAGENT_NECRO, {5, 15}
+Loot = i_gold
 
 [NPCDef c_kostej_iron]
 CATEGORY = Monsters
@@ -3038,6 +3156,8 @@ ResistFire = -250
 ResistElectric = -100
 ResistCold = 250
 AggroMode = Hostile
+Loot = RANDOM_REAGENT_NECRO, {5, 20}
+Loot = i_gold
 
 [NPCDef c_kostej_silver]
 CATEGORY = Monsters
@@ -3095,6 +3215,8 @@ ResistFire = -150
 ResistElectric = 0 //nachylnost na elektrinu 
 ResistCold = 300 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_gold
+Loot = RANDOM_REAGENT_NECRO, {10, 25}
 
 [NPCDef c_kostej_golden]
 CATEGORY = Monsters
@@ -3152,6 +3274,8 @@ ResistFire = -100
 ResistElectric = 50 //nachylnost na elektrinu 
 ResistCold = 300 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_gold
+Loot = RANDOM_REAGENT_NECRO, {10, 50}
 
 [NPCDef c_kostej_verite]
 CATEGORY = Monsters
@@ -3211,6 +3335,8 @@ ResistFire = -50
 ResistElectric = 100 //nachylnost na elektrinu 
 ResistCold = 350 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = RANDOM_REAGENT_NECRO, {15, 30}
+Loot = i_gold
 
 [NPCDef c_kostej_valorite]
 CATEGORY = Monsters
@@ -3270,6 +3396,8 @@ ResistFire = 0
 ResistElectric = 150 //nachylnost na elektrinu 
 ResistCold = 400 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = RANDOM_REAGENT_NECRO, {25, 50}
+Loot = i_gold
 
 [NPCDef c_kostej_obsidian]
 CATEGORY = Monsters
@@ -3329,6 +3457,9 @@ ResistFire = 50
 ResistElectric = 200 //nachylnost na elektrinu 
 ResistCold = 450 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = RANDOM_REAGENT_NECRO, {25, 50}
+Loot = RANDOM_REAGENT_NECRO, {25, 50}
+Loot = i_gold
 
 [NPCDef c_kostej_adamantinum]
 CATEGORY = Monsters
@@ -3387,6 +3518,9 @@ ResistFire = 100
 ResistElectric = 250 //nachylnost na elektrinu 
 ResistCold = 600 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = RANDOM_REAGENT_NECRO, {40, 75}
+Loot = RANDOM_REAGENT_NECRO, {40, 75}
+Loot = i_gold
 
 [NPCDef c_ghost_proklety]
 CATEGORY = Monsters
@@ -3444,3 +3578,4 @@ ResistFire = 500
 ResistElectric = 300
 ResistCold = 800
 AggroMode = Hostile
+Loot = i_gold

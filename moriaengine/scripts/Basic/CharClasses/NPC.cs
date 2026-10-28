@@ -741,6 +741,57 @@ namespace SteamEngine.CompiledScripts {
 			set { this.SetTag(instanceStartingEquipmentTK, value); }
 		}
 
+		private static readonly TagKey lootTK = TagKey.Acquire("_npcLoot_");
+
+		/// <summary>#791 - the monster's loot, Erebor's ON=@NPCRestock "ITEM=" lines ("Loot = ..." in
+		/// .def content, see the converter): each "item[,amount]" - an itemdef, a RANDOM_* pick-list
+		/// constant or a loot_*/tm_* template - is put into the backpack when the NPC is created
+		/// (NPC.On_Create), so it falls to the corpse on death. "Loot = i_gold" is the gold marker
+		/// whose amount MonsterLoot sets from the monster's experience.</summary>
+		public List<string> Loot {
+			get { return this.GetTag(lootTK) as List<string>; }
+			set {
+				this.SetTag(lootTK, value);
+				this.lootRunners = null;
+			}
+		}
+
+		private LScriptHolder[] lootRunners; //compiled "ITEM = <loot line>" scripts, built on first use
+
+		/// <summary>#791 - creates this NPCDef's loot in `container` (the new NPC's backpack), each
+		/// line through the template ITEM op - so random lists, nested templates and "{0 1}"-style
+		/// amounts behave exactly as ITEM= does in templates. A broken line is logged and skipped.</summary>
+		public void CreateLoot(Thing container) {
+			List<string> loot = this.Loot;
+			if (loot == null) {
+				return;
+			}
+			if (this.lootRunners == null) {
+				LScriptHolder[] runners = new LScriptHolder[loot.Count];
+				for (int i = 0; i < loot.Count; i++) {
+					try {
+						runners[i] = LScriptMain.GetNewSnippetRunner("NPCDef " + this.PrettyDefname, 0, "ITEM = " + loot[i]);
+					} catch (Exception e) {
+						Logger.WriteWarning("NPCDef " + this.PrettyDefname, "loot line '" + loot[i] + "' doesn't compile: " + e.Message);
+					}
+				}
+				this.lootRunners = runners;
+			}
+			for (int i = 0; i < this.lootRunners.Length; i++) {
+				LScriptHolder runner = this.lootRunners[i];
+				if (runner == null) {
+					continue;
+				}
+				try {
+					runner.Run(container, (ScriptArgs) null);
+				} catch (FatalException) {
+					throw;
+				} catch (Exception e) {
+					Logger.WriteWarning("NPCDef " + this.PrettyDefname, "loot line '" + loot[i] + "' failed: " + e.Message);
+				}
+			}
+		}
+
 		/// <summary>Real archive content rolls starting hair/beard via 3 magic "Equip ="
 		/// keywords instead of a literal defname - "random_male_hair"/"random_female_hair"/
 		/// "random_facial_hair" (confirmed widespread, e.g. c_m_HEALER/c_f_HEALER) - a native
@@ -1116,6 +1167,13 @@ namespace SteamEngine.CompiledScripts {
 				this.MaxManaRange = ParseStatRange(filename, line, "maxmana", args);
 				return;
 			}
+			if (param == "loot") {
+				//#791 - "Loot = item[,amount]", one line per Erebor @NPCRestock ITEM= line
+				List<string> loot = this.Loot ?? new List<string>();
+				loot.Add(args.Trim());
+				this.Loot = loot;
+				return;
+			}
 			if (param == "equip") {
 				//#563 - "Equip = defname" or "Equip = defname, amount" or "Equip = defname, min max"
 				//#775 - defname can also be a Sphere weighted random pick, "{i_bardiche 1 i_halberd 1}"
@@ -1485,6 +1543,7 @@ namespace SteamEngine.CompiledScripts {
 			//drops it into the backpack otherwise (ammo like arrows) - no separate equip call
 			//needed here.
 			List<NPCDef.StartingEquipmentEntry> equipment = def.StartingEquipment;
+			bool hasMonsterCreate = false; //#791 - an "Equip = i_monster_create" entry, see MonsterLoot
 			if (equipment != null) {
 				//real-user-reported: creating c_f_HEALER/c_m_HEALER logged "starting equipment
 				//item 'random_female_hair' is not a known ItemDef" and, worse, crashed entirely
@@ -1509,6 +1568,12 @@ namespace SteamEngine.CompiledScripts {
 				List<Item> createdStartingEquipment = new List<Item>();
 				foreach (NPCDef.StartingEquipmentEntry entry in equipment) {
 					string entryDefname = entry.PickDefname(Globals.dice); //#775 - rolls a "{a 1 b 1}" random pick
+					if (MonsterLoot.IsMonsterCreateMarker(entryDefname)) {
+						//#791 - Erebor's i_monster_create is a one-shot script item, not equipment: its
+						//loot logic runs below (MonsterLoot.ApplyCreatureStart), the item isn't created
+						hasMonsterCreate = true;
+						continue;
+					}
 					bool isHairKeyword = IsHairRandomizerKeyword(entryDefname);
 					ItemDef itemDef = ResolveStartingEquipmentItemDef(entryDefname, isHairKeyword);
 					if (itemDef == null) {
@@ -1554,6 +1619,14 @@ namespace SteamEngine.CompiledScripts {
 						createdItem.Cont = this.Backpack;
 					}
 				}
+			}
+
+			//#791 - the monster's loot (Erebor's ON=@NPCRestock), into the backpack so it falls to
+			//the corpse - then, for i_monster_create monsters, the gold amount and rare extras
+			//(Erebor's creaturestart), in the same order Sphere ran them
+			def.CreateLoot(this.Backpack);
+			if (hasMonsterCreate) {
+				MonsterLoot.ApplyCreatureStart(this);
 			}
 
 			//#4 of the 2026-10-26 monster-testing batch - stub abilities standing in for legacy
