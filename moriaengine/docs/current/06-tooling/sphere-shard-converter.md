@@ -83,6 +83,15 @@ that gap:
   (#551 decision #2) so implementing a hook later automatically "lights up" every monster
   already tagged with it.
 
+**Random lists need commas (#763).** Sphere writes weighted random picks as
+`COLOR={ colors_white 9 color_gray_lt 1 }`. LScript can't read that form when an identifier
+comes first, because `name value` is an assignment there. The list collapses into one element,
+and the def crashes the first time it's instantiated: `c_sheep_woolly` did, taking down every
+test that spawned one. `ConvertedTemplateDef.FixRandomExpression` (comma-separates a `{...}`
+list) was already applied to templates and constants. It now also covers `Color` and the
+`model` taken from `ID=`. Equip `{...}` lists are parsed by `NPC.LoadScriptLine`, not LScript,
+and random equip picks aren't supported there at all, a separate gap.
+
 **Still genuinely unsupported** (need real new subsystems before a mapping would mean
 anything, confirmed unchanged by this pass): `moverate`, `resources` (loot), `bloodcolor`,
 `foodtype`, `desires`, `aversions`, `shelter`, `reslevel`.

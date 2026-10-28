@@ -145,7 +145,7 @@ SUBSECTION = Kvest Neutralni-001 Vampiri Pribeh
 DESCRIPTION = Truhla past
 
 type = t_container
-model = { i_chest_metal 1 i_chest_metal_brass 1 I_CHEST_WOODEN_BRASS 1}
+model = { i_chest_metal, 1, i_chest_metal_brass, 1, I_CHEST_WOODEN_BRASS, 1}
 //layer = unknown
 
 //[TYPEDEF T_truhla_Past] //(commented out by Converter) 
