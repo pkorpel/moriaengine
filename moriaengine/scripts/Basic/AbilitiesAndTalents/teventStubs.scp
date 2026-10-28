@@ -21,8 +21,10 @@ Name = "(e_air)"
 [PassiveAbilityDef a_tevent_e_aldaron_vamp]
 Name = "(e_aldaron_vamp)"
 
-[PassiveAbilityDef a_tevent_e_autoreflect]
-Name = "(e_autoreflect)"
+//#797 batch 4: upgraded from a bare stub to a real AutoReflectAbilityDef
+//(MonsterSpecialAttacks/) - magic reflection re-arms after every swing taken.
+[AutoReflectAbilityDef a_tevent_e_autoreflect]
+Name = "Auto Reflect"
 
 [PassiveAbilityDef a_tevent_e_backstub]
 Name = "(e_backstub)"
@@ -75,8 +77,10 @@ Name = "(e_demon_lord)"
 [PassiveAbilityDef a_tevent_e_dragon_brain]
 Name = "(e_dragon_brain)"
 
-[PassiveAbilityDef a_tevent_e_dragon_regeneration]
-Name = "(e_dragon_regeneration)"
+//#797 batch 4: upgraded from a bare stub to a real DragonRegenerationAbilityDef
+//(MonsterSpecialAttacks/) - heals a fixed amount every few seconds while hurt.
+[DragonRegenerationAbilityDef a_tevent_e_dragon_regeneration]
+Name = "Regeneration"
 
 [PassiveAbilityDef a_tevent_e_drone_large]
 Name = "(e_drone_large)"
@@ -96,8 +100,10 @@ Name = "(e_elem_terror)"
 [PassiveAbilityDef a_tevent_e_emotedmg]
 Name = "(e_emotedmg)"
 
-[PassiveAbilityDef a_tevent_e_explode]
-Name = "(e_explode)"
+//#797 batch 4: upgraded from a bare stub to a real ExplodeAbilityDef
+//(MonsterSpecialAttacks/) - on death, blasts everyone who fought it (damage / distance).
+[ExplodeAbilityDef a_tevent_e_explode]
+Name = "Death Explosion"
 
 [PassiveAbilityDef a_tevent_e_explosiondispell]
 Name = "(e_explosiondispell)"
@@ -186,8 +192,10 @@ Name = "(e_humanoid)"
 [PassiveAbilityDef a_tevent_e_illusionist]
 Name = "(e_illusionist)"
 
-[PassiveAbilityDef a_tevent_e_inexhaustible]
-Name = "(e_inexhaustible)"
+//#797 batch 4: upgraded from a bare stub to a real InexhaustibleAbilityDef
+//(MonsterSpecialAttacks/) - regains stamina with every step.
+[InexhaustibleAbilityDef a_tevent_e_inexhaustible]
+Name = "Inexhaustible"
 
 [PassiveAbilityDef a_tevent_e_item_refuser]
 Name = "(e_item_refuser)"
@@ -195,14 +203,18 @@ Name = "(e_item_refuser)"
 [PassiveAbilityDef a_tevent_e_kaloc_help]
 Name = "(e_kaloc_help)"
 
-[PassiveAbilityDef a_tevent_e_lifeleech]
-Name = "(e_lifeleech)"
+//#797 batch 4: upgraded from a bare stub to a real LifeLeechAbilityDef
+//(MonsterSpecialAttacks/) - heals itself on every landed swing.
+[LifeLeechAbilityDef a_tevent_e_lifeleech]
+Name = "Life Leech"
 
 [PassiveAbilityDef a_tevent_e_lifeleech_vampire]
 Name = "(e_lifeleech_vampire)"
 
-[PassiveAbilityDef a_tevent_e_lightnings]
-Name = "(e_lightnings)"
+//#797 batch 4: upgraded from a bare stub to a real LightningsAbilityDef
+//(MonsterSpecialAttacks/) - chance when hit to strike a spot nearby with lightning tiles.
+[LightningsAbilityDef a_tevent_e_lightnings]
+Name = "Lightnings"
 
 [PassiveAbilityDef a_tevent_e_lihe_sarfeos]
 Name = "(e_lihe_sarfeos)"
@@ -216,8 +228,10 @@ Name = "Looter"
 [PassiveAbilityDef a_tevent_e_malica_help]
 Name = "(e_malica_help)"
 
-[PassiveAbilityDef a_tevent_e_managain]
-Name = "(e_managain)"
+//#797 batch 4: upgraded from a bare stub to a real ManaGainAbilityDef
+//(MonsterSpecialAttacks/) - regains a quarter of its mana for every 5% of hits lost.
+[ManaGainAbilityDef a_tevent_e_managain]
+Name = "Mana Gain"
 
 [PassiveAbilityDef a_tevent_e_menavec]
 Name = "(e_menavec)"
@@ -268,11 +282,15 @@ Name = "Critical Hit"
 [NpcCurseAbilityDef a_tevent_e_npc_curse]
 Name = "Dark Curse"
 
-[PassiveAbilityDef a_tevent_e_npc_curse_mana]
-Name = "(e_npc_curse_mana)"
+//#797 batch 4: upgraded from a bare stub to a real NpcCurseManaAbilityDef
+//(MonsterSpecialAttacks/) - periodic area mana drain.
+[NpcCurseManaAbilityDef a_tevent_e_npc_curse_mana]
+Name = "Mana Curse"
 
-[PassiveAbilityDef a_tevent_e_npc_curse_stam]
-Name = "(e_npc_curse_stam)"
+//#797 batch 4: upgraded from a bare stub to a real NpcCurseStamAbilityDef
+//(MonsterSpecialAttacks/) - periodic area stamina drain.
+[NpcCurseStamAbilityDef a_tevent_e_npc_curse_stam]
+Name = "Stamina Curse"
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
 //DetectAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) -
@@ -307,8 +325,10 @@ Name = "Leaper"
 [PassiveAbilityDef a_tevent_e_npc_mag]
 Name = "(e_npc_mag)"
 
-[PassiveAbilityDef a_tevent_e_npc_magicshield]
-Name = "(e_npc_magicshield)"
+//#797 batch 4: upgraded from a bare stub to a real MagicShieldAbilityDef
+//(MonsterSpecialAttacks/) - absorbs most of every swing's damage.
+[MagicShieldAbilityDef a_tevent_e_npc_magicshield]
+Name = "Magic Shield"
 
 [PassiveAbilityDef a_tevent_e_npc_manashield]
 Name = "(e_npc_manashield)"
@@ -319,8 +339,10 @@ Name = "(e_npc_massleap)"
 [PassiveAbilityDef a_tevent_e_npc_multishot]
 Name = "(e_npc_multishot)"
 
-[PassiveAbilityDef a_tevent_e_npc_reactivearmor]
-Name = "(e_npc_reactivearmor)"
+//#797 batch 4: upgraded from a bare stub to a real ReactiveArmorAbilityDef
+//(MonsterSpecialAttacks/) - reflects part of melee damage taken back at the attacker.
+[ReactiveArmorAbilityDef a_tevent_e_npc_reactivearmor]
+Name = "Reactive Armor"
 
 [PassiveAbilityDef a_tevent_e_npc_reagdrop]
 Name = "(e_npc_reagdrop)"
@@ -345,8 +367,10 @@ Name = "Round Attack (Pull)"
 [SniperAbilityDef a_tevent_e_npc_sniper]
 Name = "Sniper"
 
-[PassiveAbilityDef a_tevent_e_npc_stam_dmg]
-Name = "(e_npc_stam_dmg)"
+//#797 batch 4: upgraded from a bare stub to a real StamDmgAbilityDef
+//(MonsterSpecialAttacks/) - chance to drain the stamina of whoever hits it.
+[StamDmgAbilityDef a_tevent_e_npc_stam_dmg]
+Name = "Stamina Drain"
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
 //StunAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - rolled on a
@@ -411,14 +435,18 @@ Name = "Strangler Vine"
 [ParaKrikAbilityDef a_tevent_e_parakrik]
 Name = "Paralyzing Scream"
 
-[PassiveAbilityDef a_tevent_e_phoenix]
-Name = "(e_phoenix)"
+//#797 batch 4: upgraded from a bare stub to a real PhoenixAbilityDef
+//(MonsterSpecialAttacks/) - rises again at half max hits when beaten below a fifth.
+[PhoenixAbilityDef a_tevent_e_phoenix]
+Name = "Phoenix Rebirth"
 
 [PassiveAbilityDef a_tevent_e_phoenix_25]
 Name = "(e_phoenix_25)"
 
-[PassiveAbilityDef a_tevent_e_phoenix_fire]
-Name = "(e_phoenix_fire)"
+//#797 batch 4: upgraded from a bare stub to a real PhoenixFireAbilityDef
+//(MonsterSpecialAttacks/) - 1 in 15 landed swings drops 10 fire tiles around it.
+[PhoenixFireAbilityDef a_tevent_e_phoenix_fire]
+Name = "Phoenix Fire"
 
 [PassiveAbilityDef a_tevent_e_potiondrinker]
 Name = "(e_potiondrinker)"
@@ -426,8 +454,10 @@ Name = "(e_potiondrinker)"
 [PassiveAbilityDef a_tevent_e_ps_fanatik]
 Name = "(e_ps_fanatik)"
 
-[PassiveAbilityDef a_tevent_e_pushall]
-Name = "(e_pushall)"
+//#797 batch 4: upgraded from a bare stub to a real PushallAbilityDef
+//(MonsterSpecialAttacks/) - chance when hit to throw nearby players away.
+[PushallAbilityDef a_tevent_e_pushall]
+Name = "Push All"
 
 [PassiveAbilityDef a_tevent_e_q019_pocestny]
 Name = "(e_q019_pocestny)"
@@ -492,8 +522,10 @@ Name = "(e_strach_lord2)"
 [SummonEaterAbilityDef a_tevent_e_summoneater]
 Name = "Summon Eater"
 
-[PassiveAbilityDef a_tevent_e_summoneater_vamp]
-Name = "(e_summoneater_vamp)"
+//#797 batch 4: upgraded from a bare stub to a real SummonEaterVampAbilityDef
+//(MonsterSpecialAttacks/) - eats a summon it hits and absorbs its stats.
+[SummonEaterVampAbilityDef a_tevent_e_summoneater_vamp]
+Name = "Summon Devourer"
 
 [PassiveAbilityDef a_tevent_e_summonfrenzy]
 Name = "(e_summonfrenzy)"

@@ -496,6 +496,127 @@ namespace SteamEngine.CompiledScripts {
 			set { this.SetTag(summoningLifetimeTK, value); }
 		}
 
+		//#797 - monster abilities batch 4 per-species overrides, same {min,max}-or-null shape as
+		//the ones above. Each .def field name (lowercased) maps to its own tag key here, so
+		//LoadScriptLine handles all of them with one lookup instead of one if-block each.
+		private static readonly Dictionary<string, TagKey> batch4AbilityRangeTags = new Dictionary<string, TagKey>(StringComparer.OrdinalIgnoreCase) {
+			{ "phoenixfiredamage", TagKey.Acquire("_npcPhoenixFireDamage_") },
+			{ "explodedamage", TagKey.Acquire("_npcExplodeDamage_") },
+			{ "regenerationhp", TagKey.Acquire("_npcRegenerationHp_") },
+			{ "regenerationinterval", TagKey.Acquire("_npcRegenerationInterval_") },
+			{ "lifeleechamount", TagKey.Acquire("_npcLifeLeechAmount_") },
+			{ "reactivearmorpercent", TagKey.Acquire("_npcReactiveArmorPercent_") },
+			{ "stamdmgchance", TagKey.Acquire("_npcStamDmgChance_") },
+			{ "stamdmgpower", TagKey.Acquire("_npcStamDmgPower_") },
+			{ "lightningschance", TagKey.Acquire("_npcLightningsChance_") },
+			{ "lightningsrange", TagKey.Acquire("_npcLightningsRange_") },
+			{ "npccursemanachance", TagKey.Acquire("_npcCurseManaChance_") },
+			{ "npccursemanacooldown", TagKey.Acquire("_npcCurseManaCooldown_") },
+			{ "npccursemanadamage", TagKey.Acquire("_npcCurseManaDamage_") },
+			{ "npccursestamchance", TagKey.Acquire("_npcCurseStamChance_") },
+			{ "npccursestamcooldown", TagKey.Acquire("_npcCurseStamCooldown_") },
+			{ "npccursestamdamage", TagKey.Acquire("_npcCurseStamDamage_") },
+			{ "pushallchance", TagKey.Acquire("_npcPushallChance_") },
+			{ "pushallcooldown", TagKey.Acquire("_npcPushallCooldown_") },
+			{ "magicshieldstrength", TagKey.Acquire("_npcMagicShieldStrength_") }
+		};
+
+		private int[] GetBatch4Range(string fieldName) {
+			return this.GetTag(batch4AbilityRangeTags[fieldName]) as int[];
+		}
+
+		private void SetBatch4Range(string fieldName, int[] value) {
+			this.SetTag(batch4AbilityRangeTags[fieldName], value);
+		}
+
+		/// <summary>Real archive field is tag.phoenix_fire_damage.</summary>
+		public int[] PhoenixFireDamage {
+			get { return this.GetBatch4Range("phoenixfiredamage"); }
+			set { this.SetBatch4Range("phoenixfiredamage", value); }
+		}
+		/// <summary>Real archive field is tag.explode_dmg.</summary>
+		public int[] ExplodeDamage {
+			get { return this.GetBatch4Range("explodedamage"); }
+			set { this.SetBatch4Range("explodedamage", value); }
+		}
+		/// <summary>Real archive fields are tag.regeneration_hp/_speed (seconds).</summary>
+		public int[] RegenerationHp {
+			get { return this.GetBatch4Range("regenerationhp"); }
+			set { this.SetBatch4Range("regenerationhp", value); }
+		}
+		public int[] RegenerationInterval {
+			get { return this.GetBatch4Range("regenerationinterval"); }
+			set { this.SetBatch4Range("regenerationinterval", value); }
+		}
+		/// <summary>Real archive field is tag.npc_lifeLeech.</summary>
+		public int[] LifeLeechAmount {
+			get { return this.GetBatch4Range("lifeleechamount"); }
+			set { this.SetBatch4Range("lifeleechamount", value); }
+		}
+		/// <summary>Real archive field is tag.reactivearmor_damagePerc (percent).</summary>
+		public int[] ReactiveArmorPercent {
+			get { return this.GetBatch4Range("reactivearmorpercent"); }
+			set { this.SetBatch4Range("reactivearmorpercent", value); }
+		}
+		/// <summary>Real archive fields are tag.stam_dmg_chance/_power.</summary>
+		public int[] StamDmgChance {
+			get { return this.GetBatch4Range("stamdmgchance"); }
+			set { this.SetBatch4Range("stamdmgchance", value); }
+		}
+		public int[] StamDmgPower {
+			get { return this.GetBatch4Range("stamdmgpower"); }
+			set { this.SetBatch4Range("stamdmgpower", value); }
+		}
+		/// <summary>Real archive fields are tag.e_lightnings_chance/_range.</summary>
+		public int[] LightningsChance {
+			get { return this.GetBatch4Range("lightningschance"); }
+			set { this.SetBatch4Range("lightningschance", value); }
+		}
+		public int[] LightningsRange {
+			get { return this.GetBatch4Range("lightningsrange"); }
+			set { this.SetBatch4Range("lightningsrange", value); }
+		}
+		/// <summary>Real archive fields are tag.npc_curse_mana_chance/_delay/_dmg.</summary>
+		public int[] NpcCurseManaChance {
+			get { return this.GetBatch4Range("npccursemanachance"); }
+			set { this.SetBatch4Range("npccursemanachance", value); }
+		}
+		public int[] NpcCurseManaCooldown {
+			get { return this.GetBatch4Range("npccursemanacooldown"); }
+			set { this.SetBatch4Range("npccursemanacooldown", value); }
+		}
+		public int[] NpcCurseManaDamage {
+			get { return this.GetBatch4Range("npccursemanadamage"); }
+			set { this.SetBatch4Range("npccursemanadamage", value); }
+		}
+		/// <summary>Real archive fields are tag.npc_curse_stam_chance/_delay/_dmg.</summary>
+		public int[] NpcCurseStamChance {
+			get { return this.GetBatch4Range("npccursestamchance"); }
+			set { this.SetBatch4Range("npccursestamchance", value); }
+		}
+		public int[] NpcCurseStamCooldown {
+			get { return this.GetBatch4Range("npccursestamcooldown"); }
+			set { this.SetBatch4Range("npccursestamcooldown", value); }
+		}
+		public int[] NpcCurseStamDamage {
+			get { return this.GetBatch4Range("npccursestamdamage"); }
+			set { this.SetBatch4Range("npccursestamdamage", value); }
+		}
+		/// <summary>Real archive fields are tag.e_pushall_chance/_time (seconds).</summary>
+		public int[] PushallChance {
+			get { return this.GetBatch4Range("pushallchance"); }
+			set { this.SetBatch4Range("pushallchance", value); }
+		}
+		public int[] PushallCooldown {
+			get { return this.GetBatch4Range("pushallcooldown"); }
+			set { this.SetBatch4Range("pushallcooldown", value); }
+		}
+		/// <summary>Real archive field is tag.npc_magicShield (percent of a swing absorbed).</summary>
+		public int[] MagicShieldStrength {
+			get { return this.GetBatch4Range("magicshieldstrength"); }
+			set { this.SetBatch4Range("magicshieldstrength", value); }
+		}
+
 		private static readonly TagKey summonedCreaturesTK = TagKey.Acquire("_npcSummonedCreatures_");
 
 		/// <summary>e_npc_summoning's own per-species reinforcement list (real archive fields
@@ -1159,6 +1280,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "summoninglifetime") {
 				this.SummoningLifetime = ParseStatRange(filename, line, "summoninglifetime", args);
+				return;
+			}
+			if (batch4AbilityRangeTags.ContainsKey(param)) {
+				this.SetBatch4Range(param, ParseStatRange(filename, line, param, args));
 				return;
 			}
 			if (param == "addsummon") {

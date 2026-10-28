@@ -15,7 +15,9 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System.Collections.Generic;
 using SteamEngine.Common;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -40,6 +42,39 @@ namespace SteamEngine.CompiledScripts {
 				return NPCDef.RollStatRange(npcOverride);
 			}
 			return ScriptUtil.GetRandInRange(abilityDefault[0], abilityDefault[1]);
+		}
+
+		/// <summary>True when `ch` exists and carries the ability `def` (null def = never).</summary>
+		private static bool HasAbilityDef(Character ch, AbilityDef def) {
+			Ability ability;
+			return (def != null) && (ch != null) && ch.HasAbility(def, out ability);
+		}
+
+		/// <summary>The archive's standard "isPlayer || isPet" victim filter shared by the area
+		/// abilities: any living, visible, non-GM player, or any NPC with a master (a tamed pet,
+		/// a summon, a mount) - never a wild monster.</summary>
+		private static bool IsPlayerOrPetTarget(Character target) {
+			if ((target == null) || target.IsDeleted || !target.IsAliveAndValid || target.IsNotVisible) {
+				return false;
+			}
+			if (target.IsPlayerForCombat) {
+				return !target.IsGM;
+			}
+			NPC npc = target as NPC;
+			return (npc != null) && (npc.ControlMaster != null);
+		}
+
+		/// <summary>Snapshot of the characters around a point, so a loop that damages (and so
+		/// possibly deletes) them never mutates the sector list it is walking.</summary>
+		private static List<Character> CharsAround(Map map, int x, int y, int range) {
+			List<Character> list = new List<Character>();
+			foreach (AbstractCharacter ch in map.GetCharsInRange(x, y, range)) {
+				Character c = ch as Character;
+				if (c != null) {
+					list.Add(c);
+				}
+			}
+			return list;
 		}
 
 		//North,NorthEast,East,SouthEast,South,SouthWest,West,NorthWest (GameCore/Enums.cs's own
