@@ -1,6 +1,45 @@
 # moriaengine — working state
 
-## SESSION HANDOFF (2026-10-28): teventStubs batch 3 SHIPPED (summoneater/parakrik/npc_curse/summoning/sniper/infiniteMana) - #745 (cure bleeding) still QUEUED; #751 (command-auth quirk) filed, not fixed
+## SESSION HANDOFF (2026-10-28): #751 command-auth gap FIXED (PR #755); MonsterSpecialAttacks.cs split into a per-ability folder (PR #756) - #745 (cure bleeding) still QUEUED
+
+**Where things stand:** picked up from the prior session's handoff (see the DONE entry
+just below for full context). Two things shipped this pass:
+
+- **#751 FIXED (PR #755)** - `Commands.AuthorizeCommand` (`SimpleCommandParser`'s own
+  top-level dispatch entry point for non-elevated accounts) now clears
+  `topLevelCommandPending` at the top of the method, mirroring `AuthorizeCommandThrow`'s
+  own `#406` fix. Verified by removing the `PromoteThenDemoteToAvoidColdLazyFieldAuthBug`
+  workaround from the two `MonsterAbilitiesBatch3Tests` facts that needed it (#751's own
+  origin) - both pass cleanly without it now. The test-harness workaround itself is
+  removed; any future test hitting this same cold-lazy-FieldValue shape no longer needs
+  it either.
+- **MonsterSpecialAttacks.cs split (#754, PR #756)** - user's ask: stop letting
+  teventStubs batches keep growing one 1368-line file. `scripts/Basic/
+  AbilitiesAndTalents/MonsterSpecialAttacks.cs` is now a `MonsterSpecialAttacks/` folder,
+  one file per ability (`Stun.cs`/`Critic.cs`/`Roundattack.cs`/`Bleed.cs`/`Knockback.cs`/
+  `SelfRes.cs`/`Detect.cs`/`Leaper.cs`/`Looter.cs`/`SummonEater.cs`/`ParaKrik.cs`/
+  `NpcCurse.cs`/`Summoner.cs`/`Sniper.cs`/`InfiniteMana.cs`), matching the existing
+  `AbilitiesAndTalents/Abilities/<Name>/` convention. `MonsterSpecialAttacks` is now a
+  `static partial class` spread across those same files (each has its `AbilityDef`
+  subclass + its own cooldown tag/lazy def-lookup/`TryApply*` slice of the partial
+  class), plus `MonsterSpecialAttacksShared.cs` for the genuinely cross-ability helpers
+  (`RollChance`/`RollTunable`/the direction tables) - `PullToward`/`PushAway` turned out
+  to each only be used by ONE ability (Roundattack/Knockback respectively), so they moved
+  into those files instead of the shared one. Pure move, zero behavior change - every
+  public `MonsterSpecialAttacks.TryX(...)` call site (`DamageManager`/`NPCAiTimer`/
+  `Corpse`/`Character`/`SummonSpellDef`) untouched. Largest new file is 225 lines
+  (Roundattack.cs). **Real gotcha hit while building this, worth remembering for any
+  future partial-class-across-files split**: splitting a class that uses
+  `[ViewableClass]`/`[SaveableClass]` needs `using SteamEngine.CompiledScripts.Dialogs;`
+  added to EVERY new file that carries the attribute, not just the original file's own
+  using block - easy to forget since the attribute "already worked" in the monolith.
+
+**Next**: nothing else queued from this thread. #745 (cure bleeding) stays QUEUED per the
+prior session's note - do NOT start implementing it unless the user explicitly picks it
+up; it needs its own design pass. If the user doesn't mention #745, ask what to pick up
+next.
+
+## DONE (2026-10-28): teventStubs batch 3 SHIPPED (summoneater/parakrik/npc_curse/summoning/sniper/infiniteMana) - #745 (cure bleeding) still QUEUED; #751 (command-auth quirk) filed, not fixed [superseded by the SESSION HANDOFF above - #751 is now fixed]
 
 **Where things stand:** 15 of the 148 `teventStubs.scp` placeholder abilities from #653 now
 have real behavior - batch 1 (`e_npc_stun`/`e_npc_critic`/`e_npc_roundattack`(`_pullall`)/
