@@ -69,6 +69,7 @@ Read straight off `SettingsCategories`'s own `[InfoField(...)]` properties
 | Item Decay | `DecaySettings` | see below |
 | Notoriety | `NotorietySettings` | `murdererThreshold`, `criminalFlagSeconds`, `wildMonstersRenderOrange` - see [Notoriety & murder counts](../04-gameplay-systems/notoriety.md) |
 | Movement | `CharCollisionSettings` | `requireFullStamina`, `flatPushCost`, `playersBlockedByCharacters`, `npcsBlockedByCharacters`, `fatigueAndOverload`, `maxLoadPercent`, `staminaLossAtWeight`, `runningStaminaPenalty` - see [Movement & character collision](../04-gameplay-systems/movement-and-collision.md) |
+| Monster Abilities | `MonsterAbilitiesSettings` | every monster ability's engine-wide defaults (stun, critic, roundattack/pull, bleed, knockback, self-res, detect, leaper, paralyzing scream, dark curse, summoner, sniper, strangler vine), as pass-through properties onto each live `AbilityDef` (no storage of its own, #758). **Rule (#783): every new monster ability, or new tunable field on one, gets a `<Ability><Property>` property here.** `Tests/MonsterAbilitiesSettingsCoverageTests.cs` enforces it on the fast tier |
 | NPC Aggro | `NpcAggroSettings` | `aggroRange`, `giveUpRange`, `npcsDefendThemselves`, `petsAssistOwner` - see [Pets & NPC AI](../04-gameplay-systems/pets-and-npc-ai.md#pet-commands-768) |
 | Logout | `LogoutSettings` | `logoutDelaySeconds` (default 60), `showLogoutEffect` - see [Networking & the protocol layer](../02-engine-core/networking-protocol.md#disconnect-lingering-and-the-logout-delay-261) |
 
