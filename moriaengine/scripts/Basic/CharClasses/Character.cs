@@ -1386,6 +1386,10 @@ namespace SteamEngine.CompiledScripts {
 					MonsterSpecialAttacks.TryApplySelfRes(this, corpse);
 				}
 
+				//#797 - a_tevent_e_explode blasts everyone who fought it, same "position still
+				//valid" timing as self-res above
+				MonsterSpecialAttacks.TryApplyExplode(this);
+
 				if (this.IsPlayer) {
 					this.OModel = this.Model;
 					this.OColor = this.Color;
@@ -2066,6 +2070,7 @@ namespace SteamEngine.CompiledScripts {
 		//#779 walking stamina drain
 		public override void On_StepTaken(bool running) {
 			MovementStamina.DrainForStep(this, running);
+			MonsterSpecialAttacks.OnStepTaken(this); //#797 hazard tiles, e_inexhaustible
 		}
 
 		//#767 - Sphere's @PersonalSpace: someone just shoved past this character. As in Sphere

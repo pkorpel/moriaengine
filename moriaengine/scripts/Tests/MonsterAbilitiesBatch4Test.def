@@ -1,0 +1,56 @@
+// #797 - test-only content for scripts/Tests/MonsterAbilitiesBatch4Tests.cs. Each test NPCDef
+// gets a guaranteed (1000/1000) chance and no cooldown for its abilities, so the tests call
+// MonsterSpecialAttacks' public methods directly rather than waiting out real combat RNG.
+[NPCDef npc_test_b4_defender]
+NAME = "Batch4 Defender"
+ANIM = 0x1fff
+TEVENTS = e_npc_reactivearmor
+TEVENTS = e_npc_stam_dmg
+TEVENTS = e_managain
+TEVENTS = e_autoreflect
+ReactiveArmorPercent = 50 50
+StamDmgChance = 1000 1000
+StamDmgPower = 10 10
+
+[NPCDef npc_test_b4_leecher]
+NAME = "Batch4 Leecher"
+ANIM = 0x1fff
+TEVENTS = e_lifeleech
+TEVENTS = e_summoneater_vamp
+TEVENTS = e_inexhaustible
+LifeLeechAmount = 25 25
+
+[NPCDef npc_test_b4_exploder]
+NAME = "Batch4 Exploder"
+ANIM = 0x1fff
+TEVENTS = e_explode
+ExplodeDamage = 60 60
+
+[NPCDef npc_test_b4_pusher]
+NAME = "Batch4 Pusher"
+ANIM = 0x1fff
+TEVENTS = e_pushall
+
+[NPCDef npc_test_b4_cursemana]
+NAME = "Batch4 Mana Curser"
+ANIM = 0x1fff
+TEVENTS = e_npc_curse_mana
+NpcCurseManaChance = 1000 1000
+NpcCurseManaCooldown = 0 0
+NpcCurseManaDamage = 30 30
+
+[NPCDef npc_test_b4_cursestam]
+NAME = "Batch4 Stamina Curser"
+ANIM = 0x1fff
+TEVENTS = e_npc_curse_stam
+NpcCurseStamChance = 1000 1000
+NpcCurseStamCooldown = 0 0
+NpcCurseStamDamage = 30 30
+
+[NPCDef npc_test_b4_phoenix]
+NAME = "Batch4 Phoenix"
+ANIM = 0x1fff
+TEVENTS = e_phoenix
+TEVENTS = e_dragon_regeneration
+RegenerationHp = 40 40
+RegenerationInterval = 0 0

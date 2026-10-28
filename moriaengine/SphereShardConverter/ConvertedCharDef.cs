@@ -767,19 +767,9 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
-			if (name == "tag.npc_stun_chance" || name == "tag.npc_stun_time" || name == "tag.npc_stun_delay" ||
-					name == "tag.npc_critic_chance" || name == "tag.npc_critic_dmg" ||
-					name == "tag.roundattack_chance" || name == "tag.roundattack_damage" || name == "tag.roundattack_time" ||
-					name == "tag.pullall_distance" || name == "tag.npc_bleed" || name == "tag.resstimer" ||
-					name == "tag.parakrik_chance" || name == "tag.parakrik_delay" ||
-					name == "tag.npc_curse_chance" || name == "tag.npc_curse_delay" || name == "tag.npc_curse_dmg" ||
-					name == "tag.npc_sniper_chance" || name == "tag.npc_sniper_dmg" ||
-					name == "tag.npc_summoning_chance" || name == "tag.npc_summoning_time" || name == "tag.npc_summoning_removetime") {
+			string tuningFieldName;
+			if (abilityTuningFieldNames.TryGetValue(name, out tuningFieldName)) {
 				if (this.IsPlayerDefByName) {
-					return;
-				}
-				string fieldName;
-				if (!abilityTuningFieldNames.TryGetValue(name, out fieldName)) {
 					return;
 				}
 				MatchCollection tuningMatches = numberRE.Matches(value);
@@ -787,9 +777,9 @@ namespace SteamEngine.Converter {
 					int min = (int) Math.Round(double.Parse(tuningMatches[0].Value, CultureInfo.InvariantCulture));
 					if (tuningMatches.Count > 1) {
 						int max = (int) Math.Round(double.Parse(tuningMatches[1].Value, CultureInfo.InvariantCulture));
-						this.Set(fieldName, min + " " + max, comment);
+						this.Set(tuningFieldName, min + " " + max, comment);
 					} else {
-						this.Set(fieldName, min.ToString(CultureInfo.InvariantCulture), comment);
+						this.Set(tuningFieldName, min.ToString(CultureInfo.InvariantCulture), comment);
 					}
 				}
 				return;
@@ -832,7 +822,28 @@ namespace SteamEngine.Converter {
 				//#npc_summoning - real archive fields, already real seconds, no scale conversion needed.
 				{ "tag.npc_summoning_chance", "SummoningChance" },
 				{ "tag.npc_summoning_time", "SummoningCooldown" },
-				{ "tag.npc_summoning_removetime", "SummoningLifetime" }
+				{ "tag.npc_summoning_removetime", "SummoningLifetime" },
+				//#797 batch 4 - real archive fields, all in the archive's own units (percent for
+				//reactivearmor/magicshield, permille for the chances, seconds for the delays).
+				{ "tag.phoenix_fire_damage", "PhoenixFireDamage" },
+				{ "tag.explode_dmg", "ExplodeDamage" },
+				{ "tag.regeneration_hp", "RegenerationHp" },
+				{ "tag.regeneration_speed", "RegenerationInterval" },
+				{ "tag.npc_lifeleech", "LifeLeechAmount" },
+				{ "tag.reactivearmor_damageperc", "ReactiveArmorPercent" },
+				{ "tag.stam_dmg_chance", "StamDmgChance" },
+				{ "tag.stam_dmg_power", "StamDmgPower" },
+				{ "tag.e_lightnings_chance", "LightningsChance" },
+				{ "tag.e_lightnings_range", "LightningsRange" },
+				{ "tag.npc_curse_mana_chance", "NpcCurseManaChance" },
+				{ "tag.npc_curse_mana_delay", "NpcCurseManaCooldown" },
+				{ "tag.npc_curse_mana_dmg", "NpcCurseManaDamage" },
+				{ "tag.npc_curse_stam_chance", "NpcCurseStamChance" },
+				{ "tag.npc_curse_stam_delay", "NpcCurseStamCooldown" },
+				{ "tag.npc_curse_stam_dmg", "NpcCurseStamDamage" },
+				{ "tag.e_pushall_chance", "PushallChance" },
+				{ "tag.e_pushall_time", "PushallCooldown" },
+				{ "tag.npc_magicshield", "MagicShieldStrength" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum
