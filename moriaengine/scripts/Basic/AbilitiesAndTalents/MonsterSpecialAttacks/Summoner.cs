@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static SummonerAbilityDef summonerAbilityDef;
-		private static SummonerAbilityDef SummonerDef {
+		internal static SummonerAbilityDef SummonerDef {
 			get {
 				if (summonerAbilityDef == null) {
 					summonerAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_summoning") as SummonerAbilityDef;

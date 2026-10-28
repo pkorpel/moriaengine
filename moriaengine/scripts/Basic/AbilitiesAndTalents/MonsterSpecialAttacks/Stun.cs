@@ -87,7 +87,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static readonly PluginKey stunPluginKey = PluginKey.Acquire("_npcStun_");
 
 		private static StunAbilityDef stunAbilityDef;
-		private static StunAbilityDef StunDef {
+		internal static StunAbilityDef StunDef {
 			get {
 				if (stunAbilityDef == null) {
 					stunAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_stun") as StunAbilityDef;

@@ -57,7 +57,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static DetectAbilityDef detectAbilityDef;
-		private static DetectAbilityDef DetectDef {
+		internal static DetectAbilityDef DetectDef {
 			get {
 				if (detectAbilityDef == null) {
 					detectAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_detect") as DetectAbilityDef;

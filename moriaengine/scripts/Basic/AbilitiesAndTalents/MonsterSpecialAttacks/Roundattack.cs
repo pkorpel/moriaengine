@@ -94,7 +94,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public static partial class MonsterSpecialAttacks {
 		private static RoundattackAbilityDef roundattackAbilityDef;
-		private static RoundattackAbilityDef RoundattackDef {
+		internal static RoundattackAbilityDef RoundattackDef {
 			get {
 				if (roundattackAbilityDef == null) {
 					roundattackAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_roundattack") as RoundattackAbilityDef;
@@ -104,7 +104,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static RoundattackPullAbilityDef roundattackPullAbilityDef;
-		private static RoundattackPullAbilityDef RoundattackPullDef {
+		internal static RoundattackPullAbilityDef RoundattackPullDef {
 			get {
 				if (roundattackPullAbilityDef == null) {
 					roundattackPullAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_roundattack_pullall") as RoundattackPullAbilityDef;
