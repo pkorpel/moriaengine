@@ -152,7 +152,8 @@ namespace SteamEngine.Converter {
 						this.modelNum = idNum;
 					}
 				} else {
-					this.Set("model", this.idLine.Value, this.idLine.Comment);
+					//#763 - "ID={ i_chest_metal 1 i_chest_metal_brass 1 }" random lists need commas in LScript
+					this.Set("model", ConvertedTemplateDef.FixRandomExpression(this.idLine.Value), this.idLine.Comment);
 					this.byDefname.TryGetValue(this.idLine.Value, out this.modelDef);
 				}
 			}
@@ -299,7 +300,10 @@ namespace SteamEngine.Converter {
 		protected virtual void ProcessCreateTriggerLine(string name, string value, string comment, int lineNum) {
 			switch (name) {
 				case "color":
-					this.Set("Color", value, comment);
+					//#763 - Sphere's "{ colors_white 9 color_gray_lt 1 }" is whitespace-separated, but
+					//in LScript "name value" is an assignment, so the list collapsed into one element
+					//and failed to parse the first time the def was instantiated. Commas fix it.
+					this.Set("Color", ConvertedTemplateDef.FixRandomExpression(value), comment);
 					break;
 			}
 		}

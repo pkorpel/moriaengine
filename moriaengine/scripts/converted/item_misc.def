@@ -16,7 +16,7 @@ NAME = "Dragons Egg"
 model = i_fruit_coconut
 type = t_fruit //guessed from base def by Converter 
 //VALUE = 5000 // commented out by Converter 
-Color = { 0000 1 0033 1 0038 1 005d 1 0091 1 0175 1 0371 1 0455 1 07fff 1 }
+Color = { 0000, 1, 0033, 1, 0038, 1, 005d, 1, 0091, 1, 0175, 1, 0371, 1, 0455, 1, 07fff, 1 }
 
 [ItemDef i_dragon_spawn]
 CATEGORY = Custom Items
