@@ -55,5 +55,25 @@ namespace SteamEngine.CompiledScripts {
 		/// tile stops them, as in Sphere. Off = NPCs walk through other characters freely.</summary>
 		[SaveableData]
 		public bool npcsBlockedByCharacters = true;
+
+		/// <summary>#779 - players at 0 stamina, or carrying more than maxLoadPercent of what they can
+		/// carry (STR*4+30 stones), can't move, and walking costs stamina depending on the load
+		/// (Sphere 0.99z8's CheckMoveWalkDir / Calc_DropStamWhileMoving). Off = none of that.</summary>
+		[SaveableData]
+		public bool fatigueAndOverload = true;
+
+		/// <summary>#779 - load (percent of max carry weight) beyond which a player can't move at all.</summary>
+		[SaveableData]
+		public int maxLoadPercent = 200;
+
+		/// <summary>#779 - load percent at which each step costs 1 stamina half the time; the chance
+		/// falls off (rises) along an S-curve below (above) it. Sphere's STAMINALOSSATWEIGHT - Erebor
+		/// ran 150.</summary>
+		[SaveableData]
+		public int staminaLossAtWeight = 150;
+
+		/// <summary>#779 - percent added to the load while running (Sphere's RUNNINGPENALTY, 50).</summary>
+		[SaveableData]
+		public int runningStaminaPenalty = 50;
 	}
 }

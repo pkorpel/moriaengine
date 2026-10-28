@@ -1668,6 +1668,12 @@ namespace SteamEngine.CompiledScripts {
 			NPCAiTimer.DefendAgainst(this, enemy); //#768 - fight back (a rebel now fights its ex-owner too, as in Sphere)
 		}
 
+		//#778 - someone shoved past this NPC (#767): a strangler vine grabs them
+		public override void On_PersonalSpace(Character pusher) {
+			base.On_PersonalSpace(pusher);
+			MonsterSpecialAttacks.TryEntangle(this, pusher);
+		}
+
 		public override short MaxHits {
 			get {
 				return this.maxHitpoints;

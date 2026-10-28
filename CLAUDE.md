@@ -1,5 +1,28 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #778 strangler vine entangle + #779 fatigue/overload; #777 GM-step script closed
+
+User: skip and close the GM-step script (#777, closed not planned - #767 enforces full stamina
+server-side), do the other two. FAST-TIER UNIT TESTS ONLY.
+- **GameCore**: `WalkRunOrFly` gained `CheckCanMove(running)` (FIRST, before terrain/collision)
+  and `On_StepTaken(running)` (after an actual move). GM players skip both. Character overrides
+  them: CheckCanMove = vine hold + MovementStamina; On_StepTaken = the drain.
+- **#779** `scripts/Basic/Movement/MovementStamina.cs`, players only: 0 stamina -> "too fatigued";
+  carried weight (layers < Mount - excludes the bank, which `Character.Weight` INCLUDES) above
+  maxLoadPercent (200) of `STR*4+30` -> can't move; each step loses 1 stamina with Sphere's S-curve
+  chance around staminaLossAtWeight (150, Erebor's ini), +50% load when running. Settings on
+  CharCollisionSettings ("Movement").
+- **#778** `MonsterSpecialAttacks/StranglerVine.cs`: `StranglerVineAbilityDef`
+  (`vineHitsToBreak` 5) replaces the `a_tevent_e_ovinovac` stub in teventStubs.scp.
+  `NPC.On_PersonalSpace` -> TryEntangle: tags on both sides, the vine engages the victim.
+  `DamageManager.ProcessSwing` -> CountEntangleHit. Hold release (vine/victim dead, different tile)
+  is checked lazily in CheckCanMove.
+- Verified: fast tier 147/147 (`Tests/MovementStaminaTests.cs`: S-curve against sphere.ini's own
+  "90% load = 25%" example, bell curve, max carry, load %, and the vine's pure hold/hit rules). A
+  direct GameCore.dll boot reached Init done with no vine/settings errors and the baseline 449
+  "defined multiple times". NB: run that boot FROM the moriaengine/ folder - started from
+  GameCore/bin it fails in ClassTemplateParser.Init.
+
 ## DONE (2026-10-28): #774 pet friend/drop/guard-item + #775 random Equip lists
 
 User asked to do the items deferred from #768/#763. FAST-TIER UNIT TESTS ONLY.

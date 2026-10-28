@@ -399,8 +399,11 @@ Name = "(e_ooze)"
 [PassiveAbilityDef a_tevent_e_ostards]
 Name = "(e_ostards)"
 
-[PassiveAbilityDef a_tevent_e_ovinovac]
-Name = "(e_ovinovac)"
+//#778 - upgraded from a bare zero-effect stub to a real StranglerVineAbilityDef
+//(scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks/StranglerVine.cs) - entangles whoever
+//shoves past the monster, see NPC.On_PersonalSpace.
+[StranglerVineAbilityDef a_tevent_e_ovinovac]
+Name = "Strangler Vine"
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
 //ParaKrikAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - periodic
