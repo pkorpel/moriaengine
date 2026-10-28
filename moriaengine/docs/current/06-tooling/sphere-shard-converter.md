@@ -90,6 +90,12 @@ The rest of the block (#793): `ITEMNEWBIE=` -> `Equip =` (NPC gear, newbie), `CO
 `EquipColor =`/`EquipName =` for the latest gear line, `ADDSPELL=` -> `AddSpell =`. `tag(isBoss,1)`
 in `@Create` -> `IsBoss = 1` (#794, bosses never turn [elite](../04-gameplay-systems/elite-monsters.md)).
 
+**Monster ability tuning (#653 onward).** `tag.*` lines in a chardef's `ON=@Create` that tune a
+monster ability (`tag.npc_stun_chance`, `tag.explode_dmg`, `tag(e_lightnings_chance,100)`...)
+become `NPCDef` override fields via the `ConvertedCharDef.abilityTuningFieldNames` table,
+`{min max}` ranges kept, in the archive's own units. See
+[Monster abilities](../04-gameplay-systems/monster-abilities.md).
+
 **Applying a regen: whole files only.** `scripts/converted/` is never edited by hand - not even a
 "surgical" insert of lines the converter generated. Copy every regenerated file whole over the
 tracked one (the converter's upper-case names like `DRAGONS.def` map onto the tracked lower-case
