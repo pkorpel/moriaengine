@@ -1,5 +1,19 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #781 knockback/pull went through walls - forced moves now walk by real movement rules
+
+User report: knockback knocked them into a house through its wall. Root cause: `PushAway`
+(Knockback.cs) checked only the LAND tile under each step (water/impassable terrain flags) and
+ignored statics, so house walls never stopped it, and it landed on the terrain Z. Roundattack's
+`PullToward` was worse: it teleported the target straight next to the monster. Both now go
+through `MonsterSpecialAttacks.ForceMove` (Knockback.cs), which walks step by step with
+`Map.CheckMovement` (the victim's own MovementSettings) and refuses a living character's tile;
+it stops at the last tile reached, on its real Z. The pure core is `WalkForced` (an
+AStar.StepFunc delegate). The pull walks toward the monster until adjacent. `ComputeMaxPushSteps`
+was removed; `Tests/KnockbackPushDistanceTests.cs` was rewritten on synthetic grids (by a wall ->
+0, 2 from a wall -> 2, no corner-cutting, landing Z, pull stops adjacent / at a wall). Fast tier
+150/150. Docs: movement-and-collision.md "Forced moves". FAST-TIER ONLY, not live-tested.
+
 ## DONE (2026-10-28): #778 strangler vine entangle + #779 fatigue/overload; #777 GM-step script closed
 
 User: skip and close the GM-step script (#777, closed not planned - #767 enforces full stamina

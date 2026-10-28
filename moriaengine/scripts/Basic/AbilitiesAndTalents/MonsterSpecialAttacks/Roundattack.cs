@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
 using SteamEngine.Common;
 using SteamEngine.Persistence;
 using SteamEngine.Regions;
@@ -196,23 +197,19 @@ namespace SteamEngine.CompiledScripts {
 				!target.IsNotVisible && !target.IsGM;
 		}
 
+		/// <summary>#781 - drags `target` toward `self` until adjacent, one real step at a time
+		/// (MonsterSpecialAttacks.ForceMove): it stops at the first wall, closed door, cliff or
+		/// character in the way. It used to teleport the target straight next to the monster, so
+		/// a monster inside a house pulled people in through the wall.</summary>
 		private static void PullToward(NPC self, Character target) {
-			if (Point2D.GetSimpleDistance(self, target) <= 1) {
+			int distance = Point2D.GetSimpleDistance(self, target);
+			if (distance <= 1) {
 				return; //already adjacent - nothing to pull
 			}
-			Direction dir = Point2D.GetDirFromTo(self, target);
-			int x = self.X + directionDx[(int) dir];
-			int y = self.Y + directionDy[(int) dir];
-			Map map = self.GetMap();
-			if (!map.IsValidPos(x, y) || map.IsMapTileWater(x, y)) {
-				return; //no safe spot to land the pull - skip it rather than clip into something
-			}
-			int tileId = map.GetTileId(x, y);
-			if (TileData.HasFlag(TileData.GetTileFlags(tileId), TileFlag.Impassable)) {
-				return;
-			}
-			int z = map.GetTileZ(x, y);
-			target.Go(x, y, z, target.M);
+			int monsterX = self.X, monsterY = self.Y;
+			ForceMove(target, distance - 1,
+				(x, y) => Point2D.GetDirFromTo(new Point2D(x, y), new Point2D(monsterX, monsterY)),
+				(x, y) => Math.Max(Math.Abs(x - monsterX), Math.Abs(y - monsterY)) <= 1);
 		}
 
 		private static double NextRoundattackTime(NPC self) {
