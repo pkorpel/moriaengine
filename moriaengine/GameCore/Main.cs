@@ -90,6 +90,7 @@ namespace SteamEngine {
 		//}
 
 		public static void Main() {
+			ParentProcessWatchdog.StartFromEnvironment(); //#785 - exit with the test run that started us, if any
 			SteamMain();
 		}
 
