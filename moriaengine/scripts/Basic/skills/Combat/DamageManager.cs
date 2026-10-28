@@ -209,6 +209,9 @@ namespace SteamEngine.CompiledScripts {
 				//the pre-armor swing value, so this must run after CauseDamage above.
 				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
 
+				//#778 - a strangler vine holding someone lets go after enough landed hits
+				MonsterSpecialAttacks.CountEntangleHit(defender);
+
 				swingArgs.InternalSetFinalDamage(actualDamage);
 
 				// Testing combat messages (CombatSettings.showCombatMessages) - the only
