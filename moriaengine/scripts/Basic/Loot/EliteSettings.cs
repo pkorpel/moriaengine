@@ -111,8 +111,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Players from this level up absorb less of their damage into the elite:
 		/// levelBonusBase + (level - levelBonusMinLevel) * levelBonusPerLevel permille, the level
-		/// counted up to levelBonusMaxLevel. Erebor's values - its levels went that high, ours
-		/// don't (60 is about the effective max), so as shipped nobody gets the bonus.</summary>
+		/// counted up to levelBonusMaxLevel. Erebor's values; our levels are uncapped on the same
+		/// (level+1)*330 curve as Erebor's, so they reach these the same way.</summary>
 		[SaveableData]
 		public int levelBonusMinLevel = 200;
 
