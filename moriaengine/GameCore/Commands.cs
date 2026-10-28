@@ -149,6 +149,17 @@ namespace SteamEngine {
 		//TODO? passing just the argument name might be too primitive, but I think it should be enough
 		public static bool AuthorizeCommand(ISrc commandSrc, string name) {
 			if (commandRunning) {
+				//#751 - mirror AuthorizeCommandThrow's own #406 behavior: clear BEFORE the
+				//check, same reasoning as there - this is SimpleCommandParser's own top-level
+				//dispatch call (its only caller), so by the time THIS runs we're already
+				//looking at the literal command word; without this, the flag stayed true for
+				//the rest of the command's execution (AuthorizeCommandThrow never got a chance
+				//to clear it, since SimpleCommandParser - the path a non-"PlevelForLscriptCommands"
+				//account always takes - never goes through lazy-expression resolution for the
+				//top-level word itself), so the FIRST cold lazy .def FieldValue resolution
+				//triggered by the command's own body got wrongly re-gated using its own
+				//internal expression name instead of being exempt.
+				topLevelCommandPending = false;
 				ScriptArgs sa = new ScriptArgs(commandSrc, name);
 				if (TriggerResult.Cancel == Globals.Instance.TryCancellableTrigger(TriggerKey.command, sa)) {
 					return false;

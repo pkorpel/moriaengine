@@ -54,7 +54,6 @@ namespace SteamEngine.Tests.Protocol {
 		public void NpcCurseDamagesPlayersAndPetsButNotWildMonsters() {
 			this.EnsureAutoAccountCreationEnabled();
 			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "NpcCurseChecker")) {
-				this.PromoteThenDemoteToAvoidColdLazyFieldAuthBug(client);
 				client.SendSpeech(".TestNpcCurseDamagesPlayerAndPetButNotWildMonster");
 				Assert.True(this.fixture.WaitForGameOutput("NPCCURSE_TEST:", TimeSpan.FromSeconds(10)));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "NPCCURSE_TEST:");
@@ -80,7 +79,6 @@ namespace SteamEngine.Tests.Protocol {
 		public void SniperOnlyAddsBonusDamageAgainstPlayers() {
 			this.EnsureAutoAccountCreationEnabled();
 			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "SniperChecker")) {
-				this.PromoteThenDemoteToAvoidColdLazyFieldAuthBug(client);
 				client.SendSpeech(".TestSniperAddsBonusDamageVsPlayerAtRangeOnly");
 				Assert.True(this.fixture.WaitForGameOutput("SNIPER_TEST:", TimeSpan.FromSeconds(10)));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "SNIPER_TEST:");
