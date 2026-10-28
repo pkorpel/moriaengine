@@ -27,18 +27,19 @@ namespace SteamEngine.CompiledScripts {
 	/// pathfinding) is deliberately simplified to a real speed boost instead - this NPC just
 	/// takes extra pathfinding steps per NPCAiTimer think-tick while closing distance, using the
 	/// SAME honest StepTowardsSmart A* movement every other NPC uses, never teleporting/
-	/// clipping through walls. Default of 7 (changed from 2) is a deliberate "about as fast as
-	/// a running player" tuning: the NPC AI tick is 1.5s and all of a tick's extra steps fire in
-	/// one burst, while a real running player covers 1 tile per 0.18s (MovementState.
-	/// RunStepTime) - 1 normal step + 7 extra per 1.5s tick is the closest whole-step match to
-	/// that real pace (~5.33 tiles/sec vs. a player's ~5.56).</summary>
+	/// clipping through walls. Default bumped to 10 (user's explicit call, faster than the
+	/// real-running-player-speed math below would suggest) - the NPC AI tick is 1.5s and all
+	/// of a tick's extra steps fire in one burst, while a real running player covers 1 tile
+	/// per 0.18s (MovementState.RunStepTime, ~5.56 tiles/sec) - 1 normal + 7 extra per tick
+	/// was the closest whole-step match to THAT pace; 10 extra (~7.33 tiles/sec) deliberately
+	/// exceeds it.</summary>
 	[ViewableClass]
 	public class LeaperAbilityDef : PassiveAbilityDef {
 		private FieldValue extraSteps;
 
 		public LeaperAbilityDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
-			this.extraSteps = this.InitTypedField("leaperExtraSteps", (double) 7, typeof(double));
+			this.extraSteps = this.InitTypedField("leaperExtraSteps", (double) 10, typeof(double));
 		}
 
 		/// <summary>How many EXTRA pathfinding steps (on top of the normal one) this NPC takes
