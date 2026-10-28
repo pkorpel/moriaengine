@@ -632,10 +632,32 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#npc_summoning's own per-species reinforcement list - tag.npc_summoning_char[N]
+			//(N varies per entry, hence the prefix check rather than an exact name match) maps
+			//directly onto NPCDef.SummonedCreatures' "AddSummon = defname" syntax, same shape as
+			//the existing addspell= -> AddSpell mapping (#564). tag.npc_summoning_count carries
+			//no extra information this engine's own shape needs - NPCDef.SummonedCreatures'
+			//List.Count already IS "how many to spawn each proc" by construction
+			//(TryApplySummoning spawns one instance of EVERY configured entry), so it's a no-op
+			//here rather than a dropped/unmapped field.
+			if (name.StartsWith("tag.npc_summoning_char[", StringComparison.Ordinal)) {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				this.Set("AddSummon", value.Trim(), comment);
+				return;
+			}
+			if (name == "tag.npc_summoning_count") {
+				return;
+			}
 			if (name == "tag.npc_stun_chance" || name == "tag.npc_stun_time" || name == "tag.npc_stun_delay" ||
 					name == "tag.npc_critic_chance" || name == "tag.npc_critic_dmg" ||
 					name == "tag.roundattack_chance" || name == "tag.roundattack_damage" || name == "tag.roundattack_time" ||
-					name == "tag.pullall_distance" || name == "tag.npc_bleed" || name == "tag.resstimer") {
+					name == "tag.pullall_distance" || name == "tag.npc_bleed" || name == "tag.resstimer" ||
+					name == "tag.parakrik_chance" || name == "tag.parakrik_delay" ||
+					name == "tag.npc_curse_chance" || name == "tag.npc_curse_delay" || name == "tag.npc_curse_dmg" ||
+					name == "tag.npc_sniper_chance" || name == "tag.npc_sniper_dmg" ||
+					name == "tag.npc_summoning_chance" || name == "tag.npc_summoning_time" || name == "tag.npc_summoning_removetime") {
 				if (this.IsPlayerDefByName) {
 					return;
 				}
@@ -677,7 +699,23 @@ namespace SteamEngine.Converter {
 				//25% chance ... | default ~ 100%").
 				{ "tag.npc_bleed", "BleedChance" },
 				//#selfreser - real archive field is tag.resstimer, seconds, no scale conversion needed.
-				{ "tag.resstimer", "SelfresDelay" }
+				{ "tag.resstimer", "SelfresDelay" },
+				//#parakrik - real archive fields, raw deciseconds for delay (same convention as
+				//stun's own Duration/Cooldown), no scale conversion needed for either.
+				{ "tag.parakrik_chance", "ParaKrikChance" },
+				{ "tag.parakrik_delay", "ParaKrikCooldown" },
+				//#npc_curse - real archive fields, delay already real seconds (same convention
+				//as roundattack's own Cooldown).
+				{ "tag.npc_curse_chance", "NpcCurseChance" },
+				{ "tag.npc_curse_delay", "NpcCurseCooldown" },
+				{ "tag.npc_curse_dmg", "NpcCurseDamage" },
+				//#npc_sniper - real archive fields, no scale conversion needed.
+				{ "tag.npc_sniper_chance", "SniperChance" },
+				{ "tag.npc_sniper_dmg", "SniperDamage" },
+				//#npc_summoning - real archive fields, already real seconds, no scale conversion needed.
+				{ "tag.npc_summoning_chance", "SummoningChance" },
+				{ "tag.npc_summoning_time", "SummoningCooldown" },
+				{ "tag.npc_summoning_removetime", "SummoningLifetime" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum

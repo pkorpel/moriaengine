@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Persistence;
@@ -318,6 +319,195 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public class LooterAbilityDef : PassiveAbilityDef {
 		public LooterAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up ("what are some other monster abilities we can
+	/// implement?") - e_summoneater. Unconditional in the real archive source (no chance tag
+	/// at all) - on a landed swing, if the target is a summoned creature (SummonSpellDef's own
+	/// IsSummonedCreature tag), it's deleted outright instead of taking normal damage. No
+	/// NPCDef override, no converter work - nothing to recover.</summary>
+	[ViewableClass]
+	public class SummonEaterAbilityDef : PassiveAbilityDef {
+		public SummonEaterAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up - e_parakrik ("Paralyzing Scream"). Real archive default
+	/// is chance(70,3)=7% per swing ATTEMPT (not just a landed one, same as roundattack), own
+	/// cooldown default 50 raw deciseconds (5s, same raw-decisecond convention as StunAbilityDef's
+	/// own Duration/Cooldown). Real mechanic pulses every non-GM, non-dead PLAYER in the
+	/// monster's own map sector - approximated here with a flat tile Range (default 8, same
+	/// precedent as RoundattackAbilityDef/DetectAbilityDef's own Range fields) since this engine
+	/// has no equivalent "same sector" concept exposed for an AoE query.</summary>
+	[ViewableClass]
+	public class ParaKrikAbilityDef : PassiveAbilityDef {
+		private FieldValue chance;
+		private FieldValue cooldown;
+		private FieldValue range;
+
+		public ParaKrikAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.chance = this.InitTypedField("parakrikChance", new double[] { 70, 70 }, typeof(double[]));
+			this.cooldown = this.InitTypedField("parakrikCooldown", new double[] { 50, 50 }, typeof(double[]));
+			this.range = this.InitTypedField("parakrikRange", (double) 8, typeof(double));
+		}
+
+		/// <summary>Permille (0-1000) {min,max} chance range to trigger on each swing attempt -
+		/// deliberately shadows AbilityDef.Chance (different shape/scale) rather than reusing it.</summary>
+		public new double[] Chance {
+			get { return (double[]) this.chance.CurrentValue; }
+			set { this.chance.CurrentValue = value; }
+		}
+
+		/// <summary>Minimum time between two screams, raw archive deciseconds (divide by 10 for
+		/// real seconds) - deliberately shadows AbilityDef.Cooldown (a single real-seconds
+		/// scalar, different shape/unit) rather than reusing it.</summary>
+		public new double[] Cooldown {
+			get { return (double[]) this.cooldown.CurrentValue; }
+			set { this.cooldown.CurrentValue = value; }
+		}
+
+		/// <summary>AoE radius in tiles, approximating the real archive's "same sector" scope.</summary>
+		public double Range {
+			get { return (double) this.range.CurrentValue; }
+			set { this.range.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up - e_npc_curse ("Dark Curse"). Has the cleanest doc comment
+	/// of any ability in the whole archive: "hurts all the enemies in the distance of 8 using
+	/// dark and dirty magic". Real defaults: chance(110,3)=11%, delay {12,15} real seconds
+	/// (randombetween then x10 - already real seconds, same convention as RoundattackAbilityDef's
+	/// own Cooldown), dmg {50,60}.</summary>
+	[ViewableClass]
+	public class NpcCurseAbilityDef : PassiveAbilityDef {
+		private FieldValue chance;
+		private FieldValue cooldown;
+		private FieldValue damage;
+		private FieldValue range;
+
+		public NpcCurseAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.chance = this.InitTypedField("npcCurseChance", new double[] { 110, 110 }, typeof(double[]));
+			this.cooldown = this.InitTypedField("npcCurseCooldown", new double[] { 12, 15 }, typeof(double[]));
+			this.damage = this.InitTypedField("npcCurseDamage", new double[] { 50, 60 }, typeof(double[]));
+			this.range = this.InitTypedField("npcCurseRange", (double) 8, typeof(double));
+		}
+
+		/// <summary>Permille (0-1000) {min,max} chance range to trigger on each swing attempt -
+		/// deliberately shadows AbilityDef.Chance (different shape/scale) rather than reusing it.</summary>
+		public new double[] Chance {
+			get { return (double[]) this.chance.CurrentValue; }
+			set { this.chance.CurrentValue = value; }
+		}
+
+		/// <summary>Recharge interval {min,max} range between pulses, real seconds -
+		/// deliberately shadows AbilityDef.Cooldown (a single scalar, different shape) rather
+		/// than reusing it.</summary>
+		public new double[] Cooldown {
+			get { return (double[]) this.cooldown.CurrentValue; }
+			set { this.cooldown.CurrentValue = value; }
+		}
+
+		/// <summary>AoE magic damage range.</summary>
+		public double[] Damage {
+			get { return (double[]) this.damage.CurrentValue; }
+			set { this.damage.CurrentValue = value; }
+		}
+
+		/// <summary>AoE radius in tiles.</summary>
+		public double Range {
+			get { return (double) this.range.CurrentValue; }
+			set { this.range.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up - e_npc_summoning ("Summoner"). Real defaults: chance 50
+	/// (5%), cooldown 30s, summoned-creature lifetime 7200s (2h). The real archive's own
+	/// per-species summon LIST (`tag.npc_summoning_char[i]`/`_count`) is recovered as
+	/// NPCDef.SummonedCreatures - same list-of-NPCDef shape as the already-shipped
+	/// NPCDef.Spells (#564).</summary>
+	[ViewableClass]
+	public class SummonerAbilityDef : PassiveAbilityDef {
+		private FieldValue chance;
+		private FieldValue cooldown;
+		private FieldValue summonLifetime;
+
+		public SummonerAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.chance = this.InitTypedField("summonerChance", new double[] { 50, 50 }, typeof(double[]));
+			this.cooldown = this.InitTypedField("summonerCooldown", new double[] { 30, 30 }, typeof(double[]));
+			this.summonLifetime = this.InitTypedField("summonerLifetime", new double[] { 7200, 7200 }, typeof(double[]));
+		}
+
+		/// <summary>Permille (0-1000) {min,max} chance range to trigger on each swing attempt -
+		/// deliberately shadows AbilityDef.Chance (different shape/scale) rather than reusing it.</summary>
+		public new double[] Chance {
+			get { return (double[]) this.chance.CurrentValue; }
+			set { this.chance.CurrentValue = value; }
+		}
+
+		/// <summary>Recharge interval {min,max} range between summon waves, real seconds -
+		/// deliberately shadows AbilityDef.Cooldown (a single scalar, different shape) rather
+		/// than reusing it.</summary>
+		public new double[] Cooldown {
+			get { return (double[]) this.cooldown.CurrentValue; }
+			set { this.cooldown.CurrentValue = value; }
+		}
+
+		/// <summary>{min,max} seconds a summoned reinforcement survives before auto-despawning.</summary>
+		public double[] SummonLifetime {
+			get { return (double[]) this.summonLifetime.CurrentValue; }
+			set { this.summonLifetime.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up - e_npc_sniper. Real archive requires BOTH the defender
+	/// being a player AND the attacker actively fighting at range (`isfighting_ranged`) - a
+	/// strictly narrower gate than CriticAbilityDef's "vs player only" (any weapon). Real
+	/// defaults: chance(200,3)=20%, dmg flat 50 (archive's own range tag default, when unset,
+	/// is a flat fallback rather than a true {min,max} - using {50,50} here reproduces that).</summary>
+	[ViewableClass]
+	public class SniperAbilityDef : PassiveAbilityDef {
+		private FieldValue chance;
+		private FieldValue damage;
+
+		public SniperAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.chance = this.InitTypedField("sniperChance", new double[] { 200, 200 }, typeof(double[]));
+			this.damage = this.InitTypedField("sniperDamage", new double[] { 50, 50 }, typeof(double[]));
+		}
+
+		/// <summary>Permille (0-1000) {min,max} chance range to land a critical hit while
+		/// fighting at range, vs. players only (same real archive restriction) - deliberately
+		/// shadows AbilityDef.Chance (different shape/scale) rather than reusing it.</summary>
+		public new double[] Chance {
+			get { return (double[]) this.chance.CurrentValue; }
+			set { this.chance.CurrentValue = value; }
+		}
+
+		/// <summary>Bonus damage range added to the landed swing on a critical.</summary>
+		public double[] Damage {
+			get { return (double[]) this.damage.CurrentValue; }
+			set { this.damage.CurrentValue = value; }
+		}
+	}
+
+	/// <summary>
+	/// Real-user-reported follow-up - e_npc_infiniteMana. Unconditional in the real archive
+	/// source (no chance tag, no per-species tuning) - this NPC's mana is simply always kept
+	/// at max. No NPCDef override, no converter work.</summary>
+	[ViewableClass]
+	public class InfiniteManaAbilityDef : PassiveAbilityDef {
+		public InfiniteManaAbilityDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 		}
 	}
@@ -827,6 +1017,317 @@ namespace SteamEngine.CompiledScripts {
 				loot.Cont = backpack;
 				return; //one item per step, matching the real archive's own single-grab shape
 			}
+		}
+
+		private static SummonEaterAbilityDef summonEaterAbilityDef;
+		private static SummonEaterAbilityDef SummonEaterDef {
+			get {
+				if (summonEaterAbilityDef == null) {
+					summonEaterAbilityDef = AbstractScript.GetByDefname("a_tevent_e_summoneater") as SummonEaterAbilityDef;
+				}
+				return summonEaterAbilityDef;
+			}
+		}
+
+		/// <summary>#summoneater - unconditional in the real archive: if the attacker lands a
+		/// swing on a summoned creature, that creature is deleted outright instead of taking
+		/// normal damage. Must be called right after Trigger_BeforeSwing succeeds, before the
+		/// normal critic/damage/stun/bleed/knockback chain - returns true when the defender was
+		/// consumed, telling the caller to skip the rest of the swing entirely (there's nothing
+		/// left to apply any of that to).</summary>
+		public static bool TryApplySummonEater(Character attacker, Character defender) {
+			SummonEaterAbilityDef def = SummonEaterDef;
+			if (def == null) {
+				return false;
+			}
+			Ability ability;
+			if (!attacker.HasAbility(def, out ability)) {
+				return false;
+			}
+			if (!SummonSpellDef.IsSummonedCreature(defender)) {
+				return false;
+			}
+			defender.Delete();
+			return true;
+		}
+
+		private static ParaKrikAbilityDef paraKrikAbilityDef;
+		private static ParaKrikAbilityDef ParaKrikDef {
+			get {
+				if (paraKrikAbilityDef == null) {
+					paraKrikAbilityDef = AbstractScript.GetByDefname("a_tevent_e_parakrik") as ParaKrikAbilityDef;
+				}
+				return paraKrikAbilityDef;
+			}
+		}
+
+		private static readonly TagKey nextParaKrikTimeTK = TagKey.Acquire("_npcNextParaKrikTime_");
+
+		/// <summary>#parakrik - periodic (checked once per NPCAiTimer.Fight think-tick while
+		/// fighting, same "faithful simpler equivalent of a per-swing-attempt recharge-gated
+		/// roll" precedent as roundattack) chance to paralyze every non-GM, living player within
+		/// Range - pets/summons/other monsters are untouched, matching the real archive's own
+		/// player-only filter. Reuses the exact same ParalyzeEffectPluginDef.Paralyze call stun
+		/// already uses, including the same ResistParalyse&gt;900 immunity check.</summary>
+		public static void TryApplyParaKrik(NPC self) {
+			ParaKrikAbilityDef def = ParaKrikDef;
+			if (def == null) {
+				return;
+			}
+			Ability ability;
+			if (!self.HasAbility(def, out ability)) {
+				return;
+			}
+			if (Globals.TimeInSeconds < NextParaKrikTime(self)) {
+				return;
+			}
+
+			NPCDef npcDef = (NPCDef) self.Def;
+			double cooldown = RollTunable(npcDef.ParaKrikCooldown, def.Cooldown);
+			//real archive unit: raw deciseconds (see StunAbilityDef's own doc comment for this
+			//same convention) - divide by 10 for real seconds, here at the point of use.
+			SetNextParaKrikTime(self, Globals.TimeInSeconds + (cooldown / 10.0));
+
+			double chance = RollTunable(npcDef.ParaKrikChance, def.Chance);
+			if (!RollChance(chance)) {
+				return;
+			}
+
+			int range = (int) def.Range;
+			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, range)) {
+				Character target = ch as Character;
+				if ((target == null) || target.IsGM || !target.IsPlayerForCombat || !target.IsAliveAndValid) {
+					continue;
+				}
+				if (target.ResistParalyse > 900) {
+					continue;
+				}
+				ParalyzeEffectPluginDef.Paralyze(target, paraKrikPluginKey, TimeSpan.FromSeconds(3));
+			}
+		}
+
+		//a dedicated key (not stunPluginKey) - a target can legitimately be stunned AND
+		//screamed-at independently, each needs its own installed-plugin slot. internal (not
+		//private) so a test can confirm the scream actually landed, same precedent as
+		//stunPluginKey above.
+		internal static readonly PluginKey paraKrikPluginKey = PluginKey.Acquire("_npcParaKrik_");
+
+		private static double NextParaKrikTime(NPC self) {
+			object tag = self.GetTag(nextParaKrikTimeTK);
+			return tag is double ? (double) tag : 0;
+		}
+
+		private static void SetNextParaKrikTime(NPC self, double value) {
+			self.SetTag(nextParaKrikTimeTK, value);
+		}
+
+		private static NpcCurseAbilityDef npcCurseAbilityDef;
+		private static NpcCurseAbilityDef NpcCurseDef {
+			get {
+				if (npcCurseAbilityDef == null) {
+					npcCurseAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_curse") as NpcCurseAbilityDef;
+				}
+				return npcCurseAbilityDef;
+			}
+		}
+
+		private static readonly TagKey nextNpcCurseTimeTK = TagKey.Acquire("_npcNextCurseTime_");
+
+		/// <summary>#npc_curse ("Dark Curse") - periodic ranged AoE magic damage pulse, same
+		/// once-per-think-tick-while-fighting pattern as roundattack/parakrik. Real archive
+		/// target filter: any living, non-GM player, OR any tamed pet - wild monsters other
+		/// than the caster itself are never hit (matches f_npcCurse_effect's own
+		/// isPlayer-or-isPet check).</summary>
+		public static void TryApplyNpcCurse(NPC self) {
+			NpcCurseAbilityDef def = NpcCurseDef;
+			if (def == null) {
+				return;
+			}
+			Ability ability;
+			if (!self.HasAbility(def, out ability)) {
+				return;
+			}
+			if (Globals.TimeInSeconds < NextNpcCurseTime(self)) {
+				return;
+			}
+
+			NPCDef npcDef = (NPCDef) self.Def;
+			double cooldown = RollTunable(npcDef.NpcCurseCooldown, def.Cooldown);
+			SetNextNpcCurseTime(self, Globals.TimeInSeconds + cooldown);
+
+			double chance = RollTunable(npcDef.NpcCurseChance, def.Chance);
+			if (!RollChance(chance)) {
+				return;
+			}
+
+			double damage = RollTunable(npcDef.NpcCurseDamage, def.Damage);
+			int range = (int) def.Range;
+			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, range)) {
+				Character target = ch as Character;
+				if (!IsValidNpcCurseTarget(target)) {
+					continue;
+				}
+				//bare DamageType.Magic has no real-vs-phase-2 resist "subtype" bit and throws -
+				//MagicMystical is this engine's existing generic bucket for "magic damage, no
+				//specific element" (already used for the Mystic profession's own attack), which
+				//fits "dark and dirty magic" just as well as any other non-elemental label would.
+				DamageManager.CauseDamage(self, target, DamageType.MagicMystical, damage);
+			}
+		}
+
+		private static bool IsValidNpcCurseTarget(Character target) {
+			if ((target == null) || target.IsDeleted || !target.IsAliveAndValid || target.IsNotVisible) {
+				return false;
+			}
+			if (target.IsPlayerForCombat) {
+				return !target.IsGM;
+			}
+			NPC npc = target as NPC;
+			return (npc != null) && (npc.ControlMaster != null); //a tamed pet
+		}
+
+		private static double NextNpcCurseTime(NPC self) {
+			object tag = self.GetTag(nextNpcCurseTimeTK);
+			return tag is double ? (double) tag : 0;
+		}
+
+		private static void SetNextNpcCurseTime(NPC self, double value) {
+			self.SetTag(nextNpcCurseTimeTK, value);
+		}
+
+		private static SummonerAbilityDef summonerAbilityDef;
+		private static SummonerAbilityDef SummonerDef {
+			get {
+				if (summonerAbilityDef == null) {
+					summonerAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_summoning") as SummonerAbilityDef;
+				}
+				return summonerAbilityDef;
+			}
+		}
+
+		private static readonly TagKey nextSummoningTimeTK = TagKey.Acquire("_npcNextSummoningTime_");
+		private static readonly TimerKey summonedCreatureDespawnTimerKey = TimerKey.Acquire("_npcSummonedCreatureDespawn_");
+
+		/// <summary>#npc_summoning ("Summoner") - periodic (once-per-think-tick-while-fighting,
+		/// same pattern as roundattack/parakrik/npc_curse) chance to spawn reinforcements. Real
+		/// archive spawns ONE INSTANCE OF EVERY configured chardef per proc (a loop over all
+		/// indices up to a count), not a single random pick - NPCDef.SummonedCreatures mirrors
+		/// that shape directly. No-op if the NPCDef never configured any (same "incomplete
+		/// content defaults permissive/inert" convention used elsewhere). Spawned reinforcements
+		/// are autonomous Hostile (no ControlMaster) - same choice SummonSpellDef's own Hostile
+		/// branch already makes for a "popular kill-all" summon - and despawn automatically via
+		/// the same generic SummonSpellDef.SummonDespawnTimer the Mage summon spells use.</summary>
+		public static void TryApplySummoning(NPC self) {
+			SummonerAbilityDef def = SummonerDef;
+			if (def == null) {
+				return;
+			}
+			Ability ability;
+			if (!self.HasAbility(def, out ability)) {
+				return;
+			}
+			NPCDef npcDef = (NPCDef) self.Def;
+			List<NPCDef> toSummon = npcDef.SummonedCreatures;
+			if ((toSummon == null) || (toSummon.Count == 0)) {
+				return;
+			}
+			if (Globals.TimeInSeconds < NextSummoningTime(self)) {
+				return;
+			}
+
+			double cooldown = RollTunable(npcDef.SummoningCooldown, def.Cooldown);
+			SetNextSummoningTime(self, Globals.TimeInSeconds + cooldown);
+
+			double chance = RollTunable(npcDef.SummoningChance, def.Chance);
+			if (!RollChance(chance)) {
+				return;
+			}
+
+			double lifetimeSecs = RollTunable(npcDef.SummoningLifetime, def.SummonLifetime);
+			foreach (NPCDef reinforcementDef in toSummon) {
+				NPC reinforcement = (NPC) reinforcementDef.Create(self.X, self.Y, self.Z, self.M);
+				reinforcement.AggroMode = AggroMode.Hostile;
+				SummonSpellDef.MarkAsSummonedCreature(reinforcement);
+				reinforcement.AddTimer(summonedCreatureDespawnTimerKey, new SummonSpellDef.SummonDespawnTimer())
+					.DueInSpan = TimeSpan.FromSeconds(lifetimeSecs);
+			}
+		}
+
+		private static double NextSummoningTime(NPC self) {
+			object tag = self.GetTag(nextSummoningTimeTK);
+			return tag is double ? (double) tag : 0;
+		}
+
+		private static void SetNextSummoningTime(NPC self, double value) {
+			self.SetTag(nextSummoningTimeTK, value);
+		}
+
+		private static SniperAbilityDef sniperAbilityDef;
+		private static SniperAbilityDef SniperDef {
+			get {
+				if (sniperAbilityDef == null) {
+					sniperAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_sniper") as SniperAbilityDef;
+				}
+				return sniperAbilityDef;
+			}
+		}
+
+		/// <summary>#npc_sniper - same call-site/shape as TryApplyCritic (before CauseDamage,
+		/// mutates swingArgs.DamageAfterAC while it's still mutable), but gated on the attacker
+		/// actively fighting at RANGE (matches the real archive's own isfighting_ranged check) in
+		/// addition to the defender being a player - strictly narrower than critic's "vs player
+		/// only, any weapon".</summary>
+		public static void TryApplySniper(Character attacker, WeaponSwingArgs swingArgs) {
+			SniperAbilityDef def = SniperDef;
+			if (def == null) {
+				return;
+			}
+			if (!swingArgs.defender.IsPlayerForCombat) {
+				return;
+			}
+			if ((attacker.WeaponType != WeaponType.Bow) && (attacker.WeaponType != WeaponType.XBow)) {
+				return;
+			}
+			Ability ability;
+			if (!attacker.HasAbility(def, out ability)) {
+				return;
+			}
+
+			NPCDef npcDef = attacker.Def as NPCDef;
+			double chance = RollTunable(npcDef == null ? null : npcDef.SniperChance, def.Chance);
+			if (!RollChance(chance)) {
+				return;
+			}
+
+			double bonus = RollTunable(npcDef == null ? null : npcDef.SniperDamage, def.Damage);
+			swingArgs.DamageAfterAC += bonus;
+			CombatMessages.Send(swingArgs.defender, "[Combat] " + attacker.Name + " hits you with a precise shot!");
+		}
+
+		private static InfiniteManaAbilityDef infiniteManaAbilityDef;
+		private static InfiniteManaAbilityDef InfiniteManaDef {
+			get {
+				if (infiniteManaAbilityDef == null) {
+					infiniteManaAbilityDef = AbstractScript.GetByDefname("a_tevent_e_npc_infinitemana") as InfiniteManaAbilityDef;
+				}
+				return infiniteManaAbilityDef;
+			}
+		}
+
+		/// <summary>#npc_infiniteMana - unconditional in the real archive (no chance roll, no
+		/// per-species tuning): this NPC's mana is simply always kept topped up. Checked once
+		/// per NPCAiTimer.Fight think-tick, same cheap pattern as the other periodic checks here -
+		/// a caster granted this ability never actually runs out of mana between casts.</summary>
+		public static void TryApplyInfiniteMana(NPC self) {
+			InfiniteManaAbilityDef def = InfiniteManaDef;
+			if (def == null) {
+				return;
+			}
+			Ability ability;
+			if (!self.HasAbility(def, out ability)) {
+				return;
+			}
+			self.Mana = self.MaxMana;
 		}
 	}
 
