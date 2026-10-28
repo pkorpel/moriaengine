@@ -73,6 +73,14 @@ namespace SteamEngine.CompiledScripts {
 		//a crude CPU-cost bound, not just a gameplay one).
 		private const double MinThinkIntervalSeconds = 0.3;
 
+		//#768 - a following pet (or one under a "go" order) that's behind thinks, and so steps, faster
+		//than its normal MoveRate cadence until it has caught up - Sphere's follow walks every ~0.5s and
+		//runs every ~0.25s once more than 3 tiles behind; the 1.5s baseline left pets far behind a walking player.
+		public const int RunWhenBehindBy = 3;
+		public const double CatchUpWalkSeconds = 0.45;
+		public const double CatchUpRunSeconds = 0.25;
+		private const int GoGiveUpTicks = 5; //think-ticks without any progress before a "go" order is given up
+
 		private static readonly TimerKey aiTimerTK = TimerKey.Acquire("_npcAiTimer_");
 
 		[SaveableData] public int homeX;
@@ -101,6 +109,9 @@ namespace SteamEngine.CompiledScripts {
 
 		//#769 - transient, not saved: the path being walked by StepTowardsSmart. Re-planned from scratch after a reload.
 		private NpcPathCache pathCache;
+
+		//#768 - transient: consecutive think-ticks a "go" order made no progress
+		private int goStuckTicks;
 
 		public AIState LastState { get; private set; }
 
@@ -255,11 +266,27 @@ namespace SteamEngine.CompiledScripts {
 
 			IPoint3D goal = self.PetGoalPoint;
 			if (goal != null) {
-				if (Point2D.GetSimpleDistance(self, goal) <= 1) {
+				int goalDistance = Point2D.GetSimpleDistance(self, goal);
+				if (goalDistance <= 1) {
 					self.PetGoalPoint = null; //arrived
+					this.goStuckTicks = 0;
 				} else {
 					this.LastState = AIState.GoingToPoint;
-					this.StepTowardsSmart(self, goal);
+					int beforeX = self.X, beforeY = self.Y;
+					this.StepTowardsSmart(self, goal, goalDistance > RunWhenBehindBy);
+					if ((self.X == beforeX) && (self.Y == beforeY)) {
+						//#768 - truly stuck (AStar already hands out partial paths, so no progress at all
+						//means nothing reachable gets closer): give up and say so, instead of trying forever
+						if (++this.goStuckTicks >= GoGiveUpTicks) {
+							Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " gives up going to " + goal);
+							self.PetGoalPoint = null;
+							this.goStuckTicks = 0;
+							Character.PetResponse(self, self.FollowTarget ?? self.ControlMaster, false);
+						}
+					} else {
+						this.goStuckTicks = 0;
+						this.ScheduleCatchUpStep(Point2D.GetSimpleDistance(self, goal));
+					}
 					return;
 				}
 			}
@@ -287,8 +314,76 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void Follow(NPC self, Character master) {
-			if (Point2D.GetSimpleDistance(self, master) > 1) {
-				this.StepTowardsSmart(self, master);
+			int distance = Point2D.GetSimpleDistance(self, master);
+			if (distance > 1) {
+				this.StepTowardsSmart(self, master, distance > RunWhenBehindBy);
+				this.ScheduleCatchUpStep(Point2D.GetSimpleDistance(self, master));
+			}
+		}
+
+		/// <summary>#768 - still behind after this step: think again sooner than the normal cadence.</summary>
+		private void ScheduleCatchUpStep(int remainingDistance) {
+			double interval = CatchUpInterval(remainingDistance, this.PeriodInSeconds);
+			if (interval < this.PeriodInSeconds) {
+				this.DueInSeconds = interval;
+			}
+		}
+
+		/// <summary>#768 - seconds until the next think-tick for a mover `distance` tiles from where it's
+		/// headed: the normal interval once it's caught up (within 1 tile), otherwise a walking or (more
+		/// than RunWhenBehindBy behind) running cadence - never slower than normal.</summary>
+		public static double CatchUpInterval(int distance, double normalInterval) {
+			if (distance <= 1) {
+				return normalInterval;
+			}
+			double wanted = (distance > RunWhenBehindBy) ? CatchUpRunSeconds : CatchUpWalkSeconds;
+			return Math.Min(normalInterval, wanted);
+		}
+
+		/// <summary>#768 - Sphere's OnHarmedBy: an NPC that gets attacked fights back, unless it's already
+		/// fighting someone. Never its own master - an owner attacking its pet first makes it rebel
+		/// (NPC.On_HostileAction drops the ownership), after which this does pick the ex-owner.</summary>
+		public static void DefendAgainst(NPC self, Character attacker) {
+			if (!NpcAggroSettings.instance.npcsDefendThemselves) {
+				return;
+			}
+			if ((attacker == null) || (attacker == self) || attacker.IsDeleted || self.IsDeleted || !attacker.IsAliveAndValid) {
+				return;
+			}
+			if (attacker == (self.FollowTarget ?? self.ControlMaster)) {
+				return;
+			}
+			NPCAiTimer timer = GetFor(self);
+			if ((timer != null) && (timer.target == null)) {
+				Logger.WriteDebug("NPCAiTimer.DefendAgainst: " + self.Name + "#" + self.Uid + " fights back against " + attacker.Name);
+				timer.EngageTarget(attacker);
+			}
+		}
+
+		/// <summary>#768 - Sphere's following pets attack whatever their master is fighting: called when
+		/// `attacker` does something hostile to `victim`, it sends every idle pet following the attacker
+		/// after the victim. Attacking one of your own pets isn't a fight the others join (the hit one
+		/// rebels instead - see NPC.On_HostileAction).</summary>
+		public static void AlertPetsOf(Character attacker, Character victim) {
+			if (!NpcAggroSettings.instance.petsAssistOwner) {
+				return;
+			}
+			if ((attacker == null) || (victim == null) || (attacker == victim) || attacker.IsDeleted || victim.IsDeleted) {
+				return;
+			}
+			NPC victimNpc = victim as NPC;
+			if ((victimNpc != null) && ((victimNpc.ControlMaster == attacker) || (victimNpc.FollowTarget == attacker))) {
+				return;
+			}
+			foreach (AbstractCharacter ch in attacker.GetMap().GetCharsInRange(attacker.X, attacker.Y, AggroRange)) {
+				NPC pet = ch as NPC;
+				if ((pet == null) || (pet == victim) || !pet.ShouldFollowOwner || ((pet.FollowTarget ?? pet.ControlMaster) != attacker)) {
+					continue;
+				}
+				NPCAiTimer timer = GetFor(pet);
+				if ((timer != null) && (timer.target == null)) {
+					timer.EngageTarget(victim);
+				}
 			}
 		}
 
@@ -663,10 +758,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private void StepTowards(NPC self, IPoint2D target) {
+		private void StepTowards(NPC self, IPoint2D target, bool running = false) {
 			Direction dir = Point2D.GetDirFromTo(self, target);
-			if (!this.TryStep(self, dir)) {
-				this.TrySidestepCharacter(self, dir);
+			if (!this.TryStep(self, dir, running)) {
+				this.TrySidestepCharacter(self, dir, running);
 			}
 		}
 
@@ -674,7 +769,7 @@ namespace SteamEngine.CompiledScripts {
 		/// dir was refused only because someone stands there, try the two neighbouring directions
 		/// (random order first), like Sphere's NPC_WalkToPoint sidestep. Terrain-blocked steps are
 		/// left alone so wall-pacing behavior doesn't change.</summary>
-		private bool TrySidestepCharacter(NPC self, Direction dir) {
+		private bool TrySidestepCharacter(NPC self, Direction dir, bool running = false) {
 			Map map = self.GetMap();
 			int x, y, z;
 			if (!map.CheckMovement(self, self.MovementSettings, dir, false, out x, out y, out z) ||
@@ -682,19 +777,19 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			int turn = (Globals.dice.Next(2) == 0) ? 1 : -1;
-			return this.TryStep(self, (Direction) (((int) dir + turn + 8) % 8)) ||
-				this.TryStep(self, (Direction) (((int) dir - turn + 8) % 8));
+			return this.TryStep(self, (Direction) (((int) dir + turn + 8) % 8), running) ||
+				this.TryStep(self, (Direction) (((int) dir - turn + 8) % 8), running);
 		}
 
 		/// <summary>Like StepTowards, but routes around obstacles via the real AStar pathfinder (scripts/Basic/AI/PathFinding/AStar.cs) instead of only ever trying the single direct-line direction. Used by Follow, combat approach, the "go" goal point and home-return.
 		/// #769 - the path is cached (NpcPathCache) and walked step by step; it's only re-planned when a step fails, the target moved away from where it was planned to, or every few steps. A character target counts as reached when adjacent (its own tile is occupied), and a target that can't be reached still yields a partial path toward it.</summary>
-		private void StepTowardsSmart(NPC self, IPoint3D target) {
+		private void StepTowardsSmart(NPC self, IPoint3D target, bool running = false) {
 			if (this.pathCache == null) {
 				this.pathCache = new NpcPathCache();
 			}
 			Direction dir;
 			if (this.pathCache.TryGetNextStep(self.X, self.Y, target.X, target.Y, out dir)) {
-				if (this.TryStep(self, dir)) {
+				if (this.TryStep(self, dir, running)) {
 					this.pathCache.Advance(self.X, self.Y);
 					return;
 				}
@@ -710,17 +805,17 @@ namespace SteamEngine.CompiledScripts {
 			if (path == null) {
 				Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " found NO path to " + target + " (" + result.Iterations + " iterations) - falling back to direct step");
 				this.pathCache.Invalidate();
-				this.StepTowards(self, target);
+				this.StepTowards(self, target, running);
 			} else if (path.Length == 0) {
 				this.pathCache.Invalidate(); //already there
 			} else {
 				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y);
-				if (this.TryStep(self, path[0])) {
+				if (this.TryStep(self, path[0], running)) {
 					this.pathCache.Advance(self.X, self.Y);
 				} else {
 					Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " path's first step (" + path[0] + ") failed - falling back to direct step");
 					this.pathCache.Invalidate();
-					this.StepTowards(self, target);
+					this.StepTowards(self, target, running);
 				}
 			}
 		}
@@ -743,7 +838,7 @@ namespace SteamEngine.CompiledScripts {
 			this.TryStep(self, dir);
 		}
 
-		private bool TryStep(NPC self, Direction dir) {
+		private bool TryStep(NPC self, Direction dir, bool running = false) {
 			int x, y, z;
 			if (!self.GetMap().CheckMovement(self, self.MovementSettings, dir, false, out x, out y, out z)) {
 				Logger.WriteDebug("NPCAiTimer.TryStep: " + self.Name + "#" + self.Uid + " CheckMovement DENIED dir=" + dir + " from (" + self.X + "," + self.Y + "," + self.Z + ") settings=" + self.MovementSettings);
@@ -752,7 +847,7 @@ namespace SteamEngine.CompiledScripts {
 			if (self.Direction != dir) {
 				self.Direction = dir;
 			}
-			return self.WalkRunOrFly(dir, false, false);
+			return self.WalkRunOrFly(dir, running, false);
 		}
 	}
 }

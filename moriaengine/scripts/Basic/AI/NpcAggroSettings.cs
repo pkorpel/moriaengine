@@ -50,5 +50,15 @@ namespace SteamEngine.CompiledScripts {
 		/// teleporting, or just outrunning the NPC.</summary>
 		[SaveableData]
 		public int giveUpRange = 18;
+
+		/// <summary>#768 - an NPC that gets attacked fights back (Sphere's OnHarmedBy), unless it's
+		/// already fighting someone. Off = only autonomously aggressive NPCs ever fight.</summary>
+		[SaveableData]
+		public bool npcsDefendThemselves = true;
+
+		/// <summary>#768 - pets following their master attack whatever the master attacks, like
+		/// Sphere's following pets. Off = only "guard"/"kill" orders send pets into a fight.</summary>
+		[SaveableData]
+		public bool petsAssistOwner = true;
 	}
 }
