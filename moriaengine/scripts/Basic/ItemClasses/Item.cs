@@ -193,6 +193,17 @@ namespace SteamEngine.CompiledScripts {
 					return TriggerResult.Cancel;
 				}
 			}
+			//#774 - a pet told to "guard" this item (or the container it lies in) stops strangers
+			//taking it and goes for whoever tried
+			Character wouldBeThief = args.PickingChar as Character;
+			if (wouldBeThief != null) {
+				NPC guard = Character.FindItemGuard(this, wouldBeThief);
+				if (guard != null) {
+					NPCAiTimer.DefendItemAgainst(guard, wouldBeThief);
+					args.Result = new DenyResult_StringSysMessage(guard.Name + " is guarding that.");
+					return TriggerResult.Cancel;
+				}
+			}
 			return base.On_DenyPickup(args);
 		}
 

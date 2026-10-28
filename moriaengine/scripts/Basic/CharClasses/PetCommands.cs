@@ -26,10 +26,11 @@ namespace SteamEngine.CompiledScripts {
 	/// Pet control via normal speech, parsed like Sphere 0.99z8 (#768, see PetCommandParser):
 	/// "all &lt;command&gt;" / "pets &lt;command&gt;" for every pet this character owns in range, or
 	/// "&lt;name or creature type&gt; &lt;command&gt;" for one. Commands: come / follow me, guard me /
-	/// defend me / guard, stay / stay here / stop, follow (target), go (target), kill / attack
-	/// (target), transfer (target), release / dismiss, status. Every order replaces what the pet
-	/// was doing, a fight included, and the pet answers "Yes Master" / "Sorry" (animals make
-	/// their idle/anger sound instead).
+	/// defend me, guard (target), stay / stay here / stop, follow (target), go (target), kill /
+	/// attack (target), transfer (target), release / dismiss, friend (target), drop, status. Every
+	/// order replaces what the pet was doing, a fight included, and the pet answers "Yes Master" /
+	/// "Sorry" (animals make their idle/anger sound instead). Friends (#774) can give orders too,
+	/// except transfer/release/friend, which stay with the owner.
 	///
 	/// GMs bypass the ownership check - their commands reach any NPC in range, wild monsters
 	/// included (Sphere's NPC_IsOwnedBy does the same for a higher plevel). See
@@ -38,7 +39,6 @@ namespace SteamEngine.CompiledScripts {
 	/// Parsed on the speaker's own On_Say (not per-pet On_Hear) so that "all go"/"all kill" issue
 	/// a single target request whose result applies to every matched pet.
 	///
-	/// Not here yet: "friend" (co-owners need a persisted friend list) and "drop" (pets carry nothing).
 	/// </summary>
 	public partial class Character {
 		public override TriggerResult On_Say(string speech, SpeechType type, int[] keywords) {
@@ -58,6 +58,17 @@ namespace SteamEngine.CompiledScripts {
 				(pets.Count > 0 ? ": " + string.Join(", ", pets.ConvertAll(p => p.Name + "#" + p.Uid)) : ""));
 			if (pets.Count == 0) {
 				return;
+			}
+			if ((command == PetCommand.Transfer) || (command == PetCommand.Release) || (command == PetCommand.Friend)) {
+				//#774 - a friend may order the pet around, but only its owner can give it away
+				int before = pets.Count;
+				pets.RemoveAll(pet => !this.IsGM && (pet.ControlMaster != this));
+				if (pets.Count < before) {
+					this.SysMessage("Only the owner can do that.");
+				}
+				if (pets.Count == 0) {
+					return;
+				}
 			}
 			string petsWord = "pet" + (pets.Count > 1 ? "s" : "");
 
@@ -94,6 +105,17 @@ namespace SteamEngine.CompiledScripts {
 				case PetCommand.Follow:
 					this.TargetForPets(SingletonScript<Targ_PetFollow>.Instance, pets, "Whom should your " + petsWord + " follow?");
 					break;
+				case PetCommand.Guard:
+					this.TargetForPets(SingletonScript<Targ_PetGuard>.Instance, pets, "What should your " + petsWord + " guard?");
+					break;
+				case PetCommand.Friend:
+					this.TargetForPets(SingletonScript<Targ_PetFriend>.Instance, pets, "Who should your " + petsWord + " also obey?");
+					break;
+				case PetCommand.Drop:
+					foreach (NPC pet in pets) {
+						PetDrop(pet, this);
+					}
+					break;
 				case PetCommand.Go:
 					this.TargetForPets(SingletonScript<Targ_PetGo>.Instance, pets, "Where should your " + petsWord + " go?");
 					break;
@@ -111,6 +133,7 @@ namespace SteamEngine.CompiledScripts {
 						pet.IsGuarding = false;
 						pet.ShouldFollowOwner = true;
 						pet.PetGoalPoint = null;
+						pet.PetFriends = null;
 						PetResponse(pet, this, true);
 					}
 					this.SysMessage("You release your " + petsWord + " into the wild.");
@@ -131,12 +154,72 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Every order replaces what the pet was doing, a fight included (Sphere's Skill_Start).</summary>
+		/// <summary>Every order replaces what the pet was doing, a fight or guarding an item included (Sphere's Skill_Start).</summary>
 		internal static void BreakOffForNewOrder(NPC pet) {
 			NPCAiTimer timer = NPCAiTimer.GetFor(pet);
 			if (timer != null) {
 				timer.Disengage();
 			}
+			pet.GuardedItem = null;
+		}
+
+		/// <summary>#774 - may `speaker` give this pet orders: its owner, a friend added with "friend",
+		/// or a GM (Sphere's NPC_IsOwnedBy: MEMORY_IPET | MEMORY_FRIEND, or a higher plevel).</summary>
+		public bool AcceptsOrdersFrom(Character speaker) {
+			if (speaker == null) {
+				return false;
+			}
+			if (speaker.IsGM || (this.ControlMaster == speaker)) {
+				return true;
+			}
+			List<Character> friends = this.PetFriends;
+			return (friends != null) && friends.Contains(speaker);
+		}
+
+		/// <summary>#774 - the pet guarding `item` (or the ground item it's inside of) that's close
+		/// enough to stop `picker` taking it, or null. Owners, friends and GMs are never stopped.</summary>
+		public static NPC FindItemGuard(AbstractItem item, Character picker) {
+			AbstractItem top = item.TopObj() as AbstractItem;
+			if ((top == null) || !top.IsOnGround) {
+				return null;
+			}
+			foreach (AbstractCharacter ch in top.GetMap().GetCharsInRange(top.X, top.Y, ItemGuardRange)) {
+				NPC guard = ch as NPC;
+				if ((guard != null) && (guard.GuardedItem == top) && !guard.Flag_Dead && !guard.AcceptsOrdersFrom(picker)) {
+					return guard;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>#774 - how close a guarding pet has to be to its item to stop someone taking it.</summary>
+		public const int ItemGuardRange = 6;
+
+		/// <summary>#774 - Sphere's NPC_PetDrop: empties the pet's backpack at its feet. Its own
+		/// starting gear (attr_newbie) stays with it.</summary>
+		private static void PetDrop(NPC pet, Character master) {
+			AbstractItem pack = pet.FindLayer(LayerNames.Pack);
+			List<AbstractItem> toDrop = new List<AbstractItem>();
+			if (pack != null) {
+				foreach (AbstractItem item in pack) {
+					Item asItem = item as Item;
+					if ((asItem == null) || !asItem.HasAttribute(ItemAttributes.attr_newbie)) {
+						toDrop.Add(item);
+					}
+				}
+			}
+			if (toDrop.Count == 0) {
+				if (pet.IsHuman) {
+					pet.Say("I'm carrying nothing.");
+				} else {
+					PetResponse(pet, master, false);
+				}
+				return;
+			}
+			foreach (AbstractItem item in toDrop) {
+				item.P(pet.X, pet.Y, pet.Z, pet.M);
+			}
+			PetResponse(pet, master, true);
 		}
 
 		/// <summary>Sphere's NPC_PetResponse: the pet turns to its master and says "Yes Master" or
@@ -162,6 +245,9 @@ namespace SteamEngine.CompiledScripts {
 			if (pet.PetGoalPoint != null) {
 				return "going to " + pet.PetGoalPoint;
 			}
+			if (pet.GuardedItem != null) {
+				return "guarding " + pet.GuardedItem.Name;
+			}
 			if (pet.ShouldFollowOwner) {
 				return (pet.IsGuarding ? "guarding " : "following ") + ((pet.FollowTarget ?? pet.ControlMaster)?.Name ?? "nobody");
 			}
@@ -171,7 +257,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>
 		/// "all"/"pets" -> every controllable NPC within speech range. Otherwise -> the first one
 		/// whose own name or creature type name matches. A GM's commands match ANY NPC; a regular
-		/// player's commands only match NPCs that player actually owns (ControlMaster == this).
+		/// player's commands only match NPCs that accept their orders (owner or friend, #774).
 		/// </summary>
 		private List<NPC> FindControllableNpcs(string targetName) {
 			List<NPC> result = new List<NPC>();
@@ -189,7 +275,7 @@ namespace SteamEngine.CompiledScripts {
 				if (pet.ControlMaster == this) {
 					npcsOwnedByMe++;
 				}
-				if (!isGM && (pet.ControlMaster != this)) {
+				if (!isGM && !pet.AcceptsOrdersFrom(this)) {
 					continue;
 				}
 				if (wantsAll) {
@@ -229,6 +315,84 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
 			self.SysMessage("You must target someone to follow.");
+			return TargetResult.RestartTargetting;
+		}
+	}
+
+	/// <summary>#774 - "guard": an item -> stay by it and stop strangers taking it; a character ->
+	/// follow and protect them; yourself -> the same as "guard me".</summary>
+	public class Targ_PetGuard : CompiledTargetDef {
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			List<NPC> pets = (List<NPC>) parameter;
+			foreach (NPC pet in pets) {
+				if (targetted == pet) {
+					Character.PetResponse(pet, self, false);
+					continue;
+				}
+				Character.BreakOffForNewOrder(pet);
+				pet.FollowTarget = targetted;
+				pet.ShouldFollowOwner = true;
+				pet.PetGoalPoint = null;
+				pet.IsGuarding = true;
+				Character.PetResponse(pet, self, true);
+			}
+			return TargetResult.Done;
+		}
+
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			List<NPC> pets = (List<NPC>) parameter;
+			AbstractItem top = targetted.TopObj() as AbstractItem;
+			if ((top == null) || !top.IsOnGround) {
+				self.SysMessage("Your pet can only guard something lying on the ground.");
+				return TargetResult.RestartTargetting;
+			}
+			foreach (NPC pet in pets) {
+				Character.BreakOffForNewOrder(pet);
+				pet.GuardedItem = top;
+				pet.ShouldFollowOwner = false;
+				pet.PetGoalPoint = null;
+				pet.IsGuarding = false;
+				Character.PetResponse(pet, self, true);
+			}
+			Logger.WriteDebug("PetCommand 'guard': " + self.Name + " set " + pets.Count + " pet(s) to guard " + top);
+			return TargetResult.Done;
+		}
+
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			self.SysMessage("You must target an item or someone to guard.");
+			return TargetResult.RestartTargetting;
+		}
+	}
+
+	/// <summary>#774 - "friend": the targeted player may give these pets orders too.</summary>
+	public class Targ_PetFriend : CompiledTargetDef {
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			List<NPC> pets = (List<NPC>) parameter;
+			if (!targetted.IsPlayer) {
+				self.SysMessage("Only a player can be your pet's friend.");
+				return TargetResult.RestartTargetting;
+			}
+			foreach (NPC pet in pets) {
+				if ((targetted == pet.ControlMaster) || pet.AcceptsOrdersFrom(targetted)) {
+					Character.PetResponse(pet, self, false); //already obeys them
+					continue;
+				}
+				List<Character> friends = pet.PetFriends ?? new List<Character>();
+				friends.Add(targetted);
+				pet.PetFriends = friends;
+				Character.PetResponse(pet, self, true);
+				targetted.SysMessage(self.Name + " has granted you the ability to give orders to " + pet.Name + ".");
+			}
+			return TargetResult.Done;
+		}
+
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			self.SysMessage("You must target a player.");
+			return TargetResult.RestartTargetting;
+		}
+
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			self.SysMessage("You must target a player.");
 			return TargetResult.RestartTargetting;
 		}
 	}
@@ -308,7 +472,9 @@ namespace SteamEngine.CompiledScripts {
 				return TargetResult.Done;
 			}
 			foreach (NPC pet in pets) {
+				Character.BreakOffForNewOrder(pet);
 				pet.ControlMaster = targetted;
+				pet.PetFriends = null; //the new owner chooses their own friends
 				pet.FollowTarget = null; //clear any GM override so the new owner takes effect in NPCAiTimer's FollowTarget ?? ControlMaster check
 				pet.ShouldFollowOwner = true;
 				pet.PetGoalPoint = null;
