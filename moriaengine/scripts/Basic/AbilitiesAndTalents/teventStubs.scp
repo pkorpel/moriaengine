@@ -207,8 +207,11 @@ Name = "(e_lightnings)"
 [PassiveAbilityDef a_tevent_e_lihe_sarfeos]
 Name = "(e_lihe_sarfeos)"
 
-[PassiveAbilityDef a_tevent_e_looter]
-Name = "(e_looter)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//LooterAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - loots a
+//lootable corpse it steps onto, see Corpse.On_Step.
+[LooterAbilityDef a_tevent_e_looter]
+Name = "Looter"
 
 [PassiveAbilityDef a_tevent_e_malica_help]
 Name = "(e_malica_help)"
@@ -268,8 +271,11 @@ Name = "(e_npc_curse_mana)"
 [PassiveAbilityDef a_tevent_e_npc_curse_stam]
 Name = "(e_npc_curse_stam)"
 
-[PassiveAbilityDef a_tevent_e_npc_detect]
-Name = "(e_npc_detect)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//DetectAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) -
+//periodically reveals nearby hidden/invisible characters, see NPCAiTimer.Fight.
+[DetectAbilityDef a_tevent_e_npc_detect]
+Name = "Detection"
 
 [PassiveAbilityDef a_tevent_e_npc_diamonddrop]
 Name = "(e_npc_diamonddrop)"
@@ -280,11 +286,17 @@ Name = "(e_npc_golddrop)"
 [PassiveAbilityDef a_tevent_e_npc_infinitemana]
 Name = "(e_npc_infinitemana)"
 
-[PassiveAbilityDef a_tevent_e_npc_knockback]
-Name = "(e_npc_knockback)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//KnockbackAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) -
+//chance to push the target back on a landed hit, see DamageManager.ProcessSwing.
+[KnockbackAbilityDef a_tevent_e_npc_knockback]
+Name = "Knockback"
 
-[PassiveAbilityDef a_tevent_e_npc_leaper]
-Name = "(e_npc_leaper)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//LeaperAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) -
+//simplified (user-approved) to a real pursuit speed boost, see NPCAiTimer.Fight.
+[LeaperAbilityDef a_tevent_e_npc_leaper]
+Name = "Leaper"
 
 [PassiveAbilityDef a_tevent_e_npc_mag]
 Name = "(e_npc_mag)"
@@ -426,8 +438,11 @@ Name = "(e_scales)"
 [PassiveAbilityDef a_tevent_e_scorpion]
 Name = "(e_scorpion)"
 
-[PassiveAbilityDef a_tevent_e_selfreser]
-Name = "(e_selfreser)"
+//real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
+//SelfReserAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) -
+//respawns a fresh copy of the monster a while after death, see Character.CauseDeath.
+[SelfReserAbilityDef a_tevent_e_selfreser]
+Name = "Self-Resurrection"
 
 [PassiveAbilityDef a_tevent_e_serpent]
 Name = "(e_serpent)"

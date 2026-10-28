@@ -325,6 +325,11 @@ namespace SteamEngine.CompiledScripts {
 			//combat trigger" behavior.
 			MonsterSpecialAttacks.TryRoundattack(self);
 
+			//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_detect
+			//periodically force-reveals nearby hidden/invisible characters while actively
+			//fighting - same "once per think-tick while fighting" treatment as roundattack.
+			MonsterSpecialAttacks.TryApplyDetect(self);
+
 			if (this.TryCastSpell(self, target)) {
 				return; //cast instead of swinging this tick - don't also touch the weapon-skill queue below
 			}
@@ -381,6 +386,18 @@ namespace SteamEngine.CompiledScripts {
 			if ((distance > effectiveRange) || !hasLineOfSight) {
 				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", effectiveRange=" + effectiveRange + ", hasLineOfSight=" + hasLineOfSight + ")");
 				this.StepTowardsSmart(self, target);
+
+				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_leaper
+				//(user-approved simplification: a real speed boost, not teleport-assisted
+				//pursuit - see LeaperAbilityDef's own doc comment) takes extra honest
+				//StepTowardsSmart steps the same tick while still closing distance.
+				int extraSteps = MonsterSpecialAttacks.GetLeaperExtraSteps(self);
+				for (int i = 0; i < extraSteps; i++) {
+					if (Point2D.GetSimpleDistance(self, target) <= effectiveRange) {
+						break; //close enough now, stop taking leaper's extra steps
+					}
+					this.StepTowardsSmart(self, target);
+				}
 			}
 
 			//AddTarget must only be called ONCE per engagement - see lastEngagedTarget's comment. The
