@@ -1,5 +1,30 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #774 pet friend/drop/guard-item + #775 random Equip lists
+
+User asked to do the items deferred from #768/#763. FAST-TIER UNIT TESTS ONLY.
+- **#774 friend**: `Character.PetFriends` (a `List<Character>` tag; GenericListSaver persists it
+  with delayed refs) plus `AcceptsOrdersFrom` (owner, friend or GM) replaces the old
+  ControlMaster-only check in FindControllableNpcs. Transfer/release/friend stay owner-only
+  ("Only the owner can do that."); friends are cleared on transfer/release. New `Targ_PetFriend`
+  (players only).
+- **#774 drop**: `PetDrop` moves the pack contents to the ground via `item.P(...)`, keeping
+  attr_newbie starting gear; "I'm carrying nothing." otherwise.
+- **#774 guard + item**: bare "guard" is now a TARGET command (`PetCommand.Guard`; "guard
+  me"/"defend me" stay immediate). An item -> `Character.GuardedItem`; a character -> protect
+  them; yourself -> guard me. NPCAiTimer has a new `GuardingItem` state (stay within 1 tile,
+  cleared once the item is off the ground). `Item.On_DenyPickup` calls `Character.FindItemGuard`
+  (top-level ground item, guard within 6 tiles, picker not owner/friend/GM) -> denies with
+  "<pet> is guarding that." and `NPCAiTimer.DefendItemAgainst`. Any new order clears it
+  (`BreakOffForNewOrder`). Our own design: Sphere 0.99z8's item GUARD_TARG is effectively a no-op.
+- **#775**: `NPCDef.SplitEquipLine` / `TryParseRandomDefnames` / `PickWeighted`, and
+  `StartingEquipmentEntry.RandomDefnames/RandomWeights/PickDefname`, rolled per spawn in
+  NPC.On_Create. Affects the converted `Equip = {i_bardiche 1 ...}` lines (npc_evil_race,
+  dung_Okultisti), which previously spawned without that item.
+- Tests: `NpcRandomEquipTests.cs` (new) and the PetCommandParserTests additions. Fast tier 128/128.
+  Pet engine wiring is build-verified only. The PetCommandTests protocol speech was changed from
+  "all guard" to "all guard me" (bare guard now opens a target cursor).
+
 ## DONE (2026-10-28): #768 pet commands reworked to Sphere 0.99z8 behavior
 
 User: "go for it, no need to ask"; FAST-TIER UNIT TESTS ONLY. Shipped, per the #768 analysis:
