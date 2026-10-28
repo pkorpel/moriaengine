@@ -1345,6 +1345,12 @@ namespace SteamEngine.CompiledScripts {
 
 				if (corpse != null) {
 					corpse.InitFromChar(this);
+
+					//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_selfreser
+					//(if this dying character has it) arms a respawn timer on the fresh corpse -
+					//must run here, before this.Delete() below, while this NPC's own position is
+					//still valid. See MonsterSpecialAttacks.TryApplySelfRes's own doc comment.
+					MonsterSpecialAttacks.TryApplySelfRes(this, corpse);
 				}
 
 				if (this.IsPlayer) {

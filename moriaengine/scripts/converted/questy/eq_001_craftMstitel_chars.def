@@ -612,6 +612,7 @@ MaxHits = 19000 21075
 MaxStam = 395 420
 MaxMana = 0
 Experience = 800 1000
+KnockbackChance = 900
 NaturalDamageType = DamageType.Physical|DamageType.Blunt
 Wrestling = 1300
 Tactics = 1200

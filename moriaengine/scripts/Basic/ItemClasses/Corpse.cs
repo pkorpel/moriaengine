@@ -134,6 +134,14 @@ namespace SteamEngine.CompiledScripts {
 			this.SetAttribute(ItemAttributes.attr_decay, true);
 		}
 
+		/// <summary>Real-user-reported follow-up to #653's teventStubs batch - e_looter. An NPC
+		/// with LooterAbilityDef that steps onto this corpse moves one item from it into its
+		/// own backpack - see LooterAbilityDef's own doc comment.</summary>
+		public override void On_Step(AbstractCharacter stepping, bool repeated, MovementType movementType) {
+			base.On_Step(stepping, repeated, movementType);
+			MonsterSpecialAttacks.TryApplyLoot(stepping as NPC, this);
+		}
+
 		public void ReturnStuffToChar(Character resurrectedChar) {
 			if (this.equippedItems != null) {
 				foreach (Item i in this.equippedItems.Values) {
