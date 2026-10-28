@@ -64,9 +64,17 @@ random full-boot class and never finishes. `OwnerAggroTests` and
 Economy/Social/CombatScenario.
 
 So `scripts/test-full.sh` without a filter runs the fast tier, then **each full-boot
-class in its own `dotnet test`**. A class that hangs (`--blame-hang`, 3 min, no dump,
-leftover servers killed) is retried once; plain failures are not. It ends with a
-per-class summary (`pass` / `pass … after a hang` / `FAIL` / `HANG (twice)`).
+class in its own `dotnet test`**. It shows live progress the whole time (each result as it
+lands, `still running (Ns)` lines, the server pair's boot/ready/unresponsive events, a
+heartbeat at least every 20 s). A test running longer than `STUCK_SECONDS` (120) is
+killed with its whole process tree and reported `STUCK` (not retried); a class whose run
+crashed is retried once; plain failures are not. Once the server pair dies or stops
+answering, the class's remaining tests fail within seconds. It ends with a per-class summary
+(`pass` / `pass … after a crash` / `FAIL` / `STUCK` / `HANG (twice)`), with the full log of
+everything that didn't pass in `$TMPDIR/moria-test-full/`. Stopping it (Ctrl+C, kill, or its
+parent going away) kills the whole run; `scripts/test-full.sh --kill-stale` cleans up
+leftovers, and a run refuses to start while any exist. Details:
+moriaengine/docs/current/07-testing/test-infrastructure.md (#785).
 
 Saves: unless the fixture gives each test class its own temp save directory,
 full-boot runs write into `moriaengine/saves/`, and a dirty tree stops `/task-ship`.
@@ -104,8 +112,9 @@ against, but plain non-hang failures and even ordinary passes). A lingering pair
 ports 2593/2595, and every LATER class then fails with a misleading
 `SocketException: Connection timed out` instead of its real result - once it starts,
 it cascades across most of the rest of a run, not a one-off. `test-full.sh` now sweeps
-(`lsof -t ... | xargs kill`) before every class, not just after a detected hang, so this
-self-heals automatically - no manual intervention should be needed anymore. If it
+(`lsof -t ... | xargs kill`) before every class, not just after a detected hang, and since
+#785 the fixture kills each server's whole process tree, the servers kill themselves when
+their test process dies, and the fixture refuses to boot while another run holds the ports. If it
 somehow still is: check process start times (`stat -c '%y' /proc/<pid>`) against the
 current class's own pair - anything meaningfully older is the leftover, not the zombies
 note above (that one's about dead `Z`-state entries that can't interfere; this one is

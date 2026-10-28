@@ -1,5 +1,31 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #785 protocol test infra - live progress, fail fast, no collisions, no orphans
+
+User: "make sure tests are responsive and we know right away if they are stuck". Root causes
+found: (1) xUnit ran COLLECTIONS IN PARALLEL in one dotnet test, so several server pairs on the
+same fixed ports and saves/ raced against each other; (2) with an unhealthy server, every test's
+login helper retried 40x with 15s timeouts, ~2m15s per test, 20+ min per class, silently; (3)
+killing a run only killed the wrapper shell, and the children lived on, holding the ports;
+(4) GameCore's stderr was thrown away, so crashes looked like timeouts.
+Shipped: `scripts/test-full.sh` (already the documented runner - USE IT for protocol runs, never
+ad-hoc dotnet test) rewritten in bash, with live pass/FAIL/still-running/srv-event/heartbeat
+output, STUCK_SECONDS (120) kill+name, a process group per run, kill on stop or parent death,
+`--kill-stale`, and failed-class logs in $TMPDIR/moria-test-full/. Plus `Tests/Protocol/ServerHealth.cs`
+(ServerUnresponsiveException fail-fast + ProgressLog), the fixture's machine-wide port lock
+($TMPDIR/moria-protocol-servers.lock), STEAMENGINE_PARENT_PID -> `Common/ParentProcessWatchdog.cs`
+(hard self-Kill in GameCore + Aux), stderr capture, Kill(true) teardown, and xunit.runner.json
+parallelizeTestCollections=false + longRunningTestSeconds=15.
+Each piece was verified against real processes: live output; the stuck kill (STUCK_SECONDS=20 on
+RangedCombatSustainTests -> killed at 25s, nothing left over); the port lock (held with
+`flock` -> refused in 16s); the watchdog (GameCore gone 1s after its parent died); and parent
+death (killing only the wrapper shell killed the whole run).
+**Found by it: #786** - GameCore stack-overflows (exit 134) deleting an NPC mid-swing
+(ThrowIfDeleted's limbo branch re-enters Delete). It reproduces in CombatDepthTestsA and
+MagerySpellTests, and is very likely the real cause of the old "#100 flake". NOT fixed here.
+**Gotcha**: in this sandbox `kill -0` reports unreaped zombies as alive - check /proc/<pid>/stat
+state Z.
+
 ## DONE (2026-10-28): #783 Strangler Vine added to .settings "Monster Abilities" + coverage rule/test
 
 User noticed the #778 strangler vine wasn't on the .settings page and asked that every ability's
@@ -7810,6 +7836,10 @@ and bin/obj already exist from prior sessions). Full suite:
 
 ## Workflow conventions for this repo (don't re-derive each session)
 
+- **Protocol (full-boot) tests: always via `scripts/test-full.sh [filter]`, never ad-hoc
+  `dotnet test` (#785).** It shows live progress, kills+names a stuck test, fails a dead server's
+  class fast, never leaves orphans, and refuses to run while leftovers exist
+  (`scripts/test-full.sh --kill-stale`). Run it in the background and relay its progress lines.
 - **Every ability's default settings go on `.settings` (#783, user rule 2026-10-28).** A new
   monster ability (or a new tunable field on one) needs a matching pass-through property on
   `MonsterAbilitiesSettings` ("Monster Abilities" page), named `<Ability><Property>` (e.g.

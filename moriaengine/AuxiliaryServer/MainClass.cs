@@ -23,6 +23,8 @@ namespace SteamEngine.AuxiliaryServer {
 		}
 
 		static void Main() {
+			Common.ParentProcessWatchdog.StartFromEnvironment(); //#785 - exit with the test run that started us, if any
+
 			//name the console window for better recognizability
 			Console.Title = "SE Auxiliary Server - " + Assembly.GetExecutingAssembly().Location;
 

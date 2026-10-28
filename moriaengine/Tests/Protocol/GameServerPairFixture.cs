@@ -24,6 +24,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		private readonly Process auxProcess;
 		private readonly Process gameProcess;
+		private FileStream portLock;
 		private readonly StringBuilder gameOutput = new StringBuilder();
 		private readonly object gameOutputLock = new object();
 
@@ -85,15 +86,25 @@ namespace SteamEngine.Tests.Protocol {
 				}
 			}
 
+			//#785 - one server pair at a time, across processes too: every pair binds the same fixed
+			//ports and shares saves/, so a second concurrent run (another dotnet test, or a run that
+			//was "stopped" but is still alive) used to make every class of both runs fail with
+			//"Game server never appeared"/LoginDenied noise. The OS drops the lock with the process.
+			this.portLock = AcquirePortLock();
+
 			string auxDll = Path.Combine(this.RepoRoot, "AuxiliaryServer", "bin", "Debug", "net8.0", "SteamEngine.AuxiliaryServer.dll");
 			string gameDll = Path.Combine(this.RepoRoot, "GameCore", "bin", "Debug", "net8.0", "SteamEngine.GameCore.dll");
 
 			if (!File.Exists(auxDll)) {
+				this.ReleasePortLock();
 				throw new FileNotFoundException("AuxiliaryServer not built - run build.ps1 first.", auxDll);
 			}
 			if (!File.Exists(gameDll)) {
+				this.ReleasePortLock();
 				throw new FileNotFoundException("GameCore not built - run build.ps1 first.", gameDll);
 			}
+			DateTime bootStarted = DateTime.UtcNow;
+			ProgressLog.Write("BOOT: starting AuxiliaryServer + GameCore");
 
 			// Real bug found and fixed here: if anything from this point on throws (most
 			// commonly the boot-timeout a few lines down, when GameCore's own nested script
@@ -123,18 +134,70 @@ namespace SteamEngine.Tests.Protocol {
 						}
 					}
 				};
-				this.gameProcess.ErrorDataReceived += (s, e) => { };
+				//#785 - stderr too: a crashing GameCore (e.g. exit 134, an abort) writes its fatal error
+				//and stack trace there, and that was being thrown away
+				this.gameProcess.ErrorDataReceived += (s, e) => {
+					if (e.Data != null) {
+						lock (this.gameOutputLock) {
+							this.gameOutput.AppendLine("[stderr] " + e.Data);
+						}
+					}
+				};
 				this.gameProcess.BeginOutputReadLine();
 				this.gameProcess.BeginErrorReadLine();
 
 				if (!this.WaitForGameOutput("Init done.", TimeSpan.FromSeconds(60))) {
-					throw new TimeoutException("GameCore did not reach 'Init done.' in time. Output so far:\n" + this.gameOutput);
+					throw new TimeoutException(this.gameProcess.HasExited ?
+						"GameCore exited during boot (code " + this.gameProcess.ExitCode + "). Output:\n" + this.gameOutput :
+						"GameCore did not reach 'Init done.' in 60s. Output so far:\n" + this.gameOutput);
 				}
-			} catch {
+			} catch (Exception e) {
+				ProgressLog.Write("BOOT FAILED after " + (int) (DateTime.UtcNow - bootStarted).TotalSeconds + "s: " + FirstLine(e.Message));
 				TryKill(this.gameProcess);
 				TryKill(this.auxProcess);
+				this.ReleasePortLock();
 				throw;
 			}
+			ProgressLog.Write("READY: servers up in " + (int) (DateTime.UtcNow - bootStarted).TotalSeconds + "s");
+			ServerHealth.Reset(this);
+		}
+
+		public bool GameProcessHasExited {
+			get { return this.gameProcess.HasExited; }
+		}
+
+		public int GameProcessExitCode {
+			get { return this.gameProcess.HasExited ? this.gameProcess.ExitCode : 0; }
+		}
+
+		private static FileStream AcquirePortLock() {
+			//machine-wide (temp dir), not per checkout: the ports are shared by every worktree
+			string path = Path.Combine(Path.GetTempPath(), "moria-protocol-servers.lock");
+			DateTime deadline = DateTime.UtcNow + TimeSpan.FromSeconds(15); //the previous collection's pair may still be shutting down
+			while (true) {
+				try {
+					return new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+				} catch (IOException) {
+					if (DateTime.UtcNow >= deadline) {
+						ProgressLog.Write("BOOT FAILED: another protocol test run holds the server ports");
+						throw new InvalidOperationException("Another protocol test run is using the server ports (" + path +
+							" is locked). Stop it first - scripts/test-full.sh --kill-stale kills leftover runs.");
+					}
+					System.Threading.Thread.Sleep(500);
+				}
+			}
+		}
+
+		private void ReleasePortLock() {
+			if (this.portLock != null) {
+				this.portLock.Dispose();
+				this.portLock = null;
+			}
+		}
+
+		private static string FirstLine(string text) {
+			int newline = text.IndexOf('\n');
+			return (newline < 0) ? text : text.Substring(0, newline);
 		}
 
 		public string GameOutputSnapshot() {
@@ -202,6 +265,9 @@ namespace SteamEngine.Tests.Protocol {
 			// hanging indefinitely at "Compiling scripts..." otherwise) instead of always
 			// spawning a fresh node.
 			psi.Environment["MSBUILDDISABLENODEREUSE"] = "1";
+			//#785 - the server exits on its own if this test process dies (ParentProcessWatchdog),
+			//instead of living on as an orphan that holds the ports
+			psi.Environment[SteamEngine.Common.ParentProcessWatchdog.EnvironmentVariable] = Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture);
 			var proc = Process.Start(psi);
 			// Deliberately never write to or close StandardInput - see class comment.
 			return proc;
@@ -210,12 +276,14 @@ namespace SteamEngine.Tests.Protocol {
 		public void Dispose() {
 			TryKill(this.gameProcess);
 			TryKill(this.auxProcess);
+			this.ReleasePortLock();
+			ProgressLog.Write("STOPPED: servers shut down");
 		}
 
 		private static void TryKill(Process proc) {
 			try {
 				if (proc != null && !proc.HasExited) {
-					proc.Kill();
+					proc.Kill(true); //#785 - the whole tree, including GameCore's nested script-compile builds
 					proc.WaitForExit(5000);
 				}
 			} catch (InvalidOperationException) {
