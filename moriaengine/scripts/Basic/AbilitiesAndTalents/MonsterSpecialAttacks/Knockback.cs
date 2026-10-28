@@ -39,7 +39,7 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 			this.chance = this.InitTypedField("knockbackChance", new double[] { 333, 333 }, typeof(double[]));
 			//user-requested default (was a hardcoded single tile) - PushAway below walks this
-			//many tiles outward, stopping at the first blocked one, so a real obstacle still
+			//many tiles outward, stopping at the first blocked step, so a real obstacle still
 			//shortens the push rather than being skipped over.
 			this.distance = this.InitTypedField("knockbackDistance", (double) 3, typeof(double));
 		}
@@ -55,8 +55,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Tiles to push the defender away, in a straight line - PushAway stops early
-		/// (at the furthest still-open tile) if a wall/water/map-edge is hit before reaching
-		/// this many tiles.</summary>
+		/// (at the last tile reached) at anything that would stop a walking character: a wall,
+		/// water, a cliff, the map edge or another character (#781).</summary>
 		public double Distance {
 			get { return (double) this.distance.CurrentValue; }
 			set { this.distance.CurrentValue = value; }
@@ -76,8 +76,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#knockback - on a landed melee swing, a chance to push the defender away
 		/// from the attacker by up to KnockbackAbilityDef.Distance tiles (default 3, #758),
-		/// stopping early at the first blocked tile - same tile-validity checks as PullToward
-		/// (Roundattack.cs), just the inverse direction (away from, not toward, the attacker).</summary>
+		/// stopping early at the first blocked step - the same forced-step walk (ForceMove) as
+		/// PullToward (Roundattack.cs), just the inverse direction (away from, not toward, the attacker).</summary>
 		public static void TryApplyKnockback(Character attacker, Character defender) {
 			KnockbackAbilityDef def = KnockbackDef;
 			if (def == null) {
@@ -97,46 +97,57 @@ namespace SteamEngine.CompiledScripts {
 			PushAway(attacker, defender, (int) def.Distance);
 		}
 
-		/// <summary>Walks up to `maxDistance` tiles away from `attacker`, stopping at the
-		/// furthest tile that's still open (no water/impassable/map-edge) - a blocked tile
-		/// SHORTENS the push rather than cancelling it outright, unlike the old single-tile
-		/// version this replaced.</summary>
+		/// <summary>#781 - pushes `defender` up to `maxDistance` tiles straight away from `attacker`,
+		/// one real step at a time (see WalkForced): a wall, a closed door, water, a cliff or another
+		/// character ends the push at the last tile reached - right by a wall that's no push at all.
+		/// It used to look only at the terrain tile under each step, so house walls (statics) never
+		/// stopped it and it knocked people inside buildings.</summary>
 		private static void PushAway(Character attacker, Character defender, int maxDistance) {
 			Direction dir = Point2D.GetDirFromTo(attacker, defender);
-			Map map = defender.GetMap();
-			int dx = directionDx[(int) dir];
-			int dy = directionDy[(int) dir];
-			int steps = ComputeMaxPushSteps(maxDistance, step => {
-				int x = defender.X + (dx * step);
-				int y = defender.Y + (dy * step);
-				if (!map.IsValidPos(x, y) || map.IsMapTileWater(x, y)) {
+			ForceMove(defender, maxDistance, (x, y) => dir, (x, y) => false);
+		}
+
+		/// <summary>#781 - moves `victim` by forced steps (knockback, pull) using the same rules as
+		/// walking - Map.CheckMovement with the victim's own movement settings, so statics, walls,
+		/// diagonal corners and floor heights all count - and never onto a living character's tile.
+		/// Lands on the real Z of the last tile reached.</summary>
+		internal static void ForceMove(Character victim, int maxSteps, Func<int, int, Direction> nextDir, Func<int, int, bool> arrived) {
+			Map map = victim.GetMap();
+			IMovementSettings settings = victim.MovementSettings;
+			AStar.StepFunc step = delegate (int x, int y, int z, Direction d, out int newX, out int newY, out int newZ) {
+				if (!map.CheckMovement(new Point3D(x, y, z), settings, d, false, out newX, out newY, out newZ)) {
 					return false;
 				}
-				int tileId = map.GetTileId(x, y);
-				return !TileData.HasFlag(TileData.GetTileFlags(tileId), TileFlag.Impassable);
-			});
+				return CharacterCollision.FindObstacle(victim, map, newX, newY, newZ) == null;
+			};
+			int endX, endY, endZ;
+			int steps = WalkForced(victim.X, victim.Y, victim.Z, maxSteps, nextDir, arrived, step, out endX, out endY, out endZ);
 			if (steps > 0) {
-				int x = defender.X + (dx * steps);
-				int y = defender.Y + (dy * steps);
-				int z = map.GetTileZ(x, y);
-				defender.Go(x, y, z, defender.M);
+				victim.Go(endX, endY, endZ, victim.M);
 			}
 		}
 
-		/// <summary>Pure "walk outward until blocked" step counter, factored out of PushAway so
-		/// it's directly unit-testable without a live Map/Character (see
-		/// Tests/KnockbackPushDistanceTests.cs) - `isStepOpen(step)` answers "is the tile at
-		/// this many steps out still open" for steps 1..maxDistance in order; returns the
-		/// largest step reached before the first `false` (0 if even step 1 is blocked).</summary>
-		public static int ComputeMaxPushSteps(int maxDistance, Func<int, bool> isStepOpen) {
-			int reached = 0;
-			for (int step = 1; step <= maxDistance; step++) {
-				if (!isStepOpen(step)) {
+		/// <summary>#781 - pure "walk until blocked": from (x, y, z), up to maxSteps steps in
+		/// nextDir(x, y) each, stopping early once arrived(x, y) or at the first step `step` refuses.
+		/// Returns the steps taken; (endX, endY, endZ) is where they lead (the start if none).
+		/// Unit-tested on synthetic grids (Tests/KnockbackPushDistanceTests.cs).</summary>
+		public static int WalkForced(int x, int y, int z, int maxSteps, Func<int, int, Direction> nextDir, Func<int, int, bool> arrived,
+				AStar.StepFunc step, out int endX, out int endY, out int endZ) {
+			endX = x;
+			endY = y;
+			endZ = z;
+			int taken = 0;
+			while ((taken < maxSteps) && !arrived(endX, endY)) {
+				int nx, ny, nz;
+				if (!step(endX, endY, endZ, nextDir(endX, endY), out nx, out ny, out nz)) {
 					break;
 				}
-				reached = step;
+				endX = nx;
+				endY = ny;
+				endZ = nz;
+				taken++;
 			}
-			return reached;
+			return taken;
 		}
 	}
 }
