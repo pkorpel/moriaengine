@@ -138,7 +138,7 @@ namespace SteamEngine.Tests.Protocol {
 		/// class left wandering nearby (a GM's "all" matches every NPC in range, owned or not).</summary>
 		[Fact]
 		public void AllVerbAffectsEveryOwnedPet() {
-			using (var game = this.ConnectAndRun("PetAllVerb", ".TestSetGmOff", ".TestSetupTwoOwnedPets", "all guard")) {
+			using (var game = this.ConnectAndRun("PetAllVerb", ".TestSetGmOff", ".TestSetupTwoOwnedPets", "all guard me")) {
 				this.AssertSeen("-> matched 2 NPC(s)", TimeSpan.FromSeconds(10));
 			}
 		}

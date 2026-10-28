@@ -238,6 +238,39 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey petFriendsTK = TagKey.Acquire("_petFriends_");
+
+		/// <summary>#774 - co-owners added with the "friend" pet command: they can give this pet orders
+		/// (Sphere's MEMORY_FRIEND counts as owned in NPC_IsOwnedBy), but not transfer, release or
+		/// befriend it further. Null when there are none. Cleared on transfer and release.</summary>
+		public List<Character> PetFriends {
+			get {
+				return this.GetTag(petFriendsTK) as List<Character>;
+			}
+			set {
+				if ((value == null) || (value.Count == 0)) {
+					this.RemoveTag(petFriendsTK);
+				} else {
+					this.SetTag(petFriendsTK, value);
+				}
+			}
+		}
+
+		private static readonly TagKey guardedItemTK = TagKey.Acquire("_guardedItem_");
+
+		/// <summary>#774 - set by "guard" + targeting an item: the pet stays by it, and nobody but its
+		/// owner/friends can pick it up while the pet is near - whoever tries gets attacked (see
+		/// Character.FindItemGuard and Item.On_DenyPickup). Cleared by any new order, or once the item
+		/// is no longer lying on the ground.</summary>
+		public AbstractItem GuardedItem {
+			get {
+				return this.GetTag(guardedItemTK) as AbstractItem;
+			}
+			set {
+				this.SetTag(guardedItemTK, value);
+			}
+		}
+
 		public bool Flag_GreenHealthBar {
 			get {
 				return this.ProtectedFlag7;

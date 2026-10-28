@@ -31,7 +31,8 @@ namespace SteamEngine.CompiledScripts {
 		Fighting,
 		Fleeing,
 		Following,
-		GoingToPoint
+		GoingToPoint,
+		GuardingItem
 	}
 
 	/// <summary>
@@ -291,6 +292,23 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 
+			//#774 - "guard" + an item: stay by it until it's picked up (only its owner/friends can -
+			//Item.On_DenyPickup stops anyone else), destroyed or carried off the map
+			AbstractItem guarded = self.GuardedItem;
+			if (guarded != null) {
+				if (guarded.IsDeleted || !guarded.IsOnGround || (guarded.M != self.M)) {
+					self.GuardedItem = null;
+				} else {
+					this.LastState = AIState.GuardingItem;
+					int guardDistance = Point2D.GetSimpleDistance(self, guarded);
+					if (guardDistance > 1) {
+						this.StepTowardsSmart(self, guarded, guardDistance > RunWhenBehindBy);
+						this.ScheduleCatchUpStep(Point2D.GetSimpleDistance(self, guarded));
+					}
+					return;
+				}
+			}
+
 			//FollowTarget lets a GM temporarily direct ANY NPC (not just a real owned pet) via the
 			//same come/go/stop/transfer commands - it defaults to ControlMaster so a real pet's
 			//owner doesn't need to do anything special, but a GM-issued "come" on an unowned
@@ -357,6 +375,19 @@ namespace SteamEngine.CompiledScripts {
 			if ((timer != null) && (timer.target == null)) {
 				Logger.WriteDebug("NPCAiTimer.DefendAgainst: " + self.Name + "#" + self.Uid + " fights back against " + attacker.Name);
 				timer.EngageTarget(attacker);
+			}
+		}
+
+		/// <summary>#774 - a pet guarding an item goes for whoever just tried to take it (an explicit
+		/// order, so it doesn't depend on npcsDefendThemselves), unless it's already fighting.</summary>
+		public static void DefendItemAgainst(NPC guard, Character thief) {
+			if ((thief == null) || thief.IsDeleted || !thief.IsAliveAndValid) {
+				return;
+			}
+			NPCAiTimer timer = GetFor(guard);
+			if ((timer != null) && (timer.target == null)) {
+				Logger.WriteDebug("NPCAiTimer.DefendItemAgainst: " + guard.Name + "#" + guard.Uid + " goes for " + thief.Name);
+				timer.EngageTarget(thief);
 			}
 		}
 
