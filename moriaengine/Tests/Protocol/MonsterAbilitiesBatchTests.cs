@@ -80,7 +80,7 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestLeaperExtraSteps");
 				Assert.True(this.fixture.WaitForGameOutput("LEAPER_TEST:", TimeSpan.FromSeconds(10)));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEAPER_TEST:");
-				Assert.Contains("leaperSteps=7", line);
+				Assert.Contains("leaperSteps=10", line);
 				Assert.Contains("nonLeaperSteps=0", line);
 			}
 		}
