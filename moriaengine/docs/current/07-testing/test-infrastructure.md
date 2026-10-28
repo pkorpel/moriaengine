@@ -26,13 +26,52 @@ when perfectly healthy - a single AI-combat test can legitimately take 40-60+ se
 no intermediate output, a long silent stretch is genuinely ambiguous: slow, or actually
 hung (same fixed-port concurrent-invocation hang class covered in
 [Known gotchas](known-gotchas.md#never-run-two-full-boot-test-invocations-concurrently))?
-`Tests/xunit.runner.json` (`diagnosticMessages: true`, `longRunningTestSeconds: 30`) fixes
-this with xUnit's own built-in feature - any test still running past 30 seconds gets a
+`Tests/xunit.runner.json` (`diagnosticMessages: true`, `longRunningTestSeconds: 15` - was 30
+before #785) fixes this with xUnit's own built-in feature - any test still running past 15 seconds gets a
 periodic `[Long Running Test] '<full test name>', Elapsed: <time>` line printed to the
 normal console output, repeated while it keeps running. Confirmed: a real 40-second test
 printed exactly one clean heartbeat line, no other noise added. The file must stay at
 `Tests/xunit.runner.json` and ship with `CopyToOutputDirectory` in the `.csproj` - xUnit
 reads it from next to the compiled test assembly at runtime, not from the source tree.
+
+## Knowing right away when a run is stuck (#785)
+
+The user's requirement: never wait on a test run without knowing what it's doing. Five pieces:
+
+1. **Live progress** - `scripts/test-full.sh` streams every test result the moment it's in
+   (`pass`/`FAIL` lines), a `still running (Ns)` line from the long-running heartbeat above, the
+   server pair's own events (`srv BOOT`/`READY`/`UNRESPONSIVE`/`STOPPED` - written by the fixture to
+   the file in `STEAMENGINE_TEST_PROGRESS_FILE`), and a heartbeat at least every
+   `HEARTBEAT_SECONDS` (20).
+2. **Stuck = killed and named** - a test running longer than `STUCK_SECONDS` (120) makes the
+   script kill the run's whole process group and report `STUCK <test>`; the class is not retried.
+   The full log of anything that didn't pass stays in `$TMPDIR/moria-test-full/<class>.log`.
+3. **Dead server = fail fast** - `ServerHealth` (Tests/Protocol/ServerHealth.cs): every
+   `TestLoginClient`/`TestGameClient` checks in before connecting and a completed login reports
+   back. Once GameCore has exited, or logins have failed for 30 s across more than 3 attempts, the
+   pair is declared dead for the rest of the fixture: every later client throws
+   `ServerUnresponsiveException`, which (unlike the `InvalidOperationException`s the per-test
+   retry loops catch) ends the test at once. Before, each test of a broken class retried 40 times
+   with 15 s read timeouts - ~2m15s per test, 20+ minutes per class, all silent. GameCore's
+   **stderr is captured** into the game output too, so a crash shows its real cause (that's how
+   #786, a stack overflow behind the old "CombatDepthTests flake", was found).
+4. **No collisions** - `xunit.runner.json` has `parallelizeTestCollections: false` (xUnit used to
+   boot several collections' server pairs at once on the same ports and `saves/` - a run raced
+   against itself), and the fixture holds a machine-wide lock
+   (`$TMPDIR/moria-protocol-servers.lock`, released by the OS if the process dies) for its whole
+   life: a second concurrent run fails within 15 s with "Another protocol test run is using the
+   server ports" instead of tangling with the first.
+5. **No orphans** - the fixture passes its PID in `STEAMENGINE_PARENT_PID`;
+   `ParentProcessWatchdog` (Common) in both GameCore and AuxiliaryServer kills the server within
+   ~2 s once that process is gone. The fixture's own teardown kills each server's whole process
+   tree (`Kill(true)`, catching nested script-compile builds). `test-full.sh` runs each
+   `dotnet test` in its own process group (`set -m`), kills it on Ctrl+C/kill, and also when its
+   own parent disappears (e.g. a background-task wrapper shell was killed - the case that left a
+   full run alive and colliding with the next one). `scripts/test-full.sh --kill-stale` cleans up
+   anything left anyway, and every run refuses to start while leftovers exist.
+
+Checking for leftovers: `kill -0` is not enough in this sandbox - dead processes stay as unreaped
+zombies (state `Z` in `/proc/<pid>/stat`), which `kill -0` still reports as alive.
 
 ## `GameServerPairFixture`
 

@@ -159,6 +159,11 @@ LScript resolution-order footgun itself is unfixed at the engine level.
 
 ## Never run two full-boot test invocations concurrently
 
+**Enforced since #785**: the fixture holds a machine-wide lock for its whole life, so a second
+concurrent run now fails within 15 s with "Another protocol test run is using the server
+ports" instead of hanging, and xUnit no longer runs collections in parallel inside one run
+either. The history below is why.
+
 `GameServerPairFixture` uses fixed ports (`2593`/`2595`). Two `dotnet test` invocations
 against full-boot-tier tests running at the same time don't error out cleanly on the
 port conflict - both just **hang indefinitely**, with near-zero CPU, no output, and no

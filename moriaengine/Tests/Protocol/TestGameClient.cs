@@ -37,6 +37,7 @@ namespace SteamEngine.Tests.Protocol {
 		private const int DefaultReadTimeoutMillis = 15000;
 
 		public TestGameClient(string host, int port) {
+			ServerHealth.BeforeConnect(); //#785 - fail fast instead of retrying against a dead server pair
 			this.tcp = new TcpClient();
 			this.tcp.Connect(host, port);
 			this.stream = this.tcp.GetStream();
@@ -236,6 +237,7 @@ namespace SteamEngine.Tests.Protocol {
 				}
 				throw new InvalidOperationException("Expected CharactersListOutPacket (0xA9), got " + detail);
 			}
+			ServerHealth.MarkHealthy(); //#785 - a completed login: the server pair is fine
 
 			const int maxCharacters = 5; // AbstractAccount.maxCharactersPerGameAccount
 			var names = new string[maxCharacters];
