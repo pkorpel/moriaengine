@@ -63,6 +63,12 @@ Int = 80 90
 Dex = 200 300
 Magery = 900 1000
 Wrestling = 700 800
+Equip = I_ROBE
+EquipColor = 0482
+Equip = i_spellbook
+AddSpell = s_flamestrike
+EquipColor = 0481
+EquipName = Kniha Elfu
 AggroMode = Calm
 
 //[SPEECH JOPTRAVEL0] //(commented out by Converter) 

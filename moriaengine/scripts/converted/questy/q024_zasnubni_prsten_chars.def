@@ -16,6 +16,15 @@ Int = 100
 Equip = random_male_hair
 EquipColor = colors_hair
 Experience = 0 0
+Equip = 01410
+Equip = 01411
+Equip = 01412
+Equip = 01413
+Equip = 01414
+Equip = 01b77
+Equip = i_robe
+Equip = i_shoes_plain
+EquipColor = 030
 AggroMode = Calm
 
 [NPCDef c_q024_zlodej_boris]
@@ -35,6 +44,12 @@ Color = 083EA
 Equip = random_male_hair
 EquipColor = colors_hair
 Experience = 0 0
+Equip = i_surcoat
+EquipColor = 039
+Equip = i_pants_long
+EquipColor = 039
+Equip = i_shoes_plain
+EquipColor = 030
 AggroMode = Calm
 
 [NPCDef c_q024_Fiflena]
@@ -53,6 +68,13 @@ Int = 100
 Equip = random_female_hair
 EquipColor = colors_hair
 Experience = 0 0
+Equip = 01f06
+Equip = 01f07
+Equip = i_necklace_gold
+Equip = 01f09
+Equip = 01eff
+Equip = i_shoes_plain
+EquipColor = 030
 AggroMode = Calm
 
 [NPCDef c_q024_klenotnik]
@@ -72,4 +94,10 @@ Color = 083EA
 Equip = random_male_hair
 EquipColor = colors_hair
 Experience = 0 0
+Equip = 01713
+Equip = 01f0a
+Equip = 01f7b
+Equip = 01539
+Equip = i_shoes_plain
+EquipColor = 030
 AggroMode = Calm

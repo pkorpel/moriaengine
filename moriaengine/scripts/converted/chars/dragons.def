@@ -74,6 +74,9 @@ Poisoning = 3000 4500
 SpiritSpeak = 1800
 Equip = i_light_source
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
+Loot = RANDOM_REAGENT,{50, 70}
 ResistPoison = 1000
 ResistBleed = 950
 ResistParalyse = 1000
@@ -83,9 +86,6 @@ ResistFire = 500 750
 ResistElectric = 500 750
 ResistCold = 500 750
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
-Loot = RANDOM_REAGENT,{50, 70}
 
 [NPCDef 0x3d]
 category = Monsters
@@ -126,12 +126,12 @@ Experience = 220 250
 Fame = 2000 6000
 Karma = -5000 -6999
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef 0x3b]
 category = Monsters
@@ -192,12 +192,12 @@ AddSpell = s_dispel_field
 AddSpell = s_dispel
 AddSpell = s_greater_heal
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_drake_green]
 CATEGORY = Monsters
@@ -238,12 +238,12 @@ SpiritSpeak = 16500
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_drake_red]
 CATEGORY = Monsters
@@ -278,12 +278,12 @@ MagicResist = 800
 Fame = 2000 6000
 Karma = -3000 -8000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_drake_blue]
 CATEGORY = Monsters
@@ -324,12 +324,12 @@ MagicResist = 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_drake_copper]
 CATEGORY = Monsters
@@ -365,12 +365,12 @@ MagicResist = 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_drake_silver]
 CATEGORY = Monsters
@@ -412,12 +412,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 930
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_drake_gold]
 CATEGORY = Monsters
@@ -458,12 +458,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 920
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_drake_ice]
 CATEGORY = Monsters
@@ -504,11 +504,11 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_drake_black]
 CATEGORY = Monsters
@@ -549,12 +549,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 920
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_wyvern]
 CATEGORY = Monsters
@@ -589,12 +589,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_green]
 CATEGORY = Monsters
@@ -631,12 +631,12 @@ SpiritSpeak = 1750
 MagicResist = 1400
 Wrestling = 900 1000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_red]
 CATEGORY = Monsters
@@ -672,12 +672,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 850
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_blue]
 CATEGORY = Monsters
@@ -718,12 +718,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 850
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_copper]
 CATEGORY = Monsters
@@ -767,12 +767,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_silver]
 CATEGORY = Monsters
@@ -816,12 +816,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000 -8000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_gold]
 CATEGORY = Monsters
@@ -862,12 +862,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000 -8000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_ice]
 CATEGORY = Monsters
@@ -908,11 +908,11 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000 -8000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistSummon = 800
 ResistPoison = 800
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_black]
 CATEGORY = Monsters
@@ -953,12 +953,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000 -8000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 700
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef 0xc]
 CATEGORY = Monsters
@@ -1003,12 +1003,12 @@ Wrestling = 900 1000
 Fame = 2000 6000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 500
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef 0x31e]
 CATEGORY = Monsters
@@ -1053,14 +1053,14 @@ Wrestling = 1500
 Fame = 2000 6000
 Karma = -3000 -8000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 200
 AggroMode = Hostile
 
 //[SPEECH spk_dragon_lord] //(commented out by Converter) 
-Loot = loot_DRAGON
-Loot = i_gold
 
 [NPCDef c_dragon_beridor]
 CATEGORY = Dungy
@@ -1099,6 +1099,7 @@ MaxHits = 6000 8000
 MaxStam = 730
 MaxMana = 0
 Experience = 500 600
+SelfresDelay = 10
 SpiritSpeak = 800
 Parry = 1200
 MagicResist = 2500
@@ -1107,9 +1108,9 @@ Wrestling = 1500
 Fame = 2000 6000
 Karma = -3000 -8000
 Equip = i_monster_create
+Loot = loot_DRAGON
+Loot = i_gold
 ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 700
 AggroMode = Hostile
-Loot = loot_DRAGON
-Loot = i_gold

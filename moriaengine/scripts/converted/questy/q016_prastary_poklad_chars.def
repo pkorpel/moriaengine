@@ -19,6 +19,12 @@ MagicResist = 500
 Tactics = 500
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+EquipColor = 001
+Equip = i_sandals
+EquipColor = 001
+Equip = i_robe
+EquipColor = 001
 AggroMode = Calm
 
 [NPCDef c_q016_Orillus]
@@ -40,6 +46,12 @@ MagicResist = 500
 Tactics = 500
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+EquipColor = color_o_obsidian
+Equip = i_sandals
+EquipColor = 001
+Equip = i_robe
+EquipColor = color_o_obsidian
 AggroMode = Calm
 
 [NPCDef c_q016_Andor]
@@ -69,4 +81,16 @@ Wrestling = 1200
 Fencing = 1000
 Tactics = 1000
 Color = colors_skin
+Equip = i_platemail_chest
+EquipColor = color_o_valorite
+Equip = i_platemail_arms
+EquipColor = color_o_valorite
+Equip = i_platemail_gloves
+EquipColor = color_o_valorite
+Equip = i_platemail_gorget
+EquipColor = color_o_valorite
+Equip = i_platemail_helm
+EquipColor = color_o_valorite
+Equip = i_boots_thigh
+EquipColor = 0982
 AggroMode = Calm

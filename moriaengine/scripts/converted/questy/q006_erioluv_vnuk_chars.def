@@ -16,6 +16,20 @@ Int = 100
 Equip = random_male_hair
 EquipColor = colors_hair
 Experience = 0 0
+Equip = i_hat_wizards
+EquipColor = 544
+Equip = i_robe
+EquipColor = 544
+Equip = i_cape
+EquipColor = 544
+Equip = i_shoes_plain
+EquipColor = 544
+Equip = i_staff_gnarled
+EquipColor = 544
+Equip = i_hair_short
+EquipColor = 1000
+Equip = i_beard_short
+EquipColor = 1000
 AggroMode = Calm
 
 [NPCDef c_krkavec]

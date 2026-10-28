@@ -17,6 +17,7 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
@@ -639,6 +640,10 @@ namespace SteamEngine.CompiledScripts {
 			/// whatever color the most recently equipped hair/facial-hair item got."</summary>
 			public string Color;
 
+			/// <summary>#793 - "EquipName = ...": the item's own name (Erebor's "ITEMNEWBIE=.../NAME=..."
+			/// in @NPCRestock, e.g. a quest NPC's named robe). Null = the itemdef's name.</summary>
+			public string Name;
+
 			/// <summary>#775 - set for a Sphere weighted random pick, "Equip = {i_bardiche 1 i_halberd 1}":
 			/// one of these defnames is rolled per spawn (see PickDefname), Defname then only holds
 			/// the raw "{...}" text for messages. Null for a plain single-item entry.</summary>
@@ -742,6 +747,19 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static readonly TagKey lootTK = TagKey.Acquire("_npcLoot_");
+		private static readonly TagKey isBossTK = TagKey.Acquire("_npcIsBoss_");
+
+		/// <summary>#794 - Erebor's tag(isBoss,1): a boss never turns into an elite monster (EliteMonster).</summary>
+		public bool IsBoss {
+			get { return this.GetTag(isBossTK) != null; }
+			set {
+				if (value) {
+					this.SetTag(isBossTK, true);
+				} else {
+					this.RemoveTag(isBossTK);
+				}
+			}
+		}
 
 		/// <summary>#791 - the monster's loot, Erebor's ON=@NPCRestock "ITEM=" lines ("Loot = ..." in
 		/// .def content, see the converter): each "item[,amount]" - an itemdef, a RANDOM_* pick-list
@@ -1167,6 +1185,10 @@ namespace SteamEngine.CompiledScripts {
 				this.MaxManaRange = ParseStatRange(filename, line, "maxmana", args);
 				return;
 			}
+			if (param == "isboss") {
+				this.IsBoss = ConvertTools.ParseInt32(args.Trim()) != 0;
+				return;
+			}
 			if (param == "loot") {
 				//#791 - "Loot = item[,amount]", one line per Erebor @NPCRestock ITEM= line
 				List<string> loot = this.Loot ?? new List<string>();
@@ -1201,6 +1223,13 @@ namespace SteamEngine.CompiledScripts {
 				//own doc comment. Always belongs to whichever "Equip =" entry was just added.
 				if (this.StartingEquipment != null && this.StartingEquipment.Count > 0) {
 					this.StartingEquipment[this.StartingEquipment.Count - 1].Color = args.Trim();
+				}
+				return;
+			}
+			if (param == "equipname") {
+				//#793 - same pairing as equipcolor, for Erebor's "ITEMNEWBIE=.../NAME=..."
+				if (this.StartingEquipment != null && this.StartingEquipment.Count > 0) {
+					this.StartingEquipment[this.StartingEquipment.Count - 1].Name = args.Trim();
 				}
 				return;
 			}
@@ -1410,7 +1439,24 @@ namespace SteamEngine.CompiledScripts {
 			if (pool != null && pool.Length > 0) {
 				defname = pool[Globals.dice.Next(pool.Length)];
 			}
-			return ThingDef.GetByDefname(defname) as ItemDef;
+			ItemDef found = ThingDef.GetByDefname(defname) as ItemDef;
+			int model;
+			if ((found == null) && (defname.Length > 1) && (defname[0] == '0') &&
+					int.TryParse(defname, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out model)) {
+				//#793 - Sphere's "ITEMNEWBIE=01f07": a hex graphic, not a defname (Sphere's numbers
+				//with a leading 0 are hex) - the itemdef of that graphic
+				found = ThingDef.FindItemDef(model) as ItemDef;
+			}
+			if ((found == null) && defname.StartsWith("random_", StringComparison.OrdinalIgnoreCase)) {
+				//#793 - a Sphere pick-list constant, e.g. RANDOM_LIGHT { i_CANDLE, 1, i_TORCH, 1, i_LANTERN, 1 }
+				try {
+					object picked = LScriptMain.RunSnippet("<equip>", 0, Globals.Instance, "return(" + defname + ")");
+					found = (picked as ItemDef) ?? (ThingDef.GetByDefname(Convert.ToString(picked, CultureInfo.InvariantCulture)) as ItemDef);
+				} catch (Exception e) {
+					Logger.WriteDebug("equip '" + defname + "' is not a pick-list constant: " + e.Message);
+				}
+			}
+			return found;
 		}
 
 		/// <summary>Resolves a StartingEquipmentEntry.Color's raw text to a concrete color
@@ -1600,6 +1646,9 @@ namespace SteamEngine.CompiledScripts {
 							}
 						}
 					}
+					if (entry.Name != null) {
+						created.Name = entry.Name;
+					}
 					//real-user-reported: a monster's starting-equipment item (a mage's spellbook,
 					//a ranger's bow) was lootable off the corpse and could be farmed. The real
 					//archive's own field name for this whole mechanism is literally ITEMNEWBIE=
@@ -1622,11 +1671,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			//#791 - the monster's loot (Erebor's ON=@NPCRestock), into the backpack so it falls to
-			//the corpse - then, for i_monster_create monsters, the gold amount and rare extras
-			//(Erebor's creaturestart), in the same order Sphere ran them
+			//the corpse - then, for i_monster_create monsters, the gold amount, rare extras and
+			//(#794) the elite roll (Erebor's creaturestart), in the same order Sphere ran them -
+			//creaturestart on a 0 s timer, as in Erebor, so it sees a spawn gem's tag
 			def.CreateLoot(this.Backpack);
 			if (hasMonsterCreate) {
-				MonsterLoot.ApplyCreatureStart(this);
+				MonsterLoot.ScheduleCreatureStart(this);
 			}
 
 			//#4 of the 2026-10-26 monster-testing batch - stub abilities standing in for legacy

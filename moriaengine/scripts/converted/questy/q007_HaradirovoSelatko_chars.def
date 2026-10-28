@@ -21,6 +21,16 @@ MagicResist = 100
 Tactics = 100
 Equip = i_hair_long
 EquipColor = 0047
+Equip = i_skull_cap
+EquipColor = 0483
+Equip = i_doublet
+EquipColor = 08fe
+Equip = i_pants_long
+EquipColor = 073a
+Equip = i_boots_calf
+EquipColor = 0750
+Equip = i_bow
+EquipColor = 05f7
 AggroMode = Calm
 
 [NPCDef c_hospod]
@@ -47,6 +57,14 @@ Equip = i_hair_long
 EquipColor = color_o_copper
 Equip = i_beard_mustache
 EquipColor = color_o_copper
+Equip = i_sandals
+Equip = i_shirt_fancy
+EquipColor = color_o_copper
+Equip = i_necklace_gold
+EquipColor = color_o_iron
+Equip = i_bracelet_gold
+EquipColor = color_o_iron
+Equip = i_pants_long
 AggroMode = Calm
 
 [NPCDef c_rachel]
@@ -70,6 +88,12 @@ MagicResist = 100
 Tactics = 100
 Equip = i_hair_long
 EquipColor = 001
+Equip = i_hat_wizards
+EquipColor = 0035
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0035
+Equip = i_necklace_gold
 AggroMode = Calm
 
 [NPCDef c_kovarskej]
@@ -88,6 +112,10 @@ Int = 1000
 Blacksmith = 1000
 Equip = i_hair_long
 Equip = i_beard_long_med
+Equip = i_adamantinum_kladivko
+Equip = i_sandals
+Equip = i_robe
+EquipColor = 0997
 AggroMode = Calm
 
 [NPCDef c_maginscript]
@@ -138,6 +166,13 @@ Equip = i_hair_long
 EquipColor = 083a
 Equip = i_beard_long_med
 EquipColor = color_o_obsidian
+Equip = i_sandals
+EquipColor = color_o_obsidian
+Equip = i_cape
+EquipColor = 1259
+Equip = i_deathshroud_npc
+EquipColor = 1259
+Equip = i_staff_black_mithril
 ResistPoison = 850 995
 ResistParalyse = 700 750
 ResistSummon = 750 850
@@ -159,6 +194,13 @@ Dex = 1000
 Int = 1000
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+EquipColor = 071a
+Equip = i_sandals
+Equip = i_cape
+EquipColor = 071a
+Equip = i_robe
+EquipColor = 05e0
 AggroMode = Calm
 
 [NPCDef c_rodrigo]

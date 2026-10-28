@@ -128,6 +128,9 @@ MagicResist = 100
 Tactics = 100
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+Equip = i_sandals
+Equip = i_robe
 AggroMode = Calm
 
 //[SPEECH Hrobeus] //(commented out by Converter) 
@@ -155,6 +158,9 @@ MagicResist = 500
 Tactics = 500
 Equip = random_male_hair
 Equip = random_facial_hair
+Equip = i_hat_wizards
+Equip = i_sandals
+Equip = i_robe
 AggroMode = Calm
 
 //[SPEECH Irbis] //(commented out by Converter) 
