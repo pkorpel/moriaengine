@@ -111,7 +111,14 @@ namespace SteamEngine.CompiledScripts {
 				defender.Trigger_HostileAction(attacker);
 				defender.Trigger_Disrupt();//nebo jen pri damage > 0 ?
 
-				damage *= GetResistModifier(defender, flags);
+				//#797 - e_explode remembers everyone who hurt it
+				MonsterSpecialAttacks.RecordExplodeFoe(attacker, defender);
+
+				//#797 - Irresistable (Sphere's dam_god, e.g. e_explode's blast) skips resists
+				//entirely; GetResistModifier would throw on a type with neither magic nor physical
+				if (flags != DamageType.Irresistable) {
+					damage *= GetResistModifier(defender, flags);
+				}
 				// #511/#514: GetResistModifier's two-phase subtraction (physical/magic resist,
 				// then elemental/weapon-subtype resist) is never clamped at 0 - high stacked
 				// resist can drive it negative, which would otherwise flip this multiplication
@@ -198,6 +205,9 @@ namespace SteamEngine.CompiledScripts {
 				//#794 - an elite monster hits harder, and absorbs most of a player's swing
 				EliteMonster.ModifySwingDamage(attacker, defender, swingArgs);
 
+				//#797 - a_tevent_e_npc_magicshield on the DEFENDER swallows most of the swing
+				MonsterSpecialAttacks.TryApplyMagicShield(attacker, defender, swingArgs);
+
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC);
 
 				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
@@ -217,6 +227,24 @@ namespace SteamEngine.CompiledScripts {
 
 				//#794 - a hit interrupts an elite's gate spell
 				EliteMonster.OnGotHit(defender);
+
+				//#797 batch 4 - abilities reacting to a landed swing. Attacker side first (its own
+				//leech/fire outburst), then the defender's, which only make sense while the
+				//defender survived the blow (a killed NPC is already deleted here).
+				MonsterSpecialAttacks.TryApplyLifeLeech(attacker);
+				MonsterSpecialAttacks.TryApplyPhoenixFire(attacker);
+				if (!defender.IsDeleted && defender.IsAliveAndValid) {
+					MonsterSpecialAttacks.TryApplyReactiveArmor(attacker, defender, damageType, actualDamage);
+					MonsterSpecialAttacks.TryApplyStamDmg(attacker, defender);
+					MonsterSpecialAttacks.TryApplyManaGain(defender, actualDamage);
+					MonsterSpecialAttacks.TryApplyPhoenixRebirth(defender);
+					MonsterSpecialAttacks.TryApplyLightnings(defender);
+					MonsterSpecialAttacks.TryApplyPushall(defender);
+					MonsterSpecialAttacks.TryApplyAutoReflect(defender);
+				}
+				if (attacker.IsDeleted) {
+					return; //reactive armor killed an NPC attacker - nothing left to message or drain
+				}
 
 				swingArgs.InternalSetFinalDamage(actualDamage);
 

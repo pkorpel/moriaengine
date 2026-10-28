@@ -30,6 +30,17 @@ namespace SteamEngine.Tests {
 				.Distinct();
 		}
 
+		//#797 - the tunables an ability class adds on top of the generic ability defs, including
+		//ones inherited from an ABSTRACT shared ability base (AreaCurseAbilityDef's curse fields).
+		//A concrete base (RoundattackPull : Roundattack) is its own ability with its own entries.
+		private static IEnumerable<PropertyInfo> OwnTunables(Type type) {
+			for (Type t = type; (t != null) && (t == type || t.IsAbstract) && (t != typeof(PassiveAbilityDef)) && (t != typeof(AbilityDef)); t = t.BaseType) {
+				foreach (PropertyInfo p in t.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)) {
+					yield return p;
+				}
+			}
+		}
+
 		[Fact]
 		public void FindsTheMonsterAbilities() {
 			List<Type> types = MonsterAbilityDefTypes().ToList();
@@ -49,7 +60,7 @@ namespace SteamEngine.Tests {
 			foreach (Type type in MonsterAbilityDefTypes()) {
 				string ability = type.Name.EndsWith("AbilityDef", StringComparison.Ordinal) ?
 					type.Name.Substring(0, type.Name.Length - "AbilityDef".Length) : type.Name;
-				foreach (PropertyInfo tunable in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)) {
+				foreach (PropertyInfo tunable in OwnTunables(type)) {
 					if (!tunable.CanWrite || (tunable.GetSetMethod() == null)) {
 						continue;
 					}

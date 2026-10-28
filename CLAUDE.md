@@ -1,5 +1,37 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-10-28): teventStubs batch 4 (then batch 5 right after) - branch feat-monster-abilities-batch4
+
+User: "go ahead with batch 4, once you are done, move to batch 5 right away". Survey (138 stubs
+left; 3,147 of the 4,431 monster refs are e_character/e_monster base hooks, not abilities).
+**Batch 4** (simple, existing hook shapes; archive tunables -> converter tag map + NPCDef override
++ MonsterAbilitiesSettings entry each): e_phoenix_fire (51, 1/15 own swing -> 10 fire hazard
+tiles in 5, dmg 20), e_phoenix (30, <20% HP & maxhits>250 -> hits=maxhits=maxhits/2 + fire ring),
+e_explode (28, on death dmg/dist to everyone who damaged it, irresistible, default 100),
+e_dragon_regeneration (25, +power HP every speed s), e_lifeleech (20, heal per landed hit,
+default {maxhits/300+20, maxhits/200+35}, cap), e_npc_reactivearmor (19, reflect perc% (def 20)
+of swing dmg to attacker within 2, Mystics exempt), e_npc_stam_dmg (19, 20% drain attacker
+stam by power), e_lightnings (19, 5% when hit -> 2x7 lightning hazard tiles at a random spot in
+range 5, dmg 40-80), e_summoneater_vamp (18, summoneater + absorb its stats, cap 30000),
+e_managain (17, +25% maxmana per 5% maxhits lost), e_npc_curse_mana/_stam (15+6, Dark Curse
+variants), e_inexhaustible (13, +3 stam/step), e_pushall (11, 5%/30 s when hit, push players
+within 6 by 6-dist tiles), e_npc_magicshield (11, absorb shield% (def 90) of swing dmg, less vs
+high-level Mystics; engine has no silence so no bypass), e_autoreflect (10, re-arm magic
+reflection after every received swing). New defender-side hooks in DamageManager.ProcessSwing
+(before/after CauseDamage) + CauseDamage attacker recording for explode.
+**Batch 5** (after 4 ships): e_backstub, e_eye, e_npc_multishot, e_explosiondispell,
+e_duplicator, e_npc_massleap, e_npc_warcry, e_craft_monster, e_golem.
+Issue: #797 (batch 4). User decisions: hazard tiles ALSO hit standers when they appear; all 3 curses (incl. shipped Dark Curse) faithful - spare the current target, 5x vs pets - AND both rules switchable on .settings per curse (user follow-up: NpcCurse/NpcCurseMana/NpcCurseStam SpareCurrentTarget + PetMultiplier).
+**Status (batch 4)**: code + converter regen (26 files, purely additive, fresh regen diffs to 0) + docs
+(new docs/current/04-gameplay-systems/monster-abilities.md) done. Fast tier 193/193. Protocol:
+MonsterAbilitiesBatch4Tests 4/4, batch 1/3/settings/bleed suites green. Found + filed **#798**:
+deleting an owned pet (ControlMaster = online player) hangs the server - pre-existing, reproduced
+with zero #797 code; tests work around it (clear ControlMaster first). Also caught: AutoReflect's
+plugin needs its AbilityDef as source def (EffectName casts by the FromAbility flag). Batch 2
+(MonsterAbilitiesBatchTests) flakes ~1 in 3 (server goes unresponsive in the looter test) -
+A/B on unmodified main running in ../moria-verify-797 to tell if pre-existing.
+Gotchas: test character names must be letters/spaces only (a digit -> client dropped "Illegal name").
+
 ## DONE (2026-10-28): #793 human NPC clothing from @NPCRestock + #794 elite-monster transform
 
 **#793**: `ConvertedCharDef.ConvertRestockLoot` reads the whole @NPCRestock block in order -
