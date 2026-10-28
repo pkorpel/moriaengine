@@ -1,5 +1,64 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-10-28): #763 c_sheep_woolly Color-parse crash (user-approved order: #763 -> #769 AStar -> #768 pets)
+
+User picked the order: fix #763 first, so the pet/ranger/magery tests that spawn c_sheep_woolly
+become runnable again, then the AStar fixes (#769), then the pet-command rework (#768). Plan:
+root-cause the `animals.def:1154` "unexpected token ' }'" Color parse. Fix it in the archive
+fork (pkorpel/erebor-sphere-archive) or the converter, NEVER by hand-patching scripts/converted/.
+Regenerate, prove with MagerySpellTests + PetCommandTests + RangerCombatTests.
+(#767 is still unmerged on branch feat-767-char-collision while its targeted run finishes. Do
+#763 on its own branch from main, and don't build while that run is in flight.)
+
+## IN PROGRESS (2026-10-28): ANALYSIS ONLY, 2 parallel asks while the #767 targeted test run goes
+
+1. **Pet commands**: compare EreborNext (scratchpad/erebornext/src, Sphere 0.99z8 C#) pet-command
+   handling with ours (`scripts/Basic/CharClasses/PetCommands.cs` + NPCAiTimer). User reports
+   "flaky behavior". Find the concrete divergences and bugs.
+2. **AStar**: review `scripts/Basic/AI/PathFinding/AStar.cs`. Is it the right algorithm for NPC
+   "smart movement", and what are the improvements?
+No code changes and no builds/tests while the targeted run is in flight (fixed ports). Report
+back to the user, then implement only on sign-off.
+**Status: both analyses DONE and posted** (#768 pet commands, #769 AStar). Waiting on the user to
+pick what to implement. Headline findings: pets move 1 tile/1.5s (can't keep up); come/go don't
+preempt combat; the parser takes the LAST word as the verb (so "all follow me"/"guard me"/"stay" are
+silently ignored); no NPC self-defense; AStar is really greedy best-first (squared ×121 heuristic);
+an exact-Z goal makes it burn 1000 iterations and fail; bad hash; replans every tick; no partial path.
+Also: PetCommandTests/Ranger tests are dead because of #763 (c_sheep_woolly crash), so pet regressions are invisible.
+
+## DONE (2026-10-28): #767 char collision - Sphere stamina-gated shove + NPCs blocked by characters
+
+Asked: a tile occupied by another char can't simply be stepped on; pushing through needs full
+stamina and costs stamina. Analysis first (posted on #767), user approved all recommendations.
+- **Reference findings**: Sphere 0.99z8's SERVER rule (EreborNext `CChar.Movement.Pushing.cs`) is
+  NOT full stamina - cost=log2(obstacle STR)+1, needs Stam>=cost+1; NPCs never push (random
+  sidestep). "Full stamina" is the CLIENT rule (TazUO `Pathfinder.cs:174`), which TazUO's
+  IgnoreStaminaCheck checkbox bypasses; Erebor's `e_allplayers` @personalspace script policed
+  that bypass ("GM step"). moriaengine had ZERO char collision before this.
+- **Shipped**: GameCore `AbstractCharacter.CheckCharacterObstacles` virtual hook in `WalkRunOrFly`
+  (after terrain, before @step, GMs skip); `scripts/Basic/Movement/CharacterCollision.cs` (rules)
+  + `CharCollisionSettings.cs` (.settings "Movement": requireFullStamina, flatPushCost,
+  players/npcsBlockedByCharacters); `Character.Trigger_PersonalSpace`/`On_PersonalSpace`;
+  `AStar.GetPathFromTo(Character, ...)` treats a char-occupied FIRST step as impassable;
+  `NPCAiTimer.TrySidestepCharacter` for StepTowards/Flee. Deliberate deviation: ghosts don't block
+  NPCs. Docs: `docs/current/04-gameplay-systems/movement-and-collision.md`.
+- **Verified**: new `CharCollisionTests` 11/11 checks via real WalkRunOrFly; fast tier 58/58.
+  Targeted per-class run: CharCollision/NpcRangedApproach/NpcMoveRate/MovementSpeed/
+  NpcRangedCombat/BankerDialog pass. PetCommands/Ranger/RangerSettings fail on the #763
+  c_sheep_woolly crash (stack trace in the log), OwnerAggro = the #121 symptom, Mystic = #719,
+  CombatDepth = the #100 flake. Gathering hung on the known MiningYieldsOre flake; the run was
+  stopped there (AttrFlag/LevelingIsolated don't touch movement).
+- **GOTCHAS HIT, remember these**: (1) TaskStop on a background `dotnet test` only kills the
+  wrapper shell - dotnet test/vstest/testhost and the GameCore/AuxiliaryServer pair KEEP RUNNING,
+  and a second run then collides on the fixed ports (every class fails with "Game server never
+  appeared"/"GameCore did not reach Init done"/LoginDenied, i.e. INVALID results). Check /proc
+  for a live `dotnet test`/SteamEngine.GameCore.dll before any new run. Kill the whole tree,
+  including the driver script, or it starts the next class. The classifier only allowed the kill
+  after the user explicitly asked. (2) The full protocol suite under sandbox load produces dozens
+  of "server not responding" failures (same as the 26-32 seen in earlier runs) - prefer
+  targeted per-class runs. (3) AStar's goal needs an EXACT Z and the open-ground test terrain
+  isn't flat - derive test tiles by walking `Map.CheckMovement` from a known point.
+
 ## DONE (2026-10-28): NPC aggro/give-up ranges made .settings-configurable (#762, PR #764) - #763 filed, not fixed
 
 User asked how far an NPC notices a player (autonomous aggro) vs. how far it chases before

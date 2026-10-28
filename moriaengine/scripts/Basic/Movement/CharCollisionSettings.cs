@@ -1,0 +1,59 @@
+/*
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	Or visit http://www.gnu.org/copyleft/gpl.html
+*/
+
+using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Persistence;
+
+namespace SteamEngine.CompiledScripts {
+	/// <summary>
+	/// GM-tunable rules for walking onto a tile another character stands on (#767) - shown as
+	/// a "Movement" category in the .settings dialog, same pattern as NpcAggroSettings. See
+	/// CharacterCollision for where these are applied.
+	/// </summary>
+	[SaveableClass]
+	[HasSavedMembers]
+	[ViewableClass]
+	public class CharCollisionSettings : SettingsMetaCategory {
+
+		[SavedMember]
+		public static CharCollisionSettings instance = new CharCollisionSettings();
+
+		[LoadingInitializer]
+		public CharCollisionSettings() {
+		}
+
+		/// <summary>Players can only shove past another character at full stamina - the same
+		/// rule the UO client enforces locally (and TazUO's "ignore stamina check" option
+		/// skips). Off = plain Sphere 0.99z8 server rule: stamina just has to exceed the cost.</summary>
+		[SaveableData]
+		public bool requireFullStamina = true;
+
+		/// <summary>Stamina a successful shove costs. 0 = Sphere's formula, log2(obstacle STR)+1
+		/// (STR 50 -> 6, STR 100 -> 7, STR 200 -> 8); anything above 0 is a flat cost.</summary>
+		[SaveableData]
+		public int flatPushCost = 0;
+
+		/// <summary>Off = players walk through other characters freely (the pre-#767 behavior).</summary>
+		[SaveableData]
+		public bool playersBlockedByCharacters = true;
+
+		/// <summary>NPCs (pets and summons included) never shove - any living character on the
+		/// tile stops them, as in Sphere. Off = NPCs walk through other characters freely.</summary>
+		[SaveableData]
+		public bool npcsBlockedByCharacters = true;
+	}
+}
