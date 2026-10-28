@@ -21,6 +21,8 @@ Color = color_rock
 Str = 500
 Dex = 120
 Int = 51
+Loot = loot_HARPY
+Loot = i_gold,{0, 100}
 AggroMode = Hostile
 
 [NPCDef c_crunch_snowminotaur]
@@ -56,6 +58,7 @@ Wrestling = 1500
 Parry = 1500
 Tactics = 1500
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 600
 ResistBleed = 600
 ResistParalyse = 1000
@@ -183,6 +186,7 @@ armorVsM = 58
 Str = 1000
 Dex = 1000
 Int = 1000
+Loot = i_crunch_gurmug_telo
 AggroMode = Calm
 
 [EquippableDef i_crunch_gurmug_telo]

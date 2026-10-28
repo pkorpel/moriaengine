@@ -48,6 +48,12 @@ namespace SteamEngine.CompiledScripts {
 
 		public override AbstractItem NewItem(IThingFactory factory, int amount) {
 			Thing t = factory.Create(this);
+			if (t == this) {
+				//#791 - a TemplateDef without its own CONTAINER puts its items straight into this
+				//container and returns it - that's not a new item (and must not be deleted as one,
+				//which used to happen to e.g. loot_cyclops's nested tm_rocks)
+				return null;
+			}
 			AbstractItem i = t as AbstractItem;
 			if (i != null) {
 				if (i.Cont != this) {

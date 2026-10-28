@@ -132,6 +132,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Loot")]
+		public LootSettings LootSettings {
+			get {
+				return LootSettings.instance;
+			}
+		}
+
 		[InfoField("Movement")]
 		public CharCollisionSettings CharCollisionSettings {
 			get {

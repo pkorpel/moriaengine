@@ -85,6 +85,7 @@ Parry = 900 1000
 Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
+Loot = random_coin_purse
 AggroMode = Calm
 
 [NPCDef c_hrobar_mt]
@@ -123,6 +124,7 @@ Equip = i_pants_long
 Equip = i_shirt_fancy
 Equip = i_boots_calf
 Equip = i_leather_gloves
+Loot = random_coin_purse
 AggroMode = Calm
 
 [NPCDef c_pani_roouse_mt]
@@ -167,6 +169,7 @@ Equip = i_boots_calf
 EquipColor = 096c
 Equip = i_leather_gloves
 EquipColor = 096c
+Loot = random_coin_purse
 AggroMode = Calm
 
 [NPCDef 0x3df]
@@ -198,6 +201,7 @@ Parry = 900 1000
 Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
+Loot = random_coin_purse
 AggroMode = Calm
 
 [NPCDef knez_manweho]
@@ -228,6 +232,7 @@ Parry = 900 1000
 Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
+Loot = random_coin_purse
 AggroMode = Calm
 
 [NPCDef c_veleknez_manweho]
@@ -259,6 +264,7 @@ Parry = 900 1000
 Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
+Loot = random_coin_purse
 AggroMode = Calm
 
 [NPCDef c_strazce_knihovny]
@@ -314,6 +320,7 @@ Equip = i_cape
 EquipColor = 0481
 Equip = i_halberd
 EquipColor = 0
+Loot = i_gold,{0, 100}
 AggroMode = GuardsRealm
 Realm = Gondor
 
@@ -395,4 +402,5 @@ Parry = 900 1000
 Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
+Loot = random_coin_purse
 AggroMode = Calm
