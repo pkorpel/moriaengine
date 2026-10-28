@@ -1,5 +1,69 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): NPC aggro/give-up ranges made .settings-configurable (#762, PR #764) - #763 filed, not fixed
+
+User asked how far an NPC notices a player (autonomous aggro) vs. how far it chases before
+giving up - found both were hardcoded `const int`s on `NPCAiTimer` (`AggroRange=8`,
+`GiveUpRange=12`), never exposed. New `NpcAggroSettings` category (`.settings` -> "NPC
+Aggro"), same `[SaveableClass][HasSavedMembers][ViewableClass]` shape as `LogoutSettings`/
+`NotorietySettings` - defaults bumped to 14/18 per explicit user request.
+
+**Leaper follow-up, same session, before the aggro work**: user asked to bump `leaperExtraSteps`
+2->10 (was 7, shipped in #758 the session before) - trivial, quick push+PR per the user's
+own "no need to test this one" instruction, updated the matching hardcoded test assertion
+too (same lesson as always: a quick numeric tweak with existing test coverage still needs
+the test's own expected value updated, even when told not to re-run the suite).
+
+**Real margin issue found and fixed while verifying the aggro-range bump**:
+`MagerySpellTests.BladeSpiritsSummonsAnUncontrolledCreature` deliberately placed a Hostile
+summon at distance=15, specifically to stay outside the old `AggroRange=8` (engaging it was
+previously confirmed to hang the whole server - a documented NPCAiTimer-tick-thread-vs-
+command-thread concurrency hazard). With the new default of 14, that margin nearly
+vanished - bumped to 17 and widened `TestReportNearbySummon`'s search radius to match.
+
+**A wrong diagnosis caught and corrected before shipping, worth remembering**: an earlier
+attempt bumped the same test's distance all the way to 25 "for extra safety margin" - it
+failed. First theory: `Globals.MaxUpdateRange` (18, the real client vision-range ceiling
+`CanInteractWith` enforces for ground-targeted casts) was the culprit, so distance dropped
+to 17 (safely under 18). **Still failed.** Bisecting further - even reverting the literal
+distance back to the EXACT original value (15, previously verified working in #758's own
+PR #759 merge just one conversation turn earlier) - **also failed, identically.** This
+proved the test's own distance value was never the actual problem at all.
+
+**Root-caused via a clean isolated git worktree, not more guessing** - checked out `main`
+at the exact pre-#762 commit into a scratch worktree (`git worktree add --detach <path>
+main`), since the in-place `git stash`/`stash pop` route hit two real problems: (1) a plain
+`git stash` (no `-u`) still somehow swept up unrelated pre-existing uncommitted changes
+already sitting in this shared workspace (NOT from this session) alongside this session's
+own changes, and popping it back created a real merge conflict in `CommandsAuthorization.cs`
+(resolved by keeping the real upstream content - the stash's own side was empty/stale) plus
+an unrelated stray diff in `EconomyTests.cs` (discarded, per explicit user confirmation);
+(2) `Generated/*.Generated.cs` is gitignored and must be deleted + regenerated via a real
+`GameCore.dll` boot in the OTHER worktree too, same as any fresh worktree (see the
+Environment-notes section further down) - the classifier correctly blocks a blind `rm -f`
+across the MAIN working tree's Generated files (irreversible-looking even though they're
+regenerable), but allows it inside a scratch worktree under the designated scratchpad path.
+**Confirmed conclusively**: `BladeSpiritsSummonsAnUncontrolledCreature` (and 8 others in the
+same `MagerySpellTests` collection) are ALREADY broken on unmodified `main` - a real,
+pre-existing bug, NOT caused by this change at all. Filed as **#763** (not fixed here, out
+of scope) - root cause is `c_sheep_woolly`'s already-documented lazy-FieldValue Color-parse
+crash (hit by an unrelated earlier Fact, `DamageSpellStillLandsDamageAndConsumesMana`),
+which wedges the shared single-threaded server for every later Fact in the same collection.
+Also used the same clean-worktree technique to confirm 2 `OwnerAggroTests` failures seen
+while regression-testing are the already-tracked #121 flake, not a regression - commented
+there instead of re-filing.
+
+**Lesson for next time an A/B against clean `main` is needed**: prefer a scratch worktree
+(`git worktree add --detach <scratchpad-path> main`, copy `steamengine.ini`/`steamaux.ini`,
+delete+regenerate `*.Generated.cs` via a real `GameCore.dll` boot THERE) over `git stash` in
+the main working tree - a plain `git stash` can silently catch more than intended in a
+shared/long-lived workspace, and popping it back is not guaranteed clean. `git worktree
+remove --force <path>` cleans up the scratch copy afterward with zero risk to the real
+checkout.
+
+**Verified**: fast tier 58/58. `NpcRangedApproachTests` (the one aggro-adjacent test in the
+regression run NOT already broken on main) passes clean.
+
 ## DONE (2026-10-28): "Monster Abilities" .settings page + configurable knockback distance (#758, PR #759)
 
 User reviewed the shipped teventStubs batches and asked for 3 things, plus a 4th follow-up
