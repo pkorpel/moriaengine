@@ -89,8 +89,9 @@ comes first, because `name value` is an assignment there. The list collapses int
 and the def crashes the first time it's instantiated: `c_sheep_woolly` did, taking down every
 test that spawned one. `ConvertedTemplateDef.FixRandomExpression` (comma-separates a `{...}`
 list) was already applied to templates and constants. It now also covers `Color` and the
-`model` taken from `ID=`. Equip `{...}` lists are parsed by `NPC.LoadScriptLine`, not LScript,
-and random equip picks aren't supported there at all, a separate gap.
+`model` taken from `ID=`. Equip `{...}` lists are parsed by `NPC.LoadScriptLine`, not LScript:
+since #775 it understands Sphere's weighted pick (`Equip = {i_bardiche 1 i_halberd 1}`, spaces
+or commas, weights optional) and rolls one item per spawn (`StartingEquipmentEntry.PickDefname`).
 
 **Still genuinely unsupported** (need real new subsystems before a mapping would mean
 anything, confirmed unchanged by this pass): `moverate`, `resources` (loot), `bloodcolor`,

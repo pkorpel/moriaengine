@@ -21,7 +21,8 @@ namespace SteamEngine.CompiledScripts {
 	public enum PetCommand {
 		None,
 		Come,     //"come", "follow me"
-		GuardMe,  //"guard me", "defend me", "guard"
+		GuardMe,  //"guard me", "defend me"
+		Guard,    //"guard" + target an item to guard, a character to protect, or yourself (= guard me)
 		Stay,     //"stay", "stay here", "stop"
 		Follow,   //"follow" + target a character
 		Go,       //"go" + target a spot
@@ -29,6 +30,8 @@ namespace SteamEngine.CompiledScripts {
 		Transfer, //"transfer" + target the new owner
 		Release,  //"release", "dismiss"
 		Status,   //"status"
+		Friend,   //"friend" + target a player who may give the pet orders too
+		Drop,     //"drop" - empty the pet's backpack onto the ground
 	}
 
 	/// <summary>
@@ -37,18 +40,20 @@ namespace SteamEngine.CompiledScripts {
 	/// name or creature type name, and the phrase can be several words ("follow me", "guard me",
 	/// "stay here"). The old parser only looked at the last word, so every multi-word command
 	/// was silently ignored. Pure - no engine state - so it's unit-tested directly.
-	/// Deliberate deviation: Sphere's bare "guard" asks for an item to guard; there's no item
-	/// guarding here, so "guard" keeps meaning "guard me", as it always has in this engine.
+	/// "guard" asks for a target like Sphere's does (an item to guard); targeting a character
+	/// protects that character instead, and targeting yourself is the same as "guard me".
 	/// </summary>
 	public static class PetCommandParser {
 		//longest phrases first, so "follow me" wins over "follow" and "guard me" over "guard"
 		private static readonly string[] phrases = {
 			"follow me", "guard me", "defend me", "stay here",
 			"come", "guard", "stay", "stop", "follow", "go", "kill", "attack", "transfer", "release", "dismiss", "status",
+			"friend", "drop",
 		};
 		private static readonly PetCommand[] commands = {
 			PetCommand.Come, PetCommand.GuardMe, PetCommand.GuardMe, PetCommand.Stay,
-			PetCommand.Come, PetCommand.GuardMe, PetCommand.Stay, PetCommand.Stay, PetCommand.Follow, PetCommand.Go, PetCommand.Kill, PetCommand.Kill, PetCommand.Transfer, PetCommand.Release, PetCommand.Release, PetCommand.Status,
+			PetCommand.Come, PetCommand.Guard, PetCommand.Stay, PetCommand.Stay, PetCommand.Follow, PetCommand.Go, PetCommand.Kill, PetCommand.Kill, PetCommand.Transfer, PetCommand.Release, PetCommand.Release, PetCommand.Status,
+			PetCommand.Friend, PetCommand.Drop,
 		};
 
 		/// <summary>Splits speech into addressee and command. False when the speech doesn't end with

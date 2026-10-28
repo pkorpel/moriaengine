@@ -638,6 +638,95 @@ namespace SteamEngine.CompiledScripts {
 			/// Color= line would carry) or the literal "match_hair" keyword, meaning "use
 			/// whatever color the most recently equipped hair/facial-hair item got."</summary>
 			public string Color;
+
+			/// <summary>#775 - set for a Sphere weighted random pick, "Equip = {i_bardiche 1 i_halberd 1}":
+			/// one of these defnames is rolled per spawn (see PickDefname), Defname then only holds
+			/// the raw "{...}" text for messages. Null for a plain single-item entry.</summary>
+			public string[] RandomDefnames;
+			public int[] RandomWeights;
+
+			/// <summary>The defname to create for this spawn - Defname itself, or a weighted roll among RandomDefnames.</summary>
+			public string PickDefname(Random random) {
+				if (this.RandomDefnames == null) {
+					return this.Defname;
+				}
+				return PickWeighted(this.RandomDefnames, this.RandomWeights, random);
+			}
+		}
+
+		/// <summary>#775 - weighted pick: names[i] comes up weights[i] times in sum(weights).</summary>
+		public static string PickWeighted(string[] names, int[] weights, Random random) {
+			int total = 0;
+			foreach (int w in weights) {
+				total += w;
+			}
+			int roll = random.Next(total);
+			for (int i = 0; i < names.Length; i++) {
+				roll -= weights[i];
+				if (roll < 0) {
+					return names[i];
+				}
+			}
+			return names[names.Length - 1];
+		}
+
+		/// <summary>#775 - splits an "Equip =" value into its item part and the optional ", amount" part.
+		/// The item part may be a "{...}" random list, which can itself contain commas.</summary>
+		public static void SplitEquipLine(string args, out string itemPart, out string amountPart) {
+			string trimmed = args.Trim();
+			int split;
+			if (trimmed.StartsWith("{", StringComparison.Ordinal)) {
+				int close = trimmed.IndexOf('}');
+				split = (close < 0) ? -1 : trimmed.IndexOf(',', close);
+			} else {
+				split = trimmed.IndexOf(',');
+			}
+			if (split < 0) {
+				itemPart = trimmed;
+				amountPart = null;
+			} else {
+				itemPart = trimmed.Substring(0, split).Trim();
+				amountPart = trimmed.Substring(split + 1).Trim();
+			}
+		}
+
+		/// <summary>#775 - parses Sphere's weighted random pick "{name weight name weight ...}" (spaces
+		/// and/or commas). A list without weights ("{a b c}") gives every name weight 1. False if the
+		/// text isn't a "{...}" list or is malformed (empty, a non-positive weight).</summary>
+		public static bool TryParseRandomDefnames(string text, out string[] names, out int[] weights) {
+			names = null;
+			weights = null;
+			string trimmed = text.Trim();
+			if (!trimmed.StartsWith("{", StringComparison.Ordinal) || !trimmed.EndsWith("}", StringComparison.Ordinal)) {
+				return false;
+			}
+			string[] tokens = trimmed.Substring(1, trimmed.Length - 2).Split(new[] { ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries);
+			if (tokens.Length == 0) {
+				return false;
+			}
+			List<string> nameList = new List<string>();
+			List<int> weightList = new List<int>();
+			int i = 0;
+			while (i < tokens.Length) {
+				int weight;
+				if (int.TryParse(tokens[i], out weight)) {
+					return false; //a weight with no name before it
+				}
+				nameList.Add(tokens[i]);
+				if ((i + 1 < tokens.Length) && int.TryParse(tokens[i + 1], out weight)) {
+					if (weight <= 0) {
+						return false;
+					}
+					weightList.Add(weight);
+					i += 2;
+				} else {
+					weightList.Add(1);
+					i += 1;
+				}
+			}
+			names = nameList.ToArray();
+			weights = weightList.ToArray();
+			return true;
 		}
 
 		private static readonly TagKey instanceStartingEquipmentTK = TagKey.Acquire("_npcStartingEquipment_");
@@ -1029,16 +1118,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "equip") {
 				//#563 - "Equip = defname" or "Equip = defname, amount" or "Equip = defname, min max"
-				string[] parts = args.Split(',');
-				string defname = parts[0].Trim();
+				//#775 - defname can also be a Sphere weighted random pick, "{i_bardiche 1 i_halberd 1}"
+				string defname, amountText;
+				SplitEquipLine(args, out defname, out amountText);
 				int[] amountRange = null;
-				if (parts.Length > 1) {
-					amountRange = ParseStatRange(filename, line, "equip amount", parts[1].Trim());
+				if (amountText != null) {
+					amountRange = ParseStatRange(filename, line, "equip amount", amountText);
+				}
+				StartingEquipmentEntry entry = new StartingEquipmentEntry { Defname = defname, AmountRange = amountRange };
+				if (defname.StartsWith("{", StringComparison.Ordinal) &&
+						!TryParseRandomDefnames(defname, out entry.RandomDefnames, out entry.RandomWeights)) {
+					Logger.WriteWarning(filename, line, "equip random list '" + defname + "' must be '{defname weight defname weight ...}'.");
+					return;
 				}
 				if (this.StartingEquipment == null) {
 					this.StartingEquipment = new List<StartingEquipmentEntry>();
 				}
-				this.StartingEquipment.Add(new StartingEquipmentEntry { Defname = defname, AmountRange = amountRange });
+				this.StartingEquipment.Add(entry);
 				return;
 			}
 			if (param == "equipcolor") {
@@ -1412,11 +1508,12 @@ namespace SteamEngine.CompiledScripts {
 				//real per-player ground-drop behavior on live equip actions completely untouched.
 				List<Item> createdStartingEquipment = new List<Item>();
 				foreach (NPCDef.StartingEquipmentEntry entry in equipment) {
-					bool isHairKeyword = IsHairRandomizerKeyword(entry.Defname);
-					ItemDef itemDef = ResolveStartingEquipmentItemDef(entry.Defname, isHairKeyword);
+					string entryDefname = entry.PickDefname(Globals.dice); //#775 - rolls a "{a 1 b 1}" random pick
+					bool isHairKeyword = IsHairRandomizerKeyword(entryDefname);
+					ItemDef itemDef = ResolveStartingEquipmentItemDef(entryDefname, isHairKeyword);
 					if (itemDef == null) {
 						Logger.WriteWarning("NPC.On_Create (NPCDef " + def.PrettyDefname + ")",
-							"starting equipment item '" + entry.Defname + "' is not a known ItemDef.");
+							"starting equipment item '" + entryDefname + "' is not a known ItemDef.");
 						continue;
 					}
 					Thing created = itemDef.Create(this);

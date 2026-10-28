@@ -111,19 +111,21 @@ word*, so "all follow me", "all guard me" and "all stay" were silently ignored.
 | Say | Effect |
 |---|---|
 | come, follow me | follow the speaker |
-| guard me, defend me, guard | follow the speaker and join fights against whoever attacks them (`IsGuarding`). Sphere's bare "guard" targets an item instead; there's no item guarding here |
+| guard me, defend me | follow the speaker and join fights against whoever attacks them (`IsGuarding`) |
+| guard | target an item lying on the ground: the pet stays by it (`GuardedItem`), and while it's within 6 tiles nobody but its owner/friends/GMs can pick the item up or take anything out of it - whoever tries gets "<pet> is guarding that." and is attacked. Target a character to protect them instead, or yourself for "guard me". Guarding ends with any new order or once the item is off the ground (#774) |
 | stay, stay here, stop | stand put, drop any fight, stop guarding |
 | follow | target someone to follow |
 | go | target a spot; given up with "Sorry" after 5 think-ticks without progress |
 | kill, attack | target someone; refused for the speaker's own pets |
-| transfer | target the new owner |
-| release, dismiss | release into the wild |
+| transfer | target the new owner (owner only) |
+| release, dismiss | release into the wild (owner only) |
+| friend | target a player who may give the pet orders too (`PetFriends`, saved); owner only. Friends can't transfer, release or add friends. Cleared on transfer/release (#774) |
+| drop | the pet empties its backpack at its feet, keeping its own `attr_newbie` starting gear; "I'm carrying nothing." otherwise (#774) |
 | status | each pet's health and current orders, as a sysmessage |
 
 Every order replaces what the pet was doing, a fight included (Sphere's `Skill_Start`). The pet
 turns to its master and says "Yes Master" or "Sorry". Non-human pets play their idle/anger sound
-instead. GMs can command any NPC in range. Not here yet: friend (co-owners need a persisted
-friend list) and drop (pets carry nothing).
+instead. The owner, friends, and GMs (any NPC in range) can give orders.
 
 **Following keeps up now.** A pet following or under a "go" order that's still more than 1 tile
 away thinks again after `CatchUpWalkSeconds` (0.45s), or `CatchUpRunSeconds` (0.25s) and running
