@@ -188,6 +188,10 @@ namespace SteamEngine.CompiledScripts {
 				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
 				MonsterSpecialAttacks.TryApplyStun(attacker, defender);
 
+				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_knockback
+				//(if the attacker has it) can also push the defender back on a landed hit.
+				MonsterSpecialAttacks.TryApplyKnockback(attacker, defender);
+
 				//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
 				//the pre-armor swing value, so this must run after CauseDamage above.
 				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);

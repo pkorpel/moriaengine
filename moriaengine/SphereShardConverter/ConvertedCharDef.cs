@@ -612,10 +612,30 @@ namespace SteamEngine.Converter {
 			//deciseconds/permille/ticks) - NPCAiTimer's own consuming code documents and divides
 			//out the real-world units at the point of use, not here, so this stays a pure
 			//number-extraction step like every other @Create handler above.
+			//#knockback - real archive unit is 0-100, NOT the 0-1000 permille every other
+			//ability tag here uses (confirmed: "{0 100} < tag.npc_knockback") - multiplied by
+			//10 here so NPCDef.KnockbackChance stays on the same scale as everything else,
+			//rather than this one field needing a special-case unit downstream.
+			if (name == "tag.npc_knockback") {
+				if (this.IsPlayerDefByName) {
+					return;
+				}
+				MatchCollection knockbackMatches = numberRE.Matches(value);
+				if (knockbackMatches.Count > 0) {
+					int min = (int) Math.Round(double.Parse(knockbackMatches[0].Value, CultureInfo.InvariantCulture) * 10);
+					if (knockbackMatches.Count > 1) {
+						int max = (int) Math.Round(double.Parse(knockbackMatches[1].Value, CultureInfo.InvariantCulture) * 10);
+						this.Set("KnockbackChance", min + " " + max, comment);
+					} else {
+						this.Set("KnockbackChance", min.ToString(CultureInfo.InvariantCulture), comment);
+					}
+				}
+				return;
+			}
 			if (name == "tag.npc_stun_chance" || name == "tag.npc_stun_time" || name == "tag.npc_stun_delay" ||
 					name == "tag.npc_critic_chance" || name == "tag.npc_critic_dmg" ||
 					name == "tag.roundattack_chance" || name == "tag.roundattack_damage" || name == "tag.roundattack_time" ||
-					name == "tag.pullall_distance" || name == "tag.npc_bleed") {
+					name == "tag.pullall_distance" || name == "tag.npc_bleed" || name == "tag.resstimer") {
 				if (this.IsPlayerDefByName) {
 					return;
 				}
@@ -655,7 +675,9 @@ namespace SteamEngine.Converter {
 				//#bleed - real archive unit is permille (0-1000) same as the other chance
 				//tags above, confirmed via Bleed.scp's own comment ("tag.npc_bleed=250 //
 				//25% chance ... | default ~ 100%").
-				{ "tag.npc_bleed", "BleedChance" }
+				{ "tag.npc_bleed", "BleedChance" },
+				//#selfreser - real archive field is tag.resstimer, seconds, no scale conversion needed.
+				{ "tag.resstimer", "SelfresDelay" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum

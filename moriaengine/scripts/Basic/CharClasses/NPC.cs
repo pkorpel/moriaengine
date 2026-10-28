@@ -366,6 +366,8 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey roundattackCooldownTK = TagKey.Acquire("_npcRoundattackCooldown_");
 		private static readonly TagKey pullDistanceTK = TagKey.Acquire("_npcPullDistance_");
 		private static readonly TagKey bleedChanceTK = TagKey.Acquire("_npcBleedChance_");
+		private static readonly TagKey knockbackChanceTK = TagKey.Acquire("_npcKnockbackChance_");
+		private static readonly TagKey selfresDelayTK = TagKey.Acquire("_npcSelfresDelay_");
 
 		/// <summary>Real-user-reported follow-up to #653's teventStubs batch - per-species
 		/// override {min, max} ranges for StunAbilityDef/CriticAbilityDef/
@@ -423,6 +425,20 @@ namespace SteamEngine.CompiledScripts {
 		public int[] BleedChance {
 			get { return this.GetTag(bleedChanceTK) as int[]; }
 			set { this.SetTag(bleedChanceTK, value); }
+		}
+		/// <summary>Already on the SAME 0-1000 permille scale as every other ability override
+		/// here - the real archive's own tag.npc_knockback is on a 0-100 scale, converted ×10
+		/// by SphereShardConverter on the way in (see ConvertedCharDef.cs's own comment) so
+		/// nothing downstream has to remember a special-case unit for this one field.</summary>
+		public int[] KnockbackChance {
+			get { return this.GetTag(knockbackChanceTK) as int[]; }
+			set { this.SetTag(knockbackChanceTK, value); }
+		}
+		/// <summary>{min,max} seconds after death before a fresh instance of this NPC respawns -
+		/// real archive field is tag.resstimer.</summary>
+		public int[] SelfresDelay {
+			get { return this.GetTag(selfresDelayTK) as int[]; }
+			set { this.SetTag(selfresDelayTK, value); }
 		}
 
 		private static readonly TagKey fameRangeTK = TagKey.Acquire("_fameRange_");
@@ -871,6 +887,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "bleedchance") {
 				this.BleedChance = ParseStatRange(filename, line, "bleedchance", args);
+				return;
+			}
+			if (param == "knockbackchance") {
+				this.KnockbackChance = ParseStatRange(filename, line, "knockbackchance", args);
+				return;
+			}
+			if (param == "selfresdelay") {
+				this.SelfresDelay = ParseStatRange(filename, line, "selfresdelay", args);
 				return;
 			}
 			if (param == "maxhits") {
