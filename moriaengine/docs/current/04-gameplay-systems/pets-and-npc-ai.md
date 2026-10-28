@@ -66,6 +66,32 @@ the two neighbouring directions, and `StepTowardsSmart`'s AStar routes around a 
 first step. Pets and summons follow the same rule. See
 [Movement & character collision](movement-and-collision.md).
 
+### Pathfinding (#769)
+
+`StepTowardsSmart` (follow, combat approach, "go", home-return) uses
+`scripts/Basic/AI/PathFinding/AStar.cs`. Before #769 the "A*" was really a greedy best-first
+search: its heuristic was the squared distance times 121, which swamped the step cost. It also
+needed an exact-Z goal match, so a target standing slightly off its tile's walkable Z burned the
+whole 1000-iteration budget and failed. On top of that it had a colliding hash, used static
+shared state, and replanned from scratch every think-tick. Now:
+
+- **Real A\***. UO steps cost 1 diagonally too, so the heuristic is the Chebyshev distance,
+  with ties broken toward the target. A node gets re-queued when a cheaper route to it turns up.
+  Paths are shortest: `AStarTests` checks them against a BFS on 60 random grids.
+- **Goal tolerance** (`AStar.Options`): `ZTolerance` (default 10) and `StopWithin`. A character
+  target counts as reached when adjacent, because its own tile is occupied.
+- **Bounded**: the search stays within `WindowMargin` (16) tiles of the start/target box, capped
+  at `MaxIterations` (1000).
+- **Partial paths**: when the target can't be reached, the path to the closest node reached is
+  returned (`Result.ReachedGoal = false`), so the NPC still closes in. A null result only means
+  no first step exists at all; then `StepTowards`' direct step/sidestep is used.
+- **Path caching**: `NpcPathCache` on the `NPCAiTimer` (transient) walks the planned path. It
+  re-plans when a step fails, when the NPC isn't where the path expects, when the target has
+  moved more than 2 tiles, or every 8 steps.
+- **Testable core**: `AStar.FindPath` only takes a step delegate. `FindPathOnMap` adapts
+  `Map.CheckMovement` to it, and unit tests run the core on synthetic grids. All search state
+  is per call, so the core is reentrant.
+
 ## Taming and pet ownership
 
 Taming a valid target sets the NPC's `ControlMaster` to the tamer - verified via a real

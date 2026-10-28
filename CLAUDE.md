@@ -1,5 +1,31 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #769 AStar rewritten as real A* + NPC path caching - next: #768 pet commands
+
+Per the #769 analysis (user: "go for it, no need to ask"; FAST-TIER UNIT TESTS ONLY):
+`scripts/Basic/AI/PathFinding/AStar.cs`'s search core was replaced. The Testing region (Astar_Walk/
+Astar_Draw targets and timers, saveable) was left untouched. The new core is
+`AStar.FindPath(start, target, StepFunc, Options)`, which only knows a step delegate;
+`FindPathOnMap` adapts `Map.CheckMovement`. Details:
+- Chebyshev heuristic (UO diagonal = 1) with an h tie-break, and lazy-deletion re-queue on a
+  cheaper g. (It used to be greedy best-first with a 121·(dx²+dy²) heuristic.)
+- `Options`: StopWithin (1 for character targets), ZTolerance 10 (the old exact-Z goal made
+  near-misses burn 1000 iterations), WindowMargin 16, MaxIterations 1000, AllowPartial (path to
+  the closest node reached), and FirstStepBlocked (#767 char check).
+- Packed long keys replace the colliding `17^x^y^z` hash; no static state (reentrant).
+- `NpcPathCache` (new, transient field on NPCAiTimer): `StepTowardsSmart` walks the cached path
+  and replans on a failed step, on mover displacement, when the target drifts >2 tiles, or every
+  8 steps. The old `GetPathFromTo(...)` overloads are kept (exact-tile, no partial) for
+  Astar_Draw/Walk and the #767 protocol test.
+Tests: `Tests/AStarTests.cs` (13 facts, synthetic grids + a BFS oracle on 60 random grids, plus
+path-cache rules). Fast tier 74/74. Not verified live/protocol (per instruction).
+Docs: `pets-and-npc-ai.md#pathfinding-769`, `movement-and-collision.md`.
+
+**Next: #768 pet commands** - the analysis is in the #768 issue comment. Proposed order: parser
+rewrite (multi-word commands, all/pets/name/typename, Yes Master/Sorry), orders preempting
+combat, follow cadence, self-defense + assist owner, stop/IsGuarding and go fixes, missing
+commands. #763 is fixed, so the pet protocol tests would work again, but stick to unit tests.
+
 ## DONE (2026-10-28): #763 c_sheep_woolly crash - converter now comma-separates Color/model random lists
 
 **Next up (user-approved order)**: #769 AStar fixes, then the #768 pet-command rework.
