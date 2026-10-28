@@ -19,8 +19,10 @@ tag; `MonsterLoot.FlushCreatureStart` runs it at once for tests). Surface + spaw
 power 500-900, stats +25%, swing +20% (+power/3 % vs summons), players' swings absorbed by power
 permille, regen power/7 per 2 s, resists, exp x300-500% (gold follows), reagent/gem/diamond
 bundle, magic-item PLACEHOLDER. `EliteEscapeTimer`: 20 min after meeting a player -> 3 s gate
-cast (AI frozen, a hit interrupts, retry 5 s) -> leaves (deleted). **Open question for the user**:
-Erebor's level bonus starts at level 200 - nobody here reaches it; thresholds are settings.
+cast (AI frozen, a hit interrupts, retry 5 s) -> leaves (deleted). Player level bonus from
+level 200 (Erebor's): works as is - CORRECTION, levels are NOT capped at 60 here (that was an
+unused `Player.EffectiveLevel` comment = Erebor's statslevel); they're uncapped on Erebor's own
+(level+1)*330 curve, user confirmed "player levels should scale to 200".
 **Gotcha hit (caught by the protocol test)**: a one-shot `BoundTimer` (no PeriodInSeconds) is
 DELETED before its `OnTimeout` runs, so setting `DueInSeconds` inside OnTimeout does nothing -
 a self-re-arming timer must have a period (NPCAiTimer's pattern; set DueInSeconds per step).

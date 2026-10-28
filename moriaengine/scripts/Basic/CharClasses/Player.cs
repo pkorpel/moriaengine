@@ -40,7 +40,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//used in some cases where 60 is considered the effective max level
+		//Erebor's statslevel (level capped at 60 for a few stat formulas) - NOT a level cap: levels
+		//are uncapped, on the same (level+1)*330 curve as Erebor's. Currently unused.
 		public int EffectiveLevel {
 			get {
 				return Math.Min((int) this.level, 60);

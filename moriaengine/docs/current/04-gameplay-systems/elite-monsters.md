@@ -30,9 +30,10 @@ before the gold - Erebor's `f_spawnEliteForm`:
 | loot | 2× high reagents (power/10), 2× any reagents (power/20), gems (power/50), diamonds (power/100); `(power-400)/1000` chance of a magic item - a PLACEHOLDER like the creaturestart one |
 | show | sound 254, blue sparkles around it |
 
-**Level bonus**: Erebor let players from level 200 up absorb less (200 + 5 per level above 200,
-up to level 400, permille off the power). Our levels don't go that high (about 60 is the
-effective max), so as shipped nobody gets it - the thresholds are settings.
+**Level bonus**: players from level 200 up lose less of their swing (200 + 5 per level above
+200, counted up to level 400, permille off the power - a level-260 player vs a 900-power elite
+gets 1000 - 900 + 500 = 60% through instead of 10%). Levels are uncapped here, on Erebor's own
+(level+1) × 330 curve (`LevelingSettings.nextLevelCoefficient`), so this works as in Erebor.
 
 ## Leaving - `EliteEscapeTimer`
 
