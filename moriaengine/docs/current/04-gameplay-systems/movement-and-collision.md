@@ -26,10 +26,12 @@ never block anyone.
 
 **NPC movers** never shove. Any obstacle stops them, including pets and summons. When a direct
 step is refused only because of a character, `NPCAiTimer.TrySidestepCharacter` tries the two
-neighbouring directions (Sphere's `NPC_WalkToPoint` sidestep). AStar called with the mover
-(`AStar.GetPathFromTo(Character, ...)`) treats a character-occupied *first* step as impassable,
-so `StepTowardsSmart` routes around it. Only the first step is checked, because characters
-move and the path is recomputed every step anyway.
+neighbouring directions (Sphere's `NPC_WalkToPoint` sidestep). `StepTowardsSmart`
+passes AStar a `FirstStepBlocked` check (`CharacterCollision.IsTileBlockedFor`), so a
+character-occupied *first* step is treated as impassable and the path routes around it. Only
+the first step is checked, because characters move. A cached path that runs into a character
+later just fails that step and gets re-planned (see
+[Pets & NPC AI](pets-and-npc-ai.md#pathfinding-769)).
 
 **Player movers**, against the first obstacle found:
 
