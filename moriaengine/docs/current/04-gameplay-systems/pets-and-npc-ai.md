@@ -100,6 +100,42 @@ is the general ownership check other systems reuse rather than inventing their o
 [Economy: banking & vendors](economy-banking-vendors.md)'s player-vendor
 `CanVendorBeControlledBy`, which is just `IsPetOf` under a different name).
 
+## Pet commands (#768)
+
+Spoken commands are parsed by `PetCommandParser` (`scripts/Basic/CharClasses/`) the way Sphere
+0.99z8 does it: `<addressee> <command phrase>`. The addressee is `all`/`pets` (every pet you own
+within speech range), or one pet's own name or creature type name ("horse come"), ignoring case
+and a leading a/an/the. Commands can be several words. The old parser looked only at the *last
+word*, so "all follow me", "all guard me" and "all stay" were silently ignored.
+
+| Say | Effect |
+|---|---|
+| come, follow me | follow the speaker |
+| guard me, defend me, guard | follow the speaker and join fights against whoever attacks them (`IsGuarding`). Sphere's bare "guard" targets an item instead; there's no item guarding here |
+| stay, stay here, stop | stand put, drop any fight, stop guarding |
+| follow | target someone to follow |
+| go | target a spot; given up with "Sorry" after 5 think-ticks without progress |
+| kill, attack | target someone; refused for the speaker's own pets |
+| transfer | target the new owner |
+| release, dismiss | release into the wild |
+| status | each pet's health and current orders, as a sysmessage |
+
+Every order replaces what the pet was doing, a fight included (Sphere's `Skill_Start`). The pet
+turns to its master and says "Yes Master" or "Sorry". Non-human pets play their idle/anger sound
+instead. GMs can command any NPC in range. Not here yet: friend (co-owners need a persisted
+friend list) and drop (pets carry nothing).
+
+**Following keeps up now.** A pet following or under a "go" order that's still more than 1 tile
+away thinks again after `CatchUpWalkSeconds` (0.45s), or `CatchUpRunSeconds` (0.25s) and running
+once more than `RunWhenBehindBy` (3) tiles behind. Before, it took one step per 1.5s think-tick
+regardless, far slower than a walking player.
+
+**Fighting back** (`.settings` -> "NPC Aggro"). `npcsDefendThemselves` makes an attacked NPC fight
+its attacker unless it's already fighting (Sphere's `OnHarmedBy`). That includes a rebel pet
+fighting the owner who hit it. `petsAssistOwner` sends idle pets following their master after
+whatever the master attacks, like Sphere's following pets. Hitting your own pet isn't a fight
+your other pets join.
+
 ## See also
 
 [Spawning](spawning.md) for how NPCs come into existence and get replaced on death.

@@ -1,6 +1,33 @@
 # moriaengine — working state
 
-## DONE (2026-10-28): #769 AStar rewritten as real A* + NPC path caching - next: #768 pet commands
+## DONE (2026-10-28): #768 pet commands reworked to Sphere 0.99z8 behavior
+
+User: "go for it, no need to ask"; FAST-TIER UNIT TESTS ONLY. Shipped, per the #768 analysis:
+- `PetCommandParser` (new, pure): `<all|pets|name|type name> <command phrase>`, with multi-word
+  commands (come/follow me, guard me/defend me/guard, stay/stay here/stop, follow, go, kill/attack,
+  transfer, release/dismiss, status). The old parser took the LAST word as the verb, so "all follow
+  me"/"guard me"/"stay" did nothing. Names match the pet's own name OR `Def.Name`, ignoring case and
+  a leading article.
+- `PetCommands.cs` rewritten on top of it. Every order disengages first (`BreakOffForNewOrder`).
+  Replies are "Yes Master"/"Sorry" for humans, idle/anger sound for animals (`PetResponse`).
+  Stay clears `IsGuarding`; kill refuses the speaker's own pets; new `Targ_PetFollow`; status
+  shows health and orders. Kept the debug log formats the pet protocol tests assert on.
+- `NPCAiTimer`: catch-up cadence while following/going and >1 tile behind (0.45s walk, 0.25s +
+  running when >3 behind; `CatchUpInterval` is pure and tested). "go" gives up with "Sorry" after 5
+  no-progress ticks. `DefendAgainst` (an attacked NPC fights back, hooked from
+  `NPC.On_HostileAction` AFTER the rebel logic, so a rebel fights its ex-owner as in Sphere).
+  `AlertPetsOf` (idle following pets join their master's attack, hooked in
+  `Character.Trigger_HostileAction` BEFORE `On_HostileAction`, so hitting your own pet doesn't
+  pull the others in).
+- `NpcAggroSettings`: new `npcsDefendThemselves`/`petsAssistOwner` (both default true).
+- Tests: `Tests/PetCommandParserTests.cs`. Fast tier 111/111. Engine wiring is only
+  build-verified (no protocol runs, per instruction).
+- Deferred: friend (co-owner, needs a persisted friend list), drop (pets carry nothing), Sphere's
+  item-target "guard".
+- Behavior changes to watch in live testing: NPCs now fight back when attacked, even Calm animals;
+  pets join the owner's fights by default. Both can be switched off in `.settings` -> NPC Aggro.
+
+## DONE (2026-10-28): #769 AStar rewritten as real A* + NPC path caching
 
 Per the #769 analysis (user: "go for it, no need to ask"; FAST-TIER UNIT TESTS ONLY):
 `scripts/Basic/AI/PathFinding/AStar.cs`'s search core was replaced. The Testing region (Astar_Walk/
@@ -21,10 +48,7 @@ Tests: `Tests/AStarTests.cs` (13 facts, synthetic grids + a BFS oracle on 60 ran
 path-cache rules). Fast tier 74/74. Not verified live/protocol (per instruction).
 Docs: `pets-and-npc-ai.md#pathfinding-769`, `movement-and-collision.md`.
 
-**Next: #768 pet commands** - the analysis is in the #768 issue comment. Proposed order: parser
-rewrite (multi-word commands, all/pets/name/typename, Yes Master/Sorry), orders preempting
-combat, follow cadence, self-defense + assist owner, stop/IsGuarding and go fixes, missing
-commands. #763 is fixed, so the pet protocol tests would work again, but stick to unit tests.
+(#768 pet commands followed and shipped - see the entry above.)
 
 ## DONE (2026-10-28): #763 c_sheep_woolly crash - converter now comma-separates Color/model random lists
 
@@ -48,22 +72,6 @@ the old form is asserted to FAIL). Fast tier 62/62. NOT verified end-to-end with
 protocol tests that spawn c_sheep_woolly (Magery/PetCommands/Ranger), per the unit-tests-only
 instruction. Those should start passing again; #719's Ranger part likely had the same cause.
 Not covered: random lists in `Equip =` (parsed by `NPC.LoadScriptLine`, unsupported there).
-
-## IN PROGRESS (2026-10-28): ANALYSIS ONLY, 2 parallel asks while the #767 targeted test run goes
-
-1. **Pet commands**: compare EreborNext (scratchpad/erebornext/src, Sphere 0.99z8 C#) pet-command
-   handling with ours (`scripts/Basic/CharClasses/PetCommands.cs` + NPCAiTimer). User reports
-   "flaky behavior". Find the concrete divergences and bugs.
-2. **AStar**: review `scripts/Basic/AI/PathFinding/AStar.cs`. Is it the right algorithm for NPC
-   "smart movement", and what are the improvements?
-No code changes and no builds/tests while the targeted run is in flight (fixed ports). Report
-back to the user, then implement only on sign-off.
-**Status: both analyses DONE and posted** (#768 pet commands, #769 AStar). Waiting on the user to
-pick what to implement. Headline findings: pets move 1 tile/1.5s (can't keep up); come/go don't
-preempt combat; the parser takes the LAST word as the verb (so "all follow me"/"guard me"/"stay" are
-silently ignored); no NPC self-defense; AStar is really greedy best-first (squared ×121 heuristic);
-an exact-Z goal makes it burn 1000 iterations and fail; bad hash; replans every tick; no partial path.
-Also: PetCommandTests/Ranger tests are dead because of #763 (c_sheep_woolly crash), so pet regressions are invisible.
 
 ## DONE (2026-10-28): #767 char collision - Sphere stamina-gated shove + NPCs blocked by characters
 
