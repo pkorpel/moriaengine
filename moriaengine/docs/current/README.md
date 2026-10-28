@@ -91,6 +91,8 @@ file whose job is session continuity, not permanent reference.
 - [Economy: banking & vendors](04-gameplay-systems/economy-banking-vendors.md)
 - [Spawning](04-gameplay-systems/spawning.md)
 - [Pets & NPC AI](04-gameplay-systems/pets-and-npc-ai.md)
+- [Movement & character collision](04-gameplay-systems/movement-and-collision.md) - the
+  `WalkRunOrFly` pipeline and Sphere's stamina-gated shove past other characters (#767).
 - [Crafting & gathering](04-gameplay-systems/crafting-gathering.md)
 - [Item double-click & the "use" action framework](04-gameplay-systems/item-use-and-dclick.md) -
   how dclick/`.usehand` decide what an item does, and the data-driven equip-and-use hook.
