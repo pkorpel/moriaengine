@@ -1036,6 +1036,7 @@ Fame = 10
 Karma = 1 99
 Experience = 1 2
 Equip = i_monster_create
+Loot = i_cat_gut
 ResistPoison = 970
 AggroMode = Calm
 

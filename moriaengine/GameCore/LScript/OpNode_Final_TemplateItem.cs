@@ -61,6 +61,9 @@ namespace SteamEngine.LScript {
 				vars.self = t;
 			}
 
+			if (amount <= 0) {
+				return null; //#791 - as in Sphere, a rolled amount of 0 ("ITEM=x,{0 1}") means no item, not an empty stack
+			}
 			try {
 				AbstractItem i = t.NewItem(tf, amount);
 				vars.self = i;
@@ -84,6 +87,9 @@ namespace SteamEngine.LScript {
 			int amount = 1;
 			if (results.Length > 1) {
 				amount = Convert.ToInt32(results[1], CultureInfo.InvariantCulture);
+			}
+			if (amount <= 0) {
+				return null; //#791 - see Run
 			}
 			try {
 				AbstractItem i = t.NewItem(tf, amount);

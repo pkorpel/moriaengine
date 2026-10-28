@@ -33,6 +33,11 @@ Parry = 900 1000
 Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
+Loot = i_shirt_fancy
+Loot = i_pants_long
+Loot = i_hat_feather
+Loot = random_boots
+Loot = random_coin_purse
 AggroMode = Calm
 
 [NPCDef c_crunch_krvavec]
@@ -98,6 +103,11 @@ Parry = 900 1000
 Swords = 1500 2000
 Macing = 1500 2000
 MagicResist = 1200 1500
+Loot = i_shirt_fancy
+Loot = i_pants_long
+Loot = i_hat_feather
+Loot = random_boots
+Loot = random_coin_purse
 AggroMode = Calm
 
 [NPCDef c_crunch_strazcebrany]

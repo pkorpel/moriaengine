@@ -42,6 +42,7 @@ Peacemaking = 1
 AnimalLore = 5501
 Experience = 1 2
 Equip = i_monster_create
+Loot = loot_pig_silvester
 AggroMode = Calm
 
 [TemplateDef loot_pig_silvester]
@@ -109,6 +110,7 @@ SpiritSpeak = 250
 AnimalTaming = 2000
 Experience = 5 10
 Equip = i_monster_create
+Loot = i_easter_egg,{1, 10}
 ResistPoison = 970
 AggroMode = Hostile
 

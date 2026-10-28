@@ -35,6 +35,7 @@ MagicResist = 850 1000
 Tactics = 800 900
 Wrestling = 900 1000
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 1000
 ResistParalyse = 360
 ResistSummon = 450

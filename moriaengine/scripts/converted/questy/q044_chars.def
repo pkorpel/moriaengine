@@ -63,6 +63,7 @@ Tactics = 350 500
 Wrestling = 400 550
 SpiritSpeak = 150
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 950 975
 ResistSummon = 390 500
 AggroMode = Hostile

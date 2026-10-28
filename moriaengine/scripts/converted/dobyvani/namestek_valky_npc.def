@@ -49,6 +49,7 @@ Equip = i_cape
 EquipColor = 0481
 Equip = i_halberd
 EquipColor = 0
+Loot = i_gold,{0, 100}
 AggroMode = Calm
 
 [NPCDef c_namestek_valky_m]
@@ -109,6 +110,8 @@ EquipColor = 1
 Equip = i_sword_long
 Equip = i_shield_kite_metal
 EquipColor = 076B
+Loot = i_gold,{0, 100}
+Loot = random_coin_purse
 ResistParalyse = 990
 ResistPoison = 990
 AggroMode = Calm

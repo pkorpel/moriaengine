@@ -51,6 +51,8 @@ ResistFire = 940
 ResistElectric = 850
 ResistCold = 900
 AggroMode = Hostile
+Loot = i_ore_pisek,{3, 8}
+Loot = i_gold
 
 [NPCDef 0x2f0]
 CATEGORY = Monsters
@@ -104,6 +106,8 @@ ResistFire = 100
 ResistElectric = -700
 ResistCold = -500
 AggroMode = Hostile
+Loot = i_ore_copper,{1, 5}
+Loot = i_gold
 
 [NPCDef c_golem_iron]
 CATEGORY = Monsters
@@ -160,6 +164,8 @@ ResistFire = 100
 ResistElectric = -650
 ResistCold = -450
 AggroMode = Hostile
+Loot = i_ore_iron,{1, 4}
+Loot = i_gold
 
 [NPCDef c_golem_silver]
 CATEGORY = Monsters
@@ -216,6 +222,7 @@ ResistFire = 100
 ResistElectric = -600 //nachylnost na elektrinu 
 ResistCold = -400 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_golem_golden]
 CATEGORY = Monsters
@@ -272,6 +279,7 @@ ResistFire = 400
 ResistElectric = -400 //nachylnost na elektrinu 
 ResistCold = -200 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_gold
 
 [NPCDef c_golem_verite]
 CATEGORY = Monsters
@@ -328,6 +336,8 @@ ResistFire = 600
 ResistElectric = -50 //nachylnost na elektrinu 
 ResistCold = 100 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_ore_verite,{1, 3}
+Loot = i_gold
 
 [NPCDef c_golem_valorite]
 CATEGORY = Monsters
@@ -384,6 +394,8 @@ ResistFire = 600
 ResistElectric = -50 //nachylnost na elektrinu 
 ResistCold = 150 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_ore_valorite,{1, 2}
+Loot = i_gold
 
 [NPCDef c_golem_obsidian]
 CATEGORY = Monsters
@@ -440,6 +452,8 @@ ResistFire = 600
 ResistElectric = -50 //nachylnost na elektrinu 
 ResistCold = 150 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_ore_obsidian,1
+Loot = i_gold
 
 [NPCDef c_golem_adamantinum]
 CATEGORY = Monsters
@@ -495,6 +509,8 @@ ResistFire = 800
 ResistElectric = -50 //nachylnost na elektrinu 
 ResistCold = 150 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_ore_adamantinum,1
+Loot = i_gold
 
 [NPCDef c_golem_shadow]
 CATEGORY = Monsters
@@ -550,6 +566,8 @@ ResistFire = 800
 ResistElectric = -50 //nachylnost na elektrinu 
 ResistCold = 150 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_ore_shadow,1
+Loot = i_gold
 
 [NPCDef c_golem_mithril]
 CATEGORY = Monsters
@@ -608,6 +626,8 @@ ResistFire = 800
 ResistElectric = 450 //nachylnost na elektrinu 
 ResistCold = 250 //nachylnost na chlad 
 AggroMode = Hostile
+Loot = i_ore_mithril,1
+Loot = i_gold
 
 [NPCDef c_spirit_blood]
 CATEGORY = Dungy
@@ -658,6 +678,8 @@ ResistFire = 250
 ResistElectric = -400
 ResistCold = -200
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{10, 15}
 
 [NPCDef c_spirit_water]
 CATEGORY = Dungy
@@ -708,6 +730,8 @@ ResistFire = 750
 ResistElectric = -400
 ResistCold = -600
 AggroMode = Calm
+Loot = i_gold
+Loot = random_reagent,{15, 25}
 
 [NPCDef 0x2f]
 CATEGORY = Monsters
@@ -759,6 +783,9 @@ ResistFire = -600 //ohen je boli
 ResistElectric = 900 //elektrina reaperovi neublizuje 
 ResistCold = 200 //mraz jaks taks 
 AggroMode = Hostile
+Loot = I_LOG_copper,{1, 5}
+Loot = i_reag_dead_wood,{1, 5}
+Loot = i_gold
 
 [NPCDef c_reaper_spruce]
 CATEGORY = Monsters
@@ -816,6 +843,10 @@ ResistFire = -600 //ohen je boli
 ResistElectric = 900 //elektrina reaperovi neublizuje 
 ResistCold = 200 //mraz jaks taks 
 AggroMode = Hostile
+Loot = I_LOG_copper,{1, 5}
+Loot = i_reag_dead_wood,{1, 5}
+Loot = RANDOM_REAGENT_NECRO,{5, 20}
+Loot = i_gold
 
 [NPCDef c_reaper_chesnut]
 CATEGORY = Monsters
@@ -876,6 +907,10 @@ ResistFire = -600 //ohen je boli
 ResistElectric = 900 //elektrina reaperovi neublizuje 
 ResistCold = 200 //mraz jaks taks 
 AggroMode = Hostile
+Loot = I_LOG_iron,{1, 4}
+Loot = RANDOM_REAGENT_NECRO,{15, 20}
+Loot = i_reag_dead_wood,{1, 5}
+Loot = i_gold
 
 [NPCDef c_reaper_oak]
 CATEGORY = Monsters
@@ -937,6 +972,10 @@ ResistFire = -600 //ohen je boli
 ResistElectric = 900 //elektrina reaperovi neublizuje 
 ResistCold = 200 //mraz jaks taks 
 AggroMode = Hostile
+Loot = I_LOG_verite,{1, 3}
+Loot = RANDOM_REAGENT_NECRO,{15, 30}
+Loot = i_reag_dead_wood,{1, 5}
+Loot = i_gold
 
 [NPCDef c_reaper_teak]
 CATEGORY = Monsters
@@ -999,6 +1038,10 @@ ResistFire = -50 //ohen je boli
 ResistElectric = 950 //elektrina reaperovi neublizuje 
 ResistCold = 450 //mraz jaks taks 
 AggroMode = Hostile
+Loot = I_LOG_valorite,{1, 2}
+Loot = RANDOM_REAGENT_NECRO,{25, 40}
+Loot = i_reag_dead_wood,{1, 5}
+Loot = i_gold
 
 [NPCDef c_reaper_mahagon]
 CATEGORY = Monsters
@@ -1062,6 +1105,10 @@ ResistFire = -50 //ohen je boli
 ResistElectric = 950 //elektrina reaperovi neublizuje 
 ResistCold = 450 //mraz jaks taks 
 AggroMode = Hostile
+Loot = I_LOG_obsidian,1
+Loot = RANDOM_REAGENT_NECRO,{25, 50}
+Loot = i_reag_dead_wood,{1, 5}
+Loot = i_gold
 
 [NPCDef c_reaper_eben]
 CATEGORY = Monsters
@@ -1129,6 +1176,10 @@ ResistFire = -50 //ohen je boli
 ResistElectric = 950 //elektrina reaperovi neublizuje 
 ResistCold = 450 //mraz jaks taks 
 AggroMode = Hostile
+Loot = I_LOG_adamantinum,1
+Loot = RANDOM_REAGENT_NECRO,{35, 50}
+Loot = i_reag_dead_wood,{1, 5}
+Loot = i_gold
 
 [NPCDef c_reaper_elven]
 CATEGORY = Monsters
@@ -1195,6 +1246,10 @@ ResistFire = -50 //ohen je boli
 ResistElectric = 950 //elektrina reaperovi neublizuje 
 ResistCold = 450 //mraz jaks taks 
 AggroMode = Hostile
+Loot = I_LOG_mithril,1
+Loot = RANDOM_REAGENT_NECRO,{45, 50}
+Loot = i_reag_dead_wood,{1, 5}
+Loot = i_gold
 
 [NPCDef 0x3a]
 CATEGORY = Monsters
@@ -1252,6 +1307,8 @@ ResistFire = 600
 ResistElectric = -700 //zranitelnost energii 
 ResistCold = -300
 AggroMode = Hostile
+Loot = i_gold
+Loot = RANDOM_REAGENT_NECRO,{1, 10}
 
 [NPCDef c_spirit_copper]
 CATEGORY = Monsters
@@ -1312,6 +1369,8 @@ ResistFire = 600
 ResistElectric = -700 //zranitelnost energii 
 ResistCold = -300
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{10, 25}
 
 [NPCDef c_spirit_iron]
 CATEGORY = Monsters
@@ -1374,6 +1433,8 @@ ResistFire = 600
 ResistElectric = -450 //zranitelnost energii 
 ResistCold = -100
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{20, 35}
 
 [NPCDef c_spirit_silver]
 CATEGORY = Monsters
@@ -1436,6 +1497,8 @@ ResistFire = 600
 ResistElectric = -450 //zranitelnost energii 
 ResistCold = -100
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{20, 45}
 
 [NPCDef c_spirit_gold]
 CATEGORY = Monsters
@@ -1497,6 +1560,8 @@ ResistFire = 600
 ResistElectric = -450 //zranitelnost energii 
 ResistCold = -100
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{20, 45}
 
 [NPCDef c_spirit_verite]
 CATEGORY = Monsters
@@ -1558,6 +1623,8 @@ ResistFire = 600
 ResistElectric = -450 //zranitelnost energii 
 ResistCold = -100
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{30, 55}
 
 [NPCDef c_spirit_valorite]
 CATEGORY = Monsters
@@ -1620,6 +1687,8 @@ ResistFire = 600
 ResistElectric = -200 //zranitelnost energii 
 ResistCold = -50
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{50, 75}
 
 [NPCDef c_spirit_obsidian]
 CATEGORY = Monsters
@@ -1680,6 +1749,8 @@ ResistFire = 800
 ResistElectric = -50
 ResistCold = 150
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{50, 75}
 
 [NPCDef c_spirit_adamantinum]
 CATEGORY = Monsters
@@ -1748,6 +1819,8 @@ ResistFire = 900
 ResistElectric = -50
 ResistCold = 150
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{50, 75}
 
 [NPCDef c_spirit_mithril]
 CATEGORY = Monsters
@@ -1815,3 +1888,5 @@ ResistFire = 900
 ResistElectric = -50
 ResistCold = 150
 AggroMode = Hostile
+Loot = i_gold
+Loot = random_reagent,{50, 75}

@@ -38,4 +38,7 @@ MagicResist = 4000 5000
 Tactics = 900 1000
 Wrestling = 900 1000
 Equip = i_sword_broad_iron
+Loot = loot_DAEMON
+Loot = i_gold
+Loot = i_sword_broad_valorite
 AggroMode = Hostile

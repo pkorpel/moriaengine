@@ -25,6 +25,8 @@ Wrestling = 900 1000
 Fame = 1
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_elem
+Loot = i_gold
 AggroMode = Hostile
 
 [NPCDef c_crunch_alenor]
