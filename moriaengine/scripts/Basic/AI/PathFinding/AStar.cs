@@ -28,12 +28,23 @@ namespace SteamEngine.CompiledScripts {
 		private static PriorityQueue<AStarNode, int> openList = new PriorityQueue<AStarNode, int>();
 
 		public static Direction[] GetPathFromTo(IPoint3D start, IPoint3D target, Map map, IMovementSettings settings) {
-			return GetPathFromTo(start, target, map, settings, 1000);
+			return GetPathFromTo(start, target, map, settings, 1000, null);
+		}
+
+		/// <summary>#767 - with a mover, a first step onto a tile another character blocks (see
+		/// CharacterCollision) is treated as impassable, so the path routes around it. Only the
+		/// first step is checked - characters move, and the path is recomputed every step anyway.</summary>
+		public static Direction[] GetPathFromTo(Character mover, IPoint3D target, Map map, IMovementSettings settings) {
+			return GetPathFromTo(mover, target, map, settings, 1000, mover);
 		}
 
 		private static Direction[] emptyArray = new Direction[0];
 
 		public static Direction[] GetPathFromTo(IPoint3D start, IPoint3D target, Map map, IMovementSettings settings, int maxIterations) {
+			return GetPathFromTo(start, target, map, settings, maxIterations, null);
+		}
+
+		private static Direction[] GetPathFromTo(IPoint3D start, IPoint3D target, Map map, IMovementSettings settings, int maxIterations, Character mover) {
 #if DEBUG
 			long ticksStart = HighPerformanceTimer.TickCount;
 			long ticksEnd;
@@ -64,9 +75,14 @@ namespace SteamEngine.CompiledScripts {
 					int newY, newX, newZ;
 					Direction dir = (Direction) d;
 					if (map.CheckMovement(parentNode, settings, dir, false, out newX, out newY, out newZ)) {
+						bool isTarget = (targetX == newX) && (targetY == newY) && (targetZ == newZ);
+						if ((mover != null) && (parentNode.stepsSoFar == 0) && !isTarget &&
+								CharacterCollision.IsTileBlockedFor(mover, map, newX, newY, newZ)) {
+							continue;
+						}
 
 						//we found the target
-						if ((targetX == newX) && (targetY == newY) && (targetZ == newZ)) {
+						if (isTarget) {
 							Direction[] path = new Direction[newStepsSoFar];
 							int i = newStepsSoFar - 1;
 							path[i] = dir;

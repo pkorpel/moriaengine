@@ -2020,6 +2020,21 @@ namespace SteamEngine.CompiledScripts {
 
 		}
 
+		public override bool CheckCharacterObstacles(Map map, int x, int y, int z) {
+			return CharacterCollision.CheckStep(this, map, x, y, z);
+		}
+
+		//#767 - Sphere's @PersonalSpace: someone just shoved past this character. As in Sphere
+		//0.99z8, it fires after the pusher paid the stamina and its return value is ignored.
+		private static TriggerKey personalSpaceTK = TriggerKey.Acquire("personalSpace");
+		public void Trigger_PersonalSpace(Character pusher) {
+			this.TryTrigger(personalSpaceTK, new ScriptArgs(pusher));
+			this.On_PersonalSpace(pusher);
+		}
+
+		public virtual void On_PersonalSpace(Character pusher) {
+		}
+
 		private static ContainerDef backpackDef;
 		private AbstractItem AddBackpack() {
 			this.ThrowIfDeleted();

@@ -1,0 +1,5 @@
+//#767 - attached to the shoved character by CharCollisionTests.TestCharCollision, so the test can
+//see that @personalSpace really fired and who the pusher was
+[triggergroup e_test_personalspace]
+on=@personalSpace
+tag.personalSpacePusher = argv[0]
