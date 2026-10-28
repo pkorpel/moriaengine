@@ -169,6 +169,14 @@ namespace SteamEngine.CompiledScripts {
 			AnimCalculator.PerformAnim(attacker, GetSwingAnim(attacker.WeaponType));
 
 			if (TriggerResult.Cancel != Trigger_BeforeSwing(swingArgs)) {
+				//real-user-reported follow-up: a_tevent_e_summoneater (if the attacker has it)
+				//instantly deletes a summoned-creature defender instead of dealing normal
+				//damage - nothing left to apply critic/stun/knockback/bleed to, so bail out of
+				//the whole swing immediately.
+				if (MonsterSpecialAttacks.TryApplySummonEater(attacker, defender)) {
+					return;
+				}
+
 				// #447/#448: a Mystic's swing deals mind-power magic damage (DamageType.
 				// Mystical, confirmed as this engine's own purpose-built flag for exactly this -
 				// see Enums.cs's "Mystikuv utok" comment) instead of the weapon's normal
@@ -181,6 +189,11 @@ namespace SteamEngine.CompiledScripts {
 				//(if the attacker has it) can still add bonus damage to THIS swing, so it must
 				//run before CauseDamage below, while swingArgs.DamageAfterAC is still mutable.
 				MonsterSpecialAttacks.TryApplyCritic(attacker, swingArgs);
+
+				//real-user-reported follow-up: a_tevent_e_npc_sniper (if the attacker has it)
+				//can also add bonus damage while fighting at range vs a player - same mutable-
+				//DamageAfterAC timing as critic above.
+				MonsterSpecialAttacks.TryApplySniper(attacker, swingArgs);
 
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC);
 
