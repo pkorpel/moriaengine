@@ -1,5 +1,15 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #783 Strangler Vine added to .settings "Monster Abilities" + coverage rule/test
+
+User noticed the #778 strangler vine wasn't on the .settings page and asked that every ability's
+defaults be there, with a note for future work. Added `MonsterAbilitiesSettings.StranglerVineHitsToBreak`.
+An audit found every other monster ability already covered (InfiniteMana/Looter/SummonEater have
+no tunables). New fast-tier `Tests/MonsterAbilitiesSettingsCoverageTests.cs` enforces it by
+reflection; it was red/green verified by renaming the vine property. The rule is now in Workflow
+conventions (bottom of this file) and settings-dialog.md (whose table was also missing the
+Monster Abilities row since #758). Fast tier 152/152.
+
 ## DONE (2026-10-28): #781 knockback/pull went through walls - forced moves now walk by real movement rules
 
 User report: knockback knocked them into a house through its wall. Root cause: `PushAway`
@@ -7800,6 +7810,13 @@ and bin/obj already exist from prior sessions). Full suite:
 
 ## Workflow conventions for this repo (don't re-derive each session)
 
+- **Every ability's default settings go on `.settings` (#783, user rule 2026-10-28).** A new
+  monster ability (or a new tunable field on one) needs a matching pass-through property on
+  `MonsterAbilitiesSettings` ("Monster Abilities" page), named `<Ability><Property>` (e.g.
+  `StranglerVineHitsToBreak`). The fast-tier `MonsterAbilitiesSettingsCoverageTests` enforces it
+  through MonsterSpecialAttacks' lazy `...Def` lookups. Give a new ability one too, or the test
+  won't see it. Any other new tunable system gets its own settings category (see
+  docs/current/03-admin-tooling/settings-dialog.md "Adding a new category").
 - **Keep `docs/current/` updated in the same change, not as a follow-up.** Any code
   change touching a system that already has a page there must update that page in the
   same PR — see the "Documentation" section near the top of this file for the full rule
