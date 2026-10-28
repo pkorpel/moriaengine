@@ -141,6 +141,8 @@ SpiritSpeak = 250
 AnimalTaming = 2000
 Experience = 10 30
 Equip = i_monster_create
+Loot = i_christmas_bulb,{1, 10}
+Loot = i_christmas_bulb,{0, 10}
 ResistPoison = 970
 AggroMode = Hostile
 

@@ -83,6 +83,9 @@ ResistFire = 500 750
 ResistElectric = 500 750
 ResistCold = 500 750
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
+Loot = RANDOM_REAGENT,{50, 70}
 
 [NPCDef 0x3d]
 category = Monsters
@@ -127,6 +130,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef 0x3b]
 category = Monsters
@@ -191,6 +196,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_drake_green]
 CATEGORY = Monsters
@@ -235,6 +242,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_drake_red]
 CATEGORY = Monsters
@@ -273,6 +282,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_drake_blue]
 CATEGORY = Monsters
@@ -317,6 +328,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_drake_copper]
 CATEGORY = Monsters
@@ -356,6 +369,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_drake_silver]
 CATEGORY = Monsters
@@ -401,6 +416,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 930
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_drake_gold]
 CATEGORY = Monsters
@@ -445,6 +462,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 920
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_drake_ice]
 CATEGORY = Monsters
@@ -488,6 +507,8 @@ Equip = i_monster_create
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_drake_black]
 CATEGORY = Monsters
@@ -532,6 +553,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 920
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_wyvern]
 CATEGORY = Monsters
@@ -570,6 +593,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_green]
 CATEGORY = Monsters
@@ -610,6 +635,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_red]
 CATEGORY = Monsters
@@ -649,6 +676,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 850
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_blue]
 CATEGORY = Monsters
@@ -693,6 +722,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 850
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_copper]
 CATEGORY = Monsters
@@ -740,6 +771,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_silver]
 CATEGORY = Monsters
@@ -787,6 +820,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_gold]
 CATEGORY = Monsters
@@ -831,6 +866,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_ice]
 CATEGORY = Monsters
@@ -874,6 +911,8 @@ Equip = i_monster_create
 ResistSummon = 800
 ResistPoison = 800
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_black]
 CATEGORY = Monsters
@@ -918,6 +957,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 700
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef 0xc]
 CATEGORY = Monsters
@@ -966,6 +1007,8 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 500
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef 0x31e]
 CATEGORY = Monsters
@@ -1016,6 +1059,8 @@ ResistPoison = 200
 AggroMode = Hostile
 
 //[SPEECH spk_dragon_lord] //(commented out by Converter) 
+Loot = loot_DRAGON
+Loot = i_gold
 
 [NPCDef c_dragon_beridor]
 CATEGORY = Dungy
@@ -1066,3 +1111,5 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 700
 AggroMode = Hostile
+Loot = loot_DRAGON
+Loot = i_gold

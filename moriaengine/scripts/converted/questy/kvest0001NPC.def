@@ -158,6 +158,10 @@ Parry = 500 750
 Wrestling = 500 700
 Tactics = 500 600
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_Akhbaruv_retizek_01
 AggroMode = Hostile
 
 [NPCDef c_kvest_orc_nevychovanec_02]
@@ -190,6 +194,10 @@ Parry = 500 750
 Wrestling = 500 700
 Tactics = 500 600
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_Akhbaruv_retizek_02
 AggroMode = Hostile
 
 [NPCDef c_kvest_orc_nevychovanec_03]
@@ -222,6 +230,10 @@ Parry = 500 750
 Wrestling = 500 700
 Tactics = 500 600
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_Akhbaruv_retizek_03
 AggroMode = Hostile
 
 [NPCDef c_kvest_orc_nevychovanec_04]
@@ -254,6 +266,11 @@ Parry = 500 750
 Wrestling = 500 700
 Tactics = 500 600
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_kvest_Harghalaghuv_dopis
+Loot = i_Akhbaruv_retizek_04
 AggroMode = Hostile
 
 [NPCDef c_kvest_orc_nevychovanec_05]
@@ -286,6 +303,10 @@ Parry = 800 950
 Wrestling = 500 700
 Tactics = 700 800
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_Akhbaruv_retizek_05
 AggroMode = Hostile
 
 [NPCDef c_kvest_orc_nevychovanec_06]
@@ -318,6 +339,10 @@ Parry = 500 750
 Wrestling = 500 700
 Tactics = 500 600
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_Akhbaruv_retizek_06
 AggroMode = Hostile
 
 [NPCDef c_kvest_orc_nevychovanec_07]
@@ -350,6 +375,10 @@ Parry = 500 750
 Wrestling = 500 700
 Tactics = 500 600
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_Akhbaruv_retizek_07
 AggroMode = Hostile
 
 [NPCDef c_kvest_orc_nevychovanec_08]
@@ -382,6 +411,10 @@ Parry = 500 750
 Wrestling = 500 700
 Tactics = 500 600
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_Akhbaruv_retizek_08
 AggroMode = Hostile
 
 [NPCDef c_kvest_orc_nevychovanec_09]
@@ -414,6 +447,10 @@ Parry = 500 750
 Wrestling = 500 700
 Tactics = 500 600
 Equip = i_monster_create
+Loot = loot_ORC
+Loot = i_gold,{0, 60}
+Loot = i_orc_skull
+Loot = i_Akhbaruv_retizek_09
 AggroMode = Hostile
 
 [NPCDef c_kvest_zlobr_01]
@@ -444,6 +481,8 @@ MagicResist = 1000
 Fame = 100 5000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_TROLL
+Loot = i_gold
 AggroMode = Hostile
 
 [NPCDef c_kvest_zlobr_02]
@@ -474,6 +513,8 @@ MagicResist = 1000
 Fame = 100 5000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_TROLL
+Loot = i_gold
 AggroMode = Hostile
 
 [NPCDef c_kvest_zlobr_03]
@@ -504,6 +545,8 @@ MagicResist = 1000
 Fame = 100 5000
 Karma = -3000
 Equip = i_monster_create
+Loot = loot_TROLL
+Loot = i_gold
 AggroMode = Hostile
 
 [NPCDef c_h_poskok_bratrstva]
@@ -588,6 +631,12 @@ AddSpell = s_fireball
 AddSpell = s_poison
 AddSpell = s_lightning
 Equip = i_monster_create
+Loot = loot_undead
+Loot = loot_undead_body
+Loot = i_gold
+Loot = RANDOM_REAGENT,{10, 50}
+Loot = i_shepherds_crook
+Loot = RANDOM_SCROLL,{ 0, 1 }
 AggroMode = Hostile
 
 [NPCDef c_kvest0001_Lurgug]
@@ -623,4 +672,6 @@ MagicResist = 700
 Fame = 100 2000
 Karma = -4000 -4999
 Equip = i_monster_create
+Loot = loot_OGRE
+Loot = i_gold,{0, 100}
 AggroMode = Hostile

@@ -78,7 +78,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
-			this.npcDef.Create(this.x, this.y, this.z, this.m);
+			//#791 - like Erebor's isResurrectedNPC: the risen monster gets its loot items again,
+			//but no gold (its gold marker stays at 1), so killing it twice doesn't double the gold
+			MonsterLoot.CreatingResurrected = true;
+			try {
+				this.npcDef.Create(this.x, this.y, this.z, this.m);
+			} finally {
+				MonsterLoot.CreatingResurrected = false;
+			}
 		}
 	}
 

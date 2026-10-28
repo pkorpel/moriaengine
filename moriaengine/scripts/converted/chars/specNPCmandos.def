@@ -251,6 +251,7 @@ Int = 100
 Experience = 3 4
 Wrestling = 850 1000
 Equip = i_monster_create
+Loot = i_gold
 ResistPoison = 100
 AggroMode = Hostile
 

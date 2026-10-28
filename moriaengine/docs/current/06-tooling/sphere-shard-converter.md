@@ -83,6 +83,10 @@ that gap:
   (#551 decision #2) so implementing a hook later automatically "lights up" every monster
   already tagged with it.
 
+**Loot (#791).** A chardef's `ON=@NPCRestock` `ITEM=` lines become `Loot = item[,amount]` lines
+(`ConvertedCharDef.ConvertRestockLoot`), with the archive's `i_gold{700 999}` typo and glued-on
+second `ITEM=` repaired - see [Monster loot](../04-gameplay-systems/monster-loot.md).
+
 **Random lists need commas (#763).** Sphere writes weighted random picks as
 `COLOR={ colors_white 9 color_gray_lt 1 }`. LScript can't read that form when an identifier
 comes first, because `name value` is an assignment there. The list collapses into one element,

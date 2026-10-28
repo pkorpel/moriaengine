@@ -1,5 +1,31 @@
 # moriaengine — working state
 
+## DONE (2026-10-28): #791 monster loot - Erebor @NPCRestock loot + i_monster_create gold
+
+Analysis is on #791. **Converter**: `ConvertedCharDef.ConvertRestockLoot` turns each @NPCRestock
+`ITEM=` into `Loot = item[,amount]` (repairs the archive's `i_gold{700 999}` typo and glued-on
+second `ITEM=`). Regenerated: 1,975 Loot lines in 68 files, nothing else changed. 62 files were
+swapped wholesale; DRAGONS/Golems/INSECTS/SPECIAL/UNDEADS (upper-case regen names vs tracked
+lower-case, plus unrelated drift) and systems/aldaron.def got a SURGICAL Loot-line-only insert
+per [NPCDef] section. Gotcha: my `grep -v aldaron` filter also skipped chars/specNPCaldaron.def -
+caught by comparing per-file Loot counts.
+**Engine**: `NPCDef.Loot` + `CreateLoot` (each line compiled once as "ITEM = ..." through
+OpNode_TemplateItem, run into the backpack) in `NPC.On_Create`. Then, for "Equip =
+i_monster_create" NPCs, `scripts/Basic/Loot/MonsterLoot.ApplyCreatureStart` (no marker item is
+created): gold = ExperienceReward*750/1000 (900 on dungeon planes 2,10-15), a magic-item
+roll -> PLACEHOLDER log only, rare extras (coal/ebony crystal/bowstring/treasure map), i_nofame
+(dormant - only Veterinary resurrection hands it out in Erebor), exp 1-9 -> 10. Self-res'd
+monsters get no gold (MonsterLoot.CreatingResurrected around SelfRes's Create).
+`LootSettings` (.settings "Loot").
+**Template-engine fixes needed along the way**: OpNode_TemplateItem now skips amount <= 0 (Sphere
+semantics; it used to create EMPTY stacks for `{0 1}` rolls). Container.NewItem returns null when
+a template fills the container itself (it used to DELETE the backpack - loot_cyclops's tm_rocks).
+**Verified**: fast tier 168/168 (MonsterLootFormulaTests). Protocol 14/14: MonsterLootTests (orc
+gold == formula, loot in pack + corpse; cyclops backpack survives; 20 ogres with no zero-amount
+items) + NpcStartingEquipment/NpcGuardContent/HealerNpcSpawn/MonsterSpecialAttacks.
+**Follow-ups, not done**: 189 human NPCs (vendors/trainers/quest) keep ITEMNEWBIE/COLOR clothing
+and SELL in @NPCRestock - still unconverted; the elite-monster transform; real magic items.
+
 ## QUEUED (2026-10-28): #788 - user said "leave it for a bit later, we will have more work around these things"
 
 The 6 pre-existing CombatDepthTestsA/MagerySpellTests failures uncovered by the #786 fix (NPC
