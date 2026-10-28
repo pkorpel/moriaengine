@@ -257,8 +257,9 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#488 - defensive test-only cleanup for a Hostile summon (Blade Spirits).
 		/// TestCastGroundTargetedSpellNearSelf's own `distance` parameter already keeps it
-		/// outside NPCAiTimer.AggroRange (8) so it never actually engages the test caster in the
-		/// first place - this is belt-and-suspenders on top of that, not the primary defense.
+		/// outside NpcAggroSettings.instance.aggroRange (#762, default 14) so it never actually
+		/// engages the test caster in the first place - this is belt-and-suspenders on top of
+		/// that, not the primary defense.
 		/// Deliberately a plain property set (AggroMode), nothing that touches the NPC's
 		/// lifecycle: both outright Thing.Delete() and CauseDeath were tried against an
 		/// ACTIVELY-ENGAGED NPC (back when distance wasn't yet used to avoid engagement at all)
@@ -378,8 +379,11 @@ namespace SteamEngine.CompiledScripts {
 		/// rather than throwing if it's already despawned, so the same command can confirm both
 		/// "it appeared" (shortly after casting) and "it's gone" (after the duration elapses).
 		/// Range widened from 5 to 20 for #488's own Blade Spirits test, which deliberately
-		/// summons well outside NPCAiTimer.AggroRange (8) - see
-		/// TestCastGroundTargetedSpellNearSelf's own doc comment for why.</summary>
+		/// summons outside NpcAggroSettings.instance.aggroRange (#762, default 14 - was
+		/// NPCAiTimer.AggroRange=8 before that setting shipped) - see
+		/// TestCastGroundTargetedSpellNearSelf's own doc comment for why, and for why the
+		/// distance can't just be pushed arbitrarily far out (Globals.MaxUpdateRange=18 is a
+		/// hard ceiling on ground-targeted casts, unrelated to aggro).</summary>
 		[SteamFunction]
 		public static void TestReportNearbySummon(Character self) {
 			foreach (AbstractCharacter ac in self.GetMap().GetCharsInRange(self.X, self.Y, 20)) {
@@ -437,7 +441,8 @@ namespace SteamEngine.CompiledScripts {
 		/// outside the spellbook's slot range), Blade Spirits/Summon Creature are real content
 		/// with real ids, so no dedicated scroll workaround is needed here. `distance` matters
 		/// specifically for a Hostile summon (Blade Spirits) - anything beyond
-		/// NPCAiTimer.AggroRange (8) from self never autonomously engages its own caster at all,
+		/// NpcAggroSettings.instance.aggroRange (#762, default 14) from self never
+		/// autonomously engages its own caster at all,
 		/// which matters because deleting (or even CauseDeath-ing) an ACTIVELY-ENGAGED NPC was
 		/// confirmed directly to hang the whole server (a real NPCAiTimer-tick-thread-vs-command-
 		/// thread concurrency hazard, flagged not fixed here) - an idle, never-engaged NPC has no

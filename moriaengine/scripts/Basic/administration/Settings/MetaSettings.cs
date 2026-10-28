@@ -125,6 +125,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("NPC Aggro")]
+		public NpcAggroSettings NpcAggroSettings {
+			get {
+				return NpcAggroSettings.instance;
+			}
+		}
+
 		[InfoField("Logout")]
 		public LogoutSettings LogoutSettings {
 			get {
