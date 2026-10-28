@@ -105,3 +105,22 @@ override that seeds instance state other code might read during `On_EnterRegion`
 account for that ordering - see the item-decay and corpse-ownership examples in
 [item-decay.md](../04-gameplay-systems/item-decay.md) for how this was actually hit and
 worked around.
+
+## Deleting a Thing (#206, #786)
+
+`Thing.InternalDeleteNoRFV()` (the core of every `Delete()`) runs in this order:
+1. `Trigger_Destroy()` - fires `@destroy`, deletes contained items, and (characters) removes
+   it from the map and marks it **limbo**.
+2. `base.Delete()` - tears down plugins, trigger groups and timers.
+3. Frees the uid; `IsDeleted` is true from here on.
+
+Step 1 has to come before step 2 so that per-instance `@destroy` handlers still exist when
+`@destroy` fires (#206, see [Spawning](../04-gameplay-systems/spawning.md)). As a result, a
+Thing is in limbo but **not yet deleted** while its plugins tear down, and a plugin's
+`On_UnAssign` can legitimately touch it (e.g. `WeaponSkillTargetQueuePlugin` aborting the
+current skill). `TagHolder.ThrowIfDeleted()` normally treats "limbo while the server runs" as a
+stray-object bug and deletes the Thing; during a delete that used to restart the delete from
+inside itself, forever, until GameCore died with a stack overflow (exit 134) - any NPC deleted
+mid-swing, e.g. by a test's cleanup (#786). Now `Thing.IsBeingDeleted` is true for the whole
+of `InternalDeleteNoRFV()`: a nested delete returns at once, and `ThrowIfDeleted()` leaves a
+Thing that's being deleted alone. Regression test: `Tests/Protocol/DeleteFightingNpcTests.cs`.
