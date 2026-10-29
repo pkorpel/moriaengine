@@ -658,4 +658,22 @@
   <data name="RegionEventsLoc_mountRefuses" xml:space="preserve">
     <value>Your mount refuses to go any further.</value>
   </data>
+  <data name="SkillTeacherLoc_DamagedCharacter" xml:space="preserve">
+    <value>Your character is damaged... use your crystal or call a GM.</value>
+  </data>
+  <data name="SkillTeacherLoc_UnderMagic" xml:space="preserve">
+    <value>You must not be under any magical influence.</value>
+  </data>
+  <data name="SkillTeacherLoc_NotReadyYet" xml:space="preserve">
+    <value>You are not ready for the next lesson yet.</value>
+  </data>
+  <data name="SkillTeacherLoc_ReachedYourMaximum" xml:space="preserve">
+    <value>You have reached your maximum in {0}.</value>
+  </data>
+  <data name="SkillTeacherLoc_TrainMore" xml:space="preserve">
+    <value>You must train more before the next lesson.</value>
+  </data>
+  <data name="SkillTeacherLoc_LevelTooLow" xml:space="preserve">
+    <value>Your level is too low.</value>
+  </data>
 </root>

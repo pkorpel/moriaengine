@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
@@ -249,6 +250,7 @@ namespace SteamEngine.Converter {
 			} else {
 				this.headerType = "NPCDef";
 				this.ConvertRestockLoot();
+				this.ConvertTeacherSkill();
 				//#656 - flush the accumulated resist fields exactly once each, now that both the
 				//rare top-level LineImplTask path and the @Create-body path have had their chance
 				//to populate pendingResistFields (both run inside base.ThirdStage() above).
@@ -910,6 +912,54 @@ namespace SteamEngine.Converter {
 			{ "blacksmithing", "Blacksmith" },
 			{ "veterinary", "Veterinary" }
 		};
+
+		//#828 - the teachers' skill names that skillNameAliases doesn't cover (kept separate so the
+		//@Create skill-value handling above doesn't start converting more chardefs' skill lines)
+		private static readonly Dictionary<string, string> teacherSkillAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
+			{ "ei", "EvalInt" },
+			{ "enticement", "Discordance" },
+			{ "itemid", "ItemID" },
+			{ "begging", "Begging" },
+			{ "camping", "Camping" },
+			{ "cartography", "Cartography" },
+			{ "herding", "Herding" },
+			{ "musicianship", "Musicianship" },
+			{ "removetrap", "RemoveTrap" },
+			{ "snooping", "Snooping" },
+			{ "stealing", "Stealing" },
+			{ "tasteid", "TasteID" },
+			{ "tracking", "Tracking" }
+		};
+
+		private static readonly Regex ucimskillRE = new Regex(@"^\s*tag\(\s*ucimskill\s*,\s*(?<skill>\w+)\s*\)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+		/// <summary>#828 - Erebor's skill teachers (chars/ucitele.scp) name the one skill they teach in
+		/// ON=@userclick: "tag(ucimskill,anatomy)" (set on the first click). Emitted as the NPCDef's
+		/// TeachesSkill, in SkillName terms - the engine's SkillTeacherSpeech (spk_mistr) reads it.</summary>
+		private void ConvertTeacherSkill() {
+			TriggerSection click = this.origData.GetTrigger("userclick");
+			if (click == null) {
+				return;
+			}
+			using (StringReader reader = new StringReader(click.Code.ToString())) {
+				string line;
+				while ((line = reader.ReadLine()) != null) {
+					Match m = ucimskillRE.Match(line);
+					if (m.Success) {
+						this.Set("TeachesSkill", TeacherSkillName(m.Groups["skill"].Value), "");
+						return;
+					}
+				}
+			}
+		}
+
+		private static string TeacherSkillName(string archiveName) {
+			string name;
+			if (skillNameAliases.TryGetValue(archiveName, out name) || teacherSkillAliases.TryGetValue(archiveName, out name)) {
+				return name;
+			}
+			return archiveName;
+		}
 
 		//can/aggromode/combatspell/experience/tamingdifficulty are all NPCDef-only fields
 		//(confirmed live in NPC.cs/AbstractCharacterDef.cs, #551) - comment them out rather

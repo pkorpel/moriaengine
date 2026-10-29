@@ -658,4 +658,22 @@
   <data name="RegionEventsLoc_mountRefuses" xml:space="preserve">
     <value>Tvé zvíře odmítá jít dál.</value>
   </data>
+  <data name="SkillTeacherLoc_DamagedCharacter" xml:space="preserve">
+    <value>Máš poškozenou postavu... použij svůj krystal nebo zavolej GM...</value>
+  </data>
+  <data name="SkillTeacherLoc_UnderMagic" xml:space="preserve">
+    <value>Nesmíš být pod žádným magickým vlivem...</value>
+  </data>
+  <data name="SkillTeacherLoc_NotReadyYet" xml:space="preserve">
+    <value>Ještě nejsi připraven na další lekci.</value>
+  </data>
+  <data name="SkillTeacherLoc_ReachedYourMaximum" xml:space="preserve">
+    <value>Dosáhl jsi svého maxima {0}.</value>
+  </data>
+  <data name="SkillTeacherLoc_TrainMore" xml:space="preserve">
+    <value>Před další lekcí musíš ještě trénovat.</value>
+  </data>
+  <data name="SkillTeacherLoc_LevelTooLow" xml:space="preserve">
+    <value>Jsi na moc nízké úrovni.</value>
+  </data>
 </root>
