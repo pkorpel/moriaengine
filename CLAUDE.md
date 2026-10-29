@@ -1,5 +1,23 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-10-29): #827 spk_healer DONE (PR pending) -> next #828 spk_mistr
+
+User: "go for 827 and then 828". **#827 finding**: Erebor's healers (NPC=brain_vendor, not invul, SpiritSpeak
+55-78) can't understand ghost speech (0.99z8 CanUnderstandGhost: healer brain | SpiritSpeak flag | dead | INVUL |
+GM), so spk_healer's "res" never reached a ghost - ghosts were resurrected by SINGLE-CLICKING a healer within <5
+tiles (e_healer @userclick). Here no NPC sees a ghost (Flag_Insubst), so none hears one either - same outcome.
+**Done**: HealerSpeech (spk_healer: outcast -> "cursed by the gods" sysmessage; dead speaker seen -> resurrect),
+HealerAbilityDef (upgraded a_tevent_e_healer stub; Character.On_Click hook; HealerClickRange=4 on .settings),
+shared Healer (MonsterSpecialAttacks/Healer.cs), SpellDef.ApplyEffectChar = Sphere SPELLEFFECT (s_resurrection
+at 1000, no region permission check). Realm outcast = GondorOutcast/MordorOutcast (archive tag.realm<0, "vyvrhel").
+**Found #831**: CompiledLocStringCollection entries come ONLY from Common/Localisation/Resources/GameText*.resx
+(key Class_field) - field initializers are ignored and Languages/*.txt overlays are dead since #104. RegionEventsLoc
+(#821) had no resx entries -> all region messages were "<LocalisationEntryNotAvailable>" in game; fixed (en + Erebor
+Czech). LocalizationVerification's 8 missing = FishingLoc/LumberjackingLoc (pre-existing); it doesn't count keys
+absent from resx entirely (null, not the sentinel) - that's why #821 slipped through.
+Verified: HealerTests (5 cases, red with the stub back), RegionEventTests, fast 198/198, ItemRefuser/Batch4 green,
+MagerySpellTests only the 4 known summons/reveal. Boot timeouts under load (>60s) needed a rerun.
+
 ## DONE (2026-10-29): #826 port spk_guard (branch 826-spk-guard)
 
 User: "go for it" (first #825 port). Erebor [speech spk_guard] (systems/npc_ai.scp): *guard*/*straz* -> guard

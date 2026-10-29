@@ -2317,6 +2317,11 @@ namespace SteamEngine.CompiledScripts {
 		/// uses the exact same GetHighlightColorFor result, just converted to the separate hue
 		/// value the name-text packet needs (Notoriety.GetNameHue).</summary>
 		public override void On_Click(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
+			NPC asNpc = this as NPC;
+			Character clickingChar = clicker as Character;
+			if ((asNpc != null) && (clickingChar != null) && MonsterSpecialAttacks.TryHealerClick(asNpc, clickingChar)) {
+				return; //#827 e_healer turned a realm outcast away (Sphere's @userclick return 1)
+			}
 			int hue = Notoriety.GetNameHue(this.GetHighlightColorFor(clicker));
 			PacketSequences.SendNameFrom(clickerConn, this, this.Name, hue);
 		}

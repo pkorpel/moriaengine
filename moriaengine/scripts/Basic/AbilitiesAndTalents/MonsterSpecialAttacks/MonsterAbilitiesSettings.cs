@@ -586,6 +586,12 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.ItemRefuserDef != null) { MonsterSpecialAttacks.ItemRefuserDef.Message = value; } }
 		}
 
+		//#827 - e_healer: how close a ghost must be to the healer it clicks
+		public int HealerClickRange {
+			get { return (MonsterSpecialAttacks.HealerDef != null) ? MonsterSpecialAttacks.HealerDef.ClickRange : 0; }
+			set { if (MonsterSpecialAttacks.HealerDef != null) { MonsterSpecialAttacks.HealerDef.ClickRange = value; } }
+		}
+
 		public double[] DispelBombChance {
 			get { return MonsterSpecialAttacks.DispelBombDef?.Chance; }
 			set { if (MonsterSpecialAttacks.DispelBombDef != null) { MonsterSpecialAttacks.DispelBombDef.Chance = value; } }

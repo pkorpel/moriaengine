@@ -634,4 +634,28 @@
   <data name="loc_silence_YoureSilenced" xml:space="preserve">
     <value>You're silenced so you can't cast any spells</value>
   </data>
+  <data name="HealerLoc_CursedByTheGods" xml:space="preserve">
+    <value>Jsi stižen kletbou bohů a vyvržen z tohoto světa. Nemohu tě navrátit k životu.</value>
+  </data>
+  <data name="RegionEventsLoc_enteredMines" xml:space="preserve">
+    <value>Sestoupil(a) jsi do dolů.</value>
+  </data>
+  <data name="RegionEventsLoc_leftMines" xml:space="preserve">
+    <value>Opouštíš doly.</value>
+  </data>
+  <data name="RegionEventsLoc_enteredSafeZone" xml:space="preserve">
+    <value>Nyní jsi v bezpečné zóně.</value>
+  </data>
+  <data name="RegionEventsLoc_leftSafeZone" xml:space="preserve">
+    <value>Opustil(a) jsi bezpečnou zónu.</value>
+  </data>
+  <data name="RegionEventsLoc_noFieldSpell" xml:space="preserve">
+    <value>Toto kouzlo zde nejde použít.</value>
+  </data>
+  <data name="RegionEventsLoc_noTeleport" xml:space="preserve">
+    <value>Nesnaž se podvádět!</value>
+  </data>
+  <data name="RegionEventsLoc_mountRefuses" xml:space="preserve">
+    <value>Tvé zvíře odmítá jít dál.</value>
+  </data>
 </root>

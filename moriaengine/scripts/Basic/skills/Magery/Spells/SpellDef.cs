@@ -659,7 +659,10 @@ namespace SteamEngine.CompiledScripts {
 			if (!this.CheckPermissionIncoming(spellEffectArgs.Caster, target)) {
 				return;
 			}
+			this.RunEffectChar(target, spellEffectArgs);
+		}
 
+		private void RunEffectChar(Character target, SpellEffectArgs spellEffectArgs) {
 			Character caster = spellEffectArgs.Caster;
 			var result = caster.TryCancellableTrigger(tkCauseSpellEffect, spellEffectArgs.scriptArgs);
 			if (result != TriggerResult.Cancel) {
@@ -835,6 +838,14 @@ namespace SteamEngine.CompiledScripts {
 			if (this.CheckSpellPowerWithMessage(sea)) {
 				this.Trigger_EffectChar(target, sea);
 			}
+		}
+
+		/// <summary>#827 - Sphere's SPELLEFFECT: this spell's effect on `target` at a fixed power, without casting
+		/// it - no region rules, no power check (e.g. a healer NPC resurrecting a ghost with s_resurrection).</summary>
+		public void ApplyEffectChar(Character source, Character target, int spellPower, EffectFlag sourceType) {
+			SpellEffectArgs sea = SpellEffectArgs.Acquire(source, target, target, this, spellPower, sourceType);
+			this.MakeSound(target);
+			this.RunEffectChar(target, sea);
 		}
 
 		//TODO:  versions for item and ground
