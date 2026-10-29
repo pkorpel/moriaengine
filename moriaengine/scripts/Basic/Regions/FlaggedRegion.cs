@@ -342,10 +342,37 @@ namespace SteamEngine.Regions {
 			}
 		}
 
-		private void LoadSpecificFlag(string filename, int line, int mask, string args) {
+		/// <summary>#818 - a Sphere FLAGS bit (the flag_* names are Sphere's), in the engine's terms.</summary>
+		private void LoadSpecificFlag(string filename, int line, int sphereMask, string args) {
 			if (ConvertTools.ParseBoolean(args)) {//args is 1 or true or something like that
-				this.flags |= (RegionFlags) mask;
+				this.flags |= FromSphereFlags(sphereMask);
 			}
+		}
+
+		/// <summary>#818 - Sphere 0.99z8's region FLAGS bits in the engine's RegionFlags. They agree
+		/// only from 0x800 up (underground, nodecay, safe, guarded, nopvp, arena); below that Sphere's
+		/// bits are anti-magic rules that mean other things here (Sphere's 0x02 "no recall in" is our
+		/// NoMagicOut). Recall, gate and the Teleport spell have no separate rule in the engine, so
+		/// they become NoTeleportingIn/Out; ship, nobuilding, announce and instalogout have no
+		/// equivalent and are dropped. The converter uses this for the archive map's FLAGS.</summary>
+		public static RegionFlags FromSphereFlags(int sphere) {
+			RegionFlags result = (RegionFlags) (sphere & 0x1f800); //underground, nodecay, safe, guarded, nopvp, arena: same bits
+			if ((sphere & 0x01) != 0) { //ANTIMAGIC_ALL
+				result |= RegionFlags.NoMagicIn | RegionFlags.NoMagicOut;
+			}
+			if ((sphere & 0x02) != 0) { //ANTIMAGIC_RECALL_IN
+				result |= RegionFlags.NoTeleportingIn;
+			}
+			if ((sphere & 0x04) != 0) { //ANTIMAGIC_RECALL_OUT
+				result |= RegionFlags.NoTeleportingOut;
+			}
+			if ((sphere & 0x18) != 0) { //ANTIMAGIC_GATE, ANTIMAGIC_TELEPORT
+				result |= RegionFlags.NoTeleportingIn | RegionFlags.NoTeleportingOut;
+			}
+			if ((sphere & 0x20) != 0) { //ANTIMAGIC_DAMAGE
+				result |= RegionFlags.NoHarmfulMagicIn | RegionFlags.NoHarmfulMagicOut;
+			}
+			return result;
 		}
 
 		private void LoadSpecificFlag(RegionFlags mask, string args) {
