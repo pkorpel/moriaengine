@@ -36,8 +36,21 @@ within 6 by 6-dist tiles), e_npc_magicshield (11, absorb shield% (def 90) of swi
 high-level Mystics; engine has no silence so no bypass), e_autoreflect (10, re-arm magic
 reflection after every received swing). New defender-side hooks in DamageManager.ProcessSwing
 (before/after CauseDamage) + CauseDamage attacker recording for explode.
-**Batch 5** (after 4 ships): e_backstub, e_eye, e_npc_multishot, e_explosiondispell,
-e_duplicator, e_npc_massleap, e_npc_warcry, e_craft_monster, e_golem.
+**Batch 5** (#799, started right after batch 4 was committed locally as 8831e43, same branch):
+e_explosiondispell (dispel bomb, BoundTimer fuse), e_npc_multishot (reuses AreaCurseAbilityDef,
+triggered when hit, physical), e_eye, e_golem, e_backstub, e_npc_massleap, e_duplicator,
+e_craft_monster (+ new crafted-by tag in CraftingSkillDef), e_npc_warcry (range 8 - archive value
+is a runtime setting). User decisions: mass leap FAITHFUL teleport hops; backstab FAITHFUL
+(x3/5, tunable on .settings).
+**Batch 5 status (2026-10-29, resumed after a session crash)**: code, converter regen (36 files,
+additive) and test content (Tests/BackstabFormulaTests.cs, Tests/Protocol/MonsterAbilitiesBatch5Tests.cs,
+scripts/Tests/MonsterAbilitiesBatch5Test(s).def/.cs) were all on disk uncommitted. Batch 4 merged as
+PR #801. Fixed the protocol test's stray brace; fast tier 196/196. The timed test hung ~2 in 3:
+the dispel bomb deleting an unowned summon hit **#798**, root-caused via dotnet-stack as a Timer
+lock-order deadlock and fixed separately (PR #803, merged; see its DONE entry). Fresh converter regen
+diffs to 0. Docs: monster-abilities.md + settings-dialog.md. Then rebase on main, re-verify, PR,
+merge, close #799. The 10-21 *RealRestart*/StaticMemberPersistence untracked files are old #536
+debris - not part of batch 5, leave them out of the commit.
 Issue: #797 (batch 4). User decisions: hazard tiles ALSO hit standers when they appear; all 3 curses (incl. shipped Dark Curse) faithful - spare the current target, 5x vs pets - AND both rules switchable on .settings per curse (user follow-up: NpcCurse/NpcCurseMana/NpcCurseStam SpareCurrentTarget + PetMultiplier).
 **Status (batch 4)**: code + converter regen (26 files, purely additive, fresh regen diffs to 0) + docs
 (new docs/current/04-gameplay-systems/monster-abilities.md) done. Fast tier 193/193. Protocol:
