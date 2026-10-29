@@ -2099,6 +2099,12 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_StepTaken(bool running) {
 			MovementStamina.DrainForStep(this, running);
 			MonsterSpecialAttacks.OnStepTaken(this); //#797 hazard tiles, e_inexhaustible
+			RegionEventSystem.OnStepTaken(this); //#813 e_nohorse, e_nohorsehigh
+		}
+
+		//#813 - the archive's region events (r_nosumon, r_SafeZone...)
+		public override void On_RegionChanged(Region oldRegion, Region newRegion) {
+			RegionEventSystem.Transition(this, oldRegion, newRegion);
 		}
 
 		//#767 - Sphere's @PersonalSpace: someone just shoved past this character. As in Sphere
