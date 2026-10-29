@@ -72,6 +72,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutput("GATHERING_DELAY_SPED_UP:", TimeSpan.FromSeconds(10)));
 
 				var (x, y, z) = client.ReadSpawnPosition(TimeSpan.FromSeconds(10));
+				this.ForceCopperVein(client, x, y); //#813 - open rock is mostly empty now
 
 				client.SendSkillUse(45); // Mining
 				Thread.Sleep(300);
@@ -113,6 +114,10 @@ namespace SteamEngine.Tests.Protocol {
 				string foliageLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "FOLIAGE_FOUND:");
 				Assert.DoesNotContain("none", foliageLine);
 				var (fx, fy, fz, model) = ExtractFoliage(foliageLine);
+				//#813 - open-world trees roll from their region, about a third are empty
+				int markForce = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestForceWoodVein " + fx + " " + fy + " \"spruce\" 5");
+				Assert.True(this.fixture.WaitForGameOutputSince("WOOD_VEIN_FORCED:", markForce, TimeSpan.FromSeconds(10)), "no WOOD_VEIN_FORCED");
 
 				client.SendSkillUse(44); // Lumberjacking
 				Thread.Sleep(300);
@@ -165,6 +170,7 @@ namespace SteamEngine.Tests.Protocol {
 				uint backpackUid = ParseLabelledUInt(setupLine, "backpack=");
 
 				var (x, y, z) = client.ReadSpawnPosition(TimeSpan.FromSeconds(10));
+				this.ForceCopperVein(client, x, y); //#813 - open rock is mostly empty now
 
 				//real client behavior: a container must be "open" before anything inside it can
 				//be targeted/dclicked (OpenedContainers.HasContainerOpenFromAt) - a real client
@@ -439,6 +445,14 @@ namespace SteamEngine.Tests.Protocol {
 				end++;
 			}
 			return uint.Parse(text.Substring(0, end), System.Globalization.CultureInfo.InvariantCulture);
+		}
+
+		/// <summary>#813 - what a rock spot holds comes from its region (r_default_rock: about 93%
+		/// nothing), so a test that needs ore puts a copper vein on the spot first.</summary>
+		private void ForceCopperVein(TestGameClient client, int x, int y) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestForceVein " + x + " " + y + " \"copper\" 5");
+			Assert.True(this.fixture.WaitForGameOutputSince("VEIN_FORCED:", mark, TimeSpan.FromSeconds(10)), "no VEIN_FORCED");
 		}
 
 		private static string LastLineContaining(string output, string marker) {

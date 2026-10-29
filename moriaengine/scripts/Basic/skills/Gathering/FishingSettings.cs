@@ -43,10 +43,8 @@ namespace SteamEngine.CompiledScripts {
 
 		public static FishingSettings instance = new FishingSettings();
 
-		// ---- Junk-fish / treasure-map catch (#271) ----
+		// ---- Junk-fish / treasure-map catch (#271; how often junk is caught comes from the region since #813) ----
 
-		public int junkChanceNumerator { get { return FishingCatchSystem.JunkChanceNumerator; } set { FishingCatchSystem.JunkChanceNumerator = value; } }
-		public int junkChanceDenominator { get { return FishingCatchSystem.JunkChanceDenominator; } set { FishingCatchSystem.JunkChanceDenominator = value; } }
 		public int treasureMapChanceNumerator { get { return FishingCatchSystem.TreasureMapChanceNumerator; } set { FishingCatchSystem.TreasureMapChanceNumerator = value; } }
 		public int treasureMapChanceDenominator { get { return FishingCatchSystem.TreasureMapChanceDenominator; } set { FishingCatchSystem.TreasureMapChanceDenominator = value; } }
 		public string junkCrateDefname { get { return FishingCatchSystem.JunkCrateDefname; } set { FishingCatchSystem.JunkCrateDefname = value; } }

@@ -23,42 +23,47 @@ namespace SteamEngine.Tests.Protocol {
 			this.fixture = servers;
 		}
 
+		/// <summary>#813 - the world's water rolls from the archive's r_default_water region type
+		/// (100 nothing / 29 fish / 10 junk fish): about seven in ten spots hold nothing, fish beat junk.</summary>
 		[Fact]
-		public void CatchRollProducesFishJunkCratesAndTreasureMapCrates() {
+		public void WaterRegionRollFollowsTheArchive() {
 			using (var client = this.ConnectLoginAndCreateCharacter("FishCatchChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				// Forced ~1/2 junk and ~1/2-of-junk map inside the SteamFunction, so 2000 samples
-				// comfortably exercise all three branches without being flaky.
-				client.SendSpeech(".TestSampleFishingCatch 2000");
-				Assert.True(this.fixture.WaitForGameOutputSince("FISHING_CATCH_SAMPLE:", mark, TimeSpan.FromSeconds(15)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "FISHING_CATCH_SAMPLE:");
+				client.SendSpeech(".TestSampleWaterRegionRoll 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("WATER_REGION_SAMPLE:", mark, TimeSpan.FromSeconds(15)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "WATER_REGION_SAMPLE:");
+				int nothing = ExtractInt(line, "nothing=");
 				int fish = ExtractInt(line, "fish=");
 				int junk = ExtractInt(line, "junk=");
-				int junkWithMap = ExtractInt(line, "junkWithMap=");
-				// All three outcomes must actually occur at these forced generous odds.
-				Assert.True(fish > 0, "Expected some plain-fish catches: " + line);
-				Assert.True(junk > 0, "Expected some junk-crate catches: " + line);
-				Assert.True(junkWithMap > 0, "Expected some junk-crate-with-map catches: " + line);
-				// Plain junk (no map) should clearly outnumber map-bearing junk at ~1/2 map odds.
-				Assert.True(junk + junkWithMap > fish / 4, "Expected a substantial junk share at forced odds: " + line);
+				Assert.True(nothing > 2400 && nothing < 3200, "Expected about 70 percent nothing: " + line);
+				Assert.True(fish > junk && junk > 0, "Expected fish more common than junk, and some junk: " + line);
 			}
 		}
 
+		/// <summary>#813 - a spot holds what it rolled until its pool runs out, then nothing; an
+		/// under-skilled fisher gets w_fish1 instead (Erebor's fixresource); junk fish keep the junk
+		/// crate payoff.</summary>
 		[Fact]
-		public void FishVarietyRollYieldsOnlyRealFishAcrossMultipleKinds() {
-			using (var client = this.ConnectLoginAndCreateCharacter("FishVarietyChecker")) {
-				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSampleFishingFishVariety 600");
-				Assert.True(this.fixture.WaitForGameOutputSince("FISHING_FISH_VARIETY_SAMPLE:", mark, TimeSpan.FromSeconds(15)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "FISHING_FISH_VARIETY_SAMPLE:");
-				int fishWithItem = ExtractInt(line, "fishWithItem=");
-				int distinctKinds = ExtractInt(line, "distinctKinds=");
-				// With junk forced off, every one of the 600 catches must be a real fish item.
-				Assert.Equal(600, fishWithItem);
-				// 600 uniform draws over 6 kinds must realistically hit more than one kind - a
-				// generous >1 bound catches a broken "always the same fish" roll without flaking.
-				Assert.True(distinctKinds > 1, "Expected the fish-variety roll to vary across kinds: " + line);
+		public void SpotPoolSkillGateAndJunk() {
+			this.EnsureAutoAccountCreationEnabled(); //AccountB - "protocoltest" is at its 5-character cap
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "FishSpotChecker")) {
+				AssertHas(this.SpotCatches(client, "w_fish3", 1000), "Fish:i_fish_big_3 Fish:i_fish_big_3 Nothing:none");
+				AssertHas(this.SpotCatches(client, "w_jf1", 0), "Fish:i_fish_big_1 Fish:i_fish_big_1 Nothing:none");
+				string junk = this.SpotCatches(client, "w_jf1", 1000);
+				Assert.True(junk.Contains("JunkCrate", StringComparison.Ordinal) && junk.Contains("i_crate_small", StringComparison.Ordinal) && junk.EndsWith("Nothing:none", StringComparison.Ordinal), "Expected two junk crates then nothing: " + junk);
 			}
+		}
+
+		private string SpotCatches(TestGameClient client, string resource, int skill) {
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".TestFishingSpotCatches \"" + resource + "\" " + skill);
+			string marker = "FISHING_SPOT_CATCHES: " + resource + " skill=" + skill;
+			Assert.True(this.fixture.WaitForGameOutputSince(marker, mark, TimeSpan.FromSeconds(15)), "no " + marker);
+			return LastLineContaining(this.fixture.GameOutputSnapshot(), marker).TrimEnd('\r');
+		}
+
+		private static void AssertHas(string line, string expected) {
+			Assert.True(line.Contains(expected, StringComparison.Ordinal), "Expected '" + expected + "' in: " + line);
 		}
 
 		[Fact]
@@ -79,18 +84,6 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(total > 0 && total < 4000, "Expected roughly 1/750 of 40000 attempts to ambush: " + line);
 				// Frog is ~49% of triggers, the kraken bucket only ~3% - frog should clearly dominate.
 				Assert.True(frog > kraken * 3, "Expected frog ambushes to be rolled far more often than kraken: " + line);
-			}
-		}
-
-		[Fact]
-		public void JunkChanceEditWritesThroughToLiveSystem() {
-			using (var client = this.ConnectLoginAndCreateCharacter("FishSettingsJunkChecker")) {
-				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSetJunkChanceViaFishingSettings 3 7");
-				Assert.True(this.fixture.WaitForGameOutputSince("FISHING_SETTINGS_JUNK_SET:", mark, TimeSpan.FromSeconds(30)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "FISHING_SETTINGS_JUNK_SET:");
-				Assert.Contains("num=3", line);
-				Assert.Contains("den=7", line);
 			}
 		}
 

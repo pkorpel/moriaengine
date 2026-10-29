@@ -20,7 +20,8 @@ using System.Globalization;
 
 namespace SteamEngine.CompiledScripts {
 
-	/// <summary>Server-side helpers for Fishing's catch + ambush tests (#271). Mirrors the
+	/// <summary>Server-side helpers for Fishing's catch + ambush tests (#271; catch reworked onto
+	/// region resources in #813). Mirrors the
 	/// LumberjackingVeinSystemTests / LumberjackingSettingsTests server-side helper shape - drives
 	/// the real FishingCatchSystem.Catch / FishingAmbushSystem.TryAmbush / FishingSettings
 	/// write-through paths and reports a greppable line back over the game console for the
@@ -28,82 +29,45 @@ namespace SteamEngine.CompiledScripts {
 	/// rolls) for the probabilistic paths, same precedent as the sibling systems.</summary>
 	public static class FishingCatchSystemTests {
 
-		/// <summary>Samples `attempts` catches, reporting how many were fish vs junk crates vs
-		/// junk-crates-with-map. Temporarily forces generous junk/map chances so a reasonable
-		/// sample size exercises all three branches, then restores the real defaults so the test
-		/// run leaves no global side effect (the chances are process-wide mutable statics).</summary>
+		/// <summary>#813 - samples the archive's r_default_water region type (what most of the
+		/// world's water rolls from): how many picks are nothing / fish / junk fish.</summary>
 		[SteamFunction]
-		public static void TestSampleFishingCatch(Character self, ScriptArgs sa) {
+		public static void TestSampleWaterRegionRoll(Character self, ScriptArgs sa) {
 			int attempts = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
-
-			int savedJunkNum = FishingCatchSystem.JunkChanceNumerator;
-			int savedJunkDen = FishingCatchSystem.JunkChanceDenominator;
-			int savedMapNum = FishingCatchSystem.TreasureMapChanceNumerator;
-			int savedMapDen = FishingCatchSystem.TreasureMapChanceDenominator;
-			try {
-				FishingCatchSystem.JunkChanceNumerator = 1;
-				FishingCatchSystem.JunkChanceDenominator = 2; //~half junk, so both fish and junk are well-sampled
-				FishingCatchSystem.TreasureMapChanceNumerator = 1;
-				FishingCatchSystem.TreasureMapChanceDenominator = 2; //~half of junk also carries a map
-
-				int fish = 0;
-				int junk = 0;
-				int junkWithMap = 0;
-				for (int i = 0; i < attempts; i++) {
-					FishingCatchSystem.CatchResult r = FishingCatchSystem.Catch(self);
-					switch (r.Kind) {
-						case FishingCatchSystem.CatchKind.Fish:
-							fish++;
-							break;
-						case FishingCatchSystem.CatchKind.JunkCrate:
-							junk++;
-							break;
-						case FishingCatchSystem.CatchKind.JunkCrateWithMap:
-							junkWithMap++;
-							break;
-					}
+			RegionTypeDef water = RegionTypeDef.GetByDefname("r_default_water");
+			int nothing = 0, fish = 0, junk = 0;
+			for (int i = 0; i < attempts; i++) {
+				RegionResourceDef r = water.PickRandom();
+				if ((r == null) || r.IsNothing) {
+					nothing++;
+				} else if (FishingCatchSystem.IsJunk(r)) {
+					junk++;
+				} else {
+					fish++;
 				}
-				Console.WriteLine("FISHING_CATCH_SAMPLE: attempts=" + attempts + " fish=" + fish +
-					" junk=" + junk + " junkWithMap=" + junkWithMap);
-			} finally {
-				FishingCatchSystem.JunkChanceNumerator = savedJunkNum;
-				FishingCatchSystem.JunkChanceDenominator = savedJunkDen;
-				FishingCatchSystem.TreasureMapChanceNumerator = savedMapNum;
-				FishingCatchSystem.TreasureMapChanceDenominator = savedMapDen;
 			}
+			Console.WriteLine("WATER_REGION_SAMPLE: attempts=" + attempts + " nothing=" + nothing + " fish=" + fish + " junk=" + junk);
 		}
 
-		/// <summary>With junk chance forced to zero, every catch must be a real catchable fish
-		/// item - confirms the fish-variety roll only ever yields known fish defnames, never null
-		/// or a stray non-fish item.</summary>
+		/// <summary>#813 - one water spot, forced to hold `resource` with a pool of 2 (bypassing the
+		/// region roll): three catches by self at Fishing `skill` (x10). Reports each catch's kind
+		/// and item.</summary>
 		[SteamFunction]
-		public static void TestSampleFishingFishVariety(Character self, ScriptArgs sa) {
-			int attempts = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
-
-			int savedJunkNum = FishingCatchSystem.JunkChanceNumerator;
-			try {
-				FishingCatchSystem.JunkChanceNumerator = 0; //never junk - isolate the fish roll
-				int fishWithItem = 0;
-				int distinctSeen = 0;
-				bool[] seen = new bool[FishingCatchSystem.FishDefnames.Length];
-				for (int i = 0; i < attempts; i++) {
-					FishingCatchSystem.CatchResult r = FishingCatchSystem.Catch(self);
-					if (r.Kind == FishingCatchSystem.CatchKind.Fish && r.ItemDef != null) {
-						fishWithItem++;
-						for (int f = 0; f < FishingCatchSystem.FishDefnames.Length; f++) {
-							ItemDef fd = ThingDef.GetByDefname(FishingCatchSystem.FishDefnames[f]) as ItemDef;
-							if (ReferenceEquals(r.ItemDef, fd) && !seen[f]) {
-								seen[f] = true;
-								distinctSeen++;
-							}
-						}
-					}
-				}
-				Console.WriteLine("FISHING_FISH_VARIETY_SAMPLE: attempts=" + attempts +
-					" fishWithItem=" + fishWithItem + " distinctKinds=" + distinctSeen);
-			} finally {
-				FishingCatchSystem.JunkChanceNumerator = savedJunkNum;
+		public static void TestFishingSpotCatches(Character self, ScriptArgs sa) {
+			//the raw text: a plain account's Argv is the whole line as one literal string
+			string[] args = sa.Args.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			string resource = args[0].Trim('"');
+			int skill = Convert.ToInt32(args[1], CultureInfo.InvariantCulture);
+			self.SetRealSkillValue((int) SkillName.Fishing, skill);
+			byte m = self.M;
+			int x = self.X + 50, y = self.Y + 50; //some spot nobody else uses
+			FishingCatchSystem.ForceSpotForTest(m, x, y, RegionResourceDef.GetByDefname(resource), 2);
+			string report = "";
+			for (int i = 0; i < 3; i++) {
+				FishingCatchSystem.CatchResult r = FishingCatchSystem.Catch(self, m, x, y);
+				report += " " + r.Kind + ":" + ((r.ItemDef == null) ? "none" : r.ItemDef.PrettyDefname);
 			}
+			Console.WriteLine("FISHING_SPOT_CATCHES: " + resource + " skill=" + skill + report);
 		}
 
 		/// <summary>#271 - samples `attempts` ambush rolls at self's own location, reporting the
@@ -141,16 +105,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		// ---- FishingSettings write-through (#271) ----
-
-		[SteamFunction]
-		public static void TestSetJunkChanceViaFishingSettings(Character self, ScriptArgs sa) {
-			int num = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
-			int den = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
-			FishingSettings.instance.junkChanceNumerator = num;
-			FishingSettings.instance.junkChanceDenominator = den;
-			Console.WriteLine("FISHING_SETTINGS_JUNK_SET: num=" + FishingCatchSystem.JunkChanceNumerator +
-				" den=" + FishingCatchSystem.JunkChanceDenominator);
-		}
 
 		[SteamFunction]
 		public static void TestSetAmbushChanceViaFishingSettings(Character self, ScriptArgs sa) {

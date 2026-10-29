@@ -14,51 +14,29 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
+using System;
+using System.Collections.Generic;
 
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
-	/// Fishing's catch system (#271, mirrors Mining #333 / Lumberjacking #422 in spirit, but
-	/// deliberately NOT a skill-gated resource-tier ladder - see below).
+	/// Fishing's catch system (#271, reworked onto the Erebor archive's region resources in #813).
 	///
-	/// Why no fish-tier ladder: real Erebor fishing used a `w_fish1..N` skill-gated tier ladder,
-	/// but those tier items DO NOT EXIST in moriaengine content. What does exist
-	/// (i_fish_raw_whole / i_fish_small / i_fish_big_1..4) is a set of equal-value COSMETIC
-	/// graphic variants (all T_FISH, "Fisherman" subsection, no surviving VALUE/rarity ordering).
-	/// Fabricating skill thresholds to turn cosmetic equivalents into a rarity ladder would mean
-	/// inventing tuning numbers with no real source - against this repo's standing convention
-	/// (wire the real mechanism, don't hand-author unconfirmed tuning - see Mining's own history).
-	/// So this is an honest "fish variety" roll instead of a fake tier ladder: a normal cast
-	/// yields one of the real catchable fish graphics, picked uniformly.
+	/// What a water spot holds is rolled from its region's t_water region type
+	/// (sphereregion.scp, RegionResourceSystem) - e.g. r_default_water: 100 nothing, 15 w_fish1,
+	/// 8 w_fish2, 5 w_fish3, 1 w_fish4 and 1 each of the junk fish w_jf1-10. Like Sphere's resource
+	/// spots (and the mining/lumberjacking veins) the roll holds for that spot until its pool
+	/// (AMOUNT) is fished out, then the spot rests for REGEN and rolls again; a "nothing" spot rests
+	/// straight away. Under-skilled for what the spot holds = you catch w_fish1 instead (Erebor's
+	/// fixresource). Until #813 this was a uniform pick between fish graphics plus an invented 1/10
+	/// junk roll, on the stale belief that the w_fish tiers' items didn't exist - they do.
 	///
-	/// Fishing's one genuinely-unique mechanic (not shared with Mining/Lumberjacking): the
-	/// "junk fish" catch. On a tunable fraction of successful casts you haul up a junk crate
-	/// instead of a fish (real Erebor's i_junkfish1..10 "crate pulled from the water"). The crate
-	/// itself is real content (i_crate_small). Each junk crate carries an embedded, tunable chance
-	/// of having contained a real treasure map - but moriaengine has NO treasure-map decode/dig
-	/// mechanic at all (confirmed: only a blank T_MAP craftable i_MAP_ROLLED and a spawn-point
-	/// TreasureChestDef exist). So, mirroring exactly how Mining shipped functional-now and
-	/// deferred region-restriction to #338, the treasure-map payoff is a PLACEHOLDER (grants the
-	/// generic i_MAP_ROLLED) pending a real follow-up (#530). The mechanism, the roll, and the
-	/// GM-tunable chances are all real and wired now.
+	/// Junk fish: the archive's i_junkfish1-10 are barrels whose contents script (t_junkfish /
+	/// randfishjunk) isn't converted, so a junk-fish catch keeps this system's own payoff - a junk
+	/// crate, with a tunable chance of a treasure map. The treasure map is a PLACEHOLDER (the
+	/// generic i_MAP_ROLLED) until a real treasure-map system exists (#530).
 	/// </summary>
 	public static class FishingCatchSystem {
-
-		/// <summary>The real catchable fish graphics in moriaengine (all equal-value cosmetic
-		/// variants - see class doc). Mutable so FishingSettings could re-point them, though
-		/// they're content-tied defnames, not tuning numbers, so not exposed there by default -
-		/// same scope decision as the ore/wood tier item defnames.</summary>
-		public static readonly string[] FishDefnames = {
-			"i_fish_raw_whole", "i_fish_small", "i_fish_big_1", "i_fish_big_2", "i_fish_big_3", "i_fish_big_4"
-		};
-
-		/// <summary>Chance (out of JunkChanceDenominator) that a successful cast hauls up a junk
-		/// crate instead of a fish. Default 1/10 - a judgment call (no confirmed real rate; real
-		/// Erebor's junkfish items each had their own independent spawn weighting we can't
-		/// reconstruct), deliberately modest so normal fishing still mostly yields fish. GM-tunable
-		/// via FishingSettings.</summary>
-		public static int JunkChanceNumerator = 1;
-		public static int JunkChanceDenominator = 10;
 
 		/// <summary>Of the junk crates hauled up, the chance (out of TreasureMapChanceDenominator)
 		/// that this one "contained a treasure map". Default 1/20 - judgment call, kept rare since
@@ -75,7 +53,13 @@ namespace SteamEngine.CompiledScripts {
 		/// needs no code change.</summary>
 		public static string TreasureMapDefname = "i_MAP_ROLLED";
 
-		public enum CatchKind { Fish, JunkCrate, JunkCrateWithMap }
+		/// <summary>What an under-skilled fisher catches instead (Erebor's fixresource).</summary>
+		public static string LowestFishResource = "w_fish1";
+
+		/// <summary>How long a water spot with no region type at all stays empty.</summary>
+		public static int EmptySpotRegenSeconds = 30 * 60;
+
+		public enum CatchKind { Fish, JunkCrate, JunkCrateWithMap, Nothing }
 
 		/// <summary>The outcome of one successful cast, resolved by Catch below.</summary>
 		public struct CatchResult {
@@ -90,13 +74,41 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Resolves one successful cast: rolls junk-vs-fish, and (for junk) the embedded
-		/// treasure-map sub-chance. Pure resolution only - does NOT create any item or touch the
-		/// world; the caller creates whatever the result names (so this stays unit-testable
-		/// without a backpack/world). ItemDef may be null if a defname has no matching content -
-		/// the caller fails safe, same precedent as MonsterAmbushSystem.</summary>
-		public static CatchResult Catch(Character fisher) {
-			if (RollHit(JunkChanceNumerator, JunkChanceDenominator)) {
+		private class Spot {
+			public RegionResourceDef Resource; //null = nothing here
+			public int RemainingPool;
+			public double RegenReadyAtSeconds;
+			public bool Untouched = true;
+		}
+
+		private static readonly Dictionary<(byte, int, int), Spot> spots = new Dictionary<(byte, int, int), Spot>();
+
+		/// <summary>Resolves one successful cast at the given water tile. Pure resolution plus the
+		/// spot's own bookkeeping - does NOT create any item; the caller creates whatever the result
+		/// names. ItemDef may be null if a defname has no matching content (caller fails safe).</summary>
+		public static CatchResult Catch(Character fisher, byte mapPlane, int x, int y) {
+			Spot spot;
+			if (!spots.TryGetValue((mapPlane, x, y), out spot)) {
+				spot = new Spot();
+				spots[(mapPlane, x, y)] = spot;
+			}
+			if (spot.Untouched || ((spot.RemainingPool <= 0) && (Globals.TimeInSeconds >= spot.RegenReadyAtSeconds))) {
+				Assign(spot, mapPlane, x, y);
+			}
+			if (spot.RemainingPool <= 0) {
+				return new CatchResult(CatchKind.Nothing, null, null);
+			}
+
+			RegionResourceDef caught = spot.Resource;
+			if (fisher.GetRealSkillValue(SkillName.Fishing) < caught.SkillMin) {
+				caught = RegionResourceDef.GetByDefname(LowestFishResource) ?? caught; //fixresource
+			}
+			spot.RemainingPool--;
+			if (spot.RemainingPool <= 0) {
+				spot.RegenReadyAtSeconds = Globals.TimeInSeconds + spot.Resource.RegenSeconds;
+			}
+
+			if (IsJunk(caught)) {
 				ItemDef crate = ThingDef.GetByDefname(JunkCrateDefname) as ItemDef;
 				if (RollHit(TreasureMapChanceNumerator, TreasureMapChanceDenominator)) {
 					ItemDef map = ThingDef.GetByDefname(TreasureMapDefname) as ItemDef;
@@ -104,8 +116,30 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return new CatchResult(CatchKind.JunkCrate, crate, null);
 			}
+			return new CatchResult(CatchKind.Fish, caught.ReapDef, null);
+		}
 
-			return new CatchResult(CatchKind.Fish, PickFishDef(), null);
+		private static void Assign(Spot spot, byte mapPlane, int x, int y) {
+			spot.Untouched = false;
+			RegionResourceDef resource = RegionResourceSystem.Pick(mapPlane, x, y, "t_water");
+			if ((resource == null) || resource.IsNothing) {
+				spot.Resource = null;
+				spot.RemainingPool = 0;
+				spot.RegenReadyAtSeconds = Globals.TimeInSeconds + (((resource != null) && (resource.RegenSeconds > 0)) ? resource.RegenSeconds : EmptySpotRegenSeconds);
+				return;
+			}
+			spot.Resource = resource;
+			spot.RemainingPool = Globals.dice.Next(resource.AmountMin, resource.AmountMax + 1);
+		}
+
+		/// <summary>The archive's junk fish (w_jf1-10 reap i_junkfish1-10).</summary>
+		public static bool IsJunk(RegionResourceDef resource) {
+			return (resource.Reap != null) && resource.Reap.StartsWith("i_junkfish", StringComparison.OrdinalIgnoreCase);
+		}
+
+		/// <summary>Test-only: puts a known resource and pool on a spot, bypassing the region roll.</summary>
+		internal static void ForceSpotForTest(byte mapPlane, int x, int y, RegionResourceDef resource, int pool) {
+			spots[(mapPlane, x, y)] = new Spot { Resource = resource, RemainingPool = pool, Untouched = false };
 		}
 
 		private static bool RollHit(int numerator, int denominator) {
@@ -113,11 +147,6 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			return Globals.dice.Next(denominator) < numerator;
-		}
-
-		private static ItemDef PickFishDef() {
-			string defname = FishDefnames[Globals.dice.Next(FishDefnames.Length)];
-			return ThingDef.GetByDefname(defname) as ItemDef;
 		}
 	}
 }
