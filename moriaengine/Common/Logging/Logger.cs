@@ -40,6 +40,11 @@ namespace SteamEngine.Common {
 
 		private const string timeFormat = "HH:mm:ss";
 
+		//#815 - lock order: Console.Out before lockObject. Console.Out is this logger wrapped in .NET's
+		//synchronized TextWriter, which locks itself around every call (so Console.WriteLine already
+		//holds it when it gets to our WriteLine), and on Unix .NET's console stream locks Console.Out
+		//again while writing (ConsolePal.UpdatedCachedCursorPosition). Taking lockObject first and then
+		//writing to the console was the opposite order - two threads logging at once deadlocked.
 		private static readonly object lockObject = new object();
 
 		[SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
@@ -697,6 +702,7 @@ namespace SteamEngine.Common {
 		}
 
 		public override void WriteLine(string value) {
+			lock (Console.Out) //#815 lock order, see lockObject
 			lock (lockObject) {
 				string printline = string.Concat(DateTime.Now.ToString(timeFormat, CultureInfo.InvariantCulture), ": ", indentation, value);
 				console.WriteLine(printline);
@@ -715,6 +721,7 @@ namespace SteamEngine.Common {
 		}
 
 		public static void WriteLine(LogStr value) {
+			lock (Console.Out) //#815 lock order, see lockObject
 			lock (lockObject) {
 				LogStr printline = LogStr.Concat((LogStr) DateTime.Now.ToString(timeFormat, CultureInfo.InvariantCulture), (LogStr) ": ", (LogStr) indentation, value);
 				if (console != null) {
@@ -733,6 +740,7 @@ namespace SteamEngine.Common {
 		}
 
 		public override void Write(string value) {
+			lock (Console.Out) //#815 lock order, see lockObject
 			lock (lockObject) {
 				console.Write(value);
 				if (OnConsoleWrite != null) {
@@ -751,6 +759,7 @@ namespace SteamEngine.Common {
 
 		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 		public static void Write(LogStr value) {
+			lock (Console.Out) //#815 lock order, see lockObject
 			lock (lockObject) {
 				console.Write(value.RawString);
 				if (OnConsoleWrite != null) {
