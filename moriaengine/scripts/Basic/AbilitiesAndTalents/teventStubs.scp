@@ -209,8 +209,9 @@ Name = "(e_illusionist)"
 [InexhaustibleAbilityDef a_tevent_e_inexhaustible]
 Name = "Inexhaustible"
 
-[PassiveAbilityDef a_tevent_e_item_refuser]
-Name = "(e_item_refuser)"
+//#807 - real behavior in ItemRefuserAbilityDef (MonsterSpecialAttacks/) - turns down items dropped on it.
+[ItemRefuserAbilityDef a_tevent_e_item_refuser]
+Name = "Item Refuser"
 
 [PassiveAbilityDef a_tevent_e_kaloc_help]
 Name = "(e_kaloc_help)"
