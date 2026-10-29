@@ -634,4 +634,28 @@
   <data name="loc_silence_YoureSilenced" xml:space="preserve">
     <value>You're silenced so you can't cast any spells</value>
   </data>
+  <data name="HealerLoc_CursedByTheGods" xml:space="preserve">
+    <value>You are cursed by the gods and cast out of this world. I cannot bring you back to life.</value>
+  </data>
+  <data name="RegionEventsLoc_enteredMines" xml:space="preserve">
+    <value>You have descended into the mines.</value>
+  </data>
+  <data name="RegionEventsLoc_leftMines" xml:space="preserve">
+    <value>You are leaving the mines.</value>
+  </data>
+  <data name="RegionEventsLoc_enteredSafeZone" xml:space="preserve">
+    <value>You are now in a safe zone.</value>
+  </data>
+  <data name="RegionEventsLoc_leftSafeZone" xml:space="preserve">
+    <value>You have left the safe zone.</value>
+  </data>
+  <data name="RegionEventsLoc_noFieldSpell" xml:space="preserve">
+    <value>This spell cannot be used here.</value>
+  </data>
+  <data name="RegionEventsLoc_noTeleport" xml:space="preserve">
+    <value>Don't try to cheat!</value>
+  </data>
+  <data name="RegionEventsLoc_mountRefuses" xml:space="preserve">
+    <value>Your mount refuses to go any further.</value>
+  </data>
 </root>

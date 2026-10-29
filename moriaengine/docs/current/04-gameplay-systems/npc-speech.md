@@ -89,6 +89,21 @@ areas have that flag (jail, klec, Lagr, the tutorial, bug) - guards here walk to
 
 Test: `GuardSpeechTests` (protocol, two real clients, real hostile acts and real speech).
 
+### spk_healer - "res" near a healer (#827)
+
+`HealerSpeech` (`scripts/Basic/Speech/HealerSpeech.cs`), on 18 healer chardefs: anything containing "res" makes the
+healer tell a realm outcast (Erebor's negative `tag.realm`, our `GondorOutcast`/`MordorOutcast`) that they're
+cursed by the gods, and resurrect a dead speaker it sees. That second half never reaches an ordinary ghost, in
+Erebor or here: 0.99z8 only lets an NPC understand ghost speech if it has the healer brain, Spirit Speak or is
+invulnerable (`CanUnderstandGhost`), and Erebor's healers are plain vendor-brain NPCs; here no NPC sees a ghost, so
+none hears one. Erebor's ghosts were resurrected by **single-clicking** a healer - `e_healer`, now a real ability
+(`HealerAbilityDef`, see [Monster abilities](monster-abilities.md)). Both share `Healer` (`MonsterSpecialAttacks/Healer.cs`).
+
+Not ported: `resurrect_player`'s account log line (`accMsg`), and Sphere's hard-coded healer-brain reactions
+(Erebor's healers don't have that brain).
+
+Test: `HealerTests` (protocol: real clicks and speech as a ghost and as an outcast).
+
 ## Differences in `ScriptedSpeech` from Sphere
 
 These matter only for hand-written LScript speeches. `ScriptedSpeech` matches its patterns anywhere in the
