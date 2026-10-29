@@ -12,6 +12,29 @@ It now targets a spot next to the player (`PET_SETUP_POS`). Kill: the order work
 for damage and a sheep can't hurt a sheep (WeaponAttack 2 x Str 19 x 3.17/1000 = ~0.12 attack vs armor 6
 floors to 0, and was 2-6 -> 0 before #711 too), so it now checks TestWild's AI target. PetCommandTests 6/6 x2.
 
+## DONE (2026-10-29): #808 NPC item-give (Sphere NPC_OnItemGive) + real pet ownership
+
+User: "go ahead with #808". Reference: EreborNext CChar.NpcGive.cs/NpcStatus.cs/NpcItems.cs, 0.56b
+Event_DoubleClick, Erebor's @NPCRefuseItem scripts. User decisions (all the recommended ones):
+ownership = owner + pet friends + GM; animal pets faithful (food it's hungry for = eats, else refused,
+load pack animals via their opened pack); gold on a banker refused like everything on an unowned NPC;
+port Erebor's own @NPCRefuseItem lines.
+**`Character.IsPetOf` was a `//TODO` returning `cre.IsGM`** - now Sphere's NPC_IsOwnedBy. That stub
+also made MOUNTING your own tamed horse, renaming/equipping a pet and its pack GM-only all along.
+Now: `NpcItemGive` (after #807's refuser, from NPC.On_PutItemOn): GM -> pack; owner/friend: humanoid
+pet eats food ("Mmm. Thank you.") or carries it ("Tell me to drop this..."/"too weak"), animal pet eats
+food it's hungry for (`PetFeedingSystem.TryFeedWith`, split out of `.Feed`'s formula); everyone else
+refused: the NPC's @NPCRefuseItem, else "They don't appear to want the item." overhead to the giver.
+Owner double-click on a pet's pack opens it (no snoop); own pack horse/llama (0x123/0x124) double-click
+opens its pack. Converter: 5 simple `SAY("...")` @NPCRefuseItem bodies added to
+`ConvertedThingDef.passthroughTriggers` (the 4 bareword `SAY text !!!` ones are not - LScript can't
+parse them); fresh archive clone, baseline regen diffed to 0 first, then whole-file swap of
+ents.def/namestek_valky_npc.def/aldaron.def; fresh regen diffs to 0.
+Verified: NpcItemGiveTests 4/4 (incl. the real converted C_f_GUARD_ent2's "Mne nemuzes podplatit."),
+red with IsPetOf+hook reverted; ItemRefuser/PetCommand/NpcFoodTypeHunger/NpcGuardContent/SecureTrade/
+Social green; fast 196/196. Docs: pets-and-npc-ai.md (ownership + giving; removed a stale
+`CanVendorBeControlledBy` claim - no such method), sphere-shard-converter.md (verbatim triggers).
+
 ## DONE (2026-10-29): #810 secure trade reworked to Sphere 0.99z8 rules
 
 User: before #808, look at item exchange between players (drop item on player -> trade window), check

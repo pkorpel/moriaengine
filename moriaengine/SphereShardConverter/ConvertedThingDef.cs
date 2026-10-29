@@ -270,11 +270,19 @@ namespace SteamEngine.Converter {
 		}
 
 		//defname -> trigger names this engine's LScript support can actually run, verified
-		//simple enough case by case - see the long comment above. Currently just the #667
-		//race-class stone.
+		//simple enough case by case - see the long comment above. The #667 race-class stone,
+		//and (#808) the NPCs whose @NPCRefuseItem is a plain SAY("...") + return 1 - run by
+		//NpcItemGive when an item given to them is turned down. Not the 4 with a bareword
+		//"SAY text !!!" body (questy/kvest0001NPC, kvest0002NPC, npc_minas_tirith) - LScript
+		//can't parse those; they get the generic refusal message.
 		private static readonly Dictionary<string, string[]> passthroughTriggers =
 			new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase) {
-				{ "i_stone_raceclass", new[] { "dclick" } }
+				{ "i_stone_raceclass", new[] { "dclick" } },
+				{ "c_namestek_valky_g", new[] { "npcrefuseitem" } },
+				{ "c_namestek_valky_m", new[] { "npcrefuseitem" } },
+				{ "C_m_GUARD_ent1", new[] { "npcrefuseitem" } },
+				{ "C_f_GUARD_ent2", new[] { "npcrefuseitem" } },
+				{ "c_ocs_guard_npc_killer", new[] { "npcrefuseitem" } }
 			};
 
 		private void EmitVerbatimTrigger(string triggerName, TriggerSection section) {

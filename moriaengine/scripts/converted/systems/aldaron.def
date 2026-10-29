@@ -222,6 +222,13 @@ Tactics = 900 1000
 SpiritSpeak = 800
 Peacemaking = 1000
 Provocation = 1000
+
+ON=@npcrefuseitem
+SAY("Mne nemuzes podplatit. Odejdi!")
+return 1
+//////////////////
+/// eventy pre kapitana a obludu - nastavovanie qtagu massovo
+//////////////////
 ResistParalyse = 800 850
 ResistPoison = 1000
 AggroMode = Calm

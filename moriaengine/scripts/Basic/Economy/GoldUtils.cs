@@ -31,7 +31,7 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	public static class GoldUtils {
 		private static ThingDef goldDef;
-		private static ThingDef GoldDef {
+		internal static ThingDef GoldDef {
 			get {
 				if (goldDef == null) {
 					goldDef = ThingDef.GetByDefname("i_gold");

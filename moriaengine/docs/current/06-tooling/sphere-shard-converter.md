@@ -90,6 +90,13 @@ The rest of the block (#793): `ITEMNEWBIE=` -> `Equip =` (NPC gear, newbie), `CO
 `EquipColor =`/`EquipName =` for the latest gear line, `ADDSPELL=` -> `AddSpell =`. `tag(isBoss,1)`
 in `@Create` -> `IsBoss = 1` (#794, bosses never turn [elite](../04-gameplay-systems/elite-monsters.md)).
 
+**Verbatim trigger bodies (#670, #808).** Only `@Create` is normally consumed (into fields); a
+few other trigger bodies are emitted as-is, keyed by defname in `ConvertedThingDef.passthroughTriggers`
+- only after checking the body is simple enough for LScript (plain calls like `SAY("...")`, no
+`if`/`endif`, no bareword `SAY text`). Currently `i_stone_raceclass`'s `@dclick` and 5 NPCs'
+`@NPCRefuseItem` (`c_namestek_valky_g/_m`, `C_m_GUARD_ent1`, `C_f_GUARD_ent2`,
+`c_ocs_guard_npc_killer`); the 4 bareword-SAY ones (kvest0001/0002, `c_strazce_knihovny`) are not.
+
 **Monster ability tuning (#653 onward).** `tag.*` lines in a chardef's `ON=@Create` that tune a
 monster ability (`tag.npc_stun_chance`, `tag.explode_dmg`, `tag(e_lightnings_chance,100)`...)
 become `NPCDef` override fields via the `ConvertedCharDef.abilityTuningFieldNames` table,

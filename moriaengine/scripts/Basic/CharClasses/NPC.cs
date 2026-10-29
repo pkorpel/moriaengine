@@ -1972,9 +1972,13 @@ namespace SteamEngine.CompiledScripts {
 			MonsterSpecialAttacks.TryEntangle(this, pusher);
 		}
 
-		//#807 - an item dropped on this NPC: e_item_refuser turns it down (the giver keeps it)
+		//#807 - an item dropped on this NPC: e_item_refuser turns it down (the giver keeps it);
+		//#808 - otherwise Sphere's NPC_OnItemGive (pets take/eat it, everyone else refuses)
 		public override TriggerResult On_PutItemOn(ItemOnCharArgs args) {
 			if (MonsterSpecialAttacks.TryRefuseItem(this, args.ManipulatedItem)) {
+				return TriggerResult.Cancel;
+			}
+			if (NpcItemGive.OnItemGive(this, args.PuttingChar as Character, args.ManipulatedItem) == TriggerResult.Cancel) {
 				return TriggerResult.Cancel;
 			}
 			return base.On_PutItemOn(args);

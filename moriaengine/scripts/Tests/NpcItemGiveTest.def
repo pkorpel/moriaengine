@@ -1,0 +1,28 @@
+// #808 - test-only NPCs for Tests/Protocol/NpcItemGiveTests.cs (scripts/Tests/NpcItemGiveTests.cs).
+// An animal pet that eats raw meat, a humanoid pet (hireling) that eats it too, a plain NPC, and
+// one with its own @NPCRefuseItem line (the shape of Erebor's guards' "you can't bribe me").
+[NPCDef npc_test_give_animal]
+NAME = "Give Dog"
+model = c_dog
+ANIM = 0x1fff
+FoodType = 5 t_meat_raw
+
+[NPCDef npc_test_give_human]
+NAME = "Give Hireling"
+model = c_man
+ANIM = 0x1fff
+FoodType = 5 t_meat_raw
+
+[NPCDef npc_test_give_plain]
+NAME = "Give Stranger"
+model = c_man
+ANIM = 0x1fff
+
+[NPCDef npc_test_give_bribe]
+NAME = "Give Guard"
+model = c_man
+ANIM = 0x1fff
+
+ON=@npcrefuseitem
+SAY("You cannot bribe me!")
+return 1
