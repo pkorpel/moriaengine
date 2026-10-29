@@ -8,7 +8,17 @@ model = i_bag
 layer = 0 //Set by Converter 
 Color = 034
 
-//[speech spk_q075_valecnik] //(commented out by Converter) 
+[SpeechStub spk_q075_valecnik]
+ON=*ukol*
+ON=*prace*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q075_valecnik
+//endif
 
 //[function f_q075_valecnik] //(commented out by Converter) 
 

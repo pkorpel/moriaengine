@@ -8,7 +8,20 @@ model = i_backpack
 layer = 21 //Set by Converter 
 Color = 042
 
-//[SPEECH spk_q31_kuchar] //(commented out by Converter) 
+[SpeechStub spk_q31_kuchar]
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+
+//if (<distance> > 3)
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<eval src.tag.realm> ==1)
+//f_q31_kuchar
+//else
+//f_q31_kuchar_mordor
+//endif
+//endif
 
 //[FUNCTION f_q31_kuchar] //(commented out by Converter) 
 

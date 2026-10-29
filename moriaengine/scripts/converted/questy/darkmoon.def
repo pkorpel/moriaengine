@@ -4,7 +4,13 @@
 
 //[dialog d_darkmoon_01] //(commented out by Converter) 
 
-//[speech spk_q039_first_quest] //(commented out by Converter) 
+[SpeechStub spk_q039_first_quest]
+ON=*ukol*
+ON=*prace*
+ON=*zdravim*
+ON=*ahoj*
+
+//f_q039_first_quest
 
 //[dialog d_q039_first_quest] //(commented out by Converter) 
 

@@ -8,7 +8,21 @@
 
 //[dialog d_q023_ShamanQworet button] //(commented out by Converter) 
 
-//[speech spk_q023_ShamanQworet] //(commented out by Converter) 
+[SpeechStub spk_q023_ShamanQworet]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance> > 3)
+//src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q023_ShamanQworet
+//endif
+
+//////////////////////////////////////////////////
+//////////////Carodej Unas///////////////////////
+//////////////////////////////////////////////////
 
 //[function f_q023_CarodejUnas] //(commented out by Converter) 
 
@@ -16,4 +30,14 @@
 
 //[dialog d_q023_CarodejUnas button] //(commented out by Converter) 
 
-//[speech spk_q023_CarodejUnas] //(commented out by Converter) 
+[SpeechStub spk_q023_CarodejUnas]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance> > 3)
+//src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q023_CarodejUnas
+//endif

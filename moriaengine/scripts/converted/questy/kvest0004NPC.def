@@ -133,7 +133,28 @@ Equip = i_sandals
 Equip = i_robe
 AggroMode = Calm
 
-//[SPEECH Hrobeus] //(commented out by Converter) 
+[SpeechStub Hrobeus]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+//IF (<safe.SRC.TAG.crunch_informace_001>)
+//SAY Ha! posila te chovatel, co?... poslouchejte dobre, doufam ze mate dobre a presne mapy, prvni z vajec se totiz nachazi na miste pozice xxxx.xxxx  //priblizna pozice nejaky pevnosti, kde bude prvni vejce a v nejakym booku heslo, ktery potom reknou sluzebnikovi pro zjisteni druhyho vejce, pro zacatek poslouzi napr "heslo1"
+
+//else
+//SAY Co cumis?? Vodpal!
+//endif
+ON=*heslo1*
+//src.addexp(500)
+
+//src.tag.remove(crunch_informace_001)
+
+//SAY Hmm... znas heslo... zajimave, jsi prvni... Kazdopadne kdyz nas heslo, musis vedet, ze druhe vejce se naleza na xxxx.xxxx. Mnoho stesti hrdino. // pozice druhyho vejce a dalsiho hesla
+ON=*heslo2*
+//src.addexp(500)
+//SAY Prekvapujes me, dobrodruhu, vazne! Jiz dlouho jsem neslysel toto heslo... Pokud te zajima pozice tretiho vejce, zkus xxxx.xxxx
+
+
+// chovatel - prvni questovni postava
 
 [NPCDef c_irbis]
 CATEGORY = Kvesty
@@ -163,4 +184,29 @@ Equip = i_sandals
 Equip = i_robe
 AggroMode = Calm
 
-//[SPEECH Irbis] //(commented out by Converter) 
+[SpeechStub Irbis]
+
+//IF (<safe.SRC.TAG.splnenkvest_001>)
+//SAY Jeste jednou dekuji.
+//elseIF (<safe.SRC.TAG.crunch_prvnivejce>) && (<safe.SRC.TAG.crunch_druhevejce>) &&  (<safe.SRC.TAG.crunch_tretivejce>)
+//SAY Diky, diky, diky!
+//SRC.TAG.splnenkvest_001=1
+//src.addexp(1500)
+//endIF
+//IF (<SRC.RESTEST 1 i_Crunch_vejce_01> )
+//SAY To snad ne!! Ukhubovo vejce! To je z nich skoro nejvzacnejsi! dekuji ti hrdino, dekuji,  moc... Ale potrebuju i ta ostatni dve vejce...
+//SRC.TAG.crunch_prvnivejce=1
+//src.consume=1 i_Crunch_vejce_01
+//elseIF (<SRC.RESTEST 1 i_Crunch_vejce_02> )
+//SAY Proboha! ale to je... Thurovo vejce! Dekuji ti, dobrodruhu, nikdy ti to nezapomenu! Ale  potrebuju i ta ostatni dve vejce...
+//SRC.TAG.crunch_druhevejce=1
+//src.consume=1 i_Crunch_vejce_02
+//elseIF (<SRC.RESTEST 1 i_Crunch_vejce_03> )
+//SAY Ahh! Korrovo vejce, nejvzacnejsi dar, jenz jsi mi kdy mohl prinest... dekuji ti poutniku,  jsem ti nadosmrti zavazan! Ale potrebuju i ta ostatni dve vejce...
+//SRC.TAG.crunch_tretivejce=1
+//src.consume=1 i_Crunch_vejce_03
+//endif
+//else
+//SAY Zdravim priteli.. mam na tebe malou prosbicku... shanim tri mala vejce, jsou pro mne velice  dulezita.. avsak nohy uz mi neslouzi - vyhledej prosim meho pritele, Hrobea. On ti rekne kde  vejce najdes. Prines mi je, prosim te o to.
+//SRC.TAG.crunch_informace_001=1
+//endIF

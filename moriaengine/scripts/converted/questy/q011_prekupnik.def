@@ -32,7 +32,17 @@ model = i_bag
 layer = 0 //Set by Converter 
 Color = 058
 
-//[speech spk_gq011_prekupnik] //(commented out by Converter) 
+[SpeechStub spk_gq011_prekupnik]
+ON=*ukol*
+ON=*prace*
+ON=*zdravim*
+ON=*ahoj*
+
+//if ( <distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_gq011_prekupnik
+//endif
 
 //[FUNCTION f_gq011_prekupnik] //(commented out by Converter) 
 
@@ -42,7 +52,17 @@ Color = 058
 
 //[dialog d_gq011_prekupnik button] //(commented out by Converter) 
 
-//[speech spk_mq011_prekupnik] //(commented out by Converter) 
+[SpeechStub spk_mq011_prekupnik]
+ON=*ukol*
+ON=*prace*
+ON=*zdravim*
+ON=*ahoj*
+
+//if ( <distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_mq011_prekupnik
+//endif
 
 //[FUNCTION f_mq011_prekupnik] //(commented out by Converter) 
 

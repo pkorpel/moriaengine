@@ -210,7 +210,18 @@ ResistElectric = 200
 ResistCold = 200
 AggroMode = Hostile
 
-//[SPEECH spk_crunch_prisluhovac] //(commented out by Converter) 
+[SpeechStub spk_crunch_prisluhovac]
+ON=*lol*
+//SAY("Zadne lol, zemres, <src.name>!")
+ON=*ress*
+//SAY("Vysaju z tebe tvou krev, <src.name>!")
+ON=*boost*
+//SAY("Zadny boost ti nepomuze k preziti!")
+
+
+/////////////////////////////////////////////
+///// waterman - vodni verze minotaura //////
+/////////////////////////////////////////////
 
 [NPCDef c_wasserman] //Boss Etheria
 CATEGORY = Dungy
@@ -357,7 +368,17 @@ Loot = loot_SEA_SERPENT
 Loot = i_gold
 AggroMode = Calm
 
-//[SPEECH spk_crunch_tearus] //(commented out by Converter) 
+[SpeechStub spk_crunch_tearus]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+//SAY("Nemuzete prezit, vydate-li se dal podzemim a nebudete-li znat elfske kouzlo moci... Pokud si to budete prat, mozna si na nej vzpomenu... opravdu chcete pokracovat ve svem putovani?")
+ON=*Ano*
+ON=*Jiste*
+//SAY("Dobra tedy... ten z vas, kdo ma nejvetsi vuli a schopnost kouzlit, by mel na konci podzemi, az budete v nouzi, zakricet hlasite slovo EREANARON. Kouzlo vas bud pohlti, nebo pomuze v zaverecnem souboji... mnoho stesti!")
+
+
+////////////////////////////////////////////////
 
 [NPCDef c_etheria_boss]
 CATEGORY = Dungy
@@ -396,7 +417,23 @@ ResistElectric = 400
 ResistCold = 600
 AggroMode = Hostile
 
-//[speech spk_etheria_boss] //(commented out by Converter) 
+[SpeechStub spk_etheria_boss]
+ON=*ereanaron*
+//Say("Muuuaaaaarrrghhhhhhh!")
+//effect=3,i_FIRE_COLUMN,6,15,1	// flamestrike
+//sound=snd_SPELL_POLYMORPH            //to zni hezky
+//newitemsafe=i_etheria_boss_gate
+//lastnew.p=<p>
+//lastnew.update
+//lastnew.fix
+//go(5416,3411) ////nastavi se kam ze se to ma portnout
+//removetarget //aby az je znova uvidi zase neco rekl !
+//removefight
+//npc=brain_monster //aby se choval normalne a nereagoval podruhe na slovo
+//newloot(i_eth_boss_menic) //aby prestal bejt invul
+//events -e_etheria_boss_first
+//events +e_etheria_boss_second
+//invul=0
 
 [ItemDef i_etheria_boss_gate]
 Name = "Vstup znamena smrt"
@@ -465,7 +502,15 @@ type = t_eq_script
 model = i_memory
 Layer = layer_special //guessed from base def by Converter 
 
-//[SPEECH crunch_Detheanorus] //(commented out by Converter) 
+[SpeechStub crunch_Detheanorus]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+//SAY("Zdravim! Kdyz mi pomuzete, pustim vas do svych tajnych komnat. Potrebuji zjistit posledni slovo do verse jedne rikanky... pomuzete?")
+ON=*ano*
+//SAY("Ve chvilce vzdy posledni, jako bys to cekal, sesles chvatne formuli, na zachranny... a na to posledni slovo ne a ne prijit.. napada vas neco?")
+ON=*recall*
+//src.go 5638 3381 //nekde v prostorach etherie 1 patra, budou tam priserky obycejny ale s vice regama
 
 [NPCDef c_etheria_warrior]
 CATEGORY = Dungy

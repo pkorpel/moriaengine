@@ -62,7 +62,249 @@ model = i_deed
 
 //[function isVendorInactive] //(commented out by Converter) 
 
-//[SPEECH spk_vendor_custom] //(commented out by Converter) 
+[SpeechStub spk_vendor_custom]
+ON=*forget*
+ON=*zapomen*
+//say(Provedu)
+//if (ismypet)&&(!src.isgm)
+//kermel.sysmessage("mypet: <src.name>, mainowner: <tag(mainowner)>")
+//tag(mainowner,<src>)
+//kermel.sysmessage("mainowner ted: <tag(mainowner)>")
+//endif
+//if (src==tag(mainowner))
+//while (memoryfindtype(memory_ipet))
+//safe memoryfindtype(memory_ipet).remove
+//endwhile
+//newmemory(<src>)
+//act.color=memory_ipet
+//act.timer=-1
+//endif
+ON=*inventory*
+//checkvendor
+//if (src.isgm)
+//findID(i_vendor_box).drop
+//findID(i_vendor_tag_box).drop
+//findID(i_buyer_box).drop
+//findID(i_buyer_goods_box).drop
+//endif
+ON=*kdo*
+ON=*komu*
+//if(strlen(<memoryfindtype(memory_ipet).link.region.tag(houserealm)>))
+//say "Mym zamestavatelem je <?memoryfindtype(memory_ipet).link.sex(pan,pani)?> <?memoryfindtype(memory_ipet).link.getrealnamebyrealm(<region.tag.houserealm>)?>."
+//else
+//say "Mym zamestavatelem je <?memoryfindtype(memory_ipet).link.sex(pan,pani)?> <?memoryfindtype(memory_ipet).link.name?>."
+//endif
+ON=*oblect*
+ON=*obleceni*
+ON=*clothing*
+//if (src.isdead)
+//src.redmessage("Jako duch tohle nemuzes!")
+//return 1
+//endif
+//say(Hned se prevleknu)
+//if (restrictside)
+//return 1
+//endif
+//checkvendor
+//if (isMyPet)
+//eqvendorlayers(cont=<findlayer(29)>)
+//src.eqvendorlayers(logcont=<uid>)
+//findlayer(29).contents(logcont(<src>))//cont=<src>
+//endif
+ON=*nakup*
+ON=*kup*
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+//if (src.isdead)
+//src.redmessage("Jako duch tohle nemuzes!")
+//return 1
+//endif
+//food=<def.maxfood>
+//say(Maly moment)
+//if (restrictside)
+//return 1
+//endif
+//if (checkVendorDialog) //neni otevrene menu jineho vendora?
+//return 1
+//endif
+//checkvendor
+//if (<findID(i_vendor_tag_box).rescount>)
+//src.tag(cv_lastdialog,"")
+//findID(i_vendor_tag_box).DIALOG d_vendor
+//else
+//say Nemam nic na prodej.
+//endif
+ON=*stock*
+ON=*sklad*
+//say(Okamzicek)
+//if (restrictside)
+//return 1
+//endif
+//if (checkvendordialog) //neni otevrene menu jineho vendora?
+//return 1
+//endif
+//checkvendor
+//if (isMyPet)
+//safe src.findID(i_vendor_stock).remove
+//src.newitem i_vendor_stock
+//src.act.link=<findID(i_vendor_tag_box)>
+//src.act.cont=<src>
+//src.act.target("Target an item in your pack to stock.")
+//endif
+ON=*cena*
+ON=*price*
+ON=*nastavit*
+//if (restrictside)
+//return 1
+//endif
+//checkvendor
+//setprice
+ON=*gold*
+ON=*penez*
+ON=*penize*
+//say(Pockej, spocitam to)
+//if (restrictside)
+//return 1
+//endif
+//if (ismypet)
+//say Mam k dispozici <tag.gold> zlata.
+//endif
+ON=*vydelek*
+//if (src.isdead)
+//src.redmessage("Jako duch tohle nemuzes!")
+//return 1
+//endif
+//if (restrictside)
+//return 1
+//endif
+//say(Hned to bude...)
+//checkvendor
+//if (ISMYPET)
+//if !(<tag.GOLD>)
+//say Dnes pro tebe nemam zadne penize...
+//else
+//src.f_vytvor_mesec(<tag(gold)>,<src.findlayer(layer_bankbox)>)
+//src.accmsg("vybral <tag(gold)> zlata z vendora <name>(<uid>); (<src.p>)")
+//say Dostal jsi <tag.gold> zlata.
+//tag(gold,0)
+//endif
+//endif
+ON=*zbozi*
+ON=*collect*
+//if (src.isdead)
+//src.redmessage("Jako duch tohle nemuzes!")
+//return 1
+//endif
+//if (restrictside)
+//return 1
+//endif
+//say(Hned to bude...)
+//checkvendor
+//if (ISMYPET)
+//if (findID(i_buyer_goods_box).rescount)
+//newitem i_backpack
+//act.name="Collected from <?name?>"
+//act.logcont=<src.findlayer(29)>
+//findID(i_buyer_goods_box).contents(collectgoods(<act>))
+//src.accmsg("vybral nakoupene zbozi z vendora <name>(<uid>). Vacek s vecmi je <act.name>(<act>)")
+//say Nakoupene zbozi najdes v bance.
+//else
+//say Dnes pro tebe nemam zadne zbozi.
+//endif
+//endif
+ON=*Redeed*
+//if (src.isgm)
+//src.newitemsafe(i_backpack)
+//lastnew.name="From redeeded vendor <?name?>"
+//lastnew.logbounce
+//lastnew.givegold(<tag.gold>)
+//findID(i_vendor_box).contents2(f_safeitem_restore(<lastnew>))
+//findID(i_buyer_goods_box).contents(collectgoods(<lastnew>))
+//eqlayers(logcont=<lastnew>)
+//src.NEWITEMsafe(i_deed_vendor)
+//src.act.logcont=<lastnew>
+//remove
+//endif
+ON=*pridat*
+ON=*add*
+//if (src.isdead)
+//src.redmessage("Jako duch tohle nemuzes!")
+//return 1
+//endif
+//if (restrictside)
+//return 1
+//endif
+//checkvendor
+//if (ISMYPET)
+//safe src.findID(i_vendor_gold).remove
+//src.newitem i_vendor_gold
+//src.act.link=<UID>
+//src.act.cont=<src>
+//src.act.TARGET Target gold to add to vendors account.
+//endif
+ON=*sell*
+ON=*prod*
+//if (src.isdead)
+//src.redmessage("Jako duch tohle nemuzes!")
+//return 1
+//endif
+//say(Ukaz co mas)
+//if (restrictside)
+//return 1
+//endif
+//if (checkvendordialog) //neni otevrene menu jineho vendora?
+//return 1
+//endif
+//checkvendor
+//src.accmsg("otevrel nabidku SELL od vendora <name>(<uid>) a majetkem <eval tag(gold)>gp na pozici <src.p>")
+//vendorspk_sell
+ON=*poptav*
+ON=*desire*
+//if (src.isdead)
+//src.redmessage("Jako duch tohle nemuzes!")
+//return 1
+//endif
+//say(Shanim toto zbozi)
+//if (restrictside)
+//return 1
+//endif
+//if (checkvendordialog) //neni otevrene menu jineho vendora?
+//return 1
+//endif
+//checkvendor
+//src.tag(cv_lastdialog,"")
+//findID(i_buyer_box).dialog d_vendor_desire
+ON=*info*
+ON=*napove*
+ON=*help*
+//if (restrictside)
+//return 1
+//endif
+//if (ismypet)
+//src.Dialog(d_vendor_help)
+//else
+//src.informovat(16,4,Napoveda k ovladani vendora,cv_customer_help)
+//endif
+//mandos
+ON=*ortodox*
+ON=*vlast*
+//checkvendor
+//if (ISMYPET)
+//tag.pure=1
+//SAY "S neprateli meho pana nejednam !"
+//endif
+ON=*zrad*
+ON=*duffer*
+//checkvendor
+//if (ISMYPET)
+//tag.pure=0
+//SAY "Kdo ma penize, je nas pritel."
+//endif
+//newitem i_infobook
+//act.logbounce
+//act.more=b_vendor_navod_<eval <ismypet>+1>
+//act.dclick
 
 //[function restrictside] //(commented out by Converter) 
 

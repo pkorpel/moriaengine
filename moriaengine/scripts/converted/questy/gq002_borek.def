@@ -10,11 +10,36 @@
 
 //[dialog d_gq002_kovar button] //(commented out by Converter) 
 
-//[speech spk_gq002_borek] //(commented out by Converter) 
+[SpeechStub spk_gq002_borek]
+ON=*ahoj*
+ON=*radlice*
+ON=*pluh*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+
+//f_qSpeech(f_gq002_Borek_DClick)
+
+//////////////////////////////////////////////////////
+//ON DCLICK+SPEECH Borek Function
+//////////////////////////////////////////////////////
 
 //[function f_gq002_Borek_DClick] //(commented out by Converter) 
 
-//[speech spk_gq002_kovar] //(commented out by Converter) 
+[SpeechStub spk_gq002_kovar]
+ON=*ahoj*
+ON=*radlice*
+ON=*pluh*
+ON=*kladivo*
+ON=*ukol*
+ON=*prace*
+
+//f_qSpeech(f_gq002_Kovar_DClick)
+
+
+//////////////////////////////////////////////////////
+//ON DCLICK+SPEECH Kovar Function
+//////////////////////////////////////////////////////
 
 //[function f_gq002_Kovar_DClick] //(commented out by Converter) 
 

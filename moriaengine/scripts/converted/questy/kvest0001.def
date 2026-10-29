@@ -28,7 +28,86 @@ WEIGHT = 1
 model = i_bone_skull
 type = t_bone //guessed from base def by Converter 
 
-//[SPEECH spk_vypravec_straze_mordor_0001] //(commented out by Converter) 
+[SpeechStub spk_vypravec_straze_mordor_0001]
+ON=*ahoj*
+ON=*hi*
+//say "Ja nemam cas na zabavu. Pokud zde namas co pohledavat nebo nemas povoleni ke vstupu tak odejdi "
+ON=*sell*
+ON=*sell*
+ON=*buy*
+//say "Jsem straz ne obchodnik !!. Pokud zde namas co pohledavat nebo nemas povoleni ke vstupu tak odejdi "
+ON=*uplatek*
+ON=*uplatky*
+//say *stisil hlas* Kolik bys za pruchod zaplatil?  "10"  "50" "100" tisic ?
+//src.TAG.mordorpokusuplatek=1
+ON=*10*
+//if (<safe.src.TAG.mordorpokusuplatek1>)
+//say Ja to myslel vazne!!    Chlapy na neeeeeeej
+//src.TAG.vyvrhel=1
+
+
+//elseif (<safe.src.TAG.mordorpokusuplatek>)
+//say Tak a ted bud zvisis cenu.. nebo te necham zavrit!!!
+//src.TAG.mordorpokusuplatek1=1
+//endif
+ON=*50*
+//if (<safe.src.TAG.mordorpokusuplatek>)&&(<src.RESTEST 50000 i_gold>)
+//say oki beru..  Ale nikomu o tom ani muk  jinak si te najdu a podriznu krk.
+//src.go 3686 2738
+//elseif (<safe.src.TAG.mordorpokusuplatek>)
+//say oki beru..  Ale nikomu o tom ani muk  jinak si te najdu a zabiju.ALe prvni si prines penize.
+//else
+//say No nechapu co tim 50 myslis.
+//endif
+ON=*100*
+//if (<safe.src.TAG.mordorpokusuplatek>)&&(<src.RESTEST 100000 i_gold>)
+//say oki beru..  Ale nikomu o tom ani muk. ohlo by nas to oba stat krk
+//src.go 3686 2738
+//elseif (<safe.src.TAG.mordorpokusuplatek>)
+//say oki beru..  Ale nikomu o tom ani muk  jinak si te najdu a zabiju.ALe prvni si prines penize.
+//else
+//say No nechapu co tim 50 myslis.
+//endif
+ON=*pustit*
+ON=*projit*
+ON=*stoupit*
+ON=*vejit*
+ON=*mam*povoleni*
+ON=*mam*propustku*
+ON=*chci*vstoupit*
+//if (<src.RESTEST 1 i_propustka_bila_vez_jednorazova>)
+//src.consume=i_propustka_bila_vez_jednorazova
+//src.newequip=1 i_medajlon_propusteni
+//say Do citadeli muzes vstoupit, propustka ti vsak byla odebrana a misto ni si vezmi tento medailon pro ten ti povoluje jit tam kam ty potrebujes.
+//src.go 3686 2738
+
+//elseif (<src.RESTEST 1 i_propustka_bila_vez_stala>)
+//say zdravim <src.name> .  Muzete  jit dal..
+//src.go 3686 2738
+
+//elseif (<src.RESTEST 1 i_medajlon_propusteni>)
+//src.consume=1 i_medajlon_propusteni
+
+//else
+//say Bez radne vystaveneho povoleni se dovnitr nedostanes. A to ti muze vystavit jen kapitan straze.
+//endif
+ON=*chci*odejit*
+ON=*odejit*
+ON=*odchazim*
+//say Marghul stebou..
+//src.go 3686 2743
+ON=*povoleni*
+ON=*kde*?*
+//say Marghul stebou..
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                       Kvest Mordor-002 Reyla a Akhbar                            //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
 
 [ItemDef i_kvest0001_zadani]
 CATEGORY = Kvesty
@@ -185,7 +264,128 @@ armorVsM = 5
 mindDefenseVsM = 5
 Color = 0028
 
-//[SPEECH spk_poskok_bratrstva] //(commented out by Converter) 
+[SpeechStub spk_poskok_bratrstva]
+
+//  Poskok Bratrstva
+ON=*uschoval*
+//if (<safe.src.TAG.kvest0001dokoncen>)
+//say ANO Barlug ma uschovane saty co ty prinest, Musim je jeste vyprat nez je predat Akhbarovy
+//else
+//say "Burlug nevi co odpovedet"
+//endif
+ON=*Hlad*
+ON=chci jidlo
+//if (<src.RESTEST 50 i_gold>)
+//src.newItem={ i_HAM 1 i_fruit_apple 1 i_bread_loaf 1 i_bacon_slice 1 i_RIBS_COOKED 1 i_SAUSAGES 1}
+//lastnew.bounce
+//src.consume=50 i_gold
+//src.message "Diky za dysko.."
+//sound 0F7
+//else
+//say= "Potrebuji  penize na suroviny.. "
+//endif
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*ukol*
+ON=*reyla*
+ON=*Akhbar*
+ON=*saty*
+ON=*dopis*
+
+
+//if (<safe.src.TAG.kvest0001dokoncen>)
+//say Barlug te zdravit ma pritel...   A jeste  jdnou dik za pomoc Reyle a Akhbar. Barlug ma na tebe dotaz zda ty mu pomoci. Pomuzes Barlugovy ?
+
+
+//elseIF (<src.RESTEST 1 i_kvest_Reyliny_saty>)&&(<i_Akhbaruv_retizek_01>)&&(<i_Akhbaruv_retizek_02>)&&(<i_Akhbaruv_retizek_03>)&&(<i_Akhbaruv_retizek_04>)&&(<i_Akhbaruv_retizek_05>)&&(<i_Akhbaruv_retizek_06>)&&(<i_Akhbaruv_retizek_07>)&&(<i_Akhbaruv_retizek_08>)&&(<i_Akhbaruv_retizek_09>)
+//say Burlug se radovat,Tys zvladl prinest vse prinyst bez me pomoci,Reyla a Akhbar mit radost
+//src.addexp(400)
+//src.consume=i_kvest_Reyliny_saty
+//src.TAG.kvest0001dokoncen=1
+//elseIF (<i_Akhbaruv_retizek_01>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_01
+//elseIF (<i_Akhbaruv_retizek_02>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_02
+//elseIF (<i_Akhbaruv_retizek_03>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_03
+//elseIF (<i_Akhbaruv_retizek_04>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_04
+//elseIF (<i_Akhbaruv_retizek_05>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_05
+//elseIF (<i_Akhbaruv_retizek_06>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_06
+//elseIF (<i_Akhbaruv_retizek_07>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_07
+//elseIF (<i_Akhbaruv_retizek_08>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_08
+//elseIF (<i_Akhbaruv_retizek_09>)
+//say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar
+//src.addexp(10)
+//src.consume=i_Akhbaruv_retizek_09
+//elseIF (<src.RESTEST 1 i_kvest_Reyliny_saty>)
+//say Burlug se radovat, protoze Akhbar a Reyla se radovat z navraceni cervena sat. Ja vezmu k sobe a saty vyprat oni byt spina.
+//src.addexp(200)
+//src.TAG.kvest0001dokoncen=1
+//src.consume=i_kvest_Reyliny_saty
+//elseIF (<src.RESTEST 1 i_kvest_Urghalaghuv_denik>)
+//say Burlug nedoporucovat boj ze zlobry,ale ty tam muset a mozna bojovat. Nasgardsky prusmyk lezi daleko na jiho a vychod  uprostred velka skala
+//elseIF (<src.RESTEST 1 i_kvest_Harghalaghuv_dopis>)
+//say Burlug si spominat ze jmenovana tabor Bagrong je po piskove ceste smer jih od Cerna Vez Barad-Dur
+//else
+//say "Bulug zdravi i tebe..   co ty potrebovat ?"
+//src.TAG.selatko=1
+//endif
+ON=*suport*
+//DORAND 3
+//say "Burlug hlidat Toto uzemi Bratrstva !!  AT se deje cokoliv..  "
+//say "Burlug dobre hlidat.. ale o suportu nebyt ani rec!! "
+//say "Burlug hlidat Bratrstvo..  a  a obcas dat ukoly..  Ale o Suportu zde nebyt rec  "
+//enddo
+ON=*jiste*
+ON=*ano*
+ON=*pomohu*
+ON=*samozrejme*
+ON=*jiste*
+//if (<safe.src.TAG.kvest0001dokoncen>)
+//say Barlug ma bratra co slouzit v cerna vez V Barad Dur.Jeho chytit zla nemoc bolest zad. Reyla mi udelat lek pro nej  ale ja nevim jak mu jej odnest. "Donesl"  bys mu jej ?
+//else
+//say "Burlug nevi co odpovedet"
+//endif
+ON=*donesl*
+ON=*donesu*
+//if (<safe.src.TAG.kvest0001dokoncen>)
+//say Burluguv bratr se jmenovat se jmenvat Liguk.  Mozna ze ty mit problem ze strazemi co branit vejit k Cerna vez, ale ja verit ze ty si poradit. Tady mas lektvar .
+//else
+//say "Bulug nevi co ty chtit donest"
+//endif
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-003 Lek pro Liguka                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
 
 [PotionDef I_lek_pro_Liguka]
 CATEGORY = Kvesty
@@ -196,7 +396,100 @@ NAME = "Dzber elixiru prirodni zkusenosti a moudrosti"
 model = i_flask1_orange
 type = t_drink //guessed from base def by Converter 
 
-//[SPEECH spk_poskok_barad_kasarny] //(commented out by Converter) 
+[SpeechStub spk_poskok_barad_kasarny]
+
+// Liguk   bratr Burluga poskok  v kasarnach  v  Barad Dur
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-004 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-005 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-006 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-007 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-008 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-009 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-010 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+//
+//            Typy  itemu
+//
+/////////////////////////////////
 
 //[typedef T_nastrazna_past_001] //(commented out by Converter) 
 

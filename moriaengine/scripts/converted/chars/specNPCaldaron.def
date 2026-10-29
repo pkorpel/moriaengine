@@ -1157,7 +1157,16 @@ ResistElectric = 200
 ResistCold = 100
 AggroMode = Hostile
 
-//[speech spk_ztracene_mesto_ignac] //(commented out by Converter) 
+[SpeechStub spk_ztracene_mesto_ignac]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_ztracene_mesto_ignac
+//endif
 
 //[function f_ztracene_mesto_ignac] //(commented out by Converter) 
 

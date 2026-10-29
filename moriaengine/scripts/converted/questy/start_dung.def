@@ -34,7 +34,21 @@ Color = 0989
 
 //[DIALOG d_nb001 button] //(commented out by Converter) 
 
-//[speech spk_nb001] //(commented out by Converter) 
+[SpeechStub spk_nb001]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance>>3)
+//Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_nb001
+//endif
+
+//////////////////////////////////////////////////
+//////////////nb002 - latka, bandy////////////////
+//////////////////////////////////////////////////
 
 //[function f_nb002] //(commented out by Converter) 
 
@@ -44,7 +58,21 @@ Color = 0989
 
 //[DIALOG d_nb002 button] //(commented out by Converter) 
 
-//[speech spk_nb002] //(commented out by Converter) 
+[SpeechStub spk_nb002]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance>>3)
+//Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_nb002
+//endif
+
+//////////////////////////////////////////////////
+//////////////nb003 - copper a iron ore///////////
+//////////////////////////////////////////////////
 
 //[function f_nb003] //(commented out by Converter) 
 
@@ -54,7 +82,21 @@ Color = 0989
 
 //[DIALOG d_nb003 button] //(commented out by Converter) 
 
-//[speech spk_nb003] //(commented out by Converter) 
+[SpeechStub spk_nb003]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance>>3)
+//Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_nb003
+//endif
+
+//////////////////////////////////////////////////
+//////////////nb004 - spruce a chestnut logy//////
+//////////////////////////////////////////////////
 
 //[function f_nb004] //(commented out by Converter) 
 
@@ -64,7 +106,21 @@ Color = 0989
 
 //[DIALOG d_nb004 button] //(commented out by Converter) 
 
-//[speech spk_nb004] //(commented out by Converter) 
+[SpeechStub spk_nb004]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance>>3)
+//Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_nb004
+//endif
+
+//////////////////////////////////////////////////
+//////////////nb005 - rybytvi rybytvi/////////////
+//////////////////////////////////////////////////
 
 //[function f_nb005] //(commented out by Converter) 
 
@@ -76,7 +132,21 @@ Color = 0989
 
 //[function f_nb005_countFish] //(commented out by Converter) 
 
-//[speech spk_nb005] //(commented out by Converter) 
+[SpeechStub spk_nb005]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance>>3)
+//Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_nb005
+//endif
+
+//////////////////////////////////////////////////
+//////////////nb_006 - liche lord nb//////////////
+//////////////////////////////////////////////////
 
 //[function f_nb006] //(commented out by Converter) 
 
@@ -86,7 +156,21 @@ Color = 0989
 
 //[DIALOG d_nb006 button] //(commented out by Converter) 
 
-//[speech spk_nb006] //(commented out by Converter) 
+[SpeechStub spk_nb006]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance>>3)
+//Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_nb006
+//endif
+
+//////////////////////////////////////////////////
+//////////////nb_007 - Remeslnik Imro/////////////
+//////////////////////////////////////////////////
 
 //[function f_nb007] //(commented out by Converter) 
 
@@ -96,7 +180,21 @@ Color = 0989
 
 //[DIALOG d_nb007 button] //(commented out by Converter) 
 
-//[speech spk_nb007] //(commented out by Converter) 
+[SpeechStub spk_nb007]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance>>3)
+//Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_nb007
+//endif
+
+//////////////////////////////////////////////////
+//////////////nb_gatekeeper - Port na 3+ lvl//////
+//////////////////////////////////////////////////
 
 //[function f_nb_gatekeeper] //(commented out by Converter) 
 
@@ -104,7 +202,23 @@ Color = 0989
 
 //[DIALOG d_nb_gatekeeper button] //(commented out by Converter) 
 
-//[speech spk_nb_gatekeeper] //(commented out by Converter) 
+[SpeechStub spk_nb_gatekeeper]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance>>3)
+//src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_nb_gatekeeper
+//endif
+
+
+
+//////////////////////////////////////////////////
+//////////////      K A M E N Y     //////////////
+//////////////////////////////////////////////////
 
 [Constants start_dung_dialogs]
 basefont_start_dung		<BASEFONT SIZE="+5" COLOR="#000080">
