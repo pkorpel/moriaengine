@@ -186,8 +186,9 @@ Name = "(e_hcn_teletotarget)"
 [PassiveAbilityDef a_tevent_e_healdrinker]
 Name = "(e_healdrinker)"
 
-[PassiveAbilityDef a_tevent_e_healer]
-Name = "(e_healer)"
+//#827 - real behavior in HealerAbilityDef (MonsterSpecialAttacks/) - a ghost clicking the healer is resurrected.
+[HealerAbilityDef a_tevent_e_healer]
+Name = "Healer"
 
 [PassiveAbilityDef a_tevent_e_hm_pruvodce]
 Name = "(e_hm_pruvodce)"
