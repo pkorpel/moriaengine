@@ -54,6 +54,11 @@ base class, check for an existing same-named property on any subclass first.
 `Timer` (`GameCore/Timers/Timer.cs`) is the engine's scheduling primitive: a background
 thread (`TimerThread`) drains a priority queue ordered by absolute fire time (`fireAt`, a
 `TimeSpan` since server start) and calls `OnTimeout()` under `MainClass.globalLock` when due.
+The timer thread takes `globalLock` first and only then the timer's own lock, which is the
+engine-wide lock order (#17, `Main.cs`). Packet handlers already hold `globalLock`, and
+deleting a Thing locks each of its timers in `Timer.Delete`. Before #798 the timer thread took
+those two locks the other way round, so deleting an NPC whose timer was just coming due (a
+fresh NPC's AI timer, a newly owned pet's hunger timer) deadlocked the server.
 Two knobs control it:
 
 - `DueInSeconds` - delay before the *next* firing. Negative pauses the timer (removes it from
