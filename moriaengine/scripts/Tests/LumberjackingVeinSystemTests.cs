@@ -47,7 +47,8 @@ namespace SteamEngine.CompiledScripts {
 			int y = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
 			byte mapPlane = self.GetMap().M;
 			ItemDef result = LumberjackingVeinSystem.Chop(self, mapPlane, x, y);
-			Console.WriteLine("CHOP_RESULT: wood=" + DescribeWoodResult(result));
+			//#813 emptySpot: the spot's region roll was "nothing" (not just a used-up pool)
+			Console.WriteLine("CHOP_RESULT: wood=" + DescribeWoodResult(result) + " emptySpot=" + LumberjackingVeinSystem.IsEmptySpot(mapPlane, x, y));
 		}
 
 		/// <summary>Same ItemDef.Defname-vs-real-identity gotcha as MiningVeinSystemTests'
@@ -82,30 +83,6 @@ namespace SteamEngine.CompiledScripts {
 			byte mapPlane = self.GetMap().M;
 			LumberjackingVeinSystem.ForceVeinRegenReadyForTest(mapPlane, x, y);
 			Console.WriteLine("WOOD_VEIN_REGEN_FORCED: x=" + x + " y=" + y);
-		}
-
-		/// <summary>Samples `attempts` fresh, never-before-touched tiles (baseX+i each time) to
-		/// confirm the weighted roll favors common wood over rare wood - same statistical-
-		/// sampling precedent as MiningVeinSystemTests' TestSampleVeinOreDistribution.</summary>
-		[SteamFunction]
-		public static void TestSampleWoodVeinDistribution(Character self, ScriptArgs sa) {
-			int attempts = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
-			int baseX = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
-			byte mapPlane = self.GetMap().M;
-			self.SetRealSkillValue((int) SkillName.Lumberjacking, 1200);
-
-			int spruceCount = 0;
-			int elvenCount = 0;
-			for (int i = 0; i < attempts; i++) {
-				ItemDef result = LumberjackingVeinSystem.Chop(self, mapPlane, baseX + i, 0);
-				if (ReferenceEquals(result, WoodTiers.Spruce.ItemDef)) {
-					spruceCount++;
-				}
-				if (ReferenceEquals(result, WoodTiers.Elven.ItemDef)) {
-					elvenCount++;
-				}
-			}
-			Console.WriteLine("WOOD_DISTRIBUTION_SAMPLE: attempts=" + attempts + " spruce=" + spruceCount + " elven=" + elvenCount);
 		}
 
 		/// <summary>#431 - samples `attempts` ambush rolls at self's own location, reporting the

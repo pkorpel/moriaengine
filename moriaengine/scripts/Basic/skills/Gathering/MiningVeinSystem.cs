@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
 using System.Collections.Generic;
 
 namespace SteamEngine.CompiledScripts {
@@ -39,14 +40,6 @@ namespace SteamEngine.CompiledScripts {
 			this.MinAmount = minAmount;
 			this.MaxAmount = maxAmount;
 			this.RegenMinutes = regenMinutes;
-		}
-
-		/// <summary>Rarity weight for the untouched-vein roll - the real AMOUNT range's own
-		/// midpoint is used directly as a commonness proxy (copper/iron's much larger pools mean
-		/// much higher weight, mithril's tiny pool means it's rolled far less often) - matches
-		/// #333's own explicit design, not an invented formula.</summary>
-		public double Weight {
-			get { return (this.MinAmount + this.MaxAmount) / 2.0; }
 		}
 
 		private ItemDef itemDef;
@@ -80,13 +73,32 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly OreTier[] All = {
 			Copper, Iron, Silver, Gold, Verite, Valorite, Obsidian, Shadow, Adamantinum, Mithril
 		};
+
+		private static readonly Dictionary<string, OreTier> extraTiers = new Dictionary<string, OreTier>(StringComparer.OrdinalIgnoreCase);
+
+		/// <summary>#813 - the tier a region resource yields: one of All by its reaped item, or a
+		/// tier made from the resource's own archive values (skill = the range's low end, like
+		/// fixresource's check; amount; regen).</summary>
+		public static OreTier ForResource(RegionResourceDef resource) {
+			foreach (OreTier tier in All) {
+				if (StringComparer.OrdinalIgnoreCase.Equals(tier.ItemDefname, resource.Reap)) {
+					return tier;
+				}
+			}
+			OreTier extra;
+			if (!extraTiers.TryGetValue(resource.Reap, out extra)) {
+				extra = new OreTier(resource.Reap, resource.SkillMin, resource.AmountMin, resource.AmountMax, Math.Max(1, resource.RegenSeconds / 60));
+				extraTiers[resource.Reap] = extra;
+			}
+			return extra;
+		}
 	}
 
 	/// <summary>
 	/// Mining's per-tile vein system (#333, Phase A of #332) - lazily-created vein state per
-	/// mined tile, no pre-authored vein registry (matching #332's own confirmed design: "full
-	/// per-vein pool fidelity, scoped to individual tiles, not named regions - since region data
-	/// doesn't exist"). A vein has ONE assigned ore type at a time; insufficient skill doesn't
+	/// mined tile, like Sphere's resource spots. Since #813 what a spot holds is rolled from its
+	/// region's t_rock region type in the Erebor archive (RegionResourceSystem) - open rock is
+	/// mostly empty, mines are rich. A vein has ONE assigned ore type at a time; insufficient skill doesn't
 	/// fail the attempt, it downgrades the yield to copper (real `fixresource` logic); the pool
 	/// depletes by 1 per successful extraction and regenerates (with a fresh ore roll - veins
 	/// vary over time, per the user's own explicit confirmation) once its timer elapses.
@@ -148,7 +160,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			if (vein.Untouched || (vein.RemainingPool <= 0 && Globals.TimeInSeconds >= vein.RegenReadyAtSeconds)) {
-				AssignFreshOre(vein);
+				AssignFreshOre(vein, mapPlane, x, y);
 			}
 
 			if (vein.RemainingPool <= 0) {
@@ -239,26 +251,33 @@ namespace SteamEngine.CompiledScripts {
 			vein.CaveInAutoClearAtSeconds = Globals.TimeInSeconds + CaveInAutoClearSeconds;
 		}
 
-		private static void AssignFreshOre(Vein vein) {
-			double totalWeight = 0;
-			foreach (OreTier tier in OreTiers.All) {
-				totalWeight += tier.Weight;
+		/// <summary>#813 - what this spot holds comes from the region it's in: the area's
+		/// t_rock region type from the Erebor archive (sphereregion.scp), weighted roll -
+		/// RegionResourceSystem. "Nothing" (r_nothing, or no region type for t_rock here)
+		/// leaves the spot empty until that resource's REGEN, then it rolls again (Sphere's
+		/// resource spot). A resource that isn't one of the OreTiers (sand, gems...) gets a
+		/// tier built from its own archive values.</summary>
+		private static void AssignFreshOre(Vein vein, byte mapPlane, int x, int y) {
+			vein.Untouched = false;
+			RegionResourceDef resource = RegionResourceSystem.Pick(mapPlane, x, y, "t_rock");
+			if ((resource == null) || resource.IsNothing) {
+				vein.AssignedOre = null;
+				vein.RemainingPool = 0;
+				vein.RegenReadyAtSeconds = Globals.TimeInSeconds + (((resource != null) && (resource.RegenSeconds > 0)) ? resource.RegenSeconds : EmptySpotRegenSeconds);
+				return;
 			}
-
-			double roll = Globals.dice.NextDouble() * totalWeight;
-			OreTier picked = OreTiers.All[OreTiers.All.Length - 1];
-			double accumulated = 0;
-			foreach (OreTier tier in OreTiers.All) {
-				accumulated += tier.Weight;
-				if (roll < accumulated) {
-					picked = tier;
-					break;
-				}
-			}
-
+			OreTier picked = OreTiers.ForResource(resource);
 			vein.AssignedOre = picked;
 			vein.RemainingPool = Globals.dice.Next(picked.MinAmount, picked.MaxAmount + 1);
-			vein.Untouched = false;
+		}
+
+		/// <summary>How long a spot with no region type at all stays empty (r_nothing's own REGEN).</summary>
+		public static int EmptySpotRegenSeconds = 30 * 60;
+
+		/// <summary>#813 - true when this spot rolled "nothing" (as opposed to being used up).</summary>
+		public static bool IsEmptySpot(byte mapPlane, int x, int y) {
+			Vein vein;
+			return veins.TryGetValue((mapPlane, x, y), out vein) && !vein.Untouched && (vein.AssignedOre == null);
 		}
 	}
 }

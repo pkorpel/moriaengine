@@ -190,6 +190,12 @@ namespace SteamEngine.Converter {
 							case "area":
 								cd = new ConvertedRegion(input, convertedFile);
 								break;
+							case "regionresource": //#813
+								cd = new ConvertedRegionResource(input, convertedFile);
+								break;
+							case "regiontype": //#813
+								cd = new ConvertedRegionType(input, convertedFile);
+								break;
 							case "template":
 								cd = new ConvertedTemplateDef(input, convertedFile);
 								break;
@@ -250,6 +256,8 @@ namespace SteamEngine.Converter {
 				case "itemdef":
 				case "chardef":
 				case "area":
+				case "regionresource": //#813
+				case "regiontype":
 					return false;
 			}
 			return true;//temp
