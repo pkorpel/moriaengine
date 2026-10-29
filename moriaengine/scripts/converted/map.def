@@ -297,7 +297,7 @@ COLDCHANCE = 00
 Spawnpoint = (4D)4962,3804,0,10
 Rect = 4895,3735,5002,3895
 Rect = 4788,3945,4868,4080
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -307,7 +307,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)4816,4082,0,10
 Rect = 4785,4035,4828,4088
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -350,7 +350,7 @@ COLDCHANCE = 00
 GROUP = a test
 Spawnpoint = (4D)2312,2515,0,100
 Rect = 2199,2459,2375,2618
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_PlanSto) //calculated by Converter 
 Mapplane = 100
 
@@ -361,7 +361,7 @@ COLDCHANCE = 00
 GROUP = a Jails
 Spawnpoint = (4D)5615,801,0,250
 Rect = 5512,784,5631,839
-FLAGS = 06d9f
+FLAGS = 0x68c3 //Sphere 06d9f 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 250
 
@@ -372,7 +372,7 @@ COLDCHANCE = 00
 GROUP = a Jails
 Spawnpoint = (4D)3256,2916,5
 Rect = 3255,2914,3257,2917 //klec v morgulu 
-FLAGS = 06d9f
+FLAGS = 0x68c3 //Sphere 06d9f 
 Parent = (a_Gorgoroth) //calculated by Converter 
 Mapplane = 0
 
@@ -385,7 +385,7 @@ coldchance = 20
 GROUP = a Jails
 Spawnpoint = (4D)432,1212,0,1
 Rect = 272,910,599,1365
-FLAGS = 06d9f
+FLAGS = 0x68c3 //Sphere 06d9f 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 1
 
@@ -396,7 +396,7 @@ COLDCHANCE = 00
 GROUP = a special
 Spawnpoint = (4D)2281,2586,80,10
 Rect = 2281,2586,2305,2600
-FLAGS = 00180
+FLAGS = 0x0 //Sphere 00180 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -407,7 +407,7 @@ COLDCHANCE = 00
 GROUP = a special
 Spawnpoint = (4D)4763,1362,10,10
 Rect = 4742,1341,4784,1365
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -418,7 +418,7 @@ COLDCHANCE = 00
 GROUP = a special
 Spawnpoint = (4D)4763,1362,10
 Rect = 4742,1336,4784,1365
-FLAGS = 00180
+FLAGS = 0x0 //Sphere 00180 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -429,7 +429,7 @@ COLDCHANCE = 00
 GROUP = a special
 Spawnpoint = (4D)4763,1362,10,35
 Rect = 4742,1336,4784,1365
-FLAGS = 00180
+FLAGS = 0x0 //Sphere 00180 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 35
 
@@ -440,7 +440,7 @@ COLDCHANCE = 00
 GROUP = a special
 Spawnpoint = (4D)4753,118
 Rect = 4738,99,4770,126
-FLAGS = 00180
+FLAGS = 0x0 //Sphere 00180 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -451,7 +451,7 @@ COLDCHANCE = 00
 GROUP = a special
 Spawnpoint = (4D)5927,110
 Rect = 5914,93,5939,112
-FLAGS = 0180
+FLAGS = 0x0 //Sphere 0180 
 Parent = (a_Jamy_smrti) //calculated by Converter 
 Mapplane = 0
 
@@ -462,7 +462,7 @@ COLDCHANCE = 00
 GROUP = a special
 Spawnpoint = (4D)5991,138
 Rect = 5981,120,6006,153
-FLAGS = 03197
+FLAGS = 0x30c3 //Sphere 03197 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -473,7 +473,7 @@ COLDCHANCE = 00
 GROUP = a special
 Spawnpoint = (4D)4722,1122
 Rect = 4714,1117,4733,1129
-FLAGS = 00180
+FLAGS = 0x0 //Sphere 00180 
 Parent = (a_PlanSto) //calculated by Converter 
 Mapplane = 100
 
@@ -826,7 +826,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6131,3885,-80
 Rect = 3112,2940,3135,2954
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -965,7 +965,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)3103,3027
 Rect = 3089,3022,3110,3047
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Jizni_Ithilien) //calculated by Converter 
 Mapplane = 0
 
@@ -977,7 +977,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6106,4079,-80
 Rect = 6088,4055,6127,4089
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -1003,7 +1003,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)3084,2924
 Rect = 3071,2905,3102,2931
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Severni_Ithilien) //calculated by Converter 
 Mapplane = 0
 
@@ -1027,7 +1027,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6129,3773,-80
 Rect = 6117,3766,6137,3794
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Vychodni_breh) //calculated by Converter 
 Mapplane = 0
 
@@ -1039,7 +1039,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6131,3885,-80
 Rect = 6114,3874,6137,3902
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Vychodni_breh) //calculated by Converter 
 Mapplane = 0
 
@@ -1071,7 +1071,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5737,3730,-80
 Rect = 5721,3726,5755,3748
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -1083,7 +1083,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)2996,2923,1
 Rect = 2985,2909,3013,2930
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1095,7 +1095,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5611,4077,-80
 Rect = 5600,4059,5628,4083
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -1110,7 +1110,7 @@ Rect = 2971,2971,2995,2989
 Rect = 2994,2980,2998,2989
 Rect = 2971,2983,2993,2996
 Rect = 2971,2996,2988,3003
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -1129,7 +1129,7 @@ Rect = 5723,3940,5799,4008
 Rect = 5730,3698,5868,4001
 Rect = 5751,3993,5848,4091
 Rect = 5848,3947,5895,4042
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -1455,7 +1455,7 @@ COLDCHANCE = 00
 GROUP = vyznamna mista
 Spawnpoint = (4D)2854,2484,50
 Rect = 2800,2408,2893,2551
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1491,7 +1491,7 @@ Spawnpoint = (4D)2518,3615
 Rect = 2508,3592,2522,3637
 Rect = 2523,3592,2523,3611
 Rect = 2523,3612,2523,3637
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -1503,7 +1503,7 @@ COLDCHANCE = 00
 GROUP = vyznamna mista
 Spawnpoint = (4D)2996,2528
 Rect = 2895,2420,3059,2569
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1515,7 +1515,7 @@ COLDCHANCE = 25
 GROUP = vyznamna mista
 Spawnpoint = (4D)1952,2740
 Rect = 1929,2697,1978,2749
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1531,7 +1531,7 @@ Rect = 2856,2664,3007,2727
 Rect = 2856,2624,3031,2671
 Rect = 2872,2720,2983,2751
 Rect = 2824,2616,2863,2687
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1625,7 +1625,7 @@ Spawnpoint = (4D)5808,443
 Rect = 5809,536,5999,614
 Rect = 5880,427,6139,535
 Rect = 5787,442,5879,446
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -1638,7 +1638,7 @@ COLDCHANCE = 00
 GROUP = vyznamna mista
 Spawnpoint = (4D)2330,2441,-22,1
 Rect = 2321,2438,2369,2541
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 1
 
@@ -1648,7 +1648,7 @@ events = r_nosumon
 group = knihovna
 Spawnpoint = (4D)1184,1364,0,5
 Rect = 1179,1358,1189,1370
-FLAGS = 0119E
+FLAGS = 0x10c0 //Sphere 0119E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -1657,7 +1657,7 @@ Name = "knihovna Harad"
 group = knihovna
 Spawnpoint = (4D)4170,3940,20,5
 Rect = 4163,3932,4182,3944
-FLAGS = 0119E
+FLAGS = 0x10c0 //Sphere 0119E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -1666,7 +1666,7 @@ Name = "knihovna Minas Tirith"
 group = knihovna
 Spawnpoint = (4D)5547,3830,0,5
 Rect = 5529,3819,5556,3846
-FLAGS = 0119E
+FLAGS = 0x10c0 //Sphere 0119E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -1675,7 +1675,7 @@ Name = "knihovna Minas Tirith sklep"
 group = knihovna
 Spawnpoint = (4D)5450,200,20,5
 Rect = 5435,165,5475,218
-FLAGS = 0119E
+FLAGS = 0x10c0 //Sphere 0119E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -1689,7 +1689,7 @@ GROUP = Mesta Gondor
 Spawnpoint = (4D)3157,970,40
 Rect = 3134,946,3166,976 //Erebor povrch 
 Rect = 4704,2023,4913,2153 //Erebor mistnosti 
-FLAGS = 0900 // 0100 available 
+FLAGS = 0x800 //Sphere 0900  0100 available 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -1703,7 +1703,7 @@ GROUP = Mesta Gondor
 Spawnpoint = (4D)3816,1021
 Rect = 4784,2200,4991,2261
 Rect = 4819,2239,4859,2306
-FLAGS = 0900 // 0100 available 
+FLAGS = 0x800 //Sphere 0900  0100 available 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -1716,7 +1716,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1079,1327
 Rect = 1049,1250,1125,1370
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Kraj) //calculated by Converter 
 Mapplane = 0
 
@@ -1729,7 +1729,7 @@ coldchance = 20
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1069,1181,2
 Rect = 1000,1120,1224,1248
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Kraj) //calculated by Converter 
 Mapplane = 0
 
@@ -1742,7 +1742,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1268,1405
 Rect = 1251,1386,1280,1453
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Kraj) //calculated by Converter 
 Mapplane = 0
 
@@ -1755,7 +1755,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1312,1373
 Rect = 1285,1339,1326,1411
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1768,7 +1768,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1215,1347
 Rect = 1179,1329,1233,1374
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Kraj) //calculated by Converter 
 Mapplane = 0
 
@@ -1781,7 +1781,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1582,1184
 Rect = 1544,1160,1596,1214
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1795,7 +1795,7 @@ GROUP = Mesta Gondor
 Spawnpoint = (4D)1633,1221
 Rect = 1621,1168,1655,1239
 Rect = 1604,1220,1629,1239
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1808,7 +1808,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1424,1090
 Rect = 1392,1040,1484,1122
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Severni_vrchy) //calculated by Converter 
 Mapplane = 0
 
@@ -1821,7 +1821,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1210,613
 Rect = 1180,582,1296,655
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1839,7 +1839,7 @@ Rect = 5627,3946,5681,3995
 Rect = 5456,3895,5504,3979
 Rect = 5467,3785,5534,3867
 Rect = 5490,3863,5525,4024
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -1857,7 +1857,7 @@ Rect = 2999,2800,3010,2825
 Rect = 3007,2825,3027,2846
 Rect = 3010,2805,3018,2825
 Rect = 3019,2812,3027,2823
-FLAGS = 0100
+FLAGS = 0x0 //Sphere 0100 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1870,7 +1870,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)3105,1077
 Rect = 3095,1032,3151,1091
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Rhovanion) //calculated by Converter 
 Mapplane = 0
 
@@ -1884,7 +1884,7 @@ GROUP = Mesta Gondor
 Spawnpoint = (4D)2312,2515
 Rect = 2245,2507,2376,2621 // hlavni cast 
 Rect = 2245,2491,2283,2510 // levej horni roh 
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Rohan) //calculated by Converter 
 Mapplane = 0
 
@@ -1910,7 +1910,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)2737,3282
 Rect = 2693,3234,2749,3288
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Lebennin) //calculated by Converter 
 Mapplane = 0
 
@@ -1923,7 +1923,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)2468,2939,5
 Rect = 2436,2899,2503,2980
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1939,7 +1939,7 @@ Rect = 2152,3180,2370,3305
 Rect = 2263,3100,2317,3184
 Rect = 2257,3158,2263,3181
 Rect = 2250,3167,2260,3183
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1955,7 +1955,7 @@ Rect = 3166,992,3234,1021
 Rect = 3155,1016,3220,1063
 Rect = 3162,1062,3220,1078
 Rect = 3233,992,3249,1009
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -1968,7 +1968,7 @@ COLDCHANCE = 05
 GROUP = Mesta Gondor
 Spawnpoint = (4D)1592,1944
 Rect = 1568,1904,1623,1943
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -1983,7 +1983,7 @@ Spawnpoint = (4D)2887,3245
 Rect = 2864,3193,2940,3251
 Rect = 2865,3250,2906,3285
 Rect = 2903,3247,2915,3272
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2001,7 +2001,7 @@ Rect = 662,1259,727,1346
 Rect = 726,1267,750,1287
 Rect = 723,1286,735,1307
 Rect = 734,1285,742,1296
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2017,7 +2017,7 @@ Rect = 2447,1824,2493,1928
 Rect = 2423,1825,2447,1919
 Rect = 2391,1826,2423,1911
 Rect = 2373,1842,2391,1905
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2034,7 +2034,7 @@ Rect = 2925,1248,3041,1300
 Rect = 2989,1143,3053,1190
 Rect = 2988,1190,3044,1196
 Rect = 2963,1199,3034,1236
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Rhovanion) //calculated by Converter 
 Mapplane = 0
 
@@ -2048,7 +2048,7 @@ GROUP = Mesta Mordor
 Spawnpoint = (4D)3824,2134
 Rect = 3730,2023,3962,2210
 Rect = 3959,2033,3989,2065
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2062,7 +2062,7 @@ GROUP = Mesta Mordor
 Spawnpoint = (4D)3647,2717,-50
 Rect = 3549,2664,3727,2792 // hlavni cast - mesto 
 Rect = 3656,2632,3703,2687 // palac - beze zmeny 
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Mordor) //calculated by Converter 
 Mapplane = 0
 
@@ -2075,7 +2075,7 @@ COLDCHANCE = 00
 GROUP = Mesta Mordor
 Spawnpoint = (4D)3920,3012
 Rect = 3880,2976,3959,3047
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2088,7 +2088,7 @@ COLDCHANCE = 05
 GROUP = Mesta Mordor
 Spawnpoint = (4D)3472,3264,13
 Rect = 3400,3216,3559,3327
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -2102,7 +2102,7 @@ GROUP = Mesta Mordor
 Spawnpoint = (4D)4186,3960
 Rect = 4104,3888,4313,4047
 Rect = 4152,3818,4228,3899
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Haradwaith) //calculated by Converter 
 Mapplane = 0
 
@@ -2115,7 +2115,7 @@ COLDCHANCE = 00
 GROUP = Mesta Mordor
 Spawnpoint = (4D)2910,3710
 Rect = 2872,3680,2959,3735
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Haradwaith) //calculated by Converter 
 Mapplane = 0
 
@@ -2128,7 +2128,7 @@ COLDCHANCE = 00
 GROUP = Mesta Mordor
 Spawnpoint = (4D)2775,3804
 Rect = 2736,3748,2815,3823
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Horondor) //calculated by Converter 
 Mapplane = 0
 
@@ -2141,7 +2141,7 @@ COLDCHANCE = 00
 GROUP = Mesta Mordor
 Spawnpoint = (4D)2502,4017,11
 Rect = 2360,3935,2541,4094
-FLAGS = 0100 // 0100 available 
+FLAGS = 0x0 //Sphere 0100  0100 available 
 Parent = (a_Horondor) //calculated by Converter 
 Mapplane = 0
 
@@ -2217,7 +2217,7 @@ Rect = 204,3678,225,3693
 Rect = 470,3472,487,3493
 Rect = 514,3424,525,3445
 Rect = 552,3382,573,3403
-FLAGS = 00001
+FLAGS = 0x3 //Sphere 00001 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2267,7 +2267,7 @@ Rect = 388,3814,409,3839
 Rect = 306,3862,321,3885
 Rect = 460,3922,477,3963
 Rect = 324,3766,369,3787
-FLAGS = 0001A
+FLAGS = 0xc0 //Sphere 0001A 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2385,7 +2385,7 @@ COLDCHANCE = 00
 GROUP = Ostrovy
 Spawnpoint = (4D)377,392,51
 Rect = 228,354,380,445
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2410,7 +2410,7 @@ Rect = 5908,830,6116,952
 Rect = 5800,640,6135,903
 Rect = 6032,576,6137,655
 Rect = 5504,768,5911,943
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2423,7 +2423,7 @@ COLDCHANCE = 00
 GROUP = Doly
 Spawnpoint = (4D)5311,35
 Rect = 5297,25,5347,79
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Jamy_smrti) //calculated by Converter 
 Mapplane = 0
 
@@ -2436,7 +2436,7 @@ COLDCHANCE = 00
 GROUP = Doly
 Spawnpoint = (4D)4750,2190
 Rect = 4715,2169,4774,2206
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2449,7 +2449,7 @@ COLDCHANCE = 00
 GROUP = Doly
 Spawnpoint = (4D)529,666
 Rect = 462,641,515,685
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2462,7 +2462,7 @@ COLDCHANCE = 00
 GROUP = Doly
 Spawnpoint = (4D)756,1528
 Rect = 730,1509,780,1540
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2475,7 +2475,7 @@ COLDCHANCE = 00
 GROUP = Doly
 Spawnpoint = (4D)1232,917
 Rect = 1189,877,1247,932
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2490,7 +2490,7 @@ Spawnpoint = (4D)2030,2281
 Rect = 2007,2259,2058,2286
 Rect = 2011,2283,2038,2293
 Rect = 2036,2286,2041,2292
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2503,7 +2503,7 @@ COLDCHANCE = 00
 GROUP = Doly
 Spawnpoint = (4D)2066,717
 Rect = 2036,673,2075,721
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Angmar) //calculated by Converter 
 Mapplane = 0
 
@@ -2517,7 +2517,7 @@ GROUP = Doly
 Spawnpoint = (4D)3849,2523
 Rect = 3812,2487,3887,2524
 Rect = 3833,2522,3875,2540
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Mordor) //calculated by Converter 
 Mapplane = 0
 
@@ -2531,7 +2531,7 @@ GROUP = Doly
 Spawnpoint = (4D)4518,3235
 Rect = 4499,3221,4536,3241
 Rect = 4512,3241,4535,3251
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2550,7 +2550,7 @@ Rect = 4868,12,5043,137
 Rect = 4704,1592,4775,1919
 Rect = 4776,1616,5023,1879
 Rect = 4848,1584,4903,1623
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2564,7 +2564,7 @@ GROUP = Doly
 Rect = 4704,1592,4775,1919
 Rect = 4776,1616,5023,1879
 Rect = 4848,1584,4903,1623
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Doly) //calculated by Converter 
 Mapplane = 0
 
@@ -2574,7 +2574,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 GROUP = Doly
 Rect = 2797,2870,2837,2976
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2588,7 +2588,7 @@ GROUP = Doly
 Spawnpoint = (4D)3265,3116
 Rect = 3243,3072,3291,3092
 Rect = 3262,3093,3274,3116
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -2601,7 +2601,7 @@ COLDCHANCE = 00
 GROUP = Doly
 Spawnpoint = (4D)4950,2344
 Rect = 4919,2307,4957,2340
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2613,7 +2613,7 @@ GROUP = Dungeon
 Spawnpoint = (4D)5832,3631,0,11
 Rect = 5622,3475,5793,3596
 Rect = 5809,3608,5845,3668
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -2624,7 +2624,7 @@ COLDCHANCE = 00
 GROUP = Dungeon vstup
 Spawnpoint = (4D)235,2085
 Rect = 232,2073,247,2088
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -2636,7 +2636,7 @@ COLDCHANCE = 00
 GROUP = Dungeon
 Spawnpoint = (4D)5965,161,0,12
 Rect = 5940,128,5988,164
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -2648,7 +2648,7 @@ COLDCHANCE = 00
 GROUP = Dungeon
 Spawnpoint = (4D)6006,4064,-80,10
 Rect = 5968,4036,6025,4082
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2660,7 +2660,7 @@ COLDCHANCE = 00
 GROUP = Dungeon
 Spawnpoint = (4D)5636,114,0,10
 Rect = 5613,88,5647,118
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2675,7 +2675,7 @@ Rect = 1468,473,1889,720
 Rect = 1749,380,1889,472
 Rect = 1573,187,1792,378
 Rect = 1681,120,1774,186
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -2686,7 +2686,7 @@ COLDCHANCE = 00
 GROUP = quest dungeon
 Spawnpoint = (4D)4968,40,0,10
 Rect = 4935,32,4971,73
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2697,7 +2697,7 @@ COLDCHANCE = 00
 GROUP = quest dungeon
 Spawnpoint = (4D)5412,2556,15,35
 Rect = 5376,2368,5529,2565
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -2708,7 +2708,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)938,642,-80,2
 Rect = 712,349,1321,829
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -2719,7 +2719,7 @@ COLDCHANCE = 00
 GROUP = quest dungeon
 Spawnpoint = (4D)2232,1800,45,10
 Rect = 2085,1696,2235,1840
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2729,7 +2729,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5968,143,0,11
 Rect = 5922,124,6007,154
-FLAGS = 0001E
+FLAGS = 0xc0 //Sphere 0001E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -2740,7 +2740,7 @@ COLDCHANCE = 00
 GROUP = quest dungeon
 Spawnpoint = (4D)5323,907,0,10
 Rect = 5312,863,5385,913
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2752,7 +2752,7 @@ COLDCHANCE = 00
 GROUP = quest dungeon
 Spawnpoint = (4D)5612,3609,31,10
 Rect = 5494,3503,5622,3619
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2763,7 +2763,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)4937,4074,0,10
 Rect = 4906,4067,4943,4087
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2777,7 +2777,7 @@ Spawnpoint = (4D)4939,4061,0,10
 Rect = 4930,4003,4991,4065
 Rect = 4992,4000,5036,4073
 Rect = 5037,3980,5081,4073
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2791,7 +2791,7 @@ Spawnpoint = (4D)4978,3976,0,10
 Rect = 4924,3917,4992,3993
 Rect = 4993,3907,5043,3946
 Rect = 4993,3946,5020,3989
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2803,7 +2803,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)5735,2507,20,11
 Rect = 5730,2466,5863,2589
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -2815,7 +2815,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)5735,2507,20,10
 Rect = 5730,2466,5863,2589
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2827,7 +2827,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)3,1268,-8,2
 Rect = 1,1253,176,1576
-FLAGS = 0081E
+FLAGS = 0x8c0 //Sphere 0081E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -2839,7 +2839,7 @@ GROUP = Dungeon Edgarovo Utociste
 Spawnpoint = (4D)5847,2468,0,10
 Rect = 5733,2363,5874,2464
 Rect = 5832,2453,5857,2473
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2850,7 +2850,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Edgarovo Utociste
 Spawnpoint = (4D)5097,3721,0,10
 Rect = 5057,3687,5107,3733
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2861,7 +2861,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Edgarovo Utociste
 Spawnpoint = (4D)5024,3718,0,10
 Rect = 4989,3686,5038,3730
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2872,7 +2872,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Edgarovo Utociste
 Spawnpoint = (4D)5097,3652,0,10
 Rect = 5007,3626,5103,3672
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2883,7 +2883,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Edgarovo Utociste
 Spawnpoint = (4D)5016,3755,0,10
 Rect = 5012,3750,5020,3759
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -2894,7 +2894,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5706,294,30
 Rect = 5665,220,5798,324
-FLAGS = 0081E
+FLAGS = 0x8c0 //Sphere 0081E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -2906,7 +2906,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5543,244,5,5
 Rect = 5473,229,5545,259
-FLAGS = 02801
+FLAGS = 0x2803 //Sphere 02801 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -2918,7 +2918,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5543,244,5,6
 Rect = 5473,229,5545,259
-FLAGS = 02801
+FLAGS = 0x2803 //Sphere 02801 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 6
 
@@ -2930,7 +2930,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5543,244,5,7
 Rect = 5473,229,5545,259
-FLAGS = 02801
+FLAGS = 0x2803 //Sphere 02801 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 7
 
@@ -2942,7 +2942,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)2335,791,45
 Rect = 2244,760,2403,845
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2955,7 +2955,7 @@ GROUP = Arena
 Spawnpoint = (4D)5286,3474,35
 Rect = 5618,3483,5799,3601
 Rect = 5195,3467,5390,3616
-FLAGS = 00800
+FLAGS = 0x800 //Sphere 00800 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -2968,7 +2968,7 @@ GROUP = Arena
 Spawnpoint = (4D)5870,800
 Rect = 5846,782,5893,817
 Rect = 5195,3467,5390,3616
-FLAGS = 00800
+FLAGS = 0x800 //Sphere 00800 
 Parent = (a_doly_Moria) //calculated by Converter 
 Mapplane = 0
 
@@ -2980,7 +2980,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)2335,791,45
 Rect = 2244,760,2403,845
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 55
 
@@ -2993,7 +2993,7 @@ GROUP = Arena
 Spawnpoint = (4D)5286,3474,35,55
 Rect = 5618,3483,5799,3601
 Rect = 5195,3467,5390,3616
-FLAGS = 00800
+FLAGS = 0x800 //Sphere 00800 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 55
 
@@ -3006,7 +3006,7 @@ GROUP = Arena
 Spawnpoint = (4D)5870,800,0,55
 Rect = 5846,782,5893,817
 Rect = 5195,3467,5390,3616
-FLAGS = 00800
+FLAGS = 0x800 //Sphere 00800 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 55
 
@@ -3018,7 +3018,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,10
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3030,7 +3030,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,55
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 55
 
@@ -3042,7 +3042,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,11
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -3054,7 +3054,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,56
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 56
 
@@ -3066,7 +3066,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,12
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -3078,7 +3078,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,57
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 57
 
@@ -3090,7 +3090,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,58
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 58
 
@@ -3102,7 +3102,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,59
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 59
 
@@ -3114,7 +3114,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5721,296,10,60
 Rect = 5588,149,5801,353
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 60
 
@@ -3126,7 +3126,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5060,1195,0,5
 Rect = 4976,1128,5083,1223
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -3138,7 +3138,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)5060,1195,0,55
 Rect = 4976,1128,5083,1223
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 55
 
@@ -3150,7 +3150,7 @@ COLDCHANCE = 00
 GROUP = Arena
 Spawnpoint = (4D)2199,1781,45
 Rect = 2126,1738,2216,1815
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -3162,7 +3162,7 @@ COLDCHANCE = 50
 GROUP = Arena
 Spawnpoint = (4D)6012,2747,0,55
 Rect = 5945,2700,6069,2789
-FLAGS = 0001E
+FLAGS = 0xc0 //Sphere 0001E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 55
 
@@ -3174,7 +3174,7 @@ COLDCHANCE = 50
 GROUP = Arena
 Spawnpoint = (4D)6050,2771,0,56
 Rect = 5945,2700,6069,2789
-FLAGS = 0801E
+FLAGS = 0x80c0 //Sphere 0801E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 56
 
@@ -3186,7 +3186,7 @@ COLDCHANCE = 00
 GROUP = Mordorske uzemi
 Spawnpoint = (4D)5847,2104,10,10
 Rect = 5847,2104,5937,2174
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3198,7 +3198,7 @@ COLDCHANCE = 00
 GROUP = Mordorske uzemi
 Spawnpoint = (4D)3144,2854,80
 Rect = 3112,2832,3183,2919
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Mordor) //calculated by Converter 
 Mapplane = 0
 
@@ -3210,7 +3210,7 @@ COLDCHANCE = 20
 GROUP = Dungeony
 Spawnpoint = (4D)5406,4052
 Rect = 5371,4017,5433,4078
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3222,7 +3222,7 @@ COLDCHANCE = 10
 GROUP = Dungeony
 Spawnpoint = (4D)5574,3575,3
 Rect = 5501,3509,5616,3613
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Domov_drakulu) //calculated by Converter 
 Mapplane = 10
 
@@ -3234,7 +3234,7 @@ COLDCHANCE = 10
 GROUP = Dungeony
 Spawnpoint = (4D)5995,1557
 Rect = 5956,1238,6120,1574
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3246,7 +3246,7 @@ COLDCHANCE = 10
 GROUP = Dungeony
 Spawnpoint = (4D)5995,1557
 Rect = 5956,1238,6120,1574
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -3258,7 +3258,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)4945,1386
 Rect = 4921,1340,4960,1445
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3270,7 +3270,7 @@ GROUP = Stredozeme
 Spawnpoint = (4D)2064,2198
 Rect = 2008,2140,2062,2212
 Rect = 2063,2174,2133,2218
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -3283,7 +3283,7 @@ GROUP = Dungeony
 Spawnpoint = (4D)2308,1318,20
 Rect = 2304,1304,2415,1375
 Rect = 2408,1256,2488,1447
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -3295,7 +3295,7 @@ COLDCHANCE = 00
 GROUP = Dungeon //nb 
 Spawnpoint = (4D)3579,2809
 Rect = 3574,2795,3610,2824
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Mordor) //calculated by Converter 
 Mapplane = 0
 
@@ -3307,7 +3307,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)4970,3870,0,10
 Rect = 4961,3855,4977,3893
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Katakomby) //calculated by Converter 
 Mapplane = 10
 
@@ -3319,7 +3319,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)4908,1713,0,10
 Rect = 4865,1645,4934,1724
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3331,7 +3331,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)2834,755,45
 Rect = 2826,744,2846,762
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -3343,7 +3343,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)19,1196,-10,2
 Rect = 1,794,189,1196
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -3356,7 +3356,7 @@ GROUP = Dungeony
 Spawnpoint = (4D)6047,3506,20,10
 Rect = 5816,3257,6135,3671
 Rect = 5968,3184,6072,3263
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3369,7 +3369,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)6103,3586,20,10
 Rect = 6095,3577,6108,3596
-FLAGS = 00812 // dungeon, noport, nogate 
+FLAGS = 0x8c0 //Sphere 00812  dungeon, noport, nogate 
 Parent = (a_Ledove_jeskyne_level_1) //calculated by Converter 
 Mapplane = 10
 
@@ -3381,7 +3381,7 @@ COLDCHANCE = 00
 GROUP = Dungeony
 Spawnpoint = (4D)5896,1438
 Rect = 5720,1248,5959,1495
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -3392,7 +3392,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5869,2108,10,11
 Rect = 5758,2098,5959,2305
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -3404,7 +3404,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5856,2153,10,11
 Rect = 5853,2150,5859,2154
-FLAGS = 00812 // dungeon, noport, nogate 
+FLAGS = 0x8c0 //Sphere 00812  dungeon, noport, nogate 
 Parent = (a_Nexmirias) //calculated by Converter 
 Mapplane = 11
 
@@ -3416,7 +3416,7 @@ RAINCHANCE = 20
 COLDCHANCE = 00
 Spawnpoint = (4D)477,612,-20,2
 Rect = 417,595,492,639
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -3428,7 +3428,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5913,345,0,30
 Rect = 5848,293,5957,376
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 30
 
@@ -3440,7 +3440,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5913,345,0,31
 Rect = 5848,293,5957,376
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 31
 
@@ -3452,7 +3452,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5913,345,0,32
 Rect = 5848,293,5957,376
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 32
 
@@ -3464,7 +3464,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5913,345,0,33
 Rect = 5848,293,5957,376
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 33
 
@@ -3476,7 +3476,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5913,345,0,34
 Rect = 5848,293,5957,376
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 34
 
@@ -3488,7 +3488,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5913,345,0,35
 Rect = 5848,293,5957,376
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 35
 
@@ -3499,7 +3499,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6109,2877,20,10
 Rect = 6094,2733,6142,2890
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3510,7 +3510,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6102,3189,0,10
 Rect = 6072,2913,6133,3200
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3521,7 +3521,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6102,3189,0,11
 Rect = 6072,2913,6133,3200
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -3532,7 +3532,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6102,3189,0,12
 Rect = 6072,2913,6133,3200
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -3543,7 +3543,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6102,3189,0,13
 Rect = 6072,2913,6133,3200
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 13
 
@@ -3554,7 +3554,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)6125,3249,11,10
 Rect = 6090,3214,6127,3251
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3565,7 +3565,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)6044,3890,-80
 Rect = 5973,3698,6142,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3576,7 +3576,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)5902,3891,-80
 Rect = 5589,3698,5972,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3587,7 +3587,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)6044,3890,-80
 Rect = 5973,3698,6142,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -3598,7 +3598,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)5902,3891,-80
 Rect = 5589,3698,5972,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -3609,7 +3609,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)6044,3890,-80
 Rect = 5973,3698,6142,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -3620,7 +3620,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)5902,3891,-80
 Rect = 5589,3698,5972,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -3631,7 +3631,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)6044,3890,-80
 Rect = 5973,3698,6142,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 13
 
@@ -3642,7 +3642,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)5902,3891,-80
 Rect = 5589,3698,5972,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 13
 
@@ -3653,7 +3653,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)6044,3890,-80
 Rect = 5973,3698,6142,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 14
 
@@ -3664,7 +3664,7 @@ RAINCHANCE = 25
 COLDCHANCE = 00
 Spawnpoint = (4D)5902,3891,-80
 Rect = 5589,3698,5972,4094
-flags = 08012
+flags = 0x80c0 //Sphere 08012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 14
 
@@ -3675,7 +3675,7 @@ COLDCHANCE = 00
 GROUP = Sluje
 Spawnpoint = (4D)5555,490,0,10
 Rect = 5522,444,5584,524
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3687,7 +3687,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Mont Dorlas
 Spawnpoint = (4D)3869,1013
 Rect = 3860,995,3905,1038
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -3698,7 +3698,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Mont Dorlas
 Spawnpoint = (4D)5708,156,0,10
 Rect = 5587,148,5799,352
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3709,7 +3709,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Mont Dorlas
 Spawnpoint = (4D)5256,352,0,10
 Rect = 5187,149,5402,373
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3720,7 +3720,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Mont Dorlas
 Spawnpoint = (4D)5432,377,0,10
 Rect = 5415,152,5574,393
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3732,7 +3732,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Mont Dorlas
 Spawnpoint = (4D)5236,160,0,10
 Rect = 5235,153,5248,162
-FLAGS = 00812 // dungeon, noport, nogate 
+FLAGS = 0x8c0 //Sphere 00812  dungeon, noport, nogate 
 Parent = (a_Mount_Dorlas_Level_2) //calculated by Converter 
 Mapplane = 10
 
@@ -3743,7 +3743,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dug snagum
 Spawnpoint = (4D)4394,3288
 Rect = 4337,3280,4451,3348
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -3754,7 +3754,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dug snagum
 Spawnpoint = (4D)4850,434
 Rect = 4707,402,4915,582
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3765,7 +3765,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dug snagum
 Spawnpoint = (4D)4946,407
 Rect = 4922,393,5086,595
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3776,7 +3776,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dug snagum
 Spawnpoint = (4D)5072,343
 Rect = 4923,250,5077,388
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3787,7 +3787,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dug snagum
 Spawnpoint = (4D)4859,185
 Rect = 4727,162,4877,366
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3799,7 +3799,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Katakomby Okultistu
 Spawnpoint = (4D)5731,3103,-18
 Rect = 5680,3050,5919,3239
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3814,7 +3814,7 @@ Rect = 3790,183,3949,225
 Rect = 3846,223,3932,241
 Rect = 3863,237,3882,250
 Rect = 3926,194,3974,251
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Severni_Spoust) //calculated by Converter 
 Mapplane = 0
 
@@ -3825,7 +3825,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Sluje
 Spawnpoint = (4D)5482,486
 Rect = 5386,436,5795,759
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -3836,7 +3836,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Tajemna hora
 Spawnpoint = (4D)413,3416,10
 Rect = 380,3410,469,3439
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Ostrov_Zatemnele_mysli) //calculated by Converter 
 Mapplane = 0
 
@@ -3847,7 +3847,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Tajemna hora
 Spawnpoint = (4D)132,116,-28,2
 Rect = 36,2,187,139
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -3858,7 +3858,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Tajemna hora
 Spawnpoint = (4D)427,109,-28,2
 Rect = 365,2,482,123
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -3869,7 +3869,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Tajemna hora
 Spawnpoint = (4D)247,20,-28,2
 Rect = 203,2,363,109
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -3880,7 +3880,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Tajemna hora
 Spawnpoint = (4D)274,136,-28,2
 Rect = 210,111,249,145
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -3892,7 +3892,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Tajemna hora
 Spawnpoint = (4D)274,136,-28,2
 Rect = 260,125,285,147
-FLAGS = 00812 // dungeon, noport, nogate 
+FLAGS = 0x8c0 //Sphere 00812  dungeon, noport, nogate 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -3903,7 +3903,7 @@ COLDCHANCE = 00
 GROUP = Dungeon - bosses
 Spawnpoint = (4D)5522,700,1,10
 Rect = 5502,675,5547,730
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3914,7 +3914,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Carn Dum
 Spawnpoint = (4D)1692,558
 Rect = 1692,545,1755,563
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Angmar) //calculated by Converter 
 Mapplane = 0
 
@@ -3925,7 +3925,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Carn Dum
 Spawnpoint = (4D)5398,1914,10
 Rect = 5305,1863,5403,1994
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3936,7 +3936,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Carn Dum
 Spawnpoint = (4D)5301,2307,-17
 Rect = 5199,2281,5361,2458
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3947,7 +3947,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Carn Dum
 Spawnpoint = (4D)5260,1909,12
 Rect = 5190,1857,5300,2004
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3958,7 +3958,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Carn Dum
 Spawnpoint = (4D)5345,2553
 Rect = 5195,2470,5365,2617
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3969,7 +3969,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Carn Dum
 Spawnpoint = (4D)5275,2042
 Rect = 5191,2023,5363,2269
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -3981,7 +3981,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Carn Dum
 Spawnpoint = (4D)5260,1892,-18,10
 Rect = 5259,1860,5300,1900
-FLAGS = 00812 // dungeon, noport, nogate 
+FLAGS = 0x8c0 //Sphere 00812  dungeon, noport, nogate 
 Parent = (a_Carn_Dum_Level_3) //calculated by Converter 
 Mapplane = 10
 
@@ -3992,7 +3992,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Arachnon
 Spawnpoint = (4D)395,1582,-22,2
 Rect = 380,1500,549,1597
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -4003,7 +4003,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Arachnon
 Spawnpoint = (4D)226,1336,-19,2
 Rect = 202,1334,249,1385
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -4014,7 +4014,7 @@ COLDCHANCE = 00
 GROUP = Dungeon
 Spawnpoint = (4D)5555,2325,0,10
 Rect = 5416,2112,5689,2340
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4025,7 +4025,7 @@ COLDCHANCE = 00
 GROUP = Dungeon
 Spawnpoint = (4D)5345,4068,0,10
 Rect = 5121,3894,5353,4085
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4036,7 +4036,7 @@ COLDCHANCE = 00
 GROUP = vyznamna mista
 Spawnpoint = (4D)5794,473,0,10
 Rect = 5728,432,5862,534
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4047,7 +4047,7 @@ COLDCHANCE = 00
 GROUP = Dungeon
 Spawnpoint = (4D)4794,837,0,10
 Rect = 4711,812,4790,910
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4065,7 +4065,7 @@ Rect = 2728,1868,2735,1876
 Rect = 2743,1840,2768,1861
 Rect = 2752,1871,2761,1879
 Rect = 2754,1879,2759,1884
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Temny_hvozd) //calculated by Converter 
 Mapplane = 0
 
@@ -4076,7 +4076,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dol Guldur
 Spawnpoint = (4D)5220,649,50,10
 Rect = 5204,646,5249,700
-FLAGS = 0081E
+FLAGS = 0x8c0 //Sphere 0081E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4087,7 +4087,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dol Guldur
 Spawnpoint = (4D)5259,830,10,10
 Rect = 5200,820,5299,931
-FLAGS = 0081E
+FLAGS = 0x8c0 //Sphere 0081E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4098,7 +4098,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dol Guldur
 Spawnpoint = (4D)5294,649,30,10
 Rect = 5258,644,5307,696
-FLAGS = 0081E
+FLAGS = 0x8c0 //Sphere 0081E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4109,7 +4109,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Dol Guldur
 Spawnpoint = (4D)5638,3381,0,10
 Rect = 5196,3364,5671,3457
-FLAGS = 0081E
+FLAGS = 0x8c0 //Sphere 0081E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4122,7 +4122,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5333,2444,-17,35
 Rect = 5199,2281,5361,2458
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 35
 
@@ -4135,7 +4135,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5247,2967,0,35
 Rect = 5199,2915,5542,3290
-FLAGS = 0801E
+FLAGS = 0x80c0 //Sphere 0801E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 35
 
@@ -4148,7 +4148,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5240,2965,15,35
 Rect = 5235,2953,5244,3002
-FLAGS = 0841E
+FLAGS = 0x80c0 //Sphere 0841E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4161,7 +4161,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5277,2993,0,35
 Rect = 5244,2957,5295,3006
-FLAGS = 0841E
+FLAGS = 0x80c0 //Sphere 0841E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4174,7 +4174,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5362,3004,0,35
 Rect = 5350,2960,5406,3037
-FLAGS = 0841E
+FLAGS = 0x80c0 //Sphere 0841E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4188,7 +4188,7 @@ GROUP = startovni dungeon
 Spawnpoint = (4D)5450,2965,0,35
 Rect = 5439,2933,5489,2961
 Rect = 5452,2961,5489,2980
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4200,7 +4200,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5495,2944,0,36
 Rect = 5491,2933,5520,2980
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 36
 
@@ -4212,7 +4212,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5495,2944,0,37
 Rect = 5491,2933,5520,2980
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 37
 
@@ -4224,7 +4224,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5495,2944,0,38
 Rect = 5491,2933,5520,2980
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 38
 
@@ -4237,7 +4237,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5464,3030,0,35
 Rect = 5464,2992,5507,3057
-FLAGS = 0801E
+FLAGS = 0x80c0 //Sphere 0801E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4251,7 +4251,7 @@ GROUP = startovni dungeon
 Spawnpoint = (4D)5494,3108,0,35
 Rect = 5479,3085,5527,3125
 Rect = 5479,3085,5505,3090
-FLAGS = 0801E
+FLAGS = 0x80c0 //Sphere 0801E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4264,7 +4264,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5499,3079,0,35
 Rect = 5492,3071,5503,3085
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_Tutorial_Osada_piratu) //calculated by Converter 
 Mapplane = 35
 
@@ -4277,7 +4277,7 @@ COLDCHANCE = 00
 GROUP = startovni dungeon
 Spawnpoint = (4D)5513,3136,0,35
 Rect = 5476,3126,5541,3160
-FLAGS = 0801E
+FLAGS = 0x80c0 //Sphere 0801E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4294,7 +4294,7 @@ Rect = 5271,3017,5336,3053
 Rect = 5271,3027,5286,3086
 Rect = 5248,3029,5270,3067
 Rect = 5257,3067,5269,3081
-FLAGS = 0801E
+FLAGS = 0x80c0 //Sphere 0801E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4308,7 +4308,7 @@ GROUP = startovni dungeon
 Spawnpoint = (4D)5327,3074,5,35
 Rect = 5294,3059,5358,3100
 Rect = 5303,3100,5350,3108
-FLAGS = 0801E
+FLAGS = 0x80c0 //Sphere 0801E 
 Parent = (a_Tutorial) //calculated by Converter 
 Mapplane = 35
 
@@ -4321,7 +4321,7 @@ COLDCHANCE = 00
 GROUP = Dung Beridor
 Spawnpoint = (4D)620,1059
 Rect = 607,1050,662,1084
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -4333,7 +4333,7 @@ COLDCHANCE = 00
 GROUP = Dung Beridor
 Spawnpoint = (4D)5834,2639,10,10
 Rect = 5540,2618,5889,2995
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4344,7 +4344,7 @@ COLDCHANCE = 00
 GROUP = Kralova Hrobka
 Spawnpoint = (4D)5076,2169,0,10
 Rect = 5017,2138,5083,2201
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4355,7 +4355,7 @@ COLDCHANCE = 00
 GROUP = Kralova Hrobka
 Spawnpoint = (4D)5044,2159,40,11
 Rect = 5017,2138,5083,2201
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4366,7 +4366,7 @@ COLDCHANCE = 00
 GROUP = Doupe
 Spawnpoint = (4D)5737,3186,-18
 Rect = 5662,3036,5951,3254
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -4377,7 +4377,7 @@ COLDCHANCE = 00
 GROUP = Doupe
 Spawnpoint = (4D)3422,2980,5
 Rect = 3411,2972,3427,2981
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Mordor) //calculated by Converter 
 Mapplane = 0
 
@@ -4389,7 +4389,7 @@ COLDCHANCE = 00
 GROUP = Dung Beridor
 Spawnpoint = (4D)1903,160,-28,2
 Rect = 1824,5,2083,217
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -4401,7 +4401,7 @@ COLDCHANCE = 00
 GROUP = Dung Beridor
 Spawnpoint = (4D)5466,2669,10,10
 Rect = 5194,2628,5513,2909
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4413,7 +4413,7 @@ COLDCHANCE = 00
 GROUP = Dung Beridor
 Spawnpoint = (4D)5208,113,0,10
 Rect = 5194,95,5223,132
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4425,7 +4425,7 @@ GROUP = Dungeon - bosses
 Spawnpoint = (4D)5554,616,2,11
 Rect = 5520,588,5580,647
 Rect = 5393,612,5477,719
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4437,7 +4437,7 @@ COLDCHANCE = 00
 GROUP = Dungeon - bosses
 Spawnpoint = (4D)5208,113,0,11
 Rect = 5194,95,5223,2627
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4449,7 +4449,7 @@ COLDCHANCE = 00
 GROUP = Dung Moina Filya
 Spawnpoint = (4D)5412,2556,15,10
 Rect = 5370,2368,5537,2565
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4460,7 +4460,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Doupe Kyklopu
 Spawnpoint = (4D)4917,999,0,10
 Rect = 4843,802,4951,1010
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4472,7 +4472,7 @@ COLDCHANCE = 00
 GROUP = Dung Etheria
 Spawnpoint = (4D)1351,3131
 Rect = 1333,3120,1376,3140
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -4483,7 +4483,7 @@ COLDCHANCE = 00
 GROUP = Dung Etheria
 Spawnpoint = (4D)5100,3810
 Rect = 5045,3786,5129,3868
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -4494,7 +4494,7 @@ COLDCHANCE = 00
 GROUP = Dung Etheria
 Spawnpoint = (4D)5286,1556
 Rect = 5200,1512,5296,1599
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4505,7 +4505,7 @@ COLDCHANCE = 00
 GROUP = Dung Etheria
 Spawnpoint = (4D)5285,1648
 Rect = 5194,1603,5291,1712
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4516,7 +4516,7 @@ COLDCHANCE = 00
 GROUP = Dung Etheria
 Spawnpoint = (4D)5309,745
 Rect = 5204,706,5316,766
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4527,7 +4527,7 @@ COLDCHANCE = 00
 GROUP = Dung Etheria
 Spawnpoint = (4D)5281,1755
 Rect = 5203,1721,5292,1823
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4538,7 +4538,7 @@ COLDCHANCE = 00
 GROUP = Dung Etheria
 Spawnpoint = (4D)6086,1883,100
 Rect = 6065,1867,6102,1907
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -4549,7 +4549,7 @@ COLDCHANCE = 00
 GROUP = Dung Etheria //prej to nejak patri k etherce, vede tam brana nebo co 
 Spawnpoint = (4D)5099,3810
 Rect = 5094,3783,5095,3848
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -4559,7 +4559,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5719,111,0,10
 Rect = 5695,101,5722,122
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4571,7 +4571,7 @@ COLDCHANCE = 00
 GROUP = Dung Shagar
 Spawnpoint = (4D)839,3614
 Rect = 823,3604,864,3627
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Ostrov_Divu) //calculated by Converter 
 Mapplane = 0
 
@@ -4582,7 +4582,7 @@ COLDCHANCE = 00
 GROUP = Dung Shagar
 Spawnpoint = (4D)5848,2045,10,10
 Rect = 5416,1496,5895,2091
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4593,7 +4593,7 @@ COLDCHANCE = 00
 GROUP = Dung Shagar
 Spawnpoint = (4D)5848,2045,10,10
 Rect = 5679,1748,5696,1785
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4604,7 +4604,7 @@ COLDCHANCE = 00
 GROUP = Dung Shagar
 Spawnpoint = (4D)5848,2045,10,10
 Rect = 5675,1744,5700,1789
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -4615,7 +4615,7 @@ COLDCHANCE = 00
 GROUP = Dung Shagar
 Spawnpoint = (4D)5848,2045,10,10
 Rect = 5671,1740,5704,1793
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 20
 
@@ -4626,7 +4626,7 @@ COLDCHANCE = 00
 GROUP = Dungeon Glammoreg
 Spawnpoint = (4D)5708,156,0,11
 Rect = 5587,148,5799,352
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4637,7 +4637,7 @@ COLDCHANCE = 00
 GROUP = Dung Glammoreg
 Spawnpoint = (4D)5473,849,0,10
 Rect = 5359,784,5484,857
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4648,7 +4648,7 @@ COLDCHANCE = 00
 GROUP = Dung Glammoreg
 Spawnpoint = (4D)5473,849,0,11
 Rect = 5359,784,5484,857
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4660,7 +4660,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)4682,2320
 Rect = 4640,2272,4775,2351
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -4671,7 +4671,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5267,1015,10
 Rect = 5196,958,5701,1229
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -4681,7 +4681,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5267,1016,10,10
 Rect = 5270,1100,5349,1199
-FLAGS = 0001E
+FLAGS = 0xc0 //Sphere 0001E 
 Parent = (a_Mahat_Level_1) //calculated by Converter 
 Mapplane = 10
 
@@ -4692,7 +4692,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5267,1015,10,10
 Rect = 5196,958,5701,1229
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4703,7 +4703,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat classic
 Spawnpoint = (4D)5332,1135,10,13
 Rect = 5196,958,5701,1229
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 13
 
@@ -4714,7 +4714,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5389,985,10,11
 Rect = 5359,966,5419,1007
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4725,7 +4725,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5509,1015,10,11
 Rect = 5483,985,5538,1044
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4736,7 +4736,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5509,1015,30,12
 Rect = 5483,985,5538,1044
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -4747,7 +4747,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5299,989,10,11
 Rect = 5257,966,5340,1002
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -4759,7 +4759,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5267,1015,10,20
 Rect = 5196,958,5701,1229
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 20
 
@@ -4770,7 +4770,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5233,1445,10,10
 Rect = 5188,1234,5645,1489
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4781,7 +4781,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat classic
 Spawnpoint = (4D)5233,1445,10,13
 Rect = 5188,1234,5645,1489
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 13
 
@@ -4793,7 +4793,7 @@ COLDCHANCE = 00
 GROUP = Dung Mahat
 Spawnpoint = (4D)5233,1445,10,20
 Rect = 5188,1234,5645,1489
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 20
 
@@ -4804,7 +4804,7 @@ COLDCHANCE = 00
 Group = dunegons
 Spawnpoint = (4D)4850,2250,0,10
 Rect = 4819,2239,4859,2306
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -4817,7 +4817,7 @@ Spawnpoint = (4D)4882,1530
 Rect = 4824,1476,4933,1569
 Rect = 4696,1528,4839,1575
 Rect = 4920,1536,5095,1599
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -4830,7 +4830,7 @@ GROUP = Jamy smrti
 Spawnpoint = (4D)5372,96
 Rect = 5184,4,6131,139
 Rect = 5808,148,5867,227
-FLAGS = 00804
+FLAGS = 0x880 //Sphere 00804 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -4843,7 +4843,7 @@ GROUP = Jamy smrti
 Spawnpoint = (4D)5372,96
 Rect = 5184,4,6131,139
 Rect = 5808,148,5867,227
-FLAGS = 00804
+FLAGS = 0x880 //Sphere 00804 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 21
 
@@ -4856,7 +4856,7 @@ GROUP = Jamy smrti
 Spawnpoint = (4D)5372,96
 Rect = 5184,4,6131,139
 Rect = 5808,148,5867,227
-FLAGS = 00804
+FLAGS = 0x880 //Sphere 00804 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 22
 
@@ -4869,7 +4869,7 @@ GROUP = Jamy smrti
 Spawnpoint = (4D)5372,96
 Rect = 5184,4,6131,139
 Rect = 5808,148,5867,227
-FLAGS = 00804
+FLAGS = 0x880 //Sphere 00804 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 23
 
@@ -4882,7 +4882,7 @@ GROUP = Jamy smrti
 Spawnpoint = (4D)5372,96
 Rect = 5184,4,6131,139
 Rect = 5808,148,5867,227
-FLAGS = 00804
+FLAGS = 0x880 //Sphere 00804 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 24
 
@@ -4895,7 +4895,7 @@ GROUP = Jamy smrti
 Spawnpoint = (4D)5372,96
 Rect = 5184,4,6131,139
 Rect = 5808,148,5867,227
-FLAGS = 00804
+FLAGS = 0x880 //Sphere 00804 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 25
 
@@ -4906,7 +4906,7 @@ COLDCHANCE = 00
 Spawnpoint = (4D)4750,858
 Rect = 4707,804,4809,924
 Rect = 5000,859,5097,952
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -4917,7 +4917,7 @@ COLDCHANCE = 00
 GROUP = vm quest
 Spawnpoint = (4D)5287,1556,-18,5
 Rect = 5200,1512,5296,1599
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -4928,7 +4928,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)4763,1362,10,5
 Rect = 4742,1341,4784,1365
-FLAGS = 00816
+FLAGS = 0x8c0 //Sphere 00816 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -4939,7 +4939,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)5866,802,0,5
 Rect = 5845,722,5898,822
-FLAGS = 00816
+FLAGS = 0x8c0 //Sphere 00816 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -4950,7 +4950,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)5870,748,0,6
 Rect = 5845,722,5898,822
-FLAGS = 00816
+FLAGS = 0x8c0 //Sphere 00816 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 6
 
@@ -4961,7 +4961,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)3508,3291,25,5
 Rect = 3486,3281,3543,3324
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -4972,7 +4972,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)4822,2003,-40,5
 Rect = 4802,1952,4924,2023
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -4984,7 +4984,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)2593,2401
 Rect = 2590,2397,2594,2403
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Vychodni_Marka) //calculated by Converter 
 Mapplane = 0
 
@@ -4995,7 +4995,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)1658,2441,-5
 Rect = 1608,2353,1705,2459
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -5006,7 +5006,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)5629,102,0,5
 Rect = 5607,83,5657,125
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -5018,7 +5018,7 @@ COLDCHANCE = 00
 GROUP = poklady
 Spawnpoint = (4D)3923,2505,0,5
 Rect = 3915,2502,3927,2508
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -5052,7 +5052,7 @@ Rect = 2534,2254,2540,2261
 Rect = 2534,2289,2541,2298
 Rect = 2428,2316,2483,2323
 Rect = 2461,2323,2472,2330
-FLAGS = 00012
+FLAGS = 0xc0 //Sphere 00012 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -5064,7 +5064,7 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)3952,35,20
 Rect = 3939,21,3963,46
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_Severni_Spoust) //calculated by Converter 
 Mapplane = 0
 
@@ -5076,7 +5076,7 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)5437,3543,0,11
 Rect = 5417,3527,5462,3567
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -5088,7 +5088,7 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)5391,80,0,11
 Rect = 5359,56,5402,97
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -5100,8 +5100,8 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)5630,103,0,11
 Rect = 5608,84,5654,125
-FLAGS = 0001E // asi nejde recall ven:) 
-FLAGS = 00812
+FLAGS = 0xc0 //Sphere 0001E  asi nejde recall ven:) 
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -5113,7 +5113,7 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)5686,75,0,11
 Rect = 5659,50,5712,90
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -5125,7 +5125,7 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)5092,3823,5,11
 Rect = 5066,3783,5118,3840
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -5137,8 +5137,8 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)3801,194,0,11
 Rect = 3786,180,3859,214
-FLAGS = 0001E // asi nejde recall ven:) 
-FLAGS = 00812
+FLAGS = 0xc0 //Sphere 0001E  asi nejde recall ven:) 
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -5150,8 +5150,8 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)5208,113,0,12
 Rect = 5194,95,5223,2627
-FLAGS = 0001E // asi nejde recall ven:) 
-FLAGS = 00812
+FLAGS = 0xc0 //Sphere 0001E  asi nejde recall ven:) 
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -5163,8 +5163,8 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)4881,1974,0,12
 Rect = 4868,1961,4894,1991
-FLAGS = 0001E // asi nejde recall ven:) 
-FLAGS = 00812
+FLAGS = 0xc0 //Sphere 0001E  asi nejde recall ven:) 
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 12
 
@@ -5176,8 +5176,8 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)4881,1974,0,11
 Rect = 4868,1961,4894,1991
-FLAGS = 0001E // asi nejde recall ven:) 
-FLAGS = 00812
+FLAGS = 0xc0 //Sphere 0001E  asi nejde recall ven:) 
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -5189,8 +5189,8 @@ COLDCHANCE = 00
 GROUP = Dungeon - draci
 Spawnpoint = (4D)5427,3604,-1,11
 Rect = 5402,3572,5455,3650
-FLAGS = 0001E // asi nejde recall ven:) 
-FLAGS = 00812
+FLAGS = 0xc0 //Sphere 0001E  asi nejde recall ven:) 
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -5200,7 +5200,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5466,691,0,10
 Rect = 5445,671,5477,717
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -5213,7 +5213,7 @@ COLDCHANCE = 00
 GROUP = MORIA
 Spawnpoint = (4D)6014,1223,40
 Rect = 5740,953,6130,1245
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -5223,7 +5223,7 @@ RAINCHANCE = 50
 COLDCHANCE = 00
 Spawnpoint = (4D)370,2536,45
 Rect = 365,2530,374,2539
-FLAGS = 06d9e
+FLAGS = 0x68c0 //Sphere 06d9e 
 Parent = (a_Ostrovy_Titanu) //calculated by Converter 
 Mapplane = 0
 
@@ -5235,7 +5235,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3629,2691,-50
 Rect = 3613,2689,3629,2703
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5247,7 +5247,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2489,3977,11
 Rect = 2485,3969,2495,3977
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -5259,7 +5259,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5545,3737,-80
 Rect = 5539,3731,5548,3736
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -5271,7 +5271,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2191,3220
 Rect = 2179,3213,2191,3219
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -5283,7 +5283,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2932,3712
 Rect = 2927,3713,2937,3728
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -5298,7 +5298,7 @@ Rect = 3635,2690,3648,2697
 Rect = 3636,2698,3648,2701
 Rect = 3638,2702,3648,2705
 Rect = 3636,2672,3645,2689
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5310,7 +5310,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3842,2171
 Rect = 3836,2156,3846,2169
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -5322,7 +5322,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2487,4053,11
 Rect = 2482,4046,2491,4053
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -5334,7 +5334,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1582,1194
 Rect = 1574,1190,1582,1197
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hurka) //calculated by Converter 
 Mapplane = 0
 
@@ -5346,7 +5346,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3627,2712,-50
 Rect = 3622,2706,3634,2712
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5359,7 +5359,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2922,3712
 Rect = 2917,3713,2926,3735
 Rect = 2942,3701,2952,3708
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -5371,7 +5371,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3611,2713,-50
 Rect = 3606,2706,3617,2713
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5383,7 +5383,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3587,2694,-25
 Rect = 3575,2684,3585,2698
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5395,7 +5395,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1092,1344
 Rect = 1078,1341,1094,1361
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -5408,7 +5408,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2489,4015,11
 Rect = 2483,3983,2495,3991
 Rect = 2470,3989,2496,4014
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -5420,7 +5420,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3575,2713,-25
 Rect = 3555,2711,3574,2722
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5432,7 +5432,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3575,2728,-25
 Rect = 3553,2723,3574,2737
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5444,7 +5444,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1593,1917
 Rect = 1576,1906,1593,1923
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Tharbad) //calculated by Converter 
 Mapplane = 0
 
@@ -5456,7 +5456,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3604,2705,-50
 Rect = 3589,2694,3604,2708
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5473,7 +5473,7 @@ Rect = 3584,2733,3604,2737
 Rect = 3586,2738,3591,2740
 Rect = 3588,2741,3591,2743
 Rect = 3592,2738,3604,2744
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5485,7 +5485,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2442,4005,1
 Rect = 2430,3995,2441,4011
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -5497,7 +5497,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3594,2752,-25
 Rect = 3591,2746,3597,2750
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5509,7 +5509,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3616,2734,-50
 Rect = 3608,2731,3615,2737
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5521,7 +5521,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3615,2741,-50
 Rect = 3607,2739,3615,2746
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5533,7 +5533,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3626,2735,-50
 Rect = 3619,2733,3626,2737
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5545,7 +5545,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3624,2728,-50
 Rect = 3619,2724,3623,2730
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5557,7 +5557,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3626,2723,-50
 Rect = 3624,2718,3632,2722
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5569,7 +5569,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3121,1053
 Rect = 3114,1038,3126,1052
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Esgaroth) //calculated by Converter 
 Mapplane = 0
 
@@ -5581,7 +5581,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1235,597
 Rect = 1229,584,1249,599
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Forondon) //calculated by Converter 
 Mapplane = 0
 
@@ -5593,7 +5593,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3632,2733,-50
 Rect = 3629,2724,3634,2732
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5605,7 +5605,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3639,2732,-50
 Rect = 3637,2726,3644,2731
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -5617,7 +5617,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2912,3711
 Rect = 2906,3712,2916,3722
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -5630,7 +5630,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3430,3236,12
 Rect = 3424,3217,3453,3229
 Rect = 3424,3227,3433,3235
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Nurn) //calculated by Converter 
 Mapplane = 0
 
@@ -5642,7 +5642,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3621,3264,12
 Rect = 3615,3253,3635,3263
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -5654,7 +5654,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2440,4058,10
 Rect = 2433,4044,2444,4057
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -5667,7 +5667,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3817,2175
 Rect = 3809,2168,3815,2173
 Rect = 3807,2172,3815,2184
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -5679,7 +5679,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3816,2164
 Rect = 3812,2158,3819,2163
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -5691,7 +5691,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3827,2171
 Rect = 3823,2165,3829,2170
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -5703,7 +5703,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3834,2129
 Rect = 3828,2122,3836,2128
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -5715,7 +5715,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3817,2119
 Rect = 3813,2113,3819,2118
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -5727,7 +5727,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2361,2601
 Rect = 2362,2589,2372,2604
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -5742,7 +5742,7 @@ Rect = 5607,3958,5625,3975
 Rect = 5616,3953,5620,3957
 Rect = 5621,3949,5625,3957
 Rect = 5626,3932,5627,3948
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -5754,7 +5754,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3718,3338
 Rect = 3704,3324,3717,3341
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -5766,7 +5766,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3809,3308
 Rect = 3804,3292,3817,3306
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -5778,7 +5778,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1594,1934
 Rect = 1589,1923,1599,1933
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Tharbad) //calculated by Converter 
 Mapplane = 0
 
@@ -5791,7 +5791,7 @@ GROUP = Rooms
 Spawnpoint = (4D)1603,1921
 Rect = 1599,1911,1608,1920
 Rect = 1608,1910,1620,1921
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Tharbad) //calculated by Converter 
 Mapplane = 0
 
@@ -5803,7 +5803,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1609,1938
 Rect = 1604,1927,1614,1937
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Tharbad) //calculated by Converter 
 Mapplane = 0
 
@@ -5815,7 +5815,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)887,631
 Rect = 883,621,897,630
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -5829,7 +5829,7 @@ Spawnpoint = (4D)883,650
 Rect = 869,649,879,666
 Rect = 877,649,882,659
 Rect = 879,641,887,649
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -5841,7 +5841,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3897,3231
 Rect = 3893,3222,3901,3230
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -5853,7 +5853,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3886,3533,1
 Rect = 3877,3516,3895,3532
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -5865,7 +5865,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4146,3946,20
 Rect = 4129,3933,4151,3945
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -5877,7 +5877,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2387,1890,20
 Rect = 2378,1868,2396,1890
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Lorien) //calculated by Converter 
 Mapplane = 0
 
@@ -5889,7 +5889,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)358,1121
 Rect = 350,1105,363,1119
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -5901,7 +5901,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)378,1117,2
 Rect = 365,1112,377,1123
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -5914,7 +5914,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2159,2879
 Rect = 2144,2866,2153,2885
 Rect = 2151,2866,2163,2878
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -5927,7 +5927,7 @@ GROUP = Rooms
 Spawnpoint = (4D)752,1367
 Rect = 745,1349,760,1367
 Rect = 750,1346,760,1350
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -5939,7 +5939,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)729,1382
 Rect = 720,1379,727,1390
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -5952,7 +5952,7 @@ GROUP = Rooms
 Spawnpoint = (4D)861,1435
 Rect = 851,1428,860,1449
 Rect = 859,1428,865,1434
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -5965,7 +5965,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3903,2133,2
 Rect = 3898,2128,3911,2135
 Rect = 3904,2136,3911,2141
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -5977,7 +5977,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4133,3954
 Rect = 4127,3947,4138,3956
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -5990,7 +5990,7 @@ GROUP = Rooms
 Spawnpoint = (4D)4205,3935,20
 Rect = 4198,3924,4214,3938
 Rect = 4214,3924,4216,3931
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -6002,7 +6002,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4137,3925,20
 Rect = 4129,3917,4136,3931
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -6014,7 +6014,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4173,4003
 Rect = 4167,3994,4175,4002
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -6026,7 +6026,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3186,1010,2
 Rect = 3178,1004,3185,1014
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol) //calculated by Converter 
 Mapplane = 0
 
@@ -6046,7 +6046,7 @@ Rect = 5616,3776,5618,3784
 Rect = 5619,3777,5620,3780
 Rect = 5619,3781,5625,3784
 Rect = 5621,3779,5623,3781
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6058,7 +6058,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2391,1861
 Rect = 2382,1856,2390,1864
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Lorien) //calculated by Converter 
 Mapplane = 0
 
@@ -6071,7 +6071,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3680,2762
 Rect = 3675,2751,3683,2761
 Rect = 3680,2747,3689,2758
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -6083,7 +6083,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2479,2943
 Rect = 2474,2934,2488,2942
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6095,7 +6095,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2467,1847,20
 Rect = 2455,1838,2467,1850
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Lorien) //calculated by Converter 
 Mapplane = 0
 
@@ -6107,7 +6107,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5543,3941,-20
 Rect = 5529,3920,5553,3939
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -6119,7 +6119,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2359,2598
 Rect = 2348,2586,2358,2602
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6131,7 +6131,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2182,3226,2 //amroth 
 Rect = 2170,3224,2181,3231
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -6143,7 +6143,7 @@ GROUP = Rooms
 Spawnpoint = (4D)4531,1220
 Rect = 4525,1209,4541,1219
 Rect = 4542,1209,4547,1216
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6156,7 +6156,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2993,2814
 Rect = 2986,2806,2998,2812
 Rect = 2986,2812,2993,2826
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6168,7 +6168,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2333,2560,20
 Rect = 2329,2552,2342,2558
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6180,7 +6180,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)730,1367
 Rect = 720,1364,729,1377
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -6193,7 +6193,7 @@ GROUP = Rooms
 Spawnpoint = (4D)933,1109
 Rect = 921,1096,934,1106
 Rect = 921,1107,930,1110
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Kraj) //calculated by Converter 
 Mapplane = 0
 
@@ -6205,7 +6205,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2473,3977,1
 Rect = 2458,3974,2466,3987
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -6217,7 +6217,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3013,2813
 Rect = 3006,2809,3012,2818
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Cair_Andros) //calculated by Converter 
 Mapplane = 0
 
@@ -6229,7 +6229,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1686,2276,5
 Rect = 1682,2258,1700,2275
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6241,7 +6241,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2467,3979,1
 Rect = 2468,3967,2480,3975
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -6253,7 +6253,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2264,2505
 Rect = 2253,2499,2263,2506
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6265,7 +6265,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2260,2524
 Rect = 2250,2509,2266,2524
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6277,7 +6277,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2189,3238,2 //dol amroth 
 Rect = 2175,3234,2188,3241
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -6289,7 +6289,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2338,2580,20
 Rect = 2323,2581,2341,2605
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6302,7 +6302,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2361,2602
 Rect = 2348,2603,2361,2619
 Rect = 2361,2605,2372,2618
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6315,7 +6315,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2299,2544,20
 Rect = 2292,2529,2306,2541
 Rect = 2301,2529,2309,2545
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6328,7 +6328,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2266,2499
 Rect = 2267,2499,2278,2505
 Rect = 2270,2506,2278,2512
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6342,7 +6342,7 @@ Spawnpoint = (4D)3179,1045,1
 Rect = 3170,1035,3183,1042
 Rect = 3170,1037,3178,1049
 Rect = 3170,1046,3183,1054
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol) //calculated by Converter 
 Mapplane = 0
 
@@ -6354,7 +6354,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4919,2818
 Rect = 4912,2803,4926,2817
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6366,7 +6366,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2900,3712
 Rect = 2892,3712,2905,3723
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -6380,7 +6380,7 @@ Spawnpoint = (4D)5562,3942,-20
 Rect = 5555,3920,5569,3940
 Rect = 5571,3918,5578,3934
 Rect = 5564,3919,5570,3934
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6392,7 +6392,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2789,3795
 Rect = 2790,3787,2798,3801
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Horondor) //calculated by Converter 
 Mapplane = 0
 
@@ -6405,7 +6405,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5520,3933,-20
 Rect = 5512,3920,5529,3929
 Rect = 5512,3930,5517,3936
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -6419,7 +6419,7 @@ Spawnpoint = (4D)879,1452
 Rect = 874,1441,885,1450
 Rect = 886,1441,891,1448
 Rect = 891,1442,896,1447
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6431,7 +6431,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2796,3780
 Rect = 2796,3772,2808,3785
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Horondor) //calculated by Converter 
 Mapplane = 0
 
@@ -6443,7 +6443,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4170,4029
 Rect = 4161,4026,4168,4032
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -6456,7 +6456,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5605,3904,-19
 Rect = 5593,3897,5603,3912
 Rect = 5595,3889,5603,3896
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6468,7 +6468,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2941,1261,45
 Rect = 2929,1252,2940,1269
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Kralovstvi_lesnich_elfu) //calculated by Converter 
 Mapplane = 0
 
@@ -6480,7 +6480,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4157,4024
 Rect = 4153,4016,4160,4023
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -6493,7 +6493,7 @@ GROUP = Rooms
 Spawnpoint = (4D)1481,1112
 Rect = 1470,1107,1478,1121
 Rect = 1478,1113,1483,1121
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Fornost) //calculated by Converter 
 Mapplane = 0
 
@@ -6505,7 +6505,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4119,4020
 Rect = 4115,4012,4124,4019
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -6517,7 +6517,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1582,1201 //hurka 
 Rect = 1574,1198,1581,1206
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hurka) //calculated by Converter 
 Mapplane = 0
 
@@ -6529,7 +6529,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4909,2798
 Rect = 4903,2784,4917,2798
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6544,7 +6544,7 @@ Rect = 5305,3715,5316,3723
 Rect = 5310,3709,5317,3712
 Rect = 5312,3712,5316,3715
 Rect = 5303,3703,5317,3711
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Helmuv_zleb) //calculated by Converter 
 Mapplane = 0
 
@@ -6556,7 +6556,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1083,1185
 Rect = 1080,1172,1091,1183
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -6569,7 +6569,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3794,2141,2
 Rect = 3772,2121,3799,2151
 Rect = 3769,2146,3795,2158
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -6581,7 +6581,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3830,2118
 Rect = 3826,2112,3833,2118
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -6594,7 +6594,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2735,3267
 Rect = 2714,3259,2727,3277
 Rect = 2726,3264,2734,3276
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Linhir) //calculated by Converter 
 Mapplane = 0
 
@@ -6606,7 +6606,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2487,4063,11
 Rect = 2483,4057,2491,4062
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -6619,7 +6619,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5645,3967,-80
 Rect = 5634,3953,5644,3974
 Rect = 5634,3972,5640,3977
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6632,7 +6632,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3607,2772
 Rect = 3592,2767,3601,2776
 Rect = 3601,2768,3606,2775
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -6645,7 +6645,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5661,3982,-80
 Rect = 5655,3964,5665,3980
 Rect = 5662,3981,5662,3981
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6657,7 +6657,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1074,1339
 Rect = 1064,1337,1074,1345
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -6669,7 +6669,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5553,3994,-80
 Rect = 5546,3989,5552,3997
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -6681,7 +6681,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5544,3999,-80
 Rect = 5538,3989,5545,3998
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -6693,7 +6693,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5534,3998,-80
 Rect = 5530,3989,5537,3997
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -6705,7 +6705,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1202,1345
 Rect = 1193,1335,1205,1344
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Zabovresky) //calculated by Converter 
 Mapplane = 0
 
@@ -6717,7 +6717,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1067,1332
 Rect = 1061,1323,1070,1331
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -6729,7 +6729,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1639,1196,35
 Rect = 1636,1187,1643,1194
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hurecko) //calculated by Converter 
 Mapplane = 0
 
@@ -6741,7 +6741,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5527,3998,-80 //minas 
 Rect = 5522,3989,5529,3997
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6753,7 +6753,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5518,3998,-80 //minas 
 Rect = 5514,3989,5521,3997
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6765,7 +6765,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1633,1185,35
 Rect = 1625,1182,1630,1187
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hurecko) //calculated by Converter 
 Mapplane = 0
 
@@ -6777,7 +6777,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5668,3981,-80 //minas 
 Rect = 5666,3964,5674,3980
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6789,7 +6789,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3128,1066
 Rect = 3125,1068,3134,1076
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Esgaroth) //calculated by Converter 
 Mapplane = 0
 
@@ -6802,7 +6802,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3128,1065
 Rect = 3130,1053,3141,1065
 Rect = 3125,1057,3131,1063
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Esgaroth) //calculated by Converter 
 Mapplane = 0
 
@@ -6814,7 +6814,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2268,2552,20
 Rect = 2261,2549,2266,2554
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -6826,7 +6826,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3116,1067
 Rect = 3107,1064,3114,1070
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Esgaroth) //calculated by Converter 
 Mapplane = 0
 
@@ -6839,7 +6839,7 @@ GROUP = Rooms
 Spawnpoint = (4D)1198,644
 Rect = 1193,632,1203,643
 Rect = 1192,621,1206,638
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6851,7 +6851,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2477,1744,20
 Rect = 2469,1740,2477,1746
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -6863,7 +6863,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)677,1307 //sede pristavt 
 Rect = 668,1303,676,1323
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -6875,7 +6875,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5664,3850,-80
 Rect = 5654,3846,5663,3853
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6887,7 +6887,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5665,3841,-80
 Rect = 5654,3838,5663,3844
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6899,7 +6899,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5664,3834,-80
 Rect = 5654,3830,5663,3836
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6911,7 +6911,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5664,3825,-80
 Rect = 5654,3820,5663,3828
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6924,7 +6924,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5669,3806,-80
 Rect = 5654,3800,5668,3811
 Rect = 5654,3811,5661,3817
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -6936,7 +6936,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2419,4019
 Rect = 2416,4011,2422,4018
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -6948,7 +6948,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2440,4021,16
 Rect = 2430,4014,2441,4024
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -6960,7 +6960,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2440,4029,16
 Rect = 2430,4025,2441,4034
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -6972,7 +6972,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2397,4053,2
 Rect = 2394,4045,2402,4052
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -6984,7 +6984,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2440,4066,11
 Rect = 2430,4063,2439,4070
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -6996,7 +6996,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2449,4055,12
 Rect = 2445,4044,2452,4056
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -7008,7 +7008,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2465,4059,11
 Rect = 2459,4041,2469,4058
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -7020,7 +7020,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2479,4069,7
 Rect = 2468,4069,2490,4087
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -7032,7 +7032,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2290,2521
 Rect = 2285,2510,2294,2521
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7044,7 +7044,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)694,1293 //sede pristavy 
 Rect = 685,1290,692,1301
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -7056,7 +7056,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2344,2525
 Rect = 2340,2516,2348,2523
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7068,7 +7068,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2357,2525
 Rect = 2350,2516,2358,2523
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7080,7 +7080,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2354,2579
 Rect = 2349,2570,2358,2579
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7092,7 +7092,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2323,2562,30
 Rect = 2318,2549,2327,2560
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7104,7 +7104,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2286,2573,40
 Rect = 2282,2564,2291,2573
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7116,7 +7116,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2293,2558,20
 Rect = 2282,2553,2293,2561
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7128,7 +7128,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2307,2558,20
 Rect = 2296,2553,2307,2561
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7140,7 +7140,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2264,2544,20
 Rect = 2257,2540,2264,2547
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -7152,7 +7152,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3115,1059
 Rect = 3107,1052,3114,1061
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Esgaroth) //calculated by Converter 
 Mapplane = 0
 
@@ -7164,7 +7164,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1116,1355
 Rect = 1100,1347,1114,1359
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -7177,7 +7177,7 @@ GROUP = Rooms
 Spawnpoint = (4D)1100,1307
 Rect = 1098,1298,1110,1306
 Rect = 1100,1305,1113,1313
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -7190,7 +7190,7 @@ GROUP = Rooms
 Spawnpoint = (4D)1085,1291
 Rect = 1085,1276,1099,1285
 Rect = 1085,1282,1094,1292
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -7202,7 +7202,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)731,1281 //sede pristavy 
 Rect = 725,1271,735,1278
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -7214,7 +7214,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)742,1281 //sede pristavy 
 Rect = 737,1271,747,1278
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -7227,7 +7227,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5686,4027,-80
 Rect = 5683,4016,5693,4024
 Rect = 5690,4007,5698,4017
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -7240,7 +7240,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2286,3122
 Rect = 2277,3113,2285,3125
 Rect = 2281,3107,2285,3114
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -7252,7 +7252,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5522,3959,-40
 Rect = 5513,3950,5529,3957
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -7264,7 +7264,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5541,3959,-40
 Rect = 5530,3950,5549,3957
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -7276,7 +7276,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5626,3909,-40
 Rect = 5613,3903,5624,3913
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7288,7 +7288,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5626,3895,-40
 Rect = 5615,3888,5624,3902
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7300,7 +7300,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5590,3789,-40
 Rect = 5585,3781,5594,3788
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7312,7 +7312,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1042,1182
 Rect = 1037,1172,1046,1181
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -7324,7 +7324,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)718,1389,5
 Rect = 710,1386,717,1397
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -7336,7 +7336,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)744,1382
 Rect = 732,1379,742,1388
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -7348,7 +7348,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)743,1368
 Rect = 733,1365,742,1374
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -7360,7 +7360,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1268,1410
 Rect = 1258,1407,1268,1414
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Parezov) //calculated by Converter 
 Mapplane = 0
 
@@ -7372,7 +7372,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1266,1402
 Rect = 1262,1393,1271,1401
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Parezov) //calculated by Converter 
 Mapplane = 0
 
@@ -7384,7 +7384,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1277,1417
 Rect = 1265,1417,1276,1425
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Parezov) //calculated by Converter 
 Mapplane = 0
 
@@ -7396,7 +7396,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1562,1179
 Rect = 1553,1172,1562,1184
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hurka) //calculated by Converter 
 Mapplane = 0
 
@@ -7408,7 +7408,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1568,1194
 Rect = 1557,1189,1567,1198
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hurka) //calculated by Converter 
 Mapplane = 0
 
@@ -7420,7 +7420,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1446,1093
 Rect = 1437,1085,1452,1092
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Fornost) //calculated by Converter 
 Mapplane = 0
 
@@ -7432,7 +7432,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1421,1099,1
 Rect = 1411,1098,1426,1104
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Fornost) //calculated by Converter 
 Mapplane = 0
 
@@ -7444,7 +7444,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1404,1110
 Rect = 1395,1106,1403,1113
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Fornost) //calculated by Converter 
 Mapplane = 0
 
@@ -7456,7 +7456,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5578,3789,-40
 Rect = 5572,3781,5584,3788
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7468,7 +7468,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2896,3226,2
 Rect = 2888,3219,2899,3226
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelargir) //calculated by Converter 
 Mapplane = 0
 
@@ -7480,7 +7480,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2907,3237,5
 Rect = 2898,3230,2909,3237
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelargir) //calculated by Converter 
 Mapplane = 0
 
@@ -7493,7 +7493,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2915,3232
 Rect = 2909,3222,2920,3229
 Rect = 2912,3229,2917,3231
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelargir) //calculated by Converter 
 Mapplane = 0
 
@@ -7505,7 +7505,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2721,3255
 Rect = 2715,3240,2724,3254
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Linhir) //calculated by Converter 
 Mapplane = 0
 
@@ -7517,7 +7517,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1226,1346
 Rect = 1220,1337,1228,1344
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Zabovresky) //calculated by Converter 
 Mapplane = 0
 
@@ -7529,7 +7529,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1210,604
 Rect = 1205,593,1215,604
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Forondon) //calculated by Converter 
 Mapplane = 0
 
@@ -7541,7 +7541,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1317,1394
 Rect = 1311,1384,1318,1397
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Radovsko) //calculated by Converter 
 Mapplane = 0
 
@@ -7553,7 +7553,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3908,3009
 Rect = 3891,2996,3907,3018
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Bagronk) //calculated by Converter 
 Mapplane = 0
 
@@ -7565,7 +7565,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1229,654
 Rect = 1224,643,1234,654
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -7577,7 +7577,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5564,3789,-40
 Rect = 5559,3781,5570,3788
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7589,7 +7589,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5660,3960,-80
 Rect = 5656,3951,5675,3958
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7601,7 +7601,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5554,3789,-40
 Rect = 5550,3781,5557,3788
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -7613,7 +7613,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2889,3710
 Rect = 2875,3702,2888,3717
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -7625,7 +7625,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2568,2169
 Rect = 2556,2164,2567,2172
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Vychodni_Marka) //calculated by Converter 
 Mapplane = 0
 
@@ -7637,7 +7637,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2568,2151
 Rect = 2563,2142,2572,2151
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Vychodni_Marka) //calculated by Converter 
 Mapplane = 0
 
@@ -7649,7 +7649,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5548,3810,-20
 Rect = 5542,3797,5559,3809
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -7661,7 +7661,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5671,3781,-80
 Rect = 5667,3773,5673,3780
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7673,7 +7673,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5678,3781,-80
 Rect = 5674,3773,5682,3780
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7685,7 +7685,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5575,3810,-20
 Rect = 5560,3797,5578,3808
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7697,7 +7697,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5286,3719
 Rect = 5278,3708,5285,3720
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Helmuv_zleb) //calculated by Converter 
 Mapplane = 0
 
@@ -7709,7 +7709,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5589,3811,-20
 Rect = 5579,3794,5601,3809
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7721,7 +7721,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4134,4043
 Rect = 4127,4034,4133,4047
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -7733,7 +7733,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1569,1185
 Rect = 1565,1174,1571,1183
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hurka) //calculated by Converter 
 Mapplane = 0
 
@@ -7745,7 +7745,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3190,1068
 Rect = 3181,1064,3188,1074
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol) //calculated by Converter 
 Mapplane = 0
 
@@ -7757,7 +7757,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3195,1035
 Rect = 3188,1022,3198,1034
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol) //calculated by Converter 
 Mapplane = 0
 
@@ -7770,7 +7770,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3208,1035
 Rect = 3201,1037,3208,1047
 Rect = 3209,1033,3215,1046
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol) //calculated by Converter 
 Mapplane = 0
 
@@ -7782,7 +7782,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3191,1061,1
 Rect = 3188,1047,3194,1060
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol) //calculated by Converter 
 Mapplane = 0
 
@@ -7794,7 +7794,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3199,1059,2
 Rect = 3196,1049,3203,1059
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol) //calculated by Converter 
 Mapplane = 0
 
@@ -7806,7 +7806,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4856,2106
 Rect = 4848,2087,4861,2104
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -7818,7 +7818,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4840,2109
 Rect = 4817,2097,4839,2110
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -7830,7 +7830,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4802,2063
 Rect = 4796,2052,4809,2062
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -7842,7 +7842,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4800,2069
 Rect = 4786,2064,4799,2072
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -7854,7 +7854,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4800,2080
 Rect = 4786,2075,4799,2082
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -7866,7 +7866,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4800,2091
 Rect = 4786,2086,4799,2093
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -7878,7 +7878,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4800,2114
 Rect = 4786,2108,4799,2115
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -7890,7 +7890,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2947,1235,45
 Rect = 2941,1220,2955,1234
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Kralovstvi_lesnich_elfu) //calculated by Converter 
 Mapplane = 0
 
@@ -7903,7 +7903,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2970,1282,45
 Rect = 2952,1282,2961,1291
 Rect = 2961,1278,2969,1291
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Kralovstvi_lesnich_elfu) //calculated by Converter 
 Mapplane = 0
 
@@ -7917,7 +7917,7 @@ Spawnpoint = (4D)2986,1280,45
 Rect = 2975,1267,2983,1276
 Rect = 2983,1267,2988,1279
 Rect = 2988,1266,2995,1278
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Kralovstvi_lesnich_elfu) //calculated by Converter 
 Mapplane = 0
 
@@ -7930,7 +7930,7 @@ GROUP = Rooms
 Spawnpoint = (4D)3023,1290,45
 Rect = 3013,1269,3033,1289
 Rect = 3027,1270,3039,1298
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Kralovstvi_lesnich_elfu) //calculated by Converter 
 Mapplane = 0
 
@@ -7943,7 +7943,7 @@ GROUP = Rooms
 Spawnpoint = (4D)1298,1396
 Rect = 1289,1382,1296,1395
 Rect = 1297,1382,1304,1394
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Radovsko) //calculated by Converter 
 Mapplane = 0
 
@@ -7955,7 +7955,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1301,1378
 Rect = 1294,1375,1300,1380
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Radovsko) //calculated by Converter 
 Mapplane = 0
 
@@ -7967,7 +7967,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5704,3947,-80
 Rect = 5696,3935,5705,3944
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -7979,7 +7979,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1157,1229
 Rect = 1155,1217,1168,1228
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -7991,7 +7991,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1181,1241
 Rect = 1176,1227,1186,1240
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -8003,7 +8003,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1198,1236
 Rect = 1191,1219,1209,1235
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -8015,7 +8015,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1213,1157
 Rect = 1204,1146,1216,1156
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -8027,7 +8027,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1209,1171
 Rect = 1201,1161,1209,1170
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -8039,7 +8039,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3898,2989
 Rect = 3894,2982,3901,2987
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Bagronk) //calculated by Converter 
 Mapplane = 0
 
@@ -8051,7 +8051,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3915,2995
 Rect = 3911,2989,3918,2994
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Bagronk) //calculated by Converter 
 Mapplane = 0
 
@@ -8063,7 +8063,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3921,3008
 Rect = 3917,3002,3924,3007
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Bagronk) //calculated by Converter 
 Mapplane = 0
 
@@ -8075,7 +8075,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3921,3030
 Rect = 3917,3023,3924,3028
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Bagronk) //calculated by Converter 
 Mapplane = 0
 
@@ -8087,7 +8087,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3906,3030
 Rect = 3902,3024,3909,3029
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Bagronk) //calculated by Converter 
 Mapplane = 0
 
@@ -8099,7 +8099,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2595,2168
 Rect = 2590,2159,2598,2167
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Vychodni_Marka) //calculated by Converter 
 Mapplane = 0
 
@@ -8111,7 +8111,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4121,3914
 Rect = 4111,3910,4120,3916
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -8123,7 +8123,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4121,3921
 Rect = 4111,3917,4120,3923
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -8137,7 +8137,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4121,3928
 Rect = 4111,3924,4120,3930
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -8149,7 +8149,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4121,3935
 Rect = 4111,3931,4120,3937
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -8161,7 +8161,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4121,3941
 Rect = 4111,3938,4120,3944
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -8173,7 +8173,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4121,3949
 Rect = 4111,3945,4120,3951
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -8185,7 +8185,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3773,2094
 Rect = 3759,2085,3775,2092
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -8197,7 +8197,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3586,2776
 Rect = 3578,2772,3585,2778
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8209,7 +8209,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2497,2954
 Rect = 2493,2944,2500,2953
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -8221,7 +8221,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5702,3775,-80
 Rect = 5692,3751,5707,3775
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8233,7 +8233,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5298,3712
 Rect = 5292,3704,5301,3711
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Helmuv_zleb) //calculated by Converter 
 Mapplane = 0
 
@@ -8246,7 +8246,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5312,3736
 Rect = 5301,3727,5311,3735
 Rect = 5295,3726,5301,3732
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Helmuv_zleb) //calculated by Converter 
 Mapplane = 0
 
@@ -8258,7 +8258,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2925,3708
 Rect = 2918,3697,2933,3706
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -8273,7 +8273,7 @@ Rect = 5641,3923,5659,3935
 Rect = 5659,3915,5666,3939
 Rect = 5652,3915,5660,3924
 Rect = 5645,3919,5653,3925
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8285,7 +8285,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5618,3992,-80
 Rect = 5602,3988,5617,3995
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8297,7 +8297,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5589,4003,-80
 Rect = 5585,3996,5592,4002
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8309,7 +8309,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5581,4003,-80
 Rect = 5576,3996,5584,4002
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8321,7 +8321,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5570,3999,-80
 Rect = 5565,3996,5575,4002
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8333,7 +8333,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5590,3774,-60
 Rect = 5586,3760,5593,3772
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8345,7 +8345,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5547,3779,-40
 Rect = 5537,3770,5544,3782
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -8358,7 +8358,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5547,3779,-40
 Rect = 5545,3770,5556,3776
 Rect = 5549,3774,5555,3780
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -8371,7 +8371,7 @@ GROUP = Rooms
 Spawnpoint = (4D)1104,1295
 Rect = 1100,1279,1107,1293
 Rect = 1095,1284,1107,1293
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -8383,7 +8383,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5647,3895,-60
 Rect = 5630,3883,5647,3907
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8395,7 +8395,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3634,2739,-50
 Rect = 3630,2739,3637,2744
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8407,7 +8407,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3647,2739,-50
 Rect = 3640,2733,3645,2740
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8419,7 +8419,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5623,3886,-40
 Rect = 5615,3882,5620,3887
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8431,7 +8431,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2374,3072
 Rect = 2361,3061,2379,3072
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -8443,7 +8443,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3713,2731
 Rect = 3710,2723,3715,2731
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8455,7 +8455,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2255,3296
 Rect = 2250,3283,2265,3295
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -8467,7 +8467,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2371,2575,20
 Rect = 2367,2573,2370,2578
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -8479,7 +8479,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2287,3288
 Rect = 2276,3279,2288,3286
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -8491,7 +8491,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2247,3231
 Rect = 2243,3222,2250,3230
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -8503,7 +8503,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4236,3950,-30
 Rect = 4228,3941,4235,3951
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -8515,7 +8515,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2288,3164
 Rect = 2285,3148,2291,3163
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -8527,7 +8527,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2209,3220
 Rect = 2206,3214,2216,3219
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -8539,7 +8539,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2206,3244
 Rect = 2199,3237,2214,3243
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -8551,7 +8551,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2196,3244
 Rect = 2193,3235,2197,3243
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -8563,7 +8563,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5701,3803,-80
 Rect = 5691,3791,5699,3815
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8575,7 +8575,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2883,3222
 Rect = 2873,3215,2881,3228
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Pelargir) //calculated by Converter 
 Mapplane = 0
 
@@ -8587,7 +8587,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4230,4004,-30
 Rect = 4225,3992,4233,4002
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -8599,7 +8599,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2774,3198,-2
 Rect = 2757,3196,2773,3205
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Lebennin) //calculated by Converter 
 Mapplane = 0
 
@@ -8611,7 +8611,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3338,3525,40
 Rect = 3336,3515,3343,3525
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -8623,7 +8623,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2417,4044
 Rect = 2410,4036,2420,4043
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -8636,7 +8636,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5599,3741,-80
 Rect = 5583,3742,5590,3749
 Rect = 5590,3736,5598,3749
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8649,7 +8649,7 @@ GROUP = Rooms
 Spawnpoint = (4D)2481,2966
 Rect = 2476,2956,2487,2977
 Rect = 2469,2956,2475,2974
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -8661,7 +8661,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2996,1244,45
 Rect = 2986,1241,2995,1246
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Kralovstvi_lesnich_elfu) //calculated by Converter 
 Mapplane = 0
 
@@ -8673,7 +8673,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3509,3287,26
 Rect = 3492,3287,3533,3317 //hradiste s domy 
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Nurn) //calculated by Converter 
 Mapplane = 0
 
@@ -8684,7 +8684,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1066,1313
 Rect = 1057,1285,1082,1302
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -8696,7 +8696,7 @@ COLDCHANCE = 00
 GROUP = quest Rooms
 Spawnpoint = (4D)5606,3857,-20
 Rect = 5598,3817,5612,3843
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8708,7 +8708,7 @@ COLDCHANCE = 00
 GROUP = quest Rooms
 Spawnpoint = (4D)2036,2146,10
 Rect = 4824,3873,4873,3928
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -8720,7 +8720,7 @@ COLDCHANCE = 00
 GROUP = quest Rooms
 Spawnpoint = (4D)4841,3869
 Rect = 4830,3836,4849,3870
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 0
 
@@ -8732,7 +8732,7 @@ GROUP = Rooms
 Spawnpoint = (4D)5606,3945,-40
 Rect = 5598,3943,5612,3949
 Rect = 5604,3939,5612,3943
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8743,7 +8743,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5611,3930,-40
 Rect = 5603,3921,5612,3937
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8754,7 +8754,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2473,4045,10
 Rect = 2470,4040,2476,4048
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -8765,7 +8765,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2485,4026,11
 Rect = 2481,4021,2489,4029
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -8776,7 +8776,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2473,4054,10
 Rect = 2470,4050,2476,4058
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -8787,7 +8787,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2475,4025,11
 Rect = 2471,4021,2479,4028
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -8798,7 +8798,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2415,4057,1
 Rect = 2409,4051,2415,4059
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -8809,7 +8809,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2464,4008,10
 Rect = 2462,4006,2465,4012
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -8820,7 +8820,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2414,4066
 Rect = 2409,4062,2416,4070
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -8831,7 +8831,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5690,3798,-80
 Rect = 5688,3794,5690,3798
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8842,7 +8842,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5689,3803,-80
 Rect = 5688,3802,5690,3806
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8853,7 +8853,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2332,2517
 Rect = 2328,2513,2334,2517
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -8864,7 +8864,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2365,2529
 Rect = 2364,2524,2368,2530
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -8875,7 +8875,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2364,2539
 Rect = 2363,2534,2367,2540
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -8886,7 +8886,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2350,2551
 Rect = 2345,2546,2349,2552
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -8897,7 +8897,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2350,2558
 Rect = 2344,2554,2348,2560
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -8908,7 +8908,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3590,2714,-50
 Rect = 3589,2712,3590,2715
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8919,7 +8919,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3577,2747,-25
 Rect = 3575,2744,3579,2750
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8930,7 +8930,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3654,2746,-25
 Rect = 3651,2743,3655,2749
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8941,7 +8941,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3667,2741,-25
 Rect = 3664,2738,3667,2742
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8952,7 +8952,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3671,2741,-25
 Rect = 3669,2738,3672,2741
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8963,7 +8963,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3639,2723,-50
 Rect = 3637,2722,3640,2724
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8974,7 +8974,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3594,2714,-50
 Rect = 3592,2712,3595,2715
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -8985,7 +8985,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5689,3811,-80
 Rect = 5688,3810,5690,3814
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -8996,7 +8996,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5689,3827,-80
 Rect = 5688,3826,5690,3830
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9007,7 +9007,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5689,3835,-80
 Rect = 5688,3834,5690,3838
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9018,7 +9018,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5689,3843,-80
 Rect = 5688,3842,5690,3846
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9029,7 +9029,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5682,3799,-80
 Rect = 5681,3798,5684,3802
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9040,7 +9040,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1076,1327
 Rect = 1073,1324,1078,1328
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -9051,7 +9051,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3615,2726,-50
 Rect = 3613,2723,3616,2728
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -9062,7 +9062,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1586,1170
 Rect = 1587,1169,1589,1173
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Hurka) //calculated by Converter 
 Mapplane = 0
 
@@ -9073,7 +9073,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5682,3815,-80
 Rect = 5681,3814,5684,3818
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9084,7 +9084,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5682,3831,-80
 Rect = 5681,3830,5684,3834
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9095,7 +9095,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5682,3839,-80
 Rect = 5681,3838,5684,3842
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9106,7 +9106,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2893,3702
 Rect = 2888,3701,2893,3704
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -9117,7 +9117,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2893,3698
 Rect = 2888,3696,2893,3699
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -9128,7 +9128,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2898,3698
 Rect = 2898,3696,2901,3699
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -9139,7 +9139,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2898,3702
 Rect = 2898,3701,2901,3704
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Oaza_Hagir) //calculated by Converter 
 Mapplane = 0
 
@@ -9150,7 +9150,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2891,3263
 Rect = 2890,3260,2892,3264
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -9161,7 +9161,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5671,3822,-80
 Rect = 5670,3821,5673,3825
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9172,7 +9172,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3827,2152
 Rect = 3822,2148,3829,2153
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -9183,7 +9183,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3817,2150
 Rect = 3812,2145,3817,2152
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -9194,7 +9194,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2313,2602,60
 Rect = 2307,2597,2312,2601
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Edoras) //calculated by Converter 
 Mapplane = 0
 
@@ -9205,7 +9205,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3665,2752,-25
 Rect = 3661,2751,3668,2755
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Barad_dur) //calculated by Converter 
 Mapplane = 0
 
@@ -9216,7 +9216,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4148,4035
 Rect = 4144,4034,4151,4041
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -9227,7 +9227,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3153,954,40
 Rect = 3152,953,3154,955
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -9238,7 +9238,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3153,950,40
 Rect = 3152,948,3154,950
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -9249,7 +9249,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3157,947,40
 Rect = 3156,946,3158,948
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -9260,7 +9260,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)3161,947,40
 Rect = 3160,946,3163,948
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Erebor) //calculated by Converter 
 Mapplane = 0
 
@@ -9271,7 +9271,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1302,1399
 Rect = 1301,1396,1303,1400
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Radovsko) //calculated by Converter 
 Mapplane = 0
 
@@ -9282,7 +9282,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)739,1360
 Rect = 735,1355,738,1361
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Sede_pristavy) //calculated by Converter 
 Mapplane = 0
 
@@ -9293,7 +9293,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1459,1059,30
 Rect = 1458,1059,1461,1063
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Severni_vrchy) //calculated by Converter 
 Mapplane = 0
 
@@ -9304,7 +9304,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1460,1054,30
 Rect = 1460,1053,1464,1056
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Fornost) //calculated by Converter 
 Mapplane = 0
 
@@ -9315,7 +9315,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1467,1054,30
 Rect = 1466,1053,1470,1056
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Fornost) //calculated by Converter 
 Mapplane = 0
 
@@ -9326,7 +9326,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2252,3230
 Rect = 2251,3229,2255,3231
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Dol_Amroth) //calculated by Converter 
 Mapplane = 0
 
@@ -9337,7 +9337,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5672,3840,-80
 Rect = 5670,3836,5673,3842
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9348,7 +9348,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)4521,1227
 Rect = 4521,1227,4526,1230
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -9359,7 +9359,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)1580,1934,12
 Rect = 1579,1932,1581,1937
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Tharbad) //calculated by Converter 
 Mapplane = 0
 
@@ -9370,7 +9370,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2463,4027,10
 Rect = 2461,4023,2464,4029
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -9381,7 +9381,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)2463,4018,10
 Rect = 2461,4014,2464,4020
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Umbar) //calculated by Converter 
 Mapplane = 0
 
@@ -9392,7 +9392,7 @@ COLDCHANCE = 00
 GROUP = Rooms
 Spawnpoint = (4D)5683,3809,-80
 Rect = 5682,3807,5683,3810
-FLAGS = 01192
+FLAGS = 0x10c0 //Sphere 01192 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9401,7 +9401,7 @@ Name = "pole 1"
 GROUP = Rooms
 Spawnpoint = (4D)3445,3236,12
 Rect = 3438,3229,3460,3247
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -9410,7 +9410,7 @@ Name = "pole 2"
 GROUP = Rooms
 Spawnpoint = (4D)3626,3273,12
 Rect = 3622,3268,3629,3274
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -9419,7 +9419,7 @@ Name = "pole 3"
 GROUP = Rooms
 Spawnpoint = (4D)3757,2125
 Rect = 3750,2122,3762,2134
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Rhun) //calculated by Converter 
 Mapplane = 0
 
@@ -9428,7 +9428,7 @@ Name = "pole 4"
 GROUP = Rooms
 Spawnpoint = (4D)3707,3352
 Rect = 3696,3345,3716,3367
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -9437,7 +9437,7 @@ Name = "pole 5"
 GROUP = Rooms
 Spawnpoint = (4D)3730,3352
 Rect = 3725,3347,3732,3357
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -9446,7 +9446,7 @@ Name = "pole 6"
 GROUP = Rooms
 Spawnpoint = (4D)3880,3243
 Rect = 3873,3236,3894,3255
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -9455,7 +9455,7 @@ Name = "pole 7"
 GROUP = Rooms
 Spawnpoint = (4D)3910,3227
 Rect = 3904,3221,3913,3239
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -9464,7 +9464,7 @@ Name = "pole 8"
 GROUP = Rooms
 Spawnpoint = (4D)3902,3189
 Rect = 3894,3181,3920,3211
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Nurnen) //calculated by Converter 
 Mapplane = 0
 
@@ -9473,7 +9473,7 @@ Name = "pole 9"
 GROUP = Rooms
 Spawnpoint = (4D)4153,4003
 Rect = 4150,4000,4159,4005
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -9482,7 +9482,7 @@ Name = "pole 10"
 GROUP = Rooms
 Spawnpoint = (4D)4166,4008
 Rect = 4163,4005,4170,4009
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -9491,7 +9491,7 @@ Name = "pole 11"
 GROUP = Rooms
 Spawnpoint = (4D)4553,1221
 Rect = 4553,1221,4563,1232
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -9500,7 +9500,7 @@ Name = "pole 12"
 GROUP = Rooms
 Spawnpoint = (4D)4532,1244
 Rect = 4518,1233,4531,1243
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -9509,7 +9509,7 @@ Name = "pole 13"
 GROUP = Rooms
 Spawnpoint = (4D)4555,1241
 Rect = 4545,1235,4554,1240
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Mordorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -9518,7 +9518,7 @@ Name = "pole 14"
 GROUP = Rooms
 Spawnpoint = (4D)958,1106
 Rect = 939,1093,957,1105
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Kraj) //calculated by Converter 
 Mapplane = 0
 
@@ -9527,7 +9527,7 @@ Name = "pole 15"
 GROUP = Rooms
 Spawnpoint = (4D)871,1455
 Rect = 862,1447,870,1454
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -9536,7 +9536,7 @@ Name = "pole 16"
 GROUP = Rooms
 Spawnpoint = (4D)4181,4033
 Rect = 4170,4026,4180,4032
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -9545,7 +9545,7 @@ Name = "pole 17"
 GROUP = Rooms
 Spawnpoint = (4D)4173,4041
 Rect = 4168,4037,4172,4040
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Harad) //calculated by Converter 
 Mapplane = 0
 
@@ -9554,7 +9554,7 @@ Name = "pole 18"
 GROUP = Rooms
 Spawnpoint = (4D)1108,1184
 Rect = 1096,1176,1107,1183
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -9563,7 +9563,7 @@ Name = "pole 19"
 GROUP = Rooms
 Spawnpoint = (4D)1095,1195
 Rect = 1084,1189,1094,1194
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -9572,7 +9572,7 @@ Name = "pole 20"
 GROUP = Rooms
 Spawnpoint = (4D)1189,1345
 Rect = 1179,1338,1188,1344
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Zabovresky) //calculated by Converter 
 Mapplane = 0
 
@@ -9581,7 +9581,7 @@ Name = "pole 21"
 GROUP = Rooms
 Spawnpoint = (4D)1059,1331
 Rect = 1050,1324,1058,1330
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -9590,7 +9590,7 @@ Name = "pole 22"
 GROUP = Rooms
 Spawnpoint = (4D)1627,1190,35
 Rect = 1627,1190,1634,1205
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Hurecko) //calculated by Converter 
 Mapplane = 0
 
@@ -9599,7 +9599,7 @@ Name = "pole 23"
 GROUP = Rooms
 Spawnpoint = (4D)1632,1173,35
 Rect = 1632,1173,1639,1181
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Hurecko) //calculated by Converter 
 Mapplane = 0
 
@@ -9608,7 +9608,7 @@ Name = "pole 24"
 GROUP = Rooms
 Spawnpoint = (4D)1088,1296
 Rect = 1088,1296,1096,1305
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Hobitin) //calculated by Converter 
 Mapplane = 0
 
@@ -9617,7 +9617,7 @@ Name = "pole 25"
 GROUP = Rooms
 Spawnpoint = (4D)5679,4024,-80
 Rect = 5669,4019,5682,4026
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Pelenorska_pole) //calculated by Converter 
 Mapplane = 0
 
@@ -9626,7 +9626,7 @@ Name = "pole 26"
 GROUP = Rooms
 Spawnpoint = (4D)1023,1170,6
 Rect = 1023,1170,1035,1181
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -9635,7 +9635,7 @@ Name = "pole 27"
 GROUP = Rooms
 Spawnpoint = (4D)1037,1164,6
 Rect = 1037,1164,1046,1170
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -9644,7 +9644,7 @@ Name = "pole 28"
 GROUP = Rooms
 Spawnpoint = (4D)1048,1167,6
 Rect = 1048,1167,1057,1177
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -9653,7 +9653,7 @@ Name = "pole 29"
 GROUP = Rooms
 Spawnpoint = (4D)1047,1179,6
 Rect = 1047,1179,1058,1189
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Severni_ctvrtka) //calculated by Converter 
 Mapplane = 0
 
@@ -9662,7 +9662,7 @@ Name = "pole 30"
 GROUP = Rooms
 Spawnpoint = (4D)2696,3236
 Rect = 2695,3235,2711,3252
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Lebennin) //calculated by Converter 
 Mapplane = 0
 
@@ -9671,7 +9671,7 @@ Name = "pole 31"
 GROUP = Rooms
 Spawnpoint = (4D)2731,3245
 Rect = 2726,3240,2743,3252
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Linhir) //calculated by Converter 
 Mapplane = 0
 
@@ -9680,7 +9680,7 @@ Name = "pole 32"
 GROUP = Rooms
 Spawnpoint = (4D)5705,3934,-80
 Rect = 5696,3924,5704,3933
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9689,7 +9689,7 @@ Name = "pole 33"
 GROUP = Rooms
 Spawnpoint = (4D)5714,3944,-80
 Rect = 5706,3934,5713,3943
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Minas_Tirith) //calculated by Converter 
 Mapplane = 0
 
@@ -9698,7 +9698,7 @@ Name = "pole 34"
 GROUP = Rooms
 Spawnpoint = (4D)5338,3705
 Rect = 5332,3700,5350,3710
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Helmuv_zleb) //calculated by Converter 
 Mapplane = 0
 
@@ -9707,7 +9707,7 @@ Name = "pole 35"
 GROUP = Rooms
 Spawnpoint = (4D)1317,1373
 Rect = 1313,1365,1323,1375
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Radovsko) //calculated by Converter 
 Mapplane = 0
 
@@ -9716,7 +9716,7 @@ Name = "pole 36"
 GROUP = Rooms
 Spawnpoint = (4D)2154,2882
 Rect = 2154,2882,2164,2890
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Gondorske_uzemi) //calculated by Converter 
 Mapplane = 0
 
@@ -9725,7 +9725,7 @@ Name = "pole 37"
 GROUP = Rooms
 Spawnpoint = (4D)3096,1070
 Rect = 3096,1070,3100,1076
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Esgaroth) //calculated by Converter 
 Mapplane = 0
 
@@ -9734,7 +9734,7 @@ Name = "pole 38"
 GROUP = Rooms
 Spawnpoint = (4D)3097,1081
 Rect = 3097,1081,3101,1090
-FLAGS = 01182
+FLAGS = 0x1040 //Sphere 01182 
 Parent = (a_Esgaroth) //calculated by Converter 
 Mapplane = 0
 
@@ -9744,7 +9744,7 @@ RAINCHANCE = 00
 COLDCHANCE = 00
 Spawnpoint = (4D)5968,143,0,5
 Rect = 5922,124,6006,153
-FLAGS = 0001E
+FLAGS = 0xc0 //Sphere 0001E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -9755,7 +9755,7 @@ COLDCHANCE = 00
 GROUP = questy
 Spawnpoint = (4D)6092,29,0,5
 Rect = 6079,18,6124,94
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -9766,7 +9766,7 @@ COLDCHANCE = 00
 GROUP = dungeon
 Spawnpoint = (4D)5235,1781,-18,5
 Rect = 5200,1720,5299,1819
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 5
 
@@ -9777,7 +9777,7 @@ COLDCHANCE = 5
 GROUP = dungeon
 Spawnpoint = (4D)5932,2594,0,10
 Rect = 5918,2571,6117,2661
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9788,7 +9788,7 @@ COLDCHANCE = 00
 GROUP = dungeon
 Spawnpoint = (4D)6080,2363,0,10
 Rect = 6006,2305,6139,2421
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9799,7 +9799,7 @@ COLDCHANCE = 00
 GROUP = dungeon
 Spawnpoint = (4D)5460,2049,9,11
 Rect = 5454,2041,5464,2051
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -9810,7 +9810,7 @@ COLDCHANCE = 80
 GROUP = dungeon
 Spawnpoint = (4D)5995,2558,9,10
 Rect = 5982,2431,6119,2566
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9822,7 +9822,7 @@ GROUP = dungeon
 Spawnpoint = (4D)620,1312,-54,2
 Rect = 538,1358,585,1408
 Rect = 587,1301,621,1376
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 2
 
@@ -9831,7 +9831,7 @@ Name = "Darkmoon 1"
 GROUP = dungeon
 Spawnpoint = (4D)5350,887,0,11
 Rect = 5322,866,5381,909
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 11
 
@@ -9841,7 +9841,7 @@ GROUP = dungeon
 Spawnpoint = (4D)4984,993,0,10
 Rect = 4969,961,5071,1006
 Rect = 5053,1008,5069,1032
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9850,7 +9850,7 @@ Name = "Darkmoon 3"
 GROUP = dungeon
 Spawnpoint = (4D)5097,1371,0,10
 Rect = 5085,1338,5106,1384
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9859,7 +9859,7 @@ Name = "Darkmoon 4"
 GROUP = dungeon
 Spawnpoint = (4D)5097,1281,0,10
 Rect = 5084,1261,5108,1296
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9868,7 +9868,7 @@ Name = "Darkmoon 5"
 GROUP = dungeon
 Spawnpoint = (4D)5982,383,0,10
 Rect = 5972,372,5991,399
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9880,7 +9880,7 @@ Rect = 5793,405,5920,426
 Rect = 5808,228,5957,403
 Rect = 5769,362,5806,401
 Rect = 5804,337,5806,339
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9889,7 +9889,7 @@ Name = "Darkmoon 7"
 GROUP = dungeon
 Spawnpoint = (4D)5034,1385,0,10
 Rect = 5019,1343,5049,1456
-FLAGS = 00812
+FLAGS = 0x8c0 //Sphere 00812 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 10
 
@@ -9911,7 +9911,7 @@ COLDCHANCE = 00
 GROUP = Dungeon
 Spawnpoint = (4D)5555,2325,0,7
 Rect = 5416,2112,5689,2340
-FLAGS = 0881E
+FLAGS = 0x88c0 //Sphere 0881E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 7
 
@@ -9923,7 +9923,7 @@ COLDCHANCE = 100
 GROUP = Ostrovy
 Spawnpoint = (4D)149,2147,0,7
 Rect = 38,1964,427,2193
-FLAGS = 0301E
+FLAGS = 0x30c0 //Sphere 0301E 
 Parent = (a_world) //calculated by Converter 
 Mapplane = 7
 
