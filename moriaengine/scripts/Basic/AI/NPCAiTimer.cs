@@ -234,8 +234,9 @@ namespace SteamEngine.CompiledScripts {
 				return; //#794 - casting its gate / leaving: frozen (Erebor's flag_freeze)
 			}
 
-			//#797 - e_dragon_regeneration heals in any state, not only while fighting
-			MonsterSpecialAttacks.TryApplyDragonRegeneration(self);
+			//#797/#799 - abilities on their own clock, in any AI state (regeneration, backstab
+			//hiding, mass leap hops, dispel bomb fuses)
+			MonsterSpecialAttacks.OnAiTick(self);
 
 			this.Think(self);
 		}
@@ -478,6 +479,7 @@ namespace SteamEngine.CompiledScripts {
 			MonsterSpecialAttacks.TryApplyNpcCurse(self);
 			MonsterSpecialAttacks.TryApplyNpcCurseMana(self); //#797
 			MonsterSpecialAttacks.TryApplyNpcCurseStam(self); //#797
+			MonsterSpecialAttacks.TryApplyWarcry(self); //#799
 			MonsterSpecialAttacks.TryApplySummoning(self);
 
 			//real-user-reported follow-up - a_tevent_e_npc_infiniteMana just keeps this NPC's

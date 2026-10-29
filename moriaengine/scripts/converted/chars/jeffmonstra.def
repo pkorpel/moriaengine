@@ -756,6 +756,7 @@ MaxHits = 1500 2000
 MaxStam = 2000 3750
 MaxMana = 0
 Experience = 40 50
+DupeCount = 1
 NaturalDamageType = DamageType.Blunt|DamageType.Physical
 Parry = 1000
 MagicResist = 1000

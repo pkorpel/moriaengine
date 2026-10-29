@@ -22,6 +22,20 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public abstract class CraftingSkillDef : SkillDef {
+		//#799 - who crafted an item (Erebor's tag.craftedby)
+		private static readonly TagKey crafterTK = TagKey.Acquire("_craftedBy_");
+
+		public static void SetCrafter(Item item, Character crafter) {
+			if ((item != null) && !item.IsDeleted) {
+				item.SetTag(crafterTK, crafter);
+			}
+		}
+
+		/// <summary>The character who crafted this item, or null.</summary>
+		public static Character GetCrafter(Item item) {
+			return item.GetTag(crafterTK) as Character;
+		}
+
 
 		public CraftingSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -130,6 +144,7 @@ namespace SteamEngine.CompiledScripts {
 					canMake = false;
 				} else {//resources consumed or we are GM or no resources needed, create the item and place it to the pre-defined (or default) location
 					Item newItem = (Item) iDefToMake.Create(self.ReceivingContainer);
+					SetCrafter(newItem, self); //#799 - e_craft_monster's "weapon you made yourself" critical
 					//self.ClilocSysMessage(500638);//You create the item and put it in your backpack.
 					self.SysMessage(string.Format(
 								Loc<CraftSkillsLoc>.Get(self.Language).ItemMadeAndPutInRecCont,

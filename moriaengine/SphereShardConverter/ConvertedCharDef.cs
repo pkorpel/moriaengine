@@ -843,7 +843,17 @@ namespace SteamEngine.Converter {
 				{ "tag.npc_curse_stam_dmg", "NpcCurseStamDamage" },
 				{ "tag.e_pushall_chance", "PushallChance" },
 				{ "tag.e_pushall_time", "PushallCooldown" },
-				{ "tag.npc_magicshield", "MagicShieldStrength" }
+				{ "tag.npc_magicshield", "MagicShieldStrength" },
+				//#799 batch 5 - same, archive units (warcry delay stays raw deciseconds)
+				{ "tag.dupecount", "DupeCount" },
+				{ "tag.backstub_damagereducer", "BackstabDamageReducer" },
+				{ "tag.multishot_chance", "MultishotChance" },
+				{ "tag.multishot_delay", "MultishotCooldown" },
+				{ "tag.multishot_dmg", "MultishotDamage" },
+				{ "tag.e_explosiondispell_chance", "DispelBombChance" },
+				{ "tag.e_explosiondispell_range", "DispelBombRange" },
+				{ "tag.e_explosiondispell_time", "DispelBombCooldown" },
+				{ "tag.npc_warcry_delay", "WarcryCooldown" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum

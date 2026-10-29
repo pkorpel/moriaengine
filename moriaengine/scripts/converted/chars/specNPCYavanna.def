@@ -78,6 +78,7 @@ Int = 86 110
 MaxHits = 200 300
 MaxStam = 100 120
 MaxMana = 860 1100
+DupeCount = 3
 Experience = 15 22
 Parry = 500 600
 MagicResist = 500

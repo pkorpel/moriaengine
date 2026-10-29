@@ -40,10 +40,10 @@ namespace SteamEngine.CompiledScripts {
 		private FieldValue spareCurrentTarget;
 		private FieldValue petMultiplier;
 
-		protected AreaCurseAbilityDef(string defname, string filename, int headerLine, string keyPrefix, double[] defaultDamage)
+		protected AreaCurseAbilityDef(string defname, string filename, int headerLine, string keyPrefix, double[] defaultDamage, double[] defaultCooldown)
 			: base(defname, filename, headerLine) {
 			this.chance = this.InitTypedField(keyPrefix + "Chance", new double[] { 110, 110 }, typeof(double[]));
-			this.cooldown = this.InitTypedField(keyPrefix + "Cooldown", new double[] { 12, 15 }, typeof(double[]));
+			this.cooldown = this.InitTypedField(keyPrefix + "Cooldown", defaultCooldown, typeof(double[]));
 			this.damage = this.InitTypedField(keyPrefix + "Damage", defaultDamage, typeof(double[]));
 			this.range = this.InitTypedField(keyPrefix + "Range", (double) 8, typeof(double));
 			//#797 user decision: faithful to the archive by default, but GM-switchable on .settings
@@ -97,7 +97,7 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public class NpcCurseAbilityDef : AreaCurseAbilityDef {
 		public NpcCurseAbilityDef(string defname, string filename, int headerLine)
-			: base(defname, filename, headerLine, "npcCurse", new double[] { 50, 60 }) {
+			: base(defname, filename, headerLine, "npcCurse", new double[] { 50, 60 }, new double[] { 12, 15 }) {
 		}
 	}
 
@@ -105,7 +105,7 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public class NpcCurseManaAbilityDef : AreaCurseAbilityDef {
 		public NpcCurseManaAbilityDef(string defname, string filename, int headerLine)
-			: base(defname, filename, headerLine, "npcCurseMana", new double[] { 40, 80 }) {
+			: base(defname, filename, headerLine, "npcCurseMana", new double[] { 40, 80 }, new double[] { 12, 15 }) {
 		}
 	}
 
@@ -113,7 +113,7 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public class NpcCurseStamAbilityDef : AreaCurseAbilityDef {
 		public NpcCurseStamAbilityDef(string defname, string filename, int headerLine)
-			: base(defname, filename, headerLine, "npcCurseStam", new double[] { 40, 80 }) {
+			: base(defname, filename, headerLine, "npcCurseStam", new double[] { 40, 80 }, new double[] { 12, 15 }) {
 		}
 	}
 
@@ -190,19 +190,19 @@ namespace SteamEngine.CompiledScripts {
 				});
 		}
 
-		private static void TryApplyAreaCurse(NPC self, AreaCurseAbilityDef def, TagKey nextTimeTK,
+		private static bool TryApplyAreaCurse(NPC self, AreaCurseAbilityDef def, TagKey nextTimeTK,
 				int[] chanceOverride, int[] cooldownOverride, int[] damageOverride, Action<Character, double> apply) {
 			if (!HasAbilityDef(self, def)) {
-				return;
+				return false;
 			}
 			object nextTime = self.GetTag(nextTimeTK);
 			if ((nextTime is double) && (Globals.TimeInSeconds < (double) nextTime)) {
-				return;
+				return false;
 			}
 			self.SetTag(nextTimeTK, Globals.TimeInSeconds + RollTunable(cooldownOverride, def.Cooldown));
 
 			if (!RollChance(RollTunable(chanceOverride, def.Chance))) {
-				return;
+				return false;
 			}
 
 			Character spared = null;
@@ -221,6 +221,7 @@ namespace SteamEngine.CompiledScripts {
 				EffectFactory.StationaryEffect(target, CurseEffect, 6, 15);
 				apply(target, target.IsPlayerForCombat ? amount : amount * def.PetMultiplier);
 			}
+			return true;
 		}
 	}
 }
