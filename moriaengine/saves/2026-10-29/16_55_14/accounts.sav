@@ -1,0 +1,10 @@
+//Textual SteamEngine save
+//GameAccounts
+
+[ScriptedAccount regionarchivetest]
+password="regionarchivetest"
+plevel=7
+maxplevel=7
+//CharUID[0]=#1
+
+[EOF]

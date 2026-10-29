@@ -90,6 +90,14 @@ The rest of the block (#793): `ITEMNEWBIE=` -> `Equip =` (NPC gear, newbie), `CO
 `EquipColor =`/`EquipName =` for the latest gear line, `ADDSPELL=` -> `AddSpell =`. `tag(isBoss,1)`
 in `@Create` -> `IsBoss = 1` (#794, bosses never turn [elite](../04-gameplay-systems/elite-monsters.md)).
 
+**Regions (#813).** `spheremap.scp`'s `[AREA]`s become `[FlaggedRegion a_<name>]` sections in
+`map.def` (`ConvertedRegion`): rects (Sphere's exclusive max made inclusive), spawn point, map
+plane, flags (kept in Sphere hex), and a parent computed from which other region contains it.
+`EVENTS`/`RESOURCES`/`RAINCHANCE`/`COLDCHANCE`/`GROUP` pass through as-is. `CLASS` is dropped.
+Until #813 every area threw in the constructor (it wrote `createdat` as a `DateTime`, no longer
+saveable), so no region was ever emitted. `sphereregion.scp`'s `[RegionType]`/`[RegionResource]`
+are still commented out (region resources come next on #813).
+
 **Verbatim trigger bodies (#670, #808).** Only `@Create` is normally consumed (into fields); a
 few other trigger bodies are emitted as-is, keyed by defname in `ConvertedThingDef.passthroughTriggers`
 - only after checking the body is simple enough for LScript (plain calls like `SAY("...")`, no
