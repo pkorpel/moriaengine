@@ -1,0 +1,7 @@
+// #810 - one side's "offered items" box in a secure trade (scripts/Basic/Trading/SecureTrade.cs).
+// Equipped on its owner's Special layer, like Sphere's IT_EQ_TRADE_WINDOW (also model 0x1e5e there),
+// so it is never on the ground, never shown to anyone, and saved with its owner.
+[ContainerDef i_secure_trade_box]
+NAME = "Trade box"
+model = 0x1e5e
+Layer=LayerNames.Special
