@@ -1,5 +1,22 @@
 # moriaengine — working state
 
+## DONE (2026-10-29): #798 server hang deleting an NPC - Timer lock-order deadlock
+
+Found while running #799 (batch 5) protocol tests: a dispel bomb deleting an UNOWNED summon hung
+GameCore about 2 runs in 3. A `dotnet-stack report` of the hung process showed an AB/BA deadlock.
+`Timer.ProcessTimingOut` locked the timer, then waited for `globalLock`; the packet thread held
+`globalLock` and `Thing.Delete -> DeleteTimers -> Timer.Delete` waited for that same timer lock.
+That violates the #17 lock order (globalLock first). Fix: ProcessTimingOut takes globalLock, then
+the timer, and re-checks isDeleted/isInChangesQueue once it holds both. Red/green: Batch4's
+owned-pet delete (its #798 workaround removed) hangs without the fix and passes with it.
+MonsterAbilitiesBatchTests (batch 2's "~1 in 3 unresponsive looter test" flake) went 3/3 green,
+so that flake was probably this too. Pre-existing PetCommandTests failures (same with or without
+the fix) filed as #802.
+**Hung-server debugging recipe**: `dotnet tool install -g dotnet-stack`, then
+`dotnet-stack report -p <GameCore pid>`. Both the server AND dotnet-stack need a SHORT TMPDIR (the
+diagnostic socket path must stay under 108 chars, and the scratchpad path is longer), e.g. a /tmp/cb5
+symlink to the scratchpad. No pgrep here; find the pid by scanning /proc/*/cmdline for GameCore.
+
 ## IN PROGRESS (2026-10-28): teventStubs batch 4 (then batch 5 right after) - branch feat-monster-abilities-batch4
 
 User: "go ahead with batch 4, once you are done, move to batch 5 right away". Survey (138 stubs
