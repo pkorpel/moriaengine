@@ -155,6 +155,14 @@ namespace SteamEngine.CompiledScripts {
 			summon.AddTimer(despawnTimerKey, new SummonDespawnTimer()).DueInSpan = TimeSpan.FromSeconds(durationSecs);
 		}
 
+		/// <summary>#813 - unsummons now (Sphere's removeAgressiveSummon zeroes the summon's timer):
+		/// its despawn timer, or a new one for a summon that had none, runs out on the next timer
+		/// tick - so a caller in the middle of the summon's own step doesn't delete it under itself.</summary>
+		public static void DespawnNow(Character summon) {
+			Timer timer = summon.GetTimer(despawnTimerKey) ?? summon.AddTimer(despawnTimerKey, new SummonDespawnTimer());
+			timer.DueInSpan = TimeSpan.Zero;
+		}
+
 		[SaveableClass]
 		[DeepCopyableClass]
 		public class SummonDespawnTimer : BoundTimer {

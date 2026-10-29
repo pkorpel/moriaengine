@@ -7,9 +7,8 @@ namespace SteamEngine.Tests.Protocol {
 	/// Fishing's full implementation (#271) - the fish-variety + junk-fish/treasure-map catch
 	/// system (FishingCatchSystem), the water-monster ambush (FishingAmbushSystem, mirrors Mining
 	/// #335 / Lumberjacking #431), and the GM-tunable FishingSettings write-through. Mirrors
-	/// LumberjackingVeinSystemTests / LumberjackingSettingsTests. No per-tile vein/depletion/regen
-	/// coverage - Fishing has no skill-gated fish-tier ladder (no fish-tier content exists, see
-	/// FishingCatchSystem's own doc comment), so there's nothing of that shape to test.
+	/// LumberjackingVeinSystemTests / LumberjackingSettingsTests. Since #813 the catch comes from
+	/// the water spot's region resources (the archive's w_fish/w_jf tiers, per-spot pools).
 	/// </summary>
 	[Collection(FishingCatchSystemCollection.Name)]
 	public class FishingCatchSystemTests {
