@@ -151,9 +151,7 @@ namespace SteamEngine.CompiledScripts {
 			int expectedSelfManaLost = Math.Min(30, selfManaBefore); //can't drain more than it has
 			int petManaLost = 500 - pet.Mana;
 			manaCurser.Delete();
-			//#798 - deleting a pet while its owner is online hangs the server; release it first
-			pet.ControlMaster = null;
-			pet.Delete();
+			pet.Delete(); //still owned - this used to hang the server (#798, Timer lock order)
 
 			self.Stam = self.MaxStam;
 			int selfStamBefore = self.Stam;
