@@ -90,6 +90,7 @@ whoever is already standing on it when it appears (the archive was step-on only)
 | craft_monster | 13 | Craftsman-profession attackers do +{10,20}; with a weapon they crafted themselves, 1 in 4 is a +{15,25} critical | |
 | npc_warcry | 11 | at most once a minute while fighting: everyone within 8 is shocked and their spellcasting interrupted. The archive's range is a runtime setting, 8 is ours | WarcryCooldown (deciseconds) |
 | item_refuser | 119 | an item dropped on it is turned down, even from a GM: it says its message (`{0}` = the item's name; the archive's Czech "Hmm, <item> nepotrebuju...") and the item goes back to the giver's pack. Hook: `NPC.On_PutItemOn` (#807); a cancelled `TryPutItemOnChar` now returns a deny so the drop bounces back instead of sticking in the hand | ItemRefuserMessage |
+| healer | 18 | a ghost that single-clicks the healer from at most 4 tiles (the archive's `distance<5`) is resurrected - `s_resurrection`'s effect at full power via `SpellDef.ApplyEffectChar` (Sphere's SPELLEFFECT, no region rules); a realm outcast is told they're cursed by the gods instead and the name click is swallowed. This, not the "res" speech, is how Erebor's ghosts got resurrected - see [NPC speech](npc-speech.md). Hook: `Character.On_Click` (#827) | HealerClickRange |
 
 ### Area curse rules (#797)
 
@@ -111,6 +112,6 @@ Curse hit everyone, including the current target, at 1x.
 Erebor's `tag.craftedby`). Items crafted before #799 have no record.
 
 Tests: `Tests/Protocol/MonsterSpecialAttacksTests`, `MonsterAbilitiesBatchTests` (2),
-`MonsterAbilitiesBatch3Tests`, `MonsterAbilitiesBatch4Tests`, `MonsterAbilitiesBatch5Tests`, `ItemRefuserTests`, `NpcBleedTests`;
+`MonsterAbilitiesBatch3Tests`, `MonsterAbilitiesBatch4Tests`, `MonsterAbilitiesBatch5Tests`, `ItemRefuserTests`, `HealerTests`, `NpcBleedTests`;
 fast tier `MonsterAbilitiesSettingsCoverageTests`, `MagicShieldFormulaTests`, `KnockbackPushDistanceTests`,
 `BackstabFormulaTests`.
