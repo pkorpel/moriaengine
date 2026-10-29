@@ -237,7 +237,36 @@ Equip = i_beard_short
 EquipColor = 777
 AggroMode = Calm
 
-//[SPEECH spk_go_lorien] //(commented out by Converter) 
+[SpeechStub spk_go_lorien]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+//Say "Za maly poplatek te muzu prevezt na druhou stranu teto reky"
+ON=*prevezt*
+ON=*prevoz*
+ON=*prevez*
+ON=*ano*
+ON=*prosim*
+ON=*dobre*
+
+//if (src.findid(i_delay_lorien))
+//return
+//endif
+
+//if (src.pay({10 30}))
+//SRC.NEWITEM i_delay_lorien
+//if (!strcmp(<src.region.name>,"Lorien"))
+//SRC.ACT.MOREP=2460,1943
+//else
+//SRC.ACT.MOREP=2468,1925
+//endif
+//SRC.ACT.EQUIP
+//else
+//Say "Zadarmo te tam ale nesvezu !"
+//endif
 
 [EquippableDef i_delay_lorien]
 Name = "Teleport Delay Timer lorien"

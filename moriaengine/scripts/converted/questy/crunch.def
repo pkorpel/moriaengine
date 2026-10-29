@@ -100,7 +100,13 @@ Equip = i_cape
 EquipColor = 06ad
 AggroMode = Calm
 
-//[SPEECH crunch_zlodejicek] //(commented out by Converter) 
+[SpeechStub crunch_zlodejicek]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+//SAY("Co na mne ziras? Honem si najdi neco na praci, nebo tas zbran a ja te naucim dobrym zpusobum, parchante!")
+
+// Alchymista Beau
 
 [NPCDef c_irbis_08]
 CATEGORY = Kvesty
@@ -130,4 +136,19 @@ Equip = i_sandals
 Equip = i_robe
 AggroMode = Calm
 
-//[SPEECH Crunch_Beau] //(commented out by Converter) 
+[SpeechStub Crunch_Beau]
+ON=*hi*
+ON=*ahoj*
+ON=*cau*
+ON=*nazdar*
+//IF (<safe.SRC.TAG.splnenkvest_004>)
+//SAY("Jeste jednou dekuji.")
+//endif
+//if (<SRC.RESTEST 1 i_Crunch__hlava2> )
+//SAY("Krasa, mas tu prisadu! Diky moc, ani nevis, jak moc jsem ti za tu hlavu vdecny! Jsem navdeky tvym dluznikem...")
+//src.consume=1 i_Crunch_hlava2
+//SRC.TAG.splnenkvest_004=1
+//src.addexp(1500)
+//else
+//SAY("Vitej... potreboval bych, abys mi prinesl tlejici hlavu, potrebuji ji jako prisadu... Jiste se ti odmenim, pokud mi ji prineses... Diky moc!")
+//endif

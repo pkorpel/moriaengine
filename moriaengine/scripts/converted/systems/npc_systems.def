@@ -26,4 +26,14 @@ model = i_rune_summon_creature
 
 //[events e_healer] //(commented out by Converter) 
 
-//[speech spk_healer] //(commented out by Converter) 
+[SpeechStub spk_healer]
+ON=*res*
+//if (src.tag(realm)<0)
+//src.sysmessage("Jsi stizen kletbou bohu a vyvrzen z tohoto sveta. Nemohu te navratit k zivotu.")
+//return 1
+//endif
+//if (src.flag_dead)
+//if (srccanseelos)
+//src.resurrect_player(<uid>)
+//endif
+//endif

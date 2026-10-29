@@ -24,13 +24,45 @@
 
 //[dialog d_gq001_mikkena3 button] //(commented out by Converter) 
 
-//[speech spk_gq001_mikkena] //(commented out by Converter) 
+[SpeechStub spk_gq001_mikkena]
+ON=*ukol*
+ON=*prace*
+ON=*zdravim*
+ON=*ahoj*
+
+//f_qSpeech(f_gq001_mikkena_DClick)
 
 //[function f_gq001_mikkena_DClick] //(commented out by Converter) 
 
-//[speech spk_gq001_edwin] //(commented out by Converter) 
+[SpeechStub spk_gq001_edwin]
+ON=*lektvary*
+ON=*ahoj*
+ON=*hi*
+ON=*ukol*
+//if (<src.rescount i_gq001_lektvary> >= 1)
+//src.consume(i_gq001_lektvary)
+//say("Vybornem uz na to cekam.")
+//say("Vyrid Mikkene moje podekovani. A tohle ji prosim vrat.")
+//src.giveitem(i_gq001_sklenice)
+//else
+//say("Zdravicko, zdravicko.")
+//endif
 
-//[speech spk_gq001_charton] //(commented out by Converter) 
+[SpeechStub spk_gq001_charton]
+ON=*lektvary*
+ON=*ahoj*
+ON=*hi*
+ON=*ukol*
+//if (<src.rescount i_gq001_lektvary> >= 1)
+//src.consume(i_gq001_lektvary)
+//say("Vybornem uz na to cekam.")
+//say("Vyrid Mikkene moje podekovani. A tohle ji prosim vrat.")
+//src.giveitem(i_gq001_sklenice)
+//else
+//say("Zdravicko, zdravicko.")
+//endif
+
+// Itemky //
 
 [ItemDef i_gq001_strom]
 CATEGORY = Moria Questy

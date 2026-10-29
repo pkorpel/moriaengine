@@ -97,6 +97,8 @@ file whose job is session continuity, not permanent reference.
   high-experience monsters: stronger, absorbs player damage, richer loot, leaves after 20 min (#794).
 - [Monster abilities](04-gameplay-systems/monster-abilities.md) - Erebor's `TEVENTS=e_*` special
   attacks as passive abilities: every implemented one, where it hooks in, how it's tuned (#653, #797).
+- [NPC speech](04-gameplay-systems/npc-speech.md) - Erebor's `[SPEECH]` blocks (TSPEECH), how hearing
+  works, and the converted `[SpeechStub]` placeholders that hint GMs which speech is unported (#825).
 - [Movement & character collision](04-gameplay-systems/movement-and-collision.md) - the
   `WalkRunOrFly` pipeline and Sphere's stamina-gated shove past other characters (#767).
 - [Crafting & gathering](04-gameplay-systems/crafting-gathering.md)

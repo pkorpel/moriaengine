@@ -2,11 +2,35 @@
 
 //[FUNCTION f_namestek_valky_m] //(commented out by Converter) 
 
-//[SPEECH spk_namestek_valky_m] //(commented out by Converter) 
+[SpeechStub spk_namestek_valky_m]
+ON=*ahoj*
+ON=*hi*
+//if (<eval src.tag.realm> == 2)
+//say("Chces zautocit...?")
+//dialog(d_namestek_valky_m)
+//return 1
+//else
+//say("Tahni!")
+//endif
+
+////////////////////////////////////////////
+//////////////PRO GONDOR////////////////////
+////////////////////////////////////////////
 
 //[FUNCTION f_namestek_valky_g] //(commented out by Converter) 
 
-//[SPEECH spk_namestek_valky_g] //(commented out by Converter) 
+[SpeechStub spk_namestek_valky_g]
+ON=*ahoj*
+ON=*hi*
+//if (<eval src.tag.realm> == 1)
+//say("Hmmm?")
+//dialog(d_namestek_valky_g)
+//return 1
+//else
+//say("Tahni!")
+//endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //[dialog d_namestek_valky_g] //(commented out by Converter) 
 

@@ -139,7 +139,55 @@ Equip = i_pants_long
 EquipColor = 08f
 AggroMode = Calm
 
-//[SPEECH crunch_Karenus] //(commented out by Converter) 
+[SpeechStub crunch_Karenus]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+//IF (<?src.tag(splnenkvest_008)?>==1)
+//SAY Dekuju ti, ale ted vypadni a nech me samotneho!
+//return 1
+//endif
+//IF(<?src.tag(crunch_informace_008)?>==1)
+//SAY Nechcete se jit zeptat radsi toho Bvutanna jak jsem vam rekl?
+//return 1
+//endif
+//IF(<?src.tag(crunch_informace_008)?>==2)
+//SAY COZE??? Tak tohle vam napovidal? Reknu vam, jak to opravdu bylo, poslouchejte pozorne...
+//src.newitemsafe=i_crunch_indicie2
+//lastnew.bounce
+//SRC.TAG(crunch_informace_008,3)
+//SAY A ted me prosim nechte chvili premyslet a prijdte za maly moment. Vymyslim, co dal.
+//return 1
+//endif
+//IF(<?src.tag(crunch_informace_008)?>==3)
+//SAY Vyhledejte orka Gurmuga. On tenkrat v knihovne velel skretum, co spalovali nase knihy a ostatni dokumenty. Zkuste se ho otazat, jak to vlastne opravdu bylo...
+//SRC.TAG(crunch_informace_008,4)
+//return 1
+//endif
+//if(<?src.tag(crunch_informace_008)?>==4)
+//say Uz jste mluvili s Gurmugem? Bezte za nim, snad vam rekne vice.
+//return 1
+//endif
+//if(<?src.tag(crunch_informace_008)?>==5)
+//SAY Takze to byl Bvutannus, kdo me omracil? Hmm, je to parchant... Najdete maga Hurtana, on bude znat jeho slabinu...
+//SRC.TAG(crunch_informace_008,6)
+//return 1
+//endif
+//IF(<?src.tag(crunch_informace_008)?>==6)
+//SAY Hurtan vam poradi!
+//return 1
+//endif
+//if((<?src.tag(crunch_informace_008)?>==7)||(<?src.tag(crunch_informace_008)?>==8))
+//say Nech me ted byt, musim premyslet!
+//return 1
+//else
+//SAY Zajima vas, proc uz nejsem knihovnikem v Minas Tirith? jdete se zeptat Bvutanna a pak mi prijde rict co vam napovidal, at se taky zasmeju...
+//SRC.TAG(crunch_informace_008,1)
+//endif
+ON=*ok*
+//SAY Tak sup sup, at uz mam klid...
+
+//Bvutannus, Minas Tirithsky soucasny knihovnik
 
 [NPCDef c_crunch_Bvutannus]
 CATEGORY = Kvesty
@@ -172,7 +220,22 @@ Equip = i_robe
 EquipColor = 001
 AggroMode = Calm
 
-//[SPEECH crunch_Bvutannus] //(commented out by Converter) 
+[SpeechStub crunch_Bvutannus]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+//IF (<src.tag(splnenkvest_008)>==1)
+//SAY Tahni, nechci te ani videt!
+//elseIF (<src.tag(crunch_informace_008)>==1)
+//SAY Hmm vy jste s nim mluvili? Zajimalo by me, co vam napovidal... nuze poslouchejte jak se to stalo...
+//src.newitemsafe=i_crunch_indicie1
+//lastnew.bounce
+//SRC.TAG(crunch_informace_008,2)
+//else
+//SAY Co na me tak civis? Padej nebo te pretahnu knizkou pres papulu!
+//endif
+
+// Gurm�g, skret, jeden z najezdniku na Minas Tirith
 
 [NPCDef c_crunch_Gurmug]
 CATEGORY = Kvesty
@@ -201,7 +264,35 @@ type = t_eq_script
 model = i_memory
 Layer = layer_special //guessed from base def by Converter 
 
-//[SPEECH crunch_Gurmug] //(commented out by Converter) 
+[SpeechStub crunch_Gurmug]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+//IF (<src.tag(splnenkvest_008)>==1)
+//SAY Nazdar kamo, tak co, podarilo se ti to vyresit? No to jsem rad, tak se zas nekdy stav!
+//return 1
+//endif
+//IF(<src.tag(crunch_informace_008)>==4)
+//SAY Hmm... na ten najezd si vzpominam... ale nez vam reknu, jak to opravdu bylo, musite mi prinest 20K gp, ano?
+//else
+//SAY Mas nejakej problem? Jestli jo, moje sekera v tvy hlave ho kvapne vyresi!!!
+//endif
+ON=*ano*
+ON=*penize*
+ON=*prachy*
+ON=*20k*
+ON=*20000*
+//IF (<SRC.RESTEST 20000 i_gold>)
+//src.consume=20000 i_gold
+//SAY Hmm.. mas ty penize.. tak dobre poslouchej, reknu ti, jak to tenkrat bylo...
+//src.newitemsafe=i_crunch_indicie3
+//lastnew.bounce
+//SRC.TAG(crunch_informace_008,5)
+//else
+//SAY Myslis si ze jsem uplne tupej? Nemas ty prachy. Ja chci 20k, je to jasny?!?
+//endif
+
+//m�g Hurtan
 
 [NPCDef c_crunch_Hurtan]
 CATEGORY = Kvesty
@@ -234,4 +325,35 @@ Equip = i_robe
 EquipColor = color_o_obsidian
 AggroMode = Calm
 
-//[SPEECH crunch_Hurtan] //(commented out by Converter) 
+[SpeechStub crunch_Hurtan]
+ON=*hi*
+ON=*ahoj*
+ON=*cus*
+ON=*hoj*
+ON=*nazdar*
+ON=*Dobry den*
+ON=*huja*
+ON=*zdar*
+//IF(<src.tag(splnenkvest_008)>==1)
+//SAY Uz nemam co bych vam rekl, nechte starce taky chvili na pokoji!
+//return 1
+//endif
+//IF(<src.tag(crunch_informace_008)>==6)
+//SAY Zdravim.. chcete znat slabinu Bvutanna? Reknu vam to, ale nejdriv musite zabit snezneho Minotaura, zijiciho v jeskyni na ledovych planich...
+//return 1
+//endif
+//IF(<src.tag(crunch_informace_008)>==7)
+//SAY Hmm, je mrtvy.. Tak tedy poslouchejte. Bvutannus ma sestru, muzete ji zabit... chcete vedet kde ji najdete?
+//return 1
+//endif
+//SAY Nazdarek, dneska se nam den ale vydaril, ze?
+ON=*ano*
+//src.sysmessage() //to tu bejt musi jinak to proste nefunguje, SUX :-/ !!!!
+//if(<src.tag(crunch_informace_008)>==7)
+//SAY Prozradim vam jen, ze se jmenuje Thoragala. Jo a az ji zabijete, rozrezejte ji... ma tendenci vstavat z mrtvych hehe
+//SRC.TAG(crunch_informace_008,8)
+//return 1
+//else //odpoved na ten "hezky den"...
+//SAY Tak na mne uz konecne prestan cumet a dej si vodchod!!!
+//return 1
+//endif

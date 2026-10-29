@@ -4,7 +4,17 @@
 
 //[dialog d_q044_ember button] //(commented out by Converter) 
 
-//[speech spk_q044_ember] //(commented out by Converter) 
+[SpeechStub spk_q044_ember]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_q044_ember_DClick)
 
 //[function f_q044_ember_DClick] //(commented out by Converter) 
 

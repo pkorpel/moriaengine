@@ -153,7 +153,109 @@ EquipColor = 00
 EquipName = Vidle
 AggroMode = Calm
 
-//[SPEECH spk_sberac_vajec] //(commented out by Converter) 
+[SpeechStub spk_sberac_vajec]
+ON=*hi*
+ON=*Dobry den*
+ON=*Ahoj*
+ON=*Cau*
+ON=*Zdravim*
+//if (src.findid(i_easterQuest_wentThrough))
+//say("Dobre tedy, jsem pozadu s dodavkou vajec pro Velikonocniho zajicka. Je na me kvuli tomu velice nastvany. Smenim s tebou Velikonocni vajcka za ruzne veci.")
+//   if !(src.findid(i_easterQuest_wentThrough).tag(prodlouzeni_po_loadu))
+//     src.findid(i_easterQuest_wentThrough).tag(prodlouzeni_po_loadu,1)  // Prodlouzi jen jednou
+//     src.findid(i_easterQuest_wentThrough).timer=1036800  // Nastavi timer na 12 dni (Default)
+//     src.accMsg("Hraci <src.name>, UID: <src> byl prodlouzen limit Velikonocniho eventu o 12 dni.")
+//   endif
+//else
+//say("Zdravim te poutniku! Ani nevis, jak velky problem me trapi. Vypadas celkem zelene na to, aby jsi mi <src.sex(pomohl,pomohla)>. Ale to muze byt tim jarem, troufas si na to? Ano?")
+//endif
+//return 1
+ON=*ano*
+ON=*yes*
+ON=*dukaz*
+ON=*duvera*
+//if (src.findid(i_easterQuest_wentThrough))
+//say("Nabizim ti 10000 zlata za 100 vajicek, Magicky vacek za 1000 vajicek a nebo Tajemnou mapu za 2500 vajicek. Co si z toho prejes vymenit? Penize? Item? Mapu?")
+//else
+//say("Abych si otestoval Tve schopnosti, chci po tobe, aby jsi <src.sex(prosel,prosla)> az na konec doupete Velikonocniho zajicka. Az potom se s tebou budu bavit vice.")
+//endif
+//return 1
+ON=*vymena*
+ON=*veci*
+ON=*nabidka*
+ON=*smena*
+ON=*kurz*
+//if (src.findid(i_easterQuest_wentThrough))
+//say("Nabizim ti 10000 zlata za 100 vajicek, Magicky vacek za 1000 vajicek a nebo Tajemnou mapu za 2500 vajicek. Co si z toho prejes vymenit? Penize? Item? Mapu?")
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
+ON=*penize*
+ON=*zlato*
+ON=*goldy*
+//if (src.findid(i_easterQuest_wentThrough))
+//if (<src.restest(100,i_easter_egg)>)
+//src.accMsg("Hrac <src.name>, UID: <src> dostal 10000 gp za 100 velikonocnich vajicek.")
+//src.consume(100,i_easter_egg)
+//src.givegold(10000)
+//say("Dekuji ti, ale to nestaci. Prines mi jich vice, penez mam dost.")
+//src.findid(i_easterQuest_wentThrough).tag(odevzdanych_vajec,#+100)
+//if (finduid(#040034663)) && !(src.isgm)
+//finduid(#040034663).tag(vyplaceno_zlata,#+10000)
+//f_logBestCollector
+//endif
+//else
+//say("Nemas dost vajicek pro tuto vymenu. Chces vedet smenny kurz?")
+//endif
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
+ON=*item*
+ON=*magicky*
+ON=*itemek*
+//if (src.findid(i_easterQuest_wentThrough))
+//if (<src.restest(1000,i_easter_egg)>)
+//src.accMsg("Hrac <src.name>, UID: <src> dostal 1x Magicky vacek za 1000 velikonocnich vajicek.")
+//src.consume(1000,i_easter_egg)
+//src.giveitem(i_mi_bag)
+//say("Dekuji ti, ale to nestaci. Prines mi jich vice, itemku mam jeste dost.")
+//src.findid(i_easterQuest_wentThrough).tag(odevzdanych_vajec,#+1000)
+//if (finduid(#040034663)) && !(src.isgm)
+//finduid(#040034663).tag(magickych_itemku,#+1)
+//f_logBestCollector
+//endif
+//else
+//say("Nemas dost vajicek pro tuto vymenu. Chces vedet smenny kurz?")
+//endif
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
+ON=*mapu*
+ON=*mapa*
+ON=*tajemnou*
+//if (src.findid(i_easterQuest_wentThrough))
+//if (<src.restest(2500,i_easter_egg)>)
+//src.accMsg("Hrac <src.name>, UID: <src> dostal 1x Tajemnou mapu za 2500 velikonocnich vajicek.")
+//src.consume(2500,i_easter_egg)
+//src.giveitem(i_u_treasure_map)
+//say("Dekuji ti, ale stale jich mam malo. Prines mi jich vice, jeste nejake Tajemne mapy mam.")
+//src.findid(i_easterQuest_wentThrough).tag(odevzdanych_vajec,#+2500)
+//if (finduid(#040034663)) && !(src.isgm)
+//finduid(#040034663).tag(tajemnych_map,#+1)
+//f_logBestCollector
+//endif
+//else
+//say("Nemas dost vajicek pro tuto vymenu. Chces vedet smenny kurz?")
+//endif
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
+
+// call upon an NPC
 
 //[function f_easterEvent_generateEgg] //(commented out by Converter) 
 

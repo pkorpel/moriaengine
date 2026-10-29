@@ -44,7 +44,13 @@ namespace SteamEngine {
 				case "triggergroup":
 				case "triggergroups":
 					//case "resources"://in sphere, resources are the same like events... is it gonna be that way too in SE? NO!
-					tgResolvers.Add(new TGResolver(this, args, filename, line));
+					//#825 - Sphere also takes a comma-separated list (TSPEECH = spk_healer,spk_shopkeep)
+					foreach (string name in args.Split(',')) {
+						string trimmed = name.Trim();
+						if (trimmed.Length > 0) {
+							tgResolvers.Add(new TGResolver(this, trimmed, filename, line));
+						}
+					}
 					break;
 				default:
 					base.LoadScriptLine(filename, line, param, args);//the AbstractDef Loadline

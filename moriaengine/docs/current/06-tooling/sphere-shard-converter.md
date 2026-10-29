@@ -71,6 +71,9 @@ that gap:
 - **`ARMOR` -> `armorVsP`/`armorVsM`** - averaged the same way, then written to BOTH
   fields (not the old #44 hand-edit's tuple-split guess) - this is Character-level, safe
   on a PlayerDef too.
+- **`[SPEECH x]` -> `[SpeechStub x]`** (#825, `ConvertedSpeech`) - the `ON=` patterns are kept and the
+  Sphere script under them is written as comments. The engine's `SpeechStub` is a placeholder that a real
+  speech of the same name replaces. See [NPC speech](../04-gameplay-systems/npc-speech.md).
 - **TEVENTS (`event`/`events`/`tevent`/`tevents`/`speech`/`tspeech`/`triggergroup`/
   `triggergroups`)** - moved from `ConvertedCharDef` into the shared `ConvertedThingDef`
   (benefits itemdefs too) as a plain pass-through. The engine's own

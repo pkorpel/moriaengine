@@ -148,7 +148,10 @@ AggroMode = Calm
 
 //[EVENTS e_miniq_kun] //(commented out by Converter) 
 
-//[speech spk_miniquest] //(commented out by Converter) 
+[SpeechStub spk_miniquest]
+ON=*zdravim*
+ON=*ahoj*
+//say Zdravim fesaku!
 
 //[function f_lov_kill] //(commented out by Converter) 
 

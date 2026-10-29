@@ -2,7 +2,19 @@
 
 //[function f_npc_alchymista] //(commented out by Converter) 
 
-//[speech spk_alchymista] //(commented out by Converter) 
+[SpeechStub spk_alchymista]
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*zdravi*
+ON=*buy*
+ON=*koupit*
+ON=*nakup*
+
+//if (canReachNPC(<src.targ>))
+//f_npc_alchymista
+//endif
+//return 1
 
 //[DIALOG d_npc_alchymista] //(commented out by Converter) 
 

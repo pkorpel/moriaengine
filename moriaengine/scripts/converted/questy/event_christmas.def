@@ -184,7 +184,124 @@ EquipColor = 0021
 EquipName = Magicka hulka
 AggroMode = Calm
 
-//[SPEECH spk_vanocni_sberac] //(commented out by Converter) 
+[SpeechStub spk_vanocni_sberac]
+ON=*hi*
+ON=*Dobry den*
+ON=*Ahoj*
+ON=*Cau*
+ON=*Zdravim*
+//if (src.findid(i_christmasQuest))
+//say("Netajim se svou sberatelskou vasni. Miluji veskere Vanocni banky, prines mi nejake a ja se ti odmenim. Nejlepsi jsou ty, ktere jsou jeste od krve! Muhehe!")
+//else
+//if (<src.restest(1,i_christmas_pig_head)>)
+//f_christmasEvent_bringHead
+//else
+//say("Zdravim te poutniku! Myslis si, ze by jsi mi <src.sex(dokazal,dokazala)> pomoct? Troufas si na to? Ano?")
+//endif
+//endif
+//return 1
+ON=*ano*
+ON=*yes*
+ON=*dukaz*
+ON=*duvera*
+ON=*prase*
+ON=*ukol*
+ON=*hlava*
+//if (src.findid(i_christmasQuest))
+//say("Nabizim ti 10000 zlata za 100 banek, Magicky vacek za 1000 banek a nebo Tajemnou mapu za 2500 banek. Co si z toho prejes vymenit? Penize? Item? Mapu?")
+//else
+//if (<src.restest(1,i_christmas_pig_head)>)
+//f_christmasEvent_bringHead
+//else
+//say("Abych si otestoval Tve schopnosti, chci po tobe, aby jsi mi <src.sex(prinesl,prinesla)> cerstvou hlavu zlateho prasete. Az potom se s tebou budu bavit vice.")
+//endif
+//endif
+//return 1
+ON=*vymena*
+ON=*veci*
+ON=*nabidka*
+ON=*smena*
+ON=*kurz*
+//if (src.findid(i_christmasQuest))
+//say("Nabizim ti 10000 zlata za 100 banek, Magicky vacek za 1000 banek a nebo Tajemnou mapu za 2500 banek. Co si z toho prejes vymenit? Penize? Item? Mapu?")
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
+ON=*bonus*
+ON=*exp*
+ON=*experience*
+ON=*zkusenosti*
+ON=*pozehnani*
+//if (src.findid(i_christmasQuest))
+//say("Tem, kteri mi prinesou velke mnozstvi banek pozehnam, ze budou ziskavat vice zkusenosti. Prines mi banky a pozehnam i tobe.")
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
+ON=*penize*
+ON=*zlato*
+ON=*goldy*
+//if (src.findid(i_christmasQuest))
+//if (<src.restest(100,i_christmas_bulb)>)
+//src.accMsg("Hrac <src.name>, UID: <src> dostal 10000 gp za 100 vanocnich banek.")
+//src.consume(100,i_christmas_bulb)
+//src.givegold(10000)
+//say("Dekuji ti, ale to nestaci. Prines mi jich vice, penez mam dost.")
+//src.findid(i_christmasQuest).tag(odevzdanych_banek,#+100)
+//if (finduid(def_christmasQuest_MemoryStone)) && !(src.isgm)
+//finduid(def_christmasQuest_MemoryStone).tag(vyplaceno_zlata,#+10000)
+//f_christmas_logBestCollector
+//endif
+//else
+//say("Nemas dost Banek pro tuto vymenu. Chces vedet smenny kurz?")
+//endif
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
+ON=*item*
+ON=*magicky*
+ON=*itemek*
+//if (src.findid(i_christmasQuest))
+//if (<src.restest(1000,i_christmas_bulb)>)
+//src.accMsg("Hrac <src.name>, UID: <src> dostal 1x Magicky vacek za 1000 vanocnich banek.")
+//src.consume(1000,i_christmas_bulb)
+//src.giveitem(i_mi_bag)
+//say("Dekuji ti, ale to nestaci. Prines mi jich vice, itemku mam jeste dost.")
+//src.findid(i_christmasQuest).tag(odevzdanych_banek,#+1000)
+//if (finduid(def_christmasQuest_MemoryStone)) && !(src.isgm)
+//finduid(def_christmasQuest_MemoryStone).tag(magickych_itemku,#+1)
+//f_christmas_logBestCollector
+//endif
+//else
+//say("Nemas dost Banek pro tuto vymenu. Chces vedet smenny kurz?")
+//endif
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
+ON=*mapu*
+ON=*mapa*
+ON=*tajemnou*
+//if (src.findid(i_christmasQuest))
+//if (<src.restest(2500,i_christmas_bulb)>)
+//src.accMsg("Hrac <src.name>, UID: <src> dostal 1x Tajemnou mapu za 2500 vanocnich banek.")
+//src.consume(2500,i_christmas_bulb)
+//src.giveitem(i_u_treasure_map)
+//say("Dekuji ti, ale stale jich mam malo. Prines mi jich vice, jeste nejake Tajemne mapy mam.")
+//src.findid(i_christmasQuest).tag(odevzdanych_banek,#+2500)
+//if (finduid(def_christmasQuest_MemoryStone)) && !(src.isgm)
+//finduid(def_christmasQuest_MemoryStone).tag(tajemnych_map,#+1)
+//f_christmas_logBestCollector
+//endif
+//else
+//say("Nemas dost Banek pro tuto vymenu. Chces vedet smenny kurz?")
+//endif
+//else
+//say("Neverim ti, s tebou se bavit nehodlam. Musis mi dat dukaz, ze ti mohu duverovat.")
+//endif
+//return 1
 
 //[function f_christmasEvent_bringHead] //(commented out by Converter) 
 

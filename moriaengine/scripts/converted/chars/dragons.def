@@ -1060,7 +1060,25 @@ ResistSummon = 800
 ResistPoison = 200
 AggroMode = Hostile
 
-//[SPEECH spk_dragon_lord] //(commented out by Converter) 
+[SpeechStub spk_dragon_lord]
+ON=*kua*
+//SAY("Chicht")
+ON=*lol*
+//SAY("LOL? Kdo se smeje nejlepe, ten se smeje naposled.")
+ON=*ress*
+//SAY("Ano ano, navrat ho zpet do zivota, mam rad, kdyz se jidlo hybe.")
+ON=*poklad*
+//SAY("Ne! Muj poklad!")
+ON=*hi*
+//SAY("Hu.")
+ON=*boost*
+//SAY("Tak se vzajemne osolte.")
+ON=*zed*
+//SAY("Preje si nekdo ohen?")
+ON=*zdi*
+//SAY("Preje si nekdo ohen?")
+ON=*au*
+//SAY("Copak? Pan si udelal bebi?")
 
 [NPCDef c_dragon_beridor]
 CATEGORY = Dungy

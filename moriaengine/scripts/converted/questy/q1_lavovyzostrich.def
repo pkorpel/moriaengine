@@ -30,4 +30,18 @@ Color = 0985
 
 //[dialog d_q1_lavovyjester_3 button] //(commented out by Converter) 
 
-//[SPEECH spk_q1_lavovyjester_lecitel] //(commented out by Converter) 
+[SpeechStub spk_q1_lavovyjester_lecitel]
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+//IF (<src.tag.q1_neuspel> ==1)
+//SAY= To jsi ty! Tahni odsud nebo se neznam!
+//return 1
+//ELSEIF (<src.tag.q1_lavovyjester> ==0)
+//DIALOG(d_q1_lavovyjester_1)
+//ELSEIF (<src.tag.q1_lavovyjester> ==1)
+//DIALOG(d_q1_lavovyjester_2)
+//ELSEIF (<src.tag.q1_lavovyjester> ==2)
+//DIALOG(d_q1_lavovyjester_3)
+//return 1
+//endif

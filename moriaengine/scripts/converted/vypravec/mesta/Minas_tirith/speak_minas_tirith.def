@@ -196,7 +196,11 @@
 
 //[dialog d_pani_roouse_or_hrobar_mt button] //(commented out by Converter) 
 
-//[SPEECH spk_strazce_knihovny] //(commented out by Converter) 
+[SpeechStub spk_strazce_knihovny]
+ON=*ahoj*
+ON=*hi*
+//say="Ja nemam cas na zabavu. Pokud zde namas co pohledavat nebo nemas povoleni ke vstupu tak odejdi "
+//DIALOG(d_strazce_knihovny)
 
 //[dialog d_strazce_knihovny] //(commented out by Converter) 
 
@@ -335,7 +339,11 @@ Color = 062
 
 //[function f_nasleduj] //(commented out by Converter) 
 
-//[SPEECH namestek_valky_g] //(commented out by Converter) 
+[SpeechStub namestek_valky_g]
+ON=*ahoj*
+ON=*hi*
+//say "Ja nemam cas na zabavu. Pokud zde namas co pohledavat nebo nemas povoleni ke vstupu tak odejdi "
+//DIALOG(d_strazce_knihovny)
 
 //[dialog d_minas_namestek_valky_g] //(commented out by Converter) 
 

@@ -20,19 +20,141 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 
-//[SPEECH spk_kvest003_Grager] //(commented out by Converter) 
+[SpeechStub spk_kvest003_Grager]
+ON=*hi*
+ON=*buy*
+ON=*ahoj*
+//SAY Ahojky priteli mam nejakou informaci na prodej za 10000 gp. Mas zajem ji koupit?
+ON=*ano*
+ON=*jiste*
+ON=*chci*
 
-//[SPEECH spk_kvest003_ubar_pirati] //(commented out by Converter) 
+//if (<src.restest 10000 i_gold>)
+//src.consume=10000 i_gold
+//SAY Diky mam konecne na opravu lodi, tak poslouchej... Je to tajny..  ale Haradskemu Shahovy se stratila dcera, ci co.. hleda hrdiny kteri by mu pomohly ji najit..  Pri uspechu prej obrovska odmena... Pri neuspechu smrt.
+//else
+//SAY Rekl jsem za 10000 gp min ani cent.
+//endif
+ON=dik
+ON=diky
+ON=*to*je*vse*
+ON=*vsechno ?
+ON=*vsecko ?
+//SAY "Maz zac ...    ale pamatuj je to tajny takze naradim to sirit dal..."
+ON=ne
+//SAY "Neee ? Hmm tak zadny obchod nebude.."
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-003 Umbarske Problemy                            //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[SpeechStub spk_kvest003_ubar_pirati]
+ON=*buy*
+//SAY Co blbnes ?  ja nic neprodavam..
+ON=*hi*
+//SAY Zda se ti na me mne neco smesneho ?
+ON=*ahoj*
+//SAY Co blbnes ?  ja te neznam.  a znat nechci
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-004 Hora plamene                                 //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
 
 //[DIALOG D_Duch_Alrondhirona] //(commented out by Converter) 
 
 //[DIALOG D_Duch_Alrondhirona BUTTON] //klasik ukoncenim se vratis na zacatek //(commented out by Converter) 
 
-//[SPEECH spk_Duch_Alrondhirona] //(commented out by Converter) 
+[SpeechStub spk_Duch_Alrondhirona]
+ON=*hi*
+ON=*buy*
+ON=*ahoj*
+//SAY Stujte udatni hrdinove a deste se toho co je pred vami!
+//src.DIALOG(D_Duch_Alrondhirona)
 
-//[SPEECH panzvirat] //(commented out by Converter) 
 
-//[SPEECH zlatymustang] //(commented out by Converter) 
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-005 Iribisova vejce                              //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-006 Zlata otep                                   //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[SpeechStub panzvirat]
+ON=*Dobry*
+ON=*den*
+ON=*zlata*
+ON=*otep*
+ON=*naleza*
+ON=*zdravim*
+ON=*hi*
+ON=*dekuji*
+ON=*diky*
+ON=*nazdar*
+ON=*co*
+ON=*pomoc*
+ON=*kurva*
+ON=*ress*
+ON=*deje*
+ON=*GM*
+//if (<safe.src.TAG.GOTGOLD>)
+//say "Stesti te provazej hrdino a jeste jednou prijmi me diky."
+//return 0
+//elseif !(<safe.src.TAG.GOT>)
+//say "Stesti te provazej hrdino pri hledani Zlate otepi."
+//return 0
+//endif
+
+//if (src.profession==class_ranger)||(src.profession==class_thief)
+//SAY "Dekuji ti za nalezeni Zlate otepi. Tento artefakt byl odcizen a jeho sila se nesmela dostat do cizich rukou. Odmenou ti bud hlt elixiru prirodniho poznani ktery najdes v mem dome."
+//src.go 2456,839,7
+//else
+//SAY "Dekuji ti za nalezeni Zlate otepi. Tento artefakt byl odcizen a jeho sila se nesmela dostat do cizich rukou."
+//src.go 3003,506,20
+//src.addexp(500)
+//endif
+//return 1
+
+/////////////////////////////
+
+[SpeechStub zlatymustang]
+ON=*Dobry*
+ON=*den*
+ON=*zlata*
+ON=*otep*
+ON=*naleza*
+ON=*zdravim*
+ON=*hi*
+ON=*nasel*
+ON=*pan*
+
+//if (0<src.TAG.GOT>==1)
+//message "Dekuji ti za pomoc nasedni a vydame se na cestu. Niceho se nelekej a oslov meho pana."
+//src.go 2455,855
+//return 1
+//else
+//message "Priteli byl jsem poslan na tuto zem najit Zlatou otep co byla ukradena memu panovi.  Pomuzesli mi odmena te nemine. Najdi ji a vrat se ke me."
+//return 1
+//endif
+
+//////////////////////////////
 
 [ItemDef I_port_tamer]
 CATEGORY = Kvesty
@@ -54,7 +176,28 @@ WEIGHT = 0
 model = 0x100d
 Color = 0995
 
-//[SPEECH JOPTRAVEL] //(commented out by Converter) 
+[SpeechStub JOPTRAVEL]
+ON=*jak*
+ON=*JAK*
+ON=*Povidej*
+ON=*POVEZ*
+ON=*REKNI*
+ON=*DEGRANA*
+ON=*DEGRAN*
+ON=*ZAHUBIT*
+//SAY Jen Draci mec, se srdcem bijicim a krvi v nem proudici zabiti ho muze.
+//SAY Vsak tyto casti jsou na dnech dungeonu Moutn Dorlas, Dol Guldur a Beridoru hlidany.
+//SAY Pokud tyto casti ziskate pak jiz snadne sloziti znich zbran co smrt Degranovi privodi.
+ON=*hi*
+ON=*ahoj*
+ON=*cau*
+ON=*cus*
+ON=*mej*
+ON=*dekuji*
+ON=*diky*
+ON=*nazdar*
+//SAY Jen dulezitou vec si pamatuj ta zbran tak krehka jest, ze jen jednu ranu mas pote zbran se rozpadne a jiz nikdy druha takova nebude.
+//SAY Proto streste se tuto zbran na jineho nez Degrana pouzit.
 
 [WeaponDef i_sword_zkazy]
 CATEGORY = Kvesty
