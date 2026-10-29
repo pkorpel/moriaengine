@@ -580,6 +580,12 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.WarcryDef != null) { MonsterSpecialAttacks.WarcryDef.Range = value; } }
 		}
 
+		//#807 - e_item_refuser; {0} is the refused item's name
+		public string ItemRefuserMessage {
+			get { return MonsterSpecialAttacks.ItemRefuserDef?.Message; }
+			set { if (MonsterSpecialAttacks.ItemRefuserDef != null) { MonsterSpecialAttacks.ItemRefuserDef.Message = value; } }
+		}
+
 		public double[] DispelBombChance {
 			get { return MonsterSpecialAttacks.DispelBombDef?.Chance; }
 			set { if (MonsterSpecialAttacks.DispelBombDef != null) { MonsterSpecialAttacks.DispelBombDef.Chance = value; } }

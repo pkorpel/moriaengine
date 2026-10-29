@@ -1972,6 +1972,14 @@ namespace SteamEngine.CompiledScripts {
 			MonsterSpecialAttacks.TryEntangle(this, pusher);
 		}
 
+		//#807 - an item dropped on this NPC: e_item_refuser turns it down (the giver keeps it)
+		public override TriggerResult On_PutItemOn(ItemOnCharArgs args) {
+			if (MonsterSpecialAttacks.TryRefuseItem(this, args.ManipulatedItem)) {
+				return TriggerResult.Cancel;
+			}
+			return base.On_PutItemOn(args);
+		}
+
 		public override short MaxHits {
 			get {
 				return this.maxHitpoints;

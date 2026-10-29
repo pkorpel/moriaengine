@@ -1,0 +1,10 @@
+// #807 - test-only content for scripts/Tests/ItemRefuserTests.cs: one NPC with e_item_refuser,
+// one without, for a real drop-an-item-on-them packet.
+[NPCDef npc_test_item_refuser]
+NAME = "Refuser"
+ANIM = 0x1fff
+TEVENTS = e_item_refuser
+
+[NPCDef npc_test_item_keeper]
+NAME = "Keeper"
+ANIM = 0x1fff
