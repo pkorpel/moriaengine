@@ -89,6 +89,7 @@ whoever is already standing on it when it appears (the archive was step-on only)
 | duplicator | 13 | splits into a copy (attacks the same target) each time it is hit, up to DupeCount copies; a copy never splits. Unset = 0 = never | DupeCount |
 | craft_monster | 13 | Craftsman-profession attackers do +{10,20}; with a weapon they crafted themselves, 1 in 4 is a +{15,25} critical | |
 | npc_warcry | 11 | at most once a minute while fighting: everyone within 8 is shocked and their spellcasting interrupted. The archive's range is a runtime setting, 8 is ours | WarcryCooldown (deciseconds) |
+| item_refuser | 119 | an item dropped on it is turned down, even from a GM: it says its message (`{0}` = the item's name; the archive's Czech "Hmm, <item> nepotrebuju...") and the item goes back to the giver's pack. Hook: `NPC.On_PutItemOn` (#807); a cancelled `TryPutItemOnChar` now returns a deny so the drop bounces back instead of sticking in the hand | ItemRefuserMessage |
 
 ### Area curse rules (#797)
 
@@ -103,7 +104,6 @@ Curse hit everyone, including the current target, at 1x.
 
 - `e_character`/`e_monster` (3,147 grants) are Sphere's base player/monster event hooks, not
   special attacks. So are the empty monster-type tags (`e_undead`, `e_daemon`, `e_spider`...).
-- `e_item_refuser` (119) is blocked: the engine has no give/drop-onto-a-character interaction.
 - Roughly 77 rare boss-specific hooks remain stubs.
 
 **Crafted-by record (#799):** craft monster needs to know who made a weapon, so
@@ -111,6 +111,6 @@ Curse hit everyone, including the current target, at 1x.
 Erebor's `tag.craftedby`). Items crafted before #799 have no record.
 
 Tests: `Tests/Protocol/MonsterSpecialAttacksTests`, `MonsterAbilitiesBatchTests` (2),
-`MonsterAbilitiesBatch3Tests`, `MonsterAbilitiesBatch4Tests`, `MonsterAbilitiesBatch5Tests`, `NpcBleedTests`;
+`MonsterAbilitiesBatch3Tests`, `MonsterAbilitiesBatch4Tests`, `MonsterAbilitiesBatch5Tests`, `ItemRefuserTests`, `NpcBleedTests`;
 fast tier `MonsterAbilitiesSettingsCoverageTests`, `MagicShieldFormulaTests`, `KnockbackPushDistanceTests`,
 `BackstabFormulaTests`.

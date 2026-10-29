@@ -11,9 +11,21 @@ spawn to (4763,1363,10), so `GameState.HandleTarget` dropped the target ("That i
 It now targets a spot next to the player (`PET_SETUP_POS`). Kill: the order worked, but the test waited
 for damage and a sheep can't hurt a sheep (WeaponAttack 2 x Str 19 x 3.17/1000 = ~0.12 attack vs armor 6
 floors to 0, and was 2-6 -> 0 before #711 too), so it now checks TestWild's AI target. PetCommandTests 6/6 x2.
-e_item_refuser (119 monsters): blocked so far - no give/drop-onto-character hook. Plan: read the archive's
-e_item_refuser, find how DropItemInPacket handles a drop onto a character, design the hook, ask the user
-only if there's a real design fork.
+
+## DONE (2026-10-29): #807 e_item_refuser (119 NPCs) - resumed after a session crash
+
+All of it was sitting uncommitted on branch 807-item-refuser in the main checkout. NOT blocked after
+all: `TryPutItemOnChar` already fires `On_PutItemOn` on the receiver (Sphere's @ReceiveItem); earlier
+batches only grepped ReceiveItem/ItemDropOn_Char. `ItemRefuserAbilityDef` (ItemRefuserMessage on
+.settings) + `NPC.On_PutItemOn` -> `TryRefuseItem` -> Cancel. GameCore: a cancelled TryPutItemOnChar
+returned Allow with the item still dragged (stuck in hand) -> now Deny_NoMessage, the drop bounces back.
+**Finding that corrected the crashed session's premise (and #808's)**: a non-GM can NOT put anything
+on any NPC today - `Character.CanPutItemsInContainer` denies with "That does not belong to you" unless
+`contAsChar.IsPetOf(this)`, and `IsPetOf` is a `//TODO` stub returning `cre.IsGM` (owners can't even
+load their own pets). So the protocol test's keeper half runs as a GM (keeper takes it; refuser still
+refuses - its trigger runs before the permission check). Red/green: each half reverted -> red.
+`AttrFlagTests.InvisItemHiddenUnlessExplicitlyRevealed` flaked during regression runs - fails with
+and without the fix (server-unresponsive/boot timeouts), does no pickup/drop at all - pre-existing.
 
 ## DONE (2026-10-29): #798 server hang deleting an NPC - Timer lock-order deadlock
 
