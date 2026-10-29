@@ -103,22 +103,29 @@ namespace SteamEngine.Timers {
 					timer = priorityQueue.Dequeue();
 					TimeSpan fireAt = timer.fireAt;
 					if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
-						lock (timer) {
-							if (timer.period >= TimeSpan.Zero) {
-								timer.fireAt = fireAt + timer.period;
-								changes.Enqueue(timer);
-								manualResetEvent.Set();
-								timer.isInChangesQueue = true;
-							}
-							currentTimer = timer;
-							try {
-								lock (MainClass.globalLock) {
-									timer.OnTimeout();
+						//#798 - globalLock first, then the timer (lock order #17, see Main.cs). This used to
+						//lock the timer and wait for globalLock inside it, while a packet handler holding
+						//globalLock deleted the timer's owner and waited for the same timer in Timer.Delete -
+						//a deadlock that hung the server whenever the timer came due at that moment.
+						lock (MainClass.globalLock) {
+							lock (timer) {
+								//re-check: it may have been deleted or rescheduled while this waited for globalLock
+								if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
+									if (timer.period >= TimeSpan.Zero) {
+										timer.fireAt = fireAt + timer.period;
+										changes.Enqueue(timer);
+										manualResetEvent.Set();
+										timer.isInChangesQueue = true;
+									}
+									currentTimer = timer;
+									try {
+										timer.OnTimeout();
+									} catch (FatalException) {
+										throw;
+									} catch (Exception e) {
+										Logger.WriteError(e);
+									}
 								}
-							} catch (FatalException) {
-								throw;
-							} catch (Exception e) {
-								Logger.WriteError(e);
 							}
 						}
 						currentTimer = null;
