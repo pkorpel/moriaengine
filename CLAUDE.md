@@ -1,6 +1,21 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-29): #827 spk_healer DONE (PR pending) -> next #828 spk_mistr
+## DONE (2026-10-29): #828 skill teachers (spk_mistr) + player rank; NEXT #833 rank quests (branch 828-spk-mistr)
+
+User: "go for 827 and then 828"; then "can we do ranks, settings and port the quests as well?" -> rank + settings
+here, quests = #833 (next). Archive: skills grow normally past 25/50/75 (skillgain only checks profession cap); a
+teacher (tag.ucimskill in @USERCLICK, one per skill, 36) sells 25->30/50->55/75->80 for 5k/10k/20k when the skill
+is EXACTLY on the threshold, rank >=1/2/3, level >2/5/11, profession cap >= target. Greeting runs roundskill (nearest
+5.0, floor = profession minimum) - so a priest (Anatomy min 30.0) at 25.0 is lifted to 30.0 and misses the Expert
+lesson; that's Erebor.
+**Done**: SkillTeacherSpeech, Player.SkillRank (tag-backed), SkillTeacherSettings (requireRank off until #833,
+roundSkillOnGreeting, prices, levels), SkillTeacherLoc (resx en + Erebor Czech), NPCDef.TeachesSkill; converter:
+TeachesSkill from @userclick, and undefined COLOR constants commented out (color_human x39 made EVERY teacher
+unspawnable; also color_skin, COLOR_O_BLACKROCK) via a ConvertedConstants name registry; regen diffs to 0.
+Verified: SkillTeacherTests 7 cases (red without the speech), fast 198/198, SpeechStub/InfoDialog/Leveling green
+(Titan XP = known), Localization still its 8 known.
+
+## DONE (2026-10-29, PR #832): #827 spk_healer + e_healer, #831 region event loc texts
 
 User: "go for 827 and then 828". **#827 finding**: Erebor's healers (NPC=brain_vendor, not invul, SpiritSpeak
 55-78) can't understand ghost speech (0.99z8 CanUnderstandGhost: healer brain | SpiritSpeak flag | dead | INVUL |

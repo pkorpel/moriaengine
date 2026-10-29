@@ -151,6 +151,30 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey teachesSkillTK = TagKey.Acquire("_npcDefTeachesSkill_");
+
+		/// <summary>#828 - the one skill an Erebor skill teacher (spk_mistr, archive tag.ucimskill) teaches;
+		/// null for everyone else. Same #265 boxed-int coercion as AggroMode/Realm.</summary>
+		public SkillName? TeachesSkill {
+			get {
+				object tag = this.GetTag(teachesSkillTK);
+				if (tag is SkillName skill) {
+					return skill;
+				}
+				if ((tag is int intTag) && Enum.IsDefined(typeof(SkillName), intTag)) {
+					return (SkillName) intTag;
+				}
+				return null;
+			}
+			set {
+				if (value == null) {
+					this.RemoveTag(teachesSkillTK);
+				} else {
+					this.SetTag(teachesSkillTK, value.Value);
+				}
+			}
+		}
+
 		private static readonly TagKey realmTK = TagKey.Acquire("_npcDefRealm_");
 
 		/// <summary>#700 - species-level default Realm for AggroMode.GuardsRealm NPCs (e.g. a
@@ -1200,6 +1224,15 @@ namespace SteamEngine.CompiledScripts {
 					this.AggroMode = mode;
 				} else {
 					Logger.WriteWarning(filename, line, "aggromode '" + args + "' is not a known AggroMode value.");
+				}
+				return;
+			}
+			if (param == "teachesskill") {
+				SkillName skill;
+				if (Enum.TryParse(args, true, out skill)) {
+					this.TeachesSkill = skill;
+				} else {
+					Logger.WriteWarning(filename, line, "teachesskill '" + args + "' is not a known SkillName.");
 				}
 				return;
 			}
