@@ -57,6 +57,11 @@ namespace SteamEngine.CompiledScripts {
 			return self.HasTimer(criminalTimerTK);
 		}
 
+		/// <summary>Lifts the criminal flag right away (a GM pardon, or a test resetting the state).</summary>
+		public static void ClearCriminal(Character self) {
+			self.RemoveTimer(criminalTimerTK);
+		}
+
 		public static void FlagCriminal(Character self) {
 			if (!IsMurderer(self)) { //murderers are already the worst notoriety, flagging them criminal too would add nothing
 				self.AddTimer(criminalTimerTK, new CriminalExpiryTimer()).DueInSeconds = CriminalFlagSeconds;
