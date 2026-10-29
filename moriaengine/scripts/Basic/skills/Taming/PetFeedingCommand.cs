@@ -105,33 +105,9 @@ namespace SteamEngine.CompiledScripts {
 					if (hunger.food >= maxFood) {
 						break;
 					}
-					if (foodItem.IsDeleted || (foodItem.Amount <= 0)) {
-						continue;
+					if (FeedOne(hunger, maxFood, foodItem)) {
+						fedAnything = true;
 					}
-
-					int foodWeight = (int) foodItem.Weight;
-					if (foodWeight < MinFoodWeight) {
-						foodWeight = MinFoodWeight;
-					}
-
-					int neededWeight = (maxFood - hunger.food) * 10;
-					long neededCount = neededWeight / foodWeight;
-					if (((neededCount * foodWeight) / 10) < (maxFood - hunger.food)) {
-						neededCount++; //round up one extra unit so the animal ends up fully fed
-					}
-					if (neededCount > foodItem.Amount) {
-						neededCount = foodItem.Amount;
-					}
-					if (neededCount <= 0) {
-						continue;
-					}
-
-					long consumed = foodItem.Consume(neededCount);
-					hunger.food += (int) ((consumed * foodWeight) / 10);
-					if (hunger.food > maxFood) {
-						hunger.food = maxFood;
-					}
-					fedAnything = true;
 				}
 			}
 
@@ -139,6 +115,69 @@ namespace SteamEngine.CompiledScripts {
 				pet.Emote("eats some food");
 			}
 			return fedAnything;
+		}
+
+		/// <summary>#808 - the pet eats from this one item (dropped on it by its owner/friend), if
+		/// it's food this species eats and the pet is hungry. Same formula as TryFeed.</summary>
+		public static bool TryFeedWith(NPC pet, Item foodItem) {
+			NPCDef def = (NPCDef) pet.Def;
+			List<NPCDef.FoodTypeEntry> foodTypes = def.FoodTypes;
+			PetHungerTimer hunger = PetHungerTimer.GetFor(pet);
+			if ((foodTypes == null) || (hunger == null) || (hunger.food >= def.MaxFood) || !IsFoodFor(foodTypes, foodItem)) {
+				return false;
+			}
+			if (FeedOne(hunger, def.MaxFood, foodItem)) {
+				pet.Emote("eats some food");
+				return true;
+			}
+			return false;
+		}
+
+		public static bool IsFoodFor(NPC pet, Item item) {
+			return IsFoodFor(((NPCDef) pet.Def).FoodTypes, item);
+		}
+
+		private static bool IsFoodFor(List<NPCDef.FoodTypeEntry> foodTypes, Item item) {
+			if (foodTypes == null) {
+				return false;
+			}
+			foreach (NPCDef.FoodTypeEntry entry in foodTypes) {
+				if (FoodCategories.Matches(item.TypeDef as ItemDef, entry.CategoryOrDefname)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		//consumes enough of foodItem to fill the pet up (or all of it); true if any was eaten
+		private static bool FeedOne(PetHungerTimer hunger, int maxFood, Item foodItem) {
+			if (foodItem.IsDeleted || (foodItem.Amount <= 0)) {
+				return false;
+			}
+
+			int foodWeight = (int) foodItem.Weight;
+			if (foodWeight < MinFoodWeight) {
+				foodWeight = MinFoodWeight;
+			}
+
+			int neededWeight = (maxFood - hunger.food) * 10;
+			long neededCount = neededWeight / foodWeight;
+			if (((neededCount * foodWeight) / 10) < (maxFood - hunger.food)) {
+				neededCount++; //round up one extra unit so the animal ends up fully fed
+			}
+			if (neededCount > foodItem.Amount) {
+				neededCount = foodItem.Amount;
+			}
+			if (neededCount <= 0) {
+				return false;
+			}
+
+			long consumed = foodItem.Consume(neededCount);
+			hunger.food += (int) ((consumed * foodWeight) / 10);
+			if (hunger.food > maxFood) {
+				hunger.food = maxFood;
+			}
+			return true;
 		}
 	}
 }
