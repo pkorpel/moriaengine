@@ -308,6 +308,13 @@ namespace SteamEngine.Converter {
 		protected virtual void ProcessCreateTriggerLine(string name, string value, string comment, int lineNum) {
 			switch (name) {
 				case "color":
+					//#828 - a color constant the archive never defines (the 36 teachers' "color_human")
+					//is just 0 in Sphere, but here it failed to parse every time the def was instantiated
+					if (ConvertedConstants.IsUndefinedName(value)) {
+						this.Warning(lineNum, "Color '" + value.Trim() + "' is not defined anywhere in the archive - commented out");
+						this.Set("//Color", value.Trim(), comment + " not defined in the archive, commented out by Converter");
+						break;
+					}
 					//#763 - Sphere's "{ colors_white 9 color_gray_lt 1 }" is whitespace-separated, but
 					//in LScript "name value" is an assignment, so the list collapsed into one element
 					//and failed to parse the first time the def was instantiated. Commas fix it.

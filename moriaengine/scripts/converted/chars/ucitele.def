@@ -11,7 +11,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Anatomy"
 model = C_MAN
 DEFNAME = c_m_anatomy
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -28,6 +28,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Anatomy
 AggroMode = Calm
 
 [NPCDef mistr_AnimalLore]
@@ -41,7 +42,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr AnimalLore"
 model = C_MAN
 DEFNAME = c_m_AnimalLore
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -58,6 +59,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = AnimalLore
 AggroMode = Calm
 
 [NPCDef mistr_Archery]
@@ -71,7 +73,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Archery"
 model = C_MAN
 DEFNAME = c_m_Archery
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -91,6 +93,7 @@ EquipColor = 0481
 Equip = i_bow
 EquipColor = 0481
 Equip = i_arrow_copper, 500
+TeachesSkill = Archery
 AggroMode = Calm
 
 [NPCDef mistr_ArmsLore]
@@ -104,7 +107,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr ArmsLore"
 model = C_MAN
 DEFNAME = c_m_ArmsLore
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -121,6 +124,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = ArmsLore
 AggroMode = Calm
 
 [NPCDef mistr_Begging]
@@ -134,7 +138,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Begging"
 model = C_MAN
 DEFNAME = c_m_Begging
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -150,6 +154,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Begging
 AggroMode = Calm
 
 [NPCDef mistr_Camping]
@@ -163,7 +168,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Camping"
 model = C_MAN
 DEFNAME = c_m_Camping
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -179,6 +184,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Camping
 AggroMode = Calm
 
 [NPCDef mistr_Cartography]
@@ -192,7 +198,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Cartography"
 model = C_MAN
 DEFNAME = c_m_Cartography
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -208,6 +214,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Cartography
 AggroMode = Calm
 
 [NPCDef mistr_DetectingHidden]
@@ -221,7 +228,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr DetectingHidden"
 model = C_MAN
 DEFNAME = c_m_DetectingHidden
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -238,6 +245,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = DetectHidden
 AggroMode = Calm
 
 [NPCDef mistr_Enticement]
@@ -251,7 +259,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Enticement"
 model = C_MAN
 DEFNAME = c_m_Enticement
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -267,6 +275,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Discordance
 AggroMode = Calm
 
 [NPCDef mistr_Forensics]
@@ -280,7 +289,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Forensics"
 model = C_MAN
 DEFNAME = c_m_Forensics
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -297,6 +306,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Forensics
 AggroMode = Calm
 
 [NPCDef mistr_Healing]
@@ -310,7 +320,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Healing"
 model = C_MAN
 DEFNAME = c_m_Healing
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -327,6 +337,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Healing
 AggroMode = Calm
 
 [NPCDef mistr_Herding]
@@ -340,7 +351,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Herding"
 model = C_MAN
 DEFNAME = c_m_Herding
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -358,6 +369,7 @@ Equip = i_robe
 EquipColor = 0481
 Equip = i_shepherds_crook_copper
 EquipColor = 0481
+TeachesSkill = Herding
 AggroMode = Calm
 
 [NPCDef mistr_Hiding]
@@ -371,7 +383,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Hiding"
 model = C_MAN
 DEFNAME = c_m_Hiding
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -388,6 +400,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Hiding
 AggroMode = Calm
 
 [NPCDef mistr_ItemID]
@@ -401,7 +414,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr ItemID"
 model = C_MAN
 DEFNAME = c_m_ItemID
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -417,6 +430,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = ItemID
 AggroMode = Calm
 
 [NPCDef mistr_Magery]
@@ -430,7 +444,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Magery"
 model = C_MAN
 DEFNAME = c_m_Magery
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -449,6 +463,7 @@ Equip = i_robe
 EquipColor = 0481
 Equip = i_staff_gnarled_copper
 EquipColor = 0481
+TeachesSkill = Magery
 AggroMode = Calm
 
 [NPCDef mistr_Meditation]
@@ -462,7 +477,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Meditation"
 model = C_MAN
 DEFNAME = c_m_Meditation
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -479,6 +494,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Meditation
 AggroMode = Calm
 
 [NPCDef mistr_Musicianship]
@@ -492,7 +508,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Musicianship"
 model = C_MAN
 DEFNAME = c_m_Musicianship
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -510,6 +526,7 @@ Equip = i_robe
 EquipColor = 0481
 Equip = i_lire
 EquipColor = 0481
+TeachesSkill = Musicianship
 AggroMode = Calm
 
 [NPCDef mistr_Parrying]
@@ -523,7 +540,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Parrying"
 model = C_MAN
 DEFNAME = c_m_Parrying
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -542,6 +559,7 @@ Equip = i_robe
 EquipColor = 0481
 Equip = i_copper_heater_shield
 EquipColor = 0481
+TeachesSkill = Parry
 AggroMode = Calm
 
 [NPCDef mistr_Peacemaking]
@@ -555,7 +573,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Peacemaking"
 model = C_MAN
 DEFNAME = c_m_Peacemaking
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -572,6 +590,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Peacemaking
 AggroMode = Calm
 
 [NPCDef mistr_Poisoning]
@@ -585,7 +604,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Poisoning"
 model = C_MAN
 DEFNAME = c_m_Poisoning
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -602,6 +621,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Poisoning
 AggroMode = Calm
 
 [NPCDef mistr_Provocation]
@@ -615,7 +635,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Provocation"
 model = C_MAN
 DEFNAME = c_m_Provocation
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -632,6 +652,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Provocation
 AggroMode = Calm
 
 [NPCDef mistr_Snooping]
@@ -645,7 +666,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Snooping"
 model = C_MAN
 DEFNAME = c_m_Snooping
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -661,6 +682,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Snooping
 AggroMode = Calm
 
 [NPCDef mistr_SpiritSpeak]
@@ -674,7 +696,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr SpiritSpeak"
 model = C_MAN
 DEFNAME = c_m_SpiritSpeak
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -691,6 +713,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = SpiritSpeak
 AggroMode = Calm
 
 [NPCDef mistr_Stealing]
@@ -704,7 +727,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Stealing"
 model = C_MAN
 DEFNAME = c_m_Stealing
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -720,6 +743,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Stealing
 AggroMode = Calm
 
 [NPCDef mistr_Stealth]
@@ -733,7 +757,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Stealth"
 model = C_MAN
 DEFNAME = c_m_Stealth
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -750,6 +774,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Stealth
 AggroMode = Calm
 
 [NPCDef mistr_Tactics]
@@ -763,7 +788,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Tactics"
 model = C_MAN
 DEFNAME = c_m_Tactics
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Provocation = 1000
@@ -779,6 +804,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Tactics
 AggroMode = Calm
 
 [NPCDef mistr_TasteID]
@@ -792,7 +818,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr TasteID"
 model = C_MAN
 DEFNAME = c_m_TasteID
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -808,6 +834,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = TasteID
 AggroMode = Calm
 
 [NPCDef mistr_Tracking]
@@ -821,7 +848,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Tracking"
 model = C_MAN
 DEFNAME = c_m_Tracking
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -837,6 +864,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Tracking
 AggroMode = Calm
 
 [NPCDef mistr_Veterinary]
@@ -850,7 +878,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Veterinary"
 model = C_MAN
 DEFNAME = c_m_Veterinary
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -867,6 +895,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Veterinary
 AggroMode = Calm
 
 [NPCDef mistr_Wrestling]
@@ -880,7 +909,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Wrestling"
 model = C_MAN
 DEFNAME = c_m_Wrestling
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -897,6 +926,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = Wrestling
 AggroMode = Calm
 
 [NPCDef mistr_RemoveTrap]
@@ -910,7 +940,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr RemoveTrap"
 model = C_MAN
 DEFNAME = c_m_RemoveTrap
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -926,6 +956,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = RemoveTrap
 AggroMode = Calm
 
 [NPCDef mistr_Swordsmanship]
@@ -939,7 +970,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Two Hand Sharps"
 model = C_MAN
 DEFNAME = c_m_Swordsmanship
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -958,6 +989,7 @@ Equip = i_robe
 EquipColor = 0481
 Equip = i_axe_battle_large_copper
 EquipColor = 0481
+TeachesSkill = Swords
 AggroMode = Calm
 
 [NPCDef mistr_Resist]
@@ -971,7 +1003,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Magic Resistance"
 model = C_MAN
 DEFNAME = c_m_Resist
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -988,6 +1020,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = MagicResist
 AggroMode = Calm
 
 [NPCDef mistr_Macefighting]
@@ -1001,7 +1034,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Crushing"
 model = C_MAN
 DEFNAME = c_m_Macefighting
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -1020,6 +1053,7 @@ Equip = i_robe
 EquipColor = 0481
 Equip = i_mace_war_copper
 EquipColor = 0481
+TeachesSkill = Macing
 AggroMode = Calm
 
 [NPCDef mistr_Fencing]
@@ -1033,7 +1067,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Sharps"
 model = C_MAN
 DEFNAME = c_m_Fencing
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -1052,6 +1086,7 @@ Equip = i_robe
 EquipColor = 0481
 Equip = i_sword_viking_copper
 EquipColor = 0481
+TeachesSkill = Fencing
 AggroMode = Calm
 
 [NPCDef mistr_EI]
@@ -1065,7 +1100,7 @@ TSPEECH = spk_mistr
 NAME = "Mistr Evalution Inteligence"
 model = C_MAN
 DEFNAME = c_m_EI
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -1081,6 +1116,7 @@ EquipColor = 0481
 Equip = i_sandals
 Equip = i_robe
 EquipColor = 0481
+TeachesSkill = EvalInt
 AggroMode = Calm
 
 [NPCDef c_mistr_craft]
@@ -1088,7 +1124,7 @@ TEVENTS = e_mistr_craft
 TEVENTS = e_monster
 NAME = "Mistr Remesel"
 model = C_MAN
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -1113,7 +1149,7 @@ TEVENTS = e_mistr_craft
 TEVENTS = e_monster
 NAME = "Stavitel Lodi"
 model = C_MAN
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000
@@ -1143,7 +1179,7 @@ TEVENTS = e_mistr_craft
 TEVENTS = e_monster
 NAME = "Stavitel Lodi"
 model = C_MAN
-Color = color_human
+//Color = color_human // not defined in the archive, commented out by Converter 
 Str = 1000
 Dex = 1000
 Int = 1000

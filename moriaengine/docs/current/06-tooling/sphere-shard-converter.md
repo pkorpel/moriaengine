@@ -71,6 +71,11 @@ that gap:
 - **`ARMOR` -> `armorVsP`/`armorVsM`** - averaged the same way, then written to BOTH
   fields (not the old #44 hand-edit's tuple-split guess) - this is Character-level, safe
   on a PlayerDef too.
+- **Skill teachers' `tag(ucimskill,x)` -> `TeachesSkill = <SkillName>`** (#828) - read from the chardef's `@userclick`,
+  where Erebor sets it.
+- **A `COLOR=` constant the archive never defines** (the teachers' `color_human`, `color_skin`, `COLOR_O_BLACKROCK`)
+  is written commented out with a warning (#828): Sphere just gets 0, while here the def failed to parse every
+  time it was instantiated. `ConvertedConstants` collects every `[DEFNAMES]` name in the first stage for this.
 - **`[SPEECH x]` -> `[SpeechStub x]`** (#825, `ConvertedSpeech`) - the `ON=` patterns are kept and the
   Sphere script under them is written as comments. The engine's `SpeechStub` is a placeholder that a real
   speech of the same name replaces. See [NPC speech](../04-gameplay-systems/npc-speech.md).

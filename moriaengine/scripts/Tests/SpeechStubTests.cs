@@ -33,7 +33,7 @@ namespace SteamEngine.CompiledScripts {
 			bool defHasIt = def.GetAllTriggerGroups().Any(tg => tg.Defname.Equals("spk_kecy_a_drby", StringComparison.OrdinalIgnoreCase));
 			Console.WriteLine("SPEECH_STUB_REPORT: stubs=" + stubs + " chatter=" + chatterPatterns + " defHasIt=" + defHasIt +
 				" banker=" + TypeOf("spk_jobbanker") + " shopkeep=" + TypeOf("spk_shopkeep") + " vendorCustom=" + TypeOf("spk_vendor_custom") +
-				" guard=" + TypeOf("spk_guard"));
+				" guard=" + TypeOf("spk_guard") + " healer=" + TypeOf("spk_healer") + " mistr=" + TypeOf("spk_mistr"));
 		}
 
 		private static string TypeOf(string defname) {
