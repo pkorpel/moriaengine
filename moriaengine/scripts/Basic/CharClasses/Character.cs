@@ -486,9 +486,35 @@ namespace SteamEngine.CompiledScripts {
 			return cre.IsPetOf(this);
 		}
 
+		/// <summary>#808 - Sphere 0.99z8's NPC_IsOwnedBy: does `cre` own me - my ControlMaster, a pet
+		/// friend (#774), or a GM above my own plevel. Drives mounting, renaming, equipping, pack
+		/// access and giving items to a pet (it used to be GM-only).</summary>
 		public bool IsPetOf(Character cre) {
-			//TODO
-			return cre.IsGM;
+			if (cre == null) {
+				return false;
+			}
+			if (cre == this) {
+				return true;
+			}
+			if (cre.IsGM) {
+				return cre.Plevel > this.Plevel;
+			}
+			if (this.IsPlayer) {
+				return false;
+			}
+			if (this.ControlMaster == cre) {
+				return true;
+			}
+			List<Character> friends = this.PetFriends;
+			return (friends != null) && friends.Contains(cre);
+		}
+
+		//Sphere's CREID_HORSE_PACK / CREID_LLAMA_PACK
+		public bool IsPackAnimal {
+			get {
+				int model = this.Model;
+				return (model == 0x123) || (model == 0x124);
+			}
 		}
 
 		public override bool CanEquipItemsOn(AbstractCharacter chr) {
@@ -2246,7 +2272,9 @@ namespace SteamEngine.CompiledScripts {
 				} else {
 					if (from != this && this.IsMountableBy((Character) from)) {
 						from.Mount = this;
-					} else { //TODO? paperdoll only for humanoids? show backpack of pets?
+					} else if (from != this && this.IsPackAnimal && this.IsPetOf((Character) from)) {
+						this.Backpack.OpenTo((Character) from); //#808 - Sphere: your pack horse/llama opens its pack
+					} else { //TODO? paperdoll only for humanoids?
 						this.ShowPaperdollTo(from);
 					}
 				}

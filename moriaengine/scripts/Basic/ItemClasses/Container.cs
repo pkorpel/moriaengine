@@ -75,7 +75,8 @@ namespace SteamEngine.CompiledScripts {
 			//(TODO): check ownership(?), trigger snooping(done?), etc...
 			Character topChar = this.TopObj() as Character;
 			Character fromAsChar = (Character) from;
-			if ((topChar != null) && (topChar != fromAsChar) && (!fromAsChar.IsGM)) {
+			//#808 - a pet's own owner/friends just open its pack (Sphere's CanSeeInContainer)
+			if ((topChar != null) && (topChar != fromAsChar) && (!fromAsChar.IsGM) && !topChar.IsPetOf(fromAsChar)) {
 				SkillSequenceArgs ssa = SkillSequenceArgs.Acquire(fromAsChar, SkillName.Snooping, this, null, null, null, null);
 				ssa.PhaseSelect();
 			} else {

@@ -95,10 +95,44 @@ shared state, and replanned from scratch every think-tick. Now:
 ## Taming and pet ownership
 
 Taming a valid target sets the NPC's `ControlMaster` to the tamer - verified via a real
-end-to-end gathering/taming test (`GatheringTests.TamingSetsControlMaster`). `IsPetOf`
-is the general ownership check other systems reuse rather than inventing their own (see
-[Economy: banking & vendors](economy-banking-vendors.md)'s player-vendor
-`CanVendorBeControlledBy`, which is just `IsPetOf` under a different name).
+end-to-end gathering/taming test (`GatheringTests.TamingSetsControlMaster`).
+
+`Character.IsPetOf(cre)` is the general ownership check - Sphere 0.99z8's `NPC_IsOwnedBy`
+(#808): `cre` owns this character if it's the `ControlMaster`, on the pet's friend list
+(`PetFriends`, #774), or a GM above its plevel. Until #808 it was a `//TODO` that only said yes
+to GMs, so **players couldn't mount their own tamed horse, rename it, equip it or touch its
+pack**. Everything that asks "is this mine?" goes through it: mounting (`IsMountableBy`),
+renaming, equipping items on a pet, putting items into / opening a pet's pack (an owner's
+double-click on a pet's pack opens it instead of snooping) and giving items. (This page used to
+say player vendors reuse it via `CanVendorBeControlledBy` - no such method exists any more.)
+
+Double-clicking your own pack horse/llama (models 0x123/0x124, `IsPackAnimal`) opens its pack -
+that's how a pack animal is loaded (Sphere). A mountable pet is mounted; anyone else gets the
+paperdoll as before.
+
+## Giving items to NPCs (#807, #808)
+
+Dropping an item on an NPC (`NPC.On_PutItemOn`) follows Sphere 0.99z8's `NPC_OnItemGive` as far
+as Erebor's content reaches it (`scripts/Basic/CharClasses/NpcItemGive.cs`):
+
+1. `e_item_refuser` NPCs turn it down with their line (#807).
+2. A GM's item goes into the NPC's pack.
+3. The NPC's owner/friend:
+   - a **humanoid** pet eats food its `FoodTypes` match while hungry ("Mmm. Thank you."; not
+     hungry: "No thank you."), otherwise carries the item in its pack ("Tell me to drop this when
+     you want it back."; gold also gets "Thank thee."), unless that would overload it ("I'm too
+     weak to carry that.", `MovementStamina.MaxCarryWeight`);
+   - an **animal** pet eats food it's hungry for (same formula as `.Feed`,
+     `PetFeedingSystem.TryFeedWith`); anything else is refused like below - load a pack animal
+     through its opened pack instead.
+4. Everyone else is refused. Sphere first asks `NPC_WantThisItem` (DESIRES, food while hungry,
+   vendor buys it), but on Erebor's content that's never true for an unowned NPC (DESIRES only on
+   mounts/elementals and not converted; only pets track hunger) - so gold dropped on a banker is
+   refused too (user decision). The NPC's `@NPCRefuseItem` runs (Erebor's guards: "Mne nemuzes
+   podplatit" - ported by the converter for the 5 simple `SAY("...")` bodies); unless it returns 1,
+   the giver sees "They don't appear to want the item." over the NPC.
+
+A refused (or partly eaten) item bounces back to the giver. Tests: `Tests/Protocol/NpcItemGiveTests.cs`.
 
 ## Pet commands (#768)
 

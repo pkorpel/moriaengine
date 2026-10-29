@@ -49,6 +49,10 @@ Equip = i_cape
 EquipColor = 0481
 Equip = i_halberd
 EquipColor = 0
+
+ON=@npcrefuseitem
+SAY("Jsem verny krali!")
+return 1
 Loot = i_gold,{0, 100}
 AggroMode = Calm
 
@@ -110,6 +114,10 @@ EquipColor = 1
 Equip = i_sword_long
 Equip = i_shield_kite_metal
 EquipColor = 076B
+
+ON=@npcrefuseitem
+SAY("Jsem verny svemu panu!")
+return 1
 Loot = i_gold,{0, 100}
 Loot = random_coin_purse
 Equip = i_spellbook
