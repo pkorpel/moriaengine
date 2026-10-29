@@ -764,6 +764,9 @@ namespace SteamEngine {
 				if (!canMoveEverywhere) {
 					this.On_StepTaken(running); //#779 - e.g. walking stamina drain
 				}
+				if ((oldRegion != newRegion) && !this.IsDeleted) {
+					this.On_RegionChanged(oldRegion, newRegion); //#813
+				}
 			} else { //just changing direction, no steps
 				CharSyncQueue.AboutToChangeDirection(this, requested);
 				this.Direction = dir;
@@ -787,6 +790,9 @@ namespace SteamEngine {
 				}
 				this.point4d.SetXYZM(x, y, z, m);
 				this.ChangedP(oldP, MovementType.Teleporting);
+				if (oldRegion != newRegion) {
+					this.On_RegionChanged(oldRegion, newRegion); //#813
+				}
 			} else {
 				throw new SEException("Invalid position (" + x + "," + y + " on mapplane " + m + ")");
 			}
@@ -831,6 +837,11 @@ namespace SteamEngine {
 
 		/// <summary>Called by WalkRunOrFly right after a step was actually taken (#779). Not called for GM players.</summary>
 		public virtual void On_StepTaken(bool running) {
+		}
+
+		/// <summary>#813 - after a step or a teleport that moved this character into another region
+		/// (the regions' own exit/enter have run and the position is already the new one).</summary>
+		public virtual void On_RegionChanged(Region oldRegion, Region newRegion) {
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]

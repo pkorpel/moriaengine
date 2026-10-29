@@ -46,7 +46,25 @@ SteamFunction's Argv is the whole line as ONE literal string - parse sa.Args for
 **Found + fixed on the way: #815 GameCore deadlock (PR #816)** - Logger took lockObject then (via .NET's Unix
 ConsolePal) Console.Out, Console.WriteLine the reverse. Was the "server pair is dead/unresponsive" protocol
 flake; stack dump via dotnet-stack (short TMPDIR) found it in one shot.
-**PR 3** top region events.
+**PR 3 (branch 813-region-events): region events.** RegionEvents.cs (RegionEventSystem) ports the archive's
+most-used event-only [RegionType]s: r_nosumon (328 areas) + r_playerhouse (280) -> removeAgressiveSummon (summon's
+despawn timer runs out now - SummonSpellDef.DespawnNow; summoned mounts mage_horse_brown/necro_horse_undead stay;
+e_zabitivdome house-death log NOT ported, needs a last-murderer tag), r_nofield (35; field spells 24/28/39/47/50) and
+r_notele (7; Teleport 22) in SpellDef.CheckPermissionOutgoing, r_doly_nohorse (14; summon removal, enter/leave
+message, dismount on step), r_SafeZone (5; non-GM player invul inside, NPC Disengage = gohome), r_nohorsehigh (2;
+dismount above z 19 unless ostard mount item 0x3ea3-5). Sphere semantics: one area per char = innermost
+FlaggedRegion (house/ship defer to it); new GameCore hook AbstractCharacter.On_RegionChanged (after step/teleport,
+position already new) -> Transition fires old area's exits + new area's enters only when the area changes
+(43 tents in nosumon towns lack the event, so "inherit parent events" would differ from Sphere). Ongoing rules
+(fields, tele, horses) are checked against the current area when they matter, no attached-event state.
+RegionEventTests: real archive areas, real Go/WalkRunOrFly, red-checked. r_noclickhigh + 1-6-use ones = later.
+**Found on the way: #818 (PR #819)** - region FLAGS were Sphere bits read as engine RegionFlags (only 0x800+
+agree): Sphere 0x02 no-recall-in = our NoMagicOut -> no casting in 660/714 archive areas. FlaggedRegion.
+FromSphereFlags translates (converter writes FLAGS in engine terms, "//Sphere 00812" comment kept).
+Gotcha: `git rebase` here leaves a doubled pick + clean tree ("Could not apply") - rebuild the branch with
+reset --hard origin/main + cherry-pick instead (keep a backup branch first).
+Gotcha: a GameCore boot can time out at "Compiling scripts..." (59s vs 11s normal) under CPU load from a busy
+VBCSCompiler - retry after load drops, it's not a hang.
 
 ## DONE (2026-10-29): #808 NPC item-give (Sphere NPC_OnItemGive) + real pet ownership
 
