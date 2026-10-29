@@ -1,6 +1,23 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-29): #802 PetCommandTests failures, then e_item_refuser - branch 802-pet-command-tests
+## DONE (2026-10-29): #822 material-colored items spawn uncolored - branch 822-material-colors
+
+User (local testing after #813): a new i_sword_viking_mithril had the base hue. No converted Colored*Def has
+ever had a Color line (Erebor colored them in @Create: weaponcreate(mithril) -> color_o_mithril,
+weaponcreate(mithril,elven) -> color_elven). Ours came only from HuesCalculator.SetColorOnDefsWithMaterial,
+run from the setter of a saved static flag on the "second load of a new world", then kept alive as saved def
+values - so the hue depended on save history. **Now a coded default**: ThingDef.SetCodedDefaultColor (applies
+only if no script/save/GM color; not saved), set by HuesCalculator.Init on every startup/recompile; an
+unmappable Material/MaterialType logs a warning instead of aborting the loop; the saved flag is gone.
+Verified: MaterialColorTests (3 real boots: fresh + 2 save/restart; sword 0x98b, wooden mithril staff 0x7d6)
+red before (def=0x0 every boot) / green after; fast 196/196; MonsterLoot/MiningVein/NpcGuardContent/HealerNpc green.
+**Found: #823** - in this container (DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1) DateSaver parses with cs-CZ ->
+every saved DateTime fails, which drops the WHOLE saved static-members table (TESTSettClass:att4 is a DateTime):
+no [SavedMember] static has ever been restored here. Likely also #814's "DateTime is no longer saveable".
+Debug tip: the probe's Ask() dumps the server output since the mark on a miss - "This code line does nothing"
+for a .Command = the SteamFunction doesn't exist (my helper file had silently not been written).
+
+## DONE (2026-10-29, PR #806): #802 PetCommandTests failures, then e_item_refuser - branch 802-pet-command-tests
 
 User: remove the 10-21 #536 probe leftovers (done - 4 untracked files deleted, never committed), look into
 #802, then e_item_refuser. #802: `PetCommandTestsB.GoCommandSetsGoalPointFromTargetCursor` (no 'sent 1
@@ -12,7 +29,7 @@ It now targets a spot next to the player (`PET_SETUP_POS`). Kill: the order work
 for damage and a sheep can't hurt a sheep (WeaponAttack 2 x Str 19 x 3.17/1000 = ~0.12 attack vs armor 6
 floors to 0, and was 2-6 -> 0 before #711 too), so it now checks TestWild's AI target. PetCommandTests 6/6 x2.
 
-## IN PROGRESS (2026-10-29): #813 map regions + region resources from the archive - PR 1 of 3 done
+## DONE (2026-10-29): #813 map regions + region resources + events from the archive - PRs #814/#817/#821
 
 User: converted map/region content all commented out, regions only in the save - analyze + improve. User:
 spheremap.scp/sphereregion.scp (our map.def/region.def) are their MAIN archive files. Decisions (on #813):

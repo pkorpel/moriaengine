@@ -146,6 +146,15 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>Sets the color this def has when neither its script, nor a save, nor an in-game edit gives
+		/// it one - a color computed from code, e.g. a material's hue. Like any coded default it isn't saved,
+		/// so it's applied again on every boot.</summary>
+		public void SetCodedDefaultColor(int value) {
+			if (this.color.IsDefaultCodedValue) {
+				this.color.SetFromCode(value);
+			}
+		}
+
 		public float Weight {
 			get {
 				return (float) this.weight.CurrentValue;
