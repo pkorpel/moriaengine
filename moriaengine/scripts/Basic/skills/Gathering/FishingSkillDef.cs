@@ -29,11 +29,9 @@ namespace SteamEngine.CompiledScripts {
 	/// water-monster ambush (FishingAmbushSystem). Skill-gain-through-use (#140/#328) was already
 	/// wired.
 	///
-	/// Deliberately NOT a skill-gated fish-tier ladder (unlike Mining's/Lumberjacking's per-tile
-	/// ore/wood veins): moriaengine has no fish-tier content to gate on - see FishingCatchSystem's
-	/// own doc comment for the full reasoning. The treasure-map payoff of the junk-fish mechanic
-	/// is a placeholder pending the real treasure-map system (#530), mirroring how Mining shipped
-	/// functional-now and deferred region-restriction to #338.
+	/// Since #813 the catch comes from the water spot's region resources (the archive's w_fish /
+	/// w_jf tiers, skill-gated, per-spot pools) - see FishingCatchSystem. The treasure-map payoff
+	/// of junk fish is a placeholder pending the real treasure-map system (#530).
 	///
 	/// Simplification: targets any nearby land tile flagged TileFlag.Wet ("Water? Or mud?...
 	/// probably the first" per that flag's own doc comment) - this engine has no per-tile water-
@@ -99,8 +97,9 @@ namespace SteamEngine.CompiledScripts {
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 
-			//#271 - fish-variety roll, with the fishing-unique junk-fish/treasure-map sub-mechanic.
-			FishingCatchSystem.CatchResult result = FishingCatchSystem.Catch(self);
+			//#271/#813 - what this water spot holds, from its region's t_water region type
+			IPoint3D target = skillSeqArgs.Target1;
+			FishingCatchSystem.CatchResult result = FishingCatchSystem.Catch(self, self.GetMap().M, target.X, target.Y);
 			if (result.ItemDef != null) {
 				result.ItemDef.Create(self.Backpack);
 			}
@@ -114,6 +113,9 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case FishingCatchSystem.CatchKind.JunkCrate:
 					self.SysMessage(Loc<FishingLoc>.Get(self.Language).junkCrate);
+					break;
+				case FishingCatchSystem.CatchKind.Nothing:
+					self.SysMessage(Loc<FishingLoc>.Get(self.Language).nothingHere); //#813
 					break;
 				default:
 					self.SysMessage(Loc<FishingLoc>.Get(self.Language).success);
@@ -169,5 +171,6 @@ namespace SteamEngine.CompiledScripts {
 		public string needFishingPole = "You must be holding a fishing pole to do that."; //#370
 		public string junkCrate = "You haul up a soggy crate of junk."; //#271
 		public string junkCrateWithMap = "You haul up a soggy crate of junk - and find a tattered map inside!"; //#271
+		public string nothingHere = "The fish don't seem to be biting here."; //#813 - the spot's region roll was "nothing", or it's fished out
 	}
 }

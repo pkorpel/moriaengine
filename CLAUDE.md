@@ -32,7 +32,20 @@ identical on main (pre-existing), CombatDepth stand-off = #788, RoofLos = known 
 pre-existing. Boots ~20s (was ~17s) - 769 regions parsed from scripts.
 Gotcha hit again: two files with the same basename (scripts/Tests + Tests/Protocol RegionArchiveTests.cs)
 -> `mv` into one backup dir refused the second; harmless here, use distinct backup names.
-**Next: PR 2** region resources (RegionType/RegionResource defs -> mining/lumberjacking/fishing by region),
+**PR 2 (branch 813-region-resources): region resources.** Recovered 2026-10-29 after a container restart
+(work was uncommitted on main). Converter: [RegionResource] -> [RegionResourceDef] (REGEN evaluated to
+RegenSeconds), [RegionType] with RESOURCES -> [RegionTypeDef] (event-only ones stay commented, PR 3) -
+ConvertedRegionResources.cs; region.def = fresh regen (diff 0). Engine: RegionResources.cs (defs +
+RegionResourceSystem.Pick = Sphere CheckNaturalResource: area -> world region fallback -> region type for
+t_rock/t_tree/t_water). Mining/Lumberjacking veins and Fishing spots roll from it (r_nothing = empty spot until
+REGEN; under-skilled -> lowest tier, fixresource); fishing's junk-chance setting removed (archive w_jf weights).
+Tests: old global-roll distribution tests -> RegionTypeDef samples (.TestSampleRegionTypeRoll); tests that need
+ore/wood at a random open-world spot force a vein first (open rock is ~93% empty, trees ~36%); regen tests
+accept "fresh roll was nothing" (MINE_RESULT/CHOP_RESULT report emptySpot). Gotcha: on a plain account a
+SteamFunction's Argv is the whole line as ONE literal string - parse sa.Args for multi-arg test helpers.
+**Found + fixed on the way: #815 GameCore deadlock (PR #816)** - Logger took lockObject then (via .NET's Unix
+ConsolePal) Console.Out, Console.WriteLine the reverse. Was the "server pair is dead/unresponsive" protocol
+flake; stack dump via dotnet-stack (short TMPDIR) found it in one shot.
 **PR 3** top region events.
 
 ## DONE (2026-10-29): #808 NPC item-give (Sphere NPC_OnItemGive) + real pet ownership

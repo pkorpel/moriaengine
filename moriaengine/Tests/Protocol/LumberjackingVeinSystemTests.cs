@@ -94,8 +94,9 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("CHOP_RESULT:", mark, TimeSpan.FromSeconds(10)));
 				Assert.Contains("wood=null", LastLineContaining(this.fixture.GameOutputSnapshot(), "CHOP_RESULT:"));
 
-				// Force the regen timer to have already elapsed - the next hit should roll
-				// fresh wood (random reroll, so we just confirm wood comes back at all).
+				// Force the regen timer to have already elapsed - the next hit rolls the spot
+				// again from its region (#813), which may be wood or "nothing" (an empty spot,
+				// not the used-up pool it was) - either way not stuck exhausted.
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestForceWoodVeinRegenReady 1200 2300");
 				Assert.True(this.fixture.WaitForGameOutputSince("WOOD_VEIN_REGEN_FORCED:", mark, TimeSpan.FromSeconds(10)));
@@ -103,24 +104,32 @@ namespace SteamEngine.Tests.Protocol {
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestChopAtTile 1200 2300");
 				Assert.True(this.fixture.WaitForGameOutputSince("CHOP_RESULT:", mark, TimeSpan.FromSeconds(10)));
-				Assert.DoesNotContain("wood=null", LastLineContaining(this.fixture.GameOutputSnapshot(), "CHOP_RESULT:"));
+				string rerolled = LastLineContaining(this.fixture.GameOutputSnapshot(), "CHOP_RESULT:");
+				Assert.True(!rerolled.Contains("wood=null", StringComparison.Ordinal) || rerolled.Contains("emptySpot=True", StringComparison.Ordinal), "Expected a fresh roll after regen: " + rerolled);
 			}
 		}
 
+		/// <summary>#813 - open-world trees roll from the archive's r_default_tree (3500 nothing /
+		/// 3500 l_copper / 2500 l_iron / 104 l_verite / 54 l_valorite / 27 l_obsidian): about a third
+		/// of the spots are empty, common wood far outnumbers rare.</summary>
 		[Fact]
-		public void UntouchedVeinRollFavorsCommonWoodOverRareOnes() {
+		public void TreeRegionRollFollowsTheArchive() {
 			using (var client = this.ConnectLoginAndCreateCharacter("WoodVeinDistributionChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				// 2000 samples - same margin reasoning as Mining's own UntouchedVeinRollFavors
-				// CommonOresOverRareOnes (elven's small expected count has enough binomial
-				// variance at 500 samples to occasionally violate a 5x-ratio bound by chance).
-				client.SendSpeech(".TestSampleWoodVeinDistribution 2000 5000");
-				Assert.True(this.fixture.WaitForGameOutputSince("WOOD_DISTRIBUTION_SAMPLE:", mark, TimeSpan.FromSeconds(15)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "WOOD_DISTRIBUTION_SAMPLE:");
-				int spruce = ExtractInt(line, "spruce=");
-				int elven = ExtractInt(line, "elven=");
-				Assert.True(spruce > elven * 5, "Expected spruce to be rolled far more often than elven: " + line);
+				client.SendSpeech(".TestSampleRegionTypeRoll \"r_default_tree\" 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("REGION_TYPE_SAMPLE: r_default_tree", mark, TimeSpan.FromSeconds(15)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "REGION_TYPE_SAMPLE: r_default_tree");
+				int nothing = ExtractInt(line, "nothing=");
+				int common = CountOf(line, "l_copper");
+				int rare = CountOf(line, "l_obsidian");
+				Assert.True(nothing > 1250 && nothing < 1650, "Expected about 36 percent nothing: " + line);
+				Assert.True(common > rare * 5, "Expected l_copper far more common than l_obsidian: " + line);
 			}
+		}
+
+		//a resource the sample never picked isn't in the line at all
+		private static int CountOf(string line, string resource) {
+			return line.Contains(" " + resource + "=", StringComparison.Ordinal) ? ExtractInt(line, " " + resource + "=") : 0;
 		}
 
 		[Fact]

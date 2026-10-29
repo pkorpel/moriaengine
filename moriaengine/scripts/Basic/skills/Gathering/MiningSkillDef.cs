@@ -119,6 +119,8 @@ namespace SteamEngine.CompiledScripts {
 			if (def != null) {
 				def.Create(self.Backpack);
 				self.SysMessage(Loc<MiningLoc>.Get(self.Language).success);
+			} else if (MiningVeinSystem.IsEmptySpot(self.GetMap().M, targetted.X, targetted.Y)) {
+				self.SysMessage(Loc<MiningLoc>.Get(self.Language).notAVein); //#813 - the region's roll was "nothing"
 			} else {
 				self.SysMessage(Loc<MiningLoc>.Get(self.Language).veinExhausted);
 			}

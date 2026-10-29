@@ -94,10 +94,9 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("MINE_RESULT:", mark, TimeSpan.FromSeconds(10)));
 				Assert.Contains("ore=null", LastLineContaining(this.fixture.GameOutputSnapshot(), "MINE_RESULT:"));
 
-				// Force the regen timer to have already elapsed - the next hit should roll a
-				// FRESH ore (we forced "iron" originally, but the real mechanic rerolls on
-				// regen - a high enough sample would show variety; here we just confirm ore
-				// actually comes back, not the exact new type, since the reroll is random).
+				// Force the regen timer to have already elapsed - the next hit rolls the spot
+				// again from its region (#813), which may be ore or "nothing" (an empty spot, not
+				// the used-up iron pool it was) - either way not stuck exhausted.
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestForceVeinRegenReady 1200 2300");
 				Assert.True(this.fixture.WaitForGameOutputSince("VEIN_REGEN_FORCED:", mark, TimeSpan.FromSeconds(10)));
@@ -105,25 +104,38 @@ namespace SteamEngine.Tests.Protocol {
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestMineAtTile 1200 2300");
 				Assert.True(this.fixture.WaitForGameOutputSince("MINE_RESULT:", mark, TimeSpan.FromSeconds(10)));
-				Assert.DoesNotContain("ore=null", LastLineContaining(this.fixture.GameOutputSnapshot(), "MINE_RESULT:"));
+				string rerolled = LastLineContaining(this.fixture.GameOutputSnapshot(), "MINE_RESULT:");
+				Assert.True(!rerolled.Contains("ore=null", StringComparison.Ordinal) || rerolled.Contains("emptySpot=True", StringComparison.Ordinal), "Expected a fresh roll after regen: " + rerolled);
 			}
 		}
 
+		/// <summary>#813 - open rock rolls from the archive's r_default_rock (100 nothing / 1 copper /
+		/// 4 sand / 1 iron / 1 ruby): about 93% of the spots are empty. Mines are rich: r_doly
+		/// (3000 nothing / 7000 copper / ... / 55 obsidian) favors common ore far over rare.</summary>
 		[Fact]
-		public void UntouchedVeinRollFavorsCommonOresOverRareOnes() {
+		public void RockRegionRollFollowsTheArchive() {
 			using (var client = this.ConnectLoginAndCreateCharacter("VeinDistributionChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				// 2000 samples, not 500 - mithril's own expected count at 500 samples (~8) has
-				// enough binomial variance to occasionally violate a 5x-ratio bound by pure
-				// chance (confirmed by reproducing a flake, then rerunning the same assertion
-				// in isolation clean) - 2000 pushes the margin from ~2.5 sigma to ~6+ sigma.
-				client.SendSpeech(".TestSampleVeinOreDistribution 2000 5000");
-				Assert.True(this.fixture.WaitForGameOutputSince("VEIN_DISTRIBUTION_SAMPLE:", mark, TimeSpan.FromSeconds(15)));
-				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "VEIN_DISTRIBUTION_SAMPLE:");
-				int copper = ExtractInt(line, "copper=");
-				int mithril = ExtractInt(line, "mithril=");
-				Assert.True(copper > mithril * 5, "Expected copper to be rolled far more often than mithril: " + line);
+				client.SendSpeech(".TestSampleRegionTypeRoll \"r_default_rock\" 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("REGION_TYPE_SAMPLE: r_default_rock", mark, TimeSpan.FromSeconds(15)));
+				string open = LastLineContaining(this.fixture.GameOutputSnapshot(), "REGION_TYPE_SAMPLE: r_default_rock");
+				int nothing = ExtractInt(open, "nothing=");
+				Assert.True(nothing > 3600 && nothing < 3870, "Expected about 93 percent nothing in open rock: " + open);
+
+				mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestSampleRegionTypeRoll \"r_doly\" 4000");
+				Assert.True(this.fixture.WaitForGameOutputSince("REGION_TYPE_SAMPLE: r_doly", mark, TimeSpan.FromSeconds(15)));
+				string mine = LastLineContaining(this.fixture.GameOutputSnapshot(), "REGION_TYPE_SAMPLE: r_doly");
+				int copper = CountOf(mine, "o_copper");
+				int obsidian = CountOf(mine, "o_obsidian");
+				Assert.True(ExtractInt(mine, "nothing=") < 1000, "Expected a mine to be mostly ore: " + mine);
+				Assert.True(copper > obsidian * 5, "Expected copper far more common than obsidian: " + mine);
 			}
+		}
+
+		//a resource the sample never picked isn't in the line at all
+		private static int CountOf(string line, string resource) {
+			return line.Contains(" " + resource + "=", StringComparison.Ordinal) ? ExtractInt(line, " " + resource + "=") : 0;
 		}
 
 		[Fact]
