@@ -18,6 +18,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
@@ -224,7 +225,13 @@ namespace SteamEngine.Converter {
 				//} else {
 				def.headerType = "FlaggedRegion";
 				//}
-				def.Set(name, line.Value, line.Comment);
+				string lowerName = name.ToLowerInvariant();
+				if ((lowerName == "flags") || (lowerName == "flag")) {
+					int engineFlags = (int) FlaggedRegion.FromSphereFlags(value); //#818
+					def.Set(name, "0x" + engineFlags.ToString("x", CultureInfo.InvariantCulture), ("Sphere " + line.Value.Trim() + " " + line.Comment).Trim());
+				} else {
+					def.Set(name, line.Value, line.Comment);
+				}
 				//return line.Value;
 			}
 			//return "";

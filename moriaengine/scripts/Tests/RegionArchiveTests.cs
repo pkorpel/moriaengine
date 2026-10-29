@@ -49,6 +49,28 @@ namespace SteamEngine.CompiledScripts {
 				" group=" + r.Group + " parent=" + ((r.Parent == null) ? "none" : r.Parent.Defname) + " rects=" + r.Rectangles.Count);
 		}
 
+		/// <summary>#818 - teleports self into the archive region (a spot the map lookup really
+		/// puts in it) and reports whether a spell (Clumsy) passes the cast's region check there.</summary>
+		[SteamFunction]
+		public static void TestRegionCanCast(Character self, ScriptArgs sa) {
+			string defname = sa.Args.Trim().Trim('"');
+			FlaggedRegion region = (FlaggedRegion) StaticRegion.GetByDefname(defname);
+			Map map = Map.GetMap(region.Mapplane);
+			foreach (ImmutableRectangle rect in region.Rectangles) {
+				for (int x = rect.MinX; x <= rect.MaxX; x++) {
+					for (int y = rect.MinY; y <= rect.MaxY; y++) {
+						if (map.GetRegionFor(x, y) == region) {
+							self.Go(x, y, map.GetTileZ(x, y), region.Mapplane);
+							Console.WriteLine("REGION_CAN_CAST: " + defname + " in=" + (self.Region == region) +
+								" cast=" + SpellDef.GetById(1).CheckPermissionOutgoing(self));
+							return;
+						}
+					}
+				}
+			}
+			Console.WriteLine("REGION_CAN_CAST: " + defname + " in=False");
+		}
+
 		/// <summary>Which region is at m/x/y (what the map lookup really returns).</summary>
 		[SteamFunction]
 		public static void TestRegionAt(Character self, ScriptArgs sa) {

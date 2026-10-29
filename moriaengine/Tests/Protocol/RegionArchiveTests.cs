@@ -22,12 +22,17 @@ namespace SteamEngine.Tests.Protocol {
 					AssertHas(count, "all=769 fromScripts=769 gmModified=0");
 
 					string mine = Ask(fixture1, client, ".TestRegionReport \"a_Ereborsky_dul\"", "REGION_REPORT: a_Ereborsky_dul");
-					AssertHas(mine, "exists=True name=Ereborsky dul fromScripts=True gmModified=False flags=0x812 events=r_doly_nohorse resources=r_doly group=Doly parent=a_world rects=1");
+					AssertHas(mine, "exists=True name=Ereborsky dul fromScripts=True gmModified=False flags=0x8c0 events=r_doly_nohorse resources=r_doly group=Doly parent=a_world rects=1");
 					//a region the old frozen regions.sav never had (Barad-dur), with a child house
 					string house = Ask(fixture1, client, ".TestRegionReport \"a_dum_1\"", "REGION_REPORT: a_dum_1");
 					AssertHas(house, "events=r_playerhouse+r_nosumon");
 					AssertHas(house, "parent=a_Barad_dur");
 					AssertHas(Ask(fixture1, client, ".TestRegionAt 0 4740 2190", "REGION_AT: 0,4740,2190"), "-> a_Ereborsky_dul");
+					//#818 - Sphere's FLAGS 00812 (underground, no recall in, no Teleport) is 0x8c0 in the
+					//engine's terms above: magic still works there (0x812 read as ours was NoMagicOut).
+					//a_Jail's 06d9f has Sphere's ANTIMAGIC_ALL - no casting.
+					AssertHas(Ask(fixture1, client, ".TestRegionCanCast \"a_Ereborsky_dul\"", "REGION_CAN_CAST: a_Ereborsky_dul"), "in=True cast=True");
+					AssertHas(Ask(fixture1, client, ".TestRegionCanCast \"a_Jail\"", "REGION_CAN_CAST: a_Jail"), "in=True cast=False");
 
 					AssertHas(Ask(fixture1, client, ".TestRegionGmEdits", "REGION_GM_EDITS:"), "created=True");
 					Ask(fixture1, client, ".TestTriggerGlobalSave", "TEST_SAVE: done");
@@ -37,7 +42,7 @@ namespace SteamEngine.Tests.Protocol {
 			using (var fixture2 = GameServerPairFixture.BootPreservingSaves()) {
 				using (var client = Connect(fixture2, "Region Rechecker")) {
 					string mine = Ask(fixture2, client, ".TestRegionReport \"a_Ereborsky_dul\"", "REGION_REPORT: a_Ereborsky_dul");
-					AssertHas(mine, "fromScripts=True gmModified=True flags=0x8812 events=r_doly_nohorse resources=r_doly");
+					AssertHas(mine, "fromScripts=True gmModified=True flags=0x88c0 events=r_doly_nohorse resources=r_doly");
 					AssertHas(Ask(fixture2, client, ".TestRegionReport \"a_dum_2\"", "REGION_REPORT: a_dum_2"), "exists=False");
 					AssertHas(Ask(fixture2, client, ".TestRegionReport \"a_test_gm_region\"", "REGION_REPORT: a_test_gm_region"), "exists=True name=Test GM Region fromScripts=False");
 					//769 archive - 1 deleted + 1 GM-created; only the edited archive region counts as GM-modified (a GM-created
