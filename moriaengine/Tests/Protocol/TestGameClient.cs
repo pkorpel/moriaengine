@@ -66,6 +66,7 @@ namespace SteamEngine.Tests.Protocol {
 			{ 0xa2, 8 },  // UpdateCurrentManaOutPacket
 			{ 0xa3, 8 },  // UpdateCurrentStaminaOutPacket
 			{ 0x1d, 4 },  // DeleteObjectOutPacket
+			{ 0x25, 19 }, // AddItemToContainerOutPacket (#807 - a refused item going back into the pack)
 			{ 0x2e, 14 }, // WornItemOutPacket
 			{ 0x6c, 18 }, // TargetCursorCommandsOutPacket (server->client "pick a target" prompt)
 			{ 0xBC, 2 },  // SeasonalInformationOutPacket

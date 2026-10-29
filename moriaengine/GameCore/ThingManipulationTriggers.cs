@@ -1359,7 +1359,10 @@ namespace SteamEngine {
 				return this.TryPutItemOnItem(target.GetBackpack());
 			}
 
-			return DenyResultMessages.Allow;
+			//#807 - a trigger turned the item down (e.g. e_item_refuser). This used to report Allow
+			//with the item still being dragged, leaving it stuck in the hand; a deny makes the drop
+			//packet handlers bounce it back to the giver (they skip it if a trigger already moved it).
+			return DenyResultMessages.Deny_NoMessage;
 		}
 
 		//typically called from InPackets. drops the held item on target (I am the src)
