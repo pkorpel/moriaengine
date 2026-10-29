@@ -1,35 +1,36 @@
 using System;
 using System.Collections.Generic;
+using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
-	[HasSavedMembers]
 	public static class HuesCalculator {
 
 		static Dictionary<Material, Constant> woodHues = new Dictionary<Material, Constant>();
 		static Dictionary<Material, Constant> metalHues = new Dictionary<Material, Constant>();
 		static Dictionary<Material, Constant> oreHues = new Dictionary<Material, Constant>();
 
-
-		private static bool defsWithMaterialColored;
-		[SavedMember]
-		public static bool DefsWithMaterialColored {
-			get {
-				return defsWithMaterialColored;
-			}
-			set {
-				if (!value) {
-					SetColorOnDefsWithMaterial();
-				}
-				defsWithMaterialColored = true;
-			}
+		//called by ClassManager on every startup/recompile, after the world is loaded
+		public static void Init() {
+			SetColorOnDefsWithMaterial();
 		}
 
-		//pusti se automaticky po druhym loadu novyho sveta
+		/// <summary>#822 - gives every def with a material (colored weapons, armors, projectiles) its material's hue,
+		/// unless its script, a save or a GM gave it a color. A coded default, so it's never saved and doesn't depend
+		/// on the world's save history (it used to be set once on the "second load of a new world" behind a saved
+		/// flag, and then live on only as saved def values).</summary>
 		public static void SetColorOnDefsWithMaterial() {
+			woodHues.Clear();
+			metalHues.Clear();
+			oreHues.Clear();
 			foreach (AbstractScript scp in AbstractScript.AllScripts) {
 				IObjectWithMaterial materialObj = scp as IObjectWithMaterial;
-				if (materialObj != null) {
-					materialObj.Color = GetHueForMaterial(materialObj.Material, materialObj.MaterialType);
+				ThingDef def = scp as ThingDef;
+				if ((materialObj != null) && (def != null)) {
+					try {
+						def.SetCodedDefaultColor(GetHueForMaterial(materialObj.Material, materialObj.MaterialType));
+					} catch (SEException e) {
+						Logger.WriteWarning(def.PrettyDefname, e.Message);
+					}
 				}
 			}
 		}
