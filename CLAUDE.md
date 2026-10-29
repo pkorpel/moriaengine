@@ -1,5 +1,20 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-10-29): #802 PetCommandTests failures, then e_item_refuser - branch 802-pet-command-tests
+
+User: remove the 10-21 #536 probe leftovers (done - 4 untracked files deleted, never committed), look into
+#802, then e_item_refuser. #802: `PetCommandTestsB.GoCommandSetsGoalPointFromTargetCursor` (no 'sent 1
+pet(s) to') and `PetCommandTestsA.GmCanOrderAnUnownedNpcToKill` (no 'PET_KILL_TEST: PASS') fail on main,
+identical with/without #803. **Done - both were stale tests, the pet commands work.** Go: the test
+targeted hardcoded (5240,40,20), which went out of the player's update range when #210 (10-15) moved the
+spawn to (4763,1363,10), so `GameState.HandleTarget` dropped the target ("That is not a valid target").
+It now targets a spot next to the player (`PET_SETUP_POS`). Kill: the order worked, but the test waited
+for damage and a sheep can't hurt a sheep (WeaponAttack 2 x Str 19 x 3.17/1000 = ~0.12 attack vs armor 6
+floors to 0, and was 2-6 -> 0 before #711 too), so it now checks TestWild's AI target. PetCommandTests 6/6 x2.
+e_item_refuser (119 monsters): blocked so far - no give/drop-onto-character hook. Plan: read the archive's
+e_item_refuser, find how DropItemInPacket handles a drop onto a character, design the hook, ask the user
+only if there's a real design fork.
+
 ## DONE (2026-10-29): #798 server hang deleting an NPC - Timer lock-order deadlock
 
 Found while running #799 (batch 5) protocol tests: a dispel bomb deleting an UNOWNED summon hung
