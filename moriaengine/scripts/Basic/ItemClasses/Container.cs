@@ -87,6 +87,18 @@ namespace SteamEngine.CompiledScripts {
 			this.OpenTo(Globals.SrcCharacter);
 		}
 
+		//#810 - taking an item back out of a secure trade box resets both accepts
+		public override void On_ItemLeave(ItemInItemArgs args) {
+			SecureTrade.OnItemLeftBox(this);
+			base.On_ItemLeave(args);
+		}
+
+		protected override bool IsReachableOnInvisibleLayer {
+			get {
+				return SecureTrade.FindByBoxUid((uint) this.Uid) != null;
+			}
+		}
+
 		public sealed override bool IsContainer {
 			get {
 				return true;
