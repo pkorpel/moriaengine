@@ -12,6 +12,32 @@ It now targets a spot next to the player (`PET_SETUP_POS`). Kill: the order work
 for damage and a sheep can't hurt a sheep (WeaponAttack 2 x Str 19 x 3.17/1000 = ~0.12 attack vs armor 6
 floors to 0, and was 2-6 -> 0 before #711 too), so it now checks TestWild's AI target. PetCommandTests 6/6 x2.
 
+## DONE (2026-10-29): #810 secure trade reworked to Sphere 0.99z8 rules
+
+User: before #808, look at item exchange between players (drop item on player -> trade window), check
+Erebor + EreborNext, implement. Trade already existed (#13) but was broken in a real client and leaky.
+Reference: EreborNext `CItemContainer.Trade.cs`/`CClientGame.CharacterDrop.cs`/`CChar.ItemDrop.cs` (cloned
+with `$GL_TOKEN` from the env - the user said the token lives there; remote URL scrubbed), Sphere 0.56b
+(github necr0potenc3/Sphere), TazUO `SecureTrading.cs`. Full table on #810.
+**Real-client bugs found**: TazUO drops the 0x6F open unless it knows BOTH boxes, and #13 hid them
+(`RemoveFromView`) and sent UNFLAGGED uids - the window can never have opened in a real client; the
+old protocol test passed only because it echoed raw uids back. The boxes were also ground backpacks
+(later arrivals saw them, saved as ground items, ground decay); the partner could take items out of
+your box (red-run confirmed); cancel sent no close packet.
+**Now**: `i_secure_trade_box` (SecureTrade.def) equipped on the owner's Special layer; sent to both
+clients as items in the owner's mobile (0x25) before the open; flagged uids; `Item.IsNotVisible` gained
+`IsReachableOnInvisibleLayer` (Container: true for a live trade box) or nothing could reach it. Start:
+online+alive+CanReach, else bounce w/ message (SecureTradeCommands now returns DenyResult, null = not a
+trade). Owner-only pickup; add/remove unticks both; removal -> 2 s anti-swap; accept needs LOS within 18;
+only the owner may tick/close; cancel closes both; death (before corpse) + logout cancel; logout also
+bounces the held item (was left "dragged" on the lingering body - generic, not trade-only); orphaned
+boxes emptied at login. Removed SetGoldAndPlatinum (gold from nothing, unreachable; 99z8 has no trade gold).
+Verified: new SecureTradeTests 5/5 (red run with the hooks disabled -> red), SocialTests/ItemRefuser/
+ItemStacking/BankerDialog/Economy green, fast 196/196. AttrFlagTests.InvisItemHiddenUnlessExplicitlyRevealed
+fails only inside the full class (passes solo 2/2), same assertion failed before this work - pre-existing.
+Gotcha: a red run once hung the server when a player logged out holding the PARTNER's item - unreachable
+with the protections on, not chased.
+
 ## DONE (2026-10-29): #807 e_item_refuser (119 NPCs) - resumed after a session crash
 
 All of it was sitting uncommitted on branch 807-item-refuser in the main checkout. NOT blocked after

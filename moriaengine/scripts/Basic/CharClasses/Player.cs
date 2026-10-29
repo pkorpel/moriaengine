@@ -397,6 +397,11 @@ namespace SteamEngine.CompiledScripts {
 				EffectFactory.StationaryEffect(this, 0x376A, 10, 16);
 			}
 
+			//#810 - Sphere's client detach: whatever is in hand goes back to the pack (it used to stay
+			//"dragged" on the lingering body), and every open trade is cancelled
+			this.TryGetRidOfDraggedItem();
+			SecureTrade.CancelAllFor(this, "logged out");
+
 			AbstractAccount acc = this.Account;
 			double delay = ((acc != null) && (acc.PLevel >= Globals.PlevelOfGM)) ? 0 : LogoutSettings.instance.logoutDelaySeconds;
 			this.AddTimer(charLingeringTimerTK, new CharLingeringTimer()).DueInSeconds = delay;
@@ -415,6 +420,7 @@ namespace SteamEngine.CompiledScripts {
 			this.DeleteTimer(charLingeringTimerTK); //cancel any pending logout-delay removal - reconnecting resumes this body in place
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {
+				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
 				//if (DbManager.Config.useDb) {
 				//    DbMethods.loginLogs.GameLogin(this.Conn);
 				//    Logger.WriteDebug(ScriptUtil.GetLogString(this.Conn, "Logged in"));
