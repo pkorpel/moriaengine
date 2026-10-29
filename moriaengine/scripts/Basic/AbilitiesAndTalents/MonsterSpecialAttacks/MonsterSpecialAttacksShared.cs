@@ -77,6 +77,28 @@ namespace SteamEngine.CompiledScripts {
 			return list;
 		}
 
+		/// <summary>NPCAiTimer.OnTimeout - every AI think-tick in any state (#797/#799): the
+		/// abilities that run on their own clock rather than off a swing.</summary>
+		internal static void OnAiTick(NPC self) {
+			TryApplyDragonRegeneration(self);
+			TryBackstabHide(self);
+			TryMassLeapTick(self);
+			TryDispelBombTick(self);
+		}
+
+		/// <summary>Makes an NPC fight `enemy` now (archive "attack(src)").</summary>
+		private static void SwitchTargetTo(Character self, Character enemy) {
+			NPC npc = self as NPC;
+			if ((npc == null) || (enemy == null) || !enemy.IsAliveAndValid) {
+				return;
+			}
+			NPCAiTimer.EnsureInstalled(npc);
+			NPCAiTimer ai = NPCAiTimer.GetFor(npc);
+			if ((ai != null) && (ai.Target != enemy)) {
+				ai.EngageTarget(enemy);
+			}
+		}
+
 		//North,NorthEast,East,SouthEast,South,SouthWest,West,NorthWest (GameCore/Enums.cs's own
 		//Direction order) - used by Roundattack's PullToward and Knockback's PushAway to find the
 		//one tile adjacent to (respectively, toward/away from) the attacker.

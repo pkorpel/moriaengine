@@ -1759,6 +1759,7 @@ MaxStam = 260 300
 MaxMana = 1000
 Experience = 30 34
 NaturalDamageType = DamageType.Magic|DamageType.Electric //ruzne 
+DupeCount = 1
 Wrestling = 1000 1100
 Parry = 850 1000
 Tactics = 850 1000

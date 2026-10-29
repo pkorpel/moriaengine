@@ -1,0 +1,42 @@
+// #799 - test-only content for scripts/Tests/MonsterAbilitiesBatch5Tests.cs. Guaranteed
+// chances and no cooldowns, so the tests call MonsterSpecialAttacks' public methods directly.
+[NPCDef npc_test_b5_eye]
+NAME = "Batch5 Eye"
+ANIM = 0x1fff
+TEVENTS = e_eye
+
+[NPCDef npc_test_b5_golem]
+NAME = "Batch5 Golem"
+ANIM = 0x1fff
+TEVENTS = e_golem
+TEVENTS = e_craft_monster
+
+[NPCDef npc_test_b5_duplicator]
+NAME = "Batch5 Duplicator"
+ANIM = 0x1fff
+TEVENTS = e_duplicator
+DupeCount = 1
+
+[NPCDef npc_test_b5_multishot]
+NAME = "Batch5 Multishot"
+ANIM = 0x1fff
+TEVENTS = e_npc_multishot
+MultishotChance = 1000 1000
+MultishotCooldown = 0 0
+MultishotDamage = 25 25
+
+[NPCDef npc_test_b5_backstab]
+NAME = "Batch5 Backstabber"
+ANIM = 0x1fff
+TEVENTS = e_backstub
+
+[NPCDef npc_test_b5_leaper]
+NAME = "Batch5 Mass Leaper"
+ANIM = 0x1fff
+TEVENTS = e_npc_massleap
+TEVENTS = e_npc_warcry
+
+[NPCDef npc_test_b5_bomber]
+NAME = "Batch5 Bomber"
+ANIM = 0x1fff
+TEVENTS = e_explosiondispell

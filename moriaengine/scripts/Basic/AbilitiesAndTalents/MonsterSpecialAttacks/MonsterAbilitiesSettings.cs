@@ -418,5 +418,191 @@ namespace SteamEngine.CompiledScripts {
 			get { return MonsterSpecialAttacks.AutoReflectDef == null ? 0 : MonsterSpecialAttacks.AutoReflectDef.Power; }
 			set { if (MonsterSpecialAttacks.AutoReflectDef != null) { MonsterSpecialAttacks.AutoReflectDef.Power = value; } }
 		}
+
+		//#799 batch 5
+		public double[] MultishotChance {
+			get { return MonsterSpecialAttacks.MultishotDef?.Chance; }
+			set { if (MonsterSpecialAttacks.MultishotDef != null) { MonsterSpecialAttacks.MultishotDef.Chance = value; } }
+		}
+
+		public double[] MultishotCooldown {
+			get { return MonsterSpecialAttacks.MultishotDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.MultishotDef != null) { MonsterSpecialAttacks.MultishotDef.Cooldown = value; } }
+		}
+
+		public double[] MultishotDamage {
+			get { return MonsterSpecialAttacks.MultishotDef?.Damage; }
+			set { if (MonsterSpecialAttacks.MultishotDef != null) { MonsterSpecialAttacks.MultishotDef.Damage = value; } }
+		}
+
+		public double MultishotRange {
+			get { return MonsterSpecialAttacks.MultishotDef == null ? 0 : MonsterSpecialAttacks.MultishotDef.Range; }
+			set { if (MonsterSpecialAttacks.MultishotDef != null) { MonsterSpecialAttacks.MultishotDef.Range = value; } }
+		}
+
+		public bool MultishotSpareCurrentTarget {
+			get { return (MonsterSpecialAttacks.MultishotDef != null) && MonsterSpecialAttacks.MultishotDef.SpareCurrentTarget; }
+			set { if (MonsterSpecialAttacks.MultishotDef != null) { MonsterSpecialAttacks.MultishotDef.SpareCurrentTarget = value; } }
+		}
+
+		public double MultishotPetMultiplier {
+			get { return MonsterSpecialAttacks.MultishotDef == null ? 0 : MonsterSpecialAttacks.MultishotDef.PetMultiplier; }
+			set { if (MonsterSpecialAttacks.MultishotDef != null) { MonsterSpecialAttacks.MultishotDef.PetMultiplier = value; } }
+		}
+
+		public double[] EyeStamDrain {
+			get { return MonsterSpecialAttacks.EyeDef?.StamDrain; }
+			set { if (MonsterSpecialAttacks.EyeDef != null) { MonsterSpecialAttacks.EyeDef.StamDrain = value; } }
+		}
+
+		public double EyeLeechMultiplier {
+			get { return MonsterSpecialAttacks.EyeDef == null ? 0 : MonsterSpecialAttacks.EyeDef.LeechMultiplier; }
+			set { if (MonsterSpecialAttacks.EyeDef != null) { MonsterSpecialAttacks.EyeDef.LeechMultiplier = value; } }
+		}
+
+		public double EyeHitsCapMultiplier {
+			get { return MonsterSpecialAttacks.EyeDef == null ? 0 : MonsterSpecialAttacks.EyeDef.HitsCapMultiplier; }
+			set { if (MonsterSpecialAttacks.EyeDef != null) { MonsterSpecialAttacks.EyeDef.HitsCapMultiplier = value; } }
+		}
+
+		public int EyePlayerManaCost {
+			get { return MonsterSpecialAttacks.EyeDef == null ? 0 : MonsterSpecialAttacks.EyeDef.PlayerManaCost; }
+			set { if (MonsterSpecialAttacks.EyeDef != null) { MonsterSpecialAttacks.EyeDef.PlayerManaCost = value; } }
+		}
+
+		public double EyeDeflectChance {
+			get { return MonsterSpecialAttacks.EyeDef == null ? 0 : MonsterSpecialAttacks.EyeDef.DeflectChance; }
+			set { if (MonsterSpecialAttacks.EyeDef != null) { MonsterSpecialAttacks.EyeDef.DeflectChance = value; } }
+		}
+
+		public double[] EyeAttentionInt {
+			get { return MonsterSpecialAttacks.EyeDef?.AttentionInt; }
+			set { if (MonsterSpecialAttacks.EyeDef != null) { MonsterSpecialAttacks.EyeDef.AttentionInt = value; } }
+		}
+
+		public double GolemChanceAbove75 {
+			get { return MonsterSpecialAttacks.GolemDef == null ? 0 : MonsterSpecialAttacks.GolemDef.ChanceAbove75; }
+			set { if (MonsterSpecialAttacks.GolemDef != null) { MonsterSpecialAttacks.GolemDef.ChanceAbove75 = value; } }
+		}
+
+		public double GolemChanceAbove50 {
+			get { return MonsterSpecialAttacks.GolemDef == null ? 0 : MonsterSpecialAttacks.GolemDef.ChanceAbove50; }
+			set { if (MonsterSpecialAttacks.GolemDef != null) { MonsterSpecialAttacks.GolemDef.ChanceAbove50 = value; } }
+		}
+
+		public double GolemChanceAbove25 {
+			get { return MonsterSpecialAttacks.GolemDef == null ? 0 : MonsterSpecialAttacks.GolemDef.ChanceAbove25; }
+			set { if (MonsterSpecialAttacks.GolemDef != null) { MonsterSpecialAttacks.GolemDef.ChanceAbove25 = value; } }
+		}
+
+		public double GolemChanceAbove10 {
+			get { return MonsterSpecialAttacks.GolemDef == null ? 0 : MonsterSpecialAttacks.GolemDef.ChanceAbove10; }
+			set { if (MonsterSpecialAttacks.GolemDef != null) { MonsterSpecialAttacks.GolemDef.ChanceAbove10 = value; } }
+		}
+
+		public double GolemChanceBelow10 {
+			get { return MonsterSpecialAttacks.GolemDef == null ? 0 : MonsterSpecialAttacks.GolemDef.ChanceBelow10; }
+			set { if (MonsterSpecialAttacks.GolemDef != null) { MonsterSpecialAttacks.GolemDef.ChanceBelow10 = value; } }
+		}
+
+		public double BackstabHideDelay {
+			get { return MonsterSpecialAttacks.BackstabDef == null ? 0 : MonsterSpecialAttacks.BackstabDef.HideDelay; }
+			set { if (MonsterSpecialAttacks.BackstabDef != null) { MonsterSpecialAttacks.BackstabDef.HideDelay = value; } }
+		}
+
+		public double BackstabDamageFactor {
+			get { return MonsterSpecialAttacks.BackstabDef == null ? 0 : MonsterSpecialAttacks.BackstabDef.DamageFactor; }
+			set { if (MonsterSpecialAttacks.BackstabDef != null) { MonsterSpecialAttacks.BackstabDef.DamageFactor = value; } }
+		}
+
+		public double BackstabRehideDelay {
+			get { return MonsterSpecialAttacks.BackstabDef == null ? 0 : MonsterSpecialAttacks.BackstabDef.RehideDelay; }
+			set { if (MonsterSpecialAttacks.BackstabDef != null) { MonsterSpecialAttacks.BackstabDef.RehideDelay = value; } }
+		}
+
+		public double BackstabInterruptDelay {
+			get { return MonsterSpecialAttacks.BackstabDef == null ? 0 : MonsterSpecialAttacks.BackstabDef.InterruptDelay; }
+			set { if (MonsterSpecialAttacks.BackstabDef != null) { MonsterSpecialAttacks.BackstabDef.InterruptDelay = value; } }
+		}
+
+		public int BackstabNoticeRange {
+			get { return MonsterSpecialAttacks.BackstabDef == null ? 0 : MonsterSpecialAttacks.BackstabDef.NoticeRange; }
+			set { if (MonsterSpecialAttacks.BackstabDef != null) { MonsterSpecialAttacks.BackstabDef.NoticeRange = value; } }
+		}
+
+		public double[] MassLeapChance {
+			get { return MonsterSpecialAttacks.MassLeapDef?.Chance; }
+			set { if (MonsterSpecialAttacks.MassLeapDef != null) { MonsterSpecialAttacks.MassLeapDef.Chance = value; } }
+		}
+
+		public int MassLeapRange {
+			get { return MonsterSpecialAttacks.MassLeapDef == null ? 0 : MonsterSpecialAttacks.MassLeapDef.Range; }
+			set { if (MonsterSpecialAttacks.MassLeapDef != null) { MonsterSpecialAttacks.MassLeapDef.Range = value; } }
+		}
+
+		public double MassLeapFirstDelay {
+			get { return MonsterSpecialAttacks.MassLeapDef == null ? 0 : MonsterSpecialAttacks.MassLeapDef.FirstDelay; }
+			set { if (MonsterSpecialAttacks.MassLeapDef != null) { MonsterSpecialAttacks.MassLeapDef.FirstDelay = value; } }
+		}
+
+		public double[] MassLeapHopDelay {
+			get { return MonsterSpecialAttacks.MassLeapDef?.HopDelay; }
+			set { if (MonsterSpecialAttacks.MassLeapDef != null) { MonsterSpecialAttacks.MassLeapDef.HopDelay = value; } }
+		}
+
+		public int DuplicatorDupeCount {
+			get { return MonsterSpecialAttacks.DuplicatorDef == null ? 0 : MonsterSpecialAttacks.DuplicatorDef.DupeCount; }
+			set { if (MonsterSpecialAttacks.DuplicatorDef != null) { MonsterSpecialAttacks.DuplicatorDef.DupeCount = value; } }
+		}
+
+		public double[] CraftMonsterBonus {
+			get { return MonsterSpecialAttacks.CraftMonsterDef?.Bonus; }
+			set { if (MonsterSpecialAttacks.CraftMonsterDef != null) { MonsterSpecialAttacks.CraftMonsterDef.Bonus = value; } }
+		}
+
+		public double CraftMonsterCritChance {
+			get { return MonsterSpecialAttacks.CraftMonsterDef == null ? 0 : MonsterSpecialAttacks.CraftMonsterDef.CritChance; }
+			set { if (MonsterSpecialAttacks.CraftMonsterDef != null) { MonsterSpecialAttacks.CraftMonsterDef.CritChance = value; } }
+		}
+
+		public double[] CraftMonsterCritBonus {
+			get { return MonsterSpecialAttacks.CraftMonsterDef?.CritBonus; }
+			set { if (MonsterSpecialAttacks.CraftMonsterDef != null) { MonsterSpecialAttacks.CraftMonsterDef.CritBonus = value; } }
+		}
+
+		public double[] WarcryCooldown {
+			get { return MonsterSpecialAttacks.WarcryDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.WarcryDef != null) { MonsterSpecialAttacks.WarcryDef.Cooldown = value; } }
+		}
+
+		public int WarcryRange {
+			get { return MonsterSpecialAttacks.WarcryDef == null ? 0 : MonsterSpecialAttacks.WarcryDef.Range; }
+			set { if (MonsterSpecialAttacks.WarcryDef != null) { MonsterSpecialAttacks.WarcryDef.Range = value; } }
+		}
+
+		public double[] DispelBombChance {
+			get { return MonsterSpecialAttacks.DispelBombDef?.Chance; }
+			set { if (MonsterSpecialAttacks.DispelBombDef != null) { MonsterSpecialAttacks.DispelBombDef.Chance = value; } }
+		}
+
+		public double[] DispelBombCooldown {
+			get { return MonsterSpecialAttacks.DispelBombDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.DispelBombDef != null) { MonsterSpecialAttacks.DispelBombDef.Cooldown = value; } }
+		}
+
+		public double[] DispelBombThrowRange {
+			get { return MonsterSpecialAttacks.DispelBombDef?.ThrowRange; }
+			set { if (MonsterSpecialAttacks.DispelBombDef != null) { MonsterSpecialAttacks.DispelBombDef.ThrowRange = value; } }
+		}
+
+		public double DispelBombFuse {
+			get { return MonsterSpecialAttacks.DispelBombDef == null ? 0 : MonsterSpecialAttacks.DispelBombDef.Fuse; }
+			set { if (MonsterSpecialAttacks.DispelBombDef != null) { MonsterSpecialAttacks.DispelBombDef.Fuse = value; } }
+		}
+
+		public int DispelBombBlastRange {
+			get { return MonsterSpecialAttacks.DispelBombDef == null ? 0 : MonsterSpecialAttacks.DispelBombDef.BlastRange; }
+			set { if (MonsterSpecialAttacks.DispelBombDef != null) { MonsterSpecialAttacks.DispelBombDef.BlastRange = value; } }
+		}
 	}
 }

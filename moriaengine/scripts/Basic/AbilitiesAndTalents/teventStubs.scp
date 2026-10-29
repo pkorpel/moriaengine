@@ -26,8 +26,10 @@ Name = "(e_aldaron_vamp)"
 [AutoReflectAbilityDef a_tevent_e_autoreflect]
 Name = "Auto Reflect"
 
-[PassiveAbilityDef a_tevent_e_backstub]
-Name = "(e_backstub)"
+//#799 batch 5: upgraded from a bare stub to a real BackstabAbilityDef
+//(MonsterSpecialAttacks/) - hides when it spots a player; its first hit from hiding is devastating.
+[BackstabAbilityDef a_tevent_e_backstub]
+Name = "Ambush"
 
 [PassiveAbilityDef a_tevent_e_bahenny_drak_aura]
 Name = "(e_bahenny_drak_aura)"
@@ -62,8 +64,10 @@ Name = "(e_cajun)"
 [PassiveAbilityDef a_tevent_e_character]
 Name = "(e_character)"
 
-[PassiveAbilityDef a_tevent_e_craft_monster]
-Name = "(e_craft_monster)"
+//#799 batch 5: upgraded from a bare stub to a real CraftMonsterAbilityDef
+//(MonsterSpecialAttacks/) - takes extra damage from Craftsmen, crits from their own weapons.
+[CraftMonsterAbilityDef a_tevent_e_craft_monster]
+Name = "Crafter's Prey"
 
 [PassiveAbilityDef a_tevent_e_daemon]
 Name = "(e_daemon)"
@@ -88,8 +92,10 @@ Name = "(e_drone_large)"
 [PassiveAbilityDef a_tevent_e_drop_egg]
 Name = "(e_drop_egg)"
 
-[PassiveAbilityDef a_tevent_e_duplicator]
-Name = "(e_duplicator)"
+//#799 batch 5: upgraded from a bare stub to a real DuplicatorAbilityDef
+//(MonsterSpecialAttacks/) - splits into copies of itself when hit.
+[DuplicatorAbilityDef a_tevent_e_duplicator]
+Name = "Duplicator"
 
 [PassiveAbilityDef a_tevent_e_earth]
 Name = "(e_earth)"
@@ -105,14 +111,18 @@ Name = "(e_emotedmg)"
 [ExplodeAbilityDef a_tevent_e_explode]
 Name = "Death Explosion"
 
-[PassiveAbilityDef a_tevent_e_explosiondispell]
-Name = "(e_explosiondispell)"
+//#799 batch 5: upgraded from a bare stub to a real DispelBombAbilityDef
+//(MonsterSpecialAttacks/) - chance when hit to throw a bomb that dispels everyone near it 3 s later.
+[DispelBombAbilityDef a_tevent_e_explosiondispell]
+Name = "Dispel Bomb"
 
 [PassiveAbilityDef a_tevent_e_explosionlava]
 Name = "(e_explosionlava)"
 
-[PassiveAbilityDef a_tevent_e_eye]
-Name = "(e_eye)"
+//#799 batch 5: upgraded from a bare stub to a real EyeAbilityDef
+//(MonsterSpecialAttacks/) - its hits sap stamina and leech life, physical blows may bounce off.
+[EyeAbilityDef a_tevent_e_eye]
+Name = "Draining Gaze"
 
 [PassiveAbilityDef a_tevent_e_fire]
 Name = "(e_fire)"
@@ -144,8 +154,10 @@ Name = "(e_getwpn)"
 [PassiveAbilityDef a_tevent_e_goblin_treasure]
 Name = "(e_goblin_treasure)"
 
-[PassiveAbilityDef a_tevent_e_golem]
-Name = "(e_golem)"
+//#799 batch 5: upgraded from a bare stub to a real GolemAbilityDef
+//(MonsterSpecialAttacks/) - turns on whoever hits it, less often as it wears down.
+[GolemAbilityDef a_tevent_e_golem]
+Name = "Golem Fury"
 
 [PassiveAbilityDef a_tevent_e_guard]
 Name = "(e_guard)"
@@ -333,11 +345,15 @@ Name = "Magic Shield"
 [PassiveAbilityDef a_tevent_e_npc_manashield]
 Name = "(e_npc_manashield)"
 
-[PassiveAbilityDef a_tevent_e_npc_massleap]
-Name = "(e_npc_massleap)"
+//#799 batch 5: upgraded from a bare stub to a real MassLeapAbilityDef
+//(MonsterSpecialAttacks/) - teleports from player to player, attacking each.
+[MassLeapAbilityDef a_tevent_e_npc_massleap]
+Name = "Mass Leap"
 
-[PassiveAbilityDef a_tevent_e_npc_multishot]
-Name = "(e_npc_multishot)"
+//#799 batch 5: upgraded from a bare stub to a real MultishotAbilityDef
+//(MonsterSpecialAttacks/) - chance when hit to shoot every player/pet around but its current target.
+[MultishotAbilityDef a_tevent_e_npc_multishot]
+Name = "Split Shot"
 
 //#797 batch 4: upgraded from a bare stub to a real ReactiveArmorAbilityDef
 //(MonsterSpecialAttacks/) - reflects part of melee damage taken back at the attacker.
@@ -390,8 +406,10 @@ Name = "Summoner"
 [PassiveAbilityDef a_tevent_e_npc_summonkiller]
 Name = "(e_npc_summonkiller)"
 
-[PassiveAbilityDef a_tevent_e_npc_warcry]
-Name = "(e_npc_warcry)"
+//#799 batch 5: upgraded from a bare stub to a real WarcryAbilityDef
+//(MonsterSpecialAttacks/) - periodic cry that interrupts everyone's spellcasting.
+[WarcryAbilityDef a_tevent_e_npc_warcry]
+Name = "War Cry"
 
 [PassiveAbilityDef a_tevent_e_ocs_boss_resser]
 Name = "(e_ocs_boss_resser)"
