@@ -217,14 +217,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static FlaggedRegion FindArea(byte mapPlane, int x, int y) {
 			Map map = Map.GetMap(mapPlane);
-			if (map == null) {
-				return null;
-			}
-			Region region = map.GetRegionFor(x, y);
-			while ((region != null) && !(region is FlaggedRegion)) {
-				region = region.Parent; //a house/ship region sits inside a static area
-			}
-			return region as FlaggedRegion;
+			return (map == null) ? null : RegionEventSystem.AreaOf(map.GetRegionFor(x, y));
 		}
 	}
 }

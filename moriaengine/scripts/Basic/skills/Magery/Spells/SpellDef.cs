@@ -742,6 +742,9 @@ namespace SteamEngine.CompiledScripts {
 			RegionFlags.NoHarmfulMagicIn | RegionFlags.NoMagicIn | RegionFlags.NoTeleportingIn;
 
 		internal bool CheckPermissionOutgoing(Character caster) {
+			if (!RegionEventSystem.CheckSpellAllowed(caster, this)) { //#813 r_nofield, r_notele
+				return false;
+			}
 			FlaggedRegion region = caster.Region as FlaggedRegion;
 			if (region != null) {
 				RegionFlags regionFlags = region.Flags;
