@@ -12,26 +12,26 @@ namespace SteamEngine.Tests.Protocol {
 		private const string Account = "speechstubtest";
 		private const string Password = "speechstubtest";
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(15);
-		private const string Hint = "[unported speech spk_guard on ";
+		private const string Hint = "[unported speech spk_kecy_a_drby on ";
 
 		[Fact]
 		public void ArchiveSpeechesArePlaceholdersThatHintGmsOnly() {
 			using (var fixture = new GameServerPairFixture()) {
 				using (var client = Connect(fixture, "Speech Tester")) {
 					string report = Ask(fixture, client, ".TestSpeechStubReport", "SPEECH_STUB_REPORT:");
-					//252 archive blocks: 2 ported in C#, spk_vendor_custom is the LScript one in scripts/Optional/PlayerVendor
-					AssertHas(report, "stubs=249 guard=*guard*|*straz* guardDefHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech");
+					//252 archive blocks: 3 ported in C#, spk_vendor_custom is the LScript one in scripts/Optional/PlayerVendor
+					AssertHas(report, "stubs=248 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech");
 
-					Ask(fixture, client, ".TestSpawnSpeechStubGuard", "SPEECH_STUB_GUARD:");
+					Ask(fixture, client, ".TestSpawnSpeechStubListener", "SPEECH_STUB_LISTENER:");
 					client.SendSpeech("hello there");
 					Assert.Null(TryReadMessageContaining(client, Hint, TimeSpan.FromSeconds(3)));
-					client.SendSpeech("guard, help!");
+					client.SendSpeech("hey vypravec");
 					string hint = TryReadMessageContaining(client, Hint, TimeSpan.FromSeconds(10));
 					Assert.NotNull(hint);
-					AssertHas(hint, ": *guard*]");
+					AssertHas(hint, ": *Vypravec*]");
 
 					AssertHas(Ask(fixture, client, ".TestSpeechStubBecomePlayer", "SPEECH_STUB_PLAYER:"), "gm=False");
-					client.SendSpeech("guard, help!");
+					client.SendSpeech("hey vypravec");
 					Assert.Null(TryReadMessageContaining(client, Hint, TimeSpan.FromSeconds(3)));
 				}
 			}
