@@ -19,3 +19,7 @@
 # Third-party Erebor archive input for SphereShardConverter - not vendored,
 # see docs/current/06-tooling/sphere-shard-converter.md for the clone command.
 /SphereShardConverter/convert/
+
+# test runs leave real saves here until the next fixture boot cleans them; only the baseline is tracked (#813)
+/saves/*
+!/saves/2000-01-01/
