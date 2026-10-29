@@ -95,6 +95,8 @@ namespace SteamEngine.CompiledScripts {
 			if (def != null) {
 				def.Create(self.Backpack);
 				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).success);
+			} else if (LumberjackingVeinSystem.IsEmptySpot(self.GetMap().M, targetted.X, targetted.Y)) {
+				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).notATree); //#813 - the region's roll was "nothing"
 			} else {
 				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).veinExhausted);
 			}

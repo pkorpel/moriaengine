@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
 using System.Collections.Generic;
 
 namespace SteamEngine.CompiledScripts {
@@ -42,19 +43,6 @@ namespace SteamEngine.CompiledScripts {
 			this.MinAmount = minAmount;
 			this.MaxAmount = maxAmount;
 			this.RegenMinutes = regenMinutes;
-		}
-
-		/// <summary>Rarity weight for the untouched-vein roll - same "real AMOUNT range's own
-		/// midpoint as a commonness proxy" precedent as Mining's OreTier.Weight. The real
-		/// source's own region-type distribution comments out adamantinum/mithril entirely
-		/// (reserved for the separate elven-bonus mechanic, #427) - matching Mining's OWN
-		/// already-shipped OreTiers.All (which likewise includes Adamantinum/Mithril in its
-		/// weighted pool despite the identical real-source comment on the ore side), this
-		/// deliberately does NOT exclude them - their tiny amount ranges already make them
-		/// naturally rare without needing a hard exclusion, consistent with the sibling
-		/// system's own precedent.</summary>
-		public double Weight {
-			get { return (this.MinAmount + this.MaxAmount) / 2.0; }
 		}
 
 		private ItemDef itemDef;
@@ -94,6 +82,25 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly WoodTier[] All = {
 			Spruce, Chestnut, Oak, Teak, Mahagon, Eben, Elven
 		};
+
+		private static readonly Dictionary<string, WoodTier> extraTiers = new Dictionary<string, WoodTier>(StringComparer.OrdinalIgnoreCase);
+
+		/// <summary>#813 - the tier a region resource yields: one of All by its reaped item, or a
+		/// tier made from the resource's own archive values (skill = the range's low end, like
+		/// fixresource's check; amount; regen).</summary>
+		public static WoodTier ForResource(RegionResourceDef resource) {
+			foreach (WoodTier tier in All) {
+				if (StringComparer.OrdinalIgnoreCase.Equals(tier.ItemDefname, resource.Reap)) {
+					return tier;
+				}
+			}
+			WoodTier extra;
+			if (!extraTiers.TryGetValue(resource.Reap, out extra)) {
+				extra = new WoodTier(resource.Reap, resource.SkillMin, resource.AmountMin, resource.AmountMax, Math.Max(1, resource.RegenSeconds / 60));
+				extraTiers[resource.Reap] = extra;
+			}
+			return extra;
+		}
 
 		/// <summary>Reverse lookup from a yielded ItemDef back to its WoodTier - used by
 		/// LumberjackingAmbushSystem (#431) to key its Reaper variant off the wood tier a chop
@@ -144,7 +151,7 @@ namespace SteamEngine.CompiledScripts {
 			Vein vein = GetOrCreateVein(mapPlane, x, y);
 
 			if (vein.Untouched || (vein.RemainingPool <= 0 && Globals.TimeInSeconds >= vein.RegenReadyAtSeconds)) {
-				AssignFreshWood(vein);
+				AssignFreshWood(vein, mapPlane, x, y);
 			}
 
 			if (vein.RemainingPool <= 0) {
@@ -188,26 +195,33 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static void AssignFreshWood(Vein vein) {
-			double totalWeight = 0;
-			foreach (WoodTier tier in WoodTiers.All) {
-				totalWeight += tier.Weight;
+		/// <summary>#813 - what this spot holds comes from the region it's in: the area's
+		/// t_tree region type from the Erebor archive (sphereregion.scp), weighted roll -
+		/// RegionResourceSystem. "Nothing" (r_nothing, or no region type for t_tree here)
+		/// leaves the spot empty until that resource's REGEN, then it rolls again (Sphere's
+		/// resource spot). A resource that isn't one of the WoodTiers (sand, gems...) gets a
+		/// tier built from its own archive values.</summary>
+		private static void AssignFreshWood(Vein vein, byte mapPlane, int x, int y) {
+			vein.Untouched = false;
+			RegionResourceDef resource = RegionResourceSystem.Pick(mapPlane, x, y, "t_tree");
+			if ((resource == null) || resource.IsNothing) {
+				vein.AssignedWood = null;
+				vein.RemainingPool = 0;
+				vein.RegenReadyAtSeconds = Globals.TimeInSeconds + (((resource != null) && (resource.RegenSeconds > 0)) ? resource.RegenSeconds : EmptySpotRegenSeconds);
+				return;
 			}
-
-			double roll = Globals.dice.NextDouble() * totalWeight;
-			WoodTier picked = WoodTiers.All[WoodTiers.All.Length - 1];
-			double accumulated = 0;
-			foreach (WoodTier tier in WoodTiers.All) {
-				accumulated += tier.Weight;
-				if (roll < accumulated) {
-					picked = tier;
-					break;
-				}
-			}
-
+			WoodTier picked = WoodTiers.ForResource(resource);
 			vein.AssignedWood = picked;
 			vein.RemainingPool = Globals.dice.Next(picked.MinAmount, picked.MaxAmount + 1);
-			vein.Untouched = false;
+		}
+
+		/// <summary>How long a spot with no region type at all stays empty (r_nothing's own REGEN).</summary>
+		public static int EmptySpotRegenSeconds = 30 * 60;
+
+		/// <summary>#813 - true when this spot rolled "nothing" (as opposed to being used up).</summary>
+		public static bool IsEmptySpot(byte mapPlane, int x, int y) {
+			Vein vein;
+			return veins.TryGetValue((mapPlane, x, y), out vein) && !vein.Untouched && (vein.AssignedWood == null);
 		}
 	}
 }

@@ -48,7 +48,8 @@ namespace SteamEngine.CompiledScripts {
 			int y = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
 			byte mapPlane = self.GetMap().M;
 			ItemDef result = MiningVeinSystem.Mine(self, mapPlane, x, y);
-			Console.WriteLine("MINE_RESULT: ore=" + DescribeOreResult(result));
+			//#813 emptySpot: the spot's region roll was "nothing" (not just a used-up pool)
+			Console.WriteLine("MINE_RESULT: ore=" + DescribeOreResult(result) + " emptySpot=" + MiningVeinSystem.IsEmptySpot(mapPlane, x, y));
 		}
 
 		/// <summary>ItemDef.Defname is the raw header defname (e.g. "0x19b7"), not the real
@@ -107,10 +108,10 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("CAVE_IN_CLEAR_ATTEMPT: cleared=" + cleared);
 		}
 
-		/// <summary>Samples `attempts` fresh tiles, each mined once with a high enough skill to
-		/// always succeed against copper's own 0 threshold, counting how many trigger the real
-		/// 1/120 cave-in roll - same statistical-sampling precedent as
-		/// TestSampleVeinOreDistribution above.</summary>
+		/// <summary>Samples `attempts` fresh tiles, each given a copper vein (#813 - a fresh tile's
+		/// own region roll is mostly "nothing", which never reaches the cave-in roll) and mined
+		/// once with a high enough skill to always succeed, counting how many trigger the real
+		/// 1/120 cave-in roll.</summary>
 		[SteamFunction]
 		public static void TestSampleCaveInChance(Character self, ScriptArgs sa) {
 			int attempts = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
@@ -120,6 +121,7 @@ namespace SteamEngine.CompiledScripts {
 
 			int caveIns = 0;
 			for (int i = 0; i < attempts; i++) {
+				MiningVeinSystem.ForceVeinForTest(mapPlane, baseX + i, 1, OreTiers.Copper, 5);
 				MiningVeinSystem.Mine(self, mapPlane, baseX + i, 1);
 				if (MiningVeinSystem.IsCaveInBlocked(mapPlane, baseX + i, 1)) {
 					caveIns++;
@@ -173,32 +175,6 @@ namespace SteamEngine.CompiledScripts {
 			byte mapPlane = self.GetMap().M;
 			MiningVeinSystem.ForceVeinRegenReadyForTest(mapPlane, x, y);
 			Console.WriteLine("VEIN_REGEN_FORCED: x=" + x + " y=" + y);
-		}
-
-		/// <summary>Samples `attempts` fresh, never-before-touched tiles (baseX+i each time) to
-		/// confirm the weighted roll actually favors common ores over rare ones - same
-		/// statistical-sampling precedent as SpawnCommandTests' TestSampleRollSpawnDefDistribution.
-		/// Skill set high enough to never trigger the downgrade, so this purely measures the
-		/// untouched-vein roll itself.</summary>
-		[SteamFunction]
-		public static void TestSampleVeinOreDistribution(Character self, ScriptArgs sa) {
-			int attempts = Convert.ToInt32(sa.Argv[0], CultureInfo.InvariantCulture);
-			int baseX = Convert.ToInt32(sa.Argv[1], CultureInfo.InvariantCulture);
-			byte mapPlane = self.GetMap().M;
-			self.SetRealSkillValue((int) SkillName.Mining, 1200);
-
-			int copperCount = 0;
-			int mithrilCount = 0;
-			for (int i = 0; i < attempts; i++) {
-				ItemDef result = MiningVeinSystem.Mine(self, mapPlane, baseX + i, 0);
-				if (ReferenceEquals(result, OreTiers.Copper.ItemDef)) {
-					copperCount++;
-				}
-				if (ReferenceEquals(result, OreTiers.Mithril.ItemDef)) {
-					mithrilCount++;
-				}
-			}
-			Console.WriteLine("VEIN_DISTRIBUTION_SAMPLE: attempts=" + attempts + " copper=" + copperCount + " mithril=" + mithrilCount);
 		}
 	}
 }
