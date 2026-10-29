@@ -496,10 +496,10 @@ namespace SteamEngine.CompiledScripts {
 			set { this.SetTag(summoningLifetimeTK, value); }
 		}
 
-		//#797 - monster abilities batch 4 per-species overrides, same {min,max}-or-null shape as
+		//#797/#799 - monster abilities batch 4+ per-species overrides, same {min,max}-or-null shape as
 		//the ones above. Each .def field name (lowercased) maps to its own tag key here, so
 		//LoadScriptLine handles all of them with one lookup instead of one if-block each.
-		private static readonly Dictionary<string, TagKey> batch4AbilityRangeTags = new Dictionary<string, TagKey>(StringComparer.OrdinalIgnoreCase) {
+		private static readonly Dictionary<string, TagKey> moreAbilityRangeTags = new Dictionary<string, TagKey>(StringComparer.OrdinalIgnoreCase) {
 			{ "phoenixfiredamage", TagKey.Acquire("_npcPhoenixFireDamage_") },
 			{ "explodedamage", TagKey.Acquire("_npcExplodeDamage_") },
 			{ "regenerationhp", TagKey.Acquire("_npcRegenerationHp_") },
@@ -518,103 +518,153 @@ namespace SteamEngine.CompiledScripts {
 			{ "npccursestamdamage", TagKey.Acquire("_npcCurseStamDamage_") },
 			{ "pushallchance", TagKey.Acquire("_npcPushallChance_") },
 			{ "pushallcooldown", TagKey.Acquire("_npcPushallCooldown_") },
-			{ "magicshieldstrength", TagKey.Acquire("_npcMagicShieldStrength_") }
+			{ "magicshieldstrength", TagKey.Acquire("_npcMagicShieldStrength_") },
+			{ "dupecount", TagKey.Acquire("_npcDupeCount_") },
+			{ "backstabdamagereducer", TagKey.Acquire("_npcBackstabDamageReducer_") },
+			{ "multishotchance", TagKey.Acquire("_npcMultishotChance_") },
+			{ "multishotcooldown", TagKey.Acquire("_npcMultishotCooldown_") },
+			{ "multishotdamage", TagKey.Acquire("_npcMultishotDamage_") },
+			{ "dispelbombchance", TagKey.Acquire("_npcDispelBombChance_") },
+			{ "dispelbombrange", TagKey.Acquire("_npcDispelBombRange_") },
+			{ "dispelbombcooldown", TagKey.Acquire("_npcDispelBombCooldown_") },
+			{ "warcrycooldown", TagKey.Acquire("_npcWarcryCooldown_") }
 		};
 
-		private int[] GetBatch4Range(string fieldName) {
-			return this.GetTag(batch4AbilityRangeTags[fieldName]) as int[];
+		private int[] GetAbilityRange(string fieldName) {
+			return this.GetTag(moreAbilityRangeTags[fieldName]) as int[];
 		}
 
-		private void SetBatch4Range(string fieldName, int[] value) {
-			this.SetTag(batch4AbilityRangeTags[fieldName], value);
+		private void SetAbilityRange(string fieldName, int[] value) {
+			this.SetTag(moreAbilityRangeTags[fieldName], value);
 		}
 
 		/// <summary>Real archive field is tag.phoenix_fire_damage.</summary>
 		public int[] PhoenixFireDamage {
-			get { return this.GetBatch4Range("phoenixfiredamage"); }
-			set { this.SetBatch4Range("phoenixfiredamage", value); }
+			get { return this.GetAbilityRange("phoenixfiredamage"); }
+			set { this.SetAbilityRange("phoenixfiredamage", value); }
 		}
 		/// <summary>Real archive field is tag.explode_dmg.</summary>
 		public int[] ExplodeDamage {
-			get { return this.GetBatch4Range("explodedamage"); }
-			set { this.SetBatch4Range("explodedamage", value); }
+			get { return this.GetAbilityRange("explodedamage"); }
+			set { this.SetAbilityRange("explodedamage", value); }
 		}
 		/// <summary>Real archive fields are tag.regeneration_hp/_speed (seconds).</summary>
 		public int[] RegenerationHp {
-			get { return this.GetBatch4Range("regenerationhp"); }
-			set { this.SetBatch4Range("regenerationhp", value); }
+			get { return this.GetAbilityRange("regenerationhp"); }
+			set { this.SetAbilityRange("regenerationhp", value); }
 		}
 		public int[] RegenerationInterval {
-			get { return this.GetBatch4Range("regenerationinterval"); }
-			set { this.SetBatch4Range("regenerationinterval", value); }
+			get { return this.GetAbilityRange("regenerationinterval"); }
+			set { this.SetAbilityRange("regenerationinterval", value); }
 		}
 		/// <summary>Real archive field is tag.npc_lifeLeech.</summary>
 		public int[] LifeLeechAmount {
-			get { return this.GetBatch4Range("lifeleechamount"); }
-			set { this.SetBatch4Range("lifeleechamount", value); }
+			get { return this.GetAbilityRange("lifeleechamount"); }
+			set { this.SetAbilityRange("lifeleechamount", value); }
 		}
 		/// <summary>Real archive field is tag.reactivearmor_damagePerc (percent).</summary>
 		public int[] ReactiveArmorPercent {
-			get { return this.GetBatch4Range("reactivearmorpercent"); }
-			set { this.SetBatch4Range("reactivearmorpercent", value); }
+			get { return this.GetAbilityRange("reactivearmorpercent"); }
+			set { this.SetAbilityRange("reactivearmorpercent", value); }
 		}
 		/// <summary>Real archive fields are tag.stam_dmg_chance/_power.</summary>
 		public int[] StamDmgChance {
-			get { return this.GetBatch4Range("stamdmgchance"); }
-			set { this.SetBatch4Range("stamdmgchance", value); }
+			get { return this.GetAbilityRange("stamdmgchance"); }
+			set { this.SetAbilityRange("stamdmgchance", value); }
 		}
 		public int[] StamDmgPower {
-			get { return this.GetBatch4Range("stamdmgpower"); }
-			set { this.SetBatch4Range("stamdmgpower", value); }
+			get { return this.GetAbilityRange("stamdmgpower"); }
+			set { this.SetAbilityRange("stamdmgpower", value); }
 		}
 		/// <summary>Real archive fields are tag.e_lightnings_chance/_range.</summary>
 		public int[] LightningsChance {
-			get { return this.GetBatch4Range("lightningschance"); }
-			set { this.SetBatch4Range("lightningschance", value); }
+			get { return this.GetAbilityRange("lightningschance"); }
+			set { this.SetAbilityRange("lightningschance", value); }
 		}
 		public int[] LightningsRange {
-			get { return this.GetBatch4Range("lightningsrange"); }
-			set { this.SetBatch4Range("lightningsrange", value); }
+			get { return this.GetAbilityRange("lightningsrange"); }
+			set { this.SetAbilityRange("lightningsrange", value); }
 		}
 		/// <summary>Real archive fields are tag.npc_curse_mana_chance/_delay/_dmg.</summary>
 		public int[] NpcCurseManaChance {
-			get { return this.GetBatch4Range("npccursemanachance"); }
-			set { this.SetBatch4Range("npccursemanachance", value); }
+			get { return this.GetAbilityRange("npccursemanachance"); }
+			set { this.SetAbilityRange("npccursemanachance", value); }
 		}
 		public int[] NpcCurseManaCooldown {
-			get { return this.GetBatch4Range("npccursemanacooldown"); }
-			set { this.SetBatch4Range("npccursemanacooldown", value); }
+			get { return this.GetAbilityRange("npccursemanacooldown"); }
+			set { this.SetAbilityRange("npccursemanacooldown", value); }
 		}
 		public int[] NpcCurseManaDamage {
-			get { return this.GetBatch4Range("npccursemanadamage"); }
-			set { this.SetBatch4Range("npccursemanadamage", value); }
+			get { return this.GetAbilityRange("npccursemanadamage"); }
+			set { this.SetAbilityRange("npccursemanadamage", value); }
 		}
 		/// <summary>Real archive fields are tag.npc_curse_stam_chance/_delay/_dmg.</summary>
 		public int[] NpcCurseStamChance {
-			get { return this.GetBatch4Range("npccursestamchance"); }
-			set { this.SetBatch4Range("npccursestamchance", value); }
+			get { return this.GetAbilityRange("npccursestamchance"); }
+			set { this.SetAbilityRange("npccursestamchance", value); }
 		}
 		public int[] NpcCurseStamCooldown {
-			get { return this.GetBatch4Range("npccursestamcooldown"); }
-			set { this.SetBatch4Range("npccursestamcooldown", value); }
+			get { return this.GetAbilityRange("npccursestamcooldown"); }
+			set { this.SetAbilityRange("npccursestamcooldown", value); }
 		}
 		public int[] NpcCurseStamDamage {
-			get { return this.GetBatch4Range("npccursestamdamage"); }
-			set { this.SetBatch4Range("npccursestamdamage", value); }
+			get { return this.GetAbilityRange("npccursestamdamage"); }
+			set { this.SetAbilityRange("npccursestamdamage", value); }
 		}
 		/// <summary>Real archive fields are tag.e_pushall_chance/_time (seconds).</summary>
 		public int[] PushallChance {
-			get { return this.GetBatch4Range("pushallchance"); }
-			set { this.SetBatch4Range("pushallchance", value); }
+			get { return this.GetAbilityRange("pushallchance"); }
+			set { this.SetAbilityRange("pushallchance", value); }
 		}
 		public int[] PushallCooldown {
-			get { return this.GetBatch4Range("pushallcooldown"); }
-			set { this.SetBatch4Range("pushallcooldown", value); }
+			get { return this.GetAbilityRange("pushallcooldown"); }
+			set { this.SetAbilityRange("pushallcooldown", value); }
 		}
 		/// <summary>Real archive field is tag.npc_magicShield (percent of a swing absorbed).</summary>
 		public int[] MagicShieldStrength {
-			get { return this.GetBatch4Range("magicshieldstrength"); }
-			set { this.SetBatch4Range("magicshieldstrength", value); }
+			get { return this.GetAbilityRange("magicshieldstrength"); }
+			set { this.SetAbilityRange("magicshieldstrength", value); }
+		}
+		/// <summary>Real archive field is tag.dupecount (how many copies e_duplicator may make).</summary>
+		public int[] DupeCount {
+			get { return this.GetAbilityRange("dupecount"); }
+			set { this.SetAbilityRange("dupecount", value); }
+		}
+		/// <summary>Real archive field is tag.backstub_damageReducer (permille of the ambush bonus kept).</summary>
+		public int[] BackstabDamageReducer {
+			get { return this.GetAbilityRange("backstabdamagereducer"); }
+			set { this.SetAbilityRange("backstabdamagereducer", value); }
+		}
+		/// <summary>Real archive fields are tag.multishot_chance/_delay (seconds)/_dmg.</summary>
+		public int[] MultishotChance {
+			get { return this.GetAbilityRange("multishotchance"); }
+			set { this.SetAbilityRange("multishotchance", value); }
+		}
+		public int[] MultishotCooldown {
+			get { return this.GetAbilityRange("multishotcooldown"); }
+			set { this.SetAbilityRange("multishotcooldown", value); }
+		}
+		public int[] MultishotDamage {
+			get { return this.GetAbilityRange("multishotdamage"); }
+			set { this.SetAbilityRange("multishotdamage", value); }
+		}
+		/// <summary>Real archive fields are tag.e_explosiondispell_chance/_range/_time (seconds).</summary>
+		public int[] DispelBombChance {
+			get { return this.GetAbilityRange("dispelbombchance"); }
+			set { this.SetAbilityRange("dispelbombchance", value); }
+		}
+		public int[] DispelBombRange {
+			get { return this.GetAbilityRange("dispelbombrange"); }
+			set { this.SetAbilityRange("dispelbombrange", value); }
+		}
+		public int[] DispelBombCooldown {
+			get { return this.GetAbilityRange("dispelbombcooldown"); }
+			set { this.SetAbilityRange("dispelbombcooldown", value); }
+		}
+		/// <summary>Real archive field is tag.NPC_Warcry_delay - raw deciseconds, same convention as StunCooldown.</summary>
+		public int[] WarcryCooldown {
+			get { return this.GetAbilityRange("warcrycooldown"); }
+			set { this.SetAbilityRange("warcrycooldown", value); }
 		}
 
 		private static readonly TagKey summonedCreaturesTK = TagKey.Acquire("_npcSummonedCreatures_");
@@ -1282,8 +1332,8 @@ namespace SteamEngine.CompiledScripts {
 				this.SummoningLifetime = ParseStatRange(filename, line, "summoninglifetime", args);
 				return;
 			}
-			if (batch4AbilityRangeTags.ContainsKey(param)) {
-				this.SetBatch4Range(param, ParseStatRange(filename, line, param, args));
+			if (moreAbilityRangeTags.ContainsKey(param)) {
+				this.SetAbilityRange(param, ParseStatRange(filename, line, param, args));
 				return;
 			}
 			if (param == "addsummon") {

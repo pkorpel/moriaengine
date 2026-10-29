@@ -27,12 +27,12 @@ prefixed (`stunChance`, `npcCurseManaChance`...).
 
 | Hook | Abilities |
 |---|---|
-| `DamageManager.ProcessSwing`, before `CauseDamage` | summon eater (+ vamp) - swing ends, critic, sniper, magic shield (defender) |
-| `ProcessSwing`, after a landed hit, attacker side | stun, knockback, bleed, life leech, phoenix fire |
-| `ProcessSwing`, after a landed hit, defender side (only if it survived) | reactive armor, stamina drain, mana gain, phoenix rebirth, lightnings, push all, auto reflect, strangler-vine hit count |
+| `DamageManager.ProcessSwing`, before `CauseDamage` | summon eater (+ vamp) - swing ends, critic, sniper, magic shield and eye deflect (defender) |
+| `ProcessSwing`, after a landed hit, attacker side | stun, knockback, bleed, life leech, phoenix fire, eye drain, backstab ambush |
+| `ProcessSwing`, after a landed hit, defender side (only if it survived) | reactive armor, stamina drain, mana gain, phoenix rebirth, lightnings, push all, auto reflect, strangler-vine hit count, backstab-hide interrupt, multishot, dispel bomb; and unless reactive armor killed the attacker: craft monster, eye attention, golem retarget, mass leap, duplicator |
 | `DamageManager.CauseDamage` | explode records who hurt it; `DamageType.Irresistable` skips resists (Sphere's `dam_god`) |
-| `NPCAiTimer.Fight` (once per think-tick while fighting) | roundattack/pull, detect, paralyzing scream, the three curses, summoner, infinite mana, leaper |
-| `NPCAiTimer.OnTimeout` (every tick, any state) | dragon regeneration |
+| `NPCAiTimer.Fight` (once per think-tick while fighting) | roundattack/pull, detect, paralyzing scream, the three curses, summoner, infinite mana, leaper, warcry |
+| `NPCAiTimer.OnTimeout` (every tick, any state, `MonsterSpecialAttacks.OnAiTick`) | dragon regeneration, backstab hiding, mass leap hops, dispel bomb fuses |
 | `Character.CauseDeath` (position still valid) | self-res, explode |
 | `Character.On_StepTaken` | hazard tiles, inexhaustible |
 | `Corpse.On_Step` / `NPC.On_PersonalSpace` | looter / strangler vine |
@@ -80,6 +80,15 @@ whoever is already standing on it when it appears (the archive was step-on only)
 | pushall | 11 | 5% when hit, 30 s cooldown: players within 6 thrown away by (6 - distance) | PushallChance/Cooldown |
 | npc_magicshield | 11 | absorbs 90% of each swing; a Mystic pierces it by level/200. The archive's "silenced" bypass has nothing to hook (no silence effect yet) | MagicShieldStrength (percent) |
 | autoreflect | 10 | magic reflection re-armed after every swing taken | |
+| explosiondispell | 36 | 5% when hit, 30 s cooldown: throws a dispel bomb within 5; 3 s later everything within 5 is dispelled (summons vanish, dispellable effects end), thrower included | DispelBombChance/Cooldown/Range |
+| npc_multishot | 29 | 11% when hit, 3 s cooldown: a split shot at every player/pet within 8 in LOS except its target, {40,80} physical, 5x to pets (shares `AreaCurseAbilityDef`) | MultishotChance/Cooldown/Damage |
+| eye | 29 | its hits sap {1,5} stamina and, while a player target has mana, leech 2x the damage as hits (cap 3x maxhits) for 4 of the player's mana; 15% of physical blows bounce off; switches to an attacker whose int beats {100,1250} | |
+| golem | 20 | turns on whoever hit it: 35/30/25/20/10% above 75/50/25/10/below 10% hits | |
+| backstub | 20 | hides a few s after noticing a player; its first hit from hiding adds (maxhits - damage) x 3/5 and reveals it, re-hides 8 s later; a hit taken while hiding interrupts for 10 s. **User decision:** faithful, the 3/5 factor is on `.settings` | BackstabDamageReducer (permille) |
+| npc_massleap | 13 | 1 in 14 player hits: marks every non-GM player within 12, then teleports onto each in turn (first after 3 s, then every {3,4} s) and attacks them, skipping anyone out of sight. **User decision:** faithful teleports | |
+| duplicator | 13 | splits into a copy (attacks the same target) each time it is hit, up to DupeCount copies; a copy never splits. Unset = 0 = never | DupeCount |
+| craft_monster | 13 | Craftsman-profession attackers do +{10,20}; with a weapon they crafted themselves, 1 in 4 is a +{15,25} critical | |
+| npc_warcry | 11 | at most once a minute while fighting: everyone within 8 is shocked and their spellcasting interrupted. The archive's range is a runtime setting, 8 is ours | WarcryCooldown (deciseconds) |
 
 ### Area curse rules (#797)
 
@@ -95,9 +104,13 @@ Curse hit everyone, including the current target, at 1x.
 - `e_character`/`e_monster` (3,147 grants) are Sphere's base player/monster event hooks, not
   special attacks. So are the empty monster-type tags (`e_undead`, `e_daemon`, `e_spider`...).
 - `e_item_refuser` (119) is blocked: the engine has no give/drop-onto-a-character interaction.
-- Batch 5 (harder ones: backstab ambush, eye, multishot, dispel bomb, duplicator, mass leap,
-  warcry, craft monster, golem retargeting) and roughly 77 rare boss-specific hooks remain stubs.
+- Roughly 77 rare boss-specific hooks remain stubs.
+
+**Crafted-by record (#799):** craft monster needs to know who made a weapon, so
+`CraftingSkillDef` now tags every crafted item with its crafter (`SetCrafter`/`GetCrafter`,
+Erebor's `tag.craftedby`). Items crafted before #799 have no record.
 
 Tests: `Tests/Protocol/MonsterSpecialAttacksTests`, `MonsterAbilitiesBatchTests` (2),
-`MonsterAbilitiesBatch3Tests`, `MonsterAbilitiesBatch4Tests`, `NpcBleedTests`; fast tier
-`MonsterAbilitiesSettingsCoverageTests`, `MagicShieldFormulaTests`, `KnockbackPushDistanceTests`.
+`MonsterAbilitiesBatch3Tests`, `MonsterAbilitiesBatch4Tests`, `MonsterAbilitiesBatch5Tests`, `NpcBleedTests`;
+fast tier `MonsterAbilitiesSettingsCoverageTests`, `MagicShieldFormulaTests`, `KnockbackPushDistanceTests`,
+`BackstabFormulaTests`.

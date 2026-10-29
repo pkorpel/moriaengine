@@ -205,8 +205,10 @@ namespace SteamEngine.CompiledScripts {
 				//#794 - an elite monster hits harder, and absorbs most of a player's swing
 				EliteMonster.ModifySwingDamage(attacker, defender, swingArgs);
 
-				//#797 - a_tevent_e_npc_magicshield on the DEFENDER swallows most of the swing
+				//#797 - a_tevent_e_npc_magicshield on the DEFENDER swallows most of the swing;
+				//#799 - an e_eye defender may make a physical blow bounce off entirely
 				MonsterSpecialAttacks.TryApplyMagicShield(attacker, defender, swingArgs);
+				MonsterSpecialAttacks.TryApplyEyeDeflect(attacker, defender, swingArgs);
 
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC);
 
@@ -233,6 +235,8 @@ namespace SteamEngine.CompiledScripts {
 				//defender survived the blow (a killed NPC is already deleted here).
 				MonsterSpecialAttacks.TryApplyLifeLeech(attacker);
 				MonsterSpecialAttacks.TryApplyPhoenixFire(attacker);
+				MonsterSpecialAttacks.TryApplyEyeDrain(attacker, defender, actualDamage); //#799
+				MonsterSpecialAttacks.TryApplyBackstabAmbush(attacker, defender, actualDamage); //#799
 				if (!defender.IsDeleted && defender.IsAliveAndValid) {
 					MonsterSpecialAttacks.TryApplyReactiveArmor(attacker, defender, damageType, actualDamage);
 					MonsterSpecialAttacks.TryApplyStamDmg(attacker, defender);
@@ -241,6 +245,17 @@ namespace SteamEngine.CompiledScripts {
 					MonsterSpecialAttacks.TryApplyLightnings(defender);
 					MonsterSpecialAttacks.TryApplyPushall(defender);
 					MonsterSpecialAttacks.TryApplyAutoReflect(defender);
+					//#799 batch 5 - the ones reading the attacker skip an NPC attacker reactive armor just killed
+					MonsterSpecialAttacks.TryInterruptBackstabHide(defender);
+					MonsterSpecialAttacks.TryApplyMultishot(defender);
+					MonsterSpecialAttacks.TryApplyDispelBomb(defender);
+					if (!attacker.IsDeleted) {
+						MonsterSpecialAttacks.TryApplyCraftMonster(attacker, defender);
+						MonsterSpecialAttacks.TryApplyEyeAttention(attacker, defender);
+						MonsterSpecialAttacks.TryApplyGolemRetarget(attacker, defender);
+						MonsterSpecialAttacks.TryApplyMassLeap(attacker, defender);
+						MonsterSpecialAttacks.TryApplyDuplicator(attacker, defender);
+					}
 				}
 				if (attacker.IsDeleted) {
 					return; //reactive armor killed an NPC attacker - nothing left to message or drain
