@@ -17,7 +17,7 @@ the fix) filed as #802.
 diagnostic socket path must stay under 108 chars, and the scratchpad path is longer), e.g. a /tmp/cb5
 symlink to the scratchpad. No pgrep here; find the pid by scanning /proc/*/cmdline for GameCore.
 
-## IN PROGRESS (2026-10-28): teventStubs batch 4 (then batch 5 right after) - branch feat-monster-abilities-batch4
+## DONE (2026-10-29): teventStubs batch 4 (PR #801, #797) + batch 5 (PR #804, #799)
 
 User: "go ahead with batch 4, once you are done, move to batch 5 right away". Survey (138 stubs
 left; 3,147 of the 4,431 monster refs are e_character/e_monster base hooks, not abilities).
@@ -42,15 +42,12 @@ triggered when hit, physical), e_eye, e_golem, e_backstub, e_npc_massleap, e_dup
 e_craft_monster (+ new crafted-by tag in CraftingSkillDef), e_npc_warcry (range 8 - archive value
 is a runtime setting). User decisions: mass leap FAITHFUL teleport hops; backstab FAITHFUL
 (x3/5, tunable on .settings).
-**Batch 5 status (2026-10-29, resumed after a session crash)**: code, converter regen (36 files,
-additive) and test content (Tests/BackstabFormulaTests.cs, Tests/Protocol/MonsterAbilitiesBatch5Tests.cs,
-scripts/Tests/MonsterAbilitiesBatch5Test(s).def/.cs) were all on disk uncommitted. Batch 4 merged as
-PR #801. Fixed the protocol test's stray brace; fast tier 196/196. The timed test hung ~2 in 3:
-the dispel bomb deleting an unowned summon hit **#798**, root-caused via dotnet-stack as a Timer
-lock-order deadlock and fixed separately (PR #803, merged; see its DONE entry). Fresh converter regen
-diffs to 0. Docs: monster-abilities.md + settings-dialog.md. Then rebase on main, re-verify, PR,
-merge, close #799. The 10-21 *RealRestart*/StaticMemberPersistence untracked files are old #536
-debris - not part of batch 5, leave them out of the commit.
+**Batch 5 SHIPPED (PR #804, closes #799)**, resumed after a session crash (all code/regen/tests were
+uncommitted on disk). Its timed test hung ~2 in 3 on #798 (Timer deadlock, fixed by PR #803 first).
+Fresh regen diffs to 0. Verified: fast 196/196; Batch5 2/2 x3, Batch4/3/2, MonsterSpecialAttacks,
+Settings, Bleed all green. Remaining stubs: ~77 rare boss hooks + e_item_refuser (blocked).
+Gotcha: `git rebase` here can stop with "Could not apply" on a clean pick (todo lists the commit
+twice) - `git cherry-pick` onto a fresh branch from origin/main worked.
 Issue: #797 (batch 4). User decisions: hazard tiles ALSO hit standers when they appear; all 3 curses (incl. shipped Dark Curse) faithful - spare the current target, 5x vs pets - AND both rules switchable on .settings per curse (user follow-up: NpcCurse/NpcCurseMana/NpcCurseStam SpareCurrentTarget + PetMultiplier).
 **Status (batch 4)**: code + converter regen (26 files, purely additive, fresh regen diffs to 0) + docs
 (new docs/current/04-gameplay-systems/monster-abilities.md) done. Fast tier 193/193. Protocol:
