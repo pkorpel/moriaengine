@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 using SteamEngine.CompiledScripts.Dialogs;
@@ -53,9 +54,73 @@ namespace SteamEngine.Regions {
 	public class FlaggedRegion : StaticRegion {
 		private RegionFlags flags;
 
+		//#813 - from the archive map (spheremap.scp): Sphere region events and RESOURCES region
+		//types by name, weather chances and the area group. Kept as data here; behavior for them
+		//lives elsewhere (region resources, ported region events).
+		private List<string> regionEvents;
+		private List<string> regionResources;
+		private int rainChance, coldChance;
+		private string group;
+
 		[LoadSection]
 		public FlaggedRegion(PropsSection input)
 			: base(input) {
+		}
+
+		/// <summary>#813 - [FlaggedRegion x] sections in scripts: the converted archive map.</summary>
+		public static void Bootstrap() {
+			ScriptLoader.RegisterScriptType("FlaggedRegion", LoadFromScripts, false);
+		}
+
+		private static IUnloadable LoadFromScripts(PropsSection input) {
+			return StaticRegion.LoadFromScripts(input, section => new FlaggedRegion(section));
+		}
+
+		/// <summary>Sphere region events/region types (EVENTS=), e.g. r_nosumon, r_playerhouse.</summary>
+		public IList<string> RegionEvents {
+			get { return (IList<string>) this.regionEvents ?? Array.Empty<string>(); }
+		}
+
+		/// <summary>Region types (RESOURCES=) deciding what rock/trees/water yield here, e.g. r_default_rock, r_doly.</summary>
+		public IList<string> RegionResources {
+			get { return (IList<string>) this.regionResources ?? Array.Empty<string>(); }
+		}
+
+		public int RainChance {
+			get { return this.rainChance; }
+		}
+
+		public int ColdChance {
+			get { return this.coldChance; }
+		}
+
+		/// <summary>Sphere's area group (GROUP=), e.g. "Doly", "Mesta Gondor", "Arena".</summary>
+		public string Group {
+			get { return this.group; }
+		}
+
+		protected override void ResetForSavedOverride() {
+			this.flags = RegionFlags.Zero;
+			this.regionEvents = null;
+			this.regionResources = null;
+			this.rainChance = 0;
+			this.coldChance = 0;
+			this.group = null;
+		}
+
+		private static List<string> AddNames(List<string> list, string valueString) {
+			foreach (string part in valueString.Split(',')) {
+				string name = part.Trim();
+				if (name.Length > 0) {
+					if (list == null) {
+						list = new List<string>();
+					}
+					if (!list.Contains(name)) {
+						list.Add(name);
+					}
+				}
+			}
+			return list;
 		}
 
 		public FlaggedRegion()
@@ -74,6 +139,7 @@ namespace SteamEngine.Regions {
 			}
 			set {
 				this.flags = value;
+				this.MarkGmModified(); //#813 - loading sets the field directly, so this is an in-game edit
 			}
 		}
 
@@ -164,6 +230,21 @@ namespace SteamEngine.Regions {
 			if (this.flags != RegionFlags.Zero) {
 				output.WriteValue("flags", this.flags);
 			}
+			if (this.regionEvents != null) {
+				output.WriteValue("events", string.Join(", ", this.regionEvents));
+			}
+			if (this.regionResources != null) {
+				output.WriteValue("resources", string.Join(", ", this.regionResources));
+			}
+			if (this.rainChance != 0) {
+				output.WriteValue("rainchance", this.rainChance);
+			}
+			if (this.coldChance != 0) {
+				output.WriteValue("coldchance", this.coldChance);
+			}
+			if (this.group != null) {
+				output.WriteValue("group", this.group);
+			}
 		}
 
 		public override void LoadLine(string filename, int line, string valueName, string valueString) {
@@ -232,7 +313,28 @@ namespace SteamEngine.Regions {
 					//but this naive ConvertTools.ParseInt32(valueString) still expected a bare
 					//number - confirmed as a real, already-occurring FormatException in logs
 					//("The input string '(Enum:RegionFlags)4498' was not in a correct format").
-					this.flags = (RegionFlags) ObjectSaver.Load(valueString);
+					//#813 - the converted archive map has Sphere's own hex form (FLAGS = 00812)
+					if (valueString.TrimStart().StartsWith("(", StringComparison.Ordinal)) {
+						this.flags = (RegionFlags) ObjectSaver.Load(valueString);
+					} else {
+						this.flags = (RegionFlags) ConvertTools.ParseInt32(valueString.Trim());
+					}
+					break;
+				case "event":
+				case "events":
+					this.regionEvents = AddNames(this.regionEvents, ConvertTools.LoadSimpleQuotedString(valueString));
+					break;
+				case "resources":
+					this.regionResources = AddNames(this.regionResources, ConvertTools.LoadSimpleQuotedString(valueString));
+					break;
+				case "rainchance":
+					this.rainChance = ConvertTools.ParseInt32(valueString.Trim());
+					break;
+				case "coldchance":
+					this.coldChance = ConvertTools.ParseInt32(valueString.Trim());
+					break;
+				case "group":
+					this.group = ConvertTools.LoadSimpleQuotedString(valueString.Trim());
 					break;
 				default:
 					base.LoadLine(filename, line, valueName, valueString);//the Region Loadline

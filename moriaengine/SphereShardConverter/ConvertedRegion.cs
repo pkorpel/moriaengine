@@ -42,11 +42,14 @@ namespace SteamEngine.Converter {
 
 
 		private static LineImplTask[] firstStageImpl = {
-//				new LineImplTask("event", new LineImpl(WriteAsTG)), 
-//				new LineImplTask("events", new LineImpl(WriteAsTG)), 
-//				new LineImplTask("tevent", new LineImpl(WriteAsTG)), 
-//				new LineImplTask("tevents", new LineImpl(WriteAsTG)), 
-//				new LineImplTask("resources", new LineImpl(WriteAsTG)), 
+				//#813 - kept as plain name lists/values on FlaggedRegion (RegionEvents, RegionResources,
+				//RainChance, ColdChance, Group); the engine gives them behavior separately
+				new LineImplTask("event", PassThrough),
+				new LineImplTask("events", PassThrough),
+				new LineImplTask("resources", PassThrough),
+				new LineImplTask("rainchance", PassThrough),
+				new LineImplTask("coldchance", PassThrough),
+				new LineImplTask("group", PassThrough),
 
 				new LineImplTask("p", ParseP), 
 				new LineImplTask("rect", ParseRect), 
@@ -87,7 +90,10 @@ namespace SteamEngine.Converter {
 			: base(input, convertedFile) {
 			this.firstStageImplementations.Add(firstStageImpl);
 
-			this.Set("createdat", ObjectSaver.Save(DateTime.Now), "");
+			//#813 - this used to write createdat=DateTime.Now, but DateTime stopped being a saveable
+			//type (Region.createdAt is a TimeSpan now), so EVERY [AREA] threw here and was skipped -
+			//the whole reason no region ever came out of the converter. Generated content has no
+			//business carrying a creation time anyway.
 
 			string name = input.HeaderName;
 			this.Set("Name", "\"" + name + "\"", "");
@@ -97,7 +103,7 @@ namespace SteamEngine.Converter {
 				//} else {
 				//headerType = "Region";
 			}
-			this.headerType = "Region";
+			this.headerType = "FlaggedRegion"; //#813 - every region, flagged or not: one region class for the engine to load
 			//todo: make this strip all non-ascii characters
 			string[] splitted = nonCharacterSplitRE.Split(name);
 			splitted[0] = "a_" + splitted[0];
@@ -122,6 +128,10 @@ namespace SteamEngine.Converter {
 				this.headerName = defnameLine.Value;
 				regionsByDefname[defnameLine.Value] = this;//this could overwrite something, but that is not our fault I think :)
 			}
+		}
+
+		private static void PassThrough(ConvertedDef def, PropsLine line) {
+			def.Set(line.Name, line.Value.Trim(), line.Comment);
 		}
 
 		private static void ParseRect(ConvertedDef def, PropsLine line) {
