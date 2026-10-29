@@ -22,17 +22,18 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#825 - server-side helpers for Tests/Protocol/SpeechStubTests.cs.</summary>
 	public static class SpeechStubTests {
-		private const string GuardDef = "c_vguard_rohan_hala_jezdec"; //TSPEECH = spk_guard
+		private const string ListenerDef = "c_h_quest_postava_0007"; //TSPEECH = spk_vypravec_vtipy, spk_kecy_a_drby
 
 		[SteamFunction]
 		public static void TestSpeechStubReport(Character self) {
 			int stubs = AbstractScript.AllScripts.OfType<SpeechStub>().Count();
-			SpeechStub guard = AbstractScript.GetByDefname("spk_guard") as SpeechStub;
-			string guardPatterns = (guard == null) ? "none" : string.Join("|", guard.Patterns);
-			NPCDef def = (NPCDef) ThingDef.GetByDefname(GuardDef);
-			bool defHasIt = def.GetAllTriggerGroups().Any(tg => tg.Defname.Equals("spk_guard", StringComparison.OrdinalIgnoreCase));
-			Console.WriteLine("SPEECH_STUB_REPORT: stubs=" + stubs + " guard=" + guardPatterns + " guardDefHasIt=" + defHasIt +
-				" banker=" + TypeOf("spk_jobbanker") + " shopkeep=" + TypeOf("spk_shopkeep") + " vendorCustom=" + TypeOf("spk_vendor_custom"));
+			SpeechStub chatter = AbstractScript.GetByDefname("spk_kecy_a_drby") as SpeechStub;
+			string chatterPatterns = (chatter == null) ? "none" : (chatter.Patterns.Count + " first=" + chatter.Patterns[0]);
+			NPCDef def = (NPCDef) ThingDef.GetByDefname(ListenerDef);
+			bool defHasIt = def.GetAllTriggerGroups().Any(tg => tg.Defname.Equals("spk_kecy_a_drby", StringComparison.OrdinalIgnoreCase));
+			Console.WriteLine("SPEECH_STUB_REPORT: stubs=" + stubs + " chatter=" + chatterPatterns + " defHasIt=" + defHasIt +
+				" banker=" + TypeOf("spk_jobbanker") + " shopkeep=" + TypeOf("spk_shopkeep") + " vendorCustom=" + TypeOf("spk_vendor_custom") +
+				" guard=" + TypeOf("spk_guard"));
 		}
 
 		private static string TypeOf(string defname) {
@@ -41,11 +42,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		[SteamFunction]
-		public static void TestSpawnSpeechStubGuard(Character self) {
+		public static void TestSpawnSpeechStubListener(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
-			NPCDef def = (NPCDef) ThingDef.GetByDefname(GuardDef);
-			NPC guard = (NPC) def.Create(self.X + 1, self.Y, self.Z, self.M);
-			Console.WriteLine("SPEECH_STUB_GUARD: " + guard.Name);
+			NPCDef def = (NPCDef) ThingDef.GetByDefname(ListenerDef);
+			NPC npc = (NPC) def.Create(self.X + 1, self.Y, self.Z, self.M);
+			Console.WriteLine("SPEECH_STUB_LISTENER: " + npc.Name);
 		}
 
 		/// <summary>Drops the account to a plain player (no GM) - the test's last step, as it can't run dot commands after.</summary>

@@ -60,5 +60,11 @@ namespace SteamEngine.CompiledScripts {
 		/// Sphere's following pets. Off = only "guard"/"kill" orders send pets into a fight.</summary>
 		[SaveableData]
 		public bool petsAssistOwner = true;
+
+		/// <summary>#826 - calling the guards ("guard"/"straz" near a guard, Erebor's spk_guard) sends them after
+		/// whoever the caller fought with: someone who attacked the caller, or whom the caller attacked, at
+		/// most this many seconds ago (Sphere's fight memory).</summary>
+		[SaveableData]
+		public int guardCallMemorySeconds = 120;
 	}
 }

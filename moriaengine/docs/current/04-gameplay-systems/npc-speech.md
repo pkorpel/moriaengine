@@ -62,6 +62,33 @@ commented Sphere body in `scripts/converted` as the reference. Nothing in the co
 Still warning at boot (by design): 5 chardefs name speech blocks that don't exist in the archive
 (`Hrobus`, `spk_uhlir`, `spk_mo_malicia`, `spk_kvest0001_Kapitan_straze_Barad`, `spk_kvest001_Liche_Sarfeos`).
 
+## Ported speeches
+
+### spk_guard - calling the guards (#826)
+
+`GuardSpeech` (`scripts/Basic/Speech/GuardSpeech.cs`), on Erebor's 76 guard chardefs. Saying anything containing
+"guard" or "straz" near a guard sends it after whoever the speaker has been fighting: `FightMemory`
+(`scripts/Basic/AI/FightMemory.cs`), the engine's version of Sphere's `MEMORY_FIGHT`, remembers both sides of every
+hostile act (`Character.Trigger_HostileAction`) for `guardCallMemorySeconds` (120, `.settings` "NPC Aggro"). The
+guard leaves its target alone when it protects them (Sphere's `ismyguard`):
+
+| Guard (archive `tag.guard`) | Protects |
+|---|---|
+| Gondor (1) | Gondor players who are neither criminal nor murderers |
+| Mordor (2) | every Mordor player |
+
+Only players are targeted, never an invulnerable one. Every guard in earshot answers on its own (each Sphere NPC
+hears on its own), shouting one of Erebor's two Czech lines ("<name>, odejdi nebo zemri!" or "<name>, v <region>
+nemas co pohledavat!") and engaging the target through `NPCAiTimer.EngageTarget`.
+
+Not ported, because the engine has no such system: town citizenship, blacklists and realm/keep bans (`isbannedplayer`,
+`isfrommytown`, so a criminal is never "from this guard's town"), Mystic hypnosis (`tag.hypno_mystik`), and the
+guard's temporary karma (`guardkarma_*` + `i_memory_cleaner`). The archive's teleport-to-target
+(`e_tele_to_target` / `i_attack_guard`) only fires when the target stands in an insta-logout area, and only 7 archive
+areas have that flag (jail, klec, Lagr, the tutorial, bug) - guards here walk to their target like every NPC.
+
+Test: `GuardSpeechTests` (protocol, two real clients, real hostile acts and real speech).
+
 ## Differences in `ScriptedSpeech` from Sphere
 
 These matter only for hand-written LScript speeches. `ScriptedSpeech` matches its patterns anywhere in the
