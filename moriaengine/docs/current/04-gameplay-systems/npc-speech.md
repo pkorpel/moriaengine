@@ -104,6 +104,32 @@ Not ported: `resurrect_player`'s account log line (`accMsg`), and Sphere's hard-
 
 Test: `HealerTests` (protocol: real clicks and speech as a ghost and as an outcast).
 
+### spk_mistr - skill teachers (#828)
+
+`SkillTeacherSpeech` (`scripts/Basic/Speech/SkillTeacherSpeech.cs`), on Erebor's 36 teachers (`chars/ucitele.scp`, one
+per skill: the archive's `tag.ucimskill`, set in their `@userclick`, converted to `NPCDef.TeachesSkill`). Skills grow
+normally past 25/50/75 - Erebor's `skillgain` only checks the profession cap - and a teacher sells the jump from
+**exactly** the threshold:
+
+| Lesson | Skill | Becomes | Price | Level | Rank (with the switch on) | Profession cap |
+|---|---|---|---|---|---|---|
+| Expert | 25.0 | 30.0 | 5000 | 3+ | Expert | 30.0+ |
+| Master | 50.0 | 55.0 | 10000 | 6+ | Master | 55.0+ |
+| Grandmaster | 75.0 | 80.0 | 20000 | 12+ | Grandmaster | 80.0+ |
+
+Greeting the teacher ("dobry den", "zdravim", "mistr", "hi", "hello", "buy"...) gets its offer (or Erebor's message
+for what's missing: not ready, reached your maximum, train more, level too low); "ano"/"yes" pays (`GoldUtils.TryPay`)
+and sets the skill. No lessons for a ghost, a player without a profession, or one under bless/curse/stat spells
+(Erebor's `ismagic`). Greeting also rounds the taught skill to the nearest 5.0, never below the profession's
+starting value (Erebor's `roundskill`: 27.4 becomes 25.0).
+
+The player rank is `Player.SkillRank` (Novice/Expert/Master/Grandmaster, Erebor's `tag.skillrank`), editable in
+`.info`. Erebor's players earned it through the rank quests, being ported in #833 - until then the "Skill Teachers"
+`.settings` switch `requireRank` is off. The same category holds `roundSkillOnGreeting`, the prices and the levels.
+Not ported: the weekly "meet a master" quest (`f_weekly_meetMaster`).
+
+Test: `SkillTeacherTests` (protocol: the real converted anatomy teacher, a mage and a priest student, real speech).
+
 ## Differences in `ScriptedSpeech` from Sphere
 
 These matter only for hand-written LScript speeches. `ScriptedSpeech` matches its patterns anywhere in the

@@ -70,7 +70,7 @@ TYPE = T_BOOZE
 WEIGHT = 10
 model = i_bottle_ale
 //VALUE = {4 5} // commented out by Converter 
-Color = COLOR_O_BLACKROCK
+//Color = COLOR_O_BLACKROCK // not defined in the archive, commented out by Converter 
 
 [ItemDef i_ale_oktoberfest]
 CATEGORY = Ales
