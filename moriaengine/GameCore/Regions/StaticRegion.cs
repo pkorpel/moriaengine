@@ -69,19 +69,95 @@ namespace SteamEngine.Regions {
 		}
 
 		#region Saving/Loading/Manipulating
+		//#813 - static regions come from the converted archive map (scripts/converted/map.def, loaded
+		//as scripts before the world) and the world save only holds what GMs changed in-game: new
+		//regions, edited archive regions (same defname - applied on top of the archive one) and
+		//deleted archive regions ("deleted=true" tombstones).
+		private static bool loadingFromScripts;
+		private static readonly HashSet<string> deletedArchiveRegions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		private bool isFromScripts;
+		private bool isGmModified;
+		private bool pendingArchiveDelete;
+		private string pendingParentDefname;
+
+		/// <summary>Loaded from the converted archive map (scripts), not created in-game.</summary>
+		public bool IsFromScripts {
+			get { return this.isFromScripts; }
+		}
+
+		/// <summary>Created or changed in-game - saved, so it survives a restart on top of the archive map.</summary>
+		public bool IsGmModified {
+			get { return this.isGmModified; }
+		}
+
+		protected void MarkGmModified() {
+			this.isGmModified = true;
+		}
+
+		/// <summary>The script loader's entry point for a region section in scripts (FlaggedRegion
+		/// registers it). A region that already exists (a script reload) is left as it is - region
+		/// changes in the archive take effect after a restart.</summary>
+		public static IUnloadable LoadFromScripts(PropsSection input, Func<PropsSection, StaticRegion> create) {
+			if (byDefname.ContainsKey(input.HeaderName)) {
+				Logger.WriteDebug("Region " + input.HeaderName + " already loaded, not reloading it from scripts.");
+				return ScriptRegionHandle.instance;
+			}
+			loadingFromScripts = true;
+			try {
+				create(input);
+			} finally {
+				loadingFromScripts = false;
+			}
+			return ScriptRegionHandle.instance;
+		}
+
+		private sealed class ScriptRegionHandle : IUnloadable {
+			internal static readonly ScriptRegionHandle instance = new ScriptRegionHandle();
+			public void Unload() { }
+			public bool IsUnloaded { get { return false; } }
+		}
+
 		[LoadSection]
 		public StaticRegion(PropsSection input) {
 			string defName = input.HeaderName;
+			PropsLine deletedLine = input.TryPopPropsLine("deleted");
+			bool isTombstone = (deletedLine != null) && ConvertTools.ParseBoolean(deletedLine.Value);
 
-			if (!byDefname.ContainsKey(defName)) {
-				//byDefname[defName] = this;
-				this.Defname = defName;
-			} else {
+			StaticRegion existing;
+			if (byDefname.TryGetValue(defName, out existing)) {
+				if (existing.isFromScripts && !loadingFromScripts) {
+					existing.ApplySavedOverride(input, isTombstone);
+					this.isDeleted = true; //this instance was only the vehicle for the save section
+					return;
+				}
 				throw new OverrideNotAllowedException("Region " + LogStr.Ident(defName) + " loaded multiple times.");
 			}
+			if (isTombstone) {
+				this.isDeleted = true; //the archive no longer has that region either
+				return;
+			}
 
+			this.Defname = defName;
+			this.isFromScripts = loadingFromScripts;
 			this.LoadSectionLines(input);
 			this.inactivated = false;
+		}
+
+		private void ApplySavedOverride(PropsSection input, bool isTombstone) {
+			if (isTombstone) {
+				this.pendingArchiveDelete = true;
+				deletedArchiveRegions.Add(this.Defname);
+				return;
+			}
+			this.rectangles = new List<RegionRectangle>();
+			this.ResetForSavedOverride();
+			this.LoadSectionLines(input);
+			this.isGmModified = true;
+		}
+
+		/// <summary>Before a saved, GM-edited version of an archive region is applied on top of it:
+		/// clear whatever the save replaces wholesale rather than adds to.</summary>
+		protected virtual void ResetForSavedOverride() {
 		}
 
 		[SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
@@ -104,11 +180,22 @@ namespace SteamEngine.Regions {
 				output.WriteComment("Static Regions");
 				output.WriteLine();
 
+				//#813 - only what differs from the archive map: GM-created or GM-edited regions,
+				//plus tombstones for archive regions a GM deleted
+				int saved = 0;
 				foreach (StaticRegion region in AllRegions) {
-					region.SaveWithHeader(output);
+					if (!region.isFromScripts || region.isGmModified) {
+						region.SaveWithHeader(output);
+						saved++;
+					}
+				}
+				foreach (string deletedDefname in deletedArchiveRegions) {
+					output.WriteSection("FlaggedRegion", deletedDefname);
+					output.WriteValue("deleted", true);
+					output.WriteLine();
 				}
 
-				Logger.WriteDebug("Saved " + byDefname.Count + " static regions.");
+				Logger.WriteDebug("Saved " + saved + " static regions (the rest come from the archive map).");
 			}
 
 			[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -119,6 +206,7 @@ namespace SteamEngine.Regions {
 				try {
 					Logger.WriteDebug("Resolving loaded static regions");
 
+					ResolvePendingParentsAndDeletes();
 					ResolveParents();
 
 					ResolveRegionsHierarchy();
@@ -179,6 +267,16 @@ namespace SteamEngine.Regions {
 			switch (valueName) {
 				case "name":
 					this.name = string.Intern(ConvertTools.LoadSimpleQuotedString(valueString));
+					break;
+				case "parent":
+					//#813 - resolved by defname once every region exists (ResolvePendingParentsAndDeletes):
+					//regions loaded from scripts come before the world load, so ObjectSaver's delayed
+					//reference loading isn't running for them
+					Match m = StaticRegionSaveCoordinator.regionNameRE.Match(valueString.Trim());
+					if (!m.Success) {
+						throw new SEException("Unrecognized parent region reference ('" + valueString + "'), expected (defname)");
+					}
+					this.pendingParentDefname = m.Groups["value"].Value;
 					break;
 				default:
 					base.LoadLine(filename, line, valueName, valueString);
@@ -282,6 +380,45 @@ namespace SteamEngine.Regions {
 				if (list != null) {
 					Map map = Map.GetMap((byte) i);
 					map.ActivateRegions(list);
+				}
+			}
+		}
+
+		/// <summary>#813 - sets every region's parent from its "parent=(defname)" line, then removes the
+		/// archive regions a GM deleted (saved tombstones), handing their children to their parent.</summary>
+		private static void ResolvePendingParentsAndDeletes() {
+			List<StaticRegion> all = new List<StaticRegion>(AllRegions);
+			foreach (StaticRegion region in all) {
+				if (region.pendingParentDefname != null) {
+					StaticRegion parent = GetByDefname(region.pendingParentDefname);
+					if (parent == null) {
+						Logger.WriteWarning("Region " + LogStr.Ident(region.Defname) + " has an unknown parent " + LogStr.Ident(region.pendingParentDefname) + " - using the world region.");
+					} else {
+						region.Parent = parent;
+					}
+					region.pendingParentDefname = null;
+				}
+			}
+			foreach (StaticRegion region in all) {
+				if (region.pendingArchiveDelete) {
+					foreach (StaticRegion child in all) {
+						if (child.Parent == region) {
+							child.Parent = region.Parent;
+						}
+					}
+					byName.Remove(region.name);
+					byDefname.Remove(region.Defname);
+					region.isDeleted = true;
+					region.inactivated = true;
+				}
+			}
+			//a region whose parent couldn't be found hangs off the world region
+			foreach (StaticRegion region in AllRegions) {
+				if ((region.Parent == null) && (region.Defname != null) && !region.Defname.Equals("a_world", StringComparison.OrdinalIgnoreCase)) {
+					StaticRegion world = GetByDefname("a_world");
+					if ((world != null) && (world != region)) {
+						region.Parent = world;
+					}
 				}
 			}
 		}
@@ -497,6 +634,7 @@ namespace SteamEngine.Regions {
 			} finally {
 				ActivateAll();//all OK
 			}
+			this.isGmModified = true; //#813
 			return result;
 		}
 
@@ -527,6 +665,17 @@ namespace SteamEngine.Regions {
 				if (this != voidRegion) {
 					byName[value] = this;
 				}
+				this.isGmModified = true; //#813 - loading sets the field directly, so this is an in-game edit
+			}
+		}
+
+		public override Point4D P {
+			get {
+				return base.P;
+			}
+			set {
+				base.P = value;
+				this.isGmModified = true; //#813
 			}
 		}
 
@@ -575,6 +724,9 @@ namespace SteamEngine.Regions {
 				}
 				byName.Remove(this.name); //remove it from the byNames dict
 				byDefname.Remove(this.Defname);//and from the byDefnames dict this means that the region is now completely removed
+				if (this.isFromScripts) {
+					deletedArchiveRegions.Add(this.Defname); //#813 - saved as a tombstone, or the archive would bring it back
+				}
 			} finally {
 				ActivateAll();//all OK
 			}

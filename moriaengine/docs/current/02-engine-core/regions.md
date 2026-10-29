@@ -4,10 +4,26 @@
 
 - **`Region`** (`GameCore/Regions/Region.cs:27`) - abstract base. A region is a
   `PluginHolder` with one or more rectangles and a parent region (regions nest).
-- **`StaticRegion`** (`GameCore/Regions/StaticRegion.cs:28`) - map-authored regions, loaded
-  from the committed world snapshot (`saves/2000-01-01/00_00_00/regions.sav` is the baseline
-  used by every fresh boot and every test fixture). These never move and exist for the
-  lifetime of the server.
+- **`StaticRegion`** (`GameCore/Regions/StaticRegion.cs`) - map-authored regions that never
+  move. **Since #813 they come from the Erebor archive**: the converter turns
+  `spheremap.scp`'s 769 `[AREA]`s into `[FlaggedRegion]` sections in
+  `scripts/converted/map.def` (computing each one's parent from the rectangles), and the
+  script loader loads them on every boot (`FlaggedRegion.Bootstrap` registers the section
+  type; `StaticRegion.LoadFromScripts`). The world save only holds what GMs changed in-game:
+  - a region created in-game is saved whole;
+  - an archive region edited in-game (rects, name, spawn point, flags - `IsGmModified`) is
+    saved and applied **on top of** the archive one with the same defname at the next boot
+    (`ApplySavedOverride`);
+  - an archive region deleted in-game is saved as a `deleted=true` tombstone, or the archive
+    would bring it back.
+  `IsFromScripts`/`IsGmModified` tell them apart. To change the map for good, change the
+  archive fork and regenerate - like all other converted content. Until #813 the regions
+  lived only in a `regions.sav` committed once at the repo's start (511 of the 769 areas,
+  older names, no events/resources/weather), because the converter crashed on every
+  `[AREA]` (it wrote a `DateTime`, no longer saveable) and silently emitted nothing. The
+  baseline `saves/2000-01-01/00_00_00/regions.sav` is now empty.
+  Parents are resolved by defname after everything is loaded (`ResolvePendingParentsAndDeletes`);
+  a script reload doesn't reload regions - archive region changes need a restart.
 - **`DynamicRegion`** (`GameCore/Regions/DynamicRegion.cs:23`) - runtime-placed regions:
   houses, ships, anything a player action creates. `Place(Point4D p)`
   (`DynamicRegion.cs:48-61`) registers it with the map for the first time; this is also where
@@ -22,6 +38,10 @@
   `Underground`/`Dungeon`, `NoDecay`, `Safe`, `Guarded`, `NoPvp`, `Arena`. Flags are
   inherited from the parent region chain (`HasInheritedFlag`, `FlaggedRegion.cs`) unless a
   child region explicitly sets its own bit.
+  From the archive it also keeps, as plain data (#813): `RegionEvents` (Sphere `EVENTS=`,
+  e.g. r_nosumon, r_playerhouse), `RegionResources` (`RESOURCES=` region types, e.g.
+  r_default_rock, r_doly), `RainChance`/`ColdChance` (no weather system yet) and `Group`
+  ("Doly", "Mesta Gondor", ...). `FLAGS` is read in Sphere's hex form (`00812`).
 
 ## Lookup priority: dynamic regions always win
 

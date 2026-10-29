@@ -1,0 +1,27 @@
+//Textual SteamEngine save
+//Things
+
+[Player c_man]
+account=$regionarchivetest
+name="Region Checker"
+directionAndFlags=(Enum:DirectionAndFlag)8
+uid=1
+p=(4D)4763,1363,10
+color=1002
+createdat=:00:00:00.4491023
+
+[Wearable i_shirt_plain]
+uid=3
+p=(4D)7000,0,5
+color=2
+createdat=:00:00:00.4685210
+cont=#1
+
+[Wearable i_pants_long]
+uid=2
+p=(4D)7000,0,4
+color=2
+createdat=:00:00:00.4628449
+cont=#1
+
+[EOF]

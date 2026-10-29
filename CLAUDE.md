@@ -12,6 +12,29 @@ It now targets a spot next to the player (`PET_SETUP_POS`). Kill: the order work
 for damage and a sheep can't hurt a sheep (WeaponAttack 2 x Str 19 x 3.17/1000 = ~0.12 attack vs armor 6
 floors to 0, and was 2-6 -> 0 before #711 too), so it now checks TestWild's AI target. PetCommandTests 6/6 x2.
 
+## IN PROGRESS (2026-10-29): #813 map regions + region resources from the archive - PR 1 of 3 done
+
+User: converted map/region content all commented out, regions only in the save - analyze + improve. User:
+spheremap.scp/sphereregion.scp (our map.def/region.def) are their MAIN archive files. Decisions (on #813):
+archive baseline + GM overrides in the save; real region resources (RegionType/RegionResource drive
+gathering, unblocks #338); port the most-used region events now (nosumon, playerhouse, safezone, nohorse).
+**PR 1 (branch regions-from-archive): regions from the archive.** Root cause: ConvertedRegion's ctor wrote
+createdat=DateTime.Now, DateTime is no longer saveable -> every [AREA] threw, logged, skipped -> map.def
+empty; the only regions were a regions.sav committed in the INITIAL commit (511/769, older names, no
+events/resources/weather). Now: converter emits all 769 as [FlaggedRegion] (parents computed, EVENTS/
+RESOURCES/RAINCHANCE/COLDCHANCE/GROUP passed through, FLAGS in Sphere hex); FlaggedRegion.Bootstrap
+registers the script section; StaticRegion: IsFromScripts/IsGmModified, saved section with same defname
+= ApplySavedOverride on the archive region, deleted archive regions -> "deleted=true" tombstones, parents
+resolved by defname after load (ObjectSaver's delayed refs don't run for scripts); SaveAll writes only
+GM-created/edited + tombstones; baseline regions.sav emptied. Verified: RegionArchiveTests (real restart:
+edit/delete/create survive, rest from archive), fast 196/196; Housing/HouseLockdown 4 failures A/B'd
+identical on main (pre-existing), CombatDepth stand-off = #788, RoofLos = known flake, Gathering taming
+pre-existing. Boots ~20s (was ~17s) - 769 regions parsed from scripts.
+Gotcha hit again: two files with the same basename (scripts/Tests + Tests/Protocol RegionArchiveTests.cs)
+-> `mv` into one backup dir refused the second; harmless here, use distinct backup names.
+**Next: PR 2** region resources (RegionType/RegionResource defs -> mining/lumberjacking/fishing by region),
+**PR 3** top region events.
+
 ## DONE (2026-10-29): #808 NPC item-give (Sphere NPC_OnItemGive) + real pet ownership
 
 User: "go ahead with #808". Reference: EreborNext CChar.NpcGive.cs/NpcStatus.cs/NpcItems.cs, 0.56b
