@@ -1,5 +1,21 @@
 # moriaengine — working state
 
+## DONE (2026-10-29): #826 port spk_guard (branch 826-spk-guard)
+
+User: "go for it" (first #825 port). Erebor [speech spk_guard] (systems/npc_ai.scp): *guard*/*straz* -> guard
+attacks the speaker's MEMORY_FIGHT link unless ismyguard (Gondor guard: Gondor players not criminal/murderer;
+Mordor guard: all Mordor players); player targets only, never invul. **Done**: GuardSpeech (C# AbstractSpeech
+"spk_guard", replaces the stub; every guard in earshot answers, IgnoredOrActedUpon), new FightMemory (both sides of
+Character.Trigger_HostileAction, transient ConditionalWeakTable, NpcAggroSettings.guardCallMemorySeconds=120),
+Notoriety.ClearCriminal. Czech archive shout lines kept. Not ported (no engine system): town citizenship/bans
+(isbannedplayer/isfrommytown), hypno_mystik, guard karma juggling; the teleport-to-target only fires in the 7
+insta-logout areas (jail/tutorial) - FromSphereFlags drops instalogout anyway.
+Verified: GuardSpeechTests (2 real clients, 5 scenarios, red with GuardSpeech unregistered), SpeechStubTests moved
+to spk_kecy_a_drby, fast 198/198, Notoriety/PetCommand/NpcGuardContent green, CombatDepthA 2 stand-off = #788.
+Gotcha: TestTeleportToOpenGround's "open ground" can still block terrain LOS 2 tiles away - an NPC spawned there
+never hears you (Thing.Speech needs listener.CanSeeLOS). Pick a spot with CanSeeLOS and assert it.
+Gotcha: csc exit 137 (OOM) during Generated compile = environment, retry.
+
 ## DONE (2026-10-29): #825 NPC speech placeholders (branch 825-npc-speech); ports queued #826/#827/#828
 
 User: lots of speech warnings at boot; how is speech supposed to work, how is it assigned, placeholders like
