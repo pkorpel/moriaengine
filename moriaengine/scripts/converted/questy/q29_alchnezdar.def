@@ -25,7 +25,12 @@ model = i_bag
 layer = 0 //Set by Converter 
 Color = 0433
 
-//[SPEECH spk_q029_alchnezdar] //(commented out by Converter) 
+[SpeechStub spk_q029_alchnezdar]
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+//f_q029_alchnezdar_DClick
+//return 1
 
 //[dialog d_q029_alchnezdar1] //(commented out by Converter) 
 

@@ -7,7 +7,17 @@ WEIGHT = 3
 model = i_necklace_silver_beads
 Color = 037
 
-//[speech spk_q015_paradnice] //(commented out by Converter) 
+[SpeechStub spk_q015_paradnice]
+ON=*ukol*
+ON=*prace*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q015_paradnice
+//endif
 
 //[FUNCTION f_q015_paradnice] //(commented out by Converter) 
 

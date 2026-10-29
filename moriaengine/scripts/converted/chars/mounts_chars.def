@@ -82,6 +82,23 @@ AggroMode = Calm
 
 //[function f_onsee_nbMountNPC] //(commented out by Converter) 
 
-//[SPEECH spk_nbMountNPC] //(commented out by Converter) 
+[SpeechStub spk_nbMountNPC]
+ON=*zdravim*
+ON=*hi*
+ON=*ahoj*
+ON=*jezdit*
+ON=*lama*
+ON=*lamu*
+
+//f_nbMountNpc_interact
+//return
+
+////
+// Newbie Mount NPC interaction with players.
+//
+// @param I        [char] the NPC
+// @param src      [char] the player
+// @return         [void] no return value
+////
 
 //[function f_nbMountNpc_interact] //(commented out by Converter) 

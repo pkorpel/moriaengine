@@ -4,7 +4,20 @@
 
 //[dialog d_q043_tut_argol button] //(commented out by Converter) 
 
-//[speech spk_q043_tut_argol] //(commented out by Converter) 
+[SpeechStub spk_q043_tut_argol]
+ON=*ahoj*
+ON=*utrzek*
+ON=*pergamen*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_q043_tut_Argol_DClick)
+
+//ON DCLICK+SPEECH Argol Function
+//////////////////////////////////////////////////////
 
 //[function f_q043_tut_Argol_DClick] //(commented out by Converter) 
 

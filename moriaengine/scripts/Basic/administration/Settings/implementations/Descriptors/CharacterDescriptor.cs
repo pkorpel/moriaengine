@@ -46,15 +46,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 		[Button("Bank")]
 		public static void Bank(object target) {
-			// TEMPORARY diagnostic logging (#509 live-testing - clicking this did nothing for
-			// the user). Remove once root-caused.
-			Logger.WriteWarning("[BANKDEBUG] CharacterDescriptor.Bank: target=" + target + " Globals.SrcCharacter=" + Globals.SrcCharacter);
-			try {
-				((Character) target).Bank.OpenTo(Globals.SrcCharacter);
-				Logger.WriteWarning("[BANKDEBUG] Bank.OpenTo succeeded.");
-			} catch (Exception e) {
-				Logger.WriteError("[BANKDEBUG] Bank.OpenTo threw: " + e);
-			}
+			((Character) target).Bank.OpenTo(Globals.SrcCharacter);
 		}
 
 		[GetMethod("Edit", typeof(ContainerView.ThingAsContainer))]

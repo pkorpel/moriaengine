@@ -4,11 +4,34 @@
 
 //[dialog d_q038_ocs_hospodsky button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_hospodsky] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_hospodsky]
+ON=*nakup*
+ON=*kup*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q038_ocs_hospodsky
+//endif
 
 //[function f_q038_ocs_hospodsky] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_edgar] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_edgar]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.qtag(q038_ocs)> == 1)
+//f_q038_ocs_edgar
+//else
+//Say("Nemam s tebou o com rozpravat")
+//endif
+//endif
 
 //[function f_q038_ocs_edgar] //(commented out by Converter) 
 
@@ -16,7 +39,20 @@
 
 //[dialog d_q038_ocs_edgar button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_zalarnik] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_zalarnik]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.qtag(q038_ocs)> == 1)||(<src.qtag(q038_ocs)> == 2)
+//f_q038_ocs_zalarnik
+//else
+//Say("Nemam si s tebou o cem povidat...")
+//endif
+//endif
 
 //[function f_q038_ocs_zalarnik] //(commented out by Converter) 
 
@@ -24,7 +60,20 @@
 
 //[dialog d_q038_ocs_zalarnik button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_melichar] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_melichar]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.tag(ocs_pomaha)> == 1)
+//f_q038_ocs_melichar
+//else
+//Say("Nemam si s tebou co rict")
+//endif
+//endif
 
 //[function f_q038_ocs_melichar] //(commented out by Converter) 
 
@@ -32,7 +81,20 @@
 
 //[dialog d_q038_ocs_melichar button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_arnost] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_arnost]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.tag(ocs_pomaha)> == 1)
+//f_q038_ocs_arnost
+//else
+//say("Neotravuj nas!")
+//endif
+//endif
 
 //[function f_q038_ocs_arnost] //(commented out by Converter) 
 
@@ -40,7 +102,20 @@
 
 //[dialog d_q038_ocs_arnost button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_liecitelka] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_liecitelka]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.tag(ocs_pomaha)> == 1)
+//f_q038_ocs_liecitelka
+//else
+//say("Neotravuj nas!")
+//endif
+//endif
 
 //[function f_q038_ocs_liecitelka] //(commented out by Converter) 
 
@@ -48,7 +123,16 @@
 
 //[dialog d_q038_ocs_liecitelka button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_johana] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_johana]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q038_ocs_johana
+//endif
 
 //[function f_q038_ocs_johana] //(commented out by Converter) 
 
@@ -56,7 +140,20 @@
 
 //[dialog d_q038_ocs_johana button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_baltazar] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_baltazar]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.tag(ocs_pomaha)> == 2)
+//f_q038_ocs_baltazar
+//else
+//Say("Nemam s tebou o com rozpravat")
+//endif
+//endif
 
 //[function f_q038_ocs_baltazar] //(commented out by Converter) 
 
@@ -64,7 +161,20 @@
 
 //[dialog d_q038_ocs_baltazar button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_adrian] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_adrian]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.tag(ocs_pomaha)> == 2)
+//f_q038_ocs_adrian
+//else
+//say("Neotravuj nas!")
+//endif
+//endif
 
 //[function f_q038_ocs_adrian] //(commented out by Converter) 
 
@@ -72,7 +182,20 @@
 
 //[dialog d_q038_ocs_adrian button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_carodejnica] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_carodejnica]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.tag(ocs_pomaha)> == 2)
+//f_q038_ocs_carodejnica
+//else
+//say("Neotravuj nas!")
+//endif
+//endif
 
 //[function f_q038_ocs_carodejnica] //(commented out by Converter) 
 
@@ -80,7 +203,20 @@
 
 //[dialog d_q038_ocs_carodejnica button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_hungar] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_hungar]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.tag(ocs_pomaha)> == 2)
+//f_q038_ocs_hungar
+//else
+//say("Neotravuj nas!")
+//endif
+//endif
 
 //[function f_q038_ocs_hungar] //(commented out by Converter) 
 
@@ -88,7 +224,20 @@
 
 //[dialog d_q038_ocs_hungar button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_traig] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_traig]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<src.tag(ocs_pomaha)> == 2)
+//f_q038_ocs_traig
+//else
+//say("Neotravuj nas!")
+//endif
+//endif
 
 //[function f_q038_ocs_traig] //(commented out by Converter) 
 
@@ -96,7 +245,20 @@
 
 //[dialog d_q038_ocs_traig button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_sfenuk] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_sfenuk]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<eval src.qtag(q038_ocs)> > 32)
+//f_q038_ocs_sfenuk
+//else
+//say("Neotravuj me!")
+//endif
+//endif
 
 //[function f_q038_ocs_sfenuk] //(commented out by Converter) 
 
@@ -104,13 +266,39 @@
 
 //[dialog d_q038_ocs_sfenuk button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_umogon] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_umogon]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<eval src.qtag(q038_ocs)> > 32)
+//f_q038_ocs_umogon
+//else
+//say("Neotravuj me!")
+//endif
+//endif
 
 //[dialog d_q038_ocs_umogon] //(commented out by Converter) 
 
 //[dialog d_q038_ocs_umogon button] //(commented out by Converter) 
 
-//[speech spk_q038_ocs_kubrogin] //(commented out by Converter) 
+[SpeechStub spk_q038_ocs_kubrogin]
+ON=*hi*
+ON=*zdravim*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//if (<eval src.qtag(q038_ocs)> > 32)
+//f_q038_ocs_kubrogin
+//else
+//say("Neotravuj me!")
+//endif
+//endif
 
 //[dialog d_q038_ocs_kubrogin] //(commented out by Converter) 
 

@@ -47,6 +47,11 @@ namespace SteamEngine.CompiledScripts {
 		internal static IUnloadable LoadFromScripts(PropsSection input) {
 			string name = input.HeaderName.ToLower();
 			AbstractScript s = AbstractScript.GetByDefname(name);
+			AbstractSpeech placeholder = s as AbstractSpeech;
+			if (placeholder != null && placeholder.IsPlaceholder) {
+				placeholder.UnregisterPlaceholder(); //#825 - the real speech replaces the converted stub
+				s = null;
+			}
 			ScriptedSpeech ssd;
 			if (s != null) {
 				ssd = s as ScriptedSpeech;

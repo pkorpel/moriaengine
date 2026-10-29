@@ -1,5 +1,25 @@
 # moriaengine — working state
 
+## DONE (2026-10-29): #825 NPC speech placeholders (branch 825-npc-speech); ports queued #826/#827/#828
+
+User: lots of speech warnings at boot; how is speech supposed to work, how is it assigned, placeholders like
+the monster-ability teventStubs? Sphere: [SPEECH] = ON=*pattern* triggers (whole-utterance wildcard, shared
+bodies), via TSPEECH (chardef 464, itemdef 24 = ships) / SPEECH (instance 5); NPC_OnHear order pet cmds ->
+instance -> chardef -> healer default -> @NPCHearUnknown. Archive: 252 blocks, 2061 ON=, ~3250 body lines; 210
+of 231 missing names used once, 159 call f_* quest functions -> no mechanical body conversion. Engine already
+had AbstractSpeech/ScriptedSpeech + C# BankerSpeech/ShopkeeperSpeech; converter commented every [SPEECH] out.
+User decisions: converter-generated placeholder per block, GM-only hint on match, then port spk_guard (#826),
+spk_healer (#827), spk_mistr (#828).
+**Done**: converter [SPEECH] -> [SpeechStub] (ConvertedSpeech: ON= kept, Sphere body as comments; fresh regen,
+98 files swapped whole, diffs to 0); scripts/Basic/Speech/SpeechStub.cs (Sphere Str_Match whole-utterance
+patterns, GMs in speech range get "[unported speech spk_x on NPC: *pat*]", never handles); real speech wins
+either load order (AbstractSpeech.IsPlaceholder, ScriptedSpeech replaces a stub); TSPEECH/TEVENTS comma lists
+split (AbstractDefTriggerGroupHolder); #509 [BANKDEBUG] leftovers removed. Boot "not a valid TriggerGroup"
+435 -> 9 (5 archive refs to blocks that don't exist + PlayerDef 0x190/0x191 e_character/e_monster).
+Verified: SpeechStubTests (protocol), SpeechPlaceholderTests (fast, red without the ScriptedSpeech change),
+fast 198/198, Economy/PetCommand/BankerDialog green (BankerDialog's first test flaked once at boot, 4/4 x2 after).
+Doc: docs/current/04-gameplay-systems/npc-speech.md.
+
 ## DONE (2026-10-29): #822 material-colored items spawn uncolored - branch 822-material-colors
 
 User (local testing after #813): a new i_sword_viking_mithril had the base hue. No converted Colored*Def has

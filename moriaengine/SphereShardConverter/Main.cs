@@ -196,6 +196,9 @@ namespace SteamEngine.Converter {
 							case "regiontype": //#813
 								cd = new ConvertedRegionType(input, convertedFile);
 								break;
+							case "speech": //#825
+								cd = new ConvertedSpeech(input, convertedFile);
+								break;
 							case "template":
 								cd = new ConvertedTemplateDef(input, convertedFile);
 								break;

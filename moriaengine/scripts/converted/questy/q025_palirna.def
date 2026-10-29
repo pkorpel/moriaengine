@@ -56,7 +56,22 @@ Color = 090b
 
 //[dialog d_q025_kotel button] //(commented out by Converter) 
 
-//[speech spk_q025_hospodska] //(commented out by Converter) 
+[SpeechStub spk_q025_hospodska]
+ON=*dobry*
+ON=*dobre*
+ON=*den*
+ON=*rano*
+ON=*dopoledne*
+ON=*odpoledne*
+ON=*vecer*
+ON=*ahoj*
+ON=*zdar*
+ON=*zdravi*
+//if (<distance> > 3)
+//say("Coze? Pojdte bliz!")
+//else
+//f_q025_osloveni_hospodske
+//endif
 
 //[function f_q025_osloveni_hospodske] //(commented out by Converter) 
 
@@ -68,7 +83,22 @@ Color = 090b
 
 //[dialog d_q025_hospodska button] //(commented out by Converter) 
 
-//[speech spk_q025_palic] //(commented out by Converter) 
+[SpeechStub spk_q025_palic]
+ON=*dobry*
+ON=*dobre*
+ON=*den*
+ON=*rano*
+ON=*dopoledne*
+ON=*odpoledne*
+ON=*vecer*
+ON=*ahoj*
+ON=*zdar*
+ON=*zdravi*
+//if (<distance> > 3)
+//say("Coze? Pojdte bliz!")
+//else
+//f_q025_osloveni_palice
+//endif
 
 //[function f_q025_osloveni_palice] //(commented out by Converter) 
 

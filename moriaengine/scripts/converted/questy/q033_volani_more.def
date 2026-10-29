@@ -2,7 +2,15 @@
 
 //[function f_q033_vetesnikignac] //(commented out by Converter) 
 
-//[speech spk_q033_vetesnikignac] //(commented out by Converter) 
+[SpeechStub spk_q033_vetesnikignac]
+ON=*ahoj*
+ON=*hi*
+
+//if (<distance>>3)
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q033_vetesnikignac
+//endif
 
 //[dialog d_q033_vetesnikignac] //(commented out by Converter) 
 
@@ -12,7 +20,15 @@
 
 //[function f_q033_piratrenfer] //(commented out by Converter) 
 
-//[speech spk_q033_piratrenfer] //(commented out by Converter) 
+[SpeechStub spk_q033_piratrenfer]
+ON=*ahoj*
+ON=*hi*
+
+//if (<distance>>3)
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q033_piratrenfer
+//endif
 
 //[dialog d_q033_piratrenfer] //(commented out by Converter) 
 
@@ -22,7 +38,15 @@
 
 //[function f_q033_rybarvolek] //(commented out by Converter) 
 
-//[speech spk_q033_rybarvolek] //(commented out by Converter) 
+[SpeechStub spk_q033_rybarvolek]
+ON=*ahoj*
+ON=*hi*
+
+//if (<distance>>3)
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_q033_rybarvolek
+//endif
 
 //[dialog d_q033_rybarvolek] //(commented out by Converter) 
 

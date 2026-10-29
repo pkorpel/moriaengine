@@ -1,0 +1,73 @@
+# NPC speech
+
+What NPCs do when a player says something near them: Erebor's `[SPEECH]` blocks, how they're attached,
+how this engine runs them, and the placeholders that stand in for the unported ones (#825).
+
+## How Sphere does it
+
+A speech block is a list of `ON=` patterns, each followed by Sphere script. Consecutive `ON=` lines share
+the body under the last one:
+
+```
+[speech spk_healer]
+on=*res*
+if (src.flag_dead)
+  src.resurrect_player(<uid>)
+endif
+```
+
+- **Patterns** match the whole utterance, case-insensitively: `*` is any run of characters and `?` is one
+  character, so `*res*` matches anything containing "res". `SRC` in the body is the speaker.
+- **Assignment**: `TSPEECH=` on a chardef (Erebor: 464 uses) or an itemdef (24, all ships), and `SPEECH=` on a
+  single character (5). Sphere also takes a comma-separated list (`TSPEECH = spk_healer,spk_shopkeep`).
+- **Order** in Sphere's `NPC_OnHear`: pet commands, the character's own `SPEECH` list, the chardef's `TSPEECH`
+  list, a built-in healer reaction, then `@NPCHearUnknown`. Inside a block, a matched body that ends without a
+  return or with `return 1` handles the speech: nothing else runs. `return 0` keeps looking at the block's later
+  `ON=` lines.
+
+The archive has 252 blocks with 2,061 patterns and about 3,250 lines of script. Most are one-off quest NPCs
+(210 of the names are used by a single chardef) and 159 blocks call Erebor `f_*` quest functions, so the
+script bodies can't be converted mechanically.
+
+## How the engine runs speech
+
+- `AbstractSpeech` (GameCore) is a TriggerGroup that answers the `hear` trigger. `TSPEECH`/`SPEECH` lines
+  resolve exactly like `TEVENTS` (`AbstractDefTriggerGroupHolder`), comma lists included.
+- Who hears (`Thing.cs`): characters within the speech distance that can see the speaker. Saying a listener's
+  name first ("Name ...") talks to that one only, and an NPC that answered exclusively stays the speaker's
+  conversation partner for the next line. A listener runs its TriggerGroups (its own and its def's) first, then
+  `On_Hear` (pet commands, vendors).
+- A speech returns `SpeechResult.ActedUponExclusively` to stop the dispatch, or `IgnoredOrActedUpon` to let
+  others hear it too.
+- Real speeches come in two shapes: a C# `AbstractSpeech` subclass registered in `Bootstrap()` (`BankerSpeech`
+  is spk_jobbanker, `ShopkeeperSpeech` is spk_shopkeep), or an LScript `[Speech name]` section with the same
+  `ON=*pattern*` triggers (`ScriptedSpeech`, e.g. spk_vendor_custom in `scripts/Optional/PlayerVendor`).
+
+## Placeholders for unported speeches
+
+The converter turns every archive `[SPEECH x]` into a `[SpeechStub x]` section (`ConvertedSpeech`): the `ON=`
+patterns stay as they are and the Sphere script under them is kept as comments, ready for porting.
+`SpeechStub` (`scripts/Basic/Speech/SpeechStub.cs`) loads it:
+
+- every `TSPEECH` reference to an archive block resolves, so the speech shows on the def (no boot warning);
+- players notice nothing. When a phrase matches one of the patterns, GMs within speech distance of the NPC get
+  `[unported speech spk_guard on <NPC>: *guard*]`, so live testing shows which unported speech it hit;
+- a real speech of the same name wins whichever loads first: a stub section is skipped when the name is
+  already taken by a real speech, and `ScriptedSpeech` replaces a stub that loaded before it
+  (`AbstractSpeech.IsPlaceholder`).
+
+**Porting one**: write the C# `AbstractSpeech` (or an LScript `[Speech]`) under the archive name, using the
+commented Sphere body in `scripts/converted` as the reference. Nothing in the converted content changes.
+
+Still warning at boot (by design): 5 chardefs name speech blocks that don't exist in the archive
+(`Hrobus`, `spk_uhlir`, `spk_mo_malicia`, `spk_kvest0001_Kapitan_straze_Barad`, `spk_kvest001_Liche_Sarfeos`).
+
+## Differences in `ScriptedSpeech` from Sphere
+
+These matter only for hand-written LScript speeches. `ScriptedSpeech` matches its patterns anywhere in the
+utterance (not the whole of it), stops at the first matching `ON=` (Sphere goes on after a `return 0`), and
+treats a body with no return as not handled (Sphere treats it as handled). `SpeechStub` uses Sphere's
+whole-utterance matching.
+
+Tests: `SpeechStubTests` (protocol: real speech from a real client to a converted guard; GM gets the hint,
+a player doesn't, ported speeches win) and `SpeechPlaceholderTests` (fast tier: load order).

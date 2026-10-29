@@ -59,6 +59,16 @@ namespace SteamEngine.CompiledScripts {
 			return "SpeechDef " + this.Defname;
 		}
 
+		/// <summary>#825 - a stand-in for a speech that isn't implemented yet (scripts' SpeechStub, one per unported
+		/// archive [SPEECH] block). A real speech of the same name replaces it, whichever loads first.</summary>
+		public virtual bool IsPlaceholder {
+			get { return false; }
+		}
+
+		internal void UnregisterPlaceholder() {
+			this.Unregister();
+		}
+
 		protected abstract SpeechResult Handle(AbstractCharacter listener, SpeechArgs speechArgs);
 
 		protected abstract SpeechResult TryHandle(AbstractCharacter listener, SpeechArgs speechArgs);

@@ -7,7 +7,85 @@ def_mistr_price_vm        20000
 def_mistr_levelLimit         56
 
 
-//[SPEECH spk_mistr] //(commented out by Converter) 
+[SpeechStub spk_mistr]
+ON=*Dobry*
+ON=*den*
+ON=*mistr*
+ON=*expert*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+ON=*buy*
+
+//if (src.isdead)
+//say("Musis byt nazivu. S duchy se nebavim...")
+//return 1
+//endif
+
+//f_weekly_meetMaster
+
+//src.roundskill(<tag(ucimskill)>)
+//if (src.profession==prof_undeclared)
+//src.sysmessage("Mas poskozenou postavu... pouzij svuj krystal nebo zavolej GM...")
+//return 0
+//elseif (src.ismagic)
+//src.sysmessage("Nesmis byt pod zadnym magickym vlivem...")
+//return 0
+//endif
+
+//if (src.canbe_velmistr(<tag(ucimskill)>))
+//say("Vidim ze jsi pripraven stati se VELMISTREM <tag.ucimskill>. Pokud mas zajem staci rici ANO a za poplatek <def_mistr_price_vm>gp te vytrenuji v tomto oboru.")
+//return 0
+//elseif (src.canbe_mistr(<tag(ucimskill)>))
+//say("Vidim ze jsi pripraven stati se MISTREM <tag.ucimskill>. Pokud mas zajem staci rici ANO a za poplatek <def_mistr_price_mistr>gp te vytrenuji v tomto oboru.")
+//return 0
+//elseif (src.canbe_expert(<tag(ucimskill)>))
+//say("Vidim ze jsi pripraven stati se EXPERTEM <tag.ucimskill>. Pokud mas zajem staci rici ANO a za poplatek <def_mistr_price_expert>gp te vytrenuji v tomto oboru.")
+//return 0
+//else
+//say("Nemohu te naucit vice o <tag.ucimskill>.")
+//return 0
+//endif
+ON=*YES*
+ON=*ANO*
+
+//if (src.isdead)
+//say("Musis byt nazivu. S duchy se nebavim...")
+//return 1
+//endif
+//if (src.profession==prof_undeclared)
+//src.sysmessage("Mas poskozenou postavu... pouzij svuj krystal nebo zavolej GM...")
+//return 0
+//elseif (src.ismagic)
+//src.sysmessage("Nesmis byt pod zadnym magickym vlivem...")
+//return 0
+//endif
+
+//if (src.canbe_velmistr(<tag.ucimskill>))
+//if (src.pay(<def_mistr_price_vm>))
+//src.<tag.ucimskill>=800
+//say("Byl jsi vytrenovan VELMISTREM <tag.ucimskill> ")
+//else
+//say("Nemas patricnou sumu, za kterou bych te mohl vytrenovat.")
+//endif
+//elseif (src.canbe_MISTR(<tag.ucimskill>))
+//if (src.pay(<def_mistr_price_mistr>))
+//src.<tag.ucimskill>=550
+//say("Byl jsi vytrenovan MISTREM <tag.ucimskill> ")
+//else
+//say("Nemas patricnou sumu, za kterou bych te mohl vytrenovat.")
+//endif
+//elseif (src.canbe_expert(<tag.ucimskill>))
+//if (src.pay(<def_mistr_price_expert>))
+//src.<tag.ucimskill>=300
+//say("Byl jsi vytrenovan EXPERTEM <tag.ucimskill> ")
+//else
+//say("Nemas patricnou sumu, za kterou bych te mohl vytrenovat.")
+//endif
+//else
+//say("Nemohu te naucit vice o <tag.ucimskill>.")
+//return 0
+//endif
 
 //[function canbe_expert] //(commented out by Converter) 
 
@@ -17,7 +95,25 @@ def_mistr_levelLimit         56
 
 //[events e_mistr_craft] //(commented out by Converter) 
 
-//[speech spk_mistr_craft] //(commented out by Converter) 
+[SpeechStub spk_mistr_craft]
+ON=*sell*
+ON=*hi*
+ON=*hello*
+ON=*prod*
+ON=*exp*
+//if (src.profession==class_craft)||(src.isgm)
+//say("Poskytuji lekce na zaklade tvych zkusenosti s remeslnou vyrobou")
+//src.findid(i_buyer_tag_box).remove
+//src.newitemsafe(i_buyer_tag_box)
+//lastnew.equip
+//lastnew.link=<uid>
+//src.findlayer(21).contents(tryexpit)
+//src.findid(i_buyer_tag_box).dialog d_craftmistr
+//else
+//say("Nemohu slouzit...")
+//endif
+
+//argv(0) - exforthis
 
 //[function f_mistr_craft_computeGp] //(commented out by Converter) 
 
@@ -43,7 +139,50 @@ craftexp_gotexp		010000000
 
 ////////////////////////////////////////MISTR REMESEL LOG
 
-//[speech spk_mistr_craft_log] //(commented out by Converter) 
+[SpeechStub spk_mistr_craft_log]
+ON=*sell*
+ON=*hi*
+ON=*hello*
+ON=*prod*
+ON=*exp*
+ON=*ahoj*
+ON=*zdravim*
+ON=*odevzdat*
+//if (src.isdead)
+//return(0)
+//endif
+//if (<distance> > 6)
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)//treba na vypocet poctu lodi vediet spawn
+//if (<baseid>==c_mistr_craft_log_gondor)
+//if (<src.tag.realm>)
+//if (<src.tag.realm>==1)||(src.isgm)
+//dialog(d_craftmistrlog_gondor,<my_spawn>)
+//else
+//say("Tahni!")
+//endif
+//elseif (src.isgm)
+//dialog(d_craftmistrlog_gondor,<my_spawn>)
+//else
+//say("Sluzby poskytuju jen gondorum!")
+//endif
+//elseif (<baseid>==c_mistr_craft_log_mordor)
+//if (<src.tag.realm>)
+//if (<src.tag.realm>==2)||(src.isgm)
+//dialog(d_craftmistrlog_mordor,<my_spawn>)
+//else
+//say("Tahni!")
+//endif
+//elseif (src.isgm)
+//dialog(d_craftmistrlog_mordor,<my_spawn>)
+//else
+//say("Sluzby poskytuju jen mordorum!")
+//endif
+//endif
+//f_mistr_craft_log
+//endif
+//return(1)
 
 //[function f_mistr_craft_log] //(commented out by Converter) 
 

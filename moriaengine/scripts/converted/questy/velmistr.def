@@ -9,7 +9,13 @@ def_q000_minLevel           12
 ////////////////////////////////////
 
 
-//[SPEECH spk_q000_Elqira] //(commented out by Converter) 
+[SpeechStub spk_q000_Elqira]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+//f_qSpeech(f_q000_ElqiraDClick)
 
 //[function f_q000_ElqiraDClick] //(commented out by Converter) 
 
@@ -19,7 +25,13 @@ def_q000_minLevel           12
 
 //[function f_q000_playerIsReady] //(commented out by Converter) 
 
-//[SPEECH spk_q000_elmira] //(commented out by Converter) 
+[SpeechStub spk_q000_elmira]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+//f_qSpeech(f_q000_ElmiraDClick)
 
 //[function f_q000_ElmiraDClick] //(commented out by Converter) 
 
@@ -27,7 +39,13 @@ def_q000_minLevel           12
 
 //[DIALOG d_q000_Elmira button] //(commented out by Converter) 
 
-//[SPEECH spk_q000_elvira] //(commented out by Converter) 
+[SpeechStub spk_q000_elvira]
+ON=*dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+//f_qSpeech(f_q000_Elvira)
 
 //[function f_q000_ElviraDClick] //(commented out by Converter) 
 
@@ -37,7 +55,14 @@ def_q000_minLevel           12
 
 //[dialog d_q000_Elvira button] //(commented out by Converter) 
 
-//[SPEECH spk_q000_rinald] //(commented out by Converter) 
+[SpeechStub spk_q000_rinald]
+ON=*dobry*
+ON=*dobre*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+ON=*Rinald*
 
 //[function f_q000_RinaldDClick] //(commented out by Converter) 
 

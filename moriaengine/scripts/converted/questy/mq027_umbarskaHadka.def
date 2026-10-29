@@ -4,7 +4,20 @@
 
 //[dialog d_mq027_Antonio button] //(commented out by Converter) 
 
-//[speech spk_mq027_Antonio] //(commented out by Converter) 
+[SpeechStub spk_mq027_Antonio]
+ON=zdravim
+ON=*ahoj*
+ON=*ukol*
+ON=*prace*
+ON=*pozdrav*
+ON=*Antonio*
+ON=*Vincent*
+
+//f_qSpeech(f_mq027_Antonio_DClick)
+
+//////////////////////////////////////////////////////
+// DClick Antonio
+//////////////////////////////////////////////////////
 
 //[function f_mq027_Antonio_DClick] //(commented out by Converter) 
 
@@ -12,7 +25,20 @@
 
 //[dialog d_mq027_Vincent button] //(commented out by Converter) 
 
-//[speech spk_mq027_Vincent] //(commented out by Converter) 
+[SpeechStub spk_mq027_Vincent]
+ON=zdravim
+ON=*ahoj*
+ON=*ukol*
+ON=*prace*
+ON=*pozdrav*
+ON=*Antonio*
+ON=*Vincent*
+
+//f_qSpeech(f_mq027_Vincent_DClick)
+
+//////////////////////////////////////////////////////
+// DClick Vincent
+//////////////////////////////////////////////////////
 
 //[function f_mq027_Vincent_DClick] //(commented out by Converter) 
 
