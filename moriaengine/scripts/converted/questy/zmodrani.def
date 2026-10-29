@@ -31,7 +31,36 @@ Layer = layer_special //guessed from base def by Converter
 
 //[function vytvor_efekt_pro_inferno] //args - kam to ten ohen hodi (4) //(commented out by Converter) 
 
-//[SPEECH spk_prechod] //(commented out by Converter) 
+[SpeechStub spk_prechod]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+
+//if src.tag(zabilmnicha)
+//Say("Jak se opovazujes vstoupit na svate misto s krvi na rukou !")
+//endif
+
+//if !(src.tag(zabilmnicha))
+//Say("Tve hledani je u konce. Zde je klic k tvemu vykoupeni.")
+//endif
+ON=*klic*
+ON=*vykoupeni*
+
+//if (<src.tag(zabilmnicha)>)
+//Say("Nikdy ti klic do svatyne nevydam ! Odejdi z techto mist a hledej vykoupeni.")
+//endif
+
+//if !(<src.tag(zabilmnicha)>)
+//Say Zde je klic ke svatyni.
+//if (<serv.time> > <tag.time>)
+//newitem=i_klic_prechod
+//act.bounce
+//tag.time=<serv.time>+5*60*60
+//endif
+//endif
 
 [ItemDef i_door_predchod]
 CATEGORY = questy

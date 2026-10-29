@@ -62,7 +62,45 @@ model = i_corpse
 
 //[function hasreflex] //(commented out by Converter) 
 
-//[speech spk_guard] //(commented out by Converter) 
+[SpeechStub spk_guard]
+ON=*guard*
+ON=*straz*
+//finduid(021eb9e).sysmessage(Reaguji na pokyn straz)
+//kermel.sysmessage(Reaguji na pokyn straz)
+//src=<src.memoryfindtype(MEMORY_fight).link>
+//newitemsafe(i_memory_cleaner)
+//lastnew.tag(hiskarma,<karma>)
+//equip(<lastnew>)
+//guardkarma_<typedef.tag(guard)>
+//if !(src.isplayer)||(src.flag_invul)
+//return 1
+//endif
+//if (region!=src.region)	// wtf ? pozn. yavanna
+//return 1
+//endif
+//if (<src.tag(hypno_mystik)>)
+//if (<src.karma> > -10000)
+//return 1
+//endif
+//endif
+//var(ban_out,0)
+//if (!(ismyguard))||(isbannedplayer)  //bannedplayer take overi jestli hrac nahodou neni obcanem mesta
+//if(<var(ban_out)>) //banned ale stoji mimo
+//var(ban_out,"")
+//say(Zmizni od mesta!)
+//endif
+//dorand 2
+//say("<src.name>, odejdi nebo zemri!")
+//say("<src.name>, v <memoryfindtype(MEMORY_ISPAWNED).link.region.name> nemas co pohledavat!")
+//enddo
+//writelog("guard utoci kvuli spk na <src>")
+//attack(<src>)
+//if(!isevent(e_guard_nonport))
+//events(+e_tele_to_target)
+//endif
+//endif
+//var(ban_out,"")
+//return 0
 
 //[function removememories] //(commented out by Converter) 
 

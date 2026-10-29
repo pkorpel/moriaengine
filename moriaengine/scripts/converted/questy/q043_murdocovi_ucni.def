@@ -66,67 +66,227 @@
 
 //[dialog d_q043_kronikar button] //(commented out by Converter) 
 
-//[speech spk_mq043_dran] //(commented out by Converter) 
+[SpeechStub spk_mq043_dran]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_mq043_dran_DClick)
 
 //[function f_mq043_dran_DClick] //(commented out by Converter) 
 
-//[speech spk_mq043_bran] //(commented out by Converter) 
+[SpeechStub spk_mq043_bran]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_mq043_bran_DClick)
 
 //[function f_mq043_bran_DClick] //(commented out by Converter) 
 
-//[speech spk_mq043_wran] //(commented out by Converter) 
+[SpeechStub spk_mq043_wran]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_mq043_wran_DClick)
 
 //[function f_mq043_wran_DClick] //(commented out by Converter) 
 
-//[speech spk_mq043_tran] //(commented out by Converter) 
+[SpeechStub spk_mq043_tran]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_mq043_tran_DClick)
 
 //[function f_mq043_tran_DClick] //(commented out by Converter) 
 
-//[speech spk_mq043_oran] //(commented out by Converter) 
+[SpeechStub spk_mq043_oran]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_mq043_oran_DClick)
 
 //[function f_mq043_oran_DClick] //(commented out by Converter) 
 
-//[speech spk_gq043_Anton] //(commented out by Converter) 
+[SpeechStub spk_gq043_Anton]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_gq043_Anton_DClick)
 
 //[function f_gq043_Anton_DClick] //(commented out by Converter) 
 
-//[speech spk_gq043_Alena] //(commented out by Converter) 
+[SpeechStub spk_gq043_Alena]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_gq043_Alena_DClick)
 
 //[function f_gq043_Alena_DClick] //(commented out by Converter) 
 
-//[speech spk_gq043_Helena] //(commented out by Converter) 
+[SpeechStub spk_gq043_Helena]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_gq043_Helena_DClick)
 
 //[function f_gq043_Helena_DClick] //(commented out by Converter) 
 
-//[speech spk_gq043_Magdalena] //(commented out by Converter) 
+[SpeechStub spk_gq043_Magdalena]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_gq043_Magdalena_DClick)
 
 //[function f_gq043_Magdalena_DClick] //(commented out by Converter) 
 
-//[speech spk_gq043_Lenka] //(commented out by Converter) 
+[SpeechStub spk_gq043_Lenka]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_gq043_Lenka_DClick)
 
 //[function f_gq043_Lenka_DClick] //(commented out by Converter) 
 
-//[speech spk_q043_hospodsky] //(commented out by Converter) 
+[SpeechStub spk_q043_hospodsky]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_q043_hospodsky_DClick)
 
 //[function f_q043_hospodsky_DClick] //(commented out by Converter) 
 
-//[speech spk_q043_ozrala] //(commented out by Converter) 
+[SpeechStub spk_q043_ozrala]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_q043_ozrala_DClick)
 
 //[function f_q043_ozrala_DClick] //(commented out by Converter) 
 
-//[speech spk_q043_hrobar] //(commented out by Converter) 
+[SpeechStub spk_q043_hrobar]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_q043_hrobar_DClick)
 
 //[function f_q043_hrobar_DClick] //(commented out by Converter) 
 
-//[speech spk_q043_zlodejicek] //(commented out by Converter) 
+[SpeechStub spk_q043_zlodejicek]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_q043_zlodejicek_DClick)
 
 //[function f_q043_zlodejicek_DClick] //(commented out by Converter) 
 
-//[speech spk_q043_namornik] //(commented out by Converter) 
+[SpeechStub spk_q043_namornik]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_q043_namornik_DClick)
 
 //[function f_q043_namornik_DClick] //(commented out by Converter) 
 
-//[speech spk_q043_kronikar] //(commented out by Converter) 
+[SpeechStub spk_q043_kronikar]
+ON=*ahoj*
+ON=*zdravim*
+ON=*murdoc*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*pomoc*
+ON=*quest*
+ON=*hi*
+//f_qSpeech(f_q043_kronikar_DClick)
 
 //[function f_q043_kronikar_DClick] //(commented out by Converter) 
 

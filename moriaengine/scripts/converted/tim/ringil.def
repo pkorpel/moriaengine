@@ -71,4 +71,45 @@ EquipColor = 0481
 EquipName = Kniha Elfu
 AggroMode = Calm
 
-//[SPEECH JOPTRAVEL0] //(commented out by Converter) 
+[SpeechStub JOPTRAVEL0]
+ON=*KOKOT*
+ON=*HNUPE*
+ON=*PICO*
+ON=*DEBILE*
+ON=*KRETENE*
+ON=*HOVNE*
+ON=*KURVO*
+ON=*CURAKU*
+//SAY Vis co me muzes chudaku...
+ON=*hi*
+ON=*ahoj*
+ON=*cau*
+ON=*cus*
+ON=*cao*
+ON=*hoj*
+ON=*huj*
+ON=*nazdar*
+//SAY=Bud pozdraven hrdino, ja jsem Elmir z Elrondova domu, mohu ti pomoci najit bajny mec Ringil.
+//SAY=ale nejdrive musis odpovedet na mou otazku!
+ON=*quest*
+ON=*otazka*
+ON=*prace*
+ON=*pribeh*
+ON=*dobrodruzstvi*
+ON=*adventure*
+ON=*hadanka*
+ON=*rebus*
+ON=*hadej*
+//SAY Rekni mi hrdino, kdo jest pravym majitelem Ringilu
+//SAY Musim se zeptat, abych ti uveril ze jsi opravdu pritel.
+ON=*fingolfin*
+//SAY Gratuluji, vidim ze jsi opravdu ten ktery muze zjiskat zpet fingolfinuv mec.
+//SAY a proto ti reknu kde se nachazi jeho hrobka.
+//SAY Nyni odejdi a zjiskej bajny Ringil, necht te provazeji vsichni Valar.
+//src.newitem=i_book_open
+//src.act.name=Souradnice hrobky 583,1108
+//src.act.bounce
+
+//CATEGORY=Moria Questy
+//SUBSECTION=Quest ringil
+//DESCRIPTION=Elmir hadankar

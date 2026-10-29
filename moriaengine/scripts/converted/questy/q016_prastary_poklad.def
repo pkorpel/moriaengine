@@ -16,14 +16,51 @@
 
 //[dialog d_q016_Andor Button] //(commented out by Converter) 
 
-//[SPEECH spk_q016_StaryNegr] //(commented out by Converter) 
+[SpeechStub spk_q016_StaryNegr]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+
+//if (<distance> > 3)
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+//else
+//f_q016_StaryNegr_DClick
+//endif
 
 //[Function f_q016_StaryNegr_DClick] //(commented out by Converter) 
 
-//[SPEECH spk_q016_Orillus] //(commented out by Converter) 
+[SpeechStub spk_q016_Orillus]
+ON=*hi*
+ON=*ahoj*
+ON=*cus*
+ON=*hoj*
+ON=*nazdar*
+ON=*Dobry den*
+ON=*huja*
+ON=*zdar*
+
+//if (<distance> > 3)
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+//else
+//f_q016_Orillus_DClick
+//endif
 
 //[Function f_q016_Orillus_DClick] //(commented out by Converter) 
 
-//[SPEECH spk_q016_Andor] //(commented out by Converter) 
+[SpeechStub spk_q016_Andor]
+ON=*hi*
+ON=*ahoj*
+ON=*cus*
+ON=*hoj*
+ON=*nazdar*
+ON=*Dobry den*
+ON=*huja*
+ON=*zdar*
+
+//if (<distance> > 3)
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+//else
+//f_q016_Andor_DClick
+//endif
 
 //[Function f_q016_Andor_DClick] //(commented out by Converter) 

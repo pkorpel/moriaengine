@@ -76,4 +76,263 @@ Color = 037
 
 //[typedef t_scout_shamanova_odmena] //(commented out by Converter) 
 
-//[SPEECH spk_q017_sberatel] //(commented out by Converter) 
+[SpeechStub spk_q017_sberatel]
+ON=*hi*
+ON=*ahoj*
+ON=*zdrav*
+ON=*cau*
+//say("Zdravim, sbiram stare artefakty od alchymisty Terlaka! Nemas nejaky na VYMENu ?")
+ON=*vymen*
+ON=*vymena*
+ON=*vymenit*
+ON=*zamen*
+ON=*artefakt*
+
+//if !(strcmpi(<src.profession>,class_war))  //ak to JE war
+//if (src.findid(i_hammer_war_obsidian)||src.findid(i_axe_double_obsidian))  //ma obsid kladivo alebo sekeru
+//if (src.findid(i_hammer_war_obsidian).isevent(t_scout_warova_odmena))  //ma obsid kladivo od terlaka (s tym eventom)
+//      if (strcmpi(<src.findid(i_hammer_war_obsidian).name>,"Nejake kladivo"))  //ak sa vec NEVOLA "..." - nemusi byt
+//say("Ano to je ono!")  //to co povie to npc ked zoberie vec
+//src.consume(i_hammer_war_obsidian)  //zoberie vec
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)  // ak je tak vacsi ako 0 -> nepojdeme s tym tagom do zaporu
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)  // odcita sa 2 z tagu
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//      else
+//        say("Tyto novy nesbiram, jenom stary!")
+//      endif
+//elseif (src.findid(i_axe_double_obsidian).isevent(t_scout_warova_odmena))
+//say("Ano to je ono!")
+//src.consume(i_axe_double_obsidian)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//if !(strcmpi(<src.profession>,class_mag))  //ak to je mag
+//if (src.findid(i_hat_wizards))
+//if (src.findid(i_hat_wizards).isevent(t_scout_magova_odmena))
+//if (strcmpi(<src.findid(i_hat_wizards).name>,"Klobouk maga"))
+//say("Ano to je ono!")
+//src.consume(i_hat_wizards)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Tyto novy nesbiram, jenom stary!")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//if !(strcmpi(<src.profession>,class_priest))  //ak to je priest
+//if (src.findid(i_obsidian_HEATER_SHIELD))
+//if (src.findid(i_obsidian_HEATER_SHIELD).isevent(t_scout_priestova_odmena))
+//if (strcmpi(<src.findid(i_obsidian_heater_shield).name>,"Stit lecitele"))
+//say("Ano to je ono!")
+//src.consume(i_obsidian_HEATER_SHIELD)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Tyto novy nesbiram, jenom stary!")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//if !(strcmpi(<src.profession>,class_necro))  //ak to je necro
+//if (src.findid(i_robe))
+//if (src.findid(i_robe).isevent(t_scout_necroova_odmena))
+//if (strcmpi(<src.findid(i_robe).name>,"Roba temneho"))
+//say("Ano to je ono!")
+//src.consume(i_robe)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Tyto novy nesbiram, jenom stary!")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//if !(strcmpi(<src.profession>,class_thief))  //ak to je thief
+//if (src.findid(i_scimitar_obsidian))
+//if (src.findid(i_scimitar_obsidian).isevent(t_scout_thiefova_odmena))
+//say("Ano to je ono!")
+//src.consume(i_scimitar_obsidian)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//if !(strcmpi(<src.profession>,class_mystik))  //ak to je mystik
+//if (src.findid(i_cape))
+//if (src.findid(i_cape).isevent(t_scout_mystikova_odmena))
+//say("Ano to je ono!")
+//src.consume(i_cape)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//if !(strcmpi(<src.profession>,class_craft))  //ak to je craft
+//if (src.findid(i_pickaxe))
+//if (src.findid(i_pickaxe).isevent(t_scout_craftova_odmena))
+//if (strcmpi(<src.findid(i_pickaxe).name>,"Adamantiovy krumpac"))
+//say("Ano to je ono!")
+//src.consume(i_pickaxe)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Tyto novy nesbiram, jenom stary!")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//if !(strcmpi(<src.profession>,class_ranger))  //ak to je ranger
+//if (src.findid(i_obsidian_CHAINMAIL_gloves))
+//if (src.findid(i_obsidian_CHAINMAIL_gloves).isevent(t_scout_rangerova_odmena))
+//if (strcmpi(<src.findid(i_obsidian_CHAINMAIL_gloves).name>,"Rukavice presneho zasahu"))
+//say("Ano to je ono!")
+//src.consume(i_obsidian_CHAINMAIL_gloves)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Tyto novy nesbiram, jenom stary!")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//if !(strcmpi(<src.profession>,class_shaman))  //ak to je shaman
+//if (src.findid(i_obsidian_RINGMAIL_leggings))
+//if (src.findid(i_obsidian_RINGMAIL_leggings).isevent(t_scout_shamanova_odmena))
+//if (strcmpi(<src.findid(i_obsidian_RINGMAIL_leggings).name>,"Voodoo kalhoty"))
+//say("Ano to je ono!")
+//src.consume(i_obsidian_RINGMAIL_leggings)
+//src.newitemsafe(i_cashiers_check)
+//lastnew.more1=50000
+//lastnew.bounce
+//if (<src.qtag(q017_terlak)>>0)
+//src.qtag(q017_terlak,<src.qtag(q017_terlak)>-2)
+//endif
+//if (<src.qtag(q017_terlak)><1)
+//src.qtag(q017_terlak,0)
+//endif
+//else
+//say("Tyto novy nesbiram, jenom stary!")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//else
+//say("Nevidim u tebe zadnou vec kterou potrebuji")
+//endif
+//return(1)
+//endif
+
+//say("Bohuzel nemas nic, co by mne zajimalo.")

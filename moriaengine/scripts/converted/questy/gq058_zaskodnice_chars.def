@@ -26,4 +26,15 @@ Equip = i_OBSIDIAN_HEATER_SHIELD
 Equip = i_sword_broad_adamantinum
 AggroMode = Calm
 
-//[speech spk_gq058_zaskodnice] //(commented out by Converter) 
+[SpeechStub spk_gq058_zaskodnice]
+ON=*ahoj*
+ON=*ukol*
+ON=*prace*
+ON=*den*
+ON=*zdravim*
+
+//if (src.targ.distance > 5)
+//src.sysMessage("Zena si te nevsima, musis jit bliz.")
+//else
+//f_gq058_Zaskodnice_DClick
+//endif

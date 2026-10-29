@@ -1187,7 +1187,19 @@ AggroMode = Hostile
 
 //[function f_eq_cm_mocichtivy_zbohatlik] //(commented out by Converter) 
 
-//[speech spk_eq_cm_mocichtivy_zbohatlik] //(commented out by Converter) 
+[SpeechStub spk_eq_cm_mocichtivy_zbohatlik]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//if (<distance> > 4)
+//src.SysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+//else
+//if (<karma> >= 0)
+//f_eq_cm_mocichtivy_zbohatlik
+//endif
+//endif
 
 //[DIALOG d_eq_cm_mocichtivy_zbohatlik] //(commented out by Converter) 
 

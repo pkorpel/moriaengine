@@ -2,7 +2,30 @@
 
 //[function f_expertMistrDClick] //(commented out by Converter) 
 
-//[speech spk_quest_expert] //(commented out by Converter) 
+[SpeechStub spk_quest_expert]
+//on=*konec*
+//say("Jak si prejes. Expert quest ukoncen.")
+//tag(stone).f_expert_quest_end
+ON=*hi*
+ON=*ano*
+ON=vim*
+ON=ahoj
+ON=*zdravim*
+
+//if (<distance> > 4)
+//src.sysMessage("Rvat na sebe nebudete. Musis prijit bliz.")
+//elseif (<eval src.tag(expert_failed)>)
+//say("Loucim se s tebou, zkus to priste znova...")
+//src.paralyze(20)
+//else
+//f_expertMistrDClick
+//endif
+
+//////////////////////////
+// I T E M S
+//////////////////////////
+
+// Kamen portujici do quest dungu
 
 [ItemDef i_expert_quest_first]
 NAME = "Cesta k povyseni na experta"

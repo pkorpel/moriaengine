@@ -60,4 +60,16 @@ Equip = i_pants_long
 EquipColor = 08f
 AggroMode = Calm
 
-//[SPEECH crunch_alenor] //(commented out by Converter) 
+[SpeechStub crunch_alenor]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+//IF (<safe.SRC.TAG.jandoruv_black>) && (act.taming>950)
+//SAY("Hmm, prinesl jsi tu spravnou prisadu... Pustim te tedy k tomu cernemu dablovi, uvidime, jestli te strpi v ohrade! Budes-li chtit jit ven, rekni jen 'pustit'...")
+//src.go 810,3545,10
+//src.tag.remove(jandoruv_black)
+//else
+//SAY("Pokud jsi ranger, schopny zkrotit cerneho mustanga, pustim te k nemu. Avsak musis mi prinest vsechny prisady, ktere najdes na sneznem ostrove.")
+//endIF
+ON=*pustit*
+//src.go(817,3538,10)

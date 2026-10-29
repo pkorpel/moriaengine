@@ -2,7 +2,14 @@
 
 //[function f_q30_zmocnenecg_DClick] //(commented out by Converter) 
 
-//[SPEECH spk_gq030_zmocnenec] //(commented out by Converter) 
+[SpeechStub spk_gq030_zmocnenec]
+ON=*Hi*
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+ON=*Bud zdrav*
+
+//f_qSpeech(f_q30_zmocnenecg_DClick)
 
 //[function f_gq030_refuseQDialog] //(commented out by Converter) 
 
@@ -14,7 +21,14 @@
 
 //[function f_q30_zmocnenecm_DClick] //(commented out by Converter) 
 
-//[SPEECH spk_mq030_zmocnenec] //(commented out by Converter) 
+[SpeechStub spk_mq030_zmocnenec]
+ON=*Hi*
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+ON=*Bud zdrav*
+
+//f_qSpeech(f_q30_zmocnenecm_DClick)
 
 //[function f_mq030_refuseQDialog] //(commented out by Converter) 
 

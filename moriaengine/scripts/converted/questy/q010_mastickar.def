@@ -8,7 +8,13 @@ model = i_bag
 layer = 0 //Set by Converter 
 Color = 034
 
-//[speech spk_q010_mastickar] //(commented out by Converter) 
+[SpeechStub spk_q010_mastickar]
+ON=*ukol*
+ON=*prace*
+ON=*zdravim*
+ON=*ahoj*
+
+//f_qSpeech(f_q010_mastickar)
 
 //[function f_q010_mastickar] //(commented out by Converter) 
 

@@ -6,7 +6,31 @@ type = t_eq_script
 model = i_memory
 Layer = layer_special //guessed from base def by Converter 
 
-//[speech spk_diy_vendor] //(commented out by Converter) 
+[SpeechStub spk_diy_vendor]
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*zdravi*
+ON=*buy*
+ON=*koupit*
+ON=*nakup*
+//IF (<distance>>8)
+//if (src.isdead)
+//src.redmessage("Jako duch tohle nemuzes!")
+//return 1
+//endif
+//src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+//ELSE
+//DIALOG (d_dyi_vendor)
+//ENDIF
+//IF (src.isgm)
+//DIALOG(d_dyi_vendor_gmmenu)
+//ENDIF
+//return 1
+
+////////////////////////////////////////////////////////
+///////////////gump-zacatek/////////////////////////////
+////////////////////////////////////////////////////////
 
 //[DIALOG d_dyi_vendor] //(commented out by Converter) 
 

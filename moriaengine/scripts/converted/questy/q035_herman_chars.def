@@ -24,4 +24,10 @@ Equip = i_hair_long
 EquipColor = 00976
 AggroMode = Calm
 
-//[speech spk_q035_herman] //(commented out by Converter) 
+[SpeechStub spk_q035_herman]
+ON=*ukol*
+ON=*prace*
+ON=*zdravim*
+ON=*ahoj*
+
+//f_q035_herman

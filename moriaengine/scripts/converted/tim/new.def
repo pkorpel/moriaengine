@@ -99,7 +99,15 @@ Equip = i_robe
 EquipColor = 079C
 AggroMode = Calm
 
-//[SPEECH JOBCRYER] //(commented out by Converter) 
+[SpeechStub JOBCRYER]
+ON=*helo*
+ON=*hey*
+ON=*hi*
+ON=*hail*
+ON=*g'day*
+//SAYU Pomozte zachranit mesto Moria. Trpaslici delnici byli prepadeni skrety!!!
+//Probehne 1. Sraz hracu Morie. Informace se doctete na foru www.moria.cz Jste srdecne zvani.
+//Volte pro nasi Morii na www.moria.cz v novinkach se doctete podrobnejsi informace. Enjoy game.
 
 [EquippableDef I_cryer_TIMER]
 NAME = "cryer TIMER"

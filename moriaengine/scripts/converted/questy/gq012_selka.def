@@ -8,7 +8,16 @@ model = i_crate_small
 layer = 0 //Set by Converter 
 Color = 042
 
-//[SPEECH spk_gq012_selka] //(commented out by Converter) 
+[SpeechStub spk_gq012_selka]
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_gq012_selka
+//endif
 
 //[FUNCTION f_gq012_selka] //(commented out by Converter) 
 

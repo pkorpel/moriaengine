@@ -2,7 +2,21 @@
 
 //[function f_npc_drazitel] //(commented out by Converter) 
 
-//[speech spk_drazitel] //(commented out by Converter) 
+[SpeechStub spk_drazitel]
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*zdravi*
+ON=*buy*
+ON=*koupit*
+ON=*nakup*
+
+//if (<distance> > 3)
+//src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+//else
+//f_npc_drazitel
+//endif
+//return 1
 
 //[DIALOG d_npc_drazitel] //(commented out by Converter) 
 

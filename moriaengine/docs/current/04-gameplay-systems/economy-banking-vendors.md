@@ -20,7 +20,8 @@ speech example anywhere in this codebase to confirm syntax against, and simple k
 matching doesn't need LScript's pattern-trigger machinery. This was new functionality,
 not restored content - the converted `vendors.def` banker NPCs had their speech trigger
 commented out by the old converter with nothing left to restore (the referenced
-`jobbanker.def` speech block was stripped to an empty header).
+`jobbanker.def` speech block was stripped to an empty header; since #825 it's a `[SpeechStub]`
+placeholder, which `BankerSpeech` overrides - see [NPC speech](npc-speech.md)).
 
 Recognizes 3 keywords anywhere in the spoken line (`balance`, `deposit`, `withdraw`) via
 plain substring search - `deposit`/`withdraw` pull the first run of digits out of the

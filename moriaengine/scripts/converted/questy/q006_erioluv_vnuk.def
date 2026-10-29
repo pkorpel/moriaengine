@@ -8,7 +8,17 @@
 
 //[function f_q006_hasSubquestResources_7] //(commented out by Converter) 
 
-//[speech spk_q006_eriol] //(commented out by Converter) 
+[SpeechStub spk_q006_eriol]
+ON=*ahoj*
+ON=*zdravi*
+ON=*dobry*
+ON=*ukol*
+
+//f_qSpeech(f_q006_eriol)
+
+//////////////////////////////////////////////////
+/////////////dialog Unas for q006//////////////////
+//////////////////////////////////////////////////
 
 //[function f_q006_Unas_Request_Greeting] //(commented out by Converter) 
 

@@ -174,7 +174,24 @@ model = i_water_bloody
 
 //[events t_bloodstep] //(commented out by Converter) 
 
-//[SPEECH spk_go_imp] //(commented out by Converter) 
+[SpeechStub spk_go_imp]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+//say("Za maly poplatek te prevezu na tajemny ostrov se zvlastnim hradem.")
+ON=*ostrov*
+ON=*hrad*
+//say("Obyvatele hradu jsou kapku podivinsti, hehe.")
+
+//if (src.pay({10 30}))
+//src.NEWITEM i_delay_imp
+//src.ACT.EQUIP
+//else
+//say("Zadarmo te tam ale nesvezu!")
+//endif
 
 [EquippableDef i_delay_imp]
 Name = "Teleport Delay Timer imp"
@@ -182,9 +199,83 @@ TYPE = T_EQ_SCRIPT
 model = i_memory
 Layer = layer_special //guessed from base def by Converter 
 
-//[speech spk_erebor_opilec] //(commented out by Converter) 
+[SpeechStub spk_erebor_opilec]
+ON=*Dobry*
+ON=*den*
+ON=*nazdar*
+ON=*hi*
+//if (<tag(kure)>==1)//test zda mu uz nerekl o hladu
+//SAY("Tak kde jsi s tim kuretem?")
+//elseif (<tag(kuretime)> > <serv.time>)//test zda uz upynul pozadovany cas od posledniho zezrani kurete
+//SAY("Konecne mam plny brich.")
+//emote("grg")
+//else
+//SAY("Nazdar! *hic* Hele, mam hlad jako vlk! *hic* Kdyz mi prineses od hostinskeho *hic* kousek kurete, neco bych tu pro tebe mel! *hic*")
+//tag(kure,1) // rekl o hladu, tag ulozim na NPC
+//endif
+ON=*kure*
+ON=*jidlo*
+ON=*tady*
+//if (<tag(kure)>==1)&&(<src.rescount i_chicken_leg> >= 1)//rek mu o hladu a ma pro nej kure
+//SAY("Aaa, diky! Na, vem si tohle.")
+//EMOTE("hic")
+//SAY("Sutrak, muze se ti hodit.")
+//EMOTE("hic")
+//SAY("A ted me nerus, musim to snist!")
+//EMOTE("hic")
+//src.consume(i_chicken_leg)
+//src.NEWITEM i_dagger_verite // tady bych dal saphire nebo emerald t
+// treba takhle
+//dorand 4
+//src.newitem i_gem_emerald
+//src.newitem i_gem_sapphire
+//src.newitem i_gem_diamond
+//src.newitem i_gem_ruby
+//enddo
+//src.ACT.BOUNCE
+//src.addexp(50)
+//tag(kure,0) // vynuluje tag na postave
+//tag(kuretime,<eval <serv.time>+10*60*60*2>)//dalsich 2 hodin nebude chtit papat
+//else
+//EMOTE("hic")
+//endif
 
-//[speech spk_harad_opilec] //(commented out by Converter) 
+[SpeechStub spk_harad_opilec]
+ON=*Dobry*
+ON=*den*
+ON=*nazdar*
+ON=*hi*
+//if (<tag(syr)>==1)
+//SAY("Tak kde jsi s tim syrem?")
+//elseif (<tag(syrtime)> > <serv.time>)
+//SAY("Joo to bylo dobry! Uz mam dost.")
+//else
+//SAY("Nazdar! *hic* Hele, mam chut na poradny kus *hic* syra, rozumis? Kdyz mi ho sezenes, neco ti dam! *hic*")
+//tag(syr,1)
+//endif
+ON=*syr*
+ON=*jidlo*
+ON=*tady*
+//if (<tag(syr)>==1)&&(<src.rescount i_cheese_wheel> >= 1)
+//SAY("Aaa, diky! Na, vem si tohle.")
+//emote("hic")
+//SAY("Mozna to uzijes.")
+//emote("hic")
+//SAY("A ted me nerus, musim to snist!")
+//emote("hic")
+//src.consume(i_cheese_wheel)
+//dorand 3
+//src.newitem i_dagger_verite
+//src.newitem i_dagger_iron
+//src.newitem i_gem_ruby
+//enddo
+//src.ACT.BOUNCE
+//src.addexp(50)
+//tag(syr,0)//vynuluje tag na postave
+//tag(syrtime,<eval <serv.time>+10*60*60*2>)
+//else
+//emote("hic")
+//endif
 
 [ItemDef i_gate_timer_marek1]
 CATEGORY = Dungy
@@ -393,7 +484,28 @@ Color = 021
 
 //[events e_brinbor] //(commented out by Converter) 
 
-//[SPEECH brinborkecy] //(commented out by Converter) 
+[SpeechStub brinborkecy]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+//Say("Dekuji Vam za zachranu. Jste statecni hrdinove. Ale dejte si pozor! Zde je to velmi nebezpecne. Dol Guldur je domovem mocneho nekromanta.")
+ON=*jakeho*
+ON=*nekromant*
+ON=*informace*
+ON=*pomoc*
+ON=*rad*
+//Say("Ano. Jeho komnaty jsem nenasel, ale ziskal jsem klic, ktery by mohl vest k doupeti te nelidske bestie. Snad pro nej najdete uplatneni.")
+//IF (<serv.time> > <tag.time>)
+//src.newitem=i_klic_guldur
+//src.act.bounce
+//tag.time=<serv.time>+10*60*60
+//endif
+
+
+//beridor
 
 [ItemDef i_gate_random_beridor]
 CATEGORY = Dungy
