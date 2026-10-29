@@ -540,6 +540,43 @@ namespace SteamEngine.Tests.Protocol {
 		/// branch: type(1) + myBoxUid(4) + myBoxUid-again(4) + otherBoxUid(4) + hasName(1) +
 		/// [name, ASCII null-terminated].
 		/// </summary>
+		/// <summary>Sends SecureTradeInPacket (0x6f) type 1 - close/cancel the trade window
+		/// (the box uid is this client's own).</summary>
+		public void SendSecureTradeCancel(uint tradeBoxUid) {
+			byte[] packet = new byte[8];
+			packet[0] = 0x6f;
+			EncodeUShortBigEndian(8, packet, 1);
+			packet[3] = 1;
+			EncodeIntBigEndian((int) tradeBoxUid, packet, 4);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>Reads 0x6f packets until a type 1 (close) arrives; returns its box uid.</summary>
+		public uint ReadSecureTradeClose(TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (true) {
+				byte[] payload = this.ReadPacketPayload(0x6f, deadline - DateTime.UtcNow);
+				if (payload[2] == 1) {
+					return (uint) ((payload[3] << 24) | (payload[4] << 16) | (payload[5] << 8) | payload[6]);
+				}
+			}
+		}
+
+		/// <summary>Reads 0x25 (item added to a container) packets until one matches; returns it.
+		/// Payload: serial(4) model(2) unknown(1) amount(2) x(2) y(2) container(4) hue(2).</summary>
+		public (uint ItemUid, ushort Model, uint ContUid) ReadContainerItem(Func<uint, ushort, uint, bool> match, TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (true) {
+				byte[] p = this.ReadPacketPayload(0x25, deadline - DateTime.UtcNow);
+				uint itemUid = (uint) ((p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]);
+				ushort model = (ushort) ((p[4] << 8) | p[5]);
+				uint contUid = (uint) ((p[13] << 24) | (p[14] << 16) | (p[15] << 8) | p[16]);
+				if (match(itemUid, model, contUid)) {
+					return (itemUid, model, contUid);
+				}
+			}
+		}
+
 		public (uint MyBoxUid, uint OtherBoxUid, string OtherName) ReadSecureTradeOpen(TimeSpan timeout) {
 			byte[] payload = this.ReadPacketPayload(0x6f, timeout);
 			byte type = payload[2];

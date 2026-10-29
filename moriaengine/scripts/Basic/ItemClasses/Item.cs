@@ -226,6 +226,12 @@ namespace SteamEngine.CompiledScripts {
 		/// DenyResultMessages.Deny_ContainerClosed is a real, already pre-existing cliloc that
 		/// fits this denial well ("You cannot peek into the container.").</summary>
 		public override void On_DenyPickupItemFrom(DenyPickupArgs args) {
+			//#810 - only a secure trade box's owner may take items out of it
+			Container asContainer = this as Container;
+			if ((asContainer != null) && SecureTrade.IsPickupFromBoxDenied(asContainer, args.PickingChar)) {
+				args.Result = DenyResultMessages.Deny_ThatDoesNotBelongToYou;
+				return;
+			}
 			if (this.HasAttribute(ItemAttributes.attr_secure)) {
 				House house = House.FindHouseAt(this);
 				if ((house != null) && !house.HasAccess(args.PickingChar as Character)) {
@@ -411,7 +417,15 @@ namespace SteamEngine.CompiledScripts {
 
 		public sealed override bool IsNotVisible {
 			get {
-				return (this.Flag_Invisible || !this.IsInVisibleLayer || this.Flag_Disconnected);
+				return (this.Flag_Invisible || (!this.IsInVisibleLayer && !this.IsReachableOnInvisibleLayer) || this.Flag_Disconnected);
+			}
+		}
+
+		/// <summary>An item on an invisible layer that the people who opened it can still reach -
+		/// a secure trade box (#810), equipped on its owner's Special layer.</summary>
+		protected virtual bool IsReachableOnInvisibleLayer {
+			get {
+				return false;
 			}
 		}
 

@@ -1344,6 +1344,8 @@ namespace SteamEngine.CompiledScripts {
 
 				this.AbortSkill();
 				this.Dismount();
+				//#810 - before the corpse exists, so the offered items go back to the pack first
+				SecureTrade.CancelAllFor(this, "died");
 				SoundCalculator.PlayDeathSound(this);
 
 				this.Trigger_Death(killedBy);

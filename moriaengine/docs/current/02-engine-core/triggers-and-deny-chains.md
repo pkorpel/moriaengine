@@ -108,15 +108,16 @@ before taking an item out, even though the access check itself correctly allowed
 
 ## The one documented exception: SecureTrade bypasses the chain entirely
 
-`SecureTrade.AddItem` (`scripts/Basic/Trading/SecureTrade.cs:116`) calls `who.PutItemInItem(
-box, 0, 0, false)` directly, with its own comment noting "no permission/reach checks - the
-box has no real reachable position". This is deliberate - a trade box isn't really "in the
-world" in a way `CanReach` could sensibly evaluate - but it means nothing routed through the
-normal `On_DenyPutOnGround`/`On_DenyPickup` chain ever runs for an item entering a trade.
-When `attr_nodroptrade` (#223) needed to block this specific path, it needed an *explicit*
-check added directly inside `AddItem`, returning `true` (not `false`) to tell the caller
-"handled, don't fall through to the generic container-drop path" without actually moving the
-item - relying on the deny-trigger chain alone would have silently done nothing here.
+`SecureTrade.AddItem` (`scripts/Basic/Trading/SecureTrade.cs`) calls `who.PutItemInItem(
+box, 0, 0, false)` directly - "no permission/reach checks - we've already established who is a
+legitimate trade party". This is deliberate (the trade rules - reach, alive, online - are
+checked when the trade starts, see [Trading & secure trade](../04-gameplay-systems/trading-secure-trade.md)),
+but it means nothing routed through the normal `On_DenyPutOnGround`/`On_DenyPickup` chain ever
+runs for an item entering a trade. When `attr_nodroptrade` (#223) needed to block this specific
+path, it needed an *explicit* check inside `AddItem`, which returns a deny result so the caller
+bounces the item back - relying on the deny-trigger chain alone would have silently done
+nothing here. (Taking items OUT of a trade box does go through the chain:
+`Item.On_DenyPickupItemFrom` lets only the box's owner do it, #810.)
 
 ## Related
 - [Known gotchas](../07-testing/known-gotchas.md) - the test-writing consequences of the

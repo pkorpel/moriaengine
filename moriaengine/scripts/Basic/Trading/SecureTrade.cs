@@ -15,67 +15,100 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.Networking;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
-	/// One active secure-trade session between two players (issue #13). Each side has its own
-	/// virtual "offered items" container; the client renders both boxes side by side once it
-	/// receives the open (type 0) packet naming them.
+	/// One active secure-trade session between two players (issue #13, reworked to Sphere 0.99z8
+	/// rules in #810 - EreborNext's CItemContainer.Trade.cs / CClientGame.CharacterDrop.cs). Each
+	/// side has its own "offered items" box; the client renders both side by side once it receives
+	/// the open (type 0) packet naming them.
 	///
-	/// The two boxes are real Container items (reusing the same 0xe75 backpack itemdef
-	/// Character.AddBackpack uses) so the ordinary pick-up/drop-item packet handling can move
-	/// items into and out of them with no special-casing needed on that side. They're pulled out
-	/// of normal view (RemoveFromView) right after creation so bystanders never see or can
-	/// interact with them - the two participants see their contents only via the explicit
-	/// OpenedContainers registration below, a separate channel from normal visibility.
+	/// Like Sphere's IT_EQ_TRADE_WINDOW, each box (i_secure_trade_box) is a real Container
+	/// EQUIPPED on its owner's Special layer - invisible to everyone else, saved with the owner,
+	/// never on the ground. A box with no live session (server restart mid-trade) is emptied back
+	/// into its owner's pack at their next login (ReturnOrphanedBoxes).
+	///
+	/// Rules: a trade starts by dropping an item on another online, living player within reach.
+	/// Any change of either offer unchecks both accept boxes; taking an item back out also makes
+	/// the partner wait TradeStabilizeSeconds before they can accept (Sphere's anti-swap timer).
+	/// Accepting needs the partner in sight within the update range. Only the box owner can take
+	/// items out of a box. Death, logout or either side closing the window cancels the trade and
+	/// returns everything.
 	/// </summary>
 	public sealed class SecureTrade {
+		private const double TradeStabilizeSeconds = 2;
+		private const string BoxDefname = "i_secure_trade_box";
+
 		private static readonly Dictionary<uint, SecureTrade> byBoxUid = new Dictionary<uint, SecureTrade>();
 
 		private readonly Character initiator, other;
 		private readonly Container initiatorBox, otherBox;
-		private uint initiatorGold, initiatorPlat, otherGold, otherPlat;
 		private bool initiatorAccepted, otherAccepted;
+		private double initiatorBoxStableAt, otherBoxStableAt;
 		private bool finalized;
 
 		private SecureTrade(Character initiator, Character other) {
 			this.initiator = initiator;
 			this.other = other;
 			this.initiatorBox = CreateBox(initiator);
-			this.otherBox = CreateBox(initiator); //spawned near the initiator too - never actually visible to either side, see class remarks
+			this.otherBox = CreateBox(other);
 
 			byBoxUid[(uint) this.initiatorBox.Uid] = this;
 			byBoxUid[(uint) this.otherBox.Uid] = this;
 
-			OpenedContainers.SetContainerOpened(initiator, this.initiatorBox);
-			OpenedContainers.SetContainerOpened(initiator, this.otherBox);
-			OpenedContainers.SetContainerOpened(other, this.initiatorBox);
-			OpenedContainers.SetContainerOpened(other, this.otherBox);
+			this.RegisterViewers();
 
-			SendOpen(initiator, (uint) this.initiatorBox.Uid, (uint) this.otherBox.Uid, other.Name);
-			SendOpen(other, (uint) this.otherBox.Uid, (uint) this.initiatorBox.Uid, initiator.Name);
+			//the client only opens the trade gump once it knows both boxes (TazUO's SecureTrading
+			//handler drops the open packet otherwise) - RunUO's SecureTradeEquip: each box as an
+			//item contained in its owner's mobile
+			foreach (Character to in new[] { initiator, other }) {
+				SendBox(to, this.initiatorBox, initiator);
+				SendBox(to, this.otherBox, other);
+			}
+			//box uids are the flagged item uids the client knows the boxes by (TazUO looks them up)
+			SendOpen(initiator, this.initiatorBox.FlaggedUid, this.otherBox.FlaggedUid, other.Name);
+			SendOpen(other, this.otherBox.FlaggedUid, this.initiatorBox.FlaggedUid, initiator.Name);
+		}
+
+		//both parties see both boxes' contents. Re-done on every change: OpenedContainers.GetViewers
+		//drops a viewer who steps out of reach, and would never add them back.
+		private void RegisterViewers() {
+			OpenedContainers.SetContainerOpened(this.initiator, this.initiatorBox);
+			OpenedContainers.SetContainerOpened(this.initiator, this.otherBox);
+			OpenedContainers.SetContainerOpened(this.other, this.initiatorBox);
+			OpenedContainers.SetContainerOpened(this.other, this.otherBox);
 		}
 
 		private static ContainerDef boxDef;
-		private static Container CreateBox(Character near) {
-			if (boxDef == null) {
-				boxDef = ThingDef.FindItemDef(0xe75) as ContainerDef;
+		private static ContainerDef BoxDef {
+			get {
 				if (boxDef == null) {
-					throw new SEException("Unable to find itemdef 0xe75 (used for secure trade boxes) in scripts.");
+					boxDef = ThingDef.GetByDefname(BoxDefname) as ContainerDef;
+					if (boxDef == null) {
+						throw new SEException("Unable to find ContainerDef " + BoxDefname + " (secure trade boxes) in scripts.");
+					}
 				}
+				return boxDef;
 			}
-
-			Container box = (Container) boxDef.Create(near.X, near.Y, near.Z, near.M);
-			box.RemoveFromView();
-			return box;
 		}
 
+		private static Container CreateBox(Character owner) {
+			return (Container) BoxDef.Create(owner); //equips it on the owner's Special layer
+		}
+
+		private static bool IsTradeBox(AbstractItem item) {
+			return (item != null) && (item.Def == BoxDef);
+		}
+
+		/// <summary>Accepts the client's flagged item uid as well as a plain one.</summary>
 		public static SecureTrade FindByBoxUid(uint boxUid) {
 			SecureTrade trade;
-			byBoxUid.TryGetValue(boxUid, out trade);
+			byBoxUid.TryGetValue((uint) Thing.UidClearFlags(boxUid), out trade);
 			return trade;
 		}
 
@@ -89,56 +122,126 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
-		public static bool TryStartOrAddItem(AbstractCharacter fromChar, AbstractCharacter targetChar, AbstractItem item) {
+		private static List<SecureTrade> FindAllFor(Character ch) {
+			List<SecureTrade> list = new List<SecureTrade>();
+			foreach (SecureTrade trade in byBoxUid.Values) {
+				if (!trade.finalized && (trade.initiator == ch || trade.other == ch) && !list.Contains(trade)) {
+					list.Add(trade);
+				}
+			}
+			return list;
+		}
+
+		/// <summary>An item dropped on a character. Null = not a player-to-player trade (an NPC,
+		/// which goes the normal TryPutItemOnChar way).</summary>
+		public static DenyResult TryStartOrAddItem(AbstractCharacter fromChar, AbstractCharacter targetChar, AbstractItem item) {
 			Character from = fromChar as Character;
 			Character target = targetChar as Character;
 			if (from == null || target == null || !from.IsPlayer || !target.IsPlayer) {
-				return false; //only real player-to-player trades go through here
+				return null;
 			}
 
-			SecureTrade trade = FindActive(from, target) ?? new SecureTrade(from, target);
+			SecureTrade trade = FindActive(from, target);
+			if (trade == null) {
+				DenyResult canStart = CanStartTrade(from, target);
+				if (!canStart.Allow) {
+					return canStart;
+				}
+				if (IsNoDropTrade(item)) {
+					return CannotBeTraded; //don't open an empty window for an item that can't go in it
+				}
+				trade = new SecureTrade(from, target);
+			}
 			return trade.AddItem(from, item);
 		}
 
-		public static bool TryAddItemToBox(AbstractCharacter whoChar, AbstractItem destCont, AbstractItem item) {
+		private static readonly DenyResult CannotBeTraded = new DenyResult_StringSysMessage("That item cannot be traded.");
+
+		private static bool IsNoDropTrade(AbstractItem item) {
+			Item asItem = item as Item;
+			return (asItem != null) && asItem.HasAttribute(ItemAttributes.attr_nodroptrade);
+		}
+
+		private static DenyResult CanStartTrade(Character from, Character target) {
+			if (from.Flag_Dead) {
+				return DenyResultMessages.Deny_NoMessage;
+			}
+			if (target.GameState == null) {
+				return new DenyResult_StringSysMessage(target.Name + " is not online.");
+			}
+			if (target.Flag_Dead) {
+				return new DenyResult_StringSysMessage("You can't trade with a ghost.");
+			}
+			return from.CanReach(target);
+		}
+
+		/// <summary>An item dropped into a trade box. Null = not one of ours.</summary>
+		public static DenyResult TryAddItemToBox(AbstractCharacter whoChar, AbstractItem destCont, AbstractItem item) {
 			SecureTrade trade = FindByBoxUid((uint) destCont.Uid);
 			if (trade == null) {
-				return false; //not one of ours - let the generic container-drop path handle it
+				return null;
 			}
-
 			Character who = whoChar as Character;
-			if (who == null) {
-				return false;
+			if (who == null || (who != trade.initiator && who != trade.other)) {
+				return DenyResultMessages.Deny_ThatDoesNotBelongToYou;
 			}
 			return trade.AddItem(who, item);
 		}
 
-		private bool AddItem(Character who, AbstractItem item) {
+		private DenyResult AddItem(Character who, AbstractItem item) {
 			if (this.finalized) {
-				return false;
+				return DenyResultMessages.Deny_NoMessage;
 			}
 
-			//#223 - attr_nodroptrade. This path deliberately bypasses the normal deny-trigger
-			//chain entirely (see this method's own pre-existing comment below), so there's no
-			//Item.On_Deny* hook that would otherwise catch this - must check explicitly here.
-			//Returning true (not false) claims "handled" so the caller doesn't fall through to
-			//the generic container-drop path, which could still physically place the item.
-			Item asItem = item as Item;
-			if ((asItem != null) && asItem.HasAttribute(ItemAttributes.attr_nodroptrade)) {
-				who.SysMessage("That item cannot be traded.");
-				return true;
+			//#223 - attr_nodroptrade. This path bypasses the normal deny-trigger chain, so there's
+			//no Item.On_Deny* hook that would otherwise catch this - must check explicitly here.
+			if (IsNoDropTrade(item)) {
+				return CannotBeTraded;
 			}
 
+			//always into the dropper's own box, even if it was dropped on the partner's side
 			Container box = (who == this.initiator) ? this.initiatorBox : this.otherBox;
-			who.PutItemInItem(box, 0, 0, false); //no permission/reach checks - the box has no real reachable position, and we've already established who is a legitimate trade party above
+			who.PutItemInItem(box, 0, 0, false); //no permission/reach checks - we've already established who is a legitimate trade party
 
 			//changing either side's offer is a last-second change of terms - both sides must
-			//re-confirm, matching the classic UO convention of un-checking both accept boxes.
+			//re-confirm (Sphere's Trade_Status(false) on ContentAdd).
+			this.RegisterViewers();
+			this.ResetAccepted();
+			return DenyResultMessages.Allow;
+		}
+
+		/// <summary>Container.On_ItemLeave - an item left a trade box. When that's the owner taking
+		/// it back (not the trade completing/cancelling), both accepts reset and the partner has to
+		/// wait before accepting again (Sphere's Trade_Status(false, true) on OnRemoveOb).</summary>
+		internal static void OnItemLeftBox(Container box) {
+			SecureTrade trade = FindByBoxUid((uint) box.Uid);
+			if (trade == null || trade.finalized) {
+				return;
+			}
+			double stableAt = Globals.TimeInSeconds + TradeStabilizeSeconds;
+			if (box == trade.initiatorBox) {
+				trade.initiatorBoxStableAt = stableAt;
+			} else {
+				trade.otherBoxStableAt = stableAt;
+			}
+			trade.ResetAccepted();
+		}
+
+		/// <summary>Item.On_DenyPickupItemFrom - only the box's owner may take items out of it;
+		/// the partner can look but not take.</summary>
+		internal static bool IsPickupFromBoxDenied(Container box, AbstractCharacter picker) {
+			SecureTrade trade = FindByBoxUid((uint) box.Uid);
+			if (trade == null) {
+				return false;
+			}
+			Character owner = (box == trade.initiatorBox) ? trade.initiator : trade.other;
+			return picker != owner;
+		}
+
+		private void ResetAccepted() {
 			this.initiatorAccepted = false;
 			this.otherAccepted = false;
 			this.BroadcastAcceptedState();
-
-			return true;
 		}
 
 		public void SetAccepted(AbstractCharacter whoChar, bool accepted) {
@@ -146,18 +249,36 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			Character who = whoChar as Character;
-			if (who == null) {
-				return;
-			}
-
+			Character partner;
+			double partnerBoxStableAt;
 			if (who == this.initiator) {
-				this.initiatorAccepted = accepted;
+				partner = this.other;
+				partnerBoxStableAt = this.otherBoxStableAt;
 			} else if (who == this.other) {
-				this.otherAccepted = accepted;
+				partner = this.initiator;
+				partnerBoxStableAt = this.initiatorBoxStableAt;
 			} else {
 				return;
 			}
 
+			if (accepted) {
+				if (Globals.TimeInSeconds < partnerBoxStableAt) {
+					who.SysMessage("Wait a second for the other trade window to stabilize.");
+					this.BroadcastAcceptedState(); //un-ticks the box the client already ticked
+					return;
+				}
+				if (!IsInTradeRange(who, partner)) {
+					who.SysMessage("You are too far away to trade items.");
+					this.BroadcastAcceptedState();
+					return;
+				}
+			}
+
+			if (who == this.initiator) {
+				this.initiatorAccepted = accepted;
+			} else {
+				this.otherAccepted = accepted;
+			}
 			this.BroadcastAcceptedState();
 
 			if (this.initiatorAccepted && this.otherAccepted) {
@@ -165,33 +286,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public void SetGoldAndPlatinum(AbstractCharacter whoChar, uint gold, uint platinum) {
-			if (this.finalized) {
-				return;
+		//Sphere: the partner in sight within SPHEREMAP_VIEW_SIZE (18 = our MaxUpdateRange)
+		private static bool IsInTradeRange(Character who, Character partner) {
+			if (who.M != partner.M) {
+				return false;
 			}
-			Character who = whoChar as Character;
-			if (who == null) {
-				return;
+			if (Point2D.GetSimpleDistance(who, partner) > Globals.MaxUpdateRange) {
+				return false;
 			}
-
-			if (who == this.initiator) {
-				this.initiatorGold = gold;
-				this.initiatorPlat = platinum;
-				SendMyGold(this.initiator, (uint) this.initiatorBox.Uid, gold, platinum);
-				SendHisGold(this.other, (uint) this.otherBox.Uid, gold, platinum);
-			} else if (who == this.other) {
-				this.otherGold = gold;
-				this.otherPlat = platinum;
-				SendMyGold(this.other, (uint) this.otherBox.Uid, gold, platinum);
-				SendHisGold(this.initiator, (uint) this.initiatorBox.Uid, gold, platinum);
-			} else {
-				return;
-			}
-
-			//same re-confirmation rule as changing the offered items.
-			this.initiatorAccepted = false;
-			this.otherAccepted = false;
-			this.BroadcastAcceptedState();
+			return who.GetMap().CanSeeLosFromTo(who, partner);
 		}
 
 		public void Cancel() {
@@ -199,36 +302,62 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			this.finalized = true;
-			this.ReturnBoxContents(this.initiatorBox, this.initiator);
-			this.ReturnBoxContents(this.otherBox, this.other);
-			this.CleanUp();
+			MoveAllItems(this.initiatorBox, this.initiator);
+			MoveAllItems(this.otherBox, this.other);
+			this.CloseAndCleanUp();
+		}
+
+		/// <summary>Cancels every trade this character is in - death, logout (Sphere's
+		/// CancelAllTrades / the trade-window delete in @death). Erebor's own @death logs it.</summary>
+		public static void CancelAllFor(Character ch, string reason) {
+			foreach (SecureTrade trade in FindAllFor(ch)) {
+				Character partner = (trade.initiator == ch) ? trade.other : trade.initiator;
+				Console.WriteLine("SecureTrade: " + ch + " " + reason + " during an active trade with " + partner + " - trade cancelled.");
+				trade.Cancel();
+			}
+		}
+
+		/// <summary>For tests: this character's trade state in one line.</summary>
+		public static string Describe(Character ch) {
+			List<SecureTrade> trades = FindAllFor(ch);
+			if (trades.Count == 0) {
+				return "trades=0";
+			}
+			SecureTrade t = trades[0];
+			bool isInitiator = t.initiator == ch;
+			Container myBox = isInitiator ? t.initiatorBox : t.otherBox;
+			return "trades=" + trades.Count +
+				" myAccepted=" + (isInitiator ? t.initiatorAccepted : t.otherAccepted) +
+				" partnerAccepted=" + (isInitiator ? t.otherAccepted : t.initiatorAccepted) +
+				" myBox=" + myBox.Uid + " myBoxOnMe=" + (myBox.Cont == ch) + " myBoxLayer=" + myBox.Z +
+				" myBoxCount=" + myBox.Count;
+		}
+
+		/// <summary>Player.On_LogIn - a trade box with no live session (the server went down
+		/// mid-trade) is emptied back into its owner's pack and deleted.</summary>
+		public static void ReturnOrphanedBoxes(Character ch) {
+			List<AbstractItem> orphans = null;
+			foreach (AbstractItem equipped in ch) {
+				if (IsTradeBox(equipped) && FindByBoxUid((uint) equipped.Uid) == null) {
+					if (orphans == null) {
+						orphans = new List<AbstractItem>();
+					}
+					orphans.Add(equipped);
+				}
+			}
+			if (orphans != null) {
+				foreach (Container box in orphans) {
+					MoveAllItems(box, ch);
+					box.Delete();
+				}
+			}
 		}
 
 		private void CompleteTrade() {
 			this.finalized = true;
-
-			//gold/platinum are swapped as whole units via a backing resource, same as any other
-			//currency grant - no partial/negative balances are possible since each side could
-			//only ever set a value here, there's nothing to validate beyond what's already typed in.
-			this.GiveCurrency(this.other, this.initiatorGold, this.initiatorPlat);
-			this.GiveCurrency(this.initiator, this.otherGold, this.otherPlat);
-
 			MoveAllItems(this.initiatorBox, this.other);
 			MoveAllItems(this.otherBox, this.initiator);
-
-			SendClose(this.initiator, (uint) this.initiatorBox.Uid);
-			SendClose(this.other, (uint) this.otherBox.Uid);
-			this.CleanUp();
-		}
-
-		private void GiveCurrency(Character recipient, uint gold, uint platinum) {
-			// GoldUtils.Grant merges into an existing backpack pile rather than always creating
-			// a new stack - this used to inline the same item-creation logic without that merge.
-			GoldUtils.Grant(recipient, gold);
-			if (platinum > 0) {
-				//platinum has no equivalent concept in this engine/era - any amount entered is
-				//silently ignored rather than guessing at an unsupported currency conversion.
-			}
+			this.CloseAndCleanUp();
 		}
 
 		private static void MoveAllItems(Container box, Character recipient) {
@@ -245,11 +374,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private void ReturnBoxContents(Container box, Character owner) {
-			MoveAllItems(box, owner);
-		}
-
-		private void CleanUp() {
+		private void CloseAndCleanUp() {
+			SendClose(this.initiator, this.initiatorBox.FlaggedUid);
+			SendClose(this.other, this.otherBox.FlaggedUid);
+			foreach (Character to in new[] { this.initiator, this.other }) {
+				SendBoxRemoved(to, this.initiatorBox);
+				SendBoxRemoved(to, this.otherBox);
+			}
 			byBoxUid.Remove((uint) this.initiatorBox.Uid);
 			byBoxUid.Remove((uint) this.otherBox.Uid);
 			this.initiatorBox.Delete();
@@ -257,38 +388,59 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void BroadcastAcceptedState() {
-			SendAcceptedState(this.initiator, (uint) this.initiatorBox.Uid, this.initiatorAccepted, this.otherAccepted);
-			SendAcceptedState(this.other, (uint) this.otherBox.Uid, this.otherAccepted, this.initiatorAccepted);
+			SendAcceptedState(this.initiator, this.initiatorBox.FlaggedUid, this.initiatorAccepted, this.otherAccepted);
+			SendAcceptedState(this.other, this.otherBox.FlaggedUid, this.otherAccepted, this.initiatorAccepted);
+		}
+
+		private static void SendBox(Character to, Container box, Character owner) {
+			GameState state = to.GameState;
+			if (state == null) {
+				return;
+			}
+			var p = Pool<AddItemToContainerOutPacket>.Acquire();
+			p.Prepare(owner.FlaggedUid, box);
+			state.Conn.SendSinglePacket(p);
+		}
+
+		//the box is on an invisible layer, so its Delete() isn't announced to anyone
+		private static void SendBoxRemoved(Character to, Container box) {
+			GameState state = to.GameState;
+			if (state == null) {
+				return;
+			}
+			var p = Pool<DeleteObjectOutPacket>.Acquire();
+			p.Prepare(box);
+			state.Conn.SendSinglePacket(p);
 		}
 
 		private static void SendOpen(Character to, uint myBoxUid, uint otherBoxUid, string otherName) {
+			GameState state = to.GameState;
+			if (state == null) {
+				return;
+			}
 			var p = Pool<SecureTradeOutPacket>.Acquire();
 			p.PrepareOpen(myBoxUid, otherBoxUid, otherName);
-			to.GameState.Conn.SendSinglePacket(p);
+			state.Conn.SendSinglePacket(p);
 		}
 
 		private static void SendClose(Character to, uint boxUid) {
+			GameState state = to.GameState;
+			if (state == null) {
+				return;
+			}
 			var p = Pool<SecureTradeOutPacket>.Acquire();
 			p.PrepareClose(boxUid);
-			to.GameState.Conn.SendSinglePacket(p);
+			state.Conn.SendSinglePacket(p);
 		}
 
 		private static void SendAcceptedState(Character to, uint boxUid, bool meAccepted, bool otherAccepted) {
+			GameState state = to.GameState;
+			if (state == null) {
+				return;
+			}
 			var p = Pool<SecureTradeOutPacket>.Acquire();
 			p.PrepareAcceptedState(boxUid, meAccepted, otherAccepted);
-			to.GameState.Conn.SendSinglePacket(p);
-		}
-
-		private static void SendMyGold(Character to, uint boxUid, uint gold, uint platinum) {
-			var p = Pool<SecureTradeOutPacket>.Acquire();
-			p.PrepareMyGold(boxUid, gold, platinum);
-			to.GameState.Conn.SendSinglePacket(p);
-		}
-
-		private static void SendHisGold(Character to, uint boxUid, uint gold, uint platinum) {
-			var p = Pool<SecureTradeOutPacket>.Acquire();
-			p.PrepareHisGold(boxUid, gold, platinum);
-			to.GameState.Conn.SendSinglePacket(p);
+			state.Conn.SendSinglePacket(p);
 		}
 	}
 
@@ -297,24 +449,32 @@ namespace SteamEngine.CompiledScripts {
 			new SecureTradeCommandsImpl();
 		}
 
-		public override bool TryAddItemToBox(AbstractCharacter who, AbstractItem destCont, AbstractItem item) {
+		public override DenyResult TryAddItemToBox(AbstractCharacter who, AbstractItem destCont, AbstractItem item) {
 			return SecureTrade.TryAddItemToBox(who, destCont, item);
 		}
 
-		public override bool TryStartOrAddItem(AbstractCharacter from, AbstractCharacter target, AbstractItem item) {
+		public override DenyResult TryStartOrAddItem(AbstractCharacter from, AbstractCharacter target, AbstractItem item) {
 			return SecureTrade.TryStartOrAddItem(from, target, item);
 		}
 
+		//Sphere's Event_SecureTrade: only the window's own owner may tick or close it
 		public override void SetAccepted(AbstractCharacter who, uint tradeBoxUid, bool accepted) {
-			SecureTrade.FindByBoxUid(tradeBoxUid)?.SetAccepted(who, accepted);
+			SecureTrade trade = SecureTrade.FindByBoxUid(tradeBoxUid);
+			if (trade != null && IsOwnBox(who, tradeBoxUid)) {
+				trade.SetAccepted(who, accepted);
+			}
 		}
 
 		public override void Cancel(AbstractCharacter who, uint tradeBoxUid) {
-			SecureTrade.FindByBoxUid(tradeBoxUid)?.Cancel();
+			SecureTrade trade = SecureTrade.FindByBoxUid(tradeBoxUid);
+			if (trade != null && IsOwnBox(who, tradeBoxUid)) {
+				trade.Cancel();
+			}
 		}
 
-		public override void SetGoldAndPlatinum(AbstractCharacter who, uint tradeBoxUid, uint gold, uint platinum) {
-			SecureTrade.FindByBoxUid(tradeBoxUid)?.SetGoldAndPlatinum(who, gold, platinum);
+		private static bool IsOwnBox(AbstractCharacter who, uint tradeBoxUid) {
+			AbstractItem box = Thing.UidGetItem((int) tradeBoxUid);
+			return (box != null) && (box.Cont == who);
 		}
 	}
 }

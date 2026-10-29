@@ -420,9 +420,10 @@ namespace SteamEngine.Networking {
 	/// first), so the concrete implementation registers itself here via its constructor at script
 	/// load (see scripts/Basic/Trading/SecureTrade.cs's Bootstrap()).
 	///
-	/// TryAddItemToBox/TryStartOrAddItem return false to mean "not a trade-related drop, caller
+	/// TryAddItemToBox/TryStartOrAddItem return null to mean "not a trade-related drop, caller
 	/// should fall through to normal container/char drop handling" - this keeps GameCore's
-	/// DropItemInPacket oblivious to what a "trade box" actually is.
+	/// DropItemInPacket oblivious to what a "trade box" actually is. Otherwise the result is the
+	/// drop's outcome; a deny bounces the dragged item back like any other refused drop (#810).
 	/// </summary>
 	[CLSCompliant(false)]
 	public abstract class SecureTradeCommands {
@@ -436,11 +437,10 @@ namespace SteamEngine.Networking {
 			instance = this;
 		}
 
-		public abstract bool TryAddItemToBox(AbstractCharacter who, AbstractItem destCont, AbstractItem item);
-		public abstract bool TryStartOrAddItem(AbstractCharacter from, AbstractCharacter target, AbstractItem item);
+		public abstract DenyResult TryAddItemToBox(AbstractCharacter who, AbstractItem destCont, AbstractItem item);
+		public abstract DenyResult TryStartOrAddItem(AbstractCharacter from, AbstractCharacter target, AbstractItem item);
 		public abstract void SetAccepted(AbstractCharacter who, uint tradeBoxUid, bool accepted);
 		public abstract void Cancel(AbstractCharacter who, uint tradeBoxUid);
-		public abstract void SetGoldAndPlatinum(AbstractCharacter who, uint tradeBoxUid, uint gold, uint platinum);
 	}
 
 	/// <summary>
@@ -1277,8 +1277,9 @@ namespace SteamEngine.Networking {
 							//engine - checked first so dropping into one doesn't fall through to
 							//the generic container-drop path, which gates on reachability that a
 							//position-less trade box would always fail.
-							if (tradeCommands != null && tradeCommands.TryAddItemToBox(cre, coAsItem, i)) {
-								result = DenyResultMessages.Allow;
+							DenyResult tradeResult = (tradeCommands != null) ? tradeCommands.TryAddItemToBox(cre, coAsItem, i) : null;
+							if (tradeResult != null) {
+								result = tradeResult;
 							} else if (coAsItem.IsContainer && (this.x != 0xFFFF) && (this.y != 0xFFFF)) {
 								//client put it to some coords inside container
 								result = cre.TryPutItemInItem(coAsItem, this.x, this.y, false);
@@ -1291,9 +1292,10 @@ namespace SteamEngine.Networking {
 							//dropping an item on another player (not oneself) is the classic UO
 							//gesture for starting/adding to a secure trade, rather than literally
 							//stuffing the item straight into their backpack unasked.
-							if (tradeCommands != null && targetChar != cre &&
-								tradeCommands.TryStartOrAddItem(cre, targetChar, i)) {
-								result = DenyResultMessages.Allow;
+							DenyResult tradeResult = (tradeCommands != null && targetChar != cre) ?
+								tradeCommands.TryStartOrAddItem(cre, targetChar, i) : null;
+							if (tradeResult != null) {
+								result = tradeResult;
 							} else {
 								result = cre.TryPutItemOnChar(targetChar);
 							}
