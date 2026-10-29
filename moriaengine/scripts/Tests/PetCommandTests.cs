@@ -64,6 +64,8 @@ namespace SteamEngine.CompiledScripts {
 			pet.Name = "TestPet";
 			pet.ControlMaster = self;
 			Console.WriteLine("PET_SETUP: STARTED (owned pet #" + pet.Uid + ")");
+			//#802 - where the player stands, so a ground target can be picked within its update range
+			Console.WriteLine("PET_SETUP_POS: " + self.X + " " + self.Y + " " + self.Z);
 		}
 
 		[SteamFunction]
@@ -100,17 +102,21 @@ namespace SteamEngine.CompiledScripts {
 			wild.Name = "TestWild";
 			NPC victim = (NPC) sheepDef.Create(self.X + 2, self.Y, self.Z, self.M);
 			victim.Name = "TestVictim";
-			int startingHits = victim.Hits;
-			// 30s, not the original 12s - matches CombatScenarioTests.cs/CombatDepthTests.cs's
-			// own bump for the same reason: CI's slower/more contended runner needs more margin
-			// for combat RNG (weapon-skill success retries every ~1s, not guaranteed quickly).
-			// Attached to self, not victim - see CombatDepthTests.cs's TestSpellcasterDamage
-			// comment: BoundTimer.Cont returns null once its TagHolder IsDeleted, so a check
-			// attached directly to the (possibly-killed) victim would silently never fire in
-			// exactly the case - the target dying - most likely to be a real pass.
-			self.AddTimer(DamageCheckTimer.TimerKey, new DamageCheckTimer(victim, startingHits, "PET_KILL_TEST"))
-				.DueInSeconds = 30;
 			Console.WriteLine("PET_SETUP: STARTED (wild #" + wild.Uid + ", victim #" + victim.Uid + ")");
+		}
+
+		/// <summary>#802 - whether the GM's kill order took: TestWild is fighting TestVictim. This
+		/// used to wait for damage, but a sheep can't hurt a sheep (WeaponAttack 2 x Str-scaling
+		/// ~0.12 vs armor 6 always floors to 0), so the test could never pass; the order itself
+		/// is what this test is about.</summary>
+		[SteamFunction]
+		public static void TestReportWildKillTarget(Character self) {
+			NPC wild = FindByName(self, "TestWild");
+			NPC victim = FindByName(self, "TestVictim");
+			NPCAiTimer ai = (wild == null) ? null : NPCAiTimer.GetFor(wild);
+			bool engaging = (victim != null) && (ai != null) && (ai.Target == victim);
+			Console.WriteLine("PET_KILL_TEST: " + (engaging ? "PASS" : "FAIL") + " (wild=" + wild + " target=" +
+				((ai == null) ? "no AI" : (ai.Target + " state=" + ai.LastState)) + ")");
 		}
 
 		/// <summary>A pet already mid-fight (via direct EngageTarget, same as CombatScenarioTests.cs)

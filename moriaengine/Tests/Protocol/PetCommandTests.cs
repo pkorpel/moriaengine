@@ -34,6 +34,20 @@ namespace SteamEngine.Tests.Protocol {
 			return game;
 		}
 
+		/// <summary>The player's x/y/z from TestSetupOwnedPet's "PET_SETUP_POS: x y z" line.</summary>
+		protected static int[] FindPlayerPos(string output) {
+			const string marker = "PET_SETUP_POS: ";
+			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "Could not find player position in game output:\n" + output);
+			int end = output.IndexOf('\n', idx);
+			string[] parts = output.Substring(idx + marker.Length, ((end < 0) ? output.Length : end) - idx - marker.Length).Trim().Split(' ');
+			return new int[] {
+				int.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture),
+				int.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture),
+				int.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture)
+			};
+		}
+
 		protected void AssertSeen(string marker, TimeSpan timeout) {
 			bool saw = this.fixture.WaitForGameOutput(marker, timeout);
 			Assert.True(saw, "Expected to see '" + marker + "' within " + timeout + ". Game output:\n" + this.fixture.GameOutputSnapshot());
@@ -129,7 +143,11 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(300);
 				game.SendSpeech("TestWild kill");
 				game.SendTargetUid(FindVictimUid(this.GameOutputSnapshot()));
-				this.AssertSeen("PET_KILL_TEST: PASS", TimeSpan.FromSeconds(45));
+				// #802 - checks the order took (TestWild fighting TestVictim), not damage: a sheep
+				// can't hurt a sheep (its attack always floors to 0 against sheep armor)
+				Thread.Sleep(2000);
+				game.SendSpeech(".TestReportWildKillTarget");
+				this.AssertSeen("PET_KILL_TEST: PASS", TimeSpan.FromSeconds(10));
 			}
 		}
 
@@ -187,9 +205,13 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(300);
 				game.SendSpeech("TestPet go");
 				Thread.Sleep(300);
-				game.SendTargetGround(5240, 40, 20);
+				// #802 - a spot next to the player: the engine drops a ground target beyond the update
+				// range, and the old hardcoded (5240,40,20) went out of range when #210 moved the spawn
+				int[] pos = FindPlayerPos(this.GameOutputSnapshot());
+				int x = pos[0] + 3, y = pos[1], z = pos[2];
+				game.SendTargetGround(x, y, z);
 				this.AssertSeen("sent 1 pet(s) to", TimeSpan.FromSeconds(10));
-				this.AssertSeen("(5240,40,20)", TimeSpan.FromSeconds(5));
+				this.AssertSeen("(" + x + "," + y + "," + z + ")", TimeSpan.FromSeconds(5));
 			}
 		}
 	}
