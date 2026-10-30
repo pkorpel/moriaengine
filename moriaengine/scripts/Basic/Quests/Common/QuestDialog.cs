@@ -122,15 +122,26 @@ namespace SteamEngine.CompiledScripts {
 			this.ExitResponse(false, true);
 		}
 
-		//Erebor's own markup in a text, kept as it is in the archive
-		private static readonly Regex choice = new Regex("<\\??src\\.(sex|splitRealm)\\(\"?([^\",)]*)\"?,\"?([^\",)]*)\"?\\)\\??>", RegexOptions.CultureInvariant);
+		//Erebor's own markup in a text, kept as it is in the archive: <src.sex("a","b")>, the quotes optional and needed for a
+		//variant with a comma in it
+		private static readonly Regex choice = new Regex("<\\??src\\.(sex|splitRealm)\\((?:\"([^\"]*)\"|([^\",)]*)),(?:\"([^\"]*)\"|([^\",)]*))\\)\\??>",
+			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
-		internal static string ExpandMarkup(string text, Player player, string name) {
-			string expanded = choice.Replace(text, m => {
-				bool first = (m.Groups[1].Value == "sex") ? (player.Gender != Gender.Female) : (player.Realm == Realm.Gondor);
-				return first ? m.Groups[2].Value : m.Groups[3].Value;
-			});
-			return expanded.Replace("<name>", name)
+		internal static string ExpandMarkup(string text, Player player, string npcName) {
+			return ExpandMarkup(text, player.Gender != Gender.Female, player.Realm == Realm.Gondor, player.Name, npcName);
+		}
+
+		/// <summary>The texts' markup to what the player reads: `npcName` is the speaker's, as &lt;name&gt; is on Erebor's dialogs.</summary>
+		public static string ExpandMarkup(string text, bool male, bool gondor, string playerName, string npcName) {
+			string expanded = text, before;
+			do { //over and over: a variant can hold another choice, and only the innermost one matches at first
+				before = expanded;
+				expanded = choice.Replace(before, m => {
+					bool first = string.Equals(m.Groups[1].Value, "sex", StringComparison.OrdinalIgnoreCase) ? male : gondor;
+					return first ? (m.Groups[2].Value + m.Groups[3].Value) : (m.Groups[4].Value + m.Groups[5].Value);
+				});
+			} while (expanded != before);
+			return expanded.Replace("<src.name>", playerName).Replace("<name>", npcName)
 				.Replace("<def_questDialog_colorTextEmote>", "<basefont color=#ffff88>")
 				.Replace("<def_questDialog_colorTextNormal>", "<basefont color=#ffffff>")
 				.Replace("<def_questDialog_colorTextResponse>", "<basefont color=#D7DF01>")

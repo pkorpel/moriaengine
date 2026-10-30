@@ -148,7 +148,9 @@ namespace SteamEngine.Tests.Protocol {
 
 				this.GoTo(client, "envoy");
 				client.SendSpeech("zdravim");
-				this.Press(client, "envoy q000_getVM");
+				var envoy = client.ReadGumpSkippingQuestScroll(Wait);
+				Assert.Contains(envoy.Strings, s => s.Contains("Nejsi ty ten, kdo pomohl Elqire", StringComparison.Ordinal));
+				this.Answer(client, envoy.GumpUid, "envoy q000_getVM");
 				Assert.Contains("stage=13 rank=Grandmaster", this.State(client));
 
 				//an envoy deals with his own realm only
