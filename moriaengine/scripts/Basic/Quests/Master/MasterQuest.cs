@@ -26,7 +26,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <para>Mistr Lenastir (c_lenastir) asks an Expert of level 6+ for a fertilized egg of the snake queen
 	/// (c_hadi_kralovna), and gives them a key (i_klic_teleportu) to an old teleport (i_hadi_teleport) that leads to the
 	/// Snake Islands. Entering those islands, by any way, marks the player (r_hadiostrovy, Erebor's tag.mistrquest). The
-	/// egg belongs to whoever lifts it first. Lenastir takes it only from its owner, and from a player who has been there:
+	/// egg belongs to whoever lifts it first out of her corpse. Lenastir takes it only from its owner, and from a player who has been there:
 	/// someone else's egg gets the player sent to the bug area.</para>
 	/// <para>The archive doesn't say where the pieces stood; scripts/Setup has its own proposal.</para>
 	/// </summary>
@@ -188,12 +188,25 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#833 - i_hadi_vejce: belongs to the first player to lift it (Erebor's @pickup_pack link), and describes itself
-	/// on a click.</summary>
+	/// <summary>#833 - i_hadi_vejce: belongs to the first player to lift it out of a corpse (Erebor's @pickup_pack link, which
+	/// only fires for containers), and describes itself on a click. An egg from anywhere else is the "bought" one.</summary>
 	public class E_MasterQuestEgg : CompiledTriggerGroup {
+		private static readonly TagKey liftedFromCorpseTK = TagKey.Acquire("_masterQuestEggFromCorpse_");
+
+		//the last moment the egg still knows where it lies: On_EnterChar comes after it has left
+		public void On_DenyPickup(Item self, DenyPickupArgs args) {
+			if (self.Cont is Corpse) {
+				self.SetTag(liftedFromCorpseTK, 1);
+			} else {
+				self.RemoveTag(liftedFromCorpseTK);
+			}
+		}
+
 		public void On_EnterChar(Item self, ItemInCharArgs args) {
 			Player player = args.Cont as Player;
-			if ((player != null) && (MasterQuest.GetEggOwner(self) == null)) {
+			bool fromCorpse = self.GetTag(liftedFromCorpseTK) != null;
+			self.RemoveTag(liftedFromCorpseTK);
+			if (fromCorpse && (player != null) && (MasterQuest.GetEggOwner(self) == null)) {
 				MasterQuest.SetEggOwner(self, player);
 				if (MasterQuest.HasAccepted(player)) {
 					QuestJournal.Report(player, QuestJournal.Master);
