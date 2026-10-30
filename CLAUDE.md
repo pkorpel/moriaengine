@@ -1,5 +1,13 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #841 multi-map support, plane 2 = map2.mul (branch 841-multi-map)
+
+User uploaded Map2/Staidx2/Statics2.mul to uo-files; renamed lowercase (Linux). Validated: exact 288x200 size, spawn Z of plane 2
+regions matches land Z. Map.GetFacetOfMapplane (2 -> 2, else 0, as Sphere's g_MulMap; plane 1's mapdif patches unsupported), per-facet
+sizes, StaticSector picks files by facet, 0xBF 08 at login. Map's ctor read Facet before setting m: harmless only while Facet was 0.
+Verified: MultiMapTests (all 14 regions walkable, client told on teleports both ways, relog on plane 2; red without the login packet).
+Players' clients need the same map2 files (updater has no mention of them). Still nothing leads into plane 2: entrances were GM-placed.
+
 ## DONE (2026-10-30): #844 titles with rank, English ladders (branch 844-title-rank)
 
 User: "The <good/bad> <name>, <rank> <profession title>", English ranks, translate the Czech profession titles. Done:

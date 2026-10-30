@@ -737,6 +737,18 @@ namespace SteamEngine.Tests.Protocol {
 			return (gumpUid, layoutText);
 		}
 
+		/// <summary>#841 - the map number of the next SetFacetOutPacket (0xBF 0x08), the server telling the client which
+		/// map it's on: payload[0..1] length, [2..3] sub-command, [4] the map.</summary>
+		public int ReadFacetChange(TimeSpan timeout) {
+			DateTime deadline = DateTime.UtcNow + timeout;
+			while (true) {
+				byte[] payload = this.ReadPacketPayload(0xBF, deadline - DateTime.UtcNow);
+				if (((payload[2] << 8) | payload[3]) == 0x08) {
+					return payload[4];
+				}
+			}
+		}
+
 		/// <summary>The quest journal's scroll (D_QuestJournalReport) in a gump's layout.</summary>
 		public const string QuestScrollLayout = "button 0 0 30 30";
 
