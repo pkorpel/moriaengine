@@ -88,7 +88,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("nation=Gondoran", line);
 				Assert.Contains("realm=Gondor", line);
 				Assert.Contains("home=5678,3871,-80", line);
-				Assert.Contains("title=ucen", line); // Mage's level-0 title
+				Assert.Contains("title=Novice Apprentice", line); // rank + Mage's level-0 title
 				Assert.Contains("str=60", line);
 				Assert.Contains("dex=70", line);
 				Assert.Contains("int=120", line);

@@ -74,8 +74,8 @@ vitRange=70, 120, 160
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_priest/titul_priest_f)
-titles=verici, ranhojic, lecitel, mnich, duchovni, knez, veleknez, kardinal, spasitel, avatar
-titlesFemale=verici, ranhojicka, lecitelka, mnich, duchovni, knezka, veleknezka, kardinal, spasitelka, avatar
+titles="Believer", "Medic", "Healer", "Monk", "Cleric", "Priest", "High Priest", "Cardinal", "Savior", "Avatar"
+titlesFemale="Believer", "Medic", "Healer", "Monk", "Cleric", "Priestess", "High Priestess", "Cardinal", "Savior", "Avatar"
 
 //list allowed spells, per the wiki. Reactive Armor is omitted - not implemented in this engine
 //(scripts/Basic/skills/Magery/Spells/unimplementedSpells.def), same precedent as mage.def's
