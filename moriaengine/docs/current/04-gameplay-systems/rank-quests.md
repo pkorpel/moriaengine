@@ -63,7 +63,7 @@ get a key (`i_klic_teleportu`, newbie, handed out again if lost) to an old locke
 | Stepping on the teleport with the key | The key is used up. An Expert lands on the Snake Islands at 1508,3860,10; anyone else gets "You can't go through here!" |
 | Entering the Snake Islands, by any way | Marks the player (`r_hadiostrovy`, Erebor's `tag.mistrquest`) |
 | Killing the queen (`c_hadi_kralovna`) | Her corpse holds an egg |
-| Lifting the egg | It belongs to the first player to lift it |
+| Lifting the egg out of her corpse | It belongs to the first player to do so. An egg lifted from anywhere else belongs to nobody and doesn't move the quest on |
 | Greeting Lenastir with the egg | Rank Master, 500 experience, egg and key taken |
 
 Lenastir refuses a player who has an egg but was never on the islands ("a plain bought egg"). A player who has been there
@@ -85,8 +85,7 @@ A GM adding Lenastir by hand needs to make him invulnerable (Erebor's `@create`,
 
 ### Differences from Erebor
 
-- The egg belongs to the first player to lift it from anywhere. Erebor's `@pickup_pack` only fired when lifting from a
-  container.
+- Only a corpse counts for owning the egg, where Erebor's `@pickup_pack` took any container.
 - The quest stone statistics (`questMenu_questStone`) are not kept.
 
 ## Grandmaster quest

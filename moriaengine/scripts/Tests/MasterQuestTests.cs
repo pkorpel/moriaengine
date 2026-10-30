@@ -116,6 +116,14 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MASTER_KEY: given");
 		}
 
+		/// <summary>An egg on the ground at my feet, as a GM's .add makes one.</summary>
+		[SteamFunction]
+		public static void TestMasterQuestEggOnGround(Character self) {
+			RemoveFromBackpack(self, MasterQuest.EggDef);
+			Item egg = (Item) ThingDef.GetByDefname(MasterQuest.EggDef).Create(self.X, self.Y, self.Z, self.M);
+			Console.WriteLine("MASTER_GROUND_EGG: egg=" + egg.Uid + " pack=" + self.Backpack.Uid);
+		}
+
 		/// <summary>Onto the teleport's tile, the way a step gets there.</summary>
 		[SteamFunction]
 		public static void TestMasterQuestStepOnTeleport(Character self) {

@@ -70,6 +70,17 @@ namespace SteamEngine.Tests.Protocol {
 				state = this.State(client);
 				Assert.Contains("region=a_Hadi_ostrovy rank=Expert reached=True key=False", state);
 
+				//an egg lifted off the ground is nobody's, and doesn't move the quest on
+				string onGround = this.Ask(client, ".TestMasterQuestEggOnGround", "MASTER_GROUND_EGG:");
+				uint groundEgg = Uid(onGround, "egg=");
+				client.SendDoubleClick(Uid(onGround, "pack="));
+				Thread.Sleep(500);
+				client.SendPickUpItem(groundEgg, 1);
+				Thread.Sleep(300);
+				client.SendDropItem(groundEgg, 0xFFFF, 0xFFFF, 0, (int) Uid(onGround, "pack="));
+				Assert.Contains("egg=True eggMine=False", this.State(client));
+				Assert.Contains("Hadi ostrovy", this.JournalPage(client));
+
 				//the real queen's egg, lifted out of her corpse by the real client
 				string queen = this.Ask(client, ".TestMasterQuestKillQueen", "MASTER_QUEEN:");
 				Assert.DoesNotContain("egg=none", queen);
