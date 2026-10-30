@@ -41,6 +41,7 @@ Karma = -9500
 DetectHidden = 900 1000
 Parry = 900 1000
 Magery = 2000
+EvalInt = 900 1000
 MagicResist = 3500 4000
 Tactics = 900 1000
 Wrestling = 950 1000

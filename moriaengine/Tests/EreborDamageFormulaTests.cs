@@ -59,6 +59,17 @@ namespace SteamEngine.Tests {
 			Assert.Equal(expected, DamageManager.DoesSwingInterrupt(attackerIsPlayer, isRanged, defenderIsPlayer, damage, maxHits));
 		}
 
+		[Theory]
+		[InlineData(1000, 1000, 500, 500, false, 100)] //(1000 - (1000 - 2750)/5) / 10 = 135, capped
+		[InlineData(1000, 1000, 1000, 10, false, 91)]  //(1000 - (1000 - 550)/5) / 10
+		[InlineData(500, 500, 0, 0, false, 40)]        //(500 - 500/5) / 10
+		[InlineData(0, 0, 1000, 100, false, 20)]       //(0 + 1000/5) / 10
+		[InlineData(1000, 1000, 1000, 10, true, 90)]   //an archer's stamina counts 9x: defend 545
+		[InlineData(1000, 1000, 0, 0, false, 80)]
+		public void HitDifficultyLimit(int skill, int tactics, int targetTactics, int targetStamina, bool shootsBack, int expected) {
+			Assert.Equal(expected, CombatCalculator.CalculateHitDifficultyLimit(skill, tactics, targetTactics, targetStamina, shootsBack));
+		}
+
 		[Fact]
 		public void ZeroSpeedFallsBackToFifty() {
 			Assert.Equal(2 * (0xfffff / 50) / 10.0, CombatCalculator.CalculateSwingDelay(0, 76, 1.0, 10).TotalSeconds, 6);

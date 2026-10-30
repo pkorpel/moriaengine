@@ -34,6 +34,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private FieldValue pvpArmorChange;
+		private FieldValue pvpMindDefenseChange;
 		private FieldValue professionPluginDef;
 		private FieldValue allowedSpells;
 		private FieldValue allowedWeaponTypes;
@@ -344,6 +345,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 		#endregion Accessors
 
+		/// <summary>#860 - nastaveni_global_armorchangeom_vP_*: taken from a spell's defense * 10
+		/// against players' spells, as Erebor writes it, so a negative one protects.</summary>
+		public int PvPMindDefenseChange {
+			get {
+				return (int) this.pvpMindDefenseChange.CurrentValue;
+			}
+		}
+
 		/// <summary>#860 - nastaveni_global_armorchange_vP_*: added to armor against players' swings.</summary>
 		public int PvPArmorChange {
 			get {
@@ -361,6 +370,7 @@ namespace SteamEngine.CompiledScripts {
 			this.allowedArmorMaterials = this.InitTypedField("allowedArmorMaterials", new WearableType[0], typeof(WearableType[]));
 
 			this.pvpArmorChange = this.InitTypedField("pvpArmorChange", 0, typeof(int));
+			this.pvpMindDefenseChange = this.InitTypedField("pvpMindDefenseChange", 0, typeof(int));
 			this.strRange = this.InitTypedField("strRange", new int[0], typeof(int[]));
 			this.dexRange = this.InitTypedField("dexRange", new int[0], typeof(int[]));
 			this.intRange = this.InitTypedField("intRange", new int[0], typeof(int[]));

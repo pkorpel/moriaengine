@@ -67,6 +67,12 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("pvpChange=-32", line);
 				Assert.Contains("playerDodged=False", line);
 				Assert.Contains("spellDodged=False", line);
+
+				//#860 - a monster's mind power is its Evaluate Intelligence, its defense Resist / 10
+				string mind = LastLineContaining(this.fixture.GameOutputSnapshot(), "MIND_VALUES:");
+				Assert.True(ExtractIntValue(mind, "titanMageEvalInt=") > 0, mind);
+				Assert.Equal(ExtractIntValue(mind, "titanMageEvalInt="), ExtractIntValue(mind, "titanMagePower="));
+				Assert.Equal(ExtractIntValue(mind, "resist=") / 10, ExtractIntValue(mind, "titanMageDefense="));
 			}
 		}
 

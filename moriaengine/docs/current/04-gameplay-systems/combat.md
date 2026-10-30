@@ -59,8 +59,8 @@ values, marked with the variable's name in a comment:
 
 Bows and crossbows use these like any other weapon; `RangerSettings`' damage, speed and
 tier bonus fields are unused. Bare hands (attack 5, speed 200) are on `.settings`. Spell
-effects are hand-kept in the spell `.def`s from `nastaveni_spelleffect_*`: Erebor's third
-number on a damage spell is armor piercing, which isn't applied yet.
+effects are hand-kept in the spell `.def`s from `nastaveni_spelleffect_*`, with the third number
+Erebor gives some of them as `ArmorPiercing`.
 
 On Erebor the adamantinum and mithril jagged bolts really have a multiplier of 0, so they do no
 damage.
@@ -161,7 +161,30 @@ blows can't be dodged this way.
 **Interrupting a cast.** Only a player's melee blow does: 5 damage on a monster, a tenth of the
 target's hit points on a player. Ammo and monsters' blows don't. Other damage still disrupts.
 
-**Not ported.** Item wear: `Durability` scales armor and weapons as on Erebor, but nothing lowers
+**Hit roll.** Sphere's `Calc_CombatChanceToHit`: `difficulty = rand(limit)`, where
+`limit = (skill - (attack - defend)/5) / 10`, 0 to 100. `attack` is the average of weapon skill and
+Tactics; `defend` the average of the target's Tactics and stamina * 10 (* 9 if the target shoots
+at a melee attacker). A paralyzed target uses `rand(10)`, difficulty 0 always hits, and otherwise
+the skill check runs against `difficulty * 10`. Guards (`AggroMode.GuardsRealm`) always hit, as
+`GUARDSINSTANTKILL=1` did.
+
+**Spells.** A mind power spell's power is `mind power * 10`, multiplied by `spellPowerVsM` (2.0) vs
+a monster, `spellPowerPvP` between players, then less `mind defense * 10`. Player mind power comes
+from Evaluate Intelligence, Spirit Speak and Int by the weapon's `MindPower`; a monster's is its
+plain Evaluate Intelligence. Player mind defense is `(Resist/10 + armor's * armorMindDefense) *
+mindDefenseGlobal`, a monster's `Resist/10`. Field spells add `fieldSpellPowerPerLevel` per fourth
+of the level. Damage is `low + (high - low) * power / 1000`, growing past 1000. Spells with
+`ArmorPiercing` go through armor like a swing (`CalculateSpellArmorEffect`, always `damagecust`,
+even from a monster); the others ignore armor. A monster's spell on a monster does at least 5.
+
+**Mystic strike.** Power is `mind power * 10`, `* mysticPowerVsM * (spellPowerVsM + level * 0.01)`
+vs a monster, less the spell defense, and damage is `power * mysticStrikeEffect / 1000`, as cold
+magic. Not ported: the ability's paralysis chance and the lightning variant (#868).
+
+**Not ported.** Reactive armor is still an unimplemented spell, and energy shield still absorbs
+all damage where Erebor's takes only monsters' spells (#868). A bare-handed player's spell keeps
+its damage: Erebor's bare hands rule (`wrestling/200 + 1`) also runs on spells, but it would
+cap spells of anyone with free hands, so it applies to swings only here. Item wear: `Durability` scales armor and weapons as on Erebor, but nothing lowers
 it, because there's no repair skill yet (#865). Thief rebound and the magic items' reflex and
 block have no ability or item here yet (#866).
 

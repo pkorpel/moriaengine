@@ -807,6 +807,7 @@ Magery = 700 850
 MagicResist = 500 650
 Tactics = 500 700
 Wrestling = 500 700
+EvalInt = 600 700
 SpiritSpeak = 300
 Equip = i_monster_create
 Equip = i_light_source

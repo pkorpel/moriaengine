@@ -100,14 +100,20 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Cause damage to defender. Returns number of hitpoints that was actually removed. Runs @Damage triggers.</summary>
 		public static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage) {
-			return CauseDamage(attacker, defender, flags, damage, false);
+			return CauseDamage(attacker, defender, flags, damage, false, false);
+		}
+
+		/// <summary>#860 - a harmful spell's damage: rounded, and a monster's on a monster does at least 5.</summary>
+		public static int CauseSpellDamage(Character attacker, Character defender, DamageType flags, double damage) {
+			return CauseDamage(attacker, defender, flags, damage, false, true);
 		}
 
 		/// <summary>#860 - Erebor's f_dmgFinal_MvM_minimalDMG and f_dmgFinal_PvX_minimalDMG, after
 		/// resists. A target immune to the damage type (resist modifier 0) stays unhurt.</summary>
-		internal static double ApplyMinimalDamage(Character attacker, Character defender, DamageType flags, double damage) {
+		internal static double ApplyMinimalDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing) {
 			if (attacker.IsPlayerForCombat) {
-				if ((attacker.WeaponType == WeaponType.BareHands) && !Professions.HasProfession(attacker, Professions.Mystic)) {
+				if (isSwing && (attacker.FindLayer(LayerNames.Hand1) == null) && (attacker.FindLayer(LayerNames.Hand2) == null) &&
+						!Professions.HasProfession(attacker, Professions.Mystic)) {
 					return (damage == 0) ? 1 : (attacker.GetSkill(SkillName.Wrestling) / 200) + 1;
 				}
 			} else if (!defender.IsPlayerForCombat && (damage < 1) && ((flags & DamageType.Summon) != DamageType.Summon)) {
@@ -116,7 +122,7 @@ namespace SteamEngine.CompiledScripts {
 			return damage;
 		}
 
-		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing) {
+		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell) {
 			if (defender.Flag_Invulnerable) {
 				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
 				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists
@@ -160,11 +166,11 @@ namespace SteamEngine.CompiledScripts {
 				// this into a heal. Floored here, before the @damage trigger below, so a future
 				// script-level heal-via-negative-damage hook (none exists yet) still has a path.
 				damage = Math.Max(0, damage);
-				if (isSwing) {
+				if (isSwing || isSpell) {
 					damage = CombatCalculator.RoundLikeSphere(damage);
-				}
-				if (isSwing && (resistModifier > 0)) {
-					damage = ApplyMinimalDamage(attacker, defender, flags, damage);
+					if ((resistModifier > 0) && (attacker != null)) {
+						damage = ApplyMinimalDamage(attacker, defender, flags, damage, isSwing);
+					}
 				}
 
 				int previousHits = defender.Hits;
@@ -177,9 +183,9 @@ namespace SteamEngine.CompiledScripts {
 				defender.Hits = (short) newHits;
 
 				int actualDamage = previousHits - newHits;
-				if (isSwing && !defender.IsDeleted && DoesSwingInterrupt(attacker.IsPlayerForCombat, attacker.WeaponProjectileType != ProjectileType.None,
-						defender.IsPlayerForCombat, actualDamage, defender.MaxHits)) {
-					defender.Trigger_Disrupt();
+				if (isSwing && (actualDamage > 0) && !defender.IsDeleted) {
+					defender.Trigger_Disrupt(DoesSwingInterrupt(attacker.IsPlayerForCombat, attacker.WeaponProjectileType != ProjectileType.None,
+						defender.IsPlayerForCombat, actualDamage, defender.MaxHits));
 				}
 				if (actualDamage > 0) {
 					//TODO create blood?
@@ -235,7 +241,8 @@ namespace SteamEngine.CompiledScripts {
 				// physical damage type, even though the weapon itself (a staff) is a plain
 				// OneHandBlunt/TwoHandBlunt per mystic.def.
 				bool attackerIsMystic = Professions.HasProfession(attacker, Professions.Mystic);
-				DamageType damageType = attackerIsMystic ? DamageType.MagicMystical : attacker.WeaponDamageType;
+				// #860 - Erebor's mystic strike is dam_magic|dam_cold
+				DamageType damageType = attackerIsMystic ? DamageType.MagicCold : attacker.WeaponDamageType;
 
 				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_critic
 				//(if the attacker has it) can still add bonus damage to THIS swing, so it must
@@ -261,7 +268,7 @@ namespace SteamEngine.CompiledScripts {
 					return;
 				}
 
-				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true);
+				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true, false);
 
 				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
 				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
@@ -456,12 +463,19 @@ namespace SteamEngine.CompiledScripts {
 		/// WeaponSwingArgs shape only because that type is shared with the physical path.</summary>
 		private static WeaponSwingArgs GetMindPowerSwingArgs(Character attacker, Character defender) {
 			bool defenderIsPlayer = defender.IsPlayerForCombat;
-			double mindPower = defenderIsPlayer ? attacker.MindPowerVsP : attacker.MindPowerVsM;
-			double mindDefense = defenderIsPlayer ? defender.MindDefenseVsP : defender.MindDefenseVsM;
+			MagerySettings magery = MagerySettings.instance;
+			double power = (defenderIsPlayer ? attacker.MindPowerVsP : attacker.MindPowerVsM) * 10;
+			if (defenderIsPlayer) {
+				power *= magery.spellPowerPvP;
+			} else {
+				Player player = attacker as Player;
+				int level = (player != null) ? Math.Min(player.Level, 200) : 0;
+				power *= magery.mysticPowerVsM * (magery.spellPowerVsM + (level * magery.mysticPowerPerLevel));
+			}
+			int defense = CombatCalculator.GetSpellDefense(attacker, defender);
+			double damageAfterMD = Math.Max(0, Math.Truncate(((Math.Truncate(power) - defense) * magery.mysticStrikeEffect) / 1000));
 
-			double damageAfterMD = CombatCalculator.CalculateMindPowerEffect(attacker, defender, mindPower, mindDefense);
-
-			return new WeaponSwingArgs(attacker, defender, mindPower, 0, mindDefense, damageAfterMD);
+			return new WeaponSwingArgs(attacker, defender, power, 0, defense, damageAfterMD);
 		}
 
 		static TriggerKey beforeSwingTK = TriggerKey.Acquire("beforeSwing");

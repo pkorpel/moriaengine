@@ -40,6 +40,36 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double mindPowerIntModifier = 0.700;
 
+		[SaveableData]
+		public double spellPowerVsM = 2.000; //nastaveni_global_vMsm
+
+		[SaveableData]
+		public double spellPowerPvP = 1.000; //nastaveni_global_pvpSM
+
+		[SaveableData]
+		public double spellPowerMonster = 1.000; //nastaveni_global_MvSM
+
+		/// <summary>#860 - added to spellPowerVsM per fourth of the caster's level (at most 50),
+		/// for field spells.</summary>
+		[SaveableData]
+		public double fieldSpellPowerPerLevel = 0.020; //nastaveni_standcast_sm
+
+		[SaveableData]
+		public double armorMindDefense = 0.800; //nastaveni_global_armorOM
+
+		[SaveableData]
+		public double mindDefenseGlobal = 0.900; //nastaveni_global_om
+
+		[SaveableData]
+		public double mysticPowerVsM = 1.100; //nastaveni_global_mystikvM / 10
+
+		[SaveableData]
+		public double mysticPowerPerLevel = 0.010; //nastaveni_mysticLvL_sm
+
+		/// <summary>#860 - a Mystic strike does this much at power 1000.</summary>
+		[SaveableData]
+		public double mysticStrikeEffect = 16; //nastaveni_ability_mystikUCbezpary
+
 		/// <summary>#450 - Mystic's swing speed is mana-driven (sqrt(mana/2) * weapon speed *
 		/// this), not the normal sqrt(Dex)-based formula every other profession uses. Placeholder
 		/// default - Erebor's real nastaveni_weapspeed_mystik value is a live-shard GM config

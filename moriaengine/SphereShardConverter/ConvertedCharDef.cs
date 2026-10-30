@@ -884,6 +884,8 @@ namespace SteamEngine.Converter {
 			{ "fencing", "Fencing" },
 			{ "macefighting", "Macing" },
 			{ "evalint", "EvalInt" },
+			{ "ei", "EvalInt" },
+			{ "evaluatingintel", "EvalInt" },
 			{ "taming", "AnimalTaming" },
 			{ "archery", "Archery" },
 			{ "poisoning", "Poisoning" },
