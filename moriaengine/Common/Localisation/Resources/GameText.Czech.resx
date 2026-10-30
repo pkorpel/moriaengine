@@ -712,4 +712,10 @@
   <data name="QuestDialogLoc_TooFarToTalk" xml:space="preserve">
     <value>Na takovou vzdálenost s tebou jednat nebude.</value>
   </data>
+  <data name="QuestJournalLoc_NoQuestsYet" xml:space="preserve">
+    <value>Zatím nemáš žádné questy.</value>
+  </data>
+  <data name="QuestJournalLoc_NotAvailableYet" xml:space="preserve">
+    <value>Tato sekce zatím není k dispozici.</value>
+  </data>
 </root>
