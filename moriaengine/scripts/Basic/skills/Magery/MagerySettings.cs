@@ -52,7 +52,7 @@ namespace SteamEngine.CompiledScripts {
 		/// retain 97%, i.e. lose 3% per swing). Placeholder default, same reason as
 		/// mysticWeaponSpeedModifier above.</summary>
 		[SaveableData]
-		public double mysticManaLossPermille = 970; //nastaveni_mystik_manaloss
+		public double mysticManaLossPermille = 960; //nastaveni_mystik_manaloss
 
 		/// <summary>#483/#484 - multiplier applied to a spell's own Magery skill-requirement
 		/// threshold when it's used as a fallback fizzle difficulty (see SpellDef.Difficulty's

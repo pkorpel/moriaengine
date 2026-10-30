@@ -17,10 +17,10 @@ layer = 13 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_PLATEMAIL_ARMS]
 CATEGORY = Provisions - Armor - Colored
@@ -39,10 +39,10 @@ layer = 19 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_PLATEMAIL_leggings]
 CATEGORY = Provisions - Armor - Colored
@@ -61,10 +61,10 @@ layer = 4 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_PLATEMAIL_GORGET]
 CATEGORY = Provisions - Armor - Colored
@@ -83,10 +83,10 @@ layer = 10 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_PLATEMAIL_GAUNTLETS]
 CATEGORY = Provisions - Armor - Colored
@@ -105,10 +105,10 @@ layer = 7 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_FEMALE_PLATEMAIL]
 CATEGORY = Provisions - Armor - Colored
@@ -127,10 +127,10 @@ layer = 13 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_PLATE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -149,10 +149,10 @@ layer = 6 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_CLOSED_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -171,10 +171,10 @@ layer = 6 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_BASCINET]
 CATEGORY = Provisions - Armor - Colored
@@ -193,10 +193,10 @@ layer = 6 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_NOSE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -215,10 +215,10 @@ layer = 6 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 60
-mindDefenseVsP = 60
-armorVsM = 60
-mindDefenseVsM = 60
+armorVsP = 85 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 85
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_Obsidian_CHAINMAIL_gorget]
 NAME = "Obsidian Chainmail Gorget"
@@ -233,10 +233,10 @@ layer = 10 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_Obsidian_CHAINMAIL_sleeves]
 NAME = "Obsidian Chainmail Sleeves"
@@ -251,10 +251,10 @@ layer = 19 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_Obsidian_CHAINMAIL_gloves]
 NAME = "Obsidian Chainmail Gloves"
@@ -269,10 +269,10 @@ layer = 7 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_CHAINMAIL_COIF]
 CATEGORY = Provisions - Armor - Colored
@@ -291,10 +291,10 @@ layer = 6 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 42
-mindDefenseVsP = 42
-armorVsM = 42
-mindDefenseVsM = 42
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_CHAINMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -313,10 +313,10 @@ layer = 4 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 42
-mindDefenseVsP = 42
-armorVsM = 42
-mindDefenseVsM = 42
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_CHAINMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -335,10 +335,10 @@ layer = 13 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 42
-mindDefenseVsP = 42
-armorVsM = 42
-mindDefenseVsM = 42
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_Obsidian_kite_wood_shield]
 NAME = "Obsidian kite shield"
@@ -353,10 +353,10 @@ layer = 2 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 9 //nastaveni_armorarmor 
+mindDefenseVsP = 24 //nastaveni_armorparts_OM 
+armorVsM = 9
+mindDefenseVsM = 24
 
 [ColoredArmorDef i_Obsidian_RINGMAIL_gorget]
 NAME = "Obsidian ringmail gorget"
@@ -371,10 +371,10 @@ layer = 10 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_Obsidian_RINGMAIL_helm]
 NAME = "Obsidian Ringmail Helm"
@@ -389,10 +389,10 @@ layer = 6 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_RINGMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -411,10 +411,10 @@ layer = 4 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 45
-mindDefenseVsP = 45
-armorVsM = 45
-mindDefenseVsM = 45
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_RINGMAIL_SLEEVES]
 CATEGORY = Provisions - Armor - Colored
@@ -433,10 +433,10 @@ layer = 19 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 45
-mindDefenseVsP = 45
-armorVsM = 45
-mindDefenseVsM = 45
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_RINGMAIL_GLOVES]
 CATEGORY = Provisions - Armor - Colored
@@ -455,10 +455,10 @@ layer = 7 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 45
-mindDefenseVsP = 45
-armorVsM = 45
-mindDefenseVsM = 45
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_RINGMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -477,10 +477,10 @@ layer = 13 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 45
-mindDefenseVsP = 45
-armorVsM = 45
-mindDefenseVsM = 45
+armorVsP = 55 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 55
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_OBSIDIAN_METAL_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -499,10 +499,10 @@ layer = 2 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 23
-mindDefenseVsP = 23
-armorVsM = 23
-mindDefenseVsM = 23
+armorVsP = 9 //nastaveni_armorarmor 
+mindDefenseVsP = 24 //nastaveni_armorparts_OM 
+armorVsM = 9
+mindDefenseVsM = 24
 
 [ColoredArmorDef i_OBSIDIAN_HEATER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -521,10 +521,10 @@ layer = 2 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 15
-mindDefenseVsP = 15
-armorVsM = 15
-mindDefenseVsM = 15
+armorVsP = 6 //nastaveni_armorarmor 
+mindDefenseVsP = 24 //nastaveni_armorparts_OM 
+armorVsM = 6
+mindDefenseVsM = 24
 
 [ColoredArmorDef i_OBSIDIAN_BUCKLER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -543,10 +543,10 @@ layer = 2 //Set by Converter
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 15
-mindDefenseVsP = 15
-armorVsM = 15
-mindDefenseVsM = 15
+armorVsP = 5 //nastaveni_armorarmor 
+mindDefenseVsP = 24 //nastaveni_armorparts_OM 
+armorVsM = 5
+mindDefenseVsM = 24
 
 [ColoredArmorDef i_studded_cap_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -563,10 +563,10 @@ layer = 6 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 9
-mindDefenseVsP = 9
-armorVsM = 9
-mindDefenseVsM = 9
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_studded_sleeves_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -583,10 +583,10 @@ layer = 19 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 18
-mindDefenseVsP = 18
-armorVsM = 18
-mindDefenseVsM = 18
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_studded_gloves_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -603,10 +603,10 @@ layer = 7 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 18
-mindDefenseVsP = 18
-armorVsM = 18
-mindDefenseVsM = 18
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_studded_gorget_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -623,10 +623,10 @@ layer = 10 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 18
-mindDefenseVsP = 18
-armorVsM = 18
-mindDefenseVsM = 18
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_studded_leggings_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -643,10 +643,10 @@ layer = 4 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 18
-mindDefenseVsP = 18
-armorVsM = 18
-mindDefenseVsM = 18
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_studded_tunic_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -663,10 +663,10 @@ layer = 13 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 18
-mindDefenseVsP = 18
-armorVsM = 18
-mindDefenseVsM = 18
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_armor_female_bustier_studded_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -683,10 +683,10 @@ layer = 13 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 18
-mindDefenseVsP = 18
-armorVsM = 18
-mindDefenseVsM = 18
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_armor_female_studded_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -703,10 +703,10 @@ layer = 13 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 18
-mindDefenseVsP = 18
-armorVsM = 18
-mindDefenseVsM = 18
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_bone_arms_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -725,10 +725,10 @@ layer = 19 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 17
-mindDefenseVsP = 17
-armorVsM = 17
-mindDefenseVsM = 17
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_bone_chest_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -747,10 +747,10 @@ layer = 13 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 17
-mindDefenseVsP = 17
-armorVsM = 17
-mindDefenseVsM = 17
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_bone_gloves_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -769,10 +769,10 @@ layer = 7 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 17
-mindDefenseVsP = 17
-armorVsM = 17
-mindDefenseVsM = 17
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_bone_helmet_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -791,10 +791,10 @@ layer = 6 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 17
-mindDefenseVsP = 17
-armorVsM = 17
-mindDefenseVsM = 17
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145
 
 [ColoredArmorDef i_bone_leggings_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -813,7 +813,7 @@ layer = 4 //Set by Converter
 Material = Material.Obsidian //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 17
-mindDefenseVsP = 17
-armorVsM = 17
-mindDefenseVsM = 17
+armorVsP = 33 //nastaveni_armorarmor 
+mindDefenseVsP = 145 //nastaveni_armorparts_OM 
+armorVsM = 33
+mindDefenseVsM = 145

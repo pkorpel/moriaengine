@@ -42,6 +42,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#860 - nastaveni_arrowdamage_N: multiplies the attack of the weapon firing this.</summary>
+		public double DamageMultiplier {
+			get {
+				return this.TypeDef.DamageMultiplier;
+			}
+		}
+
 		private static TriggerKey coupledWithWeaponTK = TriggerKey.Acquire("coupledWithWeapon");
 		internal void Trigger_CoupledWithWeapon(Character self, Weapon weapon) {
 			this.TryTrigger(coupledWithWeaponTK, new ScriptArgs(self, weapon));

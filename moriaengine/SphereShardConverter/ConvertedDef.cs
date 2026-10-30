@@ -69,6 +69,22 @@ namespace SteamEngine.Converter {
 			}
 		}
 
+		/// <summary>Replaces what Set wrote for this key, or sets it if it wasn't there.</summary>
+		public void Replace(string key, string value, string comment) {
+			string prefix = key + " = ";
+			int index = this.writtenData.FindIndex(line => line.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+			if (index >= 0) {
+				this.writtenData.RemoveAt(index);
+			}
+			int countBefore = this.writtenData.Count;
+			this.Set(key, value, comment);
+			if ((index >= 0) && (index < countBefore)) {
+				string written = this.writtenData[countBefore];
+				this.writtenData.RemoveAt(countBefore);
+				this.writtenData.Insert(index, written);
+			}
+		}
+
 		public virtual void Dump(TextWriter writer) {
 			writer.WriteLine();
 			string header = string.Concat("[", this.headerType, " ", this.headerName, "]");

@@ -23,8 +23,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
 	/// Server-side helpers for the #456/#457/run-stand-archery follow-up on top of Ranger's
-	/// base attack (RangerCombatTests.cs): RangerSettings damage/speed override, the #457
-	/// arrow-tier placeholder bonus, and the stand-still toggle's default behavior
+	/// base attack (RangerCombatTests.cs): the ammo's damage multiplier and the stand-still toggle's default behavior
 	/// (crossbow=locked, bow=free).
 	/// </summary>
 	public static class RangerSettingsTests {
@@ -60,41 +59,22 @@ namespace SteamEngine.CompiledScripts {
 			ammo.Amount = 50;
 		}
 
-		/// <summary>Replaces whatever ammo is currently in self's backpack with a fresh stack
-		/// of the given defname - used to swap arrow tiers mid-test for #457's bonus check.</summary>
+		/// <summary>Replaces whatever ammo is currently in self's backpack with plain bolts.</summary>
 		[SteamFunction]
-		public static void TestReplaceArrowsWithValorite(Character self) {
+		public static void TestReplaceAmmoWithPlainBolts(Character self) {
 			foreach (Item i in self.Backpack.EnumShallow()) {
 				Projectile p = i as Projectile;
 				if (p != null) {
 					p.Delete();
 				}
 			}
-			GrantArrows(self, "i_arrow_valorite");
-			self.InvalidateCombatWeaponValues(); // force a fresh ammo lookup/tier recompute
+			GrantArrows(self, "i_xbolt_copper");
+			self.InvalidateCombatWeaponValues(); // force a fresh ammo lookup
 		}
 
 		[SteamFunction]
 		public static void TestReportWeaponAttackVsP(Character self) {
 			Console.WriteLine("RANGER_SETTINGS_TEST: attackVsP=" + self.WeaponAttackVsP);
-		}
-
-		[SteamFunction]
-		public static void TestSetRangerBowDamage100(Character self) {
-			RangerSettings.instance.bowDamage = 100;
-			self.InvalidateCombatWeaponValues();
-		}
-
-		[SteamFunction]
-		public static void TestSetRangerBowDamage1000(Character self) {
-			RangerSettings.instance.bowDamage = 1000;
-			self.InvalidateCombatWeaponValues();
-		}
-
-		[SteamFunction]
-		public static void TestResetRangerBowDamage(Character self) {
-			RangerSettings.instance.bowDamage = 5;
-			self.InvalidateCombatWeaponValues();
 		}
 
 		/// <summary>#512 - reworked from the original snap-back mechanic (see git history for

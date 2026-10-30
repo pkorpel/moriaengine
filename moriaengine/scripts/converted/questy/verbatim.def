@@ -257,6 +257,8 @@ layer = 2 //Set by Converter
 WeaponType = WeaponType.TwoHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 Color = 065
+speed = 40 //nastaveni_weapspeed 
+piercing = 0 //nastaveni_weappiercing 
 
 [WearableDef i_qv1_ajda_satecky]
 CATEGORY = Verbatim

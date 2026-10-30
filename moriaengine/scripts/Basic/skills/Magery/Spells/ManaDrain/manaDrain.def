@@ -15,7 +15,7 @@ CASTTIME=2.0
 RUNEITEM=i_rune_mana_drain
 SCROLLITEM=i_scroll_mana_drain
 FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
-EFFECT=0,10
+EFFECT=0,25
 MANAUSE=11
 Requirements=40.0 Magery
 
