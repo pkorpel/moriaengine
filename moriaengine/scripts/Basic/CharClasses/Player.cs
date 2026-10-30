@@ -298,15 +298,17 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Recomputes Character.Title from the current Profession+Level+gender (#165) -
-		/// call whenever either of those changes (ProfessionPlugin.On_Assign, LevelingSystem.
-		/// AddExperience's level-up loop). Does nothing if no profession is assigned (Title is
+		/// <summary>Recomputes Character.Title from the current SkillRank+Profession+Level+gender (#165, #844)
+		/// - call whenever one of those changes (ProfessionPlugin.On_Assign, LevelingSystem.
+		/// AddExperience's level-up loop, the SkillRank setter), and at login, for a title saved by an older
+		/// version. Erebor's title had the rank too (experiences.scp rankname). Does nothing if no profession is assigned (Title is
 		/// left as whatever it already was, same "incomplete content stays permissive" pattern
 		/// used elsewhere - a title-less character isn't an error).</summary>
 		public void RefreshTitle() {
 			ProfessionDef profession = this.Profession;
 			if (profession != null) {
-				this.Title = profession.GetTitle(this.Level, this.IsFemale);
+				string title = profession.GetTitle(this.Level, this.IsFemale);
+				this.Title = string.IsNullOrEmpty(title) ? title : this.SkillRank + " " + title;
 			}
 		}
 		#endregion Profession
@@ -421,6 +423,7 @@ namespace SteamEngine.CompiledScripts {
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
+				this.RefreshTitle();
 				//if (DbManager.Config.useDb) {
 				//    DbMethods.loginLogs.GameLogin(this.Conn);
 				//    Logger.WriteDebug(ScriptUtil.GetLogString(this.Conn, "Logged in"));

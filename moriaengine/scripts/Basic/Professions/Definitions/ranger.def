@@ -74,8 +74,8 @@ vitRange=60, 90, 130
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_ranger/titul_ranger_f)
-titles=tulak, zalesak, stopar, krotitel, lucisnik, strelec, lovec, strazce, chodec, hranicar
-titlesFemale=tulacka, zalesacka, stoparka, krotitelka, lucisnice, strelkyne, lovkyne, strazkyne, chodkyne, hranicarka
+titles="Wanderer", "Woodsman", "Tracker", "Tamer", "Archer", "Marksman", "Hunter", "Warden", "Strider", "Ranger"
+titlesFemale="Wanderer", "Woodswoman", "Tracker", "Tamer", "Archer", "Markswoman", "Huntress", "Warden", "Strider", "Ranger"
 
 //list allowed spells - Magic Arrow/Night Sight/Teleport/Recall/Dispel/Mark, per the wiki
 allowedSpells=s_magic_arrow, s_nightsight, s_teleport, s_recall, s_dispel, s_mark

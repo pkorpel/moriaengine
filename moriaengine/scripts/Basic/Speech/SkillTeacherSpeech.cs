@@ -52,6 +52,7 @@ namespace SteamEngine.CompiledScripts {
 				} else {
 					this.SetTag(skillRankTK, value);
 				}
+				this.RefreshTitle();
 			}
 		}
 	}

@@ -81,8 +81,8 @@ vitRange=60, 90, 110
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_necro/titul_necro_f)
-titles=hrobar, trapitel, tryznitel, mucitel, tyran, vyvolavac, demonolog, nekromant, smrtonos, cernokneznik
-titlesFemale=hrobarka, trapitelka, tryznitelka, mucitelka, tyranka, vyvolavacka, demonolog, nekromantka, smrtonoska, cernokneznice
+titles="Gravedigger", "Tormentor", "Chastener", "Torturer", "Tyrant", "Summoner", "Demonologist", "Necromancer", "Deathbringer", "Warlock"
+titlesFemale="Gravedigger", "Tormentor", "Chastener", "Torturer", "Tyrant", "Summoner", "Demonologist", "Necromancer", "Deathbringer", "Warlock"
 
 //list allowed spells, per the wiki - only the Magery-circle subset that's actually implemented
 //in this engine (see the file-level comment above for the large chunk of Necromancer-specific
