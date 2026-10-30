@@ -67,6 +67,14 @@ namespace SteamEngine.Tests {
 			Assert.Equal(piercing, Field("zbrane", defname, "Piercing"));
 		}
 
+		[Theory]
+		[InlineData("i_iron_platemail", "396")]         //1100 * layerar[13] 36%
+		[InlineData("i_iron_platemail_gorget", "66")]   //6%
+		[InlineData("i_iron_heater_shield", "55")]      //1100/6 * layerar[2] 30%
+		public void ArmorHasEreborsWeight(string defname, string weight) {
+			Assert.Equal(weight, Field("brneni", defname, "WEIGHT"));
+		}
+
 		[Fact]
 		public void StavesHaveEreborsMindPower() {
 			Assert.Equal("805", Field("zbrane", "i_staff_black_iron", "MindPowerVsP"));

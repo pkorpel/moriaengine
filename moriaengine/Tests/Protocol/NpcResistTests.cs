@@ -52,6 +52,24 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#860 - Sphere's armor coverage on players and monsters, PvP armor, dodge.</summary>
+		[Fact]
+		public void ArmorCoverageAndDodge() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "ArmorChecker")) {
+				client.SendSpeech(".TestArmorCoverageReport");
+				Assert.True(this.fixture.WaitForGameOutput("ARMOR_COVERAGE:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "ARMOR_COVERAGE:");
+
+				Assert.Equal(ExtractIntValue(line, "bare=") + 23, ExtractIntValue(line, "chest=")); //65 * 36%
+				Assert.Equal(ExtractIntValue(line, "bare=") + 32, ExtractIntValue(line, "helm="));  //65 * 50%
+				Assert.Equal(ExtractIntValue(line, "npcBare=") + 23, ExtractIntValue(line, "npcWorn="));
+				Assert.InRange(ExtractIntValue(line, "dodged="), 850, 1150); //20 points = 20% of 5000
+				Assert.Contains("pvpChange=-32", line);
+				Assert.Contains("playerDodged=False", line);
+				Assert.Contains("spellDodged=False", line);
+			}
+		}
+
 		[Fact]
 		public void ResistRangeRollsDifferentValuesAcrossSpawns() {
 			//proves ResistParalyse is actually ROLLED per spawn (not just clamped/validated

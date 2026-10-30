@@ -21,6 +21,7 @@
 
 [ProfessionDef profession_priest]
 Defname = class_priest //class_ as alternate prefix
+PvPArmorChange = -42 //nastaveni_global_armorchange_vP
 Name = "priest"
 professionPluginDef = p_profession_default
 

@@ -28,6 +28,7 @@
 
 [ProfessionDef profession_necromant]
 Defname = class_necromant //class_ as alternate prefix
+PvPArmorChange = 18 //nastaveni_global_armorchange_vP
 Name = "necromancer"
 professionPluginDef = p_profession_default
 

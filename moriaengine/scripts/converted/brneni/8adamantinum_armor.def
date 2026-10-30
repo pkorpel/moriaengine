@@ -6,7 +6,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Platemail
 
 NAME = "Adamantinum Platemail"
-WEIGHT = 160
+WEIGHT = 180 //nastaveni_armorweight 
 RESOURCES = 25 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -28,7 +28,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Platemail Arms
 
 NAME = "Adamantinum Platemail Arms"
-WEIGHT = 130
+WEIGHT = 70 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -50,7 +50,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Platemail Legs
 
 NAME = "Adamantinum Platemail Legs"
-WEIGHT = 140
+WEIGHT = 115 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -72,7 +72,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Platemail Gorget
 
 NAME = "Adamantinum Platemail Gorget"
-WEIGHT = 40
+WEIGHT = 30 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -94,7 +94,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Platemail Gauntlets
 
 NAME = "Adamantinum Platemail Gauntlets"
-WEIGHT = 40
+WEIGHT = 35 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -116,7 +116,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Female Platemail
 
 NAME = "Adamantinum Platemail"
-WEIGHT = 100
+WEIGHT = 180 //nastaveni_armorweight 
 RESOURCES = 22 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -138,7 +138,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Plate Helm
 
 NAME = "Adamantinum Plate Helm"
-WEIGHT = 70
+WEIGHT = 70 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -160,7 +160,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Closed Helm
 
 NAME = "Adamantinum Closed Helm"
-WEIGHT = 70
+WEIGHT = 70 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -182,7 +182,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Bascinet
 
 NAME = "Adamantinum Bascinet"
-WEIGHT = 60
+WEIGHT = 70 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 10 // commented out by Converter 
@@ -204,7 +204,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Nose Helm
 
 NAME = "Adamantinum Nose Helm"
-WEIGHT = 70
+WEIGHT = 70 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 0 // commented out by Converter 
@@ -222,7 +222,7 @@ mindDefenseVsM = 175
 
 [ColoredArmorDef i_Adamantinum_CHAINMAIL_gorget]
 NAME = "Adamantinum Chainmail Gorget"
-WEIGHT = 20
+WEIGHT = 24 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -240,7 +240,7 @@ mindDefenseVsM = 175
 
 [ColoredArmorDef i_Adamantinum_CHAINMAIL_sleeves]
 NAME = "Adamantinum Chainmail Sleeves"
-WEIGHT = 20
+WEIGHT = 56 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -258,7 +258,7 @@ mindDefenseVsM = 175
 
 [ColoredArmorDef i_Adamantinum_CHAINMAIL_gloves]
 NAME = "Adamantinum Chainmail Gloves"
-WEIGHT = 20
+WEIGHT = 28 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -280,7 +280,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Chainmail Coif
 
 NAME = "Adamantinum Chainmail Coif"
-WEIGHT = 40
+WEIGHT = 56 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -302,7 +302,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Chainmail Leggings
 
 NAME = "Adamantinum Chainmail Leggings"
-WEIGHT = 70
+WEIGHT = 92 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -324,7 +324,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Chainmail Tunic
 
 NAME = "Adamantinum Chainmail Tunic"
-WEIGHT = 90
+WEIGHT = 144 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -342,7 +342,7 @@ mindDefenseVsM = 175
 
 [ColoredArmorDef i_Adamantinum_kite_wood_shield]
 NAME = "Adamantinum kite shield"
-WEIGHT = 20
+WEIGHT = 12 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -360,7 +360,7 @@ mindDefenseVsM = 29
 
 [ColoredArmorDef i_Adamantinum_RINGMAIL_gorget]
 NAME = "Adamantinum ringmail gorget"
-WEIGHT = 20
+WEIGHT = 15 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -378,7 +378,7 @@ mindDefenseVsM = 175
 
 [ColoredArmorDef i_Adamantinum_RINGMAIL_helm]
 NAME = "Adamantinum Ringmail Helm"
-WEIGHT = 20
+WEIGHT = 35 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -400,7 +400,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Ringmail Leggings
 
 NAME = "Adamantinum Ringmail Leggings"
-WEIGHT = 90
+WEIGHT = 58 //nastaveni_armorweight 
 RESOURCES = 16 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -422,7 +422,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Ringmail Sleeves
 
 NAME = "Adamantinum Ringmail Sleeves"
-WEIGHT = 70
+WEIGHT = 35 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -444,7 +444,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Ringmail Gloves
 
 NAME = "Adamantinum Ringmail Gloves"
-WEIGHT = 20
+WEIGHT = 18 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -466,7 +466,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Ringmail Tunic
 
 NAME = "Adamantinum Ringmail Tunic"
-WEIGHT = 90
+WEIGHT = 90 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_adamantinum
 SKILLMAKE = 850 blacksmithing, 990 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -488,7 +488,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Buckler
 
 NAME = "Adamantinum Buckler"
-WEIGHT = 50
+WEIGHT = 8 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -510,7 +510,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Heater Shield
 
 NAME = "Adamantinum Heater Shield"
-WEIGHT = 120
+WEIGHT = 25 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -532,7 +532,7 @@ SUBSECTION = Adamantinum
 DESCRIPTION = Metal Shield
 
 NAME = "Adamantinum Metal Shield"
-WEIGHT = 90
+WEIGHT = 20 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_adamantinum
 SKILLMAKE = 990 blacksmithing, 850 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -567,6 +567,7 @@ armorVsP = 38 //nastaveni_armorarmor
 mindDefenseVsP = 175 //nastaveni_armorparts_OM 
 armorVsM = 38
 mindDefenseVsM = 175
+WEIGHT = 22 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_sleeves_Adamantinum]
 CATEGORY = Provisions - Armor - Colored
@@ -587,6 +588,7 @@ armorVsP = 38 //nastaveni_armorarmor
 mindDefenseVsP = 175 //nastaveni_armorparts_OM 
 armorVsM = 38
 mindDefenseVsM = 175
+WEIGHT = 22 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_gloves_Adamantinum]
 CATEGORY = Provisions - Armor - Colored
@@ -607,6 +609,7 @@ armorVsP = 38 //nastaveni_armorarmor
 mindDefenseVsP = 175 //nastaveni_armorparts_OM 
 armorVsM = 38
 mindDefenseVsM = 175
+WEIGHT = 11 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_gorget_Adamantinum]
 CATEGORY = Provisions - Armor - Colored
@@ -627,6 +630,7 @@ armorVsP = 38 //nastaveni_armorarmor
 mindDefenseVsP = 175 //nastaveni_armorparts_OM 
 armorVsM = 38
 mindDefenseVsM = 175
+WEIGHT = 10 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_leggings_Adamantinum]
 CATEGORY = Provisions - Armor - Colored
@@ -647,6 +651,7 @@ armorVsP = 38 //nastaveni_armorarmor
 mindDefenseVsP = 175 //nastaveni_armorparts_OM 
 armorVsM = 38
 mindDefenseVsM = 175
+WEIGHT = 37 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_tunic_Adamantinum]
 CATEGORY = Provisions - Armor - Colored
@@ -667,6 +672,7 @@ armorVsP = 38 //nastaveni_armorarmor
 mindDefenseVsP = 175 //nastaveni_armorparts_OM 
 armorVsM = 38
 mindDefenseVsM = 175
+WEIGHT = 58 //nastaveni_armorweight 
 
 [ColoredArmorDef i_armor_female_bustier_studded_Adamantinum]
 CATEGORY = Provisions - Armor - Colored
@@ -687,6 +693,7 @@ armorVsP = 38 //nastaveni_armorarmor
 mindDefenseVsP = 175 //nastaveni_armorparts_OM 
 armorVsM = 38
 mindDefenseVsM = 175
+WEIGHT = 58 //nastaveni_armorweight 
 
 [ColoredArmorDef i_armor_female_studded_Adamantinum]
 CATEGORY = Provisions - Armor - Colored
@@ -707,6 +714,7 @@ armorVsP = 38 //nastaveni_armorarmor
 mindDefenseVsP = 175 //nastaveni_armorparts_OM 
 armorVsM = 38
 mindDefenseVsM = 175
+WEIGHT = 58 //nastaveni_armorweight 
 
 [ColoredArmorDef i_bone_arms_Adamantinum]
 CATEGORY = Provisions - Armor - Colored
@@ -714,7 +722,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Arms of Adamantinum
 
 Name = "Bone Arms of Adamantinum"
-WEIGHT = 30
+WEIGHT = 29 //nastaveni_armorweight 
 RESOURCES = 2 i_ingot_adamantinum, 1 i_bone_arms //some resources were fixed by converter 
 SKILLMAKE = 900 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -736,7 +744,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Chest of Adamantinum
 
 NAME = "Bone Chest of Adamantinum"
-WEIGHT = 130
+WEIGHT = 76 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_adamantinum, 1 i_bone_chest //some resources were fixed by converter 
 SKILLMAKE = 900 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -758,7 +766,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Gloves of Adamantinum
 
 Name = "Bone Gloves of Adamantinum"
-WEIGHT = 40
+WEIGHT = 15 //nastaveni_armorweight 
 RESOURCES = 3 i_ingot_adamantinum, 1 i_bone_gloves //some resources were fixed by converter 
 SKILLMAKE = 900 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -780,7 +788,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Helmet of Adamantinum
 
 name = "Bone Helmet of Adamantinum"
-WEIGHT = 50
+WEIGHT = 29 //nastaveni_armorweight 
 RESOURCES = 5 i_ingot_adamantinum, 1 i_bone_helmet //some resources were fixed by converter 
 SKILLMAKE = 900 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -802,7 +810,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Legs of Adamantinum
 
 Name = "Bone Legs of Adamantinum"
-WEIGHT = 80
+WEIGHT = 48 //nastaveni_armorweight 
 RESOURCES = 6 i_ingot_adamantinum, 1 i_bone_leggings //some resources were fixed by converter 
 SKILLMAKE = 900 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
