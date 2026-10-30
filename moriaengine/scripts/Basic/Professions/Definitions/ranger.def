@@ -21,6 +21,7 @@
 
 [ProfessionDef profession_ranger]
 Defname = class_ranger //class_ as alternate prefix
+PvPArmorChange = -2 //nastaveni_global_armorchange_vP
 Name = "ranger"
 professionPluginDef = p_profession_default
 

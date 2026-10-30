@@ -23,6 +23,7 @@
 
 [ProfessionDef profession_craftsman]
 Defname = class_craftsman //class_ as alternate prefix
+PvPArmorChange = -32 //nastaveni_global_armorchange_vP
 Name = "craftsman"
 professionPluginDef = p_profession_default
 
