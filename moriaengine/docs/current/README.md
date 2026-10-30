@@ -66,8 +66,8 @@ file whose job is session continuity, not permanent reference.
 - [GM commands](03-admin-tooling/gm-commands.md) - `CommandsAuthorization`, the
   default-deny-above-plevel-4 fallback, the target-cursor command pattern (`.flip`/`.kill`
   shape) vs self-referential commands (`.TagList` shape).
-- [Dialog framework](03-admin-tooling/dialogs-framework.md) - `CompiledGumpDef`,
 - [World setup](03-admin-tooling/world-setup.md) - `.SetupWorld`, the add-only way to get things into the world
+- [Dialog framework](03-admin-tooling/dialogs-framework.md) - `CompiledGumpDef`,
   `ImprovedDialog`/`GUTATable`/`GUTAButton`/`GUTACheckBox`, `DialogArgs`, dialog stacking.
 
 ### 4. Gameplay systems
