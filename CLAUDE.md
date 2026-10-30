@@ -1,5 +1,18 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #843 quest subfolders + add-only .SetupWorld (branch world-setup); titles #844 next
+
+User: (1) Quests/ gets one subfolder per quest. (2) Setups move to scripts/Setup, a master command runs them, repeatable,
+never replacing anything, only adding; the go-to way for anything that must exist in the world. Decisions: permanent id per
+piece, moved stays, deleted is re-created.
+**Done**: Quests/{Common,Expert,Master,Grandmaster}; scripts/Setup: WorldSetup, WorldSetups.All + .SetupWorld, WorldPieces (id tag on
+the piece, found by scanning Thing.AllThings, so no saved registry), WorldSpots; the old RemovePlaced/Clear are gone. An id-less piece
+of the same def within 16 tiles is adopted, so a world set up before this isn't doubled; strays from #838's old spots aren't
+(too far) and need deleting by hand. Fixed: the cave exit held the setup's Rinald, not the live one, so a respawned Rinald
+didn't block it. Doc: docs/current/03-admin-tooling/world-setup.md.
+Verified: WorldSetupTests (red without the id lookup: added=38), WorldSetupRestartTests (real save + restart), Expert/Master/
+Grandmaster/QuestJournal green, fast 198/198.
+
 ## DONE (2026-10-30): #839 quest journal, placeholder tabs, story-accurate Grandmaster spots (branch 833-quest-journal)
 
 User: "go ahead with the Questy tab and fix the spots, you can maybe add blank pages for other tabs, as a reminder we will
@@ -8255,6 +8268,9 @@ and bin/obj already exist from prior sessions). Full suite:
 
 ## Workflow conventions for this repo (don't re-derive each session)
 
+- **Anything that must exist in the world goes through `scripts/Setup` and `.SetupWorld` (#843, user rule 2026-10-30).** Quest
+  stones, NPCs, teleports, spawn gems: a `WorldSetup` with permanent piece ids, added to `WorldSetups.All`. Setups only ever
+  add what's missing, never replace. See docs/current/03-admin-tooling/world-setup.md.
 - **Protocol (full-boot) tests: always via `scripts/test-full.sh [filter]`, never ad-hoc
   `dotnet test` (#785).** It shows live progress, kills+names a stuck test, fails a dead server's
   class fast, never leaves orphans, and refuses to run while leftovers exist

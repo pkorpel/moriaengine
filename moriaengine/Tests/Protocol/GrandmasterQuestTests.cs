@@ -26,7 +26,7 @@ namespace SteamEngine.Tests.Protocol {
 			using (var admin = this.ConnectOnce(AdminAccount, "Quest Admin")) {
 				this.Ask(admin, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST:");
 				autoAccountCreationEnabled = true;
-				this.Ask(admin, ".SetupGrandmasterQuest", "SETUP_GRANDMASTER_QUEST:");
+				this.Ask(admin, ".SetupGrandmasterQuest", "SETUP_DONE:");
 				Thread.Sleep(3000); //the gems' first spawns
 				string world = this.Ask(admin, ".TestQ000World", "Q000_WORLD:");
 				Assert.True(world.Contains("elvira=True elmira=True entrance=True rinald=True exit=True root=True rootGuarded=True rinaldGuarded=True entranceInvul=True envoy=True", StringComparison.Ordinal), world);
@@ -150,6 +150,12 @@ namespace SteamEngine.Tests.Protocol {
 				this.Ask(client, ".TestQ000Prepare \"11 2 12 Mordor\"", "Q000_PREPARED:");
 				client.SendSpeech("zdravim");
 				Assert.NotNull(TryReadMessageContaining(client, "prisluhovaci Mordoru", Wait));
+
+				//the next hero's Rinald keeps the way out shut too, though he isn't the one the setup placed
+				this.Ask(client, ".TestQ000Prepare \"8 2 12 Gondor\"", "Q000_PREPARED:");
+				this.EnterCave(client);
+				this.Ask(client, ".TestQ000StepOn \"exit\"", "Q000_STEPPED:");
+				Assert.NotNull(TryReadMessageContaining(client, "neotocis", Wait));
 			}
 		}
 

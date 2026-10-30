@@ -3,16 +3,16 @@
 A player's rank (`Player.SkillRank`: Novice, Expert, Master, Grandmaster) comes from Erebor's three rank quests. The
 skill teachers can require it for their lessons, see [NPC speech](npc-speech.md). All three are ported (#833).
 
-**To turn the system on**, a GM runs `.SetupExpertQuest`, `.SetupMasterQuest` and `.SetupGrandmasterQuest`, then switches on
-`requireRank` in `.settings` -> "Skill Teachers".
+**To turn the system on**, a GM runs [`.SetupWorld`](../03-admin-tooling/world-setup.md), then switches on `requireRank` in
+`.settings` -> "Skill Teachers".
 
 The archive holds the quest scripts but not Erebor's world: its stones, signs and NPCs were placed by GMs on the live
-server. So each quest comes with a GM command that places its pieces, and the pieces stay ordinary world objects that
-GMs can move and relink.
+server. So each quest has a [world setup](../03-admin-tooling/world-setup.md) that places its pieces, and the pieces stay
+ordinary world objects that GMs can move and relink.
 
 ## Expert quest
 
-Code: `scripts/Basic/Quests/ExpertQuest.cs`, from `questy/expert.scp`.
+Code: `scripts/Basic/Quests/Expert/`, from `questy/expert.scp`. Setup: `scripts/Setup/ExpertQuestSetup.cs`.
 
 A Novice of level 3+ double-clicks a start stone and is taken to a free quest site in the `a_expert` cave. Six clue
 signs around the site get a random arrangement of clues about five names, and a quest master appears. Greeting it
@@ -32,8 +32,7 @@ says to wait.
 ### Setting it up
 
 `.SetupExpertQuest` (GM) places both of Erebor's start stones (Gondor 2771,2761 and Mordor 3723,2953) and one quest
-site with six signs in each rectangle of `a_expert`, all linked. Running it again replaces what it placed, and any quest
-running at those sites ends with its player taken home.
+site with six signs in each rectangle of `a_expert`, all linked.
 
 Links can also be made by hand, as on Erebor. A GM adds the piece, double-clicks a site and targets a start stone, or
 double-clicks a sign and targets a site. Linking is what hides a site from players and names a sign: Erebor did that
@@ -48,7 +47,7 @@ in `@create`, which the converter drops, and a compiled `On_Create` trigger grou
 
 ## Master quest
 
-Code: `scripts/Basic/Quests/MasterQuest.cs`, from `questy/mistr.scp`. Its NPCs are in `questy/mistr_chars.scp`.
+Code: `scripts/Basic/Quests/Master/`, from `questy/mistr.scp`. Its NPCs are in `questy/mistr_chars.scp`. Setup: `scripts/Setup/MasterQuestSetup.cs`.
 
 An Expert of level 6+ greets Mistr Lenastir, says "ano" and gets the task: a fertilized egg of the snake queen. They also
 get a key (`i_klic_teleportu`, newbie, handed out again if lost) to an old locked teleport. Asking about it ("kde",
@@ -67,8 +66,8 @@ but carries someone else's egg is called a cheat and sent to the bug area (370,2
 
 ### Setting it up
 
-`.SetupMasterQuest` (GM) places the pieces. Running it again replaces them. **The archive doesn't record any of these
-spots, they are proposals**; move them as you like, they are ordinary world objects:
+`.SetupMasterQuest` (GM) places the pieces. **The archive doesn't record any of these spots, they are proposals**; move them
+as you like, they are ordinary world objects:
 
 | Piece | Spot | Why |
 |---|---|---|
@@ -87,7 +86,7 @@ A GM adding Lenastir by hand needs to make him invulnerable (Erebor's `@create`,
 
 ## Grandmaster quest
 
-Code: `scripts/Basic/Quests/GrandmasterQuest.cs`, from `questy/velmistr.scp` (the q000 line). A Master of level 12+ starts it.
+Code: `scripts/Basic/Quests/Grandmaster/`, from `questy/velmistr.scp` (the q000 line). Setup: `scripts/Setup/GrandmasterQuestSetup.cs`. A Master of level 12+ starts it.
 Progress is one number per player, `GrandmasterQuest.GetStage` (Erebor's `q000_velmistr`):
 
 | Stage | How it's reached |
@@ -111,12 +110,12 @@ wrongly throws the player out; saying "Rinald" turns him into a daemon 3 seconds
 already turned is replaced when the next hero enters.
 
 The dialogs (`GrandmasterQuestDialogs.cs`) are Erebor's texts byte for byte, generated from the archive once and meant to
-be read like normal code. They sit on `QuestDialogDef` and `QuestDialogContent` (`QuestDialog.cs`), the part of Erebor's
+be read like normal code. They sit on `QuestDialogDef` and `QuestDialogContent` (`Common/QuestDialog.cs`), the part of Erebor's
 `questDialog_framework.scp` this quest uses, ready for other quests. Everything the player reads in this quest is Czech.
 
 ### Setting it up
 
-`.SetupGrandmasterQuest` (GM) places the pieces and replaces an earlier run's. Pieces in caves are found by walking in from a
+`.SetupGrandmasterQuest` (GM) places the pieces. Pieces in caves are found by walking in from a
 known starting tile by the real movement rules. The test also walks to the pieces from a spawn point, or the cave's mouth for
 the root. A region's spawn point proves nothing by itself: see the note on plane 2 below.
 
@@ -148,7 +147,7 @@ Also: "guarded" means any hostile creature within 10 tiles, where Erebor's guard
 
 ## Quest journal
 
-Code: `scripts/Basic/Quests/QuestJournal.cs`, from `questy/System/questmenu.scp`. It's the only place a player can look up what
+Code: `scripts/Basic/Quests/Common/QuestJournal.cs`, from `questy/System/questmenu.scp`. It's the only place a player can look up what
 to do next.
 
 `.questy` (any player) opens the menu. Its Questy tab lists the quests a player has started: active in blue first, finished in
