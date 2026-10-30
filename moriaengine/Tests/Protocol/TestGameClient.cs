@@ -737,6 +737,20 @@ namespace SteamEngine.Tests.Protocol {
 			return (gumpUid, layoutText);
 		}
 
+		/// <summary>The quest journal's scroll (D_QuestJournalReport) in a gump's layout.</summary>
+		public const string QuestScrollLayout = "button 0 0 30 30";
+
+		/// <summary>ReadGumpDialogWithStrings for the next gump that isn't the quest journal's scroll, which can
+		/// arrive at any quest step.</summary>
+		public (int GumpUid, string LayoutText, List<string> Strings) ReadGumpSkippingQuestScroll(TimeSpan timeout) {
+			while (true) {
+				var gump = this.ReadGumpDialogWithStrings(timeout);
+				if (!gump.LayoutText.Contains(QuestScrollLayout, StringComparison.OrdinalIgnoreCase)) {
+					return gump;
+				}
+			}
+		}
+
 		/// <summary>Same packet as ReadGumpDialog, but also decodes the strings list that
 		/// follows the layout text (SendGumpMenuDialogPacket.WriteDynamicPart: ushort count,
 		/// then per string a ushort char-count + that many big-endian UTF16 chars) - needed for

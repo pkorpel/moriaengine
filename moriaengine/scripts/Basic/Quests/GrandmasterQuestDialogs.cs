@@ -563,4 +563,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 	}
+
+	/// <summary>#839 - d_questy_velmistr: the journal's text for each stage, 1 to 13.</summary>
+	public static class GrandmasterQuestJournal {
+		internal static readonly string[] Texts = {
+			"Elvira a Elmira, dcery Elqiry, se sve matce jiz dlouhe mesice neozvaly. Pry se vydaly na vychod Ledovych plani poznat tamni krajinu. Jsou na pobyt v prirode zvykle a matka je presvedcena, ze se jim muselo neco stat..",
+			"<src.sex(\"Nasel\",\"Nasla\")> jsi Elviru v lese na vychode Ledovych plani. Ta je zcela nepricetna a na tve pokusy o osloveni vubec nereaguje. Kde muze byt jeji sestra Elmira?",
+			"<src.sex(\"Nasel\",\"Nasla\")> jsi Elmiru uzamcenou v kleci u skaly na vychode Ledovych plani. Prosi te, abys <src.sex(\"pomohl\",\"pomohla\")> alespon jeji sestre, Elvire, ktera je na uteku pred tim samym muzem, ktery Elmiru vezni. Elvira pry vbehla do snehove boure a nemohla se dostat daleko. Navic by sestru nikdy neopustila. Musi tu nekde byt!",
+			"<src.sex(\"Nasel\",\"Nasla\")> jsi Elviru v lese na vychode Ledovych plani, kus od jeskyne, kde je uveznena jeji sestra. Elmira je zcela nepricetna a na tve pokusy o osloveni vubec nereaguje. Elmiru bude jiste osud jeji sestry zajimat.",
+			"<src.sex(\"Rekl\",\"Rekla\")> jsi Elmire, jak je na tom jeji sestra. Ta si vybavila povest o lecive byline, korenu Este, jejiz posledni sazenice by mohly byt v temne jeskyni na vychodni casti pohori Ered Mithrin. Varuje te vsak pred sverenim ukolu nekomu jinemu, zaroven vsak takovou vypravu nemas podnikat <src.sex(\"sam\",\"sama\")>! Na tuto cestu bude nutne sehnat nekolik silnejsich a zkusenejsich bojovniku.",
+			"Na konci temne jeskyne jsi <src.sex(\"utrhl\",\"utrhla\")> sazenici, ktera odpovida popisu Elmiry. Podle ni by koren teto vzcne byliny mohl vylecit Elviru z podivne nemoci. Elviru jsi naposledy <src.sex(\"videl\",\"videla\")> v lese na vychode Ledovych plani.",
+			"<src.sex(\"Podal\",\"Podala\")> jsi Elvire koren Este, vzacnou bylinu z temne jeskyne. Elvira se velmi rychle zacala zotavovat ze sveho poblouzneni.",
+			"Elvira ti prozradila cely pribeh o jejim a sestrinym prichodu do Ledovych plani a o Rinaldovi. Znalost jeho jmena ti dava silu jej zranit. Elvira te o to primo zada v prosbe o zachranu sve sestry.",
+			"<src.sex(\"Zabil\",\"Zabila\")> jsi Rinalda, tyrana z Ledovych plani. <src.sex(\"Nalezl\",\"Nalezla\")> jsi u nej i nejaky klic.",
+			"<src.sex(\"Vysvobodil\",\"Vysvobodila\")> jsi Elmiru ze zajeti a uzdravila jeji sestru Elviru. Matka Elqira bude z techto novin jiste nadsena.",
+			"<src.sex(\"Popsal\",\"Popsala\")> jsi Elqire pribeh jejich dcer a <src.sex(\"utesil\",\"utesila\")> ji, ze jsou obe v poradku. Matka byla z teto noviny cela bez sebe a slibila, ze se o tvych zasluhach sveri vsem svym znamym.",
+			"<src.sex(\"Doslechl\",\"Doslechla\")> jsi se, ze te shani Zmocnenec <src.splitRealm(\"Gondoru\",\"Mordoru\")>, pro tve zasluhy pote, co jsi <src.sex(\"popsal\",\"popsala\")> Elqire pribeh jejich dcer a <src.sex(\"utesil\",\"utesila\")> ji, ze jsou po tvem zasahu obe v poradku.",
+			"Zmocnenec <src.splitRealm(\"Gondoru\",\"Mordoru\")> te pasoval na Velmistra pro tve zasluhy pote, co jsi <src.sex(\"zachranil\",\"zachranila\")> dcery stare Elqiry. Tvuj pribeh o osudu jejich dcer ji upokojil a ta z radosti, ze jsou po tvem zasahu obe v poradku, vypravi o tvych zasluhach kudy chodi.",
+		};
+	}
 }

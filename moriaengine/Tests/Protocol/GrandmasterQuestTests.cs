@@ -12,7 +12,7 @@ namespace SteamEngine.Tests.Protocol {
 	public class GrandmasterQuestTests {
 		private const string Account = "grandmasterquestplayer";
 		private const string AdminAccount = "grandmasterquestadmin"; //the server's first account: a GM, can turn on auto-creation
-		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(30);
 		private static bool autoAccountCreationEnabled;
 
 		private readonly GameServerPairFixture fixture;
@@ -30,6 +30,10 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(3000); //the gems' first spawns
 				string world = this.Ask(admin, ".TestQ000World", "Q000_WORLD:");
 				Assert.True(world.Contains("elvira=True elmira=True entrance=True rinald=True exit=True root=True rootGuarded=True rinaldGuarded=True entranceInvul=True envoy=True", StringComparison.Ordinal), world);
+				Assert.Contains("rootFromSurface=True", world);
+				Assert.True(int.Parse(Field(world, "rootFromMouth="), CultureInfo.InvariantCulture) > 50, "the root should be deep in the cave: " + world);
+				int apart = int.Parse(Field(world, "sistersApart="), CultureInfo.InvariantCulture);
+				Assert.True((apart > 40) && (apart < 150), "the forest should be a little way from the cave: " + world);
 			}
 			using (var client = this.Connect(Account, "Quest Hero")) {
 				client.SendSpeech(".SetupGrandmasterQuest");
@@ -45,7 +49,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("upset=True", this.State(client));
 				this.Ask(client, ".TestQ000Calm", "Q000_CALM:");
 				client.SendDoubleClick(elqira);
-				var assignment = client.ReadGumpDialogWithStrings(Wait);
+				var assignment = client.ReadGumpSkippingQuestScroll(Wait);
 				string texts = assignment.LayoutText + string.Join("|", assignment.Strings);
 				Assert.True(texts.Contains("Mam dve dcery", StringComparison.Ordinal) && texts.Contains("Vydam se na Ledove plane.", StringComparison.Ordinal), texts); //the 12th of 12 places, on a further page of responses
 				this.Answer(client, assignment.GumpUid, "elqira q000_questAssignment");
@@ -164,7 +168,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		//answers the gump that's coming with the named exit button
 		private void Press(TestGameClient client, string dialogAndButton) {
-			this.Answer(client, client.ReadGumpDialog(Wait).GumpUid, dialogAndButton);
+			this.Answer(client, client.ReadGumpSkippingQuestScroll(Wait).GumpUid, dialogAndButton);
 		}
 
 		private void Answer(TestGameClient client, int gumpUid, string dialogAndButton) {

@@ -42,6 +42,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static readonly TagKey reachedIslandsTK = TagKey.Acquire("_masterQuestReachedIslands_");
 		private static readonly TagKey eggOwnerTK = TagKey.Acquire("_masterQuestEggOwner_");
+		private static readonly TagKey acceptedTK = TagKey.Acquire("_masterQuestAccepted_");
 
 		//called by ClassManager on every startup/recompile, see ExpertQuest.Init
 		public static void Init() {
@@ -55,7 +56,34 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Erebor's r_hadiostrovy @enter.</summary>
 		public static void MarkReachedIslands(Character ch) {
+			bool first = ch.GetTag(reachedIslandsTK) == null;
 			ch.SetTag(reachedIslandsTK, 1);
+			Player player = ch as Player;
+			if (first && (player != null) && HasAccepted(player)) {
+				QuestJournal.Report(player, QuestJournal.Master);
+			}
+		}
+
+		public static bool HasAccepted(Player player) {
+			return player.GetTag(acceptedTK) != null;
+		}
+
+		/// <summary>#839 - the journal's page. Erebor's journal had none for this quest.</summary>
+		internal static string GetJournalText(Player player) {
+			if (player.SkillRank >= SkillRank.Master) {
+				return "<src.sex(\"Prinesl\",\"Prinesla\")> jsi Mistru Lenastirovi vejce hadi kralovny a <src.sex(\"byl\",\"byla\")> jsi <src.sex(\"povysen\",\"povysena\")> na mistra.";
+			}
+			if (!HasAccepted(player)) {
+				return null;
+			}
+			Item egg = FindInBackpack(player, EggDef);
+			if ((egg != null) && (GetEggOwner(egg) == player)) {
+				return "<src.sex(\"Ziskal\",\"Ziskala\")> jsi vejce hadi kralovny. Odnes ho Mistru Lenastirovi.";
+			}
+			if (HasReachedIslands(player)) {
+				return "<src.sex(\"Dostal\",\"Dostala\")> ses na Hadi ostrovy. Nekde tu musi byt hadi kralovna a jeji vejce.";
+			}
+			return "Mistr Lenastir po tobe chce oplozene hadi vejce od samotne hadi kralovny. Dal ti klic ke staremu teleportu, ktery ma byt nekde v podzemi pobliz hadich oltaru. Vede pry k ni i jina cesta.";
 		}
 
 		public static void ForgetReachedIslands(Player player) {
@@ -118,6 +146,7 @@ namespace SteamEngine.CompiledScripts {
 			player.SysMessage(Loc<MasterQuestLoc>.Get(player.Language).Promoted);
 			player.SkillRank = SkillRank.Master;
 			ForgetReachedIslands(player);
+			player.RemoveTag(acceptedTK);
 			ConsumeOne(egg);
 			Item key = FindInBackpack(player, KeyDef);
 			if (key != null) {
@@ -125,6 +154,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			lenastir.Sound((int) SoundNames.lightningstrike);
 			LevelingSystem.AddExperience(player, ExperienceReward);
+			QuestJournal.Report(player, QuestJournal.Master);
 		}
 
 		/// <summary>Erebor's Lenastirovarec on *yes* / *ano*: the task, and the key to an Expert who has none.</summary>
@@ -135,6 +165,10 @@ namespace SteamEngine.CompiledScripts {
 				lenastir.Say("Poslouchej tedy. Musis mi prinest oplozene hadi vejce od samotne hadi kralovny. Bohuzel neznam misto, kde se kralovna nachazi, ale mohu ti poskytnout tento klic, ktery pry stary teleport otevira. Dej vsak pozor, hadi jsou velmi nebezpecni.");
 				Item key = (Item) ThingDef.GetByDefname(KeyDef).Create(player.Backpack);
 				key.SetAttribute(ItemAttributes.attr_newbie, true);
+				if (!HasAccepted(player)) {
+					player.SetTag(acceptedTK, 1);
+					QuestJournal.Report(player, QuestJournal.Master);
+				}
 			}
 		}
 
@@ -219,6 +253,9 @@ namespace SteamEngine.CompiledScripts {
 			Player player = args.Cont as Player;
 			if ((player != null) && (MasterQuest.GetEggOwner(self) == null)) {
 				MasterQuest.SetEggOwner(self, player);
+				if (MasterQuest.HasAccepted(player)) {
+					QuestJournal.Report(player, QuestJournal.Master);
+				}
 			}
 		}
 
