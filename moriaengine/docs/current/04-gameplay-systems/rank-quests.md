@@ -44,6 +44,11 @@ in `@create`, which the converter drops, and a compiled `On_Create` trigger grou
 - The signs stay visible. Erebor's `@create` made them invisible, which no player can read.
 - The sign gump stays open after a step (`e_expert_signWatch` is not ported).
 - The quest stone statistics (`questMenu_questStone`) are not kept.
+- The master is invulnerable, or killing it would leave the player stuck until the time limit. It still exists only for the
+  attempt, as on Erebor.
+
+Every rank-up gets Erebor's level-up celebration, `QuestNpc.CelebrateRank`: the gate sound, the Manwe's blessing effect and a circle of
+sparkles, white for Gondor and black otherwise.
 
 ## Master quest
 

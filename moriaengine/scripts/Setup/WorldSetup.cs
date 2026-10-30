@@ -60,7 +60,7 @@ namespace SteamEngine.CompiledScripts {
 	/// A setup asks for a piece: if it exists anywhere it's left as it is, however far a GM moved it, and if a GM deleted it,
 	/// it's created again. A piece from before there were ids, the same kind of thing near the spot, is taken as that piece.
 	/// Nothing is ever removed or replaced, and anything not asked for is never touched. So changing a spot in a setup
-	/// only affects pieces yet to be created.</summary>
+	/// only affects pieces yet to be created. See WorldPieces.Item for the one thing a run does to a piece that exists.</summary>
 	public sealed class WorldPieces {
 		private const int NearSpot = 16;
 		private static readonly TagKey pieceIdTK = TagKey.Acquire("_worldPieceId_");
@@ -83,8 +83,12 @@ namespace SteamEngine.CompiledScripts {
 			thing.SetTag(pieceIdTK, id);
 		}
 
+		/// <summary>An item that belongs in the world: fixed in place, which also keeps it from decaying and from being
+		/// picked up. Done on every run, for pieces placed before this rule too.</summary>
 		public Item Item(string id, string defname, int[] at, byte m, Action<Item> onNew = null) {
-			return (Item) this.GetOrCreate(id, defname, at, m, onNew == null ? (Action<Thing>) null : t => onNew((Item) t));
+			Item item = (Item) this.GetOrCreate(id, defname, at, m, onNew == null ? (Action<Thing>) null : t => onNew((Item) t));
+			item.SetAttribute(ItemAttributes.attr_move_never, true);
+			return item;
 		}
 
 		public NPC Npc(string id, string defname, int[] at, byte m, Action<NPC> onNew = null) {

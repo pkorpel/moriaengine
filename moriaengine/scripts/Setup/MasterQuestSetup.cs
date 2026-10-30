@@ -43,8 +43,7 @@ namespace SteamEngine.CompiledScripts {
 
 			int[] teleportAt = WorldSpots.NearestStandable(Map.GetMap(MasterQuest.TeleportPlane), 5331, 2745, 5);
 			if (teleportAt != null) {
-				pieces.Item("master/teleport", MasterQuest.TeleportDef, teleportAt, MasterQuest.TeleportPlane,
-					teleport => teleport.SetAttribute(ItemAttributes.attr_move_never, true));
+				pieces.Item("master/teleport", MasterQuest.TeleportDef, teleportAt, MasterQuest.TeleportPlane);
 			}
 
 			int[] queenAt = WorldSpots.NearestStandable(map, 1518, 3890, 20);
