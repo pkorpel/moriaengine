@@ -1,6 +1,18 @@
 # moriaengine — working state
 
-## DONE (2026-10-30): #843 quest subfolders + add-only .SetupWorld (branch world-setup); titles #844 next
+## DONE (2026-10-30): #844 titles with rank, English ladders (branch 844-title-rank)
+
+User: "The <good/bad> <name>, <rank> <profession title>", English ranks, translate the Czech profession titles. Done:
+Player.RefreshTitle prefixes SkillRank (also on the SkillRank setter and at login, so saved Czech titles update), all 9 ladders
+translated in Professions/Definitions/*.def, avoiding rank words ("Guild Elder", not guildmaster) and keeping steps distinct.
+ProfessionTitleLadderTests (fast) enforces that. Alignment stays "The Good/The Evil". The translations are my own wording.
+Gotcha again: Player.cs is CRLF, a Python exact-match edit failed on it; handle per file.
+Gotcha: unquoted strings in a .def array are parsed as names and lazily: "Healer" hit the class of that name, only when a priest
+first needed a title. Quote them, and test every profession. Gotcha: a test account holds 5 characters; a 6th fails the next login
+with an unrelated-looking error. Verified: ProfessionTests (all 9 ladders, both genders, read), Race/SkillTeacher/Expert/Master
+green, Leveling only the known Titan XP, fast 207/207.
+
+## DONE (2026-10-30): #843 quest subfolders + add-only .SetupWorld (branch world-setup, PR #845)
 
 User: (1) Quests/ gets one subfolder per quest. (2) Setups move to scripts/Setup, a master command runs them, repeatable,
 never replacing anything, only adding; the go-to way for anything that must exist in the world. Decisions: permanent id per

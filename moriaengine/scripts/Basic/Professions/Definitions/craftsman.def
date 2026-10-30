@@ -81,8 +81,8 @@ vitRange=100, 130, 150
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_craft/titul_craft_f - note 11 entries, not 10, like every other profession's ladder;
 //the source itself has this one extra "kralovsky velmoz" rank with no distinct female form)
-titles=kutil, tovarys, remeslnik, kramar, hokynar, kupec, obchodnik, cechmistr, magnat, velmoz, kralovsky velmoz
-titlesFemale=kutilka, tovaryska, remeslnice, kramarka, hokynarka, kupec, obchodnice, cechmistrova, magnat, velmozkyne, kralovsky velmoz
+titles="Tinkerer", "Journeyman", "Craftsman", "Peddler", "Shopkeeper", "Merchant", "Trader", "Guild Elder", "Magnate", "Grandee", "Royal Grandee"
+titlesFemale="Tinkerer", "Journeywoman", "Craftswoman", "Peddler", "Shopkeeper", "Merchant", "Trader", "Guild Elder", "Magnate", "Grandee", "Royal Grandee"
 
 //list allowed spells, per the wiki - same small utility set as Thief/Warrior
 allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark

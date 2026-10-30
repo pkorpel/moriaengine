@@ -89,5 +89,38 @@ namespace SteamEngine.CompiledScripts {
 			self.Realm = realm;
 			Console.WriteLine("PAPERDOLL_NAME: " + self.PaperdollName);
 		}
+
+		/// <summary>#844 - reports my paperdoll name at each rank, for a Mage. The last check is a title saved by an older
+		/// version, refreshed by logging in.</summary>
+		[SteamFunction]
+		public static void TestCheckTitleWithRank(Character self) {
+			Player player = (Player) self;
+			player.Profession = Professions.Mage;
+			player.Level = 0;
+			player.Realm = Realm.Gondor;
+			foreach (SkillRank rank in new[] { SkillRank.Novice, SkillRank.Expert, SkillRank.Master, SkillRank.Grandmaster }) {
+				player.SkillRank = rank;
+				Console.WriteLine("TITLE_RANK " + rank + ": " + player.PaperdollName);
+			}
+			player.Level = 200;
+			player.RefreshTitle();
+			Console.WriteLine("TITLE_RANK top: " + player.PaperdollName);
+			player.SkillRank = SkillRank.Novice;
+			player.Title = "ucen";
+			player.On_LogIn();
+			Console.WriteLine("TITLE_RANK relog: " + player.Title);
+			//the ladders parse lazily, so each is read here: a bad entry only shows when a character of that profession needs it
+			int titles = 0;
+			foreach (ProfessionDef profession in Professions.AllReal) {
+				foreach (bool female in new[] { false, true }) {
+					for (int level = 0; level <= 200; level += 10) {
+						if (profession.GetTitle(level, female).Length > 0) {
+							titles++;
+						}
+					}
+				}
+			}
+			Console.WriteLine("TITLE_LADDERS: read=" + titles);
+		}
 	}
 }
