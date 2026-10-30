@@ -1,5 +1,12 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #858 quest text markup (branch 858-quest-text-markup)
+
+User tested Grandmaster: raw <src.splitRealm on an Elmira response, words missing at the envoy. QuestDialogContent's pattern didn't allow commas in
+quoted variants; HTML drops the unexpanded markup as an unknown tag, so it fails silently. Also <src.name> was never handled, and choices nest (splitRealm holding sex), so ExpandMarkup loops until stable. 7 strings in all.
+QuestDialogTextTests (fast) runs every string of GrandmasterQuestDialogs.cs through ExpandMarkup for all gender/realm combinations. Otherwise
+Grandmaster tested fine live, so all three rank quests are now tested in game.
+
 ## DONE (2026-10-30): #856 the egg counts only when lifted from a corpse (branch 856-egg-from-corpse)
 
 User: lifting a GM-created egg off the ground advanced the Master quest. I had claimed the egg on any first lift and called that harmless;
