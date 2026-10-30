@@ -1,9 +1,7 @@
 // #606 - "Converter: map real tag.resist_X damage-resist tags onto NPCDef's existing
 // ResistX fields" - test-only content proving the real engine ResistX fields (already
 // live, consumed in DamageManager.GetResistModifier) actually apply when set via a
-// .def file the same way the converter now emits them. ResistSlashing/ResistStabbing
-// both set here to cover the "sharp" dual-write case (DamageType.Sharp = Slashing|Stabbing,
-// no dedicated ResistSharp property exists).
+// .def file the same way the converter now emits them.
 // ResistParalyse's "700 800" range covers the resist-range-rolling fix: proves a real
 // {min max} resist line rolls a per-spawn value instead of being pre-averaged into a flat
 // number. ResistCurse covers the new field added for the same investigation.
@@ -15,5 +13,8 @@ ResistFire = 200
 ResistElectric = 100
 ResistSlashing = -100
 ResistStabbing = -100
+ResistSharp = 300
+ResistBlunt = 150
+ResistPhysical = 500
 ResistParalyse = 700 800
 ResistCurse = -100

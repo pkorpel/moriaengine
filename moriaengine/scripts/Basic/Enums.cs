@@ -190,8 +190,8 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Bodne zbrane (mece, dyky, vidle) (drive piercing, prejmenovano aby se to nepletlo s prubojnosti)</summary>
 		Stabbing = 0x000200,
 		PhysicalStabbing = Physical | Stabbing,
-		/// <summary>Secne bodne zbrane (mece)</summary>
-		Sharp = Slashing | Stabbing,
+		/// <summary>Secne bodne zbrane (mece). #860 - Erebor's own dam_sharp, with its own resist_sharp</summary>
+		Sharp = 0x008000,
 		PhysicalSharp = Physical | Sharp,
 		/// <summary>Tupe zbrane (hole, palcaty)</summary>
 		Blunt = 0x000400,

@@ -25,62 +25,98 @@ namespace SteamEngine.CompiledScripts {
 		// existing color convention for this already present in the codebase to match.
 		private const int damageMessageColor = 0x21;
 
+		/// <summary>f_rsst_inRange</summary>
+		private static int ClampResist(int resist) {
+			return Math.Max(-40000, Math.Min(1000, resist));
+		}
+
+		private static int ResistIf(DamageType damageType, DamageType flag, int resist) {
+			return ((damageType & flag) == flag) ? ClampResist(resist) : 0;
+		}
+
+		private static int Count(DamageType damageType, params DamageType[] flags) {
+			int count = 0;
+			foreach (DamageType flag in flags) {
+				if ((damageType & flag) == flag) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+		private static int ApplyGroupResist(int groupResist, int factor) {
+			return ((1000 - groupResist) * factor) / 1000;
+		}
+
+		/// <summary>#860 - Erebor's handleresists (resists.scp). Resists are in permille, 150 is 15%.
+		/// The subtypes of a kind are averaged, then that kind's group resist (physical, magic)
+		/// multiplies them. Physical and magic together average. Returns the share of the damage
+		/// that goes through; negative resists raise it. A type with no subtype isn't reduced.</summary>
 		public static double GetResistModifier(Character resistingChar, DamageType damageType) {
-			int intDamageType = (int) damageType;
+			int physCount = Count(damageType, DamageType.Blunt, DamageType.Sharp, DamageType.Slashing, DamageType.Stabbing, DamageType.Bleed, DamageType.Archery);
+			int physFactor = 1000;
+			if (physCount > 0) {
+				physFactor = 1000 * physCount;
+				physFactor -= ResistIf(damageType, DamageType.Slashing, resistingChar.ResistSlashing);
+				physFactor -= ResistIf(damageType, DamageType.Stabbing, resistingChar.ResistStabbing);
+				physFactor -= ResistIf(damageType, DamageType.Blunt, resistingChar.ResistBlunt);
+				physFactor -= ResistIf(damageType, DamageType.Sharp, resistingChar.ResistSharp);
+				physFactor -= ResistIf(damageType, DamageType.Bleed, resistingChar.ResistBleed);
+				physFactor -= ResistIf(damageType, DamageType.Archery, resistingChar.ResistArchery);
+				physFactor /= physCount;
+			}
+			if ((physCount > 0) || ((damageType & DamageType.Physical) == DamageType.Physical)) {
+				physFactor = ApplyGroupResist(ClampResist(resistingChar.ResistPhysical), physFactor);
+			}
 
-			//phase 1
-			double isMagic = ((intDamageType & 0x0001) == 0) ? 0.0 : 1;
-			double isPhysical = ((intDamageType & 0x0002) == 0) ? 0.0 : 1;
+			int magCount = Count(damageType, DamageType.Poison, DamageType.Fire, DamageType.Cold, DamageType.Electric, DamageType.Acid, DamageType.Dragon, DamageType.Mystical);
+			int magFactor = 1000;
+			if (magCount > 0) {
+				magFactor = 1000 * magCount;
+				magFactor -= ResistIf(damageType, DamageType.Fire, resistingChar.ResistFire);
+				magFactor -= ResistIf(damageType, DamageType.Cold, resistingChar.ResistCold);
+				magFactor -= ResistIf(damageType, DamageType.Acid, resistingChar.ResistAcid);
+				magFactor -= ResistIf(damageType, DamageType.Poison, resistingChar.ResistPoison);
+				magFactor -= ResistIf(damageType, DamageType.Electric, resistingChar.ResistElectric);
+				magFactor -= ResistIf(damageType, DamageType.Dragon, resistingChar.ResistDragon);
+				magFactor -= ResistIf(damageType, DamageType.Mystical, resistingChar.ResistMystical);
+				magFactor /= magCount;
+			}
+			if ((magCount > 0) || ((damageType & DamageType.Magic) == DamageType.Magic)) {
+				magFactor = ApplyGroupResist(ClampResist(resistingChar.ResistMagic), magFactor);
+			}
 
-			double modifier = 1;
-			double resistCount = isMagic + isPhysical;
-			modifier = modifier * resistCount;
-			Sanity.IfTrueThrow(resistCount == 0, "Attack of type '" + damageType + "' - neither magical nor physical");
-
-			modifier -= isMagic * resistingChar.ResistMagic;
-			modifier -= isPhysical * resistingChar.ResistPhysical;
-
-			//phase 2
-			double isFire = ((intDamageType & (int) DamageType.Fire) == 0) ? 0.0 : 1;
-			double isElectric = ((intDamageType & (int) DamageType.Electric) == 0) ? 0.0 : 1;
-			double isAcid = ((intDamageType & (int) DamageType.Acid) == 0) ? 0.0 : 1;
-			double isCold = ((intDamageType & (int) DamageType.Cold) == 0) ? 0.0 : 1;
-			double isPoison = ((intDamageType & (int) DamageType.Poison) == 0) ? 0.0 : 1;
-			double isMystical = ((intDamageType & (int) DamageType.Mystical) == 0) ? 0.0 : 1;
-			double isSlashing = ((intDamageType & (int) DamageType.Slashing) == 0) ? 0.0 : 1;
-			double isStabbing = ((intDamageType & (int) DamageType.Stabbing) == 0) ? 0.0 : 1;
-			double isBlunt = ((intDamageType & (int) DamageType.Blunt) == 0) ? 0.0 : 1;
-			double isArchery = ((intDamageType & (int) DamageType.Archery) == 0) ? 0.0 : 1;
-			double isBleed = ((intDamageType & (int) DamageType.Bleed) == 0) ? 0.0 : 1;
-			double isSummon = ((intDamageType & (int) DamageType.Summon) == 0) ? 0.0 : 1;
-			double isDragon = ((intDamageType & (int) DamageType.Dragon) == 0) ? 0.0 : 1;
-
-			resistCount = isFire + isElectric + isAcid + isCold +
-				isPoison + isMystical + isSlashing + isStabbing +
-				isBlunt + isArchery + isBleed + isSummon + isDragon;
-			Sanity.IfTrueThrow(resistCount == 0, "Attack of type '" + damageType + "' - has no resist subtype");
-
-			modifier = modifier * resistCount;
-
-			modifier -= isFire * resistingChar.ResistFire;
-			modifier -= isElectric * resistingChar.ResistElectric;
-			modifier -= isAcid * resistingChar.ResistAcid;
-			modifier -= isCold * resistingChar.ResistCold;
-			modifier -= isPoison * resistingChar.ResistPoison;
-			modifier -= isMystical * resistingChar.ResistMystical;
-			modifier -= isSlashing * resistingChar.ResistSlashing;
-			modifier -= isStabbing * resistingChar.ResistStabbing;
-			modifier -= isBlunt * resistingChar.ResistBlunt;
-			modifier -= isArchery * resistingChar.ResistArchery;
-			modifier -= isBleed * resistingChar.ResistBleed;
-			modifier -= isSummon * resistingChar.ResistSummon;
-			modifier -= isDragon * resistingChar.ResistDragon;
-
-			return modifier;
+			int factor = 1000;
+			if ((physCount > 0) && (magCount > 0)) {
+				factor = (physFactor + magFactor) / 2;
+			} else if (physCount > 0) {
+				factor = physFactor;
+			} else if (magCount > 0) {
+				factor = magFactor;
+			}
+			factor = ApplyGroupResist(ResistIf(damageType, DamageType.Summon, resistingChar.ResistSummon), factor);
+			return factor / 1000.0;
 		}
 
 		/// <summary>Cause damage to defender. Returns number of hitpoints that was actually removed. Runs @Damage triggers.</summary>
 		public static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage) {
+			return CauseDamage(attacker, defender, flags, damage, false);
+		}
+
+		/// <summary>#860 - Erebor's f_dmgFinal_MvM_minimalDMG and f_dmgFinal_PvX_minimalDMG, after
+		/// resists. A target immune to the damage type (resist modifier 0) stays unhurt.</summary>
+		internal static double ApplyMinimalDamage(Character attacker, Character defender, DamageType flags, double damage) {
+			if (attacker.IsPlayerForCombat) {
+				if ((attacker.WeaponType == WeaponType.BareHands) && !Professions.HasProfession(attacker, Professions.Mystic)) {
+					return (damage == 0) ? 1 : (attacker.GetSkill(SkillName.Wrestling) / 200) + 1;
+				}
+			} else if (!defender.IsPlayerForCombat && (damage < 1) && ((flags & DamageType.Summon) != DamageType.Summon)) {
+				return 5;
+			}
+			return damage;
+		}
+
+		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing) {
 			if (defender.Flag_Invulnerable) {
 				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
 				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists
@@ -116,15 +152,18 @@ namespace SteamEngine.CompiledScripts {
 
 				//#797 - Irresistable (Sphere's dam_god, e.g. e_explode's blast) skips resists
 				//entirely; GetResistModifier would throw on a type with neither magic nor physical
-				if (flags != DamageType.Irresistable) {
-					damage *= GetResistModifier(defender, flags);
-				}
-				// #511/#514: GetResistModifier's two-phase subtraction (physical/magic resist,
-				// then elemental/weapon-subtype resist) is never clamped at 0 - high stacked
-				// resist can drive it negative, which would otherwise flip this multiplication
-				// into a heal. Floored here, before the @damage trigger below, so a future
+				double resistModifier = (flags == DamageType.Irresistable) ? 1 : GetResistModifier(defender, flags);
+				damage *= resistModifier;
+				// #511/#514: a resist above 1000 drives the modifier negative, which would flip
+				// this into a heal. Floored here, before the @damage trigger below, so a future
 				// script-level heal-via-negative-damage hook (none exists yet) still has a path.
 				damage = Math.Max(0, damage);
+				if (isSwing) {
+					damage = CombatCalculator.RoundLikeSphere(damage);
+				}
+				if (isSwing && (resistModifier > 0)) {
+					damage = ApplyMinimalDamage(attacker, defender, flags, damage);
+				}
 
 				int previousHits = defender.Hits;
 
@@ -210,7 +249,7 @@ namespace SteamEngine.CompiledScripts {
 				MonsterSpecialAttacks.TryApplyMagicShield(attacker, defender, swingArgs);
 				MonsterSpecialAttacks.TryApplyEyeDeflect(attacker, defender, swingArgs);
 
-				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC);
+				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true);
 
 				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
 				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
@@ -321,34 +360,43 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			CombatSettings settings = CombatSettings.instance;
-			double attack = settings.weapAttack;
 			double piercing = attacker.WeaponPiercing;
 
 			bool defenderIsPlayer = defender.IsPlayerForCombat;
 			bool attackerIsPlayer = attacker.IsPlayerForCombat;
 
-			double armorClass;
+			// #860 - combat_main_nonmystik_countDmg and combat_main_npc. The armor multiplier is on
+			// damagecust's side only, a monster hitting a player uses the plain armor (damagecust_MvP).
+			double attack, armorClass;
 			if (attackerIsPlayer) {
 				if (defenderIsPlayer) {
-					attack *= settings.weapAttackPvP;
+					attack = CombatCalculator.RoundLikeSphere(attacker.WeaponAttackVsP * settings.weapAttack);
+					attack = CombatCalculator.RoundLikeSphere(attack * settings.weapAttackPvP);
+				} else {
+					attack = CombatCalculator.RoundLikeSphere(attacker.WeaponAttackVsM * settings.weapAttack);
+					attack = CombatCalculator.RoundLikeSphere(attack * GetAttackVsMonsterMultiplier(attacker, settings));
 				}
-				armorClass = defender.ArmorClassVsP;
+				armorClass = defender.ArmorClassVsP * (defenderIsPlayer ? settings.armorClassP : settings.armorClassM);
 			} else {
-				attack *= settings.weapAttackM;
-				armorClass = defender.ArmorClassVsM;
-			}
-			if (defenderIsPlayer) {
-				attack *= attacker.WeaponAttackVsP;
-				armorClass *= settings.armorClassP;
-			} else {
-				attack *= attacker.WeaponAttackVsM;
-				attack *= settings.weapAttackVsM;
-				armorClass *= settings.armorClassM;
+				attack = CombatCalculator.RoundLikeSphere(attacker.WeaponAttackVsM * settings.weapAttackM);
+				if (defenderIsPlayer) {
+					armorClass = defender.ArmorClassVsM;
+				} else {
+					attack = CombatCalculator.RoundLikeSphere(attack * settings.weapAttackVsM);
+					armorClass = defender.ArmorClassVsM * settings.armorClassM;
+				}
 			}
 
 			double damageAfterAC = CombatCalculator.CalculateArmorClassEffect(attacker, defender, attack, piercing, armorClass);
 
 			return new WeaponSwingArgs(attacker, defender, attack, piercing, armorClass, damageAfterAC);
+		}
+
+		/// <summary>#860 - vMweapattack grows with the player's level, up to 200.</summary>
+		internal static double GetAttackVsMonsterMultiplier(Character attacker, CombatSettings settings) {
+			Player player = attacker as Player;
+			int level = (player != null) ? Math.Min(player.Level, settings.weapAttackVsMMaxLevel) : 0;
+			return settings.weapAttackVsM + (level * settings.weapAttackVsMPerLevel);
 		}
 
 		/// <summary>#447/#448/#449 - Mystic's mind-power swing. `piercing` has no equivalent in

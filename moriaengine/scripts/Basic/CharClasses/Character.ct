@@ -41,6 +41,7 @@ Def:	//vars on the def
 	int resistSlashing = 0
 	int resistStabbing = 0
 	int resistBlunt = 0
+	int resistSharp = 0
 	int resistArchery = 0
 	int resistBleed = 0
 	int resistSummon = 0

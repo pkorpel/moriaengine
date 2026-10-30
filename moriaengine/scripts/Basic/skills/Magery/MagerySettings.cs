@@ -46,7 +46,7 @@ namespace SteamEngine.CompiledScripts {
 		/// constant, not present in the public script archive (same situation #447's own research
 		/// flagged for every other Mystic tuning number).</summary>
 		[SaveableData]
-		public double mysticWeaponSpeedModifier = 1.000; //nastaveni_weapspeed_mystik
+		public double mysticWeaponSpeedModifier = 60; //nastaveni_weapspeed_mystik
 
 		/// <summary>#450 - fraction of current mana retained after each Mystic swing (970 =
 		/// retain 97%, i.e. lose 3% per swing). Placeholder default, same reason as

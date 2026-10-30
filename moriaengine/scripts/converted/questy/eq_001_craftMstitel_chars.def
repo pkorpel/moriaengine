@@ -830,7 +830,7 @@ ResistParalyse = 800 950
 ResistFire = 750
 ResistElectric = 750
 ResistSlashing = 750
-ResistStabbing = 750
+ResistSharp = 750
 AggroMode = Hostile
 
 [NPCDef c_eq_cm_mag_lvl2]
@@ -896,7 +896,7 @@ ResistParalyse = 700 850
 ResistFire = 500
 ResistElectric = 500
 ResistSlashing = 600
-ResistStabbing = 600
+ResistSharp = 600
 AggroMode = Hostile
 
 [NPCDef c_eq_cm_mag_lvl1]
@@ -959,7 +959,7 @@ ResistPoison = 800 950
 ResistParalyse = 500 750
 ResistFire = 500
 ResistSlashing = 200
-ResistStabbing = 200
+ResistSharp = 200
 AggroMode = Hostile
 
 [NPCDef c_eq_cm_mag_ochrance]
@@ -1030,7 +1030,7 @@ ResistParalyse = 800 950
 ResistFire = 750
 ResistElectric = 750
 ResistSlashing = 750
-ResistStabbing = 750
+ResistSharp = 750
 AggroMode = Hostile
 
 [NPCDef c_eq_cm_kozeluh]
@@ -1177,6 +1177,7 @@ ResistPoison = 1000
 ResistParalyse = 900
 ResistSummon = 1000
 ResistBleed = 950
+ResistSharp = 800
 ResistSlashing = 600
 ResistStabbing = 850
 ResistBlunt = 300
@@ -1284,6 +1285,7 @@ ResistPoison = 600
 ResistParalyse = 1000
 ResistSummon = 850
 ResistBleed = 750
+ResistSharp = 350
 ResistSlashing = 750
 ResistStabbing = 450
 ResistBlunt = 100
@@ -1369,6 +1371,7 @@ ResistPoison = 750
 ResistParalyse = 1000
 ResistSummon = 950
 ResistBleed = 400
+ResistSharp = 450
 ResistSlashing = 450
 ResistStabbing = 450
 ResistBlunt = 450
@@ -1443,6 +1446,7 @@ ResistPoison = 1000
 ResistParalyse = 1000
 ResistSummon = 500
 ResistBleed = 1000
+ResistSharp = 600
 ResistSlashing = 100
 ResistStabbing = 600
 ResistBlunt = -400
@@ -1506,6 +1510,7 @@ ResistPoison = 1000
 ResistParalyse = 1000
 ResistSummon = 500
 ResistBleed = 1000
+ResistSharp = 850
 ResistSlashing = 850
 ResistStabbing = 850
 ResistBlunt = 850

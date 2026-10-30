@@ -1027,6 +1027,7 @@ namespace SteamEngine.CompiledScripts {
 		private static TagKey resistSlashingTK = TagKey.Acquire("_resist_slashing_");
 		private static TagKey resistStabbingTK = TagKey.Acquire("_resist_stabbing_");
 		private static TagKey resistBluntTK = TagKey.Acquire("_resist_blunt_");
+		private static TagKey resistSharpTK = TagKey.Acquire("_resist_sharp_");
 		private static TagKey resistArcheryTK = TagKey.Acquire("_resist_archery_");
 		private static TagKey resistBleedTK = TagKey.Acquire("_resist_bleed_");
 		private static TagKey resistSummonTK = TagKey.Acquire("_resist_summon_");
@@ -1180,6 +1181,21 @@ namespace SteamEngine.CompiledScripts {
 					this.SetTag(resistStabbingTK, dynamicPart);
 				} else {
 					this.RemoveTag(resistStabbingTK);
+				}
+			}
+		}
+
+		public int ResistSharp {
+			get {
+				int dynamicPart = Convert.ToInt32(this.GetTag(resistSharpTK));
+				return dynamicPart + this.TypeDef.ResistSharp;
+			}
+			set {
+				int dynamicPart = value - this.TypeDef.ResistSharp;
+				if (dynamicPart != 0) {
+					this.SetTag(resistSharpTK, dynamicPart);
+				} else {
+					this.RemoveTag(resistSharpTK);
 				}
 			}
 		}

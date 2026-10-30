@@ -80,6 +80,18 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double weapAttackVsM = 1.600; //nastaveni_global_vMweapattack
 
+		/// <summary>#860 - added to weapAttackVsM per player level, combat_main_nonmystik_countDmg.</summary>
+		[SaveableData]
+		public double weapAttackVsMPerLevel = 0.010;
+
+		[SaveableData]
+		public int weapAttackVsMMaxLevel = 200;
+
+		/// <summary>#860 - Erebor ran on Windows, where the world ticked about 9.14 times a
+		/// second, not 10 (EreborNext's clock probe). Hitspeed is in those ticks.</summary>
+		[SaveableData]
+		public double swingTicksPerSecond = 9.14;
+
 		[SaveableData]
 		public double weapAttackPvP = 0.900; //nastaveni_global_PvPweapattack
 
