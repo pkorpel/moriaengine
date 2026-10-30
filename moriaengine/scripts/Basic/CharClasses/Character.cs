@@ -2082,8 +2082,20 @@ namespace SteamEngine.CompiledScripts {
 			this.On_Disruption();
 		}
 
+		private bool keepCastingWhenDisrupted;
+
+		/// <summary>#860 - a blow breaks paralysis and the like, but casting only if it's hard enough.</summary>
+		public void Trigger_Disrupt(bool interruptCasting) {
+			this.keepCastingWhenDisrupted = !interruptCasting;
+			try {
+				this.Trigger_Disrupt();
+			} finally {
+				this.keepCastingWhenDisrupted = false;
+			}
+		}
+
 		public virtual void On_Disruption() {
-			if (this.CurrentSkillName == SkillName.Magery) {
+			if ((this.CurrentSkillName == SkillName.Magery) && !this.keepCastingWhenDisrupted) {
 				this.AbortSkill();
 			}
 		}

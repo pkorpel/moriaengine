@@ -28,6 +28,20 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#860 - coverage of the body parts in percent, Sphere's race body part table.</summary>
 		private static readonly double[] bodyPartCoverage = { 14, 6, 18, 18, 14, 7, 17, 6 };
 
+		/// <summary>#860 - tag.armordef: every worn piece adds its share, without the best-piece rule.</summary>
+		private static double SumOverBodyPartsOfMindDefense(Character self) {
+			double[] parts = new double[bodyPartCount];
+			foreach (Item equipped in self.VisibleEquip) {
+				Wearable wearable = equipped as Wearable;
+				if ((wearable != null) && ((LayerNames) wearable.Z != LayerNames.Hand2)) {
+					foreach (int part in GetBodyPartsOfLayer((LayerNames) wearable.Z)) {
+						parts[part] = Math.Max(parts[part], wearable.MindDefenseVsP);
+					}
+				}
+			}
+			return SumOverBodyParts(parts);
+		}
+
 		private static double SumOverBodyParts(double[] values) {
 			double sum = 0;
 			for (int i = 0; i < bodyPartCount; i++) {
@@ -68,19 +82,25 @@ namespace SteamEngine.CompiledScripts {
 			int armorClassVsP, mindDefenseVsP, armorClassVsM, mindDefenseVsM;
 			int resist = SkillDef.SkillValueOfChar(self, SkillName.MagicResist);
 			double resistEffect = SkillDef.GetBySkillName(SkillName.MagicResist).GetEffectForChar(self);
-			mindDefenseVsP = (int) (
-				(resist * resistEffect) / 1000);
-			mindDefenseVsM = mindDefenseVsP;
+
+			// #860 - f_getminddef and f_minddefrefresh: a monster's is plain Magic Resistance / 10
+			if (self.IsPlayerForCombat) {
+				MagerySettings magery = MagerySettings.instance;
+				double fromResist = RoundLikeSphere((resist * resistEffect) / 1000);
+				mindDefenseVsP = (int) RoundLikeSphere((fromResist + (SumOverBodyPartsOfMindDefense(self) * magery.armorMindDefense)) * magery.mindDefenseGlobal);
+				mindDefenseVsM = mindDefenseVsP;
+			} else {
+				mindDefenseVsP = resist / 10;
+				mindDefenseVsM = mindDefenseVsP;
+			}
 
 			armorClassVsP = self.DefForCombat.ArmorVsP;
 			armorClassVsM = self.DefForCombat.ArmorVsM;
 
 			// #860 - Sphere's CalcArmorDefense: the best piece on each body part by coverage, plus
 			// the shield by Parrying, whoever wears them. On Erebor that's on top of the def's
-			// armor (armorsum), for monsters too. Mind defense counts on players only for now.
-			bool isPlayer = self.IsPlayerForCombat;
+			// armor (armorsum), for monsters too.
 			double[] armorVsP = new double[bodyPartCount], armorVsM = new double[bodyPartCount];
-			double[] mindDefVsP = new double[bodyPartCount], mindDefVsM = new double[bodyPartCount];
 			double[] materials = new double[bodyPartCount];
 			double shieldVsP = 0, shieldVsM = 0, materialTotal = 0;
 
@@ -102,18 +122,12 @@ namespace SteamEngine.CompiledScripts {
 				foreach (int part in GetBodyPartsOfLayer(layer)) {
 					armorVsP[part] = Math.Max(armorVsP[part], wearable.ArmorVsP);
 					armorVsM[part] = Math.Max(armorVsM[part], wearable.ArmorVsM);
-					mindDefVsP[part] = Math.Max(mindDefVsP[part], wearable.MindDefenseVsP);
-					mindDefVsM[part] = Math.Max(mindDefVsM[part], wearable.MindDefenseVsM);
 					materials[part] = Math.Max(materials[part], material);
 				}
 			}
 
 			armorClassVsP += (int) (shieldVsP + SumOverBodyParts(armorVsP));
 			armorClassVsM += (int) (shieldVsM + SumOverBodyParts(armorVsM));
-			if (isPlayer) {
-				mindDefenseVsP += (int) SumOverBodyParts(mindDefVsP);
-				mindDefenseVsM += (int) SumOverBodyParts(mindDefVsM);
-			}
 			materialTotal += SumOverBodyParts(materials);
 
 			CombatArmorValues retVal = new CombatArmorValues();
@@ -289,6 +303,7 @@ namespace SteamEngine.CompiledScripts {
 					// and there's no dedicated field for the distinction.
 					if (retVal.weaponType == WeaponType.Bow) {
 						SetRangedWeaponRange(retVal, RangesSettings.instance.bow);
+						retVal.rangeVsP = RangesSettings.instance.bowVsPlayers;
 					} else if (retVal.weaponType == WeaponType.XBow) {
 						bool isHeavy = weapon.TypeDef.Defname.IndexOf("heavy", StringComparison.OrdinalIgnoreCase) >= 0;
 						SetRangedWeaponRange(retVal, isHeavy ? RangesSettings.instance.heavyCrossbow : RangesSettings.instance.crossbow);
@@ -328,12 +343,13 @@ namespace SteamEngine.CompiledScripts {
 				}
 
 				double sum = GetAttackStatMultiplier(self);
-				retVal.attackVsP = RoundLikeSphere(RoundLikeSphere(weapAttackVsP * sum) * ammoMultiplier);
-				retVal.attackVsM = RoundLikeSphere(RoundLikeSphere(weapAttackVsM * sum) * ammoMultiplier);
+				double runBow = (retVal.weaponType == WeaponType.Bow) ? RangerSettings.instance.runBowDamage : 1;
+				retVal.attackVsP = RoundLikeSphere(RoundLikeSphere(RoundLikeSphere(weapAttackVsP * sum) * runBow) * ammoMultiplier);
+				retVal.attackVsM = RoundLikeSphere(RoundLikeSphere(RoundLikeSphere(weapAttackVsM * sum) * runBow) * ammoMultiplier);
 
 				sum = GetMindPowerStatMultiplier(self);
-				retVal.mindPowerVsM = weapMindPowerVsM * sum;
-				retVal.mindPowerVsP = weapMindPowerVsP * sum;
+				retVal.mindPowerVsM = RoundLikeSphere(weapMindPowerVsM * sum);
+				retVal.mindPowerVsP = RoundLikeSphere(weapMindPowerVsP * sum);
 			} else {
 				NPCDef npcDef = self.DefForCombat as NPCDef;
 				if (npcDef != null) {
@@ -408,8 +424,8 @@ namespace SteamEngine.CompiledScripts {
 					retVal.attackVsM = npcDef.WeaponAttack;
 					retVal.attackVsP = retVal.attackVsM;
 
-					double npcMindPowerSum = GetMindPowerStatMultiplier(self);
-					retVal.mindPowerVsM = npcDef.MindPower * npcMindPowerSum;
+					// #860 - f_mindpowrefresh: a monster's is plain Evaluate Intelligence
+					retVal.mindPowerVsM = SkillDef.SkillValueOfChar(self, SkillName.EvalInt);
 					retVal.mindPowerVsP = retVal.mindPowerVsM;
 				} else {
 					//else ?!
@@ -428,6 +444,7 @@ namespace SteamEngine.CompiledScripts {
 			// whole engagement (see WeaponSkillDef.On_Stroke's own give-up check).
 			if (self.IsPlayerForCombat && Professions.HasProfession(self, Professions.Mystic)) {
 				SetRangedWeaponRange(retVal, RangesSettings.instance.mystic);
+				retVal.rangeVsP = RangesSettings.instance.mysticVsPlayers;
 			}
 
 			int rangeModifier = self.WeaponRangeModifier;
@@ -538,6 +555,44 @@ namespace SteamEngine.CompiledScripts {
 			return Math.Max(0, RoundLikeSphere(ubrano * randomFactor));
 		}
 
+		/// <summary>#860 - what's between a spell's power and the target: mind defense * 10, against
+		/// players' spells on a player changed by the profession (armorchangeom).</summary>
+		public static int GetSpellDefense(Character caster, Character target) {
+			int mindDefense = caster.IsPlayerForCombat ? target.MindDefenseVsP : target.MindDefenseVsM;
+			int change = 0;
+			if (caster.IsPlayerForCombat && target.IsPlayerForCombat) {
+				Player player = target as Player;
+				ProfessionDef profession = (player != null) ? player.Profession : null;
+				change = (profession != null) ? profession.PvPMindDefenseChange : 0;
+			}
+			return (mindDefense * 10) - change;
+		}
+
+		/// <summary>#860 - a spell's damagecust, armor and rolls as for a swing. It's the caster's spell,
+		/// so a monster's on a player still uses this formula, not damagecust_MvP.</summary>
+		public static double CalculateSpellArmorEffect(Character caster, Character target, double attack, double piercing) {
+			CombatSettings settings = CombatSettings.instance;
+			bool casterIsPlayer = caster.IsPlayerForCombat;
+			double armor, damageMod;
+			if (target.IsPlayerForCombat) {
+				armor = (casterIsPlayer ? Math.Max(0, target.ArmorClassVsP + DamageManager.GetPvPArmorChange(target)) : target.ArmorClassVsM) * settings.armorClassP;
+				damageMod = casterIsPlayer ? settings.swingDamagePvP : settings.swingDamageM;
+			} else {
+				armor = (casterIsPlayer ? target.ArmorClassVsP : target.ArmorClassVsM) * settings.armorClassM;
+				damageMod = casterIsPlayer ? settings.swingDamageVsM : (settings.swingDamageVsM * settings.swingDamageM);
+			}
+			return CalculateDamageCust(attack, armor, piercing,
+				ScriptUtil.GetRandInRange(settings.armorRandEffectMin, settings.armorRandEffectMax), damageMod);
+		}
+
+		/// <summary>#860 - Sphere's Calc_CombatChanceToHit: the upper bound of the difficulty roll.</summary>
+		public static int CalculateHitDifficultyLimit(int skill, int tactics, int targetTactics, int targetStamina, bool targetShootsBack) {
+			int attack = (skill + tactics) / 2;
+			int defend = (targetTactics + (targetStamina * (targetShootsBack ? 9 : 10))) / 2;
+			int difference = (skill - ((attack - defend) / 5)) / 10;
+			return Math.Max(0, Math.Min(100, difference));
+		}
+
 		public static double CalculateArmorClassEffect(Character attacker, Character defender, double attack, double piercing, double armorClass) {
 			bool defenderIsPlayer = defender.IsPlayerForCombat;
 			bool attackerIsPlayer = attacker.IsPlayerForCombat;
@@ -558,34 +613,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 			return CalculateDamageCust(attack, armorClass, piercing,
 				ScriptUtil.GetRandInRange(settings.armorRandEffectMin, settings.armorRandEffectMax), damageMod);
-		}
-
-		/// <summary>Mystic's mind-power attack (#447/#448/#449) - subtractive mindPower-minus-
-		/// mindDefense, confirmed from the Erebor source (magie.scp: "finalPower = spellpower -
-		/// spelldefense"). Deliberately does NOT replicate CalculateArmorClassEffect's #96
-		/// isMvP-placeholder override - that bug is specific to the physical armorClass path;
-		/// mindDefense is a separate, never-before-exercised value with no equivalent override,
-		/// so the defender's real mind defense is always used here.</summary>
-		public static double CalculateMindPowerEffect(Character attacker, Character defender, double mindPower, double mindDefense) {
-			bool defenderIsPlayer = defender.IsPlayerForCombat;
-			bool attackerIsPlayer = attacker.IsPlayerForCombat;
-			CombatSettings settings = CombatSettings.instance;
-
-			double damageMod;
-			if (defenderIsPlayer) {
-				damageMod = attackerIsPlayer ? settings.swingDamagePvP
-					: ScriptUtil.GetRandInRange(settings.swingDamageRandMvPMin, settings.swingDamageRandMvPMax);
-			} else {
-				damageMod = settings.swingDamageM;
-			}
-
-			mindPower = Math.Max(0, mindPower);
-			mindDefense = Math.Max(0, mindDefense);
-			damageMod = Math.Max(0, damageMod);
-
-			// #511/#514: same floor-at-0 fix as CalculateArmorClassEffect - mindDefense
-			// exceeding mindPower must not go negative (would heal, not damage).
-			return Math.Max(0, (mindPower - mindDefense) * damageMod);
 		}
 	}
 }

@@ -60,6 +60,7 @@ SpiritSpeak = 1900
 Peacemaking = 1900 2000
 Provocation = 1900 2000
 Magery = 4500
+EvalInt = 1300
 Equip = i_spellbook
 AddSpell = s_fireball
 AddSpell = s_lightning

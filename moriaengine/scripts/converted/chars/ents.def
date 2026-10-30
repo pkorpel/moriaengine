@@ -89,6 +89,7 @@ MagicResist = 900 1000
 Macing = 900 1000
 Tactics = 900 1000
 Magery = 1200
+EvalInt = 900 1000
 SpiritSpeak = 750
 Fencing = 1000 1100
 Parry = 1000 1100

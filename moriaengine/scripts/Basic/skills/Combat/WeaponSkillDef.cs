@@ -243,7 +243,7 @@ namespace SteamEngine.CompiledScripts {
 							EffectFactory.EffectFromTo(self, target, projectileAnim, 10, 1, false, false, 0, 0);
 						}
 
-						skillSeqArgs.Success = this.CheckSuccess(self, Globals.dice.Next(700));
+						skillSeqArgs.Success = this.RollHit(self, target);
 
 						if (self.CanInteractWith(target).Allow) {
 							WeaponSkillTargetQueuePlugin.AddTarget(self, target);//we're not really adding the target, just restarting the attack, most probably
@@ -274,6 +274,25 @@ namespace SteamEngine.CompiledScripts {
 			protected override void OnTimeout(TagHolder cont) {
 				AnimCalculator.PerformAttackAnim((Character) cont);
 			}
+		}
+
+		/// <summary>#860 - Sphere's Calc_CombatChanceToHit plus its skill check. A difficulty of 0
+		/// skips the check, the swing just hits.</summary>
+		private bool RollHit(Character self, Character target) {
+			NPC npc = self as NPC;
+			if ((npc != null) && (npc.AggroMode == AggroMode.GuardsRealm)) {
+				return true; //GUARDSINSTANTKILL=1 in Erebor's sphere.ini
+			}
+			int difficulty;
+			if (ParalyzeEffectPluginDef.IsParalyzed(target)) {
+				difficulty = Globals.dice.Next(10);
+			} else {
+				bool targetShootsBack = (target.CurrentSkillName == SkillName.Archery) && (this.Id != (int) SkillName.Archery);
+				int limit = CombatCalculator.CalculateHitDifficultyLimit(this.SkillValueOfChar(self), SkillDef.SkillValueOfChar(self, SkillName.Tactics),
+					SkillDef.SkillValueOfChar(target, SkillName.Tactics), target.Stam, targetShootsBack);
+				difficulty = (limit > 0) ? Globals.dice.Next(limit) : 0;
+			}
+			return (difficulty == 0) || this.CheckSuccess(self, difficulty * 10);
 		}
 
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {

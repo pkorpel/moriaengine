@@ -607,26 +607,39 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		private const int spellFireField = 28, spellPoisonField = 39, spellParalyzeField = 47;
+
+		/// <summary>#860 - dospellcustom_donesrc, Mystic's strike has its own in DamageManager.</summary>
+		private double GetMindPowerMultiplier(Character caster, Character target) {
+			MagerySettings settings = MagerySettings.instance;
+			double multiplier = caster.IsPlayerForCombat ? 1 : settings.spellPowerMonster;
+			if (target.IsPlayerForCombat) {
+				return caster.IsPlayerForCombat ? (multiplier * settings.spellPowerPvP) : multiplier;
+			}
+			double vsMonster = settings.spellPowerVsM;
+			Player player = caster as Player;
+			if ((player != null) && ((this.Id == spellFireField) || (this.Id == spellPoisonField) || (this.Id == spellParalyzeField))) {
+				vsMonster += System.Math.Min(player.Level / 4, 50) * settings.fieldSpellPowerPerLevel;
+			}
+			return multiplier * vsMonster;
+		}
+
 		private void GetSpellPowerAgainstChar(Character caster, IPoint3D mainTarget, Character currentTarget, EffectFlag effectFlag, ref SpellEffectArgs sea) {
 			int spellPower;
 			SpellFlag flags = this.Flags;
-			if ((flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower) {
-				int mindDef;
-				if (caster.IsPlayerForCombat) {
-					mindDef = currentTarget.MindDefenseVsP;
-				} else {
-					mindDef = currentTarget.MindDefenseVsM;
-				}
-				if (currentTarget.IsPlayerForCombat) {
-					spellPower = (caster.MindPowerVsP - mindDef) * 10; //*10 because we need to be in thousands, like it is with skills
-				} else {
-					spellPower = (caster.MindPowerVsM - mindDef) * 10;
-				}
+			bool usesMindPower = (flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower;
+			if (usesMindPower) {
+				int mindPower = currentTarget.IsPlayerForCombat ? caster.MindPowerVsP : caster.MindPowerVsM;
+				spellPower = (int) ((mindPower * 10) * GetMindPowerMultiplier(caster, currentTarget)); //*10 because we need to be in thousands, like it is with skills
 			} else {
 				spellPower = caster.GetSkill(SkillName.Magery);
 			}
 			spellPower = StandcastHelper.ApplyMultiplier(caster, spellPower);
 			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower);
+			if (usesMindPower) {
+				//#860 - dospellcustom_donesrc: the multipliers come before the target's defense
+				spellPower -= CombatCalculator.GetSpellDefense(caster, currentTarget);
+			}
 
 			if (sea == null) {
 				sea = SpellEffectArgs.Acquire(caster, mainTarget, currentTarget, this, spellPower, effectFlag);
