@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-30): #833 Erebor rank quests - Expert DONE, Master, Grandmaster next
+## IN PROGRESS (2026-10-30): #833 Erebor rank quests - Expert, Master DONE, Grandmaster next
 
 User: "can we do ranks, settings and port the quests as well?" Ranks + settings shipped in #828 (Player.SkillRank,
 SkillTeacherSettings.requireRank off). Now the quests that grant the rank: questy/expert.scp (rank 1), mistr.scp
@@ -18,7 +18,20 @@ Gotcha: a compiled TriggerGroup On_Create can't work (TryTrigger(create, null) v
 then overwrites attributes) - hide/name pieces when they are linked instead.
 Flake: ExpertQuestTests' login helper once hit LoginDenied=1 (account in use, retry loop masks the first failure), 1 of
 4 runs, past all the quest steps it reached; the helper is the same as in the other protocol tests.
-**Next**: Master (mistr.scp), then Grandmaster (velmistr.scp); requireRank stays off until all three are in.
+**Expert SHIPPED: PR #835.** CI still has no runners (2 s, runner null), admin-merged.
+**Master DONE (2026-10-30)**: MasterQuest.cs (branch 833-master-quest): MasterQuestSpeech (Lenastirovarec), egg links to
+the first lifter (On_EnterChar, runs after the pickup is allowed), r_hadiostrovy @enter marks the player,
+.SetupMasterQuest. The archive records no spots, so proposals: Lenastir beside both Expert stones, teleport between the
+serpent pillars of Beridor Level 3 (found by scanning statics0.mul), queen + serpents gems on Hadi ostrovy.
+Verified: MasterQuestTests (protocol, red with the egg trigger off and with the region mark off, 3/3 green), Expert/
+SkillTeacher/RegionEvent/SpeechStub green (stub count 244), Localization its 8 known (474 checked).
+Gotcha: dungeons are on their own Mapplane (Beridor L3 = 10); the same statics also show on plane 0 but belong to no
+region there. Check the region's Mapplane before placing anything by x,y. Test helpers must open a corpse and the pack
+before dragging (client reachability).
+Login flake (LoginDenied=1, or broken pipe at login right after the admin leaves) was a helper gap: it retried only
+InvalidOperationException and reported the last failure. Quest test helpers now also retry IOException and report the
+first failure; no flake in 10 runs since.
+**Next**: Grandmaster (velmistr.scp); requireRank stays off until all three are in.
 
 ## DONE (2026-10-29, PR #834): #828 skill teachers (spk_mistr) + player rank
 

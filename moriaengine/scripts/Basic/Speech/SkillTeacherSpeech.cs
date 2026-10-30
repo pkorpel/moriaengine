@@ -135,7 +135,7 @@ namespace SteamEngine.CompiledScripts {
 			return SpeechResult.IgnoredOrActedUpon;
 		}
 
-		private static bool ContainsAny(string speech, string[] words) {
+		internal static bool ContainsAny(string speech, string[] words) {
 			foreach (string word in words) {
 				if (speech.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0) {
 					return true;
