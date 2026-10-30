@@ -197,7 +197,7 @@ namespace SteamEngine.Tests.Protocol {
 		//character names may only hold letters and spaces - a digit gets the client dropped
 		private TestGameClient ConnectOnce(string account, string charName) {
 			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
-			InvalidOperationException lastFailure = null;
+			Exception firstFailure = null; //later attempts only say the account is in use, by the first one
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
@@ -205,13 +205,13 @@ namespace SteamEngine.Tests.Protocol {
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					return game;
-				} catch (InvalidOperationException e) {
+				} catch (Exception e) when ((e is InvalidOperationException) || (e is System.IO.IOException)) {
 					game.Dispose();
-					lastFailure = e;
+					firstFailure = firstFailure ?? e;
 					Thread.Sleep(300);
 				}
 			}
-			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
+			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", firstFailure);
 		}
 
 		private int WaitForServerListingAndGetRedirectPort(string account) {

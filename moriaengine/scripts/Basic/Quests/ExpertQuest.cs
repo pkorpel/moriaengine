@@ -73,7 +73,7 @@ namespace SteamEngine.CompiledScripts {
 			Attach(MasterDef, SingletonScript<E_ExpertQuestMaster>.Instance);
 		}
 
-		private static void Attach(string defname, TriggerGroup tg) {
+		internal static void Attach(string defname, TriggerGroup tg) {
 			AbstractDefTriggerGroupHolder def = ThingDef.GetByDefname(defname) as AbstractDefTriggerGroupHolder;
 			if (def == null) {
 				Logger.WriteWarning("ExpertQuest: " + defname + " is missing, its quest behavior isn't attached.");
@@ -345,6 +345,20 @@ namespace SteamEngine.CompiledScripts {
 			return map.IsValidPos(x, y) && !map.IsMapTileWater(x, y) && map.CanFit(x, y, z, 16, true, false, true);
 		}
 
+		/// <summary>{x, y, z} of the standable spot closest to x,y within `range` tiles, or null.</summary>
+		internal static int[] NearestStandable(Map map, int x, int y, int range) {
+			int[] best = null;
+			for (int ax = x - range; ax <= x + range; ax++) {
+				for (int ay = y - range; ay <= y + range; ay++) {
+					int z;
+					if (CanStand(map, ax, ay, out z) && ((best == null) || (Dist(new[] { ax, ay }, x, y) < Dist(best, x, y)))) {
+						best = new[] { ax, ay, z };
+					}
+				}
+			}
+			return best;
+		}
+
 		/// <summary>The .SetupExpertQuest command: Erebor's two start stones, one quest site per rectangle of the a_expert
 		/// cave with six clue signs around it, all linked. Replaces what an earlier run placed.</summary>
 		[SteamFunction]
@@ -386,7 +400,7 @@ namespace SteamEngine.CompiledScripts {
 			self.SysMessage(summary);
 		}
 
-		private static void RemovePlaced(Map map, string defname, ImmutableRectangle rect) {
+		internal static void RemovePlaced(Map map, string defname, ImmutableRectangle rect) {
 			ThingDef def = ThingDef.GetByDefname(defname);
 			List<Thing> found = new List<Thing>();
 			foreach (Thing t in map.GetThingsInRectangle(rect)) {

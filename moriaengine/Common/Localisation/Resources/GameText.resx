@@ -691,4 +691,16 @@
   <data name="ExpertQuestLoc_ComeCloser" xml:space="preserve">
     <value>There will be no shouting. You must come closer.</value>
   </data>
+  <data name="MasterQuestLoc_Promoted" xml:space="preserve">
+    <value>Congratulations, you have become a Master. This opens the way to the further growth of your character.</value>
+  </data>
+  <data name="MasterQuestLoc_EggDescription" xml:space="preserve">
+    <value>This is a fertilized snake egg - a very rare ingredient.</value>
+  </data>
+  <data name="MasterQuestLoc_TeleportDescription" xml:space="preserve">
+    <value>An unknown locked teleport</value>
+  </data>
+  <data name="MasterQuestLoc_CantPass" xml:space="preserve">
+    <value>You can't go through here!</value>
+  </data>
 </root>
