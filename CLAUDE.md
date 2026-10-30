@@ -1,5 +1,14 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-10-30): mirror Erebor's combat numbers (audit first, no code changes until the user sees it)
+
+User: "completely mirror all the combat settings from erebor"; some monsters take no damage, some hit crazy high, players sometimes deal none. Sources:
+erebor-sphere-archive scripts, save/sphereworld.scp variables, definition files, EreborNext for native Sphere. Deliberate changes like #711
+(NPCs use the player's stat scaling) get replaced if Erebor differs. Plan: audit -> compare -> hand-worked matchups -> staged fixes with tests.
+Audit done, results on #860 (incl. the hit roll, EreborNext Calc_CombatChanceToHit, fix with stage 4). Stages: 1 values, 2 formulas (MvP, level bonus, armor roll, vMweapdam, #711 out, speed), 3 secondary rules, 4 spells/rangers/hit.
+**Stage 1 done (branch 860-erebor-values)**: converter's SphereWorldVars reads save/sphereworld.scp; ConvertedItemDef.ThirdStageFinished applies weapon attack/speed/piercing, staff mind power, armor + shields + mind defense, ammo DamageMultiplier/Piercing. 35 files regenerated whole, fresh regen diffs to 0. Bows no longer use RangerSettings' damage/speed/tier bonus (fields kept, unused). Bare hands 5/200, Mystic mana loss 960, spell ranges by hand; a damage spell's third number on Erebor is armor piercing (not applied yet). NOT done: armor weights, workbook (with stage 2).
+Verified: fast 230/230, RangerSettings/RangerCombat/ArmorEffect/Mystic/NpcAttackStatScaling/RangedSustain green, Magery only the known 4. CombatScenario titan + ContentRestoration flight fail identically on clean main; the titan one is for stage 2.
+
 ## DONE (2026-10-30): #858 quest text markup (branch 858-quest-text-markup)
 
 User tested Grandmaster: raw <src.splitRealm on an Elmira response, words missing at the envoy. QuestDialogContent's pattern didn't allow commas in

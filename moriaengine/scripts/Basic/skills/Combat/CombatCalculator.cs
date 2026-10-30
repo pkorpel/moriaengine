@@ -411,36 +411,18 @@ namespace SteamEngine.CompiledScripts {
 					// defname, since this engine's content consistently names every heavy
 					// crossbow item "i_crossbow_heavy_<material>" across all 7 material tiers
 					// and there's no dedicated field for the distinction.
-					// #456 - bow/crossbow damage and speed are ALSO a settings-only override
-					// (RangerSettings), deliberately not written into the 21 bow/crossbow .def
-					// entries - a full content rework using newer Erebor def items is planned
-					// later, so editing that content now would just be thrown away. Same
-					// light-vs-heavy-crossbow defname check the range override above uses.
-					RangerSettings rangerSettings = RangerSettings.instance;
 					if (retVal.weaponType == WeaponType.Bow) {
 						SetRangedWeaponRange(retVal, RangesSettings.instance.bow);
-						weapAttackVsP = rangerSettings.bowDamage;
-						weapAttackVsM = rangerSettings.bowDamage;
-						weapSpeed = rangerSettings.bowSpeed;
 					} else if (retVal.weaponType == WeaponType.XBow) {
 						bool isHeavy = weapon.TypeDef.Defname.IndexOf("heavy", StringComparison.OrdinalIgnoreCase) >= 0;
 						SetRangedWeaponRange(retVal, isHeavy ? RangesSettings.instance.heavyCrossbow : RangesSettings.instance.crossbow);
-						weapAttackVsP = isHeavy ? rangerSettings.heavyCrossbowDamage : rangerSettings.lightCrossbowDamage;
-						weapAttackVsM = weapAttackVsP;
-						weapSpeed = isHeavy ? rangerSettings.heavyCrossbowSpeed : rangerSettings.lightCrossbowSpeed;
 					}
 
-					// #457 - explicit placeholder multiplier (see RangerSettings.
-					// arrowDamageBonusPerTier's own doc comment for why this isn't a real
-					// Erebor port), applied only when a matching projectile was actually found.
+					// #860 - nastaveni_arrowdamage_<tdata1> of the ammo
 					if ((retVal.weaponType == WeaponType.Bow || retVal.weaponType == WeaponType.XBow) &&
 							(self.weaponProjectile != null)) {
-						int tier = GetAmmoTierRank(self.weaponProjectile);
-						if (tier > 0) {
-							double bonus = 1 + (tier * rangerSettings.arrowDamageBonusPerTier);
-							weapAttackVsP *= bonus;
-							weapAttackVsM *= bonus;
-						}
+						weapAttackVsP *= self.weaponProjectile.DamageMultiplier;
+						weapAttackVsM *= self.weaponProjectile.DamageMultiplier;
 					}
 				} else {
 					retVal.weaponType = WeaponType.BareHands;
@@ -642,28 +624,6 @@ namespace SteamEngine.CompiledScripts {
 			retVal.rangeVsP = range;
 			retVal.strikeStartRange = range;
 			retVal.strikeStopRange = range + 2;
-		}
-
-		/// <summary>#457 placeholder support - 0-based material tier rank matching this engine's
-		/// own content-file tier order (1copper/2iron/3verite/4valorite/5obsidian/6adamantinum/
-		/// 7mytheril), NOT the raw Material enum value (which skips Silver/Gold - armor-only
-		/// materials not used for this weapon/ammo tier progression). Returns 0 (no bonus) for
-		/// anything that isn't a colored, tiered projectile.</summary>
-		private static int GetAmmoTierRank(Projectile projectile) {
-			ColoredProjectile colored = projectile as ColoredProjectile;
-			if (colored == null) {
-				return 0;
-			}
-			switch (colored.TypeDef.Material) {
-				case Material.Copper: return 0;
-				case Material.Iron: return 1;
-				case Material.Verite: return 2;
-				case Material.Valorite: return 3;
-				case Material.Obsidian: return 4;
-				case Material.Adamantinum: return 5;
-				case Material.Mithril: return 6;
-				default: return 0;
-			}
 		}
 
 		/// <summary>#96 fix: `armor` used to be computed correctly from the real `armorClass`

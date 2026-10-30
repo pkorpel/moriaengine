@@ -55,10 +55,8 @@ namespace SteamEngine.CompiledScripts {
 			set { RangesSettings.instance.heavyCrossbow = value; }
 		}
 
-		/// <summary>#456 - confirmed real Erebor DAM ratio (bow weakest, heavy crossbow
-		/// strongest - source-confirmed, not a guess), applied as a settings-only override of
-		/// whatever the weapon's own (still converter-placeholder) AttackVsP/VsM content says -
-		/// see CombatCalculator.CalculateCombatWeaponValues.</summary>
+		/// <summary>Unused since #860: bows and crossbows have Erebor's real AttackVsP/VsM per
+		/// material now. Kept declared, a [SaveableData] field can't be removed.</summary>
 		[SaveableData]
 		public double bowDamage = 5;
 
@@ -68,13 +66,8 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double heavyCrossbowDamage = 13;
 
-		/// <summary>#456 - confirmed real Erebor ratio (bow/light crossbow equally fast, heavy
-		/// crossbow ~10% slower - source values 58/58/52). The absolute scale is NOT a direct
-		/// copy of Erebor's raw numbers - moriaengine's own weapon Speed field is a rate
-		/// multiplier (higher = faster swings, see CombatCalculator's delay formula), the
-		/// opposite shape from Erebor's own tick-count-like speed stat, so these values instead
-		/// preserve Erebor's real ~52:58 ratio centered on this engine's existing melee-weapon
-		/// baseline of 100.</summary>
+		/// <summary>Unused since #860: bows and crossbows have Erebor's real Speed now
+		/// (58/58/52, the same kind of rate as ours). Kept declared, see above.</summary>
 		[SaveableData]
 		public double bowSpeed = 100;
 
@@ -94,13 +87,8 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public bool crossbowMustStandStill = true;
 
-		/// <summary>#457 - explicit placeholder, NOT a real Erebor port. The real
-		/// nastaveni_arrowdamage_N settings do have real, varied values in the Erebor archive,
-		/// but the mapping from arrow material tier to index N isn't recoverable from the
-		/// public archive (the base arrow item has no tdata1 set in what's available) - rather
-		/// than guess a mapping and present it as faithful, this is a flat per-material-tier
-		/// damage increment (e.g. 0.05 = +5% per tier above copper) applied via
-		/// CombatCalculator - tune freely, this number carries no Erebor authority.</summary>
+		/// <summary>Unused since #860: ammo has Projectile.DamageMultiplier, Erebor's
+		/// nastaveni_arrowdamage_N by the ammo's TDATA1. Kept declared, see above.</summary>
 		[SaveableData]
 		public double arrowDamageBonusPerTier = 0.05;
 	}

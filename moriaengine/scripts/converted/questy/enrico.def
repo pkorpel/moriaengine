@@ -152,6 +152,8 @@ layer = 1 //Set by Converter
 WeaponType = WeaponType.OneHandBlunt //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 Color = 0480
+speed = 100 //nastaveni_weapspeed 
+piercing = 50 //nastaveni_weappiercing 
 
 [ItemDef i_srdiczko]
 Name = "Srdce krvavce"

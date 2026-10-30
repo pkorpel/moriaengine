@@ -14,8 +14,8 @@ WeaponType = WeaponType.Bow //guessed by Converter
 WeaponAnimType = WeaponAnimType.Bow //guessed by Converter 
 attackVsP = 4
 attackVsM = 4
-piercing = 100 //default value set by Converter 
-speed = 100 //default value set by Converter 
+piercing = 0 //nastaveni_weappiercing 
+speed = 58 //nastaveni_weapspeed 
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
@@ -71,6 +71,8 @@ WeaponType = WeaponType.OneHandBlunt //guessed by Converter
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 Color = 065f
+speed = 50 //nastaveni_weapspeed 
+piercing = 0 //nastaveni_weappiercing 
 
 [ItemDef i_book_inscription]
 CATEGORY = Noe

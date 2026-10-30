@@ -17,10 +17,10 @@ layer = 19 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_PLATEMAIL_leggings]
 CATEGORY = Provisions - Armor - Colored
@@ -39,10 +39,10 @@ layer = 4 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_PLATEMAIL_GORGET]
 CATEGORY = Provisions - Armor - Colored
@@ -61,10 +61,10 @@ layer = 10 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_PLATEMAIL_GAUNTLETS]
 CATEGORY = Provisions - Armor - Colored
@@ -83,10 +83,10 @@ layer = 7 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_PLATEMAIL]
 CATEGORY = Provisions - Armor - Colored
@@ -105,10 +105,10 @@ layer = 13 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_FEMALE_PLATEMAIL]
 CATEGORY = Provisions - Armor - Colored
@@ -127,10 +127,10 @@ layer = 13 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_PLATE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -149,10 +149,10 @@ layer = 6 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_CLOSED_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -171,10 +171,10 @@ layer = 6 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_BASCINET]
 CATEGORY = Provisions - Armor - Colored
@@ -193,10 +193,10 @@ layer = 6 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_NOSE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -215,10 +215,10 @@ layer = 6 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 40
-mindDefenseVsP = 40
-armorVsM = 40
-mindDefenseVsM = 40
+armorVsP = 68 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 68
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_kite_wood_shield]
 NAME = "Silver kite shield"
@@ -233,10 +233,10 @@ layer = 2 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 6 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 6
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_RINGMAIL_gorget]
 NAME = "Silver ringmail gorget"
@@ -251,10 +251,10 @@ layer = 10 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_RINGMAIL_helm]
 NAME = "Silver Ringmail Helm"
@@ -269,10 +269,10 @@ layer = 6 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_RINGMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -291,10 +291,10 @@ layer = 4 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 30
-mindDefenseVsP = 30
-armorVsM = 30
-mindDefenseVsM = 30
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_RINGMAIL_SLEEVES]
 CATEGORY = Provisions - Armor - Colored
@@ -313,10 +313,10 @@ layer = 19 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 30
-mindDefenseVsP = 30
-armorVsM = 30
-mindDefenseVsM = 30
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_RINGMAIL_GLOVES]
 CATEGORY = Provisions - Armor - Colored
@@ -335,10 +335,10 @@ layer = 7 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 30
-mindDefenseVsP = 30
-armorVsM = 30
-mindDefenseVsM = 30
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_RINGMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -357,10 +357,10 @@ layer = 13 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Ring //guessed by Converter 
-armorVsP = 30
-mindDefenseVsP = 30
-armorVsM = 30
-mindDefenseVsM = 30
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_CHAINMAIL_gorget]
 NAME = "Silver Chainmail Gorget"
@@ -375,10 +375,10 @@ layer = 10 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_CHAINMAIL_sleeves]
 NAME = "Silver Chainmail Sleeves"
@@ -393,10 +393,10 @@ layer = 19 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_CHAINMAIL_gloves]
 NAME = "Silver Chainmail Gloves"
@@ -411,10 +411,10 @@ layer = 7 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 21
-mindDefenseVsP = 21
-armorVsM = 21
-mindDefenseVsM = 21
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_CHAINMAIL_COIF]
 CATEGORY = Provisions - Armor - Colored
@@ -433,10 +433,10 @@ layer = 6 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 28
-mindDefenseVsP = 28
-armorVsM = 28
-mindDefenseVsM = 28
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_CHAINMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -455,10 +455,10 @@ layer = 4 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 28
-mindDefenseVsP = 28
-armorVsM = 28
-mindDefenseVsM = 28
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_CHAINMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -477,10 +477,10 @@ layer = 13 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Chain //guessed by Converter 
-armorVsP = 28
-mindDefenseVsP = 28
-armorVsM = 28
-mindDefenseVsM = 28
+armorVsP = 38 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 38
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_BUCKLER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -499,10 +499,10 @@ layer = 2 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 10
-mindDefenseVsP = 10
-armorVsM = 10
-mindDefenseVsM = 10
+armorVsP = 2 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 2
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_METAL_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -521,10 +521,10 @@ layer = 2 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 15
-mindDefenseVsP = 15
-armorVsM = 15
-mindDefenseVsM = 15
+armorVsP = 6 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 6
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_Silver_HEATER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -543,10 +543,10 @@ layer = 2 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
-armorVsP = 5
-mindDefenseVsP = 5
-armorVsM = 5
-mindDefenseVsM = 5
+armorVsP = 3 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 3
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_bone_arms_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -565,10 +565,10 @@ layer = 19 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 11
-mindDefenseVsP = 11
-armorVsM = 11
-mindDefenseVsM = 11
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_bone_chest_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -587,10 +587,10 @@ layer = 13 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 11
-mindDefenseVsP = 11
-armorVsM = 11
-mindDefenseVsM = 11
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_bone_gloves_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -609,10 +609,10 @@ layer = 7 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 11
-mindDefenseVsP = 11
-armorVsM = 11
-mindDefenseVsM = 11
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_bone_helmet_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -631,10 +631,10 @@ layer = 6 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 11
-mindDefenseVsP = 11
-armorVsM = 11
-mindDefenseVsM = 11
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_bone_leggings_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -653,10 +653,10 @@ layer = 4 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Bone //guessed by Converter 
-armorVsP = 11
-mindDefenseVsP = 11
-armorVsM = 11
-mindDefenseVsM = 11
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_studded_cap_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -673,10 +673,10 @@ layer = 6 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 9
-mindDefenseVsP = 9
-armorVsM = 9
-mindDefenseVsM = 9
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_studded_sleeves_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -693,10 +693,10 @@ layer = 19 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 12
-mindDefenseVsP = 12
-armorVsM = 12
-mindDefenseVsM = 12
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_studded_gloves_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -713,10 +713,10 @@ layer = 7 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 12
-mindDefenseVsP = 12
-armorVsM = 12
-mindDefenseVsM = 12
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_studded_gorget_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -733,10 +733,10 @@ layer = 10 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 12
-mindDefenseVsP = 12
-armorVsM = 12
-mindDefenseVsM = 12
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_studded_leggings_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -753,10 +753,10 @@ layer = 4 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 12
-mindDefenseVsP = 12
-armorVsM = 12
-mindDefenseVsM = 12
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_studded_tunic_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -773,10 +773,10 @@ layer = 13 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 12
-mindDefenseVsP = 12
-armorVsM = 12
-mindDefenseVsM = 12
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_armor_female_bustier_studded_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -793,10 +793,10 @@ layer = 13 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 12
-mindDefenseVsP = 12
-armorVsM = 12
-mindDefenseVsM = 12
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0
 
 [ColoredArmorDef i_armor_female_studded_Silver]
 CATEGORY = Provisions - Armor - Colored
@@ -813,7 +813,7 @@ layer = 13 //Set by Converter
 Material = Material.Silver //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
 WearableType = WearableType.Studded //guessed by Converter 
-armorVsP = 12
-mindDefenseVsP = 12
-armorVsM = 12
-mindDefenseVsM = 12
+armorVsP = 16 //nastaveni_armorarmor 
+mindDefenseVsP = 0 //nastaveni_armorparts_OM 
+armorVsM = 16
+mindDefenseVsM = 0

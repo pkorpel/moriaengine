@@ -7,6 +7,8 @@ Layer = 1 //guessed from base def by Converter
 type = t_weapon_fence //guessed from base def by Converter 
 WeaponType = WeaponType.OneHandSpike //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
+speed = 130 //nastaveni_weapspeed 
+piercing = 0 //nastaveni_weappiercing 
 
 [ItemDef i_vyjmecni_sloupohne]
 NAME = "Sloup Ohne"
