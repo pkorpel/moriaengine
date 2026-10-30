@@ -87,7 +87,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>setText(newTextLine, ...): the text for the following Html or response.</summary>
 		public void SetText(string text) {
-			this.text = this.Expand(text);
+			this.text = ExpandMarkup(text, this.player, this.speaker.Name);
 		}
 
 		/// <summary>questDialog_HTMLGUMP: the NPC's text on this page.</summary>
@@ -125,12 +125,12 @@ namespace SteamEngine.CompiledScripts {
 		//Erebor's own markup in a text, kept as it is in the archive
 		private static readonly Regex choice = new Regex("<\\??src\\.(sex|splitRealm)\\(\"?([^\",)]*)\"?,\"?([^\",)]*)\"?\\)\\??>", RegexOptions.CultureInvariant);
 
-		private string Expand(string text) {
+		internal static string ExpandMarkup(string text, Player player, string name) {
 			string expanded = choice.Replace(text, m => {
-				bool first = (m.Groups[1].Value == "sex") ? (this.player.Gender != Gender.Female) : (this.player.Realm == Realm.Gondor);
+				bool first = (m.Groups[1].Value == "sex") ? (player.Gender != Gender.Female) : (player.Realm == Realm.Gondor);
 				return first ? m.Groups[2].Value : m.Groups[3].Value;
 			});
-			return expanded.Replace("<name>", this.speaker.Name)
+			return expanded.Replace("<name>", name)
 				.Replace("<def_questDialog_colorTextEmote>", "<basefont color=#ffff88>")
 				.Replace("<def_questDialog_colorTextNormal>", "<basefont color=#ffffff>")
 				.Replace("<def_questDialog_colorTextResponse>", "<basefont color=#D7DF01>")

@@ -116,17 +116,22 @@ be read like normal code. They sit on `QuestDialogDef` and `QuestDialogContent` 
 
 ### Setting it up
 
-`.SetupGrandmasterQuest` (GM) places the pieces and replaces an earlier run's. Pieces in caves and on the plains are found by
-walking outward from the region's spawn point by the real movement rules, so they can always be reached from there.
+`.SetupGrandmasterQuest` (GM) places the pieces and replaces an earlier run's. Pieces in caves are found by walking in from a
+known starting tile by the real movement rules. The test also walks to the pieces from a spawn point, or the cave's mouth for
+the root. A region's spawn point proves nothing by itself: see the note on plane 2 below.
 
 | Piece | Spot | Source |
 |---|---|---|
 | Rinald, his cave's exit, 4 hellhounds | `a_Slunecni_jeskyne`, 30 and 3 steps from its spawn point | The area is the archive's, the spots are proposals |
-| Elvira | `a_Severni_Spoust`, 10 steps from its spawn point | Proposal. That area is the story's Ice Plains (`r_led_plane`) |
-| Elmira, the cage door, the cave's entrance | `a_Severni_Spoust`, 26 steps | Proposal. **There are no cage bars**: Erebor's were built by GMs. She stands still beside the door |
-| Root of Este, 4 alarm tiles, 3 phoenixes | `a_Ered_Mithrinska_Jeskyne`, plane 2, 30 steps | Proposal, from Elmira's story |
+| Elvira | The cedar forest at about 4004,512, on the east of the Ice Plains (`a_Severni_Spoust`) | The journal: "in the forest on the east of the Ice Plains". The only forest there, found in the map's statics |
+| Elmira, the cage door, the cave's entrance | The rock face at about 4104,530, 100 tiles from Elvira | The journal: "in a cage by a rock", "a little way from" the forest. **There are no cage bars**: Erebor's were built by GMs. She stands still beside the door |
+| Root of Este, 4 alarm tiles, 3 phoenixes | The far end of the tunnels in from the mouth at 2919,725, at about 2853,734 | The journal: "at the end of the dark cave", "on the eastern part of Ered Mithrin". See below |
 | Elqira, twice | Beside both Expert stones | Proposal |
 | The envoys | Spawn points of `a_Minas_Tirith` and `a_Rhun` | From the story's "v Minas Tirith / ve Rhunu" |
+
+**Plane 2.** Erebor's cave, `a_Ered_Mithrinska_Jeskyne`, is on mapplane 2, and its coordinates fit another map file. This engine
+reads `map0.mul` for every plane, so there it's open sea (#841). The root is in the tunnels around `a_Ered_Mithrin_vstup` on the
+surface map instead, the cave's real mouth area, reached on foot.
 
 The two cave gates are this repo's own items (`GrandmasterQuest.def`): Erebor's general varGate isn't in the archive.
 
@@ -135,12 +140,35 @@ The two cave gates are this repo's own items (`GrandmasterQuest.def`): Erebor's 
 Tracked in #837:
 
 - Rinald's breath and `e_rinald`'s weakening by profession are not ported, so he is a harder fight.
-- The quest journal (`questMenu`) isn't kept.
 - Stage 12 can't happen: it comes from hints in other quests' NPC dialogs, which aren't ported. It's optional.
 - Dying in the cave takes the player out on the next minute tick, and the corpse stays inside.
 - The Zmocnenec only does the promotion; the rest of his dialog is the q30 quest.
 
 Also: "guarded" means any hostile creature within 10 tiles, where Erebor's guardit system listed spawns by hand.
+
+## Quest journal
+
+Code: `scripts/Basic/Quests/QuestJournal.cs`, from `questy/System/questmenu.scp`. It's the only place a player can look up what
+to do next.
+
+`.questy` (any player) opens the menu. Its Questy tab lists the quests a player has started: active in blue first, finished in
+green. Clicking one opens its page, with the text for the player's current stage. When a quest moves on, a sound plays and a
+scroll appears on the screen's edge, which opens that page; a newer scroll replaces one still showing.
+
+Erebor's journal had the Grandmaster quest (13 texts, byte for byte, in `GrandmasterQuestJournal`), but no page for Expert or
+Master. Those two pages are new text in the same style. Expert's scroll shows on starting and passing; a failed attempt
+drops the quest from the list.
+
+Open dungeons, boosters, weekly quests and the PvP league are placeholder pages saying the section isn't available yet (#840).
+Their systems aren't ported.
+
+To add a ported quest: one `QuestJournalEntry` in `QuestJournal.Entries` and a `Report` call on each step.
+
+### Gump text colour
+
+In the client, an HTML element with no background is white only if it has a scrollbar, and black without one. Erebor's gumps
+always set the scrollbar flag, which is why their text is readable on dark gumps. Use `AddHtml(..., false, true)`, or start the
+text with a `<basefont>`.
 
 ### Gotcha: `On_Create` in a compiled trigger group
 
@@ -154,3 +182,4 @@ the real minute timer, leaving the cave, re-running the setup mid-quest).
 queen's egg lifted from her corpse, the reward, a plain egg, someone else's egg, a wasted key).
 `GrandmasterQuestTests` (protocol: the setup and that its spots are walkable, the whole story in both orders through real
 gumps, an upset Elqira, guards, the closed cave, a wrong name, Rinald's change and death, the reward, the envoy's realm).
+`QuestJournalTests` (protocol: a plain player's `.questy`, the placeholder sections, the list and its colours, a page, the scroll).

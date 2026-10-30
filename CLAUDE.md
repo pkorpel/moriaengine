@@ -1,5 +1,23 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #839 quest journal, placeholder tabs, story-accurate Grandmaster spots (branch 833-quest-journal)
+
+User: "go ahead with the Questy tab and fix the spots, you can maybe add blank pages for other tabs, as a reminder we will
+need to pick it up later." **Done**: QuestJournal.cs: .questy (PLEVEL_PLAYER), Questy tab, a page per quest, the stage scroll
+(QuestJournal.Report; GrandmasterQuest.Advance = SetStage + scroll, tests' setup uses bare SetStage), placeholders for
+dungeons/boosters/weekly/PvP (#840). Grandmaster's 13 texts transpiled, Expert/Master pages are new text.
+**Spots**: the journal says Elvira in the forest + Elmira's cage by a rock, east of the Ice Plains. a_Severni_Spoust is 3000+
+tiles wide and its spawn point is mid-map, so #838's "N steps from spawn" was wrong. Forest at 4004,512 and rock at 4104,530
+come from map0/statics0.
+**Found: #841** plane 2 is map0 here (engine: "0 for all mapplanes"), so a_Ered_Mithrinska_Jeskyne's spawn point is open sea.
+In #838 the root, alarms and gem all landed on that one tile and "walkable" passed on a zero-step path. **A reachable check
+from a region's spawn point proves nothing if that point can't move: print ring sizes.** Root now at the end of the tunnels
+from the mouth at 2919,725 (WalkableRing limited to RootCave, about 2853,734). "dirt" is not "cave": an unbounded walk left the
+mountain and ended on a road. **Client**: HTML with no background is white only WITH a scrollbar, black without
+(TazUO HtmlControl) - that was an Expert gump bug. Tests: ReadGumpSkippingQuestScroll for quest gumps.
+Verified: QuestJournalTests (red without the allowlist), Expert test red without the scrollbars, Grandmaster/Master/
+SkillTeacher/SpeechStub green, Localization its 8 known (484 checked), fast 198/198.
+
 ## DONE (2026-10-30): #833 Erebor rank quests - Expert, Master, Grandmaster
 
 User: "can we do ranks, settings and port the quests as well?" Ranks + settings shipped in #828 (Player.SkillRank,

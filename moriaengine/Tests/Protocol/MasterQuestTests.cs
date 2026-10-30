@@ -51,6 +51,7 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech("ano");
 				Assert.NotNull(TryReadMessageContaining(client, "Poslouchej tedy", Wait));
 				Assert.Contains("key=True keyNewbie=True", this.State(client));
+				Assert.Contains("Mistr Lenastir po tobe chce", this.JournalPage(client));
 				client.SendSpeech("ano");
 				Assert.NotNull(TryReadMessageContaining(client, "Musis mi prinest", Wait));
 				client.SendSpeech("kde najdu klic");
@@ -81,6 +82,7 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(300);
 				client.SendDropItem(egg, 0xFFFF, 0xFFFF, 0, (int) Uid(queen, "pack="));
 				Assert.Contains("egg=True eggMine=True", this.State(client));
+				Assert.Contains("Odnes ho Mistru Lenastirovi", this.JournalPage(client));
 
 				//back to Lenastir
 				this.Ask(client, ".TestMasterQuestBackToLenastir", "MASTER_BACK:");
@@ -90,6 +92,7 @@ namespace SteamEngine.Tests.Protocol {
 				state = this.State(client);
 				Assert.Contains("rank=Master reached=False key=False", state);
 				Assert.Contains("egg=False", state);
+				Assert.Contains("na mistra", this.JournalPage(client));
 				client.SendSpeech("ahoj");
 				Assert.NotNull(TryReadMessageContaining(client, "Jiz jsi muj ukol splnil", Wait));
 
@@ -114,6 +117,15 @@ namespace SteamEngine.Tests.Protocol {
 
 		private void Prepare(TestGameClient client, string args) {
 			Assert.Contains("los=True", this.Ask(client, ".TestMasterQuestPrepare \"" + args + "\"", "MASTER_PREPARE:"));
+		}
+
+		//the Master quest's page in the journal, with the menu closed again
+		private string JournalPage(TestGameClient client) {
+			client.SendSpeech(".questy");
+			client.SendGumpResponse(client.ReadGumpSkippingQuestScroll(Wait).GumpUid, 1001);
+			string page = string.Join("|", client.ReadGumpSkippingQuestScroll(Wait).Strings);
+			client.SendGumpResponse(client.ReadGumpSkippingQuestScroll(Wait).GumpUid, 0);
+			return page;
 		}
 
 		private string State(TestGameClient client) {

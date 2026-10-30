@@ -712,4 +712,10 @@
   <data name="QuestDialogLoc_TooFarToTalk" xml:space="preserve">
     <value>They won't deal with you from that distance.</value>
   </data>
+  <data name="QuestJournalLoc_NoQuestsYet" xml:space="preserve">
+    <value>You have no quests yet.</value>
+  </data>
+  <data name="QuestJournalLoc_NotAvailableYet" xml:space="preserve">
+    <value>This section isn't available yet.</value>
+  </data>
 </root>
