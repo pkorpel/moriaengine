@@ -202,13 +202,19 @@ namespace SteamEngine.CompiledScripts {
 		/// source actually has separate pvp/pvm range constants, but a single shared value is
 		/// enough for now; split into two fields here if that distinction ever matters.</summary>
 		[SaveableData]
-		public int mystic = 8;
+		public int mystic = 8; //nastaveni_global_mystikrangepvm
+
+		[SaveableData]
+		public int mysticVsPlayers = 7; //nastaveni_global_mystikrangepvp
 
 		/// <summary>#454 follow-up - placeholder default (same situation as mystic above -
 		/// Erebor's real range constants are live-shard GM config). Applies to any weapon with
 		/// WeaponType.Bow, regardless of profession.</summary>
 		[SaveableData]
-		public int bow = 8;
+		public int bow = 8; //nastaveni_global_runbowrangepvm
+
+		[SaveableData]
+		public int bowVsPlayers = 7; //nastaveni_global_Runbowrangepvp
 
 		/// <summary>#454 follow-up - placeholder default. Applies to WeaponType.XBow weapons
 		/// whose defname does NOT contain "heavy" (see CombatCalculator.CalculateCombatWeaponValues

@@ -60,6 +60,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double bowDamage = 5;
 
+		/// <summary>#860 - a bow's attack is this share of a crossbow's, before the ammo.</summary>
+		[SaveableData]
+		public double runBowDamage = 0.820; //nastaveni_global_runbowdam
+
 		[SaveableData]
 		public double lightCrossbowDamage = 7;
 

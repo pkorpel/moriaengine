@@ -87,6 +87,7 @@ Wrestling = 1000
 Magery = 2000
 Macing = 850 1000
 Poisoning = 800
+EvalInt = 1000
 Equip = i_spellbook
 AddSpell = s_harm
 AddSpell = s_fireball

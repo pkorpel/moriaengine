@@ -1106,6 +1106,7 @@ Dex = 1000
 Int = 1000
 Provocation = 1000
 Peacemaking = 1000
+EvalInt = 1000
 Equip = random_male_hair
 EquipColor = 0481
 Equip = random_facial_hair

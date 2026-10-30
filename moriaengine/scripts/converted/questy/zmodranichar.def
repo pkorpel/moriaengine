@@ -74,6 +74,7 @@ Parry = 650 750
 MagicResist = 733 950
 Tactics = 188 225
 Wrestling = 793 910
+EvalInt = 792 896
 Magery = 656 895
 Meditation = 491 600
 Peacemaking = 591

@@ -17,6 +17,8 @@
 
 using SteamEngine.CompiledScripts.Dialogs;
 
+using System;
+
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
@@ -24,11 +26,21 @@ namespace SteamEngine.CompiledScripts {
 
 		#region FieldValues
 		private FieldValue damageType;
+		private FieldValue armorPiercing;
 
 		public DamageSpellDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 
 			this.damageType = this.InitTypedField("damageType", DamageType.Magic, typeof(DamageType));
+			this.armorPiercing = this.InitTypedField("armorPiercing", -1, typeof(int));
+		}
+
+		/// <summary>#860 - the third number of Erebor's spell effect: such a spell goes through
+		/// damagecust, so armor stops it like a swing, less this. -1 is a spell armor ignores.</summary>
+		public int ArmorPiercing {
+			get {
+				return (int) this.armorPiercing.CurrentValue;
+			}
 		}
 
 		public DamageType DamageType {
@@ -43,11 +55,19 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
 			double dam = this.CalculateDamage(target, spellEffectArgs);
-			DamageManager.CauseDamage(spellEffectArgs.Caster, target, this.DamageType, dam);
+			DamageManager.CauseSpellDamage(spellEffectArgs.Caster, target, this.DamageType, dam);
 		}
 
 		protected virtual double CalculateDamage(Character target, SpellEffectArgs spellEffectArgs) {
-			return this.GetEffectForValue(spellEffectArgs.SpellPower);
+			//#860 - promilerange: power above 1000 keeps growing, in whole numbers
+			double[] effect = this.Effect;
+			double low = (effect.Length > 0) ? effect[0] : 0;
+			double high = (effect.Length > 1) ? effect[1] : low;
+			double damage = low + Math.Truncate(((high - low) * spellEffectArgs.SpellPower) / 1000);
+			if (this.ArmorPiercing >= 0) {
+				return CombatCalculator.CalculateSpellArmorEffect(spellEffectArgs.Caster, target, damage, this.ArmorPiercing);
+			}
+			return damage;
 		}
 	}
 }

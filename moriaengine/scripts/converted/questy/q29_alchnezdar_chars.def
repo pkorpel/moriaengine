@@ -61,6 +61,7 @@ Poisoning = 1500
 Tactics = 1000
 Wrestling = 800
 Magery = 5000 6000
+EvalInt = 900 950
 Equip = i_monster_create
 Equip = i_spellbook
 AddSpell = s_lightning

@@ -148,6 +148,7 @@ Poisoning = 2500
 Meditation = 100
 Inscribe = 1000
 Magery = 1201
+EvalInt = 1500
 Wrestling = 1200
 MagicResist = 2500
 Tactics = 300
