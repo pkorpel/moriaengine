@@ -1,6 +1,26 @@
 # moriaengine — working state
 
-## DONE (2026-10-29): #828 skill teachers (spk_mistr) + player rank; NEXT #833 rank quests (branch 828-spk-mistr)
+## IN PROGRESS (2026-10-30): #833 Erebor rank quests - Expert DONE, Master, Grandmaster next
+
+User: "can we do ranks, settings and port the quests as well?" Ranks + settings shipped in #828 (Player.SkillRank,
+SkillTeacherSettings.requireRank off). Now the quests that grant the rank: questy/expert.scp (rank 1), mistr.scp
+(rank 2), velmistr.scp (rank 3). Plan: read each fully, list what engine systems they need, port one PR per rank.
+**Finding (full notes on #833)**: the archive has the scripts but NOT Erebor's world - save/sphereworld.scp is only
+globals. Quest stones/sites/signs (Expert, in map region a_expert), Lenastirovarec + snake queen + old teleport
+(Master), Elqira/Elmira/Elvira/Rinald + cave pieces (Grandmaster) were all GM-placed live.
+**User decisions (on #833)**: port quest logic + Erebor's GM linking tools + a GM setup command that places the pieces
+at Erebor's known spots (movable/relinkable). One PR per quest: Expert, then Master, then Grandmaster.
+**Expert DONE (2026-10-30)**: recovered uncommitted after a crash (the start stone attach was left commented out by a
+red check). ExpertQuest.cs: .SetupExpertQuest, GM links, master speech + dclick, real minute timer; doc
+rank-quests.md. Verified: ExpertQuestTests (protocol, red without the attach), SkillTeacher/SpeechStub green
+(stub count 245 now), Localization its 8 known, fast 198/198.
+Gotcha: a compiled TriggerGroup On_Create can't work (TryTrigger(create, null) vs generated sa.Argv; Item.On_Create
+then overwrites attributes) - hide/name pieces when they are linked instead.
+Flake: ExpertQuestTests' login helper once hit LoginDenied=1 (account in use, retry loop masks the first failure), 1 of
+8 runs, past all the quest steps it reached; the helper is the same as in the other protocol tests.
+**Next**: Master (mistr.scp), then Grandmaster (velmistr.scp); requireRank stays off until all three are in.
+
+## DONE (2026-10-29, PR #834): #828 skill teachers (spk_mistr) + player rank
 
 User: "go for 827 and then 828"; then "can we do ranks, settings and port the quests as well?" -> rank + settings
 here, quests = #833 (next). Archive: skills grow normally past 25/50/75 (skillgain only checks profession cap); a
