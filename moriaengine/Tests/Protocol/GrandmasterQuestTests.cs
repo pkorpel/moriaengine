@@ -27,11 +27,12 @@ namespace SteamEngine.Tests.Protocol {
 				this.Ask(admin, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST:");
 				autoAccountCreationEnabled = true;
 				this.Ask(admin, ".SetupGrandmasterQuest", "SETUP_DONE:");
+				Assert.Contains("added=2 kept=0", this.Ask(admin, ".SetupDungeonEntrances", "SETUP_DONE:"));
 				Thread.Sleep(3000); //the gems' first spawns
 				string world = this.Ask(admin, ".TestQ000World", "Q000_WORLD:");
 				Assert.True(world.Contains("elvira=True elmira=True entrance=True rinald=True exit=True root=True rootGuarded=True rinaldGuarded=True entranceInvul=True envoy=True", StringComparison.Ordinal), world);
-				Assert.Contains("rootFromSurface=True", world);
-				Assert.True(int.Parse(Field(world, "rootFromMouth="), CultureInfo.InvariantCulture) > 50, "the root should be deep in the cave: " + world);
+				Assert.Contains("gateFromSurface=True", world);
+				Assert.True(int.Parse(Field(world, "rootFromGate="), CultureInfo.InvariantCulture) > 50, "the root should be deep in the cave: " + world);
 				int apart = int.Parse(Field(world, "sistersApart="), CultureInfo.InvariantCulture);
 				Assert.True((apart > 40) && (apart < 150), "the forest should be a little way from the cave: " + world);
 			}
@@ -79,6 +80,10 @@ namespace SteamEngine.Tests.Protocol {
 				this.Ask(client, ".TestQ000StepOn \"entrance\"", "Q000_STEPPED:");
 				Assert.NotNull(TryReadMessageContaining(client, "tam nejdes", Wait));
 				Assert.Contains("region=a_Severni_Spoust", this.State(client));
+
+				//the dark cave's gate works both ways, on foot
+				Assert.Contains("m=2 region=a_Ered_Mithrinska_Jeskyne", this.Ask(client, ".TestQ000WalkOnto \"gateIn\"", "Q000_WALKED:"));
+				Assert.Contains("m=0 region=a_Ered_Mithrin_vstup", this.Ask(client, ".TestQ000WalkOnto \"gateOut\"", "Q000_WALKED:"));
 
 				//the root is guarded until the guards are dead
 				uint root = this.GoTo(client, "root");
