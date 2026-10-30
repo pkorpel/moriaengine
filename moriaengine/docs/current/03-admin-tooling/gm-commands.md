@@ -74,7 +74,7 @@ ArgsList`). That binds the *second* word to the *first* word's own argument list
 than leaving it as a sibling argument to `go` - `"go jamy smrti"` parses as
 `go(jamy(smrti))`, not `go(jamy, smrti)` or `go("jamy smrti")`. `Go(Character self,
 string s)` (`scripts/Utils/LegacyUtils.cs:30`) expects the whole region name (or
-`"x y"`/`"x y z"`/`"x y z m"` coordinate string) as one argument, so this broke any
+`"x y"`/`"x y z"`/`"x y z m"` coordinate string, with spaces or commas) as one argument, so this broke any
 multi-token call outright - a quoted argument (`.go "jamy smrti"`) always worked, since a
 quoted string is one atomic grammar token, but requiring GMs to know to quote region
 names is a real UX papercut, not just a documentation footnote.

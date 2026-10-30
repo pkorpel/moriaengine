@@ -29,9 +29,11 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains(menu.Strings, s => s.Contains("You have no quests yet", StringComparison.Ordinal));
 
 				//the sections that aren't ported say so, and each can be reached
+				AssertWindowIsSolid(menu.LayoutText);
 				foreach (var section in new[] { (2, "Otevrene Dungeony"), (3, "Boostery"), (11, "Tydenni Questy"), (21, "PvP Sezona") }) {
 					client.SendGumpResponse(menu.GumpUid, section.Item1);
 					menu = client.ReadGumpDialogWithStrings(Wait);
+					AssertWindowIsSolid(menu.LayoutText);
 					Assert.Contains(section.Item2, menu.Strings);
 					Assert.Contains(menu.Strings, s => s.Contains("isn't available yet", StringComparison.Ordinal));
 				}
@@ -74,6 +76,13 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendGumpResponse(scroll.GumpUid, 1);
 				page = client.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("jsi Elvire koren Este", string.Join("|", page.Strings));
+			}
+		}
+
+		//a checkertrans turns everything it overlaps see-through in the client: only the side buttons, left of the window, may use one
+		private static void AssertWindowIsSolid(string layout) {
+			foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(layout, "checkertrans (\\d+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase)) {
+				Assert.Equal("10", m.Groups[1].Value);
 			}
 		}
 

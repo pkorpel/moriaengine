@@ -62,11 +62,11 @@ namespace SteamEngine.CompiledScripts {
 							break;
 						}
 					case 3: {
-							self.Go(ConvertTools.ParseUInt16(args[0]), ConvertTools.ParseUInt16(args[1]), ConvertTools.ParseSByte(args[3]), ConvertTools.ParseByte(args[4]));
+							self.Go(ConvertTools.ParseUInt16(args[0]), ConvertTools.ParseUInt16(args[1]), ConvertTools.ParseSByte(args[2]));
 							break;
 						}
 					case 4: {
-							self.Go(ConvertTools.ParseUInt16(args[0]), ConvertTools.ParseUInt16(args[1]), ConvertTools.ParseSByte(args[3]));
+							self.Go(ConvertTools.ParseUInt16(args[0]), ConvertTools.ParseUInt16(args[1]), ConvertTools.ParseSByte(args[2]), ConvertTools.ParseByte(args[3]));
 							return;
 						}
 					default: {
