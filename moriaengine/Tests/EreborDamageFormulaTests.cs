@@ -48,6 +48,17 @@ namespace SteamEngine.Tests {
 			Assert.Equal(seconds, CombatCalculator.CalculateSwingDelay(root, weaponSpeed, 1.0, 10).TotalSeconds, 6);
 		}
 
+		[Theory]
+		[InlineData(true, false, true, 10, 100, true)]   //a tenth of a player's hit points
+		[InlineData(true, false, true, 9, 100, false)]
+		[InlineData(true, false, false, 5, 1000, true)]  //any monster: 5
+		[InlineData(true, false, false, 4, 1000, false)]
+		[InlineData(true, true, true, 500, 100, false)]  //ammo never interrupts
+		[InlineData(false, false, true, 500, 100, false)] //a monster's blow doesn't either
+		public void SwingInterruptsCasting(bool attackerIsPlayer, bool isRanged, bool defenderIsPlayer, int damage, int maxHits, bool expected) {
+			Assert.Equal(expected, DamageManager.DoesSwingInterrupt(attackerIsPlayer, isRanged, defenderIsPlayer, damage, maxHits));
+		}
+
 		[Fact]
 		public void ZeroSpeedFallsBackToFifty() {
 			Assert.Equal(2 * (0xfffff / 50) / 10.0, CombatCalculator.CalculateSwingDelay(0, 76, 1.0, 10).TotalSeconds, 6);

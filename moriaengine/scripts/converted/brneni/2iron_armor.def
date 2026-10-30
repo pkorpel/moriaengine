@@ -6,7 +6,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Platemail
 
 NAME = "Iron Platemail"
-WEIGHT = 230
+WEIGHT = 396 //nastaveni_armorweight 
 RESOURCES = 25 i_ingot_iron
 SKILLMAKE = 480 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -28,7 +28,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Platemail Arms
 
 NAME = "Iron Platemail Arms"
-WEIGHT = 180
+WEIGHT = 154 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_iron
 SKILLMAKE = 440 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -50,7 +50,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Platemail Legs
 
 NAME = "Iron Platemail Legs"
-WEIGHT = 200
+WEIGHT = 253 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_iron
 SKILLMAKE = 460 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -72,7 +72,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Platemail Gorget
 
 NAME = "Iron Platemail Gorget"
-WEIGHT = 60
+WEIGHT = 66 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 400 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -94,7 +94,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Platemail Gauntlets
 
 NAME = "Iron Platemail Gauntlets"
-WEIGHT = 50
+WEIGHT = 77 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_iron
 SKILLMAKE = 420 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -116,7 +116,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Female Platemail
 
 NAME = "Iron Platemail"
-WEIGHT = 130
+WEIGHT = 396 //nastaveni_armorweight 
 RESOURCES = 22 i_ingot_iron
 SKILLMAKE = 400 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -138,7 +138,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Plate Helm
 
 NAME = "Iron Plate Helm"
-WEIGHT = 100
+WEIGHT = 154 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_iron
 SKILLMAKE = 450 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -160,7 +160,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Closed Helm
 
 NAME = "Iron Closed Helm"
-WEIGHT = 100
+WEIGHT = 154 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_iron
 SKILLMAKE = 400 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -182,7 +182,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Bascinet
 
 NAME = "Iron Bascinet"
-WEIGHT = 90
+WEIGHT = 154 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_iron
 SKILLMAKE = 400 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 10 // commented out by Converter 
@@ -204,7 +204,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Nose Helm
 
 NAME = "Iron Nose Helm"
-WEIGHT = 100
+WEIGHT = 154 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_iron
 SKILLMAKE = 400 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 0 // commented out by Converter 
@@ -222,7 +222,7 @@ mindDefenseVsM = 15
 
 [ColoredArmorDef i_Iron_CHAINMAIL_gorget]
 NAME = "Iron Chainmail Gorget"
-WEIGHT = 20
+WEIGHT = 48 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 460 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -240,7 +240,7 @@ mindDefenseVsM = 15
 
 [ColoredArmorDef i_Iron_CHAINMAIL_sleeves]
 NAME = "Iron Chainmail Sleeves"
-WEIGHT = 20
+WEIGHT = 112 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 460 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -258,7 +258,7 @@ mindDefenseVsM = 15
 
 [ColoredArmorDef i_Iron_CHAINMAIL_gloves]
 NAME = "Iron Chainmail Gloves"
-WEIGHT = 20
+WEIGHT = 56 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 460 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -280,7 +280,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Chainmail Coif
 
 NAME = "Iron Chainmail Coif"
-WEIGHT = 70
+WEIGHT = 112 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 460 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -302,7 +302,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Chainmail Leggings
 
 NAME = "Iron Chainmail Leggings"
-WEIGHT = 100
+WEIGHT = 184 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 470 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -324,7 +324,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Chainmail Tunic
 
 NAME = "Iron Chainmail Tunic"
-WEIGHT = 150
+WEIGHT = 288 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 480 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -342,7 +342,7 @@ mindDefenseVsM = 15
 
 [ColoredArmorDef i_Iron_kite_wood_shield]
 NAME = "Iron kite shield"
-WEIGHT = 20
+WEIGHT = 32 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 430 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -360,7 +360,7 @@ mindDefenseVsM = 2
 
 [ColoredArmorDef i_Iron_RINGMAIL_gorget]
 NAME = "Iron ringmail gorget"
-WEIGHT = 20
+WEIGHT = 39 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 430 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -378,7 +378,7 @@ mindDefenseVsM = 15
 
 [ColoredArmorDef i_Iron_RINGMAIL_helm]
 NAME = "Iron Ringmail Helm"
-WEIGHT = 20
+WEIGHT = 91 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 430 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -400,7 +400,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Ringmail Leggings
 
 NAME = "Iron Ringmail Leggings"
-WEIGHT = 150
+WEIGHT = 150 //nastaveni_armorweight 
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 430 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -422,7 +422,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Ringmail Sleeves
 
 NAME = "Iron Ringmail Sleeves"
-WEIGHT = 130
+WEIGHT = 91 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 410 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -444,7 +444,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Ringmail Gloves
 
 NAME = "Iron Ringmail Gloves"
-WEIGHT = 20
+WEIGHT = 46 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 400 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -466,7 +466,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Ringmail Tunic
 
 NAME = "Iron Ringmail Tunic"
-WEIGHT = 150
+WEIGHT = 234 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_iron
 SKILLMAKE = 350 blacksmithing, 440 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -488,7 +488,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Buckler
 
 NAME = "Iron Buckler"
-WEIGHT = 70
+WEIGHT = 22 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 400 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -510,7 +510,7 @@ SUBSECTION = iron Colored
 DESCRIPTION = Heater Shield
 
 NAME = "Iron Heater Shield"
-WEIGHT = 140
+WEIGHT = 55 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_iron
 SKILLMAKE = 480 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -532,7 +532,7 @@ SUBSECTION = Iron
 DESCRIPTION = Metal Shield
 
 NAME = "Iron Metal Shield"
-WEIGHT = 110
+WEIGHT = 40 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_iron
 SKILLMAKE = 450 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -554,7 +554,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Arms of Iron
 
 Name = "Bone Arms of Iron"
-WEIGHT = 40
+WEIGHT = 69 //nastaveni_armorweight 
 RESOURCES = 2 i_ingot_iron, 1 i_bone_arms //some resources were fixed by converter 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -576,7 +576,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Chest of Iron
 
 NAME = "Bone Chest of Iron"
-WEIGHT = 150
+WEIGHT = 176 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_iron, 1 i_bone_chest //some resources were fixed by converter 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -598,7 +598,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Gloves of Iron
 
 Name = "Bone Gloves of Iron"
-WEIGHT = 50
+WEIGHT = 34 //nastaveni_armorweight 
 RESOURCES = 3 i_ingot_iron, 1 i_bone_gloves //some resources were fixed by converter 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -620,7 +620,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Helmet of Iron
 
 name = "Bone Helmet of Iron"
-WEIGHT = 60
+WEIGHT = 69 //nastaveni_armorweight 
 RESOURCES = 5 i_ingot_iron, 1 i_bone_helmet //some resources were fixed by converter 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -642,7 +642,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Legs of Iron
 
 Name = "Bone Legs of Iron"
-WEIGHT = 100
+WEIGHT = 113 //nastaveni_armorweight 
 RESOURCES = 6 i_ingot_iron, 1 i_bone_leggings //some resources were fixed by converter 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -677,6 +677,7 @@ armorVsP = 13 //nastaveni_armorarmor
 mindDefenseVsP = 15 //nastaveni_armorparts_OM 
 armorVsM = 13
 mindDefenseVsM = 15
+WEIGHT = 62 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_sleeves_Iron]
 CATEGORY = Provisions - Armor - Colored
@@ -697,6 +698,7 @@ armorVsP = 13 //nastaveni_armorarmor
 mindDefenseVsP = 15 //nastaveni_armorparts_OM 
 armorVsM = 13
 mindDefenseVsM = 15
+WEIGHT = 62 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_gloves_Iron]
 CATEGORY = Provisions - Armor - Colored
@@ -717,6 +719,7 @@ armorVsP = 13 //nastaveni_armorarmor
 mindDefenseVsP = 15 //nastaveni_armorparts_OM 
 armorVsM = 13
 mindDefenseVsM = 15
+WEIGHT = 31 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_gorget_Iron]
 CATEGORY = Provisions - Armor - Colored
@@ -737,6 +740,7 @@ armorVsP = 13 //nastaveni_armorarmor
 mindDefenseVsP = 15 //nastaveni_armorparts_OM 
 armorVsM = 13
 mindDefenseVsM = 15
+WEIGHT = 26 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_leggings_Iron]
 CATEGORY = Provisions - Armor - Colored
@@ -757,6 +761,7 @@ armorVsP = 13 //nastaveni_armorarmor
 mindDefenseVsP = 15 //nastaveni_armorparts_OM 
 armorVsM = 13
 mindDefenseVsM = 15
+WEIGHT = 101 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_tunic_Iron]
 CATEGORY = Provisions - Armor - Colored
@@ -777,6 +782,7 @@ armorVsP = 13 //nastaveni_armorarmor
 mindDefenseVsP = 15 //nastaveni_armorparts_OM 
 armorVsM = 13
 mindDefenseVsM = 15
+WEIGHT = 158 //nastaveni_armorweight 
 
 [ColoredArmorDef i_armor_female_bustier_studded_Iron]
 CATEGORY = Provisions - Armor - Colored
@@ -797,6 +803,7 @@ armorVsP = 13 //nastaveni_armorarmor
 mindDefenseVsP = 15 //nastaveni_armorparts_OM 
 armorVsM = 13
 mindDefenseVsM = 15
+WEIGHT = 158 //nastaveni_armorweight 
 
 [ColoredArmorDef i_armor_female_studded_Iron]
 CATEGORY = Provisions - Armor - Colored
@@ -817,3 +824,4 @@ armorVsP = 13 //nastaveni_armorarmor
 mindDefenseVsP = 15 //nastaveni_armorparts_OM 
 armorVsM = 13
 mindDefenseVsM = 15
+WEIGHT = 158 //nastaveni_armorweight 

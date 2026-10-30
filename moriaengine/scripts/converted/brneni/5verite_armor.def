@@ -6,7 +6,7 @@ SUBSECTION = Verite
 DESCRIPTION = Platemail
 
 NAME = "Verite Platemail"
-WEIGHT = 190
+WEIGHT = 342 //nastaveni_armorweight 
 RESOURCES = 25 i_ingot_verite
 SKILLMAKE = 780 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -28,7 +28,7 @@ SUBSECTION = Verite
 DESCRIPTION = Platemail Arms
 
 NAME = "Verite Platemail Arms"
-WEIGHT = 150
+WEIGHT = 133 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_verite
 SKILLMAKE = 740 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -50,7 +50,7 @@ SUBSECTION = Verite
 DESCRIPTION = Platemail Legs
 
 NAME = "Verite Platemail Legs"
-WEIGHT = 170
+WEIGHT = 219 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_verite
 SKILLMAKE = 760 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -72,7 +72,7 @@ SUBSECTION = Verite
 DESCRIPTION = Platemail Gorget
 
 NAME = "Verite Platemail Gorget"
-WEIGHT = 50
+WEIGHT = 57 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 700 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -94,7 +94,7 @@ SUBSECTION = Verite
 DESCRIPTION = Platemail Gauntlets
 
 NAME = "Verite Platemail Gauntlets"
-WEIGHT = 50
+WEIGHT = 67 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_verite
 SKILLMAKE = 720 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 45 // commented out by Converter 
@@ -116,7 +116,7 @@ SUBSECTION = Verite
 DESCRIPTION = Female Platemail
 
 NAME = "Verite Platemail"
-WEIGHT = 110
+WEIGHT = 342 //nastaveni_armorweight 
 RESOURCES = 22 i_ingot_verite
 SKILLMAKE = 700 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 6 // commented out by Converter 
@@ -138,7 +138,7 @@ SUBSECTION = Verite
 DESCRIPTION = Plate Helm
 
 NAME = "Verite Plate Helm"
-WEIGHT = 90
+WEIGHT = 133 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_verite
 SKILLMAKE = 750 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -160,7 +160,7 @@ SUBSECTION = Verite
 DESCRIPTION = Closed Helm
 
 NAME = "Verite Closed Helm"
-WEIGHT = 90
+WEIGHT = 133 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_verite
 SKILLMAKE = 700 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -182,7 +182,7 @@ SUBSECTION = Verite
 DESCRIPTION = Bascinet
 
 NAME = "Verite Bascinet"
-WEIGHT = 80
+WEIGHT = 133 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_verite
 SKILLMAKE = 700 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 10 // commented out by Converter 
@@ -204,7 +204,7 @@ SUBSECTION = Verite
 DESCRIPTION = Nose Helm
 
 NAME = "Verite Nose Helm"
-WEIGHT = 90
+WEIGHT = 133 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_verite
 SKILLMAKE = 700 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 0 // commented out by Converter 
@@ -222,7 +222,7 @@ mindDefenseVsM = 20
 
 [ColoredArmorDef i_Verite_CHAINMAIL_gorget]
 NAME = "Verite Chainmail Gorget"
-WEIGHT = 20
+WEIGHT = 42 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 760 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -240,7 +240,7 @@ mindDefenseVsM = 20
 
 [ColoredArmorDef i_Verite_CHAINMAIL_sleeves]
 NAME = "Verite Chainmail Sleeves"
-WEIGHT = 20
+WEIGHT = 98 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 760 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -258,7 +258,7 @@ mindDefenseVsM = 20
 
 [ColoredArmorDef i_Verite_CHAINMAIL_gloves]
 NAME = "Verite Chainmail Gloves"
-WEIGHT = 20
+WEIGHT = 49 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 760 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -280,7 +280,7 @@ SUBSECTION = Verite
 DESCRIPTION = Chainmail Coif
 
 NAME = "Verite Chainmail Coif"
-WEIGHT = 50
+WEIGHT = 98 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 760 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -302,7 +302,7 @@ SUBSECTION = Verite
 DESCRIPTION = Chainmail Leggings
 
 NAME = "Verite Chainmail Leggings"
-WEIGHT = 90
+WEIGHT = 161 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 770 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -324,7 +324,7 @@ SUBSECTION = Verite
 DESCRIPTION = Chainmail Tunic
 
 NAME = "Verite Chainmail Tunic"
-WEIGHT = 120
+WEIGHT = 252 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 780 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -342,7 +342,7 @@ mindDefenseVsM = 20
 
 [ColoredArmorDef i_Verite_kite_wood_shield]
 NAME = "Verite kite shield"
-WEIGHT = 20
+WEIGHT = 27 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 730 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -360,7 +360,7 @@ mindDefenseVsM = 3
 
 [ColoredArmorDef i_Verite_RINGMAIL_gorget]
 NAME = "Verite ringmail gorget"
-WEIGHT = 20
+WEIGHT = 33 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 730 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -378,7 +378,7 @@ mindDefenseVsM = 20
 
 [ColoredArmorDef i_Verite_RINGMAIL_helm]
 NAME = "Verite Ringmail Helm"
-WEIGHT = 20
+WEIGHT = 77 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 730 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -400,7 +400,7 @@ SUBSECTION = Verite
 DESCRIPTION = Ringmail Leggings
 
 NAME = "Verite Ringmail Leggings"
-WEIGHT = 120
+WEIGHT = 127 //nastaveni_armorweight 
 RESOURCES = 16 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 730 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -422,7 +422,7 @@ SUBSECTION = Verite
 DESCRIPTION = Ringmail Sleeves
 
 NAME = "Verite Ringmail Sleeves"
-WEIGHT = 100
+WEIGHT = 77 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 710 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -444,7 +444,7 @@ SUBSECTION = Verite
 DESCRIPTION = Ringmail Gloves
 
 NAME = "Verite Ringmail Gloves"
-WEIGHT = 20
+WEIGHT = 39 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 700 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -466,7 +466,7 @@ SUBSECTION = Verite
 DESCRIPTION = Ringmail Tunic
 
 NAME = "Verite Ringmail Tunic"
-WEIGHT = 120
+WEIGHT = 198 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_verite
 SKILLMAKE = 500 blacksmithing, 740 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -488,7 +488,7 @@ SUBSECTION = Verite
 DESCRIPTION = Buckler
 
 NAME = "Verite Buckler"
-WEIGHT = 60
+WEIGHT = 18 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_verite
 SKILLMAKE = 700 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -510,7 +510,7 @@ SUBSECTION = Verite
 DESCRIPTION = Heater Shield
 
 NAME = "Verite Heater Shield"
-WEIGHT = 130
+WEIGHT = 47 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_verite
 SKILLMAKE = 780 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -532,7 +532,7 @@ SUBSECTION = Verite
 DESCRIPTION = Metal Shield
 
 NAME = "Verite Metal Shield"
-WEIGHT = 60
+WEIGHT = 35 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_verite
 SKILLMAKE = 750 blacksmithing, 600 tinkering //some resources were fixed by converter 
 //REQSTR = 10 // commented out by Converter 
@@ -567,6 +567,7 @@ armorVsP = 23 //nastaveni_armorarmor
 mindDefenseVsP = 20 //nastaveni_armorparts_OM 
 armorVsM = 23
 mindDefenseVsM = 20
+WEIGHT = 52 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_sleeves_verite]
 CATEGORY = Provisions - Armor - Colored
@@ -587,6 +588,7 @@ armorVsP = 23 //nastaveni_armorarmor
 mindDefenseVsP = 20 //nastaveni_armorparts_OM 
 armorVsM = 23
 mindDefenseVsM = 20
+WEIGHT = 52 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_gloves_verite]
 CATEGORY = Provisions - Armor - Colored
@@ -607,6 +609,7 @@ armorVsP = 23 //nastaveni_armorarmor
 mindDefenseVsP = 20 //nastaveni_armorparts_OM 
 armorVsM = 23
 mindDefenseVsM = 20
+WEIGHT = 26 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_gorget_verite]
 CATEGORY = Provisions - Armor - Colored
@@ -627,6 +630,7 @@ armorVsP = 23 //nastaveni_armorarmor
 mindDefenseVsP = 20 //nastaveni_armorparts_OM 
 armorVsM = 23
 mindDefenseVsM = 20
+WEIGHT = 22 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_leggings_verite]
 CATEGORY = Provisions - Armor - Colored
@@ -647,6 +651,7 @@ armorVsP = 23 //nastaveni_armorarmor
 mindDefenseVsP = 20 //nastaveni_armorparts_OM 
 armorVsM = 23
 mindDefenseVsM = 20
+WEIGHT = 85 //nastaveni_armorweight 
 
 [ColoredArmorDef i_studded_tunic_verite]
 CATEGORY = Provisions - Armor - Colored
@@ -667,6 +672,7 @@ armorVsP = 23 //nastaveni_armorarmor
 mindDefenseVsP = 20 //nastaveni_armorparts_OM 
 armorVsM = 23
 mindDefenseVsM = 20
+WEIGHT = 133 //nastaveni_armorweight 
 
 [ColoredArmorDef i_armor_female_bustier_studded_verite]
 CATEGORY = Provisions - Armor - Colored
@@ -687,6 +693,7 @@ armorVsP = 23 //nastaveni_armorarmor
 mindDefenseVsP = 20 //nastaveni_armorparts_OM 
 armorVsM = 23
 mindDefenseVsM = 20
+WEIGHT = 133 //nastaveni_armorweight 
 
 [ColoredArmorDef i_armor_female_studded_verite]
 CATEGORY = Provisions - Armor - Colored
@@ -707,6 +714,7 @@ armorVsP = 23 //nastaveni_armorarmor
 mindDefenseVsP = 20 //nastaveni_armorparts_OM 
 armorVsM = 23
 mindDefenseVsM = 20
+WEIGHT = 133 //nastaveni_armorweight 
 
 [ColoredArmorDef i_bone_arms_Verite]
 CATEGORY = Provisions - Armor - Colored
@@ -714,7 +722,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Arms of Verite
 
 Name = "Bone Arms of Verite"
-WEIGHT = 40
+WEIGHT = 59 //nastaveni_armorweight 
 RESOURCES = 2 i_ingot_verite, 1 i_bone_arms //some resources were fixed by converter 
 SKILLMAKE = 700 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -736,7 +744,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Chest of Verite
 
 NAME = "Bone Chest of Verite"
-WEIGHT = 150
+WEIGHT = 151 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_verite, 1 i_bone_chest //some resources were fixed by converter 
 SKILLMAKE = 700 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -758,7 +766,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Gloves of Verite
 
 Name = "Bone Gloves of Verite"
-WEIGHT = 50
+WEIGHT = 29 //nastaveni_armorweight 
 RESOURCES = 3 i_ingot_verite, 1 i_bone_gloves //some resources were fixed by converter 
 SKILLMAKE = 700 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -780,7 +788,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Helmet of Verite
 
 name = "Bone Helmet of Verite"
-WEIGHT = 60
+WEIGHT = 59 //nastaveni_armorweight 
 RESOURCES = 5 i_ingot_verite, 1 i_bone_helmet //some resources were fixed by converter 
 SKILLMAKE = 700 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -802,7 +810,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Legs of Verite
 
 Name = "Bone Legs of Verite"
-WEIGHT = 100
+WEIGHT = 97 //nastaveni_armorweight 
 RESOURCES = 6 i_ingot_verite, 1 i_bone_leggings //some resources were fixed by converter 
 SKILLMAKE = 700 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 

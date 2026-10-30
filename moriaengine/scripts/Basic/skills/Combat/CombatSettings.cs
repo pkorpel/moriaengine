@@ -80,6 +80,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double weapAttackVsM = 1.600; //nastaveni_global_vMweapattack
 
+		/// <summary>#860 - permille of monsters' physical blows dodged per point of a_weapon_dodge.</summary>
+		[SaveableData]
+		public int weaponDodgePerPoint = 10; //nastaveni_ability_pvMdodge
+
 		/// <summary>#860 - added to weapAttackVsM per player level, combat_main_nonmystik_countDmg.</summary>
 		[SaveableData]
 		public double weapAttackVsMPerLevel = 0.010;

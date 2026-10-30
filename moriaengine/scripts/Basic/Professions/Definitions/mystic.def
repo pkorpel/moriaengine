@@ -22,6 +22,7 @@
 
 [ProfessionDef profession_mystic]
 Defname = class_mystic //class_ as alternate prefix
+PvPArmorChange = 10 //nastaveni_global_armorchange_vP
 Name = "mystic"
 professionPluginDef = p_profession_default
 

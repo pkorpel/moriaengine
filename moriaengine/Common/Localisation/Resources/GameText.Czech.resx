@@ -601,6 +601,9 @@
   <data name="ThrowingLoc_youNeedThrowingKnife" xml:space="preserve">
     <value>Nemáš žádný házecí nůž.</value>
   </data>
+  <data name="DamageManagerLoc_YouDodged" xml:space="preserve">
+    <value>Uhnul jsi úderu.</value>
+  </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
     <value>Nemáš střelivo.</value>
   </data>

@@ -601,6 +601,9 @@
   <data name="ThrowingLoc_youNeedThrowingKnife" xml:space="preserve">
     <value>Nem� ��dn� h�zec� n��.</value>
   </data>
+  <data name="DamageManagerLoc_YouDodged" xml:space="preserve">
+    <value>You dodged the blow.</value>
+  </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
     <value>Nem� st�elivo.</value>
   </data>

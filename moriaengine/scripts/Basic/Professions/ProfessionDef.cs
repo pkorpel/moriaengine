@@ -33,6 +33,7 @@ namespace SteamEngine.CompiledScripts {
 			return GetByDefIndex(key);
 		}
 
+		private FieldValue pvpArmorChange;
 		private FieldValue professionPluginDef;
 		private FieldValue allowedSpells;
 		private FieldValue allowedWeaponTypes;
@@ -343,6 +344,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 		#endregion Accessors
 
+		/// <summary>#860 - nastaveni_global_armorchange_vP_*: added to armor against players' swings.</summary>
+		public int PvPArmorChange {
+			get {
+				return (int) this.pvpArmorChange.CurrentValue;
+			}
+		}
+
 		#region Load from scripts
 		public ProfessionDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -352,6 +360,7 @@ namespace SteamEngine.CompiledScripts {
 			this.allowedWeaponTypes = this.InitTypedField("allowedWeaponTypes", new WeaponType[0], typeof(WeaponType[]));
 			this.allowedArmorMaterials = this.InitTypedField("allowedArmorMaterials", new WearableType[0], typeof(WearableType[]));
 
+			this.pvpArmorChange = this.InitTypedField("pvpArmorChange", 0, typeof(int));
 			this.strRange = this.InitTypedField("strRange", new int[0], typeof(int[]));
 			this.dexRange = this.InitTypedField("dexRange", new int[0], typeof(int[]));
 			this.intRange = this.InitTypedField("intRange", new int[0], typeof(int[]));

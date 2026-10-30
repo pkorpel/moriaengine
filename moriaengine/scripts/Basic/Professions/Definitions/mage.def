@@ -15,6 +15,7 @@
 
 [ProfessionDef profession_mage]
 Defname = class_mage //class_ as alternate prefix
+PvPArmorChange = 15 //nastaveni_global_armorchange_vP
 Name = "mag"
 professionPluginDef = p_profession_mage
 
