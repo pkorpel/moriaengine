@@ -84,6 +84,7 @@ ResistPoison = 900
 ResistParalyse = 360
 ResistSummon = 350
 ResistBleed = 200
+ResistSharp = 0
 ResistSlashing = 150
 ResistStabbing = 350
 ResistBlunt = 0

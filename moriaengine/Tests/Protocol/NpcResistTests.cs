@@ -9,9 +9,8 @@ namespace SteamEngine.Tests.Protocol {
 	/// etc, Character.ct's Defs: section) were already fully live and consumed in
 	/// DamageManager.GetResistModifier - they just had zero .def content setting them
 	/// anywhere. This proves the exact field names the converter now emits (ResistPoison/
-	/// ResistFire/ResistElectric/ResistSlashing/ResistStabbing - the last two covering the
-	/// "sharp" dual-write case, DamageType.Sharp = Slashing|Stabbing) actually apply on a
-	/// real NPC.
+	/// ResistFire/ResistElectric/ResistSlashing/ResistStabbing/ResistSharp) actually apply on a
+	/// real NPC, and #860 that they are permille shares of the damage.
 	/// </summary>
 	[Collection(NpcResistCollection.Name)]
 	public class NpcResistTests {
@@ -40,6 +39,16 @@ namespace SteamEngine.Tests.Protocol {
 				//roll, not a fixed value - assert it's in-range rather than an exact number.
 				Assert.InRange(ExtractIntValue(line, "paralyse="), 700, 800);
 				Assert.Contains("curse=-100", line);
+				Assert.Contains("sharp=300", line);
+
+				//#860 - Erebor's handleresists: subtypes averaged, then the group resist (500) halves
+				string modifiers = LastLineContaining(this.fixture.GameOutputSnapshot(), "NPC_RESIST_MODIFIER:");
+				Assert.Contains("slashing=0.55", modifiers); //(1000 + 100) * 500
+				Assert.Contains("sharp=0.35", modifiers);
+				Assert.Contains("two=0.487", modifiers);     //(1100 + 850) / 2 = 975, * 500
+				Assert.Contains("fire=0.8", modifiers);      //no magic group resist
+				Assert.Contains("both=0.612", modifiers);    //(425 + 800) / 2
+				Assert.Contains("plain=1", modifiers);       //no subtype: not reduced at all
 			}
 		}
 

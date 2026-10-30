@@ -78,12 +78,9 @@ the weighted-zone sum.
 
 `CalculateCombatWeaponValues` (line 368) resolves the equipped weapon (hand1, falling back
 to hand2) into a `CombatWeaponValues` struct - range, strike-start/stop range, piercing,
-projectile type/anim, and the swing `delay` (`TimeSpan.FromSeconds((0xfffff / 1000.0) /
-delay)`, line 418, a direct carry-over from the original Sphere-derived engine, flagged in
-the code itself as "dedictvi z morie, funguje to tak proc to menit" - "inherited from Moria,
-it works, why change it"). For NPCs it reads `NPCDef`'s own flat fields instead
-(`WeaponRange`/`WeaponDelay`/`WeaponAttack`/etc, line 435) rather than deriving from worn
-items.
+projectile type/anim, and the swing `delay` (see [Swing formulas](#swing-formulas-860)). For
+NPCs it reads `NPCDef`'s own flat fields instead (`WeaponRange`/`WeaponAttack`/etc) rather
+than deriving from worn items.
 
 `CalculateArmorClassEffect` (line 479) is the actual to-hit/mitigation formula - see the open
 gap below.
@@ -100,13 +97,13 @@ In order:
    owner/commander, regardless of how the attack got triggered - target selection
    (`NPC.ShouldAggroOn`/`NPCAiTimer`) already prevents this in practice, but this is the one
    place everything funnels through, so it's also checked here as defense in depth.
-3. `GetResistModifier` (line 28) applies the character's resist stats - a two-phase model:
-   phase 1 is magic-vs-physical (`ResistMagic`/`ResistPhysical`), phase 2 is the damage's
-   finer-grained subtype (fire/electric/acid/cold/poison/mystical/slashing/stabbing/blunt/
-   archery/bleed/summon/dragon). Each phase's modifier scales by how many subtype bits are
-   actually set, then subtracts the matching resist value(s) - `Sanity.IfTrueThrow` guards
-   against a `DamageType` with zero bits set in either phase (malformed content, not a
-   runtime possibility with correct `.def` data).
+3. `GetResistModifier` applies the character's resists, Erebor's `handleresists`. Resists are
+   permille (150 = 15%, clamped to -40000..1000). The physical subtypes of the damage
+   (blunt, sharp, slashing, stabbing, bleed, archery) are averaged, then `ResistPhysical`
+   multiplies them; the magic ones likewise with `ResistMagic`. Damage with both kinds
+   averages the two, and summon damage is multiplied by `ResistSummon`. Damage with no
+   subtype at all isn't reduced. On a swing the result is rounded, and the
+   [minimum damage](#swing-formulas-860) rules apply.
 4. `Trigger_Damage` fires `@causeDamage`/`@damage` (attacker/defender respectively) - this is
    the generic deny/observe point other systems hook (see
    [triggers-and-deny-chains.md](../02-engine-core/triggers-and-deny-chains.md)).
@@ -139,30 +136,47 @@ the LOS ray, mirroring the exact `ItemDispidInfo.GetByModel(item.Model).Flags`/
 of `CanInteractWith`/`CanSeeLOS`, not just spellcasting - any LOS-gated interaction now
 correctly respects a real placed wall.
 
-## Open gap: armor mitigation is largely inert (#96)
+## Swing formulas (#860)
 
-Tracked as issue #96, **deliberately left open, not fixed** - the user wants armor
-mitigation revisited only once armor/material/skill content is more complete, to avoid
-redoing the formula twice. Two confirmed problems in
-`CombatCalculator.CalculateArmorClassEffect` (line 479):
+These mirror Erebor's `combat.scp`, integer rounding included (`RoundLikeSphere`). Pure parts
+are in `CombatCalculator` (`CalculateDamageCust`, `CalculateDamageMvP`, `CalculateSwingDelay`)
+and are tested in `Tests/EreborDamageFormulaTests.cs`.
 
-1. The real, correctly-derived `armorClass` argument is **discarded for a random
-   placeholder** (`ScriptUtil.GetRandInRange(settings.armorRandEffectMin,
-   settings.armorRandEffectMax)`, line 500) in every case except monster-attacks-player
-   (`isMvP`, line 486). NPC-vs-NPC, player-vs-NPC, and PvP combat all ignore the defender's
-   actual armor value entirely. A commented-out line (`armorClass *=
-   settings.armorClassMvP`, line 508-510) and the otherwise-completely-unused
-   `CombatSettings.armorClassMvP = 200` field (`CombatSettings.cs:86`) suggest this was
-   meant to be finished, not a deliberate design choice.
-2. Even in the one case that DOES use the real armor value (MvP), measuring actual swing
-   damage with full plate equipped versus bare skin (300 trials via direct
-   `DamageManager.GetWeaponSwingArgs` calls) showed under 1% difference, where
-   hand-calculating from `CombatSettings`'s own per-zone weights predicts roughly 20-25%.
-   This is reproducible and unexplained by problem #1 (MvP already uses the real armor
-   value) - an open mystery, not a clean fix, and not chased further.
+**Attack.** A player's is `weapon attack * (tactics, anatomy, armslore and Str parts) * ammo
+multiplier`, then `* weapAttack` (1.1), then `* weapAttackPvP` (0.9) vs a player or
+`* (weapAttackVsM + min(level, 200) * 0.01)` vs a monster. A monster's is the def's
+`WeaponAttack * weapAttackM`, with no stats and whatever weapon it holds, `* weapAttackVsM`
+vs a monster.
 
-Don't attempt a quick fix to either of these without raising it with the user first - the
-armor/material/skill systems these numbers depend on are explicitly still maturing.
+**Armor.** A player's swing, or a monster's on a monster (`damagecust`):
+`armor * armorClassP/M * roll(0.945-1.05) * (1 - piercing/1000)` is subtracted from the attack,
+and the rest is multiplied by `swingDamagePvP` (0.9) or `swingDamageVsM` (1.35). A monster
+hitting a player (`damagecust_MvP`) keeps a percentage instead:
+`attack * (1 - armor * (1 - piercing/1000) / armorClassMvP) * roll(0.85-1.0)`, so armor 100
+halves the hit and armor 200 stops it.
+
+**Minimum damage**, after resists, on swings, not against a target immune to the damage type:
+a monster's swing on a monster that would do less than 1 does 5, unless it's summon damage. A
+player's bare hands do 1 when the result is 0, otherwise exactly `wrestling/200 + 1`, however
+high the result was. Mystics are exempt.
+
+**Damage type.** A player's weapon: swords and axes slash, fencing weapons are sharp, maces and
+bare hands blunt, bows and crossbows stab; a war fork stabs, a scimitar and an executioner's axe
+slash. A monster's own `NaturalDamageType` (`tag.weapflag`) wins over a held weapon; without one,
+its swords and axes are sharp and slashing, its fencing weapons sharp and stabbing.
+
+**Speed.** `hitspeed = 0xfffff / (root * speed)` server ticks, and a swing takes
+`2 * hitspeed` because Erebor's scripts set it on both halves (`@Start` and `@HitTry`).
+`swingTicksPerSecond` is 9.14, Erebor's Windows rate. Root and speed:
+
+| Who | Root | Speed |
+|---|---|---|
+| Player | `sqrt_int(Dex) - 2` | weapon's, bare hands 200 |
+| Mystic | `sqrt_int(mana / 2)` | `mysticWeaponSpeedModifier` (60) |
+| NPC | `sqrt_int(NpcSpeed / 2)`, or max stamina without one | `weaponSpeedNPC` * 1000 (150) |
+
+`sqrt_int` is Erebor's own function and returns about 100 times the root. Speed 0 falls back
+to 50. A Mystic's mana counts as at least 2 here: at 0 Erebor would give a swing of over an hour. `NPCDef.WeaponDelay` isn't used.
 
 ## Settings
 

@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Globalization;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -35,7 +36,14 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("NPC_RESIST_TEST_RESULT: poison=" + npc.ResistPoison +
 				" fire=" + npc.ResistFire + " electric=" + npc.ResistElectric +
 				" slashing=" + npc.ResistSlashing + " stabbing=" + npc.ResistStabbing +
-				" paralyse=" + npc.ResistParalyse + " curse=" + npc.ResistCurse);
+				" paralyse=" + npc.ResistParalyse + " curse=" + npc.ResistCurse + " sharp=" + npc.ResistSharp);
+			Console.WriteLine("NPC_RESIST_MODIFIER:" +
+				" slashing=" + DamageManager.GetResistModifier(npc, DamageType.PhysicalSlashing).ToString(CultureInfo.InvariantCulture) +
+				" sharp=" + DamageManager.GetResistModifier(npc, DamageType.PhysicalSharp).ToString(CultureInfo.InvariantCulture) +
+				" two=" + DamageManager.GetResistModifier(npc, DamageType.Physical | DamageType.Slashing | DamageType.Blunt).ToString(CultureInfo.InvariantCulture) +
+				" fire=" + DamageManager.GetResistModifier(npc, DamageType.MagicFire).ToString(CultureInfo.InvariantCulture) +
+				" both=" + DamageManager.GetResistModifier(npc, DamageType.PhysicalBlunt | DamageType.Fire).ToString(CultureInfo.InvariantCulture) +
+				" plain=" + DamageManager.GetResistModifier(npc, DamageType.Physical).ToString(CultureInfo.InvariantCulture));
 		}
 	}
 }
