@@ -76,6 +76,7 @@ file whose job is session continuity, not permanent reference.
 - [Notoriety & murder counts](04-gameplay-systems/notoriety.md)
 - [Leveling & experience](04-gameplay-systems/leveling-experience.md)
 - [Professions](04-gameplay-systems/professions.md)
+- [Rank quests](04-gameplay-systems/rank-quests.md) - how a player becomes an Expert, Master and Grandmaster
 - [Races & nations](04-gameplay-systems/races-and-nations.md)
 - [Abilities & talents](04-gameplay-systems/abilities-and-talents.md)
 - [Item ATTR flags](04-gameplay-systems/item-attr-flags.md) - the Sphere-style bitflag
