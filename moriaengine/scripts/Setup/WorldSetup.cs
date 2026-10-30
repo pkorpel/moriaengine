@@ -205,8 +205,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>The {x, y, z} tiles `steps` walking steps away from `start` by the real movement rules, or as far as
-		/// there is to walk. Print how far a walk gets before trusting it: a region's spawn point can be a tile nobody can
-		/// leave (#841), and then this is just that tile.</summary>
+		/// there is to walk. Check how far a walk gets before trusting it: from a tile nobody can leave, this is just that tile
+		/// (#841).</summary>
 		public static List<int[]> WalkableRing(Map map, IPoint3D start, IMovementSettings settings, int steps, ImmutableRectangle within = null) {
 			HashSet<long> seen = new HashSet<long>();
 			List<int[]> ring = new List<int[]> { new[] { start.X, start.Y, start.Z } };

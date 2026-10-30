@@ -57,7 +57,9 @@ protected internal override void Place(WorldPieces pieces, Character gm) {
   call, or a GM's later changes get overwritten on each run. Linking pieces to each other after the call is fine, if it's safe to
   repeat.
 - **Spots:** `WorldSpots.NearestStandable` for open ground, `WorldSpots.WalkableRing` to walk in from a known tile. Check a walk really
-  went somewhere: a region's spawn point can be a tile nobody can leave, as on plane 2 (#841), and then every ring is that one tile.
-  Check the region's `Mapplane` too.
+  went somewhere: a spawn point can be a tile nobody can leave, and then every ring is that one tile. That's how a quest piece
+  once ended up in open sea (#841).
+- **Planes:** check the region's `Mapplane`. Most planes are copies of the surface map's terrain with their own contents. Plane 2
+  is a different, smaller map: `map2.mul`, 2304x1600 (`Map.GetFacetOfMapplane`).
 - **A piece that gets replaced while the game runs**, as Rinald is when the next hero enters his cave, calls `WorldPieces.MarkAsPiece` on the
   replacement. Otherwise the next run places a second one.

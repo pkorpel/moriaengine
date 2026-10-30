@@ -31,7 +31,7 @@ namespace SteamEngine.Regions {
 		internal StaticItem[] statics;
 
 		private static List<StaticSector[,]> staticMaps = new List<StaticSector[,]>(1);
-		//with only one map (map0.mul), this has only 1 entry
+		//by facet: map0.mul is entry 0, map2.mul entry 2
 
 		//Map.sectorWidth>>3 is the number of MUL sectors per SE sector. (Map.sectorFactor-3 would NOT be.)
 		private static StaticSector emptySector = new StaticSector(new ushort[0, 0], new sbyte[0, 0], new StaticItem[0]);
@@ -100,10 +100,9 @@ namespace SteamEngine.Regions {
 			return sector;
 		}
 
-		//(TODO): Loading other map MULs.
 		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body")]
 		private static void LoadMapSector(int sx, int sy, int numMulSectors, int facet, out ushort[,] tile, out sbyte[,] z) {
-			string mulFileP = Path.Combine(Globals.MulPath, "map0.mul");
+			string mulFileP = Path.Combine(Globals.MulPath, "map" + facet + ".mul");
 
 			if (File.Exists(mulFileP)) {
 				using (BinaryReader mulbr = new BinaryReader(new FileStream(mulFileP, FileMode.Open, FileAccess.Read))) {
@@ -135,12 +134,11 @@ namespace SteamEngine.Regions {
 			}
 		}
 
-		//(TODO): Loading other static MULs.
 		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body")]
 		private static StaticItem[] LoadStaticsSector(int mulsX, int mulsY, int sx, int sy, int numMulSectors, int facet, out uint[,] versions) {
 			versions = new uint[numMulSectors, numMulSectors];
-			string mulFilePI = Path.Combine(Globals.MulPath, "staidx0.mul");
-			string mulFileP = Path.Combine(Globals.MulPath, "statics0.mul");
+			string mulFilePI = Path.Combine(Globals.MulPath, "staidx" + facet + ".mul");
+			string mulFileP = Path.Combine(Globals.MulPath, "statics" + facet + ".mul");
 
 			if (File.Exists(mulFilePI) && File.Exists(mulFileP)) {
 				List<StaticItem> statics = new List<StaticItem>();
@@ -185,7 +183,7 @@ namespace SteamEngine.Regions {
 
 				return statics.ToArray();
 			}
-			throw new SEException("Unable to locate statics0.mul or staidx0.mul. Using map disabled.");
+			throw new SEException("Unable to locate statics" + facet + ".mul or staidx" + facet + ".mul. Using map disabled.");
 		}
 
 		internal bool HasStaticId(int x, int y, int staticId) {
