@@ -175,47 +175,40 @@ namespace SteamEngine.Regions {
 
 		#region facets
 
-		//private static readonly ushort[] mapSizeX = { 6144 }; //7168x4096 for the new map0.mul
-		//private static readonly ushort[] mapSizeY = { 4096 };
+		/// <summary>#841 - the facet whose files (map2.mul etc.) hold the map data of a mapplane, which is also the map
+		/// number the client is told. As Sphere's g_MulMap: plane 2 is map2, every other plane is map0. Sphere's plane 1 is
+		/// client map 1 on map0 with mapdif1 patches; patches aren't supported, so here it's plain map0.</summary>
+		public static int GetFacetOfMapplane(int m) {
+			return (m == 2) ? 2 : 0;
+		}
 
 		/**
-			Returns the number of X tiles in the specified mapplane.
+			Returns the number of X tiles in the specified facet.
 		*/
-		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "facet")]
 		public static int GetMapSizeX(int facet) {
-			//if (mapplane >= 0 && mapplane < mapSizeX.Length) {
-			//    return mapSizeX[mapplane];
-			//} else {
-			//	return mapSizeX[0];
-			//}
-			return 6144;
+			return (facet == 2) ? 2304 : 6144;
 		}
 
 		/**
-			Returns the number of Y tiles in the specified mapplane.
+			Returns the number of Y tiles in the specified facet.
 		*/
-		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "facet")]
 		public static int GetMapSizeY(int facet) {
-			//if (mapplane >= 0 && mapplane < mapSizeY.Length) {
-			//    return mapSizeY[mapplane];
-			//} else {
-			//    return mapSizeY[0];
-			//}
-			return 4096;
+			return (facet == 2) ? 1600 : 4096;
 		}
 
 		/**
-			This returns the real map number for a particular mapplane. Currently, it's 0 for all mapplanes.
+			This returns the real map number for this mapplane.
 		*/
 		public int Facet {
 			get {
-				return 0;//this will be variable once (if) we have support for more mapxx.mul
+				return GetFacetOfMapplane(this.m);
 			}
 		}
 
+		/// <summary>Facet numbers go up to 2, there's just no plane on facet 1.</summary>
 		public static int FacetCount {
 			get {
-				return 1;
+				return 3;
 			}
 		}
 
@@ -288,9 +281,8 @@ namespace SteamEngine.Regions {
 
 		private Map(byte m) {
 			Logger.WriteDebug("Initializing map " + m);
-			int facet = this.Facet; //TODO?
-
 			this.m = m;
+			int facet = this.Facet;
 			this.sizeX = GetMapSizeX(facet);
 			this.sizeY = GetMapSizeY(facet);
 			this.numXSectors = this.sizeX >> sectorFactor;

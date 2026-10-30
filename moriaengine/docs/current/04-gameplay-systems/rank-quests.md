@@ -128,9 +128,9 @@ the root. A region's spawn point proves nothing by itself: see the note on plane
 | Elqira, twice | Beside both Expert stones | Proposal |
 | The envoys | Spawn points of `a_Minas_Tirith` and `a_Rhun` | From the story's "v Minas Tirith / ve Rhunu" |
 
-**Plane 2.** Erebor's cave, `a_Ered_Mithrinska_Jeskyne`, is on mapplane 2, and its coordinates fit another map file. This engine
-reads `map0.mul` for every plane, so there it's open sea (#841). The root is in the tunnels around `a_Ered_Mithrin_vstup` on the
-surface map instead, the cave's real mouth area, reached on foot.
+**Plane 2.** Erebor's cave, `a_Ered_Mithrinska_Jeskyne`, is on mapplane 2. The map exists now (#841), but nothing leads into it
+yet: Erebor's teleports were placed by GMs and aren't in the archive. Until then the root is in the tunnels around
+`a_Ered_Mithrin_vstup` on the surface map, the cave's real mouth area, reached on foot.
 
 The two cave gates are this repo's own items (`GrandmasterQuest.def`): Erebor's general varGate isn't in the archive.
 

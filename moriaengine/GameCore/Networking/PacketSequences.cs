@@ -59,7 +59,7 @@ namespace SteamEngine.Networking {
 			Map map = ch.GetMap();
 			pg.AcquirePacket<LoginConfirmationOutPacket>().Prepare(ch, map.SizeX, map.SizeY); //0x1B
 
-			//pg.AcquirePacket<SetFacetOutPacket>().Prepare(map.Facet);//0xBF 0x08
+			pg.AcquirePacket<SetFacetOutPacket>().Prepare(map.Facet);//0xBF 0x08
 			//conn.SendPacketGroup(pg);
 
 			//PreparedPacketGroups.SendEnableMapDiffFiles(conn); //0xBF 0x18
