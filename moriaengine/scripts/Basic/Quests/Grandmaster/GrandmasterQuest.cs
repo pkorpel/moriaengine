@@ -614,6 +614,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((button == "q000_getVM") && GrandmasterQuest.CanBePromoted(player)) {
 				GrandmasterQuest.Advance(player, 13);
 				player.SkillRank = SkillRank.Grandmaster;
+				QuestNpc.CelebrateRank(player);
 			}
 		}
 	}
