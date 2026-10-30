@@ -48,9 +48,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static Thing Target(string name) {
-			Point4D spoust = RegionP("a_Severni_Spoust");
-			ImmutableRectangle plains = Around(spoust, 45);
-			Point4D mithrin = RegionP("a_Ered_Mithrinska_Jeskyne");
+			ImmutableRectangle plains = new ImmutableRectangle(3970, 495, 4125, 545); //the east of the Ice Plains
 			Point4D tirith = RegionP("a_Minas_Tirith");
 			switch (name) {
 				case "elqira": return Find(GrandmasterQuest.ElqiraDef, 0, new ImmutableRectangle(2760, 2755, 2775, 2770));
@@ -60,7 +58,7 @@ namespace SteamEngine.CompiledScripts {
 				case "entrance": return Find(GrandmasterQuest.CaveEntranceDef, 0, plains);
 				case "exit": return Find(GrandmasterQuest.CaveExitDef, RegionP(GrandmasterQuest.CaveRegion).M, Cave());
 				case "rinald": return Find(GrandmasterQuest.RinaldDef, RegionP(GrandmasterQuest.CaveRegion).M, Cave());
-				case "root": return Find(GrandmasterQuest.RootDef, mithrin.M, new ImmutableRectangle(mithrin.X - 40, mithrin.Y - 40, mithrin.X + 40, mithrin.Y + 40));
+				case "root": return Find(GrandmasterQuest.RootDef, 0, GrandmasterQuest.RootCave);
 				case "envoy": return Find(GrandmasterQuest.GondorEnvoyDef, tirith.M, Around(tirith, 10));
 				default: throw new SEException("no such target " + name);
 			}
@@ -154,7 +152,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static bool CanWalk(Character self, IPoint3D from, Thing to) {
-			AStar.Options options = new AStar.Options { MaxIterations = 400000, WindowMargin = 300, AllowPartial = false, StopWithin = 1 };
+			AStar.Options options = new AStar.Options { MaxIterations = 4000000, WindowMargin = 400, AllowPartial = false, StopWithin = 1 };
 			AStar.Result path = AStar.FindPathOnMap(from, to, to.GetMap(), self.MovementSettings, options);
 			return (path != null) && path.ReachedGoal;
 		}
@@ -164,12 +162,13 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestQ000World(Character self) {
 			Point4D spoust = RegionP("a_Severni_Spoust");
 			Point4D cave = RegionP(GrandmasterQuest.CaveRegion);
-			Point4D mithrin = RegionP("a_Ered_Mithrinska_Jeskyne");
 			Thing root = Target("root");
 			Console.WriteLine("Q000_WORLD: elvira=" + CanWalk(self, spoust, Target("elvira")) + " elmira=" + CanWalk(self, spoust, Target("elmira")) + " entrance=" + CanWalk(self, spoust, Target("entrance")) +
-				" rinald=" + CanWalk(self, cave, Target("rinald")) + " exit=" + CanWalk(self, cave, Target("exit")) + " root=" + CanWalk(self, mithrin, root) +
+				" rinald=" + CanWalk(self, cave, Target("rinald")) + " exit=" + CanWalk(self, cave, Target("exit")) + " root=" + CanWalk(self, GrandmasterQuest.RootCaveMouth, root) +
 				" rootGuarded=" + GrandmasterQuest.AreGuardsAlive(root, null) + " rinaldGuarded=" + GrandmasterQuest.AreGuardsAlive(Target("rinald"), Target("rinald")) +
-				" entranceInvul=" + ((NPC) Target("elmira")).Flag_Invulnerable + " envoy=" + (Target("envoy") != null));
+				" entranceInvul=" + ((NPC) Target("elmira")).Flag_Invulnerable + " envoy=" + (Target("envoy") != null) +
+				" rootFromSurface=" + CanWalk(self, RegionP("a_Severni_Spoust"), root) + " rootAt=" + root.X + "," + root.Y + "," + root.Z + " rootFromMouth=" + Point2D.GetSimpleDistance(GrandmasterQuest.RootCaveMouth.X, GrandmasterQuest.RootCaveMouth.Y, root.X, root.Y) + " sistersApart=" + Point2D.GetSimpleDistance(Target("elvira"), Target("elmira")) +
+				" elvira=" + Target("elvira").X + "," + Target("elvira").Y + " elmira=" + Target("elmira").X + "," + Target("elmira").Y);
 		}
 	}
 }

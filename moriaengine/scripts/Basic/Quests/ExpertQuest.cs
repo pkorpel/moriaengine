@@ -129,6 +129,17 @@ namespace SteamEngine.CompiledScripts {
 			return ((site == null) || site.IsDeleted) ? null : site;
 		}
 
+		/// <summary>#839 - the journal's page. Erebor's journal had none for this quest.</summary>
+		internal static string GetJournalText(Player player) {
+			if (player.SkillRank >= SkillRank.Expert) {
+				return "<src.sex(\"Prosel\",\"Prosla\")> jsi zkouskou v jeskyni a <src.sex(\"stal\",\"stala\")> ses expertem.";
+			}
+			if (player.GetTag(questionTK) != null) {
+				return "Jsi v jeskyni zkousky. Precti si cedule s indiciemi na stenach, pak pozdrav Mistra a odpovez na jeho tri otazky. Na vyreseni mas omezeny cas a jeskyni nesmis opustit.";
+			}
+			return null;
+		}
+
 		public static int GetQuestion(Player player) {
 			object tag = player.GetTag(questionTK);
 			return (tag == null) ? 0 : Convert.ToInt32(tag, CultureInfo.InvariantCulture);
@@ -211,6 +222,7 @@ namespace SteamEngine.CompiledScripts {
 			NPC master = (NPC) ThingDef.GetByDefname(MasterDef).Create(site.X, site.Y, site.Z, site.M);
 			master.SetTag(siteOfMasterTK, site);
 			site.SetTag(masterTK, master);
+			QuestJournal.Report(player, QuestJournal.Expert);
 		}
 
 		/// <summary>Erebor's f_expert_quest_end: the site is free again and its master gone; with `sendHome` the
@@ -280,6 +292,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (player.SkillRank < SkillRank.Expert) {
 				player.SkillRank = SkillRank.Expert;
+				QuestJournal.Report(player, QuestJournal.Expert);
 			}
 			master.Say("Uspesne jsi se " + (female ? "stala" : "stal") + " expertem.");
 			End(site, true);
@@ -361,7 +374,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>The {x, y, z} tiles `steps` walking steps away from `start` by the real movement rules, or as far as
 		/// there is to walk, so a player can get to them from there.</summary>
-		internal static List<int[]> WalkableRing(Map map, IPoint3D start, IMovementSettings settings, int steps) {
+		internal static List<int[]> WalkableRing(Map map, IPoint3D start, IMovementSettings settings, int steps, ImmutableRectangle within = null) {
 			HashSet<long> seen = new HashSet<long>();
 			List<int[]> ring = new List<int[]> { new[] { start.X, start.Y, start.Z } };
 			seen.Add((((long) start.X) << 16) | (uint) start.Y);
@@ -371,7 +384,7 @@ namespace SteamEngine.CompiledScripts {
 					Point3D probe = new Point3D(tile[0], tile[1], tile[2]);
 					for (int dir = 0; dir < 8; dir++) {
 						int x, y, z;
-						if (map.CheckMovement(probe, settings, (Direction) dir, false, out x, out y, out z) && seen.Add((((long) x) << 16) | (uint) y)) {
+						if (map.CheckMovement(probe, settings, (Direction) dir, false, out x, out y, out z) && IsWithin(within, x, y) && seen.Add((((long) x) << 16) | (uint) y)) {
 							next.Add(new[] { x, y, z });
 						}
 					}
@@ -382,6 +395,10 @@ namespace SteamEngine.CompiledScripts {
 				ring = next;
 			}
 			return ring;
+		}
+
+		private static bool IsWithin(ImmutableRectangle rect, int x, int y) {
+			return (rect == null) || ((x >= rect.MinX) && (x <= rect.MaxX) && (y >= rect.MinY) && (y <= rect.MaxY));
 		}
 
 		/// <summary>The .SetupExpertQuest command: Erebor's two start stones, one quest site per rectangle of the a_expert
@@ -677,11 +694,11 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				greeting = "Znas odpoved na mou dalsi otazku?";
 			}
-			this.AddHtml(170, 230, 440, 100, greeting, false, false);
+			this.AddHtml(170, 230, 440, 100, greeting, false, true); //without a scrollbar the client draws it black on this dark gump
 
 			this.AddPage(2);
 			string[] questions = { "Ma prvni otazka zni:<br><br>Kdo se zivi bojem?", "Ma druha otazka zni:<br><br>Kdo tancuje?", "Ma treti a posledni otazka zni:<br><br>Kdo bojuje kopim?" };
-			this.AddHtml(170, 230, 440, 100, questions[Math.Min(question, 2)], false, false);
+			this.AddHtml(170, 230, 440, 100, questions[Math.Min(question, 2)], false, true);
 			for (int i = 0; i < ExpertQuest.Names.Length; i++) {
 				this.AddButton(25, 395 + (20 * i), 0xfa5, 0xfa7, i + 1, GumpButtonType.Reply, 0);
 				this.AddLabel(60, 398 + (20 * i), 152, ExpertQuest.Names[i]);

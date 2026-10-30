@@ -58,14 +58,23 @@ namespace SteamEngine.Tests.Protocol {
 
 				//a clue sign: its name in Erebor's spaced capitals on top
 				client.SendDoubleClick(Uid(state, "sign="));
-				var sign = client.ReadGumpDialogWithStrings(Wait);
+				var sign = client.ReadGumpSkippingQuestScroll(Wait);
 				string spaced = string.Join(" ", Field(state, "clueName=").ToUpperInvariant().ToCharArray());
 				Assert.True(sign.LayoutText.Contains(spaced, StringComparison.Ordinal) || sign.Strings.Any(s => s.Contains(spaced, StringComparison.Ordinal)),
 					"sign gump without '" + spaced + "': " + sign.LayoutText);
 
+				//the journal knows, and the master's text must not be black on its dark gump (no scrollbar = black in the client)
+				client.SendSpeech(".questy");
+				var journal = client.ReadGumpSkippingQuestScroll(Wait);
+				client.SendGumpResponse(journal.GumpUid, 1000);
+				var journalPage = client.ReadGumpSkippingQuestScroll(Wait);
+				Assert.Contains(journalPage.Strings, s => s.Contains("Jsi v jeskyni zkousky", StringComparison.Ordinal));
+				client.SendGumpResponse(client.ReadGumpSkippingQuestScroll(Wait).GumpUid, 0);
+
 				client.SendSpeech("ahoj");
 				for (int question = 0; question < 3; question++) {
-					var gump = client.ReadGumpDialog(Wait);
+					var gump = client.ReadGumpSkippingQuestScroll(Wait);
+					Assert.Matches("htmlgump 170 230 440 100 \\d+ 0 1", gump.LayoutText);
 					client.SendGumpResponse(gump.GumpUid, Array.IndexOf(Names, answers[question]) + 1);
 				}
 				state = this.State(client);
@@ -84,7 +93,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("region=a_expert rank=Novice onQuest=True", state);
 				string right = Field(state, "answers=").Split(',')[0];
 				client.SendDoubleClick(Uid(state, "master=")); //the same as greeting it
-				var first = client.ReadGumpDialog(Wait);
+				var first = client.ReadGumpSkippingQuestScroll(Wait);
 				client.SendGumpResponse(first.GumpUid, Array.IndexOf(Names, Names.First(n => n != right)) + 1);
 				state = this.State(client);
 				Assert.Contains("rank=Novice", state);

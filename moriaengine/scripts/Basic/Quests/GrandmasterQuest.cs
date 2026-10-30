@@ -50,6 +50,11 @@ namespace SteamEngine.CompiledScripts {
 		public const string CaveEntranceDef = "i_q000_caveEntrance";
 		public const string CaveExitDef = "i_q000_caveExit";
 		public const string CaveRegion = "a_Slunecni_jeskyne"; //Erebor's tag.q000_dungeon, GROUP=vm quest
+		//The dark cave. Erebor's a_Ered_Mithrinska_Jeskyne is on mapplane 2, by its coordinates another map file: this engine
+		//reads map0.mul for every plane, so there it's open sea. We have the tunnels around a_Ered_Mithrin_vstup, on the
+		//surface map, from this mouth on the east side of the mountains.
+		public static readonly Point3D RootCaveMouth = new Point3D(2919, 725, 45);
+		public static readonly ImmutableRectangle RootCave = new ImmutableRectangle(2790, 690, 2925, 810);
 		public const int MinLevel = 12;
 		public const int CaveMinutes = 60;
 		public const int GuardRange = 10;
@@ -80,6 +85,17 @@ namespace SteamEngine.CompiledScripts {
 
 		public static void SetStage(Player player, int stage) {
 			player.SetTag(stageTK, stage);
+		}
+
+		/// <summary>Erebor's qtag(q000_velmistr,n,38): the next stage, announced by the journal's scroll.</summary>
+		public static void Advance(Player player, int stage) {
+			SetStage(player, stage);
+			QuestJournal.Report(player, QuestJournal.Grandmaster);
+		}
+
+		internal static string GetJournalText(Player player) {
+			int stage = GetStage(player);
+			return (stage == 0) ? null : GrandmasterQuestJournal.Texts[stage - 1];
 		}
 
 		/// <summary>Erebor's f_q000_playerIsReady.</summary>
@@ -145,7 +161,7 @@ namespace SteamEngine.CompiledScripts {
 			int stage = GetStage(player);
 			if (clicked && (stage == 6)) {
 				player.SysMessage("Podarilo se ti podat Elvire koren Este a vypada to, ze zabira!");
-				SetStage(player, 7);
+				Advance(player, 7);
 				Reward(player, 50);
 				elvira.Say("Aaaaah...");
 				elvira.Emote("zacala prudce dychat.");
@@ -165,7 +181,7 @@ namespace SteamEngine.CompiledScripts {
 				player.SysMessage("Tohle musi byt Elvira. Je strasne podobna sve matce");
 				if ((stage == 1) || (stage == 3)) {
 					player.SysMessage("Zda se, ze Elvira je tezce nemocna ci naprosto silena.");
-					SetStage(player, (stage == 1) ? 2 : 4);
+					Advance(player, (stage == 1) ? 2 : 4);
 					Reward(player, 50);
 				}
 			}
@@ -275,7 +291,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (GetStage(player) == 8) {
 				player.SysMessage("Pred odchodem jsi z Rinaldova tela jeste " + Sex(player, "sebral", "sebrala") + " klic.");
-				SetStage(player, 9);
+				Advance(player, 9);
 				Reward(player, 1000);
 			} else {
 				player.SysMessage("Nejsi moc " + Sex(player, "moudry", "moudra") + " z toho, co se tady stalo...");
@@ -350,7 +366,7 @@ namespace SteamEngine.CompiledScripts {
 					player.RedMessage("Kvetinu stale nekdo hlida. Na jeji sebrani potrebujes klid!");
 				} else {
 					player.SysMessage("Podarilo se ti vytrhnout koren Este!");
-					SetStage(player, 6);
+					Advance(player, 6);
 					Reward(player, 100);
 				}
 			} else if (stage > 5) {
@@ -368,7 +384,7 @@ namespace SteamEngine.CompiledScripts {
 					elmira.Say("Dekuji ti " + Sex(player, "muj hrdino", "ma hrdinko") + "!");
 				}
 				Reward(player, 50);
-				SetStage(player, 10);
+				Advance(player, 10);
 			} else if (stage < 9) {
 				player.SysMessage("Nevis, jak bys " + Sex(player, "mohl", "mohla") + " tyto pevne mrize otevrit.");
 			} else {
@@ -429,36 +445,37 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>The .SetupGrandmasterQuest command. The archive defines Rinald's cave and the regions of the story, the
-		/// rest is a proposal: Elqira beside both Expert stones, Elvira and Elmira's cage with the cave's entrance on the Ice
-		/// Plains (a_Severni_Spoust), the root of Este with its guards in the Ered Mithrin cave, an envoy in Minas Tirith
-		/// and in Rhun. Replaces what an earlier run placed.</summary>
+		/// <summary>The .SetupGrandmasterQuest command. The archive defines Rinald's cave, the regions of the story and, in the
+		/// journal's texts, roughly where things are: Elvira in the forest east of the Ice Plains (a_Severni_Spoust), Elmira's
+		/// cage by the rock face a little way off, with the cave's entrance, the root of Este at the far end of the dark cave
+		/// (see RootCaveMouth). Exact tiles are proposals, as are Elqira beside both Expert stones and the envoys at the spawn points
+		/// of Minas Tirith and Rhun. Replaces what an earlier run placed.</summary>
 		[SteamFunction]
 		public static void SetupGrandmasterQuest(Character self) {
 			Map world = Map.GetMap(0);
 			Point4D spoust = StaticRegion.GetByDefname("a_Severni_Spoust").P;
 			Point4D cave = StaticRegion.GetByDefname(CaveRegion).P;
 			Map caveMap = Map.GetMap(cave.M);
-			Point4D mithrin = StaticRegion.GetByDefname("a_Ered_Mithrinska_Jeskyne").P;
-			Map mithrinMap = Map.GetMap(mithrin.M);
 			Point4D tirith = StaticRegion.GetByDefname("a_Minas_Tirith").P;
 			Map tirithMap = Map.GetMap(tirith.M);
 			Point4D rhun = StaticRegion.GetByDefname("a_Rhun").P;
-			int rootX = mithrin.X, rootY = mithrin.Y;
 
 			Clear(world, new ImmutableRectangle(2760, 2755, 2775, 2770), ElqiraDef);
 			Clear(world, new ImmutableRectangle(3712, 2947, 3727, 2962), ElqiraDef);
-			Clear(world, new ImmutableRectangle(spoust.X - 45, spoust.Y - 45, spoust.X + 45, spoust.Y + 45), ElviraDef, ElmiraDef, CageDoorDef, CaveEntranceDef);
+			Clear(world, new ImmutableRectangle(spoust.X - 45, spoust.Y - 45, spoust.X + 45, spoust.Y + 45), ElviraDef, ElmiraDef, CageDoorDef, CaveEntranceDef); //where the first version put them
+			Clear(world, new ImmutableRectangle(3970, 495, 4125, 545), ElviraDef, ElmiraDef, CageDoorDef, CaveEntranceDef);
 			Clear(caveMap, new ImmutableRectangle(5200, 1512, 5297, 1600), RinaldDef, CaveExitDef, "c_hellhound", "i_worldgem_bit");
-			Clear(mithrinMap, new ImmutableRectangle(rootX - 50, rootY - 50, rootX + 50, rootY + 50), RootDef, AlarmDef, "c_q000_phoenix", "i_worldgem_bit");
+			Clear(Map.GetMap(2), new ImmutableRectangle(1, 794, 189, 1196), RootDef, AlarmDef, "c_q000_phoenix", "i_worldgem_bit"); //where the first version put them
+			Clear(world, RootCave, RootDef, AlarmDef, "c_q000_phoenix", "i_worldgem_bit");
+			Clear(world, new ImmutableRectangle(2926, 690, 3300, 900), RootDef, AlarmDef, "i_worldgem_bit");
 			Clear(tirithMap, new ImmutableRectangle(tirith.X - 8, tirith.Y - 8, tirith.X + 8, tirith.Y + 8), GondorEnvoyDef);
 			Clear(world, new ImmutableRectangle(rhun.X - 8, rhun.Y - 8, rhun.X + 8, rhun.Y + 8), MordorEnvoyDef);
 
 			PlaceStill(ElqiraDef, world, Beside(world, 2769, 2763, 5), 0);
 			PlaceStill(ElqiraDef, world, Beside(world, 3721, 2955, 5), 0);
 			IMovementSettings walker = self.MovementSettings;
-			PlaceStill(ElviraDef, world, ExpertQuest.WalkableRing(world, spoust, walker, 10)[0], 0);
-			int[] elmiraAt = ExpertQuest.WalkableRing(world, spoust, walker, 26)[0];
+			PlaceStill(ElviraDef, world, Beside(world, 4004, 512, 10), 0);
+			int[] elmiraAt = Beside(world, 4104, 530, 6);
 			PlaceStill(ElmiraDef, world, elmiraAt, 0);
 			List<int[]> aroundElmira = ExpertQuest.WalkableRing(world, new Point3D(elmiraAt[0], elmiraAt[1], elmiraAt[2]), walker, 3);
 			PlaceFixed(CageDoorDef, aroundElmira[0], 0);
@@ -470,14 +487,14 @@ namespace SteamEngine.CompiledScripts {
 			exit.SetTag(rinaldTK, GetRinald(entrance));
 			Spawn("c_hellhound", ExpertQuest.WalkableRing(caveMap, new Point3D(rinaldAt[0], rinaldAt[1], rinaldAt[2]), walker, 3)[0], cave.M, 4);
 
-			int[] rootAt = ExpertQuest.WalkableRing(mithrinMap, mithrin, walker, 30)[0];
-			PlaceFixed(RootDef, rootAt, mithrin.M);
+			int[] rootAt = ExpertQuest.WalkableRing(world, RootCaveMouth, walker, int.MaxValue, RootCave)[0]; //the end of the dark cave
+			PlaceFixed(RootDef, rootAt, 0);
 			Point3D rootPoint = new Point3D(rootAt[0], rootAt[1], rootAt[2]);
-			List<int[]> aroundRoot = ExpertQuest.WalkableRing(mithrinMap, rootPoint, walker, 6);
+			List<int[]> aroundRoot = ExpertQuest.WalkableRing(world, rootPoint, walker, 6, RootCave);
 			for (int i = 0; i < 4; i++) {
-				PlaceFixed(AlarmDef, aroundRoot[i * aroundRoot.Count / 4], mithrin.M);
+				PlaceFixed(AlarmDef, aroundRoot[i * aroundRoot.Count / 4], 0);
 			}
-			Spawn("c_q000_phoenix", ExpertQuest.WalkableRing(mithrinMap, rootPoint, walker, 2)[0], mithrin.M, 3);
+			Spawn("c_q000_phoenix", ExpertQuest.WalkableRing(world, rootPoint, walker, 2, RootCave)[0], 0, 3);
 
 			PlaceStill(GondorEnvoyDef, tirithMap, Beside(tirithMap, tirith.X + 2, tirith.Y, 6), tirith.M);
 			PlaceStill(MordorEnvoyDef, world, Beside(world, rhun.X + 2, rhun.Y, 6), 0);
@@ -599,7 +616,7 @@ namespace SteamEngine.CompiledScripts {
 			int q = GrandmasterQuest.GetStage(player);
 			if (GrandmasterQuest.IsReady(player)) {
 				if (button == "q000_questAssignment") {
-					GrandmasterQuest.SetStage(player, 1);
+					GrandmasterQuest.Advance(player, 1);
 					npc.Say("... Nemuzes si je splest!");
 				} else if (button == "q000_wrongChoice") {
 					npc.Say("Nechci se ted s tebou bavit.. Jdi pryc.");
@@ -609,7 +626,7 @@ namespace SteamEngine.CompiledScripts {
 					QuestNpc.Upset(npc, 150);
 				}
 			} else if ((q == 10) && (button == "q000_questSolved")) {
-				GrandmasterQuest.SetStage(player, 11);
+				GrandmasterQuest.Advance(player, 11);
 				ThingDef.GetByDefname("i_mi_bag").Create(player.Backpack);
 				GoldUtils.Grant(player, 2500);
 			}
@@ -620,14 +637,14 @@ namespace SteamEngine.CompiledScripts {
 		protected override void OnButton(string button, Character npc, Player player) {
 			int q = GrandmasterQuest.GetStage(player);
 			if ((q == 1) && (button == "q000_goFindElvira")) {
-				GrandmasterQuest.SetStage(player, 3);
+				GrandmasterQuest.Advance(player, 3);
 			} else if (((q == 2) || (q == 3)) && (button == "q000_refuse")) {
 				npc.Say("Jdi pryc!");
 				QuestNpc.Upset(npc, 60);
 			} else if ((q == 2) || (q == 4)) {
 				if (button == "q000_goForHerb") {
 					npc.Say("Pospes si!");
-					GrandmasterQuest.SetStage(player, 5);
+					GrandmasterQuest.Advance(player, 5);
 					GrandmasterQuest.Reward(player, 50);
 				} else if (button == "q000_refuseHelp") {
 					npc.Say("Ty mi nepomuzes!");
@@ -648,7 +665,7 @@ namespace SteamEngine.CompiledScripts {
 		protected override void OnButton(string button, Character npc, Player player) {
 			if ((GrandmasterQuest.GetStage(player) == 7) && (button == "q000_goKillRinald")) {
 				npc.Say("Dekuji ti " + GrandmasterQuest.Sex(player, "hrdino", "hrdinko") + "!");
-				GrandmasterQuest.SetStage(player, 8);
+				GrandmasterQuest.Advance(player, 8);
 			}
 		}
 	}
@@ -677,7 +694,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void OnButton(string button, Character npc, Player player) {
 			if ((button == "q000_getVM") && GrandmasterQuest.CanBePromoted(player)) {
-				GrandmasterQuest.SetStage(player, 13);
+				GrandmasterQuest.Advance(player, 13);
 				player.SkillRank = SkillRank.Grandmaster;
 			}
 		}
