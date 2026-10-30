@@ -154,6 +154,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			lenastir.Sound((int) SoundNames.lightningstrike);
 			LevelingSystem.AddExperience(player, ExperienceReward);
+			QuestNpc.CelebrateRank(player);
 			QuestJournal.Report(player, QuestJournal.Master);
 		}
 

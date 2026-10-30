@@ -39,7 +39,8 @@ namespace SteamEngine.CompiledScripts {
 	/// GM, target what it belongs to), or by scripts/Setup.</para>
 	/// <para>Differences from Erebor: only the player on the quest gets the master's gump (in Erebor anyone talking
 	/// to it could answer); the signs stay visible (Erebor created them invisible, which no player can read); the
-	/// sign gump stays open after a step; the quest-stone statistics (questMenu_questStone) aren't kept.</para>
+	/// sign gump stays open after a step; the quest-stone statistics (questMenu_questStone) aren't kept; the master is
+	/// invulnerable.</para>
 	/// </summary>
 	public static class ExpertQuest {
 		public const string StartStoneDef = "i_expert_quest_first";
@@ -211,6 +212,7 @@ namespace SteamEngine.CompiledScripts {
 
 			RemoveMaster(site);
 			NPC master = (NPC) ThingDef.GetByDefname(MasterDef).Create(site.X, site.Y, site.Z, site.M);
+			master.Flag_Invulnerable = true; //one attempt has one master: killing it would leave the player stuck until the limit
 			master.SetTag(siteOfMasterTK, site);
 			site.SetTag(masterTK, master);
 			QuestJournal.Report(player, QuestJournal.Expert);
@@ -287,6 +289,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			master.Say("Uspesne jsi se " + (female ? "stala" : "stal") + " expertem.");
 			End(site, true);
+			QuestNpc.CelebrateRank(player);
 		}
 
 		/// <summary>Erebor's f_expertMistrDClick behind the master's speech and @UserDClick. False if `player` isn't on

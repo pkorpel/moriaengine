@@ -52,7 +52,7 @@ namespace SteamEngine.Tests.Protocol {
 				string state = this.State(client);
 				Assert.Contains("region=a_expert rank=Novice onQuest=True signs=6", state);
 				Assert.Contains("signName=Cedule_s_napisem siteInvisible=True", state);
-				Assert.Contains("masters=1", state);
+				Assert.Contains("masters=1 masterInvulnerable=True", state);
 				string[] answers = Field(state, "answers=").Split(',');
 
 				//a clue sign: its name in Erebor's spaced capitals on top
@@ -75,6 +75,10 @@ namespace SteamEngine.Tests.Protocol {
 					var gump = client.ReadGumpSkippingQuestScroll(Wait);
 					Assert.Matches("htmlgump 170 230 440 100 \\d+ 0 1", gump.LayoutText);
 					client.SendGumpResponse(gump.GumpUid, Array.IndexOf(Names, answers[question]) + 1);
+				}
+				//the celebration, Manwe's blessing and the 16 sparkles around the new Expert, where they ended up
+				for (int effect = 0; effect < 17; effect++) {
+					Assert.NotNull(client.ReadPacketPayload(0xC0, Wait));
 				}
 				state = this.State(client);
 				Assert.Contains("rank=Expert", state);

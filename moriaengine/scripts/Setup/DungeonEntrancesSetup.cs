@@ -49,8 +49,8 @@ namespace SteamEngine.CompiledScripts {
 				gm.SysMessage("No way to walk from the spawn point of " + outsideRegion + " or " + insideRegion + ", no gates placed there.");
 				return;
 			}
-			pieces.Item("entrance/" + name + "/in", GateDef, outsideGate, outside.M, gate => Open(gate, inside));
-			pieces.Item("entrance/" + name + "/out", GateDef, insideGate, inside.M, gate => Open(gate, outside));
+			pieces.Item("entrance/" + name + "/in", GateDef, outsideGate, outside.M, gate => gate.MoreP = inside);
+			pieces.Item("entrance/" + name + "/out", GateDef, insideGate, inside.M, gate => gate.MoreP = outside);
 		}
 
 		//null if the spawn point is a tile nobody can leave, which a walk just returns (#841)
@@ -59,9 +59,5 @@ namespace SteamEngine.CompiledScripts {
 			return ((spot[0] == spawnPoint.X) && (spot[1] == spawnPoint.Y)) ? null : spot;
 		}
 
-		private static void Open(Item gate, Point4D target) {
-			gate.SetAttribute(ItemAttributes.attr_move_never, true);
-			gate.MoreP = target;
-		}
 	}
 }
