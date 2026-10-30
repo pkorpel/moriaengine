@@ -22,14 +22,12 @@ model = i_moongate_blue
 [EquippableDef i_mistr_delay]
 NAME = "Delay mistr"
 TYPE = T_EQ_SCRIPT
-WEIGHT = 
 layer = layer_special
 model = i_handr_1
 
 [EquippableDef i_mistr_delay2]
 NAME = "Delay mistr2"
 TYPE = T_EQ_SCRIPT
-WEIGHT = 
 layer = layer_special
 model = i_handr_1
 
@@ -45,7 +43,6 @@ Color = 0481
 [EquippableDef i_velmistr_delay]
 NAME = "Delay velmistr"
 TYPE = T_EQ_SCRIPT
-WEIGHT = 
 layer = layer_special
 model = i_handr_1
 

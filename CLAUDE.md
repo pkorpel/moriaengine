@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-30): #833 Erebor rank quests - Expert, Master DONE, Grandmaster next
+## DONE (2026-10-30): #833 Erebor rank quests - Expert, Master, Grandmaster
 
 User: "can we do ranks, settings and port the quests as well?" Ranks + settings shipped in #828 (Player.SkillRank,
 SkillTeacherSettings.requireRank off). Now the quests that grant the rank: questy/expert.scp (rank 1), mistr.scp
@@ -31,7 +31,19 @@ before dragging (client reachability).
 Login flake (LoginDenied=1, or broken pipe at login right after the admin leaves) was a helper gap: it retried only
 InvalidOperationException and reported the last failure. Quest test helpers now also retry IOException and report the
 first failure; no flake in 10 runs since.
-**Next**: Grandmaster (velmistr.scp); requireRank stays off until all three are in.
+**Master SHIPPED: PR #836.**
+**Grandmaster DONE (2026-10-30)**: GrandmasterQuest.cs + .def (cave gates), QuestDialog.cs (small reusable port of
+questDialog_framework.scp: QuestDialogDef/QuestDialogContent, QuestNpc = f_qSpeech/f_npcUpset), GrandmasterQuestDialogs.cs
+(164 texts generated once from the archive by a throwaway transpiler, byte-exact). Stage = one int per player.
+Setup finds spots with ExpertQuest.WalkableRing (BFS by Map.CheckMovement from the region's spawn point), reachable by
+construction; NearestStandable fails in caves. Found on the way: a blank WEIGHT= in an archive itemdef threw when the item
+was removed, so Rinald (i_velmistr_delay) could never die - converter drops blank weight (regen diff = 4 lines, 2 files).
+povysujici_brany.scp is a dead older scheme: its gate destination says "ZADAT LOKACI", not evidence for spots.
+Verified: GrandmasterQuestTests (all stages, both orders, red with the cave exit trigger off and with Elqira's speech
+off), Expert/Master/SkillTeacher/RegionEvent/Guard/Healer/SpeechStub green (stubs 238), Localization its 8 known (480
+checked), fast 198/198. Leftovers: #837.
+**requireRank stays OFF on purpose**: on before a GM runs the three setups, nobody could learn past 25/50/75. Turn on then.
+Spots of Master + Grandmaster are unreviewed proposals (table in rank-quests.md).
 
 ## DONE (2026-10-29, PR #834): #828 skill teachers (spk_mistr) + player rank
 

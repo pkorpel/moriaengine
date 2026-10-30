@@ -13,7 +13,6 @@
 [EquippableDef i_murdoc_pvp_delay]
 NAME = "Delay Pvp"
 TYPE = T_EQ_SCRIPT
-WEIGHT = 
 layer = layer_special
 model = i_handr_1
 
