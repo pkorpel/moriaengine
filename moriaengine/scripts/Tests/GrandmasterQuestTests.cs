@@ -58,7 +58,9 @@ namespace SteamEngine.CompiledScripts {
 				case "entrance": return Find(GrandmasterQuest.CaveEntranceDef, 0, plains);
 				case "exit": return Find(GrandmasterQuest.CaveExitDef, RegionP(GrandmasterQuest.CaveRegion).M, Cave());
 				case "rinald": return Find(GrandmasterQuest.RinaldDef, RegionP(GrandmasterQuest.CaveRegion).M, Cave());
-				case "root": return Find(GrandmasterQuest.RootDef, 0, GrandmasterQuest.RootCave);
+				case "root": return Find(GrandmasterQuest.RootDef, RegionP(GrandmasterQuest.RootCaveRegion).M, GrandmasterQuest.RootCave);
+				case "gateIn": return Find(DungeonEntrancesSetup.GateDef, 0, new ImmutableRectangle(2826, 744, 2846, 762));
+				case "gateOut": return Find(DungeonEntrancesSetup.GateDef, RegionP(GrandmasterQuest.RootCaveRegion).M, GrandmasterQuest.RootCave);
 				case "envoy": return Find(GrandmasterQuest.GondorEnvoyDef, tirith.M, Around(tirith, 10));
 				default: throw new SEException("no such target " + name);
 			}
@@ -87,6 +89,27 @@ namespace SteamEngine.CompiledScripts {
 			int[] at = WorldSpots.WalkableRing(thing.GetMap(), thing, self.MovementSettings, 1)[0];
 			self.Go(at[0], at[1], at[2], thing.M);
 			Console.WriteLine("Q000_AT: uid=" + thing.Uid + " los=" + self.CanSeeLOS(thing).Allow);
+		}
+
+		/// <summary>The way a player gets through a gate: from where the other gate lands them, on real steps along the path
+		/// to it. Arriving by teleport wouldn't trigger it.</summary>
+		[SteamFunction]
+		public static void TestQ000WalkOnto(Character self, ScriptArgs sa) {
+			string name = Arg(sa);
+			Thing gate = Target(name);
+			Point4D start = RegionP((name == "gateIn") ? "a_Ered_Mithrin_vstup" : GrandmasterQuest.RootCaveRegion);
+			self.Go(start.X, start.Y, start.Z, start.M);
+			AStar.Options options = new AStar.Options { AllowPartial = false, StopWithin = 0 };
+			AStar.Result path = AStar.FindPathOnMap(start, gate, gate.GetMap(), self.MovementSettings, options);
+			string steps = "";
+			if ((path != null) && (path.Path != null)) {
+				foreach (Direction dir in path.Path) {
+					self.Direction = dir;
+					bool walked = self.WalkRunOrFly(dir, false, true);
+					steps += " " + dir + "=" + walked + "(" + self.X + "," + self.Y + "," + self.Z + ")";
+				}
+			}
+			Console.WriteLine("Q000_WALKED: from=" + start + " gate=" + gate.X + "," + gate.Y + "," + gate.Z + " m=" + self.M + " region=" + RegionEventSystem.AreaOf(self.Region).Defname + " steps=" + steps.Trim().Replace(' ', '/'));
 		}
 
 		[SteamFunction]
@@ -164,10 +187,10 @@ namespace SteamEngine.CompiledScripts {
 			Point4D cave = RegionP(GrandmasterQuest.CaveRegion);
 			Thing root = Target("root");
 			Console.WriteLine("Q000_WORLD: elvira=" + CanWalk(self, spoust, Target("elvira")) + " elmira=" + CanWalk(self, spoust, Target("elmira")) + " entrance=" + CanWalk(self, spoust, Target("entrance")) +
-				" rinald=" + CanWalk(self, cave, Target("rinald")) + " exit=" + CanWalk(self, cave, Target("exit")) + " root=" + CanWalk(self, GrandmasterQuest.RootCaveMouth, root) +
+				" rinald=" + CanWalk(self, cave, Target("rinald")) + " exit=" + CanWalk(self, cave, Target("exit")) + " root=" + CanWalk(self, RegionP(GrandmasterQuest.RootCaveRegion), root) +
 				" rootGuarded=" + GrandmasterQuest.AreGuardsAlive(root, null) + " rinaldGuarded=" + GrandmasterQuest.AreGuardsAlive(Target("rinald"), Target("rinald")) +
 				" entranceInvul=" + ((NPC) Target("elmira")).Flag_Invulnerable + " envoy=" + (Target("envoy") != null) +
-				" rootFromSurface=" + CanWalk(self, RegionP("a_Severni_Spoust"), root) + " rootAt=" + root.X + "," + root.Y + "," + root.Z + " rootFromMouth=" + Point2D.GetSimpleDistance(GrandmasterQuest.RootCaveMouth.X, GrandmasterQuest.RootCaveMouth.Y, root.X, root.Y) + " sistersApart=" + Point2D.GetSimpleDistance(Target("elvira"), Target("elmira")) +
+				" gateFromSurface=" + CanWalk(self, RegionP("a_Severni_Spoust"), Target("gateIn")) + " rootAt=" + root.X + "," + root.Y + "," + root.Z + " rootFromGate=" + Point2D.GetSimpleDistance(Target("gateOut"), root) + " sistersApart=" + Point2D.GetSimpleDistance(Target("elvira"), Target("elmira")) +
 				" elvira=" + Target("elvira").X + "," + Target("elvira").Y + " elmira=" + Target("elmira").X + "," + Target("elmira").Y);
 		}
 	}

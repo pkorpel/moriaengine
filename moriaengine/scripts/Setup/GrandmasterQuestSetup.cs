@@ -22,8 +22,8 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#833, #839 - the Grandmaster quest's pieces. The archive defines Rinald's cave, the regions of the story and, in the
 	/// journal's texts, roughly where things are: Elvira in the forest east of the Ice Plains (a_Severni_Spoust), Elmira's
-	/// cage by the rock face a little way off, with the cave's entrance, the root of Este at the far end of the dark cave
-	/// (see GrandmasterQuest.RootCaveMouth). Exact tiles are proposals, as are Elqira beside both Expert stones and the
+	/// cage by the rock face a little way off, with the cave's entrance, the root of Este at the far end of the dark cave.
+	/// Exact tiles are proposals, as are Elqira beside both Expert stones and the
 	/// envoys at the spawn points of Minas Tirith and Rhun.</summary>
 	public sealed class GrandmasterQuestSetup : WorldSetup {
 		public override string Name {
@@ -52,7 +52,7 @@ namespace SteamEngine.CompiledScripts {
 			Item entrance = PlaceFixed(pieces, "cave/entrance", GrandmasterQuest.CaveEntranceDef, aroundElmira[aroundElmira.Count / 2], 0);
 
 			this.PlaceCave(pieces, entrance, walker);
-			this.PlaceRoot(pieces, world, walker);
+			this.PlaceRoot(pieces, walker);
 
 			Point4D tirith = StaticRegion.GetByDefname("a_Minas_Tirith").P;
 			PlaceStill(pieces, "envoy/gondor", GrandmasterQuest.GondorEnvoyDef, WorldSpots.NearestStandable(Map.GetMap(tirith.M), tirith.X + 2, tirith.Y, 6), tirith.M);
@@ -70,16 +70,18 @@ namespace SteamEngine.CompiledScripts {
 				WorldSpots.WalkableRing(caveMap, new Point3D(rinaldAt[0], rinaldAt[1], rinaldAt[2]), walker, 3)[0], cave.M);
 		}
 
-		private void PlaceRoot(WorldPieces pieces, Map world, IMovementSettings walker) {
-			int[] rootAt = WorldSpots.WalkableRing(world, GrandmasterQuest.RootCaveMouth, walker, int.MaxValue, GrandmasterQuest.RootCave)[0]; //the end of the dark cave
-			PlaceFixed(pieces, "root", GrandmasterQuest.RootDef, rootAt, 0);
+		private void PlaceRoot(WorldPieces pieces, IMovementSettings walker) {
+			Point4D cave = StaticRegion.GetByDefname(GrandmasterQuest.RootCaveRegion).P;
+			Map caveMap = Map.GetMap(cave.M);
+			int[] rootAt = WorldSpots.WalkableRing(caveMap, cave, walker, int.MaxValue, GrandmasterQuest.RootCave)[0]; //the end of the dark cave
+			PlaceFixed(pieces, "root", GrandmasterQuest.RootDef, rootAt, cave.M);
 			Point3D rootPoint = new Point3D(rootAt[0], rootAt[1], rootAt[2]);
-			List<int[]> aroundRoot = WorldSpots.WalkableRing(world, rootPoint, walker, 6, GrandmasterQuest.RootCave);
+			List<int[]> aroundRoot = WorldSpots.WalkableRing(caveMap, rootPoint, walker, 6, GrandmasterQuest.RootCave);
 			for (int i = 0; i < 4; i++) {
-				PlaceFixed(pieces, "root/alarm" + i, GrandmasterQuest.AlarmDef, aroundRoot[i * aroundRoot.Count / 4], 0);
+				PlaceFixed(pieces, "root/alarm" + i, GrandmasterQuest.AlarmDef, aroundRoot[i * aroundRoot.Count / 4], cave.M);
 			}
 			pieces.SpawnGem(Id("root/guards"), new SpawnInfo(3, (IThingFactory) ThingDef.GetByDefname("c_q000_phoenix"), 20, 40, 8),
-				WorldSpots.WalkableRing(world, rootPoint, walker, 2, GrandmasterQuest.RootCave)[0], 0);
+				WorldSpots.WalkableRing(caveMap, rootPoint, walker, 2, GrandmasterQuest.RootCave)[0], cave.M);
 		}
 
 		private static string Id(string name) {

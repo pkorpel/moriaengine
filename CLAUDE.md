@@ -1,5 +1,17 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #850 Ered Mithrin cave: entrance, root of Este at its end (branch ered-mithrin-cave)
+
+**Done**: scripts/Setup/DungeonEntrancesSetup.cs (.SetupDungeonEntrances, in .SetupWorld): a two-way i_moongate_red (t_telepad + MoreP) from
+a_Ered_Mithrin_vstup to a_Ered_Mithrinska_Jeskyne, 2 steps from each spawn point; warns instead of placing if a spawn point can't be
+walked from. Root + alarms + phoenix gem at the far end of the real cave (walk limited to RootCave). 13 plane 2 regions still have no
+entrance: add a PlaceEntrance line per region, but each needs a spot outside. A root placed earlier stays in the surface tunnels:
+delete grandmaster/root, root/alarm0-3, root/guards, then .SetupWorld.
+Test: real steps along a path from each spawn point onto the gate (Go doesn't trigger t_telepad, and on a slope not every neighbor tile
+can step on). Red without MoreP.
+**Lead, not chased**: "Exception while sending ... BeginSend" + "Client (uid=1...) closed: Shutdown" right at a new login as the previous
+client's CharLingeringTimer fires; both had connection uid=1. Likely the server side of the login race the test helpers retry around.
+
 ## DONE (2026-10-30): #848 .go plane + .questy transparency (branch 848-go-and-journal-gump)
 
 User found both before Ered Mithrin work. **.go**: LegacyUtils.Go's indexes off by one since the initial commit: 4 args used the 4th as Z
