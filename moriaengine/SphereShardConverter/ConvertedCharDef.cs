@@ -94,10 +94,8 @@ namespace SteamEngine.Converter {
 
 		//#606 - real archive resist-tag suffix -> this engine's existing Character.ct
 		//ResistX field name(s) (already a fully live, consumed-in-combat mechanic via
-		//DamageManager.GetResistModifier - just starved of content until now). "sharp" has
-		//no dedicated property - DamageType.Sharp = Slashing|Stabbing is already a combined
-		//flag in this engine's own enum, so the faithful mapping writes the same value to
-		//both. "sumon" is a confirmed real typo variant of "summon" in the source archive.
+		//DamageManager.GetResistModifier - just starved of content until now).
+		//"sumon" is a confirmed real typo variant of "summon" in the source archive.
 		//"curse" maps to ResistCurse (added for this field specifically - a real, shipped
 		//Curse spell/effect exists, CurseSpellEffectPlugin, unlike silence/taunt/working
 		//below, which still have no matching mechanic anywhere in moriaengine and stay
@@ -114,7 +112,7 @@ namespace SteamEngine.Converter {
 				{ "pierce", new[] { "ResistStabbing" } },
 				{ "slash", new[] { "ResistSlashing" } },
 				{ "cold", new[] { "ResistCold" } },
-				{ "sharp", new[] { "ResistSlashing", "ResistStabbing" } },
+				{ "sharp", new[] { "ResistSharp" } },
 				{ "blunt", new[] { "ResistBlunt" } },
 				{ "phys", new[] { "ResistPhysical" } },
 				{ "magic", new[] { "ResistMagic" } },
@@ -150,9 +148,8 @@ namespace SteamEngine.Converter {
 			} else {
 				emitted = first.ToString(CultureInfo.InvariantCulture);
 			}
-			//#656 - "specific" (a single-field alias, e.g. slash/pierce) always wins over
-			//"general" (a multi-field alias - currently only "sharp") for a given field,
-			//regardless of which one this chardef happens to list first.
+			//#656 - "specific" (a single-field alias) wins over a multi-field alias for a given
+			//field, whichever came first. Since #860 "sharp" has its own field, so none is multi.
 			bool specific = fieldNames.Length == 1;
 			ConvertedCharDef charDef = (ConvertedCharDef) def;
 			foreach (string fieldName in fieldNames) {
@@ -201,16 +198,7 @@ namespace SteamEngine.Converter {
 		//#656 - same ThirdStage-deferred precedent as pendingKarmaMidpoint/pendingBrainType
 		//above: a chardef's resist tags arrive one line at a time (possibly from either the
 		//rare top-level LineImplTask path or the @Create-body ProcessCreateTriggerLine path,
-		//in either order), but "sharp" maps to BOTH ResistSlashing and ResistStabbing (no
-		//dedicated property exists - DamageType.Sharp combines both flags) while "slash"/
-		//"pierce" each map to exactly one of those same fields. A chardef that sets a general
-		//"sharp" AND a specific "slash"/"pierce" (very common in the real archive) must not
-		//emit two competing Set() calls for the same field - the engine field is a plain
-		//scalar Int32, so the real .def loader just applies whichever line happens to come
-		//last, silently discarding the other and making the effective value depend on the
-		//archive's own line order (sharp-before-slash/pierce, by accident, not by design).
-		//Accumulated here instead, with the more specific tag always winning regardless of
-		//order, then flushed exactly once per field in ThirdStage.
+		//in either order). Accumulated here, then flushed exactly once per field in ThirdStage.
 		private sealed class PendingResist {
 			public string Value;
 			public string Comment;
@@ -809,6 +797,8 @@ namespace SteamEngine.Converter {
 				{ "tag.npc_bleed", "BleedChance" },
 				//#selfreser - real archive field is tag.resstimer, seconds, no scale conversion needed.
 				{ "tag.resstimer", "SelfresDelay" },
+				//#860 - f_getspeed_npc
+				{ "tag.npc_speed", "NpcSpeed" },
 				//#parakrik - real archive fields, raw deciseconds for delay (same convention as
 				//stun's own Duration/Cooldown), no scale conversion needed for either.
 				{ "tag.parakrik_chance", "ParaKrikChance" },

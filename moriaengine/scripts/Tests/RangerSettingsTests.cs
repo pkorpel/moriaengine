@@ -33,6 +33,7 @@ namespace SteamEngine.CompiledScripts {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			self.Str = 300; // same #96-follow-up reasoning as RangerCombatTests - keeps a clean
 							 // attack value for the direct swing-formula checks below.
+			self.Dex = 100; // #860 - a real bow swing takes 2 x hitspeed, 12 s at the starting Dex
 
 			ThingDef bowDef = ThingDef.GetByDefname("i_bow_copper");
 			AbstractItem bow = (AbstractItem) bowDef.Create(self.P());
