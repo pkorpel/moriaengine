@@ -1,5 +1,12 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #856 the egg counts only when lifted from a corpse (branch 856-egg-from-corpse)
+
+User: lifting a GM-created egg off the ground advanced the Master quest. I had claimed the egg on any first lift and called that harmless;
+Erebor's @pickup_pack is containers only. Now only an egg lifted from a corpse. On_EnterChar can't see where it came from (the item is
+already limbo), so E_MasterQuestEgg.On_DenyPickup, which runs just before, records it. As on Erebor, an unowned egg + having been on the islands
+= the "cheat" path, sent to the bug area.
+
 ## DONE (2026-10-30): #854 GMs can move fixed items (branch gm-move-never)
 
 User, after testing #852: "GMs should be able to move move never items." Item.On_DenyPickup's Flag_NonMovable check now skips GMs (IsGM, so not
