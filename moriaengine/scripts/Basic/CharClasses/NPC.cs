@@ -393,6 +393,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey bleedChanceTK = TagKey.Acquire("_npcBleedChance_");
 		private static readonly TagKey knockbackChanceTK = TagKey.Acquire("_npcKnockbackChance_");
 		private static readonly TagKey selfresDelayTK = TagKey.Acquire("_npcSelfresDelay_");
+		private static readonly TagKey npcSpeedTK = TagKey.Acquire("_npcSpeed_");
 		private static readonly TagKey parakrikChanceTK = TagKey.Acquire("_npcParakrikChance_");
 		private static readonly TagKey parakrikCooldownTK = TagKey.Acquire("_npcParakrikCooldown_");
 		private static readonly TagKey npcCurseChanceTK = TagKey.Acquire("_npcCurseChance_");
@@ -471,6 +472,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 		/// <summary>{min,max} seconds after death before a fresh instance of this NPC respawns -
 		/// real archive field is tag.resstimer.</summary>
+		/// <summary>#860 - tag.npc_speed {min, max}: what this monster's swing speed is counted
+		/// from instead of its max stamina (f_getspeed_npc), rolled once at creation.</summary>
+		public int[] NpcSpeed {
+			get { return this.GetTag(npcSpeedTK) as int[]; }
+			set { this.SetTag(npcSpeedTK, value); }
+		}
+
 		public int[] SelfresDelay {
 			get { return this.GetTag(selfresDelayTK) as int[]; }
 			set { this.SetTag(selfresDelayTK, value); }
@@ -800,7 +808,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly HashSet<string> knownResistFieldNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
 			"ResistMagic", "ResistFire", "ResistElectric", "ResistAcid", "ResistCold",
 			"ResistPoison", "ResistMystical", "ResistPhysical", "ResistSlashing",
-			"ResistStabbing", "ResistBlunt", "ResistArchery", "ResistBleed", "ResistSummon",
+			"ResistStabbing", "ResistSharp", "ResistBlunt", "ResistArchery", "ResistBleed", "ResistSummon",
 			"ResistDragon", "ResistParalyse", "ResistCurse"
 		};
 
@@ -1321,6 +1329,10 @@ namespace SteamEngine.CompiledScripts {
 				this.KnockbackChance = ParseStatRange(filename, line, "knockbackchance", args);
 				return;
 			}
+			if (param == "npcspeed") {
+				this.NpcSpeed = ParseStatRange(filename, line, "npcspeed", args);
+				return;
+			}
 			if (param == "selfresdelay") {
 				this.SelfresDelay = ParseStatRange(filename, line, "selfresdelay", args);
 				return;
@@ -1693,6 +1705,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey swingStaminaTK = TagKey.Acquire("_swingStamina_");
+
+		/// <summary>#860 - this NPC's tag.npc_speed, 0 if it has none.</summary>
+		public int SwingStamina {
+			get { return Convert.ToInt32(this.GetTag(swingStaminaTK) ?? 0); }
+			set { this.SetTag(swingStaminaTK, value); }
+		}
+
 		public override void On_Create() {
 			base.On_Create();
 
@@ -1748,6 +1768,10 @@ namespace SteamEngine.CompiledScripts {
 			if (maxHits >= 0) {
 				this.MaxHits = (short) maxHits;
 				this.Hits = this.MaxHits;
+			}
+			int swingStamina = NPCDef.RollStatRange(def.NpcSpeed);
+			if (swingStamina > 0) {
+				this.SwingStamina = swingStamina;
 			}
 			int maxStam = def.RollMaxStam();
 			if (maxStam >= 0) {

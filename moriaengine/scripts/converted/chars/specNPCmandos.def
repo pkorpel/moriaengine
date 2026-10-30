@@ -250,6 +250,7 @@ ResistPoison = 700
 ResistParalyse = 500 650
 ResistSummon = 450
 ResistBleed = 200
+ResistSharp = 50
 ResistSlashing = 50 //sekery 
 ResistStabbing = -150
 ResistBlunt = -150

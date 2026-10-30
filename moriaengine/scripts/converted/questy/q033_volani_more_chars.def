@@ -83,8 +83,7 @@ ResistPoison = 1000 //nemrtveho neotravis
 ResistBleed = 1000
 ResistParalyse = 950
 ResistFire = -250
-ResistSlashing = -250
-ResistStabbing = -250
+ResistSharp = -250
 AggroMode = Hostile
 
 [NPCDef c_q033_piratrenfer]

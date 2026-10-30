@@ -288,26 +288,55 @@ namespace SteamEngine.CompiledScripts {
 			return retVal;
 		}
 
+		/// <summary>#860 - a player's weapflag in f_getatack_nonmystik, by Sphere weapon type:
+		/// t_weapon_sword (our Sword and Axe) slashes, t_weapon_fence (our Spike) is sharp.</summary>
 		public static DamageType GetWeaponDamageType(WeaponType weapType) {
 			switch (weapType) {
 				case WeaponType.Bow:
 				case WeaponType.XBow:
-					return DamageType.PhysicalArchery;
+					return DamageType.PhysicalStabbing;
 				case WeaponType.OneHandSword:
 				case WeaponType.TwoHandSword:
-					return DamageType.PhysicalSharp;
+				case WeaponType.OneHandAxe:
+				case WeaponType.TwoHandAxe:
+					return DamageType.PhysicalSlashing;
 				case WeaponType.BareHands:
 				case WeaponType.OneHandBlunt:
 				case WeaponType.TwoHandBlunt:
 					return DamageType.PhysicalBlunt;
 				case WeaponType.OneHandSpike:
 				case WeaponType.TwoHandSpike:
-					return DamageType.PhysicalStabbing;
-				case WeaponType.OneHandAxe:
-				case WeaponType.TwoHandAxe:
-					return DamageType.PhysicalSlashing;
+					return DamageType.PhysicalSharp;
 			}
 			throw new SEException("weapType out of range");
+		}
+
+		private const int warForkModel = 0x1404, scimitarModel = 0x13b5, axeExecModel = 0xf45;
+
+		/// <summary>#860 - the three fencing weapons f_getatack_nonmystik and creaturestart name
+		/// by display id, either facing. A monster's sword and fence hits also count as sharp.</summary>
+		private static DamageType GetDamageTypeOfWeapon(Weapon weapon, WeaponType weaponType, bool isPlayer) {
+			int model = weapon.Model;
+			if ((model == warForkModel) || (model == warForkModel + 1)) {
+				return DamageType.PhysicalStabbing;
+			}
+			if (isPlayer) {
+				if ((model == scimitarModel) || (model == scimitarModel + 1) || (model == axeExecModel) || (model == axeExecModel + 1)) {
+					return DamageType.PhysicalSlashing;
+				}
+				return GetWeaponDamageType(weaponType);
+			}
+			switch (weaponType) {
+				case WeaponType.OneHandSword:
+				case WeaponType.TwoHandSword:
+				case WeaponType.OneHandAxe:
+				case WeaponType.TwoHandAxe:
+					return DamageType.PhysicalSharp | DamageType.Slashing;
+				case WeaponType.OneHandSpike:
+				case WeaponType.TwoHandSpike:
+					return DamageType.PhysicalSharp | DamageType.Stabbing;
+			}
+			return GetWeaponDamageType(weaponType);
 		}
 
 		internal class CombatArmorValues {
@@ -376,6 +405,7 @@ namespace SteamEngine.CompiledScripts {
 
 			if (self.IsPlayerForCombat) {
 				double weapSpeed, weapAttackVsP, weapAttackVsM, weapMindPowerVsP, weapMindPowerVsM;
+				double ammoMultiplier = 1;
 				if (weapon != null) {
 					retVal.weaponType = weapon.WeaponType;
 					retVal.weaponAnimType = weapon.WeaponAnimType;
@@ -421,8 +451,7 @@ namespace SteamEngine.CompiledScripts {
 					// #860 - nastaveni_arrowdamage_<tdata1> of the ammo
 					if ((retVal.weaponType == WeaponType.Bow || retVal.weaponType == WeaponType.XBow) &&
 							(self.weaponProjectile != null)) {
-						weapAttackVsP *= self.weaponProjectile.DamageMultiplier;
-						weapAttackVsM *= self.weaponProjectile.DamageMultiplier;
+						ammoMultiplier = self.weaponProjectile.DamageMultiplier;
 					}
 				} else {
 					retVal.weaponType = WeaponType.BareHands;
@@ -439,7 +468,6 @@ namespace SteamEngine.CompiledScripts {
 					weapMindPowerVsP = MagerySettings.instance.bareHandsMindPowerVsP;
 					weapMindPowerVsM = MagerySettings.instance.bareHandsMindPowerVsP;
 				}
-				double delay;
 				if (Professions.HasProfession(self, Professions.Mystic)) {
 					// #450 - confirmed from the Erebor source: a Mystic's swing speed is driven
 					// by current mana, not Dex - "the longer you fight, the slower you get" as
@@ -448,19 +476,14 @@ namespace SteamEngine.CompiledScripts {
 					// attack per #447's research) - Math.Max guards the same division-by-zero
 					// the existing Dex-based formula below would also hit at Dex=0, just far
 					// more likely to actually occur here.
-					delay = Math.Sqrt(Math.Max(self.Mana, (short) 1) / 2.0);
-					delay *= weapSpeed;
-					delay *= MagerySettings.instance.mysticWeaponSpeedModifier;
+					retVal.delay = CalculateSwingDelay(SqrtInt(Math.Max(self.Mana / 2, 1)), MagerySettings.instance.mysticWeaponSpeedModifier);
 				} else {
-					delay = Math.Sqrt(self.Dex);
-					delay *= weapSpeed;
-					delay *= CombatSettings.instance.weaponSpeedGlobal;
+					retVal.delay = CalculateSwingDelay(SqrtInt(self.Dex) - 2, weapSpeed);
 				}
-				retVal.delay = TimeSpan.FromSeconds((0xfffff / 1000.0) / delay);//dedictvi z morie. funguje to tak proc to menit :)
 
 				double sum = GetAttackStatMultiplier(self);
-				retVal.attackVsP = weapAttackVsP * sum;
-				retVal.attackVsM = weapAttackVsM * sum;
+				retVal.attackVsP = RoundLikeSphere(RoundLikeSphere(weapAttackVsP * sum) * ammoMultiplier);
+				retVal.attackVsM = RoundLikeSphere(RoundLikeSphere(weapAttackVsM * sum) * ammoMultiplier);
 
 				sum = GetMindPowerStatMultiplier(self);
 				retVal.mindPowerVsM = weapMindPowerVsM * sum;
@@ -526,27 +549,17 @@ namespace SteamEngine.CompiledScripts {
 						retVal.projectileType = weapon.ProjectileType;
 						self.weaponProjectile = TryFindProjectile(self, weapon.ProjectileType);
 						if (self.weaponProjectile != null) {
-							retVal.piercing += self.weaponProjectile.Piercing;
 							retVal.projectileAnim = weapon.ProjectileAnim;
 						}
 					}
 
-					retVal.delay = TimeSpan.FromSeconds(npcDef.WeaponDelay);
+					// #860 - f_getspeed_npc: tag.npc_speed, which defaults to the max stamina
+					NPC npc = self as NPC;
+					int swingStamina = ((npc != null) && (npc.SwingStamina > 0)) ? npc.SwingStamina : self.MaxStam;
+					retVal.delay = CalculateSwingDelay(SqrtInt(swingStamina / 2), CombatSettings.instance.weaponSpeedNPC * 1000);
 
-					// #711 - real-user-reported: a ranged NPC (c_titan_ranger, WeaponAttack=40)
-					// dealt exactly 0 damage against a tougher-armored NPC (c_titan, ArmorVsM=80)
-					// across every one of ~28 landed shots in a live repro - not RNG, a hard
-					// wall. CalculateArmorClassEffect's formula is a subtractive floor
-					// (max(0, (attack-armor)*damageMod)) that the PLAYER branch above already
-					// defends against via this same Str/Tactics/Anatomy/ArmsLore scaling
-					// (confirmed real content never sets Tactics/Anatomy/ArmsLore's effect=, so
-					// in practice this is Str-driven) - NPCs never got it at all, just the bare
-					// .def WeaponAttack value. User's explicit call: apply the identical formula
-					// to NPCs too, accepting that this raises NPC damage output broadly (most
-					// monsters have far higher Str than a typical player) rather than inventing
-					// a separate, dampened NPC-only modifier.
-					double attackSum = GetAttackStatMultiplier(self);
-					retVal.attackVsM = npcDef.WeaponAttack * attackSum;
+					// #860 - combat_main_npc takes the def's attack as it is, no stats (undoes #711)
+					retVal.attackVsM = npcDef.WeaponAttack;
 					retVal.attackVsP = retVal.attackVsM;
 
 					double npcMindPowerSum = GetMindPowerStatMultiplier(self);
@@ -575,16 +588,12 @@ namespace SteamEngine.CompiledScripts {
 			retVal.rangeVsM += rangeModifier;
 			retVal.rangeVsP += rangeModifier;
 
-			retVal.damageType = GetWeaponDamageType(retVal.weaponType);
+			retVal.damageType = (weapon != null) ? GetDamageTypeOfWeapon(weapon, retVal.weaponType, self.IsPlayerForCombat)
+				: GetWeaponDamageType(retVal.weaponType);
 
-			// #607 - the real archive's tag.weapflag field encodes a monster's own NATURAL
-			// (bare claws/bite/etc) attack damage type - distinct from WeaponType, which can
-			// only express a FIXED physical sub-type (PhysicalBlunt for BareHands) and has no
-			// way to represent an elemental/multi-flag combo like "physical+fire". Only applies
-			// when the NPC has no real weapon item equipped - a weapon's own WeaponType-derived
-			// damage type (e.g. a bow's PhysicalArchery) always takes priority, matching how
-			// #600's real-weapon range override is similarly gated on "weapon != null".
-			if (!self.IsPlayerForCombat && (weapon == null)) {
+			// #607/#860 - the archive's tag.weapflag, a monster's own damage type. Creaturestart
+			// looks at the weapon only for a monster without one, so it wins over a held weapon.
+			if (!self.IsPlayerForCombat) {
 				NPCDef naturalDamageDef = self.DefForCombat as NPCDef;
 				if ((naturalDamageDef != null) && (naturalDamageDef.NaturalDamageType != DamageType.Irresistable)) {
 					retVal.damageType = naturalDamageDef.NaturalDamageType;
@@ -626,46 +635,83 @@ namespace SteamEngine.CompiledScripts {
 			retVal.strikeStopRange = range + 2;
 		}
 
-		/// <summary>#96 fix: `armor` used to be computed correctly from the real `armorClass`
-		/// argument, then unconditionally thrown away and replaced with a near-meaningless
-		/// random +-5% placeholder (the old armorRandEffectMin/Max settings, now removed) for
-		/// every case except "monster attacks player" - i.e. real armor had zero effect on
-		/// NPC-vs-NPC, player-vs-NPC (every Ranger fight, #458), and PvP combat. A dedicated
-		/// "MvP armor factor" setting (armorClassMvP = 200) existed with nothing left to apply
-		/// it to, and a `//!!TODO!! different formula for PvM and MvP` comment sat right above
-		/// the override - this was unfinished work, not deliberate design (confirmed in #96's
-		/// own investigation). Empirically verified via a real equip (actual client protocol,
-		/// not a shortcut) that the "real armor" branch already in use for MvP produces
-		/// correctly-proportional damage reduction - so the fix is simply to stop discarding it
-		/// for the other three cases, not to invent a new formula. armorClassMvP is left
-		/// deliberately unused - its intended semantics (200 as what unit?) were never
-		/// confirmed anywhere, and guessing wrong here would make things worse, not better;
-		/// revisit as its own follow-up if ever needed.</summary>
+		/// <summary>#860 - Sphere's integer maths: (x*1000+500)/1000.</summary>
+		internal static double RoundLikeSphere(double value) {
+			return Math.Floor(value + 0.5);
+		}
+
+		/// <summary>#860 - Erebor's sqrt_int function (funkce.scp). It's Newton's method on
+		/// value*10000, so it returns about 100*sqrt(value), not an integer square root.</summary>
+		public static int SqrtInt(int value) {
+			if (value <= 0) {
+				return 0;
+			}
+			int target = value * 10000;
+			int root = target;
+			for (int i = 0; i < 30; i++) {
+				int last = root;
+				root = (root / 2) + ((target / root) / 2);
+				if ((last == root) || (last == (root - 1))) {
+					return last;
+				}
+			}
+			return -1;
+		}
+
+		/// <summary>#860 - f_getspeed_*: hitspeed is in server ticks, and scripts set it on both
+		/// halves of a swing (skill @Start and @HitTry), so a whole swing takes twice that.</summary>
+		public static TimeSpan CalculateSwingDelay(int root, double weaponSpeed) {
+			CombatSettings settings = CombatSettings.instance;
+			return CalculateSwingDelay(root, weaponSpeed, settings.weaponSpeedGlobal, settings.swingTicksPerSecond);
+		}
+
+		public static TimeSpan CalculateSwingDelay(int root, double weaponSpeed, double globalSpeed, double ticksPerSecond) {
+			int speed = (int) RoundLikeSphere(root * weaponSpeed * globalSpeed);
+			if (speed <= 0) {
+				speed = 50;
+			}
+			int hitspeed = Math.Max(0xfffff / speed, 1);
+			return TimeSpan.FromSeconds((2 * hitspeed) / ticksPerSecond);
+		}
+
+		/// <summary>#860 - Erebor's damagecust: a player's swing, or a monster's on a monster.
+		/// armor is after armorClassP/M, armorRoll is the Parrying effect 0.945-1.05. Armor above
+		/// the attack gives 0 here; a negative result would read as a heal in CauseDamage.</summary>
+		public static double CalculateDamageCust(double attack, double armor, double piercing, double armorRoll, double damageMod) {
+			double obrana = RoundLikeSphere(Math.Max(0, armor) * armorRoll * (1000 - piercing));
+			double koef = Math.Truncate(((attack * 1000) - obrana + 500) / 1000);
+			return Math.Max(0, RoundLikeSphere(koef * damageMod));
+		}
+
+		/// <summary>#860 - Erebor's damagecust_MvP: armor cuts a percentage of a monster's attack,
+		/// armorFactor is nastaveni_global_MvP_armorfactor (200: armor 100 halves it).</summary>
+		public static double CalculateDamageMvP(double attack, double armor, double piercing, double armorFactor, double randomFactor, double damageMod) {
+			double obrana = Math.Max(0, armor) * (1000 - piercing);
+			double utok = RoundLikeSphere(attack * damageMod);
+			double ubrano = RoundLikeSphere(utok * (1000 - Math.Truncate(obrana / armorFactor)) / 1000);
+			return Math.Max(0, RoundLikeSphere(ubrano * randomFactor));
+		}
+
 		public static double CalculateArmorClassEffect(Character attacker, Character defender, double attack, double piercing, double armorClass) {
 			bool defenderIsPlayer = defender.IsPlayerForCombat;
 			bool attackerIsPlayer = attacker.IsPlayerForCombat;
 			CombatSettings settings = CombatSettings.instance;
 
+			if (defenderIsPlayer && !attackerIsPlayer) {
+				return CalculateDamageMvP(attack, armorClass, piercing, settings.armorClassMvP,
+					ScriptUtil.GetRandInRange(settings.swingDamageRandMvPMin, settings.swingDamageRandMvPMax), settings.swingDamageM);
+			}
 			double damageMod;
 			if (defenderIsPlayer) {
-				if (attackerIsPlayer) {
-					damageMod = settings.swingDamagePvP;
-				} else {
-					damageMod = ScriptUtil.GetRandInRange(settings.swingDamageRandMvPMin, settings.swingDamageRandMvPMax);
-				}
+				damageMod = settings.swingDamagePvP;
 			} else {
-				damageMod = settings.swingDamageM;
+				damageMod = settings.swingDamageVsM;
+				if (!attackerIsPlayer) {
+					damageMod *= settings.swingDamageM;
+				}
 			}
-
-			double armor = armorClass * (1000 - piercing) / 1000;
-
-			armor = Math.Max(0, armor);
-			attack = Math.Max(0, attack);
-			damageMod = Math.Max(0, damageMod);
-
-			// #511/#514: armor exceeding attack must floor at 0, not go negative - a negative
-			// result here reads as a HEAL to CauseDamage's "Hits -= damage", not a reduced hit.
-			return Math.Max(0, (attack - armor) * damageMod);
+			return CalculateDamageCust(attack, armorClass, piercing,
+				ScriptUtil.GetRandInRange(settings.armorRandEffectMin, settings.armorRandEffectMax), damageMod);
 		}
 
 		/// <summary>Mystic's mind-power attack (#447/#448/#449) - subtractive mindPower-minus-
