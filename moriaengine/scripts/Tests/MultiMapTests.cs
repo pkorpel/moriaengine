@@ -45,6 +45,11 @@ namespace SteamEngine.CompiledScripts {
 				" land=" + plane2.GetTileZ(19, 1196) + " stuck=[" + stuck.Trim() + "]");
 		}
 
+		[SteamFunction]
+		public static void TestMultiMapWhere(Character self) {
+			Console.WriteLine("MULTIMAP_WHERE: x=" + self.X + " y=" + self.Y + " z=" + self.Z + " m=" + self.M);
+		}
+
 		/// <summary>Args (one string): "x y z m" - takes me there.</summary>
 		[SteamFunction]
 		public static void TestMultiMapGo(Character self, ScriptArgs sa) {

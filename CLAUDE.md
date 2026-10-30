@@ -1,5 +1,12 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #848 .go plane + .questy transparency (branch 848-go-and-journal-gump)
+
+User found both before Ered Mithrin work. **.go**: LegacyUtils.Go's indexes off by one since the initial commit: 4 args used the 4th as Z
+and dropped the plane, 3 args threw. **Gump**: TazUO's checkertrans sets alpha 0.5 on every child it overlaps (GumpHelpers.ApplyTrans),
+not just what's under it, so the tab icons' checkers dimmed the menu's main background. Weekly/PvP have no tabs, hence opaque. No
+checkertrans over anything that must stay solid; the selected tab now has a hued icon instead. **Next**: Ered Mithrin cave entrance.
+
 ## DONE (2026-10-30): #841 multi-map support, plane 2 = map2.mul (branch 841-multi-map)
 
 User uploaded Map2/Staidx2/Statics2.mul to uo-files; renamed lowercase (Linux). Validated: exact 288x200 size, spawn Z of plane 2
