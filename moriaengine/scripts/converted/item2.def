@@ -28,3 +28,5 @@ layer = 2 //Set by Converter
 WeaponType = WeaponType.TwoHandAxe //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 Color = color_magic_weap
+speed = 52 //nastaveni_weapspeed 
+piercing = 150 //nastaveni_weappiercing 

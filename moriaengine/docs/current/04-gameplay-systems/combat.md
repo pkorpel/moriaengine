@@ -39,6 +39,30 @@ deletion timing). Both `On_Stroke` and `On_Fail` check `target.IsDeleted` first 
 cleanly instead of calling `CanInteractWith`/`CanSeeLOS` on a deleted `Thing`, which would
 throw.
 
+## Where the numbers come from (#860)
+
+Erebor set most combat values at runtime from the `nastaveni_*` variables in
+`save/sphereworld.scp`, overriding its item definitions. The converter reads them
+(`SphereWorldVars`), so weapons, armor and ammo in `scripts/converted` carry Erebor's real
+values, marked with the variable's name in a comment:
+
+| Item | Field | Variable |
+|---|---|---|
+| Weapon | `attackVsP/VsM` | `nastaveni_weapdam_<defname>` |
+| Weapon | `speed`, `piercing` | `nastaveni_weapspeed_<model>`, `nastaveni_weappiercing_<model>` (shared by all materials) |
+| Staff | `MindPowerVsP/VsM` | `nastaveni_staffSMbonus_<defname>` |
+| Armor set piece | `armorVsP/VsM` | `nastaveni_armorarmor_<metal>_<type>`, shields get a sixth, a plate set's shield then `nastaveni_global_plateshield_armor_decrease` |
+| Armor set piece | `mindDefenseVsP/VsM` | `nastaveni_armorparts_OM_<defname>` |
+| Ammo | `DamageMultiplier`, `Piercing` | `nastaveni_arrowdamage_<tdata1>` (permille), `nastaveni_arrowdamage_<tdata2>` |
+
+Bows and crossbows use these like any other weapon; `RangerSettings`' damage, speed and
+tier bonus fields are unused. Bare hands (attack 5, speed 200) are on `.settings`. Spell
+effects are hand-kept in the spell `.def`s from `nastaveni_spelleffect_*`: Erebor's third
+number on a damage spell is armor piercing, which isn't applied yet.
+
+Armor pieces' weights (`nastaveni_armorweight_*`) aren't applied. On Erebor the adamantinum
+and mithril jagged bolts really have a multiplier of 0, so they do no damage.
+
 ## Stat aggregation: `CombatCalculator`
 
 `CombatCalculator.CalculateCombatArmorValues` (`CombatCalculator.cs:25`) only computes real

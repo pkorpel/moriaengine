@@ -5,9 +5,8 @@ using Xunit;
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// Regression tests for the #456/#457/run-stand-archery follow-up on Ranger's base attack
-	/// (RangerCombatTests.cs covers the base attack itself): RangerSettings.bowDamage actually
-	/// overrides the weapon's own content value, the #457 arrow-tier placeholder bonus applies,
-	/// and the stand-still toggle's default behavior (crossbow=locked, bow=free) actually holds
+	/// (RangerCombatTests.cs covers the base attack itself): the weapon's and the ammo's own
+	/// Erebor values drive the attack, and the stand-still toggle's default behavior (crossbow=locked, bow=free) actually holds
 	/// under a real mid-fight attempt to walk.
 	/// </summary>
 	[Collection(RangerSettingsCollection.Name)]
@@ -21,52 +20,34 @@ namespace SteamEngine.Tests.Protocol {
 			this.fixture = servers;
 		}
 
+		/// <summary>#860 - a copper bow's attack is Erebor's 36, scaled by the shooter's stats,
+		/// not the old flat RangerSettings.bowDamage of 5.</summary>
 		[Fact]
-		public void BowDamageSettingDrivesWeaponAttack() {
+		public void BowAttackComesFromTheWeapon() {
 			using (var client = this.ConnectLoginAndCreateCharacter("RangerSettingsDamageChecker")) {
 				this.EquipRealBow(client);
 
-				client.SendSpeech(".TestSetRangerBowDamage100");
-				int at100 = this.ReportWeaponAttackVsP(client);
+				int attack = this.ReportWeaponAttackVsP(client);
 
-				client.SendSpeech(".TestSetRangerBowDamage1000");
-				int at1000 = this.ReportWeaponAttackVsP(client);
-
-				client.SendSpeech(".TestResetRangerBowDamage");
-
-				Assert.True(at100 > 0, "Expected a nonzero attack value at bowDamage=100.");
-				double ratio = (double) at1000 / at100;
-				Assert.True((ratio > 9.0) && (ratio < 11.0),
-					"Expected WeaponAttackVsP to scale ~10x with a 10x RangerSettings.bowDamage change " +
-					"(#456 - settings-only override, not weapon content). at100=" + at100 + " at1000=" + at1000 +
-					" ratio=" + ratio);
+				Assert.True((attack >= 30) && (attack <= 70), "Expected 36 x (Str 300 x 3.17/1000 + skills) x 1.05, got " + attack);
 			}
 		}
 
-		/// <summary>#457 - a higher-tier arrow (valorite, tier rank 3) should apply the
-		/// placeholder per-tier bonus (default +5%/tier) on top of whatever RangerSettings.
-		/// bowDamage already contributes, confirming the bonus is real and tier-sensitive (not
-		/// just a constant applied regardless of ammo).</summary>
+		/// <summary>#860 - ammo multiplies the attack by Erebor's nastaveni_arrowdamage_N: a plain
+		/// copper bolt 1050, a jagged one 800.</summary>
 		[Fact]
-		public void HigherTierArrowGrantsDamageBonus() {
+		public void AmmoMultipliesTheAttack() {
 			using (var client = this.ConnectLoginAndCreateCharacter("RangerSettingsArrowTierChecker")) {
-				this.EquipRealBow(client);
+				this.EquipRealCrossbow(client);
+				int withJagged = this.ReportWeaponAttackVsP(client);
 
-				client.SendSpeech(".TestSetRangerBowDamage1000"); // large magnitude keeps int-truncation noise small
-				int withCopper = this.ReportWeaponAttackVsP(client);
+				client.SendSpeech(".TestReplaceAmmoWithPlainBolts");
+				int withPlain = this.ReportWeaponAttackVsP(client);
 
-				client.SendSpeech(".TestReplaceArrowsWithValorite");
-				int withValorite = this.ReportWeaponAttackVsP(client);
-
-				client.SendSpeech(".TestResetRangerBowDamage");
-
-				Assert.True(withCopper > 0, "Expected a nonzero baseline attack value with copper arrows.");
-				double ratio = (double) withValorite / withCopper;
-				// valorite is tier rank 3, default bonus 0.05/tier -> expected ratio 1.15
-				Assert.True((ratio > 1.10) && (ratio < 1.20),
-					"Expected valorite arrows (tier rank 3) to grant roughly a 15% bonus over copper " +
-					"(#457 placeholder, default 0.05/tier). withCopper=" + withCopper + " withValorite=" + withValorite +
-					" ratio=" + ratio);
+				Assert.True(withJagged > 0, "Expected a nonzero attack with jagged bolts.");
+				double ratio = (double) withPlain / withJagged;
+				Assert.True((ratio > 1.2) && (ratio < 1.45),
+					"Expected 1050/800 = 1.31. withJagged=" + withJagged + " withPlain=" + withPlain);
 			}
 		}
 
