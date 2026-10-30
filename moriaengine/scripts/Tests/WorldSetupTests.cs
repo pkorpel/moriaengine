@@ -64,6 +64,26 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("WORLD_EDIT: moved=" + to[0] + "," + to[1]);
 		}
 
+		/// <summary>Takes me beside a quest sign, and reports it.</summary>
+		[SteamFunction]
+		public static void TestWorldSetupGoToSign(Character self) {
+			Thing sign = FindOne(ExpertQuest.SignDef);
+			int[] at = WorldSpots.NearestStandable(sign.GetMap(), sign.X + 1, sign.Y, 3);
+			self.Go(at[0], at[1], at[2], sign.M);
+			ReportSign(self, sign);
+		}
+
+		[SteamFunction]
+		public static void TestWorldSetupReportSign(Character self, ScriptArgs sa) {
+			ReportSign(self, Thing.UidGetThing(int.Parse(sa.Args.Trim().Trim('"'))));
+		}
+
+		private static void ReportSign(Character self, Thing sign) {
+			Item item = (Item) sign;
+			Console.WriteLine("WORLD_SIGN: uid=" + sign.Uid + " at=" + sign.X + "," + sign.Y + " me=" + self.X + " " + self.Y + " " + self.Z + " onGround=" + (item.Cont == null) +
+				" fixed=" + item.Flag_NonMovable + " decaying=" + ItemDecaySystem.HasActiveTimer(item));
+		}
+
 		//item pieces that a player could pick up, or that would decay away
 		private static int LoosePieces() {
 			int loose = 0;

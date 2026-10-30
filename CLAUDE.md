@@ -1,5 +1,10 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #854 GMs can move fixed items (branch gm-move-never)
+
+User, after testing #852: "GMs should be able to move move never items." Item.On_DenyPickup's Flag_NonMovable check now skips GMs (IsGM, so not
+with .gm off); the item stays fixed where it lands. Covers attr_static too. Verified: WorldSetupTests, red without the fix.
+
 ## DONE (2026-10-30): #852 Expert quest in-game test feedback (branch 852-quest-test-feedback)
 
 User tested: (1) added=38 = their build predated #851's gates, no bug. (2) Quest pieces decayed: WorldPieces.Item now sets attr_move_never on

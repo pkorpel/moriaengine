@@ -107,7 +107,8 @@ before this work - not just a missing write path (confirmed via grep: no read pa
 either; `AbstractItem.On_DenyPickup`'s default implementation returned `Continue`
 unconditionally). `RecomputeNonMovable` (`Item.cs:143-149`) derives the flag:
 `attr_static`/`attr_move_never` set it, `attr_move_always` is an explicit override that
-wins if somehow combined with either on the same item. `Item.On_DenyPickup`
+wins if somehow combined with either on the same item. It stops players, not GMs: a GM can
+drag a fixed item and it stays fixed where it lands (#854), but not with `.gm` off. `Item.On_DenyPickup`
 (`Item.cs:158-178`) is the new read path, denying pickup when `Flag_NonMovable` is true.
 
 ### Magic/crafting-quality display: `attr_magic` / `attr_exceptional` / `attr_enchanted` / `attr_imbued` / `attr_reforged`
