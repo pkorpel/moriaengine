@@ -141,6 +141,15 @@ or commas, weights optional) and rolls one item per spawn (`StartingEquipmentEnt
 anything, confirmed unchanged by this pass): `moverate`, `resources` (loot), `bloodcolor`,
 `foodtype`, `desires`, `aversions`, `shelter`, `reslevel`.
 
+## Runtime values from sphereworld.scp (#860)
+
+Reading the definitions isn't enough: Erebor overwrote weapon, armor and ammo values at runtime
+from the `nastaveni_*` variables in `save/sphereworld.scp`. `SphereWorldVars` loads that file's
+`[VarNames]` from the `convert/` folder, and `ConvertedItemDef.ThirdStageFinished` applies the
+values over what the definitions said (`ConvertedDef.Replace`). See
+[combat.md](../04-gameplay-systems/combat.md#where-the-numbers-come-from-860) for the table.
+Without the file the converter warns and keeps the definitions' values.
+
 ## Current status
 
 Dormant between uses, but buildable - retargeted to SDK-style/net8.0 and added to

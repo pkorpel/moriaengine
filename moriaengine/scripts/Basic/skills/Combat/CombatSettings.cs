@@ -42,16 +42,16 @@ namespace SteamEngine.CompiledScripts {
 		public bool showCombatMessages = false;
 
 		[SaveableData]
-		public double bareHandsAttackVsP = 10;
+		public double bareHandsAttackVsP = 5; //nastaveni_weapdam_barehands
 
 		[SaveableData]
-		public double bareHandsAttackVsM = 10;
+		public double bareHandsAttackVsM = 5; //nastaveni_weapdam_barehands
 
 		[SaveableData]
 		public double bareHandsPiercing = 100;
 
 		[SaveableData]
-		public double bareHandsSpeed = 100;
+		public double bareHandsSpeed = 200; //nastaveni_weapspeed_barehands
 
 		[SaveableData]
 		public int bareHandsRange = 1;

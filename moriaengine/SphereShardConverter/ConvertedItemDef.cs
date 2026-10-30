@@ -46,6 +46,8 @@ namespace SteamEngine.Converter {
 		WeaponType? computedWeaponType;
 		double? attackVsPValue;
 
+		string tData1, tData2;
+
 		//#700 - readable copy of TDATA3, needed by ConvertedCharDef's own "tag.mount"
 		//handling to resolve a T_EQ_HORSE mount item (e.g. i_mt_horse_brown_dk) to the real
 		//mount creature chardef it actually represents (TDATA3=c_horse_brown_dk) - the item's
@@ -309,6 +311,7 @@ namespace SteamEngine.Converter {
 		}
 
 		private static void HandleTData1(ConvertedDef def, PropsLine line) {
+			((ConvertedItemDef) def).tData1 = line.Value;
 			if (def.headerType.Equals("PotionDef", StringComparison.OrdinalIgnoreCase)) {
 				def.Set("EmptyFlask", line.Value, "converted from 'TDATA1'");
 			} else {
@@ -317,6 +320,7 @@ namespace SteamEngine.Converter {
 		}
 
 		private static void HandleTData2(ConvertedDef def, PropsLine line) {
+			((ConvertedItemDef) def).tData2 = line.Value;
 			WriteAsComment(def, line);
 		}
 
@@ -408,8 +412,19 @@ namespace SteamEngine.Converter {
 		};
 
 		public static void ThirdStageFinished() {
+			ApplyArmorSettings();
 			foreach (ConvertedItemDef def in itemsByDefname.Values) {
+				if (def.isWeapon) {
+					def.ApplyWeaponSettings();
+				} else if (def.headerType.EndsWith("ProjectileDef", StringComparison.OrdinalIgnoreCase)) {
+					def.ApplyAmmoSettings();
+				}
 				if (def.computedWeaponType != WeaponType.OneHandBlunt && def.computedWeaponType != WeaponType.TwoHandBlunt) {
+					continue;
+				}
+				if (SphereWorldVars.TryGetInt("nastaveni_staffSMbonus_" + def.PrettyDefname, out int staffBonus)) {
+					def.Set("MindPowerVsP", staffBonus.ToString(CultureInfo.InvariantCulture), "nastaveni_staffSMbonus");
+					def.Set("MindPowerVsM", staffBonus.ToString(CultureInfo.InvariantCulture), "");
 					continue;
 				}
 				if (def.attackVsPValue == null) {
@@ -440,6 +455,83 @@ namespace SteamEngine.Converter {
 					+ " (bare-hands baseline x this weapon's own real AttackVsP progression)";
 				def.Set("MindPowerVsP", mindPowerText, comment);
 				def.Set("MindPowerVsM", mindPowerText, "#539 - same scaling, AttackVsM==AttackVsP for every real weapon def");
+			}
+		}
+
+		//#860 - f_nastaveni_setdefault overwrites DAM with nastaveni_weapdam_<defname>; speed and
+		//piercing are read by the display id (combat.scp), so all materials share them
+		private void ApplyWeaponSettings() {
+			string defname = this.PrettyDefname;
+			string dispId = (this.modelDef != null) ? this.modelDef.PrettyDefname : defname;
+			if (SphereWorldVars.TryGetInt("nastaveni_weapdam_" + defname, out int attack)) {
+				this.attackVsPValue = attack;
+				this.Replace("attackVsP", attack.ToString(CultureInfo.InvariantCulture), "nastaveni_weapdam");
+				this.Replace("attackVsM", attack.ToString(CultureInfo.InvariantCulture), "nastaveni_weapdam");
+			}
+			if (SphereWorldVars.TryGetInt("nastaveni_weapspeed_" + dispId, out int speed)) {
+				this.Replace("speed", speed.ToString(CultureInfo.InvariantCulture), "nastaveni_weapspeed");
+			}
+			if (SphereWorldVars.TryGetInt("nastaveni_weappiercing_" + dispId, out int piercing)) {
+				this.Replace("piercing", piercing.ToString(CultureInfo.InvariantCulture), "nastaveni_weappiercing");
+			}
+		}
+
+		//#860 - ammo's TDATA1 and TDATA2 index nastaveni_arrowdamage_N (combat.scp): the first is a
+		//damage multiplier in permille, the second piercing; no TDATA2 is index 0, piercing 0
+		private void ApplyAmmoSettings() {
+			if (!int.TryParse(this.tData1, NumberStyles.Integer, CultureInfo.InvariantCulture, out int damageIndex) ||
+					!SphereWorldVars.TryGetInt("nastaveni_arrowdamage_" + damageIndex, out int damage)) {
+				return;
+			}
+			if (!int.TryParse(this.tData2, NumberStyles.Integer, CultureInfo.InvariantCulture, out int piercingIndex)) {
+				piercingIndex = 0;
+			}
+			SphereWorldVars.TryGetInt("nastaveni_arrowdamage_" + piercingIndex, out int piercing);
+			this.Set("DamageMultiplier", (damage / 1000.0).ToString("0.0##", CultureInfo.InvariantCulture), "nastaveni_arrowdamage_" + damageIndex);
+			this.Set("Piercing", piercing.ToString(CultureInfo.InvariantCulture), "nastaveni_arrowdamage_" + piercingIndex);
+		}
+
+		//#860 - the defnames of the f_<type>defname functions in nastaveni_ceho.scp, {0} = metal
+		private static readonly Dictionary<string, string[]> armorSetPieces = new Dictionary<string, string[]> {
+			{ "plate", new[] { "i_{0}_closed_helm", "i_{0}_bascinet", "i_{0}_nose_helm", "i_{0}_plate_helm", "i_{0}_platemail_gorget", "i_{0}_platemail",
+				"i_{0}_female_platemail", "i_{0}_platemail_arms", "i_{0}_platemail_gauntlets", "i_{0}_platemail_leggings", "i_{0}_heater_shield" } },
+			{ "chain", new[] { "i_{0}_chainmail_coif", "i_{0}_chainmail_gorget", "i_{0}_chainmail_tunic", "i_{0}_chainmail_sleeves", "i_{0}_chainmail_gloves",
+				"i_{0}_chainmail_leggings", "i_{0}_metal_shield" } },
+			{ "ring", new[] { "i_{0}_ringmail_helm", "i_{0}_ringmail_gorget", "i_{0}_ringmail_tunic", "i_{0}_ringmail_sleeves", "i_{0}_ringmail_gloves",
+				"i_{0}_ringmail_leggings", "i_{0}_kite_wood_shield" } },
+			{ "bone", new[] { "i_bone_helmet_{0}", "i_bone_chest_{0}", "i_bone_arms_{0}", "i_bone_gloves_{0}", "i_bone_leggings_{0}" } },
+			{ "studded", new[] { "i_studded_cap_{0}", "i_studded_gorget_{0}", "i_studded_tunic_{0}", "i_armor_female_bustier_studded_{0}", "i_armor_female_studded_{0}",
+				"i_studded_sleeves_{0}", "i_studded_gloves_{0}", "i_studded_leggings_{0}", "i_{0}_buckler_shield" } }
+		};
+
+		private static readonly string[] armorMetals = { "copper", "iron", "silver", "golden", "verite", "valorite", "obsidian", "adamantinum", "mithril" };
+
+		//#860 - f_nastav_armorset: nastaveni_armorarmor_<metal>_<type> is the armor of every piece of
+		//the set, a shield gets a sixth of it, and a plate set's shield then loses another 8
+		private static void ApplyArmorSettings() {
+			SphereWorldVars.TryGetInt("nastaveni_global_plateshield_armor_decrease", out int plateShieldChange);
+			foreach (KeyValuePair<string, string[]> set in armorSetPieces) {
+				foreach (string metal in armorMetals) {
+					if (!SphereWorldVars.TryGetInt("nastaveni_armorarmor_" + metal + "_" + set.Key, out int armor)) {
+						continue;
+					}
+					foreach (string piece in set.Value) {
+						string defname = string.Format(CultureInfo.InvariantCulture, piece, metal);
+						if (itemsByDefname.TryGetValue(defname, out ConvertedThingDef thing)) {
+							bool isShield = defname.EndsWith("_shield", StringComparison.OrdinalIgnoreCase);
+							int value = isShield ? (armor / 6) : armor;
+							if (isShield && set.Key.Equals("plate")) {
+								value += plateShieldChange;
+							}
+							thing.Replace("armorVsP", value.ToString(CultureInfo.InvariantCulture), "nastaveni_armorarmor");
+							thing.Replace("armorVsM", value.ToString(CultureInfo.InvariantCulture), "");
+							if (SphereWorldVars.TryGetInt("nastaveni_armorparts_OM_" + defname, out int mindDefense)) {
+								thing.Replace("mindDefenseVsP", mindDefense.ToString(CultureInfo.InvariantCulture), "nastaveni_armorparts_OM");
+								thing.Replace("mindDefenseVsM", mindDefense.ToString(CultureInfo.InvariantCulture), "");
+							}
+						}
+					}
+				}
 			}
 		}
 
