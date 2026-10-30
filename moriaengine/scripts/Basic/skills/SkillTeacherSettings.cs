@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 	/// #828 - GM-tunable rules of Erebor's skill teachers (spk_mistr, SkillTeacherSpeech), shown as a
 	/// "Skill Teachers" category in the .settings dialog. Defaults are the archive's (systems/mistri.scp,
 	/// [defnames mistr_settings]) except requireRank: the player ranks come from Erebor's rank quests (#833),
-	/// so until those are ported teachers don't ask for one.
+	/// whose pieces a GM has to place first, so teachers only ask for one once it's switched on.
 	/// </summary>
 	[SaveableClass]
 	[HasSavedMembers]
@@ -38,7 +38,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>A lesson needs the player's rank (Player.SkillRank): Expert for 25->30, Master for 50->55,
-		/// Grandmaster for 75->80, as in Erebor. Off until the rank quests (#833) let players earn ranks.</summary>
+		/// Grandmaster for 75->80, as in Erebor. Off by default: switch it on after running the rank quests' setup
+		/// commands (#833), before that nobody can earn a rank.</summary>
 		[SaveableData]
 		public bool requireRank = false;
 
