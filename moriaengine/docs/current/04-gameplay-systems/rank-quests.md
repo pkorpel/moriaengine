@@ -1,8 +1,10 @@
 # Rank quests
 
 A player's rank (`Player.SkillRank`: Novice, Expert, Master, Grandmaster) comes from Erebor's three rank quests. The
-skill teachers can require it for their lessons, see [NPC speech](npc-speech.md). The quests are being ported one at a
-time (#833): **Expert and Master are done**; Grandmaster (`questy/velmistr.scp`) is not.
+skill teachers can require it for their lessons, see [NPC speech](npc-speech.md). All three are ported (#833).
+
+**To turn the system on**, a GM runs `.SetupExpertQuest`, `.SetupMasterQuest` and `.SetupGrandmasterQuest`, then switches on
+`requireRank` in `.settings` -> "Skill Teachers".
 
 The archive holds the quest scripts but not Erebor's world: its stones, signs and NPCs were placed by GMs on the live
 server. So each quest comes with a GM command that places its pieces, and the pieces stay ordinary world objects that
@@ -83,6 +85,63 @@ A GM adding Lenastir by hand needs to make him invulnerable (Erebor's `@create`,
   container.
 - The quest stone statistics (`questMenu_questStone`) are not kept.
 
+## Grandmaster quest
+
+Code: `scripts/Basic/Quests/GrandmasterQuest.cs`, from `questy/velmistr.scp` (the q000 line). A Master of level 12+ starts it.
+Progress is one number per player, `GrandmasterQuest.GetStage` (Erebor's `q000_velmistr`):
+
+| Stage | How it's reached |
+|---|---|
+| 1 | Elqira tells of her lost daughters. Picking the wrong words or place upsets her, and she won't talk for 60-150 s |
+| 2 or 3 | Found Elvira first (spellbound), or Elmira first, who asks to find Elvira |
+| 4 | Found Elvira after Elmira |
+| 5 | Elmira sends the player for the root of Este |
+| 6 | Double-clicked the root in the Ered Mithrin cave, once its guards are dead |
+| 7 | Double-clicked Elvira, who takes the root (only by hand, not by talking) |
+| 8 | Elvira told of Rinald and his name |
+| 9 | Killed Rinald and left his cave |
+| 10 | Opened Elmira's cage |
+| 11 | Told Elqira: a magic bag and 2500 gold |
+| 12 | Optional, see below |
+| 13 | The envoy of the player's realm makes them a Grandmaster |
+
+**Rinald's cave** (`a_Slunecni_jeskyne`, plane 5, in the archive as the "vm quest" area) opens only at stage 8, and allows 60
+minutes. Rinald is invulnerable and no way out opens while he lives. His hounds must be dead before he talks. Naming him
+wrongly throws the player out; saying "Rinald" turns him into a daemon 3 seconds later, and he can be killed. A Rinald who
+already turned is replaced when the next hero enters.
+
+The dialogs (`GrandmasterQuestDialogs.cs`) are Erebor's texts byte for byte, generated from the archive once and meant to
+be read like normal code. They sit on `QuestDialogDef` and `QuestDialogContent` (`QuestDialog.cs`), the part of Erebor's
+`questDialog_framework.scp` this quest uses, ready for other quests. Everything the player reads in this quest is Czech.
+
+### Setting it up
+
+`.SetupGrandmasterQuest` (GM) places the pieces and replaces an earlier run's. Pieces in caves and on the plains are found by
+walking outward from the region's spawn point by the real movement rules, so they can always be reached from there.
+
+| Piece | Spot | Source |
+|---|---|---|
+| Rinald, his cave's exit, 4 hellhounds | `a_Slunecni_jeskyne`, 30 and 3 steps from its spawn point | The area is the archive's, the spots are proposals |
+| Elvira | `a_Severni_Spoust`, 10 steps from its spawn point | Proposal. That area is the story's Ice Plains (`r_led_plane`) |
+| Elmira, the cage door, the cave's entrance | `a_Severni_Spoust`, 26 steps | Proposal. **There are no cage bars**: Erebor's were built by GMs. She stands still beside the door |
+| Root of Este, 4 alarm tiles, 3 phoenixes | `a_Ered_Mithrinska_Jeskyne`, plane 2, 30 steps | Proposal, from Elmira's story |
+| Elqira, twice | Beside both Expert stones | Proposal |
+| The envoys | Spawn points of `a_Minas_Tirith` and `a_Rhun` | From the story's "v Minas Tirith / ve Rhunu" |
+
+The two cave gates are this repo's own items (`GrandmasterQuest.def`): Erebor's general varGate isn't in the archive.
+
+### Differences from Erebor
+
+Tracked in #837:
+
+- Rinald's breath and `e_rinald`'s weakening by profession are not ported, so he is a harder fight.
+- The quest journal (`questMenu`) isn't kept.
+- Stage 12 can't happen: it comes from hints in other quests' NPC dialogs, which aren't ported. It's optional.
+- Dying in the cave takes the player out on the next minute tick, and the corpse stays inside.
+- The Zmocnenec only does the promotion; the rest of his dialog is the q30 quest.
+
+Also: "guarded" means any hostile creature within 10 tiles, where Erebor's guardit system listed spawns by hand.
+
 ### Gotcha: `On_Create` in a compiled trigger group
 
 `ThingDef.Trigger_Create` fires `TryTrigger(TriggerKey.create, null)`, and the generated `CompiledTriggerGroup` code reads
@@ -93,3 +152,5 @@ Tests: `ExpertQuestTests` (protocol: the setup command, the GM links, the whole 
 the real minute timer, leaving the cave, re-running the setup mid-quest).
 `MasterQuestTests` (protocol: the setup and that its spots are walkable, Lenastir's answers, the key and teleport, the real
 queen's egg lifted from her corpse, the reward, a plain egg, someone else's egg, a wasted key).
+`GrandmasterQuestTests` (protocol: the setup and that its spots are walkable, the whole story in both orders through real
+gumps, an upset Elqira, guards, the closed cave, a wrong name, Rinald's change and death, the reward, the envoy's realm).

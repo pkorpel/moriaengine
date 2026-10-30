@@ -703,4 +703,13 @@
   <data name="MasterQuestLoc_CantPass" xml:space="preserve">
     <value>You can't go through here!</value>
   </data>
+  <data name="QuestDialogLoc_TooFar" xml:space="preserve">
+    <value>You are too far away!</value>
+  </data>
+  <data name="QuestDialogLoc_NotAsAGhost" xml:space="preserve">
+    <value>You can't do this as a ghost!</value>
+  </data>
+  <data name="QuestDialogLoc_TooFarToTalk" xml:space="preserve">
+    <value>They won't deal with you from that distance.</value>
+  </data>
 </root>

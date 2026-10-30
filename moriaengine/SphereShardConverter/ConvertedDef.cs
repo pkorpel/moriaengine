@@ -215,6 +215,9 @@ namespace SteamEngine.Converter {
 		}
 
 		protected static void MayBeInt_IgnorePoint(ConvertedDef def, PropsLine line) {
+			if (line.Value.Trim().Length == 0) {
+				return; //a blank WEIGHT= can't be parsed the first time the def's Weight is read, which breaks even removing the item
+			}
 			string retVal = TryNormalizeNumber(line.Value.Replace(".", ""));
 			def.Set(line.Name, retVal, line.Comment);
 			//return retVal;

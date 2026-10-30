@@ -1,0 +1,18 @@
+//#833 - Erebor's Grandmaster quest went into and out of Rinald's cave through varGates, a general item the archive
+//doesn't define. These are that quest's two, see GrandmasterQuest.cs.
+
+[ItemDef i_q000_caveEntrance]
+CATEGORY = Moria
+SUBSECTION = velmistrovsky quest
+DESCRIPTION = Vstup do Rinaldovy jeskyne
+NAME = "Vstup do jeskyne"
+TYPE = t_script
+model = 0x0dda
+
+[ItemDef i_q000_caveExit]
+CATEGORY = Moria
+SUBSECTION = velmistrovsky quest
+DESCRIPTION = Vychod z Rinaldovy jeskyne
+NAME = "Vychod z jeskyne"
+TYPE = t_script
+model = 0x0dda

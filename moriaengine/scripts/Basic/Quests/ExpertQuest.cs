@@ -218,7 +218,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void End(Item site, bool sendHome) {
 			Player player = GetQuestPlayer(site);
 			site.RemoveTag(playerTK);
-			site.RemoveTimer(timerTK);
+			site.DeleteTimer(timerTK);
 			RemoveMaster(site);
 			if (player != null) {
 				player.RemoveTag(questionTK);
@@ -351,12 +351,37 @@ namespace SteamEngine.CompiledScripts {
 			for (int ax = x - range; ax <= x + range; ax++) {
 				for (int ay = y - range; ay <= y + range; ay++) {
 					int z;
-					if (CanStand(map, ax, ay, out z) && ((best == null) || (Dist(new[] { ax, ay }, x, y) < Dist(best, x, y)))) {
+					if (map.IsValidPos(ax, ay) && CanStand(map, ax, ay, out z) && ((best == null) || (Dist(new[] { ax, ay }, x, y) < Dist(best, x, y)))) {
 						best = new[] { ax, ay, z };
 					}
 				}
 			}
 			return best;
+		}
+
+		/// <summary>The {x, y, z} tiles `steps` walking steps away from `start` by the real movement rules, or as far as
+		/// there is to walk, so a player can get to them from there.</summary>
+		internal static List<int[]> WalkableRing(Map map, IPoint3D start, IMovementSettings settings, int steps) {
+			HashSet<long> seen = new HashSet<long>();
+			List<int[]> ring = new List<int[]> { new[] { start.X, start.Y, start.Z } };
+			seen.Add((((long) start.X) << 16) | (uint) start.Y);
+			for (int step = 0; step < steps; step++) {
+				List<int[]> next = new List<int[]>();
+				foreach (int[] tile in ring) {
+					Point3D probe = new Point3D(tile[0], tile[1], tile[2]);
+					for (int dir = 0; dir < 8; dir++) {
+						int x, y, z;
+						if (map.CheckMovement(probe, settings, (Direction) dir, false, out x, out y, out z) && seen.Add((((long) x) << 16) | (uint) y)) {
+							next.Add(new[] { x, y, z });
+						}
+					}
+				}
+				if (next.Count == 0) {
+					break;
+				}
+				ring = next;
+			}
+			return ring;
 		}
 
 		/// <summary>The .SetupExpertQuest command: Erebor's two start stones, one quest site per rectangle of the a_expert
