@@ -251,6 +251,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#833 - Erebor's f_qSpeech/f_qDClick and f_npcUpset, for NPCs with quest dialogs.</summary>
 	public static class QuestNpc {
 		public const int TalkDistance = 3;
+		private const int BlessingEffect = 0x2ED0, SparkleEffect = 0x3779, SnowHue = 1153, BlackHue = 1;
 		private static readonly TagKey upsetTillTK = TagKey.Acquire("_questNpcUpsetTill_");
 
 		private static readonly string[] upsetSays = { "Nech me byt..", "Promin, nechci ted s tebou mluvit.", "Prosim nech me byt!", "Nemluv na me!", "Jdi odeme pryc!", "Odejdi..." };
@@ -265,6 +266,22 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			def.AddTriggerGroup(tg);
+		}
+
+		/// <summary>#852 - a new rank: Erebor's level-up celebration (experiences.scp), the gate sound, Manwe's blessing and a
+		/// circle of sparkles, white for Gondor and black for everyone else.</summary>
+		public static void CelebrateRank(Player player) {
+			player.Sound((int) SoundNames.gatetrvl);
+			EffectFactory.StationaryEffect(player, BlessingEffect, 0, 32);
+			int hue = (player.Realm == Realm.Gondor) ? SnowHue : BlackHue;
+			for (int dx = -2; dx <= 2; dx++) {
+				for (int dy = -2; dy <= 2; dy++) {
+					if ((Math.Abs(dx) == 2) || (Math.Abs(dy) == 2)) { //the 16 tiles around the player, as Erebor's do_a_cyrcle
+						Point4D spot = new Point4D(player.X + dx, player.Y + dy, player.Z, player.M);
+						EffectFactory.StationaryEffectAt(spot, SparkleEffect, 10, 30, true, false, hue, RenderModes.Opaque);
+					}
+				}
+			}
 		}
 
 		/// <summary>Whether the player stands close enough to deal with the NPC; tells them if not.</summary>

@@ -60,7 +60,21 @@ namespace SteamEngine.CompiledScripts {
 			strayUid = stray.Uid;
 			door.Delete();
 			FindOne(MasterQuest.LenastirDef).RemoveTag(TagKey.Acquire("_worldPieceId_"));
+			((Item) FindOne(ExpertQuest.SignDef)).SetAttribute(ItemAttributes.attr_move_never, false); //as placed before item pieces were fixed
 			Console.WriteLine("WORLD_EDIT: moved=" + to[0] + "," + to[1]);
+		}
+
+		//item pieces that a player could pick up, or that would decay away
+		private static int LoosePieces() {
+			int loose = 0;
+			TagKey idTK = TagKey.Acquire("_worldPieceId_");
+			foreach (Thing thing in Thing.AllThings) {
+				Item item = thing as Item;
+				if ((item != null) && !item.IsDeleted && (item.GetTag(idTK) != null) && (!item.Flag_NonMovable || ItemDecaySystem.HasActiveTimer(item))) {
+					loose++;
+				}
+			}
+			return loose;
 		}
 
 		[SteamFunction]
@@ -68,7 +82,7 @@ namespace SteamEngine.CompiledScripts {
 			Thing elvira = FindOne(GrandmasterQuest.ElviraDef);
 			Thing stray = Thing.UidGetThing(strayUid);
 			Console.WriteLine("WORLD_CHECK: elviras=" + Count(GrandmasterQuest.ElviraDef) + " elviraMoved=" + ((elvira.X == movedX) && (elvira.Y == movedY)) + " elviraAt=" + elvira.X + "," + elvira.Y +
-				" doors=" + Count(GrandmasterQuest.CageDoorDef) + " strayThere=" + (stray != null) +
+				" loose=" + LoosePieces() + " doors=" + Count(GrandmasterQuest.CageDoorDef) + " strayThere=" + (stray != null) +
 				" stones=" + Count(ExpertQuest.StartStoneDef) + " lenastirs=" + Count(MasterQuest.LenastirDef) + " rinalds=" + Count(GrandmasterQuest.RinaldDef) + " elqiras=" + Count(GrandmasterQuest.ElqiraDef));
 		}
 	}

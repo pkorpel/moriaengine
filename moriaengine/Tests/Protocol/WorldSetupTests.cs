@@ -34,6 +34,7 @@ namespace SteamEngine.Tests.Protocol {
 
 				string counts = this.Ask(admin, ".TestWorldSetupCheck", "WORLD_CHECK:");
 				Assert.Contains("stones=2 lenastirs=2 rinalds=1 elqiras=2", counts);
+				Assert.Contains("loose=0", counts);
 
 				//a GM's edits: the moved piece stays moved, the deleted one comes back, the unrelated item stays;
 				//and a Lenastir from before pieces had ids is taken as that piece, not doubled
@@ -41,7 +42,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("added=1 kept=" + (AllPieces - 1), this.Ask(admin, ".SetupWorld", "SETUP_DONE:"));
 				counts = this.Ask(admin, ".TestWorldSetupCheck", "WORLD_CHECK:");
 				Assert.Contains("elviras=1 elviraMoved=True", counts);
-				Assert.Contains("doors=1 strayThere=True", counts);
+				Assert.Contains("loose=0 doors=1 strayThere=True", counts); //a sign placed loose by an older version is fixed too
 				Assert.Contains("stones=2 lenastirs=2 rinalds=1 elqiras=2", counts);
 			}
 			using (var client = this.Connect(Account, "Setup Player")) {

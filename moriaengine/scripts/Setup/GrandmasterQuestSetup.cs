@@ -65,7 +65,7 @@ namespace SteamEngine.CompiledScripts {
 			Map caveMap = Map.GetMap(cave.M);
 			int[] rinaldAt = WorldSpots.WalkableRing(caveMap, cave, walker, 30)[0];
 			NPC rinald = pieces.Npc(GrandmasterQuest.RinaldPieceId, GrandmasterQuest.RinaldDef, rinaldAt, cave.M, GrandmasterQuest.PrepareRinald);
-			GrandmasterQuest.LinkCave(entrance, pieces.Item(Id("cave/exit"), GrandmasterQuest.CaveExitDef, WorldSpots.WalkableRing(caveMap, cave, walker, 3)[0], cave.M, Fix), rinald, rinaldAt, cave.M);
+			GrandmasterQuest.LinkCave(entrance, pieces.Item(Id("cave/exit"), GrandmasterQuest.CaveExitDef, WorldSpots.WalkableRing(caveMap, cave, walker, 3)[0], cave.M), rinald, rinaldAt, cave.M);
 			pieces.SpawnGem(Id("cave/hounds"), new SpawnInfo(4, (IThingFactory) ThingDef.GetByDefname("c_hellhound"), 20, 40, 8),
 				WorldSpots.WalkableRing(caveMap, new Point3D(rinaldAt[0], rinaldAt[1], rinaldAt[2]), walker, 3)[0], cave.M);
 		}
@@ -88,10 +88,6 @@ namespace SteamEngine.CompiledScripts {
 			return "grandmaster/" + name;
 		}
 
-		private static void Fix(Item item) {
-			item.SetAttribute(ItemAttributes.attr_move_never, true);
-		}
-
 		private static void PlaceStill(WorldPieces pieces, string name, string defname, int[] at, byte m) {
 			pieces.Npc(Id(name), defname, at, m, npc => {
 				npc.Flag_Invulnerable = true; //Erebor's @create
@@ -100,7 +96,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static Item PlaceFixed(WorldPieces pieces, string name, string defname, int[] at, byte m) {
-			return pieces.Item(Id(name), defname, at, m, Fix);
+			return pieces.Item(Id(name), defname, at, m);
 		}
 	}
 }

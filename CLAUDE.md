@@ -1,5 +1,13 @@
 # moriaengine — working state
 
+## DONE (2026-10-30): #852 Expert quest in-game test feedback (branch 852-quest-test-feedback)
+
+User tested: (1) added=38 = their build predated #851's gates, no bug. (2) Quest pieces decayed: WorldPieces.Item now sets attr_move_never on
+every item piece on every run, which also stops players picking them up; a fixed item can't be dragged even by a GM (clear the
+attribute in .info). (3) Rank-up celebration: QuestNpc.CelebrateRank ports Erebor's level-up (gate sound, effect 0x2ED0 "pozehnani Manweho",
+16 sparkles, white Gondor / black otherwise), on all three rank-ups. (4) User asked if the master should be a spawn: decision keep it per-quest
+as on Erebor, invulnerable.
+
 ## DONE (2026-10-30): #850 Ered Mithrin cave: entrance, root of Este at its end (branch ered-mithrin-cave)
 
 **Done**: scripts/Setup/DungeonEntrancesSetup.cs (.SetupDungeonEntrances, in .SetupWorld): a two-way i_moongate_red (t_telepad + MoreP) from

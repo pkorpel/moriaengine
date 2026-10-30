@@ -19,6 +19,10 @@ Every piece has a permanent id, like `grandmaster/elvira`, kept in a tag on the 
 
 Nothing is ever removed or replaced, and nothing the setups didn't ask for is touched. Ids survive a save and restart.
 
+Every item piece is fixed in place (`attr_move_never`), which also stops it decaying and keeps players from picking it up. A run
+applies this to pieces that already exist too, and that's the only thing it does to them. To move an item piece, a GM clears that
+attribute in `.info` first, since a fixed item can't be dragged even by a GM.
+
 The run reports what it did: `SETUP_DONE: World added=1 kept=37`.
 
 Two consequences:

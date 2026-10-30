@@ -121,7 +121,7 @@ namespace SteamEngine.CompiledScripts {
 					busy++;
 				}
 			}
-			Console.WriteLine(state + " busySites=" + busy + " masters=" + CountMasters());
+			Console.WriteLine(state + " busySites=" + busy + " masters=" + CountMasters() + " masterInvulnerable=" + AllMastersInvulnerable());
 		}
 
 		private static int MasterUid(Item site) {
@@ -131,6 +131,17 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			return -1;
+		}
+
+		private static bool AllMastersInvulnerable() {
+			foreach (ImmutableRectangle rect in StaticRegion.GetByDefname("a_expert").Rectangles) {
+				foreach (Thing t in Map.GetMap(0).GetThingsInRectangle(rect)) {
+					if (IsMaster(t) && !((Character) t).Flag_Invulnerable) {
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 
 		private static int CountMasters() {
