@@ -19,8 +19,8 @@ namespace SteamEngine.Tests.Protocol {
 			using (var fixture = new GameServerPairFixture()) {
 				using (var client = Connect(fixture, "Speech Tester")) {
 					string report = Ask(fixture, client, ".TestSpeechStubReport", "SPEECH_STUB_REPORT:");
-					//252 archive blocks: 5 ported in C#, spk_vendor_custom is the LScript one in scripts/Optional/PlayerVendor
-					AssertHas(report, "stubs=246 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech healer=HealerSpeech mistr=SkillTeacherSpeech");
+					//252 archive blocks: 6 ported in C#, spk_vendor_custom is the LScript one in scripts/Optional/PlayerVendor
+					AssertHas(report, "stubs=245 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech healer=HealerSpeech mistr=SkillTeacherSpeech");
 
 					Ask(fixture, client, ".TestSpawnSpeechStubListener", "SPEECH_STUB_LISTENER:");
 					client.SendSpeech("hello there");

@@ -676,4 +676,19 @@
   <data name="SkillTeacherLoc_LevelTooLow" xml:space="preserve">
     <value>Your level is too low.</value>
   </data>
+  <data name="ExpertQuestLoc_AlreadyWalkedThisPath" xml:space="preserve">
+    <value>You have already walked this path.</value>
+  </data>
+  <data name="ExpertQuestLoc_WaitUntilFree" xml:space="preserve">
+    <value>You must wait until the quest is free.</value>
+  </data>
+  <data name="ExpertQuestLoc_LevelTooLow" xml:space="preserve">
+    <value>You must be at least level {0}.</value>
+  </data>
+  <data name="ExpertQuestLoc_MinutesLeft" xml:space="preserve">
+    <value>You have {0} more minutes to solve the quest.</value>
+  </data>
+  <data name="ExpertQuestLoc_ComeCloser" xml:space="preserve">
+    <value>There will be no shouting. You must come closer.</value>
+  </data>
 </root>
