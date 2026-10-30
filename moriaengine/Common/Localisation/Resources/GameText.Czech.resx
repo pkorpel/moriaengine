@@ -676,4 +676,19 @@
   <data name="SkillTeacherLoc_LevelTooLow" xml:space="preserve">
     <value>Jsi na moc nízké úrovni.</value>
   </data>
+  <data name="ExpertQuestLoc_AlreadyWalkedThisPath" xml:space="preserve">
+    <value>Ty už máš tuto cestu za sebou.</value>
+  </data>
+  <data name="ExpertQuestLoc_WaitUntilFree" xml:space="preserve">
+    <value>Musíš počkat, až se quest uvolní.</value>
+  </data>
+  <data name="ExpertQuestLoc_LevelTooLow" xml:space="preserve">
+    <value>Musíš mít alespoň level {0}.</value>
+  </data>
+  <data name="ExpertQuestLoc_MinutesLeft" xml:space="preserve">
+    <value>Na vyřešení questu ti zbývá ještě {0} minut.</value>
+  </data>
+  <data name="ExpertQuestLoc_ComeCloser" xml:space="preserve">
+    <value>Řvát na sebe nebudete. Musíš přijít blíž.</value>
+  </data>
 </root>
