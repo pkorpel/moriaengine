@@ -256,6 +256,17 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly string[] upsetSays = { "Nech me byt..", "Promin, nechci ted s tebou mluvit.", "Prosim nech me byt!", "Nemluv na me!", "Jdi odeme pryc!", "Odejdi..." };
 		private static readonly string[] upsetEmotes = { "s tebou odmita mluvit", "te ignoruje", "je velmi zneklidnena a nekomunikuje" };
 
+		/// <summary>The quests' items and NPCs carry their behavior in their own triggers, which the converter can't port:
+		/// a quest's Init attaches its C# trigger groups to the converted defs with this.</summary>
+		public static void Attach(string defname, TriggerGroup tg) {
+			AbstractDefTriggerGroupHolder def = ThingDef.GetByDefname(defname) as AbstractDefTriggerGroupHolder;
+			if (def == null) {
+				Logger.WriteWarning("Quest: " + defname + " is missing, its quest behavior isn't attached.");
+				return;
+			}
+			def.AddTriggerGroup(tg);
+		}
+
 		/// <summary>Whether the player stands close enough to deal with the NPC; tells them if not.</summary>
 		public static bool IsCloseEnough(Character npc, Character player) {
 			if (Point2D.GetSimpleDistance(npc, player) > TalkDistance) {

@@ -44,7 +44,7 @@ namespace SteamEngine.CompiledScripts {
 			player.SkillRank = SkillRank.Novice;
 			player.Realm = Realm.Gondor;
 			Item stone = GondorStone();
-			player.Go(stone.X + 1, stone.Y, ExpertQuest.StandZ(stone.GetMap(), stone.X + 1, stone.Y), stone.M);
+			player.Go(stone.X + 1, stone.Y, WorldSpots.StandZ(stone.GetMap(), stone.X + 1, stone.Y), stone.M);
 			Console.WriteLine("EXPERT_PREPARE: stone=" + stone.Uid + " sites=" + ExpertQuest.GetSites(stone).Count);
 		}
 
@@ -52,7 +52,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestExpertQuestGoToStone(Character self) {
 			Item stone = GondorStone();
-			self.Go(stone.X + 1, stone.Y, ExpertQuest.StandZ(stone.GetMap(), stone.X + 1, stone.Y), stone.M);
+			self.Go(stone.X + 1, stone.Y, WorldSpots.StandZ(stone.GetMap(), stone.X + 1, stone.Y), stone.M);
 			Console.WriteLine("EXPERT_AT_STONE: " + stone.Uid);
 		}
 
@@ -62,8 +62,8 @@ namespace SteamEngine.CompiledScripts {
 			Item stone = GondorStone();
 			TestExpertQuestGoToStone(self);
 			Map map = stone.GetMap();
-			newSite = (Item) ThingDef.GetByDefname(ExpertQuest.SiteDef).Create(stone.X + 2, stone.Y, ExpertQuest.StandZ(map, stone.X + 2, stone.Y), stone.M);
-			newSign = (Item) ThingDef.GetByDefname(ExpertQuest.SignDef).Create(stone.X, stone.Y + 1, ExpertQuest.StandZ(map, stone.X, stone.Y + 1), stone.M);
+			newSite = (Item) ThingDef.GetByDefname(ExpertQuest.SiteDef).Create(stone.X + 2, stone.Y, WorldSpots.StandZ(map, stone.X + 2, stone.Y), stone.M);
+			newSign = (Item) ThingDef.GetByDefname(ExpertQuest.SignDef).Create(stone.X, stone.Y + 1, WorldSpots.StandZ(map, stone.X, stone.Y + 1), stone.M);
 			Console.WriteLine("EXPERT_PIECES: stone=" + stone.Uid + " site=" + newSite.Uid + " sign=" + newSign.Uid + " invisibleBefore=" + newSite.Flag_Invisible);
 		}
 
@@ -92,10 +92,10 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("EXPERT_TICK: done");
 		}
 
-		/// <summary>The GM's .SetupExpertQuest again, without leaving my plain account.</summary>
+		/// <summary>The GM's .SetupExpertQuest again, from a plain account.</summary>
 		[SteamFunction]
 		public static void TestExpertQuestResetup(Character self) {
-			ExpertQuest.SetupExpertQuest(self);
+			new ExpertQuestSetup().Run(self);
 		}
 
 		/// <summary>Where I am, my rank, and - while I'm on the quest - its answers and a sign with its clue.</summary>

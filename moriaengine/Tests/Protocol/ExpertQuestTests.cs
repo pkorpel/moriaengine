@@ -27,8 +27,7 @@ namespace SteamEngine.Tests.Protocol {
 			using (var admin = this.ConnectOnce(AdminAccount, "Quest Admin")) {
 				this.Ask(admin, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST:");
 				autoAccountCreationEnabled = true;
-				string setup = this.Ask(admin, ".SetupExpertQuest", "SETUP_EXPERT_QUEST:");
-				Assert.Contains("stones=2 sites=2 signs=12", setup);
+				Assert.Contains("added=16 kept=0", this.Ask(admin, ".SetupExpertQuest", "SETUP_DONE:"));
 
 				//Erebor's GM linking: double-click a new site and target the start stone, a new sign and target the site
 				string pieces = this.Ask(admin, ".TestExpertQuestNewPieces", "EXPERT_PIECES:");
@@ -113,14 +112,14 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("busySites=0 masters=0", state);
 				Assert.Contains("region=a_Anorien", state); //left where they walked out to, not sent home
 
-				//running the setup again in the middle of a quest takes the player home and leaves no master behind
+				//running the setup again in the middle of a quest changes nothing
 				stone = this.Prepare(client);
 				client.SendDoubleClick(stone);
 				Assert.Contains("masters=1", this.State(client));
-				this.Ask(client, ".TestExpertQuestResetup", "SETUP_EXPERT_QUEST:");
+				Assert.Contains("added=0 kept=16", this.Ask(client, ".TestExpertQuestResetup", "SETUP_DONE:"));
 				state = this.State(client);
-				Assert.DoesNotContain("region=a_expert", state);
-				Assert.Contains("busySites=0 masters=0", state);
+				Assert.Contains("region=a_expert rank=Novice onQuest=True", state);
+				Assert.Contains("busySites=1 masters=1", state);
 			}
 		}
 
