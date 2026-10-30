@@ -145,7 +145,9 @@ namespace SteamEngine.CompiledScripts {
 
 			if (!defender.IsDeleted && !defender.Flag_Dead && !defender.Flag_Insubst) {
 				defender.Trigger_HostileAction(attacker);
-				defender.Trigger_Disrupt();//nebo jen pri damage > 0 ?
+				if (!isSwing) {
+					defender.Trigger_Disrupt();//nebo jen pri damage > 0 ?
+				}
 
 				//#797 - e_explode remembers everyone who hurt it
 				MonsterSpecialAttacks.RecordExplodeFoe(attacker, defender);
@@ -175,6 +177,10 @@ namespace SteamEngine.CompiledScripts {
 				defender.Hits = (short) newHits;
 
 				int actualDamage = previousHits - newHits;
+				if (isSwing && !defender.IsDeleted && DoesSwingInterrupt(attacker.IsPlayerForCombat, attacker.WeaponProjectileType != ProjectileType.None,
+						defender.IsPlayerForCombat, actualDamage, defender.MaxHits)) {
+					defender.Trigger_Disrupt();
+				}
 				if (actualDamage > 0) {
 					//TODO create blood?
 					if (newHits > 0) {
@@ -248,6 +254,12 @@ namespace SteamEngine.CompiledScripts {
 				//#799 - an e_eye defender may make a physical blow bounce off entirely
 				MonsterSpecialAttacks.TryApplyMagicShield(attacker, defender, swingArgs);
 				MonsterSpecialAttacks.TryApplyEyeDeflect(attacker, defender, swingArgs);
+
+				if (TryDodge(attacker, defender, damageType)) {
+					swingArgs.InternalSetFinalDamage(0);
+					Trigger_AfterSwing(swingArgs);
+					return;
+				}
 
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true);
 
@@ -376,7 +388,11 @@ namespace SteamEngine.CompiledScripts {
 					attack = CombatCalculator.RoundLikeSphere(attacker.WeaponAttackVsM * settings.weapAttack);
 					attack = CombatCalculator.RoundLikeSphere(attack * GetAttackVsMonsterMultiplier(attacker, settings));
 				}
-				armorClass = defender.ArmorClassVsP * (defenderIsPlayer ? settings.armorClassP : settings.armorClassM);
+				if (defenderIsPlayer) {
+					armorClass = Math.Max(0, defender.ArmorClassVsP + GetPvPArmorChange(defender)) * settings.armorClassP;
+				} else {
+					armorClass = defender.ArmorClassVsP * settings.armorClassM;
+				}
 			} else {
 				attack = CombatCalculator.RoundLikeSphere(attacker.WeaponAttackVsM * settings.weapAttackM);
 				if (defenderIsPlayer) {
@@ -390,6 +406,41 @@ namespace SteamEngine.CompiledScripts {
 			double damageAfterAC = CombatCalculator.CalculateArmorClassEffect(attacker, defender, attack, piercing, armorClass);
 
 			return new WeaponSwingArgs(attacker, defender, attack, piercing, armorClass, damageAfterAC);
+		}
+
+		/// <summary>#860 - nastaveni_global_armorchange_vP_&lt;profession&gt;, against players only.</summary>
+		internal static int GetPvPArmorChange(Character defender) {
+			Player player = defender as Player;
+			ProfessionDef profession = (player != null) ? player.Profession : null;
+			return (profession != null) ? profession.PvPArmorChange : 0;
+		}
+
+		private static PassiveAbilityDef weaponDodgeDef;
+
+		/// <summary>#860 - f_dmgFinal_phys_dodge: a point of a_weapon_dodge dodges 1% of the monsters' physical
+		/// blows (nastaveni_ability_pvMdodge). Players' blows can't be dodged this way.</summary>
+		internal static bool TryDodge(Character attacker, Character defender, DamageType damageType) {
+			if (attacker.IsPlayerForCombat || ((damageType & DamageType.Physical) != DamageType.Physical)) {
+				return false;
+			}
+			if (weaponDodgeDef == null) {
+				weaponDodgeDef = (PassiveAbilityDef) AbilityDef.GetByDefname("a_weapon_dodge");
+			}
+			if ((defender.GetAbility(weaponDodgeDef) * CombatSettings.instance.weaponDodgePerPoint) <= Globals.dice.Next(1000)) {
+				return false;
+			}
+			defender.SysMessage(Loc<DamageManagerLoc>.Get(defender.Language).YouDodged);
+			SoundCalculator.PlayMissSound(attacker);
+			return true;
+		}
+
+		/// <summary>#860 - f_nonmystik_calcFizz: only a player's melee blow interrupts casting, a
+		/// hard one if the target is a player, 5 damage if not. Ammo never does.</summary>
+		public static bool DoesSwingInterrupt(bool attackerIsPlayer, bool isRanged, bool defenderIsPlayer, int damage, int defenderMaxHits) {
+			if (!attackerIsPlayer || isRanged) {
+				return false;
+			}
+			return damage >= (defenderIsPlayer ? (defenderMaxHits / 10) : 5);
 		}
 
 		/// <summary>#860 - vMweapattack grows with the player's level, up to 200.</summary>
@@ -522,5 +573,8 @@ namespace SteamEngine.CompiledScripts {
 			this.finalDamage = value;
 		}
 	}
-}
 
+	public class DamageManagerLoc : CompiledLocStringCollection<DamageManagerLoc> {
+		internal string YouDodged = "Uhnul jsi uderu.";
+	}
+}

@@ -22,6 +22,48 @@ namespace SteamEngine.CompiledScripts {
 
 	public static class CombatCalculator {
 
+		private const int bodyPartCount = 8;
+		private const int partHead = 0, partNeck = 1, partBack = 2, partChest = 3, partArms = 4, partHands = 5, partLegs = 6, partFeet = 7;
+
+		/// <summary>#860 - coverage of the body parts in percent, Sphere's race body part table.</summary>
+		private static readonly double[] bodyPartCoverage = { 14, 6, 18, 18, 14, 7, 17, 6 };
+
+		private static double SumOverBodyParts(double[] values) {
+			double sum = 0;
+			for (int i = 0; i < bodyPartCount; i++) {
+				sum += values[i] * bodyPartCoverage[i];
+			}
+			return sum / 100;
+		}
+
+		/// <summary>#860 - the switch in Sphere's CalcArmorDefense.</summary>
+		private static int[] GetBodyPartsOfLayer(LayerNames layer) {
+			switch (layer) {
+				case LayerNames.Helmet:
+					return new[] { partHead };
+				case LayerNames.Collar:
+					return new[] { partNeck };
+				case LayerNames.Cape:
+				case LayerNames.Robe:
+				case LayerNames.Chest:
+				case LayerNames.HalfApron:
+					return new[] { partChest, partBack };
+				case LayerNames.Shirt:
+				case LayerNames.Tunic:
+					return new[] { partChest, partBack, partArms };
+				case LayerNames.Arms:
+					return new[] { partArms };
+				case LayerNames.Gloves:
+					return new[] { partHands };
+				case LayerNames.Pants:
+				case LayerNames.Skirt:
+				case LayerNames.Shoes:
+				case LayerNames.Leggins:
+					return new[] { partLegs, partFeet };
+			}
+			return new int[0];
+		}
+
 		internal static CombatArmorValues CalculateCombatArmorValues(Character self) {
 			int armorClassVsP, mindDefenseVsP, armorClassVsM, mindDefenseVsM;
 			int resist = SkillDef.SkillValueOfChar(self, SkillName.MagicResist);
@@ -33,243 +75,47 @@ namespace SteamEngine.CompiledScripts {
 			armorClassVsP = self.DefForCombat.ArmorVsP;
 			armorClassVsM = self.DefForCombat.ArmorVsM;
 
-			double materialTotal = 0;
+			// #860 - Sphere's CalcArmorDefense: the best piece on each body part by coverage, plus
+			// the shield by Parrying, whoever wears them. On Erebor that's on top of the def's
+			// armor (armorsum), for monsters too. Mind defense counts on players only for now.
+			bool isPlayer = self.IsPlayerForCombat;
+			double[] armorVsP = new double[bodyPartCount], armorVsM = new double[bodyPartCount];
+			double[] mindDefVsP = new double[bodyPartCount], mindDefVsM = new double[bodyPartCount];
+			double[] materials = new double[bodyPartCount];
+			double shieldVsP = 0, shieldVsM = 0, materialTotal = 0;
 
-			//we calculate worn armor only for players
-			if (self.IsPlayerForCombat) {
-				double armorVsPHead = 0;
-				double armorVsPNeck = 0;
-				double armorVsPBack = 0;
-				double armorVsPChest = 0;
-				double armorVsPArms = 0;
-				double armorVsPHands = 0;
-				double armorVsPLegs = 0;
-				double armorVsPFeet = 0;
-
-				double armorVsMHead = 0;
-				double armorVsMNeck = 0;
-				double armorVsMBack = 0;
-				double armorVsMChest = 0;
-				double armorVsMArms = 0;
-				double armorVsMHands = 0;
-				double armorVsMLegs = 0;
-				double armorVsMFeet = 0;
-
-				double mindDefVsPHead = 0;
-				double mindDefVsPNeck = 0;
-				double mindDefVsPBack = 0;
-				double mindDefVsPChest = 0;
-				double mindDefVsPArms = 0;
-				double mindDefVsPHands = 0;
-				double mindDefVsPLegs = 0;
-				double mindDefVsPFeet = 0;
-
-				double mindDefVsMHead = 0;
-				double mindDefVsMNeck = 0;
-				double mindDefVsMBack = 0;
-				double mindDefVsMChest = 0;
-				double mindDefVsMArms = 0;
-				double mindDefVsMHands = 0;
-				double mindDefVsMLegs = 0;
-				double mindDefVsMFeet = 0;
-
-				double materialHead = 0;
-				double materialNeck = 0;
-				double materialBack = 0;
-				double materialChest = 0;
-				double materialArms = 0;
-				double materialHands = 0;
-				double materialLegs = 0;
-				double materialFeet = 0;
-
-				double armorVsPTotal = 0;
-				double armorVsMTotal = 0;
-
-				foreach (Item equipped in self.VisibleEquip) {
-					Wearable wearable = equipped as Wearable;
-					if (wearable != null) {
-						LayerNames layer = (LayerNames) wearable.Z;
-						int armorVsP = wearable.ArmorVsP;
-						int mindDefVsP = wearable.MindDefenseVsP;
-						int armorVsM = wearable.ArmorVsM;
-						int mindDefVsM = wearable.MindDefenseVsM;
-						
-						int material = 0;
-						ColoredArmor colored = wearable as ColoredArmor;
-						if (colored != null) {
-							material = (int) colored.TypeDef.Material;
-						}
-
-						if ((armorVsP > 0) || (mindDefVsP > 0) || (armorVsM > 0) || (mindDefVsM > 0)) {
-							switch (layer) {
-								case LayerNames.Helmet:
-									armorVsPHead = Math.Max(armorVsPHead, armorVsP);
-									mindDefVsPHead = Math.Max(mindDefVsPHead, mindDefVsP);
-									armorVsMHead = Math.Max(armorVsMHead, armorVsM);
-									mindDefVsMHead = Math.Max(mindDefVsMHead, mindDefVsM);
-									materialHead = Math.Max(materialHead, material);
-									break;
-								case LayerNames.Collar:
-									armorVsPNeck = Math.Max(armorVsPNeck, armorVsP);
-									mindDefVsPNeck = Math.Max(mindDefVsPNeck, mindDefVsP);
-									armorVsMNeck = Math.Max(armorVsMNeck, armorVsM);
-									mindDefVsMNeck = Math.Max(mindDefVsMNeck, mindDefVsM);
-									materialHead = Math.Max(materialHead, material);
-									break;
-								case LayerNames.Shirt:
-								case LayerNames.Chest:       // 13 = armor chest
-								case LayerNames.Tunic:       // 17 = jester suit
-									armorVsPBack = Math.Max(armorVsPBack, armorVsP);
-									armorVsPChest = Math.Max(armorVsPChest, armorVsP);
-									mindDefVsPBack = Math.Max(mindDefVsPBack, mindDefVsP);
-									mindDefVsPChest = Math.Max(mindDefVsPChest, mindDefVsP);
-									armorVsMBack = Math.Max(armorVsMBack, armorVsM);
-									armorVsMChest = Math.Max(armorVsMChest, armorVsM);
-									mindDefVsMBack = Math.Max(mindDefVsMBack, mindDefVsM);
-									mindDefVsMChest = Math.Max(mindDefVsMChest, mindDefVsM);
-									materialBack = Math.Max(materialBack, material);
-									materialChest = Math.Max(materialChest, material);
-									break;
-								case LayerNames.Arms:                // 19 = armor
-									armorVsPArms = Math.Max(armorVsPArms, armorVsP);
-									mindDefVsPArms = Math.Max(mindDefVsPArms, mindDefVsP);
-									armorVsMArms = Math.Max(armorVsMArms, armorVsM);
-									mindDefVsMArms = Math.Max(mindDefVsMArms, mindDefVsM);
-									materialArms = Math.Max(materialArms, material);
-									break;
-								case LayerNames.Pants:
-								case LayerNames.Skirt:
-								case LayerNames.HalfApron:
-									armorVsPLegs = Math.Max(armorVsPLegs, armorVsP);
-									mindDefVsPLegs = Math.Max(mindDefVsPLegs, mindDefVsP);
-									armorVsMLegs = Math.Max(armorVsMLegs, armorVsM);
-									mindDefVsMLegs = Math.Max(mindDefVsMLegs, mindDefVsM);
-									materialLegs = Math.Max(materialLegs, material);
-									break;
-								case LayerNames.Shoes:
-									armorVsPFeet = Math.Max(armorVsPFeet, armorVsP);
-									mindDefVsPFeet = Math.Max(mindDefVsPFeet, mindDefVsP);
-									armorVsMFeet = Math.Max(armorVsMFeet, armorVsM);
-									mindDefVsMFeet = Math.Max(mindDefVsMFeet, mindDefVsM);
-									materialFeet = Math.Max(materialFeet, material);
-									break;
-								case LayerNames.Gloves:      // 7
-									armorVsPHands = Math.Max(armorVsPHands, armorVsP);
-									mindDefVsPHands = Math.Max(mindDefVsPHands, mindDefVsP);
-									armorVsMHands = Math.Max(armorVsMHands, armorVsM);
-									mindDefVsMHands = Math.Max(mindDefVsMHands, mindDefVsM);
-									materialHands = Math.Max(materialHands, material);
-									break;
-								case LayerNames.Cape:                // 20 = cape
-									armorVsPBack = Math.Max(armorVsPBack, armorVsP);
-									armorVsPArms = Math.Max(armorVsPArms, armorVsP);
-									mindDefVsPBack = Math.Max(mindDefVsPBack, mindDefVsP);
-									mindDefVsPArms = Math.Max(mindDefVsPArms, mindDefVsP);
-									armorVsMBack = Math.Max(armorVsMBack, armorVsM);
-									armorVsMArms = Math.Max(armorVsMArms, armorVsM);
-									mindDefVsMBack = Math.Max(mindDefVsMBack, mindDefVsM);
-									mindDefVsMArms = Math.Max(mindDefVsMArms, mindDefVsM);
-									materialBack = Math.Max(materialBack, material);
-									materialArms = Math.Max(materialArms, material);
-									break;
-								case LayerNames.Robe:                // 22 = robe over all.
-									armorVsPBack = Math.Max(armorVsPBack, armorVsP);
-									armorVsPChest = Math.Max(armorVsPChest, armorVsP);
-									armorVsPArms = Math.Max(armorVsPArms, armorVsP);
-									armorVsPLegs = Math.Max(armorVsPLegs, armorVsP); ;
-									mindDefVsPBack = Math.Max(mindDefVsPBack, mindDefVsP);
-									mindDefVsPChest = Math.Max(mindDefVsPChest, mindDefVsP);
-									mindDefVsPArms = Math.Max(mindDefVsPArms, mindDefVsP);
-									mindDefVsPLegs = Math.Max(mindDefVsPLegs, mindDefVsP);
-									armorVsMBack = Math.Max(armorVsMBack, armorVsM);
-									armorVsMChest = Math.Max(armorVsMChest, armorVsM);
-									armorVsMArms = Math.Max(armorVsMArms, armorVsM);
-									armorVsMLegs = Math.Max(armorVsMLegs, armorVsM); ;
-									mindDefVsMBack = Math.Max(mindDefVsMBack, mindDefVsM);
-									mindDefVsMChest = Math.Max(mindDefVsMChest, mindDefVsM);
-									mindDefVsMArms = Math.Max(mindDefVsMArms, mindDefVsM);
-									mindDefVsMLegs = Math.Max(mindDefVsMLegs, mindDefVsM);
-									materialBack = Math.Max(materialBack, material);
-									materialChest = Math.Max(materialChest, material);
-									materialArms = Math.Max(materialArms, material);
-									materialLegs = Math.Max(materialLegs, material);
-									break;
-								case LayerNames.Leggins:
-									armorVsPLegs = Math.Max(armorVsPLegs, armorVsP);
-									armorVsPFeet = Math.Max(armorVsPFeet, armorVsP);
-									mindDefVsPLegs = Math.Max(mindDefVsPLegs, mindDefVsP);
-									mindDefVsPFeet = Math.Max(mindDefVsPFeet, mindDefVsP);
-									armorVsMLegs = Math.Max(armorVsMLegs, armorVsM);
-									armorVsMFeet = Math.Max(armorVsMFeet, armorVsM);
-									mindDefVsMLegs = Math.Max(mindDefVsMLegs, mindDefVsM);
-									mindDefVsMFeet = Math.Max(mindDefVsMFeet, mindDefVsM);
-									materialLegs = Math.Max(materialLegs, material);
-									materialFeet = Math.Max(materialFeet, material);
-									break;
-								case LayerNames.Hand2: //shield
-									int parrying = SkillDef.SkillValueOfChar(self, SkillName.Parry);
-									armorVsPTotal = (armorVsP * parrying) / 1000;
-									armorVsMTotal = (armorVsP * parrying) / 1000;
-									//no mindDef with shield
-									materialTotal = material;
-									break;
-							}
-						}
-					}
+			foreach (Item equipped in self.VisibleEquip) {
+				Wearable wearable = equipped as Wearable;
+				if (wearable == null) {
+					continue;
 				}
-
-				armorVsPTotal +=
-					(armorVsPHead * 0.1) +
-					(armorVsPNeck * 0.05) +
-					(armorVsPBack * 0.1) +
-					(armorVsPChest * 0.3) +
-					(armorVsPArms * 0.1) +
-					(armorVsPHands * 0.1) +
-					(armorVsPLegs * 0.2) +
-					(armorVsPFeet * 0.05);
-				armorClassVsP += (int) armorVsPTotal;
-
-				mindDefenseVsP += (int) (
-					(mindDefVsPHead * 0.1) +
-					(mindDefVsPNeck * 0.05) +
-					(mindDefVsPBack * 0.1) +
-					(mindDefVsPChest * 0.3) +
-					(mindDefVsPArms * 0.1) +
-					(mindDefVsPHands * 0.1) +
-					(mindDefVsPLegs * 0.2) +
-					(mindDefVsPFeet * 0.05));
-
-				armorVsMTotal +=
-					(armorVsMHead * 0.1) +
-					(armorVsMNeck * 0.05) +
-					(armorVsMBack * 0.1) +
-					(armorVsMChest * 0.3) +
-					(armorVsMArms * 0.1) +
-					(armorVsMHands * 0.1) +
-					(armorVsMLegs * 0.2) +
-					(armorVsMFeet * 0.05);
-				armorClassVsM += (int) armorVsMTotal;
-
-				mindDefenseVsM += (int) (
-					(mindDefVsMHead * 0.1) +
-					(mindDefVsMNeck * 0.05) +
-					(mindDefVsMBack * 0.1) +
-					(mindDefVsMChest * 0.3) +
-					(mindDefVsMArms * 0.1) +
-					(mindDefVsMHands * 0.1) +
-					(mindDefVsMLegs * 0.2) +
-					(mindDefVsMFeet * 0.05));
-
-				materialTotal +=
-					(materialHead * 0.1) +
-					(materialNeck * 0.05) +
-					(materialBack * 0.1) +
-					(materialChest * 0.3) +
-					(materialArms * 0.1) +
-					(materialHands * 0.1) +
-					(materialLegs * 0.2) +
-					(materialFeet * 0.05);
+				LayerNames layer = (LayerNames) wearable.Z;
+				ColoredArmor colored = wearable as ColoredArmor;
+				int material = (colored != null) ? (int) colored.TypeDef.Material : 0;
+				if (layer == LayerNames.Hand2) {
+					int parrying = SkillDef.SkillValueOfChar(self, SkillName.Parry);
+					shieldVsP = (wearable.ArmorVsP * parrying) / 1000.0;
+					shieldVsM = (wearable.ArmorVsM * parrying) / 1000.0;
+					materialTotal = material;
+					continue;
+				}
+				foreach (int part in GetBodyPartsOfLayer(layer)) {
+					armorVsP[part] = Math.Max(armorVsP[part], wearable.ArmorVsP);
+					armorVsM[part] = Math.Max(armorVsM[part], wearable.ArmorVsM);
+					mindDefVsP[part] = Math.Max(mindDefVsP[part], wearable.MindDefenseVsP);
+					mindDefVsM[part] = Math.Max(mindDefVsM[part], wearable.MindDefenseVsM);
+					materials[part] = Math.Max(materials[part], material);
+				}
 			}
+
+			armorClassVsP += (int) (shieldVsP + SumOverBodyParts(armorVsP));
+			armorClassVsM += (int) (shieldVsM + SumOverBodyParts(armorVsM));
+			if (isPlayer) {
+				mindDefenseVsP += (int) SumOverBodyParts(mindDefVsP);
+				mindDefenseVsM += (int) SumOverBodyParts(mindDefVsM);
+			}
+			materialTotal += SumOverBodyParts(materials);
+
 			CombatArmorValues retVal = new CombatArmorValues();
 			retVal.armorVsP = armorClassVsP;
 			retVal.armorVsM = armorClassVsM;

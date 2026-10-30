@@ -523,6 +523,14 @@ namespace SteamEngine.Converter {
 							if (isShield && set.Key.Equals("plate")) {
 								value += plateShieldChange;
 							}
+							//f_nastav_armorset's argv(4)==1: a share of the whole set by layer, not in the shield's -8
+							if (SphereWorldVars.TryGetInt("nastaveni_armorweight_" + metal + "_" + set.Key, out int setWeight) &&
+									int.TryParse(((ConvertedItemDef) thing).layer, NumberStyles.Integer, CultureInfo.InvariantCulture, out int layer) &&
+									SphereWorldVars.TryGetLayerArmorPercent(layer, out int layerPercent)) {
+								int pieceWeight = isShield ? (setWeight / 6) : setWeight;
+								pieceWeight = ((layerPercent * pieceWeight) + 50) / 100;
+								thing.Replace("WEIGHT", pieceWeight.ToString(CultureInfo.InvariantCulture), "nastaveni_armorweight");
+							}
 							thing.Replace("armorVsP", value.ToString(CultureInfo.InvariantCulture), "nastaveni_armorarmor");
 							thing.Replace("armorVsM", value.ToString(CultureInfo.InvariantCulture), "");
 							if (SphereWorldVars.TryGetInt("nastaveni_armorparts_OM_" + defname, out int mindDefense)) {

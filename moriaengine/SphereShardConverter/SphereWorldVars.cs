@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SteamEngine.Converter {
 
@@ -29,6 +30,27 @@ namespace SteamEngine.Converter {
 					}
 				}
 			}
+		}
+
+		private static readonly Dictionary<int, int> layerArmorPercents = new Dictionary<int, int>();
+
+		/// <summary>The layerar[N] table of spheredefs.scp: each layer's share of a whole armor.</summary>
+		public static void LoadLayerArmorPercents(string path) {
+			layerArmorPercents.Clear();
+			if (!File.Exists(path)) {
+				ConverterLogger.WriteWarning("No " + path + ", Erebor's armor weights won't be applied.");
+				return;
+			}
+			foreach (string line in File.ReadLines(path)) {
+				Match match = Regex.Match(line, @"^layerar\[(\d+)\]\s+(\d+)");
+				if (match.Success) {
+					layerArmorPercents[int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)] = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+				}
+			}
+		}
+
+		public static bool TryGetLayerArmorPercent(int layer, out int percent) {
+			return layerArmorPercents.TryGetValue(layer, out percent);
 		}
 
 		public static bool TryGetInt(string name, out int value) {

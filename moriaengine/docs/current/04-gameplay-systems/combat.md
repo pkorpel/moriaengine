@@ -53,6 +53,8 @@ values, marked with the variable's name in a comment:
 | Staff | `MindPowerVsP/VsM` | `nastaveni_staffSMbonus_<defname>` |
 | Armor set piece | `armorVsP/VsM` | `nastaveni_armorarmor_<metal>_<type>`, shields get a sixth, a plate set's shield then `nastaveni_global_plateshield_armor_decrease` |
 | Armor set piece | `mindDefenseVsP/VsM` | `nastaveni_armorparts_OM_<defname>` |
+| Armor set piece | `WEIGHT` | `nastaveni_armorweight_<metal>_<type>`, a shield's a sixth, by the layer's share (`layerar[N]`, spheredefs.scp) |
+| Profession | `PvPArmorChange` | `nastaveni_global_armorchange_vP_<profession>`, hand-kept in the `.def`s |
 | Ammo | `DamageMultiplier`, `Piercing` | `nastaveni_arrowdamage_<tdata1>` (permille), `nastaveni_arrowdamage_<tdata2>` |
 
 Bows and crossbows use these like any other weapon; `RangerSettings`' damage, speed and
@@ -60,21 +62,17 @@ tier bonus fields are unused. Bare hands (attack 5, speed 200) are on `.settings
 effects are hand-kept in the spell `.def`s from `nastaveni_spelleffect_*`: Erebor's third
 number on a damage spell is armor piercing, which isn't applied yet.
 
-Armor pieces' weights (`nastaveni_armorweight_*`) aren't applied. On Erebor the adamantinum
-and mithril jagged bolts really have a multiplier of 0, so they do no damage.
+On Erebor the adamantinum and mithril jagged bolts really have a multiplier of 0, so they do no
+damage.
 
 ## Stat aggregation: `CombatCalculator`
 
-`CombatCalculator.CalculateCombatArmorValues` (`CombatCalculator.cs:25`) only computes real
-worn-armor totals **for players** (`self.IsPlayerForCombat`, line 39) - NPCs get their flat
-`ArmorVsP`/`ArmorVsM` straight from `DefForCombat` with no per-layer aggregation. For
-players, it walks `VisibleEquip`, buckets each `Wearable` by `LayerNames` into body-zone
-accumulators (head/neck/back/chest/arms/hands/legs/feet - lines 40-83), then combines them
-with fixed per-zone weights (head 10%, neck 5%, back 10%, chest 30%, arms 10%, hands 10%,
-legs 20%, feet 5% - lines 221-271) into one `armorVsP`/`armorVsM`/`mindDefenseVsP`/
-`mindDefenseVsM` total. A shield (`LayerNames.Hand2`) is handled separately (line 209) -
-its `ArmorVsP` is scaled by the wearer's own `Parry` skill value rather than contributing to
-the weighted-zone sum.
+`CombatCalculator.CalculateCombatArmorValues` follows Sphere's `CalcArmorDefense`, for players
+and NPCs alike: a character's armor is its def's `ArmorVsP`/`ArmorVsM` plus what it wears. Each
+worn `Wearable` covers body parts by layer, the best piece per part counts, and the parts weigh
+head 14%, neck 6%, back 18%, chest 18%, arms 14%, hands 7%, legs 17%, feet 6%. So plate on the
+chest layer alone counts 36%. A shield (`LayerNames.Hand2`) adds its armor scaled by the
+wearer's `Parry` instead. Mind defense from armor counts on players only.
 
 `CalculateCombatWeaponValues` (line 368) resolves the equipped weapon (hand1, falling back
 to hand2) into a `CombatWeaponValues` struct - range, strike-start/stop range, piercing,
@@ -148,12 +146,24 @@ multiplier`, then `* weapAttack` (1.1), then `* weapAttackPvP` (0.9) vs a player
 `WeaponAttack * weapAttackM`, with no stats and whatever weapon it holds, `* weapAttackVsM`
 vs a monster.
 
-**Armor.** A player's swing, or a monster's on a monster (`damagecust`):
+**Armor.** Against a player's swing, a player's armor first changes by their profession's
+`PvPArmorChange`, floored at 0. A player's swing, or a monster's on a monster (`damagecust`):
 `armor * armorClassP/M * roll(0.945-1.05) * (1 - piercing/1000)` is subtracted from the attack,
 and the rest is multiplied by `swingDamagePvP` (0.9) or `swingDamageVsM` (1.35). A monster
 hitting a player (`damagecust_MvP`) keeps a percentage instead:
 `attack * (1 - armor * (1 - piercing/1000) / armorClassMvP) * roll(0.85-1.0)`, so armor 100
 halves the hit and armor 200 stops it.
+
+**Dodge.** Each point of `a_weapon_dodge` dodges 1% of monsters' physical blows
+(`weaponDodgePerPoint`). A dodged blow does nothing and fires no on-hit abilities. Players'
+blows can't be dodged this way.
+
+**Interrupting a cast.** Only a player's melee blow does: 5 damage on a monster, a tenth of the
+target's hit points on a player. Ammo and monsters' blows don't. Other damage still disrupts.
+
+**Not ported.** Item wear: `Durability` scales armor and weapons as on Erebor, but nothing lowers
+it, because there's no repair skill yet (#865). Thief rebound and the magic items' reflex and
+block have no ability or item here yet (#866).
 
 **Minimum damage**, after resists, on swings, not against a target immune to the damage type:
 a monster's swing on a monster that would do less than 1 does 5, unless it's summon damage. A
