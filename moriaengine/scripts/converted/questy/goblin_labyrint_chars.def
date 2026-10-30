@@ -218,6 +218,7 @@ Tactics = 500
 Wrestling = 700
 SpiritSpeak = 800
 Magery = 1200
+EvalInt = 800
 Equip = i_monster_create
 Equip = i_spellbook
 AddSpell = s_harm

@@ -631,6 +631,7 @@ Tactics = 850 1000
 Wrestling = 850 1000
 Macing = 850 1000
 Magery = 1000
+EvalInt = 800
 Fame = 500
 Karma = -1 -3500
 Equip = i_spellbook

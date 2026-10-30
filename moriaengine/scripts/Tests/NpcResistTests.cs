@@ -75,6 +75,10 @@ namespace SteamEngine.CompiledScripts {
 			self.SetRealAbilityPoints(dodge, 0);
 			player.Profession = original;
 			npc.Delete();
+			NPC caster = (NPC) ThingDef.GetByDefname("c_titan_mage").Create(self.X + 1, self.Y, self.Z, self.M);
+			Console.WriteLine("MIND_VALUES: titanMagePower=" + caster.MindPowerVsP + " titanMageEvalInt=" + caster.GetSkill(SkillName.EvalInt) +
+				" titanMageDefense=" + caster.MindDefenseVsM + " resist=" + caster.GetSkill(SkillName.MagicResist));
+			caster.Delete();
 			Console.WriteLine("ARMOR_COVERAGE: bare=" + bare + " chest=" + chest + " helm=" + helm + " npcBare=" + npcBare + " npcWorn=" + npcWorn +
 				" dodged=" + dodged + " pvpChange=" + playerSwing + " playerDodged=" + playerDodged + " spellDodged=" + spellDodged);
 		}

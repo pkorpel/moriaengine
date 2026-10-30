@@ -866,6 +866,7 @@ Tactics = 850 1000
 Wrestling = 850 1000
 Macing = 850 1000
 Magery = 1000
+EvalInt = 700
 SpiritSpeak = 250
 Equip = i_spellbook
 AddSpell = s_fireball

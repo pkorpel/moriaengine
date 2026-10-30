@@ -43,10 +43,9 @@ Once Magery's skill-sequence calls `SpellDef.Trigger_Success` (`SpellDef.cs:430`
 resolves its OWN target-type-specific effect chain, independent of the generic skill
 triggers:
 
-1. Determines spell power: either mind-power-based (`SpellFlag.UseMindPower`, using
-   `MindPowerVsP`/`MindPowerVsM` minus the target's `MindDefenseVsP`/`MindDefenseVsM`, scaled
-   `*10` to match skill-value units) or the caster's raw `Magery` skill value
-   (`GetSpellPowerAgainstChar`/`GetSpellPowerAgainstNonChar`, lines 593-635).
+1. Determines spell power: either mind-power-based (`SpellFlag.UseMindPower`, see
+   [Spells in combat.md](combat.md#swing-formulas-860)) or Magery skill
+   (`GetSpellPowerAgainstChar`/`GetSpellPowerAgainstNonChar`).
 2. Dispatches to `Trigger_EffectChar`/`Trigger_EffectItem`/`Trigger_EffectGround` based on
    what the resolved target actually is and which `SpellFlag.CanEffect*` bits the spell
    declares (lines 472-507) - each is its own cancellable trigger chain

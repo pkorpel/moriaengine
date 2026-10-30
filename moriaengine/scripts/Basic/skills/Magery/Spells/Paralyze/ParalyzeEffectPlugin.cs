@@ -60,6 +60,15 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 
+		public static bool IsParalyzed(Character target) {
+			foreach (Plugin plugin in target.GetAllPlugins()) {
+				if (plugin is ParalyzeEffectPlugin) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		//paralyze method for general usage
 		public static void Paralyze(Character target, PluginKey key, TimeSpan duration, Thing source, EffectFlag type) {
 			type |= EffectFlag.HarmfulEffect;
