@@ -28,7 +28,7 @@ namespace SteamEngine.CompiledScripts {
 	/// Snake Islands. Entering those islands, by any way, marks the player (r_hadiostrovy, Erebor's tag.mistrquest). The
 	/// egg belongs to whoever lifts it first. Lenastir takes it only from its owner, and from a player who has been there:
 	/// someone else's egg gets the player sent to the bug area.</para>
-	/// <para>The archive doesn't say where the pieces stood; .SetupMasterQuest has its own proposal.</para>
+	/// <para>The archive doesn't say where the pieces stood; scripts/Setup has its own proposal.</para>
 	/// </summary>
 	public static class MasterQuest {
 		public const string EggDef = "i_hadi_vejce";
@@ -46,8 +46,8 @@ namespace SteamEngine.CompiledScripts {
 
 		//called by ClassManager on every startup/recompile, see ExpertQuest.Init
 		public static void Init() {
-			ExpertQuest.Attach(EggDef, SingletonScript<E_MasterQuestEgg>.Instance);
-			ExpertQuest.Attach(TeleportDef, SingletonScript<E_MasterQuestTeleport>.Instance);
+			QuestNpc.Attach(EggDef, SingletonScript<E_MasterQuestEgg>.Instance);
+			QuestNpc.Attach(TeleportDef, SingletonScript<E_MasterQuestTeleport>.Instance);
 		}
 
 		public static bool HasReachedIslands(Player player) {
@@ -184,65 +184,6 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				player.RedMessage(Loc<MasterQuestLoc>.Get(player.Language).CantPass);
 			}
-		}
-
-		/// <summary>The .SetupMasterQuest command: Lenastir beside both of Erebor's Expert stones, the teleport between
-		/// the serpent pillars of Beridor Level 3, and spawn gems for the snake queen and her serpents on the Snake
-		/// Islands. The archive has none of these spots. Replaces what an earlier run placed.</summary>
-		[SteamFunction]
-		public static void SetupMasterQuest(Character self) {
-			Map map = Map.GetMap(0);
-			ImmutableRectangle[] lenastirAreas = { Around(2773, 2763, 6), Around(3725, 2955, 6) };
-			ImmutableRectangle teleportArea = Around(5331, 2745, 6);
-			ImmutableRectangle islandArea = Around(1518, 3890, 30);
-			foreach (ImmutableRectangle area in lenastirAreas) {
-				ExpertQuest.RemovePlaced(map, LenastirDef, area);
-			}
-			Map teleportMap = Map.GetMap(TeleportPlane);
-			ExpertQuest.RemovePlaced(teleportMap, TeleportDef, teleportArea);
-			foreach (string defname in new[] { QueenDef, "c_hadi_obraz", "c_serpent_silver_mistr", "c_serpent_gold_mistr", "c_serpent_black_mistr", "i_worldgem_bit" }) {
-				ExpertQuest.RemovePlaced(map, defname, islandArea);
-			}
-
-			int lenastirs = 0;
-			foreach (int[] spot in new[] { new[] { 2773, 2763 }, new[] { 3725, 2955 } }) {
-				int[] at = ExpertQuest.NearestStandable(map, spot[0], spot[1], 5);
-				if (at != null) {
-					Character lenastir = (Character) ThingDef.GetByDefname(LenastirDef).Create(at[0], at[1], at[2], 0);
-					lenastir.Flag_Invulnerable = true; //Erebor's @create
-					lenastirs++;
-				}
-			}
-			int teleports = 0;
-			int[] teleportAt = ExpertQuest.NearestStandable(teleportMap, 5331, 2745, 5);
-			if (teleportAt != null) {
-				Item teleport = (Item) ThingDef.GetByDefname(TeleportDef).Create(teleportAt[0], teleportAt[1], teleportAt[2], TeleportPlane);
-				teleport.SetAttribute(ItemAttributes.attr_move_never, true);
-				teleports++;
-			}
-			int gems = 0;
-			int[] queenAt = ExpertQuest.NearestStandable(map, 1518, 3890, 20);
-			int[] serpentsAt = (queenAt == null) ? null : ExpertQuest.NearestStandable(map, queenAt[0] + 4, queenAt[1], 10);
-			if (queenAt != null) {
-				SpawnInfo queen = new SpawnInfo(1, (IThingFactory) ThingDef.GetByDefname(QueenDef), 30, 60, 5);
-				ScriptHolder.GetFunction("f_spawninit").Run(new Point4D(queenAt[0], queenAt[1], queenAt[2], 0), queen);
-				gems++;
-			}
-			if (serpentsAt != null) {
-				SpawnInfo serpents = new SpawnInfo(6, 10, 20, 12);
-				foreach (string defname in new[] { "c_serpent_silver_mistr", "c_serpent_gold_mistr", "c_serpent_black_mistr" }) {
-					serpents.Entries.Add(new SpawnEntry((IThingFactory) ThingDef.GetByDefname(defname), 1));
-				}
-				ScriptHolder.GetFunction("f_spawninit").Run(new Point4D(serpentsAt[0], serpentsAt[1], serpentsAt[2], 0), serpents);
-				gems++;
-			}
-			string summary = "SETUP_MASTER_QUEST: lenastirs=" + lenastirs + " teleports=" + teleports + " gems=" + gems;
-			System.Console.WriteLine(summary);
-			self.SysMessage(summary);
-		}
-
-		private static ImmutableRectangle Around(int x, int y, int range) {
-			return new ImmutableRectangle(x - range, y - range, x + range, y + range);
 		}
 	}
 

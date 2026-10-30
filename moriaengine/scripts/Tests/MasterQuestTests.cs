@@ -45,7 +45,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static void GoBeside(Character self, Thing thing) {
-			int[] at = ExpertQuest.NearestStandable(thing.GetMap(), thing.X + 1, thing.Y, 3);
+			int[] at = WorldSpots.NearestStandable(thing.GetMap(), thing.X + 1, thing.Y, 3);
 			self.Go(at[0], at[1], at[2], thing.M);
 		}
 
@@ -128,7 +128,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestMasterQuestKillQueen(Character self) {
 			RemoveFromBackpack(self, MasterQuest.EggDef);
-			int[] at = ExpertQuest.NearestStandable(self.GetMap(), self.X + 1, self.Y, 3);
+			int[] at = WorldSpots.NearestStandable(self.GetMap(), self.X + 1, self.Y, 3);
 			Character queen = (Character) ThingDef.GetByDefname(MasterQuest.QueenDef).Create(at[0], at[1], at[2], self.M);
 			queen.CauseDeath(self);
 			foreach (Thing t in self.GetMap().GetThingsInRectangle(new ImmutableRectangle(at[0] - 1, at[1] - 1, at[0] + 1, at[1] + 1))) {
