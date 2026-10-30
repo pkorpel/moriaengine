@@ -43,6 +43,7 @@ namespace SteamEngine.CompiledScripts {
 		public const string NoField = "r_nofield";
 		public const string NoTeleport = "r_notele";
 		public const string NoHorseHigh = "r_nohorsehigh";
+		public const string SnakeIslands = "r_hadiostrovy";
 
 		/// <summary>e_nofield: Wall of Stone, Fire Field, Poison Field, Paralyze Field, Energy Field.</summary>
 		public static readonly int[] FieldSpellIds = { 24, 28, 39, 47, 50 };
@@ -114,6 +115,9 @@ namespace SteamEngine.CompiledScripts {
 				case MinesNoHorse:
 					RemoveAggressiveSummon(ch);
 					ch.SysMessage(Loc<RegionEventsLoc>.Get(ch.Language).enteredMines);
+					break;
+				case SnakeIslands:
+					MasterQuest.MarkReachedIslands(ch);
 					break;
 				case SafeZone:
 					if (ch.IsPlayer) {

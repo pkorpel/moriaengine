@@ -691,4 +691,16 @@
   <data name="ExpertQuestLoc_ComeCloser" xml:space="preserve">
     <value>Řvát na sebe nebudete. Musíš přijít blíž.</value>
   </data>
+  <data name="MasterQuestLoc_Promoted" xml:space="preserve">
+    <value>Blahopřejeme, byl jsi povýšen na mistra. Tímto se ti otevírá cesta k dalšímu růstu tvé postavy.</value>
+  </data>
+  <data name="MasterQuestLoc_EggDescription" xml:space="preserve">
+    <value>Toto je oplodněné hadí vejce - velmi vzácná přísada.</value>
+  </data>
+  <data name="MasterQuestLoc_TeleportDescription" xml:space="preserve">
+    <value>Neznámý zamčený teleport</value>
+  </data>
+  <data name="MasterQuestLoc_CantPass" xml:space="preserve">
+    <value>Tudy nemůžeš projít!</value>
+  </data>
 </root>
