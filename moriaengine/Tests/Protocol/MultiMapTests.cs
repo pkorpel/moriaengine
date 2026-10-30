@@ -43,6 +43,28 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#848: .go x,y,z,m reached the plane's number as z and never changed plane; .go x y z threw.</summary>
+		[Fact]
+		public void GoCommandTakesZAndPlane() {
+			using (var gm = this.ConnectOnce(AdminAccount, "Map Goer")) {
+				Assert.Contains("x=1 y=1 ", this.GoAndReport(gm, ".go 1,1,1,10"));
+				Assert.Contains(" m=10", this.GoAndReport(gm, ".go 1,1,1,10"));
+				Assert.Contains("x=19 y=1196 z=-10 m=2", this.GoAndReport(gm, ".go 19 1196 -10 2")); //negative z, spaces, the other map
+				Assert.Contains("x=2771 y=2761", this.GoAndReport(gm, ".go 2771,2761,0,0"));
+				string threeArgs = this.GoAndReport(gm, ".go 2772 2761 0");
+				Assert.Contains("x=2772 y=2761", threeArgs);
+				Assert.Contains(" m=0", threeArgs);
+				Assert.Contains(" m=10", this.GoAndReport(gm, ".go 5331 2745 10 10"));
+				Assert.Contains(" m=10", this.GoAndReport(gm, ".go 5332 2745")); //no plane given: stays on this one
+			}
+		}
+
+		private string GoAndReport(TestGameClient client, string go) {
+			client.SendSpeech(go);
+			Thread.Sleep(300);
+			return this.Ask(client, ".TestMultiMapWhere", "MULTIMAP_WHERE:");
+		}
+
 		private TestGameClient Relog(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {

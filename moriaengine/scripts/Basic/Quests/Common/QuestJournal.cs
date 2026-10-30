@@ -95,7 +95,7 @@ namespace SteamEngine.CompiledScripts {
 	public class D_QuestJournal : CompiledGumpDef {
 		public const int SectionQuests = 1, SectionDungeons = 2, SectionBoosters = 3, SectionWeekly = 11, SectionPvp = 21;
 		private const int Width = 300, Height = 400, Background = 9270, TitleHue = 95, HintHue = 0x21;
-		private const int QuestsOnPage = 7, FirstQuestButton = 1000;
+		private const int QuestsOnPage = 7, FirstQuestButton = 1000, SelectedTabHue = 52;
 		private static readonly int[] sectionPics = { 0x2B08, 0x2B03, 0x2B05 };
 		private static readonly int[] tabPics = { 0x3324, 0x3334, 0x332B };
 		private static readonly int[] tabTitleX = { 15, -22, 10 };
@@ -151,11 +151,12 @@ namespace SteamEngine.CompiledScripts {
 		private void AddTab(int tab, bool active) {
 			int x = 35 + ((Width - (tabPics.Length * 64)) / 2) + (tab * 64);
 			this.AddBackground(x, 73, 58, 56, Background);
+			//Erebor dimmed the other tabs with a checkertrans, but the client makes everything it overlaps see-through, and
+			//that includes the whole window under the tab; so the selected tab is the one that stands out instead
 			if (active) {
 				this.AddButton(x + 13, 85, tabPics[tab], tabPics[tab], tab + 1, GumpButtonType.Reply, 0);
-				this.CheckerTrans(x + 10, 83, 38, 36);
 			} else {
-				this.AddImage(x + 13, 85, tabPics[tab]);
+				this.AddImage(x + 13, 85, tabPics[tab], SelectedTabHue);
 			}
 		}
 
