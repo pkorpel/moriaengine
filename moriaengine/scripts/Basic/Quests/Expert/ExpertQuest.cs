@@ -36,7 +36,7 @@ namespace SteamEngine.CompiledScripts {
 	/// A wrong answer, giving up, the 60-minute limit or leaving the site's region ends the quest; except for leaving,
 	/// the player is taken back to Gondor or Mordor.</para>
 	/// <para>The pieces are world objects, placed and linked by GMs as in Erebor (double-click a site or a sign as a
-	/// GM, target what it belongs to), or all at once with the .SetupExpertQuest command.</para>
+	/// GM, target what it belongs to), or by scripts/Setup.</para>
 	/// <para>Differences from Erebor: only the player on the quest gets the master's gump (in Erebor anyone talking
 	/// to it could answer); the signs stay visible (Erebor created them invisible, which no player can read); the
 	/// sign gump stays open after a step; the quest-stone statistics (questMenu_questStone) aren't kept.</para>
@@ -67,19 +67,10 @@ namespace SteamEngine.CompiledScripts {
 		//called by ClassManager on every startup/recompile: Erebor's items carry their behavior in their own
 		//triggers, which the converter can't port - the C# trigger groups are attached to the converted defs here
 		public static void Init() {
-			Attach(StartStoneDef, SingletonScript<E_ExpertQuestStartStone>.Instance);
-			Attach(SiteDef, SingletonScript<E_ExpertQuestSite>.Instance);
-			Attach(SignDef, SingletonScript<E_ExpertQuestSign>.Instance);
-			Attach(MasterDef, SingletonScript<E_ExpertQuestMaster>.Instance);
-		}
-
-		internal static void Attach(string defname, TriggerGroup tg) {
-			AbstractDefTriggerGroupHolder def = ThingDef.GetByDefname(defname) as AbstractDefTriggerGroupHolder;
-			if (def == null) {
-				Logger.WriteWarning("ExpertQuest: " + defname + " is missing, its quest behavior isn't attached.");
-				return;
-			}
-			def.AddTriggerGroup(tg);
+			QuestNpc.Attach(StartStoneDef, SingletonScript<E_ExpertQuestStartStone>.Instance);
+			QuestNpc.Attach(SiteDef, SingletonScript<E_ExpertQuestSite>.Instance);
+			QuestNpc.Attach(SignDef, SingletonScript<E_ExpertQuestSign>.Instance);
+			QuestNpc.Attach(MasterDef, SingletonScript<E_ExpertQuestMaster>.Instance);
 		}
 
 		#region links
@@ -238,7 +229,7 @@ namespace SteamEngine.CompiledScripts {
 					bool mordor = (player.Realm == Realm.Mordor) || (player.Realm == Realm.MordorOutcast);
 					int x = mordor ? 3735 : 2757, y = mordor ? 2962 : 2757;
 					Map map = Map.GetMap(0);
-					player.Go(x, y, StandZ(map, x, y), 0);
+					player.Go(x, y, WorldSpots.StandZ(map, x, y), 0);
 				}
 			}
 		}
@@ -337,165 +328,6 @@ namespace SteamEngine.CompiledScripts {
 			return order;
 		}
 		#endregion start and end
-
-		#region setup
-		/// <summary>The highest spot at x,y a character can stand on (land or the top of a static), or the land height.</summary>
-		public static int StandZ(Map map, int x, int y) {
-			int best = map.GetTileZ(x, y);
-			bool found = map.CanFit(x, y, best, 16, true, false, true);
-			foreach (AbstractInternalItem s in map.GetStaticsAndMultiComponentsOnCoords(x, y)) {
-				int top = s.Z + s.Height;
-				if ((!found || (top > best)) && map.CanFit(x, y, top, 16, true, false, true)) {
-					best = top;
-					found = true;
-				}
-			}
-			return best;
-		}
-
-		private static bool CanStand(Map map, int x, int y, out int z) {
-			z = StandZ(map, x, y);
-			return map.IsValidPos(x, y) && !map.IsMapTileWater(x, y) && map.CanFit(x, y, z, 16, true, false, true);
-		}
-
-		/// <summary>{x, y, z} of the standable spot closest to x,y within `range` tiles, or null.</summary>
-		internal static int[] NearestStandable(Map map, int x, int y, int range) {
-			int[] best = null;
-			for (int ax = x - range; ax <= x + range; ax++) {
-				for (int ay = y - range; ay <= y + range; ay++) {
-					int z;
-					if (map.IsValidPos(ax, ay) && CanStand(map, ax, ay, out z) && ((best == null) || (Dist(new[] { ax, ay }, x, y) < Dist(best, x, y)))) {
-						best = new[] { ax, ay, z };
-					}
-				}
-			}
-			return best;
-		}
-
-		/// <summary>The {x, y, z} tiles `steps` walking steps away from `start` by the real movement rules, or as far as
-		/// there is to walk, so a player can get to them from there.</summary>
-		internal static List<int[]> WalkableRing(Map map, IPoint3D start, IMovementSettings settings, int steps, ImmutableRectangle within = null) {
-			HashSet<long> seen = new HashSet<long>();
-			List<int[]> ring = new List<int[]> { new[] { start.X, start.Y, start.Z } };
-			seen.Add((((long) start.X) << 16) | (uint) start.Y);
-			for (int step = 0; step < steps; step++) {
-				List<int[]> next = new List<int[]>();
-				foreach (int[] tile in ring) {
-					Point3D probe = new Point3D(tile[0], tile[1], tile[2]);
-					for (int dir = 0; dir < 8; dir++) {
-						int x, y, z;
-						if (map.CheckMovement(probe, settings, (Direction) dir, false, out x, out y, out z) && IsWithin(within, x, y) && seen.Add((((long) x) << 16) | (uint) y)) {
-							next.Add(new[] { x, y, z });
-						}
-					}
-				}
-				if (next.Count == 0) {
-					break;
-				}
-				ring = next;
-			}
-			return ring;
-		}
-
-		private static bool IsWithin(ImmutableRectangle rect, int x, int y) {
-			return (rect == null) || ((x >= rect.MinX) && (x <= rect.MaxX) && (y >= rect.MinY) && (y <= rect.MaxY));
-		}
-
-		/// <summary>The .SetupExpertQuest command: Erebor's two start stones, one quest site per rectangle of the a_expert
-		/// cave with six clue signs around it, all linked. Replaces what an earlier run placed.</summary>
-		[SteamFunction]
-		public static void SetupExpertQuest(Character self) {
-			Map map = Map.GetMap(0);
-			StaticRegion cave = StaticRegion.GetByDefname("a_expert");
-			if (cave == null) {
-				self.SysMessage("The a_expert region doesn't exist - the Expert quest has nowhere to go.");
-				return;
-			}
-			RemovePlaced(map, StartStoneDef, new ImmutableRectangle(2771 - 3, 2761 - 3, 2771 + 3, 2761 + 3));
-			RemovePlaced(map, StartStoneDef, new ImmutableRectangle(3723 - 3, 2953 - 3, 3723 + 3, 2953 + 3));
-			foreach (ImmutableRectangle rect in cave.Rectangles) {
-				RemovePlaced(map, SiteDef, rect);
-				RemovePlaced(map, SignDef, rect);
-			}
-
-			List<Item> sites = new List<Item>();
-			foreach (ImmutableRectangle rect in cave.Rectangles) {
-				Item site = PlaceSite(map, rect);
-				if (site != null) {
-					sites.Add(site);
-				}
-			}
-			int stones = 0;
-			foreach (int[] spot in new[] { new[] { 2771, 2761 }, new[] { 3723, 2953 } }) {
-				Item stone = (Item) ThingDef.GetByDefname(StartStoneDef).Create(spot[0], spot[1], StandZ(map, spot[0], spot[1]), 0);
-				foreach (Item site in sites) {
-					LinkSite(stone, site);
-				}
-				stones++;
-			}
-			int signs = 0;
-			foreach (Item site in sites) {
-				signs += GetSigns(site).Count;
-			}
-			string summary = "SETUP_EXPERT_QUEST: stones=" + stones + " sites=" + sites.Count + " signs=" + signs;
-			Console.WriteLine(summary);
-			self.SysMessage(summary);
-		}
-
-		internal static void RemovePlaced(Map map, string defname, ImmutableRectangle rect) {
-			ThingDef def = ThingDef.GetByDefname(defname);
-			List<Thing> found = new List<Thing>();
-			foreach (Thing t in map.GetThingsInRectangle(rect)) {
-				if (t.Def == def) {
-					found.Add(t);
-				}
-			}
-			foreach (Thing t in found) {
-				if (defname == SiteDef) {
-					End((Item) t, true); //a quest running here ends with its site, or its player and master would stay behind
-				}
-				t.Delete();
-			}
-		}
-
-		//a site on the standable spot closest to the rectangle's middle, and six signs on standable spots around it,
-		//at least 4 tiles from the site and from each other
-		private static Item PlaceSite(Map map, ImmutableRectangle rect) {
-			int cx = (rect.MinX + rect.MaxX) / 2, cy = (rect.MinY + rect.MaxY) / 2;
-			List<int[]> spots = new List<int[]>();
-			for (int x = rect.MinX; x <= rect.MaxX; x++) {
-				for (int y = rect.MinY; y <= rect.MaxY; y++) {
-					int z;
-					if (CanStand(map, x, y, out z)) {
-						spots.Add(new[] { x, y, z });
-					}
-				}
-			}
-			if (spots.Count == 0) {
-				return null;
-			}
-			spots.Sort((a, b) => Dist(a, cx, cy).CompareTo(Dist(b, cx, cy)));
-			int[] at = spots[0];
-			Item site = (Item) ThingDef.GetByDefname(SiteDef).Create(at[0], at[1], at[2], 0);
-
-			List<int[]> placed = new List<int[]> { at };
-			foreach (int[] spot in spots) {
-				if (GetSigns(site).Count >= 6) {
-					break;
-				}
-				if (placed.TrueForAll(p => Math.Max(Math.Abs(p[0] - spot[0]), Math.Abs(p[1] - spot[1])) >= 4)) {
-					Item sign = (Item) ThingDef.GetByDefname(SignDef).Create(spot[0], spot[1], spot[2], 0);
-					LinkSign(site, sign);
-					placed.Add(spot);
-				}
-			}
-			return site;
-		}
-
-		private static int Dist(int[] spot, int x, int y) {
-			return Math.Max(Math.Abs(spot[0] - x), Math.Abs(spot[1] - y));
-		}
-		#endregion setup
 	}
 
 	/// <summary>#833 - the quest site's once-a-minute countdown (Erebor's i_expert_quest_second @timer).</summary>

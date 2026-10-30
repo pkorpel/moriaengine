@@ -25,7 +25,7 @@ namespace SteamEngine.Tests.Protocol {
 			using (var admin = this.ConnectOnce(AdminAccount, "Quest Admin")) {
 				this.Ask(admin, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST:");
 				autoAccountCreationEnabled = true;
-				Assert.Contains("lenastirs=2 teleports=1 gems=2", this.Ask(admin, ".SetupMasterQuest", "SETUP_MASTER_QUEST:"));
+				Assert.Contains("added=5 kept=0", this.Ask(admin, ".SetupMasterQuest", "SETUP_DONE:"));
 				Thread.Sleep(2500); //the gems' first spawns
 				string world = this.Ask(admin, ".TestMasterQuestWorld", "MASTER_WORLD:");
 				Assert.Contains("queens=1 ", world);

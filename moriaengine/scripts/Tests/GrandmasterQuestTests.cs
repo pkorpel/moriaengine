@@ -84,7 +84,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestQ000GoTo(Character self, ScriptArgs sa) {
 			Thing thing = Target(Arg(sa));
-			int[] at = ExpertQuest.WalkableRing(thing.GetMap(), thing, self.MovementSettings, 1)[0];
+			int[] at = WorldSpots.WalkableRing(thing.GetMap(), thing, self.MovementSettings, 1)[0];
 			self.Go(at[0], at[1], at[2], thing.M);
 			Console.WriteLine("Q000_AT: uid=" + thing.Uid + " los=" + self.CanSeeLOS(thing).Allow);
 		}

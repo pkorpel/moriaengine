@@ -35,7 +35,7 @@ namespace SteamEngine.CompiledScripts {
 	/// 8 Elvira told of Rinald and his name; 9 killed Rinald in his cave, which gives the key; 10 opened Elmira's cage;
 	/// 11 told Elqira, who rewards the player; 12 (optional) other NPCs said the envoy looks for them; 13 the envoy of
 	/// Gondor or Mordor made them a Grandmaster.</para>
-	/// <para>Everything the player reads is Erebor's Czech. The pieces are placed by .SetupGrandmasterQuest.</para>
+	/// <para>Everything the player reads is Erebor's Czech. The pieces are placed by scripts/Setup.</para>
 	/// </summary>
 	public static class GrandmasterQuest {
 		public const string ElqiraDef = "c_q000_elqira";
@@ -69,13 +69,13 @@ namespace SteamEngine.CompiledScripts {
 		//called by ClassManager on every startup/recompile, see ExpertQuest.Init
 		public static void Init() {
 			foreach (string npc in new[] { ElqiraDef, ElmiraDef, ElviraDef, RinaldDef, GondorEnvoyDef, MordorEnvoyDef }) {
-				ExpertQuest.Attach(npc, SingletonScript<E_Q000Npc>.Instance);
+				QuestNpc.Attach(npc, SingletonScript<E_Q000Npc>.Instance);
 			}
-			ExpertQuest.Attach(RootDef, SingletonScript<E_Q000Root>.Instance);
-			ExpertQuest.Attach(AlarmDef, SingletonScript<E_Q000Alarm>.Instance);
-			ExpertQuest.Attach(CageDoorDef, SingletonScript<E_Q000CageDoor>.Instance);
-			ExpertQuest.Attach(CaveEntranceDef, SingletonScript<E_Q000CaveEntrance>.Instance);
-			ExpertQuest.Attach(CaveExitDef, SingletonScript<E_Q000CaveExit>.Instance);
+			QuestNpc.Attach(RootDef, SingletonScript<E_Q000Root>.Instance);
+			QuestNpc.Attach(AlarmDef, SingletonScript<E_Q000Alarm>.Instance);
+			QuestNpc.Attach(CageDoorDef, SingletonScript<E_Q000CageDoor>.Instance);
+			QuestNpc.Attach(CaveEntranceDef, SingletonScript<E_Q000CaveEntrance>.Instance);
+			QuestNpc.Attach(CaveExitDef, SingletonScript<E_Q000CaveExit>.Instance);
 		}
 
 		public static int GetStage(Player player) {
@@ -264,28 +264,38 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (rinald == null) {
 				int[] spot = (int[]) entrance.GetTag(rinaldSpotTK);
-				PlaceRinald(entrance, spot[0], spot[1], spot[2], (byte) spot[3]);
+				rinald = (NPC) ThingDef.GetByDefname(RinaldDef).Create(spot[0], spot[1], spot[2], (byte) spot[3]);
+				PrepareRinald(rinald);
+				WorldPieces.MarkAsPiece(rinald, RinaldPieceId);
+				entrance.SetTag(rinaldTK, rinald);
 			}
 		}
 
+		public const string RinaldPieceId = "grandmaster/rinald";
 		private static readonly TagKey rinaldSpotTK = TagKey.Acquire("_q000RinaldSpot_");
+		private static readonly TagKey entranceTK = TagKey.Acquire("_q000Entrance_");
 
-		private static void PlaceRinald(Item entrance, int x, int y, int z, byte m) {
-			NPC rinald = (NPC) ThingDef.GetByDefname(RinaldDef).Create(x, y, z, m);
+		internal static void PrepareRinald(NPC rinald) {
 			rinald.Flag_Invulnerable = true;
 			NPCAiTimer.GetFor(rinald).WanderLeash = 0;
-			entrance.SetTag(rinaldTK, rinald);
-			entrance.SetTag(rinaldSpotTK, new[] { x, y, z, m });
 		}
 
-		internal static NPC GetRinald(Item entranceOrExit) {
-			NPC rinald = entranceOrExit.GetTag(rinaldTK) as NPC;
+		/// <summary>The entrance knows Rinald and where a new one stands, the exit asks the entrance.</summary>
+		internal static void LinkCave(Item entrance, Item exit, NPC rinald, int[] rinaldAt, byte m) {
+			entrance.SetTag(rinaldTK, rinald);
+			entrance.SetTag(rinaldSpotTK, new[] { rinaldAt[0], rinaldAt[1], rinaldAt[2], m });
+			exit.SetTag(entranceTK, entrance);
+		}
+
+		internal static NPC GetRinald(Item entrance) {
+			NPC rinald = entrance.GetTag(rinaldTK) as NPC;
 			return ((rinald == null) || rinald.IsDeleted) ? null : rinald;
 		}
 
 		/// <summary>Erebor's f_q000_vg_CaveExit_test + f_q000_vg_CaveExit.</summary>
 		internal static void TryLeaveCave(Item exit, Player player) {
-			if (GetRinald(exit) != null) {
+			Item entrance = exit.GetTag(entranceTK) as Item;
+			if ((entrance != null) && (GetRinald(entrance) != null)) {
 				player.RedMessage("Ted to preci neotocis!");
 				return;
 			}
@@ -415,95 +425,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 		#endregion the root and the cage
-
-		#region setup
-		private static int[] Beside(Map map, int x, int y, int range) {
-			return ExpertQuest.NearestStandable(map, x, y, range);
-		}
-
-		private static NPC PlaceStill(string defname, Map map, int[] at, byte m) {
-			NPC npc = (NPC) ThingDef.GetByDefname(defname).Create(at[0], at[1], at[2], m);
-			npc.Flag_Invulnerable = true; //Erebor's @create
-			NPCAiTimer.GetFor(npc).WanderLeash = 0;
-			return npc;
-		}
-
-		private static Item PlaceFixed(string defname, int[] at, byte m) {
-			Item item = (Item) ThingDef.GetByDefname(defname).Create(at[0], at[1], at[2], m);
-			item.SetAttribute(ItemAttributes.attr_move_never, true);
-			return item;
-		}
-
-		private static void Spawn(string defname, int[] at, byte m, short amount) {
-			SpawnInfo info = new SpawnInfo(amount, (IThingFactory) ThingDef.GetByDefname(defname), 20, 40, 8);
-			ScriptHolder.GetFunction("f_spawninit").Run(new Point4D(at[0], at[1], at[2], m), info);
-		}
-
-		private static void Clear(Map map, ImmutableRectangle area, params string[] defnames) {
-			foreach (string defname in defnames) {
-				ExpertQuest.RemovePlaced(map, defname, area);
-			}
-		}
-
-		/// <summary>The .SetupGrandmasterQuest command. The archive defines Rinald's cave, the regions of the story and, in the
-		/// journal's texts, roughly where things are: Elvira in the forest east of the Ice Plains (a_Severni_Spoust), Elmira's
-		/// cage by the rock face a little way off, with the cave's entrance, the root of Este at the far end of the dark cave
-		/// (see RootCaveMouth). Exact tiles are proposals, as are Elqira beside both Expert stones and the envoys at the spawn points
-		/// of Minas Tirith and Rhun. Replaces what an earlier run placed.</summary>
-		[SteamFunction]
-		public static void SetupGrandmasterQuest(Character self) {
-			Map world = Map.GetMap(0);
-			Point4D spoust = StaticRegion.GetByDefname("a_Severni_Spoust").P;
-			Point4D cave = StaticRegion.GetByDefname(CaveRegion).P;
-			Map caveMap = Map.GetMap(cave.M);
-			Point4D tirith = StaticRegion.GetByDefname("a_Minas_Tirith").P;
-			Map tirithMap = Map.GetMap(tirith.M);
-			Point4D rhun = StaticRegion.GetByDefname("a_Rhun").P;
-
-			Clear(world, new ImmutableRectangle(2760, 2755, 2775, 2770), ElqiraDef);
-			Clear(world, new ImmutableRectangle(3712, 2947, 3727, 2962), ElqiraDef);
-			Clear(world, new ImmutableRectangle(spoust.X - 45, spoust.Y - 45, spoust.X + 45, spoust.Y + 45), ElviraDef, ElmiraDef, CageDoorDef, CaveEntranceDef); //where the first version put them
-			Clear(world, new ImmutableRectangle(3970, 495, 4125, 545), ElviraDef, ElmiraDef, CageDoorDef, CaveEntranceDef);
-			Clear(caveMap, new ImmutableRectangle(5200, 1512, 5297, 1600), RinaldDef, CaveExitDef, "c_hellhound", "i_worldgem_bit");
-			Clear(Map.GetMap(2), new ImmutableRectangle(1, 794, 189, 1196), RootDef, AlarmDef, "c_q000_phoenix", "i_worldgem_bit"); //where the first version put them
-			Clear(world, RootCave, RootDef, AlarmDef, "c_q000_phoenix", "i_worldgem_bit");
-			Clear(world, new ImmutableRectangle(2926, 690, 3300, 900), RootDef, AlarmDef, "i_worldgem_bit");
-			Clear(tirithMap, new ImmutableRectangle(tirith.X - 8, tirith.Y - 8, tirith.X + 8, tirith.Y + 8), GondorEnvoyDef);
-			Clear(world, new ImmutableRectangle(rhun.X - 8, rhun.Y - 8, rhun.X + 8, rhun.Y + 8), MordorEnvoyDef);
-
-			PlaceStill(ElqiraDef, world, Beside(world, 2769, 2763, 5), 0);
-			PlaceStill(ElqiraDef, world, Beside(world, 3721, 2955, 5), 0);
-			IMovementSettings walker = self.MovementSettings;
-			PlaceStill(ElviraDef, world, Beside(world, 4004, 512, 10), 0);
-			int[] elmiraAt = Beside(world, 4104, 530, 6);
-			PlaceStill(ElmiraDef, world, elmiraAt, 0);
-			List<int[]> aroundElmira = ExpertQuest.WalkableRing(world, new Point3D(elmiraAt[0], elmiraAt[1], elmiraAt[2]), walker, 3);
-			PlaceFixed(CageDoorDef, aroundElmira[0], 0);
-			Item entrance = PlaceFixed(CaveEntranceDef, aroundElmira[aroundElmira.Count / 2], 0);
-
-			int[] rinaldAt = ExpertQuest.WalkableRing(caveMap, cave, walker, 30)[0];
-			PlaceRinald(entrance, rinaldAt[0], rinaldAt[1], rinaldAt[2], cave.M);
-			Item exit = PlaceFixed(CaveExitDef, ExpertQuest.WalkableRing(caveMap, cave, walker, 3)[0], cave.M);
-			exit.SetTag(rinaldTK, GetRinald(entrance));
-			Spawn("c_hellhound", ExpertQuest.WalkableRing(caveMap, new Point3D(rinaldAt[0], rinaldAt[1], rinaldAt[2]), walker, 3)[0], cave.M, 4);
-
-			int[] rootAt = ExpertQuest.WalkableRing(world, RootCaveMouth, walker, int.MaxValue, RootCave)[0]; //the end of the dark cave
-			PlaceFixed(RootDef, rootAt, 0);
-			Point3D rootPoint = new Point3D(rootAt[0], rootAt[1], rootAt[2]);
-			List<int[]> aroundRoot = ExpertQuest.WalkableRing(world, rootPoint, walker, 6, RootCave);
-			for (int i = 0; i < 4; i++) {
-				PlaceFixed(AlarmDef, aroundRoot[i * aroundRoot.Count / 4], 0);
-			}
-			Spawn("c_q000_phoenix", ExpertQuest.WalkableRing(world, rootPoint, walker, 2, RootCave)[0], 0, 3);
-
-			PlaceStill(GondorEnvoyDef, tirithMap, Beside(tirithMap, tirith.X + 2, tirith.Y, 6), tirith.M);
-			PlaceStill(MordorEnvoyDef, world, Beside(world, rhun.X + 2, rhun.Y, 6), 0);
-
-			string summary = "SETUP_GRANDMASTER_QUEST: done rinald=" + rinaldAt[0] + "," + rinaldAt[1] + "," + rinaldAt[2] + " root=" + rootAt[0] + "," + rootAt[1] + "," + rootAt[2];
-			Console.WriteLine(summary);
-			self.SysMessage(summary);
-		}
-		#endregion setup
 	}
 
 	/// <summary>#833 - the cave's minute timer on the player (Erebor's i_q000_delayer @timer).</summary>
