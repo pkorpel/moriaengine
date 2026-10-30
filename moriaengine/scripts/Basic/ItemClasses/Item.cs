@@ -175,7 +175,8 @@ namespace SteamEngine.CompiledScripts {
 		/// pre-existing Sphere/UO clilocs that had never been referenced anywhere in this engine
 		/// before #220/#221.</summary>
 		public override TriggerResult On_DenyPickup(DenyPickupArgs args) {
-			if (this.Flag_NonMovable) {
+			Character picker = args.PickingChar as Character;
+			if (this.Flag_NonMovable && ((picker == null) || !picker.IsGM)) { //#854 - fixed for players, GMs place things
 				args.Result = DenyResultMessages.Deny_YouCannotPickThatUp;
 				return TriggerResult.Cancel;
 			}
@@ -187,7 +188,6 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			if (this.HasAttribute(ItemAttributes.attr_owned) && (this.OwnedBy != null)) {
-				Character picker = args.PickingChar as Character;
 				if ((picker != this.OwnedBy) && ((picker == null) || !picker.IsGM)) {
 					args.Result = DenyResultMessages.Deny_ThatDoesNotBelongToYou;
 					return TriggerResult.Cancel;

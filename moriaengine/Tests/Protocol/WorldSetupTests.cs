@@ -44,11 +44,39 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("elviras=1 elviraMoved=True", counts);
 				Assert.Contains("loose=0 doors=1 strayThere=True", counts); //a sign placed loose by an older version is fixed too
 				Assert.Contains("stones=2 lenastirs=2 rinalds=1 elqiras=2", counts);
+
+				//a GM drags a fixed piece, and it stays fixed where it landed; with .gm off the same character can't
+				string sign = this.Ask(admin, ".TestWorldSetupGoToSign", "WORLD_SIGN:");
+				uint uid = uint.Parse(Field(sign, "uid="));
+				string[] me = sign.Substring(sign.IndexOf("me=", StringComparison.Ordinal) + 3).Split(' ');
+				admin.SendPickUpItem(uid, 1);
+				Thread.Sleep(300);
+				admin.SendDropItem(uid, ushort.Parse(me[0]), ushort.Parse(me[1]), sbyte.Parse(me[2]), -1);
+				Thread.Sleep(500);
+				string moved = this.Ask(admin, ".TestWorldSetupReportSign " + uid, "WORLD_SIGN:");
+				Assert.Contains("at=" + me[0] + "," + me[1] + " ", moved);
+				Assert.Contains("onGround=True fixed=True decaying=False", moved);
+
+				admin.SendSpeech(".gm");
+				Thread.Sleep(300);
+				admin.SendPickUpItem(uid, 1);
+				Thread.Sleep(300);
+				Assert.Contains("onGround=True fixed=True", this.Ask(admin, ".TestWorldSetupReportSign " + uid, "WORLD_SIGN:"));
+				admin.SendSpeech(".gm");
+				Thread.Sleep(300);
 			}
 			using (var client = this.Connect(Account, "Setup Player")) {
 				client.SendSpeech(".SetupWorld");
 				Assert.NotNull(TryReadMessageContaining(client, "No permission", Wait));
 			}
+		}
+
+		private static string Field(string line, string key) {
+			int idx = line.IndexOf(key, StringComparison.Ordinal);
+			Assert.True(idx >= 0, "no '" + key + "' in: " + line);
+			int start = idx + key.Length;
+			int end = line.IndexOf(' ', start);
+			return (end < 0) ? line.Substring(start).Trim() : line.Substring(start, end - start);
 		}
 
 		private static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {
