@@ -68,8 +68,8 @@ vitRange=50, 80, 100
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_mystik/titul_mystik_f)
-titles=poutnik, blouznivec, vizionar, tusitel, vestec, hypnotizer, hvezdopravec, telepat, jasnovidec, prorok
-titlesFemale=poutnicka, blouznivkyne, vizionarka, tusitelka, vestkyne, hypnotizerka, hvezdopravkyne, telepatka, jasnovidkyne, prorokyne
+titles="Pilgrim", "Dreamer", "Visionary", "Sensitive", "Soothsayer", "Hypnotist", "Astrologer", "Telepath", "Clairvoyant", "Prophet"
+titlesFemale="Pilgrim", "Dreamer", "Visionary", "Sensitive", "Soothsayer", "Hypnotist", "Astrologer", "Telepath", "Clairvoyant", "Prophetess"
 
 //list allowed spells, per the wiki. The wiki also notes offensive/support spells (besides
 //Magic Arrow/Feeblemind) can only be cast on self - not enforced here, this engine's

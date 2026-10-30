@@ -146,12 +146,18 @@ namespace SteamEngine.Tests.Protocol {
 		/// can succeed. Same pattern as SocialTests.cs/LevelingTests.cs's own non-first
 		/// accounts. Idempotent - harmless to call more than once across Facts.</summary>
 		private void EnsureAutoAccountCreationEnabled() {
+			if (autoAccountCreationEnabled) {
+				return; //each call costs a character, and an account holds 5
+			}
 			using (var client = this.ConnectLoginAndCreateCharacter(Account, "AutoAccountEnabler")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestEnableAutoAccountCreation");
 				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST:", mark, TimeSpan.FromSeconds(10)));
 			}
+			autoAccountCreationEnabled = true;
 		}
+
+		private static bool autoAccountCreationEnabled;
 
 		/// <summary>#177: a level-10 character must get the real level-10 title tier (1), not
 		/// the ladder's last entry (9, meant for level 200+) - the exact real-world symptom
@@ -186,6 +192,25 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("PAPERDOLL_NAME:", mark, TimeSpan.FromSeconds(10)),
 					"Did not see PAPERDOLL_NAME after sending Neutral. Output:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
 				Assert.Contains("PAPERDOLL_NAME: AlignTester", LastLineContaining(this.fixture.GameOutputSnapshot(), "PAPERDOLL_NAME:"));
+			}
+		}
+
+		/// <summary>#844: "The Good Name, Rank Title", following the rank; a saved old title is replaced at login.</summary>
+		[Fact]
+		public void TitleShowsTheRankInFrontOfTheProfessionTitle() {
+			this.EnsureAutoAccountCreationEnabled();
+			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "RankTester")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestCheckTitleWithRank");
+				Assert.True(this.fixture.WaitForGameOutputSince("TITLE_LADDERS:", mark, TimeSpan.FromSeconds(10)), this.fixture.GameOutputSnapshot().Substring(mark));
+				string output = this.fixture.GameOutputSnapshot().Substring(mark);
+				Assert.Contains("TITLE_RANK Novice: The Good RankTester, Novice Apprentice", output);
+				Assert.Contains("TITLE_RANK Expert: The Good RankTester, Expert Apprentice", output);
+				Assert.Contains("TITLE_RANK Master: The Good RankTester, Master Apprentice", output);
+				Assert.Contains("TITLE_RANK Grandmaster: The Good RankTester, Grandmaster Apprentice", output);
+				Assert.Contains("TITLE_RANK top: The Good RankTester, Grandmaster Archmage", output);
+				Assert.Contains("TITLE_RANK relog: Novice Archmage", output);
+				Assert.Contains("TITLE_LADDERS: read=378", output); //9 professions, 2 genders, 21 levels
 			}
 		}
 

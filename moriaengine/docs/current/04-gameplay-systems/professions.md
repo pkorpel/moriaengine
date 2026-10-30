@@ -107,7 +107,16 @@ the armor-mitigation and NPC-content gaps tracked elsewhere): converted weapon c
 Necromancer's entire "Black Magic" spell identity is unimplemented in this engine at all
 - #158.
 
-## Title ladders (#165/#177)
+## Title ladders (#165/#177/#844)
+
+A character's title reads "The Good/The Evil <name>, <rank> <profession title>", such as "The Good Aragorn, Master Sorcerer".
+The rank is `Player.SkillRank` in English: Novice, Expert, Master or Grandmaster, see [Rank quests](rank-quests.md). Erebor's
+title had the rank too. A player's title updates when their rank or level changes, and at login.
+
+The ladders are English translations of Erebor's Czech ones, in `scripts/Basic/Professions/Definitions/*.def`
+(`titles`/`titlesFemale`). Each entry is quoted: unquoted, the script parser reads it as a name, and a title matching a class,
+as "Healer" does, fails when a character of that profession first needs it. A title can't contain a rank word, because it
+follows one. `ProfessionTitleLadderTests` checks those rules, and that every step reads differently.
 
 `ProfessionDef.GetTitle(int level, bool female)` (`ProfessionDef.cs:317-324`) looks up a
 10-rank title ladder (11 for Craftsman) per profession/gender, ported from the original

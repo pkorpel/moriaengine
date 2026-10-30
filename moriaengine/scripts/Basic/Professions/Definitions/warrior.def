@@ -74,8 +74,8 @@ vitRange=80, 130, 180
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_war/titul_war_f)
-titles=rvac, zapasnik, stitonos, rekrut, kadet, sermir, bojovnik, valecnik, dobyvatel, rytir
-titlesFemale=rvac, zapasnice, stitonoska, rekrut, kadetka, sermirka, bojovnice, valecnice, dobyvatelka, rytirka
+titles="Brawler", "Wrestler", "Shieldbearer", "Recruit", "Cadet", "Swordsman", "Fighter", "Warrior", "Conqueror", "Knight"
+titlesFemale="Brawler", "Wrestler", "Shieldbearer", "Recruit", "Cadet", "Swordswoman", "Fighter", "Warrior", "Conqueror", "Knight"
 
 //list allowed spells, per the wiki - same small utility set as Thief/Craftsman
 allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark

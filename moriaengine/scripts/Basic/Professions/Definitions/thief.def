@@ -104,8 +104,8 @@ vitRange=70, 100, 140
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_thief/titul_thief_f)
-titles=lump, chmatak, tichoslapek, kapsar, lapka, lupic, zbojnik, hrdlorez, vrah, zabijak
-titlesFemale=lump, chmatak, tichoslapka, kapsarka, lapka, lupicka, zbojnice, hrdlorezkyne, vrazedkyne, zabijak
+titles="Scoundrel", "Pilferer", "Sneak", "Pickpocket", "Footpad", "Robber", "Brigand", "Cutthroat", "Killer", "Assassin"
+titlesFemale="Scoundrel", "Pilferer", "Sneak", "Pickpocket", "Footpad", "Robber", "Brigand", "Cutthroat", "Killer", "Assassin"
 
 ////3 talent tree branches
 ttb1 = ttb_thief_assassin

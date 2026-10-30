@@ -74,8 +74,8 @@ vitRange=70, 90, 120
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_shaman/titul_shaman_f)
-titles=pohan, bezverec, myslitel, kacir, heretik, mastickar, okultista, zarikavac, zaklinac, vymitac
-titlesFemale=pohanka, bezverkyne, myslitelka, kacirka, hereticka, mastickarka, okultistka, zarikavacka, zaklinacka, vymitacka
+titles="Pagan", "Infidel", "Thinker", "Dissenter", "Heretic", "Herbalist", "Occultist", "Charmer", "Conjurer", "Exorcist"
+titlesFemale="Pagan", "Infidel", "Thinker", "Dissenter", "Heretic", "Herbalist", "Occultist", "Charmer", "Conjurer", "Exorcist"
 
 //list allowed spells, per the wiki - Reactive Armor and Mana Drain are omitted, not
 //implemented in this engine (unimplementedSpells.def); Frost Bolt isn't implemented at all
