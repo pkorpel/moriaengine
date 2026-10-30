@@ -50,11 +50,8 @@ namespace SteamEngine.CompiledScripts {
 		public const string CaveEntranceDef = "i_q000_caveEntrance";
 		public const string CaveExitDef = "i_q000_caveExit";
 		public const string CaveRegion = "a_Slunecni_jeskyne"; //Erebor's tag.q000_dungeon, GROUP=vm quest
-		//The dark cave. Erebor's a_Ered_Mithrinska_Jeskyne is on mapplane 2, and nothing leads there yet: its teleports were
-		//placed by GMs. We use the tunnels around a_Ered_Mithrin_vstup, on the surface map, from this mouth on the east side
-		//of the mountains.
-		public static readonly Point3D RootCaveMouth = new Point3D(2919, 725, 45);
-		public static readonly ImmutableRectangle RootCave = new ImmutableRectangle(2790, 690, 2925, 810);
+		public const string RootCaveRegion = "a_Ered_Mithrinska_Jeskyne"; //the dark cave, on mapplane 2
+		public static readonly ImmutableRectangle RootCave = new ImmutableRectangle(1, 794, 189, 1196);
 		public const int MinLevel = 12;
 		public const int CaveMinutes = 60;
 		public const int GuardRange = 10;

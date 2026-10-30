@@ -124,13 +124,13 @@ the root. A region's spawn point proves nothing by itself: see the note on plane
 | Rinald, his cave's exit, 4 hellhounds | `a_Slunecni_jeskyne`, 30 and 3 steps from its spawn point | The area is the archive's, the spots are proposals |
 | Elvira | The cedar forest at about 4004,512, on the east of the Ice Plains (`a_Severni_Spoust`) | The journal: "in the forest on the east of the Ice Plains". The only forest there, found in the map's statics |
 | Elmira, the cage door, the cave's entrance | The rock face at about 4104,530, 100 tiles from Elvira | The journal: "in a cage by a rock", "a little way from" the forest. **There are no cage bars**: Erebor's were built by GMs. She stands still beside the door |
-| Root of Este, 4 alarm tiles, 3 phoenixes | The far end of the tunnels in from the mouth at 2919,725, at about 2853,734 | The journal: "at the end of the dark cave", "on the eastern part of Ered Mithrin". See below |
+| Root of Este, 4 alarm tiles, 3 phoenixes | The far end of `a_Ered_Mithrinska_Jeskyne`, plane 2, found by walking in from its spawn point | The journal: "at the end of the dark cave", "on the eastern part of Ered Mithrin". The cave's gate is in `.SetupDungeonEntrances` |
 | Elqira, twice | Beside both Expert stones | Proposal |
 | The envoys | Spawn points of `a_Minas_Tirith` and `a_Rhun` | From the story's "v Minas Tirith / ve Rhunu" |
 
-**Plane 2.** Erebor's cave, `a_Ered_Mithrinska_Jeskyne`, is on mapplane 2. The map exists now (#841), but nothing leads into it
-yet: Erebor's teleports were placed by GMs and aren't in the archive. Until then the root is in the tunnels around
-`a_Ered_Mithrin_vstup` on the surface map, the cave's real mouth area, reached on foot.
+The cave is reached by a two-way gate at `a_Ered_Mithrin_vstup`, its mouth area on the surface. Erebor's own teleports were placed by
+GMs and aren't in the archive. A root placed by an older version stands in the surface tunnels, and setups never move pieces:
+delete it, its 4 alarm tiles and the phoenix gem (ids `grandmaster/root...`), then run `.SetupWorld`.
 
 The two cave gates are this repo's own items (`GrandmasterQuest.def`): Erebor's general varGate isn't in the archive.
 

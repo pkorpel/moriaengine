@@ -32,7 +32,7 @@ Two consequences:
 | Command | Does |
 |---|---|
 | `.SetupWorld` | Every setup, in order |
-| `.SetupExpertQuest`, `.SetupMasterQuest`, `.SetupGrandmasterQuest` | One setup, by the same rules |
+| `.SetupExpertQuest`, `.SetupMasterQuest`, `.SetupGrandmasterQuest`, `.SetupDungeonEntrances` | One setup, by the same rules |
 
 All are GM only. What each quest places is in [Rank quests](../04-gameplay-systems/rank-quests.md).
 
