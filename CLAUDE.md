@@ -17,7 +17,7 @@ rank-quests.md. Verified: ExpertQuestTests (protocol, red without the attach), S
 Gotcha: a compiled TriggerGroup On_Create can't work (TryTrigger(create, null) vs generated sa.Argv; Item.On_Create
 then overwrites attributes) - hide/name pieces when they are linked instead.
 Flake: ExpertQuestTests' login helper once hit LoginDenied=1 (account in use, retry loop masks the first failure), 1 of
-8 runs, past all the quest steps it reached; the helper is the same as in the other protocol tests.
+4 runs, past all the quest steps it reached; the helper is the same as in the other protocol tests.
 **Next**: Master (mistr.scp), then Grandmaster (velmistr.scp); requireRank stays off until all three are in.
 
 ## DONE (2026-10-29, PR #834): #828 skill teachers (spk_mistr) + player rank
