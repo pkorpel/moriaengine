@@ -68,7 +68,7 @@ namespace SteamEngine.Converter {
 				new LineImplTask("tevent", WriteAsIsLine),
 				new LineImplTask("tevents", WriteAsIsLine),
 				new LineImplTask("speech", WriteAsIsLine),
-				new LineImplTask("tspeech", WriteAsIsLine),
+				new LineImplTask("tspeech", HandleTSpeech),
 				new LineImplTask("triggergroup", WriteAsIsLine),
 				new LineImplTask("triggergroups", WriteAsIsLine),
 				new LineImplTask("name", WriteInQuotes)
@@ -81,6 +81,14 @@ namespace SteamEngine.Converter {
 
 		private static void WriteAsIsLine(ConvertedDef def, PropsLine line) {
 			def.Set(line);
+		}
+
+		//#883 - double-clicking a banker talks to it here (#509), the realm bankers too
+		private static void HandleTSpeech(ConvertedDef def, PropsLine line) {
+			def.Set(line);
+			if (string.Equals(line.Value.Trim(), "spk_banker_ok", StringComparison.OrdinalIgnoreCase)) {
+				def.Set("TEVENTS", "e_banker", "");
+			}
 		}
 
 

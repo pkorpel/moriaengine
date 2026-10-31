@@ -65,7 +65,7 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
-		public void DoubleClickingBankerWithinRangeOpensBankBox() {
+		public void DoubleClickingBankerWithinRangeLeadsToTheBankBox() {
 			using (var client = this.ConnectLoginAndCreateCharacter("BankerDClickNearChecker")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestSetupNearbyBankerForDialogCheck");
@@ -73,13 +73,19 @@ namespace SteamEngine.Tests.Protocol {
 				uint bankerUid = ExtractUid(this.fixture.GameOutputSnapshot(), mark, "uid=");
 				Thread.Sleep(500);
 
+				client.SendSpeech(".TestBankerPortDress"); //no pants, no banker
+				Thread.Sleep(500);
 				client.SendDoubleClick(bankerUid);
+				var gump = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(gump.GumpUid, 1); //Bankovni sluzby
+				gump = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+				client.SendGumpResponse(gump.GumpUid, 1); //Otevrit banku
 				Thread.Sleep(500);
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestReportBankOpenToMe");
 				Assert.True(this.fixture.WaitForGameOutputSince("BANK_OPEN_TEST: open=True", mark, TimeSpan.FromSeconds(10)),
-					"Expected double-clicking a nearby banker to open the bank box. Game output:\n" + this.fixture.GameOutputSnapshot());
+					"Expected double-clicking a nearby banker to lead to the bank box. Game output:\n" + this.fixture.GameOutputSnapshot());
 			}
 		}
 
