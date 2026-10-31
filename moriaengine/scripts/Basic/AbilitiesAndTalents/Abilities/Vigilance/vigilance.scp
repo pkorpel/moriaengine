@@ -1,0 +1,6 @@
+//#866 - ra_thief_rebound and ra_thief_defstance, see ThiefDefence.
+[PassiveAbilityDef a_thief_rebound]
+Name="Attack Rebound"
+
+[PassiveAbilityDef a_thief_defstance]
+Name="Vigilant Stance"

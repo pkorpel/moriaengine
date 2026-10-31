@@ -290,10 +290,23 @@ namespace SteamEngine.CompiledScripts {
 				MonsterSpecialAttacks.TryApplyMagicShield(attacker, defender, swingArgs);
 				MonsterSpecialAttacks.TryApplyEyeDeflect(attacker, defender, swingArgs);
 
-				if (TryDodge(attacker, defender, damageType)) {
+				//#866 - f_dmgFinal_dodge's order: abilities that send the blow back or stop it, then dodge
+				double reflected = 0;
+				if (ThiefDefence.TryAvoid(attacker, defender, damageType, swingArgs.DamageAfterAC, out reflected) ||
+						TryDodge(attacker, defender, damageType)) {
+					if (reflected > 0) {
+						CauseDamage(defender, attacker, damageType, reflected);
+						if (attacker.IsDeleted) {
+							return;
+						}
+					}
 					swingArgs.InternalSetFinalDamage(0);
 					Trigger_AfterSwing(swingArgs);
 					return;
+				}
+
+				if (ThiefDefence.WeakensOwnBlow(attacker, defender)) {
+					swingArgs.DamageAfterAC = swingArgs.DamageAfterAC * CombatSettings.instance.vigilanceOwnDamage;
 				}
 
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true, false, out double reactiveReturn);

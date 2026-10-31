@@ -127,6 +127,15 @@ namespace SteamEngine.Tests {
 			Assert.Equal(expected, BleedingEffectPluginDef.CalculateReapply(power, ticks, added, cap));
 		}
 
+		[Theory]
+		[InlineData(100, 0, false, 0, 1000)]   //a kryss: 10%
+		[InlineData(150, 30, false, 0, 3000)]  //a cutlass, all points: 30%
+		[InlineData(150, 30, true, 10, 6000)]  //and the stance doubles it
+		[InlineData(50, 10, true, 0, 1000)]    //vigilant without the ability: no bonus
+		public void ReboundChanceOutOfTenThousand(int weapon, int points, bool vigilant, int stance, int expected) {
+			Assert.Equal(expected, ThiefDefence.CalculateReboundChance(weapon, points, vigilant, stance));
+		}
+
 		[Fact]
 		public void ZeroSpeedFallsBackToFifty() {
 			Assert.Equal(2 * (0xfffff / 50) / 10.0, CombatCalculator.CalculateSwingDelay(0, 76, 1.0, 10).TotalSeconds, 6);
