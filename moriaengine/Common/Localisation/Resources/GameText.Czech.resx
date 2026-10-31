@@ -604,6 +604,33 @@
   <data name="DamageManagerLoc_YouDodged" xml:space="preserve">
     <value>Uhnul jsi úderu.</value>
   </data>
+  <data name="MysticAbilitiesLoc_OnlyMystic" xml:space="preserve">
+    <value>Toto umí použít pouze Mystik.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_NotReady" xml:space="preserve">
+    <value>Nejsi na to připravený.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_FreezingStrikes" xml:space="preserve">
+    <value>Tvé údery jsou mrazivé.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_ParalysingStrikes" xml:space="preserve">
+    <value>Tvé údery jsou ochromující.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_NowCold" xml:space="preserve">
+    <value>Nyní zasazuješ mrazivé údery</value>
+  </data>
+  <data name="MysticAbilitiesLoc_NowLightning" xml:space="preserve">
+    <value>Nyní zasazuješ údery energií</value>
+  </data>
+  <data name="MysticAbilitiesLoc_CrushingBlow" xml:space="preserve">
+    <value>Zdrcující úder!</value>
+  </data>
+  <data name="MysticAbilitiesLoc_TargetFrozen" xml:space="preserve">
+    <value>Cíl je zmrazen!</value>
+  </data>
+  <data name="MysticAbilitiesLoc_TargetStruck" xml:space="preserve">
+    <value>Cíl je ochromen!</value>
+  </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
     <value>Nemáš střelivo.</value>
   </data>
