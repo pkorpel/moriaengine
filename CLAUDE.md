@@ -4,7 +4,10 @@
 
 User: don't wait for confirmations, carry on with all. Banker: "port over the entire dialog from erebor and all the behavior as well".
 **Bugs first (branch 879-bank-spellbook-backpack)**: #879 bank never opened in a real client: TazUO ignores 0x24 for an unknown item and the bank box is on a hidden layer (protocol tests can't see this, same as #810); send it 0x2E first. #880 SpellBook.On_DenyDClick denied every time. #881 clear the backpack as Erebor's promazat does.
-Then #882 stats + skills, #883 banker, #884 guildstone.
+#879-#881 shipped PR #885.
+**#883 banker done (branch 883-banker)**: BankerDialog.cs (d_banker_ok, d_banker_bank, f_banker_ok), BankerSpeech (spk_jobbanker in order) + BankerOkSpeech, CashiersItem (.ct, purse/strongbox/cheque, .check, .mesec), converter: CashiersItemDef + limits, tag.realm (2 = Mordor, not -1), e_banker on spk_banker_ok. Doc banker.md. Double click on a banker now opens the dialog, "bank" still opens the box on C_H_BANKER. No jail here; Erebor's partial purse pour made gold, fixed; e_vendor_check only sees moving, not casting.
+Gotcha: test accounts start as GM, and a GM pays nothing for .check/.mesec.
+Next #882 stats + skills, #884 guildstone.
 
 ## DONE (2026-10-31): #860 leftovers: #868, #872, #866, #865
 

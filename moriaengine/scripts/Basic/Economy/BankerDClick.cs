@@ -20,8 +20,9 @@ using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
-	/// #509 - double-click a banker NPC to open your own bank box, mirroring the "bank" speech
-	/// keyword in BankerSpeech.cs (same BankerRange.MaxDistance=6 check). A plain TriggerGroup
+	/// #509 - double-click a banker NPC to talk to it (#883: Erebor's dialog, whose first button
+	/// opens the bank box; the "bank" speech keyword still opens it directly), with the same
+	/// BankerRange.MaxDistance=6 check as BankerSpeech.cs. A plain TriggerGroup
 	/// (not AbstractSpeech, which is sealed to the hear trigger) hooking the now-cancellable
 	/// TriggerKey.dClick added to Thing.Trigger_DClick for exactly this purpose - returning
 	/// TriggerResult.Cancel here suppresses the banker's otherwise-default paperdoll/mount
@@ -63,7 +64,12 @@ namespace SteamEngine.CompiledScripts {
 				//here directly, same convention as every other On_*Click override in this
 				//codebase.
 				try {
-					dclicker.Bank.OpenBankTo(dclicker);
+					Player player = dclicker as Player;
+					if (player != null) {
+						BankerDialog.Open(banker, player);
+					} else {
+						dclicker.Bank.OpenBankTo(dclicker);
+					}
 				} catch (FatalException) {
 					throw;
 				} catch (Exception e) {

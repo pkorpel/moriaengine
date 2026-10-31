@@ -12,22 +12,11 @@ access thy bank box." - real UO bank boxes are only reachable through a banker N
 default. GMs are exempted so admin inspection via the normal container-open path still
 works.
 
-`BankerSpeech` (`scripts/Basic/Economy/BankerSpeech.cs`) is the actual banker interaction
-- a direct `AbstractSpeech` subclass (mirrors `ScriptedSpeech`'s own shape, the same
-`Bootstrap()`/`Register()` convention `PartyCommands`/`SecureTradeCommandsImpl` already
-use elsewhere) rather than an LScript `[SPEECH]` block - there was no existing LScript
-speech example anywhere in this codebase to confirm syntax against, and simple keyword
-matching doesn't need LScript's pattern-trigger machinery. This was new functionality,
-not restored content - the converted `vendors.def` banker NPCs had their speech trigger
-commented out by the old converter with nothing left to restore (the referenced
-`jobbanker.def` speech block was stripped to an empty header; since #825 it's a `[SpeechStub]`
-placeholder, which `BankerSpeech` overrides - see [NPC speech](npc-speech.md)).
-
-Recognizes 3 keywords anywhere in the spoken line (`balance`, `deposit`, `withdraw`) via
-plain substring search - `deposit`/`withdraw` pull the first run of digits out of the
-message (`TryExtractAmount`, e.g. "withdraw 500" -> 500) rather than requiring an exact
-phrase. `GoldUtils.CountGoldIn`/`TryDeposit`/`TryWithdraw` do the actual balance math
-against `Character.Bank`.
+Talking to a banker, its two dialogs, cheques and purses are Erebor's since #883, see
+[Bankers, cheques and purses](banker.md). `BankerSpeech` (`scripts/Basic/Economy/BankerSpeech.cs`)
+is a direct `AbstractSpeech` subclass that overrides the `[SpeechStub]` placeholders, see
+[NPC speech](npc-speech.md). `deposit N` and `withdraw N` pull the first run of digits out of the
+message (`TryExtractAmount`); `GoldUtils.TryDeposit`/`TryWithdraw` do the math against `Character.Bank`.
 
 ## NPC vendor buy/sell
 
