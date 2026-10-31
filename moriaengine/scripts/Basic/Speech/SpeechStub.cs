@@ -116,7 +116,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Sphere's Str_Match: the pattern matches the WHOLE utterance, case-insensitively, '*' being any
 		/// run of characters and '?' any one character.</summary>
-		private static Regex GetRegex(string pattern) {
+		internal static Regex GetRegex(string pattern) {
 			Regex regex;
 			if (!regexes.TryGetValue(pattern, out regex)) {
 				StringBuilder sb = new StringBuilder("^");

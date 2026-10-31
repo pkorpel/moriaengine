@@ -413,6 +413,7 @@ namespace SteamEngine.Converter {
 
 		public static void ThirdStageFinished() {
 			ApplyArmorSettings();
+			ApplyCashiersSettings();
 			foreach (ConvertedItemDef def in itemsByDefname.Values) {
 				if (def.isWeapon) {
 					def.ApplyWeaponSettings();
@@ -492,6 +493,23 @@ namespace SteamEngine.Converter {
 
 		//#860 - ammo's TDATA1 and TDATA2 index nastaveni_arrowdamage_N (combat.scp): the first is a
 		//damage multiplier in permille, the second piercing; no TDATA2 is index 0, piercing 0
+		//#883 - seky.scp's money items; the limits are globals in sphereworld.scp
+		private static void ApplyCashiersSettings() {
+			string[,] items = {
+				{ "i_cashiers_check", null },
+				{ "i_cashiers_mesec", "nastaveni_max_amount_mesec" },
+				{ "i_cashiers_pokladnicka", "nastaveni_max_amount_pokladnice" }
+			};
+			for (int i = 0; i < items.GetLength(0); i++) {
+				if (itemsByDefname.TryGetValue(items[i, 0], out ConvertedThingDef def)) {
+					def.headerType = "CashiersItemDef";
+					if ((items[i, 1] != null) && SphereWorldVars.TryGetInt(items[i, 1], out int maxAmount)) {
+						def.Set("MaxAmount", maxAmount.ToString(CultureInfo.InvariantCulture), "");
+					}
+				}
+			}
+		}
+
 		private void ApplyAmmoSettings() {
 			if (!int.TryParse(this.tData1, NumberStyles.Integer, CultureInfo.InvariantCulture, out int damageIndex) ||
 					!SphereWorldVars.TryGetInt("nastaveni_arrowdamage_" + damageIndex, out int damage)) {
