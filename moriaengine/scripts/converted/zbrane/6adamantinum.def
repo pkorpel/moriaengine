@@ -23,6 +23,7 @@ speed = 130 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.1 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_club_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -47,6 +48,7 @@ speed = 100 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 4900.0 //#539 - scaled: 700 * 28.0/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 4900.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -73,6 +75,7 @@ speed = 85 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.45 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_cutlass_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -97,6 +100,7 @@ speed = 75 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.25 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_mace_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -121,6 +125,7 @@ speed = 90 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 8000.0 //#539 - scaled: 700 * 80.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 8000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -147,6 +152,7 @@ speed = 63 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.05 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -172,6 +178,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_shepherds_crook_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -197,6 +204,7 @@ speed = 60 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 3000.0 //#539 - scaled: 700 * 30.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 3000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -224,6 +232,7 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 1270 //nastaveni_staffSMbonus 
 MindPowerVsM = 1270
 
@@ -250,6 +259,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_spear_short_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -274,6 +284,7 @@ speed = 90 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_war_fork_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -298,6 +309,7 @@ speed = 65 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_sword_broad_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -322,6 +334,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_mace_war_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -346,6 +359,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 3290.0 //#539 - scaled: 700 * 47.0/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 3290.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -372,6 +386,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_sword_viking_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -396,6 +411,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredStaffDef i_staff_quarter_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -421,6 +437,7 @@ speed = 45 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 1305 //nastaveni_staffSMbonus 
 MindPowerVsM = 1305
 
@@ -447,6 +464,7 @@ speed = 100 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_hammer_pick_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -471,6 +489,7 @@ speed = 63 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 5250.0 //#539 - scaled: 700 * 90.0/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 5250.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -498,6 +517,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_exec_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -522,6 +542,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_double_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -547,6 +568,7 @@ speed = 65 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_hammer_war_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -572,6 +594,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 3000.0 //#539 - scaled: 700 * 60.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 3000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -599,6 +622,7 @@ speed = 55 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_spear_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -623,6 +647,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredStaffDef i_staff_gnarled_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -648,6 +673,7 @@ speed = 40 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 1340 //nastaveni_staffSMbonus 
 MindPowerVsM = 1340
 
@@ -675,6 +701,7 @@ speed = 62 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_battle_large_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -700,6 +727,7 @@ speed = 55 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bardiche_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -725,6 +753,7 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_maul_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -749,6 +778,7 @@ speed = 70 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 3305.56 //#539 - scaled: 700 * 85.0/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 3305.56 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -776,6 +806,7 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bow_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -803,6 +834,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_crossbow_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -830,6 +862,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_crossbow_heavy_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -857,6 +890,7 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bow_adamantinum_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -884,6 +918,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_crossbow_adamantinum_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -911,3 +946,4 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 

@@ -17,6 +17,7 @@
 
 using System.Globalization;
 using SteamEngine.Common;
+using System;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
@@ -38,18 +39,36 @@ namespace SteamEngine.CompiledScripts {
 			base.On_Assign();
 		}
 
+		private static readonly TagKey bleedPowerTK = TagKey.Acquire("_bleedPower_");
+		private static readonly TagKey bleedTicksTK = TagKey.Acquire("_bleedTicks_");
+
+		internal double BleedPower {
+			get { return Convert.ToDouble(this.GetTag(bleedPowerTK) ?? 0.0); }
+			set { this.SetTag(bleedPowerTK, value); }
+		}
+
+		internal int BleedTicks {
+			get { return Convert.ToInt32(this.GetTag(bleedTicksTK) ?? 0); }
+			set { this.SetTag(bleedTicksTK, value); }
+		}
+
+		/// <summary>#872 - i_krvaceni's timer: fades by f_bleed_calculateCurrentValue.</summary>
 		public override void On_FadingEffectTick() {
 			Character self = this.Cont as Character;
-			if (self != null) {
-
-				double damage = DamageManager.CauseDamage(this.SourceThing as Character, self,
-					DamageType.PhysicalBleed, this.EffectPower);
-
-				if (damage < 1) { //once there's no damage (like when target is immune), remove
-					this.Delete();
-				}
-			} else {
+			int ticks = this.BleedTicks;
+			if ((self == null) || (ticks >= BleedingEffectPluginDef.BleedTickCount)) {
 				this.Delete();
+				return;
+			}
+			double damage = BleedingEffectPluginDef.CalculateCurrentValue(this.BleedPower, ticks, BleedingEffectPluginDef.DamageCoefficient);
+			bool interrupts = Globals.dice.Next(1000) < CombatSettings.instance.bleedFizzleChance;
+			double dealt = DamageManager.CauseBleedDamage(this.SourceThing as Character, self, DamageType.PhysicalBleed, damage, interrupts);
+			if (dealt < 1) { //once there's no damage (like when target is immune), remove
+				this.Delete();
+				return;
+			}
+			if (!self.IsDeleted) {
+				this.BleedTicks = ticks + 1;
 			}
 
 			//0-4 are valid messages
@@ -93,6 +112,43 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		internal const int BleedTickCount = 10;
+		internal const int DamageCoefficient = 1, CapCoefficient = 2;
+
+		/// <summary>#872 - f_bleed_calculateCurrentValue: a quadratic fade over the ten ticks. The cap
+		/// fades half as fast, so a stack that's been running keeps some of what it reached.</summary>
+		public static double CalculateCurrentValue(double power, int ticks, int coefficient) {
+			double fade = 1000 - Math.Truncate((ticks * ticks * 1000.0) / (BleedTickCount * BleedTickCount * coefficient));
+			return Math.Truncate((power * fade) / 1000);
+		}
+
+		/// <summary>#872 - f_thief_doBleed on a target already bleeding: what's left plus the new
+		/// blow, up to the attacker's cap or what the stack could still hold.</summary>
+		public static double CalculateReapply(double power, int ticks, double addedPower, double cap) {
+			double stackCap = CalculateCurrentValue(power, ticks, CapCoefficient);
+			return Math.Min(CalculateCurrentValue(power, ticks, DamageCoefficient) + addedPower, Math.Max(cap, stackCap));
+		}
+
+		/// <summary>#872 - f_thief_doBleed. Every hit restarts the ten ticks.</summary>
+		public void Strike(Character attacker, Character target, double addedPower) {
+			EffectFlag flags = EffectFlag.HarmfulEffect | EffectFlag.FromAbility;
+			TimeSpan duration = TimeSpan.FromSeconds(this.TickInterval * (BleedTickCount + 1));
+			double cap = this.GetMaxPower(attacker, target, flags);
+			BleedingEffectPlugin bleeding = target.GetPlugin(this.PluginKey) as BleedingEffectPlugin;
+			if (bleeding != null) {
+				double power = CalculateReapply(bleeding.BleedPower, bleeding.BleedTicks, addedPower, cap);
+				bleeding.Init(attacker, flags, power, duration);
+				bleeding.BleedPower = power;
+				bleeding.BleedTicks = 0;
+				return;
+			}
+			bleeding = (BleedingEffectPlugin) this.Create();
+			double firstPower = Math.Min(addedPower, cap);
+			bleeding.Init(attacker, flags, firstPower, duration);
+			bleeding.BleedPower = firstPower;
+			target.AddPlugin(this.PluginKey, bleeding);
+		}
+
 		public static bool IsBleeding(Character ch) {
 			return ch.GetPlugin(SingletonScript<BleedingEffectPluginDef>.Instance.PluginKey) is BleedingEffectPlugin;
 		}
@@ -108,8 +164,12 @@ namespace SteamEngine.CompiledScripts {
 			Character sourceChar = source as Character;
 			if (sourceChar != null) {
 				var def = BleedingMaxPowerBonusDef;
-				return base.GetMaxPower(source, target, sourceType) *
-					(1 + (sourceChar.GetAbility(def) * def.EffectPower));
+				double cap = base.GetMaxPower(source, target, sourceType);
+				Player player = sourceChar as Player;
+				if ((player != null) && Professions.HasProfession(player, Professions.Thief)) {
+					cap = CombatSettings.instance.thiefBleedCap + Math.Min(player.Level, 200);
+				}
+				return cap * (1 + (sourceChar.GetAbility(def) * def.EffectPower));
 			}
 
 			return base.GetMaxPower(source, target, sourceType);

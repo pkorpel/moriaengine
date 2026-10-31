@@ -52,6 +52,20 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#872 - a titan resists bleed 300: 100 -> 70, the fade 99 -> 69, cap 300 + 200.</summary>
+		[Fact]
+		public void ThiefBleedFadesAndCaps() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "BleedChecker")) {
+				client.SendSpeech(".TestThiefBleedReport");
+				Assert.True(this.fixture.WaitForGameOutput("THIEF_BLEED:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "THIEF_BLEED:");
+
+				Assert.Equal(70, ExtractIntValue(line, "firstTick="));
+				Assert.Equal(69, ExtractIntValue(line, "secondTick="));
+				Assert.Equal(500, ExtractIntValue(line, "capped="));
+			}
+		}
+
 		/// <summary>#868 - the blow costs less and hurts the monster back.</summary>
 		[Fact]
 		public void ReactiveArmorAbsorbsAndReturnsBlows() {

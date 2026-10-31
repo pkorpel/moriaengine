@@ -26,6 +26,7 @@ speed = 100 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13b4]
 DUPEITEM = i_club
@@ -51,6 +52,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xe88]
 DUPEITEM = i_pitchfork
@@ -76,6 +78,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf4a]
 DUPEITEM = i_axe
@@ -102,6 +105,7 @@ speed = 55 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x1443]
 DUPEITEM = i_axe_two_hand
@@ -127,6 +131,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf46]
 DUPEITEM = i_axe_exec
@@ -153,6 +158,7 @@ speed = 65 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf4c]
 DUPEITEM = i_axe_double
@@ -178,6 +184,7 @@ speed = 100 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf48]
 DUPEITEM = i_axe_battle
@@ -204,6 +211,7 @@ speed = 55 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13fb]
 DUPEITEM = i_axe_battle_large
@@ -229,6 +237,7 @@ speed = 62 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13b0]
 DUPEITEM = i_axe_war
@@ -254,6 +263,7 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf4e]
 DUPEITEM = i_bardiche
@@ -280,6 +290,7 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x143f]
 DUPEITEM = i_halberd
@@ -306,6 +317,7 @@ speed = 85 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.45 //nastaveni_weapbleed 
 
 [ItemDef 0x1401]
 DUPEITEM = i_kryss
@@ -332,6 +344,7 @@ speed = 75 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.25 //nastaveni_weapbleed 
 
 [ItemDef 0x1441]
 DUPEITEM = i_cutlass
@@ -358,6 +371,7 @@ speed = 65 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x1405]
 DUPEITEM = i_war_fork
@@ -383,6 +397,7 @@ speed = 63 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.05 //nastaveni_weapbleed 
 
 [ItemDef 0x13b6]
 DUPEITEM = i_scimitar
@@ -409,6 +424,7 @@ speed = 90 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x1403]
 DUPEITEM = i_spear_short
@@ -435,6 +451,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13ff]
 DUPEITEM = i_katana
@@ -460,6 +477,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf5f]
 DUPEITEM = i_sword_broad
@@ -485,6 +503,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf61]
 DUPEITEM = i_sword_long
@@ -510,6 +529,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf63]
 DUPEITEM = i_spear
@@ -536,6 +556,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13ba]
 DUPEITEM = i_sword_viking
@@ -584,6 +605,7 @@ speed = 90 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf5d]
 DUPEITEM = i_mace
@@ -610,6 +632,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x1407]
 DUPEITEM = i_mace_war
@@ -635,6 +658,7 @@ speed = 60 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13f5]
 DUPEITEM = i_shepherds_crook
@@ -661,6 +685,7 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xdf1]
 DUPEITEM = i_staff_black
@@ -686,6 +711,7 @@ speed = 45 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xe8a]
 DUPEITEM = i_staff_quarter
@@ -711,6 +737,7 @@ speed = 40 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13f9]
 DUPEITEM = i_staff_gnarled
@@ -736,6 +763,7 @@ speed = 63 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x143d]
 DUPEITEM = i_hammer_pick
@@ -762,6 +790,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x1439]
 DUPEITEM = i_hammer_war
@@ -788,6 +817,7 @@ speed = 70 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x143b]
 DUPEITEM = i_maul
@@ -818,6 +848,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 //TDATA4 = i_arrow_x // commented out by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13b2]
 DUPEITEM = i_bow
@@ -847,6 +878,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 //TDATA4 = i_bolt_jagged_x // commented out by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0xf50]
 DUPEITEM = i_crossbow
@@ -877,6 +909,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 //TDATA4 = i_xbolt_x // commented out by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef 0x13fd]
 DUPEITEM = i_crossbow_heavy
