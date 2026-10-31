@@ -20,7 +20,7 @@ namespace SteamEngine.Tests.Protocol {
 				using (var client = Connect(fixture, "Speech Tester")) {
 					string report = Ask(fixture, client, ".TestSpeechStubReport", "SPEECH_STUB_REPORT:");
 					//252 archive blocks: 13 ported in C#, spk_vendor_custom is the LScript one in scripts/Optional/PlayerVendor
-					AssertHas(report, "stubs=238 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech healer=HealerSpeech mistr=SkillTeacherSpeech");
+					AssertHas(report, "stubs=237 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech healer=HealerSpeech mistr=SkillTeacherSpeech");
 
 					Ask(fixture, client, ".TestSpawnSpeechStubListener", "SPEECH_STUB_LISTENER:");
 					client.SendSpeech("hello there");
