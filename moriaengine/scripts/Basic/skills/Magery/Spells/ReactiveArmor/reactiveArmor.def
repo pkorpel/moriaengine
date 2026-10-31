@@ -1,0 +1,24 @@
+//#868 - f_dmgFinal_applyReactiveAR: absorbs and returns a share of physical blows,
+//nastaveni_reactivea_* on MagerySettings. Mana and cast time are nastaveni_spell*_s_reactive_armor.
+[DurableCharEffectSpellDef 7]
+DEFNAME=s_reactive_armor
+NAME=Reactive Armor
+SOUND=snd_SPELL_REACTIVE_ARMOR
+RUNES=FS
+CASTTIME=1.5
+RUNEITEM=i_rune_REACTIVE_ARMOR
+SCROLLITEM=i_scroll_REACTIVE_ARMOR
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+EFFECT=0
+DURATION=2*60.0,5*60.0
+MANAUSE=7
+Requirements=10.0 Magery
+
+EffectPluginDef = p_reactive_armor
+EffectPluginKey_Spell = @@spellEffect_reactive_armor
+EffectPluginKey_Potion = @@spellEffect_reactive_armor
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x376A, 9, 32)
+
+[ReactiveArmorPluginDef p_reactive_armor]

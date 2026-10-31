@@ -41,6 +41,18 @@ namespace SteamEngine.CompiledScripts {
 		public double mindPowerIntModifier = 0.700;
 
 		[SaveableData]
+		public int reactiveArmorAbsorbPvP = 10; //nastaveni_reactivea_pvp_absorb
+
+		[SaveableData]
+		public int reactiveArmorReturnPvP = 10; //nastaveni_reactivea_pvp_return
+
+		[SaveableData]
+		public int reactiveArmorAbsorbPvM = 20; //nastaveni_reactivea_pvm_absorb
+
+		[SaveableData]
+		public int reactiveArmorReturnPvM = 10; //nastaveni_reactivea_pvm_return
+
+		[SaveableData]
 		public double spellPowerVsM = 2.000; //nastaveni_global_vMsm
 
 		[SaveableData]

@@ -92,6 +92,16 @@ namespace SteamEngine.Tests {
 			Assert.Equal(expected, StandcastHelper.CalculateLevelBonus(level, spellId, 0.02), 6);
 		}
 
+		[Theory]
+		[InlineData(100, 20, 10, 80, 10)]
+		[InlineData(100, 10, 10, 90, 10)]
+		[InlineData(9, 20, 10, 8, 0)]   //whole numbers, rounded down
+		public void ReactiveArmorSplitsTheBlow(int damage, int absorb, int ret, int taken, int returned) {
+			ReactiveArmorPluginDef.Calculate(damage, absorb, ret, out int actualTaken, out int actualReturned);
+			Assert.Equal(taken, actualTaken);
+			Assert.Equal(returned, actualReturned);
+		}
+
 		[Fact]
 		public void ZeroSpeedFallsBackToFifty() {
 			Assert.Equal(2 * (0xfffff / 50) / 10.0, CombatCalculator.CalculateSwingDelay(0, 76, 1.0, 10).TotalSeconds, 6);

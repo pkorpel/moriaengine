@@ -52,6 +52,21 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#868 - the blow costs less and hurts the monster back.</summary>
+		[Fact]
+		public void ReactiveArmorAbsorbsAndReturnsBlows() {
+			using (var client = this.ConnectLoginAndCreateCharacter(Account, "ReactiveChecker")) {
+				client.SendSpeech(".TestReactiveArmorReport");
+				Assert.True(this.fixture.WaitForGameOutput("REACTIVE_ARMOR:", TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "REACTIVE_ARMOR:");
+
+				Assert.Contains("active=True", line);
+				Assert.Equal(0, ExtractIntValue(line, "returnedWithout="));
+				Assert.True(ExtractIntValue(line, "returned=") > 0, line);
+				Assert.True(ExtractIntValue(line, "with=") <= ExtractIntValue(line, "without="), line); //the titan's roll is 0.85-1
+			}
+		}
+
 		/// <summary>#860 - Sphere's armor coverage on players and monsters, PvP armor, dodge.</summary>
 		[Fact]
 		public void ArmorCoverageAndDodge() {
