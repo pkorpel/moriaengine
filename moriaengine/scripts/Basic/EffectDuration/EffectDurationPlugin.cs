@@ -23,7 +23,7 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
-	public partial class EffectDurationPlugin {
+	public partial class EffectDurationPlugin : IEffectDescriber {
 
 		//sourcething = spell caster / ability user / trap item / etc
 		public void Init(Thing sourceThing, EffectFlag sourceType, double power, TimeSpan duration) {
@@ -103,6 +103,69 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return this.ToString();
 			}
+		}
+
+		/// <summary>#923 - false for what's a part of an effect and means nothing to a player.</summary>
+		protected virtual bool IsShownAsEffect {
+			get {
+				return true;
+			}
+		}
+
+		/// <summary>#923 - what it does, for .boosts: "+10 Str". Without a meaning of its own, its power.</summary>
+		public virtual string EffectDetail {
+			get {
+				int power = (int) this.effectPower;
+				return (power > 1) ? ("Sila " + power) : "";
+			}
+		}
+
+		public virtual int EffectIcon {
+			get {
+				if (this.sourceDef is SpellDef spell) {
+					return ((spell.Id >= 1) && (spell.Id <= 64)) ? (FirstSpellIcon + spell.Id - 1) : 0;
+				}
+				return (this.sourceDef is AbilityDef ability) ? ability.Icon : 0;
+			}
+		}
+
+		private const int FirstSpellIcon = 0x8C0;
+
+		private string EffectSource(Character holder) {
+			string kind;
+			if ((this.flags & EffectFlag.FromSpellBook) != EffectFlag.None) {
+				kind = "kouzlo";
+			} else if ((this.flags & EffectFlag.FromSpellScroll) != EffectFlag.None) {
+				kind = "svitek";
+			} else if ((this.flags & EffectFlag.FromPotion) != EffectFlag.None) {
+				kind = "lektvar";
+			} else if ((this.flags & EffectFlag.FromTrap) != EffectFlag.None) {
+				kind = "past";
+			} else if ((this.flags & EffectFlag.FromAbility) != EffectFlag.None) {
+				kind = "schopnost";
+			} else {
+				kind = "";
+			}
+			bool fromSomeoneElse = (this.sourceThing != null) && !this.sourceThing.IsDeleted && (this.sourceThing != holder);
+			return ActiveEffects.Join(kind, fromSomeoneElse ? ("od: " + this.sourceThing.Name) : "");
+		}
+
+		public ActiveEffect DescribeEffect(Character holder) {
+			if (!this.IsShownAsEffect) {
+				return null;
+			}
+			EffectSection section = EffectSection.Neutral;
+			if ((this.flags & EffectFlag.BeneficialEffect) == EffectFlag.BeneficialEffect) {
+				section = EffectSection.Positive;
+			} else if ((this.flags & EffectFlag.HarmfulEffect) == EffectFlag.HarmfulEffect) {
+				section = EffectSection.Negative;
+			}
+			return new ActiveEffect(section, this.EffectName) {
+				SecondsLeft = this.Timer,
+				Detail = this.EffectDetail,
+				Source = this.EffectSource(holder),
+				Icon = this.EffectIcon
+			};
 		}
 
 		public virtual void On_Death() {

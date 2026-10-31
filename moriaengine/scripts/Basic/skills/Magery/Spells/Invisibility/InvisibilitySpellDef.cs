@@ -40,6 +40,11 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
+		/// <summary>#923 - for .boosts.</summary>
+		public static double SecondsLeft(Character target) {
+			return target.GetTimer(timerKey)?.DueInSeconds ?? -1;
+		}
+
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
 			base.On_EffectChar(target, spellEffectArgs);
 
