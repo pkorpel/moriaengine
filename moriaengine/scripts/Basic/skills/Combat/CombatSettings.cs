@@ -88,6 +88,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double weapAttackVsMPerLevel = 0.010;
 
+		/// <summary>#866 - e_vigilance: the share of a thief's blow on a monster left in the stance.</summary>
+		[SaveableData]
+		public double vigilanceOwnDamage = 0.700;
+
 		/// <summary>#872 - a thief's bleed cap, plus their level up to 200.</summary>
 		[SaveableData]
 		public int thiefBleedCap = 300; //nastaveni_thief_bleed_cap

@@ -154,6 +154,13 @@ hitting a player (`damagecust_MvP`) keeps a percentage instead:
 `attack * (1 - armor * (1 - piercing/1000) / armorClassMvP) * roll(0.85-1.0)`, so armor 100
 halves the hit and armor 200 stops it.
 
+**Rebound and magic defence.** Before dodge, in `ThiefDefence.TryAvoid`: a thief's `a_thief_rebound`
+sends a monster's physical blow back, whole, at `(weapon + 5 per point) * 10` out of 10000; the weapon
+is cutlass 150, kryss 100, scimitar 50, nothing else. `.vigilance` or `.stance` costs half of max
+stamina each way, needs 50, multiplies that 10 by `10 + a_thief_defstance points`, and takes
+`vigilanceOwnDamage` (70%) of the thief's own blows on monsters. Then the magic reflex and block,
+percentages of blows from `ThiefDefence.SetMagicDefence`; nothing sets them until magic items exist.
+
 **Dodge.** Each point of `a_weapon_dodge` dodges 1% of monsters' physical blows
 (`weaponDodgePerPoint`). A dodged blow does nothing and fires no on-hit abilities. Players'
 blows can't be dodged this way.
@@ -205,8 +212,7 @@ of the time. Monsters' own bleed (`e_npc_bleed`) is separate.
 `i_voodooshield` aren't in the archive. A bare-handed player's spell keeps
 its damage: Erebor's bare hands rule (`wrestling/200 + 1`) also runs on spells, but it would
 cap spells of anyone with free hands, so it applies to swings only here. Item wear: `Durability` scales armor and weapons as on Erebor, but nothing lowers
-it, because there's no repair skill yet (#865). Thief rebound and the magic items' reflex and
-block have no ability or item here yet (#866).
+it, because there's no repair skill yet (#865).
 
 **Minimum damage**, after resists, on swings, not against a target immune to the damage type:
 a monster's swing on a monster that would do less than 1 does 5, unless it's summon damage. A
