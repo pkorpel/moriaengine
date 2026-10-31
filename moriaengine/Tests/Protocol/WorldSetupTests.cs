@@ -11,7 +11,7 @@ namespace SteamEngine.Tests.Protocol {
 		private const string Account = "worldsetupplayer";
 		private const string AdminAccount = "worldsetupadmin"; //the server's first account: a GM, can turn on auto-creation
 		private const int ExpertPieces = 16, MasterPieces = 5, GrandmasterPieces = 17, EntrancePieces = 2;
-		private const int TownPieces = 10;
+		private const int TownPieces = 20;
 		private const int AllPieces = ExpertPieces + MasterPieces + GrandmasterPieces + EntrancePieces + TownPieces;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(30);
 		private static bool autoAccountCreationEnabled;

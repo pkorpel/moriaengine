@@ -69,7 +69,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>d_town_menu: the lines depend on who's looking. The button numbers are Erebor's.</summary>
 	public class D_TownMenu : CompiledGumpDef {
 		internal const int CitizensButton = 1, BlacklistButton = 2, ElectionButton = 3, PayTaxButton = 4, StandButton = 5, TaxStatusButton = 6, AddBanButton = 12, SetTaxButton = 14, MayorButton = 15,
-			ExpelButton = 16, MakeMayorButton = 17, MakeCitizenButton = 18, SuggestedBansButton = 21, NewsButton = 23, HomeButton = 24, CitizenshipButton = 25;
+			ExpelButton = 16, RemoveRingButton = 26, MakeNazgulButton = 27, MakeMayorButton = 17, MakeCitizenButton = 18, SuggestedBansButton = 21, NewsButton = 23, HomeButton = 24, CitizenshipButton = 25;
 		private const int Hue = 955, LabelHue = 0x481, RowHeight = 20, Width = 280, FirstRow = 176;
 		private static readonly string[] rankNames = { "Nepritel", "Verejnost", "Obcan", "Starosta", "GM" };
 
@@ -84,6 +84,16 @@ namespace SteamEngine.CompiledScripts {
 				if (rank >= neededRank) {
 					lines.Add(new KeyValuePair<int, string>(button, text));
 				}
+			}
+			if (town.Realm == Realm.Mordor) { //d_nazg_menu: the shrine opens this only to a Nazgul
+				Line(Town.RankPublic, BlacklistButton, "Blacklist");
+				Line(Town.RankMayor, SuggestedBansButton, "Hraci navrzeni na blacklist");
+				Line(Town.RankMayor, AddBanButton, "Pridat hrace na blacklist");
+				Line(Town.RankPublic, NewsButton, "Novinky");
+				Line(Town.RankMayor, HomeButton, "Zmenit home");
+				Line(Town.RankGm, RemoveRingButton, "Zbavit nazgula prstenu");
+				Line(Town.RankGm, MakeNazgulButton, "Udelat nazgulem");
+				return lines;
 			}
 			Line(Town.RankPublic, CitizensButton, "Seznam obcanu");
 			Line(Town.RankPublic, BlacklistButton, "Blacklist");
@@ -114,11 +124,14 @@ namespace SteamEngine.CompiledScripts {
 			this.AddBackground(0, 0, Width, FirstRow + (lines.Count * RowHeight) + 14, 2620);
 			this.AddImage(10, 10, 100);
 			this.AddHtml(30, 30, 100, 60, "Mesto " + town.Name, false, false);
-			this.AddLabel(150, 14, LabelHue, "Starosta:");
+			bool mordor = town.Realm == Realm.Mordor;
+			this.AddLabel(150, 14, LabelHue, mordor ? "Nazgul:" : "Starosta:");
 			this.AddLabel(150, 34, Hue, (town.mayor != null) ? town.mayor.Name : "");
 			this.AddLabel(150, 54, LabelHue, "Tvuj status:");
-			this.AddLabel(150, 74, Hue, rankNames[town.GetRank(player)]);
-			this.AddLabel(14, 118, LabelHue, "Dane: " + town.tax + " gp");
+			this.AddLabel(150, 74, Hue, (mordor && (town.GetRank(player) == Town.RankMayor)) ? "Nazgul" : rankNames[town.GetRank(player)]);
+			if (!mordor) {
+				this.AddLabel(14, 118, LabelHue, "Dane: " + town.tax + " gp");
+			}
 			this.AddLabel(14, 138, LabelHue, "Stav pokladny: " + town.treasury + " gp");
 
 			int y = FirstRow;
@@ -210,6 +223,19 @@ namespace SteamEngine.CompiledScripts {
 				case MakeCitizenButton:
 					player.SysMessage("Koho chces udelat obcanem?");
 					player.Target(SingletonScript<Targ_TownCitizen>.Instance, town);
+					break;
+				case RemoveRingButton:
+					if (town.mayor == null) {
+						player.SysMessage("Neni Nazgul, ktery by vladl tomuto mestu");
+					} else {
+						Character nazgul = town.mayor;
+						nazgul.RedMessage("Marghul rozhodl o odebrani tveho prstenu");
+						NazgulRings.TakeAway(NazgulRings.RingOf(nazgul), nazgul);
+					}
+					break;
+				case MakeNazgulButton:
+					player.SysMessage("Koho chces udelat nazgulem?");
+					player.Target(SingletonScript<Targ_MakeNazgul>.Instance, town);
 					break;
 				case HomeButton:
 					Point4D home = StaticRegion.GetByDefname(RegionEventSystem.AreaOf(town.stone.Region).Defname).P;

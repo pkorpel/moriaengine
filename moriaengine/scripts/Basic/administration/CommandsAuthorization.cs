@@ -143,6 +143,7 @@ namespace SteamEngine.CompiledScripts {
 			//default-deny fallback below, so no ordinary player could ever use them
 			this.commands["NavrhBan"] = PLEVEL_PLAYER;
 			this.commands["Honor"] = PLEVEL_PLAYER;
+			this.commands["Fear"] = PLEVEL_PLAYER;
 			this.commands["Blacklist"] = PLEVEL_PLAYER;
 			this.commands["GuildLeave"] = PLEVEL_PLAYER;
 			this.commands["GuildMembers"] = PLEVEL_PLAYER;

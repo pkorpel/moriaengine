@@ -181,6 +181,26 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
+		/// <summary>Where a player's .navrhban goes: their town, or in Mordor, which has no citizens, the
+		/// Mordor city they're in.</summary>
+		public static Town ForSuggesting(Character ch) {
+			if (ch.Realm != Realm.Mordor) {
+				return OfCitizen(ch);
+			}
+			FlaggedRegion area = RegionEventSystem.AreaOf(ch.Region);
+			return ((area != null) && (area.Realm == Realm.Mordor) && !string.IsNullOrEmpty(area.City)) ? ForCity(area.City) : null;
+		}
+
+		/// <summary>The town this character rules.</summary>
+		public static Town OfRuler(Character ch) {
+			foreach (Town town in all) {
+				if (town.mayor == ch) {
+					return town;
+				}
+			}
+			return null;
+		}
+
 		public static Town OfChest(TaxChest chest) {
 			foreach (Town town in all) {
 				if (town.taxChest == chest) {
@@ -223,7 +243,7 @@ namespace SteamEngine.CompiledScripts {
 			if (ch.IsGM) {
 				return RankGm;
 			}
-			if (ch == this.mayor) {
+			if ((ch == this.mayor) || ((this.Realm == Realm.Mordor) && NazgulRings.IsFirst(ch))) {
 				return RankMayor;
 			}
 			if (this.FindCitizen(ch) != null) {
