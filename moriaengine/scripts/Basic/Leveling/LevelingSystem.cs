@@ -31,6 +31,8 @@ namespace SteamEngine.CompiledScripts {
 	/// formula + overflow carry) in one place instead of duplicated at every call site.
 	/// </summary>
 	public static class LevelingSystem {
+		public const int StartingStatSum = 300;
+
 		private static readonly TagKey lastDeathTimeTK = TagKey.Acquire("_levelingLastDeathTime_");
 
 		/// <summary>How long after a death a player is immune to losing MORE experience from a
@@ -105,15 +107,8 @@ namespace SteamEngine.CompiledScripts {
 			return 120;
 		}
 
-		/// <summary>Each unspent skill point raises the skill by 5.0% (50 raw units - skill
-		/// values are stored *10, see FormatSkillValue/D_LevelSpendSkills) - verified against
-		/// Erebor's own f_skillbutton handler (experiences.scp's [DIALOG d_levelbonus BUTTON]
-		/// on=@anybutton: "&lt;arg(skillname)&gt;=&lt;eval arg(skillvalue)+50&gt;"), not the 1
-		/// raw unit (0.1%) this used before - a real-world-testing finding (#199).
-		/// Erebor additionally gates training behind escalating cost (1/2/3 points per click
-		/// above 50/75%) and hard "needs a master trainer" milestones at exactly 25/50/75% -
-		/// deliberately NOT ported here, since the user only flagged the flat percentage-per-
-		/// point rate being wrong, not these extra mechanics.</summary>
+		/// <summary>A click raises the skill by 5.0% (50 raw units, skill values are stored *10) -
+		/// Erebor's [DIALOG d_levelbonus BUTTON]. It costs 1, 2 or 3 points, see SkillRaiseCost.</summary>
 		public const int SkillPointGain = 50;
 
 		/// <summary>Combat/magic/social skills a player can raise by spending points (#204) -
@@ -149,32 +144,105 @@ namespace SteamEngine.CompiledScripts {
 			return SpendableSkills.Contains(skill);
 		}
 
-		/// <summary>Spends `pointsToSpend` unspent skill points (#129) into `skill`, validated
-		/// against the player's profession skill cap - mirrors Skill.Cap's own precedent of
-		/// returning 0 when no profession is assigned, so a player with no profession can never
-		/// spend a skill point at all (not an oversight - this is the user's own stated design,
-		/// "no-profession-assigned = can't spend attribute points", applied the same way here).
-		/// Returns false (no partial spend) if the player lacks the points, the skill isn't
-		/// spendable at all (#204 - craft/gathering skills must be trained by use), or the cap
-		/// would be exceeded.</summary>
-		public static bool TrySpendSkillPoints(Player player, SkillName skill, int pointsToSpend) {
-			if ((player == null) || (pointsToSpend <= 0) || (player.UnspentSkillPoints < pointsToSpend) ||
-				!IsSkillPointSpendable(skill)) {
-				return false;
+		/// <summary>bodunaskill: what the next 5.0 costs, by the value it starts from.</summary>
+		public static int SkillRaiseCost(int rawValue) {
+			if (rawValue < 500) {
+				return 1;
 			}
+			return (rawValue < 750) ? 2 : 3;
+		}
+
+		/// <summary>roundskill: to the nearest 5.0, never under what the profession starts at.</summary>
+		public static int RoundSkill(int rawValue, int minimum) {
+			return (rawValue < minimum) ? minimum : (((rawValue + 25) / 50) * 50);
+		}
+
+		/// <summary>ismagic, the spells among its list: stat changes would be spent on top of.</summary>
+		public static bool IsUnderStatMagic(Player player) {
+			foreach (Plugin plugin in player.GetAllPlugins()) {
+				if ((plugin is StrModSpellEffectPlugin) || (plugin is DexModSpellEffectPlugin) || (plugin is IntModSpellEffectPlugin) ||
+					(plugin is BlessSpellEffectPlugin) || (plugin is CurseSpellEffectPlugin)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>#882 - one click of d_levelbonus on a skill: rounds it, then raises it by 5.0
+		/// unless a master has to teach this step. Only combat_skills can be raised with points
+		/// (#204). Returns why not, or null when it went up.</summary>
+		public static string RaiseSkill(Player player, SkillName skill) {
 			ProfessionDef profession = player.Profession;
-			int cap = (profession != null) ? profession.GetSkillCap(skill) : 0;
-			int current = player.GetRealSkillValue(skill);
-			int gain = pointsToSpend * SkillPointGain;
-			if ((current + gain) > cap) {
-				return false;
+			if ((profession == null) || !IsSkillPointSpendable(skill)) {
+				return "Tuto dovednost nelze zvysovat body.";
 			}
-			//real-user-reported: ModifySkillValue only ever stacked a TEMPORARY Skill.modification
-			//(the same mechanism equipment/potion buffs use), never the permanent RealValue a
-			//point-spend is supposed to grant - SetRealSkillValue is the correct call here.
-			player.SetRealSkillValue((int) skill, current + gain);
-			player.UnspentSkillPoints -= pointsToSpend;
-			return true;
+			if (IsUnderStatMagic(player)) {
+				return "Jsi pod vlivem magie - nemuzes zvysovat sve dovednosti.";
+			}
+			int value = RoundSkill(player.GetRealSkillValue(skill), profession.GetSkillMinimum(skill));
+			player.SetRealSkillValue((int) skill, value);
+			if ((value + SkillPointGain) > profession.GetSkillCap(skill)) {
+				return "V teto dovednosti jsi uz " + (player.IsFemale ? "dosahla" : "dosahl") + " maxima.";
+			}
+			if ((value == 250) || (value == 500) || (value == 750)) {
+				return "Na dalsi uroven v teto dovednosti te musi vyucit mistr.";
+			}
+			int cost = SkillRaiseCost(value);
+			if (player.UnspentSkillPoints < cost) {
+				return "Na zvyseni teto dovednosti nemas dost bodu.";
+			}
+			player.SetRealSkillValue((int) skill, value + SkillPointGain);
+			player.UnspentSkillPoints -= cost;
+			return null;
+		}
+
+		/// <summary>#882 - f_srazitskilly + roundcombatskills, at death: what use taught is kept only
+		/// in steps of 5.0 for the skills bought with points, and nothing stays outside the
+		/// profession's limits.</summary>
+		public static void TrimSkillsAtDeath(Player player) {
+			ProfessionDef profession = player.Profession;
+			if (profession == null) {
+				return;
+			}
+			foreach (SkillDef skillDef in SkillDef.AllSkillDefs) {
+				int minimum = profession.GetSkillMinimum(skillDef);
+				int value = System.Math.Min(System.Math.Max(player.GetRealSkillValue(skillDef), minimum), profession.GetSkillCap(skillDef));
+				if (IsSkillPointSpendable((SkillName) skillDef.Id)) {
+					value = RoundSkill(value, minimum);
+				}
+				if (value != player.GetRealSkillValue(skillDef)) {
+					player.SetRealSkillValue(skillDef, value);
+				}
+			}
+		}
+
+		/// <summary>#882 - startclass: a new life starts at level 0 with nothing to spend, skills
+		/// exactly at the profession's start values, and the 300 chosen stats already paid for.</summary>
+		public static void StartNewLife(Player player, ProfessionDef profession) {
+			player.Level = 0;
+			player.Experience = 0;
+			player.UnspentSkillPoints = 0;
+			player.UnspentAbilityPoints = 0;
+			foreach (SkillDef skillDef in SkillDef.AllSkillDefs) {
+				player.SetRealSkillValue(skillDef, profession.GetSkillMinimum(skillDef));
+			}
+			RecordStartingStats(player);
+		}
+
+		/// <summary>Stats as Erebor's strlev & co: the budget counts them from the first point.</summary>
+		public static void RecordStartingStats(Player player) {
+			player.StrPointsAllocated = player.Str;
+			player.DexPointsAllocated = player.Dex;
+			player.IntPointsAllocated = player.Int;
+			player.VitPointsAllocated = player.Vit;
+		}
+
+		/// <summary>#882 - characters from before the start stats were counted had 300 free points.</summary>
+		public static void FixUncountedStartingStats(Player player) {
+			int allocated = player.StrPointsAllocated + player.DexPointsAllocated + player.IntPointsAllocated + player.VitPointsAllocated;
+			if ((player.Profession != null) && (allocated < StartingStatSum)) {
+				RecordStartingStats(player);
+			}
 		}
 
 		/// <summary>Spends `pointsToSpend` unspent ability points (#129) into `ability`, via the
@@ -195,22 +263,28 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Spends `pointsToSpend` attribute points (#129/#156) into one of
 		/// STR/DEX/INT/VIT, validated against BOTH Player.AttributePointBudget (the overall pool)
-		/// AND the profession's own per-stat hard cap (ProfessionDef.GetStatRange's 3rd element) -
-		/// a player can have unspent budget left but still be unable to push one specific stat
-		/// any higher, same as Erebor's own `<eval tag.basestr>><basestats_<tag.class>_str_max>`
-		/// check in newbie_portals.scp. Requires a profession to be assigned at all - mirrors
-		/// Skill.Cap's own "no profession = cap 0" precedent, the user's own stated design for
-		/// this phase.</summary>
-		public static bool TrySpendAttributePoints(Player player, AttributeStat stat, int pointsToSpend) {
-			if ((player == null) || (pointsToSpend <= 0) || (player.Profession == null) ||
-				(player.AttributePointBudget < pointsToSpend)) {
+		/// AND the profession's own per-stat hard cap (ProfessionDef.GetStatRange's 3rd element,
+		/// Erebor's nastaveni_povolani_maxstats). `refusal` says why not, null for no points left,
+		/// which on Erebor just shows the dialog again.</summary>
+		public static bool TrySpendAttributePoints(Player player, AttributeStat stat, int pointsToSpend, out string refusal) {
+			refusal = null;
+			if ((player == null) || (pointsToSpend <= 0) || (player.Profession == null)) {
 				return false;
 			}
+			if (IsUnderStatMagic(player)) {
+				refusal = "Jsi pod vlivem magie, nemuzes zvysovat sve dovednosti.";
+				return false;
+			}
+			if (player.AttributePointBudget < pointsToSpend) {
+				return false;
+			}
+			string atMaximum = (player.IsFemale ? "Dosahla" : "Dosahl") + " jsi maximalni hodnoty.";
 			int[] range = player.Profession.GetStatRange(stat);
 			int hardCap = (range.Length == 3) ? range[2] : short.MaxValue;
 			switch (stat) {
 				case AttributeStat.Str:
 					if ((player.Str + pointsToSpend) > hardCap) {
+						refusal = atMaximum;
 						return false;
 					}
 					player.Str += (short) pointsToSpend;
@@ -218,6 +292,7 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case AttributeStat.Dex:
 					if ((player.Dex + pointsToSpend) > hardCap) {
+						refusal = atMaximum;
 						return false;
 					}
 					player.Dex += (short) pointsToSpend;
@@ -225,6 +300,7 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case AttributeStat.Int:
 					if ((player.Int + pointsToSpend) > hardCap) {
+						refusal = atMaximum;
 						return false;
 					}
 					player.Int += (short) pointsToSpend;
@@ -232,6 +308,7 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case AttributeStat.Vit:
 					if ((player.Vit + pointsToSpend) > hardCap) {
+						refusal = atMaximum;
 						return false;
 					}
 					player.Vit += (short) pointsToSpend;

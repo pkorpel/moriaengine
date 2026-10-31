@@ -20,7 +20,7 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		/// <summary>Mage's own strRange/dexRange/intRange/vitRange (mage.def): {50,80,90},
-		/// {60,90,100}, {100,150,230}, {50,80,100} - min/startingMax/hardCap. These 4 values sum
+		/// {60,90,100}, {100,140,230}, {50,80,100} - min/startingMax/hardCap. These 4 values sum
 		/// to exactly 300 and each sits inside its own [min, hardCap], so D_RaceClassStats (#176)
 		/// accepts them.</summary>
 		private static readonly Dictionary<int, string> MageValidStats = new Dictionary<int, string> {
@@ -104,6 +104,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("STARTING_EQUIPMENT:", mark, TimeSpan.FromSeconds(10)));
 				string equipLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "STARTING_EQUIPMENT:");
 				Assert.Contains("gold=2000", equipLine);
+				Assert.Contains("level=0 budget=0 skillPoints=0 abilityPoints=0 offBaseSkills=0", LastLineContaining(this.fixture.GameOutputSnapshot(), "STARTING_POINTS:")); //#882
 				Assert.Contains("i_spellbook_3", equipLine);
 				Assert.DoesNotContain("i_gem_amethyst", equipLine); //#881 - nothing of the tutorial comes along
 				Assert.Contains("worn=", equipLine);
