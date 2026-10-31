@@ -415,6 +415,7 @@ namespace SteamEngine.CompiledScripts {
 			//    Console.WriteLine(ScriptUtil.GetLogString(this.Conn, "Logged out"));
 			//}
 
+			Guild.AnnounceConnection(this, false);
 			base.On_LogOut();
 		}
 
@@ -425,6 +426,7 @@ namespace SteamEngine.CompiledScripts {
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);
+				Guild.AnnounceConnection(this, true);
 				//if (DbManager.Config.useDb) {
 				//    DbMethods.loginLogs.GameLogin(this.Conn);
 				//    Logger.WriteDebug(ScriptUtil.GetLogString(this.Conn, "Logged in"));

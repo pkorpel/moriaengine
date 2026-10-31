@@ -21,104 +21,40 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>
-	/// Text-command interface for guilds (enhancements #14) - modeled on PartyCommands'
-	/// invite/accept/decline flow, since that's the proven working pattern for role-based
-	/// membership in this codebase. No gump/packet UI (see Guild.cs's class doc) - commands
-	/// instead, same approach as HouseCommands for house release.
+	/// Text commands around guilds (enhancements #14): chat, info and diplomacy. Joining, ranks
+	/// and the name are run from the guildstone (#884, D_GuildMenu).
 	/// </summary>
 	public static class GuildCommands {
-		[SteamFunction]
-		public static void GuildCreate(Character self, ScriptArgs sa) {
-			if (Guild.GetGuild(self) != null) {
-				self.SysMessage("You are already in a guild.");
-				return;
-			}
-			string name = JoinArgs(sa);
-			if (string.IsNullOrEmpty(name)) {
-				self.SysMessage("Usage: .guildcreate <name>");
-				return;
-			}
-			if (Guild.FindByName(name) != null) {
-				self.SysMessage("A guild with that name already exists.");
-				return;
-			}
-			GuildDef.NewGuild(self, name);
-			self.SysMessage("You have founded the guild '" + name + "'.");
-		}
-
-		[SteamFunction]
-		public static void GuildInvite(Character self, ScriptArgs sa) {
-			Player player = self as Player;
-			if (player == null) {
-				return;
-			}
-			Guild guild = Guild.GetGuild(self);
-			if (guild == null) {
-				self.SysMessage("You are not in a guild.");
-				return;
-			}
-			if (!guild.IsLeader(self)) {
-				self.SysMessage("Only the guild's founder can invite new members.");
-				return;
-			}
-			player.SysMessage("Whom do you want to invite to the guild?");
-			player.Target(SingletonScript<Targ_GuildInvite>.Instance, guild);
-		}
-
-		[SteamFunction]
-		public static void GuildAccept(Character self, ScriptArgs sa) {
-			Guild guild = FindInvitingGuild(self);
-			if (guild == null) {
-				self.SysMessage("No one has invited you to a guild.");
-				return;
-			}
-			guild.ClearInvite(self);
-			RolesManagement.TryAssign(self, guild);
-			self.SysMessage("You have joined the guild '" + guild.Name + "'.");
-		}
-
-		[SteamFunction]
-		public static void GuildDecline(Character self, ScriptArgs sa) {
-			Guild guild = FindInvitingGuild(self);
-			if (guild == null) {
-				self.SysMessage("No one has invited you to a guild.");
-				return;
-			}
-			guild.ClearInvite(self);
-			self.SysMessage("You decline the guild invitation.");
-		}
-
 		[SteamFunction]
 		public static void GuildLeave(Character self, ScriptArgs sa) {
 			Guild guild = Guild.GetGuild(self);
 			if (guild == null) {
-				self.SysMessage("You are not in a guild.");
+				self.SysMessage("Nejsi clenem zadne guildy.");
 				return;
 			}
-			if (guild.IsLeader(self) && (guild.Members.Count > 1)) {
-				self.SysMessage("As founder, you must disband the guild (.guilddisband) or there must be no one else left in it.");
-				return;
-			}
-			RolesManagement.TryUnAssign(self, guild);
-			self.SysMessage("You have left the guild.");
-			if (guild.Members.Count == 0) {
-				guild.Dispose();
+			guild.Resign(self);
+		}
+
+		/// <summary>#884 - Erebor's .guildMembers: who of my guild is online and where.</summary>
+		[SteamFunction]
+		public static void GuildMembers(Character self, ScriptArgs sa) {
+			Guild guild = Guild.GetGuild(self);
+			if (guild == null) {
+				self.RedMessage("Nejsi clenem zadne guildy.");
+			} else if (!guild.IsFullMember(self)) {
+				self.RedMessage("Jako adept nemas na tento prikaz narok.");
+			} else {
+				self.Dialog(self, SingletonScript<D_GuildOnline>.Instance, new DialogArgs(guild));
 			}
 		}
 
+		/// <summary>#884 - Erebor's .toggleabbrev.</summary>
 		[SteamFunction]
-		public static void GuildDisband(Character self, ScriptArgs sa) {
+		public static void ToggleAbbrev(Character self, ScriptArgs sa) {
 			Guild guild = Guild.GetGuild(self);
-			if (guild == null) {
-				self.SysMessage("You are not in a guild.");
-				return;
+			if (guild != null) {
+				guild.ToggleAbbreviation(self);
 			}
-			if (!guild.IsLeader(self)) {
-				self.SysMessage("Only the guild's founder can disband it.");
-				return;
-			}
-			guild.SendGuildMessage(self, "The guild has been disbanded.");
-			guild.Dispose();
 		}
 
 		[SteamFunction]
@@ -143,7 +79,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			self.SysMessage("Guild: " + guild.Name + (string.IsNullOrEmpty(guild.Abbreviation) ? "" : " [" + guild.Abbreviation + "]"));
-			self.SysMessage("Founder: " + (guild.Founder != null ? guild.Founder.Name : "(none)"));
+			self.SysMessage("Master: " + (guild.Master != null ? guild.Master.Name : "(none)"));
 			self.SysMessage("Members: " + string.Join(", ", guild.Members.Select(m => m.Name)));
 		}
 
@@ -155,7 +91,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (!guild.IsLeader(self)) {
-				self.SysMessage("Only the guild's founder can set the abbreviation.");
+				self.SysMessage("Only the guild's master can set the abbreviation.");
 				return;
 			}
 			guild.Abbreviation = JoinArgs(sa);
@@ -169,7 +105,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (!guild.IsLeader(self)) {
-				self.SysMessage("Only the guild's founder can manage diplomacy.");
+				self.SysMessage("Only the guild's master can manage diplomacy.");
 				return;
 			}
 			string targetName = JoinArgs(sa);
@@ -213,37 +149,11 @@ namespace SteamEngine.CompiledScripts {
 			});
 		}
 
-		private static Guild FindInvitingGuild(Character self) {
-			foreach (Guild g in Guild.AllGuilds) {
-				if (g.HasPendingInvite(self)) {
-					return g;
-				}
-			}
-			return null;
-		}
-
 		private static string JoinArgs(ScriptArgs sa) {
 			if ((sa == null) || (sa.Argv == null) || (sa.Argv.Length == 0)) {
 				return null;
 			}
 			return string.Join(" ", sa.Argv.Select(o => o.ToString()));
-		}
-	}
-
-	public class Targ_GuildInvite : CompiledTargetDef {
-		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
-			Guild guild = (Guild) parameter;
-			if (Guild.GetGuild(targetted) != null) {
-				self.SysMessage(targetted.Name + " is already in a guild.");
-				return TargetResult.Done;
-			}
-			if (!guild.TryInvite(targetted)) {
-				self.SysMessage("You can't invite " + targetted.Name + ".");
-				return TargetResult.Done;
-			}
-			self.SysMessage("You invite " + targetted.Name + " to the guild.");
-			targetted.SysMessage(self.Name + " invites you to join the guild '" + guild.Name + "'. Use .guildaccept or .guilddecline.");
-			return TargetResult.Done;
 		}
 	}
 }

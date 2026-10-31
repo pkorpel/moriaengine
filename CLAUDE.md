@@ -11,7 +11,12 @@ Gotcha: test accounts start as GM, and a GM pays nothing for .check/.mesec.
 **#882 stats + skills (branch 882-stats-skills)**: new characters had 300 FREE stat points (start stats weren't counted in the budget), skills weren't reset to base, level/points weren't reset. Now LevelingSystem.StartNewLife + RaiseSkill (cost 1/2/3, blocked at 25/50/75, roundskill, ismagic) + TrimSkillsAtDeath; start range = second number of statRange, not the hard cap; mage/necro/priest start max fixed; warrior Begging/Camping, Enticement = our Discordance caps added; requireRank default ON. Doc leveling-experience.md.
 GameCore exit 134 once in LevelingTests in a mixed class run, not reproduced in 2 reruns, no stack in the log. Watch it.
 Gotcha: Tactics base is 30.0 for a warrior, so a test at 26.3 rounds UP to base; test on a skill with base 0.
-Next #884 guildstone.
+#882 shipped PR #887.
+**#884 guildstone done (branch 884-guildstone)**: session died 02:57 on 10-31 mid test run, all work was on disk, finished in the next session. GuildStone.cs/.ct, GuildDialogs.cs, Guild.cs ranks, converter GuildStoneDef + guilds.def (whole regen), deed places the stone, text GuildCreate/Invite/Accept/Decline/Disband commands gone (the stone runs it). Doc guilds.md.
+Found finishing it: **no guild had ever survived a restart** (#14 on): nothing led the save to a Role, r_guild wasn't registered before the load (static def, now GuildDef.Bootstrap), Role.LoadLine had no return after name, RankSystem compared a lower-cased key to "rankNames", a membership joined its role possibly before its member resolved. GuildStoneRestartTests covers it. A stone's guild is saved by GuildStone.Save, not a .ct field: the generated copy ctor would deep copy the Guild on .dupe.
+The abbreviation never showed in a real client: AOS tooltip clients click through On_AosClick, the test asked the server what the name would be. It now reads the 0xAE a client gets. A test client's 7.0.15.1 takes that path too, so a click test sees what TazUO sees.
+Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
+Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
 ## DONE (2026-10-31): #860 leftovers: #868, #872, #866, #865
 

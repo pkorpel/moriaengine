@@ -283,6 +283,7 @@ namespace SteamEngine.CompiledScripts {
 		protected virtual void LoadLine(string filename, int line, string valueName, string valueString) {
 			if (valueName.Equals("name", StringComparison.OrdinalIgnoreCase)) {
 				this.name = (string) ObjectSaver.OptimizedLoad_String(valueString);
+				return;
 			}
 			throw new ScriptException("Invalid data '" + LogStr.Ident(valueName) + "' = '" + LogStr.Number(valueString) + "'.");
 		}

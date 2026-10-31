@@ -18,17 +18,11 @@
 namespace SteamEngine.CompiledScripts {
 
 	public class t_deed : CompiledTriggerGroup {
-
-	}
-
-	/// <summary>Guildstone (enhancements #14) - previously an empty shell. Points players at the real interaction surface (GuildCommands' text commands - see Guild.cs for why there's no gump here yet) rather than implementing a full guildstone gump.</summary>
-	public class t_guildstone : CompiledTriggerGroup {
+		/// <summary>#884 - Sphere's deed: pick a spot and the stone stands there.</summary>
 		public void On_DClick(Item self, Character clicker) {
-			Guild guild = Guild.GetGuild(clicker);
-			if (guild == null) {
-				clicker.SysMessage("You are not in a guild. Use .guildcreate <name> to found one.");
-			} else {
-				clicker.SysMessage("You are a member of the guild '" + guild.Name + "'. Use .guildinfo for details.");
+			Player player = clicker as Player;
+			if ((player != null) && (self.Def == ThingDef.GetByDefname("i_deed_GUILDSTONE"))) {
+				player.Target(SingletonScript<Targ_PlaceGuildstone>.Instance, self);
 			}
 		}
 	}
