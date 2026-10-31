@@ -16,6 +16,7 @@
 */
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
@@ -98,10 +99,30 @@ namespace SteamEngine.CompiledScripts {
 			player.Profession = profession; //triggers ProfessionPlugin.On_Assign - starting skills + title (#135/#165/#177)
 			player.Nation = nation; //cascades Realm + Home (#163/#164)
 			player.P(player.Home); //one-time placement at the new home, NOT a reusable recall (#164 explicitly excludes recall)
+			ClearForNewLife(player);
 			GiveStartingEquipment(player, profession);
 
 			player.SysMessage("Welcome! You are now a " + RaceData.GetDisplayName(race) + " " +
 				profession.Name + " of " + NationData.GetDisplayName(nation) + ".");
+		}
+
+		private static readonly LayerNames[] clearedLayers = {
+			LayerNames.Hand1, LayerNames.Hand2, LayerNames.Shoes, LayerNames.Pants, LayerNames.Shirt, LayerNames.Helmet, LayerNames.Gloves,
+			LayerNames.Ring, LayerNames.Collar, LayerNames.HalfApron, LayerNames.Chest, LayerNames.Bracelet, LayerNames.Tunic, LayerNames.Earrings,
+			LayerNames.Arms, LayerNames.Cape, LayerNames.Robe, LayerNames.Skirt, LayerNames.Leggins, LayerNames.Dragging
+		};
+
+		/// <summary>#881 - Erebor's promazat: nothing of the tutorial comes along, worn, carried,
+		/// banked or in hand.</summary>
+		internal static void ClearForNewLife(Player player) {
+			foreach (LayerNames layer in clearedLayers) {
+				AbstractItem item = player.FindLayer(layer);
+				if (item != null) {
+					item.Delete();
+				}
+			}
+			player.Backpack.EmptyCont();
+			player.Bank.EmptyCont();
 		}
 
 		/// <summary>Profession.Name (a short English key: "mag", "warrior", "necromancer", ...)
@@ -141,7 +162,33 @@ namespace SteamEngine.CompiledScripts {
 			if (template != null) {
 				template.Create(player);
 			}
+			//newloot dresses the character, our template only fills the pack
+			foreach (Wearable piece in new List<AbstractItem>(player.Backpack).OfType<Wearable>().ToList()) {
+				if (player.FindLayer((LayerNames) piece.Layer) == null) {
+					player.TryEquip(piece);
+				}
+			}
+			//startclass: weapons go to the pack, what's left on gets the class color
+			foreach (LayerNames hand in new[] { LayerNames.Hand1, LayerNames.Hand2 }) {
+				AbstractItem held = player.FindLayer(hand);
+				if (held != null) {
+					held.Cont = player.Backpack;
+				}
+			}
+			if (professionColors.TryGetValue(profession.Name, out int color)) {
+				foreach (LayerNames layer in clearedLayers) {
+					AbstractItem item = player.FindLayer(layer);
+					if (item != null) {
+						item.Color = color;
+					}
+				}
+			}
 		}
+
+		private static readonly Dictionary<string, int> professionColors = new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase) {
+			{ "warrior", 0x538 }, { "necromancer", 0x3c2 }, { "priest", 0x2219 }, { "mag", 0x57 }, { "craftsman", 0x712 },
+			{ "thief", 0x2ff }, { "ranger", 0x233 }, { "shaman", 0x2e8 }, { "mystic", 0x835 }
+		};
 	}
 
 	/// <summary>Dialog-openable entry point for the race-selection flow (#174) - unlike

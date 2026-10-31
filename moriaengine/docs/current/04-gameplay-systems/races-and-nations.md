@@ -71,6 +71,12 @@ player.P(player.Home); //one-time placement, NOT a reusable recall
 GiveStartingEquipment(player, profession);
 ```
 
+## Entering the world (#881)
+
+`RaceSelection.Finish` follows Erebor's `startclass`. `ClearForNewLife` is `promazat`: worn items, the backpack,
+the bank and anything held are gone. Then 2000 gold and the profession's `tm_<class>newbie` kit: clothing and
+armor go on, weapons and shields into the pack, and what's worn gets the class color.
+
 ## Starting equipment
 
 `GiveStartingEquipment` (`RaceSelection.cs:119-129`) grants 2000 starting gold plus the

@@ -16,7 +16,11 @@ Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
 
+using SteamEngine.Common;
+using SteamEngine.Communication;
+using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Networking;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
@@ -25,6 +29,25 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class BankBox {
+		/// <summary>#879 - a client ignores opening an item it doesn't know, and a bank box sits on a
+		/// layer that's never sent. Sphere's addBankOpen sends it to the owner first.</summary>
+		public void OpenBankTo(Character viewer) {
+			GameState state = viewer.GameState;
+			if (state == null) {
+				return;
+			}
+			WornItemOutPacket packet = Pool<WornItemOutPacket>.Acquire();
+			packet.PrepareItem(this.Cont.FlaggedUid, this);
+			state.Conn.SendSinglePacket(packet);
+			this.OpenTo(viewer);
+		}
+
+		protected override bool IsReachableOnInvisibleLayer {
+			get {
+				return true;
+			}
+		}
+
 		/// <summary>
 		/// Real UO bank boxes are only accessible through a banker, not by double-clicking them
 		/// directly (enhancements Phase 14.5, issue #36) - Container.On_DClick has no such gate,

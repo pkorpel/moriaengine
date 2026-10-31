@@ -41,6 +41,7 @@ namespace SteamEngine.CompiledScripts {
 			Thing cont = this.Cont;
 			if (ch.IsGM || (cont == ch) || (cont == ch.Backpack)) {
 				base.On_DenyDClick(args);
+				return;
 			}
 
 			//necessary since DisplayTo implies this is in a client-visible and known container.
