@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>d_town_menu: the lines depend on who's looking. The button numbers are Erebor's.</summary>
 	public class D_TownMenu : CompiledGumpDef {
-		internal const int CitizensButton = 1, BlacklistButton = 2, PayTaxButton = 4, TaxStatusButton = 6, AddBanButton = 12, SetTaxButton = 14, MayorButton = 15,
+		internal const int CitizensButton = 1, BlacklistButton = 2, ElectionButton = 3, PayTaxButton = 4, StandButton = 5, TaxStatusButton = 6, AddBanButton = 12, SetTaxButton = 14, MayorButton = 15,
 			ExpelButton = 16, MakeMayorButton = 17, MakeCitizenButton = 18, SuggestedBansButton = 21, NewsButton = 23, HomeButton = 24, CitizenshipButton = 25;
 		private const int Hue = 955, LabelHue = 0x481, RowHeight = 20, Width = 280, FirstRow = 176;
 		private static readonly string[] rankNames = { "Nepritel", "Verejnost", "Obcan", "Starosta", "GM" };
@@ -89,7 +89,9 @@ namespace SteamEngine.CompiledScripts {
 			Line(Town.RankPublic, BlacklistButton, "Blacklist");
 			Line(Town.RankPublic, HomeButton, "Nastavit home");
 			Line(Town.RankMayor, SuggestedBansButton, "Hraci navrzeni na Blacklist");
+			Line(Town.RankCitizen, ElectionButton, "Volby starosty");
 			Line(Town.RankCitizen, PayTaxButton, "Zaplatit dane");
+			Line(Town.RankCitizen, StandButton, (town.FindCandidate(player) != null) ? "Zrusit svou kandidaturu" : "Kandidovat na starostu");
 			Line(Town.RankCitizen, TaxStatusButton, "Stav platby dani");
 			Line(Town.RankCitizen, NewsButton, "Novinky");
 			Line(Town.RankMayor, AddBanButton, "Pridat hrace na blacklist");
@@ -160,6 +162,16 @@ namespace SteamEngine.CompiledScripts {
 				case AddBanButton:
 					player.SysMessage("Koho chces pridat na blacklist?");
 					player.Target(SingletonScript<Targ_TownBan>.Instance, town);
+					break;
+				case ElectionButton:
+					D_TownElection.Show(town, player);
+					break;
+				case StandButton:
+					if (town.FindCandidate(player) != null) {
+						D_TownConfirm.Ask(player, "Opravdu chces zrusit svou kandidaturu?", () => town.WithdrawCandidate(player));
+					} else {
+						D_TownConfirm.Ask(player, "Opravdu chces kandidovat na starostu", () => town.Stand(player));
+					}
 					break;
 				case PayTaxButton:
 					D_TownConfirm.Ask(player, "Prejes si zaplatit dan svemu mestu?", () => town.PayTax(player));
@@ -292,6 +304,45 @@ namespace SteamEngine.CompiledScripts {
 					town.RemoveCitizen(who);
 					who.RedMessage("Jiz nejsi obcanem mesta " + town.Name + ".");
 				});
+			}
+		}
+	}
+
+	/// <summary>d_tmseznam's 3: the candidates and their votes, and a button by each to vote.</summary>
+	public class D_TownElection : CompiledGumpDef {
+		private const int FirstRowButton = 100, RowHeight = 20, FirstRow = 62, TextHue = 2301;
+
+		internal static void Show(Town town, Player player) {
+			player.Dialog(player, SingletonScript<D_TownElection>.Instance, new DialogArgs(town));
+		}
+
+		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
+			Town town = (Town) args[0];
+			this.SetLocation(100, 100);
+			this.AddPage(0);
+			this.AddBackground(0, 0, 300, FirstRow + (Math.Max(town.candidates.Count, 1) * RowHeight) + 20, 2620);
+			this.AddLabel(14, 12, 0x481, "Volby starosty: " + town.candidates.Count);
+			this.AddButton(255, 12, 0xfb1, 0xfb3, 0, GumpButtonType.Reply, 0);
+			if (town.candidates.Count > 0) {
+				this.AddLabel(14, 36, TextHue, "Do konce voleb: " + TownDialogs.TimeLeft(town.electionStart + (TownSettings.instance.electionDays * 24 * 60 * 60)));
+			}
+			for (int i = 0; i < town.candidates.Count; i++) {
+				int y = FirstRow + (i * RowHeight);
+				this.AddButton(14, y, 4005, 4007, FirstRowButton + i, GumpButtonType.Reply, 0);
+				this.AddLabel(50, y, TextHue, town.candidates[i].who.Name);
+				this.AddLabel(255, y, TextHue, town.candidates[i].votes.ToString(System.Globalization.CultureInfo.InvariantCulture));
+			}
+		}
+
+		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
+			Town town = (Town) args[0];
+			Player player = (Player) gi.Cont;
+			int index = gr.PressedButton - FirstRowButton;
+			if (gr.PressedButton == 0) {
+				D_TownMenu.Show(town, player);
+			} else if ((index >= 0) && (index < town.candidates.Count)) {
+				town.Vote(player, town.candidates[index]);
+				Show(town, player);
 			}
 		}
 	}

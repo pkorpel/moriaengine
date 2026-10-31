@@ -28,6 +28,20 @@ namespace SteamEngine.CompiledScripts {
 		public bool autoPay;
 	}
 
+	/// <summary>Someone standing for mayor: their crystal in the candidates' pouch.</summary>
+	[SaveableClass]
+	public class TownCandidate {
+		[LoadingInitializer]
+		public TownCandidate() {
+		}
+
+		[SaveableData]
+		public Character who;
+
+		[SaveableData]
+		public int votes;
+	}
+
 	/// <summary>A name on a blacklist, or suggested for one. The ban is on that name of the character, so
 	/// someone masked as another isn't recognized, and a mask of a banned name doesn't get them banned.</summary>
 	[SaveableClass]
@@ -91,6 +105,21 @@ namespace SteamEngine.CompiledScripts {
 
 		[SaveableData]
 		public List<TownCitizen> citizens = new List<TownCitizen>();
+
+		/// <summary>tag.funkce_major, when the mayor's term began; 0 when there's no term to wait for.</summary>
+		[SaveableData]
+		public double mayorSince;
+
+		/// <summary>tag.zacatek_voleb</summary>
+		[SaveableData]
+		public double electionStart;
+
+		[SaveableData]
+		public List<TownCandidate> candidates = new List<TownCandidate>();
+
+		/// <summary>Who has voted in this election.</summary>
+		[SaveableData]
+		public List<Character> voters = new List<Character>();
 
 		[SaveableData]
 		public List<string> news = new List<string>();
@@ -366,8 +395,9 @@ namespace SteamEngine.CompiledScripts {
 			TownCitizen citizen = this.FindCitizen(ch);
 			if (citizen != null) {
 				this.citizens.Remove(citizen);
+				this.WithdrawCandidate(ch);
 				if (this.mayor == ch) {
-					this.mayor = null;
+					this.ClearMayor();
 				}
 			}
 		}
@@ -407,6 +437,11 @@ namespace SteamEngine.CompiledScripts {
 		/// a citizen who hasn't paid stops being one, and automatic payment covers the coming period.</summary>
 		public void CheckTimers() {
 			this.citizens.RemoveAll(citizen => (citizen.who == null) || citizen.who.IsDeleted);
+			this.CheckTax();
+			this.CheckElection();
+		}
+
+		private void CheckTax() {
 			if (Globals.TimeInSeconds <= this.taxDueAt) {
 				return;
 			}
@@ -433,9 +468,101 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>vyhod_starostu, rezignovat</summary>
+		/// <summary>vyhod_starostu, rezignovat: the next candidate needn't wait for the term to end.</summary>
 		public void ClearMayor() {
 			this.mayor = null;
+			this.mayorSince = 0;
+		}
+
+		public void SetMayor(Character ch) {
+			this.mayor = ch;
+			this.mayorSince = Globals.TimeInSeconds;
+		}
+
+		public TownCandidate FindCandidate(Character ch) {
+			foreach (TownCandidate candidate in this.candidates) {
+				if (candidate.who == ch) {
+					return candidate;
+				}
+			}
+			return null;
+		}
+
+		private void TellCitizens(string text) {
+			foreach (TownCitizen citizen in this.citizens) {
+				citizen.who.SysMessage(text);
+			}
+		}
+
+		/// <summary>kandidovat: the first candidate starts the election, once the mayor's term is over.</summary>
+		public void Stand(Player player) {
+			if (player.IsGM) {
+				player.SysMessage("GM na starostu nekandiduji");
+			} else if (this.FindCandidate(player) != null) {
+				player.SysMessage("Kandidatem na starostu uz jsi.");
+			} else if ((this.candidates.Count == 0) && (this.mayorSince > 0) &&
+					(Globals.TimeInSeconds < (this.mayorSince + (TownSettings.instance.mayorTermDays * SecondsInDay)))) {
+				player.RedMessage("Jeste neskoncilo funkcni obdobi soucasneho starosty");
+			} else {
+				if (this.candidates.Count == 0) {
+					this.electionStart = Globals.TimeInSeconds;
+					this.TellCitizens("Nove volby starosty zahajeny!");
+				}
+				this.candidates.Add(new TownCandidate { who = player });
+				this.TellCitizens("Mestsky Hlasatel: Novy kandidat na starostu mesta, muzete hlasovat.");
+				player.SysMessage("Tva kandidatura na starostu mesta " + this.Name + " prijata.");
+			}
+		}
+
+		public void WithdrawCandidate(Character ch) {
+			TownCandidate candidate = this.FindCandidate(ch);
+			if (candidate != null) {
+				this.candidates.Remove(candidate);
+				ch.RedMessage("Kandidatura zrusena");
+			}
+		}
+
+		/// <summary>The vote of d_tmseznam: citizens who've paid their tax, once, and not for themselves.</summary>
+		public void Vote(Player voter, TownCandidate candidate) {
+			TownCitizen citizen = this.FindCitizen(voter);
+			if (citizen == null) {
+				return;
+			}
+			if (!citizen.paidTax && (voter != this.mayor)) {
+				voter.RedMessage("Neplatic dani nemuze hlasovat! Zaplat nejdrive dane!");
+			} else if (this.voters.Contains(voter)) {
+				voter.SysMessage("V techto volbach uz jsi jednou hlasoval");
+			} else if (candidate.who == voter) {
+				voter.SysMessage("Sam pro sebe hlasovat nemuzes");
+			} else {
+				candidate.votes++;
+				this.voters.Add(voter);
+				voter.SysMessage("Hlas zaznamenan");
+			}
+		}
+
+		/// <summary>kontrola_voleb, ukonci_volby: the most votes win. Of a tie, a sitting mayor stays, or the lot decides.</summary>
+		private void CheckElection() {
+			this.candidates.RemoveAll(candidate => (candidate.who == null) || candidate.who.IsDeleted);
+			if ((this.candidates.Count == 0) ||
+					(Globals.TimeInSeconds <= (this.electionStart + (TownSettings.instance.electionDays * SecondsInDay)))) {
+				return;
+			}
+			int mostVotes = 0;
+			foreach (TownCandidate candidate in this.candidates) {
+				mostVotes = Math.Max(mostVotes, candidate.votes);
+			}
+			List<TownCandidate> best = this.candidates.FindAll(candidate => candidate.votes == mostVotes);
+			Character sitting = this.mayor;
+			Character winner = best.Exists(candidate => candidate.who == sitting) ? sitting : best[Globals.dice.Next(best.Count)].who;
+			if ((sitting != null) && (sitting != winner)) {
+				sitting.RedMessage("Prisel jsi ve volbach o urad starosty ve meste " + this.Name);
+			}
+			this.TellCitizens("Volby ukonceny, starostou byl " + ((winner == sitting) ? "znovu" : "") + "zvolen " + winner.Name + ".");
+			winner.SysMessage(((winner == sitting) ? "Byl jsi znovuzvolen starostou mesta " : "Byl jsi zvolen starostou mesta ") + this.Name);
+			this.SetMayor(winner);
+			this.candidates.Clear();
+			this.voters.Clear();
 		}
 
 		/// <summary>zmenit_home: citizens move for free, others pay the treasury.</summary>
