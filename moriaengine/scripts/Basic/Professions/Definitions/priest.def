@@ -79,8 +79,5 @@ vitRange=70, 120, 160
 titles="Believer", "Medic", "Healer", "Monk", "Cleric", "Priest", "High Priest", "Cardinal", "Savior", "Avatar"
 titlesFemale="Believer", "Medic", "Healer", "Monk", "Cleric", "Priestess", "High Priestess", "Cardinal", "Savior", "Avatar"
 
-//list allowed spells, per the wiki. Reactive Armor is omitted - not implemented in this engine
-//(scripts/Basic/skills/Magery/Spells/unimplementedSpells.def), same precedent as mage.def's
-//own commented-out summon spells.
-allowedSpells=s_magic_arrow, s_nightsight, s_heal, s_agility, s_cunning, s_cure, s_protection, s_strength, s_harm, s_bless, s_teleport, s_archcure, s_archprotection, s_greater_heal, s_recall, s_magic_reflection, s_dispel_field, s_dispel, s_mark, s_gate_travel, s_resurrection
-//s_reactive_armor - not implemented in this engine
+//list allowed spells, per the wiki.
+allowedSpells=s_reactive_armor, s_magic_arrow, s_nightsight, s_heal, s_agility, s_cunning, s_cure, s_protection, s_strength, s_harm, s_bless, s_teleport, s_archcure, s_archprotection, s_greater_heal, s_recall, s_magic_reflection, s_dispel_field, s_dispel, s_mark, s_gate_travel, s_resurrection

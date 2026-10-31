@@ -29,6 +29,27 @@ namespace SteamEngine.CompiledScripts {
 	/// converter now emits from the real archive's tag.resist_X tags.
 	/// </summary>
 	public static class NpcResistTests {
+		/// <summary>#868 - a real monster's blow on a player under Reactive Armor.</summary>
+		[SteamFunction]
+		public static void TestReactiveArmorReport(Character self) {
+			NPC monster = (NPC) ThingDef.GetByDefname("c_titan").Create(self.X + 1, self.Y, self.Z, self.M);
+			self.MaxHits = 5000;
+			self.Hits = 5000;
+			int monsterHits = monster.Hits;
+			DamageManager.ProcessSwing(monster, self);
+			int without = 5000 - self.Hits;
+			int returnedWithout = monsterHits - monster.Hits;
+
+			((SpellDef) SpellDef.GetByDefname("s_reactive_armor")).ApplyEffectChar(self, self, 1000, EffectFlag.FromSpellBook | EffectFlag.BeneficialEffect);
+			bool active = ReactiveArmorPluginDef.HasReactiveArmor(self);
+			self.Hits = 5000;
+			DamageManager.ProcessSwing(monster, self);
+			int with = 5000 - self.Hits;
+			int returned = monsterHits - monster.Hits;
+			monster.Delete();
+			Console.WriteLine("REACTIVE_ARMOR: active=" + active + " without=" + without + " returnedWithout=" + returnedWithout + " with=" + with + " returned=" + returned);
+		}
+
 		/// <summary>#860 - armor by Sphere's body part coverage, on a player and on a monster, the
 		/// PvP profession change, and how often a_weapon_dodge dodges.</summary>
 		[SteamFunction]
