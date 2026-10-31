@@ -216,15 +216,7 @@ namespace SteamEngine.CompiledScripts {
 			Guild guild = GetGuild(ch);
 			if (guild != null) {
 				string verb = connected ? (ch.IsFemale ? "pripojila" : "pripojil") : (ch.IsFemale ? "odpojila" : "odpojil");
-				foreach (Character member in guild.Members) {
-					member.SysMessage("--*" + ch.Name + " se " + verb + "*--");
-				}
-			}
-		}
-
-		public void SendGuildMessage(Character speaker, string text) {
-			foreach (Character member in this.Members) {
-				member.SysMessage("[Guild] " + speaker.Name + ": " + text);
+				ChatSystem.GuildNotice(guild, "--*" + ch.Name + " se " + verb + "*--");
 			}
 		}
 

@@ -143,6 +143,9 @@ namespace SteamEngine.CompiledScripts {
 			//default-deny fallback below, so no ordinary player could ever use them
 			this.commands["Party"] = PLEVEL_PLAYER;
 			this.commands["Boosts"] = PLEVEL_PLAYER;//#923 what affects me
+			this.commands["Zprava"] = PLEVEL_PLAYER;//#931
+			this.commands["Chat"] = PLEVEL_PLAYER;//#931
+			this.commands["GuildScream"] = PLEVEL_PLAYER;//#931
 			this.commands["PotionCure"] = PLEVEL_PLAYER;//#927
 			this.commands["PotionInvis"] = PLEVEL_PLAYER;//#927
 			this.commands["PotionReactive"] = PLEVEL_PLAYER;//#927
