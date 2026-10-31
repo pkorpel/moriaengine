@@ -92,8 +92,8 @@ namespace SteamEngine.CompiledScripts {
 				default: return;
 			}
 
-			if (!LevelingSystem.TrySpendAttributePoints(player, stat, 1)) {
-				player.RedMessage("Could not spend a point there - check your remaining budget and this stat's cap.");
+			if (!LevelingSystem.TrySpendAttributePoints(player, stat, 1, out string refusal) && (refusal != null)) {
+				player.RedMessage(refusal);
 			}
 			player.Dialog(player, this, args);
 		}

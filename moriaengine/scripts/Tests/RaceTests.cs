@@ -82,6 +82,12 @@ namespace SteamEngine.CompiledScripts {
 					worn.Add(item.Def.PrettyDefname + ":" + item.Color);
 				}
 			}
+			int skills = 0;
+			foreach (SkillDef skillDef in SkillDef.AllSkillDefs) {
+				skills += (player.GetRealSkillValue(skillDef) != player.Profession.GetSkillMinimum(skillDef)) ? 1 : 0;
+			}
+			Console.WriteLine("STARTING_POINTS: level=" + player.Level + " budget=" + player.AttributePointBudget + " skillPoints=" + player.UnspentSkillPoints +
+				" abilityPoints=" + player.UnspentAbilityPoints + " offBaseSkills=" + skills);
 			Console.WriteLine("STARTING_EQUIPMENT: gold=" + gold + " items=" + string.Join(",", defnames) + " worn=" + string.Join(",", worn));
 		}
 

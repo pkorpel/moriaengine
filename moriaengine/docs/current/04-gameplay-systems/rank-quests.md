@@ -3,8 +3,8 @@
 A player's rank (`Player.SkillRank`: Novice, Expert, Master, Grandmaster) comes from Erebor's three rank quests. The
 skill teachers can require it for their lessons, see [NPC speech](npc-speech.md). All three are ported (#833).
 
-**To turn the system on**, a GM runs [`.SetupWorld`](../03-admin-tooling/world-setup.md), then switches on `requireRank` in
-`.settings` -> "Skill Teachers".
+**To turn the system on**, a GM runs [`.SetupWorld`](../03-admin-tooling/world-setup.md). `requireRank` in `.settings` ->
+"Skill Teachers" is on by default since #882; a world saved earlier keeps its old value until it's switched there.
 
 The archive holds the quest scripts but not Erebor's world: its stones, signs and NPCs were placed by GMs on the live
 server. So each quest has a [world setup](../03-admin-tooling/world-setup.md) that places its pieces, and the pieces stay

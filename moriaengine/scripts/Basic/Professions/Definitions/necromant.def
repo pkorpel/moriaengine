@@ -34,6 +34,7 @@ professionPluginDef = p_profession_default
 
 //SkillNameOrDefname = starting value, cap value
 //not listed skills are considered 0, 0
+Discordance=0, 500
 Alchemy=300, 1000
 AnimalLore=0, 250
 Anatomy=0, 750
@@ -77,7 +78,7 @@ allowedArmorMaterials=Bone
 //STR/DEX/INT/VIT ranges {minimum, startingMax, hardCap} (#135/#134, native 0-100+ scale, NOT x10)
 strRange=60, 90, 100
 dexRange=60, 90, 100
-intRange=80, 130, 220
+intRange=80, 120, 220
 vitRange=60, 90, 110
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's

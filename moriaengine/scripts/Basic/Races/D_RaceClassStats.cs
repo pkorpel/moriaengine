@@ -41,7 +41,7 @@ namespace SteamEngine.CompiledScripts {
 		private const int DexEntryId = 11;
 		private const int IntEntryId = 12;
 		private const int VitEntryId = 13;
-		public const int RequiredSum = 300;
+		public const int RequiredSum = LevelingSystem.StartingStatSum;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			RaceClassStatsArgs stats = (RaceClassStatsArgs) args[0];
@@ -59,7 +59,7 @@ namespace SteamEngine.CompiledScripts {
 			for (int i = 0; i < names.Length; i++) {
 				int[] range = stats.Profession.GetStatRange(attrs[i]);
 				int minimum = (range.Length == 3) ? range[0] : 1;
-				int maximum = (range.Length == 3) ? range[2] : short.MaxValue;
+				int maximum = (range.Length == 3) ? range[1] : short.MaxValue;
 				this.AddHtml(170, y, 60, 20, names[i], false, false);
 				this.AddHtml(210, y, 100, 20, "(" + minimum + " - " + maximum + ")", false, false);
 				this.AddTextEntry(340, y - 2, 60, 20, 0, entryIds[i], minimum.ToString());
@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 		private static bool InRange(ProfessionDef profession, AttributeStat stat, int value, out string error) {
 			int[] range = profession.GetStatRange(stat);
 			int minimum = (range.Length == 3) ? range[0] : 1;
-			int maximum = (range.Length == 3) ? range[2] : short.MaxValue;
+			int maximum = (range.Length == 3) ? range[1] : short.MaxValue;
 			if ((value < minimum) || (value > maximum)) {
 				error = stat + " must be between " + minimum + " and " + maximum + ".";
 				return false;

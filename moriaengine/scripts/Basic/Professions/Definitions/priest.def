@@ -28,6 +28,7 @@ professionPluginDef = p_profession_default
 
 //SkillNameOrDefname = starting value, cap value
 //not listed skills are considered 0, 0
+Discordance=0, 500
 Alchemy=300, 1000
 Anatomy=300, 1000
 AnimalLore=0, 250
@@ -72,7 +73,7 @@ allowedArmorMaterials=Leather, Studded, Chain, Ring, Plate
 strRange=60, 90, 130
 dexRange=70, 100, 120
 intRange=60, 90, 120
-vitRange=70, 120, 160
+vitRange=70, 110, 160
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's
 //titul_priest/titul_priest_f)
