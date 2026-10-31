@@ -1999,7 +1999,7 @@ namespace SteamEngine.CompiledScripts {
 				case AggroMode.Hostile:
 					return true;
 				case AggroMode.GuardsRealm:
-					return NPCAiTimer.IsOppositeRealm(this.Realm, candidate.Realm);
+					return NPCAiTimer.IsOppositeRealm(this.Realm, candidate.Realm) || Town.IsBannedFor(this, candidate);
 				default:
 					return false;
 			}
