@@ -50,6 +50,14 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int homeChangeFee = 100000;
 
+		/// <summary>How long an election runs from its first candidate.</summary>
+		[SaveableData]
+		public int electionDays = 7;
+
+		/// <summary>A mayor's term: nobody can stand against them before it's over.</summary>
+		[SaveableData]
+		public int mayorTermDays = 30;
+
 		public override string ToString() {
 			return "Towns";
 		}
