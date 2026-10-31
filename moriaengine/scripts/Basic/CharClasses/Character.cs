@@ -2883,12 +2883,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		public virtual TriggerResult On_DenyOpenDoor(DenySwitchDoorArgs args) {
-			return TriggerResult.Continue;
-		}
-
-		public virtual TriggerResult On_DenyCloseDoor(DenySwitchDoorArgs args) {
-			return TriggerResult.Continue;
+		/// <summary>#941 - Sphere's macro: the first door within 4 tiles, open ones too.</summary>
+		public override void On_OpenDoorMacro() {
+			foreach (AbstractItem found in this.GetMap().GetItemsInRange(this.X, this.Y, 4)) {
+				Item item = found as Item;
+				if ((item != null) && item.IsMacroDoor) {
+					item.TryUseDoor(this);
+					return;
+				}
+			}
 		}
 
 		/// <summary>Not called Party: a property of that name would swallow the .party command.</summary>

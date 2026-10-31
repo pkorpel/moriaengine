@@ -11,3 +11,7 @@ type = t_door
 [ItemDef i_flip_light_probe]
 model = 0xa0f
 type = t_light_lit
+
+[ItemDef i_door_key_probe]
+model = 0x100e
+type = t_key

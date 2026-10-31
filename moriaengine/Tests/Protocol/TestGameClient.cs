@@ -434,6 +434,12 @@ namespace SteamEngine.Tests.Protocol {
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
+		/// <summary>The client's OpenDoor macro: TextCommand (0x12), type 0x58, an empty text.</summary>
+		public void SendOpenDoorMacro() {
+			byte[] packet = { 0x12, 0x00, 0x05, 0x58, 0x00 };
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
 		/// <summary>Sends SingleClickInPacket (0x09) - id(1) + uid(4). The real client packet
 		/// behind the floating overhead name text (Thing.On_Click/Character.On_Click, or
 		/// On_AosClick depending on Globals.UseAosToolTips/the negotiated client version -
