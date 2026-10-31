@@ -64,12 +64,6 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MY_UID: " + self.Uid + " name=" + self.Name);
 		}
 
-		[SteamFunction]
-		public static void TestCheckGuild(Character self) {
-			Guild guild = Guild.GetGuild(self);
-			Console.WriteLine("GUILD_CHECK: " + self.Name + " guild=" + (guild != null ? guild.Name : "none"));
-		}
-
 		/// <summary>Creates a known, named item directly in self's backpack for a secure-trade
 		/// scenario to pick up and drop on the other participant.</summary>
 		[SteamFunction]

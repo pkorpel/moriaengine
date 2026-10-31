@@ -169,6 +169,12 @@ namespace SteamEngine.Converter {
 					def.isEquippable = true;
 					break;
 				case "t_multi":
+					if (string.Equals(def.headerName, "i_guildstone", StringComparison.OrdinalIgnoreCase)) {
+						//#884 - a plain stone with Erebor's t_guild events, GuildStone here
+						def.headerType = "GuildStoneDef";
+						def.Replace("TYPE", "t_normal", "");
+						break;
+					}
 					def.headerType = "MultiItemDef";
 					def.DontDump();	//for now
 					break;

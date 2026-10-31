@@ -23,6 +23,8 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableClass]
 		public class GuildMembership : RankMembership {
 			public bool canShowAbbrev;
+			public bool isCandidate;
+			public int seniority;
 
 			internal GuildMembership(Character member, Guild cont)
 				: base(member, cont) {
@@ -40,13 +42,23 @@ namespace SteamEngine.CompiledScripts {
 				if (this.canShowAbbrev) {
 					output.WriteValue("canShowAbbrev", this.canShowAbbrev);
 				}
+				if (this.isCandidate) {
+					output.WriteValue("isCandidate", this.isCandidate);
+				}
+				output.WriteValue("seniority", this.seniority);
 				base.Save(output);
 			}
 
 			protected override void LoadLine(string filename, int line, string valueName, string valueString) {
-				switch (valueName) {
-					case "canShowAbbrev":
+				switch (valueName.ToLowerInvariant()) {
+					case "canshowabbrev":
 						this.canShowAbbrev = ConvertTools.ParseBoolean(valueString);
+						return;
+					case "iscandidate":
+						this.isCandidate = ConvertTools.ParseBoolean(valueString);
+						return;
+					case "seniority":
+						this.seniority = ConvertTools.ParseInt32(valueString);
 						return;
 				}
 				base.LoadLine(filename, line, valueName, valueString);

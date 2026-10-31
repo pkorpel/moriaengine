@@ -90,11 +90,19 @@ namespace SteamEngine.CompiledScripts {
 
 			private void Load_RoleMember(object resolvedObject, string filename, int line) {
 				this.member = (Character) resolvedObject;
+				this.TryJoinLoadedCont();
 			}
 
 			private void Load_RoleCont(object resolvedObject, string filename, int line) {
 				this.cont = (Role) resolvedObject;
-				this.cont.InternalLoadMembership(this);
+				this.TryJoinLoadedCont();
+			}
+
+			/// <summary>Either reference can resolve first, and the role needs both.</summary>
+			private void TryJoinLoadedCont() {
+				if ((this.member != null) && (this.cont != null)) {
+					this.cont.InternalLoadMembership(this);
+				}
 			}
 		}
 	}

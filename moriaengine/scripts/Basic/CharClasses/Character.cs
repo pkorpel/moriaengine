@@ -2351,11 +2351,16 @@ namespace SteamEngine.CompiledScripts {
 				return; //#827 e_healer turned a realm outcast away (Sphere's @userclick return 1)
 			}
 			int hue = Notoriety.GetNameHue(this.GetHighlightColorFor(clicker));
-			PacketSequences.SendNameFrom(clickerConn, this, this.Name, hue);
+			PacketSequences.SendNameFrom(clickerConn, this, Guild.NameWithAbbreviation(this), hue);
 		}
 
 		public override void On_AosClick(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
 			int hue = Notoriety.GetNameHue(this.GetHighlightColorFor(clicker));
+			string shownName = Guild.NameWithAbbreviation(this);
+			if (shownName != this.Name) { //#884 a cliloc name has no room for the [abbreviation]
+				PacketSequences.SendNameFrom(clickerConn, this, shownName, hue);
+				return;
+			}
 			AosToolTips toolTips = this.GetAosToolTips(clicker.Language);
 			PacketSequences.SendClilocNameFrom(clickerConn, this, toolTips.FirstId, hue, toolTips.FirstArgument);
 		}
