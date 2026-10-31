@@ -1,5 +1,13 @@
 # moriaengine — working state
 
+## DONE (2026-10-31): #938 .flip exactly as Sphere, dropping flips (branch flip-as-sphere)
+
+User: .flip must match Sphere, dropping an item flips it. Reference EreborNext CItem.Flip + FlipOracleTests (real 0.99z8 numbers). Doc flip.md.
+Bugs: GetNextFlipModel looped on dupeList[0], so 589 of the archive's groups never got past their 2nd variant nor home; the one-step test passed. Groups were in ConcurrentDictionary order, now loaded order. DUPELIST and FLIP were commented out by the converter: live now, 36 files.
+Added: light pattern (Item.LightPattern over the def's Light), door offset + ALIGN/HAND/SWING, corpse 0x2006, character clockwise, flipDroppedItems in steamengine.ini (Sphere's own setting, not .settings).
+Decision: .flip keeps its cursor (#193, the user's own ask); Sphere's .flip acts on self and .xflip targets.
+Gotchas: a def's lines for a name with no FieldValue are postponed past ThingDef.LoadingFinished, so DUPELIST resolves on first use. A test dragging from a pack the client hasn't opened silently does nothing: lift from the ground. Item already overrode DirectionByte, sends Light.
+
 ## DONE (2026-10-31): #937 boot with no errors (branch boot-no-errors), also closes #823
 
 User: a rebuild/boot must log no errors at all. Was 759 ERROR/WARNING lines, now 0 on a new world and on a saved one; BootLogTests enforces both, plus a list of defs that must exist.

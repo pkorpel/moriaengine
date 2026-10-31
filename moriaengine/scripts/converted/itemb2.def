@@ -5,7 +5,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Suspension Bridge
 DESCRIPTION = @
 
-//DUPELIST = 07e2,07e3,07e4,07e5,07e6,07e7,07e8,07e9,07ea,07eb,07ec,07ed,07ee,07ef,07f0,07f1,07f2,07f3,07f4,07f5,07f6,07f7,07f8,07f9,07fa,07fb,07fc,07fd,07fe,07ff,0800,0801,0802,0803,0804,0805,0806,0807,0808,0809,080a,080b,080c,080d,080e,080f,0810,0811,0812,0813,0814,0815,0816,0817,0818 // commented out by Converter 
+DupeList = 0x7e2,0x7e3,0x7e4,0x7e5,0x7e6,0x7e7,0x7e8,0x7e9,0x7ea,0x7eb,0x7ec,0x7ed,0x7ee,0x7ef,0x7f0,0x7f1,0x7f2,0x7f3,0x7f4,0x7f5,0x7f6,0x7f7,0x7f8,0x7f9,0x7fa,0x7fb,0x7fc,0x7fd,0x7fe,0x7ff,0x800,0x801,0x802,0x803,0x804,0x805,0x806,0x807,0x808,0x809,0x80a,0x80b,0x80c,0x80d,0x80e,0x80f,0x810,0x811,0x812,0x813,0x814,0x815,0x816,0x817,0x818
 RESOURCES = 15 i_rope, 5 i_board
 DEFNAME = i_bridge
 
@@ -179,7 +179,7 @@ CATEGORY = Buildings - Fences
 SUBSECTION = Iron Fence
 DESCRIPTION = @
 
-//DUPELIST = 0822,0823,0849,084a,084b // commented out by Converter 
+DupeList = 0x822,0x823,0x849,0x84a,0x84b
 RESOURCES = 25 i_ingot_iron
 DEFNAME = i_fence_iron
 
@@ -195,7 +195,7 @@ SUBSECTION = Iron Gate
 DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
-//DUPELIST = 0825,0826,0827,0828,0829,082a,082b,082c,082d,082e,082f,0830,0831,0832,0833 // commented out by Converter 
+DupeList = 0x825,0x826,0x827,0x828,0x829,0x82a,0x82b,0x82c,0x82d,0x82e,0x82f,0x830,0x831,0x832,0x833
 RESOURCES = 25 i_ingot_iron
 DEFNAME = i_gate_iron
 
@@ -295,7 +295,7 @@ SUBSECTION = Wooden Gate
 DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
-//DUPELIST = 083a,083b,083c,083d,083e,083f,0840,0841,0842,0843,0844,0845,0846,0847,0848 // commented out by Converter 
+DupeList = 0x83a,0x83b,0x83c,0x83d,0x83e,0x83f,0x840,0x841,0x842,0x843,0x844,0x845,0x846,0x847,0x848
 RESOURCES = 25 i_board
 DEFNAME = i_gate_wood
 
@@ -385,7 +385,7 @@ DUPEITEM = i_fence_iron
 
 [ItemDef 0x84c]
 TYPE = T_DOOR
-//DUPELIST = 084d,084e,084f,0850,0851,0852,0853,0854,0855,0856,0857,0858,0859,085a,085b // commented out by Converter 
+DupeList = 0x84d,0x84e,0x84f,0x850,0x851,0x852,0x853,0x854,0x855,0x856,0x857,0x858,0x859,0x85a,0x85b
 RESOURCES = 25 i_ingot_iron
 DEFNAME = i_gate_iron_2
 
@@ -439,7 +439,7 @@ CATEGORY = Buildings - Fences
 SUBSECTION = Wooden Fence 2
 DESCRIPTION = @
 
-//DUPELIST = 085d,085e,085f,0860,0861,0862,0863,0864,0865,0877,0878 // commented out by Converter 
+DupeList = 0x85d,0x85e,0x85f,0x860,0x861,0x862,0x863,0x864,0x865,0x877,0x878
 RESOURCES = 25 i_board
 DEFNAME = i_gate_wood_2
 
@@ -476,7 +476,7 @@ SUBSECTION = Wooden Gate 2
 DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
-//DUPELIST = 0867,0868,0869,086a,086b,086c,086d,086e,086f,0870,0871,0872,0873,0874,0875 // commented out by Converter 
+DupeList = 0x867,0x868,0x869,0x86a,0x86b,0x86c,0x86d,0x86e,0x86f,0x870,0x871,0x872,0x873,0x874,0x875
 RESOURCES = 25 i_board
 DEFNAME = i_gate_wood_3
 
@@ -569,7 +569,7 @@ CATEGORY = Buildings - Stairs
 SUBSECTION = Wooden Ramp
 DESCRIPTION = @
 
-//DUPELIST = 087b,087c,087d // commented out by Converter 
+DupeList = 0x87b,0x87c,0x87d
 RESOURCES = 25 i_board
 DEFNAME = i_ramp_wood
 
@@ -587,7 +587,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Wooden Rail
 DESCRIPTION = @
 
-//DUPELIST = 087f,0880,0881,0882,0883,0884,0885,0886,0887,0888,0889 // commented out by Converter 
+DupeList = 0x87f,0x880,0x881,0x882,0x883,0x884,0x885,0x886,0x887,0x888,0x889
 RESOURCES = 15 i_board
 DEFNAME = i_railing_wood
 
@@ -629,7 +629,7 @@ CATEGORY = Buildings - Fences
 SUBSECTION = Wooden Fence 3
 DESCRIPTION = @
 
-//DUPELIST = 088b // commented out by Converter 
+DupeList = 0x88b
 RESOURCES = 25 i_board
 DEFNAME = i_fence_wood_2
 
@@ -641,7 +641,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Wooden Ladder 1
 DESCRIPTION = @
 
-//DUPELIST = 089b // commented out by Converter 
+DupeList = 0x89b
 RESOURCES = 15 i_board
 DEFNAME = i_ladder_wood
 
@@ -650,7 +650,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Wooden Ladder 2
 DESCRIPTION = @
 
-//DUPELIST = 089c // commented out by Converter 
+DupeList = 0x89c
 RESOURCES = 15 i_board
 
 [ItemDef 0x89b]
@@ -664,7 +664,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Wooden Ladder 3
 DESCRIPTION = @
 
-//DUPELIST = 089e // commented out by Converter 
+DupeList = 0x89e
 RESOURCES = 15 i_board
 
 [ItemDef 0x89e]
@@ -675,7 +675,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Wooden Ladder 2
 DESCRIPTION = @
 
-//DUPELIST = 08a0,08a1,08a2,08a3,08a4 // commented out by Converter 
+DupeList = 0x8a0,0x8a1,0x8a2,0x8a3,0x8a4
 RESOURCES = 15 i_board
 DEFNAME = i_ladder_wood_2
 
@@ -699,7 +699,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Rope Ladder
 DESCRIPTION = @
 
-//DUPELIST = 08a6 // commented out by Converter 
+DupeList = 0x8a6
 RESOURCES = 10 i_rope
 DEFNAME = i_ladder_rope
 
@@ -711,7 +711,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Wooden Bannister
 DESCRIPTION = @
 
-//DUPELIST = 08af,08b0,08b1,08b2,08b3,08b4,08b5,08b6,08b7,08b8,08b9,08ba,08bb,08bc,08bd,08be,08bf,08c0,08c1,08c2,08c3,08c4,08c5,08c6,08c7,08c8,08c9,08ca // commented out by Converter 
+DupeList = 0x8af,0x8b0,0x8b1,0x8b2,0x8b3,0x8b4,0x8b5,0x8b6,0x8b7,0x8b8,0x8b9,0x8ba,0x8bb,0x8bc,0x8bd,0x8be,0x8bf,0x8c0,0x8c1,0x8c2,0x8c3,0x8c4,0x8c5,0x8c6,0x8c7,0x8c8,0x8c9,0x8ca
 RESOURCES = 15 i_board
 DEFNAME = i_banister_wood
 
@@ -804,7 +804,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Edging
 DESCRIPTION = @
 
-//DUPELIST = 08cc,08cd,08ce // commented out by Converter 
+DupeList = 0x8cc,0x8cd,0x8ce
 RESOURCES = 5 i_board
 DEFNAME = i_edging_wood
 
@@ -822,7 +822,7 @@ CATEGORY = Fireplaces, Chimneys & Ovens
 SUBSECTION = Stone Fireplace 1
 DESCRIPTION = @ (empty)
 
-//DUPELIST = 08d0,08d3,08d4 // commented out by Converter 
+DupeList = 0x8d0,0x8d3,0x8d4
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
 DEFNAME = i_fireplace_stone
 
@@ -834,7 +834,7 @@ CATEGORY = Fireplaces, Chimneys & Ovens
 SUBSECTION = Stone Chimney 1
 DESCRIPTION = @
 
-//DUPELIST = 08d2,08d5,08d6,08d9 // commented out by Converter 
+DupeList = 0x8d2,0x8d5,0x8d6,0x8d9
 RESOURCES = 300 i_rock_plain
 DEFNAME = i_chimney_stone
 
@@ -858,7 +858,7 @@ CATEGORY = Fireplaces, Chimneys & Ovens
 SUBSECTION = Stone Chimney 2
 DESCRIPTION = @
 
-//DUPELIST = 08d8,08dc,08dd // commented out by Converter 
+DupeList = 0x8d8,0x8dc,0x8dd
 RESOURCES = 300 i_rock_plain
 DEFNAME = i_chimney_stone_2
 
@@ -873,7 +873,7 @@ CATEGORY = Fireplaces, Chimneys & Ovens
 SUBSECTION = Stone Fireplace 2
 DESCRIPTION = @ (empty)
 
-//DUPELIST = 08db,08de,08df // commented out by Converter 
+DupeList = 0x8db,0x8de,0x8df
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
 DEFNAME = i_fireplace_stone_2
 
@@ -898,7 +898,7 @@ SUBSECTION = Cave Floor
 DESCRIPTION = Stalagmites
 
 TYPE = T_ROCK
-//DUPELIST = 08e1,08e2,08e3,08e4,08e5,08e6,08e7,08e8,08e9,08ea // commented out by Converter 
+DupeList = 0x8e1,0x8e2,0x8e3,0x8e4,0x8e5,0x8e6,0x8e7,0x8e8,0x8e9,0x8ea
 
 [ItemDef 0x8e1]
 DUPEITEM = 0x8e0
@@ -943,7 +943,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Stone Rail 1
 DESCRIPTION = @
 
-//DUPELIST = 08ec,08ed,08ee // commented out by Converter 
+DupeList = 0x8ec,0x8ed,0x8ee
 RESOURCES = 20 i_rock_plain
 DEFNAME = i_rail_stone
 
@@ -961,7 +961,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Stone Rail 2
 DESCRIPTION = @
 
-//DUPELIST = 08f0,08f1,08f2 // commented out by Converter 
+DupeList = 0x8f0,0x8f1,0x8f2
 RESOURCES = 20 i_rock_plain, 10 i_board
 DEFNAME = i_rail_stone_2
 
@@ -979,7 +979,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Sandstone Rail
 DESCRIPTION = @
 
-//DUPELIST = 08f4,08f5,08f6 // commented out by Converter 
+DupeList = 0x8f4,0x8f5,0x8f6
 RESOURCES = 20 i_stone_sand, 10 i_board
 DEFNAME = i_rail_stone_3
 
@@ -997,7 +997,7 @@ CATEGORY = Buildings - Other
 SUBSECTION = Stone Rail 3
 DESCRIPTION = @
 
-//DUPELIST = 08f8,08f9,08fa,08fb,08fc // commented out by Converter 
+DupeList = 0x8f8,0x8f9,0x8fa,0x8fb,0x8fc
 RESOURCES = 20 i_rock_plain, 10 i_board
 DEFNAME = i_rail_stone_4
 
@@ -1021,7 +1021,7 @@ CATEGORY = Ground Tiles
 SUBSECTION = Dirt Patch
 DESCRIPTION = @
 
-//DUPELIST = 0912,0913,0914 // commented out by Converter 
+DupeList = 0x912,0x913,0x914
 
 [ItemDef 0x912]
 DUPEITEM = 0x911
@@ -1037,7 +1037,7 @@ CATEGORY = Buildings - Stairs
 SUBSECTION = Stone Step
 DESCRIPTION = @
 
-//DUPELIST = 0916,0917,0918 // commented out by Converter 
+DupeList = 0x916,0x917,0x918
 RESOURCES = 40 i_rock_plain
 DEFNAME = i_stone_steps
 
@@ -1066,7 +1066,7 @@ SUBSECTION = Beekeepers/Candlers
 DESCRIPTION = Bees
 
 TYPE = t_trap_active
-//DUPELIST = 091c,091d,091e,091f,0920,0921,0922 // commented out by Converter 
+DupeList = 0x91c,0x91d,0x91e,0x91f,0x920,0x921,0x922
 WEIGHT = 1
 DEFNAME = i_bee_swarm
 //VALUE = 2 // commented out by Converter 
@@ -1098,7 +1098,7 @@ SUBSECTION = Stone Oven 1
 DESCRIPTION = @
 
 TYPE = T_FIRE
-//DUPELIST = 092c,092d,092e,092f,0930,0931,0932,0933,0934,0943,0944 // commented out by Converter 
+DupeList = 0x92c,0x92d,0x92e,0x92f,0x930,0x931,0x932,0x933,0x934,0x943,0x944
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
 DEFNAME = i_oven_stone
 
@@ -1134,7 +1134,7 @@ CATEGORY = Fireplaces, Chimneys & Ovens
 SUBSECTION = Stone Fireplace 1
 DESCRIPTION = @ (unlit)
 
-//DUPELIST = 0936 // commented out by Converter 
+DupeList = 0x936
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
 DEFNAME = i_fireplace_stone_3
 
@@ -1147,7 +1147,7 @@ SUBSECTION = Stone Fireplace 1
 DESCRIPTION = @
 
 TYPE = T_FIRE
-//DUPELIST = 0938,0939,093a,093b,093c,093d,093e,093f,0940,0941,0942,0945,0946,0947,0948,0949,094a,094b,094c,094d,094e,094f,0950,0956,0957,0958,0959,095a,095b,095c,095d,095e,0961,0962,0963,0964,0965,0966,0967,0968,0969,096a,096b,096c // commented out by Converter 
+DupeList = 0x938,0x939,0x93a,0x93b,0x93c,0x93d,0x93e,0x93f,0x940,0x941,0x942,0x945,0x946,0x947,0x948,0x949,0x94a,0x94b,0x94c,0x94d,0x94e,0x94f,0x950,0x956,0x957,0x958,0x959,0x95a,0x95b,0x95c,0x95d,0x95e,0x961,0x962,0x963,0x964,0x965,0x966,0x967,0x968,0x969,0x96a,0x96b,0x96c
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
 DEFNAME = i_fireplace_stone_4
 
@@ -1231,7 +1231,7 @@ CATEGORY = Fireplaces, Chimneys & Ovens
 SUBSECTION = Stone Fireplace 2
 DESCRIPTION = @ (unlit)
 
-//DUPELIST = 0952,095f,0960 // commented out by Converter 
+DupeList = 0x952,0x95f,0x960
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
 DEFNAME = i_fireplace_stone_5
 
@@ -1244,7 +1244,7 @@ SUBSECTION = Stone Fireplace 2
 DESCRIPTION = @
 
 TYPE = T_FIRE
-//DUPELIST = 0954,0955 // commented out by Converter 
+DupeList = 0x954,0x955
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
 DEFNAME = i_fireplace_stone_6
 
@@ -1329,7 +1329,7 @@ SUBSECTION = Cook
 DESCRIPTION = Stew
 
 TYPE = T_FOOD
-//DUPELIST = 0971,0972,0973 // commented out by Converter 
+DupeList = 0x971,0x972,0x973
 WEIGHT = 1
 RESOURCES = 1 i_water, 1 i_pot, 1 i_flour_sack
 DEFNAME = i_bowl_stew
@@ -1349,7 +1349,7 @@ CATEGORY = Decoration - Curtains
 SUBSECTION = Curtain 01
 DESCRIPTION = @
 
-//DUPELIST = 0981,0982,0983,0984,0985,0986,0987,0988,0989,098b // commented out by Converter 
+DupeList = 0x981,0x982,0x983,0x984,0x985,0x986,0x987,0x988,0x989,0x98b
 RESOURCES = 10 i_cloth, 1 i_ingot_gold
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_curtain_2
@@ -1398,7 +1398,7 @@ SUBSECTION = Torches
 DESCRIPTION = Wall Sconce (Lit) (W)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 09fe,09ff // commented out by Converter 
+DupeList = 0x9fe,0x9ff
 RESOURCES = 1 i_sconce //some resources were fixed by converter 
 //TDATA3 = i_sconce // commented out by Converter 
 layer = 19 //Set by Converter 
@@ -1428,7 +1428,7 @@ SUBSECTION = Torches
 DESCRIPTION = Wall Sconce (Lit) (N)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 0a03,0a04 // commented out by Converter 
+DupeList = 0xa03,0xa04
 RESOURCES = 1 i_sconce2 //some resources were fixed by converter 
 //TDATA3 = i_sconce2 // commented out by Converter 
 layer = 16 //Set by Converter 
@@ -1447,7 +1447,7 @@ SUBSECTION = Torches
 DESCRIPTION = Wall Torch (Lit) (W)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 0a08,0a09 // commented out by Converter 
+DupeList = 0xa08,0xa09
 RESOURCES = 1 i_torch_wall //some resources were fixed by converter 
 //TDATA3 = i_torch_wall // commented out by Converter 
 layer = 8 //Set by Converter 
@@ -1466,7 +1466,7 @@ SUBSECTION = Torches
 DESCRIPTION = Wall Torch (Lit) (N)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 0a0d,0a0e // commented out by Converter 
+DupeList = 0xa0d,0xa0e
 RESOURCES = 1 i_torch_wall2 //some resources were fixed by converter 
 //TDATA3 = i_torch_wall2 // commented out by Converter 
 layer = 5 //Set by Converter 
@@ -1485,7 +1485,7 @@ SUBSECTION = Candles
 DESCRIPTION = Candle (Lit)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 0a10,0a11 // commented out by Converter 
+DupeList = 0xa10,0xa11
 WEIGHT = 2
 RESOURCES = 1 i_candle //some resources were fixed by converter 
 //TDATA3 = i_candle // commented out by Converter 
@@ -1505,7 +1505,7 @@ DUPEITEM = i_candle_lit
 //DESCRIPTION = Torch (Lit)
 //
 //TYPE = T_LIGHT_LIT
-////DUPELIST = 0a13,0a14 // commented out by Converter 
+//DupeList = 0xa13,0xa14
 //WEIGHT = 1
 //RESOURCES = 1 i_torch //some resources were fixed by converter 
 ////TDATA3 = i_torch // commented out by Converter 
@@ -1525,7 +1525,7 @@ SUBSECTION = Lanterns
 DESCRIPTION = Lantern (Lit)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 0a16,0a17,0a1a,0a1b,0a1c,0a22,0a23,0a24 // commented out by Converter 
+DupeList = 0xa16,0xa17,0xa1a,0xa1b,0xa1c,0xa22,0xa23,0xa24
 WEIGHT = 2
 RESOURCES = 1 i_lantern //some resources were fixed by converter 
 //TDATA3 = i_lantern // commented out by Converter 
@@ -1564,7 +1564,7 @@ CATEGORY = Decoration - Lightsources
 SUBSECTION = Lanterns
 DESCRIPTION = Lantern Post (WE)
 
-//DUPELIST = 0a20 // commented out by Converter 
+DupeList = 0xa20
 RESOURCES = 5 i_board
 DEFNAME = i_lantern_post
 
@@ -1588,9 +1588,9 @@ CATEGORY = Decoration - Signs
 SUBSECTION = Sign Posts
 DESCRIPTION = Wooden Sign Post
 
-//DUPELIST = 0b98 // commented out by Converter 
+DupeList = 0xb98
 RESOURCES = 2 i_board, 2 i_hinge
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xb98]
 DUPEITEM = 0xb97
@@ -1600,9 +1600,9 @@ CATEGORY = Decoration - Signs
 SUBSECTION = Sign Posts
 DESCRIPTION = Wooden Sign Post
 
-//DUPELIST = 0b9a // commented out by Converter 
+DupeList = 0xb9a
 RESOURCES = 2 i_board, 2 i_hinge
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xb9a]
 DUPEITEM = 0xb99
@@ -1612,9 +1612,9 @@ CATEGORY = Decoration - Signs
 SUBSECTION = Sign Posts
 DESCRIPTION = Metal Sign Post
 
-//DUPELIST = 0b9c // commented out by Converter 
+DupeList = 0xb9c
 RESOURCES = 2 i_ingot_iron, 2 i_hinge
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xb9c]
 DUPEITEM = 0xb9b
@@ -1624,9 +1624,9 @@ CATEGORY = Decoration - Signs
 SUBSECTION = Sign Posts
 DESCRIPTION = Metal Sign Post
 
-//DUPELIST = 0b9e // commented out by Converter 
+DupeList = 0xb9e
 RESOURCES = 2 i_ingot_iron, 2 i_hinge
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xb9e]
 DUPEITEM = 0xb9d
@@ -1636,9 +1636,9 @@ CATEGORY = Decoration - Signs
 SUBSECTION = Sign Posts
 DESCRIPTION = Metal Sign Post
 
-//DUPELIST = 0ba0 // commented out by Converter 
+DupeList = 0xba0
 RESOURCES = 2 i_ingot_iron, 2 i_hinge
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xba0]
 DUPEITEM = 0xb9f
@@ -1648,9 +1648,9 @@ CATEGORY = Decoration - Signs
 SUBSECTION = Sign Posts
 DESCRIPTION = Metal Sign Post
 
-//DUPELIST = 0ba2 // commented out by Converter 
+DupeList = 0xba2
 RESOURCES = 2 i_ingot_iron, 2 i_hinge
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xba2]
 DUPEITEM = 0xba1
@@ -1661,9 +1661,9 @@ SUBSECTION = Trade
 DESCRIPTION = Bakery
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0ba4 // commented out by Converter 
+DupeList = 0xba4
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_sign_bakery
 
 [ItemDef 0xba4]
@@ -1675,9 +1675,9 @@ SUBSECTION = Trade
 DESCRIPTION = Tailor
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0ba6 // commented out by Converter 
+DupeList = 0xba6
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_sign_tailor
 
 [ItemDef 0xba6]
@@ -1689,9 +1689,9 @@ SUBSECTION = Trade
 DESCRIPTION = Tinker
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0ba8 // commented out by Converter 
+DupeList = 0xba8
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_sign_tinker
 
 [ItemDef 0xba8]
@@ -1703,9 +1703,9 @@ SUBSECTION = Trade
 DESCRIPTION = Butcher
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0baa // commented out by Converter 
+DupeList = 0xbaa
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbaa]
 DUPEITEM = 0xba9
@@ -1716,9 +1716,9 @@ SUBSECTION = Trade
 DESCRIPTION = Healer
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bac // commented out by Converter 
+DupeList = 0xbac
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbac]
 DUPEITEM = 0xbab
@@ -1729,9 +1729,9 @@ SUBSECTION = Trade
 DESCRIPTION = Mage
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bae // commented out by Converter 
+DupeList = 0xbae
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbae]
 DUPEITEM = 0xbad
@@ -1742,9 +1742,9 @@ SUBSECTION = Trade
 DESCRIPTION = Woodworker
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bb0 // commented out by Converter 
+DupeList = 0xbb0
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbb0]
 DUPEITEM = 0xbaf
@@ -1755,9 +1755,9 @@ SUBSECTION = Trade
 DESCRIPTION = Customs
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bb2 // commented out by Converter 
+DupeList = 0xbb2
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbb2]
 DUPEITEM = 0xbb1
@@ -1768,9 +1768,9 @@ SUBSECTION = Trade
 DESCRIPTION = Inn
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bb4 // commented out by Converter 
+DupeList = 0xbb4
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbb4]
 DUPEITEM = 0xbb3
@@ -1781,9 +1781,9 @@ SUBSECTION = Trade
 DESCRIPTION = Shipwright
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bb6 // commented out by Converter 
+DupeList = 0xbb6
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbb6]
 DUPEITEM = 0xbb5
@@ -1794,9 +1794,9 @@ SUBSECTION = Trade
 DESCRIPTION = Stables
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bb8 // commented out by Converter 
+DupeList = 0xbb8
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbb8]
 DUPEITEM = 0xbb7
@@ -1807,9 +1807,9 @@ SUBSECTION = Trade
 DESCRIPTION = Barber Shop
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bba // commented out by Converter 
+DupeList = 0xbba
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbba]
 DUPEITEM = 0xbb9
@@ -1820,9 +1820,9 @@ SUBSECTION = Trade
 DESCRIPTION = Bard
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bbc // commented out by Converter 
+DupeList = 0xbbc
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbbc]
 DUPEITEM = 0xbbb
@@ -1833,9 +1833,9 @@ SUBSECTION = Trade
 DESCRIPTION = Fletcher
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bbe // commented out by Converter 
+DupeList = 0xbbe
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbbe]
 DUPEITEM = 0xbbd
@@ -1846,9 +1846,9 @@ SUBSECTION = Trade
 DESCRIPTION = Armourer
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bc0 // commented out by Converter 
+DupeList = 0xbc0
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbc0]
 DUPEITEM = 0xbbf
@@ -1859,9 +1859,9 @@ SUBSECTION = Trade
 DESCRIPTION = Jewler
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bc2 // commented out by Converter 
+DupeList = 0xbc2
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbc2]
 DUPEITEM = 0xbc1
@@ -1872,9 +1872,9 @@ SUBSECTION = Trade
 DESCRIPTION = Tavern
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bc4 // commented out by Converter 
+DupeList = 0xbc4
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbc4]
 DUPEITEM = 0xbc3
@@ -1885,9 +1885,9 @@ SUBSECTION = Trade
 DESCRIPTION = Reagent Shop
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bc6 // commented out by Converter 
+DupeList = 0xbc6
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbc6]
 DUPEITEM = 0xbc5
@@ -1898,9 +1898,9 @@ SUBSECTION = Trade
 DESCRIPTION = Blacksmith
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bc8 // commented out by Converter 
+DupeList = 0xbc8
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbc8]
 DUPEITEM = 0xbc7
@@ -1911,9 +1911,9 @@ SUBSECTION = Trade
 DESCRIPTION = Painter
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bca // commented out by Converter 
+DupeList = 0xbca
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbca]
 DUPEITEM = 0xbc9
@@ -1924,9 +1924,9 @@ SUBSECTION = Trade
 DESCRIPTION = Provisioner
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bcc // commented out by Converter 
+DupeList = 0xbcc
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbcc]
 DUPEITEM = 0xbcb
@@ -1937,9 +1937,9 @@ SUBSECTION = Trade
 DESCRIPTION = Bowyer
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bce // commented out by Converter 
+DupeList = 0xbce
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbce]
 DUPEITEM = 0xbcd
@@ -1950,9 +1950,9 @@ SUBSECTION = Blank
 DESCRIPTION = Wooden Blank
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bd0 // commented out by Converter 
+DupeList = 0xbd0
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 067 // commented out by Converter 
 
 [ItemDef 0xbd0]
@@ -1965,9 +1965,9 @@ DESCRIPTION = Brass Blank
 
 name = "domovni menu"
 TYPE = t_housemenu
-//DUPELIST = 0bd2 // commented out by Converter 
+DupeList = 0xbd2
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 064 // commented out by Converter 
 DEFNAME = i_sign_brass
 
@@ -1981,9 +1981,9 @@ SUBSECTION = Guild
 DESCRIPTION = Armaments Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bd4 // commented out by Converter 
+DupeList = 0xbd4
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbd4]
 DUPEITEM = 0xbd3
@@ -1994,9 +1994,9 @@ SUBSECTION = Guild
 DESCRIPTION = Armourers Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bd6 // commented out by Converter 
+DupeList = 0xbd6
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbd6]
 DUPEITEM = 0xbd5
@@ -2007,9 +2007,9 @@ SUBSECTION = Guild
 DESCRIPTION = Blacksmiths Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bd8 // commented out by Converter 
+DupeList = 0xbd8
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbd8]
 DUPEITEM = 0xbd7
@@ -2020,9 +2020,9 @@ SUBSECTION = Guild
 DESCRIPTION = Weapons Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bda // commented out by Converter 
+DupeList = 0xbda
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbda]
 DUPEITEM = 0xbd9
@@ -2033,9 +2033,9 @@ SUBSECTION = Guild
 DESCRIPTION = Bardic Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bdc // commented out by Converter 
+DupeList = 0xbdc
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbdc]
 DUPEITEM = 0xbdb
@@ -2046,9 +2046,9 @@ SUBSECTION = Guild
 DESCRIPTION = Barters Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bde // commented out by Converter 
+DupeList = 0xbde
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbde]
 DUPEITEM = 0xbdd
@@ -2059,9 +2059,9 @@ SUBSECTION = Guild
 DESCRIPTION = Provisioner Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0be0 // commented out by Converter 
+DupeList = 0xbe0
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbe0]
 DUPEITEM = 0xbdf
@@ -2072,9 +2072,9 @@ SUBSECTION = Guild
 DESCRIPTION = Traders Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0be2 // commented out by Converter 
+DupeList = 0xbe2
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbe2]
 DUPEITEM = 0xbe1
@@ -2085,9 +2085,9 @@ SUBSECTION = Guild
 DESCRIPTION = Cooks Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0be4 // commented out by Converter 
+DupeList = 0xbe4
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbe4]
 DUPEITEM = 0xbe3
@@ -2098,9 +2098,9 @@ SUBSECTION = Guild
 DESCRIPTION = Healers Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0be6 // commented out by Converter 
+DupeList = 0xbe6
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbe6]
 DUPEITEM = 0xbe5
@@ -2111,9 +2111,9 @@ SUBSECTION = Guild
 DESCRIPTION = Mages Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0be8 // commented out by Converter 
+DupeList = 0xbe8
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbe8]
 DUPEITEM = 0xbe7
@@ -2124,9 +2124,9 @@ SUBSECTION = Guild
 DESCRIPTION = Sorcerers Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bea // commented out by Converter 
+DupeList = 0xbea
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbea]
 DUPEITEM = 0xbe9
@@ -2137,9 +2137,9 @@ SUBSECTION = Guild
 DESCRIPTION = Illusionist Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bec // commented out by Converter 
+DupeList = 0xbec
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbec]
 DUPEITEM = 0xbeb
@@ -2150,9 +2150,9 @@ SUBSECTION = Guild
 DESCRIPTION = Miners Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bee // commented out by Converter 
+DupeList = 0xbee
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbee]
 DUPEITEM = 0xbed
@@ -2163,9 +2163,9 @@ SUBSECTION = Guild
 DESCRIPTION = Archers Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bf0 // commented out by Converter 
+DupeList = 0xbf0
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbf0]
 DUPEITEM = 0xbef
@@ -2176,9 +2176,9 @@ SUBSECTION = Guild
 DESCRIPTION = Seamens Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bf2 // commented out by Converter 
+DupeList = 0xbf2
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbf2]
 DUPEITEM = 0xbf1
@@ -2189,9 +2189,9 @@ SUBSECTION = Guild
 DESCRIPTION = Fishermans Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bf4 // commented out by Converter 
+DupeList = 0xbf4
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbf4]
 DUPEITEM = 0xbf3
@@ -2202,9 +2202,9 @@ SUBSECTION = Guild
 DESCRIPTION = Sailors Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bf6 // commented out by Converter 
+DupeList = 0xbf6
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbf6]
 DUPEITEM = 0xbf5
@@ -2215,9 +2215,9 @@ SUBSECTION = Guild
 DESCRIPTION = Shipwrights Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bf8 // commented out by Converter 
+DupeList = 0xbf8
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbf8]
 DUPEITEM = 0xbf7
@@ -2228,9 +2228,9 @@ SUBSECTION = Guild
 DESCRIPTION = Tailors Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bfa // commented out by Converter 
+DupeList = 0xbfa
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbfa]
 DUPEITEM = 0xbf9
@@ -2241,9 +2241,9 @@ SUBSECTION = Guild
 DESCRIPTION = Thieves Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bfc // commented out by Converter 
+DupeList = 0xbfc
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbfc]
 DUPEITEM = 0xbfb
@@ -2254,9 +2254,9 @@ SUBSECTION = Guild
 DESCRIPTION = Rogues Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0bfe // commented out by Converter 
+DupeList = 0xbfe
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xbfe]
 DUPEITEM = 0xbfd
@@ -2267,9 +2267,9 @@ SUBSECTION = Guild
 DESCRIPTION = Assassins Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0c00 // commented out by Converter 
+DupeList = 0xc00
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xc00]
 DUPEITEM = 0xbff
@@ -2280,9 +2280,9 @@ SUBSECTION = Guild
 DESCRIPTION = Tinkers Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0c02 // commented out by Converter 
+DupeList = 0xc02
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xc02]
 DUPEITEM = 0xc01
@@ -2293,9 +2293,9 @@ SUBSECTION = Guild
 DESCRIPTION = Warriors Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0c04 // commented out by Converter 
+DupeList = 0xc04
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xc04]
 DUPEITEM = 0xc03
@@ -2306,9 +2306,9 @@ SUBSECTION = Guild
 DESCRIPTION = Cavalry Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0c06 // commented out by Converter 
+DupeList = 0xc06
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xc06]
 DUPEITEM = 0xc05
@@ -2319,9 +2319,9 @@ SUBSECTION = Guild
 DESCRIPTION = Fighters Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0c08 // commented out by Converter 
+DupeList = 0xc08
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xc08]
 DUPEITEM = 0xc07
@@ -2332,9 +2332,9 @@ SUBSECTION = Guild
 DESCRIPTION = Merchants Guild
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0c0a // commented out by Converter 
+DupeList = 0xc0a
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xc0a]
 DUPEITEM = 0xc09
@@ -2345,9 +2345,9 @@ SUBSECTION = Trade
 DESCRIPTION = Bank
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0c0c // commented out by Converter 
+DupeList = 0xc0c
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xc0c]
 DUPEITEM = 0xc0b
@@ -2358,9 +2358,9 @@ SUBSECTION = Trade
 DESCRIPTION = Theatre
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0c0e // commented out by Converter 
+DupeList = 0xc0e
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 
 [ItemDef 0xc0e]
 DUPEITEM = 0xc0d
@@ -2370,7 +2370,7 @@ CATEGORY = Vegetation
 SUBSECTION = Dried Vegetation
 DESCRIPTION = Dried Flowers
 
-//DUPELIST = 0c3c // commented out by Converter 
+DupeList = 0xc3c
 RESOURCES = 1 i_crop_flower
 DEFNAME = i_dried_flowers
 
@@ -2382,7 +2382,7 @@ CATEGORY = Vegetation
 SUBSECTION = Dried Vegetation
 DESCRIPTION = Dried Flowers
 
-//DUPELIST = 0c3e // commented out by Converter 
+DupeList = 0xc3e
 RESOURCES = 1 i_crop_flower
 DEFNAME = i_dried_flowers_3
 
@@ -2394,7 +2394,7 @@ CATEGORY = Vegetation
 SUBSECTION = Dried Vegetation
 DESCRIPTION = Dried Onions
 
-//DUPELIST = 0c40 // commented out by Converter 
+DupeList = 0xc40
 RESOURCES = 1 i_crop_onion
 DEFNAME = i_dried_onions
 
@@ -2406,7 +2406,7 @@ CATEGORY = Vegetation
 SUBSECTION = Dried Vegetation
 DESCRIPTION = Dried Herbs
 
-//DUPELIST = 0c42 // commented out by Converter 
+DupeList = 0xc42
 RESOURCES = 1 i_crop_herb
 DEFNAME = i_dried_herbs
 
@@ -2418,7 +2418,7 @@ CATEGORY = Decoration - Signs
 SUBSECTION = Trade
 DESCRIPTION = BeeKeeper
 
-//DUPELIST = 0c44 // commented out by Converter 
+DupeList = 0xc44
 RESOURCES = 2 i_board, 1 i_ingot_iron
 DEFNAME = i_sign_beekeeper
 
@@ -2430,7 +2430,7 @@ CATEGORY = Vegetation
 SUBSECTION = Plants and Flowers
 DESCRIPTION = Flowers
 
-//DUPELIST = 0c46,0c47,0c48,0c49,0c4a,0c4b,0c4c,0c4d,0c4e // commented out by Converter 
+DupeList = 0xc46,0xc47,0xc48,0xc49,0xc4a,0xc4b,0xc4c,0xc4d,0xc4e
 DEFNAME = i_crop_flower_3
 
 [ItemDef 0xc46]
@@ -2466,7 +2466,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Cotton Plant
 
 TYPE = T_CROPS
-//DUPELIST = 0c50 // commented out by Converter 
+DupeList = 0xc50
 //TDATA1 = i_crop_cotton1 // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
 //TDATA3 = i_COTTON // commented out by Converter 
@@ -2481,7 +2481,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Cotton Plant Uprooted
 
 TYPE = T_CROPS
-//DUPELIST = 0c52 // commented out by Converter 
+DupeList = 0xc52
 //TDATA1 = i_crop_cotton1 // commented out by Converter 
 //TDATA2 = i_crop_cotton2 // commented out by Converter 
 DEFNAME = i_crop_cotton1
@@ -2491,7 +2491,7 @@ DUPEITEM = i_crop_cotton1
 
 [ItemDef 0xc53]
 TYPE = T_CROPS
-//DUPELIST = 0c54 // commented out by Converter 
+DupeList = 0xc54
 //TDATA1 = i_crop_cotton1 // commented out by Converter 
 //TDATA2 = i_crop_cotton // commented out by Converter 
 DEFNAME = i_crop_cotton2
@@ -2505,7 +2505,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Wheat
 
 TYPE = T_CROPS
-//DUPELIST = 0c56 // commented out by Converter 
+DupeList = 0xc56
 //TDATA1 = i_crop_WHEAT1 // commented out by Converter 
 //TDATA2 = i_crop_WHEAT4 // commented out by Converter 
 DEFNAME = i_crop_wheat3
@@ -2519,7 +2519,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Wheat
 
 TYPE = T_CROPS
-//DUPELIST = 0c59 // commented out by Converter 
+DupeList = 0xc59
 //TDATA1 = i_crop_WHEAT1 // commented out by Converter 
 //TDATA2 = i_crop_WHEAT // commented out by Converter 
 DEFNAME = i_crop_wheat4
@@ -2537,7 +2537,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Wheat
 
 TYPE = T_CROPS
-//DUPELIST = 0c58,0c5b // commented out by Converter 
+DupeList = 0xc58,0xc5b
 //TDATA1 = i_crop_WHEAT1 // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
 //TDATA3 = i_wheat_sheaf // commented out by Converter 
@@ -2593,7 +2593,7 @@ DEFNAME = i_crop_turnip1
 
 [ItemDef 0xc62]
 TYPE = T_CROPS
-//DUPELIST = 0c63 // commented out by Converter 
+DupeList = 0xc63
 WEIGHT = 0.1
 //TDATA1 = i_crop_turnip1 // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
@@ -3022,7 +3022,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Grasses
 
 TYPE = T_GRASS
-//DUPELIST = 0cad,0cae,0caf,0cb0,0cb1,0cb2,0cb3,0cb4,0cb5,0cb6,0cb9,0cba,0cbb,0cbc,0cbd // commented out by Converter 
+DupeList = 0xcad,0xcae,0xcaf,0xcb0,0xcb1,0xcb2,0xcb3,0xcb4,0xcb5,0xcb6,0xcb9,0xcba,0xcbb,0xcbc,0xcbd
 DEFNAME = i_plant_grasses
 //VALUE = 1 // commented out by Converter 
 
@@ -3062,7 +3062,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Cattails
 
 TYPE = t_grass
-//DUPELIST = 0cb8 // commented out by Converter 
+DupeList = 0xcb8
 DEFNAME = i_plant_cattails
 //VALUE = 1 // commented out by Converter 
 
@@ -3699,7 +3699,7 @@ CATEGORY = Vegetation
 SUBSECTION = Mushrooms
 DESCRIPTION = @
 
-//DUPELIST = 0d0d,0d0e,0d0f,0d10,0d11,0d12,0d13,0d14,0d15,0d16,0d17,0d18,0d19 // commented out by Converter 
+DupeList = 0xd0d,0xd0e,0xd0f,0xd10,0xd11,0xd12,0xd13,0xd14,0xd15,0xd16,0xd17,0xd18,0xd19
 DEFNAME = i_crop_mushroom
 //VALUE = 1 // commented out by Converter 
 
@@ -3751,7 +3751,7 @@ SUBSECTION = Fruits and Vegetables
 DESCRIPTION = Grapevines
 
 TYPE = t_crops
-//DUPELIST = 0d1c,0d1d,0d1e,0d1f,0d20,0d21,0d22,0d23,0d24 // commented out by Converter 
+DupeList = 0xd1c,0xd1d,0xd1e,0xd1f,0xd20,0xd21,0xd22,0xd23,0xd24
 //TDATA1 = i_crop_grapevine // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
 //TDATA3 = i_fruit_grapes // commented out by Converter 
@@ -3937,7 +3937,7 @@ CATEGORY = Vegetation
 SUBSECTION = Trees
 DESCRIPTION = Yucca
 
-//DUPELIST = 0d38 // commented out by Converter 
+DupeList = 0xd38
 DEFNAME = i_plant_yucca
 //VALUE = 1 // commented out by Converter 
 
@@ -3950,7 +3950,7 @@ SUBSECTION = Fruits and Vegetables
 DESCRIPTION = Turnip
 
 TYPE = T_FRUIT
-//DUPELIST = 0d3a // commented out by Converter 
+DupeList = 0xd3a
 WEIGHT = 1
 //TDATA1 = i_crop_turnip1 // commented out by Converter 
 DEFNAME = i_fruit_turnip
@@ -3964,7 +3964,7 @@ CATEGORY = Vegetation
 SUBSECTION = Plants and Flowers
 DESCRIPTION = Brambles
 
-//DUPELIST = 0d40 // commented out by Converter 
+DupeList = 0xd40
 DEFNAME = i_plant_bramble
 //VALUE = 1 // commented out by Converter 
 
@@ -4964,7 +4964,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Wheat
 
 TYPE = t_crops
-//DUPELIST = 0daf // commented out by Converter 
+DupeList = 0xdaf
 //TDATA1 = i_crop_wheat1 // commented out by Converter 
 //TDATA2 = i_crop_wheat3 // commented out by Converter 
 DEFNAME = i_crop_wheat2
@@ -4981,7 +4981,7 @@ SUBSECTION = Fisherman
 DESCRIPTION = Small Fish
 
 TYPE = t_fish
-//DUPELIST = 0dd7,0dd8,0dd9 // commented out by Converter 
+DupeList = 0xdd7,0xdd8,0xdd9
 WEIGHT = 1
 DEFNAME = i_fish_small
 //VALUE = 2 // commented out by Converter 
@@ -5001,7 +5001,7 @@ SUBSECTION = Moongates
 DESCRIPTION = Red Moongate (Animated)
 
 TYPE = t_telepad
-//DUPELIST = 0ddb,0ddc,0ddd,0dde // commented out by Converter 
+DupeList = 0xddb,0xddc,0xddd,0xdde
 RESOURCES = 1 i_scroll_gate_travel //some resources were fixed by converter 
 DEFNAME = i_moongate_red
 
@@ -5023,7 +5023,7 @@ SUBSECTION = Campfires
 DESCRIPTION = Campfire
 
 TYPE = T_CAMPFIRE
-//DUPELIST = 0de4,0de5,0de6,0de7,0de8 // commented out by Converter 
+DupeList = 0xde4,0xde5,0xde6,0xde7,0xde8
 RESOURCES = 1 i_kindling //some resources were fixed by converter 
 DEFNAME = i_campfire
 

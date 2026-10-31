@@ -434,7 +434,26 @@ namespace SteamEngine {
 		}
 
 		public void Flip() {
-			this.Model = this.TypeDef.GetNextFlipModel(this.Model);
+			this.Flip(null);
+		}
+
+		/// <summary>#938 - Sphere's FLIP on an item. Which of its forms applies depends on the item, see Item.Flip.</summary>
+		public virtual void Flip(string command) {
+			this.FlipToNextModel();
+		}
+
+		internal protected void FlipToNextModel() {
+			int next = this.TypeDef.GetNextFlipModel(this.Model);
+			if (next != this.Model) {
+				this.Model = next;
+			}
+		}
+
+		/// <summary>#938 - Sphere's IsMovableType, for what flips when dropped.</summary>
+		public virtual bool IsMovableType {
+			get {
+				return !this.Flag_NonMovable;
+			}
 		}
 
 		public new static void RegisterTriggerGroup(TriggerGroup tg) {

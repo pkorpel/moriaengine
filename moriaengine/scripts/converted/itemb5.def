@@ -212,7 +212,7 @@ CATEGORY = Decoration - Curtains
 SUBSECTION = Single White
 DESCRIPTION = @
 
-//DUPELIST = 0159f // commented out by Converter 
+DupeList = 0x159f
 WEIGHT = 3
 RESOURCES = 1 i_log, 1 i_board, 1 i_cloth, 1 i_thread, 1 i_nails
 DEFNAME = i_curtain_banner_nw
@@ -1000,7 +1000,7 @@ CATEGORY = Decoration - Curtains
 SUBSECTION = Small White
 DESCRIPTION = @
 
-//DUPELIST = 015f7 // commented out by Converter 
+DupeList = 0x15f7
 WEIGHT = 1
 RESOURCES = 1 i_cloth
 DEFNAME = i_plain_white_curtain
@@ -1013,7 +1013,7 @@ CATEGORY = Decoration - Curtains
 SUBSECTION = Single Red
 DESCRIPTION = @
 
-//DUPELIST = 0160e // commented out by Converter 
+DupeList = 0x160e
 WEIGHT = 2
 RESOURCES = 2 i_cloth, 1 i_thread
 DEFNAME = i_single_red_curtain
@@ -1395,7 +1395,7 @@ CATEGORY = Decoration - Curtains
 SUBSECTION = Small Red
 DESCRIPTION = @
 
-//DUPELIST = 01639 // commented out by Converter 
+DupeList = 0x1639
 WEIGHT = 1
 RESOURCES = 1 i_cloth
 DEFNAME = i_CURTAIN_PLAIN_RED
@@ -1408,7 +1408,7 @@ CATEGORY = Decoration - Miscellaneous
 SUBSECTION = Ninos Sign
 DESCRIPTION = @
 
-//DUPELIST = 0163e,0163f // commented out by Converter 
+DupeList = 0x163e,0x163f
 WEIGHT = 7
 RESOURCES = 6 i_board, 1 i_nails, 20 i_reag_blood_moss, 1 i_glass
 DEFNAME = i_SIGN_NINOS
@@ -1446,7 +1446,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Catapults
 DESCRIPTION = Catapult 01
 
-//DUPELIST = 01649,0164a,0164b,0164c,0164d,0164e,0164f,01650,01651,01652,01653,01654,01655,01656,01657,01658,01659,0165a,0165b,0165c,0165d,0165e,0165f,01660,01661,01662 // commented out by Converter 
+DupeList = 0x1649,0x164a,0x164b,0x164c,0x164d,0x164e,0x164f,0x1650,0x1651,0x1652,0x1653,0x1654,0x1655,0x1656,0x1657,0x1658,0x1659,0x165a,0x165b,0x165c,0x165d,0x165e,0x165f,0x1660,0x1661,0x1662
 WEIGHT = 40
 RESOURCES = 28 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 2 i_rope
 DEFNAME = i_catapult_1
@@ -1530,7 +1530,7 @@ DUPEITEM = i_catapult_1
 DUPEITEM = i_catapult_1
 
 [ItemDef 0x1663]
-//DUPELIST = 01664,01665,01666 // commented out by Converter 
+DupeList = 0x1664,0x1665,0x1666
 
 [ItemDef 0x1664]
 DUPEITEM = 0x1663
@@ -1546,7 +1546,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Catapults
 DESCRIPTION = Catapult 02
 
-//DUPELIST = 01673,01674,01675,01676,01677,01678,01679,0167a,0167b,0167c,0167d,0167e,0167f,01680,01681,01682,01683,01684,01685,01686,01687,01688,01689,0168a,0168b,0168c // commented out by Converter 
+DupeList = 0x1673,0x1674,0x1675,0x1676,0x1677,0x1678,0x1679,0x167a,0x167b,0x167c,0x167d,0x167e,0x167f,0x1680,0x1681,0x1682,0x1683,0x1684,0x1685,0x1686,0x1687,0x1688,0x1689,0x168a,0x168b,0x168c
 WEIGHT = 40
 RESOURCES = 28 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 2 i_rope
 DEFNAME = i_catapult_2
@@ -1630,7 +1630,7 @@ DUPEITEM = i_catapult_2
 DUPEITEM = i_catapult_2
 
 [ItemDef 0x168d]
-//DUPELIST = 0168e,0168f,01690 // commented out by Converter 
+DupeList = 0x168e,0x168f,0x1690
 
 [ItemDef 0x168e]
 DUPEITEM = 0x168d
@@ -1646,7 +1646,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Catapults
 DESCRIPTION = Catapult 03
 
-//DUPELIST = 01695,01696,01697,01698,01699,0169a,0169b,0169c,0169d,0169e,0169f,016a0,016a1,016a2,016a3,016a4,016a5,016a6,016a7,016a8,016a9,016aa,016ab,016ac,016ad,016ae,016af,016b0,016b4 // commented out by Converter 
+DupeList = 0x1695,0x1696,0x1697,0x1698,0x1699,0x169a,0x169b,0x169c,0x169d,0x169e,0x169f,0x16a0,0x16a1,0x16a2,0x16a3,0x16a4,0x16a5,0x16a6,0x16a7,0x16a8,0x16a9,0x16aa,0x16ab,0x16ac,0x16ad,0x16ae,0x16af,0x16b0,0x16b4
 WEIGHT = 40
 RESOURCES = 28 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 2 i_rope
 DEFNAME = i_catapult_3
@@ -1736,7 +1736,7 @@ DUPEITEM = i_catapult_3
 DUPEITEM = i_catapult_3
 
 [ItemDef 0x16b1]
-//DUPELIST = 016b2,016b3 // commented out by Converter 
+DupeList = 0x16b2,0x16b3
 
 [ItemDef 0x16b2]
 DUPEITEM = 0x16b1
@@ -1752,7 +1752,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Catapults
 DESCRIPTION = Catapult 04
 
-//DUPELIST = 016ba,016bb,016bc,016bd,016be,016bf,016c0,016c1,016c2,016c3,016c4,016c5,016c6,016c7,016c8,016c9,016ca,016cb,016cc,016cd,016ce,016cf,016d0,016d1,016d2,016d3,016d4,016d5,016d9 // commented out by Converter 
+DupeList = 0x16ba,0x16bb,0x16bc,0x16bd,0x16be,0x16bf,0x16c0,0x16c1,0x16c2,0x16c3,0x16c4,0x16c5,0x16c6,0x16c7,0x16c8,0x16c9,0x16ca,0x16cb,0x16cc,0x16cd,0x16ce,0x16cf,0x16d0,0x16d1,0x16d2,0x16d3,0x16d4,0x16d5,0x16d9
 WEIGHT = 40
 RESOURCES = 28 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 2 i_rope
 DEFNAME = i_catapult_4
@@ -1842,7 +1842,7 @@ DUPEITEM = i_catapult_4
 DUPEITEM = i_catapult_4
 
 [ItemDef 0x16d6]
-//DUPELIST = 016d7,016d8 // commented out by Converter 
+DupeList = 0x16d7,0x16d8
 
 [ItemDef 0x16d7]
 DUPEITEM = 0x16d6
@@ -1858,7 +1858,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Ballista
 DESCRIPTION = Ballista 2
 
-//DUPELIST = 016f9,016fa,016fb,016fc,016fd,016fe,016ff,01700,01701,01702,01703,01704,01705,01706,01707,01708 // commented out by Converter 
+DupeList = 0x16f9,0x16fa,0x16fb,0x16fc,0x16fd,0x16fe,0x16ff,0x1700,0x1701,0x1702,0x1703,0x1704,0x1705,0x1706,0x1707,0x1708
 WEIGHT = 40
 RESOURCES = 18 i_board, 5 i_log, 2 i_nails, 1 i_ingot_iron, 8 i_rope
 DEFNAME = i_ballista_1
@@ -1916,7 +1916,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Fountains
 DESCRIPTION = Fountain 01
 
-//DUPELIST = 01732,01733,01734,01735,01736,01737,01738,01739,0173a,0173b,0173c,0173d,0173e,0173f,01740,01741,01742,01743,01744,01745,01746,01747,01748,01749,0174a,0174b,0174c,0174d,0174e,0174f,01750,01751,01752,01753,01754,01755,01756,01757,01758,01759,0175a // commented out by Converter 
+DupeList = 0x1732,0x1733,0x1734,0x1735,0x1736,0x1737,0x1738,0x1739,0x173a,0x173b,0x173c,0x173d,0x173e,0x173f,0x1740,0x1741,0x1742,0x1743,0x1744,0x1745,0x1746,0x1747,0x1748,0x1749,0x174a,0x174b,0x174c,0x174d,0x174e,0x174f,0x1750,0x1751,0x1752,0x1753,0x1754,0x1755,0x1756,0x1757,0x1758,0x1759,0x175a
 WEIGHT = 140
 RESOURCES = 100 i_rock_plain, 40 i_water, 1 i_springs
 DEFNAME = i_fountain_1
@@ -2074,7 +2074,7 @@ SUBSECTION = Tailor
 DESCRIPTION = Cut Cloth
 
 TYPE = T_CLOTH
-//DUPELIST = 01768 // commented out by Converter 
+DupeList = 0x1768
 WEIGHT = 1
 RESOURCES = 1 i_cloth
 DEFNAME = i_cloth_cut_1
@@ -2098,7 +2098,7 @@ SUBSECTION = Rocks
 DESCRIPTION = @
 
 TYPE = T_AROCK
-//DUPELIST = 01772,01773,01774,01775,01776,01777,01778,01779,0177a,0177b,0177c // commented out by Converter 
+DupeList = 0x1772,0x1773,0x1774,0x1775,0x1776,0x1777,0x1778,0x1779,0x177a,0x177b,0x177c
 WEIGHT = 350
 
 [ItemDef 0x1772]
@@ -2140,7 +2140,7 @@ SUBSECTION = Grass
 DESCRIPTION = @
 
 TYPE = T_GRASS
-//DUPELIST = 0177e,0177f,01780,01781,01782,01783,01784,01785,01786,01787,01788,01789 // commented out by Converter 
+DupeList = 0x177e,0x177f,0x1780,0x1781,0x1782,0x1783,0x1784,0x1785,0x1786,0x1787,0x1788,0x1789
 
 [ItemDef 0x177e]
 DUPEITEM = 0x177d
@@ -2267,7 +2267,7 @@ CATEGORY = Ground Tiles
 SUBSECTION = Snow
 DESCRIPTION = @
 
-//DUPELIST = 017be,017bf,017c0,017c1,017c2,017c3,017c4,017c5,017c6,017c7,017c8,017c9,017ca,017cb,017cc,017cd,017ce // commented out by Converter 
+DupeList = 0x17be,0x17bf,0x17c0,0x17c1,0x17c2,0x17c3,0x17c4,0x17c5,0x17c6,0x17c7,0x17c8,0x17c9,0x17ca,0x17cb,0x17cc,0x17cd,0x17ce
 RESOURCES = 1 i_water
 DEFNAME = i_snow
 
@@ -2328,7 +2328,7 @@ SUBSECTION = Teleporter
 DESCRIPTION = @
 
 TYPE = T_TELEPAD
-//DUPELIST = 017d0,017d1,017d2,017d3,017d4,017d5,017d6,017d7,017d8,017d9,017da,017db,017dc,017dd,017de,017df,017e0,017e1,017e2,017e3,017e4,017e5,017e6,017e7,017e8,017e9,017ea,017eb,017ec,017ed,017ee,017ef,017f0,017f1,017f2,017fc,017fd,017fe,017ff,01800,01801,01802,01803,01804,01805,01806,01807,01808,01809,0180a,0180b,0180c,0180d // commented out by Converter 
+DupeList = 0x17d0,0x17d1,0x17d2,0x17d3,0x17d4,0x17d5,0x17d6,0x17d7,0x17d8,0x17d9,0x17da,0x17db,0x17dc,0x17dd,0x17de,0x17df,0x17e0,0x17e1,0x17e2,0x17e3,0x17e4,0x17e5,0x17e6,0x17e7,0x17e8,0x17e9,0x17ea,0x17eb,0x17ec,0x17ed,0x17ee,0x17ef,0x17f0,0x17f1,0x17f2,0x17fc,0x17fd,0x17fe,0x17ff,0x1800,0x1801,0x1802,0x1803,0x1804,0x1805,0x1806,0x1807,0x1808,0x1809,0x180a,0x180b,0x180c,0x180d
 WEIGHT = 60
 RESOURCES = 60 i_board, 1 i_nails
 DEFNAME = i_teleporter
@@ -2540,7 +2540,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Heating stand
 
 TYPE = t_light_lit
-//DUPELIST = 0184b,0184c,0184e,0184f,01850 // commented out by Converter 
+DupeList = 0x184b,0x184c,0x184e,0x184f,0x1850
 WEIGHT = 3
 RESOURCES = 1 i_heating_stand //some resources were fixed by converter 
 //TDATA3 = i_heating_stand // commented out by Converter 
@@ -2572,7 +2572,7 @@ SUBSECTION = Candles
 DESCRIPTION = Skull Candle (Lit)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 01855,01856,01858,01859,0185a // commented out by Converter 
+DupeList = 0x1855,0x1856,0x1858,0x1859,0x185a
 WEIGHT = 4
 RESOURCES = 1 i_skull_candle //some resources were fixed by converter 
 //TDATA3 = i_skull_candle // commented out by Converter 
@@ -2603,7 +2603,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Dishing Stump
 
-//DUPELIST = 01866 // commented out by Converter 
+DupeList = 0x1866
 WEIGHT = 10
 RESOURCES = 1 i_tree_stump
 DEFNAME = i_dishing_stump
@@ -2680,7 +2680,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Butcher
 DESCRIPTION = Beef Carcass
 
-//DUPELIST = 01872 // commented out by Converter 
+DupeList = 0x1872
 WEIGHT = 20
 DEFNAME = i_CARCASS_BEEF
 //VALUE = 14 // commented out by Converter 
@@ -2693,7 +2693,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Butcher
 DESCRIPTION = Sheep Carcass
 
-//DUPELIST = 01874 // commented out by Converter 
+DupeList = 0x1874
 WEIGHT = 10
 DEFNAME = i_CARCASS_OTHER
 //VALUE = 14 // commented out by Converter 
@@ -2734,7 +2734,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Baker
 DESCRIPTION = Millstone
 
-//DUPELIST = 01884,01885,01886,01887,01888,01889,0188a // commented out by Converter 
+DupeList = 0x1884,0x1885,0x1886,0x1887,0x1888,0x1889,0x188a
 WEIGHT = 10
 RESOURCES = 10 i_rock_plain
 DEFNAME = i_millstone
@@ -2786,7 +2786,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Mandrake Root (Plant Form)
 
 TYPE = t_reagent_raw
-//DUPELIST = 018de // commented out by Converter 
+DupeList = 0x18de
 //TDATA1 = i_crop_mandrake // commented out by Converter 
 DEFNAME = i_fruit_mandrake
 //VALUE = 1 // commented out by Converter 
@@ -2800,8 +2800,8 @@ SUBSECTION = Alchemist
 DESCRIPTION = Mandrake Root (Plant Form)
 
 TYPE = T_CROPS
-//DUPELIST = 018e0 // commented out by Converter 
-//FLIP = 1 // commented out by Converter 
+DupeList = 0x18e0
+Flippable = true
 //TDATA1 = i_crop_mandrake // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
 //TDATA3 = i_fruit_mandrake // commented out by Converter 
@@ -2817,7 +2817,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Garlic (Plant Form)
 
 TYPE = T_CROPS
-//DUPELIST = 018e2 // commented out by Converter 
+DupeList = 0x18e2
 //TDATA1 = i_crop_garlic // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
 //TDATA3 = i_fruit_garlic // commented out by Converter 
@@ -2842,7 +2842,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Nightshade (Plant Form)
 
 TYPE = T_CROPS
-//DUPELIST = 018e6 // commented out by Converter 
+DupeList = 0x18e6
 //TDATA1 = i_crop_nightshade // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
 //TDATA2 = i_fruit_nightshade // commented out by Converter 
@@ -2858,7 +2858,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Nightshade (Plant Form)
 
 TYPE = t_reagent_raw
-//DUPELIST = 018e8 // commented out by Converter 
+DupeList = 0x18e8
 //TDATA1 = i_crop_nightshade // commented out by Converter 
 DEFNAME = i_fruit_nightshade
 //VALUE = 1 // commented out by Converter 
@@ -2872,7 +2872,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Ginseng (Plant Form)
 
 TYPE = T_CROPS
-//DUPELIST = 018ea // commented out by Converter 
+DupeList = 0x18ea
 //TDATA1 = i_crop_ginseng // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
 //TDATA3 = i_fruit_ginseng // commented out by Converter 
@@ -2888,7 +2888,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Ginseng (Plant Form)
 
 TYPE = t_reagent_raw
-//DUPELIST = 018ec // commented out by Converter 
+DupeList = 0x18ec
 //TDATA1 = i_crop_ginseng // commented out by Converter 
 DEFNAME = i_fruit_ginseng
 //VALUE = 1 // commented out by Converter 
@@ -2921,7 +2921,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Baker
 DESCRIPTION = Flour Mill
 
-//DUPELIST = 01921,01922,01923,01925,01926,01927,0192c,0192d,0192e,0192f,01931,01932,01933 // commented out by Converter 
+DupeList = 0x1921,0x1922,0x1923,0x1925,0x1926,0x1927,0x192c,0x192d,0x192e,0x192f,0x1931,0x1932,0x1933
 WEIGHT = 40
 RESOURCES = 1 i_millstone, 4 i_log, 2 i_nails, 20 i_board, 20 i_grain_loose, 1 i_flour_mill_crank
 DEFNAME = i_flour_mill
@@ -3006,7 +3006,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Baker
 DESCRIPTION = Flour Mill (Crank)
 
-//DUPELIST = 01934,01935,01936,01937 // commented out by Converter 
+DupeList = 0x1934,0x1935,0x1936,0x1937
 WEIGHT = 2
 RESOURCES = 2 i_ingot_iron
 DEFNAME = i_flour_mill_crank_6
@@ -3038,7 +3038,7 @@ SUBSECTION = Stone Roof Tile
 DESCRIPTION = @
 
 TYPE = t_roof
-//DUPELIST = 0193a,0193b,0193c,0193d,0193e // commented out by Converter 
+DupeList = 0x193a,0x193b,0x193c,0x193d,0x193e
 WEIGHT = 5
 RESOURCES = 5 i_rock_plain
 DEFNAME = i_ROOF_STONE_tile
@@ -3687,7 +3687,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Fountains
 DESCRIPTION = Fountain 02
 
-//DUPELIST = 019c4,019c5,019c6,019c7,019c8,019c9,019ca,019cb,019cc,019cd,019ce,019cf,019d0,019d1,019d2,019d3,019d4,019d5,019d6,019d7,019d8,019d9,019da,019db,019dc,019dd,019de,019df,019e0,019e1,019e2,019e3,019e4,019e5,019e6,019e7,019e8,019e9,019ea,019eb,019ec // commented out by Converter 
+DupeList = 0x19c4,0x19c5,0x19c6,0x19c7,0x19c8,0x19c9,0x19ca,0x19cb,0x19cc,0x19cd,0x19ce,0x19cf,0x19d0,0x19d1,0x19d2,0x19d3,0x19d4,0x19d5,0x19d6,0x19d7,0x19d8,0x19d9,0x19da,0x19db,0x19dc,0x19dd,0x19de,0x19df,0x19e0,0x19e1,0x19e2,0x19e3,0x19e4,0x19e5,0x19e6,0x19e7,0x19e8,0x19e9,0x19ea,0x19eb,0x19ec
 WEIGHT = 140
 RESOURCES = 100 i_stone_sand, 40 i_water, 1 i_springs
 DEFNAME = i_fountain_2
@@ -3820,7 +3820,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Skeletons
 DESCRIPTION = Skeleton (Boots)
 
-//DUPELIST = 01a02,01b7c,01b7d,01b7f,01b80 // commented out by Converter 
+DupeList = 0x1a02,0x1b7c,0x1b7d,0x1b7f,0x1b80
 WEIGHT = 42
 RESOURCES = 1 i_skeleton_hang, 1 i_boots_calf //some resources were fixed by converter 
 //TDATA1 = i_skeleton_hang // commented out by Converter 
@@ -3834,7 +3834,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Skeletons
 DESCRIPTION = Skeleton
 
-//DUPELIST = 01a04 // commented out by Converter 
+DupeList = 0x1a04
 RESOURCES = 1 i_shackles_hanging, 1 i_skeleton //some resources were fixed by converter 
 DEFNAME = i_skeleton_hang
 
@@ -3842,7 +3842,7 @@ DEFNAME = i_skeleton_hang
 DUPEITEM = i_skeleton_hang
 
 [ItemDef 0x1a05]
-//DUPELIST = 01a06 // commented out by Converter 
+DupeList = 0x1a06
 RESOURCES = 1 i_shackles_hanging //some resources were fixed by converter 
 DEFNAME = i_skeleton_hang2
 
@@ -3856,7 +3856,7 @@ DUPEITEM = i_SHACKLES_HANGING
 DUPEITEM = i_SHACKLES_HANGING
 
 [ItemDef 0x1a09]
-//DUPELIST = 01a0a // commented out by Converter 
+DupeList = 0x1a0a
 RESOURCES = 1 i_shackles_hanging //some resources were fixed by converter 
 DEFNAME = i_skeleton_hang3
 
@@ -3869,7 +3869,7 @@ SUBSECTION = Lava
 DESCRIPTION = @
 
 TYPE = t_fire
-//DUPELIST = 012f0,01a1a,01a1b,01a1c,01a1d,01a47,01a48,01a49,01a4a,01a4b // commented out by Converter 
+DupeList = 0x12f0,0x1a1a,0x1a1b,0x1a1c,0x1a1d,0x1a47,0x1a48,0x1a49,0x1a4a,0x1a4b
 DEFNAME = i_lava_falls
 //VALUE = 1 // commented out by Converter 
 
@@ -3887,7 +3887,7 @@ DUPEITEM = i_lava_falls
 
 [ItemDef 0x1a1e]
 TYPE = t_lava
-//DUPELIST = 01a1f,01a20,01a21,01a22,01a23,01a24,01a25,01a26,01a27,01a28,01a29,01a2a,01a2b,01a2c,01a2d,01a2e,01a2f,01a30,01a31,01a32,01a33,01a34,01a35,01a36,01a4c,01a4d,01a4e,01a4f,01a50,01a51,01a52,01a53,01a54,01a55,01a56,01a57,01a58,01a59,01a5a,01a5b,01a5c,01a5d,01a5e,01a5f,01a60,01a61,01a62,01a63,01a64 // commented out by Converter 
+DupeList = 0x1a1f,0x1a20,0x1a21,0x1a22,0x1a23,0x1a24,0x1a25,0x1a26,0x1a27,0x1a28,0x1a29,0x1a2a,0x1a2b,0x1a2c,0x1a2d,0x1a2e,0x1a2f,0x1a30,0x1a31,0x1a32,0x1a33,0x1a34,0x1a35,0x1a36,0x1a4c,0x1a4d,0x1a4e,0x1a4f,0x1a50,0x1a51,0x1a52,0x1a53,0x1a54,0x1a55,0x1a56,0x1a57,0x1a58,0x1a59,0x1a5a,0x1a5b,0x1a5c,0x1a5d,0x1a5e,0x1a5f,0x1a60,0x1a61,0x1a62,0x1a63,0x1a64
 DEFNAME = i_lava_wall
 
 [ItemDef 0x1a1f]
@@ -3964,7 +3964,7 @@ DUPEITEM = i_lava_wall
 
 [ItemDef 0x1a37]
 TYPE = t_lava
-//DUPELIST = 01a38,01a39,01a3a,01a3b,01a3c,01a3d,01a3e,01a3f,01a40,01a41,01a42,01a43,01a44,01a45,01a46,01a65,01a66,01a67,01a68,01a69,01a6a,01a6b,01a6c,01a6d,01a6e,01a6f,01a70,01a71,01a72,01a73,01a74 // commented out by Converter 
+DupeList = 0x1a38,0x1a39,0x1a3a,0x1a3b,0x1a3c,0x1a3d,0x1a3e,0x1a3f,0x1a40,0x1a41,0x1a42,0x1a43,0x1a44,0x1a45,0x1a46,0x1a65,0x1a66,0x1a67,0x1a68,0x1a69,0x1a6a,0x1a6b,0x1a6c,0x1a6d,0x1a6e,0x1a6f,0x1a70,0x1a71,0x1a72,0x1a73,0x1a74
 DEFNAME = i_lava_base
 
 [ItemDef 0x1a38]
@@ -4155,7 +4155,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Blacksmiths
 DESCRIPTION = Ore Cart
 
-//DUPELIST = 01a83,01a86,01a87,01a88,01a8b // commented out by Converter 
+DupeList = 0x1a83,0x1a86,0x1a87,0x1a88,0x1a8b
 WEIGHT = 6
 RESOURCES = 2 i_log, 2 i_board, 1 i_nails
 DEFNAME = i_CART_ORE_ne_1
@@ -4199,7 +4199,7 @@ SUBSECTION = StableMaster
 DESCRIPTION = Hay
 
 TYPE = T_CROPS
-//DUPELIST = 01a94 // commented out by Converter 
+DupeList = 0x1a94
 //TDATA1 = i_crop_hay1 // commented out by Converter 
 //TDATA2 = i_crop_hay // commented out by Converter 
 DEFNAME = i_crop_hay2
@@ -4213,7 +4213,7 @@ SUBSECTION = StableMaster
 DESCRIPTION = Hay
 
 TYPE = T_CROPS
-//DUPELIST = 01a96 // commented out by Converter 
+DupeList = 0x1a96
 //TDATA1 = i_crop_hay1 // commented out by Converter 
 //TDATA2 = i_crop_hay2 // commented out by Converter 
 DEFNAME = i_crop_hay1
@@ -4227,7 +4227,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Flax
 
 TYPE = T_CROPS
-//DUPELIST = 01a9a // commented out by Converter 
+DupeList = 0x1a9a
 WEIGHT = 1
 //TDATA1 = i_crop_flax1 // commented out by Converter 
 //TDATA2 = i_crop_flax // commented out by Converter 
@@ -4254,7 +4254,7 @@ CATEGORY = Vegetation
 SUBSECTION = Plants and Flowers
 DESCRIPTION = Flax
 
-//DUPELIST = 01a9d // commented out by Converter 
+DupeList = 0x1a9d
 WEIGHT = 2
 DEFNAME = i_flax_bundle
 //VALUE = 2 // commented out by Converter 
@@ -4268,7 +4268,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Hops
 
 TYPE = T_CROPS
-//DUPELIST = 01aa0 // commented out by Converter 
+DupeList = 0x1aa0
 WEIGHT = 4
 //TDATA1 = i_crop_hops1 // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
@@ -4281,7 +4281,7 @@ SUBSECTION = Plants and Flowers
 DESCRIPTION = Hops
 
 TYPE = T_CROPS
-//DUPELIST = 01aa1 // commented out by Converter 
+DupeList = 0x1aa1
 WEIGHT = 4
 //TDATA1 = i_crop_hops1 // commented out by Converter 
 //TDATA2 = i_crop_hops // commented out by Converter 
@@ -4307,7 +4307,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Lighthouse
 DESCRIPTION = Lighthouse
 
-//DUPELIST = 01aa5,01aa6,01aa7,01aa8,01aa9,01aaa,01aab,01aac,01aad,01aae,01aaf,01ab0,01ab1,01ab2,01ab3,01ab4,01ab5,01ab6,01ab7,01ab8,01ab9,01aba,01abb,01abc,01abd,01abe,01abf,01ac0,01ac1,01ac2,01ac3,01ac4,01ac5,01ac6,01ac7,01ac8,01ac9,01aca,01acb,01acc,01acd,01ace,01acf,01ad0,01ad1,01ad2 // commented out by Converter 
+DupeList = 0x1aa5,0x1aa6,0x1aa7,0x1aa8,0x1aa9,0x1aaa,0x1aab,0x1aac,0x1aad,0x1aae,0x1aaf,0x1ab0,0x1ab1,0x1ab2,0x1ab3,0x1ab4,0x1ab5,0x1ab6,0x1ab7,0x1ab8,0x1ab9,0x1aba,0x1abb,0x1abc,0x1abd,0x1abe,0x1abf,0x1ac0,0x1ac1,0x1ac2,0x1ac3,0x1ac4,0x1ac5,0x1ac6,0x1ac7,0x1ac8,0x1ac9,0x1aca,0x1acb,0x1acc,0x1acd,0x1ace,0x1acf,0x1ad0,0x1ad1,0x1ad2
 WEIGHT = 156
 RESOURCES = 66 i_stone_sand, 24 i_glass
 DEFNAME = i_lighthouse
@@ -4455,7 +4455,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Birds Nest
 DESCRIPTION = @
 
-//DUPELIST = 01ad5 // commented out by Converter 
+DupeList = 0x1ad5
 WEIGHT = 3
 RESOURCES = 8 i_straw, 3 i_egg
 DEFNAME = i_nest_with_eggs
@@ -4481,7 +4481,7 @@ SUBSECTION = Skeletons
 DESCRIPTION = Pile of Skulls
 
 TYPE = T_BONE
-//DUPELIST = 01ad9,01ada,01adb,01adc,01add,01ade,01adf // commented out by Converter 
+DupeList = 0x1ad9,0x1ada,0x1adb,0x1adc,0x1add,0x1ade,0x1adf
 WEIGHT = 180
 RESOURCES = 45 i_bone_skull
 DEFNAME = i_SKULL_PILE
@@ -4525,7 +4525,7 @@ SUBSECTION = Moongate Summoning (Red)
 DESCRIPTION = @
 
 TYPE = t_light_lit
-//DUPELIST = 01ae6,01ae7,01ae8,01ae9,01aea,01aeb,01aec,01aed // commented out by Converter 
+DupeList = 0x1ae6,0x1ae7,0x1ae8,0x1ae9,0x1aea,0x1aeb,0x1aec,0x1aed
 layer = 29 //Set by Converter 
 DEFNAME = i_moongate_red_fx
 //TDATA4 = i_moongate_red_fx // commented out by Converter 
@@ -4560,7 +4560,7 @@ SUBSECTION = Moongate Summoning (Blue)
 DESCRIPTION = @
 
 TYPE = t_light_lit
-//DUPELIST = 01af4,01af5,01af6,01af7,01af8,01af9,01afa,01afb // commented out by Converter 
+DupeList = 0x1af4,0x1af5,0x1af6,0x1af7,0x1af8,0x1af9,0x1afa,0x1afb
 layer = 29 //Set by Converter 
 DEFNAME = i_moongate_blue_fx
 //TDATA4 = 0 // commented out by Converter 
@@ -4594,7 +4594,7 @@ CATEGORY = Ground Tiles
 SUBSECTION = Floor Cracks
 DESCRIPTION = @
 
-//DUPELIST = 01b02,01b03,01b04,01b05,01b06,01b08 // commented out by Converter 
+DupeList = 0x1b02,0x1b03,0x1b04,0x1b05,0x1b06,0x1b08
 DEFNAME = i_floor_cracks
 
 [ItemDef 0x1b02]
@@ -4621,7 +4621,7 @@ SUBSECTION = Bones
 DESCRIPTION = Bone Pile
 
 TYPE = T_BONE
-//DUPELIST = 01b0a,01b0b,01b0c,01b0d,01b0e,01b0f,01b10 // commented out by Converter 
+DupeList = 0x1b0a,0x1b0b,0x1b0c,0x1b0d,0x1b0e,0x1b0f,0x1b10
 WEIGHT = 17
 RESOURCES = 12 i_bone, 5 i_bone_shards
 DEFNAME = i_bone_pile
@@ -4694,14 +4694,14 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Skeletons
 DESCRIPTION = Skeleton (Meat)
 
-//DUPELIST = 01b1e // commented out by Converter 
+DupeList = 0x1b1e
 WEIGHT = 50
 RESOURCES = 1 i_skeleton_boots, 1 i_flesh_torso, 1 i_flesh_right_leg, 1 i_flesh_left_leg //some resources were fixed by converter 
 //TDATA1 = i_skeleton_boots // commented out by Converter 
 DEFNAME = i_skeleton_flesh
 
 [ItemDef 0x1b1e]
-//DUPELIST = 01b1d // commented out by Converter 
+DupeList = 0x1b1d
 
 [ItemDef 0x1b20]
 DUPEITEM = i_leaves
@@ -4798,7 +4798,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Treasure
 DESCRIPTION = @
 
-//DUPELIST = 01b40,01b41,01b42,01b43,01b44,01b45,01b46,01b47,01b48,01b4a,01b4b,01b4c,01b4d,01b4e,01b4f,01b50,01b51,01b53,01b54,01b55,01b56,01b57,01b58,01b59,01b5a,01b5b,01b5c,01b5d,01b5f,01b60,01b61,01b62,01b63,01b64,01b65,01b66,01b67,01b68,01b69,01b6a,01b6b // commented out by Converter 
+DupeList = 0x1b40,0x1b41,0x1b42,0x1b43,0x1b44,0x1b45,0x1b46,0x1b47,0x1b48,0x1b4a,0x1b4b,0x1b4c,0x1b4d,0x1b4e,0x1b4f,0x1b50,0x1b51,0x1b53,0x1b54,0x1b55,0x1b56,0x1b57,0x1b58,0x1b59,0x1b5a,0x1b5b,0x1b5c,0x1b5d,0x1b5f,0x1b60,0x1b61,0x1b62,0x1b63,0x1b64,0x1b65,0x1b66,0x1b67,0x1b68,0x1b69,0x1b6a,0x1b6b
 WEIGHT = 200
 RESOURCES = 15000 i_gold, 50 t_gem
 DEFNAME = i_treasure
@@ -4932,7 +4932,7 @@ SUBSECTION = Wall Cracks
 DESCRIPTION = @
 
 TYPE = T_WALL
-//DUPELIST = 01b6d,01b6e,01b6f // commented out by Converter 
+DupeList = 0x1b6d,0x1b6e,0x1b6f
 DEFNAME = i_wall_cracks
 
 [ItemDef 0x1b6d]
@@ -4978,7 +4978,7 @@ CATEGORY = Vegetation
 SUBSECTION = Sticks and Wood
 DESCRIPTION = Wood Pile
 
-//DUPELIST = 01b82,01b83,01b84,01b85,01b86,01b87,01b88,01b89,01b8a,01b8b,01b8c,01b8d,01b8e,01b8f,01b90,01b91,01b92,01b93,01b97,01b98,01b99,01b9a // commented out by Converter 
+DupeList = 0x1b82,0x1b83,0x1b84,0x1b85,0x1b86,0x1b87,0x1b88,0x1b89,0x1b8a,0x1b8b,0x1b8c,0x1b8d,0x1b8e,0x1b8f,0x1b90,0x1b91,0x1b92,0x1b93,0x1b97,0x1b98,0x1b99,0x1b9a
 WEIGHT = 8
 DEFNAME = i_wood_pile
 //VALUE = 5 // commented out by Converter 
@@ -5099,7 +5099,7 @@ CATEGORY = Ground Tiles
 SUBSECTION = Refuse
 DESCRIPTION = @
 
-//DUPELIST = 01ba0,01ba1,01ba2,01ba3,01ba4,01ba5,01ba6,01ba7,01ba8,01ba9,01baa,01bab,01bac,01bad,01bae,01baf,01bb0,01bb1,01bb2,01bb4,01bb5,01bb6,01bb7,01bb8,01bb9,01bba,01bbb,01bbc,01bbd // commented out by Converter 
+DupeList = 0x1ba0,0x1ba1,0x1ba2,0x1ba3,0x1ba4,0x1ba5,0x1ba6,0x1ba7,0x1ba8,0x1ba9,0x1baa,0x1bab,0x1bac,0x1bad,0x1bae,0x1baf,0x1bb0,0x1bb1,0x1bb2,0x1bb4,0x1bb5,0x1bb6,0x1bb7,0x1bb8,0x1bb9,0x1bba,0x1bbb,0x1bbc,0x1bbd
 WEIGHT = 3
 DEFNAME = i_refuse
 
@@ -5195,7 +5195,7 @@ CATEGORY = Levers and Switches
 SUBSECTION = Stone Trigger
 DESCRIPTION = @
 
-//DUPELIST = 01bc0,01bc1 // commented out by Converter 
+DupeList = 0x1bc0,0x1bc1
 WEIGHT = 15
 RESOURCES = 3 i_rock_plain
 DEFNAME = i_TRIGGER_STONE_PLAIN
@@ -5222,7 +5222,7 @@ DESCRIPTION = Chaos Shield
 TYPE = t_shield
 WEIGHT = 1
 RESOURCES = 4 i_ingot_silver, 10 i_ingot_obsidian
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 0 // commented out by Converter 
 layer = 2 //Set by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
@@ -5238,10 +5238,10 @@ SUBSECTION = Shields
 DESCRIPTION = Order Shield
 
 TYPE = t_shield
-//DUPELIST = 01bc5 // commented out by Converter 
+DupeList = 0x1bc5
 WEIGHT = 1
 RESOURCES = 4 i_ingot_silver, 8 i_ingot_obsidian, 2 i_ingot_gold
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 0 // commented out by Converter 
 layer = 2 //Set by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
@@ -5402,7 +5402,7 @@ SUBSECTION = Virtue Items
 DESCRIPTION = Candle of Love
 
 TYPE = t_light_lit
-//DUPELIST = 01c15,01c16 // commented out by Converter 
+DupeList = 0x1c15,0x1c16
 WEIGHT = 5
 RESOURCES = 1 i_candle, 1 i_ingot_adamantinum //some resources were fixed by converter 
 layer = 2 //Set by Converter 
@@ -5420,7 +5420,7 @@ CATEGORY = Animations
 SUBSECTION = Oil Flask
 DESCRIPTION = @
 
-//DUPELIST = 01c1a,01c1b,01c1c,01c1d,01c1e,01c1f // commented out by Converter 
+DupeList = 0x1c1a,0x1c1b,0x1c1c,0x1c1d,0x1c1e,0x1c1f
 DEFNAME = i_fx_oil_flask
 
 [ItemDef 0x1c1a]
@@ -5446,7 +5446,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Casket
 DESCRIPTION = @
 
-//DUPELIST = 01c23,01c24,01c25,01c26,01c27,01c28,01c29,01c2a,01c2b,01c2c,01c2d,01c2e,01c2f,01c30,01c31,01c32,01c33,01c34,01c35,01c36,01c37,01c38,01c39,01c3a // commented out by Converter 
+DupeList = 0x1c23,0x1c24,0x1c25,0x1c26,0x1c27,0x1c28,0x1c29,0x1c2a,0x1c2b,0x1c2c,0x1c2d,0x1c2e,0x1c2f,0x1c30,0x1c31,0x1c32,0x1c33,0x1c34,0x1c35,0x1c36,0x1c37,0x1c38,0x1c39,0x1c3a
 WEIGHT = 32
 RESOURCES = 32 i_board, 2 i_nails, 3 i_cloth
 DEFNAME = i_casket_wood

@@ -486,13 +486,13 @@ namespace SteamEngine.CompiledScripts {
 
 		public override byte DirectionByte {
 			get {
-				return (byte) this.TypeDef.Light;
+				return (byte) this.Light;
 			}
 		}
 
 		public virtual LightType Light {
 			get {
-				return this.TypeDef.Light;
+				return (LightType) this.LightPattern;
 			}
 		}
 

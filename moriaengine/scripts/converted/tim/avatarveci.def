@@ -7,7 +7,7 @@ DESCRIPTION = Serpent Chair
 
 NAME = "Serpent Chair"
 TYPE = T_CHAIR
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_serpent_chair
 
@@ -23,7 +23,7 @@ DESCRIPTION = Skull Altar
 
 NAME = "Crystal Pillar"
 TYPE = T_NORMAL
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_crystal_pillar
 
@@ -43,7 +43,7 @@ DESCRIPTION = Ankh Amulet
 
 NAME = "Ankh Amulet"
 TYPE = T_JEWELRY
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_ankh_Amulet
 
@@ -54,7 +54,7 @@ DESCRIPTION = Sepent Amulet
 
 NAME = "Sepent Amulet"
 TYPE = T_JEWELRY
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_Sepent_Amulet
 
@@ -64,7 +64,7 @@ SUBSECTION = Necromancer
 DESCRIPTION = Blue Skull pillar
 
 NAME = "Blue Skull pillar"
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_b_s_pillar
 
@@ -83,7 +83,7 @@ SUBSECTION = Necromancer
 DESCRIPTION = Rune Pillar
 
 NAME = "Rune Pillar"
-//DUPELIST = 003a4 // commented out by Converter 
+DupeList = 0x3a4
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_r_pillar_x1
 
@@ -93,7 +93,7 @@ SUBSECTION = Necromancer
 DESCRIPTION = Rune Pillar
 
 NAME = "Rune Pillar"
-//DUPELIST = 003b1 // commented out by Converter 
+DupeList = 0x3b1
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_r_pillar_1
 
@@ -112,7 +112,7 @@ SUBSECTION = Necromancer
 DESCRIPTION = Rune Pillar
 
 NAME = "Rune Pillar"
-//DUPELIST = 003a2 // commented out by Converter 
+DupeList = 0x3a2
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_s_r_pillar_2
 
@@ -122,7 +122,7 @@ SUBSECTION = Necromancer
 DESCRIPTION = Small Rune Pillar
 
 NAME = "Small Rune Pillar"
-//DUPELIST = 003a3 // commented out by Converter 
+DupeList = 0x3a3
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_s_r_pillar_1
 
@@ -141,7 +141,7 @@ SUBSECTION = Necromancer
 DESCRIPTION = Goat Statue
 
 NAME = "Goat Statue"
-//DUPELIST = 003b2 // commented out by Converter 
+DupeList = 0x3b2
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_goat_statuex1
 
@@ -160,7 +160,7 @@ SUBSECTION = Necromancer
 DESCRIPTION = Goat Statue
 
 NAME = "Goat Statue"
-//DUPELIST = 003e3 // commented out by Converter 
+DupeList = 0x3e3
 //DYE = 0 // commented out by Converter 
 DEFNAME = i_goat_statue
 
@@ -256,7 +256,7 @@ strikeStopRange = 10 //default value set by Converter
 
 [ItemDef 0x24b]
 NAME = "Wizard Cape"
-//DUPELIST = 0240 // commented out by Converter 
+DupeList = 0x240
 DEFNAME = i_wizard_cape_2
 
 [WearableDef 0x240]
@@ -267,7 +267,7 @@ WEIGHT = 5
 RESOURCES = 14 i_cloth
 RESOURCES2 = 14 i_cloth, 1 i_thread
 SKILLMAKE = 804 tailoring,  magery 800 t_sewing_kit //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //DYE = 1 // commented out by Converter 
 layer = 0 //Set by Converter 
 DEFNAME = i_wizard_cape
@@ -306,7 +306,7 @@ WEIGHT = 14
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 25 i_ingot_iron
 SKILLMAKE = 1000 blacksmithing //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 130 // commented out by Converter 
 //SKILL = Mace Fighting // commented out by Converter 
 TwoHanded = true
@@ -329,7 +329,7 @@ WEIGHT = 13
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 15 i_ingot_iron
 SKILLMAKE = 808 blacksmithing //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 60 // commented out by Converter 
 //SKILL = Mace Fighting // commented out by Converter 
 TwoHanded = true
@@ -386,7 +386,7 @@ TYPE = T_WEAPON_MACE_SMITH
 WEIGHT = 11
 RESOURCES = 9 i_ingot_iron
 SKILLMAKE = 808 blacksmithing //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 30 // commented out by Converter 
 //SKILL = Mace Fighting // commented out by Converter 
 TwoHanded = false
@@ -460,7 +460,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 14 i_ingot_iron
 SKILLMAKE = 902 blacksmithing
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 40 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = false
@@ -483,7 +483,7 @@ WEIGHT = 6
 RESOURCES = 20 i_log
 RESOURCES2 = 20 i_log, 1 i_cat_gut //some resources were fixed by converter 
 SKILLMAKE = 808 bowcraft
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 20 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -510,7 +510,7 @@ WEIGHT = 8
 RESOURCES = 20 i_log
 RESOURCES2 = 20 i_log, 1 i_cat_gut //some resources were fixed by converter 
 SKILLMAKE = 808 bowcraft
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 20 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 TwoHanded = true
@@ -536,7 +536,7 @@ type = t_weapon_axe
 WEIGHT = 15
 RESOURCES = 20 i_ingot_iron
 SKILLMAKE = 1000 blacksmithing
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 45 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -625,7 +625,7 @@ WEIGHT = 1
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
 SKILLMAKE = 802 blacksmithing
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 40 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = false
@@ -1290,7 +1290,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 6
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 1000 blacksmithing, 1000 magery //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 model = 0x23a

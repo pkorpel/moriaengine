@@ -175,6 +175,17 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private const int CorpseModel = 0x2006;
+
+		/// <summary>#938 - only the corpse graphic turns, a corpse of any other look goes by its flip group.</summary>
+		public override void Flip(string command) {
+			if (this.Model == CorpseModel) {
+				this.Direction = (Direction) (((int) this.direction + 1) & (int) Direction.Mask);
+			} else {
+				base.Flip(command);
+			}
+		}
+
 		/// <summary>A corpse never emits light - this used to throw ("Light property is not
 		/// valid for corpses"), which crashed the whole .info dialog outright whenever a GM
 		/// opened one, since the generic reflection-based field renderer calls every viewable
