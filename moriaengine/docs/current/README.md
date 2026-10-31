@@ -92,6 +92,7 @@ file whose job is session continuity, not permanent reference.
 - [Trading & secure trade](04-gameplay-systems/trading-secure-trade.md)
 - [Economy: banking & vendors](04-gameplay-systems/economy-banking-vendors.md)
 - [Bankers, cheques and purses](04-gameplay-systems/banker.md)
+- [Guilds and guildstones](04-gameplay-systems/guilds.md) - Erebor's guildstone, its menu and ranks (#884).
 - [Spawning](04-gameplay-systems/spawning.md)
 - [Pets & NPC AI](04-gameplay-systems/pets-and-npc-ai.md)
 - [Monster loot](04-gameplay-systems/monster-loot.md) - Erebor's @NPCRestock loot and

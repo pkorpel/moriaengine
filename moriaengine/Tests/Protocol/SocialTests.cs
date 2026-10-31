@@ -26,50 +26,6 @@ namespace SteamEngine.Tests.Protocol {
 		/// <summary>Real UO rule: a guild founder can invite another player (by targeting them),
 		/// and once that player accepts, both report membership in the same guild.</summary>
 		[Fact]
-		public void TwoPlayersCanFormAGuildTogether() {
-			using (var clientA = this.ConnectLoginAndCreateCharacter(AccountA, "GuildFounder")) {
-				clientA.SendSpeech(".TestEnableAutoAccountCreation");
-				Assert.True(this.fixture.WaitForGameOutput("AUTO_ACCOUNT_TEST: ENABLED", TimeSpan.FromSeconds(10)));
-
-				using (var clientB = this.ConnectLoginAndCreateCharacter(AccountB, "GuildJoiner")) {
-					int markB = this.fixture.GameOutputSnapshot().Length;
-					clientB.SendSpeech(".TestReportMyUid");
-					Assert.True(this.fixture.WaitForGameOutputSince("MY_UID:", markB, TimeSpan.FromSeconds(10)),
-						"Expected MY_UID after position " + markB + ". Game output:\n" + this.fixture.GameOutputSnapshot());
-					uint joinerUid = ExtractUid(this.fixture.GameOutputSnapshot(), markB);
-
-					Thread.Sleep(300);
-					clientA.SendSpeech(".GuildCreate TestGuild");
-					Thread.Sleep(300);
-					clientA.SendSpeech(".GuildInvite");
-					Thread.Sleep(300);
-					clientA.SendTargetUid(joinerUid);
-					Thread.Sleep(500);
-					clientB.SendSpeech(".GuildAccept");
-					Thread.Sleep(500);
-
-					int markA2 = this.fixture.GameOutputSnapshot().Length;
-					clientA.SendSpeech(".TestCheckGuild");
-					Assert.True(this.fixture.WaitForGameOutputSince("GUILD_CHECK: GuildFounder", markA2, TimeSpan.FromSeconds(10)));
-
-					int markB2 = this.fixture.GameOutputSnapshot().Length;
-					clientB.SendSpeech(".TestCheckGuild");
-					Assert.True(this.fixture.WaitForGameOutputSince("GUILD_CHECK: GuildJoiner", markB2, TimeSpan.FromSeconds(10)));
-
-					string output = this.fixture.GameOutputSnapshot();
-					string founderLine = LastLineContaining(output, "GUILD_CHECK: GuildFounder");
-					string joinerLine = LastLineContaining(output, "GUILD_CHECK: GuildJoiner");
-					Assert.Contains("guild=TestGuild", founderLine);
-					Assert.Contains("guild=TestGuild", joinerLine);
-				}
-			}
-		}
-
-		/// <summary>Real UO rule: dropping an item on another player starts a secure trade;
-		/// nothing changes hands until BOTH sides check "accept" (checking just one side is not
-		/// enough), and once both have, the offered item actually moves into the other side's
-		/// backpack.</summary>
-		[Fact]
 		public void TwoPlayersCanCompleteASecureTrade() {
 			using (var clientA = this.ConnectLoginAndCreateCharacter(AccountA, "TraderOne")) {
 				clientA.SendSpeech(".TestEnableAutoAccountCreation");

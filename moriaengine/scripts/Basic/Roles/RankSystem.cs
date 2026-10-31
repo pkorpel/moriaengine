@@ -119,7 +119,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void LoadLine(string filename, int line, string valueName, string valueString) {
 			switch (valueName) {
-				case "rankNames":
+				case "ranknames":
 					ObjectSaver.Load(valueString, this.Load_RankNames, filename, line);
 					return;
 			}

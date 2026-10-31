@@ -141,12 +141,9 @@ namespace SteamEngine.CompiledScripts {
 			//Guild commands - gated by their own internal leader/member checks, not plevel;
 			//missing from this allowlist meant they silently required GM (plevel>=4) by the
 			//default-deny fallback below, so no ordinary player could ever use them
-			this.commands["GuildCreate"] = PLEVEL_PLAYER;
-			this.commands["GuildInvite"] = PLEVEL_PLAYER;
-			this.commands["GuildAccept"] = PLEVEL_PLAYER;
-			this.commands["GuildDecline"] = PLEVEL_PLAYER;
 			this.commands["GuildLeave"] = PLEVEL_PLAYER;
-			this.commands["GuildDisband"] = PLEVEL_PLAYER;
+			this.commands["GuildMembers"] = PLEVEL_PLAYER;
+			this.commands["ToggleAbbrev"] = PLEVEL_PLAYER;
 			this.commands["GuildSay"] = PLEVEL_PLAYER;
 			this.commands["GuildInfo"] = PLEVEL_PLAYER;
 			this.commands["GuildAbbreviation"] = PLEVEL_PLAYER;
