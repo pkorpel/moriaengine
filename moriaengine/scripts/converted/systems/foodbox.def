@@ -115,7 +115,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Regals
 
 name = "Spizirna"
-WEIGHT = 2000
+WEIGHT = 200
 RESOURCES = 20 i_log_verite, 10 i_log_valorite, 30 i_nails
 //FLIP = 1 // commented out by Converter 
 model = 0x2c6c

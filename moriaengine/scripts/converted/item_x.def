@@ -16,7 +16,7 @@ DESCRIPTION = Communication Crystal (red)
 
 NAME = "Communications Crystal"
 TYPE = T_COMM_CRYSTAL
-WEIGHT = 10
+WEIGHT = 1
 model = I_CRYSTAL_RED
 //VALUE = 81 // commented out by Converter 
 
@@ -27,7 +27,7 @@ DESCRIPTION = Communication Crystal (green)
 
 NAME = "Communications Crystal"
 TYPE = T_COMM_CRYSTAL
-WEIGHT = 10
+WEIGHT = 1
 model = I_CRYSTAL_GREEN
 //VALUE = 158 // commented out by Converter 
 
@@ -38,7 +38,7 @@ DESCRIPTION = Communication Crystal (green)
 
 NAME = "Communications Crystal"
 TYPE = T_COMM_CRYSTAL
-WEIGHT = 10
+WEIGHT = 1
 model = I_CRYSTAL_GREEN
 //VALUE = 310 // commented out by Converter 
 
@@ -132,7 +132,7 @@ SUBSECTION = Bows - Exceptional
 DESCRIPTION = Superior Bow
 
 NAME = "Superior Bow"
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 8 i_log
 SKILLMAKE = 450 bowcraft
 //REQSTR = 30 // commented out by Converter 
@@ -160,7 +160,7 @@ SUBSECTION = Bows - Exceptional
 DESCRIPTION = Superior Crossbow
 
 NAME = "Superior Crossbow"
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 8 i_log
 SKILLMAKE = 550 bowcraft
 //REQSTR = 30 // commented out by Converter 
@@ -188,7 +188,7 @@ SUBSECTION = Bows - Exceptional
 DESCRIPTION = Superior Heavy Crossbow
 
 NAME = "Superior Heavy Crossbow"
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 11 i_log
 SKILLMAKE = 650 bowcraft
 //REQSTR = 30 // commented out by Converter 
@@ -216,7 +216,7 @@ SUBSECTION = Bows - Exceptional
 DESCRIPTION = Exceptional Bow
 
 NAME = "Exceptional Bow"
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 9 i_log
 SKILLMAKE = 755 bowcraft
 //REQSTR = 30 // commented out by Converter 
@@ -244,7 +244,7 @@ SUBSECTION = Bows - Exceptional
 DESCRIPTION = Exceptional Crossbow
 
 NAME = "Exceptional Crossbow"
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 10 i_log
 SKILLMAKE = 855 bowcraft
 //REQSTR = 30 // commented out by Converter 
@@ -272,7 +272,7 @@ SUBSECTION = Bows - Exceptional
 DESCRIPTION = Exceptional Heavy Crossbow
 
 NAME = "Exceptional Heavy Crossbow"
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 13 i_log
 SKILLMAKE = 955 bowcraft
 //REQSTR = 30 // commented out by Converter 
@@ -300,7 +300,7 @@ SUBSECTION = Bows - Exceptional
 DESCRIPTION = Elven Bow
 
 NAME = "Elven Bow"
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 8 i_log
 SKILLMAKE = 995 bowcraft, 500 magery
 //REQSTR = 30 // commented out by Converter 

@@ -56,8 +56,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Worn and carried items (backpack included) - not the bank box, mount or vendor
-		/// layers, which Sphere doesn't count either. Character.Weight itself does include the bank.</summary>
+		/// <summary>Worn and carried items (backpack included) - not the mount or vendor layers.</summary>
 		public static float CarriedWeight(Character self) {
 			float carried = 0;
 			foreach (AbstractItem item in self) {

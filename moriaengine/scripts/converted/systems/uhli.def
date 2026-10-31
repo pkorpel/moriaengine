@@ -6,7 +6,7 @@ SUBSECTION = Itemy
 DESCRIPTION = Uhli obycejne
 
 NAME = "Nekvalitni Uhli"
-WEIGHT = 10
+WEIGHT = 1
 model = i_gem_emerald_2
 type = t_gem //guessed from base def by Converter 
 Color = 5000
@@ -17,7 +17,7 @@ SUBSECTION = Itemy
 DESCRIPTION = Uhli obycejne
 
 NAME = "Uhli"
-WEIGHT = 10
+WEIGHT = 1
 model = i_gem_emerald_2
 type = t_gem //guessed from base def by Converter 
 Color = 5000
@@ -28,7 +28,7 @@ SUBSECTION = Itemy
 DESCRIPTION = Uhli advanced
 
 NAME = "Kamen Ohne"
-WEIGHT = 10
+WEIGHT = 1
 model = i_gem_emerald_2
 type = t_gem //guessed from base def by Converter 
 Color = 098E
@@ -40,7 +40,7 @@ DESCRIPTION = Aktivacni krystal spruce
 
 NAME = "slaby aktivacni krystal"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_crystal_red
 Color = 0973
 
@@ -51,7 +51,7 @@ DESCRIPTION = Aktivacni krystal chest
 
 NAME = "slabsi aktivacni krystal"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_crystal_red
 Color = 05E5
 
@@ -62,7 +62,7 @@ DESCRIPTION = Aktivacni krystal Teak
 
 NAME = "mensi aktivacni krystal"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_crystal_red
 Color = 05F2
 
@@ -73,7 +73,7 @@ DESCRIPTION = Aktivacni krystal Teak
 
 NAME = "obycejny aktivacni krystal"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_crystal_red
 Color = 01C4
 
@@ -84,7 +84,7 @@ DESCRIPTION = Aktivacni krystal Maha
 
 NAME = "aktivacni krystal"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_crystal_red
 Color = 0ED
 
@@ -95,7 +95,7 @@ DESCRIPTION = Aktivacni krystal Eben
 
 NAME = "silny aktivacni krystal"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_crystal_red
 Color = 0774
 
@@ -106,7 +106,7 @@ DESCRIPTION = Aktivacni krystal Elven
 
 NAME = "mocny aktivacni krystal"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_crystal_red
 Color = 07D6
 
@@ -117,7 +117,7 @@ DESCRIPTION = Tetiva spruce
 
 NAME = "tetiva vhodna pro spruce zbrane"
 type = 00
-WEIGHT = 50
+WEIGHT = 5
 model = i_fx_ebolt
 Color = 0973
 
@@ -128,7 +128,7 @@ DESCRIPTION = Tetiva chest
 
 NAME = "tetiva vhodna pro chestnut zbrane"
 type = 00
-WEIGHT = 50
+WEIGHT = 5
 model = i_fx_ebolt
 Color = 05E5
 
@@ -139,7 +139,7 @@ DESCRIPTION = Tetiva oak
 
 NAME = "tetiva vhodna pro oak zbrane"
 type = 00
-WEIGHT = 50
+WEIGHT = 5
 model = i_fx_ebolt
 Color = 05F2
 
@@ -150,7 +150,7 @@ DESCRIPTION = Tetiva Teak
 
 NAME = "tetiva vhodna pro teak zbrane"
 type = 00
-WEIGHT = 50
+WEIGHT = 5
 model = i_fx_ebolt
 Color = 01C4
 
@@ -161,7 +161,7 @@ DESCRIPTION = Tetiva Mahagon
 
 NAME = "tetiva vhodna pro mahagon zbrane"
 type = 00
-WEIGHT = 50
+WEIGHT = 5
 model = i_fx_ebolt
 Color = 0ED
 
@@ -172,7 +172,7 @@ DESCRIPTION = Tetiva Eben
 
 NAME = "tetiva vhodna pro eben zbrane"
 type = 00
-WEIGHT = 50
+WEIGHT = 5
 model = i_fx_ebolt
 Color = 0774
 
@@ -183,7 +183,7 @@ DESCRIPTION = Tetiva Elven
 
 NAME = "tetiva vhodna pro elven zbrane"
 type = 00
-WEIGHT = 50
+WEIGHT = 5
 model = i_fx_ebolt
 Color = 07D6
 

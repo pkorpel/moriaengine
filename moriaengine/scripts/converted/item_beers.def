@@ -7,7 +7,7 @@ DESCRIPTION = Amber Ale
 
 NAME = "Visnovka"
 TYPE = T_BOOZE
-WEIGHT = 10
+WEIGHT = 1
 model = i_bottle_ale
 //VALUE = {25 55} // commented out by Converter 
 Color = COLOR_RED2
@@ -19,7 +19,7 @@ DESCRIPTION = Honey Ale
 
 NAME = "Medovina"
 TYPE = T_BOOZE
-WEIGHT = 10
+WEIGHT = 1
 model = i_bottle_ale
 //VALUE = {18 25} // commented out by Converter 
 Color = COLOR_O_GOLD
@@ -31,7 +31,7 @@ DESCRIPTION = Brown Ale
 
 NAME = "Bazinovka"
 TYPE = T_BOOZE
-WEIGHT = 10
+WEIGHT = 1
 model = i_bottle_ale
 //VALUE = {4 99} // commented out by Converter 
 Color = COLORS_BROWN
@@ -43,7 +43,7 @@ DESCRIPTION = Spiced Ale
 
 NAME = "Rum"
 TYPE = T_BOOZE
-WEIGHT = 10
+WEIGHT = 1
 model = i_bottle_ale
 //VALUE = {35 80} // commented out by Converter 
 Color = 02c
@@ -55,7 +55,7 @@ DESCRIPTION = Smoked Porter
 
 NAME = "Opilcova touha"
 TYPE = T_BOOZE
-WEIGHT = 10
+WEIGHT = 1
 model = i_bottle_ale
 //VALUE = {70 98} // commented out by Converter 
 Color = COLOR_GRAY_DK
@@ -67,7 +67,7 @@ DESCRIPTION = Stout Ale
 
 NAME = "Lahev piva"
 TYPE = T_BOOZE
-WEIGHT = 10
+WEIGHT = 1
 model = i_bottle_ale
 //VALUE = {4 5} // commented out by Converter 
 //Color = COLOR_O_BLACKROCK // not defined in the archive, commented out by Converter 
@@ -79,7 +79,7 @@ DESCRIPTION = Oktoberfest Ale
 
 NAME = "Brandy"
 TYPE = T_BOOZE
-WEIGHT = 10
+WEIGHT = 1
 model = i_bottle_ale
 //VALUE = {38 42} // commented out by Converter 
 Color = COLORS_ORANGE
@@ -91,6 +91,6 @@ DESCRIPTION = Pulitr piva
 
 NAME = "Pulitr piva"
 TYPE = T_BOOZE
-WEIGHT = 10
+WEIGHT = 1
 model = i_mug_ale
 //VALUE = {200 500} // commented out by Converter 

@@ -1010,7 +1010,13 @@ namespace SteamEngine.CompiledScripts {
 
 		public override long Gold {
 			get {
-				return 0;
+				return GoldUtils.CountGoldOn(this);
+			}
+		}
+
+		public override int MaxCarryWeight {
+			get {
+				return MovementStamina.MaxCarryWeight(this.Str);
 			}
 		}
 		#endregion status properties

@@ -1056,7 +1056,7 @@ SUBSECTION = Beekeepers/Candlers
 DESCRIPTION = Beehive
 
 TYPE = t_bee_hive
-WEIGHT = 60
+WEIGHT = 6
 DEFNAME = i_beehive
 //VALUE = 2 // commented out by Converter 
 
@@ -1067,7 +1067,7 @@ DESCRIPTION = Bees
 
 TYPE = t_trap_active
 //DUPELIST = 091c,091d,091e,091f,0920,0921,0922 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_bee_swarm
 //VALUE = 2 // commented out by Converter 
 
@@ -1330,7 +1330,7 @@ DESCRIPTION = Stew
 
 TYPE = T_FOOD
 //DUPELIST = 0971,0972,0973 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_water, 1 i_pot, 1 i_flour_sack
 DEFNAME = i_bowl_stew
 //VALUE = {2 4} // commented out by Converter 
@@ -1486,7 +1486,7 @@ DESCRIPTION = Candle (Lit)
 
 TYPE = T_LIGHT_LIT
 //DUPELIST = 0a10,0a11 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_candle //some resources were fixed by converter 
 //TDATA3 = i_candle // commented out by Converter 
 layer = 2 //Set by Converter 
@@ -1506,7 +1506,7 @@ DESCRIPTION = Torch (Lit)
 
 TYPE = T_LIGHT_LIT
 //DUPELIST = 0a13,0a14 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_torch //some resources were fixed by converter 
 //TDATA3 = i_torch // commented out by Converter 
 layer = 2 //Set by Converter 
@@ -1526,7 +1526,7 @@ DESCRIPTION = Lantern (Lit)
 
 TYPE = T_LIGHT_LIT
 //DUPELIST = 0a16,0a17,0a1a,0a1b,0a1c,0a22,0a23,0a24 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_lantern //some resources were fixed by converter 
 //TDATA3 = i_lantern // commented out by Converter 
 layer = 2 //Set by Converter 
@@ -2594,7 +2594,7 @@ DEFNAME = i_crop_turnip1
 [ItemDef 0xc62]
 TYPE = T_CROPS
 //DUPELIST = 0c63 // commented out by Converter 
-WEIGHT = 1
+WEIGHT = 0.1
 //TDATA1 = i_crop_turnip1 // commented out by Converter 
 //TDATA2 = 0 // commented out by Converter 
 //TDATA3 = i_fruit_turnip // commented out by Converter 
@@ -3951,7 +3951,7 @@ DESCRIPTION = Turnip
 
 TYPE = T_FRUIT
 //DUPELIST = 0d3a // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 //TDATA1 = i_crop_turnip1 // commented out by Converter 
 DEFNAME = i_fruit_turnip
 //VALUE = 1 // commented out by Converter 
@@ -4982,7 +4982,7 @@ DESCRIPTION = Small Fish
 
 TYPE = t_fish
 //DUPELIST = 0dd7,0dd8,0dd9 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_fish_small
 //VALUE = 2 // commented out by Converter 
 
@@ -5069,7 +5069,7 @@ SUBSECTION = Wands
 DESCRIPTION = Wand
 
 TYPE = T_WAND
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 2 i_ingot_silver, 2 i_ingot_gold, 1 i_gem_diamond
 //REQSTR = 1 // commented out by Converter 
 TwoHanded = false
@@ -5083,7 +5083,7 @@ SUBSECTION = Wands
 DESCRIPTION = Wand
 
 TYPE = T_WAND
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 2 i_ingot_silver, 2 i_ingot_gold, 1 i_gem_diamond
 //REQSTR = 1 // commented out by Converter 
 TwoHanded = false
@@ -5097,7 +5097,7 @@ SUBSECTION = Wands
 DESCRIPTION = Wand
 
 TYPE = T_WAND
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 1 i_log, 1 i_gem_diamond
 //REQSTR = 1 // commented out by Converter 
 TwoHanded = false
@@ -5111,7 +5111,7 @@ SUBSECTION = Wands
 DESCRIPTION = Wand
 
 TYPE = T_WAND
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 1 i_log, 1 i_gem_diamond
 //REQSTR = 1 // commented out by Converter 
 TwoHanded = false

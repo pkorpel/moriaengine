@@ -27,7 +27,7 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class Container : Equippable {
-		float weight;
+		float weight; //of the contents, Sphere's m_totalweight
 
 		public override short Gump {
 			get {
@@ -147,14 +147,21 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Sphere's IsWeighed: false keeps the contents' weight from whoever holds this.</summary>
+		protected virtual bool IsWeighed {
+			get {
+				return true;
+			}
+		}
+
 		public override float Weight {
 			get {
-				return this.weight;
+				return this.IsWeighed ? (base.Weight + this.weight) : 0;
 			}
 		}
 
 		public override void FixWeight() {
-			float w = this.Def.Weight;
+			float w = 0;
 			foreach (AbstractItem i in this) {
 				if (i != null) {
 					i.FixWeight();
@@ -166,11 +173,11 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void AdjustWeight(float adjust) {
 			this.weight += adjust;
-			base.AdjustWeight(adjust);
+			base.AdjustWeight(this.IsWeighed ? adjust : 0); //0 still tells the holder its status changed
 		}
 
 		public override void On_BuildAosToolTips(AosToolTips toolTips, Language language) {
-			toolTips.AddLine(1050044, this.Count.ToString(), this.Weight.ToString());
+			toolTips.AddLine(1050044, this.Count.ToString(), this.weight.ToString());
 			//~1_COUNT~ items, ~2_WEIGHT~ stones
 		}
 
@@ -179,7 +186,7 @@ namespace SteamEngine.CompiledScripts {
 			Language language = clickerState.Language;
 			PacketSequences.SendNameFrom(clicker.GameState.Conn, this,
 				string.Concat(this.Count.ToString(), " ", Loc<ContainerLoc>.Get(language).itemsGenitiv, ", ",
-				this.Weight.ToString(), " ", Loc<ContainerLoc>.Get(language).stonesGenitiv),
+				this.weight.ToString(), " ", Loc<ContainerLoc>.Get(language).stonesGenitiv),
 				0);
 		}
 	}

@@ -139,7 +139,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Star Sapphire 1 (Dark Blue)
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_star_sapphire
 //VALUE = 35 // commented out by Converter 
 
@@ -149,7 +149,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Emerald 1
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_emerald
 //VALUE = 40 // commented out by Converter 
 
@@ -159,7 +159,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Sapphire 1 (Light Blue)
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_sapphire
 //VALUE = 30 // commented out by Converter 
 
@@ -169,7 +169,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Sapphire 2 (Dark Blue)
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_sapphire_2
 //VALUE = 35 // commented out by Converter 
 
@@ -179,7 +179,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Ruby 1
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_ruby
 //VALUE = 30 // commented out by Converter 
 
@@ -189,7 +189,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Ruby 2
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_ruby_2
 //VALUE = 30 // commented out by Converter 
 
@@ -199,7 +199,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Citrine 1
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_citrine
 //VALUE = 20 // commented out by Converter 
 
@@ -209,7 +209,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Amethyst 1
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_amethyst
 //VALUE = 20 // commented out by Converter 
 
@@ -219,7 +219,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Amethyst 2
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_amethyst_2
 //VALUE = 20 // commented out by Converter 
 
@@ -229,7 +229,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Tourmaline 1
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_tourmaline
 //VALUE = 20 // commented out by Converter 
 
@@ -239,7 +239,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Sapphire 3
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_sapphire_3
 //VALUE = 35 // commented out by Converter 
 
@@ -321,7 +321,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Amethyst 1
 
 TYPE = T_GEM
-WEIGHT = 100
+WEIGHT = 10
 DEFNAME = i_gem_amethyst_3
 //VALUE = 20 // commented out by Converter 
 
@@ -349,7 +349,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Piece of Amber
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_amber
 //VALUE = 10 // commented out by Converter 
 
@@ -359,7 +359,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Diamond 1 (Dark) (Small)
 
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_gem_diamond
 //VALUE = 45 // commented out by Converter 
 
@@ -460,7 +460,7 @@ DESCRIPTION = Hay (Sheaf)
 
 TYPE = t_grain
 //DUPELIST = 0100c,0100d // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 DEFNAME = i_hay_sheaf
 //VALUE = 3 // commented out by Converter 
 
@@ -777,7 +777,7 @@ DESCRIPTION = Arm
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01ce5 // commented out by Converter 
-WEIGHT = 500
+WEIGHT = 50
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_arm_right
 //VALUE = 3 // commented out by Converter 
@@ -789,7 +789,7 @@ DESCRIPTION = Upper Body
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01ce6 // commented out by Converter 
-WEIGHT = 2200
+WEIGHT = 220
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_upper_body
 
@@ -800,7 +800,7 @@ DESCRIPTION = Legs
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01ce7 // commented out by Converter 
-WEIGHT = 1800
+WEIGHT = 180
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_leggings
 
@@ -811,7 +811,7 @@ DESCRIPTION = Torso
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01ce8 // commented out by Converter 
-WEIGHT = 2000
+WEIGHT = 200
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_torso_2
 
@@ -821,7 +821,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Head
 
 //DUPELIST = 01ce9 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain //some resources were fixed by converter 
 DEFNAME = i_flesh_head
 
@@ -832,7 +832,7 @@ DESCRIPTION = Leg
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01cec // commented out by Converter 
-WEIGHT = 1800
+WEIGHT = 180
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_leg
 
@@ -842,7 +842,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Body Part
 
 //DUPELIST = 01cea // commented out by Converter 
-WEIGHT = 400
+WEIGHT = 40
 DEFNAME = i_flesh
 
 [ItemDef 0x1ce4]
@@ -851,7 +851,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Legs
 
 //DUPELIST = 01ceb // commented out by Converter 
-WEIGHT = 1800
+WEIGHT = 180
 DEFNAME = i_flesh_legs_3
 //VALUE = 1 // commented out by Converter 
 
@@ -892,7 +892,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Heart
 
 TYPE = t_MEAT_RAW
-WEIGHT = 500
+WEIGHT = 50
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_heart
 //VALUE = 1 // commented out by Converter 
@@ -903,7 +903,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Liver
 
 TYPE = t_MEAT_RAW
-WEIGHT = 500
+WEIGHT = 50
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_liver
 //VALUE = 1 // commented out by Converter 
@@ -914,7 +914,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Entrails
 
 TYPE = t_MEAT_RAW
-WEIGHT = 600
+WEIGHT = 60
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_entrails
 //VALUE = 1 // commented out by Converter 
@@ -925,7 +925,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Brain
 
 TYPE = t_MEAT_RAW
-WEIGHT = 800
+WEIGHT = 80
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_brain
 //VALUE = 1 // commented out by Converter 
@@ -948,7 +948,7 @@ DESCRIPTION = Torso
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01dad // commented out by Converter 
-WEIGHT = 2000
+WEIGHT = 200
 RESOURCES = 1 i_flesh_heart, 2 i_ribs_raw, 1 i_flesh_liver, 1 i_flesh_entrails, 1 i_blood_2 //some resources were fixed by converter 
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_torso
@@ -960,7 +960,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Head
 
 //DUPELIST = 01dae // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain, 1 i_blood_2 //some resources were fixed by converter 
 DEFNAME = i_flesh_head_2
 //VALUE = 1 // commented out by Converter 
@@ -972,7 +972,7 @@ DESCRIPTION = Left Arm
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01daf // commented out by Converter 
-WEIGHT = 700
+WEIGHT = 70
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_left_arm
 //VALUE = 1 // commented out by Converter 
@@ -984,7 +984,7 @@ DESCRIPTION = Right Arm
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01db0 // commented out by Converter 
-WEIGHT = 700
+WEIGHT = 70
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_right_arm
 //VALUE = 1 // commented out by Converter 
@@ -996,7 +996,7 @@ DESCRIPTION = Left Leg
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01db1 // commented out by Converter 
-WEIGHT = 1100
+WEIGHT = 110
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_left_leg
 //VALUE = 1 // commented out by Converter 
@@ -1008,7 +1008,7 @@ DESCRIPTION = Right leg
 
 TYPE = t_MEAT_RAW
 //DUPELIST = 01db2 // commented out by Converter 
-WEIGHT = 1100
+WEIGHT = 110
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_right_leg
 //VALUE = 1 // commented out by Converter 
@@ -1019,7 +1019,7 @@ SUBSECTION = Dirt
 DESCRIPTION = @
 
 //DUPELIST = 01dfe,01dff,01e00 // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 DEFNAME = i_dirt
 //VALUE = 1 // commented out by Converter 
 
@@ -1030,7 +1030,7 @@ DESCRIPTION = Folded Cloth
 
 TYPE = t_cloth
 //DUPELIST = 0175e,0175f,01760,01761,01762,01763,01764,01765 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_cloth
 //VALUE = 3 // commented out by Converter 
@@ -1052,7 +1052,7 @@ DESCRIPTION = @
 
 TYPE = t_fire
 //DUPELIST = 019ac,019ad,019ae,019af,019b0,019b1,019b2,019b3,019b4,019b5,019b6 // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 DEFNAME = i_fire
 //VALUE = 1 // commented out by Converter 
 
@@ -1063,7 +1063,7 @@ DESCRIPTION = Skull
 
 TYPE = T_BONE
 //DUPELIST = 01ae1,01ae2,01ae3,01ae4 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 DEFNAME = i_bone_skull
 //VALUE = 1 // commented out by Converter 
 
@@ -1074,7 +1074,7 @@ DESCRIPTION = Bone
 
 TYPE = T_BONE
 //DUPELIST = 01b12 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_bone
 //VALUE = 1 // commented out by Converter 
 
@@ -1085,7 +1085,7 @@ DESCRIPTION = Jaw Bone
 
 TYPE = T_BONE
 //DUPELIST = 01b14 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_bone_jaw
 //VALUE = 1 // commented out by Converter 
 
@@ -1096,7 +1096,7 @@ DESCRIPTION = Pelvis Bone
 
 TYPE = T_BONE
 //DUPELIST = 01b16 // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 DEFNAME = i_bone_pelvis
 //VALUE = 1 // commented out by Converter 
 
@@ -1107,7 +1107,7 @@ DESCRIPTION = Rib Cage
 
 TYPE = T_BONE
 //DUPELIST = 01b18 // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 DEFNAME = i_bone_ribcage
 //VALUE = 1 // commented out by Converter 
 
@@ -1118,7 +1118,7 @@ DESCRIPTION = Bone Shards
 
 TYPE = T_BONE
 //DUPELIST = 01b1a // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 DEFNAME = i_bone_shards
 //VALUE = 1 // commented out by Converter 
 
@@ -1129,7 +1129,7 @@ DESCRIPTION = Spine
 
 TYPE = T_BONE
 //DUPELIST = 01b1c // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 DEFNAME = i_bone_spine
 //VALUE = 2 // commented out by Converter 
 
@@ -1139,7 +1139,7 @@ SUBSECTION = Trees
 DESCRIPTION = Leaves
 
 //DUPELIST = 01b20,01b21,01b22,01b23,01b24,01b25,01b26 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_leaves
 //VALUE = 2 // commented out by Converter 
 
@@ -1149,7 +1149,7 @@ SUBSECTION = Dirt
 DESCRIPTION = @
 
 //DUPELIST = 01b28,01b29,01b2a,01b2b,01b2c,01b2d,01b2e,01b2f,01b30,01b31,01b32,01b33,01b34,01b35,01b36,01b37,01b38,01b39,01b3a,01b3b,01b3c,01b3d,01b3e // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_dirt_tile
 //VALUE = 2 // commented out by Converter 
 
@@ -1159,7 +1159,7 @@ SUBSECTION = Sticks and Wood
 DESCRIPTION = Sticks
 
 //DUPELIST = 01b9c,01b9d,01b9e // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 DEFNAME = i_sticks
 //VALUE = 2 // commented out by Converter 
 
@@ -1170,7 +1170,7 @@ DESCRIPTION = Feathers (White)
 
 TYPE = t_FEATHER
 //DUPELIST = 0dfa,0dfb,01bd2,01bd3 // commented out by Converter 
-WEIGHT = 1
+WEIGHT = 0.1
 DEFNAME = i_feather
 //VALUE = 2 // commented out by Converter 
 
@@ -1207,7 +1207,7 @@ DESCRIPTION = Log (SE)
 NAME = "log%s"
 TYPE = t_log
 //DUPELIST = 01bde,01bdf,01be0,01be1,01be2 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_log
 //VALUE = 10 // commented out by Converter 
 
@@ -1218,7 +1218,7 @@ DESCRIPTION = SpiderWeb 01 (01/05)
 
 TYPE = t_web
 //DUPELIST = 010b9,010ba,010bb,010bc,010bd,010be,010bf,010c0,010c1,010c2,010c3,010c4,010c5,010c6,010c7,010c8,010c9,010ca,010cb,010cc,010cd,010ce,010cf,010d0,010d1 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_spiderweb
 //VALUE = 2 // commented out by Converter 
 
@@ -1229,7 +1229,7 @@ DESCRIPTION = Garbage
 
 TYPE = t_garbage
 //DUPELIST = 010ef,010f0,010f1,010f2,010f3 // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 DEFNAME = i_garbage
 //VALUE = 1 // commented out by Converter 
 
@@ -1239,7 +1239,7 @@ SUBSECTION = Shells
 DESCRIPTION = Conch Shells
 
 //DUPELIST = 0fc5,0fc6,0fc7,0fc8,0fc9,0fca,0fcb,0fcc // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 DEFNAME = i_shell
 //VALUE = 1 // commented out by Converter 
 
@@ -1249,17 +1249,17 @@ model = I_DIRT
 Color = colors_yellow
 
 [ItemDef I_CLAY]
-WEIGHT = 100
+WEIGHT = 10
 model = I_ROCK_2
 //VALUE = 10 // commented out by Converter 
 
 [ItemDef I_STONE_MARBLE]
-WEIGHT = 1000
+WEIGHT = 100
 model = I_PILLOW
 //VALUE = 5 // commented out by Converter 
 
 [ItemDef I_STONE_SAND]
-WEIGHT = 1000
+WEIGHT = 100
 model = I_PILLOW
 //VALUE = 5 // commented out by Converter 
 Color = colors_yellow

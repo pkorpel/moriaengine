@@ -92,6 +92,20 @@ knockback could push someone into a house through its wall, and the pull telepor
 straight next to the monster. The walk itself is the pure `MonsterSpecialAttacks.WalkForced`
 (step delegate), tested in `Tests/KnockbackPushDistanceTests.cs`.
 
+## Weight (#889)
+
+Everything is in stones, as a float, as `.def` files write it, as Sphere's scripts read it. Sphere's
+native unit is a tenth of a stone: `WEIGHT=3.0` and `WEIGHT=.1` are raw tenths with the point
+ignored, and an undotted `WEIGHT=10` is 10 stones. The converter writes all of them as stones.
+
+- An item without a `WEIGHT` line takes it from tiledata. Tiledata's 255 (immovable) and water count
+  as 1 stone.
+- A stack weighs unit weight x amount. `i_gold` has weight 0, and then a stack is a tenth of a stone
+  per 50 coins (99z8), which is the "1 stone per 500" of Erebor's purses.
+- `Container.weight` is the contents only, Sphere's `m_totalweight`; `Weight` adds the container's own.
+- A bank box is `IsWeighed = false`, so its owner doesn't carry what's in it.
+- A character weighs what they carry, and the status window shows that in whole stones, rounded down.
+
 ## Fatigue and overload (#779)
 
 Ported from Sphere 0.99z8 (EreborNext `CheckMoveWalkDir`, `Calc_MaxCarryWeight`,
@@ -100,9 +114,8 @@ NPC stamina and carried weight aren't kept Sphere-accurate here.
 
 - **At 0 stamina** a player can't move: "You are too fatigued to move." (or "Your mount is too
   fatigued to move." when riding).
-- **Max carry weight** is `STR*4 + 30` stones. Carried weight is worn items plus the backpack
-  (layers below `Mount`), so it excludes the bank box. `Character.Weight` itself includes the
-  bank, so it isn't used for this. Above `maxLoadPercent` (200%): "You are carrying too much
+- **Max carry weight** is `STR*4 + 30` stones, and the status window shows it. Carried weight is worn items plus the backpack
+  (layers below `Mount`). Above `maxLoadPercent` (200%): "You are carrying too much
   to move."
 - **Every step** costs 1 stamina with a chance from Sphere's S-curve: 50% at
   `staminaLossAtWeight` percent load, halving every 10 percent below and mirrored above. With

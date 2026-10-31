@@ -137,7 +137,7 @@ DESCRIPTION = Frost Bolt Scroll
 
 Name = "Frost Bolt Scroll"
 TYPE = t_scroll
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
 SKILLMAKE = 750 inscription, 600 magery //some resources were fixed by converter 
 model = i_scroll_blank

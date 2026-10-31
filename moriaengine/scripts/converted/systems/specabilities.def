@@ -742,7 +742,7 @@ DESCRIPTION = Krystal videni
 
 NAME = "Krystal videni"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_crystal_red
 Color = 0099
 
@@ -753,7 +753,7 @@ DESCRIPTION = Lahvicka poznani
 
 NAME = "Elixir poznani"
 type = 00
-WEIGHT = 10
+WEIGHT = 1
 model = i_bottle_empty
 Color = 0088
 

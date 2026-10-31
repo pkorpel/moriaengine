@@ -68,9 +68,9 @@ namespace SteamEngine.Tests {
 		}
 
 		[Theory]
-		[InlineData("i_iron_platemail", "396")]         //1100 * layerar[13] 36%
-		[InlineData("i_iron_platemail_gorget", "66")]   //6%
-		[InlineData("i_iron_heater_shield", "55")]      //1100/6 * layerar[2] 30%
+		[InlineData("i_iron_platemail", "39.6")]         //1100 * layerar[13] 36%
+		[InlineData("i_iron_platemail_gorget", "6.6")]   //6%
+		[InlineData("i_iron_heater_shield", "5.5")]      //1100/6 * layerar[2] 30%
 		public void ArmorHasEreborsWeight(string defname, string weight) {
 			Assert.Equal(weight, Field("brneni", defname, "WEIGHT"));
 		}

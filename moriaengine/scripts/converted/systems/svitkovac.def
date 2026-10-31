@@ -80,7 +80,7 @@ svitkovac_spell_shortcut[104] "Mana Shield"
 [EquippableDef i_scroll_case]
 NAME = "Svitkovac"
 TYPE = t_svitkovac
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 10 i_scroll_blank, 15 i_log_obsidian, 10 i_gem_diamond
 SKILLMAKE = 900 carpentry, 1 t_carpentry //some resources were fixed by converter 
 layer = 1

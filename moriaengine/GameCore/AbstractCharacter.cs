@@ -1107,6 +1107,13 @@ namespace SteamEngine {
 		//They can even go negative (but not from using powers, which work only with enough points).
 		//You only gain points by sacrificing gold (that balances this with other magic classes since this has no reagent costs).
 		public abstract short TithingPoints { get; set; }
+
+		/// <summary>Carry capacity in stones, for the status window.</summary>
+		public virtual int MaxCarryWeight {
+			get {
+				return 0;
+			}
+		}
 		/// <summary>Displays in client status as Physical resistance by default</summary>
 		public virtual short StatusArmorClass { get { return 0; } }
 		/// <summary>Displays in client status as Energy resistance by default</summary>

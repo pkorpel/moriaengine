@@ -41,7 +41,7 @@ trestu		7
 [ItemDef i_gold_lagr]
 NAME = "Propousteci zlataky"
 type = t_lagr_gold
-WEIGHT = 10
+WEIGHT = 1
 model = i_gold
 Color = 0021
 
