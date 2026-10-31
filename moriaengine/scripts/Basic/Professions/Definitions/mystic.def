@@ -56,6 +56,8 @@ TasteID=0, 500
 Tracking=0, 500
 Wrestling=300, 1000
 
+a_mystik_doubleswing = 1, 40
+
 //weapon/armor restrictions (#135/#138) - magical staves exclusively, per the wiki ("Mystik
 //pouziva k boji magicke hole"); bone or leather armor, per the wiki
 allowedWeaponTypes=OneHandBlunt, TwoHandBlunt
