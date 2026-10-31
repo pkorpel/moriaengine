@@ -172,8 +172,9 @@ the skill check runs against `difficulty * 10`. Guards (`AggroMode.GuardsRealm`)
 a monster, `spellPowerPvP` between players, then less `mind defense * 10`. Player mind power comes
 from Evaluate Intelligence, Spirit Speak and Int by the weapon's `MindPower`; a monster's is its
 plain Evaluate Intelligence. Player mind defense is `(Resist/10 + armor's * armorMindDefense) *
-mindDefenseGlobal`, a monster's `Resist/10`. Field spells add `fieldSpellPowerPerLevel` per fourth
-of the level. Damage is `low + (high - low) * power / 1000`, growing past 1000. Spells with
+mindDefenseGlobal`, a monster's `Resist/10`. Vs monsters, field spells add
+`fieldSpellPowerPerLevel` (0.02) per fourth of the level, at most 50, and under Standcast other
+spells add it per level up to 200, half for explosion, chain lightning and meteor swarm. Damage is `low + (high - low) * power / 1000`, growing past 1000. Spells with
 `ArmorPiercing` go through armor like a swing (`CalculateSpellArmorEffect`, always `damagecust`,
 even from a monster); the others ignore armor. A monster's spell on a monster does at least 5.
 

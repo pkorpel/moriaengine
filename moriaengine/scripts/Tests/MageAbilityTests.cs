@@ -157,7 +157,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestReportStandcastMultiplier(Character self, ScriptArgs sa) {
 			int basePower = Convert.ToInt32(SplitArgs(sa)[0], CultureInfo.InvariantCulture);
-			int boosted = StandcastHelper.ApplyMultiplier(self, basePower);
+			int boosted = (int) Math.Round(basePower * (1.0 + StandcastHelper.GetLevelBonus(self, 18)));
 			Console.WriteLine("MAGEABILITY_TEST: basePower=" + basePower + " boosted=" + boosted);
 		}
 
