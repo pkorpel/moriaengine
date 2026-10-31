@@ -2356,9 +2356,20 @@ namespace SteamEngine.CompiledScripts {
 			if ((asNpc != null) && (clickingChar != null) && MonsterSpecialAttacks.TryHealerClick(asNpc, clickingChar)) {
 				return; //#827 e_healer turned a realm outcast away (Sphere's @userclick return 1)
 			}
-			int hue = Notoriety.GetNameHue(this.GetHighlightColorFor(clicker));
+			int hue = this.ClickedNameHue(clicker, clickerConn);
 			PacketSequences.SendNameFrom(clickerConn, this, Guild.NameWithAbbreviation(this), hue);
 		}
+
+		/// <summary>#892 - showname_old, getNameHue: a Nazgul is announced, and named in their color.</summary>
+		private int ClickedNameHue(AbstractCharacter clicker, TcpConnection<GameState> clickerConn) {
+			if (NazgulRings.IsNazgul(this)) {
+				PacketSequences.SendNameFrom(clickerConn, this, "NAZGUL", NazgulHue);
+				return NazgulHue;
+			}
+			return Notoriety.GetNameHue(this.GetHighlightColorFor(clicker));
+		}
+
+		private const int NazgulHue = 0x3c2;
 
 		/// <summary>#892 - an office's clothes follow what the character wears.</summary>
 		public override void On_ItemEquip(ItemInCharArgs args) {
@@ -2373,9 +2384,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override void On_AosClick(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
-			int hue = Notoriety.GetNameHue(this.GetHighlightColorFor(clicker));
+			int hue = this.ClickedNameHue(clicker, clickerConn);
 			string shownName = Guild.NameWithAbbreviation(this);
-			if (shownName != this.Name) { //#884 a cliloc name has no room for the [abbreviation]
+			if ((shownName != this.Name) || NazgulRings.IsNazgul(this)) { //#884 a cliloc name has no room for the [abbreviation]
 				PacketSequences.SendNameFrom(clickerConn, this, shownName, hue);
 				return;
 			}

@@ -88,6 +88,8 @@ namespace SteamEngine.CompiledScripts {
 			Town town = (Town) parameter;
 			if (targetted.Realm != town.Realm) {
 				self.SysMessage("Neni to nas, neni treba jej blacklistovat");
+			} else if (NazgulRings.IsFirst(targetted)) {
+				self.SysMessage("Prvniho Nazgula nemuzes pridat na blacklist");
 			} else if (town.FindBan(targetted) != null) {
 				self.SysMessage(targetted.Name + " jiz na blacklistu je.");
 			} else if (town.FindCitizen(targetted) != null) {
@@ -110,6 +112,8 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(targetted.Name + " jiz na blacklistu je.");
 			} else if (targetted.Realm != self.Realm) {
 				self.SysMessage("Tohoto neni potreba navrhovat na blacklist");
+			} else if (NazgulRings.IsFirst(targetted)) {
+				self.SysMessage("Prvniho Nazgula nemuzes navrhnout na blacklist");
 			} else if (town.FindCitizen(targetted) != null) {
 				self.SysMessage("Obcany daneho mesta nelze navrhovat na blacklist");
 			} else if (targetted.IsGM) {
@@ -130,7 +134,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void NavrhBan(Character self, ScriptArgs sa) {
 			Player player = self as Player;
-			Town town = Town.OfCitizen(self);
+			Town town = Town.ForSuggesting(self);
 			if ((player != null) && (town != null)) {
 				player.SysMessage("Koho chces navrhnout na blacklist?");
 				player.Target(SingletonScript<Targ_TownSuggestBan>.Instance, town);
@@ -143,8 +147,8 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void Blacklist(Character self, ScriptArgs sa) {
 			Player player = self as Player;
-			Town town = Town.OfCitizen(self);
-			if ((player != null) && (town != null) && (town.mayor == self)) {
+			Town town = Town.OfRuler(self);
+			if ((player != null) && (town != null)) {
 				player.SysMessage("Koho chces pridat na blacklist?");
 				player.Target(SingletonScript<Targ_TownBan>.Instance, town);
 			}
