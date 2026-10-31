@@ -10,6 +10,8 @@ namespace SteamEngine.Tests.Protocol {
 	public class TownTests {
 		private const string Account = "towntests";
 		private const string AccountB = "towntestsb";
+		private const int TownPieces = 10;
+		private const int RealmAddBan = 3, RealmOffice = 4;
 		private const int Election = 3, Stand = 5, Blacklist = 2, SuggestedBans = 21, AddBan = 12, MakeCitizenship = 25, PayTax = 4, TaxStatus = 6, SetTax = 14, Resign = 15, Home = 24, News = 23, Yes = 1;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
 
@@ -23,8 +25,8 @@ namespace SteamEngine.Tests.Protocol {
 		public void SetupPutsAStoneInEveryCityOnce() {
 			using (var client = this.Connect("Town Setup Tester")) {
 				string first = this.Ask(client, ".SetupTowns", "SETUP_DONE:"); //another test may have run it already
-				Assert.Equal(9, Number(first, "added") + Number(first, "kept"));
-				Assert.Contains("added=0 kept=9", this.Ask(client, ".SetupTowns", "SETUP_DONE:"));
+				Assert.Equal(TownPieces, Number(first, "added") + Number(first, "kept"));
+				Assert.Contains("added=0 kept=" + TownPieces, this.Ask(client, ".SetupTowns", "SETUP_DONE:"));
 				this.Ask(client, ".TestTownStones", "TOWN_STONES:");
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string city in new[] { "Minas_Tirith", "Edoras", "Dol_Amroth", "Fornost", "Hobitin", "Erebor", "Dol", "Sede_pristavy", "Kralovstvi_lesnich_elfu" }) {
@@ -236,6 +238,71 @@ namespace SteamEngine.Tests.Protocol {
 				string kept = this.Report(one);
 				Assert.Contains("candidates=0", kept);
 				Assert.Contains("mayor=Town_Voter_One", kept);
+			}
+		}
+
+		[Fact]
+		public void GeneralIsAppointedWearsTheUniformAndHonors() {
+			using (var gm = this.Connect("Town General Maker")) {
+				this.Ask(gm, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+				using var general = this.Connect("Town General", AccountB);
+				this.Ask(gm, ".SetupTowns", "SETUP_DONE:");
+				this.Ask(general, ".TestTownPrepare 1", "TOWN_READY:");
+				uint stone = (uint) Number(this.Ask(gm, ".TestRealmStone", "REALM_STONE:"), "uid");
+				this.Ask(general, ".TestRealmStone", "REALM_STONE:");
+				uint generalUid = (uint) Number(this.Ask(general, ".TestRealmReport", "REALM_REPORT:"), "uid");
+
+				//a GM appoints, on the stone
+				gm.SendDoubleClick(stone);
+				var list = gm.ReadGumpDialogWithStrings(Wait);
+				gm.SendGumpResponse(list.GumpUid, RealmOffice);
+				Thread.Sleep(300);
+				gm.SendTargetUid(generalUid);
+				Thread.Sleep(300);
+				string appointed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
+				Assert.Contains("holder=General_Town_General name=General_Town_General badge=True uniform=False", appointed);
+				double strength = Number(appointed, "str");
+				double vitality = Number(appointed, "vit");
+
+				//no uniform, no honor
+				general.SendSpeech(".honor");
+				Thread.Sleep(300);
+				Assert.Equal(strength, Number(this.Ask(general, ".TestRealmReport", "REALM_REPORT:"), "str"));
+
+				this.Ask(general, ".TestRealmDress", "REALM_DRESSED:");
+				Thread.Sleep(400);
+				string dressed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
+				Assert.Contains("uniform=True", dressed);
+				Assert.Contains("cape=0x481", dressed);
+				general.SendSpeech(".honor");
+				Thread.Sleep(300);
+				string honored = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
+				Assert.Equal(strength + 5, Number(honored, "str"));
+				Assert.Equal(vitality + 5, Number(honored, "vit"));
+
+				//a piece off, and the clothes go back
+				this.Ask(general, ".TestRealmUndress", "REALM_DRESSED:");
+				Thread.Sleep(400);
+				string undressed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
+				Assert.Contains("uniform=False", undressed);
+				Assert.DoesNotContain("cape=0x481", undressed);
+
+				//the General bans for the whole realm, and a guard of any town of it knows
+				this.Ask(gm, ".TestTownPrepare 0", "TOWN_READY:");
+				uint gmUid = (uint) Number(this.Ask(gm, ".TestRealmReport", "REALM_REPORT:"), "uid");
+				general.SendDoubleClick(stone);
+				list = general.ReadGumpDialogWithStrings(Wait);
+				general.SendGumpResponse(list.GumpUid, RealmAddBan);
+				Thread.Sleep(300);
+				general.SendTargetUid(gmUid);
+				var input = general.ReadGumpDialogWithStrings(Wait);
+				general.SendGumpResponse(input.GumpUid, 1, new Dictionary<int, string> { { 1, "Zradce" } });
+				general.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("attacks=True", this.Ask(gm, ".TestTownGuardCheck", "TOWN_GUARD:"));
+
+				this.Ask(general, ".TestRealmDismiss", "REALM_DISMISSED:");
+				string dismissed = this.Ask(general, ".TestRealmReport", "REALM_REPORT:");
+				Assert.Contains("holder=none name=Town_General badge=False", dismissed);
 			}
 		}
 

@@ -16,6 +16,10 @@ namespace SteamEngine.CompiledScripts {
 			"Minas_Tirith", "Edoras", "Dol_Amroth", "Fornost", "Hobitin", "Erebor", "Dol", "Sede_pristavy", "Kralovstvi_lesnich_elfu"
 		};
 
+		/// <summary>The realm's stones stand in its capital, as far on as a stone's own spot isn't taken.</summary>
+		public const string GeneralCity = "Minas_Tirith";
+		public const string GeneralStoneDef = "i_generalstone";
+
 		public override string Name {
 			get {
 				return "Town stones";
@@ -37,6 +41,11 @@ namespace SteamEngine.CompiledScripts {
 					pieces.Item(StonePieceId(city), StoneDef, spot, area.P.M);
 				}
 			}
+			FlaggedRegion capital = CityArea(GeneralCity);
+			int[] generalSpot = SpotIn(capital, gm, 1);
+			if (generalSpot != null) {
+				pieces.Item("realm/gondor/stone", GeneralStoneDef, generalSpot, capital.P.M);
+			}
 		}
 
 		public static string StonePieceId(string city) {
@@ -48,10 +57,11 @@ namespace SteamEngine.CompiledScripts {
 			return StaticRegion.GetByDefname("a_" + city.Replace('-', '_')) as FlaggedRegion;
 		}
 
-		private static int[] SpotIn(FlaggedRegion area, Character gm) {
+		/// <summary>A tile `StepsFromSpawnPoint` from the area's spawn point, the `nth` of them, inside the area.</summary>
+		private static int[] SpotIn(FlaggedRegion area, Character gm, int nth = 0) {
 			Point4D spawnPoint = area.P;
 			Map map = Map.GetMap(spawnPoint.M);
-			foreach (int[] spot in WorldSpots.WalkableRing(map, spawnPoint, gm.MovementSettings, StepsFromSpawnPoint)) {
+			foreach (int[] spot in WorldSpots.WalkableRing(map, spawnPoint, gm.MovementSettings, StepsFromSpawnPoint + (2 * nth))) {
 				bool moved = (spot[0] != spawnPoint.X) || (spot[1] != spawnPoint.Y);
 				if (moved && (RegionEventSystem.AreaOf(map.GetRegionFor(spot[0], spot[1])) == area)) {
 					return spot;

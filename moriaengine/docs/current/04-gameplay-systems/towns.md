@@ -56,6 +56,18 @@ Guards go by their home's town: a guard attacks a blacklisted player on sight an
 them, shouting a warning first at someone still outside the walls. A guard protects a citizen of its own
 town even when criminal, though not a murderer.
 
+## The General of Gondor
+
+`systems/generals.scp`. A GM appoints one on `i_generalstone` (`.SetupTowns` stands it in Minas Tirith): the
+character becomes "General Name" and wears `i_generals_bracelet`, which can't come off by hand. The
+stone shows everyone the realm's blacklist. The General and GMs edit it. Guards of the realm attack
+those names anywhere, unless they're citizens of the guard's own town.
+
+`.honor` gives everyone not of Mordor within 8 tiles +5 Str, Dex, Int and Vit for 240 s, and the General
+waits 300 s to use it again. It needs the uniform: robe, cape, gloves, shoes, hat and a mount. Complete, the
+clothes take the office's colors and looks, and each goes back when the uniform stops being complete. The
+numbers are on `.settings`, category "Realm Offices".
+
 ## Saving
 
 `Town` is saved with its stone, as a guild is. Destroying the stone ends the town.
