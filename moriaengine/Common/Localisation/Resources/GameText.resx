@@ -652,6 +652,30 @@
   <data name="ThiefDefenceLoc_MagicallyBlocked" xml:space="preserve">
     <value>The blow was magically stopped</value>
   </data>
+  <data name="DestroyableLoc_IsDestroyed" xml:space="preserve">
+    <value>{0} is destroyed</value>
+  </data>
+  <data name="DestroyableLoc_MayBeDamaged" xml:space="preserve">
+    <value>{0} may have been damaged</value>
+  </data>
+  <data name="RepairLoc_NotRepairable" xml:space="preserve">
+    <value>This can't be repaired</value>
+  </data>
+  <data name="RepairLoc_NotNeeded" xml:space="preserve">
+    <value>This doesn't need repairing</value>
+  </data>
+  <data name="RepairLoc_NeedAnvil" xml:space="preserve">
+    <value>You must stand by an anvil</value>
+  </data>
+  <data name="RepairLoc_NotEnough" xml:space="preserve">
+    <value>You don't have enough material ({0})</value>
+  </data>
+  <data name="RepairLoc_Repaired" xml:space="preserve">
+    <value>The repair worked</value>
+  </data>
+  <data name="RepairLoc_Failed" xml:space="preserve">
+    <value>The repair failed</value>
+  </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
     <value>Nem� st�elivo.</value>
   </data>

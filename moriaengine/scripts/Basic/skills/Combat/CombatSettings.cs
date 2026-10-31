@@ -88,6 +88,15 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double weapAttackVsMPerLevel = 0.010;
 
+		[SaveableData]
+		public int weaponWearPerHit = 60; //nastaveni_global_physIdam
+
+		[SaveableData]
+		public int staffWearPerSpell = 50; //nastaveni_global_magicIdam
+
+		[SaveableData]
+		public int armorWearPerDamage = 180; //nastaveni_global_armorIdam
+
 		/// <summary>#866 - e_vigilance: the share of a thief's blow on a monster left in the stance.</summary>
 		[SaveableData]
 		public double vigilanceOwnDamage = 0.700;

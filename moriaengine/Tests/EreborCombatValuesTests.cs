@@ -83,6 +83,14 @@ namespace SteamEngine.Tests {
 			Assert.Equal(efficiency, Field("zbrane", defname, "BleedingEfficiency"));
 		}
 
+		[Theory]
+		[InlineData("zbrane", "i_sword_long_iron", "260")]        //200 * 1300 / 1000
+		[InlineData("brneni", "i_iron_platemail", "50")]          //200 * 700 * 36 / 100000
+		[InlineData("brneni", "i_mithril_platemail_gorget", "58")] //1400 * 700 * 6 / 100000
+		public void ItemsHaveEreborsDurability(string folder, string defname, string durability) {
+			Assert.Equal(durability, Field(folder, defname, "maxDurability"));
+		}
+
 		[Fact]
 		public void StavesHaveEreborsMindPower() {
 			Assert.Equal("805", Field("zbrane", "i_staff_black_iron", "MindPowerVsP"));

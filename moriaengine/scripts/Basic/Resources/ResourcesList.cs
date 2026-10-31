@@ -48,6 +48,10 @@ namespace SteamEngine.CompiledScripts {
 			this.nonMultiplicablesSubList = list.OfType<IResourceListEntry_Simple>().OrderBy(e => -e.DesiredCount).ToArray();
 		}
 
+		public IEnumerable<IResourceListEntry> Entries {
+			get { return this.resourceItemsList; }
+		}
+
 		public static void ThrowIfNotConsumable(ResourcesList rl) {
 			if (rl != null) {
 				foreach (var entry in rl.nonMultiplicablesSubList) {

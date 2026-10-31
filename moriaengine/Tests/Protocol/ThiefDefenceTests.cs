@@ -35,6 +35,26 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#865 - a point of wear, gone at the last point, repair at an anvil.</summary>
+		[Fact]
+		public void WearAndRepair() {
+			using (var client = this.ConnectLoginAndCreateCharacter("WearChecker")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestWearAndRepairReport");
+				Assert.True(this.fixture.WaitForGameOutputSince("WEAR_REPAIR:", mark, TimeSpan.FromSeconds(10)));
+				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "WEAR_REPAIR:");
+
+				Assert.Equal(260, ExtractDouble(line, "max"));
+				Assert.Equal(260, ExtractDouble(line, "fresh"));
+				Assert.Equal(259, ExtractDouble(line, "worn"));
+				Assert.Equal(1, ExtractDouble(line, "destroyed"));
+				Assert.Equal(ExtractDouble(line, "half"), ExtractDouble(line, "awayFromAnvil")); //no anvil, no repair
+				Assert.Equal(1, ExtractDouble(line, "repaired"));
+				Assert.Equal(260 - ExtractDouble(line, "tries"), ExtractDouble(line, "maxAfter")); //every try costs a point
+				Assert.True(ExtractDouble(line, "ingotsLeft") < 100, line);
+			}
+		}
+
 		private static double ExtractDouble(string line, string key) {
 			string marker = key + "=";
 			int idx = line.IndexOf(marker, StringComparison.Ordinal);

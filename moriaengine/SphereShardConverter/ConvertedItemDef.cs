@@ -471,6 +471,17 @@ namespace SteamEngine.Converter {
 			if (SphereWorldVars.TryGetInt("nastaveni_weapspeed_" + dispId, out int speed)) {
 				this.Replace("speed", speed.ToString(CultureInfo.InvariantCulture), "nastaveni_weapspeed");
 			}
+			foreach (string suffix in materialTierSuffixes) {
+				if (defname.EndsWith(suffix, StringComparison.OrdinalIgnoreCase) &&
+						SphereWorldVars.TryGetInt("nastaveni_durability" + suffix, out int metalDurability) &&
+						SphereWorldVars.TryGetInt("nastaveni_durability_" + dispId, out int weaponDurability)) {
+					//weaponcreate
+					this.Set("maxDurability", ((metalDurability * weaponDurability) / 1000).ToString(CultureInfo.InvariantCulture), "nastaveni_durability");
+				}
+			}
+			if (SphereWorldVars.TryGetInt("nastaveni_cm_can_repair_" + defname, out int canRepair) && (canRepair != 0)) {
+				this.Set("canRepair", "true", "nastaveni_cm_can_repair");
+			}
 			if (SphereWorldVars.TryGetInt("nastaveni_weapbleed_" + dispId, out int bleed)) {
 				this.Replace("BleedingEfficiency", (bleed / 1000.0).ToString("0.###", CultureInfo.InvariantCulture), "nastaveni_weapbleed");
 			}
@@ -533,6 +544,14 @@ namespace SteamEngine.Converter {
 								int pieceWeight = isShield ? (setWeight / 6) : setWeight;
 								pieceWeight = ((layerPercent * pieceWeight) + 50) / 100;
 								thing.Replace("WEIGHT", pieceWeight.ToString(CultureInfo.InvariantCulture), "nastaveni_armorweight");
+								//armorcreate, shieldcreate
+								if (SphereWorldVars.TryGetInt("nastaveni_durability_" + metal, out int metalDurability) &&
+										SphereWorldVars.TryGetInt("nastaveni_durability_" + set.Key, out int setDurability)) {
+									thing.Set("maxDurability", ((metalDurability * setDurability * layerPercent) / 100000).ToString(CultureInfo.InvariantCulture), "nastaveni_durability");
+								}
+							}
+							if (SphereWorldVars.TryGetInt("nastaveni_cm_can_repair_" + defname, out int canRepair) && (canRepair != 0)) {
+								thing.Set("canRepair", "true", "nastaveni_cm_can_repair");
 							}
 							thing.Replace("armorVsP", value.ToString(CultureInfo.InvariantCulture), "nastaveni_armorarmor");
 							thing.Replace("armorVsM", value.ToString(CultureInfo.InvariantCulture), "");

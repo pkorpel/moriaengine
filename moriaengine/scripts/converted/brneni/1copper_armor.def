@@ -33,6 +33,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 9 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_PLATEMAIL_leggings]
 CATEGORY = Provisions - Armor - Colored
@@ -55,6 +57,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 16 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_PLATEMAIL_GORGET]
 CATEGORY = Provisions - Armor - Colored
@@ -77,6 +81,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 4 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_PLATEMAIL_GAUNTLETS]
 CATEGORY = Provisions - Armor - Colored
@@ -99,6 +105,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 4 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_PLATEMAIL]
 CATEGORY = Provisions - Armor - Colored
@@ -121,6 +129,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 25 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_FEMALE_PLATEMAIL]
 CATEGORY = Provisions - Armor - Colored
@@ -143,6 +153,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 25 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_PLATE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -165,6 +177,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 9 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_CLOSED_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -187,6 +201,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 9 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_BASCINET]
 CATEGORY = Provisions - Armor - Colored
@@ -209,6 +225,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 9 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_NOSE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -231,6 +249,8 @@ armorVsP = 60 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 60
 mindDefenseVsM = 10
+maxDurability = 9 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_copper_CHAINMAIL_gorget]
 NAME = "Copper Chainmail Gorget"
@@ -249,6 +269,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 3 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_copper_CHAINMAIL_sleeves]
 NAME = "Copper Chainmail Sleeves"
@@ -267,6 +289,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 8 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_copper_CHAINMAIL_gloves]
 NAME = "Copper Chainmail Gloves"
@@ -285,6 +309,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 4 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_CHAINMAIL_COIF]
 CATEGORY = Provisions - Armor - Colored
@@ -307,6 +333,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 8 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_CHAINMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -329,6 +357,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 13 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_CHAINMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -351,6 +381,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 21 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_copper_kite_wood_shield]
 NAME = "Copper kite shield"
@@ -369,6 +401,8 @@ armorVsP = 5 //nastaveni_armorarmor
 mindDefenseVsP = 1 //nastaveni_armorparts_OM 
 armorVsM = 5
 mindDefenseVsM = 1
+maxDurability = 12 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_copper_RINGMAIL_gorget]
 NAME = "Copper ringmail gorget"
@@ -387,6 +421,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 2 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_copper_RINGMAIL_helm]
 NAME = "Copper Ringmail Helm"
@@ -405,6 +441,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 5 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_RINGMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -427,6 +465,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 9 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_RINGMAIL_SLEEVES]
 CATEGORY = Provisions - Armor - Colored
@@ -449,6 +489,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 5 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_RINGMAIL_GLOVES]
 CATEGORY = Provisions - Armor - Colored
@@ -471,6 +513,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 2 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_RINGMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -493,6 +537,8 @@ armorVsP = 30 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 30
 mindDefenseVsM = 10
+maxDurability = 14 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_BUCKLER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -515,6 +561,8 @@ armorVsP = 1 //nastaveni_armorarmor
 mindDefenseVsP = 1 //nastaveni_armorparts_OM 
 armorVsM = 1
 mindDefenseVsM = 1
+maxDurability = 9 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_METAL_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -537,6 +585,8 @@ armorVsP = 5 //nastaveni_armorarmor
 mindDefenseVsP = 1 //nastaveni_armorparts_OM 
 armorVsM = 5
 mindDefenseVsM = 1
+maxDurability = 18 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_COPPER_HEATER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -559,6 +609,8 @@ armorVsP = 2 //nastaveni_armorarmor
 mindDefenseVsP = 1 //nastaveni_armorparts_OM 
 armorVsM = 2
 mindDefenseVsM = 1
+maxDurability = 21 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_cap_copper]
 CATEGORY = Provisions - Armor - Colored
@@ -580,6 +632,8 @@ mindDefenseVsP = 10 //nastaveni_armorparts_OM
 armorVsM = 8
 mindDefenseVsM = 10
 WEIGHT = 71 //nastaveni_armorweight 
+maxDurability = 4 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_sleeves_copper]
 CATEGORY = Provisions - Armor - Colored
@@ -601,6 +655,8 @@ mindDefenseVsP = 10 //nastaveni_armorparts_OM
 armorVsM = 8
 mindDefenseVsM = 10
 WEIGHT = 71 //nastaveni_armorweight 
+maxDurability = 4 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_gloves_copper]
 CATEGORY = Provisions - Armor - Colored
@@ -622,6 +678,8 @@ mindDefenseVsP = 10 //nastaveni_armorparts_OM
 armorVsM = 8
 mindDefenseVsM = 10
 WEIGHT = 36 //nastaveni_armorweight 
+maxDurability = 2 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_gorget_copper]
 CATEGORY = Provisions - Armor - Colored
@@ -643,6 +701,8 @@ mindDefenseVsP = 10 //nastaveni_armorparts_OM
 armorVsM = 8
 mindDefenseVsM = 10
 WEIGHT = 31 //nastaveni_armorweight 
+maxDurability = 1 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_leggings_copper]
 CATEGORY = Provisions - Armor - Colored
@@ -664,6 +724,8 @@ mindDefenseVsP = 10 //nastaveni_armorparts_OM
 armorVsM = 8
 mindDefenseVsM = 10
 WEIGHT = 117 //nastaveni_armorweight 
+maxDurability = 6 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_tunic_copper]
 CATEGORY = Provisions - Armor - Colored
@@ -685,6 +747,8 @@ mindDefenseVsP = 10 //nastaveni_armorparts_OM
 armorVsM = 8
 mindDefenseVsM = 10
 WEIGHT = 184 //nastaveni_armorweight 
+maxDurability = 10 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_armor_female_bustier_studded_copper]
 CATEGORY = Provisions - Armor - Colored
@@ -706,6 +770,8 @@ mindDefenseVsP = 10 //nastaveni_armorparts_OM
 armorVsM = 8
 mindDefenseVsM = 10
 WEIGHT = 184 //nastaveni_armorweight 
+maxDurability = 10 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_armor_female_studded_copper]
 CATEGORY = Provisions - Armor - Colored
@@ -727,6 +793,8 @@ mindDefenseVsP = 10 //nastaveni_armorparts_OM
 armorVsM = 8
 mindDefenseVsM = 10
 WEIGHT = 184 //nastaveni_armorweight 
+maxDurability = 10 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_arms_Copper]
 CATEGORY = Provisions - Armor - Colored
@@ -749,6 +817,8 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
+maxDurability = 4 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_chest_Copper]
 CATEGORY = Provisions - Armor - Colored
@@ -771,6 +841,8 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
+maxDurability = 10 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_gloves_Copper]
 CATEGORY = Provisions - Armor - Colored
@@ -793,6 +865,8 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
+maxDurability = 2 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_helmet_Copper]
 CATEGORY = Provisions - Armor - Colored
@@ -815,6 +889,8 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
+maxDurability = 4 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_leggings_Copper]
 CATEGORY = Provisions - Armor - Colored
@@ -837,3 +913,5 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
+maxDurability = 6 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 

@@ -1,9 +1,10 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-31): #860 leftovers, last one: #865
+## DONE (2026-10-31): #860 leftovers: #868, #872, #866, #865
 
 User: "carry on with the remaining open items".
-**#866 done** (branch 866-thief-rebound, also #480): ThiefDefence: a_thief_rebound, .vigilance/.stance, magic reflex and block as tags until magic items exist. Reading the source corrected #480: vigilance doesn't reduce damage taken, it takes 30% off the thief's own blows on monsters and multiplies rebound.
+**#865 done** (branch 865-wear-repair): CombatWear (weapons per hit, staves per harmful spell, armor by body part), Destroyable.TakeWear (native OnTakeDamage), Erebor's maxDurability + canRepair via the converter, .repair at an anvil. bodypart_layers isn't in the archive, weights 14/6/36/7/7/23 read as head/neck/torso/arms/hands/legs. Items already in a world keep 100/100.
+**#866 done** (PR #877, also #480): ThiefDefence: a_thief_rebound, .vigilance/.stance, magic reflex and block as tags until magic items exist. Reading the source corrected #480: vigilance doesn't reduce damage taken, it takes 30% off the thief's own blows on monsters and multiplies rebound.
 **#872 done** (PR #876, also #479): BleedingEffectPluginDef.Strike, f_thief_doBleed's fade, stacking and caps; nastaveni_weapbleed via the converter (BleedingEfficiency); class ability roll in CombatCalculator.CalculateClassAbility. a_bleeding_strike's 40 stam activation is still ours, Erebor's ripper is 3 stam + drain.
 **#868 done** (PRs #874, #875): reactive armor spell, Mystic's .astralpower, .switchmagic, Crushing Blow, strike ending mana shield. Can't be ported: energy shield's strength and voodoo shield, i_energyshield, shield_power and i_voodooshield aren't in the archive. Gotcha again: test accounts hold 5 characters, a 6th Fact starves another test with an unrelated-looking failure.
 

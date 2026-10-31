@@ -469,7 +469,7 @@ THIEF_ABILITIES = [
     ("Backstab (stealth opener)", "Designed: hidden+adjacent+facing required, x1.5 vs Player / x2.0 vs Monster bonus, reveals on success", "No - designed only, issue #477", "docs/moria design notes + GitHub issue #477"),
     ("Attack-from-behind (passive)", "Designed: facing-based damage bonus", "No - designed only, issue #478", "GitHub issue #478"),
     ("Podriznuti (toggle amplifier)", "Designed: amplifies the attack-from-behind bonus", "No - designed only, issue #478", "GitHub issue #478"),
-    ("Thief bleed cap", "Designed: Thief-specific higher cap on the generic bleed mechanism", "No - designed only, issue #479", "GitHub issue #479"),
+    ("Thief bleed cap", "Designed: Thief-specific higher cap on the generic bleed mechanism", "Yes - 300 + level up to 200, 250 for others", "GitHub issue #479"),
     ("Defensive stance + weapon reflect", "Designed: damage-reduction stance, weapon-specific reflect", "No - designed only, issue #480", "GitHub issue #480"),
     ("Shield-strike paralyze", "Designed: niche paralyze-on-shield-strike", "No - designed only (optional), issue #481", "GitHub issue #481"),
 ]
@@ -777,8 +777,8 @@ def build_overview(wb):
         "On-hit abilities, a_weapon_dodge (each point dodges 1% of monsters' physical blows), elite monsters, Magic Shield "
         "and the like, a target shooting back (its stamina counts 9x in the hit roll), a paralyzed target (rand(10) "
         "instead of the limit), guards always hitting. A GM always passes the hit roll's skill check.",
-        "#868 (reactive armor, energy shield, Mystic's paralysis and lightning strikes), #865 (nothing wears items out, "
-        "durability only scales what's typed in), #866 (thief rebound, magic items' reflex and block).",
+        "reactive armor, energy shield and rebound on blows taken, Astral Power's effects, bleed damage over time, item wear and repair. "
+        "Durability only scales what's typed in here. All of those are in the game, see combat.md.",
     ]:
         row = note(ws, row, 1, "- " + line, span=8)
     row += 1
@@ -913,7 +913,7 @@ def build_core_formulas(wb):
         ("sqrt_int in Excel", "Excel has no sqrt_int: the workbook uses ROUND(100*SQRT(x),0). Erebor's is an integer Newton iteration, usually the same and at most 1 off, which rarely moves hitspeed by a tick", "CombatCalculator.SqrtInt"),
         ("Hit roll", "attack = TRUNC((skill+tactics)/2); defend = TRUNC((target tactics + target stamina*10)/2); limit = TRUNC((skill - TRUNC((attack-defend)/5))/10), 0-100; difficulty = rand(limit); 0 always hits, otherwise CheckSuccess(skill, difficulty*10). Chance rows sum that over every difficulty", "WeaponSkillDef.RollHit, CombatCalculator.CalculateHitDifficultyLimit, SkillUtils.CheckSuccess"),
         ("Damage type of a swing", "Player: swords and axes slash, fencing weapons are sharp, maces and bare hands blunt, bows and crossbows stab, war fork stabs, scimitar and executioner's axe slash. Monster: NaturalDamageType wins; without one by weapon, swords/axes Sharp|Slashing, fencing Sharp|Stabbing, bare hands Blunt", "CombatCalculator.GetWeaponDamageType, GetDamageTypeOfWeapon"),
-        ("Weapon durability scaling", "effective AttackVsP/VsM = (TypeDef.AttackVsP/2) + (TypeDef.AttackVsP/2) * (Durability/MaxDurability) - i.e. half value at 0 durability, full value at full durability. Nothing lowers durability yet (#865)", "Weapon.AttackVsP"),
+        ("Weapon durability scaling", "effective AttackVsP/VsM = (TypeDef.AttackVsP/2) + (TypeDef.AttackVsP/2) * (Durability/MaxDurability) - i.e. half value at 0 durability, full value at full durability. Nothing lowers durability yet", "Weapon.AttackVsP"),
     ]
     row = header_row(ws, row, 1, ["Formula", "Exact expression", "Source"])
     for r in formula_texts:
@@ -1084,7 +1084,7 @@ def build_armor_ref(wb):
                             "Erebor's save/sphereworld.scp. How to change: fix it in the archive or the converter and "
                             "regenerate the defs, never by hand. Durability scaling (Wearable) applies on top at runtime: "
                             "effective value = (TypeDef value / 2) + (TypeDef value / 2) * (Durability/MaxDurability) - a "
-                            "damaged piece gives proportionally less, though nothing wears items out yet (#865).", span=14)
+                            "damaged piece gives proportionally less, and fights wear items down (see combat.md).", span=14)
     row += 1
     row = note(ws, row, 1, "Across a full outfit the best piece per body part counts, then the part weights - see Core "
                             "Formulas tab's Body-part table. A full set of one armor counts exactly its number: iron plate "
@@ -1668,8 +1668,8 @@ def build_mystic(wb, weapons_info, monsters_info):
                "Mystic's swing is a separate damage path whatever the weapon: mind power against the spell defense, as "
                "cold magic (DamageManager.GetMindPowerSwingArgs). Armor doesn't matter, MagicResist and worn armor's mind "
                "defense do. Staves carry Erebor's nastaveni_staffSMbonus, maces and hammers #539's scaling, every other "
-               "weapon the flat bare-hands 700 regardless of material. Not ported: the strike's paralysis chance and "
-               "lightning variant (#868). The swing itself still rolls to hit with the weapon's skill.", span=8)
+               "weapon the flat bare-hands 700 regardless of material. Not modeled: Astral Power's paralysis chance and "
+               "lightning variant (see combat.md). The swing itself still rolls to hit with the weapon's skill.", span=8)
     row += 1
 
     wi = weapons_info
