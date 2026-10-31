@@ -156,7 +156,7 @@ namespace SteamEngine.Tests.Protocol {
 			return (end < 0) ? line.Substring(start).Trim() : line.Substring(start, end - start);
 		}
 
-		private static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {
+		internal static string TryReadMessageContaining(TestGameClient client, string text, TimeSpan timeout) {
 			DateTime deadline = DateTime.UtcNow + timeout;
 			while (true) {
 				TimeSpan remaining = deadline - DateTime.UtcNow;

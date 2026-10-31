@@ -18,6 +18,13 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #927 all of Erebor's potions (branch potions)
+
+User: all potions fully working, as on Erebor; files in their own folder, separate files. scripts/Basic/Potions, doc potions.md. Potion + PotionKind per family, PotionKinds finds by def, numbers on PotionSettings as Erebor's "seconds,min,max".
+Decisions read from the source: Sphere's layer 44 replaces what's in it (EreborNext CanEquipLayer, layer >= LAYER_SPELL_STATS), so one potion at a time, no stacking; nightsight + skins have own slots. Cure defs aren't in the archive. Perception times mine. Bomb in a pack: Erebor's `nastaveni_<id>` was broken, used the potion's strength.
+Found: **Magic Reflection threw on a cold boot**: p_magic_reflection registers in a static initializer, so it didn't exist until something touched the class (NpcBeneficialSpellTests noted it). MagicReflectionPluginBootstrap now does at boot; a .def line for it collides. i_potion_Shrink couldn't be created: converter's "T_potion_shrink" case never matched a lowercased type, and the type had no typedef. PotionKeg moved here from Optional/StorageBoxes (no def existed, i_keg_potion added). DamageManager.Trigger_Damage now takes no attacker (Sphere's damage_noresponse).
+Gotchas: `PotionDef` is also water, milk and empty flasks, audit by i_potion_ name. CultureInfo cs-CZ throws here (#823 family): invariant + Replace. A test's rapid t_allpotions trips the hammering rule: ForgetAttempts. 5 characters per account again.
+
 ## DONE (2026-10-31): #923 .boosts (branch boosts-dialog)
 
 User: dialog of everything affecting a player, a framework so future bonuses show by themselves; Erebor's .boosty improved. List by default, compact strip toggle, Cooldowns section, keep food + mounts. Potions next, separately.
