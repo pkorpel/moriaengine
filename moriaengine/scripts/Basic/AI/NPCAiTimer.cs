@@ -84,6 +84,9 @@ namespace SteamEngine.CompiledScripts {
 
 		private static readonly TimerKey aiTimerTK = TimerKey.Acquire("_npcAiTimer_");
 
+		/// <summary>#892 - stop_guard: told to hold still, until a hit or an order says otherwise.</summary>
+		[SaveableData] public bool isHeld;
+
 		[SaveableData] public int homeX;
 		[SaveableData] public int homeY;
 		[SaveableData] public sbyte homeZ;
@@ -250,6 +253,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void Think(NPC self) {
+			if (this.isHeld) {
+				return;
+			}
 			if ((this.target != null) && !this.IsValidTarget(self, this.target)) {
 				Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " dropped target " + this.target.Name + " (no longer valid - dead, map mismatch, or out of GiveUpRange)");
 				this.target = null;
@@ -372,6 +378,10 @@ namespace SteamEngine.CompiledScripts {
 		/// fighting someone. Never its own master - an owner attacking its pet first makes it rebel
 		/// (NPC.On_HostileAction drops the ownership), after which this does pick the ex-owner.</summary>
 		public static void DefendAgainst(NPC self, Character attacker) {
+			NPCAiTimer held = GetFor(self);
+			if (held != null) {
+				held.isHeld = false;
+			}
 			if (!NpcAggroSettings.instance.npcsDefendThemselves) {
 				return;
 			}

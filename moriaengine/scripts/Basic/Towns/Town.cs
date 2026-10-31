@@ -132,6 +132,20 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public List<TownBan> suggestedBans = new List<TownBan>();
 
+		[SaveableData]
+		public GuardForce force;
+
+		/// <summary>The town's hired guards.</summary>
+		public GuardForce Force {
+			get {
+				if (this.force == null) {
+					this.force = new GuardForce { city = this.city, town = this };
+				}
+				this.force.EnsureCheckTimer(this.stone);
+				return this.force;
+			}
+		}
+
 		[LoadingInitializer]
 		public Town() {
 			all.Add(this);
