@@ -180,7 +180,15 @@ even from a monster); the others ignore armor. A monster's spell on a monster do
 
 **Mystic strike.** Power is `mind power * 10`, `* mysticPowerVsM * (spellPowerVsM + level * 0.01)`
 vs a monster, less the spell defense, and damage is `power * mysticStrikeEffect / 1000`, as cold
-magic. Not ported: the ability's paralysis chance and the lightning variant (#868).
+magic. `.switchmagic` turns strikes on monsters to lightning, for 20 stamina; PvP is always cold.
+
+`.astralpower` toggles Erebor's class ability, for 3 stamina and then
+`astralPowerStaminaPerSecond` (16) until it's under 5. Each strike rolls `MysticAbilities.
+CalculateAbility(statsLevel)` out of 100000. A hit deals up to 13 (cold) or 15 (lightning) instead
+of 16, and then a cold strike freezes for a second (always on monsters, 30% on players, not
+through magic reflection), and a lightning one can add a lightning spell of power 2000 + mind
+power * 8-16. Crushing Blow (`a_mystik_doubleswing`) vs monsters: `10% + 0.5% per point` to add
+75% power, for 30 stamina.
 
 **Reactive armor.** On a physical blow, after resists and minimum damage, the spell absorbs
 `reactiveArmorAbsorbPvM/PvP` (20/10%) of it and sends `reactiveArmorReturnPvM/PvP` (10/10%) back to

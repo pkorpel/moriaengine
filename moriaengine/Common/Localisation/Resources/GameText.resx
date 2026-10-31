@@ -604,6 +604,33 @@
   <data name="DamageManagerLoc_YouDodged" xml:space="preserve">
     <value>You dodged the blow.</value>
   </data>
+  <data name="MysticAbilitiesLoc_OnlyMystic" xml:space="preserve">
+    <value>Only a Mystic can do this.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_NotReady" xml:space="preserve">
+    <value>You aren't ready for that.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_FreezingStrikes" xml:space="preserve">
+    <value>Your strikes are freezing.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_ParalysingStrikes" xml:space="preserve">
+    <value>Your strikes are paralysing.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_NowCold" xml:space="preserve">
+    <value>You now strike with cold.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_NowLightning" xml:space="preserve">
+    <value>You now strike with energy.</value>
+  </data>
+  <data name="MysticAbilitiesLoc_CrushingBlow" xml:space="preserve">
+    <value>Crushing blow!</value>
+  </data>
+  <data name="MysticAbilitiesLoc_TargetFrozen" xml:space="preserve">
+    <value>The target is frozen!</value>
+  </data>
+  <data name="MysticAbilitiesLoc_TargetStruck" xml:space="preserve">
+    <value>The target is stunned!</value>
+  </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
     <value>Nem� st�elivo.</value>
   </data>

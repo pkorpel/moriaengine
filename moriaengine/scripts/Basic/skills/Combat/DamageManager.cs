@@ -263,7 +263,8 @@ namespace SteamEngine.CompiledScripts {
 				// OneHandBlunt/TwoHandBlunt per mystic.def.
 				bool attackerIsMystic = Professions.HasProfession(attacker, Professions.Mystic);
 				// #860 - Erebor's mystic strike is dam_magic|dam_cold
-				DamageType damageType = attackerIsMystic ? DamageType.MagicCold : attacker.WeaponDamageType;
+				DamageType damageType = !attackerIsMystic ? attacker.WeaponDamageType :
+					(swingArgs.MysticLightning ? DamageType.MagicElectric : DamageType.MagicCold);
 
 				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_critic
 				//(if the attacker has it) can still add bonus damage to THIS swing, so it must
@@ -362,6 +363,9 @@ namespace SteamEngine.CompiledScripts {
 				// missed one - WeaponSkillDef has no separate "cast attempt" step to hook for a
 				// Mystic the way Erebor's own single dospellcustom_donesrc call would.
 				if (attackerIsMystic) {
+					if (swingArgs.MysticSpecial && !defender.IsDeleted && defender.IsAliveAndValid) {
+						MysticAbilities.ApplySpecialStrike(attacker, defender, swingArgs.MysticLightning);
+					}
 					DropManaShieldForStrike(attacker);
 					int manaBefore = attacker.Mana;
 					attacker.Mana = (short) Math.Round(attacker.Mana * MagerySettings.instance.mysticManaLossPermille / 1000.0);
@@ -514,11 +518,20 @@ namespace SteamEngine.CompiledScripts {
 				Player player = attacker as Player;
 				int level = (player != null) ? Math.Min(player.Level, 200) : 0;
 				power *= magery.mysticPowerVsM * (magery.spellPowerVsM + (level * magery.mysticPowerPerLevel));
+				if (MysticAbilities.RollCrushingBlow(attacker)) {
+					power += Math.Truncate(power * magery.mysticCrushingBlowStrength);
+				}
 			}
+			bool lightning = !defenderIsPlayer && MysticAbilities.StrikesWithLightning(attacker);
+			bool special = MysticAbilities.RollSpecial(attacker);
+			double effect = !special ? magery.mysticStrikeEffect : (lightning ? magery.mysticLightningStrikeEffect : magery.mysticSpecialStrikeEffect);
 			int defense = CombatCalculator.GetSpellDefense(attacker, defender);
-			double damageAfterMD = Math.Max(0, Math.Truncate(((Math.Truncate(power) - defense) * magery.mysticStrikeEffect) / 1000));
+			double damageAfterMD = Math.Max(0, Math.Truncate(((Math.Truncate(power) - defense) * effect) / 1000));
 
-			return new WeaponSwingArgs(attacker, defender, power, 0, defense, damageAfterMD);
+			WeaponSwingArgs swingArgs = new WeaponSwingArgs(attacker, defender, power, 0, defense, damageAfterMD);
+			swingArgs.MysticSpecial = special;
+			swingArgs.MysticLightning = lightning;
+			return swingArgs;
 		}
 
 		static TriggerKey beforeSwingTK = TriggerKey.Acquire("beforeSwing");
@@ -600,6 +613,9 @@ namespace SteamEngine.CompiledScripts {
 		public readonly Character attacker;
 		public readonly double attack, piercing, armorClass;
 		int finalDamage;
+
+		/// <summary>#868 - a Mystic's strike: an Astral Power one, and of lightning, not cold.</summary>
+		internal bool MysticSpecial, MysticLightning;
 
 		public WeaponSwingArgs(Character attacker, Character defender, double attack, double piercing, double armorClass, double damageAfterAC)
 			: base(attacker, defender, attack, piercing, armorClass, damageAfterAC, -1) {
