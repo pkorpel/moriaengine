@@ -96,6 +96,28 @@ function Set-MulPathToCheckedInUoFiles {
 	}
 }
 
+function Remove-OrphanedGeneratedFiles {
+	# *.Generated.cs files are gitignored and sit beside their .ct template, so moving or
+	# deleting a template leaves the old output behind on every machine that had built it,
+	# where it collides with the new one (CS0102/CS0111 on the class). Hit moving Potion.ct
+	# in #928: the author's copy had been deleted by hand, so only other checkouts failed.
+	# The generator trims spaces and underscores off the name, and 'ItemLockPlugin .ct'
+	# does have a space, so compare trimmed names.
+	$templates = @{}
+	Get-ChildItem -Path scripts -Filter '*.ct' -Recurse -File | ForEach-Object {
+		$templates[(Join-Path $_.DirectoryName $_.BaseName.Trim('_', ' '))] = $true
+	}
+	Get-ChildItem -Path scripts -Filter '*.Generated.cs' -Recurse -File |
+		Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } |
+		ForEach-Object {
+			$template = Join-Path $_.DirectoryName ($_.Name -replace '\.Generated\.cs$', '')
+			if (-not $templates.ContainsKey($template)) {
+				Write-Host "==> Removing $($_.FullName): its template is gone"
+				Remove-Item $_.FullName
+			}
+		}
+}
+
 function Invoke-ScriptGeneration {
 	# scripts/Generated needs GameCore to have actually booted once (it writes
 	# a default steamengine.ini and exits) and then a second time (it compiles
@@ -209,6 +231,7 @@ if ($Clean) {
 }
 
 Write-Host '==> Restoring SteamEngine.sln'
+Remove-OrphanedGeneratedFiles
 Invoke-Dotnet @('restore', 'SteamEngine.sln')
 
 Write-Host "==> Building standalone-buildable projects ($Configuration)"
