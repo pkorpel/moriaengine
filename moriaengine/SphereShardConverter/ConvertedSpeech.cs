@@ -26,10 +26,16 @@ namespace SteamEngine.Converter {
 	/// its ON= patterns are kept as they are, and the Sphere script under each one is kept as comments, for
 	/// porting later. Sphere script can't run as LScript, so nothing of the body is live.</summary>
 	public class ConvertedSpeech : ConvertedDef {
+		private static readonly HashSet<string> names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public ConvertedSpeech(PropsSection input, ConvertedFile convertedFile)
 			: base(input, convertedFile) {
 			this.headerType = "SpeechStub";
+			names.Add(input.HeaderName);
+		}
+
+		internal static bool IsDefined(string name) {
+			return names.Contains(name.Trim());
 		}
 
 		public override void Dump(TextWriter writer) {

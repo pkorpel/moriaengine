@@ -173,18 +173,18 @@ n_potions[35]  i_potion_Stoneskinelixir
 n_potions[36]  i_potion_Mobility
 n_potions[37] i_potion_nightsight
 n_potions[38]  i_potion_Explosiondispell
-n_potions[39]
+n_potions[39] ""
 n_potions[40]  i_potion_HPsightLess
 n_potions[41]  i_potion_HPsight
 n_potions[42]  i_potion_HPsightGreat
 n_potions[43]  i_potion_HPsightElixir
-n_potions[44]
-n_potions[45]
-n_potions[46]
-n_potions[47]
-n_potions[48]
-n_potions[49]
-n_potions[50]
+n_potions[44] ""
+n_potions[45] ""
+n_potions[46] ""
+n_potions[47] ""
+n_potions[48] ""
+n_potions[49] ""
+n_potions[50] ""
 
 //n_material[0]  i_ingot_copper
 //n_material[1]  i_ingot_iron
@@ -443,9 +443,9 @@ n_global_default[11]    100
 n_global[12]       global_armorIdam
 n_global_name[12]       "damage Armoru pri zasahu"
 n_global_default[12]    100
-n_global[13]
-n_global_name[13]
-n_global_default[13]
+n_global[13] ""
+n_global_name[13] ""
+n_global_default[13] ""
 n_global[14]       craftexp_factor
 n_global_name[14]       craft expy - celkem
 n_global_default[14]    1000
@@ -589,9 +589,9 @@ n_global2_default[8]  0
 n_global2[9]    global_armorchange_vM_druid
 n_global2_name[9]  "zmena AC vM druid"
 n_global2_default[9]  0
-n_global2[10]
-n_global2_name[10]
-n_global2_default[10]
+n_global2[10] ""
+n_global2_name[10] ""
+n_global2_default[10] ""
 n_global2[11]    global_armorchange_vP_war
 n_global2_name[11]       "zmena AC vP war"
 n_global2_default[11]   0
@@ -655,15 +655,15 @@ n_global2_default[33]   0
 n_global2[34]       global_armorchangeom_vP_druid
 n_global2_name[34]      "zmena OM vP druid"
 n_global2_default[34]   0
-n_global2[35]
-n_global2_name[35]
-n_global2_default[35]
+n_global2[35] ""
+n_global2_name[35] ""
+n_global2_default[35] ""
 n_global2[36]       vzdalenost_guardspawn
 n_global2_name[36]      "Vzdalenost guardspawnu od sebe"
 n_global2_default[36]   7
-n_global2[37]
-n_global2_name[37]
-n_global2_default[37]
+n_global2[37] ""
+n_global2_name[37] ""
+n_global2_default[37] ""
 n_global2[38]       afk_toggleonoff
 n_global2_name[38]      "Zap/vyp kontroly AFK"
 n_global2_default[38]   1
@@ -738,9 +738,9 @@ n_global3_default[10]  897
 n_global3[11]    spellcast_silence_mind_blast
 n_global3_name[11]  "Silence po MindBlastu xx dsec."
 n_global3_default[11]  15
-n_global3[12]
-n_global3_name[12]
-n_global3_default[12]
+n_global3[12] ""
+n_global3_name[12] ""
+n_global3_default[12] ""
 n_global3[13]    GM_Step
 n_global3_name[13]  "Zapnuti osetreni GM Stepu"
 n_global3_default[13]  0
@@ -753,15 +753,15 @@ n_global3_default[15]  5
 n_global3[16]    GM_Step_resist
 n_global3_name[16]  "GM Step_ochrana(ds) po leapu/teleportu"
 n_global3_default[16]  20
-n_global3[17]
-n_global3_name[17]
-n_global3_default[17]
+n_global3[17] ""
+n_global3_name[17] ""
+n_global3_default[17] ""
 n_global3[18]     FollowScript_check
 n_global3_name[18]  "Zapnuti kontroly Follow Scriptu"
 n_global3_default[18]  1
-n_global3[19]
-n_global3_name[19]
-n_global3_default[19]
+n_global3[19] ""
+n_global3_name[19] ""
+n_global3_default[19] ""
 n_global3[20]    base_elite_bonus
 n_global3_name[20]  "Zakladni bonus proti elitkam"
 n_global3_default[20]  200
@@ -830,9 +830,9 @@ n_ability_default[20]   100
 n_ability[21]       ability_craft_vigour
 n_ability_name[21]      Vigour ability bonus
 n_ability_default[21]   100
-n_ability[22]
-n_ability_name[22]
-n_ability_default[22]
+n_ability[22] ""
+n_ability_name[22] ""
+n_ability_default[22] ""
 n_ability[23]       ability_animatemanadrain
 n_ability_name[23]      "animate - mana drain (exp/x)"
 n_ability_default[23]  200
@@ -867,9 +867,9 @@ n_ability_default[32]  "0,0,0,0"
 n_ability[33]    povolani_maxstats_mystik
 n_ability_name[33]  maxstaty mystik
 n_ability_default[33]  "0,0,0,0"
-n_ability[34]
-n_ability_name[34]
-n_ability_default[34]
+n_ability[34] ""
+n_ability_name[34] ""
+n_ability_default[34] ""
 n_ability[35]       thief_backstabM_bonus
 n_ability_name[35]      "thief backstab bonus vM"
 n_ability_default[35]   2000
@@ -906,9 +906,9 @@ n_ability_default[45]  500
 n_ability[46]    warcry_range
 n_ability_name[46]  "dosah warcry"
 n_ability_default[46]  5
-n_ability[47]
-n_ability_name[47]
-n_ability_default[47]
+n_ability[47] ""
+n_ability_name[47] ""
+n_ability_default[47] ""
 n_ability[48]    normal_bleed_cap
 n_ability_name[48]  "Bleed Cap Ostatni"
 n_ability_default[48]  250
@@ -952,9 +952,9 @@ n_ability2_default[9]   1
 n_ability2[10]          stuntattack_chance
 n_ability2_name[10]     stuntattack sance
 n_ability2_default[10]  300
-n_ability2[11]
-n_ability2_name[11]
-n_ability2_default[11]
+n_ability2[11] ""
+n_ability2_name[11] ""
+n_ability2_default[11] ""
 n_ability2[12]          roundattack_chance
 n_ability2_name[12]     sance na roundattack
 n_ability2_default[12]  300
@@ -982,9 +982,9 @@ n_ability2_default[19]  900
 n_ability2[20]          woodoo_delay
 n_ability2_name[20]     pauza po woodoo
 n_ability2_default[20]  600
-n_ability2[21]
-n_ability2_name[21]
-n_ability2_default[21]
+n_ability2[21] ""
+n_ability2_name[21] ""
+n_ability2_default[21] ""
 n_ability2[22]          lordnazguls_fear_distance
 n_ability2_name[22]     dosah Lordnazg fearu
 n_ability2_default[22]  12
@@ -997,9 +997,9 @@ n_ability2_default[24]  180
 n_ability2[25]           fear_effect_counter
 n_ability2_name[25]     trvani Fearu(sec)
 n_ability2_default[25]  300
-n_ability2[26]
-n_ability2_name[26]
-n_ability2_default[26]
+n_ability2[26] ""
+n_ability2_name[26] ""
+n_ability2_default[26] ""
 n_ability2[27]           generals_honor_distance
 n_ability2_name[27]     dosah Generalova honoru
 n_ability2_default[27]  8
@@ -1009,15 +1009,15 @@ n_ability2_default[28]  300
 n_ability2[29]           honor_effect_counter
 n_ability2_name[29]     trvani Honoru(sec)
 n_ability2_default[29]  300
-n_ability2[30]
-n_ability2_name[30]
-n_ability2_default[30]
+n_ability2[30] ""
+n_ability2_name[30] ""
+n_ability2_default[30] ""
 n_ability2[31]           hypnoza_povolena
 n_ability2_name[31]     povol/zakaz(1/0) hypnozu
 n_ability2_default[31]  1
-n_ability2[32]
-n_ability2_name[32]
-n_ability2_default[32]
+n_ability2[32] ""
+n_ability2_name[32] ""
+n_ability2_default[32] ""
 n_ability2[33]          knockback_chance
 n_ability2_name[33]     sance na odstrceni
 n_ability2_default[33]  900
@@ -1030,9 +1030,9 @@ n_ability2_default[35]  10
 n_ability2[36]          knockback_delay
 n_ability2_name[36]  knockback pauza
 n_ability2_default[36]  10
-n_ability2[37]
-n_ability2_name[37]
-n_ability2_default[37]
+n_ability2[37] ""
+n_ability2_name[37] ""
+n_ability2_default[37] ""
 n_ability2[38]          efekt_mithril
 n_ability2_name[38]  sila mithril bonusu
 n_ability2_default[38]  1000
@@ -1048,9 +1048,9 @@ n_ability2_default[41]  50
 n_ability2[42]          manaleech_max
 n_ability2_name[42]  max sani many
 n_ability2_default[42]  50
-n_ability2[43]
-n_ability2_name[43]
-n_ability2_default[43]
+n_ability2[43] ""
+n_ability2_name[43] ""
+n_ability2_default[43] ""
 n_ability2[44]         bleed_bolt
 n_ability2_name[44]    sila bleedu kuse
 n_ability2_default[44] 0
@@ -1074,18 +1074,18 @@ n_ability3_default[0]  5
 n_ability3[1]    controlnpc_chance
 n_ability3_name[1]  "modifier sance uspechu ovladni"
 n_ability3_default[1]  500
-n_ability3[2]
-n_ability3_name[2]
-n_ability3_default[2]
+n_ability3[2] ""
+n_ability3_name[2] ""
+n_ability3_default[2] ""
 n_ability3[3]    ms_manasuck_time
 n_ability3_name[3]  "prodleva manashield klesani many"
 n_ability3_default[3]  1
 n_ability3[4]    ms_manasuck_amount
 n_ability3_name[4]  "pokles many pri manashieldu"
 n_ability3_default[4]  3
-n_ability3[5]
-n_ability3_name[5]
-n_ability3_default[5]
+n_ability3[5] ""
+n_ability3_name[5] ""
+n_ability3_default[5] ""
 n_ability3[6]    cs_101_manause
 n_ability3_name[6]  "frost bolt mana"
 n_ability3_default[6]  20
@@ -1095,9 +1095,9 @@ n_ability3_default[7]  5
 n_ability3[8]    cs_101_effect
 n_ability3_name[8]  "frost bolt power"
 n_ability3_default[8]  20,40,800 //min, max, piercing
-n_ability3[9]
-n_ability3_name[9]
-n_ability3_default[9]
+n_ability3[9] ""
+n_ability3_name[9] ""
+n_ability3_default[9] ""
 n_ability3[10]    standcast_sm
 n_ability3_name[10]  "standcast SM"
 n_ability3_default[10]  10
@@ -1125,9 +1125,9 @@ n_ability3_default[17]  300
 n_ability3[18]    pact_again
 n_ability3_name[18]  "shaman pacts znovu v sec"
 n_ability3_default[18]  600
-n_ability3[19]    voodoocontrol_again
-n_ability3_name[19]  "voodoocontrol znovu v sec"
-n_ability3_default[19]  90
+//n_ability3[19]    voodoocontrol_again //defined again later, commented out by Converter
+//n_ability3_name[19]  "voodoocontrol znovu v sec" //defined again later, commented out by Converter
+//n_ability3_default[19]  90 //defined again later, commented out by Converter
 n_ability3[19]    voodooshield_again
 n_ability3_name[19]  "voodooshield znovu v sec"
 n_ability3_default[19]  90
@@ -1158,12 +1158,12 @@ n_ability3_default[27]  10
 n_ability3[28]    reactivea_pvp_absorb
 n_ability3_name[28]  "Reactive A. pvp absorb %"
 n_ability3_default[28]  10
-n_ability3[29]
-n_ability3_name[29]
-n_ability3_default[29]
-n_ability3[30]
+n_ability3[29] ""
+n_ability3_name[29] ""
+n_ability3_default[29] ""
+n_ability3[30] ""
 n_ability3_name[30] "Dragon resist armor:"
-n_ability3_default[30]
+n_ability3_default[30] ""
 n_ability3[31]     dragon_resist_hrud
 n_ability3_name[31] "Hrud: "
 n_ability3_default[31] 10
@@ -1182,9 +1182,9 @@ n_ability3_default[35] 6
 n_ability3[36]     dragon_resist_krk
 n_ability3_name[36] "Krk: "
 n_ability3_default[36] 5
-n_ability3[37]
-n_ability3_name[37]
-n_ability3_default[37]
+n_ability3[37] ""
+n_ability3_name[37] ""
+n_ability3_default[37] ""
 n_ability3[38]     mystik_doubleswing_strength
 n_ability3_name[38] "% sila mystik doubleswing"
 n_ability3_default[38] 75
@@ -1194,9 +1194,9 @@ n_ability3_default[39] 30
 n_ability3[40]     MindBlast_silence_chance
 n_ability3_name[40] "Sance na silence MindBlastem"
 n_ability3_default[40] 60
-n_ability3[41]
-n_ability3_name[41]
-n_ability3_default[41]
+n_ability3[41] ""
+n_ability3_name[41] ""
+n_ability3_default[41] ""
 n_ability3[42]     single_taunt_stamina
 n_ability3_name[42] "Stamina na Single Taunt"
 n_ability3_default[42] 20
@@ -1252,9 +1252,9 @@ n_ability4_default[8]   260
 n_ability4[9]    splitShot_effecttime
 n_ability4_name[9]   "sec na vystrel splitShotu"
 n_ability4_default[9]   10
-n_ability4[10]
-n_ability4_name[10]
-n_ability4_default[10]
+n_ability4[10] ""
+n_ability4_name[10] ""
+n_ability4_default[10] ""
 n_ability4[11]          crushingArrow_delay
 n_ability4_name[11]     "crushingArrow - Prodleva pred vystrelem (ds)"
 n_ability4_default[11]  15
@@ -1290,13 +1290,13 @@ n_magicCharge[3]    charge_baseEff
 n_magicCharge_name[3] "Zakladni ucinek efektu (%)"
 n_magicCharge_default[3] 50
 
-n_magicCharge[4]
-n_magicCharge_name[4]
-n_magicCharge_default[4]
+n_magicCharge[4] ""
+n_magicCharge_name[4] ""
+n_magicCharge_default[4] ""
 
-n_magicCharge[5]
-n_magicCharge_name[5]
-n_magicCharge_default[5]
+n_magicCharge[5] ""
+n_magicCharge_name[5] ""
+n_magicCharge_default[5] ""
 
 n_magicCharge[6]    charge_spellPow_pvp[5]
 n_magicCharge_name[6]  "Magic Arrow (PvP)"
@@ -1368,9 +1368,9 @@ n_magicCharge[25]    charge_spellPow_pvm[49]
 n_magicCharge_name[25] "Chain Lightning (PvM)"
 n_magicCharge_default[25] 200
 
-n_magicCharge[26]
-n_magicCharge_name[26]
-n_magicCharge_default[26]
+n_magicCharge[26] ""
+n_magicCharge_name[26] ""
+n_magicCharge_default[26] ""
 
 n_magicCharge[27]    charge_silenceBonus
 n_magicCharge_name[27] "Silence Bonus (%%)"
@@ -1417,63 +1417,63 @@ n_poison_default[4]  128,196
 n_poison[5]    i_potion_poisondeadly
 n_poison_name[5]  sila deadly
 n_poison_default[5]  1,255
-n_poison[6]
-n_poison_name[6]
-n_poison_default[6]
+n_poison[6] ""
+n_poison_name[6] ""
+n_poison_default[6] ""
 n_poison[7]    poison_para
 n_poison_name[7]  rychlost para jed
 n_poison_default[7]  10
 n_poison[8]    i_potion_poison_para
 n_poison_name[8]  sila para jed (vuci resistu)
 n_poison_default[8]  750,999
-n_poison[9]
-n_poison_name[9]
-n_poison_default[9]
+n_poison[9] ""
+n_poison_name[9] ""
+n_poison_default[9] ""
 n_poison[10]    poison_fizz
 n_poison_name[10]  rychlost poison fizz
 n_poison_default[10]  5
 n_poison[11]    i_potion_poison_fizz
 n_poison_name[11]  fizz %sance
 n_poison_default[11]  10,50
-n_poison[12]
-n_poison_name[12]
-n_poison_default[12]
+n_poison[12] ""
+n_poison_name[12] ""
+n_poison_default[12] ""
 n_poison[13]    poison_stamina
 n_poison_name[13]  rychlost poison stamina
 n_poison_default[13]  5
 n_poison[14]    i_potion_poison_stamina
 n_poison_name[14]  % staminy
 n_poison_default[14]  1,20
-n_poison[15]
-n_poison_name[15]
-n_poison_default[15]
+n_poison[15] ""
+n_poison_name[15] ""
+n_poison_default[15] ""
 n_poison[16]    poison_clumsy
 n_poison_name[16]  rychlost/trvani clumsy
 n_poison_default[16]  5
 n_poison[17]    i_potion_poison_clumsy
 n_poison_name[17]  -dex
 n_poison_default[17]  1,20
-n_poison[18]
-n_poison_name[18]
-n_poison_default[18]
+n_poison[18] ""
+n_poison_name[18] ""
+n_poison_default[18] ""
 n_poison[19]    poison_weaken
 n_poison_name[19]  rychlost/trvani weaken
 n_poison_default[19]  5
 n_poison[20]    i_potion_poison_weaken
 n_poison_name[20]  -str
 n_poison_default[20]  1,20
-n_poison[21]
-n_poison_name[21]
-n_poison_default[21]
+n_poison[21] ""
+n_poison_name[21] ""
+n_poison_default[21] ""
 n_poison[22]    poison_feeblemind
 n_poison_name[22]  rychlost/trvani feeblemind
 n_poison_default[22]  5
 n_poison[23]    i_potion_poison_feeblemind
 n_poison_name[23]  -int
 n_poison_default[23]  1,20
-n_poison[24]
-n_poison_name[24]
-n_poison_default[24]
+n_poison[24] ""
+n_poison_name[24] ""
+n_poison_default[24] ""
 n_poison[25]    mvm_coefficient
 n_poison_name[25]  Koeficient MvM jedu
 n_poison_default[25]  100
@@ -1483,15 +1483,15 @@ n_poison_default[26]  2500
 n_poison[27]    pvp_coefficient
 n_poison_name[27]  Koeficient PvP jedu
 n_poison_default[27]  100
-n_poison[28]
-n_poison_name[28]
-n_poison_default[28]
+n_poison[28] ""
+n_poison_name[28] ""
+n_poison_default[28] ""
 n_poison[29]    use_custom_poison
 n_poison_name[29]  pouzivat custom poison
 n_poison_default[29] 0
-n_poison[30]
-n_poison_name[30]
-n_poison_default[30]
+n_poison[30] ""
+n_poison_name[30] ""
+n_poison_default[30] ""
 n_poison[31]	spell_poisoning_effect
 n_poison_name[31]	kouzlo poison - vliv poisoningu koeficient
 n_poison_default[31]	205

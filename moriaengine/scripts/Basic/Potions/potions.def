@@ -2,10 +2,12 @@
 
 [PotionEffectPluginDef p_potion_effect]
 
-//the archive has no itemdef of its own for it, only items of it
+//the archive has no itemdef of its own for it, only items of it. The recipe was the old StorageBoxes def's
 [PotionKegDef i_keg_potion]
 NAME = "Soudek na lektvary"
 TYPE = t_keg_potion
+RESOURCES = 8 i_board, 1 i_barrel_tap, 1 i_barrel_hoops
+SKILLMAKE = 65.0 tinkering, t_tinker_tools
 model = 0x1940
 
 [PetFigurineDef i_pet_figurine]

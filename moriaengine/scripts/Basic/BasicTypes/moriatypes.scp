@@ -14,11 +14,11 @@
 
 [typedef t_potion_shrink]
 
+[typedef t_pergamen_forma]
+
 [typedef t_bottle_empty]
 
 [typedef t_custom_spell]
-
-[typedef T_potion_shrink]
 
 [typedef t_post_hitching]
 

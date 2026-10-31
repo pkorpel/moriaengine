@@ -58,7 +58,7 @@ d_area_Mordor_2_1 	Minas Morgul
 d_area_Mordor_2_2 	Gorgoroth
 d_areas_Mordor_2	2
 
-d_area_Mordor_3_1	Rhovanion
+//d_area_Mordor_3_1	Rhovanion //defined again later, commented out by Converter
 d_area_Mordor_3_1	Temny hvozd
 d_areas_Mordor_3	2
 

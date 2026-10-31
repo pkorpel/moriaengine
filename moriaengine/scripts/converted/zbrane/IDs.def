@@ -950,7 +950,7 @@ SUBSECTION = Archers/Bowyers
 DESCRIPTION = jagged bolts (Straight)
 
 DUPEITEM = i_bolt_jagged
-//DEFNAME = i_bolt_jagged_x // commented out by Converter 
+DEFNAME = i_bolt_jagged_x
 
 [ProjectileDef 0xf3f]
 CATEGORY = Items by Professions
@@ -988,7 +988,7 @@ SUBSECTION = Archers/Bowyers
 DESCRIPTION = Arrow (Straight)
 
 DUPEITEM = i_arrow
-//DEFNAME = i_arrow_x // commented out by Converter 
+DEFNAME = i_arrow_x
 
 [ItemDef 0x1bd4]
 CATEGORY = Items by Professions
@@ -1060,4 +1060,4 @@ SUBSECTION = Archers/Bowyers
 DESCRIPTION = Crossbow bolt (Straight)
 
 DUPEITEM = i_xbolt
-//DEFNAME = i_xbolt_x // commented out by Converter 
+DEFNAME = i_xbolt_x

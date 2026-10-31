@@ -112,7 +112,7 @@ DESCRIPTION = Hrobeus
 
 TEVENTS = e_character
 TEVENTS = e_monster
-TSPEECH = Hrobus
+//TSPEECH = Hrobus
 NAME = "Hrobeus"
 model = C_MAN
 //DESIRES = i_gold,t_wand,t_reagent,t_bone // commented out by Converter 

@@ -588,13 +588,13 @@ DESCRIPTION = Bullets
 NAME = "Bullets"
 DEFNAME = i_bullets
 
-[ItemDef 0x23e]
+[ItemDef i_wooden_sign_post]
 CATEGORY = Other
 SUBSECTION = Avatar
 DESCRIPTION = Wooden Sign Post
 
 NAME = "Wooden Sign Post"
-DEFNAME = i_wooden_sign_post
+model = 0x23e
 
 [WearableDef 0x283]
 NAME = "Sword Stap"
@@ -877,8 +877,8 @@ name = "shroom yellow"
 [ItemDef 0x307]
 name = "cauldron"
 
-[ItemDef 0x308]
-name = "??"
+//[ItemDef 0x308] //(commented out by Converter) 
+//name = "??"
 
 [ItemDef 0x308]
 name = "??"
@@ -1282,7 +1282,7 @@ name = "big blue necklace"
 [ItemDef 0x903]
 name = "talisman"
 
-[WeaponDef 0x23a]
+[WeaponDef i_flamming_scimitar]
 SUBSECTION = Swords
 
 NAME = "Flamming Scimitar"
@@ -1293,11 +1293,11 @@ SKILLMAKE = 1000 blacksmithing, 1000 magery //some resources were fixed by conve
 //FLIP = 1 // commented out by Converter 
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
+model = 0x23a
 TwoHanded = false
 layer = 0 //Set by Converter 
 WeaponType = WeaponType.OneHandSword //guessed by Converter 
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
-DEFNAME = i_flamming_scimitar
 attackVsP = 27.5
 attackVsM = 27.5
 piercing = 100 //default value set by Converter 

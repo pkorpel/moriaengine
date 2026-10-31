@@ -279,5 +279,5 @@ DEFNAME = i_kindling
 [ItemDef 0xde2]
 DUPEITEM = i_kindling
 
-[ItemDef 0xf6b]
-DUPEITEM = 0xf64
+//[ItemDef 0xf6b] //(commented out by Converter) 
+//DUPEITEM = 0xf64

@@ -41,6 +41,9 @@ namespace SteamEngine.Converter {
 
 		public Dictionary<string, ConvertedThingDef> byDefname = new Dictionary<string, ConvertedThingDef>(StringComparer.OrdinalIgnoreCase);
 		public Dictionary<int, ConvertedThingDef> byModel = new Dictionary<int, ConvertedThingDef>();
+		//#937 - the numbers used as a header so far, and which of the engine's own scripts' defs to keep
+		protected Dictionary<string, ConvertedThingDef> byHeader;
+		protected HashSet<string> handWritten;
 
 		public int Model {
 			get {
@@ -85,9 +88,59 @@ namespace SteamEngine.Converter {
 
 		//#883 - double-clicking a banker talks to it here (#509), the realm bankers too
 		private static void HandleTSpeech(ConvertedDef def, PropsLine line) {
-			def.Set(line);
+			//#937 - five NPCs name a speech that's nowhere in the archive
+			string[] names = line.Value.Split(',');
+			if (Array.TrueForAll(names, ConvertedSpeech.IsDefined)) {
+				def.Set(line);
+			} else {
+				foreach (string name in names) {
+					def.Set(ConvertedSpeech.IsDefined(name) ? "TSPEECH" : "//TSPEECH", name.Trim(), line.Comment);
+				}
+			}
 			if (string.Equals(line.Value.Trim(), "spk_banker_ok", StringComparison.OrdinalIgnoreCase)) {
 				def.Set("TEVENTS", "e_banker", "");
+			}
+		}
+
+		//#937 - an archive name that's nowhere in the archive, always meant gold
+		private static readonly Dictionary<string, string> modelAliases =
+			new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
+				{ "i_coin_gold", "i_gold" },
+			};
+
+		//#937 - a number used twice. Sphere redoes the def, keeping both names on it. Here the first section's def
+		//would stay and the rest of the section be lost, so one that has a name of its own stands as a def of that
+		//name, with the number as its model. Without a name it only repeats the number, and the later one counts.
+		private void ResolveHeaderNumber() {
+			if (this.IsDontDump) {
+				return; //a mount's item, it won't be there to take the number
+			}
+			string ownName = (this.defname1 ?? this.defname2)?.Value;
+			if (this.handWritten.Contains(this.headerName) || ((ownName != null) && this.handWritten.Contains(ownName))) {
+				this.DontDump();
+				return;
+			}
+			if (!this.headerName.StartsWith("0x", StringComparison.Ordinal)) {
+				return;
+			}
+			ConvertedThingDef first;
+			if (!this.byHeader.TryGetValue(this.headerName, out first)) {
+				this.byHeader[this.headerName] = this;
+				return;
+			}
+			string firstName = (first.defname1 ?? first.defname2)?.Value;
+			if ((ownName != null) && !string.Equals(ownName, firstName, StringComparison.OrdinalIgnoreCase)) {
+				this.Set("model", this.headerName, "");
+				this.headerName = ownName;
+				this.defname1 = null;
+				this.defname2 = null;
+				this.hasNumericalHeader = false;
+				this.byDefname[ownName] = this;
+			} else if (firstName != null) {
+				this.DontDump();
+			} else {
+				first.DontDump();
+				this.byHeader[this.headerName] = this;
 			}
 		}
 
@@ -102,6 +155,11 @@ namespace SteamEngine.Converter {
 					this.headerName = "0x" + headerNum.ToString("x");
 					this.modelNum = headerNum;
 				}
+				//#937 - DEFNAME of a dupe was lost, and everything that named it with it (i_rock_3)
+				this.defname1 = this.origData.TryPopPropsLine("defname");
+				if (this.defname1 != null) {
+					this.byDefname[this.defname1.Value] = this;
+				}
 			} else {
 				bool needsHeader = false;
 				this.idLine = this.origData.TryPopPropsLine("id");
@@ -114,7 +172,9 @@ namespace SteamEngine.Converter {
 						this.hasNumericalHeader = true;
 						//ownModel = true;
 						this.modelNum = headerNum;
-						this.byModel[headerNum] = this;
+						if (!this.byModel.ContainsKey(headerNum)) {
+							this.byModel[headerNum] = this;
+						}
 						this.headerName = "0x" + headerNum.ToString("x");
 					}
 				} else {
@@ -145,6 +205,7 @@ namespace SteamEngine.Converter {
 					this.Info(this.origData.HeaderLine, "Has no defname except a number, and model defined elsewhere...");
 				}
 			}
+			this.ResolveHeaderNumber();
 		}
 
 		public override void SecondStage() {
@@ -160,9 +221,18 @@ namespace SteamEngine.Converter {
 						this.modelNum = idNum;
 					}
 				} else {
+					string model = this.idLine.Value.Trim();
+					if (modelAliases.TryGetValue(model, out string alias)) {
+						model = alias;
+					}
+					this.byDefname.TryGetValue(model, out this.modelDef);
+					if ((this is ConvertedItemDef) && (this.modelDef == null) && ConvertedConstants.IsUndefinedName(model) && !HandWrittenScripts.IsDefined(model)) {
+						//#937 - nothing of that name to take the model from, and an item without one can't load
+						this.Warning(this.idLine.Line, "Model '" + model + "' is not defined anywhere, commented out");
+						this.DontDump();
+					}
 					//#763 - "ID={ i_chest_metal 1 i_chest_metal_brass 1 }" random lists need commas in LScript
-					this.Set("model", ConvertedTemplateDef.FixRandomExpression(this.idLine.Value), this.idLine.Comment);
-					this.byDefname.TryGetValue(this.idLine.Value, out this.modelDef);
+					this.Set("model", ConvertedTemplateDef.FixRandomExpression(model), this.idLine.Comment);
 				}
 			}
 
@@ -329,6 +399,10 @@ namespace SteamEngine.Converter {
 					this.Set("Color", ConvertedTemplateDef.FixRandomExpression(value), comment);
 					break;
 			}
+		}
+
+		internal bool HasDefname2(string name) {
+			return (this.defname1 != null) && (this.defname2 != null) && string.Equals(this.defname2.Value, name, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public string PrettyDefname {

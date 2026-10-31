@@ -64,8 +64,7 @@ namespace SteamEngine {
 					if (line.Length > 0) {
 						string[] args = Utility.SplitSphereString(line, true);
 						if (args.Length != 4) {
-							Logger.WriteWarning("Bodyconv.def contains a line in an unexpected format. That line is '" + line + "'");
-							break;
+							continue; //#937 - the older client's file has 2 columns, and no model we'd have to add
 						}
 						int model = ConvertTools.ParseInt32(args[0]);
 						if (!Exists(model)) {

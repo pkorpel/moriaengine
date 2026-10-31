@@ -58,8 +58,6 @@ Skills
 Abilities
 
 [DIALOG d_explevel Button]
-on=0
-
 on=1
 src.Dialog(d_levelspendattributes)
 

@@ -286,7 +286,6 @@ model = c_woman
 ICON = i_pet_MAN
 CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
 BLOODCOLOR = 020
-RESOURCES = 
 moverate = 4
 WeaponAttack = 55
 armorVsP = 40

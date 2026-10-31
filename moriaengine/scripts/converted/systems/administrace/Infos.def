@@ -21,9 +21,9 @@
 //[function dialog_zpruhledni] //(commented out by Converter) 
 
 [Constants dialogy]
-center                <center>
-centere               </center>
-br                    <br>
+//center                <center> //defined again later, commented out by Converter
+//centere               </center> //defined again later, commented out by Converter
+//br                    <br> //defined again later, commented out by Converter
 
 d_def_button_ok1      0fb7
 d_def_button_ok2      0fb9
@@ -57,57 +57,57 @@ d_def_button_vyska    22
 d_def_baseMenu_sirka  26
 d_def_baseMenu_vyska  73
 
-d_def_writecolor      2300
-d_def_readcolor       2303
+//d_def_writecolor      2300 //defined in the engine's own scripts, commented out by Converter
+//d_def_readcolor       2303 //defined in the engine's own scripts, commented out by Converter
 d_def_valuecolor      1000
-d_def_NAcolor         2305
+//d_def_NAcolor         2305 //defined in the engine's own scripts, commented out by Converter
 d_def_headcolor       98
 d_def_subheadcolor    95
 d_def_textcolor       90
 
-d_def_refer_sirka	800
+//d_def_refer_sirka	800 //defined in the engine's own scripts, commented out by Converter
 d_def_refer_vyska	480
 
-d_def_admin_sirka	800
+//d_def_admin_sirka	800 //defined in the engine's own scripts, commented out by Converter
 d_def_admin_vyska	480
 
-d_def_accounts_sirka	800
+//d_def_accounts_sirka	800 //defined in the engine's own scripts, commented out by Converter
 d_def_accounts_vyska	480
 
-d_def_accinfo_sirka	800
+//d_def_accinfo_sirka	800 //defined in the engine's own scripts, commented out by Converter
 d_def_accinfo_vyska	480
 
-d_def_charinfo_sirka	800
+//d_def_charinfo_sirka	800 //defined in the engine's own scripts, commented out by Converter
 d_def_charinfo_vyska	480
 
-d_def_charinfo_sirka	800
+//d_def_charinfo_sirka	800 //defined in the engine's own scripts, commented out by Converter
 d_def_iteminfo_vyska	480
 
-d_def_flagsinfo_sirka	800
+//d_def_flagsinfo_sirka	800 //defined in the engine's own scripts, commented out by Converter
 d_def_flagsinfo_vyska	480
 
-d_def_caninfo_sirka	640
+//d_def_caninfo_sirka	640 //defined in the engine's own scripts, commented out by Converter
 d_def_caninfo_vyska	480
 
-d_def_skills_sirka	640
+//d_def_skills_sirka	640 //defined in the engine's own scripts, commented out by Converter
 d_def_skills_vyska	480
 
-d_def_Pages_sirka	800
+//d_def_Pages_sirka	800 //defined in the engine's own scripts, commented out by Converter
 d_def_Pages_vyska	480
 
 //flags:
-iflag_rename	00001//name: 2 - <argv(6)>
-iflag_notext	00002
-iflag_button	00004//command: 3 - <argv(7)>
-iflag_bitmask	00008//bit to operate: 1 <argv(5)>, name of bitmask to change: <argv(4)>
-iflag_nowrite	00010//read only
-iflag_npc	00020
-iflag_pc	00040
-iflag_adminrea	00080//vidi jen admin
-iflag_adminwr	00100//jen admin muze prepisovat(ostatni cist)
-iflag_text	00200//navratova
-iflag_check	00800
-iflag_string	01000//pro kontrolu
+//iflag_rename	00001//name: 2 - <argv(6)> //defined in the engine's own scripts, commented out by Converter
+//iflag_notext	00002 //defined in the engine's own scripts, commented out by Converter
+//iflag_button	00004//command: 3 - <argv(7)> //defined in the engine's own scripts, commented out by Converter
+//iflag_bitmask	00008//bit to operate: 1 <argv(5)>, name of bitmask to change: <argv(4)> //defined in the engine's own scripts, commented out by Converter
+//iflag_nowrite	00010//read only //defined in the engine's own scripts, commented out by Converter
+//iflag_npc	00020 //defined in the engine's own scripts, commented out by Converter
+//iflag_pc	00040 //defined in the engine's own scripts, commented out by Converter
+//iflag_adminrea	00080//vidi jen admin //defined in the engine's own scripts, commented out by Converter
+//iflag_adminwr	00100//jen admin muze prepisovat(ostatni cist) //defined in the engine's own scripts, commented out by Converter
+//iflag_text	00200//navratova //defined in the engine's own scripts, commented out by Converter
+//iflag_check	00800 //defined in the engine's own scripts, commented out by Converter
+//iflag_string	01000//pro kontrolu //defined in the engine's own scripts, commented out by Converter
 
 //047e
 

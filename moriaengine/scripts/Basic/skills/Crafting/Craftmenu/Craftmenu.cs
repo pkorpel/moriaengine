@@ -27,11 +27,7 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	[HasSavedMembers]
 	public static class CraftmenuContents {
-		// [SavedMember] is a harmless no-op here, kept for historical clarity rather than
-		// removed: this field is readonly, so StaticMemberSaver.TryRegisterMember's
-		// readonly-field guard always skips it (issue #358) - it's rebuilt lazily from
-		// AbstractSkillDef/CraftingSkillDef content below anyway, not save-game state.
-		[SavedMember]
+		// Rebuilt lazily from AbstractSkillDef/CraftingSkillDef content below, not save-game state.
 		private static readonly Dictionary<SkillName, CraftmenuCategory> mainCategories = new Dictionary<SkillName, CraftmenuCategory>();
 
 		public static Dictionary<SkillName, CraftmenuCategory> MainCategories {

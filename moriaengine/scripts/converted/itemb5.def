@@ -219,7 +219,7 @@ DEFNAME = i_curtain_banner_nw
 
 [ItemDef 0x159f]
 DUPEITEM = i_curtain_banner_nw
-//DEFNAME = i_curtain_banner_ne // commented out by Converter 
+DEFNAME = i_curtain_banner_ne
 
 [ItemDef 0x15a0]
 CATEGORY = Decoration - Banners and Tapestries
@@ -4162,23 +4162,23 @@ DEFNAME = i_CART_ORE_ne_1
 
 [ItemDef 0x1a83]
 DUPEITEM = i_CART_ORE_ne_1
-//DEFNAME = i_CART_ORE_ne_2 // commented out by Converter 
+DEFNAME = i_CART_ORE_ne_2
 
 [ItemDef 0x1a86]
 DUPEITEM = i_CART_ORE_ne_1
-//DEFNAME = i_CART_ORE_ne_3 // commented out by Converter 
+DEFNAME = i_CART_ORE_ne_3
 
 [ItemDef 0x1a87]
 DUPEITEM = i_CART_ORE_ne_1
-//DEFNAME = i_CART_ORE_nw_1 // commented out by Converter 
+DEFNAME = i_CART_ORE_nw_1
 
 [ItemDef 0x1a88]
 DUPEITEM = i_CART_ORE_ne_1
-//DEFNAME = i_CART_ORE_nw_2 // commented out by Converter 
+DEFNAME = i_CART_ORE_nw_2
 
 [ItemDef 0x1a8b]
 DUPEITEM = i_CART_ORE_ne_1
-//DEFNAME = i_CART_ORE_nw_3 // commented out by Converter 
+DEFNAME = i_CART_ORE_nw_3
 
 [ItemDef 0x1a92]
 CATEGORY = Items by Professions
@@ -4462,7 +4462,7 @@ DEFNAME = i_nest_with_eggs
 
 [ItemDef 0x1ad5]
 DUPEITEM = i_nest_with_eggs
-//DEFNAME = i_nest // commented out by Converter 
+DEFNAME = i_nest
 
 [ItemDef 0x1ad6]
 CATEGORY = Items by Professions
@@ -4473,7 +4473,7 @@ DUPEITEM = i_KEG_WOOD
 
 [ItemDef 0x1ad7]
 DUPEITEM = i_KEG_WOOD
-//DEFNAME = i_KEG_WOOD_2 // commented out by Converter 
+DEFNAME = i_KEG_WOOD_2
 
 [ItemDef 0x1ad8]
 CATEGORY = Decoration - Dungeons and The Dead

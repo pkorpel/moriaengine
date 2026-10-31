@@ -92,6 +92,7 @@ namespace SteamEngine.Converter {
 				Directory.SetCurrentDirectory(origCurDir);
 				SphereWorldVars.Load(Path.Combine(convertPath, "save", "sphereworld.scp"));
 				SphereWorldVars.LoadLayerArmorPercents(Path.Combine(convertPath, "scripts", "spheredefs.scp"));
+				HandWrittenScripts.Load("scripts", Path.Combine("scripts", "converted"));
 				Console.WriteLine("Converting " + filesList.Count + " Sphere script files.");
 
 				foreach (ConvertedFile file in filesList) {
@@ -152,7 +153,10 @@ namespace SteamEngine.Converter {
 		private static void CreateFileList(string folder, List<ConvertedFile> list) {
 			//Console.WriteLine("converting from folder "+LogStr.File(folder));
 
-			foreach (string subfolder in Directory.GetDirectories(folder)) {
+			//#937 - sorted: when two files define the same thing, the outcome mustn't depend on the file system
+			List<string> subfolders = new List<string>(Directory.GetDirectories(folder));
+			subfolders.Sort(StringComparer.Ordinal);
+			foreach (string subfolder in subfolders) {
 				CreateFileList(subfolder, list);
 			}
 
@@ -160,7 +164,9 @@ namespace SteamEngine.Converter {
 			//Windows, where the original converter was written/run) - a handful of real
 			//archive files have an uppercase ".SCP" extension (e.g. DRAGONS.SCP, INSECTS.SCP)
 			//and were being silently skipped entirely on this platform, never even attempted.
-			foreach (string filename in Directory.EnumerateFiles(folder)) {
+			List<string> filenames = new List<string>(Directory.EnumerateFiles(folder));
+			filenames.Sort(StringComparer.Ordinal);
+			foreach (string filename in filenames) {
 				if (filename.EndsWith(".scp", StringComparison.OrdinalIgnoreCase)) {
 					ConvertedFile file = new ConvertedFile(filename);
 					list.Add(file);

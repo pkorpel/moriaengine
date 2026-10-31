@@ -54,11 +54,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly string[] formats = { "dd.MM.yyyy HH:mm:ss.FFFFFFF", "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy" };
+
 		public string Save(object objToSave) {
 			//return "::"+((DateTime) value).Ticks;
 			//we will return the date in some more acceptable form
 			//the FFF... notation cuts off any possible zeros, it works only if decimal part of the seconds is null				
-			string dateString = ((DateTime) objToSave).ToString("dd.MM.yyyy HH:mm:ss.FFFFFFF");
+			string dateString = ((DateTime) objToSave).ToString("dd.MM.yyyy HH:mm:ss.FFFFFFF", CultureInfo.InvariantCulture);
 			//cut off the last zeros, we dot need them, hour was not specified
 			if (dateString.EndsWith("00:00:00")) {//no hours at all?					
 				dateString = dateString.Substring(0, dateString.Length - 8).Trim();
@@ -71,9 +73,9 @@ namespace SteamEngine.CompiledScripts {
 		public object Load(Match match) {
 			GroupCollection gc = match.Groups;
 
-			//prepare formatter for parsing and parse the date from the string
-			IFormatProvider culture = new CultureInfo("cs-CZ", true);
-			return DateTime.Parse(gc["value"].Value, culture);
+			//#823 - what Save writes, not by a named culture: those don't exist under invariant globalization, and
+			//one date failing drops the whole table of saved statics
+			return DateTime.ParseExact(gc["value"].Value, formats, CultureInfo.InvariantCulture, DateTimeStyles.None);
 		}
 
 		public string Prefix {

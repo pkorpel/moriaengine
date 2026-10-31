@@ -27,6 +27,7 @@ namespace SteamEngine.Converter {
 	public class ConvertedItemDef : ConvertedThingDef {
 		public static Dictionary<string, ConvertedThingDef> itemsByDefname = new Dictionary<string, ConvertedThingDef>(StringComparer.OrdinalIgnoreCase);
 		public static Dictionary<int, ConvertedThingDef> itemsByModel = new Dictionary<int, ConvertedThingDef>();
+		private static readonly Dictionary<string, ConvertedThingDef> itemsByHeader = new Dictionary<string, ConvertedThingDef>(StringComparer.OrdinalIgnoreCase);
 
 		string type;
 
@@ -89,6 +90,8 @@ namespace SteamEngine.Converter {
 			: base(input, convertedFile) {
 			this.byModel = itemsByModel;
 			this.byDefname = itemsByDefname;
+			this.byHeader = itemsByHeader;
+			this.handWritten = HandWrittenScripts.Items;
 
 			this.firstStageImplementations.Add(firstStageImpl);
 			this.secondStageImplementations.Add(secondStageImpl);
@@ -98,7 +101,7 @@ namespace SteamEngine.Converter {
 		}
 
 		//resources list may need some number (counts) corrections
-		private static void HandleResourcesList(ConvertedDef def, PropsLine line) {
+		internal static void HandleResourcesList(ConvertedDef def, PropsLine line) {
 			string args = line.Value.ToLowerInvariant();
 			StringBuilder corrected = new StringBuilder(args.Length);
 			string commentary = "";
@@ -116,12 +119,20 @@ namespace SteamEngine.Converter {
 						corrected.Append(split[0]).Append(" ").Append(split[1]).Append(", ");
 					}
 				} else if (split.Length == 1) {
+					object ignored;
+					if (ConvertTools.TryParseAnyNumber(split[0], out ignored)) { //a number alone is an amount of nothing
+						commentary = "some resources were fixed by converter";
+						continue;
+					}
 					corrected.Append("1 ").Append(split[0]).Append(", "); //number 1 prepended
 					commentary = "some resources were fixed by converter";
 				} else {
 					def.Warning(line.Line, "Unknown resource string '"+singleRes+"'");
 					corrected.Append(singleRes).Append(", ");
 				}
+			}
+			if (corrected.Length == 0) {
+				return;
 			}
 			corrected.Length -= 2; //remove the last ", "
 
@@ -222,7 +233,6 @@ namespace SteamEngine.Converter {
 						break;
 					}
 					def.headerType = "MultiItemDef";
-					def.DontDump();	//for now
 					break;
 				case "t_musical":
 					def.headerType = "MusicalDef";
@@ -555,6 +565,7 @@ namespace SteamEngine.Converter {
 			for (int i = 0; i < items.GetLength(0); i++) {
 				if (itemsByDefname.TryGetValue(items[i, 0], out ConvertedThingDef def)) {
 					def.headerType = "CashiersItemDef";
+					def.Remove("layer"); //a bag's, and this isn't worn
 					if ((items[i, 1] != null) && SphereWorldVars.TryGetInt(items[i, 1], out int maxAmount)) {
 						def.Set("MaxAmount", maxAmount.ToString(CultureInfo.InvariantCulture), "");
 					}
@@ -675,7 +686,31 @@ namespace SteamEngine.Converter {
 				{ "i_hatchet", "1" }
 			};
 
+		private static readonly Regex itemNameRE = new Regex(@"\bi_\w+", RegexOptions.CultureInvariant);
+
+		//#937 - a recipe with something that's nowhere (i_enchant_weapon) can't be made. One under a second defname,
+		//which defs here don't have (i_lemon), is written under the first.
+		private void FixRecipeNames() {
+			for (int i = 0; i < this.writtenData.Count; i++) {
+				string line = this.writtenData[i];
+				if (line.StartsWith("resources", StringComparison.OrdinalIgnoreCase)) {
+					foreach (Match m in itemNameRE.Matches(line.Split(new[] { "//" }, 2, StringSplitOptions.None)[0])) {
+						if (itemsByDefname.TryGetValue(m.Value, out ConvertedThingDef def)) {
+							if (def.HasDefname2(m.Value)) {
+								this.writtenData[i] = line.Replace(m.Value, def.PrettyDefname);
+							}
+						} else if (!HandWrittenScripts.IsDefined(m.Value)) {
+							this.writtenData[i] = "//" + line + " //" + m.Value + " is nowhere, commented out by Converter";
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		public override void ThirdStage() {
+			this.FixRecipeNames();
+
 			string toolTypeOverride;
 			if (toolTypeOverrides.TryGetValue(this.PrettyDefname, out toolTypeOverride)) {
 				this.Set("tooltype", toolTypeOverride, "guessed by Converter");

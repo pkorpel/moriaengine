@@ -1228,7 +1228,7 @@ DEFNAME = i_pillow_4
 
 [ItemDef 0x13a9]
 DUPEITEM = i_pillow_4
-//DEFNAME = i_pillow_5 // commented out by Converter 
+DEFNAME = i_pillow_5
 
 [ItemDef 0x13aa]
 DUPEITEM = i_pillow_4
@@ -1246,7 +1246,7 @@ DEFNAME = i_pillow_7
 
 [ItemDef 0x13ad]
 DUPEITEM = i_pillow_7
-//DEFNAME = i_pillow_8 // commented out by Converter 
+DEFNAME = i_pillow_8
 
 [ItemDef 0x13ae]
 DUPEITEM = i_pillow_7

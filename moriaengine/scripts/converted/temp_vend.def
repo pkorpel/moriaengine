@@ -91,7 +91,7 @@ sell = i_hat_feather,{0, 5}
 sell = i_hat_tricorne,{0, 5}
 sell = i_bandana,{0, 5}
 sell = i_bandage,{150, 250}
-sell = i_sewing_kit{3, 5}
+sell = i_sewing_kit,{3, 5}
 
 [TemplateDef VENDOR_S_SHIP]
 CATEGORY = Vendor Templates

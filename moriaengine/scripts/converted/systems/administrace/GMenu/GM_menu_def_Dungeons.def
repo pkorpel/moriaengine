@@ -57,7 +57,7 @@ def_GM_Menu_Pads_type[1]      def_GM_Menu_item
 def_GM_Menu_Pads_help[1]      "d_frozenpad_help" // no help
 
 def_GM_Menu_Pads_name[2]      "Poison dlazdice (i_poisonPad)"
-def_GM_Menu_Pads_object[3]    "i_poisonPad"
+//def_GM_Menu_Pads_object[3]    "i_poisonPad" //defined again later, commented out by Converter
 def_GM_Menu_Pads_type[2]      def_GM_Menu_item
 def_GM_Menu_Pads_help[2]      "d_poisonpad_help" // no help
 

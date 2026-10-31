@@ -23,7 +23,6 @@ Name = "Mesec"
 TYPE = t_normal
 WEIGHT = 50
 model = i_bag
-layer = 0 //Set by Converter 
 Color = 0995
 MaxAmount = 60000
 

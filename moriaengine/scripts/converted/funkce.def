@@ -419,10 +419,10 @@ model = i_pet_horse
 
 //[function onetime] //(commented out by Converter) 
 
-[ContainerDef i_chest_weapset]
-model = i_bag
-type = t_container //guessed from base def by Converter 
-layer = 0 //Set by Converter 
+//[ContainerDef i_chest_weapset] //(commented out by Converter) 
+//model = i_bag
+//type = t_container //guessed from base def by Converter 
+//layer = 0 //Set by Converter 
 
 //[function weapset] //metals //(commented out by Converter) 
 
@@ -458,10 +458,10 @@ item = i_log_obsidian,500
 item = i_log_adamantinum,500
 item = i_log_mithril,500
 
-[ContainerDef i_chest_armorset]
-model = i_bag
-type = t_container //guessed from base def by Converter 
-layer = 0 //Set by Converter 
+//[ContainerDef i_chest_armorset] //(commented out by Converter) 
+//model = i_bag
+//type = t_container //guessed from base def by Converter 
+//layer = 0 //Set by Converter 
 
 //[function armorset] //kov, druh //(commented out by Converter) 
 

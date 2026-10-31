@@ -172,7 +172,8 @@ Color = 0990
 CATEGORY = Verbatim
 
 Name = "Zaklad zdi"
-model = i_coin_gold
+model = i_gold
+type = t_gold //guessed from base def by Converter 
 Color = 0994
 
 //[EVENTS e_npc_firefielder] //(commented out by Converter) 

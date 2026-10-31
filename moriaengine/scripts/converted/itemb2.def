@@ -1499,25 +1499,25 @@ DUPEITEM = i_candle_lit
 [ItemDef 0xa11]
 DUPEITEM = i_candle_lit
 
-[EquippableDef 0xa12]
-CATEGORY = Decoration - Lightsources
-SUBSECTION = Torches
-DESCRIPTION = Torch (Lit)
+//[EquippableDef 0xa12] //(commented out by Converter) 
+//CATEGORY = Decoration - Lightsources
+//SUBSECTION = Torches
+//DESCRIPTION = Torch (Lit)
+//
+//TYPE = T_LIGHT_LIT
+////DUPELIST = 0a13,0a14 // commented out by Converter 
+//WEIGHT = 1
+//RESOURCES = 1 i_torch //some resources were fixed by converter 
+////TDATA3 = i_torch // commented out by Converter 
+//layer = 2 //Set by Converter 
+//DEFNAME = i_torch_lit
+////TDATA4 = 0 // commented out by Converter 
 
-TYPE = T_LIGHT_LIT
-//DUPELIST = 0a13,0a14 // commented out by Converter 
-WEIGHT = 1
-RESOURCES = 1 i_torch //some resources were fixed by converter 
-//TDATA3 = i_torch // commented out by Converter 
-layer = 2 //Set by Converter 
-DEFNAME = i_torch_lit
-//TDATA4 = 0 // commented out by Converter 
+//[ItemDef 0xa13] //(commented out by Converter) 
+//DUPEITEM = i_torch_lit
 
-[ItemDef 0xa13]
-DUPEITEM = i_torch_lit
-
-[ItemDef 0xa14]
-DUPEITEM = i_torch_lit
+//[ItemDef 0xa14] //(commented out by Converter) 
+//DUPEITEM = i_torch_lit
 
 [EquippableDef 0xa15]
 CATEGORY = Decoration - Lightsources
@@ -1973,7 +1973,7 @@ DEFNAME = i_sign_brass
 
 [ItemDef 0xbd2]
 DUPEITEM = i_sign_brass
-//DEFNAME = i_sign_brass_2 // commented out by Converter 
+DEFNAME = i_sign_brass_2
 
 [ItemDef 0xbd3]
 CATEGORY = Decoration - Signs
@@ -2625,16 +2625,16 @@ TYPE = T_CROPS
 //TDATA2 = i_crop_sprouts3 // commented out by Converter 
 DEFNAME = i_crop_sprouts2
 
-[ItemDef 0xc70]
+[ItemDef i_crop_sprouts3]
 CATEGORY = Vegetation
 SUBSECTION = Fruits and Vegetables
 DESCRIPTION = Sprouts
 
 TYPE = T_CROPS
+model = 0xc70
 //TDATA1 = i_crop_sprouts1 // commented out by Converter 
 //TDATA2 = 0 // not sure what this turns into. commented out by Converter 
 //TDATA3 = i_fruit_lettuce // not sure what this turns into. commented out by Converter 
-DEFNAME = i_crop_sprouts3
 
 [ItemDef 0xc6f]
 CATEGORY = Vegetation

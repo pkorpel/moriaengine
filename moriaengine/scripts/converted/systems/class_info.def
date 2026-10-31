@@ -367,11 +367,11 @@ class_info_class_war_max_points[9] 10
 class_info_class_war_function[9] stance
 class_info_class_war_description[9] "Tato schopnost umoznuje valecnikovi se vice soustredit na obranu a snizit tak obdrzene zraneni o 25%. Toto soustredeni vsak vyrazne snizuje zraneni, ktere valecnik zpusobuje. Ke zmene postaveni je treba mit minimalne 80 bodu staminy."
 
-class_info_class_war_name[10] Vykryti stitem
-class_info_class_war_tag[10] ra_vykryti
-class_info_class_war_max_points[10] 20
-class_info_class_war_function[10] none
-class_info_class_war_description[10] "Tato automaticka schopnost umoznuje valecnikovi snizit obdrzene fyzicke zraneni tim, ze cast tohoto zraneni je pohlcena stitem. Velikost pohlceneho zraneni je zavisla na materialu, z nehoz je stit vyroben."
+//class_info_class_war_name[10] Vykryti stitem //defined again later, commented out by Converter
+//class_info_class_war_tag[10] ra_vykryti //defined again later, commented out by Converter
+//class_info_class_war_max_points[10] 20 //defined again later, commented out by Converter
+//class_info_class_war_function[10] none //defined again later, commented out by Converter
+//class_info_class_war_description[10] "Tato automaticka schopnost umoznuje valecnikovi snizit obdrzene fyzicke zraneni tim, ze cast tohoto zraneni je pohlcena stitem. Velikost pohlceneho zraneni je zavisla na materialu, z nehoz je stit vyroben." //defined again later, commented out by Converter
 
 class_info_class_war_name[10] Vykryti stitem
 class_info_class_war_tag[10] ra_vykryti
@@ -470,7 +470,7 @@ class_info_class_necro_abilities 15 // number of abilities == kazda pridana abil
 // meni sa cislo v [x]
 
 class_info_class_necro_name[0] Povolani mrtvych
-class_info_class_necro_tag[0]
+class_info_class_necro_tag[0] ""
 class_info_class_necro_max_points[0] none
 class_info_class_necro_function[0] necroanimate
 class_info_class_necro_description[0] "Jedna se o nejvyssi temne kouzlo, kterym je nekromant schopen mrtvolu povolat zpet k zivotu a nasledne ji ovladat."
@@ -524,7 +524,7 @@ class_info_class_necro_function[8] none
 class_info_class_necro_description[8] "Nekromant je panem summonu - zejmena nemrtvych - touto abilitou je schopen udrzet summony dele pri zivote. Teto schopnosti se nekromant muze ucit od levelu 50."
 
 class_info_class_necro_name[9] Prokleti
-class_info_class_necro_tag[9]
+class_info_class_necro_tag[9] ""
 class_info_class_necro_max_points[9] none
 class_info_class_necro_function[9] none
 class_info_class_necro_description[9] "Nekromant je schopen monstrum proklit - jedna se o velmi silne kouzlo, ktere nekromantovi umozni snizit odolnost monstra vuci ohni a tak jej muze nekromant lepe zranit."

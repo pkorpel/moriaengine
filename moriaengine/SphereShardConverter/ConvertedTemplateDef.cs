@@ -94,7 +94,8 @@ namespace SteamEngine.Converter {
 						case "buy":
 						case "sell":
 
-							this.Set(name, FixRandomExpression(value), comment);
+							//#937 - a comma is missing from the archive's "i_sewing_kit{3 5}"
+							this.Set(name, FixRandomExpression(Regex.Replace(value, @"(?<=\w)\s*{", ",{")), comment);
 							break;
 					}
 				}
