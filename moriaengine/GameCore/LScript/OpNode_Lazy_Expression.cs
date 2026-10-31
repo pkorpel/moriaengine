@@ -351,8 +351,11 @@ namespace SteamEngine.LScript {
 					goto runit;
 				}
 
-				throw new NameRefException(this.line, this.column, this.filename,
-					new ClassNameRef(this.name), this.ParentScriptHolder.GetDecoratedName());
+				//#916 - a function can share a name with a class, as .party does with Party
+				if (ScriptHolder.GetFunction(this.name) == null) {
+					throw new NameRefException(this.line, this.column, this.filename,
+						new ClassNameRef(this.name), this.ParentScriptHolder.GetDecoratedName());
+				}
 			}
 
 			memberNameMatched |= resolver.Resolve(typeof(IntrinsicMethods), BindingFlags.Static, MemberTypes.Method | MemberTypes.Property, out desc);
