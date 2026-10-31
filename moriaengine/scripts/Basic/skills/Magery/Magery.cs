@@ -214,6 +214,9 @@ namespace SteamEngine.CompiledScripts {
 			Character self = skillSeqArgs.Self;
 			SpellDef spell = (SpellDef) skillSeqArgs.Param1;
 			spell.Trigger_Success(skillSeqArgs);
+			if ((spell.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
+				CombatWear.OnHarmfulCast(self); //#865
+			}
 			// #483/#491 - consume Standcast's toggle (if active) only AFTER Trigger_Success has
 			// resolved - that's where SpellDef.GetSpellPowerAgainstChar/AgainstNonChar reads the
 			// boosted spellPower for every target of this cast (possibly more than one, for an

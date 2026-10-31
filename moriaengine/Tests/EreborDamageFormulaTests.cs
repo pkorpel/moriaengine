@@ -136,6 +136,23 @@ namespace SteamEngine.Tests {
 			Assert.Equal(expected, ThiefDefence.CalculateReboundChance(weapon, points, vigilant, stance));
 		}
 
+		[Theory]
+		[InlineData(100, 180, 65, 65, 18)]   //one piece on that part: 18% of the damage
+		[InlineData(100, 180, 130, 65, 9)]   //two pieces share it
+		[InlineData(100, 180, 0, 0, 0)]      //nothing worn there
+		public void ArmorWearIsAShareOfTheDamage(int damage, int perDamage, int armorSum, int armor, int expected) {
+			Assert.Equal(expected, CombatWear.CalculateArmorWear(damage, perDamage, armorSum, armor));
+		}
+
+		[Theory]
+		[InlineData(true, 20, 50, 100, 10)]
+		[InlineData(true, 20, 99, 100, 0)]   //armor: nothing for a scratch
+		[InlineData(false, 20, 50, 100, 10)]
+		[InlineData(false, 20, 99, 100, 1)]  //a weapon always costs at least 1
+		public void RepairCostsAShareOfTheResources(bool isArmor, int count, int durability, int max, int expected) {
+			Assert.Equal(expected, Repair.CalculateFirstResource(isArmor, count, durability, max));
+		}
+
 		[Fact]
 		public void ZeroSpeedFallsBackToFifty() {
 			Assert.Equal(2 * (0xfffff / 50) / 10.0, CombatCalculator.CalculateSwingDelay(0, 76, 1.0, 10).TotalSeconds, 6);

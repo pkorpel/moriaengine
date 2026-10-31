@@ -208,12 +208,22 @@ ten ticks, 4.4 s apart, and each does `power * (1 - tick^2/100)`. A stack can't 
 `thiefBleedCap + min(level, 200)`, unless it's already above that. A tick interrupts casting 66.8%
 of the time. Monsters' own bleed (`e_npc_bleed`) is separate.
 
-**Not ported.** Energy shield's strength and voodoo shield: `i_energyshield`, `shield_power` and
-`i_voodooshield` aren't in the archive. A bare-handed player's spell keeps
-its damage: Erebor's bare hands rule (`wrestling/200 + 1`) also runs on spells, but it would
-cap spells of anyone with free hands, so it applies to swings only here. Item wear: `Durability` scales armor and weapons as on Erebor, but nothing lowers
-it, because there's no repair skill yet (#865).
+**Wear.** Items have Erebor's durability: weapons `metal * weapon / 1000`, armor `metal * type *
+layer share / 100000` (`nastaveni_durability_*`). Damage to an item is rolled against
+`max durability * 16`, one point at a time, and at the last point it's destroyed. A player's weapon
+takes `weaponWearPerHit` (60) per landed swing, a staff `staffWearPerSpell` (50) per harmful spell, and
+armor on the part of the body that was hit takes `armorWearPerDamage` (180) permille of the
+damage, split by armor, with a shield counting double. Items already in a world keep their old 100/100.
 
+**Repair.** `.repair` at an anvil, on a `canRepair` item (`nastaveni_cm_can_repair_*`): costs a share of
+its first resource and of a second ingot or log, and a point of max durability whether it works or
+not. Blacksmithing, Fletching for bows, Carpentry for staves, against `rand(1025)`.
+
+**Not ported.** Energy shield's strength and voodoo shield: `i_energyshield`, `shield_power` and
+`i_voodooshield` aren't in the archive. `bodypart_layers` isn't either, so wear reads its weights
+as head, neck, torso, arms, hands, legs. A bare-handed player's spell keeps
+its damage: Erebor's bare hands rule (`wrestling/200 + 1`) also runs on spells, but it would
+cap spells of anyone with free hands, so it applies to swings only here. 
 **Minimum damage**, after resists, on swings, not against a target immune to the damage type:
 a monster's swing on a monster that would do less than 1 does 5, unless it's summon damage. A
 player's bare hands do 1 when the result is 0, otherwise exactly `wrestling/200 + 1`, however

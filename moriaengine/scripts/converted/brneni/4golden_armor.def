@@ -21,6 +21,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 26 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_PLATEMAIL_leggings]
 CATEGORY = Provisions - Armor - Colored
@@ -42,6 +43,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 42 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_PLATEMAIL_GORGET]
 CATEGORY = Provisions - Armor - Colored
@@ -64,6 +66,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 11 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_PLATEMAIL_GAUNTLETS]
 CATEGORY = Provisions - Armor - Colored
@@ -86,6 +89,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 13 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_PLATEMAIL]
 CATEGORY = Provisions - Armor - Colored
@@ -108,6 +112,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 67 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_FEMALE_PLATEMAIL]
 CATEGORY = Provisions - Armor - Colored
@@ -130,6 +135,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 67 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_PLATE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -152,6 +158,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 26 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_CLOSED_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -174,6 +181,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 26 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_BASCINET]
 CATEGORY = Provisions - Armor - Colored
@@ -196,6 +204,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 26 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_NOSE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -218,6 +227,7 @@ armorVsP = 72 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 72
 mindDefenseVsM = 0
+maxDurability = 26 //nastaveni_durability 
 
 [ColoredArmorDef i_Golden_CHAINMAIL_gorget]
 NAME = "Golden Chainmail Gorget"
@@ -236,6 +246,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 9 //nastaveni_durability 
 
 [ColoredArmorDef i_Golden_CHAINMAIL_sleeves]
 NAME = "Golden Chainmail Sleeves"
@@ -254,6 +265,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 22 //nastaveni_durability 
 
 [ColoredArmorDef i_Golden_CHAINMAIL_gloves]
 NAME = "Golden Chainmail Gloves"
@@ -272,6 +284,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 11 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_CHAINMAIL_COIF]
 CATEGORY = Provisions - Armor - Colored
@@ -294,6 +307,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 22 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_CHAINMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -316,6 +330,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 36 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_CHAINMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -338,6 +353,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 57 //nastaveni_durability 
 
 [ColoredArmorDef i_Golden_kite_wood_shield]
 NAME = "Golden kite shield"
@@ -356,6 +372,7 @@ armorVsP = 6 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 6
 mindDefenseVsM = 0
+maxDurability = 31 //nastaveni_durability 
 
 [ColoredArmorDef i_Golden_RINGMAIL_gorget]
 NAME = "Golden ringmail gorget"
@@ -374,6 +391,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 6 //nastaveni_durability 
 
 [ColoredArmorDef i_Golden_RINGMAIL_helm]
 NAME = "Golden Ringmail Helm"
@@ -392,6 +410,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 14 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_RINGMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -414,6 +433,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 24 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_RINGMAIL_SLEEVES]
 CATEGORY = Provisions - Armor - Colored
@@ -436,6 +456,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 14 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_RINGMAIL_GLOVES]
 CATEGORY = Provisions - Armor - Colored
@@ -458,6 +479,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 7 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_RINGMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -480,6 +502,7 @@ armorVsP = 41 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 41
 mindDefenseVsM = 0
+maxDurability = 38 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_HEATER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -502,6 +525,7 @@ armorVsP = 4 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 4
 mindDefenseVsM = 0
+maxDurability = 55 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_BUCKLER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -524,6 +548,7 @@ armorVsP = 3 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 3
 mindDefenseVsM = 0
+maxDurability = 23 //nastaveni_durability 
 
 [ColoredArmorDef i_GOLDEN_METAL_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -546,6 +571,7 @@ armorVsP = 6 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 6
 mindDefenseVsM = 0
+maxDurability = 47 //nastaveni_durability 
 
 [ColoredArmorDef i_bone_arms_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -568,6 +594,7 @@ armorVsP = 19 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 19
 mindDefenseVsM = 0
+maxDurability = 11 //nastaveni_durability 
 
 [ColoredArmorDef i_bone_chest_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -590,6 +617,7 @@ armorVsP = 19 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 19
 mindDefenseVsM = 0
+maxDurability = 28 //nastaveni_durability 
 
 [ColoredArmorDef i_bone_gloves_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -612,6 +640,7 @@ armorVsP = 19 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 19
 mindDefenseVsM = 0
+maxDurability = 5 //nastaveni_durability 
 
 [ColoredArmorDef i_bone_helmet_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -634,6 +663,7 @@ armorVsP = 19 //nastaveni_armorarmor
 mindDefenseVsP = 14
 armorVsM = 19
 mindDefenseVsM = 14
+maxDurability = 11 //nastaveni_durability 
 
 [ColoredArmorDef i_bone_leggings_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -656,6 +686,7 @@ armorVsP = 19 //nastaveni_armorarmor
 mindDefenseVsP = 0 //nastaveni_armorparts_OM 
 armorVsM = 19
 mindDefenseVsM = 0
+maxDurability = 18 //nastaveni_durability 
 
 [ColoredArmorDef i_studded_cap_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -677,6 +708,7 @@ mindDefenseVsP = 0 //nastaveni_armorparts_OM
 armorVsM = 19
 mindDefenseVsM = 0
 WEIGHT = 140 //nastaveni_armorweight 
+maxDurability = 11 //nastaveni_durability 
 
 [ColoredArmorDef i_studded_sleeves_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -698,6 +730,7 @@ mindDefenseVsP = 0 //nastaveni_armorparts_OM
 armorVsM = 19
 mindDefenseVsM = 0
 WEIGHT = 140 //nastaveni_armorweight 
+maxDurability = 11 //nastaveni_durability 
 
 [ColoredArmorDef i_studded_gloves_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -719,6 +752,7 @@ mindDefenseVsP = 0 //nastaveni_armorparts_OM
 armorVsM = 19
 mindDefenseVsM = 0
 WEIGHT = 70 //nastaveni_armorweight 
+maxDurability = 5 //nastaveni_durability 
 
 [ColoredArmorDef i_studded_gorget_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -740,6 +774,7 @@ mindDefenseVsP = 0 //nastaveni_armorparts_OM
 armorVsM = 19
 mindDefenseVsM = 0
 WEIGHT = 60 //nastaveni_armorweight 
+maxDurability = 4 //nastaveni_durability 
 
 [ColoredArmorDef i_studded_leggings_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -761,6 +796,7 @@ mindDefenseVsP = 0 //nastaveni_armorparts_OM
 armorVsM = 19
 mindDefenseVsM = 0
 WEIGHT = 230 //nastaveni_armorweight 
+maxDurability = 18 //nastaveni_durability 
 
 [ColoredArmorDef i_studded_tunic_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -782,6 +818,7 @@ mindDefenseVsP = 0 //nastaveni_armorparts_OM
 armorVsM = 19
 mindDefenseVsM = 0
 WEIGHT = 360 //nastaveni_armorweight 
+maxDurability = 28 //nastaveni_durability 
 
 [ColoredArmorDef i_armor_female_bustier_studded_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -803,6 +840,7 @@ mindDefenseVsP = 0 //nastaveni_armorparts_OM
 armorVsM = 19
 mindDefenseVsM = 0
 WEIGHT = 360 //nastaveni_armorweight 
+maxDurability = 28 //nastaveni_durability 
 
 [ColoredArmorDef i_armor_female_studded_Golden]
 CATEGORY = Provisions - Armor - Colored
@@ -824,3 +862,4 @@ mindDefenseVsP = 0 //nastaveni_armorparts_OM
 armorVsM = 19
 mindDefenseVsM = 0
 WEIGHT = 360 //nastaveni_armorweight 
+maxDurability = 28 //nastaveni_durability 

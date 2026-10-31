@@ -21,6 +21,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 151 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_PLATEMAIL_ARMS]
 CATEGORY = Provisions - Armor - Colored
@@ -43,6 +45,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 58 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_PLATEMAIL_leggings]
 CATEGORY = Provisions - Armor - Colored
@@ -65,6 +69,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 96 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_PLATEMAIL_GORGET]
 CATEGORY = Provisions - Armor - Colored
@@ -87,6 +93,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 25 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_PLATEMAIL_GAUNTLETS]
 CATEGORY = Provisions - Armor - Colored
@@ -109,6 +117,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 29 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_FEMALE_PLATEMAIL]
 CATEGORY = Provisions - Armor - Colored
@@ -131,6 +141,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 151 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_PLATE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -153,6 +165,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 58 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_CLOSED_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -175,6 +189,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 58 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_BASCINET]
 CATEGORY = Provisions - Armor - Colored
@@ -197,6 +213,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 58 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_NOSE_HELM]
 CATEGORY = Provisions - Armor - Colored
@@ -219,6 +237,8 @@ armorVsP = 85 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 85
 mindDefenseVsM = 145
+maxDurability = 58 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_Obsidian_CHAINMAIL_gorget]
 NAME = "Obsidian Chainmail Gorget"
@@ -237,6 +257,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 21 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_Obsidian_CHAINMAIL_sleeves]
 NAME = "Obsidian Chainmail Sleeves"
@@ -255,6 +277,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 50 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_Obsidian_CHAINMAIL_gloves]
 NAME = "Obsidian Chainmail Gloves"
@@ -273,6 +297,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 25 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_CHAINMAIL_COIF]
 CATEGORY = Provisions - Armor - Colored
@@ -295,6 +321,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 50 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_CHAINMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -317,6 +345,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 82 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_CHAINMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -339,6 +369,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 129 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_Obsidian_kite_wood_shield]
 NAME = "Obsidian kite shield"
@@ -357,6 +389,8 @@ armorVsP = 9 //nastaveni_armorarmor
 mindDefenseVsP = 24 //nastaveni_armorparts_OM 
 armorVsM = 9
 mindDefenseVsM = 24
+maxDurability = 72 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_Obsidian_RINGMAIL_gorget]
 NAME = "Obsidian ringmail gorget"
@@ -375,6 +409,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 14 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_Obsidian_RINGMAIL_helm]
 NAME = "Obsidian Ringmail Helm"
@@ -393,6 +429,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 33 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_RINGMAIL_LEGGINGS]
 CATEGORY = Provisions - Armor - Colored
@@ -415,6 +453,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 55 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_RINGMAIL_SLEEVES]
 CATEGORY = Provisions - Armor - Colored
@@ -437,6 +477,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 33 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_RINGMAIL_GLOVES]
 CATEGORY = Provisions - Armor - Colored
@@ -459,6 +501,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 16 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_RINGMAIL_TUNIC]
 CATEGORY = Provisions - Armor - Colored
@@ -481,6 +525,8 @@ armorVsP = 55 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 55
 mindDefenseVsM = 145
+maxDurability = 86 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_METAL_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -503,6 +549,8 @@ armorVsP = 9 //nastaveni_armorarmor
 mindDefenseVsP = 24 //nastaveni_armorparts_OM 
 armorVsM = 9
 mindDefenseVsM = 24
+maxDurability = 108 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_HEATER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -525,6 +573,8 @@ armorVsP = 6 //nastaveni_armorarmor
 mindDefenseVsP = 24 //nastaveni_armorparts_OM 
 armorVsM = 6
 mindDefenseVsM = 24
+maxDurability = 126 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_OBSIDIAN_BUCKLER_SHIELD]
 CATEGORY = Provisions - Armor - Colored
@@ -547,6 +597,8 @@ armorVsP = 5 //nastaveni_armorarmor
 mindDefenseVsP = 24 //nastaveni_armorparts_OM 
 armorVsM = 5
 mindDefenseVsM = 24
+maxDurability = 54 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_cap_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -568,6 +620,8 @@ mindDefenseVsP = 145 //nastaveni_armorparts_OM
 armorVsM = 33
 mindDefenseVsM = 145
 WEIGHT = 32 //nastaveni_armorweight 
+maxDurability = 25 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_sleeves_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -589,6 +643,8 @@ mindDefenseVsP = 145 //nastaveni_armorparts_OM
 armorVsM = 33
 mindDefenseVsM = 145
 WEIGHT = 32 //nastaveni_armorweight 
+maxDurability = 25 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_gloves_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -610,6 +666,8 @@ mindDefenseVsP = 145 //nastaveni_armorparts_OM
 armorVsM = 33
 mindDefenseVsM = 145
 WEIGHT = 16 //nastaveni_armorweight 
+maxDurability = 12 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_gorget_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -631,6 +689,8 @@ mindDefenseVsP = 145 //nastaveni_armorparts_OM
 armorVsM = 33
 mindDefenseVsM = 145
 WEIGHT = 14 //nastaveni_armorweight 
+maxDurability = 10 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_leggings_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -652,6 +712,8 @@ mindDefenseVsP = 145 //nastaveni_armorparts_OM
 armorVsM = 33
 mindDefenseVsM = 145
 WEIGHT = 53 //nastaveni_armorweight 
+maxDurability = 41 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_studded_tunic_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -673,6 +735,8 @@ mindDefenseVsP = 145 //nastaveni_armorparts_OM
 armorVsM = 33
 mindDefenseVsM = 145
 WEIGHT = 83 //nastaveni_armorweight 
+maxDurability = 64 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_armor_female_bustier_studded_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -694,6 +758,8 @@ mindDefenseVsP = 145 //nastaveni_armorparts_OM
 armorVsM = 33
 mindDefenseVsM = 145
 WEIGHT = 83 //nastaveni_armorweight 
+maxDurability = 64 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_armor_female_studded_obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -715,6 +781,8 @@ mindDefenseVsP = 145 //nastaveni_armorparts_OM
 armorVsM = 33
 mindDefenseVsM = 145
 WEIGHT = 83 //nastaveni_armorweight 
+maxDurability = 64 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_arms_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -737,6 +805,8 @@ armorVsP = 33 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 33
 mindDefenseVsM = 145
+maxDurability = 25 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_chest_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -759,6 +829,8 @@ armorVsP = 33 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 33
 mindDefenseVsM = 145
+maxDurability = 64 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_gloves_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -781,6 +853,8 @@ armorVsP = 33 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 33
 mindDefenseVsM = 145
+maxDurability = 12 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_helmet_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -803,6 +877,8 @@ armorVsP = 33 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 33
 mindDefenseVsM = 145
+maxDurability = 25 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ColoredArmorDef i_bone_leggings_Obsidian]
 CATEGORY = Provisions - Armor - Colored
@@ -825,3 +901,5 @@ armorVsP = 33 //nastaveni_armorarmor
 mindDefenseVsP = 145 //nastaveni_armorparts_OM 
 armorVsM = 33
 mindDefenseVsM = 145
+maxDurability = 41 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 

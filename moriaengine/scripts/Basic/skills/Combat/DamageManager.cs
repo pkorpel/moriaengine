@@ -192,6 +192,7 @@ namespace SteamEngine.CompiledScripts {
 				damage = Math.Max(0, damage);
 				if (isSwing || isSpell) {
 					damage = CombatCalculator.RoundLikeSphere(damage);
+					CombatWear.OnDamageTaken(defender, (int) damage, attacker);
 					if ((resistModifier > 0) && (attacker != null)) {
 						damage = ApplyMinimalDamage(attacker, defender, flags, damage, isSwing);
 					}
@@ -254,6 +255,7 @@ namespace SteamEngine.CompiledScripts {
 			AnimCalculator.PerformAnim(attacker, GetSwingAnim(attacker.WeaponType));
 
 			if (TriggerResult.Cancel != Trigger_BeforeSwing(swingArgs)) {
+				CombatWear.OnSwing(attacker);
 				//real-user-reported follow-up: a_tevent_e_summoneater (if the attacker has it)
 				//instantly deletes a summoned-creature defender instead of dealing normal
 				//damage - nothing left to apply critic/stun/knockback/bleed to, so bail out of

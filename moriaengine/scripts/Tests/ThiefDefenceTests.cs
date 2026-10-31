@@ -41,6 +41,45 @@ namespace SteamEngine.CompiledScripts {
 				" reflected=" + reflected + " blocked=" + blocked);
 		}
 
+		/// <summary>#865 - wear to destruction, and repair at an anvil for ingots.</summary>
+		[SteamFunction]
+		public static void TestWearAndRepairReport(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			self.DisArm();
+			Player player = (Player) self;
+			Weapon sword = (Weapon) self.NewEquip(ThingDef.GetByDefname("i_sword_long_iron"));
+			int max = sword.MaxDurability;
+			int fresh = sword.Durability;
+			int certain = (max * 16) + 1;
+			sword.TakeWear(certain, self);
+			int worn = sword.Durability;
+			sword.TakeWear(1, self); //nearly always nothing
+			sword.Durability = 1;
+			sword.TakeWear(certain, self);
+			bool destroyed = sword.IsDeleted;
+
+			Weapon second = (Weapon) self.NewEquip(ThingDef.GetByDefname("i_sword_long_iron"));
+			second.Durability = (ushort) (second.MaxDurability / 2);
+			Repair.TryRepair(player, second);
+			int awayFromAnvil = second.Durability;
+			Item anvil = (Item) ThingDef.FindItemDef(0xfaf).Create(self.X + 1, self.Y, self.Z, self.M);
+			Item ingots = (Item) ThingDef.GetByDefname("i_ingot_iron").Create(self.Backpack);
+			ingots.Amount = 100;
+			self.SetRealSkillValue((int) SkillName.Blacksmith, 1000);
+			int repairedAt = 0;
+			for (int i = 0; (i < 20) && (second.Durability < second.MaxDurability); i++) {
+				Repair.TryRepair(player, second);
+				repairedAt = i + 1;
+			}
+			bool repaired = second.Durability == second.MaxDurability;
+			int maxAfter = second.MaxDurability;
+			int ingotsLeft = ingots.IsDeleted ? 0 : ingots.Amount;
+			anvil.Delete();
+			second.Delete();
+			Console.WriteLine("WEAR_REPAIR: max=" + max + " fresh=" + fresh + " worn=" + worn + " destroyed=" + (destroyed ? 1 : 0) +
+				" awayFromAnvil=" + awayFromAnvil + " half=" + (max / 2) + " repaired=" + (repaired ? 1 : 0) + " tries=" + repairedAt + " maxAfter=" + maxAfter + " ingotsLeft=" + ingotsLeft);
+		}
+
 		private static int CountRebounds(Character attacker, Character defender) {
 			int count = 0;
 			for (int i = 0; i < 10000; i++) {
