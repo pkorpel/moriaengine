@@ -1,0 +1,13 @@
+//#927 - what's Erebor's potions and isn't one of the converted item defs
+
+[PotionEffectPluginDef p_potion_effect]
+
+//the archive has no itemdef of its own for it, only items of it
+[PotionKegDef i_keg_potion]
+NAME = "Soudek na lektvary"
+TYPE = t_keg_potion
+model = 0x1940
+
+[PetFigurineDef i_pet_figurine]
+NAME = "Figurka"
+model = 0x20F6

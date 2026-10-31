@@ -12,6 +12,8 @@
 
 [typedef t_keg_potion]
 
+[typedef t_potion_shrink]
+
 [typedef t_bottle_empty]
 
 [typedef t_custom_spell]

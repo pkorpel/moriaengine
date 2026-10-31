@@ -27,12 +27,3 @@ Def:	//vars on the def
 Vars:	//vars defined in the class, so they basically do what tags do, but better
 	public int pocetGemu = 0
 	public Dictionary<ItemDef,int> inBoxGems = null
-
-
-[ThingTemplate PotionKeg : Item]
-Def:	//vars on the def
-	public int capacity = 1000
-Vars:	//vars defined in the class, so they basically do what tags do, but better
-	public int potionsCount = 0
-	public PotionDef potionDef = null
-	

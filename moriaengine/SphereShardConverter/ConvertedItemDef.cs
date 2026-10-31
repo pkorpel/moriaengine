@@ -253,7 +253,7 @@ namespace SteamEngine.Converter {
 				case "t_potion":
 				case "t_allpotions":
 				case "t_drink":
-				case "T_potion_shrink":
+				case "t_potion_shrink":
 				case "t_speedpotions":
 				case "t_potion_bomba":
 					def.headerType = "PotionDef";
