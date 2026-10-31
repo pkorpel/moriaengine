@@ -471,6 +471,9 @@ namespace SteamEngine.Converter {
 			if (SphereWorldVars.TryGetInt("nastaveni_weapspeed_" + dispId, out int speed)) {
 				this.Replace("speed", speed.ToString(CultureInfo.InvariantCulture), "nastaveni_weapspeed");
 			}
+			if (SphereWorldVars.TryGetInt("nastaveni_weapbleed_" + dispId, out int bleed)) {
+				this.Replace("BleedingEfficiency", (bleed / 1000.0).ToString("0.###", CultureInfo.InvariantCulture), "nastaveni_weapbleed");
+			}
 			if (SphereWorldVars.TryGetInt("nastaveni_weappiercing_" + dispId, out int piercing)) {
 				this.Replace("piercing", piercing.ToString(CultureInfo.InvariantCulture), "nastaveni_weappiercing");
 			}

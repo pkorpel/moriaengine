@@ -107,7 +107,24 @@ namespace SteamEngine.Tests {
 		[InlineData(30, 71280)]
 		[InlineData(60, 95040)]
 		public void ClassAbilityChanceGrowsWithStatsLevel(int level, int expected) {
-			Assert.Equal(expected, MysticAbilities.CalculateAbility(level));
+			Assert.Equal(expected, CombatCalculator.CalculateClassAbility(level));
+		}
+
+		[Theory]
+		[InlineData(100, 0, 1, 100)]
+		[InlineData(100, 5, 1, 75)]   //1 - 25/100
+		[InlineData(100, 9, 1, 19)]
+		[InlineData(100, 5, 2, 87)]   //the cap fades half as fast
+		public void BleedFadesByTheSquareOfItsTicks(double power, int ticks, int coefficient, double expected) {
+			Assert.Equal(expected, BleedingEffectPluginDef.CalculateCurrentValue(power, ticks, coefficient));
+		}
+
+		[Theory]
+		[InlineData(100, 5, 50, 250, 125)]   //75 left + 50
+		[InlineData(240, 0, 100, 250, 250)]  //capped
+		[InlineData(400, 5, 100, 250, 350)]  //a stack above the cap keeps its 87.5%
+		public void BleedReapplyStacksUpToTheCap(double power, int ticks, double added, double cap, double expected) {
+			Assert.Equal(expected, BleedingEffectPluginDef.CalculateReapply(power, ticks, added, cap));
 		}
 
 		[Fact]

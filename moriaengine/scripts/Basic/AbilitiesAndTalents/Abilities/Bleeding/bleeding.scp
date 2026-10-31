@@ -15,7 +15,7 @@
 
 
 [BleedingEffectPluginDef p_bleeding_effect]
-TickInterval = 5
-MaxTicks = 20 //max duration (20*5 = 100 seconds)
-MaxPower = 100 //max damage per tick
+TickInterval = 4.4 //nastaveni_ability_ripperdelay 40 ticks at 9.14 a second
+MaxTicks = 10 //i_krvaceni's more1h
+MaxPower = 250 //nastaveni_normal_bleed_cap, a thief's is CombatSettings.thiefBleedCap + level
 PluginKey = @@bleeding

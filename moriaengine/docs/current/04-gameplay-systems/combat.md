@@ -194,6 +194,13 @@ power * 8-16. Crushing Blow (`a_mystik_doubleswing`) vs monsters: `10% + 0.5% pe
 `reactiveArmorAbsorbPvM/PvP` (20/10%) of it and sends `reactiveArmorReturnPvM/PvP` (10/10%) back to
 the attacker. A Mystic's strike ends their mana shield and costs half of Int in mana.
 
+**Bleeding Strike.** With the ability on and the class ability roll, a landed blow adds
+`damage * weapon's BleedingEfficiency` to a bleed (`nastaveni_weapbleed_*`: kryss 0.45, cutlass
+0.25, dagger 0.1, scimitar 0.05, others 0), on a target with bleed resist under 1000. Every hit restarts
+ten ticks, 4.4 s apart, and each does `power * (1 - tick^2/100)`. A stack can't pass 250, a thief's
+`thiefBleedCap + min(level, 200)`, unless it's already above that. A tick interrupts casting 66.8%
+of the time. Monsters' own bleed (`e_npc_bleed`) is separate.
+
 **Not ported.** Energy shield's strength and voodoo shield: `i_energyshield`, `shield_power` and
 `i_voodooshield` aren't in the archive. A bare-handed player's spell keeps
 its damage: Erebor's bare hands rule (`wrestling/200 + 1`) also runs on spells, but it would

@@ -29,6 +29,30 @@ namespace SteamEngine.CompiledScripts {
 	/// converter now emits from the real archive's tag.resist_X tags.
 	/// </summary>
 	public static class NpcResistTests {
+		/// <summary>#872 - a thief's bleed on a monster: stacking, the fade, and the cap by level.</summary>
+		[SteamFunction]
+		public static void TestThiefBleedReport(Character self) {
+			NPC monster = (NPC) ThingDef.GetByDefname("c_titan").Create(self.X + 1, self.Y, self.Z, self.M);
+			Player player = (Player) self;
+			ProfessionDef original = player.Profession;
+			player.Profession = Professions.Thief;
+			player.Level = 200;
+			BleedingEffectPluginDef def = SingletonScript<BleedingEffectPluginDef>.Instance;
+			def.Strike(self, monster, 100);
+			BleedingEffectPlugin bleeding = (BleedingEffectPlugin) monster.GetPlugin(def.PluginKey);
+			int hits = monster.Hits;
+			bleeding.On_FadingEffectTick();
+			int firstTick = hits - monster.Hits;
+			hits = monster.Hits;
+			bleeding.On_FadingEffectTick();
+			int secondTick = hits - monster.Hits;
+			def.Strike(self, monster, 1000);
+			double capped = bleeding.BleedPower;
+			player.Profession = original;
+			monster.Delete();
+			Console.WriteLine("THIEF_BLEED: firstTick=" + firstTick + " secondTick=" + secondTick + " capped=" + ((int) capped));
+		}
+
 		/// <summary>#868 - a real monster's blow on a player under Reactive Armor.</summary>
 		[SteamFunction]
 		public static void TestReactiveArmorReport(Character self) {

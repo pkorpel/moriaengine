@@ -327,6 +327,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 Color = 098c
+BleedingEfficiency = 0.25 //nastaveni_weapbleed 
 
 [ContainerDef i_shadow_weapon_bag]
 model = i_bag

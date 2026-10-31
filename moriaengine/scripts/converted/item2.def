@@ -29,4 +29,5 @@ WeaponType = WeaponType.TwoHandAxe //guessed by Converter
 WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter 
 Color = color_magic_weap
 speed = 52 //nastaveni_weapspeed 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 piercing = 150 //nastaveni_weappiercing 

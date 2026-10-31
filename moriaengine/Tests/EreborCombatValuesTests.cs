@@ -75,6 +75,14 @@ namespace SteamEngine.Tests {
 			Assert.Equal(weight, Field("brneni", defname, "WEIGHT"));
 		}
 
+		[Theory]
+		[InlineData("i_kryss_iron", "0.45")]
+		[InlineData("i_dagger_iron", "0.1")]
+		[InlineData("i_sword_long_iron", "0")]
+		public void WeaponsHaveEreborsBleed(string defname, string efficiency) {
+			Assert.Equal(efficiency, Field("zbrane", defname, "BleedingEfficiency"));
+		}
+
 		[Fact]
 		public void StavesHaveEreborsMindPower() {
 			Assert.Equal("805", Field("zbrane", "i_staff_black_iron", "MindPowerVsP"));
