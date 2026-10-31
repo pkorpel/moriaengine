@@ -35,6 +35,18 @@ A stone only works in a Gondor area, for someone in the same map area.
 
 Paying follows Erebor's `pay`: the pack first, then the bank, and a GM pays nothing.
 
+## Blacklists
+
+A citizen suggests a name with `.navrhban`, with a reason; the mayor takes or refuses it in "Hraci navrzeni
+na Blacklist". A mayor can also add a name directly, from the menu or with `.blacklist`. Citizens can't be
+listed. Everyone sees the list, and the mayor or a GM can take a name off.
+
+A ban is on the character under that name, as on Erebor, so a masked character isn't recognized.
+
+Guards go by their home's town: a guard attacks a blacklisted player on sight and answers calls about
+them, shouting a warning first at someone still outside the walls. A guard protects a citizen of its own
+town even when criminal, though not a murderer.
+
 ## Saving
 
 `Town` is saved with its stone, as a guild is. Destroying the stone ends the town.
@@ -42,4 +54,5 @@ Paying follows Erebor's `pay`: the pack first, then the bank, and a GM pays noth
 ## Not done
 
 - Messages to someone offline are lost: Erebor's `delayedmessage` isn't ported.
+- `.remember` and targeting a severed head to suggest a ban: conveniences that need Erebor's masks and heads.
 - "Najemni informace", the rent overview, belongs to Erebor's house system.

@@ -30,9 +30,8 @@ namespace SteamEngine.CompiledScripts {
 	/// </list>
 	/// Only players are targeted, never an invulnerable one. Every guard in earshot answers on its own, as each NPC
 	/// hears on its own in Sphere. Replaces the converted [SpeechStub spk_guard].
-	/// Not ported, because the engine has no such system: town citizenship, blacklists and realm/keep bans
-	/// (isbannedplayer, isfrommytown - so a criminal is never "from this guard's town"), Mystic hypnosis
-	/// (tag hypno_mystik), and the guard's temporary karma (guardkarma_*, i_memory_cleaner). The archive's
+	/// A blacklisted player is never protected, and a criminal citizen of the guard's own town is (#892).
+	/// Not ported, because the engine has no such system: Mystic hypnosis (tag hypno_mystik), and the guard's temporary karma (guardkarma_*, i_memory_cleaner). The archive's
 	/// teleport-to-target (e_tele_to_target/i_attack_guard) only ever fires in its 7 insta-logout areas (jail,
 	/// tutorial) - guards here walk to their target as every NPC does.</summary>
 	public sealed class GuardSpeech : AbstractSpeech {
@@ -88,6 +87,7 @@ namespace SteamEngine.CompiledScripts {
 			if (timer == null) {
 				return false;
 			}
+			Town.WarnBanned(guard, target);
 			guard.Say(Shout(guard, target));
 			timer.EngageTarget(target);
 			return true;
@@ -96,9 +96,12 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Sphere's ismyguard: whether `guard` protects `target`. A guard of no realm protects everyone
 		/// (it isn't a realm guard, so it never takes sides).</summary>
 		public static bool IsProtectedBy(NPC guard, Character target) {
+			if (Town.IsBannedFor(guard, target)) {
+				return false;
+			}
 			switch (guard.Realm) {
 				case Realm.Gondor:
-					return (target.Realm == Realm.Gondor) && !Notoriety.IsCriminal(target) && !Notoriety.IsMurderer(target);
+					return (target.Realm == Realm.Gondor) && (!Notoriety.IsCriminal(target) || Town.IsFromGuardsTown(guard, target)) && !Notoriety.IsMurderer(target);
 				case Realm.Mordor:
 					return target.Realm == Realm.Mordor;
 				default:

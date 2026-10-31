@@ -56,8 +56,32 @@ namespace SteamEngine.CompiledScripts {
 			TownCitizen citizen = town.FindCitizen(self);
 			Console.WriteLine("TOWN_REPORT: citizens=" + town.citizens.Count + " citizen=" + (citizen != null) + " paid=" + ((citizen != null) && citizen.paidTax) +
 				" autoPay=" + ((citizen != null) && citizen.autoPay) + " mayor=" + ((town.mayor != null) ? town.mayor.Name.Replace(' ', '_') : "none") +
+				" banned=" + town.banned.Count + " suggested=" + town.suggestedBans.Count + " rank=" + town.GetRank(self) + " uid=" + (uint) self.FlaggedUid +
 				" tax=" + town.tax + " treasury=" + town.treasury + " gold=" + self.Gold + " chest=" + (town.taxChest != null) + " news=" + town.news.Count +
 				" homeHere=" + object.Equals(((Player) self).Home, TownSetup.CityArea(City).P) + " end");
+		}
+
+		/// <summary>What a Gondor guard of the city makes of me, standing where I am, and a mask's worth of a new name.</summary>
+		[SteamFunction]
+		public static void TestTownGuardCheck(Character self) {
+			NPC guard = (NPC) ThingDef.GetByDefname("c_vguard_gondor_hala_pesak").Create(TownSetup.CityArea(City).P);
+			guard.AggroMode = AggroMode.GuardsRealm;
+			bool protectedNow = GuardSpeech.IsProtectedBy(guard, self);
+			string oldName = self.Name;
+			bool attacks = guard.ShouldAggroOn(self);
+			self.Name = "Maska";
+			bool attacksMasked = guard.ShouldAggroOn(self);
+			self.Name = oldName;
+			guard.Delete();
+			Console.WriteLine("TOWN_GUARD: attacks=" + attacks + " masked=" + attacksMasked + " protected=" + protectedNow + " end");
+		}
+
+		[SteamFunction]
+		public static void TestTownCriminal(Character self) {
+			Notoriety.FlagCriminal(self);
+			NPC guard = (NPC) ThingDef.GetByDefname("c_vguard_gondor_hala_pesak").Create(TownSetup.CityArea(City).P);
+			Console.WriteLine("TOWN_CRIMINAL: protected=" + GuardSpeech.IsProtectedBy(guard, self) + " end");
+			guard.Delete();
 		}
 
 		/// <summary>The tax period is over.</summary>
