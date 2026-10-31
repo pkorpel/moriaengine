@@ -121,8 +121,8 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestReportStandcastMultiplier 1000");
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: basePower=1000", mark, TimeSpan.FromSeconds(10)));
 				string lineActive = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: basePower=1000");
-				// 10 points * 0.0005 EffectPower * level 100 = 0.5 -> 1000 * 1.5 = 1500
-				Assert.Equal(1500, ExtractInt(lineActive, "boosted"));
+				// #860 - by level alone, level 100 * 0.02 = +2, ability points don't matter
+				Assert.Equal(3000, ExtractInt(lineActive, "boosted"));
 			}
 		}
 

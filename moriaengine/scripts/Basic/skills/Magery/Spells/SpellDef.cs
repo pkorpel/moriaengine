@@ -620,6 +620,8 @@ namespace SteamEngine.CompiledScripts {
 			Player player = caster as Player;
 			if ((player != null) && ((this.Id == spellFireField) || (this.Id == spellPoisonField) || (this.Id == spellParalyzeField))) {
 				vsMonster += System.Math.Min(player.Level / 4, 50) * settings.fieldSpellPowerPerLevel;
+			} else {
+				vsMonster += StandcastHelper.GetLevelBonus(caster, this.Id);
 			}
 			return multiplier * vsMonster;
 		}
@@ -633,8 +635,10 @@ namespace SteamEngine.CompiledScripts {
 				spellPower = (int) ((mindPower * 10) * GetMindPowerMultiplier(caster, currentTarget)); //*10 because we need to be in thousands, like it is with skills
 			} else {
 				spellPower = caster.GetSkill(SkillName.Magery);
+				if (!currentTarget.IsPlayerForCombat) {
+					spellPower = (int) System.Math.Round(spellPower * (1.0 + StandcastHelper.GetLevelBonus(caster, this.Id)));
+				}
 			}
-			spellPower = StandcastHelper.ApplyMultiplier(caster, spellPower);
 			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower);
 			if (usesMindPower) {
 				//#860 - dospellcustom_donesrc: the multipliers come before the target's defense
@@ -658,7 +662,6 @@ namespace SteamEngine.CompiledScripts {
 
 		private void GetSpellPowerAgainstNonChar(Character caster, IPoint3D target, IPoint3D currentTarget, EffectFlag effectFlag, ref SpellEffectArgs sea) {
 			int spellPower = caster.GetSkill(SkillName.Magery);
-			spellPower = StandcastHelper.ApplyMultiplier(caster, spellPower);
 			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower);
 			if (sea == null) {
 				sea = SpellEffectArgs.Acquire(caster, target, currentTarget, this, spellPower, effectFlag);

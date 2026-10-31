@@ -453,8 +453,12 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#860 - vMweapattack grows with the player's level, up to 200.</summary>
 		internal static double GetAttackVsMonsterMultiplier(Character attacker, CombatSettings settings) {
 			Player player = attacker as Player;
-			int level = (player != null) ? Math.Min(player.Level, settings.weapAttackVsMMaxLevel) : 0;
-			return settings.weapAttackVsM + (level * settings.weapAttackVsMPerLevel);
+			return CalculateAttackVsMonsterMultiplier((player != null) ? player.Level : 0, settings.weapAttackVsM,
+				settings.weapAttackVsMPerLevel, settings.weapAttackVsMMaxLevel);
+		}
+
+		public static double CalculateAttackVsMonsterMultiplier(int level, double baseMultiplier, double perLevel, int maxLevel) {
+			return baseMultiplier + (Math.Min(level, maxLevel) * perLevel);
 		}
 
 		/// <summary>#447/#448/#449 - Mystic's mind-power swing. `piercing` has no equivalent in
