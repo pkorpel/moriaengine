@@ -169,28 +169,28 @@ def_rearAbilities_70         killingSpree
 //   NAME                                          every PAIR consists of 'MIN-LEVEL,MAX-VALUE`
 def_rearAbilities_manareg_desc                       "Regenerace many"
 def_rearAbilities_manareg[0]                         0,20
-def_rearAbilities_manareg_class[0]                   //everyone
+def_rearAbilities_manareg_class[0] ""                   //everyone
 def_rearAbilities_hitsreg_desc                       "Regenerace zivotu"
 def_rearAbilities_hitsreg[0]                         0,20
-def_rearAbilities_hitsreg_class[0]                   //everyone
+def_rearAbilities_hitsreg_class[0] ""                   //everyone
 def_rearAbilities_stamreg_desc                       "Regenerace staminy"
 def_rearAbilities_stamreg[0]                         0,20
-def_rearAbilities_stamreg_class[0]                   //everyone
+def_rearAbilities_stamreg_class[0] ""                   //everyone
 def_rearAbilities_hitsleech_desc                     "Vysavani zivotu"
 def_rearAbilities_hitsleech[0]                       0,20
-def_rearAbilities_hitsleech_class[0]                 //everyone
+def_rearAbilities_hitsleech_class[0] ""                 //everyone
 def_rearAbilities_manaleech_desc                     "Vysavani many"
 def_rearAbilities_manaleech[0]                       0,20
-def_rearAbilities_manaleech_class[0]                 //everyone
+def_rearAbilities_manaleech_class[0] ""                 //everyone
 def_rearAbilities_stamleech_desc                     "Vysavani staminy"
 def_rearAbilities_stamleech[0]                       0,20
-def_rearAbilities_stamleech_class[0]                 //everyone
+def_rearAbilities_stamleech_class[0] ""                 //everyone
 def_rearAbilities_rangearrow_desc                    "Longrange attack"
 def_rearAbilities_rangearrow[0]                      0,10
-def_rearAbilities_rangearrow_class[0]                //everyone
+def_rearAbilities_rangearrow_class[0] ""                //everyone
 def_rearAbilities_throwing_desc                      "Hazeni"
 def_rearAbilities_throwing[0]                        0,10
-def_rearAbilities_throwing_class[0]                  //everyone
+def_rearAbilities_throwing_class[0] ""                  //everyone
 def_rearAbilities_weapdodge_desc                     "Uhnuti uderu"
 def_rearAbilities_weapdodge[0]                       0,20
 def_rearAbilities_weapdodge_class[0]                 mystik,mag,necro

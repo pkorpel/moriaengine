@@ -31,17 +31,45 @@ namespace SteamEngine.Converter {
 		private static readonly HashSet<string> definedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		private static readonly Regex identifierRE = new Regex(@"^[A-Za-z_]\w*$", RegexOptions.CultureInvariant);
 
+		//#937 - where each name was last defined: as in Sphere the later one counts, the earlier one is commented out
+		private static readonly Dictionary<string, (ConvertedConstants def, int index)> lastDefinitions =
+			new Dictionary<string, (ConvertedConstants, int)>(StringComparer.OrdinalIgnoreCase);
+
 		public override void FirstStage() {
 			base.FirstStage();
 			string line;
 			StringReader reader = new StringReader(this.origData.GetTrigger(0).Code.ToString());
 			while ((line = reader.ReadLine()) != null) {
-				this.writtenData.Add(ConvertedTemplateDef.FixRandomExpression(line));
 				string trimmed = line.Trim();
-				if ((trimmed.Length > 0) && !trimmed.StartsWith("//", StringComparison.Ordinal)) {
-					definedNames.Add(trimmed.Split(new[] { ' ', '\t', '=' }, 2)[0]);
+				if ((trimmed.Length == 0) || trimmed.StartsWith("//", StringComparison.Ordinal)) {
+					this.writtenData.Add(ConvertedTemplateDef.FixRandomExpression(line));
+					continue;
 				}
+				string name = trimmed.Split(new[] { ' ', '\t', '=' }, 2)[0];
+				definedNames.Add(name);
+				if (HandWrittenScripts.IsConstant(name)) {
+					this.writtenData.Add("//" + line + " //defined in the engine's own scripts, commented out by Converter");
+					continue;
+				}
+				if (lastDefinitions.TryGetValue(name, out var previous)) {
+					previous.def.writtenData[previous.index] = "//" + previous.def.writtenData[previous.index] + " //defined again later, commented out by Converter";
+				}
+				lastDefinitions[name] = (this, this.writtenData.Count);
+				this.writtenData.Add(ConvertedTemplateDef.FixRandomExpression(WithValue(line, name)));
 			}
+		}
+
+		//a name alone is an empty string in Sphere
+		private static string WithValue(string line, string name) {
+			int nameEnd = line.IndexOf(name, StringComparison.Ordinal) + name.Length;
+			string rest = line.Substring(nameEnd);
+			if (rest.TrimStart().Length == 0) {
+				return line.TrimEnd() + " \"\"";
+			}
+			if (rest.TrimStart().StartsWith("//", StringComparison.Ordinal)) {
+				return line.Substring(0, nameEnd) + " \"\"" + rest;
+			}
+			return line;
 		}
 
 		/// <summary>A bare identifier that no [DEFNAMES] section of the archive defines (only meaningful after the

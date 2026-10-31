@@ -5,8 +5,6 @@ CATEGORY = Vendori
 SUBSECTION = Miscellaneous
 DESCRIPTION = Man
 
-TEVENTS = e_character
-TEVENTS = e_monster
 Name = "Man"
 DEFNAME = c_man
 ICON = i_pet_MAN
@@ -24,8 +22,6 @@ CATEGORY = Vendori
 SUBSECTION = Miscellaneous
 DESCRIPTION = Woman
 
-TEVENTS = e_character
-TEVENTS = e_monster
 NAME = "Woman"
 DEFNAME = c_woman
 ICON = i_pet_woman
@@ -48,7 +44,6 @@ NAME = "Ghost"
 DEFNAME = c_ghost_man
 ICON = i_pet_MAN
 CAN = MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST
-RESOURCES = 
 FOODTYPE = 
 Fencing = 150 380
 Parry = 150 380

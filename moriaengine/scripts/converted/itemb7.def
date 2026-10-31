@@ -376,7 +376,7 @@ DUPEITEM = i_handr_1
 
 [ItemDef 0x2059]
 DUPEITEM = i_handr_1
-//DEFNAME = i_handr_7 // commented out by Converter 
+DEFNAME = i_handr_7
 
 [ItemDef 0x205a]
 DUPEITEM = i_handr_1
@@ -402,7 +402,7 @@ DUPEITEM = i_hand_1
 
 [ItemDef 0x2070]
 DUPEITEM = i_hand_1
-//DEFNAME = i_hand_7 // commented out by Converter 
+DEFNAME = i_hand_7
 
 [ItemDef 0x2071]
 DUPEITEM = i_hand_1
@@ -1194,7 +1194,7 @@ DEFNAME = i_pet_harpy
 
 [ItemDef 0x20dd]
 DUPEITEM = i_pet_horse_brown_lt
-//DEFNAME = i_pet_horse // commented out by Converter 
+DEFNAME = i_pet_horse
 
 [ItemDef 0x20de]
 CATEGORY = Miscellaneous
@@ -4979,7 +4979,7 @@ SUBSECTION = Poison Field
 DESCRIPTION = @ North/South
 
 DUPEITEM = i_fx_poison_field
-//DEFNAME = i_fx_poison_field_ns // commented out by Converter 
+DEFNAME = i_fx_poison_field_ns
 
 [ItemDef 0x3921]
 DUPEITEM = i_fx_poison_field
@@ -5705,7 +5705,7 @@ DEFNAME = i_ship_plank_n_c
 
 [ItemDef 0x3e93]
 DUPEITEM = i_ship_hatch_e
-//DEFNAME = i_ship_hatch_w // commented out by Converter 
+DEFNAME = i_ship_hatch_w
 
 [ItemDef 0x3e94]
 
@@ -5814,7 +5814,7 @@ TYPE = T_SHIP_SIDE
 
 [ItemDef 0x3eae]
 DUPEITEM = i_ship_hatch_e
-//DEFNAME = i_ship_hatch_n // commented out by Converter 
+DEFNAME = i_ship_hatch_n
 
 [ItemDef 0x3eaf]
 
@@ -5854,7 +5854,7 @@ DESCRIPTION = @
 
 [ItemDef 0x3eb9]
 DUPEITEM = i_ship_hatch_e
-//DEFNAME = i_ship_hatch_s // commented out by Converter 
+DEFNAME = i_ship_hatch_s
 
 //[EquippableDef 0x3eba] //(commented out by Converter) 
 //type = t_eq_horse

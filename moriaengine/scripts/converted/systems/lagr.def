@@ -2,21 +2,21 @@
 
 [Constants lagrinfo]
 //afk lagry
-afk_trest_1		2500
-afk_lumber_1		50
-afk_trest_2 		6000
-afk_lumber_2 		50
-afk_trest_3		12000
-afk_lumber_3		50
-afk_trest_4		18000
-afk_lumber_4		50
-afk_trest_5		25000
-afk_lumber_5		50
-afk_trest_6		75000
-afk_lumber_6		50
-afk_trest_7		150000
-afk_lumber_7		50
-afk_trestu		7
+//afk_trest_1		2500 //defined again later, commented out by Converter
+//afk_lumber_1		50 //defined again later, commented out by Converter
+//afk_trest_2 		6000 //defined again later, commented out by Converter
+//afk_lumber_2 		50 //defined again later, commented out by Converter
+//afk_trest_3		12000 //defined again later, commented out by Converter
+//afk_lumber_3		50 //defined again later, commented out by Converter
+//afk_trest_4		18000 //defined again later, commented out by Converter
+//afk_lumber_4		50 //defined again later, commented out by Converter
+//afk_trest_5		25000 //defined again later, commented out by Converter
+//afk_lumber_5		50 //defined again later, commented out by Converter
+//afk_trest_6		75000 //defined again later, commented out by Converter
+//afk_lumber_6		50 //defined again later, commented out by Converter
+//afk_trest_7		150000 //defined again later, commented out by Converter
+//afk_lumber_7		50 //defined again later, commented out by Converter
+//afk_trestu		7 //defined again later, commented out by Converter
 
 trest_1		1000
 lumber_1	200

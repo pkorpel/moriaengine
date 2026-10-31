@@ -1,5 +1,16 @@
 # moriaengine — working state
 
+## DONE (2026-10-31): #937 boot with no errors (branch boot-no-errors), also closes #823
+
+User: a rebuild/boot must log no errors at all. Was 759 ERROR/WARNING lines, now 0 on a new world and on a saved one; BootLogTests enforces both, plus a list of defs that must exist.
+Worst find: a section sharing a model number was thrown away whole, so c_alligator, c_orc_nb, i_door_sliding and others never existed, and a dupe's DEFNAME was dropped (i_rock_3, i_pet_horse). 152 names came back.
+Converter: HandWrittenScripts (scripts/ except converted) wins over the archive, attr_/statf_ values differ on purpose; number used twice: a section with its own name stands alone, model = the number; constants: later wins as in Sphere; file order sorted. Rules table in sphere-shard-converter.md. Regen: 87 files, fresh regen diffs to 0.
+Saves: #823 DateSaver parses exact formats, no culture; PrettyDefname returned "" for a def with no DEFNAME (altdefname is "", not null), saved as [NPCDef ], such old sections are skipped; IPAddress.Loopback is a private subclass, ObjectSaver looks up base types.
+Decisions: ADDSPELL of a missing spell is commented out, not mapped: s_chain_lighting and s_meteor_shower are archive typos and Erebor's monsters never had them either. Character models resolve lazily, so C_unicorn_lbr, c_vortex, c_giant, c_m_balron_lbr still have a broken model at spawn, no boot error, not touched. Multis are live but COMPONENT/MULTIREGION are still comments and deeds don't place them.
+Gotchas: a type-name scan matched "char" in DurableCharEffectSpellDef and removed c_orc, c_ogre, c_zombie: audit defs before/after a regen, the test caught it. Character resolution of a model never logs at boot, so a clean log proves nothing about them.
+Verified: fast 312/312, 38 related protocol classes 104 pass, 5 fail, and those 5 fail on clean main too (Housing 2, HouseLockdown 2, Taming 1).
+**Next: #938 .flip exactly as Sphere + dropping flips.** Analysis on the issue.
+
 ## IN PROGRESS (2026-10-31): user's list, issues #879-#884
 
 User: don't wait for confirmations, carry on with all. Banker: "port over the entire dialog from erebor and all the behavior as well".

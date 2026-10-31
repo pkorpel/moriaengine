@@ -70,7 +70,7 @@ SUBSECTION = Baker
 DESCRIPTION = Open Sack of Flour
 
 DUPEITEM = i_flour_sack
-//DEFNAME = i_flour_sack_open // commented out by Converter 
+DEFNAME = i_flour_sack_open
 
 [ItemDef 0x1046]
 DUPEITEM = i_flour_sack
@@ -91,7 +91,7 @@ DUPEITEM = i_hide
 
 [ItemDef 0x1081]
 DUPEITEM = i_hides_cut
-//DEFNAME = i_hides_cut_2 // commented out by Converter 
+DEFNAME = i_hides_cut_2
 
 [ItemDef 0x1082]
 DUPEITEM = i_hides_cut
@@ -703,7 +703,7 @@ DEFNAME = i_mushroom
 
 [ItemDef 0x1126]
 DUPEITEM = i_mushroom
-//DEFNAME = i_fx_mushroom_explode // commented out by Converter 
+DEFNAME = i_fx_mushroom_explode
 
 [ItemDef 0x1127]
 DUPEITEM = i_mushroom
@@ -1752,7 +1752,7 @@ DEFNAME = i_SHACKLES_HANGING
 
 [ItemDef 0x1263]
 DUPEITEM = i_SHACKLES_HANGING
-//DEFNAME = i_SHACKLES_HANGING_ne // commented out by Converter 
+DEFNAME = i_SHACKLES_HANGING_ne
 
 [ItemDef 0x1265]
 CATEGORY = Decoration - Wall Carvings & Statues
@@ -2604,7 +2604,7 @@ DUPEITEM = i_boulder
 
 [ItemDef 0x1362]
 DUPEITEM = i_boulder
-//DEFNAME = i_boulder_x // commented out by Converter 
+DEFNAME = i_boulder_x
 
 [ItemDef 0x1363]
 CATEGORY = Boulders and Rocks
@@ -2628,11 +2628,11 @@ DUPEITEM = i_rock_plain
 
 [ItemDef 0x1367]
 DUPEITEM = i_rock_plain
-//DEFNAME = i_rock_2 // commented out by Converter 
+DEFNAME = i_rock_2
 
 [ItemDef 0x1368]
 DUPEITEM = i_rock_plain
-//DEFNAME = i_rock_3 // commented out by Converter 
+DEFNAME = i_rock_3
 
 [ItemDef 0x1369]
 DUPEITEM = i_rock_plain
@@ -2645,11 +2645,11 @@ DUPEITEM = i_rock_plain
 
 [ItemDef 0x136c]
 DUPEITEM = i_rock_plain
-//DEFNAME = i_rock_7 // commented out by Converter 
+DEFNAME = i_rock_7
 
 [ItemDef 0x136d]
 DUPEITEM = i_rock_plain
-//DEFNAME = i_rock_plain_x // commented out by Converter 
+DEFNAME = i_rock_plain_x
 
 [ItemDef 0x1383]
 CATEGORY = Ground Tiles
@@ -3694,7 +3694,7 @@ DEFNAME = i_harrow_part_1
 
 [ItemDef 0x1505]
 DUPEITEM = i_harrow_part_1
-//DEFNAME = i_harrow_part_2 // commented out by Converter 
+DEFNAME = i_harrow_part_2
 
 [ItemDef 0x1506]
 DUPEITEM = i_harrow_part_1
@@ -3831,19 +3831,19 @@ DEFNAME = i_serpent_crest
 
 [ItemDef 0x151a]
 DUPEITEM = i_decorative_armor2
-//DEFNAME = i_decorative_armor2_2 // commented out by Converter 
+DEFNAME = i_decorative_armor2_2
 
 [ItemDef 0x151b]
 DUPEITEM = i_decorative_armor2_d
-//DEFNAME = i_decorative_armor2_d2 // commented out by Converter 
+DEFNAME = i_decorative_armor2_d2
 
 [ItemDef 0x151c]
 DUPEITEM = i_decorative_armor
-//DEFNAME = i_decorative_armor_2 // commented out by Converter 
+DEFNAME = i_decorative_armor_2
 
 [ItemDef 0x151d]
 DUPEITEM = i_decorative_armor_d
-//DEFNAME = i_decorative_armor_d2 // commented out by Converter 
+DEFNAME = i_decorative_armor_d2
 
 [ItemDef 0x1526]
 CATEGORY = Decoration - Furniture
@@ -3898,7 +3898,7 @@ DEFNAME = i_vat_3
 
 [ItemDef 0x1551]
 DUPEITEM = i_vat_3
-//DEFNAME = i_vat_ladder_3 // commented out by Converter 
+DEFNAME = i_vat_ladder_3
 
 [ItemDef 0x1552]
 DUPEITEM = i_vat_3

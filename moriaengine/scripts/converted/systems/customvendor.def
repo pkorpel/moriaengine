@@ -420,17 +420,17 @@ layer = 61
 model = i_backpack
 type = t_container //guessed from base def by Converter 
 
-[ContainerDef i_buyer_box]
-name = "Seznam vykupovanych veci"
-layer = 62
-model = i_backpack
-type = t_container //guessed from base def by Converter 
+//[ContainerDef i_buyer_box] //(commented out by Converter) 
+//name = "Seznam vykupovanych veci"
+//layer = 62
+//model = i_backpack
+//type = t_container //guessed from base def by Converter 
 
-[ContainerDef i_buyer_tag_box]
-name = "Docasny seznam veci k prodeji"
-layer = 63
-model = i_backpack
-type = t_container //guessed from base def by Converter 
+//[ContainerDef i_buyer_tag_box] //(commented out by Converter) 
+//name = "Docasny seznam veci k prodeji"
+//layer = 63
+//model = i_backpack
+//type = t_container //guessed from base def by Converter 
 
 [EquippableDef i_buyer_tag_item]
 name = "Buyer tag item"

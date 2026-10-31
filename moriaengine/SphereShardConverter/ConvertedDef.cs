@@ -85,6 +85,12 @@ namespace SteamEngine.Converter {
 			}
 		}
 
+		/// <summary>Takes back what Set wrote for this key.</summary>
+		public void Remove(string key) {
+			string prefix = key + " = ";
+			this.writtenData.RemoveAll(line => line.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+		}
+
 		public virtual void Dump(TextWriter writer) {
 			writer.WriteLine();
 			string header = string.Concat("[", this.headerType, " ", this.headerName, "]");
@@ -123,6 +129,12 @@ namespace SteamEngine.Converter {
 
 		public void DontDump() {
 			this.dontDump = true;
+		}
+
+		public bool IsDontDump {
+			get {
+				return this.dontDump;
+			}
 		}
 
 		public void RunStageSafely(Action stage) {

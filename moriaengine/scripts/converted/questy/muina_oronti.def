@@ -7,7 +7,7 @@ DESCRIPTION = Malica
 
 TEVENTS = e_character
 TEVENTS = e_monster
-TSPEECH = spk_mo_malicia
+//TSPEECH = spk_mo_malicia
 name = "Malica"
 model = c_woman
 Color = color_clovek

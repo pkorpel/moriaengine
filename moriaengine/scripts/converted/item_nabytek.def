@@ -2487,7 +2487,7 @@ SUBSECTION = Archers/Bowyers
 DESCRIPTION = Archery Butte (N)
 
 DUPEITEM = i_archery_butte
-//DEFNAME = i_archery_butte2 // commented out by Converter 
+DEFNAME = i_archery_butte2
 
 [ItemDef 0x1015]
 CATEGORY = Items by Professions
@@ -2586,7 +2586,7 @@ DUPEITEM = i_training_dummy
 
 [ItemDef 0x1074]
 DUPEITEM = i_training_dummy
-//DEFNAME = i_training_dummy_n // commented out by Converter 
+DEFNAME = i_training_dummy_n
 
 [ItemDef 0x1075]
 DUPEITEM = i_training_dummy
@@ -2709,7 +2709,7 @@ DEFNAME = i_bar_door_ne
 
 [ItemDef 0x190f]
 DUPEITEM = i_bar_door_ne
-//DEFNAME = i_bar_door_nw // commented out by Converter 
+DEFNAME = i_bar_door_nw
 
 [ItemDef 0x1910]
 CATEGORY = Decoration - Furniture
@@ -2876,7 +2876,7 @@ DEFNAME = i_bulletin_board
 
 [ItemDef 0x1e5f]
 DUPEITEM = i_bulletin_board
-//DEFNAME = i_bulletin_board_2 // commented out by Converter 
+DEFNAME = i_bulletin_board_2
 
 [ItemDef 0x1e60]
 CATEGORY = Decoration - Miscellaneous
@@ -3660,7 +3660,7 @@ DUPEITEM = i_vat_2
 
 [ItemDef 0x1520]
 DUPEITEM = i_vat_2
-//DEFNAME = i_vat_ladder_2 // commented out by Converter 
+DEFNAME = i_vat_ladder_2
 
 [ItemDef 0x1521]
 DUPEITEM = i_vat_2

@@ -818,7 +818,7 @@ DESCRIPTION = Lemons (1/2 Peeled)
 
 TYPE = T_FOOD
 WEIGHT = 0.1
-RESOURCES = 1 i_lemon
+RESOURCES = 1 i_fruit_lemon
 DEFNAME = i_lemon_halved
 
 [ItemDef 0x172b]
@@ -1015,7 +1015,7 @@ TYPE = T_DRINK
 //DUPELIST = 09f0 // commented out by Converter 
 WEIGHT = 2
 RESOURCES = 1 i_pitcher_glass //some resources were fixed by converter 
-RESOURCES2 = 1 i_pitcher_glass, 1 i_milk //some resources were fixed by converter 
+//RESOURCES2 = 1 i_pitcher_glass, 1 i_milk //some resources were fixed by converter  //i_milk is nowhere, commented out by Converter
 //FLIP = 1 // commented out by Converter 
 EmptyFlask = i_pitcher_glass //converted from 'TDATA1' 
 DEFNAME = i_pitcher_milk
@@ -1490,7 +1490,7 @@ DUPEITEM = i_fish_cooked
 
 [ItemDef 0x1e1e]
 DUPEITEM = i_fish_cooked
-//DEFNAME = i_fish_cooked_small // commented out by Converter 
+DEFNAME = i_fish_cooked_small
 
 [ItemDef 0x1e1f]
 CATEGORY = Items by Professions
@@ -1498,7 +1498,7 @@ SUBSECTION = Cook
 DESCRIPTION = Ham (Sliced)
 
 DUPEITEM = i_fish_cooked
-//DEFNAME = i_ham_slices // commented out by Converter 
+DEFNAME = i_ham_slices
 
 [ItemDef 0x1f7d]
 CATEGORY = Items by Professions
@@ -1570,7 +1570,7 @@ TYPE = T_DRINK
 //DUPELIST = 01f8a,01f8b,01f8c // commented out by Converter 
 WEIGHT = 1
 RESOURCES = 1 i_glass //some resources were fixed by converter 
-RESOURCES2 = 1 i_glass, 1 i_milk //some resources were fixed by converter 
+//RESOURCES2 = 1 i_glass, 1 i_milk //some resources were fixed by converter  //i_milk is nowhere, commented out by Converter
 EmptyFlask = I_GLASS //converted from 'TDATA1' 
 DEFNAME = i_glass_of_milk
 
