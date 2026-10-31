@@ -23,6 +23,8 @@ speed = 130 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0.1 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_club_adamantinum]
@@ -48,6 +50,8 @@ speed = 100 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 4900.0 //#539 - scaled: 700 * 28.0/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 4900.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
@@ -75,6 +79,8 @@ speed = 85 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 990 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0.45 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_cutlass_adamantinum]
@@ -100,6 +106,8 @@ speed = 75 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1008 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0.25 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_mace_adamantinum]
@@ -125,6 +133,8 @@ speed = 90 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 990 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 8000.0 //#539 - scaled: 700 * 80.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 8000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
@@ -152,6 +162,8 @@ speed = 63 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1080 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0.05 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_adamantinum]
@@ -178,6 +190,8 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_shepherds_crook_adamantinum]
@@ -204,6 +218,8 @@ speed = 60 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 3000.0 //#539 - scaled: 700 * 30.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 3000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
@@ -232,6 +248,8 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1125 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 1270 //nastaveni_staffSMbonus 
 MindPowerVsM = 1270
@@ -259,6 +277,8 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1350 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_spear_short_adamantinum]
@@ -284,6 +304,8 @@ speed = 90 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 990 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_war_fork_adamantinum]
@@ -309,6 +331,8 @@ speed = 65 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1170 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_sword_broad_adamantinum]
@@ -334,6 +358,8 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 990 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_mace_war_adamantinum]
@@ -359,6 +385,8 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1125 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 3290.0 //#539 - scaled: 700 * 47.0/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 3290.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
@@ -386,6 +414,8 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1170 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_sword_viking_adamantinum]
@@ -411,6 +441,8 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 990 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredStaffDef i_staff_quarter_adamantinum]
@@ -437,6 +469,8 @@ speed = 45 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1260 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 1305 //nastaveni_staffSMbonus 
 MindPowerVsM = 1305
@@ -464,6 +498,8 @@ speed = 100 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_hammer_pick_adamantinum]
@@ -489,6 +525,8 @@ speed = 63 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1125 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 5250.0 //#539 - scaled: 700 * 90.0/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 5250.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
@@ -517,6 +555,8 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_exec_adamantinum]
@@ -542,6 +582,8 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_double_adamantinum]
@@ -568,6 +610,8 @@ speed = 65 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_hammer_war_adamantinum]
@@ -594,6 +638,8 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1125 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 3000.0 //#539 - scaled: 700 * 60.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 3000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
@@ -622,6 +668,8 @@ speed = 55 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_spear_adamantinum]
@@ -647,6 +695,8 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 990 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredStaffDef i_staff_gnarled_adamantinum]
@@ -673,6 +723,8 @@ speed = 40 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1350 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 1340 //nastaveni_staffSMbonus 
 MindPowerVsM = 1340
@@ -701,6 +753,8 @@ speed = 62 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 900 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_battle_large_adamantinum]
@@ -727,6 +781,8 @@ speed = 55 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1170 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bardiche_adamantinum]
@@ -753,6 +809,8 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1080 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_maul_adamantinum]
@@ -778,6 +836,8 @@ speed = 70 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1125 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 3305.56 //#539 - scaled: 700 * 85.0/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 3305.56 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
@@ -806,6 +866,8 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1080 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bow_adamantinum]
@@ -834,6 +896,8 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 990 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_crossbow_adamantinum]
@@ -862,6 +926,8 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1080 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_crossbow_heavy_adamantinum]
@@ -890,6 +956,8 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+maxDurability = 1080 //nastaveni_durability 
+canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bow_adamantinum_run]

@@ -652,6 +652,30 @@
   <data name="ThiefDefenceLoc_MagicallyBlocked" xml:space="preserve">
     <value>Úder magicky zastaven</value>
   </data>
+  <data name="DestroyableLoc_IsDestroyed" xml:space="preserve">
+    <value>{0} je zničeno</value>
+  </data>
+  <data name="DestroyableLoc_MayBeDamaged" xml:space="preserve">
+    <value>{0} možná utrpělo poškození</value>
+  </data>
+  <data name="RepairLoc_NotRepairable" xml:space="preserve">
+    <value>Tohle není opravitelné</value>
+  </data>
+  <data name="RepairLoc_NotNeeded" xml:space="preserve">
+    <value>Netřeba opravovat</value>
+  </data>
+  <data name="RepairLoc_NeedAnvil" xml:space="preserve">
+    <value>Musíš stát u kovadliny</value>
+  </data>
+  <data name="RepairLoc_NotEnough" xml:space="preserve">
+    <value>Nemáš dost materiálu ({0})</value>
+  </data>
+  <data name="RepairLoc_Repaired" xml:space="preserve">
+    <value>Oprava se povedla</value>
+  </data>
+  <data name="RepairLoc_Failed" xml:space="preserve">
+    <value>Oprava se nepovedla</value>
+  </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
     <value>Nemáš střelivo.</value>
   </data>
