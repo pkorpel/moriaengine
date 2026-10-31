@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace SteamEngine.CompiledScripts {
@@ -27,6 +28,7 @@ namespace SteamEngine.CompiledScripts {
 		private sealed class Entry {
 			internal Character opponent;
 			internal TimeSpan when;
+			internal readonly Dictionary<Character, TimeSpan> everyone = new Dictionary<Character, TimeSpan>();
 		}
 
 		private static readonly ConditionalWeakTable<Character, Entry> memories = new ConditionalWeakTable<Character, Entry>();
@@ -44,6 +46,23 @@ namespace SteamEngine.CompiledScripts {
 			Entry entry = memories.GetOrCreateValue(self);
 			entry.opponent = opponent;
 			entry.when = now;
+			entry.everyone[opponent] = now;
+		}
+
+		/// <summary>#902 - everyone `self` has fought within `maxAge`, as Sphere's fight memories: who shares
+		/// the experience and the kill when `self` dies.</summary>
+		public static List<Character> GetFighters(Character self, TimeSpan maxAge) {
+			List<Character> fighters = new List<Character>();
+			Entry entry;
+			if ((self != null) && memories.TryGetValue(self, out entry)) {
+				TimeSpan now = Globals.TimeAsSpan;
+				foreach (KeyValuePair<Character, TimeSpan> fight in entry.everyone) {
+					if (!fight.Key.IsDeleted && ((now - fight.Value) <= maxAge)) {
+						fighters.Add(fight.Key);
+					}
+				}
+			}
+			return fighters;
 		}
 
 		/// <summary>The character `self` most recently fought with, if that was within `maxAge` and the opponent
