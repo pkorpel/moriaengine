@@ -42,18 +42,17 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_AfterSwing(WeaponSwingArgs swingArgs) {
-			if (swingArgs.FinalDamage > 0) {
-				BleedingEffectPluginDef bleedingDef = SingletonScript<BleedingEffectPluginDef>.Instance;
-				Character attacker = swingArgs.attacker;
-
-				double bleedDamage = swingArgs.FinalDamage * attacker.Weapon.BleedingEfficiency * BleedingStrikeDef.EffectPower //standard effect
+			Character attacker = swingArgs.attacker;
+			Weapon weapon = attacker.Weapon;
+			Player player = attacker as Player;
+			if ((swingArgs.FinalDamage > 0) && (weapon != null) && (player != null) && !swingArgs.defender.IsDeleted &&
+					(swingArgs.defender.ResistBleed < 1000) && (Globals.dice.Next(100001) < CombatCalculator.CalculateClassAbility(player.EffectiveLevel))) {
+				//#872 - f_thief_doBleed: the blow's share by weapon, nastaveni_weapbleed_*
+				double bleedPower = swingArgs.FinalDamage * weapon.BleedingEfficiency * BleedingStrikeDef.EffectPower
 					* (1 + (attacker.GetAbility(BleedingBonusDef) * BleedingBonusDef.EffectPower)); //bonus effect
-
-				double durationInSeconds = BleedingStrikeDef.EffectDuration;
-				int ticksCount = (int) (durationInSeconds / bleedingDef.TickInterval);
-
-				bleedingDef.Apply(attacker, swingArgs.defender, EffectFlag.HarmfulEffect | EffectFlag.FromAbility,
-					bleedDamage, ticksCount);
+				if (bleedPower > 0) {
+					SingletonScript<BleedingEffectPluginDef>.Instance.Strike(attacker, swingArgs.defender, bleedPower);
+				}
 			}
 		}
 	}

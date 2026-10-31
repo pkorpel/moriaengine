@@ -498,6 +498,12 @@ namespace SteamEngine.CompiledScripts {
 			retVal.strikeStopRange = range + 2;
 		}
 
+		/// <summary>#868 - f_setmainability: the chance out of 100000 of a class ability, by statslevel.</summary>
+		public static int CalculateClassAbility(int statsLevel) {
+			int missing = 60 - statsLevel;
+			return ((3600 - (missing * missing)) * 264) / 10;
+		}
+
 		/// <summary>#860 - Sphere's integer maths: (x*1000+500)/1000.</summary>
 		internal static double RoundLikeSphere(double value) {
 			return Math.Floor(value + 0.5);

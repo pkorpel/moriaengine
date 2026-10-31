@@ -186,6 +186,7 @@ speed = 40 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 //[typedef t_move_tool] //(commented out by Converter) 
 

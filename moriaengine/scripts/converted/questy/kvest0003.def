@@ -19,6 +19,7 @@ speed = 130 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.1 //nastaveni_weapbleed 
 
 [SpeechStub spk_kvest003_Grager]
 ON=*hi*
@@ -220,6 +221,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 Color = 098b
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef i_srdce]
 CATEGORY = Kvesty

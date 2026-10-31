@@ -69,6 +69,7 @@ WeaponType = WeaponType.XBow //guessed by Converter
 WeaponAnimType = WeaponAnimType.XBow //guessed by Converter 
 //TDATA4 = i_rock_plain // commented out by Converter 
 speed = 58 //nastaveni_weapspeed 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 piercing = 0 //nastaveni_weappiercing 
 
 [ItemDef i_regataBoje]

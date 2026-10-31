@@ -88,6 +88,14 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double weapAttackVsMPerLevel = 0.010;
 
+		/// <summary>#872 - a thief's bleed cap, plus their level up to 200.</summary>
+		[SaveableData]
+		public int thiefBleedCap = 300; //nastaveni_thief_bleed_cap
+
+		/// <summary>#872 - permille chance of a bleed's tick interrupting casting (chance_to_fizz).</summary>
+		[SaveableData]
+		public int bleedFizzleChance = 668;
+
 		[SaveableData]
 		public int weapAttackVsMMaxLevel = 200;
 

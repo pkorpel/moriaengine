@@ -20,6 +20,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 Color = 065f
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ItemDef i_selatko]
 CATEGORY = Kvesty

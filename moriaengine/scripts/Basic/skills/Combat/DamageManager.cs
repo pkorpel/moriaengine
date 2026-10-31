@@ -110,6 +110,12 @@ namespace SteamEngine.CompiledScripts {
 			return CauseDamage(attacker, defender, flags, damage, false, true, out unused);
 		}
 
+		/// <summary>#872 - a bleed's tick: casting is only sometimes interrupted (chance_to_fizz).</summary>
+		public static int CauseBleedDamage(Character attacker, Character defender, DamageType flags, double damage, bool interruptCasting) {
+			double unused;
+			return CauseDamage(attacker, defender, flags, damage, false, false, out unused, interruptCasting);
+		}
+
 		/// <summary>#860 - Erebor's f_dmgFinal_MvM_minimalDMG and f_dmgFinal_PvX_minimalDMG, after
 		/// resists. A target immune to the damage type (resist modifier 0) stays unhurt.</summary>
 		internal static double ApplyMinimalDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing) {
@@ -139,7 +145,7 @@ namespace SteamEngine.CompiledScripts {
 			return taken;
 		}
 
-		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn) {
+		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn, bool interruptCasting = true) {
 			reactiveReturn = 0;
 			if (defender.Flag_Invulnerable) {
 				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
@@ -170,7 +176,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!defender.IsDeleted && !defender.Flag_Dead && !defender.Flag_Insubst) {
 				defender.Trigger_HostileAction(attacker);
 				if (!isSwing) {
-					defender.Trigger_Disrupt();//nebo jen pri damage > 0 ?
+					defender.Trigger_Disrupt(interruptCasting);//nebo jen pri damage > 0 ?
 				}
 
 				//#797 - e_explode remembers everyone who hurt it
