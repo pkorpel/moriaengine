@@ -22,10 +22,12 @@ type = t_eq_script
 model = i_memory
 Layer = layer_special //guessed from base def by Converter 
 
-[ItemDef i_generals_bracelet]
+[PowerBadgeDef i_generals_bracelet]
 name = "Generals bracelet"
-type = t_eq_script
+TYPE = t_normal
+Layer = 14
 model = i_bracelet_gold
+layer = 14 //Set by Converter 
 Color = color_o_gold
 
 //[function general_gondoru] //src. - to GM, uid - ten hrac //(commented out by Converter) 

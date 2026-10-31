@@ -85,6 +85,54 @@ namespace SteamEngine.CompiledScripts {
 			guard.Delete();
 		}
 
+		/// <summary>Go to Gondor's stone, a step off it.</summary>
+		[SteamFunction]
+		public static void TestRealmStone(Character self) {
+			foreach (Thing thing in Thing.AllThings) {
+				if (thing is RealmStone stone) {
+					self.P(stone.P());
+					Console.WriteLine("REALM_STONE: uid=" + (uint) stone.FlaggedUid + " end");
+					return;
+				}
+			}
+			Console.WriteLine("REALM_STONE: uid=0 end");
+		}
+
+		private static string Clean(string text) {
+			return (text == null) ? "none" : text.Replace(' ', '_');
+		}
+
+		[SteamFunction]
+		public static void TestRealmReport(Character self) {
+			RealmOffice office = RealmOffice.For(Realm.Gondor);
+			AbstractItem cape = self.FindLayer(20);
+			Console.WriteLine("REALM_REPORT: holder=" + Clean(office?.holder?.Name) + " name=" + Clean(self.Name) + " badge=" + (PowerBadge.Find(self) != null) +
+				" uniform=" + Uniform.Has(self) + " uid=" + (uint) self.FlaggedUid + " str=" + self.Str + " vit=" + ((Player) self).Vit + " cape=0x" + ((cape != null) ? cape.Color.ToString("x", CultureInfo.InvariantCulture) : "none") + " end");
+		}
+
+		/// <summary>The General's six pieces, the horse among them.</summary>
+		[SteamFunction]
+		public static void TestRealmDress(Character self) {
+			foreach (string defname in new[] { "i_robe", "i_cape", "i_leather_gloves", "i_shoes_plain", "i_hat_floppy" }) {
+				self.TryEquip((Item) ThingDef.GetByDefname(defname).Create(self.Backpack));
+			}
+			Character horse = (Character) ThingDef.GetByDefname("c_horse_brown_dk").Create(self.P());
+			self.Mount = horse;
+			Console.WriteLine("REALM_DRESSED: done");
+		}
+
+		[SteamFunction]
+		public static void TestRealmUndress(Character self) {
+			self.FindLayer(7).Cont = self.Backpack;
+			Console.WriteLine("REALM_DRESSED: done");
+		}
+
+		[SteamFunction]
+		public static void TestRealmDismiss(Character self) {
+			RealmOffice.For(Realm.Gondor).Dismiss();
+			Console.WriteLine("REALM_DISMISSED: done");
+		}
+
 		/// <summary>The tax period is over.</summary>
 		[SteamFunction]
 		public static void TestTownTaxDue(Character self) {

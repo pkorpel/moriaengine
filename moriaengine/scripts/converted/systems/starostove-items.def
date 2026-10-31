@@ -23,13 +23,13 @@ Color = 0986 //gold
 
 //[function checktax] //(commented out by Converter) 
 
-[ItemDef i_generalstone]
+[RealmStoneDef i_generalstone]
 CATEGORY = GM Items
 SUBSECTION = Kameny
 DESCRIPTION = Generals Stone
 
 name = "Generals stone"
-type = t_generalmenu
+TYPE = t_normal
 model = i_grave_stone_5
 Color = 0990 //silver 
 
