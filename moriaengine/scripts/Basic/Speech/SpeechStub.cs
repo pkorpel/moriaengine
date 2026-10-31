@@ -41,7 +41,7 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname) {
 		}
 
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			ScriptLoader.RegisterScriptType("SpeechStub", LoadFromScripts, false);
 		}
 

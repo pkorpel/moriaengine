@@ -239,7 +239,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly string[] yeses = { "yes", "ano" };
 		private static readonly string[] questions = { "teleport", "najdu", "kde", "klic" };
 
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new MasterQuestSpeech("Lenastirovarec").Register();
 		}
 

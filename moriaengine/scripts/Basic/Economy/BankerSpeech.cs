@@ -33,7 +33,7 @@ namespace SteamEngine.CompiledScripts {
 	/// matching doesn't need LScript's pattern-trigger machinery anyway.
 	/// </summary>
 	public sealed class BankerSpeech : AbstractSpeech {
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new BankerSpeech("spk_jobbanker").Register();
 			new BankerOkSpeech("spk_banker_ok").Register();
 		}

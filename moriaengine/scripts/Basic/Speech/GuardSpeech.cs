@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts {
 	public sealed class GuardSpeech : AbstractSpeech {
 		private static readonly string[] keywords = { "guard", "straz" };
 
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new GuardSpeech("spk_guard").Register();
 		}
 

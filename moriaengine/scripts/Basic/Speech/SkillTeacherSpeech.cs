@@ -103,7 +103,7 @@ namespace SteamEngine.CompiledScripts {
 			new Lesson(SkillRank.Expert, 250, 300, "EXPERTEM"),
 		};
 
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new SkillTeacherSpeech("spk_mistr").Register();
 		}
 

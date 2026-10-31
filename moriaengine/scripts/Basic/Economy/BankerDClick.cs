@@ -30,7 +30,7 @@ namespace SteamEngine.CompiledScripts {
 	/// same convention as TSPEECH=spk_jobbanker right above it.
 	/// </summary>
 	public sealed class BankerDClick : TriggerGroup {
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new BankerDClick("e_banker").Register();
 		}
 

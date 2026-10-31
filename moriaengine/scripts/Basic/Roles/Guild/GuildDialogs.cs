@@ -275,7 +275,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>input(...) for the guild's name or its abbreviation.</summary>
 	public class D_GuildInput : CompiledGumpDef {
-		private const int OkButton = 1, TextEntry = 1;
+		private const int OkButton = 1, TextEntryId = 1;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Guild guild = (Guild) args[0];
@@ -284,14 +284,14 @@ namespace SteamEngine.CompiledScripts {
 			this.AddPage(0);
 			this.AddBackground(0, 0, 300, 110, 2620);
 			this.AddLabel(14, 12, 0x481, isName ? "Jak se ma guilda jmenovat?" : "Jakou ma mit guilda zkratku?");
-			this.AddTextEntry(14, 40, 270, 20, 52, TextEntry, isName ? guild.Name : guild.Abbreviation);
+			this.AddTextEntry(14, 40, 270, 20, 52, TextEntryId, isName ? guild.Name : guild.Abbreviation);
 			this.AddButton(14, 72, 0xfb7, 0xfb9, OkButton, GumpButtonType.Reply, 0);
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
 			Guild guild = (Guild) args[0];
 			Player player = (Player) gi.Cont;
-			string text = (gr.GetTextResponse(TextEntry) ?? "").Trim();
+			string text = (gr.GetTextResponse(TextEntryId) ?? "").Trim();
 			if ((gr.PressedButton == OkButton) && (text.Length > 0) && (guild.GetRank(player) == Guild.RankMaster)) {
 				if (!(bool) args[1]) {
 					guild.Abbreviation = text;
