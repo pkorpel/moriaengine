@@ -18,6 +18,11 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## IN PROGRESS (2026-10-31): #892 realm government: town stones, General, Nazguls
+
+User: whole system, WITHOUT fortress captains and dobyvani. Stone spots: my proposals, placed through the setup commands. Tunable numbers on .settings. Analysis on #892.
+Order, one PR each: (1) region realm + city name from the converter, (2) town stone: citizenship, tax, treasury, menu, setup, (3) blacklists in guards, (4) elections and votes, (5) rings, shrines, Nazguls, General, .honor/.fear, uniforms, (6) hired guards.
+
 ## DONE (2026-10-31): #889 bank box gump, status gold, weights vs Erebor (branch bank-gold-weights)
 
 User testing after #884. .check/.mesec "not paying" was a GM, who pays nothing, as on Erebor: user confirmed non-GMs pay, keep it.

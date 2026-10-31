@@ -61,6 +61,8 @@ namespace SteamEngine.Regions {
 		private List<string> regionResources;
 		private int rainChance, coldChance;
 		private string group;
+		private int realmTag;
+		private string city;
 
 		[LoadSection]
 		public FlaggedRegion(PropsSection input)
@@ -94,6 +96,39 @@ namespace SteamEngine.Regions {
 			get { return this.coldChance; }
 		}
 
+		/// <summary>Erebor's tag.realm of the area: 1 Gondor, 2 Mordor, 3 wilderness, 4 where a thief can't
+		/// change masks. Not inherited: every area that needs it has its own.</summary>
+		public int RealmTag {
+			get { return this.realmTag; }
+			set {
+				this.realmTag = value;
+				this.MarkGmModified();
+			}
+		}
+
+		public Realm Realm {
+			get {
+				switch (this.realmTag) {
+					case 1:
+						return Realm.Gondor;
+					case 2:
+						return Realm.Mordor;
+					default:
+						return Realm.None;
+				}
+			}
+		}
+
+		/// <summary>#892 - Erebor's tag.jmeno_mesta: the city this area answers to, and several areas can
+		/// share one (Pelargir and Linhir are Dol_Amroth's). Multi-word names have underscores.</summary>
+		public string City {
+			get { return this.city; }
+			set {
+				this.city = value;
+				this.MarkGmModified();
+			}
+		}
+
 		/// <summary>Sphere's area group (GROUP=), e.g. "Doly", "Mesta Gondor", "Arena".</summary>
 		public string Group {
 			get { return this.group; }
@@ -106,6 +141,8 @@ namespace SteamEngine.Regions {
 			this.rainChance = 0;
 			this.coldChance = 0;
 			this.group = null;
+			this.realmTag = 0;
+			this.city = null;
 		}
 
 		private static List<string> AddNames(List<string> list, string valueString) {
@@ -245,6 +282,12 @@ namespace SteamEngine.Regions {
 			if (this.group != null) {
 				output.WriteValue("group", this.group);
 			}
+			if (this.realmTag != 0) {
+				output.WriteValue("realm", this.realmTag);
+			}
+			if (this.city != null) {
+				output.WriteValue("city", this.city);
+			}
 		}
 
 		public override void LoadLine(string filename, int line, string valueName, string valueString) {
@@ -326,6 +369,12 @@ namespace SteamEngine.Regions {
 					break;
 				case "resources":
 					this.regionResources = AddNames(this.regionResources, ConvertTools.LoadSimpleQuotedString(valueString));
+					break;
+				case "realm":
+					this.realmTag = ConvertTools.ParseInt32(valueString.Trim());
+					break;
+				case "city":
+					this.city = ConvertTools.LoadSimpleQuotedString(valueString.Trim());
 					break;
 				case "rainchance":
 					this.rainChance = ConvertTools.ParseInt32(valueString.Trim());
