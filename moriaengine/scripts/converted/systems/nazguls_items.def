@@ -12,13 +12,13 @@ type = t_shrine_power
 model = i_altar_stone //01216 
 Color = 0675
 
-[ItemDef i_lordnazgulsstone]
+[RealmStoneDef i_lordnazgulsstone]
 CATEGORY = GM Items
 SUBSECTION = Kameny
 DESCRIPTION = Lord Nazgul's Stone
 
 name = "Lord Nazgul's stone"
-type = t_lordnazgulmenu
+TYPE = t_normal
 model = i_grave_stone_5
 Color = 0990 //silver 
 

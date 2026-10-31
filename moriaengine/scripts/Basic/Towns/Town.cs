@@ -284,14 +284,19 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>isbannedplayer: on the blacklist of the town this guard guards, unless a citizen of it.</summary>
 		public static bool IsBannedFor(NPC guard, Character ch) {
 			Town town = OfGuard(guard);
-			return (town != null) && (town.FindCitizen(ch) == null) && (town.FindBan(ch) != null);
+			if ((town != null) && (town.FindCitizen(ch) != null)) {
+				return false;
+			}
+			return RealmOffice.IsBannedFor(guard, ch) || ((town != null) && (town.FindBan(ch) != null));
 		}
 
 		/// <summary>The warning of isbannedplayer, to someone who hasn't crossed into the town yet.</summary>
 		public static void WarnBanned(NPC guard, Character ch) {
 			FlaggedRegion guardsArea = RegionEventSystem.AreaOf(HomeRegion(guard));
 			if (IsBannedFor(guard, ch) && (RegionEventSystem.AreaOf(ch.Region) != guardsArea)) {
-				guard.Say("Aaaa " + ch.Name + ", mame prikaz nevpustit te do mesta, strez se prekrocit jeho hranici!");
+				guard.Say("Aaaa " + ch.Name + (RealmOffice.IsBannedFor(guard, ch)
+					? ", mame prikaz nevpustit te do nasich mest, strez se vstoupit!"
+					: ", mame prikaz nevpustit te do mesta, strez se prekrocit jeho hranici!"));
 				guard.Say("Zmizni od mesta!");
 			}
 		}

@@ -8,16 +8,20 @@
 
 //[events e_ring_power] //(commented out by Converter) 
 
-[ItemDef i_ring_power]
+[PowerBadgeDef i_ring_power]
 name = "Ring of Power"
-type = t_eq_script
+TYPE = t_normal
+Layer = 8
 model = i_ring_gold
+layer = 8 //Set by Converter 
 Color = color_o_gold
 
-[ItemDef i_leading_ring_power]
+[PowerBadgeDef i_leading_ring_power]
 name = "Leading Ring of Power"
-type = t_eq_script
+TYPE = t_normal
+Layer = 8
 model = i_ring_gold
+layer = 8 //Set by Converter 
 Color = color_o_mithril
 
 //[function nazghulfell] //(commented out by Converter) 
