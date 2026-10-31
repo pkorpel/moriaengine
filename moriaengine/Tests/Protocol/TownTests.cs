@@ -10,7 +10,7 @@ namespace SteamEngine.Tests.Protocol {
 	public class TownTests {
 		private const string Account = "towntests";
 		private const string AccountB = "towntestsb";
-		private const int Blacklist = 2, SuggestedBans = 21, AddBan = 12, MakeCitizenship = 25, PayTax = 4, TaxStatus = 6, SetTax = 14, Resign = 15, Home = 24, News = 23, Yes = 1;
+		private const int Election = 3, Stand = 5, Blacklist = 2, SuggestedBans = 21, AddBan = 12, MakeCitizenship = 25, PayTax = 4, TaxStatus = 6, SetTax = 14, Resign = 15, Home = 24, News = 23, Yes = 1;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
 
 		private readonly GameServerPairFixture fixture;
@@ -173,6 +173,69 @@ namespace SteamEngine.Tests.Protocol {
 
 				//a criminal is safe from their own town's guards, and only those
 				Assert.Contains("protected=True", this.Ask(mayor, ".TestTownCriminal", "TOWN_CRIMINAL:"));
+			}
+		}
+
+		[Fact]
+		public void TheMostVotesMakeAMayorAndATieKeepsTheOldOne() {
+			using (var one = this.Connect("Town Voter One")) {
+				this.Ask(one, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+				using var two = this.Connect("Town Voter Two", AccountB);
+				this.Ask(one, ".SetupTowns", "SETUP_DONE:");
+				uint stone = (uint) Number(this.Ask(one, ".TestTownPrepare 1", "TOWN_READY:"), "stone");
+				this.Ask(two, ".TestTownPrepare 1", "TOWN_READY:");
+				foreach (TestGameClient client in new[] { one, two }) {
+					this.Press(client, stone, MakeCitizenship);
+					this.Yes_(client);
+					this.Press(client, stone, PayTax);
+					this.Yes_(client);
+				}
+
+				//one stands; a citizen votes for them, once, and not for themselves
+				this.Press(one, stone, Stand);
+				this.Yes_(one);
+				Assert.Contains("candidates=1 votes=0", this.Report(one));
+				this.Press(one, stone, Election);
+				var ballot = one.ReadGumpDialogWithStrings(Wait);
+				one.SendGumpResponse(ballot.GumpUid, 100);
+				one.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("votes=0 voters=0", this.Report(one));
+				this.Press(two, stone, Election);
+				ballot = two.ReadGumpDialogWithStrings(Wait);
+				two.SendGumpResponse(ballot.GumpUid, 100);
+				ballot = two.ReadGumpDialogWithStrings(Wait);
+				two.SendGumpResponse(ballot.GumpUid, 100);
+				two.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("votes=1 voters=1", this.Report(two));
+
+				//not until the week is out
+				one.SendDoubleClick(stone);
+				one.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("mayor=none", this.Report(one));
+				this.Ask(one, ".TestTownElectionOver", "TOWN_DUE:");
+				one.SendDoubleClick(stone);
+				one.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("candidates=0", this.Report(one));
+				Assert.Contains("voters=0", this.Report(one));
+				Assert.Contains("mayor=Town_Voter_One", this.Report(one));
+
+				//nobody stands against a mayor mid-term
+				this.Press(two, stone, Stand);
+				this.Yes_(two);
+				Assert.Contains("candidates=0", this.Report(two));
+				this.Ask(two, ".TestTownTermOver", "TOWN_DUE:");
+				this.Press(two, stone, Stand);
+				this.Yes_(two);
+				this.Press(one, stone, Stand);
+				this.Yes_(one);
+
+				//nobody voted, so it's a tie, and the mayor stays
+				this.Ask(one, ".TestTownElectionOver", "TOWN_DUE:");
+				one.SendDoubleClick(stone);
+				one.ReadGumpDialogWithStrings(Wait);
+				string kept = this.Report(one);
+				Assert.Contains("candidates=0", kept);
+				Assert.Contains("mayor=Town_Voter_One", kept);
 			}
 		}
 

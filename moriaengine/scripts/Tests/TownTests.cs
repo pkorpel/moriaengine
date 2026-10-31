@@ -56,6 +56,7 @@ namespace SteamEngine.CompiledScripts {
 			TownCitizen citizen = town.FindCitizen(self);
 			Console.WriteLine("TOWN_REPORT: citizens=" + town.citizens.Count + " citizen=" + (citizen != null) + " paid=" + ((citizen != null) && citizen.paidTax) +
 				" autoPay=" + ((citizen != null) && citizen.autoPay) + " mayor=" + ((town.mayor != null) ? town.mayor.Name.Replace(' ', '_') : "none") +
+				" candidates=" + town.candidates.Count + " votes=" + string.Join("+", town.candidates.ConvertAll(c => c.votes)) + " voters=" + town.voters.Count +
 				" banned=" + town.banned.Count + " suggested=" + town.suggestedBans.Count + " rank=" + town.GetRank(self) + " uid=" + (uint) self.FlaggedUid +
 				" tax=" + town.tax + " treasury=" + town.treasury + " gold=" + self.Gold + " chest=" + (town.taxChest != null) + " news=" + town.news.Count +
 				" homeHere=" + object.Equals(((Player) self).Home, TownSetup.CityArea(City).P) + " end");
@@ -92,8 +93,20 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		[SteamFunction]
+		public static void TestTownElectionOver(Character self) {
+			Town.ForCity(City).electionStart = Globals.TimeInSeconds - ((TownSettings.instance.electionDays * 24 * 60 * 60) + 1);
+			Console.WriteLine("TOWN_DUE: done");
+		}
+
+		[SteamFunction]
+		public static void TestTownTermOver(Character self) {
+			Town.ForCity(City).mayorSince = Globals.TimeInSeconds - ((TownSettings.instance.mayorTermDays * 24 * 60 * 60) + 1);
+			Console.WriteLine("TOWN_DUE: done");
+		}
+
+		[SteamFunction]
 		public static void TestTownSetMayor(Character self) {
-			Town.ForCity(City).mayor = self;
+			Town.ForCity(City).SetMayor(self);
 			Console.WriteLine("TOWN_MAYOR: done");
 		}
 
@@ -101,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestTownForSave(Character self) {
 			Town town = Town.ForStone(FindStone(City), City);
 			town.AddCitizen(self);
-			town.mayor = self;
+			town.SetMayor(self);
 			town.treasury = 777;
 			town.news.Add("Otevreno");
 			Console.WriteLine("TOWN_SAVED: ready");
