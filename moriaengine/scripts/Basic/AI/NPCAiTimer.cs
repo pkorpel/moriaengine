@@ -258,6 +258,7 @@ namespace SteamEngine.CompiledScripts {
 			if (this.target == null) {
 				this.target = this.FindTarget(self);
 				if (this.target != null) {
+					Town.WarnBanned(self, this.target);
 					Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " acquired target " + this.target.Name + " via autonomous aggro");
 				}
 			}

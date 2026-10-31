@@ -68,8 +68,8 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>d_town_menu: the lines depend on who's looking. The button numbers are Erebor's.</summary>
 	public class D_TownMenu : CompiledGumpDef {
-		internal const int CitizensButton = 1, PayTaxButton = 4, TaxStatusButton = 6, SetTaxButton = 14, MayorButton = 15, ExpelButton = 16,
-			MakeMayorButton = 17, MakeCitizenButton = 18, NewsButton = 23, HomeButton = 24, CitizenshipButton = 25;
+		internal const int CitizensButton = 1, BlacklistButton = 2, PayTaxButton = 4, TaxStatusButton = 6, AddBanButton = 12, SetTaxButton = 14, MayorButton = 15,
+			ExpelButton = 16, MakeMayorButton = 17, MakeCitizenButton = 18, SuggestedBansButton = 21, NewsButton = 23, HomeButton = 24, CitizenshipButton = 25;
 		private const int Hue = 955, LabelHue = 0x481, RowHeight = 20, Width = 280, FirstRow = 176;
 		private static readonly string[] rankNames = { "Nepritel", "Verejnost", "Obcan", "Starosta", "GM" };
 
@@ -86,10 +86,13 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			Line(Town.RankPublic, CitizensButton, "Seznam obcanu");
+			Line(Town.RankPublic, BlacklistButton, "Blacklist");
 			Line(Town.RankPublic, HomeButton, "Nastavit home");
+			Line(Town.RankMayor, SuggestedBansButton, "Hraci navrzeni na Blacklist");
 			Line(Town.RankCitizen, PayTaxButton, "Zaplatit dane");
 			Line(Town.RankCitizen, TaxStatusButton, "Stav platby dani");
 			Line(Town.RankCitizen, NewsButton, "Novinky");
+			Line(Town.RankMayor, AddBanButton, "Pridat hrace na blacklist");
 			Line(Town.RankMayor, SetTaxButton, "Nastavit dane");
 			Line(Town.RankMayor, MayorButton, player.IsGM ? "Zbavit starostu uradu" : "Slozit funkci");
 			Line(Town.RankGm, ExpelButton, "Zbavit obcanstvi");
@@ -147,6 +150,16 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case ExpelButton:
 					D_TownCitizens.Show(town, player, D_TownCitizens.ListMode.Expel);
+					break;
+				case BlacklistButton:
+					D_TownBans.Show(town, player, false);
+					break;
+				case SuggestedBansButton:
+					D_TownBans.Show(town, player, true);
+					break;
+				case AddBanButton:
+					player.SysMessage("Koho chces pridat na blacklist?");
+					player.Target(SingletonScript<Targ_TownBan>.Instance, town);
 					break;
 				case PayTaxButton:
 					D_TownConfirm.Ask(player, "Prejes si zaplatit dan svemu mestu?", () => town.PayTax(player));
@@ -280,6 +293,88 @@ namespace SteamEngine.CompiledScripts {
 					who.RedMessage("Jiz nejsi obcanem mesta " + town.Name + ".");
 				});
 			}
+		}
+	}
+
+	/// <summary>d_tmseznam's blacklist and its suggestions. A mayor or GM removes a name from the blacklist;
+	/// a suggestion the mayor takes (first button) or turns down (the second).</summary>
+	public class D_TownBans : CompiledGumpDef {
+		private const int Width = 620, PageRows = 12, RowHeight = 20, FirstRow = 40, FirstRowButton = 100, RejectButton = 1000, TextHue = 2301;
+
+		internal static void Show(Town town, Player player, bool suggestions) {
+			player.Dialog(player, SingletonScript<D_TownBans>.Instance, new DialogArgs(town, suggestions));
+		}
+
+		private static List<TownBan> List(Town town, bool suggestions) {
+			return suggestions ? town.suggestedBans : town.banned;
+		}
+
+		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
+			Town town = (Town) args[0];
+			bool suggestions = (bool) args[1];
+			bool canEdit = town.GetRank((Character) sendTo) >= Town.RankMayor;
+			List<TownBan> bans = List(town, suggestions);
+			this.SetLocation(100, 100);
+			this.AddPage(0);
+			this.AddBackground(0, 0, Width, FirstRow + (PageRows * RowHeight) + 20, 2620);
+			this.AddLabel(14, 12, 0x481, (suggestions ? "Navrzenych na blacklist: " : "Nepratel: ") + bans.Count);
+			this.AddButton(Width - 45, 12, 0xfb1, 0xfb3, 0, GumpButtonType.Reply, 0);
+			int pages = (bans.Count + PageRows - 1) / PageRows;
+			for (int page = 0; page < pages; page++) {
+				this.AddPage(page + 1);
+				if (page > 0) {
+					this.AddButton(Width - 25, FirstRow, 0xfa, 0xfb, 0, GumpButtonType.Page, page);
+				}
+				if (page < (pages - 1)) {
+					this.AddButton(Width - 25, FirstRow + ((PageRows - 1) * RowHeight), 0xfc, 0xfd, 0, GumpButtonType.Page, page + 2);
+				}
+				int last = Math.Min(bans.Count, (page + 1) * PageRows);
+				for (int i = page * PageRows; i < last; i++) {
+					TownBan ban = bans[i];
+					int y = FirstRow + ((i % PageRows) * RowHeight);
+					if (canEdit) {
+						this.AddButton(14, y, 4005, 4007, FirstRowButton + i, GumpButtonType.Reply, 0);
+					}
+					this.AddLabel(50, y, TextHue, ban.name);
+					this.AddLabel(200, y, TextHue, "Duvod: " + ban.reason);
+					if (suggestions) {
+						this.AddLabel(420, y, TextHue, "Navrhl: " + ban.suggestedBy);
+						if (canEdit) {
+							this.AddButton(Width - 55, y, 0xfb1, 0xfb3, RejectButton + i, GumpButtonType.Reply, 0);
+						}
+					}
+				}
+			}
+		}
+
+		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
+			Town town = (Town) args[0];
+			bool suggestions = (bool) args[1];
+			Player player = (Player) gi.Cont;
+			List<TownBan> bans = List(town, suggestions);
+			int button = gr.PressedButton;
+			if (button == 0) {
+				D_TownMenu.Show(town, player);
+				return;
+			}
+			bool reject = button >= RejectButton;
+			int index = button - (reject ? RejectButton : FirstRowButton);
+			if ((index < 0) || (index >= bans.Count) || (town.GetRank(player) < Town.RankMayor)) {
+				return;
+			}
+			TownBan ban = bans[index];
+			bans.RemoveAt(index);
+			if (!suggestions) {
+				ban.who.SysMessage(ban.name + " byl odstranen z cerne listiny ve meste " + town.Name);
+			} else if (reject) {
+				player.SysMessage("Navrh zamitnut");
+			} else {
+				ban.suggestedBy = null;
+				town.banned.Add(ban);
+				player.SysMessage(ban.name + " uspesne pridan na cernou listinu");
+				ban.who.RedMessage("Byl jsi dan na cernou listinu mesta " + town.Name);
+			}
+			Show(town, player, suggestions);
 		}
 	}
 
