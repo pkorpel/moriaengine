@@ -2125,6 +2125,14 @@ namespace SteamEngine.CompiledScripts {
 			return CharacterCollision.CheckStep(this, map, x, y, z);
 		}
 
+		//#918 looting a corpse can be a crime
+		public override void On_PickingUp(AbstractItem item) {
+			Corpse corpse = item.TopObj() as Corpse;
+			if (corpse != null) {
+				Notoriety.OnLooting(this, corpse);
+			}
+		}
+
 		//#778 strangler-vine hold, #779 Sphere's fatigue/overload refusals
 		public override bool CheckCanMove(bool running) {
 			return MonsterSpecialAttacks.CheckEntangledCanMove(this) && MovementStamina.CheckCanMove(this);

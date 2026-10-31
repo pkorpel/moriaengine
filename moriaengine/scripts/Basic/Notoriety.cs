@@ -93,6 +93,38 @@ namespace SteamEngine.CompiledScripts {
 			FlagCriminal(enemy);
 		}
 
+		/// <summary>#918 - `looter` is about to take something from `corpse`. Not Erebor's rule, which had
+		/// looting free: taking from a player of your own realm is a crime where that realm's switch says
+		/// so, unless the owner let their party loot them. Criminals and murderers are fair game.</summary>
+		public static void OnLooting(Character looter, Corpse corpse) {
+			Character owner = corpse.Owner;
+			if ((owner == null) || (owner == looter) || owner.IsDeleted || !looter.IsPlayer || looter.IsGM) {
+				return;
+			}
+			if ((owner.Realm != looter.Realm) || !IsLootingACrimeIn(looter.Realm)) {
+				return;
+			}
+			if (IsCriminal(owner) || IsMurderer(owner)) {
+				return;
+			}
+			if (Party.AreInOneParty(owner, looter) && Party.CanLootMe(owner)) {
+				return;
+			}
+			FlagCriminal(looter);
+			looter.SysMessage("Okradat mrtveho ze sve rise je zlocin!");
+		}
+
+		private static bool IsLootingACrimeIn(Realm realm) {
+			switch (realm) {
+				case Realm.Gondor:
+					return NotorietySettings.instance.gondorLootingIsACrime;
+				case Realm.Mordor:
+					return NotorietySettings.instance.mordorLootingIsACrime;
+				default:
+					return false;
+			}
+		}
+
 		/// <summary>Called when `victim` dies at the hands of `killedBy` - registers a murder count against `killedBy`, unless killing `victim` was justified (victim was already criminal/murderer).</summary>
 		public static void RegisterMurder(Character victim, Character killedBy) {
 			if ((victim == null) || (killedBy == null) || (victim == killedBy)) {

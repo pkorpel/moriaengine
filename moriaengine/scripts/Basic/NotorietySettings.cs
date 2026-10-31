@@ -54,5 +54,15 @@ namespace SteamEngine.CompiledScripts {
 		/// Default on; a GM who wants strict OSI-accurate notoriety can turn this off.</summary>
 		[SaveableData]
 		public bool wildMonstersRenderOrange = true;
+
+		/// <summary>#918 - whether taking from the corpse of a fellow Gondorian is a crime, unless the
+		/// owner is in the looter's party with "can loot me" on. A house rule: Erebor ran
+		/// LOOTINGISACRIME=0.</summary>
+		[SaveableData]
+		public bool gondorLootingIsACrime = true;
+
+		/// <summary>The same for Mordor, off: Mordor shows red and has no use for a criminal flag.</summary>
+		[SaveableData]
+		public bool mordorLootingIsACrime = false;
 	}
 }
