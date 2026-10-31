@@ -58,6 +58,22 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int mayorTermDays = 30;
 
+		/// <summary>What a guard's wage buys.</summary>
+		[SaveableData]
+		public int guardPayDays = 7;
+
+		/// <summary>nastaveni_weapdam_guardspawntime, whose lower end this is.</summary>
+		[SaveableData]
+		public int guardRespawnMinutes = 30;
+
+		/// <summary>nastaveni_vzdalenost_guardspawn</summary>
+		[SaveableData]
+		public int guardPostDistance = 6;
+
+		/// <summary>How many guards go after one target.</summary>
+		[SaveableData]
+		public int guardsPerKill = 5;
+
 		public override string ToString() {
 			return "Towns";
 		}

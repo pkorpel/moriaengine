@@ -103,6 +103,55 @@ gate is red and shut while there's a First. The First rules every Mordor city an
 not of Mordor loses 3 Str, Dex, Int and Vit within 10 tiles for 300 s, or 5 within 12 around the First, and
 the Nazgul waits 180 s.
 
+## Hired guards
+
+`systems/starostove.scp`, `towns.scp`, `seznam_guards.scp`. A town's mayor or Nazgul hires in "Najimat straze"
+from what `seznam_guards.scp` allows that city, paying the treasury, which anyone can add to there. The General
+and First Nazgul have their own force and funds at the realm stone, the king's and Marghul's guards, up to
+`max_guards_<city>`. A wage buys 7 days and can be extended; an unpaid guard leaves.
+
+"Rozmistit straze" gives a hired guard a post: inside the city, at least 6 tiles from another post. A guard who
+dies comes back after 30 minutes.
+
+Orders come from "Pokyny strazim" or the commands, for the city you stand in:
+
+| | Town | Realm |
+| --- | --- | --- |
+| Gondor | `.towncontrol`, `.townguardskill`, `.townguardsstop`, `.townguardscontinue`, `.townguardsflee`, `.townguardscome` | `.guardscontrol`, `.kingguardskill` and so on |
+| Mordor | `.mordortowncontrol`, `.mordortownguardskill` and so on | `.mordorguardscontrol`, `.marghulsguardskill` and so on |
+
+Kill sends up to 5 guards near you, and in Gondor not at an honest Gondoran: the target has to be criminal,
+a murderer or on the blacklist. Stop holds them until a hit or the next order, flee sends them to their post,
+come brings those within 15 tiles. The General and First also command any town's guards in their realm.
+
+## Proposed spots
+
+The archive records no positions, so these are `.SetupTowns`'s proposals, each 3 or more steps from the
+area's spawn point. Moving a piece in game keeps it there.
+
+| Piece | Spot |
+| --- | --- |
+| Minas Tirith stone | 5678,3868,-80 |
+| Edoras stone | 2312,2512,0 |
+| Dol Amroth stone | 2262,3202,0 |
+| Fornost stone | 1424,1087,4 |
+| Hobitin stone | 1079,1324,0 |
+| Erebor stone | 3157,967,40 |
+| Dol stone | 3192,1061,1 |
+| Sede pristavy stone | 755,1368,0 |
+| Kralovstvi lesnich elfu stone | 2976,1245,0 |
+| General's stone | 5679,3866,-80 |
+| Barad-dur shrine | 3647,2714,-50 |
+| Nurn shrine | 3472,3261,12 |
+| Rhun shrine | 3824,2131,0 |
+| Harad shrine | 4186,3957,0 |
+| Umbar shrine | 2502,4014,11 |
+| First Nazgul's stone | 3647,2712,-50 |
+| First Nazgul's board | 3647,2710,-50 |
+| Gate to Fela Nazgul | 3647,2708,-50 |
+| Gate back | 5850,2104,10, plane 10 |
+| Leading shrine | 5854,2104,10, plane 10 |
+
 ## Saving
 
 `Town` is saved with its stone, as a guild is. Destroying the stone ends the town.

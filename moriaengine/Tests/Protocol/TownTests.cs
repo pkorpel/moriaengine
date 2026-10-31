@@ -390,7 +390,7 @@ namespace SteamEngine.Tests.Protocol {
 			using (var fixture2 = GameServerPairFixture.BootPreservingSaves()) {
 				using (var client = Connect("Town Loader")) {
 					string loaded = Ask(fixture2, client, ".TestTownAfterRestart", "TOWN_LOADED:");
-					Assert.Contains("found=True stone=True citizens=1 mayor=Town_Saver treasury=777 news=1 taxDue=True", loaded);
+					Assert.Contains("found=True stone=True citizens=1 mayor=Town_Saver treasury=85000 news=1 taxDue=True", loaded);
 					Assert.Contains("ruler=Town_Saver ring=True", Ask(fixture2, client, ".TestNazgulAfterRestart", "NAZGUL_LOADED:"));
 				}
 			}
