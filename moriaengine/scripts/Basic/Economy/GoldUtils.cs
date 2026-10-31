@@ -54,6 +54,31 @@ namespace SteamEngine.CompiledScripts {
 			return total;
 		}
 
+		/// <summary>Sphere's ContentCount of t_gold, what the status window shows: all of it on the
+		/// character, in bags and the bank too, but not behind a lock.</summary>
+		public static long CountGoldOn(Character who) {
+			long total = 0;
+			foreach (AbstractItem item in who) {
+				total += CountGoldWithin(item);
+			}
+			return total;
+		}
+
+		private static long CountGoldWithin(AbstractItem item) {
+			if (item.Def == GoldDef) {
+				return item.Amount;
+			}
+			Container container = item as Container;
+			if ((container == null) || container.IsInLimbo || (container.Type == TriggerGroup.GetByDefname("t_container_locked"))) {
+				return 0;
+			}
+			long total = 0;
+			foreach (AbstractItem inside in container) {
+				total += CountGoldWithin(inside);
+			}
+			return total;
+		}
+
 		/// <summary>Consumes up to `amount` gold from this container's matching stacks. Returns how much was actually consumed (may be less than requested if the container didn't have enough).</summary>
 		private static long ConsumeGoldFrom(AbstractItem container, long amount) {
 			long remaining = amount;

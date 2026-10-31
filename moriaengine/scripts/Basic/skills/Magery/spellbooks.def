@@ -4,7 +4,7 @@ SUBSECTION = Magical Items
 DESCRIPTION = Spellbook
 
 TYPE = T_SPELLBOOK
-WEIGHT = 10
+WEIGHT = 1
 //RESOURCES = 80 I_PARCHMENT, 1 I_HIDE, 1 I_CLOTH // commented out by Converter 
 LAYER = 1 // this is wrong in TILEDATA ? 
 DEFNAME = i_spellbook

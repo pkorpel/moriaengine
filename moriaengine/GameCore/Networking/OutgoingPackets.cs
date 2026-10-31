@@ -914,7 +914,7 @@ namespace SteamEngine.Networking {
 		short mana, maxMana, hits, maxHits, stam, maxStam, strength, dexterity, intelligence, armor,
 			fireResist, coldResist, poisonResist, energyResist, luck, minDamage, maxDamage, tithingPoints, statCap;
 		byte currentPets, maxPets;
-		ushort weight;
+		ushort weight, maxWeight;
 		bool isFemale;
 		bool canRenameSelf;
 
@@ -943,7 +943,9 @@ namespace SteamEngine.Networking {
 				long lgold = ch.Gold;
 				this.gold = (uint) (lgold > 0xffffffff ? 0xffffffff : lgold);
 				this.armor = ch.StatusArmorClass;
-				this.weight = (ushort) ch.Weight;
+				//stones, rounded to a tenth first: a float sum of tenths can land just under a whole number
+				this.weight = (ushort) (Math.Round(ch.Weight * 10) / 10);
+				this.maxWeight = (ushort) ch.MaxCarryWeight;
 
 				this.currentPets = ch.ExtendedStatusNum07;
 				this.maxPets = ch.ExtendedStatusNum08;
@@ -976,7 +978,7 @@ namespace SteamEngine.Networking {
 				this.EncodeShort(this.hits);
 				this.EncodeShort(this.maxHits);
 				this.EncodeBool(this.canRenameSelf);
-				this.EncodeByte(4); //more data following
+				this.EncodeByte(5); //more data following; from 5 up the client takes our max weight
 			} else {
 				this.EncodeShort((short) ((this.hits << 8) / this.maxHits));
 				this.EncodeShort(256);
@@ -1002,9 +1004,8 @@ namespace SteamEngine.Networking {
 			this.EncodeShort(this.armor);
 			this.EncodeUShort(this.weight);
 
-			//If (flag 5 or higher)
-			//* BYTE[2] Max Weight
-			//* BYTE[1] Race
+			this.EncodeUShort(this.maxWeight);
+			this.EncodeByte(1); //race: the client's human, ours aren't the client's
 
 			this.EncodeShort(this.statCap);
 			this.EncodeByte(this.currentPets);

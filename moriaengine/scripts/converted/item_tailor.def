@@ -7,7 +7,7 @@ DESCRIPTION = Pouch
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e79 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_hides_cut
 RESOURCES2 = 2 i_hide
 SKILLMAKE = 100 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -23,7 +23,7 @@ SUBSECTION = Containers
 DESCRIPTION = Backpack
 
 TYPE = T_CONTAINER
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 4 i_hides_cut
 RESOURCES2 = 10 i_hide
 SKILLMAKE = 280 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -39,7 +39,7 @@ SUBSECTION = Containers
 DESCRIPTION = Leather Bag
 
 TYPE = T_CONTAINER
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_hides_cut
 RESOURCES2 = 5 i_hide
 SKILLMAKE = 290 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -56,7 +56,7 @@ DESCRIPTION = Bolt of Cloth
 
 TYPE = T_CLOTH_BOLT
 //DUPELIST = 0f96,0f97,0f98,0f99,0f9a,0f9b,0f9c // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 50 i_cloth
 SKILLMAKE = 300 tailoring //some resources were fixed by converter 
 //DYE = 1 // commented out by Converter 
@@ -89,7 +89,7 @@ SUBSECTION = Tailor
 DESCRIPTION = Sewing Kit
 
 TYPE = T_SEWING_KIT
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 2 i_ingot_iron
 RESOURCES2 = 1 i_sewing_needle, 1 i_bowl_wood, 1 i_yarn_ball
 SKILLMAKE = 188 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -103,7 +103,7 @@ DESCRIPTION = Cloak, Cape
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01530 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 14 i_cloth
 RESOURCES2 = 14 i_cloth, 1 i_thread
 SKILLMAKE = 454 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -122,7 +122,7 @@ DESCRIPTION = Long Skirt
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 10 i_cloth
 RESOURCES2 = 10 i_cloth, 1 i_thread
 SKILLMAKE = 318 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -142,7 +142,7 @@ DESCRIPTION = Plain Shirt
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01518 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 8 i_cloth
 RESOURCES2 = 8 i_cloth, 1 i_thread
 SKILLMAKE = 227 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -165,7 +165,7 @@ DESCRIPTION = Short Pants
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 0152f // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 6 i_cloth
 RESOURCES2 = 6 i_cloth, 1 i_thread
 SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -190,7 +190,7 @@ DESCRIPTION = Skirt (Tea Length)
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 10 i_cloth, 1 i_thread
 //DYE = 1 // commented out by Converter 
 layer = 23 //Set by Converter 
@@ -208,7 +208,7 @@ DESCRIPTION = Kilt
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01538 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 8 i_cloth
 RESOURCES2 = 8 i_cloth, 1 i_thread
 SKILLMAKE = 227 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -231,7 +231,7 @@ DESCRIPTION = Long Pants
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 0153a // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 8 i_cloth
 RESOURCES2 = 8 i_cloth, 1 i_thread
 SKILLMAKE = 272 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -254,7 +254,7 @@ DESCRIPTION = Half Apron
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 0153c // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 6 i_cloth
 RESOURCES2 = 6 i_cloth, 1 i_thread
 SKILLMAKE = 227 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -277,7 +277,7 @@ DESCRIPTION = Full Apron
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 0153e // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 10 i_cloth
 RESOURCES2 = 10 i_cloth, 1 i_thread
 SKILLMAKE = 318 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -300,7 +300,7 @@ DESCRIPTION = Bandana
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01540 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_cloth
 RESOURCES2 = 2 i_cloth, 1 i_thread
 SKILLMAKE = 101 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -323,7 +323,7 @@ DESCRIPTION = Body Sash
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01542 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 4 i_cloth
 RESOURCES2 = 4 i_cloth, 1 i_thread
 SKILLMAKE = 45 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -346,7 +346,7 @@ DESCRIPTION = SkullCap
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01544 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_cloth
 RESOURCES2 = 2 i_cloth, 1 i_thread
 SKILLMAKE = 01 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -369,7 +369,7 @@ DESCRIPTION = Boots (R)
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 0170c // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 8 i_hides_cut
 RESOURCES2 = 8 i_hide, 1 i_thread
 SKILLMAKE = 363 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -392,7 +392,7 @@ DESCRIPTION = Sandals (R)
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 0170e // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 4 i_hides_cut
 RESOURCES2 = 4 i_hide, 1 i_thread
 SKILLMAKE = 136 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -415,7 +415,7 @@ DESCRIPTION = Shoes (R)
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01710 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 6 i_hides_cut
 RESOURCES2 = 6 i_hide, 1 i_thread
 SKILLMAKE = 181 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -440,7 +440,7 @@ DESCRIPTION = Thigh Boots (R)
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01712 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 10 i_hides_cut
 RESOURCES2 = 10 i_hide, 1 i_thread
 SKILLMAKE = 250 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -465,7 +465,7 @@ DESCRIPTION = Floppy Hat
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 11 i_cloth
 RESOURCES2 = 5 i_cloth, 1 i_thread
 SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -484,7 +484,7 @@ DESCRIPTION = Wide Brim Hat
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 12 i_cloth
 RESOURCES2 = 5 i_cloth, 1 i_thread
 SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -503,7 +503,7 @@ DESCRIPTION = Cap
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 5 i_cloth, 1 i_thread
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
@@ -520,7 +520,7 @@ DESCRIPTION = Tall Straw Hat
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 12 i_cloth
 RESOURCES2 = 10 i_straw, 1 i_cloth, 1 i_thread
 SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -539,7 +539,7 @@ DESCRIPTION = Straw Hat
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 10 i_cloth
 RESOURCES2 = 7 i_straw, 1 i_cloth, 1 i_thread
 SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -558,7 +558,7 @@ DESCRIPTION = Wizards Hat
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 8 i_cloth, 1 i_thread
 SKILLMAKE = 350 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
 //DYE = 1 // commented out by Converter 
@@ -576,7 +576,7 @@ DESCRIPTION = Bonnet
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 11 i_cloth
 RESOURCES2 = 4 i_cloth, 1 i_thread
 SKILLMAKE = 318 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -595,7 +595,7 @@ DESCRIPTION = Feathered Hat
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 12 i_cloth, 1 i_feather //some resources were fixed by converter 
 RESOURCES2 = 5 i_cloth, 1 i_feather, 1 i_thread //some resources were fixed by converter 
 SKILLMAKE = 328 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -614,7 +614,7 @@ DESCRIPTION = Tricorne Hat
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 12 i_cloth
 RESOURCES2 = 5 i_cloth, 1 i_thread
 SKILLMAKE = 328 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -634,7 +634,7 @@ DESCRIPTION = Jester's Cap
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 0172e // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 15 i_cloth
 RESOURCES2 = 5 i_cloth, 1 i_thread
 SKILLMAKE = 300 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -657,7 +657,7 @@ DESCRIPTION = Fancy Shirt
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01efe // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 8 i_cloth
 RESOURCES2 = 8 i_cloth, 1 i_thread
 SKILLMAKE = 350 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -680,7 +680,7 @@ DESCRIPTION = Fancy Dress
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01f00 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 12 i_cloth
 RESOURCES2 = 12 i_cloth, 1 i_thread
 SKILLMAKE = 336 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -703,7 +703,7 @@ DESCRIPTION = Plain Dress
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01f02 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 10 i_cloth
 RESOURCES2 = 10 i_cloth, 1 i_thread
 SKILLMAKE = 363 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -726,7 +726,7 @@ DESCRIPTION = Robe
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01f04 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 16 i_cloth
 RESOURCES2 = 16 i_cloth, 1 i_thread
 SKILLMAKE = 590 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -752,7 +752,7 @@ DESCRIPTION = Doublet
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01f7c // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 8 i_cloth, 1 i_thread //some resources were fixed by converter 
 SKILLMAKE = 227 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
 //DYE = 1 // commented out by Converter 
@@ -774,7 +774,7 @@ DESCRIPTION = Jester's Suit
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01fa0 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 24 i_cloth
 RESOURCES2 = 24 i_cloth, 1 i_thread
 SKILLMAKE = 290 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -796,7 +796,7 @@ DESCRIPTION = Tunic
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01fa2 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 12 i_cloth
 RESOURCES2 = 12 i_cloth, 1 i_thread
 SKILLMAKE = 311 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -819,7 +819,7 @@ DESCRIPTION = Surcoat
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01ffe // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 14 i_cloth
 RESOURCES2 = 14 i_cloth, 1 i_thread
 SKILLMAKE = 320 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
@@ -840,7 +840,7 @@ SUBSECTION = Cook
 DESCRIPTION = Basket
 
 TYPE = T_CONTAINER
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 3 i_straw
 //TDATA2 = 041 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -852,7 +852,7 @@ SUBSECTION = Containers
 DESCRIPTION = Large Basket
 
 TYPE = T_CONTAINER
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 3 i_straw
 //TDATA2 = 041 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -938,7 +938,7 @@ SUBSECTION = Barber
 DESCRIPTION = WIG
 
 //DUPELIST = 0e00, 0e09, 0e0a // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_cloth, 5 i_thread, 20 i_hair_cut
 DEFNAME = i_wig
 
@@ -957,7 +957,7 @@ SUBSECTION = Barber
 DESCRIPTION = WIG 2
 
 //DUPELIST = 0e02, 0e0b, 0e0c // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_cloth, 5 i_thread, 20 i_hair_cut
 DEFNAME = i_wig_2
 
@@ -976,7 +976,7 @@ SUBSECTION = Barber
 DESCRIPTION = WIG 4
 
 //DUPELIST = 0e04, 0e0d, 0e0e // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_cloth, 5 i_thread, 20 i_hair_cut
 DEFNAME = i_wig_3
 
@@ -995,7 +995,7 @@ SUBSECTION = Barber
 DESCRIPTION = WIG STAND
 
 //DUPELIST = 0e06, 0e07, 0e08 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_cloth, 5 i_board
 DEFNAME = i_wig_stand
 
@@ -1015,7 +1015,7 @@ DESCRIPTION = Spool of Thread
 
 TYPE = T_THREAD
 //DUPELIST = 0fa1 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_flax_bundle
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_thread
@@ -1029,7 +1029,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Brown Book
 
 TYPE = T_BOOK
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_canvas, 10 i_paper, 1 i_thread, 1 i_hide
 DEFNAME = i_book_lg_pub
 
@@ -1039,7 +1039,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Light Tan Book
 
 TYPE = T_BOOK
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_canvas, 10 i_paper, 1 i_thread, 1 i_hide
 DEFNAME = i_book_sm_pub
 
@@ -1049,7 +1049,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Dark Brown Book
 
 TYPE = T_BOOK
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_canvas, 10 i_paper, 1 i_thread, 1 i_hide
 DEFNAME = i_book_sm
 
@@ -1059,7 +1059,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Purple Book
 
 TYPE = T_BOOK
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 5 i_log_copper
 SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
 DEFNAME = i_book_lg
@@ -1070,7 +1070,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Small Open Book
 
 TYPE = T_BOOK
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_canvas, 10 i_paper, 1 i_thread, 1 i_hide
 DEFNAME = i_book_sm_open
 
@@ -1080,7 +1080,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Large Open Book
 
 TYPE = T_BOOK
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_canvas, 10 i_paper, 1 i_thread, 1 i_hide
 DEFNAME = i_book_lg_open
 
@@ -1090,7 +1090,7 @@ SUBSECTION = Containers
 DESCRIPTION = Basin
 
 TYPE = T_CONTAINER
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 3 i_ingot_iron
 //FLIP = 1 // commented out by Converter 
 //TDATA2 = 041 // commented out by Converter 
@@ -1106,7 +1106,7 @@ SUBSECTION = Containers
 DESCRIPTION = Picnic Basket
 
 TYPE = T_CONTAINER
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_straw
 //FLIP = 1 // commented out by Converter 
 //TDATA2 = 03f // commented out by Converter 
@@ -1120,7 +1120,7 @@ DESCRIPTION = Book (W)
 
 TYPE = T_BOOK
 //DUPELIST = 0fbe // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_book_lg_pub
 DEFNAME = i_book_open
 
@@ -1134,7 +1134,7 @@ DESCRIPTION = BALL OF YARN
 
 TYPE = T_YARN
 //DUPELIST = 0e1e,0e1f // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_wool
 DEFNAME = i_yarn_ball
 
@@ -1151,7 +1151,7 @@ DESCRIPTION = Cut-up Leather
 
 TYPE = T_LEATHER
 //DUPELIST = 01068,01081,01082 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_hide
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_hides_cut
@@ -1165,7 +1165,7 @@ SUBSECTION = Hammocks & Cots
 DESCRIPTION = Hammock
 
 //DUPELIST = 011f1,011f2,011f3 // commented out by Converter 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_rope, 2 i_board, 2 i_cloth
 DEFNAME = i_hammock
 
@@ -1184,7 +1184,7 @@ SUBSECTION = StableMaster
 DESCRIPTION = Bridle
 
 //DUPELIST = 01375 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 2 i_hide, 1 i_ingot_iron
 DEFNAME = i_BRIDLE_HORSE
 
@@ -1197,7 +1197,7 @@ SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
 //DUPELIST = 013a6 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_cloth, 2 i_wool
 DEFNAME = i_pillow
 
@@ -1216,13 +1216,13 @@ DUPEITEM = i_pillow_2
 DUPEITEM = i_pillow
 
 [ItemDef 0x13a7]
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_cloth, 2 i_wool
 DEFNAME = i_pillow_3
 
 [ItemDef 0x13a8]
 //DUPELIST = 013a9,013aa // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_cloth, 2 i_wool
 DEFNAME = i_pillow_4
 
@@ -1234,13 +1234,13 @@ DUPEITEM = i_pillow_4
 DUPEITEM = i_pillow_4
 
 [ItemDef 0x13ab]
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_cloth, 2 i_wool, 4 i_thread
 DEFNAME = i_pillow_6
 
 [ItemDef 0x13ac]
 //DUPELIST = 013ad,013ae // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_cloth, 2 i_wool, 4 i_thread
 DEFNAME = i_pillow_7
 
@@ -1257,7 +1257,7 @@ SUBSECTION = Beekeepers/Candlers
 DESCRIPTION = String
 
 //DUPELIST = 01421 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_cotton
 DEFNAME = i_string
 
@@ -1269,7 +1269,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 6 i_cloth, 4 i_wool
 DEFNAME = i_PILLOW_LARGE
 
@@ -1278,7 +1278,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_cloth, 2 i_wool, 4 i_thread
 DEFNAME = i_pillow_9
 
@@ -1287,7 +1287,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_cloth, 2 i_wool, 4 i_thread
 DEFNAME = i_pillow_10
 
@@ -1296,7 +1296,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Torture
 DESCRIPTION = Whip
 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 10 i_hides_cut, 1 i_hide, 1 i_cat_gut
 DEFNAME = i_whip
 
@@ -1305,7 +1305,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Torture
 DESCRIPTION = Cat o' Ninetails
 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 10 i_hides_cut, 1 i_hide, 1 i_cat_gut
 DEFNAME = i_cat_o_ninetails
 
@@ -1314,7 +1314,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Bedding
 DESCRIPTION = Towel
 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 3 i_cloth
 DEFNAME = i_towel
 
@@ -1323,7 +1323,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_cloth, 1 i_wool
 DEFNAME = i_pillow_11
 
@@ -1333,7 +1333,7 @@ SUBSECTION = Bearskin Carpet
 DESCRIPTION = @
 
 //DUPELIST = 01e37,01e38,01e39,01e3a,01e3b,01e3c,01e3d,01e3e,01e40,01e41,01e42,01e43,01e44,01e45,01e46,01e47,01e48 // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 2 i_hide, 5 i_thread, 4 i_canvas
 DEFNAME = i_RUG_BEARSKIN_1
 
@@ -1394,7 +1394,7 @@ SUBSECTION = Polar Bear Rug
 DESCRIPTION = @
 
 //DUPELIST = 01e4a,01e4b,01e4c,01e4d,01e4e,01e4f,01e50,01e51,01e53,01e54,01e55,01e56,01e57,01e58,01e59,01e5a,01e5b // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 DEFNAME = i_RUG_BEARSKIN_2
 //RESOURCES3 = 2 I_CORPSE_BEAR, 5 i_THREAD, 4 i_CANVAS // commented out by Converter 
 
@@ -1455,7 +1455,7 @@ SUBSECTION = Hooks, Pulleys and Winches
 DESCRIPTION = Net
 
 //DUPELIST = 01ea4,01ea5,01ea6 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 5 i_rope
 DEFNAME = i_net
 

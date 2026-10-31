@@ -29,7 +29,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = kvetiny a byliny
 DESCRIPTION = xxxxx
 
-WEIGHT = 80
+WEIGHT = 8
 DEFNAME = i_new_kvetina_001
 
 [ItemDef 0x234c]
@@ -37,7 +37,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = kvetiny a byliny
 DESCRIPTION = xxxxx
 
-WEIGHT = 80
+WEIGHT = 8
 DEFNAME = i_new_kvetina_002
 
 [ItemDef 0x234d]
@@ -45,7 +45,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = kvetiny a byliny
 DESCRIPTION = xxxxx
 
-WEIGHT = 80
+WEIGHT = 8
 DEFNAME = i_new_kvetina_003
 
 [ItemDef 0x234e]
@@ -54,7 +54,7 @@ SUBSECTION = Artists
 DESCRIPTION = Portrait
 
 //DUPELIST = 0234f // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 15 i_log, 25 i_cloth
 SKILLMAKE = 900 carpentry, 750 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
@@ -149,7 +149,7 @@ DESCRIPTION = helma s kridly
 
 TYPE = T_ARMOR
 //DUPELIST = 0140d // commented out by Converter 
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 15 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
 SKILLMAKE = 1500 blacksmithing //some resources were fixed by converter 
@@ -1137,7 +1137,7 @@ DESCRIPTION = Full Apron
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 0153e // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 10 i_cloth
 RESOURCES2 = 10 i_cloth, 1 i_thread
 SKILLMAKE = 318 tailoring, 1 t_sewing_kit //some resources were fixed by converter 

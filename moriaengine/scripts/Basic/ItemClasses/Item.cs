@@ -469,9 +469,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>The whole stack, in stones. Coins of a weightless gold weigh 1 stone per 500, in
+		/// tenths of a stone per 50 coins as on 99z8.</summary>
 		public override float Weight {
 			get {
-				return this.Def.Weight;
+				float unitWeight = this.Def.Weight;
+				if ((unitWeight == 0) && (this.Def == GoldUtils.GoldDef)) {
+					return (this.Amount / 50) / 10f;
+				}
+				return unitWeight * this.Amount;
 			}
 		}
 

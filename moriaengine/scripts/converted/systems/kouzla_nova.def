@@ -7,7 +7,7 @@ DESCRIPTION = Mana Shield Scroll
 
 Name = "Mana Shield Scroll"
 TYPE = t_customspell_scroll
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
 SKILLMAKE = 600 inscription, 800 magery //some resources were fixed by converter 
 model = i_scroll_blank
@@ -20,7 +20,7 @@ DESCRIPTION = Mass Bless Scroll
 
 Name = "Mass Bless Scroll"
 TYPE = t_customspell_scroll
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
 SKILLMAKE = 600 inscription, 800 magery //some resources were fixed by converter 
 model = i_scroll_blank
@@ -33,7 +33,7 @@ DESCRIPTION = Sumon Attendant Scroll
 
 Name = "Summon Attendant Scroll"
 TYPE = t_customspell_scroll
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
 SKILLMAKE = 600 inscription, 800 magery //some resources were fixed by converter 
 model = i_scroll_blank

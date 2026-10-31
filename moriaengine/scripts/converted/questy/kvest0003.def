@@ -230,7 +230,7 @@ DESCRIPTION = Draci srdce
 
 NAME = "Draci srdce"
 type = T_AROCK
-WEIGHT = 500
+WEIGHT = 50
 model = i_flesh_heart
 //VALUE = 1 // commented out by Converter 
 
@@ -302,7 +302,7 @@ DESCRIPTION = Bookcase (Knihovna noci) (Empty)
 
 type = t_container
 //DUPELIST = 0a9e // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 //FLIP = 1 // commented out by Converter 
 //TDATA2 = 04d // commented out by Converter 
 //TDATA2 = 04d // commented out by Converter 

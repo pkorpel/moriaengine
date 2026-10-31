@@ -7,7 +7,7 @@ DESCRIPTION = kos s ovocem
 
 NAME = "kos s ovocem"
 TYPE = T_FRUIT
-WEIGHT = 10
+WEIGHT = 1
 model = i_basket_fruit
 //VALUE = 1 // commented out by Converter 
 

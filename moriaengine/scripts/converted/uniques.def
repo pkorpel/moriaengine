@@ -45,7 +45,7 @@ DESCRIPTION = Deguarianova roba
 
 NAME = "Deguarianova roba (unique item)"
 TYPE = t_armor
-WEIGHT = 300
+WEIGHT = 30
 RESOURCES = 130 i_cloth
 SKILLMAKE = 10000 tailoring
 //REQSTR = 30 // commented out by Converter 
@@ -65,7 +65,7 @@ SUBSECTION = Quest
 DESCRIPTION = Ragnarog (artefakt)
 
 NAME = "Ragnarog (artefakt)"
-WEIGHT = 600
+WEIGHT = 60
 model = i_sword_viking
 type = t_weapon_fence //guessed from base def by Converter 
 layer = 1 //Set by Converter 
