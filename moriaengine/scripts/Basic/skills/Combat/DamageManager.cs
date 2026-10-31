@@ -100,12 +100,14 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Cause damage to defender. Returns number of hitpoints that was actually removed. Runs @Damage triggers.</summary>
 		public static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage) {
-			return CauseDamage(attacker, defender, flags, damage, false, false);
+			double unused;
+			return CauseDamage(attacker, defender, flags, damage, false, false, out unused);
 		}
 
 		/// <summary>#860 - a harmful spell's damage: rounded, and a monster's on a monster does at least 5.</summary>
 		public static int CauseSpellDamage(Character attacker, Character defender, DamageType flags, double damage) {
-			return CauseDamage(attacker, defender, flags, damage, false, true);
+			double unused;
+			return CauseDamage(attacker, defender, flags, damage, false, true, out unused);
 		}
 
 		/// <summary>#860 - Erebor's f_dmgFinal_MvM_minimalDMG and f_dmgFinal_PvX_minimalDMG, after
@@ -122,7 +124,23 @@ namespace SteamEngine.CompiledScripts {
 			return damage;
 		}
 
-		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell) {
+		/// <summary>#868 - only blows, not spells. reactiveReturn is what ProcessSwing sends back,
+		/// there, because the attacker can die of it.</summary>
+		private static double ApplyReactiveArmor(Character attacker, Character defender, DamageType flags, double damage, out double reactiveReturn) {
+			reactiveReturn = 0;
+			if ((damage <= 0) || ((flags & DamageType.Physical) != DamageType.Physical) || !ReactiveArmorPluginDef.HasReactiveArmor(defender)) {
+				return damage;
+			}
+			MagerySettings settings = MagerySettings.instance;
+			bool isPvP = attacker.IsPlayerForCombat;
+			ReactiveArmorPluginDef.Calculate((int) damage, isPvP ? settings.reactiveArmorAbsorbPvP : settings.reactiveArmorAbsorbPvM,
+				isPvP ? settings.reactiveArmorReturnPvP : settings.reactiveArmorReturnPvM, out int taken, out int returned);
+			reactiveReturn = returned;
+			return taken;
+		}
+
+		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn) {
+			reactiveReturn = 0;
 			if (defender.Flag_Invulnerable) {
 				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
 				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists
@@ -170,6 +188,9 @@ namespace SteamEngine.CompiledScripts {
 					damage = CombatCalculator.RoundLikeSphere(damage);
 					if ((resistModifier > 0) && (attacker != null)) {
 						damage = ApplyMinimalDamage(attacker, defender, flags, damage, isSwing);
+					}
+					if (isSwing) {
+						damage = ApplyReactiveArmor(attacker, defender, flags, damage, out reactiveReturn);
 					}
 				}
 
@@ -268,7 +289,7 @@ namespace SteamEngine.CompiledScripts {
 					return;
 				}
 
-				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true, false);
+				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true, false, out double reactiveReturn);
 
 				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
 				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
@@ -295,6 +316,12 @@ namespace SteamEngine.CompiledScripts {
 				MonsterSpecialAttacks.TryApplyPhoenixFire(attacker);
 				MonsterSpecialAttacks.TryApplyEyeDrain(attacker, defender, actualDamage); //#799
 				MonsterSpecialAttacks.TryApplyBackstabAmbush(attacker, defender, actualDamage); //#799
+				if (reactiveReturn > 0) {
+					CauseDamage(defender, attacker, damageType, reactiveReturn);
+				}
+				if (attacker.IsDeleted) {
+					return;
+				}
 				if (!defender.IsDeleted && defender.IsAliveAndValid) {
 					MonsterSpecialAttacks.TryApplyReactiveArmor(attacker, defender, damageType, actualDamage);
 					MonsterSpecialAttacks.TryApplyStamDmg(attacker, defender);
@@ -335,6 +362,7 @@ namespace SteamEngine.CompiledScripts {
 				// missed one - WeaponSkillDef has no separate "cast attempt" step to hook for a
 				// Mystic the way Erebor's own single dospellcustom_donesrc call would.
 				if (attackerIsMystic) {
+					DropManaShieldForStrike(attacker);
 					int manaBefore = attacker.Mana;
 					attacker.Mana = (short) Math.Round(attacker.Mana * MagerySettings.instance.mysticManaLossPermille / 1000.0);
 					CombatMessages.Send(attacker, "[Combat] Your attack channels " + (manaBefore - attacker.Mana) +
@@ -448,6 +476,17 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			return damage >= (defenderIsPlayer ? (defenderMaxHits / 10) : 5);
+		}
+
+		private static readonly PluginKey manaShieldKey = PluginKey.Acquire("spellEffect_mana_shield");
+
+		/// <summary>#868 - combat_main_mystik: a Mystic's strike ends mana shield, for half of Int's mana.</summary>
+		private static void DropManaShieldForStrike(Character attacker) {
+			Plugin shield = attacker.GetPlugin(manaShieldKey);
+			if (shield != null) {
+				shield.Delete();
+				attacker.Mana = (short) Math.Max(0, attacker.Mana - (attacker.Int / 2));
+			}
 		}
 
 		/// <summary>#860 - vMweapattack grows with the player's level, up to 200.</summary>

@@ -30,22 +30,6 @@
 //MANAUSE=5
 //Requirements=500.0 Magery
 
-//[SpellDef 7]
-//DEFNAME=s_reactive_armor
-//NAME=Reactive Armor
-//SOUND=snd_SPELL_REACTIVE_ARMOR
-//RUNES=FS
-//CASTTIME=1.0
-////RESOURCES=i_reag_garlic,i_reag_spider_silk,i_reag_sulfur_ash
-//RUNEITEM=i_rune_REACTIVE_ARMOR
-//SCROLLITEM=i_scroll_REACTIVE_ARMOR
-//FLAGS=SPELLFLAG_FX_TARG|SPELLFLAG_GOOD//SPELLFLAG_TARG_CHAR
-////EFFECTID=i_fx_HEAL_EFFECT
-//EFFECT=10.0,40.0
-//DURATION=2*60.0,5*60.0
-//MANAUSE=7
-//Requirements=10.0 Magery
-
 ///////////////////////////////////////////// 2 kruh
 
 //[SpellDef 13]

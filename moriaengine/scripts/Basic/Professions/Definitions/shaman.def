@@ -79,8 +79,8 @@ vitRange=70, 90, 120
 titles="Pagan", "Infidel", "Thinker", "Dissenter", "Heretic", "Herbalist", "Occultist", "Charmer", "Conjurer", "Exorcist"
 titlesFemale="Pagan", "Infidel", "Thinker", "Dissenter", "Heretic", "Herbalist", "Occultist", "Charmer", "Conjurer", "Exorcist"
 
-//list allowed spells, per the wiki - Reactive Armor and Mana Drain are omitted, not
+//list allowed spells, per the wiki - Mana Drain are omitted, not
 //implemented in this engine (unimplementedSpells.def); Frost Bolt isn't implemented at all
 //(no SpellDef exists for it anywhere in this engine, not even as a commented-out stub).
-allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_cure, s_harm, s_protection, s_poison, s_teleport, s_curse, s_recall, s_dispel_field, s_mind_blast, s_paralyze, s_dispel, s_energy_bolt, s_mark, s_energy_field, s_mass_dispel, s_gate_travel, s_resurrection
-//s_reactive_armor, s_mana_drain - not implemented in this engine; Frost Bolt doesn't exist at all
+allowedSpells=s_reactive_armor, s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_cure, s_harm, s_protection, s_poison, s_teleport, s_curse, s_recall, s_dispel_field, s_mind_blast, s_paralyze, s_dispel, s_energy_bolt, s_mark, s_energy_field, s_mass_dispel, s_gate_travel, s_resurrection
+//s_mana_drain - not implemented in this engine; Frost Bolt doesn't exist at all
