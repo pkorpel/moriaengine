@@ -96,8 +96,8 @@ namespace SteamEngine.CompiledScripts {
 					if ((this.flags & EffectFlag.FromAbility) == EffectFlag.FromAbility) {
 						return ((AbilityDef) this.sourceDef).Name;
 					}
-					if ((this.flags & (EffectFlag.FromSpellBook | EffectFlag.FromSpellScroll)) != EffectFlag.None) {
-						return ((SpellDef) this.sourceDef).Name;
+					if (this.sourceDef is SpellDef spell) { //#927 - from a potion too
+						return spell.Name;
 					}
 					return this.sourceDef.PrettyDefname;
 				}

@@ -205,12 +205,12 @@ type = t_custom_spell
 layer = 44
 model = i_rune_strength
 
-[ItemDef i_potion_Shrink]
+[PotionDef i_potion_Shrink]
 NAME = "Shrink"
 TYPE = T_potion_shrink
 RESOURCES = 1 i_gem_diamond, 5 i_reag_spider_silk, 10 i_reag_pumice, 5 i_reag_eye_of_newt, 1 i_bottle_empty //some resources were fixed by converter 
 SKILLMAKE = 800 alchemy, 1 t_book_shrink //some resources were fixed by converter 
-//TDATA1 = i_bottle_empty // commented out by Converter 
+EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 0995
 

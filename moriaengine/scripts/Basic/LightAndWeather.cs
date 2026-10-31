@@ -91,6 +91,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public static int GetLightAt(IPoint4D point) {
 			EnsureClockRunning();
+			if ((point is Character seer) && NightsightPotions.HasNightSight(seer)) { //#927
+				return 0;
+			}
 			point = point.TopPoint;
 			FlaggedRegion asFlagged = point.GetMap().GetRegionFor(point) as FlaggedRegion;
 			if (asFlagged != null) {

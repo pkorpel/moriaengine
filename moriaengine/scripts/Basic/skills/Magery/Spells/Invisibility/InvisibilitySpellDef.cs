@@ -48,11 +48,15 @@ namespace SteamEngine.CompiledScripts {
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
 			base.On_EffectChar(target, spellEffectArgs);
 
+			MakeInvisible(target, this.GetDurationForValue(spellEffectArgs.SpellPower));
+		}
+
+		/// <summary>#927 - for the potion too.</summary>
+		public static void MakeInvisible(Character target, double durationSecs) {
 			target.DeleteTimer(timerKey);
 			target.Flag_InvisByMagic = true;
 			target.SysMessage("You fade from view.");
 
-			double durationSecs = this.GetDurationForValue(spellEffectArgs.SpellPower);
 			BoundTimer timer = new InvisibilityExpiryTimer();
 			target.AddTimer(timerKey, timer);
 			timer.DueInSeconds = durationSecs;

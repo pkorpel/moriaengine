@@ -211,6 +211,7 @@ namespace SteamEngine.CompiledScripts {
 				defender.Hits = (short) newHits;
 
 				int actualDamage = previousHits - newHits;
+				HpSight.ShowChange(defender, actualDamage, false); //#927
 				if (isSwing && (actualDamage > 0) && !defender.IsDeleted) {
 					defender.Trigger_Disrupt(DoesSwingInterrupt(attacker.IsPlayerForCombat, attacker.WeaponProjectileType != ProjectileType.None,
 						defender.IsPlayerForCombat, actualDamage, defender.MaxHits));
@@ -582,10 +583,12 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Happens before applying armor. If a script should want to negate or alter the damage, it should 'manually' alter Hits, and/or create a new damaging event altogether.</summary>
 		public static void Trigger_Damage(DamageArgs damageArgs) {
-			damageArgs.attacker.TryTrigger(causeDamageTK, damageArgs);
-			try {
-				damageArgs.attacker.On_CauseDamage(damageArgs);
-			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			if (damageArgs.attacker != null) { //#927 - a bomb has no attacker: Sphere's damage_noresponse
+				damageArgs.attacker.TryTrigger(causeDamageTK, damageArgs);
+				try {
+					damageArgs.attacker.On_CauseDamage(damageArgs);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
 
 			damageArgs.defender.TryTrigger(damageTK, damageArgs);
 			try {
