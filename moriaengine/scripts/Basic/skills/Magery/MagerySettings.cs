@@ -49,8 +49,8 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double spellPowerMonster = 1.000; //nastaveni_global_MvSM
 
-		/// <summary>#860 - added to spellPowerVsM per fourth of the caster's level (at most 50),
-		/// for field spells.</summary>
+		/// <summary>#860 - added to spellPowerVsM per level (up to 200) under Standcast, and per
+		/// fourth of the level (at most 50) for field spells.</summary>
 		[SaveableData]
 		public double fieldSpellPowerPerLevel = 0.020; //nastaveni_standcast_sm
 

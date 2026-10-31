@@ -70,6 +70,28 @@ namespace SteamEngine.Tests {
 			Assert.Equal(expected, CombatCalculator.CalculateHitDifficultyLimit(skill, tactics, targetTactics, targetStamina, shootsBack));
 		}
 
+		[Theory]
+		[InlineData(0, 1.6)]
+		[InlineData(1, 1.61)]
+		[InlineData(100, 2.6)]
+		[InlineData(200, 3.6)]  //the top of the bonus
+		[InlineData(201, 3.6)]
+		[InlineData(400, 3.6)]
+		public void AttackVsMonstersGrowsWithLevelUpTo200(int level, double expected) {
+			Assert.Equal(expected, DamageManager.CalculateAttackVsMonsterMultiplier(level, 1.6, 0.01, 200), 6);
+		}
+
+		[Theory]
+		[InlineData(100, 18, 2.0)]  //fireball
+		[InlineData(200, 18, 4.0)]
+		[InlineData(300, 18, 4.0)]  //capped at 200
+		[InlineData(200, 43, 2.0)]  //explosion: half
+		[InlineData(200, 49, 2.0)]  //chain lightning
+		[InlineData(200, 55, 2.0)]  //meteor swarm
+		public void StandcastBonusGrowsWithLevelUpTo200(int level, int spellId, double expected) {
+			Assert.Equal(expected, StandcastHelper.CalculateLevelBonus(level, spellId, 0.02), 6);
+		}
+
 		[Fact]
 		public void ZeroSpeedFallsBackToFifty() {
 			Assert.Equal(2 * (0xfffff / 50) / 10.0, CombatCalculator.CalculateSwingDelay(0, 76, 1.0, 10).TotalSeconds, 6);

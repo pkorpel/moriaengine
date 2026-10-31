@@ -17,22 +17,11 @@
 
 namespace SteamEngine.CompiledScripts {
 
-	/// <summary>#483/#491 - shared Standcast read/consume logic, called from both SpellDef's
-	/// GetSpellPowerAgainstChar/AgainstNonChar (read the multiplier, every target of the current
-	/// cast - must NOT consume here, or a multi-target area spell would only boost its first
-	/// target) and Magery.On_Success (consume exactly once per successful cast, after
-	/// Trigger_Success has already read the boosted spellPower for every target). Non-players
-	/// (no Level) and casters without the toggle active both get a no-op 1x multiplier - this is
-	/// the critical regression-safety property: every pre-existing Phase 0-6 test, none of which
-	/// ever activates Standcast, must see byte-identical spellPower to before this phase.
-	/// <para>"Fields get a smaller flat per-level bonus instead" (per #491's own source note)
-	/// doesn't currently have a concrete application point: Phase 4/5 separately confirmed no
-	/// field spell's effect is scaled by spellPower at all (WallSpellDef's fields are placement-
-	/// only, plus Paralyze Field's own per-tile paralyze chance isn't spellPower-scaled either) -
-	/// so the full multiplier is applied uniformly below rather than inventing a field-specific
-	/// path with nothing real to attach it to. Revisit if a future phase gives a field spell
-	/// spellPower-scaled behavior.</para></summary>
-	internal static class StandcastHelper {
+	/// <summary>#483/#491 - shared Standcast read/consume logic, called from SpellDef's
+	/// GetSpellPowerAgainstChar (every target of the current cast - must NOT consume there, or a
+	/// multi-target spell would only boost its first target) and Magery.On_Success (consume
+	/// once per successful cast).</summary>
+	public static class StandcastHelper {
 		private static ActivableAbilityDef standcastDef;
 		private static ActivableAbilityDef StandcastDef {
 			get {
@@ -43,21 +32,25 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		internal static int ApplyMultiplier(Character caster, int spellPower) {
+		private const int spellExplosion = 43, spellChainLightning = 49, spellMeteorSwarm = 55;
+
+		/// <summary>#860 - dospellcustom_donesrc: what the toggle adds to the multiplier of a spell
+		/// on a monster. By level, up to 200, and half for the spells that hit several targets.</summary>
+		public static double CalculateLevelBonus(int level, int spellId, double perLevel) {
+			int usableLevel = System.Math.Min(level, 200);
+			if ((spellId == spellExplosion) || (spellId == spellChainLightning) || (spellId == spellMeteorSwarm)) {
+				usableLevel /= 2;
+			}
+			return usableLevel * perLevel;
+		}
+
+		internal static double GetLevelBonus(Character caster, int spellId) {
 			ActivableAbilityDef def = StandcastDef;
-			if ((def == null) || !def.IsActive(caster)) {
-				return spellPower;
-			}
 			Player player = caster as Player;
-			if (player == null) {
-				return spellPower;
+			if ((def == null) || (player == null) || !def.IsActive(caster)) {
+				return 0;
 			}
-			int points = caster.GetAbility(def);
-			double bonus = points * def.EffectPower * player.Level;
-			if (bonus <= 0) {
-				return spellPower;
-			}
-			return (int) System.Math.Round(spellPower * (1.0 + bonus));
+			return CalculateLevelBonus(player.Level, spellId, MagerySettings.instance.fieldSpellPowerPerLevel);
 		}
 
 		internal static void ConsumeIfActive(Character caster) {
