@@ -69,7 +69,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>d_town_menu: the lines depend on who's looking. The button numbers are Erebor's.</summary>
 	public class D_TownMenu : CompiledGumpDef {
 		internal const int CitizensButton = 1, BlacklistButton = 2, ElectionButton = 3, PayTaxButton = 4, StandButton = 5, TaxStatusButton = 6, AddBanButton = 12, SetTaxButton = 14, MayorButton = 15,
-			ExpelButton = 16, RemoveRingButton = 26, MakeNazgulButton = 27, MakeMayorButton = 17, MakeCitizenButton = 18, SuggestedBansButton = 21, NewsButton = 23, HomeButton = 24, CitizenshipButton = 25;
+			ExpelButton = 16, CaptainButton = 13, PostsButton = 19, RecruiterButton = 20, RemoveRingButton = 26, MakeNazgulButton = 27, MakeMayorButton = 17, MakeCitizenButton = 18, SuggestedBansButton = 21, NewsButton = 23, HomeButton = 24, CitizenshipButton = 25;
 		private const int Hue = 955, LabelHue = 0x481, RowHeight = 20, Width = 280, FirstRow = 176;
 		private static readonly string[] rankNames = { "Nepritel", "Verejnost", "Obcan", "Starosta", "GM" };
 
@@ -91,6 +91,9 @@ namespace SteamEngine.CompiledScripts {
 				Line(Town.RankMayor, AddBanButton, "Pridat hrace na blacklist");
 				Line(Town.RankPublic, NewsButton, "Novinky");
 				Line(Town.RankMayor, HomeButton, "Zmenit home");
+				Line(Town.RankMayor, CaptainButton, "Pokyny strazim");
+				Line(Town.RankMayor, PostsButton, "Rozmistit straze");
+				Line(Town.RankMayor, RecruiterButton, "Najimat straze");
 				Line(Town.RankGm, RemoveRingButton, "Zbavit nazgula prstenu");
 				Line(Town.RankGm, MakeNazgulButton, "Udelat nazgulem");
 				return lines;
@@ -111,6 +114,12 @@ namespace SteamEngine.CompiledScripts {
 			Line(Town.RankGm, MakeMayorButton, "Udelat starostou");
 			Line(Town.RankGm, MakeCitizenButton, "Udelat obcanem");
 			Line(Town.RankPublic, CitizenshipButton, (town.FindCitizen(player) != null) ? "Vzdat se obcanstvi" : "Stan se obcanem");
+			RealmOffice office = RealmOffice.For(Realm.Gondor);
+			if ((rank >= Town.RankMayor) || ((office != null) && (office.holder == player))) {
+				Line(Town.RankPublic, CaptainButton, "Pokyny strazim");
+			}
+			Line(Town.RankMayor, PostsButton, "Rozmistit straze");
+			Line(Town.RankMayor, RecruiterButton, "Najimat straze");
 			return lines;
 		}
 
@@ -165,6 +174,15 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case ExpelButton:
 					D_TownCitizens.Show(town, player, D_TownCitizens.ListMode.Expel);
+					break;
+				case CaptainButton:
+					D_GuardCaptain.Show(town.Force, player);
+					break;
+				case PostsButton:
+					D_GuardPosts.Show(town.Force, player);
+					break;
+				case RecruiterButton:
+					D_GuardRecruiter.Show(town.Force, player);
 					break;
 				case BlacklistButton:
 					D_TownBans.Show(town, player, false);

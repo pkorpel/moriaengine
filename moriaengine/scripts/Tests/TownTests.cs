@@ -247,7 +247,60 @@ namespace SteamEngine.CompiledScripts {
 			self.AddTimer(TimerKey.Acquire("_testUniform_"), new UniformRefreshTimer()).DueInSeconds = 600;
 			FindGate(false).AddTimer(TimerKey.Acquire("_testGate_"), new NazgulGateReset()).DueInSeconds = 600;
 			NazgulTrial.BeginForTest((Player) self);
+			GuardForce force = Town.ForCity(City).Force;
+			force.Treasury = 100000;
+			force.Hire(self, force.HireableDefnames()[0]);
 			Console.WriteLine("REALM_TIMERS: ready");
+		}
+
+		/// <summary>What every city can hire, and the realms.</summary>
+		[SteamFunction]
+		public static void TestGuardTables(Character self) {
+			foreach (string city in TownSetup.GondorCities) {
+				Console.WriteLine("GUARD_TABLE: " + city + " " + new GuardForce { city = city }.HireableDefnames().Count + " end");
+			}
+			foreach (string city in TownSetup.MordorCities) {
+				Console.WriteLine("GUARD_TABLE: " + city + " " + new GuardForce { city = city }.HireableDefnames().Count + " end");
+			}
+			Console.WriteLine("GUARD_TABLE: king " + new GuardForce { city = TownSetup.GeneralCity, isKings = true }.HireableDefnames().Count + " end");
+			Console.WriteLine("GUARD_TABLES: done");
+		}
+
+		[SteamFunction]
+		public static void TestGuardReport(Character self) {
+			GuardForce force = Town.ForCity(City).Force;
+			HiredGuard guard = (force.guards.Count > 0) ? force.guards[0] : null;
+			NPCAiTimer ai = (guard != null && guard.IsStanding) ? NPCAiTimer.GetFor(guard.npc) : null;
+			Console.WriteLine("GUARD_REPORT: guards=" + force.guards.Count + " standing=" + ((guard != null) && guard.IsStanding) + " held=" + ((ai != null) && ai.isHeld) +
+				" treasury=" + force.Treasury + " near=" + ((guard != null) && guard.IsStanding && (Point2D.GetSimpleDistance(guard.npc.X, guard.npc.Y, self.X, self.Y) <= 1)) +
+				" fightsMe=" + ((ai != null) && (ai.Target == self)) + " posX=" + self.X + " posY=" + self.Y + " posZ=" + self.Z + " end");
+		}
+
+		[SteamFunction]
+		public static void TestGuardTime(Character self, ScriptArgs sa) {
+			GuardForce force = Town.ForCity(City).Force;
+			string what = sa.Args.Trim().Trim('"');
+			if (what == "die") {
+				force.guards[0].npc.Delete();
+				force.Check();
+				force.guards[0].respawnAt = Globals.TimeInSeconds - 1;
+				force.Check();
+			} else {
+				force.guards[0].paidUntil = Globals.TimeInSeconds - 1;
+				force.Check();
+			}
+			Console.WriteLine("GUARD_TIME: done");
+		}
+
+		[SteamFunction]
+		public static void TestTownReportUid(Character self) {
+			Console.WriteLine("TOWN_UID: uid=" + (uint) self.FlaggedUid + " end");
+		}
+
+		[SteamFunction]
+		public static void TestTownCriminalNow(Character self) {
+			Notoriety.FlagCriminal(self);
+			Console.WriteLine("TOWN_CRIMINAL_NOW: done");
 		}
 
 		/// <summary>Barad-dur's ring straight on: the quest has its own test.</summary>

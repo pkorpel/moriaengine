@@ -27,6 +27,20 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public List<TownBan> bans = new List<TownBan>();
 
+		[SaveableData]
+		public GuardForce force;
+
+		/// <summary>The king's or Marghul's guards, of the capital.</summary>
+		public GuardForce Force {
+			get {
+				if (this.force == null) {
+					this.force = new GuardForce { city = (this.realm == Realm.Gondor) ? TownSetup.GeneralCity : TownSetup.MordorCapital, isKings = true };
+				}
+				this.force.EnsureCheckTimer(this.stone);
+				return this.force;
+			}
+		}
+
 		[LoadingInitializer]
 		public RealmOffice() {
 			all.Add(this);
@@ -228,7 +242,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>d_general_executioner: the realm's blacklist for all to read. The office holder, on their
 	/// own realm's stone, edits it, and a GM appoints and dismisses.</summary>
 	public class D_RealmBans : CompiledGumpDef {
-		private const int Width = 550, PageRows = 10, RowHeight = 20, FirstRow = 40, FirstRowButton = 100, AddBanButton = 3, OfficeButton = 4, TextHue = 2301;
+		private const int Width = 550, PageRows = 10, RowHeight = 20, FirstRow = 40, FirstRowButton = 100, AddBanButton = 3, OfficeButton = 4, TextHue = 2301,
+			CaptainButton = 5, PostsButton = 6, RecruiterButton = 7;
 
 		internal static void Show(RealmOffice office, Player player) {
 			player.Dialog(player, SingletonScript<D_RealmBans>.Instance, new DialogArgs(office));
@@ -251,6 +266,14 @@ namespace SteamEngine.CompiledScripts {
 			if (viewer.IsGM) {
 				this.AddButton(14, bottom + 28, 4005, 4007, OfficeButton, GumpButtonType.Reply, 0);
 				this.AddLabel(50, bottom + 28, 955, (office.holder != null) ? "Sesadit z funkce" : "Uvest do funkce");
+			}
+			if (canEdit) {
+				this.AddButton(280, bottom + 8, 4005, 4007, CaptainButton, GumpButtonType.Reply, 0);
+				this.AddLabel(316, bottom + 8, 955, "Pokyny strazim");
+				this.AddButton(280, bottom + 28, 4005, 4007, PostsButton, GumpButtonType.Reply, 0);
+				this.AddLabel(316, bottom + 28, 955, "Rozmistit straze");
+				this.AddButton(420, bottom + 8, 4005, 4007, RecruiterButton, GumpButtonType.Reply, 0);
+				this.AddLabel(456, bottom + 8, 955, "Najimat straze");
 			}
 			int pages = (office.bans.Count + PageRows - 1) / PageRows;
 			for (int page = 0; page < pages; page++) {
@@ -277,7 +300,13 @@ namespace SteamEngine.CompiledScripts {
 			RealmOffice office = (RealmOffice) args[0];
 			Player player = (Player) gi.Cont;
 			int button = gr.PressedButton;
-			if ((button == AddBanButton) && office.CanEdit(player)) {
+			if ((button == CaptainButton) && office.CanEdit(player)) {
+				D_GuardCaptain.Show(office.Force, player);
+			} else if ((button == PostsButton) && office.CanEdit(player)) {
+				D_GuardPosts.Show(office.Force, player);
+			} else if ((button == RecruiterButton) && office.CanEdit(player)) {
+				D_GuardRecruiter.Show(office.Force, player);
+			} else if ((button == AddBanButton) && office.CanEdit(player)) {
 				player.SysMessage("Koho chces pridat na blacklist?");
 				player.Target(SingletonScript<Targ_RealmBan>.Instance, office);
 			} else if ((button == OfficeButton) && player.IsGM) {
