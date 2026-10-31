@@ -1,5 +1,11 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-10-31): user's list, issues #879-#884
+
+User: don't wait for confirmations, carry on with all. Banker: "port over the entire dialog from erebor and all the behavior as well".
+**Bugs first (branch 879-bank-spellbook-backpack)**: #879 bank never opened in a real client: TazUO ignores 0x24 for an unknown item and the bank box is on a hidden layer (protocol tests can't see this, same as #810); send it 0x2E first. #880 SpellBook.On_DenyDClick denied every time. #881 clear the backpack as Erebor's promazat does.
+Then #882 stats + skills, #883 banker, #884 guildstone.
+
 ## DONE (2026-10-31): #860 leftovers: #868, #872, #866, #865
 
 User: "carry on with the remaining open items".
