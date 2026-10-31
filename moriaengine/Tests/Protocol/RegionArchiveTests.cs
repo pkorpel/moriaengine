@@ -27,6 +27,9 @@ namespace SteamEngine.Tests.Protocol {
 					string house = Ask(fixture1, client, ".TestRegionReport \"a_dum_1\"", "REGION_REPORT: a_dum_1");
 					AssertHas(house, "events=r_playerhouse+r_nosumon");
 					AssertHas(house, "parent=a_Barad_dur");
+					//#892 - Erebor's tag.realm and tag.jmeno_mesta
+					AssertHas(Ask(fixture1, client, ".TestRegionReport \"a_Pelargir\"", "REGION_REPORT: a_Pelargir"), "realm=Gondor realmTag=1 city=Dol_Amroth ");
+					AssertHas(Ask(fixture1, client, ".TestRegionReport \"a_Barad_dur\"", "REGION_REPORT: a_Barad_dur"), "realm=Mordor realmTag=2 city=Barad-dur ");
 					AssertHas(Ask(fixture1, client, ".TestRegionAt 0 4740 2190", "REGION_AT: 0,4740,2190"), "-> a_Ereborsky_dul");
 					//#818 - Sphere's FLAGS 00812 (underground, no recall in, no Teleport) is 0x8c0 in the
 					//engine's terms above: magic still works there (0x812 read as ours was NoMagicOut).
