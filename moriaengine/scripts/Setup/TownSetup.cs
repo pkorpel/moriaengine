@@ -20,6 +20,12 @@ namespace SteamEngine.CompiledScripts {
 		public const string GeneralCity = "Minas_Tirith";
 		public const string GeneralStoneDef = "i_generalstone";
 
+		public const string ShrineDef = "i_shrine_power";
+		public const string MordorCapital = "Barad-dur";
+
+		/// <summary>Cities of the map areas with tag.realm=2. Nothing sets how many Rings there are but this.</summary>
+		public static readonly string[] MordorCities = { "Barad-dur", "Nurn", "Rhun", "Harad", "Umbar" };
+
 		public override string Name {
 			get {
 				return "Town stones";
@@ -46,6 +52,37 @@ namespace SteamEngine.CompiledScripts {
 			if (generalSpot != null) {
 				pieces.Item("realm/gondor/stone", GeneralStoneDef, generalSpot, capital.P.M);
 			}
+			this.PlaceMordor(pieces, gm);
+		}
+
+		private void PlaceMordor(WorldPieces pieces, Character gm) {
+			foreach (string city in MordorCities) {
+				FlaggedRegion area = CityArea(city);
+				int[] spot = (area != null) ? SpotIn(area, gm) : null;
+				if (spot == null) {
+					gm.SysMessage("No spot for the shrine of " + city + ", walk from its spawn point failed.");
+				} else {
+					pieces.Item("town/" + city + "/shrine", ShrineDef, spot, area.P.M);
+				}
+			}
+			FlaggedRegion capital = CityArea(MordorCapital);
+			FlaggedRegion trial = (FlaggedRegion) StaticRegion.GetByDefname("a_Fela_Nazgul");
+			int[] stoneSpot = SpotIn(capital, gm, 1);
+			int[] boardSpot = SpotIn(capital, gm, 2);
+			int[] gateSpot = SpotIn(capital, gm, 3);
+			int[] outSpot = SpotIn(trial, gm);
+			int[] leadingSpot = SpotIn(trial, gm, 2);
+			if ((stoneSpot == null) || (boardSpot == null) || (gateSpot == null) || (outSpot == null) || (leadingSpot == null)) {
+				gm.SysMessage("No spots for the First Nazgul's pieces.");
+				return;
+			}
+			pieces.Item("realm/mordor/stone", "i_lordnazgulsstone", stoneSpot, capital.P.M);
+			pieces.Item("realm/mordor/board", "i_lordnazgulsboard", boardSpot, capital.P.M);
+			//each leads to the spawn point: arriving on the other gate would send someone straight back
+			Item gate = pieces.Item("realm/mordor/gate", "i_lordnazguls_gate", gateSpot, capital.P.M, item => item.MoreP = trial.P);
+			pieces.Item("realm/mordor/gate-out", "i_lordnazguls_gate_out", outSpot, trial.P.M, item => item.MoreP = capital.P);
+			pieces.Item("realm/mordor/leading-shrine", "i_leading_shrine_power", leadingSpot, trial.P.M);
+			((NazgulGate) gate).Refresh();
 		}
 
 		public static string StonePieceId(string city) {

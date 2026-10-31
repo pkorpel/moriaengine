@@ -153,6 +153,20 @@ namespace SteamEngine.Converter {
 						def.SetBadge("8");
 					}
 					break;
+				case "t_shrine_power":
+					def.headerType = "NazgulShrineDef"; //#892
+					def.Replace("TYPE", "t_normal", "");
+					break;
+				case "t_lordnazgulboard":
+					def.headerType = "NazgulBoardDef";
+					def.Replace("TYPE", "t_normal", "");
+					break;
+				case "t_normal":
+					if (string.Equals(def.headerName, "i_lordnazguls_gate", StringComparison.OrdinalIgnoreCase) ||
+							string.Equals(def.headerName, "i_lordnazguls_gate_out", StringComparison.OrdinalIgnoreCase)) {
+						def.headerType = "NazgulGateDef";
+					}
+					break;
 				case "t_generalmenu":
 				case "t_lordnazgulmenu":
 					def.headerType = "RealmStoneDef"; //#892
