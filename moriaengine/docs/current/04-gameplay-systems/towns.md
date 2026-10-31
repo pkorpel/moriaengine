@@ -35,6 +35,15 @@ A stone only works in a Gondor area, for someone in the same map area.
 
 Paying follows Erebor's `pay`: the pack first, then the bank, and a GM pays nothing.
 
+## Elections
+
+The only vote Erebor kept. A citizen stands in "Kandidovat na starostu", and the first candidate starts an
+election, once the mayor's term of 30 days is over or if there's no mayor. It runs 7 days and, like the tax,
+ends when someone uses the stone after that.
+
+A citizen who has paid the tax votes once, and not for themselves. The most votes win. Of a tie, a sitting
+mayor stays and otherwise the lot decides. A mayor who resigns or is removed leaves no term to wait for.
+
 ## Blacklists
 
 A citizen suggests a name with `.navrhban`, with a reason; the mayor takes or refuses it in "Hraci navrzeni

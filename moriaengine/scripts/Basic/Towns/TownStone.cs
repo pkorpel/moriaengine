@@ -187,7 +187,7 @@ namespace SteamEngine.CompiledScripts {
 				if (current == null) {
 					town.AddCitizen(targetted);
 				}
-				town.mayor = targetted;
+				town.SetMayor(targetted);
 				self.SysMessage(targetted.Name + " uspesne pridan jako starosta");
 				targetted.SysMessage("Stal jsi se starostou mesta " + town.Name + ".");
 			}
