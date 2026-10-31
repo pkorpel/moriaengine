@@ -129,6 +129,13 @@ namespace SteamEngine.Converter {
 			//return line.Value;
 		}
 
+		private void SetBadge(string layer) {
+			this.headerType = "PowerBadgeDef";
+			this.isEquippable = true;
+			this.Replace("TYPE", "t_normal", "");
+			this.Set("Layer", layer, "");
+		}
+
 		private static void HandleType(ConvertedDef d, PropsLine line) {
 			ConvertedItemDef def = (ConvertedItemDef) d;
 			def.Set(line);
@@ -137,6 +144,20 @@ namespace SteamEngine.Converter {
 			def.type = args;
 
 			switch (args) {
+				case "t_eq_script":
+					//#892 - what marks an office: PowerBadge here, worn on Sphere's layers for a ring and a bracelet
+					if (string.Equals(def.headerName, "i_generals_bracelet", StringComparison.OrdinalIgnoreCase)) {
+						def.SetBadge("14");
+					} else if (string.Equals(def.headerName, "i_ring_power", StringComparison.OrdinalIgnoreCase) ||
+							string.Equals(def.headerName, "i_leading_ring_power", StringComparison.OrdinalIgnoreCase)) {
+						def.SetBadge("8");
+					}
+					break;
+				case "t_generalmenu":
+				case "t_lordnazgulmenu":
+					def.headerType = "RealmStoneDef"; //#892
+					def.Replace("TYPE", "t_normal", "");
+					break;
 				case "t_townmenu":
 					def.headerType = "TownStoneDef"; //#892 - the typedef's script is TownStone here
 					def.Replace("TYPE", "t_normal", "");
