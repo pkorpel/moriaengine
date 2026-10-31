@@ -120,6 +120,13 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The end of a ring: its city has no Nazgul and the realm perhaps no First.</summary>
 		public static void TakeAway(PowerBadge ring, Character wearer) {
 			Uniform.Clear(wearer);
+			if ((wearer.Realm == Realm.Mordor) && (wearer is Player player) && ((int) player.SkillRank == 3)) { //#931 - one who could have it
+				if (IsLeading(ring)) {
+					ChatSystem.Announce(ChatChannel.Mordor, ring.Name, "Muj pan,prvni Nazgul si me nezaslouzi.Muzete me nyni hledat");
+				} else {
+					ChatSystem.Announce(ChatChannel.Mordor, wearer.Name, "Muj pan z mesta " + CityOf(ring) + " si me nezaslouzi.Muzete me hledat");
+				}
+			}
 			if (IsLeading(ring)) {
 				PowerBadge.ClearTitle(wearer);
 				RealmOffice office = RealmOffice.For(Realm.Mordor);

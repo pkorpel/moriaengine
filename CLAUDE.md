@@ -18,6 +18,12 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #931 chat (branch chat)
+
+User: port Erebor's systems/chat.scp. scripts/Basic/Chat, doc chat.md. Decided: no realm channel for outcasts/neutrals, 1 message per 3 s on .settings, no party channel, 73 chars.
+Channels are kept as what the player flipped from their default, not a fixed set: a fixed set goes stale when the realm changes, and GMs' default has both realms. Guild.SendGuildMessage is gone, .GuildSay and the join/leave notices are on the guild channel; notices have no sender, so no list mutes them. A lost ring announces in Mordor through Announce (no sender limit).
+Gotcha: a GM's chat text is LScript, so quoted: .goch "text".
+
 ## DONE (2026-10-31): #929 moving in a party threw (branch 929-party-move)
 
 User, live: every step of a party member logged CRITICAL and movement went wrong. Character.PartyMembers cast a key collection of Character to ICollection<AbstractCharacter>, from the initial commit; .party made parties common. Party tests never walked. The party stats path behind it had never run either; tested now. GameServerPairFixture now reports each distinct CRITICAL as a line in test-full's live output: a CRITICAL fails no test, so watch for it.

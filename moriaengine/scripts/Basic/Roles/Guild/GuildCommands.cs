@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 			if (string.IsNullOrEmpty(text)) {
 				return;
 			}
-			guild.SendGuildMessage(self, text);
+			ChatSystem.SendToGuild(self, text); //#931
 		}
 
 		[SteamFunction]
