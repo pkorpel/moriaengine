@@ -182,8 +182,12 @@ even from a monster); the others ignore armor. A monster's spell on a monster do
 vs a monster, less the spell defense, and damage is `power * mysticStrikeEffect / 1000`, as cold
 magic. Not ported: the ability's paralysis chance and the lightning variant (#868).
 
-**Not ported.** Reactive armor is still an unimplemented spell, and energy shield still absorbs
-all damage where Erebor's takes only monsters' spells (#868). A bare-handed player's spell keeps
+**Reactive armor.** On a physical blow, after resists and minimum damage, the spell absorbs
+`reactiveArmorAbsorbPvM/PvP` (20/10%) of it and sends `reactiveArmorReturnPvM/PvP` (10/10%) back to
+the attacker. A Mystic's strike ends their mana shield and costs half of Int in mana.
+
+**Not ported.** Energy shield's strength and voodoo shield: `i_energyshield`, `shield_power` and
+`i_voodooshield` aren't in the archive. A bare-handed player's spell keeps
 its damage: Erebor's bare hands rule (`wrestling/200 + 1`) also runs on spells, but it would
 cap spells of anyone with free hands, so it applies to swings only here. Item wear: `Durability` scales armor and weapons as on Erebor, but nothing lowers
 it, because there's no repair skill yet (#865). Thief rebound and the magic items' reflex and

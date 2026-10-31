@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-10-31): #860 leftovers, one PR each: #868, #872, #866, #865
+
+User: "carry on with the remaining open items". #868 first (branch 868-spell-defences): reactive armor spell + Mystic swing dropping mana shield, then Mystic abilities in a second PR. Energy shield's strength and voodoo shield can't be ported: i_energyshield, shield_power and i_voodooshield aren't in the archive.
+
 ## DONE (2026-10-31): #860 mirror Erebor's combat numbers (PRs #862, #864, #867, #869, #870, #871)
 
 User: "completely mirror all the combat settings from erebor"; some monsters took no damage, some hit crazy high, players sometimes dealt none. Audit, hit roll and corrections are on #860; docs/current/04-gameplay-systems/combat.md has the formulas.
