@@ -25,7 +25,7 @@ namespace SteamEngine.CompiledScripts {
 	/// ghost speech; here an NPC doesn't see a ghost), so ghosts are resurrected by clicking the healer (e_healer,
 	/// MonsterSpecialAttacks.TryHealerClick). Replaces the converted [SpeechStub spk_healer].</summary>
 	public sealed class HealerSpeech : AbstractSpeech {
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new HealerSpeech("spk_healer").Register();
 		}
 

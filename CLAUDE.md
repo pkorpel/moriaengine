@@ -18,6 +18,10 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #935 no build warnings (branch clear-warnings)
+
+User disliked them. 12 CS0108: 10 Bootstrap() marked new (ClassManager calls each class's own, DeclaredOnly), 2 constants renamed TextEntryId. Boot's "Current directory unexpected" was stale, it looked for an old build\\Debug layout; it now warns only if there's no scripts folder. Common/Tools.cs is UTF-16: python, not Edit. BankerDialogTests' double-click fails in mixed runs, passes alone: #890, not this.
+
 ## DONE (2026-10-31): build failed after a .ct moved (branch 933-orphan-generated)
 
 User's build broke on Potion after #928: the gitignored Potion.Generated.cs stayed in the old folder. build.ps1's Remove-OrphanedGeneratedFiles now deletes a scripts/**/*.Generated.cs with no template beside it; names are compared trimmed, as 'ItemLockPlugin .ct' really has a space. Lesson: deleting a generated file by hand here hides what every other checkout will hit.

@@ -30,7 +30,7 @@ namespace SteamEngine.CompiledScripts {
 	/// need LScript's regex-trigger machinery.
 	/// </summary>
 	public sealed class ShopkeeperSpeech : AbstractSpeech {
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new ShopkeeperSpeech("spk_shopkeep").Register();
 		}
 

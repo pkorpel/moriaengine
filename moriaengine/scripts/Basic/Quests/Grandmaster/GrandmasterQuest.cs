@@ -624,7 +624,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly string[] greetings = { "dobry", "den", "zdravim", "hi", "hello" };
 		private readonly string[] patterns;
 
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new Q000Speech("spk_q000_Elqira", greetings).Register();
 			new Q000Speech("spk_q000_elmira", greetings).Register();
 			new Q000Speech("spk_q000_elvira", greetings).Register();
