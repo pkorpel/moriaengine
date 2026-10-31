@@ -10,7 +10,7 @@ namespace SteamEngine.Tests.Protocol {
 	public class TownTests {
 		private const string Account = "towntests";
 		private const string AccountB = "towntestsb";
-		private const int TownPieces = 10;
+		private const int TownPieces = 20;
 		private const int RealmAddBan = 3, RealmOffice = 4;
 		private const int Election = 3, Stand = 5, Blacklist = 2, SuggestedBans = 21, AddBan = 12, MakeCitizenship = 25, PayTax = 4, TaxStatus = 6, SetTax = 14, Resign = 15, Home = 24, News = 23, Yes = 1;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
@@ -122,6 +122,7 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void SuggestedForTheBlacklistThenGuardsCome() {
 			using (var mayor = this.Connect("Town Mayor Tester")) {
+				this.Ask(mayor, ".TestTownBecomeGm", "TOWN_GM:");
 				this.Ask(mayor, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
 				using var other = this.Connect("Town Ban Tester", AccountB);
 				this.Ask(mayor, ".SetupTowns", "SETUP_DONE:");
@@ -181,6 +182,7 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void TheMostVotesMakeAMayorAndATieKeepsTheOldOne() {
 			using (var one = this.Connect("Town Voter One")) {
+				this.Ask(one, ".TestTownBecomeGm", "TOWN_GM:");
 				this.Ask(one, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
 				using var two = this.Connect("Town Voter Two", AccountB);
 				this.Ask(one, ".SetupTowns", "SETUP_DONE:");
@@ -380,6 +382,8 @@ namespace SteamEngine.Tests.Protocol {
 				using (var client = Connect("Town Saver")) {
 					Ask(fixture1, client, ".SetupTowns", "SETUP_DONE:");
 					Ask(fixture1, client, ".TestTownForSave", "TOWN_SAVED:");
+					Ask(fixture1, client, ".TestNazgulForSave", "NAZGUL_SAVED:");
+					Ask(fixture1, client, ".TestRealmTimersForSave", "REALM_TIMERS:");
 					Ask(fixture1, client, ".TestTriggerGlobalSave", "TEST_SAVE: done");
 				}
 			}
@@ -387,6 +391,7 @@ namespace SteamEngine.Tests.Protocol {
 				using (var client = Connect("Town Loader")) {
 					string loaded = Ask(fixture2, client, ".TestTownAfterRestart", "TOWN_LOADED:");
 					Assert.Contains("found=True stone=True citizens=1 mayor=Town_Saver treasury=777 news=1 taxDue=True", loaded);
+					Assert.Contains("ruler=Town_Saver ring=True", Ask(fixture2, client, ".TestNazgulAfterRestart", "NAZGUL_LOADED:"));
 				}
 			}
 		}
@@ -442,6 +447,11 @@ namespace SteamEngine.Tests.Protocol {
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class TownTestsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "TownTests";
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class NazgulTestsCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "NazgulTests";
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]

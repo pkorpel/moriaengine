@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using SteamEngine.Regions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -138,6 +139,143 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestRealmDismiss(Character self) {
 			RealmOffice.For(Realm.Gondor).Dismiss();
 			Console.WriteLine("REALM_DISMISSED: done");
+		}
+
+		private static NazgulShrine FindShrine(bool leading) {
+			foreach (Thing thing in Thing.AllThings) {
+				if (thing is NazgulShrine shrine) {
+					FlaggedRegion area = RegionEventSystem.AreaOf(shrine.Region);
+					if (leading ? (area.Defname == "a_Fela_Nazgul") : (area.City == TownSetup.MordorCapital)) {
+						return shrine;
+					}
+				}
+			}
+			return null;
+		}
+
+		private static NazgulGate FindGate(bool wayOut) {
+			foreach (Thing thing in Thing.AllThings) {
+				if ((thing is NazgulGate gate) && ((RegionEventSystem.AreaOf(gate.Region).Defname == "a_Fela_Nazgul") == wayOut)) {
+					return gate;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>A plain player fit for a ring, at Barad-dur's shrine; "G" makes it one of Gondor, level 30 too.</summary>
+		[SteamFunction]
+		public static void TestNazgulPrepare(Character self, ScriptArgs sa) {
+			Player player = (Player) self;
+			NazgulShrine shrine = FindShrine(false);
+			player.Realm = (sa.Args.Trim().Trim('"') == "G") ? Realm.Gondor : Realm.Mordor;
+			player.Level = RealmSettings.instance.ringMinLevel;
+			player.SkillRank = SkillRank.Grandmaster;
+			player.P(shrine.P());
+			player.Account.PLevel = 1;
+			Console.WriteLine("NAZGUL_READY: shrine=" + (uint) shrine.FlaggedUid + " uid=" + (uint) self.FlaggedUid + " end");
+		}
+
+		private static Player nazgulUnderTest;
+
+		[SteamFunction]
+		public static void TestNazgulReport(Character self) {
+			nazgulUnderTest = (self.Realm == Realm.Mordor) ? (Player) self : nazgulUnderTest;
+			PowerBadge ring = NazgulRings.RingOf(self);
+			Town town = Town.ForCity(TownSetup.MordorCapital);
+			RealmOffice office = RealmOffice.For(Realm.Mordor);
+			NazgulGate gate = FindGate(false);
+			Console.WriteLine("NAZGUL_REPORT: nazgul=" + (ring != null) + " first=" + NazgulRings.IsFirst(self) + " name=" + Clean(self.Name) +
+				" ruler=" + Clean(town?.mayor?.Name) + " office=" + Clean(office?.holder?.Name) + " kills=" + ((ring != null) ? NazgulRings.KillsWith(ring, self) : -1) +
+				" deaths=" + ((ring != null) ? NazgulRings.DeathsOn(ring) : -1) + " str=" + self.Str + " vit=" + ((Player) self).Vit + " uniform=" + Uniform.Has(self) +
+				" at=" + self.P().ToString().Replace(' ', '_') + " area=" + RegionEventSystem.AreaOf(self.Region).Defname + " moreP=" + gate.MoreP.ToString().Replace(' ', '_') +
+				" trial=" + (RegionEventSystem.AreaOf(self.Region).Defname == "a_Fela_Nazgul") + " gate=0x" + gate.Color.ToString("x", CultureInfo.InvariantCulture) + " end");
+		}
+
+		/// <summary>I die `count` times by the Nazgul under test.</summary>
+		[SteamFunction]
+		public static void TestNazgulDie(Character self, ScriptArgs sa) {
+			for (int i = int.Parse(sa.Args.Trim().Trim('"'), CultureInfo.InvariantCulture); i > 0; i--) {
+				NazgulRings.OnDeath((Player) self, nazgulUnderTest);
+			}
+			Console.WriteLine("NAZGUL_DIED: done");
+		}
+
+		/// <summary>The ring worn long enough to be judged, and the wearer's record: "1" online and killing
+		/// enough, "0" not.</summary>
+		[SteamFunction]
+		public static void TestNazgulJudge(Character self, ScriptArgs sa) {
+			PowerBadge ring = NazgulRings.RingOf(self);
+			bool good = sa.Args.Trim().Trim('"') == "1";
+			ring.SetTag(TagKey.Acquire("_ringEquippedAt_"), Globals.TimeInSeconds - (2 * 24 * 60 * 60));
+			ring.SetTag(TagKey.Acquire("_ringOnlineMinutes_"), good ? (12 * 60) : 1);
+			NazgulRings.Check(ring, self);
+			Console.WriteLine("NAZGUL_JUDGED: done");
+		}
+
+		[SteamFunction]
+		public static void TestNazgulDress(Character self) {
+			foreach (string defname in new[] { "i_robe", "i_cape", "i_leather_gloves", "i_shoes_plain" }) {
+				self.TryEquip((Item) ThingDef.GetByDefname(defname).Create(self.Backpack));
+			}
+			self.Mount = (Character) ThingDef.GetByDefname("c_horse_brown_dk").Create(self.P());
+			Console.WriteLine("NAZGUL_DRESSED: done");
+		}
+
+		[SteamFunction]
+		public static void TestNazgulStep(Character self, ScriptArgs sa) {
+			FindGate(sa.Args.Trim().Trim('"') == "out").On_Step(self, false, MovementType.Walking);
+			Console.WriteLine("NAZGUL_STEPPED: done");
+		}
+
+		[SteamFunction]
+		public static void TestNazgulLeading(Character self) {
+			NazgulShrine shrine = FindShrine(true);
+			self.P(shrine.P());
+			Console.WriteLine("NAZGUL_LEADING: shrine=" + (uint) shrine.FlaggedUid + " end");
+		}
+
+		[SteamFunction]
+		public static void TestNazgulDismiss(Character self) {
+			RealmOffice.For(Realm.Mordor).Dismiss();
+			Console.WriteLine("NAZGUL_DISMISSED: done");
+		}
+
+		/// <summary>Every timer of the realm offices running: a timer that can't be saved breaks the whole save.</summary>
+		[SteamFunction]
+		public static void TestRealmTimersForSave(Character self) {
+			self.AddTimer(TimerKey.Acquire("_testRealmEffect_"), new RealmStatEffect(0)).DueInSeconds = 600;
+			self.AddTimer(TimerKey.Acquire("_testUniform_"), new UniformRefreshTimer()).DueInSeconds = 600;
+			FindGate(false).AddTimer(TimerKey.Acquire("_testGate_"), new NazgulGateReset()).DueInSeconds = 600;
+			NazgulTrial.BeginForTest((Player) self);
+			Console.WriteLine("REALM_TIMERS: ready");
+		}
+
+		/// <summary>Barad-dur's ring straight on: the quest has its own test.</summary>
+		[SteamFunction]
+		public static void TestNazgulGiveRing(Character self) {
+			Town town = Town.ForStone(FindShrine(false), TownSetup.MordorCapital);
+			if (town.mayor != null) {
+				NazgulRings.TakeAway(NazgulRings.RingOf(town.mayor), town.mayor);
+			}
+			NazgulRings.Give(self, town);
+			Console.WriteLine("NAZGUL_GIVEN: done");
+		}
+
+		[SteamFunction]
+		public static void TestNazgulForSave(Character self) {
+			Player player = (Player) self;
+			player.Realm = Realm.Mordor;
+			player.Level = RealmSettings.instance.ringMinLevel;
+			Town town = Town.ForStone(FindShrine(false), TownSetup.MordorCapital);
+			NazgulRings.Give(player, town);
+			Console.WriteLine("NAZGUL_SAVED: ready");
+		}
+
+		[SteamFunction]
+		public static void TestNazgulAfterRestart(Character self) {
+			Town town = Town.ForCity(TownSetup.MordorCapital);
+			Character ruler = town?.mayor;
+			Console.WriteLine("NAZGUL_LOADED: ruler=" + Clean(ruler?.Name) + " ring=" + ((ruler != null) && NazgulRings.IsNazgul(ruler)) + " end");
 		}
 
 		/// <summary>The tax period is over.</summary>

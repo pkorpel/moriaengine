@@ -85,7 +85,9 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>i_targ_gen_make</summary>
 		public void Appoint(Character by, Character ch) {
-			if (ch.Realm != this.realm) {
+			if (this.realm == Realm.Mordor) {
+				this.AppointFirst(by, ch);
+			} else if (ch.Realm != this.realm) {
 				by.SysMessage("Zameruj pouze hrace " + this.RealmName + "skeho realmu!");
 			} else if (ch.IsGM) {
 				by.SysMessage("GM nepotrebuji byt generalove");
@@ -99,8 +101,40 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>sesad_generala</summary>
+		/// <summary>i_targ_nazg_make: only a Nazgul can be the First.</summary>
+		private void AppointFirst(Character by, Character ch) {
+			if (ch.IsGM) {
+				by.SysMessage("GM nepotrebuji byt nazgulove");
+			} else if (ch.Realm != Realm.Mordor) {
+				by.SysMessage("Zameruj pouze hrace Mordorskeho realmu!");
+			} else if (!NazgulRings.IsNazgul(ch)) {
+				by.SysMessage("Zvol pouze Nazgula!");
+			} else {
+				this.Dismiss();
+				this.MakeFirst(ch);
+				by.SysMessage("Novy prvni Nazgul uspesne jmenovan");
+			}
+		}
+
+		/// <summary>The leading ring for the ring they had: their city is left without a Nazgul.</summary>
+		public void MakeFirst(Character ch) {
+			NazgulRings.TakeAway(NazgulRings.RingOf(ch), ch);
+			this.holder = ch;
+			NazgulRings.Give(ch, null);
+			NazgulGate.RefreshAll();
+		}
+
+		/// <summary>sesad_generala, sesad_lordnazgula</summary>
 		public void Dismiss() {
+			if ((this.realm == Realm.Mordor) && (this.holder != null) && !this.holder.IsDeleted) {
+				PowerBadge ring = NazgulRings.RingOf(this.holder);
+				if (ring != null) {
+					this.holder.RedMessage("Marghul rozhodl o tvem sesazeni z funkce prvniho Nazgula");
+					NazgulRings.TakeAway(ring, this.holder);
+				}
+				this.holder = null;
+				return;
+			}
 			if ((this.holder != null) && !this.holder.IsDeleted) {
 				PowerBadge.ClearTitle(this.holder);
 				PowerBadge badge = PowerBadge.Find(this.holder);
@@ -136,7 +170,11 @@ namespace SteamEngine.CompiledScripts {
 				player.SysMessage("Musis byt v prostoru mesta!");
 			} else {
 				RealmOffice office = RealmOffice.ForStone(this, area.Realm);
-				player.SysMessage((office.holder != null) ? ("Generalem je " + office.holder.Name) : "General Gondoru neni urcen");
+				if (area.Realm == Realm.Gondor) {
+					player.SysMessage((office.holder != null) ? ("Generalem je " + office.holder.Name) : "General Gondoru neni urcen");
+				} else {
+					player.SysMessage((office.holder != null) ? ("Nositelem prstenu je " + office.holder.Name) : "Funkce prvniho nazgula neni obsazena");
+				}
 				D_RealmBans.Show(office, player);
 			}
 		}
@@ -244,9 +282,10 @@ namespace SteamEngine.CompiledScripts {
 				player.Target(SingletonScript<Targ_RealmBan>.Instance, office);
 			} else if ((button == OfficeButton) && player.IsGM) {
 				if (office.holder != null) {
-					D_TownConfirm.Ask(player, "Opravdu si prejes sesadit z funkce generala Gondoru?", () => office.Dismiss());
+					D_TownConfirm.Ask(player, (office.realm == Realm.Gondor) ? "Opravdu si prejes sesadit z funkce generala Gondoru?"
+						: "Opravdu si prejes sesadit z funkce prvniho Nazgula?", () => office.Dismiss());
 				} else {
-					player.SysMessage("Zamer budouciho generala Gondoru");
+					player.SysMessage((office.realm == Realm.Gondor) ? "Zamer budouciho generala Gondoru" : "Zamer budouciho prvniho Nazgula");
 					player.Target(SingletonScript<Targ_RealmAppoint>.Instance, office);
 				}
 			} else if ((button >= FirstRowButton) && office.CanEdit(player) && ((button - FirstRowButton) < office.bans.Count)) {
@@ -318,8 +357,32 @@ namespace SteamEngine.CompiledScripts {
 			P(22, 0x481, "i_robe"), P(20, 0x481, "i_cape"), P(7, 0x481), P(3, 0x481, null, "i_boots_calf"), P(LayerMount, 0), P(6, 0x481, null, "i_hat_floppy")
 		};
 
+		private static readonly Piece[] ringPieces = {
+			P(22, 1, "i_robe", "i_deathshroud"), P(20, 0x692, "i_cape"), P(7, 1), P(3, 1, null, "i_boots_calf"), P(LayerMount, 0)
+		};
+
+		private static readonly Piece[] leadingRingPieces = {
+			P(22, 1, "i_robe", "i_deathshroud"), P(20, 0x689, "i_cape"), P(7, 1), P(3, 1, null, "i_boots_calf"), P(LayerMount, 0)
+		};
+
 		private static Piece[] PiecesOf(PowerBadge badge) {
-			return generalPieces;
+			if (NazgulRings.RingOf((Character) badge.Cont) == null) {
+				return generalPieces;
+			}
+			return NazgulRings.IsLeading(badge) ? leadingRingPieces : ringPieces;
+		}
+
+		/// <summary>The office is going: all it did to the clothes goes too.</summary>
+		public static void Clear(Character ch) {
+			PowerBadge badge = PowerBadge.Find(ch);
+			if (badge != null) {
+				foreach (Piece piece in PiecesOf(badge)) {
+					AbstractItem item = (piece.layer != LayerMount) ? ch.FindLayer(piece.layer) : null;
+					if (item != null) {
+						Restore(item);
+					}
+				}
+			}
 		}
 
 		private static bool IsWorn(Character ch, Piece piece) {
@@ -399,6 +462,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	[SaveableClass, DeepCopyableClass]
 	public class UniformRefreshTimer : BoundTimer {
 		[DeepCopyImplementation, LoadingInitializer]
 		public UniformRefreshTimer() {
@@ -410,6 +474,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>What .honor and .fear leave on someone: i_honorcounter, i_fearcounter.</summary>
+	[SaveableClass, DeepCopyableClass]
 	public class RealmStatEffect : BoundTimer {
 		[SaveableData, CopyableData]
 		public int amount;
@@ -441,6 +506,36 @@ namespace SteamEngine.CompiledScripts {
 	public static class RealmAbilities {
 		private static readonly TimerKey honorTK = TimerKey.Acquire("_realmHonor_");
 		private static readonly TagKey honorReadyTK = TagKey.Acquire("_honorReadyAt_");
+
+		private static readonly TimerKey fearTK = TimerKey.Acquire("_realmFear_");
+		private static readonly TagKey fearReadyTK = TagKey.Acquire("_fearReadyAt_");
+		private const int FearSound = 598;
+
+		/// <summary>fear, makeme_numb: everyone not of Mordor around a Nazgul, more so around the First.</summary>
+		[SteamFunction]
+		public static void Fear(Character self, ScriptArgs sa) {
+			if (!(NazgulRings.IsNazgul(self) && Uniform.Has(self)) && !self.IsGM) {
+				self.SysMessage("Tve vzezreni u nikoho hruzu nevzbuzuje");
+				return;
+			}
+			if (IsWaiting(self, fearReadyTK)) {
+				self.SysMessage("Jsi jeste vycerpan z predchoziho pouziti sve schopnosti");
+				return;
+			}
+			RealmSettings settings = RealmSettings.instance;
+			bool first = NazgulRings.IsFirst(self);
+			int penalty = first ? settings.firstFearPenalty : settings.fearPenalty;
+			self.Sound(FearSound);
+			self.SetTag(fearReadyTK, Globals.TimeInSeconds + settings.fearDelaySeconds);
+			foreach (AbstractCharacter around in self.GetMap().GetPlayersInRange(self.X, self.Y, first ? settings.firstFearDistance : settings.fearDistance)) {
+				Character ch = around as Character;
+				if ((ch != null) && ch.IsOnline && (ch.Realm != Realm.Mordor) && (ch.GetTimer(fearTK) == null)) {
+					RealmStatEffect.Change(ch, -penalty);
+					ch.AddTimer(fearTK, new RealmStatEffect(-penalty)).DueInSeconds = settings.fearEffectSeconds;
+					ch.SysMessage("Jsi ochromen strachem");
+				}
+			}
+		}
 
 		private static bool IsWaiting(Character ch, TagKey readyAt) {
 			object ready = ch.GetTag(readyAt);
