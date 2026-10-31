@@ -85,7 +85,7 @@ DESCRIPTION = Floor Spikes Yavanna's
 
 NAME = "Podivne skviry"
 TYPE = t_trap
-//DUPELIST = 0119b // commented out by Converter 
+DupeList = 0x119b
 model = i_TRAP_SPIKE_3
 
 [ItemDef i_spik_trap_2]
@@ -95,7 +95,7 @@ DESCRIPTION = Floor Spikes 2 Yavanna's
 
 NAME = "Podivne skviry"
 TYPE = t_trap
-//DUPELIST = 011a1 // commented out by Converter 
+DupeList = 0x11a1
 model = i_TRAP_SPIKE_4
 
 [ItemDef i_wallspik_trap]
@@ -105,7 +105,7 @@ DESCRIPTION = Floor Spikes 2 Yavanna's
 
 NAME = "Podivne skviry"
 TYPE = t_trap
-//DUPELIST = 01109 // commented out by Converter 
+DupeList = 0x1109
 model = i_TRAP_SPIKE
 
 [ItemDef i_wallspik_trap_2]
@@ -115,7 +115,7 @@ DESCRIPTION = Floor Spikes 2 Yavanna's
 
 NAME = "Podivne skviry"
 TYPE = t_trap
-//DUPELIST = 0111c // commented out by Converter 
+DupeList = 0x111c
 model = i_TRAP_SPIKE_2
 
 //[typedef t_spik_trap] //(commented out by Converter) 
@@ -135,8 +135,8 @@ model = i_TRAP_SPIKE_2
 [ItemDef i_switch_R]
 name = "Packa"
 type = t_basics_switch_r
-//dupelist = 0108F // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x108f
+Flippable = true
 model = 0x1092
 
 //[function f_switch_turnOn] //(commented out by Converter) 
@@ -148,8 +148,8 @@ model = 0x1092
 [EquippableDef i_switch_torch_R]
 name = "Pochoden"
 type = t_basics_switch_r
-//dupelist = 0A0A // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0xa0a
+Flippable = true
 model = i_torch_wall
 layer = 0 //Set by Converter 
 
@@ -166,16 +166,16 @@ layer = 0 //Set by Converter
 [EquippableDef i_torch_paralel]
 name = "podivna louc"
 type = t_normal
-//dupelist = i_torch_wall2 // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = i_torch_wall2
+Flippable = true
 model = i_torch_wall
 layer = 0 //Set by Converter 
 
 [ItemDef i_switch_paralel]
 name = "Packa"
 type = t_normal
-//dupelist = 0108F // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x108f
+Flippable = true
 model = 0x1092
 
 //[function f_switchParalel_TargOn_Item] //(commented out by Converter) 
@@ -227,8 +227,8 @@ model = 0x1093
 [EquippableDef i_switch_torch]
 name = "podivna louc"
 type = t_light_out
-//dupelist = i_torch_wall2 // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = i_torch_wall2
+Flippable = true
 //tdata3 = i_torch_wall // commented out by Converter 
 model = i_torch_wall
 layer = 0 //Set by Converter 
@@ -335,8 +335,8 @@ def_padaciDvere_height    9
 [ItemDef i_padaciDvere]
 name = "padaci dvere"
 type = t_padaciDvere
-//dupelist = 06F6 // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x6f6
+Flippable = true
 model = i_DOOR_PORTCULIS
 
 //[typedef t_padaciDvere] //(commented out by Converter) 

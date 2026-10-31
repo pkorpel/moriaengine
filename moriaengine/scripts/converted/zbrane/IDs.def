@@ -6,11 +6,11 @@ SUBSECTION = Maces & Hammers
 DESCRIPTION = Club
 
 TYPE = T_WEAPON_MACE_SMITH
-//DUPELIST = 013b4 // commented out by Converter 
+DupeList = 0x13b4
 WEIGHT = 40
 RESOURCES = 4 i_log
 RESOURCES2 = 1 i_log
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Mace Fighting // commented out by Converter 
 //SPEED = 60 // commented out by Converter 
@@ -33,10 +33,10 @@ DUPEITEM = i_club
 
 [WeaponDef 0xe87]
 TYPE = T_WEAPON_fence
-//DUPELIST = 0e88 // commented out by Converter 
+DupeList = 0xe88
 WEIGHT = 100
 RESOURCES = 5 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 50 // commented out by Converter 
@@ -59,10 +59,10 @@ DUPEITEM = i_pitchfork
 
 [WeaponDef 0xf49]
 TYPE = t_weapon_sword
-//DUPELIST = 0f4a // commented out by Converter 
+DupeList = 0xf4a
 WEIGHT = 50
 RESOURCES = 14 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 37 // commented out by Converter 
@@ -85,11 +85,11 @@ DUPEITEM = i_axe
 
 [WeaponDef 0x1442]
 TYPE = t_weapon_sword
-//DUPELIST = 01443 // commented out by Converter 
+DupeList = 0x1443
 WEIGHT = 120
 RESOURCES = 16 i_ingot_iron
 RESOURCES2 = 5 i_ingot_iron, 1 i_board
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 30 // commented out by Converter 
@@ -112,10 +112,10 @@ DUPEITEM = i_axe_two_hand
 
 [WeaponDef 0xf45]
 TYPE = t_weapon_sword
-//DUPELIST = 0f46 // commented out by Converter 
+DupeList = 0xf46
 WEIGHT = 110
 RESOURCES = 16 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 100 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 50 // commented out by Converter 
@@ -138,11 +138,11 @@ DUPEITEM = i_axe_exec
 
 [WeaponDef 0xf4b]
 TYPE = t_weapon_sword
-//DUPELIST = 0f4c // commented out by Converter 
+DupeList = 0xf4c
 WEIGHT = 110
 RESOURCES = 12 i_ingot_iron
 RESOURCES2 = 16 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 37 // commented out by Converter 
@@ -165,10 +165,10 @@ DUPEITEM = i_axe_double
 
 [WeaponDef 0xf47]
 TYPE = t_weapon_sword
-//DUPELIST = 0f48 // commented out by Converter 
+DupeList = 0xf48
 WEIGHT = 90
 RESOURCES = 14 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 20 // commented out by Converter 
@@ -191,11 +191,11 @@ DUPEITEM = i_axe_battle
 
 [WeaponDef 0x13fa]
 TYPE = t_weapon_sword
-//DUPELIST = 013fb // commented out by Converter 
+DupeList = 0x13fb
 WEIGHT = 140
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 20 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 100 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 20 // commented out by Converter 
@@ -218,10 +218,10 @@ DUPEITEM = i_axe_battle_large
 
 [WeaponDef 0x13af]
 TYPE = t_weapon_sword
-//DUPELIST = 013b0 // commented out by Converter 
+DupeList = 0x13b0
 WEIGHT = 130
 RESOURCES = 16 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //Skill = Swordmanship // commented out by Converter 
 //SPEED = 35 // commented out by Converter 
@@ -244,10 +244,10 @@ DUPEITEM = i_axe_war
 
 [WeaponDef 0xf4d]
 TYPE = T_WEAPON_SWORD
-//DUPELIST = 0f4e // commented out by Converter 
+DupeList = 0xf4e
 WEIGHT = 150
 RESOURCES = 18 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 149 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 30 // commented out by Converter 
@@ -270,11 +270,11 @@ DUPEITEM = i_bardiche
 
 [WeaponDef 0x143e]
 TYPE = T_WEAPON_SWORD
-//DUPELIST = 0143f // commented out by Converter 
+DupeList = 0x143f
 WEIGHT = 160
 RESOURCES = 20 i_ingot_iron
 RESOURCES2 = 6 i_ingot_iron, 2 i_board
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 149 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 100 // commented out by Converter 
@@ -297,11 +297,11 @@ DUPEITEM = i_halberd
 
 [WeaponDef 0x1400]
 TYPE = T_WEAPON_FENCE
-//DUPELIST = 01401 // commented out by Converter 
+DupeList = 0x1401
 WEIGHT = 40
 RESOURCES = 8 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 50 // commented out by Converter 
@@ -324,11 +324,11 @@ DUPEITEM = i_kryss
 
 [WeaponDef 0x1440]
 TYPE = t_weapon_fence
-//DUPELIST = 01441 // commented out by Converter 
+DupeList = 0x1441
 WEIGHT = 50
 RESOURCES = 8 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 45 // commented out by Converter 
@@ -351,11 +351,11 @@ DUPEITEM = i_cutlass
 
 [WeaponDef 0x1404]
 TYPE = T_WEAPON_FENCE
-//DUPELIST = 01405 // commented out by Converter 
+DupeList = 0x1405
 WEIGHT = 90
 RESOURCES = 12 i_ingot_iron
 RESOURCES2 = 9 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 35 // commented out by Converter 
@@ -378,10 +378,10 @@ DUPEITEM = i_war_fork
 
 [WeaponDef 0x13b5]
 TYPE = t_weapon_fence
-//DUPELIST = 013b6 // commented out by Converter 
+DupeList = 0x13b6
 WEIGHT = 70
 RESOURCES = 10 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 45 // commented out by Converter 
@@ -404,11 +404,11 @@ DUPEITEM = i_scimitar
 
 [WeaponDef 0x1402]
 TYPE = T_WEAPON_FENCE
-//DUPELIST = 01403 // commented out by Converter 
+DupeList = 0x1403
 WEIGHT = 80
 RESOURCES = 6 i_ingot_iron
 RESOURCES2 = 6 i_ingot_iron, 1 i_board
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 55 // commented out by Converter 
@@ -431,11 +431,11 @@ DUPEITEM = i_spear_short
 
 [WeaponDef 0x13fe]
 TYPE = t_weapon_fence
-//DUPELIST = 013ff // commented out by Converter 
+DupeList = 0x13ff
 WEIGHT = 80
 RESOURCES = 8 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 40 // commented out by Converter 
@@ -458,10 +458,10 @@ DUPEITEM = i_katana
 
 [WeaponDef 0xf5e]
 TYPE = t_weapon_fence
-//DUPELIST = 0f5f // commented out by Converter 
+DupeList = 0xf5f
 WEIGHT = 90
 RESOURCES = 10 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 35 // commented out by Converter 
@@ -484,10 +484,10 @@ DUPEITEM = i_sword_broad
 
 [WeaponDef 0xf60]
 TYPE = t_weapon_fence
-//DUPELIST = 0f61 // commented out by Converter 
+DupeList = 0xf61
 WEIGHT = 110
 RESOURCES = 12 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 35 // commented out by Converter 
@@ -510,10 +510,10 @@ DUPEITEM = i_sword_long
 
 [WeaponDef 0xf62]
 TYPE = t_weapon_fence
-//DUPELIST = 0f63 // commented out by Converter 
+DupeList = 0xf63
 WEIGHT = 130
 RESOURCES = 12 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 30 // commented out by Converter 
@@ -536,11 +536,11 @@ DUPEITEM = i_spear
 
 [WeaponDef 0x13b9]
 TYPE = t_weapon_fence
-//DUPELIST = 013ba // commented out by Converter 
+DupeList = 0x13ba
 WEIGHT = 120
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Fencing // commented out by Converter 
 //SPEED = 35 // commented out by Converter 
@@ -563,11 +563,11 @@ DUPEITEM = i_sword_viking
 
 [WeaponDef 0x8ad]
 TYPE = t_weapon_fence
-//DUPELIST = 08ad // commented out by Converter 
+DupeList = 0x8ad
 WEIGHT = 120
 RESOURCES = 24 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 35 // commented out by Converter 
@@ -586,10 +586,10 @@ strikeStopRange = 10 //default value set by Converter
 
 [WeaponDef 0xf5c]
 TYPE = T_WEAPON_MACE_SMITH
-//DUPELIST = 0f5d // commented out by Converter 
+DupeList = 0xf5d
 WEIGHT = 60
 RESOURCES = 6 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = MaceFighting // commented out by Converter 
 //SPEED = 55 // commented out by Converter 
@@ -612,11 +612,11 @@ DUPEITEM = i_mace
 
 [WeaponDef 0x1406]
 TYPE = T_WEAPON_MACE_SMITH
-//DUPELIST = 01407 // commented out by Converter 
+DupeList = 0x1407
 WEIGHT = 100
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 9 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = MaceFighting // commented out by Converter 
 //SPEED = 30 // commented out by Converter 
@@ -639,10 +639,10 @@ DUPEITEM = i_mace_war
 
 [WeaponDef 0x13f4]
 TYPE = T_WEAPON_MACE_CROOK
-//DUPELIST = 013f5 // commented out by Converter 
+DupeList = 0x13f5
 WEIGHT = 60
 RESOURCES = 2 i_log
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = MaceFighting // commented out by Converter 
 //SPEED = 70 // commented out by Converter 
@@ -665,11 +665,11 @@ DUPEITEM = i_shepherds_crook
 
 [WeaponDef 0xdf0]
 TYPE = T_WEAPON_MACE_STAFF
-//DUPELIST = 0df1 // commented out by Converter 
+DupeList = 0xdf1
 WEIGHT = 70
 RESOURCES = 8 i_log
 RESOURCES2 = 1 i_log
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Macefighting // commented out by Converter 
 //SPEED = 35 // commented out by Converter 
@@ -692,10 +692,10 @@ DUPEITEM = i_staff_black
 
 [WeaponDef 0xe89]
 TYPE = T_WEAPON_MACE_STAFF
-//DUPELIST = 0e8a // commented out by Converter 
+DupeList = 0xe8a
 WEIGHT = 90
 RESOURCES = 3 i_log
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = MaceFighting // commented out by Converter 
 //SPEED = 50 // commented out by Converter 
@@ -718,10 +718,10 @@ DUPEITEM = i_staff_quarter
 
 [WeaponDef 0x13f8]
 TYPE = T_WEAPON_MACE_STAFF
-//DUPELIST = 013f9 // commented out by Converter 
+DupeList = 0x13f9
 WEIGHT = 130
 RESOURCES = 4 i_log
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = MaceFighting // commented out by Converter 
 //SPEED = 40 // commented out by Converter 
@@ -744,10 +744,10 @@ DUPEITEM = i_staff_gnarled
 
 [WeaponDef 0x143c]
 TYPE = T_WEAPON_MACE_SMITH
-//DUPELIST = 0143d // commented out by Converter 
+DupeList = 0x143d
 WEIGHT = 100
 RESOURCES = 8 i_ingot_iron, 1 i_log
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = MaceFighting // commented out by Converter 
 //SPEED = 30 // commented out by Converter 
@@ -770,11 +770,11 @@ DUPEITEM = i_hammer_pick
 
 [WeaponDef 0x1438]
 TYPE = T_WEAPON_MACE_SMITH
-//DUPELIST = 01439 // commented out by Converter 
+DupeList = 0x1439
 WEIGHT = 120
 RESOURCES = 16 i_ingot_iron
 RESOURCES2 = 4 i_ingot_iron, 1 i_board
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = MaceFighting // commented out by Converter 
 //SPEED = 20 // commented out by Converter 
@@ -797,11 +797,11 @@ DUPEITEM = i_hammer_war
 
 [WeaponDef 0x143a]
 TYPE = T_WEAPON_MACE_SMITH
-//DUPELIST = 0143b // commented out by Converter 
+DupeList = 0x143b
 WEIGHT = 150
 RESOURCES = 10 i_ingot_iron
 RESOURCES2 = 17 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = MaceFighting // commented out by Converter 
 //SPEED = 40 // commented out by Converter 
@@ -824,11 +824,11 @@ DUPEITEM = i_maul
 
 [WeaponDef 0x13b1]
 TYPE = T_WEAPON_BOW
-//DUPELIST = 013b2 // commented out by Converter 
+DupeList = 0x13b2
 WEIGHT = 50
 RESOURCES = 2 i_log
 RESOURCES2 = 2 i_log, 1 i_cat_gut //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 //SPEED = 20 // commented out by Converter 
@@ -855,10 +855,10 @@ DUPEITEM = i_bow
 
 [WeaponDef 0xf4f]
 TYPE = T_WEAPON_XBOW
-//DUPELIST = 0f50 // commented out by Converter 
+DupeList = 0xf50
 WEIGHT = 90
 RESOURCES = 7 i_board
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 11 // commented out by Converter 
 //SKILL = Archery // commented out by Converter 
 //SPEED = 18 // commented out by Converter 
@@ -885,11 +885,11 @@ DUPEITEM = i_crossbow
 
 [WeaponDef 0x13fc]
 TYPE = T_WEAPON_XBOW
-//DUPELIST = 013fd // commented out by Converter 
+DupeList = 0x13fd
 WEIGHT = 140
 RESOURCES = 10 i_log
 RESOURCES2 = 2 i_log, 2 i_cat_gut
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 //SKILL = archery // commented out by Converter 
 //SPEED = 10 // commented out by Converter 
@@ -922,11 +922,11 @@ DESCRIPTION = jagged bolt
 NAME = "jagged bolt%s"
 TYPE = T_WEAPON_bolt_jagged
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
-//DUPELIST = 038d9,038da,038db // commented out by Converter 
+DupeList = 0x38d9,0x38da,0x38db
 WEIGHT = 10
 RESOURCES = 1 i_arrow_shaft, 1 i_feather
 SKILLMAKE = 10 bowcraft
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_bolt_jagged
 //REPLICATE = 1 // commented out by Converter 
 
@@ -960,11 +960,11 @@ DESCRIPTION = Arrow
 NAME = "arrow%s"
 TYPE = T_WEAPON_ARROW
 ProjectileType = ProjectileType.Arrow //guessed by Converter 
-//DUPELIST = 0f40,0f41,0f42 // commented out by Converter 
+DupeList = 0xf40,0xf41,0xf42
 WEIGHT = 2
 RESOURCES = 1 i_arrow_shaft, 1 i_feather
 SKILLMAKE = 10 bowcraft
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_arrow
 //REPLICATE = 1 // commented out by Converter 
 
@@ -996,7 +996,7 @@ SUBSECTION = Archers/Bowyers
 DESCRIPTION = Shaft
 
 TYPE = T_SHAFT
-//DUPELIST = 01bd5,01bd6 // commented out by Converter 
+DupeList = 0x1bd5,0x1bd6
 WEIGHT = 10
 RESOURCES = 1 i_log //some resources were fixed by converter 
 SKILLMAKE = 100 bowcraft
@@ -1006,7 +1006,7 @@ DEFNAME = i_arrow_shaft
 [ItemDef 0x1024]
 name = "2 shafts"
 TYPE = T_SHAFT
-//DUPELIST = 01025 // commented out by Converter 
+DupeList = 0x1025
 WEIGHT = 20
 RESOURCES = 1 i_log //some resources were fixed by converter 
 SKILLMAKE = 400 bowcraft
@@ -1029,11 +1029,11 @@ DESCRIPTION = Crossbow Bolt
 
 TYPE = T_WEAPON_BOLT
 ProjectileType = ProjectileType.Bolt //guessed by Converter 
-//DUPELIST = 01bfc,01bfd,01bfe // commented out by Converter 
+DupeList = 0x1bfc,0x1bfd,0x1bfe
 WEIGHT = 2
 RESOURCES = 1 i_arrow_shaft, 1 i_feather
 SKILLMAKE = 178 bowcraft
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //tdata1 = 1 // commented out by Converter 
 DEFNAME = i_xbolt
 //REPLICATE = 1 // commented out by Converter 

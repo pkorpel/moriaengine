@@ -7,8 +7,8 @@ DESCRIPTION = GM Items
 
 name = "Najem"
 TYPE = T_CONTAINER_locked
-//dupelist = 02c16 // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x2c16
+Flippable = true
 model = i_post_box
 layer = 0 //Set by Converter 
 

@@ -13,7 +13,7 @@ CATEGORY = Vegetation
 SUBSECTION = Trees
 DESCRIPTION = Stump
 
-//DUPELIST = 0e59 // commented out by Converter 
+DupeList = 0xe59
 DEFNAME = i_stump
 //VALUE = 1 // commented out by Converter 
 
@@ -23,7 +23,7 @@ SUBSECTION = Mage
 DESCRIPTION = Glowing Rune 01
 
 TYPE = t_light_lit
-//DUPELIST = 0e5d,0e5e // commented out by Converter 
+DupeList = 0xe5d,0xe5e
 layer = 2 //Set by Converter 
 DEFNAME = i_rune_glowing_1
 //TDATA4 = i_rune_glowing_1 // commented out by Converter 
@@ -35,7 +35,7 @@ SUBSECTION = Mage
 DESCRIPTION = Glowing Rune 02
 
 TYPE = t_light_lit
-//DUPELIST = 0e60,0e61 // commented out by Converter 
+DupeList = 0xe60,0xe61
 layer = 2 //Set by Converter 
 DEFNAME = i_rune_glowing_2
 //TDATA4 = i_rune_glowing_2 // commented out by Converter 
@@ -47,7 +47,7 @@ SUBSECTION = Mage
 DESCRIPTION = Glowing Rune 03
 
 TYPE = t_light_lit
-//DUPELIST = 0e63,0e64 // commented out by Converter 
+DupeList = 0xe63,0xe64
 layer = 2 //Set by Converter 
 DEFNAME = i_rune_glowing_3
 //TDATA4 = i_rune_glowing_3 // commented out by Converter 
@@ -59,7 +59,7 @@ SUBSECTION = Mage
 DESCRIPTION = Glowing Rune 04
 
 TYPE = t_light_lit
-//DUPELIST = 0e66,0e67 // commented out by Converter 
+DupeList = 0xe66,0xe67
 layer = 2 //Set by Converter 
 DEFNAME = i_rune_glowing_4
 //TDATA4 = i_rune_glowing_4 // commented out by Converter 
@@ -71,7 +71,7 @@ SUBSECTION = Mage
 DESCRIPTION = Glowing Rune 05
 
 TYPE = t_light_lit
-//DUPELIST = 0e69,0e6a // commented out by Converter 
+DupeList = 0xe69,0xe6a
 layer = 2 //Set by Converter 
 DEFNAME = i_rune_glowing_5
 //TDATA4 = i_rune_glowing_5 // commented out by Converter 
@@ -84,7 +84,7 @@ DESCRIPTION = Spider Web 01 (N)
 
 name = "spiderweb"
 TYPE = t_web
-//DUPELIST = 0ee4,0ee5,0ee6 // commented out by Converter 
+DupeList = 0xee4,0xee5,0xee6
 DEFNAME = i_spider_web
 //VALUE = 1 // commented out by Converter 
 
@@ -94,7 +94,7 @@ SUBSECTION = Coins
 DESCRIPTION = Copper Coin
 
 TYPE = t_coin
-//DUPELIST = 0eeb,0eec // commented out by Converter 
+DupeList = 0xeeb,0xeec
 DEFNAME = i_coin_copper
 //VALUE = 1 // commented out by Converter 
 
@@ -104,7 +104,7 @@ SUBSECTION = Coins
 DESCRIPTION = Gold Coin
 
 TYPE = T_GOLD
-//DUPELIST = 0eee,0eef // commented out by Converter 
+DupeList = 0xeee,0xeef
 WEIGHT = 0
 DEFNAME = i_gold
 //VALUE = 1 // commented out by Converter 
@@ -129,7 +129,7 @@ SUBSECTION = Coins
 DESCRIPTION = Silver Coin
 
 TYPE = t_coin
-//DUPELIST = 0ef1,0ef2 // commented out by Converter 
+DupeList = 0xef1,0xef2
 DEFNAME = i_coin_silver
 //VALUE = 1 // commented out by Converter 
 
@@ -459,7 +459,7 @@ SUBSECTION = StableMaster
 DESCRIPTION = Hay (Sheaf)
 
 TYPE = t_grain
-//DUPELIST = 0100c,0100d // commented out by Converter 
+DupeList = 0x100c,0x100d
 WEIGHT = 10
 DEFNAME = i_hay_sheaf
 //VALUE = 3 // commented out by Converter 
@@ -469,7 +469,7 @@ CATEGORY = Items by Professions
 SUBSECTION = StableMaster
 DESCRIPTION = Horse Dung
 
-//DUPELIST = 0f3c // commented out by Converter 
+DupeList = 0xf3c
 DEFNAME = i_horse_dung
 //VALUE = 1 // commented out by Converter 
 
@@ -766,7 +766,7 @@ DESCRIPTION = @
 
 name = "krev"
 TYPE = T_BLOOD
-//DUPELIST = 01cc8,01cc9,01cca,01ccb,01ccc,01ccd,01cce,01ccf,01cd0,01cd1,01cd2,01cd3,01cd4,01cd5,01cd6,01cd7,01cd8,01cd9,01cda,01cdb,01cdc // commented out by Converter 
+DupeList = 0x1cc8,0x1cc9,0x1cca,0x1ccb,0x1ccc,0x1ccd,0x1cce,0x1ccf,0x1cd0,0x1cd1,0x1cd2,0x1cd3,0x1cd4,0x1cd5,0x1cd6,0x1cd7,0x1cd8,0x1cd9,0x1cda,0x1cdb,0x1cdc
 DEFNAME = i_blood_tile
 //VALUE = 3 // commented out by Converter 
 
@@ -776,7 +776,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Arm
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01ce5 // commented out by Converter 
+DupeList = 0x1ce5
 WEIGHT = 50
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_arm_right
@@ -788,7 +788,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Upper Body
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01ce6 // commented out by Converter 
+DupeList = 0x1ce6
 WEIGHT = 220
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_upper_body
@@ -799,7 +799,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Legs
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01ce7 // commented out by Converter 
+DupeList = 0x1ce7
 WEIGHT = 180
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_leggings
@@ -810,7 +810,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Torso
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01ce8 // commented out by Converter 
+DupeList = 0x1ce8
 WEIGHT = 200
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_torso_2
@@ -820,7 +820,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Body Parts
 DESCRIPTION = Head
 
-//DUPELIST = 01ce9 // commented out by Converter 
+DupeList = 0x1ce9
 WEIGHT = 5
 RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain //some resources were fixed by converter 
 DEFNAME = i_flesh_head
@@ -831,7 +831,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Leg
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01cec // commented out by Converter 
+DupeList = 0x1cec
 WEIGHT = 180
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_leg
@@ -841,7 +841,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Body Parts
 DESCRIPTION = Body Part
 
-//DUPELIST = 01cea // commented out by Converter 
+DupeList = 0x1cea
 WEIGHT = 40
 DEFNAME = i_flesh
 
@@ -850,7 +850,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Body Parts
 DESCRIPTION = Legs
 
-//DUPELIST = 01ceb // commented out by Converter 
+DupeList = 0x1ceb
 WEIGHT = 180
 DEFNAME = i_flesh_legs_3
 //VALUE = 1 // commented out by Converter 
@@ -937,7 +937,7 @@ DESCRIPTION = @
 
 name = "krev"
 TYPE = T_BLOOD
-//DUPELIST = 01cf2,01cf3,01cf4,01cf5,01cf6,01cf7,01cf8,01cf9,01cfa,01cfb,01cfc,01cfd,01cfe,01cff,01d00,01d01,01d02,01d03,01d04,01d05,01d06,01d07,01d08,01d09,01d0a,01d0b,01d0c,01d0d,01d0e,01d0f,01d10,01d11,01d12 // commented out by Converter 
+DupeList = 0x1cf2,0x1cf3,0x1cf4,0x1cf5,0x1cf6,0x1cf7,0x1cf8,0x1cf9,0x1cfa,0x1cfb,0x1cfc,0x1cfd,0x1cfe,0x1cff,0x1d00,0x1d01,0x1d02,0x1d03,0x1d04,0x1d05,0x1d06,0x1d07,0x1d08,0x1d09,0x1d0a,0x1d0b,0x1d0c,0x1d0d,0x1d0e,0x1d0f,0x1d10,0x1d11,0x1d12
 DEFNAME = i_blood_2
 //VALUE = 1 // commented out by Converter 
 
@@ -947,7 +947,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Torso
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01dad // commented out by Converter 
+DupeList = 0x1dad
 WEIGHT = 200
 RESOURCES = 1 i_flesh_heart, 2 i_ribs_raw, 1 i_flesh_liver, 1 i_flesh_entrails, 1 i_blood_2 //some resources were fixed by converter 
 //TDATA1 = i_ribs_cooked // commented out by Converter 
@@ -959,7 +959,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Body Parts
 DESCRIPTION = Head
 
-//DUPELIST = 01dae // commented out by Converter 
+DupeList = 0x1dae
 WEIGHT = 5
 RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain, 1 i_blood_2 //some resources were fixed by converter 
 DEFNAME = i_flesh_head_2
@@ -971,7 +971,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Left Arm
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01daf // commented out by Converter 
+DupeList = 0x1daf
 WEIGHT = 70
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_left_arm
@@ -983,7 +983,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Right Arm
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01db0 // commented out by Converter 
+DupeList = 0x1db0
 WEIGHT = 70
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_right_arm
@@ -995,7 +995,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Left Leg
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01db1 // commented out by Converter 
+DupeList = 0x1db1
 WEIGHT = 110
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_left_leg
@@ -1007,7 +1007,7 @@ SUBSECTION = Body Parts
 DESCRIPTION = Right leg
 
 TYPE = t_MEAT_RAW
-//DUPELIST = 01db2 // commented out by Converter 
+DupeList = 0x1db2
 WEIGHT = 110
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_right_leg
@@ -1018,7 +1018,7 @@ CATEGORY = Ground Tiles
 SUBSECTION = Dirt
 DESCRIPTION = @
 
-//DUPELIST = 01dfe,01dff,01e00 // commented out by Converter 
+DupeList = 0x1dfe,0x1dff,0x1e00
 WEIGHT = 10
 DEFNAME = i_dirt
 //VALUE = 1 // commented out by Converter 
@@ -1029,7 +1029,7 @@ SUBSECTION = Tailor
 DESCRIPTION = Folded Cloth
 
 TYPE = t_cloth
-//DUPELIST = 0175e,0175f,01760,01761,01762,01763,01764,01765 // commented out by Converter 
+DupeList = 0x175e,0x175f,0x1760,0x1761,0x1762,0x1763,0x1764,0x1765
 WEIGHT = 1
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_cloth
@@ -1041,7 +1041,7 @@ SUBSECTION = Water
 DESCRIPTION = @
 
 TYPE = t_water
-//DUPELIST = 01798,01799,0179a,0179b,0179c,0179d,0179e,0179f,017a0,017a1,017a2,017a3,017a4,017a5,017a6,017a7,017a8,017a9,017aa,017ab,017ac,017ad,017ae,017af,017b0,017b1,017b2 // commented out by Converter 
+DupeList = 0x1798,0x1799,0x179a,0x179b,0x179c,0x179d,0x179e,0x179f,0x17a0,0x17a1,0x17a2,0x17a3,0x17a4,0x17a5,0x17a6,0x17a7,0x17a8,0x17a9,0x17aa,0x17ab,0x17ac,0x17ad,0x17ae,0x17af,0x17b0,0x17b1,0x17b2
 DEFNAME = i_water
 //VALUE = 2 // commented out by Converter 
 
@@ -1051,7 +1051,7 @@ SUBSECTION = Fire
 DESCRIPTION = @
 
 TYPE = t_fire
-//DUPELIST = 019ac,019ad,019ae,019af,019b0,019b1,019b2,019b3,019b4,019b5,019b6 // commented out by Converter 
+DupeList = 0x19ac,0x19ad,0x19ae,0x19af,0x19b0,0x19b1,0x19b2,0x19b3,0x19b4,0x19b5,0x19b6
 WEIGHT = 10
 DEFNAME = i_fire
 //VALUE = 1 // commented out by Converter 
@@ -1062,7 +1062,7 @@ SUBSECTION = Skeletons
 DESCRIPTION = Skull
 
 TYPE = T_BONE
-//DUPELIST = 01ae1,01ae2,01ae3,01ae4 // commented out by Converter 
+DupeList = 0x1ae1,0x1ae2,0x1ae3,0x1ae4
 WEIGHT = 3
 DEFNAME = i_bone_skull
 //VALUE = 1 // commented out by Converter 
@@ -1073,7 +1073,7 @@ SUBSECTION = Bones
 DESCRIPTION = Bone
 
 TYPE = T_BONE
-//DUPELIST = 01b12 // commented out by Converter 
+DupeList = 0x1b12
 WEIGHT = 1
 DEFNAME = i_bone
 //VALUE = 1 // commented out by Converter 
@@ -1084,7 +1084,7 @@ SUBSECTION = Bones
 DESCRIPTION = Jaw Bone
 
 TYPE = T_BONE
-//DUPELIST = 01b14 // commented out by Converter 
+DupeList = 0x1b14
 WEIGHT = 1
 DEFNAME = i_bone_jaw
 //VALUE = 1 // commented out by Converter 
@@ -1095,7 +1095,7 @@ SUBSECTION = Bones
 DESCRIPTION = Pelvis Bone
 
 TYPE = T_BONE
-//DUPELIST = 01b16 // commented out by Converter 
+DupeList = 0x1b16
 WEIGHT = 4
 DEFNAME = i_bone_pelvis
 //VALUE = 1 // commented out by Converter 
@@ -1106,7 +1106,7 @@ SUBSECTION = Bones
 DESCRIPTION = Rib Cage
 
 TYPE = T_BONE
-//DUPELIST = 01b18 // commented out by Converter 
+DupeList = 0x1b18
 WEIGHT = 4
 DEFNAME = i_bone_ribcage
 //VALUE = 1 // commented out by Converter 
@@ -1117,7 +1117,7 @@ SUBSECTION = Bones
 DESCRIPTION = Bone Shards
 
 TYPE = T_BONE
-//DUPELIST = 01b1a // commented out by Converter 
+DupeList = 0x1b1a
 WEIGHT = 2
 DEFNAME = i_bone_shards
 //VALUE = 1 // commented out by Converter 
@@ -1128,7 +1128,7 @@ SUBSECTION = Bones
 DESCRIPTION = Spine
 
 TYPE = T_BONE
-//DUPELIST = 01b1c // commented out by Converter 
+DupeList = 0x1b1c
 WEIGHT = 4
 DEFNAME = i_bone_spine
 //VALUE = 2 // commented out by Converter 
@@ -1138,7 +1138,7 @@ CATEGORY = Vegetation
 SUBSECTION = Trees
 DESCRIPTION = Leaves
 
-//DUPELIST = 01b20,01b21,01b22,01b23,01b24,01b25,01b26 // commented out by Converter 
+DupeList = 0x1b20,0x1b21,0x1b22,0x1b23,0x1b24,0x1b25,0x1b26
 WEIGHT = 1
 DEFNAME = i_leaves
 //VALUE = 2 // commented out by Converter 
@@ -1148,7 +1148,7 @@ CATEGORY = Ground Tiles
 SUBSECTION = Dirt
 DESCRIPTION = @
 
-//DUPELIST = 01b28,01b29,01b2a,01b2b,01b2c,01b2d,01b2e,01b2f,01b30,01b31,01b32,01b33,01b34,01b35,01b36,01b37,01b38,01b39,01b3a,01b3b,01b3c,01b3d,01b3e // commented out by Converter 
+DupeList = 0x1b28,0x1b29,0x1b2a,0x1b2b,0x1b2c,0x1b2d,0x1b2e,0x1b2f,0x1b30,0x1b31,0x1b32,0x1b33,0x1b34,0x1b35,0x1b36,0x1b37,0x1b38,0x1b39,0x1b3a,0x1b3b,0x1b3c,0x1b3d,0x1b3e
 WEIGHT = 1
 DEFNAME = i_dirt_tile
 //VALUE = 2 // commented out by Converter 
@@ -1158,7 +1158,7 @@ CATEGORY = Vegetation
 SUBSECTION = Sticks and Wood
 DESCRIPTION = Sticks
 
-//DUPELIST = 01b9c,01b9d,01b9e // commented out by Converter 
+DupeList = 0x1b9c,0x1b9d,0x1b9e
 WEIGHT = 3
 DEFNAME = i_sticks
 //VALUE = 2 // commented out by Converter 
@@ -1169,7 +1169,7 @@ SUBSECTION = Archers/Bowyers
 DESCRIPTION = Feathers (White)
 
 TYPE = t_FEATHER
-//DUPELIST = 0dfa,0dfb,01bd2,01bd3 // commented out by Converter 
+DupeList = 0xdfa,0xdfb,0x1bd2,0x1bd3
 WEIGHT = 0.1
 DEFNAME = i_feather
 //VALUE = 2 // commented out by Converter 
@@ -1192,7 +1192,7 @@ SUBSECTION = Archers/Bowyers
 DESCRIPTION = Board
 
 TYPE = T_BOARD
-//DUPELIST = 01bd8,01bd9,01bda,01bdb,01bdc // commented out by Converter 
+DupeList = 0x1bd8,0x1bd9,0x1bda,0x1bdb,0x1bdc
 WEIGHT = 10
 RESOURCES = 1 t_log //some resources were fixed by converter 
 SKILLMAKE = 1 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1206,7 +1206,7 @@ DESCRIPTION = Log (SE)
 
 NAME = "log%s"
 TYPE = t_log
-//DUPELIST = 01bde,01bdf,01be0,01be1,01be2 // commented out by Converter 
+DupeList = 0x1bde,0x1bdf,0x1be0,0x1be1,0x1be2
 WEIGHT = 1
 DEFNAME = i_log
 //VALUE = 10 // commented out by Converter 
@@ -1217,7 +1217,7 @@ SUBSECTION = Large SpiderWebs
 DESCRIPTION = SpiderWeb 01 (01/05)
 
 TYPE = t_web
-//DUPELIST = 010b9,010ba,010bb,010bc,010bd,010be,010bf,010c0,010c1,010c2,010c3,010c4,010c5,010c6,010c7,010c8,010c9,010ca,010cb,010cc,010cd,010ce,010cf,010d0,010d1 // commented out by Converter 
+DupeList = 0x10b9,0x10ba,0x10bb,0x10bc,0x10bd,0x10be,0x10bf,0x10c0,0x10c1,0x10c2,0x10c3,0x10c4,0x10c5,0x10c6,0x10c7,0x10c8,0x10c9,0x10ca,0x10cb,0x10cc,0x10cd,0x10ce,0x10cf,0x10d0,0x10d1
 WEIGHT = 1
 DEFNAME = i_spiderweb
 //VALUE = 2 // commented out by Converter 
@@ -1228,7 +1228,7 @@ SUBSECTION = Cook
 DESCRIPTION = Garbage
 
 TYPE = t_garbage
-//DUPELIST = 010ef,010f0,010f1,010f2,010f3 // commented out by Converter 
+DupeList = 0x10ef,0x10f0,0x10f1,0x10f2,0x10f3
 WEIGHT = 20
 DEFNAME = i_garbage
 //VALUE = 1 // commented out by Converter 
@@ -1238,7 +1238,7 @@ CATEGORY = Decoration - Miscellaneous
 SUBSECTION = Shells
 DESCRIPTION = Conch Shells
 
-//DUPELIST = 0fc5,0fc6,0fc7,0fc8,0fc9,0fca,0fcb,0fcc // commented out by Converter 
+DupeList = 0xfc5,0xfc6,0xfc7,0xfc8,0xfc9,0xfca,0xfcb,0xfcc
 WEIGHT = 10
 DEFNAME = i_shell
 //VALUE = 1 // commented out by Converter 

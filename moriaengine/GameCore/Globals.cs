@@ -185,6 +185,13 @@ namespace SteamEngine {
 			get { return useMultiItems; }
 		}
 
+		private static bool flipDroppedItems;
+		public static bool FlipDroppedItems {
+			get {
+				return flipDroppedItems;
+			}
+		}
+
 		private static bool readBodyDefs;
 		public static bool ReadBodyDefs {
 			get {
@@ -473,6 +480,7 @@ namespace SteamEngine {
 				useMap = files.GetValue("useMap", true, "Whether to load map0.mul and statics0.mul and use them or not.");
 				generateMissingDefs = files.GetValue("generateMissingDefs", false, "Whether to generate missing scripts based on tiledata.");
 				useMultiItems = files.GetValue("useMultiItems", true, "Whether to use multi items...");
+				flipDroppedItems = files.GetValue("flipDroppedItems", true, "Whether an item dropped on the ground turns to the next model of its flip group, as Sphere's FlipDroppedItems. Off, only items with FLIP=1 do.");
 				readBodyDefs = files.GetValue("readBodyDefs", true, "Whether to read Bodyconv.def (a client file) in order to determine what character models lack defs (and then to write new ones for them to 'scripts/defaults/chardefs/newCharDefsFromMuls.def').");
 				writeMulDocsFiles = files.GetValue("writeMulDocsFiles", false, "If this is true/on/1, then SteamEngine will write out some files with general information gathered from various MUL files into the 'docs/MUL file docs' folder. These should be distributed with SteamEngine anyways, but this is useful sometimes (like when a new UO expansion is released).");
 

@@ -7,9 +7,9 @@ DESCRIPTION = Sign Brass Pole
 
 name = "pole menu"
 type = t_fieldmenu
-//DUPELIST = 0bd2 // commented out by Converter 
+DupeList = 0xbd2
 RESOURCES = 2 i_board, 1 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 064 // commented out by Converter 
 model = i_sign_brass
 

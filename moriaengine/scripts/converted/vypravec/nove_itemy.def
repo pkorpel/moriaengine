@@ -6,12 +6,12 @@ SUBSECTION = Shields
 DESCRIPTION = Elven Shield
 
 TYPE = t_shield
-//DUPELIST = 01BCA // commented out by Converter 
+DupeList = 0x1bca
 WEIGHT = 14
 RESOURCES = 18 i_ingot_iron
 //RESOURCES2 = 12 i_ingot_iron, 2 i_ingot_bronze //i_ingot_bronze is nowhere, commented out by Converter
 SKILLMAKE = 502 blacksmithing //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 30 // commented out by Converter 
 layer = 2 //Set by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
@@ -53,11 +53,11 @@ CATEGORY = Items by Professions
 SUBSECTION = Artists
 DESCRIPTION = Portrait
 
-//DUPELIST = 0234f // commented out by Converter 
+DupeList = 0x234f
 WEIGHT = 5
 RESOURCES = 15 i_log, 25 i_cloth
 SKILLMAKE = 900 carpentry, 750 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_portrait_8
 
 [ItemDef 0x234f]
@@ -69,7 +69,7 @@ SUBSECTION = Stone Fireplace 1
 DESCRIPTION = @
 
 TYPE = T_FIRE
-//DUPELIST = 02351,02352,02353,02354,02355,02356,0237,02358,02359,0235a,0235b,0235c,0235d,0235e,0235f,02360,02361,02362,02363,02364,02365,02366,02367,02368,02369,0236a,0236b // commented out by Converter 
+DupeList = 0x2351,0x2352,0x2353,0x2354,0x2355,0x2356,0x237,0x2358,0x2359,0x235a,0x235b,0x235c,0x235d,0x235e,0x235f,0x2360,0x2361,0x2362,0x2363,0x2364,0x2365,0x2366,0x2367,0x2368,0x2369,0x236a,0x236b
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
 DEFNAME = i_fireplace_stonenew_4
 
@@ -148,12 +148,12 @@ SUBSECTION = Helmets
 DESCRIPTION = helma s kridly
 
 TYPE = T_ARMOR
-//DUPELIST = 0140d // commented out by Converter 
+DupeList = 0x140d
 WEIGHT = 7
 RESOURCES = 15 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
 SKILLMAKE = 1500 blacksmithing //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 10 // commented out by Converter 
 layer = 6 //Set by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
@@ -255,7 +255,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 50 // commented out by Converter 
@@ -1136,7 +1136,7 @@ DESCRIPTION = Full Apron
 
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-//DUPELIST = 0153e // commented out by Converter 
+DupeList = 0x153e
 WEIGHT = 4
 RESOURCES = 10 i_cloth
 RESOURCES2 = 10 i_cloth, 1 i_thread
@@ -4521,7 +4521,7 @@ SUBSECTION = Stone Wall 1
 CATEGORY = Decoration - Furniture
 SUBSECTION = Regals
 
-//DUPELIST = 02c6d // commented out by Converter 
+DupeList = 0x2c6d
 
 [ItemDef 0x2c6d]
 CATEGORY = Decoration - Furniture
@@ -7518,12 +7518,12 @@ SUBSECTION = Shields
 DESCRIPTION = Gondor Shield
 
 TYPE = t_shield
-//DUPELIST = 03062 // commented out by Converter 
+DupeList = 0x3062
 WEIGHT = 14
 RESOURCES = 18 i_ingot_iron
 //RESOURCES2 = 12 i_ingot_iron, 2 i_ingot_bronze //i_ingot_bronze is nowhere, commented out by Converter
 SKILLMAKE = 502 blacksmithing //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //REQSTR = 30 // commented out by Converter 
 layer = 2 //Set by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
@@ -9453,7 +9453,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -9475,7 +9475,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -9497,7 +9497,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -9519,7 +9519,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -9541,7 +9541,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -9563,7 +9563,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -9585,7 +9585,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 //SPEED = 50 // commented out by Converter 
@@ -9609,7 +9609,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -9631,7 +9631,7 @@ TYPE = T_WEAPON_SWORD
 WEIGHT = 10
 RESOURCES = 16 i_ingot_iron
 SKILLMAKE = 597 blacksmithing //some resources were fixed by converter 
-//FLIP = 0 // commented out by Converter 
+Flippable = false
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Swordsmanship // commented out by Converter 
 TwoHanded = true
@@ -9653,7 +9653,7 @@ subsection = zbrane
 description = PIKE
 
 type = t_weapon_sword
-//dupelist = 0f4e // commented out by Converter 
+DupeList = 0xf4e
 weight = 7
 RESOURCES = 16 i_ingot_iron
 skillmake = 573 blacksmithing //some resources were fixed by converter 
@@ -9705,8 +9705,8 @@ DESCRIPTION = vrata
 
 name = "vrata"
 type = t_door
-//DUPELIST = 02420,02421,02422,02423,02424 // commented out by Converter 
-//FLIP = 1 // commented out by Converter 
+DupeList = 0x2420,0x2421,0x2422,0x2423,0x2424
+Flippable = true
 DEFNAME = i_door_heavy
 
 [ItemDef 0x2420]
@@ -9745,8 +9745,8 @@ subsection = dvere
 DESCRIPTION = door sliding
 
 name = "dvere"
-//dupelist = 02A07,02A09,02A0B // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x2a07,0x2a09,0x2a0b
+Flippable = true
 model = 0x2a05
 
 [ItemDef 0x2a06]
@@ -9798,8 +9798,8 @@ category = Vypravec
 subsection = brany
 DESCRIPTION = magickaBrana 2
 
-//dupelist = 0392B,0392C,0392D,0392E // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x392b,0x392c,0x392d,0x392e
+Flippable = true
 defname = i_gate_2
 
 [ItemDef 0x392b]
@@ -9831,8 +9831,8 @@ category = Vypravec
 subsection = brany
 DESCRIPTION = magickaBrana 3
 
-//dupelist = 03930,03931,03932,03933 // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x3930,0x3931,0x3932,0x3933
+Flippable = true
 defname = i_gate_3
 
 [ItemDef 0x3930]
