@@ -142,6 +142,7 @@ namespace SteamEngine.CompiledScripts {
 			//missing from this allowlist meant they silently required GM (plevel>=4) by the
 			//default-deny fallback below, so no ordinary player could ever use them
 			this.commands["Party"] = PLEVEL_PLAYER;
+			this.commands["Boosts"] = PLEVEL_PLAYER;//#923 what affects me
 			this.commands["NavrhBan"] = PLEVEL_PLAYER;
 			this.commands["Honor"] = PLEVEL_PLAYER;
 			this.commands["TownControl"] = PLEVEL_PLAYER;

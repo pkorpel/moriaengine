@@ -57,6 +57,11 @@ namespace SteamEngine.CompiledScripts {
 			return self.HasTimer(criminalTimerTK);
 		}
 
+		/// <summary>#923 - for .boosts.</summary>
+		public static double CriminalSecondsLeft(Character self) {
+			return self.GetTimer(criminalTimerTK)?.DueInSeconds ?? -1;
+		}
+
 		/// <summary>Lifts the criminal flag right away (a GM pardon, or a test resetting the state).</summary>
 		public static void ClearCriminal(Character self) {
 			self.RemoveTimer(criminalTimerTK);

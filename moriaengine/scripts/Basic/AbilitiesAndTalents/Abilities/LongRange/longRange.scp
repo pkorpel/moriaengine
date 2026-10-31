@@ -1,5 +1,6 @@
 [ActivableAbilityDef a_longrange]
 Name="Longrange"
+Icon = 0x5209
 EffectPower=2 //regardless of ability points - those are only relevant for success chance
 EffectDuration=10
 Cooldown = 15 * 60

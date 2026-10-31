@@ -56,6 +56,12 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class StrModSpellEffectPlugin {
+		public override string EffectDetail {
+			get {
+				return ActiveEffects.SignedStat(this.strDifference, "Str");
+			}
+		}
+
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
 			self.Str = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Str, (short) this.EffectPower, out this.strDifference);
@@ -73,6 +79,12 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class DexModSpellEffectPlugin {
+		public override string EffectDetail {
+			get {
+				return ActiveEffects.SignedStat(this.dexDifference, "Dex");
+			}
+		}
+
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
 			self.Dex = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Dex, (short) this.EffectPower, out this.dexDifference);
@@ -90,6 +102,12 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class IntModSpellEffectPlugin {
+		public override string EffectDetail {
+			get {
+				return ActiveEffects.SignedStat(this.intDifference, "Int");
+			}
+		}
+
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
 			short shortEffect = (short) this.EffectPower;
@@ -114,6 +132,12 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class BlessSpellEffectPlugin {
+		public override string EffectDetail {
+			get {
+				return ActiveEffects.Join(ActiveEffects.SignedStat(this.strDifference, "Str"), ActiveEffects.SignedStat(this.dexDifference, "Dex"), ActiveEffects.SignedStat(this.intDifference, "Int"));
+			}
+		}
+
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
 			short shortEffect = (short) this.EffectPower;
@@ -140,6 +164,12 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class CurseSpellEffectPlugin {
+		public override string EffectDetail {
+			get {
+				return ActiveEffects.Join(ActiveEffects.SignedStat(this.strDifference, "Str"), ActiveEffects.SignedStat(this.dexDifference, "Dex"), ActiveEffects.SignedStat(this.intDifference, "Int"));
+			}
+		}
+
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
 			short shortEffect = (short) this.EffectPower;

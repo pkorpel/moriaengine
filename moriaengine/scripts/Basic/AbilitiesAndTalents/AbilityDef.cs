@@ -35,6 +35,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private FieldValue chance;
 		private FieldValue cooldown;
+		private FieldValue icon;
 		private FieldValue resources;//resourcelist of resources to be consumed for ability using
 		private FieldValue requirements;//resourcelist of resources that player must have intending to run the ability
 		private FieldValue effectPower;
@@ -65,6 +66,7 @@ namespace SteamEngine.CompiledScripts {
 		public AbilityDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 			this.cooldown = this.InitTypedField("cooldown", 0, typeof(double));
+			this.icon = this.InitTypedField("icon", 0, typeof(int));
 			this.chance = this.InitTypedField("chance", 1, typeof(double));
 			this.resources = this.InitTypedField("resources", null, typeof(ResourcesList));
 			this.requirements = this.InitTypedField("requirements", null, typeof(ResourcesList));
@@ -125,6 +127,16 @@ namespace SteamEngine.CompiledScripts {
 		/// Field for holding the number of seconds between next activation try.
 		/// You can use 0 for no delay
 		/// </summary>
+		/// <summary>#923 - the gump picture of this ability on .boosts, 0 for none.</summary>
+		public int Icon {
+			get {
+				return (int) this.icon.CurrentValue;
+			}
+			set {
+				this.icon.CurrentValue = value;
+			}
+		}
+
 		public double Cooldown {
 			get {
 				return (double) this.cooldown.CurrentValue;

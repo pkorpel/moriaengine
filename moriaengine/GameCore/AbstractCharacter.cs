@@ -908,6 +908,18 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>#923 - closes a dialog about to be sent anew, and forgets it at once, so that what the
+		/// client answers to the closing isn't taken for the player closing it.</summary>
+		public void DialogForget(GumpDef def) {
+			GameState state = this.GameState;
+			if (state != null) {
+				foreach (Gump gi in new List<Gump>(state.FindGumpInstances(def))) {
+					this.DialogClose(gi.Uid, 0);
+					state.PopGump(gi.Uid);
+				}
+			}
+		}
+
 		public void DialogClose(GumpDef def, int buttonId) {
 			GameState state = this.GameState;
 			if (state != null) {

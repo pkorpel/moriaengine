@@ -18,6 +18,14 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #923 .boosts (branch boosts-dialog)
+
+User: dialog of everything affecting a player, a framework so future bonuses show by themselves; Erebor's .boosty improved. List by default, compact strip toggle, Cooldowns section, keep food + mounts. Potions next, separately.
+ActiveEffects.Of(ch): EffectDurationPlugin implements IEffectDescriber, other plugins and worn items can, anything else IActiveEffectSource + Register. Doc boosts.md.
+**Most players run 3.0.6m, few TazUO.** No in-place redraw there and no drag position, so: Obnovit, Pozice, .boosts toggles, optional Zive = close + send anew at the Pozice spot. AbstractCharacter.DialogForget pops the old instance so the client's answer to the close isn't read as the player closing. liveByDefault off until tried on a real 3.0.6m. The 7.0.15.1 test client proves nothing about how 3.0.6m draws it.
+Food, mount powers, mount knowledge, equip list, HP sight: no such systems here (#924, #925). Poison and bleed had no sourceDef, so their "effect ended" message also read like a plugin's ToString: EffectName overridden.
+Gotcha: EffectChar goes through the spell power check; a test from a weak caster lands nothing, ApplyEffectChar doesn't.
+
 ## DONE (2026-10-31): #920 port i_varGate (branch 920-vargate)
 
 User: look at i_vargate and port it. scripts/Basic/VarGate: VarGate (.ct + .cs), all GM dialogs, Time Seal, f_vg_bookDeny, f_vg_mountDeny. Doc variable-gate.md. Converter: t_varGate -> VarGateDef (regen: 1 file). Not ported, nothing to act on: hypnosis, magic items, weekly, PvP kit. Grandmaster has its own cave gates. No gates in the archive, so none in .SetupWorld.
