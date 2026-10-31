@@ -749,6 +749,17 @@ namespace SteamEngine.Converter {
 			if (name == "tag.npc_summoning_count") {
 				return;
 			}
+			//#883 - f_banker_ok compares a banker's tag.realm with the player's: 1 Gondor,
+			//2 Mordor (negative is an outcast)
+			if (name == "tag.realm") {
+				if (!this.IsPlayerDefByName) {
+					string realm = value.Trim();
+					if ((realm == "1") || (realm == "2")) {
+						this.Replace("Realm", (realm == "1") ? "Gondor" : "Mordor", comment);
+					}
+				}
+				return;
+			}
 			//#794 - Erebor's "tag(isBoss,1)" (28 chardefs): bosses never turn into an elite
 			//monster (EliteNPC.scp's f_TransformToElite) - NPCDef.IsBoss
 			if (name == "tag.isboss") {

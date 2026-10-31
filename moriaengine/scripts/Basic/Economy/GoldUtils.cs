@@ -131,6 +131,22 @@ namespace SteamEngine.CompiledScripts {
 			bank.TryStackToAnyInside(goldItem);
 		}
 
+		/// <summary>Puts `amount` gold into this container, stacking onto gold already there.</summary>
+		public static void GrantInto(Thing cont, uint amount) {
+			AbstractItem goldItem = (AbstractItem) GoldDef.Create(cont);
+			goldItem.Amount = (int) amount;
+			((AbstractItem) cont).TryStackToAnyInside(goldItem);
+		}
+
+		/// <summary>All-or-nothing payment from this one container.</summary>
+		public static bool TryConsumeFrom(AbstractItem container, uint amount) {
+			if (CountGoldIn(container) < amount) {
+				return false;
+			}
+			ConsumeGoldFrom(container, amount);
+			return true;
+		}
+
 		/// <summary>Moves `amount` gold from the backpack to the bank. Unlike TryPay, this always
 		/// draws from the backpack specifically - deposit/withdraw are explicit direct transfers,
 		/// not a purchase, so Globals.PaymentSource (which only governs where purchases draw

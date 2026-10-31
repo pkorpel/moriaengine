@@ -14,7 +14,7 @@
 
 //[function pay_from_char] //(commented out by Converter) 
 
-[EquippableDef i_cashiers_mesec]
+[CashiersItemDef i_cashiers_mesec]
 CATEGORY = Ferals Stuff
 SUBSECTION = Misc
 DESCRIPTION = Cashiers Mesec (weight 1)
@@ -25,8 +25,9 @@ WEIGHT = 50
 model = i_bag
 layer = 0 //Set by Converter 
 Color = 0995
+MaxAmount = 60000
 
-[ItemDef i_cashiers_pokladnicka]
+[CashiersItemDef i_cashiers_pokladnicka]
 CATEGORY = Ferals Stuff
 SUBSECTION = Misc
 DESCRIPTION = Cashiers Mesec (weight 1)
@@ -37,6 +38,7 @@ TYPE = t_normal
 WEIGHT = 90
 model = 0xe80
 Color = 0995
+MaxAmount = 200000
 
 //[dialog d_cashiers_mesec] //(commented out by Converter) 
 
@@ -44,7 +46,7 @@ Color = 0995
 
 //[function f_what_is_this_container] //(commented out by Converter) 
 
-[ItemDef i_cashiers_check]
+[CashiersItemDef i_cashiers_check]
 CATEGORY = Ferals Stuff
 SUBSECTION = Misc
 DESCRIPTION = Cashiers Check (blank)
