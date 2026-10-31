@@ -137,11 +137,18 @@ namespace SteamEngine.Converter {
 			def.type = args;
 
 			switch (args) {
+				case "t_townmenu":
+					def.headerType = "TownStoneDef"; //#892 - the typedef's script is TownStone here
+					def.Replace("TYPE", "t_normal", "");
+					break;
 				case "t_container":
 				case "t_container_locked":
 				case "t_eq_vendor_box":
 				case "t_eq_bank_box":
 					def.headerType = "ContainerDef";
+					if (string.Equals(def.headerName, "i_tax_chest", StringComparison.OrdinalIgnoreCase)) {
+						def.headerType = "TaxChestDef";
+					}
 					def.isEquippable = true;
 					break;
 				case "t_corpse":
