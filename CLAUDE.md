@@ -1,8 +1,9 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-31): #860 leftovers, one PR each: #868, #872, #866, #865
+## IN PROGRESS (2026-10-31): #860 leftovers, one PR each: #872, #866, #865
 
-User: "carry on with the remaining open items". #868 first (branch 868-spell-defences): reactive armor spell + Mystic swing dropping mana shield, then Mystic abilities in a second PR. Energy shield's strength and voodoo shield can't be ported: i_energyshield, shield_power and i_voodooshield aren't in the archive.
+User: "carry on with the remaining open items".
+**#868 done** (PRs #874, branch 868-mystic-abilities): reactive armor spell, Mystic's .astralpower, .switchmagic, Crushing Blow, strike ending mana shield. Can't be ported: energy shield's strength and voodoo shield, i_energyshield, shield_power and i_voodooshield aren't in the archive. Gotcha again: test accounts hold 5 characters, a 6th Fact starves another test with an unrelated-looking failure.
 
 ## DONE (2026-10-31): #860 mirror Erebor's combat numbers (PRs #862, #864, #867, #869, #870, #871)
 

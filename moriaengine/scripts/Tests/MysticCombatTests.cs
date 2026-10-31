@@ -153,6 +153,36 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MYSTIC_NEVERHEALS_TEST: before=" + before + " after=" + after);
 		}
 
+		/// <summary>#868 - Astral Power and the attack switch: the strike's damage range and type.</summary>
+		[SteamFunction]
+		public static void TestMysticAbilitiesReport(Character self) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			Player player = (Player) self;
+			player.Profession = Professions.Mystic;
+			player.Level = 60;
+			self.DisArm();
+			self.Int = 300;
+			self.Stam = 1000;
+			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_resist")).Create(self.X + 1, self.Y, self.Z, self.M);
+
+			double plain = DamageManager.GetWeaponSwingArgs(self, dummy).DamageAfterAC;
+			bool inactive = MysticAbilities.IsAstralPowerActive(self);
+			MysticAbilities.AstralPower(self);
+			bool active = MysticAbilities.IsAstralPowerActive(self);
+			double smallest = double.MaxValue;
+			for (int i = 0; i < 50; i++) {
+				smallest = Math.Min(smallest, DamageManager.GetWeaponSwingArgs(self, dummy).DamageAfterAC);
+			}
+			MysticAbilities.SwitchMagic(self);
+			bool lightning = MysticAbilities.StrikesWithLightning(self);
+			MysticAbilities.SwitchMagic(self);
+			MysticAbilities.AstralPower(self);
+			bool off = MysticAbilities.IsAstralPowerActive(self);
+			dummy.Delete();
+			Console.WriteLine("MYSTIC_ABILITIES: inactive=" + inactive + " active=" + active + " off=" + off + " lightning=" + lightning +
+				" plain=" + ((int) plain) + " special=" + ((int) smallest));
+		}
+
 		/// <summary>#450 - confirms WeaponDelay is mana-driven for a Mystic (shorter delay =
 		/// faster swings at higher mana) rather than the normal Dex-based formula every other
 		/// profession uses - and that a non-Mystic's delay is completely unaffected by mana,

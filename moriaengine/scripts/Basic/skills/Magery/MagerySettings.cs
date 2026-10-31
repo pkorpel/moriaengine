@@ -41,6 +41,37 @@ namespace SteamEngine.CompiledScripts {
 		public double mindPowerIntModifier = 0.700;
 
 		[SaveableData]
+		public int astralPowerStaminaCost = 3;
+
+		[SaveableData]
+		public int astralPowerStaminaPerSecond = 16; //nastaveni_ability_staminalowering
+
+		/// <summary>#868 - a special cold strike does this much at power 1000, not mysticStrikeEffect.</summary>
+		[SaveableData]
+		public double mysticSpecialStrikeEffect = 13; //nastaveni_ability_mystikUC
+
+		[SaveableData]
+		public double mysticLightningStrikeEffect = 15; //nastaveni_ability_mystikUClightning
+
+		[SaveableData]
+		public double mysticLightningPower = 2000; //nastaveni_ability_mystikBleskDmg
+
+		[SaveableData]
+		public int mysticFreezeChanceVsP = 300; //nastaveni_mystik_abilitychance_vP
+
+		[SaveableData]
+		public int mysticFreezeChanceVsM = 1000; //nastaveni_mystik_abilitychance_vM
+
+		[SaveableData]
+		public int mysticSwitchStamina = 20;
+
+		[SaveableData]
+		public int mysticCrushingBlowStamina = 30; //nastaveni_mystik_doubleswing_stam
+
+		[SaveableData]
+		public double mysticCrushingBlowStrength = 0.750; //nastaveni_mystik_doubleswing_strength
+
+		[SaveableData]
 		public int reactiveArmorAbsorbPvP = 10; //nastaveni_reactivea_pvp_absorb
 
 		[SaveableData]

@@ -102,6 +102,14 @@ namespace SteamEngine.Tests {
 			Assert.Equal(returned, actualReturned);
 		}
 
+		[Theory]
+		[InlineData(1, 3141)]
+		[InlineData(30, 71280)]
+		[InlineData(60, 95040)]
+		public void ClassAbilityChanceGrowsWithStatsLevel(int level, int expected) {
+			Assert.Equal(expected, MysticAbilities.CalculateAbility(level));
+		}
+
 		[Fact]
 		public void ZeroSpeedFallsBackToFifty() {
 			Assert.Equal(2 * (0xfffff / 50) / 10.0, CombatCalculator.CalculateSwingDelay(0, 76, 1.0, 10).TotalSeconds, 6);

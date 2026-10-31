@@ -1,0 +1,3 @@
+//#868 - Erebor's Zdrcujici uder (ra_mystikDoubleswing), see MysticAbilities.RollCrushingBlow.
+[PassiveAbilityDef a_mystik_doubleswing]
+Name="Crushing Blow"
