@@ -108,6 +108,13 @@ namespace SteamEngine.CompiledScripts {
 		/// - An at-war guild member no longer renders the old Attackable/grey - falls through
 		///   to their own ordinary realm color instead (Gondor-blue here, chosen specifically
 		///   so it's visibly distinct from the grey this used to produce).</summary>
+		private static Guild TestGuild(Character member, string name) {
+			Guild guild = GuildDef.NewGuild((GuildStone) ThingDef.GetByDefname("i_guildstone").Create(member.Backpack));
+			guild.Rename(name);
+			guild.AddMember(member);
+			return guild;
+		}
+
 		[SteamFunction]
 		public static void TestCheckHighlightColorRedesign(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
@@ -124,10 +131,10 @@ namespace SteamEngine.CompiledScripts {
 			NPC selfViewStandin = (NPC) npcDef.Create(self.P());
 			selfViewStandin.Realm = Realm.Gondor;
 
-			Guild guildA = GuildDef.NewGuild(self, "TestWarGuildA" + self.Uid);
+			Guild guildA = TestGuild(self, "TestWarGuildA" + self.Uid);
 			NPC warEnemyGondor = (NPC) npcDef.Create(self.P());
 			warEnemyGondor.Realm = Realm.Gondor;
-			Guild guildB = GuildDef.NewGuild(warEnemyGondor, "TestWarGuildB" + self.Uid);
+			Guild guildB = TestGuild(warEnemyGondor, "TestWarGuildB" + self.Uid);
 			guildA.DeclareWarOn(guildB);
 
 			Console.WriteLine("HIGHLIGHT_REDESIGN_TEST: " +

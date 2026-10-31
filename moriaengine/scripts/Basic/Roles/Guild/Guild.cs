@@ -15,6 +15,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
@@ -37,16 +38,14 @@ namespace SteamEngine.CompiledScripts {
 	/// override anyway (matching RankSystem's existing pattern) - name-based cross-references
 	/// avoid needing a UID-based object-reference resolution mechanism for this pass.
 	///
-	/// Deliberately out of scope: the real guild-button/gump client packet (0xD4 + a management
-	/// gump) and showing the guild abbreviation over a character's displayed name in the client
-	/// (Character.Title turned out to already be completely unused at the packet level - no
-	/// name-display code reads it at all, so wiring abbreviation display means fixing that too,
-	/// a separate pre-existing gap). This pass is server-side: data model, membership, alliances/
-	/// wars, and text-command-driven interaction (GuildCommands) instead of a gump.
+	/// #884 - a guild is run from its guildstone, as on Erebor (systems/guilds.scp): see GuildStone
+	/// and D_GuildMenu. A candidate is a member with GuildMembership.isCandidate, like Erebor's
+	/// i_memory_guild, which both have. The 0xD4 guild button is still not handled.
 	/// </summary>
 	[ViewableClass]
 	[SaveableClass]
 	public partial class Guild : RankSystem {
+		public const int RankPublic = 0, RankCandidate = 1, RankMember = 2, RankMaster = 3;
 
 		public static readonly RoleKey guildRK = RoleKey.Acquire("_guild_");
 
@@ -60,32 +59,167 @@ namespace SteamEngine.CompiledScripts {
 		private List<string> alliedGuildNames;
 		private List<string> warGuildNames;
 
-		//pending invites - ephemeral, not persisted (same spirit as Party's candidates list)
-		private readonly List<Character> pendingInvites = new List<Character>();
-
 		public bool IsLeader(Character ch) {
-			return ch == this.Founder;
+			return ch == this.Master;
 		}
 
-		public Character Founder {
+		/// <summary>tag.master of the stone.</summary>
+		public Character Master {
 			get;
 			internal set;
 		}
 
-		public bool TryInvite(Character candidate) {
-			if ((candidate == null) || this.IsMember(candidate) || this.pendingInvites.Contains(candidate)) {
-				return false;
+		/// <summary>#884 - the guild lives on this stone, as on Erebor; null for one from before.</summary>
+		public GuildStone Stone {
+			get;
+			internal set;
+		}
+
+		public static Guild ForStone(GuildStone stone) {
+			foreach (Guild guild in allGuilds) {
+				if (guild.Stone == stone) {
+					return guild;
+				}
 			}
-			this.pendingInvites.Add(candidate);
-			return true;
+			return null;
 		}
 
-		public bool HasPendingInvite(Character candidate) {
-			return this.pendingInvites.Contains(candidate);
+		private GuildMembership MembershipOf(Character ch) {
+			return RolesManagement.HasRole(ch, this) ? (GuildMembership) this.GetMembership(ch) : null;
 		}
 
-		public void ClearInvite(Character candidate) {
-			this.pendingInvites.Remove(candidate);
+		private List<Character> SortedMembers(bool candidates) {
+			List<GuildMembership> found = new List<GuildMembership>();
+			foreach (Character member in this.Members) {
+				GuildMembership membership = this.MembershipOf(member);
+				if (membership.isCandidate == candidates) {
+					found.Add(membership);
+				}
+			}
+			found.Sort((a, b) => a.seniority.CompareTo(b.seniority));
+			return found.ConvertAll(membership => membership.Member);
+		}
+
+		/// <summary>Coowners of the stone, the eldest first.</summary>
+		public List<Character> FullMembers {
+			get { return this.SortedMembers(false); }
+		}
+
+		/// <summary>Friends of the stone.</summary>
+		public List<Character> Candidates {
+			get { return this.SortedMembers(true); }
+		}
+
+		public bool IsFullMember(Character ch) {
+			GuildMembership membership = this.MembershipOf(ch);
+			return (membership != null) && !membership.isCandidate;
+		}
+
+		public bool IsCandidate(Character ch) {
+			GuildMembership membership = this.MembershipOf(ch);
+			return (membership != null) && membership.isCandidate;
+		}
+
+		/// <summary>gfindrank; a GM is everyone's master.</summary>
+		public int GetRank(Character ch) {
+			if (ch.IsGM || (ch == this.Master)) {
+				return RankMaster;
+			}
+			if (this.IsFullMember(ch)) {
+				return RankMember;
+			}
+			return this.IsCandidate(ch) ? RankCandidate : RankPublic;
+		}
+
+		private GuildMembership Join(Character ch, bool asCandidate) {
+			RolesManagement.Assign(ch, this);
+			GuildMembership joined = this.MembershipOf(ch);
+			int seniority = 0;
+			foreach (Character member in this.Members) {
+				seniority = Math.Max(seniority, this.MembershipOf(member).seniority + 1);
+			}
+			joined.seniority = seniority;
+			joined.isCandidate = asCandidate;
+			return joined;
+		}
+
+		/// <summary>SrcApplyToJoin.</summary>
+		public void AddCandidate(Character ch) {
+			this.Join(ch, true);
+			ch.Say(ch.Name + " je nyni kandidatem.");
+		}
+
+		/// <summary>SrcJoinAsMember: a candidate stays in line, a newcomer joins at the end.</summary>
+		public void AddMember(Character ch) {
+			GuildMembership membership = this.MembershipOf(ch);
+			if (membership != null) {
+				membership.isCandidate = false;
+			} else {
+				this.Join(ch, false);
+			}
+			ch.Say(ch.Name + " je nyni clenem.");
+		}
+
+		/// <summary>SrcResign and refreshmaster. Erebor's votes are dead code (the voting button's
+		/// line is commented out), which leaves what they did: a master who left is replaced by
+		/// the eldest member.</summary>
+		public void Resign(Character ch) {
+			RolesManagement.UnAssign(ch, this);
+			if (ch == this.Master) {
+				List<Character> members = this.FullMembers;
+				this.Master = (members.Count > 0) ? members[0] : null;
+			}
+		}
+
+		/// <summary>The name and the stone's name together, and in the other guilds' lists.</summary>
+		public void Rename(string name) {
+			foreach (Guild other in allGuilds) {
+				ReplaceInList(other.alliedGuildNames, this.Name, name);
+				ReplaceInList(other.warGuildNames, this.Name, name);
+			}
+			this.Name = name;
+			if (this.Stone != null) {
+				this.Stone.Name = name;
+			}
+		}
+
+		private static void ReplaceInList(List<string> list, string oldName, string newName) {
+			int index = (list != null) ? list.IndexOf(oldName) : -1;
+			if (index >= 0) {
+				list[index] = newName;
+			}
+		}
+
+		/// <summary>The character's name, with " [abbrev]" if they show it (showname_old).</summary>
+		public static string NameWithAbbreviation(Character ch) {
+			Guild guild = GetGuild(ch);
+			if ((guild != null) && guild.MembershipOf(ch).canShowAbbrev) {
+				return ch.Name + " [" + guild.Abbreviation + "]";
+			}
+			return ch.Name;
+		}
+
+		public bool ShowsAbbreviation(Character ch) {
+			GuildMembership membership = this.MembershipOf(ch);
+			return (membership != null) && membership.canShowAbbrev;
+		}
+
+		public void ToggleAbbreviation(Character ch) {
+			GuildMembership membership = this.MembershipOf(ch);
+			if (membership != null) {
+				membership.canShowAbbrev = !membership.canShowAbbrev;
+			}
+		}
+
+		/// <summary>guildMsg, at login and logout.</summary>
+		public static void AnnounceConnection(Character ch, bool connected) {
+			Guild guild = GetGuild(ch);
+			if (guild != null) {
+				string verb = connected ? (ch.IsFemale ? "pripojila" : "pripojil") : (ch.IsFemale ? "odpojila" : "odpojil");
+				foreach (Character member in guild.Members) {
+					member.SysMessage("--*" + ch.Name + " se " + verb + "*--");
+				}
+			}
 		}
 
 		public void SendGuildMessage(Character speaker, string text) {
@@ -226,8 +360,11 @@ namespace SteamEngine.CompiledScripts {
 			if (this.abbreviation != null) {
 				output.WriteValue("abbreviation", this.abbreviation);
 			}
-			if (this.Founder != null) {
-				output.WriteValue("founder", this.Founder);
+			if (this.Master != null) {
+				output.WriteValue("founder", this.Master);
+			}
+			if (this.Stone != null) {
+				output.WriteValue("stone", this.Stone);
 			}
 			if (this.alliedGuildNames != null) {
 				output.WriteValue("alliedGuildNames", this.alliedGuildNames);
@@ -245,6 +382,9 @@ namespace SteamEngine.CompiledScripts {
 				case "founder":
 					ObjectSaver.Load(valueString, this.Load_Founder, filename, line);
 					return;
+				case "stone":
+					ObjectSaver.Load(valueString, this.Load_Stone, filename, line);
+					return;
 				case "alliedguildnames":
 					ObjectSaver.Load(valueString, this.Load_AlliedNames, filename, line);
 					return;
@@ -256,7 +396,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void Load_Founder(object resolvedObject, string filename, int line) {
-			this.Founder = (Character) resolvedObject;
+			this.Master = (Character) resolvedObject;
+		}
+
+		private void Load_Stone(object resolvedObject, string filename, int line) {
+			this.Stone = (GuildStone) resolvedObject;
 		}
 
 		private void Load_AlliedNames(object resolvedObject, string filename, int line) {
@@ -273,6 +417,11 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly GuildDef instance = (GuildDef)
 			new GuildDef("r_guild", "C# scripts", -1).Register();
 
+		/// <summary>The save names r_guild before anything else would touch this class.</summary>
+		public new static void Bootstrap() {
+			System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(GuildDef).TypeHandle);
+		}
+
 		public GuildDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 		}
@@ -281,11 +430,12 @@ namespace SteamEngine.CompiledScripts {
 			return new Guild(this, key);
 		}
 
-		public static Guild NewGuild(Character founder, string name) {
+		/// <summary>A guild for a stone without one, named after it, no members yet.</summary>
+		public static Guild NewGuild(GuildStone stone) {
 			Guild g = (Guild) instance.Create(Guild.guildRK);
-			g.Name = name;
-			g.Founder = founder;
-			RolesManagement.Assign(founder, g);
+			g.Name = stone.Name;
+			g.Abbreviation = stone.Name;
+			g.Stone = stone;
 			return g;
 		}
 	}
