@@ -7,7 +7,11 @@ User: don't wait for confirmations, carry on with all. Banker: "port over the en
 #879-#881 shipped PR #885.
 **#883 banker done (branch 883-banker)**: BankerDialog.cs (d_banker_ok, d_banker_bank, f_banker_ok), BankerSpeech (spk_jobbanker in order) + BankerOkSpeech, CashiersItem (.ct, purse/strongbox/cheque, .check, .mesec), converter: CashiersItemDef + limits, tag.realm (2 = Mordor, not -1), e_banker on spk_banker_ok. Doc banker.md. Double click on a banker now opens the dialog, "bank" still opens the box on C_H_BANKER. No jail here; Erebor's partial purse pour made gold, fixed; e_vendor_check only sees moving, not casting.
 Gotcha: test accounts start as GM, and a GM pays nothing for .check/.mesec.
-Next #882 stats + skills, #884 guildstone.
+#883 shipped PR #886.
+**#882 stats + skills (branch 882-stats-skills)**: new characters had 300 FREE stat points (start stats weren't counted in the budget), skills weren't reset to base, level/points weren't reset. Now LevelingSystem.StartNewLife + RaiseSkill (cost 1/2/3, blocked at 25/50/75, roundskill, ismagic) + TrimSkillsAtDeath; start range = second number of statRange, not the hard cap; mage/necro/priest start max fixed; warrior Begging/Camping, Enticement = our Discordance caps added; requireRank default ON. Doc leveling-experience.md.
+GameCore exit 134 once in LevelingTests in a mixed class run, not reproduced in 2 reruns, no stack in the log. Watch it.
+Gotcha: Tactics base is 30.0 for a warrior, so a test at 26.3 rounds UP to base; test on a skill with base 0.
+Next #884 guildstone.
 
 ## DONE (2026-10-31): #860 leftovers: #868, #872, #866, #865
 

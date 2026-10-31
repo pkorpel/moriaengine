@@ -424,6 +424,7 @@ namespace SteamEngine.CompiledScripts {
 			if (result != TriggerResult.Cancel) {
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
 				this.RefreshTitle();
+				LevelingSystem.FixUncountedStartingStats(this);
 				//if (DbManager.Config.useDb) {
 				//    DbMethods.loginLogs.GameLogin(this.Conn);
 				//    Logger.WriteDebug(ScriptUtil.GetLogString(this.Conn, "Logged in"));
@@ -445,6 +446,7 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_Death(Character killedBy) {
 			this.CheckSkillMaxima();
 			LevelingSystem.ApplyDeathExperienceLoss(this, killedBy);
+			LevelingSystem.TrimSkillsAtDeath(this);
 			base.On_Death(killedBy);
 		}
 

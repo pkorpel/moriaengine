@@ -100,6 +100,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Nation = nation; //cascades Realm + Home (#163/#164)
 			player.P(player.Home); //one-time placement at the new home, NOT a reusable recall (#164 explicitly excludes recall)
 			ClearForNewLife(player);
+			LevelingSystem.StartNewLife(player, profession);
 			GiveStartingEquipment(player, profession);
 
 			player.SysMessage("Welcome! You are now a " + RaceData.GetDisplayName(race) + " " +

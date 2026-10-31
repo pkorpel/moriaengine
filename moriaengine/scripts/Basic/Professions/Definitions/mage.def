@@ -96,7 +96,7 @@ allowedArmorMaterials=Leather
 //STR/DEX/INT/VIT ranges {minimum, startingMax, hardCap} (#135/#134, native 0-100+ scale, NOT x10)
 strRange=50, 80, 90
 dexRange=60, 90, 100
-intRange=100, 150, 230
+intRange=100, 140, 230
 vitRange=50, 80, 100
 
 //title ladder by level, male/female (#165, ported from the original Sphere source's

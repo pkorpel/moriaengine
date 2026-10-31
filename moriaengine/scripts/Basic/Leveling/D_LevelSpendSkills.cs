@@ -115,8 +115,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 			int skillId = gr.PressedButton - SkillButtonIdBase;
 			if (skillId >= 0) {
-				if (!LevelingSystem.TrySpendSkillPoints(player, (SkillName) skillId, 1)) {
-					player.RedMessage("Could not spend a point there - check your remaining points and this skill's cap.");
+				string refusal = LevelingSystem.RaiseSkill(player, (SkillName) skillId);
+				if (refusal != null) {
+					player.RedMessage(refusal);
 				}
 			}
 			player.Dialog(player, this, args);
