@@ -174,11 +174,11 @@ namespace SteamEngine.Tests.Protocol {
 					killerClient.SendSpeech(".TestKillPlayerAndReportResult " + victimUid);
 					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_DEATH_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
 					string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LEVELING_DEATH_TEST_RESULT:");
-					// victim: level 1, 1000 exp, loses 100% -> 0. killer: gets 10% of the 1000 lost = 100 (still level 0, 100 < 330).
+					// #902 - level 1 loses (1 + 1) * 330 / 20 = 33, all of it to the one who fought them.
 					Assert.Contains("victimLevel=1", line);
-					Assert.Contains("victimExperience=0", line);
+					Assert.Contains("victimExperience=967", line);
 					Assert.Contains("killerLevel=0", line);
-					Assert.Contains("killerExperience=100", line);
+					Assert.Contains("killerExperience=33", line);
 
 					// Leaves a corpse behind - clean it up now (see KillingNpcGrantsExperienceToKiller's
 					// identical comment for why).
@@ -217,7 +217,7 @@ namespace SteamEngine.Tests.Protocol {
 					mark = this.fixture.GameOutputSnapshot().Length;
 					killerClient.SendSpeech(".TestKillPlayerAndReportResult " + victimUid);
 					Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_DEATH_TEST_RESULT:", mark, TimeSpan.FromSeconds(10)));
-					// first death: victim 1000 -> 0, killer 0 -> 100. Sets the victim's immunity timer.
+					// first death: victim 1000 -> 967, killer 0 -> 33. Sets the victim's immunity timer.
 
 					mark = this.fixture.GameOutputSnapshot().Length;
 					victimClient.SendSpeech(".TestSetLevelAndExperience 5 2000"); // victim has plenty to lose again
@@ -231,7 +231,7 @@ namespace SteamEngine.Tests.Protocol {
 					Assert.Contains("victimLevel=5", line);
 					Assert.Contains("victimExperience=2000", line);
 					Assert.Contains("killerLevel=0", line);
-					Assert.Contains("killerExperience=100", line);
+					Assert.Contains("killerExperience=33", line);
 				}
 			}
 		}

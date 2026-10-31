@@ -41,12 +41,25 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int nextLevelCoefficient = 330;
 
-		/// <summary>Percentage (0-100) of a dying player's experience that is lost on death - see LevelingSystem.ApplyDeathExperienceLoss (#128). Default 100 means a full reset to 0, the user's own stated design.</summary>
+		/// <summary>#902 - f_countfight: who fought a victim counts within this many tiles of it, on its plane.</summary>
 		[SaveableData]
-		public int experienceLossPercentage = 100;
+		public int fightCreditRange = 20;
 
-		/// <summary>Percentage (0-100) of the *lost* amount (not the victim's original total) that gets paid to the killer, when the killer is a player - see LevelingSystem.ApplyDeathExperienceLoss (#128).</summary>
+		/// <summary>#902 - how long ago the last blow can be for someone to still count as having fought.</summary>
 		[SaveableData]
-		public int pkGainPercentage = 10;
+		public int fightCreditSeconds = 120;
+
+		/// <summary>#902 - in Gondor's and Mordor's areas a monster pays each fighter at most this, elites
+		/// excepted. 0 turns the cap off.</summary>
+		[SaveableData]
+		public int monsterExpCap = 100;
+
+		/// <summary>#902 - f_ztratitfame: what a death costs, as a percentage of what the next level takes.</summary>
+		[SaveableData]
+		public int deathExpLossPercent = 5;
+
+		/// <summary>#902 - how much of what a player lost goes to those who fought them, shared evenly.</summary>
+		[SaveableData]
+		public int deathExpPaidPercent = 100;
 	}
 }

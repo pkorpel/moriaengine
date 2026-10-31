@@ -18,6 +18,10 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #902 + #903 shared experience, kill credit (branch 902-shared-experience)
+
+User: very important, a group exping together must get experience. Erebor shares by who fought, not by party (isinmyparty = 0). Decisions: (1) port that + fighters' parties share too, (2) the 100 cap, on .settings, (3) user reversed #128's death rule: "I misremembered", follow Erebor. FightMemory now keeps everyone, LevelingSystem.FindFighters is the one list. Old experienceLossPercentage/pkGainPercentage are gone. Formula in leveling-experience.md. Next: .party dialog, options given to the user first.
+
 ## DONE (2026-10-31): #892 realm government: town stones, General, Nazguls
 
 User: whole system, WITHOUT fortress captains and dobyvani. Stone spots: my proposals, placed through the setup commands. Tunable numbers on .settings. Analysis on #892.

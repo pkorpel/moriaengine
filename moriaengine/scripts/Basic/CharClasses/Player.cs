@@ -447,10 +447,12 @@ namespace SteamEngine.CompiledScripts {
 		/// apply the leveling system's death-experience-loss/pay-the-killer mechanic (#128).</summary>
 		public override void On_Death(Character killedBy) {
 			this.CheckSkillMaxima();
+			bool recentlyDead = LevelingSystem.IsRecentlyDead(this);
 			LevelingSystem.ApplyDeathExperienceLoss(this, killedBy);
 			LevelingSystem.TrimSkillsAtDeath(this);
 			base.On_Death(killedBy);
-			NazgulRings.OnDeath(this, killedBy);
+			NazgulRings.OnDeath(this, killedBy, recentlyDead);
+			FightMemory.Forget(this);
 		}
 
 		/// <summary>

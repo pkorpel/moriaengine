@@ -15,6 +15,10 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
+using System.Collections.Generic;
+using SteamEngine.Regions;
+
 namespace SteamEngine.CompiledScripts {
 	/// <summary>Which attribute a call to LevelingSystem.TrySpendAttributePoints targets (#129).</summary>
 	public enum AttributeStat {
@@ -318,46 +322,108 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>
-		/// Death's experience-loss/pay-the-killer mechanic (#128) - the user's own stated
-		/// design, deliberately diverging from Erebor's actual partial-drain formula: at the
-		/// default settings (experienceLossPercentage=100, pkGainPercentage=10) the dying
-		/// player loses everything and killer(s) collectively get 10% of what was lost (not
-		/// 10% of the original total). Level never changes here - only Experience.
-		///
-		/// Exemptions (lose nothing, pay nothing): standing in a safe zone/arena
-		/// (Notoriety.IsExemptFromExperienceLoss), or within 5 minutes of a previous death
-		/// (PostDeathExperienceLossImmunity, mirrors Erebor's i_checkstats_timer).
-		///
-		/// Multi-killer credit splitting is explicitly OUT of scope for this phase - CauseDeath
-		/// only ever identifies a single `killedBy` Character (there is no damage-contribution
-		/// list anywhere in this engine to split credit from), so only that one killer (if a
-		/// Player) is paid. The user's "default even split" note applies if/when a real
-		/// multi-killer attribution mechanism gets built - not invented here speculatively.
-		/// </summary>
+		/// <summary>#902 - who shares a death: everyone who fought the victim lately, near it and on its plane,
+		/// as Erebor's @death with f_countfight. Pets and summons don't count. With `withParties`, a fighter's
+		/// party nearby counts too, alive, which Erebor didn't do: it's how a healer in a group gets experience.</summary>
+		public static List<Character> FindFighters(Character victim, Character killedBy, bool withParties) {
+			LevelingSettings settings = LevelingSettings.instance;
+			List<Character> found = FightMemory.GetFighters(victim, TimeSpan.FromSeconds(settings.fightCreditSeconds));
+			if ((killedBy != null) && !found.Contains(killedBy)) {
+				found.Add(killedBy);
+			}
+			found.RemoveAll(ch => !CountsAsFighter(victim, ch));
+			if (withParties) {
+				foreach (Character fighter in new List<Character>(found)) {
+					Party party = Party.GetParty(fighter);
+					if (party != null) {
+						foreach (Character member in party.Members) {
+							if (!found.Contains(member) && !member.Flag_Dead && CountsAsFighter(victim, member)) {
+								found.Add(member);
+							}
+						}
+					}
+				}
+			}
+			return found;
+		}
+
+		private static bool CountsAsFighter(Character victim, Character ch) {
+			if ((ch == victim) || ch.IsDeleted || (ch.M != victim.M)) {
+				return false;
+			}
+			NPC npc = ch as NPC;
+			if ((npc != null) && ((npc.ControlMaster != null) || SummonSpellDef.IsSummonedCreature(npc))) {
+				return false;
+			}
+			return Point2D.GetSimpleDistance(ch.X, ch.Y, victim.X, victim.Y) <= LevelingSettings.instance.fightCreditRange;
+		}
+
+		/// <summary>Sphere's sqrt_int: about 100 x the square root.</summary>
+		public static int SqrtInt(int value) {
+			return (int) Math.Sqrt(value * 10000.0);
+		}
+
+		/// <summary>What each of `fighters` gets from a monster worth `reward` alone: the pool grows with the
+		/// square root of their number, so together they earn more and each less.</summary>
+		public static int MonsterShare(int reward, int fighters) {
+			return (int) (((long) reward * SqrtInt(fighters) / 100) / fighters);
+		}
+
+		/// <summary>Erebor's @death for a monster. The cap is for areas of tag.realm below 3, and not for elites.</summary>
+		public static void ShareMonsterExperience(NPC victim, Character killedBy) {
+			int reward = victim.ExperienceReward;
+			if ((reward == 0) || SummonSpellDef.IsSummonedCreature(victim)) {
+				return;
+			}
+			List<Character> fighters = FindFighters(victim, killedBy, true);
+			if (fighters.Count == 0) {
+				return;
+			}
+			int share = MonsterShare(reward, fighters.Count);
+			int cap = LevelingSettings.instance.monsterExpCap;
+			FlaggedRegion area = RegionEventSystem.AreaOf(victim.Region);
+			if ((cap > 0) && (share > cap) && !EliteMonster.IsElite(victim) && ((area == null) || (area.RealmTag < 3))) {
+				share = cap;
+			}
+			foreach (Character fighter in fighters) {
+				AddExperience(fighter as Player, share);
+			}
+		}
+
+		/// <summary>#902 - Erebor's @death for a player, which replaced the design of #128. It costs a share of
+		/// what the next level takes, nothing if nobody fought them, within 5 minutes of a previous death
+		/// (i_checkstats_timer) or in a safe zone or arena. Those who fought share what was lost evenly,
+		/// but nothing for someone of their own realm or a craftsman.</summary>
 		public static void ApplyDeathExperienceLoss(Player victim, Character killedBy) {
 			if (victim == null) {
 				return;
 			}
-
-			int lost = 0;
-			if (!IsWithinPostDeathImmunity(victim) && !Notoriety.IsExemptFromExperienceLoss(victim)) {
-				int lossPercentage = LevelingSettings.instance.experienceLossPercentage;
-				lost = (int) ((long) victim.Experience * lossPercentage / 100);
-				if (lost > 0) {
-					victim.Experience -= lost;
-				}
-			}
+			LevelingSettings settings = LevelingSettings.instance;
+			List<Character> fighters = FindFighters(victim, killedBy, false);
+			bool immune = IsWithinPostDeathImmunity(victim) || Notoriety.IsExemptFromExperienceLoss(victim);
 			victim.SetTag(lastDeathTimeTK, Globals.TimeAsSpan);
-
-			if (lost > 0) {
-				Player killerPlayer = killedBy as Player;
-				if ((killerPlayer != null) && (killerPlayer != victim)) {
-					int gainPercentage = LevelingSettings.instance.pkGainPercentage;
-					int gained = (int) ((long) lost * gainPercentage / 100);
-					AddExperience(killerPlayer, gained);
+			if (immune || (fighters.Count == 0)) {
+				return;
+			}
+			int nextLevel = (victim.Level + 1) * settings.nextLevelCoefficient;
+			int lost = Math.Min((int) ((long) nextLevel * settings.deathExpLossPercent / 100), victim.Experience);
+			if (lost <= 0) {
+				return;
+			}
+			victim.Experience -= lost;
+			int share = (int) ((long) lost * settings.deathExpPaidPercent / 100) / fighters.Count;
+			if (!Professions.HasProfession(victim, Professions.Craftsman)) {
+				foreach (Character fighter in fighters) {
+					if (fighter.Realm != victim.Realm) {
+						AddExperience(fighter as Player, share);
+					}
 				}
 			}
+		}
+
+		/// <summary>i_checkstats_timer: this player died moments ago, which a kill doesn't count on.</summary>
+		public static bool IsRecentlyDead(Player player) {
+			return IsWithinPostDeathImmunity(player);
 		}
 
 		private static bool IsWithinPostDeathImmunity(Player victim) {

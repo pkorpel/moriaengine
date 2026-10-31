@@ -1975,13 +1975,7 @@ namespace SteamEngine.CompiledScripts {
 				autoMount.Delete();
 			}
 
-			Player player = killedBy as Player;
-			if (player != null) {
-				int reward = this.ExperienceReward;
-				if (reward != 0) {
-					LevelingSystem.AddExperience(player, reward);
-				}
-			}
+			LevelingSystem.ShareMonsterExperience(this, killedBy);
 		}
 
 		/// <summary>Decides whether this NPC should pick `candidate` as an aggro target - see AggroMode. Virtual so NPC subclasses/scripts can layer on additional policies beyond the three builtins.</summary>

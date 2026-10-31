@@ -177,6 +177,8 @@ namespace SteamEngine.CompiledScripts {
 			if (victim.Flag_Dead) {
 				victim.Resurrect();
 			}
+			victim.Realm = Realm.Gondor; //#902 - nothing is paid for one's own realm
+			killer.Realm = Realm.Mordor;
 			victim.CauseDeath(killer);
 			Console.WriteLine("LEVELING_DEATH_TEST_RESULT: victimLevel=" + victim.Level + " victimExperience=" + victim.Experience +
 				" killerLevel=" + killer.Level + " killerExperience=" + killer.Experience);

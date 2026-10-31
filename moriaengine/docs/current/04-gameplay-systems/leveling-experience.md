@@ -114,46 +114,37 @@ No real player-facing spend *dialog* exists yet for any of the three pools beyon
 `.explevel` buttons wired directly to these methods - a fuller dialog redesign is a known
 open item, not started.
 
-## Monster kills grant experience
+## Who gets experience from a kill
 
-`NPCDef.ExperienceWorth` ({min,max} range, a new `"experience"` `.def` line) +
-`RollExperienceReward()`. `NPC.On_Death` grants the roll to the killer via
-`AddExperience` only when the killer is a `Player` - NPCs never level, mirroring Erebor's
-own `if (isplayer)` guard. No existing `.def` content was touched by this - monster
-experience defaults to zero everywhere until values get authored per monster (consistent
-with the broader "NPC content ~55-60% incomplete" gap tracked elsewhere).
+Port of Erebor's `@death` (`sphereevents.scp`, #902). `FightMemory` remembers everyone who fought a
+character; `LevelingSystem.FindFighters` takes those whose last blow is within `fightCreditSeconds` (120),
+within `fightCreditRange` (20) tiles and on the victim's plane, with the killer. Pets and summons don't count.
 
-## Death: experience loss and the killer's cut
+**Monsters.** `tag.experience` becomes `ExperienceReward`, rolled at creation: what one fighter gets alone. With
+`N` fighters the pool is `reward x sqrt_int(N) / 100` and each gets `pool / N`:
 
-`LevelingSystem.ApplyDeathExperienceLoss(Player victim, Character killedBy)`
-(`LevelingSystem.cs:253-276`), hooked into `Player.On_Death`. This deliberately
-**diverges** from Erebor's actual ~5%-capped-loss mechanic, per the user's own explicit
-final design:
+| Fighters | Each | Together |
+| --- | --- | --- |
+| 1 | 100% | 100% |
+| 2 | 70% | 141% |
+| 3 | 57% | 173% |
+| 4 | 50% | 200% |
 
-- `experienceLossPercentage` (default **100** - full reset) - percentage of the dying
-  player's experience that's lost.
-- `pkGainPercentage` (default **10**) - percentage of the *lost* amount (not the victim's
-  original total) paid to the killer, if the killer is a player.
+In areas of `tag.realm` below 3, a monster pays each fighter at most `monsterExpCap` (100), except elites; 0
+turns the cap off. A summoned monster pays nothing. NPCs who fought count towards `N`, and never level.
 
-Both are GM-tunable via the "Level System" `.settings` category
-(`scripts/Basic/Leveling/LevelingSettings.cs` - see
-[The .settings dialog framework](../03-admin-tooling/settings-dialog.md)). At the
-defaults, this nets out to: the dying player loses everything, the killer gets 10% of
-what was lost.
+**Parties** go beyond Erebor, which didn't use them here: everyone alive in a fighter's party, in range,
+counts as a fighter of the monster. That's how a healer in a group gets experience. It doesn't apply to kills
+of players.
 
-**Exemptions** (lose nothing, pay nothing):
-- Standing in a safe zone or arena (`Notoriety.IsExemptFromExperienceLoss` - narrower than
-  the general region-based attack-blocking check, only `Flag_Safe`/`Flag_Arena`, not
-  `Flag_Guarded`/`Flag_NoPvp`).
-- Within 5 minutes of a previous death (`PostDeathExperienceLossImmunity`, mirrors
-  Erebor's `i_checkstats_timer`) - stops death-chaining (e.g. corpse-camping) from
-  draining a player repeatedly.
+## Death
 
-**Multi-killer credit splitting is explicitly out of scope** - `CauseDeath` only ever
-identifies one `killedBy` Character; there's no damage-contribution-list mechanism
-anywhere in this engine to split credit from. The "default even split" idea in the
-original design only applies if such a mechanism is ever built - not invented
-speculatively here.
+`ApplyDeathExperienceLoss` follows Erebor's `f_ztratitfame`, replacing the design of #128. Dying costs
+`deathExpLossPercent` (5) of what the next level takes, at most what the player has. Nothing is lost if nobody
+fought them, within 5 minutes of a previous death, or in a safe zone or arena.
+
+`deathExpPaidPercent` (100) of it goes to those who fought, shared evenly: nothing for one of the victim's own
+realm, or for killing a craftsman. The level never goes down.
 
 ## Gates and quests - explicitly out of scope
 
