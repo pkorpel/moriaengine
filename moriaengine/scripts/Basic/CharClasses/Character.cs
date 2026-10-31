@@ -2902,7 +2902,7 @@ namespace SteamEngine.CompiledScripts {
 			get {
 				Party p = Party.GetParty(this);
 				if (p != null) {
-					return (ICollection<AbstractCharacter>) p.Members;
+					return new List<AbstractCharacter>(p.OrderedMembers); //#929 - a collection of Character can't be cast to this
 				}
 				return EmptyReadOnlyGenericCollection<AbstractCharacter>.instance;
 			}

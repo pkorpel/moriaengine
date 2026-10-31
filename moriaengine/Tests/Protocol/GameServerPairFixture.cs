@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -200,6 +201,18 @@ namespace SteamEngine.Tests.Protocol {
 			return (newline < 0) ? text : text.Substring(0, newline);
 		}
 
+		/// <summary>#929 - a CRITICAL in the server fails no test, and one went unseen for as long as a
+		/// party could form. The run says so, once per distinct message.</summary>
+		private void ReportCriticals() {
+			HashSet<string> seen = new HashSet<string>();
+			foreach (string line in this.GameOutputSnapshot().Split('\n')) {
+				int at = line.IndexOf("CRITICAL:", StringComparison.Ordinal);
+				if ((at >= 0) && seen.Add(line.Substring(at))) {
+					ProgressLog.Write(line.Substring(at, Math.Min(line.Length - at, 180)).TrimEnd());
+				}
+			}
+		}
+
 		public string GameOutputSnapshot() {
 			lock (this.gameOutputLock) {
 				return this.gameOutput.ToString();
@@ -277,6 +290,7 @@ namespace SteamEngine.Tests.Protocol {
 			TryKill(this.gameProcess);
 			TryKill(this.auxProcess);
 			this.ReleasePortLock();
+			ReportCriticals();
 			ProgressLog.Write("STOPPED: servers shut down");
 		}
 
