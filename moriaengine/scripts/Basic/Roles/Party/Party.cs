@@ -32,6 +32,8 @@ namespace SteamEngine.CompiledScripts {
 		//who joined when, the longest-standing first, except that the leader is always at the head
 		private readonly List<Character> order = new List<Character>();
 
+		private static readonly TagKey canLootMeTK = TagKey.Acquire("_party_can_loot_me_");
+
 		public const int Capacity = 10;
 
 		public static Party GetParty(Character ch) {
@@ -72,15 +74,26 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		//TODO? loot setting
-		//protected class PartyMembership : RoleMembership {
-		//    public bool canBeLooted;
-		//    internal PartyMembership(Character member) : base(member) {
-		//    }
-		//}
-		//protected override Role.IRoleMembership CreateMembershipObject(Character member) {
-		//    return new PartyMembership(member);
-		//}
+		/// <summary>#918 - whether one's party may take from one's corpse. On the character and not the
+		/// party, as a client keeps its switch from party to party until it reconnects.</summary>
+		public static bool CanLootMe(Character ch) {
+			return ch.HasTag(canLootMeTK);
+		}
+
+		public static void SetCanLootMe(Character ch, bool canLoot) {
+			if (canLoot) {
+				ch.SetTag(canLootMeTK, true);
+				ch.ClilocSysMessage(1005447); // You have chosen to allow your party to loot your corpse.
+			} else {
+				ch.RemoveTag(canLootMeTK);
+				ch.ClilocSysMessage(1005448); // You have chosen to prevent your party from looting your corpse.
+			}
+		}
+
+		/// <summary>A client logs in with its switch off.</summary>
+		public static void ForgetCanLootMe(Character ch) {
+			ch.RemoveTag(canLootMeTK);
+		}
 
 		public void Disband() {
 			this.Dispose();

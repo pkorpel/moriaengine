@@ -37,6 +37,21 @@ increments `killedBy`'s murder count tag unless the victim was already
 criminal/murderer (killing a criminal isn't a murder). Same player-only scope restriction as
 `OnHostileAction`.
 
+## Looting
+
+Anyone can take from any corpse, nothing refuses it. Taking from a player's corpse (#918) also flags the looter
+criminal when all of this holds:
+
+- the owner and the looter are of the same realm, and that realm's `.settings` switch is on:
+  `gondorLootingIsACrime` (on) or `mordorLootingIsACrime` (off);
+- the owner isn't criminal or a murderer;
+- the owner isn't in the looter's party with "can loot me" on, see [Parties](parties.md#looting).
+
+This goes beyond Erebor, which ran `LOOTINGISACRIME=0`. Unlike attacking, looting a guildmate or a party member who
+hasn't allowed it is a crime. Enemy corpses, your own, monsters' and a GM's taking are never one. It happens on
+the real pickup (`AbstractCharacter.On_PickingUp`), so a denied one isn't a crime, and putting the item back
+doesn't undo it.
+
 ## Realm-based coloring (#163, redesigned 2026-10-16)
 
 `GetHighlightColor(viewer, self)` is what actually drives the in-client nameplate color.

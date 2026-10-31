@@ -18,6 +18,12 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #918 looting is a crime in Gondor (branch looting-crime)
+
+User: looting is free, nothing is ever blocked; it only makes you criminal if owner and looter are of the same realm and that realm's switch is on. Exception: the owner in your party with can-loot on. Beyond Erebor on purpose.
+NotorietySettings.gondorLootingIsACrime (on), mordorLootingIsACrime (off). Notoriety.OnLooting runs from the new AbstractCharacter.On_PickingUp, so only a real pickup counts. Decisions: owner criminal/murderer = fair game, guildmates are NOT exempt (user named one exception only), GMs never flagged. Can-loot sits on the character, not the party: TazUO keeps its switch across parties (default off, only sent while in a party); reset at login.
+Gotchas: in a test, a word arg of an account with MaxPlevel GM must be quoted: bare GM resolved to nothing and "00" would be a number. After .party changes the setting a client's own switch can show the opposite, it can't be told.
+
 ## DONE (2026-10-31): #916 .party dialog, short-term parties (branch party-dialog)
 
 User: party = short-term, guild = long-term; quick to create, leave, join. Option B: roster + nearby invites, own realm and visible only, no open group list (PvP: mustn't help hunt enemies). Any member invites, leader kicks, leader leaving promotes, accepting leaves the old party, no mixed realms.

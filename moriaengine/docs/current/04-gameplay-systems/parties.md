@@ -27,5 +27,9 @@ Having no party, "Zalozit druzinu" makes one, and so does a first invite.
 
 ## Looting
 
-The client's "can loot me" switch does nothing. On Erebor looting wasn't a crime (`LOOTINGISACRIME=0`), so
-the switch had nothing to allow, and our corpses are the same: anyone can loot one.
+Taking from the corpse of a fellow Gondorian is a crime, see [Notoriety](notoriety.md#looting). The exception is
+a party member who has "can loot me" on, set by the client's party switch or on `.party`.
+
+The setting stays with the character from party to party, because a client keeps its switch that way, and goes
+back to off at login, when a client's does. A client can't be told of a change, so after using `.party` its own
+switch can show the opposite. `.party` shows what counts.

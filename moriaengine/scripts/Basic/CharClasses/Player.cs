@@ -423,6 +423,7 @@ namespace SteamEngine.CompiledScripts {
 			this.DeleteTimer(charLingeringTimerTK); //cancel any pending logout-delay removal - reconnecting resumes this body in place
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {
+				Party.ForgetCanLootMe(this); //#918
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);

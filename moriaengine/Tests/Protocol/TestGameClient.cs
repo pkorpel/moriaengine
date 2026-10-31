@@ -614,6 +614,18 @@ namespace SteamEngine.Tests.Protocol {
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
+		/// <summary>Sends GeneralInformationInPacket (0xBF) subCmd 0x0006 (Party) sub-sub-command 0x06:
+		/// the party window's "can loot me" switch (#918).</summary>
+		public void SendPartyCanLoot(bool canLoot) {
+			byte[] packet = new byte[7];
+			packet[0] = 0xBF;
+			EncodeUShortBigEndian(7, packet, 1);
+			EncodeUShortBigEndian(0x0006, packet, 3);
+			packet[5] = 0x06;
+			packet[6] = (byte) (canLoot ? 1 : 0);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
 		/// <summary>
 		/// Sends GeneralInformationInPacket (0xBF) subCmd 0x0006 (Party) sub-sub-command 0x08
 		/// (AcceptJoinPartyInvitation) - leaderUid names who invited this character (the client

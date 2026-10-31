@@ -1011,6 +1011,10 @@ namespace SteamEngine {
 		}
 
 		private void PickupImpl(AbstractItem item, int amountToPick) {
+			try {
+				this.On_PickingUp(item);
+			} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+
 			IPoint4D oldPoint = item.TopObj();
 			if (oldPoint != this) {
 				if (oldPoint == item) {
@@ -1033,6 +1037,11 @@ namespace SteamEngine {
 			if (oldPoint != null) {
 				this.SendMovingItemAnimation(oldPoint, this, item);
 			}
+		}
+
+		/// <summary>#918 - the pickup is certain and the item is still where it lay, the last moment
+		/// to see where it comes from.</summary>
+		public virtual void On_PickingUp(AbstractItem item) {
 		}
 
 		public DenyResult CanPickup(AbstractItem item) {

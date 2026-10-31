@@ -82,7 +82,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 		}
 
 		public override void SetCanLoot(AbstractCharacter self, bool canLoot) {
-			//TODO?
+			Party.SetCanLootMe((Character) self, canLoot);
 		}
 
 		public override void AcceptJoinRequest(AbstractCharacter self, AbstractCharacter leader) {
