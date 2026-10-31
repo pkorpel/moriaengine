@@ -29,6 +29,9 @@ namespace SteamEngine.CompiledScripts {
 		private readonly ReadOnlyCollection<Character> candidatesReadonly;
 		private Character leader;
 
+		//who joined when, the longest-standing first, except that the leader is always at the head
+		private readonly List<Character> order = new List<Character>();
+
 		public const int Capacity = 10;
 
 		public static Party GetParty(Character ch) {
@@ -83,13 +86,46 @@ namespace SteamEngine.CompiledScripts {
 			this.Dispose();
 		}
 
-		public bool TryInvite(Character newCandidate) {
-			//todo realms
-			//1008088); // You cannot have players from opposing factions in the same party!
-			//1008093); // The party cannot have members from opposing factions.
+		/// <summary>The members in order, the leader first, which is how a client tells who leads.</summary>
+		public IList<Character> OrderedMembers {
+			get {
+				return this.order;
+			}
+		}
 
-			Character leader = (Character) this.Leader;
+		/// <summary>#916 - hands the party over. Everyone's client hears of the new order.</summary>
+		public void SetLeader(Character newLeader) {
+			if (this.order.Remove(newLeader)) {
+				this.order.Insert(0, newLeader);
+				this.leader = newLeader;
+				this.SendMemberList();
+				foreach (Character member in this.order) {
+					member.SysMessage(newLeader.Name + " je novym vudcem druziny.");
+				}
+			}
+		}
+
+		private void SendMemberList() {
+			using (PacketGroup pg = PacketGroup.AcquireMultiUsePG()) {
+				pg.AcquirePacket<AddPartyMembersOutPacket>().Prepare(this.order);
+				foreach (Character ch in this.order) {
+					GameState state = ch.GameState;
+					if (state != null) {
+						state.Conn.SendPacketGroup(pg);
+					}
+				}
+			}
+		}
+
+		/// <summary>#916 - any member can invite, and not across the realms' war.</summary>
+		public bool TryInvite(Character inviter, Character newCandidate) {
+			Character leader = inviter;
 			if (leader == null) {
+				return false;
+			}
+
+			if (NPCAiTimer.IsOppositeRealm(inviter.Realm, newCandidate.Realm)) {
+				inviter.ClilocSysMessage(1008088); // You cannot have players from opposing factions in the same party!
 				return false;
 			}
 
@@ -115,13 +151,8 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 
-			Party hisParty = GetParty(newCandidate);
-			if (hisParty != null) {
-				if (hisParty == this) {
-					leader.ClilocSysMessage(1005440); // This person is already in your party!
-				} else {
-					leader.ClilocSysMessage(1005441); // This person is already in a party!
-				}
+			if (GetParty(newCandidate) == this) { //#916 - someone in another party can accept, and leaves it
+				leader.ClilocSysMessage(1005440); // This person is already in your party!
 				return false;
 			}
 
@@ -178,26 +209,14 @@ namespace SteamEngine.CompiledScripts {
 		//}
 
 		protected override void On_MemberAdded(Character newMember, IRoleMembership membership) {
-			////  : joined the party.
-			//SendToAll(new MessageLocalizedAffix(Serial.MinusOne, -1, MessageType.Label, 0x3B2, 3, 1008094, "", AffixType.Prepend | AffixType.System, from.Name, ""));
-
-			ICollection<Character> members = this.Members;
-			if (members.Count > 1) {
+			this.order.Add(newMember);
+			if (this.order.Count > 1) {
 				newMember.ClilocSysMessage(1005445); // You have been added to the party.
 			} else {
 				this.leader = newMember;
 			}
 			this.candidates.Remove(newMember);
-
-			using (PacketGroup pg = PacketGroup.AcquireMultiUsePG()) {
-				pg.AcquirePacket<AddPartyMembersOutPacket>().Prepare(members);
-				foreach (Character ch in members) {
-					GameState state = ch.GameState;
-					if (state != null) {
-						state.Conn.SendPacketGroup(pg);
-					}
-				}
-			}
+			this.SendMemberList();
 		}
 
 		//internal override bool On_DenyRemoveMember(DenyRoleTriggerArgs args) {
@@ -205,9 +224,13 @@ namespace SteamEngine.CompiledScripts {
 		//}
 
 		protected override void On_MemberRemoved(Character exMember, IRoleMembership membership, bool beingDestroyed) {
-			if (!beingDestroyed && this.IsLeader(exMember)) {
+			this.order.Remove(exMember);
+			if (!beingDestroyed && (this.order.Count < 2)) { //#916 - a party is at least two
 				this.Disband();
 				beingDestroyed = true;
+			}
+			if (!beingDestroyed && this.IsLeader(exMember)) { //#916 - the group goes on, with the longest-standing
+				this.SetLeader(this.order[0]);
 			}
 
 			GameState exState = exMember.GameState;

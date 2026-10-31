@@ -28,10 +28,6 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				Party p = Party.GetParty(self);
 				if (p != null)
 				{
-					if (!p.IsLeader(self)) {
-						self.ClilocSysMessage(1005453); // You may only add members to the party if you are the leader.
-						return;
-					}
 					if ((p.Members.Count + p.Candidates.Count) >= Party.Capacity) {
 						self.ClilocSysMessage(1008095); // You may only have 10 in your party (this includes candidates).
 						return;
@@ -95,6 +91,10 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			if (leader == null || party == null || !party.Candidates.Contains(candidate)) {
 				self.ClilocSysMessage(3000222); // No one has invited you to be in a party.
 			} else {
+				Party oldParty = Party.GetParty(candidate);
+				if (oldParty != null) { //#916 - joining one leaves the other
+					RolesManagement.TryUnAssign(candidate, oldParty);
+				}
 				RolesManagement.TryAssign(candidate, party);
 			}
 		}
@@ -119,17 +119,12 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			Party myParty = Party.GetParty(self);
 			bool isNew = false;
-			if (myParty != null) {
-				if (!myParty.IsLeader(self)) {
-					self.ClilocSysMessage(1005453); // You may only add members to the party if you are the leader.
-					return TargetResult.Done;
-				}
-			} else {
+			if (myParty == null) {
 				myParty = PartyDef.NewParty(self);
 				isNew = true;
 			}
 
-			bool inviteLegal = myParty.TryInvite(targetted);
+			bool inviteLegal = myParty.TryInvite(self, targetted);
 			if (!inviteLegal && isNew) {
 				myParty.Dispose();
 			}

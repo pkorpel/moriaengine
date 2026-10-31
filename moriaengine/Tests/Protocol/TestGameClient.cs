@@ -103,6 +103,7 @@ namespace SteamEngine.Tests.Protocol {
 			0x78, // DrawObjectOutPacket
 			0xb0, // SendGumpMenuDialogPacket
 			0x11, // StatusBarInfoOutPacket
+			0xCC, // ClilocMessageAffixOutPacket
 			0x6F, // SecureTradeOutPacket
 			0x3c, // ItemsInContainerOutPacket
 			0x1A, // ObjectInfoOutPacket

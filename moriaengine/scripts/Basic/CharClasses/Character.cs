@@ -2881,7 +2881,8 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
-		public Party Party {
+		/// <summary>Not called Party: a property of that name would swallow the .party command.</summary>
+		public Party CurrentParty {
 			get {
 				return Party.GetParty(this);
 			}
