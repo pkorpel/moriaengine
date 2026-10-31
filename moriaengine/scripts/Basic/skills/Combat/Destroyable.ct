@@ -16,6 +16,7 @@
 [ThingTemplate Destroyable : Equippable]
 Def:	//vars on the def
 	ushort maxDurability = 100
+	bool canRepair = false
 Vars:	//vars defined in the class, so they basically do what tags do, but better
 	private ushort durability = 100
 	private ushort maxDurability = 100

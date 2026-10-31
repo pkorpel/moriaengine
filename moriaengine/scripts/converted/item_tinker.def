@@ -1484,6 +1484,7 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+canRepair = true //nastaveni_cm_can_repair 
 
 [ItemDef 0xe86]
 DUPEITEM = i_pickaxe
