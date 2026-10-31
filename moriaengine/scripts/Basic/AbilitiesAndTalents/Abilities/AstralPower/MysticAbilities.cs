@@ -12,12 +12,6 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly PluginKey frozenKey = PluginKey.Acquire("mysticStrikeFreeze");
 		private static PassiveAbilityDef crushingBlowDef;
 
-		/// <summary>f_setmainability: the chance out of 100000 of a class ability, by statslevel.</summary>
-		public static int CalculateAbility(int statsLevel) {
-			int missing = 60 - statsLevel;
-			return ((3600 - (missing * missing)) * 264) / 10;
-		}
-
 		private static bool IsMystic(Character self) {
 			return Professions.HasProfession(self, Professions.Mystic);
 		}
@@ -81,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>specability: Astral Power has to be on, then it's a roll against the level.</summary>
 		internal static bool RollSpecial(Character self) {
 			Player player = self as Player;
-			return (player != null) && IsAstralPowerActive(self) && (Globals.dice.Next(100001) < CalculateAbility(player.EffectiveLevel));
+			return (player != null) && IsAstralPowerActive(self) && (Globals.dice.Next(100001) < CombatCalculator.CalculateClassAbility(player.EffectiveLevel));
 		}
 
 		/// <summary>mystikDoubleswingSuccess, vs monsters: a strong strike for some stamina.</summary>
@@ -105,7 +99,7 @@ namespace SteamEngine.CompiledScripts {
 			MysticAbilitiesLoc loc = Loc<MysticAbilitiesLoc>.Get(attacker.Language);
 			if (lightning) {
 				Player player = attacker as Player;
-				if ((player == null) || (Globals.dice.Next(10001) > (CalculateAbility(player.EffectiveLevel) / 23))) {
+				if ((player == null) || (Globals.dice.Next(10001) > (CombatCalculator.CalculateClassAbility(player.EffectiveLevel) / 23))) {
 					return;
 				}
 				int power = (int) settings.mysticLightningPower + (attacker.MindPowerVsM * Globals.dice.Next(8, 17));

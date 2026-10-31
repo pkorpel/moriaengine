@@ -37,6 +37,7 @@ speed = 130 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.1 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_club_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -61,6 +62,7 @@ speed = 100 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 3.0/3.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -87,6 +89,7 @@ speed = 85 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.45 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_cutlass_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -111,6 +114,7 @@ speed = 75 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.25 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_mace_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -135,6 +139,7 @@ speed = 90 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 52.0/52.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -161,6 +166,7 @@ speed = 63 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0.05 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -186,6 +192,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_shepherds_crook_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -211,6 +218,7 @@ speed = 60 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 5.0/5.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -238,6 +246,7 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 750 //nastaveni_staffSMbonus 
 MindPowerVsM = 750
 
@@ -264,6 +273,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_spear_short_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -288,6 +298,7 @@ speed = 90 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_war_fork_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -312,6 +323,7 @@ speed = 65 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_sword_broad_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -336,6 +348,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_mace_war_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -360,6 +373,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 32.0/32.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -386,6 +400,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_sword_viking_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -410,6 +425,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredStaffDef i_staff_quarter_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -435,6 +451,7 @@ speed = 45 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 776 //nastaveni_staffSMbonus 
 MindPowerVsM = 776
 
@@ -461,6 +478,7 @@ speed = 100 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_hammer_pick_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -485,6 +503,7 @@ speed = 63 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 62.0/62.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -512,6 +531,7 @@ speed = 80 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_exec_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -536,6 +556,7 @@ speed = 74 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_double_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -561,6 +582,7 @@ speed = 65 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_hammer_war_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -586,6 +608,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 39.0/39.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -613,6 +636,7 @@ speed = 55 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_spear_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -637,6 +661,7 @@ speed = 76 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredStaffDef i_staff_gnarled_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -662,6 +687,7 @@ speed = 40 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 802 //nastaveni_staffSMbonus 
 MindPowerVsM = 802
 
@@ -689,6 +715,7 @@ speed = 62 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_axe_battle_large_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -714,6 +741,7 @@ speed = 55 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bardiche_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -739,6 +767,7 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_maul_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -763,6 +792,7 @@ speed = 70 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 57.0/57.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -790,6 +820,7 @@ speed = 50 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bow_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -817,6 +848,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_crossbow_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -844,6 +876,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_crossbow_heavy_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -871,6 +904,7 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_bow_copper_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -898,6 +932,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [ColoredWeaponDef i_crossbow_copper_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -925,3 +960,4 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 

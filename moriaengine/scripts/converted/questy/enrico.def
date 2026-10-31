@@ -153,6 +153,7 @@ WeaponType = WeaponType.OneHandBlunt //guessed by Converter
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 Color = 0480
 speed = 100 //nastaveni_weapspeed 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 piercing = 50 //nastaveni_weappiercing 
 
 [ItemDef i_srdiczko]

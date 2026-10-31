@@ -152,6 +152,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [WeaponDef I_XBOW_SUP]
 CATEGORY = Provisions - Weapons
@@ -179,6 +180,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [WeaponDef I_HXBOW_SUP]
 CATEGORY = Provisions - Weapons
@@ -206,6 +208,7 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [WeaponDef I_BOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -233,6 +236,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [WeaponDef I_XBOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -260,6 +264,7 @@ speed = 58 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [WeaponDef I_HXBOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -287,6 +292,7 @@ speed = 52 //nastaveni_weapspeed
 range = 1 //default value set by Converter 
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [WeaponDef i_Bow_Elven]
 CATEGORY = Provisions - Weapons
@@ -315,3 +321,4 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 Color = 237
+BleedingEfficiency = 0 //nastaveni_weapbleed 

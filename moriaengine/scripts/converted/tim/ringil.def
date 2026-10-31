@@ -19,6 +19,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 Color = 0480
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [NPCDef c_balrog_guardian]
 CATEGORY = Moria Questy

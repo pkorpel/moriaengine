@@ -15,6 +15,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 Color = 0997
+BleedingEfficiency = 0.25 //nastaveni_weapbleed 
 
 [EquippableDef i_dancing_sword_memory]
 name = "dancing sword timer"
@@ -78,6 +79,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 Color = colors_blood
+BleedingEfficiency = 0 //nastaveni_weapbleed 
 
 [WeaponDef i_krvavy_mec] // tento mec je mrtvej klidne ho smazat jak se da do hry druhy ragnarog nahrazuje ho Ragnarog nad nim zatim je toto jen pro prvnicast questu
 CATEGORY = Noe
@@ -98,3 +100,4 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 Color = colors_blood
+BleedingEfficiency = 0 //nastaveni_weapbleed 
