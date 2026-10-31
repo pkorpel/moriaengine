@@ -61,6 +61,8 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void FullRaceSelectionFlowForHuman() {
 			using (var client = this.ConnectLoginAndCreateCharacter(Account, "HumanFlowTester")) {
+				client.SendSpeech(".TestGiveTutorialJunk");
+				Assert.True(this.fixture.WaitForGameOutput("TUTORIAL_JUNK:", TimeSpan.FromSeconds(10)));
 				int mark0 = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestSpawnRaceStone");
 				Assert.True(this.fixture.WaitForGameOutputSince("RACE_STONE_SPAWNED:", mark0, TimeSpan.FromSeconds(10)));
@@ -103,7 +105,9 @@ namespace SteamEngine.Tests.Protocol {
 				string equipLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "STARTING_EQUIPMENT:");
 				Assert.Contains("gold=2000", equipLine);
 				Assert.Contains("i_spellbook_3", equipLine);
-				Assert.Contains("i_robe", equipLine);
+				Assert.DoesNotContain("i_gem_amethyst", equipLine); //#881 - nothing of the tutorial comes along
+				Assert.Contains("worn=", equipLine);
+				Assert.Contains("i_robe:87", equipLine); //#881 - worn, in color_mag
 				Assert.Contains("i_staff_gnarled_copper", equipLine);
 				Assert.Contains("i_dagger_copper", equipLine);
 				Assert.Contains("i_potion_nightsight", equipLine);

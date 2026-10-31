@@ -63,7 +63,7 @@ namespace SteamEngine.CompiledScripts {
 				//here directly, same convention as every other On_*Click override in this
 				//codebase.
 				try {
-					dclicker.Bank.OpenTo(dclicker);
+					dclicker.Bank.OpenBankTo(dclicker);
 				} catch (FatalException) {
 					throw;
 				} catch (Exception e) {

@@ -56,6 +56,14 @@ namespace SteamEngine.CompiledScripts {
 				" str=" + player.Str + " dex=" + player.Dex + " int=" + player.Int + " vit=" + player.Vit);
 		}
 
+		/// <summary>#881 - things that mustn't survive into the real world.</summary>
+		[SteamFunction]
+		public static void TestGiveTutorialJunk(Character self) {
+			((Item) ThingDef.GetByDefname("i_gem_amethyst").Create(self.Backpack)).Amount = 3;
+			((Item) ThingDef.GetByDefname("i_gem_amethyst").Create(self.Bank)).Amount = 3;
+			Console.WriteLine("TUTORIAL_JUNK: done");
+		}
+
 		/// <summary>Reports the player's gold (backpack + bank) and a comma-separated list of
 		/// distinct backpack item defnames, so a protocol test can confirm RaceSelection.
 		/// GiveStartingEquipment (newbie_portals.scp's own `startclass`/`tm_&lt;class&gt;newbie`
@@ -68,7 +76,13 @@ namespace SteamEngine.CompiledScripts {
 			foreach (AbstractItem item in player.Backpack) {
 				defnames.Add(item.Def.PrettyDefname);
 			}
-			Console.WriteLine("STARTING_EQUIPMENT: gold=" + gold + " items=" + string.Join(",", defnames));
+			List<string> worn = new List<string>();
+			foreach (AbstractItem item in player.VisibleEquip) {
+				if ((item != player.Backpack) && (item.Z != (int) LayerNames.Hair) && (item.Z != (int) LayerNames.Beard)) {
+					worn.Add(item.Def.PrettyDefname + ":" + item.Color);
+				}
+			}
+			Console.WriteLine("STARTING_EQUIPMENT: gold=" + gold + " items=" + string.Join(",", defnames) + " worn=" + string.Join(",", worn));
 		}
 
 		/// <summary>Exercises ALL 9 profession newbie-equipment templates directly (not just

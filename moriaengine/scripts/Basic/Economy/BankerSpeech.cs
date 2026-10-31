@@ -72,7 +72,7 @@ namespace SteamEngine.CompiledScripts {
 			if (msg.IndexOf("bank", StringComparison.OrdinalIgnoreCase) >= 0) {
 				Character banker = listener as Character;
 				if ((banker != null) && BankerRange.IsWithinRange(speaker, banker)) {
-					speaker.Bank.OpenTo(speaker);
+					speaker.Bank.OpenBankTo(speaker);
 				} else {
 					speaker.SysMessage("Thou must stand closer to the banker to do that.");
 				}
