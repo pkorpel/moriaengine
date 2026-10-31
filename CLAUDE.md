@@ -1,11 +1,10 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-30): mirror Erebor's combat numbers (audit first, no code changes until the user sees it)
+## DONE (2026-10-31): #860 mirror Erebor's combat numbers (PRs #862, #864, #867, #869, #870, #871)
 
-User: "completely mirror all the combat settings from erebor"; some monsters take no damage, some hit crazy high, players sometimes deal none. Sources:
-erebor-sphere-archive scripts, save/sphereworld.scp variables, definition files, EreborNext for native Sphere. Deliberate changes like #711
-(NPCs use the player's stat scaling) get replaced if Erebor differs. Plan: audit -> compare -> hand-worked matchups -> staged fixes with tests.
-Audit done, results on #860 (incl. the hit roll, EreborNext Calc_CombatChanceToHit, fix with stage 4). Stages: 1 values, 2 formulas (MvP, level bonus, armor roll, vMweapdam, #711 out, speed), 3 secondary rules, 4 spells/rangers/hit.
+User: "completely mirror all the combat settings from erebor"; some monsters took no damage, some hit crazy high, players sometimes dealt none. Audit, hit roll and corrections are on #860; docs/current/04-gameplay-systems/combat.md has the formulas.
+Split out, still open: #865 item wear (needs a repair skill), #866 thief rebound + magic-item reflex/block, #868 reactive armor, energy/voodoo shield, Mystic spec ability, #872 bleed caps. Unrelated red tests found on main: #861, #863.
+Decision to revisit with the user: Erebor's bare hands rule also runs on spells, kept to swings here.
 **Level bonuses done (branch 860-level-bonus)**: user: mirror the bonus up to level 200. Swing bonus had no direct test, now does. Standcast ported to Erebor: vMSM + 0.02 * level vs monsters, half for 43/49/55, no ability points (StandcastHelper.CalculateLevelBonus); a_standcast's EffectPower dropped.
 **Workbook (branch 860-balance-workbook)**: generator reads weapons, armor, ammo, monsters and professions from the defs, all tabs on the new rules. Checked against a Python port of the C#, never opened in real Excel. Its integer path gives iron longsword vs armor 40 = 27; the audit's 26 skipped rounding.
 **Stage 4 shipped PR #869**: spell power (mind power * 10 * vMsm/pvpSM, then defense), damage through armor for ArmorPiercing spells (18, 42, 43, 55), monsters' mind power = EvalInt (converter dropped EI=, 296 lines), defense = Resist/10, player defense with armorOM/om, PvP mind change, Mystic strike cold magic, run bows .82 + PvP range 7, hit roll (Calc_CombatChanceToHit), guards always hit.
