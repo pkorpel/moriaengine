@@ -631,6 +631,27 @@
   <data name="MysticAbilitiesLoc_TargetStruck" xml:space="preserve">
     <value>The target is stunned!</value>
   </data>
+  <data name="ThiefDefenceLoc_NotForYou" xml:space="preserve">
+    <value>This isn't for you.</value>
+  </data>
+  <data name="ThiefDefenceLoc_CantNow" xml:space="preserve">
+    <value>You can't do that now...</value>
+  </data>
+  <data name="ThiefDefenceLoc_StanceOn" xml:space="preserve">
+    <value>You take a defensive stance.</value>
+  </data>
+  <data name="ThiefDefenceLoc_StanceOff" xml:space="preserve">
+    <value>You leave your defensive stance.</value>
+  </data>
+  <data name="ThiefDefenceLoc_Rebounded" xml:space="preserve">
+    <value>You sent the blow back!</value>
+  </data>
+  <data name="ThiefDefenceLoc_MagicallyReflected" xml:space="preserve">
+    <value>The blow was magically reflected</value>
+  </data>
+  <data name="ThiefDefenceLoc_MagicallyBlocked" xml:space="preserve">
+    <value>The blow was magically stopped</value>
+  </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
     <value>Nem� st�elivo.</value>
   </data>

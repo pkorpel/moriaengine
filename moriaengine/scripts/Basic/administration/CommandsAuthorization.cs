@@ -55,6 +55,8 @@ namespace SteamEngine.CompiledScripts {
 			//#839: Erebor's quest journal, for everybody
 			this.commands["Questy"] = PLEVEL_PLAYER;
 			this.commands["AstralPower"] = PLEVEL_PLAYER;
+			this.commands["Vigilance"] = PLEVEL_PLAYER;
+			this.commands["Stance"] = PLEVEL_PLAYER;
 			this.commands["SwitchMagic"] = PLEVEL_PLAYER;
 
 			//New command (#593): feed a tamed pet/mount from the player's own backpack.

@@ -86,6 +86,8 @@ a_throwing = 9, 10
 a_kick = 10, 10
 //pretnuti slach
 a_bleeding_strike = 11, 10
+a_thief_rebound = 12, 30
+a_thief_defstance = 13, 10
 //Probodnuti
 //Dmg za lvl
 
