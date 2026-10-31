@@ -28,6 +28,7 @@ professionPluginDef = p_profession_default
 
 //SkillNameOrDefname = starting value, cap value
 //not listed skills are considered 0, 0
+Discordance=0, 750
 AnimalLore=0, 750
 Anatomy=300, 1000
 ArmsLore=0, 500

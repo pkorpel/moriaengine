@@ -66,26 +66,44 @@ ported from and verified against Erebor's own `f_levelstatbonus`:
 
 ### Spending
 
-`TrySpendSkillPoints` (`LevelingSystem.cs:155-170`) validates against
-`player.Profession.GetSkillCap(skill)` (0 if no profession is assigned - the same
-"no profession = cap 0" precedent `Skill.Cap` already established) **and** against a
-fixed allowlist of spendable skills (`SpendableSkills`, `LevelingSystem.cs:128-138`) -
-only combat/magic/social skills can be raised this way. Crafting (Blacksmith, Fletching,
-Carpentry, Cooking, Tailoring, Tinkering, Inscribe, Alchemy) and gathering
-(Lumberjacking, Mining, Fishing), plus Cartography/Discordance/Lockpicking/AnimalTaming,
-must be trained through actual use instead - deferred as #140 until that content area is
-the focus. Each point raises the skill by a flat `SkillPointGain = 50` raw units (5.0%) -
-verified against Erebor's own `f_skillbutton` handler, not the `1` raw unit (0.1%) an
-earlier pass had before real-world testing caught it (#199). Erebor additionally gates
-training behind escalating point cost and "needs a master trainer" milestones at
-25/50/75% - deliberately not ported, since only the flat rate itself was flagged as wrong.
+Spending follows Erebor's `d_levelbonus` (#882). `LevelingSystem.RaiseSkill` is one click on a
+skill: it rounds the skill to the nearest 5.0 (never under the profession's start value), then
+raises it by 5.0 (`SkillPointGain`), which costs:
 
-`TrySpendAttributePoints` (`LevelingSystem.cs:196-234`) requires a profession to be
-assigned at all (mirrors the skill-cap precedent, the user's own explicit design: "no
-profession assigned = can't spend attribute points"), and validates against **both** the
-overall `AttributePointBudget` and the profession's own per-stat hard cap
-(`ProfessionDef.GetStatRange(stat)`'s third element) - a player can have budget left but
-still be unable to push one specific stat any higher.
+| Skill value | Cost |
+|---|---|
+| under 50.0 | 1 point |
+| 50.0 to 74.9 | 2 points |
+| 75.0 and up | 3 points |
+
+It refuses, with Erebor's message, past the profession's cap, at exactly 25.0, 50.0 and 75.0
+(those steps come from a [skill teacher](npc-speech.md) for gold, which needs the rank from
+the [rank quests](rank-quests.md)), without enough points, and under a stat spell. Only
+`SpendableSkills`, Erebor's `combat_skills`, can be raised this way. Crafting and gathering are
+trained by use.
+
+Death runs `TrimSkillsAtDeath` (`f_srazitskilly` + `roundcombatskills`): every skill is put back
+inside the profession's limits, and the spendable ones are rounded to 5.0.
+
+`TrySpendAttributePoints` needs a profession and raises a stat within both
+`AttributePointBudget` and the profession's per-stat hard cap (`GetStatRange`'s third element,
+Erebor's `nastaveni_povolani_maxstats`). A stat spell refuses it too.
+
+## Starting a character
+
+Erebor's `startclass`, in `RaceSelection.Finish` -> `LevelingSystem.StartNewLife`: level 0, 0
+experience, 0 skill points, 0 ability points, all skills exactly at the profession's start
+values. The stats dialog takes exactly 300 points within each profession's start range (the
+second element of `GetStatRange`), and those count against the budget, so 0 stat points are
+left. The first points arrive at level 1: 5 skill, 2 ability, 4 stat. Up to level 40, a
+character gets 120 stat points in all.
+
+Characters created before #882 had the 300 uncounted, so 300 free points; `FixUncountedStartingStats`
+counts their current stats at login.
+
+Not ported: Erebor's points are an `i_dovedbod` item in the pack, here a counter. `explevel` also
+puts skill 33 (Stealing) back to its start value on every opening, which would wipe points spent
+on it, so that line is left out.
 
 `TrySpendAbilityPoints` (`LevelingSystem.cs:178-186`) has no profession-based gating at
 all yet - it just spends the existing `Character.ModifyAbilityPoints` mechanism. See

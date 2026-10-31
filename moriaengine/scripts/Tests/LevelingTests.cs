@@ -210,8 +210,11 @@ namespace SteamEngine.CompiledScripts {
 			Player player = (Player) self;
 			string[] parts = SplitArgs(sa);
 			SkillName skill = (SkillName) Enum.Parse(typeof(SkillName), parts[0], true);
-			int points = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
-			bool success = LevelingSystem.TrySpendSkillPoints(player, skill, points);
+			int clicks = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
+			bool success = true;
+			for (int i = 0; success && (i < clicks); i++) {
+				success = LevelingSystem.RaiseSkill(player, skill) == null;
+			}
 			Console.WriteLine("LEVELING_SPEND_SKILL_RESULT: success=" + success +
 				" unspentSkillPoints=" + player.UnspentSkillPoints +
 				" skillValue=" + player.GetRealSkillValue(skill));
@@ -295,7 +298,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
-			bool success = LevelingSystem.TrySpendAttributePoints(this.player, this.stat, this.points);
+			bool success = LevelingSystem.TrySpendAttributePoints(this.player, this.stat, this.points, out _);
 			Console.WriteLine("LEVELING_SPEND_ATTRIBUTE_RESULT: success=" + success +
 				" attributePointBudget=" + this.player.AttributePointBudget +
 				" str=" + this.player.Str + " dex=" + this.player.Dex + " int=" + this.player.Int + " vit=" + this.player.Vit);
