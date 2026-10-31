@@ -85,6 +85,13 @@ namespace SteamEngine.CompiledScripts {
 			guard.Delete();
 		}
 
+		/// <summary>Back to GM: the tests of this class share an account, and TestTownPrepare demotes it.</summary>
+		[SteamFunction]
+		public static void TestTownBecomeGm(Character self) {
+			self.Account.PLevel = self.Account.MaxPLevel;
+			Console.WriteLine("TOWN_GM: done");
+		}
+
 		/// <summary>Go to Gondor's stone, a step off it.</summary>
 		[SteamFunction]
 		public static void TestRealmStone(Character self) {

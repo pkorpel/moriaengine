@@ -244,6 +244,7 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void GeneralIsAppointedWearsTheUniformAndHonors() {
 			using (var gm = this.Connect("Town General Maker")) {
+				this.Ask(gm, ".TestTownBecomeGm", "TOWN_GM:");
 				this.Ask(gm, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
 				using var general = this.Connect("Town General", AccountB);
 				this.Ask(gm, ".SetupTowns", "SETUP_DONE:");
