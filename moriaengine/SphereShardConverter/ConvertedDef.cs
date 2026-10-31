@@ -230,13 +230,13 @@ namespace SteamEngine.Converter {
 			//return line.Value;
 		}
 
-		protected static void MayBeInt_IgnorePoint(ConvertedDef def, PropsLine line) {
+		/// <summary>WEIGHT in stones, as Sphere reads it: "3.0", ".1" and "10" are 3, 0.1 and 10.</summary>
+		protected static void WeightInStones(ConvertedDef def, PropsLine line) {
 			if (line.Value.Trim().Length == 0) {
 				return; //a blank WEIGHT= can't be parsed the first time the def's Weight is read, which breaks even removing the item
 			}
-			string retVal = TryNormalizeNumber(line.Value.Replace(".", ""));
-			def.Set(line.Name, retVal, line.Comment);
-			//return retVal;
+			double stones = double.Parse(line.Value, System.Globalization.CultureInfo.InvariantCulture);
+			def.Set(line.Name, stones.ToString("R", System.Globalization.CultureInfo.InvariantCulture), line.Comment);
 		}
 
 		protected static void MayBeHex_IgnorePoint(ConvertedDef def, PropsLine line) {

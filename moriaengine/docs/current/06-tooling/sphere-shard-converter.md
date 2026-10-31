@@ -127,6 +127,9 @@ Files that used to show "unrelated drift" (DRAGONS/Golems/INSECTS/SPECIAL/UNDEAD
 simply stale vs converter features already merged - swapping them in added their missing
 SelfresDelay/NpcCurse/Summoning/Sniper tuning.
 
+**WEIGHT is written in stones (#889).** Sphere reads `3.0` and `.1` as tenths with the point ignored and an
+undotted `10` as 10 stones; `nastaveni_armorweight` values are tenths.
+
 **Random lists need commas (#763).** Sphere writes weighted random picks as
 `COLOR={ colors_white 9 color_gray_lt 1 }`. LScript can't read that form when an identifier
 comes first, because `name value` is an assignment there. The list collapses into one element,

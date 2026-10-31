@@ -153,12 +153,20 @@ namespace SteamEngine {
 				if (value != this.amount) {
 					this.InvalidateAosToolTips();
 					ItemSyncQueue.AboutToChange(this);
+					float oldWeight = this.Weight;
+					this.amount = value;
 					Thing c = this.Cont;
 					if (c != null) {
-						c.AdjustWeight(this.def.Weight * (value - this.amount));
+						c.AdjustWeight(this.Weight - oldWeight);
 					}
-					this.amount = value;
 				}
+			}
+		}
+
+		/// <summary>On its way somewhere, as in the middle of a dupe. Its contents can't be looked at yet.</summary>
+		public bool IsInLimbo {
+			get {
+				return this.IsLimbo;
 			}
 		}
 

@@ -7,7 +7,7 @@ DESCRIPTION = stribrna dika
 
 NAME = "Druid ucen"
 TYPE = T_WAND
-WEIGHT = 500
+WEIGHT = 50
 RESOURCES = 2 i_ingot_silver, 2 i_ingot_gold, 1 i_gem_diamond
 //REQSTR = 1 // commented out by Converter 
 TwoHanded = false
@@ -31,7 +31,7 @@ DESCRIPTION = menu hulka
 
 NAME = "Druid ucen"
 TYPE = T_WAND
-WEIGHT = 500
+WEIGHT = 50
 RESOURCES = 2 i_ingot_silver, 2 i_ingot_gold, 1 i_gem_diamond
 //REQSTR = 1 // commented out by Converter 
 TwoHanded = false

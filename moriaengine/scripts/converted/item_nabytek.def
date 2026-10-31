@@ -7,7 +7,7 @@ DESCRIPTION = Wooden Crate (Small)
 
 TYPE = t_container
 //DUPELIST = 0e7e // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 8 i_board
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_hinge
 SKILLMAKE = 100 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -23,7 +23,7 @@ DESCRIPTION = Wooden Box (W)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e7d // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 10 i_board
 RESOURCES2 = 9 i_board
 SKILLMAKE = 210 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -38,7 +38,7 @@ SUBSECTION = Chairs
 DESCRIPTION = Barstool (Cross Bars)
 
 TYPE = T_CHAIR
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 9 i_log
 RESOURCES2 = 5 i_board
 SKILLMAKE = 110 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -52,7 +52,7 @@ DESCRIPTION = Barstool
 
 TYPE = T_CHAIR
 //DUPELIST = 0b5e // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 9 i_log
 RESOURCES2 = 4 i_board
 SKILLMAKE = 110 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -66,7 +66,7 @@ DESCRIPTION = Chest of Drawers (Dark Wood) (SW)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0a38 // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 25 i_log
 RESOURCES2 = 5 i_board, 10 i_nails, 3 i_drawer
 SKILLMAKE = 850 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -112,7 +112,7 @@ DESCRIPTION = Armoire (Dark Wood)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0a4d,0a50,0a51 // commented out by Converter 
-WEIGHT = 250
+WEIGHT = 25
 RESOURCES = 35 i_log
 RESOURCES2 = 20 i_board, 6 i_nails, 4 i_hinge
 SKILLMAKE = 842 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -131,7 +131,7 @@ DESCRIPTION = Armoire (Light Wood)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0a4f,0a52,0a53 // commented out by Converter 
-WEIGHT = 90
+WEIGHT = 9
 RESOURCES = 35 i_log
 RESOURCES2 = 20 i_board, 6 i_nails, 4 i_hinge
 SKILLMAKE = 842 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -162,7 +162,7 @@ DESCRIPTION = Chest of Drawers (Light Wood)(SW)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0a34 // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 5 i_board, 10 i_nails, 3 i_drawer
 //FLIP = 1 // commented out by Converter 
 //TDATA2 = 051 // commented out by Converter 
@@ -211,7 +211,7 @@ DESCRIPTION = Dresser (Vanity)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0a3d,0a44,0a45 // commented out by Converter 
-WEIGHT = 300
+WEIGHT = 30
 RESOURCES = 8 i_board, 20 i_nails, 6 i_dresser_drawer, 1 i_ingot_silver, 5 i_sand
 //FLIP = 1 // commented out by Converter 
 //TDATA2 = 051 // commented out by Converter 
@@ -280,7 +280,7 @@ DESCRIPTION = Bed Roll (Unrolled)
 
 TYPE = T_BEDROLL
 //DUPELIST = 0a56 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 5 i_cloth, 1 i_canvas, 50 i_feather, 1 i_hides_cut
 DEFNAME = i_bedroll
 
@@ -294,7 +294,7 @@ DESCRIPTION = Bedroll (Rolled Up)
 
 TYPE = T_BEDROLL
 //DUPELIST = 0a58,0a59 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 1 i_bedroll //some resources were fixed by converter 
 DEFNAME = i_bedroll_2
 //VALUE = {4 8} // commented out by Converter 
@@ -388,7 +388,7 @@ DESCRIPTION = Twin Bed (White)
 
 TYPE = T_BED
 //DUPELIST = 0a67, 0a68, 0a69, 0a6a, 0a6b // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 40 i_board, 100 i_cloth
 RESOURCES2 = 40 i_board, 1 i_bedroll, 10 i_nails, 1 i_pillow
 SKILLMAKE = 940 carpentry, 750 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -606,7 +606,7 @@ DESCRIPTION = Bed 01
 
 TYPE = T_BED
 //DUPELIST = 011cf,011d0,011d1 // commented out by Converter 
-WEIGHT = 400
+WEIGHT = 40
 RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow
 //TDATA1 = 0 // commented out by Converter 
 DEFNAME = i_BED_13
@@ -627,7 +627,7 @@ DESCRIPTION = Bed 02
 
 TYPE = T_BED
 //DUPELIST = 011d3,011d4,011d5 // commented out by Converter 
-WEIGHT = 400
+WEIGHT = 40
 RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow
 //TDATA1 = 0 // commented out by Converter 
 DEFNAME = i_BED_14
@@ -680,7 +680,7 @@ DESCRIPTION = Bookcase (Dark Wood) (Books)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0a98,0a99,0a9a,0a9b,0a9c // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 8 i_board, 2 i_nails, 20 i_book_sm
 SKILLMAKE = 365 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
@@ -711,7 +711,7 @@ DESCRIPTION = Bookcase (Dark Wood) (Empty)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0a9e // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 25 i_log
 RESOURCES2 = 8 i_board, 2 i_nails
 SKILLMAKE = 315 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1328,7 +1328,7 @@ DESCRIPTION = Wooden Bench (Dark)
 
 TYPE = T_CHAIR
 //DUPELIST = 0b2d // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 17 i_log
 RESOURCES2 = 20 i_board, 4 i_nails
 SKILLMAKE = 526 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1345,7 +1345,7 @@ DESCRIPTION = Wooden Chair (Dark)
 
 TYPE = T_CHAIR
 //DUPELIST = 0b2f,0b30,0b31 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 17 i_log
 RESOURCES2 = 20 i_board, 4 i_nails
 SKILLMAKE = 250 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1368,7 +1368,7 @@ DESCRIPTION = Throne
 
 TYPE = T_CHAIR
 //DUPELIST = 0b33 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 17 i_log
 RESOURCES2 = 40 i_board, 10 i_nails, 5 i_cloth, 100 i_feather
 SKILLMAKE = 526 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1385,7 +1385,7 @@ DESCRIPTION = Nightstand, end piece
 
 TYPE = t_table
 //DUPELIST = 0b35,0b36,0b3a,0b3c // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 17 i_log
 RESOURCES2 = 10 i_board, 4 i_nails
 SKILLMAKE = 421 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1440,7 +1440,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Tables
 DESCRIPTION = Counter
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 10 i_board, 4 i_nails
 DEFNAME = i_table_square_1
 //VALUE = {200 300} // commented out by Converter 
@@ -1450,7 +1450,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Tables
 DESCRIPTION = Counter
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 10 i_board, 4 i_nails
 DEFNAME = i_table_square_2
 //VALUE = {200 300} // commented out by Converter 
@@ -1511,7 +1511,7 @@ DESCRIPTION = Writing Table
 
 TYPE = t_table
 //DUPELIST = 0b4a,0b4b,0b4c // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 17 i_log
 RESOURCES2 = 10 i_board, 2 i_nails
 SKILLMAKE = 631 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1533,7 +1533,7 @@ DESCRIPTION = Chair (Gray Cushion)
 
 TYPE = T_CHAIR
 //DUPELIST = 0b4f,0b50,0b51 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log
 RESOURCES2 = 5 i_board, 2 i_nails, 1 i_cloth, 10 i_feather
 SKILLMAKE = 421 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1558,7 +1558,7 @@ DESCRIPTION = Chair (Gray Cushion)
 
 TYPE = T_CHAIR
 //DUPELIST = 0b53,0b54,0b55 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log
 RESOURCES2 = 5 i_board, 2 i_nails, 1 i_cloth, 10 i_feather
 SKILLMAKE = 421 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1583,7 +1583,7 @@ DESCRIPTION = Chair (Light Wood)
 
 TYPE = T_CHAIR
 //DUPELIST = 0b57,0b58,0b59 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 13 i_log
 RESOURCES2 = 5 i_board, 2 i_nails
 SKILLMAKE = 210 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1606,7 +1606,7 @@ DESCRIPTION = Chair
 
 TYPE = T_CHAIR
 //DUPELIST = 0b5b,0b5c,0b5d // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 13 i_log
 RESOURCES2 = 5 i_board, 2 i_nails
 SKILLMAKE = 210 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1687,7 +1687,7 @@ DESCRIPTION = Table
 
 TYPE = t_table
 //DUPELIST = 0b6c,0b7e,0b7f,0b87 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 6 i_board, 3 i_nails
 DEFNAME = i_table_wood_smooth_narrow_end
 //VALUE = {50 70} // commented out by Converter 
@@ -1751,7 +1751,7 @@ DESCRIPTION = Table
 
 TYPE = T_TABLE
 //DUPELIST = 0b8f // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 23 i_log
 RESOURCES2 = 6 i_board, 3 i_nails
 SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -1764,7 +1764,7 @@ DESCRIPTION = Table
 
 TYPE = T_TABLE
 //DUPELIST = 0b90 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 27 i_log
 RESOURCES2 = 6 i_board, 3 i_nails
 SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2138,7 +2138,7 @@ TYPE = T_FISH_POLE
 tooltype = FishingPole //guessed by Converter 
 TwoHanded = true //guessed by Converter 
 //DUPELIST = 0dc0 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 5 i_cloth
 RESOURCES2 = 1 i_log, 1 i_thread
 SKILLMAKE = 350 carpentry, 300 tailoring, 1 t_carpentry //some resources were fixed by converter 
@@ -2152,7 +2152,7 @@ DESCRIPTION = BLANK SCROLL
 
 TYPE = T_SCROLL_BLANK
 //DUPELIST = 0ef3 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_log_copper
 SKILLMAKE = 700 carpentry, 1 t_carpentry //some resources were fixed by converter 
 DEFNAME = i_scroll_blank
@@ -2164,7 +2164,7 @@ DESCRIPTION = BLANK CHESTNUT SCROLL
 
 TYPE = T_SCROLL_BLANK
 //DUPELIST = 0ef3 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_log_iron
 SKILLMAKE = 750 carpentry, 1 t_carpentry //some resources were fixed by converter 
 model = i_scroll_blank
@@ -2177,7 +2177,7 @@ DESCRIPTION = BLANK OAK SCROLL
 
 TYPE = T_SCROLL_BLANK
 //DUPELIST = 0ef3 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_log_verite
 SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
 model = i_scroll_blank
@@ -2190,7 +2190,7 @@ DESCRIPTION = BLANK TEAK SCROLL
 
 TYPE = T_SCROLL_BLANK
 //DUPELIST = 0ef3 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_log_valorite
 SKILLMAKE = 850 carpentry, 1 t_carpentry //some resources were fixed by converter 
 model = i_scroll_blank
@@ -2203,7 +2203,7 @@ DESCRIPTION = LARGE CRATE (1W)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e3d // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 18 i_board
 RESOURCES2 = 15 i_log, 4 i_nails
 SKILLMAKE = 450 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2222,7 +2222,7 @@ DESCRIPTION = MEDIUM CRATE (1W)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e3f // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_board
 RESOURCES2 = 10 i_log, 3 i_nails
 SKILLMAKE = 315 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2241,7 +2241,7 @@ DESCRIPTION = Wood/Brass Chest (W)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e43 // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 20 i_board
 RESOURCES2 = 15 i_board
 SKILLMAKE = 650 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2258,7 +2258,7 @@ CATEGORY = Provisions - Miscellaneous
 SUBSECTION = Containers
 DESCRIPTION = Water Tub
 
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 1 i_tub_empty //some resources were fixed by converter 
 RESOURCES2 = 1 i_tub_empty, 10 i_water //some resources were fixed by converter 
 SKILLMAKE = 700 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2270,7 +2270,7 @@ SUBSECTION = Artists
 DESCRIPTION = Portrait
 
 //DUPELIST = 0ee8 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 25 i_cloth
 RESOURCES2 = 1 i_board, 1 i_dyes
 SKILLMAKE = 650 carpentry, 500 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2291,7 +2291,7 @@ SUBSECTION = Artists
 DESCRIPTION = Painting
 
 //DUPELIST = 0ea2 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 1 i_board, 1 i_dyes
 DEFNAME = i_portrait_2
 
@@ -2304,7 +2304,7 @@ SUBSECTION = Artists
 DESCRIPTION = Painting
 
 //DUPELIST = 0ea4 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 25 i_cloth
 RESOURCES2 = 1 i_board, 1 i_dyes
 SKILLMAKE = 750 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2319,7 +2319,7 @@ SUBSECTION = Artists
 DESCRIPTION = Portrait
 
 //DUPELIST = 0ea6 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 25 i_cloth
 RESOURCES2 = 1 i_board, 1 i_dyes
 SKILLMAKE = 800 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2338,7 +2338,7 @@ SUBSECTION = Artists
 DESCRIPTION = Portrait
 
 //DUPELIST = 0ea8 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 15 i_log, 25 i_cloth
 RESOURCES2 = 1 i_board, 1 i_dyes
 SKILLMAKE = 800 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2357,7 +2357,7 @@ SUBSECTION = Bard
 DESCRIPTION = Music Stand
 
 //DUPELIST = 0eb7 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log
 RESOURCES2 = 5 i_board, 1 i_nails
 SKILLMAKE = 789 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2403,7 +2403,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tailor
 DESCRIPTION = Dress Form
 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 25 i_log, 10 i_cloth
 RESOURCES2 = 10 i_board, 1 i_nails
 SKILLMAKE = 631 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2414,7 +2414,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tailor
 DESCRIPTION = Dress Form
 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 10 i_cloth
 SKILLMAKE = 631 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
 
@@ -2437,7 +2437,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Artists
 DESCRIPTION = Portrait
 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 15 i_log, 25 i_cloth
 SKILLMAKE = 800 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
 DEFNAME = i_portrait_7
@@ -2448,7 +2448,7 @@ SUBSECTION = StableMaster
 DESCRIPTION = Saddle
 
 //DUPELIST = 0f38 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log
 RESOURCES2 = 4 i_hides_cut, 3 i_log
 SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2463,7 +2463,7 @@ SUBSECTION = Tailor
 DESCRIPTION = Dying Tub
 
 TYPE = T_DYE_VAT
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 5 i_log
 RESOURCES2 = 10 i_board
 SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2476,7 +2476,7 @@ DESCRIPTION = Archery Butte (W)
 
 TYPE = T_ARCHERY_BUTTE
 //DUPELIST = 0100b // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 20 i_straw, 10 i_board, 8 i_cloth
 SKILLMAKE = 400 carpentry, 400 tailoring, 1 t_sewing_kit, 1 t_carpentry //some resources were fixed by converter 
 DEFNAME = i_archery_butte
@@ -2496,7 +2496,7 @@ DESCRIPTION = Spinning Wheel
 
 TYPE = t_spinwheel
 //DUPELIST = 01019,0101c,010a4 // commented out by Converter 
-WEIGHT = 150
+WEIGHT = 15
 RESOURCES = 20 i_board, 1 i_ingot_iron
 SKILLMAKE = 736 carpentry, 650 tailoring, 1 t_carpentry //some resources were fixed by converter 
 DEFNAME = i_spinning_wheel
@@ -2543,7 +2543,7 @@ SUBSECTION = Cartographer
 DESCRIPTION = Globe
 
 //DUPELIST = 01048 // commented out by Converter 
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 10 i_board, 2 i_cloth
 RESOURCES2 = 3 i_board, 1 i_sand, 1 i_straw, 5 i_parchment, 1 i_ingot_iron
 SKILLMAKE = 650 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2570,7 +2570,7 @@ DESCRIPTION = Training Dummy
 
 TYPE = t_train_dummy
 //DUPELIST = 01071,01072,01073,01074,01075,01076,01077 // commented out by Converter 
-WEIGHT = 350
+WEIGHT = 35
 RESOURCES = 15 i_cloth, 35 i_straw, 8 i_board, 1 i_ingot_iron
 SKILLMAKE = 850 carpentry, 700 tailoring, 1 t_sewing_kit, 1 t_carpentry //some resources were fixed by converter 
 DEFNAME = i_training_dummy
@@ -2604,7 +2604,7 @@ DESCRIPTION = Table (Purple Runner)
 
 TYPE = t_table
 //DUPELIST = 0118c // commented out by Converter 
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 27 i_board, 30 i_cloth
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_cloth
 SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2619,7 +2619,7 @@ SUBSECTION = Tables
 DESCRIPTION = Table (Red Runner)
 
 TYPE = t_table
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 27 i_log, 30 i_cloth
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_cloth
 SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2631,7 +2631,7 @@ SUBSECTION = Tables
 DESCRIPTION = Table (Snowflake Runner)
 
 TYPE = t_table
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 27 i_log, 30 i_cloth
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_cloth
 SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2644,7 +2644,7 @@ DESCRIPTION = Table (Blue Plaid Runner)
 
 TYPE = t_table
 //DUPELIST = 01191 // commented out by Converter 
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 6 i_board, 1 i_nails, 2 i_cloth
 SKILLMAKE = 830 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
 DEFNAME = i_table_runner_plaid_blue
@@ -2656,7 +2656,7 @@ DESCRIPTION = Table (Plaid Extender Runner)
 
 TYPE = t_table
 //DUPELIST = 01192 // commented out by Converter 
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 6 i_board, 1 i_nails, 2 i_cloth
 DEFNAME = i_table_runner_plaid_BLUE_ext
 
@@ -2672,7 +2672,7 @@ SUBSECTION = Chairs
 DESCRIPTION = Foot Stool
 
 TYPE = T_CHAIR
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 4 i_bamboo, 3 i_canvas
 SKILLMAKE = 400 carpentry //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
@@ -2684,7 +2684,7 @@ SUBSECTION = Nautical
 DESCRIPTION = Ship Model (N)
 
 //DUPELIST = 014f4 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 10 i_board
 RESOURCES2 = 1 i_board, 1 i_thread, 1 i_nails, 1 i_paper
 SKILLMAKE = 950 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2701,7 +2701,7 @@ DESCRIPTION = Bar Door
 
 TYPE = T_DOOR
 //DUPELIST = 0190f // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 30 i_log
 RESOURCES2 = 5 i_board, 1 i_nails
 SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2717,7 +2717,7 @@ SUBSECTION = Bar
 DESCRIPTION = Bar
 
 //DUPELIST = 01911,01912,01913,01918,01919,0191a,0191b,0191c,0191d,0191e,0191f // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 30 i_log
 RESOURCES2 = 4 i_board, 1 i_nails
 SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2739,7 +2739,7 @@ DESCRIPTION = Woodworkers Bench
 
 TYPE = T_CHAIR
 //DUPELIST = 019f3,019f5,019f7 // commented out by Converter 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 30 i_log
 RESOURCES2 = 4 i_board, 2 i_nails, 3 i_peg, 1 i_ingot_iron
 SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2761,7 +2761,7 @@ DESCRIPTION = Vise
 
 TYPE = t_carpentry
 //DUPELIST = 019f8 // commented out by Converter 
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 30 i_log
 RESOURCES2 = 3 i_board, 1 i_nails, 1 i_springs, 2 i_ingot_iron
 SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2786,7 +2786,7 @@ DESCRIPTION = Coopers Bench
 
 TYPE = T_CHAIR
 //DUPELIST = 019fa,019fb,019fc // commented out by Converter 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 30 i_log
 RESOURCES2 = 3 i_board, 1 i_nails, 2 i_log, 1 i_ingot_iron
 SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2827,7 +2827,7 @@ SUBSECTION = BarKeep
 DESCRIPTION = Dartboard
 
 //DUPELIST = 01e2f // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_log
 RESOURCES2 = 3 i_board, 1 i_cloth
 SKILLMAKE = 157 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -2842,7 +2842,7 @@ SUBSECTION = BarKeep
 DESCRIPTION = Dartboard (Axe)
 
 //DUPELIST = 01e31 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_dartboard, 1 i_axe //some resources were fixed by converter 
 DEFNAME = i_dartboard_axe
 
@@ -2855,7 +2855,7 @@ SUBSECTION = BarKeep
 DESCRIPTION = Dartboard (Knives)
 
 //DUPELIST = 01e33 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 1 i_dartboard, 3 i_dagger
 DEFNAME = i_dartboard_knives
 
@@ -2884,7 +2884,7 @@ SUBSECTION = Trophies
 DESCRIPTION = Bear
 
 //DUPELIST = 01e67 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 10 i_hides_cut
 SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
 DEFNAME = i_trophy_bearhead
@@ -2895,7 +2895,7 @@ SUBSECTION = Trophies
 DESCRIPTION = Deer
 
 //DUPELIST = 01e68 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 10 i_hides_cut
 RESOURCES2 = 1 i_corpse_deer, 5 i_board, 1 i_nails, 1 i_wool
 SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2907,7 +2907,7 @@ SUBSECTION = Trophies
 DESCRIPTION = Fish
 
 //DUPELIST = 01e69 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 10 i_hides_cut
 RESOURCES2 = 1 i_fish_big_1, 5 i_board, 1 i_nails, 1 i_wool
 SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2919,7 +2919,7 @@ SUBSECTION = Trophies
 DESCRIPTION = Gorilla
 
 //DUPELIST = 01e6a // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 10 i_hides_cut
 SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
 DEFNAME = i_trophy_gorillahead
@@ -2930,7 +2930,7 @@ SUBSECTION = Trophies
 DESCRIPTION = Orc
 
 //DUPELIST = 01e6b // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 10 i_hides_cut
 RESOURCES2 = 1 i_corpse_orc, 5 i_board, 1 i_nails, 1 i_wool
 SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
@@ -2942,7 +2942,7 @@ SUBSECTION = Trophies
 DESCRIPTION = Polar Bear
 
 //DUPELIST = 01e6c // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 10 i_hides_cut
 SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
 DEFNAME = i_trophy_polarbearhead
@@ -2953,7 +2953,7 @@ SUBSECTION = Trophies
 DESCRIPTION = Troll
 
 //DUPELIST = 01e6d // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 15 i_log, 10 i_hides_cut
 SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
 DEFNAME = i_trophy_trollhead
@@ -2991,7 +2991,7 @@ DESCRIPTION = Wooden Crate (Small)
 
 TYPE = t_container
 //DUPELIST = 01e81 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 8 i_board
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_hinge
 SKILLMAKE = 100 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -3009,7 +3009,7 @@ SUBSECTION = Barkeep
 DESCRIPTION = BLACK CHESSMEN SW
 
 //DUPELIST = 0fa8 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 16 i_ebony
 DEFNAME = i_CHESSMEN_BLACK_sw
 
@@ -3018,7 +3018,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Barkeep
 DESCRIPTION = BLACK CHESSMAN SE
 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 16 i_ebony
 DEFNAME = i_CHESSMAN_BLACK_se
 
@@ -3027,7 +3027,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Barkeep
 DESCRIPTION = WHITE CHESSMAN SE
 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 16 i_ivory
 DEFNAME = i_CHESSMAN_WHITE_se
 
@@ -3037,7 +3037,7 @@ SUBSECTION = Barkeep
 DESCRIPTION = CARDS
 
 //DUPELIST = 0e16,0e17,0e18,0e19 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 9 i_paper
 DEFNAME = i_cards
 
@@ -3071,7 +3071,7 @@ SUBSECTION = Barkeep
 DESCRIPTION = PILE RED CHECKERS
 
 //DUPELIST = 0fa4,0fa5 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 5 i_ivory
 DEFNAME = i_CHECKERS_PILE_RED
 
@@ -3080,7 +3080,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Barkeep
 DESCRIPTION = PILE BLACK CHECKERS
 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 5 i_ebony
 DEFNAME = i_CHECKERS_PILE_BLACK
 
@@ -3150,7 +3150,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 04 (01/02) (N)
 
 //DUPELIST = 0fd6 // commented out by Converter 
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
 DEFNAME = i_tapestry_4_n
 
@@ -3167,7 +3167,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 04 (01/02) (W)
 
 //DUPELIST = 0fd8 // commented out by Converter 
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
 DEFNAME = i_tapestry_4_w
 
@@ -3184,7 +3184,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 05 (01/02) (N)
 
 //DUPELIST = 0fda // commented out by Converter 
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
 DEFNAME = i_tapestry_5_n
 
@@ -3201,7 +3201,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 05 (01/02) (W)
 
 //DUPELIST = 0fdc // commented out by Converter 
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
 DEFNAME = i_tapestry_5_w
 
@@ -3218,7 +3218,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 06 (01/02) (N)
 
 //DUPELIST = 0fde // commented out by Converter 
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
 DEFNAME = i_tapestry_6_n
 
@@ -3235,7 +3235,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 06 (01/02) (W)
 
 //DUPELIST = 0fe0 // commented out by Converter 
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
 DEFNAME = i_tapestry_6_w
 
@@ -3252,7 +3252,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 07 (01/02) (N)
 
 //DUPELIST = 0fe2 // commented out by Converter 
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
 DEFNAME = i_tapestry_7_n
 
@@ -3269,7 +3269,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 07 (01/02) (W)
 
 //DUPELIST = 0fe4 // commented out by Converter 
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
 DEFNAME = i_tapestry_7_w
 
@@ -3286,7 +3286,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 01 (01/02) (N)
 
 //DUPELIST = 0eab // commented out by Converter 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_cloth_bolt, 2 i_dyes, 1 i_log, 1 i_rope
 DEFNAME = i_tapestry
 
@@ -3303,7 +3303,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 02 (01/02) (N)
 
 //DUPELIST = 0ead // commented out by Converter 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_cloth_bolt, 2 i_dyes, 1 i_log, 1 i_rope
 DEFNAME = i_tapestry_2
 
@@ -3320,7 +3320,7 @@ SUBSECTION = Tapestries
 DESCRIPTION = Tapestry 03 (01/02) (W)
 
 //DUPELIST = 0eaf // commented out by Converter 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_cloth_bolt, 2 i_dyes, 1 i_log, 1 i_rope
 DEFNAME = i_tapestry_3
 
@@ -3359,7 +3359,7 @@ DESCRIPTION = Upright Loom
 
 TYPE = T_LOOM
 //DUPELIST = 01060,01061,01062,01063,01064,01065,01066 // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 15 i_board, 1 i_ingot_iron, 1 i_nails
 DEFNAME = i_loom_upright
 
@@ -3391,7 +3391,7 @@ DESCRIPTION = Stretched Hide
 
 TYPE = T_LEATHER
 //DUPELIST = 0106a,0106b,0106c,0106d,0106e,0106f,0107b,0107c,0107d,0107e,0107f,01080 // commented out by Converter 
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 1 i_hide, 2 i_board
 DEFNAME = i_HIDE_STRETCHED
 
@@ -3437,7 +3437,7 @@ DUPEITEM = i_HIDE_STRETCHED
 [ItemDef 0x11d6]
 TYPE = t_table
 //DUPELIST = 011d7,011d9,011da,011d8,011db // commented out by Converter 
-WEIGHT = 150
+WEIGHT = 15
 RESOURCES = 30 i_board, 4 i_nails
 DEFNAME = i_table_bamboo
 
@@ -3463,7 +3463,7 @@ DESCRIPTION = Table (Log)
 
 TYPE = t_table
 //DUPELIST = 011dd,011df,011e0,011de,011e1 // commented out by Converter 
-WEIGHT = 300
+WEIGHT = 30
 RESOURCES = 15 i_log, 4 i_nails
 DEFNAME = i_table_log_end
 
@@ -3488,7 +3488,7 @@ SUBSECTION = Mats
 DESCRIPTION = Mat (Woven)
 
 //DUPELIST = 011e7,011e8,011e9 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 2 i_straw
 DEFNAME = i_MAT_WOVEN
 
@@ -3507,7 +3507,7 @@ SUBSECTION = Mats
 DESCRIPTION = Mat (Grass)
 
 //DUPELIST = 011e3,011e4,011e5 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 2 i_straw
 DEFNAME = i_MAT_GRASS
 
@@ -3527,7 +3527,7 @@ DESCRIPTION = Cot
 
 TYPE = T_BED
 //DUPELIST = 011fe,011ff,01200 // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 4 i_board, 3 i_cloth
 //TDATA1 = 2 // commented out by Converter 
 DEFNAME = i_cot_sw
@@ -3547,7 +3547,7 @@ SUBSECTION = StableMaster
 DESCRIPTION = Brush
 
 //DUPELIST = 01371,01372,01373 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_board, 50 i_straw
 DEFNAME = i_BRUSH_HORSE
 
@@ -3566,7 +3566,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Horse Barding (01/02) (W)
 
 //DUPELIST = 01377,01378,01379 // commented out by Converter 
-WEIGHT = 500
+WEIGHT = 50
 RESOURCES = 2 i_hide, 20 i_ingot_iron, 6 i_board
 DEFNAME = i_BARDING_HORSE
 
@@ -3585,7 +3585,7 @@ SUBSECTION = Vat
 DESCRIPTION = Vat (Ladder)
 
 //DUPELIST = 014e2 // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 10 i_board, 1 i_nails
 DEFNAME = i_vat_ladder
 
@@ -3602,7 +3602,7 @@ SUBSECTION = Vat
 DESCRIPTION = @
 
 //DUPELIST = 014d8,014d9,014da,014db,014dc,014dd,014de,014df // commented out by Converter 
-WEIGHT = 400
+WEIGHT = 40
 RESOURCES = 34 i_board, 8 i_ingot_iron, 1 i_barrel_tap, 1 i_nails
 DEFNAME = i_vat
 
@@ -3637,7 +3637,7 @@ DESCRIPTION = Moulding Board
 
 TYPE = t_carpentry
 //DUPELIST = 014ea // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 1 i_log, 1 i_board
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_moulding_board
@@ -3651,7 +3651,7 @@ SUBSECTION = Vat
 DESCRIPTION = Vat (Grapes)
 
 //DUPELIST = 0151f,01520,01521,01522,01523,01524,01525 // commented out by Converter 
-WEIGHT = 500
+WEIGHT = 50
 RESOURCES = 34 i_board, 8 i_ingot_iron, 1 i_barrel_tap, 1 i_nails, 100 i_fruit_grapes
 DEFNAME = i_vat_2
 
@@ -3684,14 +3684,14 @@ DESCRIPTION = Table (Red & Green Table Cloth)
 
 TYPE = t_table
 //DUPELIST = 01669,0166a,0166c // commented out by Converter 
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 6 i_board, 1 i_nails, 2 i_cloth
 DEFNAME = i_table_runner_checkered
 
 [ItemDef 0x1668]
 TYPE = t_table
 //DUPELIST = 0166b // commented out by Converter 
-WEIGHT = 70
+WEIGHT = 7
 RESOURCES = 6 i_board, 1 i_nails, 2 i_cloth
 
 [ItemDef 0x1669]
@@ -3711,7 +3711,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Baker
 DESCRIPTION = Winnowing Basket
 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 10 i_straw
 DEFNAME = i_BASKET_WINNOWING
 
@@ -3722,7 +3722,7 @@ DESCRIPTION = Ruined Bed
 
 TYPE = T_BED
 //DUPELIST = 01895,01896,01897,01898,01899,0189a,0189b // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet
 //TDATA1 = 0 // commented out by Converter 
 DEFNAME = i_BED_RUINED_7
@@ -3754,7 +3754,7 @@ SUBSECTION = Massage Table
 DESCRIPTION = @
 
 //DUPELIST = 01917 // commented out by Converter 
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 4 i_board, 2 i_log, 1 i_nails, 4 i_canvas
 DEFNAME = i_table_massage_end
 
@@ -3792,7 +3792,7 @@ DESCRIPTION = Keg
 
 TYPE = t_container
 //DUPELIST = 01ad6,01ad7 // commented out by Converter 
-WEIGHT = 120
+WEIGHT = 12
 RESOURCES = 1 i_barrel_tap, 1 i_barrel
 //FLIP = 1 // commented out by Converter 
 //TDATA2 = 03e // commented out by Converter 
@@ -3805,7 +3805,7 @@ SUBSECTION = Coffin
 DESCRIPTION = @
 
 //DUPELIST = 01c3d,01c3e,01c3f,01c40,01c41,01c42,01c43,01c44,01c45,01c46,01c47,01c48,01c49,01c4a,01c4b,01c4c,01c4d,01c4e,01c4f,01c50,01c51,01c52,01c53,01c54,01c55,01c56,01c57,01c58,01c59,01c5a,01c5b,01c5c,01c5d,01c5e,01c5f // commented out by Converter 
-WEIGHT = 320
+WEIGHT = 32
 RESOURCES = 32 i_board, 2 i_nails
 DEFNAME = i_casket_wood_2
 
@@ -3936,7 +3936,7 @@ SUBSECTION = Tables
 DESCRIPTION = Table
 
 //DUPELIST = 01da6,01da9,01daa // commented out by Converter 
-WEIGHT = 160
+WEIGHT = 16
 RESOURCES = 16 i_board, 1 i_nails //some resources were fixed by converter 
 DEFNAME = i_TABLE_WOOD_ROUGH_SMALL_END
 
@@ -3955,7 +3955,7 @@ SUBSECTION = Tables
 DESCRIPTION = Table
 
 //DUPELIST = 01da8,01dab,01dac // commented out by Converter 
-WEIGHT = 160
+WEIGHT = 16
 RESOURCES = 16 i_board, 1 i_nails //some resources were fixed by converter 
 DEFNAME = i_TABLE_BOARD_ROUGH_SMALL_END
 
@@ -3974,7 +3974,7 @@ SUBSECTION = Farmer
 DESCRIPTION = Scarecrow
 
 //DUPELIST = 01e35 // commented out by Converter 
-WEIGHT = 230
+WEIGHT = 23
 RESOURCES = 4 i_log, 14 i_straw, 1 i_rope, 1 i_hat_straw //some resources were fixed by converter 
 DEFNAME = i_scarecrow
 
@@ -4116,7 +4116,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Unfinished Barrel
 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 3 i_barrel_staves
 DEFNAME = i_barrel_unfinished
 
@@ -4125,7 +4125,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Empty Tool Kit
 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 2 i_hide, 1 i_ingot_iron //some resources were fixed by converter 
 DEFNAME = i_toolkit_empty
 
@@ -4134,7 +4134,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Empty Tool Case
 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 2 i_hide, 1 i_ingot_iron //some resources were fixed by converter 
 DEFNAME = i_toolcase_empty
 
@@ -4144,7 +4144,7 @@ SUBSECTION = Target
 DESCRIPTION = @
 
 //DUPELIST = 01ed4,01ed5,01ed6,01ed7,01ed8 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_board, 1 i_cloth //some resources were fixed by converter 
 DEFNAME = i_target
 
@@ -4169,7 +4169,7 @@ SUBSECTION = Gypsy
 DESCRIPTION = Tarot Cards
 
 //DUPELIST = 012a6,012a7,012a8,012a9,012aa,012ab,012ac // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 13 i_paper
 DEFNAME = i_CARDS_TAROT
 

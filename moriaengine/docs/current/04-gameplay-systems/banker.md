@@ -15,6 +15,11 @@ Double-clicking any banker within 6 tiles opens the dialog (#509 asked for doubl
 had none). The dialog first checks, as `f_banker_ok` does: a realm banker refuses another realm
 ("Jedes potvoro !!!!"), and anyone needs pants, a robe or a skirt on ("Tahni uchyle !!!!").
 
+## The box and the status window
+
+The bank box opens as the gold and silver chest (gump 0x42). The status window's gold is Erebor's: all
+gold on the character, in bags and in the bank, but not in locked containers, and no cheques or purses.
+
 ## Dialogs
 
 `D_BankerOk` (`d_banker_ok`): Bankovni sluzby, Nejake drby ?, Hledam praci, Prohlednout.. Erebor's

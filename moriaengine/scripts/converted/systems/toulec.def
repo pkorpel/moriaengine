@@ -29,7 +29,7 @@ toulec_cap[7]	1600
 [ItemDef i_toulec_copper]
 name = "spruce toulec"
 type = t_toulec
-WEIGHT = 500
+WEIGHT = 50
 resources = 10 i_log_copper
 SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 1 // commented out by Converter 
@@ -39,7 +39,7 @@ Color = color_spruce
 [ItemDef i_toulec_iron]
 name = "chestnut toulec"
 type = t_toulec
-WEIGHT = 300
+WEIGHT = 30
 resources = 10 i_log_iron
 SKILLMAKE = 500 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 2 // commented out by Converter 
@@ -49,7 +49,7 @@ Color = color_chestnut
 [ItemDef i_toulec_verite]
 name = "oak toulec"
 type = t_toulec
-WEIGHT = 300
+WEIGHT = 30
 resources = 10 i_log_verite
 SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 3 // commented out by Converter 
@@ -59,7 +59,7 @@ Color = color_oak
 [ItemDef i_toulec_valorite]
 name = "teak toulec"
 type = t_toulec
-WEIGHT = 300
+WEIGHT = 30
 resources = 10 i_log_valorite
 SKILLMAKE = 700 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 4 // commented out by Converter 
@@ -69,7 +69,7 @@ Color = color_teak
 [ItemDef i_toulec_obsidian]
 name = "mahagon toulec"
 type = t_toulec
-WEIGHT = 300
+WEIGHT = 30
 resources = 10 i_log_obsidian
 SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 5 // commented out by Converter 
@@ -79,7 +79,7 @@ Color = color_mahagon
 [ItemDef i_toulec_adamantinum]
 name = "eben toulec"
 type = t_toulec
-WEIGHT = 200
+WEIGHT = 20
 resources = 10 i_log_adamantinum
 SKILLMAKE = 900 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 6 // commented out by Converter 
@@ -89,7 +89,7 @@ Color = color_eben
 [ItemDef i_toulec_mithril]
 name = "elven toulec"
 type = t_toulec
-WEIGHT = 200
+WEIGHT = 20
 resources = 10 i_log_mithril
 SKILLMAKE = 1000 carpentry, 1 t_carpentry //some resources were fixed by converter 
 //tdata1 = 7 // commented out by Converter 

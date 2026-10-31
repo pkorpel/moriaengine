@@ -18,6 +18,11 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## IN PROGRESS (2026-10-31): bank box gump, status gold, weights vs Erebor
+
+User testing after #884. Not touching .check/.mesec: a GM pays nothing, as on Erebor, user confirmed and wants it kept.
+Plan: bank box gets a fancy chest gump; Character.Gold = Erebor's ContentCount (all t_gold on the character, bank included); weights in stones as Erebor reads them (converter wrote 3.0 as 30 but 10 as 10), stack weight = unit x amount, gold 1/500 stone per coin, tiledata fallback, bank box weightless; status sends max weight Str*4+30.
+
 ## DONE (2026-10-31): #860 leftovers: #868, #872, #866, #865
 
 User: "carry on with the remaining open items".

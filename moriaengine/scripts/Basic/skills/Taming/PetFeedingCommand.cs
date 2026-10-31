@@ -155,7 +155,7 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 
-			int foodWeight = (int) foodItem.Weight;
+			int foodWeight = (int) (foodItem.Def.Weight * 10); //tenths of a stone, one piece of it
 			if (foodWeight < MinFoodWeight) {
 				foodWeight = MinFoodWeight;
 			}

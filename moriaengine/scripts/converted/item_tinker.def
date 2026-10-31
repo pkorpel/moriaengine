@@ -8,7 +8,7 @@ DESCRIPTION = Secure truhla
 NAME = "Truhla"
 TYPE = t_container
 //DUPELIST = 0e41 // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 9 i_log
 RESOURCES2 = 5 i_board
 SKILLMAKE = 800 carpentry, 850 blacksmithing, 850 tinkering, 1 t_carpentry, 1 t_tinker_tools //some resources were fixed by converter 
@@ -24,7 +24,7 @@ DESCRIPTION = Neaktivni runa
 
 NAME = "Neaktivni runa"
 TYPE = T_GEM
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_adamantinum
 SKILLMAKE = 990 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 model = i_rune_marker //i_rune_marker 
@@ -52,7 +52,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Iron Wire
 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ingot_iron
 SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_wire_iron
@@ -62,7 +62,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Silver Wire
 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ingot_silver
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_wire_silver
@@ -72,7 +72,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Gold Wire
 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ingot_gold
 SKILLMAKE = 600 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_wire_gold
@@ -82,7 +82,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Copper Wire
 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ingot_copper
 SKILLMAKE = 200 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_wire_copper
@@ -92,7 +92,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Verite Wire
 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ingot_verite
 SKILLMAKE = 200 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 model = i_wire_iron
@@ -103,7 +103,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Tinker
 DESCRIPTION = Valorite Wire
 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ingot_valorite
 SKILLMAKE = 200 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 model = i_wire_iron
@@ -126,7 +126,7 @@ DESCRIPTION = Brass Box  (N)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e80 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 5 i_ingot_iron, 5 i_log
 RESOURCES2 = 3 i_ingot_iron, 1 i_nails, 2 i_hinge
 SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -142,7 +142,7 @@ DESCRIPTION = Metal Chest (N)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e7c // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 20 i_ingot_iron, 2 i_board
 RESOURCES2 = 3 i_ingot_iron, 1 i_nails, 2 i_hinge
 SKILLMAKE = 750 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -221,7 +221,7 @@ DESCRIPTION = Lantern (Unlit)
 
 TYPE = T_LIGHT_OUT
 //DUPELIST = 0a1d,0a25 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 5 i_board
 RESOURCES2 = 1 i_sand, 1 i_ingot_iron, 1 i_oil_flask
 SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
@@ -247,7 +247,7 @@ SUBSECTION = Barkeep
 
 TYPE = T_GAME_BOARD
 //DUPELIST = 0fad // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 3 i_board
 SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //TDATA2 = 092e // commented out by Converter 
@@ -260,7 +260,7 @@ DESCRIPTION = METAL BRASS CHEST (W)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e41 // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 15 i_ingot_iron, 5 i_ingot_gold, 2 i_log
 RESOURCES2 = 9 i_ingot_iron, 2 i_hinges_brass
 SKILLMAKE = 800 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -279,7 +279,7 @@ DESCRIPTION = postocni shranka (W)
 
 TYPE = T_CONTAINER
 //DUPELIST = 0e41 // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 15 i_ingot_iron, 5 i_ingot_gold, 2 i_log
 RESOURCES2 = 9 i_ingot_iron, 2 i_hinges_brass
 SKILLMAKE = 800 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -294,7 +294,7 @@ SUBSECTION = Containers
 DESCRIPTION = Empty Barrel
 
 TYPE = T_CONTAINER
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 10 i_log
 RESOURCES2 = 10 i_board, 4 i_ingot_iron
 SKILLMAKE = 550 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -309,7 +309,7 @@ SUBSECTION = Containers
 DESCRIPTION = Keg
 
 TYPE = T_CONTAINER
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 8 i_log
 RESOURCES2 = 8 i_log, 4 i_ingot_iron
 SKILLMAKE = 450 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -324,7 +324,7 @@ SUBSECTION = Magical Items
 DESCRIPTION = Mortar and Pestle
 
 TYPE = T_MORTAR
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_copper
 RESOURCES2 = 2 i_ingot_iron
 SKILLMAKE = 233 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -336,7 +336,7 @@ SUBSECTION = Bard
 DESCRIPTION = Drum
 
 TYPE = T_MUSICAL
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 1 i_hides_cut, 5 i_board
 SKILLMAKE = 510 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //TDATA1 = 038 // commented out by Converter 
@@ -349,7 +349,7 @@ SUBSECTION = Bard
 DESCRIPTION = Tambourine
 
 TYPE = T_MUSICAL
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron, 2 i_board
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //TDATA1 = 052 // commented out by Converter 
@@ -362,7 +362,7 @@ SUBSECTION = Bard
 DESCRIPTION = Tambourine Tassle
 
 TYPE = T_MUSICAL
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_tambourine, 1 i_cloth //some resources were fixed by converter 
 SKILLMAKE = 500 carpentry, 650 musicianship, 1 t_carpentry //some resources were fixed by converter 
 //TDATA1 = 052 // commented out by Converter 
@@ -387,7 +387,7 @@ SUBSECTION = Bard
 DESCRIPTION = Lap Harp
 
 TYPE = T_MUSICAL
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 7 i_log, 2 i_wire_iron
 SKILLMAKE = 540 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //TDATA1 = 045 // commented out by Converter 
@@ -401,7 +401,7 @@ DESCRIPTION = Lute
 
 TYPE = T_MUSICAL
 //DUPELIST = 0eb4 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 6 i_log, 1 i_wire_iron
 SKILLMAKE = 520 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //TDATA1 = 04c // commented out by Converter 
@@ -419,7 +419,7 @@ SUBSECTION = Magical Items
 DESCRIPTION = Empty Alchemist Bottle
 
 TYPE = t_bottle_empty
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_ingot_pisek
 SKILLMAKE = 750 tinkering, 1 t_tinker_tools, 1 t_bottle_form, 1 t_book_bottle //some resources were fixed by converter 
 DEFNAME = i_bottle_empty
@@ -430,7 +430,7 @@ SUBSECTION = Miner
 DESCRIPTION = Shovel
 
 //DUPELIST = 0f3a // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 4 i_ingot_iron, 1 i_log
 RESOURCES2 = 4 i_ingot_iron
 SKILLMAKE = 200 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -447,7 +447,7 @@ DESCRIPTION = Scissors
 
 TYPE = T_SCISSORS
 //DUPELIST = 0f9f // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 4 i_ingot_iron
 SKILLMAKE = 145 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_scissors
@@ -461,7 +461,7 @@ SUBSECTION = Barkeep
 DESCRIPTION = Game Board
 
 TYPE = T_GAME_BOARD
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 3 i_log
 RESOURCES2 = 1 i_board
 SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -473,7 +473,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Barkeep
 DESCRIPTION = Dice and Cup
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 3 i_log
 RESOURCES2 = 2 i_die, 1 i_mug_ceramic
 SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -488,7 +488,7 @@ SUBSECTION = Containers
 DESCRIPTION = Barrel w/Lid
 
 TYPE = T_CONTAINER
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 12 i_log
 RESOURCES2 = 1 i_barrel_open, 1 i_barrel_lid //some resources were fixed by converter 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -504,7 +504,7 @@ DESCRIPTION = Anvil (N)
 
 TYPE = T_ANVIL
 //DUPELIST = 0fb0 // commented out by Converter 
-WEIGHT = 2550
+WEIGHT = 255
 RESOURCES = 20 i_ingot_iron, 1 i_log
 SKILLMAKE = 300 blacksmithing, 560 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
@@ -523,7 +523,7 @@ SUBSECTION = Barkeep
 DESCRIPTION = Skull Mug
 
 //DUPELIST = 0ffc,0ffd,0ffe // commented out by Converter 
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 3 i_ingot_iron
 RESOURCES2 = 1 i_bone_skull
 SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -544,7 +544,7 @@ SUBSECTION = BarKeep
 DESCRIPTION = Pewter Mug
 
 //DUPELIST = 0fff,01001,01002 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 3 i_ingot_iron
 RESOURCES2 = 1 i_ingot_iron
 SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -564,7 +564,7 @@ CATEGORY = Items by Professions
 SUBSECTION = BarKeep
 DESCRIPTION = Spitton
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 3 i_ingot_iron
 RESOURCES2 = 3 i_ingot_iron, 1 i_cloth
 SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -575,7 +575,7 @@ CATEGORY = Items by Professions
 SUBSECTION = BarKeep
 DESCRIPTION = Barrel Tap
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 SKILLMAKE = 520 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_barrel_tap
@@ -586,7 +586,7 @@ SUBSECTION = Keys
 DESCRIPTION = Copper Key
 
 TYPE = T_KEY
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_copper
 RESOURCES2 = 1 i_ingot_copper
 SKILLMAKE = 250 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -598,7 +598,7 @@ SUBSECTION = Keys
 DESCRIPTION = Gold Key
 
 TYPE = T_KEY
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_ingot_iron, 1 i_ingot_gold
 RESOURCES2 = 1 i_ingot_gold
 SKILLMAKE = 600 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -610,7 +610,7 @@ SUBSECTION = Keys
 DESCRIPTION = Iron Key
 
 TYPE = T_KEY
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 3 i_ingot_iron
 RESOURCES2 = 1 i_ingot_iron
 SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -622,7 +622,7 @@ SUBSECTION = Keys
 DESCRIPTION = Key Ring
 
 TYPE = T_KEYRING
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //TDATA2 = 1 // commented out by Converter 
@@ -634,7 +634,7 @@ SUBSECTION = Keys
 DESCRIPTION = Magic Key
 
 TYPE = T_KEY
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_ingot_gold, 5 i_ingot_silver, 5 i_ingot_copper
 SKILLMAKE = 800 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_key_magic
@@ -645,7 +645,7 @@ SUBSECTION = Keys
 DESCRIPTION = Rusty Iron Key
 
 TYPE = T_KEY
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 DEFNAME = i_key_rusty
 
@@ -656,7 +656,7 @@ DESCRIPTION = Dovetail Saw
 
 TYPE = t_carpentry
 //DUPELIST = 01029 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 3 i_ingot_iron, 1 i_log
 RESOURCES2 = 2 i_ingot_iron
 SKILLMAKE = 332 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -672,7 +672,7 @@ DESCRIPTION = Moulding Planes
 
 TYPE = t_carpentry
 //DUPELIST = 0102d // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 3 i_board, 1 i_ingot_iron
 SKILLMAKE = 307 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_plane_moulding
@@ -686,7 +686,7 @@ SUBSECTION = Carpenter
 DESCRIPTION = Nails
 
 //DUPELIST = 0102f // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_ingot_iron
 SKILLMAKE = 50 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_nails
@@ -701,7 +701,7 @@ DESCRIPTION = Jointing Plane
 
 TYPE = t_carpentry
 //DUPELIST = 01031 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 4 i_log
 RESOURCES2 = 3 i_board, 1 i_ingot_iron
 SKILLMAKE = 308 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -717,7 +717,7 @@ DESCRIPTION = Smoothing Plane
 
 TYPE = t_carpentry
 //DUPELIST = 01033 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 4 i_log
 RESOURCES2 = 3 i_board, 1 i_ingot_iron
 SKILLMAKE = 307 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -733,7 +733,7 @@ DESCRIPTION = Saw
 
 TYPE = t_carpentry
 //DUPELIST = 01035 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 5 i_ingot_iron, 1 i_log
 RESOURCES2 = 1 i_board, 4 i_ingot_iron
 SKILLMAKE = 313 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -749,7 +749,7 @@ DESCRIPTION = Clock
 
 TYPE = T_CLOCK
 //DUPELIST = 0104c // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_clock_frame, 1 i_clock_parts //some resources were fixed by converter 
 RESOURCES2 = 1 i_clock_frame, 1 i_parchment, 2 i_board, 1 i_clock_parts
 SKILLMAKE = 307 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -764,7 +764,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Clock Frame
 
 //DUPELIST = 0104e // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 6 i_log
 RESOURCES2 = 4 i_board, 1 i_nails
 SKILLMAKE = 304 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -780,7 +780,7 @@ DESCRIPTION = Clock Parts
 
 NAME = "Ozubena Kolecka"
 //DUPELIST = 01050 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 RESOURCES2 = 1 i_ingot_iron, 1 i_board
 SKILLMAKE = 305 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -795,7 +795,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Axle with Gears
 
 //DUPELIST = 01052 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_log
 RESOURCES2 = 1 i_axel, 1 i_gears
 SKILLMAKE = 304 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -810,7 +810,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Gears
 
 //DUPELIST = 01054 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 RESOURCES2 = 2 i_ingot_iron
 SKILLMAKE = 147 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -825,7 +825,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Hinge
 
 //DUPELIST = 01056 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 SKILLMAKE = 148 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_hinge
@@ -840,7 +840,7 @@ DESCRIPTION = Sextant
 
 TYPE = T_SEXTANT
 //DUPELIST = 01058 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_sextant_parts //some resources were fixed by converter 
 RESOURCES2 = 2 i_ingot_iron, 1 i_sextant_parts
 SKILLMAKE = 307 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -855,7 +855,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Sextant Parts
 
 //DUPELIST = 0105a // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 3 i_ingot_iron
 RESOURCES2 = 1 i_ingot_iron
 SKILLMAKE = 310 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
@@ -870,7 +870,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Axle
 
 //DUPELIST = 0105c // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 SKILLMAKE = 204 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_axel
@@ -884,7 +884,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Springs
 
 //DUPELIST = 0105e // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 SKILLMAKE = 137 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_springs
@@ -909,7 +909,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Bracelet (Gold)
 
 TYPE = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 SKILLMAKE = 635 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_bracelet_gold
@@ -920,7 +920,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Earrings (Gold)
 
 TYPE = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 SKILLMAKE = 625 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_earrings_gold
@@ -931,7 +931,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Necklace
 
 TYPE = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 SKILLMAKE = 610 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_necklace_gold
@@ -942,7 +942,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Necklace (Gold Bead)
 
 TYPE = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_necklace_gold_beads
@@ -953,7 +953,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Ring (Gold)
 
 TYPE = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 SKILLMAKE = 630 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_ring_gold
@@ -974,7 +974,7 @@ SUBSECTION = BarKeep
 DESCRIPTION = Barrel Hoops
 
 //DUPELIST = 010e2 // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 4 i_ingot_iron
 SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_barrel_hoops
@@ -989,7 +989,7 @@ DESCRIPTION = Map (Empty)
 
 TYPE = T_MAP
 //DUPELIST = 014ec // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_paper //some resources were fixed by converter 
 SKILLMAKE = 400 carpentry, 400 tinkering //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
@@ -1006,7 +1006,7 @@ DESCRIPTION = Lockpick
 NAME = "Lockpick"
 TYPE = T_LOCKPICK
 //DUPELIST = 014fc // commented out by Converter 
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_iron
 SKILLMAKE = 450 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
@@ -1017,14 +1017,14 @@ DEFNAME = i_lockpick
 [ItemDef i_lockpick_2]
 NAME = "Lockpick na 2 pokusy"
 TYPE = T_LOCKPICK
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 2 i_ingot_iron
 model = i_lockpick
 
 [ItemDef i_lockpick_3]
 NAME = "Lockpick na 3 pokusy"
 TYPE = T_LOCKPICK
-WEIGHT = 2
+WEIGHT = 0.2
 RESOURCES = 3 i_ingot_iron
 model = i_lockpick
 
@@ -1035,7 +1035,7 @@ DESCRIPTION = Tool Kit
 
 TYPE = t_carpentry
 //DUPELIST = 01eb9 // commented out by Converter 
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 1 i_toolkit_empty, 4 i_ingot_iron, 1 i_log //some resources were fixed by converter 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_toolkit
@@ -1050,7 +1050,7 @@ DESCRIPTION = Tool Case
 
 TYPE = t_carpentry
 //DUPELIST = 01ebb // commented out by Converter 
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 1 i_toolcase_empty, 4 i_ingot_iron, 1 i_log //some resources were fixed by converter 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_toolcase
@@ -1064,7 +1064,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Tinker's Tools
 
 TYPE = T_TINKER_TOOLS
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 4 i_ingot_iron
 SKILLMAKE = 350 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_tinker_tools
@@ -1075,7 +1075,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Silver Bracelet
 
 TYPE = t_jewelry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_silver
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_bracelet_silver
@@ -1086,7 +1086,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Silver Earrings
 
 TYPE = t_jewelry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_silver
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_earrings_silver
@@ -1097,7 +1097,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Silver Necklace
 
 TYPE = t_jewelry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_silver
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_necklace_silver
@@ -1108,7 +1108,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Silver Ring
 
 TYPE = t_jewelry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_silver
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_ring_silver
@@ -1119,7 +1119,7 @@ SUBSECTION = Jewelry
 DESCRIPTION = Silver Beads
 
 TYPE = t_jewelry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_silver
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 DEFNAME = i_necklace_silver_beads
@@ -1130,7 +1130,7 @@ SUBSECTION = Cook
 DESCRIPTION = Cauldron
 
 //DUPELIST = 0975 // commented out by Converter 
-WEIGHT = 300
+WEIGHT = 30
 RESOURCES = 20 i_ingot_iron
 DEFNAME = i_cauldron
 
@@ -1176,7 +1176,7 @@ SUBSECTION = Containers
 DESCRIPTION = Empty Glass Pitcher
 
 //DUPELIST = 0ff6,0ff7 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 6 i_glass
 RESOURCES2 = 1 i_sand
 //FLIP = 1 // commented out by Converter 
@@ -1443,7 +1443,7 @@ SUBSECTION = Fisherman
 DESCRIPTION = Fishing Weight
 
 //DUPELIST = 0dcd,0dce,0dcf // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 DEFNAME = i_fishing_weight
 
@@ -1463,7 +1463,7 @@ DESCRIPTION = PickAxe
 
 TYPE = t_weapon_bow_run
 //DUPELIST = 0e86 // commented out by Converter 
-WEIGHT = 110
+WEIGHT = 11
 RESOURCES = 4 i_ingot_iron
 SKILLMAKE = 421 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
@@ -1496,7 +1496,7 @@ DESCRIPTION = Barber Scissors
 
 TYPE = T_SCISSORS
 //DUPELIST = 0dfd // commented out by Converter 
-WEIGHT = 4
+WEIGHT = 0.4
 RESOURCES = 2 i_ingot_iron, 1 i_screw
 DEFNAME = i_scissors_barber
 
@@ -1508,7 +1508,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = EMPTY VIAL
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_vial_empty
 
@@ -1518,7 +1518,7 @@ SUBSECTION = Artists
 DESCRIPTION = Pen & Ink (W)
 
 //DUPELIST = 0fc0 // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_feather, 1 i_ink_pot
 DEFNAME = i_pen_and_ink
 
@@ -1534,7 +1534,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Artists
 DESCRIPTION = Paints & Brushes
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 1 i_brush, 6 i_dyes, 1 i_board
 DEFNAME = i_palette
 
@@ -1545,7 +1545,7 @@ DESCRIPTION = BRAZIER
 
 TYPE = T_FIRE
 //DUPELIST = 0e32 // commented out by Converter 
-WEIGHT = 150
+WEIGHT = 15
 RESOURCES = 15 i_ingot_iron
 DEFNAME = i_brazier_2
 
@@ -1559,7 +1559,7 @@ DESCRIPTION = Tongs
 
 TYPE = T_WEAPON_MACE_SMITH
 //DUPELIST = 0fbc // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 2 i_ingot_iron
 //FLIP = 1 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -1574,7 +1574,7 @@ DESCRIPTION = CRYSTAL BALL
 
 TYPE = T_CRYSTAL_BALL
 //DUPELIST = 0e2e,0e2f,0e30 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 2 i_board, 7 i_sand
 DEFNAME = i_crystal_ball
 
@@ -1600,7 +1600,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Empty Jar
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_sand
 DEFNAME = i_jar_empty
 
@@ -1609,7 +1609,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Full Jar
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_sand
 DEFNAME = i_jar_full
 
@@ -1618,7 +1618,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Half Empty Jar
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_sand
 DEFNAME = i_jar_half_full
 
@@ -1627,7 +1627,7 @@ CATEGORY = Provisions - Miscellaneous
 SUBSECTION = Containers
 DESCRIPTION = Wash Basin
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron, 1 i_sand
 DEFNAME = i_wash_basin
 
@@ -1636,7 +1636,7 @@ CATEGORY = Provisions - Miscellaneous
 SUBSECTION = Containers
 DESCRIPTION = Basin
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron, 1 i_sand
 DEFNAME = i_basin
 
@@ -1647,7 +1647,7 @@ DESCRIPTION = Chisels
 
 TYPE = t_carpentry
 //DUPELIST = 01027 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 DEFNAME = i_chisels
 
@@ -1659,7 +1659,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Baker
 DESCRIPTION = Dough Bowl
 
-WEIGHT = 4
+WEIGHT = 0.4
 RESOURCES = 1 i_clay
 DEFNAME = i_bowl_dough
 
@@ -1669,7 +1669,7 @@ SUBSECTION = Carpenter
 DESCRIPTION = Froe
 
 TYPE = t_carpentry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_ingot_iron
 DEFNAME = i_froe
 
@@ -1679,7 +1679,7 @@ SUBSECTION = Carpenter
 DESCRIPTION = Inshave
 
 TYPE = t_carpentry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_ingot_iron
 DEFNAME = i_inshave
 
@@ -1689,7 +1689,7 @@ SUBSECTION = Carpenter
 DESCRIPTION = Scorp
 
 TYPE = t_carpentry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_ingot_iron
 DEFNAME = i_scorp
 
@@ -1698,7 +1698,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Spoon (Wooden) (Small)
 
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_board
 DEFNAME = i_SPOON_WOOD_SMALL
 
@@ -1707,7 +1707,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Spoon (Wooden) (Large)
 
-WEIGHT = 2
+WEIGHT = 0.2
 RESOURCES = 1 i_board
 DEFNAME = i_SPOON_WOOD_LARGE
 
@@ -1716,7 +1716,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Artists
 DESCRIPTION = Mallet and Chisel
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 2 i_ingot_iron, 1 i_board
 DEFNAME = i_mallet_and_chisel
 
@@ -1726,7 +1726,7 @@ SUBSECTION = Beekeepers/Candlers
 DESCRIPTION = Dipping Stick
 
 //DUPELIST = 01429 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_sticks, 1 i_pot_of_wax, 1 i_string
 DEFNAME = i_dipping_stick
 
@@ -1739,7 +1739,7 @@ SUBSECTION = Candles
 DESCRIPTION = Candle (Unlit)
 
 TYPE = T_LIGHT_OUT
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_dipping_stick
 //TDATA3 = i_candle_short_lit // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -1751,7 +1751,7 @@ SUBSECTION = Candles
 DESCRIPTION = Candle (Unlit)
 
 TYPE = T_LIGHT_OUT
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_dipping_stick
 //TDATA3 = i_candle_lg_lit // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -1763,7 +1763,7 @@ SUBSECTION = Candles
 DESCRIPTION = Candle (Burnt Out)
 
 TYPE = T_LIGHT_OUT
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_dipping_stick
 //TDATA3 = i_candle_thin_lit // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -1775,7 +1775,7 @@ SUBSECTION = Vat
 DESCRIPTION = Bucket
 
 TYPE = T_CONTAINER
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 2 i_board, 1 i_ingot_iron, 1 i_nails
 //TDATA2 = 03e // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -1788,7 +1788,7 @@ DESCRIPTION = SpyGlass (N)
 
 TYPE = T_SPY_GLASS
 //DUPELIST = 014f6 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 2 i_ingot_iron, 1 i_glass
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_spyglass
@@ -1802,7 +1802,7 @@ SUBSECTION = Nautical
 DESCRIPTION = Anchor (W)
 
 //DUPELIST = 014f9 // commented out by Converter 
-WEIGHT = 400
+WEIGHT = 40
 RESOURCES = 40 i_ingot_iron, 1 i_rope
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_anchor
@@ -1817,7 +1817,7 @@ DESCRIPTION = Lockpicks (Set)
 
 TYPE = T_LOCKPICK
 //DUPELIST = 014fe // commented out by Converter 
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 3 i_lockpick
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_lockpick_set
@@ -1832,7 +1832,7 @@ DESCRIPTION = Key Ring w/Keys
 
 TYPE = T_KEYRING
 //DUPELIST = 0176a,0176b // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 //TDATA2 = 1 // commented out by Converter 
 DEFNAME = i_key_ring_1
@@ -1850,7 +1850,7 @@ DESCRIPTION = Hourglass
 
 TYPE = T_CLOCK
 //DUPELIST = 01811,01812,01813,01814,01815,01816,01817,01818,01819,0181a,0181b,0181c // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_board, 1 i_glass, 1 i_sand
 DEFNAME = i_hourglass
 
@@ -1895,7 +1895,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Flask Stand
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron
 DEFNAME = i_flaskstand
 
@@ -1905,7 +1905,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask (Empty)
 
 TYPE = t_bottle_empty
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_sand
 DEFNAME = i_flask1_empty
 
@@ -1916,7 +1916,7 @@ DESCRIPTION = Heating stand
 
 TYPE = t_light_out
 //DUPELIST = 0184d // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 1 i_candle, 1 i_ingot_iron, 1 i_ingot_copper
 //TDATA3 = i_heating_stand_lit // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -1928,7 +1928,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Scales
 
 //DUPELIST = 01852 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 3 i_ingot_silver
 DEFNAME = i_scales
 
@@ -1942,7 +1942,7 @@ DESCRIPTION = Skull Candle (Unlit)
 
 TYPE = t_light_out
 //DUPELIST = 01857 // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 1 i_bone_skull, 1 i_candle
 //TDATA3 = i_skull_candle_lit // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -1954,7 +1954,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Rack of Empty Vials
 
 //DUPELIST = 0185c // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 1 i_board, 1 i_nails, 3 i_vial_empty
 DEFNAME = i_testtube_rack
 
@@ -1967,7 +1967,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Rack of Full Vials
 
 //DUPELIST = 0185e // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 1 i_board, 1 i_nails, 3 i_vial_empty
 DEFNAME = i_testtube_rack_full
 

@@ -10,7 +10,7 @@ DESCRIPTION = BLOODY BANDAGES
 
 TYPE = T_BANDAGE_BLOOD
 //DUPELIST = 0e22 // commented out by Converter 
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_bandage, 1 i_blood
 DEFNAME = i_bandage_bloody
 
@@ -21,7 +21,7 @@ DESCRIPTION = Clean Bandages
 
 TYPE = T_BANDAGE
 //DUPELIST = 0ee9 // commented out by Converter 
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_cloth //some resources were fixed by converter 
 DEFNAME = i_bandage
 

@@ -1,6 +1,7 @@
 [BankBoxDef i_bankBox]
 NAME = "Bankbox"
 model = 0xe7c
+Gump = 0x42 //GUMP_CHEST_GO_SI, the gold and silver chest
 
 Layer=LayerNames.BankBox
 

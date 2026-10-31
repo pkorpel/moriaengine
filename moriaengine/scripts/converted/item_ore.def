@@ -29,7 +29,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Copper Ore
 
 NAME = "Copper Ore"
-WEIGHT = 10
+WEIGHT = 1
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 5 // commented out by Converter 
@@ -42,7 +42,7 @@ DESCRIPTION = Kremicity pisek
 
 NAME = "Kremicity pisek"
 TYPE = t_ingot
-WEIGHT = 10
+WEIGHT = 1
 model = i_ore_iron
 //VALUE = 20 // commented out by Converter 
 Color = color_o_pisek
@@ -55,7 +55,7 @@ DESCRIPTION = Iron Ore
 NAME = "Iron Ore"
 TYPE = t_ingot
 //DUPELIST = 019b8,019b9,019ba // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_ore_iron
 //VALUE = 25 // commented out by Converter 
 Color = color_o_iron
@@ -66,7 +66,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Gold Ore
 
 NAME = "Gold Ore"
-WEIGHT = 10
+WEIGHT = 1
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 30 // commented out by Converter 
@@ -78,7 +78,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Silver Ore
 
 NAME = "Silver Ore"
-WEIGHT = 10
+WEIGHT = 1
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 30 // commented out by Converter 
@@ -90,7 +90,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Shadows Ore
 
 NAME = "Shadow Ore"
-WEIGHT = 5
+WEIGHT = 0.5
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 400 // commented out by Converter 
@@ -102,7 +102,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Verite Ore
 
 NAME = "Verite Ore"
-WEIGHT = 10
+WEIGHT = 1
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 70 // commented out by Converter 
@@ -110,7 +110,7 @@ Color = color_o_verite
 
 [ItemDef i_ore_mithril]
 NAME = "Mithril Ore"
-WEIGHT = 5
+WEIGHT = 0.5
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 500 // commented out by Converter 
@@ -122,7 +122,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Mithril Ore
 
 NAME = "Valorite Ore"
-WEIGHT = 10
+WEIGHT = 1
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 80 // commented out by Converter 
@@ -130,7 +130,7 @@ Color = color_o_valorite
 
 [ItemDef i_ore_obsidian]
 NAME = "Obsidian Ore"
-WEIGHT = 5
+WEIGHT = 0.5
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 200 // commented out by Converter 
@@ -138,7 +138,7 @@ Color = 09BD
 
 [ItemDef i_ore_adamantinum]
 NAME = "Adamantium Ore"
-WEIGHT = 5
+WEIGHT = 0.5
 model = i_ore_iron
 type = t_ingot //guessed from base def by Converter 
 //VALUE = 300 // commented out by Converter 
@@ -147,7 +147,7 @@ Color = 026
 [ItemDef 0x1bf2]
 TYPE = T_INGOT
 //DUPELIST = 01bf0,01bf1,01bef,01bf3,01bf4 // commented out by Converter 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_iron //some resources were fixed by converter 
 SKILLMAKE = 200 blacksmithing //some resources were fixed by converter 
 DEFNAME = i_ingot_iron
@@ -161,7 +161,7 @@ DESCRIPTION = Sklovina
 
 NAME = "Sklovina"
 TYPE = T_INGOT
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_pisek //some resources were fixed by converter 
 SKILLMAKE = 510 blacksmithing //some resources were fixed by converter 
 model = i_gold
@@ -176,7 +176,7 @@ DESCRIPTION = Copper Ingot
 
 TYPE = T_INGOT
 //DUPELIST = 01be4,01be5,01be3,01be7,01be8 // commented out by Converter 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_copper //some resources were fixed by converter 
 SKILLMAKE = 01 blacksmithing //some resources were fixed by converter 
 DEFNAME = i_ingot_copper
@@ -190,7 +190,7 @@ DESCRIPTION = Gold Ingot
 
 TYPE = T_INGOT
 //DUPELIST = 01bea,01beb,01be9,01bed,01bee // commented out by Converter 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_gold //some resources were fixed by converter 
 SKILLMAKE = 400 blacksmithing //some resources were fixed by converter 
 DEFNAME = i_ingot_gold
@@ -204,7 +204,7 @@ DESCRIPTION = Silver Ingot
 
 TYPE = T_INGOT
 //DUPELIST = 01bf6,01bf7,01bf8,01bf9,01bfa // commented out by Converter 
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_silver //some resources were fixed by converter 
 SKILLMAKE = 450 blacksmithing //some resources were fixed by converter 
 DEFNAME = i_ingot_silver
@@ -217,7 +217,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Shadow Ingot
 
 NAME = "Shadow Ingot"
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_shadow //some resources were fixed by converter 
 SKILLMAKE = 800 blacksmithing //some resources were fixed by converter 
 model = i_ingot_iron
@@ -232,7 +232,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Verite Ingot
 
 NAME = "Verite Ingot"
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_verite //some resources were fixed by converter 
 SKILLMAKE = 650 blacksmithing //some resources were fixed by converter 
 model = i_ingot_iron
@@ -247,7 +247,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Mithril Ingot
 
 NAME = "Mithril Ingot"
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_mithril //some resources were fixed by converter 
 SKILLMAKE = 900 blacksmithing //some resources were fixed by converter 
 model = i_ingot_iron
@@ -262,7 +262,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Valorite Ingot
 
 NAME = "Valorite Ingot"
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_valorite //some resources were fixed by converter 
 SKILLMAKE = 700 blacksmithing //some resources were fixed by converter 
 model = i_ingot_iron
@@ -277,7 +277,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Obsidian Ingot
 
 NAME = "Obsidian Ingot"
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_obsidian //some resources were fixed by converter 
 SKILLMAKE = 800 blacksmithing //some resources were fixed by converter 
 model = i_ingot_iron
@@ -292,7 +292,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Adamantinum Ingot
 
 NAME = "Adamantium Ingot"
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 1 i_ore_adamantinum //some resources were fixed by converter 
 SKILLMAKE = 850 blacksmithing //some resources were fixed by converter 
 model = i_ingot_iron
@@ -303,7 +303,7 @@ Color = color_o_adamantinum
 
 [ItemDef i_log_lager]
 NAME = "lagr log%s"
-WEIGHT = 10
+WEIGHT = 1
 model = i_log
 type = t_log //guessed from base def by Converter 
 //value = 10 // commented out by Converter 
@@ -321,7 +321,7 @@ color_elven	07d6
 
 [ItemDef i_log_copper]
 NAME = "spruce log%s"
-WEIGHT = 15
+WEIGHT = 1.5
 model = i_log
 type = t_log //guessed from base def by Converter 
 //value = 10 // commented out by Converter 
@@ -329,7 +329,7 @@ Color = color_spruce
 
 [ItemDef i_log_iron]
 NAME = "chestnut log%s"
-WEIGHT = 15
+WEIGHT = 1.5
 model = i_log
 type = t_log //guessed from base def by Converter 
 //value = 12 // commented out by Converter 
@@ -337,7 +337,7 @@ Color = color_chestnut
 
 [ItemDef i_log_verite]
 NAME = "oak log%s"
-WEIGHT = 15
+WEIGHT = 1.5
 model = i_log
 type = t_log //guessed from base def by Converter 
 //value = 140 // commented out by Converter 
@@ -345,7 +345,7 @@ Color = color_oak
 
 [ItemDef i_log_valorite]
 NAME = "teak log%s"
-WEIGHT = 15
+WEIGHT = 1.5
 model = i_log
 type = t_log //guessed from base def by Converter 
 //value = 400 // commented out by Converter 
@@ -353,7 +353,7 @@ Color = color_teak
 
 [ItemDef i_log_obsidian]
 NAME = "mahagon log%s"
-WEIGHT = 15
+WEIGHT = 1.5
 model = i_log
 type = t_log //guessed from base def by Converter 
 //value = 700 // commented out by Converter 
@@ -361,7 +361,7 @@ Color = color_mahagon
 
 [ItemDef i_log_adamantinum]
 NAME = "eben log%s"
-WEIGHT = 15
+WEIGHT = 1.5
 model = i_log
 type = t_log //guessed from base def by Converter 
 //value = 1100 // commented out by Converter 
@@ -369,7 +369,7 @@ Color = color_eben
 
 [ItemDef i_log_mithril]
 NAME = "elven log%s"
-WEIGHT = 15
+WEIGHT = 1.5
 model = i_log
 type = t_log //guessed from base def by Converter 
 //value = 1400 // commented out by Converter 

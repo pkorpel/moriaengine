@@ -431,7 +431,7 @@ SUBSECTION = Potions
 DESCRIPTION = Potion (Black)(Nightsite)
 
 TYPE = t_potion
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_black
@@ -442,7 +442,7 @@ SUBSECTION = Potions
 DESCRIPTION = Potion (Orange)(Cure)
 
 TYPE = T_POTION
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_orange
@@ -453,7 +453,7 @@ SUBSECTION = Potions
 DESCRIPTION = Potion (Blue)(Agility)
 
 TYPE = T_POTION
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_blue
@@ -464,7 +464,7 @@ SUBSECTION = Potions
 DESCRIPTION = Potion (White)(Strength)
 
 TYPE = T_POTION
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_white
@@ -475,7 +475,7 @@ SUBSECTION = Potions
 DESCRIPTION = Potion (Green)(Poison)
 
 TYPE = T_POTION
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_green
@@ -486,7 +486,7 @@ SUBSECTION = Potions
 DESCRIPTION = Potion (Red)(Refresh)
 
 TYPE = T_POTION
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_red
@@ -497,7 +497,7 @@ SUBSECTION = Potions
 DESCRIPTION = Potion (Yellow)(Heal)
 
 TYPE = T_POTION
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_yellow
@@ -508,7 +508,7 @@ SUBSECTION = Potions
 DESCRIPTION = Potion (Purple)(Explosion)
 
 TYPE = T_POTION
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_bottle_empty //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 DEFNAME = i_bottle_purple
@@ -519,7 +519,7 @@ SUBSECTION = Tailor
 DESCRIPTION = Dyes
 
 TYPE = T_DYE
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 1 i_log, 1 i_reag_blood_moss //some resources were fixed by converter 
 RESOURCES2 = 1 i_log, 1 i_reag_blood_moss, 1 i_reag_sulfur_ash, 1 i_reag_serpent_scale, 1 i_reag_black_pearl
 SKILLMAKE = 100 alchemy //some resources were fixed by converter 
@@ -532,7 +532,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask (Blue Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask1_empty //converted from 'TDATA1' 
 DEFNAME = i_flask1_blue
 
@@ -542,7 +542,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask (Orange Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask1_empty //converted from 'TDATA1' 
 DEFNAME = i_flask1_orange
 
@@ -552,7 +552,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask (Red Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask1_empty //converted from 'TDATA1' 
 DEFNAME = i_flask1_red
 
@@ -562,7 +562,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Beaker (Orange Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_beaker1_orange
 
 [PotionDef 0x182f]
@@ -571,7 +571,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Beaker (Red liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_beaker1_red
 
 [PotionDef 0x1830]
@@ -580,7 +580,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Beaker (Blue Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_beaker1_blue
 
 [PotionDef 0x1831]
@@ -589,7 +589,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Beaker (Green Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_beaker1_green
 
 [ItemDef 0x1832]
@@ -598,7 +598,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 02 (Empty)
 
 //DUPELIST = 01835 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_sand
 DEFNAME = i_beaker2_empty
 
@@ -608,7 +608,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 02 (Red Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_beaker2_empty //converted from 'TDATA1' 
 DEFNAME = i_beaker2_red
 
@@ -618,7 +618,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 02 (Teal Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_beaker2_empty //converted from 'TDATA1' 
 DEFNAME = i_beaker2_teal
 
@@ -631,7 +631,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 02 (Blue Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_beaker2_empty //converted from 'TDATA1' 
 DEFNAME = i_beaker2_blue
 
@@ -641,7 +641,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 02 (Green Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_beaker2_empty //converted from 'TDATA1' 
 DEFNAME = i_beaker_2_green
 
@@ -651,7 +651,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 03 (Red Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask2_empty //converted from 'TDATA1' 
 DEFNAME = i_flask2_red
 
@@ -661,7 +661,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 03 (Purple Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask2_empty //converted from 'TDATA1' 
 DEFNAME = i_flask2_purple
 
@@ -671,7 +671,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 03 (Empty)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 2 i_sand
 DEFNAME = i_flask2_empty
 
@@ -681,7 +681,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 04 (Orange Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask_long_empty //converted from 'TDATA1' 
 DEFNAME = i_FLASK_LONG_orange
 
@@ -691,7 +691,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 04 (Purple Liquid)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask_long_empty //converted from 'TDATA1' 
 DEFNAME = i_FLASK_LONG_purple
 
@@ -701,7 +701,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 04 (Empty)
 
 TYPE = T_DRINK
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_flask_long_empty
 
 [PotionDef 0x183e]
@@ -711,7 +711,7 @@ DESCRIPTION = Flask 03 (Red Liquid)
 
 TYPE = T_DRINK
 //DUPELIST = 0183f,01840 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask2_empty //converted from 'TDATA1' 
 DEFNAME = i_flask2_red_anim
 
@@ -728,7 +728,7 @@ DESCRIPTION = Flask 04 (Purple Liquid)
 
 TYPE = t_DRINK
 //DUPELIST = 01842,01843 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask_long_empty //converted from 'TDATA1' 
 DEFNAME = i_FLASK_LONG_purple_anim
 
@@ -745,7 +745,7 @@ DESCRIPTION = Flask (Blue Liquid)
 
 TYPE = t_DRINK
 //DUPELIST = 01845,01846 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 EmptyFlask = i_flask1_empty //converted from 'TDATA1' 
 DEFNAME = i_flask1_blue_anim
 
@@ -760,7 +760,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Flask (Small & Empty)
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_sand
 DEFNAME = i_FLASK_SMALL
 
@@ -769,7 +769,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Flask (Small & Green Liquid)
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_sand
 DEFNAME = i_FLASK_SMALL_GREEN
 
@@ -779,7 +779,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE
 
 //DUPELIST = 0efd // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle
 
@@ -789,7 +789,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 2
 
 //DUPELIST = 0efe // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_2
 
@@ -799,7 +799,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 3
 
 //DUPELIST = 0f00 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_3
 
@@ -809,7 +809,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 4
 
 //DUPELIST = 0f01 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_4
 
@@ -819,7 +819,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 5
 
 //DUPELIST = 0f02 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_5
 
@@ -829,7 +829,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 6
 
 //DUPELIST = 0f03 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_6
 
@@ -839,7 +839,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Bottle
 
 //DUPELIST = 0f04 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_7
 
@@ -885,7 +885,7 @@ CATEGORY = Provisions - Miscellaneous
 SUBSECTION = Etc.
 DESCRIPTION = Oil Flask
 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_oil_flask
 //RESOURCES3 = 1 i_OIL, 1 i_FLASK // commented out by Converter 
 //VALUE = 3 // commented out by Converter 

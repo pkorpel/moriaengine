@@ -114,7 +114,7 @@ CATEGORY = Kvesty
 SUBSECTION = Kvest Mordor-002 Reyla a Akhbar
 
 NAME = "Zadani ukolu"
-WEIGHT = 100
+WEIGHT = 10
 model = i_scroll_blank
 type = t_scroll_blank //guessed from base def by Converter 
 Color = 009a
@@ -126,7 +126,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -137,7 +137,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -148,7 +148,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -159,7 +159,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -170,7 +170,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -181,7 +181,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -192,7 +192,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -203,7 +203,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -214,7 +214,7 @@ DESCRIPTION = Akbhaaruv Naramek
 
 NAME = "Naramek craftet by Akbhaar Shakis"
 type = t_jewelry
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
 model = i_necklace_gold_beads
 
@@ -225,7 +225,7 @@ CATEGORY = Kvesty
 SUBSECTION = Kvest Mordor-002 Reyla a Akhbar
 
 NAME = "Harghalaghuv dopis"
-WEIGHT = 100
+WEIGHT = 10
 model = i_scroll_blank
 type = t_scroll_blank //guessed from base def by Converter 
 Color = 009a
@@ -237,7 +237,7 @@ CATEGORY = Kvesty
 SUBSECTION = Kvest Mordor-002 Reyla a Akhbar
 
 NAME = "Harghalaghuv dopis"
-WEIGHT = 100
+WEIGHT = 10
 model = i_scroll_blank
 type = t_scroll_blank //guessed from base def by Converter 
 Color = 009a
@@ -251,7 +251,7 @@ NAME = "Reyliny saty"
 type = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 //DUPELIST = 01f00 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 12 i_cloth
 RESOURCES2 = 12 i_cloth, 1 i_thread
 SKILLMAKE = 336 tailoring, 1 t_sewing_kit //some resources were fixed by converter 

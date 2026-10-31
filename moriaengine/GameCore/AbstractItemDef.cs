@@ -151,6 +151,24 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>Like stackability below, a weight no script set comes from tiledata. Sphere counts
+		/// what tiledata calls immovable (255) or water as 1 stone.</summary>
+		public override float Weight {
+			get {
+				if (this.HasCodedDefaultWeight) {
+					ItemDispidInfo idi = this.DispidInfo;
+					if (idi == null) {
+						return 0;
+					}
+					return ((idi.Weight == 255) || TileData.HasFlag(idi.Flags, TileFlag.Wet)) ? 1 : idi.Weight;
+				}
+				return base.Weight;
+			}
+			set {
+				base.Weight = value;
+			}
+		}
+
 		//real stackability (potions, bandages, bolts, arrows, scrolls, gold, ...) is
 		//virtually never set explicitly by a script in real Sphere/UO content - the
 		//archive's own comment on the equivalent tiledata-dump field confirms it's

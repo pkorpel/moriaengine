@@ -42,6 +42,21 @@ namespace SteamEngine.CompiledScripts {
 			this.OpenTo(viewer);
 		}
 
+		/// <summary>Sphere doesn't count a bank towards what its owner carries.</summary>
+		protected override bool IsWeighed {
+			get {
+				return false;
+			}
+		}
+
+		/// <summary>The inside of the chest gump, from Sphere's table of them.</summary>
+		public override void GetContainerGumpBoundaries(out int minX, out int minY, out int maxX, out int maxY) {
+			minX = 18;
+			minY = 105;
+			maxX = 118;
+			maxY = 169;
+		}
+
 		protected override bool IsReachableOnInvisibleLayer {
 			get {
 				return true;

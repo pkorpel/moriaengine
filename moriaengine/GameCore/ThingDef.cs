@@ -155,12 +155,19 @@ namespace SteamEngine {
 			}
 		}
 
-		public float Weight {
+		/// <summary>In stones.</summary>
+		public virtual float Weight {
 			get {
 				return (float) this.weight.CurrentValue;
 			}
 			set {
 				this.weight.CurrentValue = value;
+			}
+		}
+
+		protected bool HasCodedDefaultWeight {
+			get {
+				return this.weight.IsDefaultCodedValue;
 			}
 		}
 

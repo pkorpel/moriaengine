@@ -135,7 +135,7 @@ CATEGORY = Knihy
 SUBSECTION = propustky
 
 NAME = "Jadnorazova propustka do citadely"
-WEIGHT = 100
+WEIGHT = 10
 model = i_scroll_blank
 type = t_scroll_blank //guessed from base def by Converter 
 Color = 009a
@@ -145,7 +145,7 @@ CATEGORY = Knihy
 SUBSECTION = propustky
 
 NAME = "casove neomezena propustka do citadely"
-WEIGHT = 100
+WEIGHT = 10
 model = i_scroll_blank
 type = t_scroll_blank //guessed from base def by Converter 
 Color = 009a
@@ -155,7 +155,7 @@ CATEGORY = Vypravec
 SUBSECTION = propustky
 
 NAME = "Propusteci medailon%y"
-WEIGHT = 100
+WEIGHT = 10
 model = i_gold
 type = t_gold //guessed from base def by Converter 
 Color = 0021
