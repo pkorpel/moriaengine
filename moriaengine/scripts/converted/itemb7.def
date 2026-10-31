@@ -5381,7 +5381,7 @@ DESCRIPTION = @ (n)
 
 TYPE = T_CHAIR
 //DUPELIST = 03e00 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_bench_5
 //VALUE = {80 100} // commented out by Converter 

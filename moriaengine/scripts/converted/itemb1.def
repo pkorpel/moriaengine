@@ -3738,7 +3738,7 @@ DESCRIPTION = Marble Bench 1 (n)
 
 TYPE = T_CHAIR
 //DUPELIST = 045a // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 50 i_stone_marble
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_BENCH_MARBLE
@@ -3755,7 +3755,7 @@ DESCRIPTION = Marble Bench 2 (n)
 
 TYPE = T_CHAIR
 //DUPELIST = 045c // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 50 i_stone_sand
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_bench_sandstone

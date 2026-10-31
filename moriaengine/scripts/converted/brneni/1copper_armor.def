@@ -17,7 +17,7 @@ SUBSECTION = Copper
 DESCRIPTION = Platemail Arms
 
 NAME = "Copper Platemail Arms"
-WEIGHT = 175 //nastaveni_armorweight 
+WEIGHT = 17.5 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_copper
 SKILLMAKE = 400 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -42,7 +42,7 @@ SUBSECTION = Copper
 DESCRIPTION = Platemail Legs
 
 NAME = "Copper Platemail Legs"
-WEIGHT = 288 //nastaveni_armorweight 
+WEIGHT = 28.8 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_copper
 SKILLMAKE = 420 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -66,7 +66,7 @@ SUBSECTION = Copper
 DESCRIPTION = Platemail Gorget
 
 NAME = "Copper Platemail Gorget"
-WEIGHT = 75 //nastaveni_armorweight 
+WEIGHT = 7.5 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 370 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -90,7 +90,7 @@ SUBSECTION = Copper
 DESCRIPTION = Platemail Gauntlets
 
 NAME = "Copper Platemail Gauntlets"
-WEIGHT = 88 //nastaveni_armorweight 
+WEIGHT = 8.8 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_copper
 SKILLMAKE = 390 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -114,7 +114,7 @@ SUBSECTION = Copper
 DESCRIPTION = Platemail
 
 NAME = "Copper Platemail"
-WEIGHT = 450 //nastaveni_armorweight 
+WEIGHT = 45 //nastaveni_armorweight 
 RESOURCES = 25 i_ingot_copper
 SKILLMAKE = 450 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -138,7 +138,7 @@ SUBSECTION = Copper
 DESCRIPTION = Female Platemail
 
 NAME = "Copper Platemail"
-WEIGHT = 450 //nastaveni_armorweight 
+WEIGHT = 45 //nastaveni_armorweight 
 RESOURCES = 22 i_ingot_copper
 SKILLMAKE = 370 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -162,7 +162,7 @@ SUBSECTION = Copper
 DESCRIPTION = Plate Helm
 
 NAME = "Copper Plate Helm"
-WEIGHT = 175 //nastaveni_armorweight 
+WEIGHT = 17.5 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_copper
 SKILLMAKE = 450 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -186,7 +186,7 @@ SUBSECTION = Copper
 DESCRIPTION = Closed Helm
 
 NAME = "Copper Closed Helm"
-WEIGHT = 175 //nastaveni_armorweight 
+WEIGHT = 17.5 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_copper
 SKILLMAKE = 370 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -210,7 +210,7 @@ SUBSECTION = Copper
 DESCRIPTION = Bascinet
 
 NAME = "Copper Bascinet"
-WEIGHT = 175 //nastaveni_armorweight 
+WEIGHT = 17.5 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_copper
 SKILLMAKE = 370 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -234,7 +234,7 @@ SUBSECTION = Copper
 DESCRIPTION = Nose Helm
 
 NAME = "Copper Nose Helm"
-WEIGHT = 175 //nastaveni_armorweight 
+WEIGHT = 17.5 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_copper
 SKILLMAKE = 370 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -254,7 +254,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_copper_CHAINMAIL_gorget]
 NAME = "Copper Chainmail Gorget"
-WEIGHT = 54 //nastaveni_armorweight 
+WEIGHT = 5.4 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 330 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -274,7 +274,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_copper_CHAINMAIL_sleeves]
 NAME = "Copper Chainmail Sleeves"
-WEIGHT = 126 //nastaveni_armorweight 
+WEIGHT = 12.6 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 330 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -294,7 +294,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_copper_CHAINMAIL_gloves]
 NAME = "Copper Chainmail Gloves"
-WEIGHT = 63 //nastaveni_armorweight 
+WEIGHT = 6.3 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 330 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -318,7 +318,7 @@ SUBSECTION = Copper
 DESCRIPTION = Chainmail Coif
 
 NAME = "Copper Chainmail Coif"
-WEIGHT = 126 //nastaveni_armorweight 
+WEIGHT = 12.6 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 330 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -342,7 +342,7 @@ SUBSECTION = Copper
 DESCRIPTION = Chainmail Leggings
 
 NAME = "Copper Chainmail Leggings"
-WEIGHT = 207 //nastaveni_armorweight 
+WEIGHT = 20.7 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_copper
 SKILLMAKE = 330 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -366,7 +366,7 @@ SUBSECTION = Copper
 DESCRIPTION = Chainmail Tunic
 
 NAME = "Copper Chainmail Tunic"
-WEIGHT = 324 //nastaveni_armorweight 
+WEIGHT = 32.4 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_copper
 SKILLMAKE = 330 blacksmithing, 350 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -386,7 +386,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_copper_kite_wood_shield]
 NAME = "Copper kite shield"
-WEIGHT = 38 //nastaveni_armorweight 
+WEIGHT = 3.8 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 300 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -406,7 +406,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_copper_RINGMAIL_gorget]
 NAME = "Copper ringmail gorget"
-WEIGHT = 45 //nastaveni_armorweight 
+WEIGHT = 4.5 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 300 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -426,7 +426,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_copper_RINGMAIL_helm]
 NAME = "Copper Ringmail Helm"
-WEIGHT = 105 //nastaveni_armorweight 
+WEIGHT = 10.5 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 300 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -450,7 +450,7 @@ SUBSECTION = Copper
 DESCRIPTION = Ringmail Leggings
 
 NAME = "Copper Ringmail Leggings"
-WEIGHT = 173 //nastaveni_armorweight 
+WEIGHT = 17.3 //nastaveni_armorweight 
 RESOURCES = 16 i_ingot_copper
 SKILLMAKE = 300 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -474,7 +474,7 @@ SUBSECTION = Copper
 DESCRIPTION = Ringmail Sleeves
 
 NAME = "Copper Ringmail Sleeves"
-WEIGHT = 105 //nastaveni_armorweight 
+WEIGHT = 10.5 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_copper
 SKILLMAKE = 300 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -498,7 +498,7 @@ SUBSECTION = Copper
 DESCRIPTION = Ringmail Gloves
 
 NAME = "Copper Ringmail Gloves"
-WEIGHT = 53 //nastaveni_armorweight 
+WEIGHT = 5.3 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 300 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -522,7 +522,7 @@ SUBSECTION = Copper
 DESCRIPTION = Ringmail Tunic
 
 NAME = "Copper Ringmail Tunic"
-WEIGHT = 270 //nastaveni_armorweight 
+WEIGHT = 27 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_copper
 SKILLMAKE = 300 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -546,7 +546,7 @@ SUBSECTION = Copper
 DESCRIPTION = Buckler
 
 NAME = "Copper Buckler"
-WEIGHT = 26 //nastaveni_armorweight 
+WEIGHT = 2.6 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_copper
 SKILLMAKE = 300 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -570,7 +570,7 @@ SUBSECTION = Copper
 DESCRIPTION = Metal Shield
 
 NAME = "Copper Metal Shield"
-WEIGHT = 45 //nastaveni_armorweight 
+WEIGHT = 4.5 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_copper
 SKILLMAKE = 400 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -594,7 +594,7 @@ SUBSECTION = Copper
 DESCRIPTION = Heater Shield
 
 NAME = "Copper Heater Shield"
-WEIGHT = 62 //nastaveni_armorweight 
+WEIGHT = 6.2 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_copper
 SKILLMAKE = 450 blacksmithing, 300 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -631,7 +631,7 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
-WEIGHT = 71 //nastaveni_armorweight 
+WEIGHT = 7.1 //nastaveni_armorweight 
 maxDurability = 4 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -654,7 +654,7 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
-WEIGHT = 71 //nastaveni_armorweight 
+WEIGHT = 7.1 //nastaveni_armorweight 
 maxDurability = 4 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -677,7 +677,7 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
-WEIGHT = 36 //nastaveni_armorweight 
+WEIGHT = 3.6 //nastaveni_armorweight 
 maxDurability = 2 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -700,7 +700,7 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
-WEIGHT = 31 //nastaveni_armorweight 
+WEIGHT = 3.1 //nastaveni_armorweight 
 maxDurability = 1 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -723,7 +723,7 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
-WEIGHT = 117 //nastaveni_armorweight 
+WEIGHT = 11.7 //nastaveni_armorweight 
 maxDurability = 6 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -746,7 +746,7 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
-WEIGHT = 184 //nastaveni_armorweight 
+WEIGHT = 18.4 //nastaveni_armorweight 
 maxDurability = 10 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -769,7 +769,7 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
-WEIGHT = 184 //nastaveni_armorweight 
+WEIGHT = 18.4 //nastaveni_armorweight 
 maxDurability = 10 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -792,7 +792,7 @@ armorVsP = 8 //nastaveni_armorarmor
 mindDefenseVsP = 10 //nastaveni_armorparts_OM 
 armorVsM = 8
 mindDefenseVsM = 10
-WEIGHT = 184 //nastaveni_armorweight 
+WEIGHT = 18.4 //nastaveni_armorweight 
 maxDurability = 10 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -802,7 +802,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Arms of Copper
 
 Name = "Bone Arms of Copper"
-WEIGHT = 78 //nastaveni_armorweight 
+WEIGHT = 7.8 //nastaveni_armorweight 
 RESOURCES = 2 i_ingot_copper, 1 i_bone_arms //some resources were fixed by converter 
 SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -826,7 +826,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Chest of Copper
 
 NAME = "Bone Chest of Copper"
-WEIGHT = 202 //nastaveni_armorweight 
+WEIGHT = 20.2 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_copper, 1 i_bone_chest //some resources were fixed by converter 
 SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -850,7 +850,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Gloves of Copper
 
 Name = "Bone Gloves of Copper"
-WEIGHT = 39 //nastaveni_armorweight 
+WEIGHT = 3.9 //nastaveni_armorweight 
 RESOURCES = 3 i_ingot_copper, 1 i_bone_gloves //some resources were fixed by converter 
 SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -874,7 +874,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Helmet of Copper
 
 name = "Bone Helmet of Copper"
-WEIGHT = 78 //nastaveni_armorweight 
+WEIGHT = 7.8 //nastaveni_armorweight 
 RESOURCES = 5 i_ingot_copper, 1 i_bone_helmet //some resources were fixed by converter 
 SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -898,7 +898,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Legs of Copper
 
 Name = "Bone Legs of Copper"
-WEIGHT = 129 //nastaveni_armorweight 
+WEIGHT = 12.9 //nastaveni_armorweight 
 RESOURCES = 6 i_ingot_copper, 1 i_bone_leggings //some resources were fixed by converter 
 SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 

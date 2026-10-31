@@ -6,7 +6,7 @@ SUBSECTION = Sarcophagus
 DESCRIPTION = @
 
 //DUPELIST = 01c61,01c62,01c63,01c64,01c65,01c66,01c67,01c68,01c69,01c6a,01c6b,01c6c,01c6d,01c6e,01c70,01c71,01c72,01c73,01c74,01c75,01c76,01c77,01c78,01c79,01c7a,01c7b,01c7c,01c7d,01c7e,01c7f,01c80,01c81,01c82,01c83,01c84,01c85,01c86,01c87,01c88,01c89,01c8a,01c8b,01c8c,01c8d,01c8e,01c8f,01c90,01c91,01c92,01c93,01c94,01c95,01c96,01c97,01c98,01c99,01c9a,01c9b,01c9c,01c9d,01c9e,01c9f,01ca0,01ca1,01ca2,01ca3,01ca4,01ca5,01ca6,01ca7,01ca8,01ca9,01caa,01cab,01cac,01cad,01cae,01caf,01cb0,01cb1,01cb2,01cb3,01cb4,01cb5,01cb6,01cb7,01cb8,01cb9,01cba,01cbb,01cbc,01cbd,01cbe,01cbf // commented out by Converter 
-WEIGHT = 420
+WEIGHT = 42
 RESOURCES = 42 i_stone_sand
 DEFNAME = i_sarcophagus
 
@@ -488,7 +488,7 @@ SUBSECTION = Body
 DESCRIPTION = @
 
 //DUPELIST = 01d14,01d15,01d16,01d17,01d18,01d19,01d1a,01d1b,01d1c,01d1d,01d1e,01d1f,01d20,01d21,01d22,01d23,01d24,01d25,01d26,01d27,01d28,01d29,01d2a,01d2b,01d2c,01d2d,01d2e,01d2f,01d30,01d31,01d32,01d33,01d34,01d35,01d36,01d37,01d38,01d39,01d3a,01d3b,01d3c,01d3d,01d3e,01d3f,01d40,01d41,01d42,01d43,01d44,01d45,01d46,01d47,01d48,01d49,01d4a,01d4b // commented out by Converter 
-WEIGHT = 320
+WEIGHT = 32
 RESOURCES = 32 i_board, 2 i_nails, 1 i_body_shrouded //some resources were fixed by converter 
 DEFNAME = i_casket_wood_2_with_body
 
@@ -666,7 +666,7 @@ SUBSECTION = Skeletons
 DESCRIPTION = @
 
 //DUPELIST = 01d4d,01d4e,01d4f,01d50,01d51,01d52,01d53,01d54,01d55,01d56,01d57,01d58,01d59,01d5a,01d5b,01d5c,01d5d,01d5e,01d5f,01d60,01d61,01d62,01d63,01d64,01d65,01d66,01d67,01d68,01d69,01d6a,01d6b,01d6c,01d6d,01d6e,01d6f,01d70,01d71,01d72,01d73,01d74,01d75,01d76,01d77,01d78,01d79,01d7a,01d7b,01d7c,01d7d,01d7e,01d7f,01d80,01d81,01d82,01d83,01d84,01d85,01d86,01d87,01d88,01d89 // commented out by Converter 
-WEIGHT = 320
+WEIGHT = 32
 RESOURCES = 32 i_board, 2 i_nails, 1 i_skeleton //some resources were fixed by converter 
 DEFNAME = i_casket_wood_2_with_skeleton
 
@@ -877,7 +877,7 @@ SUBSECTION = Skeletons
 DESCRIPTION = @
 
 //DUPELIST = 01d8f,01d90,01d91 // commented out by Converter 
-WEIGHT = 180
+WEIGHT = 18
 RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 16 i_bone, 1 i_bone_pelvis, 1 i_bone_ribcage, 10 i_bone_shards, 1 i_bone_spine //some resources were fixed by converter 
 DEFNAME = i_skeleton
 
@@ -922,7 +922,7 @@ DESCRIPTION = Ankh of Sacrifice
 
 TYPE = t_light_lit
 //DUPELIST = 01d98,01e5c,01e5d // commented out by Converter 
-WEIGHT = 300
+WEIGHT = 30
 RESOURCES = 10 i_rock_plain, 3 i_blood
 layer = 0 //Set by Converter 
 DEFNAME = i_ankh_sacrifice
@@ -937,7 +937,7 @@ SUBSECTION = Traps
 DESCRIPTION = Spike Trap
 
 //DUPELIST = 01d9a,01d9b,01d9c,01d9d,01d9e // commented out by Converter 
-WEIGHT = 200
+WEIGHT = 20
 RESOURCES = 20 i_ingot_iron, 2 i_blood
 DEFNAME = i_TRAP_SPIKE_LARGE
 
@@ -980,7 +980,7 @@ SUBSECTION = Broken Furniture
 DESCRIPTION = Broken Barrel
 
 //DUPELIST = 01db4,01db5,01db6 // commented out by Converter 
-WEIGHT = 210
+WEIGHT = 21
 RESOURCES = 16 i_board, 2 i_barrel_hoop, 1 i_barrel //some resources were fixed by converter 
 DEFNAME = i_barrel_broken
 
@@ -1005,7 +1005,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Broken Furniture
 DESCRIPTION = Barrel Lid
 
-WEIGHT = 20
+WEIGHT = 2
 DEFNAME = i_barrel_lid
 
 [ItemDef 0x1dbb]
@@ -1015,7 +1015,7 @@ DESCRIPTION = Sandstone Table
 
 TYPE = t_table
 //DUPELIST = 01dbc,01dbe,01dbf // commented out by Converter 
-WEIGHT = 600
+WEIGHT = 60
 RESOURCES = 30 i_stone_sand
 DEFNAME = i_table_sandstone_end
 
@@ -1042,7 +1042,7 @@ DESCRIPTION = Marble Table
 
 TYPE = t_table
 //DUPELIST = 01dc2,01dc4,01dc5 // commented out by Converter 
-WEIGHT = 600
+WEIGHT = 60
 RESOURCES = 30 i_marble
 DEFNAME = i_table_marble_end
 
@@ -1069,7 +1069,7 @@ DESCRIPTION = Sandstone Bench
 
 TYPE = T_CHAIR
 //DUPELIST = 01dc8,01dca,01dcb // commented out by Converter 
-WEIGHT = 120
+WEIGHT = 12
 RESOURCES = 6 i_stone_sand
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_bench_sandstone_end
@@ -1098,7 +1098,7 @@ DESCRIPTION = Marble Bench
 
 TYPE = T_CHAIR
 //DUPELIST = 01dce,01dd0,01dd1 // commented out by Converter 
-WEIGHT = 120
+WEIGHT = 12
 RESOURCES = 6 i_marble
 //FLIP = 1 // commented out by Converter 
 DEFNAME = i_bench_marble_end
@@ -1126,7 +1126,7 @@ SUBSECTION = Rug 3
 DESCRIPTION = @
 
 //DUPELIST = 01dd4,01dd5,01dd6,01dd7,01dd8,01dd9,01dda,01ddb,01ddc,01ddd,01dde,01ddf,01de0,01de1,01de2,01de3,01de4,01de5,01de6,01de7,01de8,01de9,01dea,01deb,01dec,01ded,01dee // commented out by Converter 
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 2 i_cloth
 DEFNAME = i_rug_worn
 
@@ -1271,7 +1271,7 @@ CATEGORY = Ground Tiles
 SUBSECTION = Mud and Footprints
 DESCRIPTION = Mud
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_dirt, 1 i_water //some resources were fixed by converter 
 DEFNAME = i_mud
 
@@ -1338,7 +1338,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 1
 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED
 
@@ -1347,7 +1347,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 2
 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_2
 
@@ -1356,7 +1356,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 3
 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_3
 
@@ -1365,7 +1365,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 4
 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_4
 
@@ -1374,7 +1374,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 5
 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_5
 
@@ -1383,7 +1383,7 @@ CATEGORY = Decoration - Potted Plants & Vases
 SUBSECTION = Potted Cactuses
 DESCRIPTION = Cactus 6
 
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 1 i_pot, 1 i_plant_cactus //some resources were fixed by converter 
 DEFNAME = i_PLANT_CACTUS_POTTED_6
 
@@ -1402,7 +1402,7 @@ SUBSECTION = Scribe
 DESCRIPTION = Red Book (Open and Face Down)
 
 TYPE = T_BOOK
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 20 i_paper, 1 i_thread, 1 i_hide //some resources were fixed by converter 
 DEFNAME = i_BOOK_OPEN_red
 
@@ -1411,7 +1411,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Scribe
 DESCRIPTION = Brown Books (Open and Face Down)
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 2 i_book_open
 DEFNAME = i_BOOK_OPEN_two_brown
 
@@ -1420,7 +1420,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Scribe
 DESCRIPTION = Red Books (Open and Face Up)
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 2 i_book_open
 DEFNAME = i_BOOK_OPEN_two_red
 
@@ -1429,7 +1429,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Scribe
 DESCRIPTION = Blue Books (Open and Face Up)
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 2 i_book_open
 DEFNAME = i_BOOK_OPEN_two_blue
 
@@ -1438,7 +1438,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Scribe
 DESCRIPTION = Stack of Books
 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 2 i_book_open
 DEFNAME = i_BOOK_OPEN_3_red
 
@@ -1447,7 +1447,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Scribe
 DESCRIPTION = Stack of Books
 
-WEIGHT = 120
+WEIGHT = 12
 RESOURCES = 6 i_book_open
 DEFNAME = i_BOOK_OPEN_two_green
 
@@ -1457,7 +1457,7 @@ SUBSECTION = Oar
 DESCRIPTION = @
 
 //DUPELIST = 01e28 // commented out by Converter 
-WEIGHT = 40
+WEIGHT = 4
 RESOURCES = 2 i_log
 DEFNAME = i_oar_part_1
 
@@ -1467,7 +1467,7 @@ SUBSECTION = Oar
 DESCRIPTION = @
 
 //DUPELIST = 01e29 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 1 i_log, 1 i_board //some resources were fixed by converter 
 DEFNAME = i_oar_part_2
 
@@ -1528,7 +1528,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Spit
 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 2 i_ingot_iron
 DEFNAME = i_spit
 
@@ -1537,7 +1537,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Chicken on a Spit
 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 1 i_chicken_plucked, 1 i_spit //some resources were fixed by converter 
 DEFNAME = i_CHICKEN_SPITTED_2
 
@@ -1546,7 +1546,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Rabbit on a Spit
 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 1 i_rabbit_skinned, 1 i_spit //some resources were fixed by converter 
 DEFNAME = i_RABBIT_SPITTED_2
 
@@ -1555,7 +1555,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Spit
 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 2 i_ingot_iron
 DEFNAME = i_spit_2
 
@@ -1595,7 +1595,7 @@ SUBSECTION = Hooks, Pulleys and Winches
 DESCRIPTION = Rope
 
 //DUPELIST = 01ea1,01ea2 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_rope
 DEFNAME = i_rope_bundle
 
@@ -1620,7 +1620,7 @@ SUBSECTION = Hooks, Pulleys and Winches
 DESCRIPTION = Winch
 
 //DUPELIST = 01ea9,01eaa,01eab,01eac,01ead,01eae,01eaf // commented out by Converter 
-WEIGHT = 170
+WEIGHT = 17
 RESOURCES = 5 i_rope, 2 i_gears, 20 i_ingot_iron
 DEFNAME = i_winch
 
@@ -1650,7 +1650,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Burned Food
 
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ribs_raw
 DEFNAME = i_ribs_BURNED
 
@@ -1660,7 +1660,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Barrel Staves
 
 //DUPELIST = 01eb2,01eb3,01eb4 // commented out by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 5 i_board
 DEFNAME = i_barrel_staves
 
@@ -1679,7 +1679,7 @@ SUBSECTION = StableMaster
 DESCRIPTION = Sheaf of Wheat
 
 TYPE = t_grain
-WEIGHT = 100
+WEIGHT = 10
 DEFNAME = i_wheat_sheaf
 //VALUE = 5 // commented out by Converter 
 
@@ -1967,7 +1967,7 @@ DESCRIPTION = Recall Rune
 
 TYPE = T_RUNE
 //DUPELIST = 01f15,01f16,01f17 // commented out by Converter 
-WEIGHT = 10
+WEIGHT = 1
 DEFNAME = i_rune_marker
 //VALUE = {16 20} // commented out by Converter 
 
@@ -2056,7 +2056,7 @@ DESCRIPTION = Blank sign
 
 TYPE = T_SIGN_GUMP
 //DUPELIST = 01f29 // commented out by Converter 
-WEIGHT = 30
+WEIGHT = 3
 RESOURCES = 2 i_board, 1 i_ingot_iron, 1 i_nails //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
 //TDATA2 = 067 // commented out by Converter 
@@ -2070,7 +2070,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Pedestal
 DESCRIPTION = @
 
-WEIGHT = 120
+WEIGHT = 12
 RESOURCES = 6 i_rock_plain
 DEFNAME = i_pedestal
 
@@ -2080,7 +2080,7 @@ SUBSECTION = Brazier
 DESCRIPTION = Brazier
 
 TYPE = T_FIRE
-WEIGHT = 150
+WEIGHT = 15
 RESOURCES = 10 i_ember, 12 i_ingot_iron
 DEFNAME = i_brazier
 
@@ -2373,7 +2373,7 @@ DESCRIPTION = @ (n / sw)
 
 TYPE = T_DOOR
 //DUPELIST = 01fef,01ff1,01ff3,01ff5,01ff7,01ff9,01ffb // commented out by Converter 
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 10 i_ingot_iron
 DEFNAME = i_door_metal_bar_2
 

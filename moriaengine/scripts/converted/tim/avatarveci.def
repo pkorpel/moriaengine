@@ -233,7 +233,7 @@ DEFNAME = i_special_arms
 [WeaponDef 0x2ee]
 NAME = "Blunderbus"
 type = t_weapon_xbow
-WEIGHT = 200
+WEIGHT = 20
 //REQSTR = 50 // commented out by Converter 
 //SKILL = ARCHERY // commented out by Converter 
 //speed = 3 // commented out by Converter 
@@ -263,7 +263,7 @@ DEFNAME = i_wizard_cape_2
 NAME = "Wizard Cape"
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 14 i_cloth
 RESOURCES2 = 14 i_cloth, 1 i_thread
 SKILLMAKE = 804 tailoring,  magery 800 t_sewing_kit //some resources were fixed by converter 
@@ -302,7 +302,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x23c]
 NAME = "Steeldriver"
 TYPE = T_WEAPON_MACE_sharp
-WEIGHT = 140
+WEIGHT = 14
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 25 i_ingot_iron
 SKILLMAKE = 1000 blacksmithing //some resources were fixed by converter 
@@ -325,7 +325,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x23b]
 NAME = "Skull Mace"
 type = t_weapon_mace_sharp
-WEIGHT = 130
+WEIGHT = 13
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 15 i_ingot_iron
 SKILLMAKE = 808 blacksmithing //some resources were fixed by converter 
@@ -383,7 +383,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x224]
 NAME = "Colossus Hammer"
 TYPE = T_WEAPON_MACE_SMITH
-WEIGHT = 110
+WEIGHT = 11
 RESOURCES = 9 i_ingot_iron
 SKILLMAKE = 808 blacksmithing //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 
@@ -405,7 +405,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x21b]
 NAME = "Flintlock"
 type = t_weapon_bow
-WEIGHT = 50
+WEIGHT = 5
 RESOURCES = 30 i_ingot_iron
 SKILLMAKE = 1000 blacksmithing
 //REQSTR = 30 // commented out by Converter 
@@ -431,7 +431,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x20e]
 NAME = "hand Cannon"
 type = t_weapon_bow
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 300 i_ingot_iron
 SKILLMAKE = 1000 blacksmithing
 //REQSTR = 50 // commented out by Converter 
@@ -457,7 +457,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x20d]
 NAME = "Colossus Blade"
 TYPE = T_WEAPON_SWORD
-WEIGHT = 100
+WEIGHT = 10
 RESOURCES = 14 i_ingot_iron
 SKILLMAKE = 902 blacksmithing
 //FLIP = 1 // commented out by Converter 
@@ -479,7 +479,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x1fc]
 NAME = "Long Bow"
 TYPE = T_WEAPON_BOW
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 20 i_log
 RESOURCES2 = 20 i_log, 1 i_cat_gut //some resources were fixed by converter 
 SKILLMAKE = 808 bowcraft
@@ -506,7 +506,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x1fb]
 NAME = "War Bow"
 TYPE = T_WEAPON_BOW
-WEIGHT = 80
+WEIGHT = 8
 RESOURCES = 20 i_log
 RESOURCES2 = 20 i_log, 1 i_cat_gut //some resources were fixed by converter 
 SKILLMAKE = 808 bowcraft
@@ -533,7 +533,7 @@ strikeStopRange = 10 //default value set by Converter
 [WeaponDef 0x1fa]
 NAME = "Skull Axe"
 type = t_weapon_axe
-WEIGHT = 150
+WEIGHT = 15
 RESOURCES = 20 i_ingot_iron
 SKILLMAKE = 1000 blacksmithing
 //FLIP = 1 // commented out by Converter 
@@ -574,7 +574,7 @@ SUBSECTION = Avatar
 DESCRIPTION = Bullet
 
 NAME = "Bullet"
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_ingot_iron //some resources were fixed by converter 
 SKILLMAKE = 900 blacksmithing
 DEFNAME = i_bullet
@@ -621,7 +621,7 @@ DEFNAME = i_veggies
 [WeaponDef 0x286]
 NAME = "Claws"
 TYPE = T_WEAPON_SWORD
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 14 i_ingot_iron
 RESOURCES2 = 10 i_ingot_iron
 SKILLMAKE = 802 blacksmithing
@@ -1287,7 +1287,7 @@ SUBSECTION = Swords
 
 NAME = "Flamming Scimitar"
 TYPE = T_WEAPON_SWORD
-WEIGHT = 60
+WEIGHT = 6
 RESOURCES = 10 i_ingot_iron
 SKILLMAKE = 1000 blacksmithing, 1000 magery //some resources were fixed by converter 
 //FLIP = 1 // commented out by Converter 

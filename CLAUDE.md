@@ -18,6 +18,15 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #889 bank box gump, status gold, weights vs Erebor (branch bank-gold-weights)
+
+User testing after #884. .check/.mesec "not paying" was a GM, who pays nothing, as on Erebor: user confirmed non-GMs pay, keep it.
+Bank box: gump 0x42 (GUMP_CHEST_GO_SI, my pick, "some fancy chestbox"; 0x9b2 on 99z8 has no script here), items placed by Sphere's chest rect. Gold: Character.Gold was `return 0`; now ContentCount(t_gold): bags and bank too, not locked containers.
+**Weights** (EreborNext is the reference): .def WEIGHT is now stones. The converter wrote "3.0" as 30 and "10" as 10, a mix of tenths and stones; 99z8 reads dotted as raw tenths, undotted x10. nastaveni_armorweight is tenths, so iron plate chest = 39.6. Hand-written defs were tenths too, fixed. Item.Weight = unit x amount (was unit, though AbstractItem.Amount already assumed it), gold 1/500 stone; no WEIGHT line -> tiledata (255/water = 1); Container.weight = contents only (a new container lacked its own weight until a restart recounted it); BankBox.IsWeighed false; status flag 5 sends max weight Str*4+30, TazUO otherwise guesses 7*(Str/2)+40. Regen: 50 files, only WEIGHT lines.
+Gotchas: Character.Gold runs inside AboutToChangeStats, so while a stack splits or a thing is duped: look only inside Containers and skip AbstractItem.IsInLimbo; enumerating a limbo item DELETES it (ThrowIfDeleted). This aborted every partial pickup until NpcItemGiveTests caught it. A character's backpack is made on first use, take a test's baseline after.
+Found, not caused here: DoubleClickingBankerWithinRangeLeadsToTheBankBox fails on clean main whenever its class isn't first in a run; GatheringTests.TamingSetsControlMaster fails on main too. GameCore exit 134 again once in a mixed run, right after BankStatusTests' first test, no stack (fixture dropped it); 4 solo and 2 mixed reruns clean. Same symptom as #882's note, no cause known, watch it.
+A GM .dupe of a bag gives an empty bag; existing behaviour, not looked at.
+
 ## DONE (2026-10-31): #860 leftovers: #868, #872, #866, #865
 
 User: "carry on with the remaining open items".

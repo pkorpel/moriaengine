@@ -12,13 +12,13 @@ model = 0x1bf1
 [ItemDef i_q022_ingoty]
 NAME = "Balik zeleznych ingotu"
 TYPE = t_normal
-WEIGHT = 100
+WEIGHT = 10
 model = 0x1bf4
 
 [ItemDef i_q022_ratiste]
 NAME = "Balik nasad k halapartnam"
 TYPE = t_normal
-WEIGHT = 100
+WEIGHT = 10
 model = 0x1bd6
 
 [ItemDef i_q022_vcely]
@@ -52,14 +52,14 @@ Color = 044c
 [ItemDef i_q022_uhli]
 NAME = "Cerne uhli"
 TYPE = t_normal
-WEIGHT = 150
+WEIGHT = 15
 model = 0x19b9
 Color = 076b
 
 [EquippableDef i_q022_bedna]
 NAME = "Bedna se zbranemi"
 TYPE = t_normal
-WEIGHT = 200
+WEIGHT = 20
 model = i_crate_lg
 layer = 0 //Set by Converter 
 Color = 071d

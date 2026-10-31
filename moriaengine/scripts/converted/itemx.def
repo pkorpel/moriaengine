@@ -51,7 +51,7 @@ type = t_food //guessed from base def by Converter
 
 [ItemDef i_LINEN]
 NAME = "Linen"
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 6 i_flax_bundle
 model = i_CLOTH
 type = t_cloth //guessed from base def by Converter 
@@ -60,7 +60,7 @@ Color = colors_yellow
 
 [ItemDef i_PAPER]
 NAME = "Paper"
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_board, 1 t_water
 SKILLMAKE = 157 carpentry, 1 t_carpentry //some resources were fixed by converter 
 model = i_MAP_ROLLED
@@ -68,7 +68,7 @@ model = i_MAP_ROLLED
 
 [ItemDef i_PARCHMENT]
 NAME = "Parchment"
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_paper, 1 i_cloth
 SKILLMAKE = 207 carpentry, 1 t_carpentry //some resources were fixed by converter 
 model = i_bedroll_open
@@ -86,7 +86,7 @@ SUBSECTION = Tailor
 DESCRIPTION = Knitting Needles
 
 NAME = "Knitting Needles"
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_board
 model = i_axel
 //VALUE = 5 // commented out by Converter 
@@ -97,7 +97,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Screw
 
 NAME = "Screw"
-WEIGHT = 2
+WEIGHT = 0.2
 RESOURCES = 1 i_ingot_iron
 model = i_hinge
 //VALUE = 1 // commented out by Converter 
@@ -108,7 +108,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Ebony
 
 NAME = "Ebony"
-WEIGHT = 10
+WEIGHT = 1
 model = i_reag_blackmoor
 type = t_reagent //guessed from base def by Converter 
 
@@ -118,7 +118,7 @@ SUBSECTION = Jewels
 DESCRIPTION = Ivory
 
 NAME = "Ivory"
-WEIGHT = 10
+WEIGHT = 1
 model = i_bone_spine
 type = t_bone //guessed from base def by Converter 
 Color = colors_white
@@ -130,13 +130,13 @@ DESCRIPTION = Hair Dyes
 
 NAME = "Hair Dyes"
 TYPE = T_HAIR_DYE
-WEIGHT = 40
+WEIGHT = 4
 model = i_TESTTUBE_RACK_FULL
 Color = colors_hair
 
 [ItemDef I_RIBBON]
 NAME = "Ribbon"
-WEIGHT = 10
+WEIGHT = 1
 model = i_yarn_ball
 type = t_yarn //guessed from base def by Converter 
 Color = colors_all
@@ -147,7 +147,7 @@ SUBSECTION = Tinker
 DESCRIPTION = Brass Hinges
 
 NAME = "Brass Hinges"
-WEIGHT = 5
+WEIGHT = 0.5
 RESOURCES = 3 i_ingot_iron, 1 i_cloth
 model = i_hinge
 Color = color_o_gold
@@ -158,7 +158,7 @@ SUBSECTION = Tailor
 DESCRIPTION = Sewing Needle
 
 NAME = "Sewing needle"
-WEIGHT = 1
+WEIGHT = 0.1
 RESOURCES = 1 i_ingot_iron
 model = I_SCORP
 type = t_carpentry //guessed from base def by Converter 
@@ -167,7 +167,7 @@ Color = color_metal
 
 [ItemDef I_DIE]
 NAME = "Die"
-WEIGHT = 2
+WEIGHT = 0.2
 model = I_GEM_SAPPHIRE
 type = t_gem //guessed from base def by Converter 
 //RESOURCES3 = 1 i_bone, 1 i_ink // commented out by Converter 
@@ -179,7 +179,7 @@ SUBSECTION = Artists
 DESCRIPTION = Inkpot
 
 NAME = "Inkpot"
-WEIGHT = 10
+WEIGHT = 1
 model = I_SPITTOON
 Color = color_gray_dk
 
@@ -190,7 +190,7 @@ DESCRIPTION = Paint Brush
 
 NAME = "Paint Brush"
 type = t_carpentry
-WEIGHT = 10
+WEIGHT = 1
 RESOURCES = 1 i_hair_cut, 1 i_board
 model = I_REAG_DAEMON_BONE
 Color = colors_brown
@@ -201,7 +201,7 @@ SUBSECTION = Necromancer
 DESCRIPTION = Bloodstone
 
 NAME = "Bloodstone"
-WEIGHT = 20
+WEIGHT = 2
 RESOURCES = 1 i_rock_7, 2 i_blood
 model = i_rock_7
 Color = colors_blood
@@ -213,7 +213,7 @@ DESCRIPTION = Marble
 
 NAME = "Marble"
 TYPE = t_AROCK
-WEIGHT = 50
+WEIGHT = 5
 model = i_rock_3 //ROCK 
 Color = color_snow
 
@@ -223,7 +223,7 @@ SUBSECTION = Cook
 DESCRIPTION = Tomato Sauce
 
 NAME = "Tomato Sauce"
-WEIGHT = 20
+WEIGHT = 2
 model = i_bottle_red //RED BOTTLE 
 type = t_potion //guessed from base def by Converter 
 
@@ -233,7 +233,7 @@ SUBSECTION = Planted Plants
 DESCRIPTION = Planted Tree Sapling
 
 NAME = "Planted Tree Sapling"
-WEIGHT = 40
+WEIGHT = 4
 model = i_PLANT_WEED
 
 [WeaponDef I_BAMBOO]
@@ -259,7 +259,7 @@ SUBSECTION = Bowyer
 DESCRIPTION = Cat Gut
 
 NAME = "Cat Gut"
-WEIGHT = 10
+WEIGHT = 1
 model = i_FLESH_ENTRAILS
 type = t_meat_raw //guessed from base def by Converter 
 
@@ -296,6 +296,6 @@ SUBSECTION = Tailor
 DESCRIPTION = Velvet
 
 NAME = "Velvet"
-WEIGHT = 10
+WEIGHT = 1
 model = i_FLESH_ENTRAILS
 type = t_meat_raw //guessed from base def by Converter 

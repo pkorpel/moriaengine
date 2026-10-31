@@ -57,7 +57,7 @@ namespace SteamEngine.Converter {
 		private static LineImplTask[] firstStageImpl = {
 				new LineImplTask("type", HandleType), 
 				new LineImplTask("dupelist", WriteAsComment), 
-				new LineImplTask("weight", MayBeInt_IgnorePoint), 
+				new LineImplTask("weight", WeightInStones), 
 				new LineImplTask("resources", HandleResourcesList),
 				new LineImplTask("resources2", HandleResourcesList),
 				new LineImplTask("skillmake", HandleResourcesList),
@@ -567,7 +567,8 @@ namespace SteamEngine.Converter {
 									SphereWorldVars.TryGetLayerArmorPercent(layer, out int layerPercent)) {
 								int pieceWeight = isShield ? (setWeight / 6) : setWeight;
 								pieceWeight = ((layerPercent * pieceWeight) + 50) / 100;
-								thing.Replace("WEIGHT", pieceWeight.ToString(CultureInfo.InvariantCulture), "nastaveni_armorweight");
+								//the setting is in tenths of a stone, Sphere's native unit
+								thing.Replace("WEIGHT", (pieceWeight / 10.0).ToString("R", CultureInfo.InvariantCulture), "nastaveni_armorweight");
 								//armorcreate, shieldcreate
 								if (SphereWorldVars.TryGetInt("nastaveni_durability_" + metal, out int metalDurability) &&
 										SphereWorldVars.TryGetInt("nastaveni_durability_" + set.Key, out int setDurability)) {

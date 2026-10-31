@@ -6,7 +6,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Platemail
 
 NAME = "Mithril Platemail"
-WEIGHT = 126 //nastaveni_armorweight 
+WEIGHT = 12.6 //nastaveni_armorweight 
 RESOURCES = 25 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -30,7 +30,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Platemail Arms
 
 NAME = "Mithril Platemail Arms"
-WEIGHT = 49 //nastaveni_armorweight 
+WEIGHT = 4.9 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -54,7 +54,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Platemail Legs
 
 NAME = "Mithril Platemail Legs"
-WEIGHT = 81 //nastaveni_armorweight 
+WEIGHT = 8.1 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 60 // commented out by Converter 
@@ -78,7 +78,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Platemail Gorget
 
 NAME = "Mithril Platemail Gorget"
-WEIGHT = 21 //nastaveni_armorweight 
+WEIGHT = 2.1 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -102,7 +102,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Platemail Gauntlets
 
 NAME = "Mithril Platemail Gauntlets"
-WEIGHT = 25 //nastaveni_armorweight 
+WEIGHT = 2.5 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 30 // commented out by Converter 
@@ -126,7 +126,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Female Platemail
 
 NAME = "Mithril Platemail"
-WEIGHT = 126 //nastaveni_armorweight 
+WEIGHT = 12.6 //nastaveni_armorweight 
 RESOURCES = 22 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 8 // commented out by Converter 
@@ -150,7 +150,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Plate Helm
 
 NAME = "Mithril Plate Helm"
-WEIGHT = 49 //nastaveni_armorweight 
+WEIGHT = 4.9 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -174,7 +174,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Closed Helm
 
 NAME = "Mithril Closed Helm"
-WEIGHT = 49 //nastaveni_armorweight 
+WEIGHT = 4.9 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -198,7 +198,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Bascinet
 
 NAME = "Mithril Bascinet"
-WEIGHT = 49 //nastaveni_armorweight 
+WEIGHT = 4.9 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 10 // commented out by Converter 
@@ -222,7 +222,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Nose Helm
 
 NAME = "Mithril Nose Helm"
-WEIGHT = 49 //nastaveni_armorweight 
+WEIGHT = 4.9 //nastaveni_armorweight 
 RESOURCES = 15 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 0 // commented out by Converter 
@@ -242,7 +242,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_Mithril_CHAINMAIL_gorget]
 NAME = "Mithril Chainmail Gorget"
-WEIGHT = 18 //nastaveni_armorweight 
+WEIGHT = 1.8 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -262,7 +262,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_Mithril_CHAINMAIL_sleeves]
 NAME = "Mithril Chainmail Sleeves"
-WEIGHT = 42 //nastaveni_armorweight 
+WEIGHT = 4.2 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -282,7 +282,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_Mithril_CHAINMAIL_gloves]
 NAME = "Mithril Chainmail Gloves"
-WEIGHT = 21 //nastaveni_armorweight 
+WEIGHT = 2.1 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -306,7 +306,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Chainmail Coif
 
 NAME = "Mithril Chainmail Coif"
-WEIGHT = 42 //nastaveni_armorweight 
+WEIGHT = 4.2 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -330,7 +330,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Chainmail Leggings
 
 NAME = "Mithril Chainmail Leggings"
-WEIGHT = 69 //nastaveni_armorweight 
+WEIGHT = 6.9 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -354,7 +354,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Chainmail Tunic
 
 NAME = "Mithril Chainmail Tunic"
-WEIGHT = 108 //nastaveni_armorweight 
+WEIGHT = 10.8 //nastaveni_armorweight 
 RESOURCES = 20 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -374,7 +374,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_Mithril_kite_wood_shield]
 NAME = "Mithril kite shield"
-WEIGHT = 8 //nastaveni_armorweight 
+WEIGHT = 0.8 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -394,7 +394,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_Mithril_RINGMAIL_gorget]
 NAME = "Mithril ringmail gorget"
-WEIGHT = 9 //nastaveni_armorweight 
+WEIGHT = 0.9 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -414,7 +414,7 @@ canRepair = true //nastaveni_cm_can_repair
 
 [ColoredArmorDef i_Mithril_RINGMAIL_helm]
 NAME = "Mithril Ringmail Helm"
-WEIGHT = 21 //nastaveni_armorweight 
+WEIGHT = 2.1 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -438,7 +438,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Ringmail Leggings
 
 NAME = "Mithril Ringmail Leggings"
-WEIGHT = 35 //nastaveni_armorweight 
+WEIGHT = 3.5 //nastaveni_armorweight 
 RESOURCES = 16 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -462,7 +462,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Ringmail Sleeves
 
 NAME = "Mithril Ringmail Sleeves"
-WEIGHT = 21 //nastaveni_armorweight 
+WEIGHT = 2.1 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -486,7 +486,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Ringmail Gloves
 
 NAME = "Mithril Ringmail Gloves"
-WEIGHT = 11 //nastaveni_armorweight 
+WEIGHT = 1.1 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -510,7 +510,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Ringmail Tunic
 
 NAME = "Mithril Ringmail Tunic"
-WEIGHT = 54 //nastaveni_armorweight 
+WEIGHT = 5.4 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_mithril
 SKILLMAKE = 1050 blacksmithing, 999 tinkering //some resources were fixed by converter 
 //REQSTR = 20 // commented out by Converter 
@@ -534,7 +534,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Buckler
 
 NAME = "Mithril Buckler"
-WEIGHT = 5 //nastaveni_armorweight 
+WEIGHT = 0.5 //nastaveni_armorweight 
 RESOURCES = 10 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -558,7 +558,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Heater Shield
 
 NAME = "Mithril Heater Shield"
-WEIGHT = 17 //nastaveni_armorweight 
+WEIGHT = 1.7 //nastaveni_armorweight 
 RESOURCES = 18 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -582,7 +582,7 @@ SUBSECTION = Mithril
 DESCRIPTION = Metal Shield
 
 NAME = "Mithril Metal Shield"
-WEIGHT = 15 //nastaveni_armorweight 
+WEIGHT = 1.5 //nastaveni_armorweight 
 RESOURCES = 14 i_ingot_mithril
 SKILLMAKE = 1100 blacksmithing, 1000 tinkering //some resources were fixed by converter 
 //REQSTR = 15 // commented out by Converter 
@@ -606,7 +606,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Arms of mithril
 
 Name = "Bone Arms of mithril"
-WEIGHT = 20 //nastaveni_armorweight 
+WEIGHT = 2 //nastaveni_armorweight 
 RESOURCES = 2 i_ingot_mithril, 1 i_bone_arms //some resources were fixed by converter 
 SKILLMAKE = 1000 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -630,7 +630,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Chest of mithril
 
 NAME = "Bone Chest of mithril"
-WEIGHT = 50 //nastaveni_armorweight 
+WEIGHT = 5 //nastaveni_armorweight 
 RESOURCES = 12 i_ingot_mithril, 1 i_bone_chest //some resources were fixed by converter 
 SKILLMAKE = 1000 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -654,7 +654,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Gloves of mithril
 
 Name = "Bone Gloves of mithril"
-WEIGHT = 10 //nastaveni_armorweight 
+WEIGHT = 1 //nastaveni_armorweight 
 RESOURCES = 3 i_ingot_mithril, 1 i_bone_gloves //some resources were fixed by converter 
 SKILLMAKE = 1000 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -678,7 +678,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Helmet of mithril
 
 name = "Bone Helmet of mithril"
-WEIGHT = 20 //nastaveni_armorweight 
+WEIGHT = 2 //nastaveni_armorweight 
 RESOURCES = 5 i_ingot_mithril, 1 i_bone_helmet //some resources were fixed by converter 
 SKILLMAKE = 1000 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -702,7 +702,7 @@ SUBSECTION = Bone Armor
 DESCRIPTION = Bone Legs of mithril
 
 Name = "Bone Legs of mithril"
-WEIGHT = 32 //nastaveni_armorweight 
+WEIGHT = 3.2 //nastaveni_armorweight 
 RESOURCES = 6 i_ingot_mithril, 1 i_bone_leggings //some resources were fixed by converter 
 SKILLMAKE = 1000 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
 //REQSTR = 40 // commented out by Converter 
@@ -739,7 +739,7 @@ armorVsP = 45 //nastaveni_armorarmor
 mindDefenseVsP = 210 //nastaveni_armorparts_OM 
 armorVsM = 45
 mindDefenseVsM = 210
-WEIGHT = 13 //nastaveni_armorweight 
+WEIGHT = 1.3 //nastaveni_armorweight 
 maxDurability = 58 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -762,7 +762,7 @@ armorVsP = 45 //nastaveni_armorarmor
 mindDefenseVsP = 210 //nastaveni_armorparts_OM 
 armorVsM = 45
 mindDefenseVsM = 210
-WEIGHT = 13 //nastaveni_armorweight 
+WEIGHT = 1.3 //nastaveni_armorweight 
 maxDurability = 58 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -785,7 +785,7 @@ armorVsP = 45 //nastaveni_armorarmor
 mindDefenseVsP = 210 //nastaveni_armorparts_OM 
 armorVsM = 45
 mindDefenseVsM = 210
-WEIGHT = 6 //nastaveni_armorweight 
+WEIGHT = 0.6 //nastaveni_armorweight 
 maxDurability = 29 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -808,7 +808,7 @@ armorVsP = 45 //nastaveni_armorarmor
 mindDefenseVsP = 210 //nastaveni_armorparts_OM 
 armorVsM = 45
 mindDefenseVsM = 210
-WEIGHT = 5 //nastaveni_armorweight 
+WEIGHT = 0.5 //nastaveni_armorweight 
 maxDurability = 25 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -831,7 +831,7 @@ armorVsP = 45 //nastaveni_armorarmor
 mindDefenseVsP = 210 //nastaveni_armorparts_OM 
 armorVsM = 45
 mindDefenseVsM = 210
-WEIGHT = 21 //nastaveni_armorweight 
+WEIGHT = 2.1 //nastaveni_armorweight 
 maxDurability = 96 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -854,7 +854,7 @@ armorVsP = 45 //nastaveni_armorarmor
 mindDefenseVsP = 210 //nastaveni_armorparts_OM 
 armorVsM = 45
 mindDefenseVsM = 210
-WEIGHT = 32 //nastaveni_armorweight 
+WEIGHT = 3.2 //nastaveni_armorweight 
 maxDurability = 151 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -877,7 +877,7 @@ armorVsP = 45 //nastaveni_armorarmor
 mindDefenseVsP = 210 //nastaveni_armorparts_OM 
 armorVsM = 45
 mindDefenseVsM = 210
-WEIGHT = 32 //nastaveni_armorweight 
+WEIGHT = 3.2 //nastaveni_armorweight 
 maxDurability = 151 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 
@@ -900,6 +900,6 @@ armorVsP = 45 //nastaveni_armorarmor
 mindDefenseVsP = 210 //nastaveni_armorparts_OM 
 armorVsM = 45
 mindDefenseVsM = 210
-WEIGHT = 32 //nastaveni_armorweight 
+WEIGHT = 3.2 //nastaveni_armorweight 
 maxDurability = 151 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 

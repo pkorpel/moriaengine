@@ -14,7 +14,7 @@ DESCRIPTION = Glacialstaff
 
 Name = "Glacial Staff"
 TYPE = t_weapon_mace_staff
-WEIGHT = 600
+WEIGHT = 60
 //REQSTR = 35 // commented out by Converter 
 //SKILL = Macefighting // commented out by Converter 
 TwoHanded = true
@@ -40,7 +40,7 @@ BleedingEfficiency = 0 //nastaveni_weapbleed
 
 [ItemDef i_deed_ballista_n]
 NAME = "deed to a Ballista (N)"
-WEIGHT = 1000
+WEIGHT = 100
 model = i_deed
 type = t_deed //guessed from base def by Converter 
 
@@ -74,7 +74,7 @@ DESCRIPTION = Clerikova Stuha
 
 NAME = "Clerikova Stuha"
 type = t_armor
-WEIGHT = 3000
+WEIGHT = 300
 //REQSTR = 100 // commented out by Converter 
 layer = 0 //Set by Converter 
 WearableType = WearableType.Plate //guessed by Converter 
@@ -124,7 +124,7 @@ DESCRIPTION = Kamenna roba
 
 NAME = "Kamenna roba"
 type = t_armor
-WEIGHT = 100
+WEIGHT = 10
 //REQSTR = 70 // commented out by Converter 
 model = i_robe
 layer = 22 //Set by Converter 
@@ -142,7 +142,7 @@ DESCRIPTION = Deathrobe
 NAME = "Death robe"
 type = t_clothing
 WearableType = WearableType.Clothing //guessed by Converter 
-WEIGHT = 1000
+WEIGHT = 100
 model = i_deathshroud
 layer = 22 //Set by Converter 
 armorVsP = 5
