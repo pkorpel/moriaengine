@@ -113,6 +113,35 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#929 - every step of a party member threw, and nothing failed for it.</summary>
+		[Fact]
+		public void WalkingInAPartyWorksAndMembersHearOfEachOther() {
+			using (var a = this.Connect("Walker Alpha", AccountA)) {
+				this.Ask(a, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+				using var b = this.Connect("Walker Beta", AccountB);
+				uint aUid = this.Ready(a, "G");
+				this.Ready(b, "G");
+				this.SayParty(a);
+				var menu = a.ReadGumpDialogWithStrings(Wait);
+				a.SendGumpResponse(menu.GumpUid, Invite);
+				menu = a.ReadGumpDialogWithStrings(Wait);
+				a.SendGumpResponse(menu.GumpUid, 0);
+				b.SendPartyAcceptInvite(aUid);
+				Thread.Sleep(300);
+				Assert.Contains("members=2", this.Report(b));
+
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				for (byte step = 0; step < 3; step++) {
+					a.SendMoveRequest(2, false, step);
+					Thread.Sleep(250);
+				}
+				this.Ask(a, ".TestPartyHurt", "PARTY_HURT:");
+				Thread.Sleep(500);
+				Assert.DoesNotContain("CRITICAL", this.fixture.GameOutputSnapshot().Substring(mark));
+				Assert.NotNull(b.ReadPacketPayload(0xA1, Wait));
+			}
+		}
+
 		private static void Has(List<string> strings, string text) {
 			Assert.True(strings.Exists(s => s.Contains(text)), "No '" + text + "' in: " + string.Join(" | ", strings));
 		}

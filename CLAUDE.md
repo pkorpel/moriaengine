@@ -18,6 +18,10 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #929 moving in a party threw (branch 929-party-move)
+
+User, live: every step of a party member logged CRITICAL and movement went wrong. Character.PartyMembers cast a key collection of Character to ICollection<AbstractCharacter>, from the initial commit; .party made parties common. Party tests never walked. The party stats path behind it had never run either; tested now. GameServerPairFixture now reports each distinct CRITICAL as a line in test-full's live output: a CRITICAL fails no test, so watch for it.
+
 ## DONE (2026-10-31): #927 all of Erebor's potions (branch potions)
 
 User: all potions fully working, as on Erebor; files in their own folder, separate files. scripts/Basic/Potions, doc potions.md. Potion + PotionKind per family, PotionKinds finds by def, numbers on PotionSettings as Erebor's "seconds,min,max".

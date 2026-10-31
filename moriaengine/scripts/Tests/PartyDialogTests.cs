@@ -23,6 +23,13 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("PARTY_HIDDEN: done");
 		}
 
+		/// <summary>#929 - a change a party member's client should hear of.</summary>
+		[SteamFunction]
+		public static void TestPartyHurt(Character self) {
+			self.Hits = (short) (self.MaxHits / 2);
+			Console.WriteLine("PARTY_HURT: uid=" + (uint) self.FlaggedUid + " x=" + self.X + " y=" + self.Y + " end");
+		}
+
 		[SteamFunction]
 		public static void TestPartyReport(Character self) {
 			Party party = Party.GetParty(self);
