@@ -21,7 +21,9 @@ Left for the user: no player source of the deed (GM .add, the archive's only sou
 ## IN PROGRESS (2026-10-31): #892 realm government: town stones, General, Nazguls
 
 User: whole system, WITHOUT fortress captains and dobyvani. Stone spots: my proposals, placed through the setup commands. Tunable numbers on .settings. Analysis on #892.
-Order, one PR each: (1) region realm + city name from the converter, (2) town stone: citizenship, tax, treasury, menu, setup, (3) blacklists in guards, (4) elections and votes, (5) rings, shrines, Nazguls, General, .honor/.fear, uniforms, (6) hired guards.
+Correction to what I told the user: on Erebor citizenship and expulsion votes are dead, their menu buttons are commented out. Citizenship is bought, a GM removes citizens, the mayor election is the only vote.
+**Step 2 shipped (Town.cs)**: `Town`, one per city, saved with its stone (hand Save, no .ct field, like GuildStone) and shared with Mordor's shrines later. Timers run on stone use, as on Erebor. Tests must read SkillRank as an enum; a test's shared server may already have run a setup. Player.Home can be null.
+Order, one PR each: (1) DONE PR #893 region realm + city name from the converter, (2) town stone: citizenship, tax, treasury, menu, setup, (3) blacklists in guards, (4) elections and votes, (5) rings, shrines, Nazguls, General, .honor/.fear, uniforms, (6) hired guards.
 
 ## DONE (2026-10-31): #889 bank box gump, status gold, weights vs Erebor (branch bank-gold-weights)
 
