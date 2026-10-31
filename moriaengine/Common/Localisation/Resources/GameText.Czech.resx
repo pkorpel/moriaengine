@@ -631,6 +631,27 @@
   <data name="MysticAbilitiesLoc_TargetStruck" xml:space="preserve">
     <value>Cíl je ochromen!</value>
   </data>
+  <data name="ThiefDefenceLoc_NotForYou" xml:space="preserve">
+    <value>Tohle není pro tebe</value>
+  </data>
+  <data name="ThiefDefenceLoc_CantNow" xml:space="preserve">
+    <value>Tohle teď nedokážeš...</value>
+  </data>
+  <data name="ThiefDefenceLoc_StanceOn" xml:space="preserve">
+    <value>Zaujal jsi obranný postoj.</value>
+  </data>
+  <data name="ThiefDefenceLoc_StanceOff" xml:space="preserve">
+    <value>Zrušil jsi obranný postoj.</value>
+  </data>
+  <data name="ThiefDefenceLoc_Rebounded" xml:space="preserve">
+    <value>Odrazil jsi úder!</value>
+  </data>
+  <data name="ThiefDefenceLoc_MagicallyReflected" xml:space="preserve">
+    <value>Úder magicky odražen</value>
+  </data>
+  <data name="ThiefDefenceLoc_MagicallyBlocked" xml:space="preserve">
+    <value>Úder magicky zastaven</value>
+  </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
     <value>Nemáš střelivo.</value>
   </data>

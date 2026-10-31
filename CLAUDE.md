@@ -1,9 +1,10 @@
 # moriaengine — working state
 
-## IN PROGRESS (2026-10-31): #860 leftovers, one PR each: #866, #865
+## IN PROGRESS (2026-10-31): #860 leftovers, last one: #865
 
 User: "carry on with the remaining open items".
-**#872 done** (branch 872-bleed, also #479): BleedingEffectPluginDef.Strike, f_thief_doBleed's fade, stacking and caps; nastaveni_weapbleed via the converter (BleedingEfficiency); class ability roll in CombatCalculator.CalculateClassAbility. a_bleeding_strike's 40 stam activation is still ours, Erebor's ripper is 3 stam + drain.
+**#866 done** (branch 866-thief-rebound, also #480): ThiefDefence: a_thief_rebound, .vigilance/.stance, magic reflex and block as tags until magic items exist. Reading the source corrected #480: vigilance doesn't reduce damage taken, it takes 30% off the thief's own blows on monsters and multiplies rebound.
+**#872 done** (PR #876, also #479): BleedingEffectPluginDef.Strike, f_thief_doBleed's fade, stacking and caps; nastaveni_weapbleed via the converter (BleedingEfficiency); class ability roll in CombatCalculator.CalculateClassAbility. a_bleeding_strike's 40 stam activation is still ours, Erebor's ripper is 3 stam + drain.
 **#868 done** (PRs #874, #875): reactive armor spell, Mystic's .astralpower, .switchmagic, Crushing Blow, strike ending mana shield. Can't be ported: energy shield's strength and voodoo shield, i_energyshield, shield_power and i_voodooshield aren't in the archive. Gotcha again: test accounts hold 5 characters, a 6th Fact starves another test with an unrelated-looking failure.
 
 ## DONE (2026-10-31): #860 mirror Erebor's combat numbers (PRs #862, #864, #867, #869, #870, #871)
