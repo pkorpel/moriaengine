@@ -46,7 +46,7 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("REGION_REPORT: " + defname + " exists=True name=" + r.Name + " fromScripts=" + r.IsFromScripts +
 				" gmModified=" + r.IsGmModified + " flags=0x" + ((int) r.Flags).ToString("x", CultureInfo.InvariantCulture) +
 				" events=" + string.Join("+", r.RegionEvents) + " resources=" + string.Join("+", r.RegionResources) +
-				" group=" + r.Group + " parent=" + ((r.Parent == null) ? "none" : r.Parent.Defname) + " rects=" + r.Rectangles.Count);
+				" group=" + r.Group + " parent=" + ((r.Parent == null) ? "none" : r.Parent.Defname) + " rects=" + r.Rectangles.Count + " realm=" + r.Realm + " realmTag=" + r.RealmTag + " city=" + r.City + " end");
 		}
 
 		/// <summary>#818 - teleports self into the archive region (a spot the map lookup really

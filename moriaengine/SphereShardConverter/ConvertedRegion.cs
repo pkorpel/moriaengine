@@ -51,6 +51,8 @@ namespace SteamEngine.Converter {
 				new LineImplTask("rainchance", PassThrough),
 				new LineImplTask("coldchance", PassThrough),
 				new LineImplTask("group", PassThrough),
+				new LineImplTask("tag.realm", ParseRealmTag),
+				new LineImplTask("tag.jmeno_mesta", ParseCityTag),
 
 				new LineImplTask("p", ParseP), 
 				new LineImplTask("rect", ParseRect), 
@@ -129,6 +131,14 @@ namespace SteamEngine.Converter {
 				this.headerName = defnameLine.Value;
 				regionsByDefname[defnameLine.Value] = this;//this could overwrite something, but that is not our fault I think :)
 			}
+		}
+
+		private static void ParseRealmTag(ConvertedDef def, PropsLine line) {
+			def.Set("Realm", line.Value.Trim(), line.Comment);
+		}
+
+		private static void ParseCityTag(ConvertedDef def, PropsLine line) {
+			def.Set("City", line.Value.Trim(), line.Comment);
 		}
 
 		private static void PassThrough(ConvertedDef def, PropsLine line) {
