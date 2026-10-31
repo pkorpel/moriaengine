@@ -209,17 +209,24 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>What a player's death means: to the quest, the killer's ring, and the victim's.</summary>
-		public static void OnDeath(Player victim, Character killer) {
+		/// <summary>What a player's death means: to the quest, whose kill it is, to everyone who fought them
+		/// (f_countfight), and to the victim's ring. Dying again right after dying counts for nothing,
+		/// on either side (i_checkstats_timer).</summary>
+		public static void OnDeath(Player victim, Character killer, bool recentlyDead = false) {
 			Player killingPlayer = killer as Player;
-			if (killingPlayer != null) {
-				if ((killingPlayer.GetTag(questEndsTK) != null) && (victim.Level >= RealmSettings.instance.ringMinLevel) &&
-						(victim.Realm == Realm.Gondor) && !Professions.HasProfession(victim, Professions.Craftsman)) {
-					killingPlayer.SetTag(questKillsTK, Int(killingPlayer, questKillsTK) + 1);
-				}
-				PowerBadge killersRing = RingOf(killingPlayer);
-				if (Counts(victim, killingPlayer) && ((killersRing == null) || IsNewVictim(killersRing, victim))) {
-					killingPlayer.SetTag(killsTK, KillsOf(killingPlayer) + 1);
+			if ((killingPlayer != null) && (killingPlayer.GetTag(questEndsTK) != null) && (victim.Level >= RealmSettings.instance.ringMinLevel) &&
+					(victim.Realm == Realm.Gondor) && !Professions.HasProfession(victim, Professions.Craftsman)) {
+				killingPlayer.SetTag(questKillsTK, Int(killingPlayer, questKillsTK) + 1);
+			}
+			if (recentlyDead) {
+				return;
+			}
+			foreach (Character fighter in LevelingSystem.FindFighters(victim, killer, false)) {
+				if ((fighter is Player) && Counts(victim, fighter)) {
+					PowerBadge fightersRing = RingOf(fighter);
+					if ((fightersRing == null) || IsNewVictim(fightersRing, victim)) {
+						fighter.SetTag(killsTK, KillsOf(fighter) + 1);
+					}
 				}
 			}
 			PowerBadge ring = RingOf(victim);

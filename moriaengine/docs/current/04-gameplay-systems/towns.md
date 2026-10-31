@@ -88,9 +88,10 @@ A Nazgul shows a red NAZGUL over the name, and their name in that color.
 - when offline time reaches 11 times online time,
 - when `deaths x 7` reaches `kills x 5` (`x 4` for the First): a Nazgul has to fight.
 
-It's checked on death and every 7 days (5 for the First), when 7 kills also come off the total. A kill
-counts if the victim is of the other realm, not a craftsman, Grandmaster, and not in an arena, and not one of
-the Nazgul's last 3 victims. Only a player's kill counts as a death.
+It's checked on death and every 7 days (5 for the First), when 7 kills also come off the total. A kill counts
+for everyone who fought the victim, if the victim is of the other realm, not a craftsman, Grandmaster, not in
+an arena, not one of that Nazgul's last 3 victims, and hadn't just died. Only a player's kill counts as a
+death, and not one right after another.
 
 **The First Nazgul.** A GM appoints a Nazgul on `i_lordnazgulsstone`, or a Nazgul takes it: with no First,
 `i_lordnazguls_gate` in Barad-dur lets a Nazgul open the way to Fela Nazgul, 3 of Mordor pass, and there's
