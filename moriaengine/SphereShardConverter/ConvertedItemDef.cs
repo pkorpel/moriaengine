@@ -172,6 +172,10 @@ namespace SteamEngine.Converter {
 					def.headerType = "RealmStoneDef"; //#892
 					def.Replace("TYPE", "t_normal", "");
 					break;
+				case "t_vargate":
+					def.headerType = "VarGateDef"; //#920
+					def.Replace("TYPE", "t_normal", "");
+					break;
 				case "t_townmenu":
 					def.headerType = "TownStoneDef"; //#892 - the typedef's script is TownStone here
 					def.Replace("TYPE", "t_normal", "");

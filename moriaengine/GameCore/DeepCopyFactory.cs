@@ -145,6 +145,8 @@ namespace SteamEngine {
 					if (IsNotCopied(type)) {
 						implementor = new CopyImplementor_NoCopyNeeded();
 						implementors[type] = implementor;
+					} else if (type.IsGenericType && implementors.TryGetValue(type.GetGenericTypeDefinition(), out implementor)) {
+						implementors[type] = implementor; //#920 - List<> and the like are registered open
 					} else {
 						throw new SEException("We don't know how to copy the type " + type);
 					}

@@ -1,0 +1,42 @@
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//	
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//	
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//	Or visit http://www.gnu.org/copyleft/gpl.html
+
+[ThingTemplate VarGate : Item]
+Def:
+
+Vars:
+	internal int gateFlags = 0
+	internal bool goHome = false
+	internal int expAmount = 0
+	internal int expMinutes = 0
+	internal int expMinLevel = 0
+	internal int expMaxLevel = 0
+	internal int expDecayLow = 0
+	internal int expDecayHigh = 0
+	internal int reqMinLevel = 0
+	internal int reqMaxLevel = 0
+	internal int addItemSeconds = 0
+	internal List<VarGateEntry> removals = null
+	internal List<VarGateEntry> additions = null
+	internal List<VarGateEntry> functions = null
+	internal List<Thing> guards = null
+	internal bool hasTimeSeal = false
+	internal int sealLength = 60
+	internal int sealDelay = 10
+	internal int sealMaxPlayers = 0
+	internal bool sealSameRealm = false
+	internal int sealFirstRealm = 0
+	internal List<VarGateSeal> seals = null
+	internal List<VarGateRecord> records = null

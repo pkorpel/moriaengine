@@ -18,6 +18,13 @@ The abbreviation never showed in a real client: AOS tooltip clients click throug
 Gotchas: a test gump the server re-sends must be read, or every later read is one behind and the buttons land on the wrong dialog. Go(x,y,z,m) with those args didn't get the joiner within reach of a stone 10 z up, P() did. An override of Save on a Thing must NOT carry [Save] ("Can not use the SaveAttribute on two class members"). Saved errors "no object with uid" for globals.sav's (TestSavedClass2) = #823, unrelated.
 Left for the user: no player source of the deed (GM .add, the archive's only source is a test kit), no terrain check on the spot, 0xD4 button.
 
+## DONE (2026-10-31): #920 port i_varGate (branch 920-vargate)
+
+User: look at i_vargate and port it. scripts/Basic/VarGate: VarGate (.ct + .cs), all GM dialogs, Time Seal, f_vg_bookDeny, f_vg_mountDeny. Doc variable-gate.md. Converter: t_varGate -> VarGateDef (regen: 1 file). Not ported, nothing to act on: hypnosis, magic items, weekly, PvP kit. Grandmaster has its own cave gates. No gates in the archive, so none in .SetupWorld.
+Engine fixes on the way: PluginHolder.RemoveTriggerGroup left its lookup entry (a removed event still read as present, could never be re-added); DeepCopyFactory never found List<>/LinkedList<>/Dictionary<,>, registered open, so .dupe of anything holding one threw.
+Gotchas: compare items by item.Def == ThingDef.GetByDefname(x): Defname of [ItemDef 0eed] + DEFNAME=i_gold isn't i_gold. Set attributes with SetAttribute: a bare Flag_NonMovable = true skips the decay re-check, so the thing still decays. An item whose TYPE names no typedef can't be created at all (#921, i_pergamen confirmed). A new .ct needs pwsh ./build.ps1 before dotnet run --project SphereShardConverter builds.
+Decision: Erebor's by-type check was inverted against its dialog and its by-item check; both follow the dialog.
+
 ## DONE (2026-10-31): #918 looting is a crime in Gondor (branch looting-crime)
 
 User: looting is free, nothing is ever blocked; it only makes you criminal if owner and looter are of the same realm and that realm's switch is on. Exception: the owner in your party with can-loot on. Beyond Erebor on purpose.

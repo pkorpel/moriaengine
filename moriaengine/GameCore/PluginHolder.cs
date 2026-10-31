@@ -165,6 +165,7 @@ namespace SteamEngine {
 					if (listNode.nextNode != null) {
 						listNode.nextNode.prevNode = listNode.prevNode;
 					}
+					this.tags.Remove(tg);
 					tg.TryRun(this, TriggerKey.unAssign, null);
 				}
 			}
