@@ -141,6 +141,7 @@ namespace SteamEngine.CompiledScripts {
 			//Guild commands - gated by their own internal leader/member checks, not plevel;
 			//missing from this allowlist meant they silently required GM (plevel>=4) by the
 			//default-deny fallback below, so no ordinary player could ever use them
+			this.commands["Party"] = PLEVEL_PLAYER;
 			this.commands["NavrhBan"] = PLEVEL_PLAYER;
 			this.commands["Honor"] = PLEVEL_PLAYER;
 			this.commands["TownControl"] = PLEVEL_PLAYER;
