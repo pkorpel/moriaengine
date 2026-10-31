@@ -28,6 +28,28 @@ namespace SteamEngine.CompiledScripts {
 		public bool autoPay;
 	}
 
+	/// <summary>A name on a blacklist, or suggested for one. The ban is on that name of the character, so
+	/// someone masked as another isn't recognized, and a mask of a banned name doesn't get them banned.</summary>
+	[SaveableClass]
+	public class TownBan {
+		[LoadingInitializer]
+		public TownBan() {
+		}
+
+		[SaveableData]
+		public Character who;
+
+		[SaveableData]
+		public string name;
+
+		[SaveableData]
+		public string reason;
+
+		/// <summary>Who suggested it, for a suggestion.</summary>
+		[SaveableData]
+		public string suggestedBy;
+	}
+
 	/// <summary>#892 - a city of systems/starostove.scp. Erebor kept a town in tags of its stone and in
 	/// invisible pouches of crystals; here it's this, saved with the stone. There's one per tag.jmeno_mesta,
 	/// which several map areas can share. Timers run when someone uses the stone, as on Erebor.</summary>
@@ -72,6 +94,14 @@ namespace SteamEngine.CompiledScripts {
 
 		[SaveableData]
 		public List<string> news = new List<string>();
+
+		/// <summary>The citizens' pouch of enemies: tag.enemyscont.</summary>
+		[SaveableData]
+		public List<TownBan> banned = new List<TownBan>();
+
+		/// <summary>tag.suggestedenemyscont</summary>
+		[SaveableData]
+		public List<TownBan> suggestedBans = new List<TownBan>();
 
 		[LoadingInitializer]
 		public Town() {
@@ -135,6 +165,14 @@ namespace SteamEngine.CompiledScripts {
 			get { return this.city.Replace('_', ' '); }
 		}
 
+		/// <summary>The realm of the map area its stone stands in.</summary>
+		public Realm Realm {
+			get {
+				FlaggedRegion area = RegionEventSystem.AreaOf(this.stone.Region);
+				return (area != null) ? area.Realm : Realm.None;
+			}
+		}
+
 		public void Remove() {
 			all.Remove(this);
 			if ((this.taxChest != null) && !this.taxChest.IsDeleted) {
@@ -159,7 +197,74 @@ namespace SteamEngine.CompiledScripts {
 			if (ch == this.mayor) {
 				return RankMayor;
 			}
-			return (this.FindCitizen(ch) != null) ? RankCitizen : RankPublic;
+			if (this.FindCitizen(ch) != null) {
+				return RankCitizen;
+			}
+			return (this.FindBan(ch) != null) ? RankEnemy : RankPublic;
+		}
+
+		public TownBan FindBan(Character ch) {
+			return FindIn(this.banned, ch);
+		}
+
+		public TownBan FindSuggestion(Character ch) {
+			return FindIn(this.suggestedBans, ch);
+		}
+
+		private static TownBan FindIn(List<TownBan> bans, Character ch) {
+			foreach (TownBan ban in bans) {
+				if ((ban.who == ch) && (ban.name == ch.Name)) {
+					return ban;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>blacklist_him</summary>
+		public void Ban(Character who, string reason) {
+			this.banned.Add(new TownBan { who = who, name = who.Name, reason = reason });
+			who.RedMessage("Byl jsi dan na cernou listinu mesta " + this.Name);
+		}
+
+		/// <summary>navrhni</summary>
+		public void SuggestBan(Character who, string reason, Character by) {
+			this.suggestedBans.Add(new TownBan { who = who, name = who.Name, reason = reason, suggestedBy = by.Name });
+			who.RedMessage("Byl jsi navrzen na blacklist mesta " + this.Name + ". Ocekavej rozhodnuti starosty.");
+		}
+
+		/// <summary>Which town's guards a guard is: the city of the area it calls home.</summary>
+		public static Town OfGuard(NPC guard) {
+			FlaggedRegion area = RegionEventSystem.AreaOf(HomeRegion(guard));
+			return ((area != null) && !string.IsNullOrEmpty(area.City)) ? ForCity(area.City) : null;
+		}
+
+		private static Region HomeRegion(NPC guard) {
+			NPCAiTimer timer = NPCAiTimer.GetFor(guard);
+			if ((timer != null) && timer.hasHome) {
+				return Map.GetMap(timer.homeM).GetRegionFor(new Point2D(timer.homeX, timer.homeY));
+			}
+			return guard.Region;
+		}
+
+		/// <summary>isfrommytown: a citizen of the town this guard guards.</summary>
+		public static bool IsFromGuardsTown(NPC guard, Character ch) {
+			Town town = OfGuard(guard);
+			return (town != null) && (town.FindCitizen(ch) != null);
+		}
+
+		/// <summary>isbannedplayer: on the blacklist of the town this guard guards, unless a citizen of it.</summary>
+		public static bool IsBannedFor(NPC guard, Character ch) {
+			Town town = OfGuard(guard);
+			return (town != null) && (town.FindCitizen(ch) == null) && (town.FindBan(ch) != null);
+		}
+
+		/// <summary>The warning of isbannedplayer, to someone who hasn't crossed into the town yet.</summary>
+		public static void WarnBanned(NPC guard, Character ch) {
+			FlaggedRegion guardsArea = RegionEventSystem.AreaOf(HomeRegion(guard));
+			if (IsBannedFor(guard, ch) && (RegionEventSystem.AreaOf(ch.Region) != guardsArea)) {
+				guard.Say("Aaaa " + ch.Name + ", mame prikaz nevpustit te do mesta, strez se prekrocit jeho hranici!");
+				guard.Say("Zmizni od mesta!");
+			}
 		}
 
 		/// <summary>The chest stands beside the stone, and comes back if it's gone.</summary>

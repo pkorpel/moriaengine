@@ -82,6 +82,75 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>i_target_town's 12: a mayor's blacklist, for which a mayor needs no one's suggestion.</summary>
+	public class Targ_TownBan : CompiledTargetDef {
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			Town town = (Town) parameter;
+			if (targetted.Realm != town.Realm) {
+				self.SysMessage("Neni to nas, neni treba jej blacklistovat");
+			} else if (town.FindBan(targetted) != null) {
+				self.SysMessage(targetted.Name + " jiz na blacklistu je.");
+			} else if (town.FindCitizen(targetted) != null) {
+				self.SysMessage("Obcany mesta nelze pridavat na blacklist");
+			} else {
+				D_TownInput.Ask(self, "Udej duvod blacklistnuti:", "", reason => {
+					town.Ban(targetted, reason);
+					self.SysMessage(targetted.Name + " uspesne pridan na cernou listinu");
+				});
+			}
+			return TargetResult.Done;
+		}
+	}
+
+	/// <summary>i_navrhban_target</summary>
+	public class Targ_TownSuggestBan : CompiledTargetDef {
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			Town town = (Town) parameter;
+			if (town.FindBan(targetted) != null) {
+				self.SysMessage(targetted.Name + " jiz na blacklistu je.");
+			} else if (targetted.Realm != self.Realm) {
+				self.SysMessage("Tohoto neni potreba navrhovat na blacklist");
+			} else if (town.FindCitizen(targetted) != null) {
+				self.SysMessage("Obcany daneho mesta nelze navrhovat na blacklist");
+			} else if (targetted.IsGM) {
+				self.SysMessage("Nenavrhuj GMka");
+			} else {
+				D_TownInput.Ask(self, "Udej duvod tveho navrhu:", "", reason => {
+					town.SuggestBan(targetted, reason, self);
+					self.SysMessage("Navrhl jsi hrace " + targetted.Name + " na blacklist mesta " + town.Name);
+				});
+			}
+			return TargetResult.Done;
+		}
+	}
+
+	/// <summary>Erebor's player commands around towns.</summary>
+	public static class TownCommands {
+		/// <summary>navrhban: a citizen suggests for their town's blacklist.</summary>
+		[SteamFunction]
+		public static void NavrhBan(Character self, ScriptArgs sa) {
+			Player player = self as Player;
+			Town town = Town.OfCitizen(self);
+			if ((player != null) && (town != null)) {
+				player.SysMessage("Koho chces navrhnout na blacklist?");
+				player.Target(SingletonScript<Targ_TownSuggestBan>.Instance, town);
+			} else {
+				self.SysMessage("Navrhovat mohou pouze obcane mest");
+			}
+		}
+
+		/// <summary>blacklist: the mayor's shortcut to the menu's line.</summary>
+		[SteamFunction]
+		public static void Blacklist(Character self, ScriptArgs sa) {
+			Player player = self as Player;
+			Town town = Town.OfCitizen(self);
+			if ((player != null) && (town != null) && (town.mayor == self)) {
+				player.SysMessage("Koho chces pridat na blacklist?");
+				player.Target(SingletonScript<Targ_TownBan>.Instance, town);
+			}
+		}
+	}
+
 	/// <summary>Who stops being what, chosen on a character: the GM lines of the menu.</summary>
 	public class Targ_TownCitizen : CompiledTargetDef {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {

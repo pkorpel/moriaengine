@@ -9,7 +9,8 @@ namespace SteamEngine.Tests.Protocol {
 	[Collection(TownTestsCollection.Name)]
 	public class TownTests {
 		private const string Account = "towntests";
-		private const int MakeCitizenship = 25, PayTax = 4, TaxStatus = 6, SetTax = 14, Resign = 15, Home = 24, News = 23, Yes = 1;
+		private const string AccountB = "towntestsb";
+		private const int Blacklist = 2, SuggestedBans = 21, AddBan = 12, MakeCitizenship = 25, PayTax = 4, TaxStatus = 6, SetTax = 14, Resign = 15, Home = 24, News = 23, Yes = 1;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
 
 		private readonly GameServerPairFixture fixture;
@@ -116,6 +117,65 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		[Fact]
+		public void SuggestedForTheBlacklistThenGuardsCome() {
+			using (var mayor = this.Connect("Town Mayor Tester")) {
+				this.Ask(mayor, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+				using var other = this.Connect("Town Ban Tester", AccountB);
+				this.Ask(mayor, ".SetupTowns", "SETUP_DONE:");
+				uint stone = (uint) Number(this.Ask(mayor, ".TestTownPrepare 1", "TOWN_READY:"), "stone");
+				this.Press(mayor, stone, MakeCitizenship);
+				this.Yes_(mayor);
+				this.Ask(mayor, ".TestTownSetMayor", "TOWN_MAYOR:");
+				this.Ask(other, ".TestTownPrepare 0", "TOWN_READY:");
+				uint otherUid = (uint) Number(this.Report(other), "uid");
+				Assert.Contains("attacks=False", this.Ask(other, ".TestTownGuardCheck", "TOWN_GUARD:"));
+
+				//suggested, and it waits for the mayor
+				mayor.SendSpeech(".navrhban");
+				Thread.Sleep(300);
+				mayor.SendTargetUid(otherUid);
+				var input = mayor.ReadGumpDialogWithStrings(Wait);
+				mayor.SendGumpResponse(input.GumpUid, 1, new Dictionary<int, string> { { 1, "Krade" } });
+				Thread.Sleep(300);
+				Assert.Contains("banned=0 suggested=1", this.Report(other));
+				Assert.Contains("attacks=False", this.Ask(other, ".TestTownGuardCheck", "TOWN_GUARD:"));
+
+				this.Press(mayor, stone, SuggestedBans);
+				var list = mayor.ReadGumpDialogWithStrings(Wait);
+				Assert.True(list.Strings.Exists(s => s.Contains("Krade")), string.Join(" | ", list.Strings));
+				mayor.SendGumpResponse(list.GumpUid, 100);
+				list = mayor.ReadGumpDialogWithStrings(Wait);
+				string banned = this.Report(other);
+				Assert.Contains("banned=1 suggested=0 rank=0", banned);
+
+				//the guards know that name, and a mask fools them
+				string guard = this.Ask(other, ".TestTownGuardCheck", "TOWN_GUARD:");
+				Assert.Contains("attacks=True masked=False protected=False", guard);
+
+				//the mayor takes the name off
+				mayor.SendGumpResponse(list.GumpUid, 0);
+				mayor.ReadGumpDialogWithStrings(Wait);
+				this.Press(mayor, stone, Blacklist);
+				list = mayor.ReadGumpDialogWithStrings(Wait);
+				mayor.SendGumpResponse(list.GumpUid, 100);
+				mayor.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("banned=0 suggested=0 rank=1", this.Report(other));
+
+				//and a mayor bans directly
+				this.Press(mayor, stone, AddBan);
+				Thread.Sleep(300);
+				mayor.SendTargetUid(otherUid);
+				input = mayor.ReadGumpDialogWithStrings(Wait);
+				mayor.SendGumpResponse(input.GumpUid, 1, new Dictionary<int, string> { { 1, "Znovu" } });
+				Thread.Sleep(300);
+				Assert.Contains("banned=1", this.Report(other));
+
+				//a criminal is safe from their own town's guards, and only those
+				Assert.Contains("protected=True", this.Ask(mayor, ".TestTownCriminal", "TOWN_CRIMINAL:"));
+			}
+		}
+
 		private void Press(TestGameClient client, uint stone, int button) {
 			client.SendDoubleClick(stone);
 			var menu = client.ReadGumpDialogWithStrings(Wait);
@@ -156,13 +216,13 @@ namespace SteamEngine.Tests.Protocol {
 			return double.Parse(text.Trim(), CultureInfo.InvariantCulture);
 		}
 
-		private TestGameClient Connect(string charName) {
+		private TestGameClient Connect(string charName, string account = Account) {
 			int redirectPort = TownTestsLogin.RedirectPort(Account);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(Account, Account);
+					game.SendLogin(account, account);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
 					Thread.Sleep(500);
