@@ -43,7 +43,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>input(...)</summary>
 	public class D_TownInput : CompiledGumpDef {
-		private const int OkButton = 1, TextEntry = 1;
+		private const int OkButton = 1, TextEntryId = 1;
 
 		public static void Ask(Player player, string question, string current, Action<string> onAnswer) {
 			player.Dialog(player, SingletonScript<D_TownInput>.Instance, new DialogArgs(question, current, onAnswer));
@@ -54,12 +54,12 @@ namespace SteamEngine.CompiledScripts {
 			this.AddPage(0);
 			this.AddBackground(0, 0, 300, 110, 2620);
 			this.AddLabel(14, 12, 0x481, (string) args[0]);
-			this.AddTextEntry(14, 40, 270, 20, 52, TextEntry, (string) args[1]);
+			this.AddTextEntry(14, 40, 270, 20, 52, TextEntryId, (string) args[1]);
 			this.AddButton(14, 72, 0xfb7, 0xfb9, OkButton, GumpButtonType.Reply, 0);
 		}
 
 		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
-			string text = (gr.GetTextResponse(TextEntry) ?? "").Trim();
+			string text = (gr.GetTextResponse(TextEntryId) ?? "").Trim();
 			if ((gr.PressedButton == OkButton) && (text.Length > 0)) {
 				((Action<string>) args[2])(text);
 			}

@@ -429,7 +429,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#833 - the quest master's speech (Erebor's spk_quest_expert): greeting it opens its gump, for the
 	/// player on its quest, within 4 tiles.</summary>
 	public sealed class ExpertQuestMasterSpeech : AbstractSpeech {
-		public static void Bootstrap() {
+		public new static void Bootstrap() {
 			new ExpertQuestMasterSpeech("spk_quest_expert").Register();
 		}
 
