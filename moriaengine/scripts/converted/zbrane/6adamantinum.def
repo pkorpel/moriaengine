@@ -53,8 +53,8 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 900 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
-MindPowerVsP = 4900.0 //#539 - scaled: 700 * 28.0/4.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
-MindPowerVsM = 4900.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
+MindPowerVsP = 6533.33 //#539 - scaled: 700 * 28.0/3.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 6533.33 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_kryss_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -136,8 +136,8 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 990 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
-MindPowerVsP = 8000.0 //#539 - scaled: 700 * 80.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
-MindPowerVsM = 8000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
+MindPowerVsP = 1076.92 //#539 - scaled: 700 * 80.0/52.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1076.92 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_scimitar_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -221,8 +221,8 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 900 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
-MindPowerVsP = 3000.0 //#539 - scaled: 700 * 30.0/7.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
-MindPowerVsM = 3000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
+MindPowerVsP = 4200.0 //#539 - scaled: 700 * 30.0/5.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 4200.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredStaffDef i_staff_black_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -388,8 +388,8 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 1125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
-MindPowerVsP = 3290.0 //#539 - scaled: 700 * 47.0/10.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
-MindPowerVsM = 3290.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
+MindPowerVsP = 1028.12 //#539 - scaled: 700 * 47.0/32.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1028.12 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_sword_long_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -528,8 +528,8 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 1125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
-MindPowerVsP = 5250.0 //#539 - scaled: 700 * 90.0/12.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
-MindPowerVsM = 5250.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
+MindPowerVsP = 1016.13 //#539 - scaled: 700 * 90.0/62.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1016.13 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_pitchfork_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -641,8 +641,8 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 1125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
-MindPowerVsP = 3000.0 //#539 - scaled: 700 * 60.0/14.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
-MindPowerVsM = 3000.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
+MindPowerVsP = 1076.92 //#539 - scaled: 700 * 60.0/39.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1076.92 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_axe_two_hand_adamantinum]
 CATEGORY = Provisions - Weapons - Colored
@@ -839,8 +839,8 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 1125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
-MindPowerVsP = 3305.56 //#539 - scaled: 700 * 85.0/18.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
-MindPowerVsM = 3305.56 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
+MindPowerVsP = 1043.86 //#539 - scaled: 700 * 85.0/57.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
+MindPowerVsM = 1043.86 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
 [ColoredWeaponDef i_halberd_adamantinum]
 CATEGORY = Provisions - Weapons - Colored

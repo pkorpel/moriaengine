@@ -883,15 +883,15 @@ DEFNAME = i_skeleton
 
 [ItemDef 0x1d8f]
 DUPEITEM = i_skeleton
-//DEFNAME = i_skeleton_sw_part_2 // commented out by Converter 
+DEFNAME = i_skeleton_sw_part_2
 
 [ItemDef 0x1d90]
 DUPEITEM = i_skeleton
-//DEFNAME = i_skeleton_se_part_1 // commented out by Converter 
+DEFNAME = i_skeleton_se_part_1
 
 [ItemDef 0x1d91]
 DUPEITEM = i_skeleton
-//DEFNAME = i_skeleton_se_part_2 // commented out by Converter 
+DEFNAME = i_skeleton_se_part_2
 
 [ItemDef 0x1d92]
 CATEGORY = Decoration - Dungeons and The Dead
@@ -1502,7 +1502,7 @@ DUPEITEM = i_OAR_DOUBLE
 
 [ItemDef 0x1e5c]
 DUPEITEM = i_ankh_sacrifice
-//DEFNAME = i_ankh_sacrifice_2 // commented out by Converter 
+DEFNAME = i_ankh_sacrifice_2
 
 [ItemDef 0x1e5d]
 DUPEITEM = i_ankh_sacrifice
@@ -1703,7 +1703,7 @@ SUBSECTION = Thief
 DESCRIPTION = Pickpocket Dip (w)
 
 DUPEITEM = i_pickpocket_dip
-//DEFNAME = i_pickpocket_dip_n // commented out by Converter 
+DEFNAME = i_pickpocket_dip_n
 
 [ItemDef 0x1ec1]
 DUPEITEM = i_pickpocket_dip
@@ -1717,7 +1717,7 @@ SUBSECTION = Thief
 DESCRIPTION = Pickpocket Dip (n)
 
 DUPEITEM = i_pickpocket_dip
-//DEFNAME = i_pickpocket_dip_w // commented out by Converter 
+DEFNAME = i_pickpocket_dip_w
 
 [ItemDef 0x1ec4]
 DUPEITEM = i_pickpocket_dip

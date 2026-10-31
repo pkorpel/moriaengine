@@ -63,8 +63,6 @@ namespace SteamEngine {
 					Logger.WriteWarning("Unable to locate sound.mul or soundidx.mul.");
 				}
 				scr.Close();
-			} else {
-				Logger.WriteWarning("Ignoring sound.mul.");
 			}
 		}
 

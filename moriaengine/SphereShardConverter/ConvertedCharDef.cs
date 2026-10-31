@@ -37,6 +37,7 @@ namespace SteamEngine.Converter {
 	public class ConvertedCharDef : ConvertedThingDef {
 		public static Dictionary<string, ConvertedThingDef> charsByDefname = new Dictionary<string, ConvertedThingDef>(StringComparer.OrdinalIgnoreCase);
 		public static Dictionary<int, ConvertedThingDef> charsByModel = new Dictionary<int, ConvertedThingDef>();
+		private static readonly Dictionary<string, ConvertedThingDef> charsByHeader = new Dictionary<string, ConvertedThingDef>(StringComparer.OrdinalIgnoreCase);
 		//by model and by defnames
 
 
@@ -63,7 +64,7 @@ namespace SteamEngine.Converter {
 			new LineImplTask("experience", PassThroughUnlessPlayerDef),
 			new LineImplTask("tamingdifficulty", PassThroughUnlessPlayerDef),
 			new LineImplTask("bloodcolor", PassThroughUnlessPlayerDef),
-			new LineImplTask("resources", PassThroughUnlessPlayerDef),
+			new LineImplTask("resources", HandleResources),
 			new LineImplTask("moverate", PassThroughUnlessPlayerDef),
 			new LineImplTask("foodtype", PassThroughUnlessPlayerDef),
 			new LineImplTask("attack", HandleAttack),
@@ -211,6 +212,8 @@ namespace SteamEngine.Converter {
 			: base(input, convertedFile) {
 			this.byModel = charsByModel;
 			this.byDefname = charsByDefname;
+			this.byHeader = charsByHeader;
+			this.handWritten = HandWrittenScripts.Chars;
 
 			this.firstStageImplementations.Add(firstStageImpl);
 			this.thirdStageImplementations.Add(thirdStageImpl);
@@ -235,6 +238,8 @@ namespace SteamEngine.Converter {
 
 			if (this.IsPlayerDefByName) {
 				this.headerType = "PlayerDef";
+				//#937 - the hooks of Erebor's characters, for NPCs they're abilities and a player has none of those
+				this.writtenData.RemoveAll(line => line.StartsWith("TEVENTS", StringComparison.OrdinalIgnoreCase));
 			} else {
 				this.headerType = "NPCDef";
 				this.ConvertRestockLoot();
@@ -397,7 +402,7 @@ namespace SteamEngine.Converter {
 							}
 							break;
 						case "addspell":
-							this.Set("AddSpell", val, comment);
+							this.SetAddSpell(val, comment);
 							break;
 					}
 				}
@@ -669,7 +674,7 @@ namespace SteamEngine.Converter {
 				if (this.IsPlayerDefByName) {
 					return;
 				}
-				this.Set("AddSpell", value.Trim(), comment);
+				this.SetAddSpell(value.Trim(), comment);
 				return;
 			}
 			//#607 - the real archive's tag.weapflag field (always inside @Create, confirmed
@@ -973,6 +978,25 @@ namespace SteamEngine.Converter {
 				WriteAsComment(def, line);
 			} else {
 				def.Set(line);
+			}
+		}
+
+		//#937 - "RESOURCES=" is often empty, or has no amounts, or has them behind the name
+		private static void HandleResources(ConvertedDef d, PropsLine line) {
+			ConvertedCharDef def = (ConvertedCharDef) d;
+			if (def.IsPlayerDefByName) {
+				WriteAsComment(def, line);
+			} else {
+				ConvertedItemDef.HandleResourcesList(def, line);
+			}
+		}
+
+		//#937 - spells the archive names and no spell here has: its typos, and the ones we don't have
+		private void SetAddSpell(string spell, string comment) {
+			if (HandWrittenScripts.IsDefined(spell)) {
+				this.Set("AddSpell", spell, comment);
+			} else {
+				this.Set("//AddSpell", spell, "no such spell, commented out by Converter");
 			}
 		}
 

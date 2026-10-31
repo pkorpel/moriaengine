@@ -88,7 +88,7 @@ namespace SteamEngine {
 			get {
 				//from the two available defnames (like c_0x190 and c_man) it returns the more understandable (c_man)
 				if (this.Defname.IndexOf("_0x") > 0) {
-					if (this.altdefname != null) {
+					if (!string.IsNullOrEmpty(this.altdefname)) { //#937 - it's "" if there's none, and such a def was saved nameless
 						return this.altdefname;
 					}
 				}
@@ -115,6 +115,9 @@ namespace SteamEngine {
 
 			string typeName = input.HeaderType;
 			string defname = input.HeaderName;
+			if (defname.Length == 0) {
+				return; //#937 - older saves wrote a def with no DEFNAME nameless, nothing says which it was
+			}
 
 			AbstractDef def = GetByDefname(defname);
 			if (def == null) {

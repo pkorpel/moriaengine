@@ -189,3 +189,34 @@ MORIA_CONVERTER_OUTPUT_DIR=/path/to/scratch dotnet run --project SphereShardConv
 Only point this at the real `scripts/converted` intentionally, once a diff against the
 scratch output has already been reviewed - see #544 for the trial-run/diff/report
 workflow this safety rail exists for.
+
+## Nothing defined twice (#937)
+
+A boot logs no error at all, and `BootLogTests` keeps it so, for a new world and a saved one. The engine treats a
+second definition as an error and drops it, so the converter settles every double before writing:
+
+- **The engine's own scripts win.** `HandWrittenScripts` scans `scripts/` except `converted` before converting. A
+  constant or a thing they already define is commented out. Their values can differ on purpose: `attr_` and `statf_`
+  flags are other bits here.
+- **A model number used twice.** Sphere redoes the def and keeps both names on it. Here a later section with a name of
+  its own stands as a def of that name, with the number as its model, so `c_orc` and `c_orc_nb` both exist. Without a
+  name it only repeats the number: the first stays if it has a name, otherwise the later one counts.
+- **A constant defined twice in the archive:** the later one counts, as in Sphere. Files are read in sorted order, so
+  this doesn't depend on the file system.
+- **A dupe's `DEFNAME`** is kept (`i_rock_3`, `i_pet_horse`). `DEFNAME2` isn't possible here, so a recipe naming one is
+  written under the first name (`i_lemon` is `i_fruit_lemon`).
+
+The rest of what's in the archive and can't load:
+
+| What | Done with it |
+|---|---|
+| An item whose model is nowhere | Commented out (`i_dialog_context`), `i_coin_gold` is `i_gold` |
+| A recipe naming an item that's nowhere | The line is commented out (`i_enchant_weapon`) |
+| `ADDSPELL` of a spell that doesn't exist here | Commented out: `s_chain_lighting`, `s_meteor_shower`, `s_summon_undead`, `s_fire_bolt` |
+| `TSPEECH` of a speech that's nowhere | Commented out |
+| A constant with no value | An empty string, as in Sphere |
+| `TEVENTS` on a `PlayerDef` | Dropped |
+| An NPC's `RESOURCES` | Written as `amount name`, an empty one dropped |
+
+`[MultiItemDef]` sections are live now, so deeds' names resolve. Their `COMPONENT` and `MULTIREGION` lines are still
+comments, so such a multi has no doors or sign, and Erebor's deeds still don't place them.

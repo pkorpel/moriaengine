@@ -857,34 +857,34 @@ DEFNAME = i_flesh_legs_3
 
 [ItemDef 0x1ce5]
 DUPEITEM = i_flesh_arm_right
-//DEFNAME = i_flesh_arm_left // commented out by Converter 
+DEFNAME = i_flesh_arm_left
 
 [ItemDef 0x1ce6]
 DUPEITEM = i_flesh_upper_body
-//DEFNAME = i_flesh_upper_body_2 // commented out by Converter 
+DEFNAME = i_flesh_upper_body_2
 
 [ItemDef 0x1ce7]
 DUPEITEM = i_flesh_leggings
-//DEFNAME = i_flesh_legs_4 // commented out by Converter 
+DEFNAME = i_flesh_legs_4
 
 [ItemDef 0x1ce8]
 DUPEITEM = i_flesh_torso_2
-//DEFNAME = i_flesh_torso_3 // commented out by Converter 
+DEFNAME = i_flesh_torso_3
 
 [ItemDef 0x1ce9]
 DUPEITEM = i_flesh_head
 
 [ItemDef 0x1cea]
 DUPEITEM = i_flesh
-//DEFNAME = i_flesh_2 // commented out by Converter 
+DEFNAME = i_flesh_2
 
 [ItemDef 0x1ceb]
 DUPEITEM = i_flesh_legs_3
-//DEFNAME = i_flesh_legs_5 // commented out by Converter 
+DEFNAME = i_flesh_legs_5
 
 [ItemDef 0x1cec]
 DUPEITEM = i_flesh_leg
-//DEFNAME = i_flesh_leg_2 // commented out by Converter 
+DEFNAME = i_flesh_leg_2
 
 [ItemDef 0x1ced]
 CATEGORY = Decoration - Dungeons and The Dead

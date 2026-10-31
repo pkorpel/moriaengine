@@ -310,9 +310,12 @@ namespace SteamEngine.Persistence {
 			if (value == Globals.Instance) {
 				return "#globals";
 			}
-			ISimpleSaveImplementor iss;
-			if (simpleImplementorsByType.TryGetValue(t, out iss)) {
-				return iss.Save(value);
+			//#937 - by base types too: IPAddress.Loopback is of a private subclass
+			for (Type simpleType = t; simpleType != null; simpleType = simpleType.BaseType) {
+				ISimpleSaveImplementor iss;
+				if (simpleImplementorsByType.TryGetValue(simpleType, out iss)) {
+					return iss.Save(value);
+				}
 			}
 
 			if (t.IsArray) {

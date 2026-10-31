@@ -128,8 +128,8 @@ mifdef_prefname[62]	Foxes//intel
 mifdef_sufname[62]	of Fox
 mifdef_prefname[63]	Whales//vit
 mifdef_sufname[63]	of Whale
-mifdef_prefname[64]	//vsechny staty
-mifdef_sufname[64]
+mifdef_prefname[64] ""	//vsechny staty
+mifdef_sufname[64] ""
 
 mifdef_prefname[70]	Regenerating//regen hits
 mifdef_sufname[70]	of Regeneration
@@ -137,8 +137,8 @@ mifdef_prefname[71]	Relaxating//regen stam
 mifdef_sufname[71]	of Relaxation
 mifdef_prefname[72]	Meditating//regen mana
 mifdef_sufname[72]	of Meditation
-mifdef_prefname[73]	//regen all
-mifdef_sufname[73]
+mifdef_prefname[73] ""	//regen all
+mifdef_sufname[73] ""
 
 mifdef_sufname[101]	of Demonslayer//bonus undead+demon
 mifdef_prefname[101]	Demonslaying

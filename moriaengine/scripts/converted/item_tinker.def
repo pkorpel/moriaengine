@@ -998,21 +998,21 @@ DEFNAME = i_map
 [ItemDef 0x14ec]
 DUPEITEM = i_map
 
-[ItemDef 0x14fb]
-CATEGORY = Items by Professions
-SUBSECTION = Thief
-DESCRIPTION = Lockpick
+//[ItemDef 0x14fb] //(commented out by Converter) 
+//CATEGORY = Items by Professions
+//SUBSECTION = Thief
+//DESCRIPTION = Lockpick
+//
+//NAME = "Lockpick"
+//TYPE = T_LOCKPICK
+////DUPELIST = 014fc // commented out by Converter 
+//WEIGHT = 0.1
+//RESOURCES = 1 i_ingot_iron
+//SKILLMAKE = 450 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+////FLIP = 1 // commented out by Converter 
+//DEFNAME = i_lockpick
 
-NAME = "Lockpick"
-TYPE = T_LOCKPICK
-//DUPELIST = 014fc // commented out by Converter 
-WEIGHT = 0.1
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 450 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
-DEFNAME = i_lockpick
-
-[ItemDef 0x14fc]
+//[ItemDef 0x14fc] //(commented out by Converter) 
 
 [ItemDef i_lockpick_2]
 NAME = "Lockpick na 2 pokusy"
@@ -1148,7 +1148,7 @@ DEFNAME = i_tray
 
 [ItemDef 0x992]
 DUPEITEM = i_tray
-//DEFNAME = i_tray_2 // commented out by Converter 
+DEFNAME = i_tray_2
 
 [ItemDef 0x97f]
 CATEGORY = Items by Professions

@@ -7,55 +7,55 @@ GUARDS		c_MAN
 
 
 [Constants HUES] // These are hues from hues.mul.
-color_none		0
-color_metal		0
-color_violet_lt		14
-color_red1		32
-color_red2		33
-color_cyan		88
-color_gray_dk		802
-color_energy_vortex	{ 0134, 0151 }
-color_gray_lt		904
-COLOR_DYE_HIGH		1000	// highest dyeable color = 1001
-color_ice		1152
-color_snow		1153
-color_rock		1154
-color_spectral		17969
+//color_none		0 //defined in the engine's own scripts, commented out by Converter
+//color_metal		0 //defined in the engine's own scripts, commented out by Converter
+//color_violet_lt		14 //defined in the engine's own scripts, commented out by Converter
+//color_red1		32 //defined in the engine's own scripts, commented out by Converter
+//color_red2		33 //defined in the engine's own scripts, commented out by Converter
+//color_cyan		88 //defined in the engine's own scripts, commented out by Converter
+//color_gray_dk		802 //defined in the engine's own scripts, commented out by Converter
+//color_energy_vortex	{ 0134 0151 } //defined in the engine's own scripts, commented out by Converter
+//color_gray_lt		904 //defined in the engine's own scripts, commented out by Converter
+//COLOR_DYE_HIGH		1000	// highest dyeable color = 1001 //defined in the engine's own scripts, commented out by Converter
+//color_ice		1152 //defined in the engine's own scripts, commented out by Converter
+//color_snow		1153 //defined in the engine's own scripts, commented out by Converter
+//color_rock		1154 //defined in the engine's own scripts, commented out by Converter
+//color_spectral		17969 //defined in the engine's own scripts, commented out by Converter
 
 
 [Constants HUES_RANGE] // These are ranges of hues from hues.mul.
-colors_skin	{1002, 1057}
-colors_all	{ {443, 443} 2 {902, 902} 1 {907, 907} 1 {928, 928} 1 {946, 947} 1 {1201, 1247} 6 {1301, 1347} 6 {1401, 1447} 6 {1501, 1547} 6 {1601, 1654} 6 {1701, 1747} 6 {1801, 1887} 6 }
-colors_white	{2301, 2301}
-colors_black	{2305, 2305}
-colors_brown	{443, 443}
-colors_red	{0641, 0676}
-colors_blue	{1301, 1354}
-colors_yellow	{1701, 1747}
-colors_green	{1401, 1447}
-colors_orange	{1501, 1547}
-colors_gray	{946, 947}
-colors_pink 	{1201, 1247}
-colors_neutral	{1801, 1887}
-colors_snake	{2001, 2018}
-colors_bird	{2101, 2130}
-colors_slime	{2201, 2224}
-colors_animal	{2301, 2318}
-colors_daemon	{ 1106, 1110 }
-colors_blood	098C
-colors_lava	{ { 32, 34 } 1 { 53, 55 } 1 { 43, 45 } 1 }
-colors_poison	{ 61, 79 }
-colors_hair	{ 1102, 1148 }
+//colors_skin	{1002 1057} //defined in the engine's own scripts, commented out by Converter
+//colors_all	{ {443 443} 2 {902 902} 1 {907 907} 1 {928 928} 1 {946 947} 1 {1201 1247} 6 {1301 1347} 6 {1401 1447} 6 {1501 1547} 6 {1601 1654} 6 {1701 1747} 6 {1801 1887} 6 } //defined in the engine's own scripts, commented out by Converter
+//colors_white	{2301 2301} //defined in the engine's own scripts, commented out by Converter
+//colors_black	{2305 2305} //defined in the engine's own scripts, commented out by Converter
+//colors_brown	{443 443} //defined in the engine's own scripts, commented out by Converter
+//colors_red	{0641 0676} //defined in the engine's own scripts, commented out by Converter
+//colors_blue	{1301 1354} //defined in the engine's own scripts, commented out by Converter
+//colors_yellow	{1701 1747} //defined in the engine's own scripts, commented out by Converter
+//colors_green	{1401 1447} //defined in the engine's own scripts, commented out by Converter
+//colors_orange	{1501 1547} //defined in the engine's own scripts, commented out by Converter
+//colors_gray	{946 947} //defined in the engine's own scripts, commented out by Converter
+//colors_pink 	{1201 1247} //defined in the engine's own scripts, commented out by Converter
+//colors_neutral	{1801 1887} //defined in the engine's own scripts, commented out by Converter
+//colors_snake	{2001 2018} //defined in the engine's own scripts, commented out by Converter
+//colors_bird	{2101 2130} //defined in the engine's own scripts, commented out by Converter
+//colors_slime	{2201 2224} //defined in the engine's own scripts, commented out by Converter
+//colors_animal	{2301 2318} //defined in the engine's own scripts, commented out by Converter
+//colors_daemon	{ 1106 1110 } //defined in the engine's own scripts, commented out by Converter
+//colors_blood	098C //defined in the engine's own scripts, commented out by Converter
+//colors_lava	{ { 32 34 } 1 { 53 55 } 1 { 43 45 } 1 } //defined in the engine's own scripts, commented out by Converter
+//colors_poison	{ 61 79 } //defined in the engine's own scripts, commented out by Converter
+//colors_hair	{ 1102 1148 } //defined in the engine's own scripts, commented out by Converter
 
-color_magic_weap    0
-color_magic_shield    0
-color_magic_arm     0
+//color_magic_weap    0 //defined in the engine's own scripts, commented out by Converter
+//color_magic_shield    0 //defined in the engine's own scripts, commented out by Converter
+//color_magic_arm     0 //defined in the engine's own scripts, commented out by Converter
 
-color_magic_defense		1650
-color_magic_guarding		1430
-color_magic_hardening		1353
-color_magic_fortification    	1805
-color_magic_invulnerability	1887
+//color_magic_defense		1650 //defined in the engine's own scripts, commented out by Converter
+//color_magic_guarding		1430 //defined in the engine's own scripts, commented out by Converter
+//color_magic_hardening		1353 //defined in the engine's own scripts, commented out by Converter
+//color_magic_fortification    	1805 //defined in the engine's own scripts, commented out by Converter
+//color_magic_invulnerability	1887 //defined in the engine's own scripts, commented out by Converter
 
 // Brain types
 
@@ -258,159 +258,159 @@ TROLLS                 { c_troll, 1, c_troll_w_axe, 1, c_troll_w_mace, 1 }
 
 [Constants SOUNDS]
 // Sounds - monsters
-snd_ANIMALS_ALIGATR1     90
-snd_ANIMALS_BEAR1         95
-snd_ANIMALS_BULL1         100
-snd_ANIMALS_CAT1         105
-snd_ANIMALS_CHICKEN1       110
-snd_ANIMALS_COUGAR1       115
-snd_ANIMALS_COW1         120
-snd_ANIMALS_CROW1         125
-snd_ANIMALS_DEER3         130
+//snd_ANIMALS_ALIGATR1     90 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_BEAR1         95 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_BULL1         100 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_CAT1         105 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_CHICKEN1       110 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_COUGAR1       115 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_COW1         120 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_CROW1         125 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_DEER3         130 //defined in the engine's own scripts, commented out by Converter
 //snd_ANIMALS_DEER4         131
 //snd_ANIMALS_DEER5         132
-snd_ANIMALS_DOG1         133
-snd_ANIMALS_DOLPHIN1     138
-snd_ANIMALS_EAGLE1       143
-snd_ANIMALS_FRSTBRD1     148
-snd_ANIMALS_GOAT1         153
-snd_ANIMALS_GORILLA1     158
-snd_ANIMALS_GRIZZLY1     163
-snd_ANIMALS_HORSE1       168
-snd_ANIMALS_JUNGBRD1       173
-snd_ANIMALS_LION1         178
-snd_ANIMALS_LLAMA3       183
+//snd_ANIMALS_DOG1         133 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_DOLPHIN1     138 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_EAGLE1       143 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_FRSTBRD1     148 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_GOAT1         153 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_GORILLA1     158 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_GRIZZLY1     163 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_HORSE1       168 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_JUNGBRD1       173 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_LION1         178 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_LLAMA3       183 //defined in the engine's own scripts, commented out by Converter
 //snd_ANIMALS_LLAMA4       184
 //snd_ANIMALS_LLAMA5       185
-snd_ANIMALS_PANTHER1     186
-snd_ANIMALS_PARROT1       191
-snd_ANIMALS_PIG1         196
-snd_ANIMALS_RABBIT3       201
+//snd_ANIMALS_PANTHER1     186 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_PARROT1       191 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_PIG1         196 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_RABBIT3       201 //defined in the engine's own scripts, commented out by Converter
 //snd_ANIMALS_RABBIT4       202
 //snd_ANIMALS_RABBIT5       203
-snd_ANIMALS_RAT1         204
-snd_ANIMALS_RAVEN1       209
-snd_ANIMALS_SHEEP1       214
-snd_ANIMALS_SNAKE1       219
-snd_ANIMALS_WALRUS1       224
-snd_ANIMALS_WOLF1         229
-snd_ELEMENTL_AIRELEM1     263
-snd_ELEMENTL_AIRELEM5	 267
-snd_ELEMENTL_ERTHEL1     268
-snd_ELEMENTL_FIRELEM1     273
-snd_ELEMENTL_WATREL1     278
+//snd_ANIMALS_RAT1         204 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_RAVEN1       209 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_SHEEP1       214 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_SNAKE1       219 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_WALRUS1       224 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMALS_WOLF1         229 //defined in the engine's own scripts, commented out by Converter
+//snd_ELEMENTL_AIRELEM1     263 //defined in the engine's own scripts, commented out by Converter
+//snd_ELEMENTL_AIRELEM5	 267 //defined in the engine's own scripts, commented out by Converter
+//snd_ELEMENTL_ERTHEL1     268 //defined in the engine's own scripts, commented out by Converter
+//snd_ELEMENTL_FIRELEM1     273 //defined in the engine's own scripts, commented out by Converter
+//snd_ELEMENTL_WATREL1     278 //defined in the engine's own scripts, commented out by Converter
 
-snd_HITS_HIT01           309
-snd_HITS_HIT02           310
-snd_HITS_HIT03           311
-snd_HITS_HIT04           312
-snd_HITS_HIT05           313
-snd_HITS_HIT06           314
-snd_HITS_HIT07           315
-snd_HITS_HIT08           316
-snd_HITS_HIT09           317
-snd_HITS_HIT10           318
-snd_HITS_HIT11           319
-snd_HITS_HIT12           320
-snd_HITS_HIT13           321
-snd_HITS_HIT14           322
-snd_HITS_HIT15           323
-snd_HITS_HIT16           324
-snd_HITS_HIT17           325
-snd_HITS_HIT18           326
-snd_HITS_HIT19           327
-snd_HITS_HIT20           328
-snd_HITS_HIT21           329
-snd_HITS_HIT22           330
+//snd_HITS_HIT01           309 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT02           310 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT03           311 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT04           312 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT05           313 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT06           314 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT07           315 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT08           316 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT09           317 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT10           318 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT11           319 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT12           320 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT13           321 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT14           322 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT15           323 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT16           324 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT17           325 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT18           326 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT19           327 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT20           328 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT21           329 //defined in the engine's own scripts, commented out by Converter
+//snd_HITS_HIT22           330 //defined in the engine's own scripts, commented out by Converter
 
-snd_HUMAN_FOOMPH01       331
-snd_HUMAN_FOOMPH06       332
-snd_HUMAN_FOOMPH07       333
-snd_HUMAN_FOOMPH08        334
-snd_HUMAN_FOOMPH09       335
-snd_HUMAN_F_DIE_01       336
-snd_HUMAN_F_DIE_02       337
-snd_HUMAN_F_DIE_03       338
-snd_HUMAN_F_DIE_04       339
-snd_HUMAN_MOOMPH01       340
-snd_HUMAN_MOOMPH02       341
-snd_HUMAN_MOOMPH03       342
-snd_HUMAN_MOOMPH04       343
-snd_HUMAN_MOOMPH05       344
-snd_HUMAN_MOOMPH13       345
-snd_HUMAN_M_DIE_01       346
-snd_HUMAN_M_DIE_02       347
-snd_HUMAN_M_DIE_03       348
-snd_HUMAN_M_DIE_04       349
-snd_MONSTER_CORPSR1       353
+//snd_HUMAN_FOOMPH01       331 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_FOOMPH06       332 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_FOOMPH07       333 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_FOOMPH08        334 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_FOOMPH09       335 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_F_DIE_01       336 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_F_DIE_02       337 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_F_DIE_03       338 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_F_DIE_04       339 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_MOOMPH01       340 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_MOOMPH02       341 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_MOOMPH03       342 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_MOOMPH04       343 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_MOOMPH05       344 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_MOOMPH13       345 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_M_DIE_01       346 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_M_DIE_02       347 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_M_DIE_03       348 //defined in the engine's own scripts, commented out by Converter
+//snd_HUMAN_M_DIE_04       349 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_CORPSR1       353 //defined in the engine's own scripts, commented out by Converter
 //snd_MONSTER_CORPSR3       354
 //snd_MONSTER_CORPSR4       355
 //snd_MONSTER_CORPSR5       356
-snd_MONSTER_DAEMON1       357
-snd_MONSTER_DRAGON1       362
-snd_MONSTER_ETTIN1       367
-snd_MONSTER_GARGYL1       372
-snd_MONSTER_GAZER1       377
-snd_MONSTER_GHOST1       382
-snd_MONSTER_GISPIDR1      387
-snd_MONSTER_GRAT1         392
-snd_MONSTER_GSCORP1       397
-snd_MONSTER_HARPY1       402
-snd_MONSTER_HEADLS1       407
-snd_MONSTER_LICHE1       412
-snd_MONSTER_LZRDMN1       417
-snd_MONSTER_MNGBAT1       422
-snd_MONSTER_OGRE1         427
-snd_MONSTER_ORC1         432
-snd_MONSTER_RATMAN1       437
-snd_MONSTER_REAPER1       442
-snd_MONSTER_SEASERP1     447
+//snd_MONSTER_DAEMON1       357 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_DRAGON1       362 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_ETTIN1       367 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_GARGYL1       372 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_GAZER1       377 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_GHOST1       382 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_GISPIDR1      387 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_GRAT1         392 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_GSCORP1       397 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_HARPY1       402 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_HEADLS1       407 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_LICHE1       412 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_LZRDMN1       417 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_MNGBAT1       422 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_OGRE1         427 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_ORC1         432 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_RATMAN1       437 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_REAPER1       442 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_SEASERP1     447 //defined in the engine's own scripts, commented out by Converter
 //snd_MONSTER_SEASERP3     448
 //snd_MONSTER_SEASERP4     449
 //snd_MONSTER_SEASERP5     450
-snd_MONSTER_SKLETN1       451
-snd_MONSTER_SLIME1       456
-snd_MONSTER_TROLL1       461
-snd_MONSTER_WISP1         466
-snd_MONSTER_ZOMBIE1       471
-snd_WEAPONS_AXE01         562
-snd_WEAPONS_BLUNT01       563
-snd_WEAPONS_CROSSBOW     564
-snd_WEAPONS_GILOTIN1     565
-snd_WEAPONS_HVYSWRD1     566
-snd_WEAPONS_HVYSWRD4     567
-snd_WEAPONS_SWISH01       568
-snd_WEAPONS_SWISH02       569
-snd_WEAPONS_SWISH03       570
-snd_WEAPONS_SWORD1       571
-snd_WEAPONS_SWORD7       572
-snd_Z_END_CARPNTRY         573
-snd_Z_END_DYE              574
-snd_Z_END_FSHSPLSH         575
-snd_Z_END_LIQUID           576
-snd_Z_END_LOCKPICK         577
-snd_Z_END_MORTAR           578
-snd_Z_END_MYSTERY1         579
-snd_Z_END_MYSTERY2         580
-snd_Z_END_MYSTERY3         581
-snd_Z_END_POISON           582
-snd_Z_END_POWDER           583
-snd_Z_END_SCISSORS         584
-snd_Z_END_SCRIBE           585
-snd_Z_END_SPIRTSPK         586
-snd_MONSTER_TERA_WARRIOR1     589
-snd_MONSTER_TERA_DRONE1       594
-snd_MONSTER_TERA_MATRIARCH1   599
-snd_MONSTER_CYCLOPS1          604
-snd_MONSTER_TITAN1            609
-snd_MONSTER_GIANTTOAD1        614
-snd_MONSTER_BULLFROG1         619
-snd_ANIMAL_OSTARD_DESERT1     624
-snd_ANIMAL_OSTARD_FRENZIED1   629
-snd_MONSTER_OPHIDIAN_WARRIOR1 634
-snd_MONSTER_OPHIDIAN_MAGE1    639
-snd_MONSTER_OPHIDIAN_QUEEN1   644
-snd_MONSTER_LAVALIZARD1       649
+//snd_MONSTER_SKLETN1       451 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_SLIME1       456 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_TROLL1       461 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_WISP1         466 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_ZOMBIE1       471 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_AXE01         562 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_BLUNT01       563 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_CROSSBOW     564 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_GILOTIN1     565 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_HVYSWRD1     566 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_HVYSWRD4     567 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_SWISH01       568 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_SWISH02       569 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_SWISH03       570 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_SWORD1       571 //defined in the engine's own scripts, commented out by Converter
+//snd_WEAPONS_SWORD7       572 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_CARPNTRY         573 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_DYE              574 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_FSHSPLSH         575 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_LIQUID           576 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_LOCKPICK         577 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_MORTAR           578 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_MYSTERY1         579 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_MYSTERY2         580 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_MYSTERY3         581 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_POISON           582 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_POWDER           583 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_SCISSORS         584 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_SCRIBE           585 //defined in the engine's own scripts, commented out by Converter
+//snd_Z_END_SPIRTSPK         586 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_TERA_WARRIOR1     589 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_TERA_DRONE1       594 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_TERA_MATRIARCH1   599 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_CYCLOPS1          604 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_TITAN1            609 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_GIANTTOAD1        614 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_BULLFROG1         619 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMAL_OSTARD_DESERT1     624 //defined in the engine's own scripts, commented out by Converter
+//snd_ANIMAL_OSTARD_FRENZIED1   629 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_OPHIDIAN_WARRIOR1 634 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_OPHIDIAN_MAGE1    639 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_OPHIDIAN_QUEEN1   644 //defined in the engine's own scripts, commented out by Converter
+//snd_MONSTER_LAVALIZARD1       649 //defined in the engine's own scripts, commented out by Converter
 
 ////////   LBR & UO3D sounds    //////
 snd_MONSTER_CENTAUR           		679
@@ -432,75 +432,75 @@ snd_MONSTER_DRAGON_SKELETON   		1160
 snd_MONSTER_SUCCUBUS          		1200
 snd_ANIMALS_UNICORN           		1212
 // Sounds - Spells
-snd_SPELL_LIGHTNING                  41
-snd_SPELL_CHAIN_LIGHTNING            41
-snd_SPELL_FIREBALL                   351
-snd_SPELL_FIRE_BOLT                  351
-snd_SPELL_METEOR_SWARM               352
-snd_SPELL_FIRE_FIELD                 477
-snd_SPELL_CLUMSY                     479
-snd_SPELL_CURE                       480
-snd_SPELL_CURSE                      481
-snd_SPELL_CREATE_FOOD                482
-snd_SPELL_NIGHT_SIGHT                483
-snd_SPELL_LIGHT                      483
-snd_SPELL_FEEBLEMIND                 484
-snd_SPELL_MAGIC_ARROW                485
-snd_SPELL_WEAKEN                     486
-snd_SPELL_AGILITY                    487
-snd_SPELL_ARCHCURE                   488
-snd_SPELL_MAGIC_REFLECTION           488
-snd_SPELL_ANIMATE_DEAD               488
-snd_SPELL_BLESS                      490
-snd_SPELL_CUNNING                    491
-snd_SPELL_INCOGNITO                  492
-snd_SPELL_PROTECTION                 493
-snd_SPELL_STRENGTH                   494
-snd_SPELL_MAGIC_TRAP                 495
-snd_SPELL_MAGIC_UNTRAP               496
-snd_SPELL_HARM                       497
-snd_SPELL_HEAL                       498
-snd_SPELL_REACTIVE_ARMOR             498
-snd_SPELL_MAGIC_LOCK                 500
-snd_SPELL_telekinesis                501
-snd_SPELL_WALL_OF_STONE              502
-snd_SPELL_ARCHPROTECTION             503
-snd_SPELL_MANA_DRAIN                 504
-snd_SPELL_MANA_VAMPIRE               505
-snd_SPELL_MARK                       506
-snd_SPELL_MASS_CURSE                 507
-snd_SPELL_RECALL                     508
-snd_SPELL_REVEAL                     509
-snd_SPELL_TELEPORT                   510
-snd_SPELL_UNLOCK                     511
-snd_SPELL_DISPEL                     513
-snd_SPELL_GREATER_HEAL               514
-snd_SPELL_INVISIBILITY               515
-snd_SPELL_PARALYZE                   516
-snd_SPELL_POISON                     517
-snd_SPELL_EXPLOSION                  519
-snd_SPELL_FLAMESTRIKE                520
-snd_SPELL_MASS_DISPEL                521
-snd_SPELL_ENERGY_BOLT                522
-snd_SPELL_ENERGY_FIELD               523
-snd_SPELL_EARTHQUAKE                 525
-snd_SPELL_GATE_TRAVEL                526
-snd_SPELL_POLYMORPH                  527
-snd_SPELL_DISPEL_FIELD               528
-snd_SPELL_PARALYZE_FIELD             529
-snd_SPELL_BLADE_SPIRITS              530
-snd_SPELL_ENERGY_VORTEX              530
-snd_SPELL_MIND_BLAST                 531
-snd_SPELL_RESURRECTION               532
-snd_SPELL_SUMMON_CREATURE            533
-snd_SPELL_SUMMON_DAEMON              534
-snd_SPELL_SUMMON_elem_air       535
-snd_SPELL_SUMMON_elem_earth     535
-snd_SPELL_SUMMON_elem_fire      535
-snd_SPELL_SUMMON_elem_water     535
-snd_SPELL_POISON_FIELD               550
-snd_SPELL_BONE_ARMOR                 577
-snd_SPELL_SUMMON_UNDEAD              586
+//snd_SPELL_LIGHTNING                  41 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_CHAIN_LIGHTNING            41 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_FIREBALL                   351 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_FIRE_BOLT                  351 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_METEOR_SWARM               352 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_FIRE_FIELD                 477 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_CLUMSY                     479 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_CURE                       480 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_CURSE                      481 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_CREATE_FOOD                482 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_NIGHT_SIGHT                483 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_LIGHT                      483 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_FEEBLEMIND                 484 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MAGIC_ARROW                485 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_WEAKEN                     486 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_AGILITY                    487 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_ARCHCURE                   488 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MAGIC_REFLECTION           488 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_ANIMATE_DEAD               488 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_BLESS                      490 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_CUNNING                    491 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_INCOGNITO                  492 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_PROTECTION                 493 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_STRENGTH                   494 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MAGIC_TRAP                 495 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MAGIC_UNTRAP               496 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_HARM                       497 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_HEAL                       498 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_REACTIVE_ARMOR             498 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MAGIC_LOCK                 500 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_telekinesis                501 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_WALL_OF_STONE              502 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_ARCHPROTECTION             503 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MANA_DRAIN                 504 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MANA_VAMPIRE               505 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MARK                       506 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MASS_CURSE                 507 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_RECALL                     508 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_REVEAL                     509 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_TELEPORT                   510 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_UNLOCK                     511 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_DISPEL                     513 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_GREATER_HEAL               514 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_INVISIBILITY               515 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_PARALYZE                   516 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_POISON                     517 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_EXPLOSION                  519 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_FLAMESTRIKE                520 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MASS_DISPEL                521 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_ENERGY_BOLT                522 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_ENERGY_FIELD               523 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_EARTHQUAKE                 525 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_GATE_TRAVEL                526 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_POLYMORPH                  527 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_DISPEL_FIELD               528 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_PARALYZE_FIELD             529 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_BLADE_SPIRITS              530 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_ENERGY_VORTEX              530 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_MIND_BLAST                 531 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_RESURRECTION               532 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_SUMMON_CREATURE            533 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_SUMMON_DAEMON              534 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_SUMMON_elem_air       535 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_SUMMON_elem_earth     535 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_SUMMON_elem_fire      535 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_SUMMON_elem_water     535 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_POISON_FIELD               550 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_BONE_ARMOR                 577 //defined in the engine's own scripts, commented out by Converter
+//snd_SPELL_SUMMON_UNDEAD              586 //defined in the engine's own scripts, commented out by Converter
 
 
 [Constants REGION_FLAGS]
@@ -591,20 +591,20 @@ MEMORY_OTHER        08000   // Memorytype for temporary changes (example functio
 
 [Constants STAT_FLAGS]
 // apply to chars
-statf_invul		000000001	// Invulnerability
-statf_dead		000000002
+//statf_invul		000000001	// Invulnerability //defined in the engine's own scripts, commented out by Converter
+//statf_dead		000000002 //defined in the engine's own scripts, commented out by Converter
 statf_freeze		000000004	// paralyzed. (spell)
-statf_invisible		000000008	// Invisible (spell).
+//statf_invisible		000000008	// Invisible (spell). //defined in the engine's own scripts, commented out by Converter
 statf_sleeping		000000010	// You look like a corpse ?
-statf_war		000000020	// War mode on ?
+//statf_war		000000020	// War mode on ? //defined in the engine's own scripts, commented out by Converter
 statf_reactive		000000040	// have reactive armor on.
-statf_poisoned		000000080	// Poison level is in the poison object
+//statf_poisoned		000000080	// Poison level is in the poison object //defined in the engine's own scripts, commented out by Converter
 statf_nightsight	000000100	// All a light to you
 statf_reflection	000000200	// Magic reflect on.
 statf_polymorph		000000400	// We have polymorphed to another form.
 statf_incognito		000000800	// Dont show skill titles
 statf_spiritspeak	000001000	// I can hear ghosts clearly.
-statf_insubstantial	000002000	// Ghost has not manifest. or GM hidden
+//statf_insubstantial	000002000	// Ghost has not manifest. or GM hidden //defined in the engine's own scripts, commented out by Converter
 statf_emoteaction	000004000	// The creature will emote its actions to it's owners.
 statf_listen		000008000	// used by t_comm_crystal
 statf_hasshield		000010000	// Using a shield
@@ -614,7 +614,7 @@ statf_caged		000080000	// Summoned in cage.
 statf_fly		000100000	// Flying or running ? (anim)
 statf_respawnnpc	000200000	// This is a major NPC, needs to respawn if dead.
 statf_hallucinating	000400000	// eat 'shrooms or bad food.
-statf_hidden		000800000	// Hidden (non-magical)
+//statf_hidden		000800000	// Hidden (non-magical) //defined in the engine's own scripts, commented out by Converter
 statf_indoors		001000000	// we are covered from the rain.
 statf_criminal		002000000	// The guards will attack me. (someone has called guards)
 statf_conjured		004000000	// This creature is conjured and will expire. (leave no corpse or loot)
@@ -622,27 +622,27 @@ statf_pet		008000000	// I am a pet/hirling. check for my owner memory.
 statf_spawned		010000000	// I am spawned by a spawn item.
 statf_saveparity	020000000	// Has this char been saved or not ?
 statf_ridden		040000000	// This is the horse. (don't display me) I am being ridden
-statf_onhorse		080000000	// Mounted on horseback.
+//statf_onhorse		080000000	// Mounted on horseback. //defined in the engine's own scripts, commented out by Converter
 
 
 [Constants ATTR_FLAGS]
 // apply to items
 attr_identified		00001	// This is the identified name. ???
-attr_decay		00002	// Timer currently set to decay.
-attr_newbie		00004	// Not lost on death or sellable ?
-attr_move_always	00008	// Always movable (else Default as stored in client) (even if MUL says not movalble) NEVER DECAYS !
-attr_move_never		00010	// Never movable (else Default as stored in client) NEVER DECAYS !
-attr_magic		00020	// DON'T SET THIS WHILE WORN! This item is magic as apposed to marked or markable.
-attr_owned		00040	// This is owned by the town. You need to steal it. NEVER DECAYS !
-attr_invis		00080	// Gray hidden item (to GM's or owners?)
+//attr_decay		00002	// Timer currently set to decay. //defined in the engine's own scripts, commented out by Converter
+//attr_newbie		00004	// Not lost on death or sellable ? //defined in the engine's own scripts, commented out by Converter
+//attr_move_always	00008	// Always movable (else Default as stored in client) (even if MUL says not movalble) NEVER DECAYS ! //defined in the engine's own scripts, commented out by Converter
+//attr_move_never		00010	// Never movable (else Default as stored in client) NEVER DECAYS ! //defined in the engine's own scripts, commented out by Converter
+//attr_magic		00020	// DON'T SET THIS WHILE WORN! This item is magic as apposed to marked or markable. //defined in the engine's own scripts, commented out by Converter
+//attr_owned		00040	// This is owned by the town. You need to steal it. NEVER DECAYS ! //defined in the engine's own scripts, commented out by Converter
+//attr_invis		00080	// Gray hidden item (to GM's or owners?) //defined in the engine's own scripts, commented out by Converter
 attr_cursed		00100
 attr_cursed2		00200	// cursed damned unholy
 attr_blessed		00400
 attr_blessed2		00800	// blessed sacred holy
 attr_forsale		01000	// For sale on a vendor.
-attr_stolen		02000	// The item is hot. m_uidLink = previous owner.
+//attr_stolen		02000	// The item is hot. m_uidLink = previous owner. //defined in the engine's own scripts, commented out by Converter
 attr_can_decay		04000	// This item can decay. but it would seem that it would not (ATTR_MOVE_NEVER etc)
-attr_static		08000	// WorldForge merge marker. (not used)
+//attr_static		08000	// WorldForge merge marker. (not used) //defined in the engine's own scripts, commented out by Converter
 
 
 [Constants Priv_Flags]
@@ -691,73 +691,73 @@ mt_ranged_immune	00020//imunita proti archery utokum
 
 [Constants ALIGNMENTS]
 // Ranges of karma ?
-EVIL                  {-10000, -6001}
-CHAOTIC               {-6000, -2001}
-GOOD                  {2000, 10000}
-WICKED                {-10000, -6001}
-BELLIGERENT           {-6000, -2001}
-NEUTRAL               {-2000, 1999}
-KINDLY                {2000, 5999}
-GOODHEARTED           {6000, 10000}
+//EVIL                  {-10000 -6001} //defined in the engine's own scripts, commented out by Converter
+//CHAOTIC               {-6000 -2001} //defined in the engine's own scripts, commented out by Converter
+//GOOD                  {2000 10000} //defined in the engine's own scripts, commented out by Converter
+//WICKED                {-10000 -6001} //defined in the engine's own scripts, commented out by Converter
+//BELLIGERENT           {-6000 -2001} //defined in the engine's own scripts, commented out by Converter
+//NEUTRAL               {-2000 1999} //defined in the engine's own scripts, commented out by Converter
+//KINDLY                {2000 5999} //defined in the engine's own scripts, commented out by Converter
+//GOODHEARTED           {6000 10000} //defined in the engine's own scripts, commented out by Converter
 
-INFAMOUS              {-10000, -6001}
-OUTLAW                {-6000, -2001}
-ANONYMOUS             {-2000, 1999}
-KNOWN                 {2000, 5999}
-FAMOUS                {6000, 10000}
+//INFAMOUS              {-10000 -6001} //defined in the engine's own scripts, commented out by Converter
+//OUTLAW                {-6000 -2001} //defined in the engine's own scripts, commented out by Converter
+//ANONYMOUS             {-2000 1999} //defined in the engine's own scripts, commented out by Converter
+//KNOWN                 {2000 5999} //defined in the engine's own scripts, commented out by Converter
+//FAMOUS                {6000 10000} //defined in the engine's own scripts, commented out by Converter
 
 
 [Constants MIDIS]
 // MIDI Music Defs
-midi_oldult01           0
-midi_create             1
-midi_dragflit           2
-midi_oldult02           3
-midi_oldult03           4
-midi_oldult04           5
-midi_oldult05           6
-midi_oldult06           7
-midi_stones2            8
-midi_britain1           9
-midi_britain2           10
-midi_BucsDen            11
-midi_Jhelom             12
-midi_LBCastle           13
-midi_linelle            14
-midi_Magincia           15
-midi_Minoc              16
-midi_Ocllo              17
-midi_Samlethe           18
-midi_Serpents           19
-midi_Skarabra           20
-midi_Trinsic            21
-midi_Vesper             22
-midi_Wind               23
-midi_Yew                24
-midi_Cave01             25
-midi_Dungeon9           26
-midi_ForestA            27
-midi_InTown01           28
-midi_JungleA            29
-midi_MountainA          30
-midi_Plains             31
-midi_Sailing            32
-midi_SwampA             33
-midi_Tavern01           34
-midi_Tavern02           35
-midi_Tavern03           36
-midi_Tavern04           37
-midi_Combat1            38
-midi_Combat2            39
-midi_Combat3            40
-midi_Approach           41
-midi_Death              42
-midi_Victory            43
-midi_BtCastle           44
-midi_NuJelm             45
-midi_Dungeon2           46
-midi_Cove               47
-midi_Moonglow           48
+//midi_oldult01           0 //defined in the engine's own scripts, commented out by Converter
+//midi_create             1 //defined in the engine's own scripts, commented out by Converter
+//midi_dragflit           2 //defined in the engine's own scripts, commented out by Converter
+//midi_oldult02           3 //defined in the engine's own scripts, commented out by Converter
+//midi_oldult03           4 //defined in the engine's own scripts, commented out by Converter
+//midi_oldult04           5 //defined in the engine's own scripts, commented out by Converter
+//midi_oldult05           6 //defined in the engine's own scripts, commented out by Converter
+//midi_oldult06           7 //defined in the engine's own scripts, commented out by Converter
+//midi_stones2            8 //defined in the engine's own scripts, commented out by Converter
+//midi_britain1           9 //defined in the engine's own scripts, commented out by Converter
+//midi_britain2           10 //defined in the engine's own scripts, commented out by Converter
+//midi_BucsDen            11 //defined in the engine's own scripts, commented out by Converter
+//midi_Jhelom             12 //defined in the engine's own scripts, commented out by Converter
+//midi_LBCastle           13 //defined in the engine's own scripts, commented out by Converter
+//midi_linelle            14 //defined in the engine's own scripts, commented out by Converter
+//midi_Magincia           15 //defined in the engine's own scripts, commented out by Converter
+//midi_Minoc              16 //defined in the engine's own scripts, commented out by Converter
+//midi_Ocllo              17 //defined in the engine's own scripts, commented out by Converter
+//midi_Samlethe           18 //defined in the engine's own scripts, commented out by Converter
+//midi_Serpents           19 //defined in the engine's own scripts, commented out by Converter
+//midi_Skarabra           20 //defined in the engine's own scripts, commented out by Converter
+//midi_Trinsic            21 //defined in the engine's own scripts, commented out by Converter
+//midi_Vesper             22 //defined in the engine's own scripts, commented out by Converter
+//midi_Wind               23 //defined in the engine's own scripts, commented out by Converter
+//midi_Yew                24 //defined in the engine's own scripts, commented out by Converter
+//midi_Cave01             25 //defined in the engine's own scripts, commented out by Converter
+//midi_Dungeon9           26 //defined in the engine's own scripts, commented out by Converter
+//midi_ForestA            27 //defined in the engine's own scripts, commented out by Converter
+//midi_InTown01           28 //defined in the engine's own scripts, commented out by Converter
+//midi_JungleA            29 //defined in the engine's own scripts, commented out by Converter
+//midi_MountainA          30 //defined in the engine's own scripts, commented out by Converter
+//midi_Plains             31 //defined in the engine's own scripts, commented out by Converter
+//midi_Sailing            32 //defined in the engine's own scripts, commented out by Converter
+//midi_SwampA             33 //defined in the engine's own scripts, commented out by Converter
+//midi_Tavern01           34 //defined in the engine's own scripts, commented out by Converter
+//midi_Tavern02           35 //defined in the engine's own scripts, commented out by Converter
+//midi_Tavern03           36 //defined in the engine's own scripts, commented out by Converter
+//midi_Tavern04           37 //defined in the engine's own scripts, commented out by Converter
+//midi_Combat1            38 //defined in the engine's own scripts, commented out by Converter
+//midi_Combat2            39 //defined in the engine's own scripts, commented out by Converter
+//midi_Combat3            40 //defined in the engine's own scripts, commented out by Converter
+//midi_Approach           41 //defined in the engine's own scripts, commented out by Converter
+//midi_Death              42 //defined in the engine's own scripts, commented out by Converter
+//midi_Victory            43 //defined in the engine's own scripts, commented out by Converter
+//midi_BtCastle           44 //defined in the engine's own scripts, commented out by Converter
+//midi_NuJelm             45 //defined in the engine's own scripts, commented out by Converter
+//midi_Dungeon2           46 //defined in the engine's own scripts, commented out by Converter
+//midi_Cove               47 //defined in the engine's own scripts, commented out by Converter
+//midi_Moonglow           48 //defined in the engine's own scripts, commented out by Converter
 
 
 [Constants NEEDSTOFIX]
@@ -898,39 +898,39 @@ layerar[24]	23//nohy
 
 
 [Constants LAYERS]
-layer_hand1		1
-layer_hand2		2
-layer_shoes		3
-layer_pants		4 // bone legs + pants.
-layer_shirt		5 // female plate
-layer_helm		6
-layer_gloves		7
-layer_ring		8
-layer_light		9	// a ITEMID_LIGHT_SRC equip item can be put here.
-layer_collar		10 // gorget or necklace.
-layer_hair		11
-layer_half_apron 	12
-layer_chest		13 // armor chest
-layer_wrist		14 // watch
-layer_hidden		15 // not sure
-layer_beard		16 // try to have only men have this.
-layer_tunic		17 // jester suit or full apron.
-layer_ears		18 // earrings
-layer_arms		19 // armor
-layer_cape		20 // cape
-layer_pack		21 // only used by ITEMID_BACKPACK
-layer_robe		22 // robe over all.
-layer_skirt		23 // skirt or kilt.
-layer_legs		24 // 0x18 = plate legs.
+//layer_hand1		1 //defined in the engine's own scripts, commented out by Converter
+//layer_hand2		2 //defined in the engine's own scripts, commented out by Converter
+//layer_shoes		3 //defined in the engine's own scripts, commented out by Converter
+//layer_pants		4 // bone legs + pants. //defined in the engine's own scripts, commented out by Converter
+//layer_shirt		5 // female plate //defined in the engine's own scripts, commented out by Converter
+//layer_helm		6 //defined in the engine's own scripts, commented out by Converter
+//layer_gloves		7 //defined in the engine's own scripts, commented out by Converter
+//layer_ring		8 //defined in the engine's own scripts, commented out by Converter
+//layer_light		9	// a ITEMID_LIGHT_SRC equip item can be put here. //defined in the engine's own scripts, commented out by Converter
+//layer_collar		10 // gorget or necklace. //defined in the engine's own scripts, commented out by Converter
+//layer_hair		11 //defined in the engine's own scripts, commented out by Converter
+//layer_half_apron 	12 //defined in the engine's own scripts, commented out by Converter
+//layer_chest		13 // armor chest //defined in the engine's own scripts, commented out by Converter
+//layer_wrist		14 // watch //defined in the engine's own scripts, commented out by Converter
+//layer_hidden		15 // not sure //defined in the engine's own scripts, commented out by Converter
+//layer_beard		16 // try to have only men have this. //defined in the engine's own scripts, commented out by Converter
+//layer_tunic		17 // jester suit or full apron. //defined in the engine's own scripts, commented out by Converter
+//layer_ears		18 // earrings //defined in the engine's own scripts, commented out by Converter
+//layer_arms		19 // armor //defined in the engine's own scripts, commented out by Converter
+//layer_cape		20 // cape //defined in the engine's own scripts, commented out by Converter
+//layer_pack		21 // only used by ITEMID_BACKPACK //defined in the engine's own scripts, commented out by Converter
+//layer_robe		22 // robe over all. //defined in the engine's own scripts, commented out by Converter
+//layer_skirt		23 // skirt or kilt. //defined in the engine's own scripts, commented out by Converter
+//layer_legs		24 // 0x18 = plate legs. //defined in the engine's own scripts, commented out by Converter
 
 // These are not part of the paper doll (but get sent to the client)
-layer_horse			25	// ride this object. (horse objects are strange?)
-layer_vendor_stock		26 // the stuff the vendor will restock and sell to the players
-layer_vendor_extra		27 // the stuff the vendor will resell to players but is not restocked. (bought from players)
-layer_vendor_buys		28 // the stuff the vendor can buy from players but does not stock.
-layer_bankbox			29 // contents of my bank box.
-layer_special			30	// Can be multiple of these. memories
-layer_dragging			31
+//layer_horse			25	// ride this object. (horse objects are strange?) //defined in the engine's own scripts, commented out by Converter
+//layer_vendor_stock		26 // the stuff the vendor will restock and sell to the players //defined in the engine's own scripts, commented out by Converter
+//layer_vendor_extra		27 // the stuff the vendor will resell to players but is not restocked. (bought from players) //defined in the engine's own scripts, commented out by Converter
+//layer_vendor_buys		28 // the stuff the vendor can buy from players but does not stock. //defined in the engine's own scripts, commented out by Converter
+//layer_bankbox			29 // contents of my bank box. //defined in the engine's own scripts, commented out by Converter
+//layer_special			30	// Can be multiple of these. memories //defined in the engine's own scripts, commented out by Converter
+//layer_dragging			31 //defined in the engine's own scripts, commented out by Converter
 LAYER_SPELL_STATS		32	// Stats effecting spell. These cancel each other out.
 LAYER_SPELL_Reactive		33
 LAYER_SPELL_Night_Sight		34
@@ -1065,8 +1065,8 @@ layerDescription[125]		"Potion Stone Skin"
 
 [Constants GUMPS]
 // name the gumps.
-g_btn_green_ok             081a
-g_btn_green_ok_press       081b
+//g_btn_green_ok             081a //defined in the engine's own scripts, commented out by Converter
+//g_btn_green_ok_press       081b //defined in the engine's own scripts, commented out by Converter
 g_btn_ok[1]                0f7
 g_btn_ok_press[1]          0f8
 g_btn_ok[2]                047b
@@ -1113,8 +1113,8 @@ g_btn_cancel_inactive[5]   0847
 g_btn_cancel[6]            0997
 g_btn_cancel_press[6]      0996
 g_btn_cancel_inactive[6]   0995
-g_btn_gray_apply           5204
-g_btn_gray_apply_press     5205
+//g_btn_gray_apply           5204 //defined in the engine's own scripts, commented out by Converter
+//g_btn_gray_apply_press     5205 //defined in the engine's own scripts, commented out by Converter
 
 g_btn_left[1]              2223
 g_btn_left[2]              02626
@@ -1209,7 +1209,7 @@ dam_summon      004000  //14    - damage od summona
 dam_bleed	008000  //15    - bleeding damage
 dam_dragon	010000  //16    - dragon breath
 
-br		"<br>"
+//br		"<br>" //defined again later, commented out by Converter
 
 
 [Constants vyroba_latek]
