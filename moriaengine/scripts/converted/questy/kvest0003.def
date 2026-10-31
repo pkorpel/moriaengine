@@ -301,9 +301,9 @@ SUBSECTION = Kvest Neutralni-001 Vampiri Pribeh
 DESCRIPTION = Bookcase (Knihovna noci) (Empty)
 
 type = t_container
-//DUPELIST = 0a9e // commented out by Converter 
+DupeList = 0xa9e
 WEIGHT = 20
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 04d // commented out by Converter 
 //TDATA2 = 04d // commented out by Converter 
 model = i_bookcase

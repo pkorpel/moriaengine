@@ -16,7 +16,7 @@ TYPE = t_bottle_form
 WEIGHT = 200
 RESOURCES = 50 i_log_verite
 SKILLMAKE = 750 carpentry, 1 t_carpentry //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 model = i_clock_frame
 Color = 0036
 

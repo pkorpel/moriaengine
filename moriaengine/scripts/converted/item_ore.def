@@ -54,7 +54,7 @@ DESCRIPTION = Iron Ore
 
 NAME = "Iron Ore"
 TYPE = t_ingot
-//DUPELIST = 019b8,019b9,019ba // commented out by Converter 
+DupeList = 0x19b8,0x19b9,0x19ba
 WEIGHT = 1
 DEFNAME = i_ore_iron
 //VALUE = 25 // commented out by Converter 
@@ -146,7 +146,7 @@ Color = 026
 
 [ItemDef 0x1bf2]
 TYPE = T_INGOT
-//DUPELIST = 01bf0,01bf1,01bef,01bf3,01bf4 // commented out by Converter 
+DupeList = 0x1bf0,0x1bf1,0x1bef,0x1bf3,0x1bf4
 WEIGHT = 0.5
 RESOURCES = 1 i_ore_iron //some resources were fixed by converter 
 SKILLMAKE = 200 blacksmithing //some resources were fixed by converter 
@@ -175,7 +175,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Copper Ingot
 
 TYPE = T_INGOT
-//DUPELIST = 01be4,01be5,01be3,01be7,01be8 // commented out by Converter 
+DupeList = 0x1be4,0x1be5,0x1be3,0x1be7,0x1be8
 WEIGHT = 0.5
 RESOURCES = 1 i_ore_copper //some resources were fixed by converter 
 SKILLMAKE = 01 blacksmithing //some resources were fixed by converter 
@@ -189,7 +189,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Gold Ingot
 
 TYPE = T_INGOT
-//DUPELIST = 01bea,01beb,01be9,01bed,01bee // commented out by Converter 
+DupeList = 0x1bea,0x1beb,0x1be9,0x1bed,0x1bee
 WEIGHT = 0.5
 RESOURCES = 1 i_ore_gold //some resources were fixed by converter 
 SKILLMAKE = 400 blacksmithing //some resources were fixed by converter 
@@ -203,7 +203,7 @@ SUBSECTION = Blacksmiths
 DESCRIPTION = Silver Ingot
 
 TYPE = T_INGOT
-//DUPELIST = 01bf6,01bf7,01bf8,01bf9,01bfa // commented out by Converter 
+DupeList = 0x1bf6,0x1bf7,0x1bf8,0x1bf9,0x1bfa
 WEIGHT = 0.5
 RESOURCES = 1 i_ore_silver //some resources were fixed by converter 
 SKILLMAKE = 450 blacksmithing //some resources were fixed by converter 

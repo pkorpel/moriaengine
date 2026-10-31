@@ -57,14 +57,14 @@ namespace SteamEngine.Converter {
 
 		private static LineImplTask[] firstStageImpl = {
 				new LineImplTask("type", HandleType), 
-				new LineImplTask("dupelist", WriteAsComment), 
+				new LineImplTask("dupelist", HandleDupeList), 
 				new LineImplTask("weight", WeightInStones), 
 				new LineImplTask("resources", HandleResourcesList),
 				new LineImplTask("resources2", HandleResourcesList),
 				new LineImplTask("skillmake", HandleResourcesList),
 				new LineImplTask("skillmake2", HandleResourcesList),
 //TODO
-				new LineImplTask("flip", WriteAsComment),
+				new LineImplTask("flip", HandleFlip),
 				new LineImplTask("reqstr", WriteAsComment),
 				new LineImplTask("dye", WriteAsComment),
 				new LineImplTask("skill", WriteAsComment),
@@ -98,6 +98,21 @@ namespace SteamEngine.Converter {
 			this.thirdStageImplementations.Add(thirdStageImpl);
 
 			this.headerType = "ItemDef";
+		}
+
+		//#938 - the models of the flip group, numbers in hex as everywhere in the archive
+		private static void HandleDupeList(ConvertedDef def, PropsLine line) {
+			List<string> models = new List<string>();
+			foreach (string entry in line.Value.Split(new[] { ',', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)) {
+				bool isHex = Regex.IsMatch(entry, "^(0x)?[0-9a-fA-F]+$", RegexOptions.CultureInvariant);
+				int model = isHex ? ConvertTools.ParseInt32(entry) : 0;
+				models.Add(isHex ? ("0x" + model.ToString("x", CultureInfo.InvariantCulture)) : entry);
+			}
+			def.Set("DupeList", string.Join(",", models), line.Comment);
+		}
+
+		private static void HandleFlip(ConvertedDef def, PropsLine line) {
+			def.Set("Flippable", (line.Value.Trim() != "0") ? "true" : "false", line.Comment);
 		}
 
 		//resources list may need some number (counts) corrections

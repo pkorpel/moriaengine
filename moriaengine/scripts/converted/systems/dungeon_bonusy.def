@@ -127,8 +127,8 @@ wallBuild_padCanBeMoved			000000040
 [ItemDef i_switch_wallBuildingLink]
 name = "Packa"
 type = t_normal
-//dupelist = 0108F // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x108f
+Flippable = true
 model = 0x1092
 
 //[dialog d_switch_wallBuilding] //(commented out by Converter) 

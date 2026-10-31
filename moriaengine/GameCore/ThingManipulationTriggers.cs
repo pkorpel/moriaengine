@@ -1317,6 +1317,10 @@ namespace SteamEngine {
 			}
 
 			if (retVal.Allow) {
+				//#938 - Sphere's ItemDrop. The next model always, a door doesn't turn by its door rules here
+				if ((Globals.FlipDroppedItems || item.TypeDef.IsFlippable) && item.IsMovableType && !item.IsStackable) {
+					item.FlipToNextModel();
+				}
 				item.MakeLimbo();
 				item.Trigger_EnterRegion(point.X, point.Y, point.Z, point.M);
 				this.SendMovingItemAnimation(this, point, item);

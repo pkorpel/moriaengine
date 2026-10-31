@@ -597,7 +597,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Flask 02 (Empty)
 
-//DUPELIST = 01835 // commented out by Converter 
+DupeList = 0x1835
 WEIGHT = 1
 RESOURCES = 2 i_sand
 DEFNAME = i_beaker2_empty
@@ -710,7 +710,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 03 (Red Liquid)
 
 TYPE = T_DRINK
-//DUPELIST = 0183f,01840 // commented out by Converter 
+DupeList = 0x183f,0x1840
 WEIGHT = 1
 EmptyFlask = i_flask2_empty //converted from 'TDATA1' 
 DEFNAME = i_flask2_red_anim
@@ -727,7 +727,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask 04 (Purple Liquid)
 
 TYPE = t_DRINK
-//DUPELIST = 01842,01843 // commented out by Converter 
+DupeList = 0x1842,0x1843
 WEIGHT = 1
 EmptyFlask = i_flask_long_empty //converted from 'TDATA1' 
 DEFNAME = i_FLASK_LONG_purple_anim
@@ -744,7 +744,7 @@ SUBSECTION = Alchemist
 DESCRIPTION = Flask (Blue Liquid)
 
 TYPE = t_DRINK
-//DUPELIST = 01845,01846 // commented out by Converter 
+DupeList = 0x1845,0x1846
 WEIGHT = 1
 EmptyFlask = i_flask1_empty //converted from 'TDATA1' 
 DEFNAME = i_flask1_blue_anim
@@ -778,7 +778,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE
 
-//DUPELIST = 0efd // commented out by Converter 
+DupeList = 0xefd
 WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle
@@ -788,7 +788,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 2
 
-//DUPELIST = 0efe // commented out by Converter 
+DupeList = 0xefe
 WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_2
@@ -798,7 +798,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 3
 
-//DUPELIST = 0f00 // commented out by Converter 
+DupeList = 0xf00
 WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_3
@@ -808,7 +808,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 4
 
-//DUPELIST = 0f01 // commented out by Converter 
+DupeList = 0xf01
 WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_4
@@ -818,7 +818,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 5
 
-//DUPELIST = 0f02 // commented out by Converter 
+DupeList = 0xf02
 WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_5
@@ -828,7 +828,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = BOTTLE 6
 
-//DUPELIST = 0f03 // commented out by Converter 
+DupeList = 0xf03
 WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_6
@@ -838,7 +838,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Alchemist
 DESCRIPTION = Bottle
 
-//DUPELIST = 0f04 // commented out by Converter 
+DupeList = 0xf04
 WEIGHT = 1
 RESOURCES = 5 i_sand
 DEFNAME = i_bottle_7

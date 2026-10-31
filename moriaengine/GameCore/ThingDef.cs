@@ -502,6 +502,7 @@ namespace SteamEngine {
 			using (StopWatch.StartAndDisplay("Resolving dupelists and multidata...")) {
 				int a = 0;
 				int countPerCent = count / 200;
+				List<AbstractItemDef> dupes = new List<AbstractItemDef>(); //#938
 				foreach (AbstractScript td in AllScripts) {
 					if ((a % countPerCent) == 0) {
 						Logger.SetTitle("Resolving dupelists and multidata: " + ((a * 100) / count) + " %");
@@ -512,6 +513,7 @@ namespace SteamEngine {
 							AbstractItemDef dupeItem = idef.DupeItem;
 							if (dupeItem != null) {
 								dupeItem.AddToDupeList(idef);
+								dupes.Add(idef);
 							}
 						} catch (FatalException) {
 							throw;
@@ -529,6 +531,11 @@ namespace SteamEngine {
 
 					}
 					a++;
+				}
+				//#938 - AllScripts is in hash order, a flip group is in the order of the scripts: uids count up as defs load
+				dupes.Sort((x, y) => x.GetHashCode().CompareTo(y.GetHashCode()));
+				foreach (AbstractItemDef idef in dupes) {
+					idef.DupeItem.AddFlipModel(idef.Model);
 				}
 			}
 			Logger.SetTitle("");

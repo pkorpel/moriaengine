@@ -188,31 +188,27 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>GM-only item orientation cycling via target cursor (#193, matching Erebor's GM
-		/// ".flip" - a native Sphere command, not a script): cycles the targeted item's Model
-		/// through its DUPEITEM group (AbstractItem.Flip -> AbstractItemDef.GetNextFlipModel), e.g.
-		/// a corner wall piece to its north-facing variant, for any item whose ItemDef content has
-		/// DUPEITEM entries wired up. Items with no DUPEITEM group simply don't change (Flip() is a
-		/// no-op in that case) - not every converted item in this engine's content still has its
-		/// original Sphere flip group, since the auto-converter preserved DUPEITEM only where
-		/// present in the source.</summary>
+		/// <summary>GM ".flip" by target cursor (#193): what Sphere's FLIP does to the target (#938), see Item.Flip.
+		/// A door takes ALIGN, HAND or SWING.</summary>
 		[SteamFunction]
-		public static void Flip(Player self) {
+		public static void Flip(Player self, ScriptArgs sa) {
 			self.SysMessage("Target the item to flip.");
-			self.Target(SingletonScript<Targ_Flip>.Instance);
+			self.Target(SingletonScript<Targ_Flip>.Instance, sa.Args.Trim().Trim('"'));
 		}
 
 		public class Targ_Flip : CompiledTargetDef {
 			protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
-				AbstractItem item = targetted as AbstractItem;
-				if (item == null) {
-					self.SysMessage("That is not an item.");
+				AbstractCharacter ch = targetted as AbstractCharacter;
+				if (ch != null) {
+					ch.Direction = (Direction) (((int) ch.Direction + 1) & (int) Direction.Mask); //clockwise, FLIP ignores its text
 					return TargetResult.Done;
 				}
 
+				Item item = (Item) targetted;
 				int modelBeforeFlip = item.Model;
-				item.Flip();
-				if (item.Model == modelBeforeFlip) {
+				byte directionBeforeFlip = item.DirectionByte;
+				item.Flip(parameter as string);
+				if ((item.Model == modelBeforeFlip) && (item.DirectionByte == directionBeforeFlip)) {
 					// #206 - DUPEITEM group is empty/missing for this item, Flip() was a silent
 					// no-op. Give the GM a clear signal instead of leaving them guessing.
 					self.SysMessage("This item has no flip variants.");

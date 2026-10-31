@@ -23,7 +23,7 @@ SUBSECTION = Archers/Bowyers
 DESCRIPTION = Feathers (2 Red & White)
 
 TYPE = t_FEATHER
-//DUPELIST = 01021 // commented out by Converter 
+DupeList = 0x1021
 WEIGHT = 0.1
 RESOURCES = 2 i_feather
 DEFNAME = i_FEATHERS_RED_WHITE
@@ -36,7 +36,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Archers/Bowyers
 DESCRIPTION = Arrow Fletching Equip
 
-//DUPELIST = 01023 // commented out by Converter 
+DupeList = 0x1023
 WEIGHT = 0.1
 DEFNAME = i_arrow_fletching
 
@@ -81,7 +81,7 @@ SUBSECTION = Tanner
 DESCRIPTION = Hides (Pile)
 
 TYPE = t_hide // T_HIDE made into t_leather later ? 
-//DUPELIST = 01079 // commented out by Converter 
+DupeList = 0x1079
 WEIGHT = 3
 DEFNAME = i_hide
 //VALUE = 5 // commented out by Converter 
@@ -102,7 +102,7 @@ SUBSECTION = Levers
 DESCRIPTION = Lever
 
 TYPE = T_SWITCH
-//DUPELIST = 0108d,0108e,01093,01094,01095 // commented out by Converter 
+DupeList = 0x108d,0x108e,0x1093,0x1094,0x1095
 WEIGHT = 3
 RESOURCES = 2 i_ingot_iron
 DEFNAME = i_lever
@@ -119,7 +119,7 @@ SUBSECTION = Switchs
 DESCRIPTION = Switch
 
 TYPE = T_SWITCH
-//DUPELIST = 01090,01091,01092 // commented out by Converter 
+DupeList = 0x1090,0x1091,0x1092
 DEFNAME = i_switch
 
 [ItemDef 0x1090]
@@ -145,7 +145,7 @@ CATEGORY = Decoration - Carpets & Rugs
 SUBSECTION = Carpet 7
 DESCRIPTION = Carpet
 
-//DUPELIST = 01099,0109a,0109b,0109c,0109d,0109e,0109f,010a0,010a1,010a2,010a3 // commented out by Converter 
+DupeList = 0x1099,0x109a,0x109b,0x109c,0x109d,0x109e,0x109f,0x10a0,0x10a1,0x10a2,0x10a3
 RESOURCES = 5 i_wool, 1 i_thread
 DEFNAME = i_carpet_7
 
@@ -416,7 +416,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Spider Web
 DESCRIPTION = Small Web
 
-//DUPELIST = 010d3,010d4,010d5,010d6,010d7 // commented out by Converter 
+DupeList = 0x10d3,0x10d4,0x10d5,0x10d6,0x10d7
 
 [ItemDef 0x10d3]
 DUPEITEM = 0x10d2
@@ -438,7 +438,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Spider Web
 DESCRIPTION = Egg Case Web
 
-//DUPELIST = 010d9,010da,010db,010dc,010dd // commented out by Converter 
+DupeList = 0x10d9,0x10da,0x10db,0x10dc,0x10dd
 WEIGHT = 10
 RESOURCES = 10 i_spiderweb
 DEFNAME = i_web_cocooon
@@ -505,7 +505,7 @@ DEFNAME = i_TRAP_FIRE_STONE
 
 [ItemDef 0x10f6]
 TYPE = T_TRAP_ACTIVE
-//DUPELIST = 010f7,010f8,010f9,010fa,010fb // commented out by Converter 
+DupeList = 0x10f7,0x10f8,0x10f9,0x10fa,0x10fb
 
 [ItemDef 0x10f7]
 DUPEITEM = 0x10f6
@@ -528,7 +528,7 @@ SUBSECTION = Traps
 DESCRIPTION = Stone Face 02 (Fire)
 
 TYPE = T_TRAP
-//DUPELIST = 010fd,010fe,010ff,01100,01101,01102 // commented out by Converter 
+DupeList = 0x10fd,0x10fe,0x10ff,0x1100,0x1101,0x1102
 WEIGHT = 16
 RESOURCES = 1 i_stone_marble, 1 i_springs
 DEFNAME = i_TRAP_FIRE_STONE_2
@@ -557,7 +557,7 @@ SUBSECTION = Traps
 DESCRIPTION = Saw Trap 01
 
 TYPE = T_TRAP
-//DUPELIST = 01104,01105,01106,01107 // commented out by Converter 
+DupeList = 0x1104,0x1105,0x1106,0x1107
 WEIGHT = 10
 RESOURCES = 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_SAW
@@ -580,7 +580,7 @@ SUBSECTION = Traps
 DESCRIPTION = Spike Trap 01
 
 TYPE = T_TRAP
-//DUPELIST = 01109,0110a,0110b,0110c,0110d,0110e,0110f // commented out by Converter 
+DupeList = 0x1109,0x110a,0x110b,0x110c,0x110d,0x110e,0x110f
 WEIGHT = 10
 RESOURCES = 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_SPIKE
@@ -612,7 +612,7 @@ SUBSECTION = Traps
 DESCRIPTION = Stone Face 03 (Fire)
 
 TYPE = T_TRAP
-//DUPELIST = 01111,01112,01113,01114,01115 // commented out by Converter 
+DupeList = 0x1111,0x1112,0x1113,0x1114,0x1115
 WEIGHT = 16
 RESOURCES = 1 i_stone_marble, 1 i_springs
 DEFNAME = i_TRAP_FIRE_STONE_3
@@ -638,7 +638,7 @@ SUBSECTION = Traps
 DESCRIPTION = Saw Trap 02
 
 TYPE = T_TRAP
-//DUPELIST = 01117,01118,01119,0111a // commented out by Converter 
+DupeList = 0x1117,0x1118,0x1119,0x111a
 WEIGHT = 10
 RESOURCES = 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_SAW_2
@@ -661,7 +661,7 @@ SUBSECTION = Traps
 DESCRIPTION = Spike Trap 02
 
 TYPE = T_TRAP
-//DUPELIST = 0111c,0111d,0111e,0111f,01120,01121 // commented out by Converter 
+DupeList = 0x111c,0x111d,0x111e,0x111f,0x1120,0x1121
 WEIGHT = 10
 RESOURCES = 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_SPIKE_2
@@ -696,7 +696,7 @@ SUBSECTION = Traps
 DESCRIPTION = Exploding Mushroom
 
 TYPE = t_food
-//DUPELIST = 01126,01127,01128,01129,0112a // commented out by Converter 
+DupeList = 0x1126,0x1127,0x1128,0x1129,0x112a
 WEIGHT = 0.5
 DEFNAME = i_mushroom
 //VALUE = 1 // commented out by Converter 
@@ -733,7 +733,7 @@ SUBSECTION = Traps
 DESCRIPTION = Dart Trap 01
 
 TYPE = T_TRAP
-//DUPELIST = 0112d,0112e // commented out by Converter 
+DupeList = 0x112d,0x112e
 
 [ItemDef 0x112d]
 DUPEITEM = 0x112c
@@ -747,7 +747,7 @@ SUBSECTION = Traps
 DESCRIPTION = Dart Trap 02
 
 TYPE = T_TRAP
-//DUPELIST = 01130,01131,01132 // commented out by Converter 
+DupeList = 0x1130,0x1131,0x1132
 WEIGHT = 5
 RESOURCES = 2 i_feather, 1 i_arrow_shaft, 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_DART_2
@@ -767,7 +767,7 @@ SUBSECTION = Traps
 DESCRIPTION = Axe Trap 01
 
 TYPE = T_TRAP
-//DUPELIST = 01134,01135,01136,01137,01138,01139 // commented out by Converter 
+DupeList = 0x1134,0x1135,0x1136,0x1137,0x1138,0x1139
 WEIGHT = 5
 RESOURCES = 2 i_axe, 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_AXE
@@ -796,7 +796,7 @@ SUBSECTION = Traps
 DESCRIPTION = Gas Trap 01
 
 TYPE = T_TRAP
-//DUPELIST = 0113b,0113c,0113d,0113e // commented out by Converter 
+DupeList = 0x113b,0x113c,0x113d,0x113e
 WEIGHT = 4
 RESOURCES = 2 i_axe, 1 i_ingot_iron, 1 i_springs, 1 t_reagent
 DEFNAME = i_TRAP_GAS
@@ -819,7 +819,7 @@ SUBSECTION = Traps
 DESCRIPTION = Axe Trap 02
 
 TYPE = T_TRAP
-//DUPELIST = 01141,01142,01143,01144 // commented out by Converter 
+DupeList = 0x1141,0x1142,0x1143,0x1144
 WEIGHT = 5
 RESOURCES = 2 i_axe, 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_AXE_2
@@ -842,7 +842,7 @@ SUBSECTION = Traps
 DESCRIPTION = Gas Trap 02
 
 TYPE = T_TRAP
-//DUPELIST = 01146,01147,01148,01149 // commented out by Converter 
+DupeList = 0x1146,0x1147,0x1148,0x1149
 WEIGHT = 4
 RESOURCES = 2 i_axe, 1 i_ingot_iron, 1 i_springs, 1 t_reagent
 DEFNAME = i_TRAP_GAS_2
@@ -865,7 +865,7 @@ SUBSECTION = Traps
 DESCRIPTION = Axe Trap 03
 
 TYPE = T_TRAP
-//DUPELIST = 0114c,0114d,0114e,0114f // commented out by Converter 
+DupeList = 0x114c,0x114d,0x114e,0x114f
 WEIGHT = 5
 RESOURCES = 2 i_axe, 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_AXE_3
@@ -888,7 +888,7 @@ SUBSECTION = Magical Sparkles
 DESCRIPTION = @
 
 TYPE = T_SPELL
-//DUPELIST = 01154,01155,01156,01157,01159,0115a,0115b,0115c,0115d,0115e // commented out by Converter 
+DupeList = 0x1154,0x1155,0x1156,0x1157,0x1159,0x115a,0x115b,0x115c,0x115d,0x115e
 RESOURCES = 2 t_reagent
 DEFNAME = i_magical_sparkles
 
@@ -930,10 +930,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 01166 // commented out by Converter 
+DupeList = 0x1166
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 065 // commented out by Converter 
 DEFNAME = i_gravestone
 
@@ -946,10 +946,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 01168 // commented out by Converter 
+DupeList = 0x1168
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 065 // commented out by Converter 
 DEFNAME = i_gravestone_2
 
@@ -962,10 +962,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0116a // commented out by Converter 
+DupeList = 0x116a
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 065 // commented out by Converter 
 DEFNAME = i_gravestone_3
 
@@ -978,10 +978,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0116c // commented out by Converter 
+DupeList = 0x116c
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 065 // commented out by Converter 
 DEFNAME = i_gravestone_4
 
@@ -994,10 +994,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0116e // commented out by Converter 
+DupeList = 0x116e
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_5
 
@@ -1010,10 +1010,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 01170 // commented out by Converter 
+DupeList = 0x1170
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_6
 
@@ -1026,10 +1026,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 01172 // commented out by Converter 
+DupeList = 0x1172
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_7
 
@@ -1042,10 +1042,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 01174 // commented out by Converter 
+DupeList = 0x1174
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_8
 
@@ -1058,10 +1058,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 01176 // commented out by Converter 
+DupeList = 0x1176
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 065 // commented out by Converter 
 DEFNAME = i_gravestone_9
 
@@ -1074,10 +1074,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 01178 // commented out by Converter 
+DupeList = 0x1178
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 065 // commented out by Converter 
 DEFNAME = i_gravestone_10
 
@@ -1090,10 +1090,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0117a // commented out by Converter 
+DupeList = 0x117a
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 065 // commented out by Converter 
 DEFNAME = i_gravestone_11
 
@@ -1106,10 +1106,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0117c // commented out by Converter 
+DupeList = 0x117c
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 065 // commented out by Converter 
 DEFNAME = i_gravestone_12
 
@@ -1122,10 +1122,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 0117e // commented out by Converter 
+DupeList = 0x117e
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_13
 
@@ -1138,10 +1138,10 @@ SUBSECTION = Graves & Gravestones
 DESCRIPTION = Gravestone
 
 TYPE = T_SIGN_GUMP
-//DUPELIST = 01180 // commented out by Converter 
+DupeList = 0x1180
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_14
 
@@ -1156,7 +1156,7 @@ DESCRIPTION = Gravestone
 TYPE = T_SIGN_GUMP
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_15
 
@@ -1168,7 +1168,7 @@ DESCRIPTION = Gravestone
 TYPE = T_SIGN_GUMP
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_16
 
@@ -1180,7 +1180,7 @@ DESCRIPTION = Gravestone
 TYPE = T_SIGN_GUMP
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_17
 
@@ -1192,7 +1192,7 @@ DESCRIPTION = Gravestone
 TYPE = T_SIGN_GUMP
 WEIGHT = 20
 RESOURCES = 4 i_stone_marble
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 //TDATA2 = 066 // commented out by Converter 
 DEFNAME = i_gravestone_18
 
@@ -1202,7 +1202,7 @@ SUBSECTION = Traps
 DESCRIPTION = Axe Trap 04
 
 TYPE = T_TRAP
-//DUPELIST = 01194,01195,01196,01197,01198,01199 // commented out by Converter 
+DupeList = 0x1194,0x1195,0x1196,0x1197,0x1198,0x1199
 WEIGHT = 5
 RESOURCES = 2 i_axe, 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_AXE_4
@@ -1231,7 +1231,7 @@ SUBSECTION = Traps
 DESCRIPTION = Floor Spikes 01
 
 TYPE = T_TRAP
-//DUPELIST = 0119b,0119c,0119d,0119e,0119f // commented out by Converter 
+DupeList = 0x119b,0x119c,0x119d,0x119e,0x119f
 WEIGHT = 5
 RESOURCES = 2 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_SPIKE_3
@@ -1257,7 +1257,7 @@ SUBSECTION = Traps
 DESCRIPTION = Floor Spikes 02
 
 TYPE = T_TRAP
-//DUPELIST = 011a1,011a2,011a3,011a4,011a5 // commented out by Converter 
+DupeList = 0x11a1,0x11a2,0x11a3,0x11a4,0x11a5
 WEIGHT = 5
 RESOURCES = 2 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_SPIKE_4
@@ -1283,7 +1283,7 @@ SUBSECTION = Traps
 DESCRIPTION = Gas Trap 03
 
 TYPE = T_TRAP
-//DUPELIST = 011a7,011a8,011a9,011aa,011ab // commented out by Converter 
+DupeList = 0x11a7,0x11a8,0x11a9,0x11aa,0x11ab
 WEIGHT = 4
 RESOURCES = 2 i_axe, 1 i_ingot_iron, 1 i_springs, 1 t_reagent
 DEFNAME = i_TRAP_GAS_3
@@ -1309,7 +1309,7 @@ SUBSECTION = Traps
 DESCRIPTION = Floor Saw 01
 
 TYPE = T_TRAP
-//DUPELIST = 011ad,011ae,011af,011b0 // commented out by Converter 
+DupeList = 0x11ad,0x11ae,0x11af,0x11b0
 WEIGHT = 10
 RESOURCES = 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_SAW_FLOOR
@@ -1332,7 +1332,7 @@ SUBSECTION = Traps
 DESCRIPTION = Floor Saw 02
 
 TYPE = T_TRAP
-//DUPELIST = 011b2,011b3,011b4,011b5 // commented out by Converter 
+DupeList = 0x11b2,0x11b3,0x11b4,0x11b5
 WEIGHT = 10
 RESOURCES = 1 i_ingot_iron, 1 i_springs
 DEFNAME = i_TRAP_SAW_FLOOR_2
@@ -1355,7 +1355,7 @@ SUBSECTION = Traps
 DESCRIPTION = Boulder Trap
 
 TYPE = T_TRAP
-//DUPELIST = 011b7,011b8,011b9,011ba,011bb // commented out by Converter 
+DupeList = 0x11b7,0x11b8,0x11b9,0x11ba,0x11bb
 WEIGHT = 15
 RESOURCES = 1 i_ingot_iron, 1 i_springs, 1 i_rock_plain
 DEFNAME = i_TRAP_BOULDER
@@ -1380,7 +1380,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Dungeon Ramp
 DESCRIPTION = Dungeon Ramp
 
-//DUPELIST = 011bd,011be,011bf // commented out by Converter 
+DupeList = 0x11bd,0x11be,0x11bf
 WEIGHT = 10
 RESOURCES = 10 i_rock_plain
 DEFNAME = i_dungeon_ramp
@@ -1400,7 +1400,7 @@ SUBSECTION = Crumbling Floor
 DESCRIPTION = @
 
 TYPE = T_TRAP
-//DUPELIST = 011c1,011c2,011c3,011c4,011c5 // commented out by Converter 
+DupeList = 0x11c1,0x11c2,0x11c3,0x11c4,0x11c5
 WEIGHT = 10
 RESOURCES = 2 i_rock_plain
 DEFNAME = i_FLOOR_CRUMBLING
@@ -1488,7 +1488,7 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Bedding
 DESCRIPTION = Straw Pillow
 
-//DUPELIST = 011eb // commented out by Converter 
+DupeList = 0x11eb
 WEIGHT = 1
 RESOURCES = 1 i_straw
 DEFNAME = i_PILLOW_STRAW
@@ -1501,7 +1501,7 @@ CATEGORY = Fireplaces, Chimneys & Ovens
 SUBSECTION = Stone Fireplace 3
 DESCRIPTION = @
 
-//DUPELIST = 011ed,011ee,011ef // commented out by Converter 
+DupeList = 0x11ed,0x11ee,0x11ef
 RESOURCES = 20 i_ingot_iron, 300 i_rock_plain, 10 i_board
 DEFNAME = i_FIREPLACE_STONE_7
 
@@ -1520,7 +1520,7 @@ SUBSECTION = Tanner
 DESCRIPTION = Hide (Regular)
 
 TYPE = T_FUR
-//DUPELIST = 011f5,011f7,011f8,011f9,011fa,011fb // commented out by Converter 
+DupeList = 0x11f5,0x11f7,0x11f8,0x11f9,0x11fa,0x11fb
 WEIGHT = 5
 DEFNAME = i_fur_dark
 //VALUE = 5 // commented out by Converter 
@@ -1558,7 +1558,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Altar
 DESCRIPTION = @
 
-//DUPELIST = 0120f,01210,01211,01212,01213,01214,01215,01216 // commented out by Converter 
+DupeList = 0x120f,0x1210,0x1211,0x1212,0x1213,0x1214,0x1215,0x1216
 RESOURCES = 10 i_rock_plain
 DEFNAME = i_ALTAR_STONE
 
@@ -1592,7 +1592,7 @@ SUBSECTION = Wall Carving
 DESCRIPTION = @
 
 TYPE = T_WALL
-//DUPELIST = 0121e,0121f,01220,01221,01222 // commented out by Converter 
+DupeList = 0x121e,0x121f,0x1220,0x1221,0x1222
 WEIGHT = 10
 RESOURCES = 10 i_rock_plain
 DEFNAME = i_wall_carving_stone
@@ -1626,7 +1626,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Statues
 DESCRIPTION = Statue
 
-//DUPELIST = 01225,01226,01227,01228 // commented out by Converter 
+DupeList = 0x1225,0x1226,0x1227,0x1228
 WEIGHT = 5
 RESOURCES = 2 i_rock_plain
 DEFNAME = i_statue_stone_sm
@@ -1650,7 +1650,7 @@ DESCRIPTION = Blood Pool
 
 name = "krev"
 TYPE = T_BLOOD
-//DUPELIST = 0122b,0122c,0122d,0122e // commented out by Converter 
+DupeList = 0x122b,0x122c,0x122d,0x122e
 DEFNAME = i_blood
 
 [ItemDef 0x122b]
@@ -1681,7 +1681,7 @@ SUBSECTION = Wall Carving
 DESCRIPTION = Wall Carving 02
 
 TYPE = T_WALL
-//DUPELIST = 01232,01233,01234,01235,01236,01237,01238,01239,0123a,0123b,0123c,0123d,0123e,01240,01241,01242,01243,01244 // commented out by Converter 
+DupeList = 0x1232,0x1233,0x1234,0x1235,0x1236,0x1237,0x1238,0x1239,0x123a,0x123b,0x123c,0x123d,0x123e,0x1240,0x1241,0x1242,0x1243,0x1244
 WEIGHT = 10
 RESOURCES = 10 i_rock_plain
 DEFNAME = i_wall_carving_stone_2
@@ -1745,7 +1745,7 @@ CATEGORY = Decoration - Dungeons and The Dead
 SUBSECTION = Torture
 DESCRIPTION = Shackles
 
-//DUPELIST = 01a07,01a08,01263 // commented out by Converter 
+DupeList = 0x1a07,0x1a08,0x1263
 WEIGHT = 3
 RESOURCES = 2 i_ingot_iron
 DEFNAME = i_SHACKLES_HANGING
@@ -1760,7 +1760,7 @@ SUBSECTION = Wall Carving
 DESCRIPTION = @
 
 TYPE = T_WALL
-//DUPELIST = 01266,01267 // commented out by Converter 
+DupeList = 0x1266,0x1267
 WEIGHT = 10
 RESOURCES = 10 i_rock_plain
 DEFNAME = i_wall_carving_stone_3
@@ -1873,7 +1873,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Statues
 DESCRIPTION = Statue
 
-//DUPELIST = 012a0,012a1,012a2,012a3,012a4 // commented out by Converter 
+DupeList = 0x12a0,0x12a1,0x12a2,0x12a3,0x12a4
 WEIGHT = 500
 RESOURCES = 300 i_rock_plain
 DEFNAME = i_statue_stone_lg
@@ -1898,7 +1898,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Statues
 DESCRIPTION = Statue
 
-//DUPELIST = 012af,012b0 // commented out by Converter 
+DupeList = 0x12af,0x12b0
 WEIGHT = 500
 RESOURCES = 300 i_rock_plain
 DEFNAME = i_statue_stone_lg_2
@@ -1922,7 +1922,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Scaffold
 DESCRIPTION = @
 
-//DUPELIST = 012b2 // commented out by Converter 
+DupeList = 0x12b2
 WEIGHT = 30
 RESOURCES = 30 i_log, 4 i_rope
 DEFNAME = i_scaffold
@@ -1935,7 +1935,7 @@ CATEGORY = Vegetation
 SUBSECTION = Yew Tree
 DESCRIPTION = Yew Tree (01/08)
 
-//DUPELIST = 012b7,012b8,012b9,012ba,012bb,012bc,012bd,012be,012bf,012c0,012c1,012c2,012c3,012c4,012c5,012c6,012c7 // commented out by Converter 
+DupeList = 0x12b7,0x12b8,0x12b9,0x12ba,0x12bb,0x12bc,0x12bd,0x12be,0x12bf,0x12c0,0x12c1,0x12c2,0x12c3,0x12c4,0x12c5,0x12c6,0x12c7
 WEIGHT = 10
 DEFNAME = i_TREE_YEW_1
 
@@ -2081,7 +2081,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Statues
 DESCRIPTION = Statue (Bust)
 
-//DUPELIST = 012cb // commented out by Converter 
+DupeList = 0x12cb
 WEIGHT = 5
 RESOURCES = 2 i_rock_plain
 DEFNAME = i_BUST_STONE_SMALL
@@ -2095,7 +2095,7 @@ SUBSECTION = Wall Coverings
 DESCRIPTION = Wall Carving
 
 TYPE = T_WALL
-//DUPELIST = 012cd,012ce,012cf,012d0,012d3,012d4 // commented out by Converter 
+DupeList = 0x12cd,0x12ce,0x12cf,0x12d0,0x12d3,0x12d4
 WEIGHT = 10
 RESOURCES = 10 i_rock_plain
 DEFNAME = i_wall_carving_stone_4
@@ -2132,7 +2132,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Statues
 DESCRIPTION = Statue
 
-//DUPELIST = 012d7 // commented out by Converter 
+DupeList = 0x12d7
 WEIGHT = 500
 RESOURCES = 300 i_rock_plain
 DEFNAME = i_statue_stone_lg_3
@@ -2149,7 +2149,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Statues
 DESCRIPTION = Statue
 
-//DUPELIST = 012d9 // commented out by Converter 
+DupeList = 0x12d9
 WEIGHT = 500
 RESOURCES = 300 i_rock_plain
 DEFNAME = i_statue_stone_lg_4
@@ -2162,7 +2162,7 @@ CATEGORY = Decoration - Curtains
 SUBSECTION = Curtain 02
 DESCRIPTION = @
 
-//DUPELIST = 012db,012dc,012dd,012de,012df,012e0,012e1 // commented out by Converter 
+DupeList = 0x12db,0x12dc,0x12dd,0x12de,0x12df,0x12e0,0x12e1
 WEIGHT = 10
 RESOURCES = 10 i_cloth
 //DYE = 1 // commented out by Converter 
@@ -2224,7 +2224,7 @@ CATEGORY = Decoration - Curtains
 SUBSECTION = Curtain 03
 DESCRIPTION = @
 
-//DUPELIST = 012e6,012e7,012e8,012e9,012ea,012eb,012ec // commented out by Converter 
+DupeList = 0x12e6,0x12e7,0x12e8,0x12e9,0x12ea,0x12eb,0x12ec
 WEIGHT = 10
 RESOURCES = 10 i_cloth
 DEFNAME = i_curtain_white_02_2_sash_3
@@ -2261,7 +2261,7 @@ DEFNAME = i_curtain_white_02_2_sash_4
 
 [ItemDef 0x12ee]
 TYPE = t_lava
-//DUPELIST = 012ef,012f1,012f2,012f4,012f5,012f6,012f7,012f8,012fa,012fb,012fc,012fd,012fe,01300,01301,01302,01303,01304,01306,01307,01308,01309,0130a,0130c,0130d,0130e,0130f,01310,01312,01313,01314,01315,01316,01318,01319,0131a,0131b,0131c // commented out by Converter 
+DupeList = 0x12ef,0x12f1,0x12f2,0x12f4,0x12f5,0x12f6,0x12f7,0x12f8,0x12fa,0x12fb,0x12fc,0x12fd,0x12fe,0x1300,0x1301,0x1302,0x1303,0x1304,0x1306,0x1307,0x1308,0x1309,0x130a,0x130c,0x130d,0x130e,0x130f,0x1310,0x1312,0x1313,0x1314,0x1315,0x1316,0x1318,0x1319,0x131a,0x131b,0x131c
 DEFNAME = i_lava
 
 [ItemDef 0x12ef]
@@ -2383,7 +2383,7 @@ DUPEITEM = i_lava
 
 [ItemDef 0x131e]
 TYPE = t_lava
-//DUPELIST = 0131f,01320,01321,01322,01323,01324,01325,01326,01327,01328,01329,0132a,0132b,0132c,0132d,0132e,0132f,01330,01331,01332,01333,01334,01335,01336,01337,01338,01339,0133a,0133b,0133c,0133d,0133e,0133f,01340,01341,01342,01343,01344,01345,01346,01347,01348,01349,0134a,0134b,0134c,0134d // commented out by Converter 
+DupeList = 0x131f,0x1320,0x1321,0x1322,0x1323,0x1324,0x1325,0x1326,0x1327,0x1328,0x1329,0x132a,0x132b,0x132c,0x132d,0x132e,0x132f,0x1330,0x1331,0x1332,0x1333,0x1334,0x1335,0x1336,0x1337,0x1338,0x1339,0x133a,0x133b,0x133c,0x133d,0x133e,0x133f,0x1340,0x1341,0x1342,0x1343,0x1344,0x1345,0x1346,0x1347,0x1348,0x1349,0x134a,0x134b,0x134c,0x134d
 DEFNAME = i_lava_edge
 
 [ItemDef 0x131f]
@@ -2544,7 +2544,7 @@ SUBSECTION = Boulders
 DESCRIPTION = Boulder
 
 TYPE = T_AROCK
-//DUPELIST = 01350,01351,01352,01353,01354,01355,01356,01357,01358,01359,0135a,0135b,0135c,0135d,0135e,0135f,01360,01361,01362 // commented out by Converter 
+DupeList = 0x1350,0x1351,0x1352,0x1353,0x1354,0x1355,0x1356,0x1357,0x1358,0x1359,0x135a,0x135b,0x135c,0x135d,0x135e,0x135f,0x1360,0x1361,0x1362
 WEIGHT = 50
 DEFNAME = i_boulder
 
@@ -2612,7 +2612,7 @@ SUBSECTION = Rocks
 DESCRIPTION = Rock
 
 TYPE = t_arock
-//DUPELIST = 01364,01365,01366,01367,01368,01369,0136a,0136b,0136c,0136d // commented out by Converter 
+DupeList = 0x1364,0x1365,0x1366,0x1367,0x1368,0x1369,0x136a,0x136b,0x136c,0x136d
 WEIGHT = 15
 DEFNAME = i_rock_plain
 //VALUE = 1 // commented out by Converter 
@@ -2692,7 +2692,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Statue
 DESCRIPTION = @
 
-//DUPELIST = 0139b,0139c,0139d // commented out by Converter 
+DupeList = 0x139b,0x139c,0x139d
 WEIGHT = 5
 RESOURCES = 2 i_rock_plain
 DEFNAME = i_statue_stone_sm_3
@@ -2711,7 +2711,7 @@ CATEGORY = Decoration - Wall Carvings & Statues
 SUBSECTION = Statue
 DESCRIPTION = @
 
-//DUPELIST = 0139f,013a0,013a1,013a2,013a3 // commented out by Converter 
+DupeList = 0x139f,0x13a0,0x13a1,0x13a2,0x13a3
 WEIGHT = 500
 RESOURCES = 300 i_rock_plain
 DEFNAME = i_statue_stone_lg_5
@@ -2737,7 +2737,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Chainmail Leggings Hanging
 
 TYPE = t_normal
-//DUPELIST = 013c1,013c3 // commented out by Converter 
+DupeList = 0x13c1,0x13c3
 WEIGHT = 11
 RESOURCES = 1 i_chainmail_leggings, 1 i_peg
 DEFNAME = i_chainmail_leggings_decoration
@@ -2748,7 +2748,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Chainmail Tunic Hanging
 
 TYPE = t_normal
-//DUPELIST = 013c2 // commented out by Converter 
+DupeList = 0x13c2
 WEIGHT = 15
 RESOURCES = 1 i_chainmail_tunic, 1 i_peg
 DEFNAME = i_chainmail_tunic_decoration
@@ -2759,7 +2759,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Leather Leggings Hanging
 
 TYPE = t_normal
-//DUPELIST = 013d0 // commented out by Converter 
+DupeList = 0x13d0
 WEIGHT = 7
 RESOURCES = 1 i_leather_leggings, 1 i_peg
 DEFNAME = i_leather_leggings_decoration
@@ -2770,7 +2770,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Leather Tunic Hanging
 
 TYPE = t_normal
-//DUPELIST = 013d1 // commented out by Converter 
+DupeList = 0x13d1
 WEIGHT = 8
 RESOURCES = 1 i_leather_tunic, 1 i_peg
 DEFNAME = i_leather_tunic_decoration
@@ -2781,7 +2781,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Studded Sleeves Hanging
 
 TYPE = t_normal
-//DUPELIST = 013de // commented out by Converter 
+DupeList = 0x13de
 WEIGHT = 9
 RESOURCES = 1 i_studded_sleeves, 1 i_peg
 DEFNAME = i_studded_sleeves_decoration
@@ -2792,7 +2792,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Studded Leggings Hanging
 
 TYPE = t_normal
-//DUPELIST = 013df // commented out by Converter 
+DupeList = 0x13df
 WEIGHT = 8
 RESOURCES = 1 i_studded_leggings, 1 i_peg
 DEFNAME = i_studded_leggings_decoration
@@ -2803,7 +2803,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Studded Tunic Hanging
 
 TYPE = t_normal
-//DUPELIST = 013e0 // commented out by Converter 
+DupeList = 0x13e0
 WEIGHT = 11
 RESOURCES = 1 i_studded_tunic, 1 i_peg
 DEFNAME = i_studded_tunic_decoration
@@ -2814,10 +2814,10 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Ringmail Leggings Decoration
 
 TYPE = t_normal
-//DUPELIST = 013e6 // commented out by Converter 
+DupeList = 0x13e6
 WEIGHT = 13
 RESOURCES = 1 i_ringmail_leggings, 1 i_peg
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_ringmail_leggings_decoration
 
 [ItemDef 0x13e6]
@@ -2829,7 +2829,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Ringmail Chest Decoration
 
 TYPE = t_normal
-//DUPELIST = 013e8 // commented out by Converter 
+DupeList = 0x13e8
 WEIGHT = 16
 RESOURCES = 1 i_ringmail_tunic, 1 i_peg
 DEFNAME = i_ringmail_tunic_decoration
@@ -2843,7 +2843,7 @@ SUBSECTION = Decorative Armor
 DESCRIPTION = Ringmail Sleeves Decoration
 
 TYPE = t_normal
-//DUPELIST = 013ea // commented out by Converter 
+DupeList = 0x13ea
 WEIGHT = 16
 RESOURCES = 1 i_ringmail_sleeves, 1 i_peg //some resources were fixed by converter 
 DEFNAME = i_ringmail_sleeves_decoration
@@ -2874,7 +2874,7 @@ SUBSECTION = Candles
 DESCRIPTION = Candle (Lit)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 0142d,0142e // commented out by Converter 
+DupeList = 0x142d,0x142e
 WEIGHT = 1
 RESOURCES = 1 i_candle_short //some resources were fixed by converter 
 //TDATA3 = i_candle_short // commented out by Converter 
@@ -2894,7 +2894,7 @@ SUBSECTION = Candles
 DESCRIPTION = Candle (Lit)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 01431,01432 // commented out by Converter 
+DupeList = 0x1431,0x1432
 WEIGHT = 1
 RESOURCES = 1 i_candle_lg //some resources were fixed by converter 
 //TDATA3 = i_candle_lg // commented out by Converter 
@@ -2914,7 +2914,7 @@ SUBSECTION = Candles
 DESCRIPTION = Candle (Lit)
 
 TYPE = T_LIGHT_LIT
-//DUPELIST = 01435,01436 // commented out by Converter 
+DupeList = 0x1435,0x1436
 WEIGHT = 1
 RESOURCES = 1 i_candle_thin //some resources were fixed by converter 
 //TDATA3 = i_candle_thin // commented out by Converter 
@@ -2945,7 +2945,7 @@ SUBSECTION = Telescope
 DESCRIPTION = @
 
 TYPE = T_TELESCOPE
-//DUPELIST = 0145a,0145b,0145c,0145d,0145e,0145f,01460,01461,01462,01463,01464,01465,01466,01467,01468,01469,0146a,0146b,0146c,0146d,0146e,0146f,01470,01471,01472,01473,01474,01475,01476,01477,01478,01479,0147a,0147b,0147c,0147d,0147e,0147f,01480,01481,01482,01483,01484,01485,01486,01487,01488,01489,0148a,0148b,0148c,0148d,0148e,0148f,01490,01491,01492,01493,01494,01495,01496,01497,01498,01499,0149a // commented out by Converter 
+DupeList = 0x145a,0x145b,0x145c,0x145d,0x145e,0x145f,0x1460,0x1461,0x1462,0x1463,0x1464,0x1465,0x1466,0x1467,0x1468,0x1469,0x146a,0x146b,0x146c,0x146d,0x146e,0x146f,0x1470,0x1471,0x1472,0x1473,0x1474,0x1475,0x1476,0x1477,0x1478,0x1479,0x147a,0x147b,0x147c,0x147d,0x147e,0x147f,0x1480,0x1481,0x1482,0x1483,0x1484,0x1485,0x1486,0x1487,0x1488,0x1489,0x148a,0x148b,0x148c,0x148d,0x148e,0x148f,0x1490,0x1491,0x1492,0x1493,0x1494,0x1495,0x1496,0x1497,0x1498,0x1499,0x149a
 WEIGHT = 1400
 RESOURCES = 100 i_rock_plain, 20 i_ingot_gold, 50 i_ingot_iron, 4 i_glass, 2 i_marble
 DEFNAME = i_telescope
@@ -3150,7 +3150,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Honesty
 DESCRIPTION = Honesty (01/04) (W)
 
-//DUPELIST = 014a0,014a1,014a2 // commented out by Converter 
+DupeList = 0x14a0,0x14a1,0x14a2
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_honesty_1
@@ -3181,7 +3181,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Honesty
 DESCRIPTION = Honesty (01/04) (N)
 
-//DUPELIST = 014a4,014a5,014a6 // commented out by Converter 
+DupeList = 0x14a4,0x14a5,0x14a6
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_honesty_2
@@ -3212,7 +3212,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Compassion
 DESCRIPTION = Compassion (01/04) (W)
 
-//DUPELIST = 014a8,014a9,014aa // commented out by Converter 
+DupeList = 0x14a8,0x14a9,0x14aa
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_compassion_1
@@ -3243,7 +3243,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Compassion
 DESCRIPTION = Compassion (01/04) (N)
 
-//DUPELIST = 014ac,014ad,014ae // commented out by Converter 
+DupeList = 0x14ac,0x14ad,0x14ae
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_compassion_2
@@ -3274,7 +3274,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Justice
 DESCRIPTION = Justice (01/04) (W)
 
-//DUPELIST = 014b0,014b1,014b2 // commented out by Converter 
+DupeList = 0x14b0,0x14b1,0x14b2
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_justice_1
@@ -3305,7 +3305,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Justice
 DESCRIPTION = Justice (01/04) (N)
 
-//DUPELIST = 014b4,014b5,014b6 // commented out by Converter 
+DupeList = 0x14b4,0x14b5,0x14b6
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_justice_2
@@ -3336,7 +3336,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Valor
 DESCRIPTION = Valor (01/04) (W)
 
-//DUPELIST = 014b8,014b9,014ba // commented out by Converter 
+DupeList = 0x14b8,0x14b9,0x14ba
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_valor_1
@@ -3367,7 +3367,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Valor
 DESCRIPTION = Valor (01/04) (N)
 
-//DUPELIST = 014bc,014bd,014be // commented out by Converter 
+DupeList = 0x14bc,0x14bd,0x14be
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_valor_2
@@ -3398,7 +3398,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Spirituality
 DESCRIPTION = Spirituality (01/04) (W)
 
-//DUPELIST = 014c0,014c1,014c2 // commented out by Converter 
+DupeList = 0x14c0,0x14c1,0x14c2
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_spirituality_1
@@ -3429,7 +3429,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Spirituality
 DESCRIPTION = Spirituality (01/04) (N)
 
-//DUPELIST = 014c4,014c5,014c6 // commented out by Converter 
+DupeList = 0x14c4,0x14c5,0x14c6
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_spirituality_2
@@ -3460,7 +3460,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Honor
 DESCRIPTION = Honor (01/04) (W)
 
-//DUPELIST = 014c8,014c9,014ca // commented out by Converter 
+DupeList = 0x14c8,0x14c9,0x14ca
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_honor_1
@@ -3491,7 +3491,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Honor
 DESCRIPTION = Honor (01/04) (N)
 
-//DUPELIST = 014cc,014cd,014ce // commented out by Converter 
+DupeList = 0x14cc,0x14cd,0x14ce
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_honor_2
@@ -3522,7 +3522,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Humility
 DESCRIPTION = Humility (01/04) (W)
 
-//DUPELIST = 014d0,014d1,014d2 // commented out by Converter 
+DupeList = 0x14d0,0x14d1,0x14d2
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_humility_1
@@ -3553,7 +3553,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Humility
 DESCRIPTION = Humility (01/04) (N)
 
-//DUPELIST = 014d4,014d5,014d6 // commented out by Converter 
+DupeList = 0x14d4,0x14d5,0x14d6
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_humility_2
@@ -3584,7 +3584,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Chaos
 DESCRIPTION = Chaos (01/04) (W)
 
-//DUPELIST = 014e4,014e5,014e6 // commented out by Converter 
+DupeList = 0x14e4,0x14e5,0x14e6
 WEIGHT = 32
 RESOURCES = 20 i_marble, 2 i_ingot_gold, 2 i_rock_plain
 DEFNAME = i_shrine_chaos_1
@@ -3615,10 +3615,10 @@ CATEGORY = Items by Professions
 SUBSECTION = Cartographer
 DESCRIPTION = Map (Rolled)(Empty)
 
-//DUPELIST = 014ee // commented out by Converter 
+DupeList = 0x14ee
 WEIGHT = 1
 RESOURCES = 1 i_map //some resources were fixed by converter 
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_MAP_ROLLED
 
 [ItemDef 0x14ee]
@@ -3630,10 +3630,10 @@ SUBSECTION = House Deeds
 DESCRIPTION = Deed (Blank)
 
 TYPE = t_deed
-//DUPELIST = 014f0 // commented out by Converter 
+DupeList = 0x14f0
 WEIGHT = 1
 RESOURCES = 1 i_paper, 1 i_wax_seal
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_deed
 
 [ItemDef 0x14f0]
@@ -3645,10 +3645,10 @@ SUBSECTION = Ship Plans
 DESCRIPTION = Ship Plans (EMPTY)
 
 TYPE = t_deed
-//DUPELIST = 014f2 // commented out by Converter 
+DupeList = 0x14f2
 WEIGHT = 1
 RESOURCES = 1 i_paper
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_deed_ship
 
 [ItemDef 0x14f2]
@@ -3659,9 +3659,9 @@ CATEGORY = Decoration - Miscellaneous
 SUBSECTION = Nautical
 DESCRIPTION = Rope (W)
 
-//DUPELIST = 014fa // commented out by Converter 
+DupeList = 0x14fa
 WEIGHT = 2
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_rope
 
 [ItemDef 0x14fa]
@@ -3672,7 +3672,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Farmer
 DESCRIPTION = Plough
 
-//DUPELIST = 01501,01502,01503 // commented out by Converter 
+DupeList = 0x1501,0x1502,0x1503
 DEFNAME = i_plough
 
 [ItemDef 0x1501]
@@ -3689,7 +3689,7 @@ CATEGORY = Items by Professions
 SUBSECTION = Farmer
 DESCRIPTION = Harrow
 
-//DUPELIST = 01505,01506,01507 // commented out by Converter 
+DupeList = 0x1505,0x1506,0x1507
 DEFNAME = i_harrow_part_1
 
 [ItemDef 0x1505]
@@ -3714,17 +3714,17 @@ CATEGORY = Decoration - Miscellaneous
 SUBSECTION = Decorative Armor
 DESCRIPTION = Leather Sleeves Hanging
 
-//DUPELIST = 013c5 // commented out by Converter 
+DupeList = 0x13c5
 
 [ItemDef 0x1508]
 CATEGORY = Decoration - Miscellaneous
 SUBSECTION = Decorative Armor
 DESCRIPTION = @
 
-//DUPELIST = 0151c // commented out by Converter 
+DupeList = 0x151c
 WEIGHT = 34
 RESOURCES = 20 i_ingot_iron, 5 i_ingot_gold, 2 i_log, 1 i_board, 70 i_feather
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_decorative_armor
 
 [ItemDef 0x1509]
@@ -3732,7 +3732,7 @@ CATEGORY = Decoration - Miscellaneous
 SUBSECTION = Decorative Armor
 DESCRIPTION = @
 
-//DUPELIST = 0151d // commented out by Converter 
+DupeList = 0x151d
 WEIGHT = 30
 RESOURCES = 1 i_decorative_armor //some resources were fixed by converter 
 DEFNAME = i_decorative_armor_d
@@ -3742,7 +3742,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Sacrifice
 DESCRIPTION = Sacrifice (01/04) (W)
 
-//DUPELIST = 0150b,0150c,0150d // commented out by Converter 
+DupeList = 0x150b,0x150c,0x150d
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_sacrifice_1
@@ -3773,7 +3773,7 @@ CATEGORY = Decoration - Shrines
 SUBSECTION = Sacrifice
 DESCRIPTION = Sacrifice (01/04) (N)
 
-//DUPELIST = 0150f,01510,01511 // commented out by Converter 
+DupeList = 0x150f,0x1510,0x1511
 WEIGHT = 32
 RESOURCES = 20 i_marble, 4 i_ingot_gold, 6 i_rock_plain
 DEFNAME = i_shrine_sacrifice_2
@@ -3804,10 +3804,10 @@ CATEGORY = Decoration - Miscellaneous
 SUBSECTION = Decorative Armor
 DESCRIPTION = @
 
-//DUPELIST = 0151a // commented out by Converter 
+DupeList = 0x151a
 WEIGHT = 34
 RESOURCES = 2 i_ingot_iron
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_decorative_armor2
 
 [ItemDef 0x1513]
@@ -3815,7 +3815,7 @@ CATEGORY = Decoration - Miscellaneous
 SUBSECTION = Decorative Armor
 DESCRIPTION = @
 
-//DUPELIST = 0151b // commented out by Converter 
+DupeList = 0x151b
 WEIGHT = 30
 RESOURCES = 1 i_decorative_armor2 //some resources were fixed by converter 
 DEFNAME = i_decorative_armor2_d
@@ -3851,10 +3851,10 @@ SUBSECTION = Chairs
 DESCRIPTION = Throne
 
 TYPE = T_CHAIR
-//DUPELIST = 01527 // commented out by Converter 
+DupeList = 0x1527
 WEIGHT = 50
 RESOURCES = 10 i_marble, 5 i_ingot_gold, 5 i_velvet, 100 i_feather
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 DEFNAME = i_chair_throne_lb
 
 [ItemDef 0x1527]
@@ -3865,7 +3865,7 @@ CATEGORY = Provisions - Clothes
 SUBSECTION = Miscellaneous
 DESCRIPTION = Gold Belt (Unwearable)
 
-//DUPELIST = 01536 // commented out by Converter 
+DupeList = 0x1536
 WEIGHT = 2
 RESOURCES = 1 i_ingot_gold, 1 i_cloth
 DEFNAME = i_BELT_GOLD
@@ -3878,7 +3878,7 @@ CATEGORY = Decoration - Curtains
 SUBSECTION = Single Red
 DESCRIPTION = @
 
-//DUPELIST = 0154f,01557 // commented out by Converter 
+DupeList = 0x154f,0x1557
 WEIGHT = 6
 RESOURCES = 3 i_ingot_iron, 8 i_cloth
 DEFNAME = i_CURTAIN_FREESTANDING
@@ -3891,7 +3891,7 @@ CATEGORY = Miscellaneous
 SUBSECTION = Vat
 DESCRIPTION = Vat (Water)
 
-//DUPELIST = 01551,01552,01553,01554,01555,01556,01558,01559 // commented out by Converter 
+DupeList = 0x1551,0x1552,0x1553,0x1554,0x1555,0x1556,0x1558,0x1559
 WEIGHT = 50
 RESOURCES = 34 i_board, 8 i_ingot_iron, 1 i_barrel_tap, 1 i_nails, 20 i_water
 DEFNAME = i_vat_3
@@ -3929,7 +3929,7 @@ CATEGORY = Decoration - Weapons & Shields
 SUBSECTION = Bow
 DESCRIPTION = @
 
-//DUPELIST = 0155d,0155e,0155f // commented out by Converter 
+DupeList = 0x155d,0x155e,0x155f
 WEIGHT = 6
 RESOURCES = 2 i_log, 1 i_board, 1 i_cat_gut, 4 i_feather, 1 i_nails
 DEFNAME = i_decorative_weapons_1
@@ -4029,7 +4029,7 @@ CATEGORY = Decoration - Weapons & Shields
 SUBSECTION = Shields
 DESCRIPTION = Shield
 
-//DUPELIST = 0156d // commented out by Converter 
+DupeList = 0x156d
 WEIGHT = 20
 RESOURCES = 6 i_ingot_iron
 DEFNAME = i_decorative_shield
@@ -4038,42 +4038,42 @@ DEFNAME = i_decorative_shield
 DUPEITEM = i_decorative_shield
 
 [ItemDef 0x156e]
-//DUPELIST = 0156f // commented out by Converter 
+DupeList = 0x156f
 DEFNAME = i_decorative_shield_2
 
 [ItemDef 0x156f]
 DUPEITEM = i_decorative_shield_2
 
 [ItemDef 0x1570]
-//DUPELIST = 01571 // commented out by Converter 
+DupeList = 0x1571
 DEFNAME = i_decorative_shield_3
 
 [ItemDef 0x1571]
 DUPEITEM = i_decorative_shield_3
 
 [ItemDef 0x1572]
-//DUPELIST = 01573 // commented out by Converter 
+DupeList = 0x1573
 DEFNAME = i_decorative_shield_4
 
 [ItemDef 0x1573]
 DUPEITEM = i_decorative_shield_4
 
 [ItemDef 0x1574]
-//DUPELIST = 01575 // commented out by Converter 
+DupeList = 0x1575
 DEFNAME = i_decorative_shield_5
 
 [ItemDef 0x1575]
 DUPEITEM = i_decorative_shield_5
 
 [ItemDef 0x1576]
-//DUPELIST = 01577 // commented out by Converter 
+DupeList = 0x1577
 DEFNAME = i_decorative_shield_6
 
 [ItemDef 0x1577]
 DUPEITEM = i_decorative_shield_6
 
 [ItemDef 0x1578]
-//DUPELIST = 01579 // commented out by Converter 
+DupeList = 0x1579
 DEFNAME = i_decorative_shield_7
 
 [ItemDef 0x1579]
@@ -4086,21 +4086,21 @@ DEFNAME = i_decorative_shield_8
 DUPEITEM = i_decorative_shield_9
 
 [ItemDef 0x157c]
-//DUPELIST = 0157b,0157d // commented out by Converter 
+DupeList = 0x157b,0x157d
 DEFNAME = i_decorative_shield_9
 
 [ItemDef 0x157d]
 DUPEITEM = i_decorative_shield_9
 
 [ItemDef 0x157e]
-//DUPELIST = 0157f // commented out by Converter 
+DupeList = 0x157f
 DEFNAME = i_decorative_shield_10
 
 [ItemDef 0x157f]
 DUPEITEM = i_decorative_shield_10
 
 [ItemDef 0x1580]
-//DUPELIST = 01581 // commented out by Converter 
+DupeList = 0x1581
 DEFNAME = i_decorative_shield_11
 
 [ItemDef 0x1581]

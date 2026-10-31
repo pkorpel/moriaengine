@@ -34,6 +34,8 @@ namespace SteamEngine {
 
 		private List<AbstractItemDef> dupeList;
 		private ReadOnlyCollection<AbstractItemDef> dupeListReadOnly;
+		private List<int> flipModels;
+		private string dupeListLine;
 
 		private ItemDispidInfo dispidInfo;
 
@@ -93,29 +95,61 @@ namespace SteamEngine {
 			}
 		}
 
-		public int GetNextFlipModel(int curModel) {
-			if (curModel == this.Model) {
-				if (this.dupeList != null) {
-					AbstractItemDef dup = this.dupeList[0];
-					return dup.Model;
+		/// <summary>#938 - Sphere's m_flip_id: DUPELIST's models in its order, then each def naming this one in
+		/// DUPEITEM, in the order they were loaded. On first use, as lines of a def can load after LoadingFinished.</summary>
+		private void ResolveDupeListLine() {
+			string line = this.dupeListLine;
+			if (line == null) {
+				return;
+			}
+			this.dupeListLine = null;
+			List<int> dupes = this.flipModels;
+			this.flipModels = null;
+			foreach (string entry in line.Split(new[] { ',', ' ', '\t' }, System.StringSplitOptions.RemoveEmptyEntries)) {
+				int model;
+				if (!ConvertTools.TryParseInt32(entry, out model)) {
+					AbstractItemDef named = GetByDefname(entry) as AbstractItemDef;
+					if (named == null) {
+						continue;
+					}
+					model = named.Model;
 				}
-			} else {
-				if (this.dupeList != null) {
-					int cur = -1;
-					for (int a = 0; a < this.dupeList.Count; a++) {
-						AbstractItemDef dup = this.dupeList[0];
-						if (dup.Model == curModel) {
-							cur = a;
-							break;
-						}
-					}
-					if (cur + 1 < this.dupeList.Count) {
-						AbstractItemDef dup = this.dupeList[cur + 1];
-						return dup.Model;
-					}
+				this.AddFlipModel(model);
+			}
+			if (dupes != null) {
+				dupes.ForEach(this.AddFlipModel);
+			}
+		}
+
+		internal void AddFlipModel(int model) {
+			if ((model > 0) && (model != this.Model)) {
+				if (this.flipModels == null) {
+					this.flipModels = new List<int>();
+				}
+				if (!this.flipModels.Contains(model)) {
+					this.flipModels.Add(model);
 				}
 			}
-			return this.Model;
+		}
+
+		public int GetNextFlipModel(int curModel) {
+			this.ResolveDupeListLine();
+			return NextFlipModel(this.Model, this.flipModels, curModel);
+		}
+
+		/// <summary>The next one around the base and its list. A model that's neither goes to the base, as in
+		/// Sphere's GetNextFlipID.</summary>
+		public static int NextFlipModel(int baseModel, IList<int> flipModels, int curModel) {
+			if (flipModels != null) {
+				int previous = baseModel;
+				foreach (int next in flipModels) {
+					if (previous == curModel) {
+						return next;
+					}
+					previous = next;
+				}
+			}
+			return baseModel;
 		}
 
 		public AbstractCharacterDef MountChar {
@@ -285,6 +319,10 @@ namespace SteamEngine {
 			if ("isstackable".Equals(param)) {
 				param = "stackable";
 			}
+			if ("dupelist".Equals(param)) {
+				this.dupeListLine = args;
+				return;
+			}
 			if ("flip".Equals(param)) {
 				param = "flippable";
 			}
@@ -299,8 +337,6 @@ namespace SteamEngine {
 			//}
 
 			switch (param) {
-				case "dupelist": //Do nothing (for now?)
-					break;
 				case "name":
 					args = ConvertTools.LoadSimpleQuotedString(args);
 
@@ -322,6 +358,8 @@ namespace SteamEngine {
 			if (this.dupeList != null) {
 				this.dupeList.Clear();
 			}
+			this.flipModels = null;
+			this.dupeListLine = null;
 			base.Unload();
 			//other various properties...
 			//todo: not clear those tags/tgs/timers/whatever that were set dynamically (ie not in scripted defs)

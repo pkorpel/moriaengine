@@ -345,8 +345,8 @@ model = i_pillow_3
 [ItemDef i_hcn_padaciDvere]
 name = "padaci dvere"
 type = t_hcn_padaciDvere
-//dupelist = 06F6 // commented out by Converter 
-//flip = 1 // commented out by Converter 
+DupeList = 0x6f6
+Flippable = true
 model = i_DOOR_PORTCULIS
 
 //[typedef t_hcn_padaciDvere] //(commented out by Converter) 

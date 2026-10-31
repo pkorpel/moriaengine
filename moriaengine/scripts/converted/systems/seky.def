@@ -33,7 +33,7 @@ DESCRIPTION = Cashiers Mesec (weight 1)
 
 Name = "Pokladnicka"
 TYPE = t_normal
-//DupeList = 09a8 // commented out by Converter 
+DupeList = 0x9a8
 WEIGHT = 90
 model = 0xe80
 Color = 0995

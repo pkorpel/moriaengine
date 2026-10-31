@@ -3,9 +3,9 @@
 [GuildStoneDef i_guildstone]
 name = "guildstone"
 TYPE = t_normal
-//DUPELIST = 0ede // commented out by Converter 
+DupeList = 0xede
 RESOURCES = 4 i_rock_plain
-//FLIP = 1 // commented out by Converter 
+Flippable = true
 model = i_grave_stone_5
 //VALUE = 100000 // commented out by Converter 
 

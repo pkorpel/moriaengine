@@ -9,7 +9,7 @@ DESCRIPTION = @
 
 Name = "Acid Splash"
 TYPE = t_spell
-//DUPELIST = 0374b,0374c,0374d,0374e,0374f,03750,03751,03752,03753,03754,03755,03756,03757,03758,03759 // commented out by Converter 
+DupeList = 0x374b,0x374c,0x374d,0x374e,0x374f,0x3750,0x3751,0x3752,0x3753,0x3754,0x3755,0x3756,0x3757,0x3758,0x3759
 model = i_fx_curse
 Color = 0442
 

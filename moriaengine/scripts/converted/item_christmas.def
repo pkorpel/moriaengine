@@ -5,8 +5,8 @@ CATEGORY = Christmas
 SUBSECTION = Christmas
 DESCRIPTION = Snowman
 
-//DUPELIST = 02329 // commented out by Converter 
-//FLIP = 1 // commented out by Converter 
+DupeList = 0x2329
+Flippable = true
 DEFNAME = i_snowman
 
 [ItemDef 0x2329]
@@ -18,8 +18,8 @@ SUBSECTION = Christmas
 DESCRIPTION = Gift Box
 
 NAME = "Darek"
-//DUPELIST = 0232B // commented out by Converter 
-//FLIP = 1 // commented out by Converter 
+DupeList = 0x232b
+Flippable = true
 DEFNAME = i_gift_box
 
 [ItemDef 0x232b]
@@ -31,8 +31,8 @@ SUBSECTION = Christmas
 DESCRIPTION = Wreath
 
 NAME = "Vanocni venec"
-//DUPELIST = 0232D // commented out by Converter 
-//FLIP = 1 // commented out by Converter 
+DupeList = 0x232d
+Flippable = true
 DEFNAME = i_wreath
 
 [ItemDef 0x232d]
@@ -68,8 +68,8 @@ SUBSECTION = Christmas
 DESCRIPTION = Houpaci konik
 
 NAME = "Houpaci konik"
-//DUPELIST = 038C6 // commented out by Converter 
-//FLIP = 1 // commented out by Converter 
+DupeList = 0x38c6
+Flippable = true
 DEFNAME = i_houpaci_konik
 
 [ItemDef 0x38c6]
