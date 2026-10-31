@@ -9,7 +9,7 @@ namespace SteamEngine.CompiledScripts {
 	/// about one is here. It lists only visible players of one's own realm, so it can't be used to find enemies.</summary>
 	public class D_Party : CompiledGumpDef {
 		private const int Width = 320, RowHeight = 20, MaxNearby = 8, Hue = 955, LabelHue = 0x481, TextHue = 2301, NearDistance = 2;
-		private const int FoundButton = 1, LeaveButton = 2, DisbandButton = 3, KickButton = 100, PromoteButton = 200, InviteButton = 300;
+		private const int FoundButton = 1, LeaveButton = 2, DisbandButton = 3, LootButton = 4, KickButton = 100, PromoteButton = 200, InviteButton = 300;
 
 		public static void Show(Player player) {
 			Party party = Party.GetParty(player);
@@ -59,7 +59,7 @@ namespace SteamEngine.CompiledScripts {
 			List<Character> nearby = (List<Character>) args[1];
 			Party party = Party.GetParty(viewer);
 			bool isLeader = (party != null) && party.IsLeader(viewer);
-			int rows = roster.Count + nearby.Count + (isLeader ? 2 : 1);
+			int rows = roster.Count + nearby.Count + ((party == null) ? 1 : (isLeader ? 3 : 2));
 
 			this.SetLocation(40, 40);
 			this.AddPage(0);
@@ -99,9 +99,10 @@ namespace SteamEngine.CompiledScripts {
 			if (party == null) {
 				this.Line(y, FoundButton, "Zalozit druzinu");
 			} else {
-				this.Line(y, LeaveButton, "Opustit druzinu");
+				this.Line(y, LootButton, "Druzina me smi okrast: " + (Party.CanLootMe(viewer) ? "ano" : "ne"));
+				this.Line(y + RowHeight, LeaveButton, "Opustit druzinu");
 				if (isLeader) {
-					this.Line(y + RowHeight, DisbandButton, "Rozpustit druzinu");
+					this.Line(y + (2 * RowHeight), DisbandButton, "Rozpustit druzinu");
 				}
 			}
 		}
@@ -126,6 +127,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if ((button == FoundButton) && (party == null)) {
 				PartyDef.NewParty(player);
+			} else if ((button == LootButton) && (party != null)) {
+				Party.SetCanLootMe(player, !Party.CanLootMe(player));
 			} else if ((button == LeaveButton) && (party != null)) {
 				RolesManagement.TryUnAssign(player, party);
 			} else if ((button == DisbandButton) && (party != null) && party.IsLeader(player)) {
