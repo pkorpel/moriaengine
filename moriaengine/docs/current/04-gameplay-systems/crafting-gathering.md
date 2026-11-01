@@ -29,6 +29,24 @@ building toolkit both use.
 of the real craft skills; `type_crafting` groups the shared item-type plumbing crafted
 content hooks into).
 
+
+### Stages (#962)
+
+As Sphere's `Skill_<name>` for each skill. Success is rolled at the start and shown after all the strokes, so a failure takes as long as a success. Difficulty 0 can't fail, a GM never does.
+
+| Skill | Delay (s) | Strokes | Sound and animation |
+|---|---|---|---|
+| Blacksmithing | 1.0 | 3-6 | hammer each stroke, a swing on all but the last |
+| Carpentry | 1.0 | 3-5 | saw every stage, a swing on all but the last stroke |
+| Bowcraft | 2.0 | 1 | sound + salute every stage |
+| Tailoring | 2.5 | 1 | scissors on success only |
+| Tinkering | 2.5 | 1 | none |
+| Alchemy | 2.0-1.0 | 1 | to be ported |
+| Cooking | 2.0 | 1 | to be ported |
+| Inscription | 2.5 | 1 | to be ported |
+
+Blacksmithing needs a forge (`t_forge`, item or static) within 3 tiles at every stage and turns to face it; lose it and the work stops with nothing lost. The menu needs a smith's weapon (`t_weapon_mace_smith`) in the hand. It opens from ingots on your person, or from the hammer targeted on ingots; the hammer on anything else repairs it. An anvil does nothing on a click, repairing needs one near. Crafting skills also open from the skill list, which Sphere refuses: kept here as a convenience, behind the same checks.
+
 ## Gathering
 
 Gathering skills (Mining, Lumberjacking, Fishing) follow a simpler shape than crafting:

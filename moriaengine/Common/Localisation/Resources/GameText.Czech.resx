@@ -106,6 +106,15 @@
   <data name="ContainerLoc_stonesGenitiv" xml:space="preserve">
     <value>stones</value>
   </data>
+  <data name="CraftSkillsLoc_NotNearForge" xml:space="preserve">
+    <value>Musis byt u vyhne</value>
+  </data>
+  <data name="CraftSkillsLoc_NeedHammer" xml:space="preserve">
+    <value>Potrebujes do ruky kladivo</value>
+  </data>
+  <data name="CraftSkillsLoc_IngotsOnPerson" xml:space="preserve">
+    <value>Ingoty musis mit u sebe</value>
+  </data>
   <data name="CraftSkillsLoc_CraftingAborted" xml:space="preserve">
     <value>Crafting aborted</value>
   </data>

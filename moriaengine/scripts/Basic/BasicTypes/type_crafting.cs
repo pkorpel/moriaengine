@@ -26,11 +26,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_anvil : CompiledTriggerGroup {
-		//anvil is for blacksmithing skill
-		public TriggerResult On_Dclick(Item self, Character dclicker) {
-			D_Craftmenu.Craftmenu(dclicker, SkillName.Blacksmith);
-			return TriggerResult.Continue;
-		}
+		//nothing to click on: repairing needs one near, smithing needs a forge
 	}
 
 	public class t_weapon_mace_smith : CompiledTriggerGroup {

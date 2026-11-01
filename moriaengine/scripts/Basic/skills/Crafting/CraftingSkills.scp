@@ -1,7 +1,7 @@
 [AlchemySkillDef 0]
 DEFNAME=Skill_Alchemy
 KEY=Alchemy
-DELAY=3, 1 // per stroke.
+DELAY=2.0, 1.0 // per stroke.
 ADVRATE=10.0,200.0,750.0 //#328 - real Erebor curve, was a broken 1-element array
 
 //ON=@Fail
@@ -10,7 +10,7 @@ ADVRATE=10.0,200.0,750.0 //#328 - real Erebor curve, was a broken 1-element arra
 [BlacksmithySkillDef 7]
 DEFNAME=Skill_Blacksmith
 KEY="Blacksmithing"
-DELAY=3, 1 //per stroke
+DELAY=1.0, 1.0 //per stroke
 ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,20,100
 
@@ -20,7 +20,7 @@ ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 [BowcraftSkillDef 8]
 DEFNAME=Skill_Bowcraft
 KEY="Bowcraft"
-DELAY=3, 1 //per stroke
+DELAY=2.0, 2.0 //per stroke
 ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,30,200
 
@@ -30,7 +30,7 @@ ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 [CarpentrySkillDef 11]
 DEFNAME=Skill_Carpentry
 KEY="Carpentry"
-DELAY=3, 1 //per stroke
+DELAY=1.0, 1.0 //per stroke
 ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 //VALUES=1,20,80
 
@@ -41,7 +41,7 @@ ADVRATE=10.0,400.0,1600.0 //#328 - real Erebor curve
 DEFNAME=Skill_Cooking
 KEY="Cooking"
 //PROMPTMSG="What would you like to cook?"
-DELAY=3, 1 //per stroke
+DELAY=2.0, 2.0 //per stroke
 ADVRATE=10.0,200.0,750.0 //#328 - real Erebor curve
 //VALUES=1,20,80
 
@@ -54,7 +54,7 @@ KEY="Inscription"
 StartByMacroEnabled = true
 //TITLE="Scribe"
 //PROMPTMSG="What spell do you want to inscribe?"
-DELAY=3, 1 //per stroke
+DELAY=2.5, 2.5 //per stroke
 //STAT_STR=15
 //STAT_INT=100
 //STAT_DEX=15
@@ -73,7 +73,7 @@ DEFNAME=Skill_Tailoring
 KEY="Tailoring"
 //TITLE="Tailor"
 //PROMPTMSG=""
-DELAY=3, 1 //per stroke
+DELAY=2.5, 2.5 //per stroke
 //STAT_STR=30
 //STAT_INT=30
 //STAT_DEX=60
@@ -92,7 +92,7 @@ DEFNAME=Skill_Tinkering
 KEY="Tinkering"
 //TITLE="Tinker"
 //PROMPTMSG=""
-DELAY=3, 1 //per stroke
+DELAY=2.5, 2.5 //per stroke
 //STAT_STR=30
 //STAT_INT=100
 //STAT_DEX=50

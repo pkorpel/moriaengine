@@ -25,8 +25,10 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
-		protected override void DoStroke(SkillSequenceArgs skillSeqArgs) {
+		//#962 - the one sound, on success only
+		protected override void DoSuccess(SkillSequenceArgs skillSeqArgs, Item newItem) {
 			skillSeqArgs.Self.Sound(0x248); //scissors and knitting
+			base.DoSuccess(skillSeqArgs, newItem);
 		}
 	}
 }

@@ -25,9 +25,6 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
-		protected override void DoStroke(SkillSequenceArgs skillSeqArgs) {
-			skillSeqArgs.Self.Sound(0x241); //lockpicking sound
-		}
 	}
 }
 //502924	Which gem will you use to make the jewelry?

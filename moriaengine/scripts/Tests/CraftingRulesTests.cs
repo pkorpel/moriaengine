@@ -83,6 +83,8 @@ namespace SteamEngine.CompiledScripts {
 			self.SetRealSkillValue((int) SkillName.Tinkering, 300);
 			Item ingots = (Item) ((ItemDef) ThingDef.GetByDefname("i_ingot_copper")).Create(self.Backpack);
 			ingots.Amount = 40;
+			self.TryEquip((Item) ((ItemDef) ThingDef.GetByDefname("i_hammer_smith")).Create(self.Backpack));
+			PlaceForge(self, 1);
 			CraftmenuCategory menu = CraftmenuContents.MainCategories[SkillName.Blacksmith];
 			string shown = "";
 			foreach (ICraftmenuElement element in menu.Contents) {
@@ -143,6 +145,63 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			Console.WriteLine("CRAFT_MADE: daggers=" + daggers + " ingots=" + ingots);
+		}
+
+		private static Item forge;
+
+		private static void PlaceForge(Character self, int distance) {
+			if ((forge != null) && !forge.IsDeleted) {
+				forge.Delete();
+			}
+			forge = null;
+			if (distance > 0) {
+				forge = (Item) ((ItemDef) ThingDef.GetByDefname("i_forge")).Create(self.Backpack);
+				forge.P((ushort) (self.X + distance), self.Y, self.Z, self.M);
+			}
+		}
+
+		/// <summary>A plain smith with ingots and a hammer, in the pack, no forge.</summary>
+		[SteamFunction]
+		public static void TestStageSetup(Character self) {
+			self.Account.PLevel = 1;
+			self.SetRealSkillValue((int) SkillName.Blacksmith, 300);
+			self.SetRealSkillValue((int) SkillName.Tinkering, 300);
+			PlaceForge(self, 0);
+			Item ingots = (Item) ((ItemDef) ThingDef.GetByDefname("i_ingot_copper")).Create(self.Backpack);
+			ingots.Amount = 40;
+			Item hammer = (Item) ((ItemDef) ThingDef.GetByDefname("i_hammer_smith")).Create(self.Backpack);
+			Console.WriteLine("STAGE_SETUP: ingots=" + (uint) ingots.FlaggedUid + " hammer=" + (uint) hammer.FlaggedUid + " pack=" + (uint) self.Backpack.FlaggedUid);
+		}
+
+		[SteamFunction]
+		public static void TestStageForge(Character self, ScriptArgs sa) {
+			PlaceForge(self, int.Parse(sa.Args.Trim('"')));
+			Console.WriteLine("STAGE_FORGE:");
+		}
+
+		/// <summary>How many strokes each skill takes over many rolls, and its delay at no skill and at full.</summary>
+		[SteamFunction]
+		public static void TestStageStrokes(Character self) {
+			string report = "";
+			foreach (SkillName skill in new[] { SkillName.Blacksmith, SkillName.Carpentry, SkillName.Fletching, SkillName.Tailoring, SkillName.Tinkering, SkillName.Alchemy }) {
+				CraftingSkillDef def = (CraftingSkillDef) SkillDef.GetBySkillName(skill);
+				int least = int.MaxValue, most = 0;
+				for (int i = 0; i < 2000; i++) {
+					int strokes = def.RollStrokes();
+					least = Math.Min(least, strokes);
+					most = Math.Max(most, strokes);
+				}
+				report += " " + skill + "=" + least + "-" + most + "@" + def.GetDelayForValue(0).ToString(System.Globalization.CultureInfo.InvariantCulture) + "/" + def.GetDelayForValue(1000).ToString(System.Globalization.CultureInfo.InvariantCulture);
+			}
+			Console.WriteLine("STAGE_STROKES:" + report);
+		}
+
+		[SteamFunction]
+		public static void TestStageMake(Character self) {
+			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
+			queue.Enqueue(new CraftingSelection((ItemDef) ThingDef.GetByDefname("i_dagger_copper"), 1));
+			CraftingProcessPlugin.StartCrafting(self, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Blacksmith), queue));
+			Console.WriteLine("STAGE_STARTED:");
 		}
 
 		/// <summary>What failing at a given loss takes from 19 ingots of a real recipe.</summary>
