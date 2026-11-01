@@ -138,3 +138,11 @@ A lock is the container's type, `t_container_locked`. Without a key nobody but a
 Double click a pick, target the lock within 2 tiles and in sight, with light to work by. It reveals you, takes a use off the pick at once (a pick of 3 tries becomes one of 2, and so on), and 2 s later rolls 0 to 100.0 under skill minus the lock's difficulty. Opening makes it `t_container` for good and sets `tag.lockpicked`. Either way Lockpicking may rise by the `skillgain` formula. One job at a time. A ship's hold has its own roll, ready for when ships exist.
 
 Not ported: Erebor's debug lines "wtf 1" and "wtf 2", printed as a worn pick is swapped.
+
+## Snooping and Stealing (#962)
+
+Stealing is off, by Erebor's own `on=@start action=-1`: the cursor comes up and nothing follows, so taking from a pack you've snooped is always refused.
+
+Double clicking someone's pack within 2 tiles of them snoops it, with Sphere's rules: 2 s, against their Dexterity, or no roll at all for a higher plevel. A lower plevel gets nowhere. A player vendor can't be snooped. Failing while invisible makes you a criminal. Everyone around who sees you may notice, the mark most readily and your Snooping against theirs. Noticed, you lose 10 karma, down to -500, and each NPC witness has 1 chance in 60 of making it a crime.
+
+Not ported: a player witness's "saw a crime" memory (it feeds guard calls), Sphere's karma scaling, an NPC mark's protests and flight.
