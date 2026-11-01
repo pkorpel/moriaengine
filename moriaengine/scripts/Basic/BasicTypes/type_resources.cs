@@ -18,11 +18,15 @@
 namespace SteamEngine.CompiledScripts {
 
 	public class t_wool : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			return ClothMaking.Ask(self, dclicker);
+		}
 	}
 
 	public class t_cotton : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			return ClothMaking.Ask(self, dclicker);
+		}
 	}
 
 	public class t_web : CompiledTriggerGroup {

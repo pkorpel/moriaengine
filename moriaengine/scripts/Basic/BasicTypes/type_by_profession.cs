@@ -106,7 +106,9 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_yarn : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			return ClothMaking.Ask(self, dclicker);
+		}
 	}
 
 	public class t_hair_dye : CompiledTriggerGroup {
@@ -138,7 +140,9 @@ namespace SteamEngine.CompiledScripts {
 	}	
 
 	public class t_thread : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			return ClothMaking.Ask(self, dclicker);
+		}
 	}
 
 	public class t_dye : CompiledTriggerGroup {
