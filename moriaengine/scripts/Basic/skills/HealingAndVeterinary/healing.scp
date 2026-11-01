@@ -16,7 +16,7 @@ DEFNAME = i_bandage_bloody
 STACKABLE = true
 
 [ItemDef 0xe22]
-DUPEITEM = 0x20
+DUPEITEM = 0xe20
 
 
 [HealingSkillDef 17]
@@ -24,8 +24,8 @@ DEFNAME=Skill_Healing
 KEY="Healing"
 //TITLE="Healer"
 //PROMPTMSG="Who will you use the bandages on?"
-DELAY=7.0,3.0
-EFFECT=0,15
+DELAY=5.0,5.0
+EFFECT=5,50
 ADVRATE=0 //0fffffff on Erebor: no gain by use
 //STAT_STR=10
 //STAT_INT=90

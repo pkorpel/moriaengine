@@ -146,3 +146,15 @@ Stealing is off, by Erebor's own `on=@start action=-1`: the cursor comes up and 
 Double clicking someone's pack within 2 tiles of them snoops it, with Sphere's rules: 2 s, against their Dexterity, or no roll at all for a higher plevel. A lower plevel gets nowhere. A player vendor can't be snooped. Failing while invisible makes you a criminal. Everyone around who sees you may notice, the mark most readily and your Snooping against theirs. Noticed, you lose 10 karma, down to -500, and each NPC witness has 1 chance in 60 of making it a crime.
 
 A witness that takes it as a crime reacts as in Sphere: a player remembers, so a call for the guards sends them after you, an NPC flags you and calls the nearest guard (`CrimeWitness`). An NPC mark protests, and 1 time in 4 runs for 20 steps. Sphere also summons a guard if none is near; here one must be around. Karma falls by Sphere's scale, double while it's above 0.
+
+## Healing and Veterinary (#962)
+
+Erebor's `systems/skills/healing*.scp`, on timers rather than skill strokes. The skill list refuses both.
+
+Double click a bandage and target someone within 6 tiles in sight, not a summon, hurt or bleeding. It takes 5 s and a bandage, and drops your weapon to the pack, but not a staff. Another bandage in between cuts the first short. People need Healing and anything else Veterinary, checked against a roll of 0 to 102.4, and a bloody bandage comes back. A bleed is stopped first, and that's all that treatment does. Otherwise it heals 5 to 50 by skill + Anatomy, past 50 at higher sums.
+
+Only shamans use bloody bandages on people. Their class ability `.improvement` can double a heal, and a priest's `.enlightment` can cut the time to 2 to 1 s. A priest who healed a player shares for 15 minutes in the experience of that player's fights.
+
+A clean bandage on a tub of blood turns the stack bloody, a bloody one in `t_water_wash` turns it clean.
+
+20 bandages on a body within 2 tiles try to raise it: a priest or shaman a person, from 80.0 Healing and Anatomy, the ghost within 4 tiles in war mode; a ranger a beast, from 80.0 Veterinary and Animal Lore. 4 s later a roll of 70.0 to 105.0 under the skill decides. A raised beast gives no experience or gold and returns 20 bloody bandages. Horses, llamas and spawns marked `i_nores` can't be raised.

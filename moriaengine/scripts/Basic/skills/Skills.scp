@@ -259,7 +259,7 @@ ADVRATE=2.5,50.0,200.0
 ON=@Fail
 	src.message "You cannot discern anything about this substance."
 
-[SCRIPTEDSKILLDEF 39]
+[HealingSkillDef 39]
 DEFNAME=Skill_Vet
 KEY="Veterinary"
 //TITLE="Veterinarian"
@@ -272,7 +272,9 @@ KEY="Veterinary"
 //BONUS_DEX=20
 //BONUS_INT=60
 //BONUSSTATS=20
-ADVRATE=10.0,200.0,800.0
+DELAY=5.0,5.0
+EFFECT=5,50
+ADVRATE=0 //0fffffff on Erebor: no gain by use
 
 ON=@Fail
 	src.message "You apply the bandages, but they barely help."
