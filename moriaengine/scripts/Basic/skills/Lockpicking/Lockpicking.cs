@@ -1,8 +1,14 @@
+using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
+	/// <summary>#962 - Erebor's systems/skills/lockpicking.scp. A lock is the container's type, t_container_locked, and how hard
+	/// it is its tag.lockpick. A pick is used up per try, or wears from 3 tries to 2 to 1, and the answer comes 2 s later. It runs
+	/// by its own timer, not as a skill stroke, so on Erebor nothing else in between stops it. The skill list has no button for it.</summary>
 	[ViewableClass]
 	public class LockpickSkillDef : SkillDef {
 		public LockpickSkillDef(string defname, string filename, int headerLine)
@@ -10,111 +16,144 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
-			//todo: various state checks...
-			Player self = skillSeqArgs.Self as Player;
-			if (self != null) {
-				self.Target(SingletonScript<Targ_Lockpick>.Instance, skillSeqArgs);
-			}
+			skillSeqArgs.Self.ClilocSysMessage(500014); //That skill cannot be used directly.
 			return TriggerResult.Cancel;
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			return TriggerResult.Continue;
+			return TriggerResult.Cancel;
 		}
 
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			Item targetted = (Item) skillSeqArgs.Target1;
-			if (self.CanReachWithMessage(targetted)) {
-				skillSeqArgs.Success = this.CheckSuccess(self, Globals.dice.Next(700));	// TODO pridat succes v zavislosti na obtiznosti zamku
-				return TriggerResult.Continue;
-				// odemknuti predmetu
-			}
-			skillSeqArgs.PhaseAbort();
 			return TriggerResult.Cancel;
 		}
 
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			Item targetted = (Item) skillSeqArgs.Target1;
-
-			self.SysMessage(self.IsFemale ? Loc<LockpickLoc>.Get(self.Language).successWoman : Loc<LockpickLoc>.Get(self.Language).success);
-
-			//TODO
-
-			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.Lockpicking, SkillAdvancementSettings.instance.lockpickingAdvRate); //#329
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			skillSeqArgs.Self.SysMessage(Loc<LockpickLoc>.Get(self.Language).fail);
-			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.Lockpicking, SkillAdvancementSettings.instance.lockpickingAdvRate); //#329 - real Erebor gains on fail too
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			skillSeqArgs.Self.SysMessage(Loc<LockpickLoc>.Get(self.Language).abort);
 		}
 	}
-
 
 	public class t_lockpick : CompiledTriggerGroup {
-		public void On_DClick(Item self, Character clicker) {
-			//TODO? use resource system for consuming lockpicks
-			DenyResult canPickup = clicker.CanPickup(self);
-			if (canPickup.Allow) {
-				clicker.SelectSkill(SkillSequenceArgs.Acquire(clicker, SkillName.Lockpicking, self));
-				//StartLockpick(clicker, self);
-			} else {
-				foreach (Item i in clicker.Backpack.EnumShallow()) {
-					if ((i.Type == this) && (clicker.CanPickup(i).Allow)) {
-						clicker.SelectSkill(SkillSequenceArgs.Acquire(clicker, SkillName.Lockpicking, self));
-						return;
-					}
-				}
+		public TriggerResult On_Dclick(Item self, Character clicker) {
+			Player player = clicker as Player;
+			if ((player != null) && !player.Flag_Dead) {
+				player.Target(SingletonScript<Targ_Lockpick>.Instance);
 			}
-			canPickup.SendDenyMessage(clicker);
+			return TriggerResult.Cancel;
 		}
 	}
 
-
 	public class Targ_Lockpick : CompiledTargetDef {
+		private const int Reach = 2, PickSound = 577;
+		private const double SecondsToPick = 2;
+
+		//one that's nearly worn out gets used first
+		private static readonly string[] picks = { "i_lockpick", "i_lockpick_2", "i_lockpick_3" };
 
 		protected override void On_Start(Player self, object parameter) {
-			self.SysMessage(Loc<LockpickLoc>.Get(self.Language).whatToUseLockOn);
+			self.SysMessage(Loc<LockpickLoc>.Get(self.Language).whatToOpen);
 			base.On_Start(self, parameter);
 		}
 
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
-			SkillSequenceArgs skillSeq = (SkillSequenceArgs) parameter;
-
-			//nevidi na cil
-			if (self.CanReachWithMessage(targetted)) {
-				//#282 - was inverted (!IsLocked), so lockpicking only ever "worked" on items that
-				//were already unlocked, and silently re-targeted forever on an actually-locked one.
-				if (ItemLockPlugin.IsLocked(targetted)) {
-					skillSeq.Target1 = targetted;
-					skillSeq.PhaseStart();
-					return TargetResult.Done;
-				}
-				self.SysMessage(Loc<LockpickLoc>.Get(self.Language).notLocked);
+			int pick = Array.FindIndex(picks, defname => ClothMaking.Count(self.Backpack, (ItemDef) ThingDef.GetByDefname(defname)) > 0);
+			if (pick < 0) {
+				return TargetResult.Done;
 			}
-			return TargetResult.RestartTargetting;
+			LockpickLoc texts = Loc<LockpickLoc>.Get(self.Language);
+			if (self.GetTimer(LockpickTimer.Key) != null) {
+				self.SysMessage(texts.takesPatience);
+			} else if ((Point2D.GetSimpleDistance(self, targetted.TopPoint) > Reach) || !self.CanSeeLOS(targetted).Allow) {
+				self.SysMessage(texts.tooFar);
+			} else if (WorkLight.CheckWithMessage(self)) {
+				if (CraftingSkillDef.IsOfType(targetted, "t_container_locked", "t_ship_hold_lock")) {
+					this.Begin(self, targetted, pick);
+				} else {
+					self.SysMessage(texts.cantUseLockpick);
+				}
+			}
+			return TargetResult.Done;
 		}
 
-		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
-			self.SysMessage(Loc<LockpickLoc>.Get(self.Language).cantUseLockpick);
-			return TargetResult.RestartTargetting;
+		private void Begin(Player self, Item locked, int pick) {
+			PlayerHunger.HurtIfStarving(self);
+			self.Flag_Hidden = false;
+			self.Flag_InvisByMagic = false;
+			self.Sound(PickSound);
+			IResourceListEntry missing;
+			ResourcesListParser.Parse("1 " + picks[pick]).ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missing);
+			if (pick > 0) {
+				ThingDef.GetByDefname(picks[pick - 1]).Create(self.Backpack);
+			}
+			LockpickTimer timer = new LockpickTimer();
+			timer.target = locked;
+			self.AddTimer(LockpickTimer.Key, timer).DueInSeconds = SecondsToPick;
 		}
 	}
 
-	public class LockpickLoc : CompiledLocStringCollection<LockpickLoc> {
-		public string cantUseLockpick = "Na tohle nelze pakl�� pou��t.";
-		public string whatToUseLockOn = "Na co chce� pou��t pakl��?";
-		public string abort = "Odemyk�n� p�eru�eno.";
-		public string fail = "Nepoda�ilo se ti odemknout z�mek";
-		public string success = "�sp�n� jsi odemkl z�mek";
-		public string successWoman = "�sp�n� jsi odemkla z�mek";
-		public string notLocked = "That isn't locked."; //#282
+	[SaveableClass, DeepCopyableClass]
+	public class LockpickTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_lockpicking_");
+
+		private const int LeastRollOnHold = 300, MostRoll = 1000;
+		private static readonly TagKey difficultyTK = TagKey.Acquire("lockpick");
+		private static readonly TagKey pickedTK = TagKey.Acquire("lockpicked");
+
+		[SaveableData, CopyableData]
+		public Item target;
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public LockpickTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			Character self = (Character) cont;
+			if ((this.target == null) || this.target.IsDeleted) {
+				return;
+			}
+			LockpickLoc texts = Loc<LockpickLoc>.Get(self.Language);
+			int skill = self.GetSkill(SkillName.Lockpicking);
+			bool gain = true;
+			if (CraftingSkillDef.IsOfType(this.target, "t_ship_hold_lock")) {
+				if (Globals.dice.Next(LeastRollOnHold, MostRoll + 1) < skill) {
+					this.target.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_ship_hold");
+					self.SysMessage(self.IsFemale ? texts.holdOpenedFemale : texts.holdOpenedMale);
+				} else {
+					self.SysMessage(texts.lockHeld);
+					gain = false;
+				}
+			} else if (Globals.dice.Next(MostRoll + 1) < (skill - DifficultyOf(this.target))) {
+				this.target.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_container");
+				this.target.SetTag(pickedTK, 1);
+				self.SysMessage(self.IsFemale ? texts.openedFemale : texts.openedMale);
+			} else {
+				self.SysMessage(texts.lockHeld);
+			}
+			if (gain) {
+				SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.Lockpicking, SkillAdvancementSettings.instance.lockpickingAdvRate);
+			}
+		}
+
+		private static int DifficultyOf(Item locked) {
+			object difficulty = locked.GetTag(difficultyTK);
+			return (difficulty == null) ? 0 : Convert.ToInt32(difficulty, System.Globalization.CultureInfo.InvariantCulture);
+		}
+	}
+
+	internal class LockpickLoc : CompiledLocStringCollection<LockpickLoc> {
+		public string whatToOpen = "Co chces odemknout?";
+		public string takesPatience = "Tahle prace vyzaduje trpelivost!";
+		public string tooFar = "Jsi moc daleko.";
+		public string cantUseLockpick = "Na tohle nelze pouzit paklic.";
+		public string lockHeld = "Zamek odolal.";
+		public string openedMale = "Odemkl jsi zamek!";
+		public string openedFemale = "Odemkla jsi zamek!";
+		public string holdOpenedMale = "Odemkl jsi podpalubi!";
+		public string holdOpenedFemale = "Odemkla jsi podpalubi!";
 	}
 }
