@@ -29,7 +29,7 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	[ViewableClass]
 	public class LumberjackingSkillDef : SkillDef {
-		private const int MaxReach = 2;
+		private const int MaxReach = 3;
 
 		public LumberjackingSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -79,7 +79,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!self.CanInteractWith(s).Allow) {
 				return false;
 			}
-			return TileData.HasFlag(s.Flags, TileFlag.Foliage);
+			return TileData.HasFlag(s.Flags, TileFlag.Foliage) || GatherTiles.IsOfType(s, "t_tree");
 		}
 
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {

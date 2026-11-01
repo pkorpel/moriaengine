@@ -97,12 +97,21 @@ namespace SteamEngine.CompiledScripts {
 					if (!this.PayFromCashiers(cashiers, src)) {
 						return;
 					}
-				} else if ((item.Type != null) && string.Equals(item.Type.Defname, "t_gold", StringComparison.OrdinalIgnoreCase)) {
+				} else if (IsGold(item)) {
 					double seconds = (((long) item.Amount * 2592) / this.Rent) * 1000;
 					this.PaidUntil = Math.Min(this.PaidUntil + seconds, MaxPaidUntil);
 					item.Delete();
 				}
 			}
+		}
+
+		private static bool IsGold(Item item) {
+			return (item.Type != null) && string.Equals(item.Type.Defname, "t_gold", StringComparison.OrdinalIgnoreCase);
+		}
+
+		/// <summary>What a rent chest takes: anything else would sit in it for good.</summary>
+		public static bool PaysRent(Item item) {
+			return (item is CashiersItem) || IsGold(item);
 		}
 
 		private static IEnumerable<Item> ItemsIn(Container container) {
