@@ -43,7 +43,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#843 - the .SetupWorld command, the way anything gets into the world.</summary>
 	public static class WorldSetups {
 		//in the order they run; a new setup goes at the end
-		public static readonly WorldSetup[] All = { new ExpertQuestSetup(), new MasterQuestSetup(), new GrandmasterQuestSetup(), new DungeonEntrancesSetup(), new TownSetup() };
+		public static readonly WorldSetup[] All = { new ExpertQuestSetup(), new MasterQuestSetup(), new GrandmasterQuestSetup(), new DungeonEntrancesSetup(), new TownSetup(), new HouseSetup() };
 
 		/// <summary>Every setup: adds what's missing, leaves everything else alone. Safe to run at any time.</summary>
 		[SteamFunction]
@@ -183,6 +183,22 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			return best;
+		}
+
+		/// <summary>The lowest spot at x,y a character can stand on, so a house's ground floor and not its roof.</summary>
+		public static int LowestStandZ(Map map, int x, int y) {
+			int land = map.GetTileZ(x, y);
+			if (map.CanFit(x, y, land, 16, true, false, true)) {
+				return land;
+			}
+			int best = int.MaxValue;
+			foreach (AbstractInternalItem s in map.GetStaticsAndMultiComponentsOnCoords(x, y)) {
+				int top = s.Z + s.Height;
+				if ((top < best) && map.CanFit(x, y, top, 16, true, false, true)) {
+					best = top;
+				}
+			}
+			return (best == int.MaxValue) ? land : best;
 		}
 
 		internal static bool CanStand(Map map, int x, int y, out int z) {
