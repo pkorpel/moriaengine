@@ -21,6 +21,49 @@ namespace SteamEngine.CompiledScripts {
 			return items;
 		}
 
+		private static void CollectUncoloured(CraftmenuCategory category, List<string> uncoloured, ref int coloured) {
+			foreach (ICraftmenuElement element in category.Contents) {
+				CraftmenuCategory section = element as CraftmenuCategory;
+				if (section != null) {
+					CollectUncoloured(section, uncoloured, ref coloured);
+				} else {
+					ItemDef def = ((CraftmenuItem) element).itemDef;
+					IObjectWithMaterial material = def as IObjectWithMaterial;
+					bool hasMaterial = (material != null) && (material.Material != Material.None);
+					Item made;
+					try {
+						made = (Item) def.Create(self_backpack);
+					} catch (SEException e) {
+						string reason = e.Message.Length > 90 ? e.Message.Substring(e.Message.Length - 90) : e.Message;
+						uncreatable.Add(def.PrettyDefname + " " + reason.Replace("/workspace/moriaengine/moriaengine/./scripts/converted/", ""));
+						continue;
+					}
+					if (made.Color != 0) {
+						coloured++;
+					} else if (hasMaterial || System.Text.RegularExpressions.Regex.IsMatch(def.PrettyDefname, "_(verite|valorite|obsidian|adamantinum|mithril|copper|iron)", System.Text.RegularExpressions.RegexOptions.IgnoreCase)) {
+						uncoloured.Add(def.PrettyDefname + ((material == null) ? "(no material)" : "(" + material.Material + "/" + material.MaterialType + ")"));
+					}
+					made.Delete();
+				}
+			}
+		}
+
+		private static Container self_backpack;
+		private static readonly List<string> uncreatable = new List<string>();
+
+		/// <summary>Every item of the metal and wood menus, made: what comes out with no colour though its material has one.</summary>
+		[SteamFunction]
+		public static void TestCraftColours(Character self) {
+			self_backpack = self.Backpack;
+			List<string> uncoloured = new List<string>();
+			int coloured = 0;
+			foreach (SkillName skill in new[] { SkillName.Blacksmith, SkillName.Fletching, SkillName.Carpentry, SkillName.Tailoring, SkillName.Tinkering, SkillName.Alchemy, SkillName.Cooking, SkillName.Inscribe }) {
+				CollectUncoloured(CraftmenuContents.MainCategories[skill], uncoloured, ref coloured);
+			}
+			Console.WriteLine("CRAFT_UNCREATABLE: " + uncreatable.Count + " " + string.Join(" | ", uncreatable.GetRange(0, Math.Min(14, uncreatable.Count))));
+			Console.WriteLine("CRAFT_COLOURS: coloured=" + coloured + " uncoloured=" + uncoloured.Count + " " + string.Join(" ", uncoloured.GetRange(0, Math.Min(36, uncoloured.Count))));
+		}
+
 		/// <summary>All the menus, and how the Blacksmith's reads.</summary>
 		[SteamFunction]
 		public static void TestCraftMenus(Character self) {
@@ -49,6 +92,30 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			Console.WriteLine("CRAFT_SMITH: shown=" + shown + " gm=" + self.IsGM);
+		}
+
+		/// <summary>A bundle in the pack: its uid, and later how much loose it became.</summary>
+		[SteamFunction]
+		public static void TestBundleMake(Character self, ScriptArgs sa) {
+			string[] args = sa.Args.Trim('"').Split(' ');
+			Item bundle = (Item) ((ItemDef) ThingDef.GetByDefname(args[0])).Create(self.Backpack);
+			bundle.Amount = int.Parse(args[1]);
+			CraftingSkillDef.SetCrafter(bundle, self);
+			Console.WriteLine("BUNDLE_MADE: uid=" + (uint) bundle.FlaggedUid + " pack=" + (uint) self.Backpack.FlaggedUid);
+		}
+
+		[SteamFunction]
+		public static void TestBundleReport(Character self, ScriptArgs sa) {
+			ItemDef def = (ItemDef) ThingDef.GetByDefname(sa.Args.Trim('"'));
+			int loose = 0;
+			bool signed = false;
+			foreach (AbstractItem item in self.Backpack) {
+				if (item.Def == def) {
+					loose += item.Amount;
+					signed = CraftingSkillDef.GetCrafter((Item) item) == self;
+				}
+			}
+			Console.WriteLine("BUNDLE_LOOSE: amount=" + loose + " signed=" + signed);
 		}
 
 		[SteamFunction]
