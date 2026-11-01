@@ -110,7 +110,7 @@ Necromancer's entire "Black Magic" spell identity is unimplemented in this engin
 ## Title ladders (#165/#177/#844)
 
 A character's title reads "The Good/The Evil <name>, <rank> <profession title>", such as "The Good Aragorn, Master Sorcerer".
-The rank is `Player.SkillRank` in English: Novice, Expert, Master or Grandmaster, see [Rank quests](rank-quests.md). Erebor's
+The rank is `Player.SkillRank`, kept on the `ProfessionPlugin` so it stays when the profession changes, in English: Novice, Expert, Master or Grandmaster, see [Rank quests](rank-quests.md). Erebor's
 title had the rank too. A player's title updates when their rank or level changes, and at login.
 
 The ladders are English translations of Erebor's Czech ones, in `scripts/Basic/Professions/Definitions/*.def`

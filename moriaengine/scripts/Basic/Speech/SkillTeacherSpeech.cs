@@ -34,26 +34,45 @@ namespace SteamEngine.CompiledScripts {
 	public partial class Player {
 		private static readonly TagKey skillRankTK = TagKey.Acquire("_skillRank_");
 
-		/// <summary>#828 - Erebor's rank (tag.skillrank). Tag-backed, with the #265 boxed-int coercion.</summary>
+		/// <summary>#828 - Erebor's rank (tag.skillrank), kept on the profession plugin (#951). The tag only holds it for
+		/// someone with no profession, and it's where every rank was before: whichever comes here first moves it over.</summary>
 		public SkillRank SkillRank {
 			get {
+				ProfessionPlugin plugin = this.ProfessionPlugin;
 				object tag = this.GetTag(skillRankTK);
-				if (tag is SkillRank rank) {
-					return rank;
+				if (tag == null) {
+					return (plugin == null) ? SkillRank.Novice : plugin.SkillRank;
 				}
-				if ((tag is int intTag) && Enum.IsDefined(typeof(SkillRank), intTag)) {
-					return (SkillRank) intTag;
+				SkillRank rank = RankFromTag(tag);
+				if (plugin != null) {
+					plugin.SkillRank = rank;
+					this.RemoveTag(skillRankTK);
 				}
-				return SkillRank.Novice;
+				return rank;
 			}
 			set {
-				if (value == SkillRank.Novice) {
+				ProfessionPlugin plugin = this.ProfessionPlugin;
+				if (plugin != null) {
+					plugin.SkillRank = value;
+					this.RemoveTag(skillRankTK);
+				} else if (value == SkillRank.Novice) {
 					this.RemoveTag(skillRankTK);
 				} else {
 					this.SetTag(skillRankTK, value);
 				}
 				this.RefreshTitle();
 			}
+		}
+
+		//the #265 boxed-int coercion
+		private static SkillRank RankFromTag(object tag) {
+			if (tag is SkillRank rank) {
+				return rank;
+			}
+			if ((tag is int intTag) && Enum.IsDefined(typeof(SkillRank), intTag)) {
+				return (SkillRank) intTag;
+			}
+			return SkillRank.Novice;
 		}
 	}
 

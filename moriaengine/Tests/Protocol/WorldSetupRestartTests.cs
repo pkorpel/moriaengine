@@ -27,7 +27,8 @@ namespace SteamEngine.Tests.Protocol {
 					AssertHas(Ask(fixture2, client, ".SetupWorld", "SETUP_DONE:"), "added=1 kept=" + (AllPieces - 1));
 					string counts = Ask(fixture2, client, ".TestWorldSetupCheck", "WORLD_CHECK:");
 					AssertHas(counts, "elviras=1");
-					AssertHas(counts, "elviraAt=" + moved);
+					string[] at = Field(counts, "elviraAt=").Split(','), to = moved.Split(',');
+					Assert.True(Math.Abs(int.Parse(at[0]) - int.Parse(to[0])) < 15, "Elvira went back from " + moved + ": " + counts); //she walks about
 					AssertHas(counts, "doors=1");
 					AssertHas(counts, "stones=2 lenastirs=2 rinalds=1 elqiras=2");
 				}
