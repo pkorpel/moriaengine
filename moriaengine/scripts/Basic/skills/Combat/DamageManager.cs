@@ -506,7 +506,7 @@ namespace SteamEngine.CompiledScripts {
 			return damage >= (defenderIsPlayer ? (defenderMaxHits / 10) : 5);
 		}
 
-		private static readonly PluginKey manaShieldKey = PluginKey.Acquire("spellEffect_mana_shield");
+		internal static readonly PluginKey manaShieldKey = PluginKey.Acquire("spellEffect_mana_shield");
 
 		/// <summary>#868 - combat_main_mystik: a Mystic's strike ends mana shield, for half of Int's mana.</summary>
 		private static void DropManaShieldForStrike(Character attacker) {

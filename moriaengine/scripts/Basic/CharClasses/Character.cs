@@ -836,11 +836,6 @@ namespace SteamEngine.CompiledScripts {
 
 					//regeneration...
 					RegenerationPlugin.TryInstallPlugin(this, this.mana, this.MaxMana, this.manaRegenSpeed);
-
-					//meditation finish
-					if (this.mana >= this.MaxMana) {
-						this.DeletePlugin(MeditationPlugin.meditationPluginKey);
-					}
 				}
 			}
 		}
@@ -2156,6 +2151,7 @@ namespace SteamEngine.CompiledScripts {
 		//#779 walking stamina drain
 		public override void On_StepTaken(bool running) {
 			HidingSkillDef.OnStep(this, running); //#962 - Sphere's CheckRevealOnMove
+			MeditationSkillDef.OnStep(this);
 			MovementStamina.DrainForStep(this, running);
 			MonsterSpecialAttacks.OnStepTaken(this); //#797 hazard tiles, e_inexhaustible
 			RegionEventSystem.OnStepTaken(this); //#813 e_nohorse, e_nohorsehigh
