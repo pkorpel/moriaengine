@@ -128,3 +128,13 @@ Double clicking `t_food` or `t_fruit` eats one piece, adding its weight in stone
 At 0 food hits don't regenerate, and a blow, a spell or starting to craft costs 10 hits with "Umiras hlady...". Under 7 food any skill's success can turn into a failure, 7 times in 10 at nothing; blows aren't skills here. GMs aren't troubled by that roll.
 
 Not ported: the food box (`systems/foodbox.scp`), and dark stopping blows and spells (`nolightfizz` on `@hittry` and `@spellcast`).
+
+## Lockpicking (#962)
+
+Erebor's `systems/skills/lockpicking.scp`, a script with its own timer, not a skill stroke. The skill list refuses it.
+
+A lock is the container's type, `t_container_locked`. Without a key nobody but a GM opens one, which wasn't so before #962: the type did nothing. Tax chests answer their own click first. How hard a lock is lives in its `tag.lockpick`, as Erebor's treasure chests have it, 0 when unset.
+
+Double click a pick, target the lock within 2 tiles and in sight, with light to work by. It reveals you, takes a use off the pick at once (a pick of 3 tries becomes one of 2, and so on), and 2 s later rolls 0 to 100.0 under skill minus the lock's difficulty. Opening makes it `t_container` for good and sets `tag.lockpicked`. Either way Lockpicking may rise by the `skillgain` formula. One job at a time. A ship's hold has its own roll, ready for when ships exist.
+
+Not ported: Erebor's debug lines "wtf 1" and "wtf 2", printed as a worn pick is swapped.

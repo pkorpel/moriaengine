@@ -42,6 +42,17 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_container_locked : CompiledTriggerGroup {
+		private const int ThatIsLocked = 501281, LockedButYouMayOpen = 501286;
+
+		//#962 - Sphere's double click: no key, no way in, but for a GM
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			if ((self is TaxChest) || Item.HasKeyFor(dclicker, self)) { //a tax chest's own click comes first, as on Erebor
+				return TriggerResult.Continue;
+			}
+			dclicker.ClilocSysMessage(dclicker.IsGM ? LockedButYouMayOpen : ThatIsLocked);
+			return dclicker.IsGM ? TriggerResult.Continue : TriggerResult.Cancel;
+		}
+
 		//public int on_PickedUpFrom() {
 		//    //src attempts to pick up something from the container. If it wasnt some kind of cheater, 
 		//    //he would not have the container open.

@@ -307,6 +307,33 @@
   <data name="HungerLoc_Stuffed2" xml:space="preserve">
     <value>You are stuffed!</value>
   </data>
+  <data name="LockpickLoc_whatToOpen" xml:space="preserve">
+    <value>Co chces odemknout?</value>
+  </data>
+  <data name="LockpickLoc_takesPatience" xml:space="preserve">
+    <value>Tahle prace vyzaduje trpelivost!</value>
+  </data>
+  <data name="LockpickLoc_tooFar" xml:space="preserve">
+    <value>Jsi moc daleko.</value>
+  </data>
+  <data name="LockpickLoc_cantUseLockpick" xml:space="preserve">
+    <value>Na tohle nelze pouzit paklic.</value>
+  </data>
+  <data name="LockpickLoc_lockHeld" xml:space="preserve">
+    <value>Zamek odolal.</value>
+  </data>
+  <data name="LockpickLoc_openedMale" xml:space="preserve">
+    <value>Odemkl jsi zamek!</value>
+  </data>
+  <data name="LockpickLoc_openedFemale" xml:space="preserve">
+    <value>Odemkla jsi zamek!</value>
+  </data>
+  <data name="LockpickLoc_holdOpenedMale" xml:space="preserve">
+    <value>Odemkl jsi podpalubi!</value>
+  </data>
+  <data name="LockpickLoc_holdOpenedFemale" xml:space="preserve">
+    <value>Odemkla jsi podpalubi!</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
@@ -546,27 +573,6 @@
   </data>
   <data name="FishingLoc_needFishingPole" xml:space="preserve">
     <value>You must be holding a fishing pole to do that.</value>
-  </data>
-  <data name="LockpickLoc_abort" xml:space="preserve">
-    <value>Odemyk�n� p�eru�eno.</value>
-  </data>
-  <data name="LockpickLoc_cantUseLockpick" xml:space="preserve">
-    <value>Na tohle nelze pakl�� pou��t.</value>
-  </data>
-  <data name="LockpickLoc_fail" xml:space="preserve">
-    <value>Nepoda�ilo se ti odemknout z�mek</value>
-  </data>
-  <data name="LockpickLoc_notLocked" xml:space="preserve">
-    <value>That isn't locked.</value>
-  </data>
-  <data name="LockpickLoc_success" xml:space="preserve">
-    <value>�sp�n� jsi odemkl z�mek</value>
-  </data>
-  <data name="LockpickLoc_successWoman" xml:space="preserve">
-    <value>�sp�n� jsi odemkla z�mek</value>
-  </data>
-  <data name="LockpickLoc_whatToUseLockOn" xml:space="preserve">
-    <value>Na co chce� pou��t pakl��?</value>
   </data>
   <data name="LumberjackingLoc_abort" xml:space="preserve">
     <value>You stop chopping.</value>

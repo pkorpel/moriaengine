@@ -1,140 +1,91 @@
 using System;
-using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
-	/// <summary>
-	/// Regression for #282: Targ_Lockpick.On_TargonItem's locked-check was inverted
-	/// (!ItemLockPlugin.IsLocked gated the skill attempt), so lockpicking only ever "worked"
-	/// on items that were already unlocked, and silently re-targeted forever on an actually-
-	/// locked one. Proves both directions: targeting a LOCKED item now actually starts the
-	/// skill sequence (ends in a fail/success message, not another target-cursor prompt),
-	/// and targeting an UNLOCKED item gets a clear "not locked" message instead.
-	/// </summary>
+	/// <summary>#962 - Erebor's lockpicking: a lock is a container's type, a pick wears out, the answer takes 2 s.</summary>
 	[Collection(LockpickingCollection.Name)]
 	public class LockpickingTests {
-		private const string Account = "protocoltest";
-		private const string Password = "protocoltest";
-
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
 		private readonly GameServerPairFixture fixture;
 
 		public LockpickingTests(GameServerPairFixture servers) {
 			this.fixture = servers;
 		}
 
-		[Fact]
-		public void LockpickingOnLockedItemActuallyAttempts() {
-			using (var client = this.ConnectLoginAndCreateCharacter("LockpickAttempter")) {
-				var (lockpickUid, lockedUid, _) = this.SetupScenario(client);
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
 
-				client.SendDoubleClick(lockpickUid);
-				// Consume the "what do you want to use the lockpick on?" prompt - its exact text
-				// uses this file's own legacy (non-UTF8) Czech byte encoding, not worth asserting
-				// on here; just confirm a real prompt arrived before moving on.
-				Assert.False(string.IsNullOrEmpty(client.ReadSystemMessage(TimeSpan.FromSeconds(10))));
+		private static uint Uid(string report, string name) {
+			return uint.Parse(Regex.Match(report, name + @"=(\d+)").Groups[1].Value);
+		}
 
-				client.SendTargetUid(lockedUid);
-				string result = client.ReadSystemMessage(TimeSpan.FromSeconds(10));
-				// "odemk" is the common ASCII-safe root of both the fail ("...odemknout...") and
-				// success ("...odemkl...") messages - either proves the skill sequence actually
-				// started (PhaseStart ran). Pre-fix, targeting a locked item never got this far.
-				Assert.Contains("odemk", result);
+		private static void WaitForMessage(TestGameClient client, string pattern) {
+			DateTime deadline = DateTime.UtcNow + Wait;
+			while (!Regex.IsMatch(client.ReadSystemMessage(deadline - DateTime.UtcNow), pattern)) {
 			}
+		}
+
+		private uint Held(TestGameClient client) {
+			return Uid(this.Ask(client, ".TestLockpickState", "LOCKPICK_STATE:"), "held");
+		}
+
+		private void Pick(TestGameClient client, uint target) {
+			client.SendDoubleClick(this.Held(client));
+			WaitForMessage(client, "Co chces odemknout");
+			client.SendTargetUid(target);
 		}
 
 		[Fact]
-		public void LockpickingOnUnlockedItemShowsNotLockedMessage() {
-			using (var client = this.ConnectLoginAndCreateCharacter("LockpickOnUnlocked")) {
-				var (lockpickUid, _, unlockedUid) = this.SetupScenario(client);
+		public void ALockHoldsUntilPicked() {
+			using var client = CommandPermissionTests.Connect("lockpicktest", "Lock Tester");
+			string setup = this.Ask(client, ".TestLockpickSetup", "LOCKPICK_SETUP:");
+			uint locked = Uid(setup, "locked");
+			client.SendDoubleClick(Uid(setup, "pack")); //a client can only reach into what it has open
+			Thread.Sleep(300);
 
-				client.SendDoubleClick(lockpickUid);
-				Assert.False(string.IsNullOrEmpty(client.ReadSystemMessage(TimeSpan.FromSeconds(10))));
+			//a lock keeps you out, Sphere's 501281
+			client.SendDoubleClick(locked);
+			Assert.Contains("00-07-A6-21", BitConverter.ToString(client.ReadPacketPayload(0xC1, Wait)));
 
-				client.SendTargetUid(unlockedUid);
-				Assert.Equal("That isn't locked.", client.ReadSystemMessage(TimeSpan.FromSeconds(10)));
-			}
-		}
+			//a key lets you in
+			this.Ask(client, ".TestLockpickKey", "LOCKPICK_KEY:");
+			client.SendDoubleClick(locked);
+			client.ReadPacketPayload(0x24, Wait);
+			this.Ask(client, ".TestLockpickKey", "LOCKPICK_KEY:");
 
-		private (uint lockpickUid, uint lockedUid, uint unlockedUid) SetupScenario(TestGameClient client) {
-			int mark = this.fixture.GameOutputSnapshot().Length;
-			client.SendSpeech(".TestSetupLockpickScenario");
-			Assert.True(this.fixture.WaitForGameOutputSince("LOCKPICK_SCENARIO:", mark, TimeSpan.FromSeconds(10)));
-			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "LOCKPICK_SCENARIO:");
-			return (
-				ExtractUidAfter(line, "lockpickUid="),
-				ExtractUidAfter(line, "lockedUid="),
-				ExtractUidAfter(line, "unlockedUid="));
-		}
+			this.Pick(client, Uid(setup, "plain"));
+			WaitForMessage(client, "nelze pouzit paklic");
+			this.Pick(client, Uid(setup, "faraway"));
+			WaitForMessage(client, "moc daleko");
+			Assert.Contains("i_lockpick_3=1", this.Ask(client, ".TestLockpickState", "LOCKPICK_STATE:"));
 
-		private static uint ExtractUidAfter(string line, string marker) {
-			int idx = line.IndexOf(marker, StringComparison.Ordinal);
-			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + line);
-			string rest = line.Substring(idx + marker.Length);
-			int end = 0;
-			while (end < rest.Length && char.IsDigit(rest[end])) {
-				end++;
-			}
-			return uint.Parse(rest.Substring(0, end), CultureInfo.InvariantCulture);
-		}
+			//a try takes a use off the pick at once, the lock answers after 2 s, one job at a time
+			this.Pick(client, locked);
+			Thread.Sleep(300);
+			Assert.Contains("i_lockpick=0 i_lockpick_2=1 i_lockpick_3=0", this.Ask(client, ".TestLockpickState", "LOCKPICK_STATE:"));
+			this.Pick(client, locked);
+			WaitForMessage(client, "trpelivost");
+			WaitForMessage(client, "Zamek odolal");
+			Assert.Contains("type=t_container_locked picked=False", this.Ask(client, ".TestLockpickState", "LOCKPICK_STATE:"));
 
-		private static string LastLineContaining(string output, string marker) {
-			int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
-			Assert.True(idx >= 0, "Could not find '" + marker + "' in:\n" + output);
-			int end = output.IndexOf('\n', idx);
-			if (end < 0) {
-				end = output.Length;
-			}
-			return output.Substring(idx, end - idx);
-		}
+			this.Ask(client, ".TestLockpickEasy", "LOCKPICK_EASY:");
+			this.Pick(client, locked);
+			WaitForMessage(client, "Odemkl jsi zamek");
+			string state = this.Ask(client, ".TestLockpickState", "LOCKPICK_STATE:");
+			Assert.Contains("i_lockpick=1 i_lockpick_2=0", state);
+			Assert.Contains("type=t_container picked=True", state);
 
-		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
-			InvalidOperationException lastFailure = null;
-			for (int attempt = 0; attempt < 40; attempt++) {
-				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
-				try {
-					game.SendLogin(Account, Password);
-					game.ReadCharacterList();
-					game.SendCreateCharacter(charName);
-					return game;
-				} catch (InvalidOperationException e) {
-					game.Dispose();
-					lastFailure = e;
-					Thread.Sleep(300);
-				}
-			}
-			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
-		}
-
-		private int WaitForServerListingAndGetRedirectPort() {
-			Exception lastFailure = null;
-			for (int attempt = 0; attempt < 40; attempt++) {
-				try {
-					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(Account, Password);
-
-						int serverCount = login.ReadServersList();
-						if (serverCount < 1) {
-							throw new InvalidOperationException("No identified game server yet (server count 0).");
-						}
-
-						login.SendServerSelect(0);
-						var (redirectPort, _) = login.ReadRedirect();
-						Assert.True(redirectPort > 0, "Expected a real port in the login redirect.");
-						return redirectPort;
-					}
-				} catch (InvalidOperationException e) {
-					lastFailure = e;
-					Thread.Sleep(300);
-				}
-			}
-			throw new TimeoutException("Game server never appeared in AuxiliaryServer's list.", lastFailure);
+			//it's open now
+			client.SendDoubleClick(locked);
+			client.ReadPacketPayload(0x24, Wait);
 		}
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class LockpickingCollection : ICollectionFixture<GameServerPairFixture> {
-		public const string Name = "LockpickingPair";
+		public const string Name = "Lockpicking";
 	}
 }

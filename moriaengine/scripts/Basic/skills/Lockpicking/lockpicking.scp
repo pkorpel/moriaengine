@@ -13,11 +13,3 @@ SKILLMAKE = 45.0 tinkering, t_tinker_tools //some resources were fixed by conver
 DEFNAME = i_lockpick
 
 [ItemDef 0x14fc]
-
-[ItemLockPluginDef p_lockedItem]
-on=@DenyDClick //argv(0) == denyresult; argv(1) == dclicker; argv(2) == this
-argv(1).sysMessage("woe nesmis")
-argv(0) = DenyResultMessages.Deny_NoMessage
-return 1
-
-

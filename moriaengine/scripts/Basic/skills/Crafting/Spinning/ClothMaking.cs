@@ -93,7 +93,7 @@ namespace SteamEngine.CompiledScripts {
 			self.AddTimer(timerKey, timer).DueInSeconds = settings.secondsToMake;
 		}
 
-		private static int Count(Container inside, ItemDef def) {
+		internal static int Count(Container inside, ItemDef def) {
 			int count = 0;
 			foreach (Item item in inside.EnumShallow()) {
 				if (item.Def == def) {
