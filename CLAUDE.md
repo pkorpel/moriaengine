@@ -1,5 +1,11 @@
 # moriaengine — working state
 
+## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
+
+User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.
+Found: **a burst of timers crashed the server.** Timer.changes (SimpleQueue) was written by game threads and read by the timer thread with each side locking only its own timer. Grow swapped the array under the reader, Dequeue gave null, lock(null) threw, FATAL: Timer thread dying. Any burst of over 32 timer changes could do it. changesLock now guards the queue alone: a leaf lock, never held while taking another, so #798's order stands. TimerBurstTests was red 2 of 2.
+Found: **Thing.AllThings could throw, and with it a world save.** UIDArray.Add kept a uid in highestUsedIndex, one past the index, so with the array's top slot taken the enumerator read off its end: SaveAll, WorldPieces, House.ByRegion, at around 1000, 2000, 4000 things, and .SetupWorld puts a new world near 1000. ThingsFillingTheArray is red without the fix.
+
 ## DONE (2026-11-01): #958 click text, mining and chopping, rent chest (branch fix-gathering-rent-chest-clicks)
 
 User, testing in TazUO. (1) Messages show on hover and repeat. TazUO's ForceTooltipsOnOldClients, on by default, sends a real 0x09 when the mouse rests on something and the server doesn't advertise tooltips; the server can't tell it from a click, 3.0.6m doesn't do it. TazUO takes overhead text from such clicks into the tooltip, a SysMessage goes to the journal each time. So click text is Item.ClickMessage, overhead from the item, as its name is. (2, 3) GatherTiles.IsOfType: a static counts by its type, following DUPEITEM, as Sphere. IsValidVein only looked at land, IsValidTree wanted Foliage so a trunk failed. Reach 3 as Erebor. Cave walls stay unminable: they're DUPEITEM of a sandstone wall; floor, stalagmites and flowstone mine. Apple trees (no def) and custom 0x2e6c, 0x2e4d "tree" tiles (no type) stay unchoppable as on Erebor. (4) RentChest opens for anyone, takes only money (PayFrom handles nothing else), only a GM takes things out; Erebor had it locked, the user wants it open.

@@ -24,7 +24,11 @@ using SteamEngine.Persistence;
 namespace SteamEngine.Timers {
 
 	public abstract class Timer : IDeletable {
+		//written by whoever changes a timer, read by the timer thread. #960 - changesLock is the only thing guarding it, as each
+		//side otherwise holds just its own timer: a burst grew the array under the reader, which got null and killed the thread.
+		//Taken last and held for the one queue operation, so nothing waits for another lock inside it (#17, #798).
 		private static SimpleQueue<Timer> changes = new SimpleQueue<Timer>();
+		private static readonly object changesLock = new object();
 
 		private static TimerPriorityQueue priorityQueue = new TimerPriorityQueue();
 		private static ManualResetEvent manualResetEvent = new ManualResetEvent(false);
@@ -59,7 +63,7 @@ namespace SteamEngine.Timers {
 					throw;
 				}
 
-				if ((priorityQueue.Count == 0) && (changes.Count == 0)) {
+				if ((priorityQueue.Count == 0) && !HasChanges()) {
 					manualResetEvent.Reset();
 				}
 
@@ -72,9 +76,27 @@ namespace SteamEngine.Timers {
 			ProcessTimingOut();
 		}
 
+		private static bool HasChanges() {
+			lock (changesLock) {
+				return changes.Count > 0;
+			}
+		}
+
+		private static void QueueChange(Timer timer) {
+			lock (changesLock) {
+				changes.Enqueue(timer);
+			}
+		}
+
+		private static Timer NextChange() {
+			lock (changesLock) {
+				return (changes.Count > 0) ? changes.Dequeue() : null;
+			}
+		}
+
 		private static void ProcessChanges() {
-			while (changes.Count > 0) {
-				Timer timer = changes.Dequeue();
+			Timer timer;
+			while ((timer = NextChange()) != null) {
 				lock (timer) {
 					timer.isInChangesQueue = false;
 
@@ -113,7 +135,7 @@ namespace SteamEngine.Timers {
 								if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
 									if (timer.period >= TimeSpan.Zero) {
 										timer.fireAt = fireAt + timer.period;
-										changes.Enqueue(timer);
+										QueueChange(timer);
 										manualResetEvent.Set();
 										timer.isInChangesQueue = true;
 									}
@@ -138,7 +160,9 @@ namespace SteamEngine.Timers {
 
 		public static void Clear() {
 			priorityQueue.Clear();
-			changes.Clear();
+			lock (changesLock) {
+				changes.Clear();
+			}
 		}
 
 		protected abstract void OnTimeout();
@@ -226,7 +250,7 @@ namespace SteamEngine.Timers {
 			lock (this) {
 				this.fireAt = value;
 				if (!this.isInChangesQueue) {
-					changes.Enqueue(this);
+					QueueChange(this);
 					manualResetEvent.Set();
 					this.isInChangesQueue = true;
 				}
@@ -237,7 +261,7 @@ namespace SteamEngine.Timers {
 			lock (this) {
 				this.isDeleted = true;
 				if (!this.isInChangesQueue) {
-					changes.Enqueue(this);
+					QueueChange(this);
 					manualResetEvent.Set();
 					this.isInChangesQueue = true;
 				}
@@ -289,7 +313,9 @@ namespace SteamEngine.Timers {
 			Logger.WriteDebug("Loaded " + priorityQueue.Count + " timers.");
 
 			ProcessChanges();
-			changes = new SimpleQueue<Timer>();//it could have been unnecessary big...
+			lock (changesLock) {
+				changes = new SimpleQueue<Timer>();//it could have been unnecessary big...
+			}
 		}
 		#endregion save/load
 	}
