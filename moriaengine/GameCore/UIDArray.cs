@@ -98,8 +98,8 @@ namespace SteamEngine {
 			this.array[index] = o;
 			this.count++;
 
-			if (uid > this.highestUsedIndex) {
-				this.highestUsedIndex = uid;
+			if (index > this.highestUsedIndex) {
+				this.highestUsedIndex = index;
 			}
 			this.version++;
 		}

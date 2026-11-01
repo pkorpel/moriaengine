@@ -93,6 +93,36 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>A real step over the region's edge, or "no way in" if the map has none.</summary>
+		/// <summary>Every door in the dialog is a door in all 8 facings, and swings there and back.</summary>
+		[SteamFunction]
+		public static void TestHouseDoorKinds(Character self) {
+			int kinds = 0, good = 0;
+			string bad = "";
+			for (int i = 0; i < D_HouseDoors.Kinds.GetLength(0); i++) {
+				kinds++;
+				string defname = D_HouseDoors.Kinds[i, 0];
+				ItemDef def = (ItemDef) ThingDef.GetByDefname(defname);
+				bool ok = true;
+				for (int offset = 0; offset < 16; offset += 2) {
+					Item door = (Item) def.Create(self.X, self.Y, self.Z, self.M);
+					door.Model = def.Model + offset;
+					int model = door.Model;
+					ok = ok && door.IsDoor && (ThingDef.FindItemDef(model) != null) && !door.IsDoorOpen;
+					door.UseDoor();
+					ok = ok && door.IsDoorOpen;
+					door.UseDoor();
+					ok = ok && (door.Model == model);
+					door.Delete();
+				}
+				if (ok) {
+					good++;
+				} else {
+					bad += defname + " ";
+				}
+			}
+			Console.WriteLine("DOOR_KINDS: kinds=" + kinds + " good=" + good + " bad=" + bad);
+		}
+
 		[SteamFunction]
 		public static void TestHouseWalkIn(Character self) {
 			Map map = Map.GetMap(Area.Mapplane);
@@ -149,6 +179,15 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 			}
+			int fourthRattans = 0;
+			int fourthRattan = ThingDef.GetByDefname("i_door_rattan").Model + 6;
+			foreach (Thing thing in Thing.AllThings) {
+				Item item = thing as Item;
+				if ((item != null) && item.IsDoor && (item.Model == fourthRattan) && item.Flag_NonMovable && (item.GetMap().GetRegionFor(item) == Area)) {
+					fourthRattans++;
+				}
+			}
+			Console.WriteLine("SETUP_DOOR: fourthRattans=" + fourthRattans);
 			Console.WriteLine("SETUP_REPORT: owner=" + ((house.Owner == null) ? "none" : house.Owner.Name) + " signAt=" + sign.X + "," + sign.Y
 				+ " doors=" + doors + " doorsOutside=" + doorsOutside + " signLevel=" + t_housemenu.LevelOf(sign));
 		}
