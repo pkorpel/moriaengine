@@ -62,6 +62,93 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HOUSE_LOCKDOWN_SETUP: teleported");
 		}
 
+		/// <summary>The chest beside the caller, so a click and a drop reach it.</summary>
+		[SteamFunction]
+		public static void TestHouseChest(Character self) {
+			if (house.RentChest != null) {
+				house.RentChest.Delete();
+			}
+			house.PlaceRentChest(self.X - 1, self.Y, self.Z, self.M);
+			Item gold = (Item) ((ItemDef) ThingDef.GetByDefname("i_gold")).Create(self.X, self.Y + 1, self.Z, self.M);
+			gold.Amount = 8900;
+			Console.WriteLine("HOUSE_CHEST: chest=" + (uint) house.RentChest.FlaggedUid + " gold=" + (uint) gold.FlaggedUid + " amount=" + gold.Amount
+				+ " x=" + gold.X + " y=" + gold.Y + " z=" + gold.Z);
+		}
+
+		[SteamFunction]
+		public static void TestHousePaid(Character self) {
+			Console.WriteLine("HOUSE_PAID: seconds=" + (long) (house.PaidUntil - Globals.TimeInSeconds) + " chestItems=" + house.RentChest.Count
+				+ " days=" + house.PaidDays + " rent=" + house.Rent);
+		}
+
+		[SteamFunction]
+		public static void TestHouseResetPaid(Character self) {
+			house.PaidUntil = Globals.TimeInSeconds;
+			Console.WriteLine("HOUSE_RESET: done");
+		}
+
+		/// <summary>Checks by the rules of f_payRentFrom. Value: 100000 at a rent of 89000.</summary>
+		[SteamFunction]
+		public static void TestHouseCheques(Character self) {
+			house.Owner = self;
+			house.PaidUntil = Globals.TimeInSeconds;
+			ThingDef checkDef = ThingDef.GetByDefname("i_cashiers_check");
+			for (int i = 0; i < 2; i++) {
+				((CashiersItem) ((ItemDef) checkDef).Create(house.RentChest)).Value = (i == 0) ? 100000 : 89000;
+			}
+			house.CheckRent(self);
+			Console.WriteLine("HOUSE_CHEQUES: seconds=" + (long) (house.PaidUntil - Globals.TimeInSeconds) + " left=" + house.RentChest.Count);
+		}
+
+		[SteamFunction]
+		public static void TestHouseSetRent(Character self) {
+			house.PaidUntil = Globals.TimeInSeconds + (86400 * 10);
+			house.SetRent(house.Rent / 2);
+			Console.WriteLine("HOUSE_SETRENT: days=" + house.PaidDays + " rent=" + house.Rent);
+		}
+
+		/// <summary>In the real region: a loose thing, a fixed one, a locked door, a pet, friends, then an unpaid check.</summary>
+		[SteamFunction]
+		public static void TestHouseEvict(Character self, ScriptArgs sa) {
+			FlaggedRegion area = Region;
+			Point4D p = area.P;
+			self.P(p.X, p.Y, p.Z, p.M);
+			house.Owner = self;
+			house.AddMember(self, HouseRank.Friend);
+			house.PaidUntil = Globals.TimeInSeconds - 10;
+			Item loose = (Item) ((ItemDef) ThingDef.GetByDefname("i_gold")).Create(p.X, p.Y, p.Z, p.M);
+			Item fixedThing = (Item) ((ItemDef) ThingDef.GetByDefname("i_flip_probe")).Create(p.X, p.Y, p.Z, p.M);
+			fixedThing.SetAttribute(ItemAttributes.attr_move_never, true);
+			Item door = (Item) ((ItemDef) ThingDef.GetByDefname("i_flip_door_probe")).Create(p.X, p.Y, p.Z, p.M);
+			door.Type = (TriggerGroup) TriggerGroup.GetByDefname("t_door_locked");
+			door.LockUid = 5;
+			NPC pet = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(p.X, p.Y, p.Z, p.M);
+			pet.ControlMaster = self;
+			if (sa.Args == "timer") {
+				house.GetTimer(HouseRentTimer.Key).DueInSeconds = 1;
+			} else {
+				house.CheckRent(self);
+				ReportEviction(self, door);
+			}
+			lastDoor = door;
+		}
+
+		private static Item lastDoor;
+
+		private static void ReportEviction(Character self, Item door) {
+			string bags = "";
+			foreach (Item bag in house.RentChest) {
+				bags += "[" + bag.Name.Substring(0, 5) + ":" + ((Container) bag).Count + "]";
+			}
+			Console.WriteLine("HOUSE_EVICTED: owner=" + ((house.Owner == null) ? "none" : house.Owner.Name) + " friends=" + house.Friends.Count
+				+ " bags=" + bags + " doorType=" + door.Type.Defname + " doorLock=" + door.LockUid + " doorThere=" + door.IsOnGround);
+		}
+
+		[SteamFunction]
+		public static void TestHouseEvictedReport(Character self) {
+			ReportEviction(self, lastDoor);
+		}
+
 		[SteamFunction]
 		public static void TestHouseForSave(Character self) {
 			House old = House.ForRegion(Region);
