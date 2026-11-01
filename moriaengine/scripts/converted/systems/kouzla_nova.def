@@ -8,8 +8,8 @@ DESCRIPTION = Mana Shield Scroll
 Name = "Mana Shield Scroll"
 TYPE = t_customspell_scroll
 WEIGHT = 1
-RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
-SKILLMAKE = 600 inscription, 800 magery //some resources were fixed by converter 
+RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
+SKILLMAKE = 600 inscription, 800 magery //nastaveni_cm_skillmake 
 model = i_scroll_blank
 Color = 044d
 

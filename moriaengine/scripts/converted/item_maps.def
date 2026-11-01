@@ -2,8 +2,8 @@
 
 [EquippableDef i_atlas_map]
 name = "Atlas map"
-resources = 5 i_hide, 2 i_thread
-skillmake = 500 carpentry, 300 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 3 i_thread, 4 i_hide, 5 i_map_blank //nastaveni_cm_resources 
+SKILLMAKE = 600 carpentry, 1 t_carpentry, 400 tailoring //nastaveni_cm_skillmake 
 model = i_spellbook
 Layer = 1 //guessed from base def by Converter 
 type = t_spellbook //guessed from base def by Converter 
@@ -24,8 +24,8 @@ DESCRIPTION = Blank Map
 
 NAME = "Blank Map"
 TYPE = T_MAP_BLANK
-RESOURCES = 1 i_log_copper
-SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_map
 //VALUE = 3 // commented out by Converter 
 //can_pile = 0 // commented out by Converter 

@@ -81,8 +81,8 @@ svitkovac_spell_shortcut[104] "Mana Shield"
 NAME = "Svitkovac"
 TYPE = t_svitkovac
 WEIGHT = 10
-RESOURCES = 10 i_scroll_blank, 15 i_log_obsidian, 10 i_gem_diamond
-SKILLMAKE = 900 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 10 i_scroll_blank, 15 i_log_obsidian, 10 i_gem_diamond //nastaveni_cm_resources 
+SKILLMAKE = 900 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 layer = 1
 model = i_spellbook
 Color = 0985

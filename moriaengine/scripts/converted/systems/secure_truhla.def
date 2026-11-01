@@ -5,6 +5,8 @@ NAME = "Truhla"
 TYPE = T_CONTAINER
 WEIGHT = 0
 model = 0xe41
+RESOURCES = 10 i_ingot_verite, 10 i_ingot_iron, 10 i_log_iron, 3 i_clock_parts, 5 i_wire_copper, 1 i_key_iron //nastaveni_cm_resources 
+SKILLMAKE = 850 tinkering, 1 t_tinker_tools, 850 blacksmithing //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 Color = color_o_verite
 

@@ -2857,7 +2857,7 @@ SUBSECTION = Beekeepers/Candlers
 DESCRIPTION = Pot of Wax
 
 WEIGHT = 4
-RESOURCES = 3 i_beeswax, 1 i_pot
+RESOURCES = 3 i_beeswax, 1 i_pot //nastaveni_cm_resources 
 DEFNAME = i_pot_of_wax
 
 [ItemDef 0x142b]
@@ -3647,8 +3647,9 @@ DESCRIPTION = Ship Plans (EMPTY)
 TYPE = t_deed
 DupeList = 0x14f2
 WEIGHT = 1
-RESOURCES = 1 i_paper
+RESOURCES = 1 i_dyes, 1 i_parchment //nastaveni_cm_resources 
 Flippable = true
+SKILLMAKE = 1 t_carpentry, 990 carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_deed_ship
 
 [ItemDef 0x14f2]
@@ -3662,6 +3663,8 @@ DESCRIPTION = Rope (W)
 DupeList = 0x14fa
 WEIGHT = 2
 Flippable = true
+RESOURCES = 5 i_cloth, 5 i_thread //nastaveni_cm_resources 
+SKILLMAKE = 600 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_rope
 
 [ItemDef 0x14fa]
@@ -3723,8 +3726,9 @@ DESCRIPTION = @
 
 DupeList = 0x151c
 WEIGHT = 34
-RESOURCES = 20 i_ingot_iron, 5 i_ingot_gold, 2 i_log, 1 i_board, 70 i_feather
+RESOURCES = 10 i_ingot_gold, 5 i_feather, 2 i_cloth, 30 i_ingot_iron, 70 i_ingot_copper, 5 i_gem_diamond, 10 i_ingot_verite //nastaveni_cm_resources 
 Flippable = true
+SKILLMAKE = 1000 blacksmithing, 1000 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_decorative_armor
 
 [ItemDef 0x1509]

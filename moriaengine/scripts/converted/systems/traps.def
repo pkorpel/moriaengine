@@ -8,6 +8,8 @@ DESCRIPTION = normalni past
 name = "past"
 type = t_trap_custom
 model = 0x2c72
+RESOURCES = 3 i_wire_verite, 2 i_clock_parts, 1 i_dagger_valorite, 5 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 750 tinkering, 1 t_tinker_tools, 500 carpentry //nastaveni_cm_skillmake 
 
 //[typedef t_trap_custom] //(commented out by Converter) 
 
