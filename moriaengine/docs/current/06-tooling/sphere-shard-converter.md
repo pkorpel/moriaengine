@@ -224,3 +224,7 @@ comments, so such a multi has no doors or sign, and Erebor's deeds still don't p
 ## Recipes of hand-written items (#962)
 
 Erebor's live recipes (`nastaveni_cm_resources_*`, `nastaveni_cm_skillmake_*` in `save/sphereworld.scp`) override the `.scp` files. `ConvertedItemDef.ApplyLiveRecipe` writes them into every converted item. Items written by hand never pass through it, and the archive has no `[ITEMDEF]` for spell scrolls at all, so `ConvertedRecipes` writes those into `scripts/converted/systems/craftmenu/craftrecipes.def` as `[CraftRecipeDef]`s, which `CraftRecipeDef` applies to the item at boot. It's a generated file: change a recipe in the archive, not there.
+
+## Live skill values (#962)
+
+`nastaveni_skilldelay_*`, `nastaveni_skilleffect_*` and `nastaveni_skilladvrate_*` in `save/sphereworld.scp` override spheretables.scp, as recipes do. `ConvertedSkillValues` writes them to `scripts/converted/systems/skillvalues.def`, and `SkillValuesDef` applies them at boot, over what the hand-written skill sections say. So to know a skill's real numbers, read that file, not spheretables.

@@ -115,7 +115,7 @@ Gaining by use is `Skill_Experience`, `SkillGainSystem.TryGainSkill`, with the a
 - The chance is 1 in `ADVRATE` successes, read at skill + (skill - difficulty), so a hard job teaches far more than an easy one.
 - Over 40.0 below the skill it's halved, over 50.0 below it's nothing.
 
-Only skills with a real `ADVRATE` on Erebor gain this way: crafting, Fishing, Lumberjacking, Mining. On Erebor the rest are `0fffffff`, here 0. Lockpicking and Taming have their own formula. Gathering's difficulty is the resource's own `SKILL` range. Mining's first point is Erebor's 1010, so it starts very slowly.
+Only skills with a real `ADVRATE` on Erebor gain this way: crafting, Fishing, Lumberjacking, Mining. On Erebor the rest are `0fffffff`, here 0. Lockpicking and Taming have their own formula. Gathering's difficulty is the resource's own `SKILL` range. All curves are Erebor's live values, see `systems/skillvalues.def`.
 
 Not ported: Sphere's skill-sum degrade, as `skillsum` is 30000 on every profession. Stat gains by use: every skill has `BONUSSTATS=0` on Erebor.
 
@@ -151,7 +151,7 @@ A witness that takes it as a crime reacts as in Sphere: a player remembers, so a
 
 Erebor's `systems/skills/healing*.scp`, on timers rather than skill strokes. The skill list refuses both.
 
-Double click a bandage and target someone within 6 tiles in sight, not a summon, hurt or bleeding. It takes 5 s and a bandage, and drops your weapon to the pack, but not a staff. Another bandage in between cuts the first short. People need Healing and anything else Veterinary, checked against a roll of 0 to 102.4, and a bloody bandage comes back. A bleed is stopped first, and that's all that treatment does. Otherwise it heals 5 to 50 by skill + Anatomy, past 50 at higher sums.
+Double click a bandage and target someone within 6 tiles in sight, not a summon, hurt or bleeding. It takes 7 to 3 s by Healing and a bandage, and drops your weapon to the pack, but not a staff. Another bandage in between cuts the first short. People need Healing and anything else Veterinary, checked against a roll of 0 to 102.4, and a bloody bandage comes back. A bleed is stopped first, and that's all that treatment does. Otherwise it heals by skill + Anatomy: 0 to 15 per 100.0 of that sum for Healing, 5 to 50 for Veterinary.
 
 Only shamans use bloody bandages on people. Their class ability `.improvement` can double a heal, and a priest's `.enlightment` can cut the time to 2 to 1 s. A priest who healed a player shares for 15 minutes in the experience of that player's fights.
 

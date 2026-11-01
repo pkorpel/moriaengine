@@ -132,6 +132,19 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#962 - values from outside this def's own section, read as if they were written there.</summary>
+		internal void SetLiveValues(string filename, int line, string delayValue, string effectValue, string advRateValue) {
+			if (delayValue != null) {
+				this.LoadScriptLine(filename, line, "delay", delayValue);
+			}
+			if (effectValue != null) {
+				this.LoadScriptLine(filename, line, "effect", effectValue);
+			}
+			if (advRateValue != null) {
+				this.LoadScriptLine(filename, line, "advrate", advRateValue);
+			}
+		}
+
 		public double GetDelayForValue(ushort skillValue) {
 			return ScriptUtil.EvalRangePermille(skillValue, this.Delay);
 		}

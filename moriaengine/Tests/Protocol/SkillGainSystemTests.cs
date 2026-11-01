@@ -25,10 +25,10 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Theory]
-		[InlineData("Mining", "1010,400,1600")]
-		[InlineData("Blacksmith", "10,400,1600")]
-		[InlineData("Alchemy", "10,200,750")]
-		[InlineData("Skill_Fishing", "10,250,800")]
+		[InlineData("Mining", "14,600,2300")]
+		[InlineData("Blacksmith", "17,760,2300")]
+		[InlineData("Alchemy", "12.5,500,2100")]
+		[InlineData("Skill_Fishing", "18.5,280,2600")]
 		public void AdvRateDataMatchesRealEreborValues(string skillDefname, string expected) {
 			// SkillName enum values don't all match the .def KEY text 1:1 (e.g. "Blacksmith" is
 			// the enum name, "Blacksmithing" is the KEY) - report by the raw skill id instead to

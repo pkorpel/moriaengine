@@ -108,6 +108,10 @@ namespace SteamEngine.Converter {
 			return (skill == "blacksmith") ? "blacksmithing" : skill;
 		}
 
+		public static string GetString(string name) {
+			return vars.TryGetValue(name, out string value) ? value : null;
+		}
+
 		public static bool TryGetInt(string name, out int value) {
 			value = 0;
 			return vars.TryGetValue(name, out string text) && int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
