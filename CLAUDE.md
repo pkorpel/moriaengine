@@ -1,5 +1,15 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-10-31): #941 Erebor houses
+
+User: analyze Erebor's houses (rent boxes, owners, locking items, etc), plan, implement ONLY once the plan is confirmed. Analysis on #941. 
+**Confirmed plan, one PR each:** (1) doors + keys (2) converter: region tags, defs (3) house core, ranks, sign menu (4) rent, eviction (5) locking (6) bank, logs, logout, limits, .rentalinfo, citizenship, .SetupHouses. Own folder scripts/Basic/Housing, separate files. Old House : MultiItem and .releasehouse go.
+**User's decisions:** signs + chests auto at the region's spawn point, GM command moves them. Doors by a GM helper, none automatic. Rent by house size (my numbers, on .settings: 900 gp a tile, nearest 1000, minimum 50k, so the median 112 tiles is about 100k), GM can set one house. Eviction on click + a daily sweep. Claim asks to confirm + a grace period on .settings. Ghosts and enemy realm can't enter the house region. Later, built to plug in: multis, deeds, stalls, fields; signs only for dum regions. Dialogs in Erebor's Czech.
+**Step 1 doors done (branch 941-doors):** ItemDoor.cs by type, the old Door class removed: nothing in the content used it, converted doors are plain items with TYPE. Item.LockUid = Sphere's MORE1 (items have no More1 here). AbstractItem.On_Create now gives a dupe its master's type: a dupe's own was t_normal. Doc doors.md.
+Gotchas: Sphere's macro closes an open door too, EreborNext says so, my test assumed not. A first step in a new direction only turns, so a walking test sets Direction first, and a blocked-step test needs a control or it passes for the wrong reason (mine did). A killed background run can survive: the shell that "low memory" stopped finished alongside its restart, sharing an output file, so re-check counts that look wrong.
+**Now: step 2, converter.**
+Found: Erebor's houses are map buildings + region (tag.housenumber, tag.houserealm), not multis: 281 dum, 61 stanek, 38 pole. Signs, doors, rent chests, doorstep tiles were placed live and aren't in the archive; no door tile in any house region, gap detection from statics gives one clean candidate for only 51 of 281. Door.cs and t_door are empty: no door in the game opens. Converter drops tag.housenumber/houserealm. Per-house rent was GM-set, lost: default 100k. Our House : MultiItem has no HouseDef in the content, the 4 Housing failures on main come from that.
+
 ## DONE (2026-10-31): #938 .flip exactly as Sphere, dropping flips (branch flip-as-sphere)
 
 User: .flip must match Sphere, dropping an item flips it. Reference EreborNext CItem.Flip + FlipOracleTests (real 0.99z8 numbers). Doc flip.md.

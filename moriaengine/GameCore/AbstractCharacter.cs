@@ -817,6 +817,10 @@ namespace SteamEngine {
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
+		/// <summary>#941 - the client's OpenDoor macro.</summary>
+		public virtual void On_OpenDoorMacro() {
+		}
+
 		public virtual TriggerResult On_Step(Direction direction, bool running) {
 			return TriggerResult.Continue;
 		}

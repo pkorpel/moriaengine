@@ -37,6 +37,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>What the OpenDoor macro looks for: an open door's type stays t_door, only t_door_open is left out.</summary>
+		public bool IsMacroDoor {
+			get {
+				string type = this.TypeName;
+				return (type == "t_door") || (type == "t_door_locked");
+			}
+		}
+
 		private string TypeName {
 			get {
 				return (this.Type == null) ? null : this.Type.Defname.ToLowerInvariant();
@@ -68,16 +76,13 @@ namespace SteamEngine.CompiledScripts {
 				int pattern = this.LightPattern + 1;
 				this.LightPattern = (pattern >= LightPatternCount) ? 0 : pattern;
 			} else if (this.IsDoor) {
-				this.Model = this.TypeDef.Model + NextDoorOffset(this.Model - this.TypeDef.Model, command);
+				this.Model = this.TypeDef.Model + NextDoorOffset(this.DoorOffset, command);
 			} else {
 				base.Flip(command);
 			}
 		}
 
 		private static int NextDoorOffset(int offset, string command) {
-			if ((offset < 0) || (offset > DoorOffsetMax)) {
-				offset = 0;
-			}
 			switch ((command ?? "").ToUpperInvariant()) {
 				case "ALIGN":
 					return offset ^ DoorAlign;

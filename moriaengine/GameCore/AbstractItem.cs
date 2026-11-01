@@ -429,7 +429,8 @@ namespace SteamEngine {
 			if (dupe != null) {
 				this.def = dupe;
 			}
-			this.Type = aidef.Type;
+			//#941 - a dupe is its master, TYPE included: a door's other models are dupes
+			this.Type = (dupe ?? aidef).Type;
 			base.On_Create();
 		}
 
