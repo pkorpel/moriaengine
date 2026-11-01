@@ -20,7 +20,7 @@ Stackable=True
 
 RESOURCES=2 i_ingot_iron
 //DAM=3
-SKILLMAKE=BLACKSMITHING 40.0, TINKERING 35.0
+SKILLMAKE=400 blacksmithing, 350 tinkering
 
 PoisoningDifficulty = 250
 PoisoningEfficiency = 0.75

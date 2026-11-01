@@ -3,6 +3,8 @@
 ## IN PROGRESS (2026-11-01): skills, exact Erebor behaviour, one by one
 
 User: crafting first, then skills with actual functions; refer to the archive and EreborNext. Analyze then implement each, no go-ahead needed, ask only when unsure. EreborNext clone: scratchpad/EreborNext (shallow, see memory for how to clone again). Audit of every skill goes on the issue, then one PR per skill.
+Audit on #962 (order there). Done: live recipes in the converter (PR #963), difficulty + failure (PR #964). Now: craft menus. ConvertedCraftMenus runs cmprep_* and writes craftmenus.def, CraftMenuDef loads it. Newest-first in a Sphere container, so a menu reads reversed from its script.
+Waiting on the user: skillCheckVariance 250 vs Sphere's 100, ADVRATE and the gain formula.
 
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
