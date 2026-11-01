@@ -46,6 +46,14 @@ Never the skill list: as in Sphere, those buttons say the skill can't be used di
 
 Cooking has no menu on Erebor: `cmprep_cooking` exists but nothing opens it. Raw food is double clicked and targeted on a fire, forge or campfire. It takes 2 s, a difficulty up to 50.0, and uses up one raw piece either way.
 
+### Spinning, the loom, mending (#962)
+
+Erebor's `f_vyroba_latky`, `scripts/Basic/skills/Crafting/Spinning`. Double click wool or cotton on you and target a spinning wheel, or thread or yarn and target a loom, in sight. A batch of the source goes at once, the wheel turns, and 3 s later the product is in your pack. One job at a time. Each job can raise Tailoring by the `skillgain` formula.
+
+A batch is 6 of the source, times Tailoring / `skillPerBatch`, and at least 6. Wool and cotton give `yieldPerFibre` each, thread and yarn give `yieldPerThread` of cloth. These three are `mnozkoef`, `pocet_z_vlny` and `pocet_z_nite`, which aren't in the archive: **the values on .settings are guesses**.
+
+A sewing kit on clothes repairs them from 40.0 Tailoring with thread on you, each repair taking a point of maximum durability. The roll is Erebor's to the letter and looks backwards: it fails when a roll of 0 to 1200 is under your skill, so a higher skill fails more. Failing takes a point of durability and a thread; succeeding restores all durability, takes magic thread if you have any, and no thread. Clothes reaching 0 are destroyed.
+
 ### Stages (#962)
 
 As Sphere's `Skill_<name>` for each skill. Success is rolled at the start and shown after all the strokes, so a failure takes as long as a success. Difficulty 0 can't fail, a GM never does.
