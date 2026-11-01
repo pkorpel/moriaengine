@@ -15,27 +15,23 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
-	/// The generic skill-gain-through-use mechanic (#140/#327/#328) - real Erebor Sphere source
-	/// (spheretables.scp) uses a native `ADVRATE` field per skill: a 3-point curve (successes
-	/// needed to gain 0.1 skill, at 0%/50%/100% of the skill's own current value relative to its
-	/// cap). `SkillDef.AdvRateOfChar` already correctly interpolates this curve
-	/// (ScriptUtil.EvalRangePermille) - this class is just the missing roll-and-increment step,
-	/// plus the gates real Erebor's own `funkce.scp` `[function skillgain]` applies (profession
-	/// cap, NPC exclusion, safe-region anti-macro exclusion).
+	/// Gaining a skill by using it (#140/#328), Sphere's Skill_Experience. Only the skills with a real ADVRATE on Erebor
+	/// gain this way: crafting, gathering and Cartography. The rest are 0fffffff there, Lockpicking and Taming have
+	/// their own formula below and most others grow by level points or teachers.
 	/// </summary>
 	public static class SkillGainSystem {
+		private const int LearnsFromFailureBelow = 300, MaxDifficulty = 1000, TooEasy = 500, RatherEasy = 400;
 
-		/// <summary>Attempts a skill gain for `self` using the native ADVRATE curve - call this
-		/// from a skill's On_Success/On_Fail (real Erebor gains on both outcomes, not just
-		/// success). Returns true if the skill actually went up. No-op (returns false) for NPCs,
-		/// characters with no profession (Skill.Cap is 0 for those - see Skill.cs), characters
-		/// already at their profession's cap, or anyone standing in a safe-flagged region
-		/// (anti-macro, matches `funkce.scp`'s own `region.flags & region_flag_safe` check).</summary>
-		public static bool TryGainSkill(Character self, SkillName skillName) {
+
+		/// <summary>difficulty in tenths, as a skill value, and negative for a failed attempt. Failing teaches only under
+		/// 30.0. An easy job teaches half as often from 40.0 below the skill and nothing from 50.0 below. Returns true if
+		/// the skill went up.</summary>
+		public static bool TryGainSkill(Character self, SkillName skillName, int difficulty) {
 			if (!(self is Player)) {
 				return false; //NPCs never organically gain skill through use
 			}
@@ -59,22 +55,32 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 
-			double advRate = def.AdvRateOfChar(self);
-			if (advRate <= 0) {
-				return false; //malformed/unset ADVRATE data - fail safe rather than divide by ~0
+			int effort = EffortOf(difficulty, currentValue);
+			if (effort == 0) {
+				return false;
 			}
-
-			// Real Erebor formula shape (funkce.scp's [function skillgain]): roll {0, N}, gain
-			// happens on hitting exactly 0 - i.e. a 1-in-(N+1) chance, where N is the interpolated
-			// "successes needed" value. Matches the documented semantics directly: a value of 10
-			// at this skill level means roughly 1-in-10 odds per attempt.
-			int roll = Globals.dice.Next((int) advRate + 1);
-			if (roll != 0) {
+			int chance = GainChance(def.AdvRate, currentValue, effort);
+			if ((chance <= 0) || (Globals.dice.Next(1000) > chance)) {
 				return false;
 			}
 
 			self.SetRealSkillValue(def, currentValue + 1); //+0.1 displayed - skills are stored x10 internally
 			return true;
+		}
+
+		public static int EffortOf(int difficulty, int skillValue) {
+			if (difficulty < 0) {
+				difficulty = (skillValue < LearnsFromFailureBelow) ? ((Math.Min(-difficulty, skillValue) / 2) - 8) : 0;
+			}
+			return Math.Min(difficulty, MaxDifficulty);
+		}
+
+		public static int GainChance(double[] advRate, int skillValue, int effort) {
+			int chance = SkillUtils.GetAdvanceChance(advRate, skillValue + (skillValue - effort));
+			if (effort + TooEasy < skillValue) {
+				return 0;
+			}
+			return (effort + RatherEasy < skillValue) ? (chance / 2) : chance;
 		}
 
 		/// <summary>Lockpicking/Taming's own gain path (#329) - the 2 of #140's 13 skills whose

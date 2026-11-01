@@ -79,7 +79,9 @@ namespace SteamEngine.CompiledScripts {
 				return TriggerResult.Cancel;
 			}
 
-			skillSeqArgs.Success = this.CheckSuccess(self, Globals.dice.Next(700));
+			int difficulty = FishingCatchSystem.RollDifficulty(self.GetMap().M, targetted.X, targetted.Y);
+			skillSeqArgs.Param2 = difficulty;
+			skillSeqArgs.Success = (difficulty <= 0) || this.CheckSuccess(self, difficulty);
 			return TriggerResult.Continue;
 		}
 
@@ -123,14 +125,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			FishingAmbushSystem.TryAmbush(self.P()); //#271
-			SkillGainSystem.TryGainSkill(self, SkillName.Fishing); //#328
+			SkillGainSystem.TryGainSkill(self, SkillName.Fishing, System.Convert.ToInt32(skillSeqArgs.Param2)); //#328
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			self.SysMessage(Loc<FishingLoc>.Get(self.Language).fail);
 			FishingAmbushSystem.TryAmbush(self.P()); //#271 - real fixresource rolls this on every gather action, not just success
-			SkillGainSystem.TryGainSkill(self, SkillName.Fishing); //#328 - real Erebor gains on fail too
+			SkillGainSystem.TryGainSkill(self, SkillName.Fishing, -System.Convert.ToInt32(skillSeqArgs.Param2)); //#328 - real Erebor gains on fail too
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {

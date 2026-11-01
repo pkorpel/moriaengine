@@ -19,7 +19,7 @@ using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 	public static class SkillUtils {
-		public const int skillCheckVariance = 250;
+		public const int skillCheckVariance = 100; //Sphere's SKILL_VARIANCE
 
 
 		public static bool CheckSuccess(int skillValue, int difficulty) {
@@ -37,6 +37,18 @@ namespace SteamEngine.CompiledScripts {
 			int roll = Globals.dice.Next(1000);
 
 			return (roll <= chanceForSuccess);
+		}
+
+		/// <summary>#962 - Sphere's m_AdvRate.GetChancePercent: the chance in 1000 of a gain. A curve of 3 runs through the
+		/// middle one at 500, past either end it keeps going. A rate of "n" means n successes to gain 0.1.</summary>
+		public static int GetAdvanceChance(double[] advRate, int value) {
+			if ((advRate == null) || (advRate.Length < 3)) {
+				return 0;
+			}
+			int low = (value >= 500) ? 1 : 0;
+			int from = (int) (advRate[low] * 10), to = (int) (advRate[low + 1] * 10);
+			int rate = from + (((to - from) * (value - (low * 500))) / 500);
+			return (rate <= 0) ? 0 : 100000 / rate;
 		}
 
 		public static int GetSCurve(int valDiff) {

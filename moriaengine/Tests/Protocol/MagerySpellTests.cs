@@ -49,12 +49,8 @@ namespace SteamEngine.Tests.Protocol {
 		/// success at skill 0 is the actual old-bug symptom). After the fix, difficulty comes
 		/// from Requirements=X Magery instead. Uses s_poison_field specifically (Requirements=
 		/// 80.0, the largest non-damage-spell requirement in this engine's content) rather than
-		/// a smaller one - SkillUtils.GetBellCurve's own math (skillCheckVariance=250) means a
-		/// small requirement like 20 only shifts the chance a few percent off 50%, within normal
-		/// 300-sample binomial noise; 80 gives a clean, safely-separated ~42%-vs-50% signal.
-		/// Expected at skill=0/difficulty=80: GetBellCurve(80) = 500-(250*80/250) = 420 -> 42%.
-		/// Expected at skill=1000/difficulty=80: valDiff=920, three /2 halvings down to chance 62,
-		/// then 1000-(62-(31*170/250)) = 1000-41 = 959 -> 95.9%.</summary>
+		/// a smaller one, for a clean, safely-separated signal. With Sphere's variance of 100:
+		/// at skill=0/difficulty=80 the chance is 30%, at skill=1000 it's nearly certain.</summary>
 		[Fact]
 		public void FizzleRateVariesWithSkillOnceDifficultyFallbackIsReal() {
 			this.EnsureAutoAccountCreationEnabled();

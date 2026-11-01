@@ -67,7 +67,9 @@ namespace SteamEngine.CompiledScripts {
 				return TriggerResult.Cancel;
 			}
 
-			skillSeqArgs.Success = this.CheckSuccess(self, Globals.dice.Next(700));
+			int difficulty = LumberjackingVeinSystem.RollDifficulty(self.GetMap().M, targetted.X, targetted.Y);
+			skillSeqArgs.Param2 = difficulty;
+			skillSeqArgs.Success = (difficulty <= 0) || this.CheckSuccess(self, difficulty);
 			return TriggerResult.Continue;
 		}
 
@@ -101,14 +103,14 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).veinExhausted);
 			}
 			LumberjackingAmbushSystem.TryAmbush(self.P(), WoodTiers.ByItemDef(def)); //#431
-			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking); //#328
+			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking, System.Convert.ToInt32(skillSeqArgs.Param2)); //#328
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).fail);
 			LumberjackingAmbushSystem.TryAmbush(self.P(), null); //#431 - real fixresource rolls this on every gather action, not just success
-			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking); //#328 - real Erebor gains on fail too
+			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking, -System.Convert.ToInt32(skillSeqArgs.Param2)); //#328 - real Erebor gains on fail too
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {

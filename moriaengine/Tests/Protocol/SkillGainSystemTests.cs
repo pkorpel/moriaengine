@@ -25,7 +25,7 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Theory]
-		[InlineData("Mining", "10,400,1600")]
+		[InlineData("Mining", "1010,400,1600")]
 		[InlineData("Blacksmith", "10,400,1600")]
 		[InlineData("Alchemy", "10,200,750")]
 		[InlineData("Skill_Fishing", "10,250,800")]
@@ -62,15 +62,15 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("LEVELING_PROFESSION_SET:", mark, TimeSpan.FromSeconds(10)));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSetSkillValue \"Mining\" 50");
+				client.SendSpeech(".TestSetSkillValue \"Blacksmith\" 50");
 				Assert.True(this.fixture.WaitForGameOutputSince("SKILL_VALUE_SET:", mark, TimeSpan.FromSeconds(10)));
 
 				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestSampleSkillGain \"Mining\" 400");
+				client.SendSpeech(".TestSampleSkillGain \"Blacksmith\" 400");
 				Assert.True(this.fixture.WaitForGameOutputSince("SKILL_GAIN_SAMPLE:", mark, TimeSpan.FromSeconds(10)));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "SKILL_GAIN_SAMPLE:");
 				Assert.Contains("before=50", line);
-				Assert.DoesNotContain("after=50", line); // some gain happened over 400 attempts at a 1-in-11-ish chance
+				Assert.DoesNotContain("after=50", line); // some gain happened: a job of 10.0 at 5.0 skill always teaches
 			}
 		}
 
