@@ -702,6 +702,16 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class ItemDef {
+		/// <summary>#962 - a recipe from outside this def's own section, read as if it were written there.</summary>
+		internal void SetRecipe(string filename, int line, string resources, string skillMake) {
+			if (resources != null) {
+				this.LoadScriptLine(filename, line, "resources", resources);
+			}
+			if (skillMake != null) {
+				this.LoadScriptLine(filename, line, "skillmake", skillMake);
+			}
+		}
+
 
 		public bool IsWearableDef {
 			get {

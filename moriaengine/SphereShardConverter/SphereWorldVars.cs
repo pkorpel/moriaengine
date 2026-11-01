@@ -87,6 +87,19 @@ namespace SteamEngine.Converter {
 			return (parts.Count == 0) ? null : string.Join(", ", parts);
 		}
 
+		/// <summary>#962 - the items with a value under one of these prefixes, each once, sorted so a regen diffs to nothing.</summary>
+		public static List<string> RecipeItems(params string[] prefixes) {
+			SortedSet<string> items = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (string name in vars.Keys) {
+				foreach (string prefix in prefixes) {
+					if (name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
+						items.Add(name.Substring(prefix.Length));
+					}
+				}
+			}
+			return new List<string>(items);
+		}
+
 		private static string SkillKey(string resource) {
 			if (!resource.StartsWith("skill_", StringComparison.Ordinal)) {
 				return resource;

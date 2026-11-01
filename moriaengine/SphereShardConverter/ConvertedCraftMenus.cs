@@ -19,7 +19,7 @@ namespace SteamEngine.Converter {
 			internal readonly List<Node> children = new List<Node>();
 		}
 
-		private const string MenuFolder = "systems/craftmenu";
+		internal const string MenuFolder = "systems/craftmenu";
 		private const string ArmorTables = "systems/nastaveni_ceho.scp";
 
 		private static readonly Regex functionRE = new Regex(@"^\[function\s+(?<name>\w+)\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);

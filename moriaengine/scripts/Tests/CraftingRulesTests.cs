@@ -187,7 +187,7 @@ namespace SteamEngine.CompiledScripts {
 				CraftingSkillDef def = (CraftingSkillDef) SkillDef.GetBySkillName(skill);
 				int least = int.MaxValue, most = 0;
 				for (int i = 0; i < 2000; i++) {
-					int strokes = def.RollStrokes();
+					int strokes = def.RollStrokes((ItemDef) ThingDef.GetByDefname("i_potion_Agility"));
 					least = Math.Min(least, strokes);
 					most = Math.Max(most, strokes);
 				}
@@ -248,6 +248,83 @@ namespace SteamEngine.CompiledScripts {
 			queue.Enqueue(new CraftingSelection((ItemDef) ThingDef.GetByDefname(args[0]), 1));
 			CraftingProcessPlugin.StartCrafting(self, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName((SkillName) Enum.Parse(typeof(SkillName), args[1])), queue));
 			Console.WriteLine("STAGE_STARTED:");
+		}
+
+		private static void Give(Character self, string defname, int amount) {
+			Item item = (Item) ((ItemDef) ThingDef.GetByDefname(defname)).Create(self.Backpack);
+			item.Amount = amount;
+		}
+
+		/// <summary>A plain thief able to brew Agility, with all it takes. Who may brew it, and a queue to start.</summary>
+		[SteamFunction]
+		public static void TestStageBrew(Character self) {
+			Player player = (Player) self;
+			player.Account.PLevel = 1;
+			player.Profession = ProfessionDef.GetByDefname("profession_thief");
+			player.SetRealSkillValue((int) SkillName.Alchemy, 1000);
+			player.SetRealSkillValue((int) SkillName.TasteID, 1000);
+			Give(player, "i_mortar_pestle", 1);
+			Give(player, "i_bottle_empty", 2);
+			Give(player, "i_reag_blood_moss", 4);
+			Give(player, "i_reag_worm_heart", 2);
+			Give(player, "i_reag_obsidian", 2);
+			ItemDef agility = (ItemDef) ThingDef.GetByDefname("i_potion_Agility");
+			bool thief = CraftingSkillDef.CanBeMade(agility, player);
+			player.Profession = ProfessionDef.GetByDefname("profession_mage");
+			bool mage = CraftingSkillDef.CanBeMade(agility, player);
+			player.Profession = ProfessionDef.GetByDefname("profession_thief");
+			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
+			queue.Enqueue(new CraftingSelection(agility, 1));
+			CraftingProcessPlugin.StartCrafting(player, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Alchemy), queue));
+			Console.WriteLine("STAGE_BREW: thief=" + thief + " mage=" + mage);
+		}
+
+		[SteamFunction]
+		public static void TestStageCount(Character self) {
+			string report = "";
+			foreach (string defname in new[] { "i_reag_blood_moss", "i_reag_worm_heart", "i_reag_obsidian", "i_bottle_empty", "i_potion_Agility", "i_scroll_blank", "i_scroll_magic_arrow" }) {
+				int count = 0;
+				foreach (AbstractItem item in self.Backpack) {
+					if (item.Def == ThingDef.GetByDefname(defname)) {
+						count += item.Amount;
+					}
+				}
+				report += " " + defname + "=" + count;
+			}
+			Console.WriteLine("STAGE_COUNT:" + report);
+		}
+
+		/// <summary>A mage ready to scribe Magic Arrow, and a thief who may not.</summary>
+		[SteamFunction]
+		public static void TestStageScribe(Character self) {
+			Player player = (Player) self;
+			player.Account.PLevel = 1;
+			player.Profession = ProfessionDef.GetByDefname("profession_mage");
+			player.SetRealSkillValue((int) SkillName.Inscribe, 1000);
+			player.SetRealSkillValue((int) SkillName.Magery, 1000);
+			SpellDef spell = (SpellDef) SpellDef.GetByDefname("s_magic_arrow");
+			SpellBook book = (SpellBook) ((ItemDef) ThingDef.GetByDefname("i_spellbook_3")).Create(player.Backpack);
+			book.AddSpell(spell);
+			SpellScrollDef scroll = spell.ScrollItem;
+			Give(player, "i_scroll_blank", 20);
+			player.MaxMana = 100;
+			player.Mana = 3;
+			bool noMana = CraftingSkillDef.CanBeMade(scroll, player);
+			player.Mana = 50;
+			bool mage = CraftingSkillDef.CanBeMade(scroll, player);
+			player.Profession = ProfessionDef.GetByDefname("profession_thief");
+			bool thief = CraftingSkillDef.CanBeMade(scroll, player);
+			player.Profession = ProfessionDef.GetByDefname("profession_mage");
+			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
+			queue.Enqueue(new CraftingSelection(scroll, 1));
+			CraftingProcessPlugin.StartCrafting(player, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Inscribe), queue));
+			int noRecipe = 0;
+			foreach (SpellDef one in SpellDef.AllSpellDefs) {
+				if ((one.ScrollItem != null) && (one.ScrollItem.Resources == null) && !one.ScrollItem.PrettyDefname.StartsWith("i_scroll_test_", StringComparison.Ordinal)) {
+					noRecipe++;
+				}
+			}
+			Console.WriteLine("STAGE_SCRIBE: noMana=" + noMana + " mage=" + mage + " thief=" + thief + " mana=" + player.Mana + " noRecipe=" + noRecipe);
 		}
 
 		/// <summary>What failing at a given loss takes from 19 ingots of a real recipe.</summary>
