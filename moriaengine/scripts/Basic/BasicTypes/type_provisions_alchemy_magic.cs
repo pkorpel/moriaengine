@@ -18,7 +18,10 @@
 namespace SteamEngine.CompiledScripts {
 
 	public class t_scroll_blank : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			CraftingSkillDef.OpenMenu(dclicker, SkillName.Inscribe);
+			return TriggerResult.Continue;
+		}
 	}	
 
 	public class t_spellbook : CompiledTriggerGroup {

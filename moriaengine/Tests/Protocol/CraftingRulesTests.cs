@@ -144,24 +144,25 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendDoubleClick(ingots);
 			WaitForMessage(client, NoHammer);
 
-			//the hammer goes in the hand and asks what for
+			//the hammer goes in the hand and asks what for, ingots open the menu, a forge isn't asked for yet
 			client.SendDoubleClick(hammer);
 			Thread.Sleep(300);
 			client.SendTargetUid(ingots);
-			WaitForMessage(client, NoForge);
+			Assert.Contains(client.ReadGumpDialogWithStrings(Wait).Strings, line => line.Contains("Blacksmithing", StringComparison.Ordinal));
+			client.SendDoubleClick(ingots);
+			Assert.Contains(client.ReadGumpDialogWithStrings(Wait).Strings, line => line.Contains("Blacksmithing", StringComparison.Ordinal));
 
+			//the skill list has no button for it
+			this.Ask(client, ".TestStageButton", "STAGE_BUTTON:");
+			Assert.Contains("2E-A1-07-00", BitConverter.ToString(client.ReadPacketPayload(0xC1, Wait)).Replace("00-07-A1-2E", "2E-A1-07-00"));
+
+			//making wants a forge within 3
+			this.Ask(client, ".TestStageMake", "STAGE_STARTED:");
+			WaitForMessage(client, NoForge);
 			this.Ask(client, ".TestStageForge \"4\"", "STAGE_FORGE:");
-			client.SendDoubleClick(ingots);
+			this.Ask(client, ".TestStageMake", "STAGE_STARTED:");
 			WaitForMessage(client, NoForge);
-
 			this.Ask(client, ".TestStageForge \"3\"", "STAGE_FORGE:");
-			client.SendDoubleClick(ingots);
-			Assert.Contains(client.ReadGumpDialogWithStrings(Wait).Strings, line => line.Contains("Blacksmithing", StringComparison.Ordinal));
-
-			client.SendDoubleClick(hammer);
-			Thread.Sleep(300);
-			client.SendTargetUid(ingots);
-			Assert.Contains(client.ReadGumpDialogWithStrings(Wait).Strings, line => line.Contains("Blacksmithing", StringComparison.Ordinal));
 
 			//at least 3 strokes of 1 s, whether it fails or not
 			var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -189,6 +190,20 @@ namespace SteamEngine.Tests.Protocol {
 			Thread.Sleep(200);
 			Assert.Contains("count=2 ", this.Ask(client, ".TestStageMade \"i_arrow_shaft_copper\"", "STAGE_MADE:"));
 			Assert.Contains("count=0 ", this.Ask(client, ".TestStageMade \"i_arrow_shafts_copper_2\"", "STAGE_MADE:"));
+
+			//raw food goes on a fire: a forge will do, a hammer won't
+			string cook = this.Ask(client, ".TestStageCookReady", "STAGE_COOK:");
+			uint raw = Uid(cook, "raw");
+			client.SendDoubleClick(raw);
+			Thread.Sleep(300);
+			client.SendTargetUid(hammer);
+			WaitForMessage(client, "sort of fire");
+			client.SendDoubleClick(raw);
+			Thread.Sleep(300);
+			client.SendTargetUid(Uid(cook, "forge"));
+			WaitForMessage(client, "smells good|Jidlo");
+			Thread.Sleep(200);
+			Assert.Contains("count=2 ", this.Ask(client, ".TestStageMade \"i_bird_raw\"", "STAGE_MADE:"));
 		}
 	}
 

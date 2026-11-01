@@ -20,7 +20,7 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 	public class t_mortar : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
-			D_Craftmenu.Craftmenu(dclicker, SkillName.Alchemy);
+			CraftingSkillDef.OpenMenu(dclicker, SkillName.Alchemy);
 			return TriggerResult.Continue;
 		}
 	}
@@ -39,21 +39,23 @@ namespace SteamEngine.CompiledScripts {
 
 	public class t_shaft : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
-			D_Craftmenu.Craftmenu(dclicker, SkillName.Fletching);
+			CraftingSkillDef.OpenMenu(dclicker, SkillName.Fletching);
 			return TriggerResult.Continue;
 		}
 	}
 
 	public class t_carpentry : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
-			D_Craftmenu.Craftmenu(dclicker, SkillName.Carpentry);
+			CraftingSkillDef.OpenMenu(dclicker, SkillName.Carpentry);
 			return TriggerResult.Continue;
 		}
 	}
 
 	public class t_sewing_kit : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
-			D_Craftmenu.Craftmenu(dclicker, SkillName.Tailoring);
+			if (dclicker is Player) {
+				((Player) dclicker).Target(SingletonScript<Targ_SewingKit>.Instance);
+			}
 			return TriggerResult.Continue;
 		}
 	}
@@ -70,7 +72,7 @@ namespace SteamEngine.CompiledScripts {
 
 	public class t_tinker_tools : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
-			D_Craftmenu.Craftmenu(dclicker, SkillName.Tinkering);
+			CraftingSkillDef.OpenMenu(dclicker, SkillName.Tinkering);
 			return TriggerResult.Continue;
 		}
 	}

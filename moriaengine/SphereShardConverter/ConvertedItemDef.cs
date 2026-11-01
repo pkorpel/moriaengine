@@ -748,9 +748,17 @@ namespace SteamEngine.Converter {
 			}
 		}
 
+		//#962 - raw food says in TDATA1 what cooking it makes
+		private void WriteCookedData() {
+			if ((this.tData1 != null) && this.writtenData.Exists(line => line.EndsWith("t_food_raw", StringComparison.OrdinalIgnoreCase) || line.EndsWith("t_meat_raw", StringComparison.OrdinalIgnoreCase))) {
+				this.Set("tag.cooked", "\"" + this.tData1 + "\"", "converted from 'TDATA1'");
+			}
+		}
+
 		public override void ThirdStage() {
 			this.ApplyLiveRecipe();
 			this.WriteBundleData();
+			this.WriteCookedData();
 			this.FixRecipeNames();
 
 			string toolTypeOverride;

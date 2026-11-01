@@ -26,7 +26,12 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_food_raw : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			if (dclicker is Player) {
+				((Player) dclicker).Target(SingletonScript<Targ_CookOn>.Instance, self);
+			}
+			return TriggerResult.Cancel;
+		}
 	}
 
 	public class t_container : CompiledTriggerGroup {
@@ -72,7 +77,12 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_meat_raw : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			if (dclicker is Player) {
+				((Player) dclicker).Target(SingletonScript<Targ_CookOn>.Instance, self);
+			}
+			return TriggerResult.Cancel;
+		}
 	}
 
 	public class t_water_wash : CompiledTriggerGroup {
@@ -152,7 +162,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_feather : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			CraftingSkillDef.OpenMenu(dclicker, SkillName.Fletching);
+			return TriggerResult.Continue;
+		}
 	}		
 
 	public class t_clock : CompiledTriggerGroup {
