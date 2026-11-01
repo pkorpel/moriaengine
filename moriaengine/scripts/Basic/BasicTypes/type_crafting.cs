@@ -62,6 +62,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	//#962 - marks for what a recipe needs at hand, as Erebor's empty typedefs: questy/noe.scp
+	public class t_bottle_form : CompiledTriggerGroup {
+	}
+
+	public class t_book_bottle : CompiledTriggerGroup {
+	}
+
+	public class t_book_shrink : CompiledTriggerGroup {
+	}
+
 	public class t_tinker_tools : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			D_Craftmenu.Craftmenu(dclicker, SkillName.Tinkering);

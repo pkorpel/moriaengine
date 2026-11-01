@@ -141,6 +141,9 @@ namespace SteamEngine.Converter {
 					}
 					corrected.Append("1 ").Append(split[0]).Append(", "); //number 1 prepended
 					commentary = "some resources were fixed by converter";
+				} else if ((split.Length == 3) && ConvertTools.TryParseAnyNumber(split[1], out object amount)) { //#962 - a comma short: MAGERY 80.0 t_sewing_kit
+					corrected.Append(split[1]).Append(" ").Append(split[0]).Append(", 1 ").Append(split[2]).Append(", ");
+					commentary = "some resources were fixed by converter";
 				} else {
 					def.Warning(line.Line, "Unknown resource string '"+singleRes+"'");
 					corrected.Append(singleRes).Append(", ");
