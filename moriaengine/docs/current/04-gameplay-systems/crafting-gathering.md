@@ -45,6 +45,8 @@ As Sphere's `Skill_<name>` for each skill. Success is rolled at the start and sh
 | Cooking | 2.0 | 1 | to be ported |
 | Inscription | 2.5 | 1 | to be ported |
 
+A made item gets Sphere's quality, 1 to 200, except scrolls and potions: skill picks one of 7 bands, a roll moves it up to 2 either way, and every band but average has its message. Nothing reads quality yet: Sphere's only use is the vendor price, and item values aren't ported. Erebor's enhanced items (quality over 170 at 100.0 skill) wait for magic items. A bundle comes out loose as it's made, as Erebor's @SkillMakeItem fires its @dropon_obj. A failure says Erebor's @Fail line.
+
 Blacksmithing needs a forge (`t_forge`, item or static) within 3 tiles at every stage and turns to face it; lose it and the work stops with nothing lost. The menu needs a smith's weapon (`t_weapon_mace_smith`) in the hand. It opens from ingots on your person, or from the hammer targeted on ingots; the hammer on anything else repairs it. An anvil does nothing on a click, repairing needs one near. Crafting skills also open from the skill list, which Sphere refuses: kept here as a convenience, behind the same checks.
 
 ## Gathering
