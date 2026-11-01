@@ -223,20 +223,32 @@
   <data name="TailoringLoc_RepairedFemale" xml:space="preserve">
     <value>Opravila jsi {0}.</value>
   </data>
-  <data name="CraftSkillsLoc_CraftingAborted" xml:space="preserve">
-    <value>Crafting aborted</value>
+  <data name="CraftSkillsLoc_MakingStopped" xml:space="preserve">
+    <value>Vyroba zrusena</value>
+  </data>
+  <data name="CraftSkillsLoc_MakingCutShort" xml:space="preserve">
+    <value>Vyroba predcasne zrusena</value>
+  </data>
+  <data name="CraftSkillsLoc_MakingTheseThings" xml:space="preserve">
+    <value>Vyrabim tyto veci:</value>
+  </data>
+  <data name="CraftSkillsLoc_FailedTryAgain" xml:space="preserve">
+    <value>Vyrobek se nepovedl - dalsi pokus.</value>
+  </data>
+  <data name="CraftSkillsLoc_NotEnoughResources" xml:space="preserve">
+    <value>Nemas dost zdroju</value>
+  </data>
+  <data name="CraftSkillsLoc_CantMakeThat" xml:space="preserve">
+    <value>nelze vyrobit {0}.</value>
+  </data>
+  <data name="WorkLightLoc_TooDark" xml:space="preserve">
+    <value>Je spatne videt.</value>
   </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
-    <value>Crafting is finished</value>
+    <value>Vyroba ukoncena.</value>
   </data>
   <data name="CraftSkillsLoc_ItemMadeAndPutInRecCont" xml:space="preserve">
     <value>You create the {0} and put it in your {1}</value>
-  </data>
-  <data name="CraftSkillsLoc_ResourcesLackingAndFinish" xml:space="preserve">
-    <value>Not enough resources to make {0}, crafting is finished.</value>
-  </data>
-  <data name="CraftSkillsLoc_ResourcesLackingButContinue" xml:space="preserve">
-    <value>Not enough resources to make {0}, continuing with other items.</value>
   </data>
   <data name="EffectDurationLoc_AbilityDeactivated" xml:space="preserve">
     <value>Ability '{0}' deactivated.</value>

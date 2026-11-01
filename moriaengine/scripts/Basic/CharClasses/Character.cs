@@ -1880,6 +1880,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual TriggerResult On_SkillStart(SkillSequenceArgs skillSeqArgs) {
+			if (!(skillSeqArgs.SkillDef is CraftingSkillDef)) {
+				CraftingProcessPlugin.Stop(this, false); //#962 - e_makestring's @hittry and @spellcast
+			}
 			return TriggerResult.Continue;
 		}
 
@@ -2338,6 +2341,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override void On_ItemDClick(AbstractItem dClicked) {
+			CraftingProcessPlugin.Stop(this, true); //#962 - @itemuserdclick
 
 			//TODO? maybe not in all cases (healing?)? maybe not at all?
 			this.Trigger_Disrupt();
@@ -2806,6 +2810,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_Damage(DamageArgs args) {
+			CraftingProcessPlugin.Stop(this, false); //#962 - e_makestring's @gethit
 		}
 
 		public void On_AfterSwing(WeaponSwingArgs args) {
