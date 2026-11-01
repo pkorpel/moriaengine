@@ -215,7 +215,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_Click(Item self, Character clicker) {
-			clicker.SysMessage(Loc<MasterQuestLoc>.Get(clicker.Language).EggDescription);
+			self.ClickMessage(clicker, Loc<MasterQuestLoc>.Get(clicker.Language).EggDescription);
 		}
 	}
 
@@ -229,7 +229,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_Click(Item self, Character clicker) {
-			clicker.SysMessage(Loc<MasterQuestLoc>.Get(clicker.Language).TeleportDescription);
+			self.ClickMessage(clicker, Loc<MasterQuestLoc>.Get(clicker.Language).TeleportDescription);
 		}
 	}
 

@@ -35,7 +35,7 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	[ViewableClass]
 	public class MiningSkillDef : SkillDef {
-		private const int MaxReach = 2;
+		private const int MaxReach = 3;
 
 		public MiningSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -95,6 +95,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (!self.CanInteractWith(targetted).Allow) {
 				return false;
+			}
+			AbstractInternalItem target = targetted as AbstractInternalItem;
+			if ((target != null) && GatherTiles.IsOfType(target, "t_rock")) {
+				return true;
 			}
 			int landTile = self.GetMap().GetTileId(targetted.X, targetted.Y);
 			return TileData.HasFlag(TileData.GetTileFlags(landTile), TileFlag.Impassable);

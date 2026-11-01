@@ -481,7 +481,7 @@ namespace SteamEngine.CompiledScripts {
 			Player player = clicker as Player;
 			int stage = (player == null) ? 0 : GrandmasterQuest.GetStage(player);
 			if (stage == 5) {
-				player.SysMessage("V teto byline poznavas koren Este, pro ktery te poslala Elmira");
+				self.ClickMessage(player, "V teto byline poznavas koren Este, pro ktery te poslala Elmira");
 				self.Message("Koren Este");
 				return TriggerResult.Cancel;
 			} else if (stage > 5) {

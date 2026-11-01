@@ -1,5 +1,10 @@
 # moriaengine — working state
 
+## DONE (2026-11-01): #958 click text, mining and chopping, rent chest (branch fix-gathering-rent-chest-clicks)
+
+User, testing in TazUO. (1) Messages show on hover and repeat. TazUO's ForceTooltipsOnOldClients, on by default, sends a real 0x09 when the mouse rests on something and the server doesn't advertise tooltips; the server can't tell it from a click, 3.0.6m doesn't do it. TazUO takes overhead text from such clicks into the tooltip, a SysMessage goes to the journal each time. So click text is Item.ClickMessage, overhead from the item, as its name is. (2, 3) GatherTiles.IsOfType: a static counts by its type, following DUPEITEM, as Sphere. IsValidVein only looked at land, IsValidTree wanted Foliage so a trunk failed. Reach 3 as Erebor. Cave walls stay unminable: they're DUPEITEM of a sandstone wall; floor, stalagmites and flowstone mine. Apple trees (no def) and custom 0x2e6c, 0x2e4d "tree" tiles (no type) stay unchoppable as on Erebor. (4) RentChest opens for anyone, takes only money (PayFrom handles nothing else), only a GM takes things out; Erebor had it locked, the user wants it open.
+Gotchas: a probe from a real spot, calling the real check, found this at once; "forest" coordinates I guessed were a town, read the region first. a_Rhovanion shadows a_Srdce_lesa where both cover a sector (a tie in Sector's comparer by intersection), harmless here, same resources.
+
 ## DONE (2026-11-01): #956 one function for a player's money (branch one-pay-function)
 
 User: everything that takes a player's money uses one function. GoldUtils.Pay, a port of Erebor's [function pay]: a GM pays nothing, pack then bank, "Potrebujes X zlatych." Gold in bags counts, as Erebor's rescount and our status window. Town.Pay, Player.Pay, PayFromBank, PayFromPack gone, TryPay and TryConsumeFrom gone, so the compiler keeps it to one.

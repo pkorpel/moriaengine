@@ -587,6 +587,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#958 - what a click tells one character, over the item as its name is. Not a SysMessage: TazUO clicks whatever
+		/// the mouse rests on, over and over, and only overhead text goes into its tooltip instead of the journal.</summary>
+		public void ClickMessage(Character clicker, string text) {
+			GameState state = clicker.GameState;
+			if (state != null) {
+				PacketSequences.SendNameFrom(state.Conn, this, text, 0);
+			}
+		}
+
 		public override void On_Click(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
 			int amount = this.Amount;
 			if (this.Amount <= 1) {
