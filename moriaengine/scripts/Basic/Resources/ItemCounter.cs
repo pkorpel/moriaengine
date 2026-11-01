@@ -68,13 +68,15 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>
-		/// Check how many items we have available for consuming and prepare a random number to consume 
-		/// (but do not take more than the desired count in the resource list). 
-		/// Then consume it
+		/// Consume this percentage of the desired count, rounded down, or what's available if that's less:
+		/// Sphere's ResourceConsumePart.
 		/// </summary>
-		internal void ConsumeSomeItems() {
-			int available = (int) Math.Min(this.foundCount, this.DesiredCount); //we can consume at most the really desired count (but no more)
-			long toConsume = (long) Math.Round((new Random().NextDouble()) * available);
+		internal void ConsumeSomeItems(int percent) {
+			long toConsume = (((long) this.DesiredCount) * percent) / 100;
+			toConsume = Math.Min(toConsume, this.foundCount);
+			if (toConsume <= 0) {
+				return;
+			}
 			foreach (Item itm in this.foundItems) {
 				//try consume as much as possible of this item
 				long wasConsumed = itm.Consume(toConsume);
