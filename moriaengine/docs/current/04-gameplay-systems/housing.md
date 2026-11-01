@@ -89,4 +89,38 @@ Differences from Erebor:
 - Deleting a house unlocks its things. Erebor's redeed deleted them, and it has no multis here yet.
 - An eviction unlocks the rent chest too if someone locked it. It stays in place anyway.
 
+## Setting up houses
+
+`.SetupHouses`, also part of `.SetupWorld`, gives each of the 281 dwellings (`a_dum_*` regions) a sign and a rent chest. Like any setup it only
+adds: a moved piece stays, a deleted one comes back. Erebor's were placed live and aren't in the archive, so every spot is a proposal.
+
+- The sign goes on the region's spawn point. For 220 houses that's a tile or two outside, on the doorstep. A spawn point often has no z,
+  and a few are in a wall or on the edge of a dock, so it goes to the nearest place a character can stand. A sign still knows its house from there.
+- The chest goes up to 3 steps inside, walked from the sign, as a post box blocks the way. For 3 houses there's no way in: `a_dum_82`, `a_dum_85`,
+  `a_dum_187`, and it stands beside the sign.
+- The hidden gem goes on a tile inside the region, as a house is found by where its gem stands.
+
+GM commands:
+
+| Command | What it does |
+|---|---|
+| `.HouseMove` | Target a sign or a rent chest, then where it goes |
+| `.HouseDoor` | Target a spot in a house to place a door, `i_0x675` unless a defname is given. Turn it with `.flip`, lock it from the sign |
+
+No doors are placed automatically, so a house stays open until a GM gives it one.
+
+## Who gets in
+
+Ghosts and players not of the house's realm can't step into a dwelling. That includes outcasts and players with no realm, as on Erebor. GMs and NPCs aren't stopped.
+Teleport refuses to land there too, and the same people can't claim it from a sign on the street. Stalls, fields and the three temples with house
+numbers are open. Anyone already inside can walk out.
+
+Erebor did this with doorstep tiles (`i_duch_dlazba`), which aren't in the archive. Differences:
+
+- It's the whole region, so there's no tile to walk around.
+- The tile's 1 second of safety on the doorstep isn't ported, there being no tile to stand on.
+
+Where a house overlaps a city as an equal in the region tree, as 17 do, the smaller region now wins the tile, as in Sphere. Before this those houses had no
+tile of their own and `r_playerhouse` never ran in them.
+
 The rest of the system follows as #941 goes on.

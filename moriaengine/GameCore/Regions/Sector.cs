@@ -344,7 +344,7 @@ namespace SteamEngine.Regions {
 					}
 					ImmutableRectangle intersectA = ImmutableRectangle.GetIntersection(this.sectorRectangle, a);
 					ImmutableRectangle intersectB = ImmutableRectangle.GetIntersection(this.sectorRectangle, b);
-					return intersectA.TilesNumber.CompareTo(intersectB.TilesNumber);
+					return intersectB.TilesNumber.CompareTo(intersectA.TilesNumber); //#941 - read from the end: the smaller wins, as in Sphere, or a city hides the houses in it
 				}
 			}
 

@@ -14,6 +14,9 @@ MANAUSE=9
 Requirements=30.0 Magery
 
 on=@effectGround
+	if (argo.Caster.TeleportRefusedAt(this))
+		return 1
+	endif
 	EffectFactory.StationaryEffectAt(this, 0x3728, 10, 30)
     EffectFactory.StationaryEffectAt(argo.Caster, 0x3728, 10, 30)
 	argo.Caster.Go(this)

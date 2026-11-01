@@ -126,6 +126,12 @@ namespace SteamEngine.Regions {
 			get { return this.houseNumber; }
 		}
 
+		/// <summary>#941 - a dwelling, the only kind that gets a sign and keeps people out. Stalls, fields and three temples
+		/// have house numbers too.</summary>
+		public bool IsHouse {
+			get { return (this.houseNumber != 0) && this.Defname.StartsWith("a_dum_", System.StringComparison.OrdinalIgnoreCase); }
+		}
+
 		/// <summary>#941 - Erebor's tag.houserealm: whose this house is. Realm.None for the few that have no such tag.</summary>
 		public Realm HouseRealm {
 			get {
@@ -263,6 +269,10 @@ namespace SteamEngine.Regions {
 		public override TriggerResult On_Enter(AbstractCharacter ch, bool forced) {
 			Player asPlayer = ch as Player;
 			if (asPlayer != null) {
+				if (!forced && !asPlayer.MayEnterHouse(this)) { //#941 - what Erebor's doorstep tiles did
+					asPlayer.SysMessage("Do tohoto domu nemuzes.");
+					return TriggerResult.Cancel;
+				}
 				asPlayer.SendGlobalLightLevel(LightAndWeather.GetLightIn(this));
 			}
 

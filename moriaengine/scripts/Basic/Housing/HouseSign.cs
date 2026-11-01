@@ -21,6 +21,10 @@ namespace SteamEngine.CompiledScripts {
 			sign.SetTag(houseTK, house);
 		}
 
+		public static bool IsSignOf(Item item, House house) {
+			return (item.Type is t_housemenu) && (item.GetTag(houseTK) == house);
+		}
+
 		/// <summary>Its house, or the house of the region it stands in, made if there's none yet.</summary>
 		private static House HouseOf(Item sign, Character clicker) {
 			House house = sign.GetTag(houseTK) as House;
@@ -54,6 +58,10 @@ namespace SteamEngine.CompiledScripts {
 			if (house.Owner == null) {
 				player.SysMessage("Dum je bez majitele");
 				if (!player.IsGM) {
+					if (!player.MayEnterHouse(house.Area)) {
+						player.SysMessage("Tento dum nemuzes obsadit.");
+						return;
+					}
 					D_TownConfirm.Ask(player, "Chces obsadit tento dum?", () => {
 						if (house.Owner == null) {
 							house.Claim(player);

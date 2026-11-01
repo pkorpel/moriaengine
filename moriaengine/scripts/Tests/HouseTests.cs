@@ -19,6 +19,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestHouseMake(Character self) {
 			self.Account.PLevel = 1;
+			self.Realm = Region.HouseRealm;
 			House old = House.ForRegion(Region);
 			if (old != null) {
 				old.Delete();

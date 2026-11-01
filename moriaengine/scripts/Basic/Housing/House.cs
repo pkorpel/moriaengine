@@ -62,7 +62,7 @@ namespace SteamEngine.CompiledScripts {
 		public static House Create(FlaggedRegion region) {
 			House house = ForRegion(region);
 			if (house == null) {
-				Point4D p = region.P;
+				Point4D p = TileInside(region);
 				house = (House) ThingDef.GetByDefname("i_house_gem").Create(p.X, p.Y, p.Z, p.M);
 				house.SetAttribute(ItemAttributes.attr_invis, true);
 				house.SetAttribute(ItemAttributes.attr_move_never, true);
@@ -70,6 +70,21 @@ namespace SteamEngine.CompiledScripts {
 				house.StartRentTimer();
 			}
 			return house;
+		}
+
+		//a house is known by where its gem stands, and most spawn points lie just outside the region
+		private static Point4D TileInside(FlaggedRegion region) {
+			Map map = Map.GetMap(region.Mapplane);
+			foreach (ImmutableRectangle rectangle in region.Rectangles) {
+				for (int x = rectangle.MinX; x <= rectangle.MaxX; x++) {
+					for (int y = rectangle.MinY; y <= rectangle.MaxY; y++) {
+						if (map.GetRegionFor(x, y) == region) {
+							return new Point4D(x, y, WorldSpots.LowestStandZ(map, x, y), region.Mapplane);
+						}
+					}
+				}
+			}
+			return region.P;
 		}
 
 		public override void On_Destroy() {

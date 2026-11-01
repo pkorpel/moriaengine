@@ -37,6 +37,14 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		/// <summary>On the ground in the region; its own sign may stand outside, on the doorstep.</summary>
+		internal bool HoldsForLocking(Item item) {
+			if (!item.IsOnGround) {
+				return false;
+			}
+			return t_housemenu.IsSignOf(item, this) || (item.GetMap().GetRegionFor(item) == this.Area);
+		}
+
 		public void Lock(Item item, HouseRank level, Character person) {
 			item.LockTo(this, level, person);
 			this.LockedItems.Remove(item);
@@ -195,7 +203,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Toto nemuzes zamknout.");
 			} else if (!House.IsLockable(targetted) && !self.IsGM) {
 				self.SysMessage("Toto nemuzes zamknout.");
-			} else if (targetted.IsOnGround && (targetted.GetMap().GetRegionFor(targetted) == house.Area)) {
+			} else if (house.HoldsForLocking(targetted)) {
 				D_HouseLockLevel.Show(self, house, targetted, rank);
 			} else {
 				self.SysMessage("Vec musi byt v domu nebo v jeho blizkosti.");
@@ -242,7 +250,7 @@ namespace SteamEngine.CompiledScripts {
 			Item item = (Item) args[1];
 			Player player = (Player) gi.Cont;
 			int button = gr.PressedButton;
-			if ((button == 0) || house.IsDeleted || item.IsDeleted || !item.IsOnGround || (item.GetMap().GetRegionFor(item) != house.Area)) {
+			if ((button == 0) || house.IsDeleted || item.IsDeleted || !house.HoldsForLocking(item)) {
 				return;
 			}
 			bool isSign = item.Type is t_housemenu;
