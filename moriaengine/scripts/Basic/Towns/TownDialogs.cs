@@ -68,7 +68,7 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>d_town_menu: the lines depend on who's looking. The button numbers are Erebor's.</summary>
 	public class D_TownMenu : CompiledGumpDef {
-		internal const int CitizensButton = 1, BlacklistButton = 2, ElectionButton = 3, PayTaxButton = 4, StandButton = 5, TaxStatusButton = 6, AddBanButton = 12, SetTaxButton = 14, MayorButton = 15,
+		internal const int RentalInfoButton = 22, CitizensButton = 1, BlacklistButton = 2, ElectionButton = 3, PayTaxButton = 4, StandButton = 5, TaxStatusButton = 6, AddBanButton = 12, SetTaxButton = 14, MayorButton = 15,
 			ExpelButton = 16, CaptainButton = 13, PostsButton = 19, RecruiterButton = 20, RemoveRingButton = 26, MakeNazgulButton = 27, MakeMayorButton = 17, MakeCitizenButton = 18, SuggestedBansButton = 21, NewsButton = 23, HomeButton = 24, CitizenshipButton = 25;
 		private const int Hue = 955, LabelHue = 0x481, RowHeight = 20, Width = 280, FirstRow = 176;
 		private static readonly string[] rankNames = { "Nepritel", "Verejnost", "Obcan", "Starosta", "GM" };
@@ -117,6 +117,7 @@ namespace SteamEngine.CompiledScripts {
 			RealmOffice office = RealmOffice.For(Realm.Gondor);
 			if ((rank >= Town.RankMayor) || ((office != null) && (office.holder == player))) {
 				Line(Town.RankPublic, CaptainButton, "Pokyny strazim");
+				Line(Town.RankPublic, RentalInfoButton, "Najemni informace");
 			}
 			Line(Town.RankMayor, PostsButton, "Rozmistit straze");
 			Line(Town.RankMayor, RecruiterButton, "Najimat straze");
@@ -166,6 +167,9 @@ namespace SteamEngine.CompiledScripts {
 
 		private void Press(Town town, Player player, int button, int rank) {
 			switch (button) {
+				case RentalInfoButton:
+					D_HouseRentals.Show(player, town.city, 0);
+					break;
 				case CitizensButton:
 					D_TownCitizens.Show(town, player, D_TownCitizens.ListMode.Citizens);
 					break;
