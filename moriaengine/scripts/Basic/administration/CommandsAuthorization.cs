@@ -214,7 +214,6 @@ namespace SteamEngine.CompiledScripts {
 
 			//Same default-deny gap as the Guild commands above - gated by its own
 			//owner-standing-in-the-house check, not plevel.
-			this.commands["ReleaseHouse"] = PLEVEL_PLAYER;
 
 			//GMs
 			//Print the value of given expression
