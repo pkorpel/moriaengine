@@ -22,7 +22,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_food : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			PlayerHunger.Eat(self, dclicker);
+			return TriggerResult.Cancel;
+		}
 	}
 
 	public class t_food_raw : CompiledTriggerGroup {
@@ -69,7 +72,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_fruit : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			PlayerHunger.Eat(self, dclicker);
+			return TriggerResult.Cancel;
+		}
 	}
 
 	public class t_drink : CompiledTriggerGroup {

@@ -118,3 +118,13 @@ Gaining by use is `Skill_Experience`, `SkillGainSystem.TryGainSkill`, with the a
 Only skills with a real `ADVRATE` on Erebor gain this way: crafting, Fishing, Lumberjacking, Mining. On Erebor the rest are `0fffffff`, here 0. Lockpicking and Taming have their own formula. Gathering's difficulty is the resource's own `SKILL` range. Mining's first point is Erebor's 1010, so it starts very slowly.
 
 Not ported: Sphere's skill-sum degrade, as `skillsum` is 30000 on every profession. Stat gains by use: every skill has `BONUSSTATS=0` on Erebor.
+
+## Hunger (#924)
+
+Sphere's food stat with Erebor's use of it, `scripts/Basic/Hunger`. A player holds up to 15 food and loses a point every 30 minutes in the world, on `.settings`. Erebor's `REGEN_4` line never reached Sphere, so this is its built-in rate. From nothing it goes up and down between 0 and 1. Under 40% the player is told how hungry they are.
+
+Double clicking `t_food` or `t_fruit` eats one piece, adding its weight in stones, at least 1. The food line is always on `.boosts`, under Stav.
+
+At 0 food hits don't regenerate, and a blow, a spell or starting to craft costs 10 hits with "Umiras hlady...". Under 7 food any skill's success can turn into a failure, 7 times in 10 at nothing; blows aren't skills here. GMs aren't troubled by that roll.
+
+Not ported: the food box (`systems/foodbox.scp`), and dark stopping blows and spells (`nolightfizz` on `@hittry` and `@spellcast`).

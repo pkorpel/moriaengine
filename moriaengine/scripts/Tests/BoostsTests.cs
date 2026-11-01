@@ -58,7 +58,7 @@ namespace SteamEngine.CompiledScripts {
 			self.Account.PLevel = 1;
 			fails = 0;
 			ClearAll(self);
-			Check("nothing at first", ActiveEffects.Of(self).Count == 0, Listed(self));
+			Check("only food at first", ActiveEffects.Of(self).Count == 1, Listed(self));
 			Character caster = (Character) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.P());
 			self.SetRealSkillValue((int) SkillName.Magery, 1000);
 
