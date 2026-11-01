@@ -124,10 +124,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			ItemDef iDefToMake = (ItemDef) skillSeqArgs.Param1;//the on_start trigger runs only if there is something here...
+			if (!self.IsGM && !this.CanStartMaking(iDefToMake, self)) {
+				CraftingProcessPlugin.MakeImpossible(skillSeqArgs);
+				return TriggerResult.Cancel;
+			}
 			//#962 - decided now, shown after all the strokes: a failure takes as long as a success
 			int difficulty = MakeDifficulty(iDefToMake);
 			skillSeqArgs.Success = (difficulty <= 0) || this.CheckSuccess(self, difficulty);
-			skillSeqArgs.Param2 = this.RollStrokes();
+			skillSeqArgs.Param2 = this.RollStrokes(iDefToMake);
 			this.DoEveryStage(skillSeqArgs);
 			return TriggerResult.Continue; //continue to delay, then @stroke
 		}
@@ -146,6 +150,10 @@ namespace SteamEngine.CompiledScripts {
 
 			this.DoEveryStage(skillSeqArgs);
 			this.DoStroke(skillSeqArgs);
+			if (!this.DoStrokeWork(skillSeqArgs)) {
+				skillSeqArgs.Success = false;
+				return TriggerResult.Continue;
+			}
 			int strokesCnt = Convert.ToInt32(skillSeqArgs.Param2);
 			if (strokesCnt > 1) {
 				//the last stroke only sounds, as Sphere's has no count left to animate
@@ -183,7 +191,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			if (canMake) {//if still OK try to consume the consumable resources (if any) otherwise step over this block
-				if (!self.IsGM && iDefToMake.Resources != null && !iDefToMake.Resources.ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missingResource)) {
+				if (!self.IsGM && !this.ConsumeMade(iDefToMake, self, out missingResource)) {
 					self.SysMessage(missingResource.GetResourceMissingMessage(self.Language));
 					canMake = false;
 				} else {//resources consumed or we are GM or no resources needed, create the item and place it to the pre-defined (or default) location
@@ -247,7 +255,7 @@ namespace SteamEngine.CompiledScripts {
 
 			if (canMake && hasMaterial) {
 				//lost some resources. if some of resources/material was missing then nothing happened...
-				iDefToMake.Resources.ConsumeSomeResources(self, ResourcesLocality.Backpack, Globals.dice.Next(FailLossPercent));
+				this.ConsumeFailed(iDefToMake, self);
 				self.SysMessage(this.FailMessage(self));
 				//#328 - real Erebor gains on a genuine failed attempt too (not just success), but
 				//not on a "couldn't even try" case (missing resources/material - canMake/hasMaterial
@@ -274,9 +282,34 @@ namespace SteamEngine.CompiledScripts {
 			return self.IsFemale ? texts.SpoiltProductFemale : texts.SpoiltProductMale;
 		}
 
-		/// <summary>How many strokes one item takes. One is Sphere's for all but the Blacksmith and Carpenter: the first delay, then done.</summary>
-		public virtual int RollStrokes() {
+		/// <summary>How many strokes one item takes. One is Sphere's for all but the Blacksmith, Carpenter and Alchemist: the first delay, then done.</summary>
+		public virtual int RollStrokes(ItemDef iDef) {
 			return 1;
+		}
+
+		/// <summary>A stroke's own work beyond its sound. False stops the making as failed.</summary>
+		protected virtual bool DoStrokeWork(SkillSequenceArgs skillSeqArgs) {
+			return true;
+		}
+
+		/// <summary>Sphere's check of a new attempt: the requirements, and the materials.</summary>
+		protected virtual bool CanStartMaking(ItemDef iDef, Character self) {
+			IResourceListEntry missing;
+			return ((iDef.SkillMake == null) || iDef.SkillMake.HasResourcesPresent(self, ResourcesLocality.BackpackAndLayers, out missing))
+				&& ((iDef.Resources == null) || iDef.Resources.HasResourcesPresent(self, ResourcesLocality.Backpack, out missing));
+		}
+
+		/// <summary>What a made item costs when it's done.</summary>
+		protected virtual bool ConsumeMade(ItemDef iDef, Character self, out IResourceListEntry missing) {
+			missing = null;
+			return (iDef.Resources == null) || iDef.Resources.ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missing);
+		}
+
+		/// <summary>What a failed attempt costs.</summary>
+		protected virtual void ConsumeFailed(ItemDef iDef, Character self) {
+			if (iDef.Resources != null) {
+				iDef.Resources.ConsumeSomeResources(self, ResourcesLocality.Backpack, Globals.dice.Next(FailLossPercent));
+			}
 		}
 
 		/// <summary>What Sphere's skill stage does whatever the stage: @start, each @stroke, @success, @fail.</summary>
@@ -374,6 +407,9 @@ namespace SteamEngine.CompiledScripts {
 			if (chr.IsGM) {//GM can everything
 				return true;
 			}
+			if (!AlchemySkillDef.ClassBrews(iDef, chr) || !InscriptionSkillDef.CanScribe(iDef, chr)) {
+				return false;
+			}
 			//skillmake (skills, tools etc.)
 			ResourcesList requir = iDef.SkillMake;
 			if (requir != null) {
@@ -399,6 +435,10 @@ namespace SteamEngine.CompiledScripts {
 		public string ResourcesLackingButContinue = "Not enough resources to make {0}, continuing with other items.";
 		public string ResourcesLackingAndFinish = "Not enough resources to make {0}, crafting is finished.";
 		public string FailedMaking = "Vyroba se nezdarila.";
+		public string TossMixture = "toss the failed mixture from the mortar";
+		public string StartGrinding = "start grinding some {0} in the mortar";
+		public string ContinueGrinding = "add {0} and continue grinding";
+		public string LackForPotion = "Hmmm, you lack {0} for this potion.";
 		public string SpoiltProductMale = "Zkazil jsi vyrobek.";
 		public string SpoiltProductFemale = "Zkazila jsi vyrobek.";
 		public string SpoiltScrollMale = "Zkazil jsi svitek.";
