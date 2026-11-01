@@ -1,0 +1,5 @@
+//#941 - Erebor's hidden gem of a house (t_customhouse on an i_worldgem_bit), all a house knows is on it
+
+[HouseDef i_house_gem]
+NAME = "dum"
+model = i_worldgem_bit
