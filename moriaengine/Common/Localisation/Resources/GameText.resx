@@ -352,6 +352,18 @@
   <data name="SnoopingLoc_youNotice" xml:space="preserve">
     <value>You notice {0} {1} {2} {3}.</value>
   </data>
+  <data name="CrimeLoc_Busybody" xml:space="preserve">
+    <value>Get thee hence, busybody!</value>
+  </data>
+  <data name="CrimeLoc_WhatAreYouDoing" xml:space="preserve">
+    <value>What do you think your doing ?</value>
+  </data>
+  <data name="CrimeLoc_AwayWithYou" xml:space="preserve">
+    <value>Ack, away with you!</value>
+  </data>
+  <data name="CrimeLoc_Beware" xml:space="preserve">
+    <value>Beware or I'll call the guards!</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

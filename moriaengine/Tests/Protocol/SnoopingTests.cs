@@ -42,6 +42,8 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("plugin=True", state);
 			Assert.Matches("karma=(0|-10)", state);
 
+			Assert.Contains("doubled=180 floor=-500 remembered=True criminal=True", this.Ask(client, ".TestSnoopWitness", "SNOOP_WITNESS:"));
+
 			//taking from it gets nowhere
 			string steal = this.Ask(client, ".TestSnoopSteal", "SNOOP_STEAL:");
 			Assert.Contains("success=False stillTheirs=True", steal);

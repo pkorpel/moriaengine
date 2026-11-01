@@ -29,6 +29,27 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("SNOOP_STEAL: success=" + stealing.Success + " stillTheirs=" + (prize.TopObj() == mark));
 		}
 
+		/// <summary>Karma as Sphere scales it, a seen crime remembered for the guards, a person's reaction.</summary>
+		[SteamFunction]
+		public static void TestSnoopWitness(Character self) {
+			self.Karma = 200;
+			CrimeWitness.ChangeKarma(self, -10, -500);
+			int doubled = self.Karma;
+			self.Karma = 105;
+			CrimeWitness.ChangeKarma(self, -10, -500);
+			self.Karma = -500;
+			CrimeWitness.ChangeKarma(self, -10, -500);
+			int floor = self.Karma;
+
+			NPC seen = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.P());
+			CrimeWitness.Notice(self, seen, null);
+			bool remembered = CrimeWitness.SeenBy(self) == seen;
+			bool criminal = Notoriety.IsCriminal(seen);
+			seen.Delete();
+
+			Console.WriteLine("SNOOP_WITNESS: doubled=" + doubled + " floor=" + floor + " remembered=" + remembered + " criminal=" + criminal);
+		}
+
 		[SteamFunction]
 		public static void TestSnoopState(Character self) {
 			Console.WriteLine("SNOOP_STATE: karma=" + self.Karma + " plugin=" + self.HasPlugin(SnoopingSkillDef.snoopedPluginKey));

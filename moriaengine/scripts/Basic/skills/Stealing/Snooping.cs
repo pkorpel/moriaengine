@@ -102,7 +102,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Sphere's CheckCrimeSeen. Everyone who sees it may notice, the mark more readily, and a skilled snoop less.
-		/// Seen, it costs karma, and 1 time in 60 a witness makes it a crime.</summary>
+		/// Seen, it costs karma, and 1 time in 60 a witness takes it as a crime.</summary>
 		internal static void CrimeSeen(Character self, Character mark, Container cnt, string action) {
 			bool seen = false;
 			foreach (AbstractCharacter other in self.GetMap().GetCharsInRange(self.X, self.Y, Globals.MaxUpdateRange)) {
@@ -113,13 +113,16 @@ namespace SteamEngine.CompiledScripts {
 				witness.SysMessage(string.Format(Loc<SnoopingLoc>.Get(witness.Language).youNotice, self.Name, action, (witness == mark) ? "your" : (mark.Name + "'s"), cnt.Name));
 				if (!witness.IsGM) {
 					seen = true;
-					if ((Globals.dice.Next(ChanceOfCrime) == 0) && !(witness is Player)) {
-						Notoriety.FlagCriminal(self);
+					if (Globals.dice.Next(ChanceOfCrime) == 0) {
+						CrimeWitness.Notice(witness, self, mark);
+					}
+					if (witness == mark) {
+						CrimeWitness.Protest(witness as NPC, self);
 					}
 				}
 			}
 			if (seen) {
-				self.Karma = (short) ((self.Karma > KarmaFloor) ? System.Math.Max(KarmaFloor, self.Karma - KarmaLost) : self.Karma);
+				CrimeWitness.ChangeKarma(self, -KarmaLost, KarmaFloor);
 			}
 		}
 
