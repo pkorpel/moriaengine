@@ -559,6 +559,15 @@
   <data name="DetectLoc_FoundFemale" xml:space="preserve">
     <value>Objevila jsi {0}.</value>
   </data>
+  <data name="MeditationLoc_HoldingABarrier" xml:space="preserve">
+    <value>Tva mysl se soustredi na udrzeni ochranne bariery...</value>
+  </data>
+  <data name="MeditationLoc_Attempting" xml:space="preserve">
+    <value>You attempt a meditative trance.</value>
+  </data>
+  <data name="MeditationLoc_LostConcentration" xml:space="preserve">
+    <value>Pohybem jsi ztratil soustredeni</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
