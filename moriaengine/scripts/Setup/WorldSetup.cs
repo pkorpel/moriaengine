@@ -32,11 +32,82 @@ namespace SteamEngine.CompiledScripts {
 
 		protected internal abstract void Place(WorldPieces pieces, Character gm);
 
-		/// <summary>This setup alone, reported to the GM.</summary>
+		/// <summary>Place, for a run with pauses: each thing returned says how far it got, and the server is free until the next.
+		/// A setup that takes long overrides this, and its Place goes through it.</summary>
+		protected internal virtual IEnumerable<string> PlaceInSteps(WorldPieces pieces, Character gm) {
+			this.Place(pieces, gm);
+			yield break;
+		}
+
+		/// <summary>This setup alone, at once, reported to the GM.</summary>
 		public void Run(Character gm) {
 			WorldPieces pieces = new WorldPieces();
 			this.Place(pieces, gm);
 			pieces.Report(gm, this.Name);
+		}
+	}
+
+	/// <summary>#951 - setups run a step at a time, telling the GM how far they got, with the server free in between. It isn't
+	/// a saved timer: a save must not meet a half done run, and one that a restart ends just runs again, setups only add.</summary>
+	public sealed class WorldSetupRun : SteamEngine.Timers.Timer {
+		private const double PauseSeconds = 0.1;
+
+		private static WorldSetupRun running;
+
+		private readonly Character gm;
+		private readonly IEnumerator<string> steps;
+		private readonly System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
+
+		private WorldSetupRun(Character gm, string what, WorldSetup[] setups) {
+			this.gm = gm;
+			this.steps = this.Steps(what, setups).GetEnumerator();
+		}
+
+		public static void Start(Character gm, string what, params WorldSetup[] setups) {
+			if (running != null) {
+				gm.SysMessage("A setup is already running, wait for it to finish.");
+				return;
+			}
+			running = new WorldSetupRun(gm, what, setups);
+			running.PeriodInSeconds = PauseSeconds;
+			running.DueInSeconds = PauseSeconds;
+		}
+
+		private IEnumerable<string> Steps(string what, WorldSetup[] setups) {
+			WorldPieces pieces = new WorldPieces();
+			foreach (WorldSetup setup in setups) {
+				yield return setup.Name + "...";
+				foreach (string step in setup.PlaceInSteps(pieces, this.gm)) {
+					yield return setup.Name + " " + step;
+				}
+			}
+			pieces.Report(this.gm, what);
+		}
+
+		protected override void OnTimeout() {
+			bool more = false;
+			try {
+				more = this.steps.MoveNext();
+				if (more) {
+					this.Tell("Setup: " + this.steps.Current);
+				}
+			} catch (FatalException) {
+				throw;
+			} catch (Exception e) {
+				Logger.WriteError(e);
+				this.Tell("Setup failed, see the log. What's placed stays, run it again to add the rest.");
+			}
+			if (!more) {
+				running = null;
+				this.Delete();
+			}
+		}
+
+		private void Tell(string message) {
+			Console.WriteLine(message + " (" + this.watch.ElapsedMilliseconds + " ms)");
+			if (!this.gm.IsDeleted) {
+				this.gm.SysMessage(message);
+			}
 		}
 	}
 
@@ -48,11 +119,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Every setup: adds what's missing, leaves everything else alone. Safe to run at any time.</summary>
 		[SteamFunction]
 		public static void SetupWorld(Character self) {
-			WorldPieces pieces = new WorldPieces();
-			foreach (WorldSetup setup in All) {
-				setup.Place(pieces, self);
-			}
-			pieces.Report(self, "World");
+			WorldSetupRun.Start(self, "World", All);
 		}
 	}
 

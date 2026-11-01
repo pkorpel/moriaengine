@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
@@ -8,7 +9,7 @@ namespace SteamEngine.CompiledScripts {
 	/// moved one stays, and doors are for GMs to place with .HouseDoor. A rent chest deleted comes back by itself.</summary>
 	public sealed class HouseSetup : WorldSetup {
 		public const string SignDef = "i_0xbd1";
-		private const int MaxStepsIn = 3, NearestSpot = 3;
+		private const int MaxStepsIn = 3, NearestSpot = 3, HousesAStep = 20;
 
 		public override string Name {
 			get {
@@ -18,14 +19,28 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void SetupHouses(Character self) {
-			new HouseSetup().Run(self);
+			WorldSetupRun.Start(self, "Houses", new HouseSetup());
 		}
 
 		protected internal override void Place(WorldPieces pieces, Character gm) {
+			foreach (string step in this.PlaceInSteps(pieces, gm)) {
+			}
+		}
+
+		protected internal override IEnumerable<string> PlaceInSteps(WorldPieces pieces, Character gm) {
+			List<FlaggedRegion> houses = new List<FlaggedRegion>();
 			foreach (StaticRegion region in StaticRegion.AllRegions) {
 				FlaggedRegion area = region as FlaggedRegion;
 				if ((area != null) && area.IsHouse) {
-					PlaceHouse(pieces, gm, area);
+					houses.Add(area);
+				}
+			}
+			int done = 0;
+			foreach (FlaggedRegion area in houses) {
+				PlaceHouse(pieces, gm, area);
+				done++;
+				if ((done % HousesAStep) == 0) {
+					yield return done + "/" + houses.Count;
 				}
 			}
 		}

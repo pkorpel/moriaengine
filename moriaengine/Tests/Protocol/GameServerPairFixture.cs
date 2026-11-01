@@ -280,6 +280,7 @@ namespace SteamEngine.Tests.Protocol {
 			psi.Environment["MSBUILDDISABLENODEREUSE"] = "1";
 			//#785 - the server exits on its own if this test process dies (ParentProcessWatchdog),
 			//instead of living on as an orphan that holds the ports
+			psi.Environment[SteamEngine.Common.TestHarness.CommandsVariable] = "1"; //#951 - Test* commands for this server only
 			psi.Environment[SteamEngine.Common.ParentProcessWatchdog.EnvironmentVariable] = Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture);
 			var proc = Process.Start(psi);
 			// Deliberately never write to or close StandardInput - see class comment.

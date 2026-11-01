@@ -1,6 +1,6 @@
 # World setup
 
-`.SetupWorld` (GM) is how anything that must exist in the world gets there: quest stones, NPCs, teleports, spawn gems. Run it
+`.SetupWorld` (plevel 5, as is each setup's own command) is how anything that must exist in the world gets there: quest stones, NPCs, teleports, spawn gems. Run it
 after a deploy that adds content. It can be run at any time, as often as you like.
 
 **Rule for new work:** if a feature needs something placed in the world, it gets a setup here and joins `.SetupWorld`. It
@@ -22,6 +22,11 @@ Nothing is ever removed or replaced, and nothing the setups didn't ask for is to
 Every item piece is fixed in place (`attr_move_never`), which also stops it decaying and keeps players from picking it up. A run
 applies this to pieces that already exist too, and that's the only thing it does to them. GMs can still drag fixed items; with `.gm`
 off they can't.
+
+`.SetupWorld` and `.SetupHouses` run a step at a time with a pause between, so the server stays free. The GM sees `Setup: Town stones...` and
+`Setup: Houses 40/281`, and the log has the same lines with the milliseconds so far, which is where to look if a run feels slow. One run at a time: a second is
+refused until the first finishes. The run isn't saved, so one that a restart cuts off is simply run again. A setup that takes long gets steps by overriding
+`PlaceInSteps`, as `HouseSetup` does. The other single setup commands run at once.
 
 The run reports what it did: `SETUP_DONE: World added=1 kept=37`.
 

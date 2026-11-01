@@ -21,8 +21,8 @@ Either way, before the resolved method actually runs, `E_CommandsAuthorization_G
 
 ```csharp
 public int on_Command(Globals globals, ISrc commandSrc, string cmd) {
-    if (cmd.StartsWith("Test", StringComparison.OrdinalIgnoreCase)) {
-        return 0; //diagnostic-only, see below
+    if (testCommandsOpen && cmd.StartsWith("Test", StringComparison.OrdinalIgnoreCase)) {
+        return 0; //protocol tests only, see below
     }
     int plevel = commandSrc.MaxPlevel;
     int cmdPlevel;
@@ -47,6 +47,12 @@ explicitly listed, while anyone below that can only run what's explicitly in the
 This is why adding a brand-new player-facing command (not GM-only) always means adding a
 line here - forgetting it is a real, already-encountered bug class (see "Historical bug"
 below), not a hypothetical.
+
+Only the word typed is checked (#406). What a command's own script reads inside doesn't need a line here, so don't list a property just because a player's dialog
+shows it: the line would also let plevels 2 and 3, who get the full parser, set it.
+
+`Test*` commands are compiled into every server, and some make the caller a GM. Their bypass is only open when the `STEAMENGINE_TEST_COMMANDS` environment variable is
+`1`, which only `GameServerPairFixture` sets (#951). Anywhere else they're ordinary unlisted commands, for GMs. Never set it on a real server.
 
 A few real allowlist entries and why they're there, to show the shape of the table:
 `"Where"`/`"Sendgmpage"`/`"Resync"`/`"Messages"` at `PLEVEL_PLAYER` (basic client

@@ -51,7 +51,7 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void TestWorldSetupEdit(Character self) {
 			Thing elvira = FindOne(GrandmasterQuest.ElviraDef);
-			int[] to = WorldSpots.NearestStandable(elvira.GetMap(), 3990, 505, 8);
+			int[] to = WorldSpots.NearestStandable(elvira.GetMap(), 3950, 505, 8); //far from her spot: she walks about while the setup runs
 			movedX = to[0];
 			movedY = to[1];
 			((Character) elvira).Go(to[0], to[1], to[2], elvira.M);
@@ -101,7 +101,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestWorldSetupCheck(Character self) {
 			Thing elvira = FindOne(GrandmasterQuest.ElviraDef);
 			Thing stray = Thing.UidGetThing(strayUid);
-			Console.WriteLine("WORLD_CHECK: elviras=" + Count(GrandmasterQuest.ElviraDef) + " elviraMoved=" + ((elvira.X == movedX) && (elvira.Y == movedY)) + " elviraAt=" + elvira.X + "," + elvira.Y +
+			Console.WriteLine("WORLD_CHECK: elviras=" + Count(GrandmasterQuest.ElviraDef) + " elviraMoved=" + (Point2D.GetSimpleDistance(elvira.X, elvira.Y, movedX, movedY) < 15) + " elviraAt=" + elvira.X + "," + elvira.Y +
 				" loose=" + LoosePieces() + " doors=" + Count(GrandmasterQuest.CageDoorDef) + " strayThere=" + (stray != null) +
 				" stones=" + Count(ExpertQuest.StartStoneDef) + " lenastirs=" + Count(MasterQuest.LenastirDef) + " rinalds=" + Count(GrandmasterQuest.RinaldDef) + " elqiras=" + Count(GrandmasterQuest.ElqiraDef));
 		}
