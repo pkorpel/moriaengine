@@ -104,3 +104,17 @@ all. Erebor's own reference implementation has a full contest (a sector-darkness
 stealth bonus for the hider, a distance penalty for the detector, and a per-detector
 re-detection cooldown), none of which is ported. This is a real, confirmed content/mechanic
 gap, not a design decision - it's just never been picked up.
+
+## Skill checks and gaining by use (#962)
+
+Sphere's numbers. A check is an S-curve of skill minus difficulty with a variance of 10.0: equal is 50%, 10.0 over is 75%, 10.0 under is 25%. Before #962 the variance was 25.0, so skills are less forgiving both ways now.
+
+Gaining by use is `Skill_Experience`, `SkillGainSystem.TryGainSkill`, with the attempt's difficulty, negative for a failure:
+
+- Failing teaches only under 30.0, and then counts as half the skill less 0.8.
+- The chance is 1 in `ADVRATE` successes, read at skill + (skill - difficulty), so a hard job teaches far more than an easy one.
+- Over 40.0 below the skill it's halved, over 50.0 below it's nothing.
+
+Only skills with a real `ADVRATE` on Erebor gain this way: crafting, Fishing, Lumberjacking, Mining. On Erebor the rest are `0fffffff`, here 0. Lockpicking and Taming have their own formula. Gathering's difficulty is the resource's own `SKILL` range. Mining's first point is Erebor's 1010, so it starts very slowly.
+
+Not ported: Sphere's skill-sum degrade, as `skillsum` is 30000 on every profession. Stat gains by use: every skill has `BONUSSTATS=0` on Erebor.

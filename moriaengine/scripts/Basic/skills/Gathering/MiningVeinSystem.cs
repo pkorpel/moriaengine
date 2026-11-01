@@ -114,6 +114,7 @@ namespace SteamEngine.CompiledScripts {
 	public static class MiningVeinSystem {
 
 		private class Vein {
+			public RegionResourceDef Resource;
 			public OreTier AssignedOre;
 			public int RemainingPool;
 			public double RegenReadyAtSeconds;
@@ -159,9 +160,7 @@ namespace SteamEngine.CompiledScripts {
 				vein.CaveInBlocked = false; //20-hour safety-net auto-clear elapsed
 			}
 
-			if (vein.Untouched || (vein.RemainingPool <= 0 && Globals.TimeInSeconds >= vein.RegenReadyAtSeconds)) {
-				AssignFreshOre(vein, mapPlane, x, y);
-			}
+			AssignIfDue(vein, mapPlane, x, y);
 
 			if (vein.RemainingPool <= 0) {
 				return null; //still exhausted, regen hasn't elapsed yet
@@ -257,9 +256,23 @@ namespace SteamEngine.CompiledScripts {
 		/// leaves the spot empty until that resource's REGEN, then it rolls again (Sphere's
 		/// resource spot). A resource that isn't one of the OreTiers (sand, gems...) gets a
 		/// tier built from its own archive values.</summary>
+		private static void AssignIfDue(Vein vein, byte mapPlane, int x, int y) {
+			if (vein.Untouched || (vein.RemainingPool <= 0 && Globals.TimeInSeconds >= vein.RegenReadyAtSeconds)) {
+				AssignFreshOre(vein, mapPlane, x, y);
+			}
+		}
+
+		/// <summary>#962 - how hard this try is, by what the spot holds. Nothing there takes no skill.</summary>
+		public static int RollDifficulty(byte mapPlane, int x, int y) {
+			Vein vein = GetOrCreateVein(mapPlane, x, y);
+			AssignIfDue(vein, mapPlane, x, y);
+			return (vein.Resource == null) ? 0 : vein.Resource.RollDifficulty();
+		}
+
 		private static void AssignFreshOre(Vein vein, byte mapPlane, int x, int y) {
 			vein.Untouched = false;
 			RegionResourceDef resource = RegionResourceSystem.Pick(mapPlane, x, y, "t_rock");
+			vein.Resource = resource;
 			if ((resource == null) || resource.IsNothing) {
 				vein.AssignedOre = null;
 				vein.RemainingPool = 0;

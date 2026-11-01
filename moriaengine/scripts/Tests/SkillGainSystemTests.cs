@@ -61,7 +61,7 @@ namespace SteamEngine.CompiledScripts {
 			int before = self.GetRealSkillValue(skill);
 			int gains = 0;
 			for (int i = 0; i < attempts; i++) {
-				if (SkillGainSystem.TryGainSkill(self, skill)) {
+				if (SkillGainSystem.TryGainSkill(self, skill, 100)) {
 					gains++;
 				}
 			}
@@ -84,7 +84,7 @@ namespace SteamEngine.CompiledScripts {
 
 			int gains = 0;
 			for (int i = 0; i < attempts; i++) {
-				if (SkillGainSystem.TryGainSkill(npc, skill)) {
+				if (SkillGainSystem.TryGainSkill(npc, skill, 100)) {
 					gains++;
 				}
 			}
@@ -104,7 +104,7 @@ namespace SteamEngine.CompiledScripts {
 
 			int gains = 0;
 			for (int i = 0; i < attempts; i++) {
-				if (SkillGainSystem.TryGainSkill(self, skill)) {
+				if (SkillGainSystem.TryGainSkill(self, skill, 100)) {
 					gains++;
 				}
 			}

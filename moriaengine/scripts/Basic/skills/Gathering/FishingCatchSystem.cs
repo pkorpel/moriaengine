@@ -87,14 +87,7 @@ namespace SteamEngine.CompiledScripts {
 		/// spot's own bookkeeping - does NOT create any item; the caller creates whatever the result
 		/// names. ItemDef may be null if a defname has no matching content (caller fails safe).</summary>
 		public static CatchResult Catch(Character fisher, byte mapPlane, int x, int y) {
-			Spot spot;
-			if (!spots.TryGetValue((mapPlane, x, y), out spot)) {
-				spot = new Spot();
-				spots[(mapPlane, x, y)] = spot;
-			}
-			if (spot.Untouched || ((spot.RemainingPool <= 0) && (Globals.TimeInSeconds >= spot.RegenReadyAtSeconds))) {
-				Assign(spot, mapPlane, x, y);
-			}
+			Spot spot = FreshSpot(mapPlane, x, y);
 			if (spot.RemainingPool <= 0) {
 				return new CatchResult(CatchKind.Nothing, null, null);
 			}
@@ -117,6 +110,24 @@ namespace SteamEngine.CompiledScripts {
 				return new CatchResult(CatchKind.JunkCrate, crate, null);
 			}
 			return new CatchResult(CatchKind.Fish, caught.ReapDef, null);
+		}
+
+		private static Spot FreshSpot(byte mapPlane, int x, int y) {
+			Spot spot;
+			if (!spots.TryGetValue((mapPlane, x, y), out spot)) {
+				spot = new Spot();
+				spots[(mapPlane, x, y)] = spot;
+			}
+			if (spot.Untouched || ((spot.RemainingPool <= 0) && (Globals.TimeInSeconds >= spot.RegenReadyAtSeconds))) {
+				Assign(spot, mapPlane, x, y);
+			}
+			return spot;
+		}
+
+		/// <summary>#962 - how hard this try is, by what the spot holds. Nothing there takes no skill.</summary>
+		public static int RollDifficulty(byte mapPlane, int x, int y) {
+			Spot spot = FreshSpot(mapPlane, x, y);
+			return (spot.Resource == null) ? 0 : spot.Resource.RollDifficulty();
 		}
 
 		private static void Assign(Spot spot, byte mapPlane, int x, int y) {
