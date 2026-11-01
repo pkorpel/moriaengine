@@ -210,6 +210,7 @@ namespace SteamEngine.CompiledScripts {
 			this.Friends.Clear();
 			this.CoOwners.Clear();
 			this.Owner = null;
+			this.BankActivated = false;
 		}
 
 		private static void DeleteIfEmpty(Container bag) {

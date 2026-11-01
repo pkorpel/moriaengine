@@ -405,7 +405,7 @@ namespace SteamEngine.CompiledScripts {
 			SecureTrade.CancelAllFor(this, "logged out");
 
 			AbstractAccount acc = this.Account;
-			double delay = ((acc != null) && (acc.PLevel >= Globals.PlevelOfGM)) ? 0 : LogoutSettings.instance.logoutDelaySeconds;
+			double delay = ((acc != null) && (acc.PLevel >= Globals.PlevelOfGM)) ? 0 : HouseEvents.LogoutDelayFor(this);
 			this.AddTimer(charLingeringTimerTK, new CharLingeringTimer()).DueInSeconds = delay;
 
 			//if (DbManager.Config.useDb) {

@@ -1387,6 +1387,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!this.Flag_Dead) {
 
 				Notoriety.RegisterMurder(this, killedBy);
+				HouseEvents.OnDeath(this, killedBy);
 				this.Trigger_HostileAction(killedBy);
 				this.Trigger_Disrupt();
 
