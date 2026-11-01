@@ -12,7 +12,7 @@ KEY="Archery"
 //BONUS_DEX=95
 //BONUS_INT=5
 //BONUSSTATS=10
-ADVRATE=10.0,200.0,800.0
+ADVRATE=0 //0fffffff on Erebor: no gain by use
 
 [WeaponSkillDef 40]
 DEFNAME=Skill_Swordsmanship
@@ -26,7 +26,7 @@ KEY="Swordsmanship"
 //BONUS_DEX=50
 //BONUS_INT=0
 //BONUSSTATS=10
-ADVRATE=10.0,150.0,600.0
+ADVRATE=0 //0fffffff on Erebor: no gain by use
 
 [WeaponSkillDef 41]
 DEFNAME=Skill_Macefighting
@@ -40,7 +40,7 @@ KEY="Macefighting"
 //BONUS_DEX=20
 //BONUS_INT=0
 //BONUSSTATS=10
-ADVRATE=10.0,150.0,600.0
+ADVRATE=0 //0fffffff on Erebor: no gain by use
 
 [WeaponSkillDef 42]
 DEFNAME=Skill_Fencing
@@ -54,7 +54,7 @@ KEY="Fencing"
 //BONUS_DEX=80
 //BONUS_INT=0
 //BONUSSTATS=10
-ADVRATE=10.0,150.0,600.0
+ADVRATE=0 //0fffffff on Erebor: no gain by use
 
 [WeaponSkillDef 43]
 DEFNAME=Skill_Wrestling
@@ -68,7 +68,7 @@ KEY="Wrestling"
 //BONUS_DEX=50
 //BONUS_INT=0
 //BONUSSTATS=10
-ADVRATE=8.5,120.0,680.0
+ADVRATE=0 //0fffffff on Erebor: no gain by use
 
 [WeaponSkillDef 50] //XBow - stand, used to be Focus
 DEFNAME=Skill_Marksmanship

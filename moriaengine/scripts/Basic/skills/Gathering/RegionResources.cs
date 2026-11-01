@@ -44,6 +44,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public int SkillMin { get { return this.skillMin; } }
+
+		/// <summary>#962 - Sphere's Skill_NaturalResource_Setup: this attempt's difficulty, in tenths.</summary>
+		public int RollDifficulty() {
+			return this.skillMin + Globals.dice.Next(Math.Max(1, this.skillMax - this.skillMin));
+		}
+
 		public int SkillMax { get { return this.skillMax; } }
 		public int AmountMin { get { return this.amountMin; } }
 		public int AmountMax { get { return this.amountMax; } }

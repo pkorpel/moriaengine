@@ -134,7 +134,21 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	public static class LumberjackingVeinSystem {
 
+		private static void AssignIfDue(Vein vein, byte mapPlane, int x, int y) {
+			if (vein.Untouched || (vein.RemainingPool <= 0 && Globals.TimeInSeconds >= vein.RegenReadyAtSeconds)) {
+				AssignFreshWood(vein, mapPlane, x, y);
+			}
+		}
+
+		/// <summary>#962 - how hard this try is, by what the spot holds. Nothing there takes no skill.</summary>
+		public static int RollDifficulty(byte mapPlane, int x, int y) {
+			Vein vein = GetOrCreateVein(mapPlane, x, y);
+			AssignIfDue(vein, mapPlane, x, y);
+			return (vein.Resource == null) ? 0 : vein.Resource.RollDifficulty();
+		}
+
 		private class Vein {
+			public RegionResourceDef Resource;
 			public WoodTier AssignedWood;
 			public int RemainingPool;
 			public double RegenReadyAtSeconds;
@@ -150,9 +164,7 @@ namespace SteamEngine.CompiledScripts {
 		public static ItemDef Chop(Character chopper, byte mapPlane, int x, int y) {
 			Vein vein = GetOrCreateVein(mapPlane, x, y);
 
-			if (vein.Untouched || (vein.RemainingPool <= 0 && Globals.TimeInSeconds >= vein.RegenReadyAtSeconds)) {
-				AssignFreshWood(vein, mapPlane, x, y);
-			}
+			AssignIfDue(vein, mapPlane, x, y);
 
 			if (vein.RemainingPool <= 0) {
 				return null; //still exhausted, regen hasn't elapsed yet
@@ -204,6 +216,7 @@ namespace SteamEngine.CompiledScripts {
 		private static void AssignFreshWood(Vein vein, byte mapPlane, int x, int y) {
 			vein.Untouched = false;
 			RegionResourceDef resource = RegionResourceSystem.Pick(mapPlane, x, y, "t_tree");
+			vein.Resource = resource;
 			if ((resource == null) || resource.IsNothing) {
 				vein.AssignedWood = null;
 				vein.RemainingPool = 0;
