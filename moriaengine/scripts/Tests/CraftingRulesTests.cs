@@ -122,7 +122,7 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestCraftOpenMenu(Character self) {
-			self.SelectSkill(SkillName.Blacksmith);
+			CraftingSkillDef.OpenMenu(self, SkillName.Blacksmith);
 			Console.WriteLine("CRAFT_OPENED:");
 		}
 
@@ -325,6 +325,25 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			Console.WriteLine("STAGE_SCRIBE: noMana=" + noMana + " mage=" + mage + " thief=" + thief + " mana=" + player.Mana + " noRecipe=" + noRecipe);
+		}
+
+		/// <summary>The blue button of the skill list.</summary>
+		[SteamFunction]
+		public static void TestStageButton(Character self) {
+			self.SelectSkill(SkillName.Blacksmith);
+			Console.WriteLine("STAGE_BUTTON:");
+		}
+
+		[SteamFunction]
+		public static void TestStageCookReady(Character self) {
+			Give(self, "i_bird_raw", 3);
+			uint raw = 0;
+			foreach (AbstractItem item in self.Backpack) {
+				if (item.Def == ThingDef.GetByDefname("i_bird_raw")) {
+					raw = (uint) item.FlaggedUid;
+				}
+			}
+			Console.WriteLine("STAGE_COOK: raw=" + raw + " forge=" + (uint) forge.FlaggedUid + " pack=" + (uint) self.Backpack.FlaggedUid);
 		}
 
 		/// <summary>What failing at a given loss takes from 19 ingots of a real recipe.</summary>

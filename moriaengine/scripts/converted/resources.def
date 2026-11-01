@@ -781,6 +781,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1ce5
 WEIGHT = 50
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_arm_right
 //VALUE = 3 // commented out by Converter 
 
@@ -793,6 +794,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1ce6
 WEIGHT = 220
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_upper_body
 
 [ItemDef 0x1cdf]
@@ -804,6 +806,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1ce7
 WEIGHT = 180
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_leggings
 
 [ItemDef 0x1ce0]
@@ -815,6 +818,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1ce8
 WEIGHT = 200
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_torso_2
 
 [ItemDef 0x1ce1]
@@ -836,6 +840,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1cec
 WEIGHT = 180
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_leg
 
 [ItemDef 0x1ce3]
@@ -896,6 +901,7 @@ DESCRIPTION = Heart
 TYPE = t_MEAT_RAW
 WEIGHT = 50
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_heart
 //VALUE = 1 // commented out by Converter 
 
@@ -907,6 +913,7 @@ DESCRIPTION = Liver
 TYPE = t_MEAT_RAW
 WEIGHT = 50
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_liver
 //VALUE = 1 // commented out by Converter 
 
@@ -918,6 +925,7 @@ DESCRIPTION = Entrails
 TYPE = t_MEAT_RAW
 WEIGHT = 60
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_entrails
 //VALUE = 1 // commented out by Converter 
 
@@ -929,6 +937,7 @@ DESCRIPTION = Brain
 TYPE = t_MEAT_RAW
 WEIGHT = 80
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_brain
 //VALUE = 1 // commented out by Converter 
 
@@ -953,6 +962,7 @@ DupeList = 0x1dad
 WEIGHT = 200
 RESOURCES = 2 i_flesh_heart, 1 i_ribs_raw, 1 i_flesh_liver, 1 i_flesh_entrails, 1 i_blood_2 //nastaveni_cm_resources 
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_torso
 //VALUE = 1 // commented out by Converter 
 
@@ -977,6 +987,7 @@ DupeList = 0x1daf
 WEIGHT = 70
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 RESOURCES = 1 i_bone, 1 i_flesh //nastaveni_cm_resources 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_left_arm
 //VALUE = 1 // commented out by Converter 
 
@@ -990,6 +1001,7 @@ DupeList = 0x1db0
 WEIGHT = 70
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 RESOURCES = 1 i_bone, 1 i_flesh //nastaveni_cm_resources 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_right_arm
 //VALUE = 1 // commented out by Converter 
 
@@ -1003,6 +1015,7 @@ DupeList = 0x1db1
 WEIGHT = 110
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 RESOURCES = 1 i_bone, 1 i_flesh //nastaveni_cm_resources 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_left_leg
 //VALUE = 1 // commented out by Converter 
 
@@ -1016,6 +1029,7 @@ DupeList = 0x1db2
 WEIGHT = 110
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 RESOURCES = 1 i_bone, 1 i_flesh //nastaveni_cm_resources 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_flesh_right_leg
 //VALUE = 1 // commented out by Converter 
 

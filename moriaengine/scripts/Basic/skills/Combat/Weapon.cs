@@ -36,9 +36,15 @@ namespace SteamEngine.CompiledScripts {
 		//#962 - Erebor's t_cm_blacksmithing_target, given to a one-handed mace at @create
 		public override void OnUse(AbstractCharacter from) {
 			Player player = from as Player;
-			if ((player != null) && (this.Type != null) && (this.Type.Defname == "t_weapon_mace_smith") && (this.Layer == (int) LayerNames.Hand1)) {
-				player.Target(SingletonScript<Targ_SmithHammer>.Instance);
-				return;
+			if ((player != null) && (this.Layer == (int) LayerNames.Hand1)) {
+				if (CraftingSkillDef.IsOfType(this, "t_weapon_mace_smith")) {
+					player.Target(SingletonScript<Targ_SmithHammer>.Instance);
+					return;
+				}
+				if (CraftingSkillDef.IsOfType(this, "t_weapon_fence")) { //and t_cm_bowcrafting_target
+					player.Target(SingletonScript<Targ_BowcraftKnife>.Instance);
+					return;
+				}
 			}
 			base.OnUse(from);
 		}

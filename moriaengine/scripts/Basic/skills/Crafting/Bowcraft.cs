@@ -18,6 +18,16 @@
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
+	/// <summary>#962 - Erebor's bowcrafting_targon_item: a knife on wood, ingots or ammunition opens the menu.</summary>
+	public class Targ_BowcraftKnife : CompiledTargetDef {
+		protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
+			if (CraftingSkillDef.IsOfType(targetted as Item, "t_log", "t_ingot", "t_weapon_bolt", "t_weapon_bolt_jagged", "t_weapon_arrow")) {
+				CraftingSkillDef.OpenMenu(self, SkillName.Fletching);
+			}
+			return TargetResult.Done;
+		}
+	}
+
 	[ViewableClass]
 	public class BowcraftSkillDef : CraftingSkillDef {
 

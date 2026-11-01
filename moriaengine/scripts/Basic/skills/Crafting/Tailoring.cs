@@ -18,6 +18,16 @@
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
+	/// <summary>#962 - Erebor's i_sewing_kit: on cloth, a hide or leather it opens the menu.</summary>
+	public class Targ_SewingKit : CompiledTargetDef {
+		protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
+			if (CraftingSkillDef.IsOfType(targetted as Item, "t_cloth", "t_hide", "t_leather")) {
+				CraftingSkillDef.OpenMenu(self, SkillName.Tailoring);
+			}
+			return TargetResult.Done;
+		}
+	}
+
 	[ViewableClass]
 	public class TailoringSkillDef : CraftingSkillDef {
 
