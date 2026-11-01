@@ -136,4 +136,28 @@ house and if they're of its realm. An eviction turns it off again.
 Erebor's limits on leaping into a house, changing mask inside and stepping on tables outside houses aren't here: none of those abilities or rules are ported yet. When one
 is, check `FlaggedRegion.HouseNumber`, as Erebor's scripts check `region.tag(housenumber)`, which also covers stalls and fields.
 
-The rest of the system follows as #941 goes on.
+## Rental information
+
+`.rentalinfo [city]`, for GMs, or "Najemni informace" on a town stone for its mayor or Nazgul and for the General, lists a city's houses and their owners, 20 a page. Without a
+city it's the one the GM stands in. A city is `FlaggedRegion.City`, so Pelargir and Linhir count as Dol Amroth's. Who sees what:
+
+| Column | GM | Lord Nazgul | General | Mayor, Nazgul |
+|---|---|---|---|---|
+| Number, place, owner | yes | yes | yes | yes |
+| Town ban | yes | yes | yes | yes |
+| Realm ban | yes | yes | yes | |
+| Co-owners | yes | yes | | |
+| Friends | yes | | | |
+
+A town ban acts on the town you stand in. Bans can only be given to your own realm, unless you're a GM, and never to a GM, the General or the Lord Nazgul. A Gondor city's own
+citizens can't be town banned from here.
+
+`.HouseCitizens [city]`, for GMs, makes a city's house owners its citizens, by the same rules as "Udelat obcanem": Gondor's only, not blacklisted, not a citizen elsewhere.
+
+Differences from Erebor:
+
+- A house's city is the area holding it, not the sectors around it, so a house next to a city isn't counted in it.
+- No thief mask colours, as masks aren't ported.
+- The list is read anew each time, so there's no `rentalclear`.
+
+Multis, deeds, stalls and fields are planned for later. Rent is built so they can plug in.
