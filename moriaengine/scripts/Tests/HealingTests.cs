@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 			self.Account.PLevel = 1;
 			player.Profession = ProfessionDef.GetByDefname("profession_" + sa.Args.Trim('"'));
 			foreach (SkillName skill in new[] { SkillName.Healing, SkillName.Veterinary, SkillName.Anatomy, SkillName.AnimalLore }) {
-				self.SetRealSkillValue((int) skill, 2000);
+				self.SetRealSkillValue((int) skill, 1100);
 			}
 			self.Hits = (short) (self.MaxHits / 2);
 			if ((clean == null) || clean.IsDeleted) {

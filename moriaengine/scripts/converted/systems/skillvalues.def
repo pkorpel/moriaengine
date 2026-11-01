@@ -1,0 +1,258 @@
+[SkillValuesDef skillvalues_SKILL_ALCHEMY]
+Skill = SKILL_ALCHEMY
+Delay = 2.0, 1.0
+Effect = 0.0, 1000.0
+AdvRate = 12.5, 500.0, 2100.0
+
+[SkillValuesDef skillvalues_SKILL_ANATOMY]
+Skill = SKILL_ANATOMY
+Delay = 2.0, 1.0
+Effect = 155.0, 155.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_ANIMAL_LORE]
+Skill = SKILL_ANIMAL_LORE
+Delay = 2.0, 1.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_APPRAISE]
+Skill = SKILL_APPRAISE
+Delay = 2.0, 2.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Archery]
+Skill = Skill_Archery
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_ARMSLORE]
+Skill = SKILL_ARMSLORE
+Delay = 2.0, 2.0
+Effect = 76.0, 76.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_Begging]
+Skill = SKILL_Begging
+Delay = 2.0, 2.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_Blacksmith]
+Skill = SKILL_Blacksmith
+Delay = 1.0, 1.0
+AdvRate = 17.0, 760.0, 2300.0
+
+[SkillValuesDef skillvalues_Skill_Bowcraft]
+Skill = Skill_Bowcraft
+Delay = 2.0, 2.0
+AdvRate = 17.0, 760.0, 2600.0
+
+[SkillValuesDef skillvalues_Skill_Camping]
+Skill = Skill_Camping
+Delay = 2.0, 2.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Carpentry]
+Skill = Skill_Carpentry
+Delay = 1.0, 1.0
+AdvRate = 18.0, 800.0, 2700.0
+
+[SkillValuesDef skillvalues_SKILL_CARTOGRAPHY]
+Skill = SKILL_CARTOGRAPHY
+Delay = 2.0, 2.0
+AdvRate = 18.0, 600.0, 2500.0
+
+[SkillValuesDef skillvalues_Skill_Cooking]
+Skill = Skill_Cooking
+Delay = 2.0, 2.0
+AdvRate = 20.0, 800.0, 2200.0
+
+[SkillValuesDef skillvalues_Skill_DetectHidden]
+Skill = Skill_DetectHidden
+Delay = 8.0, 4.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Enticement]
+Skill = Skill_Discordance
+Delay = 1.5, 1.0
+Effect = 0.0, 3000.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_EvalInt]
+Skill = Skill_EvalInt
+Delay = 2.5, 2.5
+Effect = 100.0, 100.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Fencing]
+Skill = Skill_Fencing
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Fishing]
+Skill = Skill_Fishing
+Delay = 2.5, 2.5
+AdvRate = 18.5, 280.0, 2600.0
+
+[SkillValuesDef skillvalues_Skill_Forensics]
+Skill = Skill_Forensics
+Delay = 2.5, 2.5
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Healing]
+Skill = Skill_Healing
+Delay = 7.0, 3.0
+Effect = 0.0, 15.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Herding]
+Skill = Skill_Herding
+Delay = 2.5, 2.5
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Hiding]
+Skill = Skill_Hiding
+Delay = 3.0, 1.5
+Effect = 100.0, 100.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Inscription]
+Skill = Skill_Inscription
+Delay = 2.5, 2.5
+AdvRate = 14.0, 600.0, 2500.0
+
+[SkillValuesDef skillvalues_Skill_LockPick]
+Skill = Skill_LockPick
+Delay = 2.5, 2.5
+Effect = 100.0, 100.0
+AdvRate = 180.0, 800.0, 2600.0
+
+[SkillValuesDef skillvalues_SKILL_LUMBERJACK]
+Skill = SKILL_LUMBERJACK
+Delay = 1.0, 1.0
+AdvRate = 19.0, 650.0, 2700.0
+
+[SkillValuesDef skillvalues_Skill_Macefighting]
+Skill = Skill_Macefighting
+Effect = 100.0, 100.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Magery]
+Skill = Skill_Magery
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_MagicResist]
+Skill = Skill_MagicResist
+Effect = 100.0, 100.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_MEDITATION]
+Skill = SKILL_MEDITATION
+Delay = 1.0, 0.3
+Effect = 50.0, 50.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_MINING]
+Skill = SKILL_MINING
+Delay = 1.0, 1.0
+AdvRate = 14.0, 600.0, 2300.0
+
+[SkillValuesDef skillvalues_Skill_Musicianship]
+Skill = Skill_Musicianship
+Delay = 2.5, 2.5
+Effect = 100.0, 100.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_Necromancy]
+Skill = SKILL_Necromancy
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_Parrying]
+Skill = SKILL_Parrying
+Effect = 945.0, 1050.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_PEACEMAKING]
+Skill = SKILL_PEACEMAKING
+Delay = 3.5, 2.5
+Effect = 0.0, 2000.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_POISONING]
+Skill = SKILL_POISONING
+Delay = 2.5, 2.5
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_PROVOCATION]
+Skill = SKILL_PROVOCATION
+Delay = 2.0, 1.5
+Effect = 0.0, 1000.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_REMOVE_TRAP]
+Skill = SKILL_REMOVE_TRAP
+Delay = 5.0, 2.0, 1.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Snooping]
+Skill = Skill_Snooping
+Delay = 2.0, 2.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_SPIRITSPEAK]
+Skill = SKILL_SPIRITSPEAK
+Delay = 2.0, 2.0
+Effect = 25.0, 25.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Stealing]
+Skill = Skill_Stealing
+Delay = 2.5, 2.5
+AdvRate = 0
+
+[SkillValuesDef skillvalues_SKILL_STEALTH]
+Skill = SKILL_STEALTH
+Delay = 2.5, 2.5
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Swordsmanship]
+Skill = Skill_Swordsmanship
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Tactics]
+Skill = Skill_Tactics
+Effect = 303.0, 303.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Tailoring]
+Skill = Skill_Tailoring
+Delay = 2.5, 2.5
+AdvRate = 13.0, 550.0, 2200.0
+
+[SkillValuesDef skillvalues_Skill_Taming]
+Skill = Skill_Taming
+Delay = 2.0, 2.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_skill_tasteid]
+Skill = skill_tasteid
+Delay = 2.5, 2.5
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Tinkering]
+Skill = Skill_Tinkering
+Delay = 2.5, 2.5
+AdvRate = 16.0, 700.0, 2300.0
+
+[SkillValuesDef skillvalues_Skill_Tracking]
+Skill = Skill_Tracking
+Delay = 1.0, 1.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Vet]
+Skill = Skill_Vet
+Delay = 2.5, 2.5
+Effect = 5.0, 50.0
+AdvRate = 0
+
+[SkillValuesDef skillvalues_Skill_Wrestling]
+Skill = Skill_Wrestling
+AdvRate = 0
+

@@ -310,7 +310,7 @@ StartByMacroEnabled = true
 //BONUS_DEX=30
 //BONUS_INT=0
 //BONUSSTATS=20
-ADVRATE=1010.0,400.0,1600.0 //Erebor's own
+ADVRATE=14.0,600.0,2300.0 //Erebor's live value
 //literal 1010 - GM-tunable via #330 regardless)
 //VALUES=1,10,80
 
