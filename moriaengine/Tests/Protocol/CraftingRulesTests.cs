@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
 
@@ -45,6 +46,23 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void APlayerMakesSomethingFromTheMenu() {
 			using var client = CommandPermissionTests.Connect("craftmenu", "Menu Tester");
+			//every item of every menu can be made, and metal and wood look it. Spruce is undyed on Erebor, as plain iron things are
+			Assert.Contains("coloured=", this.Ask(client, ".TestCraftColours", "CRAFT_COLOURS:"));
+			Assert.Contains("CRAFT_UNCREATABLE: 0 ", this.fixture.GameOutputSnapshot());
+
+			//a bundle unpacks, keeping who made it
+			string bundles = this.Ask(client, ".TestBundleMake \"i_arrow_shafts_copper_2 3\"", "BUNDLE_MADE:");
+			client.SendDoubleClick(uint.Parse(Regex.Match(bundles, @"pack=(\d+)").Groups[1].Value)); //a client can only reach into what it has open
+			Thread.Sleep(200);
+			uint shafts = uint.Parse(Regex.Match(bundles, @"uid=(\d+)").Groups[1].Value);
+			client.SendDoubleClick(shafts);
+			Thread.Sleep(400);
+			Assert.Contains("amount=6 signed=True", this.Ask(client, ".TestBundleReport \"i_arrow_shaft_copper\"", "BUNDLE_LOOSE:"));
+			uint piercing = uint.Parse(Regex.Match(this.Ask(client, ".TestBundleMake \"i_arrow_piercing_multi_copper 1\"", "BUNDLE_MADE:"), @"uid=(\d+)").Groups[1].Value);
+			client.SendDoubleClick(piercing);
+			Thread.Sleep(400);
+			Assert.Contains("amount=20", this.Ask(client, ".TestBundleReport \"i_arrow_piercing_copper\"", "BUNDLE_LOOSE:"));
+
 			string menus = this.Ask(client, ".TestCraftMenus", "CRAFT_MENUS:");
 			Assert.Contains("first=Copper/Spruce", menus); //Sphere shows the last in first
 			Assert.Contains("last=Ingots", menus);
