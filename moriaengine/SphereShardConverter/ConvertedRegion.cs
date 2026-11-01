@@ -53,6 +53,8 @@ namespace SteamEngine.Converter {
 				new LineImplTask("group", PassThrough),
 				new LineImplTask("tag.realm", ParseRealmTag),
 				new LineImplTask("tag.jmeno_mesta", ParseCityTag),
+				new LineImplTask("tag.housenumber", ParseHouseNumberTag),
+				new LineImplTask("tag.houserealm", ParseHouseRealmTag),
 
 				new LineImplTask("p", ParseP), 
 				new LineImplTask("rect", ParseRect), 
@@ -135,6 +137,14 @@ namespace SteamEngine.Converter {
 
 		private static void ParseRealmTag(ConvertedDef def, PropsLine line) {
 			def.Set("Realm", line.Value.Trim(), line.Comment);
+		}
+
+		private static void ParseHouseNumberTag(ConvertedDef def, PropsLine line) {
+			def.Set("HouseNumber", line.Value.Trim(), line.Comment);
+		}
+
+		private static void ParseHouseRealmTag(ConvertedDef def, PropsLine line) {
+			def.Set("HouseRealm", line.Value.Trim(), line.Comment);
 		}
 
 		private static void ParseCityTag(ConvertedDef def, PropsLine line) {
