@@ -123,4 +123,17 @@ Erebor did this with doorstep tiles (`i_duch_dlazba`), which aren't in the archi
 Where a house overlaps a city as an equal in the region tree, as 17 do, the smaller region now wins the tile, as in Sphere. Before this those houses had no
 tile of their own and `r_playerhouse` never ran in them.
 
+## House bank
+
+"Aktivovat banku" on the menu costs 100k once (`.settings`), and anyone who sees the menu can pay. After that, "Otevrit banku" opens the user's own bank box, from inside the
+house and if they're of its realm. An eviction turns it off again.
+
+## Other effects
+
+- Logging out in a house, stall or field lingers 10 seconds instead of the usual delay (`.settings`).
+- A player killed in a house by a player is told who and where, and it's logged with `DOMOVNI ZONE`.
+
+Erebor's limits on leaping into a house, changing mask inside and stepping on tables outside houses aren't here: none of those abilities or rules are ported yet. When one
+is, check `FlaggedRegion.HouseNumber`, as Erebor's scripts check `region.tag(housenumber)`, which also covers stalls and fields.
+
 The rest of the system follows as #941 goes on.

@@ -28,5 +28,12 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Days a new owner has to pay the first rent. Erebor had none.</summary>
 		[SaveableData]
 		public int claimGraceDays = 3;
+
+		[SaveableData]
+		public int bankActivationPrice = 100000;
+
+		/// <summary>Seconds a character lingers after logging out in a house, stall or field, instead of the usual delay.</summary>
+		[SaveableData]
+		public double logoutDelaySeconds = 10;
 	}
 }
