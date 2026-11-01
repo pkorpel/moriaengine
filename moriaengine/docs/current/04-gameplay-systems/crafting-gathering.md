@@ -54,6 +54,10 @@ A batch is 6 of the source, times Tailoring / `skillPerBatch`, and at least 6. W
 
 A sewing kit on clothes repairs them from 40.0 Tailoring with thread on you, each repair taking a point of maximum durability. The roll is Erebor's to the letter and looks backwards: it fails when a roll of 0 to 1200 is under your skill, so a higher skill fails more. Failing takes a point of durability and a thread; succeeding restores all durability, takes magic thread if you have any, and no thread. Clothes reaching 0 are destroyed.
 
+### The queue (#962)
+
+Erebor's makestring. Starting needs light to work by (`WorkLight`, Erebor's `nolightfizz`): night sight, a lit thing within 2 tiles or in the off hand, else a roll against the light level. A count of -1 goes on until the materials run out. Items follow each other 0.1 s apart, a failure tries the same again. Something that can't be made ends the whole queue. A blow, another skill, a spell or using an item stops the queue, but what's in the hands gets finished; only starting another skill drops the work, at the cost of a failure.
+
 ### Stages (#962)
 
 As Sphere's `Skill_<name>` for each skill. Success is rolled at the start and shown after all the strokes, so a failure takes as long as a success. Difficulty 0 can't fail, a GM never does.

@@ -130,6 +130,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestCraftDaggers(Character self) {
 			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
 			queue.Enqueue(new CraftingSelection((ItemDef) ThingDef.GetByDefname("i_dagger_copper"), 5));
+			PlaceLight(self);
 			CraftingProcessPlugin.StartCrafting(self, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Blacksmith), queue));
 			Console.WriteLine("CRAFT_STARTED:");
 		}
@@ -200,6 +201,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestStageMake(Character self) {
 			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
 			queue.Enqueue(new CraftingSelection((ItemDef) ThingDef.GetByDefname("i_dagger_copper"), 1));
+			PlaceLight(self);
 			CraftingProcessPlugin.StartCrafting(self, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Blacksmith), queue));
 			Console.WriteLine("STAGE_STARTED:");
 		}
@@ -246,6 +248,7 @@ namespace SteamEngine.CompiledScripts {
 			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
 			string[] args = sa.Args.Trim('"').Split(' ');
 			queue.Enqueue(new CraftingSelection((ItemDef) ThingDef.GetByDefname(args[0]), 1));
+			PlaceLight(self);
 			CraftingProcessPlugin.StartCrafting(self, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName((SkillName) Enum.Parse(typeof(SkillName), args[1])), queue));
 			Console.WriteLine("STAGE_STARTED:");
 		}
@@ -275,6 +278,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Profession = ProfessionDef.GetByDefname("profession_thief");
 			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
 			queue.Enqueue(new CraftingSelection(agility, 1));
+			PlaceLight(player);
 			CraftingProcessPlugin.StartCrafting(player, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Alchemy), queue));
 			Console.WriteLine("STAGE_BREW: thief=" + thief + " mage=" + mage);
 		}
@@ -317,6 +321,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Profession = ProfessionDef.GetByDefname("profession_mage");
 			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
 			queue.Enqueue(new CraftingSelection(scroll, 1));
+			PlaceLight(player);
 			CraftingProcessPlugin.StartCrafting(player, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Inscribe), queue));
 			int noRecipe = 0;
 			foreach (SpellDef one in SpellDef.AllSpellDefs) {
@@ -397,6 +402,83 @@ namespace SteamEngine.CompiledScripts {
 				Destroyable clothes = (Destroyable) shirt;
 				Console.WriteLine("CLOTH_SHIRT: durability=" + clothes.Durability + "/" + clothes.MaxDurability);
 			}
+		}
+
+		private static Item candle;
+
+		//the check of a light rolls even by day: a candle at hand settles it
+		private static void PlaceLight(Character self) {
+			if ((candle != null) && !candle.IsDeleted) {
+				candle.Delete();
+			}
+			candle = (Item) ((ItemDef) ThingDef.GetByDefname("i_candle_lit")).Create(self.Backpack);
+			candle.P(self.X, self.Y, self.Z, self.M);
+		}
+
+		private static int dayLight = -1, nightLight, undergroundLight;
+
+		/// <summary>A plain bowyer, with logs to make shafts of.</summary>
+		[SteamFunction]
+		public static void TestQueueSetup(Character self, ScriptArgs sa) {
+			self.Account.PLevel = 1;
+			self.SetRealSkillValue((int) SkillName.Fletching, 1000);
+			PlaceLight(self);
+			Give(self, "i_log_copper", int.Parse(sa.Args.Trim('"')));
+			Console.WriteLine("QUEUE_SETUP: pack=" + (uint) self.Backpack.FlaggedUid);
+		}
+
+		[SteamFunction]
+		public static void TestQueueMake(Character self, ScriptArgs sa) {
+			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
+			queue.Enqueue(new CraftingSelection((ItemDef) ThingDef.GetByDefname("i_arrow_shaft_copper"), int.Parse(sa.Args.Trim('"'))));
+			CraftingProcessPlugin.StartCrafting(self, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Fletching), queue));
+			Console.WriteLine("QUEUE_MAKING:");
+		}
+
+		[SteamFunction]
+		public static void TestQueueCount(Character self) {
+			int shafts = 0, logs = 0;
+			foreach (AbstractItem item in self.Backpack) {
+				if (item.Def == ThingDef.GetByDefname("i_arrow_shaft_copper")) {
+					shafts += item.Amount;
+				} else if (item.Def == ThingDef.GetByDefname("i_log_copper")) {
+					logs += item.Amount;
+				}
+			}
+			Console.WriteLine("QUEUE_COUNT: shafts=" + shafts + " logs=" + logs);
+		}
+
+		[SteamFunction]
+		public static void TestQueueHurt(Character self) {
+			DamageManager.CauseDamage(self, self, DamageType.MagicMystical, 1);
+			Console.WriteLine("QUEUE_HURT:");
+		}
+
+		/// <summary>Darkness no roll gets through, or the light as it was. With no candle, or with one in the off hand.</summary>
+		[SteamFunction]
+		public static void TestQueueDark(Character self, ScriptArgs sa) {
+			string mode = sa.Args.Trim('"');
+			if (mode == "restore") {
+				LightAndWeather.DayLight = dayLight;
+				LightAndWeather.NightLight = nightLight;
+				LightAndWeather.UndergroundLight = undergroundLight;
+				PlaceLight(self);
+			} else {
+				if (dayLight < 0) {
+					dayLight = LightAndWeather.DayLight;
+					nightLight = LightAndWeather.NightLight;
+					undergroundLight = LightAndWeather.UndergroundLight;
+				}
+				LightAndWeather.DayLight = 64;
+				LightAndWeather.NightLight = 64;
+				LightAndWeather.UndergroundLight = 64;
+				candle.Delete();
+				if (mode == "candle") {
+					candle = (Item) ((ItemDef) ThingDef.GetByDefname("i_candle_lit")).Create(self.Backpack);
+					candle.P((ushort) (self.X + 2), self.Y, self.Z, self.M);
+				}
+			}
+			Console.WriteLine("QUEUE_DARK:");
 		}
 
 		/// <summary>What failing at a given loss takes from 19 ingots of a real recipe.</summary>

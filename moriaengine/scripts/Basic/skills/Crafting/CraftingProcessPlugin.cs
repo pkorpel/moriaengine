@@ -23,6 +23,10 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public partial class CraftingProcessPlugin {
 		private static PluginKey craftingProcessPK = PluginKey.Acquire("_craftingProcess_");
+		private const int CraftMessageColor = 0x57;
+		private const double SecondsBetweenItems = 0.1;
+
+		private bool stopped;
 
 		public static void UnInstallCraftingPlugin(Character self) {
 			CraftingProcessPlugin p = self.GetPlugin(craftingProcessPK) as CraftingProcessPlugin;
@@ -40,8 +44,23 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static void StartCrafting(Character self, CraftingOrder crOrd) {
+			if (!WorkLight.CheckWithMessage(self)) {
+				return;
+			}
+			Announce(self, crOrd);
 			CraftingProcessPlugin p = InstallCraftingPlugin(self, crOrd);
 			p.StartCrafting();
+		}
+
+		private static void Announce(Character self, CraftingOrder order) {
+			CraftSkillsLoc texts = Loc<CraftSkillsLoc>.Get(self.Language);
+			self.SysMessage(texts.MakingTheseThings, CraftMessageColor);
+			SimpleQueue<CraftingSelection> queue = order.SelectionQueue;
+			for (int i = queue.Count; i > 0; i--) { //round it goes, ending as it was
+				CraftingSelection selection = queue.Dequeue();
+				self.SysMessage(selection.ItemDef.Name, CraftMessageColor);
+				queue.Enqueue(selection);
+			}
 		}
 
 		private void StartCrafting() {
@@ -53,60 +72,64 @@ namespace SteamEngine.CompiledScripts {
 			ssa.PhaseSelect();
 		}
 
-		/// <summary>
-		/// Static method called after finishing with one item crafting - either successfull or failed. 
-		/// If success - lower the amount of items to be made and (if anything is yet to be made) start again. 
-		/// If failed - start the craftmaking again immediatelly
-		/// </summary>
-		internal static void MakeFinished(SkillSequenceArgs skillSeqArgs, bool canMakeAndHasMaterial) {
-			Character cont = skillSeqArgs.Self;
-			CraftingProcessPlugin pl = (CraftingProcessPlugin) cont.GetPlugin(craftingProcessPK);
+		public void On_Timer() {
+			this.StartCrafting();
+		}
 
-			if (skillSeqArgs.Success) {
-				CraftingSelection crSel = pl.craftingOrder.SelectionQueue.Peek(); //actual crafted item and its to-make count
-				crSel.Count -= 1;//lower the amount of items to be made
-				if (crSel.Count <= 0) {
-					pl.craftingOrder.SelectionQueue.Dequeue(); //remove from the queue
-				}
-				if (pl.craftingOrder.SelectionQueue.Count > 0) { //still something to be made
-					pl.StartCrafting(); //start again with next item
-				} else {//nothing left, finish crafting
-					cont.SysMessage(Loc<CraftSkillsLoc>.Get(cont.Language).FinishCrafting);
-					pl.Delete(); //same as calling "uninstall plugin"
-				}
-			} else {//failed, start again now
-				if (!canMakeAndHasMaterial) {//missing necessary resources or material - remove this item from the queue and try another one (if any)
-					pl.craftingOrder.SelectionQueue.Dequeue(); //remove from the queue
-					if (pl.craftingOrder.SelectionQueue.Count > 0) { //still something to be made
-						pl.StartCrafting(); //start again with next item
-					} else {//nothing left, finish crafting
-						cont.SysMessage(Loc<CraftSkillsLoc>.Get(cont.Language).FinishCrafting);
-						pl.Delete(); //same as calling "uninstall plugin"
-					}
-				} else {//just failed and lost some material - next attempt
-					pl.StartCrafting();
+		/// <summary>#962 - Erebor's e_makestring: a blow, a spell or a skill stops what's queued, using an item
+		/// stops it sooner. What's in the hands gets finished.</summary>
+		public static void Stop(Character self, bool byUsingAnItem) {
+			CraftingProcessPlugin pl = self.GetPlugin(craftingProcessPK) as CraftingProcessPlugin;
+			if ((pl != null) && !pl.stopped) {
+				pl.stopped = true;
+				CraftSkillsLoc texts = Loc<CraftSkillsLoc>.Get(self.Language);
+				self.RedMessage(byUsingAnItem ? texts.MakingCutShort : texts.MakingStopped);
+				if (pl.Timer > 0) { //between two items, nothing's in the hands
+					pl.Delete();
 				}
 			}
 		}
 
-		internal static void MakeImpossible(SkillSequenceArgs skillSeqArgs) {
+		/// <summary>One attempt is over. Done with the count, or with a failure the same again, a moment later as Erebor's
+		/// i_make_delay. A negative count goes on until the materials end it.</summary>
+		internal static void MakeFinished(SkillSequenceArgs skillSeqArgs) {
 			Character cont = skillSeqArgs.Self;
 			CraftingProcessPlugin pl = (CraftingProcessPlugin) cont.GetPlugin(craftingProcessPK);
-
-			ItemDef iDefToMake = (ItemDef) skillSeqArgs.Param1;
-
-			pl.craftingOrder.SelectionQueue.Dequeue(); //remove the item from the queue
-			if (pl.craftingOrder.SelectionQueue.Count > 0) { //still something to be made
-				cont.SysMessage(string.Format(
-					Loc<CraftSkillsLoc>.Get(cont.Language).ResourcesLackingButContinue,
-					iDefToMake.Name));
-				pl.StartCrafting(); //start again with next item(s)
-			} else {
-				cont.SysMessage(string.Format(
-					Loc<CraftSkillsLoc>.Get(cont.Language).ResourcesLackingAndFinish,
-					iDefToMake.Name));
-				pl.Delete(); //same as calling "uninstall plugin"
+			if (pl == null) {
+				return;
 			}
+			if (pl.stopped) {
+				pl.Delete();
+				return;
+			}
+			CraftSkillsLoc texts = Loc<CraftSkillsLoc>.Get(cont.Language);
+			if (skillSeqArgs.Success) {
+				CraftingSelection crSel = pl.craftingOrder.SelectionQueue.Peek();
+				if (crSel.Count > 0) {
+					crSel.Count -= 1;
+					if (crSel.Count == 0) {
+						pl.craftingOrder.SelectionQueue.Dequeue();
+					}
+				}
+				if (pl.craftingOrder.SelectionQueue.Count == 0) {
+					cont.SysMessage(texts.FinishCrafting, CraftMessageColor);
+					pl.Delete();
+					return;
+				}
+			} else {
+				cont.SysMessage(texts.FailedTryAgain, CraftMessageColor);
+			}
+			pl.Timer = SecondsBetweenItems;
+		}
+
+		/// <summary>Erebor's makethis failing: what can't be made ends the whole queue, whatever follows in it.</summary>
+		internal static void MakeImpossible(SkillSequenceArgs skillSeqArgs) {
+			Character cont = skillSeqArgs.Self;
+			CraftSkillsLoc texts = Loc<CraftSkillsLoc>.Get(cont.Language);
+			cont.RedMessage(texts.NotEnoughResources);
+			cont.RedMessage(string.Format(texts.CantMakeThat, ((ItemDef) skillSeqArgs.Param1).Name));
+			cont.RedMessage(texts.MakingStopped);
+			UnInstallCraftingPlugin(cont);
 		}
 
 		private static CraftingProcessPlugin InstallCraftingPlugin(Character self, CraftingOrder craftingOrder) {
