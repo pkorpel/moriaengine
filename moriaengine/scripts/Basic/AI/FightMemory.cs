@@ -33,6 +33,19 @@ namespace SteamEngine.CompiledScripts {
 
 		private static readonly ConditionalWeakTable<Character, Entry> memories = new ConditionalWeakTable<Character, Entry>();
 
+		private static Character HealerOf(Character healed) {
+			object until = healed.GetTag(Bandaging.healedUntilTK);
+			if (until == null) {
+				return null;
+			}
+			if ((double) until > Globals.TimeInSeconds) {
+				return healed.GetTag(Bandaging.healedByTK) as Character;
+			}
+			healed.RemoveTag(Bandaging.healedUntilTK);
+			healed.RemoveTag(Bandaging.healedByTK);
+			return null;
+		}
+
 		public static void Record(Character victim, Character enemy) {
 			if ((victim == null) || (enemy == null) || (victim == enemy)) {
 				return;
@@ -40,6 +53,16 @@ namespace SteamEngine.CompiledScripts {
 			TimeSpan now = Globals.TimeAsSpan;
 			Remember(victim, enemy, now);
 			Remember(enemy, victim, now);
+			//#962 - f_addAllFightsForChar: a priest who healed one side shares in what the other side falls to
+			Character healer = HealerOf(enemy);
+			if (healer != null) {
+				Remember(victim, healer, now);
+			} else {
+				healer = HealerOf(victim);
+				if (healer != null) {
+					Remember(enemy, healer, now);
+				}
+			}
 		}
 
 		private static void Remember(Character self, Character opponent, TimeSpan now) {

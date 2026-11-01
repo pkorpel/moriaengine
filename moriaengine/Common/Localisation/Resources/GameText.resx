@@ -55,15 +55,6 @@
   <data name="AnimalLoreLoc_TargetWho" xml:space="preserve">
     <value>Co chce� zkoumat?</value>
   </data>
-  <data name="BandageSkillLoc_CantHealItems" xml:space="preserve">
-    <value>P�edm�ty nelze l��it.</value>
-  </data>
-  <data name="BandageSkillLoc_SelectHealingTarget" xml:space="preserve">
-    <value>Koho chce� l��it?</value>
-  </data>
-  <data name="BandageSkillLoc_YouHaveNoBandages" xml:space="preserve">
-    <value>Nem� u sebe band�e!</value>
-  </data>
   <data name="BleedingLoc_YourTargetIsBleeding" xml:space="preserve">
     <value>{0} krv�c�!</value>
   </data>
@@ -364,6 +355,174 @@
   <data name="CrimeLoc_Beware" xml:space="preserve">
     <value>Beware or I'll call the guards!</value>
   </data>
+  <data name="HealingLoc_NoBandagesOnYou" xml:space="preserve">
+    <value>Obvazy musis mit u sebe.</value>
+  </data>
+  <data name="HealingLoc_WhoToTreat" xml:space="preserve">
+    <value>Koho chces osetrit?</value>
+  </data>
+  <data name="HealingLoc_WashIn" xml:space="preserve">
+    <value>What do you want to wash these in?</value>
+  </data>
+  <data name="HealingLoc_OnlyShamans" xml:space="preserve">
+    <value>S timhle to umi jen samani!</value>
+  </data>
+  <data name="HealingLoc_Frozen" xml:space="preserve">
+    <value>You are frozen and cannot move.</value>
+  </data>
+  <data name="HealingLoc_MustNotRushHealing" xml:space="preserve">
+    <value>Leceni nesmis uspechat!</value>
+  </data>
+  <data name="HealingLoc_MustNotRushRaising" xml:space="preserve">
+    <value>Ozivovani nesmis uspechat!</value>
+  </data>
+  <data name="HealingLoc_InterruptedHealing" xml:space="preserve">
+    <value>Prerusil jsi leceni.</value>
+  </data>
+  <data name="HealingLoc_InterruptedRaisingMale" xml:space="preserve">
+    <value>Prerusil jsi ozivovani.</value>
+  </data>
+  <data name="HealingLoc_InterruptedRaisingFemale" xml:space="preserve">
+    <value>Prerusila jsi ozivovani.</value>
+  </data>
+  <data name="HealingLoc_TargetTooFar" xml:space="preserve">
+    <value>Cil je moc daleko.</value>
+  </data>
+  <data name="HealingLoc_NoSummons" xml:space="preserve">
+    <value>Nelze lecit summony.</value>
+  </data>
+  <data name="HealingLoc_CantSeeTarget" xml:space="preserve">
+    <value>Nevidis cil.</value>
+  </data>
+  <data name="HealingLoc_NotHurt" xml:space="preserve">
+    <value>{0} neni zranen.</value>
+  </data>
+  <data name="HealingLoc_TryingToHeal" xml:space="preserve">
+    <value>Pokousis se vylecit {0}.</value>
+  </data>
+  <data name="HealingLoc_HealingFaster" xml:space="preserve">
+    <value>Lecis rychleji!</value>
+  </data>
+  <data name="HealingLoc_HealingBetter" xml:space="preserve">
+    <value>Lecis lepe!</value>
+  </data>
+  <data name="HealingLoc_CantUseOnThat" xml:space="preserve">
+    <value>Na tohle nemuzes obvaz pouzit!</value>
+  </data>
+  <data name="HealingLoc_NotEnoughBandages" xml:space="preserve">
+    <value>Nemas dost obvazu!</value>
+  </data>
+  <data name="HealingLoc_BodyTooFar" xml:space="preserve">
+    <value>Telo je prilis daleko.</value>
+  </data>
+  <data name="HealingLoc_CantSeeBody" xml:space="preserve">
+    <value>Nevidis na telo.</value>
+  </data>
+  <data name="HealingLoc_CantRaiseThisWay" xml:space="preserve">
+    <value>Jako {0} nemuzes takhle ozivovat.</value>
+  </data>
+  <data name="HealingLoc_CantRaiseWithBandages" xml:space="preserve">
+    <value>Jako {0} nemuzes ozivovat pomoci obvazu.</value>
+  </data>
+  <data name="HealingLoc_NotGoodHealer" xml:space="preserve">
+    <value>Nejsi dost dobry lecitel.</value>
+  </data>
+  <data name="HealingLoc_NotLearnedInAnatomy" xml:space="preserve">
+    <value>Nejsi dost vzdelan v anatomii.</value>
+  </data>
+  <data name="HealingLoc_GhostTooFar" xml:space="preserve">
+    <value>Duch je prilis daleko.</value>
+  </data>
+  <data name="HealingLoc_GhostNotInWarMode" xml:space="preserve">
+    <value>Duch neni ve war modu.</value>
+  </data>
+  <data name="HealingLoc_ReturnToLife" xml:space="preserve">
+    <value>Necht se navrati k zivotu !</value>
+  </data>
+  <data name="HealingLoc_NotGoodVet" xml:space="preserve">
+    <value>Nejsi dost dobry veterinar.</value>
+  </data>
+  <data name="HealingLoc_NotLearnedInAnimals" xml:space="preserve">
+    <value>Nejsi dostatecne znalosti o zviratech.</value>
+  </data>
+  <data name="HealingLoc_BeyondHelp" xml:space="preserve">
+    <value>Tomu uz nepomuze ani svecena voda</value>
+  </data>
+  <data name="HealingLoc_NotAnAnimal" xml:space="preserve">
+    <value>Toto neni zvire.</value>
+  </data>
+  <data name="HealingLoc_Gutted" xml:space="preserve">
+    <value>Zvire je vykuchane.</value>
+  </data>
+  <data name="HealingLoc_TryingToRaiseAnimal" xml:space="preserve">
+    <value>Pokousis se ozivit mrtvolu zvirete.</value>
+  </data>
+  <data name="HealingLoc_HealingFailed" xml:space="preserve">
+    <value>Leceni se ti nepovedlo.</value>
+  </data>
+  <data name="HealingLoc_TreatmentFailed" xml:space="preserve">
+    <value>Osetreni se ti nepovedlo.</value>
+  </data>
+  <data name="HealingLoc_BleedingStopped" xml:space="preserve">
+    <value>Krvaceni zastaveno.</value>
+  </data>
+  <data name="HealingLoc_StoppedBleeding" xml:space="preserve">
+    <value>{0} prestal krvacet.</value>
+  </data>
+  <data name="HealingLoc_StoppedYourBleeding" xml:space="preserve">
+    <value>{0} zastavil tve krvaceni.</value>
+  </data>
+  <data name="HealingLoc_TreatedPerson" xml:space="preserve">
+    <value>{0} byl uspesne osetren</value>
+  </data>
+  <data name="HealingLoc_TreatedAnimal" xml:space="preserve">
+    <value>{0} byl uspesne osetren.</value>
+  </data>
+  <data name="HealingLoc_TreatedYou" xml:space="preserve">
+    <value>{0} te osetril.</value>
+  </data>
+  <data name="HealingLoc_RaisingFailedMale" xml:space="preserve">
+    <value>Selhal jsi v ozivovani.</value>
+  </data>
+  <data name="HealingLoc_RaisingFailedFemale" xml:space="preserve">
+    <value>Selhala jsi v ozivovani.</value>
+  </data>
+  <data name="HealingLoc_YouRaisedMale" xml:space="preserve">
+    <value>Ozivil jsi {0}.</value>
+  </data>
+  <data name="HealingLoc_YouRaisedFemale" xml:space="preserve">
+    <value>Ozivila jsi {0}.</value>
+  </data>
+  <data name="HealingLoc_RaisedYou" xml:space="preserve">
+    <value>Ozivil te {0}.</value>
+  </data>
+  <data name="HealingLoc_RaisedAnimal" xml:space="preserve">
+    <value>Oziveni uspesne.</value>
+  </data>
+  <data name="HealingLoc_AtLeastFirstLevel" xml:space="preserve">
+    <value>Musis byt alespon na prvni urovni.</value>
+  </data>
+  <data name="HealingLoc_OnlyPriest" xml:space="preserve">
+    <value>Toto umi pouzit pouze Knez.</value>
+  </data>
+  <data name="HealingLoc_OnlyShaman" xml:space="preserve">
+    <value>Toto umi pouzit pouze Saman.</value>
+  </data>
+  <data name="HealingLoc_BackToNormal" xml:space="preserve">
+    <value>Jsi zpatky v normalnim stavu.</value>
+  </data>
+  <data name="HealingLoc_HealFasterMale" xml:space="preserve">
+    <value>Nyni jsi schopen rychleji lecit bandazemi.</value>
+  </data>
+  <data name="HealingLoc_HealFasterFemale" xml:space="preserve">
+    <value>Nyni jsi schopna rychleji lecit bandazemi.</value>
+  </data>
+  <data name="HealingLoc_HealBetterMale" xml:space="preserve">
+    <value>Nyni jsi schopen lecit lepe.</value>
+  </data>
+  <data name="HealingLoc_HealBetterFemale" xml:space="preserve">
+    <value>Nyni jsi schopna lecit lepe.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
@@ -426,36 +585,6 @@
   </data>
   <data name="GmCommandsLoc_InvulOn" xml:space="preserve">
     <value>Flag_Invulnerable on (nothing can damage you)</value>
-  </data>
-  <data name="HealingLoc_HealerFailedToHealYou" xml:space="preserve">
-    <value>{0} selhal p�i pokusu t� o�et�it!</value>
-  </data>
-  <data name="HealingLoc_HealingAborted" xml:space="preserve">
-    <value>L��en� p�eru�eno</value>
-  </data>
-  <data name="HealingLoc_HealingFailed" xml:space="preserve">
-    <value>L��en� se ti nezda�ilo!</value>
-  </data>
-  <data name="HealingLoc_HealingSkillNotApplicable" xml:space="preserve">
-    <value>Nelze l��it skillem Healing</value>
-  </data>
-  <data name="HealingLoc_HealingSucceeded" xml:space="preserve">
-    <value>L��en� se ti povedlo!</value>
-  </data>
-  <data name="HealingLoc_SuccessfullyStoppedBleeding" xml:space="preserve">
-    <value>Povedlo se ti zastavit krv�cen�</value>
-  </data>
-  <data name="HealingLoc_TargetIsAtMaxHitpoints" xml:space="preserve">
-    <value>{0} je zcela zdr�v!</value>
-  </data>
-  <data name="HealingLoc_YoureAtMaxHitpoints" xml:space="preserve">
-    <value>Jsi zcela zdr�v!</value>
-  </data>
-  <data name="HealingLoc_YoureStartingToHealTarget" xml:space="preserve">
-    <value>Za��n� l��it {0}.</value>
-  </data>
-  <data name="HealingLoc_YoureStartingToHealYourself" xml:space="preserve">
-    <value>Za��n� se l��it.</value>
   </data>
   <data name="HidingLoc_HidingAborted" xml:space="preserve">
     <value>Hiding aborted.</value>

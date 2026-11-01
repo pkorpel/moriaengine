@@ -58,6 +58,8 @@ namespace SteamEngine.CompiledScripts {
 			//#839: Erebor's quest journal, for everybody
 			this.commands["Questy"] = PLEVEL_PLAYER;
 			this.commands["AstralPower"] = PLEVEL_PLAYER;
+			this.commands["Enlightment"] = PLEVEL_PLAYER;
+			this.commands["Improvement"] = PLEVEL_PLAYER;
 			this.commands["Check"] = PLEVEL_PLAYER;
 			this.commands["Mesec"] = PLEVEL_PLAYER;
 			this.commands["Repair"] = PLEVEL_PLAYER;
