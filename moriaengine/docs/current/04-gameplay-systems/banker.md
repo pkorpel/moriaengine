@@ -69,3 +69,15 @@ Differences from Erebor:
   a negative purse. Here 500 stays in the purse.
 - The purse weighs 50 stones and the strongbox 90, as the archive's `WEIGHT=` says, though its
   description says weight 1.
+
+## Paying for things
+
+Everything that takes a player's money calls `GoldUtils.Pay`, Erebor's `[function pay]`. Use it for anything new that costs gold. The lower functions are private, so there's no other way.
+
+- A GM pays nothing, and is told so.
+- It takes all of the amount or none.
+- It draws on the pack, bags in it included, then the bank, or the bank alone with `PaymentSource` set to `BankOnly`. `.check` names the bank and `.mesec` the pack.
+- Locked containers don't count.
+- Short of money, the payer sees `Potrebujes X zlatych.`. `notEnough` replaces that, and `""` says nothing, for an NPC who answers in its own words.
+
+Not payments, and not through it: guards paid from a town's treasury, gold dropped in a rent chest, a banker's deposit and withdrawal, and a gate's item costs.

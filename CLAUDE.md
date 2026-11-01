@@ -1,5 +1,12 @@
 # moriaengine — working state
 
+## DONE (2026-11-01): #956 one function for a player's money (branch one-pay-function)
+
+User: everything that takes a player's money uses one function. GoldUtils.Pay, a port of Erebor's [function pay]: a GM pays nothing, pack then bank, "Potrebujes X zlatych." Gold in bags counts, as Erebor's rescount and our status window. Town.Pay, Player.Pay, PayFromBank, PayFromPack gone, TryPay and TryConsumeFrom gone, so the compiler keeps it to one.
+Not payments, stay: guards paid from a treasury, gold dropped in a rent chest, banker deposit/withdraw, VarGate's item costs.
+Behaviour changes: GMs now pay nothing at teachers, vendors and the house bank, and automatic tax; gold in bags pays. A GM's tax or guard fund still credits the treasury from nothing, as it did.
+Gotchas: scripts/Optional/PlayerVendor/PlayerVendor.cs isn't UTF-8: search tools skip it and Python must edit bytes. Only making the old functions private found it. Player vendors have no tests. A test account buying as a GM now gets it free: EconomyTests' helper makes them a player; VendorBuyRejectsInsufficientFunds would have passed on a free item, it checks the refusal now.
+
 ## DONE (2026-11-01): shrunk pets look like the pet (branch shrink-figurine-model)
 
 User: a shrunk zostrich showed a llama. i_pet_figurine had one fixed model; Erebor makes the item the creature's ICON names. The converter always kept ICON, but CharacterDef.Icon was an int field, so reading it threw for 1411 creatures: it's a Model field on AbstractCharacterDef now, like mountItem. PetFigurine.Keep sets the model, so eviction's shrunk pets get it too. c_ocs_guard_npc_killer and c_demon_lord have an ICON naming nothing, 499 have none: they keep the old picture. Figurines already made keep theirs.

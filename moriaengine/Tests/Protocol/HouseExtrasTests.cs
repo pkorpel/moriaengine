@@ -31,7 +31,7 @@ namespace SteamEngine.Tests.Protocol {
 			//it costs 100k, which isn't there yet
 			this.PressBank(owner, sign);
 			owner.SendGumpResponse(owner.ReadGumpDialogWithStrings(Wait).GumpUid, Yes);
-			SeeMessage(owner, "Nemas dost penez.");
+			SeeMessage(owner, "Potrebujes 100000 zlatych.");
 			Assert.Contains("bank=False gold=60000", this.Ask(owner, ".TestExtrasReport", "EXTRAS_REPORT:"));
 
 			this.Ask(owner, ".TestExtrasMoreGold", "EXTRAS_GOLD:");

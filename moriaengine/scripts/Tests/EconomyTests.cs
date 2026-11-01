@@ -96,6 +96,7 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestSetupVendorOnly(Character self) {
+			self.Account.PLevel = 1; //a GM pays nothing (#956)
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			ResetGold(self);
 			NPCDef vendorDef = ThingDef.GetByDefname("C_m_WEAPONSMITH") as NPCDef;

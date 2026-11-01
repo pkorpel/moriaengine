@@ -18,6 +18,11 @@
 using System.Collections.Generic;
 
 namespace SteamEngine.CompiledScripts {
+	/// <summary>Where a payment comes from: the pack then the bank, as Globals.PaymentSource says, or only one of them.</summary>
+	public enum PaySource {
+		Usual, Pack, Bank
+	}
+
 	/// <summary>
 	/// Shared gold payment/grant logic (enhancements Phase 14.5, issue #36) - every purchase
 	/// path (secure trade, player vendor, NPC vendor, banker withdraw/deposit) needs the same
@@ -97,41 +102,61 @@ namespace SteamEngine.CompiledScripts {
 			return amount - remaining;
 		}
 
-		/// <summary>
-		/// Tries to pay `amount` gold, honoring Globals.PaymentSource. All-or-nothing - if there
-		/// isn't enough available from the applicable source(s), nothing is deducted and this
-		/// returns false.
-		/// </summary>
-		public static bool TryPay(Character payer, uint amount) {
+		/// <summary>#956 - Erebor's [function pay], the one way money leaves a player: all of it or none. A GM pays nothing. Gold
+		/// in bags counts, as on the status window, but not behind a lock. Short of money it tells them so, in notEnough if
+		/// that's given, and "" says nothing, for whoever answers in their own words.</summary>
+		public static bool Pay(Character payer, long amount, PaySource source = PaySource.Usual, string notEnough = null) {
+			if (amount < 0) {
+				return false;
+			}
 			if (amount == 0) {
 				return true;
 			}
-
-			Container backpack = payer.Backpack;
-			BankBox bank = payer.Bank;
-
-			if (Globals.PaymentSource == Globals.PaymentSourceMode.BankOnly) {
-				if (CountGoldIn(bank) < amount) {
-					return false;
-				}
-				ConsumeGoldFrom(bank, amount);
+			if (payer.IsGM) {
+				payer.SysMessage("Jako GM nic neplatis.");
 				return true;
 			}
-
-			//BackpackFirst: draw from gold on hand first, then top up from the bank.
-			long backpackGold = CountGoldIn(backpack);
-			long bankGold = CountGoldIn(bank);
-			if (backpackGold + bankGold < amount) {
+			if ((source == PaySource.Usual) && (Globals.PaymentSource == Globals.PaymentSourceMode.BankOnly)) {
+				source = PaySource.Bank;
+			}
+			Container backpack = payer.Backpack;
+			BankBox bank = payer.Bank;
+			long inPack = (source == PaySource.Bank) ? 0 : AvailableIn(backpack);
+			long inBank = (source == PaySource.Pack) ? 0 : AvailableIn(bank);
+			if (inPack + inBank < amount) {
+				string message = notEnough ?? ("Potrebujes " + amount + " zlatych.");
+				if (message.Length > 0) {
+					payer.SysMessage(message);
+				}
 				return false;
 			}
-
-			long fromBackpack = System.Math.Min(backpackGold, amount);
-			ConsumeGoldFrom(backpack, fromBackpack);
-			long remainder = amount - fromBackpack;
-			if (remainder > 0) {
-				ConsumeGoldFrom(bank, remainder);
-			}
+			long fromPack = System.Math.Min(inPack, amount);
+			TakeFrom(backpack, fromPack);
+			TakeFrom(bank, amount - fromPack);
 			return true;
+		}
+
+		private static long AvailableIn(Container container) {
+			long total = 0;
+			foreach (AbstractItem item in container) {
+				total += CountGoldWithin(item);
+			}
+			return total;
+		}
+
+		//what CountGoldWithin counts, so bags too; returns what's still to take
+		private static long TakeFrom(AbstractItem container, long amount) {
+			foreach (AbstractItem item in new List<AbstractItem>(container)) {
+				if (amount <= 0) {
+					break;
+				}
+				if (item.Def == GoldDef) {
+					amount -= ((Item) item).Consume(amount);
+				} else if ((item is Container) && (CountGoldWithin(item) > 0)) {
+					amount = TakeFrom(item, amount);
+				}
+			}
+			return amount;
 		}
 
 		/// <summary>Grants `amount` gold into the recipient's backpack, merging into an existing pile there rather than fragmenting into a new stack if one's already present.</summary>
@@ -163,16 +188,7 @@ namespace SteamEngine.CompiledScripts {
 			((AbstractItem) cont).TryStackToAnyInside(goldItem);
 		}
 
-		/// <summary>All-or-nothing payment from this one container.</summary>
-		public static bool TryConsumeFrom(AbstractItem container, uint amount) {
-			if (CountGoldIn(container) < amount) {
-				return false;
-			}
-			ConsumeGoldFrom(container, amount);
-			return true;
-		}
-
-		/// <summary>Moves `amount` gold from the backpack to the bank. Unlike TryPay, this always
+		/// <summary>Moves `amount` gold from the backpack to the bank. Unlike Pay, this always
 		/// draws from the backpack specifically - deposit/withdraw are explicit direct transfers,
 		/// not a purchase, so Globals.PaymentSource (which only governs where purchases draw
 		/// from) doesn't apply here.</summary>

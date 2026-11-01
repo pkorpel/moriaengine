@@ -68,8 +68,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			NpcVendorStock.Entry entry = entries[index];
 			Player buyer = (Player) gi.Cont;
-			if (!buyer.Pay(entry.BuyPrice)) {
-				buyer.SysMessage("Thou dost not have enough gold.");
+			if (!GoldUtils.Pay(buyer, entry.BuyPrice, notEnough: "Thou dost not have enough gold.")) {
 				return;
 			}
 

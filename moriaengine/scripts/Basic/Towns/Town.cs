@@ -383,19 +383,6 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>Erebor's pay: the pack first, then the bank, and a GM pays nothing.</summary>
-		public static bool Pay(Character who, int amount) {
-			if (who.IsGM) {
-				who.SysMessage("Jako GM nic neplatis.");
-				return true;
-			}
-			if (GoldUtils.TryPay(who, (uint) amount)) {
-				return true;
-			}
-			who.SysMessage("Potrebujes " + amount + " zlatych.");
-			return false;
-		}
-
 		/// <summary>stan_se_obcanem</summary>
 		public bool TryJoin(Player player) {
 			if (player.Realm != Realm.Gondor) {
@@ -416,7 +403,7 @@ namespace SteamEngine.CompiledScripts {
 				player.RedMessage("Jiz jsi obcanem mesta " + current.Name);
 				return false;
 			}
-			if (!Pay(player, settings.citizenshipFee)) {
+			if (!GoldUtils.Pay(player, settings.citizenshipFee)) {
 				return false;
 			}
 			this.AddCitizen(player);
@@ -448,7 +435,7 @@ namespace SteamEngine.CompiledScripts {
 				player.SysMessage("Jako starosta se tesis privilegiu neplatit dane");
 			} else if ((citizen != null) && citizen.paidTax) {
 				player.SysMessage("Tve dane uz byly zaplaceny");
-			} else if ((citizen != null) && Pay(player, this.tax)) {
+			} else if ((citizen != null) && GoldUtils.Pay(player, this.tax)) {
 				this.MarkPaid(citizen);
 				player.SysMessage("Dan zaplacena");
 			}
@@ -465,7 +452,7 @@ namespace SteamEngine.CompiledScripts {
 			citizen.autoPay = !citizen.autoPay;
 			citizen.who.SysMessage(citizen.autoPay ? "Automaticka platba dani nastavena" : "Automaticka platba dani zrusena");
 			if (citizen.autoPay && !citizen.paidTax && (citizen.who != this.mayor)) {
-				if (Pay(citizen.who, this.tax)) {
+				if (GoldUtils.Pay(citizen.who, this.tax)) {
 					this.MarkPaid(citizen);
 					citizen.who.SysMessage("Dane zaplaceny");
 				}
@@ -497,7 +484,7 @@ namespace SteamEngine.CompiledScripts {
 				citizen.paidTax = false;
 				citizen.amountPaid = 0;
 				if (citizen.autoPay) {
-					if (GoldUtils.TryPay(citizen.who, (uint) this.tax)) {
+					if (GoldUtils.Pay(citizen.who, this.tax, notEnough: "")) {
 						this.MarkPaid(citizen);
 						citizen.who.SysMessage("Dane automaticky zaplaceny - " + this.tax + "gp");
 					} else {
@@ -611,7 +598,7 @@ namespace SteamEngine.CompiledScripts {
 			} else if (this.GetRank(player) >= RankCitizen) {
 				player.SysMessage("Jako obcan se tesis privilegiu neplatit za zmenu");
 				player.Home = home;
-			} else if (Pay(player, TownSettings.instance.homeChangeFee)) {
+			} else if (GoldUtils.Pay(player, TownSettings.instance.homeChangeFee)) {
 				this.treasury += TownSettings.instance.homeChangeFee;
 				player.Home = home;
 				player.SysMessage("Domovske mesto zmeneno");

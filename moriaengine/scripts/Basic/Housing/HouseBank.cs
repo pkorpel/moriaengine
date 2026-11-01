@@ -21,12 +21,10 @@ namespace SteamEngine.CompiledScripts {
 			if (!this.BankActivated) {
 				int price = HouseSettings.instance.bankActivationPrice;
 				D_TownConfirm.Ask(player, "Skutecne chces aktivovat banku v tomto dome a za to zaplatit " + price + " gp?", () => {
-					if (player.Pay(price)) {
+					if (GoldUtils.Pay(player, price)) {
 						this.BankActivated = true;
 						player.SysMessage("Domovni terminal aktivovan.");
 						D_House.Show(player, this, sign);
-					} else {
-						player.SysMessage("Nemas dost penez.");
 					}
 				});
 			} else if (player.Region != this.Area) {
