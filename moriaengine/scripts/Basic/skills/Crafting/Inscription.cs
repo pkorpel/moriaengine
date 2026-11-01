@@ -15,6 +15,7 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
@@ -23,6 +24,11 @@ namespace SteamEngine.CompiledScripts {
 
 		public InscriptionSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
+		}
+
+		protected override string FailMessage(Character self) {
+			CraftSkillsLoc texts = Loc<CraftSkillsLoc>.Get(self.Language);
+			return self.IsFemale ? texts.SpoiltScrollFemale : texts.SpoiltScrollMale;
 		}
 
 		protected override void DoStroke(SkillSequenceArgs skillSeqArgs) {

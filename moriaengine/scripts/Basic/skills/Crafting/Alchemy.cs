@@ -15,6 +15,7 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
@@ -31,9 +32,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		//do the pouring into the flask sound in additional to the standard functionality
-		protected override void DoSuccess(SkillSequenceArgs skillSeqArgs, Item newItem) {
-			skillSeqArgs.Self.Sound(0x240);
-			base.DoSuccess(skillSeqArgs, newItem);
+		protected override string FailMessage(Character self) {
+			return Loc<CraftSkillsLoc>.Get(self.Language).FailedPotion;
 		}
 	}
 }

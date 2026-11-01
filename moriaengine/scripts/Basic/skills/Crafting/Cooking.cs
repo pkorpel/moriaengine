@@ -15,11 +15,15 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public class CookingSkillDef : CraftingSkillDef {
+		protected override string FailMessage(Character self) {
+			return Loc<CraftSkillsLoc>.Get(self.Language).FailedFood;
+		}
 
 		public CookingSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {

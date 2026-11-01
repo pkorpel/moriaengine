@@ -25,6 +25,10 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
+		protected override string FailMessage(Character self) {
+			return SpoiltProduct(self);
+		}
+
 		//#962 - every stage, as Sphere's Skill_Bowcraft
 		protected override void DoEveryStage(SkillSequenceArgs skillSeqArgs) {
 			skillSeqArgs.Self.Sound(0x55);

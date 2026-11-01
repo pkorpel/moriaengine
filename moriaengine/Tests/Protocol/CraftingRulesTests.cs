@@ -130,6 +130,12 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("Tinkering=1-1@2.5/2.5", strokes);
 			Assert.Contains("Alchemy=1-1@2/1", strokes);
 
+			//a master can't fall below band 4, and a beginner tops out at band 2, as the bands and the +-2 say
+			string quality = this.Ask(client, ".TestStageQuality", "STAGE_QUALITY:");
+			Assert.Contains(" 0=0-2q", quality);
+			Assert.Contains(" 500=1-5q", quality);
+			Assert.Contains(" 1000=4-6q", quality);
+
 			string setup = this.Ask(client, ".TestStageSetup", "STAGE_SETUP:");
 			uint ingots = Uid(setup, "ingots"), hammer = Uid(setup, "hammer");
 			client.SendDoubleClick(Uid(setup, "pack")); //a client can only reach into what it has open
@@ -160,7 +166,7 @@ namespace SteamEngine.Tests.Protocol {
 			//at least 3 strokes of 1 s, whether it fails or not
 			var watch = System.Diagnostics.Stopwatch.StartNew();
 			this.Ask(client, ".TestStageMake", "STAGE_STARTED:");
-			WaitForMessage(client, "You create|You have failed");
+			WaitForMessage(client, "You create|Zkazil");
 			Assert.True(watch.Elapsed.TotalSeconds > 2.8, "took " + watch.Elapsed);
 
 			//the forge goes mid work: it stops and nothing's made
@@ -172,6 +178,17 @@ namespace SteamEngine.Tests.Protocol {
 			WaitForMessage(client, NoForge);
 			Thread.Sleep(1500);
 			Assert.Contains(before, this.Ask(client, ".TestCraftMade", "CRAFT_MADE:"));
+
+			//as a GM, who always succeeds: a made thing has a quality and a maker, a bundle comes out loose
+			this.Ask(client, ".TestStageForge \"3\"", "STAGE_FORGE:");
+			this.Ask(client, ".TestStageGm \"i_dagger_copper Blacksmith\"", "STAGE_STARTED:");
+			WaitForMessage(client, "You create");
+			Assert.Matches(@"count=\d+ quality=[1-9]\d* signed=True", this.Ask(client, ".TestStageMade \"i_dagger_copper\"", "STAGE_MADE:"));
+			this.Ask(client, ".TestStageGm \"i_arrow_shafts_copper_2 Fletching\"", "STAGE_STARTED:");
+			WaitForMessage(client, "You create");
+			Thread.Sleep(200);
+			Assert.Contains("count=2 ", this.Ask(client, ".TestStageMade \"i_arrow_shaft_copper\"", "STAGE_MADE:"));
+			Assert.Contains("count=0 ", this.Ask(client, ".TestStageMade \"i_arrow_shafts_copper_2\"", "STAGE_MADE:"));
 		}
 	}
 

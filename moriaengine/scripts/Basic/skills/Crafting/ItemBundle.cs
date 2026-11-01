@@ -17,6 +17,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		internal static void UnpackMade(Item made, Character maker) {
+			string type = (made.Type == null) ? null : made.Type.Defname;
+			if (type == "t_shaft_multi") {
+				Unpack(made, maker, CountOf(made));
+			} else if (type == "t_arrow_piercing_multi") {
+				Unpack(made, maker, t_arrow_piercing_multi.ArrowsInBundle);
+			}
+		}
+
 		internal static int CountOf(Item bundle) {
 			object count = bundle.Def.GetTag(bundleCountTK);
 			return (count == null) ? 1 : System.Convert.ToInt32(count, System.Globalization.CultureInfo.InvariantCulture);
@@ -31,7 +40,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_arrow_piercing_multi : CompiledTriggerGroup {
-		private const int ArrowsInBundle = 20;
+		internal const int ArrowsInBundle = 20;
 
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
 			ItemBundle.Unpack(self, dclicker, ArrowsInBundle);

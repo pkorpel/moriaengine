@@ -204,6 +204,52 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("STAGE_STARTED:");
 		}
 
+		/// <summary>The quality bands each skill reaches over many rolls, and a band's range.</summary>
+		[SteamFunction]
+		public static void TestStageQuality(Character self) {
+			string report = "";
+			foreach (int skill in new[] { 0, 500, 1000 }) {
+				int least = int.MaxValue, most = -1, worst = int.MaxValue, best = 0;
+				for (int i = 0; i < 5000; i++) {
+					int band = CraftingSkillDef.RollQualityBand(skill, Globals.dice.Next);
+					int quality = CraftingSkillDef.RollQuality(band, Globals.dice.Next);
+					least = Math.Min(least, band);
+					most = Math.Max(most, band);
+					worst = Math.Min(worst, quality);
+					best = Math.Max(best, quality);
+				}
+				report += " " + skill + "=" + least + "-" + most + "q" + worst + "-" + best;
+			}
+			Console.WriteLine("STAGE_QUALITY:" + report);
+		}
+
+		/// <summary>Makes one thing as a GM would, with everything to hand, and says what came of it.</summary>
+		[SteamFunction]
+		public static void TestStageMade(Character self, ScriptArgs sa) {
+			string[] args = sa.Args.Trim('"').Split(' ');
+			ItemDef def = (ItemDef) ThingDef.GetByDefname(args[0]);
+			int quality = 0, count = 0;
+			bool signed = false;
+			foreach (AbstractItem item in self.Backpack) {
+				if (item.Def == def) {
+					count += item.Amount;
+					quality = CraftingSkillDef.GetQuality((Item) item);
+					signed = CraftingSkillDef.GetCrafter((Item) item) == self;
+				}
+			}
+			Console.WriteLine("STAGE_MADE: count=" + count + " quality=" + quality + " signed=" + signed);
+		}
+
+		[SteamFunction]
+		public static void TestStageGm(Character self, ScriptArgs sa) {
+			self.Account.PLevel = 7;
+			SimpleQueue<CraftingSelection> queue = new SimpleQueue<CraftingSelection>();
+			string[] args = sa.Args.Trim('"').Split(' ');
+			queue.Enqueue(new CraftingSelection((ItemDef) ThingDef.GetByDefname(args[0]), 1));
+			CraftingProcessPlugin.StartCrafting(self, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName((SkillName) Enum.Parse(typeof(SkillName), args[1])), queue));
+			Console.WriteLine("STAGE_STARTED:");
+		}
+
 		/// <summary>What failing at a given loss takes from 19 ingots of a real recipe.</summary>
 		[SteamFunction]
 		public static void TestCraftFailLoss(Character self, ScriptArgs sa) {

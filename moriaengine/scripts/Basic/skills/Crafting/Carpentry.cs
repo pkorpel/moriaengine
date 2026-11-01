@@ -25,6 +25,10 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
+		protected override string FailMessage(Character self) {
+			return SpoiltProduct(self);
+		}
+
 		/// <summary>Sphere's Calc_GetRandVal(3) + 2, and the last stroke that only sounds.</summary>
 		public override int RollStrokes() {
 			return Globals.dice.Next(3) + 2 + 1;

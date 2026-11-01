@@ -25,6 +25,9 @@ namespace SteamEngine.CompiledScripts {
 	public abstract class CraftingSkillDef : SkillDef {
 		//#799 - who crafted an item (Erebor's tag.craftedby)
 		private static readonly TagKey crafterTK = TagKey.Acquire("_craftedBy_");
+		private static readonly TagKey qualityTK = TagKey.Acquire("_quality_");
+
+		private const int QualityBands = 7;
 
 		//Sphere's Calc_GetRandVal(50): a failed attempt loses this much of each resource, at most
 		private const int FailLossPercent = 50;
@@ -38,6 +41,46 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The character who crafted this item, or null.</summary>
 		public static Character GetCrafter(Item item) {
 			return item.GetTag(crafterTK) as Character;
+		}
+
+		/// <summary>#962 - Sphere's QUALITY, 0-200, 100 about average; made items only.</summary>
+		public static int GetQuality(Item item) {
+			object quality = item.GetTag(qualityTK);
+			return (quality == null) ? 0 : (int) quality;
+		}
+
+		/// <summary>#962 - Sphere's quality bands: skill picks the band, the roll moves it up or down by up to 2.
+		/// 0 shoddy, 3 average, 6 superior.</summary>
+		public static int RollQualityBand(int skillValue, Func<int, int> random) {
+			int modifier = 2 - (int) Math.Truncate(Math.Log10(random(250) + 1));
+			if (random(2) == 0) {
+				modifier = -modifier;
+			}
+			int scaled = (skillValue * 2) / 10;
+			int band = (scaled < 25) ? 0 : (scaled < 50) ? 1 : (scaled < 75) ? 2 : (scaled < 125) ? 3 : (scaled < 150) ? 4 : (scaled < 175) ? 5 : 6;
+			return Math.Clamp(band + modifier, 0, QualityBands - 1);
+		}
+
+		public static int RollQuality(int band, Func<int, int> random) {
+			switch (band) {
+				case 0: return random(25) + 1;
+				case 1: return random(25) + 26;
+				case 2: return random(25) + 51;
+				case 3: return random(50) + 76;
+				case 4: return random(25) + 126;
+				case 5: return random(25) + 151;
+				default: return random(25) + 176;
+			}
+		}
+
+		private void SetQualityOf(Item newItem, Character self) {
+			int band = RollQualityBand(this.SkillValueOfChar(self), Globals.dice.Next);
+			newItem.SetTag(qualityTK, RollQuality(band, Globals.dice.Next));
+			CraftSkillsLoc texts = Loc<CraftSkillsLoc>.Get(self.Language);
+			string[] messages = { texts.QualityShoddy, texts.QualityPoor, texts.QualityBelowAverage, null, texts.QualityAboveAverage, texts.QualityExcellent, texts.QualitySuperior };
+			if (messages[band] != null) {
+				self.SysMessage(messages[band]);
+			}
 		}
 
 
@@ -146,11 +189,19 @@ namespace SteamEngine.CompiledScripts {
 				} else {//resources consumed or we are GM or no resources needed, create the item and place it to the pre-defined (or default) location
 					Item newItem = (Item) iDefToMake.Create(self.ReceivingContainer);
 					SetCrafter(newItem, self); //#799 - e_craft_monster's "weapon you made yourself" critical
+					string madeType = (newItem.Type == null) ? null : newItem.Type.Defname;
+					if (madeType == "t_potion") {
+						self.Emote(Loc<CraftSkillsLoc>.Get(self.Language).PourPotion);
+						self.Sound(0x240);
+					} else if (madeType != "t_scroll") {
+						this.SetQualityOf(newItem, self);
+					}
 					//self.ClilocSysMessage(500638);//You create the item and put it in your backpack.
 					self.SysMessage(string.Format(
 								Loc<CraftSkillsLoc>.Get(self.Language).ItemMadeAndPutInRecCont,
 								iDefToMake.Name, self.ReceivingContainer.Name));
 					this.DoSuccess(skillSeqArgs, newItem);
+					ItemBundle.UnpackMade(newItem, self); //as Erebor's @SkillMakeItem firing the bundle's @dropon_obj
 					SkillGainSystem.TryGainSkill(self, (SkillName) this.Id); //#328
 
 					CraftingProcessPlugin.MakeFinished(skillSeqArgs, true);
@@ -197,9 +248,7 @@ namespace SteamEngine.CompiledScripts {
 			if (canMake && hasMaterial) {
 				//lost some resources. if some of resources/material was missing then nothing happened...
 				iDefToMake.Resources.ConsumeSomeResources(self, ResourcesLocality.Backpack, Globals.dice.Next(FailLossPercent));
-				self.SysMessage(string.Format(
-						Loc<CraftSkillsLoc>.Get(self.Language).ItemMakingFailed,
-						iDefToMake.Name));
+				self.SysMessage(this.FailMessage(self));
 				//#328 - real Erebor gains on a genuine failed attempt too (not just success), but
 				//not on a "couldn't even try" case (missing resources/material - canMake/hasMaterial
 				//false above skips this block entirely).
@@ -213,6 +262,16 @@ namespace SteamEngine.CompiledScripts {
 			Character self = skillSeqArgs.Self;
 			self.SysMessage(Loc<CraftSkillsLoc>.Get(self.Language).CraftingAborted);
 			CraftingProcessPlugin.UnInstallCraftingPlugin(self);
+		}
+
+		/// <summary>Erebor's @Fail line for the skill.</summary>
+		protected virtual string FailMessage(Character self) {
+			return Loc<CraftSkillsLoc>.Get(self.Language).FailedMaking;
+		}
+
+		protected static string SpoiltProduct(Character self) {
+			CraftSkillsLoc texts = Loc<CraftSkillsLoc>.Get(self.Language);
+			return self.IsFemale ? texts.SpoiltProductFemale : texts.SpoiltProductMale;
 		}
 
 		/// <summary>How many strokes one item takes. One is Sphere's for all but the Blacksmith and Carpenter: the first delay, then done.</summary>
@@ -339,7 +398,20 @@ namespace SteamEngine.CompiledScripts {
 	internal class CraftSkillsLoc : CompiledLocStringCollection<CraftSkillsLoc> {
 		public string ResourcesLackingButContinue = "Not enough resources to make {0}, continuing with other items.";
 		public string ResourcesLackingAndFinish = "Not enough resources to make {0}, crafting is finished.";
-		public string ItemMakingFailed = "You have failed to make {0} and lost some of the resources";
+		public string FailedMaking = "Vyroba se nezdarila.";
+		public string SpoiltProductMale = "Zkazil jsi vyrobek.";
+		public string SpoiltProductFemale = "Zkazila jsi vyrobek.";
+		public string SpoiltScrollMale = "Zkazil jsi svitek.";
+		public string SpoiltScrollFemale = "Zkazila jsi svitek.";
+		public string FailedPotion = "Lektvar se nezdaril.";
+		public string FailedFood = "Jidlo neni pozivatelne.";
+		public string PourPotion = "pour the completed potion into a bottle";
+		public string QualityShoddy = "Due to your poor skill, the item is of shoddy quality";
+		public string QualityPoor = "You were barely able to make this item.  It is of poor quality";
+		public string QualityBelowAverage = "You make the item, but it is of below average quality";
+		public string QualityAboveAverage = "The item is of above average quality";
+		public string QualityExcellent = "The item is of excellent quality";
+		public string QualitySuperior = "Due to your exceptional skill, the item is of superior quality";
 		public string FinishCrafting = "Crafting is finished";
 		public string CraftingAborted = "Crafting aborted";
 		public string NotNearForge = "You must be near a forge to smith";

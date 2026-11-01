@@ -26,6 +26,10 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
+		protected override string FailMessage(Character self) {
+			return SpoiltProduct(self);
+		}
+
 		private const int ForgeRange = 3;
 
 		/// <summary>Sphere's Calc_GetRandVal(4) + 2, and the last stroke that only sounds.</summary>
