@@ -1,12 +1,17 @@
 # moriaengine — working state
 
+## DONE (2026-11-01): shrunk pets look like the pet (branch shrink-figurine-model)
+
+User: a shrunk zostrich showed a llama. i_pet_figurine had one fixed model; Erebor makes the item the creature's ICON names. The converter always kept ICON, but CharacterDef.Icon was an int field, so reading it threw for 1411 creatures: it's a Model field on AbstractCharacterDef now, like mountItem. PetFigurine.Keep sets the model, so eviction's shrunk pets get it too. c_ocs_guard_npc_killer and c_demon_lord have an ICON naming nothing, 499 have none: they keep the old picture. Figurines already made keep theirs.
+Gotcha: probe every def before trusting a field; a plain def.Icon would have worked in a test of 15 creatures and thrown on real pets.
+
 ## DONE (2026-11-01): #951 setup commands and permissions (branch setup-and-command-permissions)
 
 User: (1) .SetupWorld lags the server with one final message: progress + small delays. (2) Setup commands plevel 5+. (3) skillrank, level etc GM only. (4) Skill rank in the profession plugin.
 Found: every Test* command skipped authorization on any server, 590 live ones including .TestPromoteToGM, as scripts/Tests compiles into the normal assembly. Now only under the harness' environment variable. Level, Name, Dialog etc were allowlisted for .explevel's body before #406 and let plevel 2-3 set them; removed. A plain account couldn't set them anyway: SimpleCommandParser calls methods and functions, not properties.
 Done: E_CommandsAuthorization_Global.testCommandsOpen = STEAMENGINE_TEST_COMMANDS, set only by GameServerPairFixture; off, a Test* command is an ordinary one, so GMs keep it. WorldSetupRun (unsaved Timer, 0.1 s, HouseSetup 20 houses a step, timings in the log). SkillRank on ProfessionPlugin.skillRank; the old tag holds it for someone with no profession and moves over on first read, so old saves keep ranks.
 Couldn't reproduce the user's lag: a full run here takes about 2 s, nearly all pauses. Asked them to read the log's ms if it recurs.
-Failing on clean main, not from this: LevelingIsolatedTests x3 (#952 or next), LevelingTests' Titan XP (known). Verified: fast 312/312, 21 classes, 60 pass plus the fixes above.
+Failing on clean main, not from this: LevelingIsolatedTests x3 (#952), LevelingTests' Titan XP (known). Verified: fast 312/312, 21 classes, 60 pass plus the fixes above.
 Gotchas: a test closing Test commands closes them for its whole server, give it the last place or its own collection. A timer's pause gives NPCs time to walk: a "stays moved" check must not want the exact tile. Mage's ProfessionName is "Mag".
 
 ## DONE (2026-11-01): #941 Erebor houses, steps 1-6 shipped
