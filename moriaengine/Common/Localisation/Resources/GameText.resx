@@ -115,6 +115,48 @@
   <data name="CraftSkillsLoc_IngotsOnPerson" xml:space="preserve">
     <value>The ingots must be on your person</value>
   </data>
+  <data name="CraftSkillsLoc_FailedMaking" xml:space="preserve">
+    <value>Vyroba se nezdarila.</value>
+  </data>
+  <data name="CraftSkillsLoc_SpoiltProductMale" xml:space="preserve">
+    <value>Zkazil jsi vyrobek.</value>
+  </data>
+  <data name="CraftSkillsLoc_SpoiltProductFemale" xml:space="preserve">
+    <value>Zkazila jsi vyrobek.</value>
+  </data>
+  <data name="CraftSkillsLoc_SpoiltScrollMale" xml:space="preserve">
+    <value>Zkazil jsi svitek.</value>
+  </data>
+  <data name="CraftSkillsLoc_SpoiltScrollFemale" xml:space="preserve">
+    <value>Zkazila jsi svitek.</value>
+  </data>
+  <data name="CraftSkillsLoc_FailedPotion" xml:space="preserve">
+    <value>Lektvar se nezdaril.</value>
+  </data>
+  <data name="CraftSkillsLoc_FailedFood" xml:space="preserve">
+    <value>Jidlo neni pozivatelne.</value>
+  </data>
+  <data name="CraftSkillsLoc_PourPotion" xml:space="preserve">
+    <value>pour the completed potion into a bottle</value>
+  </data>
+  <data name="CraftSkillsLoc_QualityShoddy" xml:space="preserve">
+    <value>Due to your poor skill, the item is of shoddy quality</value>
+  </data>
+  <data name="CraftSkillsLoc_QualityPoor" xml:space="preserve">
+    <value>You were barely able to make this item.  It is of poor quality</value>
+  </data>
+  <data name="CraftSkillsLoc_QualityBelowAverage" xml:space="preserve">
+    <value>You make the item, but it is of below average quality</value>
+  </data>
+  <data name="CraftSkillsLoc_QualityAboveAverage" xml:space="preserve">
+    <value>The item is of above average quality</value>
+  </data>
+  <data name="CraftSkillsLoc_QualityExcellent" xml:space="preserve">
+    <value>The item is of excellent quality</value>
+  </data>
+  <data name="CraftSkillsLoc_QualitySuperior" xml:space="preserve">
+    <value>Due to your exceptional skill, the item is of superior quality</value>
+  </data>
   <data name="CraftSkillsLoc_CraftingAborted" xml:space="preserve">
     <value>Crafting aborted</value>
   </data>
@@ -123,9 +165,6 @@
   </data>
   <data name="CraftSkillsLoc_ItemMadeAndPutInRecCont" xml:space="preserve">
     <value>You create the {0} and put it in your {1}</value>
-  </data>
-  <data name="CraftSkillsLoc_ItemMakingFailed" xml:space="preserve">
-    <value>You have failed to make {0} and lost some of the resources</value>
   </data>
   <data name="CraftSkillsLoc_ResourcesLackingAndFinish" xml:space="preserve">
     <value>Not enough resources to make {0}, crafting is finished.</value>
