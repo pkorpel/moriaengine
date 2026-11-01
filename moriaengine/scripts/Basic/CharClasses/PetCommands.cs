@@ -42,6 +42,9 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	public partial class Character {
 		public override TriggerResult On_Say(string speech, SpeechType type, int[] keywords) {
+			if (this.Flag_Hidden) {
+				HidingSkillDef.Reveal(this); //#962
+			}
 			this.TryHandlePetCommand(speech);
 			return base.On_Say(speech, type, keywords);
 		}

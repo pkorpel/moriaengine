@@ -589,10 +589,7 @@ namespace SteamEngine.CompiledScripts {
 				if (this.IsGM) {
 					return true;
 				}
-				HiddenHelperPlugin ssp = target.GetPlugin(HidingSkillDef.pluginKey) as HiddenHelperPlugin;
-				return ((ssp != null) &&
-				        (ssp.hadDetectedMe != null) &&
-				        (ssp.hadDetectedMe.Contains(this)));
+				return false;
 			}
 			return true;
 		}
@@ -1823,6 +1820,9 @@ namespace SteamEngine.CompiledScripts {
 		/// Is also called when client does the useskill macro
 		/// </summary>
 		public override void SelectSkill(AbstractSkillDef skillDef) {
+			if (this.CurrentSkill == null) {
+				HidingSkillDef.Reveal(this); //#962 - Sphere's Skill_Wait
+			}
 			this.SelectSkill((SkillDef) skillDef);
 		}
 
@@ -1880,6 +1880,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual TriggerResult On_SkillStart(SkillSequenceArgs skillSeqArgs) {
+			HidingSkillDef.Spoil(this); //#962 - stopscriptedskills
 			if (!(skillSeqArgs.SkillDef is CraftingSkillDef)) {
 				CraftingProcessPlugin.Stop(this, false); //#962 - e_makestring's @hittry and @spellcast
 			}
@@ -2118,6 +2119,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static TriggerKey hostileActionTK = TriggerKey.Acquire("hostileAction");
 		public void Trigger_HostileAction(Character enemy) {
+			HidingSkillDef.Reveal(enemy); //#962 - Sphere's OnAttackedBy
 			Notoriety.OnHostileAction(this, enemy);
 			FightMemory.Record(this, enemy); //#826
 			NPCAiTimer.AlertGuardiansOf(this, enemy);
@@ -2137,6 +2139,9 @@ namespace SteamEngine.CompiledScripts {
 
 		//#918 looting a corpse can be a crime
 		public override void On_PickingUp(AbstractItem item) {
+			if (this.Flag_Hidden) {
+				HidingSkillDef.Reveal(this); //#962
+			}
 			Corpse corpse = item.TopObj() as Corpse;
 			if (corpse != null) {
 				Notoriety.OnLooting(this, corpse);
@@ -2150,6 +2155,7 @@ namespace SteamEngine.CompiledScripts {
 
 		//#779 walking stamina drain
 		public override void On_StepTaken(bool running) {
+			HidingSkillDef.OnStep(this, running); //#962 - Sphere's CheckRevealOnMove
 			MovementStamina.DrainForStep(this, running);
 			MonsterSpecialAttacks.OnStepTaken(this); //#797 hazard tiles, e_inexhaustible
 			RegionEventSystem.OnStepTaken(this); //#813 e_nohorse, e_nohorsehigh
@@ -2817,6 +2823,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public void On_Damage(DamageArgs args) {
 			CraftingProcessPlugin.Stop(this, false); //#962 - e_makestring's @gethit
+			if ((args.flags & DamageType.Physical) != 0) {
+				HidingSkillDef.Reveal(this); //Sphere's OnTakeDamage
+			}
 		}
 
 		public void On_AfterSwing(WeaponSwingArgs args) {
