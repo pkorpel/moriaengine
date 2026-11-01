@@ -242,7 +242,10 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendSpeech("buy");
 				var (gumpUid, _) = game.ReadGumpDialog(TimeSpan.FromSeconds(10));
 				game.SendGumpResponse(gumpUid, bandageButtonId);
-				Thread.Sleep(500);
+				string refused = "";
+				while (!refused.Contains("not have enough gold", StringComparison.Ordinal)) {
+					refused = game.ReadSystemMessage(TimeSpan.FromSeconds(10));
+				}
 				int mark = this.OutputMark();
 				game.SendSpeech(".TestCheckGold");
 				var (backpack, _) = this.WaitForGoldCheck(mark, TimeSpan.FromSeconds(10));

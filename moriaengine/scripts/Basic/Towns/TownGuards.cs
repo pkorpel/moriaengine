@@ -535,7 +535,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (button == DepositButton) {
-				if (int.TryParse((gr.GetTextResponse(DepositEntry) ?? "").Trim(), out int amount) && (amount > 0) && Town.Pay(player, amount)) {
+				if (int.TryParse((gr.GetTextResponse(DepositEntry) ?? "").Trim(), out int amount) && (amount > 0) && GoldUtils.Pay(player, amount)) {
 					force.Treasury += amount;
 				}
 			} else if (button >= ExtendButton) {

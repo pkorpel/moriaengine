@@ -315,7 +315,7 @@ namespace SteamEngine.CompiledScripts {
 						return false;
 					}
 
-					if (!player.Pay(priceTotal)) {
+					if (!GoldUtils.Pay(player, (long) Math.Ceiling(priceTotal))) {
 						return false;
 					}
 				}
@@ -337,7 +337,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 
 			} else {
-				if (buying && !player.Pay(entry.price)) {
+				if (buying && !GoldUtils.Pay(player, (long) Math.Ceiling(entry.price))) {
 					return false;
 				}
 
