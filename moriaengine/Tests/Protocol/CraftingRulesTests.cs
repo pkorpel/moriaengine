@@ -128,7 +128,7 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("Fletching=1-1@2/2", strokes);
 			Assert.Contains("Tailoring=1-1@2.5/2.5", strokes);
 			Assert.Contains("Tinkering=1-1@2.5/2.5", strokes);
-			Assert.Contains("Alchemy=1-1@2/1", strokes);
+			Assert.Contains("Alchemy=4-4@2/1", strokes);
 
 			//a master can't fall below band 4, and a beginner tops out at band 2, as the bands and the +-2 say
 			string quality = this.Ask(client, ".TestStageQuality", "STAGE_QUALITY:");
@@ -190,6 +190,54 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("count=2 ", this.Ask(client, ".TestStageMade \"i_arrow_shaft_copper\"", "STAGE_MADE:"));
 			Assert.Contains("count=0 ", this.Ask(client, ".TestStageMade \"i_arrow_shafts_copper_2\"", "STAGE_MADE:"));
 		}
+	}
+
+	/// <summary>#962 - a potion's reagents go in stroke by stroke, a scroll costs half its spell's mana.</summary>
+	[Collection(CraftPotionsCollection.Name)]
+	public class CraftPotionsTests {
+		private readonly GameServerPairFixture fixture;
+
+		public CraftPotionsTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		[Fact]
+		public void BrewingAndScribingAreEreborsOwn() {
+			using var client = CommandPermissionTests.Connect("craftpotion", "Potion Tester");
+			Assert.Contains("thief=True mage=False", this.Ask(client, ".TestStageBrew", "STAGE_BREW:"));
+
+			//a stroke a second at full skill: the second reagent is in by 2.3 s, the third isn't
+			Thread.Sleep(2300);
+			string midway = this.Ask(client, ".TestStageCount", "STAGE_COUNT:");
+			Assert.Contains("i_reag_blood_moss=0", midway);
+			Assert.Contains("i_reag_worm_heart=0", midway);
+			Assert.Contains("i_reag_obsidian=2", midway);
+			Assert.Contains("i_bottle_empty=2", midway);
+
+			//all gone, and the bottle only if it worked
+			Thread.Sleep(3000);
+			string done = this.Ask(client, ".TestStageCount", "STAGE_COUNT:");
+			Assert.Contains("i_reag_obsidian=0", done);
+			Assert.Matches("i_bottle_empty=1 i_potion_Agility=1|i_bottle_empty=2 i_potion_Agility=0", done);
+
+			//Magic Arrow's 6 mana: half of it spent at the start
+			string scribe = this.Ask(client, ".TestStageScribe", "STAGE_SCRIBE:");
+			Assert.Contains("noMana=False mage=True thief=False mana=47 noRecipe=0", scribe);
+
+			//it took a blank scroll and asks for Erebor's skill
+			Thread.Sleep(3200);
+			string scrolls = this.Ask(client, ".TestStageCount", "STAGE_COUNT:");
+			Assert.Matches("i_scroll_blank=19 i_scroll_magic_arrow=1|i_scroll_blank=1[89] i_scroll_magic_arrow=0", scrolls);
+		}
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class CraftPotionsCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "CraftPotions";
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]

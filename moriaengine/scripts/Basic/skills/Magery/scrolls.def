@@ -1,3 +1,4 @@
+//#962 - recipes come from the generated converted/systems/craftmenu/craftrecipes.def, not the old lines commented out here
 [SpellScrollDef 0x1f2d]
 CATEGORY = Provisions - Alchemy & Magic
 SUBSECTION = Scrolls - 1st Circle

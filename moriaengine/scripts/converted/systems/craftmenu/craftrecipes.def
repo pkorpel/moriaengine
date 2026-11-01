@@ -1,0 +1,414 @@
+[CraftRecipeDef craftrecipe_i_gembox]
+Item = i_gembox
+Resources = 2 i_ingot_iron, 15 i_log_iron
+SkillMake = 800 carpentry, 1 t_carpentry, 600 tinkering, 1 t_tinker_tools
+
+[CraftRecipeDef craftrecipe_i_keg_potion]
+Item = i_keg_potion
+Resources = 1 i_keg_small, 1 i_barrel_tap
+SkillMake = 650 tinkering, 1 t_tinker_tools
+
+[CraftRecipeDef craftrecipe_i_kudla]
+Item = i_kudla
+Resources = 2 i_ingot_iron
+SkillMake = 650 blacksmithing, 450 tinkering
+
+[CraftRecipeDef craftrecipe_i_potion_Cure]
+Item = i_potion_Cure
+Resources = 3 i_reag_garlic, 1 i_reag_ginseng
+SkillMake = 1 i_bottle_empty, 1 t_mortar, 500 alchemy, 550 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_CureGreat]
+Item = i_potion_CureGreat
+Resources = 4 i_reag_garlic, 2 i_reag_ginseng
+SkillMake = 1 i_bottle_empty, 1 t_mortar, 750 alchemy, 800 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_CureLess]
+Item = i_potion_CureLess
+Resources = 2 i_reag_garlic
+SkillMake = 1 i_bottle_empty, 1 t_mortar, 380 alchemy
+
+[CraftRecipeDef craftrecipe_i_potion_Poison]
+Item = i_potion_Poison
+Resources = 4 i_reag_nightshade, 2 i_reag_bone
+SkillMake = 1 i_bottle_empty, 1 t_mortar, 550 alchemy, 550 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_PoisonDeadly]
+Item = i_potion_PoisonDeadly
+Resources = 9 i_reag_nightshade, 5 i_reag_bone, 1 i_gem_emerald
+SkillMake = 1 i_bottle_empty, 1 t_mortar, 950 alchemy, 800 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_PoisonGreat]
+Item = i_potion_PoisonGreat
+Resources = 6 i_reag_nightshade, 3 i_reag_bone
+SkillMake = 1 i_bottle_empty, 1 t_mortar, 730 alchemy, 800 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_PoisonLess]
+Item = i_potion_PoisonLess
+Resources = 2 i_reag_nightshade, 1 i_reag_bone
+SkillMake = 1 i_bottle_empty, 1 t_mortar, 290 alchemy
+
+[CraftRecipeDef craftrecipe_i_potion_Poison_clumsy]
+Item = i_potion_Poison_clumsy
+Resources = 2 i_reag_blood_moss, 3 i_reag_volcanic_ash, 1 i_reag_daemon_bone
+SkillMake = 1 t_mortar, 1 i_bottle_empty, 700 alchemy, 650 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_Poison_feeblemind]
+Item = i_potion_Poison_feeblemind
+Resources = 1 i_reag_fertile_dirt, 3 i_reag_volcanic_ash, 1 i_reag_daemon_bone
+SkillMake = 1 t_mortar, 1 i_bottle_empty, 600 alchemy, 600 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_Poison_fizz]
+Item = i_potion_Poison_fizz
+Resources = 2 i_reag_sulfur_ash, 3 i_reag_executioners_cap, 2 i_reag_daemon_bone
+SkillMake = 1 t_mortar, 1 i_bottle_empty, 850 alchemy, 800 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_Poison_para]
+Item = i_potion_Poison_para
+Resources = 5 i_reag_eye_of_newt, 2 i_reag_daemon_bone, 1 i_reag_blood_vial, 1 i_gem_tourmaline
+SkillMake = 1 t_mortar, 1 i_bottle_empty, 900 alchemy, 900 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_Poison_stamina]
+Item = i_potion_Poison_stamina
+Resources = 2 i_reag_sulfur_ash, 3 i_reag_executioners_cap, 2 i_reag_daemon_bone
+SkillMake = 1 t_mortar, 1 i_bottle_empty, 800 alchemy, 750 tasteid
+
+[CraftRecipeDef craftrecipe_i_potion_Poison_weaken]
+Item = i_potion_Poison_weaken
+Resources = 1 i_reag_mandrake_root, 3 i_reag_volcanic_ash, 1 i_reag_daemon_bone
+SkillMake = 1 t_mortar, 1 i_bottle_empty, 750 alchemy, 700 tasteid
+
+[CraftRecipeDef craftrecipe_i_regbox]
+Item = i_regbox
+Resources = 8 i_log_copper, 4 i_log_iron
+SkillMake = 400 carpentry, 1 t_carpentry
+
+[CraftRecipeDef craftrecipe_i_scroll_agility]
+Item = i_scroll_agility
+Resources = 1 i_scroll_blank
+SkillMake = 400 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_archcure]
+Item = i_scroll_archcure
+Resources = 1 i_scroll_blank
+SkillMake = 770 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_archprotection]
+Item = i_scroll_archprotection
+Resources = 1 i_scroll_blank
+SkillMake = 750 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_blade_spirits]
+Item = i_scroll_blade_spirits
+Resources = 1 i_scroll_blank, 1 i_reag_black_pearl, 1 i_reag_mandrake_root, 1 i_reag_nightshade
+SkillMake = 600 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_bless]
+Item = i_scroll_bless
+Resources = 1 i_scroll_blank
+SkillMake = 500 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_chain_lightning]
+Item = i_scroll_chain_lightning
+Resources = 1 i_scroll_blank
+SkillMake = 860 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_clumsy]
+Item = i_scroll_clumsy
+Resources = 1 i_scroll_blank
+SkillMake = 310 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_create_food]
+Item = i_scroll_create_food
+Resources = 1 i_scroll_blank
+SkillMake = 2000 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_cunning]
+Item = i_scroll_cunning
+Resources = 1 i_scroll_blank
+SkillMake = 440 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_cure]
+Item = i_scroll_cure
+Resources = 1 i_scroll_blank
+SkillMake = 450 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_curse]
+Item = i_scroll_curse
+Resources = 1 i_scroll_blank
+SkillMake = 520 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_dispel]
+Item = i_scroll_dispel
+Resources = 1 i_scroll_blank
+SkillMake = 800 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_dispel_field]
+Item = i_scroll_dispel_field
+Resources = 1 i_scroll_blank
+SkillMake = 720 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_earthquake]
+Item = i_scroll_earthquake
+Resources = 1 i_scroll_blank
+SkillMake = 2000 inscription, 1 i_book_inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_energy_bolt]
+Item = i_scroll_energy_bolt
+Resources = 1 i_scroll_blank
+SkillMake = 740 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_energy_field]
+Item = i_scroll_energy_field
+Resources = 1 i_scroll_blank
+SkillMake = 880 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_energy_vortex]
+Item = i_scroll_energy_vortex
+Resources = 1 i_reag_black_pearl, 1 i_reag_mandrake_root, 1 i_reag_nightshade, 1 i_reag_blood_moss, 1 i_scroll_blank
+SkillMake = 930 inscription, 1 i_book_inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_explosion]
+Item = i_scroll_explosion
+Resources = 1 i_scroll_blank
+SkillMake = 770 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_feeblemind]
+Item = i_scroll_feeblemind
+Resources = 1 i_scroll_blank
+SkillMake = 370 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_fireball]
+Item = i_scroll_fireball
+Resources = 1 i_scroll_blank
+SkillMake = 410 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_fire_field]
+Item = i_scroll_fire_field
+Resources = 1 i_scroll_blank
+SkillMake = 580 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_flamestrike]
+Item = i_scroll_flamestrike
+Resources = 1 i_scroll_blank
+SkillMake = 820 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_gate_travel]
+Item = i_scroll_gate_travel
+Resources = 1 i_scroll_blank
+SkillMake = 900 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_greater_heal]
+Item = i_scroll_greater_heal
+Resources = 1 i_scroll_blank
+SkillMake = 650 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_harm]
+Item = i_scroll_harm
+Resources = 1 i_scroll_blank
+SkillMake = 460 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_heal]
+Item = i_scroll_heal
+Resources = 1 i_scroll_blank
+SkillMake = 330 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_incognito]
+Item = i_scroll_incognito
+Resources = 1 i_scroll_blank
+SkillMake = 610 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_invisibility]
+Item = i_scroll_invisibility
+Resources = 1 i_scroll_blank
+SkillMake = 760 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_lightning]
+Item = i_scroll_lightning
+Resources = 1 i_scroll_blank
+SkillMake = 520 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_magic_arrow]
+Item = i_scroll_magic_arrow
+Resources = 1 i_scroll_blank
+SkillMake = 300 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_magic_lock]
+Item = i_scroll_magic_lock
+Resources = 1 i_scroll_blank
+SkillMake = 600 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_magic_reflection]
+Item = i_scroll_magic_reflection
+Resources = 1 i_scroll_blank
+SkillMake = 700 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_magic_trap]
+Item = i_scroll_magic_trap
+Resources = 1 i_scroll_blank
+SkillMake = 410 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_magic_untrap]
+Item = i_scroll_magic_untrap
+Resources = 1 i_scroll_blank
+SkillMake = 420 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_manashield]
+Item = i_scroll_manashield
+Resources = 1 i_scroll_blank
+SkillMake = 800 magery, 400 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_mana_drain]
+Item = i_scroll_mana_drain
+Resources = 1 i_scroll_blank
+SkillMake = 570 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_mana_vampire]
+Item = i_scroll_mana_vampire
+Resources = 1 i_scroll_blank
+SkillMake = 810 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_mark]
+Item = i_scroll_mark
+Resources = 1 i_scroll_blank
+SkillMake = 850 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_mass_curse]
+Item = i_scroll_mass_curse
+Resources = 1 i_scroll_blank
+SkillMake = 760 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_mass_dispel]
+Item = i_scroll_mass_dispel
+Resources = 1 i_scroll_blank
+SkillMake = 930 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_meteor_swarm]
+Item = i_scroll_meteor_swarm
+Resources = 1 i_scroll_blank
+SkillMake = 880 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_mind_blast]
+Item = i_scroll_mind_blast
+Resources = 1 i_scroll_blank
+SkillMake = 630 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_night_sight]
+Item = i_scroll_night_sight
+Resources = 1 i_scroll_blank
+SkillMake = 280 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_paralyze]
+Item = i_scroll_paralyze
+Resources = 1 i_scroll_blank
+SkillMake = 660 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_paralyze_field]
+Item = i_scroll_paralyze_field
+Resources = 1 i_scroll_blank
+SkillMake = 780 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_poison]
+Item = i_scroll_poison
+Resources = 1 i_scroll_blank
+SkillMake = 450 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_poison_field]
+Item = i_scroll_poison_field
+Resources = 1 i_scroll_blank
+SkillMake = 640 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_polymorph]
+Item = i_scroll_polymorph
+Resources = 1 i_scroll_blank
+SkillMake = 890 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_protection]
+Item = i_scroll_protection
+Resources = 1 i_scroll_blank
+SkillMake = 500 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_reactive_armor]
+Item = i_scroll_reactive_armor
+Resources = 1 i_scroll_blank
+SkillMake = 370 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_recall]
+Item = i_scroll_recall
+Resources = 1 i_scroll_blank
+SkillMake = 550 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_resurrection]
+Item = i_scroll_resurrection
+Resources = 1 i_scroll_blank
+SkillMake = 950 inscription, 1 i_book_inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_reveal]
+Item = i_scroll_reveal
+Resources = 1 i_scroll_blank
+SkillMake = 820 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_strength]
+Item = i_scroll_strength
+Resources = 1 i_scroll_blank
+SkillMake = 480 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_summon_creature]
+Item = i_scroll_summon_creature
+Resources = 1 i_scroll_blank, 1 i_reag_blood_moss, 1 i_reag_mandrake_root, 1 i_reag_spider_silk
+SkillMake = 650 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_summon_daemon]
+Item = i_scroll_summon_daemon
+Resources = 1 i_reag_blood_moss, 1 i_reag_spider_silk, 1 i_reag_sulfur_ash, 1 i_reag_mandrake_root, 1 i_scroll_blank
+SkillMake = 1 i_book_inscription, 960 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_summon_elem_air]
+Item = i_scroll_summon_elem_air
+Resources = 1 i_reag_blood_moss, 1 i_reag_mandrake_root, 1 i_reag_spider_silk, 1 i_scroll_blank
+SkillMake = 1 i_book_inscription, 930 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_summon_elem_earth]
+Item = i_scroll_summon_elem_earth
+Resources = 1 i_reag_blood_moss, 1 i_reag_spider_silk, 1 i_reag_mandrake_root, 1 i_scroll_blank
+SkillMake = 1 i_book_inscription, 940 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_summon_elem_fire]
+Item = i_scroll_summon_elem_fire
+Resources = 1 i_reag_spider_silk, 1 i_reag_mandrake_root, 1 i_reag_sulfur_ash, 1 i_scroll_blank
+SkillMake = 1 i_book_inscription, 950 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_summon_elem_water]
+Item = i_scroll_summon_elem_water
+Resources = 1 i_reag_blood_moss, 1 i_reag_spider_silk, 1 i_reag_mandrake_root, 1 i_scroll_blank
+SkillMake = 910 inscription, 1 i_book_inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_telekinesis]
+Item = i_scroll_telekinesis
+Resources = 1 i_scroll_blank
+SkillMake = 460 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_teleport]
+Item = i_scroll_teleport
+Resources = 1 i_scroll_blank
+SkillMake = 470 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_unlock]
+Item = i_scroll_unlock
+Resources = 1 i_scroll_blank
+SkillMake = 680 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_wall_of_stone]
+Item = i_scroll_wall_of_stone
+Resources = 1 i_scroll_blank
+SkillMake = 500 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_weaken]
+Item = i_scroll_weaken
+Resources = 1 i_scroll_blank
+
+[CraftRecipeDef craftrecipe_i_torch]
+Item = i_torch
+Resources = 1 i_log_copper
+SkillMake = 350 carpentry, 1 t_carpentry
+

@@ -133,7 +133,7 @@ namespace SteamEngine.Converter {
 					mf.Flush();
 				}
 				ConvertedCraftMenus.Write(convertPath, convertToPath);
-				ConvertedCraftMenus.Write(convertPath, convertToPath);
+				ConvertedRecipes.Write(convertToPath);
 				Console.WriteLine("Files written to disk.");
 			} catch (Exception e) {
 				Logger.WriteError(e);

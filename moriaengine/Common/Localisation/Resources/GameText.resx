@@ -157,6 +157,18 @@
   <data name="CraftSkillsLoc_QualitySuperior" xml:space="preserve">
     <value>Due to your exceptional skill, the item is of superior quality</value>
   </data>
+  <data name="CraftSkillsLoc_TossMixture" xml:space="preserve">
+    <value>toss the failed mixture from the mortar</value>
+  </data>
+  <data name="CraftSkillsLoc_StartGrinding" xml:space="preserve">
+    <value>start grinding some {0} in the mortar</value>
+  </data>
+  <data name="CraftSkillsLoc_ContinueGrinding" xml:space="preserve">
+    <value>add {0} and continue grinding</value>
+  </data>
+  <data name="CraftSkillsLoc_LackForPotion" xml:space="preserve">
+    <value>Hmmm, you lack {0} for this potion.</value>
+  </data>
   <data name="CraftSkillsLoc_CraftingAborted" xml:space="preserve">
     <value>Crafting aborted</value>
   </data>

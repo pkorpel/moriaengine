@@ -41,11 +41,17 @@ As Sphere's `Skill_<name>` for each skill. Success is rolled at the start and sh
 | Bowcraft | 2.0 | 1 | sound + salute every stage |
 | Tailoring | 2.5 | 1 | scissors on success only |
 | Tinkering | 2.5 | 1 | none |
-| Alchemy | 2.0-1.0 | 1 | to be ported |
+| Alchemy | 2.0-1.0 | one per reagent type + 1 | grinding each stroke, an emote if under 5 people are in the sector |
 | Cooking | 2.0 | 1 | to be ported |
-| Inscription | 2.5 | 1 | to be ported |
+| Inscription | 2.5 | 1 | one sound at the start |
 
 A made item gets Sphere's quality, 1 to 200, except scrolls and potions: skill picks one of 7 bands, a roll moves it up to 2 either way, and every band but average has its message. Nothing reads quality yet: Sphere's only use is the vendor price, and item values aren't ported. Erebor's enhanced items (quality over 170 at 100.0 skill) wait for magic items. A bundle comes out loose as it's made, as Erebor's @SkillMakeItem fires its @dropon_obj. A failure says Erebor's @Fail line.
+
+Alchemy takes each reagent as its stroke passes and the bottle only on success, so a failure loses the reagents and keeps the bottle. The menu shows a potion only to the professions on Erebor's `potions_` list. Starting drops a run bow from the hands to the pack.
+
+Inscription needs what casting the spell needs: full mana, the skill, the spell in a book on you, its reagents. It costs half the spell's mana at the start of each attempt, and the menu shows only what the profession's `spells_scribe_` list allows. A failure costs the whole recipe on top of Sphere's part. Recipes are generated, see [the converter](../06-tooling/sphere-shard-converter.md).
+
+Any new attempt checks the requirements and materials first, as Sphere does, instead of finding out after the strokes.
 
 Blacksmithing needs a forge (`t_forge`, item or static) within 3 tiles at every stage and turns to face it; lose it and the work stops with nothing lost. The menu needs a smith's weapon (`t_weapon_mace_smith`) in the hand. It opens from ingots on your person, or from the hammer targeted on ingots; the hammer on anything else repairs it. An anvil does nothing on a click, repairing needs one near. Crafting skills also open from the skill list, which Sphere refuses: kept here as a convenience, behind the same checks.
 
