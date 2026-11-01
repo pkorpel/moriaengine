@@ -16,6 +16,7 @@ DESCRIPTION = Eggs
 TYPE = T_FOOD_RAW
 WEIGHT = 0.1
 //TDATA1 = i_eggs_fried // commented out by Converter 
+tag.cooked = "i_eggs_fried" //converted from 'TDATA1' 
 DEFNAME = i_eggs_fresh
 //VALUE = 1 // commented out by Converter 
 
@@ -28,6 +29,7 @@ TYPE = T_FOOD_RAW
 DupeList = 0x9ba
 WEIGHT = 0.5
 //TDATA1 = i_bird_cooked // commented out by Converter 
+tag.cooked = "i_bird_cooked" //converted from 'TDATA1' 
 DEFNAME = i_bird_raw
 //VALUE = 10 // commented out by Converter 
 
@@ -179,6 +181,7 @@ TYPE = T_FOOD_RAW
 DupeList = 0x1e16
 WEIGHT = 1
 //TDATA1 = i_fish_cooked // commented out by Converter 
+tag.cooked = "i_fish_cooked" //converted from 'TDATA1' 
 DEFNAME = i_fish_raw_whole
 //VALUE = 1 // commented out by Converter 
 
@@ -190,6 +193,7 @@ DESCRIPTION = Fish (Raw, Cut, & No Head)
 TYPE = T_FOOD_RAW
 DupeList = 0x1e18
 //TDATA1 = i_fish_cooked // commented out by Converter 
+tag.cooked = "i_fish_cooked" //converted from 'TDATA1' 
 DEFNAME = i_fish_raw
 //VALUE = 1 // commented out by Converter 
 
@@ -370,6 +374,7 @@ DESCRIPTION = Chicken Leg
 TYPE = t_food_raw
 WEIGHT = 1
 //TDATA1 = i_chicken_leg // commented out by Converter 
+tag.cooked = "i_chicken_leg" //converted from 'TDATA1' 
 DEFNAME = i_chicken_leg_raw
 //VALUE = 2 // commented out by Converter 
 
@@ -485,6 +490,7 @@ TYPE = T_FOOD_RAW
 WEIGHT = 1
 RESOURCES = 1 i_water, 1 i_egg, 2 i_flour_bowl
 //TDATA1 = i_bread_loaf // commented out by Converter 
+tag.cooked = "i_bread_loaf" //converted from 'TDATA1' 
 DEFNAME = i_dough
 
 [ItemDef 0x103e]
@@ -505,6 +511,7 @@ TYPE = T_FOOD_RAW
 WEIGHT = 1
 RESOURCES = 1 i_bowl_dough, 1 i_pot
 //TDATA1 = i_pan_cookies // commented out by Converter 
+tag.cooked = "i_pan_cookies" //converted from 'TDATA1' 
 DEFNAME = i_cookie_mix
 
 [ItemDef 0x1040]
@@ -540,6 +547,7 @@ TYPE = T_FOOD_RAW
 WEIGHT = 1
 RESOURCES = 1 i_bowl_dough, 1 t_fruit, 1 i_pot, 1 i_lard //some resources were fixed by converter 
 //TDATA1 = i_pie_baked // commented out by Converter 
+tag.cooked = "i_pie_baked" //converted from 'TDATA1' 
 DEFNAME = i_pie_unbaked
 
 [ItemDef 0x1043]
@@ -709,6 +717,7 @@ DESCRIPTION = Lamb of Leg (Raw)
 TYPE = T_FOOD_RAW
 WEIGHT = 2
 //TDATA1 = i_lamb_leg // commented out by Converter 
+tag.cooked = "i_lamb_leg" //converted from 'TDATA1' 
 DEFNAME = i_lamb_leg_raw
 //VALUE = 2 // commented out by Converter 
 
@@ -851,6 +860,7 @@ DupeList = 0x977
 WEIGHT = 1
 RESOURCES = 1 i_ham, 1 i_board
 //TDATA1 = i_bacon_slice // commented out by Converter 
+tag.cooked = "i_bacon_slice" //converted from 'TDATA1' 
 DEFNAME = i_bacon_slab
 
 [ItemDef 0x977]
@@ -879,6 +889,7 @@ DESCRIPTION = Fish Steak (Raw)
 TYPE = T_FOOD_RAW
 WEIGHT = 0.1
 //TDATA1 = i_fish_cut_cooked // commented out by Converter 
+tag.cooked = "i_fish_cut_cooked" //converted from 'TDATA1' 
 DEFNAME = i_fish_cut_raw
 //VALUE = 3 // commented out by Converter 
 
@@ -1194,6 +1205,7 @@ DESCRIPTION = Ribs (Raw)
 TYPE = t_meat_raw
 WEIGHT = 1
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+tag.cooked = "i_ribs_cooked" //converted from 'TDATA1' 
 DEFNAME = i_ribs_raw
 //VALUE = 3 // commented out by Converter 
 
@@ -1425,6 +1437,7 @@ TYPE = T_FOOD_RAW
 WEIGHT = 1
 RESOURCES = 1 i_bowl_dough, 1 i_cheese_wheel, 1 i_pot, 1 i_lard, 1 i_tomato_sauce //some resources were fixed by converter 
 //TDATA1 = i_pizza // commented out by Converter 
+tag.cooked = "i_pizza" //converted from 'TDATA1' 
 DEFNAME = i_pizza_uncooked
 
 [ItemDef 0x1422]

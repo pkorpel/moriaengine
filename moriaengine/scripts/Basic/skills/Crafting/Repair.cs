@@ -132,8 +132,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#962 - Erebor's blacksmithing_targon_item: a hammer on ingots opens the menu, on anything else repairs it.</summary>
 	public class Targ_SmithHammer : CompiledTargetDef {
 		protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
-			if ((targetted is Item ingots) && (ingots.Type != null) && (ingots.Type.Defname == "t_ingot")) {
-				self.SelectSkill(SkillName.Blacksmith);
+			if (CraftingSkillDef.IsOfType(targetted as Item, "t_ingot")) {
+				CraftingSkillDef.OpenMenu(self, SkillName.Blacksmith);
 				return TargetResult.Done;
 			}
 			Destroyable item = targetted as Destroyable;

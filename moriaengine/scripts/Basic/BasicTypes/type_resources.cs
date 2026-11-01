@@ -74,7 +74,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_reagent : CompiledTriggerGroup {
-
+		public TriggerResult On_Dclick(Item self, Character dclicker) {
+			CraftingSkillDef.OpenMenu(dclicker, SkillName.Alchemy);
+			return TriggerResult.Continue;
+		}
 	}
 
 	public class t_board : CompiledTriggerGroup {

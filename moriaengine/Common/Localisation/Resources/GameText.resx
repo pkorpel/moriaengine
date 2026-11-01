@@ -112,9 +112,6 @@
   <data name="CraftSkillsLoc_NeedHammer" xml:space="preserve">
     <value>You need a hammer in your hand</value>
   </data>
-  <data name="CraftSkillsLoc_IngotsOnPerson" xml:space="preserve">
-    <value>The ingots must be on your person</value>
-  </data>
   <data name="CraftSkillsLoc_FailedMaking" xml:space="preserve">
     <value>Vyroba se nezdarila.</value>
   </data>
@@ -168,6 +165,12 @@
   </data>
   <data name="CraftSkillsLoc_LackForPotion" xml:space="preserve">
     <value>Hmmm, you lack {0} for this potion.</value>
+  </data>
+  <data name="CraftSkillsLoc_CookOnFire" xml:space="preserve">
+    <value>You must cook food on some sort of fire</value>
+  </data>
+  <data name="CraftSkillsLoc_SmellsGood" xml:space="preserve">
+    <value>Mmm, smells good</value>
   </data>
   <data name="CraftSkillsLoc_CraftingAborted" xml:space="preserve">
     <value>Crafting aborted</value>

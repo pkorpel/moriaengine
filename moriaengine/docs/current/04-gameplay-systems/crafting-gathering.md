@@ -30,6 +30,22 @@ of the real craft skills; `type_crafting` groups the shared item-type plumbing c
 content hooks into).
 
 
+### What opens a menu (#962)
+
+Never the skill list: as in Sphere, those buttons say the skill can't be used directly.
+
+| Skill | Opened by |
+|---|---|
+| Blacksmithing | ingots, or a one-handed mace-type tool targeted on ingots |
+| Bowcraft | feathers, shafts, or a knife targeted on logs, ingots, bolts or arrows |
+| Carpentry | carpentry tools |
+| Tinkering | tinker's tools |
+| Tailoring | a sewing kit targeted on cloth, a hide or leather |
+| Alchemy | a mortar, or any reagent |
+| Inscription | a blank scroll |
+
+Cooking has no menu on Erebor: `cmprep_cooking` exists but nothing opens it. Raw food is double clicked and targeted on a fire, forge or campfire. It takes 2 s, a difficulty up to 50.0, and uses up one raw piece either way.
+
 ### Stages (#962)
 
 As Sphere's `Skill_<name>` for each skill. Success is rolled at the start and shown after all the strokes, so a failure takes as long as a success. Difficulty 0 can't fail, a GM never does.
@@ -42,7 +58,7 @@ As Sphere's `Skill_<name>` for each skill. Success is rolled at the start and sh
 | Tailoring | 2.5 | 1 | scissors on success only |
 | Tinkering | 2.5 | 1 | none |
 | Alchemy | 2.0-1.0 | one per reagent type + 1 | grinding each stroke, an emote if under 5 people are in the sector |
-| Cooking | 2.0 | 1 | to be ported |
+| Cooking | 2.0 | 1 | none |
 | Inscription | 2.5 | 1 | one sound at the start |
 
 A made item gets Sphere's quality, 1 to 200, except scrolls and potions: skill picks one of 7 bands, a roll moves it up to 2 either way, and every band but average has its message. Nothing reads quality yet: Sphere's only use is the vendor price, and item values aren't ported. Erebor's enhanced items (quality over 170 at 100.0 skill) wait for magic items. A bundle comes out loose as it's made, as Erebor's @SkillMakeItem fires its @dropon_obj. A failure says Erebor's @Fail line.
@@ -53,7 +69,7 @@ Inscription needs what casting the spell needs: full mana, the skill, the spell 
 
 Any new attempt checks the requirements and materials first, as Sphere does, instead of finding out after the strokes.
 
-Blacksmithing needs a forge (`t_forge`, item or static) within 3 tiles at every stage and turns to face it; lose it and the work stops with nothing lost. The menu needs a smith's weapon (`t_weapon_mace_smith`) in the hand. It opens from ingots on your person, or from the hammer targeted on ingots; the hammer on anything else repairs it. An anvil does nothing on a click, repairing needs one near. Crafting skills also open from the skill list, which Sphere refuses: kept here as a convenience, behind the same checks.
+Blacksmithing needs a forge (`t_forge`, item or static) within 3 tiles at every stage and turns to face it; lose it and the work stops with nothing lost. The menu needs a smith's weapon (`t_weapon_mace_smith`) in the hand. It opens from ingots, or from the hammer targeted on ingots; the hammer on anything else repairs it. An anvil does nothing on a click, repairing needs one near.
 
 ## Gathering
 

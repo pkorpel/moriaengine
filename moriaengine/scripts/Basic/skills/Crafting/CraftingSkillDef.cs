@@ -94,20 +94,31 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
+			//#962 - no button for a crafting skill, as Sphere's Event_Skill_Use: the tools open the menus
+			if (skillSeqArgs.Param1 == null) {
+				self.ClilocSysMessage(500014); //That skill cannot be used directly.
+				return TriggerResult.Cancel;
+			}
 			//todo: paralyzed state etc.
 			//some special requirements will be also checked (if present)
-			bool forTheMenu = skillSeqArgs.Param1 == null;
-			if (!this.CheckPrerequisities(skillSeqArgs) || (forTheMenu && !this.DoCheckMenu(self)) || !this.DoCheckSpecials(skillSeqArgs)) {
+			if (!this.CheckPrerequisities(skillSeqArgs) || !this.DoCheckSpecials(skillSeqArgs)) {
 				CraftingProcessPlugin.UnInstallCraftingPlugin(self);
 				return TriggerResult.Cancel; //something wrong, finish now
 			}
+			return TriggerResult.Continue; //do not stop, we have some item here, we can start crafting now
+		}
 
-			if (!forTheMenu) {
-				return TriggerResult.Continue; //do not stop, we have some item here, we can start crafting now
-			} //no item pre-selected, open the craftmenu
-			self.Dialog(SingletonScript<D_Craftmenu>.Instance, new DialogArgs(CraftmenuContents.MainCategories[(SkillName) this.Id]));
-			//do not continue, the rest will be solved from the craftmenu
-			return TriggerResult.Cancel; //F = continue to @start, T = stop
+		/// <summary>#962 - what a tool or a material does when used: Erebor's craftmenu().</summary>
+		public static void OpenMenu(Character self, SkillName skill) {
+			CraftingSkillDef def = (CraftingSkillDef) SkillDef.GetBySkillName(skill);
+			if (self.CheckAliveWithMessage() && def.DoCheckMenu(self)) {
+				D_Craftmenu.Craftmenu(self, skill);
+			}
+		}
+
+		/// <summary>The type's name of a thing, null with no type.</summary>
+		public static bool IsOfType(Item item, params string[] typeDefnames) {
+			return (item != null) && (item.Type != null) && (Array.IndexOf(typeDefnames, item.Type.Defname) >= 0);
 		}
 
 		/// <summary>
@@ -454,9 +465,10 @@ namespace SteamEngine.CompiledScripts {
 		public string QualitySuperior = "Due to your exceptional skill, the item is of superior quality";
 		public string FinishCrafting = "Crafting is finished";
 		public string CraftingAborted = "Crafting aborted";
+		public string CookOnFire = "You must cook food on some sort of fire";
+		public string SmellsGood = "Mmm, smells good";
 		public string NotNearForge = "You must be near a forge to smith";
 		public string NeedHammer = "You need a hammer in your hand";
-		public string IngotsOnPerson = "The ingots must be on your person";
 		//500638 - You create the item and put it in your backpack.
 		public string ItemMadeAndPutInRecCont = "You create the {0} and put it in your {1}";
 	}
