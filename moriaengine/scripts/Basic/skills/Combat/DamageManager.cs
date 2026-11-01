@@ -248,6 +248,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public static void ProcessSwing(Character attacker, Character defender) {
 			PlayerHunger.HurtIfStarving(attacker); //#924 - @hittry
+			HidingSkillDef.Reveal(attacker); //#962
 			WeaponSwingArgs swingArgs = GetWeaponSwingArgs(attacker, defender);
 			SoundCalculator.PlayAttackSound(attacker);
 			// The attacker never got any swing animation at all before this - only a sound
