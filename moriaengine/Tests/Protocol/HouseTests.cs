@@ -116,6 +116,65 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		[Fact]
+		public void GoldInTheChestBuysTime() {
+			using (var client = this.Connect(AccountA, "House Payer")) {
+				this.Ask(client, ".TestHouseMake", "HOUSE_MADE:");
+				string chestLine = this.Ask(client, ".TestHouseChest", "HOUSE_CHEST:");
+				uint chest = (uint) Number(chestLine, "chest");
+				uint gold = (uint) Number(chestLine, "gold");
+				this.Ask(client, ".TestHouseCheques", "HOUSE_CHEQUES:");
+				this.Ask(client, ".TestHouseResetPaid", "HOUSE_RESET:");
+
+				//gold dropped in by hand counts when the chest is clicked
+				client.SendPickUpItem(gold, 8800); //part of the pile
+				Thread.Sleep(300);
+				client.SendDropItem(gold, 0xFFFF, 0xFFFF, 0, (int) chest);
+				Thread.Sleep(400);
+				string before = this.Ask(client, ".TestHousePaid", "HOUSE_PAID:");
+				Assert.Contains("chestItems=1", before);
+				client.SendSingleClick(chest);
+				Thread.Sleep(400);
+				string paid = this.Ask(client, ".TestHousePaid", "HOUSE_PAID:");
+				Assert.Contains("chestItems=0", paid);
+				Assert.InRange(Number(paid, "seconds"), 255900, 256000); //8800 * 2592 / 89000, whole, * 1000
+			}
+		}
+
+		[Fact]
+		public void ChequesPayWholeMonthsDaysHoursAndMinutes() {
+			using (var client = this.Connect(AccountA, "House Cheques")) {
+				this.Ask(client, ".TestHouseMake", "HOUSE_MADE:");
+				this.Ask(client, ".TestHouseChest", "HOUSE_CHEST:");
+				string line = this.Ask(client, ".TestHouseCheques", "HOUSE_CHEQUES:");
+				//100000 at 89000: a month, 3 days at 2966, 17 hours at 123, 5 minutes at 2. The second: exactly a month.
+				long expected = (2 * 2592000) + (3 * 86400) + (17 * 3600) + (5 * 60);
+				Assert.InRange(Number(line, "seconds"), expected - 60, expected);
+				Assert.Contains("left=0", line);
+
+				string rent = this.Ask(client, ".TestHouseSetRent", "HOUSE_SETRENT:");
+				Assert.Contains("days=19", rent); //10 days at half the rent, a moment short of 20
+			}
+		}
+
+		[Fact]
+		public void AnUnpaidHouseIsEmptiedByAClickOrTheDailyLook() {
+			using (var client = this.Connect(AccountA, "House Evicted")) {
+				this.Ask(client, ".TestHouseMake", "HOUSE_MADE:");
+				this.Ask(client, ".TestHouseChest", "HOUSE_CHEST:");
+				string evicted = this.Ask(client, ".TestHouseEvict \"check\"", "HOUSE_EVICTED:");
+				Assert.Contains("owner=none friends=0", evicted);
+				Assert.True(evicted.Contains("[veci :2]") && evicted.Contains("[Zvira:1]"), evicted);
+				Assert.Contains("doorType=t_door doorLock=0 doorThere=True", evicted);
+
+				this.Ask(client, ".TestHouseMake", "HOUSE_MADE:");
+				this.Ask(client, ".TestHouseChest", "HOUSE_CHEST:");
+				client.SendSpeech(".TestHouseEvict \"timer\"");
+				Thread.Sleep(2500);
+				Assert.Contains("owner=none", this.Ask(client, ".TestHouseEvictedReport", "HOUSE_EVICTED:"));
+			}
+		}
+
 		private static void AssertHas(System.Collections.Generic.IEnumerable<string> strings, string text, string layout) {
 			Assert.True(System.Linq.Enumerable.Any(strings, s => s.Contains(text)) || layout.Contains(text), "Dialog lacks '" + text + "'");
 		}

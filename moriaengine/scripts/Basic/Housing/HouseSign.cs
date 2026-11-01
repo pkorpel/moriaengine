@@ -49,6 +49,8 @@ namespace SteamEngine.CompiledScripts {
 			if (NazgulRings.IsNazgul(player) && (house.Owner != null)) { //against a house being locked up unseen
 				self.Message("Mym majitelem je " + house.Owner.Name);
 			}
+			house.EnsureRentChest(self, player);
+			house.CheckRent(player);
 			if (house.Owner == null) {
 				player.SysMessage("Dum je bez majitele");
 				if (!player.IsGM) {

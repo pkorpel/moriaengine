@@ -134,9 +134,10 @@ namespace SteamEngine.CompiledScripts {
 			return (region != null) && region.Flag_NoDecay;
 		}
 
-		[SaveableClass]
+		//#941 - DeepCopyableClass: a stack on the ground that's split copies its timers, and this one aborted the pickup
+		[SaveableClass, DeepCopyableClass]
 		public class ItemDecayTimer : BoundTimer {
-			[LoadingInitializer]
+			[LoadingInitializer, DeepCopyImplementation]
 			public ItemDecayTimer() {
 			}
 

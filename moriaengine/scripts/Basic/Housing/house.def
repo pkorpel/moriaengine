@@ -3,3 +3,8 @@
 [HouseDef i_house_gem]
 NAME = "dum"
 model = i_worldgem_bit
+
+//the archive's i_najem_chest, a locked post box: gold is dropped in and nobody opens it
+[RentChestDef i_najem_chest]
+NAME = "Najem"
+model = i_post_box
