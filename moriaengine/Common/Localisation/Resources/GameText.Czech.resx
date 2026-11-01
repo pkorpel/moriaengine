@@ -172,6 +172,57 @@
   <data name="CraftSkillsLoc_SmellsGood" xml:space="preserve">
     <value>Mmm, smells good</value>
   </data>
+  <data name="ClothMakingLoc_ThingOnYou" xml:space="preserve">
+    <value>Vec musis mit u sebe.</value>
+  </data>
+  <data name="ClothMakingLoc_ThreadOnYou" xml:space="preserve">
+    <value>Nite musis mit u sebe.</value>
+  </data>
+  <data name="ClothMakingLoc_YarnOnYou" xml:space="preserve">
+    <value>Prizi musis mit u sebe.</value>
+  </data>
+  <data name="ClothMakingLoc_AskWool" xml:space="preserve">
+    <value>Na cem chces tuto vlnu zpracovat?</value>
+  </data>
+  <data name="ClothMakingLoc_AskCotton" xml:space="preserve">
+    <value>Na cem chces tuto bavlnu zpracovat?</value>
+  </data>
+  <data name="ClothMakingLoc_AskThread" xml:space="preserve">
+    <value>Na cem chces nite sprist?</value>
+  </data>
+  <data name="ClothMakingLoc_AskYarn" xml:space="preserve">
+    <value>Na cem chces prizi utkat?</value>
+  </data>
+  <data name="ClothMakingLoc_NoSightOfWheel" xml:space="preserve">
+    <value>Nevidis na kolovrat.</value>
+  </data>
+  <data name="ClothMakingLoc_NoSightOfLoom" xml:space="preserve">
+    <value>Nevidis na stav.</value>
+  </data>
+  <data name="ClothMakingLoc_AlreadyMaking" xml:space="preserve">
+    <value>Uz vyrabis.</value>
+  </data>
+  <data name="TailoringLoc_NoNeedOfRepair" xml:space="preserve">
+    <value>{0} nepotrebuje opravit.</value>
+  </data>
+  <data name="TailoringLoc_TooPoorToRepair" xml:space="preserve">
+    <value>Se svou ubohou dovednosti nic neopravis.</value>
+  </data>
+  <data name="TailoringLoc_Destroyed" xml:space="preserve">
+    <value>destroyed {0}</value>
+  </data>
+  <data name="TailoringLoc_RepairSpoiltMale" xml:space="preserve">
+    <value>Zkazil jsi opravu {0}.</value>
+  </data>
+  <data name="TailoringLoc_RepairSpoiltFemale" xml:space="preserve">
+    <value>Zkazila jsi opravu {0}.</value>
+  </data>
+  <data name="TailoringLoc_RepairedMale" xml:space="preserve">
+    <value>Opravil jsi {0}.</value>
+  </data>
+  <data name="TailoringLoc_RepairedFemale" xml:space="preserve">
+    <value>Opravila jsi {0}.</value>
+  </data>
   <data name="CraftSkillsLoc_CraftingAborted" xml:space="preserve">
     <value>Crafting aborted</value>
   </data>

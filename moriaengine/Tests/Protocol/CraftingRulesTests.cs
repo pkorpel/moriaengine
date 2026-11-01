@@ -250,6 +250,84 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#962 - spinning, the loom and mending clothes, as Erebor's scripts.</summary>
+	[Collection(CraftClothCollection.Name)]
+	public class CraftClothTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private readonly GameServerPairFixture fixture;
+
+		public CraftClothTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private static uint Uid(string report, string name) {
+			return uint.Parse(Regex.Match(report, name + @"=(\d+)").Groups[1].Value);
+		}
+
+		private static void WaitForMessage(TestGameClient client, string pattern) {
+			DateTime deadline = DateTime.UtcNow + Wait;
+			while (!Regex.IsMatch(client.ReadSystemMessage(deadline - DateTime.UtcNow), pattern)) {
+			}
+		}
+
+		private static void Use(TestGameClient client, uint source, uint on) {
+			client.SendDoubleClick(source);
+			Thread.Sleep(300);
+			client.SendTargetUid(on);
+		}
+
+		[Fact]
+		public void WoolBecomesYarnAndYarnCloth() {
+			using var client = CommandPermissionTests.Connect("craftcloth", "Cloth Tester");
+			string ready = this.Ask(client, ".TestClothReady \"1000\"", "CLOTH_READY:");
+			uint wool = Uid(ready, "wool"), yarn = Uid(ready, "yarn"), wheel = Uid(ready, "wheel"), loom = Uid(ready, "loom");
+			int still = int.Parse(Regex.Match(ready, @"still=(\d+)").Groups[1].Value);
+			client.SendDoubleClick(Uid(ready, "pack")); //a client can only reach into what it has open
+			Thread.Sleep(300);
+
+			//wool wants the wheel: the loom does nothing
+			Use(client, wool, loom);
+			Thread.Sleep(300);
+			Assert.Contains("i_wool=30", this.Ask(client, ".TestClothCount", "CLOTH_COUNT:"));
+
+			//100.0 Tailoring is 4 batches of 6, at the guessed 25.0 a batch, the wheel turns till it's done
+			Use(client, wool, wheel);
+			Thread.Sleep(300);
+			string spinning = this.Ask(client, ".TestClothCount", "CLOTH_COUNT:");
+			Assert.Contains("i_wool=6", spinning);
+			Assert.Contains("wheelNow=" + (still + 1), spinning);
+			Use(client, wool, wheel);
+			WaitForMessage(client, "Uz vyrabis");
+			Thread.Sleep(3200);
+			string spun = this.Ask(client, ".TestClothCount", "CLOTH_COUNT:");
+			Assert.Contains("i_yarn_ball=74", spun); //2 we had, 24 x 3
+			Assert.Contains("wheelNow=" + still, spun);
+
+			Use(client, yarn, loom);
+			Thread.Sleep(3500);
+			Assert.Contains("i_cloth=24", this.Ask(client, ".TestClothCount", "CLOTH_COUNT:"));
+
+			//clothes: Erebor's roll, either way the shirt ends a point smaller
+			string poor = this.Ask(client, ".TestClothShirt \"300\"", "CLOTH_SHIRT:");
+			Use(client, Uid(poor, "kit"), Uid(poor, "shirt"));
+			WaitForMessage(client, "ubohou");
+			Assert.Contains("durability=5/20", this.Ask(client, ".TestClothShirt \"\"", "CLOTH_SHIRT:"));
+			string good = this.Ask(client, ".TestClothShirt \"500\"", "CLOTH_SHIRT:");
+			Use(client, Uid(good, "kit"), Uid(good, "shirt"));
+			WaitForMessage(client, "pravil|Zkazil");
+			Assert.Matches("durability=(4|19)/19", this.Ask(client, ".TestClothShirt \"\"", "CLOTH_SHIRT:"));
+		}
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class CraftClothCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "CraftCloth";
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class CraftPotionsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "CraftPotions";

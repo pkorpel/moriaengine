@@ -346,6 +346,59 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("STAGE_COOK: raw=" + raw + " forge=" + (uint) forge.FlaggedUid + " pack=" + (uint) self.Backpack.FlaggedUid);
 		}
 
+		private static Item spinningWheel, loom, shirt;
+
+		/// <summary>A tailor of a given skill, a wheel and a loom beside them, wool and yarn in the pack.</summary>
+		[SteamFunction]
+		public static void TestClothReady(Character self, ScriptArgs sa) {
+			self.Account.PLevel = 1;
+			self.SetRealSkillValue((int) SkillName.Tailoring, int.Parse(sa.Args.Trim('"')));
+			spinningWheel = (Item) ((ItemDef) ThingDef.GetByDefname("i_spinning_wheel")).Create(self.Backpack);
+			spinningWheel.P((ushort) (self.X + 1), self.Y, self.Z, self.M);
+			loom = (Item) ((ItemDef) ThingDef.GetByDefname("i_loom_upright")).Create(self.Backpack);
+			loom.P(self.X, (ushort) (self.Y + 1), self.Z, self.M);
+			Item wool = (Item) ((ItemDef) ThingDef.GetByDefname("i_wool")).Create(self.Backpack);
+			wool.Amount = 30;
+			Item yarn = (Item) ((ItemDef) ThingDef.GetByDefname("i_yarn_ball")).Create(self.Backpack);
+			yarn.Amount = 2;
+			Console.WriteLine("CLOTH_READY: wool=" + (uint) wool.FlaggedUid + " yarn=" + (uint) yarn.FlaggedUid + " wheel=" + (uint) spinningWheel.FlaggedUid
+				+ " loom=" + (uint) loom.FlaggedUid + " pack=" + (uint) self.Backpack.FlaggedUid + " still=" + spinningWheel.Model);
+		}
+
+		[SteamFunction]
+		public static void TestClothCount(Character self) {
+			string report = "";
+			foreach (string defname in new[] { "i_wool", "i_yarn_ball", "i_cloth" }) {
+				int count = 0;
+				foreach (AbstractItem item in self.Backpack) {
+					if (item.Def == ThingDef.GetByDefname(defname)) {
+						count += item.Amount;
+					}
+				}
+				report += " " + defname + "=" + count;
+			}
+			Console.WriteLine("CLOTH_COUNT:" + report + " wheelNow=" + spinningWheel.Model);
+		}
+
+		/// <summary>A worn shirt and a thread, or the state of that shirt.</summary>
+		[SteamFunction]
+		public static void TestClothShirt(Character self, ScriptArgs sa) {
+			string skill = sa.Args.Trim('"');
+			if (skill.Length > 0) {
+				self.SetRealSkillValue((int) SkillName.Tailoring, int.Parse(skill));
+				shirt = (Item) ((ItemDef) ThingDef.GetByDefname("i_shirt_plain")).Create(self.Backpack);
+				Destroyable clothes = (Destroyable) shirt;
+				clothes.MaxDurability = 20;
+				clothes.Durability = 5;
+				Give(self, "i_thread", 5);
+				Item kit = (Item) ((ItemDef) ThingDef.GetByDefname("i_sewing_kit")).Create(self.Backpack);
+				Console.WriteLine("CLOTH_SHIRT: shirt=" + (uint) shirt.FlaggedUid + " kit=" + (uint) kit.FlaggedUid);
+			} else {
+				Destroyable clothes = (Destroyable) shirt;
+				Console.WriteLine("CLOTH_SHIRT: durability=" + clothes.Durability + "/" + clothes.MaxDurability);
+			}
+		}
+
 		/// <summary>What failing at a given loss takes from 19 ingots of a real recipe.</summary>
 		[SteamFunction]
 		public static void TestCraftFailLoss(Character self, ScriptArgs sa) {

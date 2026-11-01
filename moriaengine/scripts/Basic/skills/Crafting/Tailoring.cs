@@ -15,17 +15,73 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
-	/// <summary>#962 - Erebor's i_sewing_kit: on cloth, a hide or leather it opens the menu.</summary>
+	/// <summary>#962 - Erebor's i_sewing_kit: on cloth, a hide or leather it opens the menu, on clothes it repairs them.
+	/// Its rolls are kept to the letter: the fail roll grows with Tailoring and a good repair takes magic thread, not thread.
+	/// Clothes with magic properties have rules of their own, for when magic items exist.</summary>
 	public class Targ_SewingKit : CompiledTargetDef {
+		private const int LeastSkill = 400, FailRollOf = 1201;
+
 		protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
-			if (CraftingSkillDef.IsOfType(targetted as Item, "t_cloth", "t_hide", "t_leather")) {
+			Item item = targetted as Item;
+			if (CraftingSkillDef.IsOfType(item, "t_cloth", "t_hide", "t_leather")) {
 				CraftingSkillDef.OpenMenu(self, SkillName.Tailoring);
+			} else if (CraftingSkillDef.IsOfType(item, "t_clothing") && (item is Destroyable)) {
+				Repair(self, (Destroyable) item);
 			}
 			return TargetResult.Done;
 		}
+
+		private static void Repair(Player self, Destroyable clothes) {
+			TailoringLoc texts = Loc<TailoringLoc>.Get(self.Language);
+			int skill = self.GetSkill(SkillName.Tailoring);
+			if (clothes.Durability >= clothes.MaxDurability) {
+				self.SysMessage(string.Format(texts.NoNeedOfRepair, clothes.Name));
+				return;
+			}
+			if (skill < LeastSkill) {
+				self.SysMessage(texts.TooPoorToRepair);
+				return;
+			}
+			IResourceListEntry missing;
+			ResourcesList thread = ResourcesListParser.Parse("1 i_thread");
+			if (!thread.HasResourcesPresent(self, ResourcesLocality.Backpack, out missing)) {
+				return;
+			}
+			bool failed = Globals.dice.Next(FailRollOf) < skill;
+			if (failed) {
+				thread.ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missing);
+			} else {
+				ResourcesList magicThread = ResourcesListParser.Parse("1 i_magicka_nit");
+				if (magicThread.HasResourcesPresent(self, ResourcesLocality.Backpack, out missing)) {
+					magicThread.ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missing);
+				}
+			}
+			int most = clothes.MaxDurability - 1;
+			int now = failed ? (clothes.Durability - 1) : most;
+			if ((most < 1) || (now < 1)) {
+				self.Emote(string.Format(texts.Destroyed, clothes.Name));
+				clothes.Delete();
+				return;
+			}
+			clothes.MaxDurability = (ushort) most;
+			clothes.Durability = (ushort) now;
+			string text = failed ? (self.IsFemale ? texts.RepairSpoiltFemale : texts.RepairSpoiltMale) : (self.IsFemale ? texts.RepairedFemale : texts.RepairedMale);
+			self.SysMessage(string.Format(text, clothes.Name));
+		}
+	}
+
+	internal class TailoringLoc : CompiledLocStringCollection<TailoringLoc> {
+		public string NoNeedOfRepair = "{0} nepotrebuje opravit.";
+		public string TooPoorToRepair = "Se svou ubohou dovednosti nic neopravis.";
+		public string Destroyed = "destroyed {0}";
+		public string RepairSpoiltMale = "Zkazil jsi opravu {0}.";
+		public string RepairSpoiltFemale = "Zkazila jsi opravu {0}.";
+		public string RepairedMale = "Opravil jsi {0}.";
+		public string RepairedFemale = "Opravila jsi {0}.";
 	}
 
 	[ViewableClass]
