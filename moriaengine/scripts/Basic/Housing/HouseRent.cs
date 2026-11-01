@@ -179,6 +179,7 @@ namespace SteamEngine.CompiledScripts {
 			string when = DateTime.Now.ToString("d.M.yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
 			Container things = this.NewBackup("veci z domu " + this.Title + " - " + when + ", majitel " + ownerName);
 			Container animals = this.NewBackup("Zvirata z domu " + this.Title + " - " + when);
+			this.UnlockAll();
 			FlaggedRegion area = this.Area;
 			Map map = this.GetMap();
 			foreach (ImmutableRectangle rectangle in area.Rectangles) {

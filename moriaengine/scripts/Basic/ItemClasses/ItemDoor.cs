@@ -55,6 +55,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static bool HasKeyFor(Character user, Item locked) {
+			House house = locked.LockedTo;
+			if (house != null) { //Erebor's keys of a house, which friends and up get
+				return house.RankOf(user) >= HouseRank.Friend;
+			}
 			return FindKey(user.Backpack, locked.LockUid, 20);
 		}
 

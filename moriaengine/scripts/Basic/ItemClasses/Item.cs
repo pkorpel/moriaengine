@@ -176,6 +176,10 @@ namespace SteamEngine.CompiledScripts {
 		/// before #220/#221.</summary>
 		public override TriggerResult On_DenyPickup(DenyPickupArgs args) {
 			Character picker = args.PickingChar as Character;
+			if ((this.LockedTo != null) && ((picker == null) || !picker.IsGM)) { //#941 - nobody's: it has to be unlocked first
+				args.Result = new DenyResult_StringSysMessage("Vec je zamcena k domu.");
+				return TriggerResult.Cancel;
+			}
 			if (this.Flag_NonMovable && ((picker == null) || !picker.IsGM)) { //#854 - fixed for players, GMs place things
 				args.Result = DenyResultMessages.Deny_YouCannotPickThatUp;
 				return TriggerResult.Cancel;
@@ -238,6 +242,13 @@ namespace SteamEngine.CompiledScripts {
 					args.Result = DenyResultMessages.Deny_ContainerClosed;
 					return;
 				}
+			}
+			//#941 - proti vykradani zamcenych truhel: reaching in without the right is a thief's attempt
+			Character taker = args.PickingChar as Character;
+			if ((taker != null) && this.IsLockedAgainst(taker)) {
+				SteamEngine.Common.Logger.WriteWarning("ZLODEJ !!! " + taker + " tried to take " + args.ManipulatedItem + " from locked " + this);
+				args.Result = new DenyResult_StringSysMessage("Nemas na to pravo.");
+				return;
 			}
 			base.On_DenyPickupItemFrom(args);
 		}
