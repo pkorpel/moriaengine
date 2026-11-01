@@ -145,4 +145,4 @@ Stealing is off, by Erebor's own `on=@start action=-1`: the cursor comes up and 
 
 Double clicking someone's pack within 2 tiles of them snoops it, with Sphere's rules: 2 s, against their Dexterity, or no roll at all for a higher plevel. A lower plevel gets nowhere. A player vendor can't be snooped. Failing while invisible makes you a criminal. Everyone around who sees you may notice, the mark most readily and your Snooping against theirs. Noticed, you lose 10 karma, down to -500, and each NPC witness has 1 chance in 60 of making it a crime.
 
-Not ported: a player witness's "saw a crime" memory (it feeds guard calls), Sphere's karma scaling, an NPC mark's protests and flight.
+A witness that takes it as a crime reacts as in Sphere: a player remembers, so a call for the guards sends them after you, an NPC flags you and calls the nearest guard (`CrimeWitness`). An NPC mark protests, and 1 time in 4 runs for 20 steps. Sphere also summons a guard if none is near; here one must be around. Karma falls by Sphere's scale, double while it's above 0.
