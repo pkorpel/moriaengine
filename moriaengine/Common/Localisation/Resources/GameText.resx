@@ -523,6 +523,42 @@
   <data name="HealingLoc_HealBetterFemale" xml:space="preserve">
     <value>Nyni jsi schopna lecit lepe.</value>
   </data>
+  <data name="HidingLoc_Hidden" xml:space="preserve">
+    <value>Skryti se povedlo.</value>
+  </data>
+  <data name="HidingLoc_Failed" xml:space="preserve">
+    <value>Nepovedlo se ti schovat.</value>
+  </data>
+  <data name="HidingLoc_FoundMale" xml:space="preserve">
+    <value>Byl jsi objeven.</value>
+  </data>
+  <data name="HidingLoc_FoundFemale" xml:space="preserve">
+    <value>Byla jsi objevena.</value>
+  </data>
+  <data name="DetectLoc_Frozen" xml:space="preserve">
+    <value>You are frozen and cannot move.</value>
+  </data>
+  <data name="DetectLoc_Dead" xml:space="preserve">
+    <value>You are dead!</value>
+  </data>
+  <data name="DetectLoc_NotYet" xml:space="preserve">
+    <value>Jeste nelze pouzit.</value>
+  </data>
+  <data name="DetectLoc_Looking" xml:space="preserve">
+    <value>Prozkoumavas sve okoli</value>
+  </data>
+  <data name="DetectLoc_Finished" xml:space="preserve">
+    <value>Hledani ukonceno.</value>
+  </data>
+  <data name="DetectLoc_TryingToFindYou" xml:space="preserve">
+    <value>{0} se te pokousi objevit.</value>
+  </data>
+  <data name="DetectLoc_FoundMale" xml:space="preserve">
+    <value>Objevil jsi {0}.</value>
+  </data>
+  <data name="DetectLoc_FoundFemale" xml:space="preserve">
+    <value>Objevila jsi {0}.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
@@ -585,9 +621,6 @@
   </data>
   <data name="GmCommandsLoc_InvulOn" xml:space="preserve">
     <value>Flag_Invulnerable on (nothing can damage you)</value>
-  </data>
-  <data name="HidingLoc_HidingAborted" xml:space="preserve">
-    <value>Hiding aborted.</value>
   </data>
   <data name="IncomingPacketsLoc_IllegalCharsInName" xml:space="preserve">
     <value>Illegal name - Contains something other than letters and spaces.</value>

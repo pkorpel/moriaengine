@@ -158,3 +158,13 @@ Only shamans use bloody bandages on people. Their class ability `.improvement` c
 A clean bandage on a tub of blood turns the stack bloody, a bloody one in `t_water_wash` turns it clean.
 
 20 bandages on a body within 2 tiles try to raise it: a priest or shaman a person, from 80.0 Healing and Anatomy, the ghost within 4 tiles in war mode; a ranger a beast, from 80.0 Veterinary and Animal Lore. 4 s later a roll of 70.0 to 105.0 under the skill decides. A raised beast gives no experience or gold and returns 20 bloody bandages. Horses, llamas and spawns marked `i_nores` can't be raised.
+
+## Hiding, Stealth and Detect Hidden (#962)
+
+Erebor's `systems/skills/hiding.scp` and Sphere's reveal rules.
+
+Hiding takes 3 to 1.5 s, then Hiding against a roll of 0 to 102.4. Starting any other skill in between spoils it. Stealth's button does the same; the skill does nothing else on its own.
+
+A hidden step rolls Stealth, plus 10.0 per point of darkness, against 0 to 104. Running always reveals, and so does any step while magically invisible. You're also revealed by attacking, a physical hit, picking something up, speaking, teleporting, and pressing a skill button with nothing else going on.
+
+Detect Hidden: 2 s of looking, then everyone unseen within 25 tiles is tried, not GMs, the invulnerable or the dead. It's Detect minus their Hiding, plus 100.0, minus 5.0 a tile, against a roll of their Hiding, plus twice what's over 100.0. A found person is simply revealed. The same person can't be tried again by you for 7 s, and you can't search again for 8 to 4 s.

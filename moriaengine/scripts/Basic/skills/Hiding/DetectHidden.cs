@@ -17,64 +17,119 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
-using SteamEngine.Networking;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
+
+	/// <summary>#962 - Erebor's f_testreveal: 2 s of looking around, then everyone unseen within 25 tiles is tried once. Skill minus
+	/// their Hiding and the distance beats a roll of their Hiding, and a Hiding of over 100.0 counts three times. The same
+	/// person isn't tried again for 7 s. You show yourself, and it can't be done again for 8 to 4 s.</summary>
 	[ViewableClass]
 	public class DetectHiddenSkillDef : SkillDef {
+		private const int Range = 25, GraceAbove = 1000, DistanceDrop = 50, WarnFactor = 50, WarnRollLeast = 50, WarnRollMost = 400;
+		private const double SecondsLooking = 2, SecondsBetweenTries = 7;
+
+		private static readonly TagKey nextDetectTK = TagKey.Acquire("nextdetect");
+		private static readonly ConditionalWeakTable<Character, Dictionary<Character, double>> triedBy = new ConditionalWeakTable<Character, Dictionary<Character, double>>();
 
 		public DetectHiddenSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 		}
 
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
-			//todo: various state checks...
-			return TriggerResult.Continue;
+			Character self = skillSeqArgs.Self;
+			DetectLoc texts = Loc<DetectLoc>.Get(self.Language);
+			HidingSkillDef.Spoil(self);
+			HidingSkillDef.Reveal(self);
+			object next = self.GetTag(nextDetectTK);
+			if (ParalyzeEffectPluginDef.IsParalyzed(self)) {
+				self.SysMessage(texts.Frozen);
+			} else if (self.Flag_Dead) {
+				self.SysMessage(texts.Dead);
+			} else if ((next != null) && ((double) next > Globals.TimeInSeconds) && !self.IsGM) {
+				self.SysMessage(texts.NotYet);
+			} else {
+				self.SysMessage(texts.Looking);
+				self.SetTag(nextDetectTK, Globals.TimeInSeconds + this.GetDelayForValue((ushort) self.GetSkill(SkillName.DetectHidden)));
+				self.AddTimer(DetectTimer.Key, new DetectTimer()).DueInSeconds = SecondsLooking;
+			}
+			return TriggerResult.Cancel;
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			return TriggerResult.Continue;
+			return TriggerResult.Cancel;
 		}
 
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
-			//todo: various state checks...
-			Character self = skillSeqArgs.Self;
-			double range = Math.Round(this.GetEffectForChar(self));
-
-			foreach (Character target in self.GetMap().GetCharsInRange(self.X, self.Y, (int) range)) {
-				if (target.Flag_Hidden) {
-					if (this.CheckSuccess(self, target.GetSkill(SkillName.Hiding))) {
-						skillSeqArgs.Success = true;
-						skillSeqArgs.Target1 = target;
-					}
-				}
-			}
-
-			return TriggerResult.Continue;
+			return TriggerResult.Cancel;
 		}
 
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			Character target = (Character) skillSeqArgs.Target1;
-			HiddenHelperPlugin ssp = target.GetPlugin(HidingSkillDef.pluginKey) as HiddenHelperPlugin;
-			if (ssp != null) {
-				if (ssp.hadDetectedMe == null) {
-					ssp.hadDetectedMe = new LinkedList<Character>();
-				} else if (ssp.hadDetectedMe.Contains(self)) {
-					return;
-				}
-				CharSyncQueue.AboutToChangeVisibility(target);
-				ssp.hadDetectedMe.AddFirst(self);
-			}
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
-			skillSeqArgs.Self.ClilocSysMessage(500817);//You can see nothing hidden there.
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
-			skillSeqArgs.Self.SysMessage("Detecting Hidden aborted.");
 		}
+
+		internal static void Finish(Character self) {
+			foreach (AbstractCharacter other in new List<AbstractCharacter>(self.GetMap().GetCharsInRange(self.X, self.Y, Range))) {
+				Character target = other as Character;
+				if ((target != null) && (target != self) && !target.IsGM && !target.Flag_Invulnerable && !target.Flag_Dead && (target.Flag_Hidden || target.Flag_InvisByMagic)) {
+					Try(self, target);
+				}
+			}
+			self.SysMessage(Loc<DetectLoc>.Get(self.Language).Finished);
+		}
+
+		private static void Try(Character self, Character target) {
+			Dictionary<Character, double> tried = triedBy.GetOrCreateValue(target);
+			double until;
+			if (tried.TryGetValue(self, out until) && (until > Globals.TimeInSeconds)) {
+				return;
+			}
+			tried[self] = Globals.TimeInSeconds + SecondsBetweenTries;
+			int distance = Point2D.GetSimpleDistance(self, target);
+			int detect = self.GetSkill(SkillName.DetectHidden);
+			int hiding = target.GetSkill(SkillName.Hiding);
+			if (hiding > (((detect / Globals.dice.Next(WarnRollLeast, WarnRollMost + 1)) + distance) * WarnFactor)) {
+				target.SysMessage(string.Format(Loc<DetectLoc>.Get(target.Language).TryingToFindYou, self.Name));
+			}
+			int beyondMastery = Math.Max(0, (hiding - GraceAbove) * 2);
+			if ((detect - hiding + GraceAbove - (distance * DistanceDrop)) > (Globals.dice.Next(hiding + 1) + beyondMastery)) {
+				HidingSkillDef.Reveal(target);
+				DetectLoc texts = Loc<DetectLoc>.Get(self.Language);
+				self.SysMessage(string.Format(self.IsFemale ? texts.FoundFemale : texts.FoundMale, target.Name));
+			}
+		}
+	}
+
+	[SaveableClass, DeepCopyableClass]
+	public class DetectTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_detecting_");
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public DetectTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			DetectHiddenSkillDef.Finish((Character) cont);
+		}
+	}
+
+	internal class DetectLoc : CompiledLocStringCollection<DetectLoc> {
+		public string Frozen = "You are frozen and cannot move.";
+		public string Dead = "You are dead!";
+		public string NotYet = "Jeste nelze pouzit.";
+		public string Looking = "Prozkoumavas sve okoli";
+		public string Finished = "Hledani ukonceno.";
+		public string TryingToFindYou = "{0} se te pokousi objevit.";
+		public string FoundMale = "Objevil jsi {0}.";
+		public string FoundFemale = "Objevila jsi {0}.";
 	}
 }

@@ -165,8 +165,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((self != target) && (target is Player)) {
 				if (HealingAbilities.IsEnlightened(self)) {
 					self.SysMessage(texts.HealingFaster, ClassMessageColor);
-					self.Flag_Hidden = false;
-					self.Flag_InvisByMagic = false;
+					HidingSkillDef.Reveal(self);
 					seconds = ScriptUtil.EvalRangePermille(self.GetSkill(SkillName.Healing), HealingAbilities.EnlightmentSeconds);
 				} else if (bloody && HealingAbilities.IsImproved(self)) {
 					self.SysMessage(texts.HealingBetter, ClassMessageColor);
@@ -347,8 +346,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void OnTimeout(TagHolder cont) {
 			Character self = (Character) cont;
-			self.Flag_Hidden = false;
-			self.Flag_InvisByMagic = false;
+			HidingSkillDef.Reveal(self);
 			if ((this.corpse == null) || this.corpse.IsDeleted) {
 				return;
 			}

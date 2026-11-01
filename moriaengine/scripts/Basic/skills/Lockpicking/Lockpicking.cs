@@ -82,8 +82,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private void Begin(Player self, Item locked, int pick) {
 			PlayerHunger.HurtIfStarving(self);
-			self.Flag_Hidden = false;
-			self.Flag_InvisByMagic = false;
+			HidingSkillDef.Reveal(self);
 			self.Sound(PickSound);
 			IResourceListEntry missing;
 			ResourcesListParser.Parse("1 " + picks[pick]).ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missing);
