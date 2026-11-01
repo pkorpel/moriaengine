@@ -106,6 +106,15 @@
   <data name="ContainerLoc_stonesGenitiv" xml:space="preserve">
     <value>stones</value>
   </data>
+  <data name="CraftSkillsLoc_NotNearForge" xml:space="preserve">
+    <value>You must be near a forge to smith</value>
+  </data>
+  <data name="CraftSkillsLoc_NeedHammer" xml:space="preserve">
+    <value>You need a hammer in your hand</value>
+  </data>
+  <data name="CraftSkillsLoc_IngotsOnPerson" xml:space="preserve">
+    <value>The ingots must be on your person</value>
+  </data>
   <data name="CraftSkillsLoc_CraftingAborted" xml:space="preserve">
     <value>Crafting aborted</value>
   </data>

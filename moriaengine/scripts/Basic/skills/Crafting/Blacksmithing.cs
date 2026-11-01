@@ -15,6 +15,7 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
@@ -25,9 +26,43 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
+		private const int ForgeRange = 3;
+
+		/// <summary>Sphere's Calc_GetRandVal(4) + 2, and the last stroke that only sounds.</summary>
+		public override int RollStrokes() {
+			return Globals.dice.Next(4) + 2 + 1;
+		}
+
 		//do the "hammer on anvil" sound
 		protected override void DoStroke(SkillSequenceArgs skillSeqArgs) {
 			skillSeqArgs.Self.Sound(0x2a);
+		}
+
+		protected override void DoStrokeAnim(SkillSequenceArgs skillSeqArgs) {
+			AnimCalculator.PerformAttackAnim(skillSeqArgs.Self);
+		}
+
+		//a forge at every stage, as Sphere's Skill_Blacksmith, turning to face it
+		protected override bool DoCheckSpecials(SkillSequenceArgs skillSeqArgs) {
+			Character self = skillSeqArgs.Self;
+			Point2D forge;
+			if (!FindNearby(self, "t_forge", ForgeRange, out forge)) {
+				self.SysMessage(Loc<CraftSkillsLoc>.Get(self.Language).NotNearForge);
+				return false;
+			}
+			if ((forge.X != self.X) || (forge.Y != self.Y)) {
+				self.Direction = Point2D.GetDirFromTo(self, forge);
+			}
+			return true;
+		}
+
+		protected override bool DoCheckMenu(Character self) {
+			Item inHand = self.FindLayer(LayerNames.Hand1) as Item;
+			if ((inHand == null) || (inHand.Type == null) || (inHand.Type.Defname != "t_weapon_mace_smith")) {
+				self.SysMessage(Loc<CraftSkillsLoc>.Get(self.Language).NeedHammer);
+				return false;
+			}
+			return true;
 		}
 	}
 }

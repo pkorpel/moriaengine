@@ -88,6 +88,98 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#962 - a skill's stages: what smithing wants at hand, how long making takes.</summary>
+	[Collection(CraftStagesCollection.Name)]
+	public class CraftStagesTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(15);
+		private readonly GameServerPairFixture fixture;
+
+		public CraftStagesTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private static uint Uid(string report, string name) {
+			return uint.Parse(Regex.Match(report, name + @"=(\d+)").Groups[1].Value);
+		}
+
+		private static string WaitForMessage(TestGameClient client, string pattern) {
+			DateTime deadline = DateTime.UtcNow + Wait;
+			while (true) {
+				string message = client.ReadSystemMessage(deadline - DateTime.UtcNow);
+				if (Regex.IsMatch(message, pattern)) {
+					return message;
+				}
+			}
+		}
+
+		private const string NoForge = "forge|vyhne";
+		private const string NoHammer = "hammer|kladivo";
+
+		[Fact]
+		public void StagesAreSpheres() {
+			using var client = CommandPermissionTests.Connect("craftstage", "Smith Tester");
+			string strokes = this.Ask(client, ".TestStageStrokes", "STAGE_STROKES:");
+			Assert.Contains("Blacksmith=3-6@1/1", strokes);
+			Assert.Contains("Carpentry=3-5@1/1", strokes);
+			Assert.Contains("Fletching=1-1@2/2", strokes);
+			Assert.Contains("Tailoring=1-1@2.5/2.5", strokes);
+			Assert.Contains("Tinkering=1-1@2.5/2.5", strokes);
+			Assert.Contains("Alchemy=1-1@2/1", strokes);
+
+			string setup = this.Ask(client, ".TestStageSetup", "STAGE_SETUP:");
+			uint ingots = Uid(setup, "ingots"), hammer = Uid(setup, "hammer");
+			client.SendDoubleClick(Uid(setup, "pack")); //a client can only reach into what it has open
+			Thread.Sleep(300);
+
+			client.SendDoubleClick(ingots);
+			WaitForMessage(client, NoHammer);
+
+			//the hammer goes in the hand and asks what for
+			client.SendDoubleClick(hammer);
+			Thread.Sleep(300);
+			client.SendTargetUid(ingots);
+			WaitForMessage(client, NoForge);
+
+			this.Ask(client, ".TestStageForge \"4\"", "STAGE_FORGE:");
+			client.SendDoubleClick(ingots);
+			WaitForMessage(client, NoForge);
+
+			this.Ask(client, ".TestStageForge \"3\"", "STAGE_FORGE:");
+			client.SendDoubleClick(ingots);
+			Assert.Contains(client.ReadGumpDialogWithStrings(Wait).Strings, line => line.Contains("Blacksmithing", StringComparison.Ordinal));
+
+			client.SendDoubleClick(hammer);
+			Thread.Sleep(300);
+			client.SendTargetUid(ingots);
+			Assert.Contains(client.ReadGumpDialogWithStrings(Wait).Strings, line => line.Contains("Blacksmithing", StringComparison.Ordinal));
+
+			//at least 3 strokes of 1 s, whether it fails or not
+			var watch = System.Diagnostics.Stopwatch.StartNew();
+			this.Ask(client, ".TestStageMake", "STAGE_STARTED:");
+			WaitForMessage(client, "You create|You have failed");
+			Assert.True(watch.Elapsed.TotalSeconds > 2.8, "took " + watch.Elapsed);
+
+			//the forge goes mid work: it stops and nothing's made
+			string before = this.Ask(client, ".TestCraftMade", "CRAFT_MADE:");
+			before = before.Substring(before.IndexOf("daggers=", StringComparison.Ordinal));
+			this.Ask(client, ".TestStageMake", "STAGE_STARTED:");
+			Thread.Sleep(300);
+			this.Ask(client, ".TestStageForge \"0\"", "STAGE_FORGE:");
+			WaitForMessage(client, NoForge);
+			Thread.Sleep(1500);
+			Assert.Contains(before, this.Ask(client, ".TestCraftMade", "CRAFT_MADE:"));
+		}
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class CraftStagesCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "CraftStages";
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class CraftMenuCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "CraftMenu";
