@@ -19,7 +19,6 @@ Def:	//vars on the def
 	public ResourcesList resources2 = null
 	public ResourcesList skillMake = null
 	public ResourcesList skillmake2 = null
-	public Double[] strokes = new Double[] {4,2}
 	//how hard it is to craft this item (value compared against the skill (1000=100.0)
 	public int difficulty = 1000
 	public LightType light = (LightType) 0

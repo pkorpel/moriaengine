@@ -25,8 +25,10 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
-		protected override void DoStroke(SkillSequenceArgs skillSeqArgs) {
+		//#962 - every stage, as Sphere's Skill_Bowcraft
+		protected override void DoEveryStage(SkillSequenceArgs skillSeqArgs) {
 			skillSeqArgs.Self.Sound(0x55);
+			AnimCalculator.PerformAnim(skillSeqArgs.Self, GenericAnim.Salute);
 		}
 	}
 }

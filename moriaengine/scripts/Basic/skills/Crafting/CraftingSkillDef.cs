@@ -18,6 +18,7 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
@@ -52,12 +53,13 @@ namespace SteamEngine.CompiledScripts {
 			Character self = skillSeqArgs.Self;
 			//todo: paralyzed state etc.
 			//some special requirements will be also checked (if present)
-			if (!this.CheckPrerequisities(skillSeqArgs) || !this.DoCheckSpecials(skillSeqArgs)) {
+			bool forTheMenu = skillSeqArgs.Param1 == null;
+			if (!this.CheckPrerequisities(skillSeqArgs) || (forTheMenu && !this.DoCheckMenu(self)) || !this.DoCheckSpecials(skillSeqArgs)) {
 				CraftingProcessPlugin.UnInstallCraftingPlugin(self);
 				return TriggerResult.Cancel; //something wrong, finish now
 			}
 
-			if (skillSeqArgs.Param1 != null) {
+			if (!forTheMenu) {
 				return TriggerResult.Continue; //do not stop, we have some item here, we can start crafting now
 			} //no item pre-selected, open the craftmenu
 			self.Dialog(SingletonScript<D_Craftmenu>.Instance, new DialogArgs(CraftmenuContents.MainCategories[(SkillName) this.Id]));
@@ -79,17 +81,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			ItemDef iDefToMake = (ItemDef) skillSeqArgs.Param1;//the on_start trigger runs only if there is something here...
-															   //get the strokes count (i.e. number of animations and skillmaking sounds before the item is made)
-			double[] itemStrokes = iDefToMake.Strokes; //always 2-item array
-													   //compute the actual strokes count to make the selected item for "self" char
-			int strokes = (int) Math.Round(ScriptUtil.EvalRangePermille(this.SkillValueOfChar(self), itemStrokes));
-			//check the Success now
-			skillSeqArgs.Success = this.CheckSuccess(self, MakeDifficulty(iDefToMake));
-			if (!skillSeqArgs.Success) {//the item making will fail
-				skillSeqArgs.Param2 = (int) Math.Round(ScriptUtil.GetRandInRange(1, strokes));//fail will occur after a few strokes (not necessary immediatelly)
-			} else {//item will be created, with pre-computed number of strokes
-				skillSeqArgs.Param2 = strokes;
-			}
+			//#962 - decided now, shown after all the strokes: a failure takes as long as a success
+			int difficulty = MakeDifficulty(iDefToMake);
+			skillSeqArgs.Success = (difficulty <= 0) || this.CheckSuccess(self, difficulty);
+			skillSeqArgs.Param2 = this.RollStrokes();
+			this.DoEveryStage(skillSeqArgs);
 			return TriggerResult.Continue; //continue to delay, then @stroke
 		}
 
@@ -105,15 +101,16 @@ namespace SteamEngine.CompiledScripts {
 				return TriggerResult.Cancel; //something wrong, finish now
 			}
 
+			this.DoEveryStage(skillSeqArgs);
+			this.DoStroke(skillSeqArgs);
 			int strokesCnt = Convert.ToInt32(skillSeqArgs.Param2);
 			if (strokesCnt > 1) {
-				//do the animation, sound and repeat the stroke
-				this.DoStroke(skillSeqArgs);
+				//the last stroke only sounds, as Sphere's has no count left to animate
+				this.DoStrokeAnim(skillSeqArgs);
 				skillSeqArgs.Param2 = strokesCnt - 1;
 				skillSeqArgs.DelayStroke();
 				return TriggerResult.Cancel; //stop here for now (we are waiting for the next stroke round...)
 			}
-			this.DoStroke(skillSeqArgs);//do the animation, sound and finish
 			return TriggerResult.Continue; //continue to @success or @fail (the result is already prepared from the "@start" phase
 		}
 
@@ -131,6 +128,7 @@ namespace SteamEngine.CompiledScripts {
 				return;//something wrong, finish now
 			}
 
+			this.DoEveryStage(skillSeqArgs);
 			ItemDef iDefToMake = (ItemDef) skillSeqArgs.Param1;
 
 			IResourceListEntry missingResource;
@@ -173,11 +171,12 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			if (!self.CheckAliveWithMessage()) { //checking alive will be enough
+			if (!self.CheckAliveWithMessage() || !this.DoCheckSpecials(skillSeqArgs)) {
 				CraftingProcessPlugin.UnInstallCraftingPlugin(self);
 				return;//no message needed, it's been already sent in the called method
 			}
 
+			this.DoEveryStage(skillSeqArgs);
 			ItemDef iDefToMake = (ItemDef) skillSeqArgs.Param1;
 
 			//check if we can even make it (i.e. we have necessary resources) otherwise we can attempt to make something without resources and in case 
@@ -216,11 +215,24 @@ namespace SteamEngine.CompiledScripts {
 			CraftingProcessPlugin.UnInstallCraftingPlugin(self);
 		}
 
+		/// <summary>How many strokes one item takes. One is Sphere's for all but the Blacksmith and Carpenter: the first delay, then done.</summary>
+		public virtual int RollStrokes() {
+			return 1;
+		}
+
+		/// <summary>What Sphere's skill stage does whatever the stage: @start, each @stroke, @success, @fail.</summary>
+		protected virtual void DoEveryStage(SkillSequenceArgs skillSeqArgs) {
+		}
+
 		/// <summary>
 		/// This method is intended to be overriden by particular CraftingSkillDef classes. 
 		/// Its purpose is to make something related to the stroke of the particular skill (such as playing some sound...)
 		/// </summary>
 		protected virtual void DoStroke(SkillSequenceArgs skillSeqArgs) {
+		}
+
+		/// <summary>The animation of a stroke with more to follow.</summary>
+		protected virtual void DoStrokeAnim(SkillSequenceArgs skillSeqArgs) {
 		}
 
 		/// <summary>
@@ -239,6 +251,38 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		protected virtual bool DoCheckSpecials(SkillSequenceArgs skillSeqArgs) {
 			return true;
+		}
+
+		/// <summary>What must be true for the menu to open at all, beyond DoCheckSpecials.</summary>
+		protected virtual bool DoCheckMenu(Character self) {
+			return true;
+		}
+
+		/// <summary>#962 - Sphere's FindItemTypeNearby: a thing or a static of the type, the nearest within range.</summary>
+		protected static bool FindNearby(Character self, string typeDefname, int range, out Point2D found) {
+			found = default(Point2D);
+			int best = int.MaxValue;
+			Map map = self.GetMap();
+			foreach (Thing thing in map.GetThingsInRectangle(new ImmutableRectangle(self.X - range, self.Y - range, self.X + range, self.Y + range))) {
+				Item item = thing as Item;
+				if ((item != null) && (item.Type != null) && (item.Type.Defname == typeDefname)) {
+					Pick(self, item.X, item.Y, ref best, ref found);
+				}
+			}
+			foreach (AbstractInternalItem tile in map.GetStaticsAndMultiComponentsInRange(self.X, self.Y, range)) {
+				if (GatherTiles.IsOfType(tile, typeDefname)) {
+					Pick(self, tile.X, tile.Y, ref best, ref found);
+				}
+			}
+			return best <= range;
+		}
+
+		private static void Pick(Character self, int x, int y, ref int best, ref Point2D found) {
+			int distance = Point2D.GetSimpleDistance(self.X, self.Y, x, y);
+			if (distance < best) {
+				best = distance;
+				found = new Point2D((ushort) x, (ushort) y);
+			}
 		}
 
 		/// <summary>
@@ -298,6 +342,9 @@ namespace SteamEngine.CompiledScripts {
 		public string ItemMakingFailed = "You have failed to make {0} and lost some of the resources";
 		public string FinishCrafting = "Crafting is finished";
 		public string CraftingAborted = "Crafting aborted";
+		public string NotNearForge = "You must be near a forge to smith";
+		public string NeedHammer = "You need a hammer in your hand";
+		public string IngotsOnPerson = "The ingots must be on your person";
 		//500638 - You create the item and put it in your backpack.
 		public string ItemMadeAndPutInRecCont = "You create the {0} and put it in your {1}";
 	}

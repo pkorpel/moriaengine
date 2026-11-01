@@ -129,6 +129,23 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>#962 - Erebor's blacksmithing_targon_item: a hammer on ingots opens the menu, on anything else repairs it.</summary>
+	public class Targ_SmithHammer : CompiledTargetDef {
+		protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
+			if ((targetted is Item ingots) && (ingots.Type != null) && (ingots.Type.Defname == "t_ingot")) {
+				self.SelectSkill(SkillName.Blacksmith);
+				return TargetResult.Done;
+			}
+			Destroyable item = targetted as Destroyable;
+			if (item == null) {
+				self.SysMessage(Loc<RepairLoc>.Get(self.Language).NotRepairable);
+				return TargetResult.Done;
+			}
+			Repair.TryRepair(self, item);
+			return TargetResult.Done;
+		}
+	}
+
 	public class Targ_Repair : CompiledTargetDef {
 		protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
 			Destroyable item = targetted as Destroyable;

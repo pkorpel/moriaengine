@@ -33,6 +33,16 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class Weapon : IPoisonableItem {
+		//#962 - Erebor's t_cm_blacksmithing_target, given to a one-handed mace at @create
+		public override void OnUse(AbstractCharacter from) {
+			Player player = from as Player;
+			if ((player != null) && (this.Type != null) && (this.Type.Defname == "t_weapon_mace_smith") && (this.Layer == (int) LayerNames.Hand1)) {
+				player.Target(SingletonScript<Targ_SmithHammer>.Instance);
+				return;
+			}
+			base.OnUse(from);
+		}
+
 
 		//at durability 0, attacknumber is halved
 		public double AttackVsM {

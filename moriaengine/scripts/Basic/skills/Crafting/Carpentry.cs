@@ -25,8 +25,17 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
-		protected override void DoStroke(SkillSequenceArgs skillSeqArgs) {
+		/// <summary>Sphere's Calc_GetRandVal(3) + 2, and the last stroke that only sounds.</summary>
+		public override int RollStrokes() {
+			return Globals.dice.Next(3) + 2 + 1;
+		}
+
+		protected override void DoEveryStage(SkillSequenceArgs skillSeqArgs) {
 			skillSeqArgs.Self.Sound(0x23d); //hammer and saw sound
+		}
+
+		protected override void DoStrokeAnim(SkillSequenceArgs skillSeqArgs) {
+			AnimCalculator.PerformAttackAnim(skillSeqArgs.Self);
 		}
 	}
 }

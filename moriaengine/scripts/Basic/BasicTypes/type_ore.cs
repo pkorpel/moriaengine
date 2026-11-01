@@ -15,6 +15,7 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
@@ -31,7 +32,11 @@ namespace SteamEngine.CompiledScripts {
 
 		//ingot is for blacksmithing too...
 		public TriggerResult On_Dclick(Item self, Character dclicker) {
-			D_Craftmenu.Craftmenu(dclicker, SkillName.Blacksmith);
+			if (self.TopObj() != dclicker) {
+				dclicker.SysMessage(Loc<CraftSkillsLoc>.Get(dclicker.Language).IngotsOnPerson);
+				return TriggerResult.Continue;
+			}
+			dclicker.SelectSkill(SkillName.Blacksmith);
 			return TriggerResult.Continue;
 		}
 	}
