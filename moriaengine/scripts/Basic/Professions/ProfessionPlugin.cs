@@ -55,6 +55,16 @@ namespace SteamEngine.CompiledScripts {
 			player.RefreshTitle();
 		}
 
+		/// <summary>#951 - Erebor's tag.skillrank, read through Player.SkillRank.</summary>
+		public SkillRank SkillRank {
+			get {
+				return this.skillRank;
+			}
+			set {
+				this.skillRank = value;
+			}
+		}
+
 		public ProfessionDef ProfessionDef {
 			get {
 				return this.profession;
@@ -129,9 +139,12 @@ namespace SteamEngine.CompiledScripts {
 			if (professionDef != null) {
 				ProfessionPlugin newPlugin = (ProfessionPlugin) professionDef.ProfessionPluginDef.Create();
 				newPlugin.profession = professionDef;
+				newPlugin.skillRank = player.SkillRank; //a rank outlives the profession it was earned in
 				player.AddPlugin(professionKey, newPlugin); //if there was a previous one, it's deleted now
 			} else {
+				SkillRank rank = player.SkillRank;
 				player.DeletePlugin(professionKey); //null professiondef = no profession = no professionplugin
+				player.SkillRank = rank;
 			}
 		}
 	}

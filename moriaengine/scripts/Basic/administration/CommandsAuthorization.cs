@@ -40,6 +40,9 @@ namespace SteamEngine.CompiledScripts {
 
 		Dictionary<string, int> commands = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
+		/// <summary>Set by the protocol tests' fixture, and by nothing on a real server. Public so a test can close it.</summary>
+		public static bool testCommandsOpen = Environment.GetEnvironmentVariable(SteamEngine.Common.TestHarness.CommandsVariable) == "1";
+
 		//set the command plevels here... AND COMMENT IT!!!!!!!!!!!!!!!!!!!
 		public E_CommandsAuthorization_Global() {
 			//players
@@ -74,69 +77,7 @@ namespace SteamEngine.CompiledScripts {
 			//very first one created on a fresh server (AbstractAccount.HandleLoginAttempt grants
 			//that one account MaximalPlevel) - every other player was silently denied (#146).
 			this.commands["explevel"] = PLEVEL_PLAYER;
-			//explevel.scp's own body calls these two bare (no explicit receiver) as its first two
-			//lines, to refresh self's cached combat stat values before displaying them - a bare
-			//LScript call like this ALSO goes through this same authorization gate (via
-			//OpNode_Lazy_Expression, same mechanism as the explevel entry above), checked against
-			//ITS OWN name, separately from the "explevel" command name itself. Missing from this
-			//list meant the explevel fix above alone wasn't enough - every non-GM player's first
-			//.explevel ever actually attempted would still be denied one line in. Purely a
-			//self-targeted cache refresh, safe for any player to trigger on themselves.
-			this.commands["InvalidateCombatWeaponValues"] = PLEVEL_PLAYER;
-			this.commands["InvalidateCombatArmorValues"] = PLEVEL_PLAYER;
-
-			//Same gap, recurring a second time (#254): explevel.scp's own "on=1/2/3" button
-			//handlers (#156) open the point-spend dialogs via bare (unquoted) dialog-name
-			//symbols - src.Dialog(d_levelspendattributes)/etc - which go through this exact
-			//same OpNode_Lazy_Expression authorization gate, checked against the symbol's own
-			//name. Missing from this list meant every non-first-account player's Attributes/
-			//Skills/Abilities button click was silently denied - invisible in this repo's own
-			//LevelSpendDialogTests.cs because every Fact there runs under "protocoltest", the
-			//server's one auto-elevated first-ever account, which always passes regardless of
-			//this allowlist.
-			this.commands["d_levelspendattributes"] = PLEVEL_PLAYER;
-			this.commands["d_levelspendskills"] = PLEVEL_PLAYER;
-			this.commands["d_levelspendabilities"] = PLEVEL_PLAYER;
-
-			//Same gap, recurring a THIRD time (#404): explevel.scp's own "[function explevel]"
-			//body opens the dialog via a bare (no self./src. receiver) `Dialog(d_explevel)` call
-			//- both the bare "Dialog" function name and its "d_explevel" argument independently
-			//go through this same OpNode_Lazy_Expression authorization gate, each checked
-			//against its own name. Missing from this list meant EVERY non-first-account player's
-			//very first .explevel attempt was denied on this one line, before ever reaching the
-			//InvalidateCombatWeaponValues()/InvalidateCombatArmorValues() calls #146 already
-			//fixed above - invisible in this file's own ExpLevelDialogOpensWithoutError for the
-			//same reason as #146/#254: it only ever ran on "protocoltest", the server's
-			//auto-elevated first-ever account.
-			this.commands["Dialog"] = PLEVEL_PLAYER;
-			this.commands["d_explevel"] = PLEVEL_PLAYER;
-			//Same gap again, one level deeper: ScriptedGumpDef compiles every line of a raw-
-			//LScript [DIALOG ... TEXT] section into a bare `AddString("...")` call (see
-			//GameCore/LScript/ScriptedGumpDef.cs's TEXT-section parser) - explevel.scp's own
-			//TEXT section is this engine's only LIVE (non-"converted"-legacy) consumer of that
-			//mechanism, so this was invisible until a genuinely ordinary account's .explevel
-			//was driven all the way through a real value-populated render. AddString itself
-			//was only the OUTER gate - every <Token> placeholder embedded inside an AddString
-			//string is ALSO independently evaluated as its own bare symbol at render time
-			//(same OpNode_Lazy_Expression path), so every token explevel.scp's TEXT section
-			//actually references needs its own entry too - the complete, fixed set, from the
-			//script's own TEXT section (`grep -oE '<[A-Za-z][A-Za-z0-9]*>' explevel.scp`).
-			this.commands["AddString"] = PLEVEL_PLAYER;
-			this.commands["Name"] = PLEVEL_PLAYER;
-			this.commands["ProfessionName"] = PLEVEL_PLAYER;
-			this.commands["Level"] = PLEVEL_PLAYER;
-			this.commands["Experience"] = PLEVEL_PLAYER;
-			this.commands["NextLevelExperienceThreshold"] = PLEVEL_PLAYER;
-			this.commands["ArmorClassVsP"] = PLEVEL_PLAYER;
-			this.commands["ArmorClassVsM"] = PLEVEL_PLAYER;
-			this.commands["MindDefenseVsP"] = PLEVEL_PLAYER;
-			this.commands["MindDefenseVsM"] = PLEVEL_PLAYER;
-			this.commands["WeaponAttackVsP"] = PLEVEL_PLAYER;
-			this.commands["WeaponPiercing"] = PLEVEL_PLAYER;
-			this.commands["WeaponAttackVsM"] = PLEVEL_PLAYER;
-			this.commands["WeaponDelay"] = PLEVEL_PLAYER;
-			this.commands["MindPowerVsP"] = PLEVEL_PLAYER;
-			this.commands["MindPowerVsM"] = PLEVEL_PLAYER;
+			//what its dialogs use inside doesn't need entries here: only the word typed is checked (#406)
 
 			//Guild commands - gated by their own internal leader/member checks, not plevel;
 			//missing from this allowlist meant they silently required GM (plevel>=4) by the
@@ -223,6 +164,15 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["Page"] = MORE_THAN_PLAYER;//Post a new GMPage specified in arguments using direct input
 
 			//admins
+			//the world's setups, for experienced GMs (#951)
+			this.commands["SetupWorld"] = PLEVEL_ADMIN;
+			this.commands["SetupHouses"] = PLEVEL_ADMIN;
+			this.commands["SetupTowns"] = PLEVEL_ADMIN;
+			this.commands["SetupDungeonEntrances"] = PLEVEL_ADMIN;
+			this.commands["SetupExpertQuest"] = PLEVEL_ADMIN;
+			this.commands["SetupMasterQuest"] = PLEVEL_ADMIN;
+			this.commands["SetupGrandmasterQuest"] = PLEVEL_ADMIN;
+
 			this.commands["DeletePlayer"] = PLEVEL_ADMIN;//only admin can delete players
 			this.commands["DeleteAccount"] = PLEVEL_ADMIN;//only admin can delete accounts
 			this.commands["SetAccountPassword"] = PLEVEL_ADMIN;//only admin can set account passwords
@@ -235,10 +185,10 @@ namespace SteamEngine.CompiledScripts {
 
 		public int on_Command(Globals globals, ISrc commandSrc, string cmd) {
 			// "Test*" commands are verification-harness-only diagnostics (scripts/Tests/*.cs);
-			// no production command uses this prefix, and they must stay callable by the
-			// non-GM accounts the harness deliberately creates to exercise real player-level
-			// authorization paths - see #72.
-			if (cmd.StartsWith("Test", StringComparison.OrdinalIgnoreCase)) {
+			// they must stay callable by the non-GM accounts the harness deliberately creates to
+			// exercise real player-level authorization paths - see #72. They compile into every
+			// server and can make anyone a GM, so only the harness gets this (#951).
+			if (testCommandsOpen && cmd.StartsWith("Test", StringComparison.OrdinalIgnoreCase)) {
 				return 0;
 			}
 			int plevel = commandSrc.MaxPlevel;
