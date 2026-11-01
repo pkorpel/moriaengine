@@ -7,7 +7,7 @@ namespace SteamEngine.CompiledScripts {
 	public class D_House : CompiledGumpDef {
 		private const int Width = 290, RowHeight = 22, LabelHue = 955, ButtonHue = 2301;
 		private const int AddFriend = 3, ListFriends = 4, AddCoOwner = 5, ListCoOwners = 6, Rename = 7, ChangeSign = 8, Transfer = 10;
-		private const int Block = 11, AutoRent = 15;
+		private const int Block = 11, Empty = 12, ResetPaid = 13, SetRent = 14, AutoRent = 15;
 
 		public static void Show(Player player, House house, Item sign) {
 			player.Dialog(player, SingletonScript<D_House>.Instance, new DialogArgs(house, sign));
@@ -43,6 +43,9 @@ namespace SteamEngine.CompiledScripts {
 			Add(ChangeSign, HouseRank.Friend, "Zmenit vyvesku domu");
 			Add(Transfer, HouseRank.CoOwner, "Predat vlastnictvi domu");
 			Add(Block, HouseRank.Owner, (house.Blocked ? "Od" : "Za") + "blokovat dum");
+			Add(Empty, HouseRank.Owner, "Vyprazdnit dum");
+			Add(ResetPaid, HouseRank.Owner, "Vynulovat zaplaceni");
+			Add(SetRent, HouseRank.Owner, "Nastavit najem");
 			Add(AutoRent, HouseRank.Owner, (house.AutoRent ? "Vy" : "Za") + "pnout autorent");
 			return entries;
 		}
@@ -129,6 +132,26 @@ namespace SteamEngine.CompiledScripts {
 						} else {
 							player.SysMessage("Dum odblokovan.");
 						}
+					}
+					break;
+				case Empty:
+					if (house.Allows(player, HouseRank.Owner)) {
+						D_TownConfirm.Ask(player, "Opravdu chces vyklidit veci a obyvatele domu?", house.Empty);
+					}
+					break;
+				case ResetPaid:
+					if (house.Allows(player, HouseRank.Owner)) {
+						D_TownConfirm.Ask(player, "Opravdu chces vynulovat najem?", () => house.PaidUntil = Globals.TimeInSeconds);
+					}
+					break;
+				case SetRent:
+					if (house.Allows(player, HouseRank.Owner)) {
+						D_TownInput.Ask(player, "kolik ma byt najem?", house.Rent.ToString(System.Globalization.CultureInfo.InvariantCulture), answer => {
+							int rent;
+							if (int.TryParse(answer, out rent)) {
+								house.SetRent(rent);
+							}
+						});
 					}
 					break;
 				case AutoRent:

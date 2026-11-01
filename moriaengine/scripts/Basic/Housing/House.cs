@@ -67,6 +67,7 @@ namespace SteamEngine.CompiledScripts {
 				house.SetAttribute(ItemAttributes.attr_invis, true);
 				house.SetAttribute(ItemAttributes.attr_move_never, true);
 				ByRegion[region] = house;
+				house.StartRentTimer();
 			}
 			return house;
 		}
