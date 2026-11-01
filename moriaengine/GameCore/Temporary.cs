@@ -85,7 +85,7 @@ namespace SteamEngine {
 		*/
 		internal static void OpenDoorMacroRequest(AbstractCharacter cre) {
 			Sanity.IfTrueThrow(cre == null, "Character is null in UseLastSpellRequest.");
-			Logger.WriteWarning("Unimplemented: OpenDoorMacroRequest called on " + cre + ".");
+			cre.On_OpenDoorMacro();
 		}
 
 		/*
