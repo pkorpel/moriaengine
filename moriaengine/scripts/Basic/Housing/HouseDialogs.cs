@@ -6,7 +6,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#941 - d_house_menu. Buttons keep Erebor's numbers, a rank above the one in the table shows them.</summary>
 	public class D_House : CompiledGumpDef {
 		private const int Width = 290, RowHeight = 22, LabelHue = 955, ButtonHue = 2301;
-		private const int AddFriend = 3, ListFriends = 4, AddCoOwner = 5, ListCoOwners = 6, Rename = 7, ChangeSign = 8, Transfer = 10;
+		private const int LockItem = 2, AddFriend = 3, ListFriends = 4, AddCoOwner = 5, ListCoOwners = 6, Rename = 7, ChangeSign = 8, Transfer = 10;
 		private const int Block = 11, Empty = 12, ResetPaid = 13, SetRent = 14, AutoRent = 15;
 
 		public static void Show(Player player, House house, Item sign) {
@@ -35,6 +35,7 @@ namespace SteamEngine.CompiledScripts {
 					entries.Add(new KeyValuePair<int, string>(button, text));
 				}
 			}
+			Add(LockItem, HouseRank.Public, "Zamknout/odemknout vec");
 			Add(AddFriend, HouseRank.Friend, "Pridat pritele domu");
 			Add(ListFriends, HouseRank.Public, "Seznam pratel domu");
 			Add(AddCoOwner, HouseRank.CoOwner, "Pridat spoluvlastnika domu");
@@ -93,6 +94,12 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			switch (gr.PressedButton) {
+				case LockItem:
+					if (house.Allows(player, HouseRank.Public)) {
+						player.SysMessage("Co chces zamknout/odemknout?");
+						player.Target(SingletonScript<Targ_HouseLock>.Instance, house);
+					}
+					break;
 				case AddFriend:
 					this.AskFor(player, house, HouseRank.Friend, HouseRank.Friend, "pritelem");
 					break;

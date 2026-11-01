@@ -63,4 +63,30 @@ Differences from Erebor:
 - The last partial day counts: below a whole day read as nothing paid, so a house went a day early.
 - A second cheque in the chest pays its own value, Erebor's loop gave it the first one's.
 
+## Locking
+
+"Zamknout/odemknout vec" on the sign menu, from friend up, targets something on the ground in the house, then asks for a level: public,
+friend, co-owner, owner, GM (nobody is offered one above their own rank, a friend gets public and friend) or personal. Targeting it
+again unlocks it, which wants the level or being the person. In `HouseLock.cs`, and nothing limits how many.
+
+A locked thing:
+
+- can't be lifted by anyone but a GM, who can move it and it stays locked. To move it, unlock it.
+- doesn't decay.
+- wants the level to double-click. Personal wants the person, or a rank above theirs.
+- refuses taking things out of it the same way, and logs a `ZLODEJ !!!` warning. That only reaches someone who had it open before it
+  was locked, as a closed one won't open.
+- turns black while the house is blocked, and nobody but a GM can use it then, the person included.
+
+A locked door becomes `t_door_locked`. It opens for friends and up whatever its level, so there are no keys to hand out.
+
+Locking a sign sets who sees its menu instead. Ingots, logs, clothes, figurines, chairs, ore, rocks and runes can't be locked except by a GM.
+An eviction unlocks everything, as does deleting the house.
+
+Differences from Erebor:
+
+- Ranks replace its hidden keys, as elsewhere in the house.
+- Deleting a house unlocks its things. Erebor's redeed deleted them, and it has no multis here yet.
+- An eviction unlocks the rent chest too if someone locked it. It stays in place anyway.
+
 The rest of the system follows as #941 goes on.

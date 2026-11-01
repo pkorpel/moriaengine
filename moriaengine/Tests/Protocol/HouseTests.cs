@@ -251,8 +251,9 @@ namespace SteamEngine.Tests.Protocol {
 			}
 			using (var second = GameServerPairFixture.BootPreservingSaves()) {
 				using (var client = Connect("House Loader")) {
-					string loaded = Ask(second, client, ".TestHouseAfterRestart", "HOUSE_LOADED:");
-					Assert.Contains("found=True owner=House Saver name=Hnizdo rent=123000 days=11", loaded);
+					string loaded = Ask(second, client, ".TestHouseAfterRestart", "HOUSE_LOCK_LOADED:");
+					Assert.Contains("to=True level=CoOwner person=House Saver fixed=True", loaded);
+					Assert.True(second.GameOutputSnapshot().Contains("found=True owner=House Saver name=Hnizdo rent=123000 days=11"), "The house didn't load.");
 				}
 			}
 		}
