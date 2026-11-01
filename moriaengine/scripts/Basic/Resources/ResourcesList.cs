@@ -241,7 +241,7 @@ namespace SteamEngine.CompiledScripts {
 			string[] arr = new string[n];
 			for (int i = 0; i < n; i++) {
 				var entry = this.resourceItemsList[i];
-				arr[n] = string.Concat(entry.DesiredCount.ToString(CultureInfo.InvariantCulture), " ",
+				arr[i] = string.Concat(entry.DesiredCount.ToString(CultureInfo.InvariantCulture), " ",
 					entry.AsPercentage ? "%" : "", entry.ParsableString);
 			}
 			return string.Join(", ", arr);

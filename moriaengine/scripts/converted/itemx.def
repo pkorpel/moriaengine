@@ -61,16 +61,16 @@ Color = colors_yellow
 [ItemDef i_PAPER]
 NAME = "Paper"
 WEIGHT = 0.1
-RESOURCES = 1 i_board, 1 t_water
-SKILLMAKE = 157 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_log_copper //nastaveni_cm_resources 
+SKILLMAKE = 420 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_MAP_ROLLED
 //VALUE = 2 // commented out by Converter 
 
 [ItemDef i_PARCHMENT]
 NAME = "Parchment"
 WEIGHT = 1
-RESOURCES = 1 i_paper, 1 i_cloth
-SKILLMAKE = 207 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_hide //nastaveni_cm_resources 
+SKILLMAKE = 520 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_bedroll_open
 type = t_bedroll //guessed from base def by Converter 
 //VALUE = 2 // commented out by Converter 
@@ -87,8 +87,9 @@ DESCRIPTION = Knitting Needles
 
 NAME = "Knitting Needles"
 WEIGHT = 1
-RESOURCES = 1 i_board
+RESOURCES = 1 i_log_copper //nastaveni_cm_resources 
 model = i_axel
+SKILLMAKE = 450 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 //VALUE = 5 // commented out by Converter 
 
 [ItemDef I_SCREW]
@@ -181,6 +182,8 @@ DESCRIPTION = Inkpot
 NAME = "Inkpot"
 WEIGHT = 1
 model = I_SPITTOON
+RESOURCES = 5 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools, 1 t_bottle_form //nastaveni_cm_skillmake 
 Color = color_gray_dk
 
 [ItemDef I_BRUSH]
@@ -191,8 +194,9 @@ DESCRIPTION = Paint Brush
 NAME = "Paint Brush"
 type = t_carpentry
 WEIGHT = 1
-RESOURCES = 1 i_hair_cut, 1 i_board
+RESOURCES = 1 i_sticks, 1 i_fur_dark //nastaveni_cm_resources 
 model = I_REAG_DAEMON_BONE
+SKILLMAKE = 560 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Color = colors_brown
 
 [ItemDef I_BLOODSTONE]
@@ -262,6 +266,7 @@ NAME = "Cat Gut"
 WEIGHT = 1
 model = i_FLESH_ENTRAILS
 type = t_meat_raw //guessed from base def by Converter 
+RESOURCES = 1 i_blood //nastaveni_cm_resources 
 
 [ItemDef I_PEG]
 CATEGORY = Provisions - Armor
@@ -279,6 +284,8 @@ DESCRIPTION = Orc Skull
 NAME = "Orc Skull"
 model = i_bone_skull
 type = t_bone //guessed from base def by Converter 
+RESOURCES = 5 i_reag_bone //nastaveni_cm_resources 
+SKILLMAKE = 750 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 
 [ItemDef I_WAX_SEAL]
 CATEGORY = Items by Professions

@@ -256,9 +256,10 @@ SUBSECTION = Ship Plans
 DESCRIPTION = Small Ship
 
 NAME = "Deed to a small ship"
-RESOURCES = 1 i_deed, 1 i_multi_ship_small_n //some resources were fixed by converter 
+RESOURCES = 1 i_deed_ship, 1 i_anchor, 10 i_rope, 70 i_cloth, 170 i_log_iron, 85 i_log_verite, 42 i_log_valorite, 12 i_log_obsidian //nastaveni_cm_resources 
 model = i_deed_ship
 type = t_deed //guessed from base def by Converter 
+SKILLMAKE = 1 t_carpentry, 750 carpentry, 700 blacksmithing, 750 tinkering, 750 tailoring //nastaveni_cm_skillmake 
 
 [ItemDef i_deed_ship_dragon_small_N]
 CATEGORY = Provisions - Deeds
@@ -266,9 +267,10 @@ SUBSECTION = Ship Plans
 DESCRIPTION = Small Dragon Ship
 
 NAME = "Deed to a small dragon ship"
-RESOURCES = 1 i_deed, 1 i_multi_ship_dragon_small_n //some resources were fixed by converter 
+RESOURCES = 1 i_deed_ship, 1 i_anchor, 10 i_rope, 70 i_cloth, 170 i_log_iron, 85 i_log_verite, 42 i_log_valorite, 12 i_log_obsidian //nastaveni_cm_resources 
 model = i_deed_ship
 type = t_deed //guessed from base def by Converter 
+SKILLMAKE = 1 t_carpentry, 750 carpentry, 700 blacksmithing, 750 tinkering, 750 tailoring //nastaveni_cm_skillmake 
 
 [ItemDef i_deed_ship_medium_N]
 CATEGORY = Provisions - Deeds
@@ -276,7 +278,7 @@ SUBSECTION = Ship Plans
 DESCRIPTION = Medium Ship
 
 NAME = "Deed to a medium ship"
-RESOURCES = 1 i_deed, 1 i_multi_ship_medium_n //some resources were fixed by converter 
+RESOURCES = 1 i_deed, 1 i_multi_ship_medium_n //nastaveni_cm_resources 
 model = i_deed_ship
 type = t_deed //guessed from base def by Converter 
 
@@ -286,9 +288,10 @@ SUBSECTION = Ship Plans
 DESCRIPTION = Medium Dragon Ship
 
 NAME = "Deed to a medium dragon ship"
-RESOURCES = 1 i_deed, 1 i_multi_ship_dragon_medium_n //some resources were fixed by converter 
+RESOURCES = 1 i_deed_ship, 1 i_anchor, 10 i_rope, 80 i_cloth, 180 i_log_iron, 90 i_log_verite, 45 i_log_valorite, 14 i_log_obsidian //nastaveni_cm_resources 
 model = i_deed_ship
 type = t_deed //guessed from base def by Converter 
+SKILLMAKE = 1 t_carpentry, 780 carpentry, 700 blacksmithing, 750 tinkering, 750 tailoring //nastaveni_cm_skillmake 
 
 [ItemDef i_deed_ship_long_N]
 CATEGORY = Provisions - Deeds
@@ -296,7 +299,7 @@ SUBSECTION = Ship Plans
 DESCRIPTION = Long Ship
 
 NAME = "Deed to a long ship"
-RESOURCES = 1 i_deed, 1 i_multi_ship_long_n //some resources were fixed by converter 
+RESOURCES = 1 i_deed, 1 i_multi_ship_long_n //nastaveni_cm_resources 
 model = i_deed_ship
 type = t_deed //guessed from base def by Converter 
 
@@ -306,9 +309,10 @@ SUBSECTION = Ship Plans
 DESCRIPTION = Long Dragon Ship
 
 NAME = "Deed to a long dragon ship"
-RESOURCES = 1 i_deed, 1 i_multi_ship_dragon_long_n //some resources were fixed by converter 
+RESOURCES = 1 i_deed_ship, 1 i_anchor, 10 i_rope, 100 i_cloth, 200 i_log_iron, 100 i_log_verite, 50 i_log_valorite, 15 i_log_obsidian //nastaveni_cm_resources 
 model = i_deed_ship
 type = t_deed //guessed from base def by Converter 
+SKILLMAKE = 1 t_carpentry, 800 carpentry, 700 blacksmithing, 750 tinkering, 750 tailoring //nastaveni_cm_skillmake 
 
 [ItemDef i_deed_bboardw]
 CATEGORY = Provisions - Deeds

@@ -535,6 +535,8 @@ DESCRIPTION = Vial of Blood
 
 TYPE = T_REAGENT
 WEIGHT = 0
+RESOURCES = 1 i_vial_empty, 1 i_bandage_bloody //nastaveni_cm_resources 
+SKILLMAKE = 400 alchemy //nastaveni_cm_skillmake 
 DEFNAME = i_reag_blood_vial
 //VALUE = 3 // commented out by Converter 
 //can_PILE = 1 // commented out by Converter 
@@ -949,7 +951,7 @@ DESCRIPTION = Torso
 TYPE = t_MEAT_RAW
 DupeList = 0x1dad
 WEIGHT = 200
-RESOURCES = 1 i_flesh_heart, 2 i_ribs_raw, 1 i_flesh_liver, 1 i_flesh_entrails, 1 i_blood_2 //some resources were fixed by converter 
+RESOURCES = 2 i_flesh_heart, 1 i_ribs_raw, 1 i_flesh_liver, 1 i_flesh_entrails, 1 i_blood_2 //nastaveni_cm_resources 
 //TDATA1 = i_ribs_cooked // commented out by Converter 
 DEFNAME = i_flesh_torso
 //VALUE = 1 // commented out by Converter 
@@ -961,7 +963,7 @@ DESCRIPTION = Head
 
 DupeList = 0x1dae
 WEIGHT = 5
-RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain, 1 i_blood_2 //some resources were fixed by converter 
+RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain, 1 i_blood_2 //nastaveni_cm_resources 
 DEFNAME = i_flesh_head_2
 //VALUE = 1 // commented out by Converter 
 
@@ -974,6 +976,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1daf
 WEIGHT = 70
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+RESOURCES = 1 i_bone, 1 i_flesh //nastaveni_cm_resources 
 DEFNAME = i_flesh_left_arm
 //VALUE = 1 // commented out by Converter 
 
@@ -986,6 +989,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1db0
 WEIGHT = 70
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+RESOURCES = 1 i_bone, 1 i_flesh //nastaveni_cm_resources 
 DEFNAME = i_flesh_right_arm
 //VALUE = 1 // commented out by Converter 
 
@@ -998,6 +1002,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1db1
 WEIGHT = 110
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+RESOURCES = 1 i_bone, 1 i_flesh //nastaveni_cm_resources 
 DEFNAME = i_flesh_left_leg
 //VALUE = 1 // commented out by Converter 
 
@@ -1010,6 +1015,7 @@ TYPE = t_MEAT_RAW
 DupeList = 0x1db2
 WEIGHT = 110
 //TDATA1 = i_ribs_cooked // commented out by Converter 
+RESOURCES = 1 i_bone, 1 i_flesh //nastaveni_cm_resources 
 DEFNAME = i_flesh_right_leg
 //VALUE = 1 // commented out by Converter 
 
@@ -1032,6 +1038,7 @@ TYPE = t_cloth
 DupeList = 0x175e,0x175f,0x1760,0x1761,0x1762,0x1763,0x1764,0x1765
 WEIGHT = 1
 //DYE = 1 // commented out by Converter 
+RESOURCES = 1 i_cloth //nastaveni_cm_resources 
 DEFNAME = i_cloth
 //VALUE = 3 // commented out by Converter 
 
@@ -1064,6 +1071,8 @@ DESCRIPTION = Skull
 TYPE = T_BONE
 DupeList = 0x1ae1,0x1ae2,0x1ae3,0x1ae4
 WEIGHT = 3
+RESOURCES = 4 i_reag_bone //nastaveni_cm_resources 
+SKILLMAKE = 800 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_bone_skull
 //VALUE = 1 // commented out by Converter 
 
@@ -1160,6 +1169,8 @@ DESCRIPTION = Sticks
 
 DupeList = 0x1b9c,0x1b9d,0x1b9e
 WEIGHT = 3
+RESOURCES = 1 i_log_copper //nastaveni_cm_resources 
+SKILLMAKE = 350 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_sticks
 //VALUE = 2 // commented out by Converter 
 
@@ -1240,6 +1251,7 @@ DESCRIPTION = Conch Shells
 
 DupeList = 0xfc5,0xfc6,0xfc7,0xfc8,0xfc9,0xfca,0xfcb,0xfcc
 WEIGHT = 10
+RESOURCES = 1 i_bone //nastaveni_cm_resources 
 DEFNAME = i_shell
 //VALUE = 1 // commented out by Converter 
 
@@ -1267,6 +1279,7 @@ Color = colors_yellow
 [ItemDef I_STRAW]
 model = i_hay_sheaf
 type = t_grain //guessed from base def by Converter 
+RESOURCES = 1 i_log_iron //nastaveni_cm_resources 
 //VALUE = 1 // commented out by Converter 
 
 [ItemDef I_GRASS]

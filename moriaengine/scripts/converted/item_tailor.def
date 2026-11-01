@@ -8,9 +8,9 @@ DESCRIPTION = Pouch
 TYPE = T_CONTAINER
 DupeList = 0xe79
 WEIGHT = 1
-RESOURCES = 2 i_hides_cut
+RESOURCES = 2 i_hides_cut //nastaveni_cm_resources 
 RESOURCES2 = 2 i_hide
-SKILLMAKE = 100 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 300 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 Flippable = true
 //DYE = 1 // commented out by Converter 
 //TDATA2 = 03c // commented out by Converter 
@@ -24,9 +24,9 @@ DESCRIPTION = Backpack
 
 TYPE = T_CONTAINER
 WEIGHT = 3
-RESOURCES = 4 i_hides_cut
+RESOURCES = 4 i_hides_cut //nastaveni_cm_resources 
 RESOURCES2 = 10 i_hide
-SKILLMAKE = 280 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 280 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 Flippable = true
 //DYE = 1 // commented out by Converter 
 //TDATA2 = 03c // commented out by Converter 
@@ -40,9 +40,9 @@ DESCRIPTION = Leather Bag
 
 TYPE = T_CONTAINER
 WEIGHT = 2
-RESOURCES = 4 i_hides_cut
+RESOURCES = 4 i_hides_cut //nastaveni_cm_resources 
 RESOURCES2 = 5 i_hide
-SKILLMAKE = 290 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 290 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 Flippable = true
 //DYE = 1 // commented out by Converter 
 //TDATA2 = 03D // commented out by Converter 
@@ -57,8 +57,8 @@ DESCRIPTION = Bolt of Cloth
 TYPE = T_CLOTH_BOLT
 DupeList = 0xf96,0xf97,0xf98,0xf99,0xf9a,0xf9b,0xf9c
 WEIGHT = 5
-RESOURCES = 50 i_cloth
-SKILLMAKE = 300 tailoring //some resources were fixed by converter 
+RESOURCES = 50 i_cloth //nastaveni_cm_resources 
+SKILLMAKE = 1 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_cloth_bolt
 
@@ -90,9 +90,9 @@ DESCRIPTION = Sewing Kit
 
 TYPE = T_SEWING_KIT
 WEIGHT = 2
-RESOURCES = 2 i_ingot_iron
+RESOURCES = 2 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 1 i_sewing_needle, 1 i_bowl_wood, 1 i_yarn_ball
-SKILLMAKE = 188 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 188 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_sewing_kit
 
 [WearableDef 0x1515]
@@ -104,9 +104,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1530
 WEIGHT = 5
-RESOURCES = 14 i_cloth
+RESOURCES = 14 i_cloth, 3 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 14 i_cloth, 1 i_thread
-SKILLMAKE = 454 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 454 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 20 //Set by Converter 
 DEFNAME = i_cape
@@ -123,9 +123,9 @@ DESCRIPTION = Long Skirt
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 4
-RESOURCES = 10 i_cloth
+RESOURCES = 10 i_cloth, 4 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 10 i_cloth, 1 i_thread
-SKILLMAKE = 318 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 400 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 23 //Set by Converter 
 DEFNAME = i_skirt_long
@@ -143,9 +143,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1518
 WEIGHT = 3
-RESOURCES = 8 i_cloth
+RESOURCES = 8 i_cloth, 3 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 8 i_cloth, 1 i_thread
-SKILLMAKE = 227 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 300 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 5 //Set by Converter 
 DEFNAME = i_shirt_plain
@@ -166,9 +166,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x152f
 WEIGHT = 2
-RESOURCES = 6 i_cloth
+RESOURCES = 6 i_cloth, 3 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 6 i_cloth, 1 i_thread
-SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 68 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 4 //Set by Converter 
 DEFNAME = i_pants_short
@@ -209,9 +209,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1538
 WEIGHT = 2
-RESOURCES = 8 i_cloth
+RESOURCES = 8 i_cloth, 3 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 8 i_cloth, 1 i_thread
-SKILLMAKE = 227 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 227 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 23 //Set by Converter 
 DEFNAME = i_kilt
@@ -232,9 +232,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x153a
 WEIGHT = 3
-RESOURCES = 8 i_cloth
+RESOURCES = 8 i_cloth, 4 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 8 i_cloth, 1 i_thread
-SKILLMAKE = 272 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 572 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 4 //Set by Converter 
 DEFNAME = i_pants_long
@@ -255,9 +255,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x153c
 WEIGHT = 2
-RESOURCES = 6 i_cloth
+RESOURCES = 6 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 6 i_cloth, 1 i_thread
-SKILLMAKE = 227 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 330 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 12 //Set by Converter 
 DEFNAME = i_apron_half
@@ -278,9 +278,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x153e
 WEIGHT = 4
-RESOURCES = 10 i_cloth
+RESOURCES = 10 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 10 i_cloth, 1 i_thread
-SKILLMAKE = 318 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 420 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 17 //Set by Converter 
 DEFNAME = i_apron_full
@@ -301,9 +301,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1540
 WEIGHT = 1
-RESOURCES = 2 i_cloth
+RESOURCES = 1 i_cloth, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 2 i_cloth, 1 i_thread
-SKILLMAKE = 101 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 101 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_bandana
@@ -324,9 +324,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1542
 WEIGHT = 1
-RESOURCES = 4 i_cloth
+RESOURCES = 4 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 4 i_cloth, 1 i_thread
-SKILLMAKE = 45 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 45 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 17 //Set by Converter 
 DEFNAME = i_sash
@@ -347,9 +347,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1544
 WEIGHT = 1
-RESOURCES = 2 i_cloth
+RESOURCES = 2 i_cloth, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 2 i_cloth, 1 i_thread
-SKILLMAKE = 01 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 150 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_skull_cap
@@ -370,9 +370,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x170c
 WEIGHT = 3
-RESOURCES = 8 i_hides_cut
+RESOURCES = 8 i_hides_cut, 2 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 8 i_hide, 1 i_thread
-SKILLMAKE = 363 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 750 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 3 //Set by Converter 
 DEFNAME = i_boots_calf
@@ -393,9 +393,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x170e
 WEIGHT = 1
-RESOURCES = 4 i_hides_cut
+RESOURCES = 4 i_hides_cut, 2 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 4 i_hide, 1 i_thread
-SKILLMAKE = 136 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 350 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 3 //Set by Converter 
 DEFNAME = i_sandals
@@ -416,9 +416,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1710
 WEIGHT = 2
-RESOURCES = 6 i_hides_cut
+RESOURCES = 6 i_hides_cut, 2 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 6 i_hide, 1 i_thread
-SKILLMAKE = 181 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 450 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 3 //Set by Converter 
 DEFNAME = i_shoes_plain
@@ -441,9 +441,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1712
 WEIGHT = 5
-RESOURCES = 10 i_hides_cut
+RESOURCES = 10 i_hides_cut, 2 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 10 i_hide, 1 i_thread
-SKILLMAKE = 250 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 800 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 Flippable = true
 //DYE = 1 // commented out by Converter 
 layer = 3 //Set by Converter 
@@ -466,9 +466,9 @@ DESCRIPTION = Floppy Hat
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 2
-RESOURCES = 11 i_cloth
+RESOURCES = 11 i_cloth, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 5 i_cloth, 1 i_thread
-SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 450 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_hat_floppy
@@ -485,9 +485,9 @@ DESCRIPTION = Wide Brim Hat
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 2
-RESOURCES = 12 i_cloth
+RESOURCES = 12 i_cloth, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 5 i_cloth, 1 i_thread
-SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 400 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_hat_wide_brim
@@ -504,8 +504,9 @@ DESCRIPTION = Cap
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 2
-RESOURCES = 5 i_cloth, 1 i_thread
+RESOURCES = 5 i_cloth, 1 i_thread //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
+SKILLMAKE = 250 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 layer = 6 //Set by Converter 
 DEFNAME = i_cap
 armorVsP = 3
@@ -521,9 +522,9 @@ DESCRIPTION = Tall Straw Hat
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 1
-RESOURCES = 12 i_cloth
+RESOURCES = 12 i_cloth, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 10 i_straw, 1 i_cloth, 1 i_thread
-SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 500 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_hat_straw_tall
@@ -540,9 +541,9 @@ DESCRIPTION = Straw Hat
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 1
-RESOURCES = 10 i_cloth
+RESOURCES = 10 i_cloth, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 7 i_straw, 1 i_cloth, 1 i_thread
-SKILLMAKE = 68 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 350 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_hat_straw
@@ -559,8 +560,8 @@ DESCRIPTION = Wizards Hat
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 2
-RESOURCES = 8 i_cloth, 1 i_thread
-SKILLMAKE = 350 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 8 i_cloth, 3 i_thread //nastaveni_cm_resources 
+SKILLMAKE = 980 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_hat_wizards
@@ -577,9 +578,9 @@ DESCRIPTION = Bonnet
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 1
-RESOURCES = 11 i_cloth
+RESOURCES = 11 i_cloth, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 4 i_cloth, 1 i_thread
-SKILLMAKE = 318 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 318 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_bonnet
@@ -596,9 +597,9 @@ DESCRIPTION = Feathered Hat
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 2
-RESOURCES = 12 i_cloth, 1 i_feather //some resources were fixed by converter 
+RESOURCES = 12 i_cloth, 1 i_feather, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 5 i_cloth, 1 i_feather, 1 i_thread //some resources were fixed by converter 
-SKILLMAKE = 328 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 328 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_hat_feather
@@ -615,9 +616,9 @@ DESCRIPTION = Tricorne Hat
 TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 WEIGHT = 2
-RESOURCES = 12 i_cloth
+RESOURCES = 12 i_cloth, 2 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 5 i_cloth, 1 i_thread
-SKILLMAKE = 328 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 500 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_hat_tricorne
@@ -635,9 +636,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x172e
 WEIGHT = 2
-RESOURCES = 15 i_cloth
+RESOURCES = 15 i_cloth, 1 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 5 i_cloth, 1 i_thread
-SKILLMAKE = 300 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 900 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 6 //Set by Converter 
 DEFNAME = i_hat_jester
@@ -658,9 +659,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1efe
 WEIGHT = 2
-RESOURCES = 8 i_cloth
+RESOURCES = 8 i_cloth, 3 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 8 i_cloth, 1 i_thread
-SKILLMAKE = 350 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 550 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 5 //Set by Converter 
 DEFNAME = i_shirt_fancy
@@ -681,9 +682,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1f00
 WEIGHT = 3
-RESOURCES = 12 i_cloth
+RESOURCES = 12 i_cloth, 4 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 12 i_cloth, 1 i_thread
-SKILLMAKE = 336 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 700 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 22 //Set by Converter 
 DEFNAME = i_dress_full
@@ -704,9 +705,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1f02
 WEIGHT = 2
-RESOURCES = 10 i_cloth
+RESOURCES = 10 i_cloth, 4 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 10 i_cloth, 1 i_thread
-SKILLMAKE = 363 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 650 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 22 //Set by Converter 
 DEFNAME = i_dress_plain
@@ -727,9 +728,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1f04
 WEIGHT = 3
-RESOURCES = 16 i_cloth
+RESOURCES = 16 i_cloth, 4 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 16 i_cloth, 1 i_thread
-SKILLMAKE = 590 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 750 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 22 //Set by Converter 
 DEFNAME = i_robe
@@ -753,8 +754,8 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1f7c
 WEIGHT = 2
-RESOURCES = 8 i_cloth, 1 i_thread //some resources were fixed by converter 
-SKILLMAKE = 227 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 8 i_cloth, 3 i_thread //nastaveni_cm_resources 
+SKILLMAKE = 800 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 17 //Set by Converter 
 DEFNAME = i_doublet
@@ -775,9 +776,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1fa0
 WEIGHT = 5
-RESOURCES = 24 i_cloth
+RESOURCES = 16 i_cloth, 6 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 24 i_cloth, 1 i_thread
-SKILLMAKE = 290 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 750 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 layer = 17 //Set by Converter 
 DEFNAME = i_jester_suit
 armorVsP = 7
@@ -797,9 +798,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1fa2
 WEIGHT = 5
-RESOURCES = 12 i_cloth
+RESOURCES = 12 i_cloth, 3 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 12 i_cloth, 1 i_thread
-SKILLMAKE = 311 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 400 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 17 //Set by Converter 
 DEFNAME = i_tunic
@@ -820,9 +821,9 @@ TYPE = T_CLOTHING
 WearableType = WearableType.Clothing //guessed by Converter 
 DupeList = 0x1ffe
 WEIGHT = 5
-RESOURCES = 14 i_cloth
+RESOURCES = 14 i_cloth, 3 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 14 i_cloth, 1 i_thread
-SKILLMAKE = 320 tailoring, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 320 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //DYE = 1 // commented out by Converter 
 layer = 17 //Set by Converter 
 DEFNAME = i_surcoat
@@ -841,8 +842,9 @@ DESCRIPTION = Basket
 
 TYPE = T_CONTAINER
 WEIGHT = 2
-RESOURCES = 3 i_straw
+RESOURCES = 3 i_straw //nastaveni_cm_resources 
 //TDATA2 = 041 // commented out by Converter 
+SKILLMAKE = 480 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_basket
 
@@ -853,8 +855,9 @@ DESCRIPTION = Large Basket
 
 TYPE = T_CONTAINER
 WEIGHT = 5
-RESOURCES = 3 i_straw
+RESOURCES = 3 i_straw //nastaveni_cm_resources 
 //TDATA2 = 041 // commented out by Converter 
+SKILLMAKE = 500 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_basket_bushel
 
@@ -864,8 +867,9 @@ SUBSECTION = Containers
 DESCRIPTION = Small Basket
 
 TYPE = T_CONTAINER
-RESOURCES = 3 i_straw
+RESOURCES = 3 i_straw //nastaveni_cm_resources 
 //TDATA2 = 03F // commented out by Converter 
+SKILLMAKE = 300 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_basket_2
 
@@ -874,7 +878,8 @@ CATEGORY = Items by Professions
 SUBSECTION = Fisherman
 DESCRIPTION = Fishing Net
 
-RESOURCES = 10 i_rope, 10 i_thread, 4 i_shell
+RESOURCES = 10 i_rope, 10 i_thread, 4 i_shell, 3 i_string //nastaveni_cm_resources 
+SKILLMAKE = 600 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_fishing_net_2
 
 [ItemDef 0xdca]
@@ -882,7 +887,8 @@ CATEGORY = Items by Professions
 SUBSECTION = Fisherman
 DESCRIPTION = Fishing Net
 
-RESOURCES = 10 i_rope, 10 i_thread, 4 i_shell
+RESOURCES = 10 i_rope, 10 i_thread, 4 i_shell, 3 i_string //nastaveni_cm_resources 
+SKILLMAKE = 600 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_fishing_net_3
 
 [ItemDef 0xdcb]
@@ -926,7 +932,8 @@ SUBSECTION = Tailor
 DESCRIPTION = Knitting Items
 
 DupeList = 0xdf7
-RESOURCES = 1 i_knitting_needles, 1 i_yarn_ball
+RESOURCES = 1 i_knitting_needles, 1 i_yarn_ball //nastaveni_cm_resources 
+SKILLMAKE = 200 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_knitting_item
 
 [ItemDef 0xdf7]
@@ -1016,7 +1023,7 @@ DESCRIPTION = Spool of Thread
 TYPE = T_THREAD
 DupeList = 0xfa1
 WEIGHT = 1
-RESOURCES = 1 i_flax_bundle
+RESOURCES = 1 i_flax_bundle //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_thread
 
@@ -1050,7 +1057,8 @@ DESCRIPTION = Dark Brown Book
 
 TYPE = T_BOOK
 WEIGHT = 2
-RESOURCES = 1 i_canvas, 10 i_paper, 1 i_thread, 1 i_hide
+RESOURCES = 5 i_paper, 1 i_thread, 1 i_hide //nastaveni_cm_resources 
+SKILLMAKE = 350 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_book_sm
 
 [ItemDef 0xff2]
@@ -1060,8 +1068,8 @@ DESCRIPTION = Purple Book
 
 TYPE = T_BOOK
 WEIGHT = 2
-RESOURCES = 5 i_log_copper
-SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_hide, 1 i_thread, 3 i_paper //nastaveni_cm_resources 
+SKILLMAKE = 400 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_book_lg
 
 [ItemDef 0xff3]
@@ -1135,7 +1143,7 @@ DESCRIPTION = BALL OF YARN
 TYPE = T_YARN
 DupeList = 0xe1e,0xe1f
 WEIGHT = 1
-RESOURCES = 1 i_wool
+RESOURCES = 1 i_wool //nastaveni_cm_resources 
 DEFNAME = i_yarn_ball
 
 [ItemDef 0xe1e]
@@ -1152,8 +1160,9 @@ DESCRIPTION = Cut-up Leather
 TYPE = T_LEATHER
 DupeList = 0x1068,0x1081,0x1082
 WEIGHT = 1
-RESOURCES = 1 i_hide
+RESOURCES = 1 i_reag_batwing //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
+SKILLMAKE = 800 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_hides_cut
 
 [ItemDef 0x1068]
@@ -1166,7 +1175,8 @@ DESCRIPTION = Hammock
 
 DupeList = 0x11f1,0x11f2,0x11f3
 WEIGHT = 8
-RESOURCES = 1 i_rope, 2 i_board, 2 i_cloth
+RESOURCES = 1 i_rope, 2 i_board, 2 i_cloth //nastaveni_cm_resources 
+SKILLMAKE = 520 tailoring, 330 carpentry, 1 t_sewing_kit, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_hammock
 
 [ItemDef 0x11f1]
@@ -1207,6 +1217,8 @@ SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
 DupeList = 0x13a5
+RESOURCES = 6 i_cloth, 1 i_thread, 1 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 500 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_pillow_2
 
 [ItemDef 0x13a5]
@@ -1217,13 +1229,15 @@ DUPEITEM = i_pillow
 
 [ItemDef 0x13a7]
 WEIGHT = 2
-RESOURCES = 4 i_cloth, 2 i_wool
+RESOURCES = 4 i_cloth, 1 i_thread, 1 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 350 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_pillow_3
 
 [ItemDef 0x13a8]
 DupeList = 0x13a9,0x13aa
 WEIGHT = 2
-RESOURCES = 4 i_cloth, 2 i_wool
+RESOURCES = 4 i_cloth, 1 i_thread, 1 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 350 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_pillow_4
 
 [ItemDef 0x13a9]
@@ -1235,13 +1249,15 @@ DUPEITEM = i_pillow_4
 
 [ItemDef 0x13ab]
 WEIGHT = 2
-RESOURCES = 4 i_cloth, 2 i_wool, 4 i_thread
+RESOURCES = 4 i_cloth, 1 i_thread, 1 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 450 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_pillow_6
 
 [ItemDef 0x13ac]
 DupeList = 0x13ad,0x13ae
 WEIGHT = 2
-RESOURCES = 4 i_cloth, 2 i_wool, 4 i_thread
+RESOURCES = 4 i_cloth, 1 i_thread //nastaveni_cm_resources 
+SKILLMAKE = 500 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_pillow_7
 
 [ItemDef 0x13ad]
@@ -1258,7 +1274,8 @@ DESCRIPTION = String
 
 DupeList = 0x1421
 WEIGHT = 1
-RESOURCES = 1 i_cotton
+RESOURCES = 1 i_cotton, 1 i_sticks //nastaveni_cm_resources 
+SKILLMAKE = 550 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_string
 
 [ItemDef 0x1421]
@@ -1270,7 +1287,8 @@ SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
 WEIGHT = 4
-RESOURCES = 6 i_cloth, 4 i_wool
+RESOURCES = 6 i_cloth, 2 i_thread, 2 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 700 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_PILLOW_LARGE
 
 [ItemDef 0x163b]
@@ -1279,7 +1297,8 @@ SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
 WEIGHT = 2
-RESOURCES = 4 i_cloth, 2 i_wool, 4 i_thread
+RESOURCES = 4 i_cloth, 1 i_thread, 1 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 600 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_pillow_9
 
 [ItemDef 0x163c]
@@ -1288,7 +1307,8 @@ SUBSECTION = Bedding
 DESCRIPTION = Pillow
 
 WEIGHT = 2
-RESOURCES = 4 i_cloth, 2 i_wool, 4 i_thread
+RESOURCES = 4 i_cloth, 1 i_thread, 1 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 600 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_pillow_10
 
 [ItemDef 0x166e]
@@ -1297,7 +1317,8 @@ SUBSECTION = Torture
 DESCRIPTION = Whip
 
 WEIGHT = 8
-RESOURCES = 10 i_hides_cut, 1 i_hide, 1 i_cat_gut
+RESOURCES = 10 i_hides_cut, 1 i_hide, 1 i_cat_gut //nastaveni_cm_resources 
+SKILLMAKE = 500 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_whip
 
 [ItemDef 0x166f]
@@ -1306,7 +1327,8 @@ SUBSECTION = Torture
 DESCRIPTION = Cat o' Ninetails
 
 WEIGHT = 8
-RESOURCES = 10 i_hides_cut, 1 i_hide, 1 i_cat_gut
+RESOURCES = 10 i_hides_cut, 1 i_hide, 1 i_cat_gut //nastaveni_cm_resources 
+SKILLMAKE = 560 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_cat_o_ninetails
 
 [ItemDef 0x1914]
@@ -1315,7 +1337,8 @@ SUBSECTION = Bedding
 DESCRIPTION = Towel
 
 WEIGHT = 2
-RESOURCES = 3 i_cloth
+RESOURCES = 2 i_cloth //nastaveni_cm_resources 
+SKILLMAKE = 650 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_towel
 
 [ItemDef 0x1915]
@@ -1334,7 +1357,8 @@ DESCRIPTION = @
 
 DupeList = 0x1e37,0x1e38,0x1e39,0x1e3a,0x1e3b,0x1e3c,0x1e3d,0x1e3e,0x1e40,0x1e41,0x1e42,0x1e43,0x1e44,0x1e45,0x1e46,0x1e47,0x1e48
 WEIGHT = 20
-RESOURCES = 2 i_hide, 5 i_thread, 4 i_canvas
+RESOURCES = 2 i_fur_dark, 1 i_gem_amber //nastaveni_cm_resources 
+SKILLMAKE = 940 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_RUG_BEARSKIN_1
 
 [ItemDef 0x1e37]
@@ -1395,6 +1419,8 @@ DESCRIPTION = @
 
 DupeList = 0x1e4a,0x1e4b,0x1e4c,0x1e4d,0x1e4e,0x1e4f,0x1e50,0x1e51,0x1e53,0x1e54,0x1e55,0x1e56,0x1e57,0x1e58,0x1e59,0x1e5a,0x1e5b
 WEIGHT = 20
+RESOURCES = 2 i_fur_light, 1 i_gem_amber //nastaveni_cm_resources 
+SKILLMAKE = 950 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_RUG_BEARSKIN_2
 //RESOURCES3 = 2 I_CORPSE_BEAR, 5 i_THREAD, 4 i_CANVAS // commented out by Converter 
 

@@ -3,8 +3,8 @@
 [ItemDef i_hypnotizer]
 name = "Hypnotizer's ball"
 type = t_crystal_prof
-resources = 1 i_scroll_polymorph, 1 i_crystal_ball, 1 i_ingot_adamantinum
-skillmake = 1000 alchemy, 1000 magery //some resources were fixed by converter 
+RESOURCES = 1 i_crystal_ball, 1 i_scroll_polymorph, 1 i_ingot_adamantinum //nastaveni_cm_resources 
+SKILLMAKE = 850 alchemy //nastaveni_cm_skillmake 
 model = i_crystal_ball
 Color = 0480
 

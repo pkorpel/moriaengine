@@ -91,6 +91,7 @@ namespace SteamEngine.Converter {
 				CreateFileList(".", filesList);
 				Directory.SetCurrentDirectory(origCurDir);
 				SphereWorldVars.Load(Path.Combine(convertPath, "save", "sphereworld.scp"));
+				SphereWorldVars.LoadRecipeShortNames(Path.Combine(convertPath, "scripts", "systems", "nastaveni_cm.scp"));
 				SphereWorldVars.LoadLayerArmorPercents(Path.Combine(convertPath, "scripts", "spheredefs.scp"));
 				HandWrittenScripts.Load("scripts", Path.Combine("scripts", "converted"));
 				Console.WriteLine("Converting " + filesList.Count + " Sphere script files.");

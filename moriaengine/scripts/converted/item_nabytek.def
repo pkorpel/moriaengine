@@ -8,9 +8,9 @@ DESCRIPTION = Wooden Crate (Small)
 TYPE = t_container
 DupeList = 0xe7e
 WEIGHT = 3
-RESOURCES = 8 i_board
+RESOURCES = 8 i_log_copper //nastaveni_cm_resources 
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_hinge
-SKILLMAKE = 100 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 100 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 044 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -24,9 +24,9 @@ DESCRIPTION = Wooden Box (W)
 TYPE = T_CONTAINER
 DupeList = 0xe7d
 WEIGHT = 4
-RESOURCES = 10 i_board
+RESOURCES = 10 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 9 i_board
-SKILLMAKE = 210 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 210 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 040 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -39,9 +39,9 @@ DESCRIPTION = Barstool (Cross Bars)
 
 TYPE = T_CHAIR
 WEIGHT = 3
-RESOURCES = 9 i_log
+RESOURCES = 4 i_log_copper, 1 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board
-SKILLMAKE = 110 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 470 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_chair_stool_bar
 
@@ -53,9 +53,9 @@ DESCRIPTION = Barstool
 TYPE = T_CHAIR
 DupeList = 0xb5e
 WEIGHT = 3
-RESOURCES = 9 i_log
+RESOURCES = 3 i_log_copper, 1 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 4 i_board
-SKILLMAKE = 110 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 450 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_chair_stool
 
@@ -67,9 +67,9 @@ DESCRIPTION = Chest of Drawers (Dark Wood) (SW)
 TYPE = T_CONTAINER
 DupeList = 0xa38
 WEIGHT = 20
-RESOURCES = 25 i_log
+RESOURCES = 10 i_log_iron, 4 i_drawer //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board, 10 i_nails, 3 i_drawer
-SKILLMAKE = 850 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 850 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 048 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -113,9 +113,9 @@ DESCRIPTION = Armoire (Dark Wood)
 TYPE = T_CONTAINER
 DupeList = 0xa4d,0xa50,0xa51
 WEIGHT = 25
-RESOURCES = 35 i_log
+RESOURCES = 30 i_log_iron, 5 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 20 i_board, 6 i_nails, 4 i_hinge
-SKILLMAKE = 842 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 842 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 04e // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -132,9 +132,9 @@ DESCRIPTION = Armoire (Light Wood)
 TYPE = T_CONTAINER
 DupeList = 0xa4f,0xa52,0xa53
 WEIGHT = 9
-RESOURCES = 35 i_log
+RESOURCES = 5 i_nails, 30 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 20 i_board, 6 i_nails, 4 i_hinge
-SKILLMAKE = 842 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 842 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 04f // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -163,9 +163,10 @@ DESCRIPTION = Chest of Drawers (Light Wood)(SW)
 TYPE = T_CONTAINER
 DupeList = 0xa34
 WEIGHT = 20
-RESOURCES = 5 i_board, 10 i_nails, 3 i_drawer
+RESOURCES = 10 i_log_verite, 4 i_drawer //nastaveni_cm_resources 
 Flippable = true
 //TDATA2 = 051 // commented out by Converter 
+SKILLMAKE = 900 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_bureau
 //VALUE = {150 180} // commented out by Converter 
@@ -177,9 +178,10 @@ DESCRIPTION = Drawer (Light Wood)
 
 TYPE = T_CONTAINER
 DupeList = 0xa2e,0xa2f,0xa35,0xa36,0xa37
-RESOURCES = 5 i_board, 2 i_nails
+RESOURCES = 4 i_log_iron //nastaveni_cm_resources 
 Flippable = true
 //TDATA2 = 051 // commented out by Converter 
+SKILLMAKE = 400 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_drawer
 
@@ -212,9 +214,10 @@ DESCRIPTION = Dresser (Vanity)
 TYPE = T_CONTAINER
 DupeList = 0xa3d,0xa44,0xa45
 WEIGHT = 30
-RESOURCES = 8 i_board, 20 i_nails, 6 i_dresser_drawer, 1 i_ingot_silver, 5 i_sand
+RESOURCES = 8 i_log_verite, 1 i_ingot_silver, 1 i_tabulka_skla, 1 i_drawer, 1 i_nails //nastaveni_cm_resources 
 Flippable = true
 //TDATA2 = 051 // commented out by Converter 
+SKILLMAKE = 950 carpentry, 1 t_carpentry, 800 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_dresser
 
@@ -281,7 +284,8 @@ DESCRIPTION = Bed Roll (Unrolled)
 TYPE = T_BEDROLL
 DupeList = 0xa56
 WEIGHT = 5
-RESOURCES = 5 i_cloth, 1 i_canvas, 50 i_feather, 1 i_hides_cut
+RESOURCES = 4 i_cloth, 1 i_hide, 1 i_thread //nastaveni_cm_resources 
+SKILLMAKE = 510 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bedroll
 
 [ItemDef 0xa56]
@@ -295,7 +299,8 @@ DESCRIPTION = Bedroll (Rolled Up)
 TYPE = T_BEDROLL
 DupeList = 0xa58,0xa59
 WEIGHT = 5
-RESOURCES = 1 i_bedroll //some resources were fixed by converter 
+RESOURCES = 1 i_bedroll, 2 i_rope //nastaveni_cm_resources 
+SKILLMAKE = 560 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bedroll_2
 //VALUE = {4 8} // commented out by Converter 
 
@@ -326,8 +331,9 @@ DESCRIPTION = Twin Bed (Grey) (NE)
 
 TYPE = T_BED
 DupeList = 0xa5c
-RESOURCES = 30 i_board, 1 i_bedroll, 10 i_nails, 1 i_pillow
+RESOURCES = 30 i_log_iron, 5 i_nails, 1 i_pillow_7, 1 i_bedroll, 1 i_sheet //nastaveni_cm_resources 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 840 carpentry, 710 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_1
 
 [ItemDef 0xa5c]
@@ -340,8 +346,9 @@ DESCRIPTION = Twin Bed (White) (NE)
 
 TYPE = T_BED
 DupeList = 0xa5d
-RESOURCES = 30 i_board, 1 i_bedroll, 10 i_nails
+RESOURCES = 30 i_log_iron, 5 i_nails, 1 i_pillow_3, 1 i_bedroll, 1 i_sheet_2 //nastaveni_cm_resources 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 820 carpentry, 680 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_2
 
 [ItemDef 0xa5d]
@@ -354,8 +361,9 @@ DESCRIPTION = Twin Bed (White) (NE)
 
 TYPE = T_BED
 DupeList = 0xa5f,0xa60,0xa61
-RESOURCES = 30 i_board, 1 i_bedroll, 10 i_nails
+RESOURCES = 30 i_log_iron, 1 i_bedroll, 5 i_nails, 1 i_sheet //nastaveni_cm_resources 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 840 carpentry, 700 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_3
 
 [ItemDef 0xa5f]
@@ -374,8 +382,9 @@ DESCRIPTION = Twin Bed (Brown) (NE)
 
 TYPE = T_BED
 DupeList = 0xa65
-RESOURCES = 30 i_board, 1 i_bedroll, 10 i_nails
+RESOURCES = 20 i_log_iron, 1 i_bedroll, 1 i_sheet_2, 5 i_nails, 1 i_pillow_3 //nastaveni_cm_resources 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 780 carpentry, 600 tailoring, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_bed_4
 
 [ItemDef 0xa65]
@@ -389,9 +398,9 @@ DESCRIPTION = Twin Bed (White)
 TYPE = T_BED
 DupeList = 0xa67,0xa68,0xa69,0xa6a,0xa6b
 WEIGHT = 20
-RESOURCES = 40 i_board, 100 i_cloth
+RESOURCES = 30 i_log_iron, 1 i_bedroll, 5 i_nails, 1 i_sheet, 1 i_pillow_7 //nastaveni_cm_resources 
 RESOURCES2 = 40 i_board, 1 i_bedroll, 10 i_nails, 1 i_pillow
-SKILLMAKE = 940 carpentry, 750 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 840 carpentry, 700 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 //TDATA1 = 0 // commented out by Converter 
 DEFNAME = i_bed_5
 
@@ -416,8 +425,9 @@ SUBSECTION = Bedding
 DESCRIPTION = Folded Blanket
 
 DupeList = 0xa6d,0xa6e,0xa6f
-RESOURCES = 5 i_cloth
+RESOURCES = 2 i_cloth //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
+SKILLMAKE = 400 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_blanket
 
 [ItemDef 0xa6d]
@@ -436,9 +446,10 @@ DESCRIPTION = Fancy Dbl Bed (HeadBoard) (NW Wall - West Corner)
 
 TYPE = T_BED
 DupeList = 0xa71,0xa72,0xa73,0xa74,0xa75,0xa76,0xa77
-RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow
+RESOURCES = 45 i_log_verite, 2 i_bedroll, 2 i_sheet, 6 i_nails, 2 i_pillow_10 //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 910 carpentry, 740 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_6
 
 [ItemDef 0xa71]
@@ -469,9 +480,10 @@ DESCRIPTION = Fancy Dbl Bed w/ Blankets
 
 TYPE = T_BED
 DupeList = 0xa79,0xa7a,0xa7b,0xa7c,0xa7d
-RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow
+RESOURCES = 40 i_log_iron, 40 i_cloth, 5 i_nails, 2 i_pillow_7, 2 i_bedroll, 2 i_sheet //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 940 carpentry, 750 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_7
 
 [ItemDef 0xa79]
@@ -496,9 +508,10 @@ DESCRIPTION = Fancy Dbl Bed w/ Blankets Covers Turned (NW - NE Wall S Corner)
 
 TYPE = T_BED
 DupeList = 0xa7f,0xa80,0xa81,0xa82,0xa83
-RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow, 2 i_blanket
+RESOURCES = 40 i_log_iron, 40 i_cloth, 5 i_nails, 2 i_pillow_7, 2 i_bedroll, 2 i_sheet //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 947 carpentry, 750 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_8
 
 [ItemDef 0xa7f]
@@ -519,9 +532,10 @@ DUPEITEM = i_bed_8
 [ItemDef 0xa8c]
 TYPE = T_BED
 DupeList = 0xa8d,0xa8e,0xa8f,0xa90,0xa91
-RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow, 2 i_blanket
+RESOURCES = 40 i_log_iron, 40 i_cloth, 5 i_nails, 2 i_pillow_7, 2 i_bedroll, 2 i_sheet //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 947 carpentry, 750 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_9
 
 [ItemDef 0xa8d]
@@ -542,9 +556,10 @@ DUPEITEM = i_bed_9
 [ItemDef 0xa84]
 TYPE = T_BED
 DupeList = 0xa85,0xa86,0xa87
-RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow, 2 i_blanket
+RESOURCES = 40 i_log_iron, 1 i_bedroll, 5 i_nails, 1 i_sheet, 1 i_pillow_7 //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 900 carpentry, 800 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_10
 
 [ItemDef 0xa85]
@@ -559,9 +574,10 @@ DUPEITEM = i_bed_10
 [ItemDef 0xa88]
 TYPE = T_BED
 DupeList = 0xa89,0xa8a,0xa8b
-RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow, 2 i_blanket
+RESOURCES = 41 i_log_iron, 1 i_bedroll, 5 i_nails, 1 i_sheet, 1 i_pillow_7 //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 900 carpentry, 800 tailoring, 1 t_sewing_kit, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_bed_11
 
 [ItemDef 0xa89]
@@ -580,8 +596,9 @@ DESCRIPTION = Bed
 
 TYPE = T_BED
 DupeList = 0xdb1,0xdb2,0xdb3,0xdb4,0xdb5
-RESOURCES = 30 i_board, 1 i_bedroll, 10 i_nails
+RESOURCES = 50 i_log_iron, 1 i_bedroll, 5 i_nails, 1 i_pillow_2, 2 i_sheet //nastaveni_cm_resources 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 900 carpentry, 800 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_bed_12
 
 [ItemDef 0xdb1]
@@ -607,8 +624,9 @@ DESCRIPTION = Bed 01
 TYPE = T_BED
 DupeList = 0x11cf,0x11d0,0x11d1
 WEIGHT = 40
-RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow
+RESOURCES = 40 i_log_iron, 1 i_bedroll, 5 i_nails, 1 i_pillow_2, 1 i_sheet_2 //nastaveni_cm_resources 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 860 carpentry, 720 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_BED_13
 
 [ItemDef 0x11cf]
@@ -628,8 +646,9 @@ DESCRIPTION = Bed 02
 TYPE = T_BED
 DupeList = 0x11d3,0x11d4,0x11d5
 WEIGHT = 40
-RESOURCES = 50 i_board, 2 i_bedroll, 20 i_nails, 2 i_sheet, 2 i_pillow
+RESOURCES = 30 i_log_iron, 1 i_bedroll, 5 i_nails, 1 i_pillow_2, 1 i_sheet_2 //nastaveni_cm_resources 
 //TDATA1 = 0 // commented out by Converter 
+SKILLMAKE = 850 carpentry, 710 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_BED_14
 
 [ItemDef 0x11d3]
@@ -681,8 +700,8 @@ DESCRIPTION = Bookcase (Dark Wood) (Books)
 TYPE = T_CONTAINER
 DupeList = 0xa98,0xa99,0xa9a,0xa9b,0xa9c
 WEIGHT = 10
-RESOURCES = 8 i_board, 2 i_nails, 20 i_book_sm
-SKILLMAKE = 365 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 20 i_book_lg, 10 i_book_sm, 3 i_nails, 10 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 365 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 04d // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -712,9 +731,9 @@ DESCRIPTION = Bookcase (Dark Wood) (Empty)
 TYPE = T_CONTAINER
 DupeList = 0xa9e
 WEIGHT = 20
-RESOURCES = 25 i_log
+RESOURCES = 25 i_log_copper, 5 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 8 i_board, 2 i_nails
-SKILLMAKE = 315 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 315 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 04d // commented out by Converter 
 //TDATA2 = 04d // commented out by Converter 
@@ -1249,8 +1268,9 @@ SUBSECTION = Lamps
 DESCRIPTION = Lamp Post (unlit)
 
 TYPE = T_LIGHT_OUT
-RESOURCES = 1 i_candle, 20 i_ingot_iron, 2 i_sand
+RESOURCES = 1 i_candle, 20 i_ingot_iron //nastaveni_cm_resources 
 //TDATA3 = i_lamppost1_lit // commented out by Converter 
+SKILLMAKE = 999 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_lamppost1
 //CAN = 00004 // commented out by Converter 
@@ -1273,8 +1293,9 @@ SUBSECTION = Lamps
 DESCRIPTION = Lamp Post (Unlit)
 
 TYPE = T_LIGHT_OUT
-RESOURCES = 1 i_candle, 20 i_ingot_iron, 2 i_sand
+RESOURCES = 1 i_candle, 20 i_ingot_iron //nastaveni_cm_resources 
 //TDATA3 = i_lamppost2_lit // commented out by Converter 
+SKILLMAKE = 800 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_lamppost2
 
@@ -1297,8 +1318,9 @@ SUBSECTION = Lamps
 DESCRIPTION = Lamp Post (Fancy Unlit)
 
 TYPE = T_LIGHT_OUT
-RESOURCES = 1 i_candle, 25 i_ingot_iron, 4 i_sand
+RESOURCES = 1 i_candle, 25 i_ingot_iron //nastaveni_cm_resources 
 //TDATA3 = i_lamppost3_lit // commented out by Converter 
+SKILLMAKE = 700 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_lamppost3
 
@@ -1329,9 +1351,9 @@ DESCRIPTION = Wooden Bench (Dark)
 TYPE = T_CHAIR
 DupeList = 0xb2d
 WEIGHT = 3
-RESOURCES = 17 i_log
+RESOURCES = 11 i_log_verite //nastaveni_cm_resources 
 RESOURCES2 = 20 i_board, 4 i_nails
-SKILLMAKE = 526 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 526 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_bench_wood_dark
 
@@ -1346,9 +1368,9 @@ DESCRIPTION = Wooden Chair (Dark)
 TYPE = T_CHAIR
 DupeList = 0xb2f,0xb30,0xb31
 WEIGHT = 3
-RESOURCES = 17 i_log
+RESOURCES = 5 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 20 i_board, 4 i_nails
-SKILLMAKE = 250 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 550 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_chair_wood_rough_dark
 
@@ -1369,9 +1391,9 @@ DESCRIPTION = Throne
 TYPE = T_CHAIR
 DupeList = 0xb33
 WEIGHT = 3
-RESOURCES = 17 i_log
+RESOURCES = 10 i_log_verite, 2 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 40 i_board, 10 i_nails, 5 i_cloth, 100 i_feather
-SKILLMAKE = 526 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 900 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_chair_throne
 
@@ -1386,9 +1408,9 @@ DESCRIPTION = Nightstand, end piece
 TYPE = t_table
 DupeList = 0xb35,0xb36,0xb3a,0xb3c
 WEIGHT = 3
-RESOURCES = 17 i_log
+RESOURCES = 17 i_log_iron, 1 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 10 i_board, 4 i_nails
-SKILLMAKE = 421 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 421 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_table_nightstand
 
 [ItemDef 0xb35]
@@ -1441,7 +1463,8 @@ SUBSECTION = Tables
 DESCRIPTION = Counter
 
 WEIGHT = 4
-RESOURCES = 10 i_board, 4 i_nails
+RESOURCES = 22 i_log_iron, 2 i_nails //nastaveni_cm_resources 
+SKILLMAKE = 750 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_table_square_1
 //VALUE = {200 300} // commented out by Converter 
 
@@ -1462,9 +1485,9 @@ DESCRIPTION = Water Trough
 
 TYPE = T_WATER_WASH
 DupeList = 0xb42,0xb43,0xb44
-RESOURCES = 15 i_log
+RESOURCES = 15 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 10 i_board, 4 i_nails, 4 i_ingot_iron
-SKILLMAKE = 700 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 700 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_trough_water
 
 [ItemDef 0xb42]
@@ -1512,9 +1535,9 @@ DESCRIPTION = Writing Table
 TYPE = t_table
 DupeList = 0xb4a,0xb4b,0xb4c
 WEIGHT = 4
-RESOURCES = 17 i_log
+RESOURCES = 6 i_log_copper, 1 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 10 i_board, 2 i_nails
-SKILLMAKE = 631 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 631 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_table_writing
 
 [ItemDef 0xb4a]
@@ -1534,9 +1557,9 @@ DESCRIPTION = Chair (Gray Cushion)
 TYPE = T_CHAIR
 DupeList = 0xb4f,0xb50,0xb51
 WEIGHT = 3
-RESOURCES = 15 i_log
+RESOURCES = 8 i_log_iron, 1 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board, 2 i_nails, 1 i_cloth, 10 i_feather
-SKILLMAKE = 421 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 650 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_chair_wood_fancy_cushion
@@ -1559,9 +1582,9 @@ DESCRIPTION = Chair (Gray Cushion)
 TYPE = T_CHAIR
 DupeList = 0xb53,0xb54,0xb55
 WEIGHT = 3
-RESOURCES = 15 i_log
+RESOURCES = 8 i_log_iron, 1 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board, 2 i_nails, 1 i_cloth, 10 i_feather
-SKILLMAKE = 421 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 600 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //DYE = 1 // commented out by Converter 
 DEFNAME = i_chair_wood_cushion
@@ -1584,9 +1607,9 @@ DESCRIPTION = Chair (Light Wood)
 TYPE = T_CHAIR
 DupeList = 0xb57,0xb58,0xb59
 WEIGHT = 3
-RESOURCES = 13 i_log
+RESOURCES = 6 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board, 2 i_nails
-SKILLMAKE = 210 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 550 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_chair_wood
 
@@ -1607,9 +1630,9 @@ DESCRIPTION = Chair
 TYPE = T_CHAIR
 DupeList = 0xb5b,0xb5c,0xb5d
 WEIGHT = 3
-RESOURCES = 13 i_log
+RESOURCES = 5 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board, 2 i_nails
-SKILLMAKE = 210 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 500 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_chair_wood_bamboo
 
@@ -1752,9 +1775,9 @@ DESCRIPTION = Table
 TYPE = T_TABLE
 DupeList = 0xb8f
 WEIGHT = 3
-RESOURCES = 23 i_log
+RESOURCES = 20 i_log_iron, 2 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 6 i_board, 3 i_nails
-SKILLMAKE = 600 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 600 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_table_wood_rough_small
 
 [ItemDef 0xb7d]
@@ -1765,9 +1788,9 @@ DESCRIPTION = Table
 TYPE = T_TABLE
 DupeList = 0xb90
 WEIGHT = 3
-RESOURCES = 27 i_log
+RESOURCES = 25 i_log_iron, 2 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 6 i_board, 3 i_nails
-SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 400 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_table_wood_rough_board
 
 [ItemDef 0xb7e]
@@ -1909,8 +1932,9 @@ DESCRIPTION = Chair (Covered)
 
 TYPE = T_CHAIR
 DupeList = 0xc18
-RESOURCES = 1 i_chair_wood, 1 i_sheet
+RESOURCES = 1 i_chair_wood_rough_dark, 1 i_blanket //nastaveni_cm_resources 
 Flippable = true
+SKILLMAKE = 500 carpentry, 1 t_carpentry, 500 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_chair_covered
 
 [ItemDef 0xc18]
@@ -2091,8 +2115,9 @@ CATEGORY = Decoration - Furniture
 SUBSECTION = Chairs
 DESCRIPTION = Covered Ottoman
 
-RESOURCES = 1 i_table_nightstand, 1 i_cloth
+RESOURCES = 2 i_cloth //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
+SKILLMAKE = 620 tailoring, 1 t_sewing_kit, 5000 alchemy //nastaveni_cm_skillmake 
 DEFNAME = i_sheet
 
 [ItemDef 0xc32]
@@ -2101,8 +2126,9 @@ SUBSECTION = Bedding
 DESCRIPTION = Sheets
 
 DupeList = 0xc33,0xc34,0xc35,0xc36
-RESOURCES = 1 i_table_nightstand, 1 i_sheet
+RESOURCES = 3 i_cloth //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
+SKILLMAKE = 630 tailoring, 1 t_sewing_kit, 5000 alchemy //nastaveni_cm_skillmake 
 DEFNAME = i_sheet_2
 
 [ItemDef 0xc33]
@@ -2123,7 +2149,8 @@ SUBSECTION = PegBoard
 DESCRIPTION = @
 
 DupeList = 0xc3a
-RESOURCES = 2 i_board
+RESOURCES = 2 i_log_iron, 1 i_nails //nastaveni_cm_resources 
+SKILLMAKE = 710 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_pegbaord
 
 [ItemDef 0xc3a]
@@ -2139,9 +2166,9 @@ tooltype = FishingPole //guessed by Converter
 TwoHanded = true //guessed by Converter 
 DupeList = 0xdc0
 WEIGHT = 2
-RESOURCES = 5 i_cloth
+RESOURCES = 2 i_log_copper, 10 i_thread //nastaveni_cm_resources 
 RESOURCES2 = 1 i_log, 1 i_thread
-SKILLMAKE = 350 carpentry, 300 tailoring, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 350 carpentry, 300 tailoring, 1 t_carpentry //nastaveni_cm_skillmake 
 layer = 2 //Set by Converter 
 DEFNAME = i_fishing_pole
 
@@ -2153,8 +2180,8 @@ DESCRIPTION = BLANK SCROLL
 TYPE = T_SCROLL_BLANK
 DupeList = 0xef3
 WEIGHT = 1
-RESOURCES = 1 i_log_copper
-SKILLMAKE = 700 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_log_copper //nastaveni_cm_resources 
+SKILLMAKE = 1 t_carpentry, 700 carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_scroll_blank
 
 [ItemDef i_scroll_iron_blank]
@@ -2179,7 +2206,7 @@ TYPE = T_SCROLL_BLANK
 DupeList = 0xef3
 WEIGHT = 1
 RESOURCES = 1 i_log_verite
-SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_scroll_blank
 Color = 05f2
 
@@ -2204,9 +2231,9 @@ DESCRIPTION = LARGE CRATE (1W)
 TYPE = T_CONTAINER
 DupeList = 0xe3d
 WEIGHT = 5
-RESOURCES = 18 i_board
+RESOURCES = 18 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 15 i_log, 4 i_nails
-SKILLMAKE = 450 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 450 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 044 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -2223,9 +2250,9 @@ DESCRIPTION = MEDIUM CRATE (1W)
 TYPE = T_CONTAINER
 DupeList = 0xe3f
 WEIGHT = 3
-RESOURCES = 15 i_board
+RESOURCES = 15 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 10 i_log, 3 i_nails
-SKILLMAKE = 315 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 315 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 044 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -2242,9 +2269,9 @@ DESCRIPTION = Wood/Brass Chest (W)
 TYPE = T_CONTAINER
 DupeList = 0xe43
 WEIGHT = 10
-RESOURCES = 20 i_board
+RESOURCES = 5 i_ingot_copper, 10 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 15 i_board
-SKILLMAKE = 650 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 650 carpentry, 1 t_carpentry, 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 049 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -2271,9 +2298,9 @@ DESCRIPTION = Portrait
 
 DupeList = 0xee8
 WEIGHT = 3
-RESOURCES = 15 i_log, 25 i_cloth
+RESOURCES = 4 i_log_iron, 10 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 1 i_board, 1 i_dyes
-SKILLMAKE = 650 carpentry, 500 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 650 carpentry, 500 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_portrait_1
 
 [ItemDef 0xea0]
@@ -2281,8 +2308,8 @@ CATEGORY = Items by Professions
 SUBSECTION = Artists
 DESCRIPTION = Painting
 
-RESOURCES = 25 i_log, 35 i_cloth
-SKILLMAKE = 700 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 4 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 900 carpentry, 850 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_portrait_big
 
 [ItemDef 0xea1]
@@ -2292,7 +2319,8 @@ DESCRIPTION = Painting
 
 DupeList = 0xea2
 WEIGHT = 3
-RESOURCES = 1 i_board, 1 i_dyes
+RESOURCES = 4 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 640 carpentry, 490 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_portrait_2
 
 [ItemDef 0xea2]
@@ -2305,9 +2333,9 @@ DESCRIPTION = Painting
 
 DupeList = 0xea4
 WEIGHT = 3
-RESOURCES = 15 i_log, 25 i_cloth
+RESOURCES = 4 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
 RESOURCES2 = 1 i_board, 1 i_dyes
-SKILLMAKE = 750 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 750 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_portrait_3
 
 [ItemDef 0xea4]
@@ -2320,9 +2348,9 @@ DESCRIPTION = Portrait
 
 DupeList = 0xea6
 WEIGHT = 3
-RESOURCES = 15 i_log, 25 i_cloth
+RESOURCES = 4 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
 RESOURCES2 = 1 i_board, 1 i_dyes
-SKILLMAKE = 800 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 800 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_portrait_4
 
 [ItemDef 0xea6]
@@ -2339,9 +2367,9 @@ DESCRIPTION = Portrait
 
 DupeList = 0xea8
 WEIGHT = 5
-RESOURCES = 15 i_log, 25 i_cloth
+RESOURCES = 4 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
 RESOURCES2 = 1 i_board, 1 i_dyes
-SKILLMAKE = 800 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 810 carpentry, 700 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_portrait_5
 
 [ItemDef 0xea8]
@@ -2358,9 +2386,9 @@ DESCRIPTION = Music Stand
 
 DupeList = 0xeb7
 WEIGHT = 3
-RESOURCES = 15 i_log
+RESOURCES = 4 i_log_verite, 1 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board, 1 i_nails
-SKILLMAKE = 789 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 789 carpentry, 1 t_carpentry, 650 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_music_stand
 
 [ItemDef 0xeb6]
@@ -2369,8 +2397,8 @@ SUBSECTION = Bard
 DESCRIPTION = Music Stand (books)
 
 DupeList = 0xeb8
-RESOURCES = 1 i_music_stand, 1 i_sheet_music //some resources were fixed by converter 
-SKILLMAKE = 789 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_music_stand, 1 i_sheet_music //nastaveni_cm_resources 
+SKILLMAKE = 789 carpentry, 1 t_carpentry, 650 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_music_stand_book
 
 [ItemDef 0xeb7]
@@ -2381,8 +2409,8 @@ DUPEITEM = i_music_stand_book
 
 [ItemDef 0xeb9]
 DupeList = 0xeba
-RESOURCES = 1 i_music_stand_tall, 1 i_sheet_music //some resources were fixed by converter 
-SKILLMAKE = 815 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_music_stand_tall, 1 i_sheet_music //nastaveni_cm_resources 
+SKILLMAKE = 815 carpentry, 1 t_carpentry, 650 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_music_stand_tall_book
 
 [ItemDef 0xeba]
@@ -2390,9 +2418,9 @@ DUPEITEM = i_music_stand_tall_book
 
 [ItemDef 0xebb]
 DupeList = 0xebc
-RESOURCES = 20 i_log
+RESOURCES = 8 i_log_verite, 2 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board, 1 i_nails
-SKILLMAKE = 815 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 815 carpentry, 1 t_carpentry, 650 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_music_stand_tall
 
 [ItemDef 0xebc]
@@ -2404,9 +2432,9 @@ SUBSECTION = Tailor
 DESCRIPTION = Dress Form
 
 WEIGHT = 5
-RESOURCES = 25 i_log, 10 i_cloth
+RESOURCES = 5 i_log_iron, 5 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 10 i_board, 1 i_nails
-SKILLMAKE = 631 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 631 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_dress_form
 
 [ItemDef 0xec7]
@@ -2424,9 +2452,9 @@ SUBSECTION = Artists
 DESCRIPTION = Painting
 
 DupeList = 0xec9
-RESOURCES = 15 i_log, 25 i_cloth
+RESOURCES = 4 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
 RESOURCES2 = 1 i_board, 1 i_dyes
-SKILLMAKE = 800 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 830 carpentry, 720 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_portrait_6
 
 [ItemDef 0xec9]
@@ -2438,8 +2466,8 @@ SUBSECTION = Artists
 DESCRIPTION = Portrait
 
 WEIGHT = 5
-RESOURCES = 15 i_log, 25 i_cloth
-SKILLMAKE = 800 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 4 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 780 carpentry, 1 t_carpentry, 1 t_sewing_kit, 800 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_portrait_7
 
 [ItemDef 0xf37]
@@ -2449,9 +2477,9 @@ DESCRIPTION = Saddle
 
 DupeList = 0xf38
 WEIGHT = 3
-RESOURCES = 15 i_log
+RESOURCES = 40 i_hides_cut, 15 i_thread, 10 i_fur_dark //nastaveni_cm_resources 
 RESOURCES2 = 4 i_hides_cut, 3 i_log
-SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_saddle
 
 [ItemDef 0xf38]
@@ -2464,9 +2492,9 @@ DESCRIPTION = Dying Tub
 
 TYPE = T_DYE_VAT
 WEIGHT = 10
-RESOURCES = 5 i_log
+RESOURCES = 1 i_tub_empty //nastaveni_cm_resources 
 RESOURCES2 = 10 i_board
-SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 650 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_dye_tub
 
 [ItemDef 0x100a]
@@ -2497,8 +2525,8 @@ DESCRIPTION = Spinning Wheel
 TYPE = t_spinwheel
 DupeList = 0x1019,0x101c,0x10a4
 WEIGHT = 15
-RESOURCES = 20 i_board, 1 i_ingot_iron
-SKILLMAKE = 736 carpentry, 650 tailoring, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 20 i_log_verite, 4 i_ingot_iron, 6 i_nails //nastaveni_cm_resources 
+SKILLMAKE = 736 carpentry, 350 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_spinning_wheel
 
 [ItemDef 0x1016]
@@ -2544,9 +2572,9 @@ DESCRIPTION = Globe
 
 DupeList = 0x1048
 WEIGHT = 6
-RESOURCES = 10 i_board, 2 i_cloth
+RESOURCES = 10 i_log_verite, 2 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 3 i_board, 1 i_sand, 1 i_straw, 5 i_parchment, 1 i_ingot_iron
-SKILLMAKE = 650 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 650 carpentry, 1 t_carpentry, 450 tailoring, 500 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_globe
 
 [ItemDef 0x1048]
@@ -2555,8 +2583,8 @@ DUPEITEM = i_globe
 [ItemDef 0x1049]
 TYPE = T_CHAIR
 DupeList = 0x104a
-RESOURCES = 8 i_board
-SKILLMAKE = 100 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 5 i_log_verite //nastaveni_cm_resources 
+SKILLMAKE = 490 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_BENCH_LOOM
 
@@ -2571,8 +2599,8 @@ DESCRIPTION = Training Dummy
 TYPE = t_train_dummy
 DupeList = 0x1071,0x1072,0x1073,0x1074,0x1075,0x1076,0x1077
 WEIGHT = 35
-RESOURCES = 15 i_cloth, 35 i_straw, 8 i_board, 1 i_ingot_iron
-SKILLMAKE = 850 carpentry, 700 tailoring, 1 t_sewing_kit, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 15 i_cloth, 1 i_ingot_iron, 10 i_log_iron, 10 i_wheat_sheaf //nastaveni_cm_resources 
+SKILLMAKE = 850 carpentry, 700 tailoring, 1 t_sewing_kit, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_training_dummy
 
 [ItemDef 0x1071]
@@ -2605,9 +2633,9 @@ DESCRIPTION = Table (Purple Runner)
 TYPE = t_table
 DupeList = 0x118c
 WEIGHT = 7
-RESOURCES = 27 i_board, 30 i_cloth
+RESOURCES = 1 i_table_wood_rough_small, 2 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_cloth
-SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_table_runner_purple
 
 [ItemDef 0x118c]
@@ -2620,9 +2648,9 @@ DESCRIPTION = Table (Red Runner)
 
 TYPE = t_table
 WEIGHT = 7
-RESOURCES = 27 i_log, 30 i_cloth
+RESOURCES = 1 i_table_wood_rough_small, 2 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_cloth
-SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_table_runner_red
 
 [ItemDef 0x118e]
@@ -2632,9 +2660,9 @@ DESCRIPTION = Table (Snowflake Runner)
 
 TYPE = t_table
 WEIGHT = 7
-RESOURCES = 27 i_log, 30 i_cloth
+RESOURCES = 1 i_table_wood_rough_small, 2 i_cloth //nastaveni_cm_resources 
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_cloth
-SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 890 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_table_runner_snowflake
 
 [ItemDef 0x118f]
@@ -2645,8 +2673,8 @@ DESCRIPTION = Table (Blue Plaid Runner)
 TYPE = t_table
 DupeList = 0x1191
 WEIGHT = 7
-RESOURCES = 6 i_board, 1 i_nails, 2 i_cloth
-SKILLMAKE = 830 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 2 i_cloth, 1 i_nails, 17 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 830 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_table_runner_plaid_blue
 
 [ItemDef 0x1190]
@@ -2673,8 +2701,8 @@ DESCRIPTION = Foot Stool
 
 TYPE = T_CHAIR
 WEIGHT = 3
-RESOURCES = 4 i_bamboo, 3 i_canvas
-SKILLMAKE = 400 carpentry //some resources were fixed by converter 
+RESOURCES = 4 i_hay_sheaf, 2 i_cloth //nastaveni_cm_resources 
+SKILLMAKE = 400 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_chair_stool_bamboo
 
@@ -2685,9 +2713,9 @@ DESCRIPTION = Ship Model (N)
 
 DupeList = 0x14f4
 WEIGHT = 1
-RESOURCES = 10 i_board
+RESOURCES = 2 i_log_verite //nastaveni_cm_resources 
 RESOURCES2 = 1 i_board, 1 i_thread, 1 i_nails, 1 i_paper
-SKILLMAKE = 950 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 950 carpentry, 1 t_carpentry, 850 tinkering //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_MODEL_SHIP
 
@@ -2702,9 +2730,9 @@ DESCRIPTION = Bar Door
 TYPE = T_DOOR
 DupeList = 0x190f
 WEIGHT = 5
-RESOURCES = 30 i_log
+RESOURCES = 15 i_log_iron, 1 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board, 1 i_nails
-SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 900 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_bar_door_ne
 
 [ItemDef 0x190f]
@@ -2718,9 +2746,9 @@ DESCRIPTION = Bar
 
 DupeList = 0x1911,0x1912,0x1913,0x1918,0x1919,0x191a,0x191b,0x191c,0x191d,0x191e,0x191f
 WEIGHT = 4
-RESOURCES = 30 i_log
+RESOURCES = 19 i_log_iron, 1 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 4 i_board, 1 i_nails
-SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_bar_piece
 
 [ItemDef 0x1911]
@@ -2740,15 +2768,17 @@ DESCRIPTION = Woodworkers Bench
 TYPE = T_CHAIR
 DupeList = 0x19f3,0x19f5,0x19f7
 WEIGHT = 8
-RESOURCES = 30 i_log
+RESOURCES = 30 i_log_iron, 2 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 4 i_board, 2 i_nails, 3 i_peg, 1 i_ingot_iron
-SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_bench_woodworker_end
 
 [ItemDef 0x19f2]
 TYPE = t_chair
 DupeList = 0x19f6
+RESOURCES = 30 i_log_iron, 2 i_nails //nastaveni_cm_resources 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_bench_woodworker_ext
 
 [ItemDef 0x19f3]
@@ -2762,9 +2792,9 @@ DESCRIPTION = Vise
 TYPE = t_carpentry
 DupeList = 0x19f8
 WEIGHT = 6
-RESOURCES = 30 i_log
+RESOURCES = 10 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 3 i_board, 1 i_nails, 1 i_springs, 2 i_ingot_iron
-SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_vise
 
 [ItemDef 0x19f5]
@@ -2787,9 +2817,9 @@ DESCRIPTION = Coopers Bench
 TYPE = T_CHAIR
 DupeList = 0x19fa,0x19fb,0x19fc
 WEIGHT = 8
-RESOURCES = 30 i_log
+RESOURCES = 18 i_log_iron, 1 i_nails //nastaveni_cm_resources 
 RESOURCES2 = 3 i_board, 1 i_nails, 2 i_log, 1 i_ingot_iron
-SKILLMAKE = 800 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_bench_cooper
 
@@ -2809,8 +2839,8 @@ DESCRIPTION = Pickpocket Dip
 
 TYPE = T_TRAIN_PICKPOCKET
 DupeList = 0x1e2d,0x1ec0,0x1ec1,0x1ec2,0x1ec3,0x1ec4,0x1ec5
-RESOURCES = 65 i_log, 65 i_cloth
-SKILLMAKE = 800 carpentry, 600 tailoring, 1 t_sewing_kit, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 15 i_cloth, 1 i_ingot_iron, 8 i_log_iron, 10 i_wheat_sheaf //nastaveni_cm_resources 
+SKILLMAKE = 800 carpentry, 600 tailoring, 1 t_sewing_kit, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_pickpocket_dip
 //RESOURCES3 = 1 i_TRAINING_DUMMY, 10 i_BELL, 2 i_LOG, i_ROPE, i_shirt_plain, i_pants_short, i_CAP // commented out by Converter 
 
@@ -2828,9 +2858,9 @@ DESCRIPTION = Dartboard
 
 DupeList = 0x1e2f
 WEIGHT = 1
-RESOURCES = 5 i_log
+RESOURCES = 5 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 3 i_board, 1 i_cloth
-SKILLMAKE = 157 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 320 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_dartboard
 
 [ItemDef 0x1e2f]
@@ -2843,7 +2873,8 @@ DESCRIPTION = Dartboard (Axe)
 
 DupeList = 0x1e31
 WEIGHT = 2
-RESOURCES = 1 i_dartboard, 1 i_axe //some resources were fixed by converter 
+RESOURCES = 1 i_dartboard, 1 i_axe_iron //nastaveni_cm_resources 
+SKILLMAKE = 320 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_dartboard_axe
 
 [ItemDef 0x1e31]
@@ -2856,7 +2887,8 @@ DESCRIPTION = Dartboard (Knives)
 
 DupeList = 0x1e33
 WEIGHT = 5
-RESOURCES = 1 i_dartboard, 3 i_dagger
+RESOURCES = 1 i_dartboard, 3 i_dagger_iron //nastaveni_cm_resources 
+SKILLMAKE = 320 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_dartboard_knives
 
 [ItemDef 0x1e33]
@@ -2869,8 +2901,8 @@ DESCRIPTION = @
 
 TYPE = T_BBOARD
 DupeList = 0x1e5f
-RESOURCES = 20 i_board, 4 i_cloth, 1 i_nails, 1 i_paper, 1 i_feather, 1 i_ink_pot //some resources were fixed by converter 
-SKILLMAKE = 950 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 10 i_scroll_blank, 20 i_log_verite, 1 i_nails //nastaveni_cm_resources 
+SKILLMAKE = 950 carpentry, 1 t_carpentry, 600 tinkering, 1500 alchemy //nastaveni_cm_skillmake 
 //TDATA2 = 0866 // commented out by Converter 
 DEFNAME = i_bulletin_board
 
@@ -2885,8 +2917,8 @@ DESCRIPTION = Bear
 
 DupeList = 0x1e67
 WEIGHT = 3
-RESOURCES = 15 i_log, 10 i_hides_cut
-SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 15 i_log_verite, 10 i_hides_cut, 1 i_gem_tourmaline //nastaveni_cm_resources 
+SKILLMAKE = 910 carpentry, 910 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_trophy_bearhead
 
 [ItemDef 0x1e61]
@@ -2896,9 +2928,9 @@ DESCRIPTION = Deer
 
 DupeList = 0x1e68
 WEIGHT = 3
-RESOURCES = 15 i_log, 10 i_hides_cut
+RESOURCES = 15 i_log_verite, 10 i_hides_cut, 2 i_sticks, 2 i_gem_tourmaline //nastaveni_cm_resources 
 RESOURCES2 = 1 i_corpse_deer, 5 i_board, 1 i_nails, 1 i_wool
-SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 1 t_carpentry, 1 t_sewing_kit, 930 carpentry, 930 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_trophy_deerhead
 
 [ItemDef 0x1e62]
@@ -2908,9 +2940,9 @@ DESCRIPTION = Fish
 
 DupeList = 0x1e69
 WEIGHT = 3
-RESOURCES = 15 i_log, 10 i_hides_cut
+RESOURCES = 15 i_log_verite, 1 i_fish_big_1, 1 i_fish_raw_head //nastaveni_cm_resources 
 RESOURCES2 = 1 i_fish_big_1, 5 i_board, 1 i_nails, 1 i_wool
-SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 1 t_carpentry, 1 t_sewing_kit, 900 carpentry, 900 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_trophy_fish
 
 [ItemDef 0x1e63]
@@ -2920,8 +2952,8 @@ DESCRIPTION = Gorilla
 
 DupeList = 0x1e6a
 WEIGHT = 3
-RESOURCES = 15 i_log, 10 i_hides_cut
-SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 15 i_log_verite, 10 i_hides_cut, 2 i_gem_tourmaline //nastaveni_cm_resources 
+SKILLMAKE = 1 t_carpentry, 1 t_sewing_kit, 920 carpentry, 920 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_trophy_gorillahead
 
 [ItemDef 0x1e64]
@@ -2931,9 +2963,9 @@ DESCRIPTION = Orc
 
 DupeList = 0x1e6b
 WEIGHT = 3
-RESOURCES = 15 i_log, 10 i_hides_cut
+RESOURCES = 15 i_log_verite, 5 i_hides_cut, 1 i_orc_skull, 2 i_gem_tourmaline //nastaveni_cm_resources 
 RESOURCES2 = 1 i_corpse_orc, 5 i_board, 1 i_nails, 1 i_wool
-SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+SKILLMAKE = 1 t_carpentry, 1 t_sewing_kit, 940 carpentry, 940 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_trophy_orchead
 
 [ItemDef 0x1e65]
@@ -2943,8 +2975,8 @@ DESCRIPTION = Polar Bear
 
 DupeList = 0x1e6c
 WEIGHT = 3
-RESOURCES = 15 i_log, 10 i_hides_cut
-SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 15 i_log_verite, 10 i_hides_cut, 2 i_gem_tourmaline //nastaveni_cm_resources 
+SKILLMAKE = 1 t_carpentry, 1 t_sewing_kit, 960 carpentry, 900 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_trophy_polarbearhead
 
 [ItemDef 0x1e66]
@@ -2954,8 +2986,8 @@ DESCRIPTION = Troll
 
 DupeList = 0x1e6d
 WEIGHT = 3
-RESOURCES = 15 i_log, 10 i_hides_cut
-SKILLMAKE = 720 carpentry, 600 tailoring, 1 t_carpentry, 1 t_sewing_kit //some resources were fixed by converter 
+RESOURCES = 15 i_log_verite, 10 i_hides_cut, 2 i_gem_tourmaline //nastaveni_cm_resources 
+SKILLMAKE = 1 t_carpentry, 1 t_sewing_kit, 980 carpentry, 980 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_trophy_trollhead
 
 [ItemDef 0x1e67]
@@ -2980,8 +3012,8 @@ DUPEITEM = i_trophy_polarbearhead
 DUPEITEM = i_trophy_trollhead
 
 [ItemDef 0x1e7f]
-RESOURCES = 8 i_board
-SKILLMAKE = 100 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 17 i_log_copper, 1 i_nails //nastaveni_cm_resources 
+SKILLMAKE = 320 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_chair_stool_BOARD_ROUGH
 
 [ContainerDef 0x1e80]
@@ -2992,9 +3024,9 @@ DESCRIPTION = Wooden Crate (Small)
 TYPE = t_container
 DupeList = 0x1e81
 WEIGHT = 3
-RESOURCES = 8 i_board
+RESOURCES = 8 i_log_copper //nastaveni_cm_resources 
 RESOURCES2 = 6 i_board, 1 i_nails, 2 i_hinge
-SKILLMAKE = 100 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 100 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 044 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -3059,7 +3091,8 @@ SUBSECTION = Barkeep
 DESCRIPTION = Playing Cards
 
 DupeList = 0xfa3
-RESOURCES = 13 i_parchment
+RESOURCES = 13 i_paper //nastaveni_cm_resources 
+SKILLMAKE = 600 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_CARDS_PLAYING
 
 [ItemDef 0xfa3]
@@ -3111,7 +3144,8 @@ SUBSECTION = Artists
 DESCRIPTION = Easel With Canvas
 
 DupeList = 0xf68,0xf6a
-RESOURCES = 15 i_board, 1 i_canvas
+RESOURCES = 15 i_log_verite, 10 i_cloth //nastaveni_cm_resources 
+SKILLMAKE = 550 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_easel_with_canvas
 
 [ItemDef 0xf68]
@@ -3126,7 +3160,8 @@ SUBSECTION = Artists
 DESCRIPTION = Rack of Canvases
 
 DupeList = 0xf72,0xf73,0xf74,0xf75,0xf76
-RESOURCES = 3 i_canvas, 1 i_easel
+RESOURCES = 3 i_cloth, 1 i_easel_with_canvas, 3 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 620 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_CANVASES_RACK
 
 [ItemDef 0xf72]
@@ -3168,7 +3203,8 @@ DESCRIPTION = Tapestry 04 (01/02) (W)
 
 DupeList = 0xfd8
 WEIGHT = 14
-RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
+RESOURCES = 1 i_log_verite, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 700 carpentry, 700 tailoring, 1 t_carpentry, 1 t_sewing_kit, 840 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_4_w
 
 [ItemDef 0xfd8]
@@ -3185,7 +3221,8 @@ DESCRIPTION = Tapestry 05 (01/02) (N)
 
 DupeList = 0xfda
 WEIGHT = 14
-RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
+RESOURCES = 1 i_log_verite, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 690 carpentry, 690 tailoring, 1 t_carpentry, 1 t_sewing_kit, 760 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_5_n
 
 [ItemDef 0xfda]
@@ -3202,7 +3239,8 @@ DESCRIPTION = Tapestry 05 (01/02) (W)
 
 DupeList = 0xfdc
 WEIGHT = 14
-RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
+RESOURCES = 1 i_log_verite, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 680 carpentry, 680 tailoring, 1 t_carpentry, 1 t_sewing_kit, 730 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_5_w
 
 [ItemDef 0xfdc]
@@ -3219,7 +3257,8 @@ DESCRIPTION = Tapestry 06 (01/02) (N)
 
 DupeList = 0xfde
 WEIGHT = 14
-RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
+RESOURCES = 1 i_log_verite, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 670 carpentry, 670 tailoring, 1 t_carpentry, 1 t_sewing_kit, 750 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_6_n
 
 [ItemDef 0xfde]
@@ -3236,7 +3275,8 @@ DESCRIPTION = Tapestry 06 (01/02) (W)
 
 DupeList = 0xfe0
 WEIGHT = 14
-RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
+RESOURCES = 1 i_log_verite, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 660 carpentry, 670 tailoring, 1 t_carpentry, 1 t_sewing_kit, 800 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_6_w
 
 [ItemDef 0xfe0]
@@ -3253,7 +3293,8 @@ DESCRIPTION = Tapestry 07 (01/02) (N)
 
 DupeList = 0xfe2
 WEIGHT = 14
-RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
+RESOURCES = 1 i_log_verite, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 650 carpentry, 650 tailoring, 1 t_carpentry, 1 t_sewing_kit, 880 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_7_n
 
 [ItemDef 0xfe2]
@@ -3270,7 +3311,8 @@ DESCRIPTION = Tapestry 07 (01/02) (W)
 
 DupeList = 0xfe4
 WEIGHT = 14
-RESOURCES = 1 i_log, 12 i_cloth, 1 i_thread
+RESOURCES = 2 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 750 carpentry, 750 tailoring, 1 t_carpentry, 1 t_sewing_kit, 900 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_7_w
 
 [ItemDef 0xfe4]
@@ -3287,7 +3329,8 @@ DESCRIPTION = Tapestry 01 (01/02) (N)
 
 DupeList = 0xeab
 WEIGHT = 8
-RESOURCES = 1 i_cloth_bolt, 2 i_dyes, 1 i_log, 1 i_rope
+RESOURCES = 1 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 620 carpentry, 620 tailoring, 1 t_carpentry, 1 t_sewing_kit, 670 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry
 
 [ItemDef 0xeab]
@@ -3304,7 +3347,8 @@ DESCRIPTION = Tapestry 02 (01/02) (N)
 
 DupeList = 0xead
 WEIGHT = 8
-RESOURCES = 1 i_cloth_bolt, 2 i_dyes, 1 i_log, 1 i_rope
+RESOURCES = 1 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 630 carpentry, 630 tailoring, 1 t_carpentry, 1 t_sewing_kit, 680 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_2
 
 [ItemDef 0xead]
@@ -3321,7 +3365,8 @@ DESCRIPTION = Tapestry 03 (01/02) (W)
 
 DupeList = 0xeaf
 WEIGHT = 8
-RESOURCES = 1 i_cloth_bolt, 2 i_dyes, 1 i_log, 1 i_rope
+RESOURCES = 1 i_log_iron, 10 i_cloth, 1 i_dyes //nastaveni_cm_resources 
+SKILLMAKE = 640 carpentry, 640 tailoring, 1 t_carpentry, 1 t_sewing_kit, 650 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tapestry_3
 
 [ItemDef 0xeaf]
@@ -3340,7 +3385,8 @@ SUBSECTION = Bard
 DESCRIPTION = Sheet Music
 
 DupeList = 0xebe,0xebf,0xec0
-RESOURCES = 10 i_parchment
+RESOURCES = 5 i_parchment //nastaveni_cm_resources 
+SKILLMAKE = 700 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_sheet_music
 
 [ItemDef 0xebe]
@@ -3360,7 +3406,8 @@ DESCRIPTION = Upright Loom
 TYPE = T_LOOM
 DupeList = 0x1060,0x1061,0x1062,0x1063,0x1064,0x1065,0x1066
 WEIGHT = 20
-RESOURCES = 15 i_board, 1 i_ingot_iron, 1 i_nails
+RESOURCES = 15 i_log_verite, 10 i_thread, 4 i_nails //nastaveni_cm_resources 
+SKILLMAKE = 750 carpentry, 1 t_carpentry, 600 tailoring //nastaveni_cm_skillmake 
 DEFNAME = i_loom_upright
 
 [ItemDef 0x1060]
@@ -3392,7 +3439,8 @@ DESCRIPTION = Stretched Hide
 TYPE = T_LEATHER
 DupeList = 0x106a,0x106b,0x106c,0x106d,0x106e,0x106f,0x107b,0x107c,0x107d,0x107e,0x107f,0x1080
 WEIGHT = 6
-RESOURCES = 1 i_hide, 2 i_board
+RESOURCES = 1 i_hide, 4 i_log_iron, 1 i_rope //nastaveni_cm_resources 
+SKILLMAKE = 300 carpentry, 1 t_carpentry, 400 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_HIDE_STRETCHED
 
 [ItemDef 0x106a]
@@ -3438,7 +3486,8 @@ DUPEITEM = i_HIDE_STRETCHED
 TYPE = t_table
 DupeList = 0x11d7,0x11d9,0x11da,0x11d8,0x11db
 WEIGHT = 15
-RESOURCES = 30 i_board, 4 i_nails
+RESOURCES = 30 i_log_copper, 2 i_nails, 2 i_rope //nastaveni_cm_resources 
+SKILLMAKE = 700 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_table_bamboo
 
 [ItemDef 0x11d7]
@@ -3489,7 +3538,8 @@ DESCRIPTION = Mat (Woven)
 
 DupeList = 0x11e7,0x11e8,0x11e9
 WEIGHT = 2
-RESOURCES = 2 i_straw
+RESOURCES = 2 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 750 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_MAT_WOVEN
 
 [ItemDef 0x11e7]
@@ -3508,7 +3558,8 @@ DESCRIPTION = Mat (Grass)
 
 DupeList = 0x11e3,0x11e4,0x11e5
 WEIGHT = 2
-RESOURCES = 2 i_straw
+RESOURCES = 2 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_MAT_GRASS
 
 [ItemDef 0x11e3]
@@ -3528,7 +3579,7 @@ DESCRIPTION = Cot
 TYPE = T_BED
 DupeList = 0x11fe,0x11ff,0x1200
 WEIGHT = 10
-RESOURCES = 4 i_board, 3 i_cloth
+RESOURCES = 4 i_board, 3 i_cloth //nastaveni_cm_resources 
 //TDATA1 = 2 // commented out by Converter 
 DEFNAME = i_cot_sw
 
@@ -3567,7 +3618,8 @@ DESCRIPTION = Horse Barding (01/02) (W)
 
 DupeList = 0x1377,0x1378,0x1379
 WEIGHT = 50
-RESOURCES = 2 i_hide, 20 i_ingot_iron, 6 i_board
+RESOURCES = 2 i_hide, 20 i_ingot_iron, 6 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 450 carpentry, 1 t_carpentry, 500 blacksmithing //nastaveni_cm_skillmake 
 DEFNAME = i_BARDING_HORSE
 
 [ItemDef 0x1377]
@@ -3685,7 +3737,8 @@ DESCRIPTION = Table (Red & Green Table Cloth)
 TYPE = t_table
 DupeList = 0x1669,0x166a,0x166c
 WEIGHT = 7
-RESOURCES = 6 i_board, 1 i_nails, 2 i_cloth
+RESOURCES = 1 i_table_nightstand, 2 i_cloth //nastaveni_cm_resources 
+SKILLMAKE = 840 carpentry, 620 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
 DEFNAME = i_table_runner_checkered
 
 [ItemDef 0x1668]
@@ -3793,9 +3846,10 @@ DESCRIPTION = Keg
 TYPE = t_container
 DupeList = 0x1ad6,0x1ad7
 WEIGHT = 12
-RESOURCES = 1 i_barrel_tap, 1 i_barrel
+RESOURCES = 1 i_barrel_tap, 1 i_barrel //nastaveni_cm_resources 
 Flippable = true
 //TDATA2 = 03e // commented out by Converter 
+SKILLMAKE = 400 tinkering, 1 t_tinker_tools, 400 carpentry //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_KEG_WOOD
 
@@ -3806,7 +3860,8 @@ DESCRIPTION = @
 
 DupeList = 0x1c3d,0x1c3e,0x1c3f,0x1c40,0x1c41,0x1c42,0x1c43,0x1c44,0x1c45,0x1c46,0x1c47,0x1c48,0x1c49,0x1c4a,0x1c4b,0x1c4c,0x1c4d,0x1c4e,0x1c4f,0x1c50,0x1c51,0x1c52,0x1c53,0x1c54,0x1c55,0x1c56,0x1c57,0x1c58,0x1c59,0x1c5a,0x1c5b,0x1c5c,0x1c5d,0x1c5e,0x1c5f
 WEIGHT = 32
-RESOURCES = 32 i_board, 2 i_nails
+RESOURCES = 10 i_log_iron, 3 i_nails //nastaveni_cm_resources 
+SKILLMAKE = 850 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_casket_wood_2
 
 [ItemDef 0x1c3d]
@@ -3975,7 +4030,8 @@ DESCRIPTION = Scarecrow
 
 DupeList = 0x1e35
 WEIGHT = 23
-RESOURCES = 4 i_log, 14 i_straw, 1 i_rope, 1 i_hat_straw //some resources were fixed by converter 
+RESOURCES = 4 i_log_copper, 1 i_rope, 1 i_hat_straw_tall, 10 i_wheat_sheaf //nastaveni_cm_resources 
+SKILLMAKE = 600 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_scarecrow
 
 [ItemDef 0x1e35]
@@ -4126,7 +4182,8 @@ SUBSECTION = Tinker
 DESCRIPTION = Empty Tool Kit
 
 WEIGHT = 3
-RESOURCES = 2 i_hide, 1 i_ingot_iron //some resources were fixed by converter 
+RESOURCES = 2 i_hide, 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 650 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_toolkit_empty
 
 [ItemDef 0x1eb7]
@@ -4145,7 +4202,8 @@ DESCRIPTION = @
 
 DupeList = 0x1ed4,0x1ed5,0x1ed6,0x1ed7,0x1ed8
 WEIGHT = 2
-RESOURCES = 1 i_board, 1 i_cloth //some resources were fixed by converter 
+RESOURCES = 1 i_board, 1 i_cloth, 1 i_straw //nastaveni_cm_resources 
+SKILLMAKE = 340 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_target
 
 [ItemDef 0x1ed4]
@@ -4170,7 +4228,8 @@ DESCRIPTION = Tarot Cards
 
 DupeList = 0x12a6,0x12a7,0x12a8,0x12a9,0x12aa,0x12ab,0x12ac
 WEIGHT = 1
-RESOURCES = 13 i_paper
+RESOURCES = 13 i_paper //nastaveni_cm_resources 
+SKILLMAKE = 600 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_CARDS_TAROT
 
 [ItemDef 0x12a6]

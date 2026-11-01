@@ -4,6 +4,8 @@
 NAME = "odpadkovy kos"
 model = i_barrel_open
 type = t_container //guessed from base def by Converter 
+RESOURCES = 10 i_log_iron, 5 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 400 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 Color = 0986
 

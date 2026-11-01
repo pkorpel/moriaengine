@@ -101,32 +101,32 @@ Color = 0774
 [ItemDef i_scroll_animate_dead]
 name = "Scroll of Animate Dead"
 type = t_scroll
-RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
-SKILLMAKE = 800 inscription, 900 magery //some resources were fixed by converter 
+RESOURCES = 1 i_scroll_blank, 3 i_reag_bone //nastaveni_cm_resources 
+SKILLMAKE = 950 inscription //nastaveni_cm_skillmake 
 model = i_scroll_magic_arrow
 Color = 0774
 
 [ItemDef i_scroll_bone_armor]
 name = "Scroll of Bone Armor"
 type = t_scroll
-RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
-SKILLMAKE = 300 inscription, 300 magery //some resources were fixed by converter 
+RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
+SKILLMAKE = 620 inscription //nastaveni_cm_skillmake 
 model = i_scroll_night_sight
 Color = 0774
 
 [ItemDef i_scroll_light]
 name = "Scroll of Light"
 type = t_scroll
-RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
-SKILLMAKE = 200 inscription, 200 magery //some resources were fixed by converter 
+RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
+SKILLMAKE = 350 inscription //nastaveni_cm_skillmake 
 model = i_scroll_weaken
 Color = 0774
 
 [ItemDef i_scroll_firebolt]
 name = "Scroll of Fire Bolt"
 type = t_scroll
-RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
-SKILLMAKE = 600 inscription, 600 magery //some resources were fixed by converter 
+RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
+SKILLMAKE = 750 inscription //nastaveni_cm_skillmake 
 model = i_scroll_agility
 Color = 0774
 

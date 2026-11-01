@@ -10,6 +10,8 @@ namespace SteamEngine.Converter {
 	/// numbers from these nastaveni_* variables at runtime (nastaveni_ceho.scp), overriding what
 	/// its item definitions say, so the definitions alone give the wrong values.</summary>
 	internal static class SphereWorldVars {
+		private static readonly Dictionary<string, string> recipeShortNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		private static readonly Regex recipeShortNameRE = new Regex(@"^\s*zkratka_(?<short>\S+)\s+""?(?<name>[^\s""/]+)", RegexOptions.CultureInvariant);
 		private static readonly Dictionary<string, string> vars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		public static void Load(string path) {
@@ -51,6 +53,46 @@ namespace SteamEngine.Converter {
 
 		public static bool TryGetLayerArmorPercent(int layer, out int percent) {
 			return layerArmorPercents.TryGetValue(layer, out percent);
+		}
+
+		/// <summary>#962 - zkratka_iCO i_ingot_copper: nastaveni_cm.scp's short names, which the shard's live recipes are written in.</summary>
+		public static void LoadRecipeShortNames(string path) {
+			recipeShortNames.Clear();
+			if (!File.Exists(path)) {
+				ConverterLogger.WriteWarning("No " + path + ", Erebor's live recipes can't be read.");
+				return;
+			}
+			foreach (string line in File.ReadLines(path)) {
+				Match m = recipeShortNameRE.Match(line);
+				if (m.Success) {
+					recipeShortNames[m.Groups["short"].Value] = m.Groups["name"].Value;
+				}
+			}
+		}
+
+		/// <summary>#962 - nastaveni_cm_resources_ or nastaveni_cm_skillmake_ of an item, in full and as a .def line wants it:
+		/// zkrpar_expand. Skills go by our keys, SKILL_Blacksmith being blacksmithing.</summary>
+		public static string GetRecipe(string name) {
+			if (!vars.TryGetValue(name, out string value)) {
+				return null;
+			}
+			List<string> parts = new List<string>();
+			foreach (string part in value.Split(',')) {
+				string[] words = part.Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+				if (words.Length == 2) {
+					string resource = recipeShortNames.TryGetValue(words[1], out string full) ? full : words[1];
+					parts.Add(words[0].Replace(".", "") + " " + SkillKey(resource.ToLowerInvariant()));
+				}
+			}
+			return (parts.Count == 0) ? null : string.Join(", ", parts);
+		}
+
+		private static string SkillKey(string resource) {
+			if (!resource.StartsWith("skill_", StringComparison.Ordinal)) {
+				return resource;
+			}
+			string skill = resource.Substring("skill_".Length);
+			return (skill == "blacksmith") ? "blacksmithing" : skill;
 		}
 
 		public static bool TryGetInt(string name, out int value) {

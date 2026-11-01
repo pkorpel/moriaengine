@@ -9,9 +9,9 @@ NAME = "Truhla"
 TYPE = t_container
 DupeList = 0xe41
 WEIGHT = 10
-RESOURCES = 9 i_log
+RESOURCES = 10 i_ingot_verite, 10 i_ingot_iron, 10 i_log_iron, 3 i_clock_parts, 5 i_wire_copper, 1 i_key_iron //nastaveni_cm_resources 
 RESOURCES2 = 5 i_board
-SKILLMAKE = 800 carpentry, 850 blacksmithing, 850 tinkering, 1 t_carpentry, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 850 tinkering, 800 blacksmithing, 1 t_carpentry, 1 t_tinker_tools //nastaveni_cm_skillmake 
 Flippable = true
 model = i_chest_metal_brass
 layer = 0 //Set by Converter 
@@ -25,8 +25,8 @@ DESCRIPTION = Neaktivni runa
 NAME = "Neaktivni runa"
 TYPE = T_GEM
 WEIGHT = 1
-RESOURCES = 1 i_ingot_adamantinum
-SKILLMAKE = 990 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_adamantinum //nastaveni_cm_resources 
+SKILLMAKE = 990 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 model = i_rune_marker //i_rune_marker 
 //VALUE = {16 20} // commented out by Converter 
 
@@ -36,9 +36,9 @@ SUBSECTION = BarKeep
 DESCRIPTION = Ceramic Mug
 
 DupeList = 0x996,0x997,0x9ca
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 2 i_ingot_pisek //nastaveni_cm_resources 
 RESOURCES2 = 1 i_clay
-SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_mug_ceramic
 
 [ItemDef 0x996]
@@ -53,8 +53,8 @@ SUBSECTION = Tinker
 DESCRIPTION = Iron Wire
 
 WEIGHT = 0.5
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 400 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_wire_iron
 
 [ItemDef 0x1877]
@@ -63,8 +63,8 @@ SUBSECTION = Tinker
 DESCRIPTION = Silver Wire
 
 WEIGHT = 0.5
-RESOURCES = 1 i_ingot_silver
-SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_silver //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_wire_silver
 
 [ItemDef 0x1878]
@@ -73,8 +73,8 @@ SUBSECTION = Tinker
 DESCRIPTION = Gold Wire
 
 WEIGHT = 0.5
-RESOURCES = 1 i_ingot_gold
-SKILLMAKE = 600 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_gold //nastaveni_cm_resources 
+SKILLMAKE = 600 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_wire_gold
 
 [ItemDef 0x1879]
@@ -83,8 +83,8 @@ SUBSECTION = Tinker
 DESCRIPTION = Copper Wire
 
 WEIGHT = 0.5
-RESOURCES = 1 i_ingot_copper
-SKILLMAKE = 200 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_copper //nastaveni_cm_resources 
+SKILLMAKE = 200 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_wire_copper
 
 [ItemDef i_wire_verite]
@@ -93,8 +93,8 @@ SUBSECTION = Tinker
 DESCRIPTION = Verite Wire
 
 WEIGHT = 0.5
-RESOURCES = 1 i_ingot_verite
-SKILLMAKE = 200 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_verite //nastaveni_cm_resources 
+SKILLMAKE = 750 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 model = i_wire_iron
 Color = color_o_verite
 
@@ -114,9 +114,9 @@ CATEGORY = Items by Professions
 SUBSECTION = BarKeep
 DESCRIPTION = Goblet
 
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 1 i_sand
-SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_goblet
 
 [ContainerDef 0x9a8]
@@ -127,9 +127,9 @@ DESCRIPTION = Brass Box  (N)
 TYPE = T_CONTAINER
 DupeList = 0xe80
 WEIGHT = 5
-RESOURCES = 5 i_ingot_iron, 5 i_log
+RESOURCES = 5 i_log_iron, 3 i_ingot_iron, 2 i_ingot_gold //nastaveni_cm_resources 
 RESOURCES2 = 3 i_ingot_iron, 1 i_nails, 2 i_hinge
-SKILLMAKE = 400 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 400 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 04b // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -143,9 +143,9 @@ DESCRIPTION = Metal Chest (N)
 TYPE = T_CONTAINER
 DupeList = 0xe7c
 WEIGHT = 20
-RESOURCES = 20 i_ingot_iron, 2 i_board
+RESOURCES = 20 i_ingot_copper, 2 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 3 i_ingot_iron, 1 i_nails, 2 i_hinge
-SKILLMAKE = 750 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 750 tinkering, 1 t_tinker_tools, 750 blacksmithing //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 04a // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -156,9 +156,9 @@ CATEGORY = Items by Professions
 SUBSECTION = BarKeep
 DESCRIPTION = Goblet
 
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 3 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 1 i_sand
-SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_goblet_2
 
 [ItemDef 0x9d6]
@@ -166,9 +166,9 @@ CATEGORY = Items by Professions
 SUBSECTION = BarKeep
 DESCRIPTION = Pitcher
 
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 1 i_log_verite //nastaveni_cm_resources 
 RESOURCES2 = 2 i_sand
-SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_pitcher
 
 [EquippableDef 0x9fb]
@@ -178,8 +178,8 @@ DESCRIPTION = Wall Sconce (Unlit) (W)
 
 TYPE = t_light_out
 DupeList = 0x9fc
-RESOURCES = 1 i_ingot_iron, 1 i_candle
-SKILLMAKE = 300 tinkering //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron, 1 i_candle //nastaveni_cm_resources 
+SKILLMAKE = 1 t_tinker_tools, 350 tinkering //nastaveni_cm_skillmake 
 //TDATA3 = i_sconce_lit // commented out by Converter 
 layer = 0 //Set by Converter 
 DEFNAME = i_sconce
@@ -192,8 +192,8 @@ CATEGORY = Decoration - Lightsources
 SUBSECTION = Torches
 DESCRIPTION = Wall Sconce (Empty) (N)
 
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 300 tinkering //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_sconce2_empty
 
 [ItemDef 0xa06]
@@ -201,8 +201,8 @@ CATEGORY = Decoration - Lightsources
 SUBSECTION = Torches
 DESCRIPTION = Wall Torch Holder (Empty) (W)
 
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 400 tinkering //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 400 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_torch_wall_empty
 
 [ItemDef 0xa0b]
@@ -210,8 +210,8 @@ CATEGORY = Decoration - Lightsources
 SUBSECTION = Torches
 DESCRIPTION = Wall Torch Stand (Empty) (N)
 
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 400 tinkering //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 400 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_torch_wall2_empty
 
 [EquippableDef 0xa18]
@@ -222,9 +222,9 @@ DESCRIPTION = Lantern (Unlit)
 TYPE = T_LIGHT_OUT
 DupeList = 0xa1d,0xa25
 WEIGHT = 2
-RESOURCES = 5 i_board
+RESOURCES = 3 i_log_iron, 4 i_tabulka_skla //nastaveni_cm_resources 
 RESOURCES2 = 1 i_sand, 1 i_ingot_iron, 1 i_oil_flask
-SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 400 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 //TDATA3 = i_lantern_lit // commented out by Converter 
 layer = 2 //Set by Converter 
 DEFNAME = i_lantern
@@ -235,8 +235,8 @@ SUBSECTION = Candles
 DESCRIPTION = Candlabra (Unlit)
 
 TYPE = T_LIGHT_OUT
-RESOURCES = 3 i_ingot_copper, 3 i_candle
-SKILLMAKE = 500 tinkering //some resources were fixed by converter 
+RESOURCES = 3 i_ingot_copper, 3 i_candle //nastaveni_cm_resources 
+SKILLMAKE = 400 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA3 = i_candleabra_lit // commented out by Converter 
 layer = 0 //Set by Converter 
 DEFNAME = i_candleabra
@@ -248,8 +248,8 @@ SUBSECTION = Barkeep
 TYPE = T_GAME_BOARD
 DupeList = 0xfad
 WEIGHT = 5
-RESOURCES = 3 i_board
-SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 3 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA2 = 092e // commented out by Converter 
 DEFNAME = i_backgammon_game
 
@@ -261,9 +261,9 @@ DESCRIPTION = METAL BRASS CHEST (W)
 TYPE = T_CONTAINER
 DupeList = 0xe41
 WEIGHT = 20
-RESOURCES = 15 i_ingot_iron, 5 i_ingot_gold, 2 i_log
+RESOURCES = 15 i_ingot_iron, 5 i_ingot_gold, 2 i_log_copper //nastaveni_cm_resources 
 RESOURCES2 = 9 i_ingot_iron, 2 i_hinges_brass
-SKILLMAKE = 800 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 800 tinkering, 1 t_tinker_tools, 800 blacksmithing //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 042 // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -295,9 +295,9 @@ DESCRIPTION = Empty Barrel
 
 TYPE = T_CONTAINER
 WEIGHT = 10
-RESOURCES = 10 i_log
+RESOURCES = 10 i_log_iron, 2 i_barrel_hoops //nastaveni_cm_resources 
 RESOURCES2 = 10 i_board, 4 i_ingot_iron
-SKILLMAKE = 550 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 550 tinkering, 1 t_tinker_tools, 550 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 03E // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -310,9 +310,9 @@ DESCRIPTION = Keg
 
 TYPE = T_CONTAINER
 WEIGHT = 5
-RESOURCES = 8 i_log
+RESOURCES = 1 i_barrel_hoops, 8 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 8 i_log, 4 i_ingot_iron
-SKILLMAKE = 450 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 450 carpentry, 1 t_carpentry, 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 03e // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -325,9 +325,9 @@ DESCRIPTION = Mortar and Pestle
 
 TYPE = T_MORTAR
 WEIGHT = 1
-RESOURCES = 1 i_ingot_copper
+RESOURCES = 2 i_ingot_copper //nastaveni_cm_resources 
 RESOURCES2 = 2 i_ingot_iron
-SKILLMAKE = 233 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 450 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_mortar_pestle
 
 [MusicalDef 0xe9c]
@@ -337,8 +337,8 @@ DESCRIPTION = Drum
 
 TYPE = T_MUSICAL
 WEIGHT = 3
-RESOURCES = 1 i_hides_cut, 5 i_board
-SKILLMAKE = 510 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_hides_cut, 5 i_log_verite //nastaveni_cm_resources 
+SKILLMAKE = 510 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA1 = 038 // commented out by Converter 
 //TDATA2 = 039 // commented out by Converter 
 DEFNAME = i_drum
@@ -350,8 +350,8 @@ DESCRIPTION = Tambourine
 
 TYPE = T_MUSICAL
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron, 2 i_board
-SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron, 2 i_log_verite //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA1 = 052 // commented out by Converter 
 //TDATA2 = 053 // commented out by Converter 
 DEFNAME = i_tambourine
@@ -363,8 +363,8 @@ DESCRIPTION = Tambourine Tassle
 
 TYPE = T_MUSICAL
 WEIGHT = 1
-RESOURCES = 1 i_tambourine, 1 i_cloth //some resources were fixed by converter 
-SKILLMAKE = 500 carpentry, 650 musicianship, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 1 i_tambourine, 1 i_cloth //nastaveni_cm_resources 
+SKILLMAKE = 500 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 //TDATA1 = 052 // commented out by Converter 
 //TDATA2 = 053 // commented out by Converter 
 DEFNAME = i_tambourine_tas
@@ -375,8 +375,8 @@ SUBSECTION = Bard
 DESCRIPTION = Standing Harp
 
 TYPE = T_MUSICAL
-RESOURCES = 10 i_log, 4 i_wire_iron
-SKILLMAKE = 565 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 10 i_log_verite, 5 i_wire_iron //nastaveni_cm_resources 
+SKILLMAKE = 920 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA1 = 045 // commented out by Converter 
 //TDATA2 = 046 // commented out by Converter 
 DEFNAME = i_HARP_LARGE
@@ -388,8 +388,8 @@ DESCRIPTION = Lap Harp
 
 TYPE = T_MUSICAL
 WEIGHT = 10
-RESOURCES = 7 i_log, 2 i_wire_iron
-SKILLMAKE = 540 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 7 i_log_verite, 3 i_wire_iron //nastaveni_cm_resources 
+SKILLMAKE = 720 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA1 = 045 // commented out by Converter 
 //TDATA2 = 046 // commented out by Converter 
 DEFNAME = i_lyre
@@ -402,8 +402,8 @@ DESCRIPTION = Lute
 TYPE = T_MUSICAL
 DupeList = 0xeb4
 WEIGHT = 5
-RESOURCES = 6 i_log, 1 i_wire_iron
-SKILLMAKE = 520 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 6 i_log_verite, 2 i_wire_iron //nastaveni_cm_resources 
+SKILLMAKE = 520 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA1 = 04c // commented out by Converter 
 //TDATA2 = 04d // commented out by Converter 
 DEFNAME = i_lute
@@ -420,8 +420,8 @@ DESCRIPTION = Empty Alchemist Bottle
 
 TYPE = t_bottle_empty
 WEIGHT = 1
-RESOURCES = 2 i_ingot_pisek
-SKILLMAKE = 750 tinkering, 1 t_tinker_tools, 1 t_bottle_form, 1 t_book_bottle //some resources were fixed by converter 
+RESOURCES = 2 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 750 tinkering, 1 t_tinker_tools, 1 t_bottle_form, 1 i_book_bottle //nastaveni_cm_skillmake 
 DEFNAME = i_bottle_empty
 
 [ItemDef 0xf39]
@@ -431,9 +431,9 @@ DESCRIPTION = Shovel
 
 DupeList = 0xf3a
 WEIGHT = 5
-RESOURCES = 4 i_ingot_iron, 1 i_log
+RESOURCES = 4 i_ingot_iron, 1 i_log_copper //nastaveni_cm_resources 
 RESOURCES2 = 4 i_ingot_iron
-SKILLMAKE = 200 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 200 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_shovel
 
@@ -448,8 +448,8 @@ DESCRIPTION = Scissors
 TYPE = T_SCISSORS
 DupeList = 0xf9f
 WEIGHT = 1
-RESOURCES = 4 i_ingot_iron
-SKILLMAKE = 145 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 4 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 145 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_scissors
 
 [ItemDef 0xf9f]
@@ -462,9 +462,9 @@ DESCRIPTION = Game Board
 
 TYPE = T_GAME_BOARD
 WEIGHT = 5
-RESOURCES = 3 i_log
+RESOURCES = 3 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 1 i_board
-SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA2 = 091a // commented out by Converter 
 DEFNAME = i_game_board
 
@@ -474,9 +474,9 @@ SUBSECTION = Barkeep
 DESCRIPTION = Dice and Cup
 
 WEIGHT = 1
-RESOURCES = 3 i_log
+RESOURCES = 1 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 2 i_die, 1 i_mug_ceramic
-SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_dice_cup
 
 [ItemDef 0xfa8]
@@ -489,9 +489,9 @@ DESCRIPTION = Barrel w/Lid
 
 TYPE = T_CONTAINER
 WEIGHT = 10
-RESOURCES = 12 i_log
+RESOURCES = 12 i_log_iron, 2 i_barrel_hoops //nastaveni_cm_resources 
 RESOURCES2 = 1 i_barrel_open, 1 i_barrel_lid //some resources were fixed by converter 
-SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools, 500 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 Flippable = true
 //TDATA2 = 03E // commented out by Converter 
 layer = 0 //Set by Converter 
@@ -505,8 +505,8 @@ DESCRIPTION = Anvil (N)
 TYPE = T_ANVIL
 DupeList = 0xfb0
 WEIGHT = 255
-RESOURCES = 20 i_ingot_iron, 1 i_log
-SKILLMAKE = 300 blacksmithing, 560 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 10 i_ingot_obsidian, 10 i_log_verite //nastaveni_cm_resources 
+SKILLMAKE = 560 tinkering, 1 t_tinker_tools, 800 blacksmithing //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_anvil
 
@@ -524,9 +524,9 @@ DESCRIPTION = Skull Mug
 
 DupeList = 0xffc,0xffd,0xffe
 WEIGHT = 6
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 1 i_bone_skull //nastaveni_cm_resources 
 RESOURCES2 = 1 i_bone_skull
-SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_skull_mug
 
 [ItemDef 0xffc]
@@ -545,9 +545,9 @@ DESCRIPTION = Pewter Mug
 
 DupeList = 0xfff,0x1001,0x1002
 WEIGHT = 1
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 1 i_ingot_iron, 1 i_ingot_copper //nastaveni_cm_resources 
 RESOURCES2 = 1 i_ingot_iron
-SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_mug_pewter
 
 [ItemDef 0x1001]
@@ -565,9 +565,9 @@ SUBSECTION = BarKeep
 DESCRIPTION = Spitton
 
 WEIGHT = 1
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 1 i_ingot_copper //nastaveni_cm_resources 
 RESOURCES2 = 3 i_ingot_iron, 1 i_cloth
-SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_spittoon
 
 [ItemDef 0x1004]
@@ -576,8 +576,8 @@ SUBSECTION = BarKeep
 DESCRIPTION = Barrel Tap
 
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 520 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 520 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_barrel_tap
 
 [ItemDef 0x100e]
@@ -587,9 +587,9 @@ DESCRIPTION = Copper Key
 
 TYPE = T_KEY
 WEIGHT = 1
-RESOURCES = 1 i_ingot_copper
+RESOURCES = 1 i_ingot_copper //nastaveni_cm_resources 
 RESOURCES2 = 1 i_ingot_copper
-SKILLMAKE = 250 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 600 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_key_copper
 
 [ItemDef 0x100f]
@@ -599,9 +599,9 @@ DESCRIPTION = Gold Key
 
 TYPE = T_KEY
 WEIGHT = 1
-RESOURCES = 2 i_ingot_iron, 1 i_ingot_gold
+RESOURCES = 1 i_ingot_gold //nastaveni_cm_resources 
 RESOURCES2 = 1 i_ingot_gold
-SKILLMAKE = 600 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 800 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_key_gold
 
 [ItemDef 0x1010]
@@ -611,9 +611,9 @@ DESCRIPTION = Iron Key
 
 TYPE = T_KEY
 WEIGHT = 1
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 1 i_ingot_iron
-SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 700 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_key_iron
 
 [ItemDef 0x1011]
@@ -623,8 +623,8 @@ DESCRIPTION = Key Ring
 
 TYPE = T_KEYRING
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 300 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //TDATA2 = 1 // commented out by Converter 
 DEFNAME = i_key_ring
 
@@ -635,8 +635,8 @@ DESCRIPTION = Magic Key
 
 TYPE = T_KEY
 WEIGHT = 1
-RESOURCES = 5 i_ingot_gold, 5 i_ingot_silver, 5 i_ingot_copper
-SKILLMAKE = 800 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_gold, 1 i_ingot_silver, 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 950 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_key_magic
 
 [ItemDef 0x1013]
@@ -646,7 +646,8 @@ DESCRIPTION = Rusty Iron Key
 
 TYPE = T_KEY
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 650 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_key_rusty
 
 [ItemDef 0x1028]
@@ -657,9 +658,9 @@ DESCRIPTION = Dovetail Saw
 TYPE = t_carpentry
 DupeList = 0x1029
 WEIGHT = 1
-RESOURCES = 3 i_ingot_iron, 1 i_log
+RESOURCES = 3 i_ingot_iron, 1 i_log_copper //nastaveni_cm_resources 
 RESOURCES2 = 2 i_ingot_iron
-SKILLMAKE = 332 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_saw_dovetail
 
 [ItemDef 0x1029]
@@ -673,8 +674,8 @@ DESCRIPTION = Moulding Planes
 TYPE = t_carpentry
 DupeList = 0x102d
 WEIGHT = 2
-RESOURCES = 3 i_board, 1 i_ingot_iron
-SKILLMAKE = 307 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron, 3 i_log_copper //nastaveni_cm_resources 
+SKILLMAKE = 307 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_plane_moulding
 
 [ItemDef 0x102d]
@@ -687,8 +688,8 @@ DESCRIPTION = Nails
 
 DupeList = 0x102f
 WEIGHT = 2
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 50 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 1 t_tinker_tools, 300 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_nails
 
 [ItemDef 0x102f]
@@ -702,9 +703,9 @@ DESCRIPTION = Jointing Plane
 TYPE = t_carpentry
 DupeList = 0x1031
 WEIGHT = 1
-RESOURCES = 4 i_log
+RESOURCES = 2 i_log_copper, 1 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 3 i_board, 1 i_ingot_iron
-SKILLMAKE = 308 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 308 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_plane_jointing
 
 [ItemDef 0x1031]
@@ -718,9 +719,9 @@ DESCRIPTION = Smoothing Plane
 TYPE = t_carpentry
 DupeList = 0x1033
 WEIGHT = 1
-RESOURCES = 4 i_log
+RESOURCES = 2 i_log_iron, 1 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 3 i_board, 1 i_ingot_iron
-SKILLMAKE = 307 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 307 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_plane_smoothing
 
 [ItemDef 0x1033]
@@ -734,9 +735,9 @@ DESCRIPTION = Saw
 TYPE = t_carpentry
 DupeList = 0x1035
 WEIGHT = 2
-RESOURCES = 5 i_ingot_iron, 1 i_log
+RESOURCES = 5 i_ingot_iron, 1 i_log_copper //nastaveni_cm_resources 
 RESOURCES2 = 1 i_board, 4 i_ingot_iron
-SKILLMAKE = 313 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools, 300 carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_saw
 
 [ItemDef 0x1035]
@@ -750,9 +751,9 @@ DESCRIPTION = Clock
 TYPE = T_CLOCK
 DupeList = 0x104c
 WEIGHT = 2
-RESOURCES = 1 i_clock_frame, 1 i_clock_parts //some resources were fixed by converter 
+RESOURCES = 1 i_clock_frame, 1 i_clock_parts //nastaveni_cm_resources 
 RESOURCES2 = 1 i_clock_frame, 1 i_parchment, 2 i_board, 1 i_clock_parts
-SKILLMAKE = 307 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 1 t_tinker_tools, 500 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_clock
 
 [ItemDef 0x104c]
@@ -765,9 +766,9 @@ DESCRIPTION = Clock Frame
 
 DupeList = 0x104e
 WEIGHT = 2
-RESOURCES = 6 i_log
+RESOURCES = 6 i_log_iron //nastaveni_cm_resources 
 RESOURCES2 = 4 i_board, 1 i_nails
-SKILLMAKE = 304 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 1 t_tinker_tools, 350 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_clock_frame
 
 [ItemDef 0x104e]
@@ -781,9 +782,9 @@ DESCRIPTION = Clock Parts
 NAME = "Ozubena Kolecka"
 DupeList = 0x1050
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 1 i_ingot_iron, 1 i_board
-SKILLMAKE = 305 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 1 t_tinker_tools, 620 tinkering //nastaveni_cm_skillmake 
 DEFNAME = i_clock_parts
 
 [ItemDef 0x1050]
@@ -796,9 +797,9 @@ DESCRIPTION = Axle with Gears
 
 DupeList = 0x1052
 WEIGHT = 1
-RESOURCES = 2 i_log
+RESOURCES = 1 i_log_copper, 2 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 1 i_axel, 1 i_gears
-SKILLMAKE = 304 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 304 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_axel_and_gears
 
 [ItemDef 0x1052]
@@ -811,9 +812,9 @@ DESCRIPTION = Gears
 
 DupeList = 0x1054
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 2 i_ingot_iron
-SKILLMAKE = 147 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 147 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_gears
 
 [ItemDef 0x1054]
@@ -826,8 +827,8 @@ DESCRIPTION = Hinge
 
 DupeList = 0x1056
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 148 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 330 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_hinge
 
 [ItemDef 0x1056]
@@ -841,9 +842,9 @@ DESCRIPTION = Sextant
 TYPE = T_SEXTANT
 DupeList = 0x1058
 WEIGHT = 2
-RESOURCES = 1 i_sextant_parts //some resources were fixed by converter 
+RESOURCES = 1 i_sextant_parts //nastaveni_cm_resources 
 RESOURCES2 = 2 i_ingot_iron, 1 i_sextant_parts
-SKILLMAKE = 307 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 307 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_sextant
 
 [ItemDef 0x1058]
@@ -856,9 +857,9 @@ DESCRIPTION = Sextant Parts
 
 DupeList = 0x105a
 WEIGHT = 2
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 3 i_ingot_iron //nastaveni_cm_resources 
 RESOURCES2 = 1 i_ingot_iron
-SKILLMAKE = 310 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+SKILLMAKE = 310 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_sextant_parts
 
 [ItemDef 0x105a]
@@ -871,8 +872,8 @@ DESCRIPTION = Axle
 
 DupeList = 0x105c
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 204 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 204 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_axel
 
 [ItemDef 0x105c]
@@ -885,8 +886,8 @@ DESCRIPTION = Springs
 
 DupeList = 0x105e
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron
-SKILLMAKE = 137 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 137 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_springs
 
 [ItemDef 0x105e]
@@ -899,8 +900,8 @@ DESCRIPTION = Necklace
 
 TYPE = t_jewelry
 DupeList = 0x1f05
-RESOURCES = 1 i_ingot_iron //some resources were fixed by converter 
-SKILLMAKE = 610 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_iron, 1 i_gem_citrine, 1 i_gem_ruby, 1 i_gem_emerald //nastaveni_cm_resources 
+SKILLMAKE = 610 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_necklace_metal_beads
 
 [ItemDef 0x1086]
@@ -910,8 +911,8 @@ DESCRIPTION = Bracelet (Gold)
 
 TYPE = t_jewelry
 WEIGHT = 0.1
-RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
-SKILLMAKE = 635 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_gold //nastaveni_cm_resources 
+SKILLMAKE = 635 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_bracelet_gold
 
 [ItemDef 0x1087]
@@ -921,8 +922,8 @@ DESCRIPTION = Earrings (Gold)
 
 TYPE = t_jewelry
 WEIGHT = 0.1
-RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
-SKILLMAKE = 625 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_gold, 2 i_gem_citrine //nastaveni_cm_resources 
+SKILLMAKE = 625 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_earrings_gold
 
 [ItemDef 0x1088]
@@ -932,8 +933,8 @@ DESCRIPTION = Necklace
 
 TYPE = t_jewelry
 WEIGHT = 0.1
-RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
-SKILLMAKE = 610 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_gold, 1 i_gem_emerald //nastaveni_cm_resources 
+SKILLMAKE = 610 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_necklace_gold
 
 [ItemDef 0x1089]
@@ -943,8 +944,8 @@ DESCRIPTION = Necklace (Gold Bead)
 
 TYPE = t_jewelry
 WEIGHT = 0.1
-RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
-SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_gold //nastaveni_cm_resources 
+SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_necklace_gold_beads
 
 [ItemDef 0x108a]
@@ -954,8 +955,8 @@ DESCRIPTION = Ring (Gold)
 
 TYPE = t_jewelry
 WEIGHT = 0.1
-RESOURCES = 1 i_ingot_gold //some resources were fixed by converter 
-SKILLMAKE = 630 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_gold, 1 i_gem_ruby //nastaveni_cm_resources 
+SKILLMAKE = 630 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_ring_gold
 
 [ItemDef 0x108b]
@@ -964,8 +965,8 @@ SUBSECTION = Jewelry
 DESCRIPTION = Beads
 
 TYPE = t_jewelry
-RESOURCES = 1 i_ingot_iron, 3 i_gem_amber //some resources were fixed by converter 
-SKILLMAKE = 600 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 3 i_ingot_iron, 1 i_gem_amber //nastaveni_cm_resources 
+SKILLMAKE = 600 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_beads
 
 [ItemDef 0x10e1]
@@ -975,8 +976,8 @@ DESCRIPTION = Barrel Hoops
 
 DupeList = 0x10e2
 WEIGHT = 4
-RESOURCES = 4 i_ingot_iron
-SKILLMAKE = 420 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 4 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools, 400 blacksmithing //nastaveni_cm_skillmake 
 DEFNAME = i_barrel_hoops
 
 [ItemDef 0x10e2]
@@ -990,8 +991,8 @@ DESCRIPTION = Map (Empty)
 TYPE = T_MAP
 DupeList = 0x14ec
 WEIGHT = 1
-RESOURCES = 1 i_paper //some resources were fixed by converter 
-SKILLMAKE = 400 carpentry, 400 tinkering //some resources were fixed by converter 
+RESOURCES = 1 i_paper //nastaveni_cm_resources 
+SKILLMAKE = 400 carpentry, 400 tinkering //nastaveni_cm_skillmake 
 Flippable = true
 DEFNAME = i_map
 
@@ -1007,8 +1008,8 @@ DUPEITEM = i_map
 //TYPE = T_LOCKPICK
 //DupeList = 0x14fc
 //WEIGHT = 0.1
-//RESOURCES = 1 i_ingot_iron
-//SKILLMAKE = 450 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+//RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+//SKILLMAKE = 1 t_tinker_tools, 550 tinkering //nastaveni_cm_skillmake 
 //Flippable = true
 //DEFNAME = i_lockpick
 
@@ -1036,8 +1037,8 @@ DESCRIPTION = Tool Kit
 TYPE = t_carpentry
 DupeList = 0x1eb9
 WEIGHT = 6
-RESOURCES = 1 i_toolkit_empty, 4 i_ingot_iron, 1 i_log //some resources were fixed by converter 
-SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 4 i_toolkit_empty, 1 i_ingot_iron, 1 i_log_copper //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_toolkit
 
 [ItemDef 0x1eb9]
@@ -1051,8 +1052,8 @@ DESCRIPTION = Tool Case
 TYPE = t_carpentry
 DupeList = 0x1ebb
 WEIGHT = 6
-RESOURCES = 1 i_toolcase_empty, 4 i_ingot_iron, 1 i_log //some resources were fixed by converter 
-SKILLMAKE = 500 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 4 i_toolcase_empty, 1 i_ingot_iron, 1 i_log //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_toolcase
 
 [ItemDef 0x1ebb]
@@ -1065,8 +1066,8 @@ DESCRIPTION = Tinker's Tools
 
 TYPE = T_TINKER_TOOLS
 WEIGHT = 2
-RESOURCES = 4 i_ingot_iron
-SKILLMAKE = 350 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 4 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tinker_tools
 
 [ItemDef 0x1f06]
@@ -1076,8 +1077,8 @@ DESCRIPTION = Silver Bracelet
 
 TYPE = t_jewelry
 WEIGHT = 1
-RESOURCES = 1 i_ingot_silver
-SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_silver //nastaveni_cm_resources 
+SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_bracelet_silver
 
 [ItemDef 0x1f07]
@@ -1087,8 +1088,8 @@ DESCRIPTION = Silver Earrings
 
 TYPE = t_jewelry
 WEIGHT = 1
-RESOURCES = 1 i_ingot_silver
-SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_silver, 2 i_gem_citrine //nastaveni_cm_resources 
+SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_earrings_silver
 
 [ItemDef 0x1f08]
@@ -1098,8 +1099,8 @@ DESCRIPTION = Silver Necklace
 
 TYPE = t_jewelry
 WEIGHT = 1
-RESOURCES = 1 i_ingot_silver
-SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_silver, 1 i_gem_citrine //nastaveni_cm_resources 
+SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_necklace_silver
 
 [ItemDef 0x1f09]
@@ -1109,8 +1110,8 @@ DESCRIPTION = Silver Ring
 
 TYPE = t_jewelry
 WEIGHT = 1
-RESOURCES = 1 i_ingot_silver
-SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_silver, 1 i_gem_ruby //nastaveni_cm_resources 
+SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_ring_silver
 
 [ItemDef 0x1f0a]
@@ -1120,8 +1121,8 @@ DESCRIPTION = Silver Beads
 
 TYPE = t_jewelry
 WEIGHT = 1
-RESOURCES = 1 i_ingot_silver
-SKILLMAKE = 620 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 1 i_ingot_silver //nastaveni_cm_resources 
+SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_necklace_silver_beads
 
 [ItemDef 0x974]
@@ -1131,7 +1132,8 @@ DESCRIPTION = Cauldron
 
 DupeList = 0x975
 WEIGHT = 30
-RESOURCES = 20 i_ingot_iron
+RESOURCES = 20 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 400 tinkering, 1 t_tinker_tools, 500 blacksmithing //nastaveni_cm_skillmake 
 DEFNAME = i_cauldron
 
 [ItemDef 0x975]
@@ -1143,7 +1145,8 @@ SUBSECTION = Cook
 DESCRIPTION = Tray
 
 DupeList = 0x992
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 3 i_ingot_iron, 3 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 350 tinkering, 1 t_tinker_tools, 350 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 DEFNAME = i_tray
 
 [ItemDef 0x992]
@@ -1155,7 +1158,8 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Frypan
 
-RESOURCES = 1 i_ore_iron
+RESOURCES = 3 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools, 300 blacksmithing //nastaveni_cm_skillmake 
 DEFNAME = i_fry_pan
 
 [ItemDef 0x998]
@@ -1177,10 +1181,11 @@ DESCRIPTION = Empty Glass Pitcher
 
 DupeList = 0xff6,0xff7
 WEIGHT = 2
-RESOURCES = 6 i_glass
+RESOURCES = 6 i_ingot_pisek //nastaveni_cm_resources 
 RESOURCES2 = 1 i_sand
 Flippable = true
 //TDATA1 = i_pitcher_glass // commented out by Converter 
+SKILLMAKE = 650 tinkering, 1 t_tinker_tools, 1 t_bottle_form //nastaveni_cm_skillmake 
 DEFNAME = i_pitcher_glass
 //VALUE = 50 // commented out by Converter 
 
@@ -1196,7 +1201,8 @@ SUBSECTION = Cook
 DESCRIPTION = Silverware
 
 DupeList = 0x9be,0x9d4,0x9d5
-RESOURCES = 1 i_ingot_silver
+RESOURCES = 1 i_ingot_silver //nastaveni_cm_resources 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_silverware
 
 [ItemDef 0x9be]
@@ -1214,7 +1220,8 @@ SUBSECTION = BarKeep
 DESCRIPTION = Goblet
 
 DupeList = 0x9cb
-RESOURCES = 1 i_sand
+RESOURCES = 1 i_ingot_copper //nastaveni_cm_resources 
+SKILLMAKE = 420 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_goblet_3
 
 [ItemDef 0x9dc]
@@ -1250,7 +1257,8 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Pot
 
-RESOURCES = 3 i_ingot_iron
+RESOURCES = 3 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 450 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_pot
 
 [ItemDef 0x9e1]
@@ -1310,7 +1318,8 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Plate
 
-RESOURCES = 1 i_clay
+RESOURCES = 1 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_plate
 
 [ItemDef 0x9ed]
@@ -1318,7 +1327,8 @@ CATEGORY = Items by Professions
 SUBSECTION = Cook
 DESCRIPTION = Kettle
 
-RESOURCES = 5 i_ingot_iron
+RESOURCES = 5 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 800 tinkering, 1 t_tinker_tools, 700 blacksmithing //nastaveni_cm_skillmake 
 DEFNAME = i_kettle
 
 [ItemDef 0x9f3]
@@ -1369,7 +1379,8 @@ SUBSECTION = Cook
 DESCRIPTION = Knife
 
 DupeList = 0x9a6,0x9f6,0x9f7
-RESOURCES = 1 i_ingot_iron
+RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 1 tinkering, 200 blacksmithing //nastaveni_cm_skillmake 
 DEFNAME = i_knife
 
 [ItemDef 0x9a6]
@@ -1409,8 +1420,9 @@ SUBSECTION = Candles
 DESCRIPTION = Long Candle (Unlit)
 
 TYPE = T_LIGHT_OUT
-RESOURCES = 1 i_ingot_copper, 1 i_candle
+RESOURCES = 2 i_ingot_copper, 1 i_candle //nastaveni_cm_resources 
 //TDATA3 = i_candle2_lit // commented out by Converter 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 2 //Set by Converter 
 DEFNAME = i_candle2
 
@@ -1420,9 +1432,10 @@ SUBSECTION = Candles
 DESCRIPTION = Candle (Unlit)
 
 TYPE = T_LIGHT_OUT
-RESOURCES = 1 i_beeswax, 1 i_cloth
+RESOURCES = 1 i_candle_lg, 1 i_ingot_copper //nastaveni_cm_resources 
 layer = layer_hand2 // problem in TILEDATA.MUL 
 //TDATA3 = i_candle_lit // commented out by Converter 
+SKILLMAKE = 200 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_candle
 //VALUE = {4 8} // commented out by Converter 
 
@@ -1432,8 +1445,9 @@ SUBSECTION = Candles
 DESCRIPTION = Candlabra (Unlit) (Stand)
 
 TYPE = T_LIGHT_OUT
-RESOURCES = 5 i_ingot_iron, 1 i_beehive, 1 i_cloth
+RESOURCES = 5 i_ingot_iron, 3 i_candle //nastaveni_cm_resources 
 //TDATA3 = i_candleabra2_lit // commented out by Converter 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_candleabra2
 
@@ -1464,8 +1478,8 @@ DESCRIPTION = PickAxe
 TYPE = t_weapon_bow_run
 DupeList = 0xe86
 WEIGHT = 11
-RESOURCES = 4 i_ingot_iron
-SKILLMAKE = 421 tinkering, 1 t_tinker_tools //some resources were fixed by converter 
+RESOURCES = 4 i_ingot_iron, 1 i_log_copper //nastaveni_cm_resources 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 Flippable = true
 //REQSTR = 25 // commented out by Converter 
 //SPEED = 40 // commented out by Converter 
@@ -1497,7 +1511,8 @@ DESCRIPTION = Barber Scissors
 TYPE = T_SCISSORS
 DupeList = 0xdfd
 WEIGHT = 0.4
-RESOURCES = 2 i_ingot_iron, 1 i_screw
+RESOURCES = 2 i_ingot_iron, 1 i_scissors //nastaveni_cm_resources 
+SKILLMAKE = 450 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_scissors_barber
 
 [ItemDef 0xdfd]
@@ -1509,7 +1524,8 @@ SUBSECTION = Alchemist
 DESCRIPTION = EMPTY VIAL
 
 WEIGHT = 1
-RESOURCES = 5 i_sand
+RESOURCES = 2 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 600 tinkering, 1 t_tinker_tools, 1 t_bottle_form //nastaveni_cm_skillmake 
 DEFNAME = i_vial_empty
 
 [ItemDef 0xfbf]
@@ -1519,7 +1535,8 @@ DESCRIPTION = Pen & Ink (W)
 
 DupeList = 0xfc0
 WEIGHT = 2
-RESOURCES = 1 i_feather, 1 i_ink_pot
+RESOURCES = 1 i_feather, 1 i_ink_pot, 2 i_reag_black_pearl //nastaveni_cm_resources 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_pen_and_ink
 
 [ItemDef 0xfc0]
@@ -1535,7 +1552,8 @@ SUBSECTION = Artists
 DESCRIPTION = Paints & Brushes
 
 WEIGHT = 4
-RESOURCES = 1 i_brush, 6 i_dyes, 1 i_board
+RESOURCES = 1 i_brush, 6 i_dyes, 1 i_log_iron //nastaveni_cm_resources 
+SKILLMAKE = 350 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_palette
 
 [ItemDef 0xe31]
@@ -1546,7 +1564,8 @@ DESCRIPTION = BRAZIER
 TYPE = T_FIRE
 DupeList = 0xe32
 WEIGHT = 15
-RESOURCES = 15 i_ingot_iron
+RESOURCES = 15 i_ingot_iron, 1 i_potion_lava //nastaveni_cm_resources 
+SKILLMAKE = 700 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_brazier_2
 
 [ItemDef 0xe32]
@@ -1575,7 +1594,8 @@ DESCRIPTION = CRYSTAL BALL
 TYPE = T_CRYSTAL_BALL
 DupeList = 0xe2e,0xe2f,0xe30
 WEIGHT = 3
-RESOURCES = 2 i_board, 7 i_sand
+RESOURCES = 7 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 700 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_crystal_ball
 
 [ItemDef 0xe2e]
@@ -1592,7 +1612,8 @@ CATEGORY = Items by Professions
 SUBSECTION = Blacksmiths
 DESCRIPTION = Horse Shoes
 
-RESOURCES = 4 i_ingot_iron
+RESOURCES = 4 i_ingot_iron //nastaveni_cm_resources 
+SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_horse_shoes
 
 [ItemDef 0x1005]
@@ -1601,7 +1622,8 @@ SUBSECTION = Alchemist
 DESCRIPTION = Empty Jar
 
 WEIGHT = 1
-RESOURCES = 2 i_sand
+RESOURCES = 2 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 560 tinkering, 1 t_tinker_tools, 1 t_bottle_form //nastaveni_cm_skillmake 
 DEFNAME = i_jar_empty
 
 [ItemDef 0x1006]
@@ -1610,7 +1632,8 @@ SUBSECTION = Alchemist
 DESCRIPTION = Full Jar
 
 WEIGHT = 1
-RESOURCES = 2 i_sand
+RESOURCES = 2 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 560 tinkering, 1 t_tinker_tools, 1 t_bottle_form //nastaveni_cm_skillmake 
 DEFNAME = i_jar_full
 
 [ItemDef 0x1007]
@@ -1619,7 +1642,8 @@ SUBSECTION = Alchemist
 DESCRIPTION = Half Empty Jar
 
 WEIGHT = 1
-RESOURCES = 2 i_sand
+RESOURCES = 2 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 560 tinkering, 1 t_tinker_tools, 1 t_bottle_form //nastaveni_cm_skillmake 
 DEFNAME = i_jar_half_full
 
 [ItemDef 0x1008]
@@ -1628,7 +1652,8 @@ SUBSECTION = Containers
 DESCRIPTION = Wash Basin
 
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron, 1 i_sand
+RESOURCES = 1 i_ingot_iron, 10 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_wash_basin
 
 [ItemDef 0x1009]
@@ -1637,7 +1662,8 @@ SUBSECTION = Containers
 DESCRIPTION = Basin
 
 WEIGHT = 1
-RESOURCES = 1 i_ingot_iron, 1 i_sand
+RESOURCES = 1 i_ingot_iron, 10 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_basin
 
 [ItemDef 0x1026]
@@ -1727,7 +1753,7 @@ DESCRIPTION = Dipping Stick
 
 DupeList = 0x1429
 WEIGHT = 1
-RESOURCES = 1 i_sticks, 1 i_pot_of_wax, 1 i_string
+RESOURCES = 1 i_sticks, 1 i_pot_of_wax, 1 i_string //nastaveni_cm_resources 
 DEFNAME = i_dipping_stick
 
 [ItemDef 0x1429]
@@ -1740,8 +1766,9 @@ DESCRIPTION = Candle (Unlit)
 
 TYPE = T_LIGHT_OUT
 WEIGHT = 1
-RESOURCES = 1 i_dipping_stick
+RESOURCES = 1 i_dipping_stick, 1 i_beeswax //nastaveni_cm_resources 
 //TDATA3 = i_candle_short_lit // commented out by Converter 
+SKILLMAKE = 150 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_candle_short
 
@@ -1752,8 +1779,9 @@ DESCRIPTION = Candle (Unlit)
 
 TYPE = T_LIGHT_OUT
 WEIGHT = 1
-RESOURCES = 1 i_dipping_stick
+RESOURCES = 1 i_dipping_stick, 1 i_beeswax //nastaveni_cm_resources 
 //TDATA3 = i_candle_lg_lit // commented out by Converter 
+SKILLMAKE = 250 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_candle_lg
 
@@ -1776,8 +1804,9 @@ DESCRIPTION = Bucket
 
 TYPE = T_CONTAINER
 WEIGHT = 2
-RESOURCES = 2 i_board, 1 i_ingot_iron, 1 i_nails
+RESOURCES = 1 i_barrel_hoops, 1 i_ingot_iron, 2 i_log_copper //nastaveni_cm_resources 
 //TDATA2 = 03e // commented out by Converter 
+SKILLMAKE = 300 tinkering, 300 carpentry, 1 t_tinker_tools, 1 t_carpentry //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_bucket
 
@@ -1789,8 +1818,9 @@ DESCRIPTION = SpyGlass (N)
 TYPE = T_SPY_GLASS
 DupeList = 0x14f6
 WEIGHT = 3
-RESOURCES = 2 i_ingot_iron, 1 i_glass
+RESOURCES = 2 i_ingot_iron, 1 i_tabulka_skla //nastaveni_cm_resources 
 Flippable = true
+SKILLMAKE = 650 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_spyglass
 
 [ItemDef 0x14f6]
@@ -1803,8 +1833,9 @@ DESCRIPTION = Anchor (W)
 
 DupeList = 0x14f9
 WEIGHT = 40
-RESOURCES = 40 i_ingot_iron, 1 i_rope
+RESOURCES = 20 i_ingot_verite, 1 i_rope //nastaveni_cm_resources 
 Flippable = true
+SKILLMAKE = 518 tinkering, 1 t_tinker_tools, 500 blacksmithing //nastaveni_cm_skillmake 
 DEFNAME = i_anchor
 
 [ItemDef 0x14f9]
@@ -1851,7 +1882,8 @@ DESCRIPTION = Hourglass
 TYPE = T_CLOCK
 DupeList = 0x1811,0x1812,0x1813,0x1814,0x1815,0x1816,0x1817,0x1818,0x1819,0x181a,0x181b,0x181c
 WEIGHT = 2
-RESOURCES = 1 i_board, 1 i_glass, 1 i_sand
+RESOURCES = 1 i_log_valorite, 2 i_tabulka_skla, 1 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 550 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_hourglass
 
 [ItemDef 0x1811]
@@ -1929,7 +1961,8 @@ DESCRIPTION = Scales
 
 DupeList = 0x1852
 WEIGHT = 3
-RESOURCES = 3 i_ingot_silver
+RESOURCES = 3 i_ingot_silver //nastaveni_cm_resources 
+SKILLMAKE = 600 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_scales
 
 [ItemDef 0x1852]
@@ -1943,8 +1976,9 @@ DESCRIPTION = Skull Candle (Unlit)
 TYPE = t_light_out
 DupeList = 0x1857
 WEIGHT = 4
-RESOURCES = 1 i_bone_skull, 1 i_candle
+RESOURCES = 1 i_bone_skull, 1 i_candle //nastaveni_cm_resources 
 //TDATA3 = i_skull_candle_lit // commented out by Converter 
+SKILLMAKE = 450 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 layer = 0 //Set by Converter 
 DEFNAME = i_skull_candle
 
@@ -1955,7 +1989,8 @@ DESCRIPTION = Rack of Empty Vials
 
 DupeList = 0x185c
 WEIGHT = 4
-RESOURCES = 1 i_board, 1 i_nails, 3 i_vial_empty
+RESOURCES = 1 i_board, 1 i_nails, 3 i_vial_empty //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_testtube_rack
 
 [ItemDef 0x185c]
@@ -1968,7 +2003,8 @@ DESCRIPTION = Rack of Full Vials
 
 DupeList = 0x185e
 WEIGHT = 4
-RESOURCES = 1 i_board, 1 i_nails, 3 i_vial_empty
+RESOURCES = 1 i_board, 1 i_nails, 3 i_vial_empty //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_testtube_rack_full
 
 [ItemDef 0x185e]
@@ -1981,7 +2017,7 @@ DESCRIPTION = Tabulka Skla
 
 NAME = "Tabulka Skla"
 WEIGHT = 1
-RESOURCES = 5 i_ingot_pisek
-SKILLMAKE = 600 tinkering //some resources were fixed by converter 
+RESOURCES = 5 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 900 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 model = i_sheet_music
 Color = 099e

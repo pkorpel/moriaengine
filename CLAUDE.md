@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-11-01): skills, exact Erebor behaviour, one by one
+
+User: crafting first, then skills with actual functions; refer to the archive and EreborNext. Analyze then implement each, no go-ahead needed, ask only when unsure. EreborNext clone: scratchpad/EreborNext (shallow, see memory for how to clone again). Audit of every skill goes on the issue, then one PR per skill.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

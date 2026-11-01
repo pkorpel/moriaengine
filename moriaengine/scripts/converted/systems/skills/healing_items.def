@@ -11,7 +11,7 @@
 //TYPE = T_BANDAGE_BLOOD
 //DupeList = 0xe22
 //WEIGHT = 0.1
-//RESOURCES = 1 i_bandage, 1 i_blood
+//RESOURCES = 1 i_bandage, 1 i_blood //nastaveni_cm_resources 
 //DEFNAME = i_bandage_bloody
 
 //[ItemDef 0xe21] //(commented out by Converter) 
@@ -22,7 +22,7 @@
 //TYPE = T_BANDAGE
 //DupeList = 0xee9
 //WEIGHT = 0.1
-//RESOURCES = 1 i_cloth //some resources were fixed by converter 
+//RESOURCES = 1 i_cloth //nastaveni_cm_resources 
 //DEFNAME = i_bandage
 
 //[ItemDef 0xe22] //(commented out by Converter) 
@@ -35,8 +35,8 @@ DESCRIPTION = krev
 
 NAME = "krev"
 TYPE = t_blood
-RESOURCES = 5 i_log
+RESOURCES = 1 i_tub_empty, 5 i_reag_blood_vial //nastaveni_cm_resources 
 RESOURCES2 = 10 i_board
-SKILLMAKE = 400 carpentry, 1 t_carpentry //some resources were fixed by converter 
+SKILLMAKE = 700 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_dye_tub
 Color = 098e //dobra krev, lepsi neumim - Dinivan 

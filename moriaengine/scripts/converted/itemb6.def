@@ -1043,7 +1043,8 @@ DESCRIPTION = Marble Table
 TYPE = t_table
 DupeList = 0x1dc2,0x1dc4,0x1dc5
 WEIGHT = 60
-RESOURCES = 30 i_marble
+RESOURCES = 4 i_log_verite, 4 i_wire_copper, 30 i_marble_rock //nastaveni_cm_resources 
+SKILLMAKE = 600 carpentry, 1000 tinkering, 750 blacksmithing, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_table_marble_end
 
 [ItemDef 0x1dc2]
@@ -1099,8 +1100,9 @@ DESCRIPTION = Marble Bench
 TYPE = T_CHAIR
 DupeList = 0x1dce,0x1dd0,0x1dd1
 WEIGHT = 12
-RESOURCES = 6 i_marble
+RESOURCES = 20 i_marble_rock, 2 i_log_verite, 4 i_wire_copper //nastaveni_cm_resources 
 Flippable = true
+SKILLMAKE = 1000 tinkering, 600 carpentry, 600 blacksmithing, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_bench_marble_end
 
 [ItemDef 0x1dce]
@@ -1958,6 +1960,8 @@ DEFNAME = i_worldgem_lg
 name = "neaktivni runa"
 type = t_normal
 model = i_rune_marker
+RESOURCES = 1 i_ingot_adamantinum //nastaveni_cm_resources 
+SKILLMAKE = 1 t_tinker_tools, 900 blacksmithing, 950 tinkering //nastaveni_cm_skillmake 
 Color = color_gray_lt
 
 [ItemDef 0x1f14]
@@ -1968,6 +1972,8 @@ DESCRIPTION = Recall Rune
 TYPE = T_RUNE
 DupeList = 0x1f15,0x1f16,0x1f17
 WEIGHT = 1
+RESOURCES = 1 i_rune_polotovar //nastaveni_cm_resources 
+SKILLMAKE = 990 inscription, 1 i_magicke_pero //nastaveni_cm_skillmake 
 DEFNAME = i_rune_marker
 //VALUE = {16 20} // commented out by Converter 
 

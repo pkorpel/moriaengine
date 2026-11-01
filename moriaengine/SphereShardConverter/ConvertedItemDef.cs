@@ -723,7 +723,20 @@ namespace SteamEngine.Converter {
 			}
 		}
 
+		//#962 - cm_applyall: the shard's live recipes override what its .scp files say, so most of those are out of date
+		private void ApplyLiveRecipe() {
+			string resources = SphereWorldVars.GetRecipe("nastaveni_cm_resources_" + this.PrettyDefname);
+			if (resources != null) {
+				this.Replace("RESOURCES", resources, "nastaveni_cm_resources");
+			}
+			string skillMake = SphereWorldVars.GetRecipe("nastaveni_cm_skillmake_" + this.PrettyDefname);
+			if (skillMake != null) {
+				this.Replace("SKILLMAKE", skillMake, "nastaveni_cm_skillmake");
+			}
+		}
+
 		public override void ThirdStage() {
+			this.ApplyLiveRecipe();
 			this.FixRecipeNames();
 
 			string toolTypeOverride;
