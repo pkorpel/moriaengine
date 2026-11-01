@@ -713,7 +713,7 @@ DESCRIPTION=Mana Shield Scroll
 Model=i_scroll_blank
 Name=Mana Shield Scroll
 RESOURCES=i_scroll_blank//, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
-SKILLMAKE=INSCRIPTION 60.0, MAGERY 80.0
+SKILLMAKE=800 magery, 400 inscription
 TYPE=t_scroll //t_customspell_scroll
 WEIGHT=1
 

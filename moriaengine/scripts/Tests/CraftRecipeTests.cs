@@ -14,13 +14,15 @@ namespace SteamEngine.CompiledScripts {
 				ItemDef def = script as ItemDef;
 				if (def != null) {
 					try {
-						if ((def.Resources != null) || (def.SkillMake != null)) {
+						bool hasResources = def.Resources != null;
+						bool hasSkillMake = def.SkillMake != null;
+						if (hasResources || hasSkillMake) {
 							recipes++;
 						}
 					} catch (Exception e) when (!(e is FatalException)) {
 						broken++;
-						if (broken <= 8) {
-							names += def.PrettyDefname + ":" + e.Message + " | ";
+						if (broken <= 30) {
+							names += def.PrettyDefname + ": " + e.GetType().Name + " " + e.Message + " | ";
 						}
 					}
 				}

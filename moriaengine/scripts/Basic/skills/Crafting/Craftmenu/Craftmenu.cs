@@ -37,7 +37,12 @@ namespace SteamEngine.CompiledScripts {
 						CraftingSkillDef csk = AbstractSkillDef.GetById(i) as CraftingSkillDef;
 						if (csk != null) {
 							//add only Crafting skills...
-							mainCategories[(SkillName) i] = new CraftmenuCategory(csk);
+							CraftmenuCategory menu = new CraftmenuCategory(csk);
+							mainCategories[(SkillName) i] = menu;
+							CraftMenuDef def = CraftMenuDef.ForMenu(menu.Name);
+							if (def != null) {
+								def.FillIn(menu);
+							}
 						}
 					}
 				}
@@ -124,6 +129,17 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Get name compound also from the possible parent's name (if any)</summary>
+		/// <summary>#962 - cm_displayit: a section shows only if there's something in it this character can make.</summary>
+		public bool HasMakeable(Character chr) {
+			foreach (ICraftmenuElement element in this.Contents) {
+				CraftmenuCategory section = element as CraftmenuCategory;
+				if ((section != null) ? section.HasMakeable(chr) : CraftingSkillDef.CanBeMade(((CraftmenuItem) element).itemDef, chr)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public string FullName {
 			get {
 				this.ThrowIfDeleted();

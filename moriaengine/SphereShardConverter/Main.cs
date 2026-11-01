@@ -132,6 +132,8 @@ namespace SteamEngine.Converter {
 				foreach (ConvertedFile mf in filesList) {
 					mf.Flush();
 				}
+				ConvertedCraftMenus.Write(convertPath, convertToPath);
+				ConvertedCraftMenus.Write(convertPath, convertToPath);
 				Console.WriteLine("Files written to disk.");
 			} catch (Exception e) {
 				Logger.WriteError(e);

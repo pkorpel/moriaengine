@@ -106,6 +106,12 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				ICraftmenuElement elem = cat.Contents[i];
 				if (elem.IsCategory) {
 					oneCat = (CraftmenuCategory) elem;
+					if (!oneCat.HasMakeable((Character) focus)) {
+						if (imax < maxIndex) {
+							imax++;
+						}
+						continue;
+					}
 					dlg.LastTable[rowCntr, 0] = GUTAButton.Builder.Id(6 * i + 10).Valign(DialogAlignment.Valign_Center).Build();
 					dlg.LastTable[rowCntr, 2] = GUTAImage.Builder.NamedGump(GumpIDs.Pouch).Build();
 				} else {
