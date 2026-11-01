@@ -73,6 +73,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override void On_Destroy() {
+			this.UnlockAll(); //nothing could take the locks off later
 			//it's in limbo by now, so no longer in its region
 			foreach (KeyValuePair<FlaggedRegion, House> entry in ByRegion) {
 				if (entry.Value == this) {
@@ -192,6 +193,7 @@ namespace SteamEngine.CompiledScripts {
 				} else {
 					this.RemoveTag(blockedTK);
 				}
+				this.SetLockedBlocked(value);
 			}
 		}
 
@@ -253,7 +255,7 @@ namespace SteamEngine.CompiledScripts {
 			this.CoOwners.Remove(ch);
 		}
 
-		//until the house's own lock levels, for attr_lockeddown and attr_secure
+		//for a GM's attr_lockeddown and attr_secure
 		public bool CanMoveLockedItems(Character ch) {
 			return this.RankOf(ch) >= HouseRank.CoOwner;
 		}

@@ -160,6 +160,8 @@ namespace SteamEngine.CompiledScripts {
 			house.HouseName = "Hnizdo";
 			house.PaidUntil = Globals.TimeInSeconds + (86400 * 12);
 			house.Rent = 123000;
+			Point4D p = Region.P;
+			house.Lock((Item) ((ItemDef) ThingDef.GetByDefname("i_bag")).Create(p.X, p.Y, p.Z, p.M), HouseRank.CoOwner, self);
 			Console.WriteLine("HOUSE_SAVED: ready");
 		}
 
@@ -169,6 +171,10 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HOUSE_LOADED: found=" + (found != null) + " owner=" + ((found == null) || (found.Owner == null) ? "none" : found.Owner.Name)
 				+ " name=" + ((found == null) ? "" : found.HouseName) + " rent=" + ((found == null) ? 0 : found.Rent)
 				+ " days=" + ((found == null) ? 0 : found.PaidDays));
+			foreach (Item item in found.LockedItems) {
+				Console.WriteLine("HOUSE_LOCK_LOADED: to=" + (item.LockedTo == found) + " level=" + item.LockLevel + " person=" + item.LockPerson.Name
+					+ " fixed=" + item.Flag_NonMovable);
+			}
 		}
 	}
 }

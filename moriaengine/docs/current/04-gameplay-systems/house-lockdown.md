@@ -1,5 +1,8 @@
 # House lockdown & security
 
+Players lock things through the sign since #941, see [Locking](housing.md#locking). This page is about the GM's
+`attr_lockeddown` and `attr_secure`, and its code quotes the multi-based `House` from before #941.
+
 Tracking issue: #221 (part of #215). Built entirely on top of [Housing](housing.md)'s
 `House` system (#74) and [Item ATTR flags](item-attr-flags.md)'s `attr_lockeddown`/
 `attr_secure`.
