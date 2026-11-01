@@ -2061,11 +2061,6 @@ namespace SteamEngine.CompiledScripts {
 
 					//regeneration...
 					RegenerationPlugin.TryInstallPlugin(this, this.Mana, this.maxMana, this.ManaRegenSpeed);
-					
-					//meditation finish
-					if (this.Mana >= this.MaxMana) {
-						this.DeletePlugin(MeditationPlugin.meditationPluginKey);
-					}
 				}
 			}
 		}

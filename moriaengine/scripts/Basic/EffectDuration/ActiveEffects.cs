@@ -180,9 +180,4 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class MeditationPlugin : IEffectDescriber {
-		public ActiveEffect DescribeEffect(Character holder) {
-			return new ActiveEffect(EffectSection.Neutral, "Meditace");
-		}
-	}
 }
