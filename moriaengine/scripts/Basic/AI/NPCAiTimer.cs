@@ -252,8 +252,20 @@ namespace SteamEngine.CompiledScripts {
 			this.hasHome = true;
 		}
 
+		/// <summary>#962 - Sphere's NPCACT_FLEE: away from them for so many steps, whatever else is going on.</summary>
+		public void FleeFrom(Character from, int steps) {
+			this.fleeingFrom = from;
+			this.fleeSteps = steps;
+		}
+
 		private void Think(NPC self) {
 			if (this.isHeld) {
+				return;
+			}
+			if ((this.fleeSteps > 0) && (this.fleeingFrom != null) && !this.fleeingFrom.IsDeleted) {
+				this.fleeSteps--;
+				this.LastState = AIState.Fleeing;
+				this.Flee(self, this.fleeingFrom);
 				return;
 			}
 			if ((this.target != null) && !this.IsValidTarget(self, this.target)) {
@@ -798,6 +810,9 @@ namespace SteamEngine.CompiledScripts {
 			spell.Trigger_EffectChar(effectTarget, args);
 			return true;
 		}
+
+		private Character fleeingFrom;
+		private int fleeSteps;
 
 		private void Flee(NPC self, Character target) {
 			Logger.WriteDebug("NPCAiTimer.Flee: " + self.Name + "#" + self.Uid + " fleeing from " + target.Name +

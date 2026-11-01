@@ -38,7 +38,15 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly string[] keywords = { "guard", "straz" };
 
 		public new static void Bootstrap() {
-			new GuardSpeech("spk_guard").Register();
+			instance = new GuardSpeech("spk_guard");
+			instance.Register();
+		}
+
+		private static GuardSpeech instance;
+
+		/// <summary>#962 - a guard is what answers to spk_guard.</summary>
+		public static bool IsGuard(NPC npc) {
+			return ((AbstractDefTriggerGroupHolder) npc.Def).HasTriggerGroup(instance);
 		}
 
 		private GuardSpeech(string defname)
@@ -76,7 +84,12 @@ namespace SteamEngine.CompiledScripts {
 			if (guard.IsDeleted || guard.Flag_Dead || (guard.ControlMaster != null)) {
 				return false;
 			}
-			Character target = FightMemory.GetOpponent(caller, TimeSpan.FromSeconds(NpcAggroSettings.instance.guardCallMemorySeconds));
+			Character target = FightMemory.GetOpponent(caller, TimeSpan.FromSeconds(NpcAggroSettings.instance.guardCallMemorySeconds)) ?? CrimeWitness.SeenBy(caller);
+			return SendAfter(guard, target);
+		}
+
+		/// <summary>Sends `guard` after `target`, if the guard doesn't protect that one.</summary>
+		public static bool SendAfter(NPC guard, Character target) {
 			if ((target == null) || (target == guard) || !target.IsPlayer || target.Flag_Invulnerable) {
 				return false;
 			}
