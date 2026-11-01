@@ -63,6 +63,8 @@ namespace SteamEngine.Regions {
 		private string group;
 		private int realmTag;
 		private string city;
+		private int houseNumber;
+		private int houseRealmTag;
 
 		[LoadSection]
 		public FlaggedRegion(PropsSection input)
@@ -119,6 +121,25 @@ namespace SteamEngine.Regions {
 			}
 		}
 
+		/// <summary>#941 - Erebor's tag.housenumber: a house, stall or field, each kind numbered on its own. 0 if none.</summary>
+		public int HouseNumber {
+			get { return this.houseNumber; }
+		}
+
+		/// <summary>#941 - Erebor's tag.houserealm: whose this house is. Realm.None for the few that have no such tag.</summary>
+		public Realm HouseRealm {
+			get {
+				switch (this.houseRealmTag) {
+					case 1:
+						return Realm.Gondor;
+					case 2:
+						return Realm.Mordor;
+					default:
+						return Realm.None;
+				}
+			}
+		}
+
 		/// <summary>#892 - Erebor's tag.jmeno_mesta: the city this area answers to, and several areas can
 		/// share one (Pelargir and Linhir are Dol_Amroth's). Multi-word names have underscores.</summary>
 		public string City {
@@ -143,6 +164,8 @@ namespace SteamEngine.Regions {
 			this.group = null;
 			this.realmTag = 0;
 			this.city = null;
+			this.houseNumber = 0;
+			this.houseRealmTag = 0;
 		}
 
 		private static List<string> AddNames(List<string> list, string valueString) {
@@ -288,6 +311,12 @@ namespace SteamEngine.Regions {
 			if (this.city != null) {
 				output.WriteValue("city", this.city);
 			}
+			if (this.houseNumber != 0) {
+				output.WriteValue("housenumber", this.houseNumber);
+			}
+			if (this.houseRealmTag != 0) {
+				output.WriteValue("houserealm", this.houseRealmTag);
+			}
 		}
 
 		public override void LoadLine(string filename, int line, string valueName, string valueString) {
@@ -375,6 +404,12 @@ namespace SteamEngine.Regions {
 					break;
 				case "city":
 					this.city = ConvertTools.LoadSimpleQuotedString(valueString.Trim());
+					break;
+				case "housenumber":
+					this.houseNumber = ConvertTools.ParseInt32(valueString.Trim());
+					break;
+				case "houserealm":
+					this.houseRealmTag = ConvertTools.ParseInt32(valueString.Trim());
 					break;
 				case "rainchance":
 					this.rainChance = ConvertTools.ParseInt32(valueString.Trim());
