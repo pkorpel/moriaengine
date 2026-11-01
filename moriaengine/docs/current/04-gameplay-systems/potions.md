@@ -55,7 +55,8 @@ It lands a second later and counts down there, fixed in place. Without the `a_th
 ## Shrink, kegs
 
 Shrink turns your own pet within 3 tiles into a figurine, not a summoned one. A double click brings it back, as the
-owner's who clicks it, with its name, colour and hitpoints.
+owner's who clicks it, with its name, colour and hitpoints. The figurine looks like the creature, from its `ICON` (`CharacterDef.Icon`, an item's name or a model); one with no
+usable icon gets the plain figurine.
 
 A keg (`i_keg_potion`) holds 1000 of one potion. Target a potion to pour, empty bottles to draw, a garbage can to empty it.
 

@@ -19,10 +19,12 @@ namespace SteamEngine {
 
 	public abstract class AbstractCharacterDef : ThingDef {
 		private FieldValue mountItem;
+		private FieldValue icon;
 
 		protected AbstractCharacterDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 			this.mountItem = this.InitModelField("mountItem", 0);
+			this.icon = this.InitModelField("icon", 0);
 		}
 
 		public int MountItem {
@@ -31,6 +33,17 @@ namespace SteamEngine {
 			}
 			set {
 				this.mountItem.CurrentValue = value;
+			}
+		}
+
+		/// <summary>The model of the item that stands for this creature, as Sphere's ICON: a shrunk pet's look. An item's name
+		/// or a number in a script.</summary>
+		public int Icon {
+			get {
+				return (int) this.icon.CurrentValue;
+			}
+			set {
+				this.icon.CurrentValue = value;
 			}
 		}
 

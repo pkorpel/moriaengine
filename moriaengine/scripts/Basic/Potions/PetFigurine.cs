@@ -1,3 +1,4 @@
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
@@ -12,6 +13,19 @@ namespace SteamEngine.CompiledScripts {
 			this.petHits = pet.Hits;
 			this.Name = pet.Name;
 			this.Color = pet.Color;
+			int icon = IconOf(this.petDef);
+			if (icon != 0) {
+				this.Model = icon;
+			}
+		}
+
+		//Erebor makes the item its ICON names; two of the archive's name nothing, and 394 creatures have none
+		private static int IconOf(NPCDef def) {
+			try {
+				return def.Icon;
+			} catch (SEException) {
+				return 0;
+			}
 		}
 
 		public override void On_DClick(AbstractCharacter from) {
