@@ -43,10 +43,10 @@ namespace SteamEngine.Tests.Protocol {
 			this.Ask(client, ".TestBoostsLiveDefault \"0\"", "BOOSTS_DEFAULT:");
 			this.Ask(client, ".TestBoostsPlain", "BOOSTS_PLAIN:");
 
-			//a plain player can open it, and sees there's nothing
+			//a plain player can open it, and sees only their food
 			client.SendSpeech(".boosts");
 			var menu = client.ReadGumpDialogWithStrings(Wait);
-			Has(menu.Strings, "Nic na tebe nepusobi.");
+			Has(menu.Strings, "Jidlo");
 			Has(menu.Strings, "Zive: ne");
 
 			//it's a snapshot: Obnovit shows what happened since

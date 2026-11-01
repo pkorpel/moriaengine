@@ -1898,6 +1898,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual TriggerResult On_SkillSuccess(SkillSequenceArgs skillSeqArgs) {
+			//#924 - Erebor's @skillsuccess: the hungry fail. A blow isn't a skill's success in Sphere
+			if (!(skillSeqArgs.SkillDef is WeaponSkillDef) && PlayerHunger.DistractsFrom(this)) {
+				skillSeqArgs.Success = false;
+				skillSeqArgs.PhaseFail();
+				return TriggerResult.Cancel;
+			}
 			return TriggerResult.Continue;
 		}
 

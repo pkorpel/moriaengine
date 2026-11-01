@@ -44,6 +44,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static void StartCrafting(Character self, CraftingOrder crOrd) {
+			PlayerHunger.HurtIfStarving(self);
 			if (!WorkLight.CheckWithMessage(self)) {
 				return;
 			}

@@ -244,6 +244,69 @@
   <data name="WorkLightLoc_TooDark" xml:space="preserve">
     <value>Je spatne videt.</value>
   </data>
+  <data name="HungerLoc_FoodLine" xml:space="preserve">
+    <value>Jidlo</value>
+  </data>
+  <data name="HungerLoc_Starving" xml:space="preserve">
+    <value>starving</value>
+  </data>
+  <data name="HungerLoc_VeryHungry" xml:space="preserve">
+    <value>very hungry</value>
+  </data>
+  <data name="HungerLoc_Hungry" xml:space="preserve">
+    <value>hungry</value>
+  </data>
+  <data name="HungerLoc_FairlyContent" xml:space="preserve">
+    <value>fairly content</value>
+  </data>
+  <data name="HungerLoc_Content" xml:space="preserve">
+    <value>content</value>
+  </data>
+  <data name="HungerLoc_Fed" xml:space="preserve">
+    <value>fed</value>
+  </data>
+  <data name="HungerLoc_WellFed" xml:space="preserve">
+    <value>well fed</value>
+  </data>
+  <data name="HungerLoc_Stuffed" xml:space="preserve">
+    <value>stuffed</value>
+  </data>
+  <data name="HungerLoc_YouAre" xml:space="preserve">
+    <value>You are {0}</value>
+  </data>
+  <data name="HungerLoc_Distracted" xml:space="preserve">
+    <value>Ve tvem soustredeni te rusi hlad...</value>
+  </data>
+  <data name="HungerLoc_Dying" xml:space="preserve">
+    <value>Umiras hlady...</value>
+  </data>
+  <data name="HungerLoc_CantMove" xml:space="preserve">
+    <value>You can't move the item.</value>
+  </data>
+  <data name="HungerLoc_TooFull" xml:space="preserve">
+    <value>You are simply too full to eat any more!</value>
+  </data>
+  <data name="HungerLoc_EatSome" xml:space="preserve">
+    <value>eat some {0}</value>
+  </data>
+  <data name="HungerLoc_StillHungry" xml:space="preserve">
+    <value>You eat the food, but are still extremely hungry.</value>
+  </data>
+  <data name="HungerLoc_LessHungry" xml:space="preserve">
+    <value>After eating the food, you feel much less hungry.</value>
+  </data>
+  <data name="HungerLoc_Satiated" xml:space="preserve">
+    <value>You eat the food, and begin to feel more satiated.</value>
+  </data>
+  <data name="HungerLoc_NearlyStuffed" xml:space="preserve">
+    <value>You are nearly stuffed, but manage to eat the food.</value>
+  </data>
+  <data name="HungerLoc_QuiteFull" xml:space="preserve">
+    <value>You feel quite full after consuming the food.</value>
+  </data>
+  <data name="HungerLoc_Stuffed2" xml:space="preserve">
+    <value>You are stuffed!</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

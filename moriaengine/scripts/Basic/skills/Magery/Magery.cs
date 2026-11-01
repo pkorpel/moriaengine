@@ -109,6 +109,7 @@ namespace SteamEngine.CompiledScripts {
 		//checking and consuming resources
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
+			PlayerHunger.HurtIfStarving(self); //#924 - @spellcast
 			if (self.CanInteractWithMessage(skillSeqArgs.Target1)) {
 				SpellDef spell = (SpellDef) skillSeqArgs.Param1;
 

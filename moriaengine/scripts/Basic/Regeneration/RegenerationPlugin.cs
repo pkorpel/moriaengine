@@ -46,7 +46,7 @@ namespace SteamEngine.CompiledScripts {
 		public void On_Timer() {
 			Character holder = (Character) this.Cont;
 			//fields set once everytime the On_Timer method gets fired
-			double hitsRegenSpeed = holder.HitsRegenSpeed;
+			double hitsRegenSpeed = PlayerHunger.StopsHealing(holder) ? 0 : holder.HitsRegenSpeed; //#924
 			double stamRegenSpeed = holder.StamRegenSpeed;
 			double manaRegenSpeed = holder.ManaRegenSpeed;
 			int hits = holder.Hits;
