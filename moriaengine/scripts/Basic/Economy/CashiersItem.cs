@@ -204,7 +204,7 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage("Hodnota seku je prilis mala. Minimalni hodnota je " + CashiersItem.MinCheck + " gp.");
 			} else if (sum > CashiersItem.MaxCheck) {
 				self.RedMessage("Hodnota seku je prilis velka. Maximalni hodnota je " + CashiersItem.MaxCheck + " gp.");
-			} else if (PayFromBank(self, sum)) {
+			} else if (GoldUtils.Pay(self, sum, PaySource.Bank, "V bance nemas dostatek penez. Potrebujes " + sum + " gp.")) {
 				CashiersItem.CreateCheck(self, sum);
 				self.SysMessage("Sek na " + sum + " gp byl umisten do tveho batohu.");
 				self.Sound(0x4f);
@@ -219,33 +219,9 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Zadavej ve formatu .mesec(xx), kde xx je mnozstvi penez, ktere chces do mesce vlozit.");
 			} else if (sum < CashiersItem.MinPurse) {
 				self.RedMessage("Takto maly obnos nelze umistit do mesce");
-			} else if (PayFromPack(self, sum)) {
+			} else if (GoldUtils.Pay(self, sum, PaySource.Pack)) {
 				CashiersItem.CreatePurses(self, sum, self.Backpack);
 			}
-		}
-
-		private static bool PayFromBank(Character self, int sum) {
-			if (self.IsGM) {
-				self.SysMessage("Jako gm neplatis nic");
-				return true;
-			}
-			if (GoldUtils.TryConsumeFrom(self.Bank, (uint) sum)) {
-				return true;
-			}
-			self.SysMessage("V bance nemas dostatek penez. Potrebujes " + sum + " gp.");
-			return false;
-		}
-
-		private static bool PayFromPack(Character self, int sum) {
-			if (self.IsGM) {
-				self.SysMessage("Jako gm neplatis nic");
-				return true;
-			}
-			if (GoldUtils.TryConsumeFrom(self.Backpack, (uint) sum)) {
-				return true;
-			}
-			self.SysMessage("potrebujes " + sum + " gp.");
-			return false;
 		}
 	}
 

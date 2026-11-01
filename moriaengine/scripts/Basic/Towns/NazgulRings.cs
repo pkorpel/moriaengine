@@ -328,7 +328,7 @@ namespace SteamEngine.CompiledScripts {
 		private void OfferDonation(Player player, Town town) {
 			if (!player.IsGM) {
 				D_TownInput.Ask(player, "Chces-li zadej castku kterou prispejes do pokladny", "0", text => {
-					if (int.TryParse(text, out int amount) && (amount > 0) && Town.Pay(player, amount)) {
+					if (int.TryParse(text, out int amount) && (amount > 0) && GoldUtils.Pay(player, amount)) {
 						town.treasury += amount;
 						player.SysMessage("Zaplatil jsi " + amount + "gp.");
 					}

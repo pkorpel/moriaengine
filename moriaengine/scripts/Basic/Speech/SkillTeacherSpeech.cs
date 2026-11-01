@@ -193,7 +193,7 @@ namespace SteamEngine.CompiledScripts {
 				teacher.Say("Nemohu te naucit vice o " + SkillDisplayName(skill) + ".");
 				return;
 			}
-			if (GoldUtils.TryPay(student, (uint) lesson.Price)) {
+			if (GoldUtils.Pay(student, lesson.Price, notEnough: "")) {
 				student.SetRealSkillValue((int) skill, lesson.target);
 				teacher.Say("Byl jsi vytrenovan " + lesson.title + " " + SkillDisplayName(skill));
 			} else {
