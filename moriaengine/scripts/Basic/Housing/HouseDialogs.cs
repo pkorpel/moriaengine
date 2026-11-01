@@ -6,7 +6,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#941 - d_house_menu. Buttons keep Erebor's numbers, a rank above the one in the table shows them.</summary>
 	public class D_House : CompiledGumpDef {
 		private const int Width = 290, RowHeight = 22, LabelHue = 955, ButtonHue = 2301;
-		private const int LockItem = 2, AddFriend = 3, ListFriends = 4, AddCoOwner = 5, ListCoOwners = 6, Rename = 7, ChangeSign = 8, Transfer = 10;
+		private const int LockItem = 2, AddFriend = 3, ListFriends = 4, AddCoOwner = 5, ListCoOwners = 6, Rename = 7, ChangeSign = 8, Bank = 9, Transfer = 10;
 		private const int Block = 11, Empty = 12, ResetPaid = 13, SetRent = 14, AutoRent = 15;
 
 		public static void Show(Player player, House house, Item sign) {
@@ -42,6 +42,7 @@ namespace SteamEngine.CompiledScripts {
 			Add(ListCoOwners, HouseRank.Public, "Seznam spoluvlastniku domu");
 			Add(Rename, HouseRank.Friend, "Prejmenovat dum");
 			Add(ChangeSign, HouseRank.Friend, "Zmenit vyvesku domu");
+			Add(Bank, HouseRank.Blocked, house.BankActivated ? "Otevrit banku" : "Aktivovat banku (" + (HouseSettings.instance.bankActivationPrice / 1000) + "kgp)");
 			Add(Transfer, HouseRank.CoOwner, "Predat vlastnictvi domu");
 			Add(Block, HouseRank.Owner, (house.Blocked ? "Od" : "Za") + "blokovat dum");
 			Add(Empty, HouseRank.Owner, "Vyprazdnit dum");
@@ -98,6 +99,11 @@ namespace SteamEngine.CompiledScripts {
 					if (house.Allows(player, HouseRank.Public)) {
 						player.SysMessage("Co chces zamknout/odemknout?");
 						player.Target(SingletonScript<Targ_HouseLock>.Instance, house);
+					}
+					break;
+				case Bank:
+					if (house.Allows(player, HouseRank.Blocked)) {
+						house.UseBank(player, sign);
 					}
 					break;
 				case AddFriend:
