@@ -9,7 +9,7 @@ namespace SteamEngine.Tests.Protocol {
 	[Collection(HouseSetupCollection.Name)]
 	public class HouseSetupTests {
 		private const string Account = "housesetup";
-		private const int Yes = 1, LockButton = 2, PublicLevelButton = 1;
+		private const int Yes = 1, LockButton = 2, PublicLevelButton = 1, RattanButton = 5, FourthFacingButton = 4;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(30);
 
 		private readonly GameServerPairFixture fixture;
@@ -42,16 +42,36 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("added=0 kept=281", this.Ask(client, ".SetupHouses", "SETUP_DONE:"));
 				Assert.Contains("signAt=" + (x + 1) + "," + y, this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
 
-				//a door only inside a house
-				client.SendSpeech(".HouseDoor");
+				//every door in the dialog works, in all its facings
+				Assert.Contains("kinds=19 good=19 bad=", this.Ask(client, ".TestHouseDoorKinds", "DOOR_KINDS:"));
+
+				//a door by name, only inside a house
+				client.SendSpeech(".HouseDoor \"i_door_metal\"");
 				Thread.Sleep(500);
 				client.SendTargetGround(Number(outdoors, "inX"), Number(outdoors, "inY"), z);
 				Thread.Sleep(500);
-				client.SendSpeech(".HouseDoor");
+				client.SendSpeech(".HouseDoor \"i_door_metal\"");
 				Thread.Sleep(500);
 				client.SendTargetGround(x, y + 3, z);
 				Thread.Sleep(500);
 				Assert.Contains("doors=1 doorsOutside=0", this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
+
+				//the dialog: rattan, the fourth way round, and the cursor stays for a second one
+				client.SendSpeech(".HouseDoor");
+				var doors = client.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Bambusove", doors.Strings);
+				Assert.Contains("Zel. branka 1", doors.Strings);
+				client.SendGumpResponse(doors.GumpUid, RattanButton);
+				var facings = client.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains(facings.Strings, line => line.StartsWith("Bambusove", StringComparison.Ordinal));
+				client.SendGumpResponse(facings.GumpUid, FourthFacingButton);
+				Thread.Sleep(500);
+				client.SendTargetGround(Number(outdoors, "inX") + 1, Number(outdoors, "inY"), z);
+				Thread.Sleep(500);
+				client.SendTargetGround(Number(outdoors, "inX") + 2, Number(outdoors, "inY"), z);
+				Thread.Sleep(500);
+				Assert.Contains("doors=3 doorsOutside=0", this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
+				Assert.Contains("fourthRattans=2", this.Ask(client, ".TestHouseSetupReport", "SETUP_DOOR:"));
 
 				//the house's own realm walks in
 				this.Ask(client, ".TestHousePlayer \"own\"", "HOUSE_PLAYER:");
