@@ -323,6 +323,83 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#962 - Erebor's makestring: what ends a queue and what doesn't.</summary>
+	[Collection(CraftQueueCollection.Name)]
+	public class CraftQueueTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(15);
+		private readonly GameServerPairFixture fixture;
+
+		public CraftQueueTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private static void WaitForMessage(TestGameClient client, string pattern) {
+			DateTime deadline = DateTime.UtcNow + Wait;
+			while (!Regex.IsMatch(client.ReadSystemMessage(deadline - DateTime.UtcNow), pattern)) {
+			}
+		}
+
+		private void Expect(TestGameClient client, int shafts, int logs) {
+			Assert.Contains("shafts=" + shafts + " logs=" + logs, this.Ask(client, ".TestQueueCount", "QUEUE_COUNT:"));
+		}
+
+		[Fact]
+		public void AQueueEndsAsEreborsDoes() {
+			using var client = CommandPermissionTests.Connect("craftqueue", "Queue Tester");
+			string setup = this.Ask(client, ".TestQueueSetup \"2\"", "QUEUE_SETUP:");
+			uint pack = uint.Parse(Regex.Match(setup, @"pack=(\d+)").Groups[1].Value);
+			client.SendDoubleClick(pack);
+			Thread.Sleep(300);
+
+			//-1 goes on until the logs run out, and says so
+			this.Ask(client, ".TestQueueMake \"-1\"", "QUEUE_MAKING:");
+			WaitForMessage(client, "nelze vyrobit");
+			Expect(client, 2, 0);
+
+			//a count ends by itself
+			this.Ask(client, ".TestQueueSetup \"5\"", "QUEUE_SETUP:");
+			this.Ask(client, ".TestQueueMake \"2\"", "QUEUE_MAKING:");
+			WaitForMessage(client, "Vyroba ukoncena");
+			Expect(client, 4, 3);
+
+			//a blow ends the queue, the shaft in the hands still gets made
+			this.Ask(client, ".TestQueueMake \"3\"", "QUEUE_MAKING:");
+			Thread.Sleep(300);
+			this.Ask(client, ".TestQueueHurt", "QUEUE_HURT:");
+			WaitForMessage(client, "Vyroba zrusena");
+			Thread.Sleep(3000);
+			Expect(client, 5, 2);
+
+			//as does using an item
+			this.Ask(client, ".TestQueueMake \"3\"", "QUEUE_MAKING:");
+			Thread.Sleep(300);
+			client.SendDoubleClick(pack);
+			WaitForMessage(client, "predcasne");
+			Thread.Sleep(3000);
+			Expect(client, 6, 1);
+
+			//darkness stops it before it starts, a candle 2 tiles away is enough
+			this.Ask(client, ".TestQueueDark \"dark\"", "QUEUE_DARK:");
+			this.Ask(client, ".TestQueueMake \"1\"", "QUEUE_MAKING:");
+			WaitForMessage(client, "spatne videt");
+			Expect(client, 6, 1);
+			this.Ask(client, ".TestQueueDark \"candle\"", "QUEUE_DARK:");
+			this.Ask(client, ".TestQueueMake \"1\"", "QUEUE_MAKING:");
+			WaitForMessage(client, "Vyroba ukoncena");
+			Expect(client, 7, 0);
+			this.Ask(client, ".TestQueueDark \"restore\"", "QUEUE_DARK:");
+		}
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class CraftQueueCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "CraftQueue";
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class CraftClothCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "CraftCloth";

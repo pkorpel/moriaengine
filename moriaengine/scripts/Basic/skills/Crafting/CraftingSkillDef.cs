@@ -223,7 +223,7 @@ namespace SteamEngine.CompiledScripts {
 					ItemBundle.UnpackMade(newItem, self); //as Erebor's @SkillMakeItem firing the bundle's @dropon_obj
 					SkillGainSystem.TryGainSkill(self, (SkillName) this.Id, MakeDifficulty(iDefToMake)); //#328
 
-					CraftingProcessPlugin.MakeFinished(skillSeqArgs, true);
+					CraftingProcessPlugin.MakeFinished(skillSeqArgs);
 				}
 			}
 
@@ -273,13 +273,18 @@ namespace SteamEngine.CompiledScripts {
 				//false above skips this block entirely).
 				SkillGainSystem.TryGainSkill(self, (SkillName) this.Id, -MakeDifficulty(iDefToMake));
 			}
-			CraftingProcessPlugin.MakeFinished(skillSeqArgs, canMake && hasMaterial);
+			CraftingProcessPlugin.MakeFinished(skillSeqArgs);
 			//the rest will be decided by the CraftingProcessPlugin
 		}
 
+		//Sphere's Skill_Fail: leaving a job for another skill costs what a failure does
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			self.SysMessage(Loc<CraftSkillsLoc>.Get(self.Language).CraftingAborted);
+			ItemDef iDefToMake = skillSeqArgs.Param1 as ItemDef;
+			if ((iDefToMake != null) && !self.IsGM) {
+				this.ConsumeFailed(iDefToMake, self);
+			}
+			CraftingProcessPlugin.Stop(self, false);
 			CraftingProcessPlugin.UnInstallCraftingPlugin(self);
 		}
 
@@ -362,7 +367,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#962 - Sphere's FindItemTypeNearby: a thing or a static of the type, the nearest within range.</summary>
-		protected static bool FindNearby(Character self, string typeDefname, int range, out Point2D found) {
+		public static bool FindNearby(Character self, string typeDefname, int range, out Point2D found) {
 			found = default(Point2D);
 			int best = int.MaxValue;
 			Map map = self.GetMap();
@@ -443,8 +448,6 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	internal class CraftSkillsLoc : CompiledLocStringCollection<CraftSkillsLoc> {
-		public string ResourcesLackingButContinue = "Not enough resources to make {0}, continuing with other items.";
-		public string ResourcesLackingAndFinish = "Not enough resources to make {0}, crafting is finished.";
 		public string FailedMaking = "Vyroba se nezdarila.";
 		public string TossMixture = "toss the failed mixture from the mortar";
 		public string StartGrinding = "start grinding some {0} in the mortar";
@@ -463,8 +466,13 @@ namespace SteamEngine.CompiledScripts {
 		public string QualityAboveAverage = "The item is of above average quality";
 		public string QualityExcellent = "The item is of excellent quality";
 		public string QualitySuperior = "Due to your exceptional skill, the item is of superior quality";
-		public string FinishCrafting = "Crafting is finished";
-		public string CraftingAborted = "Crafting aborted";
+		public string FinishCrafting = "Vyroba ukoncena.";
+		public string MakingStopped = "Vyroba zrusena";
+		public string MakingCutShort = "Vyroba predcasne zrusena";
+		public string MakingTheseThings = "Vyrabim tyto veci:";
+		public string FailedTryAgain = "Vyrobek se nepovedl - dalsi pokus.";
+		public string NotEnoughResources = "Nemas dost zdroju";
+		public string CantMakeThat = "nelze vyrobit {0}.";
 		public string CookOnFire = "You must cook food on some sort of fire";
 		public string SmellsGood = "Mmm, smells good";
 		public string NotNearForge = "You must be near a forge to smith";

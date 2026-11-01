@@ -240,7 +240,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						SimpleQueue<CraftingSelection> selectionQueue = new SimpleQueue<CraftingSelection>();
 						foreach (int id in inputIds) {
 							int requestedCount = (int) gr.GetNumberResponse(id);//always integer number
-							if (requestedCount > 0) {//non zero request for making, parse the line number
+							if (requestedCount != 0) {//non zero request for making, parse the line number. -1 = until the materials run out
 								int line = (id - 15) / 6; //input fields have IDs as 6*i + 15
 								CraftmenuItem cmItm = (CraftmenuItem) cat.Contents[line];
 								selectionQueue.Enqueue(new CraftingSelection(cmItm.itemDef, requestedCount));
