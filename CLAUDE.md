@@ -3,7 +3,9 @@
 ## IN PROGRESS (2026-11-01): skills, exact Erebor behaviour, one by one
 
 User: crafting first, then skills with actual functions; refer to the archive and EreborNext. Analyze then implement each, no go-ahead needed, ask only when unsure. EreborNext clone: scratchpad/EreborNext (shallow, see memory for how to clone again). Audit of every skill goes on the issue, then one PR per skill.
-Audit on #962 (order there). Done: live recipes in the converter (PR #963), difficulty + failure (PR #964). Now: craft menus. ConvertedCraftMenus runs cmprep_* and writes craftmenus.def, CraftMenuDef loads it. Newest-first in a Sphere container, so a menu reads reversed from its script.
+Audit on #962 (order there). Done: live recipes in the converter (PR #963), difficulty + failure (PR #964). Craft menus PR #965: ConvertedCraftMenus runs cmprep_* and writes craftmenus.def, CraftMenuDef loads it. Newest-first in a Sphere container, so a menu reads reversed from its script.
+Colours needed nothing: the audit said none, but HuesCalculator (#822) already does it, 640 made items coloured. color_spruce is 0 on Erebor. Bundles: t_shaft_multi, t_arrow_piercing_multi, data from tdata1/2 as def tags, ItemBundle. Four items held out of the menus until ported, issue #966. Audit's claims need checking in code: this one was wrong.
+Gotchas: a parse test with `a != null || b != null` never reads b: read both first. A test making every menu item found what no menu test would. Some sources aren't UTF-8: edit as bytes, and a retried edit can apply twice when the replacement contains the search text.
 Waiting on the user: skillCheckVariance 250 vs Sphere's 100, ADVRATE and the gain formula.
 
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)

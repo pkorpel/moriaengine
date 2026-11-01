@@ -864,6 +864,8 @@ SKILLMAKE = 250 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_copper // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_copper" //converted from 'TDATA1' 
+tag.bundleCount = 2 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_spruce
 
@@ -877,6 +879,8 @@ SKILLMAKE = 450 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_copper // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_copper" //converted from 'TDATA1' 
+tag.bundleCount = 3 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_spruce
 
@@ -890,6 +894,8 @@ SKILLMAKE = 650 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_copper // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_copper" //converted from 'TDATA1' 
+tag.bundleCount = 4 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_spruce
 
@@ -903,6 +909,8 @@ SKILLMAKE = 850 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_copper // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_copper" //converted from 'TDATA1' 
+tag.bundleCount = 5 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_spruce
 
@@ -916,6 +924,8 @@ SKILLMAKE = 380 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_iron // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_iron" //converted from 'TDATA1' 
+tag.bundleCount = 2 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_chestnut
 
@@ -929,6 +939,8 @@ SKILLMAKE = 560 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_iron // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_iron" //converted from 'TDATA1' 
+tag.bundleCount = 3 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_chestnut
 
@@ -942,6 +954,8 @@ SKILLMAKE = 740 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_iron // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_iron" //converted from 'TDATA1' 
+tag.bundleCount = 4 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_chestnut
 
@@ -955,6 +969,8 @@ SKILLMAKE = 900 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_iron // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_iron" //converted from 'TDATA1' 
+tag.bundleCount = 5 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_chestnut
 
@@ -968,6 +984,8 @@ SKILLMAKE = 500 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_verite // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_verite" //converted from 'TDATA1' 
+tag.bundleCount = 2 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_oak
 
@@ -981,6 +999,8 @@ SKILLMAKE = 670 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_verite // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_verite" //converted from 'TDATA1' 
+tag.bundleCount = 3 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_oak
 
@@ -994,6 +1014,8 @@ SKILLMAKE = 830 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_verite // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_verite" //converted from 'TDATA1' 
+tag.bundleCount = 4 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_oak
 
@@ -1007,6 +1029,8 @@ SKILLMAKE = 950 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_verite // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_verite" //converted from 'TDATA1' 
+tag.bundleCount = 5 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_oak
 
@@ -1020,6 +1044,8 @@ SKILLMAKE = 630 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_valorite // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_valorite" //converted from 'TDATA1' 
+tag.bundleCount = 2 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_teak
 
@@ -1033,6 +1059,8 @@ SKILLMAKE = 780 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_valorite // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_valorite" //converted from 'TDATA1' 
+tag.bundleCount = 3 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_teak
 
@@ -1046,6 +1074,8 @@ SKILLMAKE = 910 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_valorite // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_valorite" //converted from 'TDATA1' 
+tag.bundleCount = 4 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_teak
 
@@ -1059,6 +1089,8 @@ SKILLMAKE = 1000 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_valorite // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_valorite" //converted from 'TDATA1' 
+tag.bundleCount = 5 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_teak
 
@@ -1072,6 +1104,8 @@ SKILLMAKE = 750 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_obsidian // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_obsidian" //converted from 'TDATA1' 
+tag.bundleCount = 2 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_mahagon
 
@@ -1085,6 +1119,8 @@ SKILLMAKE = 890 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_obsidian // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_obsidian" //converted from 'TDATA1' 
+tag.bundleCount = 3 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_mahagon
 
@@ -1098,6 +1134,8 @@ SKILLMAKE = 1000 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_obsidian // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_obsidian" //converted from 'TDATA1' 
+tag.bundleCount = 4 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_mahagon
 
@@ -1111,6 +1149,8 @@ SKILLMAKE = 1050 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_obsidian // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_obsidian" //converted from 'TDATA1' 
+tag.bundleCount = 5 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_mahagon
 
@@ -1124,6 +1164,8 @@ SKILLMAKE = 880 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_adamantinum // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_adamantinum" //converted from 'TDATA1' 
+tag.bundleCount = 2 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_eben
 
@@ -1137,6 +1179,8 @@ SKILLMAKE = 1000 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_adamantinum // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_adamantinum" //converted from 'TDATA1' 
+tag.bundleCount = 3 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_eben
 
@@ -1150,6 +1194,8 @@ SKILLMAKE = 1090 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_adamantinum // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_adamantinum" //converted from 'TDATA1' 
+tag.bundleCount = 4 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_eben
 
@@ -1176,6 +1222,8 @@ SKILLMAKE = 1000 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_mithril // commented out by Converter 
 //tdata2 = 2 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_mithril" //converted from 'TDATA1' 
+tag.bundleCount = 2 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_elven
 
@@ -1189,6 +1237,8 @@ SKILLMAKE = 1110 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_mithril // commented out by Converter 
 //tdata2 = 3 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_mithril" //converted from 'TDATA1' 
+tag.bundleCount = 3 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_elven
 
@@ -1202,6 +1252,8 @@ SKILLMAKE = 1180 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_mithril // commented out by Converter 
 //tdata2 = 4 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_mithril" //converted from 'TDATA1' 
+tag.bundleCount = 4 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_elven
 
@@ -1215,6 +1267,8 @@ SKILLMAKE = 1200 bowcraft //nastaveni_cm_skillmake
 //tdata1 = i_arrow_shaft_mithril // commented out by Converter 
 //tdata2 = 5 // commented out by Converter 
 model = i_arrow_shafts_2
+tag.bundleItem = "i_arrow_shaft_mithril" //converted from 'TDATA1' 
+tag.bundleCount = 5 //converted from 'TDATA2' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_elven
 
@@ -1225,6 +1279,7 @@ RESOURCES = 20 i_arrow_copper //nastaveni_cm_resources
 SKILLMAKE = 300 bowcraft, 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //tdata1 = i_arrow_piercing_copper // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_arrow_piercing_copper" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_spruce
 
@@ -1235,6 +1290,7 @@ RESOURCES = 20 i_arrow_iron //nastaveni_cm_resources
 SKILLMAKE = 380 bowcraft, 380 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_arrow_piercing_iron // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_arrow_piercing_iron" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_chestnut
 
@@ -1245,6 +1301,7 @@ RESOURCES = 20 i_arrow_verite //nastaveni_cm_resources
 SKILLMAKE = 600 bowcraft, 600 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_arrow_piercing_verite // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_arrow_piercing_verite" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_oak
 
@@ -1255,6 +1312,7 @@ RESOURCES = 20 i_arrow_valorite //nastaveni_cm_resources
 SKILLMAKE = 680 bowcraft, 680 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_arrow_piercing_valorite // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_arrow_piercing_valorite" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_teak
 
@@ -1265,6 +1323,7 @@ RESOURCES = 20 i_arrow_obsidian, 3 i_ingot_verite //nastaveni_cm_resources
 SKILLMAKE = 730 bowcraft, 730 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_arrow_piercing_obsidian // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_arrow_piercing_obsidian" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_mahagon
 
@@ -1275,6 +1334,7 @@ RESOURCES = 20 i_arrow_adamantinum, 3 i_ingot_verite //nastaveni_cm_resources
 SKILLMAKE = 880 bowcraft, 880 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //tdata1 = i_arrow_piercing_adamantinum // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_arrow_piercing_adamantinum" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_eben
 
@@ -1285,6 +1345,7 @@ RESOURCES = 20 i_arrow_mithril, 3 i_ingot_verite //nastaveni_cm_resources
 SKILLMAKE = 980 bowcraft, 980 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //tdata1 = i_arrow_piercing_mithril // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_arrow_piercing_mithril" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_elven
 
@@ -1295,6 +1356,7 @@ RESOURCES = 20 i_xbolt_copper, 3 i_ingot_verite
 SKILLMAKE = 300 bowcraft
 //tdata1 = i_bolt_jagged_copper // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_bolt_jagged_copper" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_spruce
 
@@ -1305,6 +1367,7 @@ RESOURCES = 20 i_xbolt_piercing_iron, 3 i_ingot_verite //nastaveni_cm_resources
 SKILLMAKE = 380 bowcraft, 400 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_bolt_jagged_iron // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_bolt_jagged_iron" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_chestnut
 
@@ -1315,6 +1378,7 @@ RESOURCES = 20 i_xbolt_piercing_verite, 3 i_ingot_verite //nastaveni_cm_resource
 SKILLMAKE = 600 bowcraft //nastaveni_cm_skillmake 
 //tdata1 = i_bolt_jagged_verite // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_bolt_jagged_verite" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_oak
 
@@ -1325,6 +1389,7 @@ RESOURCES = 20 i_xbolt_piercing_valorite, 3 i_ingot_valorite //nastaveni_cm_reso
 SKILLMAKE = 680 bowcraft //nastaveni_cm_skillmake 
 //tdata1 = i_bolt_jagged_valorite // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_bolt_jagged_valorite" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_teak
 
@@ -1335,6 +1400,7 @@ RESOURCES = 20 i_xbolt_piercing_obsidian, 3 i_ingot_obsidian //nastaveni_cm_reso
 SKILLMAKE = 730 bowcraft //nastaveni_cm_skillmake 
 //tdata1 = i_bolt_jagged_obsidian // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_bolt_jagged_obsidian" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_mahagon
 
@@ -1345,6 +1411,7 @@ RESOURCES = 20 i_xbolt_adamantinum, 3 i_ingot_verite
 SKILLMAKE = 880 bowcraft
 //tdata1 = i_bolt_jagged_adamantinum // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_bolt_jagged_adamantinum" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_eben
 
@@ -1355,6 +1422,7 @@ RESOURCES = 20 i_xbolt_mithril, 3 i_ingot_verite
 SKILLMAKE = 980 bowcraft
 //tdata1 = i_bolt_jagged_mithril // commented out by Converter 
 model = 0xf41
+tag.bundleItem = "i_bolt_jagged_mithril" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_elven
 
@@ -1365,6 +1433,7 @@ RESOURCES = 20 i_xbolt_copper //nastaveni_cm_resources
 SKILLMAKE = 300 bowcraft, 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //tdata1 = i_xbolt_piercing_copper // commented out by Converter 
 model = 0x1bfd
+tag.bundleItem = "i_xbolt_piercing_copper" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_spruce
 
@@ -1375,6 +1444,7 @@ RESOURCES = 20 i_xbolt_iron, 3 i_ingot_verite //nastaveni_cm_resources
 SKILLMAKE = 380 bowcraft, 380 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_xbolt_piercing_iron // commented out by Converter 
 model = 0x1bfd
+tag.bundleItem = "i_xbolt_piercing_iron" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_chestnut
 
@@ -1385,6 +1455,7 @@ RESOURCES = 20 i_xbolt_verite //nastaveni_cm_resources
 SKILLMAKE = 600 bowcraft, 600 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_xbolt_piercing_verite // commented out by Converter 
 model = 0x1bfd
+tag.bundleItem = "i_xbolt_piercing_verite" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_oak
 
@@ -1395,6 +1466,7 @@ RESOURCES = 20 i_xbolt_valorite //nastaveni_cm_resources
 SKILLMAKE = 680 bowcraft, 680 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_xbolt_piercing_valorite // commented out by Converter 
 model = 0x1bfd
+tag.bundleItem = "i_xbolt_piercing_valorite" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_teak
 
@@ -1405,6 +1477,7 @@ RESOURCES = 20 i_xbolt_obsidian, 3 i_ingot_verite //nastaveni_cm_resources
 SKILLMAKE = 730 bowcraft, 730 tinkering //nastaveni_cm_skillmake 
 //tdata1 = i_xbolt_piercing_obsidian // commented out by Converter 
 model = 0x1bfd
+tag.bundleItem = "i_xbolt_piercing_obsidian" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_mahagon
 
@@ -1415,6 +1488,7 @@ RESOURCES = 20 i_xbolt_adamantinum, 3 i_ingot_verite //nastaveni_cm_resources
 SKILLMAKE = 880 bowcraft, 880 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //tdata1 = i_xbolt_piercing_adamantinum // commented out by Converter 
 model = 0x1bfd
+tag.bundleItem = "i_xbolt_piercing_adamantinum" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_eben
 
@@ -1425,5 +1499,6 @@ RESOURCES = 20 i_xbolt_mithril, 3 i_ingot_verite //nastaveni_cm_resources
 SKILLMAKE = 980 bowcraft, 980 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 //tdata1 = i_xbolt_piercing_mithril // commented out by Converter 
 model = 0x1bfd
+tag.bundleItem = "i_xbolt_piercing_mithril" //converted from 'TDATA1' 
 //REPLICATE = 1 // commented out by Converter 
 Color = color_elven

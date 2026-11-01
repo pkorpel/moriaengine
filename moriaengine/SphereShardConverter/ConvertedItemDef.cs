@@ -738,8 +738,19 @@ namespace SteamEngine.Converter {
 			}
 		}
 
+		//#962 - t_shaft_multi and t_arrow_piercing_multi unpack into TDATA1, TDATA2 of them each
+		private void WriteBundleData() {
+			if ((this.tData1 != null) && this.writtenData.Exists(line => line.EndsWith("_multi", StringComparison.OrdinalIgnoreCase) && line.StartsWith("type", StringComparison.OrdinalIgnoreCase))) {
+				this.Set("tag.bundleItem", "\"" + this.tData1 + "\"", "converted from 'TDATA1'");
+				if (this.tData2 != null) {
+					this.Set("tag.bundleCount", this.tData2, "converted from 'TDATA2'");
+				}
+			}
+		}
+
 		public override void ThirdStage() {
 			this.ApplyLiveRecipe();
+			this.WriteBundleData();
 			this.FixRecipeNames();
 
 			string toolTypeOverride;
