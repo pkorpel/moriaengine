@@ -15,10 +15,12 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
-using System;
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
+	/// <summary>#962 - switched off on Erebor by its skill's own @start action=-1: it asks what to steal, and nothing comes of it.
+	/// So taking from a pack you've snooped is always refused, see SnoopingPlugin.</summary>
 	[ViewableClass]
 	public class StealingSkillDef : SkillDef {
 
@@ -27,47 +29,40 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
-			//todo: various state checks...
-			return TriggerResult.Continue;
-		}
-
-		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			skillSeqArgs.PhaseStroke();
-			return TriggerResult.Cancel; //cancel - don't delay
-		}
-
-		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			Item item = (Item) skillSeqArgs.Target1;
-
-			if (self.CanReach(item).Allow) {
-				int diff = (int) (700 + 100 * Math.Log(item.Weight + 1));
-				skillSeqArgs.Success = CheckSuccess(self.GetSkill(SkillName.Stealing), diff);
-			} else {
-				skillSeqArgs.Success = false;
+			Player self = skillSeqArgs.Self as Player;
+			if ((skillSeqArgs.Target1 == null) && (self != null)) {
+				self.Target(SingletonScript<Targ_Steal>.Instance);
+				return TriggerResult.Cancel;
 			}
 			return TriggerResult.Continue;
 		}
 
-		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			self.ClilocSysMessage(500174);      // You successfully steal the item!
+		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			return TriggerResult.Cancel;
+		}
 
-			//Snooping implementation does the rest
+		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
+			return TriggerResult.Cancel;
+		}
+
+		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			Item item = (Item) skillSeqArgs.Target1;
-			self.ClilocSysMessage(500172);	    // I failed to steal.
-			((Character) item.TopObj()).Trigger_HostileAction(self);
-			//self.ClilocSysMessage(500167);	    // You are now a criminal.
-
-			//Snooping implementation does the rest
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
-			skillSeqArgs.Self.SysMessage("Okrádání bylo pøedèasnì ukonèeno.");
+		}
+	}
+
+	public class Targ_Steal : CompiledTargetDef {
+		protected override void On_Start(Player self, object parameter) {
+			self.SysMessage(Loc<SnoopingLoc>.Get(self.Language).whatToSteal);
+			base.On_Start(self, parameter);
+		}
+
+		protected override TargetResult On_TargonThing(Player self, Thing targetted, object parameter) {
+			return TargetResult.Done;
 		}
 	}
 }

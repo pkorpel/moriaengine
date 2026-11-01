@@ -29,30 +29,53 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static PluginKey snoopedPluginKey = PluginKey.Acquire("_snoopedBackpacks_");
 
+		private const int Counselor = 2, MarkReach = 2, TooFarFromMark = 501584, ChanceOfCrime = 60, KarmaLost = 10, KarmaFloor = -500;
+
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
-			//todo: various state checks...
 			return TriggerResult.Continue;
 		}
 
+		//Sphere's Skill_Snooping, with Erebor's @start: the mark's Dexterity is what's to beat, a higher plevel can't be snooped
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			Character self = skillSeqArgs.Self;
+			Container cnt = (Container) skillSeqArgs.Target1;
+			Character mark = (Character) cnt.TopObj();
+			if (mark is PlayerVendor) {
+				self.SysMessage(Loc<SnoopingLoc>.Get(self.Language).notPlayerVendors);
+				return TriggerResult.Cancel;
+			}
+			if (!InReach(self, cnt, mark) || (self.Plevel < mark.Plevel)) {
+				return TriggerResult.Cancel;
+			}
+			int difficulty = ((self.Plevel >= Counselor) && (self.Plevel > mark.Plevel)) ? 0 : (mark.Dex * 10);
+			skillSeqArgs.Success = (difficulty <= 0) || this.CheckSuccess(self, difficulty);
 			return TriggerResult.Continue;
+		}
+
+		private static bool InReach(Character self, Container cnt, Character mark) {
+			if (!self.CanReachWithMessage(cnt)) {
+				return false;
+			}
+			Player player = mark as Player;
+			if (((player != null) && (player.GameState == null)) || (Point2D.GetSimpleDistance(self, mark) > MarkReach)) {
+				self.ClilocSysMessage(TooFarFromMark);
+				return false;
+			}
+			return true;
 		}
 
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
-			//todo: various state checks...
-			Character self = skillSeqArgs.Self;
-			Container cnt = (Container) skillSeqArgs.Target1;
-			if (self.CanReachWithMessage(cnt)) {
-				skillSeqArgs.Success = this.CheckSuccess(self, 800);
-				return TriggerResult.Continue;
-			}
-			return TriggerResult.Cancel;
+			return TriggerResult.Continue;
 		}
 
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			Container cnt = (Container) skillSeqArgs.Target1;
-			self.SysMessage("Vidíš do batohu osoby " + cnt.TopObj().Name + ".");
+			Character mark = (Character) cnt.TopObj();
+			if (!InReach(self, cnt, mark)) {
+				return;
+			}
+			CrimeSeen(self, mark, cnt, Loc<SnoopingLoc>.Get(self.Language).peeking);
 			cnt.OpenTo(self);
 			SnoopingPlugin sb = self.GetPlugin(snoopedPluginKey) as SnoopingPlugin;
 			if (sb == null) {
@@ -64,26 +87,59 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			Character victim = (Character) (((Container) skillSeqArgs.Target1).TopObj());
-			self.ClilocSysMessage(500210); // You failed to peek into the container. 
-			int ran = Globals.dice.Next(4);
-			switch (ran) {
-				case 3: //fatal failure
-					victim.SysMessage(self.Name + " se ti pokusil otevøít batoh.");
-					victim.Trigger_HostileAction(self);
-					self.DisArm(); // Bonus for fatal fail. Can be more
-					break;
-				case 2: //regular failure. Maybe no hostile trigger in this case?
-				case 1:
-					victim.SysMessage(self.Name + " se ti pokusil otevøít batoh.");
-					victim.Trigger_HostileAction(self);
-					break;
+			Container cnt = (Container) skillSeqArgs.Target1;
+			Character mark = (Character) cnt.TopObj();
+			if (self.Flag_InvisByMagic) {
+				Notoriety.FlagCriminal(self);
+			}
+			self.SysMessage(Loc<SnoopingLoc>.Get(self.Language).failed);
+			if (InReach(self, cnt, mark)) {
+				CrimeSeen(self, mark, cnt, Loc<SnoopingLoc>.Get(self.Language).tryingToPeek);
 			}
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
-			skillSeqArgs.Self.SysMessage("Šacování pøedèasnì ukonèeno.");
 		}
+
+		/// <summary>Sphere's CheckCrimeSeen. Everyone who sees it may notice, the mark more readily, and a skilled snoop less.
+		/// Seen, it costs karma, and 1 time in 60 a witness makes it a crime.</summary>
+		internal static void CrimeSeen(Character self, Character mark, Container cnt, string action) {
+			bool seen = false;
+			foreach (AbstractCharacter other in self.GetMap().GetCharsInRange(self.X, self.Y, Globals.MaxUpdateRange)) {
+				Character witness = other as Character;
+				if ((witness == null) || (witness == self) || !witness.CanSeeLOS(self).Allow || !Notices(self, witness, witness == mark)) {
+					continue;
+				}
+				witness.SysMessage(string.Format(Loc<SnoopingLoc>.Get(witness.Language).youNotice, self.Name, action, (witness == mark) ? "your" : (mark.Name + "'s"), cnt.Name));
+				if (!witness.IsGM) {
+					seen = true;
+					if ((Globals.dice.Next(ChanceOfCrime) == 0) && !(witness is Player)) {
+						Notoriety.FlagCriminal(self);
+					}
+				}
+			}
+			if (seen) {
+				self.Karma = (short) ((self.Karma > KarmaFloor) ? System.Math.Max(KarmaFloor, self.Karma - KarmaLost) : self.Karma);
+			}
+		}
+
+		private static bool Notices(Character self, Character witness, bool isMark) {
+			if ((witness.IsGM || self.IsGM) && (witness.IsGM != self.IsGM)) {
+				return witness.IsGM;
+			}
+			int chance = 1000 + witness.GetSkill(SkillName.Snooping) - self.GetSkill(SkillName.Snooping);
+			chance = isMark ? System.Math.Max(50, chance + (chance / 3)) : System.Math.Max(10, chance);
+			return Globals.dice.Next(1000) <= chance;
+		}
+	}
+
+	internal class SnoopingLoc : CompiledLocStringCollection<SnoopingLoc> {
+		public string whatToSteal = "Co chces zkusit ukrast?";
+		public string notPlayerVendors = "Nesmis okradat hracske vendory.";
+		public string failed = "Sacovani se nezdarilo.";
+		public string peeking = "peeking into";
+		public string tryingToPeek = "attempting to peek into";
+		public string youNotice = "You notice {0} {1} {2} {3}.";
 	}
 
 	[ViewableClass]
