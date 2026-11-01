@@ -145,16 +145,15 @@ namespace SteamEngine.CompiledScripts {
 		/// Consume some resources from the resource list from the character 
 		/// the resource is consumed only if present, the amount consumed will vary between 0 and the amount available (but not more than desired amount in the list)
 		/// </summary>
-		public void ConsumeSomeResources(Character chr, ResourcesLocality where) {
+		public void ConsumeSomeResources(Character chr, ResourcesLocality where, int percent) {
 
 			var resourceCounters = this.PrepareResourceCounters();
 			try {
 				//find the resources references
 				ResourceItemFinder.LocalizeItems(chr, where, resourceCounters);
 
-				//now for each counter consume 0-available items
 				foreach (ItemCounter ctr in resourceCounters) {
-					ctr.ConsumeSomeItems();
+					ctr.ConsumeSomeItems(percent);
 				}
 
 			} finally {

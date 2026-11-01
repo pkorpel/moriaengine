@@ -25,6 +25,9 @@ namespace SteamEngine.CompiledScripts {
 		//#799 - who crafted an item (Erebor's tag.craftedby)
 		private static readonly TagKey crafterTK = TagKey.Acquire("_craftedBy_");
 
+		//Sphere's Calc_GetRandVal(50): a failed attempt loses this much of each resource, at most
+		private const int FailLossPercent = 50;
+
 		public static void SetCrafter(Item item, Character crafter) {
 			if ((item != null) && !item.IsDeleted) {
 				item.SetTag(crafterTK, crafter);
@@ -80,8 +83,8 @@ namespace SteamEngine.CompiledScripts {
 			double[] itemStrokes = iDefToMake.Strokes; //always 2-item array
 													   //compute the actual strokes count to make the selected item for "self" char
 			int strokes = (int) Math.Round(ScriptUtil.EvalRangePermille(this.SkillValueOfChar(self), itemStrokes));
-			//check the Success now / TODO> item difficulty
-			skillSeqArgs.Success = this.CheckSuccess(self, iDefToMake.Difficulty);
+			//check the Success now
+			skillSeqArgs.Success = this.CheckSuccess(self, MakeDifficulty(iDefToMake));
 			if (!skillSeqArgs.Success) {//the item making will fail
 				skillSeqArgs.Param2 = (int) Math.Round(ScriptUtil.GetRandInRange(1, strokes));//fail will occur after a few strokes (not necessary immediatelly)
 			} else {//item will be created, with pre-computed number of strokes
@@ -194,7 +197,7 @@ namespace SteamEngine.CompiledScripts {
 
 			if (canMake && hasMaterial) {
 				//lost some resources. if some of resources/material was missing then nothing happened...
-				iDefToMake.Resources.ConsumeSomeResources(self, ResourcesLocality.Backpack);
+				iDefToMake.Resources.ConsumeSomeResources(self, ResourcesLocality.Backpack, Globals.dice.Next(FailLossPercent));
 				self.SysMessage(string.Format(
 						Loc<CraftSkillsLoc>.Get(self.Language).ItemMakingFailed,
 						iDefToMake.Name));
@@ -218,8 +221,6 @@ namespace SteamEngine.CompiledScripts {
 		/// Its purpose is to make something related to the stroke of the particular skill (such as playing some sound...)
 		/// </summary>
 		protected virtual void DoStroke(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			self.SysMessage(skillSeqArgs.SkillDef.Defname + " stroke");
 		}
 
 		/// <summary>
@@ -228,9 +229,6 @@ namespace SteamEngine.CompiledScripts {
 		/// computing some special item characteristics etc.)
 		/// </summary>
 		protected virtual void DoSuccess(SkillSequenceArgs skillSeqArgs, Item newItem) {
-			//TODO pocitat nejake ty "exceptional" vlastnosti, podepisovani predmetu atp.
-			Character self = skillSeqArgs.Self;
-			self.SysMessage(skillSeqArgs.SkillDef.Defname + " success");
 		}
 
 		/// <summary>
@@ -252,11 +250,20 @@ namespace SteamEngine.CompiledScripts {
 			if (!self.CheckAliveWithMessage()) {
 				return false;//no message needed, it's been already sent in the called method
 			}
-			if (self.Stam <= self.MaxStam / 10) {
-				self.ClilocSysMessage(501991);//You are too fatigued to even lift a finger.
-				return false; //stop
-			}
 			return true;
+		}
+
+		/// <summary>#962 - the first skill of an item's SKILLMAKE, as in Sphere's Skill_MakeItem.</summary>
+		public static int MakeDifficulty(ItemDef iDef) {
+			ResourcesList requirements = iDef.SkillMake;
+			if (requirements != null) {
+				foreach (IResourceListEntry entry in requirements.Entries) {
+					if (entry is SkillResource) {
+						return (int) entry.DesiredCount;
+					}
+				}
+			}
+			return 0;
 		}
 
 		/// <summary>Check the resources and skillmake if the given character can craft this item</summary>
