@@ -47,7 +47,7 @@ chest or a sign, and in a daily look at each house.
 - A GM's new rent rescales the time left, so what was paid keeps its worth.
 - The time runs with the server, like Sphere's `serv.time`.
 
-The chest is locked: only a GM opens it. It comes back at a sign if it's gone.
+Anyone can open the chest and put money in, and nothing but money goes in. Only a GM takes anything out, as what's in it already counts towards rent. Erebor's was locked. It comes back at a sign if it's gone.
 
 ## Eviction
 
