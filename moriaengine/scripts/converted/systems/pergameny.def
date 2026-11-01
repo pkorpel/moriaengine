@@ -65,8 +65,8 @@ DESCRIPTION = pergamen forma valorite
 
 name = "Teak Forma pergamenu"
 type = t_pergamen_forma
-resources = 10 i_log_valorite
-SKILLMAKE = 675 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 10 i_log_valorite //nastaveni_cm_resources 
+SKILLMAKE = 675 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_scroll_blank
 Color = color_teak
 
@@ -77,8 +77,8 @@ DESCRIPTION = pergamen forma obsid
 
 name = "Mahagon Forma pergamenu"
 type = t_pergamen_forma
-resources = 10 i_log_obsidian
-SKILLMAKE = 725 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 10 i_log_obsidian //nastaveni_cm_resources 
+SKILLMAKE = 725 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_scroll_blank
 Color = color_mahagon
 
@@ -89,8 +89,8 @@ DESCRIPTION = pergamen forma ada
 
 name = "Eben Forma pergamenu"
 type = t_pergamen_forma
-resources = 10 i_log_adamantinum
-SKILLMAKE = 875 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 10 i_log_adamantinum //nastaveni_cm_resources 
+SKILLMAKE = 875 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_scroll_blank
 Color = color_eben
 
@@ -101,8 +101,8 @@ DESCRIPTION = pergamen forma Mith
 
 name = "Elven Forma pergamenu"
 type = t_pergamen_forma
-resources = 10 i_log_mithril
-SKILLMAKE = 975 carpentry, 1 t_carpentry //some resources were fixed by converter 
+RESOURCES = 10 i_log_mithril //nastaveni_cm_resources 
+SKILLMAKE = 975 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_scroll_blank
 Color = color_elven
 

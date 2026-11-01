@@ -1204,7 +1204,7 @@ DESCRIPTION = Ribs (Cooked)
 
 TYPE = T_FOOD
 WEIGHT = 1
-RESOURCES = 1 i_ribs_raw
+RESOURCES = 1 i_ribs_raw //nastaveni_cm_resources 
 DEFNAME = i_ribs_cooked
 //VALUE = {12 24} // commented out by Converter 
 
@@ -1434,7 +1434,7 @@ DESCRIPTION = Beeswax
 
 DupeList = 0x1423,0x1424,0x1425,0x1426,0x1427
 WEIGHT = 1
-RESOURCES = 1 i_beehive //some resources were fixed by converter 
+RESOURCES = 1 i_beehive //nastaveni_cm_resources 
 DEFNAME = i_beeswax
 
 [ItemDef 0x1423]
@@ -1528,7 +1528,8 @@ DESCRIPTION = Glass
 
 DupeList = 0x1f82,0x1f83,0x1f84
 WEIGHT = 1
-RESOURCES = 4 i_sand
+RESOURCES = 4 i_ingot_pisek //nastaveni_cm_resources 
+SKILLMAKE = 500 tinkering, 1 t_tinker_tools, 1 t_bottle_form //nastaveni_cm_skillmake 
 DEFNAME = i_glass
 
 [ItemDef 0x1f82]
