@@ -422,6 +422,9 @@ namespace SteamEngine.CompiledScripts {
 				Party.ForgetCanLootMe(this); //#918
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
 				PlayerRecord.Login(this); //#1011
+				if ((this.Realm == Realm.None) && (this.Nation != Nation.None)) {
+					this.Realm = NationData.GetRealm(this.Nation); //#1027 - a save used to lose Mordor's
+				}
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);
 				Guild.AnnounceConnection(this, true);
