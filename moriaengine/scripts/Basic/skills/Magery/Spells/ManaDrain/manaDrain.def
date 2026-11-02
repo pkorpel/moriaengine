@@ -9,7 +9,7 @@
 [ManaDrainSpellDef 31]
 DEFNAME=s_mana_drain
 NAME=Mana Drain
-SOUND=0
+SOUND=504
 RUNES=OR
 CASTTIME=2.0
 RUNEITEM=i_rune_mana_drain

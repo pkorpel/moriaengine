@@ -51,11 +51,16 @@ namespace SteamEngine.CompiledScripts {
 
 				if (castersReflection == null) { //caster doesn't have reflection active himself
 					//this.EffectPower = given by Effect setting of s_magic_reflection and reflection caster's magery
-					effectArgs.SpellPower = (int) (effectArgs.SpellPower * this.EffectPower);
+					//#962 - it goes back as Erebor's dospellcustom: the power as it was cast, against the caster's own defense
+					bool usesMind = (spell.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower;
+					int power = effectArgs.SpellPower + (usesMind ? CombatCalculator.GetSpellDefense(origCaster, origTarget) : 0);
+					effectArgs.SpellPower = (int) (power * this.EffectPower) - (usesMind ? CombatCalculator.GetSpellDefense(origTarget, origCaster) : 0);
 					effectArgs.CurrentTarget = origCaster;
 					//effectArgs.Caster = origTarget; //should we enable this?
 
-					spell.Trigger_EffectChar(origCaster, effectArgs); //new spelleffect, using the original effectargs
+					if (effectArgs.SpellPower > 0) {
+						spell.Trigger_EffectChar(origCaster, effectArgs); //new spelleffect, using the original effectargs
+					}
 
 					ReflectionEyeCandy(origTarget);
 

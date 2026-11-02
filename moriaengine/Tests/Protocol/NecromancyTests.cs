@@ -75,6 +75,15 @@ namespace SteamEngine.Tests.Protocol {
 			Expect(client, "Toto kouzlo muzes pouzit jen na sebe");
 		}
 		[Fact]
+		public void SpellEffectsAsErebor() {
+			using var client = CommandPermissionTests.Connect("necrotest", "Necro Auditor");
+			this.Ask(client, ".TestNecroReady", "NECRO_READY:");
+			string audit = this.Ask(client, ".TestSpellAudit", "SPELL_AUDIT:");
+			Assert.Contains("unskilled=100 skilled=75 hidden=False paralyzed=False", audit);
+			Assert.Matches(@"lost=([1-9]\d*)", audit);
+		}
+
+		[Fact]
 		public void DeadRiseAndSummonsAndBones() {
 			using var client = CommandPermissionTests.Connect("necrotest", "Necro Raiser");
 			this.Ask(client, ".TestNecroReady", "NECRO_READY:");
