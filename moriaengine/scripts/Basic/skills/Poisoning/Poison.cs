@@ -51,6 +51,17 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int percentOnMonsters = 1200;
 
+		/// <summary>nastaveni_poison_pvp_coefficient, the Poison spell on a player. The default, it isn't in Erebor's save.</summary>
+		[SaveableData]
+		public int percentOnPlayers = 100;
+
+		/// <summary>nastaveni_poison_spell_poisoning_effect and _magery_effect: their defaults likewise.</summary>
+		[SaveableData]
+		public int spellPoisoningEffect = 205;
+
+		[SaveableData]
+		public int spellMageryEffect = 82;
+
 		/// <summary>nastaveni_poison_mvm_coefficient, per mille of the monster's Poisoning, on another monster.</summary>
 		[SaveableData]
 		public int monsterOnMonster = 100;
