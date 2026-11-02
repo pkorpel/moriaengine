@@ -7,10 +7,10 @@ Erebor's coach stations, `systems/travelstone.scp`, in `scripts/Basic/Travel`. A
 Double click lists the stops you may go to, 14 to a page, with prices. Taking one pays at once, then a count runs above your head for 15 s. Be within 6 tiles of the stone when it ends, or you're left behind and the money is gone. A step after the list opens makes its buttons do nothing, so open it again. Anyone following you goes along.
 
 - Price: longest axis of the distance, times 1000, divided by `priceDivisor` (3500), so about 1 gp per 3.5 tiles.
-- Enemy land isn't listed. Mordor's side can't go to Gondor's areas, everyone else can't go to Mordor's.
+- Enemy land isn't listed. Mordor's characters can't go to Gondor's areas, everyone else can't go to Mordor's.
 - Leaving from a stone on enemy land costs 5 times as much (`escortPrice` 50, in tenths). The script's comment says 3, its number says 5.
 - Outcasts are refused. GMs see every stop, pay nothing and go at once.
-- Mordor's side means a Mordor character or a murderer. Erebor tests `ismurderer`, and creates Mordor characters with 30000 kills.
+- Realm alone decides, kills don't. That's the user's call: Erebor tests `ismurderer`, so there a Gondor player with enough murders changed sides. A character with no realm counts as not Mordor's, as on Erebor.
 
 ## Stops
 

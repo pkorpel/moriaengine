@@ -59,6 +59,8 @@ Shipped, #1037, branch office-badges-at-death: PowerBadge, rings and the General
 
 Shipped, #1038, branch npc-forget-unseen: NPCs drop a hidden or invisible target and leave war mode, as Sphere's; a dropped target now always goes through Disengage. e_npc_detect monsters keep at it, or they could never reveal: that ability only runs while fighting.
 
+Shipped, #1041, branch travel-by-realm: travel stones go by realm alone, the user's call against Erebor's ismurderer.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.
