@@ -34,6 +34,7 @@ namespace SteamEngine.CompiledScripts {
 		private FieldValue minMaxHits;
 		private FieldValue cursedFailChance;
 		private FieldValue ringDamage;
+		private FieldValue rebornShare;
 
 		public PhoenixAbilityDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -41,6 +42,14 @@ namespace SteamEngine.CompiledScripts {
 			this.minMaxHits = this.InitTypedField("phoenixMinMaxHits", 250, typeof(int));
 			this.cursedFailChance = this.InitTypedField("phoenixCursedFailChance", (double) 333, typeof(double));
 			this.ringDamage = this.InitTypedField("phoenixRingDamage", new double[] { 50, 80 }, typeof(double[]));
+			this.rebornShare = this.InitTypedField("phoenixRebornShare", (double) 500, typeof(double));
+		}
+
+		/// <summary>#1022 - permille of maxhits it comes back at, which becomes the new maxhits: half for e_phoenix, three
+		/// quarters for e_phoenix_25.</summary>
+		public double RebornShare {
+			get { return (double) this.rebornShare.CurrentValue; }
+			set { this.rebornShare.CurrentValue = value; }
 		}
 
 		/// <summary>Rises when hits fall below this permille of maxhits (archive 200 = a fifth).</summary>
@@ -81,7 +90,12 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#797 e_phoenix - defender side, after a landed swing. Returns true when it rose.</summary>
 		public static bool TryApplyPhoenixRebirth(Character defender) {
-			PhoenixAbilityDef def = PhoenixDef;
+			return Rebirth(defender, PhoenixDef) || Rebirth(defender, Phoenix25Def);
+		}
+
+		internal static PhoenixAbilityDef Phoenix25Def { get { return Lookup<PhoenixAbilityDef>("a_tevent_e_phoenix_25"); } }
+
+		private static bool Rebirth(Character defender, PhoenixAbilityDef def) {
 			if (!HasAbilityDef(defender, def) || !defender.IsAliveAndValid) {
 				return false;
 			}
@@ -92,7 +106,7 @@ namespace SteamEngine.CompiledScripts {
 			if (IsCursed(defender) && RollChance(def.CursedFailChance)) {
 				return false;
 			}
-			short reborn = (short) (maxHits / 2);
+			short reborn = (short) (maxHits * def.RebornShare / 1000.0);
 			defender.MaxHits = reborn;
 			defender.Hits = reborn;
 			defender.Emote("is reborn in fire!");

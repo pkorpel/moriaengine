@@ -294,6 +294,7 @@ namespace SteamEngine.CompiledScripts {
 				//#799 - an e_eye defender may make a physical blow bounce off entirely
 				MonsterSpecialAttacks.TryApplyMagicShield(attacker, defender, swingArgs);
 				MonsterSpecialAttacks.TryApplyEyeDeflect(attacker, defender, swingArgs);
+				MonsterSpecialAttacks.TryAbsorbSwing(attacker, defender, swingArgs); //#1022 - scales, mana shield
 
 				//#866 - f_dmgFinal_dodge's order: abilities that send the blow back or stop it, then dodge
 				double reflected = 0;
@@ -358,6 +359,9 @@ namespace SteamEngine.CompiledScripts {
 					MonsterSpecialAttacks.TryApplyLightnings(defender);
 					MonsterSpecialAttacks.TryApplyPushall(defender);
 					MonsterSpecialAttacks.TryApplyAutoReflect(defender);
+					if (!attacker.IsDeleted) {
+						MonsterSpecialAttacks.TryReactToHit(attacker, defender); //#1022
+					}
 					//#799 batch 5 - the ones reading the attacker skip an NPC attacker reactive armor just killed
 					MonsterSpecialAttacks.TryInterruptBackstabHide(defender);
 					MonsterSpecialAttacks.TryApplyMultishot(defender);
