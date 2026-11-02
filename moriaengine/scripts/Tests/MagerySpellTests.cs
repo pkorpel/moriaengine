@@ -292,6 +292,8 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestCastParalyzeFieldNearSelf(Character self) {
 			SpellDef spell = SpellDef.GetByDefname("s_paralyzation_field");
 			SpellBook book = FindBook(self);
+			self.MaxMana = 5000; //#962 - Erebor's live 4044 mana
+			self.Mana = 5000;
 
 			// Caller teleports to confirmed open ground (TestTeleportToOpenGround, no static
 			// items within 7 tiles) before calling this - distance=3 stays safely inside that

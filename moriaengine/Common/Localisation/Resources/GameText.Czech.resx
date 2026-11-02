@@ -928,6 +928,30 @@
   <data name="GatheringLoc_PulledOut" xml:space="preserve">
     <value>You pull out a {0}!</value>
   </data>
+  <data name="MageryRulesLoc_OnlyOnPlayers" xml:space="preserve">
+    <value>Toto kouzlo smis kouzlit jen na hrace.</value>
+  </data>
+  <data name="MageryRulesLoc_OnlyOnYourself" xml:space="preserve">
+    <value>Toto kouzlo smis kouzlit jen na sebe.</value>
+  </data>
+  <data name="MageryRulesLoc_NotOnItems" xml:space="preserve">
+    <value>Nesmis kouzlit na predmet.</value>
+  </data>
+  <data name="MageryRulesLoc_NotOntoItems" xml:space="preserve">
+    <value>Nelze se premistovat na predmety.</value>
+  </data>
+  <data name="MageryRulesLoc_NotOntoNpcs" xml:space="preserve">
+    <value>Nelze se premistovat na NPC.</value>
+  </data>
+  <data name="MageryRulesLoc_Cheat" xml:space="preserve">
+    <value>Jsem hnusny buger...</value>
+  </data>
+  <data name="MageryRulesLoc_BetterStaff" xml:space="preserve">
+    <value>Na toto kouzlo nejspis budes potrebovat lepsi hul.</value>
+  </data>
+  <data name="MageryRulesLoc_LackSkill" xml:space="preserve">
+    <value>You lack the skill to cast this spell.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

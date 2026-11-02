@@ -220,3 +220,11 @@ As Sphere, with no gain by use. Begging is a roll against the target's Int that 
 Mining, Lumberjacking and Fishing start with Erebor's f_tezba_pauza (`Gathering.Begin`): a try within 2 s of the last says "Jeste nemuzes pouzit skill." and pushes the next one to 4 s; a rider is dismounted; the dark can refuse; hunger hurts; hiding ends; the spot must be within 3 tiles and in sight. Above 100.0 the 2 s shrink by 0.03 s a percent. Mining and Lumberjacking then swing 3 to 7 times at the skill's 1.0 s, Sphere's strokes, before the roll, and mining wears the tool once a try. Fishing has one stroke at 2.5 s with a splash, and the catch lands at your feet. A held tool is still required, a decision of ours (#370). Failures are Erebor's overhead lines.
 
 Not ported: the craft class's better material (ra_vigour), the Elven wood rule, prisoners' labor limits, the statistics.
+
+## Magery's rules (#962)
+
+Cast times, mana, durations and skill requirements come from Erebor's `nastaveni_` table through the converter (systems/spellvalues.def, `SpellValuesDef`), over what the spell's section says. Difficulty is the skill requirement, half from a scroll. Effects aren't overwritten, their meaning differs by spell. Gate Travel's duration stays a minute (#489): Erebor's number reads as 3-4 s. Erebor switched three spells off with numbers no one reaches: Paralyze Field costs 4044 mana, Poison Field wants 500.0 Magery, Earthquake 300.0.
+
+Sphere pays at the end of a cast: mana and reagents are checked at the start and taken when it lands. A fizzle or an interrupted cast costs half the mana plus a random bit, and the reagents. A GM pays nothing and casts in 0.1 s.
+
+`SpellCastRules` is Erebor's @spellcast, for players: darkness fizzles all but Night Sight, reactive armor by class, no blessing or cursing items, no teleporting onto items or NPCs, casting at others reveals you, no fields on what you hold, mages and necromancers need a good staff for summons, Mark doesn't work in dungeons, any spell but an arrow or harm on yourself drops a mana shield and half your Int of mana. Battlefield and conquest checks of recall and gate wait for those systems.

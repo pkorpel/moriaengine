@@ -68,12 +68,12 @@ namespace SteamEngine.Tests.Protocol {
 				this.ActivateAbility(client, "a_silence");
 
 				uint mindBlastTargetUid = this.SpawnDummy(client);
-				this.CastAtOtherAndWait(client, "s_mind_blast", mindBlastTargetUid, 3.5);
+				this.CastAtOtherAndWait(client, "s_mind_blast", mindBlastTargetUid, 1.0);
 				Assert.True(this.ReportHasSilenceEffect(client, mindBlastTargetUid),
 					"Expected Mind Blast (10 ability points = 100% chance) to silence its target.");
 
 				uint lightningTargetUid = this.SpawnDummy(client);
-				this.CastAtOtherAndWait(client, "s_lightning", lightningTargetUid, 3.0);
+				this.CastAtOtherAndWait(client, "s_lightning", lightningTargetUid, 1.0);
 				Assert.False(this.ReportHasSilenceEffect(client, lightningTargetUid),
 					"Expected Lightning to never silence (source no longer checks for it).");
 			}

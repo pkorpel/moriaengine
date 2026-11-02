@@ -135,6 +135,7 @@ namespace SteamEngine.Converter {
 				ConvertedCraftMenus.Write(convertPath, convertToPath);
 				ConvertedRecipes.Write(convertToPath);
 				ConvertedSkillValues.Write(convertToPath);
+				ConvertedSpellValues.Write(convertToPath);
 				Console.WriteLine("Files written to disk.");
 			} catch (Exception e) {
 				Logger.WriteError(e);
