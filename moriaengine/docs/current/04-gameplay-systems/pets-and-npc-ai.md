@@ -66,6 +66,10 @@ the two neighbouring directions, and `StepTowardsSmart`'s AStar routes around a 
 first step. Pets and summons follow the same rule. See
 [Movement & character collision](movement-and-collision.md).
 
+### Unseen targets (#1038)
+
+NPCs don't see hidden or invisible characters, as in Sphere. One that was fighting such a character breaks off, leaves war mode and goes back to wandering, and none picks it as a new target. It sees it again the moment that ends. A monster with `e_npc_detect` keeps at it, as that ability reveals people while fighting.
+
 ### How NPCs pick spells (#1033)
 
 Monster abilities aren't chosen by this AI. Each fires from its own hook (a hit, a swing, a think
