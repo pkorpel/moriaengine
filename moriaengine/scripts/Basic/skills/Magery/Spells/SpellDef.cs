@@ -722,6 +722,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!this.CheckPermissionIncoming(spellEffectArgs.Caster, target)) {
 				return;
 			}
+			MonsterSpecialAttacks.TryStartRegeneration(target); //#1022
 			this.RunEffectChar(target, spellEffectArgs);
 		}
 
