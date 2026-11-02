@@ -351,6 +351,27 @@ namespace SteamEngine.CompiledScripts {
 			return badge;
 		}
 
+		/// <summary>#1037 - a ring of power or a bracelet stays on the body through death, the user's call:
+		/// Sphere moves worn attr_move_never items to the pack. Only losing the office takes it off,
+		/// and RingOf only looks at the body, so anywhere else it would stop counting.</summary>
+		public override bool CanFallToCorpse {
+			get { return false; }
+		}
+
+		/// <summary>#1037 - puts back on what a death moved to the pack before the rule above.</summary>
+		public static void PutBackOn(Character ch) {
+			AbstractItem pack = ch.Backpack;
+			List<PowerBadge> inPack = new List<PowerBadge>();
+			foreach (AbstractItem item in pack) {
+				if (item is PowerBadge badge) {
+					inPack.Add(badge);
+				}
+			}
+			foreach (PowerBadge badge in inPack) {
+				badge.Cont = ch;
+			}
+		}
+
 		public static void SetTitle(Character ch, string title) {
 			ch.SetTag(realNameTK, ch.Name);
 			ch.Name = title + ch.Name;

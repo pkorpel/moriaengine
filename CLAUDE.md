@@ -55,6 +55,8 @@ Shipped, #1033, branch npc-spell-choice: scripts/Basic/AI/NpcSpellChoice.cs scor
 
 Shipped, #1035, branch travel-stones: systems/travelstone.scp in scripts/Basic/Travel, a stone at each of the 30 stops through .SetupWorld. ismurderer here means Mordor's side: Mordor characters are created with 30000 kills. Spots unreviewed, the archive has none. Found: WorldSpots.CanStand refused any tile over water, so Esgaroth's decks weren't ground. A count of setup pieces lives in both WorldSetupTests and WorldSetupRestartTests.
 
+Shipped, #1037, branch office-badges-at-death: PowerBadge, rings and the General's bracelet, stays on the body through death, the user's call against Sphere, which moves worn attr_move_never items to the pack. Login puts back on what a death already moved.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.
