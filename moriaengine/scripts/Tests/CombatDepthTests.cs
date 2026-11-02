@@ -225,6 +225,7 @@ namespace SteamEngine.CompiledScripts {
 			guard.Realm = Realm.Gondor;
 
 			self.Realm = Realm.MordorOutcast; // opposite side - the guard should pick self as a valid target
+			self.Account.PLevel = 1; //#1022 - guards leave GMs alone, and test accounts start as GMs
 			Console.WriteLine("GUARDSREALM_TEST: STARTED (guard #" + guard.Uid + ")");
 		}
 	}

@@ -1,0 +1,245 @@
+using System;
+using System.Collections.Generic;
+using SteamEngine.Common;
+using SteamEngine.Regions;
+
+namespace SteamEngine.CompiledScripts {
+	/// <summary>
+	/// #1033 - runs ChooseSpellToCast many times per situation and reports what it picked, as
+	/// "SPELL_CHOICE: name=True/False", since most of the choice has a random part.
+	/// </summary>
+	public static class NpcSpellChoiceTests {
+		private const int Rolls = 300;
+
+		private static readonly string[] monsterSpells = {
+			"s_lightning", "s_magic_reflection", "s_fireball", "s_harm", "s_greater_heal", "s_flamestrike", "s_paralyze",
+			"s_poison", "s_mass_dispel", "s_explosion", "s_energy_bolt", "s_mass_curse", "s_dispel", "s_summon_elem_air",
+			"s_summon_elem_fire", "s_summon_undead", "s_mind_blast", "s_mana_drain", "s_fire_bolt", "s_summon_daemon",
+			"s_blade_spirits", "s_cure", "s_meteor_swarm", "s_clumsy", "s_feeblemind", "s_magic_arrow", "s_curse",
+			"s_summon_elem_earth", "s_energy_vortex", "s_weaken", "s_fire_field", "s_heal", "s_dispel_field",
+			"s_summon_elem_water", "s_protection", "s_poison_field", "s_archprotection", "s_strength", "s_chain_lightning",
+		};
+
+		[SteamFunction]
+		public static void TestNpcSpellChoice(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			try {
+				EverySpellMonstersHoldHasAKind();
+				GuardSupportsItselfOnlyWhenNeeded(self);
+				CureOnlyWhenPoisoned(self);
+				DamageGoesForTheWeakResist(self);
+				TargetStateDecidesTheAttack(self);
+				ManaDrainOnlyForAMage(self);
+				SummonsReallyAppear(self);
+			} finally {
+				VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			}
+			Console.WriteLine("SPELL_CHOICE_DONE");
+		}
+
+		private static void EverySpellMonstersHoldHasAKind() {
+			List<string> unknown = new List<string>();
+			foreach (string name in monsterSpells) {
+				SpellDef spell = SpellDef.GetByDefname(name);
+				if ((spell == null) || (NpcSpellChoice.KindOf(spell) == NpcSpellKind.Unknown)) {
+					unknown.Add(name);
+				}
+			}
+			Console.WriteLine("SPELL_CHOICE_INFO: unknown kinds: " + string.Join(",", unknown));
+			Report("everyMonsterSpellHasAKind", unknown.Count == 0);
+		}
+
+		private static void GuardSupportsItselfOnlyWhenNeeded(Character self) {
+			NPC guard = (NPC) ((NPCDef) ThingDef.GetByDefname("c_vguard_gondor_hala_pesak")).Create(self.X + 1, self.Y, self.Z, self.M);
+			guard.Mana = 50;
+			NPC dummy = Dummy(self);
+			NPCAiTimer timer = NPCAiTimer.GetFor(guard);
+			timer.EngageTarget(dummy);
+			SpellDef reflection = SpellDef.GetByDefname("s_magic_reflection");
+			SpellDef heal = SpellDef.GetByDefname("s_greater_heal");
+			Console.WriteLine("SPELL_CHOICE_INFO: guard hits=" + guard.Hits + "/" + guard.MaxHits + " healAmount=" + heal.GetEffectForValue(NpcSpellChoice.SpellPower));
+
+			Report("guardHitsAreFull", guard.Hits == guard.MaxHits);
+			Report("guardReflectsFirst", Counts(timer, guard, dummy).Get(reflection) == Rolls);
+			timer.Fight(guard, dummy);
+			Report("guardCastReflection", MagicReflectionPluginDef.HasMagicReflection(guard));
+			timer.ForgetCastCooldown();
+
+			Dictionary<SpellDef, int> fullHealth = Counts(timer, guard, dummy);
+			Report("guardAtFullHealthCastsNothing", fullHealth.Get(null) == Rolls);
+
+			guard.Hits = (short) (guard.MaxHits * 80 / 100);
+			Report("guardAt80PercentCastsNothing", Counts(timer, guard, dummy).Get(null) == Rolls);
+
+			guard.Hits = (short) (guard.MaxHits * 60 / 100);
+			Report("guardAt60PercentHeals", Counts(timer, guard, dummy).Get(heal) == Rolls);
+			guard.Delete();
+			dummy.Delete();
+		}
+
+		private static void CureOnlyWhenPoisoned(Character self) {
+			NPC mage = Mage(self);
+			NPC dummy = Dummy(self);
+			NPCAiTimer timer = NPCAiTimer.GetFor(mage);
+			timer.EngageTarget(dummy);
+			SpellDef cure = SpellDef.GetByDefname("s_cure");
+			Report("noCureWithoutPoison", Counts(timer, mage, dummy).Get(cure) == 0);
+			Poison.Apply(mage, dummy, 100, 30, PoisonKind.AbsoluteDamage);
+			Report("mageGotPoisoned", Poison.IsPoisoned(mage));
+			Report("poisonedMageCures", Counts(timer, mage, dummy).Get(cure) == Rolls);
+			mage.Delete();
+			dummy.Delete();
+		}
+
+		private static void DamageGoesForTheWeakResist(Character self) {
+			NPC mage = Mage(self);
+			NPC dummy = Dummy(self);
+			NPCAiTimer timer = NPCAiTimer.GetFor(mage);
+			timer.EngageTarget(dummy);
+			SpellDef fireball = SpellDef.GetByDefname("s_fireball");
+			SpellDef lightning = SpellDef.GetByDefname("s_lightning");
+
+			dummy.Hits = (short) (dummy.MaxHits / 2); //at full health the first casts are control spells
+			dummy.ResistFire = 900;
+			Dictionary<SpellDef, int> fireResistant = Counts(timer, mage, dummy);
+			Report("fireResistantTargetGetsNoFire", (fireResistant.Get(fireball) == 0) && (fireResistant.Get(lightning) > 0));
+
+			dummy.ResistFire = 0;
+			dummy.ResistElectric = 900;
+			Dictionary<SpellDef, int> shockResistant = Counts(timer, mage, dummy);
+			Report("shockResistantTargetGetsNoLightning", (shockResistant.Get(lightning) == 0) && (shockResistant.Get(fireball) > 0));
+			mage.Delete();
+			dummy.Delete();
+		}
+
+		private static void TargetStateDecidesTheAttack(Character self) {
+			NPC mage = Mage(self);
+			NPC dummy = Dummy(self);
+			NPCAiTimer timer = NPCAiTimer.GetFor(mage);
+			timer.EngageTarget(dummy);
+			SpellDef paralyze = SpellDef.GetByDefname("s_paralyze");
+			SpellDef poison = SpellDef.GetByDefname("s_poison");
+			SpellDef curse = SpellDef.GetByDefname("s_curse");
+			SpellDef dispel = SpellDef.GetByDefname("s_dispel");
+			SpellDef harm = SpellDef.GetByDefname("s_harm");
+
+			Dictionary<SpellDef, int> fresh = Counts(timer, mage, dummy);
+			Console.WriteLine("SPELL_CHOICE_INFO: fresh target: " + Describe(fresh));
+			Report("freshTargetMixesControlSpells", (fresh.Get(paralyze) > Rolls / 5) && (fresh.Get(curse) > Rolls / 5) && (fresh.Get(dispel) == 0));
+
+			dummy.Hits = (short) (dummy.MaxHits / 2);
+			Report("hurtTargetIsNotCursed", Counts(timer, mage, dummy).Get(curse) == 0);
+			dummy.Hits = dummy.MaxHits;
+
+			ParalyzeEffectPluginDef.Paralyze(dummy, PluginKey.Acquire("_testChoiceParalyze_"), TimeSpan.FromSeconds(30));
+			Report("targetIsParalyzed", ParalyzeEffectPluginDef.IsParalyzed(dummy));
+			Report("paralyzedTargetIsNotParalyzedAgain", Counts(timer, mage, dummy).Get(paralyze) == 0);
+			ParalyzeEffectPluginDef.Unparalyze(dummy);
+
+			Poison.Apply(dummy, mage, 100, 30, PoisonKind.AbsoluteDamage);
+			Report("poisonedTargetIsNotPoisonedAgain", Counts(timer, mage, dummy).Get(poison) == 0);
+			Poison.RemoveAll(dummy);
+
+			SummonSpellDef.MarkAsSummonedCreature(dummy);
+			Report("summonIsDispelled", Counts(timer, mage, dummy).Get(dispel) == Rolls);
+			dummy.Delete();
+
+			dummy = Dummy(self);
+			timer.EngageTarget(dummy);
+			SpellDef.GetByDefname("s_magic_reflection").ApplyEffectChar(dummy, dummy, NpcSpellChoice.SpellPower, EffectFlag.FromSpellBook | EffectFlag.BeneficialEffect);
+			Report("targetReflects", MagicReflectionPluginDef.HasMagicReflection(dummy));
+			Dictionary<SpellDef, int> reflecting = Counts(timer, mage, dummy);
+			Console.WriteLine("SPELL_CHOICE_INFO: reflecting target: " + Describe(reflecting));
+			Report("reflectionGetsTheWeakestDamage", reflecting.Get(harm) == Rolls);
+			mage.Delete();
+			dummy.Delete();
+		}
+
+		private static void ManaDrainOnlyForAMage(Character self) {
+			NPC drainer = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_choice_drainer")).Create(self.X + 1, self.Y, self.Z, self.M);
+			drainer.Mana = 1000;
+			NPC dummy = Dummy(self);
+			NPCAiTimer timer = NPCAiTimer.GetFor(drainer);
+			timer.EngageTarget(dummy);
+			SpellDef drain = SpellDef.GetByDefname("s_mana_drain");
+			Report("noDrainOnANonMage", Counts(timer, drainer, dummy).Get(drain) == 0);
+			dummy.SetRealSkillValue((int) SkillName.Magery, 500);
+			dummy.MaxMana = 100;
+			dummy.Mana = 100;
+			Report("mageGetsDrained", Counts(timer, drainer, dummy).Get(drain) == Rolls);
+			dummy.Mana = 10;
+			Report("emptyMageIsLeftAlone", Counts(timer, drainer, dummy).Get(drain) == 0);
+			drainer.Delete();
+			dummy.Delete();
+		}
+
+		private static void SummonsReallyAppear(Character self) {
+			NPC summoner = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_choice_summoner")).Create(self.X + 1, self.Y, self.Z, self.M);
+			summoner.Mana = 1000;
+			NPC dummy = Dummy(self);
+			NPCAiTimer timer = NPCAiTimer.GetFor(summoner);
+			timer.EngageTarget(dummy);
+			for (int i = 0; i < 2; i++) {
+				timer.Fight(summoner, dummy);
+				timer.ForgetCastCooldown();
+			}
+			Console.WriteLine("SPELL_CHOICE_INFO: summons=" + SummonSpellDef.CountSummonsNear(summoner) + " casts=" + timer.CastAttempts);
+			Report("twoSummonsAppeared", SummonSpellDef.CountSummonsNear(summoner) == 2);
+			Report("noThirdSummon", Counts(timer, summoner, dummy).Get(null) == Rolls);
+		}
+
+		private static NPC Mage(Character self) {
+			NPC mage = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_choice_mage")).Create(self.X + 1, self.Y, self.Z, self.M);
+			mage.MaxMana = 1000;
+			mage.Mana = 1000;
+			return mage;
+		}
+
+		private static NPC Dummy(Character self) {
+			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 2, self.Y, self.Z, self.M);
+			dummy.MaxHits = 10000;
+			dummy.Hits = 10000;
+			return dummy;
+		}
+
+		private static Dictionary<SpellDef, int> Counts(NPCAiTimer timer, NPC caster, Character target) {
+			Dictionary<SpellDef, int> counts = new Dictionary<SpellDef, int>();
+			int nothing = 0;
+			for (int i = 0; i < Rolls; i++) {
+				SpellDef spell = timer.ChooseSpellToCast(caster, target);
+				if (spell == null) {
+					nothing++;
+				} else {
+					int count;
+					counts.TryGetValue(spell, out count);
+					counts[spell] = count + 1;
+				}
+			}
+			counts[NothingCast] = nothing;
+			return counts;
+		}
+
+		private static SpellDef NothingCast {
+			get { return SpellDef.GetByDefname("s_clumsy"); } //no test caster knows it
+		}
+
+		private static int Get(this Dictionary<SpellDef, int> counts, SpellDef spell) {
+			int count;
+			counts.TryGetValue(spell ?? NothingCast, out count);
+			return count;
+		}
+
+		private static string Describe(Dictionary<SpellDef, int> counts) {
+			List<string> parts = new List<string>();
+			foreach (KeyValuePair<SpellDef, int> pair in counts) {
+				parts.Add(pair.Key.Name + "=" + pair.Value);
+			}
+			return string.Join(", ", parts);
+		}
+
+		private static void Report(string name, bool ok) {
+			Console.WriteLine("SPELL_CHOICE: " + name + "=" + ok);
+		}
+	}
+}

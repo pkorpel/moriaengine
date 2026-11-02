@@ -49,7 +49,9 @@ Shipped, branch housedoor-one-door: `.HouseDoor` places one door and ends, the u
 
 Shipped, #1027, branch fix-negative-enum-save: ObjectSaver threw on negative enums, so every Mordor character lost its realm in a save (Realm.Mordor is -1). Saving and loading fixed, a character with a nation and no realm gets it back at login. Regions keep Erebor's 1, 2, 3 in RealmTag and only translate, so they're not involved.
 
-Now, #1031, branch npc-walk-around: the user blocked a passage and a Gondor guard couldn't reach a Mordor enemy. A* counted a character as an obstacle only on the first step, so a monster danced at the gap. Characters near the mover now block for the whole search, and a monster still stuck after a moment searches wider and walks that detour. Then the spell choice: support only when needed, offensive by the target's weakness, Erebor's priorities.
+Now, #1031, branch npc-walk-around: the user blocked a passage and a Gondor guard couldn't reach a Mordor enemy. A* counted a character as an obstacle only on the first step, so a monster danced at the gap. Characters near the mover now block for the whole search, and a monster still stuck after a moment searches wider and walks that detour. PR #1032. Tile radius rather than steps, or A* dawdles until a blocked tile counts as far. The spawn is small enclosures, a test wall across one seals it: ask AStar for a site.
+
+Shipped, #1033, branch npc-spell-choice: scripts/Basic/AI/NpcSpellChoice.cs scores what an NPC could cast, in Erebor's ai_returnspell order. Abilities aren't part of it, they fire from their own hooks. Found: summon and field spells went through the character path, so monsters paid the mana and nothing appeared, ever. Fire and harm cost the same on Erebor, so reflection takes the weakest spell, not the cheapest. Greater Heal gives a 2500-hit guard 21 hits. GMs are safe from guards since #1030, which made CombatDepthTestsB's GuardsRealm test stale: run CombatDepth after touching guards.
 
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
