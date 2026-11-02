@@ -79,6 +79,28 @@ namespace SteamEngine.CompiledScripts {
 				toolTips.FirstId, this.GetNameHue(clicker), toolTips.FirstArgument);
 		}
 
+		private static readonly TagKey killedByTK = TagKey.Acquire("_killedBy_");
+		private static readonly TagKey diedAtTK = TagKey.Acquire("_diedAt_");
+
+		internal void NoteDeath(Character killer) {
+			this.SetTag(diedAtTK, Globals.TimeInSeconds);
+			if (killer != null) {
+				this.SetTag(killedByTK, killer.Name);
+			}
+		}
+
+		public string KilledBy {
+			get {
+				return this.GetTag(killedByTK) as string;
+			}
+		}
+
+		public int SecondsDead {
+			get {
+				return (this.GetTag(diedAtTK) is double diedAt) ? (int) (Globals.TimeInSeconds - diedAt) : 0;
+			}
+		}
+
 		public void InitFromChar(Character dieingChar) {
 			this.charDef = dieingChar.Def as CharacterDef;
 			this.Amount = dieingChar.Model;

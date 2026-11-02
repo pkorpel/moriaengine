@@ -1422,6 +1422,7 @@ namespace SteamEngine.CompiledScripts {
 
 				if (corpse != null) {
 					corpse.InitFromChar(this);
+					corpse.NoteDeath(killedBy); //#962 - Forensics
 
 					//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_selfreser
 					//(if this dying character has it) arms a respawn timer on the fresh corpse -
