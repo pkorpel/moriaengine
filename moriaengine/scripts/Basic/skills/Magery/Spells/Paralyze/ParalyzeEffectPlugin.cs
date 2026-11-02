@@ -69,6 +69,19 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
+		/// <summary>#962 - paralyze_remove at strength 0: nothing here locks a paralysis stronger.</summary>
+		public static void Unparalyze(Character target) {
+			System.Collections.Generic.List<Plugin> plugins = new System.Collections.Generic.List<Plugin>();
+			foreach (Plugin plugin in target.GetAllPlugins()) {
+				if (plugin is ParalyzeEffectPlugin) {
+					plugins.Add(plugin);
+				}
+			}
+			foreach (Plugin plugin in plugins) {
+				plugin.Delete();
+			}
+		}
+
 		//paralyze method for general usage
 		public static void Paralyze(Character target, PluginKey key, TimeSpan duration, Thing source, EffectFlag type) {
 			type |= EffectFlag.HarmfulEffect;

@@ -482,6 +482,7 @@ namespace SteamEngine.CompiledScripts {
 			NPC dummy = (NPC) dummyDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			dummy.MaxMana = 500;
 			dummy.Mana = 500;
+			dummy.SetRealSkillValue((int) SkillName.Magery, 500); //#962 - Mana Drain leaves a mind without Magery alone
 			// Confirmed directly (intermittent test failures, ~1 in 3-4 runs): RegenerationPlugin
 			// ticks every ~1s (MIN_TIMER/MAX_TIMER=1.0) - the test's own margin for CASTTIME+stroke
 			// delay is comfortably long enough for several regen ticks to fully restore the drain

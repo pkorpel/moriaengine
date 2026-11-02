@@ -25,9 +25,15 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
+		//#962 - f_effect_a_mind_blast: rounded to whole points, nothing for a mind as strong as the caster's
 		protected override double CalculateDamage(Character target, SpellEffectArgs spellEffectArgs) {
-			return base.CalculateDamage(target, spellEffectArgs) * 
-				(spellEffectArgs.Caster.Int - target.Int) / 1000; //taken from moria sphere script
+			double damage = base.CalculateDamage(target, spellEffectArgs) * (spellEffectArgs.Caster.Int - target.Int);
+			return System.Math.Max(0, System.Math.Truncate((damage + 500) / 1000));
+		}
+
+		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
+			base.On_EffectChar(target, spellEffectArgs);
+			ParalyzeEffectPluginDef.Unparalyze(target); //paralyze_remove
 		}
 	}
 }
