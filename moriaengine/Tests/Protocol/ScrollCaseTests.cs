@@ -74,6 +74,17 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendDoubleClick(Uid(ready, "shield"));
 			Expect(client, "Pro toto kouzlo nemas vhodne povolani");
 
+			//#1001 - Mass Bless reaches 8 tiles from its target; a try can fizzle, so a few scrolls
+			string blessed = "";
+			for (int tries = 0; (tries < 6) && !blessed.Contains("main=True"); tries++) {
+				client.SendDoubleClick(Uid(ready, "bless"));
+				Thread.Sleep(300);
+				client.SendTargetUid(Uid(ready, "dummy"));
+				Thread.Sleep(3500);
+				blessed = this.Ask(client, ".TestMassBlessReport", "MASS_BLESS:");
+			}
+			Assert.Contains("main=True near=True far=False", blessed);
+
 			//in by dropping
 			client.SendPickUpItem(Uid(ready, "clumsy"), 5);
 			Thread.Sleep(200);

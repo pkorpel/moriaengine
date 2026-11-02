@@ -72,12 +72,13 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double baseDelaySeconds = 2.0; //#962 - i_delayer's timerd 20: tenths, the 20 seconds of #336 was a misreading
 
-		/// <summary>Sphere's Calc_GetRandVal(5) + 2 swings of a pick or a hatchet, each at the skill's own delay.</summary>
+		/// <summary>#1001 - extra swings of a pick or a hatchet, each at the skill's 1.0 s, so a try takes these + 1 seconds.
+		/// One gives the 2 s the user remembers from Erebor; Sphere's own Calc_GetRandVal(5) + 2 would be 2 and 6.</summary>
 		[SaveableData]
-		public int leastStrokes = 2;
+		public int leastStrokes = 1;
 
 		[SaveableData]
-		public int mostStrokes = 6;
+		public int mostStrokes = 1;
 
 		[SaveableData]
 		public double antiMacroThresholdPercent = 100.0;

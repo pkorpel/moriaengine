@@ -217,7 +217,9 @@ As Sphere, with no gain by use. Begging is a roll against the target's Int that 
 
 ## Gathering stages (#962)
 
-Mining, Lumberjacking and Fishing start with Erebor's f_tezba_pauza (`Gathering.Begin`): a try within 2 s of the last says "Jeste nemuzes pouzit skill." and pushes the next one to 4 s; a rider is dismounted; the dark can refuse; hunger hurts; hiding ends; the spot must be within 3 tiles and in sight. Above 100.0 the 2 s shrink by 0.03 s a percent. Mining and Lumberjacking then swing 3 to 7 times at the skill's 1.0 s, Sphere's strokes, before the roll, and mining wears the tool once a try. Fishing has one stroke at 2.5 s with a splash, and the catch lands at your feet. A held tool is still required, a decision of ours (#370). Failures are Erebor's overhead lines.
+Mining, Lumberjacking and Fishing start with Erebor's f_tezba_pauza (`Gathering.Begin`): a try within 2 s of the last says "Jeste nemuzes pouzit skill." and pushes the next one to 4 s; a rider is dismounted; the dark can refuse; hunger hurts; hiding ends; the spot must be within 3 tiles and in sight. Above 100.0 the 2 s shrink by 0.03 s a percent. Mining and Lumberjacking then swing at the skill's 1.0 s, about 2 s a try, before the roll, and mining wears the tool once a try. Fishing has one stroke at 2.5 s with a splash, and the catch lands at your feet. A held tool is still required, a decision of ours (#370). Failures are Erebor's overhead lines.
+
+A pick or hatchet try takes about 2 s (#1001, from the user's memory of Erebor): `leastStrokes` and `mostStrokes` default to 1 extra swing at the skill's 1.0 s. Sphere's own numbers would be 2 and 6, so 3 to 7 s. Both are on `.settings`; a save that already holds them keeps its values.
 
 Not ported: the craft class's better material (ra_vigour), the Elven wood rule, prisoners' labor limits, the statistics.
 
@@ -259,13 +261,15 @@ A double click casts a `t_scroll`, as Sphere: half mana, half difficulty, the sc
 
 `t_customspell_scroll` is Erebor's scroll of a spell past Sphere's numbers (Mana Shield 104, Mass Bless 102). The scroll must be on you and not directly in the bank, and its def's `Tag.profession_*` lines say who may read it. Those spells skip `@spellcast`: full mana (half on a fizzle), no darkness check, the skill is checked before the cursor comes up, and the roll is `f_circle_fizzle`: skill capped at difficulty + 39.2 against a throw of difficulty to difficulty + 40.0. Mana Shield can only be aimed at yourself. Mass Bless has no `csflag_mass` on Erebor, so it blesses one target.
 
+Mass Bless is an area spell of 8 tiles from its target, the user's call (#1001): Erebor's `a_mass_bless` has no `csflag_mass`, so it blessed one target. Who else gets it is `SpellDef`'s rule for beneficial area spells: nobody the caster stands worse with than the main target. Cast on yourself, that means allies only. Gate Travel lasts Erebor's live 3 to 4 s, not #489's 60 s.
+
 `i_scroll_case` (`t_svitkovac`) holds up to 999999 scrolls of each spell as counts on the item. Scrolls go in by dropping them on it, by its Pridat cursor, or a whole container by targeting it. Pages are the circles in pairs, necromancy and the rest. Vybrat takes one of everything.
 
 ## Necromancy
 
 Spells 65-70 sit past the 64 a client's book can show, so `SpellBook.necroSpells` holds them, Erebor's `morex`. A scroll dropped on any book teaches them. A necromancer's double click on a book holding one opens `D_NecroBook`, `d_nec`, whose back arrow opens the plain book; `.necrobolt`, `.frostbolt` and `.necrolight` cast from a book too.
 
-`i_spellbook_necro` has no `[ITEMDEF]` in the archive. Here it's a plain book in Erebor's colour with the first three circles, as `tm_necronewbie`'s `more1=0ffffff`; it used to be a 0x2253 book, which 3.0.6m doesn't have.
+`i_spellbook_necro` has no `[ITEMDEF]` in the archive, and nor has the plain `i_spellbook`. Here it's a plain book in Erebor's colour with the first three circles, as `tm_necronewbie`'s `more1=0ffffff`, plus all six necro spells as `i_spellbook_pvp`'s `morex=0ff` (#1001, the user's call). It also holds Summon Creature, because `d_nec` needs that before it shows Summon Undead.
 
 Fire Bolt is 0-17 through armor at 850. Frost Bolt is 0-30, then one second of freeze: within 7 tiles, when `om * 14` doesn't beat `sm * {2 11}`, and past the target's paralyze resist. Light has no native effect beyond a charged layer, so it runs as Night Sight with its own slot.
 

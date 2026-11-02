@@ -20,6 +20,8 @@ namespace SteamEngine.CompiledScripts {
 			self.MaxMana = 300;
 			self.Mana = 300;
 			book = (SpellBook) ThingDef.GetByDefname("i_spellbook_necro").Create(self.Backpack);
+			Console.WriteLine("NECRO_NEW_BOOK: circle3=" + book.HasSpell(24) + " circle4=" + book.HasSpell(25) + " summon=" + book.HasSpell(40) + " necro=" + book.necroSpells);
+			book.necroSpells = 0;
 			Item firebolt = (Item) ThingDef.GetByDefname("i_scroll_firebolt").Create(self.Backpack);
 			Item frostbolt = (Item) ThingDef.GetByDefname("i_scroll_frostbolt").Create(self.Backpack);
 			dummy = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.X + 2, self.Y, self.Z, self.M);

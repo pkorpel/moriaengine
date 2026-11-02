@@ -142,7 +142,7 @@ CASTTIME=2.0
 //RESOURCES=i_reag_garlic,i_reag_mandrake_root
 RUNEITEM=i_rune_BLESS
 SCROLLITEM=i_scroll_BLESS
-FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial | SpellFlag.IsAreaSpell
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
 //EFFECTID=i_fx_BLESS_EFFECT
 EFFECT=0,10
 DURATION=4*60.0,10*60.0
@@ -155,7 +155,8 @@ EffectPluginKey_Potion = @@potionEffect_statBuff
 on=@effectChar
 	EffectFactory.StationaryEffect(this, 0x373A, 10, 15)
 	
-//Erebor's a_mass_bless: its a_flags has no csflag_mass, so for all the name it blesses one target
+//#1001 - the user's call: a real area spell. Erebor's a_mass_bless has no csflag_mass, so it blessed one target
+//and its a_mass_distance 8 went unused. Who else gets it is SpellDef's rule for area spells, as with Arch Protection.
 [DurableCharEffectSpellDef 102]
 DEFNAME=s_mass_bless
 NAME=Mass Bless
@@ -163,7 +164,8 @@ SOUND=0x1EA
 RUNES=VRS
 CASTTIME=2
 SCROLLITEM=i_customscroll_mass_bless
-FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial | SpellFlag.IsAreaSpell
+EffectRange=8 //a_mass_distance
 EFFECT=0,10
 DURATION=240,600
 MANAUSE=20
