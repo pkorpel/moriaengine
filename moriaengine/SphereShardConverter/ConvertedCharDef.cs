@@ -761,6 +761,16 @@ namespace SteamEngine.Converter {
 			if (name == "tag.npc_summoning_count") {
 				return;
 			}
+			//#1022 - e_npc_summoner's list, a different ability from e_npc_summoning's
+			if (name.StartsWith("tag.npc_summoner_char[", StringComparison.Ordinal)) {
+				if (!this.IsPlayerDefByName) {
+					this.Set("AddBattleSummon", value.Trim(), comment);
+				}
+				return;
+			}
+			if (name == "tag.npc_summoner_count") {
+				return;
+			}
 			//#883 - f_banker_ok compares a banker's tag.realm with the player's: 1 Gondor,
 			//2 Mordor (negative is an outcast)
 			if (name == "tag.realm") {
@@ -857,6 +867,9 @@ namespace SteamEngine.Converter {
 				{ "tag.stam_dmg_power", "StamDmgPower" },
 				{ "tag.e_lightnings_chance", "LightningsChance" },
 				{ "tag.regespeed", "RegenerationDivisor" },
+				{ "tag.npc_lifeleech_cap", "LifeLeechCap" },
+				{ "tag.acid_ppst", "AcidChance" },
+				{ "tag.acid_dmg", "AcidDamage" },
 				{ "tag.resist_countdown_chance", "ResistCountdownChance" },
 				{ "tag.resist_countdown_amount", "ResistCountdownAmount" },
 				{ "tag.e_lightnings_range", "LightningsRange" },

@@ -756,5 +756,110 @@ namespace SteamEngine.CompiledScripts {
 			get { return MonsterSpecialAttacks.PhoenixDef == null ? 0 : MonsterSpecialAttacks.PhoenixDef.RebornShare; }
 			set { if (MonsterSpecialAttacks.PhoenixDef != null) { MonsterSpecialAttacks.PhoenixDef.RebornShare = value; } }
 		}
+
+		public int HealDrinkerHealOneIn {
+			get { return MonsterSpecialAttacks.HealDrinkerDef == null ? 0 : MonsterSpecialAttacks.HealDrinkerDef.HealOneIn; }
+			set { if (MonsterSpecialAttacks.HealDrinkerDef != null) { MonsterSpecialAttacks.HealDrinkerDef.HealOneIn = value; } }
+		}
+
+		public int HealDrinkerStoneskinOneIn {
+			get { return MonsterSpecialAttacks.HealDrinkerDef == null ? 0 : MonsterSpecialAttacks.HealDrinkerDef.StoneskinOneIn; }
+			set { if (MonsterSpecialAttacks.HealDrinkerDef != null) { MonsterSpecialAttacks.HealDrinkerDef.StoneskinOneIn = value; } }
+		}
+
+		public int HealDrinkerSpellshieldOneIn {
+			get { return MonsterSpecialAttacks.HealDrinkerDef == null ? 0 : MonsterSpecialAttacks.HealDrinkerDef.SpellshieldOneIn; }
+			set { if (MonsterSpecialAttacks.HealDrinkerDef != null) { MonsterSpecialAttacks.HealDrinkerDef.SpellshieldOneIn = value; } }
+		}
+
+		public int HealDrinkerHealDivisor {
+			get { return MonsterSpecialAttacks.HealDrinkerDef == null ? 0 : MonsterSpecialAttacks.HealDrinkerDef.HealDivisor; }
+			set { if (MonsterSpecialAttacks.HealDrinkerDef != null) { MonsterSpecialAttacks.HealDrinkerDef.HealDivisor = value; } }
+		}
+
+		public int PotionDrinkerHealOneIn {
+			get { return MonsterSpecialAttacks.PotionDrinkerDef == null ? 0 : MonsterSpecialAttacks.PotionDrinkerDef.HealOneIn; }
+			set { if (MonsterSpecialAttacks.PotionDrinkerDef != null) { MonsterSpecialAttacks.PotionDrinkerDef.HealOneIn = value; } }
+		}
+
+		public int PotionDrinkerStoneskinOneIn {
+			get { return MonsterSpecialAttacks.PotionDrinkerDef == null ? 0 : MonsterSpecialAttacks.PotionDrinkerDef.StoneskinOneIn; }
+			set { if (MonsterSpecialAttacks.PotionDrinkerDef != null) { MonsterSpecialAttacks.PotionDrinkerDef.StoneskinOneIn = value; } }
+		}
+
+		public int PotionDrinkerSpellshieldOneIn {
+			get { return MonsterSpecialAttacks.PotionDrinkerDef == null ? 0 : MonsterSpecialAttacks.PotionDrinkerDef.SpellshieldOneIn; }
+			set { if (MonsterSpecialAttacks.PotionDrinkerDef != null) { MonsterSpecialAttacks.PotionDrinkerDef.SpellshieldOneIn = value; } }
+		}
+
+		public int PotionDrinkerHealDivisor {
+			get { return MonsterSpecialAttacks.PotionDrinkerDef == null ? 0 : MonsterSpecialAttacks.PotionDrinkerDef.HealDivisor; }
+			set { if (MonsterSpecialAttacks.PotionDrinkerDef != null) { MonsterSpecialAttacks.PotionDrinkerDef.HealDivisor = value; } }
+		}
+
+		public int PotionDrinkerBoostOneIn {
+			get { return MonsterSpecialAttacks.PotionDrinkerDef == null ? 0 : MonsterSpecialAttacks.PotionDrinkerDef.BoostOneIn; }
+			set { if (MonsterSpecialAttacks.PotionDrinkerDef != null) { MonsterSpecialAttacks.PotionDrinkerDef.BoostOneIn = value; } }
+		}
+
+		public int BerserkDex {
+			get { return MonsterSpecialAttacks.BerserkDef == null ? 0 : MonsterSpecialAttacks.BerserkDef.Dex; }
+			set { if (MonsterSpecialAttacks.BerserkDef != null) { MonsterSpecialAttacks.BerserkDef.Dex = value; } }
+		}
+
+		public double[] BerserkSpeeds {
+			get { return MonsterSpecialAttacks.BerserkDef == null ? null : MonsterSpecialAttacks.BerserkDef.Speeds; }
+			set { if (MonsterSpecialAttacks.BerserkDef != null) { MonsterSpecialAttacks.BerserkDef.Speeds = value; } }
+		}
+
+		public double[] BerserkResistLoss {
+			get { return MonsterSpecialAttacks.BerserkDef == null ? null : MonsterSpecialAttacks.BerserkDef.ResistLoss; }
+			set { if (MonsterSpecialAttacks.BerserkDef != null) { MonsterSpecialAttacks.BerserkDef.ResistLoss = value; } }
+		}
+
+		public double[] BerserkThresholds {
+			get { return MonsterSpecialAttacks.BerserkDef == null ? null : MonsterSpecialAttacks.BerserkDef.Thresholds; }
+			set { if (MonsterSpecialAttacks.BerserkDef != null) { MonsterSpecialAttacks.BerserkDef.Thresholds = value; } }
+		}
+
+		public double BerserkCalmAbove {
+			get { return MonsterSpecialAttacks.BerserkDef == null ? 0 : MonsterSpecialAttacks.BerserkDef.CalmAbove; }
+			set { if (MonsterSpecialAttacks.BerserkDef != null) { MonsterSpecialAttacks.BerserkDef.CalmAbove = value; } }
+		}
+
+		public int WeaponKnockoutKnockoutOneIn {
+			get { return MonsterSpecialAttacks.WeaponKnockoutDef == null ? 0 : MonsterSpecialAttacks.WeaponKnockoutDef.KnockoutOneIn; }
+			set { if (MonsterSpecialAttacks.WeaponKnockoutDef != null) { MonsterSpecialAttacks.WeaponKnockoutDef.KnockoutOneIn = value; } }
+		}
+
+		public int BattleSummonerSummonOneIn {
+			get { return MonsterSpecialAttacks.BattleSummonerDef == null ? 0 : MonsterSpecialAttacks.BattleSummonerDef.SummonOneIn; }
+			set { if (MonsterSpecialAttacks.BattleSummonerDef != null) { MonsterSpecialAttacks.BattleSummonerDef.SummonOneIn = value; } }
+		}
+
+		public double BattleSummonerBattleSummonLifetime {
+			get { return MonsterSpecialAttacks.BattleSummonerDef == null ? 0 : MonsterSpecialAttacks.BattleSummonerDef.BattleSummonLifetime; }
+			set { if (MonsterSpecialAttacks.BattleSummonerDef != null) { MonsterSpecialAttacks.BattleSummonerDef.BattleSummonLifetime = value; } }
+		}
+
+		public double[] VampireLeechLeechCap {
+			get { return MonsterSpecialAttacks.VampireLeechDef == null ? null : MonsterSpecialAttacks.VampireLeechDef.LeechCap; }
+			set { if (MonsterSpecialAttacks.VampireLeechDef != null) { MonsterSpecialAttacks.VampireLeechDef.LeechCap = value; } }
+		}
+
+		public double[] AcidChance {
+			get { return MonsterSpecialAttacks.AcidDef == null ? null : MonsterSpecialAttacks.AcidDef.Chance; }
+			set { if (MonsterSpecialAttacks.AcidDef != null) { MonsterSpecialAttacks.AcidDef.Chance = value; } }
+		}
+
+		public double[] AcidDamage {
+			get { return MonsterSpecialAttacks.AcidDef == null ? null : MonsterSpecialAttacks.AcidDef.Damage; }
+			set { if (MonsterSpecialAttacks.AcidDef != null) { MonsterSpecialAttacks.AcidDef.Damage = value; } }
+		}
+
+		public int AcidRange {
+			get { return MonsterSpecialAttacks.AcidDef == null ? 0 : MonsterSpecialAttacks.AcidDef.Range; }
+			set { if (MonsterSpecialAttacks.AcidDef != null) { MonsterSpecialAttacks.AcidDef.Range = value; } }
+		}
 	}
 }

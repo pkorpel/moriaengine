@@ -43,7 +43,38 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>#1022 e_lifeLeech_vampire (lifeLeech.scp): the same leech, but its limit is tag.npc_lifeLeech_cap, or the stat
+	/// maximum, so hits can climb past maxhits.</summary>
+	[ViewableClass]
+	public class VampireLeechAbilityDef : PassiveAbilityDef {
+		private FieldValue cap;
+
+		public VampireLeechAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+			this.cap = this.InitTypedField("leechCap", new double[] { 32000, 32000 }, typeof(double[]));
+		}
+
+		public double[] LeechCap {
+			get { return (double[]) this.cap.CurrentValue; }
+			set { this.cap.CurrentValue = value; }
+		}
+	}
+
 	public static partial class MonsterSpecialAttacks {
+		internal static VampireLeechAbilityDef VampireLeechDef { get { return Lookup<VampireLeechAbilityDef>("a_tevent_e_lifeleech_vampire"); } }
+
+		internal static void TryLeechAboveMaxHits(Character attacker) {
+			VampireLeechAbilityDef def = VampireLeechDef;
+			if (!HasAbilityDef(attacker, def) || !attacker.IsAliveAndValid) {
+				return;
+			}
+			NPCDef npcDef = attacker.Def as NPCDef;
+			int maxHits = attacker.MaxHits;
+			double amount = (npcDef?.LifeLeechAmount != null) ? NPCDef.RollStatRange(npcDef.LifeLeechAmount) : ScriptUtil.GetRandInRange((maxHits / 300) + 20, (maxHits / 200) + 35);
+			int cap = (int) RollTunable(npcDef?.LifeLeechCap, def.LeechCap);
+			attacker.Hits = (short) Math.Max(attacker.Hits, Math.Min(cap, attacker.Hits + (int) amount));
+		}
+
 		private static LifeLeechAbilityDef lifeLeechAbilityDef;
 		internal static LifeLeechAbilityDef LifeLeechDef {
 			get {

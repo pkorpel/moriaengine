@@ -858,6 +858,7 @@ MaxHits = 300 390
 MaxStam = 600 800
 MaxMana = 0
 Experience = 25 35
+LifeLeechCap = 800
 NaturalDamageType = DamageType.Stabbing|DamageType.Physical
 MagicResist = 2000
 Wrestling = 1000

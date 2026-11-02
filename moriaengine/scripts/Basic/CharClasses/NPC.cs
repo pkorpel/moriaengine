@@ -542,6 +542,9 @@ namespace SteamEngine.CompiledScripts {
 			{ "stamdmgpower", TagKey.Acquire("_npcStamDmgPower_") },
 			{ "lightningschance", TagKey.Acquire("_npcLightningsChance_") },
 			{ "regenerationdivisor", TagKey.Acquire("_npcRegenerationDivisor_") },
+			{ "lifeleechcap", TagKey.Acquire("_npcLifeLeechCap_") },
+			{ "acidchance", TagKey.Acquire("_npcAcidChance_") },
+			{ "aciddamage", TagKey.Acquire("_npcAcidDamage_") },
 			{ "resistcountdownchance", TagKey.Acquire("_npcResistCountdownChance_") },
 			{ "resistcountdownamount", TagKey.Acquire("_npcResistCountdownAmount_") },
 			{ "lightningsrange", TagKey.Acquire("_npcLightningsRange_") },
@@ -610,6 +613,20 @@ namespace SteamEngine.CompiledScripts {
 		public int[] StamDmgPower {
 			get { return this.GetAbilityRange("stamdmgpower"); }
 			set { this.SetAbilityRange("stamdmgpower", value); }
+		}
+		/// <summary>#1022 - real archive field is tag.npc_lifeLeech_cap.</summary>
+		public int[] LifeLeechCap {
+			get { return this.GetAbilityRange("lifeleechcap"); }
+			set { this.SetAbilityRange("lifeleechcap", value); }
+		}
+		/// <summary>#1022 - real archive fields are tag.acid_ppst and tag.acid_dmg.</summary>
+		public int[] AcidChance {
+			get { return this.GetAbilityRange("acidchance"); }
+			set { this.SetAbilityRange("acidchance", value); }
+		}
+		public int[] AcidDamage {
+			get { return this.GetAbilityRange("aciddamage"); }
+			set { this.SetAbilityRange("aciddamage", value); }
 		}
 		/// <summary>#1022 - real archive field is tag.regespeed.</summary>
 		public int[] RegenerationDivisor {
@@ -717,6 +734,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static readonly TagKey summonedCreaturesTK = TagKey.Acquire("_npcSummonedCreatures_");
+		private static readonly TagKey battleSummonsTK = TagKey.Acquire("_npcBattleSummons_");
+
+		/// <summary>#1022 - e_npc_summoner's list, tag.npc_summoner_char[N].</summary>
+		public List<NPCDef> BattleSummons {
+			get { return this.GetTag(battleSummonsTK) as List<NPCDef>; }
+			set { this.SetTag(battleSummonsTK, value); }
+		}
+
 
 		/// <summary>e_npc_summoning's own per-species reinforcement list (real archive fields
 		/// tag.npc_summoning_char[i]/_count) - same list-of-NPCDef shape as the already-shipped
@@ -1409,6 +1434,18 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (moreAbilityRangeTags.ContainsKey(param)) {
 				this.SetAbilityRange(param, ParseStatRange(filename, line, param, args));
+				return;
+			}
+			if (param == "addbattlesummon") {
+				NPCDef battleSummonDef = ThingDef.GetByDefname(args) as NPCDef;
+				if (battleSummonDef == null) {
+					Logger.WriteWarning(filename, line, "addbattlesummon '" + args + "' is not a known NPCDef.");
+					return;
+				}
+				if (this.BattleSummons == null) {
+					this.BattleSummons = new List<NPCDef>();
+				}
+				this.BattleSummons.Add(battleSummonDef);
 				return;
 			}
 			if (param == "addsummon") {

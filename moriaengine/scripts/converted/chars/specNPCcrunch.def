@@ -77,6 +77,7 @@ MaxHits = 500 600
 MaxStam = 120 130
 MaxMana = 0
 Experience = 12 16 //opruz krysa - nizke expy (nevyplaci se naslapovat) 
+LifeLeechCap = 1400
 Parry = 950 1000
 Tactics = 850 1200
 Wrestling = 850 950
