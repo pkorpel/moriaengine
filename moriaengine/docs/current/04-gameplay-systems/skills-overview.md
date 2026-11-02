@@ -182,3 +182,7 @@ Erebor's script, systems/skills/taming.scp, not Sphere's skill. `TamingSkillDef`
 Gains are `skillgain` with a bonus: 100 usually, 500-600 for a spawned animal of 30.0 taming or more when tamed, 300-400 when that fails on one above 30.0. Such a tame also adds to `MountKnowledge`: the 18 mounts of `def_taming_mount`, points up to each one's maximum, shown on .boosts with a button to Erebor's list and legend. What the knowledge gives is mount powers, #925, along with the ranger's ra_mountsKnowledge limit.
 
 Not ported: "Zvire zemrelo hlady". Sphere's wild animals lose food and find their own, ours have no food until they are pets, so the check has nothing to read.
+
+## Animal Lore (#962)
+
+Erebor's f_alore, at once from the cursor, with no stroke, no delay and no gain. Anyone can be looked at; an item gets "To neni zvire", the ground nothing, as a skill's target isn't checked for reach. It tells whose the creature is, then, if a roll against the skill passes and it's an animal or knows taming, how fed it is and, with Animal Lore at least its own, what it eats. Yourself on a horse tells the horse's hunger. Wild animals always read as full, they have no food here. What riding an animal gives comes with mount powers, #925.

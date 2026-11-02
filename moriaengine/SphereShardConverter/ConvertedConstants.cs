@@ -69,7 +69,21 @@ namespace SteamEngine.Converter {
 			if (rest.TrimStart().StartsWith("//", StringComparison.Ordinal)) {
 				return line.Substring(0, nameEnd) + " \"\"" + rest;
 			}
+			if (name.StartsWith("typename_", StringComparison.OrdinalIgnoreCase)) {
+				return QuotedText(line, nameEnd, rest);
+			}
 			return line;
+		}
+
+		//#962 - Erebor's names for item types are plain words, some with a space or a question mark
+		private static string QuotedText(string line, int nameEnd, string rest) {
+			if (rest.TrimStart().StartsWith("\"", StringComparison.Ordinal)) {
+				return line;
+			}
+			int comment = rest.IndexOf("//", StringComparison.Ordinal);
+			string text = ((comment < 0) ? rest : rest.Substring(0, comment)).Trim();
+			string tail = (comment < 0) ? "" : " " + rest.Substring(comment);
+			return line.Substring(0, nameEnd) + "\t\"" + text + "\"" + tail;
 		}
 
 		/// <summary>A bare identifier that no [DEFNAMES] section of the archive defines (only meaningful after the

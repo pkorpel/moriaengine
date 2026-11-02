@@ -70,204 +70,204 @@ cm_system_basefont <BASEFONT COLOR="#c0c0c0">
 //[function cmi] //(commented out by Converter) 
 
 [Constants jmenatypu]
-Typename_00			Normal
-Typename_t_normal		Normal
-Typename_t_container		Kontejner
-Typename_t_container_locked	Zamceny Kontejner
-Typename_t_door			Dvere
-Typename_t_door_locked		Zamcene Dvere
-Typename_t_key			Klic
-Typename_t_light_lit		Svitici Svetlo
-Typename_t_light_out		Zhasnute svetlo
-Typename_t_food			Jidlo
-Typename_t_food_raw		Syrove Jidlo
-Typename_t_armor		Brneni
-Typename_t_weapon_mace_smith	Tupa Zbran(nastroj?)
-Typename_t_weapon_mace_sharp	Tupa Zbran
-Typename_t_weapon_sword		Ostra Zbran (tezka)
-Typename_t_weapon_fence		Ostra Zbran (lehka)
-Typename_t_weapon_bow		Luk
-Typename_t_wand			Hulka
-Typename_t_telepad		Telepad
-Typename_t_switch		Prepinac
-Typename_t_book			Kniha
-Typename_t_rune			Runa
-Typename_t_booze		Alkohol
-Typename_t_potion		Lektvar
-Typename_t_allpotions		Lektvar
-Typename_t_speedpotions		Lektvar
-Typename_t_potion_bomba		Bomba
-Typename_t_fire			Ohen
-Typename_t_clock		Hodiny
-Typename_t_trap			Past
-Typename_t_trap_active		Aktivni past
-Typename_t_musical		Hudebni nastroj
-Typename_t_spell		Kouzlo
-Typename_t_gem			Drahokam
-Typename_t_water		Voda
-Typename_t_clothing		Obleceni
-Typename_t_scroll		Svitek kouzla
-Typename_t_carpentry		Truhlarsky nastroj
-Typename_t_spawn_char		Character spawner
-Typename_t_game_piece		Hraci figurka
-Typename_t_portculis		Portculis?
-Typename_t_figurine		Figurina(shrink)
-Typename_t_shrine		Oltar(ress)
-Typename_t_moongate		Moongate
-Typename_t_chair		Zidle
-Typename_t_forge		Vyhen
-Typename_t_ore			Ruda
-Typename_t_log			Kmen
-Typename_t_tree			Strom
-Typename_t_rock			Skala
-Typename_t_carpentry_chop	Not Used?
-Typename_t_multi		Multiitem
-Typename_t_reagent		Reagent
-Typename_t_ship			Lod
-Typename_t_ship_plank		Lodni mustek
-Typename_t_ship_side		Bok lodi
-Typename_t_ship_side_locked	Zamceny bok lodi
-Typename_t_ship_tiller		Lodivod
-Typename_t_eq_trade_window	Secure trade item
-Typename_t_fish			Ryba
-Typename_t_sign_gump		Cedule
-Typename_t_stone_guild		Guild stone
-Typename_t_anim_active		Animace
-Typename_t_advance_gate		Advance Gate
-Typename_t_cloth		Latka
-Typename_t_hair			Vlasy
-Typename_t_beard		Vousy
-Typename_t_ingot		Ingot
-Typename_t_coin			Mince
-Typename_t_crops		Uroda
-Typename_t_drink		Piti
-Typename_t_anvil		Kovadlina
-Typename_t_port_locked		Zamceny port
-Typename_t_spawn_item		Item spawner
-Typename_t_telescope		Teleskop
-Typename_t_bed			Postel
-Typename_t_gold			Penize
-Typename_t_map			Mapa
-Typename_t_eq_memory_obj	equippable memory object
-Typename_t_weapon_mace_staff	Tupa zbran (hul)
-Typename_t_eq_horse		Mount item (equipped horse)
-Typename_t_comm_crystal		Komunkacni krystal
-Typename_t_game_board		Herni deska
-Typename_t_trash_can		Odpadkovy kos
-Typename_t_cannon_muzzle	Kanon - prach?
-Typename_t_cannon		Kanon
-Typename_t_cannon_ball		Kanonova koule
-Typename_t_armor_leather	Kozene brneni
-Typename_t_seed			Semena
-Typename_t_junk			Odpad
-Typename_t_crystal_ball		Krystalova koule
+Typename_00	"Normal"
+Typename_t_normal	"Normal"
+Typename_t_container	"Kontejner"
+Typename_t_container_locked	"Zamceny Kontejner"
+Typename_t_door	"Dvere"
+Typename_t_door_locked	"Zamcene Dvere"
+Typename_t_key	"Klic"
+Typename_t_light_lit	"Svitici Svetlo"
+Typename_t_light_out	"Zhasnute svetlo"
+Typename_t_food	"Jidlo"
+Typename_t_food_raw	"Syrove Jidlo"
+Typename_t_armor	"Brneni"
+Typename_t_weapon_mace_smith	"Tupa Zbran(nastroj?)"
+Typename_t_weapon_mace_sharp	"Tupa Zbran"
+Typename_t_weapon_sword	"Ostra Zbran (tezka)"
+Typename_t_weapon_fence	"Ostra Zbran (lehka)"
+Typename_t_weapon_bow	"Luk"
+Typename_t_wand	"Hulka"
+Typename_t_telepad	"Telepad"
+Typename_t_switch	"Prepinac"
+Typename_t_book	"Kniha"
+Typename_t_rune	"Runa"
+Typename_t_booze	"Alkohol"
+Typename_t_potion	"Lektvar"
+Typename_t_allpotions	"Lektvar"
+Typename_t_speedpotions	"Lektvar"
+Typename_t_potion_bomba	"Bomba"
+Typename_t_fire	"Ohen"
+Typename_t_clock	"Hodiny"
+Typename_t_trap	"Past"
+Typename_t_trap_active	"Aktivni past"
+Typename_t_musical	"Hudebni nastroj"
+Typename_t_spell	"Kouzlo"
+Typename_t_gem	"Drahokam"
+Typename_t_water	"Voda"
+Typename_t_clothing	"Obleceni"
+Typename_t_scroll	"Svitek kouzla"
+Typename_t_carpentry	"Truhlarsky nastroj"
+Typename_t_spawn_char	"Character spawner"
+Typename_t_game_piece	"Hraci figurka"
+Typename_t_portculis	"Portculis?"
+Typename_t_figurine	"Figurina(shrink)"
+Typename_t_shrine	"Oltar(ress)"
+Typename_t_moongate	"Moongate"
+Typename_t_chair	"Zidle"
+Typename_t_forge	"Vyhen"
+Typename_t_ore	"Ruda"
+Typename_t_log	"Kmen"
+Typename_t_tree	"Strom"
+Typename_t_rock	"Skala"
+Typename_t_carpentry_chop	"Not Used?"
+Typename_t_multi	"Multiitem"
+Typename_t_reagent	"Reagent"
+Typename_t_ship	"Lod"
+Typename_t_ship_plank	"Lodni mustek"
+Typename_t_ship_side	"Bok lodi"
+Typename_t_ship_side_locked	"Zamceny bok lodi"
+Typename_t_ship_tiller	"Lodivod"
+Typename_t_eq_trade_window	"Secure trade item"
+Typename_t_fish	"Ryba"
+Typename_t_sign_gump	"Cedule"
+Typename_t_stone_guild	"Guild stone"
+Typename_t_anim_active	"Animace"
+Typename_t_advance_gate	"Advance Gate"
+Typename_t_cloth	"Latka"
+Typename_t_hair	"Vlasy"
+Typename_t_beard	"Vousy"
+Typename_t_ingot	"Ingot"
+Typename_t_coin	"Mince"
+Typename_t_crops	"Uroda"
+Typename_t_drink	"Piti"
+Typename_t_anvil	"Kovadlina"
+Typename_t_port_locked	"Zamceny port"
+Typename_t_spawn_item	"Item spawner"
+Typename_t_telescope	"Teleskop"
+Typename_t_bed	"Postel"
+Typename_t_gold	"Penize"
+Typename_t_map	"Mapa"
+Typename_t_eq_memory_obj	"equippable memory object"
+Typename_t_weapon_mace_staff	"Tupa zbran (hul)"
+Typename_t_eq_horse	"Mount item (equipped horse)"
+Typename_t_comm_crystal	"Komunkacni krystal"
+Typename_t_game_board	"Herni deska"
+Typename_t_trash_can	"Odpadkovy kos"
+Typename_t_cannon_muzzle	"Kanon - prach?"
+Typename_t_cannon	"Kanon"
+Typename_t_cannon_ball	"Kanonova koule"
+Typename_t_armor_leather	"Kozene brneni"
+Typename_t_seed	"Semena"
+Typename_t_junk	"Odpad"
+Typename_t_crystal_ball	"Krystalova koule"
 //Typename_t_old_cashiers_check
-Typename_t_message		Zprava
-Typename_t_reagent_raw		'Syrovy' reagent
-Typename_t_eq_client_linger	udela z klienta NPC
-Typename_t_dream_gate		Brana na jiny shard?
-Typename_t_it_stone		Supply stone
-Typename_t_metronome		Metronom
-Typename_t_explosion		Exploze
-Typename_t_eq_npc_script	EQuippable NPC script
-Typename_t_web			Pavouci sit
-Typename_t_grass		Trava
-Typename_t_arock		Kamen(hazen obry)
-Typename_t_tracker		Tracking obj
-Typename_t_sound		Zvuk
-Typename_t_stone_town		Townstone
-Typename_t_weapon_mace_crook	Tupa zbran (hak)
-Typename_t_weapon_bow_run	Run strelna zbran (/krumpac)
-Typename_t_leather		Kuze
-Typename_t_ship_other		Cast lodi?
-Typename_t_bboard		Cast tabule
-Typename_t_spellbook		Kouzelna kniha
-Typename_t_corpse		Mrtvola
-Typename_t_track_item		Tracking item
-Typename_t_track_char		Tracking character
-Typename_t_weapon_arrow		Sip
-Typename_t_weapon_bolt		Sipka
-Typename_t_weapon_bolt_jagged	Zubata sipka
-Typename_t_eq_vendor_box	Vendor box
-Typename_t_eq_bank_box		Bank box
-Typename_t_deed			Deed
-Typename_t_loom			Loom?
-Typename_t_bee_hive		Vceli ul
-Typename_t_archery_butte	Terc
-Typename_t_eq_murder_count	Killcount timer
-Typename_t_eq_stuck		para v pavouci siti
-Typename_t_trap_inactive	Neaktivni past
-Typename_t_stone_room		Region stone?
-Typename_t_bandage		Bandaz(healing)
-Typename_t_campfire		Taborak(camping)
-Typename_t_map_blank		Prazdna mapa
-Typename_t_spy_glass		Dalekohled
-Typename_t_sextant		Sextant
-Typename_t_scroll_blank		Prazdny svitek
-Typename_t_fruit		Ovoce
-Typename_t_water_wash		Cista voda (bez ryb)
-Typename_t_weapon_axe		Ostra zbran (sekera?)
-Typename_t_weapon_xbow		Kuse
-Typename_t_spellicon		Ikona kouzla
-Typename_t_door_open		Otevrene dvere
-Typename_t_meat_raw		Syrove maso
-Typename_t_garbage		Odpad
-Typename_t_keyring		Krouzek na klice
-Typename_t_table		Stul
-Typename_t_floor		Podlaha
-Typename_t_roof			Strecha
-Typename_t_feather		Peri
-Typename_t_wool			Vlna
-Typename_t_fur			Srst
-Typename_t_blood		Krev
-Typename_t_foliage		jidlo?
-Typename_t_grain		Zrni
-Typename_t_scissors		Nuzky
-Typename_t_thread		Vlakno
-Typename_t_yarn			Prize
-Typename_t_spinwheel		Kolovrat
-Typename_t_bandage_blood	Krvava bandaz
-Typename_t_fish_pole		Prut (fishing)
-Typename_t_shaft		Nasada; Drik
-Typename_t_lockpick		Sperhak
-Typename_t_kindling		Triska
-Typename_t_train_dummy		Panak k boji
-Typename_t_train_pickpocket	Panak k okradani
-Typename_t_bedroll		Prikryvka
-Typename_t_bellows		Mech
-Typename_t_hide			Kuze
-Typename_t_cloth_bolt		Balik latky
-Typename_t_board		tram/prkno
-Typename_t_pitcher		Dzban
-Typename_t_pitcher_empty	Prazdny dzban
-Typename_t_dye_vat		Barva?
-Typename_t_dye			Barva
-Typename_t_potion_empty		Prazdny lektvar
-Typename_t_mortar		Hmozdir
-Typename_t_hair_dye		Vlasova barva
-Typename_t_sewing_kit		Sici souprava
-Typename_t_tinker_tools		Nastroje(tinkering)
-Typename_t_wall			Zed
-Typename_t_window		Okno
-Typename_t_cotton		Bavlna
-Typename_t_bone			Kost
-Typename_t_eq_script		Equippable script item
-Typename_t_ship_hold		Lodni podpalubi
-Typename_t_ship_hold_lock	Zamcene podpalubi
-Typename_t_lava			Lava
-Typename_t_shield		Stit
-Typename_t_jewelry		Sperk
-Typename_t_dirt			Spina
-Typename_t_script		Skript item
-Typename_t_eq_message		Dialog item
-Typename_t_shovel		Lopata
+Typename_t_message	"Zprava"
+Typename_t_reagent_raw	"'Syrovy' reagent"
+Typename_t_eq_client_linger	"udela z klienta NPC"
+Typename_t_dream_gate	"Brana na jiny shard?"
+Typename_t_it_stone	"Supply stone"
+Typename_t_metronome	"Metronom"
+Typename_t_explosion	"Exploze"
+Typename_t_eq_npc_script	"EQuippable NPC script"
+Typename_t_web	"Pavouci sit"
+Typename_t_grass	"Trava"
+Typename_t_arock	"Kamen(hazen obry)"
+Typename_t_tracker	"Tracking obj"
+Typename_t_sound	"Zvuk"
+Typename_t_stone_town	"Townstone"
+Typename_t_weapon_mace_crook	"Tupa zbran (hak)"
+Typename_t_weapon_bow_run	"Run strelna zbran (/krumpac)"
+Typename_t_leather	"Kuze"
+Typename_t_ship_other	"Cast lodi?"
+Typename_t_bboard	"Cast tabule"
+Typename_t_spellbook	"Kouzelna kniha"
+Typename_t_corpse	"Mrtvola"
+Typename_t_track_item	"Tracking item"
+Typename_t_track_char	"Tracking character"
+Typename_t_weapon_arrow	"Sip"
+Typename_t_weapon_bolt	"Sipka"
+Typename_t_weapon_bolt_jagged	"Zubata sipka"
+Typename_t_eq_vendor_box	"Vendor box"
+Typename_t_eq_bank_box	"Bank box"
+Typename_t_deed	"Deed"
+Typename_t_loom	"Loom?"
+Typename_t_bee_hive	"Vceli ul"
+Typename_t_archery_butte	"Terc"
+Typename_t_eq_murder_count	"Killcount timer"
+Typename_t_eq_stuck	"para v pavouci siti"
+Typename_t_trap_inactive	"Neaktivni past"
+Typename_t_stone_room	"Region stone?"
+Typename_t_bandage	"Bandaz(healing)"
+Typename_t_campfire	"Taborak(camping)"
+Typename_t_map_blank	"Prazdna mapa"
+Typename_t_spy_glass	"Dalekohled"
+Typename_t_sextant	"Sextant"
+Typename_t_scroll_blank	"Prazdny svitek"
+Typename_t_fruit	"Ovoce"
+Typename_t_water_wash	"Cista voda (bez ryb)"
+Typename_t_weapon_axe	"Ostra zbran (sekera?)"
+Typename_t_weapon_xbow	"Kuse"
+Typename_t_spellicon	"Ikona kouzla"
+Typename_t_door_open	"Otevrene dvere"
+Typename_t_meat_raw	"Syrove maso"
+Typename_t_garbage	"Odpad"
+Typename_t_keyring	"Krouzek na klice"
+Typename_t_table	"Stul"
+Typename_t_floor	"Podlaha"
+Typename_t_roof	"Strecha"
+Typename_t_feather	"Peri"
+Typename_t_wool	"Vlna"
+Typename_t_fur	"Srst"
+Typename_t_blood	"Krev"
+Typename_t_foliage	"jidlo?"
+Typename_t_grain	"Zrni"
+Typename_t_scissors	"Nuzky"
+Typename_t_thread	"Vlakno"
+Typename_t_yarn	"Prize"
+Typename_t_spinwheel	"Kolovrat"
+Typename_t_bandage_blood	"Krvava bandaz"
+Typename_t_fish_pole	"Prut (fishing)"
+Typename_t_shaft	"Nasada; Drik"
+Typename_t_lockpick	"Sperhak"
+Typename_t_kindling	"Triska"
+Typename_t_train_dummy	"Panak k boji"
+Typename_t_train_pickpocket	"Panak k okradani"
+Typename_t_bedroll	"Prikryvka"
+Typename_t_bellows	"Mech"
+Typename_t_hide	"Kuze"
+Typename_t_cloth_bolt	"Balik latky"
+Typename_t_board	"tram/prkno"
+Typename_t_pitcher	"Dzban"
+Typename_t_pitcher_empty	"Prazdny dzban"
+Typename_t_dye_vat	"Barva?"
+Typename_t_dye	"Barva"
+Typename_t_potion_empty	"Prazdny lektvar"
+Typename_t_mortar	"Hmozdir"
+Typename_t_hair_dye	"Vlasova barva"
+Typename_t_sewing_kit	"Sici souprava"
+Typename_t_tinker_tools	"Nastroje(tinkering)"
+Typename_t_wall	"Zed"
+Typename_t_window	"Okno"
+Typename_t_cotton	"Bavlna"
+Typename_t_bone	"Kost"
+Typename_t_eq_script	"Equippable script item"
+Typename_t_ship_hold	"Lodni podpalubi"
+Typename_t_ship_hold_lock	"Zamcene podpalubi"
+Typename_t_lava	"Lava"
+Typename_t_shield	"Stit"
+Typename_t_jewelry	"Sperk"
+Typename_t_dirt	"Spina"
+Typename_t_script	"Skript item"
+Typename_t_eq_message	"Dialog item"
+Typename_t_shovel	"Lopata"
 
-Typename_t_book_shrink		Recept shrink
-Typename_t_bottle_form		Forma Lahev
-Typename_t_book_bottle		Recept Lahev
-Typename_t_src_changer		menitko Src(script)
-Typename_t_book_inscription	Kniha inscriptce
-Typename_t_bottle_empty		Prazdna lahev
+Typename_t_book_shrink	"Recept shrink"
+Typename_t_bottle_form	"Forma Lahev"
+Typename_t_book_bottle	"Recept Lahev"
+Typename_t_src_changer	"menitko Src(script)"
+Typename_t_book_inscription	"Kniha inscriptce"
+Typename_t_bottle_empty	"Prazdna lahev"
 
 
 //[typedef t_cm_topobj] //(commented out by Converter) 

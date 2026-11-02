@@ -83,6 +83,11 @@ namespace SteamEngine.CompiledScripts {
 			timer.DueInSeconds = RiddenDecayIntervalSeconds;
 		}
 
+		/// <summary>How fed it is, or full for one nobody feeds: wild animals have no food here.</summary>
+		internal static int FoodOf(NPC self, int full) {
+			return (self.GetTimer(hungerTimerTK) is PetHungerTimer hunger) ? hunger.food : full;
+		}
+
 		/// <summary>taming_success: FOOD-1.</summary>
 		internal static void LoseFood(NPC self, int amount) {
 			if (self.GetTimer(hungerTimerTK) is PetHungerTimer hunger) {
