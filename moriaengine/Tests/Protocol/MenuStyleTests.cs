@@ -26,6 +26,11 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		private (int GumpUid, string LayoutText, System.Collections.Generic.List<string> Strings) TrackingDialog(TestGameClient client) {
+			this.Ask(client, ".TestMenuTrack", "MENU_TRACK:");
+			return client.ReadGumpDialogWithStrings(Wait);
+		}
+
 		//the seeking stroke can fail
 		private (int MenuUid, string Header, System.Collections.Generic.List<(int Model, int Color, string Text)> Rows) TrackAnimals(TestGameClient client) {
 			for (int tries = 0; ; tries++) {
@@ -48,9 +53,20 @@ namespace SteamEngine.Tests.Protocol {
 			string own = "model=" + Regex.Match(ready, @" model=(\d+)").Groups[1].Value + " ";
 
 			//dialogs by default, and a player can flip it
-			this.Ask(client, ".TestMenuTrack", "MENU_TRACK:");
-			var gump = client.ReadGumpDialogWithStrings(Wait);
-			client.SendGumpResponse(gump.GumpUid, 0);
+			var gump = this.TrackingDialog(client);
+			Assert.Equal(new[] { "What do you wish to track?", "Animals", "Monsters", "Humans", "Players", "Anything that moves" }, gump.Strings);
+			for (int tries = 0; ; tries++) {
+				client.SendGumpResponse(gump.GumpUid, 5);
+				try {
+					var found = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(4));
+					Assert.Contains("Name", found.Strings);
+					Assert.Contains(rabbit, found.Strings);
+					client.SendGumpResponse(found.GumpUid, 0);
+					break;
+				} catch (TimeoutException) when (tries < 5) { //the seeking stroke can fail
+					gump = this.TrackingDialog(client);
+				}
+			}
 			this.Ask(client, ".TestMenuPlevel \"1\"", "MENU_PLEVEL:");
 			client.SendSpeech(".menustyle");
 			Expect(client, "Menu se ted otevira jako obrazkove menu.");

@@ -15,42 +15,49 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using SteamEngine.Common;
+
 namespace SteamEngine.CompiledScripts.Dialogs {
 
 	/// <summary>Dialog that will display possible categories of characters to track (NPC's, Animals, Players)</summary>
 	public class D_Tracking_Categories : CompiledGumpDef {
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
+			TrackingMenuLoc texts = Loc<TrackingMenuLoc>.Get(((Character) sendTo).Language);
 			ImprovedDialog dlg = new ImprovedDialog(this.GumpInstance);
 			//pozadi    
-			dlg.CreateBackground(180);
+			dlg.CreateBackground(240);
 			dlg.SetLocation(80, 50);
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Co chceš stopovat?").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline(texts.WhatToTrack).Build();
 			//cudlik na zavreni dialogu
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dlg.MakeLastTableTransparent();
 
-			GUTATable picTable = new GUTATable(4, ImprovedDialog.ICON_WIDTH, 0, ButtonMetrics.D_BUTTON_WIDTH);
+			GUTATable picTable = new GUTATable(5, ImprovedDialog.ICON_WIDTH, 0, ButtonMetrics.D_BUTTON_WIDTH);
 			picTable.RowHeight = 50; //dobra vejska pro obrazky
 			picTable.InnerRowsDelimited = true;
 			dlg.AddTable(picTable);
 			dlg.LastTable[0, 0] = GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Llama).Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Zvíøata").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel(texts.Animals).Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Id(1).Valign(DialogAlignment.Valign_Center).Build();
 
 			dlg.LastTable[1, 0] = GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Ogre).Build();
-			dlg.LastTable[1, 1] = GUTAText.Builder.TextLabel("Monstra").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
+			dlg.LastTable[1, 1] = GUTAText.Builder.TextLabel(texts.Monsters).Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
 			dlg.LastTable[1, 2] = GUTAButton.Builder.Id(2).Valign(DialogAlignment.Valign_Center).Build();
 
-			dlg.LastTable[2, 0] = GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Man).Build();
-			dlg.LastTable[2, 1] = GUTAText.Builder.TextLabel("Hráèe").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
-			dlg.LastTable[2, 2] = GUTAButton.Builder.Id(3).Valign(DialogAlignment.Valign_Center).Build();
+			dlg.LastTable[2, 0] = GUTAImage.Builder.NamedGump(GumpIDs.Figurine_NPC).Build();
+			dlg.LastTable[2, 1] = GUTAText.Builder.TextLabel(texts.Humans).Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
+			dlg.LastTable[2, 2] = GUTAButton.Builder.Id(4).Valign(DialogAlignment.Valign_Center).Build();
 
-			dlg.LastTable[3, 0] = GUTAImage.Builder.NamedGump(GumpIDs.Figurine_NPC).Build();
-			dlg.LastTable[3, 1] = GUTAText.Builder.TextLabel("NPC").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
-			dlg.LastTable[3, 2] = GUTAButton.Builder.Id(4).Valign(DialogAlignment.Valign_Center).Build();
+			dlg.LastTable[3, 0] = GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Man).Build();
+			dlg.LastTable[3, 1] = GUTAText.Builder.TextLabel(texts.Players).Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
+			dlg.LastTable[3, 2] = GUTAButton.Builder.Id(3).Valign(DialogAlignment.Valign_Center).Build();
+
+			dlg.LastTable[4, 0] = GUTAImage.Builder.NamedGump(GumpIDs.Figurine_Orc).Build();
+			dlg.LastTable[4, 1] = GUTAText.Builder.TextLabel(texts.AnythingThatMoves).Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Center).Build();
+			dlg.LastTable[4, 2] = GUTAButton.Builder.Id(5).Valign(DialogAlignment.Valign_Center).Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.WriteOut();
@@ -83,6 +90,11 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					break;
 				case 4: //NPCs chosen
 					skillSeqArgs.Param1 = CharacterTypes.NPCs;
+					skillSeqArgs.Param2 = TrackingEnums.Phase_Characters_Seek; //looking for all nearby chars
+					skillSeqArgs.PhaseStart();
+					break;
+				case 5: //#1004 - Sphere's "Anything that moves"
+					skillSeqArgs.Param1 = CharacterTypes.All;
 					skillSeqArgs.Param2 = TrackingEnums.Phase_Characters_Seek; //looking for all nearby chars
 					skillSeqArgs.PhaseStart();
 					break;

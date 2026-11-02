@@ -49,6 +49,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	internal class TrackingMenuLoc : CompiledLocStringCollection<TrackingMenuLoc> {
+		public string WhatToTrack = "What do you wish to track?";
+		public string Name = "Name";
 		public string Tracking = "Tracking";
 		public string Animals = "Animals";
 		public string Monsters = "Monsters";
