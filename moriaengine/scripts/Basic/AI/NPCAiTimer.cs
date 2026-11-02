@@ -277,8 +277,8 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if ((this.target != null) && !this.IsValidTarget(self, this.target)) {
-				Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " dropped target " + this.target.Name + " (no longer valid - dead, map mismatch, or out of GiveUpRange)");
-				this.target = null;
+				Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " dropped target " + this.target.Name + " (no longer valid - dead, unseen, map mismatch, or out of GiveUpRange)");
+				this.Disengage(); //#1038 - war mode and the swing go too, or it stands there still fighting
 			}
 
 			if (this.target == null) {
@@ -484,7 +484,15 @@ namespace SteamEngine.CompiledScripts {
 			if (candidate == (self.FollowTarget ?? self.ControlMaster)) {
 				return false; //never keep fighting our own current owner/commander, however the target was originally set - catches the explicit "kill"/guard-duty paths (NPCAiTimer.EngageTarget/AlertGuardiansOf), which bypass NPC.ShouldAggroOn's own exclusion entirely since they're explicit orders, not autonomous aggro. A legitimate "rebel" (owner attacks pet) clears ControlMaster/FollowTarget first (see NPC.On_HostileAction), so this doesn't block genuine self-defense after that.
 			}
+			if (!CanSee(self, candidate) && !MonsterSpecialAttacks.HasDetect(self)) {
+				return false; //#1038 - one that detects keeps at it, it reveals while fighting
+			}
 			return Point2D.GetSimpleDistance(self, candidate) <= GiveUpRange;
+		}
+
+		/// <summary>#1038 - NPCs don't see through hiding or invisibility, as in Sphere.</summary>
+		private static bool CanSee(NPC self, Character candidate) {
+			return !candidate.Flag_InvisByMagic && !candidate.Flag_Hidden;
 		}
 
 		private bool IsLowOnHealth(NPC self) {
@@ -494,7 +502,7 @@ namespace SteamEngine.CompiledScripts {
 		private Character FindTarget(NPC self) {
 			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, AggroRange)) {
 				Character candidate = ch as Character;
-				if ((candidate != null) && self.ShouldAggroOn(candidate) && self.CanInteractWith(candidate).Allow) {
+				if ((candidate != null) && CanSee(self, candidate) && self.ShouldAggroOn(candidate) && self.CanInteractWith(candidate).Allow) {
 					return candidate;
 				}
 			}
