@@ -24,6 +24,14 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		[Fact]
+		public void DarknessStopsABlow() {
+			using var client = CommandPermissionTests.Connect("gathertest", "Dark Fighter");
+			this.Ask(client, ".TestDarkBlow", "DARK_BLOW:");
+			Expect(client, "Je spatne videt");
+			this.Ask(client, ".TestLightBack", "LIGHT_BACK:");
+		}
+
+		[Fact]
 		public void ATryIsHeldBackAndChecked() {
 			using var client = CommandPermissionTests.Connect("gathertest", "Gather Tester");
 			this.Ask(client, ".TestGatherReady", "GATHER_READY:");
