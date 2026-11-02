@@ -232,7 +232,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
-			self.SysMessage(Loc<TamingLoc>.Get(self.Language).cantSee);
 			return TargetResult.Done;
 		}
 	}

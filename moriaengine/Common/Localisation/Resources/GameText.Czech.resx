@@ -40,21 +40,6 @@
   <data name="AnatomyLoc_TargetWho" xml:space="preserve">
     <value>Koho chceš zkoumat?</value>
   </data>
-  <data name="AnimalLoreLoc_ACanceled" xml:space="preserve">
-    <value>Animal Lore bylo přerušeno.</value>
-  </data>
-  <data name="AnimalLoreLoc_AFailed" xml:space="preserve">
-    <value>Tvé zkoumání se nezdařilo.</value>
-  </data>
-  <data name="AnimalLoreLoc_ASuccess1" xml:space="preserve">
-    <value>Animal Lore se ti povedlo.</value>
-  </data>
-  <data name="AnimalLoreLoc_TargetOnlyAnimals" xml:space="preserve">
-    <value>Zaměřuj pouze zvěř!</value>
-  </data>
-  <data name="AnimalLoreLoc_TargetWho" xml:space="preserve">
-    <value>Co chceš zkoumat?</value>
-  </data>
   <data name="BleedingLoc_YourTargetIsBleeding" xml:space="preserve">
     <value>{0} krvácí!</value>
   </data>
@@ -651,6 +636,42 @@
   </data>
   <data name="MountKnowledgeLoc_LegendOfTotal" xml:space="preserve">
     <value>     do celkove znalosti jezditek</value>
+  </data>
+  <data name="AnimalLoreLoc_TargetWho" xml:space="preserve">
+    <value>Jake zvire chces prozkoumat?</value>
+  </data>
+  <data name="AnimalLoreLoc_NotAnAnimal" xml:space="preserve">
+    <value>To neni zvire.</value>
+  </data>
+  <data name="AnimalLoreLoc_BelongsTo" xml:space="preserve">
+    <value>{0} patri osobe jmenem {1}.</value>
+  </data>
+  <data name="AnimalLoreLoc_OwnMaster" xml:space="preserve">
+    <value>{0} je svym vlastnim panem.</value>
+  </data>
+  <data name="AnimalLoreLoc_VeryHungry" xml:space="preserve">
+    <value>{0} ma velky hlad.</value>
+  </data>
+  <data name="AnimalLoreLoc_NotFull" xml:space="preserve">
+    <value>{0} jeste zdaleka nema plny zaludek.</value>
+  </data>
+  <data name="AnimalLoreLoc_CouldEat" xml:space="preserve">
+    <value>{0} jeste nejake to jidlo zvladne.</value>
+  </data>
+  <data name="AnimalLoreLoc_Stuffed" xml:space="preserve">
+    <value>{0} ma dost a funi.</value>
+  </data>
+  <data name="AnimalLoreLoc_Eats" xml:space="preserve">
+    <value>{0} se zivi vecmi jako: {1}.</value>
+  </data>
+  <data name="AnimalLoreLoc_OnlyYavannaKnows" xml:space="preserve">
+    <value>ale snad jen Yavanna vi, co ta potvora zere.</value>
+  </data>
+  <data name="AnimalLoreLoc_NothingMale" xml:space="preserve">
+    <value>Nic jsi nezjistil.</value>
+  </data>
+  <data name="AnimalLoreLoc_NothingFemale" xml:space="preserve">
+    <value>Nic jsi nezjistila.</value>
   </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
