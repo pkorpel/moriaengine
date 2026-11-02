@@ -176,6 +176,14 @@ namespace SteamEngine.CompiledScripts {
 			WeaponSkillPhase phase = (WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1);
 			if (phase == WeaponSkillPhase.Drawing) {
 				if (distance <= self.WeaponStrikeStartRange) {
+					if ((self is Player) && !self.IsGM) { //#976 - Erebor's @hittry
+						PlayerHunger.HurtIfStarving(self);
+						if (!WorkLight.CheckWithMessage(self)) {
+							skillSeqArgs.DelaySpan = TimeSpan.FromSeconds(1);
+							skillSeqArgs.DelayStroke();
+							return TriggerResult.Cancel;
+						}
+					}
 					skillSeqArgs.Param1 = WeaponSkillPhase.Striking;
 					TimeSpan delay = self.WeaponDelay;
 					skillSeqArgs.Param2 = Globals.TimeAsSpan + delay;

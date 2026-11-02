@@ -242,3 +242,7 @@ Not ported: bags as one row (top-level pack items only), the builders' spoken pa
 ## Traps and the quiver (#962)
 
 `i_past` is Erebor's player trap: double click it and aim a bomb potion, a poison bottle or another trap at it. It works once on someone stepping on it, and a second loading within a minute hurts. `i_toulec` holds up to 5000 arrows of one kind, poison and all, added and taken out by its dialog. It only stores them, a bow doesn't shoot from it. Erebor's older wooden quivers, its GM's monster traps and spike traps aren't ported.
+
+## Darkness (#976)
+
+`WorkLight` is Erebor's nolightfizz: with no night sight and no lit thing within 2 tiles or in the off hand, the area's light against 0-64 decides, so even daylight fails 1 time in 65. It stops crafting, gathering, taming, lockpicking, poisoning, spells other than Night Sight, and a player's blow, which tries again a second later. GMs are spared for blows and spells, which Erebor didn't do: casting and fighting as a GM isn't meant to be random.
