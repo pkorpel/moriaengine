@@ -317,7 +317,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>Target for targetting single items or containers containing items to be added to the craftmenu (to the selected category)</summary>
 	public class Targ_Craftmenu : CompiledTargetDef {
 		protected override void On_Start(Player self, object parameter) {
-			self.SysMessage("Zam�� p�edm�t p��padn� konejner s p�edm�ty pro p�id�n� do craftmenu.");
+			self.SysMessage("Zamer predmet pripadne konejner s predmety pro pridani do craftmenu.");
 			base.On_Start(self, parameter);
 		}
 

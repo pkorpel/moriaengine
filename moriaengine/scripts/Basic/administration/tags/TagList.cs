@@ -58,28 +58,28 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, innerWidth - 2 * ButtonMetrics.D_BUTTON_WIDTH - ImprovedDialog.D_COL_SPACE, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam všech tagù na " + th + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + tagList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam vsech tagu na " + th + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + tagList.Count + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(2).Build();//cudlik na info o hodnotach
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//cudlik a input field na zuzeni vyberu
 			dlg.AddTable(new GUTATable(1, 130, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledávací kriterium").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledavaci kriterium").Build();
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Id(33).Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
 			//cudlik na zalozeni noveho tagu
 			dlg.AddTable(new GUTATable(1, 130, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Založit nový tag").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Zalozit novy tag").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(3).Build();
 			dlg.MakeLastTableTransparent();
 
 			//popis sloupcu
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 200, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Smaž").Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jméno tagu").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Smaz").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jmeno tagu").Build();
 			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Info").Build();
 			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Hodnota").Build();
 			dlg.MakeLastTableTransparent();
@@ -113,7 +113,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//Ok button
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 0));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(4).Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Uložit").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Ulozit").Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.WriteOut();

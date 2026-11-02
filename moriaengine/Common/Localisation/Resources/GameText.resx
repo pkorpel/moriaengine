@@ -5,31 +5,31 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
   <data name="AbilityDefLoc_AbilityActivated" xml:space="preserve">
-    <value>Abilita {0} aktivov�na.</value>
+    <value>Abilita {0} aktivovana.</value>
   </data>
   <data name="AbilityDefLoc_HasBeenSwitchedOff" xml:space="preserve">
-    <value>Abilita deaktivov�na.</value>
+    <value>Abilita deaktivovana.</value>
   </data>
   <data name="AbilityDefLoc_NotAllowedToHaveAbility" xml:space="preserve">
-    <value>Nejsi opr�vn�n m�t tuto abilitu.</value>
+    <value>Nejsi opravnen mit tuto abilitu.</value>
   </data>
   <data name="AbilityDefLoc_NotEnoughResourcesPresent" xml:space="preserve">
-    <value>Nedostatek zdroj� pro aktivaci ability.</value>
+    <value>Nedostatek zdroju pro aktivaci ability.</value>
   </data>
   <data name="AbilityDefLoc_NotEnoughResourcesToConsume" xml:space="preserve">
-    <value>Nedostatek zdroj� ke spot�eb� pro aktivaci ability.</value>
+    <value>Nedostatek zdroju ke spotrebe pro aktivaci ability.</value>
   </data>
   <data name="AbilityDefLoc_NotYetCooledDown" xml:space="preserve">
-    <value>Abilitu nelze pou��t tak brzy po p�edchoz�m pou�it�.</value>
+    <value>Abilitu nelze pouzit tak brzy po predchozim pouziti.</value>
   </data>
   <data name="AbilityDefLoc_YouDontHaveThisAbility" xml:space="preserve">
-    <value>O t�to abilit� nev� v�bec nic.</value>
+    <value>O teto abilite nevis vubec nic.</value>
   </data>
   <data name="BleedingLoc_YourTargetIsBleeding" xml:space="preserve">
-    <value>{0} krv�c�!</value>
+    <value>{0} krvaci!</value>
   </data>
   <data name="BleedingLoc_YoureBleeding" xml:space="preserve">
-    <value>Krv�c�!</value>
+    <value>Krvacis!</value>
   </data>
   <data name="CharacterLoc_TargetIsDead" xml:space="preserve">
     <value>The target is dead.</value>
@@ -41,7 +41,7 @@
     <value>Mana v holi</value>
   </data>
   <data name="ColoredStaffLoc_manaVanished" xml:space="preserve">
-    <value>Mana v holi je sv�z�na s tvou mysl� - odlo�en�m hole mana vyprchala.</value>
+    <value>Mana v holi je svazana s tvou mysli - odlozenim hole mana vyprchala.</value>
   </data>
   <data name="CommandLoc_CommandDoesNothing" xml:space="preserve">
     <value>This code line does nothing</value>
@@ -1343,19 +1343,19 @@
     <value>Effect of '{0}' ended.</value>
   </data>
   <data name="EnergyShieldLoc_cantMove" xml:space="preserve">
-    <value>B�hem trv�n� kouzla Energy shield se nem��e� pohybovat</value>
+    <value>Behem trvani kouzla Energy shield se nemuzes pohybovat</value>
   </data>
   <data name="EnergyShieldLoc_cantTeleport" xml:space="preserve">
-    <value>B�hem trv�n� kouzla Energy shield nem��e� pou��vat teleporta�n� kouzla</value>
+    <value>Behem trvani kouzla Energy shield nemuzes pouzivat teleportacni kouzla</value>
   </data>
   <data name="EnergyShieldLoc_shieldSavedYou" xml:space="preserve">
-    <value>Energy shield t� uchr�nil p�ed zran�n�m</value>
+    <value>Energy shield te uchranil pred zranenim</value>
   </data>
   <data name="EnergyShieldLoc_shieldSavedYouPartially" xml:space="preserve">
-    <value>Energy shield t� ��ste�n� ochr�nil p�ed zran�n�m</value>
+    <value>Energy shield te castecne ochranil pred zranenim</value>
   </data>
   <data name="EnergyShieldLoc_shieldWasted" xml:space="preserve">
-    <value>Tv�j Energy shield se vy�erpal</value>
+    <value>Tvuj Energy shield se vycerpal</value>
   </data>
   <data name="GmCommandsLoc_GMModeOff" xml:space="preserve">
     <value>GM mode off (Plevel 1).</value>
@@ -1415,25 +1415,25 @@
     <value>'{0}' is not a number!</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Add" xml:space="preserve">
-    <value>P�idat</value>
+    <value>Pridat</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Buy" xml:space="preserve">
     <value>Koupit</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Change" xml:space="preserve">
-    <value>Zm�nit</value>
+    <value>Zmenit</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Color" xml:space="preserve">
     <value>Barva</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Examine" xml:space="preserve">
-    <value>Proj�t</value>
+    <value>Projit</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Price" xml:space="preserve">
     <value>Cena</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Recall" xml:space="preserve">
-    <value>St�hnout</value>
+    <value>Stahnout</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Units" xml:space="preserve">
     <value>Jednotek?</value>
@@ -1448,22 +1448,22 @@
     <value>Odebrat sekci</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_Description" xml:space="preserve">
-    <value>N�zev zbo��</value>
+    <value>Nazev zbozi</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_NewStock" xml:space="preserve">
-    <value>P�idat dal�i zbo��</value>
+    <value>Pridat dalsi zbozi</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_PriceInGp" xml:space="preserve">
     <value>Cena (gp)</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_ReverseOrder" xml:space="preserve">
-    <value>P�evr�tit nab�dku</value>
+    <value>Prevratit nabidku</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_TargetIconSource" xml:space="preserve">
     <value>Target something to copy icon from.</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_YourAccount" xml:space="preserve">
-    <value>Va�e konto: {0} gp</value>
+    <value>Vase konto: {0} gp</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Header_Char" xml:space="preserve">
     <value>Na prodej: {0}</value>
@@ -1472,13 +1472,13 @@
     <value>Na prodej: {0} {1}</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_InvalidPrice" xml:space="preserve">
-    <value>Cena mus� b�t v�t�� ne� 0</value>
+    <value>Cena musi byt vetsi nez 0</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Label_Description" xml:space="preserve">
     <value>Popis</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Label_NewSection" xml:space="preserve">
-    <value>Nov� sekce</value>
+    <value>Nova sekce</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Label_Price" xml:space="preserve">
     <value>Cena</value>
@@ -1487,7 +1487,7 @@
     <value>Prodej</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Label_SoldByUnits" xml:space="preserve">
-    <value>Jednotkov� prodej</value>
+    <value>Jednotkovy prodej</value>
   </data>
   <data name="FishingLoc_whereToFish" xml:space="preserve">
     <value>Where do you want to fish?</value>
@@ -1526,16 +1526,16 @@
     <value>You must be holding a hatchet to do that.</value>
   </data>
   <data name="MagicReflectionLoc_NextEvilSpellReflects" xml:space="preserve">
-    <value>P��t� nep��telsk� kouzlo se od tebe odraz�</value>
+    <value>Pristi nepratelske kouzlo se od tebe odrazi</value>
   </data>
   <data name="ManaShieldLoc_cantMeditateWithManaShield" xml:space="preserve">
-    <value>Soust�edit se z�rove� na meditaci i mana shield nen� v lidsk�ch sil�ch.</value>
+    <value>Soustredit se zaroven na meditaci i mana shield neni v lidskych silach.</value>
   </data>
   <data name="ManaShieldLoc_shieldSavedYou" xml:space="preserve">
-    <value>Mana shield t� uchr�nil p�ed zran�n�m</value>
+    <value>Mana shield te uchranil pred zranenim</value>
   </data>
   <data name="ManaShieldLoc_shieldSavedYouPartially" xml:space="preserve">
-    <value>Mana shield t� ��ste�n� ochr�nil p�ed zran�n�m</value>
+    <value>Mana shield te castecne ochranil pred zranenim</value>
   </data>
   <data name="MiningLoc_abort" xml:space="preserve">
     <value>You stop mining.</value>
@@ -1568,28 +1568,28 @@
     <value>Welcome to {0}.</value>
   </data>
   <data name="PlayerVendorLoc_CanOnlySellAnimals" xml:space="preserve">
-    <value>Prod�vat lze jen zv��ata</value>
+    <value>Prodavat lze jen zvirata</value>
   </data>
   <data name="PlayerVendorLoc_NoUnitAvailable" xml:space="preserve">
-    <value>Kontejner pro jednotkov� prodej mus� m�t otev�en� a v n�m alespo� 1 p�edm�t.</value>
+    <value>Kontejner pro jednotkovy prodej musis mit otevreny a v nem alespon 1 predmet.</value>
   </data>
   <data name="PlayerVendorLoc_PriceCalculationError" xml:space="preserve">
-    <value>Cenu nelze vypo��tat.</value>
+    <value>Cenu nelze vypocitat.</value>
   </data>
   <data name="PlayerVendorLoc_StockedContainerTooFull" xml:space="preserve">
-    <value>Nem��e� prod�vat kontejner s v�ce jak 500ks zbo��</value>
+    <value>Nemuzes prodavat kontejner s vice jak 500ks zbozi</value>
   </data>
   <data name="PlayerVendorLoc_ThisNpcIsntYours" xml:space="preserve">
-    <value>Tento tvor ti nepat��.</value>
+    <value>Tento tvor ti nepatri.</value>
   </data>
   <data name="PlayerVendorLoc_VendorIsntYours" xml:space="preserve">
-    <value>Tento prodejce ti nen� pod��zen.</value>
+    <value>Tento prodejce ti neni podrizen.</value>
   </data>
   <data name="PlayerVendorLoc_VendorOffline" xml:space="preserve">
-    <value>Tento prodejce m� zav�eno</value>
+    <value>Tento prodejce ma zavreno</value>
   </data>
   <data name="PlayerVendorLoc_YouCantStockMoney" xml:space="preserve">
-    <value>Nem��e� prod�vat hotovost</value>
+    <value>Nemuzes prodavat hotovost</value>
   </data>
   <data name="ProfessionPluginLoc_YouCantCastThis" xml:space="preserve">
     <value>You can't cast this spell, being {0} of profession.</value>
@@ -1601,16 +1601,16 @@
     <value>Your profession does not allow you to wear this armor.</value>
   </data>
   <data name="RecallRuneLoc_ForbiddenEnemyTeleportingIn" xml:space="preserve">
-    <value>Zde je nep��tel�m zak�z�no kouzlit teleportovac� kouzla</value>
+    <value>Zde je nepratelum zakazano kouzlit teleportovaci kouzla</value>
   </data>
   <data name="RecallRuneLoc_ForbiddenEnemyTeleportingOut" xml:space="preserve">
-    <value>Odtud je nep��tel�m zak�z�no kouzlit teleportovac� kouzla</value>
+    <value>Odtud je nepratelum zakazano kouzlit teleportovaci kouzla</value>
   </data>
   <data name="RecallRuneLoc_ForbiddenTeleportingIn" xml:space="preserve">
-    <value>Zde je zak�z�no kouzlit teleportovac� kouzla</value>
+    <value>Zde je zakazano kouzlit teleportovaci kouzla</value>
   </data>
   <data name="RecallRuneLoc_ForbiddenTeleportingOut" xml:space="preserve">
-    <value>Odtud je zak�z�no kouzlit teleportovac� kouzla</value>
+    <value>Odtud je zakazano kouzlit teleportovaci kouzla</value>
   </data>
   <data name="RecallRuneLoc_anUnknownDestination" xml:space="preserve">
     <value>an unknown destination</value>
@@ -1619,79 +1619,79 @@
     <value>Target</value>
   </data>
   <data name="ResListLoc_AbilityTooLow" xml:space="preserve">
-    <value>Schopnost {0} ovl�d� p��li� �patn�</value>
+    <value>Schopnost {0} ovladas prilis spatne</value>
   </data>
   <data name="ResListLoc_DexTooLow" xml:space="preserve">
-    <value>Nejsi dost obratn�</value>
+    <value>Nejsi dost obratny</value>
   </data>
   <data name="ResListLoc_HitsTooLow" xml:space="preserve">
-    <value>Jsi p��li� zran�n� (m�lo hitpoint�)</value>
+    <value>Jsi prilis zraneny (malo hitpointu)</value>
   </data>
   <data name="ResListLoc_IntTooLow" xml:space="preserve">
-    <value>Nejsi dost inteligentn�</value>
+    <value>Nejsi dost inteligentni</value>
   </data>
   <data name="ResListLoc_LevelTooLow" xml:space="preserve">
     <value></value>
   </data>
   <data name="ResListLoc_ManaTooLow" xml:space="preserve">
-    <value>M� m�lo many</value>
+    <value>Mas malo many</value>
   </data>
   <data name="ResListLoc_NotEnoughItems" xml:space="preserve">
-    <value>M� m�lo {0}</value>
+    <value>Mas malo {0}</value>
   </data>
   <data name="ResListLoc_NotEnoughItemsOfType" xml:space="preserve">
-    <value>M� m�lo p�edm�t� typu {0}</value>
+    <value>Mas malo predmetu typu {0}</value>
   </data>
   <data name="ResListLoc_SkillTooLow" xml:space="preserve">
-    <value>Umen� {0} ovl�d� p��li� �patn�</value>
+    <value>Umeni {0} ovladas prilis spatne</value>
   </data>
   <data name="ResListLoc_StamTooLow" xml:space="preserve">
-    <value>Jsi p��li� vy�erpan� (m�lo staminy)</value>
+    <value>Jsi prilis vycerpany (malo staminy)</value>
   </data>
   <data name="ResListLoc_StrTooLow" xml:space="preserve">
-    <value>Nejsi dost siln�</value>
+    <value>Nejsi dost silny</value>
   </data>
   <data name="ResListLoc_VitTooLow" xml:space="preserve">
-    <value>Nejsi dost vit�ln�</value>
+    <value>Nejsi dost vitalni</value>
   </data>
   <data name="ResurrectionLoc_GhostCantReachTheBody" xml:space="preserve">
-    <value>Duch nedos�hne na sv� t�lo.</value>
+    <value>Duch nedosahne na sve telo.</value>
   </data>
   <data name="ResurrectionLoc_ThisIsntBody" xml:space="preserve">
-    <value>Toto nen� t�lo!</value>
+    <value>Toto neni telo!</value>
   </data>
   <data name="ResurrectionLoc_ThisIsntPlayersBody" xml:space="preserve">
-    <value>Toto nen� t�lo hr��sk� postavy.</value>
+    <value>Toto neni telo hracske postavy.</value>
   </data>
   <data name="SpellBookLoc_TargetBookToEmpty" xml:space="preserve">
-    <value>Ze kter� knihy chce� vysypat svitky?</value>
+    <value>Ze ktere knihy chces vysypat svitky?</value>
   </data>
   <data name="SpellDefLoc_ForbiddenBeneficialMagicIn" xml:space="preserve">
-    <value>Zde je zak�z�no kouzlit p��nosn� kouzla</value>
+    <value>Zde je zakazano kouzlit prinosna kouzla</value>
   </data>
   <data name="SpellDefLoc_ForbiddenBeneficialMagicOut" xml:space="preserve">
-    <value>Odtud je zak�z�no kouzlit p��nosn� kouzla</value>
+    <value>Odtud je zakazano kouzlit prinosna kouzla</value>
   </data>
   <data name="SpellDefLoc_ForbiddenHarmfulMagicIn" xml:space="preserve">
-    <value>Zde je zak�z�no kouzlit �kodliv� kouzla</value>
+    <value>Zde je zakazano kouzlit skodliva kouzla</value>
   </data>
   <data name="SpellDefLoc_ForbiddenHarmfulMagicOut" xml:space="preserve">
-    <value>Odtud je zak�z�no kouzlit �kodliv� kouzla</value>
+    <value>Odtud je zakazano kouzlit skodliva kouzla</value>
   </data>
   <data name="SpellDefLoc_ForbiddenMagicIn" xml:space="preserve">
-    <value>Zde je zak�z�no kouzlit</value>
+    <value>Zde je zakazano kouzlit</value>
   </data>
   <data name="SpellDefLoc_ForbiddenMagicOut" xml:space="preserve">
-    <value>Odtud je zak�z�no kouzlit</value>
+    <value>Odtud je zakazano kouzlit</value>
   </data>
   <data name="SpellDefLoc_TargetResistedSpell" xml:space="preserve">
-    <value>C�l odolal kouzlu!</value>
+    <value>Cil odolal kouzlu!</value>
   </data>
   <data name="ThrowingLoc_onlyWorksWhenFighting" xml:space="preserve">
-    <value>H�zec� no�e lze pou��t jen b�hem boje.</value>
+    <value>Hazeci noze lze pouzit jen behem boje.</value>
   </data>
   <data name="ThrowingLoc_youNeedThrowingKnife" xml:space="preserve">
-    <value>Nem� ��dn� h�zec� n��.</value>
+    <value>Nemas zadny hazeci nuz.</value>
   </data>
   <data name="DamageManagerLoc_YouDodged" xml:space="preserve">
     <value>You dodged the blow.</value>
@@ -1769,7 +1769,7 @@
     <value>The repair failed</value>
   </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
-    <value>Nem� st�elivo.</value>
+    <value>Nemas strelivo.</value>
   </data>
   <data name="loc_ability_functions_NoSuchAbility" xml:space="preserve">
     <value>There's no such ability</value>
@@ -1784,13 +1784,13 @@
     <value>To cast the resurrection spell, you need the corresponding talent</value>
   </data>
   <data name="loc_playervendor_NothingToSell" xml:space="preserve">
-    <value>Nem�m nic na prodej</value>
+    <value>Nemam nic na prodej</value>
   </data>
   <data name="loc_playervendor_OneMomentPlease" xml:space="preserve">
-    <value>Okam���ek</value>
+    <value>Okamzicek</value>
   </data>
   <data name="loc_playervendor_TargetThingToStock" xml:space="preserve">
-    <value>Zam�� v�c nebo zv��e na prodej</value>
+    <value>Zamer vec nebo zvire na prodej</value>
   </data>
   <data name="loc_silence_YouHaveBeenSilenced" xml:space="preserve">
     <value>You have been silenced for {0} seconds</value>

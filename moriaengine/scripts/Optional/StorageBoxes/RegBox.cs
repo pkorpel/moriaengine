@@ -69,10 +69,10 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			this.ResizePic(10, 10, 3000, 640, 145 + radku * 80);
 			this.Button(15, 25, 4005, 4007, true, 0, 1);		// add reagents
 			this.Button(620, 10, 4017, 4019, true, 0, 0);	// close dialog
-			this.HtmlGumpA(255, 15, 150, 20, "Bedýnka na regy", false, false);
-			this.HtmlGumpA(55, 27, 100, 20, "Pøidat regy", false, false);
+			this.HtmlGumpA(255, 15, 150, 20, "Bedynka na regy", false, false);
+			this.HtmlGumpA(55, 27, 100, 20, "Pridat regy", false, false);
 			if ((radku == 0) && (i == 0)) {
-				this.HtmlGumpA(baseX, 75, 200, 20, "Bedna na regy je prázdná", false, false);
+				this.HtmlGumpA(baseX, 75, 200, 20, "Bedna na regy je prazdna", false, false);
 			} else {
 				i = 0;
 				foreach (KeyValuePair<ItemDef, int> pair in box.inBoxReags) {
@@ -118,14 +118,14 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					int desiredCount = (int) gr.GetNumberResponse(i);
 					if ((gr.IsSwitched(i)) && (desiredCount > 0)) {	// player wants to take at least one reagent
 						if (box.inBoxReags[buttonShowItemDef[i]] < desiredCount) {
-							((Player) gi.Cont).RedMessage("Snažíš se vyndat pøíliš mnoho regù: " + buttonShowItemDef[i].Name + ". Vyndáváš plný poèet.");
+							((Player) gi.Cont).RedMessage("Snazis se vyndat prilis mnoho regu: " + buttonShowItemDef[i].Name + ". Vyndavas plny pocet.");
 							reagsToGive = box.inBoxReags[buttonShowItemDef[i]];
 						} else {
 							reagsToGive = desiredCount;
 						}
 						buttonShowItemDef[i].Create(((Player) gi.Cont).Backpack);
 						Globals.LastNewItem.Amount = reagsToGive;
-						gi.Cont.SysMessage("Vyndáváš z bedny " + Convert.ToString(reagsToGive) + "ks regu " + buttonShowItemDef[i].Name + ".");
+						gi.Cont.SysMessage("Vyndavas z bedny " + Convert.ToString(reagsToGive) + "ks regu " + buttonShowItemDef[i].Name + ".");
 						box.inBoxReags[buttonShowItemDef[i]] -= reagsToGive;
 						box.pocetRegu -= reagsToGive;
 						if (box.inBoxReags[buttonShowItemDef[i]] == 0) {
@@ -148,7 +148,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 	public class Targ_RegBox : CompiledTargetDef {
 
 		protected override void On_Start(Player self, object parameter) {
-			self.SysMessage("Zamìø reagent, který chceš vložit do bedny.");
+			self.SysMessage("Zamer reagent, ktery chces vlozit do bedny.");
 			base.On_Start(self, parameter);
 		}
 
@@ -177,7 +177,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						targetted.Delete();
 					}
 				} else {
-					self.SysMessage("Do bedny mùžeš pøidat jen regy.");
+					self.SysMessage("Do bedny muzes pridat jen regy.");
 
 				}
 			}

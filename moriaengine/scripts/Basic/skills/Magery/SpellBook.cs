@@ -220,6 +220,6 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class SpellBookLoc : CompiledLocStringCollection<SpellBookLoc> {
-		internal readonly string TargetBookToEmpty = "Ze které knihy chceš vysypat svitky?";
+		internal readonly string TargetBookToEmpty = "Ze ktere knihy chces vysypat svitky?";
 	}
 }

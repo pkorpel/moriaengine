@@ -46,7 +46,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dialogHandler.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Admin dialog - seznam pøipojených klientù (" + (firstiVal + 1) + "-" + imax + " z " + playersList.Count + ")").Build();
+			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Admin dialog - seznam pripojenych klientu (" + (firstiVal + 1) + "-" + imax + " z " + playersList.Count + ")").Build();
 			//cudlik na zavreni dialogu
 			dialogHandler.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dialogHandler.MakeLastTableTransparent();
@@ -64,7 +64,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//Jméno
 			dialogHandler.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(2).Build(); //tridit podle hráèù asc
 			dialogHandler.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(5).Build(); //tridit podle hráèù desc			
-			dialogHandler.LastTable[0, 2] = GUTAText.Builder.TextLabel("Jméno").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
+			dialogHandler.LastTable[0, 2] = GUTAText.Builder.TextLabel("Jmeno").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 
 			//Lokace
 			dialogHandler.LastTable[0, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(3).Build(); //tridit dle lokaci asc

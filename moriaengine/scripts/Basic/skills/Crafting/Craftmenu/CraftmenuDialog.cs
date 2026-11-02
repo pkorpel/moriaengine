@@ -39,7 +39,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 		}
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
-			sendTo.SysMessage("Co chceš vyrobit?");
+			sendTo.SysMessage("Co chces vyrobit?");
 			ImprovedDialog dlg = new ImprovedDialog(this.GumpInstance);
 			CraftmenuCategory cat = (CraftmenuCategory) args[0];
 
@@ -54,7 +54,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//nadpis dialogu, cudliky na back a zruseni
 
 			dlg.AddTable(new GUTATable(1, innerWidth - 3 * ButtonMetrics.D_BUTTON_WIDTH - 5 * ImprovedDialog.D_COL_SPACE, ButtonMetrics.D_BUTTON_WIDTH, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Kategorie výroby: " + cat.FullName).Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Kategorie vyroby: " + cat.FullName).Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonBack).Id(1).Build(); //one category back button
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(7).Build(); //settings button
 			dlg.LastTable[0, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build(); //exit button
@@ -68,9 +68,9 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 				dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 203, ButtonMetrics.D_BUTTON_WIDTH, 0));
 				dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(3).Build(); //new item(s) btn
-				dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Pøidat pøedmìt(y)").Build();
+				dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Pridat predmet(y)").Build();
 				dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(2).Build(); //new subcategory btn
-				dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Pøidat podkategorii").Build();
+				dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Pridat podkategorii").Build();
 				dlg.MakeLastTableTransparent();
 
 				//headlines row
@@ -86,7 +86,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				dlg.LastTable[0, 6] = GUTAText.Builder.TextLabel("Suroviny").Build();
 			}
 			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Kolik").Build();
-			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Jméno").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Top).Build();
+			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Jmeno").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Top).Build();
 			dlg.LastTable[0, 5] = GUTAText.Builder.TextLabel("Info").Build();
 			dlg.MakeLastTableTransparent();
 
@@ -183,10 +183,10 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, ImprovedDialog.ICON_WIDTH + 160, ButtonMetrics.D_BUTTON_WIDTH, 150, 0, ButtonMetrics.D_BUTTON_WIDTH));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(4).Build(); //start making
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Vyrobit vybrané").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Vyrobit vybrane").Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonBack).Id(5).Build(); //next time open here
-			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Pøíštì otevøít zde").Build();
-			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Zrušit otevírání").Build();
+			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Priste otevrit zde").Build();
+			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Zrusit otevirani").Build();
 			dlg.LastTable[0, 5] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(6).Build(); //discard saved position
 			dlg.MakeLastTableTransparent();
 
@@ -215,7 +215,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						}
 						break;
 					case 2: //new subcategory
-						var inputDialog = new CompiledInputDef("Nová subkategtorie", "Jméno", (sentTo, focus, filledText) => {
+						var inputDialog = new CompiledInputDef("Nova subkategtorie", "Jmeno", (sentTo, focus, filledText) => {
 							CraftmenuCategory newCat = new CraftmenuCategory(filledText);
 							cat.Contents.Add(newCat);
 							newCat.Parent = cat;
@@ -257,7 +257,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 							gi.Cont.SetTag(TkLastCat, lastPosDict);
 						}
 						lastPosDict[cat.CategorySkill] = cat; //store the category associated to one crafting skill
-						gi.Cont.SysMessage("Pozice výrobního menu pro skill " + cat.CategorySkill.Key + " nastavena na kategorii " + cat.FullName);
+						gi.Cont.SysMessage("Pozice vyrobniho menu pro skill " + cat.CategorySkill.Key + " nastavena na kategorii " + cat.FullName);
 						DialogStacking.ResendAndRestackDialog(gi);
 						break;
 					case 6: //stop opening here
@@ -268,7 +268,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 								gi.Cont.RemoveTag(TkLastCat); //no more last positions left
 							}
 						}
-						gi.Cont.SysMessage("Nastavení poslední pozice výrobního menu pro skill " + cat.CategorySkill.Key + " zrušeno");
+						gi.Cont.SysMessage("Nastaveni posledni pozice vyrobniho menu pro skill " + cat.CategorySkill.Key + " zruseno");
 						DialogStacking.ResendAndRestackDialog(gi);
 						break;
 					case 7: //go to settings page with this category
@@ -374,7 +374,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis tabulky
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Kategorie výroby").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Kategorie vyroby").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build(); //exit button
 			dlg.MakeLastTableTransparent();
 

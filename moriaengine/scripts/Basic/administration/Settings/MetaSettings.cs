@@ -192,7 +192,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {
 
 		public override string Name {
-			get { return "Seznam v�ech abilit"; }
+			get { return "Seznam vsech abilit"; }
 		}
 	}
 }

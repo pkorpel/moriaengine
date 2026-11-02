@@ -42,7 +42,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis dialogu, cudliky na back a zruseni
 			dlg.AddTable(new GUTATable(1, innerWidth - 3 * ButtonMetrics.D_BUTTON_WIDTH - 5 * ImprovedDialog.D_COL_SPACE, ButtonMetrics.D_BUTTON_WIDTH, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Nastavení kategorie výroby: " + cat.FullName).Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Nastaveni kategorie vyroby: " + cat.FullName).Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonBack).Id(1).Build(); //one category back button
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(2).Build(); //craftmenu button
 			dlg.LastTable[0, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build(); //exit button
@@ -86,7 +86,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					resources = ObjectSaver.Save(itm.itemDef.Resources);
 					skillmake = ObjectSaver.Save(itm.itemDef.SkillMake);
 					weight = itm.itemDef.Weight.ToString();
-					secRow[0, 2] = GUTAText.Builder.TextLabel("Váha:").Align(DialogAlignment.Align_Left).Valign(DialogAlignment.Valign_Bottom).Build();
+					secRow[0, 2] = GUTAText.Builder.TextLabel("Vaha:").Align(DialogAlignment.Align_Left).Valign(DialogAlignment.Valign_Bottom).Build();
 					secRow[0, 2] = GUTAText.Builder.Text(weight).Valign(DialogAlignment.Valign_Bottom).XPos(offset).Build();
 					secRow[1, 1] = GUTAText.Builder.TextLabel("Resources").Align(DialogAlignment.Align_Left).Valign(DialogAlignment.Valign_Bottom).Build();
 					secRow[1, 2] = GUTAText.Builder.Text(resources).Build();
@@ -105,7 +105,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//dlg.MakeLastTableTransparent();
 
 			dlg.AddTable(new GUTATable(1, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vlastnosti lze mìnit pomocí ikony v levé èásti dialogu").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vlastnosti lze menit pomoci ikony v leve casti dialogu").Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.WriteOut();
@@ -128,7 +128,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 							newGi = gi.Cont.Dialog(SingletonScript<D_Craftmenu_Settings>.Instance, new DialogArgs(cat.Parent));
 							//DialogStacking.EnstackDialog(gi, newGi);
 						} else {
-							gi.Cont.SysMessage("Nelze pøejít na nadøazenou kategorii, souèasná je v hierarchii nejvýše!");
+							gi.Cont.SysMessage("Nelze prejit na nadrazenou kategorii, soucasna je v hierarchii nejvyse!");
 							DialogStacking.ResendAndRestackDialog(gi);
 						}
 						break;

@@ -69,9 +69,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 	public class ResurrectionLoc : CompiledLocStringCollection<ResurrectionLoc> {
-		public string ThisIsntBody = "Toto není tìlo!";
-		public string ThisIsntPlayersBody = "Toto není tìlo hráèské postavy.";
+		public string ThisIsntBody = "Toto neni telo!";
+		public string ThisIsntPlayersBody = "Toto neni telo hracske postavy.";
 		//internal readonly string ResurrectionPlayerIsntDead = "Hráè toho tìla není mrtvý.";
-		public string GhostCantReachTheBody = "Duch nedosáhne na své tìlo.";
+		public string GhostCantReachTheBody = "Duch nedosahne na sve telo.";
 	}
 }

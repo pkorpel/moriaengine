@@ -121,6 +121,6 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class MagicReflectionLoc : CompiledLocStringCollection<MagicReflectionLoc> {
-		public string NextEvilSpellReflects = "Pøíští nepøátelské kouzlo se od tebe odrazí";
+		public string NextEvilSpellReflects = "Pristi nepratelske kouzlo se od tebe odrazi";
 	}
 }

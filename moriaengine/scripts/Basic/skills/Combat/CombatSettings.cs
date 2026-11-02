@@ -252,7 +252,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponTypeMassSetting : MassSettings_ByModel<WeaponDef, WeaponType> {
 		public override string Name {
 			get {
-				return "Typy zbran�";
+				return "Typy zbrani";
 			}
 		}
 
@@ -297,7 +297,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponRangeVsMMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Dost�ely/dosahy zbran� vs M";
+				return "Dostrely/dosahy zbrani vs M";
 			}
 		}
 
@@ -323,7 +323,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponRangeVsPMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Dost�ely/dosahy zbran� vs P";
+				return "Dostrely/dosahy zbrani vs P";
 			}
 		}
 
@@ -349,7 +349,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponStrikeStartRangeMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Dost�ely/dosahy zbran� - minimum pro za��tek n�p�ahu";
+				return "Dostrely/dosahy zbrani - minimum pro zacatek naprahu";
 			}
 		}
 
@@ -375,7 +375,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponStrikeStopRangeMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Dost�ely/dosahy zbran� - maximum pro trv�n� n�p�ahu";
+				return "Dostrely/dosahy zbrani - maximum pro trvani naprahu";
 			}
 		}
 
@@ -401,7 +401,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponSpeedMassSetting : MassSettings_ByModel<WeaponDef, double> {
 		public override string Name {
 			get {
-				return "Rychlosti zbran�";
+				return "Rychlosti zbrani";
 			}
 		}
 
@@ -427,7 +427,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponAnimTypeSetting : MassSettings_ByModel<WeaponDef, WeaponAnimType> {
 		public override string Name {
 			get {
-				return "Typy animace zbran�";
+				return "Typy animace zbrani";
 			}
 		}
 
@@ -485,7 +485,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponMaterialTypeMassSetting : MassSettings_ByModel<ColoredWeaponDef, MaterialType> {
 		public override string Name {
 			get {
-				return "Typ materi�lu zbran�";
+				return "Typ materialu zbrani";
 			}
 		}
 
@@ -511,7 +511,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponAttackVsPMassSetting : MassSettingByMaterial<ColoredWeaponDef, double> {
 
 		public override string Name {
-			get { return "�tok proti hr���m"; }
+			get { return "Utok proti hracum"; }
 		}
 
 		protected class WeaponAttackVsPFieldView : FieldView_ByModel {
@@ -536,7 +536,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponAttackVsMMassSetting : MassSettingByMaterial<ColoredWeaponDef, double> {
 
 		public override string Name {
-			get { return "�tok proti monstr�m"; }
+			get { return "Utok proti monstrum"; }
 		}
 
 		protected class WeaponAttackVsMFieldView : FieldView_ByModel {
@@ -561,7 +561,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WearableLayerMassSetting : MassSettings_ByModel<WearableDef, LayerNames> {
 		public override string Name {
 			get {
-				return "Layery brn�n�/oble�en�";
+				return "Layery brneni/obleceni";
 			}
 		}
 
@@ -587,7 +587,7 @@ namespace SteamEngine.CompiledScripts {
 	public class ArmorVsPMassSetting : MassSettings_ByWearableTypeAndMaterial<ColoredArmorDef, int> {
 
 		public override string Name {
-			get { return "Armor proti hr���m"; }
+			get { return "Armor proti hracum"; }
 		}
 
 		protected class ArmorVsPFieldView : FieldView_ByWearableTypeAndMaterial {
@@ -612,7 +612,7 @@ namespace SteamEngine.CompiledScripts {
 	public class ArmorVsMMassSetting : MassSettings_ByWearableTypeAndMaterial<ColoredArmorDef, int> {
 
 		public override string Name {
-			get { return "Armor proti monstr�m"; }
+			get { return "Armor proti monstrum"; }
 		}
 
 		protected class ArmorVsMFieldView : FieldView_ByWearableTypeAndMaterial {
@@ -637,7 +637,7 @@ namespace SteamEngine.CompiledScripts {
 	public class MindDefenseVsPMassSetting : MassSettings_ByWearableTypeAndMaterial<ColoredArmorDef, int> {
 
 		public override string Name {
-			get { return "Obrana mysli hr���m"; }
+			get { return "Obrana mysli hracum"; }
 		}
 
 		protected class MindDefenseVsPFieldView : FieldView_ByWearableTypeAndMaterial {
@@ -662,7 +662,7 @@ namespace SteamEngine.CompiledScripts {
 	public class MindDefenseVsMMassSetting : MassSettings_ByWearableTypeAndMaterial<ColoredArmorDef, int> {
 
 		public override string Name {
-			get { return "Obrana mysli monstr�m"; }
+			get { return "Obrana mysli monstrum"; }
 		}
 
 		protected class MindDefenseVsMFieldView : FieldView_ByWearableTypeAndMaterial {
@@ -687,7 +687,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponProjectileType : MassSettings_ByModel<WeaponDef, ProjectileType> {
 		public override string Name {
 			get {
-				return "Typ projektil� pro zbran�";
+				return "Typ projektilu pro zbrane";
 			}
 		}
 
@@ -713,7 +713,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponProjectileAnimMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Animace projektil� pro zbran�";
+				return "Animace projektilu pro zbrane";
 			}
 		}
 
@@ -739,7 +739,7 @@ namespace SteamEngine.CompiledScripts {
 	public class ProjectileTypeMassSetting : MassSettings_ByModel<ProjectileDef, ProjectileType> {
 		public override string Name {
 			get {
-				return "Typ projektil�";
+				return "Typ projektilu";
 			}
 		}
 
@@ -765,7 +765,7 @@ namespace SteamEngine.CompiledScripts {
 	public class ProjectilePiercingMassSetting : MassSettings_ByClass_ThingDef<ProjectileDef, double> {
 		public override string Name {
 			get {
-				return "Piercing projektil�";
+				return "Piercing projektilu";
 			}
 		}
 
