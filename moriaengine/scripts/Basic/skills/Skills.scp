@@ -39,15 +39,12 @@ StartByMacroEnabled = true
 DELAY=3, 1
 ADVRATE=2.5,50.0,200.0
 
-[SCRIPTEDSKILLDEF 9]
+[PEACEMAKINGSKILLDEF 9]
 DEFNAME=Skill_Peacemaking
 KEY="Peacemaking"
 StartByMacroEnabled = true
 DELAY=2.0
 ADVRATE=2.5,50.0,200.0
-
-ON=@Fail
-	src.message "You attempt to calm everyone, but fail."
 
 [SCRIPTEDSKILLDEF 10]
 DEFNAME=Skill_Camping
@@ -144,7 +141,7 @@ ADVRATE=2.5,50.0,200.0
 ON=@Fail
 	src.message "You don't seem to be able to persuade that to move."
 
-[SCRIPTEDSKILLDEF 22]
+[PROVOCATIONSKILLDEF 22]
 DEFNAME=Skill_Provocation
 KEY="Provocation"
 StartByMacroEnabled = true
@@ -159,9 +156,6 @@ StartByMacroEnabled = true
 //BONUS_INT=10
 //BONUSSTATS=5
 ADVRATE=2.5,50.0,200.0
-
-ON=@Fail
-	src.message "Your music fails to incite enough anger."
 
 [LOCKPICKSKILLDEF 24]
 DEFNAME=Skill_LockPick

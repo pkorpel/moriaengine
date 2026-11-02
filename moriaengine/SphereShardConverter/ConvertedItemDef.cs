@@ -394,6 +394,8 @@ namespace SteamEngine.Converter {
 			((ConvertedItemDef) def).tData1 = line.Value;
 			if (def.headerType.Equals("PotionDef", StringComparison.OrdinalIgnoreCase)) {
 				def.Set("EmptyFlask", line.Value, "converted from 'TDATA1'");
+			} else if (def.headerType.Equals("MusicalDef", StringComparison.OrdinalIgnoreCase)) {
+				def.Set("SuccessSound", line.Value, "converted from 'TDATA1'"); //#962
 			} else {
 				WriteAsComment(def, line);
 			}
@@ -401,7 +403,11 @@ namespace SteamEngine.Converter {
 
 		private static void HandleTData2(ConvertedDef def, PropsLine line) {
 			((ConvertedItemDef) def).tData2 = line.Value;
-			WriteAsComment(def, line);
+			if (def.headerType.Equals("MusicalDef", StringComparison.OrdinalIgnoreCase)) {
+				def.Set("FailureSound", line.Value, "converted from 'TDATA2'"); //#962
+			} else {
+				WriteAsComment(def, line);
+			}
 		}
 
 		//#700 - for a real T_EQ_HORSE mount item, TDATA3 names the actual mount creature

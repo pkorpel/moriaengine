@@ -236,6 +236,9 @@ namespace SteamEngine.CompiledScripts {
 			if (EliteMonster.IsLeaving(self)) {
 				return; //#794 - casting its gate / leaving: frozen (Erebor's flag_freeze)
 			}
+			if (PeacemakingSkillDef.IsAsleep(self)) {
+				return; //#962 - e_peacemade
+			}
 
 			//#797/#799 - abilities on their own clock, in any AI state (regeneration, backstab
 			//hiding, mass leap hops, dispel bomb fuses)
@@ -407,6 +410,16 @@ namespace SteamEngine.CompiledScripts {
 			if ((timer != null) && (timer.target == null)) {
 				Logger.WriteDebug("NPCAiTimer.DefendAgainst: " + self.Name + "#" + self.Uid + " fights back against " + attacker.Name);
 				timer.EngageTarget(attacker);
+			}
+		}
+
+		/// <summary>#962 - Sphere's ATTACK: whoever it was fighting, now it's this one.</summary>
+		public static void Attack(NPC self, Character victim) {
+			NPCAiTimer timer = GetFor(self);
+			if ((timer != null) && (victim != null) && !victim.IsDeleted && victim.IsAliveAndValid) {
+				timer.isHeld = false;
+				timer.Disengage();
+				timer.EngageTarget(victim);
 			}
 		}
 
