@@ -66,5 +66,14 @@ namespace SteamEngine.CompiledScripts {
 		/// most this many seconds ago (Sphere's fight memory).</summary>
 		[SaveableData]
 		public int guardCallMemorySeconds = 120;
+
+		/// <summary>#1033 - an NPC heals itself under this percent of its hits, and only when the heal
+		/// wouldn't be wasted. Above about 90 it looks like healing at full health.</summary>
+		[SaveableData]
+		public int npcHealBelowPercent = 75;
+
+		/// <summary>#1033 - creatures an NPC keeps summoned at once.</summary>
+		[SaveableData]
+		public int npcMaxSummons = 2;
 	}
 }

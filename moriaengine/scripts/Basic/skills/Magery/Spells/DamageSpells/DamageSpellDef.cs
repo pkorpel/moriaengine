@@ -54,18 +54,28 @@ namespace SteamEngine.CompiledScripts {
 		#endregion FieldValues
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
-			double dam = this.CalculateDamage(target, spellEffectArgs);
+			double dam = this.CalculateDamage(spellEffectArgs.Caster, target, spellEffectArgs.SpellPower);
 			DamageManager.CauseSpellDamage(spellEffectArgs.Caster, target, this.DamageType, dam);
 		}
 
-		protected virtual double CalculateDamage(Character target, SpellEffectArgs spellEffectArgs) {
+		/// <summary>#1033 - what this would do to target after armor and resists, for an NPC choosing
+		/// a spell. A roll against armor can make it vary a little.</summary>
+		public double EstimateDamage(Character caster, Character target, int spellPower) {
+			double damage = this.CalculateDamage(caster, target, spellPower);
+			if (this.DamageType == DamageType.Irresistable) {
+				return damage;
+			}
+			return damage * DamageManager.GetResistModifier(target, this.DamageType);
+		}
+
+		protected virtual double CalculateDamage(Character caster, Character target, int spellPower) {
 			//#860 - promilerange: power above 1000 keeps growing, in whole numbers
 			double[] effect = this.Effect;
 			double low = (effect.Length > 0) ? effect[0] : 0;
 			double high = (effect.Length > 1) ? effect[1] : low;
-			double damage = low + Math.Truncate(((high - low) * spellEffectArgs.SpellPower) / 1000);
+			double damage = low + Math.Truncate(((high - low) * spellPower) / 1000);
 			if (this.ArmorPiercing >= 0) {
-				return CombatCalculator.CalculateSpellArmorEffect(spellEffectArgs.Caster, target, damage, this.ArmorPiercing);
+				return CombatCalculator.CalculateSpellArmorEffect(caster, target, damage, this.ArmorPiercing);
 			}
 			return damage;
 		}

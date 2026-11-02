@@ -26,8 +26,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		//#962 - f_effect_a_mind_blast: rounded to whole points, nothing for a mind as strong as the caster's
-		protected override double CalculateDamage(Character target, SpellEffectArgs spellEffectArgs) {
-			double damage = base.CalculateDamage(target, spellEffectArgs) * (spellEffectArgs.Caster.Int - target.Int);
+		protected override double CalculateDamage(Character caster, Character target, int spellPower) {
+			double damage = base.CalculateDamage(caster, target, spellPower) * (caster.Int - target.Int);
 			return System.Math.Max(0, System.Math.Truncate((damage + 500) / 1000));
 		}
 
