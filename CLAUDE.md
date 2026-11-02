@@ -35,6 +35,8 @@ Shipped, #1004 stays open for the user's pick, branch picture-menus: Sphere's pi
 
 Shipped, branch tracking-dialog-english: the user keeps `.menustyle` as a choice for players, dialog the default. Tracking's dialogs go to English, they were Windows-1250 and lost their accents, and take Sphere's five rows with Anything that moves. Closes #1004.
 
+User's rule, 2026-11-02: Czech text is saved without diacritics, hrac not hráč, in code, resx and .def. Shipped, #1006, branch czech-no-diacritics: every string literal, both resx files and hand-written .scp and .def go to plain ASCII. Strings already turned to U+FFFD come back from the Czech resx or by hand, one marker for each lost letter. Comments in .cs stay. `°` in Role and RoleKey is syntax and stays.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

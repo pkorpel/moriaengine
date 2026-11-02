@@ -1,17 +1,17 @@
 [RegBoxDef i_regBox]
 CATEGORY = Items by Professions
 SUBSECTION = Carpentry
-DESCRIPTION = Bedýnka na regy
+DESCRIPTION = Bedynka na regy
 
-NAME = "Bedýnka na regy"
+NAME = "Bedynka na regy"
 WEIGHT = 30
 model = 0x1e80
 
 [GemBoxDef i_gemBox]
 CATEGORY = Items by Professions
 SUBSECTION = Carpentry
-DESCRIPTION = Truhlièka na drané kameny
+DESCRIPTION = Truhlicka na drane kameny
 
-NAME = "Truhlièka na drahé kameny"
+NAME = "Truhlicka na drahe kameny"
 WEIGHT = 50
 model = 0x9a8

@@ -49,7 +49,7 @@ argv(0).Button(50, arg(height) - 30, 0xfa5, 0xfa7, true, 0, 2)
 XMFHTMLGumpColor(80, arg(height) - 30, 120, 20, 1011036, 0, 0, 32767) // OKAY
 
 argv(0).CheckBox(10, arg(height) + 30, 210,211, 1, 786)
-TextEntryA(10, arg(height) + 50, 500,100, 1, 762, "this is textentry ìšèøžýá")
+TextEntryA(10, arg(height) + 50, 500,100, 1, 762, "this is textentry escrzya")
 NumberEntryA(10, arg(height) + 70, 500,100, 1, 763, 5.5)
 
 [dialog d_test2 TEXT]

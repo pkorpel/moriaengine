@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vložení nové trigger groupy na " + ph).Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vlozeni nove trigger groupy na " + ph).Build();
 			//cudlik na zavreni dialogu
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dlg.MakeLastTableTransparent();

@@ -83,7 +83,7 @@ on=@targon_thing
 
 [ContainerDef i_playervendor_stock_container]
 Model=i_backpack
-name=Nab�dka
+name=Nabidka
 LAYER=60
 
 [PlayerVendorStockEntryDef i_playervendor_stock_entry]

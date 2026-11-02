@@ -52,19 +52,19 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam statických regionù (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + regionsList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam statickych regionu (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + regionsList.Count + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//cudlik na zalozeni noveho regionu
 			dlg.AddTable(new GUTATable(1, 130, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vytvoøit region").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vytvorit region").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
 			//cudlik a input field na zuzeni vyberu
 			dlg.AddTable(new GUTATable(1, 130, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledávací kriterium").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledavaci kriterium").Build();
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Id(33).Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(2).Build();
 			dlg.MakeLastTableTransparent();
@@ -72,10 +72,10 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//popis sloupcu (Detail, Delete, Name, Defname, P)
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, ButtonMetrics.D_BUTTON_WIDTH, 150, 150, 0));
 			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Detail").Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Smaž").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Smaz").Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(3).Build(); //tridit podle jmena asc
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(4).Build(); //tridit podle jmena desc            
-			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Jméno").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
+			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Jmeno").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 			dlg.LastTable[0, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(5).Build(); //tridit dle defnamu asc
 			dlg.LastTable[0, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(6).Build(); //tridit dle defnamu desc
 			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Defname").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
@@ -161,7 +161,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						break;
 					case 1: //smazat region
 						region.Delete(); //(remove z dictu, rectangly atd.)
-						D_Display_Text.ShowInfo("Region byl smazán úspìšnì");
+						D_Display_Text.ShowInfo("Region byl smazan uspesne");
 						//DialogStacking.ShowPreviousDialog(gi); //zobrazit pripadny predchozi dialog
 						break;
 				}

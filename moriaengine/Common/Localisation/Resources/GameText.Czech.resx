@@ -5,31 +5,31 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
   <data name="AbilityDefLoc_AbilityActivated" xml:space="preserve">
-    <value>Abilita {0} aktivována.</value>
+    <value>Abilita {0} aktivovana.</value>
   </data>
   <data name="AbilityDefLoc_HasBeenSwitchedOff" xml:space="preserve">
-    <value>Abilita deaktivována.</value>
+    <value>Abilita deaktivovana.</value>
   </data>
   <data name="AbilityDefLoc_NotAllowedToHaveAbility" xml:space="preserve">
-    <value>Nejsi oprávněn mít tuto abilitu.</value>
+    <value>Nejsi opravnen mit tuto abilitu.</value>
   </data>
   <data name="AbilityDefLoc_NotEnoughResourcesPresent" xml:space="preserve">
-    <value>Nedostatek zdrojů pro aktivaci ability.</value>
+    <value>Nedostatek zdroju pro aktivaci ability.</value>
   </data>
   <data name="AbilityDefLoc_NotEnoughResourcesToConsume" xml:space="preserve">
-    <value>Nedostatek zdrojů ke spotřebě pro aktivaci ability.</value>
+    <value>Nedostatek zdroju ke spotrebe pro aktivaci ability.</value>
   </data>
   <data name="AbilityDefLoc_NotYetCooledDown" xml:space="preserve">
-    <value>Abilitu nelze použít tak brzy po předchozím použití.</value>
+    <value>Abilitu nelze pouzit tak brzy po predchozim pouziti.</value>
   </data>
   <data name="AbilityDefLoc_YouDontHaveThisAbility" xml:space="preserve">
-    <value>O této abilitě nevíš vůbec nic.</value>
+    <value>O teto abilite nevis vubec nic.</value>
   </data>
   <data name="BleedingLoc_YourTargetIsBleeding" xml:space="preserve">
-    <value>{0} krvácí!</value>
+    <value>{0} krvaci!</value>
   </data>
   <data name="BleedingLoc_YoureBleeding" xml:space="preserve">
-    <value>Krvácíš!</value>
+    <value>Krvacis!</value>
   </data>
   <data name="CharacterLoc_TargetIsDead" xml:space="preserve">
     <value>The target is dead.</value>
@@ -41,7 +41,7 @@
     <value>Mana v holi</value>
   </data>
   <data name="ColoredStaffLoc_manaVanished" xml:space="preserve">
-    <value>Mana v holi je svázána s tvou myslí - odložením hole mana vyprchala.</value>
+    <value>Mana v holi je svazana s tvou mysli - odlozenim hole mana vyprchala.</value>
   </data>
   <data name="CommandLoc_CommandDoesNothing" xml:space="preserve">
     <value>This code line does nothing</value>
@@ -1343,19 +1343,19 @@
     <value>Effect of '{0}' ended.</value>
   </data>
   <data name="EnergyShieldLoc_cantMove" xml:space="preserve">
-    <value>Během trvání kouzla Energy shield se nemůžeš pohybovat</value>
+    <value>Behem trvani kouzla Energy shield se nemuzes pohybovat</value>
   </data>
   <data name="EnergyShieldLoc_cantTeleport" xml:space="preserve">
-    <value>Během trvání kouzla Energy shield nemůžeš používat teleportační kouzla</value>
+    <value>Behem trvani kouzla Energy shield nemuzes pouzivat teleportacni kouzla</value>
   </data>
   <data name="EnergyShieldLoc_shieldSavedYou" xml:space="preserve">
-    <value>Energy shield tě uchránil před zraněním</value>
+    <value>Energy shield te uchranil pred zranenim</value>
   </data>
   <data name="EnergyShieldLoc_shieldSavedYouPartially" xml:space="preserve">
-    <value>Energy shield tě částečně ochránil před zraněním</value>
+    <value>Energy shield te castecne ochranil pred zranenim</value>
   </data>
   <data name="EnergyShieldLoc_shieldWasted" xml:space="preserve">
-    <value>Tvůj Energy shield se vyčerpal</value>
+    <value>Tvuj Energy shield se vycerpal</value>
   </data>
   <data name="GmCommandsLoc_GMModeOff" xml:space="preserve">
     <value>GM mode off (Plevel 1).</value>
@@ -1415,25 +1415,25 @@
     <value>'{0}' is not a number!</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Add" xml:space="preserve">
-    <value>Přidat</value>
+    <value>Pridat</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Buy" xml:space="preserve">
     <value>Koupit</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Change" xml:space="preserve">
-    <value>Změnit</value>
+    <value>Zmenit</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Color" xml:space="preserve">
     <value>Barva</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Examine" xml:space="preserve">
-    <value>Projít</value>
+    <value>Projit</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Price" xml:space="preserve">
     <value>Cena</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Recall" xml:space="preserve">
-    <value>Stáhnout</value>
+    <value>Stahnout</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Units" xml:space="preserve">
     <value>Jednotek?</value>
@@ -1448,22 +1448,22 @@
     <value>Odebrat sekci</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_Description" xml:space="preserve">
-    <value>Název zboží</value>
+    <value>Nazev zbozi</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_NewStock" xml:space="preserve">
-    <value>Přidat dalši zboží</value>
+    <value>Pridat dalsi zbozi</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_PriceInGp" xml:space="preserve">
     <value>Cena (gp)</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_ReverseOrder" xml:space="preserve">
-    <value>Převrátit nabídku</value>
+    <value>Prevratit nabidku</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_TargetIconSource" xml:space="preserve">
     <value>Target something to copy icon from.</value>
   </data>
   <data name="Loc_PlayerVendor_ListStock_YourAccount" xml:space="preserve">
-    <value>Vaše konto: {0} gp</value>
+    <value>Vase konto: {0} gp</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Header_Char" xml:space="preserve">
     <value>Na prodej: {0}</value>
@@ -1472,13 +1472,13 @@
     <value>Na prodej: {0} {1}</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_InvalidPrice" xml:space="preserve">
-    <value>Cena musí být větší než 0</value>
+    <value>Cena musi byt vetsi nez 0</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Label_Description" xml:space="preserve">
     <value>Popis</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Label_NewSection" xml:space="preserve">
-    <value>Nová sekce</value>
+    <value>Nova sekce</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Label_Price" xml:space="preserve">
     <value>Cena</value>
@@ -1487,7 +1487,7 @@
     <value>Prodej</value>
   </data>
   <data name="Loc_PlayerVendor_Stock_Label_SoldByUnits" xml:space="preserve">
-    <value>Jednotkový prodej</value>
+    <value>Jednotkovy prodej</value>
   </data>
   <data name="FishingLoc_whereToFish" xml:space="preserve">
     <value>Where do you want to fish?</value>
@@ -1526,16 +1526,16 @@
     <value>You must be holding a hatchet to do that.</value>
   </data>
   <data name="MagicReflectionLoc_NextEvilSpellReflects" xml:space="preserve">
-    <value>Příští nepřátelské kouzlo se od tebe odrazí</value>
+    <value>Pristi nepratelske kouzlo se od tebe odrazi</value>
   </data>
   <data name="ManaShieldLoc_cantMeditateWithManaShield" xml:space="preserve">
-    <value>Soustředit se zároveň na meditaci i mana shield není v lidských silách.</value>
+    <value>Soustredit se zaroven na meditaci i mana shield neni v lidskych silach.</value>
   </data>
   <data name="ManaShieldLoc_shieldSavedYou" xml:space="preserve">
-    <value>Mana shield tě uchránil před zraněním</value>
+    <value>Mana shield te uchranil pred zranenim</value>
   </data>
   <data name="ManaShieldLoc_shieldSavedYouPartially" xml:space="preserve">
-    <value>Mana shield tě částečně ochránil před zraněním</value>
+    <value>Mana shield te castecne ochranil pred zranenim</value>
   </data>
   <data name="MiningLoc_abort" xml:space="preserve">
     <value>You stop mining.</value>
@@ -1568,28 +1568,28 @@
     <value>Welcome to {0}.</value>
   </data>
   <data name="PlayerVendorLoc_CanOnlySellAnimals" xml:space="preserve">
-    <value>Prodávat lze jen zvířata</value>
+    <value>Prodavat lze jen zvirata</value>
   </data>
   <data name="PlayerVendorLoc_NoUnitAvailable" xml:space="preserve">
-    <value>Kontejner pro jednotkový prodej musíš mít otevřený a v něm alespoň 1 předmět.</value>
+    <value>Kontejner pro jednotkovy prodej musis mit otevreny a v nem alespon 1 predmet.</value>
   </data>
   <data name="PlayerVendorLoc_PriceCalculationError" xml:space="preserve">
-    <value>Cenu nelze vypočítat.</value>
+    <value>Cenu nelze vypocitat.</value>
   </data>
   <data name="PlayerVendorLoc_StockedContainerTooFull" xml:space="preserve">
-    <value>Nemůžeš prodávat kontejner s více jak 500ks zboží</value>
+    <value>Nemuzes prodavat kontejner s vice jak 500ks zbozi</value>
   </data>
   <data name="PlayerVendorLoc_ThisNpcIsntYours" xml:space="preserve">
-    <value>Tento tvor ti nepatří.</value>
+    <value>Tento tvor ti nepatri.</value>
   </data>
   <data name="PlayerVendorLoc_VendorIsntYours" xml:space="preserve">
-    <value>Tento prodejce ti není podřízen.</value>
+    <value>Tento prodejce ti neni podrizen.</value>
   </data>
   <data name="PlayerVendorLoc_VendorOffline" xml:space="preserve">
-    <value>Tento prodejce má zavřeno</value>
+    <value>Tento prodejce ma zavreno</value>
   </data>
   <data name="PlayerVendorLoc_YouCantStockMoney" xml:space="preserve">
-    <value>Nemůžeš prodávat hotovost</value>
+    <value>Nemuzes prodavat hotovost</value>
   </data>
   <data name="ProfessionPluginLoc_YouCantCastThis" xml:space="preserve">
     <value>You can't cast this spell, being {0} of profession.</value>
@@ -1601,16 +1601,16 @@
     <value>Your profession does not allow you to wear this armor.</value>
   </data>
   <data name="RecallRuneLoc_ForbiddenEnemyTeleportingIn" xml:space="preserve">
-    <value>Zde je nepřátelům zakázáno kouzlit teleportovací kouzla</value>
+    <value>Zde je nepratelum zakazano kouzlit teleportovaci kouzla</value>
   </data>
   <data name="RecallRuneLoc_ForbiddenEnemyTeleportingOut" xml:space="preserve">
-    <value>Odtud je nepřátelům zakázáno kouzlit teleportovací kouzla</value>
+    <value>Odtud je nepratelum zakazano kouzlit teleportovaci kouzla</value>
   </data>
   <data name="RecallRuneLoc_ForbiddenTeleportingIn" xml:space="preserve">
-    <value>Zde je zakázáno kouzlit teleportovací kouzla</value>
+    <value>Zde je zakazano kouzlit teleportovaci kouzla</value>
   </data>
   <data name="RecallRuneLoc_ForbiddenTeleportingOut" xml:space="preserve">
-    <value>Odtud je zakázáno kouzlit teleportovací kouzla</value>
+    <value>Odtud je zakazano kouzlit teleportovaci kouzla</value>
   </data>
   <data name="RecallRuneLoc_anUnknownDestination" xml:space="preserve">
     <value>an unknown destination</value>
@@ -1619,148 +1619,148 @@
     <value>Target</value>
   </data>
   <data name="ResListLoc_AbilityTooLow" xml:space="preserve">
-    <value>Schopnost {0} ovládáš příliš špatně</value>
+    <value>Schopnost {0} ovladas prilis spatne</value>
   </data>
   <data name="ResListLoc_DexTooLow" xml:space="preserve">
-    <value>Nejsi dost obratný</value>
+    <value>Nejsi dost obratny</value>
   </data>
   <data name="ResListLoc_HitsTooLow" xml:space="preserve">
-    <value>Jsi příliš zraněný (málo hitpointů)</value>
+    <value>Jsi prilis zraneny (malo hitpointu)</value>
   </data>
   <data name="ResListLoc_IntTooLow" xml:space="preserve">
-    <value>Nejsi dost inteligentní</value>
+    <value>Nejsi dost inteligentni</value>
   </data>
   <data name="ResListLoc_LevelTooLow" xml:space="preserve">
     <value></value>
   </data>
   <data name="ResListLoc_ManaTooLow" xml:space="preserve">
-    <value>Máš málo many</value>
+    <value>Mas malo many</value>
   </data>
   <data name="ResListLoc_NotEnoughItems" xml:space="preserve">
-    <value>Máš málo {0}</value>
+    <value>Mas malo {0}</value>
   </data>
   <data name="ResListLoc_NotEnoughItemsOfType" xml:space="preserve">
-    <value>Máš málo předmětů typu {0}</value>
+    <value>Mas malo predmetu typu {0}</value>
   </data>
   <data name="ResListLoc_SkillTooLow" xml:space="preserve">
-    <value>Umení {0} ovládáš příliš špatně</value>
+    <value>Umeni {0} ovladas prilis spatne</value>
   </data>
   <data name="ResListLoc_StamTooLow" xml:space="preserve">
-    <value>Jsi příliš vyčerpaný (málo staminy)</value>
+    <value>Jsi prilis vycerpany (malo staminy)</value>
   </data>
   <data name="ResListLoc_StrTooLow" xml:space="preserve">
-    <value>Nejsi dost silný</value>
+    <value>Nejsi dost silny</value>
   </data>
   <data name="ResListLoc_VitTooLow" xml:space="preserve">
-    <value>Nejsi dost vitální</value>
+    <value>Nejsi dost vitalni</value>
   </data>
   <data name="ResurrectionLoc_GhostCantReachTheBody" xml:space="preserve">
-    <value>Duch nedosáhne na své tělo.</value>
+    <value>Duch nedosahne na sve telo.</value>
   </data>
   <data name="ResurrectionLoc_ThisIsntBody" xml:space="preserve">
-    <value>Toto není tělo!</value>
+    <value>Toto neni telo!</value>
   </data>
   <data name="ResurrectionLoc_ThisIsntPlayersBody" xml:space="preserve">
-    <value>Toto není tělo hráčské postavy.</value>
+    <value>Toto neni telo hracske postavy.</value>
   </data>
   <data name="SpellBookLoc_TargetBookToEmpty" xml:space="preserve">
-    <value>Ze které knihy chceš vysypat svitky?</value>
+    <value>Ze ktere knihy chces vysypat svitky?</value>
   </data>
   <data name="SpellDefLoc_ForbiddenBeneficialMagicIn" xml:space="preserve">
-    <value>Zde je zakázáno kouzlit přínosná kouzla</value>
+    <value>Zde je zakazano kouzlit prinosna kouzla</value>
   </data>
   <data name="SpellDefLoc_ForbiddenBeneficialMagicOut" xml:space="preserve">
-    <value>Odtud je zakázáno kouzlit přínosná kouzla</value>
+    <value>Odtud je zakazano kouzlit prinosna kouzla</value>
   </data>
   <data name="SpellDefLoc_ForbiddenHarmfulMagicIn" xml:space="preserve">
-    <value>Zde je zakázáno kouzlit škodlivá kouzla</value>
+    <value>Zde je zakazano kouzlit skodliva kouzla</value>
   </data>
   <data name="SpellDefLoc_ForbiddenHarmfulMagicOut" xml:space="preserve">
-    <value>Odtud je zakázáno kouzlit škodlivá kouzla</value>
+    <value>Odtud je zakazano kouzlit skodliva kouzla</value>
   </data>
   <data name="SpellDefLoc_ForbiddenMagicIn" xml:space="preserve">
-    <value>Zde je zakázáno kouzlit</value>
+    <value>Zde je zakazano kouzlit</value>
   </data>
   <data name="SpellDefLoc_ForbiddenMagicOut" xml:space="preserve">
-    <value>Odtud je zakázáno kouzlit</value>
+    <value>Odtud je zakazano kouzlit</value>
   </data>
   <data name="SpellDefLoc_TargetResistedSpell" xml:space="preserve">
-    <value>Cíl odolal kouzlu!</value>
+    <value>Cil odolal kouzlu!</value>
   </data>
   <data name="ThrowingLoc_onlyWorksWhenFighting" xml:space="preserve">
-    <value>Házecí nože lze použít jen během boje.</value>
+    <value>Hazeci noze lze pouzit jen behem boje.</value>
   </data>
   <data name="ThrowingLoc_youNeedThrowingKnife" xml:space="preserve">
-    <value>Nemáš žádný házecí nůž.</value>
+    <value>Nemas zadny hazeci nuz.</value>
   </data>
   <data name="DamageManagerLoc_YouDodged" xml:space="preserve">
-    <value>Uhnul jsi úderu.</value>
+    <value>Uhnul jsi uderu.</value>
   </data>
   <data name="MysticAbilitiesLoc_OnlyMystic" xml:space="preserve">
-    <value>Toto umí použít pouze Mystik.</value>
+    <value>Toto umi pouzit pouze Mystik.</value>
   </data>
   <data name="MysticAbilitiesLoc_NotReady" xml:space="preserve">
-    <value>Nejsi na to připravený.</value>
+    <value>Nejsi na to pripraveny.</value>
   </data>
   <data name="MysticAbilitiesLoc_FreezingStrikes" xml:space="preserve">
-    <value>Tvé údery jsou mrazivé.</value>
+    <value>Tve udery jsou mrazive.</value>
   </data>
   <data name="MysticAbilitiesLoc_ParalysingStrikes" xml:space="preserve">
-    <value>Tvé údery jsou ochromující.</value>
+    <value>Tve udery jsou ochromujici.</value>
   </data>
   <data name="MysticAbilitiesLoc_NowCold" xml:space="preserve">
-    <value>Nyní zasazuješ mrazivé údery</value>
+    <value>Nyni zasazujes mrazive udery</value>
   </data>
   <data name="MysticAbilitiesLoc_NowLightning" xml:space="preserve">
-    <value>Nyní zasazuješ údery energií</value>
+    <value>Nyni zasazujes udery energii</value>
   </data>
   <data name="MysticAbilitiesLoc_CrushingBlow" xml:space="preserve">
-    <value>Zdrcující úder!</value>
+    <value>Zdrcujici uder!</value>
   </data>
   <data name="MysticAbilitiesLoc_TargetFrozen" xml:space="preserve">
-    <value>Cíl je zmrazen!</value>
+    <value>Cil je zmrazen!</value>
   </data>
   <data name="MysticAbilitiesLoc_TargetStruck" xml:space="preserve">
-    <value>Cíl je ochromen!</value>
+    <value>Cil je ochromen!</value>
   </data>
   <data name="ThiefDefenceLoc_NotForYou" xml:space="preserve">
-    <value>Tohle není pro tebe</value>
+    <value>Tohle neni pro tebe</value>
   </data>
   <data name="ThiefDefenceLoc_CantNow" xml:space="preserve">
-    <value>Tohle teď nedokážeš...</value>
+    <value>Tohle ted nedokazes...</value>
   </data>
   <data name="ThiefDefenceLoc_StanceOn" xml:space="preserve">
-    <value>Zaujal jsi obranný postoj.</value>
+    <value>Zaujal jsi obranny postoj.</value>
   </data>
   <data name="ThiefDefenceLoc_StanceOff" xml:space="preserve">
-    <value>Zrušil jsi obranný postoj.</value>
+    <value>Zrusil jsi obranny postoj.</value>
   </data>
   <data name="ThiefDefenceLoc_Rebounded" xml:space="preserve">
-    <value>Odrazil jsi úder!</value>
+    <value>Odrazil jsi uder!</value>
   </data>
   <data name="ThiefDefenceLoc_MagicallyReflected" xml:space="preserve">
-    <value>Úder magicky odražen</value>
+    <value>Uder magicky odrazen</value>
   </data>
   <data name="ThiefDefenceLoc_MagicallyBlocked" xml:space="preserve">
-    <value>Úder magicky zastaven</value>
+    <value>Uder magicky zastaven</value>
   </data>
   <data name="DestroyableLoc_IsDestroyed" xml:space="preserve">
-    <value>{0} je zničeno</value>
+    <value>{0} je zniceno</value>
   </data>
   <data name="DestroyableLoc_MayBeDamaged" xml:space="preserve">
-    <value>{0} možná utrpělo poškození</value>
+    <value>{0} mozna utrpelo poskozeni</value>
   </data>
   <data name="RepairLoc_NotRepairable" xml:space="preserve">
-    <value>Tohle není opravitelné</value>
+    <value>Tohle neni opravitelne</value>
   </data>
   <data name="RepairLoc_NotNeeded" xml:space="preserve">
-    <value>Netřeba opravovat</value>
+    <value>Netreba opravovat</value>
   </data>
   <data name="RepairLoc_NeedAnvil" xml:space="preserve">
-    <value>Musíš stát u kovadliny</value>
+    <value>Musis stat u kovadliny</value>
   </data>
   <data name="RepairLoc_NotEnough" xml:space="preserve">
-    <value>Nemáš dost materiálu ({0})</value>
+    <value>Nemas dost materialu ({0})</value>
   </data>
   <data name="RepairLoc_Repaired" xml:space="preserve">
     <value>Oprava se povedla</value>
@@ -1769,7 +1769,7 @@
     <value>Oprava se nepovedla</value>
   </data>
   <data name="WeaponSkillDefLoc_YouHaveNoAmmo" xml:space="preserve">
-    <value>Nemáš střelivo.</value>
+    <value>Nemas strelivo.</value>
   </data>
   <data name="loc_ability_functions_NoSuchAbility" xml:space="preserve">
     <value>There's no such ability</value>
@@ -1784,13 +1784,13 @@
     <value>To cast the resurrection spell, you need the corresponding talent</value>
   </data>
   <data name="loc_playervendor_NothingToSell" xml:space="preserve">
-    <value>Nemám nic na prodej</value>
+    <value>Nemam nic na prodej</value>
   </data>
   <data name="loc_playervendor_OneMomentPlease" xml:space="preserve">
-    <value>Okamžíček</value>
+    <value>Okamzicek</value>
   </data>
   <data name="loc_playervendor_TargetThingToStock" xml:space="preserve">
-    <value>Zaměř věc nebo zvíře na prodej</value>
+    <value>Zamer vec nebo zvire na prodej</value>
   </data>
   <data name="loc_silence_YouHaveBeenSilenced" xml:space="preserve">
     <value>You have been silenced for {0} seconds</value>
@@ -1802,87 +1802,87 @@
     <value>You're silenced so you can't cast any spells</value>
   </data>
   <data name="HealerLoc_CursedByTheGods" xml:space="preserve">
-    <value>Jsi stižen kletbou bohů a vyvržen z tohoto světa. Nemohu tě navrátit k životu.</value>
+    <value>Jsi stizen kletbou bohu a vyvrzen z tohoto sveta. Nemohu te navratit k zivotu.</value>
   </data>
   <data name="RegionEventsLoc_enteredMines" xml:space="preserve">
-    <value>Sestoupil(a) jsi do dolů.</value>
+    <value>Sestoupil(a) jsi do dolu.</value>
   </data>
   <data name="RegionEventsLoc_leftMines" xml:space="preserve">
-    <value>Opouštíš doly.</value>
+    <value>Opoustis doly.</value>
   </data>
   <data name="RegionEventsLoc_enteredSafeZone" xml:space="preserve">
-    <value>Nyní jsi v bezpečné zóně.</value>
+    <value>Nyni jsi v bezpecne zone.</value>
   </data>
   <data name="RegionEventsLoc_leftSafeZone" xml:space="preserve">
-    <value>Opustil(a) jsi bezpečnou zónu.</value>
+    <value>Opustil(a) jsi bezpecnou zonu.</value>
   </data>
   <data name="RegionEventsLoc_noFieldSpell" xml:space="preserve">
-    <value>Toto kouzlo zde nejde použít.</value>
+    <value>Toto kouzlo zde nejde pouzit.</value>
   </data>
   <data name="RegionEventsLoc_noTeleport" xml:space="preserve">
-    <value>Nesnaž se podvádět!</value>
+    <value>Nesnaz se podvadet!</value>
   </data>
   <data name="RegionEventsLoc_mountRefuses" xml:space="preserve">
-    <value>Tvé zvíře odmítá jít dál.</value>
+    <value>Tve zvire odmita jit dal.</value>
   </data>
   <data name="SkillTeacherLoc_DamagedCharacter" xml:space="preserve">
-    <value>Máš poškozenou postavu... použij svůj krystal nebo zavolej GM...</value>
+    <value>Mas poskozenou postavu... pouzij svuj krystal nebo zavolej GM...</value>
   </data>
   <data name="SkillTeacherLoc_UnderMagic" xml:space="preserve">
-    <value>Nesmíš být pod žádným magickým vlivem...</value>
+    <value>Nesmis byt pod zadnym magickym vlivem...</value>
   </data>
   <data name="SkillTeacherLoc_NotReadyYet" xml:space="preserve">
-    <value>Ještě nejsi připraven na další lekci.</value>
+    <value>Jeste nejsi pripraven na dalsi lekci.</value>
   </data>
   <data name="SkillTeacherLoc_ReachedYourMaximum" xml:space="preserve">
-    <value>Dosáhl jsi svého maxima {0}.</value>
+    <value>Dosahl jsi sveho maxima {0}.</value>
   </data>
   <data name="SkillTeacherLoc_TrainMore" xml:space="preserve">
-    <value>Před další lekcí musíš ještě trénovat.</value>
+    <value>Pred dalsi lekci musis jeste trenovat.</value>
   </data>
   <data name="SkillTeacherLoc_LevelTooLow" xml:space="preserve">
-    <value>Jsi na moc nízké úrovni.</value>
+    <value>Jsi na moc nizke urovni.</value>
   </data>
   <data name="ExpertQuestLoc_AlreadyWalkedThisPath" xml:space="preserve">
-    <value>Ty už máš tuto cestu za sebou.</value>
+    <value>Ty uz mas tuto cestu za sebou.</value>
   </data>
   <data name="ExpertQuestLoc_WaitUntilFree" xml:space="preserve">
-    <value>Musíš počkat, až se quest uvolní.</value>
+    <value>Musis pockat, az se quest uvolni.</value>
   </data>
   <data name="ExpertQuestLoc_LevelTooLow" xml:space="preserve">
-    <value>Musíš mít alespoň level {0}.</value>
+    <value>Musis mit alespon level {0}.</value>
   </data>
   <data name="ExpertQuestLoc_MinutesLeft" xml:space="preserve">
-    <value>Na vyřešení questu ti zbývá ještě {0} minut.</value>
+    <value>Na vyreseni questu ti zbyva jeste {0} minut.</value>
   </data>
   <data name="ExpertQuestLoc_ComeCloser" xml:space="preserve">
-    <value>Řvát na sebe nebudete. Musíš přijít blíž.</value>
+    <value>Rvat na sebe nebudete. Musis prijit bliz.</value>
   </data>
   <data name="MasterQuestLoc_Promoted" xml:space="preserve">
-    <value>Blahopřejeme, byl jsi povýšen na mistra. Tímto se ti otevírá cesta k dalšímu růstu tvé postavy.</value>
+    <value>Blahoprejeme, byl jsi povysen na mistra. Timto se ti otevira cesta k dalsimu rustu tve postavy.</value>
   </data>
   <data name="MasterQuestLoc_EggDescription" xml:space="preserve">
-    <value>Toto je oplodněné hadí vejce - velmi vzácná přísada.</value>
+    <value>Toto je oplodnene hadi vejce - velmi vzacna prisada.</value>
   </data>
   <data name="MasterQuestLoc_TeleportDescription" xml:space="preserve">
-    <value>Neznámý zamčený teleport</value>
+    <value>Neznamy zamceny teleport</value>
   </data>
   <data name="MasterQuestLoc_CantPass" xml:space="preserve">
-    <value>Tudy nemůžeš projít!</value>
+    <value>Tudy nemuzes projit!</value>
   </data>
   <data name="QuestDialogLoc_TooFar" xml:space="preserve">
-    <value>Jsi příliš daleko!</value>
+    <value>Jsi prilis daleko!</value>
   </data>
   <data name="QuestDialogLoc_NotAsAGhost" xml:space="preserve">
-    <value>Jako duch toto nemůžeš udělat!</value>
+    <value>Jako duch toto nemuzes udelat!</value>
   </data>
   <data name="QuestDialogLoc_TooFarToTalk" xml:space="preserve">
-    <value>Na takovou vzdálenost s tebou jednat nebude.</value>
+    <value>Na takovou vzdalenost s tebou jednat nebude.</value>
   </data>
   <data name="QuestJournalLoc_NoQuestsYet" xml:space="preserve">
-    <value>Zatím nemáš žádné questy.</value>
+    <value>Zatim nemas zadne questy.</value>
   </data>
   <data name="QuestJournalLoc_NotAvailableYet" xml:space="preserve">
-    <value>Tato sekce zatím není k dispozici.</value>
+    <value>Tato sekce zatim neni k dispozici.</value>
   </data>
 </root>

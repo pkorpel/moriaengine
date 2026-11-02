@@ -40,9 +40,9 @@ dialog.SetLocation(10,30)
 
 //nadpis tabulky
 dialog.Add(GUTATable(1,0,ButtonMetrics.D_BUTTON_WIDTH)) 
-dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Seznam GMPagí - (<firstival> - <imax>) z <pagesList.Count>").Build()) //prvni text, uplne vpravo
-dialog.LastTable.AddToCell(0,0,GUTAText.Builder.XPos(400).Hue(<Hues.WriteColor>).Text("ONLINE").Build()) //text o 400 bodù vpravo 
-dialog.LastTable.AddToCell(0,0,GUTAText.Builder.XPos(500).Hue(<Hues.NAColor>).Text("OFFLINE").Build()) //text o 500 bodù vpravo
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextHeadline("Seznam GMPagi - (<firstival> - <imax>) z <pagesList.Count>").Build()) //prvni text, uplne vpravo
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.XPos(400).Hue(<Hues.WriteColor>).Text("ONLINE").Build()) //text o 400 bodu vpravo 
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.XPos(500).Hue(<Hues.NAColor>).Text("OFFLINE").Build()) //text o 500 bodu vpravo
 dialog.LastTable.AddToCell(0,1,GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build()) //exit button
 dialog.MakeTableTransparent()
 
@@ -51,7 +51,7 @@ dialog.Add(GUTATable(1,160,140,ButtonMetrics.D_BUTTON_WIDTH,180,130,ButtonMetric
 //cudlik s hracem
 dialog.LastTable.AddToCell(0,0,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(1).Build()) //tridit dle jmena hrace asc
 dialog.LastTable.AddToCell(0,0,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(4).Build()) //tridit dle jmena hrace desc
-dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextLabel("Hráè").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET,0).Build()) //x posunuto kousek o sortovaci button
+dialog.LastTable.AddToCell(0,0,GUTAText.Builder.TextLabel("Hrac").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET,0).Build()) //x posunuto kousek o sortovaci button
 //cudlik s pozici
 dialog.LastTable.AddToCell(0,1,GUTAText.Builder.TextLabel("Pozice"))
 //cudlik na smazani
@@ -59,7 +59,7 @@ dialog.LastTable.AddToCell(0,2,GUTAText.Builder.TextLabel("Del"))
 //cas
 dialog.LastTable.AddToCell(0,3,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(2).Build()) //tridit podle casu asc
 dialog.LastTable.AddToCell(0,3,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonFactory.D_SORTBUTTON_LINE_OFFSET).Id(5).Build()) //tridit podle casu desc
-dialog.LastTable.AddToCell(0,3,GUTAText.Builder.TextLabel(ButtonMetrics.D_SORTBUTTON_COL_OFFSET,0, "Èas odeslání"))
+dialog.LastTable.AddToCell(0,3,GUTAText.Builder.TextLabel(ButtonMetrics.D_SORTBUTTON_COL_OFFSET,0, "Cas odeslani"))
 //cudlik s accountem
 dialog.LastTable.AddToCell(0,4,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(3).Build()) //tridit dle accountu asc
 dialog.LastTable.AddToCell(0,4,GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonFactory.D_SORTBUTTON_LINE_OFFSET).Id(6).Build()) //tridit dle accountu desc
@@ -67,9 +67,9 @@ dialog.LastTable.AddToCell(0,4,GUTAText.Builder.TextLabel("Account").XPos(Button
 //cudlik na odpoved
 dialog.LastTable.AddToCell(0,5,GUTAText.Builder.TextLabel("Re:").Build())
 //zbytek - text
-dialog.LastTable.AddToCell(0,6,GUTAText.Builder.TextLabel("Popis problému").Build())
+dialog.LastTable.AddToCell(0,6,GUTAText.Builder.TextLabel("Popis problemu").Build())
 //button na odpoved
-dialog.LastTable.AddToCell(0,7,GUTAText.Builder.TextLabel("Odpovìï").Build())
+dialog.LastTable.AddToCell(0,7,GUTAText.Builder.TextLabel("Odpoved").Build())
 
 dialog.MakeTableTransparent() //zpruhledni nadpisovy radek
 
@@ -178,7 +178,7 @@ elseif (btnNumber==3) //display the information about the account
 elseif (btnNumber==4) //reply to the page (if not replied, otherwise the button will not exist
   	dialog(inpt_page_reply,iPage) //send the page instance and the dialog information	
 elseif (btnNumber==5) //display the page text in the better window
-	DisplayText(src,"Puvodní text page",iPage.reason)
+	DisplayText(src,"Puvodni text page",iPage.reason)
 elseif (btnNumber==6) //display the page reply text in the better window
 	DisplayText(src,"Odpoved na page",iPage.reply)
 endif

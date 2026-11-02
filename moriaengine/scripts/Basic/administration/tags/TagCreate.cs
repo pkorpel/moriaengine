@@ -34,7 +34,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, innerWidth - 2 * ButtonMetrics.D_BUTTON_WIDTH - ImprovedDialog.D_COL_SPACE, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vložení nového tagu na " + th).Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vlozeni noveho tagu na " + th).Build();
 			//cudlik na zavreni dialogu
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(2).Build();//cudlik na info o hodnotach			
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
@@ -43,7 +43,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//dialozek s inputama
 			dlg.AddTable(new GUTATable(2, 0, 275)); //1.sl - edit nazev, 2.sl - edit hodnota
 			//napred napisy 
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Název tagu").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Nazev tagu").Build();
 			dlg.LastTable[1, 0] = GUTAText.Builder.TextLabel("Hodnota").Build();
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Id(10).Build();
 			dlg.LastTable[1, 1] = GUTAInput.Builder.Id(11).Build();

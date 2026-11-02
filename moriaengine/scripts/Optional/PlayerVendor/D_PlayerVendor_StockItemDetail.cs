@@ -304,12 +304,12 @@ namespace SteamEngine.CompiledScripts {
 	public class Loc_D_PlayerVendor_StockItemDetail : CompiledLocStringCollection<Loc_D_PlayerVendor_StockItemDetail> {
 		public string Label_Price = "Cena";
 		public string Label_Color = "Barva";
-		public string Label_Change = "Zmìnit";
+		public string Label_Change = "Zmenit";
 		public string Label_Units = "Jednotek?";
-		public string Label_Add = "Pøidat";
-		public string Label_Recall = "Stáhnout";
+		public string Label_Add = "Pridat";
+		public string Label_Recall = "Stahnout";
 		public string Label_Buy = "Koupit";
-		public string Label_Examine = "Projít";
+		public string Label_Examine = "Projit";
 
 		//public string InvalidPrice = "Cena musí být vìtší než 0";
 	}

@@ -38,7 +38,7 @@ namespace SteamEngine.CompiledScripts {
 		[SavedMember("attr6", "Categotry3")]
 		private static string att6 = "frantik";
 		[SavedMember("attr7", "Categotry4")]
-		private static string att7 = "zmolžík";
+		private static string att7 = "zmolzik";
 		[SavedMember("attr8", "Categotry4")]
 		private static TimeSpan att8 = new TimeSpan();
 		[SavedMember("attr10", "Categotry5")]

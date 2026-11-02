@@ -49,13 +49,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Založení nového regionu").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Zalozeni noveho regionu").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//navod
 			dlg.AddTable(new GUTATable(3, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vyplò vše vèetnì jednoho rectanglu (další lze pøidat pozdìji)").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vypln vse vcetne jednoho rectanglu (dalsi lze pridat pozdeji)").Build();
 			dlg.LastTable[1, 0] = GUTAText.Builder.TextHeadline("(MinX,MinY) - levy horni roh, (MaxX,MaxY) - pravy dolni roh.").Build();
 			dlg.MakeLastTableTransparent();
 
@@ -85,7 +85,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//send button
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 0));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(1).Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Vytvoøit").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Vytvorit").Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.WriteOut();
@@ -165,7 +165,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				}
 				if (parent == null) {
 					//parent je povinnost!
-					Gump newGi = D_Display_Text.ShowError("Rodièovský region " + gr.GetTextResponse(24) + " neexistuje");
+					Gump newGi = D_Display_Text.ShowError("Rodicovsky region " + gr.GetTextResponse(24) + " neexistuje");
 					DialogStacking.EnstackDialog(gi, newGi);
 					return;
 				}
@@ -175,9 +175,9 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				//vsef poradku tak hura vytvorit novy region
 				StaticRegion newRegion = new FlaggedRegion(defname, parent);
 				if (newRegion.InitializeNewRegion(name, home, oneRectList)) {
-					D_Display_Text.ShowInfo("Vytvoøení regionu bylo úspìšné");
+					D_Display_Text.ShowInfo("Vytvoreni regionu bylo uspesne");
 				} else {
-					D_Display_Text.ShowError("Pøi vytávøení regionu došlo k problémùm - viz konzole");
+					D_Display_Text.ShowError("Pri vytavreni regionu doslo k problemum - viz konzole");
 				}
 				//DialogStacking.ShowPreviousDialog(gi); //zobrazit pripadny predchozi dialog
 			} else if (gr.PressedButton == 2) {//vyber regionu parenta                         dialog,vyhledavani,prvni index, seznam regionu, trideni

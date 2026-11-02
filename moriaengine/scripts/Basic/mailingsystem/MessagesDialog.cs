@@ -49,12 +49,12 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dialogHandler.AddTable(new GUTATable(1, 300, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam zpráv (" + (firstiVal + 1) + "-" + imax + " z " + messagesList.Count + ")").Build();
+			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam zprav (" + (firstiVal + 1) + "-" + imax + " z " + messagesList.Count + ")").Build();
 
 			//cudliky na trideni dle neprectenych (i s popiskem)
 			dialogHandler.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(5).Build();//tridit dle neprectenych (neprectene nahoru)
 			dialogHandler.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(6).Build();//tridit dle neprectenych (neprectene dolu)
-			dialogHandler.LastTable[0, 1] = GUTAText.Builder.TextLabel("Tøídit dle nepøeètených (nepøeètených " + unreadCnt + ")").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
+			dialogHandler.LastTable[0, 1] = GUTAText.Builder.TextLabel("Tridit dle neprectenych (neprectenych " + unreadCnt + ")").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 			//cudlik na zavreni dialogu			
 			dialogHandler.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dialogHandler.MakeLastTableTransparent();
@@ -64,17 +64,17 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//cas
 			dialogHandler.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(1).Build(); //tridit podle casu asc
 			dialogHandler.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(2).Build(); //tridit podle casu desc            
-			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextLabel("Èas odeslání").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
+			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextLabel("Cas odeslani").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 			//cudlik s odesilatelem
 			dialogHandler.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(3).Build(); //tridit dle jmena sendera asc
 			dialogHandler.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(4).Build(); //tridit dle jmena sendera desc
 			dialogHandler.LastTable[0, 1] = GUTAText.Builder.TextLabel("Odesilatel").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 			//cudlik pro cteni
-			dialogHandler.LastTable[0, 2] = GUTAText.Builder.TextLabel("Èíst").Build();
+			dialogHandler.LastTable[0, 2] = GUTAText.Builder.TextLabel("Cist").Build();
 			//cudlik pro mazani   
 			dialogHandler.LastTable[0, 3] = GUTAText.Builder.TextLabel("Del").Build();
 			//text
-			dialogHandler.LastTable[0, 4] = GUTAText.Builder.TextLabel("Text zprávy").Build();
+			dialogHandler.LastTable[0, 4] = GUTAText.Builder.TextLabel("Text zpravy").Build();
 
 			dialogHandler.MakeLastTableTransparent(); //zpruhledni nadpisovy radek
 
@@ -156,7 +156,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 							msg.color = msg.color + 3;//trosku ztmavit barvu
 						}
 						//zobrazit tex zprávy (první parametr je nadpis, druhý je zobrazný text)
-						Gump newGi = gi.Cont.Dialog(SingletonScript<D_Display_Text>.Instance, new DialogArgs("Text zprávy", msg.text));
+						Gump newGi = gi.Cont.Dialog(SingletonScript<D_Display_Text>.Instance, new DialogArgs("Text zpravy", msg.text));
 						//stacknout messageslist pro navrat
 						DialogStacking.EnstackDialog(gi, newGi);
 						break;

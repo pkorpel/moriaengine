@@ -30,7 +30,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			if (parent != null) {
 				Globals.SrcCharacter.Dialog(SingletonScript<D_Info>.Instance, new DialogArgs(parent));
 			} else {
-				D_Display_Text.ShowError("Neexistuje rodièovský region");
+				D_Display_Text.ShowError("Neexistuje rodicovsky region");
 			}
 		}
 

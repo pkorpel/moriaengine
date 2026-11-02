@@ -303,7 +303,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 		}
 
 		public string Name {
-			get { return "Skupiny podle materiálu"; }
+			get { return "Skupiny podle materialu"; }
 		}
 
 		public int Count {

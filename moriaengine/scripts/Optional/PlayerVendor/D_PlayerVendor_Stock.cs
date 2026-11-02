@@ -196,9 +196,9 @@ namespace SteamEngine.CompiledScripts {
 		public string Label_Price = "Cena";
 		public string Label_Description = "Popis";
 		public string Label_Sell = "Prodej";
-		public string Label_SoldByUnits = "Jednotkový prodej";
-		public string Label_NewSection = "Nová sekce";
+		public string Label_SoldByUnits = "Jednotkovy prodej";
+		public string Label_NewSection = "Nova sekce";
 
-		public string InvalidPrice = "Cena musí být vìtší než 0";
+		public string InvalidPrice = "Cena musi byt vetsi nez 0";
 	}
 }

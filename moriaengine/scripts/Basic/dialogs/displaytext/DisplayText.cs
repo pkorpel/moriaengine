@@ -81,7 +81,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			if (args != null && args.Args.Length != 2) {
 				self.Dialog(SingletonScript<D_Display_Text>.Instance, new DialogArgs(args.Args[0], args.Args[1]));
 			} else {
-				Globals.SrcCharacter.Message("DisplayText musí být volána se dvìma parametry - label + text", (int) Hues.Red);
+				Globals.SrcCharacter.Message("DisplayText musi byt volana se dvema parametry - label + text", (int) Hues.Red);
 			}
 		}
 
@@ -93,7 +93,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				newArgs.SetTag(textHueTK, Hues.Red);
 				self.Dialog(SingletonScript<D_Display_Text>.Instance, newArgs);
 			} else {
-				Globals.SrcCharacter.Message("ShowError musí být volána s parametrem - text chyby", (int) Hues.Red);
+				Globals.SrcCharacter.Message("ShowError musi byt volana s parametrem - text chyby", (int) Hues.Red);
 			}
 		}
 

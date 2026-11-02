@@ -80,8 +80,7 @@ namespace SteamEngine.Common {
 				case "czech":
 				case "cs":
 				case "cesky":
-				case "èesky":
-				case "èeština":
+				case "cestina":
 				case "cs-cz":
 					return Language.Czech;
 			}

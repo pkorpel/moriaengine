@@ -53,25 +53,25 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Pøehled rectanglù pro region " + reg.Name + "(" + reg.Defname + ") (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + rectList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Prehled rectanglu pro region " + reg.Name + "(" + reg.Defname + ") (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + rectList.Count + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//cudlik na zalozeni noveho rectanglu
 			dlg.AddTable(new GUTATable(1, 130, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Pøidat rectangle").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Pridat rectangle").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
 			//popis sloupcu (Info, Height, Width, StartPoint, EndPoint, Tiles)
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, ButtonMetrics.D_BUTTON_WIDTH, 35, 35, 130, 0, 35));
 			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Edit").Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Smaž").Build();
-			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Šíøka").Build();
-			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Výška").Build();
-			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Poèáteèní bod").Build();
-			dlg.LastTable[0, 5] = GUTAText.Builder.TextLabel("Koncový bod").Build();
-			dlg.LastTable[0, 6] = GUTAText.Builder.TextLabel("Polí").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Smaz").Build();
+			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Sirka").Build();
+			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Vyska").Build();
+			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Pocatecni bod").Build();
+			dlg.LastTable[0, 5] = GUTAText.Builder.TextLabel("Koncovy bod").Build();
+			dlg.LastTable[0, 6] = GUTAText.Builder.TextLabel("Poli").Build();
 			dlg.MakeLastTableTransparent();
 
 			//seznam rectnaglu
@@ -98,7 +98,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//send button
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 0));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(2).Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Uložit").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Ulozit").Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.CreatePaging(rectList.Count, firstiVal, 1);//ted paging		
@@ -126,14 +126,14 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						//nastavenim rectanglu dojde k reinicializaci vsech regionu
 						if (reg.SetRectangles(rectsList)) {
 							if (!reg.ContainsPoint(reg.P)) {//jeste zkoukneme pozici - mohla zmizet smazáním/resizem rectanglu
-								D_Display_Text.ShowError("Home pozice je mimo region - je potøeba ji pøenastavit");
+								D_Display_Text.ShowError("Home pozice je mimo region - je potreba ji prenastavit");
 							} else {
-								D_Display_Text.ShowInfo("Ukládání rectanglù bylo úspìšné");
+								D_Display_Text.ShowInfo("Ukladani rectanglu bylo uspesne");
 							}
 							//zobrazime info a zmizime (z infa bude navrat k predchozimu dlg neb tento nestackneme)
 							break;
 						} //nekde to neproslo
-						Gump infoGi = D_Display_Text.ShowError("Ukládání rectanglù skonèilo s chybami - viz konzole!");
+						Gump infoGi = D_Display_Text.ShowError("Ukladani rectanglu skoncilo s chybami - viz konzole!");
 						DialogStacking.EnstackDialog(gi, infoGi); //vlozime dialog do stacku pro navrat						
 						break;
 					//pokud to nekde spadne, tak to uvidime v konzoli - to uz je zavazny problem a nesmi to jen tak projit! (=nechytam vyjimku)

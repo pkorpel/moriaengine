@@ -387,14 +387,14 @@ namespace SteamEngine.CompiledScripts {
 
 	public class Loc_PlayerVendor_ListStock : CompiledLocStringCollection<Loc_PlayerVendor_ListStock> {
 		public string Buy = "kup";
-		public string Description = "Název zboží";
+		public string Description = "Nazev zbozi";
 		public string PriceInGp = "Cena (gp)";
 
-		public string NewStock = "Pøidat dalši zboží";
+		public string NewStock = "Pridat dalsi zbozi";
 		public string DeleteSection = "Odebrat sekci";
-		public string ReverseOrder = "Pøevrátit nabídku";
+		public string ReverseOrder = "Prevratit nabidku";
 		public string ChangeIcon = "Ikona";
-		public string YourAccount = "Vaše konto: {0} gp";
+		public string YourAccount = "Vase konto: {0} gp";
 
 		public string TargetIconSource = "Target something to copy icon from.";
 	}
