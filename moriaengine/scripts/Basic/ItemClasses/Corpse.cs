@@ -107,7 +107,8 @@ namespace SteamEngine.CompiledScripts {
 			this.Direction = dieingChar.Direction;
 			this.Color = dieingChar.Color;
 			string name = dieingChar.Name;
-			this.Name = string.Concat("a corpse of ", name);
+			//#1022 - Sphere's corpse, and e_character's @deathcorpse names a monster's by its kind, not its own name
+			this.Name = string.Concat("Body of ", dieingChar.IsPlayer ? name : ((this.charDef != null) ? this.charDef.Name : name));
 			if (dieingChar.IsPlayer) {
 				this.owner = dieingChar;
 				this.ownerName = name;

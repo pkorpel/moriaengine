@@ -91,6 +91,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int weaponWearPerHit = 60; //nastaveni_global_physIdam
 
+		/// <summary>#1022 - e_monster's rand(30)==1, a monster swung at turns on the attacker. 0 turns it off.</summary>
+		[SaveableData]
+		public int monsterTurnsOnAttackerOneIn = 30;
+
 		[SaveableData]
 		public int staffWearPerSpell = 50; //nastaveni_global_magicIdam
 

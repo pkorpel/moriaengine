@@ -45,6 +45,8 @@ Shipped, #1011, branch whoami-dialog: the user's picks: `.whoami` a dialog inste
 
 Shipped, branch housedoor-one-door: `.HouseDoor` places one door and ends, the user's call; the cursor used to stay for double doors.
 
+#1022, the user's order: audit e_character and e_monster, then shared abilities, then guards and their AI, one PR per batch. Base events shipped, branch monster-base-events: GM click status, corpses named Body of, monsters refused by telepads, the 1 in 30 target switch, Invisibility killing a summon. Empty and sourceless stubs stay as they are.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

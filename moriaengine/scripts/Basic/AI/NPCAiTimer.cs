@@ -423,6 +423,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1022 - e_monster's @aftergetswing: now and then a monster turns on whoever just swung at it.</summary>
+		internal static void MaybeTurnOn(NPC self, Character attacker) {
+			int oneIn = CombatSettings.instance.monsterTurnsOnAttackerOneIn;
+			if ((self != null) && self.IsMonster && (self.ControlMaster == null) && (oneIn > 0) && (Globals.dice.Next(oneIn) == 0)) {
+				Attack(self, attacker);
+			}
+		}
+
 		/// <summary>#774 - a pet guarding an item goes for whoever just tried to take it (an explicit
 		/// order, so it doesn't depend on npcsDefendThemselves), unless it's already fighting.</summary>
 		public static void DefendItemAgainst(NPC guard, Character thief) {

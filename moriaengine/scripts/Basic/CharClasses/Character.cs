@@ -2384,8 +2384,22 @@ namespace SteamEngine.CompiledScripts {
 			if ((asNpc != null) && (clickingChar != null) && MonsterSpecialAttacks.TryHealerClick(asNpc, clickingChar)) {
 				return; //#827 e_healer turned a realm outcast away (Sphere's @userclick return 1)
 			}
+			if ((clickingChar != null) && clickingChar.IsGM) {
+				this.ShowStatusToGm(clickerConn);
+			}
 			int hue = this.ClickedNameHue(clicker, clickerConn);
 			PacketSequences.SendNameFrom(clickerConn, this, Guild.NameWithAbbreviation(this), hue);
+		}
+
+		/// <summary>#1022 - e_character's @userclick: a GM sees what's on someone and what they're doing.</summary>
+		private void ShowStatusToGm(TcpConnection<GameState> clickerConn) {
+			string status = (this.Flag_Hidden ? "[hidden]" : "") + (this.Flag_InvisByMagic ? "[invis]" : "") + (this.Flag_Insubst ? "[insubst]" : "") +
+				(ParalyzeEffectPluginDef.IsParalyzed(this) ? "[frozen]" : "") + (this.Flag_Invulnerable ? "[invul]" : "") + (ChatSystem.IsSilenced(this) ? "[squelched]" : "");
+			if (status.Length > 0) {
+				PacketSequences.SendNameFrom(clickerConn, this, status, 0);
+			}
+			SkillName action = this.CurrentSkillName;
+			PacketSequences.SendNameFrom(clickerConn, this, "(" + ((action == SkillName.None) ? "-" : action.ToString()) + ")", 0);
 		}
 
 		/// <summary>#892 - showname_old, getNameHue: a Nazgul is announced, and named in their color.</summary>
@@ -2835,6 +2849,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_AfterGetSwing(WeaponSwingArgs args) {
+			NPCAiTimer.MaybeTurnOn(this as NPC, args.attacker); //#1022
 		}
 
 		/// <summary>hodi zbran do batohu</summary>
