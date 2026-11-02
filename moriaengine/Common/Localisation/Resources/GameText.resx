@@ -754,6 +754,93 @@
   <data name="ProvocationLoc_DoesntReact" xml:space="preserve">
     <value>{0} nereaguje na provokaci.</value>
   </data>
+  <data name="PoisonLoc_Poisoned" xml:space="preserve">
+    <value>Jed</value>
+  </data>
+  <data name="PoisonLoc_PoisonedMale" xml:space="preserve">
+    <value>Byl jsi otraven!</value>
+  </data>
+  <data name="PoisonLoc_PoisonedFemale" xml:space="preserve">
+    <value>Byla jsi otravena!</value>
+  </data>
+  <data name="PoisonLoc_AnotherDoseMale" xml:space="preserve">
+    <value>Dostal jsi dalsi davku jedu!</value>
+  </data>
+  <data name="PoisonLoc_AnotherDoseFemale" xml:space="preserve">
+    <value>Dostala jsi dalsi davku jedu!</value>
+  </data>
+  <data name="PoisonLoc_DeadlyMale" xml:space="preserve">
+    <value>Jsi smrtelne otraven!</value>
+  </data>
+  <data name="PoisonLoc_DeadlyFemale" xml:space="preserve">
+    <value>Jsi smrtelne otravena!</value>
+  </data>
+  <data name="PoisonLoc_GravelyMale" xml:space="preserve">
+    <value>Jsi tezce otraven!</value>
+  </data>
+  <data name="PoisonLoc_GravelyFemale" xml:space="preserve">
+    <value>Jsi tezce otravena!</value>
+  </data>
+  <data name="PoisonLoc_PoisonedPlainMale" xml:space="preserve">
+    <value>Jsi otraven!</value>
+  </data>
+  <data name="PoisonLoc_PoisonedPlainFemale" xml:space="preserve">
+    <value>Jsi otravena!</value>
+  </data>
+  <data name="PoisonLoc_SlightlyMale" xml:space="preserve">
+    <value>Jsi lehce otraven!</value>
+  </data>
+  <data name="PoisonLoc_SlightlyFemale" xml:space="preserve">
+    <value>Jsi lehce otravena!</value>
+  </data>
+  <data name="PoisonLoc_NoEffect" xml:space="preserve">
+    <value>Otrava na tebe nema zadny ucinek.</value>
+  </data>
+  <data name="PoisoningLoc_UseTheBottle" xml:space="preserve">
+    <value>Jed se aplikuje poklikanim na ampulku s jedem.</value>
+  </data>
+  <data name="PoisoningLoc_WhatToPoison" xml:space="preserve">
+    <value>Co chces otravit?</value>
+  </data>
+  <data name="PoisoningLoc_ArrowsAlreadyPoisoned" xml:space="preserve">
+    <value>Tyhle sipky uz jsou otravene.</value>
+  </data>
+  <data name="PoisoningLoc_MustHoldIt" xml:space="preserve">
+    <value>Vec musis mit u sebe.</value>
+  </data>
+  <data name="PoisoningLoc_TooMany" xml:space="preserve">
+    <value>Na takove mnozstvi jedna lahvicka nestaci.</value>
+  </data>
+  <data name="PoisoningLoc_CantPoison" xml:space="preserve">
+    <value>Na toto nemuzes aplikovat jed.</value>
+  </data>
+  <data name="PoisoningLoc_AppliedMale" xml:space="preserve">
+    <value>Uspesne jsi aplikoval jed.</value>
+  </data>
+  <data name="PoisoningLoc_AppliedFemale" xml:space="preserve">
+    <value>Uspesne jsi aplikovala jed.</value>
+  </data>
+  <data name="PoisoningLoc_RanOut" xml:space="preserve">
+    <value>Dosel jed.</value>
+  </data>
+  <data name="PoisoningLoc_Failed" xml:space="preserve">
+    <value>Nepovedlo se ti aplikovat jed.</value>
+  </data>
+  <data name="PoisoningLoc_PoisonedYourselfMale" xml:space="preserve">
+    <value>Pri manipulaci jsi se priotravil pouzitym jedem.</value>
+  </data>
+  <data name="PoisoningLoc_PoisonedYourselfFemale" xml:space="preserve">
+    <value>Pri manipulaci jsi se priotravila pouzitym jedem.</value>
+  </data>
+  <data name="PoisoningLoc_SpoiltMale" xml:space="preserve">
+    <value>Pri manipulaci jsi znehodnotil lektvar.</value>
+  </data>
+  <data name="PoisoningLoc_SpoiltFemale" xml:space="preserve">
+    <value>Pri manipulaci jsi znehodnotila lektvar.</value>
+  </data>
+  <data name="PoisonedItemLoc_Poisoned" xml:space="preserve">
+    <value>Otravena</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
@@ -1044,27 +1131,6 @@
   </data>
   <data name="PlayerVendorLoc_YouCantStockMoney" xml:space="preserve">
     <value>Nem��e� prod�vat hotovost</value>
-  </data>
-  <data name="PoisonedItemLoc_DosesLeft" xml:space="preserve">
-    <value>Poison Doses</value>
-  </data>
-  <data name="PoisonedItemLoc_Power" xml:space="preserve">
-    <value>Poison Power</value>
-  </data>
-  <data name="PoisoningLoc_AllProjectilesPoisoned" xml:space="preserve">
-    <value>All of the projectiles are already poisoned.</value>
-  </data>
-  <data name="PoisoningLoc_CantPoisonThat" xml:space="preserve">
-    <value>It's impossible to poison that. You can only poison infectious weapons or weapon projectiles.</value>
-  </data>
-  <data name="PoisoningLoc_CantPoisonThisProjectile" xml:space="preserve">
-    <value>It's impossible to poison this weapon projectile</value>
-  </data>
-  <data name="PoisoningLoc_CantPoisonThisWeapon" xml:space="preserve">
-    <value>It's impossible to poison this weapon</value>
-  </data>
-  <data name="PoisoningLoc_ProjectilesHaveDifferentPoisond" xml:space="preserve">
-    <value>These projectiles are already poisoned with a different poison.</value>
   </data>
   <data name="ProfessionPluginLoc_YouCantCastThis" xml:space="preserve">
     <value>You can't cast this spell, being {0} of profession.</value>

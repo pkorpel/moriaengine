@@ -16,6 +16,9 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 Color = 0997
 BleedingEfficiency = 0.25 //nastaveni_weapbleed 
+PoisoningDifficulty = 800 //nastaveni_weappoison 
+PoisoningEfficiency = 1.8 //nastaveni_weappoison 
+PoisonCapacity = 10 //nastaveni_weappoison 
 
 [EquippableDef i_dancing_sword_memory]
 name = "dancing sword timer"
@@ -80,6 +83,9 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 Color = colors_blood
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 900 //nastaveni_weappoison 
+PoisoningEfficiency = 0.75 //nastaveni_weappoison 
+PoisonCapacity = 5 //nastaveni_weappoison 
 
 [WeaponDef i_krvavy_mec] // tento mec je mrtvej klidne ho smazat jak se da do hry druhy ragnarog nahrazuje ho Ragnarog nad nim zatim je toto jen pro prvnicast questu
 CATEGORY = Noe
@@ -101,3 +107,6 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 Color = colors_blood
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 900 //nastaveni_weappoison 
+PoisoningEfficiency = 0.75 //nastaveni_weappoison 
+PoisonCapacity = 5 //nastaveni_weappoison 

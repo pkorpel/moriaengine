@@ -34,7 +34,8 @@ SKILLMAKE = 400 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 0314
-PoisonType = p_poison_para
+PoisonKind = "poison_para"
+PoisonPower = 750, 999
 
 [PoisonPotionDef i_potion_Poison_fizz]
 NAME = "Fizzle poison"
@@ -44,7 +45,8 @@ SKILLMAKE = 400 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 022d
-PoisonType = p_poison_fizz
+PoisonKind = "poison_fizz"
+PoisonPower = 10, 50
 
 [PoisonPotionDef i_potion_Poison_stamina]
 NAME = "Stamina poison"
@@ -54,7 +56,8 @@ SKILLMAKE = 400 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 02f
-PoisonType = p_poison_stamina
+PoisonKind = "poison_stamina"
+PoisonPower = 1, 20
 
 [PoisonPotionDef i_potion_Poison_weaken]
 NAME = "Weaken poison"
@@ -64,7 +67,8 @@ SKILLMAKE = 400 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 02e6
-PoisonType = p_poison_weaken
+PoisonKind = "poison_weaken"
+PoisonPower = 1, 20
 
 [PoisonPotionDef i_potion_Poison_clumsy]
 NAME = "Clumsy poison"
@@ -74,7 +78,8 @@ SKILLMAKE = 400 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 02ed
-PoisonType = p_poison_clumsy
+PoisonKind = "poison_clumsy"
+PoisonPower = 1, 20
 
 [PoisonPotionDef i_potion_Poison_feeblemind]
 NAME = "Feeblemind poison"
@@ -84,7 +89,8 @@ SKILLMAKE = 400 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 02c9
-PoisonType = p_poison_feeblemind
+PoisonKind = "poison_feeblemind"
+PoisonPower = 1, 10
 
 [PoisonPotionDef i_potion_PoisonLess]
 NAME = "Lesser Poison"
@@ -94,7 +100,7 @@ SKILLMAKE = 300 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 0b0
-PoisonType = p_poison
+PoisonKind = "poison_c"
 PoisonPower = 2, 4
 
 [PoisonPotionDef i_potion_Poison]
@@ -105,7 +111,7 @@ SKILLMAKE = 400 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 0b2
-PoisonType = p_poison
+PoisonKind = "poison_c"
 PoisonPower = 4, 6
 
 [PoisonPotionDef i_potion_PoisonGreat]
@@ -115,7 +121,7 @@ RESOURCES = 7 i_reag_nightshade, 1 i_bottle_empty //some resources were fixed by
 SKILLMAKE = 700 alchemy //some resources were fixed by converter 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
-PoisonType = p_poison
+PoisonKind = "poison_c"
 Color = 0179
 PoisonPower = 7, 8
 
@@ -127,5 +133,5 @@ SKILLMAKE = 999 alchemy //some resources were fixed by converter
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
 Color = 0593
-PoisonType = p_poison
+PoisonKind = "poison_c"
 PoisonPower = 9, 10

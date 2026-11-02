@@ -327,6 +327,9 @@ namespace SteamEngine.CompiledScripts {
 				//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
 				//the pre-armor swing value, so this must run after CauseDamage above.
 				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
+				if (attacker is NPC poisoner) {
+					Poison.FromMonster(poisoner, defender); //#962 - combat.scp's wasHarmed
+				}
 
 				//#778 - a strangler vine holding someone lets go after enough landed hits
 				MonsterSpecialAttacks.CountEntangleHit(defender);

@@ -40,6 +40,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0.1 //nastaveni_weapbleed 
+PoisoningDifficulty = 250 //nastaveni_weappoison 
+PoisoningEfficiency = 0.75 //nastaveni_weappoison 
+PoisonCapacity = 10 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_club_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -67,6 +70,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 3.0/3.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -96,6 +100,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 110 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0.45 //nastaveni_weapbleed 
+PoisoningDifficulty = 800 //nastaveni_weappoison 
+PoisoningEfficiency = 1.3 //nastaveni_weappoison 
+PoisonCapacity = 10 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_cutlass_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -123,6 +130,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 112 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0.25 //nastaveni_weapbleed 
+PoisoningDifficulty = 800 //nastaveni_weappoison 
+PoisoningEfficiency = 1.8 //nastaveni_weappoison 
+PoisonCapacity = 10 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_mace_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -150,6 +160,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 110 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 52.0/52.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -179,6 +190,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 120 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0.05 //nastaveni_weapbleed 
+PoisoningDifficulty = 800 //nastaveni_weappoison 
+PoisoningEfficiency = 1 //nastaveni_weappoison 
+PoisonCapacity = 10 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_axe_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -207,6 +221,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_shepherds_crook_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -235,6 +250,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 5.0/5.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -265,6 +281,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 MindPowerVsP = 750 //nastaveni_staffSMbonus 
 MindPowerVsM = 750
 
@@ -294,6 +311,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 150 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 900 //nastaveni_weappoison 
+PoisoningEfficiency = 1.4 //nastaveni_weappoison 
+PoisonCapacity = 20 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_spear_short_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -321,6 +341,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 110 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 500 //nastaveni_weappoison 
+PoisoningEfficiency = 1 //nastaveni_weappoison 
+PoisonCapacity = 5 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_war_fork_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -348,6 +371,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 130 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 800 //nastaveni_weappoison 
+PoisoningEfficiency = 1 //nastaveni_weappoison 
+PoisonCapacity = 5 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_sword_broad_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -375,6 +401,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 110 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 850 //nastaveni_weappoison 
+PoisoningEfficiency = 1.6 //nastaveni_weappoison 
+PoisonCapacity = 20 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_mace_war_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -402,6 +431,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 32.0/32.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -431,6 +461,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 130 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 850 //nastaveni_weappoison 
+PoisoningEfficiency = 0.9 //nastaveni_weappoison 
+PoisonCapacity = 5 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_sword_viking_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -458,6 +491,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 110 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 900 //nastaveni_weappoison 
+PoisoningEfficiency = 0.75 //nastaveni_weappoison 
+PoisonCapacity = 5 //nastaveni_weappoison 
 
 [ColoredStaffDef i_staff_quarter_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -486,6 +522,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 140 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 MindPowerVsP = 776 //nastaveni_staffSMbonus 
 MindPowerVsM = 776
 
@@ -515,6 +552,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_hammer_pick_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -542,6 +580,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 62.0/62.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -572,6 +611,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_axe_exec_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -599,6 +639,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_axe_double_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -627,6 +668,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_hammer_war_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -655,6 +697,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 39.0/39.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -685,6 +728,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_spear_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -712,6 +756,9 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 110 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 750 //nastaveni_weappoison 
+PoisoningEfficiency = 1.7 //nastaveni_weappoison 
+PoisonCapacity = 5 //nastaveni_weappoison 
 
 [ColoredStaffDef i_staff_gnarled_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -740,6 +787,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 150 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 MindPowerVsP = 802 //nastaveni_staffSMbonus 
 MindPowerVsM = 802
 
@@ -770,6 +818,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 100 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_axe_battle_large_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -798,6 +847,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 130 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_bardiche_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -826,6 +876,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 120 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_maul_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -853,6 +904,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 125 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 MindPowerVsP = 700.0 //#539 - scaled: 700 * 57.0/57.0 (bare-hands baseline x this weapon's own real AttackVsP progression) 
 MindPowerVsM = 700.0 //#539 - same scaling, AttackVsM==AttackVsP for every real weapon def 
 
@@ -883,6 +935,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 120 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 5000 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_bow_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -913,6 +966,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 110 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_crossbow_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -943,6 +997,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 120 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_crossbow_heavy_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -973,6 +1028,7 @@ strikeStopRange = 10 //default value set by Converter
 maxDurability = 120 //nastaveni_durability 
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_bow_copper_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -1001,6 +1057,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 
 [ColoredWeaponDef i_crossbow_copper_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -1029,3 +1086,4 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 

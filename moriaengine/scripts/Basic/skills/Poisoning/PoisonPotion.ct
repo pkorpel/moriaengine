@@ -15,6 +15,6 @@
 
 [ThingTemplate PoisonPotion : Potion]
 Def:	//vars on the def
-	FadingEffectDurationPluginDef poisonType  = null
+	string poisonKind = "poison_c"
 	System.Int32[] poisonPower = new int[] {0, 1000}
 	int poisonTickCount = 24
