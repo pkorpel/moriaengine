@@ -542,6 +542,7 @@ namespace SteamEngine.CompiledScripts {
 			{ "stamdmgpower", TagKey.Acquire("_npcStamDmgPower_") },
 			{ "lightningschance", TagKey.Acquire("_npcLightningsChance_") },
 			{ "regenerationdivisor", TagKey.Acquire("_npcRegenerationDivisor_") },
+			{ "deathdamage", TagKey.Acquire("_npcDeathDamage_") },
 			{ "lifeleechcap", TagKey.Acquire("_npcLifeLeechCap_") },
 			{ "acidchance", TagKey.Acquire("_npcAcidChance_") },
 			{ "aciddamage", TagKey.Acquire("_npcAcidDamage_") },
@@ -627,6 +628,11 @@ namespace SteamEngine.CompiledScripts {
 		public int[] AcidDamage {
 			get { return this.GetAbilityRange("aciddamage"); }
 			set { this.SetAbilityRange("aciddamage", value); }
+		}
+		/// <summary>#1022 - real archive field is tag.death_damage.</summary>
+		public int[] DeathDamage {
+			get { return this.GetAbilityRange("deathdamage"); }
+			set { this.SetAbilityRange("deathdamage", value); }
 		}
 		/// <summary>#1022 - real archive field is tag.regespeed.</summary>
 		public int[] RegenerationDivisor {
@@ -2047,6 +2053,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			PlayerRecord.MonsterDied(this, killedBy); //#1011
+			MonsterSpecialAttacks.OnMonsterDeath(this, killedBy); //#1022
 			LevelingSystem.ShareMonsterExperience(this, killedBy);
 		}
 

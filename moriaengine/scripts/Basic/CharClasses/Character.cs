@@ -1399,7 +1399,7 @@ namespace SteamEngine.CompiledScripts {
 
 				CorpseDef cd = this.TypeDef.CorpseDef;
 				Corpse corpse = null;
-				if ((cd != null) && !AnimateDeadSpellDef.IsAnimated(this)) { //e_animate_monster
+				if ((cd != null) && !AnimateDeadSpellDef.IsAnimated(this) && !MonsterSpecialAttacks.LeavesNoCorpse(this)) { //e_animate_monster, e_npc_blow_up
 					corpse = (Corpse) cd.Create((IPoint4D) this);
 					//NetState.ProcessThing(corpse);
 				}

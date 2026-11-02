@@ -125,3 +125,7 @@ The 19 stubs with an empty block on Erebor and the 3 with no source stay as labe
 ## Potions, berserk and more (#1022)
 
 `NpcDrinkers.cs`, `Berserk.cs`, `WeaponKnockout.cs`, `BattleSummoner.cs`, `Acid.cs`. `e_healdrinker` and `e_potiondrinker` heal or drink one potion at a time, the first blow never counts. `e_berserk_potvora` trades resists for speed in three stages. `e_getwpn` knocks a player's weapon into the pack. `e_npc_summoner` calls its own list for 20 s. `e_lifeleech_vampire` can climb past maxhits. `e_acid_damage` splashes players within 4 tiles: dodging it waits for class abilities, and the Strength potion does nothing, as `e_strboost` isn't in the archive.
+
+## Bombs, illusions and shapeshifters (#1022)
+
+`BlowUp.cs`, `Illusionist.cs`, `Shapeshifter.cs`, `SummonFoes.cs`. `e_npc_blow_up` lights a two-stage fuse next to a player and blasts `16 * (9 - distance)` past armor, ten times that to NPCs, leaving no corpse. `e_illusionist` makes five one-hit copies for 30 s, with no wait, as Erebor's never worked. The three `e_menavec` abilities change the look for 20 s, not the stats. `e_npc_summonkiller` doubles blows on summons. `e_summonfrenzy` stops a masterless summon. `e_elem_terror` blasts its fighters as it dies. `e_undeads_ability_life` waits for #1017 and `e_necroslave` for the bosses.

@@ -214,6 +214,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static double DamageAfterAbsorbing(Character attacker, Character defender, double damage) {
+			damage = DamageAgainstSummons(attacker, defender, damage);
 			ScalesAbilityDef scales = ScalesDef;
 			if (HasAbilityDef(defender, scales) && (scales.AbsorbOneIn > 0) && (Globals.dice.Next(scales.AbsorbOneIn) == 0)) {
 				attacker.SysMessage("Jeho supiny absorbuji vetsinu tveho utoku!");
@@ -246,6 +247,7 @@ namespace SteamEngine.CompiledScripts {
 			TryDrinkAfterOwnSwing(attacker);
 			if (!defender.IsDeleted) {
 				TryKnockWeaponOut(attacker, defender, damage);
+				TryBlowUpOnOwnSwing(attacker, defender);
 			}
 		}
 
@@ -255,6 +257,10 @@ namespace SteamEngine.CompiledScripts {
 			if (defender is NPC hit) {
 				TryBerserk(hit);
 				TryBattleSummon(hit, attacker);
+				TryBlowUpOnHit(hit, attacker);
+				TryIllusion(hit, attacker);
+				TryShapeshift(hit);
+				TrySummonFrenzy(hit, attacker);
 			}
 			TryDrop(defender, GoldDropDef);
 			TryDrop(defender, ReagDropDef);

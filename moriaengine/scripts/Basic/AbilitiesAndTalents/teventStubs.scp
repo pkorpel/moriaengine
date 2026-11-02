@@ -100,8 +100,9 @@ Name = "Duplicator"
 [PassiveAbilityDef a_tevent_e_earth]
 Name = "(e_earth)"
 
-[PassiveAbilityDef a_tevent_e_elem_terror]
+[ElemTerrorAbilityDef a_tevent_e_elem_terror]
 Name = "(e_elem_terror)"
+
 
 [PassiveAbilityDef a_tevent_e_emotedmg]
 Name = "(e_emotedmg)"
@@ -202,8 +203,9 @@ Name = "(e_horses)"
 [PassiveAbilityDef a_tevent_e_humanoid]
 Name = "(e_humanoid)"
 
-[PassiveAbilityDef a_tevent_e_illusionist]
+[IllusionistAbilityDef a_tevent_e_illusionist]
 Name = "(e_illusionist)"
+
 
 //#797 batch 4: upgraded from a bare stub to a real InexhaustibleAbilityDef
 //(MonsterSpecialAttacks/) - regains stamina with every step.
@@ -247,14 +249,20 @@ Name = "(e_malica_help)"
 [ManaGainAbilityDef a_tevent_e_managain]
 Name = "Mana Gain"
 
-[PassiveAbilityDef a_tevent_e_menavec]
+[MenivecAbilityDef a_tevent_e_menavec]
 Name = "(e_menavec)"
+forms = "c_daemon_gold_menavec,c_fireant_queen_menavec,c_ophidian_king,c_eye_adamantium_menavec,c_reaper_eben,c_lizard_king,c_m_phoenix_poison,c_minotaur_menavec"
 
-[PassiveAbilityDef a_tevent_e_menavec_ledovka]
+
+[IceMenivecAbilityDef a_tevent_e_menavec_ledovka]
 Name = "(e_menavec_ledovka)"
+forms = "c_spirit_snow,c_spider_elder,c_gladiator_lord_snow,c_titan_lord_snow,c_golem_frost,c_excelent,c_minotaur,c_strazce_ledu"
 
-[PassiveAbilityDef a_tevent_e_menavec_powerful]
+
+[PowerfulMenivecAbilityDef a_tevent_e_menavec_powerful]
 Name = "(e_menavec_powerful)"
+forms = "c_cajun_lord_menavec,c_spider_elder_menavec,c_gladiator_lord_menavec,c_ophidian_mage_evil_menavec,c_golem_mithril_menavec,c_balrogh_menavec,c_eye_mithril_menavec,c_minotaur_strazce_menavec"
+
 
 [PassiveAbilityDef a_tevent_e_miniq_kun]
 Name = "(e_miniq_kun)"
@@ -281,8 +289,9 @@ Name = "(e_noport)"
 [BleedAbilityDef a_tevent_e_npc_bleed]
 Name = "Bleeding Bite"
 
-[PassiveAbilityDef a_tevent_e_npc_blow_up]
+[BlowUpAbilityDef a_tevent_e_npc_blow_up]
 Name = "(e_npc_blow_up)"
+
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
 //CriticAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - rolled on
@@ -425,8 +434,9 @@ Name = "(e_npc_summoner)"
 [SummonerAbilityDef a_tevent_e_npc_summoning]
 Name = "Summoner"
 
-[PassiveAbilityDef a_tevent_e_npc_summonkiller]
+[SummonKillerAbilityDef a_tevent_e_npc_summonkiller]
 Name = "(e_npc_summonkiller)"
+
 
 //#799 batch 5: upgraded from a bare stub to a real WarcryAbilityDef
 //(MonsterSpecialAttacks/) - periodic cry that interrupts everyone's spellcasting.
