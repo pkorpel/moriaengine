@@ -41,6 +41,8 @@ Shipped, #1009, branch ring-quest-rolling: the ring quest is the last 3 days, ro
 
 Shipped, #1011 open for expansions, branch whoami: Erebor's `.whoami` in scripts/Basic/Whoami, four lines as funkce.scp, also at the end of character creation, nations as "of Rohan", the user's call. Monster kills, deaths and age are new tags, counting from this change.
 
+Shipped, #1011, branch whoami-dialog: the user's picks: `.whoami` a dialog instead of chat lines, with level, rank, realm, home town, guild, office, ring quest progress for Mordor, time played, kill/death ratio, last killed by. Played time and the last killer are new, counting from this change.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

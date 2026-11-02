@@ -18,42 +18,49 @@ namespace SteamEngine.Tests.Protocol {
 			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
 		}
 
-		private static List<string> Four(TestGameClient client) {
+		private static List<string> Open(TestGameClient client) {
 			client.SendSpeech(".whoami");
-			DateTime deadline = DateTime.UtcNow + Wait;
-			string line;
-			do {
-				line = client.ReadSystemMessage(deadline - DateTime.UtcNow);
-			} while (!line.StartsWith("Jsem ", StringComparison.Ordinal));
-			return new List<string> { line, client.ReadSystemMessage(Wait), client.ReadSystemMessage(Wait), client.ReadSystemMessage(Wait) };
+			return client.ReadGumpDialogWithStrings(Wait).Strings;
 		}
 
 		[Fact]
 		public void ItTellsWhoYouAreAndKeepsCount() {
 			using var client = CommandPermissionTests.Connect("whotest", "Who Tester");
-			string ready = this.Ask(client, ".TestWhoReady", "WHO_READY:");
+			this.Ask(client, ".TestWhoReady", "WHO_READY:");
 			this.Ask(client, ".TestWhoPlayer", "WHO_PLAYER:");
 
 			//a player can ask, and a new character's record is clean
-			List<string> lines = Four(client);
-			Assert.StartsWith("Jsem Mag Who Tester of Rohan, ", lines[0]);
-			Assert.Equal("Premohl jsem 0 nepratel a 0 monster.", lines[1]);
-			Assert.Equal("Ja sam jsem byl porazen 0krat.", lines[2]);
-			Assert.Equal("Ziji jiz 0 dni.", lines[3]);
+			List<string> lines = Open(client);
+			Assert.Contains("Mag Who Tester of Rohan", lines);
+			Assert.Contains("Gondor", lines);
+			Assert.Contains("0krat", lines);
+			Assert.Contains("0 dni", lines);
+			Assert.Contains("0.00", lines);
+			Assert.DoesNotContain("Prsten moci", lines);
+			Assert.DoesNotContain("Naposledy zabit od", lines);
+			Assert.DoesNotContain("Funkce", lines);
 
 			this.Ask(client, ".TestWhoKillRabbit", "WHO_KILLED:");
 			this.Ask(client, ".TestWhoKillRabbit", "WHO_KILLED:");
 			Assert.Contains("dead=True", this.Ask(client, ".TestWhoDie", "WHO_DIED:"));
 			this.Ask(client, ".TestWhoAge \"2\"", "WHO_AGED:");
-			lines = Four(client);
-			Assert.Equal("Premohl jsem 0 nepratel a 2 monster.", lines[1]);
-			Assert.Equal("Ja sam jsem byl porazen 1krat.", lines[2]);
-			Assert.Equal("Ziji jiz 2 dni.", lines[3]);
+			this.Ask(client, ".TestWhoPlayed \"7500\"", "WHO_PLAYED:");
+			lines = Open(client);
+			Assert.Contains("2", lines);
+			Assert.Contains("1krat", lines);
+			Assert.Contains("2 dni", lines);
+			Assert.Contains("2 hod 5 min", lines);
+			Assert.Contains("Killer Rabbit", lines);
 
-			Assert.Contains("True", this.Ask(client, ".TestWhoFemale", "WHO_FEMALE:"));
-			lines = Four(client);
-			Assert.Equal("Premohla jsem 0 nepratel a 2 monster.", lines[1]);
-			Assert.Equal("Ja sama jsem byla porazena 1krat.", lines[2]);
+			//a ring's progress, for Mordor
+			this.Ask(client, ".TestWhoMordor", "WHO_MORDOR:");
+			Assert.Contains("0 z 5 zabiti za poslednich 3 dni", Open(client));
+
+			//the First Nazgul has an office and no more use for the quest
+			this.Ask(client, ".TestWhoFirst", "WHO_FIRST:");
+			lines = Open(client);
+			Assert.Contains("Prvni Nazgul", lines);
+			Assert.DoesNotContain("Prsten moci", lines);
 		}
 	}
 
