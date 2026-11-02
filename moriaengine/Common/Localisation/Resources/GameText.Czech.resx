@@ -1009,6 +1009,87 @@
   <data name="CraftMastersLoc_Ships" xml:space="preserve">
     <value>Do teto chvile bylo postaveno {0} lodi.</value>
   </data>
+  <data name="TrapLoc_WhatToSet" xml:space="preserve">
+    <value>Co chces vlozit do pasti?</value>
+  </data>
+  <data name="TrapLoc_DontRushMale" xml:space="preserve">
+    <value>Nebud zbrkly !</value>
+  </data>
+  <data name="TrapLoc_DontRushFemale" xml:space="preserve">
+    <value>Nebud zbrkla !</value>
+  </data>
+  <data name="TrapLoc_ExplosionSetMale" xml:space="preserve">
+    <value>Nastrazil jsi explozi</value>
+  </data>
+  <data name="TrapLoc_ExplosionSetFemale" xml:space="preserve">
+    <value>Nastrazila jsi explozi</value>
+  </data>
+  <data name="TrapLoc_PoisonedMale" xml:space="preserve">
+    <value>Otravil jsi past.</value>
+  </data>
+  <data name="TrapLoc_PoisonedFemale" xml:space="preserve">
+    <value>Otravila jsi past.</value>
+  </data>
+  <data name="TrapLoc_SprungMale" xml:space="preserve">
+    <value>Natahl jsi past.</value>
+  </data>
+  <data name="TrapLoc_SprungFemale" xml:space="preserve">
+    <value>Natahla jsi past.</value>
+  </data>
+  <data name="QuiverLoc_Quiver" xml:space="preserve">
+    <value>Toulec</value>
+  </data>
+  <data name="QuiverLoc_Empty" xml:space="preserve">
+    <value>Toulec je prazdny.</value>
+  </data>
+  <data name="QuiverLoc_EmptyKind" xml:space="preserve">
+    <value> prazdny</value>
+  </data>
+  <data name="QuiverLoc_ArrowKind" xml:space="preserve">
+    <value>Druh sipu</value>
+  </data>
+  <data name="QuiverLoc_Count" xml:space="preserve">
+    <value>Pocet</value>
+  </data>
+  <data name="QuiverLoc_AddArrows" xml:space="preserve">
+    <value>Pridat</value>
+  </data>
+  <data name="QuiverLoc_TakeOut" xml:space="preserve">
+    <value>Vyndat</value>
+  </data>
+  <data name="QuiverLoc_AimArrows" xml:space="preserve">
+    <value>Zamer sipy ktere chces pridat do toulce.</value>
+  </data>
+  <data name="QuiverLoc_OnlyArrows" xml:space="preserve">
+    <value>Do toulce muzes dat jen sipy.</value>
+  </data>
+  <data name="QuiverLoc_OtherKind" xml:space="preserve">
+    <value>Uz tam mas jiny druch sipu.</value>
+  </data>
+  <data name="QuiverLoc_CantReachQuiver" xml:space="preserve">
+    <value>Nedosahnes na toulec.</value>
+  </data>
+  <data name="QuiverLoc_CantReachArrows" xml:space="preserve">
+    <value>Nedosahnes na sipy.</value>
+  </data>
+  <data name="QuiverLoc_NoArrows" xml:space="preserve">
+    <value>V toulci nejsou zadne sipy.</value>
+  </data>
+  <data name="QuiverLoc_WantNumber" xml:space="preserve">
+    <value>Hodnota musi byt cislo vetsi nez 0.</value>
+  </data>
+  <data name="QuiverLoc_TookMale" xml:space="preserve">
+    <value>Vyndal jsi {0} sipu.</value>
+  </data>
+  <data name="QuiverLoc_TookFemale" xml:space="preserve">
+    <value>Vyndala jsi {0} sipu.</value>
+  </data>
+  <data name="QuiverLoc_TookLastMale" xml:space="preserve">
+    <value>Vyndal jsi {0} sipu. V toulci uz dalsi sipy nejsou.</value>
+  </data>
+  <data name="QuiverLoc_TookLastFemale" xml:space="preserve">
+    <value>Vyndala jsi {0} sipu. V toulci uz dalsi sipy nejsou.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

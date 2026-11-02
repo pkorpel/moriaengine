@@ -238,3 +238,7 @@ Erebor's sixteen slots in `QuickSlots`: `.setequip0` to `15` remember an item or
 Erebor's systems/mistri.scp in `CraftMasters`. A craftsman says hello to the Mistr Remesel for a list of what they made themselves and pays gold for experience, each thing once. The experience comes from the skills and materials of the recipe, the quality and `nastaveni_craftexp_*`; the price from your level, up to 56. The ship builders of Gondor and Mordor take logs, ore and ingots you have the skill for, for experience and no gold, and count the ships: a Gondor ship is 1500 teak, 300 mahagon and 50 eben, a Mordor ship 1200, 250 and 40. Items carry Erebor's values now (`nastaveni_cm_value`, `ItemDef.ItemValue`).
 
 Not ported: bags as one row (top-level pack items only), the builders' spoken pages, statistics per player, the GM stats dialog, and closing the dialog on steps.
+
+## Traps and the quiver (#962)
+
+`i_past` is Erebor's player trap: double click it and aim a bomb potion, a poison bottle or another trap at it. It works once on someone stepping on it, and a second loading within a minute hurts. `i_toulec` holds up to 5000 arrows of one kind, poison and all, added and taken out by its dialog. It only stores them, a bow doesn't shoot from it. Erebor's older wooden quivers, its GM's monster traps and spike traps aren't ported.

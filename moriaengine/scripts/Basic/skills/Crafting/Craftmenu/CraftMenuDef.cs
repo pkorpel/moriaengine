@@ -10,7 +10,7 @@ namespace SteamEngine.CompiledScripts {
 
 		//#966 - systems of their own: making one would take its materials and give nothing that works
 		private static readonly System.Collections.Generic.HashSet<string> notPorted = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-			"i_scroll_case", "i_toulec", "i_past", "i_customscroll_manashield"
+			"i_scroll_case", "i_customscroll_manashield"
 		};
 
 		public CraftMenuDef(string defname, string filename, int headerLine)
