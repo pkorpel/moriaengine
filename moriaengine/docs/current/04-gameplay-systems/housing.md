@@ -105,7 +105,7 @@ GM commands:
 | Command | What it does |
 |---|---|
 | `.HouseMove` | Target a sign or a rent chest, then where it goes |
-| `.HouseDoor` | A dialog of every door type, then its 8 facings, then target a spot in a house. The cursor stays for the other half of a double door, Esc ends it. `.HouseDoor "defname"` skips the dialog. `.flip` still turns a placed door; lock it from the sign |
+| `.HouseDoor` | A dialog of every door type, then its 8 facings, then target a spot in a house. It places one door; a double door is the command twice. `.HouseDoor "defname"` skips the dialog. `.flip` still turns a placed door; lock it from the sign |
 
 No doors are placed automatically, so a house stays open until a GM gives it one.
 

@@ -56,7 +56,7 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(500);
 				Assert.Contains("doors=1 doorsOutside=0", this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
 
-				//the dialog: rattan, the fourth way round, and the cursor stays for a second one
+				//the dialog: rattan, the fourth way round, and one door is the end of it
 				client.SendSpeech(".HouseDoor");
 				var doors = client.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("Bambusove", doors.Strings);
@@ -70,8 +70,8 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(500);
 				client.SendTargetGround(Number(outdoors, "inX") + 2, Number(outdoors, "inY"), z);
 				Thread.Sleep(500);
-				Assert.Contains("doors=3 doorsOutside=0", this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
-				Assert.Contains("fourthRattans=2", this.Ask(client, ".TestHouseSetupReport", "SETUP_DOOR:"));
+				Assert.Contains("doors=2 doorsOutside=0", this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
+				Assert.Contains("fourthRattans=1", this.Ask(client, ".TestHouseSetupReport", "SETUP_DOOR:"));
 
 				//the house's own realm walks in
 				this.Ask(client, ".TestHousePlayer \"own\"", "HOUSE_PLAYER:");
