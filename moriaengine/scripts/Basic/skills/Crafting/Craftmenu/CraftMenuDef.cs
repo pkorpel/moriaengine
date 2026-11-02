@@ -8,11 +8,6 @@ namespace SteamEngine.CompiledScripts {
 		private const int SpellsInCircle = 8;
 		private readonly System.Collections.Generic.List<string[]> entries = new System.Collections.Generic.List<string[]>();
 
-		//#966 - systems of their own: making one would take its materials and give nothing that works
-		private static readonly System.Collections.Generic.HashSet<string> notPorted = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-			"i_scroll_case", "i_customscroll_manashield"
-		};
-
 		public CraftMenuDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 		}
@@ -46,9 +41,7 @@ namespace SteamEngine.CompiledScripts {
 						path.Add(section);
 						break;
 					case "item":
-						if (!notPorted.Contains(entry[1])) {
-							AddItem(path[path.Count - 1], ThingDef.GetByDefname(entry[1]) as ItemDef);
-						}
+						AddItem(path[path.Count - 1], ThingDef.GetByDefname(entry[1]) as ItemDef);
 						break;
 					case "circle":
 						AddCircle(path[path.Count - 1], int.Parse(entry[1], System.Globalization.CultureInfo.InvariantCulture));
