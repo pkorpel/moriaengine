@@ -425,6 +425,7 @@ namespace SteamEngine.CompiledScripts {
 				if ((this.Realm == Realm.None) && (this.Nation != Nation.None)) {
 					this.Realm = NationData.GetRealm(this.Nation); //#1027 - a save used to lose Mordor's
 				}
+				PowerBadge.PutBackOn(this); //#1037
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);
 				Guild.AnnounceConnection(this, true);
