@@ -60,6 +60,13 @@ namespace SteamEngine.CompiledScripts {
 			List<TravelStop> forGondor = TravelStops.Offered(self);
 			Report("gondorIsNotOfferedMordor", forGondor.Contains(edoras) && !forGondor.Contains(baradDur));
 
+			int threshold = NotorietySettings.instance.murdererThreshold;
+			NotorietySettings.instance.murdererThreshold = 0; //anyone counts
+			Report("murdererCountsAsMurderer", Notoriety.IsMurderer(self));
+			List<TravelStop> forMurderer = TravelStops.Offered(self);
+			Report("gondorMurdererKeepsGondorsStops", forMurderer.Contains(edoras) && !forMurderer.Contains(baradDur));
+			NotorietySettings.instance.murdererThreshold = threshold;
+
 			self.Realm = Realm.Mordor;
 			List<TravelStop> forMordor = TravelStops.Offered(self);
 			Report("mordorIsNotOfferedGondor", !forMordor.Contains(edoras) && forMordor.Contains(baradDur));

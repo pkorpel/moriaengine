@@ -90,10 +90,10 @@ namespace SteamEngine.CompiledScripts {
 			return (area == null) ? 0 : area.RealmTag;
 		}
 
-		/// <summary>Erebor's ismurderer as this script means it: Mordor's characters are created with 30000
-		/// kills, so it says whose side someone is on, and a Gondor player with enough kills changes sides.</summary>
+		/// <summary>#1041 - realm alone decides, the user's call. Erebor tests ismurderer here, which is
+		/// Mordor's characters, created with 30000 kills, and any Gondor player with enough murders.</summary>
 		public static bool IsMordorSide(Character ch) {
-			return (ch.Realm == Realm.Mordor) || (ch.Realm == Realm.MordorOutcast) || Notoriety.IsMurderer(ch);
+			return ch.Realm == Realm.Mordor;
 		}
 
 		/// <summary>f_srcwantsenemy.</summary>
