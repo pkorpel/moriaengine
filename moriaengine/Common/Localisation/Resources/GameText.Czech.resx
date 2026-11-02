@@ -673,6 +673,87 @@
   <data name="AnimalLoreLoc_NothingFemale" xml:space="preserve">
     <value>Nic jsi nezjistila.</value>
   </data>
+  <data name="BardLoc_PlayPoorly" xml:space="preserve">
+    <value>You play poorly.</value>
+  </data>
+  <data name="BardLoc_NoInstrumentAvailable" xml:space="preserve">
+    <value>You have no musical instrument available</value>
+  </data>
+  <data name="BardLoc_NeedInstrument" xml:space="preserve">
+    <value>Potrebujes nejaky hudebni nastroj.</value>
+  </data>
+  <data name="BardLoc_PlayFalse" xml:space="preserve">
+    <value>Hrajes falesne.</value>
+  </data>
+  <data name="DiscordanceLoc_WhoToWeaken" xml:space="preserve">
+    <value>Koho chces zkusit oslabit?</value>
+  </data>
+  <data name="DiscordanceLoc_DontHurry" xml:space="preserve">
+    <value>Nespechej s pouzivanim dovednosti.</value>
+  </data>
+  <data name="DiscordanceLoc_OnlyMonsters" xml:space="preserve">
+    <value>Zameruj jen monstra.</value>
+  </data>
+  <data name="DiscordanceLoc_CantWeaken" xml:space="preserve">
+    <value>Tohle nemuzes oslabit.</value>
+  </data>
+  <data name="DiscordanceLoc_BeyondYou" xml:space="preserve">
+    <value>Oslabeni teto prisery presahuje tve moznosti.</value>
+  </data>
+  <data name="DiscordanceLoc_Weakened" xml:space="preserve">
+    <value>Oslabeni bylo uspesne.</value>
+  </data>
+  <data name="DiscordanceLoc_DidntWork" xml:space="preserve">
+    <value>Oslabeni se nepovedlo.</value>
+  </data>
+  <data name="PeacemakingLoc_DontHurry" xml:space="preserve">
+    <value>Nespechej s pouzivanim skillu.</value>
+  </data>
+  <data name="PeacemakingLoc_WhoToCalm" xml:space="preserve">
+    <value>Koho chces zkusit uklidnit?</value>
+  </data>
+  <data name="PeacemakingLoc_CantCalm" xml:space="preserve">
+    <value>Tohle nemuzes uklidnit.</value>
+  </data>
+  <data name="PeacemakingLoc_BeyondYou" xml:space="preserve">
+    <value>Uklidneni teto prisery presahuje tve moznosti.</value>
+  </data>
+  <data name="PeacemakingLoc_Calmed" xml:space="preserve">
+    <value>Uklidneni se povedlo.</value>
+  </data>
+  <data name="PeacemakingLoc_DidntWork" xml:space="preserve">
+    <value>Uklidnovani nezabralo.</value>
+  </data>
+  <data name="PeacemakingLoc_NothingToCalm" xml:space="preserve">
+    <value>Jiz neni co uklidnovat!</value>
+  </data>
+  <data name="ProvocationLoc_UseTheCommand" xml:space="preserve">
+    <value>Provokace se vyvolava prikazem .provo</value>
+  </data>
+  <data name="ProvocationLoc_DontHurry" xml:space="preserve">
+    <value>Nespechej s pouzivanim skillu</value>
+  </data>
+  <data name="ProvocationLoc_WhoFirst" xml:space="preserve">
+    <value>Koho chces vyprovokovat?</value>
+  </data>
+  <data name="ProvocationLoc_WhoAgainst" xml:space="preserve">
+    <value>Proti komu?</value>
+  </data>
+  <data name="ProvocationLoc_CantProvoke" xml:space="preserve">
+    <value>Tohle nemuzes vyprovokovat.</value>
+  </data>
+  <data name="ProvocationLoc_BeyondYou" xml:space="preserve">
+    <value>Provokace teto prisery presahuje tve moznosti</value>
+  </data>
+  <data name="ProvocationLoc_Worked" xml:space="preserve">
+    <value>Provokace se povedla.</value>
+  </data>
+  <data name="ProvocationLoc_DidntWork" xml:space="preserve">
+    <value>Provokace se nepovedla.</value>
+  </data>
+  <data name="ProvocationLoc_DoesntReact" xml:space="preserve">
+    <value>{0} nereaguje na provokaci.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

@@ -15,11 +15,18 @@
     Or visit http://www.gnu.org/copyleft/gpl.html
  */
 
+using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
+
+	/// <summary>#962 - Erebor's systems/skills/discordance.scp, its Enticement: a monster loses a quarter of the bard's skill
+	/// in permille of everything, for 10 s plus a second for each 2.0 of skill. Hits, mana and stamina keep their proportion.</summary>
 	[ViewableClass]
 	public class DiscordanceSkillDef : SkillDef {
+		internal static PluginKey effectPluginKey = PluginKey.Acquire("_discordanceEffect_");
 
 		public DiscordanceSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -27,144 +34,133 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			Musical instrument = skillSeqArgs.Tool as Musical;
-			if (instrument != null) {
-				if (instrument.TopObj() != self) {
-					instrument = null;
-				}
+			if (Bard.FindInstrument(self) == null) {
+				self.SysMessage(Loc<BardLoc>.Get(self.Language).NoInstrumentAvailable);
+			} else if (self is Player player) {
+				self.SysMessage(Loc<DiscordanceLoc>.Get(self.Language).WhoToWeaken);
+				player.Target(SingletonScript<Targ_Discordance>.Instance, skillSeqArgs);
 			}
-			if (instrument == null) {
-				instrument = (Musical) self.Backpack.FindByClass(typeof(Musical));
-			}
-			if (instrument == null) {
-				self.SysMessage("Nemáš u sebe hudební nástroj.");
-				skillSeqArgs.Success = false;
-				return TriggerResult.Cancel;
-			}
-			skillSeqArgs.Tool = instrument;
-
-			Character target = skillSeqArgs.Target1 as Character;
-			if (target == null) {
-				Player selfAsPlayer = self as Player;
-				if (selfAsPlayer != null) {
-					selfAsPlayer.Target(SingletonScript<Targ_Discordance>.Instance, skillSeqArgs);
-					return TriggerResult.Cancel;
-				}
-				throw new SEException("Discordance target not set for nonplayer");
-			}
-
-			return TriggerResult.Continue;
+			return TriggerResult.Cancel;
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			SkillSequenceArgs musicianship = SkillSequenceArgs.Acquire(self, SkillName.Musicianship, skillSeqArgs.Tool, true); //true = parameter for the musicianship @Stroke, it won't proceed with the skill
-			musicianship.PhaseStroke();
-
-			if (musicianship.Tool != null) {
-				skillSeqArgs.Success = musicianship.Success;
-
-				self.SysMessage("Pokousis se oslabit " + ((Character) skillSeqArgs.Target1).Name + ".");
-				return TriggerResult.Continue;
+			if (self.GetTimer(DiscordanceTimer.Key) != null) {
+				self.SysMessage(Loc<DiscordanceLoc>.Get(self.Language).DontHurry);
+			} else {
+				this.Play(self, skillSeqArgs.Target1 as Character);
 			}
-			//skillSeqArgs.Dispose();
-			return TriggerResult.Cancel; //we lost the instrument or something
+			return TriggerResult.Cancel;
+		}
+
+		private void Play(Character self, Character target) {
+			DiscordanceLoc texts = Loc<DiscordanceLoc>.Get(self.Language);
+			NPC npc = target as NPC;
+			if (target == null) {
+				self.SysMessage(texts.OnlyMonsters);
+			} else if ((npc == null) || (npc.GetSkill(SkillName.Discordance) > 0) || Bard.IsBoss(npc)) {
+				self.SysMessage(texts.CantWeaken);
+			} else if (Bard.Reach(this, self) < Bard.ExperienceOf(npc)) {
+				self.SysMessage(texts.BeyondYou);
+			} else {
+				HidingSkillDef.Reveal(self);
+				DiscordanceTimer timer = new DiscordanceTimer();
+				timer.target = npc;
+				timer.works = Bard.Plays(self, Bard.FindInstrument(self)) && (Bard.Power(this, self) >= Bard.ExperienceOf(npc));
+				self.AddTimer(DiscordanceTimer.Key, timer).DueInSeconds = Bard.Delay(this, self);
+			}
 		}
 
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-
-			if (skillSeqArgs.Tool.IsDeleted || skillSeqArgs.Tool.TopObj() != self) {
-				self.SysMessage("Nemáš u sebe hudební nástroj.");
-				skillSeqArgs.PhaseAbort();
-				return TriggerResult.Cancel;
-			}
-
-			Character target = (Character) skillSeqArgs.Target1;
-
-			if (this.SkillValueOfChar(target) > 0) {
-				self.SysMessage("Tohle nelze oslabit.");
-			} else if (skillSeqArgs.Success) { //set by Musicianship in @Start
-				//TODO experience revamp
-
-				//double targExperience = target.Experience;
-				//int mySkillValue = this.SkillValueOfChar(self);
-				//if ((mySkillValue * 0.3) < targExperience) {
-				//    self.SysMessage("Oslabeni tohoto cile presahuje tve moznosti.");
-				//} else {
-				//    double discordancePower = ScriptUtil.EvalRandomFaktor(mySkillValue, 0, 300);
-				//    if (discordancePower <= targExperience) {
-				//        skillSeqArgs.Success = false;
-				//    } //else success stays true
-				//}
-			}
-			return TriggerResult.Continue;
+			return TriggerResult.Cancel;
 		}
 
-		internal static PluginKey effectPluginKey = PluginKey.Acquire("_discordanceEffect_");
-
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			Character target = (Character) skillSeqArgs.Target1;
-
-			if (target.HasPlugin(effectPluginKey)) {
-				self.SysMessage("Cíl je již oslaben.");
-			} else {
-				self.SysMessage("Úspìšnì jsi oslabil cíl.");
-				DiscordanceEffectPlugin plugin = (DiscordanceEffectPlugin) DiscordanceEffectPlugin.defInstance.Create();
-				plugin.discordEffectPower = this.SkillValueOfChar(self);
-				target.AddPluginAsSimple(effectPluginKey, plugin);
-				self.Trigger_HostileAction(self);
-			}
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-
-			self.SysMessage("Oslabení se nepovedlo.");
-			self.Trigger_HostileAction(self);
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
-			skillSeqArgs.Self.SysMessage("Oslabování bylo pøedcasnì pøerušeno.");
+		}
+
+		/// <summary>stopscriptedskills.</summary>
+		internal static void Spoil(Character self) {
+			DiscordanceTimer timer = self.GetTimer(DiscordanceTimer.Key) as DiscordanceTimer;
+			if (timer != null) {
+				timer.works = false;
+				timer.DueInSeconds = 0;
+			}
 		}
 	}
 
 	public class Targ_Discordance : CompiledTargetDef {
-
-		protected override void On_Start(Player self, object parameter) {
-			self.SysMessage("Koho chceš zkusit oslabit?");
-			base.On_Start(self, parameter);
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			return Start(targetted, parameter);
 		}
 
-		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			return Start(targetted, parameter);
+		}
+
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			return TargetResult.Done;
+		}
+
+		private static TargetResult Start(Thing targetted, object parameter) {
 			SkillSequenceArgs skillSeq = (SkillSequenceArgs) parameter;
-
-			if (targetted.IsPlayer) {
-				self.SysMessage("Zamìøuj jenom monstra!");
-				return TargetResult.RestartTargetting;
-			}
-			if (targetted.HasPlugin(DiscordanceSkillDef.effectPluginKey)) {
-				self.SysMessage("Cíl je již oslaben.");
-				return TargetResult.Done;
-			}
-
 			skillSeq.Target1 = targetted;
 			skillSeq.PhaseStart();
-
 			return TargetResult.Done;
+		}
+	}
+
+	/// <summary>i_discordance_timer.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class DiscordanceTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_discordance_");
+
+		[SaveableData, CopyableData]
+		public NPC target;
+
+		[SaveableData, CopyableData]
+		public bool works;
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public DiscordanceTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			Character self = (Character) cont;
+			if ((this.target == null) || this.target.IsDeleted) {
+				return;
+			}
+			DiscordanceLoc texts = Loc<DiscordanceLoc>.Get(self.Language);
+			this.target.DeletePlugin(DiscordanceSkillDef.effectPluginKey);
+			if (this.works) {
+				self.SysMessage(texts.Weakened, Bandaging.ClassMessageColor);
+				DiscordanceEffectPlugin plugin = (DiscordanceEffectPlugin) DiscordanceEffectPlugin.defInstance.Create();
+				plugin.discordEffectPower = self.GetSkill(SkillName.Discordance);
+				this.target.AddPluginAsSimple(DiscordanceSkillDef.effectPluginKey, plugin);
+				FightMemory.Record(this.target, self);
+			} else {
+				self.RedMessage(texts.DidntWork);
+			}
 		}
 	}
 
 	[ViewableClass]
 	public partial class DiscordanceEffectPlugin {
+		private const int LeastSeconds = 10, SkillForASecond = 20, Permille = 1000;
 
 		public static readonly DiscordanceEffectPluginDef defInstance = new DiscordanceEffectPluginDef("p_discordanceEffect_", "C#scripts", -1);
 
 		public void On_Assign() {
 			Character cont = (Character) this.Cont;
+			cont.Emote("looks weakened.");
 
 			int lowerConst = this.discordEffectPower / 4;
+			int hitsShare = Share(cont.Hits, cont.MaxHits), manaShare = Share(cont.Mana, cont.MaxMana), stamShare = Share(cont.Stam, cont.MaxStam);
 
 			this.lowed_dex = (short) DiscordanceValueLower(cont.Dex, lowerConst);
 			this.lowed_str = (short) DiscordanceValueLower(cont.Str, lowerConst);
@@ -198,19 +194,18 @@ namespace SteamEngine.CompiledScripts {
 			cont.ModifySkillValue(SkillName.Fencing, -this.lowed_onehand);
 			cont.ModifySkillValue(SkillName.Wrestling, -this.lowed_wrestl);
 
-			if (cont.Hits > cont.MaxHits) {
-				cont.Hits = cont.MaxHits;
-			}
-			if (cont.Mana > cont.MaxMana) {
-				cont.Mana = cont.MaxMana;
-			}
-			if (cont.Stam > cont.MaxStam) {
-				cont.Stam = cont.MaxStam;
-			}
-			this.Timer = ScriptUtil.EvalRangePermille(this.discordEffectPower, 10, 15);
+			cont.Hits = (short) ((cont.MaxHits * hitsShare) / Permille);
+			cont.Mana = (short) ((cont.MaxMana * manaShare) / Permille);
+			cont.Stam = (short) ((cont.MaxStam * stamShare) / Permille);
+			this.Timer = LeastSeconds + (this.discordEffectPower / SkillForASecond);
 		}
 
 		public void On_UnAssign(Character cont) {
+			if (cont.Hits <= 0) {
+				return;
+			}
+			cont.Emote("seems to be at full strength.");
+			int hitsShare = Share(cont.Hits, cont.MaxHits), manaShare = Share(cont.Mana, cont.MaxMana), stamShare = Share(cont.Stam, cont.MaxStam);
 			cont.Dex += this.lowed_dex;
 			cont.Str += this.lowed_str;
 			cont.Int += this.lowed_int;
@@ -226,6 +221,13 @@ namespace SteamEngine.CompiledScripts {
 			cont.ModifySkillValue(SkillName.Macing, this.lowed_mace);
 			cont.ModifySkillValue(SkillName.Fencing, this.lowed_onehand);
 			cont.ModifySkillValue(SkillName.Wrestling, this.lowed_wrestl);
+			cont.Hits = (short) ((cont.MaxHits * hitsShare) / Permille);
+			cont.Mana = (short) ((cont.MaxMana * manaShare) / Permille);
+			cont.Stam = (short) ((cont.MaxStam * stamShare) / Permille);
+		}
+
+		private static int Share(int value, int most) {
+			return ((value == most) || (most == 0)) ? Permille : (value * Permille) / most;
 		}
 
 		private static int DiscordanceValueLower(int value, int lowerConst) {
@@ -243,5 +245,15 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class DiscordanceEffectPluginDef {
+	}
+
+	internal class DiscordanceLoc : CompiledLocStringCollection<DiscordanceLoc> {
+		public string WhoToWeaken = "Koho chces zkusit oslabit?";
+		public string DontHurry = "Nespechej s pouzivanim dovednosti.";
+		public string OnlyMonsters = "Zameruj jen monstra.";
+		public string CantWeaken = "Tohle nemuzes oslabit.";
+		public string BeyondYou = "Oslabeni teto prisery presahuje tve moznosti.";
+		public string Weakened = "Oslabeni bylo uspesne.";
+		public string DidntWork = "Oslabeni se nepovedlo.";
 	}
 }
