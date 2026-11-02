@@ -39,6 +39,8 @@ User's rule, 2026-11-02: Czech text is saved without diacritics, hrac not hráč
 
 Shipped, #1009, branch ring-quest-rolling: the ring quest is the last 3 days, rolling, the user's call against Erebor. Times of qualifying kills are kept for Mordor players, no start click.
 
+Shipped, #1011 open for expansions, branch whoami: Erebor's `.whoami` in scripts/Basic/Whoami, four lines as funkce.scp, also at the end of character creation, nations as "of Rohan", the user's call. Monster kills, deaths and age are new tags, counting from this change.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

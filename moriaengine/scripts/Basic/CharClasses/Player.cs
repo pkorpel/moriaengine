@@ -421,6 +421,7 @@ namespace SteamEngine.CompiledScripts {
 			if (result != TriggerResult.Cancel) {
 				Party.ForgetCanLootMe(this); //#918
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
+				PlayerRecord.Login(this); //#1011
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);
 				Guild.AnnounceConnection(this, true);
@@ -449,6 +450,7 @@ namespace SteamEngine.CompiledScripts {
 			LevelingSystem.TrimSkillsAtDeath(this);
 			base.On_Death(killedBy);
 			NazgulRings.OnDeath(this, killedBy, recentlyDead);
+			PlayerRecord.Died(this); //#1011
 			FightMemory.Forget(this);
 		}
 
