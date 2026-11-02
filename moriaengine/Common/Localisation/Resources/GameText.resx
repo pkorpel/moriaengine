@@ -883,6 +883,24 @@
   <data name="InformationLoc_TasteIdClean" xml:space="preserve">
     <value>Neni otravena.</value>
   </data>
+  <data name="SmallSkillsLoc_BegFrom" xml:space="preserve">
+    <value>U koho chces zebrat?</value>
+  </data>
+  <data name="SmallSkillsLoc_WordsMakeNoSense" xml:space="preserve">
+    <value>Slova se zdaji nesrozumitelna.</value>
+  </data>
+  <data name="SmallSkillsLoc_WhatToHerd" xml:space="preserve">
+    <value>What would you like to herd?</value>
+  </data>
+  <data name="SmallSkillsLoc_WhereToHerd" xml:space="preserve">
+    <value>Where do you want them to go ?</value>
+  </data>
+  <data name="SmallSkillsLoc_CantLightHere" xml:space="preserve">
+    <value>You can't light the kindling in a container</value>
+  </data>
+  <data name="SmallSkillsLoc_FireFailed" xml:space="preserve">
+    <value>You fail to ignite the fire.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
