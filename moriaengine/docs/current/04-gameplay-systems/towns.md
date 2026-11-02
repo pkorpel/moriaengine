@@ -76,9 +76,10 @@ shrine (`i_shrine_power`, placed by `.SetupTowns` in Barad-dur, Nurn, Rhun, Hara
 its ring is its Nazgul. They rule it through the same `Town` as a mayor: blacklist, suggestions, news, home.
 
 **Getting a ring.** With no Nazgul in the city, someone of Mordor at level 30, not a craftsman, double clicks
-the shrine. The first time starts the quest: 5 Gondor players of level 30 killed within 3 days. Then the
-ring. On Erebor the shrine itself skipped the quest, which only clicking a ring on the ground asked for.
-Here a lost ring doesn't lie around, so the shrine asks; `ringQuestKills` 0 turns it off.
+the shrine. It asks for 5 kills of Gondor players of level 30 or more in the last 3 days, rolling, and gives
+the ring at once if they're there (#1009, the user's call). A Mordor player's kills are always remembered, so
+there's no click to start it and nothing is wiped. On Erebor, clicking a ring on the ground started a 3 day
+count from that moment, and the shrine itself skipped the quest. `ringQuestKills` 0 turns it off.
 
 A Nazgul shows a red NAZGUL over the name, and their name in that color.
 
