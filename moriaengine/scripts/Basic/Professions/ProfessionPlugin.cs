@@ -82,7 +82,7 @@ namespace SteamEngine.CompiledScripts {
 		private TriggerResult CheckCancelSkill(Player player, SkillSequenceArgs skillSeqArgs) {
 			if ((!player.IsGM) && skillSeqArgs.SkillDef.Id == (int) SkillName.Magery) {
 				SpellDef spell = (SpellDef) skillSeqArgs.Param1;
-				if (!this.profession.AllowedSpells.Contains(spell)) {
+				if (!spell.IsCustom && !this.profession.AllowedSpells.Contains(spell)) { //those ask their scroll
 					player.RedMessage(string.Format(CultureInfo.InvariantCulture,
 						Loc<ProfessionPluginLoc>.Get(player.Language).YouCantCastThis,
 						this.profession.Name));

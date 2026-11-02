@@ -26,7 +26,13 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class t_scroll : CompiledTriggerGroup {
-
+		//#962 - Sphere's double click on IT_SCROLL casts it
+		public TriggerResult On_DClick(Item self, Character clicker) {
+			if (self is SpellScroll scroll) {
+				MagerySkillDef.TryCastSpellFromScroll(clicker, scroll);
+			}
+			return TriggerResult.Cancel;
+		}
 	}
 
 	public class t_eq_memory_obj : CompiledTriggerGroup {

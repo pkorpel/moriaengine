@@ -706,24 +706,29 @@ WEIGHT = 1
 DEFNAME = i_scroll_summon_elem_water
 
 
-[SpellScrollDef i_scroll_manashield]
+[SpellScrollDef i_customscroll_manashield]
 CATEGORY=Provisions - Alchemy & Magic
 SUBSECTION=Scrolls - Special
 DESCRIPTION=Mana Shield Scroll
 
 Model=i_scroll_blank
 Name=Mana Shield Scroll
-RESOURCES=i_scroll_blank//, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
-SKILLMAKE=800 magery, 400 inscription
-TYPE=t_scroll //t_customspell_scroll
+TYPE=t_customspell_scroll
 WEIGHT=1
+Color=044d
+//the professions that may read it; Erebor's tag for priests only lets them write it, the scroll refuses them
+Tag.profession_mage=1
+Tag.profession_mystic=1
+Tag.profession_necromant=1
 
+[SpellScrollDef i_customscroll_mass_bless]
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Special
+DESCRIPTION=Mass Bless Scroll
 
-//ON=@Create
-//ATTR_MAGIC=1
-//MOREX=104 //cislo kouzla
-//tag(class_mag,1) //bude pro magy mystiky a negry, knez muze jen psat
-//tag(class_mystik,1)
-//tag(class_necro,1)
-//tag(class_priest,1)
-//color=044d
+Model=i_scroll_blank
+Name=Mass Bless Scroll
+TYPE=t_customspell_scroll
+WEIGHT=1
+Color=044d
+Tag.profession_priest=1

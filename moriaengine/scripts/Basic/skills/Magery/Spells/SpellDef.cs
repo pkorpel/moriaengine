@@ -52,6 +52,8 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public class SpellDef : AbstractIndexedDef<SpellDef, int> {
+		private const int LastSphereSpellId = 100;
+
 		private static Dictionary<string, ConstructorInfo> spellDefCtorsByName = new Dictionary<string, ConstructorInfo>(StringComparer.OrdinalIgnoreCase);
 
 		//private static Dictionary<int, SpellDef> byId = new Dictionary<int, SpellDef>();
@@ -276,15 +278,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#962 - Erebor's own spells past Sphere's numbers (a_defname), cast by customspellcast: only from a
+		/// t_customspell_scroll, with no discount for the scroll and outside @spellcast.</summary>
+		public bool IsCustom {
+			get {
+				return this.Id > LastSphereSpellId;
+			}
+		}
+
 		public int GetManaUse(bool isFromScroll) {
-			if (isFromScroll) {
+			if (isFromScroll && !this.IsCustom) {
 				return this.ManaUse / 2;
 			}
 			return this.ManaUse;
 		}
 
 		public int GetDifficulty(bool isFromScroll) {
-			if (isFromScroll) {
+			if (isFromScroll && !this.IsCustom) {
 				return this.Difficulty / 2;
 			}
 			return this.Difficulty;

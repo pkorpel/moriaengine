@@ -252,3 +252,11 @@ Not ported: bags as one row (top-level pack items only), the builders' spoken pa
 Poison, Paralyze and the poison and paralyze fields don't lose power to defense as damage spells do. Their live "effect" numbers (`Resist` in spellvalues.def) are a roll of the caster's spell power that must reach the target's defense, or "Cil kouzlu odolal". Paralysis resist cuts the power first. The Poison spell is Erebor's f_effect_a_poison: mind power times Poisoning and Magery, a plain damage poison every 5 s, weighted by `percentOnMonsters` or `percentOnPlayers`. A monster of 110 in a stat loses a share of it to clumsy, feeblemind, weaken and curse, not a number. Curse also takes 5% off a monster's fire resist.
 
 Nine of the 64 spells aren't ported, none could be cast on Erebor: Create Food, Magic Trap, Magic Untrap, Magic Lock, Telekinesis, Unlock and Incognito need 500.0 Magery, Mana Vampire 250.0, Polymorph 700.0.
+
+## Spell scrolls and the scroll case
+
+A double click casts a `t_scroll`, as Sphere: half mana, half difficulty, the scroll goes whether it lands or not.
+
+`t_customspell_scroll` is Erebor's scroll of a spell past Sphere's numbers (Mana Shield 104, Mass Bless 102). The scroll must be on you and not directly in the bank, and its def's `Tag.profession_*` lines say who may read it. Those spells skip `@spellcast`: full mana (half on a fizzle), no darkness check, the skill is checked before the cursor comes up, and the roll is `f_circle_fizzle`: skill capped at difficulty + 39.2 against a throw of difficulty to difficulty + 40.0. Mana Shield can only be aimed at yourself. Mass Bless has no `csflag_mass` on Erebor, so it blesses one target.
+
+`i_scroll_case` (`t_svitkovac`) holds up to 999999 scrolls of each spell as counts on the item. Scrolls go in by dropping them on it, by its Pridat cursor, or a whole container by targeting it. Pages are the circles in pairs, necromancy and the rest. Vybrat takes one of everything.

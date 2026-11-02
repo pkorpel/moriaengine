@@ -155,6 +155,27 @@ EffectPluginKey_Potion = @@potionEffect_statBuff
 on=@effectChar
 	EffectFactory.StationaryEffect(this, 0x373A, 10, 15)
 	
+//Erebor's a_mass_bless: its a_flags has no csflag_mass, so for all the name it blesses one target
+[DurableCharEffectSpellDef 102]
+DEFNAME=s_mass_bless
+NAME=Mass Bless
+SOUND=0x1EA
+RUNES=VRS
+CASTTIME=2
+SCROLLITEM=i_customscroll_mass_bless
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+EFFECT=0,10
+DURATION=240,600
+MANAUSE=20
+Requirements=600 Magery
+Difficulty=500
+EffectPluginDef = p_bless
+EffectPluginKey_Spell = @@spellEffect_statBuff
+EffectPluginKey_Potion = @@potionEffect_statBuff
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x373A, 10, 15)
+
 [DurableCharEffectSpellDef 27]
 DEFNAME=s_curse
 NAME=Curse

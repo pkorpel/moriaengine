@@ -29,6 +29,20 @@ namespace SteamEngine.CompiledScripts {
 			return System.Array.Exists(defnames, defname => SpellDef.GetByDefname(defname) == spell);
 		}
 
+		/// <summary>f_customspell_delayed's end of a cast: hunger, then f_circle_fizzle, which caps skill at 39.2 over the
+		/// difficulty and throws against up to 40.0 over it.</summary>
+		internal static bool CustomCastHolds(Character self, SpellDef spell) {
+			if (self.IsGM) {
+				return true;
+			}
+			if (PlayerHunger.DistractsFrom(self)) {
+				return false;
+			}
+			int difficulty = spell.Difficulty;
+			int skill = System.Math.Min(self.GetSkill(SkillName.Magery), difficulty + 392);
+			return skill > Globals.dice.Next(difficulty, difficulty + 401);
+		}
+
 		/// <summary>False when it doesn't go on. fizzle says whether that shows as a fizzle.</summary>
 		internal static bool Allow(Character self, SpellDef spell, IPoint3D target, out bool fizzle) {
 			fizzle = true;
@@ -36,6 +50,14 @@ namespace SteamEngine.CompiledScripts {
 				return true; //e_allplayers
 			}
 			MageryRulesLoc texts = Loc<MageryRulesLoc>.Get(self.Language);
+			if (spell.IsCustom) { //customspellcast knows nothing of @spellcast
+				fizzle = false;
+				if (Is(spell, "s_mana_shield") && (target != self)) {
+					self.SysMessage(texts.OnlyAtYourself);
+					return false;
+				}
+				return true;
+			}
 			if (!self.IsGM && !Is(spell, NoLight) && !WorkLight.CheckWithMessage(self)) {
 				return false;
 			}
@@ -125,6 +147,7 @@ namespace SteamEngine.CompiledScripts {
 	internal class MageryRulesLoc : CompiledLocStringCollection<MageryRulesLoc> {
 		public string OnlyOnPlayers = "Toto kouzlo smis kouzlit jen na hrace.";
 		public string OnlyOnYourself = "Toto kouzlo smis kouzlit jen na sebe.";
+		public string OnlyAtYourself = "Kouzlo lze zamerit pouze na sebe.";
 		public string NotOnItems = "Nesmis kouzlit na predmet.";
 		public string NotOntoItems = "Nelze se premistovat na predmety.";
 		public string NotOntoNpcs = "Nelze se premistovat na NPC.";

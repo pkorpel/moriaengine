@@ -93,7 +93,7 @@ namespace SteamEngine.CompiledScripts {
 			PluginKey key;
 			if ((effectFlag & EffectFlag.FromPotion) == EffectFlag.FromPotion) {
 				key = this.EffectPluginKey_Potion;
-			} else if ((effectFlag & EffectFlag.FromSpellBook) == EffectFlag.FromSpellBook) {
+			} else if ((effectFlag & (EffectFlag.FromSpellBook | EffectFlag.FromSpellScroll)) != EffectFlag.None) {
 				key = this.EffectPluginKey_Spell;
 			} else {
 				throw new SEException("Undefined source type");

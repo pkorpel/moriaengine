@@ -14,7 +14,7 @@ namespace SteamEngine.Converter {
 		public static void Write(string outputPath) {
 			StringBuilder output = new StringBuilder();
 			foreach (string item in SphereWorldVars.RecipeItems(ResourcesVar, SkillMakeVar)) {
-				if (HandWrittenScripts.Items.Contains(item) && !ConvertedItemDef.itemsByDefname.ContainsKey(item)) {
+				if (HandWrittenScripts.Items.Contains(item)) {
 					string resources = SphereWorldVars.GetRecipe(ResourcesVar + item);
 					string skillMake = SphereWorldVars.GetRecipe(SkillMakeVar + item);
 					output.Append("[CraftRecipeDef craftrecipe_").Append(item).Append("]\n");
