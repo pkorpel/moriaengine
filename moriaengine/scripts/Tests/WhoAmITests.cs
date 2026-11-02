@@ -57,6 +57,17 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		[SteamFunction]
+		public static void TestWhoGuild(Character self) {
+			GuildStone stone = (GuildStone) ThingDef.GetByDefname("i_guildstone").Create(self.X, self.Y + 1, self.Z, self.M);
+			Guild guild = GuildDef.NewGuild(stone);
+			guild.AddMember(self);
+			guild.Rename("Who Guild");
+			((Player) self).Level = 12;
+			((Player) self).SkillRank = SkillRank.Master;
+			Console.WriteLine("WHO_GUILD: guild=" + Guild.GetGuild(self)?.Name);
+		}
+
+		[SteamFunction]
 		public static void TestWhoFirst(Character self) {
 			NazgulRings.Give(self, null);
 			Console.WriteLine("WHO_FIRST: done");

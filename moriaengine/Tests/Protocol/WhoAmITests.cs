@@ -52,6 +52,16 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("2 hod 5 min", lines);
 			Assert.Contains("Killer Rabbit", lines);
 
+			//level, rank and guild, each with its label
+			this.Ask(client, ".TestWhoGuild", "WHO_GUILD:");
+			lines = Open(client);
+			Assert.Contains("Uroven", lines);
+			Assert.Contains("12", lines);
+			Assert.Contains("Hodnost", lines);
+			Assert.Contains("Master", lines);
+			Assert.Contains("Guilda", lines);
+			Assert.Contains("Who Guild", lines);
+
 			//a ring's progress, for Mordor
 			this.Ask(client, ".TestWhoMordor", "WHO_MORDOR:");
 			Assert.Contains("0 z 5 zabiti za poslednich 3 dni", Open(client));
