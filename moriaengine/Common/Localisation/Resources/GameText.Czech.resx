@@ -901,6 +901,33 @@
   <data name="SmallSkillsLoc_FireFailed" xml:space="preserve">
     <value>You fail to ignite the fire.</value>
   </data>
+  <data name="GatheringLoc_NotYet" xml:space="preserve">
+    <value>Jeste nemuzes pouzit skill.</value>
+  </data>
+  <data name="GatheringLoc_FromTheSaddle" xml:space="preserve">
+    <value>Ze sedla to pujde tezko.</value>
+  </data>
+  <data name="GatheringLoc_TooFar" xml:space="preserve">
+    <value>You are too far away.</value>
+  </data>
+  <data name="GatheringLoc_CantReach" xml:space="preserve">
+    <value>Tam nedosahnes.</value>
+  </data>
+  <data name="GatheringLoc_MiningFailMale" xml:space="preserve">
+    <value>Nevykopal jsi nic zajimaveho.</value>
+  </data>
+  <data name="GatheringLoc_MiningFailFemale" xml:space="preserve">
+    <value>Nevykopala jsi nic zajimaveho.</value>
+  </data>
+  <data name="GatheringLoc_LumberjackingFail" xml:space="preserve">
+    <value>Drevo se nepodarilo kvalitne odseknout.</value>
+  </data>
+  <data name="GatheringLoc_FishingFail" xml:space="preserve">
+    <value>Dneska nejak neberou.</value>
+  </data>
+  <data name="GatheringLoc_PulledOut" xml:space="preserve">
+    <value>You pull out a {0}!</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

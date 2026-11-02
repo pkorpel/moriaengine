@@ -125,6 +125,7 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				self.SysMessage(loc.Failed);
 			}
+			AnimCalculator.PerformAttackAnim(self);
 			self.Sound(0x2a);
 		}
 	}

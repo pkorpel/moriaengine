@@ -119,5 +119,7 @@ namespace SteamEngine.CompiledScripts {
 		public double sharedGatherDelayBaseSeconds { get { return GatheringDelaySystem.BaseDelaySeconds; } set { GatheringDelaySystem.BaseDelaySeconds = value; } }
 		public double sharedGatherDelayThresholdPercent { get { return GatheringDelaySystem.AntiMacroThresholdPercent; } set { GatheringDelaySystem.AntiMacroThresholdPercent = value; } }
 		public double sharedGatherDelayReductionPerPercent { get { return GatheringDelaySystem.DelayReductionPerPercentAboveThreshold; } set { GatheringDelaySystem.DelayReductionPerPercentAboveThreshold = value; } }
+		public int sharedGatherLeastStrokes { get { return GatheringDelaySystem.instance.leastStrokes; } set { GatheringDelaySystem.instance.leastStrokes = value; } }
+		public int sharedGatherMostStrokes { get { return GatheringDelaySystem.instance.mostStrokes; } set { GatheringDelaySystem.instance.mostStrokes = value; } }
 	}
 }

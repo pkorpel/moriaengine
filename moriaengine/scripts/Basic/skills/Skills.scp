@@ -55,16 +55,13 @@ ADVRATE=2.5,50.0,200.0
 ON=@Fail
 	src.message "You fail to ignite the campfire."
 
-[SCRIPTEDSKILLDEF 12]
+[CARTOGRAPHYSKILLDEF 12]
 DEFNAME=Skill_CARTOGRAPHY
 KEY="Cartography"
 StartByMacroEnabled = true
 DELAY=2.0
 ADVRATE=2.5,50.0,200.0
 //VALUES=1,20,80
-
-ON=@Fail
-	src.message "Thy trembling hand results in an unusable map."
 
 [DISCORDANCESKILLDEF 15]
 DEFNAME=Skill_Discordance
