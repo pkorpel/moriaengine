@@ -31,7 +31,7 @@ DELAY=1.0
 DEFNAME=Skill_Parrying
 KEY="Parrying"
 
-[SCRIPTEDSKILLDEF 6]
+[BEGGINGSKILLDEF 6]
 DEFNAME=Skill_Begging
 KEY="Begging"
 StartByMacroEnabled = true
@@ -118,7 +118,7 @@ ADVRATE=2.5,50.0,200.0
 
 
 
-[SCRIPTEDSKILLDEF 20]
+[HERDINGSKILLDEF 20]
 DEFNAME=Skill_Herding
 KEY="Herding"
 //TITLE="Shepherd"
@@ -133,8 +133,6 @@ KEY="Herding"
 //BONUSSTATS=25
 ADVRATE=2.5,50.0,200.0
 
-ON=@Fail
-	src.message "You don't seem to be able to persuade that to move."
 
 [PROVOCATIONSKILLDEF 22]
 DEFNAME=Skill_Provocation
@@ -196,15 +194,13 @@ KEY="Snooping"
 DELAY=2.0
 ADVRATE=2.5,50.0,200.0
 
-[SCRIPTEDSKILLDEF 32]
+[SPIRITSPEAKSKILLDEF 32]
 DEFNAME=Skill_Spiritspeak
 KEY="SpiritSpeak"
 StartByMacroEnabled = true
 DELAY=1, 3
 Effect=0, 25
 
-ON=@Fail
-	src.message "You fail your attempt at contacting the netherworld."
 
 [STEALINGSKILLDEF 33]
 DEFNAME=Skill_Stealing
