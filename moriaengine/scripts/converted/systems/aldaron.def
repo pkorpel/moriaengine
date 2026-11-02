@@ -328,6 +328,9 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 Color = 098c
 BleedingEfficiency = 0.25 //nastaveni_weapbleed 
+PoisoningDifficulty = 800 //nastaveni_weappoison 
+PoisoningEfficiency = 1.8 //nastaveni_weappoison 
+PoisonCapacity = 10 //nastaveni_weappoison 
 
 [ContainerDef i_shadow_weapon_bag]
 model = i_bag

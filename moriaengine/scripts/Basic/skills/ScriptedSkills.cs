@@ -9,6 +9,7 @@ namespace SteamEngine.CompiledScripts {
 			ProvocationSkillDef.Spoil(self);
 			DiscordanceSkillDef.Spoil(self);
 			PeacemakingSkillDef.Spoil(self);
+			PoisoningSkillDef.Spoil(self);
 		}
 	}
 }

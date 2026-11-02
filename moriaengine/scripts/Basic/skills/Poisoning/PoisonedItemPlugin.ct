@@ -16,7 +16,6 @@
 
 [PluginTemplate PoisonedItemPlugin : Plugin]
 Vars:
-	private FadingEffectDurationPluginDef poisonType  = null
-	private double poisonPower = 0
-	private int poisonTickCount = 0
+	private int poisonPower = 0
 	private int poisonDoses = 0
+	private PoisonKind poisonKind = PoisonKind.PercentOfHits

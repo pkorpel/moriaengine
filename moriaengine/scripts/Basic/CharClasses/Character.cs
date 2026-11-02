@@ -1378,6 +1378,7 @@ namespace SteamEngine.CompiledScripts {
 		public void CauseDeath(Character killedBy) {
 			if (!this.Flag_Dead) {
 
+				Poison.RemoveAll(this); //#962 - f_pm_death
 				Notoriety.RegisterMurder(this, killedBy);
 				HouseEvents.OnDeath(this, killedBy);
 				this.Trigger_HostileAction(killedBy);

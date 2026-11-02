@@ -1,22 +1,24 @@
 /*
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-    Or visit http://www.gnu.org/copyleft/gpl.html
- */
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	Or visit http://www.gnu.org/copyleft/gpl.html
+*/
 
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -25,197 +27,194 @@ namespace SteamEngine.CompiledScripts {
 		double PoisoningEfficiency { get; }
 	}
 
-	//tool = poison potion
-	//target1 = item being poisoned (weapon, projectile, etc.)
-
+	/// <summary>#962 - Erebor's f_poisoning: the skill's button only says how, the bottle is double clicked. It goes on a weapon
+	/// that has poisoning numbers (nastaveni_weappoison) or on arrows that have a poisoned kind. Nobody gains by use.</summary>
 	[ViewableClass]
 	public class PoisoningSkillDef : SkillDef {
-
 		public PoisoningSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
 		}
 
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			PoisonPotion potion = skillSeqArgs.Tool as PoisonPotion;
-			if (potion != null) {
-				if (!self.CanPickUpWithMessage(potion)) {
-					potion = null;
-				}
-			}
-			if (potion == null) {
-				Player selfAsPlayer = self as Player;
-				if (selfAsPlayer != null) {
-					selfAsPlayer.Target(SingletonScript<Targ_Poisoning_Potion>.Instance, skillSeqArgs);
-				} else {
-					throw new SEException("Poison potion not set for nonplayer while poisoning");
-				}
-				return TriggerResult.Cancel;
-			}
-
-			Item target = skillSeqArgs.Target1 as Item;
-			if (target != null) {
-				if (!CanPoisonWithMessage(self, potion, target)) {
-					target = null;
-				}
-			}
-			if (target == null) {
-				Player selfAsPlayer = self as Player;
-				if (selfAsPlayer != null) {
-					selfAsPlayer.Target(SingletonScript<Targ_Poisoning_Target>.Instance, skillSeqArgs);
-				} else {
-					throw new SEException("Target not set for nonplayer while poisoning");
-				}
-				return TriggerResult.Cancel;
-			}
-
-			return TriggerResult.Continue;
+			self.SysMessage(Loc<PoisoningLoc>.Get(self.Language).UseTheBottle, Bandaging.ClassMessageColor);
+			return TriggerResult.Cancel;
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			self.Sound(0x4F);
-
-			PoisonPotion potion = (PoisonPotion) skillSeqArgs.Tool;
-			skillSeqArgs.Param1 = PoisonedItemPlugin.Acquire(potion); //we need to remember the parameters
-
-			IPoisonableItem targetItem = (IPoisonableItem) skillSeqArgs.Target1;
-			int difficulty = targetItem.PoisoningDifficulty;
-			skillSeqArgs.Success = this.CheckSuccess(self, difficulty);
-
-			if ((targetItem is Projectile) || (Globals.dice.NextDouble() <= 0.1)) { //1 potion can poison ~10 weapons or <=50 arrows
-				potion.CreateEmptyFlask(self.Backpack);
-				potion.Consume(1);
-			}
-
-			return TriggerResult.Continue;
+			return TriggerResult.Cancel;
 		}
 
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
-			//Character self = skillSeqArgs.Self;
-			return TriggerResult.Continue;
+			return TriggerResult.Cancel;
 		}
 
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-
-			PoisonPotion potion = (PoisonPotion) skillSeqArgs.Tool;
-			Item target = (Item) skillSeqArgs.Target1;
-			if (!CanPoisonWithMessage(self, potion, target)) {
-				return;
-			}
-
-			PoisonedItemPlugin plugin = (PoisonedItemPlugin) skillSeqArgs.Param1;
-			Projectile asProjectile = target as Projectile;
-			if (asProjectile != null) {
-				plugin.BindToProjectile(asProjectile);
-			} else {
-				plugin.BindToWeapon((Weapon) target);
-			}
-			self.ClilocSysMessage(1010517); //You apply the poison
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-
-			if ((1200 - self.GetSkill(this)) > Globals.dice.Next(12000)) {
-				self.RedMessageCliloc(502148); //You make a grave mistake while applying the poison.
-				PoisonedItemPlugin plugin = (PoisonedItemPlugin) skillSeqArgs.Param1;
-				plugin.Apply(self, self, EffectFlag.FromPotion | EffectFlag.HarmfulEffect);
-				plugin.Delete();
-			}
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
 		}
 
-		internal static bool CanPoisonWithMessage(Character self, PoisonPotion potion, Item target) {
-			if (!self.CanPickUpWithMessage(target)) {
-				return false;
+		/// <summary>f_poisoning.</summary>
+		public static void UseBottle(Player self, PoisonPotion bottle) {
+			if (WorkLight.CheckWithMessage(self)) {
+				SkillSequenceArgs.AbortSkill(self);
+				ScriptedSkills.Stop(self);
+				PoisoningTimer timer = new PoisoningTimer();
+				timer.bottle = bottle;
+				self.AddTimer(PoisoningTimer.Key, timer).DueInSeconds = PoisoningTimer.SecondsForTheCursor;
+				self.SysMessage(Loc<PoisoningLoc>.Get(self.Language).WhatToPoison);
+				self.Target(SingletonScript<Targ_Poisoning>.Instance, timer);
 			}
-			Weapon asWeapon = target as Weapon;
-			if (asWeapon != null) {
-				if (asWeapon.PoisoningDifficulty < 1) {
-					self.SysMessage(Loc<PoisoningLoc>.Get(self.Language).CantPoisonThisWeapon);
-					return false;
-				} //check for existing poison?
-				return true;
+		}
+
+		/// <summary>stopscriptedskills.</summary>
+		internal static void Spoil(Character self) {
+			PoisoningTimer timer = self.GetTimer(PoisoningTimer.Key) as PoisoningTimer;
+			if (timer != null) {
+				timer.works = false;
+				timer.DueInSeconds = 0;
 			}
-			Projectile asProjectile = target as Projectile;
-			if (asProjectile != null) {
-				if (asProjectile.PoisoningDifficulty < 1) {
-					self.SysMessage(Loc<PoisoningLoc>.Get(self.Language).CantPoisonThisProjectile);
-					return false;
-				}
-				PoisonedItemPlugin poison = PoisonedItemPlugin.GetPoisonPlugin(asProjectile);
-				if (poison != null)
-				{
-					if (poison.PoisonType != potion.PoisonType) {
-						self.SysMessage(Loc<PoisoningLoc>.Get(self.Language).ProjectilesHaveDifferentPoisond);
-						return false;
-					}
-					if (poison.PoisonDoses >= asProjectile.Amount) {
-						self.SysMessage(Loc<PoisoningLoc>.Get(self.Language).AllProjectilesPoisoned);
-						return false;
-					}
-				}
-				return true;
-			}
-			self.SysMessage(Loc<PoisoningLoc>.Get(self.Language).CantPoisonThat);
-			return false;
+		}
+
+		internal static ItemDef PoisonedKindOf(Item arrows) {
+			return ThingDef.GetByDefname(arrows.Def.PrettyDefname + "_poison") as ItemDef;
 		}
 	}
 
-
-	public class Targ_Poisoning_Potion : CompiledTargetDef {
-
-		protected override void On_Start(Player self, object parameter) {
-			self.ClilocSysMessage(502137); //Select the poison you wish to use
-			base.On_Start(self, parameter);
-		}
+	public class Targ_Poisoning : CompiledTargetDef {
+		private const int MostAmount = 50, RollOfArrows = 1001, RollOfWeapons = 101;
 
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
-			if (targetted is PoisonPotion) {
-				SkillSequenceArgs skillSeq = (SkillSequenceArgs) parameter;
-				skillSeq.Tool = targetted;
-				skillSeq.PhaseSelect();
+			PoisoningTimer timer = (PoisoningTimer) parameter;
+			if (timer.IsDeleted) {
 				return TargetResult.Done;
 			}
-			self.ClilocSysMessage(502139); //That is not a poison potion.
+			PoisoningLoc texts = Loc<PoisoningLoc>.Get(self.Language);
+			Projectile arrows = targetted as Projectile;
+			Weapon weapon = targetted as Weapon;
+			if ((arrows != null) && (PoisonedItemPlugin.GetPoisonPlugin(arrows) != null)) {
+				self.SysMessage(texts.ArrowsAlreadyPoisoned);
+				return TargetResult.Done;
+			}
+			if (targetted.TopObj() != self) {
+				self.SysMessage(texts.MustHoldIt);
+			} else if (targetted.Amount > MostAmount) {
+				self.SysMessage(texts.TooMany);
+			} else if ((arrows != null) ? (PoisoningSkillDef.PoisonedKindOf(arrows) == null) : ((weapon == null) || (weapon.PoisoningDifficulty == 0))) {
+				self.SysMessage(texts.CantPoison);
+			} else {
+				int skill = self.GetSkill(SkillName.Poisoning);
+				timer.target = targetted;
+				timer.applying = true;
+				timer.works = (arrows != null) ? (skill > Globals.dice.Next(RollOfArrows)) : (skill > (weapon.PoisoningDifficulty + Globals.dice.Next(RollOfWeapons)));
+				SkillDef def = SkillDef.GetBySkillName(SkillName.Poisoning);
+				timer.DueInSeconds = def.GetDelayForValue((ushort) skill);
+				return TargetResult.Done;
+			}
 			return TargetResult.RestartTargetting;
 		}
-	}
 
-	public class Targ_Poisoning_Target : CompiledTargetDef {
-
-		protected override void On_Start(Player self, object parameter) {
-			self.ClilocSysMessage(502142); //To what do you wish to apply the poison?
-			base.On_Start(self, parameter);
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			return TargetResult.RestartTargetting;
 		}
 
-		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
-			SkillSequenceArgs skillSeq = (SkillSequenceArgs) parameter;
-			skillSeq.Target1 = targetted;
-			skillSeq.PhaseStart();
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
 			return TargetResult.Done;
 		}
 	}
 
+	/// <summary>i_potion_poison_timer.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class PoisoningTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_poisoning_");
+
+		internal const double SecondsForTheCursor = 20;
+
+		private const int RanOutRoll = 11, RanOutOn = 6, SpoiltRoll = 1401, SelfPoisonRoll = 1001, SelfPoisonBase = 1200, SelfPoisonShare = 12;
+
+		[SaveableData, CopyableData]
+		public PoisonPotion bottle;
+
+		[SaveableData, CopyableData]
+		public Item target;
+
+		[SaveableData, CopyableData]
+		public bool applying;
+
+		[SaveableData, CopyableData]
+		public bool works;
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public PoisoningTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			Character self = (Character) cont;
+			if (!this.applying || (this.bottle == null) || this.bottle.IsDeleted || (this.target == null) || this.target.IsDeleted) {
+				return;
+			}
+			PoisoningLoc texts = Loc<PoisoningLoc>.Get(self.Language);
+			bool arrows = this.target is Projectile;
+			if (this.works) {
+				if (arrows) {
+					this.PoisonArrows(self);
+				} else {
+					this.PoisonWeapon();
+				}
+				self.SysMessage(self.IsFemale ? texts.AppliedFemale : texts.AppliedMale);
+				if (Globals.dice.Next(RanOutRoll) == RanOutOn) {
+					self.SysMessage(texts.RanOut);
+					this.bottle.Consume(1);
+				}
+			} else {
+				self.SysMessage(texts.Failed);
+				if (((SelfPoisonBase - self.GetSkill(SkillName.Poisoning)) / SelfPoisonShare) > Globals.dice.Next(SelfPoisonRoll)) {
+					self.SysMessage(self.IsFemale ? texts.PoisonedYourselfFemale : texts.PoisonedYourselfMale);
+					Poison.Apply(self, self, this.bottle.PoisonPower, PoisonEffectSettings.instance.SecondsFor(this.bottle.Kind), this.bottle.Kind);
+				}
+			}
+			if (!arrows && !this.bottle.IsDeleted && (self.GetSkill(SkillName.Poisoning) < Globals.dice.Next(SpoiltRoll))) {
+				self.SysMessage(self.IsFemale ? texts.SpoiltFemale : texts.SpoiltMale);
+				this.bottle.Consume(1);
+			}
+		}
+
+		private void PoisonArrows(Character self) {
+			Item arrows = this.target;
+			Item poisoned = (Item) PoisoningSkillDef.PoisonedKindOf(arrows).Create(arrows.Cont as Container ?? self.Backpack);
+			poisoned.Amount = arrows.Amount;
+			poisoned.Color = this.bottle.Color;
+			arrows.Delete();
+			PoisonedItemPlugin.Bind(poisoned, this.bottle, (this.bottle.PoisonPower * PoisonEffectSettings.instance.percentOnArrows) / 100, 0);
+		}
+
+		private void PoisonWeapon() {
+			Weapon weapon = (Weapon) this.target;
+			if (weapon.Def.PrettyDefname == "i_kudla") {
+				weapon.Color = this.bottle.Color;
+			}
+			PoisonedItemPlugin.Bind(weapon, this.bottle, (int) (this.bottle.PoisonPower * weapon.PoisoningEfficiency), weapon.PoisonCapacity);
+		}
+	}
+
 	public class PoisoningLoc : CompiledLocStringCollection<PoisoningLoc> {
-		public string CantPoisonThisWeapon = "It's impossible to poison this weapon";
-		public string CantPoisonThisProjectile = "It's impossible to poison this weapon projectile";
-		public string CantPoisonThat = "It's impossible to poison that. You can only poison infectious weapons or weapon projectiles.";
-		public string ProjectilesHaveDifferentPoisond = "These projectiles are already poisoned with a different poison.";
-		public string AllProjectilesPoisoned = "All of the projectiles are already poisoned.";
+		public string UseTheBottle = "Jed se aplikuje poklikanim na ampulku s jedem.";
+		public string WhatToPoison = "Co chces otravit?";
+		public string ArrowsAlreadyPoisoned = "Tyhle sipky uz jsou otravene.";
+		public string MustHoldIt = "Vec musis mit u sebe.";
+		public string TooMany = "Na takove mnozstvi jedna lahvicka nestaci.";
+		public string CantPoison = "Na toto nemuzes aplikovat jed.";
+		public string AppliedMale = "Uspesne jsi aplikoval jed.";
+		public string AppliedFemale = "Uspesne jsi aplikovala jed.";
+		public string RanOut = "Dosel jed.";
+		public string Failed = "Nepovedlo se ti aplikovat jed.";
+		public string PoisonedYourselfMale = "Pri manipulaci jsi se priotravil pouzitym jedem.";
+		public string PoisonedYourselfFemale = "Pri manipulaci jsi se priotravila pouzitym jedem.";
+		public string SpoiltMale = "Pri manipulaci jsi znehodnotil lektvar.";
+		public string SpoiltFemale = "Pri manipulaci jsi znehodnotila lektvar.";
 	}
 }
-
-//502137	Select the poison you wish to use
-//502139	That is not a poison potion.
-//502142	To what do you wish to apply the poison?
-//1060204	You cannot poison that! You can only poison infectious weapons, food or drink.
-//502145	You cannot poison that! You can only poison bladed or piercing weapons, food or drink.
-//1010517	You apply the poison
-//502148	You make a grave mistake while applying the poison.
-//1010516	You fail to apply a sufficient dose of poison on the blade
-//1010518	You fail to apply a sufficient dose of poison

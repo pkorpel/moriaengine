@@ -9,6 +9,9 @@ WeaponType = WeaponType.OneHandSpike //guessed by Converter
 WeaponAnimType = WeaponAnimType.HeldInRightHand //guessed by Converter 
 speed = 130 //nastaveni_weapspeed 
 BleedingEfficiency = 0.1 //nastaveni_weapbleed 
+PoisoningDifficulty = 250 //nastaveni_weappoison 
+PoisoningEfficiency = 0.75 //nastaveni_weappoison 
+PoisonCapacity = 10 //nastaveni_weappoison 
 piercing = 0 //nastaveni_weappiercing 
 
 [ItemDef i_vyjmecni_sloupohne]
