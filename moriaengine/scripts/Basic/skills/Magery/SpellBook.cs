@@ -30,6 +30,8 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public partial class SpellBook {
 
+		private const int FirstNecroSpell = 65, LastNecroSpell = 70;
+
 		public int FirstSpellId {
 			get {
 				return this.TypeDef.FirstSpellId;
@@ -50,6 +52,11 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void On_DClick(AbstractCharacter from) {
 			//base.On_DClick(from);
+			//#962 - f_necrobook
+			if ((this.necroSpells != 0) && (from is Player player) && Professions.HasProfession(player, Professions.Necromant)) {
+				player.Dialog(player, SingletonScript<D_NecroBook>.Instance, new DialogArgs(this));
+				return;
+			}
 			this.DisplayTo((Character) from);
 		}
 
@@ -89,7 +96,20 @@ namespace SteamEngine.CompiledScripts {
 			return this.AddSpell(spell.Id);
 		}
 
+		/// <summary>#962 - Erebor's morex: the necromancer's spells past the 64 a client's book shows.</summary>
+		private static bool IsNecroBit(int spellId, out int mask) {
+			mask = 1 << (spellId - FirstNecroSpell);
+			return (spellId >= FirstNecroSpell) && (spellId <= LastNecroSpell);
+		}
+
 		public bool AddSpell(int spellId) {
+			if (IsNecroBit(spellId, out int necroMask)) {
+				if ((this.necroSpells & necroMask) == 0) {
+					this.necroSpells |= necroMask;
+					return true;
+				}
+				return false;
+			}
 			int firstSpellId = this.FirstSpellId;
 			if ((spellId >= firstSpellId) && (spellId < (firstSpellId + 64))) {
 				ulong mask = (ulong) 1 << (spellId - firstSpellId);
@@ -107,6 +127,13 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public bool RemoveSpell(int spellId) {
+			if (IsNecroBit(spellId, out int necroMask)) {
+				if ((this.necroSpells & necroMask) != 0) {
+					this.necroSpells &= ~necroMask;
+					return true;
+				}
+				return false;
+			}
 			int firstSpellId = this.FirstSpellId;
 			if ((spellId >= firstSpellId) && (spellId < (firstSpellId + 64))) {
 				ulong mask = (ulong) 1 << (spellId - firstSpellId);
@@ -124,6 +151,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public bool HasSpell(int spellId) {
+			if (IsNecroBit(spellId, out int necroMask)) {
+				return (this.necroSpells & necroMask) != 0;
+			}
 			int firstSpellId = this.FirstSpellId;
 			if ((spellId >= firstSpellId) && (spellId < (firstSpellId + 64))) {
 				ulong mask = (ulong) 1 << (spellId - firstSpellId);

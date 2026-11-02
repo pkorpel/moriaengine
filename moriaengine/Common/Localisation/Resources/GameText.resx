@@ -1168,6 +1168,33 @@
   <data name="MageryRulesLoc_OnlyAtYourself" xml:space="preserve">
     <value>Kouzlo lze zamerit pouze na sebe.</value>
   </data>
+  <data name="MageryRulesLoc_OnlyOnYourselfMystic" xml:space="preserve">
+    <value>Toto kouzlo muzes pouzit jen na sebe.</value>
+  </data>
+  <data name="NecroBookLoc_NotInBook" xml:space="preserve">
+    <value>Neni v knize</value>
+  </data>
+  <data name="NecroBookLoc_FireBolt" xml:space="preserve">
+    <value>Firebolt</value>
+  </data>
+  <data name="NecroBookLoc_AnimateDead" xml:space="preserve">
+    <value>Animate Dead</value>
+  </data>
+  <data name="NecroBookLoc_FrostBolt" xml:space="preserve">
+    <value>Frost bolt</value>
+  </data>
+  <data name="NecroBookLoc_SummonUndead" xml:space="preserve">
+    <value>Summon Undead</value>
+  </data>
+  <data name="NecroBookLoc_BoneArmor" xml:space="preserve">
+    <value>Bone Armor</value>
+  </data>
+  <data name="NecroBookLoc_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="FrostBoltLoc_Frozen" xml:space="preserve">
+    <value>Cil zmrazen!</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

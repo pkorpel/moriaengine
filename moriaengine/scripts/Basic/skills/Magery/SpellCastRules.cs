@@ -23,6 +23,7 @@ namespace SteamEngine.CompiledScripts {
 	/// stop it. The realm and conquest checks of recall and gate wait for those systems.</summary>
 	internal static class SpellCastRules {
 		private const string NoLight = "s_nightsight";
+		private static readonly string[] MysticSelfOnly = { "s_heal", "s_cunning", "s_cure", "s_harm", "s_protection", "s_bless", "s_greater_heal", "s_magic_reflection", "s_dispel" };
 		private const int WeakStaff = 3, MiddleStaff = 4, StrongStaff = 5; //material_oak, _teak, _mahagon
 
 		private static bool Is(SpellDef spell, params string[] defnames) {
@@ -63,6 +64,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Character targetChar = target as Character;
 			Item targetItem = target as Item;
+			if (Professions.HasProfession(self, Professions.Mystic) && (target != self) && Is(spell, MysticSelfOnly)) {
+				self.RedMessage(texts.OnlyOnYourselfMystic);
+				return false;
+			}
 			if (Is(spell, "s_reactive_armor")) {
 				if (Professions.HasProfession(self, Professions.Priest) || Professions.HasProfession(self, Professions.Shaman)) {
 					if ((targetChar == null) || !targetChar.IsPlayer) {
@@ -148,6 +153,7 @@ namespace SteamEngine.CompiledScripts {
 		public string OnlyOnPlayers = "Toto kouzlo smis kouzlit jen na hrace.";
 		public string OnlyOnYourself = "Toto kouzlo smis kouzlit jen na sebe.";
 		public string OnlyAtYourself = "Kouzlo lze zamerit pouze na sebe.";
+		public string OnlyOnYourselfMystic = "Toto kouzlo muzes pouzit jen na sebe.";
 		public string NotOnItems = "Nesmis kouzlit na predmet.";
 		public string NotOntoItems = "Nelze se premistovat na predmety.";
 		public string NotOntoNpcs = "Nelze se premistovat na NPC.";

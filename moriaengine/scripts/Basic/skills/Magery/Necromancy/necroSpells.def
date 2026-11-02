@@ -1,0 +1,57 @@
+//#962 - Erebor's necromancy, systems/NecroBook.scp and [SPELL 65-70] of spheretable_x.scp. Live numbers come from
+//systems/spellvalues.def. The book holds these past its 64 spells, see SpellBook.necroSpells.
+
+[DurableCharEffectSpellDef 68]
+DEFNAME = s_light
+NAME = Light
+SOUND = 483
+RUNES = IL
+CASTTIME = 4.0
+SCROLLITEM = i_scroll_light
+FLAGS = SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
+EFFECT = LightAndWeather.UndergroundLight
+DURATION = 180,300
+MANAUSE = 8
+Requirements = 30.0 Magery
+EffectPluginDef = p_nightsight
+EffectPluginKey_Spell = @@spellEffect_light
+EffectPluginKey_Potion = @@potionEffect_light
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x376A, 9, 32)
+
+[DamageSpellDef 69]
+DEFNAME = s_fire_bolt
+NAME = Fire Bolt
+SOUND = 351
+RUNES = VFP
+CASTTIME = 2.5
+SCROLLITEM = i_scroll_firebolt
+FLAGS = SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicFire
+EFFECT = 0,17
+ArmorPiercing = 850
+MANAUSE = 22
+Requirements = 60.0 Magery
+difficulty = 600
+
+on=@effectChar
+	EffectFactory.EffectFromTo(argo.Caster, this, 0x36D4, 7, 0, false, true)
+
+[FrostBoltSpellDef 70]
+DEFNAME = s_frost_bolt
+NAME = Frost Bolt
+SOUND = 0x456
+RUNES = TUH
+CASTTIME = 2.0
+SCROLLITEM = i_scroll_frostbolt
+FLAGS = SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+DamageType = DamageType.MagicCold
+EFFECT = 0,30
+ArmorPiercing = 0
+MANAUSE = 20
+Requirements = 70.0 Magery
+difficulty = 700
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x3818, 12, 1)

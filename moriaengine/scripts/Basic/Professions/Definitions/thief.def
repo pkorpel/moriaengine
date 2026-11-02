@@ -92,7 +92,7 @@ a_thief_defstance = 13, 10
 //Dmg za lvl
 
 //list allowed spells
-allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark
+allowedSpells=s_magic_arrow, s_teleport, s_recall, s_mark, s_reactive_armor, s_harm
 
 //weapon/armor restrictions (#135/#138) - kryss/war fork (Fencing-mapped spikes), cutlass/
 //scimitar (Swords-mapped), and bows, per the wiki; chainmail and metal shields, per the wiki
