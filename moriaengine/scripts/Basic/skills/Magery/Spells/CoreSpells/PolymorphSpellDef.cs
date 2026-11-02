@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Persistence;
@@ -74,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1001 - Sphere's sm_polymorph. A gump here, as SummonMenu, Sphere's picture menu has no port.</summary>
+	/// <summary>#1001 - Sphere's sm_polymorph, a gump or the picture menu, MenuStyles.</summary>
 	internal static class PolymorphMenu {
 		private const string PolymorphSpell = "s_polymorph";
 		private static readonly TagKey choiceTK = TagKey.Acquire("_polymorphChoice_");
@@ -91,7 +92,18 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static bool Intercept(SkillSequenceArgs mageryArgs, SpellDef spell) {
 			if ((mageryArgs.Self is Player self) && (spell == SpellDef.GetByDefname(PolymorphSpell)) && (mageryArgs.Param2 == null)) {
-				self.Dialog(self, SingletonScript<D_PolymorphMenu>.Instance, new DialogArgs(mageryArgs.Tool, spell));
+				Item tool = (Item) mageryArgs.Tool;
+				List<int> offered = new List<int>();
+				List<PictureMenuRow> pictures = new List<PictureMenuRow>();
+				for (int i = 0; i < rows.Length; i++) {
+					if (self.GetSkill(SkillName.Magery) >= rows[i].skill) {
+						offered.Add(i);
+						pictures.Add(new PictureMenuRow(ThingDef.GetByDefname(rows[i].icon).Model, rows[i].label));
+					}
+				}
+				MenuStyles.Show(self, SingletonScript<D_PolymorphMenu>.Instance, new DialogArgs(tool, spell), Loc<PolymorphMenuLoc>.Get(self.Language).Title, pictures,
+					index => Chose(self, tool, spell, offered[index]),
+					null);
 				return true;
 			}
 			return false;

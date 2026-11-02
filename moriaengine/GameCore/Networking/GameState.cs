@@ -384,6 +384,15 @@ namespace SteamEngine.Networking {
 			this.conn.SendSinglePacket(packet);
 		}
 
+		/// <summary>#1004 - Sphere's picture menu: the client takes a menu for a picture one when its first row has a model.</summary>
+		public void ItemMenu(string header, IEnumerable<OpenDialogBoxPacket.IItemMenuEntry> choices, MenuRespose response, MenuCancel cancel, object parameter) {
+			int menuUid = this.PrepareMenu(response, cancel, parameter);
+
+			OpenDialogBoxPacket packet = Pool<OpenDialogBoxPacket>.Acquire();
+			packet.Prepare(menuUid, header, choices);
+			this.conn.SendSinglePacket(packet);
+		}
+
 		private int PrepareMenu(MenuRespose response, MenuCancel cancel, object parameter) {
 			int menuUid;
 			do {
@@ -402,6 +411,7 @@ namespace SteamEngine.Networking {
 		internal void HandleMenu(int menuUid, int oneBasedIndex) {
 			MenuResponseEntry entry;
 			if (this.menuEntries.TryGetValue(menuUid, out entry)) {
+				this.menuEntries.Remove(menuUid); //#1004 - a menu answers once
 				if (oneBasedIndex == 0) {
 					entry.cancel(this, entry.parameter);
 				} else {

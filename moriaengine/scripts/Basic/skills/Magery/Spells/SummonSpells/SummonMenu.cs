@@ -23,7 +23,7 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#962 - Sphere's sm_summon and e_necro's @spellcast 40: a player picks the creature of Summon before the cursor,
-	/// by profession, skill, staff and what it costs. A gump here, Sphere's picture menu has no port. The dearest creatures
+	/// by profession, skill, staff and what it costs, in a gump or Sphere's picture menu, MenuStyles. The dearest creatures
 	/// take more mana and reagents when the cast starts.</summary>
 	internal static class SummonMenu {
 		private const string SummonSpell = "s_summon_creature";
@@ -150,7 +150,22 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>True when the menu took over from the cast: it starts anew from the answer.</summary>
 		internal static bool Intercept(SkillSequenceArgs mageryArgs, SpellDef spell) {
 			if ((mageryArgs.Self is Player self) && (spell == SpellDef.GetByDefname(SummonSpell)) && (mageryArgs.Param2 == null)) {
-				self.Dialog(self, SingletonScript<D_SummonMenu>.Instance, new DialogArgs(mageryArgs.Tool, spell));
+				Item tool = (Item) mageryArgs.Tool;
+				List<int> offered = new List<int>();
+				List<PictureMenuRow> pictures = new List<PictureMenuRow>();
+				for (int i = 0; i < rows.Length; i++) {
+					if (IsOffered(self, rows[i]) && (ThingDef.GetByDefname(rows[i].icon) is ItemDef icon)) {
+						offered.Add(i);
+						pictures.Add(new PictureMenuRow(icon.Model, rows[i].label ?? ThingDef.GetByDefname(rows[i].creature).Name));
+					}
+				}
+				MenuStyles.Show(self, SingletonScript<D_SummonMenu>.Instance, new DialogArgs(tool, spell), Loc<SummonMenuLoc>.Get(self.Language).Title, pictures,
+					index => {
+						if (IsOffered(self, rows[offered[index]])) {
+							Chose(self, tool, spell, rows[offered[index]]);
+						}
+					},
+					null);
 				return true;
 			}
 			return false;

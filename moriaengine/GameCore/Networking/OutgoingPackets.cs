@@ -2404,7 +2404,6 @@ namespace SteamEngine.Networking {
 			string Text { get; }
 		}
 
-		//untested
 		public void Prepare(int uid, string header, IEnumerable<IItemMenuEntry> choices) {
 			Sanity.IfTrueThrow(header.Length > byte.MaxValue, "Header text length 256 exceeded");
 			this.uid = uid;

@@ -62,7 +62,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Character self = skillSeqArgs.Self;
 			self.ClilocSysMessage(1011350);//What do you wish to track?
-			self.Dialog(self, SingletonScript<D_Tracking_Categories>.Instance, new DialogArgs(skillSeqArgs));
+			TrackingMenus.ShowCategories(skillSeqArgs);
 			return TriggerResult.Cancel; //stop it, other triggers will be run from the tracking dialog
 		}
 
@@ -108,7 +108,7 @@ namespace SteamEngine.CompiledScripts {
 
 						//display a dialog with the found trackable characters
 						self.ClilocSysMessage(1018093);//Select the one you would like to track.
-						self.Dialog(self, SingletonScript<D_Tracking_Characters>.Instance, new DialogArgs(skillSeqArgs, charsAround));
+						TrackingMenus.ShowCharacters(skillSeqArgs, charsAround);
 						break;
 					case TrackingEnums.Phase_Character_Track: //we will try to display the chars path
 						Character trackedChar = (Character) skillSeqArgs.Target1;
@@ -155,7 +155,7 @@ namespace SteamEngine.CompiledScripts {
 
 						//display a dialog with the found trackable characters
 						self.ClilocSysMessage(1018093);//Select the one you would like to track.
-						self.Dialog(self, SingletonScript<D_Tracking_Characters>.Instance, new DialogArgs(skillSeqArgs, trackables));
+						TrackingMenus.ShowCharacters(skillSeqArgs, trackables);
 						break;
 					case TrackingEnums.Phase_Character_Track: //we will try to display the chars path
 						Character charToTrack = (Character) skillSeqArgs.Target1;
