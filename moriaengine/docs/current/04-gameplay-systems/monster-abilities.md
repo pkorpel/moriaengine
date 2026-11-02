@@ -129,3 +129,7 @@ The 19 stubs with an empty block on Erebor and the 3 with no source stay as labe
 ## Bombs, illusions and shapeshifters (#1022)
 
 `BlowUp.cs`, `Illusionist.cs`, `Shapeshifter.cs`, `SummonFoes.cs`. `e_npc_blow_up` lights a two-stage fuse next to a player and blasts `16 * (9 - distance)` past armor, ten times that to NPCs, leaving no corpse. `e_illusionist` makes five one-hit copies for 30 s, with no wait, as Erebor's never worked. The three `e_menavec` abilities change the look for 20 s, not the stats. `e_npc_summonkiller` doubles blows on summons. `e_summonfrenzy` stops a masterless summon. `e_elem_terror` blasts its fighters as it dies. `e_undeads_ability_life` waits for #1017 and `e_necroslave` for the bosses.
+
+## Guards on sight (#1022)
+
+`GuardSpeech.AttacksOnSight`: a guard attacks anyone it doesn't protect (`IsProtectedBy`, Sphere's `ismyguard`), so Gondor's guards go for Gondor's criminals and murderers unless they're citizens of the guard's town. Players of no realm are left alone unless banned, the user's call, and GMs always. Guards shout when they pick a target. A summon that strikes one dies. Ents attack anyone carrying a `t_weapon_sword`, swords and axes alike. Ostranena's guards go with the bosses.

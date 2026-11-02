@@ -261,6 +261,7 @@ namespace SteamEngine.CompiledScripts {
 				TryIllusion(hit, attacker);
 				TryShapeshift(hit);
 				TrySummonFrenzy(hit, attacker);
+				TryKillSummonHittingGuard(hit, attacker);
 			}
 			TryDrop(defender, GoldDropDef);
 			TryDrop(defender, ReagDropDef);
@@ -272,6 +273,17 @@ namespace SteamEngine.CompiledScripts {
 					defender.SetTag(attackedByPlayerTK, 1);
 					NPCAiTimer.Attack(npc, player);
 				}
+			}
+		}
+
+		internal static bool IsAxeHater(NPC npc) {
+			return HasAbilityDef(npc, Lookup<AbilityDef>("a_tevent_e_guard_ent"));
+		}
+
+		/// <summary>e_guard's @aftergetswing: a summon that strikes a guard dies.</summary>
+		private static void TryKillSummonHittingGuard(NPC guard, Character attacker) {
+			if ((guard.AggroMode == AggroMode.GuardsRealm) && SummonSpellDef.IsSummonedCreature(attacker)) {
+				attacker.Hits = 0;
 			}
 		}
 
