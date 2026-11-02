@@ -13,6 +13,7 @@ Color = color_clovek
 Str = 1000
 Dex = 1000
 Int = 1000
+NoAnimate = 1
 Equip = i_hair_short
 EquipColor = 00774
 Equip = i_beard_mustache

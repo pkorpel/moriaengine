@@ -55,3 +55,44 @@ difficulty = 700
 
 on=@effectChar
 	EffectFactory.StationaryEffect(this, 0x3818, 12, 1)
+
+[SummonSpellDef 65]
+DEFNAME = s_summon_undead
+NAME = Summon Undead
+SOUND = 586
+RUNES = KNM
+CASTTIME = 2.0
+RESOURCES = i_reag_blood_moss, i_reag_bone, i_reag_blood_vial
+SCROLLITEM = i_scroll_summon_undead
+FLAGS = SpellFlag.CanTargetAnything | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT = 0
+DURATION = 120,180
+MANAUSE = 15
+Requirements = 40.0 Magery
+//Sphere's roll of 15: a lich once, skeletons 4 times, zombies the rest
+summonChars = c_liche_necro, c_skeleton_necro, c_skeleton_necro, c_skeleton_necro, c_skeleton_necro, c_zombie_necro, c_zombie_necro, c_zombie_necro, c_zombie_necro, c_zombie_necro, c_zombie_necro, c_zombie_necro, c_zombie_necro, c_zombie_necro, c_zombie_necro
+
+[AnimateDeadSpellDef 66]
+DEFNAME = s_animate_dead
+NAME = Animate Dead
+SOUND = 488
+RUNES = IAMG
+CASTTIME = 8.0
+SCROLLITEM = i_scroll_animate_dead
+FLAGS = SpellFlag.CanTargetChar | SpellFlag.CanTargetItem | SpellFlag.CanEffectChar | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+EFFECT = 0
+MANAUSE = 100
+Requirements = 70.0 Magery
+
+//cast only through .necroarmor and its scroll, see BoneArmor.cs; here for the book's bit and the scroll
+[SpellDef 67]
+DEFNAME = s_bone_armor
+NAME = Bone Armor
+SOUND = 577
+RUNES = ICSY
+CASTTIME = 4.0
+SCROLLITEM = i_scroll_bone_armor
+FLAGS = SpellFlag.AlwaysTargetSelf
+EFFECT = 0
+MANAUSE = 10
+Requirements = 30.0 Magery

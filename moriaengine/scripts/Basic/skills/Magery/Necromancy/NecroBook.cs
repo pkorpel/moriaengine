@@ -38,6 +38,16 @@ namespace SteamEngine.CompiledScripts {
 			Cast(self, "s_light");
 		}
 
+		[SteamFunction]
+		public static void NecroAnimate(Player self) {
+			Cast(self, "s_animate_dead");
+		}
+
+		[SteamFunction]
+		public static void NecroSummon(Player self) {
+			Cast(self, "s_summon_creature");
+		}
+
 		internal static void Cast(Player self, string spellDefname) {
 			MagerySkillDef.TryCastSpellFromBook(self, SpellDef.GetByDefname(spellDefname));
 		}
@@ -46,7 +56,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>f_necrobook: what a necromancer sees of a book holding spells of theirs. Its first page's back arrow opens the
 	/// plain book.</summary>
 	public class D_NecroBook : CompiledGumpDef {
-		private const int FireBolt = 1, AnimateDead = 2, FrostBolt = 3, SummonUndead = 4, BoneArmor = 5, PlainBook = 6, Light = 7;
+		private const int FireBolt = 1, AnimateDead = 2, FrostBolt = 3, SummonUndead = 4, BoneArmorButton = 5, PlainBook = 6, Light = 7;
 		private const int ButtonGump = 2299, NameHue = 967, Frame = 83, Stroke = 2101;
 		private const int SummonInBook = 40;
 
@@ -71,7 +81,7 @@ namespace SteamEngine.CompiledScripts {
 
 			this.AddPage(3);
 			this.AddButton(127, 61, 2205, 2205, 0, GumpButtonType.Page, 2);
-			this.Entry(true, BoneArmor, 5204, book.HasSpell(67) ? texts.BoneArmor : texts.NotInBook);
+			this.Entry(true, BoneArmorButton, 5204, book.HasSpell(67) ? texts.BoneArmor : texts.NotInBook);
 			this.Entry(false, Light, 2594, book.HasSpell(68) ? texts.Light : texts.NotInBook);
 		}
 
@@ -99,6 +109,15 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case Light:
 					NecroBook.Cast(player, "s_light");
+					break;
+				case AnimateDead:
+					NecroBook.Cast(player, "s_animate_dead");
+					break;
+				case SummonUndead:
+					NecroBook.Cast(player, "s_summon_creature");
+					break;
+				case BoneArmorButton:
+					BoneArmor.NecroArmor(player);
 					break;
 				case PlainBook:
 					if (!book.IsDeleted) {

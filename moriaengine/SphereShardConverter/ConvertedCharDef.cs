@@ -780,6 +780,13 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#962 - Erebor's "tag(noanimate,1)": Animate Dead refuses the corpse - NPCDef.NoAnimate
+			if (name == "tag.noanimate") {
+				if (!this.IsPlayerDefByName && (value.Trim() != "0")) {
+					this.Set("NoAnimate", "1", comment);
+				}
+				return;
+			}
 			string tuningFieldName;
 			if (abilityTuningFieldNames.TryGetValue(name, out tuningFieldName)) {
 				if (this.IsPlayerDefByName) {

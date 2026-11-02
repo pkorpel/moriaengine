@@ -23,6 +23,7 @@ Int = 1000
 MaxHits = 6000 7000
 MaxStam = 1000 1050
 MaxMana = 0
+NoAnimate = 1
 Experience = 200 250
 CriticChance = 500 //50% chance 
 CriticDamage = 25 28
