@@ -23,7 +23,15 @@ namespace SteamEngine.CompiledScripts {
 
 	public class t_telepad : CompiledTriggerGroup {	//Our script must extend 'CompiledTriggerGroup'
 
+		/// <summary>#1022 - e_monster's @itemstep: telepads aren't for monsters, a pet follows its master.</summary>
+		internal static bool Refuses(Character steppingChar) {
+			return (steppingChar is NPC npc) && (npc.ControlMaster == null);
+		}
+
 		public void On_Step(Item self, Character steppingChar, Item selfAgain, bool repeated, MovementType movementType) {
+			if (Refuses(steppingChar)) {
+				return;
+			}
 			//only tries once after walking on
 			if ((movementType & MovementType.Teleporting) != MovementType.Teleporting) {
 				if (!repeated) {

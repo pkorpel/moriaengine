@@ -94,18 +94,29 @@ namespace SteamEngine.Tests.Protocol {
 
 			//no staff, no hold over it
 			this.Ask(client, ".TestNecroAddAnimate", "NECRO_ADDED:");
-			client.SendSpeech(".necroanimate");
-			Thread.Sleep(300);
-			client.SendTargetUid(Uid(ready, "corpse"));
-			Expect(client, "Na toto monstrum nestaci tvoje hul");
+			for (int tries = 0; ; tries++) { //the cast can fizzle, then nothing is said
+				this.Ask(client, ".TestNecroMana", "NECRO_MANA:");
+				client.SendSpeech(".necroanimate");
+				Thread.Sleep(300);
+				client.SendTargetUid(Uid(ready, "corpse"));
+				try {
+					Expect(client, "Na toto monstrum nestaci tvoje hul");
+					break;
+				} catch (TimeoutException) when (tries < 4) {
+				}
+			}
 
 			//with one it's up, it's yours, and it costs mana by the second
 			this.Ask(client, ".TestAnimateStaff", "ANIMATE_STAFF:");
-			client.SendSpeech(".necroanimate");
-			Thread.Sleep(300);
-			client.SendTargetUid(Uid(ready, "corpse"));
-			Thread.Sleep(9500);
-			string report = this.Ask(client, ".TestAnimateReport", "ANIMATE_REPORT:");
+			string report = "";
+			for (int tries = 0; (tries < 5) && !report.Contains("raised=True"); tries++) {
+				this.Ask(client, ".TestNecroMana", "NECRO_MANA:");
+				client.SendSpeech(".necroanimate");
+				Thread.Sleep(300);
+				client.SendTargetUid(Uid(ready, "corpse"));
+				Thread.Sleep(9500);
+				report = this.Ask(client, ".TestAnimateReport", "ANIMATE_REPORT:");
+			}
 			Assert.Contains("raised=True owned=True corpse=False", report);
 			int mana = int.Parse(Regex.Match(report, @"mana=(\d+)").Groups[1].Value);
 			Thread.Sleep(2500);

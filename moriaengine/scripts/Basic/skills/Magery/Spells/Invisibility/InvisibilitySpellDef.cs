@@ -46,6 +46,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
+			if (SummonSpellDef.IsSummonedCreature(target)) {
+				target.Hits = 0; //#1022 - e_monster's @spelleffect 44
+				return;
+			}
 			base.On_EffectChar(target, spellEffectArgs);
 
 			MakeInvisible(target, this.GetDurationForValue(spellEffectArgs.SpellPower));

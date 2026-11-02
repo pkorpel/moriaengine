@@ -59,6 +59,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		[SteamFunction]
+		public static void TestNecroMana(Character self) {
+			self.Mana = 300;
+			Console.WriteLine("NECRO_MANA: done");
+		}
+
+		[SteamFunction]
 		public static void TestNecroAddAnimate(Character self) {
 			book.AddSpell(66);
 			Console.WriteLine("NECRO_ADDED: done");
