@@ -132,6 +132,30 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		[SteamFunction]
+		public static void TestSpellAudit(Character self) {
+			EffectFlag flags = EffectFlag.FromSpellBook | EffectFlag.HarmfulEffect;
+			dummy.SetRealSkillValue((int) SkillName.Magery, 0);
+			dummy.MaxMana = 100;
+			dummy.Mana = 100;
+			SpellDef.GetByDefname("s_mana_drain").ApplyEffectChar(self, dummy, 1000, flags);
+			int unskilled = dummy.Mana;
+			dummy.SetRealSkillValue((int) SkillName.Magery, 500);
+			SpellDef.GetByDefname("s_mana_drain").ApplyEffectChar(self, dummy, 1000, flags);
+			int skilled = dummy.Mana;
+
+			dummy.Flag_Hidden = true;
+			SpellDef.GetByDefname("s_reveal").ApplyEffectChar(self, dummy, 1000, flags);
+			bool hidden = dummy.Flag_Hidden;
+
+			ParalyzeEffectPluginDef.Paralyze(dummy, PluginKey.Acquire("_auditPara_"), TimeSpan.FromSeconds(30));
+			self.Int = 300;
+			dummy.Int = 50;
+			int hits = dummy.Hits;
+			SpellDef.GetByDefname("s_mind_blast").ApplyEffectChar(self, dummy, 1000, flags);
+			Console.WriteLine("SPELL_AUDIT: unskilled=" + unskilled + " skilled=" + skilled + " hidden=" + hidden + " paralyzed=" + ParalyzeEffectPluginDef.IsParalyzed(dummy) + " lost=" + (hits - dummy.Hits));
+		}
+
+		[SteamFunction]
 		public static void TestNecroMakeMystic(Character self) {
 			((Player) self).Profession = Professions.Mystic;
 			book.AddSpell(SpellDef.GetByDefname("s_heal"));

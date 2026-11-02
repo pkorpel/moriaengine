@@ -52,10 +52,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			if (target.Flag_Hidden) {
-				Character caster = spellEffectArgs.Caster;
-				if (Magery.CheckSuccess(caster, target.GetSkill(SkillName.Hiding))) {
-					HidingSkillDef.UnHide(target);
-				}
+				HidingSkillDef.UnHide(target); //#962 - Sphere's plain Reveal(), no contest
 			}
 		}
 	}

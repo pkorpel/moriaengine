@@ -33,8 +33,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
-			double drain = this.GetEffectForValue(spellEffectArgs.SpellPower);
-			target.Mana = (short) Math.Max(0, target.Mana - drain);
+			if (target.GetSkill(SkillName.Magery) > 0) { //f_effect_a_mana_drain
+				double drain = this.GetEffectForValue(spellEffectArgs.SpellPower);
+				target.Mana = (short) Math.Max(0, target.Mana - drain);
+			}
 		}
 	}
 }

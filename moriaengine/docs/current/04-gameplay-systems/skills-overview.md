@@ -276,3 +276,5 @@ Animate Dead is Erebor's `[function animate]`: on a monster's corpse (a player's
 Summon is a gump of Sphere's `sm_summon` before the cursor, by profession, Magery, staff, mana and reagents. Necromancers' dear creatures take `e_necro`'s extra mana and reagents when the cast starts, the first level of each family only, as Erebor's check compares only that id. NPCs still roll from `summonChars`.
 
 Bone Armor is Erebor's `necroarmor`: 10 mana (5 from its scroll), a second later a fizzle unless Magery beats `{300 700}`, then Protection at full power and bone pieces on free layers for 180-320 s.
+
+Spell effects checked against `f_effect_a_*`: Mind Blast is `dam_god`, rounded to whole points, nothing when the target's Int is as high as the caster's, and it ends a paralysis. Mana Drain only touches a target with Magery. Reveal has no contest. Magic Reflection sends a spell back at 1.07 of the power it was cast with (`nastaveni_global_reflectSPlowering`), against the caster's own defense.
