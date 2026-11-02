@@ -105,6 +105,7 @@ namespace SteamEngine.CompiledScripts {
 
 			player.SysMessage("Welcome! You are now a " + RaceData.GetDisplayName(race) + " " +
 				profession.Name + " of " + NationData.GetDisplayName(nation) + ".");
+			PlayerRecord.Show(player); //#1011 - as newbie_portals.scp's end of a new character
 		}
 
 		private static readonly LayerNames[] clearedLayers = {

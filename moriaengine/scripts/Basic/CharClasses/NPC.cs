@@ -1992,6 +1992,7 @@ namespace SteamEngine.CompiledScripts {
 				autoMount.Delete();
 			}
 
+			PlayerRecord.MonsterDied(this, killedBy); //#1011
 			LevelingSystem.ShareMonsterExperience(this, killedBy);
 		}
 
