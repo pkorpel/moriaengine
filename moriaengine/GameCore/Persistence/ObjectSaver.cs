@@ -223,7 +223,7 @@ namespace SteamEngine.Persistence {
 		private static readonly Regex genericUidRE = new Regex(@"^\s*\((?<name>.*)\s*\)\s*(?<uid>\d+)\s*$",
 			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 		//#407 - type-preserving enum save format, see Save()'s own comment on its enum branch.
-		private static readonly Regex enumValueRE = new Regex(@"^\s*\(Enum:(?<type>[\w.+]+)\)\s*(?<value>\d+)\s*$",
+		private static readonly Regex enumValueRE = new Regex(@"^\s*\(Enum:(?<type>[\w.+]+)\)\s*(?<value>-?\d+)\s*$",
 			RegexOptions.CultureInvariant | RegexOptions.Compiled);
 		//public static Regex dateTimeRE = new Regex(@"^\s*\((?<name>.*)\s*\)\s*(?<uid>\d+)\s*$",
 		//RegexOptions.IgnoreCase|RegexOptions.CultureInvariant|RegexOptions.Compiled);
@@ -294,8 +294,11 @@ namespace SteamEngine.Persistence {
 				//enum type - deliberately NOT reusing the "(TypeName)uid" shape ObjectSaver's
 				//own generic reference-coordinator fallback (genericUidRE) already claims,
 				//to avoid colliding with that unrelated meaning.
-				return "(Enum:" + GetEnumTypeName(t) + ")" +
-					Convert.ToUInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
+				//#1027 - an enum can be negative, Realm.Mordor is -1, and ToUInt64 threw on it mid-save
+				string number = (Enum.GetUnderlyingType(t) == typeof(ulong)) ?
+					Convert.ToUInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture) :
+					Convert.ToInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
+				return "(Enum:" + GetEnumTypeName(t) + ")" + number;
 			}
 			if (ConvertTools.IsNumberType(t)) {
 				return ((IConvertible) value).ToString(CultureInfo.InvariantCulture.NumberFormat);
@@ -544,8 +547,10 @@ namespace SteamEngine.Persistence {
 					throw new InsufficientDataException("The enum type '" +
 						LogStr.Ident(m.Groups["type"].Value) + "' is not known.");
 				}
-				ulong rawValue = ConvertTools.ParseUInt64(m.Groups["value"].Value);
-				retVal = Enum.ToObject(enumType, rawValue);
+				string number = m.Groups["value"].Value;
+				retVal = number.StartsWith("-", StringComparison.Ordinal) ?
+					Enum.ToObject(enumType, long.Parse(number, CultureInfo.InvariantCulture)) :
+					Enum.ToObject(enumType, ConvertTools.ParseUInt64(number));
 				return true;
 			}
 			return false;

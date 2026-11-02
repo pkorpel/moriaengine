@@ -43,6 +43,15 @@ namespace SteamEngine.CompiledScripts {
 				" realm=" + player.Realm);
 		}
 
+		/// <summary>#1027 - Mordor's realm is negative.</summary>
+		[SteamFunction]
+		public static void TestSetMordorNation(Character self) {
+			Player player = (Player) self;
+			player.Race = Race.Human;
+			player.Nation = Nation.Mordoran;
+			Console.WriteLine("RACE_NATION_SET: nation=" + player.Nation + " realm=" + player.Realm);
+		}
+
 		[SteamFunction]
 		public static void TestCheckRaceState(Character self) {
 			Player player = (Player) self;

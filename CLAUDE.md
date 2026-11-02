@@ -47,6 +47,8 @@ Shipped, branch housedoor-one-door: `.HouseDoor` places one door and ends, the u
 
 #1022, the user's order: audit e_character and e_monster, then shared abilities, then guards and their AI, one PR per batch. Base events shipped, branch monster-base-events: GM click status, corpses named Body of, monsters refused by telepads, the 1 in 30 target switch, Invisibility killing a summon. Hit reactions shipped, branch monster-hit-reactions, HitReactions.cs. Shipped, branch monster-drinkers-berserk: e_acid_damage, e_npc_summoner, e_lifeleech_vampire, e_healdrinker, e_potiondrinker, e_getwpn, e_berserk_potvora. Next: e_npc_blow_up, e_illusionist, e_menavec and variants, e_summonfrenzy, e_npc_summonkiller, e_undeads_ability_life, e_elem_terror, e_necroslave. Then guards and their AI. Empty and sourceless stubs stay as they are.
 
+Shipped, #1027, branch fix-negative-enum-save: ObjectSaver threw on negative enums, so every Mordor character lost its realm in a save (Realm.Mordor is -1). Saving and loading fixed, a character with a nation and no realm gets it back at login. Regions keep Erebor's 1, 2, 3 in RealmTag and only translate, so they're not involved.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

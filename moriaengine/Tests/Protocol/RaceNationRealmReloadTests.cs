@@ -1,4 +1,6 @@
 using System;
+using System.Text.RegularExpressions;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Xunit;
@@ -75,6 +77,65 @@ namespace SteamEngine.Tests.Protocol {
 					Assert.Contains("race=Dwarf", line);
 					Assert.Contains("nation=Ereboran", line);
 					Assert.Contains("realm=Gondor", line);
+				}
+			}
+		}
+
+		/// <summary>#1027 - Mordor's realm is -1, which threw in the middle of the save.</summary>
+		[Fact]
+		public void MordorsRealmSurvivesARestart() {
+			Assert.Contains("realm=Mordor", this.SaveMordorAndComeBack(false));
+		}
+
+		/// <summary>#1027 - a save written before the fix: "realm=" and nothing after it. The nation brings it back.</summary>
+		[Fact]
+		public void ACharacterWhoseSaveLostTheRealmGetsItBack() {
+			Assert.Contains("realm=Mordor", this.SaveMordorAndComeBack(true));
+		}
+
+		private string SaveMordorAndComeBack(bool damageTheSave) {
+			const string mordorChar = "MordorChecker";
+			string repoRoot;
+			using (var fixture1 = new GameServerPairFixture()) {
+				repoRoot = fixture1.RepoRoot;
+				int redirectPort = WaitForServerListingAndGetRedirectPort(fixture1, Account);
+				using (var client = new TestGameClient("127.0.0.1", redirectPort)) {
+					client.SendLogin(Account, Password);
+					client.ReadCharacterList();
+					client.SendCreateCharacter(mordorChar);
+					int mark = fixture1.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestSetMordorNation");
+					Assert.True(fixture1.WaitForGameOutputSince("RACE_NATION_SET:", mark, TimeSpan.FromSeconds(10)));
+					Assert.Contains("realm=Mordor", LastLineContaining(fixture1.GameOutputSnapshot(), "RACE_NATION_SET:"));
+					mark = fixture1.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestTriggerGlobalSave");
+					Assert.True(fixture1.WaitForGameOutputSince("TEST_SAVE: done", mark, TimeSpan.FromSeconds(30)));
+				}
+			}
+			if (damageTheSave) {
+				int damaged = 0;
+				foreach (string file in Directory.GetFiles(Path.Combine(repoRoot, "saves"), "*.sav", SearchOption.AllDirectories)) {
+					string text = File.ReadAllText(file);
+					string broken = Regex.Replace(text, @"realm=\(Enum:Realm\)-1\r?\n(def=#p_realm\r?\n)?", "realm=\n");
+					if (broken != text) {
+						File.WriteAllText(file, broken);
+						damaged++;
+					}
+				}
+				Assert.True(damaged > 0, "No saved Mordor realm found to damage.");
+			}
+			using (var fixture2 = GameServerPairFixture.BootPreservingSaves()) {
+				int redirectPort = WaitForServerListingAndGetRedirectPort(fixture2, Account);
+				using (var client = new TestGameClient("127.0.0.1", redirectPort)) {
+					client.SendLogin(Account, Password);
+					string[] names = client.ReadCharacterList();
+					int slot = Array.IndexOf(names, mordorChar);
+					Assert.True(slot >= 0, "Expected the character to still exist after restart.");
+					client.SendSelectCharacter(slot);
+					int mark = fixture2.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestCheckRaceState");
+					Assert.True(fixture2.WaitForGameOutputSince("RACE_STATE:", mark, TimeSpan.FromSeconds(10)));
+					return LastLineContaining(fixture2.GameOutputSnapshot(), "RACE_STATE:");
 				}
 			}
 		}
