@@ -1306,6 +1306,12 @@
   <data name="TrackingMenuLoc_AnythingThatMoves" xml:space="preserve">
     <value>Anything that moves</value>
   </data>
+  <data name="TrackingMenuLoc_WhatToTrack" xml:space="preserve">
+    <value>What do you wish to track?</value>
+  </data>
+  <data name="TrackingMenuLoc_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
