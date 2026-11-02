@@ -125,6 +125,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Travel")]
+		public TravelSettings TravelSettings {
+			get {
+				return TravelSettings.instance;
+			}
+		}
+
 		[InfoField("NPC Aggro")]
 		public NpcAggroSettings NpcAggroSettings {
 			get {
