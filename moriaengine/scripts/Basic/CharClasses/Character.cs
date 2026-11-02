@@ -2847,6 +2847,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void On_LogOut() {
 			this.AbortSkill();
+			if (this is Player player) {
+				PlayerRecord.LoggedOut(player); //#1011
+			}
 			DialogStacking.ClearDialogStack(this);
 			base.On_LogOut();
 		}

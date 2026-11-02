@@ -35,7 +35,10 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestWhoDie(Character self) {
-			self.CauseDeath(null);
+			NPC killer = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.X + 2, self.Y, self.Z, self.M);
+			killer.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			killer.Name = "Killer Rabbit";
+			self.CauseDeath(killer);
 			Console.WriteLine("WHO_DIED: dead=" + self.Flag_Dead);
 		}
 
@@ -48,9 +51,21 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		[SteamFunction]
-		public static void TestWhoFemale(Character self) {
-			self.Model = 0x191;
-			Console.WriteLine("WHO_FEMALE: " + self.IsFemale);
+		public static void TestWhoPlayed(Character self, ScriptArgs sa) {
+			self.SetTag(TagKey.Acquire("_playedSeconds_"), double.Parse(sa.Args.Trim().Trim('"'), CultureInfo.InvariantCulture));
+			Console.WriteLine("WHO_PLAYED: done");
+		}
+
+		[SteamFunction]
+		public static void TestWhoFirst(Character self) {
+			NazgulRings.Give(self, null);
+			Console.WriteLine("WHO_FIRST: done");
+		}
+
+		[SteamFunction]
+		public static void TestWhoMordor(Character self) {
+			self.Realm = Realm.Mordor;
+			Console.WriteLine("WHO_MORDOR: done");
 		}
 	}
 }
