@@ -37,15 +37,5 @@ on=@effectChar
 	this.CureEffect(s_archcure.GetEffectForValue(argo.SpellPower))
 
 
-[function CureEffect] //find the poison plugin and lower it's effect
-	local.pluginFromSpell = this.GetPlugin(s_poison.EffectPluginKey_Spell)
-	if (pluginFromSpell != null)
-		pluginFromSpell.EffectPower = pluginFromSpell.EffectPower-argv[0]
-	endif
-	
-	if (s_poison.EffectPluginKey_Spell != s_poison.EffectPluginKey_Potion) //if potion slot for poison is different from that of spell
-		local.pluginFromPotion = this.GetPlugin(s_poison.EffectPluginKey_Potion)
-		if (pluginFromPotion != null)
-			pluginFromPotion.EffectPower = pluginFromPotion.EffectPower-argv[0]
-		endif
-	endif
+[function CureEffect] //e_poisoned: a cure takes every poison, whatever its strength
+	this.CurePoison()

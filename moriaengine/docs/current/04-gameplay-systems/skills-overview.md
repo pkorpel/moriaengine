@@ -194,3 +194,15 @@ Erebor's systems/skills/discordance.scp, peacemaking.scp and provocation.scp, wi
 Discordance (Erebor's Enticement, reach up to 300.0) weakens a monster that has none of the skill and isn't a boss: `skill / 4` permille off stats, hits, mana, stamina, Magery, Eval Int, Resist and fighting skills, for 10 s plus a second per 2.0 of skill. Hits, mana and stamina keep their proportion. Peacemaking (reach up to 200.0) wants more skill than the creature's own and puts it to sleep for as long: it neither fights nor casts, being hit doesn't wake it, and it goes for the bard on waking. Its timer starts with the cursor, so an unanswered cursor blocks the skill for 60 s. Provocation (reach up to 100.0) is the command `.provo`, the button only says so: a creature, then whoever it should attack, each rolled on its own; a player can be the second target but is never provoked.
 
 Musicianship is played by double clicking an instrument, against 0-90. Sounds are the instruments' TDATA1 and TDATA2, which the converter now keeps.
+
+## Poison and Poisoning (#962)
+
+`Poison` is Erebor's f_poison_doPoison and its poison manager, and the only way anything gets poisoned. Eight kinds: damage, percent of hits, paralysis, fizzling, stamina, and the three stat curses. One poison of each kind runs on a character; a stronger dose replaces the weaker, each hit takes a tenth off (at least 1), and it ends when nothing's left. A cure takes all of them. Poison resist of 1000 or a cure's immunity stops any new one. Hits are every 5 s, paralysis every 11 s (`PoisonEffectSettings` on .settings), and they credit the poisoner by `FightMemory`, as damage_noresponse.
+
+A bottle is double clicked, the Poisoning button only says so; the cursor gives 20 s. It goes on a weapon with Erebor's `nastaveni_weappoison` numbers (difficulty, percent of the bottle, doses, 5000 being past anyone) or on up to 50 arrows with a poisoned kind (`<arrow>_poison`, at 75 percent). Skill must beat the weapon's difficulty plus 0-100, or 0-1000 for arrows. A blade's dose wears down with use. On a blade or an arrow the percent poison is plain damage, twelve times stronger on monsters. A failure can poison you, and a weapon's bottle can spoil. Nobody gains by use.
+
+A monster with Poisoning has its skill in 1000 of poisoning on a blow, skill / 100 strong. The Poison spell is spell_poison_custom: spell power over 150, or 140 less up to 30 by level on a monster, a point more on a monster or under a curse, plus a point of damage at once.
+
+Bottle strengths are `nastaveni_poison_i_potion_*`; the bottles themselves aren't in the archive, so `poisonPotions.def` stays hand-written. That the four damage bottles are the percent poison is a reading of Erebor's comment that poison_c can't be dealt from a weapon, not something the archive states.
+
+Not ported: traps, poison fields, the dungeon and quest items that poison, the casting monsters' cure when poisoned, Sniper's poisoned knives.

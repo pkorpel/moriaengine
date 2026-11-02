@@ -23,14 +23,13 @@ namespace SteamEngine.CompiledScripts {
 	public partial class PoisonPotion {
 
 		public override void On_DClick(AbstractCharacter dclicker) {
-			SkillSequenceArgs args = SkillSequenceArgs.Acquire((Character) dclicker, SkillName.Poisoning, this);
-			args.PhaseSelect();
-
-			//base.On_DClick(dclicker); //empties flask
+			if (dclicker is Player player) {
+				PoisoningSkillDef.UseBottle(player, this);
+			}
 		}
 
-		public FadingEffectDurationPluginDef PoisonType {
-			get { return this.TypeDef.PoisonType; }
+		public PoisonKind Kind {
+			get { return Poison.ParseKind(this.TypeDef.PoisonKind); }
 		}
 
 		public int PoisonPower {
@@ -45,7 +44,7 @@ namespace SteamEngine.CompiledScripts {
 					case 1:
 						return arr[0];
 					case 2:
-						return Globals.dice.Next(arr[0], arr[1]);
+						return Globals.dice.Next(arr[0], arr[1] + 1);
 					default:
 						Logger.WriteWarning("Poison potion " + this.TypeDef.PrettyDefname +
 						                           " has > 2 numbers set as PoisonPower. Only 2 are supported, for randomization");

@@ -187,6 +187,7 @@ range = 1 //default value set by Converter
 strikeStartRange = 5 //default value set by Converter 
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 
 //[typedef t_move_tool] //(commented out by Converter) 
 

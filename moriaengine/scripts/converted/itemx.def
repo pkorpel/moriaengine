@@ -255,6 +255,7 @@ WeaponAnimType = WeaponAnimType.HeldInLeftHand //guessed by Converter
 Color = 09a
 speed = 45 //nastaveni_weapspeed 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
+PoisoningDifficulty = 0 //nastaveni_weappoison 
 piercing = 0 //nastaveni_weappiercing 
 
 [ItemDef I_CAT_GUT]

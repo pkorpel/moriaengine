@@ -572,6 +572,15 @@ namespace SteamEngine.Converter {
 			if (SphereWorldVars.TryGetInt("nastaveni_weapbleed_" + dispId, out int bleed)) {
 				this.Replace("BleedingEfficiency", (bleed / 1000.0).ToString("0.###", CultureInfo.InvariantCulture), "nastaveni_weapbleed");
 			}
+			string poisoning = SphereWorldVars.GetString("nastaveni_weappoison_" + dispId); //#962 - difficulty, percent, doses
+			if (!string.IsNullOrEmpty(poisoning)) {
+				string[] numbers = poisoning.Trim('"', ' ').Split(',');
+				this.Replace("PoisoningDifficulty", int.Parse(numbers[0], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture), "nastaveni_weappoison");
+				if (numbers.Length == 3) {
+					this.Replace("PoisoningEfficiency", (int.Parse(numbers[1], CultureInfo.InvariantCulture) / 100.0).ToString("0.##", CultureInfo.InvariantCulture), "nastaveni_weappoison");
+					this.Replace("PoisonCapacity", numbers[2].Trim(), "nastaveni_weappoison");
+				}
+			}
 			if (SphereWorldVars.TryGetInt("nastaveni_weappiercing_" + dispId, out int piercing)) {
 				this.Replace("piercing", piercing.ToString(CultureInfo.InvariantCulture), "nastaveni_weappiercing");
 			}
