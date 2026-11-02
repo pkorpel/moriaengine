@@ -186,3 +186,11 @@ Not ported: "Zvire zemrelo hlady". Sphere's wild animals lose food and find thei
 ## Animal Lore (#962)
 
 Erebor's f_alore, at once from the cursor, with no stroke, no delay and no gain. Anyone can be looked at; an item gets "To neni zvire", the ground nothing, as a skill's target isn't checked for reach. It tells whose the creature is, then, if a roll against the skill passes and it's an animal or knows taming, how fed it is and, with Animal Lore at least its own, what it eats. Yourself on a horse tells the horse's hunger. Wild animals always read as full, they have no food here. What riding an animal gives comes with mount powers, #925.
+
+## Bard skills (#962)
+
+Erebor's systems/skills/discordance.scp, peacemaking.scp and provocation.scp, with `Bard` holding what they share. All want an instrument in the pack, roll Musicianship against 0-1025 ("You play poorly."), then their own skill against the target's experience: first the skill's whole reach, which refuses outright, then a roll up to that reach. The result lands after the skill's delay. Nobody gains in them by use, on Erebor they have no skillgain call. Another skill, a hit or a spell spoils them, `ScriptedSkills.Stop`.
+
+Discordance (Erebor's Enticement, reach up to 300.0) weakens a monster that has none of the skill and isn't a boss: `skill / 4` permille off stats, hits, mana, stamina, Magery, Eval Int, Resist and fighting skills, for 10 s plus a second per 2.0 of skill. Hits, mana and stamina keep their proportion. Peacemaking (reach up to 200.0) wants more skill than the creature's own and puts it to sleep for as long: it neither fights nor casts, being hit doesn't wake it, and it goes for the bard on waking. Its timer starts with the cursor, so an unanswered cursor blocks the skill for 60 s. Provocation (reach up to 100.0) is the command `.provo`, the button only says so: a creature, then whoever it should attack, each rolled on its own; a player can be the second target but is never provoked.
+
+Musicianship is played by double clicking an instrument, against 0-90. Sounds are the instruments' TDATA1 and TDATA2, which the converter now keeps.

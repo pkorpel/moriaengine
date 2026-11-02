@@ -6,6 +6,9 @@ namespace SteamEngine.CompiledScripts {
 		public static void Stop(Character self) {
 			HidingSkillDef.Spoil(self);
 			TamingSkillDef.Spoil(self);
+			ProvocationSkillDef.Spoil(self);
+			DiscordanceSkillDef.Spoil(self);
+			PeacemakingSkillDef.Spoil(self);
 		}
 	}
 }

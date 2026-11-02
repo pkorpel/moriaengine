@@ -339,8 +339,8 @@ TYPE = T_MUSICAL
 WEIGHT = 3
 RESOURCES = 1 i_hides_cut, 5 i_log_verite //nastaveni_cm_resources 
 SKILLMAKE = 510 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
-//TDATA1 = 038 // commented out by Converter 
-//TDATA2 = 039 // commented out by Converter 
+SuccessSound = 038 //converted from 'TDATA1' 
+FailureSound = 039 //converted from 'TDATA2' 
 DEFNAME = i_drum
 
 [MusicalDef 0xe9d]
@@ -352,8 +352,8 @@ TYPE = T_MUSICAL
 WEIGHT = 1
 RESOURCES = 1 i_ingot_iron, 2 i_log_verite //nastaveni_cm_resources 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
-//TDATA1 = 052 // commented out by Converter 
-//TDATA2 = 053 // commented out by Converter 
+SuccessSound = 052 //converted from 'TDATA1' 
+FailureSound = 053 //converted from 'TDATA2' 
 DEFNAME = i_tambourine
 
 [MusicalDef 0xe9e]
@@ -365,8 +365,8 @@ TYPE = T_MUSICAL
 WEIGHT = 1
 RESOURCES = 1 i_tambourine, 1 i_cloth //nastaveni_cm_resources 
 SKILLMAKE = 500 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
-//TDATA1 = 052 // commented out by Converter 
-//TDATA2 = 053 // commented out by Converter 
+SuccessSound = 052 //converted from 'TDATA1' 
+FailureSound = 053 //converted from 'TDATA2' 
 DEFNAME = i_tambourine_tas
 
 [MusicalDef 0xeb1]
@@ -377,8 +377,8 @@ DESCRIPTION = Standing Harp
 TYPE = T_MUSICAL
 RESOURCES = 10 i_log_verite, 5 i_wire_iron //nastaveni_cm_resources 
 SKILLMAKE = 920 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
-//TDATA1 = 045 // commented out by Converter 
-//TDATA2 = 046 // commented out by Converter 
+SuccessSound = 045 //converted from 'TDATA1' 
+FailureSound = 046 //converted from 'TDATA2' 
 DEFNAME = i_HARP_LARGE
 
 [MusicalDef 0xeb2]
@@ -390,8 +390,8 @@ TYPE = T_MUSICAL
 WEIGHT = 10
 RESOURCES = 7 i_log_verite, 3 i_wire_iron //nastaveni_cm_resources 
 SKILLMAKE = 720 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
-//TDATA1 = 045 // commented out by Converter 
-//TDATA2 = 046 // commented out by Converter 
+SuccessSound = 045 //converted from 'TDATA1' 
+FailureSound = 046 //converted from 'TDATA2' 
 DEFNAME = i_lyre
 
 [MusicalDef 0xeb3]
@@ -404,8 +404,8 @@ DupeList = 0xeb4
 WEIGHT = 5
 RESOURCES = 6 i_log_verite, 2 i_wire_iron //nastaveni_cm_resources 
 SKILLMAKE = 520 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
-//TDATA1 = 04c // commented out by Converter 
-//TDATA2 = 04d // commented out by Converter 
+SuccessSound = 04c //converted from 'TDATA1' 
+FailureSound = 04d //converted from 'TDATA2' 
 DEFNAME = i_lute
 
 [ItemDef 0xeb4]
