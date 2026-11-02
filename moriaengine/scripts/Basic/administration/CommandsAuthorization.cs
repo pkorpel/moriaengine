@@ -60,6 +60,9 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["FrostBolt"] = PLEVEL_PLAYER;
 			this.commands["NecroBolt"] = PLEVEL_PLAYER;
 			this.commands["NecroLight"] = PLEVEL_PLAYER;
+			this.commands["NecroAnimate"] = PLEVEL_PLAYER;
+			this.commands["NecroSummon"] = PLEVEL_PLAYER;
+			this.commands["NecroArmor"] = PLEVEL_PLAYER;
 			this.commands["SetEquip0"] = PLEVEL_PLAYER;
 			this.commands["SetEquip1"] = PLEVEL_PLAYER;
 			this.commands["SetEquip2"] = PLEVEL_PLAYER;

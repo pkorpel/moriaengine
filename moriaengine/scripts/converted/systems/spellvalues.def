@@ -5,6 +5,13 @@ Mana = 6
 Duration = 120, 300
 Skill = 180
 
+[SpellValuesDef spellvalues_s_animate_dead]
+Spell = s_animate_dead
+CastTime = 8
+Mana = 100
+Duration = 120, 300
+Skill = 700
+
 [SpellValuesDef spellvalues_s_archcure]
 Spell = s_archcure
 CastTime = 2.3
@@ -30,6 +37,12 @@ Spell = s_bless
 CastTime = 3
 Mana = 9
 Duration = 240, 600
+Skill = 300
+
+[SpellValuesDef spellvalues_s_bone_armor]
+Spell = s_bone_armor
+CastTime = 4
+Mana = 10
 Skill = 300
 
 [SpellValuesDef spellvalues_s_chain_lightning]
@@ -347,6 +360,13 @@ CastTime = 4
 Mana = 50
 Duration = 120, 240
 Skill = 800
+
+[SpellValuesDef spellvalues_s_summon_undead]
+Spell = s_summon_undead
+CastTime = 2
+Mana = 15
+Duration = 120, 180
+Skill = 400
 
 [SpellValuesDef spellvalues_s_teleport]
 Spell = s_teleport

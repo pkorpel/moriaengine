@@ -765,3 +765,36 @@ Name=Frost Bolt Scroll
 TYPE=t_scroll
 WEIGHT=1
 Color=044d
+
+[SpellScrollDef i_scroll_summon_undead]
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Scroll of Summon Undead
+
+Model=0x14ed
+Name=Scroll of Summon Undead
+TYPE=t_scroll
+WEIGHT=1
+Color=0774
+
+[SpellScrollDef i_scroll_animate_dead]
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Scroll of Animate Dead
+
+Model=i_scroll_magic_arrow
+Name=Scroll of Animate Dead
+TYPE=t_scroll
+WEIGHT=1
+Color=0774
+
+[SpellScrollDef i_scroll_bone_armor]
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Scroll of Bone Armor
+
+Model=i_scroll_night_sight
+Name=Scroll of Bone Armor
+TYPE=t_scroll
+WEIGHT=1
+Color=0774

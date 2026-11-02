@@ -29,7 +29,11 @@ namespace SteamEngine.CompiledScripts {
 		//#962 - Sphere's double click on IT_SCROLL casts it
 		public TriggerResult On_DClick(Item self, Character clicker) {
 			if (self is SpellScroll scroll) {
-				MagerySkillDef.TryCastSpellFromScroll(clicker, scroll);
+				if (BoneArmor.IsBoneArmorScroll(scroll) && (clicker is Player player)) {
+					BoneArmor.UseScroll(player, scroll);
+				} else {
+					MagerySkillDef.TryCastSpellFromScroll(clicker, scroll);
+				}
 			}
 			return TriggerResult.Cancel;
 		}

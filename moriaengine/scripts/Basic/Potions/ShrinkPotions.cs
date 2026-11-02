@@ -24,7 +24,7 @@ namespace SteamEngine.CompiledScripts {
 			if (potion.IsDeleted) {
 				return TargetResult.Done;
 			}
-			if ((pet == null) || !pet.IsPetOf(self) || SummonSpellDef.IsSummonedCreature(pet) ||
+			if ((pet == null) || !pet.IsPetOf(self) || AnimateDeadSpellDef.IsAnimated(pet) || SummonSpellDef.IsSummonedCreature(pet) ||
 					(Point2D.GetSimpleDistance(self.X, self.Y, pet.X, pet.Y) > Range) || !self.CanSeeLOS(pet).Allow) {
 				return TargetResult.RestartTargetting;
 			}

@@ -23,6 +23,7 @@ Wrestling = 950 1000
 Tactics = 950 1000
 Macing = 900 1000
 MagicResist = 950 1000
+NoAnimate = 1
 MaxHits = 3500
 MaxStam = 300 350
 MaxMana = 0

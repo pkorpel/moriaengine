@@ -270,3 +270,9 @@ Spells 65-70 sit past the 64 a client's book can show, so `SpellBook.necroSpells
 Fire Bolt is 0-17 through armor at 850. Frost Bolt is 0-30, then one second of freeze: within 7 tiles, when `om * 14` doesn't beat `sm * {2 11}`, and past the target's paralyze resist. Light has no native effect beyond a charged layer, so it runs as Night Sight with its own slot.
 
 `allowedSpells` of every profession now match Erebor's `spells_<class>_0_n` bits, for spells that exist. `spells_mystikself` are a Mystic's, on himself only.
+
+Animate Dead is Erebor's `[function animate]`: on a monster's corpse (a player's does nothing) it makes the monster again, stripped of everything not newbie, as the caster's pet with no gold of its own. The monster's exp picks the staff needed: up to 500 spruce, 1000 chestnut, 1500 oak, 2500 teak, 4000 mahagon, 6000 eben, 9000 elven, and past that no check, as Erebor's chain ends. It costs `exp / animateManaDrain + 1` mana a second (`.settings`, Necromancy) until the caster can't pay, lasts `level / 2 + 50` seconds, and leaves no corpse. Corpses of `NoAnimate` defs refuse. The `ra_` abilities are read off tags, nothing sets them yet.
+
+Summon is a gump of Sphere's `sm_summon` before the cursor, by profession, Magery, staff, mana and reagents. Necromancers' dear creatures take `e_necro`'s extra mana and reagents when the cast starts, the first level of each family only, as Erebor's check compares only that id. NPCs still roll from `summonChars`.
+
+Bone Armor is Erebor's `necroarmor`: 10 mana (5 from its scroll), a second later a fizzle unless Magery beats `{300 700}`, then Protection at full power and bone pieces on free layers for 180-320 s.

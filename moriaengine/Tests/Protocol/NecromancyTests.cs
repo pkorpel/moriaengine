@@ -74,6 +74,56 @@ namespace SteamEngine.Tests.Protocol {
 			client.SendTargetUid(Uid(ready, "dummy"));
 			Expect(client, "Toto kouzlo muzes pouzit jen na sebe");
 		}
+		[Fact]
+		public void DeadRiseAndSummonsAndBones() {
+			using var client = CommandPermissionTests.Connect("necrotest", "Necro Raiser");
+			this.Ask(client, ".TestNecroReady", "NECRO_READY:");
+			string ready = this.Ask(client, ".TestAnimateReady", "ANIMATE_READY:");
+			Assert.Contains("dead=False", ready);
+
+			//no staff, no hold over it
+			this.Ask(client, ".TestNecroAddAnimate", "NECRO_ADDED:");
+			client.SendSpeech(".necroanimate");
+			Thread.Sleep(300);
+			client.SendTargetUid(Uid(ready, "corpse"));
+			Expect(client, "Na toto monstrum nestaci tvoje hul");
+
+			//with one it's up, it's yours, and it costs mana by the second
+			this.Ask(client, ".TestAnimateStaff", "ANIMATE_STAFF:");
+			client.SendSpeech(".necroanimate");
+			Thread.Sleep(300);
+			client.SendTargetUid(Uid(ready, "corpse"));
+			Thread.Sleep(9500);
+			string report = this.Ask(client, ".TestAnimateReport", "ANIMATE_REPORT:");
+			Assert.Contains("raised=True owned=True corpse=False", report);
+			int mana = int.Parse(Regex.Match(report, @"mana=(\d+)").Groups[1].Value);
+			Thread.Sleep(2500);
+			report = this.Ask(client, ".TestAnimateReport", "ANIMATE_REPORT:");
+			Assert.True(int.Parse(Regex.Match(report, @"mana=(\d+)").Groups[1].Value) < mana, report);
+
+			//it leaves nothing behind
+			Assert.Contains("corpses=0", this.Ask(client, ".TestAnimatedDies", "ANIMATE_DIED:"));
+
+			//the menu offers a necromancer's own, its pick goes to the ground
+			this.Ask(client, ".TestNecroAddSummon", "NECRO_ADDED:");
+			string row = this.Ask(client, ".TestSummonRow \"c_zombie_necro\"", "SUMMON_ROW:");
+			client.SendSpeech(".necrosummon");
+			var dialog = client.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Skeleton Sword", dialog.Strings);
+			Assert.DoesNotContain("Black Bear", dialog.Strings);
+			client.SendGumpResponse(dialog.GumpUid, int.Parse(Regex.Match(row, @"row=(\d+)").Groups[1].Value));
+			Thread.Sleep(300);
+			client.SendTargetGround(int.Parse(Regex.Match(ready, @"x=(\d+)").Groups[1].Value), int.Parse(Regex.Match(ready, @"y=(\d+)").Groups[1].Value), int.Parse(Regex.Match(ready, @"z=(-?\d+)").Groups[1].Value));
+			Thread.Sleep(3500);
+			Assert.Contains("found=True", this.Ask(client, ".TestSummonReport \"c_zombie_necro\"", "SUMMON_REPORT:"));
+
+			//bones on the free layers, a second later
+			this.Ask(client, ".TestBoneReady", "BONE_READY:");
+			client.SendSpeech(".necroarmor");
+			Thread.Sleep(1800);
+			report = this.Ask(client, ".TestBoneReport", "BONE_REPORT:");
+			Assert.Contains("chest=True mana=290 guarded=True", report);
+		}
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]

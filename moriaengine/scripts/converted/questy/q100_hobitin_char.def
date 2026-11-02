@@ -14,6 +14,7 @@ Color = color_clovek
 Str = 1000
 Dex = 1000
 Int = 1000
+NoAnimate = 1
 Equip = i_hair_buns
 EquipColor = 00750
 Equip = i_robe

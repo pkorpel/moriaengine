@@ -133,7 +133,7 @@ namespace SteamEngine.CompiledScripts {
 			base.On_EffectGround(target, spellEffectArgs);
 
 			NPCDef[] pool = this.SummonChars;
-			NPCDef npcDef = (pool.Length > 0) ? pool[new Random().Next(pool.Length)] : this.SummonChar;
+			NPCDef npcDef = SummonMenu.TakeChoice(spellEffectArgs.Caster, this) ?? ((pool.Length > 0) ? pool[new Random().Next(pool.Length)] : this.SummonChar);
 			if (npcDef == null) {
 				return;
 			}

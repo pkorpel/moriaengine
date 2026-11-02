@@ -61,6 +61,7 @@ Int = 800 1000
 MaxHits = 28000 29000
 MaxStam = 600 750
 MaxMana = 0
+NoAnimate = 1
 Experience = 2500 3000
 Wrestling = 1100
 Parry = 1200

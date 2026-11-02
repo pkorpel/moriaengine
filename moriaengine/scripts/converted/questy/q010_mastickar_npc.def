@@ -24,6 +24,7 @@ SpiritSpeak = 550 780
 Wrestling = 150 380
 Tactics = 150 350
 MagicResist = 300 400
+NoAnimate = 1
 MaxHits = 1500
 MaxStam = 100 150
 MaxMana = 40

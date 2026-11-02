@@ -50,6 +50,7 @@ Wrestling = 1200
 Fencing = 1000
 Tactics = 1000
 Experience = 0 0
+NoAnimate = 1
 Color = colors_skin
 Equip = i_crossbow
 Equip = i_surcoat

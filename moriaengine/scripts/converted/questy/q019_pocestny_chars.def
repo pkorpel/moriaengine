@@ -35,6 +35,7 @@ EvalInt = 1500
 Wrestling = 1200
 MagicResist = 2500
 Tactics = 300
+NoAnimate = 1
 Equip = i_spellbook
 AddSpell = s_mass_dispel
 AddSpell = s_mass_curse

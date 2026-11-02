@@ -15,6 +15,7 @@ Dex = 100
 Int = 100
 Equip = random_male_hair
 EquipColor = colors_hair
+NoAnimate = 1
 Experience = 0 0
 Equip = i_hat_wizards
 EquipColor = 544

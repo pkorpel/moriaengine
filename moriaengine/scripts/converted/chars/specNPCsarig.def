@@ -889,6 +889,7 @@ Dex = 200 300
 Karma = 0
 Provocation = 1000
 Peacemaking = 1000
+NoAnimate = 1
 Equip = i_monster_create
 Equip = i_robe
 EquipColor = 5000

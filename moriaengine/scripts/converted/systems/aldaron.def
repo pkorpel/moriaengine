@@ -222,6 +222,7 @@ Tactics = 900 1000
 SpiritSpeak = 800
 Peacemaking = 1000
 Provocation = 1000
+NoAnimate = 1
 
 ON=@npcrefuseitem
 SAY("Mne nemuzes podplatit. Odejdi!")

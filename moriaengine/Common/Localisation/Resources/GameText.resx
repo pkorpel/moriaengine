@@ -1195,6 +1195,39 @@
   <data name="FrostBoltLoc_Frozen" xml:space="preserve">
     <value>Cil zmrazen!</value>
   </data>
+  <data name="AnimateDeadLoc_NotABody" xml:space="preserve">
+    <value>Toto neni telo.</value>
+  </data>
+  <data name="AnimateDeadLoc_CantRaise" xml:space="preserve">
+    <value>S timto telem nelze dale pracovat.</value>
+  </data>
+  <data name="AnimateDeadLoc_StaffTooWeak" xml:space="preserve">
+    <value>Na toto monstrum nestaci tvoje hul.</value>
+  </data>
+  <data name="AnimateDeadLoc_LostHold" xml:space="preserve">
+    <value>Uz si nedokazal udrzet monstrum na zivu.</value>
+  </data>
+  <data name="AnimateDeadLoc_Dissolved" xml:space="preserve">
+    <value>Monstrum se rozplynulo.</value>
+  </data>
+  <data name="BoneArmorLoc_NotForYou" xml:space="preserve">
+    <value>Nesmis pouzivat toto kouzlo.</value>
+  </data>
+  <data name="BoneArmorLoc_NotInBook" xml:space="preserve">
+    <value>The spell is not in your spellbook</value>
+  </data>
+  <data name="BoneArmorLoc_BeyondYou" xml:space="preserve">
+    <value>It is beyond your ability</value>
+  </data>
+  <data name="BoneArmorLoc_NoMana" xml:space="preserve">
+    <value>You lack sufficient mana for this spell.</value>
+  </data>
+  <data name="BoneArmorLoc_MustCarry" xml:space="preserve">
+    <value>Magic items must be on your person to activate.</value>
+  </data>
+  <data name="SummonMenuLoc_Title" xml:space="preserve">
+    <value>What do you want to summon ?</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
