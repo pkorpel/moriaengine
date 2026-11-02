@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#843 - the .SetupWorld command, the way anything gets into the world.</summary>
 	public static class WorldSetups {
 		//in the order they run; a new setup goes at the end
-		public static readonly WorldSetup[] All = { new ExpertQuestSetup(), new MasterQuestSetup(), new GrandmasterQuestSetup(), new DungeonEntrancesSetup(), new TownSetup(), new HouseSetup() };
+		public static readonly WorldSetup[] All = { new ExpertQuestSetup(), new MasterQuestSetup(), new GrandmasterQuestSetup(), new DungeonEntrancesSetup(), new TownSetup(), new HouseSetup(), new TravelStonesSetup() };
 
 		/// <summary>Every setup: adds what's missing, leaves everything else alone. Safe to run at any time.</summary>
 		[SteamFunction]
@@ -270,7 +270,9 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static bool CanStand(Map map, int x, int y, out int z) {
 			z = StandZ(map, x, y);
-			return map.IsValidPos(x, y) && !map.IsMapTileWater(x, y) && map.CanFit(x, y, z, 16, true, false, true);
+			//a static above water is a deck to stand on (Esgaroth), the water itself isn't
+			bool onWater = map.IsMapTileWater(x, y) && (z <= map.GetTileZ(x, y));
+			return map.IsValidPos(x, y) && !onWater && map.CanFit(x, y, z, 16, true, false, true);
 		}
 
 		/// <summary>{x, y, z} of the standable spot closest to x,y within `range` tiles, or null.</summary>

@@ -53,6 +53,8 @@ Now, #1031, branch npc-walk-around: the user blocked a passage and a Gondor guar
 
 Shipped, #1033, branch npc-spell-choice: scripts/Basic/AI/NpcSpellChoice.cs scores what an NPC could cast, in Erebor's ai_returnspell order. Abilities aren't part of it, they fire from their own hooks. Found: summon and field spells went through the character path, so monsters paid the mana and nothing appeared, ever. Fire and harm cost the same on Erebor, so reflection takes the weakest spell, not the cheapest. Greater Heal gives a 2500-hit guard 21 hits. GMs are safe from guards since #1030, which made CombatDepthTestsB's GuardsRealm test stale: run CombatDepth after touching guards.
 
+Shipped, #1035, branch travel-stones: systems/travelstone.scp in scripts/Basic/Travel, a stone at each of the 30 stops through .SetupWorld. ismurderer here means Mordor's side: Mordor characters are created with 30000 kills. Spots unreviewed, the archive has none. Found: WorldSpots.CanStand refused any tile over water, so Esgaroth's decks weren't ground. A count of setup pieces lives in both WorldSetupTests and WorldSetupRestartTests.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

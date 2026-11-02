@@ -77,13 +77,13 @@ st_name[30]	Helmuv Zleb
 
 //[function st_opendialog] //(commented out by Converter) 
 
-[ItemDef i_stone_travel]
+[TravelStoneDef i_stone_travel]
 CATEGORY = Noe
 SUBSECTION = cestovni kameny
 DESCRIPTION = univerzalni
 
 NAME = "Cestovni kamen"
-TYPE = t_stone_travel
+TYPE = t_normal
 model = 0x1174
 Color = 00481
 
