@@ -1312,23 +1312,74 @@
   <data name="TrackingMenuLoc_Name" xml:space="preserve">
     <value>Name</value>
   </data>
-  <data name="PlayerRecordLoc_Identity" xml:space="preserve">
-    <value>Jsem {0}.</value>
+  <data name="PlayerRecordLoc_Level" xml:space="preserve">
+    <value>Uroven</value>
   </data>
-  <data name="PlayerRecordLoc_BeatenMale" xml:space="preserve">
-    <value>Premohl jsem {0} nepratel a {1} monster.</value>
+  <data name="PlayerRecordLoc_Rank" xml:space="preserve">
+    <value>Hodnost</value>
   </data>
-  <data name="PlayerRecordLoc_BeatenFemale" xml:space="preserve">
-    <value>Premohla jsem {0} nepratel a {1} monster.</value>
+  <data name="PlayerRecordLoc_Realm" xml:space="preserve">
+    <value>Rise</value>
   </data>
-  <data name="PlayerRecordLoc_DefeatedMale" xml:space="preserve">
-    <value>Ja sam jsem byl porazen {0}krat.</value>
+  <data name="PlayerRecordLoc_HomeTown" xml:space="preserve">
+    <value>Domovske mesto</value>
   </data>
-  <data name="PlayerRecordLoc_DefeatedFemale" xml:space="preserve">
-    <value>Ja sama jsem byla porazena {0}krat.</value>
+  <data name="PlayerRecordLoc_Guild" xml:space="preserve">
+    <value>Guilda</value>
+  </data>
+  <data name="PlayerRecordLoc_Office" xml:space="preserve">
+    <value>Funkce</value>
+  </data>
+  <data name="PlayerRecordLoc_Enemies" xml:space="preserve">
+    <value>Premozeni nepratele</value>
+  </data>
+  <data name="PlayerRecordLoc_Monsters" xml:space="preserve">
+    <value>Premozena monstra</value>
+  </data>
+  <data name="PlayerRecordLoc_Defeated" xml:space="preserve">
+    <value>Porazen</value>
+  </data>
+  <data name="PlayerRecordLoc_Ratio" xml:space="preserve">
+    <value>Pomer zabiti/smrti</value>
+  </data>
+  <data name="PlayerRecordLoc_LastKiller" xml:space="preserve">
+    <value>Naposledy zabit od</value>
+  </data>
+  <data name="PlayerRecordLoc_Played" xml:space="preserve">
+    <value>Odehrany cas</value>
   </data>
   <data name="PlayerRecordLoc_Alive" xml:space="preserve">
-    <value>Ziji jiz {0} dni.</value>
+    <value>Zije</value>
+  </data>
+  <data name="PlayerRecordLoc_Ring" xml:space="preserve">
+    <value>Prsten moci</value>
+  </data>
+  <data name="PlayerRecordLoc_Times" xml:space="preserve">
+    <value>{0}krat</value>
+  </data>
+  <data name="PlayerRecordLoc_Days" xml:space="preserve">
+    <value>{0} dni</value>
+  </data>
+  <data name="PlayerRecordLoc_HoursAndMinutes" xml:space="preserve">
+    <value>{0} hod {1} min</value>
+  </data>
+  <data name="PlayerRecordLoc_RingKills" xml:space="preserve">
+    <value>{0} z {1} zabiti za poslednich {2} dni</value>
+  </data>
+  <data name="PlayerRecordLoc_FirstNazgul" xml:space="preserve">
+    <value>Prvni Nazgul</value>
+  </data>
+  <data name="PlayerRecordLoc_Nazgul" xml:space="preserve">
+    <value>Nazgul</value>
+  </data>
+  <data name="PlayerRecordLoc_NazgulOf" xml:space="preserve">
+    <value>Nazgul mesta {0}</value>
+  </data>
+  <data name="PlayerRecordLoc_General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="PlayerRecordLoc_MayorOf" xml:space="preserve">
+    <value>Starosta mesta {0}</value>
   </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
