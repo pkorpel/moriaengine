@@ -35,6 +35,7 @@ namespace SteamEngine.CompiledScripts {
 			plugin.poisonPower = power;
 			plugin.poisonDoses = doses;
 			plugin.poisonKind = bottle.Kind;
+			plugin.poisonName = bottle.Name;
 			item.AddPlugin(poisonPK, plugin);
 		}
 
@@ -45,6 +46,13 @@ namespace SteamEngine.CompiledScripts {
 		public PoisonKind PoisonKind {
 			get {
 				return this.poisonKind;
+			}
+		}
+
+		/// <summary>jed_name, the bottle's.</summary>
+		public string PoisonName {
+			get {
+				return this.poisonName;
 			}
 		}
 
