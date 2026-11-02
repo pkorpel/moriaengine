@@ -23,7 +23,8 @@ User, 2026-11-02: Tracking stays ours, as 99z8's target menu is inert. Now, bran
 User, resting: keep going, park anything ambiguous for later; after the skills, all the spells, then necromancer's spells and spellbook.
 Now, branch magery-live-rules: spellvalues.def from nastaveni_spelltime/spellmana/duration/SKILLREQ, difficulty as SKILLREQ, Sphere's payment at the end of the cast (half or so on a fizzle, reagents too), Erebor's @spellcast rules. Effects aren't overwritten: their meaning differs spell by spell and only the odd ones differ, those get read one by one. PR #991.
 User: order is skills, then spells, then necro spells; a blocking question gets noted and asked at the end. Now, branch skills-heal-slots: .setequip0-15, .equip0-15, .heal0-15, .samheal0-15, from enrico.scp and healing.scp. PR #992.
-Now, branch skills-craft-masters: systems/mistri.scp: exp for gold for a craftsman's own made items, and the ship builders' logs and ore for exp. Item values from nastaveni_cm_value_, craftexp_ constants from the converter. Instance SPEECH= lines of @Create had been dropped.
+Now, branch skills-craft-masters: systems/mistri.scp: exp for gold for a craftsman's own made items, and the ship builders' logs and ore for exp. Item values from nastaveni_cm_value_, craftexp_ constants from the converter. Instance SPEECH= lines of @Create had been dropped. PR #993.
+Now, branch skills-traps-quiver: #966's i_past (systems/traps.scp) and i_toulec (systems/toulec.scp). Scroll case and mana shield scroll come with the spells.
 
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 

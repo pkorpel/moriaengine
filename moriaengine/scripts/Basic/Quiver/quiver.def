@@ -1,0 +1,7 @@
+[ItemDef i_toulec]
+model = i_toolkit_empty
+NAME = "Toulec"
+TYPE = t_quiver
+WEIGHT = 5
+RESOURCES = 50 i_hides_cut, 5 i_wire_iron, 15 i_gem_citrine, 50 i_thread
+SKILLMAKE = 500 tinkering, 400 bowcraft, 500 tailoring
