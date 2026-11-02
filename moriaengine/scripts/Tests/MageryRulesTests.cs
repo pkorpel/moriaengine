@@ -48,7 +48,8 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestRulesReport(Character self) {
-			Console.WriteLine("RULES_REPORT: mana=" + self.Mana + " hits=" + dummy.Hits);
+			PoisonTimer poison = dummy.GetTimer(PoisonTimer.KeyOf(PoisonKind.AbsoluteDamage)) as PoisonTimer;
+			Console.WriteLine("RULES_REPORT: mana=" + self.Mana + " hits=" + dummy.Hits + " poison=" + poison?.strength + " share=" + StatModSpellsUtils.Lowering(dummy, 200, -15));
 		}
 
 		[SteamFunction]

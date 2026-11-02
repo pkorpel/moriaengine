@@ -25,7 +25,8 @@ Now, branch magery-live-rules: spellvalues.def from nastaveni_spelltime/spellman
 User: order is skills, then spells, then necro spells; a blocking question gets noted and asked at the end. Now, branch skills-heal-slots: .setequip0-15, .equip0-15, .heal0-15, .samheal0-15, from enrico.scp and healing.scp. PR #992.
 Now, branch skills-craft-masters: systems/mistri.scp: exp for gold for a craftsman's own made items, and the ship builders' logs and ore for exp. Item values from nastaveni_cm_value_, craftexp_ constants from the converter. Instance SPEECH= lines of @Create had been dropped. PR #993.
 Now, branch skills-traps-quiver: #966's i_past (systems/traps.scp) and i_toulec (systems/toulec.scp). Scroll case and mana shield scroll come with the spells. PR #994.
-Now, branch darkness-on-blows: #976, the spell half went with #991. Then the spells one by one, then necromancy.
+Now, branch darkness-on-blows: #976, the spell half went with #991. Then the spells one by one, then necromancy. PR #995.
+Skills done. Spells: the 9 missing core spells (create food, traps, lock, telekinesis, unlock, incognito, mana vampire, polymorph) have live skill 250.0-700.0: nobody cast them on Erebor, left unported, on the list for the user. Now, branch spells-resist-poison: evil spells without spellflag_SM (poison, paralyze, poison and paralyze field) roll randfakt(spellpower, effect) against the target's defense, their effect numbers are that roll. Poison is f_effect_a_poison, not spell_poison_custom, as a_defname[20] says. Curses take a share of a big monster's stats, and 5% of its fire resist. Then the custom spells and scroll case, then necromancy.
 
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 

@@ -25,25 +25,18 @@ namespace SteamEngine.CompiledScripts {
 			: base(defname, filename, headerLine) {
 		}
 
-		/// <summary>#962 - Erebor's spell_poison_custom: spell power over 150, 140 for a monster, less up to 30 by the caster's level,
-		/// and a point more on a monster or under a curse. A dose of the percent poison, and a point of damage now.</summary>
+		/// <summary>#962 - f_effect_a_poison: mind power by Poisoning and by Magery, a plain damage poison every 5 s.</summary>
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
-			const int OnPlayers = 150, OnMonsters = 140, LevelsForAPoint = 5, MostFromLevel = 30, Seconds = 5, Sound = 517;
+			const int Seconds = 5, Sound = 517, Rounding = 5000000, Scale = 1000, CoefficientScale = 1000000;
 			Character caster = spellEffectArgs.Caster;
 			target.Trigger_HostileAction(caster);
 
-			bool onPlayer = target.IsPlayer;
-			int fromLevel = (!onPlayer && (caster is Player player)) ? System.Math.Min(player.Level / LevelsForAPoint, MostFromLevel) : 0;
-			int power = spellEffectArgs.SpellPower / ((onPlayer ? OnPlayers : OnMonsters) - fromLevel);
-			if (target.HasPlugin(((DurableCharEffectSpellDef) SpellDef.GetByDefname("s_curse")).EffectPluginKey_Spell)) {
-				power++;
-			}
-			if (!onPlayer) {
-				power++;
-			}
-			if ((power > 0) && Poison.Apply(target, caster, power, Seconds, PoisonKind.PercentOfHits, false, Sound)) {
-				DamageManager.CauseDamage(caster, target, DamageType.MagicPoison, 1);
-			}
+			PoisonEffectSettings settings = PoisonEffectSettings.instance;
+			long mind = target.IsPlayerForCombat ? caster.MindPowerVsP : caster.MindPowerVsM;
+			long fromPoisoning = ((mind * caster.GetSkill(SkillName.Poisoning) * settings.spellPoisoningEffect) + Rounding) / Scale;
+			long fromMagery = ((mind * caster.GetSkill(SkillName.Magery) * settings.spellMageryEffect) + Rounding) / Scale;
+			int coefficient = (target is NPC) ? settings.percentOnMonsters : settings.percentOnPlayers;
+			Poison.Apply(target, caster, (int) (((fromPoisoning + fromMagery) * coefficient) / CoefficientScale), Seconds, PoisonKind.AbsoluteDamage, false, Sound);
 		}
 	}
 }

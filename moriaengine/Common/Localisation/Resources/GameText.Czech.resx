@@ -1090,6 +1090,9 @@
   <data name="QuiverLoc_TookLastFemale" xml:space="preserve">
     <value>Vyndala jsi {0} sipu. V toulci uz dalsi sipy nejsou.</value>
   </data>
+  <data name="StatModLoc_WeakerToFire" xml:space="preserve">
+    <value>{0} je nyni zranitelnejsi ohnem.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

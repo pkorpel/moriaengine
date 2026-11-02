@@ -12,6 +12,13 @@ namespace SteamEngine.Converter {
 	/// spheretables.scp as nastaveni_cm_* do a recipe. The spells here are written by hand, so these go to
 	/// [SpellValuesDef]s, read at boot. Effects stay in the hand-written sections: what the number means differs by spell.</summary>
 	internal static class ConvertedSpellValues {
+		private const string EffectVar = "nastaveni_spelleffect_";
+
+		//evil without spellflag_SM: dospellcustom_donesrc rolls their effect against the target's defense
+		private static readonly HashSet<string> rolledAgainstDefense = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+			"s_poison", "s_paralyze", "s_paralyzation_field", "s_poison_field"
+		};
+
 		private const string KeptDuration = "s_gate_travel"; //3-4 s by the numbers, #489 made it a minute
 		private const string TimeVar = "nastaveni_spelltime_", ManaVar = "nastaveni_spellmana_", DurationVar = "nastaveni_duration_", ReqVar = "nastaveni_SKILLREQ_";
 
@@ -32,6 +39,9 @@ namespace SteamEngine.Converter {
 					string duration = SphereWorldVars.GetString(DurationVar + spell);
 					if ((duration != null) && !IsZero(duration) && !StringComparer.OrdinalIgnoreCase.Equals(spell, KeptDuration)) {
 						output.Append("Duration = ").Append(Tenths(duration)).Append('\n');
+					}
+					if (rolledAgainstDefense.Contains(spell)) {
+						output.Append("Resist = ").Append(SphereWorldVars.GetString(EffectVar + spell).Trim(' ', '"')).Append('\n');
 					}
 					string requirement = SphereWorldVars.GetString(ReqVar + spell);
 					if (requirement != null) {

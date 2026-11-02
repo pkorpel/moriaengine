@@ -18,6 +18,8 @@
 using System;
 using SteamEngine.CompiledScripts.Dialogs;
 
+using SteamEngine.Common;
+
 namespace SteamEngine.CompiledScripts {
 
 	public static class StatModSpellsUtils {
@@ -33,6 +35,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static void Bootstrap() { //ensure calling the static initialiser
+		}
+
+		private const int ShareFrom = 110;
+
+		/// <summary>#962 - f_a_curselowerstats: a monster of 110 or more loses a share of the stat, a number it would be nothing to.</summary>
+		public static short Lowering(Character self, short stat, short change) {
+			if ((change < 0) && !self.IsPlayer && (stat >= ShareFrom)) {
+				return (short) ((stat * change) / 100);
+			}
+			return change;
 		}
 
 		public static short ModifyStat(int lowBoundary, short statValue, short statDiff, out short resultDiff) {
@@ -64,7 +76,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
-			self.Str = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Str, (short) this.EffectPower, out this.strDifference);
+			self.Str = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Str, StatModSpellsUtils.Lowering(self, self.Str, (short) this.EffectPower), out this.strDifference);
 		}
 
 		public override void On_UnAssign(Character cont) {
@@ -87,7 +99,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
-			self.Dex = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Dex, (short) this.EffectPower, out this.dexDifference);
+			self.Dex = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Dex, StatModSpellsUtils.Lowering(self, self.Dex, (short) this.EffectPower), out this.dexDifference);
 		}
 
 		public override void On_UnAssign(Character cont) {
@@ -112,7 +124,7 @@ namespace SteamEngine.CompiledScripts {
 			Character self = (Character) this.Cont;
 			short shortEffect = (short) this.EffectPower;
 
-			self.Int = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Int, shortEffect, out this.intDifference);
+			self.Int = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Int, StatModSpellsUtils.Lowering(self, self.Int, shortEffect), out this.intDifference);
 			//also lower npc maxmana?
 
 			if (shortEffect < 0) {
@@ -141,9 +153,9 @@ namespace SteamEngine.CompiledScripts {
 		public void On_Assign() {
 			Character self = (Character) this.Cont;
 			short shortEffect = (short) this.EffectPower;
-			self.Str = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Str, shortEffect, out this.strDifference);
-			self.Dex = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Dex, shortEffect, out this.dexDifference);
-			self.Int = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Int, shortEffect, out this.intDifference);
+			self.Str = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Str, StatModSpellsUtils.Lowering(self, self.Str, shortEffect), out this.strDifference);
+			self.Dex = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Dex, StatModSpellsUtils.Lowering(self, self.Dex, shortEffect), out this.dexDifference);
+			self.Int = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Int, StatModSpellsUtils.Lowering(self, self.Int, shortEffect), out this.intDifference);
 
 			if (shortEffect < 0) {
 				self.Mana = Math.Min(self.Mana, self.MaxMana);
@@ -164,6 +176,9 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class CurseSpellEffectPlugin {
+		private const int MostFireResistCursed = 990, LeastFireResistCursed = 20, FireResistLostPercent = 5;
+		private static readonly TagKey fireLostTK = TagKey.Acquire("_curseFireLost_");
+
 		public override string EffectDetail {
 			get {
 				return ActiveEffects.Join(ActiveEffects.SignedStat(this.strDifference, "Str"), ActiveEffects.SignedStat(this.dexDifference, "Dex"), ActiveEffects.SignedStat(this.intDifference, "Int"));
@@ -174,15 +189,23 @@ namespace SteamEngine.CompiledScripts {
 			Character self = (Character) this.Cont;
 			short shortEffect = (short) this.EffectPower;
 
-			self.Str = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Str, shortEffect, out this.strDifference);
-			self.Dex = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Dex, shortEffect, out this.dexDifference);
-			self.Int = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Int, shortEffect, out this.intDifference);
+			self.Str = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Str, StatModSpellsUtils.Lowering(self, self.Str, shortEffect), out this.strDifference);
+			self.Dex = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Dex, StatModSpellsUtils.Lowering(self, self.Dex, shortEffect), out this.dexDifference);
+			self.Int = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.Int, StatModSpellsUtils.Lowering(self, self.Int, shortEffect), out this.intDifference);
 
 			Player contAsPlayer = self as Player;
 			if (contAsPlayer != null) {
 				contAsPlayer.Vit = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, contAsPlayer.Vit, shortEffect, out this.maxHitsDifference);
 			} else {
 				NPC contAsNPC = (NPC) self;
+				if ((contAsNPC.ResistFire < MostFireResistCursed) && (contAsNPC.ResistFire >= LeastFireResistCursed)) {
+					int lost = (contAsNPC.ResistFire * FireResistLostPercent) / 100;
+					contAsNPC.ResistFire -= lost;
+					this.SetTag(fireLostTK, lost);
+				}
+				if (this.SourceThing is Character caster) {
+					caster.SysMessage(string.Format(Loc<StatModLoc>.Get(caster.Language).WeakerToFire, contAsNPC.Name));
+				}
 
 				contAsNPC.MaxStam = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.MaxStam, shortEffect, out this.maxStamDifference);
 				contAsNPC.MaxMana = StatModSpellsUtils.ModifyStat(StatModSpellsUtils.minStat, self.MaxMana, shortEffect, out this.maxManaDifference);
@@ -229,6 +252,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override void On_UnAssign(Character cont) {
+			if (this.GetTag(fireLostTK) is int lost) {
+				cont.ResistFire += lost;
+			}
 			cont.Str -= this.strDifference;
 			cont.Dex -= this.dexDifference;
 			cont.Int -= this.intDifference;
@@ -249,5 +275,9 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class CurseSpellEffectPluginDef {
+	}
+
+	internal class StatModLoc : CompiledLocStringCollection<StatModLoc> {
+		public string WeakerToFire = "{0} je nyni zranitelnejsi ohnem.";
 	}
 }

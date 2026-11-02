@@ -246,3 +246,9 @@ Not ported: bags as one row (top-level pack items only), the builders' spoken pa
 ## Darkness (#976)
 
 `WorkLight` is Erebor's nolightfizz: with no night sight and no lit thing within 2 tiles or in the off hand, the area's light against 0-64 decides, so even daylight fails 1 time in 65. It stops crafting, gathering, taming, lockpicking, poisoning, spells other than Night Sight, and a player's blow, which tries again a second later. GMs are spared for blows and spells, which Erebor didn't do: casting and fighting as a GM isn't meant to be random.
+
+## Spells' resists and curses (#962)
+
+Poison, Paralyze and the poison and paralyze fields don't lose power to defense as damage spells do. Their live "effect" numbers (`Resist` in spellvalues.def) are a roll of the caster's spell power that must reach the target's defense, or "Cil kouzlu odolal". Paralysis resist cuts the power first. The Poison spell is Erebor's f_effect_a_poison: mind power times Poisoning and Magery, a plain damage poison every 5 s, weighted by `percentOnMonsters` or `percentOnPlayers`. A monster of 110 in a stat loses a share of it to clumsy, feeblemind, weaken and curse, not a number. Curse also takes 5% off a monster's fire resist.
+
+Nine of the 64 spells aren't ported, none could be cast on Erebor: Create Food, Magic Trap, Magic Untrap, Magic Lock, Telekinesis, Unlock and Incognito need 500.0 Magery, Mana Vampire 250.0, Polymorph 700.0.
