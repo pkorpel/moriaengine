@@ -96,6 +96,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1038 - such a monster doesn't lose a target that goes unseen.</summary>
+		public static bool HasDetect(NPC self) {
+			DetectAbilityDef def = DetectDef;
+			Ability ability;
+			return (def != null) && self.HasAbility(def, out ability);
+		}
+
 		private static double NextDetectTime(NPC self) {
 			object tag = self.GetTag(nextDetectTimeTK);
 			return tag is double ? (double) tag : 0;
