@@ -206,3 +206,7 @@ A monster with Poisoning has its skill in 1000 of poisoning on a blow, skill / 1
 Bottle strengths are `nastaveni_poison_i_potion_*`; the bottles themselves aren't in the archive, so `poisonPotions.def` stays hand-written. That the four damage bottles are the percent poison is a reading of Erebor's comment that poison_c can't be dealt from a weapon, not something the archive states.
 
 Not ported: traps, poison fields, the dungeon and quest items that poison, the casting monsters' cure when poisoned, Sniper's poisoned knives.
+
+## Information skills (#962)
+
+Anatomy, Arms Lore, Item ID, Eval Int, Forensics and Taste ID are Sphere's OnSkill_Info in `InformationSkillDef`: a cursor with no reach check, a difficulty from the target (2 on yourself, otherwise 0-59), and the result after the skill's delay. No gain by use. Sphere's English texts stay, as they did on Erebor; the prompts and failures are Erebor's Czech. Item ID first says who made a thing and, sometimes, its durability; Taste ID says whether a thing is poisoned and by what. Nothing has a price yet, so Item ID always reports no resale value. Forensics reads the killer and time of death that `Corpse.NoteDeath` records; carved corpses aren't told apart.

@@ -19,3 +19,4 @@ Vars:
 	private int poisonPower = 0
 	private int poisonDoses = 0
 	private PoisonKind poisonKind = PoisonKind.PercentOfHits
+	private string poisonName = null

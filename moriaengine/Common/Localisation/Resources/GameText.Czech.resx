@@ -25,21 +25,6 @@
   <data name="AbilityDefLoc_YouDontHaveThisAbility" xml:space="preserve">
     <value>O této abilitě nevíš vůbec nic.</value>
   </data>
-  <data name="AnatomyLoc_ACanceled" xml:space="preserve">
-    <value>Anatomie byla přerušena.</value>
-  </data>
-  <data name="AnatomyLoc_AFailed" xml:space="preserve">
-    <value>Tvé zkoumání se nezdařilo.</value>
-  </data>
-  <data name="AnatomyLoc_ASuccess1" xml:space="preserve">
-    <value>Anatomie se ti povedla.</value>
-  </data>
-  <data name="AnatomyLoc_TargetOnlyHuman" xml:space="preserve">
-    <value>Zaměřuj pouze osoby!</value>
-  </data>
-  <data name="AnatomyLoc_TargetWho" xml:space="preserve">
-    <value>Koho chceš zkoumat?</value>
-  </data>
   <data name="BleedingLoc_YourTargetIsBleeding" xml:space="preserve">
     <value>{0} krvácí!</value>
   </data>
@@ -841,6 +826,63 @@
   <data name="PoisonedItemLoc_Poisoned" xml:space="preserve">
     <value>Otravena</value>
   </data>
+  <data name="InformationLoc_AnatomyPrompt" xml:space="preserve">
+    <value>Koho si prejes prozkoumat?</value>
+  </data>
+  <data name="InformationLoc_AnatomyFailMale" xml:space="preserve">
+    <value>Pruzkumem anatomie jsi nic nezjistil.</value>
+  </data>
+  <data name="InformationLoc_AnatomyFailFemale" xml:space="preserve">
+    <value>Pruzkumem anatomie jsi nic nezjistila.</value>
+  </data>
+  <data name="InformationLoc_ArmsLorePrompt" xml:space="preserve">
+    <value>Jakou zbroj ci zbran si prejes prozkoumat?</value>
+  </data>
+  <data name="InformationLoc_ArmsLoreFail" xml:space="preserve">
+    <value>Nedokazes zjistit nic blizsiho.</value>
+  </data>
+  <data name="InformationLoc_ItemIdPrompt" xml:space="preserve">
+    <value>Co si prejes identifikovat?</value>
+  </data>
+  <data name="InformationLoc_ItemIdFail" xml:space="preserve">
+    <value>Nepodarilo se ti predmet identifikovat.</value>
+  </data>
+  <data name="InformationLoc_ItemIdMaker" xml:space="preserve">
+    <value>Vyrobce: {0}</value>
+  </data>
+  <data name="InformationLoc_ItemIdDurability" xml:space="preserve">
+    <value>Durabilita: {0}/{1}</value>
+  </data>
+  <data name="InformationLoc_ItemIdUnknown" xml:space="preserve">
+    <value>Puvod teto veci je ti neznamy.</value>
+  </data>
+  <data name="InformationLoc_EvalIntPrompt" xml:space="preserve">
+    <value>Vyber charakter pro odhad.</value>
+  </data>
+  <data name="InformationLoc_EvalIntFailMale" xml:space="preserve">
+    <value>Nejsi schopen nic odhadnout.</value>
+  </data>
+  <data name="InformationLoc_EvalIntFailFemale" xml:space="preserve">
+    <value>Nejsi schopna nic odhadnout.</value>
+  </data>
+  <data name="InformationLoc_ForensicsPrompt" xml:space="preserve">
+    <value>Ci telo chces prozkoumat?</value>
+  </data>
+  <data name="InformationLoc_ForensicsFail" xml:space="preserve">
+    <value>Nepodarilo se ti zjistit zadne detaily o smrti.</value>
+  </data>
+  <data name="InformationLoc_TasteIdPrompt" xml:space="preserve">
+    <value>Co si prejes ochutnat?</value>
+  </data>
+  <data name="InformationLoc_TasteIdFail" xml:space="preserve">
+    <value>Nepodarilo se ti zjistit slozeni ani stopy jedu.</value>
+  </data>
+  <data name="InformationLoc_TasteIdPoisoned" xml:space="preserve">
+    <value>Otravena : {0}</value>
+  </data>
+  <data name="InformationLoc_TasteIdClean" xml:space="preserve">
+    <value>Neni otravena.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
@@ -942,18 +984,6 @@
   </data>
   <data name="IncomingPacketsLoc_NotANumber" xml:space="preserve">
     <value>'{0}' is not a number!</value>
-  </data>
-  <data name="ItemIdLoc_ICanceled" xml:space="preserve">
-    <value>Identifikace předmětu přerušena.</value>
-  </data>
-  <data name="ItemIdLoc_IFailed" xml:space="preserve">
-    <value>Identifikace předmětu se nezdařila.</value>
-  </data>
-  <data name="ItemIdLoc_ISuccess" xml:space="preserve">
-    <value></value>
-  </data>
-  <data name="ItemIdLoc_TargetWhat" xml:space="preserve">
-    <value>Co chceš identifikovat?</value>
   </data>
   <data name="Loc_D_PlayerVendor_StockItemDetail_Label_Add" xml:space="preserve">
     <value>Přidat</value>

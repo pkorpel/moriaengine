@@ -73,15 +73,12 @@ StartByMacroEnabled = true
 DELAY=4.0
 ADVRATE=2.5,50.0,200.0
 
-[SCRIPTEDSKILLDEF 16]
+[EVALINTSKILLDEF 16]
 DEFNAME=Skill_EvalInt
 KEY="EvaluatingIntel"
 StartByMacroEnabled = true
 DELAY=3, 1
 Effect=0, 100
-
-ON=@Fail
-	src.message "You cannot seem to judge the creature correctly."
 
 [FishingSkillDef 18]
 DEFNAME=Skill_Fishing
@@ -103,7 +100,7 @@ ADVRATE=10.0,250.0,800.0 //Erebor's own
 ON=@Fail
 	src.message "You fish a while, but fail to catch anything."
 
-[SCRIPTEDSKILLDEF 19]
+[FORENSICSSKILLDEF 19]
 DEFNAME=Skill_Forensics
 KEY="Forensics"
 StartByMacroEnabled = true
@@ -119,8 +116,6 @@ StartByMacroEnabled = true
 //BONUSSTATS=25
 ADVRATE=2.5,50.0,200.0
 
-ON=@Fail
-	src.message "You can tell nothing about the corpse."
 
 
 [SCRIPTEDSKILLDEF 20]
@@ -234,7 +229,7 @@ StartByMacroEnabled = true
 //BONUSSTATS=20
 ADVRATE=0 //0fffffff on Erebor: no gain by use
 
-[SCRIPTEDSKILLDEF 36]
+[TASTEIDSKILLDEF 36]
 DEFNAME=Skill_tasteid
 KEY="TasteID"
 StartByMacroEnabled = true
@@ -249,9 +244,6 @@ StartByMacroEnabled = true
 //BONUS_INT=80
 //BONUSSTATS=50
 ADVRATE=2.5,50.0,200.0
-
-ON=@Fail
-	src.message "You cannot discern anything about this substance."
 
 [HealingSkillDef 39]
 DEFNAME=Skill_Vet
