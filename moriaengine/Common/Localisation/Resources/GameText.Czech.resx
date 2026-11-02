@@ -982,6 +982,33 @@
   <data name="QuickSlotsLoc_SlotIsAnItem" xml:space="preserve">
     <value>Cil ulozeny jako equip{0} je predmet!</value>
   </data>
+  <data name="CraftMastersLoc_Lessons" xml:space="preserve">
+    <value>Poskytuji lekce na zaklade tvych zkusenosti s remeslnou vyrobou</value>
+  </data>
+  <data name="CraftMastersLoc_CantServe" xml:space="preserve">
+    <value>Nemohu slouzit...</value>
+  </data>
+  <data name="CraftMastersLoc_TooFarToDeal" xml:space="preserve">
+    <value>Na takovou vzdalenost s tebou jednat nebude</value>
+  </data>
+  <data name="CraftMastersLoc_Begone" xml:space="preserve">
+    <value>Tahni!</value>
+  </data>
+  <data name="CraftMastersLoc_OnlyGondor" xml:space="preserve">
+    <value>Sluzby poskytuju jen gondorum!</value>
+  </data>
+  <data name="CraftMastersLoc_OnlyMordor" xml:space="preserve">
+    <value>Sluzby poskytuju jen mordorum!</value>
+  </data>
+  <data name="CraftMastersLoc_NoMagic" xml:space="preserve">
+    <value>Nesmis byt pod zadnym magickym vlivem...</value>
+  </data>
+  <data name="CraftMastersLoc_ShipBuilder" xml:space="preserve">
+    <value>Stavitel Lodi</value>
+  </data>
+  <data name="CraftMastersLoc_Ships" xml:space="preserve">
+    <value>Do teto chvile bylo postaveno {0} lodi.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

@@ -217,6 +217,7 @@ Int = 100
 MaxHits = 3000
 MaxStam = 500
 MaxMana = 0
+TSPEECH = spk_go_imp
 Experience = 0 0
 Parry = 1000 1100
 MagicResist = 1000

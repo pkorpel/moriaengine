@@ -352,6 +352,7 @@ RESOURCES = 3 i_reag_nightshade, 5 i_reag_sulfur_ash, 1 i_reag_ginseng, 1 i_gem_
 SKILLMAKE = 800 alchemy, 1 i_bottle_empty, 800 tasteid, 1 t_mortar //nastaveni_cm_skillmake 
 EmptyFlask = i_bottle_empty //converted from 'TDATA1' 
 model = i_bottle_empty
+ItemValue = 300 //nastaveni_cm_value 
 Color = 0985
 
 [PotionDef i_potion_reactive]

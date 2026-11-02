@@ -360,6 +360,7 @@ DESCRIPTION = Diamond 1 (Dark) (Small)
 
 TYPE = T_GEM
 WEIGHT = 1
+ItemValue = 45 //nastaveni_cm_value 
 DEFNAME = i_gem_diamond
 //VALUE = 45 // commented out by Converter 
 
@@ -829,6 +830,7 @@ DESCRIPTION = Head
 DupeList = 0x1ce9
 WEIGHT = 5
 RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain //some resources were fixed by converter 
+ItemValue = 1 //nastaveni_cm_value 
 DEFNAME = i_flesh_head
 
 [ItemDef 0x1ce2]
@@ -1053,6 +1055,7 @@ DupeList = 0x175e,0x175f,0x1760,0x1761,0x1762,0x1763,0x1764,0x1765
 WEIGHT = 1
 //DYE = 1 // commented out by Converter 
 RESOURCES = 1 i_cloth //nastaveni_cm_resources 
+ItemValue = 3 //nastaveni_cm_value 
 DEFNAME = i_cloth
 //VALUE = 3 // commented out by Converter 
 
@@ -1196,6 +1199,7 @@ DESCRIPTION = Feathers (White)
 TYPE = t_FEATHER
 DupeList = 0xdfa,0xdfb,0x1bd2,0x1bd3
 WEIGHT = 0.1
+ItemValue = 2 //nastaveni_cm_value 
 DEFNAME = i_feather
 //VALUE = 2 // commented out by Converter 
 
@@ -1294,6 +1298,7 @@ Color = colors_yellow
 model = i_hay_sheaf
 type = t_grain //guessed from base def by Converter 
 RESOURCES = 1 i_log_iron //nastaveni_cm_resources 
+ItemValue = 1 //nastaveni_cm_value 
 //VALUE = 1 // commented out by Converter 
 
 [ItemDef I_GRASS]

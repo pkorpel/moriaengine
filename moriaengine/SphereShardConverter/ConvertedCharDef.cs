@@ -452,6 +452,13 @@ namespace SteamEngine.Converter {
 				}
 				return;
 			}
+			//#962 - SPEECH= on the instance, as the craft masters have it, is TSPEECH here
+			if (name == "speech") {
+				if (!this.IsPlayerDefByName) {
+					this.Set("TSPEECH", value.Trim(), comment);
+				}
+				return;
+			}
 			if (name == "tag.experience") {
 				MatchCollection matches = numberRE.Matches(value);
 				if (matches.Count > 0) {

@@ -73,6 +73,7 @@ RESOURCES = 1 i_hide //nastaveni_cm_resources
 SKILLMAKE = 520 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 model = i_bedroll_open
 type = t_bedroll //guessed from base def by Converter 
+ItemValue = 4 //nastaveni_cm_value 
 //VALUE = 2 // commented out by Converter 
 
 [ItemDef i_CROP_HERB]
@@ -184,6 +185,7 @@ WEIGHT = 1
 model = I_SPITTOON
 RESOURCES = 5 i_ingot_pisek //nastaveni_cm_resources 
 SKILLMAKE = 500 tinkering, 1 t_tinker_tools, 1 t_bottle_form //nastaveni_cm_skillmake 
+ItemValue = 0 //nastaveni_cm_value 
 Color = color_gray_dk
 
 [ItemDef I_BRUSH]
@@ -287,6 +289,7 @@ model = i_bone_skull
 type = t_bone //guessed from base def by Converter 
 RESOURCES = 5 i_reag_bone //nastaveni_cm_resources 
 SKILLMAKE = 750 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+ItemValue = 1 //nastaveni_cm_value 
 
 [ItemDef I_WAX_SEAL]
 CATEGORY = Items by Professions

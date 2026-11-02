@@ -751,6 +751,9 @@ namespace SteamEngine.Converter {
 			if (skillMake != null) {
 				this.Replace("SKILLMAKE", skillMake, "nastaveni_cm_skillmake");
 			}
+			if (SphereWorldVars.TryGetInt("nastaveni_cm_value_" + this.PrettyDefname, out int value)) {
+				this.Set("ItemValue", value.ToString(CultureInfo.InvariantCulture), "nastaveni_cm_value");
+			}
 		}
 
 		//#962 - t_shaft_multi and t_arrow_piercing_multi unpack into TDATA1, TDATA2 of them each
