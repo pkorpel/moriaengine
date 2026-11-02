@@ -34,7 +34,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			Spoil(self);
+			ScriptedSkills.Stop(self);
 			Reveal(self);
 			self.AddTimer(HidingTimer.Key, new HidingTimer()).DueInSeconds = this.GetDelayForValue((ushort) self.GetSkill(SkillName.Hiding));
 			return TriggerResult.Cancel;

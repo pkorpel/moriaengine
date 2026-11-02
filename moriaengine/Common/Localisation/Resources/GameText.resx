@@ -568,6 +568,90 @@
   <data name="MeditationLoc_LostConcentration" xml:space="preserve">
     <value>Pohybem jsi ztratil soustredeni</value>
   </data>
+  <data name="TamingLoc_whatToTame" xml:space="preserve">
+    <value>Ktere zvire si prejes ochocit?</value>
+  </data>
+  <data name="TamingLoc_mustWait" xml:space="preserve">
+    <value>You must wait to perform another action.</value>
+  </data>
+  <data name="TamingLoc_cantSee" xml:space="preserve">
+    <value>Nevidis na cil</value>
+  </data>
+  <data name="TamingLoc_betterCrook" xml:space="preserve">
+    <value>Na ochoceni potrebujes lepsi pasteveckou hul.</value>
+  </data>
+  <data name="TamingLoc_needCrook" xml:space="preserve">
+    <value>Na ochocovani zvere potrebujes pasteveckou hul.</value>
+  </data>
+  <data name="TamingLoc_cantTame" xml:space="preserve">
+    <value>Tohle nemuzes ochocit.</value>
+  </data>
+  <data name="TamingLoc_tooWild" xml:space="preserve">
+    <value>Zvire je prilis divoke.</value>
+  </data>
+  <data name="TamingLoc_noIdea" xml:space="preserve">
+    <value>Nemas nejmensi poneti, jak toto zvire ochocit.</value>
+  </data>
+  <data name="TamingLoc_alreadyTame" xml:space="preserve">
+    <value>Zvire je jiz ochocene.</value>
+  </data>
+  <data name="TamingLoc_devoted" xml:space="preserve">
+    <value>Tohle zvire je oddane nekomu jinemu a nelze jej ochocit.</value>
+  </data>
+  <data name="TamingLoc_tooFar" xml:space="preserve">
+    <value>Jsi prilis daleko.</value>
+  </data>
+  <data name="TamingLoc_targetTooFar" xml:space="preserve">
+    <value>{0} je prilis daleko.</value>
+  </data>
+  <data name="TamingLoc_lostSightMale" xml:space="preserve">
+    <value>Ztratil jsi svuj cil z dohledu.</value>
+  </data>
+  <data name="TamingLoc_lostSightFemale" xml:space="preserve">
+    <value>Ztratila jsi svuj cil z dohledu.</value>
+  </data>
+  <data name="TamingLoc_interrupted" xml:space="preserve">
+    <value>Ochocovani bylo preruseno.</value>
+  </data>
+  <data name="TamingLoc_failed" xml:space="preserve">
+    <value>Nepovedlo se ti zvire ochocit.</value>
+  </data>
+  <data name="TamingLoc_success" xml:space="preserve">
+    <value>Zda se, ze te zvire prijalo za sveho pana.</value>
+  </data>
+  <data name="MountKnowledgeLoc_Title" xml:space="preserve">
+    <value>Znalost jezditek</value>
+  </data>
+  <data name="MountKnowledgeLoc_NothingNewMale" xml:space="preserve">
+    <value>Ochocenim tohoto jezditka jsi se nic noveho nedozvedel.</value>
+  </data>
+  <data name="MountKnowledgeLoc_NothingNewFemale" xml:space="preserve">
+    <value>Ochocenim tohoto jezditka jsi se nic noveho nedozvedela.</value>
+  </data>
+  <data name="MountKnowledgeLoc_LearnedMale" xml:space="preserve">
+    <value>Ochocenim tohoto jezditka jsi rozsiril sve znalosti o jezditkach.</value>
+  </data>
+  <data name="MountKnowledgeLoc_LearnedFemale" xml:space="preserve">
+    <value>Ochocenim tohoto jezditka jsi rozsirila sve znalosti o jezditkach.</value>
+  </data>
+  <data name="MountKnowledgeLoc_Legend" xml:space="preserve">
+    <value>Legenda</value>
+  </data>
+  <data name="MountKnowledgeLoc_LegendName" xml:space="preserve">
+    <value>-&gt; Nazev jezditka</value>
+  </data>
+  <data name="MountKnowledgeLoc_LegendCount" xml:space="preserve">
+    <value>-&gt; Ochoceno celkem</value>
+  </data>
+  <data name="MountKnowledgeLoc_LegendForMost" xml:space="preserve">
+    <value>     / pocet ochoceni pro max bonus</value>
+  </data>
+  <data name="MountKnowledgeLoc_LegendShare" xml:space="preserve">
+    <value>-&gt; Kolik % toto jezditko pridava</value>
+  </data>
+  <data name="MountKnowledgeLoc_LegendOfTotal" xml:space="preserve">
+    <value>     do celkove znalosti jezditek</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>
@@ -975,21 +1059,6 @@
   </data>
   <data name="SpellDefLoc_TargetResistedSpell" xml:space="preserve">
     <value>C�l odolal kouzlu!</value>
-  </data>
-  <data name="TamingLoc_abort" xml:space="preserve">
-    <value>You stop trying to tame the creature.</value>
-  </data>
-  <data name="TamingLoc_cantTameThat" xml:space="preserve">
-    <value>You can't tame that.</value>
-  </data>
-  <data name="TamingLoc_fail" xml:space="preserve">
-    <value>You fail to tame the creature.</value>
-  </data>
-  <data name="TamingLoc_success" xml:space="preserve">
-    <value>You have tamed the creature.</value>
-  </data>
-  <data name="TamingLoc_whatToTame" xml:space="preserve">
-    <value>What would you like to tame?</value>
   </data>
   <data name="ThrowingLoc_onlyWorksWhenFighting" xml:space="preserve">
     <value>H�zec� no�e lze pou��t jen b�hem boje.</value>
