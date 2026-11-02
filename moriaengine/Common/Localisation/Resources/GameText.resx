@@ -952,6 +952,36 @@
   <data name="MageryRulesLoc_LackSkill" xml:space="preserve">
     <value>You lack the skill to cast this spell.</value>
   </data>
+  <data name="QuickSlotsLoc_Aim" xml:space="preserve">
+    <value>Zamer vec nebo tvora.</value>
+  </data>
+  <data name="QuickSlotsLoc_CharacterStored" xml:space="preserve">
+    <value>Charakter byl uspesne zaznamenan.</value>
+  </data>
+  <data name="QuickSlotsLoc_ItemStored" xml:space="preserve">
+    <value>Predmet byl uspesne zaznamenan.</value>
+  </data>
+  <data name="QuickSlotsLoc_NothingStored" xml:space="preserve">
+    <value>Neni zaznamenan zadny predmet.</value>
+  </data>
+  <data name="QuickSlotsLoc_MustCarry" xml:space="preserve">
+    <value>Predmet musis mit u sebe nebo v otevrene bance.</value>
+  </data>
+  <data name="QuickSlotsLoc_OnlyShamans" xml:space="preserve">
+    <value>Pouze saman vi jak vyuzit krvave bandaze k leceni</value>
+  </data>
+  <data name="QuickSlotsLoc_GhostsDontHeal" xml:space="preserve">
+    <value>Jako duch nic nevylecis.</value>
+  </data>
+  <data name="QuickSlotsLoc_Paralyzed" xml:space="preserve">
+    <value>V paralyze nemuzes lecit.</value>
+  </data>
+  <data name="QuickSlotsLoc_SlotEmpty" xml:space="preserve">
+    <value>Nemas nastaveny equip{0}.</value>
+  </data>
+  <data name="QuickSlotsLoc_SlotIsAnItem" xml:space="preserve">
+    <value>Cil ulozeny jako equip{0} je predmet!</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

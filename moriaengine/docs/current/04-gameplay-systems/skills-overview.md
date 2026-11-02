@@ -228,3 +228,7 @@ Cast times, mana, durations and skill requirements come from Erebor's `nastaveni
 Sphere pays at the end of a cast: mana and reagents are checked at the start and taken when it lands. A fizzle or an interrupted cast costs half the mana plus a random bit, and the reagents. A GM pays nothing and casts in 0.1 s.
 
 `SpellCastRules` is Erebor's @spellcast, for players: darkness fizzles all but Night Sight, reactive armor by class, no blessing or cursing items, no teleporting onto items or NPCs, casting at others reveals you, no fields on what you hold, mages and necromancers need a good staff for summons, Mark doesn't work in dungeons, any spell but an arrow or harm on yourself drops a mana shield and half your Int of mana. Battlefield and conquest checks of recall and gate wait for those systems.
+
+## Quick slots (#962)
+
+Erebor's sixteen slots in `QuickSlots`: `.setequip0` to `15` remember an item or a character, `.equipN` uses the item if you carry it, `.healN` bandages the remembered character, `.samhealN` does it with a shaman's bloody bandage. The old `scripts/Optional/TargetMemory.cs` of ten slots is gone; `Player.targMem` stays, unused, as a saved field.
