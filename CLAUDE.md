@@ -37,6 +37,8 @@ Shipped, branch tracking-dialog-english: the user keeps `.menustyle` as a choice
 
 User's rule, 2026-11-02: Czech text is saved without diacritics, hrac not hráč, in code, resx and .def. Shipped, #1006, branch czech-no-diacritics: every string literal, both resx files and hand-written .scp and .def go to plain ASCII. Strings already turned to U+FFFD come back from the Czech resx or by hand, one marker for each lost letter. Comments in .cs stay. `°` in Role and RoleKey is syntax and stays.
 
+Shipped, #1009, branch ring-quest-rolling: the ring quest is the last 3 days, rolling, the user's call against Erebor. Times of qualifying kills are kept for Mordor players, no start click.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Persistence;
@@ -26,8 +28,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey deathsTK = TagKey.Acquire("_ringDeaths_");
 		private static readonly TagKey nextDecayTK = TagKey.Acquire("_ringNextDecay_");
 		private static readonly TagKey killsTK = TagKey.Acquire("_playerKillsTotal_");
-		private static readonly TagKey questKillsTK = TagKey.Acquire("_nazgulQuestKills_");
-		private static readonly TagKey questEndsTK = TagKey.Acquire("_nazgulQuestEnds_");
+		internal static readonly TagKey questKillTimesTK = TagKey.Acquire("_nazgulQuestKillTimes_");
 		private static readonly TagKey[] victimTKs = {
 			TagKey.Acquire("_ringVictim0_"), TagKey.Acquire("_ringVictim1_"), TagKey.Acquire("_ringVictim2_")
 		};
@@ -107,8 +108,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (TagKey key in victimTKs) {
 				ring.RemoveTag(key);
 			}
-			ch.RemoveTag(questKillsTK);
-			ch.RemoveTag(questEndsTK);
+			ch.RemoveTag(questKillTimesTK);
 			RingTimer timer = new RingTimer();
 			ring.AddTimer(ringTimerTK, timer);
 			timer.DueInSeconds = SecondsInMinute;
@@ -221,9 +221,11 @@ namespace SteamEngine.CompiledScripts {
 		/// on either side (i_checkstats_timer).</summary>
 		public static void OnDeath(Player victim, Character killer, bool recentlyDead = false) {
 			Player killingPlayer = killer as Player;
-			if ((killingPlayer != null) && (killingPlayer.GetTag(questEndsTK) != null) && (victim.Level >= RealmSettings.instance.ringMinLevel) &&
+			if ((killingPlayer != null) && (killingPlayer.Realm == Realm.Mordor) && (victim.Level >= RealmSettings.instance.ringMinLevel) &&
 					(victim.Realm == Realm.Gondor) && !Professions.HasProfession(victim, Professions.Craftsman)) {
-				killingPlayer.SetTag(questKillsTK, Int(killingPlayer, questKillsTK) + 1);
+				List<double> times = RecentQuestKills(killingPlayer);
+				times.Add(Globals.TimeInSeconds);
+				killingPlayer.SetTag(questKillTimesTK, string.Join(";", times.Select(time => time.ToString("R", CultureInfo.InvariantCulture))));
 			}
 			if (recentlyDead) {
 				return;
@@ -246,22 +248,33 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>i_nazgul_quest: a ring has to be earned first. True if this player has earned it.</summary>
+		/// <summary>#1009 - the user's call: Erebor's i_nazgul_quest counted from a click on the shrine for 3 days and then wiped
+		/// the count. Here a Mordor player's qualifying kills are always remembered, and those of the last days are what counts.</summary>
+		internal static List<double> RecentQuestKills(Player player) {
+			List<double> recent = new List<double>();
+			double oldest = Globals.TimeInSeconds - (RealmSettings.instance.ringQuestDays * SecondsInDay);
+			if (player.GetTag(questKillTimesTK) is string times) {
+				foreach (string time in times.Split(';')) {
+					double when = double.Parse(time, CultureInfo.InvariantCulture);
+					if (when >= oldest) {
+						recent.Add(when);
+					}
+				}
+			}
+			return recent;
+		}
+
 		public static bool PassedQuest(Player player) {
 			RealmSettings settings = RealmSettings.instance;
 			if (settings.ringQuestKills <= 0) {
 				return true;
 			}
-			if (Time(player, questEndsTK) < Globals.TimeInSeconds) {
-				player.SetTag(questEndsTK, Globals.TimeInSeconds + (settings.ringQuestDays * SecondsInDay));
-				player.SetTag(questKillsTK, 0);
-				player.SysMessage("Aby jsi mohl ziskat prsten, musis nejprve prokazat oddanost bojem proti gondoru.");
-				return false;
+			int kills = RecentQuestKills(player).Count;
+			if (kills >= settings.ringQuestKills) {
+				return true;
 			}
-			if (Int(player, questKillsTK) < settings.ringQuestKills) {
-				player.SysMessage("Musis se vic snazit");
-				return false;
-			}
-			return true;
+			player.SysMessage((kills == 0) ? "Aby jsi mohl ziskat prsten, musis nejprve prokazat oddanost bojem proti gondoru." : "Musis se vic snazit");
+			return false;
 		}
 	}
 
