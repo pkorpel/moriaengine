@@ -12,7 +12,7 @@
 //TriggerGroup/Plugin attached, so Activate() is a safe no-op; ready for a genuine
 //implementation later without touching content again.
 
-[PassiveAbilityDef a_tevent_e_acid_damage]
+[AcidAbilityDef a_tevent_e_acid_damage]
 Name = "(e_acid_damage)"
 
 [PassiveAbilityDef a_tevent_e_air]
@@ -43,7 +43,7 @@ Name = "(e_balrog)"
 [PassiveAbilityDef a_tevent_e_beridornecro]
 Name = "(e_beridornecro)"
 
-[PassiveAbilityDef a_tevent_e_berserk_potvora]
+[BerserkAbilityDef a_tevent_e_berserk_potvora]
 Name = "(e_berserk_potvora)"
 
 [PassiveAbilityDef a_tevent_e_berserkbrain_distance_fix]
@@ -148,7 +148,7 @@ Name = "(e_fire_lord)"
 [PassiveAbilityDef a_tevent_e_frosty_wave]
 Name = "(e_frosty_wave)"
 
-[PassiveAbilityDef a_tevent_e_getwpn]
+[WeaponKnockoutAbilityDef a_tevent_e_getwpn]
 Name = "(e_getwpn)"
 
 [PassiveAbilityDef a_tevent_e_goblin_treasure]
@@ -183,7 +183,7 @@ Name = "(e_hcn_npcpoison)"
 [PassiveAbilityDef a_tevent_e_hcn_teletotarget]
 Name = "(e_hcn_teletotarget)"
 
-[PassiveAbilityDef a_tevent_e_healdrinker]
+[HealDrinkerAbilityDef a_tevent_e_healdrinker]
 Name = "(e_healdrinker)"
 
 //#827 - real behavior in HealerAbilityDef (MonsterSpecialAttacks/) - a ghost clicking the healer is resurrected.
@@ -222,7 +222,7 @@ Name = "(e_kaloc_help)"
 [LifeLeechAbilityDef a_tevent_e_lifeleech]
 Name = "Life Leech"
 
-[PassiveAbilityDef a_tevent_e_lifeleech_vampire]
+[VampireLeechAbilityDef a_tevent_e_lifeleech_vampire]
 Name = "(e_lifeleech_vampire)"
 
 //#797 batch 4: upgraded from a bare stub to a real LightningsAbilityDef
@@ -416,7 +416,7 @@ Name = "Stamina Drain"
 [StunAbilityDef a_tevent_e_npc_stun]
 Name = "Stunning Strike"
 
-[PassiveAbilityDef a_tevent_e_npc_summoner]
+[BattleSummonerAbilityDef a_tevent_e_npc_summoner]
 Name = "(e_npc_summoner)"
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
@@ -490,7 +490,7 @@ phoenixRebornShare = 750
 [PhoenixFireAbilityDef a_tevent_e_phoenix_fire]
 Name = "Phoenix Fire"
 
-[PassiveAbilityDef a_tevent_e_potiondrinker]
+[PotionDrinkerAbilityDef a_tevent_e_potiondrinker]
 Name = "(e_potiondrinker)"
 
 [PassiveAbilityDef a_tevent_e_ps_fanatik]
