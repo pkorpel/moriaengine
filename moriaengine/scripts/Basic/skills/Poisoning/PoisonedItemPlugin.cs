@@ -30,12 +30,16 @@ namespace SteamEngine.CompiledScripts {
 		public static PluginKey poisonPK = PluginKey.Acquire("_poison_");
 
 		internal static void Bind(Item item, PoisonPotion bottle, int power, int doses) {
+			Bind(item, bottle.Kind, bottle.Name, power, doses);
+		}
+
+		internal static void Bind(Item item, PoisonKind kind, string name, int power, int doses) {
 			item.DeletePlugin(poisonPK);
 			PoisonedItemPlugin plugin = (PoisonedItemPlugin) PoisonedItemPluginDef.instance.Create();
 			plugin.poisonPower = power;
 			plugin.poisonDoses = doses;
-			plugin.poisonKind = bottle.Kind;
-			plugin.poisonName = bottle.Name;
+			plugin.poisonKind = kind;
+			plugin.poisonName = name;
 			item.AddPlugin(poisonPK, plugin);
 		}
 
@@ -71,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>e_poisonitem's @userclick.</summary>
 		public void On_Click(Character clicker) {
 			if (this.poisonPower > 0) {
-				clicker.SysMessage(Loc<PoisonedItemLoc>.Get(clicker.Language).Poisoned);
+				((Item) this.Cont).ClickMessage(clicker, Loc<PoisonedItemLoc>.Get(clicker.Language).Poisoned);
 			}
 		}
 
