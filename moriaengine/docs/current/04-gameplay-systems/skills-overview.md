@@ -210,3 +210,7 @@ Not ported: traps, poison fields, the dungeon and quest items that poison, the c
 ## Information skills (#962)
 
 Anatomy, Arms Lore, Item ID, Eval Int, Forensics and Taste ID are Sphere's OnSkill_Info in `InformationSkillDef`: a cursor with no reach check, a difficulty from the target (2 on yourself, otherwise 0-59), and the result after the skill's delay. No gain by use. Sphere's English texts stay, as they did on Erebor; the prompts and failures are Erebor's Czech. Item ID first says who made a thing and, sometimes, its durability; Taste ID says whether a thing is poisoned and by what. Nothing has a price yet, so Item ID always reports no resale value. Forensics reads the killer and time of death that `Corpse.NoteDeath` records; carved corpses aren't told apart.
+
+## Begging, Spirit Speak, Herding, Camping (#962)
+
+As Sphere, with no gain by use. Begging is a roll against the target's Int that gives nothing. Spirit Speak rolls against 0-89 for four minutes of contact, which opens nothing yet as ghosts' speech isn't garbled here. Herding starts by double clicking a crook: pick an animal, then a spot, and on a roll against about its Int it walks there; a GM's creature goes at once. Camping is used by double clicking kindling on the ground, which makes a fire for 4 minutes and one more per stick. Remove Trap waits for Erebor's traps, none are ported.

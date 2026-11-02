@@ -14,6 +14,9 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
+using SteamEngine.Common;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -21,8 +24,39 @@ namespace SteamEngine.CompiledScripts {
 
 	}
 
+	/// <summary>#962 - Sphere's Use_Kindling: on the ground a roll against 0-29 of Camping makes a fire that burns 4
+	/// minutes and one more per stick. No gain by use.</summary>
 	public class t_kindling : CompiledTriggerGroup {
+		private const int MostDifficulty = 30, DifficultyScale = 10, FireSound = 0x226, BaseMinutes = 4;
 
+		public TriggerResult On_DClick(Item self, Character clicker) {
+			SmallSkillsLoc texts = Loc<SmallSkillsLoc>.Get(clicker.Language);
+			if (!(self.Cont is null)) {
+				clicker.SysMessage(texts.CantLightHere);
+			} else if (!SkillDef.GetBySkillName(SkillName.Camping).CheckSuccess(clicker, Globals.dice.Next(MostDifficulty) * DifficultyScale)) {
+				clicker.SysMessage(texts.FireFailed);
+			} else {
+				Item fire = (Item) ThingDef.GetByDefname("i_campfire").Create(self.X, self.Y, self.Z, self.M);
+				fire.Flag_NonMovable = true;
+				fire.Sound(FireSound);
+				fire.AddTimer(CampfireTimer.Key, new CampfireTimer()).DueInSeconds = (BaseMinutes + self.Amount) * 60;
+				self.Delete();
+			}
+			return TriggerResult.Cancel;
+		}
+	}
+
+	[SaveableClass, DeepCopyableClass]
+	public class CampfireTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_campfire_");
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public CampfireTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			((Thing) cont).Delete();
+		}
 	}
 
 	public class t_campfire : CompiledTriggerGroup {
