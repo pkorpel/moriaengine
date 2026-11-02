@@ -70,7 +70,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		[SaveableData]
-		public double baseDelaySeconds = 2.0; //#533 - was 20.0, changed per user request
+		public double baseDelaySeconds = 2.0; //#962 - i_delayer's timerd 20: tenths, the 20 seconds of #336 was a misreading
+
+		/// <summary>Sphere's Calc_GetRandVal(5) + 2 swings of a pick or a hatchet, each at the skill's own delay.</summary>
+		[SaveableData]
+		public int leastStrokes = 2;
+
+		[SaveableData]
+		public int mostStrokes = 6;
 
 		[SaveableData]
 		public double antiMacroThresholdPercent = 100.0;

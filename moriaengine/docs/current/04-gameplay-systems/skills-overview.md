@@ -214,3 +214,9 @@ Anatomy, Arms Lore, Item ID, Eval Int, Forensics and Taste ID are Sphere's OnSki
 ## Begging, Spirit Speak, Herding, Camping (#962)
 
 As Sphere, with no gain by use. Begging is a roll against the target's Int that gives nothing. Spirit Speak rolls against 0-89 for four minutes of contact, which opens nothing yet as ghosts' speech isn't garbled here. Herding starts by double clicking a crook: pick an animal, then a spot, and on a roll against about its Int it walks there; a GM's creature goes at once. Camping is used by double clicking kindling on the ground, which makes a fire for 4 minutes and one more per stick. Remove Trap waits for Erebor's traps, none are ported.
+
+## Gathering stages (#962)
+
+Mining, Lumberjacking and Fishing start with Erebor's f_tezba_pauza (`Gathering.Begin`): a try within 2 s of the last says "Jeste nemuzes pouzit skill." and pushes the next one to 4 s; a rider is dismounted; the dark can refuse; hunger hurts; hiding ends; the spot must be within 3 tiles and in sight. Above 100.0 the 2 s shrink by 0.03 s a percent. Mining and Lumberjacking then swing 3 to 7 times at the skill's 1.0 s, Sphere's strokes, before the roll, and mining wears the tool once a try. Fishing has one stroke at 2.5 s with a splash, and the catch lands at your feet. A held tool is still required, a decision of ours (#370). Failures are Erebor's overhead lines.
+
+Not ported: the craft class's better material (ra_vigour), the Elven wood rule, prisoners' labor limits, the statistics.

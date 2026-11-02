@@ -59,10 +59,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			//#336 - PhaseStart already set the generic curve-based delay just before this
-			//trigger fired; overwrite it with the real anti-macro formula (flat 20s, reduced
-			//above skill 100.0%, matches funkce.scp's own real behavior exactly).
-			skillSeqArgs.DelayInSeconds = GatheringDelaySystem.GetDelaySeconds(skillSeqArgs.Self, SkillName.Mining);
+			Character self = skillSeqArgs.Self;
+			if (!Gathering.Begin(self, skillSeqArgs.Target1, SkillName.Mining)) {
+				return TriggerResult.Cancel;
+			}
+			(self.FindLayer(LayerNames.Hand1) as Destroyable ?? self.FindLayer(LayerNames.Hand2) as Destroyable)?.TakeWear(1, self); //Sphere's once a try
+			Gathering.RollStrokes(self);
 			return TriggerResult.Continue;
 		}
 
@@ -72,6 +74,11 @@ namespace SteamEngine.CompiledScripts {
 
 			if (!IsValidVein(self, targetted)) {
 				skillSeqArgs.PhaseAbort();
+				return TriggerResult.Cancel;
+			}
+
+			self.Sound((Globals.dice.Next(2) == 0) ? 0x126 : 0x125);
+			if (Gathering.NextStroke(skillSeqArgs)) {
 				return TriggerResult.Cancel;
 			}
 
@@ -143,7 +150,8 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			self.SysMessage(Loc<MiningLoc>.Get(self.Language).fail);
+			GatheringLoc texts = Loc<GatheringLoc>.Get(self.Language);
+			self.Message(self.IsFemale ? texts.MiningFailFemale : texts.MiningFailMale);
 			MonsterAmbushSystem.TryAmbush(self.P()); //#335 - real fixresource rolls this on every gather action, not just success
 			SkillGainSystem.TryGainSkill(self, SkillName.Mining, -System.Convert.ToInt32(skillSeqArgs.Param2)); //#328 - real Erebor gains on fail too
 		}
