@@ -97,14 +97,6 @@ nothing confirms it's actually wrong (the generic `SkillDef.CheckSuccess` S-curv
 this way by other skills too) - flagged as worth a second look if Hiding's success rate
 ever gets reported as feeling off, not something to "fix" pre-emptively.
 
-## Known gap: Detect Hidden is a bare skill check
-
-`DetectHiddenSkillDef` is just `CheckSuccess(self, target.Hiding)` - no contest mechanic at
-all. Erebor's own reference implementation has a full contest (a sector-darkness-scaled
-stealth bonus for the hider, a distance penalty for the detector, and a per-detector
-re-detection cooldown), none of which is ported. This is a real, confirmed content/mechanic
-gap, not a design decision - it's just never been picked up.
-
 ## Skill checks and gaining by use (#962)
 
 Sphere's numbers. A check is an S-curve of skill minus difficulty with a variance of 10.0: equal is 50%, 10.0 over is 75%, 10.0 under is 25%. Before #962 the variance was 25.0, so skills are less forgiving both ways now.

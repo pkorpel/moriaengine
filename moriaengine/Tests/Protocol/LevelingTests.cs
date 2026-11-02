@@ -138,8 +138,8 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("TITAN_EXPERIENCE: defname=c_titan_lord", mark, TimeSpan.FromSeconds(10)));
 				string output = this.fixture.GameOutputSnapshot().Substring(mark);
 				Assert.Contains("TITAN_EXPERIENCE: defname=c_titan min=110 max=120", output);
-				Assert.Contains("TITAN_EXPERIENCE: defname=c_titan_mage min=130 max=145", output);
-				Assert.Contains("TITAN_EXPERIENCE: defname=c_titan_lord min=160 max=180", output);
+				Assert.Contains("TITAN_EXPERIENCE: defname=c_titan_mage min=140 max=150", output);
+				Assert.Contains("TITAN_EXPERIENCE: defname=c_titan_lord min=180 max=195", output);
 			}
 		}
 
