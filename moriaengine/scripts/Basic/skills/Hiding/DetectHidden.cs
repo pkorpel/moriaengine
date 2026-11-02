@@ -43,7 +43,7 @@ namespace SteamEngine.CompiledScripts {
 		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			DetectLoc texts = Loc<DetectLoc>.Get(self.Language);
-			HidingSkillDef.Spoil(self);
+			ScriptedSkills.Stop(self);
 			HidingSkillDef.Reveal(self);
 			object next = self.GetTag(nextDetectTK);
 			if (ParalyzeEffectPluginDef.IsParalyzed(self)) {

@@ -15,25 +15,45 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System.Collections.Generic;
+using System.Globalization;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
-	/// <summary>
-	/// Taming (enhancements #21) - previously only a SkillName enum entry and an @Fail-only
-	/// shell, no logic at all. Taming a valid NPC (NPCDef.TamingDifficulty &gt;= 0, nothing
-	/// else's pet already) sets Character.ControlMaster, which NPCAiTimer's new Following state
-	/// and NPC.ShouldAggroOn (tamed pets don't pick their own fights) both key off of.
-	///
-	/// Deliberately out of scope here: pet commands (guard/stay/kill/release), a pet-ownership
-	/// transfer/abandon flow, and a pet list dialog - this pass is "taming produces a pet that
-	/// follows you around and doesn't fight on its own," not the full command suite. Natural
-	/// follow-ups once this is in use.
-	/// </summary>
+	/// <summary>#962 - Erebor's systems/skills/taming.scp: a timer of 3-7 strokes of talk, not a skill stroke. An NPC's
+	/// taming is its rolled skill (act.taming), a crook of the right wood is needed from the first animal on, and a
+	/// spawned mount also teaches its tamer, see MountKnowledge. A pet is a ControlMaster, Sphere's memory_ipet.</summary>
 	[ViewableClass]
 	public class TamingSkillDef : SkillDef {
-		private const int MaxReach = 3;
+		internal const int Reach = 5;
+
+		private const int ElfSpeakerSkill = 950;
+		private static readonly TagKey tamedTK = TagKey.Acquire("tamed");
+
+		//f_crook_test: above this much taming, a crook of this wood or better
+		private static readonly KeyValuePair<int, string>[] crooks = {
+			new KeyValuePair<int, string>(1200, "eben"), new KeyValuePair<int, string>(1000, "mahagon"),
+			new KeyValuePair<int, string>(800, "teak"), new KeyValuePair<int, string>(600, "oak"),
+			new KeyValuePair<int, string>(400, "chestnut"), new KeyValuePair<int, string>(0, "spruce")
+		};
+
+		private static readonly string[] phrases = {
+			"Hodny {0}.", "Budes muj mazlicek.", "Pojd sem {0}.", "Budu te krmit {0}.", "Nikdy nebudes hladovet.",
+			"Budu se o tebe pekne starat.", "Neublizim ti {0}.", "Budu na tebe hodny.", "Malej, hodnej, pojd ke mne.", "Tak je hodny.",
+			"{0} pojd ke mne.", "No ty jsi ale krasne zvire!", "Mas hlad? Pojd sem pojd...", "Pojd bliz! Neboj se...", "{0} stuuuj !",
+			"Klid, klid, taaak!", "U mne ti bude dobre.", "Pobez ke mne, nemas se ceho bat.", "Neboj se me, tak je hodny.", "Ty jsi ale krasavec.",
+			"Hoou pojd bliz krasavce.", "No pojd sem {0}.", "Mam pro tebe krasne misto.", "Nemej strach, pojd bliz."
+		};
+
+		private static readonly string[] elfPhrases = {
+			"Daro !", "Avon mathea le !", "Orenya linda cenwelyo.", "Nanye alassea omentielvanen.", "Nalye taura ohtar.",
+			"Nalye vanima.", "Indolya na ve rava.", "Vanesselye sile calimave.", "Merelye apsa?", "Hauta!",
+			"Tula sinome.", "Ava aista.", "Hilya inye.", "Sintanye tuolya mahtesse.", "Tula yo ni vantien ar eleninnar tirien."
+		};
 
 		public TamingSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -49,93 +69,290 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			return TriggerResult.Continue;
+			Start(skillSeqArgs.Self, (Character) skillSeqArgs.Target1);
+			return TriggerResult.Cancel;
 		}
 
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			NPC targetted = skillSeqArgs.Target1 as NPC;
-
-			if (!IsValidTameTarget(self, targetted)) {
-				skillSeqArgs.PhaseAbort();
-				return TriggerResult.Cancel;
-			}
-
-			double difficulty = ((NPCDef) targetted.Def).TamingDifficulty;
-			skillSeqArgs.Success = this.CheckSuccess(self, (int) difficulty);
-			return TriggerResult.Continue;
-		}
-
-		internal static bool IsValidTameTarget(Character self, NPC targetted) {
-			if ((targetted == null) || !targetted.IsAliveAndValid) {
-				return false;
-			}
-			if (Point2D.GetSimpleDistance(self, targetted) > MaxReach) {
-				return false;
-			}
-			if (!self.CanInteractWith(targetted).Allow) {
-				return false;
-			}
-			if (targetted.ControlMaster != null) {
-				return false; //already somebody's pet
-			}
-			return ((NPCDef) targetted.Def).TamingDifficulty >= 0;
+			return TriggerResult.Cancel;
 		}
 
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			NPC targetted = (NPC) skillSeqArgs.Target1;
-
-			targetted.ControlMaster = self;
-			targetted.Flag_WarMode = false;
-			self.SysMessage(Loc<TamingLoc>.Get(self.Language).success);
-			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.AnimalTaming, SkillAdvancementSettings.instance.tamingAdvRate); //#329
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			self.SysMessage(Loc<TamingLoc>.Get(self.Language).fail);
-			//#329 - real Erebor source (taming.scp) calls SKILLGAIN on both outcomes, not just
-			//success as #329's own issue text summarized - matching the real mechanic here since
-			//every other skill in this pass (Lockpicking included) also gains on both outcomes.
-			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.AnimalTaming, SkillAdvancementSettings.instance.tamingAdvRate);
 		}
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
-			Character self = skillSeqArgs.Self;
-			self.SysMessage(Loc<TamingLoc>.Get(self.Language).abort);
+		}
+
+		/// <summary>stopscriptedskills: the taming under way ends at once, or would: using Taming again takes the mark back.</summary>
+		internal static void Spoil(Character self) {
+			TamingTimer timer = self.GetTimer(TamingTimer.Key) as TamingTimer;
+			if (timer != null) {
+				timer.interrupted = true;
+				timer.DueInSeconds = 0;
+			}
+		}
+
+		//f_tamingstart
+		private static void Start(Character self, Character target) {
+			HidingSkillDef.Reveal(self);
+			PlayerHunger.HurtIfStarving(self);
+			TamingTimer running = self.GetTimer(TamingTimer.Key) as TamingTimer;
+			if (running != null) {
+				running.interrupted = false;
+				self.SysMessage(Loc<TamingLoc>.Get(self.Language).mustWait);
+			} else if (WorkLight.CheckWithMessage(self)) {
+				Tame(self, target);
+			}
+		}
+
+		//taming_TAME
+		private static void Tame(Character self, Character target) {
+			TamingLoc texts = Loc<TamingLoc>.Get(self.Language);
+			NPC npc = target as NPC;
+			int taming = target.GetSkill(SkillName.AnimalTaming);
+			if (!self.CanSeeLOS(target).Allow) {
+				self.SysMessage(texts.cantSee);
+			} else if (!HasCrookFor(self, taming)) {
+				self.SysMessage(IsCrook(self.FindLayer(LayerNames.Hand2)) ? texts.betterCrook : texts.needCrook);
+			} else if ((npc == null) || (taming == 0) || SummonSpellDef.IsSummonedCreature(npc)) {
+				self.SysMessage(texts.cantTame);
+			} else if (self.GetSkill(SkillName.AnimalTaming) < taming) {
+				self.SysMessage(texts.tooWild);
+			} else if (self.GetSkill(SkillName.AnimalLore) < npc.GetSkill(SkillName.AnimalLore)) {
+				self.SysMessage(texts.noIdea);
+			} else if (npc.ControlMaster != null) {
+				self.SysMessage(texts.alreadyTame);
+			} else if (ClothMaking.Count(npc.Backpack, (ItemDef) ThingDef.GetByDefname("i_rune_summon_creature")) > 0) {
+				self.SysMessage(texts.devoted);
+			} else if (Point2D.GetSimpleDistance(self, npc) > Reach) {
+				self.SysMessage(texts.tooFar);
+			} else {
+				Talk(self, npc);
+				TamingTimer timer = new TamingTimer();
+				timer.target = npc;
+				timer.strokes = Globals.dice.Next(TamingTimer.LeastStrokes, TamingTimer.MostStrokes + 1);
+				self.AddTimer(TamingTimer.Key, timer);
+				timer.PeriodInSeconds = TamingTimer.SecondsAStroke;
+				timer.DueInSeconds = TamingTimer.SecondsAStroke;
+			}
+		}
+
+		internal static void Talk(Character self, NPC npc) {
+			Player player = self as Player;
+			if ((player != null) && (player.Realm == Realm.Gondor)
+					&& ((player.Race == Race.Elf) || (player.GetSkill(SkillName.AnimalTaming) > ElfSpeakerSkill))) {
+				self.Say(elfPhrases[Globals.dice.Next(elfPhrases.Length)]);
+			} else {
+				self.Say(string.Format(CultureInfo.InvariantCulture, phrases[Globals.dice.Next(phrases.Length)], npc.Name));
+			}
+		}
+
+		private static bool IsCrook(AbstractItem held) {
+			return (held is Item item) && CraftingSkillDef.IsOfType(item, "t_weapon_mace_crook");
+		}
+
+		//f_crook_test and hasCrook
+		private static bool HasCrookFor(Character self, int taming) {
+			if (taming <= 0) {
+				return true;
+			}
+			if (self.IsGM) {
+				return true;
+			}
+			AbstractItem held = self.FindLayer(LayerNames.Hand2);
+			if (!IsCrook(held)) {
+				return false;
+			}
+			string wood = System.Array.Find(crooks, crook => taming > crook.Key).Value;
+			return ConstantOf("crook_" + held.Def.PrettyDefname) >= ConstantOf("material_" + wood);
+		}
+
+		private static int ConstantOf(string name) {
+			Constant constant = Constant.GetByName(name);
+			return (constant == null) ? 0 : System.Convert.ToInt32(constant.Value, CultureInfo.InvariantCulture);
+		}
+
+		/// <summary>flag_spawned: its spawn gem, null when it has none or has left it.</summary>
+		internal static Thing SpawnOf(NPC npc) {
+			return npc.GetTag(spawnGemTK) as Thing;
+		}
+
+		private static readonly TagKey spawnGemTK = TagKey.Acquire("spawnGem");
+
+		internal static bool Succeeds(Character self, NPC npc) {
+			return (Globals.dice.Next(1001) < (self.GetSkill(SkillName.AnimalTaming) - npc.GetSkill(SkillName.AnimalTaming))) || npc.HasTag(tamedTK);
+		}
+
+		//taming_success
+		internal static void MakePet(Character self, NPC npc) {
+			Remove(npc, "i_nores");
+			npc.ControlMaster = self;
+			npc.Flag_WarMode = false;
+			PetHungerTimer.LoseFood(npc, 1);
+			npc.Karma = 0;
+			LeaveSpawn(npc);
+			SkillSequenceArgs.AbortSkill(npc);
+			self.SysMessage(Loc<TamingLoc>.Get(self.Language).success);
+		}
+
+		internal static bool Remove(NPC npc, string defname) {
+			ItemDef mark = (ItemDef) ThingDef.GetByDefname(defname);
+			foreach (AbstractItem item in npc.Backpack) {
+				if (item.Def == mark) {
+					item.Delete();
+					return true;
+				}
+			}
+			return false;
+		}
+
+		//memory_ispawned goes: the spawn counts it as gone and makes another
+		private static void LeaveSpawn(NPC npc) {
+			if (SpawnOf(npc) != null) {
+				npc.TryTrigger(TriggerKey.Acquire("leaveSpawn"), new ScriptArgs());
+				npc.RemoveTag(spawnGemTK);
+				npc.RemoveTriggerGroup(TriggerGroup.GetByDefname("e_spawned_char"));
+			}
 		}
 	}
 
 	public class Targ_Tame : CompiledTargetDef {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			SkillSequenceArgs skillSeq = (SkillSequenceArgs) parameter;
-			NPC npc = targetted as NPC;
-			if (!TamingSkillDef.IsValidTameTarget(self, npc)) {
-				self.SysMessage(Loc<TamingLoc>.Get(self.Language).cantTameThat);
-				return TargetResult.RestartTargetting;
-			}
-			skillSeq.Target1 = npc;
+			skillSeq.Target1 = targetted;
 			skillSeq.PhaseStart();
 			return TargetResult.Done;
 		}
 
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
-			self.SysMessage(Loc<TamingLoc>.Get(self.Language).cantTameThat);
-			return TargetResult.RestartTargetting;
+			return TargetResult.Done;
 		}
 
 		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
-			self.SysMessage(Loc<TamingLoc>.Get(self.Language).cantTameThat);
-			return TargetResult.RestartTargetting;
+			self.SysMessage(Loc<TamingLoc>.Get(self.Language).cantSee);
+			return TargetResult.Done;
+		}
+	}
+
+	/// <summary>i_taming: every 2 s more talk, then the roll. A hit, another skill or a spell ends it; a spawned
+	/// animal led more than 70 tiles from home goes back. The word is taming_failure's.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class TamingTimer : BoundTimer {
+		public static readonly TimerKey Key = TimerKey.Acquire("_taming_");
+
+		internal const int LeastStrokes = 3, MostStrokes = 7;
+		internal const double SecondsAStroke = 2;
+
+		private const int SpokenOneIn = 3, HomeLeash = 70, MountTaming = 300, QuickRetrySeconds = 3;
+		private const int LeastBonus = 500, MostBonus = 600, LeastFailBonus = 300, MostFailBonus = 400, PlainBonus = 100;
+		private static readonly TagKey lastAttemptTK = TagKey.Acquire("LastTamingAttemp");
+
+		[SaveableData, CopyableData]
+		public NPC target;
+
+		[SaveableData, CopyableData]
+		public int strokes;
+
+		[SaveableData, CopyableData]
+		public bool interrupted;
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public TamingTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			Character self = (Character) cont;
+			if (this.Act(self)) {
+				this.Delete();
+			}
+		}
+
+		//true when it's over
+		private bool Act(Character self) {
+			NPC npc = this.target;
+			if ((npc == null) || npc.IsDeleted) {
+				return true;
+			}
+			if (self.IsGM) {
+				TamingSkillDef.MakePet(self, npc);
+				return true;
+			}
+			if (TamingSkillDef.Remove(npc, "i_poresu")) {
+				TamingSkillDef.MakePet(self, npc);
+				return true;
+			}
+			Thing home = TamingSkillDef.SpawnOf(npc);
+			if ((home != null) && ((System.Math.Abs(npc.X - home.X) > HomeLeash) || (System.Math.Abs(npc.Y - home.Y) > HomeLeash))) {
+				npc.P(home);
+			}
+			TamingLoc texts = Loc<TamingLoc>.Get(self.Language);
+			if (!self.CanSeeLOS(npc).Allow) {
+				self.SysMessage(self.IsFemale ? texts.lostSightFemale : texts.lostSightMale);
+			} else if (this.interrupted) {
+				self.SysMessage(texts.interrupted);
+				object last = self.GetTag(lastAttemptTK);
+				if ((last is double earlier) && (earlier >= Globals.TimeInSeconds)) {
+					Logger.WriteWarning(string.Concat(self.Name, " is taming ", npc.Name, " suspiciously fast at ", self.P().ToString(), ": gaining by fizzing on purpose?"));
+				}
+				self.SetTag(lastAttemptTK, Globals.TimeInSeconds + QuickRetrySeconds);
+			} else if (npc.ControlMaster != null) {
+				self.SysMessage(texts.alreadyTame);
+			} else if (Point2D.GetSimpleDistance(self, npc) > TamingSkillDef.Reach) {
+				self.SysMessage(string.Format(texts.targetTooFar, npc.Name));
+			} else if (this.strokes > 0) {
+				if (Globals.dice.Next(SpokenOneIn) == 0) {
+					TamingSkillDef.Talk(self, npc);
+				}
+				this.strokes--;
+				return false;
+			} else {
+				Finish(self, npc);
+			}
+			return true;
+		}
+
+		private static void Finish(Character self, NPC npc) {
+			double bonus = PlainBonus;
+			int taming = npc.GetSkill(SkillName.AnimalTaming);
+			bool spawned = TamingSkillDef.SpawnOf(npc) != null;
+			if (TamingSkillDef.Succeeds(self, npc)) {
+				if ((taming >= MountTaming) && spawned) {
+					bonus = Globals.dice.Next(LeastBonus, MostBonus + 1);
+					if (self is Player player) {
+						MountKnowledge.Learn(player, npc);
+					}
+				}
+				TamingSkillDef.MakePet(self, npc);
+			} else {
+				if ((taming > MountTaming) && spawned) {
+					bonus = Globals.dice.Next(LeastFailBonus, MostFailBonus + 1);
+				}
+				self.SysMessage(Loc<TamingLoc>.Get(self.Language).failed);
+			}
+			SkillGainSystem.TryGainSkillCustomFormula(self, SkillName.AnimalTaming, SkillAdvancementSettings.instance.tamingAdvRate, bonus);
 		}
 	}
 
 	public class TamingLoc : CompiledLocStringCollection<TamingLoc> {
-		public string whatToTame = "What would you like to tame?";
-		public string cantTameThat = "You can't tame that.";
-		public string fail = "You fail to tame the creature.";
-		public string success = "You have tamed the creature.";
-		public string abort = "You stop trying to tame the creature.";
+		public string whatToTame = "Ktere zvire si prejes ochocit?";
+		public string mustWait = "You must wait to perform another action.";
+		public string cantSee = "Nevidis na cil";
+		public string betterCrook = "Na ochoceni potrebujes lepsi pasteveckou hul.";
+		public string needCrook = "Na ochocovani zvere potrebujes pasteveckou hul.";
+		public string cantTame = "Tohle nemuzes ochocit.";
+		public string tooWild = "Zvire je prilis divoke.";
+		public string noIdea = "Nemas nejmensi poneti, jak toto zvire ochocit.";
+		public string alreadyTame = "Zvire je jiz ochocene.";
+		public string devoted = "Tohle zvire je oddane nekomu jinemu a nelze jej ochocit.";
+		public string tooFar = "Jsi prilis daleko.";
+		public string targetTooFar = "{0} je prilis daleko.";
+		public string lostSightMale = "Ztratil jsi svuj cil z dohledu.";
+		public string lostSightFemale = "Ztratila jsi svuj cil z dohledu.";
+		public string interrupted = "Ochocovani bylo preruseno.";
+		public string failed = "Nepovedlo se ti zvire ochocit.";
+		public string success = "Zda se, ze te zvire prijalo za sveho pana.";
 	}
 }

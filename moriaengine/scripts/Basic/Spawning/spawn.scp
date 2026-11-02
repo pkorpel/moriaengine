@@ -228,3 +228,11 @@ gem.tag.spawnedCount = <gem.tag.spawnedCount> - 1
 if(!gem.HasTimer(%SpawnTimer)) //add a new timer only if the older one is not present
  gem.AddTimer(%SpawnTimer, gem.tag.spawnInfo.RollRespawnDelaySeconds(),@spawnNow) //initialize a new timer - #206/#210, see @spawnNow's own comment
 endif
+
+//#962 - tamed: the same, it just lives on
+on=@leaveSpawn
+arg gem = tag.spawnGem
+gem.tag.spawnedCount = <gem.tag.spawnedCount> - 1
+if(!gem.HasTimer(%SpawnTimer)) //add a new timer only if the older one is not present
+ gem.AddTimer(%SpawnTimer, gem.tag.spawnInfo.RollRespawnDelaySeconds(),@spawnNow) //initialize a new timer - #206/#210, see @spawnNow's own comment
+endif

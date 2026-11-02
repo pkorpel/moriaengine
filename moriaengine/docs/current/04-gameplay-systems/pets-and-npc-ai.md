@@ -94,7 +94,7 @@ shared state, and replanned from scratch every think-tick. Now:
 
 ## Taming and pet ownership
 
-Taming a valid target sets the NPC's `ControlMaster` to the tamer - verified via a real
+See "Taming" in skills-overview.md for the rules. Taming sets the NPC's `ControlMaster` to the tamer - verified via a real
 end-to-end gathering/taming test (`GatheringTests.TamingSetsControlMaster`).
 
 `Character.IsPetOf(cre)` is the general ownership check - Sphere 0.99z8's `NPC_IsOwnedBy`

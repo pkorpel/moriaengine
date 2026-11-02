@@ -36,7 +36,7 @@ namespace SteamEngine.CompiledScripts {
 	/// and sent anew there.</summary>
 	public class D_Boosts : CompiledGumpDef {
 		private const int Width = 460, ListRowHeight = 48, TextRowHeight = 20, StripStep = 55, StripRow = 86, StripColumns = 10, ButtonsWidth = 110;
-		private const int RefreshButton = 1, CompactButton = 2, PositionButton = 3, LiveButton = 4, SightButton = 5;
+		private const int RefreshButton = 1, CompactButton = 2, PositionButton = 3, LiveButton = 4, SightButton = 5, MountsButton = 6;
 		private const int TitleHue = 0x481, TextHue = 2301, GoodHue = 67, BadHue = 33, CooldownHue = 52;
 
 		private static readonly TagKey compactTK = TagKey.Acquire("_boosts_compact_");
@@ -129,6 +129,9 @@ namespace SteamEngine.CompiledScripts {
 			this.Line(x, y + (2 * TextRowHeight), PositionButton, "Pozice");
 			this.Line(x, y + (3 * TextRowHeight), LiveButton, "Zive: " + (IsLive(viewer) ? "ano" : "ne"));
 			this.Line(x, y + (4 * TextRowHeight), SightButton, "Vnimani");
+			if (MountKnowledge.TotalPoints(viewer) > 0) {
+				this.Line(x, y + (5 * TextRowHeight), MountsButton, "Jezditka");
+			}
 		}
 
 		private void Line(int x, int y, int button, string text) {
@@ -146,7 +149,7 @@ namespace SteamEngine.CompiledScripts {
 					seen = effect.Section;
 				}
 			}
-			this.AddBackground(0, 0, Width, height + 100, 2620);
+			this.AddBackground(0, 0, Width, height + 120, 2620);
 			this.AddLabel(14, 12, TitleHue, (target == viewer) ? "Boosty" : ("Boosty: " + target.Name));
 			int y = 36;
 			if (effects.Count == 0) {
@@ -191,7 +194,7 @@ namespace SteamEngine.CompiledScripts {
 			List<ActiveEffect> shown = effects.FindAll(effect => effect.Section != EffectSection.Status);
 			int columns = System.Math.Min(System.Math.Max(shown.Count, 1), StripColumns);
 			int rows = System.Math.Max((shown.Count + StripColumns - 1) / StripColumns, 1);
-			this.AddBackground(0, 0, (columns * StripStep) + ButtonsWidth + 20, System.Math.Max(rows * StripRow, 120) + 10, 2620);
+			this.AddBackground(0, 0, (columns * StripStep) + ButtonsWidth + 20, System.Math.Max(rows * StripRow, 140) + 10, 2620);
 			for (int i = 0; i < shown.Count; i++) {
 				ActiveEffect effect = shown[i];
 				int x = 10 + ((i % StripColumns) * StripStep);
@@ -232,6 +235,10 @@ namespace SteamEngine.CompiledScripts {
 				case SightButton:
 					viewer.DeleteTimer(liveTimerTK);
 					D_HpSight.Show(viewer);
+					break;
+				case MountsButton:
+					viewer.DeleteTimer(liveTimerTK);
+					D_MountsKnowledge.Show(viewer);
 					break;
 				default:
 					viewer.DeleteTimer(liveTimerTK);
