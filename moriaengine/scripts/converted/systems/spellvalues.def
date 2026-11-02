@@ -1,0 +1,353 @@
+[SpellValuesDef spellvalues_s_Agility]
+Spell = s_Agility
+CastTime = 2
+Mana = 6
+Duration = 120, 300
+Skill = 180
+
+[SpellValuesDef spellvalues_s_archcure]
+Spell = s_archcure
+CastTime = 2.3
+Mana = 11
+Skill = 400
+
+[SpellValuesDef spellvalues_s_archprotection]
+Spell = s_archprotection
+CastTime = 2.3
+Mana = 11
+Duration = 180, 480
+Skill = 400
+
+[SpellValuesDef spellvalues_s_blade_spirits]
+Spell = s_blade_spirits
+CastTime = 2.5
+Mana = 14
+Duration = 60, 180
+Skill = 300
+
+[SpellValuesDef spellvalues_s_bless]
+Spell = s_bless
+CastTime = 3
+Mana = 9
+Duration = 240, 600
+Skill = 300
+
+[SpellValuesDef spellvalues_s_chain_lightning]
+Spell = s_chain_lightning
+CastTime = 4.5
+Mana = 30
+Skill = 700
+
+[SpellValuesDef spellvalues_s_Clumsy]
+Spell = s_Clumsy
+CastTime = 2.5
+Mana = 5
+Duration = 30, 35
+Skill = 100
+
+[SpellValuesDef spellvalues_s_Cunning]
+Spell = s_Cunning
+CastTime = 1.5
+Mana = 6
+Duration = 120, 300
+Skill = 200
+
+[SpellValuesDef spellvalues_s_cure]
+Spell = s_cure
+CastTime = 1.5
+Mana = 8
+Skill = 200
+
+[SpellValuesDef spellvalues_s_curse]
+Spell = s_curse
+CastTime = 3
+Mana = 12
+Duration = 30, 35
+Skill = 400
+
+[SpellValuesDef spellvalues_s_dispel]
+Spell = s_dispel
+CastTime = 2.5
+Mana = 18
+Skill = 600
+
+[SpellValuesDef spellvalues_s_dispel_field]
+Spell = s_dispel_field
+CastTime = 2.5
+Mana = 10
+Skill = 500
+
+[SpellValuesDef spellvalues_s_earthquake]
+Spell = s_earthquake
+CastTime = 4
+Mana = 50
+Duration = 3
+Skill = 3000
+
+[SpellValuesDef spellvalues_s_energy_bolt]
+Spell = s_energy_bolt
+CastTime = 2.6
+Mana = 22
+Skill = 600
+
+[SpellValuesDef spellvalues_s_energy_field]
+Spell = s_energy_field
+CastTime = 5
+Mana = 40
+Duration = 180, 240
+Skill = 700
+
+[SpellValuesDef spellvalues_s_energy_vortex]
+Spell = s_energy_vortex
+CastTime = 4
+Mana = 50
+Duration = 60, 180
+Skill = 800
+
+[SpellValuesDef spellvalues_s_explosion]
+Spell = s_explosion
+CastTime = 2.5
+Mana = 22
+Skill = 600
+
+[SpellValuesDef spellvalues_s_feeblemind]
+Spell = s_feeblemind
+CastTime = 2.5
+Mana = 5
+Duration = 30, 35
+Skill = 100
+
+[SpellValuesDef spellvalues_s_fireball]
+Spell = s_fireball
+CastTime = 1.7
+Mana = 6
+Skill = 300
+
+[SpellValuesDef spellvalues_s_fire_field]
+Spell = s_fire_field
+CastTime = 6
+Mana = 40
+Duration = 30, 120
+Skill = 400
+
+[SpellValuesDef spellvalues_s_flamestrike]
+Spell = s_flamestrike
+CastTime = 3.5
+Mana = 30
+Skill = 700
+
+[SpellValuesDef spellvalues_s_gate_travel]
+Spell = s_gate_travel
+CastTime = 9
+Mana = 80
+Skill = 700
+
+[SpellValuesDef spellvalues_s_greater_heal]
+Spell = s_greater_heal
+CastTime = 3.5
+Mana = 15
+Skill = 400
+
+[SpellValuesDef spellvalues_s_harm]
+Spell = s_harm
+CastTime = 1.2
+Mana = 6
+Skill = 200
+
+[SpellValuesDef spellvalues_s_heal]
+Spell = s_heal
+CastTime = 2.5
+Mana = 7
+Skill = 100
+
+[SpellValuesDef spellvalues_s_invisibility]
+Spell = s_invisibility
+CastTime = 3
+Mana = 20
+Duration = 60, 300
+Skill = 600
+
+[SpellValuesDef spellvalues_s_lightning]
+Spell = s_lightning
+CastTime = 3
+Mana = 11
+Skill = 400
+
+[SpellValuesDef spellvalues_s_magic_arrow]
+Spell = s_magic_arrow
+CastTime = 1.5
+Mana = 6
+Skill = 40
+
+[SpellValuesDef spellvalues_s_magic_reflection]
+Spell = s_magic_reflection
+CastTime = 3.5
+Mana = 15
+Duration = 360, 600
+Skill = 500
+
+[SpellValuesDef spellvalues_s_mana_drain]
+Spell = s_mana_drain
+CastTime = 7
+Mana = 11
+Skill = 400
+
+[SpellValuesDef spellvalues_s_mark]
+Spell = s_mark
+CastTime = 3
+Mana = 50
+Skill = 300
+
+[SpellValuesDef spellvalues_s_mass_curse]
+Spell = s_mass_curse
+CastTime = 4
+Mana = 20
+Skill = 750
+
+[SpellValuesDef spellvalues_s_mass_dispel]
+Spell = s_mass_dispel
+CastTime = 3.5
+Mana = 40
+Skill = 700
+
+[SpellValuesDef spellvalues_s_meteor_swarm]
+Spell = s_meteor_swarm
+CastTime = 6
+Mana = 40
+Skill = 700
+
+[SpellValuesDef spellvalues_s_mind_blast]
+Spell = s_mind_blast
+CastTime = 3
+Mana = 20
+Skill = 500
+
+[SpellValuesDef spellvalues_s_paralyzation_field]
+Spell = s_paralyzation_field
+CastTime = 5
+Mana = 4044
+Duration = 30, 120
+Skill = 620
+
+[SpellValuesDef spellvalues_s_paralyze]
+Spell = s_paralyze
+CastTime = 4.5
+Mana = 12
+Duration = 10, 60
+Skill = 500
+
+[SpellValuesDef spellvalues_s_poison]
+Spell = s_poison
+CastTime = 2
+Mana = 10
+Duration = 0.3, 0.5
+Skill = 500
+
+[SpellValuesDef spellvalues_s_poison_field]
+Spell = s_poison_field
+CastTime = 6
+Mana = 40
+Duration = 30, 120
+Skill = 5000
+
+[SpellValuesDef spellvalues_s_protection]
+Spell = s_protection
+CastTime = 1.5
+Mana = 7
+Duration = 180, 470
+Skill = 200
+
+[SpellValuesDef spellvalues_s_reactive_armor]
+Spell = s_reactive_armor
+CastTime = 1.5
+Mana = 7
+Duration = 10
+Skill = 100
+
+[SpellValuesDef spellvalues_s_recall]
+Spell = s_recall
+CastTime = 8
+Mana = 40
+Skill = 200
+
+[SpellValuesDef spellvalues_s_resurrection]
+Spell = s_resurrection
+CastTime = 4
+Mana = 100
+Skill = 1200
+
+[SpellValuesDef spellvalues_s_reveal]
+Spell = s_reveal
+CastTime = 1.5
+Mana = 20
+Skill = 600
+
+[SpellValuesDef spellvalues_s_strength]
+Spell = s_strength
+CastTime = 2
+Mana = 7
+Duration = 120, 480
+Skill = 200
+
+[SpellValuesDef spellvalues_s_summon_creature]
+Spell = s_summon_creature
+CastTime = 2.5
+Mana = 16
+Duration = 360, 600
+Skill = 500
+
+[SpellValuesDef spellvalues_s_summon_daemon]
+Spell = s_summon_daemon
+CastTime = 4
+Mana = 50
+Duration = 120, 240
+Skill = 800
+
+[SpellValuesDef spellvalues_s_summon_elem_air]
+Spell = s_summon_elem_air
+CastTime = 4
+Mana = 50
+Duration = 120, 240
+Skill = 800
+
+[SpellValuesDef spellvalues_s_summon_elem_earth]
+Spell = s_summon_elem_earth
+CastTime = 4
+Mana = 50
+Duration = 120, 240
+Skill = 800
+
+[SpellValuesDef spellvalues_s_summon_elem_fire]
+Spell = s_summon_elem_fire
+CastTime = 4
+Mana = 50
+Duration = 120, 240
+Skill = 800
+
+[SpellValuesDef spellvalues_s_summon_elem_water]
+Spell = s_summon_elem_water
+CastTime = 4
+Mana = 50
+Duration = 120, 240
+Skill = 800
+
+[SpellValuesDef spellvalues_s_teleport]
+Spell = s_teleport
+CastTime = 2
+Mana = 9
+Skill = 300
+
+[SpellValuesDef spellvalues_s_wall_of_stone]
+Spell = s_wall_of_stone
+CastTime = 6
+Mana = 30
+Duration = 90, 120
+Skill = 300
+
+[SpellValuesDef spellvalues_s_weaken]
+Spell = s_weaken
+CastTime = 2.5
+Mana = 5
+Duration = 30, 35
+Skill = 100
+
