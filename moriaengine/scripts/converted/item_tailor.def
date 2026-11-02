@@ -1025,6 +1025,7 @@ DupeList = 0xfa1
 WEIGHT = 1
 RESOURCES = 1 i_flax_bundle //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
+ItemValue = 50 //nastaveni_cm_value 
 DEFNAME = i_thread
 
 [ItemDef 0xfa1]
@@ -1163,6 +1164,7 @@ WEIGHT = 1
 RESOURCES = 1 i_reag_batwing //nastaveni_cm_resources 
 //DYE = 1 // commented out by Converter 
 SKILLMAKE = 800 tailoring //nastaveni_cm_skillmake 
+ItemValue = 50 //nastaveni_cm_value 
 DEFNAME = i_hides_cut
 
 [ItemDef 0x1068]
@@ -1219,6 +1221,7 @@ DESCRIPTION = Pillow
 DupeList = 0x13a5
 RESOURCES = 6 i_cloth, 1 i_thread, 1 i_straw //nastaveni_cm_resources 
 SKILLMAKE = 500 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
+ItemValue = 16 //nastaveni_cm_value 
 DEFNAME = i_pillow_2
 
 [ItemDef 0x13a5]
@@ -1359,6 +1362,7 @@ DupeList = 0x1e37,0x1e38,0x1e39,0x1e3a,0x1e3b,0x1e3c,0x1e3d,0x1e3e,0x1e40,0x1e41
 WEIGHT = 20
 RESOURCES = 2 i_fur_dark, 1 i_gem_amber //nastaveni_cm_resources 
 SKILLMAKE = 940 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
+ItemValue = 10 //nastaveni_cm_value 
 DEFNAME = i_RUG_BEARSKIN_1
 
 [ItemDef 0x1e37]
@@ -1421,6 +1425,7 @@ DupeList = 0x1e4a,0x1e4b,0x1e4c,0x1e4d,0x1e4e,0x1e4f,0x1e50,0x1e51,0x1e53,0x1e54
 WEIGHT = 20
 RESOURCES = 2 i_fur_light, 1 i_gem_amber //nastaveni_cm_resources 
 SKILLMAKE = 950 tailoring, 1 t_sewing_kit //nastaveni_cm_skillmake 
+ItemValue = 12 //nastaveni_cm_value 
 DEFNAME = i_RUG_BEARSKIN_2
 //RESOURCES3 = 2 I_CORPSE_BEAR, 5 i_THREAD, 4 i_CANVAS // commented out by Converter 
 
