@@ -732,3 +732,36 @@ TYPE=t_customspell_scroll
 WEIGHT=1
 Color=044d
 Tag.profession_priest=1
+
+[SpellScrollDef i_scroll_light]
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Scroll of Light
+
+Model=i_scroll_weaken
+Name=Scroll of Light
+TYPE=t_scroll
+WEIGHT=1
+Color=0774
+
+[SpellScrollDef i_scroll_firebolt]
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Scroll of Fire Bolt
+
+Model=i_scroll_agility
+Name=Scroll of Fire Bolt
+TYPE=t_scroll
+WEIGHT=1
+Color=0774
+
+[SpellScrollDef i_scroll_frostbolt]
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Special
+DESCRIPTION=Frost Bolt Scroll
+
+Model=i_scroll_blank
+Name=Frost Bolt Scroll
+TYPE=t_scroll
+WEIGHT=1
+Color=044d

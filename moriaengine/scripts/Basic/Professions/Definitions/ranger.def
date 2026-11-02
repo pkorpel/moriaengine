@@ -81,4 +81,4 @@ titles="Wanderer", "Woodsman", "Tracker", "Tamer", "Archer", "Marksman", "Hunter
 titlesFemale="Wanderer", "Woodswoman", "Tracker", "Tamer", "Archer", "Markswoman", "Huntress", "Warden", "Strider", "Ranger"
 
 //list allowed spells - Magic Arrow/Night Sight/Teleport/Recall/Dispel/Mark, per the wiki
-allowedSpells=s_magic_arrow, s_nightsight, s_teleport, s_recall, s_dispel, s_mark
+allowedSpells=s_magic_arrow, s_nightsight, s_teleport, s_recall, s_dispel, s_mark, s_harm

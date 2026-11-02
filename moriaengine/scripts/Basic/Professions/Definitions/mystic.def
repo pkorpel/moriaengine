@@ -79,5 +79,5 @@ titlesFemale="Pilgrim", "Dreamer", "Visionary", "Sensitive", "Soothsayer", "Hypn
 //Magic Arrow/Feeblemind) can only be cast on self - not enforced here, this engine's
 //ProfessionPlugin only gates spell ACCESS, not targeting; flagged as a known gap, not silently
 //dropped. Reveal is omitted - not implemented in this engine (unimplementedSpells.def).
-allowedSpells=s_feeblemind, s_magic_arrow, s_heal, s_cunning, s_cure, s_protection, s_harm, s_bless, s_teleport, s_greater_heal, s_recall, s_magic_reflection, s_dispel, s_mark, s_gate_travel
+allowedSpells=s_feeblemind, s_magic_arrow, s_heal, s_cunning, s_cure, s_protection, s_harm, s_bless, s_teleport, s_greater_heal, s_recall, s_magic_reflection, s_dispel, s_mark, s_gate_travel, s_mana_drain, s_reveal
 //s_reveal - not implemented in this engine

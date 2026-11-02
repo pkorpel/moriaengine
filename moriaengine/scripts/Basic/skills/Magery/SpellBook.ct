@@ -19,3 +19,4 @@ Def:	//vars on the def
 
 Vars:	
 	public ulong contents = 0
+	public int necroSpells = 0

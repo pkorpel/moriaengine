@@ -201,6 +201,11 @@ Item = i_scroll_fireball
 Resources = 1 i_scroll_blank
 SkillMake = 410 inscription
 
+[CraftRecipeDef craftrecipe_i_scroll_firebolt]
+Item = i_scroll_firebolt
+Resources = 1 i_scroll_blank
+SkillMake = 750 inscription
+
 [CraftRecipeDef craftrecipe_i_scroll_fire_field]
 Item = i_scroll_fire_field
 Resources = 1 i_scroll_blank
@@ -240,6 +245,11 @@ SkillMake = 610 inscription
 Item = i_scroll_invisibility
 Resources = 1 i_scroll_blank
 SkillMake = 760 inscription
+
+[CraftRecipeDef craftrecipe_i_scroll_light]
+Item = i_scroll_light
+Resources = 1 i_scroll_blank
+SkillMake = 350 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_lightning]
 Item = i_scroll_lightning
@@ -419,6 +429,16 @@ SkillMake = 500 inscription
 [CraftRecipeDef craftrecipe_i_scroll_weaken]
 Item = i_scroll_weaken
 Resources = 1 i_scroll_blank
+
+[CraftRecipeDef craftrecipe_i_spellbook]
+Item = i_spellbook
+Resources = 1 i_book_lg, 2 i_hide, 1 i_scroll_blank, 1 i_thread
+SkillMake = 700 carpentry, 1 t_carpentry, 500 tailoring, 1 t_sewing_kit
+
+[CraftRecipeDef craftrecipe_i_spellbook_necro]
+Item = i_spellbook_necro
+Resources = 1 i_spellbook
+SkillMake = 999 inscription, 999 magery
 
 [CraftRecipeDef craftrecipe_i_torch]
 Item = i_torch

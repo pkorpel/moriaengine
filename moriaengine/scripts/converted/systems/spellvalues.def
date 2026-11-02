@@ -123,6 +123,12 @@ CastTime = 1.7
 Mana = 6
 Skill = 300
 
+[SpellValuesDef spellvalues_s_fire_bolt]
+Spell = s_fire_bolt
+CastTime = 2.5
+Mana = 22
+Skill = 600
+
 [SpellValuesDef spellvalues_s_fire_field]
 Spell = s_fire_field
 CastTime = 6
@@ -166,6 +172,13 @@ CastTime = 3
 Mana = 20
 Duration = 60, 300
 Skill = 600
+
+[SpellValuesDef spellvalues_s_light]
+Spell = s_light
+CastTime = 4
+Mana = 8
+Duration = 180, 300
+Skill = 300
 
 [SpellValuesDef spellvalues_s_lightning]
 Spell = s_lightning

@@ -114,31 +114,31 @@ SKILLMAKE = 620 inscription //nastaveni_cm_skillmake
 model = i_scroll_night_sight
 Color = 0774
 
-[ItemDef i_scroll_light]
-name = "Scroll of Light"
-type = t_scroll
-RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
-SKILLMAKE = 350 inscription //nastaveni_cm_skillmake 
-model = i_scroll_weaken
-Color = 0774
+//[ItemDef i_scroll_light] //(commented out by Converter) 
+//name = "Scroll of Light"
+//type = t_scroll
+//RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
+//SKILLMAKE = 350 inscription //nastaveni_cm_skillmake 
+//model = i_scroll_weaken
+//Color = 0774
 
-[ItemDef i_scroll_firebolt]
-name = "Scroll of Fire Bolt"
-type = t_scroll
-RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
-SKILLMAKE = 750 inscription //nastaveni_cm_skillmake 
-model = i_scroll_agility
-Color = 0774
+//[ItemDef i_scroll_firebolt] //(commented out by Converter) 
+//name = "Scroll of Fire Bolt"
+//type = t_scroll
+//RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
+//SKILLMAKE = 750 inscription //nastaveni_cm_skillmake 
+//model = i_scroll_agility
+//Color = 0774
 
-[ItemDef i_scroll_frostbolt]
-CATEGORY = Provisions - Alchemy & Magic
-SUBSECTION = Scrolls - Special
-DESCRIPTION = Frost Bolt Scroll
-
-Name = "Frost Bolt Scroll"
-TYPE = t_scroll
-WEIGHT = 0.1
-RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
-SKILLMAKE = 750 inscription, 600 magery //some resources were fixed by converter 
-model = i_scroll_blank
-Color = 044d
+//[ItemDef i_scroll_frostbolt] //(commented out by Converter) 
+//CATEGORY = Provisions - Alchemy & Magic
+//SUBSECTION = Scrolls - Special
+//DESCRIPTION = Frost Bolt Scroll
+//
+//Name = "Frost Bolt Scroll"
+//TYPE = t_scroll
+//WEIGHT = 0.1
+//RESOURCES = 1 i_scroll_blank //some resources were fixed by converter 
+//SKILLMAKE = 750 inscription, 600 magery //some resources were fixed by converter 
+//model = i_scroll_blank
+//Color = 044d

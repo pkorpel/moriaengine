@@ -70,7 +70,7 @@ namespace SteamEngine.Converter {
 			if (!type.EndsWith("def", StringComparison.Ordinal)) {
 				return null;
 			}
-			if (type.Contains("scroll")) {
+			if (type.Contains("scroll") || type.Contains("spellbook")) {
 				return Items;
 			}
 			//the numbers of skills and spells aren't models
