@@ -639,19 +639,6 @@ namespace SteamEngine.CompiledScripts {
 		private const double SpellCastCooldownSeconds = 4;
 		private const int DefaultSpellCastRange = 10;
 
-		//#734 - ChooseSpellToCast's utility-score weights. An offensive spell's baseline sits
-		//below a self-heal's max (so a caster drops everything to save itself once truly
-		//hurt) but above a self-buff's flat score (so, once buffed, a caster/hybrid spends its
-		//casts offensively rather than endlessly re-rolling the same buff) and above the melee
-		//branch's own implicit "nothing else to do" baseline (so a melee+support NPC still
-		//prefers an available heal/buff over just swinging blindly through them).
-		private const double OffensiveSpellBaseScore = 0.6;
-		private const double BuffSpellScore = 0.5;
-		private const double OtherBeneficialSpellScore = 0.3;
-		//a self-heal scores 0 (not worth the mana) once already this close to full - avoids
-		//topping off a 1-point scratch every time it's off cooldown.
-		private const double HealConsiderThreshold = 0.9;
-
 		/// <summary>#716 - NPCDef.SpellCastRange's own per-monster override, falling back to
 		/// DefaultSpellCastRange when unconfigured (the negative sentinel).</summary>
 		internal static int GetSpellCastRange(NPCDef def) {
@@ -697,28 +684,18 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>
-		/// #734 - the utility-scored heart of this NPC's spellcasting, replacing the old
-		/// PickSpell's blind uniform-random choice among EVERY configured spell regardless of
-		/// need. Considers every spell this NPC knows (CandidateSpells) that's actually castable
-		/// right now - cooldown clear, mana available, and for an offensive spell, target in
-		/// range and LOS'd (a beneficial one needs neither, same precedent as before) - and
-		/// returns whichever one is most WORTH casting (see ScoreSpell), or null if nothing is
-		/// both castable and worth it, same "fall back to normal combat" contract TryCastSpell's
-		/// caller already expects. Internal (not private) so a test can call this directly and
-		/// deterministically, same precedent as Fight/CastAttempts above - real cooldown timing
-		/// makes a live-combat sampling test impractically slow for exercising more than one
-		/// scoring path per test.
+		/// #1033 - the spell worth casting right now, or null: fall back to normal combat. This works
+		/// out which spells could go off this tick, NpcSpellChoice says which is worth it. Internal
+		/// so a test can call it directly, real cooldowns make sampling live combat too slow.
 		/// </summary>
 		internal SpellDef ChooseSpellToCast(NPC self, Character target) {
 			NPCDef def = (NPCDef) self.Def;
-			SpellDef best = null;
-			double bestScore = 0; //0 is "not worth it" - a real candidate must score strictly above this
+			List<SpellDef> possible = new List<SpellDef>();
 			foreach (SpellDef spell in CandidateSpells(def)) {
 				if (!this.IsSpellReady(self, spell)) {
 					continue;
 				}
-				bool isBeneficial = (spell.Flags & SpellFlag.IsBeneficial) == SpellFlag.IsBeneficial;
-				if (!isBeneficial) {
+				if ((spell.Flags & SpellFlag.IsBeneficial) != SpellFlag.IsBeneficial) {
 					//a self-targeted buff needs neither the enemy's distance nor a clear shot at
 					//it - only an offensive spell actually needs to reach the enemy.
 					if (Point2D.GetSimpleDistance(self, target) > GetSpellCastRange(def)) {
@@ -728,57 +705,14 @@ namespace SteamEngine.CompiledScripts {
 						continue;
 					}
 				}
-				double score = this.ScoreSpell(self, spell, isBeneficial);
-				if (score > bestScore) {
-					bestScore = score;
-					best = spell;
-				}
+				possible.Add(spell);
 			}
-			return best;
+			return NpcSpellChoice.Choose(self, target, possible);
 		}
 
-		/// <summary>#734 - how worth casting `spell` is right now, on a roughly-comparable
-		/// scale across every spell shape this engine actually has. A self-heal (HealingSpellDef)
-		/// scores by how hurt `self` genuinely is - 0 (skip) above HealConsiderThreshold, ramping
-		/// up to 1.0 near death, so it outweighs even an offensive cast once things get dire. A
-		/// self-buff (DurableCharEffectSpellDef, e.g. Magic Reflection) scores a flat
-		/// BuffSpellScore, but only while it ISN'T already active - checked via its own real
-		/// EffectPluginKey_Spell (the exact plugin key this AI path always installs under, see
-		/// CastSpell below), not a guess, so a caster buffs once near the start of a fight and
-		/// then stops bothering, instead of wasting a cast re-rolling the same buff every time
-		/// it's off cooldown. An offensive spell scores a flat OffensiveSpellBaseScore plus a
-		/// small random tie-break, so a multi-offensive-spell caster varies which one it reaches
-		/// for when more than one is ready at once, without ignoring readiness the way the old
-		/// uniform-random PickSpell did (that picked among ALL configured spells regardless of
-		/// cooldown, silently no-op'ing whenever the roll landed on one still on cooldown).</summary>
-		private double ScoreSpell(NPC self, SpellDef spell, bool isBeneficial) {
-			if (!isBeneficial) {
-				return OffensiveSpellBaseScore + (Globals.dice.Next(100) / 1000.0);
-			}
-
-			HealingSpellDef heal = spell as HealingSpellDef;
-			if (heal != null) {
-				if (self.MaxHits <= 0) {
-					return 0;
-				}
-				double hpFraction = self.Hits / (double) self.MaxHits;
-				if (hpFraction >= HealConsiderThreshold) {
-					return 0;
-				}
-				return 1.0 - hpFraction;
-			}
-
-			DurableCharEffectSpellDef buff = spell as DurableCharEffectSpellDef;
-			if (buff != null) {
-				if (self.GetPlugin(buff.EffectPluginKey_Spell) != null) {
-					return 0; //already active - recasting now would just waste mana re-rolling it
-				}
-				return BuffSpellScore;
-			}
-
-			//some other beneficial spell shape with no stronger signal available - still worth
-			//considering, just with no real basis to prioritize it over anything else.
-			return OtherBeneficialSpellScore;
+		/// <summary>For tests: a next cast needn't wait out the real cooldown.</summary>
+		internal void ForgetCastCooldown() {
+			this.nextCastTime = 0;
 		}
 
 		private bool IsSpellReady(NPC self, SpellDef spell) {
@@ -819,10 +753,6 @@ namespace SteamEngine.CompiledScripts {
 			//that whole On_Start/SkillSequenceArgs flow entirely (see this method's own doc comment).
 			AnimCalculator.PerformAnim(self, GenericAnim.Cast);
 
-			//GM-level power (700, the classic 0-1000 permille max) rather than deriving from a Magery
-			//skill value - NPCs don't have meaningful skill points set up for this, and "this monster
-			//is an expert at its own signature spell" is a reasonable assumption for a first pass.
-			const int spellPower = 700;
 			Logger.WriteDebug("NPCAiTimer.TryCastSpell: " + self.Name + "#" + self.Uid + " casts " + spell.Name + " at " + effectTarget.Name);
 			//real-user-reported, a second bug found testing the fix above: EffectFlag.FromAbility
 			//(the original flag here) isn't one of the two "source" flags DurableCharEffectSpellDef.
@@ -833,8 +763,14 @@ namespace SteamEngine.CompiledScripts {
 			//even once correctly targeted. FromSpellBook matches the same "no other real source"
 			//assumption the normal player-cast flow already makes (SpellDef.cs's own On_Start).
 			EffectFlag effectFlag = EffectFlag.FromSpellBook | (isBeneficial ? EffectFlag.BeneficialEffect : EffectFlag.HarmfulEffect);
-			SpellEffectArgs args = SpellEffectArgs.Acquire(self, effectTarget, effectTarget, spell, spellPower, effectFlag);
-			spell.Trigger_EffectChar(effectTarget, args);
+			if ((spell.Flags & SpellFlag.CanEffectChar) == SpellFlag.CanEffectChar) {
+				SpellEffectArgs args = SpellEffectArgs.Acquire(self, effectTarget, effectTarget, spell, NpcSpellChoice.SpellPower, effectFlag);
+				spell.Trigger_EffectChar(effectTarget, args);
+			} else { //#1033 - summons and fields land on the ground, the character path does nothing for them
+				Point4D ground = new Point4D(effectTarget.X, effectTarget.Y, effectTarget.Z, effectTarget.M);
+				SpellEffectArgs args = SpellEffectArgs.Acquire(self, ground, ground, spell, NpcSpellChoice.SpellPower, effectFlag);
+				spell.Trigger_EffectGround(ground, args);
+			}
 			return true;
 		}
 

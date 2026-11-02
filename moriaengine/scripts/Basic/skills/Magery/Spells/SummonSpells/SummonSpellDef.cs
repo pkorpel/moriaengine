@@ -49,6 +49,7 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public class SummonSpellDef : DurableSpellDef {
 		private static readonly TagKey isSummonedCreatureTK = TagKey.Acquire("_isSummonedCreature_");
+		private static readonly TagKey summonerTK = TagKey.Acquire("_summoner_");
 		private static readonly TimerKey despawnTimerKey = TimerKey.Acquire("_summonDespawn_");
 
 		private FieldValue summonChar;
@@ -121,6 +122,17 @@ namespace SteamEngine.CompiledScripts {
 			return character.GetTag(isSummonedCreatureTK) is bool flag && flag;
 		}
 
+		/// <summary>#1033 - creatures caster summoned that are near it, pets or hostile ones.</summary>
+		public static int CountSummonsNear(Character caster) {
+			int count = 0;
+			foreach (AbstractCharacter ch in caster.GetMap().GetCharsInRange(caster.X, caster.Y, Globals.MaxUpdateRange)) {
+				if (ch.GetTag(summonerTK) == caster) {
+					count++;
+				}
+			}
+			return count;
+		}
+
 		/// <summary>Marks a character as "summoned" for IsSummonedCreature's own check, same tag
 		/// this spell's own On_EffectGround uses - exposed so OTHER summon-shaped mechanisms
 		/// (e.g. MonsterSpecialAttacks.TryApplySummoning's own reinforcements) mark their spawns
@@ -149,6 +161,7 @@ namespace SteamEngine.CompiledScripts {
 				summon.Flag_WarMode = false;
 			}
 			summon.SetTag(isSummonedCreatureTK, true);
+			summon.SetTag(summonerTK, caster);
 
 			int spellPower = spellEffectArgs.SpellPower;
 			double durationSecs = this.GetDurationForValue(spellPower);

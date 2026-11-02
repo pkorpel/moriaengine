@@ -66,6 +66,35 @@ the two neighbouring directions, and `StepTowardsSmart`'s AStar routes around a 
 first step. Pets and summons follow the same rule. See
 [Movement & character collision](movement-and-collision.md).
 
+### How NPCs pick spells (#1033)
+
+Monster abilities aren't chosen by this AI. Each fires from its own hook (a hit, a swing, a think
+tick) with its own chance and cooldown. Only spells are chosen, in `NpcSpellChoice`: every spell the
+NPC could cast this tick gets a score, the highest goes off, and if none scores above 0 the NPC
+just fights. One cast every 4 s or the spell's cast time, shared by all its spells.
+
+| Spell | Cast when |
+|---|---|
+| heal | under `npcHealBelowPercent` of its hits (75) and the heal wouldn't be wasted; the more hurt, the higher it scores |
+| cure | it's poisoned |
+| buff (reflection, protection...) | it doesn't have that effect; scores above most attacks, so it buffs first |
+| dispel | the target is a summon |
+| mana drain | the target has Magery and over half its mana |
+| paralyze | one time in 3, target not paralyzed |
+| curse | target not cursed; first choice while it's at full health |
+| poison | one time in 4, target not poisoned or immune, poison resist under 75% |
+| damage | by damage after armor and the target's resists, a little random; more likely on a paralyzed target |
+| weaken, clumsy, feeblemind | target doesn't have it, only when nothing better is available |
+| summon | fewer than `npcMaxSummons` (2) of its own summons nearby |
+| field | one time in 4 |
+
+A target with reflection gets the NPC's weakest damage spell, as it comes back at the caster, and no
+paralyze, poison, curse, debuff or mana drain. Summons and fields land at the target's feet.
+
+The order is Erebor's `ai_returnspell`. Not ported: "cast fast when attacked", as NPC casts here go
+off at once and can't be interrupted; polymorphed targets, as Dispel doesn't end a polymorph here;
+`tag.lecitel` healers, who heal friends. Spell power is a flat 700.
+
 ### Pathfinding (#769)
 
 `StepTowardsSmart` (follow, combat approach, "go", home-return) uses
