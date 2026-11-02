@@ -20,7 +20,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		//Erebor makes the item its ICON names; two of the archive's name nothing, and 394 creatures have none
-		private static int IconOf(NPCDef def) {
+		internal static int IconOf(NPCDef def) {
 			try {
 				return def.Icon;
 			} catch (SEException) {

@@ -57,6 +57,7 @@ namespace SteamEngine.CompiledScripts {
 
 			//#839: Erebor's quest journal, for everybody
 			this.commands["Questy"] = PLEVEL_PLAYER;
+			this.commands["MenuStyle"] = PLEVEL_PLAYER; //#1004: to compare the menus
 			this.commands["FrostBolt"] = PLEVEL_PLAYER;
 			this.commands["NecroBolt"] = PLEVEL_PLAYER;
 			this.commands["NecroLight"] = PLEVEL_PLAYER;
