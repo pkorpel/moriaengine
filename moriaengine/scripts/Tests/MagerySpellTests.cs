@@ -87,8 +87,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#489 - reports a DurableSpellDef's raw Duration range (min,max in seconds)
-		/// for a given spell defname (e.g. confirming s_gate_travel's fixed 60s,60s, not the old
-		/// 3,4 SECONDS unit bug).</summary>
+		/// for a given spell defname (e.g. s_gate_travel's 3,4, Erebor's live value, #1001).</summary>
 		[SteamFunction]
 		public static void TestReportSpellDuration(Character self, ScriptArgs sa) {
 			string defname = SplitArgs(sa)[0];
