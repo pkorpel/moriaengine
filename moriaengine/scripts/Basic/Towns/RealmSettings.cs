@@ -57,7 +57,7 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int ringMinLevel = 30;
 
-		/// <summary>Kills of Gondor players a ring asks for first (i_nazgul_quest). 0 takes the quest away.</summary>
+		/// <summary>Kills of Gondor players a ring asks for inside the last ringQuestDays, rolling. 0 takes the quest away.</summary>
 		[SaveableData]
 		public int ringQuestKills = 5;
 
