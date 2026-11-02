@@ -55,13 +55,13 @@ namespace SteamEngine.Tests.Protocol {
 		public void FizzleRateVariesWithSkillOnceDifficultyFallbackIsReal() {
 			this.EnsureAutoAccountCreationEnabled();
 			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "MageFizzleChecker")) {
-				int difficulty = this.ReportDifficulty(client, "s_poison_field");
+				int difficulty = this.ReportDifficulty(client, "s_fire_field");
 				Assert.True(difficulty > 0,
 					"Expected s_poison_field's fallback difficulty to be > 0 now that it's derived " +
 					"from Requirements=X Magery instead of a hardcoded 0.");
 
-				int lowSkillSuccesses = this.SampleFizzleRate(client, "s_poison_field", skillValue: 0, sampleCount: 300);
-				int highSkillSuccesses = this.SampleFizzleRate(client, "s_poison_field", skillValue: 1000, sampleCount: 300);
+				int lowSkillSuccesses = this.SampleFizzleRate(client, "s_fire_field", skillValue: 0, sampleCount: 300);
+				int highSkillSuccesses = this.SampleFizzleRate(client, "s_fire_field", skillValue: 1000, sampleCount: 300);
 
 				Assert.True(lowSkillSuccesses < 170,
 					"Expected skill=0 to fail noticeably more than half the time against a real " +
@@ -285,8 +285,8 @@ namespace SteamEngine.Tests.Protocol {
 		public void FizzleRateIsRoughlyEvenAtExactlyTheSkillRequirement() {
 			this.EnsureAutoAccountCreationEnabled();
 			using (var client = this.ConnectLoginAndCreateCharacter(AccountB, "MageFizzleEvenChecker")) {
-				int difficulty = this.ReportDifficulty(client, "s_poison_field");
-				int successes = this.SampleFizzleRate(client, "s_poison_field", skillValue: difficulty, sampleCount: 500);
+				int difficulty = this.ReportDifficulty(client, "s_fire_field");
+				int successes = this.SampleFizzleRate(client, "s_fire_field", skillValue: difficulty, sampleCount: 500);
 
 				Assert.True((successes > 150) && (successes < 350),
 					"Expected roughly a coin-flip (allowing wide margin for the bell-curve shape, " +
@@ -327,8 +327,8 @@ namespace SteamEngine.Tests.Protocol {
 				string resultLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_CAST_RESULT:");
 
 				int casterMana = ExtractInt(resultLine, "casterMana");
-				Assert.True(casterMana < startMana,
-					"Expected mana to be spent casting s_magic_arrow. startMana=" + startMana + " line: " + resultLine);
+				Assert.True(casterMana == startMana, //#962 - Sphere's Spell_CanCast: a GM pays nothing
+					"Expected a GM to pay no mana. startMana=" + startMana + " line: " + resultLine);
 
 				bool targetDeleted = resultLine.Contains("targetDeleted=True");
 				if (!targetDeleted) {
@@ -465,7 +465,7 @@ namespace SteamEngine.Tests.Protocol {
 				int startCasterMana = ExtractInt(startLine, "startCasterMana");
 				int startTargetMana = ExtractInt(startLine, "startTargetMana");
 
-				Thread.Sleep(4500); // s_mana_drain's CASTTIME is 2.0s; generous margin for the stroke delay too
+				Thread.Sleep(8000); // s_mana_drain's live cast time is 7.0 s
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestReportManaDrainResult " + dummyUid);

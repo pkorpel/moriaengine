@@ -117,33 +117,38 @@ namespace SteamEngine.CompiledScripts {
 
 				int manaUse = ApplyConcentrationDiscount(self, spell.GetManaUse(isFromScroll));
 				int mana = self.Mana;
-				if (mana >= manaUse) {
-					if (!isFromScroll) {
+				if ((mana >= manaUse) || self.IsGM) {
+					if (!isFromScroll && !self.IsGM) {
 						ResourcesList req = spell.Requirements;
 						IResourceListEntry missingItem;
 						if ((req != null) && (!req.HasResourcesPresent(self, ResourcesLocality.BackpackAndLayers, out missingItem))) {
-							self.SysMessage(missingItem.GetResourceMissingMessage(self.Language));
-							return TriggerResult.Cancel; ;
+							self.SysMessage(Loc<MageryRulesLoc>.Get(self.Language).LackSkill);
+							return TriggerResult.Cancel;
 						}
 
 						ResourcesList res = spell.Resources;
-						if ((res != null) && (!res.ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missingItem))) {
+						if ((res != null) && (!res.HasResourcesPresent(self, ResourcesLocality.Backpack, out missingItem))) {
 							self.SysMessage(missingItem.GetResourceMissingMessage(self.Language));
-							return TriggerResult.Cancel; ;
+							return TriggerResult.Cancel;
 						}
-					} else {
-						skillSeqArgs.Tool.Consume(1);
+					}
+
+					if (!SpellCastRules.Allow(self, spell, skillSeqArgs.Target1, out bool fizzle)) {
+						if (fizzle) {
+							Fizzle(self);
+						}
+						return TriggerResult.Cancel;
 					}
 
 					if (TriggerResult.Cancel == spell.Trigger_Start(skillSeqArgs)) {
 						return TriggerResult.Cancel;
 					}
 
-					self.Mana = (short) (mana - manaUse);
+					SpellCastRules.DropManaShield(self, spell, skillSeqArgs.Target1);
 					AnimCalculator.PerformAnim(self, GenericAnim.Cast);
 
 					self.AbortSkill();
-					skillSeqArgs.DelayInSeconds = spell.CastTime;
+					skillSeqArgs.DelayInSeconds = self.IsGM ? GmCastSeconds : spell.CastTime;
 					skillSeqArgs.DelayStroke();
 					string runeWords = spell.GetRuneWords();
 					if (!string.IsNullOrEmpty(runeWords)) {
@@ -194,6 +199,7 @@ namespace SteamEngine.CompiledScripts {
 			return TriggerResult.Continue;
 		}
 
+		private const double GmCastSeconds = 0.1;
 		private static readonly SpellDef[] magicChargeTriggerSpells = new SpellDef[3];
 
 		private static void AddMagicChargeIfTriggerSpell(Character self, SpellDef spell) {
@@ -211,9 +217,45 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#962 - Sphere pays at the end of a cast (Spell_CanCast). A failed one costs half the mana and a bit more,
+		/// and its reagents, REAGENTLOSSFAIL=1. False when there's not enough left to pay.</summary>
+		private static bool Pay(SkillSequenceArgs skillSeqArgs, bool failed) {
+			Character self = skillSeqArgs.Self;
+			if (self.IsGM) {
+				return true;
+			}
+			SpellDef spell = (SpellDef) skillSeqArgs.Param1;
+			bool isFromScroll = skillSeqArgs.Tool is SpellScroll;
+			int manaUse = ApplyConcentrationDiscount(self, spell.GetManaUse(isFromScroll));
+			if (self.Mana < manaUse) {
+				self.ClilocSysMessage(502625); // Insufficient mana for this spell.
+				return false;
+			}
+			if (failed) {
+				manaUse = (manaUse / 2) + Globals.dice.Next((manaUse / 2) + (manaUse / 4));
+			}
+			self.Mana = (short) (self.Mana - manaUse);
+			if (isFromScroll) {
+				if (!skillSeqArgs.Tool.IsDeleted) {
+					skillSeqArgs.Tool.Consume(1);
+				}
+			} else {
+				ResourcesList res = spell.Resources;
+				IResourceListEntry missingItem;
+				if ((res != null) && !res.ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missingItem)) {
+					self.SysMessage(missingItem.GetResourceMissingMessage(self.Language));
+					return false;
+				}
+			}
+			return true;
+		}
+
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			SpellDef spell = (SpellDef) skillSeqArgs.Param1;
+			if (!Pay(skillSeqArgs, false)) {
+				return;
+			}
 			spell.Trigger_Success(skillSeqArgs);
 			if ((spell.Flags & SpellFlag.IsHarmful) == SpellFlag.IsHarmful) {
 				CombatWear.OnHarmfulCast(self); //#865
@@ -231,6 +273,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Fizzle(skillSeqArgs.Self);
+			Pay(skillSeqArgs, true);
 		}
 
 		private static AbilityDef concentrationDef;
@@ -262,6 +305,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
 			Fizzle(skillSeqArgs.Self);
+			Pay(skillSeqArgs, true);
 		}
 
 		private static void Fizzle(Character self) {

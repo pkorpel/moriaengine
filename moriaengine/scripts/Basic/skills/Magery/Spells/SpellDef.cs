@@ -256,6 +256,23 @@ namespace SteamEngine.CompiledScripts {
 			return this.runeWords;
 		}
 
+		/// <summary>#962 - see SpellValuesDef. Sphere's difficulty is the skill requirement.</summary>
+		internal void SetLiveValues(string filename, int line, string liveCastTime, string liveMana, string liveDuration, string liveSkill) {
+			if (liveCastTime != null) {
+				this.LoadScriptLine(filename, line, "casttime", liveCastTime);
+			}
+			if (liveMana != null) {
+				this.LoadScriptLine(filename, line, "manause", liveMana);
+			}
+			if ((liveDuration != null) && (this is DurableSpellDef)) {
+				this.LoadScriptLine(filename, line, "duration", liveDuration);
+			}
+			if (liveSkill != null) {
+				this.LoadScriptLine(filename, line, "requirements", liveSkill + " Magery");
+				this.LoadScriptLine(filename, line, "difficulty", liveSkill);
+			}
+		}
+
 		public int GetManaUse(bool isFromScroll) {
 			if (isFromScroll) {
 				return this.ManaUse / 2;
