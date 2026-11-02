@@ -1279,6 +1279,33 @@
   <data name="PolymorphMenuLoc_Title" xml:space="preserve">
     <value>What do you want to polymorph into?</value>
   </data>
+  <data name="MenuStyleLoc_NowDialog" xml:space="preserve">
+    <value>Menu se ted otevira jako dialog.</value>
+  </data>
+  <data name="MenuStyleLoc_NowPicture" xml:space="preserve">
+    <value>Menu se ted otevira jako obrazkove menu.</value>
+  </data>
+  <data name="MenuStyleLoc_NowBoth" xml:space="preserve">
+    <value>Menu se ted otevira obema zpusoby, plati prvni volba.</value>
+  </data>
+  <data name="TrackingMenuLoc_Tracking" xml:space="preserve">
+    <value>Tracking</value>
+  </data>
+  <data name="TrackingMenuLoc_Animals" xml:space="preserve">
+    <value>Animals</value>
+  </data>
+  <data name="TrackingMenuLoc_Monsters" xml:space="preserve">
+    <value>Monsters</value>
+  </data>
+  <data name="TrackingMenuLoc_Humans" xml:space="preserve">
+    <value>Humans</value>
+  </data>
+  <data name="TrackingMenuLoc_Players" xml:space="preserve">
+    <value>Players</value>
+  </data>
+  <data name="TrackingMenuLoc_AnythingThatMoves" xml:space="preserve">
+    <value>Anything that moves</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

@@ -56,6 +56,7 @@ namespace SteamEngine.Tests.Protocol {
 		/// </summary>
 		private static readonly Dictionary<byte, int> FixedPacketPayloadSizes = new Dictionary<byte, int> {
 			{ 0x1B, 36 }, // LoginConfirmationOutPacket
+			{ 0xBA, 5 }, // the quest arrow, on while tracking
 			{ 0x55, 0 },  // LoginCompleteOutPacket
 			{ 0x20, 18 }, // DrawGamePlayerOutPacket
 			{ 0x77, 16 }, // UpdatePlayerPacket
@@ -102,6 +103,7 @@ namespace SteamEngine.Tests.Protocol {
 			0xA9, // CharactersListOutPacket
 			0x78, // DrawObjectOutPacket
 			0xb0, // SendGumpMenuDialogPacket
+			0x7C, // OpenDialogBoxPacket
 			0x11, // StatusBarInfoOutPacket
 			0xCC, // ClilocMessageAffixOutPacket
 			0x6F, // SecureTradeOutPacket
@@ -431,6 +433,41 @@ namespace SteamEngine.Tests.Protocol {
 			byte[] packet = new byte[5];
 			packet[0] = 0x06;
 			EncodeIntBigEndian((int) uid, packet, 1);
+			this.stream.Write(packet, 0, packet.Length);
+		}
+
+		/// <summary>#1004 - OpenDialogBoxPacket (0x7C): payload[0..1] length, [2..5] the menu's uid, [6..7] an id, then the header
+		/// and the rows, each model, hue and text.</summary>
+		public (int MenuUid, string Header, List<(int Model, int Color, string Text)> Rows) ReadItemMenu(TimeSpan timeout) {
+			byte[] payload = this.ReadPacketPayload(0x7C, timeout);
+			int menuUid = (payload[2] << 24) | (payload[3] << 16) | (payload[4] << 8) | payload[5];
+			int at = 8;
+			string header = ReadLengthPrefixed(payload, ref at);
+			int count = payload[at++];
+			var rows = new List<(int, int, string)>();
+			for (int i = 0; i < count; i++) {
+				int model = (payload[at] << 8) | payload[at + 1];
+				int color = (payload[at + 2] << 8) | payload[at + 3];
+				at += 4;
+				rows.Add((model, color, ReadLengthPrefixed(payload, ref at)));
+			}
+			return (menuUid, header, rows);
+		}
+
+		private static string ReadLengthPrefixed(byte[] payload, ref int at) {
+			int length = payload[at++];
+			string text = Encoding.ASCII.GetString(payload, at, length).TrimEnd('\0');
+			at += length;
+			return text;
+		}
+
+		/// <summary>#1004 - ResponseToDialogBox (0x7D); 0 is the client's cancel, the first row is 1.</summary>
+		public void SendItemMenuChoice(int menuUid, int oneBasedRow) {
+			byte[] packet = new byte[13];
+			packet[0] = 0x7D;
+			EncodeIntBigEndian(menuUid, packet, 1);
+			packet[7] = (byte) (oneBasedRow >> 8);
+			packet[8] = (byte) oneBasedRow;
 			this.stream.Write(packet, 0, packet.Length);
 		}
 
