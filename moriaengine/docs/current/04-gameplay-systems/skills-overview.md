@@ -263,6 +263,8 @@ A double click casts a `t_scroll`, as Sphere: half mana, half difficulty, the sc
 
 Mass Bless is an area spell of 8 tiles from its target, the user's call (#1001): Erebor's `a_mass_bless` has no `csflag_mass`, so it blessed one target. Who else gets it is `SpellDef`'s rule for beneficial area spells: nobody the caster stands worse with than the main target. Cast on yourself, that means allies only. Gate Travel lasts Erebor's live 3 to 4 s, not #489's 60 s.
 
+Nine core spells live in Spells/CoreSpells with Erebor's live values (#1001): Create Food, Magic Trap, Magic Untrap, Magic Lock, Telekinesis, Unlock, Incognito, Mana Vampire, Polymorph. Skill 250.0 to 700.0 keeps them out of a book, and a scroll only halves that for the roll, so it fizzles; only GMs cast them. Sphere's wands have difficulty 1 and would work, but wands aren't ported. Magic Trap and Untrap have no effect in Sphere itself. Mana Vampire takes mana without giving any to the caster, as `f_effect_a_mana_vampire`, and is refused on a target without Magery. Unlock opens a door one time in 900, `MAGICUNLOCKDOOR`. Polymorph's `sm_polymorph` is a gump and acts on the caster alone; Sphere's GM cursor for polymorphing others isn't ported. Incognito on an item isn't ported, there's no ATTR_IDENTIFIED here. Neither is dispellable yet.
+
 `i_scroll_case` (`t_svitkovac`) holds up to 999999 scrolls of each spell as counts on the item. Scrolls go in by dropping them on it, by its Pridat cursor, or a whole container by targeting it. Pages are the circles in pairs, necromancy and the rest. Vybrat takes one of everything.
 
 ## Necromancy

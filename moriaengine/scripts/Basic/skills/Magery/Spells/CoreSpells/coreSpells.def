@@ -1,0 +1,128 @@
+//#1001 - the core spells Erebor kept out of reach: live skill 250.0 to 700.0 against a cap of 100.0, so never from a book,
+//as nastaveni_SKILLREQ_ in systems/spellvalues.def. GMs skip that test, as in Sphere. A scroll skips it too but halves the
+//same number for its roll, so it fizzles; Sphere's wands, difficulty 1, would work and aren't ported. Numbers not in the
+//nastaveni_ table are spheretable_x.scp's.
+
+[CreateFoodSpellDef 2]
+DEFNAME=s_create_food
+NAME=Create Food
+SOUND=482
+RUNES=IMY
+CASTTIME=4
+RUNEITEM=i_rune_CREATE_FOOD
+SCROLLITEM=i_scroll_CREATE_FOOD
+FLAGS=SpellFlag.CanTargetGround | SpellFlag.CanEffectGround | SpellFlag.EffectNeedsLOS
+EFFECT=0
+MANAUSE=5
+Requirements=500.0 Magery
+
+//Sphere's own dispatch has no effect for these two, whatever the item
+[SpellDef 13]
+DEFNAME=s_magic_trap
+NAME=Magic Trap
+SOUND=495
+RUNES=IJ
+CASTTIME=1.5
+RUNEITEM=i_rune_MAGIC_TRAP
+SCROLLITEM=i_scroll_MAGIC_TRAP
+FLAGS=SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+EFFECT=0
+MANAUSE=6
+Requirements=500.0 Magery
+
+[SpellDef 14]
+DEFNAME=s_magic_untrap
+NAME=Magic Untrap
+SOUND=496
+RUNES=AJ
+CASTTIME=1.5
+RUNEITEM=i_rune_MAGIC_UNTRAP
+SCROLLITEM=i_scroll_MAGIC_UNTRAP
+FLAGS=SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+EFFECT=0
+MANAUSE=6
+Requirements=500.0 Magery
+
+[MagicLockSpellDef 19]
+DEFNAME=s_magic_lock
+NAME=Magic Lock
+SOUND=500
+RUNES=AP
+CASTTIME=2.0
+RUNEITEM=i_rune_MAGIC_LOCK
+SCROLLITEM=i_scroll_MAGIC_LOCK
+FLAGS=SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+EFFECT=0
+MANAUSE=9
+Requirements=500.0 Magery
+
+[TelekinesisSpellDef 21]
+DEFNAME=s_telekinesis
+NAME=Telekinesis
+SOUND=501
+RUNES=OPY
+CASTTIME=2.0
+RUNEITEM=i_rune_telekinesis
+SCROLLITEM=i_scroll_telekinesis
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanTargetItem | SpellFlag.CanEffectChar | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+EFFECT=0
+MANAUSE=9
+Requirements=500.0 Magery
+
+[UnlockSpellDef 23]
+DEFNAME=s_unlock
+NAME=Unlock
+SOUND=511
+RUNES=EP
+CASTTIME=2.0
+RUNEITEM=i_rune_UNLOCK
+SCROLLITEM=i_scroll_UNLOCK
+FLAGS=SpellFlag.CanTargetItem | SpellFlag.CanEffectItem | SpellFlag.EffectNeedsLOS
+EFFECT=0
+MANAUSE=9
+Requirements=500.0 Magery
+
+[IncognitoSpellDef 35]
+DEFNAME=s_incognito
+NAME=Incognito
+SOUND=492
+RUNES=KIE
+CASTTIME=2.5
+RUNEITEM=i_rune_INCOGNITO
+SCROLLITEM=i_scroll_INCOGNITO
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS
+EFFECT=0
+DURATION=120,480
+MANAUSE=20
+Requirements=500.0 Magery
+
+//f_effect_a_mana_vampire, despite the name takes it from the target and gives none to the caster
+[ManaDrainSpellDef 53]
+DEFNAME=s_mana_vampire
+NAME=Mana Vampire
+SOUND=505
+RUNES=OS
+CASTTIME=3.0
+RUNEITEM=i_rune_MANA_VAMPIRE
+SCROLLITEM=i_scroll_MANA_VAMPIRE
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.UseMindPower | SpellFlag.IsHarmful
+EFFECT=0,50
+MANAUSE=20
+Requirements=250.0 Magery
+
+on=@effectChar
+	EffectFactory.StationaryEffect(this, 0x374A, 10, 15)
+
+[PolymorphSpellDef 56]
+DEFNAME=s_polymorph
+NAME=Polymorph
+SOUND=527
+RUNES=VYR
+CASTTIME=3.5
+RUNEITEM=i_rune_POLYMORPH
+SCROLLITEM=i_scroll_POLYMORPH
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.AlwaysTargetSelf
+EFFECT=0
+DURATION=300,480
+MANAUSE=40
+Requirements=700.0 Magery

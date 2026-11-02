@@ -86,7 +86,7 @@ a_concentration = 10, 10
 //s_reveal built (Phase 5); #490 - s_energy_vortex/s_summon_elem_air/s_summon_daemon/
 //s_summon_elem_earth/s_summon_elem_fire/s_summon_elem_water built (Phase 6); all moved up from
 //the not-implemented list below.
-allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_harm, s_protection, s_fireball, s_teleport, s_wall_of_stone, s_lightning, s_recall, s_dispel_field, s_mind_blast, s_paralyze, s_dispel, s_energy_bolt, s_explosion, s_chain_lightning, s_energy_field, s_flamestrike, s_gate_travel, s_mass_dispel, s_meteor_swarm, s_resurrection, s_magic_reflection, s_mark, s_fire_field, s_paralyzation_field, s_mana_drain, s_blade_spirits, s_summon_creature, s_invisibility, s_reveal, s_energy_vortex, s_summon_elem_air, s_summon_daemon, s_summon_elem_earth, s_summon_elem_fire, s_summon_elem_water
+allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_harm, s_protection, s_fireball, s_teleport, s_wall_of_stone, s_lightning, s_recall, s_dispel_field, s_mind_blast, s_paralyze, s_dispel, s_energy_bolt, s_explosion, s_chain_lightning, s_energy_field, s_flamestrike, s_gate_travel, s_mass_dispel, s_meteor_swarm, s_resurrection, s_magic_reflection, s_mark, s_fire_field, s_paralyzation_field, s_mana_drain, s_blade_spirits, s_summon_creature, s_invisibility, s_reveal, s_energy_vortex, s_summon_elem_air, s_summon_daemon, s_summon_elem_earth, s_summon_elem_fire, s_summon_elem_water, s_magic_trap, s_magic_untrap, s_magic_lock, s_unlock
 
 //weapon/armor restrictions (#135/#138) - magical staves only, per the wiki
 //(https://wiki.uoerebor.cz/docs/povolani/mag/); unprepared/reinforced leather armor only

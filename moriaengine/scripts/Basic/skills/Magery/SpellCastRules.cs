@@ -83,6 +83,9 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage(texts.NotOnItems);
 				return false;
 			}
+			if (Is(spell, "s_mana_vampire") && (target is Character drained) && (drained.GetSkill(SkillName.Magery) == 0)) {
+				return false; //@spellcast: no word about it
+			}
 			if (Is(spell, "s_teleport") && !self.IsGM) {
 				if (targetItem != null) {
 					self.RedMessage(texts.NotOntoItems);

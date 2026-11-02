@@ -14,105 +14,10 @@
 //MANAUSE=4
 //Requirements=1.0 Magery
 
-//[SpellDef 2]
-//DEFNAME=s_create_food
-//NAME=Create Food
-//SOUND=snd_SPELL_CREATE_FOOD
-//RUNES=IMY
-//CASTTIME=4
-////RESOURCES=i_reag_garlic,i_reag_ginseng,i_reag_mandrake_root
-//RUNEITEM=i_rune_CREATE_FOOD
-//SCROLLITEM=i_scroll_CREATE_FOOD
-//FLAGS=SPELLFLAG_TARG_XYZ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=0.0
-//MANAUSE=5
-//Requirements=500.0 Magery
 
 ///////////////////////////////////////////// 2 kruh
 
-//[SpellDef 13]
-//DEFNAME=s_magic_trap
-//NAME=Magic Trap
-//SOUND=snd_SPELL_MAGIC_TRAP
-//RUNES=IJ
-//CASTTIME=1.5
-////RESOURCES=i_reag_garlic,i_reag_spider_silk,i_reag_sulfur_ash
-//RUNEITEM=i_rune_MAGIC_TRAP
-//SCROLLITEM=i_scroll_MAGIC_TRAP
-//FLAGS=//SPELLFLAG_TARG_OBJ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=0.0
-//MANAUSE=6
-//Requirements=20.0 Magery
-//
-//[SpellDef 14]
-//DEFNAME=s_magic_untrap
-//NAME=Magic Untrap
-//SOUND=snd_SPELL_MAGIC_UNTRAP
-//RUNES=AJ
-//CASTTIME=1.5
-////RESOURCES=i_reag_blood_moss,i_reag_sulfur_ash
-//RUNEITEM=i_rune_MAGIC_UNTRAP
-//SCROLLITEM=i_scroll_MAGIC_UNTRAP
-//FLAGS=//SPELLFLAG_TARG_OBJ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=0.0
-//MANAUSE=6
-//Requirements=20.0 Magery
-//
 ///////////////////////////////////////////////////////////// 3 kruh
-//
-//[SpellDef 19]
-//DEFNAME=s_magic_lock
-//NAME=Magic Lock
-//SOUND=snd_SPELL_MAGIC_LOCK
-//RUNES=AP
-//CASTTIME=2.0
-////RESOURCES=i_reag_blood_moss,i_reag_garlic,i_reag_sulfur_ash
-//RUNEITEM=i_rune_MAGIC_LOCK
-//SCROLLITEM=i_scroll_MAGIC_LOCK
-//FLAGS=0//SPELLFLAG_TARG_OBJ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=0.0
-//MANAUSE=9
-//Requirements=30.0 Magery
-//
-//[SpellDef 21]
-//DEFNAME=s_telekinesis
-//NAME=Telekinesis
-//SOUND=snd_SPELL_telekinesis
-//RUNES=OPY
-//CASTTIME=2.0
-////RESOURCES=i_reag_blood_moss,i_reag_mandrake_root
-//RUNEITEM=i_rune_telekinesis
-//SCROLLITEM=i_scroll_telekinesis
-//FLAGS=0//SPELLFLAG_TARG_OBJ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=0.0
-//MANAUSE=9
-//Requirements=30.0 Magery
-//
-//[SpellDef 23]
-//DEFNAME=s_unlock
-//NAME=Unlock
-//SOUND=snd_SPELL_UNLOCK
-//RUNES=EP
-//CASTTIME=2.0
-////RESOURCES=i_reag_blood_moss,i_reag_sulfur_ash
-//RUNEITEM=i_rune_UNLOCK
-//SCROLLITEM=i_scroll_UNLOCK
-//FLAGS=//SPELLFLAG_TARG_OBJ
-////EFFECTID=0
-//EFFECT=0
-//DURATION=0.0
-//MANAUSE=9
-//Requirements=30.0 Magery
 //
 //////////////////////////////////////////////// 4 kruh
 //
@@ -123,23 +28,6 @@
 //#488 - s_blade_spirits built for real, see
 //scripts/Basic/skills/Magery/Spells/SummonSpells/bladeSpirits.def
 //
-//[SpellDef 35]
-//// NOTE: This spell is used primarily for roleplaying purposes or for avoiding being killed if red. The longer duration would not unbalance gameplay in any way I could see.
-//DEFNAME=s_incognito
-//NAME=Incognito
-//SOUND=snd_SPELL_INCOGNITO
-//RUNES=KIE
-//CASTTIME=2.5
-////RESOURCES=i_reag_blood_moss,i_reag_garlic,i_reag_nightshade
-//RUNEITEM=i_rune_INCOGNITO
-//SCROLLITEM=i_scroll_INCOGNITO
-//FLAGS=0
-////EFFECTID=0
-//EFFECT=0
-//DURATION=2*60.0,8*60.0
-//MANAUSE=20
-//Requirements=50.0 Magery
-//
 //#488 - s_summon_creature built for real, see
 //scripts/Basic/skills/Magery/Spells/SummonSpells/summonCreature.def
 //
@@ -147,39 +35,6 @@
 //scripts/Basic/skills/Magery/Spells/Invisibility/invisibility.def and reveal.def
 //
 ///////////////////////////////////////////// 7 kruh
-//
-//[SpellDef 53]
-//DEFNAME=s_mana_vampire
-//NAME=Mana Vampire
-//SOUND=snd_SPELL_MANA_VAMPIRE
-//RUNES=OS
-//CASTTIME=3.0
-////RESOURCES=i_reag_black_pearl,i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk
-//RUNEITEM=i_rune_MANA_VAMPIRE
-//SCROLLITEM=i_scroll_MANA_VAMPIRE
-//FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FX_TARG|spellflag_evil|spellflag_SM|spellflag_harm//SPELLFLAG_TARG_CHAR
-////EFFECTID=i_fx_curse
-//EFFECT=0,10
-//DURATION=0.0
-//MANAUSE=20
-//Requirements=70.0 Magery
-//
-//[SpellDef 56]
-//DEFNAME=s_polymorph
-//NAME=Polymorph
-//SOUND=snd_SPELL_POLYMORPH
-//RUNES=VYR
-//CASTTIME=3.5
-////RESOURCES=i_reag_blood_moss,i_reag_mandrake_root,i_reag_spider_silk
-//RUNEITEM=i_rune_POLYMORPH
-//SCROLLITEM=i_scroll_POLYMORPH
-//FLAGS=
-////EFFECTID=0
-//EFFECT=0
-//DURATION=5*60.0,8*60.0
-//MANAUSE=40
-//Requirements=70.0 Magery
-//// NOTE: This is a Mages true form of attack/defence at higher levels. Due to the level I would suggest having decent levels to the duration. Have incognito and polymorph match in duration as they are often used in conjunction
 //
 //
 ////////////////////////////////////////////////////////////////////// 8 kruh
