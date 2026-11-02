@@ -83,6 +83,13 @@ namespace SteamEngine.CompiledScripts {
 			timer.DueInSeconds = RiddenDecayIntervalSeconds;
 		}
 
+		/// <summary>taming_success: FOOD-1.</summary>
+		internal static void LoseFood(NPC self, int amount) {
+			if (self.GetTimer(hungerTimerTK) is PetHungerTimer hunger) {
+				hunger.food -= amount;
+			}
+		}
+
 		/// <summary>Stops hunger tracking (released/rebelled pet) - safe to call even if
 		/// never installed (e.g. this NPCDef has no FoodTypes configured).</summary>
 		public static void Remove(NPC self) {

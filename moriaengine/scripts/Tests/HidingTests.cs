@@ -1,4 +1,5 @@
 using System;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 	public static class HidingTests {
@@ -71,6 +72,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestHideOther(Character self, ScriptArgs sa) {
 			other = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.P());
 			other.SetRealSkillValue((int) SkillName.Hiding, int.Parse(sa.Args.Trim('"')));
+			other.DeleteTimer(TimerKey.Acquire("_npcAiTimer_")); //a step of its own would show it before the search ends
 			other.Flag_Hidden = true;
 			self.SelectSkill(SkillName.DetectHidden);
 			Console.WriteLine("HIDE_OTHER:");

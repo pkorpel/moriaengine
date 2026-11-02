@@ -36,6 +36,9 @@ namespace SteamEngine.CompiledScripts {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef def = ThingDef.GetByDefname("C_BIRD_CROW") as NPCDef;
 			NPC npc = (NPC) def.Create(self.X + 1, self.Y, self.Z, self.M);
+			self.SetRealSkillValue((int) SkillName.AnimalTaming, 1000); //#962 - a GM needs the skill too
+			self.SetRealSkillValue((int) SkillName.AnimalLore, 1000);
+			ThingDef.GetByDefname("i_sconce_lit").Create(self.X, self.Y, self.Z, self.M);
 			Console.WriteLine("TAME_SETUP: npc=#" + npc.Uid);
 		}
 

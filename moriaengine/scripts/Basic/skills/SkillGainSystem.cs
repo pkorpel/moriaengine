@@ -88,10 +88,8 @@ namespace SteamEngine.CompiledScripts {
 		/// this LScript-side `[function skillgain]`: chance = skillValue² × advrate / (10000 ×
 		/// chanceModifier), same {0,N}-roll/gain-on-zero shape as TryGainSkill above, but fed by
 		/// a flat per-skill advrate constant instead of a 3-point curve. chanceModifier matches
-		/// every real content call site (`skillgain(skill_X, 100)` - always 100, "without
-		/// change") - not exposed as a per-call argument since nothing in this engine's content
-		/// needs a different value.</summary>
-		public static bool TryGainSkillCustomFormula(Character self, SkillName skillName, double advRate) {
+		/// skillgain's argv(1): 100 is "without change", more makes a gain likelier, as a spawned mount does.</summary>
+		public static bool TryGainSkillCustomFormula(Character self, SkillName skillName, double advRate, double chanceModifier = 100) {
 			if (!(self is Player)) {
 				return false;
 			}
@@ -107,7 +105,6 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 
-			const double chanceModifier = 100;
 			double chance = (currentValue * currentValue * advRate) / (10000 * chanceModifier);
 			int roll = Globals.dice.Next((int) chance + 1);
 			if (roll != 0) {

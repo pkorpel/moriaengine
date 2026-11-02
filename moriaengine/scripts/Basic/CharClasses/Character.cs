@@ -1875,7 +1875,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual TriggerResult On_SkillStart(SkillSequenceArgs skillSeqArgs) {
-			HidingSkillDef.Spoil(this); //#962 - stopscriptedskills
+			ScriptedSkills.Stop(this); //#962
 			if (!(skillSeqArgs.SkillDef is CraftingSkillDef)) {
 				CraftingProcessPlugin.Stop(this, false); //#962 - e_makestring's @hittry and @spellcast
 			}
@@ -2114,7 +2114,9 @@ namespace SteamEngine.CompiledScripts {
 
 		private static TriggerKey hostileActionTK = TriggerKey.Acquire("hostileAction");
 		public void Trigger_HostileAction(Character enemy) {
-			HidingSkillDef.Reveal(enemy); //#962 - Sphere's OnAttackedBy
+			if (enemy != null) { //a death can have no killer
+				HidingSkillDef.Reveal(enemy); //#962 - Sphere's OnAttackedBy
+			}
 			Notoriety.OnHostileAction(this, enemy);
 			FightMemory.Record(this, enemy); //#826
 			NPCAiTimer.AlertGuardiansOf(this, enemy);
@@ -2819,6 +2821,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public void On_Damage(DamageArgs args) {
 			CraftingProcessPlugin.Stop(this, false); //#962 - e_makestring's @gethit
+			ScriptedSkills.Stop(this);
 			if ((args.flags & DamageType.Physical) != 0) {
 				HidingSkillDef.Reveal(this); //Sphere's OnTakeDamage
 			}

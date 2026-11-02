@@ -43,7 +43,7 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSkillUse(35); // AnimalTaming
 				Thread.Sleep(300);
 				client.SendTargetUid(npcUid);
-				Thread.Sleep(1500);
+				Thread.Sleep(2500); //#962 - a GM's taming ends on i_taming's first timer
 
 				int markCheck = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestCheckControlMaster " + npcUid);

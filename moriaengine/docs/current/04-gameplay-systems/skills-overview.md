@@ -172,3 +172,13 @@ Detect Hidden: 2 s of looking, then everyone unseen within 25 tiles is tried, no
 ## Meditation (#962)
 
 Sphere's own skill, which Erebor keeps. An opening roll against up to 99.0, then a mana point a stroke, 1 to 0.3 s each by skill, until full. A step ends it with "Pohybem jsi ztratil soustredeni", and a mana shield refuses it. Weapons and low health don't matter. The Mage talent `a_meditation_bonus` no longer does anything: Erebor has no such thing.
+
+## Taming (#962)
+
+Erebor's script, systems/skills/taming.scp, not Sphere's skill. `TamingSkillDef` runs the checks in Erebor's order: sight, crook, can it be tamed at all, Taming against the animal's, Animal Lore against the animal's, already a pet, promised to someone (a summon rune in its pack), within 5 tiles. A creature's Taming is its rolled NPC skill (`AnimalTaming =` in the def). Nobody tames without a shepherd's crook in hand: spruce up to 40.0, then chestnut, oak, teak, mahagon, and eben past 120.0; the tiers are the converted `material_` and `crook_` constants. GMs need no crook.
+
+`TamingTimer` talks for 3 to 7 strokes of 2 s, then rolls `0-1000 < tamer - animal`. Being hit, another skill or a spell ends it ("Ochocovani bylo preruseno"), `ScriptedSkills.Stop` is Erebor's stopscriptedskills. Using Taming again meanwhile only clears that mark and brings the next stroke forward, a quirk of Erebor's kept as is. A spawned animal led over 70 tiles from its spawn goes home. A pet leaves its spawn, which makes another. An animal raised by a healer (`i_poresu`) is tamed on the first stroke, whatever the roll. A pet loses 1 food and its karma.
+
+Gains are `skillgain` with a bonus: 100 usually, 500-600 for a spawned animal of 30.0 taming or more when tamed, 300-400 when that fails on one above 30.0. Such a tame also adds to `MountKnowledge`: the 18 mounts of `def_taming_mount`, points up to each one's maximum, shown on .boosts with a button to Erebor's list and legend. What the knowledge gives is mount powers, #925, along with the ranger's ra_mountsKnowledge limit.
+
+Not ported: "Zvire zemrelo hlady". Sphere's wild animals lose food and find their own, ours have no food until they are pets, so the check has nothing to read.
