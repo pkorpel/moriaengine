@@ -1228,6 +1228,57 @@
   <data name="SummonMenuLoc_Title" xml:space="preserve">
     <value>What do you want to summon ?</value>
   </data>
+  <data name="LockSpellLoc_AlreadyLocked" xml:space="preserve">
+    <value>It is already locked</value>
+  </data>
+  <data name="LockSpellLoc_NoContainerKey" xml:space="preserve">
+    <value>You don't have the key to this container.</value>
+  </data>
+  <data name="LockSpellLoc_NoDoorKey" xml:space="preserve">
+    <value>You don't have the key to this door.</value>
+  </data>
+  <data name="LockSpellLoc_NoHoldKey" xml:space="preserve">
+    <value>You don't have the key to the hold.</value>
+  </data>
+  <data name="LockSpellLoc_LockedContainer" xml:space="preserve">
+    <value>You lock the container.</value>
+  </data>
+  <data name="LockSpellLoc_LockedDoor" xml:space="preserve">
+    <value>You lock the door.</value>
+  </data>
+  <data name="LockSpellLoc_LockedHold" xml:space="preserve">
+    <value>You lock the hold.</value>
+  </data>
+  <data name="LockSpellLoc_LockedShip" xml:space="preserve">
+    <value>You lock the ship.</value>
+  </data>
+  <data name="LockSpellLoc_NotWhereItIs" xml:space="preserve">
+    <value>You cannot unlock that where it is!</value>
+  </data>
+  <data name="LockSpellLoc_HaveTheKey" xml:space="preserve">
+    <value>You have the key for this</value>
+  </data>
+  <data name="LockSpellLoc_FailedDoor" xml:space="preserve">
+    <value>You failed to unlock the door.</value>
+  </data>
+  <data name="LockSpellLoc_FailedContainer" xml:space="preserve">
+    <value>You failed to unlock the container.</value>
+  </data>
+  <data name="LockSpellLoc_UnlockedContainer" xml:space="preserve">
+    <value>You unlock the container.</value>
+  </data>
+  <data name="LockSpellLoc_UnlockedDoor" xml:space="preserve">
+    <value>You unlock the door.</value>
+  </data>
+  <data name="LockSpellLoc_UnlockedHold" xml:space="preserve">
+    <value>You unlock the hold.</value>
+  </data>
+  <data name="LockSpellLoc_UnlockedShip" xml:space="preserve">
+    <value>You unlock the ship.</value>
+  </data>
+  <data name="PolymorphMenuLoc_Title" xml:space="preserve">
+    <value>What do you want to polymorph into?</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

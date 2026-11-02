@@ -58,6 +58,12 @@ Mana = 5
 Duration = 30, 35
 Skill = 100
 
+[SpellValuesDef spellvalues_s_create_food]
+Spell = s_create_food
+CastTime = 0.4
+Mana = 5
+Skill = 5000
+
 [SpellValuesDef spellvalues_s_Cunning]
 Spell = s_Cunning
 CastTime = 1.5
@@ -159,6 +165,7 @@ Skill = 700
 Spell = s_gate_travel
 CastTime = 9
 Mana = 80
+Duration = 3, 4
 Skill = 700
 
 [SpellValuesDef spellvalues_s_greater_heal]
@@ -178,6 +185,13 @@ Spell = s_heal
 CastTime = 2.5
 Mana = 7
 Skill = 100
+
+[SpellValuesDef spellvalues_s_incognito]
+Spell = s_incognito
+CastTime = 2.5
+Mana = 20
+Duration = 120, 480
+Skill = 5000
 
 [SpellValuesDef spellvalues_s_invisibility]
 Spell = s_invisibility
@@ -205,6 +219,12 @@ CastTime = 1.5
 Mana = 6
 Skill = 40
 
+[SpellValuesDef spellvalues_s_magic_lock]
+Spell = s_magic_lock
+CastTime = 2
+Mana = 9
+Skill = 5000
+
 [SpellValuesDef spellvalues_s_magic_reflection]
 Spell = s_magic_reflection
 CastTime = 3.5
@@ -212,11 +232,29 @@ Mana = 15
 Duration = 360, 600
 Skill = 500
 
+[SpellValuesDef spellvalues_s_magic_trap]
+Spell = s_magic_trap
+CastTime = 1.5
+Mana = 6
+Skill = 5000
+
+[SpellValuesDef spellvalues_s_magic_untrap]
+Spell = s_magic_untrap
+CastTime = 1.5
+Mana = 6
+Skill = 5000
+
 [SpellValuesDef spellvalues_s_mana_drain]
 Spell = s_mana_drain
 CastTime = 7
 Mana = 11
 Skill = 400
+
+[SpellValuesDef spellvalues_s_mana_vampire]
+Spell = s_mana_vampire
+CastTime = 7
+Mana = 20
+Skill = 2500
 
 [SpellValuesDef spellvalues_s_mark]
 Spell = s_mark
@@ -279,6 +317,13 @@ Mana = 40
 Duration = 30, 120
 Resist = 30000,30000
 Skill = 5000
+
+[SpellValuesDef spellvalues_s_polymorph]
+Spell = s_polymorph
+CastTime = 3.5
+Mana = 40
+Duration = 300, 480
+Skill = 7000
 
 [SpellValuesDef spellvalues_s_protection]
 Spell = s_protection
@@ -368,11 +413,23 @@ Mana = 15
 Duration = 120, 180
 Skill = 400
 
+[SpellValuesDef spellvalues_s_telekinesis]
+Spell = s_telekinesis
+CastTime = 2
+Mana = 9
+Skill = 5000
+
 [SpellValuesDef spellvalues_s_teleport]
 Spell = s_teleport
 CastTime = 2
 Mana = 9
 Skill = 300
+
+[SpellValuesDef spellvalues_s_unlock]
+Spell = s_unlock
+CastTime = 2
+Mana = 9
+Skill = 5000
 
 [SpellValuesDef spellvalues_s_wall_of_stone]
 Spell = s_wall_of_stone

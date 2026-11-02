@@ -19,7 +19,6 @@ namespace SteamEngine.Converter {
 			"s_poison", "s_paralyze", "s_paralyzation_field", "s_poison_field"
 		};
 
-		private const string KeptDuration = "s_gate_travel"; //3-4 s by the numbers, #489 made it a minute
 		private const string TimeVar = "nastaveni_spelltime_", ManaVar = "nastaveni_spellmana_", DurationVar = "nastaveni_duration_", ReqVar = "nastaveni_SKILLREQ_";
 
 		public static void Write(string outputPath) {
@@ -37,7 +36,7 @@ namespace SteamEngine.Converter {
 						output.Append("Mana = ").Append(mana.Trim()).Append('\n');
 					}
 					string duration = SphereWorldVars.GetString(DurationVar + spell);
-					if ((duration != null) && !IsZero(duration) && !StringComparer.OrdinalIgnoreCase.Equals(spell, KeptDuration)) {
+					if ((duration != null) && !IsZero(duration)) {
 						output.Append("Duration = ").Append(Tenths(duration)).Append('\n');
 					}
 					if (rolledAgainstDefense.Contains(spell)) {
