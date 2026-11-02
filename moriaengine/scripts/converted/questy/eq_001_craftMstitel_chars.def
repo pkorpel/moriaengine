@@ -1157,6 +1157,7 @@ MaxMana = 0
 Experience = 1800 2200
 NaturalDamageType = DamageType.Blunt|DamageType.Physical
 ReactiveArmorPercent = 90
+NoAnimate = 1
 BleedChance = 700 //70.0% 
 Poisoning = 5000
 Macing = 1000

@@ -92,27 +92,27 @@ armorVsM = 3
 mindDefenseVsM = 3
 Color = 0455
 
-[ItemDef i_scroll_summon_undead] //unused in game
-name = "Scroll of Summon Undead"
-type = t_scroll
-model = i_MAP_ROLLED
-Color = 0774
+//[ItemDef i_scroll_summon_undead] //unused in game //(commented out by Converter) 
+//name = "Scroll of Summon Undead"
+//type = t_scroll
+//model = i_MAP_ROLLED
+//Color = 0774
 
-[ItemDef i_scroll_animate_dead]
-name = "Scroll of Animate Dead"
-type = t_scroll
-RESOURCES = 1 i_scroll_blank, 3 i_reag_bone //nastaveni_cm_resources 
-SKILLMAKE = 950 inscription //nastaveni_cm_skillmake 
-model = i_scroll_magic_arrow
-Color = 0774
+//[ItemDef i_scroll_animate_dead] //(commented out by Converter) 
+//name = "Scroll of Animate Dead"
+//type = t_scroll
+//RESOURCES = 1 i_scroll_blank, 3 i_reag_bone //nastaveni_cm_resources 
+//SKILLMAKE = 950 inscription //nastaveni_cm_skillmake 
+//model = i_scroll_magic_arrow
+//Color = 0774
 
-[ItemDef i_scroll_bone_armor]
-name = "Scroll of Bone Armor"
-type = t_scroll
-RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
-SKILLMAKE = 620 inscription //nastaveni_cm_skillmake 
-model = i_scroll_night_sight
-Color = 0774
+//[ItemDef i_scroll_bone_armor] //(commented out by Converter) 
+//name = "Scroll of Bone Armor"
+//type = t_scroll
+//RESOURCES = 1 i_scroll_blank //nastaveni_cm_resources 
+//SKILLMAKE = 620 inscription //nastaveni_cm_skillmake 
+//model = i_scroll_night_sight
+//Color = 0774
 
 //[ItemDef i_scroll_light] //(commented out by Converter) 
 //name = "Scroll of Light"

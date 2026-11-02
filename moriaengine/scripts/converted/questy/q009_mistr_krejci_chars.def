@@ -21,6 +21,7 @@ Healing = 550 780
 SpiritSpeak = 550 780
 Wrestling = 150 380
 Tactics = 150 350
+NoAnimate = 1
 Equip = random_female_hair
 EquipColor = colors_hair
 Equip = i_shirt_plain

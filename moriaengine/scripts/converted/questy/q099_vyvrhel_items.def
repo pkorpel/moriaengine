@@ -23,6 +23,7 @@ Int = 200
 MaxHits = 1000 1200
 MaxStam = 200 310
 MaxMana = 50
+NoAnimate = 1
 Equip = random_male_hair
 Equip = random_facial_hair
 Equip = i_candle_lit

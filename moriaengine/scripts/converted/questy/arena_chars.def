@@ -26,6 +26,7 @@ Equip = i_sandals
 EquipColor = 001
 Equip = i_pants_long
 EquipColor = color_snow
+NoAnimate = 1
 AggroMode = Calm
 
 [NPCDef c_arena_strazce]
@@ -66,4 +67,5 @@ Equip = i_sandals
 EquipColor = 001
 Equip = i_platemail_legs
 EquipColor = 0989
+NoAnimate = 1
 AggroMode = Calm

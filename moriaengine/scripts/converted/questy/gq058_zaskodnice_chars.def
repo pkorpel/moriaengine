@@ -15,6 +15,7 @@ Color = color_clovek
 Str = 1000
 Dex = 1000
 Int = 1000
+NoAnimate = 1
 Equip = i_hair_long
 EquipColor = 1148
 Equip = i_OBSIDIAN_PLATEMAIL_GORGET

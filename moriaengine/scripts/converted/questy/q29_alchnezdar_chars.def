@@ -11,6 +11,7 @@ Color = colors_skin
 Str = 36 50
 Dex = 36 50
 Int = 51 65
+NoAnimate = 1
 Equip = i_shoes_plain
 EquipColor = 06
 Equip = i_pants_long

@@ -1324,6 +1324,7 @@ AddSummon = c_dragon_sluha_war
 AddSummon = c_dragon_sluha_mag
 AddSummon = c_tarantule_fire
 AddSummon = c_smrtka
+NoAnimate = 1
 NaturalDamageType = DamageType.Blunt|DamageType.Physical
 Tactics = 1000
 Wrestling = 1200

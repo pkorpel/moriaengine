@@ -46,6 +46,7 @@ Tactics = 900 1000
 SpiritSpeak = 800
 Peacemaking = 1000
 Provocation = 1000
+NoAnimate = 1
 Equip = i_monster_create
 
 ON=@npcrefuseitem
@@ -98,6 +99,7 @@ Wrestling = 1000 1100
 SpiritSpeak = 800
 Peacemaking = 1000
 Provocation = 1000
+NoAnimate = 1
 Equip = i_spellbook
 AddSpell = s_harm
 AddSpell = s_fireball

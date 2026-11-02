@@ -951,6 +951,19 @@ namespace SteamEngine.CompiledScripts {
 
 		private static readonly TagKey lootTK = TagKey.Acquire("_npcLoot_");
 		private static readonly TagKey isBossTK = TagKey.Acquire("_npcIsBoss_");
+		private static readonly TagKey noAnimateTK = TagKey.Acquire("_npcNoAnimate_");
+
+		/// <summary>#962 - Erebor's tag(noanimate,1): its corpse can't be raised.</summary>
+		public bool NoAnimate {
+			get { return this.GetTag(noAnimateTK) != null; }
+			set {
+				if (value) {
+					this.SetTag(noAnimateTK, true);
+				} else {
+					this.RemoveTag(noAnimateTK);
+				}
+			}
+		}
 
 		/// <summary>#794 - Erebor's tag(isBoss,1): a boss never turns into an elite monster (EliteMonster).</summary>
 		public bool IsBoss {
@@ -1407,6 +1420,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "isboss") {
 				this.IsBoss = ConvertTools.ParseInt32(args.Trim()) != 0;
+				return;
+			}
+			if (param == "noanimate") {
+				this.NoAnimate = ConvertTools.ParseInt32(args.Trim()) != 0;
 				return;
 			}
 			if (param == "loot") {

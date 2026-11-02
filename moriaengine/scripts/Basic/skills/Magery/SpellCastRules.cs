@@ -131,7 +131,7 @@ namespace SteamEngine.CompiledScripts {
 			return Is(spell, "s_summon_daemon") ? StrongStaff : 0;
 		}
 
-		private static bool HasStaff(Character self, int material) {
+		internal static bool HasStaff(Character self, int material) {
 			if (self.IsGM) {
 				return true;
 			}
