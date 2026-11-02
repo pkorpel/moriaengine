@@ -1017,31 +1017,43 @@ namespace SteamEngine {
 				result.SendDenyMessage(dclicker);
 
 			} else {//action triggers
-				ScriptArgs sa = new ScriptArgs(dclicker, this);
+				this.RunDClick(dclicker, isItem);
+			}
+		}
 
-				if (isItem) {
-					dclicker.TryTrigger(TriggerKey.itemDClick, sa);
-					try {
-						dclicker.On_ItemDClick((AbstractItem) this);
-					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-				} else {
-					dclicker.TryTrigger(TriggerKey.charDClick, sa);
-					try {
-						dclicker.On_CharDClick((AbstractCharacter) this);
-					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-				}
+		/// <summary>#1001 - a double click that skips the deny triggers and their reach test, for Telekinesis.</summary>
+		public void Trigger_DClickFromAfar(AbstractCharacter dclicker) {
+			this.ThrowIfDeleted();
+			if (dclicker != null) {
+				this.RunDClick(dclicker, this.IsItem);
+			}
+		}
 
-				// #509 - cancellable (was a fire-and-forget TryTrigger before) so a TriggerGroup
-				// attached to this Thing's Def (via TEVENTS/TSPEECH, e.g. a shared per-job
-				// handler like BankerDClick) can fully replace the default On_DClick behavior
-				// for specific NPCs/items instead of always running alongside it - mirrors the
-				// existing Trigger_Hear pattern (SpeechResult.ActedUponExclusively gates the
-				// fallback On_Hear the same way).
-				if (TriggerResult.Cancel != this.TryCancellableTrigger(TriggerKey.dClick, sa)) {
-					try {
-						this.On_DClick(dclicker);
-					} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
-				}
+		private void RunDClick(AbstractCharacter dclicker, bool isItem) {
+			ScriptArgs sa = new ScriptArgs(dclicker, this);
+
+			if (isItem) {
+				dclicker.TryTrigger(TriggerKey.itemDClick, sa);
+				try {
+					dclicker.On_ItemDClick((AbstractItem) this);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			} else {
+				dclicker.TryTrigger(TriggerKey.charDClick, sa);
+				try {
+					dclicker.On_CharDClick((AbstractCharacter) this);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
+			}
+
+			// #509 - cancellable (was a fire-and-forget TryTrigger before) so a TriggerGroup
+			// attached to this Thing's Def (via TEVENTS/TSPEECH, e.g. a shared per-job
+			// handler like BankerDClick) can fully replace the default On_DClick behavior
+			// for specific NPCs/items instead of always running alongside it - mirrors the
+			// existing Trigger_Hear pattern (SpeechResult.ActedUponExclusively gates the
+			// fallback On_Hear the same way).
+			if (TriggerResult.Cancel != this.TryCancellableTrigger(TriggerKey.dClick, sa)) {
+				try {
+					this.On_DClick(dclicker);
+				} catch (FatalException) { throw; } catch (Exception e) { Logger.WriteError(e); }
 			}
 		}
 

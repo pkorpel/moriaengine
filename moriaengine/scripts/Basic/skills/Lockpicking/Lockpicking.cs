@@ -138,7 +138,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static int DifficultyOf(Item locked) {
+		internal static int DifficultyOf(Item locked) {
 			object difficulty = locked.GetTag(difficultyTK);
 			return (difficulty == null) ? 0 : Convert.ToInt32(difficulty, System.Globalization.CultureInfo.InvariantCulture);
 		}

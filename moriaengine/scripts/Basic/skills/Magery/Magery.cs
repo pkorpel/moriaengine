@@ -91,7 +91,7 @@ namespace SteamEngine.CompiledScripts {
 				SpellBook book = skillSeqArgs.Tool as SpellBook;
 				if (book != null) {
 					if ((book.TopObj() == self) && book.HasSpell(spell)) {
-						if (!SummonMenu.Intercept(skillSeqArgs, spell)) {
+						if (!SummonMenu.Intercept(skillSeqArgs, spell) && !PolymorphMenu.Intercept(skillSeqArgs, spell)) {
 							spell.Trigger_Select(skillSeqArgs);
 						}
 						return TriggerResult.Cancel; //cancel here, the rest of Select is being done by SpellDef
@@ -100,7 +100,7 @@ namespace SteamEngine.CompiledScripts {
 
 				SpellScroll scroll = skillSeqArgs.Tool as SpellScroll;
 				if (scroll != null) {
-					if (!SummonMenu.Intercept(skillSeqArgs, spell)) {
+					if (!SummonMenu.Intercept(skillSeqArgs, spell) && !PolymorphMenu.Intercept(skillSeqArgs, spell)) {
 						spell.Trigger_Select(skillSeqArgs);
 					}
 					return TriggerResult.Cancel; //cancel here, the rest of Select is being done by SpellDef
