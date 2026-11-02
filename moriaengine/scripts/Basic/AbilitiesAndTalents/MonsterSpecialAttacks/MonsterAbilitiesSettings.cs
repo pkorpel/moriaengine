@@ -616,5 +616,145 @@ namespace SteamEngine.CompiledScripts {
 			get { return MonsterSpecialAttacks.DispelBombDef == null ? 0 : MonsterSpecialAttacks.DispelBombDef.BlastRange; }
 			set { if (MonsterSpecialAttacks.DispelBombDef != null) { MonsterSpecialAttacks.DispelBombDef.BlastRange = value; } }
 		}
+
+		public int GoldDropDropOneIn {
+			get { return MonsterSpecialAttacks.GoldDropDef == null ? 0 : MonsterSpecialAttacks.GoldDropDef.DropOneIn; }
+			set { if (MonsterSpecialAttacks.GoldDropDef != null) { MonsterSpecialAttacks.GoldDropDef.DropOneIn = value; } }
+		}
+
+		public int ReagDropDropOneIn {
+			get { return MonsterSpecialAttacks.ReagDropDef == null ? 0 : MonsterSpecialAttacks.ReagDropDef.DropOneIn; }
+			set { if (MonsterSpecialAttacks.ReagDropDef != null) { MonsterSpecialAttacks.ReagDropDef.DropOneIn = value; } }
+		}
+
+		public int DiamondDropDropOneIn {
+			get { return MonsterSpecialAttacks.DiamondDropDef == null ? 0 : MonsterSpecialAttacks.DiamondDropDef.DropOneIn; }
+			set { if (MonsterSpecialAttacks.DiamondDropDef != null) { MonsterSpecialAttacks.DiamondDropDef.DropOneIn = value; } }
+		}
+
+		public int ScalesAbsorbOneIn {
+			get { return MonsterSpecialAttacks.ScalesDef == null ? 0 : MonsterSpecialAttacks.ScalesDef.AbsorbOneIn; }
+			set { if (MonsterSpecialAttacks.ScalesDef != null) { MonsterSpecialAttacks.ScalesDef.AbsorbOneIn = value; } }
+		}
+
+		public double[] ScalesAbsorbedDamage {
+			get { return MonsterSpecialAttacks.ScalesDef == null ? null : MonsterSpecialAttacks.ScalesDef.AbsorbedDamage; }
+			set { if (MonsterSpecialAttacks.ScalesDef != null) { MonsterSpecialAttacks.ScalesDef.AbsorbedDamage = value; } }
+		}
+
+		public int NpcManaShieldRaiseOneIn {
+			get { return MonsterSpecialAttacks.NpcManaShieldDef == null ? 0 : MonsterSpecialAttacks.NpcManaShieldDef.RaiseOneIn; }
+			set { if (MonsterSpecialAttacks.NpcManaShieldDef != null) { MonsterSpecialAttacks.NpcManaShieldDef.RaiseOneIn = value; } }
+		}
+
+		public double NpcManaShieldShieldSeconds {
+			get { return MonsterSpecialAttacks.NpcManaShieldDef == null ? 0 : MonsterSpecialAttacks.NpcManaShieldDef.ShieldSeconds; }
+			set { if (MonsterSpecialAttacks.NpcManaShieldDef != null) { MonsterSpecialAttacks.NpcManaShieldDef.ShieldSeconds = value; } }
+		}
+
+		public double NpcRegenerationFirstDelay {
+			get { return MonsterSpecialAttacks.NpcRegenerationDef == null ? 0 : MonsterSpecialAttacks.NpcRegenerationDef.FirstDelay; }
+			set { if (MonsterSpecialAttacks.NpcRegenerationDef != null) { MonsterSpecialAttacks.NpcRegenerationDef.FirstDelay = value; } }
+		}
+
+		public double NpcRegenerationHealPeriod {
+			get { return MonsterSpecialAttacks.NpcRegenerationDef == null ? 0 : MonsterSpecialAttacks.NpcRegenerationDef.HealPeriod; }
+			set { if (MonsterSpecialAttacks.NpcRegenerationDef != null) { MonsterSpecialAttacks.NpcRegenerationDef.HealPeriod = value; } }
+		}
+
+		public double[] NpcRegenerationHitsDivisor {
+			get { return MonsterSpecialAttacks.NpcRegenerationDef == null ? null : MonsterSpecialAttacks.NpcRegenerationDef.HitsDivisor; }
+			set { if (MonsterSpecialAttacks.NpcRegenerationDef != null) { MonsterSpecialAttacks.NpcRegenerationDef.HitsDivisor = value; } }
+		}
+
+		public int NpcRegenerationMostHeals {
+			get { return MonsterSpecialAttacks.NpcRegenerationDef == null ? 0 : MonsterSpecialAttacks.NpcRegenerationDef.MostHeals; }
+			set { if (MonsterSpecialAttacks.NpcRegenerationDef != null) { MonsterSpecialAttacks.NpcRegenerationDef.MostHeals = value; } }
+		}
+
+		public double[] ResistCountdownCountdownChance {
+			get { return MonsterSpecialAttacks.ResistCountdownDef == null ? null : MonsterSpecialAttacks.ResistCountdownDef.CountdownChance; }
+			set { if (MonsterSpecialAttacks.ResistCountdownDef != null) { MonsterSpecialAttacks.ResistCountdownDef.CountdownChance = value; } }
+		}
+
+		public double[] ResistCountdownCountdownAmount {
+			get { return MonsterSpecialAttacks.ResistCountdownDef == null ? null : MonsterSpecialAttacks.ResistCountdownDef.CountdownAmount; }
+			set { if (MonsterSpecialAttacks.ResistCountdownDef != null) { MonsterSpecialAttacks.ResistCountdownDef.CountdownAmount = value; } }
+		}
+
+		public int ResistCountdownImmuneFrom {
+			get { return MonsterSpecialAttacks.ResistCountdownDef == null ? 0 : MonsterSpecialAttacks.ResistCountdownDef.ImmuneFrom; }
+			set { if (MonsterSpecialAttacks.ResistCountdownDef != null) { MonsterSpecialAttacks.ResistCountdownDef.ImmuneFrom = value; } }
+		}
+
+		public double Phoenix25RebornShare {
+			get { return MonsterSpecialAttacks.Phoenix25Def == null ? 0 : MonsterSpecialAttacks.Phoenix25Def.RebornShare; }
+			set { if (MonsterSpecialAttacks.Phoenix25Def != null) { MonsterSpecialAttacks.Phoenix25Def.RebornShare = value; } }
+		}
+
+		public double[] GoldDropDropAmount {
+			get { return MonsterSpecialAttacks.GoldDropDef == null ? null : MonsterSpecialAttacks.GoldDropDef.DropAmount; }
+			set { if (MonsterSpecialAttacks.GoldDropDef != null) { MonsterSpecialAttacks.GoldDropDef.DropAmount = value; } }
+		}
+
+		public string GoldDropDropItems {
+			get { return MonsterSpecialAttacks.GoldDropDef == null ? null : MonsterSpecialAttacks.GoldDropDef.DropItems; }
+			set { if (MonsterSpecialAttacks.GoldDropDef != null) { MonsterSpecialAttacks.GoldDropDef.DropItems = value; } }
+		}
+
+		public int GoldDropDropSound {
+			get { return MonsterSpecialAttacks.GoldDropDef == null ? 0 : MonsterSpecialAttacks.GoldDropDef.DropSound; }
+			set { if (MonsterSpecialAttacks.GoldDropDef != null) { MonsterSpecialAttacks.GoldDropDef.DropSound = value; } }
+		}
+
+		public string GoldDropDropSpeech {
+			get { return MonsterSpecialAttacks.GoldDropDef == null ? null : MonsterSpecialAttacks.GoldDropDef.DropSpeech; }
+			set { if (MonsterSpecialAttacks.GoldDropDef != null) { MonsterSpecialAttacks.GoldDropDef.DropSpeech = value; } }
+		}
+
+		public double[] ReagDropDropAmount {
+			get { return MonsterSpecialAttacks.ReagDropDef == null ? null : MonsterSpecialAttacks.ReagDropDef.DropAmount; }
+			set { if (MonsterSpecialAttacks.ReagDropDef != null) { MonsterSpecialAttacks.ReagDropDef.DropAmount = value; } }
+		}
+
+		public string ReagDropDropItems {
+			get { return MonsterSpecialAttacks.ReagDropDef == null ? null : MonsterSpecialAttacks.ReagDropDef.DropItems; }
+			set { if (MonsterSpecialAttacks.ReagDropDef != null) { MonsterSpecialAttacks.ReagDropDef.DropItems = value; } }
+		}
+
+		public int ReagDropDropSound {
+			get { return MonsterSpecialAttacks.ReagDropDef == null ? 0 : MonsterSpecialAttacks.ReagDropDef.DropSound; }
+			set { if (MonsterSpecialAttacks.ReagDropDef != null) { MonsterSpecialAttacks.ReagDropDef.DropSound = value; } }
+		}
+
+		public string ReagDropDropSpeech {
+			get { return MonsterSpecialAttacks.ReagDropDef == null ? null : MonsterSpecialAttacks.ReagDropDef.DropSpeech; }
+			set { if (MonsterSpecialAttacks.ReagDropDef != null) { MonsterSpecialAttacks.ReagDropDef.DropSpeech = value; } }
+		}
+
+		public double[] DiamondDropDropAmount {
+			get { return MonsterSpecialAttacks.DiamondDropDef == null ? null : MonsterSpecialAttacks.DiamondDropDef.DropAmount; }
+			set { if (MonsterSpecialAttacks.DiamondDropDef != null) { MonsterSpecialAttacks.DiamondDropDef.DropAmount = value; } }
+		}
+
+		public string DiamondDropDropItems {
+			get { return MonsterSpecialAttacks.DiamondDropDef == null ? null : MonsterSpecialAttacks.DiamondDropDef.DropItems; }
+			set { if (MonsterSpecialAttacks.DiamondDropDef != null) { MonsterSpecialAttacks.DiamondDropDef.DropItems = value; } }
+		}
+
+		public int DiamondDropDropSound {
+			get { return MonsterSpecialAttacks.DiamondDropDef == null ? 0 : MonsterSpecialAttacks.DiamondDropDef.DropSound; }
+			set { if (MonsterSpecialAttacks.DiamondDropDef != null) { MonsterSpecialAttacks.DiamondDropDef.DropSound = value; } }
+		}
+
+		public string DiamondDropDropSpeech {
+			get { return MonsterSpecialAttacks.DiamondDropDef == null ? null : MonsterSpecialAttacks.DiamondDropDef.DropSpeech; }
+			set { if (MonsterSpecialAttacks.DiamondDropDef != null) { MonsterSpecialAttacks.DiamondDropDef.DropSpeech = value; } }
+		}
+
+		public double PhoenixRebornShare {
+			get { return MonsterSpecialAttacks.PhoenixDef == null ? 0 : MonsterSpecialAttacks.PhoenixDef.RebornShare; }
+			set { if (MonsterSpecialAttacks.PhoenixDef != null) { MonsterSpecialAttacks.PhoenixDef.RebornShare = value; } }
+		}
 	}
 }

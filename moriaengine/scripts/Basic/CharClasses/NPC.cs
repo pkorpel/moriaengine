@@ -541,6 +541,9 @@ namespace SteamEngine.CompiledScripts {
 			{ "stamdmgchance", TagKey.Acquire("_npcStamDmgChance_") },
 			{ "stamdmgpower", TagKey.Acquire("_npcStamDmgPower_") },
 			{ "lightningschance", TagKey.Acquire("_npcLightningsChance_") },
+			{ "regenerationdivisor", TagKey.Acquire("_npcRegenerationDivisor_") },
+			{ "resistcountdownchance", TagKey.Acquire("_npcResistCountdownChance_") },
+			{ "resistcountdownamount", TagKey.Acquire("_npcResistCountdownAmount_") },
 			{ "lightningsrange", TagKey.Acquire("_npcLightningsRange_") },
 			{ "npccursemanachance", TagKey.Acquire("_npcCurseManaChance_") },
 			{ "npccursemanacooldown", TagKey.Acquire("_npcCurseManaCooldown_") },
@@ -607,6 +610,20 @@ namespace SteamEngine.CompiledScripts {
 		public int[] StamDmgPower {
 			get { return this.GetAbilityRange("stamdmgpower"); }
 			set { this.SetAbilityRange("stamdmgpower", value); }
+		}
+		/// <summary>#1022 - real archive field is tag.regespeed.</summary>
+		public int[] RegenerationDivisor {
+			get { return this.GetAbilityRange("regenerationdivisor"); }
+			set { this.SetAbilityRange("regenerationdivisor", value); }
+		}
+		/// <summary>#1022 - real archive fields are tag.resist_countdown_chance/_amount.</summary>
+		public int[] ResistCountdownChance {
+			get { return this.GetAbilityRange("resistcountdownchance"); }
+			set { this.SetAbilityRange("resistcountdownchance", value); }
+		}
+		public int[] ResistCountdownAmount {
+			get { return this.GetAbilityRange("resistcountdownamount"); }
+			set { this.SetAbilityRange("resistcountdownamount", value); }
 		}
 		/// <summary>Real archive fields are tag.e_lightnings_chance/_range.</summary>
 		public int[] LightningsChance {
@@ -2003,6 +2020,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (candidate.Flag_Invulnerable) {
 				return false; //#267 - nobody autonomously targets an invulnerable character, even one otherwise immune to the resulting damage
+			}
+			if (MonsterSpecialAttacks.LeavesPlayersAlone(this)) {
+				return false; //#1022
 			}
 			if (this.ControlMaster != null) {
 				return false; //tamed pets don't pick fights on their own - no "guard me"/"kill" command system yet (follow-up)

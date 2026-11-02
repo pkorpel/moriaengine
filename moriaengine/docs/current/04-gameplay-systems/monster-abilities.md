@@ -115,3 +115,9 @@ Tests: `Tests/Protocol/MonsterSpecialAttacksTests`, `MonsterAbilitiesBatchTests`
 `MonsterAbilitiesBatch3Tests`, `MonsterAbilitiesBatch4Tests`, `MonsterAbilitiesBatch5Tests`, `ItemRefuserTests`, `HealerTests`, `NpcBleedTests`;
 fast tier `MonsterAbilitiesSettingsCoverageTests`, `MagicShieldFormulaTests`, `KnockbackPushDistanceTests`,
 `BackstabFormulaTests`.
+
+## Hit reactions (#1022)
+
+`HitReactions.cs`, tunables on `.settings`. `e_npc_golddrop`, `e_npc_reagdrop` and `e_npc_diamonddrop` spill a little on a blow. `e_scales` absorbs one blow in three down to 1-4. `e_npc_manashield` raises a 16 s shield one blow in 15, then blows cost mana until one can't be covered. `e_npc_regeneration` mends under half hits, a tenth or `tag.regespeed` every 8 s, 12 times at most. `e_resist_countdown` wears a boss's resists down by the player's kind of attack. `e_phoenix_25` is `PhoenixAbilityDef` with `RebornShare` 750. `e_no_player_attack` leaves players alone until one hits it. `e_noport` needs nothing here.
+
+The 19 stubs with an empty block on Erebor and the 3 with no source stay as labels, the user's call. What's left is on #1022.

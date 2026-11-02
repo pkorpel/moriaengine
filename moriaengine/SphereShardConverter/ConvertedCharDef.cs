@@ -476,7 +476,7 @@ namespace SteamEngine.Converter {
 			//the base ProcessCreateTriggerLine's bare switch has no default case and silently
 			//drops anything it doesn't recognize - these were never reaching the engine at
 			//all before this. See resistFieldAliases/EmitResistFields above for the mapping.
-			if (name.StartsWith("tag.resist_", StringComparison.OrdinalIgnoreCase)) {
+			if (name.StartsWith("tag.resist_", StringComparison.OrdinalIgnoreCase) && !name.StartsWith("tag.resist_countdown", StringComparison.OrdinalIgnoreCase)) {
 				if (this.IsPlayerDefByName) {
 					return;
 				}
@@ -856,6 +856,9 @@ namespace SteamEngine.Converter {
 				{ "tag.stam_dmg_chance", "StamDmgChance" },
 				{ "tag.stam_dmg_power", "StamDmgPower" },
 				{ "tag.e_lightnings_chance", "LightningsChance" },
+				{ "tag.regespeed", "RegenerationDivisor" },
+				{ "tag.resist_countdown_chance", "ResistCountdownChance" },
+				{ "tag.resist_countdown_amount", "ResistCountdownAmount" },
 				{ "tag.e_lightnings_range", "LightningsRange" },
 				{ "tag.npc_curse_mana_chance", "NpcCurseManaChance" },
 				{ "tag.npc_curse_mana_delay", "NpcCurseManaCooldown" },

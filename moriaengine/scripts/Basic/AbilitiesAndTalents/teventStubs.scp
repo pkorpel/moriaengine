@@ -312,11 +312,23 @@ Name = "Stamina Curse"
 [DetectAbilityDef a_tevent_e_npc_detect]
 Name = "Detection"
 
-[PassiveAbilityDef a_tevent_e_npc_diamonddrop]
+[DiamondDropAbilityDef a_tevent_e_npc_diamonddrop]
 Name = "(e_npc_diamonddrop)"
+dropOneIn = 10
+dropAmount = 1, 1
+dropItems = "i_gem_diamond"
+dropSound = 52
+dropSpeech = "Muj Diamand! Za to budes pykat!"
 
-[PassiveAbilityDef a_tevent_e_npc_golddrop]
+
+[GoldDropAbilityDef a_tevent_e_npc_golddrop]
 Name = "(e_npc_golddrop)"
+dropOneIn = 5
+dropAmount = 1, 10
+dropItems = "i_gold"
+dropSound = 55
+dropSpeech = "Moje zlato! To ti nedaruju!"
+
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
 //InfiniteManaAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - mana
@@ -344,8 +356,9 @@ Name = "(e_npc_mag)"
 [MagicShieldAbilityDef a_tevent_e_npc_magicshield]
 Name = "Magic Shield"
 
-[PassiveAbilityDef a_tevent_e_npc_manashield]
+[NpcManaShieldAbilityDef a_tevent_e_npc_manashield]
 Name = "(e_npc_manashield)"
+
 
 //#799 batch 5: upgraded from a bare stub to a real MassLeapAbilityDef
 //(MonsterSpecialAttacks/) - teleports from player to player, attacking each.
@@ -362,11 +375,18 @@ Name = "Split Shot"
 [ReactiveArmorAbilityDef a_tevent_e_npc_reactivearmor]
 Name = "Reactive Armor"
 
-[PassiveAbilityDef a_tevent_e_npc_reagdrop]
+[ReagDropAbilityDef a_tevent_e_npc_reagdrop]
 Name = "(e_npc_reagdrop)"
+dropOneIn = 5
+dropAmount = 1, 10
+dropItems = "i_reag_black_pearl,i_reag_blood_moss,i_reag_garlic,i_reag_ginseng,i_reag_mandrake_root,i_reag_nightshade,i_reag_sulfur_ash,i_reag_spider_silk"
+dropSound = 310
+dropSpeech = "Me bylinky! Za to zemres!"
 
-[PassiveAbilityDef a_tevent_e_npc_regeneration]
+
+[NpcRegenerationAbilityDef a_tevent_e_npc_regeneration]
 Name = "(e_npc_regeneration)"
+
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
 //RoundattackAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - a
@@ -460,8 +480,10 @@ Name = "Paralyzing Scream"
 [PhoenixAbilityDef a_tevent_e_phoenix]
 Name = "Phoenix Rebirth"
 
-[PassiveAbilityDef a_tevent_e_phoenix_25]
+[PhoenixAbilityDef a_tevent_e_phoenix_25]
 Name = "(e_phoenix_25)"
+phoenixRebornShare = 750
+
 
 //#797 batch 4: upgraded from a bare stub to a real PhoenixFireAbilityDef
 //(MonsterSpecialAttacks/) - 1 in 15 landed swings drops 10 fire tiles around it.
@@ -491,8 +513,9 @@ Name = "(e_q040_dragon_death)"
 [PassiveAbilityDef a_tevent_e_reaper]
 Name = "(e_reaper)"
 
-[PassiveAbilityDef a_tevent_e_resist_countdown]
+[ResistCountdownAbilityDef a_tevent_e_resist_countdown]
 Name = "(e_resist_countdown)"
+
 
 [PassiveAbilityDef a_tevent_e_rinald]
 Name = "(e_rinald)"
@@ -500,8 +523,9 @@ Name = "(e_rinald)"
 [PassiveAbilityDef a_tevent_e_rozdeleni]
 Name = "(e_rozdeleni)"
 
-[PassiveAbilityDef a_tevent_e_scales]
+[ScalesAbilityDef a_tevent_e_scales]
 Name = "(e_scales)"
+
 
 [PassiveAbilityDef a_tevent_e_scorpion]
 Name = "(e_scorpion)"
