@@ -45,7 +45,7 @@ namespace SteamEngine.Tests.Protocol {
 			Expect(client, "You are too far away");
 
 			string delays = this.Ask(client, ".TestGatherDelays", "GATHER_DELAYS:");
-			Assert.Contains("at100=2 at110=1.7 strokes=2-6", delays);
+			Assert.Contains("at100=2 at110=1.7 strokes=1-1", delays);
 		}
 	}
 

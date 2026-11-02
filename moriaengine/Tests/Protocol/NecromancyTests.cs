@@ -31,7 +31,9 @@ namespace SteamEngine.Tests.Protocol {
 		[Fact]
 		public void TheBookHoldsNecroSpellsAndTheyHit() {
 			using var client = CommandPermissionTests.Connect("necrotest", "Necro Tester");
+			int mark = this.fixture.GameOutputSnapshot().Length;
 			string ready = this.Ask(client, ".TestNecroReady", "NECRO_READY:");
+			Assert.Contains("NECRO_NEW_BOOK: circle3=True circle4=False summon=True necro=63", this.fixture.GameOutputSnapshot().Substring(mark));
 			Assert.Contains("has=False", ready);
 			client.SendDoubleClick(Uid(ready, "pack"));
 			Thread.Sleep(300);

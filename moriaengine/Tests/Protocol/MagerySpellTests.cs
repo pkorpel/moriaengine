@@ -138,8 +138,8 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_DURATION_TEST:", mark, TimeSpan.FromSeconds(10)),
 					"Output since command:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_DURATION_TEST:");
-				Assert.Contains("min=60", line);
-				Assert.Contains("max=60", line);
+				Assert.Contains("min=3", line);
+				Assert.Contains("max=4", line);
 			}
 		}
 

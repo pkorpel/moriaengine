@@ -7,6 +7,8 @@ namespace SteamEngine.CompiledScripts {
 	public static class ScrollCaseTestHelpers {
 		private static Item scrollCase;
 		private static NPC dummy;
+		private static NPC nearDummy;
+		private static NPC farDummy;
 
 		private static Item Give(Character self, string defname, int amount) {
 			Item item = (Item) ThingDef.GetByDefname(defname).Create(self.Backpack);
@@ -37,10 +39,14 @@ namespace SteamEngine.CompiledScripts {
 			self.Mana = 300;
 			dummy = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.X + 1, self.Y, self.Z, self.M);
 			dummy.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			nearDummy = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.X + 9, self.Y, self.Z, self.M);
+			nearDummy.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			farDummy = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.X + 11, self.Y, self.Z, self.M);
+			farDummy.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
 			Item light = (Item) ThingDef.GetByDefname("i_sconce_lit").Create(self.X, self.Y + 1, self.Z, self.M);
 			Item plain = Give(self, "i_scroll_night_sight", 1);
 			Item shield = Give(self, "i_customscroll_manashield", 2);
-			Item bless = Give(self, "i_customscroll_mass_bless", 1);
+			Item bless = Give(self, "i_customscroll_mass_bless", 6);
 			Item clumsy = Give(self, "i_scroll_clumsy", 5);
 			scrollCase = Give(self, "i_scroll_case", 1);
 			Console.WriteLine("SCROLL_READY: self=#" + self.Uid + " dummy=#" + dummy.Uid + " pack=#" + self.Backpack.Uid + " plain=#" + plain.Uid
@@ -58,8 +64,17 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		[SteamFunction]
+		public static void TestMassBlessReport(Character self) {
+			PluginKey key = PluginKey.Acquire("spellEffect_statBuff");
+			Console.WriteLine("MASS_BLESS: main=" + (dummy.GetPlugin(key) != null) + " near=" + (nearDummy.GetPlugin(key) != null) + " far=" + (farDummy.GetPlugin(key) != null));
+			self.Mana = self.MaxMana; //a fizzle costs mana and the next try needs 20
+		}
+
+		[SteamFunction]
 		public static void TestScrollProfession(Character self, ScriptArgs sa) {
 			((Player) self).Profession = ProfessionDef.GetByDefname(sa.Argv[0].ToString());
+			self.MaxMana = 300;
+			self.Mana = 300;
 			Console.WriteLine("SCROLL_PROFESSION: done");
 		}
 	}
