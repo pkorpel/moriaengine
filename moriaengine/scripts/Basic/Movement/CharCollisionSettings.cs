@@ -56,6 +56,28 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public bool npcsBlockedByCharacters = true;
 
+		/// <summary>#1031 - tiles around an NPC where characters count as obstacles when it plans a
+		/// path. Further away they're ignored, they'll have moved by the time it gets there.</summary>
+		[SaveableData]
+		public int npcPathCharacterRadius = 8;
+
+		/// <summary>#1031 - seconds an NPC keeps finding no way past a character before it looks
+		/// for a long way round. The wait lets a pack in a corridor sort itself out.</summary>
+		[SaveableData]
+		public double npcDetourWaitSeconds = 2;
+
+		/// <summary>#1031 - seconds between two long searches of one NPC, they're the costly kind.</summary>
+		[SaveableData]
+		public double npcDetourRetrySeconds = 10;
+
+		/// <summary>#1031 - tiles beyond the NPC and its target the long search may wander.</summary>
+		[SaveableData]
+		public int npcDetourSearchMargin = 64;
+
+		/// <summary>#1031 - nodes the long search may expand before giving up.</summary>
+		[SaveableData]
+		public int npcDetourMaxIterations = 4000;
+
 		/// <summary>#779 - players at 0 stamina, or carrying more than maxLoadPercent of what they can
 		/// carry (STR*4+30 stones), can't move, and walking costs stamina depending on the load
 		/// (Sphere 0.99z8's CheckMoveWalkDir / Calc_DropStamWhileMoving). Off = none of that.</summary>

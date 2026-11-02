@@ -111,6 +111,11 @@ namespace SteamEngine.CompiledScripts {
 		//almost every time). This was the real cause of "NPC swings but never actually hits."
 		private Character lastEngagedTarget;
 
+		//#1031 - transient, not saved: when PlanPath first found a character barring the way, and
+		//when it may next run its long search.
+		private double blockedSince;
+		private double nextDetourTime;
+
 		//#769 - transient, not saved: the path being walked by StepTowardsSmart. Re-planned from scratch after a reload.
 		private NpcPathCache pathCache;
 
@@ -308,8 +313,9 @@ namespace SteamEngine.CompiledScripts {
 					this.StepTowardsSmart(self, goal, goalDistance > RunWhenBehindBy);
 					if ((self.X == beforeX) && (self.Y == beforeY)) {
 						//#768 - truly stuck (AStar already hands out partial paths, so no progress at all
-						//means nothing reachable gets closer): give up and say so, instead of trying forever
-						if (++this.goStuckTicks >= GoGiveUpTicks) {
+						//means nothing reachable gets closer): give up and say so, instead of trying forever.
+						//#1031 - not while a character bars the way and the long search hasn't had its turn.
+						if (!this.IsWaitingForDetour && (++this.goStuckTicks >= GoGiveUpTicks)) {
 							Logger.WriteDebug("NPCAiTimer.Think: " + self.Name + "#" + self.Uid + " gives up going to " + goal);
 							self.PetGoalPoint = null;
 							this.goStuckTicks = 0;
@@ -886,11 +892,8 @@ namespace SteamEngine.CompiledScripts {
 				this.pathCache.Invalidate(); //something moved into the way since the path was planned
 			}
 
-			Map map = self.GetMap();
-			AStar.Options options = new AStar.Options();
-			options.StopWithin = (target is Character) ? 1 : 0;
-			options.FirstStepBlocked = (x, y, z) => CharacterCollision.IsTileBlockedFor(self, map, x, y, z);
-			AStar.Result result = AStar.FindPathOnMap(self, target, map, self.MovementSettings, options);
+			bool detour;
+			AStar.Result result = this.PlanPath(self, target, out detour);
 			Direction[] path = result.Path;
 			if (path == null) {
 				Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " found NO path to " + target + " (" + result.Iterations + " iterations) - falling back to direct step");
@@ -899,7 +902,7 @@ namespace SteamEngine.CompiledScripts {
 			} else if (path.Length == 0) {
 				this.pathCache.Invalidate(); //already there
 			} else {
-				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y);
+				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y, detour);
 				if (this.TryStep(self, path[0], running)) {
 					this.pathCache.Advance(self.X, self.Y);
 				} else {
@@ -908,6 +911,47 @@ namespace SteamEngine.CompiledScripts {
 					this.StepTowards(self, target, running);
 				}
 			}
+		}
+
+		private bool IsWaitingForDetour {
+			get { return (this.blockedSince != 0) && (Globals.TimeInSeconds <= this.blockedSince + CharCollisionSettings.instance.npcDetourWaitSeconds); }
+		}
+
+		/// <summary>#1031 - characters near the NPC are obstacles for the whole search. When that
+		/// leaves no way to the target and the NPC stays stuck for a moment, it searches much wider
+		/// and takes the long way round; `detour` says the path is one.</summary>
+		private AStar.Result PlanPath(NPC self, IPoint3D target, out bool detour) {
+			detour = false;
+			Map map = self.GetMap();
+			CharCollisionSettings settings = CharCollisionSettings.instance;
+			AStar.Options options = new AStar.Options();
+			options.StopWithin = (target is Character) ? 1 : 0;
+			options.BlockedWithin = settings.npcPathCharacterRadius;
+			options.Blocked = (x, y, z) => CharacterCollision.IsTileBlockedFor(self, map, x, y, z);
+			AStar.Result result = AStar.FindPathOnMap(self, target, map, self.MovementSettings, options);
+			if (result.ReachedGoal || !result.HitBlocked) {
+				this.blockedSince = 0;
+				return result;
+			}
+
+			double now = Globals.TimeInSeconds;
+			if (this.blockedSince == 0) {
+				this.blockedSince = now;
+			}
+			if ((now < this.blockedSince + settings.npcDetourWaitSeconds) || (now < this.nextDetourTime)) {
+				return result;
+			}
+			this.nextDetourTime = now + settings.npcDetourRetrySeconds;
+			options.WindowMargin = settings.npcDetourSearchMargin;
+			options.MaxIterations = settings.npcDetourMaxIterations;
+			options.AllowPartial = false;
+			AStar.Result wide = AStar.FindPathOnMap(self, target, map, self.MovementSettings, options);
+			if (!wide.ReachedGoal) {
+				return result; //really sealed: NPCs can't shove, so it waits at the blockage
+			}
+			detour = true;
+			this.blockedSince = 0;
+			return wide;
 		}
 
 		private void Wander(NPC self) {

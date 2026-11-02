@@ -194,7 +194,7 @@ namespace SteamEngine.Tests {
 		[Fact]
 		public void BlockedFirstStepIsRoutedAround() {
 			Grid grid = new Grid(20, 20);
-			AStar.Options options = new AStar.Options { FirstStepBlocked = (x, y, z) => (x == 6) && (y == 5) };
+			AStar.Options options = new AStar.Options { Blocked = (x, y, z) => (x == 6) && (y == 5) };
 			AStar.Result result = grid.Find(5, 5, 10, 5, options);
 			Assert.True(result.ReachedGoal);
 			Assert.NotEqual(Direction.East, result.Path[0]);
@@ -204,10 +204,97 @@ namespace SteamEngine.Tests {
 		[Fact]
 		public void BlockedFirstStepOntoTheTargetTileIsStillAllowed() {
 			Grid grid = new Grid(10, 10);
-			AStar.Options options = new AStar.Options { FirstStepBlocked = (x, y, z) => true };
+			AStar.Options options = new AStar.Options { Blocked = (x, y, z) => true };
 			AStar.Result result = grid.Find(4, 4, 5, 4, options);
 			Assert.True(result.ReachedGoal);
 			Assert.Equal(new[] { Direction.East }, result.Path);
+		}
+
+		/// <summary>A wall along x = wallX, open only at the given rows.</summary>
+		private static Grid GridWithWall(int width, int height, int wallX, params int[] gaps) {
+			Grid grid = new Grid(width, height);
+			for (int y = 0; y < height; y++) {
+				grid.blocked[wallX, y] = Array.IndexOf(gaps, y) < 0;
+			}
+			return grid;
+		}
+
+		[Fact]
+		public void CharacterInAGapFurtherAlongSendsThePathThroughTheOtherGap() {
+			Grid grid = GridWithWall(30, 30, 10, 15, 22);
+			AStar.Options options = new AStar.Options {
+				BlockedWithin = 8,
+				Blocked = (x, y, z) => (x == 10) && (y == 15),
+			};
+			AStar.Result result = grid.Find(6, 15, 16, 15, options);
+			Assert.True(result.ReachedGoal);
+			Assert.True(result.HitBlocked);
+			int cx = 6, cy = 15;
+			foreach (Direction dir in result.Path) {
+				Map.Offset(dir, ref cx, ref cy);
+				Assert.False((cx == 10) && (cy == 15), "the path stepped onto the occupied gap");
+			}
+			Assert.Equal((16, 15), grid.Walk(6, 15, result.Path));
+		}
+
+		[Fact]
+		public void NoDawdlingUntilABlockedTileCountsAsFarAway() {
+			//right next to the only gap: with the rule on steps taken, not on distance, wandering
+			//off and coming back gets the search through the occupied tile
+			Grid grid = GridWithWall(20, 20, 10, 10);
+			AStar.Options options = new AStar.Options {
+				BlockedWithin = 3,
+				AllowPartial = false,
+				Blocked = (x, y, z) => (x == 10) && (y == 10),
+			};
+			AStar.Result result = grid.Find(9, 10, 14, 10, options);
+			Assert.False(result.ReachedGoal);
+			Assert.True(result.HitBlocked);
+		}
+
+		[Fact]
+		public void CharacterBeyondTheRadiusIsIgnored() {
+			Grid grid = GridWithWall(30, 30, 10, 15);
+			AStar.Options options = new AStar.Options {
+				BlockedWithin = 3,
+				Blocked = (x, y, z) => (x == 10) && (y == 15),
+			};
+			AStar.Result result = grid.Find(2, 15, 16, 15, options);
+			Assert.True(result.ReachedGoal);
+			Assert.False(result.HitBlocked);
+			Assert.Equal(14, result.Path.Length);
+		}
+
+		[Fact]
+		public void ADetourOutsideTheNormalWindowNeedsTheWiderSearch() {
+			Grid grid = GridWithWall(120, 120, 60, 60, 110);
+			Func<int, int, int, bool> blocked = (x, y, z) => (x == 60) && (y == 60);
+
+			AStar.Result normal = grid.Find(57, 60, 63, 60, new AStar.Options { BlockedWithin = 8, Blocked = blocked });
+			Assert.False(normal.ReachedGoal);
+			Assert.True(normal.HitBlocked);
+
+			AStar.Result wide = grid.Find(57, 60, 63, 60, new AStar.Options {
+				BlockedWithin = 8, Blocked = blocked, WindowMargin = 64, MaxIterations = 20000, AllowPartial = false,
+			});
+			Assert.True(wide.ReachedGoal);
+			Assert.Equal((63, 60), grid.Walk(57, 60, wide.Path));
+		}
+
+		[Fact]
+		public void PathCacheWalksADetourToItsEnd() {
+			NpcPathCache cache = new NpcPathCache();
+			Direction[] path = new Direction[12];
+			cache.SetPath(path, 0, 0, 10, 0, true);
+			Direction dir;
+			for (int i = 0; i < 12; i++) {
+				Assert.True(cache.TryGetNextStep(i, 0, 15, 0, out dir), "step " + i); //5 tiles of drift is fine
+				cache.Advance(i + 1, 0);
+			}
+			Assert.False(cache.TryGetNextStep(12, 0, 15, 0, out dir));
+
+			cache.SetPath(path, 0, 0, 10, 0, true);
+			Assert.False(cache.TryGetNextStep(0, 0, 19, 0, out dir)); //the target went somewhere else entirely
 		}
 
 		[Fact]
