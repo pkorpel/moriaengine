@@ -122,6 +122,48 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1022 - e_guard's @npcseenewplayer: whoever a guard doesn't protect gets attacked on sight, so a Gondor guard
+		/// goes for Gondor's criminals and murderers too. Unlike Erebor, not a player of no realm, the user's call: such a
+		/// character hasn't picked a nation yet, and guards never miss. GMs are safe.</summary>
+		public static bool AttacksOnSight(NPC guard, Character target) {
+			if (target.IsGM) {
+				return false;
+			}
+			if (MonsterSpecialAttacks.IsAxeHater(guard) && CarriesAxe(target)) {
+				return true;
+			}
+			if (target.Realm == Realm.None) {
+				return Town.IsBannedFor(guard, target);
+			}
+			return !IsProtectedBy(guard, target);
+		}
+
+		/// <summary>e_guard_ent's findtype: anywhere on them.</summary>
+		internal static bool CarriesAxe(Character target) {
+			foreach (Thing layer in target.VisibleEquip) {
+				if ((layer is Item item) && CraftingSkillDef.IsOfType(item, "t_weapon_sword")) {
+					return true;
+				}
+			}
+			return InPack(target.Backpack);
+		}
+
+		private static bool InPack(Container pack) {
+			foreach (Item item in pack) {
+				if (CraftingSkillDef.IsOfType(item, "t_weapon_sword") || ((item is Container inner) && InPack(inner))) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		internal static void OnSight(NPC guard, Character target) {
+			Town.WarnBanned(guard, target);
+			if (guard.AggroMode == AggroMode.GuardsRealm) {
+				guard.Say((MonsterSpecialAttacks.IsAxeHater(guard) && CarriesAxe(target)) ? "Klid se z lesa Fangornu !!!" : Shout(guard, target));
+			}
+		}
+
 		//Erebor's dorand 2 lines, in its own Czech: "<name>, leave or die!" / "<name>, you have no business in <region>!"
 		private static string Shout(NPC guard, Character target) {
 			Region region = guard.Region;

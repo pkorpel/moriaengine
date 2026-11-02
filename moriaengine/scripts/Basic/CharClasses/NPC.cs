@@ -2075,7 +2075,7 @@ namespace SteamEngine.CompiledScripts {
 				case AggroMode.Hostile:
 					return true;
 				case AggroMode.GuardsRealm:
-					return NPCAiTimer.IsOppositeRealm(this.Realm, candidate.Realm) || Town.IsBannedFor(this, candidate);
+					return GuardSpeech.AttacksOnSight(this, candidate); //#1022
 				default:
 					return false;
 			}
