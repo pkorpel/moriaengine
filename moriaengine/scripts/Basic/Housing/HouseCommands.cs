@@ -70,7 +70,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>The cursor stays after a door, for the other half of a double one. Esc ends it.</summary>
+	/// <summary>One door to a go, the user's call: a double door is the command twice.</summary>
 	public class Targ_HouseDoor : CompiledTargetDef {
 		internal static void Ask(Player player, HouseDoorChoice choice) {
 			player.SysMessage("Kam dvere postavit?");
@@ -96,7 +96,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			door.Model = def.Model + choice.offset;
 			door.SetAttribute(ItemAttributes.attr_move_never, true);
-			return TargetResult.RestartTargetting;
+			return TargetResult.Done;
 		}
 	}
 

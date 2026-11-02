@@ -43,6 +43,8 @@ Shipped, #1011 open for expansions, branch whoami: Erebor's `.whoami` in scripts
 
 Shipped, #1011, branch whoami-dialog: the user's picks: `.whoami` a dialog instead of chat lines, with level, rank, realm, home town, guild, office, ring quest progress for Mordor, time played, kill/death ratio, last killed by. Played time and the last killer are new, counting from this change.
 
+Shipped, branch housedoor-one-door: `.HouseDoor` places one door and ends, the user's call; the cursor used to stay for double doors.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.
