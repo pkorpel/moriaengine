@@ -867,6 +867,7 @@ namespace SteamEngine.Converter {
 				{ "tag.stam_dmg_power", "StamDmgPower" },
 				{ "tag.e_lightnings_chance", "LightningsChance" },
 				{ "tag.regespeed", "RegenerationDivisor" },
+				{ "tag.death_damage", "DeathDamage" },
 				{ "tag.npc_lifeleech_cap", "LifeLeechCap" },
 				{ "tag.acid_ppst", "AcidChance" },
 				{ "tag.acid_dmg", "AcidDamage" },

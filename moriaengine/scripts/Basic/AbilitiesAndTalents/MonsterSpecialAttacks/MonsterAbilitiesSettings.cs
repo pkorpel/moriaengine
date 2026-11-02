@@ -861,5 +861,155 @@ namespace SteamEngine.CompiledScripts {
 			get { return MonsterSpecialAttacks.AcidDef == null ? 0 : MonsterSpecialAttacks.AcidDef.Range; }
 			set { if (MonsterSpecialAttacks.AcidDef != null) { MonsterSpecialAttacks.AcidDef.Range = value; } }
 		}
+
+		public double BlowUpFuseSeconds {
+			get { return MonsterSpecialAttacks.BlowUpDef == null ? 0 : MonsterSpecialAttacks.BlowUpDef.FuseSeconds; }
+			set { if (MonsterSpecialAttacks.BlowUpDef != null) { MonsterSpecialAttacks.BlowUpDef.FuseSeconds = value; } }
+		}
+
+		public int BlowUpSureReach {
+			get { return MonsterSpecialAttacks.BlowUpDef == null ? 0 : MonsterSpecialAttacks.BlowUpDef.SureReach; }
+			set { if (MonsterSpecialAttacks.BlowUpDef != null) { MonsterSpecialAttacks.BlowUpDef.SureReach = value; } }
+		}
+
+		public int BlowUpReach {
+			get { return MonsterSpecialAttacks.BlowUpDef == null ? 0 : MonsterSpecialAttacks.BlowUpDef.Reach; }
+			set { if (MonsterSpecialAttacks.BlowUpDef != null) { MonsterSpecialAttacks.BlowUpDef.Reach = value; } }
+		}
+
+		public int BlowUpFarOneIn {
+			get { return MonsterSpecialAttacks.BlowUpDef == null ? 0 : MonsterSpecialAttacks.BlowUpDef.FarOneIn; }
+			set { if (MonsterSpecialAttacks.BlowUpDef != null) { MonsterSpecialAttacks.BlowUpDef.FarOneIn = value; } }
+		}
+
+		public int BlowUpDamageByDistance {
+			get { return MonsterSpecialAttacks.BlowUpDef == null ? 0 : MonsterSpecialAttacks.BlowUpDef.DamageByDistance; }
+			set { if (MonsterSpecialAttacks.BlowUpDef != null) { MonsterSpecialAttacks.BlowUpDef.DamageByDistance = value; } }
+		}
+
+		public int BlowUpNpcMultiplier {
+			get { return MonsterSpecialAttacks.BlowUpDef == null ? 0 : MonsterSpecialAttacks.BlowUpDef.NpcMultiplier; }
+			set { if (MonsterSpecialAttacks.BlowUpDef != null) { MonsterSpecialAttacks.BlowUpDef.NpcMultiplier = value; } }
+		}
+
+		public int BlowUpLowHitsDivisor {
+			get { return MonsterSpecialAttacks.BlowUpDef == null ? 0 : MonsterSpecialAttacks.BlowUpDef.LowHitsDivisor; }
+			set { if (MonsterSpecialAttacks.BlowUpDef != null) { MonsterSpecialAttacks.BlowUpDef.LowHitsDivisor = value; } }
+		}
+
+		public int IllusionistIllusionOneIn {
+			get { return MonsterSpecialAttacks.IllusionistDef == null ? 0 : MonsterSpecialAttacks.IllusionistDef.IllusionOneIn; }
+			set { if (MonsterSpecialAttacks.IllusionistDef != null) { MonsterSpecialAttacks.IllusionistDef.IllusionOneIn = value; } }
+		}
+
+		public double IllusionistCopyLifetime {
+			get { return MonsterSpecialAttacks.IllusionistDef == null ? 0 : MonsterSpecialAttacks.IllusionistDef.CopyLifetime; }
+			set { if (MonsterSpecialAttacks.IllusionistDef != null) { MonsterSpecialAttacks.IllusionistDef.CopyLifetime = value; } }
+		}
+
+		public int IllusionistCopyMana {
+			get { return MonsterSpecialAttacks.IllusionistDef == null ? 0 : MonsterSpecialAttacks.IllusionistDef.CopyMana; }
+			set { if (MonsterSpecialAttacks.IllusionistDef != null) { MonsterSpecialAttacks.IllusionistDef.CopyMana = value; } }
+		}
+
+		public double SummonKillerBoostPercent {
+			get { return MonsterSpecialAttacks.SummonKillerDef == null ? 0 : MonsterSpecialAttacks.SummonKillerDef.BoostPercent; }
+			set { if (MonsterSpecialAttacks.SummonKillerDef != null) { MonsterSpecialAttacks.SummonKillerDef.BoostPercent = value; } }
+		}
+
+		public double[] ElemTerrorDeathDamage {
+			get { return MonsterSpecialAttacks.ElemTerrorDef == null ? null : MonsterSpecialAttacks.ElemTerrorDef.DeathDamage; }
+			set { if (MonsterSpecialAttacks.ElemTerrorDef != null) { MonsterSpecialAttacks.ElemTerrorDef.DeathDamage = value; } }
+		}
+
+		public string MenivecForms {
+			get { return MonsterSpecialAttacks.MenivecDef == null ? null : MonsterSpecialAttacks.MenivecDef.Forms; }
+			set { if (MonsterSpecialAttacks.MenivecDef != null) { MonsterSpecialAttacks.MenivecDef.Forms = value; } }
+		}
+
+		public int MenivecMorphOneIn {
+			get { return MonsterSpecialAttacks.MenivecDef == null ? 0 : MonsterSpecialAttacks.MenivecDef.MorphOneIn; }
+			set { if (MonsterSpecialAttacks.MenivecDef != null) { MonsterSpecialAttacks.MenivecDef.MorphOneIn = value; } }
+		}
+
+		public double MenivecFirstDelay {
+			get { return MonsterSpecialAttacks.MenivecDef == null ? 0 : MonsterSpecialAttacks.MenivecDef.FirstDelay; }
+			set { if (MonsterSpecialAttacks.MenivecDef != null) { MonsterSpecialAttacks.MenivecDef.FirstDelay = value; } }
+		}
+
+		public double MenivecFormSeconds {
+			get { return MonsterSpecialAttacks.MenivecDef == null ? 0 : MonsterSpecialAttacks.MenivecDef.FormSeconds; }
+			set { if (MonsterSpecialAttacks.MenivecDef != null) { MonsterSpecialAttacks.MenivecDef.FormSeconds = value; } }
+		}
+
+		public double MenivecRestSeconds {
+			get { return MonsterSpecialAttacks.MenivecDef == null ? 0 : MonsterSpecialAttacks.MenivecDef.RestSeconds; }
+			set { if (MonsterSpecialAttacks.MenivecDef != null) { MonsterSpecialAttacks.MenivecDef.RestSeconds = value; } }
+		}
+
+		public double MenivecNearDeathRest {
+			get { return MonsterSpecialAttacks.MenivecDef == null ? 0 : MonsterSpecialAttacks.MenivecDef.NearDeathRest; }
+			set { if (MonsterSpecialAttacks.MenivecDef != null) { MonsterSpecialAttacks.MenivecDef.NearDeathRest = value; } }
+		}
+
+		public string PowerfulMenivecForms {
+			get { return MonsterSpecialAttacks.PowerfulMenivecDef == null ? null : MonsterSpecialAttacks.PowerfulMenivecDef.Forms; }
+			set { if (MonsterSpecialAttacks.PowerfulMenivecDef != null) { MonsterSpecialAttacks.PowerfulMenivecDef.Forms = value; } }
+		}
+
+		public int PowerfulMenivecMorphOneIn {
+			get { return MonsterSpecialAttacks.PowerfulMenivecDef == null ? 0 : MonsterSpecialAttacks.PowerfulMenivecDef.MorphOneIn; }
+			set { if (MonsterSpecialAttacks.PowerfulMenivecDef != null) { MonsterSpecialAttacks.PowerfulMenivecDef.MorphOneIn = value; } }
+		}
+
+		public double PowerfulMenivecFirstDelay {
+			get { return MonsterSpecialAttacks.PowerfulMenivecDef == null ? 0 : MonsterSpecialAttacks.PowerfulMenivecDef.FirstDelay; }
+			set { if (MonsterSpecialAttacks.PowerfulMenivecDef != null) { MonsterSpecialAttacks.PowerfulMenivecDef.FirstDelay = value; } }
+		}
+
+		public double PowerfulMenivecFormSeconds {
+			get { return MonsterSpecialAttacks.PowerfulMenivecDef == null ? 0 : MonsterSpecialAttacks.PowerfulMenivecDef.FormSeconds; }
+			set { if (MonsterSpecialAttacks.PowerfulMenivecDef != null) { MonsterSpecialAttacks.PowerfulMenivecDef.FormSeconds = value; } }
+		}
+
+		public double PowerfulMenivecRestSeconds {
+			get { return MonsterSpecialAttacks.PowerfulMenivecDef == null ? 0 : MonsterSpecialAttacks.PowerfulMenivecDef.RestSeconds; }
+			set { if (MonsterSpecialAttacks.PowerfulMenivecDef != null) { MonsterSpecialAttacks.PowerfulMenivecDef.RestSeconds = value; } }
+		}
+
+		public double PowerfulMenivecNearDeathRest {
+			get { return MonsterSpecialAttacks.PowerfulMenivecDef == null ? 0 : MonsterSpecialAttacks.PowerfulMenivecDef.NearDeathRest; }
+			set { if (MonsterSpecialAttacks.PowerfulMenivecDef != null) { MonsterSpecialAttacks.PowerfulMenivecDef.NearDeathRest = value; } }
+		}
+
+		public string IceMenivecForms {
+			get { return MonsterSpecialAttacks.IceMenivecDef == null ? null : MonsterSpecialAttacks.IceMenivecDef.Forms; }
+			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.Forms = value; } }
+		}
+
+		public int IceMenivecMorphOneIn {
+			get { return MonsterSpecialAttacks.IceMenivecDef == null ? 0 : MonsterSpecialAttacks.IceMenivecDef.MorphOneIn; }
+			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.MorphOneIn = value; } }
+		}
+
+		public double IceMenivecFirstDelay {
+			get { return MonsterSpecialAttacks.IceMenivecDef == null ? 0 : MonsterSpecialAttacks.IceMenivecDef.FirstDelay; }
+			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.FirstDelay = value; } }
+		}
+
+		public double IceMenivecFormSeconds {
+			get { return MonsterSpecialAttacks.IceMenivecDef == null ? 0 : MonsterSpecialAttacks.IceMenivecDef.FormSeconds; }
+			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.FormSeconds = value; } }
+		}
+
+		public double IceMenivecRestSeconds {
+			get { return MonsterSpecialAttacks.IceMenivecDef == null ? 0 : MonsterSpecialAttacks.IceMenivecDef.RestSeconds; }
+			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.RestSeconds = value; } }
+		}
+
+		public double IceMenivecNearDeathRest {
+			get { return MonsterSpecialAttacks.IceMenivecDef == null ? 0 : MonsterSpecialAttacks.IceMenivecDef.NearDeathRest; }
+			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.NearDeathRest = value; } }
+		}
 	}
 }
