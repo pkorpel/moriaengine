@@ -40,7 +40,7 @@ namespace SteamEngine.CompiledScripts {
 	/// </summary>
 	[ViewableClass]
 	public class FishingSkillDef : SkillDef {
-		private const int MaxReach = 2;
+		private const int MaxReach = 3, SplashSound = 0x27;
 
 		public FishingSkillDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -61,12 +61,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			//#271 - PhaseStart already set the generic curve-based delay just before this trigger
-			//fired; overwrite it with the real anti-macro formula (flat 20s, reduced above skill
-			//100.0%), same wiring as MiningSkillDef.On_Start (#336) / LumberjackingSkillDef (#424)
-			//- the formula itself is shared/generic in GatheringDelaySystem, just needed this call
-			//site.
-			skillSeqArgs.DelayInSeconds = GatheringDelaySystem.GetDelaySeconds(skillSeqArgs.Self, SkillName.Fishing);
+			Character self = skillSeqArgs.Self;
+			if (!Gathering.Begin(self, skillSeqArgs.Target1, SkillName.Fishing)) {
+				return TriggerResult.Cancel;
+			}
+			self.Sound(SplashSound);
+			AnimCalculator.PerformAttackAnim(self);
 			return TriggerResult.Continue;
 		}
 
@@ -103,7 +103,7 @@ namespace SteamEngine.CompiledScripts {
 			IPoint3D target = skillSeqArgs.Target1;
 			FishingCatchSystem.CatchResult result = FishingCatchSystem.Catch(self, self.GetMap().M, target.X, target.Y);
 			if (result.ItemDef != null) {
-				result.ItemDef.Create(self.Backpack);
+				result.ItemDef.Create(self.X, self.Y, self.Z, self.M); //Sphere's, at your feet
 			}
 
 			switch (result.Kind) {
@@ -120,7 +120,7 @@ namespace SteamEngine.CompiledScripts {
 					self.SysMessage(Loc<FishingLoc>.Get(self.Language).nothingHere); //#813
 					break;
 				default:
-					self.SysMessage(Loc<FishingLoc>.Get(self.Language).success);
+					self.SysMessage(string.Format(Loc<GatheringLoc>.Get(self.Language).PulledOut, result.ItemDef?.Name));
 					break;
 			}
 
@@ -130,7 +130,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			self.SysMessage(Loc<FishingLoc>.Get(self.Language).fail);
+			self.Message(Loc<GatheringLoc>.Get(self.Language).FishingFail);
 			FishingAmbushSystem.TryAmbush(self.P()); //#271 - real fixresource rolls this on every gather action, not just success
 			SkillGainSystem.TryGainSkill(self, SkillName.Fishing, -System.Convert.ToInt32(skillSeqArgs.Param2)); //#328 - real Erebor gains on fail too
 		}

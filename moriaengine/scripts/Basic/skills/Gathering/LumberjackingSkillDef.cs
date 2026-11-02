@@ -50,11 +50,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
-			//#424 - PhaseStart already set the generic curve-based delay just before this
-			//trigger fired; overwrite it with the real anti-macro formula (flat 20s, reduced
-			//above skill 100.0%), same wiring as MiningSkillDef.On_Start (#336) - the formula
-			//itself is shared/generic in GatheringDelaySystem, just needed this call site.
-			skillSeqArgs.DelayInSeconds = GatheringDelaySystem.GetDelaySeconds(skillSeqArgs.Self, SkillName.Lumberjacking);
+			if (!Gathering.Begin(skillSeqArgs.Self, skillSeqArgs.Target1, SkillName.Lumberjacking)) {
+				return TriggerResult.Cancel;
+			}
+			Gathering.RollStrokes(skillSeqArgs.Self);
 			return TriggerResult.Continue;
 		}
 
@@ -64,6 +63,11 @@ namespace SteamEngine.CompiledScripts {
 
 			if (!IsValidTree(self, targetted)) {
 				skillSeqArgs.PhaseAbort();
+				return TriggerResult.Cancel;
+			}
+
+			self.Sound(0x13e);
+			if (Gathering.NextStroke(skillSeqArgs)) {
 				return TriggerResult.Cancel;
 			}
 
@@ -108,7 +112,7 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
-			self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).fail);
+			self.Message(Loc<GatheringLoc>.Get(self.Language).LumberjackingFail);
 			LumberjackingAmbushSystem.TryAmbush(self.P(), null); //#431 - real fixresource rolls this on every gather action, not just success
 			SkillGainSystem.TryGainSkill(self, SkillName.Lumberjacking, -System.Convert.ToInt32(skillSeqArgs.Param2)); //#328 - real Erebor gains on fail too
 		}

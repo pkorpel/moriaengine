@@ -21,6 +21,43 @@ using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
+	/// <summary>#962 - Sphere's Cartography wants blank parchment and then opens sm_cartography, which Erebor's scripts don't
+	/// have: the button did nothing else there.</summary>
+	[ViewableClass]
+	public class CartographySkillDef : SkillDef {
+		public CartographySkillDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+		}
+
+		protected override TriggerResult On_Select(SkillSequenceArgs skillSeqArgs) {
+			Character self = skillSeqArgs.Self;
+			foreach (AbstractItem item in self.Backpack) {
+				if (CraftingSkillDef.IsOfType(item as Item, "t_map_blank")) {
+					return TriggerResult.Cancel;
+				}
+			}
+			self.SysMessage("You have no blank parchment to draw on");
+			return TriggerResult.Cancel;
+		}
+
+		protected override TriggerResult On_Start(SkillSequenceArgs skillSeqArgs) {
+			return TriggerResult.Cancel;
+		}
+
+		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
+			return TriggerResult.Cancel;
+		}
+
+		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
+		}
+
+		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
+		}
+
+		protected override void On_Abort(SkillSequenceArgs skillSeqArgs) {
+		}
+	}
+
 	/// <summary>#962 - Sphere's Begging: grovel, a roll against the target's Int, and nothing for it, players never got
 	/// anything from it on Erebor either. No gain by use.</summary>
 	[ViewableClass]
