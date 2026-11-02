@@ -329,11 +329,11 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			dialogHandler.LastTable.RowHeight = ButtonMetrics.D_BUTTON_HEIGHT;
 			dialogHandler.AddTable(new GUTATable(6, 100, 0, ButtonMetrics.D_BUTTON_WIDTH));
 
-			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextLabel("Peníze (exp):").Build();
+			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextLabel("Penize (exp):").Build();
 			dialogHandler.LastTable[0, 1] = GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(1).Text(Convert.ToString(treasure.MoneyCoefficient)).Build();
 			dialogHandler.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSend).Id(10).Build(); // goto treasuremoneyCoefficientHlp gump
 
-			dialogHandler.LastTable[1, 0] = GUTAText.Builder.TextLabel("Šek:").Build();
+			dialogHandler.LastTable[1, 0] = GUTAText.Builder.TextLabel("Sek:").Build();
 			dialogHandler.LastTable[1, 1] = GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(2).Text(Convert.ToString(treasure.Check)).Build();
 			dialogHandler.LastTable[1, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSend).Id(11).Build(); // goto treasureCheckHlp gump
 
@@ -388,27 +388,27 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					if (gr.GetNumberResponse(1) > 0) {
 						treasure.MoneyCoefficient = (int) gr.GetNumberResponse(1);
 					} else {
-						p.RedMessage("Hodnota moneyCoefficient musí být kladná !");
+						p.RedMessage("Hodnota moneyCoefficient musi byt kladna !");
 					}
 					if (gr.GetNumberResponse(2) >= 0) {
 						treasure.Check = (int) gr.GetNumberResponse(2);
 					} else {
-						p.RedMessage("Hodnota Check musí být kladná !");
+						p.RedMessage("Hodnota Check musi byt kladna !");
 					}
 					if (gr.GetNumberResponse(3) > 0) {
 						treasure.CycleTime = (int) gr.GetNumberResponse(3);
 					} else {
-						p.RedMessage("Hodnota Perioda musí být kladná !");
+						p.RedMessage("Hodnota Perioda musi byt kladna !");
 					}
 					if (gr.GetNumberResponse(4) >= 0) {
 						treasure.Lockpick = (int) gr.GetNumberResponse(4);
 					} else {
-						p.RedMessage("Hodnota lockpick musí být kladná !");
+						p.RedMessage("Hodnota lockpick musi byt kladna !");
 					}
 					if (gr.GetNumberResponse(5) >= 0) {
 						treasure.SetLastopen((int) gr.GetNumberResponse(5));
 					} else {
-						p.RedMessage("Hodnota lastOpened musí být kladná !");
+						p.RedMessage("Hodnota lastOpened musi byt kladna !");
 					}
 					return;
 
@@ -424,28 +424,28 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 				// Help dialogy
 				case 10:	//help moneyCoefficient
-					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - Peníze", "Promìnná 'Peníze' udává poèet penìz generovaných stáøím pokladu");
+					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - Penize", "Promenna 'Penize' udava pocet penez generovanych starim pokladu");
 					break;
 				case 11:	//help check
-					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - Šek", "Promìnná 'Šek' je konstantní poèet penìz, který bude pokaždé do pokladu vložen.<br>" +
-																								"Nemá vliv na hodnotu 'moneyCoefficient'. Suma vypoèítaná z této složky se prostì pøiète k celkovému výnosu.");
+					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - Sek", "Promenna 'Sek' je konstantni pocet penez, ktery bude pokazde do pokladu vlozen.<br>" +
+																								"Nema vliv na hodnotu 'moneyCoefficient'. Suma vypocitana z teto slozky se proste pricte k celkovemu vynosu.");
 					break;
 				case 12:	//help perioda
-					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - Perioda", "Promìnná 'perioda' je èas v sekundách, po kterém se násobí periodic itemy. Èas posledního otevøení pokladu " +
-																								"je uložen a po dalším otevøení hráèi se rozdíl èasù podìlí periodic konstantou. Výsledná hodnota udává poèet cyklù, " +
-																								"které budou generovat itemy z pokladu s kladným attributem periodic.<br>" +
+					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - Perioda", "Promenna 'perioda' je cas v sekundach, po kterem se nasobi periodic itemy. Cas posledniho otevreni pokladu " +
+																								"je ulozen a po dalsim otevreni hraci se rozdil casu podeli periodic konstantou. Vysledna hodnota udava pocet cyklu, " +
+																								"ktere budou generovat itemy z pokladu s kladnym attributem periodic.<br>" +
 																								" vzorec pro periodic itemy:<br><\t> (lastOpened/Perioda)*itemPeriodic");
 					break;
 				case 13:	//help lockpick
-					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - Lockpick", "Promìnná 'lockpick' udává minimální potøebný skill pro odemèení pokladu. Nulová hodnota nechá poklad" +
-																								"otevøený, bez nutnosti používat lockpicky.");
+					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - Lockpick", "Promenna 'lockpick' udava minimalni potrebny skill pro odemceni pokladu. Nulova hodnota necha poklad" +
+																								"otevreny, bez nutnosti pouzivat lockpicky.");
 					break;
 				case 14:	//help lastOpened
-					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - LastOpened", "Promìnná 'lastOpened' udává, pøed jakou dobou v sekundách byl naposledy poklad otevøen. " +
-																									"Pøepoèet na dny je možné vidìt o øádek níž.");
+					p.Dialog(SingletonScript<D_Display_Text>.Instance, "Help - LastOpened", "Promenna 'lastOpened' udava, pred jakou dobou v sekundach byl naposledy poklad otevren. " +
+																									"Prepocet na dny je mozne videt o radek niz.");
 					break;
 				default:
-					p.RedMessage("Nestandardní button ! Piš scripterùm!");
+					p.RedMessage("Nestandardni button ! Pis scripterum!");
 					break;
 			}
 			treasure.Dialog(p, this);
@@ -504,7 +504,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			TreasureChest treasure = (TreasureChest) gi.Focus;
 			switch (gr.PressedButton) {
 				case 0:	//exit
-					p.SysMessage("Nastavení nezmìnìno.");
+					p.SysMessage("Nastaveni nezmeneno.");
 					break;
 				default:
 					bool err = false;
@@ -541,7 +541,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						return;
 					}
 					if (gr.PressedButton == 2) { //add
-						p.SysMessage("Pøidán defaultní item.");
+						p.SysMessage("Pridan defaultni item.");
 						treasure.AddTreasureItem(treasure.DefaultTreasureItem, 1, 100, 0);
 						treasure.Dialog(p, this);
 						return;
@@ -550,7 +550,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						treasure.Dialog(p, this);
 						return;
 					}
-					p.SysMessage("Potvrzeno zadání hodnot.");
+					p.SysMessage("Potvrzeno zadani hodnot.");
 					break;
 			}
 			treasure.Dialog(p, SingletonScript<D_TreasureChest>.Instance);
@@ -573,7 +573,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			// Headline
 			dialogHandler.AddTable(new GUTATable(1, 0));
-			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam guard spawnù").Build();
+			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam guard spawnu").Build();
 			dialogHandler.MakeLastTableTransparent();
 
 			// First row
@@ -605,7 +605,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			TreasureChest treasure = (TreasureChest) gi.Focus;
 			switch (gr.PressedButton) {
 				case 0:	//Cancel
-					p.SysMessage("Nastavení nezmìnìno.");
+					p.SysMessage("Nastaveni nezmeneno.");
 					break;
 				default:
 					bool err = false;
@@ -636,7 +636,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						return;
 					}
 					if (gr.PressedButton == 2) { // pressed Add button
-						p.SysMessage("Pøidán defaultní spawn.");
+						p.SysMessage("Pridan defaultni spawn.");
 						treasure.AddTreasureSpawn((CharacterDef) ThingDef.GetByDefname("c_ostard_zostrich"), 1);
 						treasure.Dialog(p, this);
 						return;
@@ -646,7 +646,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						return;
 					}
 
-					p.SysMessage("Potvrzeno zadání hodnot.");
+					p.SysMessage("Potvrzeno zadani hodnot.");
 					break;
 			}
 			treasure.Dialog(p, SingletonScript<D_TreasureChest>.Instance);

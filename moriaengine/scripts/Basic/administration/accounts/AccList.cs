@@ -45,21 +45,21 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam hráèských úètù (" + (firstiVal + 1) + "-" + imax + " z " + accList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam hracskych uctu (" + (firstiVal + 1) + "-" + imax + " z " + accList.Count + ")").Build();
 			//cudlik na zavreni dialogu
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dlg.MakeLastTableTransparent();
 
 			//cudlik a input field na zuzeni vyberu
 			dlg.AddTable(new GUTATable(1, 150, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledávací kriterium").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledavaci kriterium").Build();
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Id(33).Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
 			//cudlik na zalozeni noveho uctu
 			dlg.AddTable(new GUTATable(1, 150, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Založit nový account").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Zalozit novy account").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(2).Build();
 			dlg.MakeLastTableTransparent();
 
@@ -149,7 +149,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				string accName = (string) text.Argv[0];
 				AbstractAccount acc = AbstractAccount.GetByName(accName);
 				if (acc == null) {
-					Globals.SrcCharacter.SysMessage("Account se jménem " + accName + " neexistuje!", (int) Hues.Red);
+					Globals.SrcCharacter.SysMessage("Account se jmenem " + accName + " neexistuje!", (int) Hues.Red);
 					return;
 				}
 				Globals.SrcCharacter.Dialog(SingletonScript<D_Info>.Instance, new DialogArgs(acc));

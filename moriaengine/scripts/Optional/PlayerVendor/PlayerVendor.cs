@@ -389,17 +389,17 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class PlayerVendorLoc : CompiledLocStringCollection<PlayerVendorLoc> {
-		public string YouCantStockMoney = "Nemùžeš prodávat hotovost";
-		public string StockedContainerTooFull = "Nemùžeš prodávat kontejner s více jak 500ks zboží";
+		public string YouCantStockMoney = "Nemuzes prodavat hotovost";
+		public string StockedContainerTooFull = "Nemuzes prodavat kontejner s vice jak 500ks zbozi";
 
-		public string NoUnitAvailable = "Kontejner pro jednotkový prodej musíš mít otevøený a v nìm alespoò 1 pøedmìt.";
+		public string NoUnitAvailable = "Kontejner pro jednotkovy prodej musis mit otevreny a v nem alespon 1 predmet.";
 
-		public string VendorOffline = "Tento prodejce má zavøeno";
-		public string VendorIsntYours = "Tento prodejce ti není podøízen.";
+		public string VendorOffline = "Tento prodejce ma zavreno";
+		public string VendorIsntYours = "Tento prodejce ti neni podrizen.";
 
-		public string ThisNpcIsntYours = "Tento tvor ti nepatøí.";
-		public string CanOnlySellAnimals = "Prodávat lze jen zvíøata";
+		public string ThisNpcIsntYours = "Tento tvor ti nepatri.";
+		public string CanOnlySellAnimals = "Prodavat lze jen zvirata";
 
-		public string PriceCalculationError = "Cenu nelze vypoèítat.";
+		public string PriceCalculationError = "Cenu nelze vypocitat.";
 	}
 }

@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			AbstractAccount acc = AbstractAccount.GetByName((string) args[0]); //jmeno accountu
 			if (acc == null) {
-				Globals.SrcCharacter.SysMessage("Account se jménem " + args[0] + " neexistuje!", (int) Hues.Red);
+				Globals.SrcCharacter.SysMessage("Account se jmenem " + args[0] + " neexistuje!", (int) Hues.Red);
 				return;
 			}
 			//mame-li ho, ulozme si ho do parametru pro pozdejsi pouziti
@@ -42,7 +42,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//seznam charu s tlacitkem pro info
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 160, 130, 110, 40, 0));
 			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Info").Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jméno").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jmeno").Build();
 			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Profese").Build();
 			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Rasa").Build();
 			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Level").Build();
@@ -107,7 +107,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				//overime zda existuje (uz ted)
 				AbstractAccount acc = AbstractAccount.GetByName(accName);
 				if (acc == null) {
-					D_Display_Text.ShowError("Account se jménem " + accName + " neexistuje!");
+					D_Display_Text.ShowError("Account se jmenem " + accName + " neexistuje!");
 					return;
 				}
 				Globals.SrcCharacter.Dialog(SingletonScript<D_Acc_Characters>.Instance, new DialogArgs(accName));

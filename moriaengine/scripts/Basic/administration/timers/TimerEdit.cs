@@ -36,7 +36,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Úprava timeru " + tm + " na " + th).Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Uprava timeru " + tm + " na " + th).Build();
 			//cudlik na zavreni dialogu
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dlg.MakeLastTableTransparent();
@@ -44,8 +44,8 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//tabulka s inputem
 			dlg.AddTable(new GUTATable(2, 0, 275)); //1.sl - edit nazev, 2.sl - edit hodnota
 			//napred napisy 
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Název timeru").Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Èas [s]").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Nazev timeru").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Cas [s]").Build();
 			dlg.LastTable[1, 0] = GUTAText.Builder.Text(tm.ToString()).Build();
 			dlg.LastTable[1, 1] = GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(11).Text(tm.DueInSeconds.ToString()).Build();
 			dlg.MakeLastTableTransparent(); //zpruhledni zbytek dialogu

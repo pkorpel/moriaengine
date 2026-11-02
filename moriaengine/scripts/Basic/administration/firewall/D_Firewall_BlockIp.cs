@@ -46,7 +46,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//treti radek Duvod
 			dialogHandler.AddTable(new GUTATable(1, 0, width - labels));
 			dialogHandler.LastTable.RowHeight = ImprovedDialog.D_ROW_HEIGHT;
-			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextLabel("Dùvod:").Build();
+			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextLabel("Duvod:").Build();
 			dialogHandler.LastTable[0, 1] = GUTAInput.Builder.Id(11).Build();
 			dialogHandler.MakeLastTableTransparent();
 

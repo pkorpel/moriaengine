@@ -41,7 +41,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vložení nového rectanglu").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vlozeni noveho rectanglu").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
@@ -66,7 +66,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//send button
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 0));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(1).Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Uložit").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Ulozit").Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.WriteOut();

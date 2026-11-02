@@ -40,15 +40,15 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			dlg.SetLocation(50, 590);
 
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Výsledky nastavení (celkem:" + allFields + ", pøenastaveno: " + resultsOK + ", chybnì zadáno: " + resultsNOK + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vysledky nastaveni (celkem:" + allFields + ", prenastaveno: " + resultsOK + ", chybne zadano: " + resultsNOK + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.AddTable(new GUTATable(1, 175, 175, 175, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Název").Build();//name of the datafield
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Souèasná hodnota").Build();//after setting
-			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Pùvodní hodnota").Build();//filled when successfully changed
-			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Chybná hodnota").Build();//filled on erroneous attempt to store the change
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Nazev").Build();//name of the datafield
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Soucasna hodnota").Build();//after setting
+			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Puvodni hodnota").Build();//filled when successfully changed
+			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Chybna hodnota").Build();//filled on erroneous attempt to store the change
 			dlg.MakeLastTableTransparent();
 
 			dlg.AddTable(new GUTATable(imax - firstiVal)); //as much lines as many results there is on the page (maximally ROW_COUNT)

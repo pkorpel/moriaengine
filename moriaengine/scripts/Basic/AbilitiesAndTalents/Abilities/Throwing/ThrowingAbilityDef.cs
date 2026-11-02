@@ -136,7 +136,7 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class ThrowingLoc : CompiledLocStringCollection<ThrowingLoc> {
-		public string youNeedThrowingKnife = "Nemáš žádný házecí nùž.";
-		public string onlyWorksWhenFighting = "Házecí nože lze použít jen bìhem boje.";
+		public string youNeedThrowingKnife = "Nemas zadny hazeci nuz.";
+		public string onlyWorksWhenFighting = "Hazeci noze lze pouzit jen behem boje.";
 	}
 }

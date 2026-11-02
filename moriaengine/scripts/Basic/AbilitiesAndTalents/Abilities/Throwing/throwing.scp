@@ -14,7 +14,7 @@ a_throwing.Activate(this)
 
 //stackable, poisonable = projectile
 [ColoredProjectileDef i_kudla]
-NAME="Vrhací nùž"
+NAME="Vrhaci nuz"
 Model=i_dagger
 Stackable=True
 

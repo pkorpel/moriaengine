@@ -51,23 +51,23 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam abilit co má " + focus.Name + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + abList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam abilit co ma " + focus.Name + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + abList.Count + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//cudlik a input field na zuzeni vyberu
 			dlg.AddTable(new GUTATable(1, 140, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledávací kriterium").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledavaci kriterium").Build();
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Id(33).Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
 			//cudlik na pridani nove ability
 			dlg.AddTable(new GUTATable(1, 120, 120, 100, 120, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Pøidat abilitu").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Pridat abilitu").Build();
 			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Ability defname").Build();
 			dlg.LastTable[0, 2] = GUTAInput.Builder.Id(6).Build();
-			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Poèet bodù").Build();
+			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Pocet bodu").Build();
 			dlg.LastTable[0, 4] = GUTAInput.Builder.Id(7).Type(LeafComponentTypes.InputNumber).Build();
 			dlg.LastTable[0, 5] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(8).Build();
 			dlg.MakeLastTableTransparent();
@@ -77,7 +77,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Info").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(2).Build(); //tridit podle name asc
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(3).Build(); //tridit podle name desc				
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Název").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Nazev").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Pts/Max pts").Build();
 			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Last usage").Build();
 			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Run").Build();
@@ -129,7 +129,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//cudlik na ulozeni zmen v hodnotach
 			dlg.AddTable(new GUTATable(1, 130, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Uložit zmìny").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Ulozit zmeny").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(9).Build();
 			dlg.MakeLastTableTransparent();
 
@@ -183,7 +183,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						AbilityDef abDef = AbilityDef.GetByDefname(abilityDefname);
 						if (abDef == null) {
 							//zadal neexistujici abilitydefname
-							Gump newGi = D_Display_Text.ShowError("Chybnì zadáno, neznámý abilitydefname: " + abilityDefname);
+							Gump newGi = D_Display_Text.ShowError("Chybne zadano, neznamy abilitydefname: " + abilityDefname);
 							DialogStacking.EnstackDialog(gi, newGi);
 							return;
 						}
@@ -195,14 +195,14 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						break;
 					case 9: //Ulozit zmeny
 						abiliter = (Character) gi.Focus;
-						string result = "Výsledek zmìn hodnot abilit: <br>";
+						string result = "Vysledek zmen hodnot abilit: <br>";
 						for (int abId = firstOnPage; abId < imax; abId++) {
 							int inptID = 5 * abId + 11;
 							Ability chgdAbility = abList[abId];
 							int newAbilityValue = (int) gr.GetNumberResponse(inptID);
 							int oldAbilityValue = abiliter.GetAbility(chgdAbility.Def);
 							if (oldAbilityValue != newAbilityValue) {
-								result = result + "Abilita '" + chgdAbility.Name + "' zmìnìna z " + oldAbilityValue + " na " + newAbilityValue + "<br>";
+								result = result + "Abilita '" + chgdAbility.Name + "' zmenena z " + oldAbilityValue + " na " + newAbilityValue + "<br>";
 								abiliter.SetRealAbilityPoints(chgdAbility.Def, newAbilityValue);
 							}
 						}

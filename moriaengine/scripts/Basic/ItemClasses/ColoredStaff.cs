@@ -134,6 +134,6 @@ namespace SteamEngine.CompiledScripts {
 
 	public class ColoredStaffLoc : CompiledLocStringCollection<ColoredStaffLoc> {
 		public string manaInStaff = "Mana v holi";
-		public string manaVanished = "Mana v holi je svázána s tvou myslí - odložením hole mana vyprchala.";
+		public string manaVanished = "Mana v holi je svazana s tvou mysli - odlozenim hole mana vyprchala.";
 	}
 }

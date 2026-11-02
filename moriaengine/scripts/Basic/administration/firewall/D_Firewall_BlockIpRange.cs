@@ -55,7 +55,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//ctvrty radek Duvod
 			dialogHandler.AddTable(new GUTATable(1, 0, width - labels));
 			dialogHandler.LastTable.RowHeight = ImprovedDialog.D_ROW_HEIGHT;
-			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextLabel("Dùvod:").Build();
+			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextLabel("Duvod:").Build();
 			dialogHandler.LastTable[0, 1] = GUTAInput.Builder.Id(11).Build();
 			dialogHandler.MakeLastTableTransparent();
 
@@ -95,7 +95,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					newArgs.SetTag(ipFromRangeTK, sa.Argv[0]);
 					newArgs.SetTag(ipToRangeTK, sa.Argv[1]);
 				} else {
-					D_Display_Text.ShowError("Oèekávány 2 parametry: od IP - do IP");
+					D_Display_Text.ShowError("Ocekavany 2 parametry: od IP - do IP");
 					return;
 				}
 				self.Dialog(SingletonScript<D_Firewall_BlockIPRange>.Instance, newArgs);

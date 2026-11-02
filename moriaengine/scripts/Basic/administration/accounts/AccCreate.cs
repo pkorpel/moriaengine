@@ -27,7 +27,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vytvoøení nového hráèského úètu").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Vytvoreni noveho hracskeho uctu").Build();
 			//cudlik na zavreni dialogu
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dlg.MakeLastTableTransparent();
@@ -35,9 +35,9 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//dvousloupeckovy dialozek
 			dlg.AddTable(new GUTATable(3, 0, 300)); //1.sl - napisy, 2.sl - editacni pole
 			//napred napisy 
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Jméno úètu").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Jmeno uctu").Build();
 			dlg.LastTable[1, 0] = GUTAText.Builder.TextLabel("Heslo").Build();
-			dlg.LastTable[2, 0] = GUTAText.Builder.TextLabel("Registraèní e-mail").Build();
+			dlg.LastTable[2, 0] = GUTAText.Builder.TextLabel("Registracni e-mail").Build();
 
 			//ted editacni pole
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Id(10).Build();

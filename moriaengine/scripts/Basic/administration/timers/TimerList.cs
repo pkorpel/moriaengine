@@ -59,29 +59,29 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//nadpis
 			dlg.AddTable(new GUTATable(1, innerWidth - 2 * ButtonMetrics.D_BUTTON_WIDTH - ImprovedDialog.D_COL_SPACE, 0, ButtonMetrics.D_BUTTON_WIDTH));
 			//dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam všech timerù na " + th + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + timerList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam vsech timeru na " + th + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + timerList.Count + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSend).Id(3).Build();//cudlik na refresh dialogu
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//cudlik a input field na zuzeni vyberu
 			dlg.AddTable(new GUTATable(1, 130, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledávací kriterium").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledavaci kriterium").Build();
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Id(33).Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
 			//cudlik na zalozeni noveho timeru
 			dlg.AddTable(new GUTATable(1, 130, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Založit nový timer").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Zalozit novy timer").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(2).Build();
 			dlg.MakeLastTableTransparent();
 
 			//popis sloupcu
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 200, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Zruš").Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jméno timeru").Build();
-			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Zbývající èas").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Zrus").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jmeno timeru").Build();
+			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Zbyvajici cas").Build();
 			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Uprav").Build();
 			dlg.MakeLastTableTransparent();
 

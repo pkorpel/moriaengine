@@ -289,7 +289,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			GUTATable storedLastTable = this.LastTable; //store this one :)
 
 			this.AddTable(new GUTATable(1, 0));
-			this.LastTable[0, 0] = GUTAText.Builder.TextLabel("Str�nka").Build();
+			this.LastTable[0, 0] = GUTAText.Builder.TextLabel("Stranka").Build();
 			//type if input,x,y,ID, width, height, prescribed text
 			this.LastTable[0, 0] = GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).XPos(65).Id(ID_PAGE_NO_INPUT).Width(30).Text(actualPage.ToString()).Build();
 			this.LastTable[0, 0] = GUTAText.Builder.TextLabel("/" + pagesCount).XPos(95).Build();
@@ -327,7 +327,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					int selectedPage = (int) gr.GetNumberResponse(ID_PAGE_NO_INPUT);
 					if (selectedPage < 1) {
 						//idiot proof adjustment
-						gi.Cont.WriteLine("Nepovolen� ��slo str�nky - povoleny jen kladn� hodnoty");
+						gi.Cont.WriteLine("Nepovolene cislo stranky - povoleny jen kladne hodnoty");
 						selectedPage = 1;
 					}
 					//count the index of the first item

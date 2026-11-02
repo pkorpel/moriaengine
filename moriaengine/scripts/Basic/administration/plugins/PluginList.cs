@@ -50,21 +50,21 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam všech plugin na " + ph + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + pluginList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Seznam vsech plugin na " + ph + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + pluginList.Count + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//cudlik a input field na zuzeni vyberu
 			dlg.AddTable(new GUTATable(1, 130, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledávací kriterium").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Vyhledavaci kriterium").Build();
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Id(33).Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
 			//popis sloupcu
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 200, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Smaž").Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jméno pluginy").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Smaz").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jmeno pluginy").Build();
 			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Defname").Build();
 			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Info").Build();
 			dlg.MakeLastTableTransparent();

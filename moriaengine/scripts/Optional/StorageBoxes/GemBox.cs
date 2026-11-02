@@ -73,10 +73,10 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			this.ResizePic(10, 10, 3000, 640, 145 + radku * 80);
 			this.Button(15, 25, 4005, 4007, true, 0, 1);		// add gems
 			this.Button(620, 10, 4017, 4019, true, 0, 0);	// close dialog
-			this.HtmlGumpA(255, 15, 200, 20, "Bedýnka na drahé kameny", false, false);
-			this.HtmlGumpA(55, 27, 100, 20, "Pøidat kameny", false, false);
+			this.HtmlGumpA(255, 15, 200, 20, "Bedynka na drahe kameny", false, false);
+			this.HtmlGumpA(55, 27, 100, 20, "Pridat kameny", false, false);
 			if ((radku == 0) && (i == 0)) {
-				this.HtmlGumpA(baseX, 75, 200, 20, "Bedna na drahé kameny je prázdná", false, false);
+				this.HtmlGumpA(baseX, 75, 200, 20, "Bedna na drahe kameny je prazdna", false, false);
 			} else {
 				i = 0;
 				foreach (KeyValuePair<ItemDef, int> pair in box.inBoxGems) {
@@ -122,14 +122,14 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					int desiredCount = (int) gr.GetNumberResponse(i);
 					if ((gr.IsSwitched(i)) && (desiredCount > 0)) {	// player wants to take at least one gem
 						if (box.inBoxGems[buttonShowItemDef[i]] < desiredCount) {
-							((Player) gi.Cont).RedMessage("Snažíš se vyndat pøíliš mnoho gemù: " + buttonShowItemDef[i].Name + ". Vyndáváš plný poèet.");
+							((Player) gi.Cont).RedMessage("Snazis se vyndat prilis mnoho gemu: " + buttonShowItemDef[i].Name + ". Vyndavas plny pocet.");
 							gemsToGive = box.inBoxGems[buttonShowItemDef[i]];
 						} else {
 							gemsToGive = desiredCount;
 						}
 						buttonShowItemDef[i].Create(((Player) gi.Cont).Backpack);
 						Globals.LastNewItem.Amount = gemsToGive;
-						gi.Cont.SysMessage("Vyndáváš z bedny " + Convert.ToString(gemsToGive) + "ks " + buttonShowItemDef[i].Name + ".");
+						gi.Cont.SysMessage("Vyndavas z bedny " + Convert.ToString(gemsToGive) + "ks " + buttonShowItemDef[i].Name + ".");
 						box.inBoxGems[buttonShowItemDef[i]] -= gemsToGive;
 						box.pocetGemu -= gemsToGive;
 						if (box.inBoxGems[buttonShowItemDef[i]] == 0) {
@@ -152,7 +152,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 	public class Targ_GemBox : CompiledTargetDef {
 
 		protected override void On_Start(Player self, object parameter) {
-			self.SysMessage("Zamìø drahý kámen, který chceš vložit do bedny.");
+			self.SysMessage("Zamer drahy kamen, ktery chces vlozit do bedny.");
 			base.On_Start(self, parameter);
 		}
 
@@ -181,7 +181,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						targetted.Delete();
 					}
 				} else {
-					self.SysMessage("Do bedny mùžeš pøidat jen drahé kameny.");
+					self.SysMessage("Do bedny muzes pridat jen drahe kameny.");
 				}
 			}
 			return TargetResult.RestartTargetting;

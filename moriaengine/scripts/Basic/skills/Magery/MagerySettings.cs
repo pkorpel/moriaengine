@@ -179,7 +179,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public SpellsSettings spells = new SpellsSettings();
 
-		[InfoField("Maxmana hol�")]
+		[InfoField("Maxmana holi")]
 		public StaffMaxManaMassSetting allSpells = new StaffMaxManaMassSetting();
 	}
 
@@ -191,14 +191,14 @@ namespace SteamEngine.CompiledScripts {
 		[InfoField("typ damage kouzel")]
 		public SpellDamageTypeMassSetting damageType = new SpellDamageTypeMassSetting();
 
-		[InfoField("v�echny kouzla")]
+		[InfoField("vsechny kouzla")]
 		public AllSpellsMassSetting allSpells = new AllSpellsMassSetting();
 	}
 
 	public class WeaponMindPowerVsPMassSetting : MassSettingByMaterial<ColoredWeaponDef, double> {
 
 		public override string Name {
-			get { return "S�la mysli proti hr���m"; }
+			get { return "Sila mysli proti hracum"; }
 		}
 
 		protected class WeaponvVsPFieldView : FieldView_ByModel {
@@ -223,7 +223,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponMindPowerVsMMassSetting : MassSettingByMaterial<ColoredWeaponDef, double> {
 
 		public override string Name {
-			get { return "S�la mysli proti monstr�m"; }
+			get { return "Sila mysli proti monstrum"; }
 		}
 
 		protected class WeaponMindPowerVsMFieldView : FieldView_ByModel {
@@ -300,14 +300,14 @@ namespace SteamEngine.CompiledScripts {
 	public class AllSpellsMassSetting : MassSettings_ByClass_List<SpellDef> {
 		
 		public override string Name {
-			get { return "Seznam v�ech kouzel"; }
+			get { return "Seznam vsech kouzel"; }
 		}
 	}
 
 	public class StaffMaxManaMassSetting : MassSettings_ByClass_SingleField<ColoredStaffDef, int> {
 
 		public override string Name {
-			get { return "Maxmana hol�"; }
+			get { return "Maxmana holi"; }
 		}
 
 		protected class StaffMaxManaFieldView : FieldView_ByClass_SingleField {

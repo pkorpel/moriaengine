@@ -234,7 +234,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			GUTATable storedLastTable = this.lastTable; //store these two things :)
 			GUTAColumn storedLastColumn = this.lastColumn;
 			this.AddTable(new GUTATable(1, 0));
-			this.lastTable[0, 0] = GUTAText.Builder.TextLabel("Stránka").Build();
+			this.lastTable[0, 0] = GUTAText.Builder.TextLabel("Stranka").Build();
 			//type if input,x,y,ID, width, height, prescribed text
 			this.lastTable[0, 0] = GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).XPos(65).Id(ID_PAGE_NO_INPUT).Width(30).Text(actualPage.ToString()).Build();
 			this.lastTable[0, 0] = GUTAText.Builder.TextLabel("/" + pagesCount).XPos(95).Build();
@@ -278,7 +278,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					int selectedPage = (int) gr.GetNumberResponse(ID_PAGE_NO_INPUT);
 					if (selectedPage < 1) {
 						//idiot proof adjustment
-						gi.Cont.WriteLine("Nepovolené èíslo stránky - povoleny jen kladné hodnoty");
+						gi.Cont.WriteLine("Nepovolene cislo stranky - povoleny jen kladne hodnoty");
 						selectedPage = 1;
 					}
 					//count the index of the first item
@@ -324,7 +324,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					int selectedPage = selPageInpt;
 					if (selectedPage < 1) {
 						//idiot proof adjustment
-						actualGi.Cont.WriteLine("Nepovolené èíslo stránky - povoleny jen kladné hodnoty");
+						actualGi.Cont.WriteLine("Nepovolene cislo stranky - povoleny jen kladne hodnoty");
 						selectedPage = 1;
 					}
 					//count the index of the first item

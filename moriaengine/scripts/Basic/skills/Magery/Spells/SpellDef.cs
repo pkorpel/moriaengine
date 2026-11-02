@@ -1077,13 +1077,13 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class SpellDefLoc : CompiledLocStringCollection<SpellDefLoc> {
-		internal string TargetResistedSpell = "C�l odolal kouzlu!";
-		internal string ForbiddenMagicIn = "Zde je zak�z�no kouzlit";
-		internal string ForbiddenMagicOut = "Odtud je zak�z�no kouzlit";
-		internal string ForbiddenHarmfulMagicIn = "Zde je zak�z�no kouzlit �kodliv� kouzla";
-		internal string ForbiddenHarmfulMagicOut = "Odtud je zak�z�no kouzlit �kodliv� kouzla";
-		internal string ForbiddenBeneficialMagicIn = "Zde je zak�z�no kouzlit p��nosn� kouzla";
-		internal string ForbiddenBeneficialMagicOut = "Odtud je zak�z�no kouzlit p��nosn� kouzla";
+		internal string TargetResistedSpell = "Cil odolal kouzlu!";
+		internal string ForbiddenMagicIn = "Zde je zakazano kouzlit";
+		internal string ForbiddenMagicOut = "Odtud je zakazano kouzlit";
+		internal string ForbiddenHarmfulMagicIn = "Zde je zakazano kouzlit skodliva kouzla";
+		internal string ForbiddenHarmfulMagicOut = "Odtud je zakazano kouzlit skodliva kouzla";
+		internal string ForbiddenBeneficialMagicIn = "Zde je zakazano kouzlit prinosna kouzla";
+		internal string ForbiddenBeneficialMagicOut = "Odtud je zakazano kouzlit prinosna kouzla";
 	}
 }
 

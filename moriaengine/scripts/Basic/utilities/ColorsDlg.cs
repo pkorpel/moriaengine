@@ -41,14 +41,14 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Colors dialog - ukázky barev v textu (poèínaje " + startingColor + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Colors dialog - ukazky barev v textu (pocinaje " + startingColor + ")").Build();
 			//cudlik na zavreni dialogu
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dlg.MakeLastTableTransparent();
 
 			//input field pro vyber barvy
 			dlg.AddTable(new GUTATable(1, 160, 40, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Zadej poèáteèní barvu: ").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Zadej pocatecni barvu: ").Build();
 			dlg.LastTable[0, 1] = GUTAInput.Builder.Type(LeafComponentTypes.InputNumber).Id(10).Text(startingColor.ToString()).Build();
 			dlg.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(1).Build();
 			dlg.MakeLastTableTransparent(); //zpruhledni zbytek dialogu

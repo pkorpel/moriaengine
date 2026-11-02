@@ -57,13 +57,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Poznámky k accountu " + acc.Name + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + notesList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Poznamky k accountu " + acc.Name + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + notesList.Count + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//cudlik na zalozeni nove pozmamky
 			dlg.AddTable(new GUTATable(1, 130, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Nová poznámka").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Nova poznamka").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
@@ -71,15 +71,15 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			dlg.AddTable(new GUTATable(1, 145, 120, 350, 0, ButtonMetrics.D_BUTTON_WIDTH));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(2).Build(); //tridit podle casu asc
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(3).Build(); //tridit podle casu desc            
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Èas").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Cas").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(4).Build(); //tridit dle refcharu asc
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(5).Build(); //tridit dle refcharu desc
 			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Postava").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
-			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Text poznámky").Build();
+			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Text poznamky").Build();
 			dlg.LastTable[0, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(6).Build(); //tridit dle issuera asc
 			dlg.LastTable[0, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(7).Build(); //tridit dle issuera desc
 			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Autor").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
-			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Smaž").Build();
+			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Smaz").Build();
 			dlg.MakeLastTableTransparent();
 
 			//seznam poznamek
@@ -178,7 +178,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						break;
 					case 1: //text zpravy
 						//zobrazit tex zprávy (první parametr je nadpis, druhý je zobrazný text)
-						newGi = gi.Cont.Dialog(SingletonScript<D_Display_Text>.Instance, new DialogArgs("Text poznámky", note.text));
+						newGi = gi.Cont.Dialog(SingletonScript<D_Display_Text>.Instance, new DialogArgs("Text poznamky", note.text));
 						DialogStacking.EnstackDialog(gi, newGi);
 						break;
 					case 2: //issuer info
@@ -226,7 +226,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			} else {
 				ScriptedAccount acc = (ScriptedAccount) AbstractAccount.GetByName(text.Argv[0].ToString());
 				if (acc == null) {
-					Globals.SrcCharacter.SysMessage("Account se jménem " + text.Argv[0] + " neexistuje.", (int) Hues.Red);
+					Globals.SrcCharacter.SysMessage("Account se jmenem " + text.Argv[0] + " neexistuje.", (int) Hues.Red);
 					return;
 				}
 				newArgs.SetTag(accountTK, acc);//nastavit account					
@@ -273,13 +273,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Prohøešky accountu " + acc.Name + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + crimesList.Count + ")").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Prohresky accountu " + acc.Name + " (zobrazeno " + (firstiVal + 1) + "-" + imax + " z " + crimesList.Count + ")").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();//cudlik na zavreni dialogu
 			dlg.MakeLastTableTransparent();
 
 			//cudlik na zalozeni noveho trestu
 			dlg.AddTable(new GUTATable(1, 130, ButtonMetrics.D_BUTTON_WIDTH, 0));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Nový prohøešek").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Novy prohresek").Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(1).Build();
 			dlg.MakeLastTableTransparent();
 
@@ -287,16 +287,16 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			dlg.AddTable(new GUTATable(1, 145, 120, 225, 225, 0, ButtonMetrics.D_BUTTON_WIDTH));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(2).Build(); //tridit podle casu asc
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(3).Build(); //tridit podle casu desc            
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Èas").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Cas").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(4).Build(); //tridit dle refcharu asc
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(5).Build(); //tridit dle refcharu desc
 			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Postava").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
-			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Popis prohøešku").Build();
+			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("Popis prohresku").Build();
 			dlg.LastTable[0, 3] = GUTAText.Builder.TextLabel("Popis trestu").Build();
 			dlg.LastTable[0, 4] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(6).Build(); //tridit dle issuera asc
 			dlg.LastTable[0, 4] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(7).Build(); //tridit dle issuera desc
 			dlg.LastTable[0, 4] = GUTAText.Builder.TextLabel("Autor").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
-			dlg.LastTable[0, 5] = GUTAText.Builder.TextLabel("Smaž").Build();
+			dlg.LastTable[0, 5] = GUTAText.Builder.TextLabel("Smaz").Build();
 			dlg.MakeLastTableTransparent();
 
 			//seznam trestu
@@ -398,7 +398,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						break;
 					case 1: //text prohresku
 						//první parametr je nadpis, druhy je zobrazeny text)
-						newGi = gi.Cont.Dialog(SingletonScript<D_Display_Text>.Instance, new DialogArgs("Popis prohøešku", crime.text));
+						newGi = gi.Cont.Dialog(SingletonScript<D_Display_Text>.Instance, new DialogArgs("Popis prohresku", crime.text));
 						DialogStacking.EnstackDialog(gi, newGi);
 						break;
 					case 2: //text trestu
@@ -450,7 +450,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			} else {
 				ScriptedAccount acc = (ScriptedAccount) AbstractAccount.GetByName(text.Argv[0].ToString());
 				if (acc == null) {
-					Globals.SrcCharacter.SysMessage("Account se jménem " + text.Argv[0] + " neexistuje.", (int) Hues.Red);
+					Globals.SrcCharacter.SysMessage("Account se jmenem " + text.Argv[0] + " neexistuje.", (int) Hues.Red);
 					return;
 				}
 				newArgs.SetTag(D_AccountNotes.accountTK, acc);
@@ -478,7 +478,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			string textFldLabel; //crime desc / record
 			string target; //who is this note for?
 			if (refChar != null) { //we have player, we dont care for the account any more
-				target = "hráèe " + refChar.Name;
+				target = "hrace " + refChar.Name;
 			} else {
 				if (acc != null) {
 					target = "account " + acc.Name;
@@ -487,11 +487,11 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				}
 			}
 			if (isCrime) {
-				dlgHeadline = "Nový záznam trestu pro " + target;
-				textFldLabel = "Prohøešek";
+				dlgHeadline = "Novy zaznam trestu pro " + target;
+				textFldLabel = "Prohresek";
 			} else {
-				dlgHeadline = "Nová poznámka pro " + target;
-				textFldLabel = "Poznámka";
+				dlgHeadline = "Nova poznamka pro " + target;
+				textFldLabel = "Poznamka";
 			}
 
 			ImprovedDialog dlg = new ImprovedDialog(this.GumpInstance);
@@ -525,7 +525,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 0));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Id(1).Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Uložit").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Ulozit").Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.WriteOut();
@@ -546,7 +546,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						string accName = gr.GetTextResponse(10);
 						acc = (ScriptedAccount) AbstractAccount.GetByName(accName);
 						if (acc == null) {//failed to find the acc
-							gi.Cont.SysMessage("Account se jménem " + accName + " neexistuje!", (int) Hues.Red);
+							gi.Cont.SysMessage("Account se jmenem " + accName + " neexistuje!", (int) Hues.Red);
 							DialogStacking.ResendAndRestackDialog(gi);
 						}
 					}

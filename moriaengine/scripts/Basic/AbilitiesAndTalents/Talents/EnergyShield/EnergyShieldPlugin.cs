@@ -99,10 +99,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class EnergyShieldLoc : CompiledLocStringCollection<EnergyShieldLoc> {
-		public string cantTeleport = "Bìhem trvání kouzla Energy shield nemùžeš používat teleportaèní kouzla";
-		public string cantMove = "Bìhem trvání kouzla Energy shield se nemùžeš pohybovat";
-		public string shieldWasted = "Tvùj Energy shield se vyèerpal";
-		public string shieldSavedYou = "Energy shield tì uchránil pøed zranìním";
-		public string shieldSavedYouPartially = "Energy shield tì èásteènì ochránil pøed zranìním";
+		public string cantTeleport = "Behem trvani kouzla Energy shield nemuzes pouzivat teleportacni kouzla";
+		public string cantMove = "Behem trvani kouzla Energy shield se nemuzes pohybovat";
+		public string shieldWasted = "Tvuj Energy shield se vycerpal";
+		public string shieldSavedYou = "Energy shield te uchranil pred zranenim";
+		public string shieldSavedYouPartially = "Energy shield te castecne ochranil pred zranenim";
 	}
 }

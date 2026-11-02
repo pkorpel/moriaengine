@@ -103,7 +103,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//send button
 			dlg.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, 0));
 			dlg.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonOK).Id(1).Build();
-			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Uložit").Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.Text("Ulozit").Build();
 			dlg.MakeLastTableTransparent();
 
 			dlg.WriteOut();

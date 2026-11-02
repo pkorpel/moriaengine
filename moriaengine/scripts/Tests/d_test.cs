@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			int headerColor = 1;
 			string header = "Carpentry Menu";
 			//int contentColor = 1;
-			string content = "blablub blöb";
+			string content = "blablub blob";
 			int width = 200;
 			int height = 220;
 
@@ -42,7 +42,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			this.CheckerTrans(10, height - 30, width - 20, 20);
 			this.Button(10, height - 30, 4005, 4007, true, 0, 1);
 			this.CheckBox(10, height + 30, 210, 211, true, 786);
-			this.TextEntryA(10, height + 50, 500, 100, 1, 762, "this is texentry ìšèøžýá");
+			this.TextEntryA(10, height + 50, 500, 100, 1, 762, "this is texentry escrzya");
 
 			this.NumberEntryA(10, height + 70, 500, 100, 1, 763, 5.5m);
 

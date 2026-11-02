@@ -20,17 +20,17 @@ using SteamEngine.Common;
 namespace SteamEngine.CompiledScripts {
 
 	public class ResListLoc : CompiledLocStringCollection<ResListLoc> {
-		public string NotEnoughItems = "Máš málo {0}";
-		public string NotEnoughItemsOfType = "Máš málo pøedmìtù typu {0}";
-		public string SkillTooLow = "Umení {0} ovládáš pøíliš špatnì";
-		public string AbilityTooLow = "Schopnost {0} ovládáš pøíliš špatnì";
-		public string DexTooLow = "Nejsi dost obratný";
-		public string IntTooLow = "Nejsi dost inteligentní";
-		public string VitTooLow = "Nejsi dost vitální";
-		public string StrTooLow = "Nejsi dost silný";
-		public string HitsTooLow = "Jsi pøíliš zranìný (málo hitpointù)";
-		public string ManaTooLow = "Máš málo many";
-		public string StamTooLow = "Jsi pøíliš vyèerpaný (málo staminy)";
+		public string NotEnoughItems = "Mas malo {0}";
+		public string NotEnoughItemsOfType = "Mas malo predmetu typu {0}";
+		public string SkillTooLow = "Umeni {0} ovladas prilis spatne";
+		public string AbilityTooLow = "Schopnost {0} ovladas prilis spatne";
+		public string DexTooLow = "Nejsi dost obratny";
+		public string IntTooLow = "Nejsi dost inteligentni";
+		public string VitTooLow = "Nejsi dost vitalni";
+		public string StrTooLow = "Nejsi dost silny";
+		public string HitsTooLow = "Jsi prilis zraneny (malo hitpointu)";
+		public string ManaTooLow = "Mas malo many";
+		public string StamTooLow = "Jsi prilis vycerpany (malo staminy)";
 		public string LevelTooLow; 
 
 	}

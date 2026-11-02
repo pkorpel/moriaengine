@@ -76,7 +76,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public TriggerResult On_SkillSelect(SkillSequenceArgs ssa) {
 			if (ssa.SkillDef.Id == (int) SkillName.Magery) {
-				((Character) this.Cont).RedMessage("Jsi v šoku a nemùžeš kouzlit!");
+				((Character) this.Cont).RedMessage("Jsi v soku a nemuzes kouzlit!");
 				return TriggerResult.Cancel;
 			}
 			return TriggerResult.Continue;
@@ -84,18 +84,18 @@ namespace SteamEngine.CompiledScripts {
 
 		public TriggerResult On_SkillStart(SkillSequenceArgs ssa) {
 			if (ssa.SkillDef.Id == (int) SkillName.Magery) {
-				((Character) this.Cont).RedMessage("Jsi v šoku a nemùžeš kouzlit!");
+				((Character) this.Cont).RedMessage("Jsi v soku a nemuzes kouzlit!");
 				return TriggerResult.Cancel;
 			}
 			return TriggerResult.Continue;
 		}
 
 		public void On_Assign() {
-			((Character) this.Cont).RedMessage("Jsi v šoku!");
+			((Character) this.Cont).RedMessage("Jsi v soku!");
 		}
 
 		public override void On_UnAssign(Character formerCont) {
-			formerCont.SysMessage("Neblahé úèinky warcry pominuly");
+			formerCont.SysMessage("Neblahe ucinky warcry pominuly");
 			//base.On_UnAssign(formerCont);
 		}
 	}

@@ -640,7 +640,7 @@ namespace SteamEngine.CompiledScripts {
 			if (state != null) {
 				if (addedDef != null) {
 					string name = addedDef is ThingDef ? ((ThingDef) addedDef).Name : addedDef.ToString();
-					this.SysMessage("Kam chce� um�stit '" + name + "' ?");
+					this.SysMessage("Kam chces umistit '" + name + "' ?");
 
 					ItemDef idef = addedDef as ItemDef;
 					AddHelper addedH = new AddHelper(addedDef, amount, fStatic);

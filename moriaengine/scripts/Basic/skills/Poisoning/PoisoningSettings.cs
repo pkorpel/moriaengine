@@ -54,14 +54,14 @@ namespace SteamEngine.CompiledScripts {
 	public class AllFadingEffectsMassSetting : MassSettings_ByClass_List<FadingEffectDurationPluginDef> {
 
 		public override string Name {
-			get { return "Všechny 'fading' efekty (bleeding, jedy, apod.)"; }
+			get { return "Vsechny 'fading' efekty (bleeding, jedy, apod.)"; }
 		}
 	}
 
 	public class FadingEffectTickIntervalMassSetting :
 		MassSettings_ByClass_SingleField<FadingEffectDurationPluginDef, double> {
 
-		public override string Name { get { return "Tick intervaly podle typu efektu v sekundách"; } }
+		public override string Name { get { return "Tick intervaly podle typu efektu v sekundach"; } }
 
 		protected class PoisonTypeTickIntervalFieldView : FieldView_ByClass_SingleField {
 			internal PoisonTypeTickIntervalFieldView(int index)
@@ -85,7 +85,7 @@ namespace SteamEngine.CompiledScripts {
 	public class FadingEffectMaxTicksMassSetting :
 		MassSettings_ByClass_SingleField<FadingEffectDurationPluginDef, int> {
 
-		public override string Name { get { return "Max poèet tickù podle typu efektu, tj. sèítací strop trvání"; } }
+		public override string Name { get { return "Max pocet ticku podle typu efektu, tj. scitaci strop trvani"; } }
 
 		protected class MaxTicksFieldView : FieldView_ByClass_SingleField {
 			internal MaxTicksFieldView(int index)
@@ -109,7 +109,7 @@ namespace SteamEngine.CompiledScripts {
 	public class FadingEffectMaxPowerMassSetting :
 		MassSettings_ByClass_SingleField<FadingEffectDurationPluginDef, double> {
 
-		public override string Name { get { return "Max power podle typu efektu, tj. sèítací strop. Použit pøi opakované aplikaci stejneho efektu na jednoho chudáka."; } }
+		public override string Name { get { return "Max power podle typu efektu, tj. scitaci strop. Pouzit pri opakovane aplikaci stejneho efektu na jednoho chudaka."; } }
 
 		protected class MaxPowerFieldView : FieldView_ByClass_SingleField {
 			internal MaxPowerFieldView(int index)
@@ -133,14 +133,14 @@ namespace SteamEngine.CompiledScripts {
 	public class AllPoisonPotionsMassSetting : MassSettings_ByClass_List<PoisonPotionDef> {
 
 		public override string Name {
-			get { return "Všechny poison potiony"; }
+			get { return "Vsechny poison potiony"; }
 		}
 	}
 
 	public class PoisonPotionPowerMassSetting :
 		MassSettings_ByClass_SingleField<PoisonPotionDef, int[]> {
 
-		public override string Name { get { return "Power jedovatých potionù - dvojèíslí, pøi použití se bere náhodná hodnota v rozmezí, vèetnì."; } }
+		public override string Name { get { return "Power jedovatych potionu - dvojcisli, pri pouziti se bere nahodna hodnota v rozmezi, vcetne."; } }
 
 		protected class PoisonPotionPowerFieldView : FieldView_ByClass_SingleField {
 			internal PoisonPotionPowerFieldView(int index)
@@ -164,7 +164,7 @@ namespace SteamEngine.CompiledScripts {
 	public class PoisonPotionTickCountMassSetting :
 		MassSettings_ByClass_SingleField<PoisonPotionDef, int> {
 
-		public override string Name { get { return "Poèet tikù jedovatých potionù"; } }
+		public override string Name { get { return "Pocet tiku jedovatych potionu"; } }
 
 		protected class PoisonPotionTickCountFieldView : FieldView_ByClass_SingleField {
 			internal PoisonPotionTickCountFieldView(int index)
@@ -190,7 +190,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public override string Name {
 			get {
-				return "Efektivita poisoningu pro jednotlivé druhy projektilù. 1.0 = 100% ";
+				return "Efektivita poisoningu pro jednotlive druhy projektilu. 1.0 = 100% ";
 			}
 		}
 
@@ -218,7 +218,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public override string Name {
 			get {
-				return "Obtížnost poisoningu pro jednotlivé druhy projektilù. 0 = nelze otrávit, 1000 = 100% ";
+				return "Obtiznost poisoningu pro jednotlive druhy projektilu. 0 = nelze otravit, 1000 = 100% ";
 			}
 		}
 
@@ -244,7 +244,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponPoisoningDifficultyMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Obtížnost poisoningu pro zbranì dle modelu. 0 = nelze otrávit, 1000 = 100% ";
+				return "Obtiznost poisoningu pro zbrane dle modelu. 0 = nelze otravit, 1000 = 100% ";
 			}
 		}
 
@@ -270,7 +270,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponPoisoningEfficiencyMassSetting : MassSettings_ByModel<WeaponDef, double> {
 		public override string Name {
 			get {
-				return "Efektivita poisoningu pro zbranì dle modelu. 1.0 = 100% ";
+				return "Efektivita poisoningu pro zbrane dle modelu. 1.0 = 100% ";
 			}
 		}
 
@@ -296,7 +296,7 @@ namespace SteamEngine.CompiledScripts {
 	public class WeaponPoisoningCapacityMassSetting : MassSettings_ByModel<WeaponDef, int> {
 		public override string Name {
 			get {
-				return "Poisoning kapacita zbraní - Kolikrát lze udeøit než se jed na zbrani vyèerpá ";
+				return "Poisoning kapacita zbrani - Kolikrat lze uderit nez se jed na zbrani vycerpa ";
 			}
 		}
 

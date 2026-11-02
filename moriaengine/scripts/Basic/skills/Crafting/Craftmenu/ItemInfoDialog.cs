@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//add 2 pixels from both top and bottom corners (but minimal rowheight stays... - due to button icons))
 			hdrTable.RowHeight = Math.Max(ImprovedDialog.D_ROW_HEIGHT, picDim.Height + 2 * ImprovedDialog.D_ICON_SPACE);
 			dlg.AddTable(hdrTable);
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Název:").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Nazev:").Build();
 			dlg.LastTable[0, 1] = GUTAText.Builder.Text(itm.Name).Build();
 			dlg.LastTable[0, 2] = GUTAImage.Builder.Gump(itm.Model).Color(itm.Color).Build();
 			dlg.LastTable[0, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build(); //exit button
@@ -55,7 +55,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 			dlg.AddTable(new GUTATable(otherRows, 85, 0));
 			//resources
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Materiál").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("Material").Build();
 			dlg.LastTable[0, 1] = GUTAText.Builder.Text((itm.Resources != null) ? itm.Resources.ToString() : "").Build();
 			//type
 			dlg.LastTable[1, 0] = GUTAText.Builder.TextLabel("Typ").Build();
@@ -74,7 +74,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				dlg.LastTable[3, 1] = GUTAText.Builder.Text(((WearableDef) itm).ArmorVsP.ToString()).Build();
 			}
 			if (itm.IsDestroyableDef) {
-				dlg.LastTable[4, 0] = GUTAText.Builder.TextLabel("Výdrž").Build();
+				dlg.LastTable[4, 0] = GUTAText.Builder.TextLabel("Vydrz").Build();
 				dlg.LastTable[4, 1] = GUTAText.Builder.Text(((DestroyableDef) itm).MaxDurability.ToString()).Build();
 			}
 

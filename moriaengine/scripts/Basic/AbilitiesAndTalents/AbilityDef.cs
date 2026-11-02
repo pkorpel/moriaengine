@@ -453,12 +453,12 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class AbilityDefLoc : CompiledLocStringCollection<AbilityDefLoc> {
-		public string AbilityActivated = "Abilita {0} aktivov�na.";
-		public string YouDontHaveThisAbility = "O t�to abilit� nev� v�bec nic.";
-		public string NotYetCooledDown = "Abilitu nelze pou��t tak brzy po p�edchoz�m pou�it�.";
-		public string HasBeenSwitchedOff = "Abilita deaktivov�na.";
-		public string NotEnoughResourcesToConsume = "Nedostatek zdroj� ke spot�eb� pro aktivaci ability.";
-		public string NotEnoughResourcesPresent = "Nedostatek zdroj� pro aktivaci ability.";
-		public string NotAllowedToHaveAbility = "Nejsi opr�vn�n m�t tuto abilitu.";
+		public string AbilityActivated = "Abilita {0} aktivovana.";
+		public string YouDontHaveThisAbility = "O teto abilite nevi vubec nic.";
+		public string NotYetCooledDown = "Abilitu nelze pouzit tak brzy po predchozim pouziti.";
+		public string HasBeenSwitchedOff = "Abilita deaktivovana.";
+		public string NotEnoughResourcesToConsume = "Nedostatek zdroju ke spotrebe pro aktivaci ability.";
+		public string NotEnoughResourcesPresent = "Nedostatek zdroju pro aktivaci ability.";
+		public string NotAllowedToHaveAbility = "Nejsi opravnen mit tuto abilitu.";
 	}
 }

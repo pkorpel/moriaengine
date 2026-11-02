@@ -99,9 +99,9 @@ namespace SteamEngine.CompiledScripts {
 		public string anUnknownDestination = "an unknown destination";
 		public string target = "Target";
 
-		internal string ForbiddenTeleportingIn = "Zde je zakázáno kouzlit teleportovací kouzla";
-		internal string ForbiddenTeleportingOut = "Odtud je zakázáno kouzlit teleportovací kouzla";
-		internal string ForbiddenEnemyTeleportingIn = "Zde je nepøátelùm zakázáno kouzlit teleportovací kouzla";
-		internal string ForbiddenEnemyTeleportingOut = "Odtud je nepøátelùm zakázáno kouzlit teleportovací kouzla";		
+		internal string ForbiddenTeleportingIn = "Zde je zakazano kouzlit teleportovaci kouzla";
+		internal string ForbiddenTeleportingOut = "Odtud je zakazano kouzlit teleportovaci kouzla";
+		internal string ForbiddenEnemyTeleportingIn = "Zde je nepratelum zakazano kouzlit teleportovaci kouzla";
+		internal string ForbiddenEnemyTeleportingOut = "Odtud je nepratelum zakazano kouzlit teleportovaci kouzla";		
 	}
 }

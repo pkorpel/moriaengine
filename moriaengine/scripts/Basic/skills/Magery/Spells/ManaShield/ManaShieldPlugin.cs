@@ -90,8 +90,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	public class ManaShieldLoc : CompiledLocStringCollection<ManaShieldLoc> {
-		public string cantMeditateWithManaShield = "Soustøedit se zároveò na meditaci i mana shield není v lidských silách.";
-		public string shieldSavedYou = "Mana shield tì uchránil pøed zranìním";
-		public string shieldSavedYouPartially = "Mana shield tì èásteènì ochránil pøed zranìním";
+		public string cantMeditateWithManaShield = "Soustredit se zaroven na meditaci i mana shield neni v lidskych silach.";
+		public string shieldSavedYou = "Mana shield te uchranil pred zranenim";
+		public string shieldSavedYouPartially = "Mana shield te castecne ochranil pred zranenim";
 	}
 }

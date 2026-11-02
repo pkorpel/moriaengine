@@ -51,7 +51,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			dialogHandler.SetLocation(40, 30);
 			//prvni radek
 			dialogHandler.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Administrace blokovaných IP (" + (firstiVal + 1) + "-" + imax + " z " + entries.Count + ")").Build();
+			dialogHandler.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Administrace blokovanych IP (" + (firstiVal + 1) + "-" + imax + " z " + entries.Count + ")").Build();
 			dialogHandler.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build(); //exit button
 			dialogHandler.MakeLastTableTransparent();
 
@@ -65,7 +65,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//cudlik s IP
 			dialogHandler.LastTable[0, 2] = GUTAText.Builder.TextLabel("Rozsah IP do").XPos(ButtonMetrics.D_SORTBUTTON_COL_OFFSET).Build();
 			//duvod
-			dialogHandler.LastTable[0, 3] = GUTAText.Builder.TextLabel("Dùvod").Build();
+			dialogHandler.LastTable[0, 3] = GUTAText.Builder.TextLabel("Duvod").Build();
 			//kdo blokoval
 			dialogHandler.LastTable[0, 4] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortUp).Id(3).Build(); //tridit dle GM - Blokare vzestupne (Blocked by)
 			dialogHandler.LastTable[0, 4] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonSortDown).YPos(ButtonMetrics.D_SORTBUTTON_LINE_OFFSET).Id(4).Build(); //tridit dle GM - Blokare sestupne(Blocked by)  
@@ -94,9 +94,9 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			// nadpis pro blokaci novych
 			dialogHandler.AddTable(new GUTATable(1, ButtonMetrics.D_BUTTON_WIDTH, width / 2 - ButtonMetrics.D_BUTTON_WIDTH, ButtonMetrics.D_BUTTON_WIDTH, 0));
 			dialogHandler.LastTable[0, 0] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(5).Build();
-			dialogHandler.LastTable[0, 1] = GUTAText.Builder.TextLabel("Pøidat novì blokovanou IP").Build();
+			dialogHandler.LastTable[0, 1] = GUTAText.Builder.TextLabel("Pridat nove blokovanou IP").Build();
 			dialogHandler.LastTable[0, 2] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(6).Build();
-			dialogHandler.LastTable[0, 3] = GUTAText.Builder.TextLabel("Pøidat novì blokovaný rozsah IP").Build();
+			dialogHandler.LastTable[0, 3] = GUTAText.Builder.TextLabel("Pridat nove blokovany rozsah IP").Build();
 
 			dialogHandler.MakeLastTableTransparent();
 

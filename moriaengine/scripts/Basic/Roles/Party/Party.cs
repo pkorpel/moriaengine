@@ -182,14 +182,14 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return true;
 			}
-			leader.SysMessage("Hráè není pøipojen");
+			leader.SysMessage("Hrac neni pripojen");
 			return false;
 		}
 
 		public void MembershipDeclined(Character decliningCandidate) {
 			AbstractCharacter leader = this.Leader;
 			if (leader != null) {
-				leader.SysMessage(decliningCandidate.Name + " odmítl tvé pozvání do party");
+				leader.SysMessage(decliningCandidate.Name + " odmitl tve pozvani do party");
 			}
 			this.candidates.Remove(decliningCandidate);
 		}
