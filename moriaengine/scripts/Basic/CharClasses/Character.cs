@@ -2855,8 +2855,10 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>hodi zbran do batohu</summary>
 		public void DisArm() {
 			Weapon w = this.Weapon;
-			if (w != null)
+			if (w != null) {
 				w.Cont = this.Backpack;
+				this.InvalidateCombatWeaponValues(); //#1022 - else the weapon counts as held
+			}
 		}
 		#endregion combat
 

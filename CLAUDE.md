@@ -45,7 +45,7 @@ Shipped, #1011, branch whoami-dialog: the user's picks: `.whoami` a dialog inste
 
 Shipped, branch housedoor-one-door: `.HouseDoor` places one door and ends, the user's call; the cursor used to stay for double doors.
 
-#1022, the user's order: audit e_character and e_monster, then shared abilities, then guards and their AI, one PR per batch. Base events shipped, branch monster-base-events: GM click status, corpses named Body of, monsters refused by telepads, the 1 in 30 target switch, Invisibility killing a summon. Hit reactions shipped, branch monster-hit-reactions, HitReactions.cs. Next: e_acid_damage, e_npc_summoner, e_npc_blow_up, e_lifeleech_vampire, e_healdrinker, e_potiondrinker, e_getwpn, e_berserk_potvora, e_illusionist, e_menavec and variants, e_summonfrenzy, e_npc_summonkiller, e_undeads_ability_life, e_elem_terror, e_necroslave. Then guards and their AI. Empty and sourceless stubs stay as they are.
+#1022, the user's order: audit e_character and e_monster, then shared abilities, then guards and their AI, one PR per batch. Base events shipped, branch monster-base-events: GM click status, corpses named Body of, monsters refused by telepads, the 1 in 30 target switch, Invisibility killing a summon. Hit reactions shipped, branch monster-hit-reactions, HitReactions.cs. Shipped, branch monster-drinkers-berserk: e_acid_damage, e_npc_summoner, e_lifeleech_vampire, e_healdrinker, e_potiondrinker, e_getwpn, e_berserk_potvora. Next: e_npc_blow_up, e_illusionist, e_menavec and variants, e_summonfrenzy, e_npc_summonkiller, e_undeads_ability_life, e_elem_terror, e_necroslave. Then guards and their AI. Empty and sourceless stubs stay as they are.
 
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 

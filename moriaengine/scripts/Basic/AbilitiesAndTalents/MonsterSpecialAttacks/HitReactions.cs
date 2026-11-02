@@ -239,8 +239,23 @@ namespace SteamEngine.CompiledScripts {
 			return damage;
 		}
 
+		/// <summary>#1022 - a monster's own blow landed.</summary>
+		public static void TryReactToOwnSwing(Character attacker, Character defender, int damage) {
+			TryLeechAboveMaxHits(attacker);
+			TryAcidSplash(attacker);
+			TryDrinkAfterOwnSwing(attacker);
+			if (!defender.IsDeleted) {
+				TryKnockWeaponOut(attacker, defender, damage);
+			}
+		}
+
 		/// <summary>After a blow landed and the monster lived.</summary>
 		public static void TryReactToHit(Character attacker, Character defender) {
+			TryDrinkOnGotHit(defender);
+			if (defender is NPC hit) {
+				TryBerserk(hit);
+				TryBattleSummon(hit, attacker);
+			}
 			TryDrop(defender, GoldDropDef);
 			TryDrop(defender, ReagDropDef);
 			TryDrop(defender, DiamondDropDef);

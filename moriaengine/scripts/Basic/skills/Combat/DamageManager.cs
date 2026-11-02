@@ -342,6 +342,7 @@ namespace SteamEngine.CompiledScripts {
 				//leech/fire outburst), then the defender's, which only make sense while the
 				//defender survived the blow (a killed NPC is already deleted here).
 				MonsterSpecialAttacks.TryApplyLifeLeech(attacker);
+				MonsterSpecialAttacks.TryReactToOwnSwing(attacker, defender, actualDamage); //#1022
 				MonsterSpecialAttacks.TryApplyPhoenixFire(attacker);
 				MonsterSpecialAttacks.TryApplyEyeDrain(attacker, defender, actualDamage); //#799
 				MonsterSpecialAttacks.TryApplyBackstabAmbush(attacker, defender, actualDamage); //#799
