@@ -90,17 +90,18 @@ Color = 0481
 on=@create
 this.Contents = 0xff
 
-[SpellBookDef 0x2253]
+//#962 - Erebor's book is a plain one by more1=0ffffff in tm_necronewbie, its necromancy lies past the 64 spells,
+//see SpellBook.necroSpells. A 0x2253 book doesn't exist in 3.0.6m.
+[SpellBookDef i_spellbook_necro]
 name = "Book of necromancy"
-defname = i_spellbook_necro
+model = i_spellbook
 layer = 1 //Set by Converter
-FirstSpellId = 101
 //#625 - ported from systems/NecroBook.def's now-dead stub (same defname, lost the
 //class-change collision) - this color was silently missing from the real entry.
 Color = 038d
 
 on=@create
-this.Contents = 0x1FFFF //17 spells
+this.Contents = 0xffffff
 
 [SpellBookDef 0x2252]
 name = "Book of Chivalry/Paladin"

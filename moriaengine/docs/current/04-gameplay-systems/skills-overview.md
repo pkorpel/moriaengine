@@ -260,3 +260,13 @@ A double click casts a `t_scroll`, as Sphere: half mana, half difficulty, the sc
 `t_customspell_scroll` is Erebor's scroll of a spell past Sphere's numbers (Mana Shield 104, Mass Bless 102). The scroll must be on you and not directly in the bank, and its def's `Tag.profession_*` lines say who may read it. Those spells skip `@spellcast`: full mana (half on a fizzle), no darkness check, the skill is checked before the cursor comes up, and the roll is `f_circle_fizzle`: skill capped at difficulty + 39.2 against a throw of difficulty to difficulty + 40.0. Mana Shield can only be aimed at yourself. Mass Bless has no `csflag_mass` on Erebor, so it blesses one target.
 
 `i_scroll_case` (`t_svitkovac`) holds up to 999999 scrolls of each spell as counts on the item. Scrolls go in by dropping them on it, by its Pridat cursor, or a whole container by targeting it. Pages are the circles in pairs, necromancy and the rest. Vybrat takes one of everything.
+
+## Necromancy
+
+Spells 65-70 sit past the 64 a client's book can show, so `SpellBook.necroSpells` holds them, Erebor's `morex`. A scroll dropped on any book teaches them. A necromancer's double click on a book holding one opens `D_NecroBook`, `d_nec`, whose back arrow opens the plain book; `.necrobolt`, `.frostbolt` and `.necrolight` cast from a book too.
+
+`i_spellbook_necro` has no `[ITEMDEF]` in the archive. Here it's a plain book in Erebor's colour with the first three circles, as `tm_necronewbie`'s `more1=0ffffff`; it used to be a 0x2253 book, which 3.0.6m doesn't have.
+
+Fire Bolt is 0-17 through armor at 850. Frost Bolt is 0-30, then one second of freeze: within 7 tiles, when `om * 14` doesn't beat `sm * {2 11}`, and past the target's paralyze resist. Light has no native effect beyond a charged layer, so it runs as Night Sight with its own slot.
+
+`allowedSpells` of every profession now match Erebor's `spells_<class>_0_n` bits, for spells that exist. `spells_mystikself` are a Mystic's, on himself only.

@@ -89,6 +89,6 @@ titlesFemale="Gravedigger", "Tormentor", "Chastener", "Torturer", "Tyrant", "Sum
 //list allowed spells, per the wiki - only the Magery-circle subset that's actually implemented
 //in this engine (see the file-level comment above for the large chunk of Necromancer-specific
 //"Black Magic" spells this excludes, all unimplemented, not a deliberate restriction).
-allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_harm, s_fireball, s_poison, s_teleport, s_wall_of_stone, s_curse, s_recall, s_paralyze, s_magic_reflection, s_dispel_field, s_dispel, s_mark, s_mass_curse, s_flamestrike, s_mass_dispel, s_gate_travel, s_resurrection, s_mana_shield
+allowedSpells=s_clumsy, s_feeblemind, s_magic_arrow, s_nightsight, s_weaken, s_cunning, s_harm, s_fireball, s_poison, s_teleport, s_wall_of_stone, s_curse, s_recall, s_paralyze, s_magic_reflection, s_dispel_field, s_dispel, s_mark, s_mass_curse, s_flamestrike, s_mass_dispel, s_gate_travel, s_resurrection, s_fire_field, s_mana_drain, s_poison_field, s_summon_creature, s_reveal, s_energy_vortex, s_light, s_fire_bolt, s_frost_bolt
 //s_mana_drain, s_summon_creature, s_mana_vampire, s_energy_vortex, s_animate_dead,
 //s_bone_armor, s_fire_bolt, s_light, s_summon_undead, s_reveal - not implemented in this engine
