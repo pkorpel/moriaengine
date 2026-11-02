@@ -85,6 +85,7 @@ file whose job is session continuity, not permanent reference.
 - [Item decay](04-gameplay-systems/item-decay.md) - the per-item-timer decay system and
   its corpse/item rate split.
 - [Housing](04-gameplay-systems/housing.md)
+- [Travel stones](04-gameplay-systems/travel-stones.md)
 - [House lockdown & security](04-gameplay-systems/house-lockdown.md) - `attr_lockeddown`/
   `attr_secure` on top of the Housing system.
 - [Doors](04-gameplay-systems/doors.md)
