@@ -227,6 +227,7 @@ Spell = s_paralyzation_field
 CastTime = 5
 Mana = 4044
 Duration = 30, 120
+Resist = 100,400
 Skill = 620
 
 [SpellValuesDef spellvalues_s_paralyze]
@@ -234,6 +235,7 @@ Spell = s_paralyze
 CastTime = 4.5
 Mana = 12
 Duration = 10, 60
+Resist = 475,525
 Skill = 500
 
 [SpellValuesDef spellvalues_s_poison]
@@ -241,6 +243,7 @@ Spell = s_poison
 CastTime = 2
 Mana = 10
 Duration = 0.3, 0.5
+Resist = 1000,1000
 Skill = 500
 
 [SpellValuesDef spellvalues_s_poison_field]
@@ -248,6 +251,7 @@ Spell = s_poison_field
 CastTime = 6
 Mana = 40
 Duration = 30, 120
+Resist = 30000,30000
 Skill = 5000
 
 [SpellValuesDef spellvalues_s_protection]

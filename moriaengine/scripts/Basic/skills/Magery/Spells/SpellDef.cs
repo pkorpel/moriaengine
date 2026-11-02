@@ -257,7 +257,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#962 - see SpellValuesDef. Sphere's difficulty is the skill requirement.</summary>
-		internal void SetLiveValues(string filename, int line, string liveCastTime, string liveMana, string liveDuration, string liveSkill) {
+		internal void SetLiveValues(string filename, int line, string liveCastTime, string liveMana, string liveDuration, string liveSkill, string liveResist) {
+			if (liveResist != null) {
+				this.resistRoll = System.Array.ConvertAll(liveResist.Split(','), part => int.Parse(part.Trim(), System.Globalization.CultureInfo.InvariantCulture));
+			}
 			if (liveCastTime != null) {
 				this.LoadScriptLine(filename, line, "casttime", liveCastTime);
 			}
@@ -624,7 +627,7 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		private const int spellFireField = 28, spellPoisonField = 39, spellParalyzeField = 47;
+		private const int spellParalyze = 38, spellFireField = 28, spellPoisonField = 39, spellParalyzeField = 47;
 
 		/// <summary>#860 - dospellcustom_donesrc, Mystic's strike has its own in DamageManager.</summary>
 		private double GetMindPowerMultiplier(Character caster, Character target) {
@@ -643,11 +646,26 @@ namespace SteamEngine.CompiledScripts {
 			return multiplier * vsMonster;
 		}
 
+		//#962 - evil without spellflag_SM: this roll of the power has to reach the target's defense
+		private int[] resistRoll;
+
+		private int RollAgainstDefense(Character caster, Character target, int spellPower) {
+			if (this.Id == spellParalyze || this.Id == spellParalyzeField) {
+				spellPower -= (spellPower * target.ResistParalyse) / 1000;
+				if (Globals.dice.Next(System.Math.Max(spellPower, 0) + 1) == 0) {
+					return 0;
+				}
+			}
+			int least = (spellPower * this.resistRoll[0]) / 1000;
+			int most = (spellPower * this.resistRoll[this.resistRoll.Length - 1]) / 1000;
+			return (Globals.dice.Next(least, System.Math.Max(least, most) + 1) < CombatCalculator.GetSpellDefense(caster, target)) ? 0 : spellPower;
+		}
+
 		private void GetSpellPowerAgainstChar(Character caster, IPoint3D mainTarget, Character currentTarget, EffectFlag effectFlag, ref SpellEffectArgs sea) {
 			int spellPower;
 			SpellFlag flags = this.Flags;
 			bool usesMindPower = (flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower;
-			if (usesMindPower) {
+			if (usesMindPower || (this.resistRoll != null)) {
 				int mindPower = currentTarget.IsPlayerForCombat ? caster.MindPowerVsP : caster.MindPowerVsM;
 				spellPower = (int) ((mindPower * 10) * GetMindPowerMultiplier(caster, currentTarget)); //*10 because we need to be in thousands, like it is with skills
 			} else {
@@ -660,6 +678,8 @@ namespace SteamEngine.CompiledScripts {
 			if (usesMindPower) {
 				//#860 - dospellcustom_donesrc: the multipliers come before the target's defense
 				spellPower -= CombatCalculator.GetSpellDefense(caster, currentTarget);
+			} else if (this.resistRoll != null) {
+				spellPower = this.RollAgainstDefense(caster, currentTarget, spellPower);
 			}
 
 			if (sea == null) {

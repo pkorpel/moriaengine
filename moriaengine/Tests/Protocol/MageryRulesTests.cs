@@ -36,6 +36,13 @@ namespace SteamEngine.Tests.Protocol {
 			Thread.Sleep(2500);
 			Assert.Contains("mana=194", this.Ask(client, ".TestRulesReport", "RULES_REPORT:"));
 
+			//the Poison spell is a plain damage poison, a monster's stats fall by a share
+			this.Ask(client, ".TestRulesCast \"s_poison\"", "RULES_CAST:");
+			Thread.Sleep(3000);
+			string poisoned = this.Ask(client, ".TestRulesReport", "RULES_REPORT:");
+			Assert.Matches(@"poison=\d+", poisoned);
+			Assert.Contains("share=-30", poisoned);
+
 			//no teleporting onto a creature
 			this.Ask(client, ".TestRulesCast \"s_teleport\"", "RULES_CAST:");
 			Expect(client, "Nelze se premistovat na NPC");
