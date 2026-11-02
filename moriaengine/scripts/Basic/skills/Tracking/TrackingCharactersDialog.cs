@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts.Dialogs {
 
@@ -31,14 +32,15 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			int firstiVal = TagMath.IGetTag(args, ImprovedDialog.pagingIndexTK);//prvni index na strance
 			int imax = Math.Min(firstiVal + ImprovedDialog.PAGE_ROWS, charsAround.Count);
 
+			TrackingMenuLoc texts = Loc<TrackingMenuLoc>.Get(((Character) sendTo).Language);
 			ImprovedDialog dlg = new ImprovedDialog(this.GumpInstance);
 			//pozadi    
-			dlg.CreateBackground(180);
+			dlg.CreateBackground(240);
 			dlg.SetLocation(80, 50);
 
 			//nadpis
 			dlg.AddTable(new GUTATable(1, 0, ButtonMetrics.D_BUTTON_WIDTH));
-			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline("Co chceš stopovat?").Build();
+			dlg.LastTable[0, 0] = GUTAText.Builder.TextHeadline(texts.WhatToTrack).Build();
 			//cudlik na zavreni dialogu
 			dlg.LastTable[0, 1] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonCross).Id(0).Build();
 			dlg.MakeLastTableTransparent();
@@ -46,7 +48,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			//popis sloupcu
 			dlg.AddTable(new GUTATable(1, ImprovedDialog.ICON_WIDTH, 0, ButtonMetrics.D_BUTTON_WIDTH));
 			dlg.LastTable[0, 0] = GUTAText.Builder.TextLabel("").Build(); //nic, to bude obrazek
-			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel("Jméno").Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Top).Build();
+			dlg.LastTable[0, 1] = GUTAText.Builder.TextLabel(texts.Name).Align(DialogAlignment.Align_Center).Valign(DialogAlignment.Valign_Top).Build();
 			dlg.LastTable[0, 2] = GUTAText.Builder.TextLabel("").Build(); //cudlik na stopovani, to je hotovka
 			dlg.MakeLastTableTransparent();
 
