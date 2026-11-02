@@ -29,11 +29,13 @@ never block anyone.
 **NPC movers** never shove. Any obstacle stops them, including pets and summons. When a direct
 step is refused only because of a character, `NPCAiTimer.TrySidestepCharacter` tries the two
 neighbouring directions (Sphere's `NPC_WalkToPoint` sidestep). `StepTowardsSmart`
-passes AStar a `FirstStepBlocked` check (`CharacterCollision.IsTileBlockedFor`), so a
-character-occupied *first* step is treated as impassable and the path routes around it. Only
-the first step is checked, because characters move. A cached path that runs into a character
-later just fails that step and gets re-planned (see
-[Pets & NPC AI](pets-and-npc-ai.md#pathfinding-769)).
+passes AStar a `Blocked` check (`CharacterCollision.IsTileBlockedFor`), so a tile a character
+stands on within `npcPathCharacterRadius` tiles of the NPC is impassable for the whole search
+and the path routes around it. Further away characters are ignored, because they move, and a
+cached path that runs into one just fails that step and gets re-planned. If a character leaves
+no way to the target for `npcDetourWaitSeconds`, the NPC runs one much wider search and walks
+that detour to its end (#1031). If even that finds nothing, it waits at the blockage: NPCs
+can't shove. See [Pets & NPC AI](pets-and-npc-ai.md#pathfinding-769).
 
 **Player movers**, against the first obstacle found:
 
@@ -69,6 +71,11 @@ dead player can't body-block monsters in a doorway.
 | `flatPushCost` | 0 | 0 = `log2(STR)+1`; above 0 = that flat stamina cost |
 | `playersBlockedByCharacters` | true | off = players walk through characters (pre-#767) |
 | `npcsBlockedByCharacters` | true | off = NPCs walk through characters (pre-#767) |
+| `npcPathCharacterRadius` | 8 | tiles around an NPC where characters count as obstacles when it plans a path |
+| `npcDetourWaitSeconds` | 2 | how long an NPC stays stuck behind a character before the long search |
+| `npcDetourRetrySeconds` | 10 | seconds between one NPC's long searches |
+| `npcDetourSearchMargin` | 64 | tiles beyond the NPC and its target the long search may wander |
+| `npcDetourMaxIterations` | 4000 | nodes the long search may expand |
 | `fatigueAndOverload` | true | #779 rules below; off = stamina and load never stop or slow anyone |
 | `maxLoadPercent` | 200 | players carrying more than this percent of their max can't move |
 | `staminaLossAtWeight` | 150 | load percent at which a step costs 1 stamina half the time (Sphere's `STAMINALOSSATWEIGHT`; Erebor ran 150) |

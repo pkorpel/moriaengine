@@ -51,9 +51,13 @@ namespace SteamEngine.CompiledScripts {
 			/// <summary>On failure, return the path to the node that got closest to the target
 			/// instead of null, so the mover still makes progress.</summary>
 			public bool AllowPartial = true;
-			/// <summary>#767 - (x, y, z) of a first step that's blocked anyway (e.g. a character
-			/// stands there). Only the first step is checked - characters move, and callers replan.</summary>
-			public Func<int, int, int, bool> FirstStepBlocked;
+			/// <summary>#767, #1031 - (x, y, z) of a tile that's blocked anyway (e.g. a character
+			/// stands there). Only asked within BlockedWithin tiles of the start - characters move,
+			/// and callers replan.</summary>
+			public Func<int, int, int, bool> Blocked;
+			/// <summary>Tiles from the start (Chebyshev) where Blocked counts. A distance, not a step
+			/// count, or the search would dawdle until a blocked tile was "far enough" along.</summary>
+			public int BlockedWithin = 1;
 		}
 
 		public sealed class Result {
@@ -61,6 +65,8 @@ namespace SteamEngine.CompiledScripts {
 			/// <summary>False when Path is a partial route toward the target (or null).</summary>
 			public bool ReachedGoal;
 			public int Iterations;
+			/// <summary>Options.Blocked turned something down, so a character may be what's in the way.</summary>
+			public bool HitBlocked;
 		}
 
 		private static readonly Direction[] emptyArray = new Direction[0];
@@ -76,11 +82,11 @@ namespace SteamEngine.CompiledScripts {
 			return FindPathOnMap(start, target, map, settings, options).Path;
 		}
 
-		/// <summary>#767 - a first step onto a tile another character blocks (see CharacterCollision)
+		/// <summary>#767 - a step next to the start onto a tile another character blocks (see CharacterCollision)
 		/// is treated as impassable, so the path routes around it.</summary>
 		public static Direction[] GetPathFromTo(Character mover, IPoint3D target, Map map, IMovementSettings settings) {
 			Options options = new Options { AllowPartial = false };
-			options.FirstStepBlocked = (x, y, z) => CharacterCollision.IsTileBlockedFor(mover, map, x, y, z);
+			options.Blocked = (x, y, z) => CharacterCollision.IsTileBlockedFor(mover, map, x, y, z);
 			return FindPathOnMap(mover, target, map, settings, options).Path;
 		}
 
@@ -135,13 +141,14 @@ namespace SteamEngine.CompiledScripts {
 					if ((x < minX) || (x > maxX) || (y < minY) || (y > maxY)) {
 						continue;
 					}
-					bool isTargetTile = (x == targetX) && (y == targetY);
-					if ((node.parent == null) && !isTargetTile && (options.FirstStepBlocked != null) && options.FirstStepBlocked(x, y, z)) {
-						continue;
-					}
 					long key = Key(x, y, z);
 					int oldG;
 					if (bestG.TryGetValue(key, out oldG) && (oldG <= newG)) {
+						continue;
+					}
+					bool isTargetTile = (x == targetX) && (y == targetY);
+					if (!isTargetTile && (options.Blocked != null) && (Chebyshev(x, y, startX, startY) <= options.BlockedWithin) && options.Blocked(x, y, z)) {
+						result.HitBlocked = true;
 						continue;
 					}
 					bestG[key] = newG;

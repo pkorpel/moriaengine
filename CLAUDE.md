@@ -49,6 +49,8 @@ Shipped, branch housedoor-one-door: `.HouseDoor` places one door and ends, the u
 
 Shipped, #1027, branch fix-negative-enum-save: ObjectSaver threw on negative enums, so every Mordor character lost its realm in a save (Realm.Mordor is -1). Saving and loading fixed, a character with a nation and no realm gets it back at login. Regions keep Erebor's 1, 2, 3 in RealmTag and only translate, so they're not involved.
 
+Now, #1031, branch npc-walk-around: the user blocked a passage and a Gondor guard couldn't reach a Mordor enemy. A* counted a character as an obstacle only on the first step, so a monster danced at the gap. Characters near the mover now block for the whole search, and a monster still stuck after a moment searches wider and walks that detour. Then the spell choice: support only when needed, offensive by the target's weakness, Erebor's priorities.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.

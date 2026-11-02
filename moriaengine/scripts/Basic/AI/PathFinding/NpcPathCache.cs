@@ -24,22 +24,27 @@ namespace SteamEngine.CompiledScripts {
 	/// still applies: the NPC is where the path expects it, the target hasn't moved more than
 	/// TargetDrift tiles from where it was when the path was planned, and fewer than ReplanEvery
 	/// steps were taken since. Anything else - or a step that fails - means plan again.
+	/// #1031 - a detour around a blocked passage is walked to its end, unless the target moves
+	/// DetourTargetDrift tiles: a replan halfway would lead back to the same blocked spot.
 	/// </summary>
 	public sealed class NpcPathCache {
 		public const int TargetDrift = 2;
 		public const int ReplanEvery = 8;
+		public const int DetourTargetDrift = 8;
 
 		private Direction[] path;
 		private int index;
 		private int expectedX, expectedY;
 		private int plannedTargetX, plannedTargetY;
+		private bool isDetour;
 
 		public bool HasPath {
 			get { return (this.path != null) && (this.index < this.path.Length); }
 		}
 
-		public void SetPath(Direction[] newPath, int moverX, int moverY, int targetX, int targetY) {
+		public void SetPath(Direction[] newPath, int moverX, int moverY, int targetX, int targetY, bool detour = false) {
 			this.path = newPath;
+			this.isDetour = detour;
 			this.index = 0;
 			this.expectedX = moverX;
 			this.expectedY = moverY;
@@ -49,9 +54,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public bool TryGetNextStep(int moverX, int moverY, int targetX, int targetY, out Direction dir) {
 			dir = Direction.North;
-			if (!this.HasPath || (this.index >= ReplanEvery) ||
+			if (!this.HasPath || (!this.isDetour && (this.index >= ReplanEvery)) ||
 					(moverX != this.expectedX) || (moverY != this.expectedY) ||
-					(Math.Max(Math.Abs(targetX - this.plannedTargetX), Math.Abs(targetY - this.plannedTargetY)) > TargetDrift)) {
+					(Math.Max(Math.Abs(targetX - this.plannedTargetX), Math.Abs(targetY - this.plannedTargetY)) > (this.isDetour ? DetourTargetDrift : TargetDrift))) {
 				return false;
 			}
 			dir = this.path[this.index];

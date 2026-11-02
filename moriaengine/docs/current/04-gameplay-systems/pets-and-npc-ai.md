@@ -87,7 +87,8 @@ shared state, and replanned from scratch every think-tick. Now:
   no first step exists at all; then `StepTowards`' direct step/sidestep is used.
 - **Path caching**: `NpcPathCache` on the `NPCAiTimer` (transient) walks the planned path. It
   re-plans when a step fails, when the NPC isn't where the path expects, when the target has
-  moved more than 2 tiles, or every 8 steps.
+  moved more than 2 tiles, or every 8 steps. A detour around a blocked passage (#1031) is walked
+  to its end, unless the target moves 8 tiles.
 - **Testable core**: `AStar.FindPath` only takes a step delegate. `FindPathOnMap` adapts
   `Map.CheckMovement` to it, and unit tests run the core on synthetic grids. All search state
   is per call, so the core is reentrant.
