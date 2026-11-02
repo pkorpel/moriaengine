@@ -41,7 +41,7 @@ namespace SteamEngine.Tests.Protocol {
 			using (TestGameClient game = this.Login("Pricer")) {
 				game.SendSpeech(".TestTravelSides");
 				Assert.True(this.fixture.WaitForGameOutput("TRAVEL_SIDES_DONE", Wait), this.fixture.GameOutputSnapshot());
-				this.AssertChecks("edorasIsGondor", "baradDurIsMordor", "gondorIsNotOfferedMordor", "mordorIsNotOfferedGondor",
+				this.AssertChecks("edorasIsGondor", "baradDurIsMordor", "gondorIsNotOfferedMordor", "murdererCountsAsMurderer", "gondorMurdererKeepsGondorsStops", "mordorIsNotOfferedGondor",
 					"noRealmIsNotOfferedMordor", "priceIsDistanceBy3Point5", "leavingEnemyLandCostsFiveTimes", "mordorPaysPlainAtHome",
 					"gmIsOfferedEverything");
 			}
