@@ -226,6 +226,7 @@ RESOURCES = 3 i_log_iron, 4 i_tabulka_skla //nastaveni_cm_resources
 RESOURCES2 = 1 i_sand, 1 i_ingot_iron, 1 i_oil_flask
 SKILLMAKE = 400 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
 //TDATA3 = i_lantern_lit // commented out by Converter 
+ItemValue = 66 //nastaveni_cm_value 
 layer = 2 //Set by Converter 
 DEFNAME = i_lantern
 
@@ -690,6 +691,7 @@ DupeList = 0x102f
 WEIGHT = 2
 RESOURCES = 1 i_ingot_iron //nastaveni_cm_resources 
 SKILLMAKE = 1 t_tinker_tools, 300 tinkering //nastaveni_cm_skillmake 
+ItemValue = 50 //nastaveni_cm_value 
 DEFNAME = i_nails
 
 [ItemDef 0x102f]
@@ -2020,4 +2022,5 @@ WEIGHT = 1
 RESOURCES = 5 i_ingot_pisek //nastaveni_cm_resources 
 SKILLMAKE = 900 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 model = i_sheet_music
+ItemValue = 69 //nastaveni_cm_value 
 Color = 099e

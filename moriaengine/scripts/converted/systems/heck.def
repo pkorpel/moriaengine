@@ -222,6 +222,7 @@ Int = 100
 MaxHits = 1000
 MaxStam = 1000
 MaxMana = 0
+TSPEECH = spk_go_lorien
 Wrestling = 1200
 Fencing = 1000
 Tactics = 1000

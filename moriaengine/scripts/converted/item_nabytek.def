@@ -334,6 +334,7 @@ DupeList = 0xa5c
 RESOURCES = 30 i_log_iron, 5 i_nails, 1 i_pillow_7, 1 i_bedroll, 1 i_sheet //nastaveni_cm_resources 
 //TDATA1 = 0 // commented out by Converter 
 SKILLMAKE = 840 carpentry, 710 tailoring, 1 t_carpentry, 1 t_sewing_kit //nastaveni_cm_skillmake 
+ItemValue = 579 //nastaveni_cm_value 
 DEFNAME = i_bed_1
 
 [ItemDef 0xa5c]
@@ -2495,6 +2496,7 @@ WEIGHT = 10
 RESOURCES = 1 i_tub_empty //nastaveni_cm_resources 
 RESOURCES2 = 10 i_board
 SKILLMAKE = 650 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
+ItemValue = 180 //nastaveni_cm_value 
 DEFNAME = i_dye_tub
 
 [ItemDef 0x100a]
@@ -2779,6 +2781,7 @@ TYPE = t_chair
 DupeList = 0x19f6
 RESOURCES = 30 i_log_iron, 2 i_nails //nastaveni_cm_resources 
 SKILLMAKE = 800 carpentry, 1 t_carpentry //nastaveni_cm_skillmake 
+ItemValue = 368 //nastaveni_cm_value 
 DEFNAME = i_bench_woodworker_ext
 
 [ItemDef 0x19f3]

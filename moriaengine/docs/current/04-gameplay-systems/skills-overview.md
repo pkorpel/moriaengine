@@ -232,3 +232,9 @@ Sphere pays at the end of a cast: mana and reagents are checked at the start and
 ## Quick slots (#962)
 
 Erebor's sixteen slots in `QuickSlots`: `.setequip0` to `15` remember an item or a character, `.equipN` uses the item if you carry it, `.healN` bandages the remembered character, `.samhealN` does it with a shaman's bloody bandage. The old `scripts/Optional/TargetMemory.cs` of ten slots is gone; `Player.targMem` stays, unused, as a saved field.
+
+## Craft masters (#962)
+
+Erebor's systems/mistri.scp in `CraftMasters`. A craftsman says hello to the Mistr Remesel for a list of what they made themselves and pays gold for experience, each thing once. The experience comes from the skills and materials of the recipe, the quality and `nastaveni_craftexp_*`; the price from your level, up to 56. The ship builders of Gondor and Mordor take logs, ore and ingots you have the skill for, for experience and no gold, and count the ships: a Gondor ship is 1500 teak, 300 mahagon and 50 eben, a Mordor ship 1200, 250 and 40. Items carry Erebor's values now (`nastaveni_cm_value`, `ItemDef.ItemValue`).
+
+Not ported: bags as one row (top-level pack items only), the builders' spoken pages, statistics per player, the GM stats dialog, and closing the dialog on steps.

@@ -133,6 +133,7 @@ SKILLMAKE = 950 blacksmithing, 750 tinkering, 800 armslore //nastaveni_cm_skillm
 //tdata1 = 7 //obsidian commented out by Converter 
 model = i_armor_female_plate
 type = t_armor //guessed from base def by Converter 
+ItemValue = 16000 //nastaveni_cm_value 
 layer = 13 //Set by Converter 
 Material = Material.OBSIDIAN //guessed by Converter 
 MaterialType = MaterialType.Metal //guessed by Converter 
