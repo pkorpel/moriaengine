@@ -1,3 +1,16 @@
+[CraftRecipeDef craftrecipe_i_bandage]
+Item = i_bandage
+Resources = 1 i_cloth
+
+[CraftRecipeDef craftrecipe_i_bandage_bloody]
+Item = i_bandage_bloody
+Resources = 1 i_bandage, 1 i_blood
+
+[CraftRecipeDef craftrecipe_i_customscroll_manashield]
+Item = i_customscroll_manashield
+Resources = 1 i_scroll_blank
+SkillMake = 600 inscription, 800 magery
+
 [CraftRecipeDef craftrecipe_i_gembox]
 Item = i_gembox
 Resources = 2 i_ingot_iron, 15 i_log_iron
@@ -12,6 +25,11 @@ SkillMake = 650 tinkering, 1 t_tinker_tools
 Item = i_kudla
 Resources = 2 i_ingot_iron
 SkillMake = 650 blacksmithing, 450 tinkering
+
+[CraftRecipeDef craftrecipe_i_lockpick]
+Item = i_lockpick
+Resources = 1 i_ingot_iron
+SkillMake = 1 t_tinker_tools, 550 tinkering
 
 [CraftRecipeDef craftrecipe_i_potion_Cure]
 Item = i_potion_Cure
@@ -253,11 +271,6 @@ Item = i_scroll_magic_untrap
 Resources = 1 i_scroll_blank
 SkillMake = 420 inscription
 
-[CraftRecipeDef craftrecipe_i_scroll_manashield]
-Item = i_scroll_manashield
-Resources = 1 i_scroll_blank
-SkillMake = 800 magery, 400 inscription
-
 [CraftRecipeDef craftrecipe_i_scroll_mana_drain]
 Item = i_scroll_mana_drain
 Resources = 1 i_scroll_blank
@@ -411,4 +424,9 @@ Resources = 1 i_scroll_blank
 Item = i_torch
 Resources = 1 i_log_copper
 SkillMake = 350 carpentry, 1 t_carpentry
+
+[CraftRecipeDef craftrecipe_i_toulec]
+Item = i_toulec
+Resources = 50 i_hides_cut, 15 i_gem_citrine, 50 i_thread, 5 i_wire_iron
+SkillMake = 500 tinkering, 400 bowcraft, 500 tailoring
 

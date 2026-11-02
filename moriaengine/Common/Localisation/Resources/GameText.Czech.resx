@@ -1093,6 +1093,81 @@
   <data name="StatModLoc_WeakerToFire" xml:space="preserve">
     <value>{0} je nyni zranitelnejsi ohnem.</value>
   </data>
+  <data name="CustomScrollLoc_MustCarry" xml:space="preserve">
+    <value>Svitek musis mit u sebe!</value>
+  </data>
+  <data name="CustomScrollLoc_WrongProfession" xml:space="preserve">
+    <value>Pro toto kouzlo nemas vhodne povolani</value>
+  </data>
+  <data name="CustomScrollLoc_NoMana" xml:space="preserve">
+    <value>Na toto kouzlo ted nemas dost many.</value>
+  </data>
+  <data name="CustomScrollLoc_TooHard" xml:space="preserve">
+    <value>Toto kouzlo je na tebe prilis slozite.</value>
+  </data>
+  <data name="ScrollCaseLoc_CantReach" xml:space="preserve">
+    <value>Nedosahnes na svitkovac.</value>
+  </data>
+  <data name="ScrollCaseLoc_OnlyScrolls" xml:space="preserve">
+    <value>Muzes vkladat pouze svitky.</value>
+  </data>
+  <data name="ScrollCaseLoc_NotAScroll" xml:space="preserve">
+    <value>Toto neni svitek.</value>
+  </data>
+  <data name="ScrollCaseLoc_MustCarry" xml:space="preserve">
+    <value>{0} musis mit u sebe.</value>
+  </data>
+  <data name="ScrollCaseLoc_AimNext" xml:space="preserve">
+    <value>Uloz dalsi svitek</value>
+  </data>
+  <data name="ScrollCaseLoc_Full" xml:space="preserve">
+    <value>Nemuzes dat vic {0} do svitkovace. Svitkovac je plny.</value>
+  </data>
+  <data name="ScrollCaseLoc_SomeMale" xml:space="preserve">
+    <value>Do svitkovace jsi vlozil pouze {0} {1}. Pro zbytek tam neni misto.</value>
+  </data>
+  <data name="ScrollCaseLoc_SomeFemale" xml:space="preserve">
+    <value>Do svitkovace jsi vlozila pouze {0} {1}. Pro zbytek tam neni misto.</value>
+  </data>
+  <data name="ScrollCaseLoc_AddedMale" xml:space="preserve">
+    <value>Vlozil jsi do svitkovace {0} {1}.</value>
+  </data>
+  <data name="ScrollCaseLoc_AddedFemale" xml:space="preserve">
+    <value>Vlozila jsi do svitkovace {0} {1}.</value>
+  </data>
+  <data name="ScrollCaseLoc_TookMale" xml:space="preserve">
+    <value>Vybral jsi ze svitkovace {0} {1}.</value>
+  </data>
+  <data name="ScrollCaseLoc_TookFemale" xml:space="preserve">
+    <value>Vybrala jsi ze svitkovace {0} {1}.</value>
+  </data>
+  <data name="ScrollCaseLoc_WantNumber" xml:space="preserve">
+    <value>Cislo musi byt vetsi nez 0.</value>
+  </data>
+  <data name="ScrollCaseLoc_Necro" xml:space="preserve">
+    <value>Nekro</value>
+  </data>
+  <data name="ScrollCaseLoc_Other" xml:space="preserve">
+    <value>Jine</value>
+  </data>
+  <data name="ScrollCaseLoc_Add" xml:space="preserve">
+    <value>Pridat</value>
+  </data>
+  <data name="ScrollCaseLoc_Take" xml:space="preserve">
+    <value>Vybrat</value>
+  </data>
+  <data name="ScrollCaseLoc_Circle" xml:space="preserve">
+    <value>{0}. Kruh</value>
+  </data>
+  <data name="ScrollCaseLoc_HowMany" xml:space="preserve">
+    <value>Kolik svitku odebrat?</value>
+  </data>
+  <data name="ScrollCaseLoc_AllOfThem" xml:space="preserve">
+    <value>Vsechny (max 60k)</value>
+  </data>
+  <data name="MageryRulesLoc_OnlyAtYourself" xml:space="preserve">
+    <value>Kouzlo lze zamerit pouze na sebe.</value>
+  </data>
   <data name="CraftSkillsLoc_FinishCrafting" xml:space="preserve">
     <value>Vyroba ukoncena.</value>
   </data>

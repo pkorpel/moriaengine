@@ -6,12 +6,12 @@ RUNES=VJS //Beleg Del Tir
 CASTTIME=2
 //RESOURCES=i_reag_garlic,i_reag_ginseng,i_reag_sulfur_ash
 //RUNEITEM=i_rune_PROTECTION
-SCROLLITEM=i_scroll_manashield //i_customscroll_manashield
-FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial | SpellFlag.AlwaysTargetSelf
+SCROLLITEM=i_customscroll_manashield
+FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS | SpellFlag.IsBeneficial
 EFFECT=0
 DURATION=30,40
 MANAUSE=30
-Requirements=600 Magery, 1 a_mana_shield
+Requirements=600 Magery
 Difficulty=500
 
 EffectPluginDef = p_mana_shield

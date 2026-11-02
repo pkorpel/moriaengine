@@ -194,7 +194,7 @@ namespace SteamEngine.CompiledScripts {
 				return TriggerResult.Cancel;
 			}
 
-			skillSeqArgs.Success = this.CheckSuccess(self, spell.GetDifficulty(isFromScroll));
+			skillSeqArgs.Success = spell.IsCustom ? SpellCastRules.CustomCastHolds(self, spell) : this.CheckSuccess(self, spell.GetDifficulty(isFromScroll));
 
 			return TriggerResult.Continue;
 		}
@@ -232,7 +232,7 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			if (failed) {
-				manaUse = (manaUse / 2) + Globals.dice.Next((manaUse / 2) + (manaUse / 4));
+				manaUse = spell.IsCustom ? (manaUse / 2) : ((manaUse / 2) + Globals.dice.Next((manaUse / 2) + (manaUse / 4)));
 			}
 			self.Mana = (short) (self.Mana - manaUse);
 			if (isFromScroll) {

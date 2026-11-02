@@ -66,7 +66,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public bool Dispellable {
 			get {
-				return (this.flags & EffectFlag.FromBook) == EffectFlag.FromBook; //potion effects are generally not dispellable. Might want some exception from this rule at some point...?
+				return (this.flags & (EffectFlag.FromBook | EffectFlag.FromScroll)) != EffectFlag.None; //potion effects are generally not dispellable. Might want some exception from this rule at some point...?
 			}
 		}
 
