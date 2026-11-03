@@ -1,5 +1,6 @@
 using System;
 using SteamEngine.Common;
+using SteamEngine.CompiledScripts.Dialogs;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1017 - spending Erebor's two points a level, by class and level.</summary>
@@ -199,6 +200,16 @@ namespace SteamEngine.CompiledScripts {
 			RangerAbilities.OnKill(player, prey);
 			SpreeTimer spree = (SpreeTimer) player.GetTimer(SpreeTimer.Key);
 			Report("killsBuildASpree", (spree != null) && (spree.charges == 2));
+			Report("aSpreeShowsItsIcon", player.HasOpenedDialog(SingletonScript<D_ChargeIcon>.Instance)); //#1070
+			ClassAbilities.SetPoints(player, "splitshot", 10);
+			player.RemoveTag(TagKey.Acquire("_nextSplitShot_"));
+			player.Stam = 200;
+			RangerAbilities.SplitShot(player);
+			Report("aSplitShotShowsItsIcon", player.HasOpenedDialog(SingletonScript<D_SplitShotIcon>.Instance));
+			spree.Drop(player);
+			spree.Drop(player);
+			Report("theLastChargeClosesTheIcon", !player.HasOpenedDialog(SingletonScript<D_ChargeIcon>.Instance) &&
+				player.HasOpenedDialog(SingletonScript<D_SplitShotIcon>.Instance));
 			prey.Delete();
 			Console.WriteLine("RANGER_DONE");
 		}

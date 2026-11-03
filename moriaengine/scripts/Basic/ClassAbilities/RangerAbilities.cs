@@ -92,9 +92,10 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage("Jeste nelze pouzit.");
 			} else if (ClassAbilities.ReduceStamina(self, settings.splitShotStamina)) {
 				self.DeleteTimer(splitShotReadyTK);
-				EffectEndTimer timer = new EffectEndTimer();
+				SplitShotReadyTimer timer = new SplitShotReadyTimer();
 				self.AddTimer(splitShotReadyTK, timer);
 				timer.DueInSeconds = settings.splitShotEffectSeconds;
+				AbilityIcons.ShowSplitShot(self); //#1070
 				self.SysMessage("Chystas se vystrelit rozdelenou strelu!");
 				self.SetTag(nextSplitShotTK, Globals.TimeInSeconds + settings.splitShotDelaySeconds);
 			}
@@ -134,6 +135,7 @@ namespace SteamEngine.CompiledScripts {
 				timer.fromY = self.Y;
 				self.AddTimer(CrushingArrowTimer.Key, timer);
 				timer.DueInSeconds = ClassAbilitySettings.instance.crushingArrowDelaySeconds;
+				AbilityIcons.ShowCrushingArrow(self); //#1070
 			}
 		}
 
@@ -256,6 +258,7 @@ namespace SteamEngine.CompiledScripts {
 			swing.DamageAfterAC = (swing.DamageAfterAC * ClassAbilitySettings.instance.criticalPermille) / 1000;
 			if (self.HasTimer(splitShotReadyTK)) {
 				self.DeleteTimer(splitShotReadyTK);
+				AbilityIcons.HideSplitShot(self);
 				SplitTo(self, target);
 			}
 			if (self.HasTimer(knockbackReadyTK)) {
@@ -326,6 +329,9 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void OnTimeout(TagHolder cont) {
 			Player self = cont as Player;
+			if (self != null) {
+				AbilityIcons.HideCrushingArrow(self); //#1070 - f_crushingArrow_cancel
+			}
 			if ((self == null) || (this.target == null) || this.target.IsDeleted) {
 				return;
 			}
@@ -487,6 +493,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			spree.charges = System.Math.Min(Limit, spree.charges + 1);
 			spree.DueInSeconds = Duration;
+			AbilityIcons.ShowCharge(self, AbilityIcons.KillingSpree, spree.charges); //#1070
 		}
 
 		internal void Drop(Player self) {
@@ -496,11 +503,26 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				this.DueInSeconds = DropDuration;
 			}
+			AbilityIcons.ShowCharge(self, AbilityIcons.KillingSpree, this.charges);
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
 			if (cont is Player self) {
 				this.Drop(self);
+			}
+		}
+	}
+
+	/// <summary>#1070 - i_splitShot: the readied split shot, and its icon while it's there.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class SplitShotReadyTimer : BoundTimer {
+		[DeepCopyImplementation, LoadingInitializer]
+		public SplitShotReadyTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			if (cont is Character self) {
+				AbilityIcons.HideSplitShot(self);
 			}
 		}
 	}

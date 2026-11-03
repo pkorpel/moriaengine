@@ -16,6 +16,12 @@ either.
 "Kouzlo pohlceno.", at `points * 10` out of 1000, the permille weapon dodge uses too (`nastaveni_ability_pvMdodge`).
 A player's spell never is, nor is anything while the player is possessing a monster.
 
+## Icons
+
+Erebor's small icons at the top left (`AbilityIcons.cs`): a charge (magic charges, killing spree, the war fork's round
+strike) as its picture with a small one per charge (`d_charge`), a readied split shot (`d_splitShot`) and a readied
+crushing arrow (`d_crushingArrow`). They stand side by side, 50 apart, each keeping its place while open.
+
 ## Mystic hypnosis and the world
 
 The body swap itself is in `MysticHypnosis.cs`. While a mystic possesses a monster:

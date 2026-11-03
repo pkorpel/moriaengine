@@ -115,6 +115,7 @@ namespace SteamEngine.CompiledScripts {
 			plugin.fireCharge = plugin.mindCharge = plugin.energyCharge = 0;
 			plugin.Set(school, charge);
 			plugin.Arm(ClassAbilitySettings.instance.chargeDurationSeconds);
+			AbilityIcons.ShowCharge(self, AbilityIcons.KindOf(school), charge); //#1070
 		}
 
 		private void Set(MagicChargeSchool school, int charge) {
@@ -149,14 +150,18 @@ namespace SteamEngine.CompiledScripts {
 				if (timer != null) {
 					timer.PeriodInSeconds = -1;
 				}
+				AbilityIcons.HideCharge(this.Cont as Character); //#1070
 				return;
 			}
 			if (this.fireCharge > 0) {
 				this.fireCharge -= amount;
+				AbilityIcons.ShowCharge(this.Cont as Character, AbilityIcons.Fire, this.fireCharge);
 			} else if (this.mindCharge > 0) {
 				this.mindCharge -= amount;
+				AbilityIcons.ShowCharge(this.Cont as Character, AbilityIcons.Mind, this.mindCharge);
 			} else {
 				this.energyCharge -= amount;
+				AbilityIcons.ShowCharge(this.Cont as Character, AbilityIcons.Energy, this.energyCharge);
 			}
 			this.Arm(ClassAbilitySettings.instance.chargeDropSeconds);
 		}
