@@ -109,6 +109,38 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		[Fact]
+		public void TheAlchemistSellsTheCandle() {
+			using (TestGameClient game = this.Login("Buyer")) {
+				game.SendSpeech(".TestAlchemistPrepare");
+				Assert.True(this.fixture.WaitForGameOutput("ALCHEMIST_READY", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech("chci koupit");
+				(int GumpUid, string LayoutText, System.Collections.Generic.List<string> Strings) shop;
+				try {
+					shop = game.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+				} catch (Exception e) {
+					throw new Xunit.Sdk.XunitException("No shop: " + e.Message + "\nGame output:\n" + this.fixture.GameOutputSnapshot());
+				}
+				Assert.Contains(shop.Strings, s => s.Contains("Svice zivota", StringComparison.Ordinal));
+				game.SendGumpResponse(shop.GumpUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 7, "1" }, { 6, "4" } });
+				var order = game.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Nakupni Listek", order.Strings);
+				Assert.Contains("45000", order.Strings);
+				game.SendGumpResponse(order.GumpUid, 13);
+				Thread.Sleep(500);
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				game.SendSpeech(".TestAlchemistReport");
+				Assert.True(this.fixture.WaitForGameOutputSince(" end", mark, Wait), this.fixture.GameOutputSnapshot());
+				string report = this.fixture.GameOutputSnapshot().Substring(mark);
+				Assert.Contains("gold=5000 candles=1 sight=4", report, StringComparison.Ordinal);
+
+				game.SendSpeech(".TestAlchemistOtherRealm");
+				Assert.True(this.fixture.WaitForGameOutput("ALCHEMIST_OTHER_REALM", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech("koupit");
+				Assert.ThrowsAny<Exception>(() => game.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(3)));
+			}
+		}
+
 		private TestGameClient Login(string name) {
 			Exception firstFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
