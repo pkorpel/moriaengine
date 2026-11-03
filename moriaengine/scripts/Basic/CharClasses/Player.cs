@@ -388,6 +388,7 @@ namespace SteamEngine.CompiledScripts {
 		/// that transition has actually completed.</summary>
 		private static TimerKey charLingeringTimerTK = TimerKey.Acquire("_charLingeringTimer_");
 		public override void On_LogOut() {
+			ShamanPacts.OnGone(this); //#1017 - @Logout ends a pact
 			//TODO: In safe/nonsafe areas, settings, etc.
 
 			if (LogoutSettings.instance.showLogoutEffect) {

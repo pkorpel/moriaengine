@@ -107,6 +107,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#860 - a harmful spell's damage: rounded, and a monster's on a monster does at least 5.</summary>
 		public static int CauseSpellDamage(Character attacker, Character defender, DamageType flags, double damage) {
 			double unused;
+			damage = ShamanAbilities.AbsorbSpell(attacker, defender, damage); //#1017 - voodoo shield
 			return CauseDamage(attacker, defender, flags, damage, false, true, out unused);
 		}
 
@@ -339,6 +340,12 @@ namespace SteamEngine.CompiledScripts {
 				//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
 				//the pre-armor swing value, so this must run after CauseDamage above.
 				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
+				if (!defender.IsDeleted) {
+					ShamanPacts.ShareBlood(attacker, defender, actualDamage); //#1017
+					if (attacker is Player reader) {
+						ShamanPacts.ReadPhysical(reader, defender);
+					}
+				}
 				if (attacker is NPC poisoner) {
 					Poison.FromMonster(poisoner, defender); //#962 - combat.scp's wasHarmed
 				}

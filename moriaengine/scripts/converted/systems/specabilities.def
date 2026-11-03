@@ -704,17 +704,17 @@ weight = 0
 layer = layer_special
 model = i_memory
 
-[ItemDef i_soul_case]
+[ShamanItemDef i_soul_case]
 name = "Schranka na dusi"
-type = t_normal
+TYPE = t_normal
 model = i_virtstone_8
 Color = 0994
 
 //[function f_lifepact] //(commented out by Converter) 
 
-[ItemDef i_soul]
+[ShamanItemDef i_soul]
 name = "Duse"
-type = t_normal
+TYPE = t_normal
 weight = 0
 model = i_virtstone_8
 Color = 0983
@@ -733,24 +733,24 @@ type = t_eq_script
 model = i_memory
 Layer = layer_special //guessed from base def by Converter 
 
-[ItemDef i_empathy_item]
+[ShamanItemDef i_empathy_item]
 CATEGORY = Moria
 SUBSECTION = Itemy
 DESCRIPTION = Krystal videni
 
 NAME = "Krystal videni"
-type = 00
+TYPE = t_normal
 WEIGHT = 1
 model = i_crystal_red
 Color = 0099
 
-[ItemDef i_empathy_bottle]
+[ShamanItemDef i_empathy_bottle]
 CATEGORY = Moria
 SUBSECTION = Itemy
 DESCRIPTION = Lahvicka poznani
 
 NAME = "Elixir poznani"
-type = 00
+TYPE = t_normal
 WEIGHT = 1
 model = i_bottle_empty
 Color = 0088

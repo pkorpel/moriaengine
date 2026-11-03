@@ -75,6 +75,10 @@ namespace SteamEngine.CompiledScripts {
 			self.SetTag(diedAtTK, Globals.TimeInSeconds);
 		}
 
+		internal static double DiedAt(Character self) {
+			return ClassAbilities.SecondsTag(self, diedAtTK);
+		}
+
 		internal static Item FindLitCandle(Character self) {
 			ItemDef lit = (ItemDef) ThingDef.GetByDefname(LifeCandle.LitDef);
 			foreach (AbstractItem item in self.Backpack) {

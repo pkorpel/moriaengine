@@ -70,6 +70,7 @@ namespace SteamEngine.Tests.Protocol {
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
 					Assert.True(string.CompareOrdinal(output, idx + marker.Length, "True", 0, 4) == 0, marker + " failed. Game output:\n" + output);
 				}
+				this.TheShamanFollowsErebor(game);
 			}
 		}
 
@@ -150,13 +151,42 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
-		private TestGameClient Login(string name) {
+		/// <summary>The shaman is the warrior's character, as an account holds five; its partner is on its own account.</summary>
+		private void TheShamanFollowsErebor(TestGameClient game) {
+			{
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				game.SendSpeech(".TestEnableAutoAccountCreation"); //protocoltest is this server's first account
+				Assert.True(this.fixture.WaitForGameOutputSince("AUTO_ACCOUNT_TEST:", mark, Wait), this.fixture.GameOutputSnapshot());
+				using (TestGameClient partner = this.Login("Seer", "shamanpartner")) {
+					partner.SendSpeech(".TestShamanPartner");
+					Assert.True(this.fixture.WaitForGameOutput("SHAMAN_PARTNER_READY", Wait), this.fixture.GameOutputSnapshot());
+					game.SendSpeech(".TestShamanAbilities");
+					Assert.True(this.fixture.WaitForGameOutput("SHAMAN_PARTNER_DIED", Wait), this.fixture.GameOutputSnapshot());
+					game.SendSpeech(".pact");
+					var gump = game.ReadGumpDialogWithStrings(Wait);
+					Assert.Contains("Pakt krve", gump.Strings);
+					Assert.Contains(".lifepact", gump.Strings);
+					Thread.Sleep(6000);
+					game.SendSpeech(".TestShamanRise");
+					Assert.True(this.fixture.WaitForGameOutput("SHAMAN_DONE", Wait), this.fixture.GameOutputSnapshot());
+					string output = this.fixture.GameOutputSnapshot();
+					foreach (string check in new[] { "bloodToMind", "mindToBloodTurnsItTwice", "balanceComesBack", "sacrificeTradesHitsForMana", "theShieldCostsACitrine", "theShieldIgnoresPlayers", "theShieldTakesAMonstersSpell", "theRestGetsThrough", "concentrationIsSometimesAThirdStronger", "noConcentrationOnPlayers", "noConcentrationForFields", "weakeningTakesARuby", "aBloodPactCostsBlood", "aMonstersBlowIsShared", "theGiverEarnsThroughTheBearer", "aPlayersBlowSwitchesItOff", "cancellingEndsBothSides", "aManaPactMayBeOwn", "theCaseIsAShamansThing", "aLifePactGivesASoul", "resistsRead", "theElixirLetsResistsBeSeen", "theSoulStaysThroughDeath", "tooRestlessRightAfterDying", "theSoulBringsItBack", "backWithATenth" }) {
+						string marker = "CLASS_ABILITY: " + check + "=";
+						int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+						Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
+						Assert.True(string.CompareOrdinal(output, idx + marker.Length, "True", 0, 4) == 0, marker + " failed. Game output:\n" + output);
+					}
+				}
+			}
+		}
+
+		private TestGameClient Login(string name, string account = TestAccount) {
 			Exception firstFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
-				int redirectPort = this.RedirectPort();
+				int redirectPort = this.RedirectPort(account);
 				var game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(TestAccount, TestAccount);
+					game.SendLogin(account, account);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(name);
 					return game;
@@ -169,12 +199,12 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Could not log in as " + name, firstFailure);
 		}
 
-		private int RedirectPort() {
+		private int RedirectPort(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(TestAccount, TestAccount);
+						login.SendLogin(account, account);
 						if (login.ReadServersList() < 1) {
 							throw new InvalidOperationException("No identified game server yet (server count 0).");
 						}
