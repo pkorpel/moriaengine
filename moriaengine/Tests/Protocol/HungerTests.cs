@@ -49,8 +49,9 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("hungry=0", this.Ask(client, ".TestHungerRolls \"7\"", "HUNGER_ROLLS:"));
 			int rolls = Number(this.Ask(client, ".TestHungerRolls \"0\"", "HUNGER_ROLLS:"), "hungry");
 			Assert.InRange(rolls, 600, 800);
-			int hidden = Number(this.Ask(client, ".TestHungerHiding", "HUNGER_HIDING:"), "hidden");
-			Assert.InRange(hidden, 10, 55);
+			string skills = this.Ask(client, ".TestHungerHiding", "HUNGER_HIDING:");
+			Assert.InRange(Number(skills, "spoke"), 10, 55); //a starving player's skill succeeds 3 times in 10
+			Assert.InRange(Number(skills, "hidden"), 85, 100); //#1095 - but hiding takes no notice of hunger, as on Erebor: 1000 against rand(1025)
 
 			//no regeneration on nothing, it comes back with a meal
 			this.Ask(client, ".TestHungerFood \"0\"", "HUNGER_FOOD:");
