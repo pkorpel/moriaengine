@@ -156,6 +156,25 @@ namespace SteamEngine.CompiledScripts {
 			return (hand != null) && (((fork != null) && (hand.Def.Model == fork.Model)) || (hand.Def.Model == 0x1405));
 		}
 
+		/// <summary>#1070 - the rest of e_thief's @AfterSwing: a war fork's double swing on a monster (no level needed,
+		/// unlike e_war's), and any fencing blow spends a readied throat slit.</summary>
+		internal static void AfterFencingBlow(Player self, Character target, WeaponSwingArgs swing) {
+			if (!IsThief(self) || !IsFencing(self)) {
+				return;
+			}
+			ClassAbilitySettings settings = ClassAbilitySettings.instance;
+			int points = ClassAbilities.Points(self, "doubleswing");
+			if (HoldsWarFork(self) && !target.IsPlayer && (points > 0) && (Globals.dice.Next(1, 1001) <= (100 + (points * 5))) &&
+					(self.Stam >= settings.doubleSwingStamina)) {
+				self.Stam = (short) (self.Stam - settings.doubleSwingStamina);
+				self.Sound(512);
+				self.Sound(566);
+				self.SysMessage("Dvojity zasah!", ClassAbilities.ClassMessageHue);
+				swing.DamageAfterAC = (swing.DamageAfterAC * settings.doubleSwingPermille) / 1000;
+			}
+			self.RemoveTag(throatReadyTK);
+		}
+
 		/// <summary>e_thief with a war fork: a blow the counter makes special charges a round strike, up to 3.</summary>
 		internal static void ChargeWarFork(Player self, Character target) {
 			if (!IsFencing(self) || !HoldsWarFork(self) || !ClassAbilities.CounterFires(self)) {
@@ -327,8 +346,7 @@ namespace SteamEngine.CompiledScripts {
 			dropped.SetAttribute(ItemAttributes.attr_decay, true);
 		}
 
-		/// <summary>[function podriznuti]. Erebor never clears the readied slit, so once used it stays ready;
-		/// kept as it is.</summary>
+		/// <summary>[function podriznuti]. The next fencing blow spends the readied slit (e_thief's @AfterSwing).</summary>
 		[SteamFunction]
 		public static void Podriznuti(Player self) {
 			if (!IsThief(self)) {
