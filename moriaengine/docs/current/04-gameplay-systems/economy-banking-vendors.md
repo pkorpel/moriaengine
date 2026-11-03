@@ -89,7 +89,9 @@ anywhere, there is no house cut, and bidders see the seller's name and realm.
   prices up to 1000M, a realm needed. The item leaves the seller for the auction house's hidden box (a backpack on
   plane 250, found again by its tag after a restart); the listing is kept in tags on the item.
 - **Bidding**: `.aukce` alone lists the own realm's listings (a GM sees all), ten to a page, soonest end first. A
-  line opens the item: its properties, seller and realm, bid, buyout, time left. Prihodit takes the bid at once
+  line opens the item: its properties, material, seller and realm, bid, buyout, time left. A magic item's name doesn't
+  say its material, so a weapon's or armor's material is shown in brackets after the name, and on the item's page.
+  Wooden things (staves, bows) use wood names (spruce to elven), everything else metal names (copper to mithril). Prihodit takes the bid at once
   through `GoldUtils.Pay` and gives the previous bidder their gold back to the bank. A bid must reach the start
   price, then beat the bid before it by `minRaisePercent`. A bid reaching the buyout buys it. Koupit pays the
   buyout and ends the listing. Sellers can't bid on their own items, and GMs can't bid at all (they would pay
