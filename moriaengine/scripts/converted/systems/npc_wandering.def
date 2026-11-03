@@ -8,7 +8,7 @@
 
 [ItemDef i_wandering_npc_point]
 NAME = "NPC wandering"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = 0xaec
 Color = 021
 

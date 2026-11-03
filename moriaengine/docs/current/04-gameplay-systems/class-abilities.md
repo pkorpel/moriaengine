@@ -39,6 +39,14 @@ points * 900 out of 10000, 3 s between.
 `.astralmorph` (a GM command, as it wasn't on Erebor's lists): a shaman takes a monster corpse's body and colour and
 wears nothing while morphed; again gives the own body back.
 
+## Mount powers (#925)
+
+A mount whose chardef has `tag(magic_horse,name)` (`NPCDef.MagicHorse`, from the converter) gives its rider that
+`<name>_mif` table of jezditka.scp while ridden (`MountPowers.cs`), as a worn magic item would: slayers 101-105, melee
+and ranged block 134-135, and for the black horse Hiding and Stealth. The rider's mount knowledge adds its share of the
+slayers again (Erebor's `i_memory_taming_bonus`): the known share of all mounts, at most 50 a point of the ranger's
+`mountsKnowledge`, and never past Taming or Animal Lore. `.boosts` shows them by the ridden mount.
+
 ## Icons
 
 Erebor's small icons at the top left (`AbilityIcons.cs`): a charge (magic charges, killing spree, the war fork's round

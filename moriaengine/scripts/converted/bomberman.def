@@ -2,7 +2,7 @@
 
 [ItemDef i_bbman_stone]
 name = "Bomberman"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_grave_stone_4
 
 //[dialog d_bbman] //(commented out by Converter) 
@@ -98,7 +98,7 @@ Color = 006d1
 
 [ItemDef i_bbman_crystal]
 Name = "BBman Crystal"
-Type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_crystal_red
 
 //[dialog d_bbman_player_window] //(commented out by Converter) 

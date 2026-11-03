@@ -90,10 +90,11 @@ namespace SteamEngine.CompiledScripts {
 			return total;
 		}
 
-		/// <summary>Per mille: what's known, never past the tamer's Taming and Animal Lore. Erebor's limit by the ranger's
-		/// ra_mountsKnowledge comes with mount powers, #925.</summary>
+		/// <summary>Per mille: what's known, never past 50 a point of the ranger's mountsKnowledge (#925, mount_equip), nor
+		/// the tamer's Taming and Animal Lore.</summary>
 		public static int Bonus(Character ch) {
 			int known = (TotalPoints(ch) * Permille) / MaxPoints;
+			known = System.Math.Min(known, ClassAbilities.Points(ch, "mountsKnowledge") * 50);
 			return System.Math.Min(known, System.Math.Min(ch.GetSkill(SkillName.AnimalTaming), ch.GetSkill(SkillName.AnimalLore)));
 		}
 

@@ -70,7 +70,7 @@ SUBSECTION = questy
 DESCRIPTION = Premena na jezdce
 
 NAME = "Premena na jezdce"
-TYPE = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = 0x1174
 Color = 0989
 
@@ -188,7 +188,7 @@ SUBSECTION = Invis Maze
 DESCRIPTION = Brana do bludiste 2
 
 NAME = "Brana Primo do bludiste"
-TYPE = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_moongate_red
 
 //[events e_notele] //(commented out by Converter) 

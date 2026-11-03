@@ -35,7 +35,7 @@ namespace SteamEngine.CompiledScripts {
 			return TargetResult.Done;
 		}
 
-		private static void Repair(Player self, Destroyable clothes) {
+		internal static void Repair(Player self, Destroyable clothes) {
 			TailoringLoc texts = Loc<TailoringLoc>.Get(self.Language);
 			int skill = self.GetSkill(SkillName.Tailoring);
 			if (clothes.Durability >= clothes.MaxDurability) {
@@ -47,6 +47,10 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			IResourceListEntry missing;
+			if (MagicItems.IsMagic(clothes)) {
+				RepairMagic(self, clothes, skill);
+				return;
+			}
 			ResourcesList thread = ResourcesListParser.Parse("1 i_thread");
 			if (!thread.HasResourcesPresent(self, ResourcesLocality.Backpack, out missing)) {
 				return;
@@ -71,6 +75,38 @@ namespace SteamEngine.CompiledScripts {
 			clothes.Durability = (ushort) now;
 			string text = failed ? (self.IsFemale ? texts.RepairSpoiltFemale : texts.RepairSpoiltMale) : (self.IsFemale ? texts.RepairedFemale : texts.RepairedMale);
 			self.SysMessage(string.Format(text, clothes.Name));
+		}
+
+		/// <summary>#1070 - magic clothing (tmi_info): over 104.0 Tailoring and a magic thread, used either way; a fifth of the
+		/// tries spoil it. From 100.1 to 104.0 nothing at all happens, as on Erebor.</summary>
+		private static void RepairMagic(Player self, Destroyable clothes, int skill) {
+			IResourceListEntry missing;
+			ResourcesList magicThread = ResourcesListParser.Parse("1 i_magicka_nit");
+			bool hasThread = magicThread.HasResourcesPresent(self, ResourcesLocality.Backpack, out missing);
+			if (skill <= 1000) {
+				self.SysMessage(hasThread ? ("Na opravu " + clothes.Name + " neumis dost dobre sit.")
+					: ("Neumis dost dobre sit a ani nemas potrebne suroviny k oprave " + clothes.Name + "."));
+				return;
+			}
+			if (skill <= 1040) {
+				return;
+			}
+			if (!hasThread) {
+				self.SysMessage("Na opravu " + clothes.Name + " nemas potrebne suroviny.");
+				return;
+			}
+			magicThread.ConsumeResourcesOnce(self, ResourcesLocality.Backpack, out missing);
+			bool failed = Globals.dice.Next(101) < 20;
+			int most = clothes.MaxDurability - 1;
+			int now = failed ? (clothes.Durability - 1) : most;
+			if ((most < 1) || (now < 1)) {
+				self.Emote("destroyed " + clothes.Name);
+				clothes.Delete();
+				return;
+			}
+			clothes.MaxDurability = (ushort) most;
+			clothes.Durability = (ushort) now;
+			self.SysMessage(((failed ? (self.IsFemale ? "Zkazila" : "Zkazil") + " jsi opravu " : (self.IsFemale ? "Opravila" : "Opravil") + " jsi ") + clothes.Name + "."));
 		}
 	}
 

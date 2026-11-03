@@ -75,23 +75,23 @@ model = i_cauldron
 
 [ItemDef i_hm_drevonaohen]
 name = "Drevo na ohen"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_kindling
 
 [ItemDef i_hm_ohen]
 name = "Ohen"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_campfire
 
 [ItemDef i_hm_warniak_egg]
 name = "Vejce"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_virtstone_1
 Color = 0481
 
 [ItemDef i_hm_spawn_remove]
 name = "Spawn delete"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_worldgem_bit
 
 [EquippableDef i_hm_bow_malica]

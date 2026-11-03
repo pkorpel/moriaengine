@@ -52,7 +52,7 @@ Erebor's `f_vyroba_latky`, `scripts/Basic/skills/Crafting/Spinning`. Double clic
 
 A batch is 6 of the source, times Tailoring / `skillPerBatch`, and at least 6. Wool and cotton give `yieldPerFibre` each, thread and yarn give `yieldPerThread` of cloth. These three are `mnozkoef`, `pocet_z_vlny` and `pocet_z_nite`, which aren't in the archive: **the values on .settings are guesses**.
 
-A sewing kit on clothes repairs them from 40.0 Tailoring with thread on you, each repair taking a point of maximum durability. The roll is Erebor's to the letter and looks backwards: it fails when a roll of 0 to 1200 is under your skill, so a higher skill fails more. Failing takes a point of durability and a thread; succeeding restores all durability, takes magic thread if you have any, and no thread. Clothes reaching 0 are destroyed.
+A sewing kit on clothes repairs them from 40.0 Tailoring with thread on you, each repair taking a point of maximum durability. The roll is Erebor's to the letter and looks backwards: it fails when a roll of 0 to 1200 is under your skill, so a higher skill fails more. Failing takes a point of durability and a thread; succeeding restores all durability, takes magic thread if you have any, and no thread. Clothes reaching 0 are destroyed. Magic clothing (#1070) wants more than 104.0 Tailoring and a magic thread, used either way: a fifth of the tries spoil it, the rest restore it, each taking a point of maximum durability. At 100.0 or less Erebor's refusals say what's missing; from 100.1 to 104.0 nothing happens at all, as on Erebor.
 
 ### The queue (#962)
 
