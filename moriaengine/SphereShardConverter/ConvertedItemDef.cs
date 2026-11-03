@@ -510,6 +510,7 @@ namespace SteamEngine.Converter {
 
 		public static void ThirdStageFinished() {
 			ApplyArmorSettings();
+			ApplyShamanItems();
 			ApplyCashiersSettings();
 			foreach (ConvertedItemDef def in itemsByDefname.Values) {
 				if (def.isWeapon) {
@@ -600,6 +601,16 @@ namespace SteamEngine.Converter {
 		//#860 - ammo's TDATA1 and TDATA2 index nastaveni_arrowdamage_N (combat.scp): the first is a
 		//damage multiplier in permille, the second piercing; no TDATA2 is index 0, piercing 0
 		//#883 - seky.scp's money items; the limits are globals in sphereworld.scp
+		//#1017 - the shaman's things, plain t_normal items whose double click is scripted
+		private static void ApplyShamanItems() {
+			foreach (string defname in new[] { "i_soul_case", "i_soul", "i_empathy_item", "i_empathy_bottle" }) {
+				if (itemsByDefname.TryGetValue(defname, out ConvertedThingDef def)) {
+					def.headerType = "ShamanItemDef";
+					def.Replace("TYPE", "t_normal", "");
+				}
+			}
+		}
+
 		private static void ApplyCashiersSettings() {
 			string[,] items = {
 				{ "i_cashiers_check", null },
