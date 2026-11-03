@@ -342,6 +342,7 @@ namespace SteamEngine.CompiledScripts {
 			if (InDefStance(self) && !target.IsPlayer) {
 				swing.DamageAfterAC = swing.DamageAfterAC * DefStanceFactor(self);
 			}
+			RangerAbilities.TryBleedBolt(self, target, swing); //#1070 - e_bleed_bolt
 		}
 
 		private static bool IsDoubleSwingWeapon(Character self) {

@@ -23,6 +23,7 @@ Def:	//vars on the def
 	WeaponAnimType weaponAnimType = WeaponAnimType.Undefined
 	ProjectileType projectileType = ProjectileType.None
 	int projectileAnim = -1
+	string ammoType = null
 	int rangeVsM = 1
 	int rangeVsP = 1
 	int strikeStartRange = 5

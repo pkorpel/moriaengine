@@ -226,7 +226,8 @@ namespace SteamEngine.CompiledScripts {
 			internal double mindPowerVsM;
 		}
 
-		private static Projectile TryFindProjectile(Character self, ProjectileType type) {
+		private static Projectile TryFindProjectile(Character self, Weapon weapon) {
+			ProjectileType type = weapon.ProjectileType;
 			if (type != ProjectileType.None) {
 				Projectile retVal = self.weaponProjectile;
 				if ((retVal != null) &&
@@ -235,10 +236,10 @@ namespace SteamEngine.CompiledScripts {
 						(retVal.Amount < 1))) {
 					retVal = null;
 				}
-				if ((retVal == null) || (!CheckProjectile(retVal, type))) {
+				if ((retVal == null) || (!CheckProjectile(retVal, weapon))) {
 					foreach (Item i in self.Backpack.EnumShallow()) {
 						retVal = i as Projectile;
-						if ((retVal != null) && (CheckProjectile(retVal, type))) {
+						if ((retVal != null) && (CheckProjectile(retVal, weapon))) {
 							return retVal;
 						}
 					}
@@ -249,9 +250,16 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
-		private static bool CheckProjectile(Projectile projectile, ProjectileType type) {
+		/// <summary>The projectile kind fits, and the weapon's own ammunition type if it has one (#1070, TDATA3): a light
+		/// crossbow shoots jagged bolts only, a heavy one plain bolts.</summary>
+		internal static bool CheckProjectile(Projectile projectile, Weapon weapon) {
+			ProjectileType type = weapon.ProjectileType;
 			ProjectileType actualType = projectile.ProjectileType;
-			return ((type & actualType) == type);
+			if ((type & actualType) != type) {
+				return false;
+			}
+			string ammoType = ((WeaponDef) weapon.Def).AmmoType;
+			return string.IsNullOrEmpty(ammoType) || ((projectile.Type != null) && string.Equals(projectile.Type.Defname, ammoType, StringComparison.OrdinalIgnoreCase));
 		}
 
 		internal static CombatWeaponValues CalculateCombatWeaponValues(Character self) {
@@ -275,7 +283,7 @@ namespace SteamEngine.CompiledScripts {
 					retVal.strikeStopRange = weapon.StrikeStopRange;
 					retVal.piercing = weapon.Piercing;
 					retVal.projectileType = weapon.ProjectileType;
-					self.weaponProjectile = TryFindProjectile(self, weapon.ProjectileType);
+					self.weaponProjectile = TryFindProjectile(self, weapon);
 					if (self.weaponProjectile != null) {
 						retVal.piercing += self.weaponProjectile.Piercing;
 						retVal.projectileAnim = weapon.ProjectileAnim;
@@ -409,7 +417,7 @@ namespace SteamEngine.CompiledScripts {
 							SetRangedWeaponRange(retVal, (configuredRange > 1) ? configuredRange : globalDefault);
 						}
 						retVal.projectileType = weapon.ProjectileType;
-						self.weaponProjectile = TryFindProjectile(self, weapon.ProjectileType);
+						self.weaponProjectile = TryFindProjectile(self, weapon);
 						if (self.weaponProjectile != null) {
 							retVal.projectileAnim = weapon.ProjectileAnim;
 						}
