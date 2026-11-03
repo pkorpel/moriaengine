@@ -16,10 +16,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Item deed = (Item) ((ItemDef) ThingDef.GetByDefname("i_deed_erebor_vendor")).Create(player.Backpack);
 			deed.Trigger_DClickFromAfar(player); //the client hasn't opened its pack, so a reach test would refuse
-			EreborVendor vendor = null;
-			foreach (AbstractCharacter near in player.GetMap().GetCharsInRange(player.X, player.Y, 2)) {
-				vendor = (near as EreborVendor) ?? vendor;
-			}
+			Report("aDeedOnlyInOwnStall", !deed.IsDeleted);
+			Stall stall = (Stall) House.Create((FlaggedRegion) StaticRegion.GetByDefname("a_stanek_13"));
+			stall.Claim(player);
+			player.P(stall);
+			deed.Trigger_DClickFromAfar(player);
+			EreborVendor vendor = stall.Vendor;
 			Report("aDeedPlacesAVendor", (vendor != null) && deed.IsDeleted && vendor.IsOwner(player) && vendor.Flag_Invulnerable);
 			if (vendor == null) {
 				Console.WriteLine("VENDOR_DONE");
@@ -51,17 +53,14 @@ namespace SteamEngine.CompiledScripts {
 			EreborVendors.Collect(vendor, player);
 			Report("theGoodsGoToTheBank", (vendor.Goods.Count == 0) && (shirt.TopObj() == player));
 
-			House stall = House.Create((FlaggedRegion) StaticRegion.GetByDefname("a_stanek_13"));
-			stall.Claim(player);
-			((Stall) stall).SetVendorSpot(player, stall);
-			((Stall) stall).PlaceVendor(player);
-			Report("aStallPlacesItsVendor", (((Stall) stall).Vendor != null) && ((Stall) stall).Vendor.IsOwner(player));
-			((Stall) stall).Vendor.Delete();
-			stall.Empty();
+			stall.SetVendorSpot(player, stall);
+			stall.PlaceVendor(player);
+			Report("aStallPlacesItsVendor", (stall.Vendor == vendor) && (vendor.X == stall.X) && (vendor.Y == stall.Y));
 
 			Item hat = (Item) ((ItemDef) ThingDef.GetByDefname("i_hat_floppy")).Create(player.Backpack);
 			EreborVendors.StockItem(vendor, player, hat, "Klobouk", 10);
 			EreborVendors.EndSession(player);
+			vendor.P(player.X + 1, player.Y, player.Z, player.M);
 			Console.WriteLine("VENDOR_DONE");
 		}
 
