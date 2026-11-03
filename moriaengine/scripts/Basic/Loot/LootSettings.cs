@@ -43,6 +43,14 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int goldPermilleDungeon = 900;
 
+		/// <summary>#1017 - the Vetesnik's tag.price for identifying one item.</summary>
+		[SaveableData]
+		public int identifyPrice = 5000;
+
+		/// <summary>#1017 - def_imi_exchangeAttrs: properties handed in for one new bag.</summary>
+		[SaveableData]
+		public int exchangeAttributes = 10;
+
 		/// <summary>No magic-item chance at or below this much gold.</summary>
 		[SaveableData]
 		public int magicItemMinGold = 30;

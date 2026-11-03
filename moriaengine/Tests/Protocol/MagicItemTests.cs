@@ -21,10 +21,17 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutput("MAGIC_DONE", Wait), this.fixture.GameOutputSnapshot());
 				game.SendSpeech(".TestMagicCombat");
 				Assert.True(this.fixture.WaitForGameOutput("MAGIC_COMBAT_DONE", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech(".TestMagicExchanger");
+				Assert.True(this.fixture.WaitForGameOutput("MAGIC_EXCHANGER_READY", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech("dobry den");
+				var dialog = game.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Vetesnik", dialog.Strings);
+				Assert.Contains("Identifikovat", dialog.Strings);
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "aBagUnpacks", "aPouchHasOneProperty", "unidentifiedCantBeWorn", "identifiedItHasAName", "everyRollMakesAnItem",
 						"everyPropertyIsFromItsTable", "aBlackBagIsValoriteOrBetter", "theInfoLines", "wornItWorks", "takenOffItStops", "namedByItsGraphic",
-						"aSlayerCountsByTheMonstersPercent", "notAgainstAnotherKind", "leechHealsByTheFormula", "freezingParalyses", "aBlockStopsAHarmfulSpell", "aReflexSendsItBack" }) {
+						"aSlayerCountsByTheMonstersPercent", "notAgainstAnotherKind", "leechHealsByTheFormula", "freezingParalyses", "aBlockStopsAHarmfulSpell", "aReflexSendsItBack",
+						"theVetesnikIsAnExchanger", "identifyingCostsAndReveals", "tooFewToExchange", "tenPropertiesBuyABag", "aCrushingPathStaff", "aSharpsPathKryss", "noPathNoMace" }) {
 					string marker = "MAGIC_ITEM: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
