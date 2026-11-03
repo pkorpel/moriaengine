@@ -46,7 +46,7 @@ journal, and "Splnil jsi ukol tydenniho questu. Odmena byla vlozena do banky." (
 | Low | Pozdrav Mistra skillu X (RS 53) | greeting the teacher of that skill; it says "Taky Te zdravim, <name>." | 1 |
 | Low | Vypij lektvar: Nightsight (RS 55) / a lesser boost potion (RS 65) | double-clicking it off the potion cooldown | `qCount*{mult..mult-2+qCount}`, mult 6 / 2 |
 | Low | Stoupni na pavucinu (RS 65) | stepping onto a web no one with the task has stepped on | `qCount*{30..50}/10` |
-| Low | Lootni predmet: gold (RS 53) / any fruit (60) / reagents (65) / gems (75) | lifting it from a spawned monster's corpse, with no more than it had at death | `(L*mult + {-500..0})/(delim + L)` |
+| Low | Lootni predmet: gold (RS 53) / any fruit (60) / reagents (65) / gems (75) | lifting from a monster's corpse what it had from its `creaturestart` (its gold and extras, any monster with `i_monster_create` not raised again, spawned or added by hand: Erebor's `spawned_item`, a misleading name), with no more than it had at death; what came into its pack later doesn't count | `(L*mult + {-500..0})/(delim + L)` |
 | Low | Zabij npc v dungeonu s alespon 20xp (RS 80) | a kill credited in a dungeon (planes 2, 10-15) with that much experience share | `(L*550 + {-500..100})/(200+L)` |
 | Low | Osetri bandazemi poskozeni (RS 75) | hit points a bandage heals on a person of the healer's realm, the healer too | `L*k*(Healing/2)*(Anatomy/10)/10000`, k 100 for priests and shamans, else 15; at least 100 |
 | Medium | Vypij lektvar: a boost potion (RS 80) | as above | mult 4 |
