@@ -78,7 +78,7 @@ raises it by 5.0 (`SkillPointGain`), which costs:
 
 It refuses, with Erebor's message, past the profession's cap, at exactly 25.0, 50.0 and 75.0
 (those steps come from a [skill teacher](npc-speech.md) for gold, which needs the rank from
-the [rank quests](rank-quests.md)), without enough points, and under a stat spell. Only
+the [rank quests](quests/README.md)), without enough points, and under a stat spell. Only
 `SpendableSkills`, Erebor's `combat_skills`, can be raised this way. Crafting and gathering are
 trained by use.
 

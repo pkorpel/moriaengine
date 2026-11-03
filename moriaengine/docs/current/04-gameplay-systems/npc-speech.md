@@ -125,7 +125,7 @@ and sets the skill. No lessons for a ghost, a player without a profession, or on
 starting value (Erebor's `roundskill`: 27.4 becomes 25.0).
 
 The player rank is `Player.SkillRank` (Novice/Expert/Master/Grandmaster, Erebor's `tag.skillrank`), editable in
-`.info`. Players earn it through the [rank quests](rank-quests.md). The "Skill Teachers" `.settings` switch `requireRank`
+`.info`. Players earn it through the [rank quests](quests/README.md). The "Skill Teachers" `.settings` switch `requireRank`
 is on by default: a world that hasn't run `.SetupWorld` needs it off, because nobody could earn a rank there. The same category holds `roundSkillOnGreeting`, the prices and the levels.
 Not ported: the weekly "meet a master" quest (`f_weekly_meetMaster`).
 
