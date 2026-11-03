@@ -97,10 +97,7 @@ namespace SteamEngine.CompiledScripts {
 				gm.SysMessage("No spot for the " + piece + " of " + realmName + ".");
 				return;
 			}
-			pieces.Npc("realm/" + realmName + "/" + piece, npcDef, spot, capital.P.M, shop => {
-				shop.Realm = realm;
-				shop.Flag_Invulnerable = true;
-			});
+			pieces.Npc("realm/" + realmName + "/" + piece, npcDef, spot, capital.P.M, realm, true);
 		}
 
 		public static string StonePieceId(string city) {

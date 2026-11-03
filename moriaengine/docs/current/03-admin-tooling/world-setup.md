@@ -19,6 +19,14 @@ Every piece has a permanent id, like `grandmaster/elvira`, kept in a tag on the 
 
 Nothing is ever removed or replaced, and nothing the setups didn't ask for is touched. Ids survive a save and restart.
 
+**NPCs are spawns.** A lone NPC piece (the alchemists, the Prodejce, the Lenastirs, Grandmaster's Elqira, Elmira, Elvira and the
+envoys) is a spawn of one, made by `.spawn`'s own `f_spawninit`: the piece is the gem, an invisible, fixed `i_worldgem_bit` on the
+ground at the NPC's spot, which a GM double-clicks to edit like any `.spawn` gem. Its first NPC comes at once; another comes a minute
+or two after one is gone. The NPC's realm and invulnerability are tags on the gem (`SpawnedPieces`), given to every NPC it spawns,
+respawns too; a still NPC has homedist 0, the rest 6. To move one for good, a GM moves the gem. Rinald alone is a bare NPC
+(`NpcWithoutSpawn`): his quest makes a new one for each hero and keeps the cave shut while he lives, which a spawn's own timer
+would break.
+
 Every item piece is fixed in place (`attr_move_never`), which also stops it decaying and keeps players from picking it up. A run
 applies this to pieces that already exist too, and that's the only thing it does to them. GMs can still drag fixed items; with `.gm`
 off they can't.
@@ -56,13 +64,14 @@ Code: `scripts/Setup/`.
 protected internal override void Place(WorldPieces pieces, Character gm) {
 	Map world = Map.GetMap(0);
 	int[] at = WorldSpots.NearestStandable(world, 2769, 2763, 5);
-	pieces.Npc("myquest/guide", "c_my_guide", at, 0, npc => npc.Flag_Invulnerable = true);
+	pieces.Npc("myquest/guide", "c_my_guide", at, 0, Realm.None, true, WorldPieces.StandsStill); //a spawn of one: realm, invulnerable, homedist
 	pieces.SpawnGem("myquest/wolves", new SpawnInfo(4, (IThingFactory) ThingDef.GetByDefname("c_wolf"), 20, 40, 8), at, 0);
 }
 ```
 
 - **Ids** are permanent: never reuse or rename one, or the next run sees a new piece and places a second.
-- **`onNew`** (the last argument) runs only on a piece just created, for things like `Flag_Invulnerable`. Don't set up a piece after the
+- **`onNew`** (the last argument of `Item` and `NpcWithoutSpawn`) runs only on a piece just created; an NPC's realm and
+  invulnerability are `Npc`'s own arguments, kept on its gem for every respawn. Don't set up a piece after the
   call, or a GM's later changes get overwritten on each run. Linking pieces to each other after the call is fine, if it's safe to
   repeat.
 - **Spots:** `WorldSpots.NearestStandable` for open ground, `WorldSpots.WalkableRing` to walk in from a known tile. Check a walk really

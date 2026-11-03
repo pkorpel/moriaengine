@@ -64,7 +64,7 @@ namespace SteamEngine.CompiledScripts {
 			Point4D cave = StaticRegion.GetByDefname(GrandmasterQuest.CaveRegion).P;
 			Map caveMap = Map.GetMap(cave.M);
 			int[] rinaldAt = WorldSpots.WalkableRing(caveMap, cave, walker, 30)[0];
-			NPC rinald = pieces.Npc(GrandmasterQuest.RinaldPieceId, GrandmasterQuest.RinaldDef, rinaldAt, cave.M, GrandmasterQuest.PrepareRinald);
+			NPC rinald = pieces.NpcWithoutSpawn(GrandmasterQuest.RinaldPieceId, GrandmasterQuest.RinaldDef, rinaldAt, cave.M, GrandmasterQuest.PrepareRinald);
 			GrandmasterQuest.LinkCave(entrance, pieces.Item(Id("cave/exit"), GrandmasterQuest.CaveExitDef, WorldSpots.WalkableRing(caveMap, cave, walker, 3)[0], cave.M), rinald, rinaldAt, cave.M);
 			pieces.SpawnGem(Id("cave/hounds"), new SpawnInfo(4, (IThingFactory) ThingDef.GetByDefname("c_hellhound"), 20, 40, 8),
 				WorldSpots.WalkableRing(caveMap, new Point3D(rinaldAt[0], rinaldAt[1], rinaldAt[2]), walker, 3)[0], cave.M);
@@ -89,10 +89,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static void PlaceStill(WorldPieces pieces, string name, string defname, int[] at, byte m) {
-			pieces.Npc(Id(name), defname, at, m, npc => {
-				npc.Flag_Invulnerable = true; //Erebor's @create
-				NPCAiTimer.GetFor(npc).WanderLeash = 0;
-			});
+			pieces.Npc(Id(name), defname, at, m, Realm.None, true, WorldPieces.StandsStill); //invulnerable: Erebor's @create
 		}
 
 		private static Item PlaceFixed(WorldPieces pieces, string name, string defname, int[] at, byte m) {

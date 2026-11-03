@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## DONE (2026-11-03): .SetupWorld's lone NPCs as spawns (branch setup-npc-spawns)
+
+User: the NPCs .SetupWorld places (alchemists, Prodejce, Lenastirs, Grandmaster's Elqira/Elmira/Elvira/envoys...) should have spawns, through the traditional .spawn system; no migration needed, the user rebuilds the world from an empty save. WorldPieces.Npc goes through SpawnGem (.spawn's f_spawninit, the gem on the ground, the piece), fires the gem's @spawnNow at once instead of after its 1 s timer; spawn.scp's @spawnNow calls SpawnedPieces.Prepare, which applies the gem's tags (realm, invulnerable) to every respawn; homedist 6 (the old default leash) or 0 for those standing still. Rinald stays quest-made: the quest replaces a transformed Rinald per hero and the cave exit waits for his death, a spawn's timer would trap heroes.
+
 ## DONE (2026-11-03): house doorstep tiles instead of the region rule (branch house-doorstep-tiles)
 
 User: houses stopping the other realm by region doesn't work, zones overlap (Barad-dur); an invisible pad that stops entry, placed under every door .HouseDoor makes. It is Erebor's i_duch_dlazba (dungeon_bonusy.scp, "nepusti ducha"): ghosts and anyone not of the house realm, but pets, are refused (Erebor pushed them back after @step; here the step is refused before it, in Character.CheckCharacterObstacles). The pad keeps its house's realm in a tag, set from the house where it's placed, so a zone's overlap doesn't decide; .HousePad places one anywhere, realm optional. The region rule goes (walk and teleport); MayEnterHouse stays for claims and the house bank. Erebor's same tile also gave i_house_safe: 1.1 s invulnerable (99z8 deletes a t_eq_script whose @Timer doesn't return 1, EreborNext CItem.Tick), ported. Anyone can walk into a house with no doors or tiles yet.
