@@ -78,6 +78,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
+			if ((cont is Corpse corpse) && corpse.HasTag(CorpseCarving.CarvedTK)) {
+				return; //#1070 - i_selfress_timer: a carved body doesn't rise
+			}
 			//#791 - like Erebor's isResurrectedNPC: the risen monster gets its loot items again,
 			//but no gold (its gold marker stays at 1), so killing it twice doesn't double the gold
 			MonsterLoot.CreatingResurrected = true;

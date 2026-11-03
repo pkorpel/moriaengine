@@ -54,6 +54,9 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>f_gotopoint. The money goes when the ride is booked, and a ride already booked is
 		/// lost even if this one can't be paid for.</summary>
 		internal void Book(Player player, TravelStop stop) {
+			if (ShamanVoodoo.RefusesRide(player)) { //#1070 - the voodoo's e_noport
+				return;
+			}
 			if (TravelStops.IsEnemyLand(player, stop.RealmTag)) {
 				player.SysMessage("Nemuzes cestovat na nepratelske uzemi.", ClassMessageHue);
 				D_TravelStone.Show(player, this, 0);

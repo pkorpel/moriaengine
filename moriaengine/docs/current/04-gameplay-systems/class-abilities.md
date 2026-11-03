@@ -16,6 +16,29 @@ either.
 "Kouzlo pohlceno.", at `points * 10` out of 1000, the permille weapon dodge uses too (`nastaveni_ability_pvMdodge`).
 A player's spell never is, nor is anything while the player is possessing a monster.
 
+## Shaman's voodoo and carving bodies
+
+A blade used on a body carves it (`CorpseCarving.cs`, f_weapon_sharp_targon_item): daggers and other fencing blades
+through their knife target, swords, axes and sharp maces with no tool skill of their own on a double click. A carved
+body is marked: bandages can't raise it and a monster's own rising (`e_selfreser`) doesn't come. Each body only once: a
+player's falls apart into a head named after them, a torso, arms and legs, all knowing whose they were, and blood, gone
+in 5 minutes (addflesh); any other gives what its NPC's RESOURCES list (#587).
+
+A coloured dagger used on a head curses its owner (`ShamanVoodoo.cs`, woodoo), the metal deciding how: copper a fifth of
+the hits, iron all the stamina, verite bleeding, valorite poison (Sphere's poison(1000), here 8% of the hits a tick),
+obsidian no casting ("Jsi v soku, nemuzes kouzlit!"), adamantinum no recall or travel stone, mithril no riding.
+A shaman of level 20, `250 + 20 * woodoo_curse` out of 1000; a failure curses the shaman, a success waits 300 s. The
+owner must be in the shaman's area; it reaches them in 10 s, comes back every 30 s, and ends when they're blessed or
+dead. One already cursed, or with magic reflection, throws it back at the shaman. After the head's first use every use
+costs the shaman all stamina and half the mana, and wears the head until it falls apart.
+
+A potion used on a head (double click the head) blesses its owner: Strength, Cunning and Agility potions their spell
+at 1.334 * the shaman's Spirit Speak, Stoneskin protection at 1.4 * it (and the chest armour comes off). `woodoo`
+points * 900 out of 10000, 3 s between.
+
+`.astralmorph` (a GM command, as it wasn't on Erebor's lists): a shaman takes a monster corpse's body and colour and
+wears nothing while morphed; again gives the own body back.
+
 ## Icons
 
 Erebor's small icons at the top left (`AbilityIcons.cs`): a charge (magic charges, killing spree, the war fork's round

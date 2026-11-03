@@ -195,7 +195,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			FlaggedRegion area = AreaOf(ch.Region);
-			bool dismount = HasEvent(area, MinesNoHorse);
+			bool dismount = HasEvent(area, MinesNoHorse) || ShamanVoodoo.ThrowsRider(ch); //#1070 - the voodoo's e_nohorse
 			if (!dismount && ch.IsPlayer && (ch.Z > NoHorseHighMaxZ) && HasEvent(area, NoHorseHigh)) {
 				AbstractCharacter mount = ch.Mount;
 				dismount = (mount == null) || (Array.IndexOf(HighMountItems, mount.MountItem) < 0);

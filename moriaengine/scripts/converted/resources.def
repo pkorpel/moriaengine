@@ -832,6 +832,7 @@ WEIGHT = 5
 RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain //some resources were fixed by converter 
 ItemValue = 1 //nastaveni_cm_value 
 DEFNAME = i_flesh_head
+TYPE = t_flesh_head
 
 [ItemDef 0x1ce2]
 CATEGORY = Decoration - Dungeons and The Dead
@@ -978,6 +979,7 @@ WEIGHT = 5
 RESOURCES = 1 i_bone_skull, 1 i_bone_jaw, 1 i_flesh_brain, 1 i_blood_2 //nastaveni_cm_resources 
 DEFNAME = i_flesh_head_2
 //VALUE = 1 // commented out by Converter 
+TYPE = t_flesh_head
 
 [ItemDef 0x1da1]
 CATEGORY = Decoration - Dungeons and The Dead

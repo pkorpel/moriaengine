@@ -615,6 +615,12 @@ namespace SteamEngine.Converter {
 				ball.headerType = "HypnotizerBallDef";
 				ball.Replace("TYPE", "t_normal", "");
 			}
+			//#1070 - the heads' @userdclick target and @targon_item gvoodoo: the shaman's good voodoo
+			foreach (string defname in new[] { "i_flesh_head", "i_flesh_head_2" }) {
+				if (itemsByDefname.TryGetValue(defname, out ConvertedThingDef head)) {
+					head.Replace("TYPE", "t_flesh_head", "");
+				}
+			}
 		}
 
 		private static void ApplyCashiersSettings() {
