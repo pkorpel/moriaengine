@@ -73,6 +73,25 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int splitShotDamageVsP = 125;
 
+		[SaveableData]
+		public int crushingArrowStamina = 25;
+
+		[SaveableData]
+		public double crushingArrowDelaySeconds = 1.5;
+
+		[SaveableData]
+		public double crushingArrowNextSeconds = 3;
+
+		[SaveableData]
+		public int crushingArrowReach = 12;
+
+		/// <summary>nastaveni_crushingArrow_PvM_durationBase and _durationAbilityPoint, as tenths.</summary>
+		[SaveableData]
+		public double crushingArrowBaseSeconds = 2;
+
+		[SaveableData]
+		public double crushingArrowSecondsPerPoint = 0.2;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;

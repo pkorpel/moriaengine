@@ -1394,6 +1394,9 @@ namespace SteamEngine.CompiledScripts {
 
 				this.Trigger_Death(killedBy);
 				ClassAbilities.OnDeath(this); //#1017
+				if ((killedBy is Player hunter) && (this is NPC prey)) {
+					RangerAbilities.OnKill(hunter, prey);
+				}
 
 				CharSyncQueue.AboutToChangeHitpoints(this);
 				this.hitpoints = 0;
