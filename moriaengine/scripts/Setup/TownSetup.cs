@@ -52,7 +52,8 @@ namespace SteamEngine.CompiledScripts {
 			if (generalSpot != null) {
 				pieces.Item("realm/gondor/stone", GeneralStoneDef, generalSpot, capital.P.M);
 			}
-			PlaceAlchemist(pieces, gm, capital, "gondor", Realm.Gondor);
+			PlaceShop(pieces, gm, capital, "gondor", Realm.Gondor, "alchemist", AlchemistShop.NpcDef, 5);
+			PlaceShop(pieces, gm, capital, "gondor", Realm.Gondor, "prodejce", ProdejceShop.NpcDef, 6);
 			this.PlaceMordor(pieces, gm);
 		}
 
@@ -67,7 +68,8 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			FlaggedRegion capital = CityArea(MordorCapital);
-			PlaceAlchemist(pieces, gm, capital, "mordor", Realm.Mordor);
+			PlaceShop(pieces, gm, capital, "mordor", Realm.Mordor, "alchemist", AlchemistShop.NpcDef, 5);
+			PlaceShop(pieces, gm, capital, "mordor", Realm.Mordor, "prodejce", ProdejceShop.NpcDef, 6);
 			FlaggedRegion trial = (FlaggedRegion) StaticRegion.GetByDefname("a_Fela_Nazgul");
 			int[] stoneSpot = SpotIn(capital, gm, 1);
 			int[] boardSpot = SpotIn(capital, gm, 2);
@@ -87,16 +89,17 @@ namespace SteamEngine.CompiledScripts {
 			((NazgulGate) gate).Refresh();
 		}
 
-		/// <summary>#1017 - the user's choice: an alchemist (c_alchymista) in each realm's capital, selling to that realm.</summary>
-		private static void PlaceAlchemist(WorldPieces pieces, Character gm, FlaggedRegion capital, string realmName, Realm realm) {
-			int[] spot = (capital == null) ? null : SpotIn(capital, gm, 5);
+		/// <summary>#1017, #1070 - the user's choice: an alchemist (c_alchymista) and a Prodejce (c_drazitel) in each realm's
+		/// capital, selling to that realm.</summary>
+		private static void PlaceShop(WorldPieces pieces, Character gm, FlaggedRegion capital, string realmName, Realm realm, string piece, string npcDef, int nth) {
+			int[] spot = (capital == null) ? null : SpotIn(capital, gm, nth);
 			if (spot == null) {
-				gm.SysMessage("No spot for the alchemist of " + realmName + ".");
+				gm.SysMessage("No spot for the " + piece + " of " + realmName + ".");
 				return;
 			}
-			pieces.Npc("realm/" + realmName + "/alchemist", AlchemistShop.NpcDef, spot, capital.P.M, alchemist => {
-				alchemist.Realm = realm;
-				alchemist.Flag_Invulnerable = true;
+			pieces.Npc("realm/" + realmName + "/" + piece, npcDef, spot, capital.P.M, shop => {
+				shop.Realm = realm;
+				shop.Flag_Invulnerable = true;
 			});
 		}
 
