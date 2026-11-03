@@ -78,6 +78,43 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1070 - the magic item auction: server side in scripts/Tests/AuctionTests.cs, then .aukce's dialogs, where
+		/// the seller takes a listing back.</summary>
+		[Fact]
+		public void TheAuctionSellsMagicItems() {
+			using (TestGameClient game = this.Login("Auctioneer")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				game.SendSpeech(".TestAuction");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUCTION_READY", mark, Wait), this.fixture.GameOutputSnapshot());
+				string ready = this.fixture.GameOutputSnapshot().Substring(mark);
+				int at = ready.IndexOf("AUCTION_READY ", StringComparison.Ordinal) + "AUCTION_READY ".Length;
+				string name = ready.Substring(at, ready.IndexOf(" |", at, StringComparison.Ordinal) - at);
+
+				game.SendSpeech(".aukce");
+				var auction = game.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Aukce magickych predmetu", auction.Strings);
+				Assert.Contains(name, auction.Strings);
+				game.SendGumpResponse(auction.GumpUid, 100, new System.Collections.Generic.Dictionary<int, string>());
+				var listing = game.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Prodava:", listing.Strings);
+				Assert.Contains("Stahnout", listing.Strings);
+				game.SendGumpResponse(listing.GumpUid, 3, new System.Collections.Generic.Dictionary<int, string>());
+				Thread.Sleep(500);
+
+				game.SendSpeech(".TestAuctionReport");
+				Assert.True(this.fixture.WaitForGameOutputSince("AUCTION_DONE", mark, Wait), this.fixture.GameOutputSnapshot());
+				string output = this.fixture.GameOutputSnapshot().Substring(mark);
+				foreach (string check in new[] { "aPlainItemIsRefused", "aRingGoesUp", "anotherRealmCantBid", "theSellerCantBid", "tooLowIsRefused", "aBidPaysAtOnce",
+						"theNextBidIsFivePercentMore", "theOutbidGetTheirGoldBack", "anOfflineBidderGetsAMessage", "noWithdrawingAfterABid", "theWinnerGetsItInTheBank",
+						"theSellerGetsTheBidInTheBank", "aBuyoutEndsItAtOnce", "noBidTheItemComesBack", "theListingsAreLimited", "theSellerWithdrawsWithoutABid", "theDialogWithdrew" }) {
+					string marker = "AUCTION: " + check + "=";
+					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
+					Assert.True(string.CompareOrdinal(output, idx + marker.Length, "True", 0, 4) == 0, marker + " failed. Game output:\n" + output);
+				}
+			}
+		}
+
 		private TestGameClient Login(string name) {
 			Exception firstFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
