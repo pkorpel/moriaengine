@@ -218,6 +218,57 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("CRAFTSMAN_DONE");
 		}
 
+		[SteamFunction]
+		public static void TestThiefAbilities(Character self) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			player.Account.PLevel = 1;
+			player.Profession = Professions.Thief;
+			player.Level = 100;
+			player.MaxStam = 200;
+			player.Stam = 200;
+			ClassAbilities.Reset(player);
+			Report("behindBonusSteps", (ThiefAbilities.FromBehindBonus(10) == 100) && (ThiefAbilities.FromBehindBonus(20) == 220));
+			Report("throatBonusSteps", (ThiefAbilities.ThroatBonus(10) == 40) && (ThiefAbilities.ThroatBonus(30) == 70));
+			NPC victim = Dummy(self, 1);
+			victim.Direction = Direction.East; //looking away from the thief, who stands to its west
+			Report("seenFromBehind", ThiefAbilities.IsBehind(player, victim));
+			victim.Direction = Direction.West;
+			Report("notFromTheFront", !ThiefAbilities.IsBehind(player, victim));
+
+			ClassAbilities.SetPoints(player, "podriznuti", 10);
+			ThiefAbilities.Podriznuti(player);
+			Report("throatSlitCostsStamina", player.Stam == 155);
+			ThiefAbilities.Podriznuti(player);
+			Report("throatSlitMustCoolDown", player.Stam == 155);
+
+			ClassAbilities.SetPoints(player, "uderstitem", 10);
+			player.Stam = 200;
+			ThiefAbilities.UderStitem(player);
+			Report("shieldStrikeCostsStamina", player.Stam == 170);
+
+			foreach (SkillName skill in new[] { SkillName.Fencing, SkillName.Tactics, SkillName.Anatomy }) {
+				player.SetRealSkillValue((int) skill, 1000);
+			}
+			((ItemDef) ThingDef.GetByDefname("i_kryss")).Create(player);
+			double weapAttack = CombatSettings.instance.weapAttack;
+			CombatSettings.instance.weapAttack = weapAttack * 100;
+			ClassAbilities.SetPoints(player, "backstab", 30);
+			HidingSkillDef.Hide(player);
+			player.SetTag(TagKey.Acquire("_hiddenAt_"), Globals.TimeInSeconds - 10);
+			short before = victim.Hits;
+			for (int i = 0; (i < 20) && (victim.Hits == before); i++) { //30 points: 105% a try against a monster
+				player.Stam = 200;
+				ThiefAbilities.FinishStab(player, victim);
+			}
+			CombatSettings.instance.weapAttack = weapAttack;
+			Report("aBackstabHurts", victim.Hits < before);
+			Report("aBackstabReveals", !player.Flag_Hidden);
+			victim.Delete();
+			Console.WriteLine("THIEF_DONE");
+		}
+
 		private static NPC Dummy(Character self, int offset) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + offset, self.Y, self.Z, self.M);
 			dummy.MaxHits = 30000;

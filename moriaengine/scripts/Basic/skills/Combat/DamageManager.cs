@@ -329,6 +329,7 @@ namespace SteamEngine.CompiledScripts {
 				MonsterSpecialAttacks.TryApplyStun(attacker, defender);
 				if ((attacker is Player stunner) && (defender is NPC stunned) && !stunned.IsDeleted) {
 					WarriorAbilities.TryStun(stunner, stunned, actualDamage); //#1017
+					ThiefAbilities.TryShieldStrike(stunner, stunned);
 				}
 
 				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_knockback

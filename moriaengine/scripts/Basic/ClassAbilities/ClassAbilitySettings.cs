@@ -141,6 +141,20 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int craftVigour = 200;
 
+		/// <summary>nastaveni_thief_backstabP_chance and _backstabM_chance: out of 1000, per point.</summary>
+		[SaveableData]
+		public int backstabChanceVsP = 48;
+
+		[SaveableData]
+		public int backstabChanceVsM = 35;
+
+		/// <summary>nastaveni_thief_backstabP_bonus and _backstabM_bonus: permille of a blow.</summary>
+		[SaveableData]
+		public int backstabBonusVsP = 1800;
+
+		[SaveableData]
+		public int backstabBonusVsM = 1500;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;
