@@ -123,8 +123,8 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("DOOR_KINDS: kinds=" + kinds + " good=" + good + " bad=" + bad);
 		}
 
-		[SteamFunction]
-		public static void TestHouseWalkIn(Character self) {
+		/// <summary>The first step from the street into the house: where from, which way, and the tile it lands on.</summary>
+		private static bool Entrance(Character self, out Point3D from, out Direction way, out Point3D to) {
 			Map map = Map.GetMap(Area.Mapplane);
 			foreach (ImmutableRectangle rectangle in Area.Rectangles) {
 				for (int x = rectangle.MinX - 1; x <= rectangle.MaxX + 1; x++) {
@@ -132,21 +132,50 @@ namespace SteamEngine.CompiledScripts {
 						if (map.GetRegionFor(x, y) == Area) {
 							continue;
 						}
-						Point3D from = new Point3D(x, y, WorldSpots.LowestStandZ(map, x, y));
+						from = new Point3D(x, y, WorldSpots.LowestStandZ(map, x, y));
 						for (int dir = 0; dir < 8; dir++) {
 							int nx, ny, nz;
 							if (map.CheckMovement(from, self.MovementSettings, (Direction) dir, false, out nx, out ny, out nz) && (map.GetRegionFor(nx, ny) == Area)) {
-								self.P(from.X, from.Y, from.Z, Area.Mapplane);
-								self.Direction = (Direction) dir; //a first step in a new direction only turns
-								bool moved = self.WalkRunOrFly((Direction) dir, false, false);
-								Console.WriteLine("HOUSE_WALK: moved=" + moved + " inside=" + (map.GetRegionFor(self.X, self.Y) == Area));
-								return;
+								way = (Direction) dir;
+								to = new Point3D(nx, ny, nz);
+								return true;
 							}
 						}
 					}
 				}
 			}
-			Console.WriteLine("HOUSE_WALK: no way in");
+			from = to = null;
+			way = Direction.North;
+			return false;
+		}
+
+		[SteamFunction]
+		public static void TestHouseWalkIn(Character self) {
+			if (!Entrance(self, out Point3D from, out Direction way, out Point3D to)) {
+				Console.WriteLine("HOUSE_WALK: no way in");
+				return;
+			}
+			Map map = Map.GetMap(Area.Mapplane);
+			self.P(from.X, from.Y, from.Z, Area.Mapplane);
+			self.Direction = way; //a first step in a new direction only turns
+			bool moved = self.WalkRunOrFly(way, false, false);
+			Console.WriteLine("HOUSE_WALK: moved=" + moved + " inside=" + (map.GetRegionFor(self.X, self.Y) == Area) +
+				" safe=" + HouseDoorstep.IsSafe(self) + " invul=" + self.Flag_Invulnerable);
+		}
+
+		[SteamFunction]
+		public static void TestHouseSafeNow(Character self) {
+			Console.WriteLine("HOUSE_SAFE: safe=" + HouseDoorstep.IsSafe(self) + " invul=" + self.Flag_Invulnerable);
+		}
+
+		/// <summary>A doorstep tile on the way in, as a GM's .HousePad lays it.</summary>
+		[SteamFunction]
+		public static void TestHousePadEntrance(Character self) {
+			bool found = Entrance(self, out Point3D from, out Direction way, out Point3D to);
+			if (found) {
+				HouseDoorstep.Place(new Point4D(to, Area.Mapplane), Area.HouseRealm);
+			}
+			Console.WriteLine("HOUSE_PAD: placed=" + found + " realm=" + Area.HouseRealm);
 		}
 
 		[SteamFunction]
@@ -187,7 +216,23 @@ namespace SteamEngine.CompiledScripts {
 					fourthRattans++;
 				}
 			}
-			Console.WriteLine("SETUP_DOOR: fourthRattans=" + fourthRattans);
+			int padded = 0, bare = 0;
+			foreach (Thing thing in Thing.AllThings) {
+				Item door = thing as Item;
+				if ((door != null) && door.IsDoor && door.IsOnGround && (door.M == sign.M) && (Point2D.GetSimpleDistance(door.X, door.Y, sign.X, sign.Y) < 20) && door.Flag_NonMovable) {
+					bool hasPad = false;
+					foreach (AbstractItem near in door.GetMap().GetItemsInRange(door.X, door.Y, 0)) {
+						hasPad |= (near is Item pad) && HouseDoorstep.IsDoorstep(pad) && (pad.X == door.X) && (pad.Y == door.Y) &&
+							(HouseDoorstep.RealmOf(pad) == Area.HouseRealm) && pad.HasAttribute(ItemAttributes.attr_invis);
+					}
+					if (hasPad) {
+						padded++;
+					} else {
+						bare++;
+					}
+				}
+			}
+			Console.WriteLine("SETUP_DOOR: fourthRattans=" + fourthRattans + " padded=" + padded + " bare=" + bare);
 			Console.WriteLine("SETUP_REPORT: owner=" + ((house.Owner == null) ? "none" : house.Owner.Name) + " signAt=" + sign.X + "," + sign.Y
 				+ " doors=" + doors + " doorsOutside=" + doorsOutside + " signLevel=" + t_housemenu.LevelOf(sign));
 		}

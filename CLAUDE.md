@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## DONE (2026-11-03): house doorstep tiles instead of the region rule (branch house-doorstep-tiles)
+
+User: houses stopping the other realm by region doesn't work, zones overlap (Barad-dur); an invisible pad that stops entry, placed under every door .HouseDoor makes. It is Erebor's i_duch_dlazba (dungeon_bonusy.scp, "nepusti ducha"): ghosts and anyone not of the house realm, but pets, are refused (Erebor pushed them back after @step; here the step is refused before it, in Character.CheckCharacterObstacles). The pad keeps its house's realm in a tag, set from the house where it's placed, so a zone's overlap doesn't decide; .HousePad places one anywhere, realm optional. The region rule goes (walk and teleport); MayEnterHouse stays for claims and the house bank. Erebor's same tile also gave i_house_safe: 1.1 s invulnerable (99z8 deletes a t_eq_script whose @Timer doesn't return 1, EreborNext CItem.Tick), ported. Anyone can walk into a house with no doors or tiles yet.
+
 ## DONE (2026-11-03): #1070 leftovers of the class abilities batch, closed
 
 User: finish everything the class abilities, magic items, stalls and trading batch left unported; plan on #1070, 11 steps, one PR each, in its order. User's calls: arena/PvP events/weekly/quest-dependent items stay blocked; the web auction becomes an in-game magic-item auction, its design confirmed by the user before building; Prodejce one per capital via .SetupWorld; no Aldaron shadow weapons nor dragon-slayer upgrade. Correction: jagged bolts exist (zbrane/ammo.scp, converted ammo.def); only t_weapon_bolt_jagged + e_bleed_bolt (new_events.scp) are missing.
