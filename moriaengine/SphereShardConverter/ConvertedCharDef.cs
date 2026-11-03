@@ -273,6 +273,9 @@ namespace SteamEngine.Converter {
 				} else {
 					this.Set("AggroMode", DeriveAggroMode(this.pendingBrainType, this.pendingKarmaMidpoint), "");
 				}
+				if (this.pendingBrainType == "brain_dragon") {
+					this.Set("DragonBrain", "1", "#1017 - a dragonslayer's fallback"); 
+				}
 			}
 		}
 
@@ -806,6 +809,14 @@ namespace SteamEngine.Converter {
 			if (name == "tag.isboss") {
 				if (!this.IsPlayerDefByName && (value.Trim() != "0")) {
 					this.Set("IsBoss", "1", comment);
+				}
+				return;
+			}
+			//#1017 - magic items' slayers read up to three "kind[,percent]" tags
+			if ((name == "tag.monstertype") || (name == "tag.monstertype2") || (name == "tag.monstertype3")) {
+				if (!this.IsPlayerDefByName) {
+					string field = (name == "tag.monstertype") ? "MonsterType" : (name == "tag.monstertype2") ? "MonsterType2" : "MonsterType3";
+					this.Replace(field, "\"" + value.Trim().Trim('"').Replace(" ", "") + "\"", comment);
 				}
 				return;
 			}

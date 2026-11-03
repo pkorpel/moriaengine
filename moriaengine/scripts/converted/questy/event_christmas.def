@@ -141,6 +141,7 @@ SpiritSpeak = 250
 AnimalTaming = 2000
 Experience = 10 30
 Hypnotizable = 16
+MonsterType = "animal"
 Equip = i_monster_create
 Loot = i_christmas_bulb,{1, 10}
 Loot = i_christmas_bulb,{0, 10}

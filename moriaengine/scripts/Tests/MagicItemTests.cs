@@ -66,6 +66,47 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGIC_DONE");
 		}
 
+		[SteamFunction]
+		public static void TestMagicCombat(Character self) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			NPC rabbit = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + 1, self.Y, self.Z, self.M);
+			rabbit.MaxHits = 30000;
+			rabbit.Hits = 30000;
+			NPCDef def = (NPCDef) rabbit.Def;
+			string type = def.MonsterType;
+			def.MonsterType = "animal,60";
+			Item ring = MagicItems.MagicItem(player, new ScriptArgs("i_ring_gold 104 20 111 10 121 100"));
+			ring.Cont = player;
+			Report("aSlayerCountsByTheMonstersPercent", (MagicCombat.SlayerBonuses(player, rabbit)[3] == 12) && (Math.Abs(MagicCombat.ApplySlayers(player, rabbit, 100) - 112) < 0.01));
+			def.MonsterType = "humanoid";
+			Report("notAgainstAnotherKind", MagicCombat.ApplySlayers(player, rabbit, 100) == 100);
+			def.MonsterType = type;
+			player.Hits = 10;
+			MagicCombat.AfterSwing(player, rabbit, 100);
+			Report("leechHealsByTheFormula", player.Hits == 10 + MagicCombat.Leech(100, 20, ClassAbilitySettings.instance));
+			Report("freezingParalyses", ParalyzeEffectPluginDef.IsParalyzed(rabbit));
+			ring.Delete();
+			player.Hits = player.MaxHits;
+
+			Item shield = MagicItems.MagicItem(player, new ScriptArgs("i_ring_gold 136 100"));
+			shield.Cont = player;
+			SpellDef arrow = SpellDef.GetByDefname("s_magic_arrow");
+			int hits = player.Hits;
+			arrow.Trigger_EffectChar(player, SpellEffectArgs.Acquire(rabbit, player, player, arrow, 500, EffectFlag.HarmfulEffect));
+			Report("aBlockStopsAHarmfulSpell", player.Hits == hits);
+			shield.Delete();
+			Item mirror = MagicItems.MagicItem(player, new ScriptArgs("i_ring_gold 133 100"));
+			mirror.Cont = player;
+			int rabbitHits = rabbit.Hits;
+			arrow.Trigger_EffectChar(player, SpellEffectArgs.Acquire(rabbit, player, player, arrow, 500, EffectFlag.HarmfulEffect));
+			Report("aReflexSendsItBack", (player.Hits == hits) && (rabbit.Hits < rabbitHits));
+			mirror.Delete();
+			rabbit.Delete();
+			Console.WriteLine("MAGIC_COMBAT_DONE");
+		}
+
 		private static void Report(string name, bool ok) {
 			Console.WriteLine("MAGIC_ITEM: " + name + "=" + ok);
 		}
