@@ -34,6 +34,7 @@ namespace SteamEngine.Converter {
 		string layer = "-1";
 		bool layerSet;
 		bool isEquippable;
+		bool neverWorn;
 
 		bool isWeapon;
 		bool isWearable;
@@ -209,6 +210,7 @@ namespace SteamEngine.Converter {
 				case "t_svice_zivota_lit":
 					def.headerType = "LifeCandleDef"; //#1017
 					def.Replace("TYPE", "t_normal", "");
+					def.neverWorn = true; //a candle in the pack, whatever its model
 					break;
 				case "t_stone_travel":
 					def.headerType = "TravelStoneDef"; //#1035
@@ -800,7 +802,7 @@ namespace SteamEngine.Converter {
 				this.layerSet = true;
 			}
 
-			if (this.isEquippable && !this.layerSet) {
+			if (this.isEquippable && !this.layerSet && !this.neverWorn) {
 				int model = this.Model;
 				ItemDispidInfo info = ItemDispidInfo.GetByModel(model);
 				if (info != null) {
