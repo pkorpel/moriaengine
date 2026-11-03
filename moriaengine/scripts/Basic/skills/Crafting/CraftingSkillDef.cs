@@ -220,6 +220,7 @@ namespace SteamEngine.CompiledScripts {
 								Loc<CraftSkillsLoc>.Get(self.Language).ItemMadeAndPutInRecCont,
 								iDefToMake.Name, self.ReceivingContainer.Name));
 					this.DoSuccess(skillSeqArgs, newItem);
+					MagicItemShop.CraftPath(self, (SkillName) this.Id, newItem); //#1017 - the craftsman's paths
 					ItemBundle.UnpackMade(newItem, self); //as Erebor's @SkillMakeItem firing the bundle's @dropon_obj
 					SkillGainSystem.TryGainSkill(self, (SkillName) this.Id, MakeDifficulty(iDefToMake)); //#328
 

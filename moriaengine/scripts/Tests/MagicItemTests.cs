@@ -107,6 +107,47 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGIC_COMBAT_DONE");
 		}
 
+		[SteamFunction]
+		public static void TestMagicExchanger(Character self) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			player.Account.PLevel = 1;
+			NPC vetesnik = (NPC) ((NPCDef) ThingDef.GetByDefname("c_vetesnik")).Create(self.X + 1, self.Y, self.Z, self.M);
+			Report("theVetesnikIsAnExchanger", MagicItemShop.IsExchanger(vetesnik) && !MagicItemShop.IsMordor(vetesnik));
+			foreach (AbstractItem old in new System.Collections.Generic.List<AbstractItem>(player.Backpack)) {
+				old.Delete();
+			}
+			MagicBag bag = (MagicBag) ((ItemDef) ThingDef.GetByDefname("i_mi_pouch")).Create(player.Backpack);
+			Item unknown = MagicItems.Unpack(bag, player);
+			((Item) ((ItemDef) ThingDef.GetByDefname("i_gold")).Create(player.Backpack)).Amount = 6000;
+			MagicItemShop.Identify(vetesnik, player, unknown);
+			Report("identifyingCostsAndReveals", !MagicItems.IsUnidentified(unknown) && MagicItems.IsMagic(unknown) && (player.Gold == 1000));
+			MagicItems.SetValue(unknown, 60, 1);
+			MagicItems.SetValue(unknown, 61, 1);
+			Report("tooFewToExchange", !MagicItemShop.Exchange(vetesnik, player) && !unknown.IsDeleted);
+			Item rich = MagicItems.MagicItem(player, new ScriptArgs("i_ring_gold 1 1 5 1 17 1 26 1 60 1 61 1 62 1 70 1"));
+			Item crafted = MagicItems.MagicItem(player, new ScriptArgs("i_ring_silver 1 1 5 1 17 1 26 1 60 1 61 1 62 1 70 1"));
+			CraftingSkillDef.SetCrafter(crafted, player);
+			Report("tenPropertiesBuyABag", MagicItemShop.Exchange(vetesnik, player) && unknown.IsDeleted && rich.IsDeleted && !crafted.IsDeleted &&
+				(ShamanAbilities.FindInPack(player, "i_mi_bag") != null));
+			crafted.Delete();
+
+			ClassAbilities.SetPoints(player, "crushing", 8);
+			Item staff = (Item) ((ItemDef) ThingDef.GetByDefname("i_staff_quarter_copper")).Create(player.Backpack);
+			Report("aCrushingPathStaff", MagicItemShop.ApplyPath(player, staff) && (MagicItems.Value(staff, 46) == 8) && (MagicItems.Value(staff, 25) == 2));
+			ClassAbilities.SetPoints(player, "sharps", 5);
+			Item kryss = (Item) ((ItemDef) ThingDef.GetByDefname("i_kryss_copper")).Create(player.Backpack);
+			Report("aSharpsPathKryss", MagicItemShop.ApplyPath(player, kryss) && (MagicItems.Value(kryss, 42) == 5));
+			ClassAbilities.SetPoints(player, "crushing", 0);
+			Item mace = (Item) ((ItemDef) ThingDef.GetByDefname("i_mace_copper")).Create(player.Backpack);
+			Report("noPathNoMace", !MagicItemShop.ApplyPath(player, mace));
+			staff.Delete();
+			kryss.Delete();
+			mace.Delete();
+			Console.WriteLine("MAGIC_EXCHANGER_READY uid=" + vetesnik.Uid);
+		}
+
 		private static void Report(string name, bool ok) {
 			Console.WriteLine("MAGIC_ITEM: " + name + "=" + ok);
 		}
