@@ -100,6 +100,7 @@ namespace SteamEngine.CompiledScripts {
 							GiveRareExtras(npc, gp, Globals.dice);
 						}
 					}
+					WeeklyQuests.MarkSpawnedItems(npc); //#1090 - creaturestart's tag(spawned_item) on the pack's contents
 				}
 			}
 

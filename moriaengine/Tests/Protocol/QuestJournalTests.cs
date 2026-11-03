@@ -142,7 +142,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.Ask(client, ".TestWeeklyTriggers", "WEEKLY_TRIGGERS_DONE");
 				string output = this.fixture.GameOutputSnapshot().Substring(mark);
 				foreach (string check in new[] { "underTenNothing", "countsByLevel", "blockedNeverDrawn", "noTaskTwice", "slotsByPool", "ereborsWorkedExample", "noSetForACraftsman",
-						"aWeekLong", "expiredIsRenewed", "eatingCountsWhileHungry", "theTeacherGreetsBack", "aWebCountsOnce", "aPlainMonstersGoldDoesnt", "aSpawnedMonstersGoldCounts",
+						"aWeekLong", "expiredIsRenewed", "eatingCountsWhileHungry", "theTeacherGreetsBack", "aWebCountsOnce", "aMonstersGoldCountsSpawnedOrNot", "whatCameLaterDoesnt",
 						"damageDealtCounts", "onlyASpawnedFoesBlowCounts", "aStreakOfTwoCounts", "aTaskAndTheSetPayIntoTheBank" }) {
 					string marker = "WEEKLY: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
