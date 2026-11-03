@@ -323,6 +323,22 @@ namespace SteamEngine.CompiledScripts {
 			Report("maskChangesNameAndRealm", (player.Name == "Stinovy") && (player.Realm == Realm.Mordor) && (Notoriety.GetMurderCount(player) == 3));
 			ThiefMask.Swap(player, ThiefMask.Attributes(player));
 			Report("maskSwapsBack", (player.Name == realName) && (player.Realm == Realm.Gondor));
+
+			//#1070 - the mask's leftovers
+			string suggested = NameList.Random("NAMES_HUMANMALE");
+			Report("theMaskSuggestsAName", !string.IsNullOrEmpty(suggested) && (NameList.Resolve("#NAMES_HUMANFEMALE") != "#NAMES_HUMANFEMALE"));
+			Character viewer = (Character) ThingDef.GetByDefname("c_a_jackrabbit").Create(player.X + 2, player.Y, player.Z, player.M);
+			viewer.Realm = Realm.Mordor;
+			Report("rentalInfoShowsTheOtherIdentity", (ThiefMask.RealName(player, viewer) == "Stinovy") && (ThiefMask.SeenRealmHue(player, viewer) == 0x26) &&
+				(ThiefMask.RealName(player, player) == realName));
+			viewer.Delete();
+			((SpellDef) SpellDef.GetByDefname("s_incognito")).ApplyEffectChar(player, player, 1000, EffectFlag.FromAbility | EffectFlag.BeneficialEffect);
+			string incognitoName = player.Name;
+			ThiefMask.Swap(player, ThiefMask.Attributes(player));
+			bool runeRenamed = (player.Name == incognitoName) && (IncognitoSpellDef.TrueName(player) == "Stinovy");
+			IncognitoSpellDef.End(player);
+			Report("underIncognitoTheRuneIsRenamed", runeRenamed && (player.Name == "Stinovy"));
+			ThiefMask.Swap(player, ThiefMask.Attributes(player));
 			player.Realm = Realm.None;
 			NPC mark = Dummy(self, 3);
 			WeaponSkillTargetQueuePlugin.AddTarget(player, mark);
@@ -348,6 +364,13 @@ namespace SteamEngine.CompiledScripts {
 			ThiefAbilities.ThrowKnife(player);
 			Report("aMagicBlockStopsIt", mark.Hits == markHits);
 			ThiefDefence.SetMagicDefence(mark, 0, 0, 0, 0);
+			PoisonedItemPlugin.Bind(knives, PoisonKind.AbsoluteDamage, "test", 50, 0); //#1070 - the knife's own poison
+			for (int i = 0; (i < 10) && !Poison.IsPoisoned(mark); i++) {
+				player.Stam = 200;
+				player.RemoveTag(TagKey.Acquire("_nextThrow_"));
+				ThiefAbilities.ThrowKnife(player);
+			}
+			Report("aPoisonedKnifePoisons", Poison.IsPoisoned(mark));
 			WeaponSkillTargetQueuePlugin.RemoveTarget(player, mark);
 			mark.Delete();
 			StrikeChargeTimer.Add(player);

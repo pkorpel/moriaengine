@@ -99,6 +99,8 @@ The rest of the block (#793): `ITEMNEWBIE=` -> `Equip =` (NPC gear, newbie), `CO
 in `@Create` -> `IsBoss = 1` (#794, bosses never turn [elite](../04-gameplay-systems/elite-monsters.md)).
 A bow's `TDATA3` -> `AmmoType = "t_weapon_..."` (a coloured bow inherits its base's), and a jagged bolt's
 `BleedCoefficient` from `nastaveni_arrowdamage_` 25 after its damage slot (#1070).
+`spherename.scp`'s `[NAMES x]` -> `[NameList x]` with a `Name = "..."` line each (#1070), read by `NameList`
+(`#NAMES_x` in an NPC's name, the thief's mask).
 `tag(resist_silence,x)` -> `ResistSilence = x` (#1070, against Mind Blast's silence), ahead of the other `tag.resist_` lines.
 
 **Regions (#813).** `spheremap.scp`'s `[AREA]`s become `[FlaggedRegion a_<name>]` sections in

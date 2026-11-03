@@ -47,6 +47,16 @@ namespace SteamEngine.CompiledScripts {
 		internal static bool HasIncognito(Character target) {
 			return target.HasTag(nameTK);
 		}
+
+		/// <summary>#1070 - the name the incognito hides and gives back at its end; the thief's mask renames this one
+		/// while it lasts (Erebor's i_rune_incognito).</summary>
+		internal static string TrueName(Character target) {
+			return target.GetTag(nameTK) as string;
+		}
+
+		internal static void SetTrueName(Character target, string name) {
+			target.SetTag(nameTK, name);
+		}
 	}
 
 	[SaveableClass, DeepCopyableClass]
