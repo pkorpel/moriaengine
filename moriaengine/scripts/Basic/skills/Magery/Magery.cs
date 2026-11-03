@@ -258,6 +258,7 @@ namespace SteamEngine.CompiledScripts {
 			StandcastHelper.ConsumeIfActive(self);
 			if (self is Player caster) {
 				MagicChargePlugin.AfterCast(caster, spell, skillSeqArgs.Target1 as Character); //#1017
+				NecroAbilities.SpellDone(caster, spell, skillSeqArgs.Tool is SpellScroll);
 			}
 		}
 
