@@ -162,6 +162,11 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double maskFailSeconds = 120;
 
+		/// <summary>nastaveni_ability_concentration: permille of a spell's mana a mage's concentration or a
+		/// necromancer's darkpower gives back.</summary>
+		[SaveableData]
+		public int manaBackPermille = 850;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;
