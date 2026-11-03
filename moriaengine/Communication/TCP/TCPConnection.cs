@@ -56,41 +56,71 @@ namespace SteamEngine.Communication.TCP {
 			this.BeginReceive();
 		}
 
+		/// <summary>#100 - what an async call was started on: the socket and the connection's generation. A pooled connection can
+		/// be closed and given to the next client before the call's callback comes, and then the callback is stale.</summary>
+		private sealed class CallState {
+			internal readonly Socket socket;
+			internal readonly int generation;
+			internal readonly Buffer buffer;
+
+			internal CallState(Socket socket, int generation, Buffer buffer) {
+				this.socket = socket;
+				this.generation = generation;
+				this.buffer = buffer;
+			}
+		}
+
+		private bool IsStale(CallState call) {
+			return (call.generation != this.Generation) || (call.socket != this.socket);
+		}
+
 		private void BeginReceive() {
 			int offset = this.receivedDataLength;
 			byte[] buffer = this.receivingBuffer.bytes;
+			Socket socket = this.socket;
 
-			this.socket.BeginReceive(buffer, offset,
-				buffer.Length - offset, SocketFlags.None, this.onReceieve, null);
+			socket.BeginReceive(buffer, offset,
+				buffer.Length - offset, SocketFlags.None, this.onReceieve, new CallState(socket, this.Generation, null));
 		}
 
 		private void OnReceieve(IAsyncResult asyncResult) {
+			CallState call = (CallState) asyncResult.AsyncState;
+			if (this.IsStale(call)) {
+				try {
+					call.socket.EndReceive(asyncResult); //finishes the old socket's call; this object is someone else's now
+				} catch { }
+				return;
+			}
 			try {
 				if ((this.socket != null) && (this.socket.Handle != IntPtr.Zero)) {
-					int length = this.socket.EndReceive(asyncResult);
+					int length = call.socket.EndReceive(asyncResult);
 
 					if (length > 0) {
 						//we have new data, but still possibly have some old data.
 						this.ProcessReceievedData(length);
 					} else {
-						this.Close("Connection lost");
+						this.CloseUnlessStale(call, "Connection lost");
 					}
 
-					if (this.IsConnected) {
+					if (this.IsConnected && !this.IsStale(call)) {
 						this.BeginReceive();
 					}
 				}
 			} catch (FatalException e) {
 				Logger.WriteFatal("TcpConnection.OnReceieve", e);
-				this.Close(e.Message);
+				this.CloseUnlessStale(call, e.Message);
 			} catch (SocketException e) {
 				//expected churn - client disconnects/resets/times out constantly, not a bug
 				Logger.WriteDebug(e);
-				this.Close(e.Message);
+				this.CloseUnlessStale(call, e.Message);
+			} catch (ObjectDisposedException e) {
+				//the socket was closed under this call: the connection is gone already
+				Logger.WriteDebug(e);
+				this.CloseUnlessStale(call, e.Message);
 			} catch (Exception e) {
 				//anything else here is unexpected - a real bug, not routine network churn
 				Logger.WriteError("TcpConnection.OnReceieve", e);
-				this.Close(e.Message);
+				this.CloseUnlessStale(call, e.Message);
 			}
 		}
 
@@ -107,30 +137,49 @@ namespace SteamEngine.Communication.TCP {
 		}
 
 		protected override void BeginSend(BufferToSend toSend) {
-			this.socket.BeginSend(toSend.buffer.bytes, toSend.offset, toSend.len, SocketFlags.None, this.onSend, toSend.buffer);
+			Socket socket = this.socket;
+			if (socket == null) { //#100 - closed meanwhile
+				toSend.buffer.Dispose();
+				return;
+			}
+			try {
+				socket.BeginSend(toSend.buffer.bytes, toSend.offset, toSend.len, SocketFlags.None, this.onSend, new CallState(socket, this.Generation, toSend.buffer));
+			} catch (ObjectDisposedException) { //#100 - the receiving thread closed it a moment ago: nobody to send to
+				toSend.buffer.Dispose();
+			}
 		}
 
 		private void OnSend(IAsyncResult asyncResult) {
-			Buffer toDispose = (Buffer) asyncResult.AsyncState;
+			CallState call = (CallState) asyncResult.AsyncState;
 
 			try {
 				SocketError err;
-				this.socket.EndSend(asyncResult, out err);
+				call.socket.EndSend(asyncResult, out err);
 
-				if (err != SocketError.Success) {
+				if ((err != SocketError.Success) && !this.IsStale(call)) {
 					this.Close(err.ToString());
 				}
 			} catch (FatalException e) {
 				Logger.WriteFatal("TcpConnection.OnSend", e);
-				this.Close(e.Message);
+				this.CloseUnlessStale(call, e.Message);
 			} catch (SocketException e) {
 				Logger.WriteDebug(e);
-				this.Close(e.Message);
+				this.CloseUnlessStale(call, e.Message);
+			} catch (ObjectDisposedException e) {
+				Logger.WriteDebug(e); //the socket was closed while this was under way: the connection is gone already
+				this.CloseUnlessStale(call, e.Message);
 			} catch (Exception e) {
 				Logger.WriteError("TcpConnection.OnSend", e);
-				this.Close(e.Message);
+				this.CloseUnlessStale(call, e.Message);
 			} finally {
-				toDispose.Dispose();
+				call.buffer.Dispose();
+			}
+		}
+
+		/// <summary>#100 - a stale callback must not close this object: it's the next client's connection by now.</summary>
+		private void CloseUnlessStale(CallState call, string reason) {
+			if (!this.IsStale(call)) {
+				this.Close(reason);
 			}
 		}
 	}

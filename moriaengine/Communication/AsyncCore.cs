@@ -65,10 +65,12 @@ namespace SteamEngine.Communication {
 		internal class OutgoingMessage {
 			internal readonly TConnection conn;
 			internal readonly PacketGroup group;
+			internal readonly int generation;
 
 			internal OutgoingMessage(TConnection conn, PacketGroup group) {
 				this.conn = conn;
 				this.group = group;
+				this.generation = conn.Generation;
 			}
 		}
 
@@ -120,7 +122,11 @@ namespace SteamEngine.Communication {
 			try {
 
 				foreach (var msg in this.outgoingPackets.GetConsumingEnumerable(this.exitToken)) {
-					msg.conn.ProcessSending(msg.group);
+					if ((msg.generation == msg.conn.Generation) && !msg.conn.IsDisposed) {
+						msg.conn.ProcessSending(msg.group);
+					} else {
+						msg.group.Dequeued(); //#100 - for a client that's gone, and the object may be the next client's now
+					}
 
 					if (this.outgoingPackets.Count == 0) {
 						this.outgoingPacketsSentEvent.Set();
