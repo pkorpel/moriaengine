@@ -73,6 +73,15 @@ A thief's war fork on a monster also has the double swing, at any level (e_thief
 spends a readied throat slit (`.podriznuti`), whether it came from behind or not.
 
 `.mask` is refused in the areas with `tag.nomask` (the start rooms), "ty hnusnej bugere. Nic nebude", as on Erebor.
+The naming dialog suggests a random name of the player's sex from Erebor's name lists (`NameList`). Under the Incognito
+spell the mask renames the name the incognito hides (Erebor's `i_rune_incognito`), so the incognito ends on the mask's
+name. `.rentalinfo` shows a thief now of another realm than the viewer under the other identity, in the viewer's realm's
+colour (`getrealname`).
+
+A poisoned throwing knife poisons what it hits with all its poison (`f_poisoning_weapon_checkPoisoningValues`,
+`f_poison_doPoison`). With a long range running, the knife also stops a recall or gate being cast (`fizzmagictravel`);
+so does a knockback, and a mystic's special strike on a player turns into that instead of the freeze when the mystic
+has a long range. The long range interrupts nothing else.
 
 `.throw`: a target's worn magic ranged reflex (132) throws the knife back, costing the thief a fifth of their stamina,
 and may drop it at their feet; ranged block (135) stops it. Both are rolled before the hit.

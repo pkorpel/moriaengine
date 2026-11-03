@@ -213,6 +213,9 @@ namespace SteamEngine.Converter {
 							case "speech": //#825
 								cd = new ConvertedSpeech(input, convertedFile);
 								break;
+							case "names": //#1070
+								cd = new ConvertedNames(input, convertedFile);
+								break;
 							case "template":
 								cd = new ConvertedTemplateDef(input, convertedFile);
 								break;

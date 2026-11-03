@@ -111,6 +111,10 @@ namespace SteamEngine.CompiledScripts {
 			if (Globals.dice.Next(1, 1001) > (defenderIsPlayer ? settings.mysticFreezeChanceVsP : settings.mysticFreezeChanceVsM)) {
 				return;
 			}
+			if (defenderIsPlayer && LongRangePlugin.LongRangeDef.IsActive(attacker)) {
+				ClassAbilities.FizzMagicTravel(defender); //#1070 - magie_custom: a long range turns the freeze into a travel fizz
+				return;
+			}
 			if (defenderIsPlayer && (MagicReflectionPluginDef.GetMagicReflectionPlugin(defender) != null)) {
 				return;
 			}

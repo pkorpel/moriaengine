@@ -275,6 +275,9 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			self.Stam = (short) (self.Stam - stamina);
+			PoisonedItemPlugin poison = PoisonedItemPlugin.GetPoisonPlugin(knife); //#1070 - f_poisoning_weapon_checkPoisoningValues
+			PoisonKind poisonKind = (poison == null) ? PoisonKind.AbsoluteDamage : poison.PoisonKind;
+			int poisonPower = (poison == null) ? 0 : poison.PoisonPower;
 			knife.Amount--;
 			if (knife.Amount <= 0) {
 				knife.Delete();
@@ -316,6 +319,9 @@ namespace SteamEngine.CompiledScripts {
 					return;
 				}
 				target.SetTag(knifeImmuneTK, Globals.TimeInSeconds + settings.throwImmuneSeconds);
+				if (LongRangePlugin.LongRangeDef.IsActive(self)) {
+					ClassAbilities.FizzMagicTravel(target); //#1070 - i_delayer_longrange's fizzrecall
+				}
 				int armor = (int) target.ArmorClassVsP / 4;
 				int take = (target.MaxStam * (settings.throwStaminaLossPercent - armor)) / 100;
 				if (target.Stam - take > 0) {
@@ -329,6 +335,9 @@ namespace SteamEngine.CompiledScripts {
 				DamageManager.CauseDamage(self, target, DamageType.Irresistable, 1);
 			}
 			target.Trigger_HostileAction(self);
+			if (poisonPower > 0) { //#1070 - the knife's own poison, all of it, as f_poison_doPoison
+				Poison.Apply(target, self, poisonPower, PoisonEffectSettings.instance.SecondsFor(poisonKind), poisonKind);
+			}
 		}
 
 		private static Item FindKnife(Character self) {

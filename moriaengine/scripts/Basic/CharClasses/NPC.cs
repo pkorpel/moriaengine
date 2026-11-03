@@ -1887,6 +1887,9 @@ namespace SteamEngine.CompiledScripts {
 			base.On_Create();
 
 			NPCDef def = (NPCDef) this.Def;
+			if ((this.Name != null) && (this.Name.IndexOf("#NAMES_", StringComparison.OrdinalIgnoreCase) >= 0)) {
+				this.Name = NameList.Resolve(this.Name); //#1070 - Sphere's NAME=#NAMES_HUMANMALE
+			}
 			this.AggroMode = def.AggroMode;
 			//#700 - only override the live Character default (Realm.None, no RealmPlugin
 			//installed) when this NPCDef actually configured a real side via tag.guard -

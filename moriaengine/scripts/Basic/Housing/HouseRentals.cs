@@ -235,7 +235,8 @@ namespace SteamEngine.CompiledScripts {
 			if (owner == null) {
 				this.AddLabel(OwnerX, y, Hue, "Neobydleny");
 			} else {
-				this.AddLabel(OwnerX, y, (owner.Realm == Realm.Mordor) ? 0x26 : ((owner.Realm == Realm.Gondor) ? 0x63 : Hue), owner.Name);
+				int ownerHue = (owner.Realm == Realm.Mordor) ? 0x26 : ((owner.Realm == Realm.Gondor) ? 0x63 : Hue);
+				this.AddLabel(OwnerX, y, ThiefMask.SeenRealmHue(owner, viewer) ?? ownerHue, ThiefMask.RealName(owner, viewer));
 				bool own = viewer.IsGM || (owner.Realm == viewer.Realm);
 				if (HouseRentals.MayRealmBan(viewer)) {
 					RealmOffice office = RealmOffice.For(viewer.IsGM ? owner.Realm : viewer.Realm);

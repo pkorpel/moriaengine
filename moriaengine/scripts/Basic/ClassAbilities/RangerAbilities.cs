@@ -264,6 +264,7 @@ namespace SteamEngine.CompiledScripts {
 			if (self.HasTimer(knockbackReadyTK)) {
 				Direction away = Point2D.GetDirFromTo(self, target);
 				MonsterSpecialAttacks.ForceMove(target, ClassAbilitySettings.instance.knockbackRange, (x, y) => away, (x, y) => false);
+				ClassAbilities.FizzMagicTravel(target); //#1070 - knockbackhim
 			}
 		}
 
