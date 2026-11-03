@@ -102,6 +102,10 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
+		internal static bool CounterOn(Player self) {
+			return self.GetTag(counterTK) != null;
+		}
+
 		/// <summary>specability: chance out of 100000, by level, while the counter's on.</summary>
 		internal static bool CounterFires(Player self) {
 			return (self.GetTag(counterTK) != null) && (Globals.dice.Next(100001) < CombatCalculator.CalculateClassAbility(self.EffectiveLevel));

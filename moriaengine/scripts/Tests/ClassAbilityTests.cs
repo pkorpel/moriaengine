@@ -200,6 +200,24 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("PRIEST_DONE");
 		}
 
+		[SteamFunction]
+		public static void TestCraftsmanVigour(Character self) {
+			Player player = (Player) self;
+			player.Account.PLevel = 1;
+			player.Profession = Professions.Craftsman;
+			player.Level = 100;
+			player.Stam = player.MaxStam;
+			ClassAbilities.Reset(player);
+			RegionResourceDef iron = RegionResourceDef.GetByDefname("o_iron");
+			Report("ironLeadsToVerite", (iron != null) && (CraftsmanAbilities.Next(iron) == RegionResourceDef.GetByDefname("o_verite")));
+			Report("mithrilIsTheTop", CraftsmanAbilities.Next(RegionResourceDef.GetByDefname("l_mithril")) == null);
+			Report("noCounterNoLuck", !CraftsmanAbilities.FindsBetter(player, "vigourMining"));
+			CraftsmanAbilities.Vigour(player);
+			ClassAbilities.SetPoints(player, "vigourMining", 500);
+			Report("theCounterAndPointsFindBetter", CraftsmanAbilities.FindsBetter(player, "vigourMining"));
+			Console.WriteLine("CRAFTSMAN_DONE");
+		}
+
 		private static NPC Dummy(Character self, int offset) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + offset, self.Y, self.Z, self.M);
 			dummy.MaxHits = 30000;

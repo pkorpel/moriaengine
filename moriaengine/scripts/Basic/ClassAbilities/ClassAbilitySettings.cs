@@ -137,6 +137,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int silenceTenths = 15;
 
+		/// <summary>nastaveni_ability_craft_vigour: out of 100000, per point, on top of the level's chance.</summary>
+		[SaveableData]
+		public int craftVigour = 200;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;
