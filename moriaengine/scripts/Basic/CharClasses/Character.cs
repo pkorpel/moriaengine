@@ -2430,11 +2430,17 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#892 - an office's clothes follow what the character wears.</summary>
 		public override void On_ItemEquip(ItemInCharArgs args) {
 			base.On_ItemEquip(args);
+			if (args.ManipulatedItem is Item worn) {
+				MagicItems.OnEquip(this, worn); //#1017
+			}
 			Uniform.RefreshSoon(this);
 		}
 
 		public override void On_ItemUnequip(ItemInCharArgs args) {
 			base.On_ItemUnequip(args);
+			if (args.ManipulatedItem is Item worn) {
+				MagicItems.OnUnequip(this, worn); //#1017
+			}
 			Uniform.Restore(args.ManipulatedItem);
 			Uniform.RefreshSoon(this);
 		}

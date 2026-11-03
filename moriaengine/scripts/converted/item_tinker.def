@@ -895,7 +895,7 @@ DEFNAME = i_springs
 [ItemDef 0x105e]
 DUPEITEM = i_springs
 
-[ItemDef 0x1085]
+[EquippableDef 0x1085]
 CATEGORY = Provisions - Jewels and Jewelry
 SUBSECTION = Jewelry
 DESCRIPTION = Necklace
@@ -904,9 +904,10 @@ TYPE = t_jewelry
 DupeList = 0x1f05
 RESOURCES = 1 i_ingot_iron, 1 i_gem_citrine, 1 i_gem_ruby, 1 i_gem_emerald //nastaveni_cm_resources 
 SKILLMAKE = 610 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 10 //Set by Converter 
 DEFNAME = i_necklace_metal_beads
 
-[ItemDef 0x1086]
+[EquippableDef 0x1086]
 CATEGORY = Provisions - Jewels and Jewelry
 SUBSECTION = Jewelry
 DESCRIPTION = Bracelet (Gold)
@@ -915,9 +916,10 @@ TYPE = t_jewelry
 WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //nastaveni_cm_resources 
 SKILLMAKE = 635 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 14 //Set by Converter 
 DEFNAME = i_bracelet_gold
 
-[ItemDef 0x1087]
+[EquippableDef 0x1087]
 CATEGORY = Provisions - Jewels and Jewelry
 SUBSECTION = Jewelry
 DESCRIPTION = Earrings (Gold)
@@ -926,9 +928,10 @@ TYPE = t_jewelry
 WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold, 2 i_gem_citrine //nastaveni_cm_resources 
 SKILLMAKE = 625 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 18 //Set by Converter 
 DEFNAME = i_earrings_gold
 
-[ItemDef 0x1088]
+[EquippableDef 0x1088]
 CATEGORY = Provisions - Jewels and Jewelry
 SUBSECTION = Jewelry
 DESCRIPTION = Necklace
@@ -937,9 +940,10 @@ TYPE = t_jewelry
 WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold, 1 i_gem_emerald //nastaveni_cm_resources 
 SKILLMAKE = 610 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 10 //Set by Converter 
 DEFNAME = i_necklace_gold
 
-[ItemDef 0x1089]
+[EquippableDef 0x1089]
 CATEGORY = Provisions - Jewels and Jewelry
 SUBSECTION = Jewelry
 DESCRIPTION = Necklace (Gold Bead)
@@ -948,9 +952,10 @@ TYPE = t_jewelry
 WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold //nastaveni_cm_resources 
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 10 //Set by Converter 
 DEFNAME = i_necklace_gold_beads
 
-[ItemDef 0x108a]
+[EquippableDef 0x108a]
 CATEGORY = Provisions - Jewels and Jewelry
 SUBSECTION = Jewelry
 DESCRIPTION = Ring (Gold)
@@ -959,9 +964,10 @@ TYPE = t_jewelry
 WEIGHT = 0.1
 RESOURCES = 1 i_ingot_gold, 1 i_gem_ruby //nastaveni_cm_resources 
 SKILLMAKE = 630 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 8 //Set by Converter 
 DEFNAME = i_ring_gold
 
-[ItemDef 0x108b]
+[EquippableDef 0x108b]
 CATEGORY = Provisions - Jewels and Jewelry
 SUBSECTION = Jewelry
 DESCRIPTION = Beads
@@ -969,6 +975,7 @@ DESCRIPTION = Beads
 TYPE = t_jewelry
 RESOURCES = 3 i_ingot_iron, 1 i_gem_amber //nastaveni_cm_resources 
 SKILLMAKE = 600 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 0 //Set by Converter 
 DEFNAME = i_beads
 
 [ItemDef 0x10e1]
@@ -1072,7 +1079,7 @@ RESOURCES = 4 i_ingot_iron //nastaveni_cm_resources
 SKILLMAKE = 300 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
 DEFNAME = i_tinker_tools
 
-[ItemDef 0x1f06]
+[EquippableDef 0x1f06]
 CATEGORY = Provisions - Clothes
 SUBSECTION = Jewelry
 DESCRIPTION = Silver Bracelet
@@ -1081,9 +1088,10 @@ TYPE = t_jewelry
 WEIGHT = 1
 RESOURCES = 1 i_ingot_silver //nastaveni_cm_resources 
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 14 //Set by Converter 
 DEFNAME = i_bracelet_silver
 
-[ItemDef 0x1f07]
+[EquippableDef 0x1f07]
 CATEGORY = Provisions - Clothes
 SUBSECTION = Jewelry
 DESCRIPTION = Silver Earrings
@@ -1092,9 +1100,10 @@ TYPE = t_jewelry
 WEIGHT = 1
 RESOURCES = 1 i_ingot_silver, 2 i_gem_citrine //nastaveni_cm_resources 
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 18 //Set by Converter 
 DEFNAME = i_earrings_silver
 
-[ItemDef 0x1f08]
+[EquippableDef 0x1f08]
 CATEGORY = Provisions - Clothes
 SUBSECTION = Jewelry
 DESCRIPTION = Silver Necklace
@@ -1103,9 +1112,10 @@ TYPE = t_jewelry
 WEIGHT = 1
 RESOURCES = 1 i_ingot_silver, 1 i_gem_citrine //nastaveni_cm_resources 
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 10 //Set by Converter 
 DEFNAME = i_necklace_silver
 
-[ItemDef 0x1f09]
+[EquippableDef 0x1f09]
 CATEGORY = Provisions - Clothes
 SUBSECTION = Jewelry
 DESCRIPTION = Silver Ring
@@ -1114,9 +1124,10 @@ TYPE = t_jewelry
 WEIGHT = 1
 RESOURCES = 1 i_ingot_silver, 1 i_gem_ruby //nastaveni_cm_resources 
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 8 //Set by Converter 
 DEFNAME = i_ring_silver
 
-[ItemDef 0x1f0a]
+[EquippableDef 0x1f0a]
 CATEGORY = Provisions - Clothes
 SUBSECTION = Jewelry
 DESCRIPTION = Silver Beads
@@ -1125,6 +1136,7 @@ TYPE = t_jewelry
 WEIGHT = 1
 RESOURCES = 1 i_ingot_silver //nastaveni_cm_resources 
 SKILLMAKE = 620 tinkering, 1 t_tinker_tools //nastaveni_cm_skillmake 
+layer = 10 //Set by Converter 
 DEFNAME = i_necklace_silver_beads
 
 [ItemDef 0x974]

@@ -49,7 +49,7 @@ ON=*ukol*
 
 //[dialog d_q009_krejci_6 button] //(commented out by Converter) 
 
-[ItemDef i_q009_ring_tailor]
+[EquippableDef i_q009_ring_tailor]
 CATEGORY = Kvesty
 SUBSECTION = Kvest Neutralni-009 Krejci
 DESCRIPTION = Prsten
@@ -57,4 +57,5 @@ DESCRIPTION = Prsten
 name = "Prsten Krejciho"
 type = t_jewelry
 model = i_ring_gold
+layer = 8 //Set by Converter 
 Color = 0999
