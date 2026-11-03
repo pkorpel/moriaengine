@@ -176,7 +176,7 @@ namespace SteamEngine.CompiledScripts {
 		/// before #220/#221.</summary>
 		public override TriggerResult On_DenyPickup(DenyPickupArgs args) {
 			Character picker = args.PickingChar as Character;
-			string hypno = (picker == null) ? null : MysticHypnosis.RefusesPickup(picker, this); //#1017 - a possessing mystic's looting
+			string hypno = (picker == null) ? null : (MysticHypnosis.RefusesPickup(picker, this) ?? EreborVendors.RefusesPickup(this)); //#1017 - a possessing mystic's looting, a vendor's goods
 			if (hypno != null) {
 				args.Result = new DenyResult_StringSysMessage(hypno);
 				return TriggerResult.Cancel;

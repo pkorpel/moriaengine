@@ -57,6 +57,22 @@ namespace SteamEngine.CompiledScripts {
 			stall.PlaceVendor(player);
 			Report("aStallPlacesItsVendor", (stall.Vendor == vendor) && (vendor.X == stall.X) && (vendor.Y == stall.Y));
 
+			Container group = (Container) ((ItemDef) ThingDef.GetByDefname("i_backpack")).Create(player.Backpack);
+			Item cap = (Item) ((ItemDef) ThingDef.GetByDefname("i_hat_straw")).Create(group);
+			Item section = EreborVendors.MakeSection(vendor, player, group, "Klobouky", null);
+			Report("aSectionGroupsGoods", (section != null) && EreborVendor.IsSection(section) && vendor.Entries.Contains(section) && (cap.TopObj() == player));
+			Item capEntry = EreborVendors.StockItem(vendor, player, cap, "Slamak", 20, section);
+			Report("stockedIntoTheSection", vendor.EntriesOf(section).Contains(capEntry) && !vendor.Entries.Contains(capEntry));
+			Report("nobodyPicksUpFromAVendor", EreborVendors.RefusesPickup(cap) == "Nesahat!");
+			EreborVendors.Buy(vendor, player, capEntry, 1);
+			Report("boughtFromTheSection", (cap.TopObj() == player) && (vendor.EntriesOf(section).Count == 0));
+			Report("anEmptySectionGoesBack", EreborVendors.RemoveSection(vendor, player, section) && (group.TopObj() == player) && !vendor.Entries.Contains(section));
+			stall.Punish();
+			Report("punishmentTakesTheVendorAway", stall.VendorPunished && (vendor.M == MysticHypnosis.ParkedPlane));
+			player.Account.PLevel = 4;
+			stall.PunishVendor(player);
+			player.Account.PLevel = 1;
+			Report("andBringsItBack", !stall.VendorPunished && (vendor.M == stall.M));
 			Item hat = (Item) ((ItemDef) ThingDef.GetByDefname("i_hat_floppy")).Create(player.Backpack);
 			EreborVendors.StockItem(vendor, player, hat, "Klobouk", 10);
 			EreborVendors.EndSession(player);
