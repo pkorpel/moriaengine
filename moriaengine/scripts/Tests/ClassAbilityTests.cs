@@ -115,6 +115,43 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("WARRIOR_DONE");
 		}
 
+		[SteamFunction]
+		public static void TestRangerAbilities(Character self) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			player.Account.PLevel = 1;
+			player.Profession = Professions.Ranger;
+			player.Level = 100;
+			player.MaxStam = 200;
+			player.Stam = 200;
+			ClassAbilities.Reset(player);
+
+			ClassAbilities.SetPoints(player, "rangearrow", 10);
+			int rangeBefore = player.WeaponRangeModifier;
+			RangerAbilities.LongRangeAbility(player);
+			Report("longRangeAddsThree", player.WeaponRangeModifier == rangeBefore + 3);
+			Report("longRangeCostsStamina", player.Stam == 150);
+
+			ClassAbilities.SetPoints(player, "knockback", 10);
+			RangerAbilities.KnockbackAbility(player);
+			Report("knockbackEndsLongRange", player.WeaponRangeModifier == rangeBefore);
+
+			Report("splitRangeGrowsWithDistance", (RangerAbilities.SplitRange(20, 10) > RangerAbilities.SplitRange(20, 3)));
+			Report("splitRangeStaysUnderItsLimit", RangerAbilities.SplitRange(20, 15) == 3);
+			Report("splitNextToTheTargetIsStrongest", (RangerAbilities.SplitPermille(20, 175, 1) > RangerAbilities.SplitPermille(20, 175, 3)));
+			Report("splitIsNeverAFullBlow", RangerAbilities.SplitPermille(20, 175, 1) < 1000);
+
+			ClassAbilities.SetPoints(player, "splitshot", 10);
+			player.Stam = 200;
+			RangerAbilities.SplitShot(player);
+			Report("splitShotCostsStamina", player.Stam == 125);
+			player.Stam = 200;
+			RangerAbilities.SplitShot(player);
+			Report("splitShotMustCoolDown", player.Stam == 200);
+			Console.WriteLine("RANGER_DONE");
+		}
+
 		private static NPC Dummy(Character self, int offset) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + offset, self.Y, self.Z, self.M);
 			dummy.MaxHits = 30000;
