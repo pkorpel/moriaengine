@@ -390,6 +390,7 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_LogOut() {
 			ShamanPacts.OnGone(this); //#1017 - @Logout ends a pact
 			MysticHypnosis.OnLogout(this); //#1017 - and brings a possessing mystic home
+			Boosters.Pause(this); //#1090 - a booster's hours count only online
 			//TODO: In safe/nonsafe areas, settings, etc.
 
 			if (LogoutSettings.instance.showLogoutEffect) {
@@ -421,6 +422,7 @@ namespace SteamEngine.CompiledScripts {
 			this.DeleteTimer(charLingeringTimerTK); //cancel any pending logout-delay removal - reconnecting resumes this body in place
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {
+				Boosters.Resume(this); //#1090
 				Party.ForgetCanLootMe(this); //#918
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
 				PlayerRecord.Login(this); //#1011
