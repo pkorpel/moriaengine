@@ -62,8 +62,7 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction("Warcry")]
 		public static void WarcryFunction(Character chr, ScriptArgs args) {
-			WarcryDef wcrDef = SingletonScript<WarcryDef>.Instance;
-			wcrDef.Activate(chr);
+			WarriorAbilities.Warcry(chr); //#1017 - Erebor's own, this ability's effect never was
 		}
 	}
 

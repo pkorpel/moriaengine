@@ -57,6 +57,12 @@ namespace SteamEngine.CompiledScripts {
 			return (p != null) && p.targetQueue.Contains(target);
 		}
 
+		/// <summary>Sphere's act while fighting: who self is swinging at, or null.</summary>
+		public static Character CurrentTarget(Character self) {
+			WeaponSkillTargetQueuePlugin p = self.GetPlugin(combatPluginPK) as WeaponSkillTargetQueuePlugin;
+			return ((p != null) && (p.targetQueue.First != null)) ? p.targetQueue.First.Value : null;
+		}
+
 		[SteamFunction]
 		public static void FightCurrentTarget(Character self) {
 			WeaponSkillTargetQueuePlugin p = self.GetPlugin(combatPluginPK) as WeaponSkillTargetQueuePlugin;

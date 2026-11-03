@@ -67,6 +67,50 @@ namespace SteamEngine.CompiledScripts {
 			{ "mystikDoubleswing", "a_mystik_doubleswing" }, { "thief_rebound", "a_thief_rebound" }, { "thief_defstance", "a_thief_defstance" },
 		};
 
+		internal const int ClassMessageHue = 0x57;
+		private static readonly TagKey counterTK = TagKey.Acquire("_specAbilityCounter_");
+
+		/// <summary>A serv.time tag: when something may be used again.</summary>
+		internal static double SecondsTag(Character ch, TagKey key) {
+			object value = ch.GetTag(key);
+			return (value is double seconds) ? seconds : 0;
+		}
+
+		/// <summary>reduceStamina(x,1): all of it or none, and it says so.</summary>
+		internal static bool ReduceStamina(Character ch, int amount) {
+			if (amount > ch.Stam) {
+				ch.RedMessage("Nemas dost staminy.");
+				return false;
+			}
+			ch.Stam = (short) (ch.Stam - amount);
+			return true;
+		}
+
+		/// <summary>f_abilitycheck: true when it was just turned on. A second use turns it off, for free.</summary>
+		internal static bool ToggleCounter(Player self, ProfessionDef profession) {
+			if (self.Level < 1) {
+				self.RedMessage("Musis byt alespon na prvni urovni.");
+			} else if (self.Profession != profession) {
+				self.RedMessage("Toto umi pouzit pouze " + profession.Name + ".");
+			} else if (self.GetTag(counterTK) != null) {
+				self.RemoveTag(counterTK);
+			} else if (ReduceStamina(self, 3)) {
+				self.SetTag(counterTK, 1);
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>specability: chance out of 100000, by level, while the counter's on.</summary>
+		internal static bool CounterFires(Player self) {
+			return (self.GetTag(counterTK) != null) && (Globals.dice.Next(100001) < CombatCalculator.CalculateClassAbility(self.EffectiveLevel));
+		}
+
+		/// <summary>Death takes the counter away, sphereevents.scp.</summary>
+		internal static void OnDeath(Character self) {
+			self.RemoveTag(counterTK);
+		}
+
 		private static TagKey TagOf(string name) {
 			return TagKey.Acquire("ra_" + name.ToLowerInvariant());
 		}
