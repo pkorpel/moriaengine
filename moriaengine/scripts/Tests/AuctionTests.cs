@@ -79,10 +79,22 @@ namespace SteamEngine.CompiledScripts {
 			AuctionHouse.Withdraw(player, one);
 			Report("theSellerWithdrawsWithoutABid", !AuctionHouse.IsListed(one) && (one.Cont == player.Bank));
 
+			//the user, in a real client: a magic weapon's or armor's name doesn't say its material, the auction must
+			Item sword = MagicItems.MagicItem(player, new ScriptArgs("i_sword_viking_mithril 1 5"));
+			Item staff = MagicItems.MagicItem(player, new ScriptArgs("i_staff_quarter_copper 1 5"));
+			Item arms = MagicItems.MagicItem(player, new ScriptArgs("i_bone_arms_mithril 1 5"));
+			Report("aSwordShowsItsMetal", (AuctionHouse.MaterialOf(sword) == "mithril") && (AuctionHouse.ShownName(sword) == sword.Name + " (mithril)"));
+			Report("aStaffShowsItsWood", AuctionHouse.MaterialOf(staff) == "spruce");
+			Report("armorShowsItsMetal", AuctionHouse.MaterialOf(arms) == "mithril");
+			Report("aRingHasNoMaterial", (AuctionHouse.MaterialOf(plain) == null) && (AuctionHouse.ShownName(plain) == plain.Name));
+			foreach (Item made in new[] { sword, staff, arms }) {
+				made.Delete();
+			}
+
 			foreach (Player bidder in new[] { first, second, mordor }) {
 				bidder.Delete();
 			}
-			shown = Ring(player);
+			shown = MagicItems.MagicItem(player, new ScriptArgs("i_staff_quarter_mithril 1 5"));
 			AuctionHouse.List(player, shown, 2000, 0);
 			Console.WriteLine("AUCTION_READY " + shown.Name + " |");
 		}

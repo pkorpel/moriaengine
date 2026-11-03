@@ -310,6 +310,26 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly string[] metals = { null, "copper", "iron", "silver", "gold", "verite", "valorite", "obsidian", "adamantinum", "mithril", "sand" };
+		private static readonly string[] woods = { null, "spruce", "chestnut", "silver", "gold", "oak", "teak", "mahagon", "eben", "elven", "sand" };
+
+		/// <summary>A weapon's or armor's material, by the item names' own words: wood for staves and bows (spruce to elven),
+		/// metal for the rest (copper to mithril); null for things with none. A magic item's name doesn't say it.</summary>
+		internal static string MaterialOf(Item item) {
+			if (!(item.Def is IObjectWithMaterial made) || (made.Material == Material.None)) {
+				return null;
+			}
+			string[] names = (made.MaterialType == MaterialType.Wood) ? woods : metals;
+			int at = (int) made.Material;
+			return (at < names.Length) ? names[at] : made.Material.ToString().ToLowerInvariant();
+		}
+
+		/// <summary>The name as the auction shows it: with the material in brackets when there is one.</summary>
+		internal static string ShownName(Item item) {
+			string material = MaterialOf(item);
+			return (material == null) ? item.Name : (item.Name + " (" + material + ")");
+		}
+
 		internal static string TimeLeft(Item item) {
 			TimeSpan left = Ends(item) - DateTime.UtcNow;
 			if (left <= TimeSpan.Zero) {

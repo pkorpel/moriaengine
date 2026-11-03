@@ -93,10 +93,12 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendSpeech(".aukce");
 				var auction = game.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("Aukce magickych predmetu", auction.Strings);
-				Assert.Contains(name, auction.Strings);
+				Assert.Contains(name + " (elven)", auction.Strings); //the user: a weapon's material must show
 				game.SendGumpResponse(auction.GumpUid, 100, new System.Collections.Generic.Dictionary<int, string>());
 				var listing = game.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("Prodava:", listing.Strings);
+				Assert.Contains("Material:", listing.Strings);
+				Assert.Contains("elven", listing.Strings);
 				Assert.Contains("Stahnout", listing.Strings);
 				game.SendGumpResponse(listing.GumpUid, 3, new System.Collections.Generic.Dictionary<int, string>());
 				Thread.Sleep(500);
@@ -106,7 +108,8 @@ namespace SteamEngine.Tests.Protocol {
 				string output = this.fixture.GameOutputSnapshot().Substring(mark);
 				foreach (string check in new[] { "aPlainItemIsRefused", "aRingGoesUp", "anotherRealmCantBid", "theSellerCantBid", "tooLowIsRefused", "aBidPaysAtOnce",
 						"theNextBidIsFivePercentMore", "theOutbidGetTheirGoldBack", "anOfflineBidderGetsAMessage", "noWithdrawingAfterABid", "theWinnerGetsItInTheBank",
-						"theSellerGetsTheBidInTheBank", "aBuyoutEndsItAtOnce", "noBidTheItemComesBack", "theListingsAreLimited", "theSellerWithdrawsWithoutABid", "theDialogWithdrew" }) {
+						"theSellerGetsTheBidInTheBank", "aBuyoutEndsItAtOnce", "noBidTheItemComesBack", "theListingsAreLimited", "theSellerWithdrawsWithoutABid",
+						"aSwordShowsItsMetal", "aStaffShowsItsWood", "armorShowsItsMetal", "aRingHasNoMaterial", "theDialogWithdrew" }) {
 					string marker = "AUCTION: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);

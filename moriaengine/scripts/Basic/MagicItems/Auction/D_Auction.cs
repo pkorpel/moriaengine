@@ -35,7 +35,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				bool bid = AuctionHouse.Bidder(item) != null;
 				int buyout = AuctionHouse.Buyout(item);
 				this.AddButton(16, y, 0xfa5, 0xfa7, FirstLine + i, GumpButtonType.Reply, 0);
-				this.AddLabel(50, y, ValueHue, item.Name);
+				this.AddLabel(50, y, ValueHue, AuctionHouse.ShownName(item));
 				this.AddLabel(300, y, ValueHue, Number(bid ? AuctionHouse.Bid(item) : AuctionHouse.Start(item)) + (bid ? "" : " (od)"));
 				this.AddLabel(400, y, ValueHue, (buyout > 0) ? Number(buyout) : "-");
 				this.AddLabel(500, y, ValueHue, AuctionHouse.TimeLeft(item));
@@ -90,7 +90,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			List<string> info = MagicItems.InfoLines(item);
 			Character seller = AuctionHouse.Seller(item), bidder = AuctionHouse.Bidder(item);
 			int buyout = AuctionHouse.Buyout(item);
-			int height = 230 + (info.Count * 20);
+			int height = 252 + (info.Count * 20);
 			this.SetLocation(80, 80);
 			this.AddPage(0);
 			this.AddBackground(0, 0, 420, height, 2620);
@@ -101,6 +101,10 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				y += 20;
 			}
 			y += 6;
+			string material = AuctionHouse.MaterialOf(item);
+			if (material != null) {
+				this.Row(ref y, "Material:", material);
+			}
 			this.Row(ref y, "Prodava:", (seller == null) ? "?" : (seller.Name + " (" + AuctionHouse.RealmOf(item) + ")"));
 			this.Row(ref y, "Nabidka:", (bidder == null) ? ("zadna, od " + D_Auction.Number(AuctionHouse.Start(item))) :
 				(D_Auction.Number(AuctionHouse.Bid(item)) + ((bidder == player) ? " (tvoje)" : "")));
