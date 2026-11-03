@@ -2,7 +2,7 @@
 
 [ItemDef i_sign_gquest]
 name = "Vyhlaska"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = 0x340d
 
 //[function f_sign_gquest_odmen_lovce] // argv(0) - UID jeho memory itemu //(commented out by Converter) 
@@ -11,7 +11,7 @@ model = 0x340d
 
 [ItemDef i_sign_gquest_vysledky]
 name = "Vyhlaska"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_sign_blank
 
 //[dialog d_sign_gquest_vysledky] //(commented out by Converter) 
@@ -162,7 +162,7 @@ Layer = layer_special //guessed from base def by Converter
 
 [ItemDef i_gemblersky_kostky]
 name = "Hraci Kostky"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_dice_cup
 
 //[function sazka] //(commented out by Converter) 

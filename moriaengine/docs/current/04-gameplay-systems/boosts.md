@@ -40,5 +40,4 @@ Erebor listed 50 things by hand, twice, and didn't tell good from bad or say wha
 legend. Its other panels depend on systems that aren't ported, and plug into the Stav section when they are:
 
 - Food: players have no hunger here at all, so no fizzing from it either.
-- Mount powers (the `_mif` bonus tables): Stav shows only which mount is ridden.
-- Ranger mount knowledge, the equip list, HP sight.
+- The equip list, HP sight.

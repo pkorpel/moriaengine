@@ -6,7 +6,7 @@ SUBSECTION = System povyseni
 DESCRIPTION = Cesta k povyseni na Mistra
 
 NAME = "Cesta k povyseni na Mistra"
-TYPE = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = 0x1174
 Color = 00480
 

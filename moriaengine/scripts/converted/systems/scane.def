@@ -2,13 +2,13 @@
 
 [ItemDef i_emote_pad]
 NAME = "Emote pad"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = 0xaec
 Color = 055
 
 [ItemDef i_sound_pad]
 NAME = "Sound pad"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = 0xaec
 Color = 066
 

@@ -13,6 +13,11 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1017 - mit_main: a double click unpacks the bag into one unidentified magic item.</summary>
 	[ViewableClass]
 	public partial class MagicBag {
+		public override void On_Create() {
+			base.On_Create();
+			MagicItemGmTools.CountBag(this); //#1070 - padnute_*
+		}
+
 		public override void On_DClick(AbstractCharacter from) {
 			if (from is Character ch) {
 				MagicItems.Unpack(this, ch);
@@ -289,54 +294,66 @@ namespace SteamEngine.CompiledScripts {
 			}
 			AddTag(ch, MagicCountTK, sign);
 			foreach (int n in Properties(item)) {
-				int v = Value(item, n) * sign;
-				if (n < 50) {
-					ch.ModifySkillValue(n, v * 10);
-				} else if (MagicItemTables.SkillGroups.TryGetValue(n, out SkillName[] skills)) {
-					foreach (SkillName skill in skills) {
-						ch.ModifySkillValue(skill, v * 10);
-					}
-				} else {
-					switch (n) {
-						case 60:
-							ch.Str = (short) (ch.Str + v);
-							break;
-						case 61:
-							ch.Dex = (short) (ch.Dex + v);
-							break;
-						case 62:
-							ch.Int = (short) (ch.Int + v);
-							break;
-						case 63:
-							if (ch is Player whale) { //vitality is a player's
-								whale.Vit = (short) (whale.Vit + v);
-							}
-							break;
-						case 64:
-							ch.Str = (short) (ch.Str + v);
-							ch.Dex = (short) (ch.Dex + v);
-							ch.Int = (short) (ch.Int + v);
-							break;
-						case 70:
-							ch.HitsRegenSpeed += v / 10.0;
-							break;
-						case 71:
-							ch.StamRegenSpeed += v / 10.0;
-							break;
-						case 72:
-							ch.ManaRegenSpeed += v / 10.0;
-							break;
-						case 73:
-							ch.HitsRegenSpeed += v / 10.0;
-							ch.StamRegenSpeed += v / 10.0;
-							ch.ManaRegenSpeed += v / 10.0;
-							break;
-						default:
-							if (wearerTKs.TryGetValue(n, out TagKey key)) {
-								AddTag(ch, key, v);
-							}
-							break;
-					}
+				ApplyProperty(ch, n, Value(item, n) * sign);
+			}
+		}
+
+		/// <summary>#925 - what a magic mount gives its rider, on as a worn magic item's.</summary>
+		internal static void ApplyValues(Character ch, IEnumerable<KeyValuePair<int, int>> values, int sign) {
+			AddTag(ch, MagicCountTK, sign);
+			foreach (KeyValuePair<int, int> value in values) {
+				ApplyProperty(ch, value.Key, value.Value * sign);
+			}
+		}
+
+		private static void ApplyProperty(Character ch, int n, int v) {
+
+			if (n < 50) {
+				ch.ModifySkillValue(n, v * 10);
+			} else if (MagicItemTables.SkillGroups.TryGetValue(n, out SkillName[] skills)) {
+				foreach (SkillName skill in skills) {
+					ch.ModifySkillValue(skill, v * 10);
+				}
+			} else {
+				switch (n) {
+					case 60:
+						ch.Str = (short) (ch.Str + v);
+						break;
+					case 61:
+						ch.Dex = (short) (ch.Dex + v);
+						break;
+					case 62:
+						ch.Int = (short) (ch.Int + v);
+						break;
+					case 63:
+						if (ch is Player whale) { //vitality is a player's
+							whale.Vit = (short) (whale.Vit + v);
+						}
+						break;
+					case 64:
+						ch.Str = (short) (ch.Str + v);
+						ch.Dex = (short) (ch.Dex + v);
+						ch.Int = (short) (ch.Int + v);
+						break;
+					case 70:
+						ch.HitsRegenSpeed += v / 10.0;
+						break;
+					case 71:
+						ch.StamRegenSpeed += v / 10.0;
+						break;
+					case 72:
+						ch.ManaRegenSpeed += v / 10.0;
+						break;
+					case 73:
+						ch.HitsRegenSpeed += v / 10.0;
+						ch.StamRegenSpeed += v / 10.0;
+						ch.ManaRegenSpeed += v / 10.0;
+						break;
+					default:
+						if (wearerTKs.TryGetValue(n, out TagKey key)) {
+							AddTag(ch, key, v);
+						}
+						break;
 				}
 			}
 		}

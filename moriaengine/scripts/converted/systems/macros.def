@@ -159,7 +159,7 @@ Layer = layer_special //guessed from base def by Converter
 
 [ItemDef i_spawnovac_povlnach_prime]
 name = "NEMAZAT NEKLIKAT - spawnovatko"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_rune_marker
 
 //[function vymazpokusy_spawn] //(commented out by Converter) 

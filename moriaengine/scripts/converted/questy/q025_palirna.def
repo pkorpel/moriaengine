@@ -40,13 +40,13 @@ Color = 0981
 
 [ItemDef i_q025_trubka]
 name = "trubka"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = 0x2f8e
 Color = 090b
 
 [ItemDef i_q025_kotel]
 name = "destilacni kotel"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = 0x2c73
 Color = 090b
 

@@ -31,7 +31,7 @@ layer = 0 //Set by Converter
 Color = color_o_valorite
 
 [ItemDef i_pvpLeague]
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_book_open
 
 //[function f_pvpLeague_increaseRank] //(commented out by Converter) 
