@@ -1376,6 +1376,9 @@ namespace SteamEngine.CompiledScripts {
 		private static TriggerKey deathTK = TriggerKey.Acquire("death");
 
 		public void CauseDeath(Character killedBy) {
+			if (MysticHypnosis.InterceptDeath(this, killedBy)) { //#1017 - a possessing mystic or its alter ego comes home instead
+				return;
+			}
 			if (!this.Flag_Dead) {
 
 				Poison.RemoveAll(this); //#962 - f_pm_death
@@ -2034,6 +2037,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public virtual TriggerResult On_SpellEffect(SpellEffectArgs spellEffectArgs) {
+			if (MysticHypnosis.OnSpellEffect(this)) { //#1017 - e_hypnotising_mystic_ego's @spelleffect
+				return TriggerResult.Cancel;
+			}
 			return TriggerResult.Continue;
 		}
 
@@ -2155,12 +2161,13 @@ namespace SteamEngine.CompiledScripts {
 
 		//#778 strangler-vine hold, #779 Sphere's fatigue/overload refusals
 		public override bool CheckCanMove(bool running) {
-			return MonsterSpecialAttacks.CheckEntangledCanMove(this) && MovementStamina.CheckCanMove(this);
+			return MonsterSpecialAttacks.CheckEntangledCanMove(this) && MysticMind.CheckCanMove(this) && MovementStamina.CheckCanMove(this);
 		}
 
 		//#779 walking stamina drain
 		public override void On_StepTaken(bool running) {
 			HidingSkillDef.OnStep(this, running); //#962 - Sphere's CheckRevealOnMove
+			MysticHypnosis.OnStep(this); //#1017 - a step breaks the hypnosis' concentration
 			MeditationSkillDef.OnStep(this);
 			MovementStamina.DrainForStep(this, running);
 			MonsterSpecialAttacks.OnStepTaken(this); //#797 hazard tiles, e_inexhaustible
@@ -2676,15 +2683,13 @@ namespace SteamEngine.CompiledScripts {
 
 		public virtual bool IsPlayerForCombat {
 			get {
-				//TODO: false for hypnomystic
-				return this.IsPlayer;
+				return this.IsPlayer && !MysticHypnosis.IsPossessing(this); //#1017 - a possessing mystic fights as the monster
 			}
 		}
 
 		public virtual CharacterDef DefForCombat {
 			get {
-				//TODO: monster def for hypnomystic
-				return this.TypeDef;
+				return MysticHypnosis.CombatDef(this) ?? this.TypeDef;
 			}
 		}
 

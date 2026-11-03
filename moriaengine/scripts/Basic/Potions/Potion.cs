@@ -24,7 +24,7 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_DClick(AbstractCharacter dclicker) {
 			Character user = dclicker as Character;
 			PotionKind kind = PotionKinds.Find(this);
-			if ((user != null) && (kind != null)) {
+			if ((user != null) && (kind != null) && !MysticHypnosis.RefusesUse(user, this)) {
 				kind.Use(user, this);
 			}
 		}

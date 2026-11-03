@@ -67,6 +67,7 @@ armorVsM = 24
 Color = 026
 Experience = 20 25
 BleedChance = 300 //30.0% 
+Hypnotizable = 9
 Str = 200
 Dex = 90 105
 Int = 40 60

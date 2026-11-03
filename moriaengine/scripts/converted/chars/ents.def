@@ -47,6 +47,7 @@ SpiritSpeak = 800
 Peacemaking = 1000
 Provocation = 1000
 NoAnimate = 1
+Hypnotizable = 32
 Equip = i_monster_create
 
 ON=@npcrefuseitem
@@ -100,6 +101,7 @@ SpiritSpeak = 800
 Peacemaking = 1000
 Provocation = 1000
 NoAnimate = 1
+Hypnotizable = 32
 Equip = i_spellbook
 AddSpell = s_harm
 AddSpell = s_fireball

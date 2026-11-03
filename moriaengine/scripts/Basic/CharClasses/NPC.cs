@@ -1001,6 +1001,21 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey isBossTK = TagKey.Acquire("_npcIsBoss_");
 		private static readonly TagKey noAnimateTK = TagKey.Acquire("_npcNoAnimate_");
 
+		private static readonly TagKey hypnotizableTK = TagKey.Acquire("_npcHypnotizable_");
+
+		/// <summary>#1017 - Erebor's tag.hypnotizable, flags_hypno: can be hypnotized, may loot, the talents a
+		/// mystic can steal and their power.</summary>
+		public int Hypnotizable {
+			get { return (this.GetTag(hypnotizableTK) is int flags) ? flags : 0; }
+			set {
+				if (value != 0) {
+					this.SetTag(hypnotizableTK, value);
+				} else {
+					this.RemoveTag(hypnotizableTK);
+				}
+			}
+		}
+
 		/// <summary>#962 - Erebor's tag(noanimate,1): its corpse can't be raised.</summary>
 		public bool NoAnimate {
 			get { return this.GetTag(noAnimateTK) != null; }
@@ -1480,6 +1495,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "isboss") {
 				this.IsBoss = ConvertTools.ParseInt32(args.Trim()) != 0;
+				return;
+			}
+			if (param == "hypnotizable") {
+				this.Hypnotizable = ConvertTools.ParseInt32(args.Trim());
 				return;
 			}
 			if (param == "noanimate") {

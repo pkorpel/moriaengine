@@ -1,0 +1,5 @@
+// #1017 - the alter ego standing in a possessing mystic's place (hypnoswap's newnpc). Name, body,
+// colour and stats are the mystic's, set when it's made.
+[NPCDef c_hypno_ego]
+NAME = "Alter ego"
+model = 0x190

@@ -176,6 +176,11 @@ namespace SteamEngine.CompiledScripts {
 		/// before #220/#221.</summary>
 		public override TriggerResult On_DenyPickup(DenyPickupArgs args) {
 			Character picker = args.PickingChar as Character;
+			string hypno = (picker == null) ? null : MysticHypnosis.RefusesPickup(picker, this); //#1017 - a possessing mystic's looting
+			if (hypno != null) {
+				args.Result = new DenyResult_StringSysMessage(hypno);
+				return TriggerResult.Cancel;
+			}
 			if ((this.LockedTo != null) && ((picker == null) || !picker.IsGM)) { //#941 - nobody's: it has to be unlocked first
 				args.Result = new DenyResult_StringSysMessage("Vec je zamcena k domu.");
 				return TriggerResult.Cancel;

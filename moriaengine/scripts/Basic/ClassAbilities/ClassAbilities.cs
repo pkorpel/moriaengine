@@ -87,6 +87,11 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		/// <summary>reduceStamina(x) with no second argument: whatever is there, down to 0.</summary>
+		internal static void ReduceStaminaToZero(Character ch, int amount) {
+			ch.Stam = (short) Math.Max(0, ch.Stam - amount);
+		}
+
 		/// <summary>f_abilitycheck: true when it was just turned on. A second use turns it off, for free.</summary>
 		internal static bool ToggleCounter(Player self, ProfessionDef profession) {
 			if (self.Level < 1) {
@@ -116,6 +121,7 @@ namespace SteamEngine.CompiledScripts {
 			self.RemoveTag(counterTK);
 			PriestAbilities.NoteDeath(self);
 			ShamanAbilities.OnDeath(self);
+			MysticMind.OnDeath(self);
 			ShamanPacts.OnGone(self);
 		}
 

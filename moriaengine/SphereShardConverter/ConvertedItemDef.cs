@@ -609,6 +609,10 @@ namespace SteamEngine.Converter {
 					def.Replace("TYPE", "t_normal", "");
 				}
 			}
+			if (itemsByDefname.TryGetValue("i_hypnotizer", out ConvertedThingDef ball)) {
+				ball.headerType = "HypnotizerBallDef";
+				ball.Replace("TYPE", "t_normal", "");
+			}
 		}
 
 		private static void ApplyCashiersSettings() {

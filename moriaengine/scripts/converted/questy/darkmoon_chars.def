@@ -50,6 +50,7 @@ NpcCurseDamage = 45 55 // dmg
 DispelBombChance = 500 //50% chance 
 DispelBombRange = 6
 DispelBombCooldown = 15
+Hypnotizable = 33
 NaturalDamageType = DamageType.Slashing|DamageType.Physical|DamageType.Fire
 Parry = 1900 2000
 MagicResist = 1500
