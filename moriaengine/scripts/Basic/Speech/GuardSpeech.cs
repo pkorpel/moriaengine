@@ -31,7 +31,8 @@ namespace SteamEngine.CompiledScripts {
 	/// Only players are targeted, never an invulnerable one. Every guard in earshot answers on its own, as each NPC
 	/// hears on its own in Sphere. Replaces the converted [SpeechStub spk_guard].
 	/// A blacklisted player is never protected, and a criminal citizen of the guard's own town is (#892).
-	/// Not ported, because the engine has no such system: Mystic hypnosis (tag hypno_mystik), and the guard's temporary karma (guardkarma_*, i_memory_cleaner). The archive's
+	/// A possessing mystic (tag hypno_mystik) is let alone as the monster it wears (#1070, MysticHypnosis.GuardsLetAlone).
+	/// Not ported: the guard's temporary karma (guardkarma_*, i_memory_cleaner), only its name colour. The archive's
 	/// teleport-to-target (e_tele_to_target/i_attack_guard) only ever fires in its 7 insta-logout areas (jail,
 	/// tutorial) - guards here walk to their target as every NPC does.</summary>
 	public sealed class GuardSpeech : AbstractSpeech {
