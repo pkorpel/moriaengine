@@ -78,6 +78,30 @@ the NPC, counting non-GM purchases only. Erebor's sum went wrong from a million 
   lowers the count (Erebor's doubled its last line); a slot used by a top button is refused on lower pages, which
   Erebor's editor meant to do (its own warning says so) but its check read the wrong tag.
 
+## The magic item auction
+
+`scripts/Basic/MagicItems/Auction`, #1070. This replaces Erebor's web auction: Erebor's `.aukce` only sent marked items
+to a website, and the items never left their owners. The user decided: each realm has its own auction, `.aukce` works
+anywhere, there is no house cut, and bidders see the seller's name and realm.
+
+- **Listing**: `.aukce start buyout`, then target an item or a container of them in your own pack. Buyout 0 means
+  none, and buyout may not be below start. Erebor's rules: identified magic items only, never newbie or move-never,
+  prices up to 1000M, a realm needed. The item leaves the seller for the auction house's hidden box (a backpack on
+  plane 250, found again by its tag after a restart); the listing is kept in tags on the item.
+- **Bidding**: `.aukce` alone lists the own realm's listings (a GM sees all), ten to a page, soonest end first. A
+  line opens the item: its properties, seller and realm, bid, buyout, time left. Prihodit takes the bid at once
+  through `GoldUtils.Pay` and gives the previous bidder their gold back to the bank. A bid must reach the start
+  price, then beat the bid before it by `minRaisePercent`. A bid reaching the buyout buys it. Koupit pays the
+  buyout and ends the listing. Sellers can't bid on their own items, and GMs can't bid at all (they would pay
+  nothing).
+- **The end**: after `durationHours`, a minute sweep (`AuctionSweepTimer` on the box) settles a listing. The item
+  goes to the winner's bank, and the bid, less `houseCutPercent`, to the seller's bank. With no bid, the item goes
+  back to the seller's bank. Stahnout returns an item while nobody has bid; a GM can do it any time, and any bid
+  goes back. News reaches people at once when they're online, otherwise it waits on their message board
+  (`MsgsBoard`).
+- **Settings** (`.settings` -> "Auction"): `durationHours` 72, `minRaisePercent` 5, `maxListings` 10 per player,
+  `houseCutPercent` 0.
+
 ## Player vendors
 
 `PlayerVendor` (`scripts/Optional/PlayerVendor/PlayerVendor.cs`) is a separate system - a

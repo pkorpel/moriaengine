@@ -153,6 +153,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Auction")]
+		public AuctionSettings AuctionSettings {
+			get {
+				return AuctionSettings.instance;
+			}
+		}
+
 		[InfoField("Elite Monsters")]
 		public EliteSettings EliteSettings {
 			get {

@@ -67,6 +67,7 @@ namespace SteamEngine.CompiledScripts {
 				this.commands[ability] = PLEVEL_PLAYER;
 			}
 			this.commands["WhoAmI"] = PLEVEL_PLAYER; //#1011: Erebor's
+			this.commands["Aukce"] = PLEVEL_PLAYER; //#1070: the magic item auction
 			this.commands["FrostBolt"] = PLEVEL_PLAYER;
 			this.commands["NecroBolt"] = PLEVEL_PLAYER;
 			this.commands["NecroLight"] = PLEVEL_PLAYER;
