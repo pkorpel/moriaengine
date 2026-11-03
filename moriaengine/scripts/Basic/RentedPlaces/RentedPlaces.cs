@@ -81,6 +81,14 @@ namespace SteamEngine.CompiledScripts {
 		internal void PlaceVendor(Player owner) {
 			Point4D spot = this.VendorSpot;
 			EreborVendor vendor = this.Vendor;
+			if (this.VendorPunished) {
+				if (owner.IsGM) {
+					owner.SysMessage("Vendor odstranen za trest, chces li jej vratit pouzij prislusny cudlik!");
+				} else {
+					owner.RedMessage("Vendor odstranen za trest, napis page pro vyreseni situace");
+				}
+				return;
+			}
 			if (vendor == null) {
 				if (spot == null) {
 					owner.SysMessage("Neni nastavena pozice!");
@@ -95,6 +103,54 @@ namespace SteamEngine.CompiledScripts {
 				vendor.P(spot);
 				owner.SysMessage("Vendor premisten");
 			}
+		}
+
+		private static readonly TagKey punishedTK = TagKey.Acquire("_stall_vendor_punished_");
+
+		public bool VendorPunished {
+			get { return this.GetTag(punishedTK) != null; }
+		}
+
+		/// <summary>Button 8, GM: Erebor's punishment moved the vendor to a GM room on its plane 100, which isn't here; the
+		/// stall's own spot on plane 250, where nobody walks, stands for it. Pressed again, the vendor comes back.</summary>
+		internal void PunishVendor(Player gm) {
+			EreborVendor vendor = this.Vendor;
+			if (this.VendorPunished) {
+				this.RemoveTag(punishedTK);
+				if (vendor == null) {
+					gm.SysMessage("Vendor nenalezen - pravdepodobne byl zrusen po potrestani!");
+				} else {
+					vendor.P(this.VendorSpot ?? new Point4D(this.X, this.Y, this.Z, this.M));
+					gm.SysMessage("Vendor navracen");
+				}
+				return;
+			}
+			if (vendor == null) {
+				gm.SysMessage("Vendor nenalezen!");
+				return;
+			}
+			D_TownConfirm.Ask(gm, "Opravdu chces odstranit vendora? Nezrusi tagy => majitel si nemuze pridat noveho vendora - pouzij pouze jako TREST nikoliv k vyklizeni stanku !!!", this.Punish);
+		}
+
+		internal void Punish() {
+			if (this.Vendor != null) {
+				this.Vendor.P(this.X, this.Y, this.Z, (byte) MysticHypnosis.ParkedPlane);
+				this.SetTag(punishedTK, 1);
+			}
+		}
+
+		/// <summary>Button 18, GM: the vendor goes to the same place for good and the stall forgets it, so its owner may add
+		/// another. It keeps its stock and gold for a GM to redeed.</summary>
+		internal void RemoveVendor(Player gm) {
+			EreborVendor vendor = this.Vendor;
+			D_TownConfirm.Ask(gm, "Opravdu chces odstranit vendora? Odstraneni i s tagy => pokud nechas majitele muze si pridat noveho vendora!", () => {
+				if (vendor != null) {
+					vendor.P(this.X, this.Y, this.Z, (byte) MysticHypnosis.ParkedPlane);
+				}
+				this.RemoveTag(vendorTK);
+				this.RemoveTag(vendorSpotTK);
+				this.RemoveTag(punishedTK);
+			});
 		}
 
 		/// <summary>Button 6: the other body.</summary>
@@ -268,7 +324,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 	/// <summary>d_vendor_menu and d_field_menu, Erebor's button numbers, without the auction and (for now) the vendor.</summary>
 	public class D_RentedPlace : CompiledGumpDef {
 		private const int Width = 260, RowHeight = 22, LabelHue = 955, ButtonHue = 2301;
-		private const int LockItem = 2, Guard = 5, PlaceVendor = 5, VendorSex = 6, VendorSpot = 17, Rename = 7, Bank = 9, Transfer = 10, Block = 11, Empty = 12, ResetPaid = 13, SetRent = 14, AutoRent = 15;
+		private const int LockItem = 2, Guard = 5, PlaceVendor = 5, VendorSex = 6, VendorSpot = 17, PunishVendor = 8, RemoveVendor = 18, Rename = 7, Bank = 9, Transfer = 10, Block = 11, Empty = 12, ResetPaid = 13, SetRent = 14, AutoRent = 15;
 
 		public static void Show(Player player, House place, Item sign) {
 			player.Dialog(player, SingletonScript<D_RentedPlace>.Instance, new DialogArgs(place, sign));
@@ -298,7 +354,11 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			Add(Bank, HouseRank.Public, place.BankActivated ? "Otevrit banku" : "Aktivovat banku (" + (HouseSettings.instance.bankActivationPrice / 1000) + "k gp)");
 			Add(Transfer, HouseRank.Owner, "Predat vlastnictvi " + ((place is Field) ? "pole" : "stanku"));
 			Add(Block, HouseRank.GM, (place.Blocked ? "Od" : "Za") + "blokovat " + noun);
-			Add(Empty, HouseRank.GM, "Trash " + noun);
+			Add(Empty, HouseRank.GM, "Trash " + noun + ((place is Stall) ? " (necha vendora)" : ""));
+			if (place is Stall punishing) {
+				Add(PunishVendor, HouseRank.GM, punishing.VendorPunished ? "Vratit vendora z trestu" : "Odstranit vendora (trest)");
+				Add(RemoveVendor, HouseRank.GM, "Odstranit vendora (uplne)");
+			}
 			Add(ResetPaid, HouseRank.GM, "Vynulovat zaplaceni");
 			Add(SetRent, HouseRank.GM, "Nastavit najem");
 			Add(AutoRent, HouseRank.GM, (place.AutoRent ? "Vy" : "Za") + "pnout autorent");
@@ -355,6 +415,16 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 						player.Target(SingletonScript<Targ_FieldGuard>.Instance, field);
 					} else if ((place is Stall stall) && place.Allows(player, HouseRank.CoOwner)) {
 						stall.PlaceVendor(player);
+					}
+					break;
+				case PunishVendor:
+					if ((place is Stall punishStall) && place.Allows(player, HouseRank.Owner)) {
+						punishStall.PunishVendor(player);
+					}
+					break;
+				case RemoveVendor:
+					if ((place is Stall removeStall) && place.Allows(player, HouseRank.Owner)) {
+						removeStall.RemoveVendor(player);
 					}
 					break;
 				case VendorSex:

@@ -64,7 +64,8 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutput("VENDOR_DONE", Wait), this.fixture.GameOutputSnapshot());
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "aDeedOnlyInOwnStall", "aDeedPlacesAVendor", "stockedIntoTheBank", "buyingPaysTheVendorNinetyPercent", "unitsSellOneByOne",
-						"theVendorBuysBack", "theEarningsGoToTheBank", "theGoodsGoToTheBank", "aStallPlacesItsVendor" }) {
+						"theVendorBuysBack", "theEarningsGoToTheBank", "theGoodsGoToTheBank", "aStallPlacesItsVendor",
+						"aSectionGroupsGoods", "stockedIntoTheSection", "nobodyPicksUpFromAVendor", "boughtFromTheSection", "anEmptySectionGoesBack", "punishmentTakesTheVendorAway", "andBringsItBack" }) {
 					string marker = "VENDOR: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);

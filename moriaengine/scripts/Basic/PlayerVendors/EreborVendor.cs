@@ -26,6 +26,8 @@ namespace SteamEngine.CompiledScripts {
 		internal static readonly TagKey PriceTK = TagKey.Acquire("_ev_price_");
 		internal static readonly TagKey UnitTK = TagKey.Acquire("_ev_unit_");
 		internal static readonly TagKey SessionTK = TagKey.Acquire("_ev_session_");
+		private static readonly TagKey sectionEntriesTK = TagKey.Acquire("_ev_section_entries_");
+		private static readonly TagKey parentTK = TagKey.Acquire("_ev_section_parent_");
 		internal const int MaxItemsInEntry = 500, RowsAPage = 15;
 
 		public override void On_Create() {
@@ -83,6 +85,66 @@ namespace SteamEngine.CompiledScripts {
 				list.RemoveAll(item => item.IsDeleted || (item.TopObj() != this));
 				return list;
 			}
+		}
+
+		/// <summary>A section's own list, or the top one for null.</summary>
+		public List<Item> EntriesOf(Item section) {
+			if (section == null) {
+				return this.Entries;
+			}
+			List<Item> list = section.GetTag(sectionEntriesTK) as List<Item>;
+			if (list == null) {
+				list = new List<Item>();
+				section.SetTag(sectionEntriesTK, list);
+			}
+			list.RemoveAll(item => item.IsDeleted || (item.TopObj() != this));
+			return list;
+		}
+
+		/// <summary>Nova sekce: a container standing for a group of goods, with its own list.</summary>
+		internal static bool IsSection(Item item) {
+			return item.GetTag(sectionEntriesTK) != null;
+		}
+
+		internal static Item ParentOf(Item section) {
+			return section.GetTag(parentTK) as Item;
+		}
+
+		internal static void MarkSection(Item section, Item parent) {
+			section.SetTag(sectionEntriesTK, new List<Item>());
+			if (parent != null) {
+				section.SetTag(parentTK, parent);
+			}
+		}
+
+		internal static void UnmarkSection(Item section) {
+			section.RemoveTag(sectionEntriesTK);
+			section.RemoveTag(parentTK);
+		}
+
+		/// <summary>Takes an entry out of whichever list holds it.</summary>
+		public void RemoveEntry(Item entry) {
+			if (!this.Entries.Remove(entry)) {
+				foreach (Item section in this.AllSections()) {
+					if (this.EntriesOf(section).Remove(entry)) {
+						return;
+					}
+				}
+			}
+		}
+
+		public List<Item> AllSections() {
+			List<Item> sections = new List<Item>();
+			void Walk(List<Item> list) {
+				foreach (Item item in list) {
+					if (IsSection(item)) {
+						sections.Add(item);
+						Walk(this.EntriesOf(item));
+					}
+				}
+			}
+			Walk(this.Entries);
+			return sections;
 		}
 
 		/// <summary>i_buyer_box: "defname|price|limit".</summary>
@@ -250,7 +312,7 @@ namespace SteamEngine.CompiledScripts {
 					vendor.Say("Maly moment");
 					if (!Refuses(vendor, speaker) && StartSession(vendor, speaker)) {
 						if (vendor.Entries.Count > 0) {
-							D_EreborVendor.Show(speaker, vendor, 0);
+							D_EreborVendor.Show(speaker, vendor, 0, null);
 						} else {
 							vendor.Say("Nemam nic na prodej.");
 						}
@@ -260,7 +322,7 @@ namespace SteamEngine.CompiledScripts {
 				vendor.Say("Okamzicek");
 				if (!Refuses(vendor, speaker) && StartSession(vendor, speaker) && owner) {
 					speaker.SysMessage("Target an item in your pack to stock.");
-					speaker.Target(SingletonScript<Targ_EreborVendorStock>.Instance, vendor);
+					speaker.Target(SingletonScript<Targ_EreborVendorStock>.Instance, new object[] { vendor, null });
 				}
 			} else if (has("cena", "price", "nastavit")) {
 				if (!Refuses(vendor, speaker) && StartSession(vendor, speaker) && owner) {
@@ -390,7 +452,16 @@ namespace SteamEngine.CompiledScripts {
 			if (vendor.Gold > 0) {
 				GoldUtils.GrantInto(bag, (uint) Math.Min(vendor.Gold, uint.MaxValue));
 			}
-			foreach (Item entry in vendor.Entries) {
+			List<Item> all = new List<Item>(vendor.Entries);
+			foreach (Item section in vendor.AllSections()) {
+				all.AddRange(vendor.EntriesOf(section));
+			}
+			foreach (Item entry in all) {
+				if (EreborVendor.IsSection(entry)) {
+					EreborVendor.UnmarkSection(entry);
+					entry.Cont = bag;
+					continue;
+				}
 				Item content = EreborVendor.Content(entry);
 				if ((content != null) && (content != entry)) {
 					content.Cont = bag;
@@ -430,7 +501,7 @@ namespace SteamEngine.CompiledScripts {
 		private const int MaxItems = EreborVendor.MaxItemsInEntry;
 
 		/// <summary>Button 3: one thing for one price, in a pouch in the bank box.</summary>
-		internal static Item StockItem(EreborVendor vendor, Player owner, Item item, string description, int price) {
+		internal static Item StockItem(EreborVendor vendor, Player owner, Item item, string description, int price, Item section = null) {
 			if (item.TopObj() != owner) {
 				owner.SysMessage("Predmet musis mit u sebe !");
 				return null;
@@ -439,22 +510,67 @@ namespace SteamEngine.CompiledScripts {
 			pouch.Name = ((item.Amount > 1) ? item.Amount + " " : "") + item.Name;
 			pouch.Color = item.Color;
 			item.Cont = pouch;
-			return AddEntry(vendor, pouch, description, price, false);
+			return AddEntry(vendor, pouch, description, price, false, section);
 		}
 
 		/// <summary>Button 1: a container's things, each at the price.</summary>
-		internal static Item StockUnits(EreborVendor vendor, Player owner, Container box, string description, int price) {
+		internal static Item StockUnits(EreborVendor vendor, Player owner, Container box, string description, int price, Item section = null) {
 			if (box.TopObj() != owner) {
 				owner.SysMessage("Predmet musis mit u sebe !");
 				return null;
 			}
 			box.Cont = vendor.Bank;
-			Item entry = AddEntry(vendor, box, description, price, true);
-			return entry;
+			return AddEntry(vendor, box, description, price, true, section);
+		}
+
+		/// <summary>Button 2, Nova sekce: the container's things go back, it stands for a group under the description in
+		/// capitals, with the first thing's picture.</summary>
+		internal static Item MakeSection(EreborVendor vendor, Player owner, Container box, string name, Item parent) {
+			if (box.TopObj() != owner) {
+				owner.SysMessage("Predmet musis mit u sebe !");
+				return null;
+			}
+			int model = box.Model;
+			foreach (AbstractItem inside in new List<AbstractItem>(box)) {
+				model = (model == box.Model) ? inside.Model : model;
+				inside.Cont = owner.Backpack;
+			}
+			box.Cont = vendor.Bank;
+			box.Name = string.IsNullOrEmpty(name) ? box.Name : name;
+			box.Model = model;
+			EreborVendor.MarkSection(box, parent);
+			box.SetTag(EreborVendor.DescriptionTK, box.Name.ToUpperInvariant());
+			vendor.EntriesOf(parent).Add(box);
+			return box;
+		}
+
+		/// <summary>Odebrat sekci: only an empty one goes back, as itself.</summary>
+		internal static bool RemoveSection(EreborVendor vendor, Player owner, Item section) {
+			if (vendor.EntriesOf(section).Count > 0) {
+				return false;
+			}
+			vendor.RemoveEntry(section);
+			EreborVendor.UnmarkSection(section);
+			section.RemoveTag(EreborVendor.DescriptionTK);
+			section.Model = ((ItemDef) section.Def).Model;
+			section.Cont = owner.Backpack;
+			return true;
+		}
+
+		/// <summary>Ikona: a thing's picture, or a creature's icon.</summary>
+		internal static void SetIcon(Item section, Thing from) {
+			if (from is Item item) {
+				section.Model = item.Model;
+			} else if (from is NPC npc) {
+				int icon = PetFigurine.IconOf((NPCDef) npc.Def);
+				if (icon != 0) {
+					section.Model = icon;
+				}
+			}
 		}
 
 		/// <summary>A pet goes on sale shrunk to its figurine; the buyer's double click brings it back as theirs.</summary>
-		internal static Item StockPet(EreborVendor vendor, Player owner, NPC pet, string description, int price) {
+		internal static Item StockPet(EreborVendor vendor, Player owner, NPC pet, string description, int price, Item section = null) {
 			if (pet.ControlMaster != owner) {
 				owner.SysMessage("Toto neni tvoje zvire");
 				return null;
@@ -464,16 +580,16 @@ namespace SteamEngine.CompiledScripts {
 			figurine.Keep(pet);
 			pouch.Name = pet.Name;
 			pet.Delete();
-			return AddEntry(vendor, pouch, description, price, false);
+			return AddEntry(vendor, pouch, description, price, false, section);
 		}
 
-		private static Item AddEntry(EreborVendor vendor, Item entry, string description, int price, bool unit) {
+		private static Item AddEntry(EreborVendor vendor, Item entry, string description, int price, bool unit, Item section) {
 			entry.SetTag(EreborVendor.DescriptionTK, string.IsNullOrEmpty(description) ? entry.Name : description);
 			entry.SetTag(EreborVendor.PriceTK, Math.Max(price, 0));
 			if (unit) {
 				entry.SetTag(EreborVendor.UnitTK, 1);
 			}
-			vendor.Entries.Add(entry);
+			vendor.EntriesOf(section).Add(entry);
 			return entry;
 		}
 		#endregion
@@ -491,7 +607,7 @@ namespace SteamEngine.CompiledScripts {
 				vendor.Gold += ((long) price * units * (100 - vendor.Commission)) / 100;
 				GiveUnits((Container) entry, buyer, units);
 				if (EreborVendor.Units(entry) == 0) {
-					vendor.Entries.Remove(entry);
+					vendor.RemoveEntry(entry);
 					entry.Delete();
 				}
 				return true;
@@ -518,7 +634,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static void Hand(EreborVendor vendor, Item entry, Character to) {
-			vendor.Entries.Remove(entry);
+			vendor.RemoveEntry(entry);
 			if (EreborVendor.IsUnit(entry)) {
 				entry.RemoveTag(EreborVendor.UnitTK);
 				entry.RemoveTag(EreborVendor.PriceTK);
@@ -553,6 +669,20 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 		#endregion
+
+		/// <summary>Projit / Prohledni: Erebor let only a GM look inside, and nobody touch ("Nesahat!").</summary>
+		internal static void Peek(Player player, Item entry) {
+			if (!player.IsGM) {
+				player.RedMessage("Funkce prozatim zakazana ! Doslo k zneuziti.");
+				return;
+			}
+			entry.OpenTo(player);
+		}
+
+		/// <summary>t_cv_showitem: what a vendor holds isn't for picking up, not even by the GM who looks.</summary>
+		internal static string RefusesPickup(Item item) {
+			return (item.TopObj() is EreborVendor) ? "Nesahat!" : null;
+		}
 
 		#region buy-back
 		internal static void SetBuyBack(EreborVendor vendor, ThingDef def, int price, int limit) {
@@ -694,9 +824,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>i_vendor_stock: parameter is the vendor and the section stocked into (null the top).</summary>
 	public class Targ_EreborVendorStock : CompiledTargetDef {
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
-			EreborVendor vendor = (EreborVendor) parameter;
+			object[] where = (object[]) parameter;
+			EreborVendor vendor = (EreborVendor) where[0];
 			if (!EreborVendors.IsActive(vendor, self)) {
 				return TargetResult.Done;
 			}
@@ -705,17 +837,18 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(refusal);
 				return TargetResult.RestartTargetting;
 			}
-			D_EreborVendorStock.Show(self, vendor, targetted);
+			D_EreborVendorStock.Show(self, vendor, targetted, (Item) where[1]);
 			return TargetResult.Done;
 		}
 
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
-			EreborVendor vendor = (EreborVendor) parameter;
+			object[] where = (object[]) parameter;
+			EreborVendor vendor = (EreborVendor) where[0];
 			if (!EreborVendors.IsActive(vendor, self)) {
 				return TargetResult.Done;
 			}
 			if ((targetted is NPC pet) && (pet.ControlMaster == self) && !(pet is EreborVendor) && !SummonSpellDef.IsSummonedCreature(pet)) {
-				D_EreborVendorStock.Show(self, vendor, pet);
+				D_EreborVendorStock.Show(self, vendor, pet, (Item) where[1]);
 				return TargetResult.Done;
 			}
 			self.SysMessage("Zamer vec ve svem batohu nebo svoje zvire na prodej.");
@@ -730,6 +863,23 @@ namespace SteamEngine.CompiledScripts {
 				return TargetResult.RestartTargetting;
 			}
 			D_EreborVendorPrice.Show(self, (EreborVendor) parameter, targetted.Def);
+			return TargetResult.Done;
+		}
+	}
+
+	/// <summary>i_vendor_changeicon.</summary>
+	public class Targ_EreborVendorIcon : CompiledTargetDef {
+		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
+			object[] where = (object[]) parameter;
+			EreborVendors.SetIcon((Item) where[1], targetted);
+			D_EreborVendor.Show(self, (EreborVendor) where[0], 0, (Item) where[1]);
+			return TargetResult.Done;
+		}
+
+		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
+			object[] where = (object[]) parameter;
+			EreborVendors.SetIcon((Item) where[1], targetted);
+			D_EreborVendor.Show(self, (EreborVendor) where[0], 0, (Item) where[1]);
 			return TargetResult.Done;
 		}
 	}
