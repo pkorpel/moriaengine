@@ -205,7 +205,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		/// <summary>#489 - Invisibility: Character.Flag_InvisByMagic already existed and was
 		/// already wired into IsNotVisible/CanSeeVisibility, but nothing set it anywhere before
-		/// this. Casts the test-only s_test_invisibility (flat 3s duration) and confirms the flag
+		/// this. Casts the test-only s_test_invisibility (flat 8s duration) and confirms the flag
 		/// goes true immediately, then false again once the duration expires.</summary>
 		[Fact]
 		public void InvisibilitySetsAndClearsFlagInvisByMagic() {
@@ -231,7 +231,7 @@ namespace SteamEngine.Tests.Protocol {
 				string duringLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_VISIBILITY_TEST:");
 				Assert.True(duringLine.Contains("invisByMagic=True"), "FULL:\n" + this.fixture.GameOutputSnapshot());
 
-				Thread.Sleep(3000); // DURATION is a flat 3s; 2s elapsed already above, this covers the rest plus margin
+				Thread.Sleep(7000); // DURATION is a flat 8s from about 1s after the cast; 3.5s elapsed above
 
 				mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestReportVisibilityFlags " + selfUid);
@@ -500,25 +500,10 @@ namespace SteamEngine.Tests.Protocol {
 				// a NullReferenceException (confirmed directly - silent, logged server-side, the cast
 				// just never starts). See TestCastSpellAtDummy for the opposite (GM/Account) case.
 				//
-				// distance=17 (beyond NpcAggroSettings.instance.aggroRange, default 14 - was
-				// AggroRange=8 and distance=15 before that setting shipped, #762) is deliberate,
-				// not arbitrary - a Hostile summon with nobody else around WILL autonomously
-				// engage the only nearby character it can find (its own caster, absent any other
-				// target), and an actively-engaged NPC hanging the whole server on later cleanup
-				// was confirmed directly (see TestNeutralizeCharacterByUid's own doc comment) -
-				// keeping it out of aggro range entirely avoids that whole class of problem
-				// instead of trying to recover from it after the fact.
-				//
-				// NOTE (#762): this exact Fact currently fails regardless of distance - confirmed
-				// via a clean isolated worktree at unmodified main (commit 8504712, before any
-				// of this change) that it ALSO fails there with "MAGERY_SUMMON_TEST: NONE",
-				// same symptom. Pre-existing, unrelated to this change - not root-caused here
-				// (filed as its own issue). An earlier theory blaming Globals.MaxUpdateRange=18
-				// (the real client vision-range ceiling CanInteractWith enforces for ground-
-				// targeted casts) was disproven the same way - distance=15 (the original,
-				// once-passing value) fails identically to distance=25, so the real cause is
-				// something else entirely.
-				client.SendSpeech(".TestCastGroundTargetedSpellNearSelf s_blade_spirits 17");
+				// #788 - 3 tiles off, on the open ground TestGrantFullSpellbook moves to: a ground target
+				// past 9 tiles is out of reach there. It was 17 to stay out of aggro range, for a hang
+				// deleting an engaged NPC that #786/#798 fixed; the summon may attack its caster now.
+				client.SendSpeech(".TestCastGroundTargetedSpellNearSelf s_blade_spirits 3");
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
 
 				Thread.Sleep(4000); // CASTTIME is 2.5s; generous margin for the stroke + effect dispatch
@@ -527,9 +512,8 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestReportNearbySummon");
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
 				string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
-				Assert.True(foundLine.Contains("FOUND"), "Expected Blade Spirits to summon a creature. line: " + foundLine);
+				Assert.True(foundLine.Contains("FOUND"), "Expected Blade Spirits to summon a creature. line: " + foundLine + "\nFULL:\n" + this.fixture.GameOutputSnapshot());
 				Assert.Contains("controlMasterUid=null", foundLine);
-				Assert.Contains("warMode=False", foundLine); // out of aggro range - confirms it never engaged
 
 				uint summonUid = ExtractMarkedUid(foundLine, "uid=");
 				mark = this.fixture.GameOutputSnapshot().Length;
@@ -551,16 +535,24 @@ namespace SteamEngine.Tests.Protocol {
 
 				uint selfUid = SelfUidOf(client);
 
-				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestCastGroundTargetedSpellNearSelf s_summon_creature"); // non-elevated AccountC, see BladeSpirits test's own comment above
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+				//#788 - Summon Creature opens Erebor's creature menu (#999): the test picks the giant rat
+				//the way the menu does, then answers the spell's cursor with a ground target. A 50.0
+				//spell fizzles one cast in sixteen at 100.0 Magery, so a fizzle is cast again.
+				string foundLine = null;
+				for (int attempt = 0; (attempt < 3) && ((foundLine == null) || !foundLine.Contains("FOUND")); attempt++) {
+					int mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestSummonCreatureChoose");
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMONCHOICE:", mark, TimeSpan.FromSeconds(10)));
+					string chose = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMONCHOICE:");
+					string[] at = chose.Substring(chose.IndexOf("at=") + 3).Trim().Split(',');
+					client.SendTargetGround(int.Parse(at[0]), int.Parse(at[1]), int.Parse(at[2]));
+					Thread.Sleep(4000);
 
-				Thread.Sleep(4000);
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportNearbySummon");
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
-				string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+					mark = this.fixture.GameOutputSnapshot().Length;
+					client.SendSpeech(".TestReportNearbySummon");
+					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
+					foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+				}
 				Assert.True(foundLine.Contains("FOUND"), "Expected Summon Creature to summon a pet. line: " + foundLine);
 				Assert.Contains("controlMasterUid=" + selfUid, foundLine);
 			}
@@ -597,29 +589,28 @@ namespace SteamEngine.Tests.Protocol {
 
 				for (int i = 0; i < summons.Length; i++) {
 					(string defname, string expectedChardef) = summons[i];
-					int mark = this.fixture.GameOutputSnapshot().Length;
 					// AccountD is non-elevated (SimpleCommandParser), same as AccountC's own
 					// summon tests above - unquoted defname is correct here, not optional.
-					// distance = 2 + i: a distinct target tile per iteration (not the same spot
-					// every time) - avoids any possible leftover-tile-state ambiguity from the
-					// previous iteration's just-deleted summon.
-					client.SendSpeech(".TestCastGroundTargetedSpellNearSelf " + defname + " " + (2 + i));
-					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
+					// distance = 2 + i: a distinct target tile per iteration.
+					// #788 - these are Erebor's 80.0 spells: at 100.0 Magery one cast in eight
+					// fizzles (the "intermittent failures at different indices" once blamed on load),
+					// so a fizzle is cast again, as a player would.
+					string foundLine = null;
+					for (int attempt = 0; (attempt < 4) && ((foundLine == null) || !foundLine.Contains("FOUND")); attempt++) {
+						int castMark = this.fixture.GameOutputSnapshot().Length;
+						client.SendSpeech(".TestCastGroundTargetedSpellNearSelf " + defname + " " + (2 + i));
+						Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", castMark, TimeSpan.FromSeconds(10)));
+						Thread.Sleep(9000); // CASTTIME is 4.0s for every Circle VIII summon
 
-					Thread.Sleep(9000); // CASTTIME is 4.0s for every Circle VIII summon; wide margin - confirmed via two
-					// different intermittent failures (at two different iteration indices across two runs,
-					// never the same one twice) under this sandbox's heavy background dotnet-process load that
-					// 6s wasn't consistently enough, same class of full-boot-tier timing contention already
-					// documented throughout this repo's CLAUDE.md - not a logic bug.
-
-					mark = this.fixture.GameOutputSnapshot().Length;
-					client.SendSpeech(".TestReportNearbySummon");
-					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
-					string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+						castMark = this.fixture.GameOutputSnapshot().Length;
+						client.SendSpeech(".TestReportNearbySummon");
+						Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", castMark, TimeSpan.FromSeconds(10)));
+						foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+					}
 					Assert.True(foundLine.Contains("FOUND"), "Expected " + defname + " to summon a creature. line: " + foundLine);
 					Assert.Contains("controlMasterUid=" + selfUid, foundLine);
 
-					mark = this.fixture.GameOutputSnapshot().Length;
+					int mark = this.fixture.GameOutputSnapshot().Length;
 					client.SendSpeech(".TestReportNearbySummonMatchesDefname " + expectedChardef);
 					Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_DEFNAME_TEST:", mark, TimeSpan.FromSeconds(10)));
 					string defnameLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_DEFNAME_TEST:");

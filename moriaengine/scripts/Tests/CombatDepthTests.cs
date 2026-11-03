@@ -80,8 +80,9 @@ namespace SteamEngine.CompiledScripts {
 		/// start fighting back or auto-aggro, keeping this test's damage source unambiguous.</summary>
 		[SteamFunction]
 		public static void TestSpellcasterDamage(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self); //#788 - a static east of the spawn point blocks sight
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
-			NPCDef licheDef = ThingDef.GetByDefname("c_liche") as NPCDef;
+			NPCDef licheDef = ThingDef.GetByDefname("c_liche_nb") as NPCDef; //#788 - Erebor's liche, harm/fireball/poison/lightning; the bare c_liche is Sphere's graphic with no spells
 			NPCDef dummyDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC liche = (NPC) licheDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			NPC dummy = (NPC) dummyDef.Create(self.X + 2, self.Y, self.Z, self.M);
@@ -121,11 +122,17 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestSpellcasterStandsOff(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self); //#788 - a static east of the spawn point blocks sight
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
-			NPCDef licheDef = ThingDef.GetByDefname("c_liche") as NPCDef;
+			NPCDef licheDef = ThingDef.GetByDefname("c_liche_nb") as NPCDef; //#788 - Erebor's liche, harm/fireball/poison/lightning; the bare c_liche is Sphere's graphic with no spells
 			NPCDef dummyDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC liche = (NPC) licheDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			NPC dummy = (NPC) dummyDef.Create(self.X + 3, self.Y, self.Z, self.M); // 2 tiles from the liche (same geometry as TestArcherStandsOff) - beyond melee range, within its 10-tile spell range
+			//#788 - Erebor's liche kills a sheep in two fireballs and then goes for the watching player:
+			//the target has to last the check, and stay where it is
+			dummy.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			dummy.MaxHits = 30000;
+			dummy.Hits = 30000;
 
 			NPCAiTimer.GetFor(liche).EngageTarget(dummy);
 			// Attached to self, not liche - see TestSpellcasterDamage's comment just above.
@@ -145,11 +152,17 @@ namespace SteamEngine.CompiledScripts {
 		/// </summary>
 		[SteamFunction]
 		public static void TestArcherStandsOff(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self); //#788 - a static east of the spawn point blocks sight
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			NPCDef archerDef = ThingDef.GetByDefname("c_skeleton_archer_nb") as NPCDef;
 			NPCDef dummyDef = ThingDef.GetByDefname("c_sheep_woolly") as NPCDef;
 			NPC archer = (NPC) archerDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			NPC dummy = (NPC) dummyDef.Create(self.X + 3, self.Y, self.Z, self.M); // 2 tiles from the archer - within its 10-tile range
+			//#788 - an archer shoots now (monsters need no arrows, #788) and kills a sheep fast, then goes
+			//for the watching player: the target has to last the check, and stay where it is
+			dummy.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			dummy.MaxHits = 30000;
+			dummy.Hits = 30000;
 
 			int startingHits = dummy.Hits;
 			NPCAiTimer.GetFor(archer).EngageTarget(dummy);

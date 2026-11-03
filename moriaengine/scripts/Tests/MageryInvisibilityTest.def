@@ -1,8 +1,8 @@
 // #483/#489 - test-only content for Invisibility's set/expire cycle. Deliberately NOT a real
 // Erebor spell - spell id 9001 is a sentinel well outside the real 0-88 range used by actual
 // content (matching MagerySummonTest.def's own s_test_summon precedent at id 9000), to
-// guarantee no collision. Flat 3s duration - long enough to observe the flag set immediately
-// after casting, short enough that the expiry test itself doesn't need to wait long. Cast via
+// guarantee no collision. Flat 8s duration (#788 - 3s left half a second between the check and the
+// expiry, which a loaded run missed) - long enough to observe the flag set after casting. Cast via
 // a scroll (same reasoning as s_test_summon - SpellBook.AddSpell silently refuses ids outside
 // [FirstSpellId, FirstSpellId+64)).
 [InvisibilitySpellDef 9001]
@@ -13,7 +13,7 @@ RUNES=
 CASTTIME=1.0
 FLAGS=SpellFlag.CanTargetChar | SpellFlag.CanEffectChar | SpellFlag.EffectNeedsLOS
 EFFECT=0
-DURATION=3.0,3.0
+DURATION=8.0,8.0
 MANAUSE=1
 Requirements=0.0 Magery
 SCROLLITEM=i_scroll_test_invisibility

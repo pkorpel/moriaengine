@@ -1,8 +1,10 @@
 # moriaengine — working state
 
-## NOW (2026-11-03): #745 curing bleeding, then #788 (user: sort out both now)
+## NOW (2026-11-03): #745 curing bleeding DONE (PR #1102), now #788 (user: sort out both now)
 
 #745, branch fix-745-one-bleed: bandages already stop Bleeding Strike's bleed (#980), not a monster's. On Erebor both are one item, i_krvaceni: e_npc_bleed's npc_bleed adds (damage/3)/2 to its more2 (no cap, no fade, ticks restart) via f_bleed_getMemory, f_thief_doBleed the thief's way. So the monster bite goes into BleedingEffectPlugin (BleedingEffectPluginDef.Bite), NpcBleedEffectPlugin goes. Then #788, its own branch.
+#788, branch fix-788-stale-combat-tests: rerun CombatDepthTestsA + MagerySpellTests on today's main, fix each failure at its cause (game or stale test).
+Found: (1) #1100's GuardPursuit made every fighting NPC call HasTriggerGroup, which threw on a def with no trigger groups (do-while on a null first node): such NPCs never fought. Hotfix PR #1103. (2) Monster archers never shot: our Fight refused NPCs without arrows, Sphere's Fight_Hit asks only players (EreborNext CChar.FightHit). (3) Stale tests: the default spawn (4763,1363) has a static east of it, so every ground cast there was refused (CanInteractWith): helpers move to open ground, where ground targets reach 9 tiles; bare c_liche is Sphere's graphic with no spells, Erebor's is c_liche_nb; Summon Creature opens #999's menu; circle 8 is Erebor's 80.0, one cast in eight fizzles at 100.0 (the "load" flakes); a long run reaches night and the darkness rule refuses casts (helper gives night sight); casters and archers kill the sheep and then go for the watcher (dummy made durable and passive); invisibility's 3 s test spell left 0.5 s of margin.
 #745 shipped: the monster bite also counts for the weekly bleeding task now (the tick calls WeeklyQuests.OnBleed); 30 damage bleeds 5, not 10. Verified: NpcBleed (bandage stops it), NpcResist, MonsterAbilitiesSettings, Healing, QuestJournal, ClassAbility green, fast 336/336.
 
 ## DONE (2026-11-03): #1100 guards' pursuit and teleport home (branch guard-pursuit-1100)
