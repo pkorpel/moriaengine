@@ -83,15 +83,22 @@ namespace SteamEngine.CompiledScripts {
 			self.SysMessage("Zurive bijes vse kolem sebe!");
 			self.Direction = (Direction) (((int) self.Direction + 4) % 8); //Erebor's four flips turn it full circle
 			self.Direction = (Direction) (((int) self.Direction + 4) % 8);
+			HitAround(self, settings.roundAttackDamagePercent, false);
+		}
+
+		/// <summary>f_performRoundAttack: a part of a blow on everyone adjacent within 6 of height. A round
+		/// strike spares players of your own realm.</summary>
+		internal static void HitAround(Player self, int percent, bool spareOwnRealm) {
 			List<Character> around = new List<Character>();
 			foreach (AbstractCharacter near in self.GetMap().GetCharsInRange(self.X, self.Y, 1)) {
 				Character ch = near as Character;
-				if ((ch != null) && (ch != self) && !ch.IsGM && !ch.Flag_Dead && (Math.Abs(ch.Z - self.Z) <= 6)) {
+				if ((ch != null) && (ch != self) && !ch.IsGM && !ch.Flag_Dead && (Math.Abs(ch.Z - self.Z) <= 6) &&
+						!(spareOwnRealm && ch.IsPlayer && (ch.Realm == self.Realm))) {
 					around.Add(ch);
 				}
 			}
 			foreach (Character victim in around) {
-				double damage = DamageManager.GetWeaponSwingArgs(self, victim).DamageAfterAC * settings.roundAttackDamagePercent / 100;
+				double damage = DamageManager.GetWeaponSwingArgs(self, victim).DamageAfterAC * percent / 100;
 				DamageManager.CauseDamage(self, victim, self.WeaponDamageType, damage);
 			}
 		}
@@ -320,6 +327,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			RangerAbilities.ApplySpree(self, target, swing);
 			ThiefAbilities.ModifyOwnBlow(self, target, swing);
+			ThiefAbilities.ChargeWarFork(self, target);
 			if (!target.IsPlayer && (self.Level >= settings.doubleSwingMinLevel)) {
 				int points = ClassAbilities.Points(self, "doubleswing");
 				if ((points > 0) && IsDoubleSwingWeapon(self) && (Globals.dice.Next(1, 1001) <= (100 + (points * 5))) && (self.Stam >= settings.doubleSwingStamina)) {

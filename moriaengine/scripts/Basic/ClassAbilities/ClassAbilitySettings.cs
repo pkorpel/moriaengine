@@ -184,6 +184,17 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int throwStaminaLossPercent = 45;
 
+		/// <summary>nastaveni_strikeCharge_roundStamina; _roundStaminaDrop isn't in the save, so it's 0 there.</summary>
+		[SaveableData]
+		public int strikeStamina = 40;
+
+		/// <summary>nastaveni_strikeCharge_roundBase and _roundBonus: percent of a blow.</summary>
+		[SaveableData]
+		public int strikeBase = 20;
+
+		[SaveableData]
+		public int strikeBonus = 5;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;
