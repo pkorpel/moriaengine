@@ -35,6 +35,13 @@ namespace SteamEngine.Common {
 
 		}
 
+		/// <summary>#100 - after both of the above and after the object counts as disposed: where a pooled object goes back to its
+		/// pool, so nothing of the disposal still runs on it once someone else may have it.</summary>
+		[SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", MessageId = "Member")]
+		protected virtual void On_AfterDispose() {
+
+		}
+
 		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
 		public virtual void Dispose() {
 			this.Dispose(true);
@@ -53,16 +60,22 @@ namespace SteamEngine.Common {
 			}
 		}
 
+		//#100 - two threads could both pass the old outer check and dispose (and so pool) one object twice; and a pooled object
+		//went back to its pool before its unmanaged part was disposed, so a connection reused meanwhile lost its new socket
 		private void Dispose(bool disposing) {
-			if (!this.disposed) {
-				lock (this) {
-					if (disposing) {// called from Dispose
-						this.On_DisposeManagedResources();
-					}
-					this.On_DisposeUnmanagedResources();
+			lock (this) {
+				if (this.disposed) {
+					return;
 				}
+				if (disposing) {// called from Dispose
+					this.On_DisposeManagedResources();
+				}
+				this.On_DisposeUnmanagedResources();
+				this.disposed = true;
 			}
-			this.disposed = true;
+			if (disposing) {
+				this.On_AfterDispose();
+			}
 		}
 
 		~Disposable() // maps to finalize

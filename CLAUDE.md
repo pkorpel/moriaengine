@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## DONE (2026-11-03): #100 the login race (branch fix-100-send-race)
+
+User: fix it. Seen as TcpConnection.OnSend NPE (TCPConnection.cs:118, BeginSend :110) as a new client logs in after the previous test's client; the new client reads "Connection closed after 0 compressed bytes" at its character list. Cause: connections are pooled. (1) A socket callback or queued send of a closed connection ran on the object after it was the next client's, and its error handling closed the new client: now each use is a generation, stale calls are dropped. (2) Disposable.Dispose checked outside its lock and a Poolable went back to its pool before its unmanaged part (the socket) was disposed, so a reused connection could lose its new socket, and two closes could pool one object twice: now checked under the lock, pooled last (On_AfterDispose); Close runs once per use. Verified: MonsterLootTests (about half its runs failed before) 4 runs passed, the 5th boot timed out on a 95 s compile; 12 login-heavy classes 30/30; no send errors in the log.
+
 ## DONE (2026-11-03): weekly loot task counted only spawn-gem monsters (branch fix-weekly-loot-spawned-item)
 
 User, live: a titan's gold didn't count for "Lootni predmet". Erebor's spawned_item is creaturestart's mark on every monster with gold not raised again (i_monster_create), spawn gem or not; the spec read it as "spawned by a gem" and PR #1094 ported that. Now MonsterLoot.ApplyCreatureStart marks the pack (WeeklyQuests.MarkSpawnedItems), the corpse records amounts of marked items. Gotcha: a name in Erebor's scripts can mislead; read what sets it.
