@@ -113,6 +113,7 @@ namespace SteamEngine.CompiledScripts {
 				this.owner = dieingChar;
 				this.ownerName = name;
 			}
+			QuestItems.PassToCorpse(dieingChar, this); //#1090
 			Item hair = dieingChar.Hair;
 			if (hair != null) {
 				this.hairModel = hair.ShortModel;
@@ -362,6 +363,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void On_ContainerOpen(AbstractCharacter viewer, GameState viewerState, TcpConnection<GameState> viewerConn) {
 			base.On_ContainerOpen(viewer, viewerState, viewerConn);
+			if (viewer is Player opener) {
+				QuestItems.TakeFromCorpse(this, opener); //#1090 - a quest item lying in it
+			}
 
 			if (this.IsOnGround && this.hasHairItems) {
 				if (this.hairItemsPackets == null) {
