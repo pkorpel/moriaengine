@@ -36,10 +36,10 @@
 
 [ItemDef i_irmo_invis_kmen]
 name = "hrusen"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_tree_sapling_2
 
 [ItemDef i_irmo_invis_koruna]
 name = "hrusen"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_tree_sapling_2

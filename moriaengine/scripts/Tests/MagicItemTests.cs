@@ -104,6 +104,38 @@ namespace SteamEngine.CompiledScripts {
 			Report("aReflexSendsItBack", (player.Hits == hits) && (rabbit.Hits < rabbitHits));
 			mirror.Delete();
 			rabbit.Delete();
+
+			//#925 - a magic mount's powers go on its rider
+			NPC roan = (NPC) ((NPCDef) ThingDef.GetByDefname("C_A_MUSTANG_ROAN")).Create(self.X + 1, self.Y, self.Z, self.M);
+			player.Mount = roan;
+			bool ridden = (MagicItems.WearerValue(player, 101) == 3) && (MagicItems.WearerValue(player, 103) == 3) && MagicItems.IsUnderMagic(player);
+			player.Dismount();
+			Report("aMagicMountGivesItsPowers", ridden && (MagicItems.WearerValue(player, 101) == 0) && !MagicItems.IsUnderMagic(player));
+			roan.Delete();
+
+			//#1070 - magic clothing wants a tailor over 104.0 and a magic thread
+			Item robe = MagicItems.MagicItem(player, new ScriptArgs("i_robe 70 5"));
+			Destroyable cloth = robe as Destroyable;
+			Item thread = (Item) ((ItemDef) ThingDef.GetByDefname("i_magicka_nit")).Create(player.Backpack);
+			bool repaired = false;
+			if (cloth != null) {
+				cloth.MaxDurability = 50;
+				cloth.Durability = 10;
+				player.SetRealSkillValue((int) SkillName.Tailoring, 1020);
+				Targ_SewingKit.Repair(player, cloth);
+				bool nothingAt102 = (cloth.Durability == 10) && !thread.IsDeleted;
+				player.SetRealSkillValue((int) SkillName.Tailoring, 1050);
+				Targ_SewingKit.Repair(player, cloth);
+				repaired = nothingAt102 && (thread.IsDeleted || (thread.Amount == 0)) && (cloth.MaxDurability == 49);
+			}
+			Report("magicClothingWantsAMasterAndMagicThread", repaired);
+			Item copy = MagicItemGmTools.Copy(player, robe);
+			Report("aGmCopiesAMagicItem", (MagicItems.Value(copy, 70) == 5) && MagicItems.IsMagic(copy) && (copy.Name == robe.Name));
+			int counted = MagicItemGmTools.BagsCounted;
+			((ItemDef) ThingDef.GetByDefname("i_mi_bag")).Create(player.Backpack).Delete();
+			Report("bagsAreCounted", MagicItemGmTools.BagsCounted == counted + 1);
+			robe.Delete();
+			copy.Delete();
 			Console.WriteLine("MAGIC_COMBAT_DONE");
 		}
 

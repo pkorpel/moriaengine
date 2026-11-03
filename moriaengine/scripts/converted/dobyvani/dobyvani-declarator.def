@@ -7,12 +7,12 @@ model = i_gravestone_5
 
 [ItemDef i_war_declarator_announcer]
 name = "War Declarator Announcer"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_worldgem_bit
 
 [ItemDef i_realmMessage_announcer]
 name = "Realm Message Announcer"
-type = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_worldgem_bit
 
 [EquippableDef i_War_declarator_MemoryItem_1] // vytvari se jako posledni ingame, az cele dobyvani je osazeno a ospawnovano

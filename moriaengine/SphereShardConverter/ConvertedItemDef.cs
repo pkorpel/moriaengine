@@ -171,6 +171,11 @@ namespace SteamEngine.Converter {
 			def.Set(line);
 
 			string args = line.Value.ToLowerInvariant();
+			//#1070 - Sphere's TYPE=0 (or 00) is t_normal; as a number no typedef matches it and the item can't be made
+			if ((args.Trim().Length > 0) && (args.Trim().TrimStart('0').Length == 0)) {
+				args = "t_normal";
+				def.Replace("TYPE", args, "Sphere's TYPE 0");
+			}
 			def.type = args;
 
 			switch (args) {

@@ -124,7 +124,8 @@ namespace SteamEngine.CompiledScripts {
 				}
 				Character mount = ch.Mount as Character;
 				if (mount != null) {
-					into.Add(new ActiveEffect(EffectSection.Status, "Jezditko") { Detail = mount.Name });
+					string powers = MountPowers.Describe(ch); //#925
+					into.Add(new ActiveEffect(EffectSection.Status, "Jezditko") { Detail = (powers == null) ? mount.Name : (mount.Name + ": " + powers) });
 				}
 			}
 		}

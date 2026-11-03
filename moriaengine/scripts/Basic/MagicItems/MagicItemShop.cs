@@ -69,6 +69,7 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				}
 				MagicItems.Finish(item);
+				MagicItemGmTools.CountIdentified(player, LootSettings.instance.identifyPrice); //#1070 - payedgold
 				Logger.WriteInfo(true, player.Name + " identifikoval predmet " + item.Name + " (" + item.Uid + ")");
 				done++;
 			}
@@ -108,6 +109,7 @@ namespace SteamEngine.CompiledScripts {
 				Logger.WriteInfo(true, player.Name + " vymenil " + item.Name + " (" + item.Uid + ") u " + npc.Name);
 				item.Delete();
 			}
+			MagicItemGmTools.CountExchanged(marked.Count); //#1070 - collected_items
 			((ItemDef) ThingDef.GetByDefname("i_mi_bag")).Create(player.Backpack);
 			if (mordor) {
 				npc.Say("Hmm, nas pan nebude moc potesen, ale svoji povinnost jsi splnil.");

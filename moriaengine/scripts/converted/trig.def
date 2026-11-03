@@ -4,7 +4,7 @@
 
 [ItemDef I_HAIR_TIE]
 NAME = "ponytail hair tie"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_fishing_weight
 Color = 038a // grey color 
 

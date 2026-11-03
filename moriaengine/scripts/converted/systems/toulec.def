@@ -4,7 +4,7 @@
 
 //[ItemDef i_toulec] //(commented out by Converter) 
 //NAME = "Toulec"
-//TYPE = 0
+//TYPE = t_normal //Sphere's TYPE 0 
 //WEIGHT = 5
 //RESOURCES = 50 i_hides_cut, 15 i_gem_citrine, 50 i_thread, 5 i_wire_iron //nastaveni_cm_resources 
 //SKILLMAKE = 500 tinkering, 400 bowcraft, 500 tailoring //nastaveni_cm_skillmake 

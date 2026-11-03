@@ -128,7 +128,7 @@ namespace SteamEngine.CompiledScripts {
 			ActiveEffect cooldown = Find(self, ability.Name);
 			Check("cooldown shows", (cooldown != null) && (cooldown.Section == EffectSection.Cooldown), Listed(self));
 			Check("with the ability's icon from its def", (cooldown != null) && (cooldown.Icon == 0x5209), (cooldown != null) ? cooldown.Icon.ToString() : "");
-			Check("counting down", (cooldown != null) && (cooldown.SecondsLeft > 800) && (cooldown.SecondsLeft <= 900), (cooldown != null) ? cooldown.SecondsLeft.ToString() : "");
+			Check("counting down", (cooldown != null) && (cooldown.SecondsLeft > ability.Cooldown - 10) && (cooldown.SecondsLeft <= ability.Cooldown), (cooldown != null) ? cooldown.SecondsLeft.ToString() : ""); //a_longrange's is Erebor's 20 s since #1047
 			self.GetAbilityObject(ability).LastUsage = Globals.TimeAsSpan - TimeSpan.FromSeconds(1000);
 			Check("gone when it ran out", Find(self, ability.Name) == null, Listed(self));
 			self.SetRealAbilityPoints(ability, 0);

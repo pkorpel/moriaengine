@@ -391,6 +391,7 @@ namespace SteamEngine.CompiledScripts {
 						this.SetFlag_Riding(true);
 						newMount.mountorrider = this;
 						this.mountorrider.Disconnect();
+						MountPowers.OnMount(this, newMount); //#925 - magic_horse
 					} //else nothing changes
 				}
 			}
@@ -400,6 +401,7 @@ namespace SteamEngine.CompiledScripts {
 			if (this.mountorrider != null) {
 				if (this.Flag_Riding) {
 					CharSyncQueue.AboutToChangeMount(this);
+					MountPowers.OnDismount(this); //#925
 
 					//move it to where we are
 					this.mountorrider.P(this);

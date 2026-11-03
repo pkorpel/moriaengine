@@ -6,7 +6,7 @@ def_CTF_christmas_MemoryStone  #0400635DB  // memory item v Arene
 
 [ItemDef i_CTF_christmas_box]
 NAME = "Vanocni Darecek"
-TYPE = 00
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_gift_box
 
 [EquippableDef i_CTF_christmas_carry_memory]

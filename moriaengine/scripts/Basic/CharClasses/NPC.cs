@@ -1044,6 +1044,19 @@ namespace SteamEngine.CompiledScripts {
 
 		private static readonly TagKey hypnotizableTK = TagKey.Acquire("_npcHypnotizable_");
 		private static readonly TagKey resistSilenceTK = TagKey.Acquire("_npcResistSilence_");
+		private static readonly TagKey magicHorseTK = TagKey.Acquire("_npcMagicHorse_");
+
+		/// <summary>#925 - Erebor's tag(magic_horse,name): the mount's powers, MountPowers' table of that name.</summary>
+		public string MagicHorse {
+			get { return this.GetTag(magicHorseTK) as string; }
+			set {
+				if (!string.IsNullOrEmpty(value)) {
+					this.SetTag(magicHorseTK, value);
+				} else {
+					this.RemoveTag(magicHorseTK);
+				}
+			}
+		}
 
 		/// <summary>#1070 - Erebor's tag.resist_silence, permille against Mind Blast's silence; 1000 or more can't be
 		/// silenced at all.</summary>
@@ -1569,6 +1582,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "hypnotizable") {
 				this.Hypnotizable = ConvertTools.ParseInt32(args.Trim());
+				return;
+			}
+			if (param == "magichorse") {
+				this.MagicHorse = args.Trim().Trim('"');
 				return;
 			}
 			if (param == "resistsilence") {

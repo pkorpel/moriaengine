@@ -30,7 +30,7 @@ Layer = layer_special //guessed from base def by Converter
 
 [ItemDef i_darkmoon_nastavovac_spawnu]
 name = "Nastavovac spawnu"
-type = 0
+TYPE = t_normal //Sphere's TYPE 0 
 model = i_worldgem_bit
 Color = 0296
 
