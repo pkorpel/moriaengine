@@ -184,7 +184,75 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince(" end", mark, Wait), this.fixture.GameOutputSnapshot());
 				report = this.fixture.GameOutputSnapshot().Substring(mark);
 				Assert.Contains("coal=10 strings=6 bag=True sold=10 soldFor=2650 cascade=1M 234K 567", report, StringComparison.Ordinal);
+
+				this.TheDiyVendorTrades(game);
 			}
+		}
+
+		/// <summary>#1070 - the DIY vendor: its button leads to a page, one offer sells coal, one buys it back (no more than its
+		/// count), then a GM renames an offer in the editor.</summary>
+		private void TheDiyVendorTrades(TestGameClient game) {
+			var none = new System.Collections.Generic.Dictionary<int, string>();
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			game.SendSpeech(".TestDiyVendorPrepare");
+			Assert.True(this.fixture.WaitForGameOutputSince("DIY_READY", mark, Wait), this.fixture.GameOutputSnapshot());
+			string ready = this.fixture.GameOutputSnapshot().Substring(mark);
+			int at = ready.IndexOf("DIY_READY gold=", StringComparison.Ordinal) + "DIY_READY gold=".Length;
+			long gold = long.Parse(ready.Substring(at, ready.IndexOf(' ', at) - at), System.Globalization.CultureInfo.InvariantCulture);
+			at = ready.IndexOf("coal=", StringComparison.Ordinal) + "coal=".Length;
+			int coal = int.Parse(ready.Substring(at, ready.IndexOf(' ', at) - at), System.Globalization.CultureInfo.InvariantCulture);
+
+			game.SendSpeech("ahoj");
+			var top = game.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Obchod", top.Strings);
+			Assert.Contains(top.Strings, s => s.Contains("Vitej u Bohouse", StringComparison.Ordinal));
+			game.SendGumpResponse(top.GumpUid, 1, none);
+			var page = game.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Prodej uhli", page.Strings);
+			Assert.Contains(page.Strings, s => s.Contains("Uhli za dobrou cenu", StringComparison.Ordinal));
+
+			game.SendGumpResponse(page.GumpUid, 81, none);
+			var selling = game.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("koupit", selling.Strings);
+			page = game.ReadGumpDialogWithStrings(Wait);
+			game.SendGumpResponse(selling.GumpUid, 11, none);
+			game.ReadGumpDialogWithStrings(Wait);
+			var contract = game.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("SMLOUVA", contract.Strings);
+			game.SendGumpResponse(contract.GumpUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 10, "20" } });
+
+			game.SendGumpResponse(page.GumpUid, 82, none);
+			var buying = game.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("prodat", buying.Strings);
+			game.ReadGumpDialogWithStrings(Wait);
+			foreach (string count in new[] { "8", "5" }) {
+				game.SendGumpResponse(buying.GumpUid, 11, none);
+				buying = game.ReadGumpDialogWithStrings(Wait);
+				contract = game.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains(contract.Strings, s => s.Contains("Smlouva o prodeji", StringComparison.Ordinal));
+				game.SendGumpResponse(contract.GumpUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 10, count } });
+			}
+			Thread.Sleep(500);
+
+			mark = this.fixture.GameOutputSnapshot().Length;
+			game.SendSpeech(".TestDiyVendorBecomeGm");
+			Assert.True(this.fixture.WaitForGameOutputSince("DIY_GM", mark, Wait), this.fixture.GameOutputSnapshot());
+			game.SendSpeech("ahoj");
+			game.ReadGumpDialogWithStrings(Wait);
+			var editor = game.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Editovat nabidku", editor.Strings);
+			game.SendGumpResponse(editor.GumpUid, 94, none);
+			var offerEdit = game.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Nastaveni nabidky", offerEdit.Strings);
+			game.SendGumpResponse(offerEdit.GumpUid, 2, new System.Collections.Generic.Dictionary<int, string> { { 1, "Nove" } });
+			editor = game.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Nove", editor.Strings);
+
+			mark = this.fixture.GameOutputSnapshot().Length;
+			game.SendSpeech(".TestDiyVendorReport");
+			Assert.True(this.fixture.WaitForGameOutputSince(" end", mark, Wait), this.fixture.GameOutputSnapshot());
+			string report = this.fixture.GameOutputSnapshot().Substring(mark);
+			Assert.Contains("gold=" + (gold - 200 + 20) + " coal=" + (coal + 20 - 5) + " offer=Nove kind=1 removed=True refused=True end", report, StringComparison.Ordinal);
 		}
 
 		/// <summary>The shaman is the warrior's character, as an account holds five; its partner is on its own account.</summary>
