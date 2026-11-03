@@ -46,6 +46,14 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("loose=0 doors=1 strayThere=True", counts); //a sign placed loose by an older version is fixed too
 				Assert.Contains("stones=2 lenastirs=2 rinalds=1 elqiras=2", counts);
 
+				//the user's call: lone NPCs are spawns of one (.spawn's gems); the Lenastir gem with no id was taken, not doubled
+				string spawns = this.Ask(admin, ".TestWorldSetupCheck", "WORLD_SPAWNS:");
+				Assert.Contains("npcPieces=1 ", spawns); //Rinald, whose quest runs his life
+				Assert.Contains(" bare=0 allInvulnerable=True shopsReady=4 ", spawns);
+				Assert.Contains("gone=True timer=True", this.Ask(admin, ".TestWorldSetupRespawn", "WORLD_RESPAWN:"));
+				Thread.Sleep(2000);
+				Assert.Contains("elviras=1 fromGem=True invulnerable=True still=True", this.Ask(admin, ".TestWorldSetupRespawned", "WORLD_RESPAWNED:"));
+
 				//a GM drags a fixed piece, and it stays fixed where it landed; with .gm off the same character can't
 				string sign = this.Ask(admin, ".TestWorldSetupGoToSign", "WORLD_SIGN:");
 				uint uid = uint.Parse(Field(sign, "uid="));

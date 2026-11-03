@@ -24,6 +24,7 @@ char.AddTriggerGroup(e_spawned_char)
 // #206 - Homedist was stored on the gem but never actually applied anywhere; NPCAiTimer's
 // wander leash defaulted to a hardcoded 6 tiles for every NPC regardless of this setting.
 NPCAiTimer.GetFor(char).WanderLeash = <tag.spawnInfo.Homedist>
+SpawnedPieces.Prepare(gem, char) //.SetupWorld's lone NPCs: realm and invulnerability kept on the gem
 tag.spawnedCount = <tag.spawnedCount> + 1
 
 //check if there are more chars to be spawned

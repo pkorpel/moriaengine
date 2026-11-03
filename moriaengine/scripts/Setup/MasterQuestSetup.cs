@@ -64,7 +64,7 @@ namespace SteamEngine.CompiledScripts {
 		private static void PlaceLenastir(WorldPieces pieces, Map map, string name, int x, int y) {
 			int[] at = WorldSpots.NearestStandable(map, x, y, 5);
 			if (at != null) {
-				pieces.Npc("master/lenastir/" + name, MasterQuest.LenastirDef, at, 0, lenastir => lenastir.Flag_Invulnerable = true); //Erebor's @create
+				pieces.Npc("master/lenastir/" + name, MasterQuest.LenastirDef, at, 0, Realm.None, true); //invulnerable: Erebor's @create
 			}
 		}
 	}
