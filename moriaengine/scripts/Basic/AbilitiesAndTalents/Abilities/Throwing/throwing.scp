@@ -7,8 +7,7 @@ on=@Activate
 //	this.Sound(530)
 //	EffectFactory.StationaryEffect(this, 02EEA, 6, 20)
 
-[function throw]
-a_throwing.Activate(this)
+//#1017 - .throw is ThiefAbilities.Throw, Erebor's knife throw; a_throwing holds the points.
 
 
 

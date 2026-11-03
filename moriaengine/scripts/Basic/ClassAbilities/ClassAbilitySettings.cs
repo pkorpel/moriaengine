@@ -167,6 +167,23 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int manaBackPermille = 850;
 
+		/// <summary>nastaveni_throw_dist: a knife reaches less far than this, plus a long range's bonus.</summary>
+		[SaveableData]
+		public int throwDistance = 7;
+
+		[SaveableData]
+		public int throwStaminaPerTile = 1;
+
+		[SaveableData]
+		public double throwDelaySeconds = 4.5;
+
+		[SaveableData]
+		public double throwImmuneSeconds = 2;
+
+		/// <summary>nastaveni_throw_staminaloss: percent of a player's max stamina, less a quarter of its armor.</summary>
+		[SaveableData]
+		public int throwStaminaLossPercent = 45;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;

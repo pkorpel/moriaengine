@@ -15,6 +15,9 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey shieldReadyTK = TagKey.Acquire("_shieldZmrazeni_");
 		private static readonly TagKey nextShieldTK = TagKey.Acquire("_uderstitemNext_");
 		private static readonly PluginKey shieldStunKey = PluginKey.Acquire("_thiefShieldStun_");
+		private static readonly PluginKey knifeStunKey = PluginKey.Acquire("_thiefKnifeStun_");
+		private static readonly TagKey nextThrowTK = TagKey.Acquire("_nextThrow_");
+		private static readonly TagKey knifeImmuneTK = TagKey.Acquire("_kudlyImmune_");
 		private const double MinHiddenSeconds = 3, StunSeconds = 2;
 
 		internal static bool IsThief(Character ch) {
@@ -166,6 +169,105 @@ namespace SteamEngine.CompiledScripts {
 				ParalyzeEffectPluginDef.Paralyze(target, shieldStunKey, TimeSpan.FromSeconds(StunSeconds));
 				self.SysMessage("Uder stitem!", ClassAbilities.ClassMessageHue);
 			}
+		}
+
+		/// <summary>[Function throw]: a throwing knife at whoever you fight. Against a player it takes stamina,
+		/// less for good armor, and paralyzes if none is left; against a monster 50 stamina and 1 point.
+		/// The knife lands at the target's feet one time in 3, to be picked up.</summary>
+		[SteamFunction("Throw")]
+		public static void ThrowKnife(Player self) {
+			ClassAbilitySettings settings = ClassAbilitySettings.instance;
+			HidingSkillDef.Reveal(self);
+			Item twoHanded = self.FindLayer(LayerNames.Hand2) as Item;
+			if ((twoHanded != null) && !CraftingSkillDef.IsOfType(twoHanded, "t_shield")) {
+				twoHanded.Cont = self.Backpack;
+			}
+			Character target = WeaponSkillTargetQueuePlugin.CurrentTarget(self);
+			Item knife = FindKnife(self);
+			if (target == null) {
+				self.SysMessage("Nemas zadny cil.");
+				return;
+			}
+			if (!IsThief(self)) {
+				self.SysMessage("Toto muze pouzit jen zlodej.");
+				return;
+			}
+			if (knife == null) {
+				self.SysMessage("Nemas u sebe ani jeden vrhaci nuz!");
+				return;
+			}
+			int distance = Point2D.GetSimpleDistance(self, target);
+			if (distance >= settings.throwDistance + self.WeaponRangeModifier) {
+				self.SysMessage("Cil je prilis daleko!");
+				return;
+			}
+			if (!self.CanSeeLOS(target).Allow) {
+				self.SysMessage("Nevidis na cil!");
+				return;
+			}
+			int stamina = distance * settings.throwStaminaPerTile;
+			if (self.Stam < stamina) {
+				self.SysMessage("Nemas dost staminy!");
+				return;
+			}
+			self.Stam = (short) (self.Stam - stamina);
+			knife.Amount--;
+			if (knife.Amount <= 0) {
+				knife.Delete();
+			}
+			double previous = ClassAbilities.SecondsTag(self, nextThrowTK);
+			self.SetTag(nextThrowTK, Globals.TimeInSeconds + settings.throwDelaySeconds);
+			if (previous >= Globals.TimeInSeconds) {
+				self.SysMessage((self.IsFemale ? "Pokusila" : "Pokusil") + " jsi se hodit prilis rychle a dyka ti vypadla z ruky!", ClassAbilities.ClassMessageHue);
+				DropKnifeAt(self);
+				return;
+			}
+			self.Anim(11);
+			self.Sound(0x145);
+			if (Globals.dice.Next(3) == 2) {
+				DropKnifeAt(target);
+			}
+			if (Globals.dice.Next(10001) >= ClassAbilities.Points(self, "throwing") * 950) {
+				self.SysMessage((self.IsFemale ? "Minula" : "Minul") + " jsi cil!", ClassAbilities.ClassMessageHue);
+				return;
+			}
+			target.Sound(target.IsFemale ? 0x325 : 0x436);
+			self.SysMessage((self.IsFemale ? "Zasahla" : "Zasahl") + " jsi cil", ClassAbilities.ClassMessageHue);
+			if (target.IsPlayer) {
+				if (ClassAbilities.SecondsTag(target, knifeImmuneTK) >= Globals.TimeInSeconds) {
+					self.SysMessage("Cil je jeste imunni vuci utoku kudlou!", ClassAbilities.ClassMessageHue);
+					return;
+				}
+				target.SetTag(knifeImmuneTK, Globals.TimeInSeconds + settings.throwImmuneSeconds);
+				int armor = (int) target.ArmorClassVsP / 4;
+				int take = (target.MaxStam * (settings.throwStaminaLossPercent - armor)) / 100;
+				if (target.Stam - take > 0) {
+					target.Stam = (short) (target.Stam - take);
+				} else {
+					target.Stam = 0;
+					ParalyzeEffectPluginDef.Paralyze(target, knifeStunKey, TimeSpan.FromSeconds(0.5));
+				}
+			} else {
+				target.Stam = (short) Math.Max(0, target.Stam - 50);
+				DamageManager.CauseDamage(self, target, DamageType.Irresistable, 1);
+			}
+			target.Trigger_HostileAction(self);
+		}
+
+		private static Item FindKnife(Character self) {
+			ItemDef knife = ThingDef.GetByDefname("i_kudla") as ItemDef;
+			foreach (AbstractItem item in self.Backpack) {
+				if (item.Def == knife) {
+					return (Item) item;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>throw_dropDaggerAt: a knife on the ground there, decaying in 5 minutes.</summary>
+		private static void DropKnifeAt(Character at) {
+			Item dropped = (Item) ((ItemDef) ThingDef.GetByDefname("i_kudla")).Create(at.X, at.Y, at.Z, at.M);
+			dropped.SetAttribute(ItemAttributes.attr_decay, true);
 		}
 
 		/// <summary>[function podriznuti]. Erebor never clears the readied slit, so once used it stays ready;
