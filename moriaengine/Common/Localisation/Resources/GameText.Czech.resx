@@ -1930,9 +1930,6 @@
   <data name="MasterQuestLoc_Promoted" xml:space="preserve">
     <value>Blahoprejeme, byl jsi povysen na mistra. Timto se ti otevira cesta k dalsimu rustu tve postavy.</value>
   </data>
-  <data name="MasterQuestLoc_EggDescription" xml:space="preserve">
-    <value>Toto je oplodnene hadi vejce - velmi vzacna prisada.</value>
-  </data>
   <data name="MasterQuestLoc_TeleportDescription" xml:space="preserve">
     <value>Neznamy zamceny teleport</value>
   </data>

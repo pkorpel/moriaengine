@@ -3,19 +3,20 @@
 Code: `scripts/Basic/Quests/Master/`, from `questy/mistr.scp`. Its NPCs are in `questy/mistr_chars.scp`. Setup: `scripts/Setup/MasterQuestSetup.cs`.
 
 An Expert of level 6+ greets Mistr Lenastir, says "ano" and gets the task: a fertilized egg of the snake queen. They also
-get a key (`i_klic_teleportu`, newbie, handed out again if lost) to an old locked teleport. Asking about it ("kde",
+get a key to an old locked teleport. The key and the egg are tags on the player, not items (`QuestItems`, the user's rule):
+nobody can buy, pass on, drop or lose either. Asking about it ("kde",
 "klic", "teleport") gets Erebor's hint: underground near the snake altars, and there is another way too.
 
 | Step | What happens |
 |---|---|
-| Stepping on the teleport with the key | The key is used up. An Expert lands on the Snake Islands at 1508,3860,10; anyone else gets "You can't go through here!" |
+| Stepping on the teleport with the key | The key is used up. An Expert lands on the Snake Islands at 1508,3860,10; anyone else gets "You can't go through here!". A new key is had by saying "ano" to Lenastir again |
 | Entering the Snake Islands, by any way | Marks the player (`r_hadiostrovy`, Erebor's `tag.mistrquest`) |
-| Killing the queen (`c_hadi_kralovna`) | Her corpse holds an egg |
-| Lifting the egg out of her corpse | It belongs to the first player to do so. An egg lifted from anywhere else belongs to nobody and doesn't move the quest on |
+| Killing the queen (`c_hadi_kralovna`) | Her loot line `i_hadi_vejce` makes no item: her corpse holds the egg |
+| Opening her corpse | The first player to open it takes the egg: "Sebral jsi oplodnene vejce hadi kralovny." |
 | Greeting Lenastir with the egg | Rank Master, 500 experience, egg and key taken |
 
-Lenastir refuses a player who has an egg but was never on the islands ("a plain bought egg"). A player who has been there
-but carries someone else's egg is called a cheat and sent to the bug area (370,2536,45), keeping the egg.
+Lenastir refuses a player who has the egg but was never on the islands ("a plain bought egg"); only a GM could give the egg that
+way now.
 
 ## Setting it up
 
@@ -33,10 +34,13 @@ A GM adding Lenastir by hand needs to make him invulnerable (Erebor's `@create`,
 
 ## Differences from Erebor
 
-- Only a corpse counts for owning the egg, where Erebor's `@pickup_pack` took any container.
+- The key and the egg are tags, not items (#1090). The egg goes to whoever opens the queen's corpse first, as lifting it out
+  of the corpse was on Erebor. Erebor's checks for someone else's egg (the bug area) and a bought egg from a shop had
+  nothing left to catch: the bug-area branch is gone, the bought-egg answer stays for a GM's egg.
 - The quest stone statistics (`questMenu_questStone`) are not kept.
 
 Rank quest 2 of 3; shared parts in the [quests README](README.md).
 
-Tests: `MasterQuestTests` (protocol: the setup and that its spots are walkable, Lenastir's answers, the key and teleport, the real
-queen's egg lifted from her corpse, the reward, a plain egg, someone else's egg, a wasted key).
+Tests: `MasterQuestTests` (protocol: the setup and that its spots are walkable, Lenastir's answers, the key as a tag and the
+teleport, the real queen with no egg item, her corpse giving the egg to the first who opens it, the reward, a GM's egg with no
+visit, a wasted key).

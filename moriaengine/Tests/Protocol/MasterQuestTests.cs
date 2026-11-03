@@ -5,8 +5,8 @@ using Xunit;
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>#833 - Erebor's Master quest end to end: a GM's .SetupMasterQuest places Lenastir, the teleport and the snake
 	/// queen's spawn; an Expert of level 6 gets the task and the key from Lenastir, goes through the teleport to the Snake
-	/// Islands, lifts the egg from the real queen's corpse and is a Master after bringing it back. Being too low, a plain
-	/// egg, someone else's egg and a spent key are covered too. Server-side helpers: scripts/Tests/MasterQuestTests.cs.</summary>
+	/// Islands, takes the egg from the real queen's corpse and is a Master after bringing it back. Being too low, an egg
+	/// with no visit to the islands and a spent key are covered too; the key and egg are tags, never items (#1090). Server-side helpers: scripts/Tests/MasterQuestTests.cs.</summary>
 	[Collection(MasterQuestCollection.Name)]
 	public class MasterQuestTests {
 		private const string Account = "masterquestplayer";
@@ -44,21 +44,21 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech("ahoj");
 				Assert.NotNull(TryReadMessageContaining(client, "Nejprve se musis stat expertem", Wait));
 
-				//the task and the key, once
+				//the task and the key, once: the key is a tag, no item (#1090, the user's rule)
 				this.Prepare(client, "1 6 0");
 				client.SendSpeech("dobry den");
 				Assert.NotNull(TryReadMessageContaining(client, "Mam pro tebe ukol", Wait));
 				client.SendSpeech("ano");
 				Assert.NotNull(TryReadMessageContaining(client, "Poslouchej tedy", Wait));
-				Assert.Contains("key=True keyNewbie=True", this.State(client));
+				Assert.Contains("key=True egg=False keyItems=0", this.State(client));
 				Assert.Contains("Mistr Lenastir po tobe chce", this.JournalPage(client));
 				client.SendSpeech("ano");
 				Assert.NotNull(TryReadMessageContaining(client, "Musis mi prinest", Wait));
 				client.SendSpeech("kde najdu klic");
 				Assert.NotNull(TryReadMessageContaining(client, "pobliz hadich oltaru", Wait));
 
-				//an egg without ever having been there
-				this.Ask(client, ".TestMasterQuestGiveEgg \"none\"", "MASTER_EGG:");
+				//an egg (a GM's) without ever having been there
+				this.Ask(client, ".TestMasterQuestGiveEgg", "MASTER_EGG:");
 				client.SendSpeech("ahoj");
 				Assert.NotNull(TryReadMessageContaining(client, "koupene obycejne vejce", Wait));
 				string state = this.State(client);
@@ -70,29 +70,15 @@ namespace SteamEngine.Tests.Protocol {
 				state = this.State(client);
 				Assert.Contains("region=a_Hadi_ostrovy rank=Expert reached=True key=False", state);
 
-				//an egg lifted off the ground is nobody's, and doesn't move the quest on
-				string onGround = this.Ask(client, ".TestMasterQuestEggOnGround", "MASTER_GROUND_EGG:");
-				uint groundEgg = Uid(onGround, "egg=");
-				client.SendDoubleClick(Uid(onGround, "pack="));
-				Thread.Sleep(500);
-				client.SendPickUpItem(groundEgg, 1);
-				Thread.Sleep(300);
-				client.SendDropItem(groundEgg, 0xFFFF, 0xFFFF, 0, (int) Uid(onGround, "pack="));
-				Assert.Contains("egg=True eggMine=False", this.State(client));
-				Assert.Contains("Hadi ostrovy", this.JournalPage(client));
-
-				//the real queen's egg, lifted out of her corpse by the real client
+				//the real queen: no egg item anywhere, her corpse holds the egg, and the first to open it takes it
 				string queen = this.Ask(client, ".TestMasterQuestKillQueen", "MASTER_QUEEN:");
-				Assert.DoesNotContain("egg=none", queen);
-				Assert.Contains("owner= ", queen);
-				uint egg = Uid(queen, "egg=");
-				client.SendDoubleClick(Uid(queen, "pack=")); //a client can only reach into what it has open
-				client.SendDoubleClick(Uid(queen, "corpse="));
-				Thread.Sleep(500);
-				client.SendPickUpItem(egg, 1);
-				Thread.Sleep(300);
-				client.SendDropItem(egg, 0xFFFF, 0xFFFF, 0, (int) Uid(queen, "pack="));
-				Assert.Contains("egg=True eggMine=True", this.State(client));
+				Assert.Contains("carried=True inCorpse=True eggItems=0", queen);
+				Assert.Contains("Hadi ostrovy", this.JournalPage(client));
+				uint corpse = Uid(queen, "corpse=");
+				client.SendDoubleClick(corpse);
+				Assert.NotNull(TryReadMessageContaining(client, "oplodnene vejce hadi kralovny", Wait));
+				Assert.Contains("egg=True keyItems=0 eggItems=0", this.State(client));
+				Assert.Contains("stillHolds=False", this.Ask(client, ".TestMasterQuestCorpse " + corpse, "MASTER_CORPSE:"));
 				Assert.Contains("Odnes ho Mistru Lenastirovi", this.JournalPage(client));
 
 				//back to Lenastir
@@ -101,8 +87,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.NotNull(TryReadMessageContaining(client, "povysuji na mistra", Wait));
 				Assert.NotNull(TryReadMessageContaining(client, "You have gained 500 experience", Wait));
 				state = this.State(client);
-				Assert.Contains("rank=Master reached=False key=False", state);
-				Assert.Contains("egg=False", state);
+				Assert.Contains("rank=Master reached=False key=False egg=False", state);
 				Assert.Contains("na mistra", this.JournalPage(client));
 				client.SendSpeech("ahoj");
 				Assert.NotNull(TryReadMessageContaining(client, "Jiz jsi muj ukol splnil", Wait));
@@ -114,15 +99,6 @@ namespace SteamEngine.Tests.Protocol {
 				state = this.State(client);
 				Assert.Contains("region=a_Beridor_Level_3", state);
 				Assert.Contains("key=False", state);
-
-				//someone else's egg: sent to the bug area, still an Expert
-				this.Prepare(client, "1 6 1");
-				this.Ask(client, ".TestMasterQuestGiveEgg \"other\"", "MASTER_EGG:");
-				client.SendSpeech("ahoj");
-				Assert.NotNull(TryReadMessageContaining(client, "otisk jineho hrdiny", Wait));
-				state = this.State(client);
-				Assert.Contains("region=a_bug rank=Expert", state);
-				Assert.Contains("egg=True", state);
 			}
 		}
 

@@ -1147,6 +1147,11 @@ namespace SteamEngine.CompiledScripts {
 				if (runner == null) {
 					continue;
 				}
+				string questItem = QuestItems.LootDefname(loot[i]);
+				if (QuestItems.IsQuestItem(questItem)) { //#1090 - a quest item is a tag, carried to the corpse, not an item
+					QuestItems.Carry(container.TopObj(), questItem);
+					continue;
+				}
 				try {
 					runner.Run(container, (ScriptArgs) null);
 				} catch (FatalException) {

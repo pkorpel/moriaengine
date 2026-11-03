@@ -26,8 +26,9 @@ namespace SteamEngine.CompiledScripts {
 	/// <para>Mistr Lenastir (c_lenastir) asks an Expert of level 6+ for a fertilized egg of the snake queen
 	/// (c_hadi_kralovna), and gives them a key (i_klic_teleportu) to an old teleport (i_hadi_teleport) that leads to the
 	/// Snake Islands. Entering those islands, by any way, marks the player (r_hadiostrovy, Erebor's tag.mistrquest). The
-	/// egg belongs to whoever lifts it first out of her corpse. Lenastir takes it only from its owner, and from a player who has been there:
-	/// someone else's egg gets the player sent to the bug area.</para>
+	/// egg goes to whoever opens her corpse first, as lifting it out was on Erebor. #1090, the user's rule: the key and the
+	/// egg are tags on the player (QuestItems), never items, so nobody can buy, pass on or drop either; Erebor's checks
+	/// against someone else's egg had nothing left to catch and are gone.</para>
 	/// <para>The archive doesn't say where the pieces stood; scripts/Setup has its own proposal.</para>
 	/// </summary>
 	public static class MasterQuest {
@@ -41,13 +42,17 @@ namespace SteamEngine.CompiledScripts {
 		public const byte TeleportPlane = 10; //Beridor Level 3's Mapplane - the same statics on plane 0 belong to no dungeon
 
 		private static readonly TagKey reachedIslandsTK = TagKey.Acquire("_masterQuestReachedIslands_");
-		private static readonly TagKey eggOwnerTK = TagKey.Acquire("_masterQuestEggOwner_");
 		private static readonly TagKey acceptedTK = TagKey.Acquire("_masterQuestAccepted_");
 
 		//called by ClassManager on every startup/recompile, see ExpertQuest.Init
 		public static void Init() {
-			QuestNpc.Attach(EggDef, SingletonScript<E_MasterQuestEgg>.Instance);
 			QuestNpc.Attach(TeleportDef, SingletonScript<E_MasterQuestTeleport>.Instance);
+			QuestItems.Register(KeyDef, "klic ke staremu teleportu");
+			QuestItems.Register(EggDef, "oplodnene vejce hadi kralovny", player => {
+				if (HasAccepted(player)) {
+					QuestJournal.Report(player, QuestJournal.Master);
+				}
+			});
 		}
 
 		public static bool HasReachedIslands(Player player) {
@@ -76,8 +81,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!HasAccepted(player)) {
 				return null;
 			}
-			Item egg = FindInBackpack(player, EggDef);
-			if ((egg != null) && (GetEggOwner(egg) == player)) {
+			if (QuestItems.Has(player, EggDef)) {
 				return "<src.sex(\"Ziskal\",\"Ziskala\")> jsi vejce hadi kralovny. Odnes ho Mistru Lenastirovi.";
 			}
 			if (HasReachedIslands(player)) {
@@ -90,47 +94,15 @@ namespace SteamEngine.CompiledScripts {
 			player.RemoveTag(reachedIslandsTK);
 		}
 
-		public static Character GetEggOwner(Item egg) {
-			Character owner = egg.GetTag(eggOwnerTK) as Character;
-			return ((owner == null) || owner.IsDeleted) ? null : owner;
-		}
-
-		public static void SetEggOwner(Item egg, Character owner) {
-			egg.SetTag(eggOwnerTK, owner);
-		}
-
-		public static Item FindInBackpack(Character ch, string defname) {
-			ThingDef def = ThingDef.GetByDefname(defname);
-			foreach (Item item in ch.Backpack.EnumDeep()) {
-				if (item.Def == def) {
-					return item;
-				}
-			}
-			return null;
-		}
-
-		internal static void ConsumeOne(Item item) {
-			if (item.Amount > 1) {
-				item.Amount -= 1;
-			} else {
-				item.Delete();
-			}
-		}
-
-		/// <summary>Erebor's Lenastirovarec, the greetings: the player's standing with the quest.</summary>
+		/// <summary>Erebor's Lenastirovarec, the greetings: the player's standing with the quest. An egg with no visit to the
+		/// islands (a GM's) still gets Erebor's "bought egg" answer.</summary>
 		internal static void Greet(NPC lenastir, Player player) {
 			bool ready = (player.SkillRank == SkillRank.Expert) && (player.Level >= MinLevel);
-			Item egg = FindInBackpack(player, EggDef);
-			if (ready && (egg != null)) {
+			if (ready && QuestItems.Has(player, EggDef)) {
 				if (!HasReachedIslands(player)) {
 					lenastir.Say("Snazis se me oklamat! Toto je koupene obycejne vejce, ty jsi hadi kralovnu ani koutkem oka nezahledl.");
-				} else if (GetEggOwner(egg) == player) {
-					Reward(lenastir, player, egg);
 				} else {
-					Character owner = GetEggOwner(egg);
-					lenastir.Say("Snazis se me podvest! Toto vejce na sobe nese otisk jineho hrdiny, jeho jmeno je " + ((owner == null) ? "" : owner.Name) + ", a to ty nejsi!");
-					lenastir.Say("Zmiz mi z oci. Dokud nebudes sam schopen vejce ziskat, zustanes slabym!");
-					player.Go(370, 2536, 45, 0); //Erebor's src.go(bug), [AREA bug]
+					Reward(lenastir, player);
 				}
 			} else if (ready) {
 				lenastir.Say("Zdravim te. Mam pro tebe ukol, za jehoz splneni te povysim na mistra. Pokud mas zajem mi pomoci a ukolu se zhostit, rekni ano.");
@@ -141,17 +113,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static void Reward(NPC lenastir, Player player, Item egg) {
+		private static void Reward(NPC lenastir, Player player) {
 			lenastir.Say("Vyborne, dekuji ti, velmi jsi mi pomohl. Za odmenu te povysuji na mistra.");
 			player.SysMessage(Loc<MasterQuestLoc>.Get(player.Language).Promoted);
 			player.SkillRank = SkillRank.Master;
 			ForgetReachedIslands(player);
 			player.RemoveTag(acceptedTK);
-			ConsumeOne(egg);
-			Item key = FindInBackpack(player, KeyDef);
-			if (key != null) {
-				ConsumeOne(key);
-			}
+			QuestItems.Take(player, EggDef);
+			QuestItems.Take(player, KeyDef);
 			lenastir.Sound((int) SoundNames.lightningstrike);
 			LevelingSystem.AddExperience(player, ExperienceReward);
 			QuestNpc.CelebrateRank(player);
@@ -160,12 +129,11 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Erebor's Lenastirovarec on *yes* / *ano*: the task, and the key to an Expert who has none.</summary>
 		internal static void Accept(NPC lenastir, Player player) {
-			if (FindInBackpack(player, KeyDef) != null) {
+			if (QuestItems.Has(player, KeyDef)) {
 				lenastir.Say("Musis mi prinest oplozene hadi vejce od samotne hadi kralovny. Bohuzel neznam misto, kde se kralovna nachazi, ale mohu ti poskytnout tento klic, ktery pry stary teleport otevira. Dej si vsak pozor, hadi jsou velmi nebezpecni.");
 			} else if (player.SkillRank == SkillRank.Expert) {
 				lenastir.Say("Poslouchej tedy. Musis mi prinest oplozene hadi vejce od samotne hadi kralovny. Bohuzel neznam misto, kde se kralovna nachazi, ale mohu ti poskytnout tento klic, ktery pry stary teleport otevira. Dej vsak pozor, hadi jsou velmi nebezpecni.");
-				Item key = (Item) ThingDef.GetByDefname(KeyDef).Create(player.Backpack);
-				key.SetAttribute(ItemAttributes.attr_newbie, true);
+				QuestItems.Give(player, KeyDef);
 				if (!HasAccepted(player)) {
 					player.SetTag(acceptedTK, 1);
 					QuestJournal.Report(player, QuestJournal.Master);
@@ -175,47 +143,14 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Erebor's i_hadi_teleport @step: the key is used up either way, only an Expert gets through.</summary>
 		internal static void TryPass(Player player) {
-			Item key = FindInBackpack(player, KeyDef);
-			if (key == null) {
+			if (!QuestItems.Take(player, KeyDef)) {
 				return;
 			}
-			ConsumeOne(key);
 			if (player.SkillRank == SkillRank.Expert) {
 				player.Go(1508, 3860, 10, 0);
 			} else {
 				player.RedMessage(Loc<MasterQuestLoc>.Get(player.Language).CantPass);
 			}
-		}
-	}
-
-	/// <summary>#833 - i_hadi_vejce: belongs to the first player to lift it out of a corpse (Erebor's @pickup_pack link, which
-	/// only fires for containers), and describes itself on a click. An egg from anywhere else is the "bought" one.</summary>
-	public class E_MasterQuestEgg : CompiledTriggerGroup {
-		private static readonly TagKey liftedFromCorpseTK = TagKey.Acquire("_masterQuestEggFromCorpse_");
-
-		//the last moment the egg still knows where it lies: On_EnterChar comes after it has left
-		public void On_DenyPickup(Item self, DenyPickupArgs args) {
-			if (self.Cont is Corpse) {
-				self.SetTag(liftedFromCorpseTK, 1);
-			} else {
-				self.RemoveTag(liftedFromCorpseTK);
-			}
-		}
-
-		public void On_EnterChar(Item self, ItemInCharArgs args) {
-			Player player = args.Cont as Player;
-			bool fromCorpse = self.GetTag(liftedFromCorpseTK) != null;
-			self.RemoveTag(liftedFromCorpseTK);
-			if (fromCorpse && (player != null) && (MasterQuest.GetEggOwner(self) == null)) {
-				MasterQuest.SetEggOwner(self, player);
-				if (MasterQuest.HasAccepted(player)) {
-					QuestJournal.Report(player, QuestJournal.Master);
-				}
-			}
-		}
-
-		public void On_Click(Item self, Character clicker) {
-			self.ClickMessage(clicker, Loc<MasterQuestLoc>.Get(clicker.Language).EggDescription);
 		}
 	}
 
@@ -272,7 +207,6 @@ namespace SteamEngine.CompiledScripts {
 
 	public class MasterQuestLoc : CompiledLocStringCollection<MasterQuestLoc> {
 		public string Promoted = "Congratulations, you have become a Master. This opens the way to the further growth of your character.";
-		public string EggDescription = "This is a fertilized snake egg - a very rare ingredient.";
 		public string TeleportDescription = "An unknown locked teleport";
 		public string CantPass = "You can't go through here!";
 	}
