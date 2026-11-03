@@ -121,32 +121,32 @@ namespace SteamEngine.CompiledScripts {
 			Report("aWebCountsOnce", web.Done == 1);
 			spiderweb.Delete();
 
-			//a spawned monster's loot, lifted from its corpse; a plain monster's doesn't count
-			WeeklyTask loot = Task("loot", "i_bandage", 1000);
-			Fixed(player, loot);
+			//the user, live: a titan's gold didn't count. Erebor's spawned_item is creaturestart's mark on every monster with gold,
+			//spawn gem or not; what comes into the pack later isn't marked
+			WeeklyTask lootGold = Task("loot", "i_gold", 1000000), lootBandages = Task("loot", "i_bandage", 1000);
+			Fixed(player, lootGold, lootBandages);
 			Item gem = (Item) ((ItemDef) ThingDef.GetByDefname("i_worldgem_bit")).Create(player.X, player.Y, player.Z, player.M);
-			int counted = 0;
-			foreach (bool spawned in new[] { false, true }) {
-				NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
-				if (spawned) {
-					orc.SetTag(TagKey.Acquire("spawnGem"), gem);
-				}
-				((Item) ((ItemDef) ThingDef.GetByDefname("i_bandage")).Create(orc.Backpack)).Amount = 120;
-				orc.CauseDeath(null);
-				foreach (Thing thing in player.GetMap().GetThingsInRectangle(new ImmutableRectangle(player.X, player.Y - 1, player.X + 2, player.Y + 1))) {
-					if (thing is Corpse corpse) {
-						foreach (AbstractItem inside in new List<AbstractItem>(corpse)) {
-							if (inside.Def == ThingDef.GetByDefname("i_bandage")) {
-								counted = loot.Done;
-								WeeklyQuests.OnLoot(player, inside);
-								Report(spawned ? "aSpawnedMonstersGoldCounts" : "aPlainMonstersGoldDoesnt", spawned ? (loot.Done >= counted + 120) : (loot.Done == counted));
-								inside.Delete();
-							}
+			NPC orc = (NPC) ((NPCDef) ThingDef.GetByDefname("c_orc")).Create(player.X + 1, player.Y, player.Z, player.M);
+			MonsterLoot.FlushCreatureStart(orc);
+			((Item) ((ItemDef) ThingDef.GetByDefname("i_bandage")).Create(orc.Backpack)).Amount = 40;
+			orc.CauseDeath(null);
+			int goldInCorpse = 0;
+			foreach (Thing thing in player.GetMap().GetThingsInRectangle(new ImmutableRectangle(player.X, player.Y - 1, player.X + 2, player.Y + 1))) {
+				if (thing is Corpse corpse) {
+					foreach (AbstractItem inside in new List<AbstractItem>(corpse)) {
+						if (inside.Def == ThingDef.GetByDefname("i_gold")) {
+							goldInCorpse += inside.Amount;
 						}
-						corpse.Delete();
+						if ((inside.Def == ThingDef.GetByDefname("i_gold")) || (inside.Def == ThingDef.GetByDefname("i_bandage"))) {
+							WeeklyQuests.OnLoot(player, inside);
+							inside.Delete();
+						}
 					}
+					corpse.Delete();
 				}
 			}
+			Report("aMonstersGoldCountsSpawnedOrNot", (goldInCorpse > 0) && (lootGold.Done == goldInCorpse));
+			Report("whatCameLaterDoesnt", lootBandages.Done == 0);
 
 			//blows: dealt to anything, taken only from a foe of another realm
 			WeeklyTask dealt = Task("dmgNPC", null, 100000), taken = Task("receiveDmg", "jakekoli", 100000), bled = Task("receiveDmg", "krvacenim", 100000);

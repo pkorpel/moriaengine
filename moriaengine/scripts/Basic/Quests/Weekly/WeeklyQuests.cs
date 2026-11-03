@@ -19,6 +19,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TimeSpan Week = TimeSpan.FromDays(7), StreakGap = TimeSpan.FromSeconds(15);
 		private static readonly TagKey setTK = TagKey.Acquire("_weekly_");
 		private static readonly TagKey corpseAmountTK = TagKey.Acquire("_weeklyCorpseAmount_");
+		private static readonly TagKey spawnedItemTK = TagKey.Acquire("_weeklySpawnedItem_");
 		private static readonly TagKey steppedByTK = TagKey.Acquire("_weeklySteppedBy_");
 
 		#region definitions
@@ -434,19 +435,29 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>Corpse.InitFromChar: what a spawned monster leaves, with how much of it there was (Erebor's spawned_item and
-		/// iic_amount on the corpse's items).</summary>
-		internal static void MarkCorpseLoot(Character dead, Corpse corpse) {
-			if (!(dead is NPC) || !(dead.GetTag(TagKey.Acquire("spawnGem")) is Thing gem) || gem.IsDeleted) {
-				return;
-			}
-			foreach (AbstractItem item in corpse) {
-				item.SetTag(corpseAmountTK, item.Amount);
+		/// <summary>creaturestart's tag(spawned_item) (systems/spawns.scp): what a monster carries once its gold is set, for every
+		/// monster with i_monster_create that wasn't raised again, spawned or added by hand alike. The name misleads: it isn't
+		/// about spawn gems.</summary>
+		internal static void MarkSpawnedItems(NPC npc) {
+			foreach (AbstractItem item in npc.Backpack) {
+				item.SetTag(spawnedItemTK, 1);
 			}
 		}
 
-		/// <summary>e_weekly_itemLoot (W:847-881): an item a spawned monster left, lifted from its corpse with no less than it had
-		/// (Erebor logged the attempt otherwise). Counted once.</summary>
+		/// <summary>Corpse.InitFromChar: how much there was at death of each such item, Erebor's iic_amount.</summary>
+		internal static void MarkCorpseLoot(Character dead, Corpse corpse) {
+			if (!(dead is NPC)) {
+				return;
+			}
+			foreach (AbstractItem item in corpse) {
+				if (item.GetTag(spawnedItemTK) != null) {
+					item.SetTag(corpseAmountTK, item.Amount);
+				}
+			}
+		}
+
+		/// <summary>e_weekly_itemLoot (W:847-881): an item a monster had from its creaturestart, lifted from its corpse with no more
+		/// than it had at death (Erebor logged the attempt otherwise). Counted once.</summary>
 		internal static void OnLoot(Player player, AbstractItem item) {
 			if (!(item.TopObj() is Corpse corpse) || (corpse.Owner != null) || !(item.GetTag(corpseAmountTK) is int had)) {
 				return;

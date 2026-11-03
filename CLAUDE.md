@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## DONE (2026-11-03): weekly loot task counted only spawn-gem monsters (branch fix-weekly-loot-spawned-item)
+
+User, live: a titan's gold didn't count for "Lootni predmet". Erebor's spawned_item is creaturestart's mark on every monster with gold not raised again (i_monster_create), spawn gem or not; the spec read it as "spawned by a gem" and PR #1094 ported that. Now MonsterLoot.ApplyCreatureStart marks the pack (WeeklyQuests.MarkSpawnedItems), the corpse records amounts of marked items. Gotcha: a name in Erebor's scripts can mislead; read what sets it.
+
 ## DONE (2026-11-03): #1095 HungerTests' hiding count (branch fix-1095-hunger-hiding)
 
 User: fix it. The test was stale, not the game: since #982 Hiding is Erebor's f_skillhide ("skill -1" cancels the native skill, so @skillsuccess and its hunger check never run; i_hiding_timer rolls Hiding against rand(1025) only), and PhaseSuccess no longer hides. The test now checks hunger on Spirit Speak's success (28/100 got through) and hiding through HidingSkillDef.Finish (96/100), which hunger doesn't touch, as on Erebor.
