@@ -76,6 +76,14 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int crushingArrowStamina = 25;
 
+		/// <summary>#1070 - nastaveni_bleed_bolt: permille of the blow, times the jagged bolt's coefficient.</summary>
+		[SaveableData]
+		public int bleedBolt = 250;
+
+		/// <summary>#1070 - e_bleed_bolt's chance out of 1000 per point of bleed_bolt.</summary>
+		[SaveableData]
+		public int bleedBoltChancePerPoint = 45;
+
 		[SaveableData]
 		public double crushingArrowDelaySeconds = 1.5;
 

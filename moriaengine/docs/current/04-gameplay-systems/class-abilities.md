@@ -47,6 +47,20 @@ two-handed axe. A taunted monster has karma -100 until the taunt ends (`f_taunt`
 strike charges are the thief's war fork ones (`.strike`). Leap's GM-step resist isn't here: it only fed Erebor's GM-step
 detection, left out in #777.
 
+## Ranger
+
+A bow takes only the ammunition its TDATA3 names (`WeaponDef.AmmoType`, from the converter): bows arrows, the heavy
+crossbow plain bolts, the light crossbow jagged bolts.
+
+Bleed bolts (`e_bleed_bolt`, on every light crossbow): a landed Archery shot bleeds at `bleed_bolt` points * 45 out of
+1000 (`bleedBoltChancePerPoint`), with `blow * (bleedBolt (250) * the bolt's BleedCoefficient / 1000) / 1000`. The
+coefficient is `nastaveni_arrowdamage_` 25 places after the bolt's damage slot: copper 600, iron 700, verite 950,
+valorite 1150, obsidian 1500, adamantinum and mithril 0 (Erebor's data). In the saddle it doesn't bleed.
+
+The crushing arrow needs ammunition ("Nemas zadne strelivo.") and uses one when it lands. Its resist reductions are
+Erebor's records: the strongest running one is what's off, a weaker one that lasts longer takes over when it ends, and a
+weaker, shorter one is dropped.
+
 ## Thief
 
 A thief's war fork on a monster also has the double swing, at any level (e_thief's @AfterSwing). Any fencing blow

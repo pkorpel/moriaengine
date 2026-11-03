@@ -95,7 +95,8 @@ namespace SteamEngine.Tests.Protocol {
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "longRangeAddsThree", "longRangeCostsStamina", "knockbackEndsLongRange", "splitRangeGrowsWithDistance",
 						"splitRangeStaysUnderItsLimit", "splitNextToTheTargetIsStrongest", "splitIsNeverAFullBlow", "splitShotCostsStamina", "splitShotMustCoolDown",
-						"crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "killsBuildASpree",
+						"crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "aWeakerArrowWaitsItsTurn", "arrowRecordsAsErebor",
+						"aLightCrossbowTakesJaggedBoltsOnly", "aJaggedBoltBleeds", "aCrushingArrowUsesABolt", "killsBuildASpree",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
 						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "aKnifeHitsTheMonster", "knivesAreUsedUp", "aMagicReflexSendsTheKnifeBack", "aMagicBlockStopsIt", "strikeSpendsChargesOnThoseAround", "aWarForkSwingsTwice", "aFencingBlowSpendsTheSlit", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall",

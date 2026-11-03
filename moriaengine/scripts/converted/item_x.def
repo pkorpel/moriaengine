@@ -154,6 +154,7 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_arrow" //TDATA3 
 
 [WeaponDef I_XBOW_SUP]
 CATEGORY = Provisions - Weapons
@@ -183,6 +184,7 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt_jagged" //TDATA3 
 
 [WeaponDef I_HXBOW_SUP]
 CATEGORY = Provisions - Weapons
@@ -212,6 +214,7 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt" //TDATA3 
 
 [WeaponDef I_BOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -241,6 +244,7 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_arrow" //TDATA3 
 
 [WeaponDef I_XBOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -270,6 +274,7 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt_jagged" //TDATA3 
 
 [WeaponDef I_HXBOW_EXCEP]
 CATEGORY = Provisions - Weapons
@@ -299,6 +304,7 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt" //TDATA3 
 
 [WeaponDef i_Bow_Elven]
 CATEGORY = Provisions - Weapons
@@ -329,3 +335,4 @@ strikeStopRange = 10 //default value set by Converter
 Color = 237
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_arrow" //TDATA3 

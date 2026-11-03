@@ -97,6 +97,8 @@ second `ITEM=` repaired - see [Monster loot](../04-gameplay-systems/monster-loot
 The rest of the block (#793): `ITEMNEWBIE=` -> `Equip =` (NPC gear, newbie), `COLOR=`/`NAME=` ->
 `EquipColor =`/`EquipName =` for the latest gear line, `ADDSPELL=` -> `AddSpell =`. `tag(isBoss,1)`
 in `@Create` -> `IsBoss = 1` (#794, bosses never turn [elite](../04-gameplay-systems/elite-monsters.md)).
+A bow's `TDATA3` -> `AmmoType = "t_weapon_..."` (a coloured bow inherits its base's), and a jagged bolt's
+`BleedCoefficient` from `nastaveni_arrowdamage_` 25 after its damage slot (#1070).
 `tag(resist_silence,x)` -> `ResistSilence = x` (#1070, against Mind Blast's silence), ahead of the other `tag.resist_` lines.
 
 **Regions (#813).** `spheremap.scp`'s `[AREA]`s become `[FlaggedRegion a_<name>]` sections in

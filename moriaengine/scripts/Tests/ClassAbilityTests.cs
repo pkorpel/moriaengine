@@ -157,6 +157,42 @@ namespace SteamEngine.CompiledScripts {
 			prey.ResistBlunt = 1000;
 			CrushedResistsTimer.Apply(prey, 100, 30);
 			Report("aSecondArrowReplacesTheFirst", prey.ResistSlashing == 400);
+			CrushedResistsTimer.Apply(prey, 50, 60); //#1070 - weaker but longer: waits its turn
+			Report("aWeakerArrowWaitsItsTurn", prey.ResistSlashing == 400);
+			var records = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<double, int>>();
+			bool first = CrushedResistsTimer.AddRecord(records, 10, 100);
+			bool weakerShorter = CrushedResistsTimer.AddRecord(records, 5, 50);
+			bool weakerLonger = CrushedResistsTimer.AddRecord(records, 20, 50);
+			bool strongerLonger = CrushedResistsTimer.AddRecord(records, 15, 200);
+			Report("arrowRecordsAsErebor", first && !weakerShorter && weakerLonger && strongerLonger && (records.Count == 2) &&
+				(records[0].Value == 200) && (records[1].Value == 50));
+
+			//#1070 - a light crossbow takes jagged bolts only, and bleeds with them
+			Item heldBow = player.FindLayer(LayerNames.Hand2) as Item;
+			if (heldBow != null) {
+				heldBow.Delete();
+			}
+			Item crossbow = (Item) ((ItemDef) ThingDef.GetByDefname("i_crossbow_copper")).Create(player);
+			Item plainBolts = (Item) ((ItemDef) ThingDef.GetByDefname("i_xbolt_copper")).Create(player.Backpack);
+			player.InvalidateCombatWeaponValues();
+			bool plainRefused = player.WeaponProjectile == null;
+			Item jagged = (Item) ((ItemDef) ThingDef.GetByDefname("i_bolt_jagged_copper")).Create(player.Backpack);
+			jagged.Amount = 10;
+			player.InvalidateCombatWeaponValues();
+			Report("aLightCrossbowTakesJaggedBoltsOnly", plainRefused && (player.WeaponProjectile == jagged) &&
+				(((ProjectileDef) jagged.Def).BleedCoefficient == 600));
+			ClassAbilities.SetPoints(player, "bleed_bolt", 100);
+			NPC bleeder = Dummy(self, 3);
+			RangerAbilities.TryBleedBolt(player, bleeder, new WeaponSwingArgs(player, bleeder, 0, 0, 0, 100));
+			Report("aJaggedBoltBleeds", BleedingEffectPluginDef.IsBleeding(bleeder));
+			ClassAbilities.SetPoints(player, "crushingArrow", 10);
+			player.SetRealSkillValue((int) SkillName.Archery, 1000);
+			RangerAbilities.FireCrushingArrow(player, bleeder);
+			Report("aCrushingArrowUsesABolt", jagged.Amount == 9);
+			bleeder.Delete();
+			crossbow.Delete();
+			plainBolts.Delete();
+			jagged.Delete();
 
 			ClassAbilities.SetPoints(player, "killingSpree", 10);
 			RangerAbilities.OnKill(player, prey);
