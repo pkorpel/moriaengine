@@ -151,14 +151,24 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>t_deed_vendor: Erebor's deed works anywhere.</summary>
+	/// <summary>t_deed_vendor. Erebor's worked anywhere; the user's rule: only in a stall its user rents, one vendor a stall.</summary>
 	public class t_deed_erebor_vendor : CompiledTriggerGroup {
 		public void On_DClick(Item self, Character clicker) {
-			if ((clicker is Player player) && (self.TopObj() == player)) {
-				bool female = self.Def == ThingDef.GetByDefname("i_deed_erebor_vendor_f");
-				EreborVendors.Place(player, female, player.P());
-				self.Delete();
+			if (!(clicker is Player player) || (self.TopObj() != player)) {
+				return;
 			}
+			Stall stall = House.FindHouseAt(player) as Stall;
+			if ((stall == null) || (stall.Owner != player)) {
+				player.SysMessage("Vendora muzes umistit jen do sveho stanku.");
+				return;
+			}
+			if (stall.Vendor != null) {
+				player.SysMessage("Ve stanku uz vendor je.");
+				return;
+			}
+			bool female = self.Def == ThingDef.GetByDefname("i_deed_erebor_vendor_f");
+			stall.Vendor = EreborVendors.Place(player, female, player.P());
+			self.Delete();
 		}
 	}
 

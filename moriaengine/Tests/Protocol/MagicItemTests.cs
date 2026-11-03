@@ -63,7 +63,7 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendSpeech(".TestEreborVendor");
 				Assert.True(this.fixture.WaitForGameOutput("VENDOR_DONE", Wait), this.fixture.GameOutputSnapshot());
 				string output = this.fixture.GameOutputSnapshot();
-				foreach (string check in new[] { "aDeedPlacesAVendor", "stockedIntoTheBank", "buyingPaysTheVendorNinetyPercent", "unitsSellOneByOne",
+				foreach (string check in new[] { "aDeedOnlyInOwnStall", "aDeedPlacesAVendor", "stockedIntoTheBank", "buyingPaysTheVendorNinetyPercent", "unitsSellOneByOne",
 						"theVendorBuysBack", "theEarningsGoToTheBank", "theGoodsGoToTheBank", "aStallPlacesItsVendor" }) {
 					string marker = "VENDOR: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);

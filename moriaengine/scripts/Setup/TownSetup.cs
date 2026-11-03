@@ -52,6 +52,7 @@ namespace SteamEngine.CompiledScripts {
 			if (generalSpot != null) {
 				pieces.Item("realm/gondor/stone", GeneralStoneDef, generalSpot, capital.P.M);
 			}
+			PlaceAlchemist(pieces, gm, capital, "gondor", Realm.Gondor);
 			this.PlaceMordor(pieces, gm);
 		}
 
@@ -66,6 +67,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			FlaggedRegion capital = CityArea(MordorCapital);
+			PlaceAlchemist(pieces, gm, capital, "mordor", Realm.Mordor);
 			FlaggedRegion trial = (FlaggedRegion) StaticRegion.GetByDefname("a_Fela_Nazgul");
 			int[] stoneSpot = SpotIn(capital, gm, 1);
 			int[] boardSpot = SpotIn(capital, gm, 2);
@@ -83,6 +85,19 @@ namespace SteamEngine.CompiledScripts {
 			pieces.Item("realm/mordor/gate-out", "i_lordnazguls_gate_out", outSpot, trial.P.M, item => item.MoreP = capital.P);
 			pieces.Item("realm/mordor/leading-shrine", "i_leading_shrine_power", leadingSpot, trial.P.M);
 			((NazgulGate) gate).Refresh();
+		}
+
+		/// <summary>#1017 - the user's choice: an alchemist (c_alchymista) in each realm's capital, selling to that realm.</summary>
+		private static void PlaceAlchemist(WorldPieces pieces, Character gm, FlaggedRegion capital, string realmName, Realm realm) {
+			int[] spot = (capital == null) ? null : SpotIn(capital, gm, 5);
+			if (spot == null) {
+				gm.SysMessage("No spot for the alchemist of " + realmName + ".");
+				return;
+			}
+			pieces.Npc("realm/" + realmName + "/alchemist", AlchemistShop.NpcDef, spot, capital.P.M, alchemist => {
+				alchemist.Realm = realm;
+				alchemist.Flag_Invulnerable = true;
+			});
 		}
 
 		public static string StonePieceId(string city) {
