@@ -27,6 +27,7 @@ NoAnimate = 1
 Experience = 200 250
 CriticChance = 500 //50% chance 
 CriticDamage = 25 28
+MonsterType = "humanoid"
 Parry = 1000 1200
 Tactics = 900 1000
 Wrestling = 1000 1200

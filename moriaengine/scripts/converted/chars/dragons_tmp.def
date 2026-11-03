@@ -62,6 +62,7 @@ ResistFire = 500 750
 ResistElectric = 500 750
 ResistCold = 500 750
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_wyrm_v1]
 CATEGORY = Monsters
@@ -125,6 +126,7 @@ ResistFire = 500 750
 ResistElectric = 500 750
 ResistCold = 500 750
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_lord_v1]
 CATEGORY = Monsters
@@ -188,6 +190,7 @@ ResistFire = 500 750
 ResistElectric = 500 750
 ResistCold = 500 750
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_bahnak]
 CATEGORY = Monsters

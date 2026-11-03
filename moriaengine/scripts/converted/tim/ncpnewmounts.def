@@ -282,6 +282,7 @@ AnimalTaming = 1000
 Fame = 8000
 Karma = -9999
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_m_steel_zostrich]
 TEVENTS = e_character
@@ -315,6 +316,7 @@ AnimalTaming = 2000
 Fame = 8000
 Karma = -9999
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_m_rock_zostrich]
 TEVENTS = e_character
@@ -372,6 +374,7 @@ Tactics = 750 850
 Wrestling = 750 850
 AnimalTaming = 850
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef i_hadnodefname_0x1133]
 TEVENTS = e_character
@@ -645,6 +648,7 @@ AnimalTaming = 1000
 Fame = 4000 8000
 Karma = -5000 -8000
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_daemon_steed]
 TEVENTS = e_character
@@ -1068,6 +1072,7 @@ AnimalTaming = 1000
 Fame = 10000
 Karma = -10000
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_hells_deathmare]
 CATEGORY = Mounts
@@ -1106,3 +1111,4 @@ Wrestling = 3000
 Fame = 8000
 Karma = -10000
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 

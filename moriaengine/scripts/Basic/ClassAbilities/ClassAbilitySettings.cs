@@ -195,6 +195,20 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int strikeBonus = 5;
 
+		/// <summary>nastaveni_ability_leechpower: leech = damage x (class points + 2 x item) x this / 200000.</summary>
+		[SaveableData]
+		public int leechPower = 1500;
+
+		/// <summary>nastaveni_hitsleech_max, _manaleech_max, _stamleech_max: the most one blow takes.</summary>
+		[SaveableData]
+		public int hitsLeechMax = 60;
+
+		[SaveableData]
+		public int manaLeechMax = 60;
+
+		[SaveableData]
+		public int stamLeechMax = 20;
+
 		/// <summary>nastaveni_hypnoza_povolena.</summary>
 		[SaveableData]
 		public bool hypnosisAllowed = true;

@@ -61,6 +61,7 @@ Int = 800 1000
 MaxHits = 28000 29000
 MaxStam = 600 750
 MaxMana = 0
+MonsterType = "dragon,60"
 Hypnotizable = 8
 NoAnimate = 1
 Experience = 2500 3000
@@ -125,6 +126,7 @@ Tactics = 654 885
 Wrestling = 688 817
 Peacemaking = 516
 Experience = 220 250
+MonsterType = "dragon,60"
 Fame = 2000 6000
 Karma = -5000 -6999
 Equip = i_monster_create
@@ -134,6 +136,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef 0x3b]
 category = Monsters
@@ -168,6 +171,7 @@ Int = 437 475
 MaxHits = 792 825
 MaxStam = 88 110
 MaxMana = 4370 4750
+MonsterType = "dragon,60"
 Parry = 550 950
 MagicResist = 992 1000
 Tactics = 976 1000
@@ -201,6 +205,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_drake_green]
 CATEGORY = Monsters
@@ -234,6 +239,7 @@ MaxStam = 180 240
 MaxMana = 0
 Experience = 40 60
 Hypnotizable = 4
+MonsterType = "dragon,60"
 Parry = 550 950
 MagicResist = 900
 Tactics = 900 1000
@@ -248,6 +254,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_drake_red]
 CATEGORY = Monsters
@@ -275,6 +282,7 @@ MaxStam = 180 240
 MaxMana = 0
 Experience = 60 70
 Hypnotizable = 8
+MonsterType = "dragon,60"
 SpiritSpeak = 800
 Parry = 550 950
 Tactics = 900 1000
@@ -289,6 +297,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_drake_blue]
 CATEGORY = Monsters
@@ -322,6 +331,7 @@ MaxStam = 150 200
 MaxMana = 0
 Experience = 80 90
 Hypnotizable = 8
+MonsterType = "dragon,60"
 SpiritSpeak = 900
 Parry = 550 950
 Tactics = 900 1000
@@ -336,6 +346,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_drake_copper]
 CATEGORY = Monsters
@@ -364,6 +375,7 @@ MaxStam = 160 200
 MaxMana = 0
 Experience = 85 105
 Hypnotizable = 4
+MonsterType = "dragon,60"
 SpiritSpeak = 750
 Parry = 550 950
 Tactics = 900 1000
@@ -378,6 +390,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_drake_silver]
 CATEGORY = Monsters
@@ -412,6 +425,7 @@ MaxStam = 160 200
 MaxMana = 0
 Experience = 95 115
 Hypnotizable = 16
+MonsterType = "dragon,60"
 SpiritSpeak = 1000
 Parry = 550 950
 MagicResist = 1000
@@ -426,6 +440,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 930
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_drake_gold]
 CATEGORY = Monsters
@@ -459,6 +474,7 @@ MaxStam = 160 200
 MaxMana = 0
 Experience = 140 160
 Hypnotizable = 4
+MonsterType = "dragon,60"
 SpiritSpeak = 1650
 Parry = 550 950
 MagicResist = 1100
@@ -473,6 +489,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 920
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_drake_ice]
 CATEGORY = Monsters
@@ -506,6 +523,7 @@ MaxStam = 150 210
 MaxMana = 0
 Experience = 150 160
 Hypnotizable = 32
+MonsterType = "dragon,60"
 SpiritSpeak = 950
 Parry = 550 950
 MagicResist = 1100
@@ -519,6 +537,7 @@ Loot = i_gold
 ResistSummon = 800
 ResistPoison = 950
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_drake_black]
 CATEGORY = Monsters
@@ -552,6 +571,7 @@ MaxStam = 160 200
 MaxMana = 0
 Experience = 170 180
 Hypnotizable = 4
+MonsterType = "dragon,60"
 SpiritSpeak = 1450
 Parry = 550 950
 MagicResist = 1200
@@ -566,6 +586,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 920
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_wyvern]
 CATEGORY = Monsters
@@ -593,6 +614,7 @@ MaxStam = 450 550
 MaxMana = 0
 Experience = 180 190
 Hypnotizable = 16
+MonsterType = "dragon,60"
 SpiritSpeak = 1400
 Parry = 550 950
 MagicResist = 1300
@@ -607,6 +629,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_green]
 CATEGORY = Monsters
@@ -640,6 +663,7 @@ Dex = 300
 Int = 500
 Experience = 300 320
 Hypnotizable = 32
+MonsterType = "dragon,60"
 SpiritSpeak = 1750
 MagicResist = 1400
 Wrestling = 900 1000
@@ -650,6 +674,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 900
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_red]
 CATEGORY = Monsters
@@ -678,6 +703,7 @@ MaxStam = 250 350
 MaxMana = 0
 Experience = 220 235
 Hypnotizable = 32
+MonsterType = "dragon,60"
 SpiritSpeak = 2000
 Parry = 550 950
 MagicResist = 1500
@@ -692,6 +718,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 850
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_blue]
 CATEGORY = Monsters
@@ -725,6 +752,7 @@ MaxStam = 275 325
 MaxMana = 0
 Experience = 240 250
 Hypnotizable = 32
+MonsterType = "dragon,60"
 SpiritSpeak = 1900
 Parry = 550 950
 MagicResist = 1500
@@ -739,6 +767,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 850
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_copper]
 CATEGORY = Monsters
@@ -775,6 +804,7 @@ Dex = 300
 Int = 400
 Experience = 250 280
 Hypnotizable = 32
+MonsterType = "dragon,60"
 SpiritSpeak = 2000
 Parry = 550 950
 MagicResist = 1600
@@ -789,6 +819,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_silver]
 CATEGORY = Monsters
@@ -825,6 +856,7 @@ Dex = 300
 Int = 500
 Experience = 300 340
 Hypnotizable = 4
+MonsterType = "dragon,60"
 SpiritSpeak = 1900
 Parry = 550 950
 MagicResist = 1700
@@ -839,6 +871,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_gold]
 CATEGORY = Monsters
@@ -872,6 +905,7 @@ MaxStam = 275 325
 MaxMana = 0
 Experience = 350 370
 Hypnotizable = 32
+MonsterType = "dragon,60"
 SpiritSpeak = 1700
 Parry = 550 950
 MagicResist = 1700
@@ -886,6 +920,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 600
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_ice]
 CATEGORY = Monsters
@@ -919,6 +954,7 @@ MaxStam = 275 325
 MaxMana = 0
 Experience = 390 410
 Hypnotizable = 16
+MonsterType = "dragon,60"
 SpiritSpeak = 1900
 Parry = 550 950
 MagicResist = 1700
@@ -932,6 +968,7 @@ Loot = i_gold
 ResistSummon = 800
 ResistPoison = 800
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef c_dragon_black]
 CATEGORY = Monsters
@@ -965,6 +1002,7 @@ MaxStam = 275 325
 MaxMana = 0
 Experience = 430 480
 Hypnotizable = 4
+MonsterType = "dragon,60"
 SpiritSpeak = 1850
 Parry = 550 950
 MagicResist = 1700
@@ -979,6 +1017,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 700
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef 0xc]
 CATEGORY = Monsters
@@ -1016,6 +1055,7 @@ MaxStam = 225 275
 MaxMana = 0
 Experience = 520 600
 Hypnotizable = 32
+MonsterType = "dragon,60"
 SpiritSpeak = 2000
 Parry = 550 950
 MagicResist = 2300
@@ -1030,6 +1070,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 500
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [NPCDef 0x31e]
 CATEGORY = Monsters
@@ -1067,6 +1108,7 @@ MaxHits = 27000 33000
 MaxStam = 150 200
 Experience = 350 370
 Hypnotizable = 32
+MonsterType = "dragon,60"
 SpiritSpeak = 2100
 Parry = 1200
 MagicResist = 2500
@@ -1081,6 +1123,7 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 200
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 
 
 [SpeechStub spk_dragon_lord]
 ON=*kua*
@@ -1140,6 +1183,7 @@ MaxStam = 730
 MaxMana = 0
 Experience = 500 600
 Hypnotizable = 8
+MonsterType = "dragon,60"
 SelfresDelay = 10
 SpiritSpeak = 800
 Parry = 1200
@@ -1155,3 +1199,4 @@ ResistFire = 1000
 ResistSummon = 800
 ResistPoison = 700
 AggroMode = Hostile
+DragonBrain = 1 //#1017 - a dragonslayer's fallback 

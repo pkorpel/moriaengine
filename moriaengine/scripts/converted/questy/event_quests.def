@@ -111,6 +111,7 @@ SpiritSpeak = 250
 AnimalTaming = 2000
 Experience = 5 10
 Hypnotizable = 17
+MonsterType = "animal"
 Equip = i_monster_create
 Loot = i_easter_egg,{1, 10}
 ResistPoison = 970
