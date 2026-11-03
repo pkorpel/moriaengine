@@ -33,13 +33,7 @@ namespace SteamEngine.CompiledScripts {
 				if ((box != null) && !box.IsDeleted) {
 					return box;
 				}
-				box = null;
-				foreach (Thing thing in Thing.AllThings) {
-					if ((thing is Container found) && (found.GetTag(boxTK) != null) && !found.IsDeleted) {
-						box = found;
-						break;
-					}
-				}
+				box = FindSavedBox();
 				if (box == null) {
 					box = (Container) ThingDef.GetByDefname("i_backpack").Create(10, 10, 0, (byte) MysticHypnosis.ParkedPlane);
 					box.Name = "Aukce";
@@ -52,6 +46,16 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return box;
 			}
+		}
+
+		/// <summary>The box as the world holds it, by its tag; nothing is made or added.</summary>
+		internal static Container FindSavedBox() {
+			foreach (Thing thing in Thing.AllThings) {
+				if ((thing is Container found) && (found.GetTag(boxTK) != null) && !found.IsDeleted) {
+					return found;
+				}
+			}
+			return null;
 		}
 
 		internal static bool IsListed(Item item) {

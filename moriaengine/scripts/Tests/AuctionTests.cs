@@ -87,6 +87,76 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("AUCTION_READY " + shown.Name + " |");
 		}
 
+		private static readonly TagKey restartTK = TagKey.Acquire("_auction_restart_");
+
+		/// <summary>Before the restart: ring A with a bid, ring B with none, both running.</summary>
+		[SteamFunction]
+		public static void TestAuctionRestartPrepare(Character self) {
+			Player player = (Player) self;
+			player.Account.PLevel = 1;
+			player.Realm = Realm.Gondor;
+			Player bidder = Bidder(player, Realm.Gondor, 20000);
+			bidder.Name = "Auction Bidder";
+			Item a = Ring(player), b = Ring(player);
+			a.SetTag(restartTK, "A");
+			b.SetTag(restartTK, "B");
+			AuctionHouse.List(player, a, 1000, 9000);
+			AuctionHouse.List(player, b, 100, 0);
+			AuctionHouse.PlaceBid(bidder, a, 1500);
+			Console.WriteLine("AUC_RESTART_READY listedA=" + AuctionHouse.IsListed(a) + " listedB=" + AuctionHouse.IsListed(b) + " bid=" + AuctionHouse.Bid(a) +
+				" bidderGold=" + bidder.Gold + " ends=" + AuctionHouse.Ends(a).Ticks + " end");
+		}
+
+		private static Item Restarted(Container box, string which) {
+			if (box != null) {
+				foreach (AbstractItem thing in box) {
+					if ((thing is Item item) && Equals(item.GetTag(restartTK), which)) {
+						return item;
+					}
+				}
+			}
+			return null;
+		}
+
+		/// <summary>After the restart, before anything touches AuctionHouse.Box: the box, its own sweep timer, both listings as
+		/// they were; then both listings end, for the restored timer to settle.</summary>
+		[SteamFunction]
+		public static void TestAuctionRestartCheck(Character self) {
+			Container box = AuctionHouse.FindSavedBox();
+			bool timer = (box != null) && (box.GetTimer(AuctionSweepTimer.Key) != null);
+			Item a = Restarted(box, "A"), b = Restarted(box, "B");
+			Character seller = (a == null) ? null : AuctionHouse.Seller(a), bidder = (a == null) ? null : AuctionHouse.Bidder(a);
+			Console.WriteLine("AUC_RESTART_CHECK box=" + (box != null) + " timer=" + timer + " listedA=" + AuctionHouse.IsListed(a) + " listedB=" + AuctionHouse.IsListed(b) +
+				" magic=" + ((a != null) && MagicItems.IsMagic(a)) + " seller=" + seller?.Name?.Replace(' ', '_') + " bidder=" + bidder?.Name?.Replace(' ', '_') +
+				" realm=" + ((a == null) ? "" : AuctionHouse.RealmOf(a).ToString()) + " start=" + ((a == null) ? 0 : AuctionHouse.Start(a)) +
+				" buyout=" + ((a == null) ? 0 : AuctionHouse.Buyout(a)) + " bid=" + ((a == null) ? 0 : AuctionHouse.Bid(a)) + " bidderGold=" + (bidder?.Gold ?? -1) +
+				" ends=" + ((a == null) ? 0 : AuctionHouse.Ends(a).Ticks) + " end");
+			if ((a != null) && (b != null)) {
+				AuctionHouse.EndNow(a);
+				AuctionHouse.EndNow(b);
+			}
+		}
+
+		/// <summary>Whether the restored sweep has settled both: A to the bidder's bank, its 1500 to the seller's, B back.</summary>
+		[SteamFunction]
+		public static void TestAuctionRestartSettled(Character self) {
+			Item a = null, b = null;
+			foreach (Thing thing in Thing.AllThings) {
+				if (thing is Item item) {
+					if (Equals(item.GetTag(restartTK), "A")) {
+						a = item;
+					} else if (Equals(item.GetTag(restartTK), "B")) {
+						b = item;
+					}
+				}
+			}
+			Character aOwner = a?.TopObj() as Character, bOwner = b?.TopObj() as Character;
+			bool settled = (a != null) && (b != null) && !AuctionHouse.IsListed(a) && !AuctionHouse.IsListed(b);
+			Console.WriteLine("AUC_RESTART_SETTLED settled=" + settled + " aTo=" + aOwner?.Name?.Replace(' ', '_') + " aInBank=" + ((aOwner != null) && (a.Cont == aOwner.Bank)) +
+				" bTo=" + bOwner?.Name?.Replace(' ', '_') + " bInBank=" + ((bOwner != null) && (b.Cont == bOwner.Bank)) +
+				" sellerBankGold=" + ((bOwner == null) ? -1 : GoldUtils.CountGoldIn(bOwner.Bank)) + " end");
+		}
+
 		[SteamFunction]
 		public static void TestAuctionReport(Character self) {
 			Report("theDialogWithdrew", !AuctionHouse.IsListed(shown) && (shown.Cont == ((Player) self).Bank));
