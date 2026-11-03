@@ -515,6 +515,9 @@ namespace SteamEngine.CompiledScripts {
 		/// comment), so a real-user-reported LOS/approach bug is best proven with one direct,
 		/// synchronous call rather than waiting out live combat ticks.</summary>
 		internal void Fight(NPC self, Character target) {
+			if (GuardPursuit.OnFighting(self, this, target)) {
+				return; //#1100 - a guard left a town NPC alone and went home
+			}
 			self.Flag_WarMode = true;
 
 			//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_roundattack
@@ -860,6 +863,20 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1100 - Erebor's runxtimes(runtovictim): so many running steps toward `target` at once, up to its side.</summary>
+		internal void RunTowards(NPC self, Character target, int steps) {
+			for (int i = 0; i < steps; i++) {
+				if (Point2D.GetSimpleDistance(self, target) <= 1) {
+					return;
+				}
+				int beforeX = self.X, beforeY = self.Y;
+				this.StepTowardsSmart(self, target, true);
+				if ((self.X == beforeX) && (self.Y == beforeY)) {
+					return;
+				}
+			}
+		}
+
 		private bool IsWaitingForDetour {
 			get { return (this.blockedSince != 0) && (Globals.TimeInSeconds <= this.blockedSince + CharCollisionSettings.instance.npcDetourWaitSeconds); }
 		}
@@ -911,6 +928,9 @@ namespace SteamEngine.CompiledScripts {
 				//around obstacles via the same AStar-backed helper Follow/Fight already use,
 				//instead of a bare direct step that could get an NPC stuck pacing against a wall
 				//it could easily have walked around.
+				if (GuardPursuit.TeleportsHome(self, this)) {
+					return; //#1100 - e_guard's @skillstroke
+				}
 				this.StepTowardsSmart(self, new Point3D(this.homeX, this.homeY, this.homeZ));
 				return;
 			}

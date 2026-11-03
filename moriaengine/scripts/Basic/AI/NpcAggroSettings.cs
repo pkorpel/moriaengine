@@ -75,5 +75,22 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#1033 - creatures an NPC keeps summoned at once.</summary>
 		[SaveableData]
 		public int npcMaxSummons = 2;
+
+		/// <summary>#1100 - Erebor's i_attack_guard: once a second a guard fighting a player runs at them, this
+		/// many steps at most. 0 turns the pursuit off.</summary>
+		[SaveableData]
+		public int guardPursuitSteps = 8;
+
+		/// <summary>#1100 - a player further than this from a guard isn't run at.</summary>
+		[SaveableData]
+		public int guardPursuitRange = 20;
+
+		/// <summary>#1100 - a pursuing guard further than this from its spawn teleports home.</summary>
+		[SaveableData]
+		public int guardLeavesForHomeAt = 70;
+
+		/// <summary>#1100 - e_guard's @skillstroke: a guard heading home from further than this teleports there.</summary>
+		[SaveableData]
+		public int guardTeleportsHomeFrom = 7;
 	}
 }

@@ -84,9 +84,33 @@ nemas co pohledavat!") and engaging the target through `NPCAiTimer.EngageTarget`
 A possessing mystic (hypnosis) is left alone unless its body is evil (karma -800 or less), and counts as no murderer,
 as Erebor's `hypno_mystik` checks and hypnoswap's karma.
 
-Not ported: keep bans, which come with the keeps, and the guard's temporary karma (`guardkarma_*` + `i_memory_cleaner`). The archive's teleport-to-target
-(`e_tele_to_target` / `i_attack_guard`) only fires when the target stands in an insta-logout area, and only 7 archive
-areas have that flag (jail, klec, Lagr, the tutorial, bug) - guards here walk to their target like every NPC.
+Not ported: keep bans, which come with the keeps, and the guard's temporary karma (`guardkarma_*` + `i_memory_cleaner`).
+
+### Guards' pursuit (#1100)
+
+`GuardPursuit` (`scripts/Basic/AI/GuardPursuit.cs`) ports Erebor's `e_tele_to_target` and `i_attack_guard`. It runs on
+guards with `e_guard` or `e_guard_ent`, and on those answering `spk_guard`. Each pursuit step runs through `GuardPursuitTimer`:
+
+- **Starting.** A guard fighting a player starts the pursuit, unless the player is invulnerable or paralyzed. Once a
+  second, if it sees the player within 20 tiles, it runs at them. It takes as many steps as it is tiles away, less 1
+  (less 3 while casting or shooting), at most 8, all at once. On the client this looks like a teleport.
+- **Too far out.** A guard more than 70 tiles from its spawn gem (from its home if it has none) teleports home instead.
+- **Ending.** The pursuit ends when the fight does.
+- **After the fight.** A guard heading home from more than 7 tiles teleports there (`e_guard`'s `@skillstroke`).
+- **Town NPCs.** A guard fighting an NPC spawned in a town (its gem in an area with `City`) drops the fight and teleports
+  home.
+
+The numbers are on `.settings` -> NPC Aggro: `guardPursuitSteps` (0 = off), `guardPursuitRange`, `guardLeavesForHomeAt`,
+`guardTeleportsHomeFrom`.
+
+I said before that this only fires in insta-logout areas. It doesn't: `i_attack_guard` skips the pursuit outside those
+areas only when `cont.tag.guard` is set. Every `tag.guard` line in the archive is on a chardef, and 0.99z8 reads `cont.tag`
+from the instance alone (EreborNext's `M_Tag`). That is why Erebor's own scripts read `typedef.tag(guard)`. So the
+check never held, and guards on Erebor ran at their targets everywhere.
+
+Erebor capped a guard at 5 steps when it was out of its spawn's region and more than 70 tiles away. That cap isn't
+ported: in that case the guard went home instead, so it never took effect. Steps follow the AI's path to the player
+rather than a straight line.
 
 Test: `GuardSpeechTests` (protocol, two real clients, real hostile acts and real speech).
 
