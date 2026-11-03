@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-03): #745 curing bleeding DONE (PR #1102), now #788 (user: sort out both now)
+## DONE (2026-11-03): #745 curing bleeding (PR #1102), #788 (PRs #1103, #1105; Blade Spirits flake left as #1104)
 
 #745, branch fix-745-one-bleed: bandages already stop Bleeding Strike's bleed (#980), not a monster's. On Erebor both are one item, i_krvaceni: e_npc_bleed's npc_bleed adds (damage/3)/2 to its more2 (no cap, no fade, ticks restart) via f_bleed_getMemory, f_thief_doBleed the thief's way. So the monster bite goes into BleedingEffectPlugin (BleedingEffectPluginDef.Bite), NpcBleedEffectPlugin goes. Then #788, its own branch.
 #788, branch fix-788-stale-combat-tests: rerun CombatDepthTestsA + MagerySpellTests on today's main, fix each failure at its cause (game or stale test).
