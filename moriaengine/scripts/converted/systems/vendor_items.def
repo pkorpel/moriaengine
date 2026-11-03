@@ -24,10 +24,11 @@ model = i_box_brass
 layer = 0 //Set by Converter 
 Color = 0986
 
-[ItemDef i_odpocet_vendora]
+[EquippableDef i_odpocet_vendora]
 name = "Created Hidden"
 type = t_eq_script
 model = i_necklace_gold //aby se to dalo vzit na sebe :) 
+layer = 10 //Set by Converter 
 
 [ContainerDef i_memory_vendorsign] //k identifikaci
 name = "Vendor sign"

@@ -26,7 +26,8 @@ NAME = "zarivy rubin"
 TYPE = t_normal
 model = i_gem_ruby
 
-[ItemDef i_q024_prsten]
+[EquippableDef i_q024_prsten]
 NAME = "zasnubni prsten"
 TYPE = t_normal
 model = i_ring_silver
+layer = 8 //Set by Converter 

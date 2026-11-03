@@ -115,7 +115,7 @@ namespace SteamEngine.CompiledScripts {
 
 			if ((power - 400) > MonsterLoot.RollInclusive(Globals.dice, 1, 1000)) {
 				//Erebor: i_mi_pouch, a small magic-item bag
-				MonsterLoot.DropMagicItemPlaceholder(npc, "elite pouch");
+				MonsterLoot.GiveMagicBag(npc, "i_mi_pouch");
 			}
 			if (settings.lootBundle) {
 				GiveLootBundle(npc, power);

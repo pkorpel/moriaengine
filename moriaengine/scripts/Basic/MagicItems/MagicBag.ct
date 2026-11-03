@@ -1,0 +1,4 @@
+[ThingTemplate MagicBag : Item]
+Def:	//mit_main: the metal tier and how many property rolls
+	int tier = 0
+	int rolls = 1

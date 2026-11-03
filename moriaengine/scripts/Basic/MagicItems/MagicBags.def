@@ -1,0 +1,42 @@
+// #1017 magic items - magicITEMS.scp's bags. A double click unpacks one unidentified magic item.
+[MagicBagDef i_mi_pouch]
+NAME = "Vacek s magickym predmetem"
+model = i_pouch
+Color = 0430
+Tier = 0
+Rolls = 1
+
+[MagicBagDef i_mi_pouch_high]
+NAME = "Vacek s magickym predmetem"
+model = i_pouch
+Color = 045d
+Tier = 1
+Rolls = 1
+
+[MagicBagDef i_mi_pouch_superhigh]
+NAME = "Vacek s magickym predmetem"
+model = i_pouch
+Color = 0455
+Tier = 2
+Rolls = 1
+
+[MagicBagDef i_mi_bag]
+NAME = "Pytlik s magickym predmetem"
+model = i_bag
+Color = 0430
+Tier = 0
+Rolls = 2
+
+[MagicBagDef i_mi_bag_high]
+NAME = "Pytlik s magickym predmetem"
+model = i_bag
+Color = 045d
+Tier = 1
+Rolls = 2
+
+[MagicBagDef i_mi_bag_superHigh]
+NAME = "Pytlik s magickym predmetem"
+model = i_bag
+Color = 0455
+Tier = 2
+Rolls = 2

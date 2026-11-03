@@ -608,6 +608,16 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				PacketSequences.SendNameFrom(clickerConn, this, string.Concat(amount.ToString(), " ", this.Name), 0);
 			}
+			MagicItems.OnClick(this, clicker); //#1017 - tmi_info's lines
+		}
+
+		/// <summary>#1017 - an unidentified magic item can't be worn.</summary>
+		public override void On_DenyEquip(DenyEquipArgs args) {
+			if ((args.PuttingChar is Character ch) && MagicItems.RefusesEquip(this, ch)) {
+				args.Result = DenyResultMessages.Deny_NoMessage;
+				return;
+			}
+			base.On_DenyEquip(args);
 		}
 
 		/// <summary>Sphere-style ATTR death-drop rules (#217/#218). Only ever evaluated from

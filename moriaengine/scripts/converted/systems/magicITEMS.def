@@ -120,41 +120,41 @@ def_imi_exchangeAttrs         10
 
 //[events e_spellblock] //(commented out by Converter) 
 
-[ContainerDef i_mi_pouch]
-model = i_pouch
-type = t_container //guessed from base def by Converter 
-layer = 13 //Set by Converter 
-Color = 0430
+//[ContainerDef i_mi_pouch] //(commented out by Converter) 
+//model = i_pouch
+//type = t_container //guessed from base def by Converter 
+//layer = 13 //Set by Converter 
+//Color = 0430
 
-[ContainerDef i_mi_pouch_high]
-model = i_pouch
-type = t_container //guessed from base def by Converter 
-layer = 13 //Set by Converter 
-Color = 045d
+//[ContainerDef i_mi_pouch_high] //(commented out by Converter) 
+//model = i_pouch
+//type = t_container //guessed from base def by Converter 
+//layer = 13 //Set by Converter 
+//Color = 045d
 
-[ContainerDef i_mi_pouch_superhigh]
-model = i_pouch
-type = t_container //guessed from base def by Converter 
-layer = 13 //Set by Converter 
-Color = 0455
+//[ContainerDef i_mi_pouch_superhigh] //(commented out by Converter) 
+//model = i_pouch
+//type = t_container //guessed from base def by Converter 
+//layer = 13 //Set by Converter 
+//Color = 0455
 
-[ContainerDef i_mi_bag]
-model = i_bag
-type = t_container //guessed from base def by Converter 
-layer = 0 //Set by Converter 
-Color = 0430
+//[ContainerDef i_mi_bag] //(commented out by Converter) 
+//model = i_bag
+//type = t_container //guessed from base def by Converter 
+//layer = 0 //Set by Converter 
+//Color = 0430
 
-[ContainerDef i_mi_bag_high]
-model = i_bag
-type = t_container //guessed from base def by Converter 
-layer = 0 //Set by Converter 
-Color = 045d
+//[ContainerDef i_mi_bag_high] //(commented out by Converter) 
+//model = i_bag
+//type = t_container //guessed from base def by Converter 
+//layer = 0 //Set by Converter 
+//Color = 045d
 
-[ContainerDef i_mi_bag_superHigh]
-model = i_bag
-type = t_container //guessed from base def by Converter 
-layer = 0 //Set by Converter 
-Color = 0455
+//[ContainerDef i_mi_bag_superHigh] //(commented out by Converter) 
+//model = i_bag
+//type = t_container //guessed from base def by Converter 
+//layer = 0 //Set by Converter 
+//Color = 0455
 
 //[typedef mit_main] //(commented out by Converter) 
 

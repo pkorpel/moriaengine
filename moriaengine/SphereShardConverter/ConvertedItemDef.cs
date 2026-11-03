@@ -241,6 +241,7 @@ namespace SteamEngine.Converter {
 				case "t_hair":
 				case "t_beard":
 				case "t_spellbook":
+				case "t_jewelry": //#1017 - rings, earrings, bracelets and necklaces are worn, magic ones too
 					def.headerType = "EquippableDef";
 					def.isEquippable = true;
 					break;
