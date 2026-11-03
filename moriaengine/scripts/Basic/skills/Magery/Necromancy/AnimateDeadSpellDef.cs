@@ -111,6 +111,7 @@ namespace SteamEngine.CompiledScripts {
 			raised.SetTag(isAnimatedTK, 1);
 			raised.Karma = 0;
 			raised.ControlMaster = self;
+			NecroAbilities.StrengthenUndead(raised, self); //#1017
 			raised.Flag_WarMode = false;
 
 			AnimatedUpkeepTimer upkeep = new AnimatedUpkeepTimer();

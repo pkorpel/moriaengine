@@ -162,6 +162,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			summon.SetTag(isSummonedCreatureTK, true);
 			summon.SetTag(summonerTK, caster);
+			NecroAbilities.StrengthenUndead(summon, caster); //#1017
 
 			int spellPower = spellEffectArgs.SpellPower;
 			double durationSecs = this.GetDurationForValue(spellPower);

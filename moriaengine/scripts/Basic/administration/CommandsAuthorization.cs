@@ -60,7 +60,7 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["MenuStyle"] = PLEVEL_PLAYER; //#1004: to compare the menus
 			this.commands["Class_Info"] = PLEVEL_PLAYER; //#1017
 			foreach (string ability in new[] { "Berserker", "RoundAttack", "Omraceni", "Leap", "Warcry", "DefStance", "Taunt", "MassTaunt",
-					"Sniper", "Knockback", "LongRange", "SplitShot", "CrushingArrow", "Resurrection", "Vigour", "Ripper", "Backstab", "Podriznuti", "UderStitem", "Mask" }) {
+					"Sniper", "Knockback", "LongRange", "SplitShot", "CrushingArrow", "Resurrection", "Vigour", "Ripper", "Backstab", "Podriznuti", "UderStitem", "Mask", "Darkpower", "Concentration" }) {
 				this.commands[ability] = PLEVEL_PLAYER;
 			}
 			this.commands["WhoAmI"] = PLEVEL_PLAYER; //#1011: Erebor's

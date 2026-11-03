@@ -278,6 +278,29 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("THIEF_DONE");
 		}
 
+		[SteamFunction]
+		public static void TestNecroAbilities(Character self) {
+			Player player = (Player) self;
+			Report("undeadHitsByPoints", (NecroAbilities.UndeadHits(100, 10) == 120) && (NecroAbilities.UndeadHits(100, 40) == 135) && (NecroAbilities.UndeadHits(100, 0) == 100));
+			player.Profession = Professions.Necromant;
+			player.Level = 100;
+			player.Stam = player.MaxStam;
+			ClassAbilities.OnDeath(player); //the craftsman's counter from earlier on this character
+			NecroAbilities.Darkpower(player);
+			Report("darkpowerTurnsTheCounterOn", ClassAbilities.CounterOn(player));
+			player.MaxMana = 200;
+			player.Mana = 0;
+			SpellDef fireball = SpellDef.GetByDefname("s_fireball");
+			for (int i = 0; (i < 400) && (player.Mana == 0); i++) {
+				NecroAbilities.SpellDone(player, fireball, false);
+			}
+			Report("darkpowerGivesManaBack", player.Mana == (fireball.ManaUse * 850) / 1000);
+			player.Mana = 0;
+			NecroAbilities.SpellDone(player, SpellDef.GetByDefname("s_recall"), false);
+			Report("notForRecall", player.Mana == 0);
+			Console.WriteLine("NECRO_DONE");
+		}
+
 		private static NPC Dummy(Character self, int offset) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + offset, self.Y, self.Z, self.M);
 			dummy.MaxHits = 30000;
