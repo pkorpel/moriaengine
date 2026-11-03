@@ -328,11 +328,13 @@ namespace SteamEngine.CompiledScripts {
 			RangerAbilities.ApplySpree(self, target, swing);
 			ThiefAbilities.ModifyOwnBlow(self, target, swing);
 			ThiefAbilities.ChargeWarFork(self, target);
-			if (!target.IsPlayer && (self.Level >= settings.doubleSwingMinLevel)) {
+			ThiefAbilities.AfterFencingBlow(self, target, swing);
+			if (!target.IsPlayer && IsWarrior(self) && (self.Level >= settings.doubleSwingMinLevel)) { //#1070 - e_war's
 				int points = ClassAbilities.Points(self, "doubleswing");
 				if ((points > 0) && IsDoubleSwingWeapon(self) && (Globals.dice.Next(1, 1001) <= (100 + (points * 5))) && (self.Stam >= settings.doubleSwingStamina)) {
 					self.Stam = (short) (self.Stam - settings.doubleSwingStamina);
 					self.Sound(512);
+					self.Sound(566);
 					self.SysMessage("Dvojity zasah!", ClassAbilities.ClassMessageHue);
 					swing.DamageAfterAC = (swing.DamageAfterAC * settings.doubleSwingPermille) / 1000;
 				}
@@ -561,6 +563,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData, CopyableData]
 		public double secondsLeft;
 
+		/// <summary>#1070 - i_taunter's restore_karma: the monster is karma -100 while taunted.</summary>
+		[SaveableData, CopyableData]
+		public short restoreKarma;
+
 		[DeepCopyImplementation, LoadingInitializer]
 		public TauntTimer() {
 		}
@@ -593,6 +599,8 @@ namespace SteamEngine.CompiledScripts {
 			TauntTimer timer = new TauntTimer();
 			timer.taunter = taunter;
 			timer.secondsLeft = Math.Max(seconds, 5);
+			timer.restoreKarma = npc.Karma;
+			npc.Karma = -100;
 			npc.AddTimer(Key, timer);
 			timer.DueInSeconds = 1;
 			timer.PeriodInSeconds = 1;
@@ -608,6 +616,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((who == null) || who.IsDeleted || (this.secondsLeft <= 0) || (who.M != npc.M) || who.Flag_Hidden || who.Flag_InvisByMagic ||
 					(Point2D.GetSimpleDistance(npc, who) > ClassAbilitySettings.instance.tauntRange)) {
 				npc.SetTag(resistTK, Resist(npc) - 200);
+				npc.Karma = this.restoreKarma;
 				this.Delete();
 				return;
 			}

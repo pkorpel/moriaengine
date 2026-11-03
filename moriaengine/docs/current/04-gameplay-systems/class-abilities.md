@@ -40,7 +40,17 @@ it comes off the chance, and at 1000 or more the monster can't be silenced, "Cil
 The Resurrection spell on a player who died less than 5 s ago does nothing, "Na oziveni jeste nejsi pripraven."
 (e_allplayers' @beforegeteffect), unless the area has `region_cf_instantRes`: the four arenas and Domov drakulu.
 
+## Warrior
+
+Double swing (e_war) is the warrior's alone, from level 30, with a long or broad sword or a large battle, double or
+two-handed axe. A taunted monster has karma -100 until the taunt ends (`f_taunt`'s `restore_karma`). Round attack's
+strike charges are the thief's war fork ones (`.strike`). Leap's GM-step resist isn't here: it only fed Erebor's GM-step
+detection, left out in #777.
+
 ## Thief
+
+A thief's war fork on a monster also has the double swing, at any level (e_thief's @AfterSwing). Any fencing blow
+spends a readied throat slit (`.podriznuti`), whether it came from behind or not.
 
 `.mask` is refused in the areas with `tag.nomask` (the start rooms), "ty hnusnej bugere. Nic nebude", as on Erebor.
 
