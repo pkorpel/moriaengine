@@ -232,7 +232,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((item == this) || (item == this.RentChest) || t_housemenu.IsAnySign(item)) {
 				return false;
 			}
-			return item.Def != ThingDef.GetByDefname("i_duch_dlazba");
+			return !HouseDoorstep.IsDoorstep(item);
 		}
 	}
 

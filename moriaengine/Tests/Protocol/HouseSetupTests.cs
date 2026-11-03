@@ -71,24 +71,36 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendTargetGround(Number(outdoors, "inX") + 2, Number(outdoors, "inY"), z);
 				Thread.Sleep(500);
 				Assert.Contains("doors=2 doorsOutside=0", this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
-				Assert.Contains("fourthRattans=1", this.Ask(client, ".TestHouseSetupReport", "SETUP_DOOR:"));
+				string doorReport = this.Ask(client, ".TestHouseSetupReport", "SETUP_DOOR:");
+				Assert.Contains("fourthRattans=1", doorReport);
+				Assert.Contains(" bare=0", doorReport); //a doorstep tile of the house's realm under every door
+				Assert.DoesNotContain("padded=0 ", doorReport);
 
 				//the house's own realm walks in
 				this.Ask(client, ".TestHousePlayer \"own\"", "HOUSE_PLAYER:");
 				Assert.Contains("moved=True inside=True", this.Ask(client, ".TestHouseWalkIn", "HOUSE_WALK:"));
 				Assert.Contains("landed=True", this.Ask(client, ".TestHouseTeleport", "HOUSE_TELE:"));
 
-				//the other realm doesn't, nor teleports in, nor claims it from the street
+				//the house's region alone no longer stops the other realm, as zones overlap (the user's call); a doorstep tile does
 				this.Ask(client, ".TestHousePlayer \"enemy\"", "HOUSE_PLAYER:");
+				Assert.Contains("moved=True inside=True safe=False", this.Ask(client, ".TestHouseWalkIn", "HOUSE_WALK:"));
+				Assert.Contains("landed=True", this.Ask(client, ".TestHouseTeleport", "HOUSE_TELE:"));
+				Assert.Contains("placed=True", this.Ask(client, ".TestHousePadEntrance", "HOUSE_PAD:"));
 				Assert.Contains("moved=False inside=False", this.Ask(client, ".TestHouseWalkIn", "HOUSE_WALK:"));
-				Assert.Contains("landed=False", this.Ask(client, ".TestHouseTeleport", "HOUSE_TELE:"));
+
+				//nor claims it from the street
 				this.Ask(client, ".TestHouseOutdoors", "HOUSE_OUTDOORS:");
 				client.SendDoubleClick(sign);
 				SeeMessage(client, "Tento dum nemuzes obsadit.");
 				Assert.Contains("owner=none", this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
 
-				//its own realm claims it, and a sign outside the region still takes its level
+				//its own realm steps over the tile, safe on it for 1.1 s (i_house_safe), claims it, and a sign outside the region
+				//still takes its level
 				this.Ask(client, ".TestHousePlayer \"own\"", "HOUSE_PLAYER:");
+				Assert.Contains("moved=True inside=True safe=True invul=True", this.Ask(client, ".TestHouseWalkIn", "HOUSE_WALK:"));
+				Thread.Sleep(2000);
+				Assert.Contains("safe=False invul=False", this.Ask(client, ".TestHouseSafeNow", "HOUSE_SAFE:"));
+				this.Ask(client, ".TestHouseOutdoors", "HOUSE_OUTDOORS:"); //back by the sign
 				client.SendDoubleClick(sign);
 				var gump = client.ReadGumpDialogWithStrings(Wait);
 				client.SendGumpResponse(gump.GumpUid, Yes);
@@ -102,7 +114,7 @@ namespace SteamEngine.Tests.Protocol {
 				Thread.Sleep(500);
 				Assert.Contains("signLevel=Public", this.Ask(client, ".TestHouseSetupReport", "SETUP_REPORT:"));
 
-				//a ghost stays out
+				//a ghost stays out, by the tile
 				this.Ask(client, ".TestHouseDie", "HOUSE_DEAD:");
 				Assert.Contains("moved=False inside=False", this.Ask(client, ".TestHouseWalkIn", "HOUSE_WALK:"));
 			}

@@ -105,20 +105,32 @@ GM commands:
 | Command | What it does |
 |---|---|
 | `.HouseMove` | Target a sign or a rent chest, then where it goes |
-| `.HouseDoor` | A dialog of every door type, then its 8 facings, then target a spot in a house. It places one door; a double door is the command twice. `.HouseDoor "defname"` skips the dialog. `.flip` still turns a placed door; lock it from the sign |
+| `.HouseDoor` | A dialog of every door type, then its 8 facings, then target a spot in a house. It places one door, and a doorstep tile under it; a double door is the command twice. `.HouseDoor "defname"` skips the dialog. `.flip` still turns a placed door; lock it from the sign |
+| `.HousePad` | A doorstep tile where the GM targets, of the house's realm there; `.HousePad "gondor"` or `"mordor"` names the realm |
 
 No doors are placed automatically, so a house stays open until a GM gives it one.
 
 ## Who gets in
 
-Ghosts and players not of the house's realm can't step into a dwelling. That includes outcasts and players with no realm, as on Erebor. GMs and NPCs aren't stopped.
-Teleport refuses to land there too, and the same people can't claim it from a sign on the street. Stalls, fields and the three temples with house
-numbers are open. Anyone already inside can walk out.
+Doorstep tiles keep people out (`HouseDoorstep`): Erebor's `i_duch_dlazba` ("nepusti ducha"), an invisible, unmovable
+tile. Ghosts can't step onto one, and nor can anyone whose realm isn't the tile's (outcasts and players with no realm
+included); pets and GMs can. Monsters have no realm, so they're kept out too. A tile of no realm stops only ghosts.
 
-Erebor did this with doorstep tiles (`i_duch_dlazba`), which aren't in the archive. Differences:
+- `.HouseDoor` puts a tile under every door it places, of that house's realm.
+- `.HousePad` puts one where the GM targets, of the house's realm there; `.HousePad "gondor"` or `"mordor"` names the
+  realm, for spots where zones overlap and the house found there would be wrong.
+- The tile keeps its realm itself (a tag). A tile placed by a GM's `.add` has none and reads its region's house realm,
+  as Erebor's did.
+- Erebor pushed the walker back after its `@step`; here the step is refused before it's taken, with "Do tohoto domu
+  nemuzes.".
+- Whoever a tile lets on stops casting and any skill and is invulnerable for 1.1 s, renewed by each step onto a tile, and
+  ending at a step out of the house: Erebor's `i_house_safe`, whose timer of 11 tenths deletes it (99z8 deletes a
+  `t_eq_script` whose `@Timer` doesn't return 1).
 
-- It's the whole region, so there's no tile to walk around.
-- The tile's 1 second of safety on the doorstep isn't ported, there being no tile to stand on.
+The house's region itself stops nobody any more, walking or teleporting: the user's call, as zones overlap (Barad-dur's)
+and stopped people on streets. Until a GM gives a house its doors or tiles, anyone can walk in. Only claiming a house
+from its sign and using its bank still ask whether someone belongs to the house's realm (`MayEnterHouse`). Stalls,
+fields and the three temples with house numbers have no tiles unless a GM lays them.
 
 Where a house overlaps a city as an equal in the region tree, as 17 do, the smaller region now wins the tile, as in Sphere. Before this those houses had no
 tile of their own and `r_playerhouse` never ran in them.

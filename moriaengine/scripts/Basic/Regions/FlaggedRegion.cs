@@ -304,10 +304,6 @@ namespace SteamEngine.Regions {
 		public override TriggerResult On_Enter(AbstractCharacter ch, bool forced) {
 			Player asPlayer = ch as Player;
 			if (asPlayer != null) {
-				if (!forced && !asPlayer.MayEnterHouse(this)) { //#941 - what Erebor's doorstep tiles did
-					asPlayer.SysMessage("Do tohoto domu nemuzes.");
-					return TriggerResult.Cancel;
-				}
 				asPlayer.SendGlobalLightLevel(LightAndWeather.GetLightIn(this));
 			}
 
