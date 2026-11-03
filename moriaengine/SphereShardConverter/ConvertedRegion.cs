@@ -57,6 +57,7 @@ namespace SteamEngine.Converter {
 				new LineImplTask("tag.houserealm", ParseHouseRealmTag),
 				new LineImplTask("tag.nomask", ParseNoMaskTag),
 				new LineImplTask("tag.cflags", ParseCustomFlagsTag),
+				new LineImplTask("tag.elven", ParseElvenTag),
 
 				new LineImplTask("p", ParseP), 
 				new LineImplTask("rect", ParseRect), 
@@ -153,6 +154,14 @@ namespace SteamEngine.Converter {
 		private static void ParseNoMaskTag(ConvertedDef def, PropsLine line) {
 			if (line.Value.Trim() != "0") {
 				def.Set("NoMask", "1", line.Comment);
+			}
+		}
+
+		//#427 - tag.elven: the point the area's elven probe wanders round, "x,y"
+		private static void ParseElvenTag(ConvertedDef def, PropsLine line) {
+			string value = line.Value.Trim();
+			if (value.Length > 0) {
+				def.Set("ElvenGrove", value, line.Comment);
 			}
 		}
 
