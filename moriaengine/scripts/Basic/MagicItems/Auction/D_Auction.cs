@@ -7,7 +7,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 	/// <summary>#1070 - the auction's list: own realm's listings (a GM sees all), ten to a page, soonest end first. Pages are
 	/// sent anew, no in-place redraw, for the 3.0.6m clients.</summary>
 	public class D_Auction : CompiledGumpDef {
-		internal const int PrevButton = 1, NextButton = 2, FirstLine = 100, PerPage = 10;
+		internal const int PrevButton = 1, NextButton = 2, NewButton = 3, FirstLine = 100, PerPage = 10;
 		private const int LabelHue = 2301, ValueHue = 52;
 
 		internal static void Show(Player player, int page) {
@@ -44,6 +44,8 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				this.AddButton(16, 295, 0xfae, 0xfb0, PrevButton, GumpButtonType.Reply, 0);
 				this.AddLabel(50, 295, LabelHue, "Predchozi");
 			}
+			this.AddButton(230, 295, 0xfa5, 0xfa7, NewButton, GumpButtonType.Reply, 0);
+			this.AddLabel(264, 295, 42, "Pridat predmet");
 			if ((page + 1) * PerPage < listings.Count) {
 				this.AddButton(500, 295, 0xfa5, 0xfa7, NextButton, GumpButtonType.Reply, 0);
 				this.AddLabel(534, 295, LabelHue, "Dalsi");
@@ -63,6 +65,8 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				Show(player, page - 1);
 			} else if (button == NextButton) {
 				Show(player, page + 1);
+			} else if (button == NewButton) {
+				D_AuctionNew.Show(player, "0", "0");
 			} else if ((button >= FirstLine) && (button - FirstLine < listings.Count)) {
 				Item item = listings[button - FirstLine];
 				if (AuctionHouse.IsListed(item)) {
@@ -70,6 +74,62 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				} else {
 					player.SysMessage("Tato aukce uz skoncila.");
 					Show(player, page);
+				}
+			}
+		}
+	}
+
+	/// <summary>#1070 - a new listing, the user's way instead of Erebor's .aukce parameters: the two prices, then a cursor for
+	/// the item or a container of them. Wrong prices bring the dialog back with what was typed.</summary>
+	public class D_AuctionNew : CompiledGumpDef {
+		internal const int TargetButton = 1, BackButton = 2, StartEntry = 10, BuyoutEntry = 11;
+		private const int LabelHue = 2301, ValueHue = 52;
+
+		internal static void Show(Player player, string start, string buyout) {
+			player.Dialog(player, SingletonScript<D_AuctionNew>.Instance, new DialogArgs(start, buyout));
+		}
+
+		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
+			this.SetLocation(80, 80);
+			this.AddPage(0);
+			this.AddBackground(0, 0, 420, 250, 2620);
+			this.AddLabel(16, 12, 42, "Nova aukce");
+			this.AddLabel(16, 40, LabelHue, "Startovni cena:");
+			this.AddImage(150, 39, 0x98d);
+			this.AddTextEntry(154, 40, 100, 20, ValueHue, StartEntry, (string) args[0]);
+			this.AddLabel(16, 66, LabelHue, "Vykupni cena:");
+			this.AddImage(150, 65, 0x98d);
+			this.AddTextEntry(154, 66, 100, 20, ValueHue, BuyoutEntry, (string) args[1]);
+			this.AddLabel(264, 66, LabelHue, "(0 = bez vykupu)");
+			this.AddHtml(16, 96, 388, 90, "Aukce pobezi " + AuctionSettings.instance.durationHours + " hodin. Do aukce jdou jen identifikovane " +
+				"magicke predmety, ktere mas u sebe. Zamerenim kontejneru das do aukce vse, co v nem je, za tyto ceny.", false, false);
+			this.AddButton(16, 205, 0xfa5, 0xfa7, TargetButton, GumpButtonType.Reply, 0);
+			this.AddLabel(50, 205, LabelHue, "Zamerit predmet");
+			this.AddButton(300, 205, 0xfa5, 0xfa7, BackButton, GumpButtonType.Reply, 0);
+			this.AddLabel(334, 205, LabelHue, "Zpet");
+		}
+
+		private static long Price(string text) {
+			string digits = (text ?? "").Trim().Replace(".", "").Replace(" ", "");
+			if (digits.Length == 0) {
+				return 0;
+			}
+			return long.TryParse(digits, NumberStyles.Integer, CultureInfo.InvariantCulture, out long price) ? price : -1;
+		}
+
+		public override void OnResponse(Gump gi, GumpResponse gr, DialogArgs args) {
+			Player player = (Player) gi.Cont;
+			if (gr.PressedButton == BackButton) {
+				D_Auction.Show(player, 0);
+			} else if (gr.PressedButton == TargetButton) {
+				string startText = gr.GetTextResponse(StartEntry), buyoutText = gr.GetTextResponse(BuyoutEntry);
+				long start = Price(startText), buyout = Price(buyoutText);
+				string refusal = AuctionHouse.PriceRefusal(player, start, buyout);
+				if (refusal != null) {
+					player.RedMessage(refusal);
+					Show(player, startText ?? "0", buyoutText ?? "0");
+				} else {
+					AuctionHouse.StartTargeting(player, (int) start, (int) buyout);
 				}
 			}
 		}

@@ -341,43 +341,41 @@ namespace SteamEngine.CompiledScripts {
 			return (int) left.TotalHours + "h " + left.Minutes + "m";
 		}
 
-		/// <summary>.aukce: the auction's dialog; .aukce start buyout: a cursor for an item or a container of them, as Erebor's
-		/// .Aukce(PocatecniCena,VykupniCena). A buyout of 0 is none.</summary>
+		/// <summary>.aukce: the auction's dialog. A new listing starts from its Pridat predmet button (D_AuctionNew); the user
+		/// didn't want Erebor's prices as command parameters, so anything after the command is ignored.</summary>
 		[SteamFunction]
 		public static void Aukce(Character self, ScriptArgs sa) {
-			Player player = self as Player;
-			if (player == null) {
-				return;
-			}
-			string[] args = ((sa == null) ? "" : (sa.Args ?? "")).Trim('"').Split(new[] { ' ', ',', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
-			if (args.Length == 0) {
+			if (self is Player player) {
 				D_Auction.Show(player, 0);
-				return;
 			}
+		}
+
+		/// <summary>The prices of a new listing, Erebor's checks: a realm, up to 1000M each, a buyout of 0 is none, else no
+		/// lower than the start. Null when they're fine.</summary>
+		internal static string PriceRefusal(Player player, long start, long buyout) {
 			if (player.Realm == Realm.None) {
-				player.RedMessage("Bez zvoleneho Realmu nemuzes pridavat veci do aukce.");
-				return;
+				return "Bez zvoleneho Realmu nemuzes pridavat veci do aukce.";
 			}
-			if ((args.Length > 2) || !long.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out long start) ||
-					!long.TryParse((args.Length > 1) ? args[1] : "0", NumberStyles.Integer, CultureInfo.InvariantCulture, out long buyout) || (start < 0) || (buyout < 0)) {
-				player.RedMessage("Nespravne parametry! Zadavej .aukce PocatecniCena VykupniCena");
-				return;
+			if ((start < 0) || (buyout < 0)) {
+				return "Ceny zadavej cislem, nula a vic.";
 			}
 			if (start > MaxPrice) {
-				player.RedMessage("Startovni cena presahuje povolene maximum 1000M.");
-				return;
+				return "Startovni cena presahuje povolene maximum 1000M.";
 			}
 			if (buyout > MaxPrice) {
-				player.RedMessage("Vykupni cena presahuje povolene maximum 1000M.");
-				return;
+				return "Vykupni cena presahuje povolene maximum 1000M.";
 			}
 			if ((buyout > 0) && (buyout < start)) {
-				player.RedMessage("Vykupni cena nemuze byt nizsi nez startovni.");
-				return;
+				return "Vykupni cena nemuze byt nizsi nez startovni.";
 			}
+			return null;
+		}
+
+		/// <summary>i_zamerovatko_aukce: the cursor for an item or a container of them, at these prices.</summary>
+		internal static void StartTargeting(Player player, int start, int buyout) {
 			player.SysMessage("Zamerujes predmety do aukce s:", ClassAbilities.ClassMessageHue);
 			player.SysMessage("Startovni cenou " + start + ", Vykupni cenou " + buyout, ClassAbilities.ClassMessageHue);
-			player.Target(SingletonScript<Targ_Auction>.Instance, new[] { (int) start, (int) buyout });
+			player.Target(SingletonScript<Targ_Auction>.Instance, new[] { start, buyout });
 		}
 	}
 
@@ -392,6 +390,7 @@ namespace SteamEngine.CompiledScripts {
 			int[] prices = (int[]) parameter;
 			if (targetted.TopObj() != self) {
 				self.SysMessage("Vec musis mit u sebe.");
+				D_Auction.Show(self, 0);
 				return TargetResult.Done;
 			}
 			int added = 0;
@@ -417,7 +416,12 @@ namespace SteamEngine.CompiledScripts {
 			} else if (added == 1) {
 				self.SysMessage(did + " jsi " + ((targetted is Container) ? "1 predmet" : targetted.Name) + " do aukce.", ClassAbilities.ClassMessageHue);
 			}
+			D_Auction.Show(self, 0);
 			return TargetResult.Done;
+		}
+
+		protected override void On_TargonCancel(Player self, object parameter) {
+			D_Auction.Show(self, 0);
 		}
 
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {

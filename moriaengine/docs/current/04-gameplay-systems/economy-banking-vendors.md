@@ -84,10 +84,13 @@ the NPC, counting non-GM purchases only. Erebor's sum went wrong from a million 
 to a website, and the items never left their owners. The user decided: each realm has its own auction, `.aukce` works
 anywhere, there is no house cut, and bidders see the seller's name and realm.
 
-- **Listing**: `.aukce start buyout`, then target an item or a container of them in your own pack. Buyout 0 means
-  none, and buyout may not be below start. Erebor's rules: identified magic items only, never newbie or move-never,
-  prices up to 1000M, a realm needed. The item leaves the seller for the auction house's hidden box (a backpack on
-  plane 250, found again by its tag after a restart); the listing is kept in tags on the item.
+- **Listing**: the auction list's Pridat predmet button (`D_AuctionNew`): the starting price and the buyout (0 is
+  none, else no lower than the start), then Zamerit predmet gives a cursor for an item or a container of them in your
+  own pack, and the list comes back. Erebor took the prices as `.aukce` parameters; the user didn't want that, so
+  `.aukce` only opens the list. Erebor's rules: identified magic items only, never newbie or move-never, prices up
+  to 1000M, a realm needed; wrong prices bring the dialog back with what was typed. The item leaves the seller for
+  the auction house's hidden box (a backpack on plane 250, found again by its tag after a restart); the listing is
+  kept in tags on the item.
 - **Bidding**: `.aukce` alone lists the own realm's listings (a GM sees all), ten to a page, soonest end first. A
   line opens the item: its properties, material, seller and realm, bid, buyout, time left. A magic item's name doesn't
   say its material, so a weapon's or armor's material is shown in brackets after the name, and on the item's page.
