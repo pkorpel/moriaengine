@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## IN PROGRESS (2026-11-03): #1090 weekly quests and boosters, quests docs folder
+
+User: quests next, weekly quests and boosters first; do NOT start the numbered quests (they want to revisit them). Rules: a special quest item becomes a tag on the player, no item (for the quests ported before too); one doc file per quest in a new folder. Plan: (1) docs/current/04-gameplay-systems/quests/ (README with the rules, expert/master/grandmaster/journal split from rank-quests.md), branch quests-docs-folder; (2) Master quest's key and egg as tags; (3) boosters; (4) weekly quests and their .questy section. Archive analysis by a research agent: scratchpad/spec-weekly-boosters.md.
+
 ## DONE (2026-11-03): .SetupWorld's lone NPCs as spawns (branch setup-npc-spawns)
 
 User: the NPCs .SetupWorld places (alchemists, Prodejce, Lenastirs, Grandmaster's Elqira/Elmira/Elvira/envoys...) should have spawns, through the traditional .spawn system; no migration needed, the user rebuilds the world from an empty save. WorldPieces.Npc goes through SpawnGem (.spawn's f_spawninit, the gem on the ground, the piece), fires the gem's @spawnNow at once instead of after its 1 s timer; spawn.scp's @spawnNow calls SpawnedPieces.Prepare, which applies the gem's tags (realm, invulnerable) to every respawn; homedist 6 (the old default leash) or 0 for those standing still. Rinald stays quest-made: the quest replaces a transformed Rinald per hero and the cave exit waits for his death, a spawn's timer would trap heroes.

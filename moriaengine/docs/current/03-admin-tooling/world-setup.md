@@ -51,7 +51,7 @@ Two consequences:
 | `.SetupWorld` | Every setup, in order |
 | `.SetupExpertQuest`, `.SetupMasterQuest`, `.SetupGrandmasterQuest`, `.SetupDungeonEntrances`, `.SetupTravelStones` | One setup, by the same rules |
 
-All are GM only. What each quest places is in [Rank quests](../04-gameplay-systems/rank-quests.md).
+All are GM only. What each quest places is in its own file under [Quests](../04-gameplay-systems/quests/README.md).
 
 ## Adding a setup
 
