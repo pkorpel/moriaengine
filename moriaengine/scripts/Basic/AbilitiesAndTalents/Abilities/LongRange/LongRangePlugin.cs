@@ -44,8 +44,7 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_UnAssign(Character cont) {
 			base.On_UnAssign(cont);
 
-			Character self = (Character) this.Cont;
-			self.WeaponRangeModifier -= (int) this.EffectPower;
+			cont.WeaponRangeModifier -= (int) this.EffectPower; //this.Cont is gone by now
 		}
 
 		//with longrange active, every swing fizzles the target's spells

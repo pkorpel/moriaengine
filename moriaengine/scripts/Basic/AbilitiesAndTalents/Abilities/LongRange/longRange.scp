@@ -1,10 +1,10 @@
 [ActivableAbilityDef a_longrange]
 Name="Longrange"
 Icon = 0x5209
-EffectPower=2 //regardless of ability points - those are only relevant for success chance
+EffectPower=3 //nastaveni_rangearrow_dstbonus, regardless of ability points - those are only relevant for success chance
 EffectDuration=10
-Cooldown = 15 * 60
-Chance = 0.09 //90% at 10 points
+Cooldown = 20 //nastaveni_rangearrow_delay
+Chance = 0.1 //nastaveni_rangearrow_chance: 100% at 10 points
 
 PluginKey = @@longrange
 PluginDef = p_longrange

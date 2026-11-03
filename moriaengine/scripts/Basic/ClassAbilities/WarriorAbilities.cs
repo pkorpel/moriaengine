@@ -225,7 +225,7 @@ namespace SteamEngine.CompiledScripts {
 					if (distance <= settings.leapRange) {
 						self.Go(new Point4D(target.X, target.Y, target.Z, target.M));
 					} else {
-						MonsterSpecialAttacks.ForceMove(self, settings.leapRange, (x, y) => Point2D.GetDirFromTo(new Point2D(x, y), target), null);
+						MonsterSpecialAttacks.ForceMove(self, settings.leapRange, (x, y) => Point2D.GetDirFromTo(new Point2D(x, y), target), (x, y) => false);
 						self.SysMessage("Nedostal ses az k cili...", ClassAbilities.ClassMessageHue);
 					}
 					self.SetTag(nextLeapTK, Globals.TimeInSeconds + settings.leapDelaySeconds);
@@ -310,9 +310,13 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>@AfterSwing of a player, on a blow that's landing.</summary>
 		internal static void ModifyOwnBlow(Player self, Character target, WeaponSwingArgs swing) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
-			if (ClassAbilities.CounterFires(self) && (self.WeaponType != WeaponType.Bow) && (self.WeaponType != WeaponType.XBow)) {
-				self.SysMessage("Kriticky zasah!", ClassAbilities.ClassMessageHue);
-				swing.DamageAfterAC = (swing.DamageAfterAC * settings.criticalPermille) / 1000;
+			if (ClassAbilities.CounterFires(self)) {
+				if (RangerAbilities.IsShooting(self)) {
+					RangerAbilities.CriticalShot(self, target, swing);
+				} else {
+					self.SysMessage("Kriticky zasah!", ClassAbilities.ClassMessageHue);
+					swing.DamageAfterAC = (swing.DamageAfterAC * settings.criticalPermille) / 1000;
+				}
 			}
 			if (!target.IsPlayer && (self.Level >= settings.doubleSwingMinLevel)) {
 				int points = ClassAbilities.Points(self, "doubleswing");

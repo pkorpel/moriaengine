@@ -36,6 +36,43 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int roundAttackStamina = 0;
 
+		/// <summary>nastaveni_knockback_chance: out of 10000, per point.</summary>
+		[SaveableData]
+		public int knockbackChance = 1000;
+
+		[SaveableData]
+		public double knockbackDelaySeconds = 10;
+
+		[SaveableData]
+		public double knockbackEffectSeconds = 10;
+
+		[SaveableData]
+		public int knockbackRange = 4;
+
+		[SaveableData]
+		public int longRangeStamina = 50;
+
+		[SaveableData]
+		public int splitShotStamina = 75;
+
+		[SaveableData]
+		public double splitShotDelaySeconds = 45;
+
+		[SaveableData]
+		public double splitShotEffectSeconds = 10;
+
+		[SaveableData]
+		public int splitShotMaxRange = 4;
+
+		[SaveableData]
+		public int splitShotAoeDivisor = 260;
+
+		[SaveableData]
+		public int splitShotDamageVsM = 175;
+
+		[SaveableData]
+		public int splitShotDamageVsP = 125;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;
