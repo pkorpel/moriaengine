@@ -195,6 +195,18 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int strikeBonus = 5;
 
+		/// <summary>nastaveni_hypnoza_povolena.</summary>
+		[SaveableData]
+		public bool hypnosisAllowed = true;
+
+		/// <summary>nastaveni_controlnpc_chance: out of 10000, a point.</summary>
+		[SaveableData]
+		public int controlNpcChance = 900;
+
+		/// <summary>catchField's cooldown after a success, seconds.</summary>
+		[SaveableData]
+		public double catchFieldCooldownSeconds = 3600;
+
 		/// <summary>nastaveni_pact_again, seconds.</summary>
 		[SaveableData]
 		public double pactAgainSeconds = 360;

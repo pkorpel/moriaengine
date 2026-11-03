@@ -58,6 +58,7 @@ MaxHits = 1000 1250
 MaxStam = 60 80
 MaxMana = 0
 Experience = 5 6
+Hypnotizable = 17
 NaturalDamageType = DamageType.Physical
 Parry = 500 600
 Tactics = 350 500

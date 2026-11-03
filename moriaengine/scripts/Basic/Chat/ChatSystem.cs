@@ -208,6 +208,10 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>goch, evch. A GM can use either.</summary>
 		public static void SendToRealm(Character sender, ChatChannel channel, string text) {
 			Realm realm = (channel == ChatChannel.Gondor) ? Realm.Gondor : Realm.Mordor;
+			if (MysticHypnosis.IsPossessing(sender)) { //#1017
+				sender.SysMessage("Ve svem stavu nemuzes pouzivat masovou komunikaci");
+				return;
+			}
 			if (((sender.Realm != realm) && !sender.IsGM) || !IsOnWithMessage(sender, channel)) {
 				return;
 			}

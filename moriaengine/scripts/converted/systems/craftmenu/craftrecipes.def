@@ -460,3 +460,17 @@ Item = i_toulec
 Resources = 50 i_hides_cut, 15 i_gem_citrine, 50 i_thread, 5 i_wire_iron
 SkillMake = 500 tinkering, 400 bowcraft, 500 tailoring
 
+[CraftRecipeDef craftrecipe_i_customscroll_mass_bless]
+Item = i_customscroll_mass_bless
+Resources = 1 i_scroll_blank
+SkillMake = 600 inscription, 800 magery
+
+[CraftRecipeDef craftrecipe_i_scroll_frostbolt]
+Item = i_scroll_frostbolt
+Resources = 1 i_scroll_blank
+SkillMake = 750 inscription, 600 magery
+
+[CraftRecipeDef craftrecipe_i_torch_lit]
+Item = i_torch_lit
+Resources = 1 i_torch
+

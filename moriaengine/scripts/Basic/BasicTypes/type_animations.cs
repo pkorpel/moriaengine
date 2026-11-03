@@ -29,7 +29,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_Step(Item self, Character steppingChar, Item selfAgain, bool repeated, MovementType movementType) {
-			if (Refuses(steppingChar)) {
+			if (Refuses(steppingChar) || MysticHypnosis.RefusesTelepad(steppingChar)) {
 				return;
 			}
 			//only tries once after walking on

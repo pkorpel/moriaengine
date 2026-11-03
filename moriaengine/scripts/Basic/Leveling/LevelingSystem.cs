@@ -70,6 +70,9 @@ namespace SteamEngine.CompiledScripts {
 			if (player == null || amount == 0) {
 				return;
 			}
+			if (MysticHypnosis.CountsExperience(player, amount)) { //#1017 - paid on the way home from a hypnosis
+				return;
+			}
 			player.Experience += amount;
 			if (amount > 0) {
 				player.SysMessage("You have gained " + amount + " experience.");

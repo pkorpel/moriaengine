@@ -26,6 +26,7 @@ Int = 100
 MaxHits = 12000 12650
 MaxStam = 300 340
 Experience = 80 110
+Hypnotizable = 11
 NaturalDamageType = DamageType.Physical|DamageType.Slashing
 MagicResist = 2000
 Tactics = 2500
