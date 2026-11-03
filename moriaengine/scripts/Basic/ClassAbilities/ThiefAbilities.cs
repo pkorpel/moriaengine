@@ -17,6 +17,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly PluginKey shieldStunKey = PluginKey.Acquire("_thiefShieldStun_");
 		private static readonly PluginKey knifeStunKey = PluginKey.Acquire("_thiefKnifeStun_");
 		private static readonly TagKey nextThrowTK = TagKey.Acquire("_nextThrow_");
+		private static readonly TagKey nextStrikeTK = TagKey.Acquire("_nextStrike_");
 		private static readonly TagKey knifeImmuneTK = TagKey.Acquire("_kudlyImmune_");
 		private const double MinHiddenSeconds = 3, StunSeconds = 2;
 
@@ -145,6 +146,47 @@ namespace SteamEngine.CompiledScripts {
 					self.SysMessage("Podriznuti!", ClassAbilities.ClassMessageHue);
 					swing.DamageAfterAC += (swing.DamageAfterAC * ThroatBonus(throat)) / 100;
 				}
+			}
+		}
+
+		/// <summary>holdsOneHand(i_war_fork): the fork's own look.</summary>
+		internal static bool HoldsWarFork(Character self) {
+			Item hand = self.FindLayer(LayerNames.Hand1) as Item;
+			ItemDef fork = ThingDef.GetByDefname("i_war_fork") as ItemDef;
+			return (hand != null) && (((fork != null) && (hand.Def.Model == fork.Model)) || (hand.Def.Model == 0x1405));
+		}
+
+		/// <summary>e_thief with a war fork: a blow the counter makes special charges a round strike, up to 3.</summary>
+		internal static void ChargeWarFork(Player self, Character target) {
+			if (!IsFencing(self) || !HoldsWarFork(self) || !ClassAbilities.CounterFires(self)) {
+				return;
+			}
+			if (target.IsPlayer && (target.Realm == self.Realm)) {
+				return; //charge_add: nothing from your own side
+			}
+			StrikeChargeTimer.Add(self);
+			self.SysMessage("Naprazeni k rychlemu utoku!", ClassAbilities.ClassMessageHue);
+		}
+
+		/// <summary>[function strike]: the round attack the charges paid for, (20 + 5 * (charges^2 - 1))% per
+		/// charge of a blow on everyone adjacent, sparing your own realm.</summary>
+		[SteamFunction]
+		public static void Strike(Player self) {
+			ClassAbilitySettings settings = ClassAbilitySettings.instance;
+			StrikeChargeTimer charges = self.GetTimer(StrikeChargeTimer.Key) as StrikeChargeTimer;
+			if (self.Flag_Dead) {
+				self.SysMessage("Jako duch nemuzes tuto abilitu pouzit!");
+			} else if (ClassAbilities.SecondsTag(self, nextStrikeTK) > Globals.TimeInSeconds) {
+				self.RedMessage("Jeste nelze pouzit.");
+				self.SetTag(nextStrikeTK, Globals.TimeInSeconds + 1);
+			} else if ((charges == null) || (charges.charges <= 0)) {
+				self.RedMessage("Nemas pripraveny zadny uder!");
+			} else if (ClassAbilities.ReduceStamina(self, settings.strikeStamina)) {
+				self.SetTag(nextStrikeTK, Globals.TimeInSeconds + 0.5);
+				int count = charges.charges;
+				int percent = (count * settings.strikeBase) + (((count * count) - 1) * settings.strikeBonus);
+				charges.Delete();
+				WarriorAbilities.HitAround(self, percent, true);
 			}
 		}
 
@@ -303,6 +345,41 @@ namespace SteamEngine.CompiledScripts {
 				self.SetTag(shieldReadyTK, 1);
 				self.SysMessage("Muzes zasadit uder stitem!");
 				self.SetTag(nextShieldTK, Globals.TimeInSeconds + ((350 - (points * 5)) / 10.0));
+			}
+		}
+	}
+
+	/// <summary>i_charge for round strikes: 3.5 s, then one a time every 1.8 s.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class StrikeChargeTimer : BoundTimer {
+		internal static readonly TimerKey Key = TimerKey.Acquire("_strikeCharge_");
+		private const int Limit = 3;
+		private const double Duration = 3.5, DropDuration = 1.8;
+
+		[SaveableData, CopyableData]
+		public int charges;
+
+		[DeepCopyImplementation, LoadingInitializer]
+		public StrikeChargeTimer() {
+		}
+
+		internal static void Add(Player self) {
+			StrikeChargeTimer timer = self.GetTimer(Key) as StrikeChargeTimer;
+			if (timer == null) {
+				timer = new StrikeChargeTimer();
+				self.AddTimer(Key, timer);
+				timer.PeriodInSeconds = Duration;
+			}
+			timer.charges = Math.Min(Limit, timer.charges + 1);
+			timer.DueInSeconds = Duration;
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			this.charges--;
+			if (this.charges <= 0) {
+				this.Delete();
+			} else {
+				this.DueInSeconds = DropDuration;
 			}
 		}
 	}

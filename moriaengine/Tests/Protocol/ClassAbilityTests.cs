@@ -90,7 +90,7 @@ namespace SteamEngine.Tests.Protocol {
 						"crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "killsBuildASpree",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
-						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "aKnifeHitsTheMonster", "knivesAreUsedUp", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall" }) {
+						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "aKnifeHitsTheMonster", "knivesAreUsedUp", "strikeSpendsChargesOnThoseAround", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall" }) {
 					string marker = "CLASS_ABILITY: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);

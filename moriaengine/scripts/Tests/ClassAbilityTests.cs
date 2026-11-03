@@ -291,6 +291,16 @@ namespace SteamEngine.CompiledScripts {
 			Report("knivesAreUsedUp", knives.IsDeleted || (knives.Amount < 20));
 			WeaponSkillTargetQueuePlugin.RemoveTarget(player, mark);
 			mark.Delete();
+			StrikeChargeTimer.Add(player);
+			StrikeChargeTimer.Add(player);
+			player.Stam = 200;
+			NPC beside = Dummy(self, 1);
+			short besideHits = beside.Hits;
+			CombatSettings.instance.weapAttack = weapAttack * 100;
+			ThiefAbilities.Strike(player);
+			CombatSettings.instance.weapAttack = weapAttack;
+			Report("strikeSpendsChargesOnThoseAround", (beside.Hits < besideHits) && !player.HasTimer(StrikeChargeTimer.Key) && (player.Stam == 160));
+			beside.Delete();
 			Console.WriteLine("THIEF_DONE");
 		}
 
