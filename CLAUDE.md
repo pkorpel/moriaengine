@@ -61,6 +61,8 @@ Shipped, #1038, branch npc-forget-unseen: NPCs drop a hidden or invisible target
 
 Shipped, #1041, branch travel-by-realm: travel stones go by realm alone, the user's call against Erebor's ismurderer.
 
+Shipped, #1043, branch travel-followers-price-points: a ride takes only what NPCAiTimer.Think would have following ("stop" leaves a wild NPC's FollowTarget set as a mark), each stop has a price point apart from its arrival, Minas Tirith and Helmuv Zleb's real spots, both ways, and the stone no longer says cash only: payment always was GoldUtils.Pay.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.
