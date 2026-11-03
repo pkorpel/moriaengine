@@ -133,8 +133,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>PLACEHOLDER (#791) - magic items aren't designed yet. Erebor gave an i_mi_bag here;
 		/// for now the roll only logs, so the chance is in place for when the drop is.</summary>
+		/// <summary>#1017 - giveitem(i_mi_bag): it lands in the corpse.</summary>
 		public static void DropMagicItemPlaceholder(NPC npc, string why) {
-			Logger.WriteDebug("MonsterLoot: " + npc.Name + "#" + npc.Uid + " (" + why + ") rolled a magic item - not implemented yet");
+			GiveMagicBag(npc, "i_mi_bag");
+		}
+
+		public static void GiveMagicBag(NPC npc, string defname) {
+			if (ThingDef.GetByDefname(defname) is ItemDef def) {
+				def.Create(npc.Backpack);
+			}
 		}
 
 		/// <summary>Erebor's thresholds, each "gold &gt; a random roll" - the bigger the gold, the likelier.</summary>

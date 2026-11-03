@@ -36,7 +36,7 @@ NAME = "Crystal Pillar"
 model = i_deed
 type = t_deed //guessed from base def by Converter 
 
-[ItemDef 0x905]
+[EquippableDef 0x905]
 CATEGORY = Other
 SUBSECTION = Necromancer
 DESCRIPTION = Ankh Amulet
@@ -45,9 +45,10 @@ NAME = "Ankh Amulet"
 TYPE = T_JEWELRY
 Flippable = false
 //DYE = 0 // commented out by Converter 
+layer = 0 //Set by Converter 
 DEFNAME = i_ankh_Amulet
 
-[ItemDef 0x904]
+[EquippableDef 0x904]
 CATEGORY = Other
 SUBSECTION = Necromancer
 DESCRIPTION = Sepent Amulet
@@ -56,6 +57,7 @@ NAME = "Sepent Amulet"
 TYPE = T_JEWELRY
 Flippable = false
 //DYE = 0 // commented out by Converter 
+layer = 0 //Set by Converter 
 DEFNAME = i_Sepent_Amulet
 
 [ItemDef 0x3e5]
