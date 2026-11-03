@@ -13,16 +13,16 @@ Flippable = true
 //TDATA2 = 064 // commented out by Converter 
 model = i_sign_brass
 
-[ContainerDef i_vendor_chest]
-CATEGORY = GM Items
-SUBSECTION = Truhla na najem
-DESCRIPTION = Truhlicka na najem pro vendora
-
-name = "Najem"
-TYPE = T_CONTAINER_locked
-model = i_box_brass
-layer = 0 //Set by Converter 
-Color = 0986
+//[ContainerDef i_vendor_chest] //(commented out by Converter) 
+//CATEGORY = GM Items
+//SUBSECTION = Truhla na najem
+//DESCRIPTION = Truhlicka na najem pro vendora
+//
+//name = "Najem"
+//TYPE = T_CONTAINER_locked
+//model = i_box_brass
+//layer = 0 //Set by Converter 
+//Color = 0986
 
 [EquippableDef i_odpocet_vendora]
 name = "Created Hidden"

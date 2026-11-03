@@ -1,3 +1,4 @@
+using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
@@ -22,7 +23,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static bool IsSignOf(Item item, House house) {
-			return (item.Type is t_housemenu) && (item.GetTag(houseTK) == house);
+			return IsAnySign(item) && (item.GetTag(houseTK) == house);
+		}
+
+		/// <summary>#1017 - a house's, a stall's (t_vendormenu) or a field's (t_fieldmenu) sign.</summary>
+		public static bool IsAnySign(Item item) {
+			return (item.Type is t_housemenu) || (item.Type is t_vendormenu) || (item.Type is t_fieldmenu);
 		}
 
 		/// <summary>Its house, or the house of the region it stands in, made if there's none yet.</summary>
@@ -37,11 +43,15 @@ namespace SteamEngine.CompiledScripts {
 			}
 			house = House.Create(region);
 			Link(sign, house);
-			clicker.SysMessage("V tomto sektoru nalezen dum " + house.Title + ". Menu prirazeno.");
+			clicker.SysMessage("V tomto sektoru nalezen " + (house.HasMembers ? "dum " : "prostor ") + house.Title + ". Menu prirazeno.");
 			return house;
 		}
 
 		public void On_DClick(Item self, Character clicker) {
+			Use(self, clicker);
+		}
+
+		internal static void Use(Item self, Character clicker) {
 			Player player = clicker as Player;
 			if (player == null) {
 				return;
@@ -62,16 +72,24 @@ namespace SteamEngine.CompiledScripts {
 						player.SysMessage("Tento dum nemuzes obsadit.");
 						return;
 					}
-					D_TownConfirm.Ask(player, "Chces obsadit tento dum?", () => {
+					D_TownConfirm.Ask(player, house.ClaimQuestion, () => {
 						if (house.Owner == null) {
 							house.Claim(player);
-							D_House.Show(player, house, self);
+							ShowMenu(player, house, self);
 						}
 					});
 					return;
 				}
 			}
-			D_House.Show(player, house, self);
+			ShowMenu(player, house, self);
+		}
+
+		private static void ShowMenu(Player player, House house, Item sign) {
+			if (house.HasMembers) {
+				D_House.Show(player, house, sign);
+			} else {
+				D_RentedPlace.Show(player, house, sign);
+			}
 		}
 	}
 }

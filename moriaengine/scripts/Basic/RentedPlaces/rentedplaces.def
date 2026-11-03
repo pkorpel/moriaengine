@@ -1,0 +1,19 @@
+// #1017 - Erebor's stalls (vendormenu.scp) and fields (fieldmenu.scp): rented like houses, a gem per region.
+
+[StallDef i_stall_gem]
+NAME = "stanek"
+model = i_worldgem_bit
+
+[FieldDef i_field_gem]
+NAME = "pole"
+model = i_worldgem_bit
+
+//the archive's chests, open as the houses' rent chest: only money goes in
+[RentChestDef i_vendor_chest]
+NAME = "Najem"
+model = i_box_brass
+Color = 0986
+
+[RentChestDef i_field_chest]
+NAME = "Najem"
+model = i_box_brass
