@@ -88,6 +88,9 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendSpeech(".TestMysticAbilities");
 				Assert.True(this.fixture.WaitForGameOutput("MYSTIC_DONE", Wait), this.fixture.GameOutputSnapshot());
 				var ball = game.ReadGumpDialogWithStrings(Wait);
+				for (int i = 0; (i < 10) && (ball.Strings.Count == 0); i++) { //#1070 - the ranger's and thief's icons come first
+					ball = game.ReadGumpDialogWithStrings(Wait);
+				}
 				Assert.Contains("Ovladani NPC", ball.Strings);
 				Assert.Contains(".catchfield", ball.Strings);
 				game.SendSpeech(".TestMysticHypnosis");
@@ -95,7 +98,7 @@ namespace SteamEngine.Tests.Protocol {
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "longRangeAddsThree", "longRangeCostsStamina", "knockbackEndsLongRange", "splitRangeGrowsWithDistance",
 						"splitRangeStaysUnderItsLimit", "splitNextToTheTargetIsStrongest", "splitIsNeverAFullBlow", "splitShotCostsStamina", "splitShotMustCoolDown",
-						"crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "aWeakerArrowWaitsItsTurn", "arrowRecordsAsErebor",
+						"aSpreeShowsItsIcon", "aSplitShotShowsItsIcon", "theLastChargeClosesTheIcon", "crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "aWeakerArrowWaitsItsTurn", "arrowRecordsAsErebor",
 						"aLightCrossbowTakesJaggedBoltsOnly", "aJaggedBoltBleeds", "aCrushingArrowUsesABolt", "killsBuildASpree",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",

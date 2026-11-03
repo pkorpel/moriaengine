@@ -205,6 +205,7 @@ namespace SteamEngine.CompiledScripts {
 				int count = charges.charges;
 				int percent = (count * settings.strikeBase) + (((count * count) - 1) * settings.strikeBonus);
 				charges.Delete();
+				AbilityIcons.HideCharge(self); //#1070
 				WarriorAbilities.HitAround(self, percent, true);
 			}
 		}
@@ -405,6 +406,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			timer.charges = Math.Min(Limit, timer.charges + 1);
 			timer.DueInSeconds = Duration;
+			AbilityIcons.ShowCharge(self, AbilityIcons.RoundAttack, timer.charges); //#1070
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
@@ -413,6 +415,9 @@ namespace SteamEngine.CompiledScripts {
 				this.Delete();
 			} else {
 				this.DueInSeconds = DropDuration;
+			}
+			if (cont is Character self) {
+				AbilityIcons.ShowCharge(self, AbilityIcons.RoundAttack, this.charges);
 			}
 		}
 	}
