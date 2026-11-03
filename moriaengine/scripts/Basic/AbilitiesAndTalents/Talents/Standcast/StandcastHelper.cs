@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 	/// once per successful cast).</summary>
 	public static class StandcastHelper {
 		private static ActivableAbilityDef standcastDef;
-		private static ActivableAbilityDef StandcastDef {
+		internal static ActivableAbilityDef StandcastDef {
 			get {
 				if (standcastDef == null) {
 					standcastDef = (ActivableAbilityDef) AbilityDef.GetByDefname("a_standcast");

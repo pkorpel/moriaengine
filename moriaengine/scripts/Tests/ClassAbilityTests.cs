@@ -327,7 +327,7 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("NECRO_DONE");
 		}
 
-		private static NPC Dummy(Character self, int offset) {
+		internal static NPC Dummy(Character self, int offset) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + offset, self.Y, self.Z, self.M);
 			dummy.MaxHits = 30000;
 			dummy.Hits = 30000;
@@ -339,7 +339,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static void Report(string name, bool ok) {
+		internal static void Report(string name, bool ok) {
 			Console.WriteLine("CLASS_ABILITY: " + name + "=" + ok);
 		}
 	}

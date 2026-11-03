@@ -115,6 +115,8 @@ namespace SteamEngine.CompiledScripts {
 		internal static void OnDeath(Character self) {
 			self.RemoveTag(counterTK);
 			PriestAbilities.NoteDeath(self);
+			ShamanAbilities.OnDeath(self);
+			ShamanPacts.OnGone(self);
 		}
 
 		private static TagKey TagOf(string name) {

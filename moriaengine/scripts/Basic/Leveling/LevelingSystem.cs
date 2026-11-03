@@ -387,7 +387,11 @@ namespace SteamEngine.CompiledScripts {
 				share = cap;
 			}
 			foreach (Character fighter in fighters) {
+				if (ShamanPacts.EarnsNoKillExp(fighter as Player)) { //#1017 - a blood pact's giver earns through its bearer
+					continue;
+				}
 				AddExperience(fighter as Player, share);
+				ShamanPacts.ShareKillExp(fighter as Player, share);
 			}
 		}
 

@@ -195,6 +195,21 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int strikeBonus = 5;
 
+		/// <summary>nastaveni_pact_again, seconds.</summary>
+		[SaveableData]
+		public double pactAgainSeconds = 360;
+
+		/// <summary>nastaveni_bloodpact_dmg: percent of a monster's blow shared.</summary>
+		[SaveableData]
+		public int bloodPactPercent = 15;
+
+		/// <summary>nastaveni_lifepact_again and _fail, minutes there.</summary>
+		[SaveableData]
+		public double lifePactAgainSeconds = 3300;
+
+		[SaveableData]
+		public double lifePactFailSeconds = 120;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;
