@@ -43,7 +43,31 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutput("TRAVEL_SIDES_DONE", Wait), this.fixture.GameOutputSnapshot());
 				this.AssertChecks("edorasIsGondor", "baradDurIsMordor", "gondorIsNotOfferedMordor", "murdererCountsAsMurderer", "gondorMurdererKeepsGondorsStops", "mordorIsNotOfferedGondor",
 					"noRealmIsNotOfferedMordor", "priceIsDistanceBy3Point5", "leavingEnemyLandCostsFiveTimes", "mordorPaysPlainAtHome",
-					"gmIsOfferedEverything");
+					"gmIsOfferedEverything", "minasTirithPricedByItsRealSpot", "helmuvPricedByItsRealSpot", "theWayBackCostsTheSame",
+					"betweenThoseTwoIsTheRealDistance");
+			}
+		}
+
+		[Fact]
+		public void TheBankPaysARide() {
+			using (TestGameClient game = this.Login("Coin Keeper")) {
+				game.SendSpeech(".TestTravelPaysFromBank");
+				Assert.True(this.fixture.WaitForGameOutput("TRAVEL_BANK_DONE", Wait), this.fixture.GameOutputSnapshot());
+				this.AssertChecks("theBankPaysARide");
+			}
+		}
+
+		[Fact]
+		public void OnlyWhatReallyFollowsComesAlong() {
+			using (TestGameClient game = this.Login("Shepherd")) {
+				game.SendSpeech(".TestTravelFollowersSetup");
+				Assert.True(this.fixture.WaitForGameOutput("TRAVEL_FOLLOWERS_READY", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech("Stojan stop");
+				game.SendSpeech("Zustan stop");
+				Thread.Sleep(500);
+				game.SendSpeech(".TestTravelFollowersGo");
+				Assert.True(this.fixture.WaitForGameOutput("TRAVEL_FOLLOWERS_DONE", Wait), this.fixture.GameOutputSnapshot());
+				this.AssertChecks("stopMarksAWildNpc", "stayStopsAnOwnPet", "aStoppedWildNpcStaysBehind", "aPetToldToStayStaysBehind", "aFollowingPetComesAlong");
 			}
 		}
 

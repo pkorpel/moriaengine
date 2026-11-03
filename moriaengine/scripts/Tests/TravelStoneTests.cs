@@ -80,6 +80,15 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TRAVEL_INFO: Edoras to Fornost " + expected + " gp, asked " + TravelStops.Price(self, from, fornost));
 			Report("priceIsDistanceBy3Point5", (expected > 0) && (TravelStops.Price(self, from, fornost) == expected));
 
+			TravelStop minasTirith = Named("Minas Tirith"), helmuv = Named("Helmuv Zleb");
+			Point2D realMinasTirith = new Point2D(2977, 2951), realHelmuv = new Point2D(2099, 2559);
+			int toMinasTirith = (Point2D.GetSimpleDistance(from, realMinasTirith) * 1000) / 3500;
+			Console.WriteLine("TRAVEL_INFO: Edoras to Minas Tirith " + toMinasTirith + " gp, asked " + TravelStops.Price(self, from, minasTirith));
+			Report("minasTirithPricedByItsRealSpot", TravelStops.Price(self, from, minasTirith) == toMinasTirith);
+			Report("helmuvPricedByItsRealSpot", TravelStops.Price(self, from, helmuv) == (Point2D.GetSimpleDistance(from, realHelmuv) * 1000) / 3500);
+			Report("theWayBackCostsTheSame", TravelStops.Price(self, minasTirith.Destination, edoras) == toMinasTirith);
+			Report("betweenThoseTwoIsTheRealDistance", TravelStops.Price(self, minasTirith.Destination, helmuv) == (Point2D.GetSimpleDistance(realMinasTirith, realHelmuv) * 1000) / 3500);
+
 			Point4D enemyStone = baradDur.Destination;
 			int plain = (Point2D.GetSimpleDistance(enemyStone, fornost.Destination) * 1000) / 3500;
 			Report("leavingEnemyLandCostsFiveTimes", TravelStops.Price(self, enemyStone, fornost) == plain * 5);
@@ -123,6 +132,54 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			Console.WriteLine("TRAVEL_RIDES=" + rides);
+		}
+
+		[SteamFunction]
+		public static void TestTravelPaysFromBank(Character self) {
+			TestTravelPrepare(self);
+			ItemDef gold = (ItemDef) ThingDef.GetByDefname("i_gold");
+			foreach (AbstractItem item in new List<AbstractItem>(self.Backpack)) {
+				if (item.Def == gold) {
+					item.Delete();
+				}
+			}
+			int price = TravelStops.Price(self, stone, Named("Fornost"));
+			long inAll = self.Gold;
+			((Item) gold.Create(self.Bank)).Amount = price + 100;
+			((TravelStone) stone).Book((Player) self, Named("Fornost"));
+			Report("theBankPaysARide", self.HasTimer(TravelRide.Key) && (self.Gold == inAll + 100));
+			self.DeleteTimer(TravelRide.Key);
+			Console.WriteLine("TRAVEL_BANK_DONE");
+		}
+
+		private static NPC stopped, ownStopped, ownFollowing;
+
+		[SteamFunction]
+		public static void TestTravelFollowersSetup(Character self) {
+			self.Account.PLevel = 4; //only a GM can tell a wild NPC to stop
+			int[] arrival = Named("Edoras").Arrival;
+			self.Go(new Point4D(arrival[0], arrival[1], arrival[2], 0));
+			NPCDef rabbit = (NPCDef) ThingDef.GetByDefname("c_a_jackrabbit");
+			stopped = (NPC) rabbit.Create(self.X, self.Y + 1, self.Z, self.M);
+			stopped.Name = "Stojan";
+			ownStopped = (NPC) rabbit.Create(self.X + 1, self.Y, self.Z, self.M);
+			ownStopped.Name = "Zustan";
+			ownStopped.ControlMaster = self;
+			ownFollowing = (NPC) rabbit.Create(self.X, self.Y - 1, self.Z, self.M);
+			ownFollowing.Name = "Vernak";
+			ownFollowing.ControlMaster = self;
+			Console.WriteLine("TRAVEL_FOLLOWERS_READY");
+		}
+
+		[SteamFunction]
+		public static void TestTravelFollowersGo(Character self) {
+			Report("stopMarksAWildNpc", (stopped.FollowTarget == self) && !stopped.ShouldFollowOwner);
+			Report("stayStopsAnOwnPet", !ownStopped.ShouldFollowOwner);
+			TravelRide.Arrive(self, Named("Fornost"));
+			Report("aStoppedWildNpcStaysBehind", Point2D.GetSimpleDistance(stopped, self) > 100);
+			Report("aPetToldToStayStaysBehind", Point2D.GetSimpleDistance(ownStopped, self) > 100);
+			Report("aFollowingPetComesAlong", Point2D.GetSimpleDistance(ownFollowing, self) < 3);
+			Console.WriteLine("TRAVEL_FOLLOWERS_DONE");
 		}
 
 		[SteamFunction]

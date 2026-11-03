@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Networking;
@@ -33,7 +34,7 @@ namespace SteamEngine.CompiledScripts {
 		private void Tell(AbstractCharacter clicker) {
 			Character ch = clicker as Character;
 			if (ch != null) {
-				this.ClickMessage(ch, "Stanice dostavniku a povozu. Nase cesty jsou naprosto bezpecne. Zpoplatneni je podle vzdalenosti a plati se jen hotove.");
+				this.ClickMessage(ch, "Stanice dostavniku a povozu. Nase cesty jsou naprosto bezpecne. Zpoplatneni je podle vzdalenosti.");
 				this.ClickMessage(ch, "Pokud vyuzijes nasich sluzeb, budes jiste spokojen, poutniku.");
 			}
 		}
@@ -129,13 +130,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Point4D point = new Point4D(spot[0], spot[1], spot[2], stop.Destination.M);
 			HidingSkillDef.UnHide(self);
+			List<NPC> followers = new List<NPC>();
 			foreach (AbstractCharacter near in self.GetMap().GetCharsInRange(self.X, self.Y, Globals.MaxUpdateRange)) {
-				Character follower = near as Character;
-				if ((follower != null) && (follower != self) && (follower.FollowTarget == self)) {
-					Move(follower, point);
+				NPC npc = near as NPC;
+				if ((npc != null) && IsFollowing(npc, self)) {
+					followers.Add(npc);
 				}
 			}
+			foreach (NPC follower in followers) {
+				Move(follower, point);
+			}
 			Move(self, point);
+		}
+
+		/// <summary>#1043 - really walking after self, as NPCAiTimer.Think decides it. Sphere asks the same of
+		/// its NPCACT_FOLLOW_TARG. "Stop" leaves a wild NPC's FollowTarget set, to mark it as told to stand.</summary>
+		private static bool IsFollowing(NPC npc, Character self) {
+			return npc.ShouldFollowOwner && (npc.PetGoalPoint == null) && ((npc.FollowTarget ?? npc.ControlMaster) == self);
 		}
 
 		private static void Move(Character ch, Point4D point) {

@@ -4,9 +4,9 @@ Erebor's coach stations, `systems/travelstone.scp`, in `scripts/Basic/Travel`. A
 
 ## Using one
 
-Double click lists the stops you may go to, 14 to a page, with prices. Taking one pays at once, then a count runs above your head for 15 s. Be within 6 tiles of the stone when it ends, or you're left behind and the money is gone. A step after the list opens makes its buttons do nothing, so open it again. Anyone following you goes along.
+Double click lists the stops you may go to, 14 to a page, with prices. Taking one pays at once, then a count runs above your head for 15 s. Be within 6 tiles of the stone when it ends, or you're left behind and the money is gone. A step after the list opens makes its buttons do nothing, so open it again. What's really following you goes along: not a pet told to stay, nor an NPC told to stop. Payment is `GoldUtils.Pay`, pack then bank.
 
-- Price: longest axis of the distance, times 1000, divided by `priceDivisor` (3500), so about 1 gp per 3.5 tiles.
+- Price: longest axis of the distance, times 1000, divided by `priceDivisor` (3500), so about 1 gp per 3.5 tiles. It's measured between price points, the user's call: Minas Tirith (2977,2951) and Helmuv Zleb (2099,2559) arrive in a far corner of the map, so each has one apart from its arrival point. A stone in such a city counts as standing at it. Any other stop's price point is where you arrive.
 - Enemy land isn't listed. Mordor's characters can't go to Gondor's areas, everyone else can't go to Mordor's.
 - Leaving from a stone on enemy land costs 5 times as much (`escortPrice` 50, in tenths). The script's comment says 3, its number says 5.
 - Outcasts are refused. GMs see every stop, pay nothing and go at once.
