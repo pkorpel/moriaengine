@@ -250,6 +250,7 @@ namespace SteamEngine.CompiledScripts {
 			//the world's setups, for experienced GMs (#951)
 			this.commands["SetupWorld"] = PLEVEL_ADMIN;
 			this.commands["SetupHouses"] = PLEVEL_ADMIN;
+			this.commands["SetupStalls"] = PLEVEL_ADMIN;
 			this.commands["SetupTowns"] = PLEVEL_ADMIN;
 			this.commands["SetupDungeonEntrances"] = PLEVEL_ADMIN;
 			this.commands["SetupExpertQuest"] = PLEVEL_ADMIN;

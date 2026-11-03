@@ -22,6 +22,19 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int minimumRent = 50000;
 
+		/// <summary>#1017 - the user's rule for stalls and fields: about 300 gp a tile, at least 15000.</summary>
+		[SaveableData]
+		public int stallRentPerTile = 300;
+
+		[SaveableData]
+		public int stallMinimumRent = 15000;
+
+		[SaveableData]
+		public int fieldRentPerTile = 300;
+
+		[SaveableData]
+		public int fieldMinimumRent = 15000;
+
 		[SaveableData]
 		public int rentRounding = 1000;
 
