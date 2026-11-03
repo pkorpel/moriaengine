@@ -56,6 +56,27 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1017 - Erebor's player vendor: server side in scripts/Tests/EreborVendorTests.cs, then its buy list by speech.</summary>
+		[Fact]
+		public void EreborsPlayerVendorTrades() {
+			using (TestGameClient game = this.Login("Trader")) {
+				game.SendSpeech(".TestEreborVendor");
+				Assert.True(this.fixture.WaitForGameOutput("VENDOR_DONE", Wait), this.fixture.GameOutputSnapshot());
+				string output = this.fixture.GameOutputSnapshot();
+				foreach (string check in new[] { "aDeedPlacesAVendor", "stockedIntoTheBank", "buyingPaysTheVendorNinetyPercent", "unitsSellOneByOne",
+						"theVendorBuysBack", "theEarningsGoToTheBank", "theGoodsGoToTheBank", "aStallPlacesItsVendor" }) {
+					string marker = "VENDOR: " + check + "=";
+					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
+					Assert.True(string.CompareOrdinal(output, idx + marker.Length, "True", 0, 4) == 0, marker + " failed. Game output:\n" + output);
+				}
+				game.SendSpeech("Kupec nakup");
+				var list = game.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(15));
+				Assert.Contains("Nazev zbozi", list.Strings);
+				Assert.Contains("Klobouk", list.Strings);
+			}
+		}
+
 		private TestGameClient Login(string name) {
 			Exception firstFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {

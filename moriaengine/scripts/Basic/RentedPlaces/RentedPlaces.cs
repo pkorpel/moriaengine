@@ -47,8 +47,74 @@ namespace SteamEngine.CompiledScripts {
 			return RentOf(region, settings.stallRentPerTile, settings.stallMinimumRent);
 		}
 
+		private static readonly TagKey vendorTK = TagKey.Acquire("_stall_vendor_");
+		private static readonly TagKey vendorSpotTK = TagKey.Acquire("_stall_vendor_spot_");
+
+		/// <summary>vendoruid: one vendor a stall, through its menu.</summary>
+		public EreborVendor Vendor {
+			get {
+				EreborVendor vendor = this.GetTag(vendorTK) as EreborVendor;
+				return ((vendor == null) || vendor.IsDeleted) ? null : vendor;
+			}
+			set {
+				this.SetTag(vendorTK, value);
+			}
+		}
+
+		/// <summary>vendpos: where the vendor stands.</summary>
+		public Point4D VendorSpot {
+			get { return this.GetTag(vendorSpotTK) as Point4D; }
+			set { this.SetTag(vendorSpotTK, value); }
+		}
+
 		public override void Empty() {
 			RentedPlaces.Empty(this, "veci ze stanku ");
+			EreborVendor vendor = this.Vendor;
+			if (vendor != null) { //trashvendor_itagy: Erebor moved it to a GM room keeping its stock and gold; here a GM redeeds it later
+				vendor.Say("Stanek byl vyklizen.");
+			}
+			this.RemoveTag(vendorTK);
+			this.RemoveTag(vendorSpotTK);
+		}
+
+		/// <summary>Button 5: Umisteni / Premisteni Vendora.</summary>
+		internal void PlaceVendor(Player owner) {
+			Point4D spot = this.VendorSpot;
+			EreborVendor vendor = this.Vendor;
+			if (vendor == null) {
+				if (spot == null) {
+					owner.SysMessage("Neni nastavena pozice!");
+					return;
+				}
+				this.Vendor = EreborVendors.Place(owner, false, spot);
+				owner.SysMessage("Vendor uspesne pridan");
+			} else if ((vendor.X == spot.X) && (vendor.Y == spot.Y)) {
+				owner.SysMessage("Neni potreba ho premistovat, na urcenem miste uz stoji");
+				owner.SysMessage("Pro premisteni vendora nastav napred jeho novou pozici");
+			} else {
+				vendor.P(spot);
+				owner.SysMessage("Vendor premisten");
+			}
+		}
+
+		/// <summary>Button 6: the other body.</summary>
+		internal void ChangeVendorSex(Player owner) {
+			EreborVendor vendor = this.Vendor;
+			if (vendor == null) {
+				owner.SysMessage("Neni tu vendor, nemuzes menit nic");
+				return;
+			}
+			vendor.Model = (vendor.Model == 0x191) ? 0x190 : 0x191;
+			owner.SysMessage("Pohlavi vendora zmeneno.");
+		}
+
+		internal void SetVendorSpot(Player owner, IPoint4D point) {
+			if (point.GetMap().GetRegionFor(point) == this.Area) {
+				this.VendorSpot = new Point4D(point.X, point.Y, point.Z, point.M);
+				owner.SysMessage("Vendorovo misto nastaveno");
+			} else {
+				owner.SysMessage("Vendora muzes umistit jen do stanku");
+			}
 		}
 	}
 
@@ -181,6 +247,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	public class Targ_StallVendorSpot : CompiledTargetDef {
+		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
+			Stall stall = (Stall) parameter;
+			stall.SetVendorSpot(self, new Point4D(targetted.X, targetted.Y, targetted.Z, self.M));
+			return TargetResult.Done;
+		}
+	}
+
 	public class Targ_FieldGuard : CompiledTargetDef {
 		protected override TargetResult On_TargonChar(Player self, Character targetted, object parameter) {
 			RentedPlaces.SetGuard(self, (Field) parameter, targetted);
@@ -194,7 +268,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 	/// <summary>d_vendor_menu and d_field_menu, Erebor's button numbers, without the auction and (for now) the vendor.</summary>
 	public class D_RentedPlace : CompiledGumpDef {
 		private const int Width = 260, RowHeight = 22, LabelHue = 955, ButtonHue = 2301;
-		private const int LockItem = 2, Guard = 5, Rename = 7, Bank = 9, Transfer = 10, Block = 11, Empty = 12, ResetPaid = 13, SetRent = 14, AutoRent = 15;
+		private const int LockItem = 2, Guard = 5, PlaceVendor = 5, VendorSex = 6, VendorSpot = 17, Rename = 7, Bank = 9, Transfer = 10, Block = 11, Empty = 12, ResetPaid = 13, SetRent = 14, AutoRent = 15;
 
 		public static void Show(Player player, House place, Item sign) {
 			player.Dialog(player, SingletonScript<D_RentedPlace>.Instance, new DialogArgs(place, sign));
@@ -215,6 +289,10 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			Add(LockItem, HouseRank.Owner, "Zamknout/odemknout vec");
 			if (place is Field) {
 				Add(Guard, HouseRank.Owner, "Priradit hlidace");
+			} else if (place is Stall stall) {
+				Add(PlaceVendor, HouseRank.Owner, (stall.Vendor == null) ? "Umisteni Vendora" : "Premisteni Vendora");
+				Add(VendorSex, HouseRank.Owner, "Zmena pohlavi Vendora");
+				Add(VendorSpot, HouseRank.Owner, "Nastavit pozici pro vendora");
 			}
 			Add(Rename, HouseRank.Owner, "Prejmenovat " + noun);
 			Add(Bank, HouseRank.Public, place.BankActivated ? "Otevrit banku" : "Aktivovat banku (" + (HouseSettings.instance.bankActivationPrice / 1000) + "k gp)");
@@ -275,6 +353,19 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 					if ((place is Field field) && place.Allows(player, HouseRank.CoOwner)) {
 						player.SysMessage("Koho chces udelat hlidacem?");
 						player.Target(SingletonScript<Targ_FieldGuard>.Instance, field);
+					} else if ((place is Stall stall) && place.Allows(player, HouseRank.CoOwner)) {
+						stall.PlaceVendor(player);
+					}
+					break;
+				case VendorSex:
+					if ((place is Stall sexStall) && place.Allows(player, HouseRank.CoOwner)) {
+						sexStall.ChangeVendorSex(player);
+					}
+					break;
+				case VendorSpot:
+					if ((place is Stall spotStall) && place.Allows(player, HouseRank.CoOwner)) {
+						player.SysMessage("Zamer pozici!");
+						player.Target(SingletonScript<Targ_StallVendorSpot>.Instance, spotStall);
 					}
 					break;
 				case Rename:

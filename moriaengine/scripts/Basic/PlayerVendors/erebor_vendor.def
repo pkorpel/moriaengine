@@ -1,0 +1,33 @@
+// #1017 - Erebor's player vendor (systems/customvendor.scp). Its own names: c_h_vendor and spk_vendor_custom belong to the older
+// scripts/Optional/PlayerVendor, which stays beside it.
+
+[EreborVendorDef c_erebor_vendor]
+NAME = "Vendor"
+model = 0x190
+Color = colors_skin
+Str = 100
+Dex = 0
+Int = 100
+AggroMode = Calm
+EVENTS = spk_erebor_vendor
+
+[EreborVendorDef c_erebor_vendor_f]
+NAME = "Vendor"
+model = 0x191
+Color = colors_skin
+Str = 100
+Dex = 0
+Int = 100
+AggroMode = Calm
+EVENTS = spk_erebor_vendor
+
+// i_deed_vendor and i_deed_vendor_f: a double click puts the vendor where its owner stands
+[ItemDef i_deed_erebor_vendor]
+NAME = "Vendor Deed (male)"
+model = i_deed
+TYPE = t_deed_erebor_vendor
+
+[ItemDef i_deed_erebor_vendor_f]
+NAME = "Vendor Deed (female)"
+model = i_deed
+TYPE = t_deed_erebor_vendor
