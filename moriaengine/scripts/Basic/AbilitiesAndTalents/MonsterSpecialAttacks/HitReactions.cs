@@ -280,6 +280,11 @@ namespace SteamEngine.CompiledScripts {
 			return HasAbilityDef(npc, Lookup<AbilityDef>("a_tevent_e_guard_ent"));
 		}
 
+		/// <summary>#1100 - Erebor's e_guard or e_guard_ent.</summary>
+		internal static bool HasGuardEvent(NPC npc) {
+			return HasAbilityDef(npc, Lookup<AbilityDef>("a_tevent_e_guard")) || IsAxeHater(npc);
+		}
+
 		/// <summary>e_guard's @aftergetswing: a summon that strikes a guard dies.</summary>
 		private static void TryKillSummonHittingGuard(NPC guard, Character attacker) {
 			if ((guard.AggroMode == AggroMode.GuardsRealm) && SummonSpellDef.IsSummonedCreature(attacker)) {
