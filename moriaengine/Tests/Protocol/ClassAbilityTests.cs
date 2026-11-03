@@ -167,6 +167,23 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutput("ALCHEMIST_OTHER_REALM", Wait), this.fixture.GameOutputSnapshot());
 				game.SendSpeech("koupit");
 				Assert.ThrowsAny<Exception>(() => game.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(3)));
+
+				//#1070 - the Prodejce: coal as a stack, bowstrings in a bag past five, the sale counted
+				game.SendSpeech(".TestProdejcePrepare");
+				Assert.True(this.fixture.WaitForGameOutput("PRODEJCE_READY", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech("chci koupit");
+				var prodejce = game.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains(prodejce.Strings, s => s.Contains("Tetiva Spruce", StringComparison.Ordinal));
+				game.SendGumpResponse(prodejce.GumpUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 1, "10" }, { 12, "6" } });
+				var list = game.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("2650", list.Strings);
+				game.SendGumpResponse(list.GumpUid, 13);
+				Thread.Sleep(500);
+				mark = this.fixture.GameOutputSnapshot().Length;
+				game.SendSpeech(".TestProdejceReport");
+				Assert.True(this.fixture.WaitForGameOutputSince(" end", mark, Wait), this.fixture.GameOutputSnapshot());
+				report = this.fixture.GameOutputSnapshot().Substring(mark);
+				Assert.Contains("coal=10 strings=6 bag=True sold=10 soldFor=2650 cascade=1M 234K 567", report, StringComparison.Ordinal);
 			}
 		}
 

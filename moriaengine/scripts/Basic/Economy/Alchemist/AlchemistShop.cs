@@ -41,6 +41,10 @@ namespace SteamEngine.CompiledScripts {
 			new AlchemistWare("Schranka na duse", "i_soul_case", 12000, true),
 		};
 
+		internal static string[] WareNames {
+			get { return Array.ConvertAll(Wares, ware => ware.Name); }
+		}
+
 		internal static bool IsAlchemist(Character ch) {
 			return (ch is NPC) && (ch.Def == ThingDef.GetByDefname(NpcDef));
 		}
@@ -74,6 +78,9 @@ namespace SteamEngine.CompiledScripts {
 			} else if (!player.IsGM) {
 				alchemist.Say("Nech me byt !");
 			}
+			if (player.IsGM) {
+				ShopStatistics.Show(player, alchemist, WareNames); //#1070 - d_npc_alchymista_statistika
+			}
 			return true;
 		}
 
@@ -83,6 +90,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!GoldUtils.Pay(player, total)) {
 				return;
 			}
+			ShopStatistics.Record(alchemist, player, counts, total); //#1070 - f_npc_drazitel_vybrano
 			for (int i = 0; i < Wares.Length; i++) {
 				if (counts[i] > 0) {
 					Hand(player, Wares[i], counts[i]);
