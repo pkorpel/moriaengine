@@ -165,4 +165,3 @@ area's spawn point. Moving a piece in game keeps it there.
 - "Najemni informace", the rent overview, belongs to Erebor's house system.
 - `.nazghulfell`, the First's fell beast, and the mount's uniform color.
 - The gates of `i_nazgulsonly_gate`: Erebor's GMs placed them, for what isn't recorded.
-- A thief's mask isn't ported, so nothing stops a Nazgul using it.

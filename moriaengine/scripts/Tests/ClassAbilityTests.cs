@@ -289,6 +289,17 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Report("aKnifeHitsTheMonster", mark.Hits == markHits - 1);
 			Report("knivesAreUsedUp", knives.IsDeleted || (knives.Amount < 20));
+			ThiefDefence.SetMagicDefence(mark, 0, 0, 100, 0); //#1070 - magic ranged reflex, then block
+			markHits = mark.Hits;
+			player.Stam = 200;
+			player.RemoveTag(TagKey.Acquire("_nextThrow_"));
+			ThiefAbilities.ThrowKnife(player);
+			Report("aMagicReflexSendsTheKnifeBack", (mark.Hits == markHits) && (player.Stam == ((200 - (3 * ClassAbilitySettings.instance.throwStaminaPerTile)) * 4) / 5));
+			ThiefDefence.SetMagicDefence(mark, 0, 0, 0, 100);
+			player.RemoveTag(TagKey.Acquire("_nextThrow_"));
+			ThiefAbilities.ThrowKnife(player);
+			Report("aMagicBlockStopsIt", mark.Hits == markHits);
+			ThiefDefence.SetMagicDefence(mark, 0, 0, 0, 0);
 			WeaponSkillTargetQueuePlugin.RemoveTarget(player, mark);
 			mark.Delete();
 			StrikeChargeTimer.Add(player);

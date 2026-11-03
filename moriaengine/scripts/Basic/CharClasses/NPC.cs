@@ -2146,6 +2146,9 @@ namespace SteamEngine.CompiledScripts {
 			if (this.ControlMaster != null) {
 				return false; //tamed pets don't pick fights on their own - no "guard me"/"kill" command system yet (follow-up)
 			}
+			if (MysticHypnosis.MonsterGoesFor(this, candidate)) {
+				return true; //#1070 - e_monster's @npcseenewplayer
+			}
 			switch (this.AggroMode) {
 				case AggroMode.Hostile:
 					return true;

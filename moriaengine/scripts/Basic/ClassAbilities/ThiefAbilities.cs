@@ -216,6 +216,8 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>[Function throw]: a throwing knife at whoever you fight. Against a player it takes stamina,
 		/// less for good armor, and paralyzes if none is left; against a monster 50 stamina and 1 point.
 		/// The knife lands at the target's feet one time in 3, to be picked up.</summary>
+		private const int KnifeEffect = 9598; //myTarget.effect(0,9598,5,0,0)
+
 		[SteamFunction("Throw")]
 		public static void ThrowKnife(Player self) {
 			ClassAbilitySettings settings = ClassAbilitySettings.instance;
@@ -266,8 +268,21 @@ namespace SteamEngine.CompiledScripts {
 			}
 			self.Anim(11);
 			self.Sound(0x145);
+			EffectFactory.EffectFromTo(self, target, KnifeEffect, 5, 0, false, false);
+			if (ThiefDefence.RollsRangedReflex(target)) { //#1070 - a magic item sends it back
+				target.SysMessage("Dyka byla magicky odrazena.", ClassAbilities.ClassMessageHue);
+				self.Stam = (short) ((self.Stam * 4) / 5);
+				if (Globals.dice.Next(3) == 2) {
+					DropKnifeAt(self);
+				}
+				return;
+			}
 			if (Globals.dice.Next(3) == 2) {
 				DropKnifeAt(target);
+			}
+			if (ThiefDefence.RollsRangedBlock(target)) {
+				target.SysMessage("Dyka byla magicky zablokovana.", ClassAbilities.ClassMessageHue);
+				return;
 			}
 			if (Globals.dice.Next(10001) >= ClassAbilities.Points(self, "throwing") * 950) {
 				self.SysMessage((self.IsFemale ? "Minula" : "Minul") + " jsi cil!", ClassAbilities.ClassMessageHue);

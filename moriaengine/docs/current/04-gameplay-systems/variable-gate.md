@@ -12,7 +12,8 @@ In this order. Anything that stops the walker stops it before anything is taken 
 
 1. No target set: nothing happens, and the server log gets a warning.
 2. A linked guard's spawn has a monster alive: stays on the gate.
-3. An NPC without "NPC muze projit", a ghost without "Duchove mohou projit": stays on the gate.
+3. An NPC without "NPC muze projit", a possessing mystic without "Hypno-NPC muze projit" ("Tuto branu nemuzes
+   pouzit."), a ghost without "Duchove mohou projit": stays on the gate.
 4. Level: `min,max` is a range, inclusive. Only `min` means above it, not at it.
 5. Remove list, add list, deny-capable functions, Time Seal: a refusal steps the walker back off the gate.
 6. Taken: cursor, PvP tools, mount, bank box, the remove list.
@@ -40,7 +41,8 @@ In this order. Anything that stops the walker stops it before anything is taken 
 | Pridej Strazce menu | Spawn gems, picked with a target. Erebor typed their uids. |
 | Plugin: Time Seal | See below. |
 
-Functions from Erebor that work here: `f_vg_bookDeny`, `f_vg_mountDeny`.
+Functions from Erebor that work here: `f_vg_bookDeny`, `f_vg_mountDeny`, `vg_pvp_denyMagic` (no identified magic item
+carried or worn, the bank aside; crafted ones and mounts may).
 
 ## Time Seal
 
@@ -60,8 +62,6 @@ first one's realm passes until the seal ends. A button resets it.
 
 Nothing here for them to act on:
 
-- `vg_hypnoGoThrough`: no Mystic hypnosis.
-- `vg_pvp_denyMagic`: no magic items.
 - `f_vg_finishDng`: no weekly quests.
 - `f_varGate_pvp_equip`, `f_varGate_pvp_clearequip`: no PvP arena kit.
 - `f_q000_vg_Cave*`: the Grandmaster quest has its own cave gates.

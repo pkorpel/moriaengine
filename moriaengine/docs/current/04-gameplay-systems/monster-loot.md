@@ -63,9 +63,8 @@ needs the final state right after creating a monster calls `MonsterLoot.FlushCre
 - **Gold**: the `i_gold` marker's amount = `ExperienceReward × goldPermille / 1000` - 750 outside
   dungeons, 900 in them (map planes 2 and 10-15, Erebor's `isDung`). Experience is in Sphere's ×10
   fixed point (`Experience = 180 195`), so a 180-experience monster drops 135 gold.
-- **Magic items - PLACEHOLDER**: above 30 gold, a chance of `(gold - 30) / (120000 - 30)`
-  (`/ 105000` from 500 gold up), Erebor's `f_creatureStart_giveMIBag`. Magic items aren't designed
-  yet, so a hit only logs (`MonsterLoot.DropMagicItemPlaceholder`); Erebor gave an `i_mi_bag`.
+- **Magic items**: above 30 gold, a chance of `(gold - 30) / (120000 - 30)`
+  (`/ 105000` from 500 gold up), Erebor's `f_creatureStart_giveMIBag`: an `i_mi_bag` in the pack.
 - **Rare extras**, gold-scaled: elemental coal (extra chance for fire monsters), ebony crystal,
   ebony bowstring, treasure map.
 - `i_nofame` (Erebor's marker on a creature resurrected with Veterinary): no experience, no gold.

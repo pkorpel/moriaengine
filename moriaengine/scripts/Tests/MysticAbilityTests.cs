@@ -1,6 +1,7 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1017 - the mystic: controlnpc, catch, catchField, buffSteal, hypnosis.</summary>
@@ -141,6 +142,36 @@ namespace SteamEngine.CompiledScripts {
 			LevelingSystem.AddExperience(player, 100);
 			Report("experienceWaits", player.Experience == experience);
 
+			//#1070 - what the world makes of a possessing mystic
+			NPC guard = (NPC) ThingDef.GetByDefname("c_vguard_mordor_hala_jezdec").Create((ushort) (player.X + 4), player.Y, player.Z, player.M);
+			guard.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			Realm realm = player.Realm;
+			player.Realm = Realm.Gondor;
+			short karma = body.Karma;
+			body.Karma = 0;
+			Report("guardsLetAMildBodyAlone", !GuardSpeech.AttacksOnSight(guard, player) && !GuardSpeech.SendAfter(guard, player));
+			body.Karma = -1000;
+			Report("guardsGoForAnEvilBody", GuardSpeech.AttacksOnSight(guard, player));
+			body.Karma = karma;
+			guard.Delete();
+			NPC monster = (NPC) ThingDef.GetByDefname("c_ogre").Create((ushort) (player.X + 4), player.Y, player.Z, player.M);
+			monster.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			Report("monstersGoForIt", monster.ShouldAggroOn(player) && MysticHypnosis.MonsterGoesFor(monster, player));
+			HighlightColor shown = Notoriety.GetHighlightColor(monster, player);
+			Report("itShowsAsTheMonster", (shown == Notoriety.GetHighlightColor(monster, body)) && (shown != HighlightColor.Innocent));
+			player.Realm = realm;
+			monster.Delete();
+			Report("theMenusRefuse", MysticHypnosis.RefusesMenu(player));
+			Report("noGuildInTheName", Guild.NameWithAbbreviation(player) == player.Name);
+			VarGate gate = (VarGate) ((ItemDef) ThingDef.GetByDefname("i_vargate")).Create((ushort) (player.X + 1), player.Y, player.Z, player.M);
+			Report("aGateRefusesIt", !gate.CanPass(player));
+			gate.Flags = VarGateFlags.HypnoGoThrough;
+			Report("unlessTheGateLetsHypnosisThrough", gate.CanPass(player));
+			gate.Delete();
+			ClassAbilities.SetPoints(player, "speldodge", 100);
+			Report("noAbsorptionWhilePossessing", !ClassAbilities.TryAbsorbSpell(player, body));
+			ClassAbilities.SetPoints(player, "speldodge", 0);
+
 			MysticHypnosis.OnSwungAt(ego);
 			Report("aBlowOnTheEgoBringsItHome", !MysticHypnosis.IsPossessing(player) && (player.Model == model) && (player.X == x) && (player.Name == name) && ego.IsDeleted);
 			Report("withHalfItsHits", player.Hits == 90);
@@ -157,6 +188,12 @@ namespace SteamEngine.CompiledScripts {
 			ego = MysticHypnosis.Possession(player).ego;
 			ego.CauseDeath(null);
 			Report("theEgosDeathBringsItHomeHurt", !MysticHypnosis.IsPossessing(player) && (player.Hits == 1) && ego.IsDeleted);
+
+			//#1070 - speldodge on a player at home: a monster's spell is swallowed, a player's never
+			ClassAbilities.SetPoints(player, "speldodge", 100);
+			Report("aMonstersSpellIsAbsorbed", ClassAbilities.TryAbsorbSpell(player, body) && !ClassAbilities.TryAbsorbSpell(player, player));
+			ClassAbilities.SetPoints(player, "speldodge", 0);
+			Report("noPointsNoAbsorption", !ClassAbilities.TryAbsorbSpell(player, body));
 
 			def.Hypnotizable = flags;
 			body.Delete();

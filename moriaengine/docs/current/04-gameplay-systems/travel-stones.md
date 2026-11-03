@@ -9,7 +9,7 @@ Double click lists the stops you may go to, 14 to a page, with prices. Taking on
 - Price: longest axis of the distance, times 1000, divided by `priceDivisor` (3500), so about 1 gp per 3.5 tiles. It's measured between price points, the user's call: Minas Tirith (2977,2951) and Helmuv Zleb (2099,2559) arrive in a far corner of the map, so each has one apart from its arrival point. A stone in such a city counts as standing at it. Any other stop's price point is where you arrive.
 - Enemy land isn't listed. Mordor's characters can't go to Gondor's areas, everyone else can't go to Mordor's.
 - Leaving from a stone on enemy land costs 5 times as much (`escortPrice` 50, in tenths). The script's comment says 3, its number says 5.
-- Outcasts are refused. GMs see every stop, pay nothing and go at once.
+- Outcasts are refused, a possessing mystic gets nothing. GMs see every stop, pay nothing and go at once.
 - Realm alone decides, kills don't. That's the user's call: Erebor tests `ismurderer`, so there a Gondor player with enough murders changed sides. A character with no realm counts as not Mordor's, as on Erebor.
 
 ## Stops
@@ -28,7 +28,6 @@ Changing a stop means changing `TravelStops.All`: the `st_pos` lines in `travels
 
 ## Left out
 
-- `hypno_mystik`: hypnosis isn't ported, #1017.
 - `e_noport` refusing a ride only matters to mounts, which don't use stones.
 - Casting no longer needs its own check: a spell only matters if it moved you, and the move is what's checked.
 - Followers aren't tested for being able to walk to you first, as Sphere does.

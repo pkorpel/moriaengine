@@ -27,7 +27,7 @@ before the gold - Erebor's `f_spawnEliteForm`:
 | regeneration | power/7 hit points every 2 s while hurt ("is regenerating.") |
 | resists | poison at least 700 and at least the power; summon at least 970 |
 | experience | × (300 + (power - 500)/2) % - 300-500% - so its **gold** grows too (creaturestart runs after) |
-| loot | 2× high reagents (power/10), 2× any reagents (power/20), gems (power/50), diamonds (power/100); `(power-400)/1000` chance of a magic item - a PLACEHOLDER like the creaturestart one |
+| loot | 2× high reagents (power/10), 2× any reagents (power/20), gems (power/50), diamonds (power/100); `(power-400)/1000` chance of an `i_mi_pouch` |
 | show | sound 254, blue sparkles around it |
 
 **Level bonus**: players from level 200 up lose less of their swing (200 + 5 per level above

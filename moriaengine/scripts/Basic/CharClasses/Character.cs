@@ -2040,6 +2040,9 @@ namespace SteamEngine.CompiledScripts {
 			if (MysticHypnosis.OnSpellEffect(this)) { //#1017 - e_hypnotising_mystic_ego's @spelleffect
 				return TriggerResult.Cancel;
 			}
+			if (ClassAbilities.TryAbsorbSpell(this, spellEffectArgs.Caster)) { //#1070 - speldodge
+				return TriggerResult.Cancel;
+			}
 			return TriggerResult.Continue;
 		}
 

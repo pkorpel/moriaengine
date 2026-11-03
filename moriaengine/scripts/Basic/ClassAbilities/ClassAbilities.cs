@@ -71,6 +71,19 @@ namespace SteamEngine.CompiledScripts {
 		internal const int ClassMessageHue = 0x57;
 		private static readonly TagKey counterTK = TagKey.Acquire("_specAbilityCounter_");
 
+		/// <summary>#1070 - e_allplayers' @beforegeteffect: a monster's spell is swallowed whole by points * pvMdodge out
+		/// of 1000 of speldodge (the permille weapon dodge uses too). Not while possessing.</summary>
+		internal static bool TryAbsorbSpell(Character target, Character caster) {
+			if (!(target is Player) || !(caster is NPC) || MysticHypnosis.IsPossessing(target)) {
+				return false;
+			}
+			if ((Points(target, "speldodge") * CombatSettings.instance.weaponDodgePerPoint) <= Globals.dice.Next(1000)) {
+				return false;
+			}
+			target.SysMessage("Kouzlo pohlceno.", ClassMessageHue);
+			return true;
+		}
+
 		/// <summary>A serv.time tag: when something may be used again.</summary>
 		internal static double SecondsTag(Character ch, TagKey key) {
 			object value = ch.GetTag(key);

@@ -192,7 +192,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>The character's name, with " [abbrev]" if they show it (showname_old).</summary>
 		public static string NameWithAbbreviation(Character ch) {
-			Guild guild = GetGuild(ch);
+			Guild guild = MysticHypnosis.IsPossessing(ch) ? null : GetGuild(ch); //#1070 - showname: a possessing mystic shows no guild
 			if ((guild != null) && guild.MembershipOf(ch).canShowAbbrev) {
 				return ch.Name + " [" + guild.Abbreviation + "]";
 			}

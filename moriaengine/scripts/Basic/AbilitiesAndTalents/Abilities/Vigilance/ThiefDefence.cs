@@ -35,6 +35,15 @@ namespace SteamEngine.CompiledScripts {
 			self.SetTag(rangedBlockTK, rangedBlock);
 		}
 
+		/// <summary>#1070 - mi_rangedreflex and mi_rangedblock rolled as Erebor's tag &gt; {0 99}.</summary>
+		internal static bool RollsRangedReflex(Character self) {
+			return GetTagPercent(self, rangedReflexTK) > Globals.dice.Next(100);
+		}
+
+		internal static bool RollsRangedBlock(Character self) {
+			return GetTagPercent(self, rangedBlockTK) > Globals.dice.Next(100);
+		}
+
 		internal static bool IsVigilant(Character self) {
 			return self.HasTag(vigilanceTK);
 		}

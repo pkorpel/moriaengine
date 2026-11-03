@@ -11,6 +11,7 @@ namespace SteamEngine.CompiledScripts {
 	public enum VarGateFlags {
 		None = 0,
 		NpcGoThrough = 0x1,
+		HypnoGoThrough = 0x2,
 		GhostGoThrough = 0x4,
 		ExpGate = 0x8,
 		RequiresLevel = 0x10,
@@ -216,12 +217,16 @@ namespace SteamEngine.CompiledScripts {
 			return (ch as Player)?.Level ?? 0;
 		}
 
-		private bool CanPass(Character ch) {
+		internal bool CanPass(Character ch) {
 			if (this.Has(VarGateFlags.Guarded) && this.IsAGuardAlive) {
 				ch.SysMessage("Neprojdes, dokud je strazce pruchodu na zivu.");
 				return false;
 			}
 			if (!ch.IsPlayer && !this.Has(VarGateFlags.NpcGoThrough)) {
+				return false;
+			}
+			if (MysticHypnosis.IsPossessing(ch) && !this.Has(VarGateFlags.HypnoGoThrough)) { //#1070 - vg_hypnoGoThrough
+				ch.RedMessage("Tuto branu nemuzes pouzit.");
 				return false;
 			}
 			if (ch.Flag_Dead && !this.Has(VarGateFlags.GhostGoThrough)) {
@@ -628,6 +633,19 @@ namespace SteamEngine.CompiledScripts {
 				if (VarGate.Matches(item, "t_pergamen_forma", true) || VarGate.Matches(item, "t_book", true) ||
 						VarGate.Matches(item, "i_pergamen", false) || VarGate.Matches(item, "i_pergamen_esence", false)) {
 					self.SysMessage("Nesmis projit, pokud neses knihu,pergamen nebo nejakou jeho cast.");
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>#1070 - pvp_events.scp's vg_pvp_denyMagic: no magic item past the gate, carried or worn, the bank
+		/// aside. Crafted ones and mounts may.</summary>
+		[SteamFunction]
+		public static bool vg_pvp_denyMagic(Character self) {
+			foreach (Item item in VarGate.Carried(self)) {
+				if (MagicItemShop.IsRealMagicItem(item) && !VarGate.Matches(item, "t_eq_horse", true)) {
+					self.SysMessage("S magickymi predmety nesmis vstoupit!");
 					return true;
 				}
 			}

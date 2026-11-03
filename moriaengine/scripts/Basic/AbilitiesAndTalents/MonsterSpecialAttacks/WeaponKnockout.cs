@@ -23,7 +23,7 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static void TryKnockWeaponOut(Character attacker, Character defender, int damage) {
 			WeaponKnockoutAbilityDef def = WeaponKnockoutDef;
-			if (HasAbilityDef(attacker, def) && (damage > 0) && (defender is Player) && (defender.Weapon != null) && OneIn(def.KnockoutOneIn)) {
+			if (HasAbilityDef(attacker, def) && (damage > 0) && (defender is Player) && !MysticHypnosis.IsPossessing(defender) && (defender.Weapon != null) && OneIn(def.KnockoutOneIn)) { //#1070 - not a possessing mystic's
 				defender.DisArm();
 				defender.SysMessage(defender.IsFemale ? "Dostala jsi strasnou ranu, pri ktere ti vypadla zbran z ruky." : "Dostal jsi strasnou ranu, pri ktere ti vypadla zbran z ruky.");
 			}

@@ -197,6 +197,11 @@ namespace SteamEngine.CompiledScripts {
 				return HighlightColor.Yellow;
 			}
 
+			NPC body = MysticHypnosis.Body(self);
+			if (body != null) {
+				return GetHighlightColor(viewer, body); //#1070 - a possessing mystic shows as the monster
+			}
+
 			if (self.Realm == Realm.Mordor) {
 				return HighlightColor.Murderer;
 			}
