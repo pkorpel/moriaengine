@@ -227,6 +227,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Experience = 0;
 			player.UnspentSkillPoints = 0;
 			player.UnspentAbilityPoints = 0;
+			ClassAbilities.Reset(player); //#1017
 			foreach (SkillDef skillDef in SkillDef.AllSkillDefs) {
 				player.SetRealSkillValue(skillDef, profession.GetSkillMinimum(skillDef));
 			}
