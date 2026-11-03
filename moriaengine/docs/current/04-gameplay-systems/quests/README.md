@@ -9,8 +9,9 @@ One file per quest, for an overview. Quest systems that aren't a quest of their 
 | Grandmaster, rank 3 (the q000 line) | [grandmaster.md](grandmaster.md) | #833 |
 | The quest journal, `.questy` | [journal.md](journal.md) | #839 |
 | Boosters, more experience for a while | [boosters.md](boosters.md) | #1090 |
+| Weekly quests (Tydenni questy) | [weekly.md](weekly.md) | #1090 |
 
-Not ported: weekly quests (#1090, under way), the numbered quests (q006-q100, gq*, mq*: the user wants to revisit
+Not ported: the numbered quests (q006-q100, gq*, mq*: the user wants to revisit
 them first), and the rest listed on #1069.
 
 ## Rules for quest ports

@@ -67,6 +67,7 @@ namespace SteamEngine.CompiledScripts {
 				this.Delete();
 				return;
 			}
+			WeeklyQuests.OnBleed(self, this.SourceThing as Character, (int) dealt); //#1090 - f_weekly_receiveDmg
 			if (!self.IsDeleted) {
 				this.BleedTicks = ticks + 1;
 			}

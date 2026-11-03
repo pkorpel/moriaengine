@@ -2170,6 +2170,17 @@ namespace SteamEngine.CompiledScripts {
 			Corpse corpse = item.TopObj() as Corpse;
 			if (corpse != null) {
 				Notoriety.OnLooting(this, corpse);
+				if (this is Player looter) {
+					WeeklyQuests.OnLoot(looter, item); //#1090 - e_weekly_itemLoot
+				}
+			}
+		}
+
+		//#1090 - e_weekly_stepOnWeb
+		public override void On_ItemStep(AbstractItem i, bool repeated, MovementType movementType) {
+			base.On_ItemStep(i, repeated, movementType);
+			if (!repeated && (this is Player player) && (i is Item item)) {
+				WeeklyQuests.OnStepOnItem(player, item);
 			}
 		}
 
@@ -2388,6 +2399,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void On_ItemDClick(AbstractItem dClicked) {
 			CraftingProcessPlugin.Stop(this, true); //#962 - @itemuserdclick
+			if (this is Player player) {
+				WeeklyQuests.OnItemDClick(player, dClicked as Item); //#1090 - e_weekly_itemDclick, before the item's own use
+			}
 
 			//TODO? maybe not in all cases (healing?)? maybe not at all?
 			this.Trigger_Disrupt();

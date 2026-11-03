@@ -423,6 +423,7 @@ namespace SteamEngine.CompiledScripts {
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {
 				Boosters.Resume(this); //#1090
+				WeeklyQuests.OnLogin(this); //#1090 - e_weekly_quest @login
 				Party.ForgetCanLootMe(this); //#918
 				SecureTrade.ReturnOrphanedBoxes(this); //#810 - a trade box left over from a server restart mid-trade
 				PlayerRecord.Login(this); //#1011

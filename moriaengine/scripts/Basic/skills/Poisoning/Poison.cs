@@ -192,6 +192,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>The hit itself. Nothing left of it ends the poison.</summary>
 		internal static int Hit(Character self, PoisonTimer poison) {
+			WeeklyQuests.OnPoisonTick(self, poison.dealer, poison.strength); //#1090 - i_memory_jed's tick
 			switch (poison.kind) {
 				case PoisonKind.AbsoluteDamage:
 					return Damage(self, poison, poison.strength);
