@@ -166,6 +166,19 @@ namespace SteamEngine.CompiledScripts {
 				return null; //still exhausted, regen hasn't elapsed yet
 			}
 
+			//#1017 - a craftsman's vigour can find the next metal up, if the skill is there for it
+			if (CraftsmanAbilities.FindsBetter(miner, "vigourMining")) {
+				RegionResourceDef better = CraftsmanAbilities.Next(vein.Resource);
+				if (better != null) {
+					OreTier betterOre = OreTiers.ForResource(better);
+					if (miner.GetRealSkillValue(SkillName.Mining) >= betterOre.SkillThreshold) {
+						vein.Resource = better;
+						vein.AssignedOre = betterOre;
+						miner.SysMessage((miner.IsFemale ? "Nasla" : "Nasel") + " jsi lepsi material!", ClassAbilities.ClassMessageHue);
+					}
+				}
+			}
+
 			OreTier realOre = vein.AssignedOre;
 			OreTier yieldOre = (miner.GetRealSkillValue(SkillName.Mining) >= realOre.SkillThreshold)
 				? realOre

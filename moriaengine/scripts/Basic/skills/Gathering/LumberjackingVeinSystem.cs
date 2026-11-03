@@ -170,6 +170,19 @@ namespace SteamEngine.CompiledScripts {
 				return null; //still exhausted, regen hasn't elapsed yet
 			}
 
+			//#1017 - a craftsman's vigour can find the next wood up, if the skill is there for it
+			if (CraftsmanAbilities.FindsBetter(chopper, "vigourLumber")) {
+				RegionResourceDef better = CraftsmanAbilities.Next(vein.Resource);
+				if (better != null) {
+					WoodTier betterWood = WoodTiers.ForResource(better);
+					if (chopper.GetRealSkillValue(SkillName.Lumberjacking) >= betterWood.SkillThreshold) {
+						vein.Resource = better;
+						vein.AssignedWood = betterWood;
+						chopper.SysMessage((chopper.IsFemale ? "Nasla" : "Nasel") + " jsi lepsi material!", ClassAbilities.ClassMessageHue);
+					}
+				}
+			}
+
 			WoodTier realWood = vein.AssignedWood;
 			WoodTier yieldWood = (chopper.GetRealSkillValue(SkillName.Lumberjacking) >= realWood.SkillThreshold)
 				? realWood

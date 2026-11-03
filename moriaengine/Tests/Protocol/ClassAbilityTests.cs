@@ -78,10 +78,13 @@ namespace SteamEngine.Tests.Protocol {
 			using (TestGameClient game = this.Login("Pathfinder")) {
 				game.SendSpeech(".TestRangerAbilities");
 				Assert.True(this.fixture.WaitForGameOutput("RANGER_DONE", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech(".TestCraftsmanVigour"); //the same character, an account holds five
+				Assert.True(this.fixture.WaitForGameOutput("CRAFTSMAN_DONE", Wait), this.fixture.GameOutputSnapshot());
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "longRangeAddsThree", "longRangeCostsStamina", "knockbackEndsLongRange", "splitRangeGrowsWithDistance",
 						"splitRangeStaysUnderItsLimit", "splitNextToTheTargetIsStrongest", "splitIsNeverAFullBlow", "splitShotCostsStamina", "splitShotMustCoolDown",
-						"crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "killsBuildASpree" }) {
+						"crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "killsBuildASpree",
+						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter" }) {
 					string marker = "CLASS_ABILITY: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
