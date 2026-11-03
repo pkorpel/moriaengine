@@ -40,6 +40,22 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1017 - stalls and fields, on this server too: server side in scripts/Tests/RentedPlaceTests.cs.</summary>
+		[Fact]
+		public void StallsAndFieldsAreRentedLikeHouses() {
+			using (TestGameClient game = this.Login("Merchant")) {
+				game.SendSpeech(".TestRentedPlaces");
+				Assert.True(this.fixture.WaitForGameOutput("RENTED_DONE", Wait), this.fixture.GameOutputSnapshot());
+				string output = this.fixture.GameOutputSnapshot();
+				foreach (string check in new[] { "kindsByRegion", "rentBySize", "claimed", "theOwnersMenuRank", "locked", "evictionTakesTheLocked", "andLeavesTheRest", "theDogGuards" }) {
+					string marker = "RENTED: " + check + "=";
+					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
+					Assert.True(string.CompareOrdinal(output, idx + marker.Length, "True", 0, 4) == 0, marker + " failed. Game output:\n" + output);
+				}
+			}
+		}
+
 		private TestGameClient Login(string name) {
 			Exception firstFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {

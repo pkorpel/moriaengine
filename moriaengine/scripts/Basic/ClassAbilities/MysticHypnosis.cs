@@ -200,7 +200,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static bool StaysOnMystic(Item item) {
-			string defname = item.Def.Defname;
+			string defname = item.Def.PrettyDefname;
 			return (defname == "i_ring_power") || (defname == "i_leading_ring_power");
 		}
 
@@ -334,7 +334,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>strelec: throwers get rocks, archers a bow.</summary>
 		private static void Archer(Player self, NPC monster) {
-			string defname = monster.Def.Defname;
+			string defname = monster.Def.PrettyDefname;
 			if (throwers.Contains(defname)) {
 				Give(self, "i_bow_rock", 1, true);
 				Give(self, "i_rock_plain", 7, false);

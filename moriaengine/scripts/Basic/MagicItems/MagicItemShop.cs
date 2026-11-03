@@ -11,12 +11,12 @@ namespace SteamEngine.CompiledScripts {
 		private const int ReachDistance = 3, IdentifyDistance = 6;
 
 		internal static bool IsExchanger(NPC npc) {
-			string defname = npc.Def.Defname;
+			string defname = npc.Def.PrettyDefname;
 			return (defname == "c_vetesnik") || (defname == "c_vyberci");
 		}
 
 		internal static bool IsMordor(NPC npc) {
-			return npc.Def.Defname == "c_vyberci";
+			return npc.Def.PrettyDefname == "c_vyberci";
 		}
 
 		internal static bool TryOpen(NPC npc, Character from) {

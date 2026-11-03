@@ -97,7 +97,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static void ControlTarget(Player self, Character target) {
-			if (target.Flag_Invulnerable || (target.Def.Defname == "c_dog") || AnimateDeadSpellDef.IsAnimated(target)) {
+			if (target.Flag_Invulnerable || (target.Def.PrettyDefname == "c_dog") || AnimateDeadSpellDef.IsAnimated(target)) {
 				self.RedMessage("Cil nelze ovladnout");
 			} else if (target.GetSkill(SkillName.AnimalLore) > self.GetSkill(SkillName.AnimalLore)) {
 				self.RedMessage("V mysli cile se nedokazes orientovat");

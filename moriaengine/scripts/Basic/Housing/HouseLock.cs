@@ -59,7 +59,7 @@ namespace SteamEngine.CompiledScripts {
 			item.Unlock();
 		}
 
-		private void UnlockAll() {
+		internal void UnlockAll() {
 			foreach (Item item in new List<Item>(this.LockedItems)) {
 				this.Unlock(item);
 			}
@@ -193,7 +193,7 @@ namespace SteamEngine.CompiledScripts {
 		protected override TargetResult On_TargonItem(Player self, Item targetted, object parameter) {
 			House house = (House) parameter;
 			HouseRank rank = house.RankOf(self);
-			bool isSign = targetted.Type is t_housemenu;
+			bool isSign = t_housemenu.IsAnySign(targetted);
 			if (isSign ? (rank < t_housemenu.LevelOf(targetted)) : !targetted.CanChangeLock(house, self, rank)) {
 				self.RedMessage("Nemas na to pravo.");
 			} else if ((targetted.LockedTo == house) && !isSign) {
@@ -234,6 +234,19 @@ namespace SteamEngine.CompiledScripts {
 			int rank = (int) (HouseRank) args[2];
 			this.SetLocation(100, 100);
 			this.AddPage(0);
+			if (!((House) args[0]).HasMembers) { //#1017 - d_vend_statask: public, owner, GM
+				this.AddBackground(0, 0, 300, (rank >= (int) HouseRank.GM) ? 130 : 110, 2620);
+				this.AddLabel(20, 20, Hue, "Na jakou uroven chces vec zamknout?");
+				int y = 50;
+				foreach (HouseRank level in new[] { HouseRank.Public, HouseRank.Owner, HouseRank.GM }) {
+					if ((level != HouseRank.GM) || (rank >= (int) HouseRank.GM)) {
+						this.AddButton(20, y, 2104, 2103, (int) level + 1, GumpButtonType.Reply, 0);
+						this.AddLabel(40, y - 5, Hue, Levels[(int) level]);
+						y += 20;
+					}
+				}
+				return;
+			}
 			this.AddBackground(0, 0, 300, 110 + (rank * 20), 2620);
 			this.AddLabel(20, 20, Hue, "Na jakou uroven chces vec zamknout?");
 			this.AddButton(20, 50, 2104, 2103, PersonalButton, GumpButtonType.Reply, 0);
@@ -253,7 +266,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((button == 0) || house.IsDeleted || item.IsDeleted || !house.HoldsForLocking(item)) {
 				return;
 			}
-			bool isSign = item.Type is t_housemenu;
+			bool isSign = t_housemenu.IsAnySign(item);
 			if (button == PersonalButton) {
 				if (isSign) {
 					player.SysMessage("Nemuzes zamknout vyvesku domu na osobu.");

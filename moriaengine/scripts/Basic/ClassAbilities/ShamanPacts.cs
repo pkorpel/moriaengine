@@ -21,7 +21,7 @@ namespace SteamEngine.CompiledScripts {
 			if (player == null) {
 				return;
 			}
-			switch (this.Def.Defname) {
+			switch (this.Def.PrettyDefname) {
 				case "i_soul_case":
 					if (ShamanAbilities.IsShaman(player)) {
 						ShamanPacts.LifePact(player);

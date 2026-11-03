@@ -63,13 +63,55 @@ namespace SteamEngine.CompiledScripts {
 			House house = ForRegion(region);
 			if (house == null) {
 				Point4D p = TileInside(region);
-				house = (House) ThingDef.GetByDefname("i_house_gem").Create(p.X, p.Y, p.Z, p.M);
+				house = (House) ThingDef.GetByDefname(GemDefFor(region)).Create(p.X, p.Y, p.Z, p.M);
 				house.SetAttribute(ItemAttributes.attr_invis, true);
 				house.SetAttribute(ItemAttributes.attr_move_never, true);
 				ByRegion[region] = house;
 				house.StartRentTimer();
 			}
 			return house;
+		}
+
+		/// <summary>#1017 - Erebor's stalls (stanek) and fields (pole) are rented like houses.</summary>
+		internal static string GemDefFor(FlaggedRegion region) {
+			string defname = region.Defname ?? "";
+			if (defname.StartsWith("a_stanek_", StringComparison.OrdinalIgnoreCase)) {
+				return "i_stall_gem";
+			}
+			if (defname.StartsWith("a_pole_", StringComparison.OrdinalIgnoreCase)) {
+				return "i_field_gem";
+			}
+			return "i_house_gem";
+		}
+
+		/// <summary>What a stall or field says where a house says "dum": its number's word, the claim, the eviction.</summary>
+		protected internal virtual string PlaqueText {
+			get { return "Dum cislo "; }
+		}
+
+		protected internal virtual string ClaimQuestion {
+			get { return "Chces obsadit tento dum?"; }
+		}
+
+		protected internal virtual string ClaimedText {
+			get { return "Toto je nyni tvuj dum."; }
+		}
+
+		protected internal virtual string EvictedText {
+			get { return "Nedostatecne zaplaceny najem - vystehovavam dum."; }
+		}
+
+		protected internal virtual string ChestDefname {
+			get { return "i_najem_chest"; }
+		}
+
+		/// <summary>Houses have friends, co-owners and personal locks; stalls and fields only an owner.</summary>
+		protected internal virtual bool HasMembers {
+			get { return true; }
+		}
+
+		protected internal virtual int RentByArea(FlaggedRegion region) {
+			return RentOf(region);
 		}
 
 		//a house is known by where its gem stands, and most spawn points lie just outside the region
@@ -164,7 +206,7 @@ namespace SteamEngine.CompiledScripts {
 		public int Rent {
 			get {
 				object manual = this.GetTag(manualRentTK);
-				return (manual == null) ? RentOf(this.Area) : (int) manual;
+				return (manual == null) ? this.RentByArea(this.Area) : (int) manual;
 			}
 			set {
 				this.SetTag(manualRentTK, value);
@@ -173,12 +215,22 @@ namespace SteamEngine.CompiledScripts {
 
 		public static int RentOf(FlaggedRegion region) {
 			HouseSettings settings = HouseSettings.instance;
+			return RentOf(region, settings.rentPerTile, settings.minimumRent);
+		}
+
+		internal static int RentOf(FlaggedRegion region, int perTile, int minimum) {
+			HouseSettings settings = HouseSettings.instance;
 			int tiles = 0;
 			foreach (ImmutableRectangle rectangle in region.Rectangles) {
 				tiles += (rectangle.Width + 1) * (rectangle.Height + 1);
 			}
-			int rounded = (int) Math.Round((tiles * (double) settings.rentPerTile) / settings.rentRounding) * settings.rentRounding;
-			return Math.Max(rounded, settings.minimumRent);
+			int rounded = (int) Math.Round((tiles * (double) perTile) / settings.rentRounding) * settings.rentRounding;
+			return Math.Max(rounded, minimum);
+		}
+
+		/// <summary>A GM's set rent is forgotten, it's by size again.</summary>
+		internal void ForgetManualRent() {
+			this.RemoveTag(manualRentTK);
 		}
 
 		/// <summary>In Globals.TimeInSeconds, which like Sphere's serv.time only runs with the server.</summary>
@@ -256,7 +308,7 @@ namespace SteamEngine.CompiledScripts {
 		public void Claim(Character owner) {
 			this.Owner = owner;
 			this.PaidUntil = Globals.TimeInSeconds + (HouseSettings.instance.claimGraceDays * SecondsPerDay);
-			owner.SysMessage("Toto je nyni tvuj dum.");
+			owner.SysMessage(this.ClaimedText);
 			owner.SysMessage("Najem cini " + this.Rent + " gp");
 			owner.RedMessage("Autorent zapnut, zaplat si najem do " + HouseSettings.instance.claimGraceDays + " dni!");
 		}

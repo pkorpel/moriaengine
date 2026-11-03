@@ -40,7 +40,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void PlaceRentChest(int x, int y, int z, byte m) {
-			RentChest chest = (RentChest) ThingDef.GetByDefname("i_najem_chest").Create(x, y, z, m);
+			RentChest chest = (RentChest) ThingDef.GetByDefname(this.ChestDefname).Create(x, y, z, m);
 			chest.SetAttribute(ItemAttributes.attr_move_never, true);
 			chest.House = this;
 			this.RentChest = chest;
@@ -81,7 +81,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (this.AutoRent && (this.PaidUntil <= now)) {
 				if (src != null) {
-					src.RedMessage("Nedostatecne zaplaceny najem - vystehovavam dum.");
+					src.RedMessage(this.EvictedText);
 				}
 				this.Empty();
 			}
@@ -171,7 +171,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private Container NewBackup(string name) {
+		protected Container NewBackup(string name) {
 			Container bag = (Container) ThingDef.GetByDefname("i_backpack").Create(this.RentChest);
 			bag.Name = name;
 			bag.SetAttribute(ItemAttributes.attr_invis, true);
@@ -182,7 +182,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>trashhouse: what's on the ground goes into a backpack in the chest, tame animals are shrunk into another,
 		/// doors stay and unlock, and the house is free. Only a GM reaches the backpacks; they go after a year.</summary>
-		public void Empty() {
+		public virtual void Empty() {
 			this.EnsureRentChest(this, null);
 			string ownerName = (this.Owner == null) ? "nikdo" : this.Owner.Name;
 			string when = DateTime.Now.ToString("d.M.yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
@@ -222,14 +222,14 @@ namespace SteamEngine.CompiledScripts {
 			this.BankActivated = false;
 		}
 
-		private static void DeleteIfEmpty(Container bag) {
+		protected static void DeleteIfEmpty(Container bag) {
 			if (bag.Count == 0) {
 				bag.Delete();
 			}
 		}
 
 		private bool TakesWhenEmptied(Item item) {
-			if ((item == this) || (item == this.RentChest) || (item.Type is t_housemenu)) {
+			if ((item == this) || (item == this.RentChest) || t_housemenu.IsAnySign(item)) {
 				return false;
 			}
 			return item.Def != ThingDef.GetByDefname("i_duch_dlazba");
