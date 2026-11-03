@@ -213,6 +213,9 @@ namespace SteamEngine.CompiledScripts {
 
 				int actualDamage = previousHits - newHits;
 				HpSight.ShowChange(defender, actualDamage, false); //#927
+				if (isSwing) {
+					WeeklyQuests.OnSwingDamage(attacker, defender, Math.Min(actualDamage, previousHits)); //#1090 - min(ubrano, hits)
+				}
 				if (isSwing && (actualDamage > 0) && !defender.IsDeleted) {
 					defender.Trigger_Disrupt(DoesSwingInterrupt(attacker.IsPlayerForCombat, attacker.WeaponProjectileType != ProjectileType.None,
 						defender.IsPlayerForCombat, actualDamage, defender.MaxHits));

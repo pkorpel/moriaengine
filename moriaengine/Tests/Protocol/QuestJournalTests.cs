@@ -30,13 +30,18 @@ namespace SteamEngine.Tests.Protocol {
 
 				//the sections that aren't ported say so, and each can be reached
 				AssertWindowIsSolid(menu.LayoutText);
-				foreach (var section in new[] { (2, "Otevrene Dungeony"), (11, "Tydenni Questy"), (21, "PvP Sezona") }) {
+				foreach (var section in new[] { (2, "Otevrene Dungeony"), (21, "PvP Sezona") }) {
 					client.SendGumpResponse(menu.GumpUid, section.Item1);
 					menu = client.ReadGumpDialogWithStrings(Wait);
 					AssertWindowIsSolid(menu.LayoutText);
 					Assert.Contains(section.Item2, menu.Strings);
 					Assert.Contains(menu.Strings, s => s.Contains("isn't available yet", StringComparison.Ordinal));
 				}
+				//#1090 - the weekly section: below level 10, when the tasks open
+				client.SendGumpResponse(menu.GumpUid, 11);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Tydenni Questy", menu.Strings);
+				Assert.Contains(menu.Strings, s => s.Contains("Plneni se otevre na 10 urovni.", StringComparison.Ordinal));
 				client.SendGumpResponse(menu.GumpUid, 1);
 				menu = client.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("Questy", menu.Strings);
@@ -125,6 +130,61 @@ namespace SteamEngine.Tests.Protocol {
 					return message;
 				}
 			}
+		}
+
+		/// <summary>#1090 - Erebor's weekly quests: the sets, every trigger and the rewards server side, then the journal's page, a
+		/// task's detail and the popup of a task done in the client. Server side: scripts/Tests/WeeklyQuestTests.cs.</summary>
+		[Fact]
+		public void WeeklyQuestsFollowErebor() {
+			using (var client = this.Connect(Account, "Weekly Runner")) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				this.Ask(client, ".TestWeeklySets", "WEEKLY_SETS_DONE");
+				this.Ask(client, ".TestWeeklyTriggers", "WEEKLY_TRIGGERS_DONE");
+				string output = this.fixture.GameOutputSnapshot().Substring(mark);
+				foreach (string check in new[] { "underTenNothing", "countsByLevel", "blockedNeverDrawn", "noTaskTwice", "slotsByPool", "ereborsWorkedExample", "noSetForACraftsman",
+						"aWeekLong", "expiredIsRenewed", "eatingCountsWhileHungry", "theTeacherGreetsBack", "aWebCountsOnce", "aPlainMonstersGoldDoesnt", "aSpawnedMonstersGoldCounts",
+						"damageDealtCounts", "onlyASpawnedFoesBlowCounts", "aStreakOfTwoCounts", "aTaskAndTheSetPayIntoTheBank" }) {
+					string marker = "WEEKLY: " + check + "=";
+					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
+					Assert.True(string.CompareOrdinal(output, idx + marker.Length, "True", 0, 4) == 0, marker + " failed. Game output:\n" + output);
+				}
+
+				string fresh = this.Ask(client, ".TestWeeklyFreshSet", "WEEKLY_FRESH:");
+				int at = fresh.IndexOf("first=", StringComparison.Ordinal) + "first=".Length;
+				string first = fresh.Substring(at, fresh.IndexOf(" |", at, StringComparison.Ordinal) - at);
+				string firstLine = first.Contains(':') ? first.Substring(0, first.IndexOf(':')) : first.Split(' ')[0];
+				//the triggers above finished tasks, each with its popup still queued for the client
+				client.SendSpeech(".questy");
+				var menu = ReadUntil(client, "Questy");
+				client.SendGumpResponse(menu.GumpUid, 11);
+				menu = ReadUntil(client, "Odmena za splneni vsech Questu");
+				string page = string.Join("|", menu.Strings);
+				Assert.Contains("Odmena za splneni vsech Questu", page);
+				Assert.Contains(firstLine, page);
+				Assert.Contains("Zbyva: 6 dni", page);
+				client.SendGumpResponse(menu.GumpUid, 100);
+				var detail = ReadUntil(client, "zlatych");
+				Assert.Contains(firstLine, string.Join("|", detail.Strings));
+
+				this.Ask(client, ".TestWeeklyFinishFirst", "WEEKLY_FINISHED: True");
+				var done = ReadUntil(client, "Splnen Weekly Quest");
+				client.SendGumpResponse(done.GumpUid, 1);
+				ReadUntil(client, "S P L N E N O");
+			}
+		}
+
+		private static (int GumpUid, string LayoutText, System.Collections.Generic.List<string> Strings) ReadUntil(TestGameClient client, string text) {
+			string seen = "";
+			for (int i = 0; i < 20; i++) {
+				var gump = client.ReadGumpDialogWithStrings(Wait);
+				string all = string.Join("|", gump.Strings);
+				if (all.Contains(text, StringComparison.Ordinal)) {
+					return gump;
+				}
+				seen += all.Substring(0, Math.Min(60, all.Length)) + " ## ";
+			}
+			throw new Xunit.Sdk.XunitException("No gump with '" + text + "', saw: " + seen);
 		}
 
 		private string Ask(TestGameClient client, string speech, string marker) {

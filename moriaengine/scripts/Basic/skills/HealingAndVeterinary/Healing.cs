@@ -305,6 +305,9 @@ namespace SteamEngine.CompiledScripts {
 				patient.SysMessage(string.Format(texts.TreatedYou, self.Name), ClassMessageColor);
 			}
 			HpSight.ShowChange(patient, healed, true);
+			if (person) {
+				WeeklyQuests.OnBandageHeal(self, patient, healed); //#1090 - f_weekly_quest_healing
+			}
 		}
 	}
 
