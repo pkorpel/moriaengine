@@ -39,6 +39,18 @@ namespace SteamEngine.Communication {
 
 		private TState state;
 
+		/// <summary>#100 - connections are pooled: a closed one goes back to the pool and the next client gets the same object.
+		/// Each use is a new generation, so what was started for an earlier one (a queued send, a socket callback still on its
+		/// way) can tell it's stale and leave the new client alone.</summary>
+		private int generation;
+		private int closing;
+
+		internal int Generation {
+			get {
+				return this.generation;
+			}
+		}
+
 		public AbstractConnection() {
 			if (this.GetType() != typeof(TConnection)) {
 				throw new SEException("The type must be the same as the TConnection generic parameter");
@@ -54,6 +66,8 @@ namespace SteamEngine.Communication {
 		}
 
 		protected override void On_Reset() {
+			this.generation++;
+			this.closing = 0;
 			this.receivingBuffer = Pool<Buffer>.Acquire();
 			this.decryptBuffer = Pool<Buffer>.Acquire();
 			this.decompressBuffer = Pool<Buffer>.Acquire();
@@ -91,15 +105,18 @@ namespace SteamEngine.Communication {
 			base.On_DisposeManagedResources();
 		}
 
+		/// <summary>#100 - once per use: the receiving thread ("Connection lost") and a send's callback can close it together, and
+		/// one of them read core after the other had cleared it.</summary>
 		public void Close(string reason) {
-
-			if (!this.IsDisposed) {
-				lock (this.core.LockObject) {
+			if (Interlocked.Exchange(ref this.closing, 1) != 0) {
+				return;
+			}
+			AsyncCore<TConnection, TState, TEndPoint> core = this.core;
+			if (!this.IsDisposed && (core != null)) {
+				lock (core.LockObject) {
 					this.state.On_Close(reason);
 				}
-				//this.state.Dispose();
 			}
-			//On_Close(reason);
 			base.Dispose();
 		}
 

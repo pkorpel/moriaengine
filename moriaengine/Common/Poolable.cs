@@ -25,11 +25,12 @@ namespace SteamEngine.Common {
 			this.Reset();
 		}
 
-		protected override void On_DisposeManagedResources() {
+		//#100 - last of all, see Disposable.On_AfterDispose
+		protected override void On_AfterDispose() {
 			if (this.myPool != null) {
 				this.myPool.Release(this);
 			}
-			base.On_DisposeManagedResources();
+			base.On_AfterDispose();
 		}
 
 		internal void Reset() {
