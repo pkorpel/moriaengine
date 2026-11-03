@@ -57,6 +57,16 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1070 - Sphere's TIMER=n with attr_decay: gone in so many seconds, whatever DecaySettings say.</summary>
+		public static void ScheduleIn(Item item, double seconds) {
+			item.DeleteTimer(decayTimerTK);
+			item.SetAttribute(ItemAttributes.attr_decay, true);
+			item.DeleteTimer(decayTimerTK);
+			ItemDecayTimer timer = new ItemDecayTimer();
+			item.AddTimer(decayTimerTK, timer);
+			timer.DueInSeconds = seconds;
+		}
+
 		/// <summary>Unconditional cancel - used from Item.On_LeaveRegion, which fires exactly
 		/// when an item stops being on the ground (about to enter a container/character) but
 		/// BEFORE its own Cont is actually updated to the new value (Trigger_LeaveGround's own

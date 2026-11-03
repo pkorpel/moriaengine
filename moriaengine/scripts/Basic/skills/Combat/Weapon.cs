@@ -46,9 +46,14 @@ namespace SteamEngine.CompiledScripts {
 					return;
 				}
 				if (CraftingSkillDef.IsOfType(this, "t_weapon_fence")) { //and t_cm_bowcrafting_target
-					player.Target(SingletonScript<Targ_BowcraftKnife>.Instance);
+					player.Target(SingletonScript<Targ_BowcraftKnife>.Instance, this);
 					return;
 				}
+			}
+			if ((player != null) && (this.TypeDef.AssociatedSkill == SkillName.None) &&
+					CraftingSkillDef.IsOfType(this, "t_weapon_sword", "t_weapon_axe", "t_weapon_mace_sharp")) { //#1070 - f_weapon_sharp_targon_item
+				player.Target(SingletonScript<Targ_Blade>.Instance, this);
+				return;
 			}
 			base.OnUse(from);
 		}
