@@ -1393,6 +1393,7 @@ namespace SteamEngine.CompiledScripts {
 				SoundCalculator.PlayDeathSound(this);
 
 				this.Trigger_Death(killedBy);
+				ClassAbilities.OnDeath(this); //#1017
 
 				CharSyncQueue.AboutToChangeHitpoints(this);
 				this.hitpoints = 0;

@@ -125,6 +125,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Class Abilities")]
+		public ClassAbilitySettings ClassAbilitySettings {
+			get {
+				return ClassAbilitySettings.instance;
+			}
+		}
+
 		[InfoField("Travel")]
 		public TravelSettings TravelSettings {
 			get {
