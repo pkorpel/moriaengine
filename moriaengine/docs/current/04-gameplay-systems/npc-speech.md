@@ -81,9 +81,10 @@ Only players are targeted, never an invulnerable one. Every guard in earshot ans
 hears on its own), shouting one of Erebor's two Czech lines ("<name>, odejdi nebo zemri!" or "<name>, v <region>
 nemas co pohledavat!") and engaging the target through `NPCAiTimer.EngageTarget`.
 
-Not ported, because the engine has no such system: town citizenship, blacklists and realm/keep bans (`isbannedplayer`,
-`isfrommytown`, so a criminal is never "from this guard's town"), Mystic hypnosis (`tag.hypno_mystik`), and the
-guard's temporary karma (`guardkarma_*` + `i_memory_cleaner`). The archive's teleport-to-target
+A possessing mystic (hypnosis) is left alone unless its body is evil (karma -800 or less), and counts as no murderer,
+as Erebor's `hypno_mystik` checks and hypnoswap's karma.
+
+Not ported: keep bans, which come with the keeps, and the guard's temporary karma (`guardkarma_*` + `i_memory_cleaner`). The archive's teleport-to-target
 (`e_tele_to_target` / `i_attack_guard`) only fires when the target stands in an insta-logout area, and only 7 archive
 areas have that flag (jail, klec, Lagr, the tutorial, bug) - guards here walk to their target like every NPC.
 

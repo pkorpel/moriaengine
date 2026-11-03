@@ -303,7 +303,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
-			if (player == null) {
+			if ((player == null) || MysticHypnosis.RefusesMenu(player)) { //#1070 - not while possessing
 				return;
 			}
 			if (this.IsLeadingShrine) {

@@ -39,6 +39,6 @@ A GM's commands are parsed as scripts, so text is quoted: `.goch "text"`. A plai
 - The rate limit is real: on Erebor it was only a rule in the help text.
 - The list is edited in the dialog, not one input box per name.
 - No Mordor switch for Gondor, or the reverse: it never did anything.
-- Hypnosis blocking chat isn't here, as there's no hypnosis.
+- A possessing mystic can't use chat ("Ve svem stavu nemuzes pouzivat masovou komunikaci"), as on Erebor.
 
 Erebor's personal settings panel showed the same switches. Here they're only on `.chat`, and its minipanel button isn't ported.

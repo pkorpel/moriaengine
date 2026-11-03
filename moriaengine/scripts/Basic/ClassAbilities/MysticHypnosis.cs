@@ -29,6 +29,35 @@ namespace SteamEngine.CompiledScripts {
 			return Possession(ch) != null;
 		}
 
+		/// <summary>The body a possessing mystic is in, or null.</summary>
+		internal static NPC Body(Character ch) {
+			PossessionTimer state = Possession(ch);
+			return ((state != null) && (state.monster != null) && !state.monster.IsDeleted) ? state.monster : null;
+		}
+
+		/// <summary>hypnoswap's karma: an evil body (karma -800 or less) makes the mystic karma -10000, anything else
+		/// leaves them below that; the guards of e_guard and its kin let alone a possessing mystic above -10000.</summary>
+		internal static bool GuardsLetAlone(Character ch) {
+			NPC body = Body(ch);
+			return (body != null) && (body.Karma > -800);
+		}
+
+		/// <summary>hypnoswap sets kills to 0: a possessing mystic is no murderer to the guards.</summary>
+		internal static bool CountsAsMurderer(Character ch) {
+			return !IsPossessing(ch) && Notoriety.IsMurderer(ch);
+		}
+
+		/// <summary>e_monster's @npcseenewplayer: a monster goes for a possessing mystic on sight.</summary>
+		internal static bool MonsterGoesFor(NPC npc, Character candidate) {
+			return IsPossessing(candidate) && (Body(candidate) != npc) && MonsterSpecialAttacks.HasMonsterEvent(npc);
+		}
+
+		/// <summary>The menus a possessing mystic can't open: travel stones, signs, town, tax, office and shrine stones.
+		/// Erebor's @userdclick just returns.</summary>
+		internal static bool RefusesMenu(AbstractCharacter ch) {
+			return (ch is Character c) && IsPossessing(c);
+		}
+
 		/// <summary>Character.DefForCombat: a possessing mystic fights as the monster.</summary>
 		internal static CharacterDef CombatDef(Character ch) {
 			PossessionTimer state = Possession(ch);

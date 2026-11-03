@@ -98,11 +98,13 @@ namespace SteamEngine.Tests.Protocol {
 						"crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "killsBuildASpree",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
-						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "aKnifeHitsTheMonster", "knivesAreUsedUp", "strikeSpendsChargesOnThoseAround", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall",
+						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "aKnifeHitsTheMonster", "knivesAreUsedUp", "aMagicReflexSendsTheKnifeBack", "aMagicBlockStopsIt", "strikeSpendsChargesOnThoseAround", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall",
 						"theBallIsItsOwnThing", "onlyPetsAndSummonsObey", "aSummonCanBeTaken", "itObeysTheMystic", "catchTakesHold", "bothStandStill",
 						"holdingDrainsMana", "catchAgainLetsGo", "aSecondCatchHurts", "theFieldHoldsThoseAround", "aBlowFreesOne", "theFieldEndsAgain",
 						"theFieldCoolsDownAnHour", "aTalentIsStolen", "andGivenBack", "concentrationStarts", "aStepBreaksIt", "theMysticIsTheMonster",
 						"theMonsterWaitsAway", "anAlterEgoStandsInPlace", "theGearWaitsInTheBank", "itFightsAsTheMonster", "experienceWaits",
+						"guardsLetAMildBodyAlone", "guardsGoForAnEvilBody", "monstersGoForIt", "itShowsAsTheMonster", "theMenusRefuse", "noGuildInTheName",
+						"aGateRefusesIt", "unlessTheGateLetsHypnosisThrough", "noAbsorptionWhilePossessing", "aMonstersSpellIsAbsorbed", "noPointsNoAbsorption",
 						"aBlowOnTheEgoBringsItHome", "withHalfItsHits", "theGearIsBack", "theMonsterIsBack", "experienceIsPaid",
 						"dyingInTheBodyBringsItHome", "theEgosDeathBringsItHomeHurt" }) {
 					string marker = "CLASS_ABILITY: " + check + "=";

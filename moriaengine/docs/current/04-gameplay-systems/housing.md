@@ -133,8 +133,8 @@ house and if they're of its realm. An eviction turns it off again.
 - Logging out in a house, stall or field lingers 10 seconds instead of the usual delay (`.settings`).
 - A player killed in a house by a player is told who and where, and it's logged with `DOMOVNI ZONE`.
 
-Erebor's limits on leaping into a house, changing mask inside and stepping on tables outside houses aren't here: none of those abilities or rules are ported yet. When one
-is, check `FlaggedRegion.HouseNumber`, as Erebor's scripts check `region.tag(housenumber)`, which also covers stalls and fields.
+Leaping into a house and changing mask inside are refused by those abilities (#1046, #1055). Stepping on tables
+outside houses isn't here, as `f_table_noStep` isn't ported. A new rule should check `FlaggedRegion.HouseNumber`, as Erebor's scripts check `region.tag(housenumber)`, which also covers stalls and fields.
 
 ## Rental information
 

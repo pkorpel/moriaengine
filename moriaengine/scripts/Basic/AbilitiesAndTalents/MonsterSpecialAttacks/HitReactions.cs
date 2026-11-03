@@ -287,6 +287,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static AbilityDef MonsterEventDef { get { return Lookup<AbilityDef>("a_tevent_e_monster"); } }
+
+		/// <summary>#1070 - whether the NPC carries Erebor's e_monster.</summary>
+		internal static bool HasMonsterEvent(NPC npc) {
+			return HasAbilityDef(npc, MonsterEventDef);
+		}
+
 		/// <summary>e_no_player_attack: leaves players alone until one has hit it.</summary>
 		internal static bool LeavesPlayersAlone(NPC npc) {
 			return HasAbilityDef(npc, NoPlayerAttackDef) && !npc.HasTag(attackedByPlayerTK);
