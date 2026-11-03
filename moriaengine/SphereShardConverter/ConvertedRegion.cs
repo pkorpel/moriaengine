@@ -55,6 +55,8 @@ namespace SteamEngine.Converter {
 				new LineImplTask("tag.jmeno_mesta", ParseCityTag),
 				new LineImplTask("tag.housenumber", ParseHouseNumberTag),
 				new LineImplTask("tag.houserealm", ParseHouseRealmTag),
+				new LineImplTask("tag.nomask", ParseNoMaskTag),
+				new LineImplTask("tag.cflags", ParseCustomFlagsTag),
 
 				new LineImplTask("p", ParseP), 
 				new LineImplTask("rect", ParseRect), 
@@ -145,6 +147,25 @@ namespace SteamEngine.Converter {
 
 		private static void ParseHouseRealmTag(ConvertedDef def, PropsLine line) {
 			def.Set("HouseRealm", line.Value.Trim(), line.Comment);
+		}
+
+		//#1070 - tag.nomask: a thief can't change masks here (the start rooms)
+		private static void ParseNoMaskTag(ConvertedDef def, PropsLine line) {
+			if (line.Value.Trim() != "0") {
+				def.Set("NoMask", "1", line.Comment);
+			}
+		}
+
+		//#1070 - tag.cFlags, region_cf_* bits in Sphere hex: denyRecall_in 0x10, denyRecall_out 0x20,
+		//instantRes 0x80 (the arenas and Domov drakulu)
+		private static void ParseCustomFlagsTag(ConvertedDef def, PropsLine line) {
+			string value = line.Value.Trim();
+			int flags = value.StartsWith("0", System.StringComparison.Ordinal)
+				? int.Parse(value, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture)
+				: int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+			if (flags != 0) {
+				def.Set("CustomFlags", flags.ToString(System.Globalization.CultureInfo.InvariantCulture), line.Comment);
+			}
 		}
 
 		private static void ParseCityTag(ConvertedDef def, PropsLine line) {

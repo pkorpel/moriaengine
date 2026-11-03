@@ -219,6 +219,7 @@ Experience = 110 150
 Hypnotizable = 5
 NaturalDamageType = DamageType.Blunt|DamageType.Physical
 MonsterType = "humanoid,60"
+ResistSilence = 200
 Parry = 1000
 MagicResist = 2000
 Tactics = 500

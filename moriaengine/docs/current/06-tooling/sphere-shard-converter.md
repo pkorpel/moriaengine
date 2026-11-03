@@ -97,11 +97,14 @@ second `ITEM=` repaired - see [Monster loot](../04-gameplay-systems/monster-loot
 The rest of the block (#793): `ITEMNEWBIE=` -> `Equip =` (NPC gear, newbie), `COLOR=`/`NAME=` ->
 `EquipColor =`/`EquipName =` for the latest gear line, `ADDSPELL=` -> `AddSpell =`. `tag(isBoss,1)`
 in `@Create` -> `IsBoss = 1` (#794, bosses never turn [elite](../04-gameplay-systems/elite-monsters.md)).
+`tag(resist_silence,x)` -> `ResistSilence = x` (#1070, against Mind Blast's silence), ahead of the other `tag.resist_` lines.
 
 **Regions (#813).** `spheremap.scp`'s `[AREA]`s become `[FlaggedRegion a_<name>]` sections in
 `map.def` (`ConvertedRegion`): rects (Sphere's exclusive max made inclusive), spawn point, map
 plane, flags (kept in Sphere hex), and a parent computed from which other region contains it.
 `EVENTS`/`RESOURCES`/`RAINCHANCE`/`COLDCHANCE`/`GROUP` pass through as-is. `CLASS` is dropped.
+`tag.nomask` -> `NoMask = 1` (no thief's mask there) and `tag.cFlags` (Sphere hex) -> `CustomFlags` in decimal:
+`region_cf_denyRecall_in` 0x10, `_out` 0x20, `instantRes` 0x80 (#1070).
 Until #813 every area threw in the constructor (it wrote `createdat` as a `DateTime`, no longer
 saveable), so no region was ever emitted. `sphereregion.scp`'s `[RegionType]`/`[RegionResource]`
 are still commented out (region resources come next on #813).

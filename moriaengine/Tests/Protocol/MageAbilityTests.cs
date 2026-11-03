@@ -60,6 +60,18 @@ namespace SteamEngine.Tests.Protocol {
 				string silenced = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: silenced");
 				Assert.Contains("castsBefore=True", silenced);
 				Assert.Contains("castsAfter=False", silenced);
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: resist", mark, TimeSpan.FromSeconds(10)), this.fixture.GameOutputSnapshot());
+				string resist = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: resist");
+				Assert.Contains("def=1000", resist); //#1070
+				Assert.Contains("chance=375", resist);
+				Assert.Contains("immune=True", resist);
+				Assert.Contains("plain=True", resist);
+				client.SendSpeech(".TestRegionCustomFlags");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: regionflags", mark, TimeSpan.FromSeconds(10)), this.fixture.GameOutputSnapshot());
+				string flags = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: regionflags");
+				foreach (string check in new[] { "noMask=True", "arenaFlags=176", "inArena=True", "waitsOutside=True", "recallInRefused=True", "recallOutRefused=True", "risesAtOnce=True" }) {
+					Assert.Contains(check, flags);
+				}
 			}
 		}
 

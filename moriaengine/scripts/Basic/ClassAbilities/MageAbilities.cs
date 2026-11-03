@@ -54,9 +54,14 @@ namespace SteamEngine.CompiledScripts {
 			if (MaterialLevel(material) == 0) {
 				return false;
 			}
+			int resist = (target.Def is NPCDef def) ? def.ResistSilence : 0; //#1070 - tag.resist_silence
+			if (resist >= 1000) {
+				caster.RedMessage("Cil odolava umlceni");
+				return false;
+			}
 			MagicChargePlugin charges = MagicChargePlugin.Get(caster);
 			int mindCharges = (charges == null) ? 0 : charges.GetCharge(MagicChargeSchool.Mind);
-			if (Globals.dice.Next(1, 1001) > SilenceChance(points, caster.Int, material, 0, mindCharges)) {
+			if (Globals.dice.Next(1, 1001) > SilenceChance(points, caster.Int, material, resist, mindCharges)) {
 				return false;
 			}
 			int tenths = Silence(target, ClassAbilities.Points(caster, "mind_blast_silenced_time") + ClassAbilitySettings.instance.silenceTenths);

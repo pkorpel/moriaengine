@@ -41,6 +41,8 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Na pouziti teto schopnosti jeste nejsi dost " + (self.IsFemale ? "zkusena" : "zkuseny") + ".", ClassAbilities.ClassMessageHue);
 			} else if ((area != null) && ((area.RealmTag == 4) || (area.HouseNumber != 0))) {
 				self.SysMessage("Zde se nelze premaskovat!", ClassAbilities.ClassMessageHue);
+			} else if ((area != null) && area.NoMask) { //#1070 - tag.nomask, the start rooms
+				self.SysMessage("ty hnusnej bugere. Nic nebude", ClassAbilities.ClassMessageHue);
 			} else if (!self.Flag_Hidden && !self.IsGM) {
 				self.SysMessage("Pozor! Nesmi te pri tom videt.", ClassAbilities.ClassMessageHue);
 			} else if (self.M == CampPlane) {
