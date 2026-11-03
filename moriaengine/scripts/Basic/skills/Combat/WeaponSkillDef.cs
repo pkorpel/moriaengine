@@ -236,7 +236,8 @@ namespace SteamEngine.CompiledScripts {
 							} else {
 								projectile.Amount = amount - 1;
 							}
-						} else if (self.WeaponProjectileType != ProjectileType.None) {
+						} else if ((self.WeaponProjectileType != ProjectileType.None) && (self is Player)) {
+							//#788 - Sphere's Fight_Hit asks only a player for ammunition, a monster archer shoots without
 							self.SysMessage(Loc<WeaponSkillDefLoc>.Get(self.Language).YouHaveNoAmmo);
 							self.AbortSkill();
 							return TriggerResult.Cancel;

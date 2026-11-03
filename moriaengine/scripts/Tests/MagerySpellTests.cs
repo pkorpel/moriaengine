@@ -38,6 +38,9 @@ namespace SteamEngine.CompiledScripts {
 		/// ground placement is simplest and matches precedent regardless.</summary>
 		[SteamFunction]
 		public static void TestGrantFullSpellbook(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self); //#788 - a static east of the spawn point refused every ground cast there
+			//#788 - Erebor's darkness rule refuses a cast on a light roll, and a long run reaches night
+			PotionEffectPlugin.Apply(self, PotionEffectPlugin.NightSightSlot, PotionStat.NightSight, 0, 3600, "Nightsight", 0x8C5);
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
 			self.Str = 100;
 			self.Dex = 100;
@@ -341,6 +344,16 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			Console.WriteLine("MAGERY_PARALYZE_TEST: paralyzed=" + paralyzed);
+		}
+
+		/// <summary>#788 - Summon Creature's menu (#999, Erebor's sm_summon): picks the giant rat the way the menu
+		/// does (SummonMenu.Chose starts the cast with the creature), and says where the cursor should land.</summary>
+		[SteamFunction]
+		public static void TestSummonCreatureChoose(Character self) {
+			SummonMenu.Row rat = Array.Find(SummonMenu.rows, row => row.creature == "c_rat_giant_mage");
+			SummonMenu.Chose((Player) self, FindBook(self), SpellDef.GetByDefname("s_summon_creature"), rat);
+			int x = self.X + 2;
+			Console.WriteLine("MAGERY_SUMMONCHOICE: at=" + x + "," + self.Y + "," + self.GetMap().GetTileZ(x, self.Y));
 		}
 
 		private static SpellBook FindBook(Character self) {
