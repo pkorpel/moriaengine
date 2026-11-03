@@ -48,7 +48,7 @@ namespace SteamEngine.CompiledScripts {
 		private const int ExpEntry = 100, ExpLevelEntry = 101, ExpDecayEntry = 102, ReqLevelEntry = 103;
 
 		private static readonly VarGateFlags[] checkFlags = {
-			VarGateFlags.NpcGoThrough, VarGateFlags.GhostGoThrough, VarGateFlags.ExpGate, VarGateFlags.RequiresLevel, VarGateFlags.Sideways,
+			VarGateFlags.NpcGoThrough, VarGateFlags.HypnoGoThrough, VarGateFlags.GhostGoThrough, VarGateFlags.ExpGate, VarGateFlags.RequiresLevel, VarGateFlags.Sideways,
 			VarGateFlags.RecallPort, VarGateFlags.RemoveCursor, VarGateFlags.RemovePvpTools, VarGateFlags.RemoveMount, VarGateFlags.RemoveBank,
 			VarGateFlags.RemoveItems, VarGateFlags.AddItems, VarGateFlags.RunFunctions, VarGateFlags.Guarded, VarGateFlags.HasPlugins
 		};
@@ -58,8 +58,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void Check(VarGate gate, VarGateFlags flag, int y, string text) {
-			this.AddCheck(14, y, 210, 211, gate.Has(flag), (int) flag);
-			this.AddLabel(40, y, TextHue, text);
+			this.Check(gate, flag, 14, y, text);
+		}
+
+		private void Check(VarGate gate, VarGateFlags flag, int x, int y, string text) {
+			this.AddCheck(x, y, 210, 211, gate.Has(flag), (int) flag);
+			this.AddLabel(x + 26, y, TextHue, text);
 		}
 
 		private void Entry(int y, string label, int entry, string value) {
@@ -83,7 +87,8 @@ namespace SteamEngine.CompiledScripts {
 			this.AddLabel(335, y, LabelHue, "Nastav na moji pozici");
 			y += 28;
 			this.Check(gate, VarGateFlags.NpcGoThrough, y, "NPC muze projit.");
-			this.Check(gate, VarGateFlags.RecallPort, y + RowHeight, "Recall Home");
+			this.Check(gate, VarGateFlags.RecallPort, 300, y, "Recall Home");
+			this.Check(gate, VarGateFlags.HypnoGoThrough, y + RowHeight, "Hypno-NPC muze projit."); //#1070
 			this.Check(gate, VarGateFlags.GhostGoThrough, y + (2 * RowHeight), "Duchove mohou projit.");
 			y += 3 * RowHeight;
 			this.Check(gate, VarGateFlags.ExpGate, y, "Toto je ExpGate.");

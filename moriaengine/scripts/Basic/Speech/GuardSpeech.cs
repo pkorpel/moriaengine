@@ -93,7 +93,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((target == null) || (target == guard) || !target.IsPlayer || target.Flag_Invulnerable) {
 				return false;
 			}
-			if (IsProtectedBy(guard, target)) {
+			if (MysticHypnosis.GuardsLetAlone(target) || IsProtectedBy(guard, target)) { //#1070 - spk_guard's hypno_mystik
 				return false;
 			}
 			NPCAiTimer timer = NPCAiTimer.GetFor(guard);
@@ -114,7 +114,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			switch (guard.Realm) {
 				case Realm.Gondor:
-					return (target.Realm == Realm.Gondor) && (!Notoriety.IsCriminal(target) || Town.IsFromGuardsTown(guard, target)) && !Notoriety.IsMurderer(target);
+					return (target.Realm == Realm.Gondor) && (!Notoriety.IsCriminal(target) || Town.IsFromGuardsTown(guard, target)) && !MysticHypnosis.CountsAsMurderer(target);
 				case Realm.Mordor:
 					return target.Realm == Realm.Mordor;
 				default:
@@ -126,7 +126,7 @@ namespace SteamEngine.CompiledScripts {
 		/// goes for Gondor's criminals and murderers too. Unlike Erebor, not a player of no realm, the user's call: such a
 		/// character hasn't picked a nation yet, and guards never miss. GMs are safe.</summary>
 		public static bool AttacksOnSight(NPC guard, Character target) {
-			if (target.IsGM) {
+			if (target.IsGM || MysticHypnosis.GuardsLetAlone(target)) { //#1070 - e_guard's hypno_mystik
 				return false;
 			}
 			if (MonsterSpecialAttacks.IsAxeHater(guard) && CarriesAxe(target)) {

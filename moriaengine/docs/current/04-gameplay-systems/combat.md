@@ -159,7 +159,8 @@ sends a monster's physical blow back, whole, at `(weapon + 5 per point) * 10` ou
 is cutlass 150, kryss 100, scimitar 50, nothing else. `.vigilance` or `.stance` costs half of max
 stamina each way, needs 50, multiplies that 10 by `10 + a_thief_defstance points`, and takes
 `vigilanceOwnDamage` (70%) of the thief's own blows on monsters. Then the magic reflex and block,
-percentages of blows from `ThiefDefence.SetMagicDefence`; nothing sets them until magic items exist.
+percentages of blows from `ThiefDefence.SetMagicDefence`, which worn magic items set (131, 132, 134, 135). A thrown
+knife meets the ranged pair too: reflected, it costs the thief a fifth of their stamina and may fall at their feet.
 
 **Dodge.** Each point of `a_weapon_dodge` dodges 1% of monsters' physical blows
 (`weaponDodgePerPoint`). A dodged blow does nothing and fires no on-hit abilities. Players'

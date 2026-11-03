@@ -53,7 +53,7 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static void Use(Item self, Character clicker) {
 			Player player = clicker as Player;
-			if (player == null) {
+			if ((player == null) || MysticHypnosis.RefusesMenu(player)) { //#1070 - not while possessing
 				return;
 			}
 			House house = HouseOf(self, player);

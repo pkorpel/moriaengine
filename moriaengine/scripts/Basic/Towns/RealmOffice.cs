@@ -174,7 +174,7 @@ namespace SteamEngine.CompiledScripts {
 	public partial class RealmStone {
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
-			if (player == null) {
+			if ((player == null) || MysticHypnosis.RefusesMenu(player)) { //#1070 - not while possessing
 				return;
 			}
 			FlaggedRegion area = RegionEventSystem.AreaOf(this.Region);

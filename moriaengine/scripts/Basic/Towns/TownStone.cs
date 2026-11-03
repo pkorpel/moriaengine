@@ -14,7 +14,7 @@ namespace SteamEngine.CompiledScripts {
 	public partial class TownStone {
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
-			if (player == null) {
+			if ((player == null) || MysticHypnosis.RefusesMenu(player)) { //#1070 - not while possessing
 				return;
 			}
 			FlaggedRegion area = RegionEventSystem.AreaOf(this.Region);
@@ -70,7 +70,7 @@ namespace SteamEngine.CompiledScripts {
 		public override void On_DClick(AbstractCharacter from) {
 			Player player = from as Player;
 			Town town = Town.OfChest(this);
-			if ((player == null) || (town == null)) {
+			if ((player == null) || (town == null) || MysticHypnosis.RefusesMenu(player)) { //#1070 - not while possessing
 				return;
 			}
 			town.CollectChest();
