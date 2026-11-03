@@ -64,7 +64,7 @@ namespace SteamEngine.Tests.Protocol {
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "roundAttackHitsWhoIsNear", "roundAttackLeavesTheRest", "warcryTakesOwnMana", "stunWindowsShrink",
 						"stunLimitGrowsWithTheMetal", "plainMaceStunsNothing", "shieldsByMetal", "stanceOnCostsHalfStamina", "stanceOff",
-						"tauntTurnsItOnTheWarrior", "tauntingHardensIt", "leapNeedsAFight" }) {
+						"tauntTurnsItOnTheWarrior", "tauntingHardensIt", "aTauntedMonsterIsEvil", "leapNeedsAFight" }) {
 					string marker = "CLASS_ABILITY: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
@@ -98,7 +98,7 @@ namespace SteamEngine.Tests.Protocol {
 						"crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "killsBuildASpree",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
-						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "aKnifeHitsTheMonster", "knivesAreUsedUp", "aMagicReflexSendsTheKnifeBack", "aMagicBlockStopsIt", "strikeSpendsChargesOnThoseAround", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall",
+						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "aKnifeHitsTheMonster", "knivesAreUsedUp", "aMagicReflexSendsTheKnifeBack", "aMagicBlockStopsIt", "strikeSpendsChargesOnThoseAround", "aWarForkSwingsTwice", "aFencingBlowSpendsTheSlit", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall",
 						"theBallIsItsOwnThing", "onlyPetsAndSummonsObey", "aSummonCanBeTaken", "itObeysTheMystic", "catchTakesHold", "bothStandStill",
 						"holdingDrainsMana", "catchAgainLetsGo", "aSecondCatchHurts", "theFieldHoldsThoseAround", "aBlowFreesOne", "theFieldEndsAgain",
 						"theFieldCoolsDownAnHour", "aTalentIsStolen", "andGivenBack", "concentrationStarts", "aStepBreaksIt", "theMysticIsTheMonster",

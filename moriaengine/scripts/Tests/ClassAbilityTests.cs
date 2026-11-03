@@ -107,6 +107,7 @@ namespace SteamEngine.CompiledScripts {
 			NPCAiTimer ai = NPCAiTimer.GetFor(far);
 			Report("tauntTurnsItOnTheWarrior", (ai.Target == player) && far.HasTimer(TauntTimer.Key));
 			Report("tauntingHardensIt", TauntTimer.Resist(far) == 250);
+			Report("aTauntedMonsterIsEvil", far.Karma == -100); //#1070
 
 			Character none = WeaponSkillTargetQueuePlugin.CurrentTarget(player);
 			Report("leapNeedsAFight", none == null);
@@ -312,6 +313,24 @@ namespace SteamEngine.CompiledScripts {
 			CombatSettings.instance.weapAttack = weapAttack;
 			Report("strikeSpendsChargesOnThoseAround", (beside.Hits < besideHits) && !player.HasTimer(StrikeChargeTimer.Key) && (player.Stam == 160));
 			beside.Delete();
+
+			//#1070 - the rest of e_thief's @AfterSwing
+			Item held = player.FindLayer(LayerNames.Hand1) as Item;
+			if (held != null) {
+				held.Delete();
+			}
+			Item fork = (Item) ((ItemDef) ThingDef.GetByDefname("i_war_fork")).Create(player);
+			ClassAbilities.SetPoints(player, "doubleswing", 200);
+			player.Stam = 200;
+			player.SetTag(TagKey.Acquire("_podriznuti_"), 1);
+			NPC forked = Dummy(self, 1);
+			WeaponSwingArgs forkSwing = new WeaponSwingArgs(player, forked, 0, 0, 0, 100);
+			ThiefAbilities.AfterFencingBlow(player, forked, forkSwing);
+			Report("aWarForkSwingsTwice", (forkSwing.DamageAfterAC == 150) && (player.Stam == 200 - ClassAbilitySettings.instance.doubleSwingStamina));
+			Report("aFencingBlowSpendsTheSlit", !player.HasTag(TagKey.Acquire("_podriznuti_")));
+			forked.Delete();
+			fork.Delete();
+			ClassAbilities.SetPoints(player, "doubleswing", 0);
 			Console.WriteLine("THIEF_DONE");
 		}
 
