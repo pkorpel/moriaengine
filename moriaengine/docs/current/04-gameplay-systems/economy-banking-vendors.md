@@ -37,6 +37,23 @@ row per stock entry (icon, name, price, buy button), modeled after the crafting 
 (`CraftmenuDialog.cs`) but deliberately much simpler: no paging, no GM-only columns,
 since the stock list is small and fixed.
 
+## Fixed-price shops: the alchemist and the Prodejce
+
+Two of Erebor's NPC shops sell at fixed prices to their own realm, each one in both capitals through `.SetupWorld`
+(`TownSetup.PlaceShop`):
+
+- the alchemist (`c_alchymista`, `scripts/Basic/Economy/Alchemist`, #1017): elixirs, the empathy crystal, perception
+  potions, the life candle and the soul case;
+- the Prodejce (`c_drazitel`, `scripts/Basic/Economy/Prodejce`, #1070, `npc_drazitel.scp`): coal (250, up to 1000), magic
+  thread (10000, up to 1000), staff crystals and bowstrings of five woods (up to 100 each).
+
+A greeting or a buying word, or a double click within 3 tiles, opens the shop. Wares are picked on its pages, Koupit
+holds the order for 10 minutes as a shopping list where a line can be struck, and paying goes through `GoldUtils.Pay`.
+Stacks come as one stack; more than five single things come in a bag named Zbozi. Another realm gets "Nech me byt !".
+
+A GM opening either also gets its sales (`d_npc_*_statistika`, `ShopStatistics`): each ware's count and the sum, kept on
+the NPC, counting non-GM purchases only. Erebor's sum went wrong from a million gold on; this one doesn't.
+
 ## Player vendors
 
 `PlayerVendor` (`scripts/Optional/PlayerVendor/PlayerVendor.cs`) is a separate system - a

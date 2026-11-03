@@ -10,7 +10,7 @@ namespace SteamEngine.Tests.Protocol {
 	public class TownTests {
 		private const string Account = "towntests";
 		private const string AccountB = "towntestsb";
-		private const int TownPieces = 22; //#1017 - with the two alchemists
+		private const int TownPieces = 24; //#1017, #1070 - with the two alchemists and two Prodejce
 		private const int RealmAddBan = 3, RealmOffice = 4;
 		private const int Election = 3, Stand = 5, Blacklist = 2, SuggestedBans = 21, AddBan = 12, MakeCitizenship = 25, PayTax = 4, TaxStatus = 6, SetTax = 14, Resign = 15, Home = 24, News = 23, Yes = 1;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
