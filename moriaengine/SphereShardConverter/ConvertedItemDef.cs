@@ -205,6 +205,11 @@ namespace SteamEngine.Converter {
 					def.headerType = "VarGateDef"; //#920
 					def.Replace("TYPE", "t_normal", "");
 					break;
+				case "t_svice_zivota":
+				case "t_svice_zivota_lit":
+					def.headerType = "LifeCandleDef"; //#1017
+					def.Replace("TYPE", "t_normal", "");
+					break;
 				case "t_stone_travel":
 					def.headerType = "TravelStoneDef"; //#1035
 					def.Replace("TYPE", "t_normal", "");

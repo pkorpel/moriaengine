@@ -215,11 +215,12 @@ namespace SteamEngine.CompiledScripts {
 				magicChargeTriggerSpells[1] = SpellDef.GetByDefname("s_harm");
 				magicChargeTriggerSpells[2] = SpellDef.GetByDefname("s_lightning");
 			}
-			if (spell == magicChargeTriggerSpells[0]) {
+			//#1017 - charge_checkCastedCharger: only with points in that charge
+			if ((spell == magicChargeTriggerSpells[0]) && (ClassAbilities.Points(self, "magicCharge_fire") > 0)) {
 				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Fire);
-			} else if (spell == magicChargeTriggerSpells[1]) {
+			} else if ((spell == magicChargeTriggerSpells[1]) && (ClassAbilities.Points(self, "magicCharge_mind") > 0)) {
 				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Mind);
-			} else if (spell == magicChargeTriggerSpells[2]) {
+			} else if ((spell == magicChargeTriggerSpells[2]) && (ClassAbilities.Points(self, "magicCharge_energy") > 0)) {
 				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Energy);
 			}
 		}
