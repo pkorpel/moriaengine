@@ -40,7 +40,7 @@ namespace SteamEngine.CompiledScripts {
 	public class t_bandage : CompiledTriggerGroup {
 		public TriggerResult On_Dclick(Item self, Character clicker) {
 			Player player = clicker as Player;
-			if (player != null) {
+			if ((player != null) && !MysticHypnosis.RefusesUse(player, self)) {
 				if (ClothMaking.Count(player.Backpack, (ItemDef) self.Def) <= 0) {
 					player.SysMessage(Loc<HealingLoc>.Get(player.Language).NoBandagesOnYou);
 				} else {

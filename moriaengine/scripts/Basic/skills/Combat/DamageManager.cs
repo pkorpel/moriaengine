@@ -300,6 +300,12 @@ namespace SteamEngine.CompiledScripts {
 				if (attacker is Player warrior) {
 					WarriorAbilities.ModifyOwnBlow(warrior, defender, swingArgs); //#1017
 				}
+				MysticMind.ModifyBlow(attacker, defender, swingArgs); //#1017 - stolen talents
+				MysticMind.OnSwungAt(defender); //#1017 - a blow frees one held by catchField
+				MysticHypnosis.OnSwungAt(defender); //#1017 - and breaks a hypnosis
+				if (defender.IsDeleted || attacker.IsDeleted) {
+					return;
+				}
 				if (defender is Player blocker) {
 					WarriorAbilities.ModifyIncomingBlow(blocker, attacker, swingArgs); //#1017
 				}

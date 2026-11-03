@@ -686,6 +686,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower, currentTarget);
 			spellPower = ShamanAbilities.Concentrate(caster, currentTarget, this, spellPower); //#1017 - Koncentrace
+			spellPower = MysticMind.ModifySpellPower(caster, currentTarget, spellPower); //#1017 - a stolen attack talent
 			if (usesMindPower) {
 				//#860 - dospellcustom_donesrc: the multipliers come before the target's defense
 				spellPower -= CombatCalculator.GetSpellDefense(caster, currentTarget);

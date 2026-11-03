@@ -91,6 +91,18 @@ namespace SteamEngine.Converter {
 			this.writtenData.RemoveAll(line => line.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
 		}
 
+		/// <summary>The value written for a key, without its comment, or null.</summary>
+		public string GetWritten(string key) {
+			string prefix = key + " = ";
+			string line = this.writtenData.Find(l => l.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+			if (line == null) {
+				return null;
+			}
+			string value = line.Substring(prefix.Length);
+			int comment = value.IndexOf("//", StringComparison.Ordinal);
+			return ((comment >= 0) ? value.Substring(0, comment) : value).Trim();
+		}
+
 		public virtual void Dump(TextWriter writer) {
 			writer.WriteLine();
 			string header = string.Concat("[", this.headerType, " ", this.headerName, "]");

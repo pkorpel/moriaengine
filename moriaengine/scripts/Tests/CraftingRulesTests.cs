@@ -325,7 +325,8 @@ namespace SteamEngine.CompiledScripts {
 			CraftingProcessPlugin.StartCrafting(player, new CraftingOrder((CraftingSkillDef) SkillDef.GetBySkillName(SkillName.Inscribe), queue));
 			int noRecipe = 0;
 			foreach (SpellDef one in SpellDef.AllSpellDefs) {
-				if ((one.ScrollItem != null) && (one.ScrollItem.Resources == null) && !one.ScrollItem.PrettyDefname.StartsWith("i_scroll_test_", StringComparison.Ordinal)) {
+				if ((one.ScrollItem != null) && (one.ScrollItem.Resources == null) && !one.ScrollItem.PrettyDefname.StartsWith("i_scroll_test_", StringComparison.Ordinal) &&
+						(one.ScrollItem.PrettyDefname != "i_scroll_summon_undead")) { //Erebor's "unused in game", it has no recipe
 					noRecipe++;
 				}
 			}

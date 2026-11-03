@@ -427,6 +427,25 @@ namespace SteamEngine.Converter {
 		//ON=@Create trigger body - NOT the top-level "experience" line the base LineImplTask
 		//handlers above already cover. NPCDef.ExperienceWorth (#127) already understands the
 		//"min max" shape this emits, so this is a pure converter fix - #566.
+		private int hypnoFlags;
+		private static readonly Regex hypnoFlagRE = new Regex(@"flag_(hypnoCanBe|hypnoLoot|Buff|BuffPower)(?:\[(\d+)\])?", RegexOptions.IgnoreCase);
+
+		/// <summary>specabilities.scp's [Constants flags_hypno].</summary>
+		private static int HypnoFlag(string name, string index) {
+			int n = string.IsNullOrEmpty(index) ? 0 : int.Parse(index, CultureInfo.InvariantCulture);
+			switch (name.ToLowerInvariant()) {
+				case "hypnocanbe":
+					return 0x1;
+				case "hypnoloot":
+					return 0x2;
+				case "buff":
+					return ((n >= 1) && (n <= 4)) ? (0x4 << (n - 1)) : 0;
+				case "buffpower":
+					return ((n >= 1) && (n <= 10)) ? (0x400000 << (n - 1)) : 0;
+			}
+			return 0;
+		}
+
 		protected override void ProcessCreateTriggerLine(string name, string value, string comment, int lineNum) {
 			//the real archive's "COLOR=..." line right after an "ITEMNEWBIE=..." line colors
 			//THAT item (e.g. c_m_HEALER: "ITEMNEWBIE=random_facial_hair / COLOR=match_hair" -
@@ -787,6 +806,20 @@ namespace SteamEngine.Converter {
 			if (name == "tag.isboss") {
 				if (!this.IsPlayerDefByName && (value.Trim() != "0")) {
 					this.Set("IsBoss", "1", comment);
+				}
+				return;
+			}
+			//#1017 - the mystic's flags_hypno, ORed in line by line: tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>
+			if (name == "tag.hypnotizable") {
+				if (!this.IsPlayerDefByName) {
+					int flags = value.Contains("<tag.hypnotizable>") ? this.hypnoFlags : 0;
+					foreach (Match flag in hypnoFlagRE.Matches(value)) {
+						flags |= HypnoFlag(flag.Groups[1].Value, flag.Groups[2].Value);
+					}
+					if ((flags != 0) || (this.hypnoFlags != 0)) {
+						this.Replace("Hypnotizable", flags.ToString(CultureInfo.InvariantCulture), comment);
+					}
+					this.hypnoFlags = flags;
 				}
 				return;
 			}

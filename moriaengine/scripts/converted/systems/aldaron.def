@@ -223,6 +223,7 @@ SpiritSpeak = 800
 Peacemaking = 1000
 Provocation = 1000
 NoAnimate = 1
+Hypnotizable = 32
 
 ON=@npcrefuseitem
 SAY("Mne nemuzes podplatit. Odejdi!")
@@ -707,6 +708,7 @@ MaxHits = 1100 1300
 MaxStam = 180 240
 MaxMana = 0
 Experience = 40 60
+Hypnotizable = 4
 Parry = 550 950
 MagicResist = 900
 Tactics = 900 1000

@@ -1,7 +1,9 @@
 [function explevel]
+if (HypnoAllows())
 InvalidateCombatWeaponValues()
 InvalidateCombatArmorValues()
 Dialog(d_explevel)
+endif
 
 [Dialog d_explevel]
 // Widened from 400 to 560, and the value column moved from x=250 to x=340 - at x=70,

@@ -389,6 +389,7 @@ namespace SteamEngine.CompiledScripts {
 		private static TimerKey charLingeringTimerTK = TimerKey.Acquire("_charLingeringTimer_");
 		public override void On_LogOut() {
 			ShamanPacts.OnGone(this); //#1017 - @Logout ends a pact
+			MysticHypnosis.OnLogout(this); //#1017 - and brings a possessing mystic home
 			//TODO: In safe/nonsafe areas, settings, etc.
 
 			if (LogoutSettings.instance.showLogoutEffect) {
