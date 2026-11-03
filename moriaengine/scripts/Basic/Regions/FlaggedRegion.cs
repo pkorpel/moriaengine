@@ -67,6 +67,7 @@ namespace SteamEngine.Regions {
 		private int houseRealmTag;
 		private bool noMask;
 		private int customFlags;
+		private int elvenGroveX = -1, elvenGroveY = -1;
 
 		[LoadSection]
 		public FlaggedRegion(PropsSection input)
@@ -157,6 +158,19 @@ namespace SteamEngine.Regions {
 		/// at once (0x80).</summary>
 		public int CustomFlags {
 			get { return this.customFlags; }
+		}
+
+		/// <summary>#427 - Erebor's tag.elven: the point this area's elven probe wanders round (ElvenGrove).</summary>
+		public bool HasElvenGrove {
+			get { return this.elvenGroveX >= 0; }
+		}
+
+		public int ElvenGroveX {
+			get { return this.elvenGroveX; }
+		}
+
+		public int ElvenGroveY {
+			get { return this.elvenGroveY; }
 		}
 
 		public const int DenyRecallIn = 0x10, DenyRecallOut = 0x20, InstantRes = 0x80;
@@ -354,6 +368,9 @@ namespace SteamEngine.Regions {
 			if (this.customFlags != 0) {
 				output.WriteValue("customflags", this.customFlags);
 			}
+			if (this.HasElvenGrove) {
+				output.WriteLine("elvengrove=" + this.elvenGroveX + "," + this.elvenGroveY);
+			}
 		}
 
 		public override void LoadLine(string filename, int line, string valueName, string valueString) {
@@ -454,6 +471,12 @@ namespace SteamEngine.Regions {
 				case "customflags":
 					this.customFlags = ConvertTools.ParseInt32(valueString.Trim());
 					break;
+				case "elvengrove": {
+						string[] xy = valueString.Split(',');
+						this.elvenGroveX = ConvertTools.ParseInt32(xy[0].Trim());
+						this.elvenGroveY = ConvertTools.ParseInt32(xy[1].Trim());
+						break;
+					}
 				case "rainchance":
 					this.rainChance = ConvertTools.ParseInt32(valueString.Trim());
 					break;

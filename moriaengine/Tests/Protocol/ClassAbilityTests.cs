@@ -101,6 +101,7 @@ namespace SteamEngine.Tests.Protocol {
 						"aSpreeShowsItsIcon", "aSplitShotShowsItsIcon", "theLastChargeClosesTheIcon", "crushingArrowWearsResists", "aSecondArrowReplacesTheFirst", "aWeakerArrowWaitsItsTurn", "arrowRecordsAsErebor",
 						"aLightCrossbowTakesJaggedBoltsOnly", "aJaggedBoltBleeds", "aCrushingArrowUsesABolt", "killsBuildASpree",
 						"ironLeadsToVerite", "mithrilIsTheTop", "noCounterNoLuck", "theCounterAndPointsFindBetter",
+						"theCounterIsOffAgain", "anAreaHoldsTheProbe", "theProbeWandersRoundItsPoint", "ebonyTurnsElvenNearTheProbe", "oneElvenLogOnly", "anElvenTreeHasNothingThere", "onlyCraftsmenMeetTheProbe", "farFromTheProbeEbonyStays",
 						"behindBonusSteps", "throatBonusSteps", "seenFromBehind", "notFromTheFront", "throatSlitCostsStamina", "throatSlitMustCoolDown",
 						"shieldStrikeCostsStamina", "aBackstabHurts", "aBackstabReveals", "maskChangesNameAndRealm", "maskSwapsBack", "theMaskSuggestsAName", "rentalInfoShowsTheOtherIdentity", "underIncognitoTheRuneIsRenamed", "aKnifeHitsTheMonster", "knivesAreUsedUp", "aMagicReflexSendsTheKnifeBack", "aMagicBlockStopsIt", "aPoisonedKnifePoisons", "strikeSpendsChargesOnThoseAround", "aWarForkSwingsTwice", "aFencingBlowSpendsTheSlit", "undeadHitsByPoints", "darkpowerTurnsTheCounterOn", "darkpowerGivesManaBack", "notForRecall",
 						"theBallIsItsOwnThing", "onlyPetsAndSummonsObey", "aSummonCanBeTaken", "itObeysTheMystic", "catchTakesHold", "bothStandStill",

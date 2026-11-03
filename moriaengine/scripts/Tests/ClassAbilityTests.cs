@@ -1,6 +1,7 @@
 using System;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts.Dialogs;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1017 - spending Erebor's two points a level, by class and level.</summary>
@@ -263,6 +264,41 @@ namespace SteamEngine.CompiledScripts {
 			CraftsmanAbilities.Vigour(player);
 			ClassAbilities.SetPoints(player, "vigourMining", 500);
 			Report("theCounterAndPointsFindBetter", CraftsmanAbilities.FindsBetter(player, "vigourMining"));
+
+			//#427 - the elven probe: near it ebony turns elven and an elven tree has nothing, for craftsmen only
+			CraftsmanAbilities.Vigour(player); //the counter off, or vigour could move the ebony up first
+			Report("theCounterIsOffAgain", !ClassAbilities.CounterOn(player));
+			FlaggedRegion grove = null;
+			foreach (StaticRegion region in StaticRegion.AllRegions) {
+				if ((region is FlaggedRegion area) && area.HasElvenGrove) {
+					player.Go(new Point4D(area.ElvenGroveX, area.ElvenGroveY, 0, area.Mapplane));
+					if (RegionEventSystem.AreaOf(player.Region) == area) {
+						grove = area;
+						break;
+					}
+				}
+			}
+			Report("anAreaHoldsTheProbe", grove != null);
+			if (grove != null) {
+				Point2D first = ElvenGrove.SpotOf(grove);
+				Report("theProbeWandersRoundItsPoint", (Math.Abs(first.X - grove.ElvenGroveX) <= ElvenGrove.Wander) && (Math.Abs(first.Y - grove.ElvenGroveY) <= ElvenGrove.Wander));
+				player.SetRealSkillValue((int) SkillName.Lumberjacking, ElvenGrove.RollMax + 1);
+				byte m = player.M;
+				int x = player.X + 1, y = player.Y;
+				ElvenGrove.PlaceForTest(grove, new Point2D(player.X, player.Y));
+				LumberjackingVeinSystem.ForceVeinForTest(m, x, y, WoodTiers.Eben, 5);
+				Report("ebonyTurnsElvenNearTheProbe", LumberjackingVeinSystem.Chop(player, m, x, y) == WoodTiers.Elven.ItemDef);
+				Report("oneElvenLogOnly", LumberjackingVeinSystem.Chop(player, m, x, y) == null);
+				LumberjackingVeinSystem.ForceVeinForTest(m, x, y, WoodTiers.Elven, 5);
+				Report("anElvenTreeHasNothingThere", LumberjackingVeinSystem.Chop(player, m, x, y) == null);
+				player.Profession = Professions.Warrior;
+				LumberjackingVeinSystem.ForceVeinForTest(m, x, y, WoodTiers.Elven, 5);
+				Report("onlyCraftsmenMeetTheProbe", LumberjackingVeinSystem.Chop(player, m, x, y) == WoodTiers.Elven.ItemDef);
+				player.Profession = Professions.Craftsman;
+				ElvenGrove.PlaceForTest(grove, new Point2D(player.X + ElvenGrove.Reach, player.Y));
+				LumberjackingVeinSystem.ForceVeinForTest(m, x, y, WoodTiers.Eben, 5);
+				Report("farFromTheProbeEbonyStays", LumberjackingVeinSystem.Chop(player, m, x, y) == WoodTiers.Eben.ItemDef);
+			}
 			Console.WriteLine("CRAFTSMAN_DONE");
 		}
 
