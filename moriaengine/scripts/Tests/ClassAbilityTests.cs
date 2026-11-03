@@ -275,6 +275,22 @@ namespace SteamEngine.CompiledScripts {
 			Report("maskChangesNameAndRealm", (player.Name == "Stinovy") && (player.Realm == Realm.Mordor) && (Notoriety.GetMurderCount(player) == 3));
 			ThiefMask.Swap(player, ThiefMask.Attributes(player));
 			Report("maskSwapsBack", (player.Name == realName) && (player.Realm == Realm.Gondor));
+			player.Realm = Realm.None;
+			NPC mark = Dummy(self, 3);
+			WeaponSkillTargetQueuePlugin.AddTarget(player, mark);
+			Item knives = (Item) ((ItemDef) ThingDef.GetByDefname("i_kudla")).Create(player.Backpack);
+			knives.Amount = 20;
+			ClassAbilities.SetPoints(player, "throwing", 10);
+			short markHits = mark.Hits;
+			for (int i = 0; (i < 10) && (mark.Hits == markHits); i++) {
+				player.Stam = 200;
+				player.RemoveTag(TagKey.Acquire("_nextThrow_"));
+				ThiefAbilities.ThrowKnife(player);
+			}
+			Report("aKnifeHitsTheMonster", mark.Hits == markHits - 1);
+			Report("knivesAreUsedUp", knives.IsDeleted || (knives.Amount < 20));
+			WeaponSkillTargetQueuePlugin.RemoveTarget(player, mark);
+			mark.Delete();
 			Console.WriteLine("THIEF_DONE");
 		}
 
