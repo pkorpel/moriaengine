@@ -160,13 +160,12 @@ namespace SteamEngine {
 
 		public bool HasTriggerGroup(TriggerGroup tg) {
 			if (tg == null) return false;
-			PluginHolder.TGListNode curNode = this.firstTGListNode;
-			do {
+			//a def with no trigger groups has no first node (#1100 made every fighting NPC ask)
+			for (PluginHolder.TGListNode curNode = this.firstTGListNode; curNode != null; curNode = curNode.nextNode) {
 				if (curNode.storedTG == tg) {
 					return true;
 				}
-				curNode = curNode.nextNode;
-			} while (curNode != null);
+			}
 			return false;
 		}
 
