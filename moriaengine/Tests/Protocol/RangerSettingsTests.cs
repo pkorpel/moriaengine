@@ -33,21 +33,25 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
-		/// <summary>#860 - ammo multiplies the attack by Erebor's nastaveni_arrowdamage_N: a plain
-		/// copper bolt 1050, a jagged one 800.</summary>
+		/// <summary>#860 - ammo multiplies the attack by Erebor's nastaveni_arrowdamage_N, a jagged copper bolt
+		/// 800. #1070 - the light crossbow takes jagged bolts only (its TDATA3), so with plain bolts it has no ammo
+		/// and the multiplier is gone: 1000/800 = 1.25.</summary>
 		[Fact]
 		public void AmmoMultipliesTheAttack() {
 			using (var client = this.ConnectLoginAndCreateCharacter("RangerSettingsArrowTierChecker")) {
 				this.EquipRealCrossbow(client);
 				int withJagged = this.ReportWeaponAttackVsP(client);
 
+				int mark = this.fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestReplaceAmmoWithPlainBolts");
+				Assert.True(this.fixture.WaitForGameOutputSince("RANGER_SETTINGS_AMMO:", mark, TimeSpan.FromSeconds(10)));
+				Assert.Contains("RANGER_SETTINGS_AMMO: none", this.fixture.GameOutputSnapshot().Substring(mark));
 				int withPlain = this.ReportWeaponAttackVsP(client);
 
 				Assert.True(withJagged > 0, "Expected a nonzero attack with jagged bolts.");
 				double ratio = (double) withPlain / withJagged;
-				Assert.True((ratio > 1.2) && (ratio < 1.45),
-					"Expected 1050/800 = 1.31. withJagged=" + withJagged + " withPlain=" + withPlain);
+				Assert.True((ratio > 1.2) && (ratio < 1.3),
+					"Expected 1000/800 = 1.25. withJagged=" + withJagged + " withPlain=" + withPlain);
 			}
 		}
 

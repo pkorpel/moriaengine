@@ -18,5 +18,6 @@ Def:	//vars on the def
 	double piercing = 0
 	double damageMultiplier = 1.0
 	ProjectileType projectileType = ProjectileType.Bolt
+	int bleedCoefficient = 0
 	int poisoningDifficulty = 0
 	double poisoningEfficiency = 1.0

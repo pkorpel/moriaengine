@@ -129,6 +129,7 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 Color = color_o_copper
 DamageMultiplier = 0.8 //nastaveni_arrowdamage_11 
 Piercing = 285 //nastaveni_arrowdamage_25 
+BleedCoefficient = 600 //nastaveni_arrowdamage_36 
 
 [ColoredProjectileDef i_bolt_jagged_iron]
 NAME = "chesnut jagged bolt%s"
@@ -146,6 +147,7 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 Color = color_o_iron
 DamageMultiplier = 0.9 //nastaveni_arrowdamage_12 
 Piercing = 300 //nastaveni_arrowdamage_26 
+BleedCoefficient = 700 //nastaveni_arrowdamage_37 
 
 [ColoredProjectileDef i_bolt_jagged_verite]
 NAME = "oak jagged bolt%s"
@@ -163,6 +165,7 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 Color = color_o_verite
 DamageMultiplier = 1.0 //nastaveni_arrowdamage_13 
 Piercing = 315 //nastaveni_arrowdamage_27 
+BleedCoefficient = 950 //nastaveni_arrowdamage_38 
 
 [ColoredProjectileDef i_bolt_jagged_valorite]
 NAME = "teak jagged bolt%s"
@@ -180,6 +183,7 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 Color = color_o_valorite
 DamageMultiplier = 1.03 //nastaveni_arrowdamage_14 
 Piercing = 335 //nastaveni_arrowdamage_28 
+BleedCoefficient = 1150 //nastaveni_arrowdamage_39 
 
 [ColoredProjectileDef i_bolt_jagged_obsidian]
 NAME = "mahagon jagged bolt%s"
@@ -197,6 +201,7 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 Color = color_o_obsidian
 DamageMultiplier = 1.08 //nastaveni_arrowdamage_15 
 Piercing = 360 //nastaveni_arrowdamage_29 
+BleedCoefficient = 1500 //nastaveni_arrowdamage_40 
 
 [ColoredProjectileDef i_bolt_jagged_adamantinum]
 NAME = "eben jagged bolt%s"
@@ -214,6 +219,7 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 Color = color_o_adamantinum
 DamageMultiplier = 0.0 //nastaveni_arrowdamage_16 
 Piercing = 360 //nastaveni_arrowdamage_30 
+BleedCoefficient = 0 //nastaveni_arrowdamage_41 
 
 [ColoredProjectileDef i_bolt_jagged_mithril]
 NAME = "elven jagged bolt%s"
@@ -231,6 +237,7 @@ ProjectileType = ProjectileType.Bolt //guessed by Converter
 Color = color_o_mithril
 DamageMultiplier = 0.0 //nastaveni_arrowdamage_17 
 Piercing = 360 //nastaveni_arrowdamage_31 
+BleedCoefficient = 0 //nastaveni_arrowdamage_42 
 
 [ColoredProjectileDef i_xbolt_copper]
 NAME = "spruce bolt%s"

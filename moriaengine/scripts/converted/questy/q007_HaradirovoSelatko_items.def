@@ -22,6 +22,7 @@ strikeStopRange = 10 //default value set by Converter
 Color = 065f
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_arrow" //TDATA3 
 
 [ItemDef i_selatko]
 CATEGORY = Kvesty

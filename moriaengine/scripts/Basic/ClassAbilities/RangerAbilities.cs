@@ -122,6 +122,8 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Cil je prilis daleko!");
 			} else if (!self.CanSeeLOS(target).Allow) {
 				self.RedMessage("Nevidis na cil!");
+			} else if (!HasAmmo(self)) {
+				return;
 			} else if (ClassAbilities.ReduceStamina(self, ClassAbilitySettings.instance.crushingArrowStamina)) {
 				self.SysMessage("Chystas se vystrelit drtivou strelu!", ClassAbilities.ClassMessageHue);
 				self.SetTag(nextCrushingArrowTK, Globals.TimeInSeconds + ClassAbilitySettings.instance.crushingArrowNextSeconds);
@@ -141,6 +143,8 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Musis v ruce drzet strelnou zbran!");
 			} else if (!self.CanSeeLOS(target).Allow) {
 				self.RedMessage("Nevidis na cil!");
+			} else if (!HasAmmo(self)) {
+				return;
 			} else if (Globals.dice.Next(1, 1001) > self.GetSkill(SkillName.Archery)) {
 				self.SysMessage((self.IsFemale ? "Minula" : "Minul") + " jsi cil!");
 			} else if (Point2D.GetSimpleDistance(self, target) > ClassAbilitySettings.instance.crushingArrowReach) {
@@ -156,6 +160,60 @@ namespace SteamEngine.CompiledScripts {
 				int power = (points * 10) + ((int) DamageManager.GetWeaponSwingArgs(self, npc).attack * 3);
 				power -= (power * resist) / 1000;
 				CrushedResistsTimer.Apply(npc, power, ClassAbilitySettings.instance.crushingArrowBaseSeconds + (points * ClassAbilitySettings.instance.crushingArrowSecondsPerPoint));
+				ShotTaken(self, npc);
+			}
+		}
+
+		/// <summary>#1070 - f_archer_validateAmmo: the bow's own ammunition in the pack.</summary>
+		private static bool HasAmmo(Player self) {
+			if (self.WeaponProjectile == null) {
+				self.SysMessage("Nemas zadne strelivo.");
+				return false;
+			}
+			return true;
+		}
+
+		/// <summary>#1070 - f_crushingArrow_successEffect: the arrow flies, the bow sounds, and f_archer_consumeAmmoOnShot
+		/// takes one.</summary>
+		private static void ShotTaken(Player self, Character target) {
+			Projectile ammo = self.WeaponProjectile;
+			int anim = self.WeaponProjectileAnim;
+			if (anim >= 0) {
+				EffectFactory.EffectFromTo(self, target, anim, 10, 1, false, false);
+			}
+			Item hand = self.FindLayer(LayerNames.Hand2) as Item;
+			self.Sound(CraftingSkillDef.IsOfType(hand, "t_weapon_bow_run") ? 563 : 564); //snd_WEAPONS_BLUNT01, snd_WEAPONS_CROSSBOW
+			if (ammo != null) {
+				if (ammo.Amount <= 1) {
+					ammo.Delete();
+				} else {
+					ammo.Amount--;
+				}
+			}
+		}
+
+		/// <summary>#1070 - e_bleed_bolt, on a light crossbow (whose TDATA3 is jagged bolts): an Archery shot bleeds at
+		/// points * 45 out of 1000, with the blow * (nastaveni_bleed_bolt * the bolt's coefficient / 1000) / 1000.
+		/// In the saddle it can't, and says so now and then.</summary>
+		internal static void TryBleedBolt(Player self, Character target, WeaponSwingArgs swing) {
+			Weapon crossbow = self.Weapon;
+			if ((crossbow == null) || !string.Equals(((WeaponDef) crossbow.Def).AmmoType, "t_weapon_bolt_jagged", StringComparison.OrdinalIgnoreCase)) {
+				return;
+			}
+			if (self.Flag_Riding) {
+				if (Globals.dice.Next(10) == 1) {
+					self.SysMessage("V sedle nejsi " + (self.IsFemale ? "schopna" : "schopen") + " s touto kusi dobre manipulovat", ClassAbilities.ClassMessageHue);
+				}
+				return;
+			}
+			if (Globals.dice.Next(1000) >= ClassAbilities.Points(self, "bleed_bolt") * ClassAbilitySettings.instance.bleedBoltChancePerPoint) {
+				return;
+			}
+			Projectile bolt = self.WeaponProjectile;
+			int coefficient = (bolt == null) ? 0 : ((ProjectileDef) bolt.Def).BleedCoefficient;
+			double power = (swing.DamageAfterAC * ((ClassAbilitySettings.instance.bleedBolt * coefficient) / 1000)) / 1000;
+			if (power > 0) {
+				SingletonScript<BleedingEffectPluginDef>.Instance.Strike(self, target, power);
 			}
 		}
 
@@ -280,8 +338,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>reduceResist of sharp, slash, pierce and blunt, while the arrow's in. A new arrow replaces the
-	/// old one. What's invulnerable, a resist of 1000, stays so.</summary>
+	/// <summary>reduceResist of sharp, slash, pierce and blunt (resists.scp's i_resistModifier records): every arrow is a
+	/// record of a value and an end; the strongest running one is what's off the resists, and a weaker one that outlasts
+	/// it takes over when it ends. A record weaker and shorter than one already there is dropped. What's invulnerable, a
+	/// resist of 1000, stays so.</summary>
 	[SaveableClass, DeepCopyableClass]
 	public class CrushedResistsTimer : BoundTimer {
 		internal static readonly TimerKey Key = TimerKey.Acquire("_crushedResists_");
@@ -289,28 +349,93 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData, CopyableData]
 		public int sharp, slashing, stabbing, blunt;
 
+		/// <summary>"end,value;end,value", strongest first, each later one weaker and lasting longer.</summary>
+		[SaveableData, CopyableData]
+		public string records = "";
+
 		[DeepCopyImplementation, LoadingInitializer]
 		public CrushedResistsTimer() {
 		}
 
 		internal static void Apply(NPC npc, int power, double seconds) {
-			CrushedResistsTimer old = npc.GetTimer(Key) as CrushedResistsTimer;
-			if (old != null) {
-				old.Restore(npc);
-				old.Delete();
+			CrushedResistsTimer timer = npc.GetTimer(Key) as CrushedResistsTimer;
+			if (timer == null) {
+				timer = new CrushedResistsTimer();
+				npc.AddTimer(Key, timer);
 			}
-			CrushedResistsTimer timer = new CrushedResistsTimer();
-			timer.sharp = (npc.ResistSharp >= 1000) ? 0 : power;
-			timer.slashing = (npc.ResistSlashing >= 1000) ? 0 : power;
-			timer.stabbing = (npc.ResistStabbing >= 1000) ? 0 : power;
-			timer.blunt = (npc.ResistBlunt >= 1000) ? 0 : power;
-			npc.ResistSharp -= timer.sharp;
-			npc.ResistSlashing -= timer.slashing;
-			npc.ResistStabbing -= timer.stabbing;
-			npc.ResistBlunt -= timer.blunt;
-			npc.AddTimer(Key, timer);
-			timer.DueInSeconds = seconds;
+			List<KeyValuePair<double, int>> list = timer.Records;
+			if (AddRecord(list, Globals.TimeInSeconds + seconds, power)) {
+				timer.Records = list;
+				timer.ApplyFirst(npc);
+			}
 			npc.Sound(0x3a8);
+		}
+
+		/// <summary>f_reduceResist_findPlacement and f_reduceResist_cleanInvalidRecords. False if nothing changed.</summary>
+		internal static bool AddRecord(List<KeyValuePair<double, int>> list, double end, int value) {
+			for (int i = 0; i < list.Count; i++) {
+				KeyValuePair<double, int> cur = list[i];
+				if (cur.Value <= value) {
+					if (cur.Key < end) {
+						list[i] = new KeyValuePair<double, int>(end, value);
+						for (int j = list.Count - 1; j > i; j--) {
+							if (list[j].Key < end) {
+								list.RemoveAt(j);
+							}
+						}
+						return true;
+					}
+					if (cur.Value == value) {
+						return false;
+					}
+					list.Insert(i, new KeyValuePair<double, int>(end, value));
+					return true;
+				}
+				if (cur.Key >= end) {
+					return false;
+				}
+			}
+			list.Add(new KeyValuePair<double, int>(end, value));
+			return true;
+		}
+
+		private List<KeyValuePair<double, int>> Records {
+			get {
+				List<KeyValuePair<double, int>> list = new List<KeyValuePair<double, int>>();
+				foreach (string record in (this.records ?? "").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+					string[] parts = record.Split(',');
+					list.Add(new KeyValuePair<double, int>(double.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture),
+						int.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture)));
+				}
+				return list;
+			}
+			set {
+				List<string> parts = new List<string>();
+				foreach (KeyValuePair<double, int> record in value) {
+					parts.Add(record.Key.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + "," + record.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+				}
+				this.records = string.Join(";", parts);
+			}
+		}
+
+		/// <summary>f_resistModifier_applyCurrResist: the first record off the resists, until its end.</summary>
+		private void ApplyFirst(NPC npc) {
+			this.Restore(npc);
+			List<KeyValuePair<double, int>> list = this.Records;
+			if (list.Count == 0) {
+				this.Delete();
+				return;
+			}
+			int power = list[0].Value;
+			this.sharp = (npc.ResistSharp >= 1000) ? 0 : power;
+			this.slashing = (npc.ResistSlashing >= 1000) ? 0 : power;
+			this.stabbing = (npc.ResistStabbing >= 1000) ? 0 : power;
+			this.blunt = (npc.ResistBlunt >= 1000) ? 0 : power;
+			npc.ResistSharp -= this.sharp;
+			npc.ResistSlashing -= this.slashing;
+			npc.ResistStabbing -= this.stabbing;
+			npc.ResistBlunt -= this.blunt;
+			this.DueInSeconds = Math.Max(0, list[0].Key - Globals.TimeInSeconds);
 		}
 
 		private void Restore(NPC npc) {
@@ -318,11 +443,23 @@ namespace SteamEngine.CompiledScripts {
 			npc.ResistSlashing += this.slashing;
 			npc.ResistStabbing += this.stabbing;
 			npc.ResistBlunt += this.blunt;
+			this.sharp = this.slashing = this.stabbing = this.blunt = 0;
 		}
 
+		/// <summary>The record ran out: f_resistModifierTimer, the next one if any. A one-shot timer is already gone
+		/// here, so the next record gets a new one.</summary>
 		protected override void OnTimeout(TagHolder cont) {
-			if (cont is NPC npc) {
-				this.Restore(npc);
+			if (!(cont is NPC npc)) {
+				return;
+			}
+			this.Restore(npc);
+			List<KeyValuePair<double, int>> list = this.Records;
+			list.RemoveAll(r => r.Key <= Globals.TimeInSeconds + 0.05);
+			if (list.Count > 0) {
+				CrushedResistsTimer next = new CrushedResistsTimer();
+				next.Records = list;
+				npc.AddTimer(Key, next);
+				next.ApplyFirst(npc);
 			}
 		}
 	}

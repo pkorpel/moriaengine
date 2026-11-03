@@ -71,6 +71,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			GrantArrows(self, "i_xbolt_copper");
 			self.InvalidateCombatWeaponValues(); // force a fresh ammo lookup
+			Console.WriteLine("RANGER_SETTINGS_AMMO: " + ((self.WeaponProjectile == null) ? "none" : self.WeaponProjectile.Def.PrettyDefname));
 		}
 
 		[SteamFunction]

@@ -516,6 +516,7 @@ namespace SteamEngine.Converter {
 			foreach (ConvertedItemDef def in itemsByDefname.Values) {
 				if (def.isWeapon) {
 					def.ApplyWeaponSettings();
+					def.ApplyAmmoType();
 				} else if (def.headerType.EndsWith("ProjectileDef", StringComparison.OrdinalIgnoreCase)) {
 					def.ApplyAmmoSettings();
 				}
@@ -644,6 +645,20 @@ namespace SteamEngine.Converter {
 			SphereWorldVars.TryGetInt("nastaveni_arrowdamage_" + piercingIndex, out int piercing);
 			this.Set("DamageMultiplier", (damage / 1000.0).ToString("0.0##", CultureInfo.InvariantCulture), "nastaveni_arrowdamage_" + damageIndex);
 			this.Set("Piercing", piercing.ToString(CultureInfo.InvariantCulture), "nastaveni_arrowdamage_" + piercingIndex);
+			//#1070 - e_bleed_bolt: a jagged bolt's bleed is nastaveni_arrowdamage_ 25 places after its damage
+			if (string.Equals(this.type, "t_weapon_bolt_jagged", StringComparison.OrdinalIgnoreCase) &&
+					SphereWorldVars.TryGetInt("nastaveni_arrowdamage_" + (damageIndex + 25), out int bleed)) {
+				this.Set("BleedCoefficient", bleed.ToString(CultureInfo.InvariantCulture), "nastaveni_arrowdamage_" + (damageIndex + 25));
+			}
+		}
+
+		//#1070 - a bow's TDATA3 is the ammunition it takes: the light crossbow jagged bolts only, the heavy one plain bolts.
+		//A coloured bow inherits its base's (ID=i_crossbow).
+		private void ApplyAmmoType() {
+			string ammo = this.TData3 ?? (this.modelDef as ConvertedItemDef)?.TData3;
+			if ((ammo != null) && ammo.Trim().StartsWith("t_weapon_", StringComparison.OrdinalIgnoreCase)) {
+				this.Set("AmmoType", "\"" + ammo.Trim().ToLowerInvariant() + "\"", "TDATA3");
+			}
 		}
 
 		//#860 - the defnames of the f_<type>defname functions in nastaveni_ceho.scp, {0} = metal

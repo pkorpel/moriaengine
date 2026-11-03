@@ -967,6 +967,7 @@ maxDurability = 110 //nastaveni_durability
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_arrow" //TDATA3 
 
 [ColoredWeaponDef i_crossbow_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -998,6 +999,7 @@ maxDurability = 120 //nastaveni_durability
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt_jagged" //TDATA3 
 
 [ColoredWeaponDef i_crossbow_heavy_copper]
 CATEGORY = Provisions - Weapons - Colored
@@ -1029,6 +1031,7 @@ maxDurability = 120 //nastaveni_durability
 canRepair = true //nastaveni_cm_can_repair 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt" //TDATA3 
 
 [ColoredWeaponDef i_bow_copper_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -1058,6 +1061,7 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_arrow" //TDATA3 
 
 [ColoredWeaponDef i_crossbow_copper_run]
 CATEGORY = Provisions - Weapons - Colored
@@ -1087,3 +1091,4 @@ strikeStartRange = 5 //default value set by Converter
 strikeStopRange = 10 //default value set by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt_jagged" //TDATA3 

@@ -900,6 +900,7 @@ strikeStopRange = 10 //default value set by Converter
 //TDATA4 = i_arrow_x // commented out by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_arrow" //TDATA3 
 
 [ItemDef 0x13b2]
 DUPEITEM = i_bow
@@ -931,6 +932,7 @@ strikeStopRange = 10 //default value set by Converter
 //TDATA4 = i_bolt_jagged_x // commented out by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt_jagged" //TDATA3 
 
 [ItemDef 0xf50]
 DUPEITEM = i_crossbow
@@ -963,6 +965,7 @@ strikeStopRange = 10 //default value set by Converter
 //TDATA4 = i_xbolt_x // commented out by Converter 
 BleedingEfficiency = 0 //nastaveni_weapbleed 
 PoisoningDifficulty = 0 //nastaveni_weappoison 
+AmmoType = "t_weapon_bolt" //TDATA3 
 
 [ItemDef 0x13fd]
 DUPEITEM = i_crossbow_heavy
