@@ -155,6 +155,13 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int backstabBonusVsM = 1500;
 
+		/// <summary>nastaveni_ability_maskdelay_success and _fail, tenths there.</summary>
+		[SaveableData]
+		public double maskSuccessSeconds = 900;
+
+		[SaveableData]
+		public double maskFailSeconds = 120;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;
