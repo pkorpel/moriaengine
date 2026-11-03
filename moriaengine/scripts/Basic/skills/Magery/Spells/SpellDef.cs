@@ -684,7 +684,7 @@ namespace SteamEngine.CompiledScripts {
 					spellPower = (int) System.Math.Round(spellPower * (1.0 + StandcastHelper.GetLevelBonus(caster, this.Id)));
 				}
 			}
-			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower);
+			spellPower = MagicChargeHelper.ApplyBonus(caster, this, spellPower, currentTarget);
 			if (usesMindPower) {
 				//#860 - dospellcustom_donesrc: the multipliers come before the target's defense
 				spellPower -= CombatCalculator.GetSpellDefense(caster, currentTarget);

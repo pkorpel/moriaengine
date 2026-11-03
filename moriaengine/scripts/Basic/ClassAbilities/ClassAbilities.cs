@@ -64,7 +64,7 @@ namespace SteamEngine.CompiledScripts {
 			{ "weapdodge", "a_weapon_dodge" }, { "speldodge", "a_spell_absorption" },
 			{ "hitsleech", "a_leech_hits" }, { "manaleech", "a_leech_mana" }, { "stamleech", "a_leech_stam" },
 			{ "warcry", "a_warcry" }, { "rangearrow", "a_longrange" }, { "throwing", "a_throwing" },
-			{ "energyshield", "a_energy_shield" }, { "mind_blast_silence", "a_silence" }, { "mind_blast_silenced_time", "a_silence_bonus" },
+			{ "energyshield", "a_energy_shield" },
 			{ "mystikDoubleswing", "a_mystik_doubleswing" }, { "thief_rebound", "a_thief_rebound" }, { "thief_defstance", "a_thief_defstance" },
 		};
 

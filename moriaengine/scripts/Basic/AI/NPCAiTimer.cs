@@ -724,6 +724,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private bool IsSpellReady(NPC self, SpellDef spell) {
+			if (self.HasTimer(MageAbilities.SilencedTK)) {
+				return false; //#1017 - e_npc_silenced
+			}
 			if (Globals.TimeInSeconds < this.nextCastTime) {
 				return false; //still "in flight"/recovering from a previous cast - ANY spell, not just this one
 			}

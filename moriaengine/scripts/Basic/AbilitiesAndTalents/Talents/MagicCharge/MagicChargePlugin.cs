@@ -91,38 +91,135 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private bool AnyChargeLeft() {
-			return (this.fireCharge > 0) || (this.mindCharge > 0) || (this.energyCharge > 0);
+		private int Total {
+			get { return this.fireCharge + this.mindCharge + this.energyCharge; }
 		}
 
-		public static void AddCharge(Character self, MagicChargeSchool school) {
+		/// <summary>#1017 - charge_add: one school at a time, a new one starts over at 1. Hitting your own
+		/// side or a friendly pet charges nothing.</summary>
+		public static void AddCharge(Character self, MagicChargeSchool school, Character target = null) {
+			if (target != null) {
+				if (target.IsPlayer && (target.Realm == self.Realm)) {
+					return;
+				}
+				if ((target is NPC npc) && npc.IsPetOf(self)) {
+					return;
+				}
+			}
 			MagicChargePlugin plugin = (MagicChargePlugin) self.GetPlugin(key);
 			if (plugin == null) {
 				plugin = (MagicChargePlugin) MagicChargePluginDef.instance.Create();
 				self.AddPlugin(key, plugin);
 			}
+			int charge = System.Math.Min(ClassAbilitySettings.instance.chargeLimit, plugin.GetCharge(school) + 1);
+			plugin.fireCharge = plugin.mindCharge = plugin.energyCharge = 0;
+			plugin.Set(school, charge);
+			plugin.Arm(ClassAbilitySettings.instance.chargeDurationSeconds);
+		}
+
+		private void Set(MagicChargeSchool school, int charge) {
 			switch (school) {
 				case MagicChargeSchool.Fire:
-					plugin.fireCharge = System.Math.Min(10, plugin.fireCharge + 1);
+					this.fireCharge = charge;
 					break;
 				case MagicChargeSchool.Energy:
-					plugin.energyCharge = System.Math.Min(10, plugin.energyCharge + 1);
+					this.energyCharge = charge;
 					break;
 				default:
-					plugin.mindCharge = System.Math.Min(10, plugin.mindCharge + 1);
+					this.mindCharge = charge;
 					break;
 			}
-			double interval = MagerySettings.instance.magicChargeDecayIntervalSeconds;
-			BoundTimer timer = plugin.GetTimer(tickTimerKey);
+		}
+
+		private void Arm(double seconds) {
+			BoundTimer timer = this.GetTimer(tickTimerKey);
 			if (timer == null) {
 				timer = new MagicChargeDecayTimer();
-				plugin.AddTimer(tickTimerKey, timer);
+				this.AddTimer(tickTimerKey, timer);
 			}
-			// Always re-arm (not just on first creation) - a previous OnTimeout may have gone
-			// dormant (PeriodInSeconds=-1) once charges hit 0, and this call just added a fresh
-			// one.
-			timer.DueInSeconds = interval;
-			timer.PeriodInSeconds = interval;
+			timer.DueInSeconds = seconds;
+			timer.PeriodInSeconds = seconds;
+		}
+
+		/// <summary>f_charge_decrease.</summary>
+		internal void Decrease(int amount) {
+			if (this.Total <= amount) {
+				this.fireCharge = this.mindCharge = this.energyCharge = 0;
+				BoundTimer timer = this.GetTimer(tickTimerKey);
+				if (timer != null) {
+					timer.PeriodInSeconds = -1;
+				}
+				return;
+			}
+			if (this.fireCharge > 0) {
+				this.fireCharge -= amount;
+			} else if (this.mindCharge > 0) {
+				this.mindCharge -= amount;
+			} else {
+				this.energyCharge -= amount;
+			}
+			this.Arm(ClassAbilitySettings.instance.chargeDropSeconds);
+		}
+
+		/// <summary>#1017 - the school Erebor's def_charge_type gives a spell, or null.</summary>
+		internal static MagicChargeSchool? SchoolOf(SpellDef spell) {
+			switch (spell.Id) {
+				case 5:
+				case 18:
+				case 43:
+				case 51:
+				case 55:
+					return MagicChargeSchool.Fire;
+				case 12:
+				case 37:
+					return MagicChargeSchool.Mind;
+				case 30:
+				case 42:
+				case 49:
+					return MagicChargeSchool.Energy;
+			}
+			return null;
+		}
+
+		private static bool IsCharger(SpellDef spell) {
+			return (spell.Id == 18) || (spell.Id == 12) || (spell.Id == 30);
+		}
+
+		internal static string AbilityOf(MagicChargeSchool school) {
+			switch (school) {
+				case MagicChargeSchool.Fire:
+					return "magicCharge_fire";
+				case MagicChargeSchool.Energy:
+					return "magicCharge_energy";
+				default:
+					return "magicCharge_mind";
+			}
+		}
+
+		/// <summary>#1017 - e_magicCharge's @afterDoEffect and charge_checkCastedCharger, once a cast. Fireball,
+		/// Harm and Lightning charge. Another spell of a school spends: all of it if the school differs or
+		/// it's fire, one on a player.</summary>
+		internal static void AfterCast(Player self, SpellDef spell, Character target) {
+			MagicChargeSchool? school = SchoolOf(spell);
+			if (school == null) {
+				return;
+			}
+			if (IsCharger(spell)) {
+				if (ClassAbilities.Points(self, AbilityOf(school.Value)) > 0) {
+					AddCharge(self, school.Value, target);
+				}
+				return;
+			}
+			MagicChargePlugin plugin = Get(self);
+			if ((plugin == null) || (plugin.Total == 0)) {
+				return;
+			}
+			int limit = ClassAbilitySettings.instance.chargeLimit;
+			if ((plugin.GetCharge(school.Value) == 0) || (school.Value == MagicChargeSchool.Fire)) {
+				plugin.Decrease(limit);
+			} else if ((target != null) && target.IsPlayer) {
+				plugin.Decrease(1);
+			}
 		}
 
 		public static MagicChargePlugin Get(Character self) {
@@ -142,24 +239,7 @@ namespace SteamEngine.CompiledScripts {
 				if (plugin == null) {
 					return;
 				}
-				if (plugin.fireCharge > 0) {
-					plugin.fireCharge--;
-				}
-				if (plugin.mindCharge > 0) {
-					plugin.mindCharge--;
-				}
-				if (plugin.energyCharge > 0) {
-					plugin.energyCharge--;
-				}
-				if (!plugin.AnyChargeLeft()) {
-					// Stop rescheduling rather than deleting the plugin from within its own
-					// timer's OnTimeout (a risky self-deletion-of-host pattern) - a negative
-					// PeriodInSeconds means Timer.cs's own ProcessTimingOut simply never re-
-					// enqueues this timer, so it goes permanently dormant. The plugin itself
-					// staying attached (at 0/0/0 charge) is harmless - GetCharge/ApplyBonus
-					// already treat 0 as a clean no-op.
-					this.PeriodInSeconds = -1;
-				}
+				plugin.Decrease(1);
 			}
 		}
 	}

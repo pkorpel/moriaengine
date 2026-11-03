@@ -185,7 +185,24 @@ namespace SteamEngine.CompiledScripts {
 				s = MagicChargeSchool.Mind;
 			}
 			MagicChargePlugin.AddCharge(self, s);
+			ClassAbilities.SetPoints(self, MagicChargePlugin.AbilityOf(s), 10);
 			Console.WriteLine("MAGEABILITY_TEST: added " + school + " charge, now=" + MagicChargePlugin.Get(self).GetCharge(s));
+		}
+
+		/// <summary>#1017 - f_silence_npc's numbers.</summary>
+		[SteamFunction]
+		public static void TestSilenceFormula(Character self) {
+			Console.WriteLine("MAGEABILITY_TEST: silence chance=" + MageAbilities.SilenceChance(10, 250, Material.Copper, 0, 0) +
+				" withCharge=" + MageAbilities.SilenceChance(10, 250, Material.Copper, 0, 2) +
+				" level=" + MageAbilities.MaterialLevel(Material.Mithril));
+			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_single_combat_spell")).Create(self.X + 2, self.Y, self.Z, self.M);
+			dummy.Mana = 100;
+			NPCAiTimer timer = NPCAiTimer.GetFor(dummy);
+			bool castsBefore = timer.ChooseSpellToCast(dummy, self) != null;
+			int tenths = MageAbilities.Silence(dummy, 30);
+			bool castsAfter = timer.ChooseSpellToCast(dummy, self) != null;
+			Console.WriteLine("MAGEABILITY_TEST: silenced castsBefore=" + castsBefore + " castsAfter=" + castsAfter + " tenths=" + tenths);
+			dummy.Delete();
 		}
 
 		/// <summary>Same ScriptArgs dual-shape handling established elsewhere this session.</summary>

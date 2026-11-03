@@ -32,6 +32,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void On_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
+			if (target is NPC npc) {
+				MageAbilities.TrySilence(spellEffectArgs.Caster, npc); //#1017 - silence on NPCs only
+			}
 			base.On_EffectChar(target, spellEffectArgs);
 			ParalyzeEffectPluginDef.Unparalyze(target); //paralyze_remove
 		}
