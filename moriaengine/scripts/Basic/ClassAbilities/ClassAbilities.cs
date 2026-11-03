@@ -71,6 +71,15 @@ namespace SteamEngine.CompiledScripts {
 		internal const int ClassMessageHue = 0x57;
 		private static readonly TagKey counterTK = TagKey.Acquire("_specAbilityCounter_");
 
+		/// <summary>#1070 - fizzmagictravel: a recall or a gate being cast stops. Erebor's thrown knife and knockback do it
+		/// with a long range running, and so does a mystic's special strike on a player.</summary>
+		internal static void FizzMagicTravel(Character target) {
+			if ((target.CurrentSkillName == SkillName.Magery) && (target.CurrentSkillArgs != null) &&
+					(target.CurrentSkillArgs.Param1 is SpellDef spell) && ((spell.Id == 32) || (spell.Id == 52))) {
+				target.AbortSkill();
+			}
+		}
+
 		/// <summary>#1070 - e_allplayers' @beforegeteffect: a monster's spell is swallowed whole by points * pvMdodge out
 		/// of 1000 of speldodge (the permille weapon dodge uses too). Not while possessing.</summary>
 		internal static bool TryAbsorbSpell(Character target, Character caster) {

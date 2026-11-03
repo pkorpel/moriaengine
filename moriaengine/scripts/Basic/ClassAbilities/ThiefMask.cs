@@ -71,10 +71,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>maskparse, with the current identity stored as the next mask.</summary>
 		internal static void Swap(Player self, string[] mask) {
-			string name = self.Name;
+			bool incognito = IncognitoSpellDef.HasIncognito(self); //#1070 - with the incognito rune, the rune is renamed
+			string name = incognito ? IncognitoSpellDef.TrueName(self) : self.Name;
 			int karma = self.Karma, murders = Notoriety.GetMurderCount(self);
 			Realm realm = self.Realm;
-			self.Name = mask[0];
+			if (incognito) {
+				IncognitoSpellDef.SetTrueName(self, mask[0]);
+			} else {
+				self.Name = mask[0];
+			}
 			self.Karma = short.Parse(mask[1], CultureInfo.InvariantCulture);
 			Notoriety.SetMurderCount(self, int.Parse(mask[2], CultureInfo.InvariantCulture));
 			self.Realm = MaskRealm(mask);
@@ -88,6 +93,23 @@ namespace SteamEngine.CompiledScripts {
 				self.SetTag(maskHomeTK, home);
 			}
 			self.Resend();
+		}
+
+		/// <summary>#1070 - getrealname for .rentalinfo: a thief now of another realm than the viewer is shown under the
+		/// other identity, the one of the viewer's realm that holds the house.</summary>
+		internal static string RealName(Character owner, Character viewer) {
+			if (ThiefAbilities.IsThief(owner) && (owner.Realm != viewer.Realm) && (Attributes(owner) is string[] mask)) {
+				return mask[0];
+			}
+			return owner.Name;
+		}
+
+		/// <summary>#1070 - .rentalinfo colours such a thief by the viewer's realm, or null to keep the usual colour.</summary>
+		internal static int? SeenRealmHue(Character owner, Character viewer) {
+			if (ThiefAbilities.IsThief(owner) && (owner.Realm != viewer.Realm)) {
+				return (viewer.Realm == Realm.Gondor) ? 0x63 : 0x26;
+			}
+			return null;
 		}
 
 		/// <summary>showMask, for a GM.</summary>
@@ -122,7 +144,8 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			this.AddLabel(60, 20, 995, "Jake ma byt tve druhe jmeno?");
 			this.AddLabel(40, 40, 995, "(vybirej peclive, zustane ti naporad...)");
 			this.AddBackground(30, 60, 270, 22, 3000);
-			this.AddTextEntry(35, 61, 253, 25, 0, NameEntry, "");
+			string suggested = NameList.Random(((Character) sendTo).IsFemale ? "NAMES_HUMANFEMALE" : "NAMES_HUMANMALE"); //#1070 - name=#<sex(NAMES_HUMANMALE,NAMES_HUMANfeMALE)>
+			this.AddTextEntry(35, 61, 253, 25, 0, NameEntry, suggested ?? "");
 			this.AddButton(150, 85, 2104, 2103, OkButton, GumpButtonType.Reply, 0);
 			this.AddLabel(165, 80, 0, "OK");
 		}

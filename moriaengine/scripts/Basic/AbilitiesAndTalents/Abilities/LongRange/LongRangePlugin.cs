@@ -47,12 +47,8 @@ namespace SteamEngine.CompiledScripts {
 			cont.WeaponRangeModifier -= (int) this.EffectPower; //this.Cont is gone by now
 		}
 
-		//with longrange active, every swing fizzles the target's spells
-		public void On_AfterSwing(Character self, WeaponSwingArgs swingArgs) {
-			if (swingArgs.FinalDamage > 0) { //do we need to have done damage?
-				swingArgs.defender.Trigger_Disrupt();
-			}
-		}
+		//#1070 - Erebor's long range interrupts no spell of its own: only a recall or gate, through a thrown knife, a
+		//knockback or a mystic's special strike (ClassAbilities.FizzMagicTravel). A shot interrupts as any shot does.
 	}
 
 	[ViewableClass]
