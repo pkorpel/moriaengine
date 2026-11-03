@@ -149,6 +149,20 @@ namespace SteamEngine.CompiledScripts {
 			player.Stam = 200;
 			RangerAbilities.SplitShot(player);
 			Report("splitShotMustCoolDown", player.Stam == 200);
+			NPC prey = Dummy(self, 2);
+			prey.ResistSlashing = 500;
+			CrushedResistsTimer.Apply(prey, 100, 30);
+			Report("crushingArrowWearsResists", prey.ResistSlashing == 400);
+			prey.ResistBlunt = 1000;
+			CrushedResistsTimer.Apply(prey, 100, 30);
+			Report("aSecondArrowReplacesTheFirst", prey.ResistSlashing == 400);
+
+			ClassAbilities.SetPoints(player, "killingSpree", 10);
+			RangerAbilities.OnKill(player, prey);
+			RangerAbilities.OnKill(player, prey);
+			SpreeTimer spree = (SpreeTimer) player.GetTimer(SpreeTimer.Key);
+			Report("killsBuildASpree", (spree != null) && (spree.charges == 2));
+			prey.Delete();
 			Console.WriteLine("RANGER_DONE");
 		}
 
