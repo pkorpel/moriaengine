@@ -65,6 +65,8 @@ namespace SteamEngine.Regions {
 		private string city;
 		private int houseNumber;
 		private int houseRealmTag;
+		private bool noMask;
+		private int customFlags;
 
 		[LoadSection]
 		public FlaggedRegion(PropsSection input)
@@ -146,6 +148,23 @@ namespace SteamEngine.Regions {
 			}
 		}
 
+		/// <summary>#1070 - Erebor's tag.nomask: a thief can't change masks here.</summary>
+		public bool NoMask {
+			get { return this.noMask; }
+		}
+
+		/// <summary>#1070 - Erebor's tag.cFlags, region_cf_*: recall and gate denied in (0x10) or out (0x20), resurrection
+		/// at once (0x80).</summary>
+		public int CustomFlags {
+			get { return this.customFlags; }
+		}
+
+		public const int DenyRecallIn = 0x10, DenyRecallOut = 0x20, InstantRes = 0x80;
+
+		public bool HasCustomFlag(int flag) {
+			return (this.customFlags & flag) != 0;
+		}
+
 		/// <summary>#892 - Erebor's tag.jmeno_mesta: the city this area answers to, and several areas can
 		/// share one (Pelargir and Linhir are Dol_Amroth's). Multi-word names have underscores.</summary>
 		public string City {
@@ -172,6 +191,8 @@ namespace SteamEngine.Regions {
 			this.city = null;
 			this.houseNumber = 0;
 			this.houseRealmTag = 0;
+			this.noMask = false;
+			this.customFlags = 0;
 		}
 
 		private static List<string> AddNames(List<string> list, string valueString) {
@@ -327,6 +348,12 @@ namespace SteamEngine.Regions {
 			if (this.houseRealmTag != 0) {
 				output.WriteValue("houserealm", this.houseRealmTag);
 			}
+			if (this.noMask) {
+				output.WriteValue("nomask", 1);
+			}
+			if (this.customFlags != 0) {
+				output.WriteValue("customflags", this.customFlags);
+			}
 		}
 
 		public override void LoadLine(string filename, int line, string valueName, string valueString) {
@@ -420,6 +447,12 @@ namespace SteamEngine.Regions {
 					break;
 				case "houserealm":
 					this.houseRealmTag = ConvertTools.ParseInt32(valueString.Trim());
+					break;
+				case "nomask":
+					this.noMask = ConvertTools.ParseInt32(valueString.Trim()) != 0;
+					break;
+				case "customflags":
+					this.customFlags = ConvertTools.ParseInt32(valueString.Trim());
 					break;
 				case "rainchance":
 					this.rainChance = ConvertTools.ParseInt32(valueString.Trim());

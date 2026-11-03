@@ -3,7 +3,7 @@
 ## IN PROGRESS (2026-11-03): #1070 leftovers of the class abilities batch
 
 User: finish everything the class abilities, magic items, stalls and trading batch left unported; plan on #1070, 11 steps, one PR each, in its order. User's calls: arena/PvP events/weekly/quest-dependent items stay blocked; the web auction becomes an in-game magic-item auction, its design confirmed by the user before building; Prodejce one per capital via .SetupWorld; no Aldaron shadow weapons nor dragon-slayer upgrade. Correction: jagged bolts exist (zbrane/ammo.scp, converted ammo.def); only t_weapon_bolt_jagged + e_bleed_bolt (new_events.scp) are missing.
-Now, step 1, branch leftovers-1070-hypno-wiring: hypnotised mystic at travel stones, var gate (vg_hypnoGoThrough, vg_pvp_denyMagic), shrines and stones (#913), spk_guard; guards/notoriety see a possessing mystic as the monster; knife throw's magic ranged reflex/block.
+Step 1 shipped PR #1071 (#913 closed). Found: spell absorption was never read, ported there. Now, step 2, branch leftovers-1070-converter-data: tag.resist_silence -> NPCDef.ResistSilence (ahead of the tag.resist_ branch, which swallowed it), tag.nomask -> NoMask, tag.cFlags -> CustomFlags (recall/gate deny in/out, instant res: the arenas), Resurrection waits 5 s after a death. Regen: 23 files, only those lines.
 
 ## DONE (2026-11-03): skills, spells, class abilities, magic items, stalls, vendors
 

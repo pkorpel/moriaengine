@@ -30,7 +30,19 @@ The body swap itself is in `MysticHypnosis.cs`. While a mystic possesses a monst
 - Chat and `.explevel` refuse it, and so do telepads, potions and bandages.
 - A monster's disarming blow (`e_getwpn`) leaves its weapon alone.
 
-## Thief's knife
+## Mage's silence
+
+Mind Blast's silence (`silence.scp`) meets a monster's `tag.resist_silence`, `NPCDef.ResistSilence` from the converter:
+it comes off the chance, and at 1000 or more the monster can't be silenced, "Cil odolava umlceni".
+
+## Priest's and everyone's resurrection
+
+The Resurrection spell on a player who died less than 5 s ago does nothing, "Na oziveni jeste nejsi pripraven."
+(e_allplayers' @beforegeteffect), unless the area has `region_cf_instantRes`: the four arenas and Domov drakulu.
+
+## Thief
+
+`.mask` is refused in the areas with `tag.nomask` (the start rooms), "ty hnusnej bugere. Nic nebude", as on Erebor.
 
 `.throw`: a target's worn magic ranged reflex (132) throws the knife back, costing the thief a fifth of their stamina,
 and may drop it at their feet; ranged block (135) stops it. Both are rolled before the hit.

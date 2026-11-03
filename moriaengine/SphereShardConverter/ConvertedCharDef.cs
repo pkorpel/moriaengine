@@ -98,9 +98,9 @@ namespace SteamEngine.Converter {
 		//DamageManager.GetResistModifier - just starved of content until now).
 		//"sumon" is a confirmed real typo variant of "summon" in the source archive.
 		//"curse" maps to ResistCurse (added for this field specifically - a real, shipped
-		//Curse spell/effect exists, CurseSpellEffectPlugin, unlike silence/taunt/working
-		//below, which still have no matching mechanic anywhere in moriaengine and stay
-		//deliberately unmapped).
+		//Curse spell/effect exists, CurseSpellEffectPlugin, unlike taunt/working, which
+		//still have no matching mechanic anywhere in moriaengine and stay deliberately
+		//unmapped. Silence is NPCDef.ResistSilence, see ProcessCreateTriggerLine).
 		private static readonly Dictionary<string, string[]> resistFieldAliases =
 			new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase) {
 				{ "poison", new[] { "ResistPoison" } },
@@ -135,7 +135,7 @@ namespace SteamEngine.Converter {
 		private static void EmitResistFields(ConvertedDef def, string resistKind, string value, string comment) {
 			string[] fieldNames;
 			if (!resistFieldAliases.TryGetValue(resistKind, out fieldNames)) {
-				return; //silence/taunt/working/etc - no matching mechanic, leave unmapped
+				return; //taunt/working/etc - no matching mechanic, leave unmapped
 			}
 			MatchCollection resistMatches = numberRE.Matches(value);
 			if (resistMatches.Count == 0) {
@@ -498,6 +498,13 @@ namespace SteamEngine.Converter {
 			//the base ProcessCreateTriggerLine's bare switch has no default case and silently
 			//drops anything it doesn't recognize - these were never reaching the engine at
 			//all before this. See resistFieldAliases/EmitResistFields above for the mapping.
+			//#1070 - Erebor's "tag(resist_silence,450)": permille against Mind Blast's silence - NPCDef.ResistSilence
+			if (name == "tag.resist_silence") {
+				if (!this.IsPlayerDefByName) {
+					this.Replace("ResistSilence", value.Trim(), comment);
+				}
+				return;
+			}
 			if (name.StartsWith("tag.resist_", StringComparison.OrdinalIgnoreCase) && !name.StartsWith("tag.resist_countdown", StringComparison.OrdinalIgnoreCase)) {
 				if (this.IsPlayerDefByName) {
 					return;

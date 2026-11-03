@@ -1043,6 +1043,20 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static readonly TagKey hypnotizableTK = TagKey.Acquire("_npcHypnotizable_");
+		private static readonly TagKey resistSilenceTK = TagKey.Acquire("_npcResistSilence_");
+
+		/// <summary>#1070 - Erebor's tag.resist_silence, permille against Mind Blast's silence; 1000 or more can't be
+		/// silenced at all.</summary>
+		public int ResistSilence {
+			get { return (this.GetTag(resistSilenceTK) is int resist) ? resist : 0; }
+			set {
+				if (value != 0) {
+					this.SetTag(resistSilenceTK, value);
+				} else {
+					this.RemoveTag(resistSilenceTK);
+				}
+			}
+		}
 
 		/// <summary>#1017 - Erebor's tag.hypnotizable, flags_hypno: can be hypnotized, may loot, the talents a
 		/// mystic can steal and their power.</summary>
@@ -1555,6 +1569,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "hypnotizable") {
 				this.Hypnotizable = ConvertTools.ParseInt32(args.Trim());
+				return;
+			}
+			if (param == "resistsilence") {
+				this.ResistSilence = ConvertTools.ParseInt32(args.Trim());
 				return;
 			}
 			if (param == "noanimate") {

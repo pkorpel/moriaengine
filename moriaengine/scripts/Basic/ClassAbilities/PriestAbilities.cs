@@ -5,6 +5,7 @@ using SteamEngine.Communication.TCP;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Networking;
 using SteamEngine.Persistence;
+using SteamEngine.Regions;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
@@ -77,6 +78,20 @@ namespace SteamEngine.CompiledScripts {
 
 		internal static double DiedAt(Character self) {
 			return ClassAbilities.SecondsTag(self, diedAtTK);
+		}
+
+		/// <summary>#1070 - e_allplayers' @beforegeteffect: the Resurrection spell on a player who died less than 5 s
+		/// ago does nothing, unless the area resurrects at once (region_cf_instantRes, the arenas).</summary>
+		internal static bool TooSoonToRise(Character target, SpellDef spell) {
+			if (!(target is Player) || !(spell is ResurrectionSpellDef) || (Globals.TimeInSeconds - DiedAt(target) >= 5)) {
+				return false;
+			}
+			FlaggedRegion area = RegionEventSystem.AreaOf(target.Region);
+			if ((area != null) && area.HasCustomFlag(FlaggedRegion.InstantRes)) {
+				return false;
+			}
+			target.SysMessage("Na oziveni jeste nejsi " + (target.IsFemale ? "pripravena" : "pripraven") + ".");
+			return true;
 		}
 
 		internal static Item FindLitCandle(Character self) {
