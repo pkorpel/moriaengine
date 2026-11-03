@@ -26,33 +26,21 @@ namespace SteamEngine.CompiledScripts {
 	/// majority - every pre-existing Phase 0-6 test included) is a guaranteed no-op, same
 	/// regression-safety shape as StandcastHelper.</summary>
 	internal static class MagicChargeHelper {
-		internal static int ApplyBonus(Character caster, SpellDef spell, int spellPower) {
+		/// <summary>#1017 - f_magicCharge_formula. No target, as for a spell on the ground, counts as a monster.</summary>
+		internal static int ApplyBonus(Character caster, SpellDef spell, int spellPower, Character target = null) {
 			MagicChargePlugin plugin = MagicChargePlugin.Get(caster);
-			if (plugin == null) {
+			MagicChargeSchool? school = MagicChargePlugin.SchoolOf(spell);
+			if ((plugin == null) || (school == null)) {
 				return spellPower;
 			}
-
-			double perPoint = MagerySettings.instance.magicChargeBonusPerPoint;
-			double bonus = 0;
-
-			DamageSpellDef damageSpell = spell as DamageSpellDef;
-			if (damageSpell != null) {
-				DamageType dt = damageSpell.DamageType;
-				if ((dt & DamageType.Fire) == DamageType.Fire) {
-					bonus += plugin.GetCharge(MagicChargeSchool.Fire) * perPoint;
-				}
-				if ((dt & DamageType.Electric) == DamageType.Electric) {
-					bonus += plugin.GetCharge(MagicChargeSchool.Energy) * perPoint;
-				}
+			ClassAbilitySettings settings = ClassAbilitySettings.instance;
+			int perCharge = ((target != null) && target.IsPlayer) ? settings.chargeSpellPowerVsP : settings.chargeSpellPowerVsM;
+			int effect = plugin.GetCharge(school.Value) * perCharge;
+			int ability = ClassAbilities.Points(caster, MagicChargePlugin.AbilityOf(school.Value));
+			if (ability < settings.chargeAbilityPoints) {
+				effect = (effect * ((settings.chargeBaseEffect * settings.chargeAbilityPoints) + (ability * (100 - settings.chargeBaseEffect)))) / (100 * settings.chargeAbilityPoints);
 			}
-			if ((spell.Flags & SpellFlag.UseMindPower) == SpellFlag.UseMindPower) {
-				bonus += plugin.GetCharge(MagicChargeSchool.Mind) * perPoint;
-			}
-
-			if (bonus <= 0) {
-				return spellPower;
-			}
-			return (int) System.Math.Round(spellPower * (1.0 + bonus));
+			return (spellPower * (1000 + effect)) / 1000;
 		}
 	}
 }

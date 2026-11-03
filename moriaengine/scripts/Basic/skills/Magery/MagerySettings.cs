@@ -162,13 +162,15 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double concentrationDiscountPerPoint = 0.02;
 
-		/// <summary>#483/#491 - Magic Charge: spell-power bonus fraction per stacked charge point
+		/// <summary>No longer read since #1017, see ClassAbilitySettings.
+		/// #483/#491 - Magic Charge: spell-power bonus fraction per stacked charge point
 		/// (max 10) in the charge's own school, applied to that school's other spells. Live-shard
 		/// value unconfirmable from the public archive - placeholder, same as above.</summary>
 		[SaveableData]
 		public double magicChargeBonusPerPoint = 0.02;
 
-		/// <summary>#483/#491 - Magic Charge: seconds between each -1 decay tick once a school has
+		/// <summary>No longer read since #1017, see ClassAbilitySettings.
+		/// #483/#491 - Magic Charge: seconds between each -1 decay tick once a school has
 		/// at least 1 charge. Placeholder default.</summary>
 		[SaveableData]
 		public double magicChargeDecayIntervalSeconds = 10.0;

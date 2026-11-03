@@ -207,24 +207,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private const double GmCastSeconds = 0.1;
-		private static readonly SpellDef[] magicChargeTriggerSpells = new SpellDef[3];
-
-		private static void AddMagicChargeIfTriggerSpell(Character self, SpellDef spell) {
-			if (magicChargeTriggerSpells[0] == null) {
-				magicChargeTriggerSpells[0] = SpellDef.GetByDefname("s_fireball");
-				magicChargeTriggerSpells[1] = SpellDef.GetByDefname("s_harm");
-				magicChargeTriggerSpells[2] = SpellDef.GetByDefname("s_lightning");
-			}
-			//#1017 - charge_checkCastedCharger: only with points in that charge
-			if ((spell == magicChargeTriggerSpells[0]) && (ClassAbilities.Points(self, "magicCharge_fire") > 0)) {
-				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Fire);
-			} else if ((spell == magicChargeTriggerSpells[1]) && (ClassAbilities.Points(self, "magicCharge_mind") > 0)) {
-				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Mind);
-			} else if ((spell == magicChargeTriggerSpells[2]) && (ClassAbilities.Points(self, "magicCharge_energy") > 0)) {
-				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Energy);
-			}
-		}
-
 		/// <summary>#962 - Sphere pays at the end of a cast (Spell_CanCast). A failed one costs half the mana and a bit more,
 		/// and its reagents, REAGENTLOSSFAIL=1. False when there's not enough left to pay.</summary>
 		private static bool Pay(SkillSequenceArgs skillSeqArgs, bool failed) {
@@ -274,9 +256,9 @@ namespace SteamEngine.CompiledScripts {
 			// area spell); consuming any earlier would silently drop the boost for later targets
 			// of the same cast.
 			StandcastHelper.ConsumeIfActive(self);
-			// #483/#491 - Magic Charge: successfully casting Fire Ball/Harm/Lightning stacks a
-			// charge in that spell's own school (fire/mind/energy respectively).
-			AddMagicChargeIfTriggerSpell(self, spell);
+			if (self is Player caster) {
+				MagicChargePlugin.AfterCast(caster, spell, skillSeqArgs.Target1 as Character); //#1017
+			}
 		}
 
 		protected override void On_Fail(SkillSequenceArgs skillSeqArgs) {
