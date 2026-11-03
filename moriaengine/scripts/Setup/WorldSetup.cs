@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using SteamEngine.Common;
 using SteamEngine.Regions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -132,6 +133,10 @@ namespace SteamEngine.CompiledScripts {
 		private const int NearSpot = 16;
 		private static readonly TagKey pieceIdTK = TagKey.Acquire("_worldPieceId_");
 		private static readonly TagKey spawnInfoTK = TagKey.Acquire("spawnInfo");
+		private static readonly TimerKey spawnTimerTK = TimerKey.Acquire("SpawnTimer");
+		private static readonly TriggerKey spawnNowTK = TriggerKey.Acquire("spawnNow");
+		public const short WandersAbout = 6, StandsStill = 0; //6 is NPCAiTimer's leash for an NPC of no spawn
+		private const double RespawnMinMinutes = 1, RespawnMaxMinutes = 2;
 
 		private readonly Dictionary<string, Thing> existing = new Dictionary<string, Thing>(StringComparer.OrdinalIgnoreCase);
 		private int added, kept;
@@ -158,7 +163,22 @@ namespace SteamEngine.CompiledScripts {
 			return item;
 		}
 
-		public NPC Npc(string id, string defname, int[] at, byte m, Action<NPC> onNew = null) {
+		/// <summary>A lone NPC that belongs in the world, as a spawn of one (the user's call): the piece is a gem made by .spawn's
+		/// own f_spawninit, and SpawnedPieces gives each NPC it spawns, a respawn too, the realm and invulnerability kept on the
+		/// gem. Its first NPC comes at once, not a second later, as quest setups want it there.</summary>
+		public void Npc(string id, string defname, int[] at, byte m, Realm realm = Realm.None, bool invulnerable = false, short homeDist = WandersAbout) {
+			int addedBefore = this.added;
+			this.SpawnGem(id, new SpawnInfo(1, (IThingFactory) ThingDef.GetByDefname(defname), RespawnMinMinutes, RespawnMaxMinutes, homeDist), at, m);
+			Item gem = (Item) this.existing[id];
+			SpawnedPieces.Mark(gem, realm, invulnerable);
+			if ((this.added > addedBefore) && (gem.GetTimer(spawnTimerTK) != null)) {
+				gem.DeleteTimer(spawnTimerTK);
+				gem.TryTrigger(spawnNowTK, new ScriptArgs());
+			}
+		}
+
+		/// <summary>A lone NPC with no spawn, for one whose life its quest runs (Rinald).</summary>
+		public NPC NpcWithoutSpawn(string id, string defname, int[] at, byte m, Action<NPC> onNew = null) {
 			return (NPC) this.GetOrCreate(id, defname, at, m, onNew == null ? (Action<Thing>) null : t => onNew((NPC) t));
 		}
 
@@ -233,6 +253,39 @@ namespace SteamEngine.CompiledScripts {
 			string summary = "SETUP_DONE: " + what + " added=" + this.added + " kept=" + this.kept;
 			Console.WriteLine(summary);
 			gm.SysMessage(summary);
+		}
+	}
+
+	/// <summary>What a world piece's spawn gem gives every NPC it spawns, a respawn too: spawn.scp's @spawnNow calls Prepare.</summary>
+	public static class SpawnedPieces {
+		private static readonly TagKey realmTK = TagKey.Acquire("_spawnRealm_");
+		private static readonly TagKey invulnerableTK = TagKey.Acquire("_spawnInvulnerable_");
+
+		internal static void Mark(Item gem, Realm realm, bool invulnerable) {
+			if (realm == Realm.None) {
+				gem.RemoveTag(realmTK);
+			} else {
+				gem.SetTag(realmTK, (int) realm);
+			}
+			if (invulnerable) {
+				gem.SetTag(invulnerableTK, 1);
+			} else {
+				gem.RemoveTag(invulnerableTK);
+			}
+		}
+
+		public static void Prepare(Thing gem, Thing spawned) {
+			Character ch = spawned as Character;
+			if ((gem == null) || (ch == null)) {
+				return;
+			}
+			object realm = gem.GetTag(realmTK);
+			if (realm != null) {
+				ch.Realm = (Realm) Convert.ToInt32(realm, System.Globalization.CultureInfo.InvariantCulture);
+			}
+			if (gem.GetTag(invulnerableTK) != null) {
+				ch.Flag_Invulnerable = true;
+			}
 		}
 	}
 
