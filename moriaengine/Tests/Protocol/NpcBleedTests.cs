@@ -5,7 +5,7 @@ using Xunit;
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// Real-user-reported follow-up to #653's teventStubs batch - e_npc_bleed given real
-	/// behavior (NpcBleedEffect.cs/.ct/.scp, MonsterSpecialAttacks.TryApplyBleed). See
+	/// behavior (MonsterSpecialAttacks.TryApplyBleed; since #745 the bite adds to BleedingEffectPlugin, as Erebor's i_krvaceni). See
 	/// scripts/Tests/NpcBleedTests.cs's own doc comment for the full writeup.
 	/// </summary>
 	[Collection(NpcBleedCollection.Name)]
@@ -27,7 +27,7 @@ namespace SteamEngine.Tests.Protocol {
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "BLEED_APPLY_TEST:");
 
 				Assert.Contains("bleeding=True", line);
-				Assert.Contains("effectPower=10", line); //30 damage / 3, matching the real archive ratio
+				Assert.Contains("effectPower=5", line); //Erebor's npc_bleed: (30/3)/2
 			}
 		}
 
@@ -38,9 +38,10 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutput("BLEED_STACK_TEST:", TimeSpan.FromSeconds(10)));
 				string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "BLEED_STACK_TEST:");
 
-				Assert.Contains("afterFirst=10", line);
-				Assert.Contains("afterSecond=20", line);
+				Assert.Contains("afterFirst=5", line);
+				Assert.Contains("afterSecond=10", line);
 				Assert.Contains("stacked=True", line);
+				Assert.Contains("bandageStops=True", line); //#745
 			}
 		}
 

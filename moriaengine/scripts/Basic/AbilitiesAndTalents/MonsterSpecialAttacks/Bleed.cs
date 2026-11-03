@@ -57,9 +57,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>#bleed - on a landed melee swing, a chance to apply/stack a bleed DoT
-		/// (NpcBleedEffectPluginDef) scaled off the damage that swing actually dealt - same
-		/// real archive ratio (bleedpower = actualDamage/3). Must be called AFTER
+		/// <summary>#bleed - on a landed melee swing, a chance to add to the target's bleed
+		/// (#745 - BleedingEffectPluginDef.Bite, the one bleed a bandage stops, as Erebor's
+		/// i_krvaceni) scaled off the damage that swing actually dealt. Must be called AFTER
 		/// DamageManager.CauseDamage, since it needs the real landed-damage amount, not the
 		/// pre-armor swing value. A miss or a fully-blocked swing (actualDamage &lt;= 0) has
 		/// nothing to scale off of - same as the real archive's own `wasHarmed` guard.</summary>
@@ -82,9 +82,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			double effectPower = actualDamage / 3.0;
-			NpcBleedEffectPluginDef bleedingDef = SingletonScript<NpcBleedEffectPluginDef>.Instance;
-			bleedingDef.Apply(attacker, defender, EffectFlag.HarmfulEffect, effectPower, bleedingDef.MaxTicks);
+			SingletonScript<BleedingEffectPluginDef>.Instance.Bite(attacker, defender, actualDamage);
 		}
 	}
 }

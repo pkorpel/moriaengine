@@ -284,8 +284,8 @@ Name = "(e_noport)"
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
 //BleedAbilityDef (scripts/Basic/AbilitiesAndTalents/MonsterSpecialAttacks.cs) - rolled on
-//a landed melee swing, applies NpcBleedEffectPluginDef (scripts/Basic/AbilitiesAndTalents/
-//NpcBleedEffect.cs/.ct/.scp), see DamageManager.ProcessSwing's own TryApplyBleed call.
+//a landed melee swing, adds to the target's bleed (#745 - BleedingEffectPluginDef.Bite, the
+//same bleed Bleeding Strike makes and a bandage stops), see DamageManager.ProcessSwing's TryApplyBleed call.
 [BleedAbilityDef a_tevent_e_npc_bleed]
 Name = "Bleeding Bite"
 

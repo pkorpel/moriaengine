@@ -27,6 +27,10 @@ namespace SteamEngine.CompiledScripts {
 	/// number.
 	/// </summary>
 	public static class NpcBleedTests {
+		private static BleedingEffectPlugin Bleed(Character ch) {
+			return ch.GetPlugin(SingletonScript<BleedingEffectPluginDef>.Instance.PluginKey) as BleedingEffectPlugin;
+		}
+
 		[SteamFunction]
 		public static void TestBleedAppliesOnHit(Character self) {
 			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
@@ -35,11 +39,11 @@ namespace SteamEngine.CompiledScripts {
 			NPC attacker = (NPC) attackerDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			NPC dummy = (NPC) dummyDef.Create(self.X + 2, self.Y, self.Z, self.M);
 
-			MonsterSpecialAttacks.TryApplyBleed(attacker, dummy, 30); //30 damage -> expect effectPower 10
+			MonsterSpecialAttacks.TryApplyBleed(attacker, dummy, 30); //30 damage -> (30/3)/2 = 5, Erebor's npc_bleed
 
-			NpcBleedEffectPlugin plugin = dummy.GetPlugin(SingletonScript<NpcBleedEffectPluginDef>.Instance.PluginKey) as NpcBleedEffectPlugin;
+			BleedingEffectPlugin plugin = Bleed(dummy);
 			bool bleeding = plugin != null;
-			double effectPower = plugin != null ? plugin.EffectPower : -1;
+			double effectPower = plugin != null ? plugin.BleedPower : -1;
 			Console.WriteLine("BLEED_APPLY_TEST: bleeding=" + bleeding + " effectPower=" + effectPower);
 		}
 
@@ -51,16 +55,22 @@ namespace SteamEngine.CompiledScripts {
 			NPC attacker = (NPC) attackerDef.Create(self.X + 1, self.Y, self.Z, self.M);
 			NPC dummy = (NPC) dummyDef.Create(self.X + 2, self.Y, self.Z, self.M);
 
-			MonsterSpecialAttacks.TryApplyBleed(attacker, dummy, 30); //effectPower +10
-			NpcBleedEffectPlugin plugin = dummy.GetPlugin(SingletonScript<NpcBleedEffectPluginDef>.Instance.PluginKey) as NpcBleedEffectPlugin;
-			double afterFirst = plugin != null ? plugin.EffectPower : -1;
+			MonsterSpecialAttacks.TryApplyBleed(attacker, dummy, 30); //+5
+			BleedingEffectPlugin plugin = Bleed(dummy);
+			double afterFirst = plugin != null ? plugin.BleedPower : -1;
 
-			MonsterSpecialAttacks.TryApplyBleed(attacker, dummy, 30); //should stack: +10 more
-			plugin = dummy.GetPlugin(SingletonScript<NpcBleedEffectPluginDef>.Instance.PluginKey) as NpcBleedEffectPlugin;
-			double afterSecond = plugin != null ? plugin.EffectPower : -1;
+			MonsterSpecialAttacks.TryApplyBleed(attacker, dummy, 30); //should stack: +5 more
+			plugin = Bleed(dummy);
+			double afterSecond = plugin != null ? plugin.BleedPower : -1;
 
+			//#745 - it's the one bleed a bandage stops, as Erebor's i_krvaceni
+			self.SetRealSkillValue((int) SkillName.Veterinary, 1000);
+			for (int attempt = 0; (attempt < 10) && (Bleed(dummy) != null); attempt++) {
+				Bandaging.Finish(self, dummy, false); //a 1000 skill fails one roll in 41
+			}
+			bool bandaged = Bleed(dummy) == null;
 			Console.WriteLine("BLEED_STACK_TEST: afterFirst=" + afterFirst + " afterSecond=" + afterSecond +
-				" stacked=" + (afterSecond > afterFirst));
+				" stacked=" + (afterSecond > afterFirst) + " bandageStops=" + bandaged);
 		}
 
 		[SteamFunction]
@@ -73,13 +83,13 @@ namespace SteamEngine.CompiledScripts {
 			dummy.ResistBleed = 1000; //full resist - same permille scale as the other Resist* fields
 
 			MonsterSpecialAttacks.TryApplyBleed(attacker, dummy, 30);
-			NpcBleedEffectPlugin plugin = dummy.GetPlugin(SingletonScript<NpcBleedEffectPluginDef>.Instance.PluginKey) as NpcBleedEffectPlugin;
+			BleedingEffectPlugin plugin = Bleed(dummy);
 			bool appliedBeforeTick = plugin != null;
 
 			if (plugin != null) {
 				plugin.On_FadingEffectTick();
 			}
-			bool stillBleedingAfterTick = dummy.GetPlugin(SingletonScript<NpcBleedEffectPluginDef>.Instance.PluginKey) != null;
+			bool stillBleedingAfterTick = Bleed(dummy) != null;
 
 			Console.WriteLine("BLEED_RESIST_TEST: appliedBeforeTick=" + appliedBeforeTick +
 				" stillBleedingAfterTick=" + stillBleedingAfterTick);

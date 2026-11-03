@@ -207,7 +207,9 @@ the attacker. A Mystic's strike ends their mana shield and costs half of Int in 
 0.25, dagger 0.1, scimitar 0.05, others 0), on a target with bleed resist under 1000. Every hit restarts
 ten ticks, 4.4 s apart, and each does `power * (1 - tick^2/100)`. A stack can't pass 250, a thief's
 `thiefBleedCap + min(level, 200)`, unless it's already above that. A tick interrupts casting 66.8%
-of the time. Monsters' own bleed (`e_npc_bleed`) is separate.
+of the time. A monster's bite (`e_npc_bleed`) adds `(damage / 3) / 2` to the same bleed, with no fade
+or cap of what's there, and restarts the ticks (#745). A successful bandage stops a bleed of either kind,
+in place of healing (Erebor's `i_krvaceni`, one item for both).
 
 **Wear.** Items have Erebor's durability: weapons `metal * weapon / 1000`, armor `metal * type *
 layer share / 100000` (`nastaveni_durability_*`). Damage to an item is rolled against

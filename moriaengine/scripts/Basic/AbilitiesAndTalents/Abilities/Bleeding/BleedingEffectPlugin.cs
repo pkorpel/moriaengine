@@ -27,15 +27,9 @@ namespace SteamEngine.CompiledScripts {
 
 		public override void On_Assign() {
 
-			//announce bleeding to both attacker and prey
+			//f_bleed_getMemory's "Krvacis!"; the striker hears of it in Strike, a monster's bite says nothing
 			Character self = (Character) this.Cont;
 			self.RedMessage(Loc<BleedingLoc>.Get(self.Language).YoureBleeding);
-
-			Character attacker = this.SourceThing as Character;
-			self.GreenMessage(string.Format(CultureInfo.InvariantCulture,
-				Loc<BleedingLoc>.Get(self.Language).YourTargetIsBleeding, self.Name));
-
-
 			base.On_Assign();
 		}
 
@@ -132,6 +126,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#872 - f_thief_doBleed. Every hit restarts the ten ticks.</summary>
 		public void Strike(Character attacker, Character target, double addedPower) {
+			attacker.GreenMessage(string.Format(CultureInfo.InvariantCulture, Loc<BleedingLoc>.Get(attacker.Language).YourTargetIsBleeding, target.Name));
 			EffectFlag flags = EffectFlag.HarmfulEffect | EffectFlag.FromAbility;
 			TimeSpan duration = TimeSpan.FromSeconds(this.TickInterval * (BleedTickCount + 1));
 			double cap = this.GetMaxPower(attacker, target, flags);
@@ -147,6 +142,25 @@ namespace SteamEngine.CompiledScripts {
 			double firstPower = Math.Min(addedPower, cap);
 			bleeding.Init(attacker, flags, firstPower, duration);
 			bleeding.BleedPower = firstPower;
+			target.AddPlugin(this.PluginKey, bleeding);
+		}
+
+		/// <summary>#745 - e_npc_bleed's npc_bleed: a monster's bite adds (damage/3)/2 to the same bleed a strike makes,
+		/// so a bandage stops both. Unlike a strike, nothing fades or caps what's there; the ten ticks restart.</summary>
+		public void Bite(Character attacker, Character target, int damage) {
+			double added = (damage / 3) / 2;
+			TimeSpan duration = TimeSpan.FromSeconds(this.TickInterval * (BleedTickCount + 1));
+			BleedingEffectPlugin bleeding = target.GetPlugin(this.PluginKey) as BleedingEffectPlugin;
+			if (bleeding != null) {
+				double power = bleeding.BleedPower + added;
+				bleeding.Init(attacker, EffectFlag.HarmfulEffect, power, duration);
+				bleeding.BleedPower = power;
+				bleeding.BleedTicks = 0;
+				return;
+			}
+			bleeding = (BleedingEffectPlugin) this.Create();
+			bleeding.Init(attacker, EffectFlag.HarmfulEffect, added, duration);
+			bleeding.BleedPower = added;
 			target.AddPlugin(this.PluginKey, bleeding);
 		}
 
