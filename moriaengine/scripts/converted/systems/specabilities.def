@@ -212,15 +212,15 @@ weight = 0
 layer = layer_special
 model = i_memory
 
-[EquippableDef i_svice_zivota]
+[LifeCandleDef i_svice_zivota]
 NAME = "Svice zivota"
-type = t_svice_zivota
+TYPE = t_normal
 model = i_candle_lg
 layer = 0 //Set by Converter 
 
-[EquippableDef i_svice_zivota_lit]
+[LifeCandleDef i_svice_zivota_lit]
 NAME = "Svice zivota"
-type = t_svice_zivota_lit
+TYPE = t_normal
 model = i_candle_lg_lit
 layer = 2 //Set by Converter 
 Color = 00842

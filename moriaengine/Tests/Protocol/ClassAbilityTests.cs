@@ -90,6 +90,25 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		[Fact]
+		public void ThePriestRisesByItsCandle() {
+			using (TestGameClient game = this.Login("Canon")) {
+				game.SendSpeech(".TestPriestAbilities");
+				Assert.True(this.fixture.WaitForGameOutput("PRIEST_DIED", Wait), this.fixture.GameOutputSnapshot());
+				Thread.Sleep(11000);
+				game.SendSpeech(".TestPriestRise");
+				Assert.True(this.fixture.WaitForGameOutput("PRIEST_DONE", Wait), this.fixture.GameOutputSnapshot());
+				string output = this.fixture.GameOutputSnapshot();
+				foreach (string check in new[] { "restoredByTens", "lightingMakesALitCandle", "theCandleStaysThroughDeath", "tooRestlessRightAfterDying",
+						"thePriestRises", "risesAtHalfHits", "theCandleBurnsOut" }) {
+					string marker = "CLASS_ABILITY: " + check + "=";
+					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
+					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
+					Assert.True(string.CompareOrdinal(output, idx + marker.Length, "True", 0, 4) == 0, marker + " failed. Game output:\n" + output);
+				}
+			}
+		}
+
 		private TestGameClient Login(string name) {
 			Exception firstFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
