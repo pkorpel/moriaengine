@@ -296,6 +296,13 @@ namespace SteamEngine.CompiledScripts {
 				MonsterSpecialAttacks.TryApplyEyeDeflect(attacker, defender, swingArgs);
 				MonsterSpecialAttacks.TryAbsorbSwing(attacker, defender, swingArgs); //#1022 - scales, mana shield
 
+				if (attacker is Player warrior) {
+					WarriorAbilities.ModifyOwnBlow(warrior, defender, swingArgs); //#1017
+				}
+				if (defender is Player blocker) {
+					WarriorAbilities.ModifyIncomingBlow(blocker, attacker, swingArgs); //#1017
+				}
+
 				//#866 - f_dmgFinal_dodge's order: abilities that send the blow back or stop it, then dodge
 				double reflected = 0;
 				if (ThiefDefence.TryAvoid(attacker, defender, damageType, swingArgs.DamageAfterAC, out reflected) ||
@@ -320,6 +327,9 @@ namespace SteamEngine.CompiledScripts {
 				//a_tevent_e_npc_stun (if the attacker has it) - a landed swing (we're only here
 				//because Trigger_BeforeSwing wasn't cancelled) can also stun the defender.
 				MonsterSpecialAttacks.TryApplyStun(attacker, defender);
+				if ((attacker is Player stunner) && (defender is NPC stunned) && !stunned.IsDeleted) {
+					WarriorAbilities.TryStun(stunner, stunned, actualDamage); //#1017
+				}
 
 				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_knockback
 				//(if the attacker has it) can also push the defender back on a landed hit.

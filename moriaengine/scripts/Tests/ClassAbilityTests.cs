@@ -50,6 +50,78 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("CLASS_ABILITY_POINTS: manareg=" + ClassAbilities.Points(self, "manareg") + " end");
 		}
 
+		/// <summary>Sets a warrior up with rabbits to hit and a two handed sword.</summary>
+		[SteamFunction]
+		public static void TestWarriorAbilities(Character self) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			player.Account.PLevel = 1;
+			player.Profession = Professions.Warrior;
+			player.Level = 100;
+			player.Str = 250;
+			player.MaxStam = 200;
+			player.Stam = 200;
+			ClassAbilities.Reset(player);
+			foreach (SkillName skill in new[] { SkillName.Swords, SkillName.Tactics, SkillName.Anatomy, SkillName.ArmsLore }) {
+				player.SetRealSkillValue((int) skill, 1000);
+			}
+			player.Dex = 100;
+
+			ClassAbilities.SetPoints(player, "roundattack", 10);
+			Item sword = (Item) ((ItemDef) ThingDef.GetByDefname("i_axe_battle_large")).Create(player);
+			Console.WriteLine("WARRIOR_INFO: weapon type=" + ((sword.Type == null) ? "null" : sword.Type.Defname) + " layer=" + sword.Layer);
+			NPC near = Dummy(self, 1), far = Dummy(self, 3);
+			short nearHits = near.Hits, farHits = far.Hits;
+			double weapAttack = CombatSettings.instance.weapAttack;
+			CombatSettings.instance.weapAttack = weapAttack * 100; //a bare test character's blow doesn't get through a rabbit's hide
+			WarriorAbilities.FinishRoundAttack(player);
+			CombatSettings.instance.weapAttack = weapAttack;
+			Report("roundAttackHitsWhoIsNear", near.Hits < nearHits);
+			Report("roundAttackLeavesTheRest", far.Hits == farHits);
+			player.Mana = 50;
+			ClassAbilities.SetPoints(player, "warcry", 10);
+			WarriorAbilities.Warcry(player);
+			Report("warcryTakesOwnMana", player.Mana == 0);
+			Report("warcryMustCoolDown", WarriorAbilities.IsWarrior(player));
+
+			ClassAbilities.SetPoints(player, "stuntattack", 10);
+			WarriorAbilities.Omraceni(player);
+			Report("stunWindowsShrink", (WarriorAbilities.StunWindowSeconds(0) == 20) && (WarriorAbilities.StunWindowSeconds(30) == 11));
+			Report("stunLimitGrowsWithTheMetal", (WarriorAbilities.StunLimit(Material.Copper, false, 0) == 51) && (WarriorAbilities.StunLimit(Material.Mithril, false, 30) == 901 + (901 * 20 / 100)));
+			Report("plainMaceStunsNothing", WarriorAbilities.StunLimit(Material.None, false, 0) == 0);
+			Report("shieldsByMetal", (WarriorAbilities.ShieldBlockPercent(Material.Mithril) == 50) && (WarriorAbilities.ShieldBlockPercent(Material.None) == 100));
+
+			player.Stam = 200;
+			WarriorAbilities.DefStance(player);
+			Report("stanceOnCostsHalfStamina", WarriorAbilities.InDefStance(player) && (player.Stam == 100));
+			player.Stam = 200;
+			WarriorAbilities.DefStance(player);
+			Report("stanceOff", !WarriorAbilities.InDefStance(player));
+
+			ClassAbilities.SetPoints(player, "taunt", 10);
+			player.Stam = 200;
+			near.Delete();
+			far.Hits = far.MaxHits;
+			WarriorAbilities.TauntOne(player, far);
+			NPCAiTimer ai = NPCAiTimer.GetFor(far);
+			Report("tauntTurnsItOnTheWarrior", (ai.Target == player) && far.HasTimer(TauntTimer.Key));
+			Report("tauntingHardensIt", TauntTimer.Resist(far) == 250);
+
+			Character none = WeaponSkillTargetQueuePlugin.CurrentTarget(player);
+			Report("leapNeedsAFight", none == null);
+			player.Stam = player.MaxStam;
+			far.Delete();
+			Console.WriteLine("WARRIOR_DONE");
+		}
+
+		private static NPC Dummy(Character self, int offset) {
+			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + offset, self.Y, self.Z, self.M);
+			dummy.MaxHits = 30000;
+			dummy.Hits = 30000;
+			return dummy;
+		}
+
 		private static void Fill(Player player, RearAbility ability) {
 			while (ClassAbilities.MayRaise(player, ability, false) && ClassAbilities.Raise(player, ability)) {
 			}

@@ -68,6 +68,10 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void Stance(Character self) {
+			if (WarriorAbilities.IsWarrior(self)) {
+				WarriorAbilities.DefStance(self); //#1017 - class_info gives warriors .stance too
+				return;
+			}
 			Vigilance(self);
 		}
 

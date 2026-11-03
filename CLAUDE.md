@@ -65,6 +65,8 @@ Shipped, #1043, branch travel-followers-price-points: a ride takes only what NPC
 
 Now, user, 2026-11-03, stepping away, no go-ahead between items, new questions parked for the end: class abilities (#1017), then magic items, then if time vendor stalls, fields, player trading. User's answers: Erebor's vendors go beside the old scripts/Optional PlayerVendor, both kept; stall and field rent by size, about 300 gp a tile, minimum 15k, on .settings, GM can set one by hand. Still unanswered: whether .settings survive a restart (#536).
 
+#1017 in scripts/Basic/ClassAbilities, order and audit on the issue. PR #1045: spending (d_rearability, spare = level*2 less spent) and d_class_info; tables written once from the archive; old AbilityDefs keep their storage, the rest are ra_ tags. Branch class-war: berserker, roundattack, omraceni, leap, warcry, defstance, taunt, masstaunt, doubleswing, vykryti. Numbers on ClassAbilitySettings. Next: ranger, thief, mage, priest, craftsman, necro, shaman, mystic. Gotcha: a bare test character's blow is 0 through a rabbit's armor.
+
 ## DONE (2026-11-01): .HouseDoor dialog (branch house-door-dialog)
 
 User: a dialog of door types, not one metal door. D_HouseDoors, 19 families in a picture grid, then D_HouseDoorFacing, 8 facings; a door is its def's model + offset, an even offset closed. The cursor stays for a double door. .HouseDoor "defname" still skips the dialog. Labels mine, in Czech.
