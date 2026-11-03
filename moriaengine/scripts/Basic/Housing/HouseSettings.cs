@@ -35,6 +35,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int fieldMinimumRent = 15000;
 
+		/// <summary>#1017 - a player vendor's tag.provize: what it keeps of a sale, and adds to what it pays.</summary>
+		[SaveableData]
+		public int vendorCommissionPercent = 10;
+
 		[SaveableData]
 		public int rentRounding = 1000;
 

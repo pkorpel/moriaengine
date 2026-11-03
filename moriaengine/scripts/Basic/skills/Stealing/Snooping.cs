@@ -40,7 +40,7 @@ namespace SteamEngine.CompiledScripts {
 			Character self = skillSeqArgs.Self;
 			Container cnt = (Container) skillSeqArgs.Target1;
 			Character mark = (Character) cnt.TopObj();
-			if (mark is PlayerVendor) {
+			if ((mark is PlayerVendor) || (mark is EreborVendor)) {
 				self.SysMessage(Loc<SnoopingLoc>.Get(self.Language).notPlayerVendors);
 				return TriggerResult.Cancel;
 			}
