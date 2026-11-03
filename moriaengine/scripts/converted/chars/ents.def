@@ -48,6 +48,8 @@ Peacemaking = 1000
 Provocation = 1000
 NoAnimate = 1
 Hypnotizable = 32
+MonsterType = "reaper"
+MonsterType2 = "undead,80"
 Equip = i_monster_create
 
 ON=@npcrefuseitem
@@ -102,6 +104,8 @@ Peacemaking = 1000
 Provocation = 1000
 NoAnimate = 1
 Hypnotizable = 32
+MonsterType = "reaper"
+MonsterType2 = "undead,80"
 Equip = i_spellbook
 AddSpell = s_harm
 AddSpell = s_fireball

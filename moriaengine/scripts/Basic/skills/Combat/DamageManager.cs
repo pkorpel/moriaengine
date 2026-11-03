@@ -301,6 +301,7 @@ namespace SteamEngine.CompiledScripts {
 					WarriorAbilities.ModifyOwnBlow(warrior, defender, swingArgs); //#1017
 				}
 				MysticMind.ModifyBlow(attacker, defender, swingArgs); //#1017 - stolen talents
+				MagicCombat.ModifyBlow(attacker, defender, swingArgs); //#1017 - magic items' slayers
 				MysticMind.OnSwungAt(defender); //#1017 - a blow frees one held by catchField
 				MysticHypnosis.OnSwungAt(defender); //#1017 - and breaks a hypnosis
 				if (defender.IsDeleted || attacker.IsDeleted) {
@@ -346,6 +347,7 @@ namespace SteamEngine.CompiledScripts {
 				//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
 				//the pre-armor swing value, so this must run after CauseDamage above.
 				MonsterSpecialAttacks.TryApplyBleed(attacker, defender, actualDamage);
+				MagicCombat.AfterSwing(attacker, defender, actualDamage); //#1017 - leech, paralysis
 				if (!defender.IsDeleted) {
 					ShamanPacts.ShareBlood(attacker, defender, actualDamage); //#1017
 					if (attacker is Player reader) {

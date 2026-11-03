@@ -1001,6 +1001,47 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey isBossTK = TagKey.Acquire("_npcIsBoss_");
 		private static readonly TagKey noAnimateTK = TagKey.Acquire("_npcNoAnimate_");
 
+		private static readonly TagKey monsterTypeTK = TagKey.Acquire("_npcMonsterType_");
+		private static readonly TagKey monsterType2TK = TagKey.Acquire("_npcMonsterType2_");
+		private static readonly TagKey monsterType3TK = TagKey.Acquire("_npcMonsterType3_");
+		private static readonly TagKey dragonBrainTK = TagKey.Acquire("_npcDragonBrain_");
+
+		/// <summary>#1017 - Erebor's tag.monstertype, monstertype2, monstertype3: "kind[,percent]" for slayers.</summary>
+		public string MonsterType {
+			get { return this.GetTag(monsterTypeTK) as string; }
+			set { this.SetOrRemove(monsterTypeTK, value); }
+		}
+
+		public string MonsterType2 {
+			get { return this.GetTag(monsterType2TK) as string; }
+			set { this.SetOrRemove(monsterType2TK, value); }
+		}
+
+		public string MonsterType3 {
+			get { return this.GetTag(monsterType3TK) as string; }
+			set { this.SetOrRemove(monsterType3TK, value); }
+		}
+
+		private void SetOrRemove(TagKey key, string value) {
+			if (string.IsNullOrEmpty(value)) {
+				this.RemoveTag(key);
+			} else {
+				this.SetTag(key, value);
+			}
+		}
+
+		/// <summary>#1017 - NPC=brain_dragon: a dragonslayer counts in full when no monstertype says dragon.</summary>
+		public bool DragonBrain {
+			get { return this.GetTag(dragonBrainTK) != null; }
+			set {
+				if (value) {
+					this.SetTag(dragonBrainTK, true);
+				} else {
+					this.RemoveTag(dragonBrainTK);
+				}
+			}
+		}
+
 		private static readonly TagKey hypnotizableTK = TagKey.Acquire("_npcHypnotizable_");
 
 		/// <summary>#1017 - Erebor's tag.hypnotizable, flags_hypno: can be hypnotized, may loot, the talents a
@@ -1495,6 +1536,21 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "isboss") {
 				this.IsBoss = ConvertTools.ParseInt32(args.Trim()) != 0;
+				return;
+			}
+			if ((param == "monstertype") || (param == "monstertype2") || (param == "monstertype3")) {
+				string kind = args.Trim().Trim('"');
+				if (param == "monstertype") {
+					this.MonsterType = kind;
+				} else if (param == "monstertype2") {
+					this.MonsterType2 = kind;
+				} else {
+					this.MonsterType3 = kind;
+				}
+				return;
+			}
+			if (param == "dragonbrain") {
+				this.DragonBrain = ConvertTools.ParseInt32(args.Trim()) != 0;
 				return;
 			}
 			if (param == "hypnotizable") {

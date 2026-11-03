@@ -693,6 +693,7 @@ namespace SteamEngine.CompiledScripts {
 			} else if (this.resistRoll != null) {
 				spellPower = this.RollAgainstDefense(caster, currentTarget, spellPower);
 			}
+			spellPower = MagicCombat.ModifySpellPower(caster, currentTarget, spellPower); //#1017 - magic items' slayers, after the defense
 
 			if (sea == null) {
 				sea = SpellEffectArgs.Acquire(caster, mainTarget, currentTarget, this, spellPower, effectFlag);
@@ -725,6 +726,9 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			MonsterSpecialAttacks.TryStartRegeneration(target); //#1022
+			if (MagicCombat.ReflectsOrBlocks(this, target, spellEffectArgs, reflected => this.RunEffectChar(reflected, spellEffectArgs))) { //#1017
+				return;
+			}
 			this.RunEffectChar(target, spellEffectArgs);
 		}
 

@@ -709,6 +709,7 @@ MaxStam = 180 240
 MaxMana = 0
 Experience = 40 60
 Hypnotizable = 4
+MonsterType = "dragon"
 Parry = 550 950
 MagicResist = 900
 Tactics = 900 1000

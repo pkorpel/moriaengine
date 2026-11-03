@@ -19,9 +19,12 @@ namespace SteamEngine.Tests.Protocol {
 			using (TestGameClient game = this.Login("Enchanter")) {
 				game.SendSpeech(".TestMagicItems");
 				Assert.True(this.fixture.WaitForGameOutput("MAGIC_DONE", Wait), this.fixture.GameOutputSnapshot());
+				game.SendSpeech(".TestMagicCombat");
+				Assert.True(this.fixture.WaitForGameOutput("MAGIC_COMBAT_DONE", Wait), this.fixture.GameOutputSnapshot());
 				string output = this.fixture.GameOutputSnapshot();
 				foreach (string check in new[] { "aBagUnpacks", "aPouchHasOneProperty", "unidentifiedCantBeWorn", "identifiedItHasAName", "everyRollMakesAnItem",
-						"everyPropertyIsFromItsTable", "aBlackBagIsValoriteOrBetter", "theInfoLines", "wornItWorks", "takenOffItStops", "namedByItsGraphic" }) {
+						"everyPropertyIsFromItsTable", "aBlackBagIsValoriteOrBetter", "theInfoLines", "wornItWorks", "takenOffItStops", "namedByItsGraphic",
+						"aSlayerCountsByTheMonstersPercent", "notAgainstAnotherKind", "leechHealsByTheFormula", "freezingParalyses", "aBlockStopsAHarmfulSpell", "aReflexSendsItBack" }) {
 					string marker = "MAGIC_ITEM: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);

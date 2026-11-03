@@ -89,6 +89,7 @@ Experience = 15 18
 NoAnimate = 1
 SniperChance = 200 //20% 
 SniperDamage = 10 //o 10 HP 
+MonsterType = "humanoid,40"
 Parry = 500
 Archery = 700 800
 Wrestling = 750

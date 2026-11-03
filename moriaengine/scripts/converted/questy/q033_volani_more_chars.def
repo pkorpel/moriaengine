@@ -60,6 +60,7 @@ MaxStam = 330
 MaxMana = 1200
 Experience = 60 90
 Hypnotizable = 4
+MonsterType = "undead"
 NaturalDamageType = DamageType.Slashing|DamageType.Physical
 Parry = 850 1000
 MagicResist = 1700
