@@ -123,7 +123,75 @@ namespace SteamEngine.CompiledScripts {
 			ShamanPacts.LifePact(partner);
 			Report("theSoulBringsItBack", !partner.Flag_Dead && (ShamanAbilities.FindInPack(partner, "i_soul") == null));
 			Report("backWithATenth", partner.Hits == Math.Max(1, partner.MaxHits / 10));
+
+			//#1070 - carving and the voodoo
+			Player player = (Player) self;
+			Corpse body = null;
+			foreach (Thing thing in partner.GetMap().GetThingsInRange(partner.X, partner.Y, 3)) {
+				if ((thing is Corpse found) && (found.Owner == partner)) {
+					body = found;
+				}
+			}
+			Item head = null;
+			if (body != null) {
+				CorpseCarving.Carve(player, body);
+				foreach (Thing thing in body.GetMap().GetThingsInRange(body.X, body.Y, 1)) {
+					if ((thing is Item part) && CorpseCarving.IsHead(part)) {
+						head = part;
+					}
+				}
+			}
+			Report("aPlayersBodyFallsApart", (body != null) && body.HasTag(CorpseCarving.CarvedTK) && (head != null) &&
+				(CorpseCarving.HeadOf(head) == partner) && (head.Name == partner.Name));
+			Item dagger = (Item) ((ItemDef) ThingDef.GetByDefname("i_dagger_copper")).Create(player.Backpack);
+			Report("daggersCurseByMetal", (ShamanVoodoo.DaggerTier(dagger) == 1) && (ShamanVoodoo.DaggerTier(((ItemDef) ThingDef.GetByDefname("i_dagger")).Create(player.Backpack) as Item) == 0));
+			ClassAbilities.SetPoints(player, "woodoo_curse", 40);
+			player.RemoveTag(TagKey.Acquire("_nextWoodoo_"));
+			if (head != null) {
+				ShamanVoodoo.Curse(player, head, ShamanVoodoo.Damage);
+			}
+			partner.Hits = 100;
+			ShamanVoodoo.Arrive(partner, player, ShamanVoodoo.Damage);
+			Report("aCurseHurtsAFifth", ShamanVoodoo.Has(partner, ShamanVoodoo.Damage) && (partner.Hits == 80));
+			ShamanVoodoo.Arrive(partner, player, ShamanVoodoo.Shock);
+			Report("aSecondCurseFallsBack", ShamanVoodoo.Has(player, ShamanVoodoo.Shock) && ShamanVoodoo.RefusesCast(player, SpellDef.GetByDefname("s_heal") as SpellDef));
+			VoodooEffectTimer.Apply(player, ShamanVoodoo.NoPort, null);
+			Report("noPortRefusesRecall", ShamanVoodoo.RefusesCast(player, SpellDef.GetByDefname("s_recall") as SpellDef) && ShamanVoodoo.RefusesRide(player));
+			player.DeleteTimer(VoodooEffectTimer.Key);
+			partner.DeleteTimer(VoodooEffectTimer.Key);
+			dagger.Delete();
+
+			NPC crow = (NPC) ((NPCDef) ThingDef.GetByDefname("C_BIRD_CROW")).Create(player.X + 1, player.Y, player.Z, player.M);
+			crow.CauseDeath(null);
+			Corpse crowBody = null;
+			foreach (Thing thing in player.GetMap().GetThingsInRange(player.X + 1, player.Y, 1)) {
+				if ((thing is Corpse found) && (found.CharDef == ThingDef.GetByDefname("C_BIRD_CROW"))) {
+					crowBody = found;
+				}
+			}
+			int feathersBefore = CountAround(player, "i_feather");
+			if (crowBody != null) {
+				CorpseCarving.Carve(player, crowBody);
+			}
+			Report("aMonstersBodyGivesItsResources", (crowBody != null) && (CountAround(player, "i_feather") == feathersBefore + 10));
+			if (crowBody != null) {
+				int model = player.Model;
+				AstralMorph.Morph(player, crowBody);
+				bool morphed = AstralMorph.IsMorphed(player) && (player.Model != model);
+				AstralMorph.Dismorph(player);
+				Report("theAstralMorphTakesTheBody", morphed && !AstralMorph.IsMorphed(player) && (player.Model == model));
+			}
 			Console.WriteLine("SHAMAN_DONE");
+		}
+
+		private static int CountAround(Character self, string defname) {
+			int count = 0;
+			foreach (Thing thing in self.GetMap().GetThingsInRange(self.X, self.Y, 4)) {
+				if ((thing is Item item) && (item.Def.PrettyDefname == defname) && (item.Cont == null)) {
+					count += item.Amount;
+				}
+			}
+			return count;
 		}
 
 		private static Player FindPlayer(string name) {

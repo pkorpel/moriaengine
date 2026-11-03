@@ -76,6 +76,15 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int crushingArrowStamina = 25;
 
+		/// <summary>#1070 - nastaveni_woodoo_delay, 300 tenths: a good voodoo waits a tenth of it, a failed curse all of it,
+		/// a cast one ten times it.</summary>
+		[SaveableData]
+		public double voodooDelaySeconds = 30;
+
+		/// <summary>#1070 - nastaveni_woodoo_chance: out of 10000 per point of woodoo, for a good voodoo.</summary>
+		[SaveableData]
+		public int voodooBlessChance = 900;
+
 		/// <summary>#1070 - nastaveni_bleed_bolt: permille of the blow, times the jagged bolt's coefficient.</summary>
 		[SaveableData]
 		public int bleedBolt = 250;
