@@ -318,6 +318,7 @@ namespace SteamEngine.CompiledScripts {
 					swing.DamageAfterAC = (swing.DamageAfterAC * settings.criticalPermille) / 1000;
 				}
 			}
+			RangerAbilities.ApplySpree(self, target, swing);
 			if (!target.IsPlayer && (self.Level >= settings.doubleSwingMinLevel)) {
 				int points = ClassAbilities.Points(self, "doubleswing");
 				if ((points > 0) && IsDoubleSwingWeapon(self) && (Globals.dice.Next(1, 1001) <= (100 + (points * 5))) && (self.Stam >= settings.doubleSwingStamina)) {
