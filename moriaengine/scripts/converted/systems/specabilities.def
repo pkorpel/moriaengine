@@ -216,13 +216,11 @@ model = i_memory
 NAME = "Svice zivota"
 TYPE = t_normal
 model = i_candle_lg
-layer = 0 //Set by Converter 
 
 [LifeCandleDef i_svice_zivota_lit]
 NAME = "Svice zivota"
 TYPE = t_normal
 model = i_candle_lg_lit
-layer = 2 //Set by Converter 
 Color = 00842
 
 //[TYPEDEF t_svice_zivota] //(commented out by Converter) 
