@@ -94,9 +94,11 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Player bidder in new[] { first, second, mordor }) {
 				bidder.Delete();
 			}
+			//the client lists this one through the auction's Pridat predmet button, then withdraws it
 			shown = MagicItems.MagicItem(player, new ScriptArgs("i_staff_quarter_mithril 1 5"));
-			AuctionHouse.List(player, shown, 2000, 0);
-			Console.WriteLine("AUCTION_READY " + shown.Name + " |");
+			Report("pricesAreChecked", (AuctionHouse.PriceRefusal(player, 5000, 100) != null) && (AuctionHouse.PriceRefusal(player, 2000, 0) == null) &&
+				(AuctionHouse.PriceRefusal(player, AuctionHouse.MaxPrice + 1L, 0) != null) && (AuctionHouse.PriceRefusal(player, -1, 0) != null));
+			Console.WriteLine("AUCTION_READY uid=" + ((uint) shown.Uid) + " pack=" + ((uint) player.Backpack.Uid) + " name=" + shown.Name + " |");
 		}
 
 		private static readonly TagKey restartTK = TagKey.Acquire("_auction_restart_");
@@ -171,7 +173,7 @@ namespace SteamEngine.CompiledScripts {
 
 		[SteamFunction]
 		public static void TestAuctionReport(Character self) {
-			Report("theDialogWithdrew", !AuctionHouse.IsListed(shown) && (shown.Cont == ((Player) self).Bank));
+			Report("theDialogWithdrew", !AuctionHouse.IsListed(shown) && (shown.Cont == ((Player) self).Bank) && (AuctionHouse.Start(shown) == 0));
 			Console.WriteLine("AUCTION_DONE");
 		}
 	}

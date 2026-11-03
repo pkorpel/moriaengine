@@ -87,14 +87,30 @@ namespace SteamEngine.Tests.Protocol {
 				game.SendSpeech(".TestAuction");
 				Assert.True(this.fixture.WaitForGameOutputSince("AUCTION_READY", mark, Wait), this.fixture.GameOutputSnapshot());
 				string ready = this.fixture.GameOutputSnapshot().Substring(mark);
-				int at = ready.IndexOf("AUCTION_READY ", StringComparison.Ordinal) + "AUCTION_READY ".Length;
-				string name = ready.Substring(at, ready.IndexOf(" |", at, StringComparison.Ordinal) - at);
+				uint staff = uint.Parse(Between(ready, "AUCTION_READY uid=", " "), System.Globalization.CultureInfo.InvariantCulture);
+				uint pack = uint.Parse(Between(ready, " pack=", " "), System.Globalization.CultureInfo.InvariantCulture);
+				string name = Between(ready, " name=", " |");
+				var none = new System.Collections.Generic.Dictionary<int, string>();
 
-				game.SendSpeech(".aukce");
+				//the user's way to start one: the list's Pridat predmet, the prices, then the item
+				game.SendDoubleClick(pack); //the client must know the pack's contents to target one
+				game.SendSpeech(".aukce 100 200"); //parameters are ignored now
 				var auction = game.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("Aukce magickych predmetu", auction.Strings);
+				Assert.Contains("Pridat predmet", auction.Strings);
+				game.SendGumpResponse(auction.GumpUid, 3, none);
+				var start = game.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Nova aukce", start.Strings);
+				game.SendGumpResponse(start.GumpUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 10, "5000" }, { 11, "100" } });
+				start = game.ReadGumpDialogWithStrings(Wait); //a buyout under the start brings it back
+				Assert.Contains("Nova aukce", start.Strings);
+				game.SendGumpResponse(start.GumpUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 10, "2.000" }, { 11, "0" } });
+				Thread.Sleep(500);
+				game.SendTargetUid(staff);
+				auction = game.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains(name + " (elven)", auction.Strings); //the user: a weapon's material must show
-				game.SendGumpResponse(auction.GumpUid, 100, new System.Collections.Generic.Dictionary<int, string>());
+				Assert.Contains("2.000 (od)", auction.Strings);
+				game.SendGumpResponse(auction.GumpUid, 100, none);
 				var listing = game.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("Prodava:", listing.Strings);
 				Assert.Contains("Material:", listing.Strings);
@@ -109,13 +125,20 @@ namespace SteamEngine.Tests.Protocol {
 				foreach (string check in new[] { "aPlainItemIsRefused", "aRingGoesUp", "anotherRealmCantBid", "theSellerCantBid", "tooLowIsRefused", "aBidPaysAtOnce",
 						"theNextBidIsFivePercentMore", "theOutbidGetTheirGoldBack", "anOfflineBidderGetsAMessage", "noWithdrawingAfterABid", "theWinnerGetsItInTheBank",
 						"theSellerGetsTheBidInTheBank", "aBuyoutEndsItAtOnce", "noBidTheItemComesBack", "theListingsAreLimited", "theSellerWithdrawsWithoutABid",
-						"aSwordShowsItsMetal", "aStaffShowsItsWood", "armorShowsItsMetal", "aRingHasNoMaterial", "theDialogWithdrew" }) {
+						"aSwordShowsItsMetal", "aStaffShowsItsWood", "armorShowsItsMetal", "aRingHasNoMaterial", "pricesAreChecked", "theDialogWithdrew" }) {
 					string marker = "AUCTION: " + check + "=";
 					int idx = output.LastIndexOf(marker, StringComparison.Ordinal);
 					Assert.True(idx >= 0, marker + " never reported. Game output:\n" + output);
 					Assert.True(string.CompareOrdinal(output, idx + marker.Length, "True", 0, 4) == 0, marker + " failed. Game output:\n" + output);
 				}
 			}
+		}
+
+		private static string Between(string text, string before, string after) {
+			int at = text.IndexOf(before, StringComparison.Ordinal);
+			Assert.True(at >= 0, "no '" + before + "' in: " + text);
+			at += before.Length;
+			return text.Substring(at, text.IndexOf(after, at, StringComparison.Ordinal) - at);
 		}
 
 		private TestGameClient Login(string name) {
