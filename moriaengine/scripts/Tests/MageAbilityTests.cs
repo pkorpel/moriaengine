@@ -17,6 +17,7 @@
 
 using System;
 using System.Globalization;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -203,6 +204,44 @@ namespace SteamEngine.CompiledScripts {
 			bool castsAfter = timer.ChooseSpellToCast(dummy, self) != null;
 			Console.WriteLine("MAGEABILITY_TEST: silenced castsBefore=" + castsBefore + " castsAfter=" + castsAfter + " tenths=" + tenths);
 			dummy.Delete();
+
+			//#1070 - tag.resist_silence from the converter, against the chance; 1000 can't be silenced at all
+			NPCDef immuneDef = (NPCDef) ThingDef.GetByDefname("c_mahat_boss");
+			NPC immune = (NPC) immuneDef.Create(self.X + 2, self.Y, self.Z, self.M);
+			immune.DeleteTimer(SteamEngine.Timers.TimerKey.Acquire("_npcAiTimer_"));
+			Item staff = (Item) ((ItemDef) ThingDef.GetByDefname("i_staff_gnarled_mithril")).Create(self);
+			ClassAbilities.SetPoints(self, "mind_blast_silence", 100);
+			bool immuneSilenced = MageAbilities.TrySilence(self, immune);
+			immune.Delete();
+			immune = (NPC) ((NPCDef) ThingDef.GetByDefname("npc_test_single_combat_spell")).Create(self.X + 2, self.Y, self.Z, self.M);
+			bool plainSilenced = MageAbilities.TrySilence(self, immune);
+			immune.Delete();
+			staff.Delete();
+			ClassAbilities.SetPoints(self, "mind_blast_silence", 0);
+			Console.WriteLine("MAGEABILITY_TEST: resist def=" + immuneDef.ResistSilence + " ogre=" + ((NPCDef) ThingDef.GetByDefname("c_ogre_lord")).ResistSilence +
+				" chance=" + MageAbilities.SilenceChance(10, 250, Material.Copper, 350, 0) + " immune=" + !immuneSilenced + " plain=" + plainSilenced);
+		}
+
+		/// <summary>#1070 - tag.nomask and tag.cFlags from the converter: recall and gate in and out of an arena, and
+		/// resurrection there at once.</summary>
+		[SteamFunction]
+		public static void TestRegionCustomFlags(Character self) {
+			FlaggedRegion arena = (FlaggedRegion) StaticRegion.GetByDefname("a_Arena_Gondor");
+			FlaggedRegion startRoom = (FlaggedRegion) StaticRegion.GetByDefname("a_Start_room");
+			self.Account.PLevel = 1;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			SpellDef resurrection = SpellDef.GetByDefname("s_resurrection");
+			PriestAbilities.NoteDeath(self);
+			bool waitsOutside = PriestAbilities.TooSoonToRise(self, resurrection);
+			bool recallInRefused = !RecallRune.CheckTelePermissionIn(self, arena.P);
+			self.Go(arena.P);
+			FlaggedRegion here = RegionEventSystem.AreaOf(self.Region); //a_Arena_Gondor_Podzemi shares this rect, with the same flags
+			bool inArena = (here != null) && here.HasCustomFlag(FlaggedRegion.InstantRes) && here.HasCustomFlag(FlaggedRegion.DenyRecallOut);
+			bool recallOutRefused = !RecallRune.CheckTelePermissionOut(self);
+			bool risesAtOnce = !PriestAbilities.TooSoonToRise(self, resurrection);
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			Console.WriteLine("MAGEABILITY_TEST: regionflags noMask=" + startRoom.NoMask + " arenaFlags=" + arena.CustomFlags + " inArena=" + inArena +
+				" waitsOutside=" + waitsOutside + " recallInRefused=" + recallInRefused + " recallOutRefused=" + recallOutRefused + " risesAtOnce=" + risesAtOnce);
 		}
 
 		/// <summary>Same ScriptArgs dual-shape handling established elsewhere this session.</summary>

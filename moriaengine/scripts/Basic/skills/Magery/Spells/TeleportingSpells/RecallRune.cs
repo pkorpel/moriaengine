@@ -73,6 +73,11 @@ namespace SteamEngine.CompiledScripts {
 				caster.RedMessage(Loc<RecallRuneLoc>.Get(caster.Language).ForbiddenTeleportingOut);
 				return false;
 			}
+			FlaggedRegion area = RegionEventSystem.AreaOf(caster.Region);
+			if (!caster.IsGM && (area != null) && area.HasCustomFlag(FlaggedRegion.DenyRecallOut)) { //#1070 - region_cf_denyRecall_out
+				caster.RedMessage("Tva kouzla jsou rusena antimagickym polem.");
+				return false;
+			}
 			//TODO enemyteleporting - check realm friendliness
 			return true;
 		}
@@ -84,6 +89,11 @@ namespace SteamEngine.CompiledScripts {
 
 			if ((regionFlags & RegionFlags.NoTeleportingIn) == RegionFlags.NoTeleportingIn) {
 				caster.RedMessage(Loc<RecallRuneLoc>.Get(caster.Language).ForbiddenTeleportingIn);
+				return false;
+			}
+			FlaggedRegion area = RegionEventSystem.AreaOf(region);
+			if (!caster.IsGM && (area != null) && area.HasCustomFlag(FlaggedRegion.DenyRecallIn)) { //#1070 - region_cf_denyRecall_in
+				caster.SysMessage("Tva kouzla jsou rusena antimagickym polem.");
 				return false;
 			}
 			//TODO enemyteleporting - check realm friendliness

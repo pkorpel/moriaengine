@@ -193,3 +193,10 @@ fixed in the `.def` content itself, not in `SpellDef`/`MagerySkillDef` code.
 Armor, Summon Undead, Mana Drain, Mana Vampire, Energy Vortex, Summon Creature, Reveal, and
 Fire Bolt have no `SpellDef` content at all in this engine. The Necromancer profession
 exists and can be assigned, but has nothing resembling its real spell kit to cast.
+
+## Areas that refuse recall and gate (#1070)
+
+Besides the region FLAGS, Erebor's `tag.cFlags` (`CustomFlags` on the area): `region_cf_denyRecall_out` refuses recall and
+gate from inside, "Tva kouzla jsou rusena antimagickym polem.", `region_cf_denyRecall_in` refuses a rune that points
+inside (`RecallRune.CheckTelePermissionOut/In`). GMs aren't refused. The four arenas have both. Erebor's battlefield
+checks on the same spells wait for the keep conquest.
