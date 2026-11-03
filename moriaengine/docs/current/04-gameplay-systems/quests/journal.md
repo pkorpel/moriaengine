@@ -11,7 +11,7 @@ Erebor's journal had the Grandmaster quest (13 texts, byte for byte, in `Grandma
 Master. Those two pages are new text in the same style. Expert's scroll shows on starting and passing; a failed attempt
 drops the quest from the list.
 
-Open dungeons, boosters, weekly quests and the PvP league are placeholder pages saying the section isn't available yet (#840).
+Boosters have their page ([boosters.md](boosters.md)). Open dungeons, weekly quests and the PvP league are placeholder pages saying the section isn't available yet (#840).
 Their systems aren't ported.
 
 To add a ported quest: one `QuestJournalEntry` in `QuestJournal.Entries` and a `Report` call on each step.

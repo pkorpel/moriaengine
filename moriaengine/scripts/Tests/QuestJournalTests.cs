@@ -16,6 +16,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -36,6 +37,42 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestJournalAdvance(Character self, ScriptArgs sa) {
 			GrandmasterQuest.Advance((Player) self, int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture));
 			Console.WriteLine("JOURNAL_ADVANCED: done");
+		}
+
+		/// <summary>#1090 - two +25%/1h boosters and one +50%/1h, in the order a player would have got them.</summary>
+		[SteamFunction]
+		public static void TestBoostersGive(Character self) {
+			Player player = (Player) self;
+			player.DeleteTimer(BoosterTimer.Key);
+			player.RemoveTag(TagKey.Acquire("_boosters_"));
+			Boosters.Add(player, 0);
+			Boosters.Add(player, 3);
+			Boosters.Add(player, 0);
+			Console.WriteLine("BOOSTERS_GIVEN: rows=" + Boosters.Stored(player).Count);
+		}
+
+		/// <summary>After the journal started the first row: the bonus on a gain and not on a loss, no second one while it
+		/// runs, the rows left, and that a logout pauses it with its time and a login resumes it.</summary>
+		[SteamFunction]
+		public static void TestBoostersReport(Character self) {
+			Player player = (Player) self;
+			BoosterTimer active = Boosters.Active(player);
+			long before = player.Experience;
+			int level = player.Level;
+			LevelingSystem.AddExperience(player, 4);
+			bool bonus = (player.Level == level) && (player.Experience == before + 5); //4 + 25% of 4, rounded down: 5
+			bool noSecond = !Boosters.Use(player, 0);
+			List<KeyValuePair<int, int>> left = Boosters.Stored(player);
+			double due = (active == null) ? 0 : active.DueInSeconds;
+			Boosters.Pause(player);
+			bool paused = Boosters.Active(player) == null;
+			Boosters.Resume(player);
+			BoosterTimer resumed = Boosters.Active(player);
+			bool sameTime = (resumed != null) && (Math.Abs(resumed.DueInSeconds - due) < 5);
+			Console.WriteLine("BOOSTERS_REPORT: kind=" + ((active == null) ? -1 : active.kind) + " due=" + ((due > 3500) && (due <= 3600)) + " bonus=" + bonus +
+				" noSecond=" + noSecond + " left=" + string.Join(",", left.ConvertAll(row => row.Key + "x" + row.Value)) +
+				" paused=" + paused + " resumed=" + sameTime + " end");
+			player.DeleteTimer(BoosterTimer.Key);
 		}
 	}
 }

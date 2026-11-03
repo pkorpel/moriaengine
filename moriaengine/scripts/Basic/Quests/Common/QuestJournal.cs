@@ -96,6 +96,7 @@ namespace SteamEngine.CompiledScripts {
 		public const int SectionQuests = 1, SectionDungeons = 2, SectionBoosters = 3, SectionWeekly = 11, SectionPvp = 21;
 		private const int Width = 300, Height = 400, Background = 9270, TitleHue = 95, HintHue = 0x21;
 		private const int QuestsOnPage = 7, FirstQuestButton = 1000, SelectedTabHue = 52;
+		internal const int FirstBoosterButton = 500, BoostersOnPage = 3;
 		private static readonly int[] sectionPics = { 0x2B08, 0x2B03, 0x2B05 };
 		private static readonly int[] tabPics = { 0x3324, 0x3334, 0x332B };
 		private static readonly int[] tabTitleX = { 15, -22, 10 };
@@ -131,6 +132,8 @@ namespace SteamEngine.CompiledScripts {
 			QuestJournalLoc loc = Loc<QuestJournalLoc>.Get(player.Language);
 			if (section == SectionQuests) {
 				this.AddQuests(player, loc);
+			} else if (section == SectionBoosters) {
+				this.AddBoosters(player);
 			} else {
 				//not ported yet: dungeon marks, boosters, weekly quests, the PvP league - #840
 				this.AddLabel((Width / 2) - 62, Height / 2, HintHue, loc.NotAvailableYet);
@@ -157,6 +160,42 @@ namespace SteamEngine.CompiledScripts {
 				this.AddButton(x + 13, 85, tabPics[tab], tabPics[tab], tab + 1, GumpButtonType.Reply, 0);
 			} else {
 				this.AddImage(x + 13, 85, tabPics[tab], SelectedTabHue);
+			}
+		}
+
+		/// <summary>#1090 - Erebor's boosters page: the running one, then the stored ones, three a page, each a button that
+		/// starts it while none runs.</summary>
+		private void AddBoosters(Player player) {
+			BoosterTimer active = Boosters.Active(player);
+			this.AddBackground(80, 128, 225, 80, Background);
+			this.AddLabel(150, 138, TitleHue, "Aktivni booster");
+			if (active != null) {
+				this.AddImage(100, 152, Boosters.Icon);
+				this.AddHtml(135, 158, 140, 20, "<center><basefont color=#00FA55 size=6>" + Boosters.Kinds[active.kind].Description + "</basefont></center>", false, false);
+				this.AddLabel(135, 176, TitleHue, Boosters.TimeText(active.DueInSeconds));
+			} else {
+				this.AddLabel(110, 162, HintHue, "Zadny Booster neni aktivni.");
+			}
+			List<KeyValuePair<int, int>> stored = Boosters.Stored(player);
+			int page = 1;
+			this.AddPage(page);
+			for (int row = 0; row < stored.Count; row++) {
+				if ((row > 0) && ((row % BoostersOnPage) == 0)) {
+					this.AddButton(Width - 30, 47, 0x15E1, 0x15E5, 0, GumpButtonType.Page, page + 1);
+					page++;
+					this.AddPage(page);
+					this.AddButton(93, 47, 0x15E3, 0x15E7, 0, GumpButtonType.Page, page - 1);
+				}
+				int y = 214 + ((row % BoostersOnPage) * 64);
+				this.AddBackground(75, y, 235, 60, Background);
+				this.AddBackground(250, y, 60, 60, Background);
+				this.AddHtml(88, y + 12, 160, 20, "<center><basefont color=#00F0FA>" + Boosters.Kinds[stored[row].Key].Description + "</basefont></center>", false, false);
+				this.AddHtml(88, y + 28, 160, 20, "<basefont color=#00FA55 size=6>" + stored[row].Value + "x</basefont>", false, false);
+				if (active != null) {
+					this.AddImage(264, y + 14, Boosters.Icon, SelectedTabHue); //Erebor greyed it with a checkertrans, which the client lets through to the window
+				} else {
+					this.AddButton(264, y + 14, Boosters.Icon, Boosters.Icon, FirstBoosterButton + row, GumpButtonType.Reply, 0);
+				}
 			}
 		}
 
@@ -202,6 +241,9 @@ namespace SteamEngine.CompiledScripts {
 			if (button >= FirstQuestButton) {
 				QuestJournal.OpenPage(player, button - FirstQuestButton);
 				QuestJournal.Open(player, SectionQuests);
+			} else if (button >= FirstBoosterButton) {
+				Boosters.Use(player, button - FirstBoosterButton);
+				QuestJournal.Open(player, SectionBoosters);
 			} else {
 				QuestJournal.Open(player, button);
 			}

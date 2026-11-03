@@ -30,7 +30,7 @@ namespace SteamEngine.Tests.Protocol {
 
 				//the sections that aren't ported say so, and each can be reached
 				AssertWindowIsSolid(menu.LayoutText);
-				foreach (var section in new[] { (2, "Otevrene Dungeony"), (3, "Boostery"), (11, "Tydenni Questy"), (21, "PvP Sezona") }) {
+				foreach (var section in new[] { (2, "Otevrene Dungeony"), (11, "Tydenni Questy"), (21, "PvP Sezona") }) {
 					client.SendGumpResponse(menu.GumpUid, section.Item1);
 					menu = client.ReadGumpDialogWithStrings(Wait);
 					AssertWindowIsSolid(menu.LayoutText);
@@ -40,6 +40,28 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendGumpResponse(menu.GumpUid, 1);
 				menu = client.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("Questy", menu.Strings);
+
+				//#1090 - the boosters: the stored ones, one started by its button, none other while it runs
+				client.SendGumpResponse(menu.GumpUid, 3);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Zadny Booster neni aktivni.", menu.Strings);
+				client.SendGumpResponse(menu.GumpUid, 0);
+				this.Ask(client, ".TestBoostersGive", "BOOSTERS_GIVEN:");
+				client.SendSpeech(".questy");
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				client.SendGumpResponse(menu.GumpUid, 3);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				string boosters = string.Join("|", menu.Strings);
+				Assert.Contains("+25% zkusenosti na 1h", boosters);
+				Assert.Contains("+50% zkusenosti na 1h", boosters);
+				Assert.Contains("2x", boosters);
+				client.SendGumpResponse(menu.GumpUid, 500);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				boosters = string.Join("|", menu.Strings);
+				Assert.Contains("Aktivni booster", boosters);
+				Assert.DoesNotContain("Zadny Booster neni aktivni.", boosters);
+				Assert.Contains("kind=0 due=True bonus=True noSecond=True left=0x1,3x1 paused=True resumed=True",
+					this.Ask(client, ".TestBoostersReport", "BOOSTERS_REPORT:"));
 				client.SendGumpResponse(menu.GumpUid, 0);
 
 				//a finished quest in green, the active one in blue and first
