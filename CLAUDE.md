@@ -1,5 +1,10 @@
 # moriaengine — working state
 
+## NOW (2026-11-03): #745 curing bleeding, then #788 (user: sort out both now)
+
+#745, branch fix-745-one-bleed: bandages already stop Bleeding Strike's bleed (#980), not a monster's. On Erebor both are one item, i_krvaceni: e_npc_bleed's npc_bleed adds (damage/3)/2 to its more2 (no cap, no fade, ticks restart) via f_bleed_getMemory, f_thief_doBleed the thief's way. So the monster bite goes into BleedingEffectPlugin (BleedingEffectPluginDef.Bite), NpcBleedEffectPlugin goes. Then #788, its own branch.
+#745 shipped: the monster bite also counts for the weekly bleeding task now (the tick calls WeeklyQuests.OnBleed); 30 damage bleeds 5, not 10. Verified: NpcBleed (bandage stops it), NpcResist, MonsterAbilitiesSettings, Healing, QuestJournal, ClassAbility green, fast 336/336.
+
 ## DONE (2026-11-03): #1100 guards' pursuit and teleport home (branch guard-pursuit-1100)
 
 User: e_tele_to_target is guards' teleport, they run at the players they fight and go home when far from their town. They're right: i_attack_guard's tag.guard gate reads the instance's tag, the archive sets it on the chardef only, and 0.99z8 doesn't fall back (EreborNext M_Tag), so it runs everywhere. Port: GuardPursuit in scripts/Basic/AI, a 1 s timer: LOS, within 20, distance-1 (-3 casting/shooting) steps capped 8 (5 out of the spawn's region and >70 away) at once, then attack; >70 from the spawn teleports home; idle guards >7 from the spawn teleport home; a guard fighting a town-spawned NPC drops it and goes home. Numbers on NpcAggroSettings. Fix GuardSpeech's comment and #1022's status. Erebor's 5-step cap far out is dead code (the guard goes home there instead), not ported. Verified: GuardSightTests (new pursuit Fact, red with the Fight hook off), GuardSpeech, TownGuard, NpcGuardContent, CombatDepthTestsB green, fast 336/336. Gotcha: a gate on `cont.tag.x` in an Erebor script never sees a chardef's TAG, read whose tag it is before believing a gate. The open ground at the test spot is only about 9 tiles wide.
