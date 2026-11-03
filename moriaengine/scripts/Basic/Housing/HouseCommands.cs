@@ -17,7 +17,25 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>A door of a house: the dialog, or straight to the spot with a door's defname. Lock it from the sign.</summary>
+		/// <summary>A doorstep tile (HouseDoorstep) where the GM targets; a realm named sets it, else the house's there.</summary>
+		[SteamFunction]
+		public static void HousePad(Character self, ScriptArgs sa) {
+			Player player = self as Player;
+			if (player == null) {
+				return;
+			}
+			string named = (sa == null) ? "" : (sa.Args ?? "").Trim('"', ' ').ToLowerInvariant();
+			if (named.Length == 0) {
+				player.Target(SingletonScript<Targ_HousePad>.Instance);
+			} else if ((named == "gondor") || (named == "mordor")) {
+				player.Target(SingletonScript<Targ_HousePad>.Instance, (named == "gondor") ? Realm.Gondor : Realm.Mordor);
+			} else {
+				player.SysMessage("Realm je \"gondor\" nebo \"mordor\", nebo nic: pak podle domu.");
+			}
+		}
+
+		/// <summary>A door of a house: the dialog, or straight to the spot with a door's defname. Lock it from the sign.
+		/// A doorstep tile goes under it, of the house's realm.</summary>
 		[SteamFunction]
 		public static void HouseDoor(Character self, ScriptArgs sa) {
 			Player player = self as Player;
@@ -79,7 +97,9 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override TargetResult On_TargonGround(Player self, IPoint3D targetted, object parameter) {
 			HouseDoorChoice choice = (HouseDoorChoice) parameter;
-			if (House.FindHouseAt(new Point4D(targetted.X, targetted.Y, targetted.Z, self.M)) == null) {
+			Point4D at = new Point4D(targetted.X, targetted.Y, targetted.Z, self.M);
+			House house = House.FindHouseAt(at);
+			if (house == null) {
 				self.SysMessage("Tady neni zadny dum.");
 				return TargetResult.Done;
 			}
@@ -96,6 +116,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 			door.Model = def.Model + choice.offset;
 			door.SetAttribute(ItemAttributes.attr_move_never, true);
+			HouseDoorstep.Place(at, house.Area.HouseRealm);
+			self.SysMessage("Pod dvermi je dlazdice, ktera nepusti cizi realm ani duchy.");
 			return TargetResult.Done;
 		}
 	}

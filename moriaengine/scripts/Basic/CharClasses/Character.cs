@@ -2153,6 +2153,12 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public override bool CheckCharacterObstacles(Map map, int x, int y, int z) {
+			if (HouseDoorstep.Refuses(this, map, x, y, z)) { //a house's doorstep tile, i_duch_dlazba
+				if (this is Player) {
+					this.SysMessage(HouseDoorstep.Refused);
+				}
+				return false;
+			}
 			return CharacterCollision.CheckStep(this, map, x, y, z);
 		}
 
@@ -2181,6 +2187,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			MeditationSkillDef.OnStep(this);
 			MovementStamina.DrainForStep(this, running);
+			HouseDoorstep.AfterStep(this); //i_duch_dlazba's i_house_safe
 			MonsterSpecialAttacks.OnStepTaken(this); //#797 hazard tiles, e_inexhaustible
 			RegionEventSystem.OnStepTaken(this); //#813 e_nohorse, e_nohorsehigh
 		}
