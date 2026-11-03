@@ -49,11 +49,16 @@ namespace SteamEngine.CompiledScripts {
 			self.Go(at[0], at[1], at[2], thing.M);
 		}
 
-		private static void RemoveFromBackpack(Character self, string defname) {
-			Item item;
-			while ((item = MasterQuest.FindInBackpack(self, defname)) != null) {
-				item.Delete();
+		/// <summary>#1090 - the quest's items are tags; any item of their defs would break the user's rule.</summary>
+		private static int ItemsOf(string defname) {
+			ThingDef def = ThingDef.GetByDefname(defname);
+			int count = 0;
+			foreach (Thing thing in Thing.AllThings) {
+				if ((thing.Def == def) && !thing.IsDeleted) {
+					count++;
+				}
 			}
+			return count;
 		}
 
 		/// <summary>What the setup placed, and whether the queen can be walked to from where the teleport lands.</summary>
@@ -87,8 +92,8 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				MasterQuest.ForgetReachedIslands(player);
 			}
-			RemoveFromBackpack(player, MasterQuest.EggDef);
-			RemoveFromBackpack(player, MasterQuest.KeyDef);
+			QuestItems.Take(player, MasterQuest.EggDef);
+			QuestItems.Take(player, MasterQuest.KeyDef);
 			GoBeside(player, GondorLenastir());
 			Console.WriteLine("MASTER_PREPARE: los=" + player.CanSeeLOS(GondorLenastir()).Allow);
 		}
@@ -99,29 +104,17 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MASTER_BACK: los=" + self.CanSeeLOS(GondorLenastir()).Allow);
 		}
 
-		/// <summary>An egg in my pack, owned by nobody, or by Lenastir ("other": some other hero).</summary>
+		/// <summary>The egg as a GM could give it, with no visit to the islands behind it.</summary>
 		[SteamFunction]
-		public static void TestMasterQuestGiveEgg(Character self, ScriptArgs sa) {
-			RemoveFromBackpack(self, MasterQuest.EggDef);
-			Item egg = (Item) ThingDef.GetByDefname(MasterQuest.EggDef).Create(self.Backpack);
-			if (sa.Args.Trim().Trim('"') == "other") {
-				MasterQuest.SetEggOwner(egg, GondorLenastir());
-			}
-			Console.WriteLine("MASTER_EGG: " + egg.Uid);
+		public static void TestMasterQuestGiveEgg(Character self) {
+			QuestItems.Give(self, MasterQuest.EggDef);
+			Console.WriteLine("MASTER_EGG: given");
 		}
 
 		[SteamFunction]
 		public static void TestMasterQuestGiveKey(Character self) {
-			ThingDef.GetByDefname(MasterQuest.KeyDef).Create(self.Backpack);
+			QuestItems.Give(self, MasterQuest.KeyDef);
 			Console.WriteLine("MASTER_KEY: given");
-		}
-
-		/// <summary>An egg on the ground at my feet, as a GM's .add makes one.</summary>
-		[SteamFunction]
-		public static void TestMasterQuestEggOnGround(Character self) {
-			RemoveFromBackpack(self, MasterQuest.EggDef);
-			Item egg = (Item) ThingDef.GetByDefname(MasterQuest.EggDef).Create(self.X, self.Y, self.Z, self.M);
-			Console.WriteLine("MASTER_GROUND_EGG: egg=" + egg.Uid + " pack=" + self.Backpack.Uid);
 		}
 
 		/// <summary>Onto the teleport's tile, the way a step gets there.</summary>
@@ -132,36 +125,37 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MASTER_STEPPED: done");
 		}
 
-		/// <summary>The real queen killed next to me: reports the egg lying in her corpse.</summary>
+		/// <summary>The real queen killed next to me: no egg item in her or her corpse, which carries the egg as a mark.</summary>
 		[SteamFunction]
 		public static void TestMasterQuestKillQueen(Character self) {
-			RemoveFromBackpack(self, MasterQuest.EggDef);
+			QuestItems.Take(self, MasterQuest.EggDef);
 			int[] at = WorldSpots.NearestStandable(self.GetMap(), self.X + 1, self.Y, 3);
 			Character queen = (Character) ThingDef.GetByDefname(MasterQuest.QueenDef).Create(at[0], at[1], at[2], self.M);
+			bool carried = QuestItems.Carried(queen).Contains(MasterQuest.EggDef);
 			queen.CauseDeath(self);
 			foreach (Thing t in self.GetMap().GetThingsInRectangle(new ImmutableRectangle(at[0] - 1, at[1] - 1, at[0] + 1, at[1] + 1))) {
-				Corpse corpse = t as Corpse;
-				if (corpse != null) {
-					foreach (Item item in corpse.EnumShallow()) {
-						if (item.Def == ThingDef.GetByDefname(MasterQuest.EggDef)) {
-							Console.WriteLine("MASTER_QUEEN: egg=" + item.Uid + " owner=" + MasterQuest.GetEggOwner(item) + " corpse=" + corpse.Uid + " pack=" + self.Backpack.Uid);
-							return;
-						}
-					}
+				if (t is Corpse corpse) {
+					Console.WriteLine("MASTER_QUEEN: carried=" + carried + " inCorpse=" + QuestItems.Carried(corpse).Contains(MasterQuest.EggDef) +
+						" eggItems=" + ItemsOf(MasterQuest.EggDef) + " corpse=" + corpse.Uid + " pack=" + self.Backpack.Uid);
+					return;
 				}
 			}
-			Console.WriteLine("MASTER_QUEEN: egg=none");
+			Console.WriteLine("MASTER_QUEEN: corpse=none");
+		}
+
+		[SteamFunction]
+		public static void TestMasterQuestCorpse(Character self, ScriptArgs sa) {
+			Thing corpse = Thing.UidGetThing(int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture));
+			Console.WriteLine("MASTER_CORPSE: stillHolds=" + QuestItems.Carried(corpse).Contains(MasterQuest.EggDef));
 		}
 
 		[SteamFunction]
 		public static void TestMasterQuestState(Character self) {
 			Player player = (Player) self;
-			Item egg = MasterQuest.FindInBackpack(player, MasterQuest.EggDef);
-			Item key = MasterQuest.FindInBackpack(player, MasterQuest.KeyDef);
 			Region region = player.Region;
 			Console.WriteLine("MASTER_STATE: region=" + ((region == null) ? "none" : region.Defname) + " rank=" + player.SkillRank + " reached=" + MasterQuest.HasReachedIslands(player) +
-				" key=" + (key != null) + " keyNewbie=" + ((key != null) && key.HasAttribute(ItemAttributes.attr_newbie)) +
-				" egg=" + (egg != null) + " eggMine=" + ((egg != null) && (MasterQuest.GetEggOwner(egg) == player)));
+				" key=" + QuestItems.Has(player, MasterQuest.KeyDef) + " egg=" + QuestItems.Has(player, MasterQuest.EggDef) +
+				" keyItems=" + ItemsOf(MasterQuest.KeyDef) + " eggItems=" + ItemsOf(MasterQuest.EggDef));
 		}
 	}
 }

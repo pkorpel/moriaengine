@@ -1930,9 +1930,6 @@
   <data name="MasterQuestLoc_Promoted" xml:space="preserve">
     <value>Congratulations, you have become a Master. This opens the way to the further growth of your character.</value>
   </data>
-  <data name="MasterQuestLoc_EggDescription" xml:space="preserve">
-    <value>This is a fertilized snake egg - a very rare ingredient.</value>
-  </data>
   <data name="MasterQuestLoc_TeleportDescription" xml:space="preserve">
     <value>An unknown locked teleport</value>
   </data>

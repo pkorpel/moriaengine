@@ -170,7 +170,7 @@ namespace SteamEngine.CompiledScripts {
 			Region region = player.Region;
 			NPC rinald = (NPC) Target("rinald");
 			Console.WriteLine("Q000_STATE: stage=" + GrandmasterQuest.GetStage(player) + " rank=" + player.SkillRank + " region=" + ((region == null) ? "none" : region.Defname) +
-				" gold=" + GoldUtils.CountGoldIn(player.Backpack) + " bag=" + (MasterQuest.FindInBackpack(player, "i_mi_bag") != null) + " upset=" + QuestNpc.IsUpset((NPC) Target("elqira")) +
+				" gold=" + GoldUtils.CountGoldIn(player.Backpack) + " bag=" + (ShamanAbilities.FindInPack(player, "i_mi_bag") != null) + " upset=" + QuestNpc.IsUpset((NPC) Target("elqira")) +
 				" rinald=" + ((rinald == null) ? "none" : rinald.Name.Replace(' ', '_')) + " rinaldInvulnerable=" + ((rinald != null) && rinald.Flag_Invulnerable));
 		}
 
