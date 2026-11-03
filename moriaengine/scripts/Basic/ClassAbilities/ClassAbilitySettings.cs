@@ -100,6 +100,43 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double selfResSuccessSeconds = 3600;
 
+		/// <summary>nastaveni_charge_limit: most charges of one school.</summary>
+		[SaveableData]
+		public int chargeLimit = 3;
+
+		[SaveableData]
+		public double chargeDurationSeconds = 15;
+
+		[SaveableData]
+		public double chargeDropSeconds = 5;
+
+		/// <summary>nastaveni_charge_baseEff: percent of the bonus with next to no points.</summary>
+		[SaveableData]
+		public int chargeBaseEffect = 50;
+
+		/// <summary>nastaveni_charge_abilityPoints: points for the whole bonus.</summary>
+		[SaveableData]
+		public int chargeAbilityPoints = 10;
+
+		/// <summary>nastaveni_charge_spellPow_pvm_ per charge, the same for every spell on Erebor.</summary>
+		[SaveableData]
+		public int chargeSpellPowerVsM = 200;
+
+		[SaveableData]
+		public int chargeSpellPowerVsP = 100;
+
+		/// <summary>nastaveni_charge_silenceBonus: permille of silence's chance per mind charge.</summary>
+		[SaveableData]
+		public int chargeSilenceBonus = 100;
+
+		/// <summary>nastaveni_MindBlast_silence_chance: out of 1000, per point.</summary>
+		[SaveableData]
+		public int silenceChance = 60;
+
+		/// <summary>nastaveni_spellcast_silence_mind_blast, in tenths of a second, plus a tenth per point.</summary>
+		[SaveableData]
+		public int silenceTenths = 15;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;

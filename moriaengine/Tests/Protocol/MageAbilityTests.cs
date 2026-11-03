@@ -45,37 +45,21 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
-		/// <summary>#491 - Silence's 2 confirmed fixes, combined into one Fact to stay within
-		/// Account's 5-character-slot budget (shared across every Fact in this file): (1) procs
-		/// off Mind Blast (set to 10 ability points = 100% chance per AbilityDef.CheckSuccess's
-		/// own points*Chance formula, deterministic), not Lightning (which should NEVER proc
-		/// regardless of points/chance, since the fixed source no longer even checks for it); (2)
-		/// base EffectDuration is 1.5s now, not the old 10s.</summary>
+		/// <summary>#1017 - Erebor's f_silence_npc: points * 60, plus Int * staff level / 2, out of 1000,
+		/// and a silenced monster casts nothing.</summary>
 		[Fact]
-		public void SilenceProcsOffMindBlastNotLightningWithFixedDuration() {
+		public void SilenceFollowsEreborsFormula() {
 			using (var client = this.ConnectLoginAndCreateCharacter("MageSilenceCaster")) {
 				int mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportSilenceEffectDuration");
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: silenceEffectDuration=", mark, TimeSpan.FromSeconds(10)));
-				string durationLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: silenceEffectDuration=");
-				Assert.Contains("silenceEffectDuration=1.5", durationLine);
-
-				client.SendSpeech(".TestGrantFullSpellbook");
-				Assert.True(this.fixture.WaitForGameOutput("MAGERY_TEST: spellbook granted", TimeSpan.FromSeconds(10)));
-				this.SetAbilityPoints(client, "a_silence", 10);
-				// a_silence is a StatDrainingAbilityDef (ActivableAbilityDef) - setting points
-				// alone doesn't attach p_silence; Activate does (same as Energy Shield/Standcast).
-				this.ActivateAbility(client, "a_silence");
-
-				uint mindBlastTargetUid = this.SpawnDummy(client);
-				this.CastAtOtherAndWait(client, "s_mind_blast", mindBlastTargetUid, 1.0);
-				Assert.True(this.ReportHasSilenceEffect(client, mindBlastTargetUid),
-					"Expected Mind Blast (10 ability points = 100% chance) to silence its target.");
-
-				uint lightningTargetUid = this.SpawnDummy(client);
-				this.CastAtOtherAndWait(client, "s_lightning", lightningTargetUid, 1.0);
-				Assert.False(this.ReportHasSilenceEffect(client, lightningTargetUid),
-					"Expected Lightning to never silence (source no longer checks for it).");
+				client.SendSpeech(".TestSilenceFormula");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: silenced", mark, TimeSpan.FromSeconds(10)), this.fixture.GameOutputSnapshot());
+				string numbers = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: silence chance");
+				Assert.Equal(725, ExtractInt(numbers, "chance"));
+				Assert.Equal(870, ExtractInt(numbers, "withCharge"));
+				Assert.Equal(7, ExtractInt(numbers, "level"));
+				string silenced = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: silenced");
+				Assert.Contains("castsBefore=True", silenced);
+				Assert.Contains("castsAfter=False", silenced);
 			}
 		}
 
@@ -157,8 +141,8 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestReportMagicChargeBonus s_fireball 1000");
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGEABILITY_TEST: spell=s_fireball", mark, TimeSpan.FromSeconds(10)));
 				string lineWithCharge = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGEABILITY_TEST: spell=s_fireball");
-				// 1 fire charge * default 0.02 bonus-per-point -> 1000 * 1.02 = 1020
-				Assert.Equal(1020, ExtractInt(lineWithCharge, "boosted"));
+				// #1017 - f_magicCharge_formula: 1 charge at full points, 200 permille against a monster
+				Assert.Equal(1200, ExtractInt(lineWithCharge, "boosted"));
 
 				// A fire charge must NOT boost an unrelated electric-school spell.
 				mark = this.fixture.GameOutputSnapshot().Length;
