@@ -32,9 +32,8 @@ namespace SteamEngine.CompiledScripts {
 	/// hears on its own in Sphere. Replaces the converted [SpeechStub spk_guard].
 	/// A blacklisted player is never protected, and a criminal citizen of the guard's own town is (#892).
 	/// A possessing mystic (tag hypno_mystik) is let alone as the monster it wears (#1070, MysticHypnosis.GuardsLetAlone).
-	/// Not ported: the guard's temporary karma (guardkarma_*, i_memory_cleaner), only its name colour. The archive's
-	/// teleport-to-target (e_tele_to_target/i_attack_guard) only ever fires in its 7 insta-logout areas (jail,
-	/// tutorial) - guards here walk to their target as every NPC does.</summary>
+	/// Not ported: the guard's temporary karma (guardkarma_*, i_memory_cleaner), only its name colour. The guard it sends
+	/// runs at its target as Erebor's e_tele_to_target (#1100, GuardPursuit).</summary>
 	public sealed class GuardSpeech : AbstractSpeech {
 		private static readonly string[] keywords = { "guard", "straz" };
 
