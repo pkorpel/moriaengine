@@ -92,6 +92,14 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public double crushingArrowSecondsPerPoint = 0.2;
 
+		/// <summary>nastaveni_ability_resurrectiondelay_fail.</summary>
+		[SaveableData]
+		public double selfResFailSeconds = 75;
+
+		/// <summary>nastaveni_ability_resurrectiondelay_succes.</summary>
+		[SaveableData]
+		public double selfResSuccessSeconds = 3600;
+
 		/// <summary>nastaveni_ability_leapchange: out of 10000, per point.</summary>
 		[SaveableData]
 		public int leapChance = 950;

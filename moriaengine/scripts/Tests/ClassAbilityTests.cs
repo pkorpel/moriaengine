@@ -166,6 +166,40 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("RANGER_DONE");
 		}
 
+		[SteamFunction]
+		public static void TestPriestAbilities(Character self) {
+			Player player = (Player) self;
+			player.Account.PLevel = 1;
+			player.Profession = Professions.Priest;
+			player.Level = 100;
+			ClassAbilities.Reset(player);
+			ClassAbilities.SetPoints(player, "selfres", 20);
+			ClassAbilities.SetPoints(player, "selfres_hp", 5);
+
+			Report("restoredByTens", (PriestAbilities.Restored(5, 200) == 100) && (PriestAbilities.Restored(0, 200) == 3));
+			LifeCandle candle = (LifeCandle) ((ItemDef) ThingDef.GetByDefname("i_svice_zivota")).Create(player.Backpack);
+			candle.On_DClick(player);
+			Report("lightingMakesALitCandle", (PriestAbilities.FindLitCandle(player) != null) && candle.IsDeleted);
+			player.CauseDeath(null);
+			Report("theCandleStaysThroughDeath", PriestAbilities.FindLitCandle(player) != null);
+			PriestAbilities.Resurrection(player);
+			Report("tooRestlessRightAfterDying", player.Flag_Dead);
+			Console.WriteLine("PRIEST_DIED");
+		}
+
+		[SteamFunction]
+		public static void TestPriestRise(Character self) {
+			Player player = (Player) self;
+			for (int i = 0; (i < 200) && player.Flag_Dead; i++) { //90% a try at 20 points, each failure's delay wiped
+				PriestAbilities.Resurrection(player);
+				self.RemoveTag(TagKey.Acquire("_priestNextSelfres_"));
+			}
+			Report("thePriestRises", !player.Flag_Dead);
+			Report("risesAtHalfHits", player.Hits == (player.MaxHits / 2));
+			Report("theCandleBurnsOut", PriestAbilities.FindLitCandle(player) == null);
+			Console.WriteLine("PRIEST_DONE");
+		}
+
 		private static NPC Dummy(Character self, int offset) {
 			NPC dummy = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(self.X + offset, self.Y, self.Z, self.M);
 			dummy.MaxHits = 30000;
