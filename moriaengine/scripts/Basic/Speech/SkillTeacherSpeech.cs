@@ -168,6 +168,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!CanTalk(teacher, student)) {
 				return;
 			}
+			WeeklyQuests.OnGreetTeacher(teacher, student, skill); //#1090 - f_weekly_meetMaster
 			if (SkillTeacherSettings.instance.roundSkillOnGreeting) {
 				RoundSkill(student, skill);
 			}

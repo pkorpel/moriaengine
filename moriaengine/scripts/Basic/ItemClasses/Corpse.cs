@@ -141,6 +141,8 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 
+			WeeklyQuests.MarkCorpseLoot(dieingChar, this); //#1090 - what a spawned monster left, and how much
+
 			//#219 - re-evaluate now that Owner is known. On_EnterRegion already fired once
 			//during this corpse's own Create() call (before InitFromChar ever ran, so before
 			//this.owner was set above) and scheduled an NPC-rate timer by default - this call

@@ -81,6 +81,7 @@ namespace SteamEngine.CompiledScripts {
 				player.SysMessage("You have lost " + (-amount) + " experience.");
 			}
 			int coefficient = LevelingSettings.instance.nextLevelCoefficient;
+			int levelBefore = player.Level;
 			while (player.Experience > (player.Level + 1) * coefficient) {
 				player.Level += 1;
 				player.Experience -= player.Level * coefficient;
@@ -94,6 +95,9 @@ namespace SteamEngine.CompiledScripts {
 				EffectFactory.StationaryEffect(player, LevelUpEffectGraphic, 10, 20);
 				player.Sound((int) LevelUpSound);
 				player.RefreshTitle(); //#165 - title ladder tier may have changed
+			}
+			if (player.Level > levelBefore) {
+				WeeklyQuests.Check(player); //#1090 - f_srovnatlevel: a weekly set from level 10
 			}
 		}
 
@@ -396,6 +400,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				AddExperience(fighter as Player, share);
 				ShamanPacts.ShareKillExp(fighter as Player, share);
+				WeeklyQuests.OnKillCredit(fighter as Player, victim, share); //#1090 - @playerKill with added_experience_bydeath
 			}
 		}
 

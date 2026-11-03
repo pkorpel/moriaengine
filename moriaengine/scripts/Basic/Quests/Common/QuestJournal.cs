@@ -66,6 +66,9 @@ namespace SteamEngine.CompiledScripts {
 		public static void Questy(Character self) {
 			Player player = self as Player;
 			if (player != null) {
+				if (!player.IsGM) {
+					WeeklyQuests.Check(player); //#1090 - Erebor's .questy, not for GMs
+				}
 				Open(player, D_QuestJournal.SectionQuests);
 			}
 		}
@@ -134,6 +137,8 @@ namespace SteamEngine.CompiledScripts {
 				this.AddQuests(player, loc);
 			} else if (section == SectionBoosters) {
 				this.AddBoosters(player);
+			} else if (section == SectionWeekly) {
+				WeeklyPage.Add(this, player, Width);
 			} else {
 				//not ported yet: dungeon marks, boosters, weekly quests, the PvP league - #840
 				this.AddLabel((Width / 2) - 62, Height / 2, HintHue, loc.NotAvailableYet);
@@ -238,9 +243,15 @@ namespace SteamEngine.CompiledScripts {
 			if ((player == null) || (button == 0)) {
 				return;
 			}
+			bool renewed = WeeklyQuests.Check(player); //#1090 - every button of d_questy
 			if (button >= FirstQuestButton) {
 				QuestJournal.OpenPage(player, button - FirstQuestButton);
 				QuestJournal.Open(player, SectionQuests);
+			} else if ((button >= WeeklyPage.FirstDetailButton) && (button < FirstBoosterButton)) {
+				QuestJournal.Open(player, SectionWeekly);
+				if (!renewed) {
+					D_WeeklyDetail.Show(player, button - WeeklyPage.FirstDetailButton);
+				}
 			} else if (button >= FirstBoosterButton) {
 				Boosters.Use(player, button - FirstBoosterButton);
 				QuestJournal.Open(player, SectionBoosters);
