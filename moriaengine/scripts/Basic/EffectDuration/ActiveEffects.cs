@@ -161,14 +161,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	public partial class NpcBleedEffectPlugin {
-		public override string EffectName {
-			get {
-				return "Bleeding";
-			}
-		}
-	}
-
 	public partial class DiscordanceEffectPlugin : IEffectDescriber {
 		public ActiveEffect DescribeEffect(Character holder) {
 			return new ActiveEffect(EffectSection.Negative, "Discordance") {

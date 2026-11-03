@@ -52,7 +52,7 @@ whoever is already standing on it when it appears (the archive was step-on only)
 | npc_stun | 169 | landed hit may paralyze, own cooldown | StunChance/Duration/Cooldown |
 | npc_critic | 115 | bonus damage vs players | CriticChance/Damage |
 | npc_roundattack(_pullall) | | periodic AoE pulse (pull variant drags targets in) | Roundattack*, PullDistance |
-| npc_bleed | 119 | stacking bleed DoT, damage/3 power | BleedChance |
+| npc_bleed | 119 | adds (damage/3)/2 to the target's bleed, the one Bleeding Strike makes and a bandage stops (#745) | BleedChance |
 | npc_knockback | 40 | pushes the defender up to 3 tiles, walls stop it | KnockbackChance |
 | selfreser | 78 | the monster respawns at its corpse after a delay | SelfresDelay |
 | npc_detect | 60 | reveals hidden/invisible characters nearby | |
