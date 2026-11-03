@@ -147,10 +147,11 @@ namespace SteamEngine.Tests.Protocol {
 				this.gameProcess.BeginOutputReadLine();
 				this.gameProcess.BeginErrorReadLine();
 
-				if (!this.WaitForGameOutput("Init done.", TimeSpan.FromSeconds(60))) {
+				int bootSeconds = BootSeconds();
+				if (!this.WaitForGameOutput("Init done.", TimeSpan.FromSeconds(bootSeconds))) {
 					throw new TimeoutException(this.gameProcess.HasExited ?
 						"GameCore exited during boot (code " + this.gameProcess.ExitCode + "). Output:\n" + this.gameOutput :
-						"GameCore did not reach 'Init done.' in 60s. Output so far:\n" + this.gameOutput);
+						"GameCore did not reach 'Init done.' in " + bootSeconds + "s. Output so far:\n" + this.gameOutput);
 				}
 			} catch (Exception e) {
 				ProgressLog.Write("BOOT FAILED after " + (int) (DateTime.UtcNow - bootStarted).TotalSeconds + "s: " + FirstLine(e.Message));
@@ -194,6 +195,12 @@ namespace SteamEngine.Tests.Protocol {
 				this.portLock.Dispose();
 				this.portLock = null;
 			}
+		}
+
+		/// <summary>How long a boot may take to reach Init done: MORIA_BOOT_SECONDS, or 90. Every boot compiles all scripts,
+		/// which took about 50 s on a loaded machine (2026-11-03), so the old 60 s failed whole restart tests.</summary>
+		private static int BootSeconds() {
+			return int.TryParse(Environment.GetEnvironmentVariable("MORIA_BOOT_SECONDS"), out int seconds) && (seconds > 0) ? seconds : 90;
 		}
 
 		private static string FirstLine(string text) {
