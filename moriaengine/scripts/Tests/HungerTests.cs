@@ -35,22 +35,35 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HUNGER_ROLLS: hungry=" + hungry);
 		}
 
-		/// <summary>100 sure Hidings through the real success phase, on no food: how many it left the player hidden.</summary>
+		/// <summary>On no food: 100 Spirit Speak successes, how many the hunger let through; and 100 sure Hidings by Erebor's own roll,
+		/// which hunger doesn't touch.</summary>
 		[SteamFunction]
 		public static void TestHungerHiding(Character self) {
 			PlayerHunger.SetFood(self, 0);
+			//a skill's success fails 7 times in 10 (Erebor's @skillsuccess ishungrymsg); Spirit Speak's success starts the contact
+			int spoke = 0;
+			for (int i = 0; i < 100; i++) {
+				self.DeleteTimer(SpiritContactTimer.Key);
+				SkillSequenceArgs.Acquire(self, SkillName.SpiritSpeak).PhaseSuccess();
+				if (self.GetTimer(SpiritContactTimer.Key) != null) {
+					spoke++;
+				}
+			}
+			self.DeleteTimer(SpiritContactTimer.Key);
+			//#1095 - hiding isn't one of them: Erebor's f_skillhide cancels the native skill ("skill -1"), so its @skillsuccess never
+			//runs, and i_hiding_timer only rolls Hiding against rand(1025); #982 ported that as HidingSkillDef.Finish
 			self.SetRealSkillValue((int) SkillName.Hiding, 1000);
 			int hidden = 0;
 			for (int i = 0; i < 100; i++) {
 				self.Flag_Hidden = false;
-				SkillSequenceArgs.Acquire(self, SkillName.Hiding).PhaseSuccess();
+				HidingSkillDef.Finish(self);
 				if (self.Flag_Hidden) {
 					hidden++;
 				}
 			}
 			self.Flag_Hidden = false;
 			PlayerHunger.SetFood(self, 10);
-			Console.WriteLine("HUNGER_HIDING: hidden=" + hidden);
+			Console.WriteLine("HUNGER_HIDING: spoke=" + spoke + " hidden=" + hidden);
 		}
 
 		/// <summary>Whether a starving player's hits regenerate, given a second.</summary>
