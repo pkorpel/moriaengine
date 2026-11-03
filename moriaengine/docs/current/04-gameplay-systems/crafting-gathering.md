@@ -117,6 +117,14 @@ Shares the gathering shape above (target -> stroke -> yield a log) - verified vi
 same end-to-end `GatheringTests` suite as Mining and Taming. Requires `i_hatchet`
 equipped (`#370`).
 
+**Elven wood (#427, `ElvenGrove`)**: Erebor's `i_elvenprobe` from `miningfix.scp`. Two areas have `tag.elven=x,y`, kept by
+the converter as `FlaggedRegion.ElvenGrove`: one in Gondor at 2065,1377 and the battlefield at 2958,1857. Each area's probe
+sits on a spot rolled within 50 tiles of that point, rolled again every 10 minutes. A craftsman chopping within 15 tiles of
+it gets nothing from an elven tree. An ebony tree there becomes one elven log when a roll of 100.0-135.0 is under their
+Lumberjacking, and the find is logged. This runs after the craftsman's vigour, in Erebor's order. Everyone else, and
+elven trees anywhere else, are unaffected. The probe was a GM-placed item on Erebor; here the spot isn't saved, so a
+restart rolls it anew.
+
 ### Fishing
 
 Requires `i_fishing_pole` equipped (`#370` - the pole itself was a plain, non-equippable

@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -180,6 +181,23 @@ namespace SteamEngine.CompiledScripts {
 						vein.AssignedWood = betterWood;
 						chopper.SysMessage((chopper.IsFemale ? "Nasla" : "Nasel") + " jsi lepsi material!", ClassAbilities.ClassMessageHue);
 					}
+				}
+			}
+
+			//#427 - near an area's elven probe, a craftsman's elven tree has nothing and ebony can turn elven
+			if (ElvenGrove.IsNear(chopper)) {
+				if (vein.AssignedWood == WoodTiers.Elven) {
+					vein.Resource = RegionResourceDef.GetByDefname("l_copper");
+					vein.AssignedWood = WoodTiers.Spruce;
+					vein.RemainingPool = 0;
+					vein.RegenReadyAtSeconds = Globals.TimeInSeconds + (vein.AssignedWood.RegenMinutes * 60);
+					return null;
+				}
+				if ((vein.AssignedWood == WoodTiers.Eben) && ElvenGrove.RollsElven(chopper)) {
+					vein.Resource = RegionResourceDef.GetByDefname("l_mithril");
+					vein.AssignedWood = WoodTiers.Elven;
+					vein.RemainingPool = 1;
+					Logger.WriteInfo(true, "Elven wood: " + chopper.Name + " (uid " + chopper.Uid + ", account " + chopper.Account?.Name + ") found an elven log at " + x + "," + y);
 				}
 			}
 
