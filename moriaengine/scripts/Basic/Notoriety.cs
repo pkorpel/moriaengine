@@ -49,6 +49,11 @@ namespace SteamEngine.CompiledScripts {
 			return 0;
 		}
 
+		/// <summary>#1017 - the thief's mask carries its own count.</summary>
+		public static void SetMurderCount(Character self, int count) {
+			self.SetTag(murderCountTK, count);
+		}
+
 		public static bool IsMurderer(Character self) {
 			return GetMurderCount(self) >= MurdererThreshold;
 		}

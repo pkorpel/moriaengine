@@ -266,6 +266,15 @@ namespace SteamEngine.CompiledScripts {
 			Report("aBackstabHurts", victim.Hits < before);
 			Report("aBackstabReveals", !player.Flag_Hidden);
 			victim.Delete();
+
+			ThiefMask.ClearMask(player);
+			player.Realm = Realm.Gondor;
+			string realName = player.Name;
+			ThiefMask.SetAttributes(player, "Stinovy", -5000, 3, Realm.Mordor);
+			ThiefMask.Swap(player, ThiefMask.Attributes(player));
+			Report("maskChangesNameAndRealm", (player.Name == "Stinovy") && (player.Realm == Realm.Mordor) && (Notoriety.GetMurderCount(player) == 3));
+			ThiefMask.Swap(player, ThiefMask.Attributes(player));
+			Report("maskSwapsBack", (player.Name == realName) && (player.Realm == Realm.Gondor));
 			Console.WriteLine("THIEF_DONE");
 		}
 
