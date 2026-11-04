@@ -1,8 +1,9 @@
 # moriaengine — working state
 
-## NOW (2026-11-04): 1165 Shielded STM / optimistic multithreading research (no implementation)
+## DONE (2026-11-04): 1165 Shielded STM / optimistic multithreading research (no implementation)
 
-User: the original SteamEngine author recommended github.com/jbakic/Shielded (STM for .NET). Analyze it, find newer/better options, judge if it helps this server against #1161's measurements, write it up (new doc beside performance-review.md + pointer). Do NOT implement. Plan: read Shielded's source, survey alternatives online, a throwaway microbenchmark of its overhead in the scratchpad, docs-only PR.
+User: the original SteamEngine author recommended github.com/jbakic/Shielded (STM for .NET). Analyze it, find newer/better options, judge if it helps this server against #1161's measurements, write it up. Do NOT implement.
+Done: docs/current/02-engine-core/multithreading-and-stm.md + section 11 of performance-review.md. Verdict: no. Shielded 4.4.9 (last release 2020, netstandard2.0, runs on .NET 8); only newer .NET STM is LanguageExt's (same model, functional style). Measured: read in a transaction 68 ns vs 1.8 plain, write 169 ns, a modelled NPC think 19 us of STM bookkeeping (real think 22-39 us), 4 threads 2.8x, 8 threads worse. Adoption = ~3,600 mutable fields + ~3,500 packet/log calls. ModernUO keeps one core thread and parallelizes only save serialization. Benchmark: tools/perf/stmbench on the local branch 1161-perf-harness.
 
 ## DONE (2026-11-04): 1161 performance review (research only, no engine code)
 

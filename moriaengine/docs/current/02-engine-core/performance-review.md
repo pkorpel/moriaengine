@@ -18,7 +18,7 @@ Contents: [1. Assumptions and targets](#1-assumptions-and-targets) ·
 [4. Our engine](#4-our-engine-main-loop-and-threads) · [5. Measurements](#5-measurements) ·
 [6. Problems and proposals](#6-problems-ranked-with-proposals) · [7. Checked and fine](#7-checked-and-fine) ·
 [8. Order](#8-recommended-order) · [9. Benchmark setup](#9-benchmark-and-stress-test-setup) ·
-[10. Limits](#10-limits-of-this-study)
+[10. Limits](#10-limits-of-this-study) · [11. More cores](#11-using-more-cores-stm)
 
 ## 1. Assumptions and targets
 
@@ -548,3 +548,13 @@ Sum inclusive time per frame on the thread whose stacks contain `Timer.TimerThre
 - **1M items wasn't reached:** 626k at the design point; save time and memory at 1M are extrapolated linearly.
 - **The prototypes are experiments.** The NPC-sleep prototype changes behaviour (unseen NPCs don't wander or regenerate) and
   is not what problem 1 proposes.
+
+## 11. Using more cores (STM)
+
+Whether software transactional memory ([Shielded](https://github.com/jbakic/Shielded), recommended by SteamEngine's
+original author) could let the game logic run on several threads is researched in
+[Multithreading with STM](multithreading-and-stm.md) (#1165). Short answer: not for this target. Shielded's bookkeeping
+measured about 95 ns per field access in a transaction, roughly as much as a whole NPC think, and four threads won back at
+best 2.8×. Adopting it means converting about 3,600 mutable fields and deferring about 3,500 packet and log calls. The
+problems above are too much work, not too few cores. If cores are ever needed, keep the single game thread and move
+separable work (save serialization, path planning, map loading) off it first, as ModernUO does.

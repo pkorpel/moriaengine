@@ -61,6 +61,8 @@ file whose job is session continuity, not permanent reference.
   read/write, `GameState`, login → character list → enter world, the target-cursor flow.
 - [Performance review](02-engine-core/performance-review.md) - #1161: how EreborNext and Sphere 0.56b handle load,
   measurements of ours with a populated world and 50 simulated players, ranked problems and fixes, the stress-test setup.
+- [Multithreading with STM](02-engine-core/multithreading-and-stm.md) - #1165: the Shielded library and newer options,
+  measured costs, whether optimistic multithreading would help this server (no), what to do instead if cores are needed.
 
 ### 3. Admin & GM tooling
 - [The `.settings` dialog framework](03-admin-tooling/settings-dialog.md) -
