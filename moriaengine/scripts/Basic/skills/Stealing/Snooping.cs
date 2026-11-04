@@ -148,7 +148,7 @@ namespace SteamEngine.CompiledScripts {
 	[ViewableClass]
 	public partial class SnoopingPlugin {
 
-		public static readonly SnoopingPluginDef defInstance = new SnoopingPluginDef("p_snoopedBackpacks", "C#scripts", -1);
+		public static readonly SnoopingPluginDef defInstance = (SnoopingPluginDef) new SnoopingPluginDef("p_snoopedBackpacks", "C#scripts", -1).Register(); //#1163 - never was
 		internal static PluginKey snoopedPluginKey = PluginKey.Acquire("_snoopedBackpacks_");
 		public static int duration = 180;
 

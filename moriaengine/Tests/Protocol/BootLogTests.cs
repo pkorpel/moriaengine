@@ -22,12 +22,34 @@ namespace SteamEngine.Tests.Protocol {
 					//the engine's bits, not defs.def's Sphere 08000 and 020
 					Assert.Contains("attrStatic=64 statfWar=64", defs);
 					Assert.Contains("sewingKit=True", defs);
+					//#1163 - the save holds one of every plugin whose def is made in code
+					string setup = Ask(fixture1, client, ".TestBootStates \"setup\"", "BOOT_STATES: setup");
+					Assert.NotEqual(Value(setup, "sheepBefore"), Value(setup, "sheepDiscorded"));
+					Assert.NotEqual(Value(setup, "regenBefore"), Value(setup, "regenIgnited"));
 					Ask(fixture1, client, ".TestTriggerGlobalSave", "TEST_SAVE: done");
 				}
 			}
 			using (var fixture2 = GameServerPairFixture.BootPreservingSaves()) {
-				AssertNoProblems(fixture2);
+				List<string> problems = ProblemsAtBoot(fixture2);
+				string check;
+				using (var client = Connect("Boot Checker")) {
+					check = Ask(fixture2, client, ".TestBootStates \"check\"", "BOOT_STATES: check");
+				}
+				Assert.True(problems.Count == 0, problems.Count + " at boot:\n" + string.Join("\n", problems) + "\n" + check);
+				Assert.Contains("found=True,True,True", check);
+				foreach (string state in new[] { "queue", "tracker", "paralyze", "discord", "warcry", "charge", "ignition", "poison", "crafting", "snoop" }) {
+					Assert.True(Value(check, state) == "True", state + " didn't survive the restart: " + check);
+				}
+				//discordance and ignition gave back what they took when they ended after the restart
+				Assert.Equal(Value(check, "sheepBefore"), Value(check, "sheepStats"));
+				Assert.Equal(Value(check, "regenBefore"), Value(check, "regen"));
 			}
+		}
+
+		private static string Value(string line, string key) {
+			Match m = Regex.Match(line, @"\b" + key + @"=(\S+)");
+			Assert.True(m.Success, "No " + key + "= in: " + line);
+			return m.Groups[1].Value;
 		}
 
 		private static void AssertNoProblems(GameServerPairFixture fixture) {

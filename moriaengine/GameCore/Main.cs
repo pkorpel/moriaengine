@@ -184,7 +184,7 @@ namespace SteamEngine {
 
 				TileData.GenerateMissingDefs();
 				CharData.GenerateMissingDefs();
-
+				ClassManager.InitStaticDefs(); //#1163 - before the world, so saved plugins find their defs
 
 				WorldSaver.Load();
 				//}
@@ -363,6 +363,7 @@ namespace SteamEngine {
 			//if (!Globals.fastStartUp) {
 			ScriptLoader.Load();
 			TriggerGroup.ReAddGlobals();
+			ClassManager.InitStaticDefs(); //#1163
 
 			WorldSaver.Load();
 			//}
