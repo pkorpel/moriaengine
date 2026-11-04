@@ -471,3 +471,26 @@ rat and two crunch monsters.
 
 Test: `HcnTombTests` (protocol, account hcntests): the pursuit's memory, dash and hate, the snake's poison, a mad
 warrior and mage, the rat's karma.
+
+## Proactive bosses (#1146)
+
+`Proactive.cs`. The user's design, beyond Erebor: the boss reactions of #1022 also act on the monster's own initiative,
+not only when it is hit. They include the dragons, the summoning bosses, the lava bomb, the OCS raising, the helm's cry,
+Darkmoon's forms, the shapeshifters, and Halda Molle's frost wave and warniaks.
+
+- While a boss fights, every `monsterInitiativeSeconds` (NPC Aggro settings, 6 s; 0 turns it off) it rolls its
+  reactions against its target, at their own odds and cooldowns, as if the target had hit it. The first roll comes a
+  full interval into the fight.
+- Its own landed blow rolls them too (`monsterInitiativeOnOwnBlows`, on).
+- Some stay reactions only: the Balrog's reflection, Bezejmenny's split, Arghelior's per-blow lines, the sand
+  guardian's warrior line. `monsterInitiativeOff` lists more, by ability defname, comma separated.
+- Being hit, or a damage spell (#1145), rolls them as before. The dragons' reactions now run on spells too.
+
+How: the reaction checks go through `MonsterSpecialAttacks.Reacts(npc, ability)`, which is `HasAbilityDef` except while a
+monster acts on its own initiative.
+
+Found on the way: a shapeshifter picking a form that doesn't exist (Menivec's `c_eye_adamantium_menavec` isn't in the
+archive) did nothing, one change in eight; it now picks among the forms that exist.
+
+Test: `HcnTombTests.BossesActOnTheirOwnInitiative` (protocol): the tick's timing, the fire lord's summons on the tick and
+on its own blow, the off switch and list, the Balrog's reflection staying a reaction.

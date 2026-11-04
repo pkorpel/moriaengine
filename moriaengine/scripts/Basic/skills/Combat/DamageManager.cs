@@ -113,6 +113,9 @@ namespace SteamEngine.CompiledScripts {
 			if ((attacker != null) && !attacker.IsDeleted && !defender.IsDeleted && !defender.Flag_Dead) {
 				MonsterSpecialAttacks.TryEmoteDamage(defender, dealt, flags);
 				MonsterSpecialAttacks.TryReactToHit(attacker, defender);
+				if (!defender.IsDeleted && !attacker.IsDeleted) {
+					MonsterSpecialAttacks.TryDragonReactions(attacker, defender); //the dragons' @aftergetswing as well
+				}
 			}
 			return dealt;
 		}

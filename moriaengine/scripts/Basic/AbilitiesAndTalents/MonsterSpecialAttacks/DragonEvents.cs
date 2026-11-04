@@ -399,7 +399,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void TryFireDragon(NPC dragon) {
 			FireDragonAbilityDef def = FireDragonDef;
-			if (!HasAbilityDef(dragon, def) ||
+			if (!Reacts(dragon, def) ||
 					!RollWithCooldown(dragon, nextDragonFireTK, Tuned(dragon, "fireDragonChance", def.Chance), Tuned(dragon, "fireDragonCooldown", def.Cooldown))) {
 				return;
 			}
@@ -416,7 +416,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void TryFireDragonBomb(NPC dragon, Character attacker) {
 			FireDragonBombAbilityDef def = FireDragonBombDef;
-			if (!HasAbilityDef(dragon, def) ||
+			if (!Reacts(dragon, def) ||
 					!RollWithCooldown(dragon, nextDragonBombTK, Tuned(dragon, "fireDragonBombChance", def.Chance), Tuned(dragon, "fireDragonBombCooldown", def.Cooldown))) {
 				return;
 			}
@@ -429,7 +429,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void TryFireDragonRound(NPC dragon) {
 			FireDragonRoundAbilityDef def = FireDragonRoundDef;
-			if (!HasAbilityDef(dragon, def) ||
+			if (!Reacts(dragon, def) ||
 					!RollWithCooldown(dragon, nextDragonRoundTK, Tuned(dragon, "fireDragonRoundChance", def.Chance), Tuned(dragon, "fireDragonRoundCooldown", def.Cooldown))) {
 				return;
 			}
@@ -447,7 +447,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static void TryFireDragonCage(NPC dragon) {
 			FireDragonCageAbilityDef def = FireDragonCageDef;
-			if (!HasAbilityDef(dragon, def) ||
+			if (!Reacts(dragon, def) ||
 					!RollWithCooldown(dragon, nextDragonCageTK, Tuned(dragon, "fireDragonCageChance", def.Chance), Tuned(dragon, "fireDragonCageCooldown", def.Cooldown))) {
 				return;
 			}
@@ -470,7 +470,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static void TryDragonAura(NPC dragon, Character attacker, DragonAuraAbilityDef def, TagKey nextTK, string prefix, bool swamp) {
-			if (!HasAbilityDef(dragon, def) || (attacker == null) ||
+			if (!Reacts(dragon, def) || (attacker == null) ||
 					!RollWithCooldown(dragon, nextTK, Tuned(dragon, prefix + "Chance", def.Chance), Tuned(dragon, prefix + "Cooldown", def.Cooldown))) {
 				return;
 			}
@@ -492,7 +492,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>bahenny_drak_krev: bleeds at 85, 65, 45, 25 and 5 percent.</summary>
 		private static void TryDragonBlood(NPC dragon) {
 			DragonBloodAbilityDef def = DragonBloodDef;
-			if (!HasAbilityDef(dragon, def) || (dragon.MaxHits <= 0)) {
+			if (!Reacts(dragon, def) || (dragon.MaxHits <= 0)) {
 				return;
 			}
 			int percent = (dragon.Hits * 100) / dragon.MaxHits;
@@ -510,7 +510,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>e_dragon_brain's @NPCSeeNewPlayer and @aftergetswing: the brain starts thinking.</summary>
 		internal static void WakeDragonBrain(NPC dragon) {
 			DragonBrainAbilityDef def = DragonBrainDef;
-			if (HasAbilityDef(dragon, def) && (dragon.GetTimer(DragonBrainTimer.Key) == null)) {
+			if (Reacts(dragon, def) && (dragon.GetTimer(DragonBrainTimer.Key) == null)) {
 				DragonBrainTimer timer = new DragonBrainTimer();
 				dragon.AddTimer(DragonBrainTimer.Key, timer);
 				timer.DueInSeconds = ScriptUtil.GetRandInRange(def.Interval[0], def.Interval[1]);
@@ -519,7 +519,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>NPCAiTimer's tick: a brain dragon wakes on seeing a player within 18.</summary>
 		internal static void TryDragonBrainSight(NPC dragon) {
-			if (HasAbilityDef(dragon, DragonBrainDef) && (dragon.GetTimer(DragonBrainTimer.Key) == null) && (DragonBrainPlayerNear(dragon) != null)) {
+			if (Reacts(dragon, DragonBrainDef) && (dragon.GetTimer(DragonBrainTimer.Key) == null) && (DragonBrainPlayerNear(dragon) != null)) {
 				WakeDragonBrain(dragon);
 			}
 		}

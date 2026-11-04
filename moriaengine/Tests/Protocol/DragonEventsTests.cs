@@ -249,6 +249,20 @@ namespace SteamEngine.Tests.Protocol {
 			//the converter's KARMA=-{...} is evil now
 			this.Expect(client, "karma", "evil=True port=8");
 		}
+
+		/// <summary>#1146 - proactive bosses.</summary>
+		[Fact]
+		public void BossesActOnTheirOwnInitiative() {
+			using var client = CommandPermissionTests.Connect("hcntests", "Bold Fighter");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestDragon \"ready\"", "DRAGON_TEST: ready ");
+			string line = CommandPermissionTests.Ask(this.fixture, client, ".TestProactive", "PROACTIVE_TEST: ");
+			//the tick: a full interval into the fight, then the fire lord's phoenixes, then it waits
+			Assert.True(line.Contains("first=False due=True phoenixes=2 again=False"), line);
+			//its own blow rolls too, unless switched off; an ability on the off list stays a reaction
+			Assert.True(line.Contains("ownBlow=2 ownBlowOff=0 offList=0"), line);
+			//the Balrog's reflection only ever answers a blow
+			Assert.True(line.Contains("reflectOnOwn=False reflectOnHit=True"), line);
+		}
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]

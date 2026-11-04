@@ -92,5 +92,17 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#1100 - e_guard's @skillstroke: a guard heading home from further than this teleports there.</summary>
 		[SaveableData]
 		public int guardTeleportsHomeFrom = 7;
+
+		/// <summary>#1146 - a fighting boss rolls its reactions on its own initiative this often, as if hit. 0 turns it off.</summary>
+		[SaveableData]
+		public double monsterInitiativeSeconds = 6;
+
+		/// <summary>#1146 - a boss's own landed blow rolls its reactions too.</summary>
+		[SaveableData]
+		public bool monsterInitiativeOnOwnBlows = true;
+
+		/// <summary>#1146 - ability defnames, by commas, that stay reactions only (e.g. a_tevent_e_fire_lord).</summary>
+		[SaveableData]
+		public string monsterInitiativeOff = "";
 	}
 }

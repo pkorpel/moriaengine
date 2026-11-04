@@ -60,7 +60,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>TryReactToHit: maybe another form.</summary>
 		internal static void TryDarkmoonMorph(NPC self) {
 			DarkmoonAbilityDef def = DarkmoonDef;
-			if (!HasAbilityDef(self, def)) {
+			if (!Reacts(self, def)) {
 				return;
 			}
 			double now = Globals.TimeInSeconds;
