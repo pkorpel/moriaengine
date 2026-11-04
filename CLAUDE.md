@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): 1165 Shielded STM / optimistic multithreading research (no implementation)
+
+User: the original SteamEngine author recommended github.com/jbakic/Shielded (STM for .NET). Analyze it, find newer/better options, judge if it helps this server against #1161's measurements, write it up (new doc beside performance-review.md + pointer). Do NOT implement. Plan: read Shielded's source, survey alternatives online, a throwaway microbenchmark of its overhead in the scratchpad, docs-only PR.
+
 ## DONE (2026-11-04): 1161 performance review (research only, no engine code)
 
 User: find the bottlenecks before the world is populated. Target 50 players at peak, a fully populated world (several maps, big dungeons). Three phases: EreborNext's approach, Sphere 0.56b's approach, then ours against both, measured where possible with a throwaway harness. Deliverable: docs/current/02-engine-core/performance-review.md, docs-only PR.
