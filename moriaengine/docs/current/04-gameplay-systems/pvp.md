@@ -112,7 +112,45 @@ were GM-placed.
   sent players to 5521,3701,35, a spot inside no arena;
 - `tim/turnaj.scp`'s telepads, which no item used.
 
-**Not ported yet, the user's call (#1116):** the team tournament GM tool and the Murdoc PvP gates.
+**The Murdoc PvP gates aren't ported** (the user's call, #1133): their targets were GM data the archive doesn't keep.
+
+### Team tournament
+
+Erebor's `.pvpturnaj_arena` (`systems/arena.scp`, `PvpTournament`, #1133).
+
+`.pvpturnaj_arena` (GM) opens "Turnaj - Hlavni Vyber":
+- **Vybavy:** the chest of gear for each profession and sex. Men's buttons are 102-110 and women's 112-120, then a
+  target on a container.
+- **Teamy:** 6 teams of 7. A slot's button, then a target on a player.
+- **Novy turnaj:** empties the teams and lets everyone take gear again. It takes the place of Erebor's "Codal", which did
+  nothing.
+
+The stone "Cesta na turnaj" (`i_stone_pvp_turnaj`): a GM adds it where the teams gather. `.SetupWorld` doesn't place it,
+as it's an event tool. A team member's double click:
+1. What they carry and wear goes to the bank, in a "Vybava z turnaje" bag, as the PvP event kit does.
+2. They get a copy of everything in their profession's chest. A robe or a pet figurine takes the team's colour
+   (0x982, 0x480, 0xA6F, 0x481, 0x62A, 0x44C).
+3. They go to the Nova Arena Equip Room (2202,1794,45).
+
+Refusals: no team ("Nejsi clenem zadneho teamu!"), no chest for their profession ("Nemuzes vstoupit!"), or gear already
+taken this tournament.
+
+The user's call: the stone gives once per player and tournament. Erebor's guard was commented out, so it gave without end.
+
+Fixed from Erebor:
+- A player holds one slot only. Erebor let one fill several.
+- Every slot shows its name. Two of Erebor's showed another slot's.
+- A new tournament clears the teams. Erebor never cleared `pvp_team`.
+- No debug line for each item given.
+
+Not ported: the weapon picker (`d_arena_vyber_zbrane`), dead on Erebor.
+
+Test: `TournamentTests.TeamsChestsAndOneEntryPerTournament`:
+- the real GM dialogs set the warrior's chest and team 2's first slot;
+- the stone sends the dagger to the bank and gives the chest's robe in team 2's colour, the bandages and the katana, then
+  moves the player to the equip room;
+- a second use gives nothing;
+- `Novy turnaj` empties the teams.
 
 Test: `ArenaTests.InForAFeeOutWithEverythingBack` (protocol). It checks the real *arena* speech and fee, the
 countdown, the state with recall refused, the way out through the gate with a 0 restored, and the way out by moving.

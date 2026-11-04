@@ -83,7 +83,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>f_equip2bank.</summary>
-		private static void ToBank(Character ch) {
+		internal static void ToBank(Character ch) {
 			TakeOff(ch);
 			List<Item> loose = Loose(ch);
 			if (loose.Count == 0) {

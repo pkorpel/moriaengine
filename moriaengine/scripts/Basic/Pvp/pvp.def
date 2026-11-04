@@ -1,0 +1,6 @@
+//#1133 - Erebor's i_stone_pvp_turnaj (systems/arena.scp), the team tournament's stone (PvpTournament). A GM adds it
+//where the teams gather; .SetupWorld doesn't place it, as it's a tool for an event.
+[PvpTournamentStoneDef i_stone_pvp_turnaj]
+Name = "Cesta na turnaj"
+model = 0x1174
+Color = 00999

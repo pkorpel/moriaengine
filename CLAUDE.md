@@ -1,8 +1,8 @@
 # moriaengine — working state
 
-## NOW (2026-11-04): 1133 PvP leftovers: season boosters, realm uniform, team tournament tool
+## DONE (2026-11-04): 1133 PvP leftovers: season boosters, realm uniform, team tournament tool (PRs #1134, #1135, #1136)
 
-User's answers to #1116's parked questions: tournament tool yes (one equip-stone use per tournament), Murdoc gates no, realm uniform yes (12 months for new captains), season end = boosters for the top places (default 1-3 kind 1, 4-10 kind 0, on .settings), e_qv3_dejloot no. Plan on #1133, one PR each: (1) season boosters, branch pvp-season-boosters: PvpLeague.RewardSeason at StartSeason, PvpLeagueSettings big/smallBoosterPlaces/Kind; (2) realm uniform, branch realm-uniform: scripts/Basic/Towns/RealmUniform.cs (saved list of entries, Refresh after equip like the office Uniform, D_RealmUniform from .info 'Uniforma', .adminunif list), captains get 12 months, dismissal removes it; (3) team tournament tool.
+User's answers to #1116's parked questions: tournament tool yes (one equip-stone use per tournament), Murdoc gates no, realm uniform yes (12 months for new captains), season end = boosters for the top places (default 1-3 kind 1, 4-10 kind 0, on .settings), e_qv3_dejloot no. Plan on #1133, one PR each: (1) season boosters, branch pvp-season-boosters: PvpLeague.RewardSeason at StartSeason, PvpLeagueSettings big/smallBoosterPlaces/Kind; (2) realm uniform, branch realm-uniform: scripts/Basic/Towns/RealmUniform.cs (saved list of entries, Refresh after equip like the office Uniform, D_RealmUniform from .info 'Uniforma', .adminunif list), captains get 12 months, dismissal removes it; (3) team tournament tool, branch pvp-tournament: PvpTournament.cs (saved chests/slots/equipped, D_PvpTournament/Chests/Teams, Targ_*, PvpTournamentStone .ct + hand def in Pvp/pvp.def, regen arena.def), Murdoc gates dropped. Not placed by .SetupWorld (event tool).
 
 ## DONE (2026-11-04): 1116 PvP: league/events, Mordor arena, RP rank, keep conquest + commanders (PRs #1117-#1131, closed)
 
