@@ -2041,4 +2041,55 @@
   <data name="CampCommandsLoc_Lowered" xml:space="preserve">
     <value>{0}: o stupen lagru mene.</value>
   </data>
+  <data name="AfkLoc_Check" xml:space="preserve">
+    <value>AFK KONTROLA!</value>
+  </data>
+  <data name="AfkLoc_CopyTheText" xml:space="preserve">
+    <value>OPIS TEXT CO VIDIS NAHORE</value>
+  </data>
+  <data name="AfkLoc_Correct" xml:space="preserve">
+    <value>Spravne, prijemnou hru</value>
+  </data>
+  <data name="AfkLoc_Wrong" xml:space="preserve">
+    <value>Spatne</value>
+  </data>
+  <data name="AfkLoc_TryAgain" xml:space="preserve">
+    <value>Zkus to znovu</value>
+  </data>
+  <data name="AfkLoc_TimeUp" xml:space="preserve">
+    <value>Cas AFK kontroly vyprsel</value>
+  </data>
+  <data name="AfkLoc_SecondsToCamp" xml:space="preserve">
+    <value>{0} sekund do lagru</value>
+  </data>
+  <data name="AfkLoc_CheckIn" xml:space="preserve">
+    <value>AFK kontrola za {0} sekund. Doporucuji vypnout makro!</value>
+  </data>
+  <data name="AfkLoc_FirstFailure" xml:space="preserve">
+    <value>Tve 1. AFK selhani. Davej si lepsi pozor. Limit je {0} selhani v danem obdobi.</value>
+  </data>
+  <data name="AfkLoc_FirstFailureOfPeriod" xml:space="preserve">
+    <value>Tve 1. AFK selhani v novem obdobi. Davej si lepsi pozor</value>
+  </data>
+  <data name="AfkLoc_NthFailure" xml:space="preserve">
+    <value>Tve {0}. AFK selhani v pocitanem obdobi. Davej si lepsi pozor!</value>
+  </data>
+  <data name="AfkLoc_ToleranceGone" xml:space="preserve">
+    <value>Tvoje tolerance k AFK selhani vyprsela. Vitej v Lagru</value>
+  </data>
+  <data name="AfkLoc_SentenceDoubled" xml:space="preserve">
+    <value>Trest zvysen na {0}</value>
+  </data>
+  <data name="AfkLoc_MissedMale" xml:space="preserve">
+    <value>Zmeskal jsem {0} krat.</value>
+  </data>
+  <data name="AfkLoc_MissedFemale" xml:space="preserve">
+    <value>Zmeskala jsem {0} krat.</value>
+  </data>
+  <data name="AfkLoc_WhichPlayer" xml:space="preserve">
+    <value>Na kterou postavu?</value>
+  </data>
+  <data name="AfkLoc_OnlyOnline" xml:space="preserve">
+    <value>Jen hrace, kteri jsou ve hre.</value>
+  </data>
 </root>

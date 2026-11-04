@@ -244,6 +244,7 @@ namespace SteamEngine.CompiledScripts {
 			if (account != null) {
 				SetLevel(account, afk, Level(account, afk) - 1);
 			}
+			AfkCheck.ForgiveFailure(who); //nachytanafk, numberAFKsInMonth
 		}
 
 		private static void ConsumeOne(Character who, string defname) {

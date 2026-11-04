@@ -78,3 +78,48 @@ character goes to their home. What went to the bank stays there.
 
 Test: `CampTests.TheCampFromSentenceToRelease` (protocol: the real `.lagr` cursor, the guard's real speech, a partial
 payment, the release, a recidivist, the menu's gump). The no-harm rule between players isn't covered by a test.
+
+## AFK check
+
+Erebor's `systems/administrace/afk.scp`. Code: `AfkCheck.cs`, `AfkSettings.cs` (`.settings` -> AFK), `AfkLog.cs`.
+
+**The check.**
+- The dialog shows four random letters drawn as red dots, from Erebor's own dot font (the converted
+  `d_afk_<letter>_<n>` points). Each letter is at a random size and place, and the dialog sits at a random spot.
+- "AFK KONTROLA!": the player types the letters (any case, anywhere in the box) within `answerSeconds` (15).
+- A red "N sekund do lagru" comes every other second. A wrong answer or a closed dialog brings it back the next
+  second.
+- "Spravne, prijemnou hru" ends it. An answer with less than 2 seconds used is logged as suspiciously fast.
+
+**Failures** count within a period of `periodDays` (15) from the first one:
+- the first and then up to `allowedFailures` (2) are told and let go;
+- the next ends the period and sends the player to the labour camp for AFK. Someone already in the camp has what they
+  owe doubled and their AFK level raised instead.
+- Every `correctToWipeFailure` (60) correct answers wipe a failure. A correct answer after the period has run out
+  wipes one per period passed. `.pocetafk` tells a player how many count.
+
+**Logging out** doesn't help: a check or its warning carries on at login, and a check whose time ran out offline gets
+one second.
+
+**Who gets checked.**
+- `.afk [seconds]` (cursor) starts a check now, optionally with a shorter time.
+- `.runafk` (cursor) gives the `countdownSeconds` (15) warning first: "AFK kontrola za N sekund. Doporucuji vypnout
+  makro!".
+- `.forceafk` warns everyone gathering or crafting now.
+- The automatic round (`automaticCheck`) does the same every 500-3300 seconds, one round in 15 only 60-130 seconds
+  after the last. **It's off by default, as on Erebor** (`nastaveni_afk_toggleonoff=0`), where GMs ran the checks.
+  "Gathering or crafting" is Erebor's `ismacroing`: cooking, smithing, alchemy, carpentry, lumberjacking, mining,
+  fishing, tinkering, bowcraft, tailoring, inscription, cartography, taming or lockpicking. GMs and the dead are skipped.
+- On Erebor `.forceafk` only ran the round when the automatic check was on. Here a GM's `.forceafk` always runs it.
+
+`.lagrodvolat`/`.afklagrodvolat` also take back one catch and one failure, as Erebor's.
+
+Not ported: Erebor's fake letters for catching scripts (off there, `nastaveni_afk_fakeonoff=0`) and its pardon for a
+check that ended during a world save.
+
+Every step goes to the AFK log (the server log too), as Erebor's messages to the GMs.
+
+Test: `AfkCheckTests.TheCheckItsFailuresAndTheCamp` (protocol, the real `.afk`/`.runafk` cursors and the dialog: the
+dots match the font, a wrong answer brings the dialog back, a right one ends it, two failures are let go and the third
+sends to the camp, three more in the camp double what's owed, the warning leads to the check). The automatic round and
+the login resume aren't covered by a test.
