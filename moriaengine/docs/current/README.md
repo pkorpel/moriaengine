@@ -59,6 +59,8 @@ file whose job is session continuity, not permanent reference.
   `FlaggedRegion`, how dynamic regions (houses, ships) take priority over static ones.
 - [Networking & the protocol layer](02-engine-core/networking-protocol.md) - packet
   read/write, `GameState`, login → character list → enter world, the target-cursor flow.
+- [Performance review](02-engine-core/performance-review.md) - #1161: how EreborNext and Sphere 0.56b handle load,
+  measurements of ours with a populated world and 50 simulated players, ranked problems and fixes, the stress-test setup.
 
 ### 3. Admin & GM tooling
 - [The `.settings` dialog framework](03-admin-tooling/settings-dialog.md) -
