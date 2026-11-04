@@ -316,6 +316,7 @@ namespace SteamEngine.CompiledScripts {
 			string area = AreaName(front.declaredOn);
 			front.remaining = ConquestSettings.instance.warSeconds;
 			front.lastHerald = -1;
+			KeepCaptains.RespawnGuards(front.declaredOn);
 			if (front.lord != null) {
 				front.lord.DelayedRedMessage("Valka muze zacit!");
 			}

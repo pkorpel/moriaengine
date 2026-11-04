@@ -124,8 +124,50 @@ Fixed from Erebor:
 - The palantir works for as long as the war runs. Erebor's `canbewar` also wanted the hour 19-21, so every war stopped
   dead at 22:00.
 
-Still to come (#1116): the keep's guards must be dead before a breach; the captain stones and guards go over to the
-winner and the war lord becomes captain; participation rewards.
+Still to come (#1116): participation rewards.
+
+## Keep captains and guards
+
+Erebor's `systems/velitele_pevnosti*.scp` (`KeepCaptains`, `CaptainStone`). Each keep has one captain stone, placed by
+`.SetupWorld` beside its palantir (spots unreviewed): `i_captainstone` in Gondor's keeps, `i_mordorcaptainstone` in
+Mordor's. Either serves whoever holds the keep. That's a fix: Erebor's stone kept its realm's type, so the new captain
+of a keep taken by the other realm could never open it.
+
+The stone's double click:
+- It names the captain ("Pevnost ridi ..." or "Kapitan pevnosti ... neni urcen").
+- A GM is offered to dismiss the captain, or to appoint one with a target. A GM, a mayor, the General, a Nazgul or a
+  captain of another keep can't be appointed, with Erebor's lines.
+- For the keep's chiefs (the captain, the holder realm's General or First Nazgul, a GM), standing in the keep, it opens
+  the guard dialogs of the town guards (`GuardForce`): orders, recruiter and posts.
+
+The keep's guards:
+- They are free: "Mozno najmout: n neplacenych strazi", up to `max_guards_<keep>`, from `Guard_king_<keep>_n`.
+- They never run out.
+- A post must be on the keep's own battlefield, within 10 tiles of the captain stone (`keepGuardReach`), and 5 tiles
+  from the other posts (`keepGuardSpacing`). Erebor's lines: "Pevnostniho strazce nelze umistit tak daleko od pevnosti",
+  "Tam nemuzes strazce umistit", "Nemuzes umistit guarda tak blizko jineho".
+- A dead guard comes back after the town guards' delay, and at once when a war on the keep starts.
+- While one stands, the palantir can't be breached: "Jeste zbyvaji nejake straze k zabiti." Erebor never checked the
+  last guard hired.
+
+On a capture:
+- The captain is dismissed.
+- Each guard becomes its def's `guardopposite`; a guard with none is let go.
+- The war lord becomes the captain ("Kapitan " before the name), unless Erebor's rules stop it: GM, mayor, General,
+  captain, Nazgul.
+- Becoming the General or the First Nazgul also ends a captaincy.
+
+Commands, for the keep's chiefs, with the Mordor names as aliases (`.mordorkeep*`):
+- `.keepcontrol`: the posts and the orders;
+- `.keepguardsstop`, `.keepguardscontinue`, `.keepguardsflee`;
+- `.keepguardscome`: the guards within 15 tiles come. The caller must be inside the keep.
+
+A captain's commands work for their own keep; anyone else's for the keep whose stone is nearest. The keep must be the
+caller's realm's: "Nemuzes ovladat pevnost, kterou jsi nedobyl". A General, the First or a GM must stand in the keep.
+
+Not ported:
+- the "Guards Kill" order (disabled on Erebor);
+- the realm uniform for 12 months that Erebor gave a war lord made captain (`uniforms.scp` isn't ported; the user's call).
 
 `.dobyvani` tells a player what their realm prepares and what is coming at it. `.ResetWars` (GM) clears the front of the
 realm the GM stands in.
@@ -151,3 +193,9 @@ the right for 100 000. `PalantirTests.BreachCounterCaptureAndTheCashBox`:
 - a defender turns it back and it fills again;
 - held to 0, the keep is Gondor's, the lines are -1/-2 and the right is spent;
 - the cash box pays its war lord a cheque of 23240 for 32 hours.
+
+`KeepCaptainTests.AppointHireFreeGuardsAndHandOverOnCapture`:
+- a GM appoints a captain at the stone (yes, then the target);
+- the captain hires a free guard through the recruiter;
+- a post 15 tiles off is refused, one 2 tiles off stands, and the palantir is guarded;
+- Mordor takes the keep: the captain is dismissed, the guard is Mordor's, and the war lord is captain.

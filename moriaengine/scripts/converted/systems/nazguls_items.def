@@ -32,15 +32,15 @@ TYPE = t_normal
 model = i_grave_stone_4
 Color = color_o_verite
 
-[ItemDef i_mordorcaptainstone]
-CATEGORY = GM Items
-SUBSECTION = Kameny
-DESCRIPTION = Mordor Captain's Stone
-
-name = "Mordor Captain's stone"
-type = t_mordorcaptainmenu
-model = i_grave_stone_5
-Color = 099a //med 
+//[ItemDef i_mordorcaptainstone] //(commented out by Converter) 
+//CATEGORY = GM Items
+//SUBSECTION = Kameny
+//DESCRIPTION = Mordor Captain's Stone
+//
+//name = "Mordor Captain's stone"
+//type = t_mordorcaptainmenu
+//model = i_grave_stone_5
+//Color = 099a //med 
 
 [EquippableDef i_nazgul_quest]
 name = "nazgul quest"

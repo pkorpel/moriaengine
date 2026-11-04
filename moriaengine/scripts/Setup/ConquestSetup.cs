@@ -3,7 +3,7 @@ using SteamEngine.Regions;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1116 - the keep conquest's pieces, which Erebor's GMs placed and the archive doesn't keep: a war declarator in
-	/// each realm's capital, and the realm's war lieutenant beside it; a palantir and its cash box in each keep. Spots chosen
+	/// each realm's capital, and the realm's war lieutenant beside it; a palantir, its cash box and a captain stone in each keep. Spots chosen
 	/// here, unreviewed.</summary>
 	public sealed class ConquestSetup : WorldSetup {
 		public override string Name {
@@ -59,6 +59,13 @@ namespace SteamEngine.CompiledScripts {
 			string id = "conquest/" + fort.ToLowerInvariant();
 			pieces.Item(id + "/palantir", "i_fortress_palantir", spot, area.P.M, item => ((FortressPalantir) item).SetFort(fort));
 			pieces.Item(id + "/cashbox", "i_fort_cashbox", boxSpot, area.P.M, item => ((FortCashBox) item).Fort = fort);
+			int[] stoneSpot = SpotIn(area, gm, 2);
+			if (stoneSpot == null) {
+				gm.SysMessage("No spot for the captain stone of " + fort + " in " + areaName + ".");
+				return;
+			}
+			string stoneDef = fort.StartsWith("Mordor", System.StringComparison.Ordinal) ? "i_mordorcaptainstone" : "i_captainstone";
+			pieces.Item(id + "/captainstone", stoneDef, stoneSpot, area.P.M, item => ((CaptainStone) item).SetFort(fort));
 		}
 
 		private static void Declarator(WorldPieces pieces, Character gm, string city, Realm realm) {

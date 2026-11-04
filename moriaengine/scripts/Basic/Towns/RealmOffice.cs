@@ -107,6 +107,7 @@ namespace SteamEngine.CompiledScripts {
 				by.SysMessage("GM nepotrebuji byt generalove");
 			} else {
 				this.Dismiss();
+				KeepCaptains.DismissFrom(ch); //#1116 - a General is no captain
 				this.holder = ch;
 				PowerBadge.GiveTo(ch, "i_generals_bracelet");
 				PowerBadge.SetTitle(ch, "General ");
@@ -133,6 +134,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The leading ring for the ring they had: their city is left without a Nazgul.</summary>
 		public void MakeFirst(Character ch) {
 			NazgulRings.TakeAway(NazgulRings.RingOf(ch), ch);
+			KeepCaptains.DismissFrom(ch); //#1116 - nor is the First
 			this.holder = ch;
 			NazgulRings.Give(ch, null);
 			NazgulGate.RefreshAll();
