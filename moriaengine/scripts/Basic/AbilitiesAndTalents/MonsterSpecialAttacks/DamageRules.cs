@@ -133,7 +133,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The Balrog's own swing, landed or dodged.</summary>
 		internal static void TryBalrogSwing(Character attacker, Character target) {
 			BalrogAbilityDef def = BalrogDef;
-			if (!(attacker is NPC self) || !HasAbilityDef(self, def) || (target == null) || target.IsDeleted || target.Flag_Dead) {
+			if (!(attacker is NPC self) || !Reacts(self, def) || (target == null) || target.IsDeleted || target.Flag_Dead) {
 				return;
 			}
 			bool burn = OneIn(def.BurnOneIn);
@@ -153,7 +153,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>A blow at the Balrog: part of it may come back.</summary>
 		private static void TryBalrogReflect(NPC self, Character attacker) {
 			BalrogAbilityDef def = BalrogDef;
-			if (!HasAbilityDef(self, def) || (attacker == null) || attacker.IsDeleted || attacker.Flag_Dead) {
+			if (!Reacts(self, def) || (attacker == null) || attacker.IsDeleted || attacker.Flag_Dead) {
 				return;
 			}
 			if ((attacker.Hits > def.ReflectKillHits) && OneIn(def.ReflectOneIn)) {
@@ -169,7 +169,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>A spell landed on the Balrog: maybe its shadow curse, on its own target (as Erebor's: not the caster).</summary>
 		internal static BalrogCurseTimer TryBalrogSpellCurse(NPC self) {
 			BalrogAbilityDef def = BalrogDef;
-			if (!HasAbilityDef(self, def) || self.HasTag(balrogCursingTK) || !OneIn(def.CurseOneIn)) {
+			if (!Reacts(self, def) || self.HasTag(balrogCursingTK) || !OneIn(def.CurseOneIn)) {
 				return null;
 			}
 			Character victim = NPCAiTimer.GetFor(self)?.Target;
@@ -230,7 +230,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>DamageManager.CauseDamage, before anything else: true loses the damage.</summary>
 		internal static bool TryRinald(Character attacker, Character defender) {
 			RinaldAbilityDef def = RinaldDef;
-			if (!(defender is NPC rinald) || !HasAbilityDef(rinald, def) || rinald.IsDeleted) {
+			if (!(defender is NPC rinald) || !Reacts(rinald, def) || rinald.IsDeleted) {
 				return false;
 			}
 			if (rinald.Flag_Invulnerable) {
@@ -336,7 +336,7 @@ namespace SteamEngine.CompiledScripts {
 		#region the helm's cry
 		private static void TryOdinvisCry(NPC self) {
 			OdinvisKrikAbilityDef def = OdinvisKrikDef;
-			if (!HasAbilityDef(self, def) || PeacemakingSkillDef.IsAsleep(self) || !OneIn(def.CryOneIn)) {
+			if (!Reacts(self, def) || PeacemakingSkillDef.IsAsleep(self) || !OneIn(def.CryOneIn)) {
 				return;
 			}
 			self.Emote("crying.");
@@ -374,7 +374,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>e_emotedmg, a landed blow on the carrier.</summary>
 		internal static void TryEmoteDamage(Character defender, double damage, DamageType type) {
-			if (!defender.IsDeleted && HasAbilityDef(defender, EmoteDamageDef)) {
+			if (!defender.IsDeleted && Reacts(defender, EmoteDamageDef)) {
 				defender.Say("-" + (int) Math.Round(damage) + ": flags " + ((int) type).ToString("X4"));
 			}
 		}

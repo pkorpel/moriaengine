@@ -249,6 +249,7 @@ namespace SteamEngine.CompiledScripts {
 			TryDeathBossOwnSwing(attacker); //#1022 the dying bosses
 			TryBalrogSwing(attacker, defender); //#1022 e_balrog
 			TryHcnOwnSwing(attacker, defender, damage); //#1022 e_hcn_npcpoison, e_hcn_madnessability
+			TryInitiativeOnOwnBlow(attacker, defender); //#1146 - proactive bosses
 			if (!defender.IsDeleted) {
 				TryKnockWeaponOut(attacker, defender, damage);
 				TryBlowUpOnOwnSwing(attacker, defender);

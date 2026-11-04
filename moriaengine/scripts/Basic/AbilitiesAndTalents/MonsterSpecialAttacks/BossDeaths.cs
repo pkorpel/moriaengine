@@ -218,7 +218,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>TryReactToHit: the PR 3 bosses when hit.</summary>
 		internal static void TryDeathBossReactions(NPC self, Character attacker) {
 			LavaBombAbilityDef lava = LavaBombDef;
-			if (HasAbilityDef(self, lava)) {
+			if (Reacts(self, lava)) {
 				int cooldown = Tuned(self, "lavaBombCooldown", lava.Cooldown);
 				if (!(self.GetTag(lavaBombNextTK) is double next)) {
 					self.SetTag(lavaBombNextTK, Globals.TimeInSeconds + cooldown); //the first bomb comes a cooldown after the first blow
@@ -228,7 +228,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			StrachLord1AbilityDef lord1 = StrachLord1Def;
-			if (HasAbilityDef(self, lord1) && !self.HasTag(strachLord1DoneTK) && (self.Hits < (self.MaxHits / 6))) {
+			if (Reacts(self, lord1) && !self.HasTag(strachLord1DoneTK) && (self.Hits < (self.MaxHits / 6))) {
 				self.SetTag(strachLord1DoneTK, 1);
 				self.Say("Beleg Faroth Kel");
 				self.Say("Pokud mate odvahu se mi postavit tak mne nasledujte!");
@@ -238,11 +238,11 @@ namespace SteamEngine.CompiledScripts {
 				VanishIn(self, lord1.VanishSeconds);
 			}
 			OcsResserAbilityDef resser = OcsResserDef;
-			if (HasAbilityDef(self, resser) && RollChance(resser.Chance)) {
+			if (Reacts(self, resser) && RollChance(resser.Chance)) {
 				RaiseOcsHelpers(self, resser);
 			}
 			BeridorNecroAbilityDef beridor = BeridorNecroDef;
-			if (HasAbilityDef(self, beridor)) {
+			if (Reacts(self, beridor)) {
 				int count = ((self.GetTag(beridorCountTK) is int c) ? c : 0) + 1;
 				self.SetTag(beridorCountTK, count);
 				if (count == 1) {
@@ -291,7 +291,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>TryReactToOwnSwing: the kamikaze ghost.</summary>
 		internal static void TryDeathBossOwnSwing(Character attacker) {
 			BombaBoyAbilityDef def = BombaBoyDef;
-			if (!(attacker is NPC self) || !HasAbilityDef(self, def) || self.HasTag(bombaBoyDoneTK)) {
+			if (!(attacker is NPC self) || !Reacts(self, def) || self.HasTag(bombaBoyDoneTK)) {
 				return;
 			}
 			self.SetTag(bombaBoyDoneTK, 1);
@@ -318,7 +318,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>OnMonsterDeath: the paladin's gate.</summary>
 		internal static void OnDeathBossDeath(NPC self) {
 			PaladinBossAbilityDef paladin = PaladinBossDef;
-			if (HasAbilityDef(self, paladin)) {
+			if (Reacts(self, paladin)) {
 				FireRing(self, 2, 1);
 				OpenGate(self, paladin.GateTarget, 0x987, paladin.GateSeconds);
 			}
@@ -330,7 +330,7 @@ namespace SteamEngine.CompiledScripts {
 				if (!RegionEventSystem.IsIn(player, "e_beridor")) {
 					return null;
 				}
-			} else if (!HasAbilityDef(dying, NecroSlaveDef) || SummonSpellDef.IsSummonedCreature(dying)) {
+			} else if (!Reacts(dying, NecroSlaveDef) || SummonSpellDef.IsSummonedCreature(dying)) {
 				return null;
 			}
 			if ((dying.Def as NPCDef)?.DragonBrain == true) {
@@ -367,7 +367,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Character.CauseDeath, once the body exists: a helper's body remembered, a necroslave's rise armed.</summary>
 		internal static void OnBodyLaid(Character dying, Corpse corpse, Character killedBy, string undead) {
 			OcsHelperAbilityDef helper = OcsHelperDef;
-			if (HasAbilityDef(dying, helper)) {
+			if (Reacts(dying, helper)) {
 				OcsHelperRecord record = new OcsHelperRecord { def = (NPCDef) dying.Def, x = dying.X, y = dying.Y, z = dying.Z, m = dying.M };
 				corpse.AddTimer(OcsHelperRecord.Key, record);
 				record.DueInSeconds = helper.RecordSeconds;

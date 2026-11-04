@@ -255,7 +255,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>TryReactToHit: the summoning bosses when hit.</summary>
 		internal static void TrySummonerReactions(NPC self, Character attacker) {
 			FireLordAbilityDef fireLord = FireLordDef;
-			if (HasAbilityDef(self, fireLord) && !IsSubdued(self)) {
+			if (Reacts(self, fireLord) && !IsSubdued(self)) {
 				if (OneIn(fireLord.ExplosionOneIn)) {
 					self.Say("Heru Beleg Ruin Val");
 					FireColumns(self, fireLord.Columns);
@@ -266,7 +266,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			StrachLord2AbilityDef lord2 = StrachLord2Def;
-			if (HasAbilityDef(self, lord2)) {
+			if (Reacts(self, lord2)) {
 				if (OneIn(lord2.DaemonOneIn)) {
 					self.Say("Zhynes Strachem a Ohnem!!!");
 					SummonGroup(self, new[] { "c_daemon_fireps" }, self.X, self.Y, 1, 150, TargetOf(self, attacker), true, true);
@@ -282,11 +282,11 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			SerpentDruidAbilityDef druid = SerpentDruidDef;
-			if (HasAbilityDef(self, druid) && !IsSubdued(self) && !self.HasTag(serpentFormTK) && (self.Hits < (self.MaxHits / 2))) {
+			if (Reacts(self, druid) && !IsSubdued(self) && !self.HasTag(serpentFormTK) && (self.Hits < (self.MaxHits / 2))) {
 				TakeSerpentForm(self, druid);
 			}
 			CajunAbilityDef cajun = CajunDef;
-			if (HasAbilityDef(self, cajun) && !IsSubdued(self) && (attacker != null)) {
+			if (Reacts(self, cajun) && !IsSubdued(self) && (attacker != null)) {
 				if (OneIn(cajun.SummonOneIn)) {
 					self.Say("Heru Val");
 					self.Sound(533);
@@ -299,7 +299,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			DroneSummonerAbilityDef drone = DroneSummonerDef;
-			if (HasAbilityDef(self, drone)) {
+			if (Reacts(self, drone)) {
 				bool three = OneIn(drone.ThreeOneIn), one = OneIn(drone.OneOneIn);
 				if (three || one) {
 					self.Say("Heru Val Drone");
@@ -314,7 +314,7 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 			}
-			if (HasAbilityDef(self, SandGuardianDef) && (attacker != null) && Professions.HasProfession(attacker, Professions.Warrior)) {
+			if (Reacts(self, SandGuardianDef) && (attacker != null) && Professions.HasProfession(attacker, Professions.Warrior)) {
 				self.Say("Valecniku  blaznivej...   takovich jako ty jsem uz v mladi skolil desitky..");
 			}
 		}
