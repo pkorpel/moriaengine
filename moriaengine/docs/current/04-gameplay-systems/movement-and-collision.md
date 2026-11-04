@@ -99,6 +99,28 @@ knockback could push someone into a house through its wall, and the pull telepor
 straight next to the monster. The walk itself is the pure `MonsterSpecialAttacks.WalkForced`
 (step delegate), tested in `Tests/KnockbackPushDistanceTests.cs`.
 
+## Floors between levels (#1148)
+
+The user's report: a player on a house floor (2946,1229,45, Kralovstvi lesnich elfu) and a titan, titan mage and titan
+ranger on the street right below. The mage cast through the floor, the ranger shot through it, and the titan's swing
+reached up and its knockback threw the player down to the street. Three fixes:
+
+- **Line of sight:** a floor or ceiling (a `Surface` or `Roof` tile, by its top) between two characters more than half
+  a character (8) apart in height blocks sight (`Map.IsFloorBetween`).
+  - It is checked in the column each one stands in. In the lower one's column, or a column both share, a floor at the
+    upper one's own height counts, since it is the floor they stand on.
+  - In the upper one's own column it doesn't count, so someone on a platform or stairs beside you stays visible.
+  - Floors are rarely `Noshoot`, which is all the older vertical check looked at. Sphere's own rule for a shared
+    column is "only within 8 in height".
+- **Swing reach:** `WeaponSkillDef.StrikeDistance` is Sphere's `GetTopDist3D`: the flat distance, or the height
+  difference / 8 when that's more. A swing needs 1 (or the weapon's range), so 45 below is 5 away. The AI's "close
+  enough to attack" check uses the same distance.
+- **Where `Go` puts you:** `Map.GetFixedZ` (behind every `Go(x, y, z)`) gave the terrain height, so any `Go` into a
+  building dropped to the ground floor: knockback's landing, gates, teleports. It is now the highest walkable surface
+  at or below the asked height + 8, as movement counts them. `Go(x, y)` with no height starts from the terrain.
+
+Test: `FloorAttackTests` (protocol), at the user's spot.
+
 ## Weight (#889)
 
 Everything is in stones, as a float, as `.def` files write it, as Sphere's scripts read it. Sphere's

@@ -138,7 +138,13 @@ namespace SteamEngine.CompiledScripts {
 					return false;
 			}
 		}
-
+
+		/// <summary>#1148 - Sphere's GetTopDist3D for a swing: the flat distance, or the height difference in half character
+		/// heights (8) when that's more. A monster on the street under a player on a house floor 45 up was at distance 0 and
+		/// hit them through the floor.</summary>
+		public static int StrikeDistance(Character self, Character target) {
+			return Math.Max(Point2D.GetSimpleDistance(self, target), Math.Abs(self.Z - target.Z) / (SteamEngine.Regions.Map.PlayerHeight / 2));
+		}
 		protected override TriggerResult On_Stroke(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			Character target = (Character) skillSeqArgs.Target1;
@@ -172,7 +178,7 @@ namespace SteamEngine.CompiledScripts {
 				return TriggerResult.Cancel;
 			}
 
-			int distance = Point2D.GetSimpleDistance(self, target);
+			int distance = StrikeDistance(self, target);
 			WeaponSkillPhase phase = (WeaponSkillPhase) Convert.ToInt64(skillSeqArgs.Param1);
 			if (phase == WeaponSkillPhase.Drawing) {
 				if (distance <= self.WeaponStrikeStartRange) {

@@ -630,7 +630,7 @@ namespace SteamEngine.CompiledScripts {
 				hasLineOfSight = self.CanInteractWith(target).Allow;
 			}
 
-			int distance = Point2D.GetSimpleDistance(self, target);
+			int distance = WeaponSkillDef.StrikeDistance(self, target); //#1148 - a floor above or below counts, as for the swing
 			if ((distance > effectiveRange) || !hasLineOfSight) {
 				Logger.WriteDebug("NPCAiTimer.Fight: " + self.Name + "#" + self.Uid + " approaching " + target.Name + " (distance=" + distance + ", effectiveRange=" + effectiveRange + ", hasLineOfSight=" + hasLineOfSight + ")");
 				this.StepTowardsSmart(self, target);
@@ -641,7 +641,7 @@ namespace SteamEngine.CompiledScripts {
 				//StepTowardsSmart steps the same tick while still closing distance.
 				int extraSteps = MonsterSpecialAttacks.GetLeaperExtraSteps(self);
 				for (int i = 0; i < extraSteps; i++) {
-					if (Point2D.GetSimpleDistance(self, target) <= effectiveRange) {
+					if (WeaponSkillDef.StrikeDistance(self, target) <= effectiveRange) {
 						break; //close enough now, stop taking leaper's extra steps
 					}
 					this.StepTowardsSmart(self, target);

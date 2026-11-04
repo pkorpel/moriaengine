@@ -1579,7 +1579,7 @@ namespace SteamEngine.CompiledScripts {
 			if (Jail.Redirect(this)) {
 				return; //#1107 - Sphere's Spell_Effect_Teleport
 			}
-			this.P(pnt.X, pnt.Y);
+			this.P(pnt.X, pnt.Y, this.GetMap().GetTileZ(pnt.X, pnt.Y)); //#1148 - no Z given: from the ground up, not from where we were
 			this.Fix();
 			//Update();
 		}
@@ -1606,7 +1606,7 @@ namespace SteamEngine.CompiledScripts {
 			if (Jail.Redirect(this)) {
 				return; //#1107 - Sphere's Spell_Effect_Teleport
 			}
-			this.P(pnt.X, pnt.Y);
+			this.P(pnt.X, pnt.Y, this.GetMap().GetTileZ(pnt.X, pnt.Y)); //#1148 - no Z given: from the ground up, not from where we were
 			this.Fix();
 			//Update();
 		}
@@ -1633,7 +1633,7 @@ namespace SteamEngine.CompiledScripts {
 			if (Jail.Redirect(this)) {
 				return; //#1107 - Sphere's Spell_Effect_Teleport
 			}
-			this.P(x, y);
+			this.P(x, y, this.GetMap().GetTileZ(x, y)); //#1148 - no Z given: from the ground up, not from where we were
 			this.Fix();
 			//Update();
 		}
