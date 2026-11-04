@@ -145,7 +145,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			NPCDef npcDef = (NPCDef) self.Def;
+			NPCDef npcDef = TuningDef(self); //#1022 a form's while Darkmoon has one
 			//real archive unit: roundattack_time is already real seconds (the source script's
 			//own f_npc_rndAtt_setVals multiplies the raw tag by 10 "ticks" before adding to
 			//serv.time, and a Sphere tick is 0.1s - the two conversions cancel out), unlike
