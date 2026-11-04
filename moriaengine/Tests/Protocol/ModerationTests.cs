@@ -212,7 +212,8 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
-	/// <summary>#1107 step 5 - Sphere's moderator verbs.</summary>
+	/// <summary>#1107 step 5 - Sphere's moderator verbs; #1114 - .gmmenu and jail in a player's .info, before the kick takes
+	/// this client off (the account's five characters are all used by this collection).</summary>
 	[Collection(ModerationCollection.Name)]
 	public class GmToolsTests {
 		private readonly GameServerPairFixture fixture;
@@ -230,6 +231,26 @@ namespace SteamEngine.Tests.Protocol {
 			Thread.Sleep(500);
 			client.SendTargetUid(target);
 			Thread.Sleep(300);
+		}
+
+		/// <summary>The button on the same row as the text, in a gump's layout.</summary>
+		internal static int ButtonBeside(string layout, System.Collections.Generic.List<string> strings, string text) {
+			int index = strings.IndexOf(text);
+			Assert.True(index >= 0, "no '" + text + "' in the gump");
+			var label = System.Text.RegularExpressions.Regex.Match(layout, @"\{\s*(?:text|croppedtext)\s+(\d+)\s+(\d+)\s+(?:\d+\s+\d+\s+)?\d+\s+" + index + @"\s*\}");
+			Assert.True(label.Success, "no label for '" + text + "' in: " + layout);
+			int x = int.Parse(label.Groups[1].Value), y = int.Parse(label.Groups[2].Value);
+			int best = -1, bestDistance = int.MaxValue;
+			//the nearest button on the same row, to the left of the text (the dialogs have columns)
+			foreach (System.Text.RegularExpressions.Match button in System.Text.RegularExpressions.Regex.Matches(layout, @"\{\s*button\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s*\}")) {
+				int bx = int.Parse(button.Groups[1].Value), by = int.Parse(button.Groups[2].Value);
+				if ((System.Math.Abs(by - y) <= 10) && (bx <= x) && ((x - bx) < bestDistance)) {
+					bestDistance = x - bx;
+					best = int.Parse(button.Groups[3].Value);
+				}
+			}
+			Assert.True(best >= 0, "no button beside '" + text + "' in: " + layout);
+			return best;
 		}
 
 		[Fact]
@@ -255,10 +276,38 @@ namespace SteamEngine.Tests.Protocol {
 			Thread.Sleep(500);
 			Assert.Contains("gmAtWolf=True", this.Ask(client, ".TestGmToolsState", "GMTOOLS_STATE:"));
 
+			this.Ask(client, ".TestGmToolsGoBack", "GMTOOLS_BACK");
+
+			//#1114 - .gmmenu: .goname with its field filled goes to the wolf
+			client.SendSpeech(".gmmenu");
+			var (menuUid, layout, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			Assert.Contains("Moderace", strings);
+			int goname = ButtonBeside(layout, strings, ".goname");
+			client.SendGumpResponse(menuUid, goname, new System.Collections.Generic.Dictionary<int, string> { { goname, "Gmtool Wolf" } });
+			Thread.Sleep(500);
+			Assert.Contains("gmAtWolf=True", this.Ask(client, ".TestGmToolsState", "GMTOOLS_STATE:"));
+
+			//.info on oneself: Jail / Forgive jails, and again forgives
+			this.Ask(client, ".TestJailReady", "JAIL_READY:");
+			client.SendSpeech(".info");
+			var (infoUid, infoLayout, infoStrings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			int jail = ButtonBeside(infoLayout, infoStrings, "Jail / Forgive");
+			client.SendGumpResponse(infoUid, jail, new System.Collections.Generic.Dictionary<int, string>());
+			Thread.Sleep(500);
+			Assert.Contains("inJail=True", this.Ask(client, ".TestJailReport", "JAIL_REPORT:"));
+			client.SendSpeech(".info");
+			(infoUid, infoLayout, infoStrings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			client.SendGumpResponse(infoUid, ButtonBeside(infoLayout, infoStrings, "Jail / Forgive"), new System.Collections.Generic.Dictionary<int, string>());
+			Thread.Sleep(500);
+			Assert.Contains("jailed=False backWhereItWas=True", this.Ask(client, ".TestForgiveReport", "FORGIVE_REPORT:"));
+
 			//.clients: this one is on it; its Kick takes it off the server
 			client.SendSpeech(".clients");
-			var (gumpUid, _, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
-			Assert.Contains("Gm Tools Tester", strings);
+			var (gumpUid, _, clientStrings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			for (int skipped = 0; (skipped < 5) && !clientStrings.Exists(s => s.StartsWith("Hracu ve hre")); skipped++) {
+				(gumpUid, _, clientStrings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10)); //the info dialog sends itself again after a button
+			}
+			Assert.Contains("Gm Tools Tester", clientStrings);
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendGumpResponse(gumpUid, 5000, new System.Collections.Generic.Dictionary<int, string>());
 			Assert.True(this.fixture.WaitForGameOutputSince("kicked Gm Tools Tester", mark, TimeSpan.FromSeconds(10)));

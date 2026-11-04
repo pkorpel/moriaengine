@@ -49,6 +49,43 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			((Character) target).Bank.OpenTo(Globals.SrcCharacter);
 		}
 
+		/// <summary>#1114 - whether the player is in jail.</summary>
+		[GetMethod("Jailed", typeof(bool))]
+		public static object Jailed(object target) {
+			return Jail.IsJailed((Character) target);
+		}
+
+		/// <summary>#1114 - whether the player is in the labour camp.</summary>
+		[GetMethod("InLabourCamp", typeof(bool))]
+		public static object InLabourCamp(object target) {
+			return Camp.IsInCamp((Character) target);
+		}
+
+		/// <summary>#1114 - .jail or .forgive, whichever applies.</summary>
+		[Button("Jail / Forgive")]
+		public static void JailOrForgive(object target) {
+			Character who = (Character) target;
+			Character gm = Globals.SrcCharacter as Character;
+			if (Jail.IsJailed(who)) {
+				Jail.Forgive(who, gm);
+			} else if (Jail.Send(who)) {
+				if (gm != null) {
+					gm.SysMessage(string.Format(Loc<JailLoc>.Get(gm.Language).YouJailed, who.Name));
+				}
+			} else if (gm != null) {
+				gm.SysMessage(Loc<JailLoc>.Get(gm.Language).OnlyPlayers);
+			}
+		}
+
+		/// <summary>#1114 - .lagrmenu for this player.</summary>
+		[Button("Labour camp")]
+		public static void LabourCamp(object target) {
+			Character who = (Character) target;
+			if ((Globals.SrcCharacter is Player gm) && (who.Account != null)) {
+				CampCommands.Carry(gm, who, CampCommands.Order.Menu);
+			}
+		}
+
 		[GetMethod("Edit", typeof(ContainerView.ThingAsContainer))]
 		public static object Edit(object target) {
 			return new ContainerView.ThingAsContainer((Thing) target);
