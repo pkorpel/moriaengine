@@ -135,3 +135,41 @@ Not ported: Erebor's `stone=0`, as nothing here sets Sphere's STONE (Erebor only
 Test: the same `ArenaTests` fact, after the training arena. It covers a death on a horse (alive 3 s later at Mordor's
 point, gold from the body back, riding), a horse 30 tiles off (stays), and a GM's point, then cleared. It's red with the
 death hook off.
+
+## PvP event kit
+
+Erebor's `funkce.scp` kit functions, for a GM's [variable gate](variable-gate.md) (`PvpEventKit`). Nothing in
+the archive called them: GMs typed them into gates' function lists.
+
+- `f_varGate_pvp_equip(<metal>)`, for any metal with an `i_<metal>_platemail` (iron, copper, verite, valorite, obsidian,
+  adamantinum, mithril). With another one: "Nelze volat funkci s timto parametrem: ...", and nothing happens.
+  1. What's worn goes to the pack. Everything in the pack that isn't fixed goes to the bank, in a red backpack named
+     "Vybava z turnaje".
+  2. 20 empty bottles, the PvP spellbook, 40 bandages, 15 cooked fish steaks, a llama.
+  3. The profession's armor and weapons of that metal, each named PVPEVENT:
+     - warrior, priest and craftsman get plate;
+     - thief gets chain;
+     - mage and mystic get studded;
+     - necromancer gets bone;
+     - shaman and ranger get ring.
+
+     The weapons follow Erebor's table, with knives for a thief and bolts and arrows for a craftsman and a ranger.
+- `f_varGate_pvp_clearequip`: what's worn goes to the pack, then everything in the pack that isn't fixed is deleted.
+- `i_spellbook_pvp` ("PVPEVENT"):
+  - 23 magery spells: harm, fireball, dispel, energy bolt, magic reflection, mind blast, night sight, poison, cure, heal,
+    greater heal, clumsy, feeblemind, magic arrow, weaken, paralyze, flamestrike, curse, teleport, reactive armor,
+    reveal, cunning, protection;
+  - for a necromancer it opens as the necro book with every necro spell (Erebor's `morem=1`, `morex=0ff`).
+
+  It's hand-written now; the converter comments out the archive's.
+
+Nothing reads the PVPEVENT name back, as on Erebor: it's only a marker.
+
+Fixed from Erebor: worn things that can't be moved (a badge of office, a Nazgul's ring) stay on. Erebor's bounce took them off
+into the pack, where the kit then left them.
+
+**Not ported, the user's call (#1116):** `e_qv3_dejloot`. On Erebor, leaving Mahat extra L1/L2 and Novorocni Dungeon
+cleared the pack with `f_varGate_pvp_clearequip`.
+
+Test: `VarGateTests.EveryRuleWalkedByARealStep` walks a warrior through gates with `f_varGate_pvp_equip(iron)`, then
+`f_varGate_pvp_clearequip`, then a metal with no plate.

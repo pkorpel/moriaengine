@@ -37,12 +37,13 @@ In this order. Anything that stops the walker stops it before anything is taken 
 | Odstran bank box | Empties the bank. |
 | Odstran Object menu | Lines by item, type or event. An amount of 0 takes all. "Jdi": can pass without it. "Kontrola": nothing's taken, and whoever has more than the amount is refused. |
 | Pridej Object menu | Lines by item or event. "Kontrola": nothing's given, and whoever has less is refused. A time limit in seconds gives it once per player. |
-| Pridej Funkci menu | Named functions run on the walker, with the gate as the first argument. A deny-capable one stops them by returning true. |
+| Pridej Funkci menu | Named functions run on the walker, with the gate as the first argument. A deny-capable one stops them by returning true. A line can carry one more argument, as Erebor's: `f_varGate_pvp_equip(iron)` or `f_varGate_pvp_equip iron`. |
 | Pridej Strazce menu | Spawn gems, picked with a target. Erebor typed their uids. |
 | Plugin: Time Seal | See below. |
 
 Functions from Erebor that work here: `f_vg_bookDeny`, `f_vg_mountDeny`, `vg_pvp_denyMagic` (no identified magic item
-carried or worn, the bank aside; crafted ones and mounts may).
+carried or worn, the bank aside; crafted ones and mounts may; each one is named, "Nesmis projit s predmetem ...!"), and
+the PvP event kit's `f_varGate_pvp_equip(<metal>)` and `f_varGate_pvp_clearequip` (see [PvP](pvp.md#pvp-event-kit)).
 
 ## Time Seal
 
@@ -63,7 +64,6 @@ first one's realm passes until the seal ends. A button resets it.
 Nothing here for them to act on:
 
 - `f_vg_finishDng`: no weekly quests.
-- `f_varGate_pvp_equip`, `f_varGate_pvp_clearequip`: no PvP arena kit.
 - `f_q000_vg_Cave*`: the Grandmaster quest has its own cave gates.
 - The Realm Controller plugin: "not working yet" on Erebor too.
 - The bosses and quests that open a temporary gate with `newitem(i_vargate)` (`e_ztracene_mesto_paladin_boss`,

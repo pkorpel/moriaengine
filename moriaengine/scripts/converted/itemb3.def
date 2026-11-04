@@ -570,13 +570,13 @@ DUPEITEM = i_scroll_x_brown
 [ItemDef 0xef9]
 DUPEITEM = i_scroll_x_purp
 
-[EquippableDef i_spellbook_pvp]
-name = "PVPEVENT"
-model = i_spellbook
-Layer = 1 //guessed from base def by Converter 
-type = t_spellbook //guessed from base def by Converter 
-//value = 300 // commented out by Converter 
-Color = 038d
+//[EquippableDef i_spellbook_pvp] //(commented out by Converter) 
+//name = "PVPEVENT"
+//model = i_spellbook
+//Layer = 1 //guessed from base def by Converter 
+//type = t_spellbook //guessed from base def by Converter 
+////value = 300 // commented out by Converter 
+//Color = 038d
 
 [ItemDef 0xeff]
 DUPEITEM = i_bottle_hair_dye
