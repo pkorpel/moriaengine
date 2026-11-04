@@ -749,14 +749,37 @@ namespace SteamEngine.Regions {
 
 		//TODO needs work
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters"), SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
+		/// <summary>#1148 - where someone put at this point stands: the highest walkable surface (the terrain, or a Surface
+		/// static, multi part or item, as GetStartZ counts them) whose top is at most half a character's height above the
+		/// point's Z; the terrain when the point is below all of them. It used to be the terrain alone, so every Go(x, y, z)
+		/// into a house dropped to the ground floor (a knockback on a house floor threw the player down to the street).</summary>
 		public int GetFixedZ(IPoint3D point) {
-			//int oldZ = point.Z;
 			int x = point.X;
 			int y = point.Y;
-			//if (this.IsValidPos(x, y)) {
-				return this.GetTileZ(x, y);
-			//}
-			//return oldZ;
+			int landZ = this.GetTileZ(x, y);
+			if (!this.IsValidPos(x, y)) {
+				return landZ;
+			}
+			int reach = point.Z + (PlayerHeight / 2);
+			int best = landZ;
+			foreach (AbstractInternalItem staticItem in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
+				ItemDispidInfo idi = staticItem.DispidInfo;
+				int top = staticItem.Z + idi.CalcHeight;
+				if (((idi.Flags & TileFlag.Surface) != 0) && (top <= reach) && (top > best)) {
+					best = top;
+				}
+			}
+			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
+				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
+				int top = item.Z + idi.CalcHeight;
+				if (((idi.Flags & TileFlag.Surface) != 0) && (top <= reach) && (top > best)) {
+					best = top;
+				}
+			}
+			return best;
 		}
+
+		/// <summary>Sphere's PLAYER_HEIGHT.</summary>
+		public const int PlayerHeight = 16;
 	}
 }
