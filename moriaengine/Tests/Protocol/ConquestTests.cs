@@ -372,6 +372,54 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1133 - the paid realm uniform.</summary>
+	[Collection(ConquestCollection.Name)]
+	public class RealmUniformTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private readonly GameServerPairFixture fixture;
+
+		public RealmUniformTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		[Fact]
+		public void ACompleteSetTakesTheRealmsColoursForItsMonths() {
+			using var client = CommandPermissionTests.Connect("conquestthird", "Conquest Uniformed");
+			this.Ask(client, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+			this.Ask(client, ".TestUniformReady", "UNIFORM_READY");
+			//no cape yet: nothing changes
+			string before = this.Ask(client, ".TestUniformState", "UNIFORM_STATE:");
+			Assert.Contains("until=2027-01-04", before);
+			Assert.DoesNotContain("Uniforma", before);
+			//the cape completes it: Gondor's colours and name
+			this.Ask(client, ".TestUniformCape \"on\"", "UNIFORM_CAPE");
+			Thread.Sleep(500);
+			Assert.Contains("chest=Gondorska Uniforma/57c cape=Gondorska Uniforma/98f capeWorn=True", this.Ask(client, ".TestUniformState", "UNIFORM_STATE:"));
+			//the cape off: all back as it was
+			this.Ask(client, ".TestUniformCape \"off\"", "UNIFORM_CAPE");
+			Thread.Sleep(500);
+			string off = this.Ask(client, ".TestUniformState", "UNIFORM_STATE:");
+			Assert.DoesNotContain("Uniforma", off);
+			//three months on, it's over
+			this.Ask(client, ".TestUniformCape \"later\"", "UNIFORM_CAPE");
+			Thread.Sleep(500);
+			string later = this.Ask(client, ".TestUniformState", "UNIFORM_STATE:");
+			Assert.Contains("until=none", later);
+			Assert.DoesNotContain("Uniforma", later);
+			//the GM's dialog gives 3 months
+			this.Ask(client, ".TestUniformDialog", "UNIFORM_DIALOG");
+			var (uid, _, strings) = client.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("- uniforma neni aktivni -", strings);
+			client.SendGumpResponse(uid, 1, new Dictionary<int, string> { { 1, "3" } });
+			Thread.Sleep(500);
+			Assert.Contains("until=2027-02-04", this.Ask(client, ".TestUniformState", "UNIFORM_STATE:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ConquestCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Conquest";

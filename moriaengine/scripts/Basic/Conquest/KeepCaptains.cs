@@ -176,6 +176,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			Make(keep, lord);
+			RealmUniform.Grant(lord, 12, lord); //#1133 - f_uniformRealm_set(12)
 			lord.SysMessage(Conquest.Word(lord, "Byl jsi jmenovan kapitanem", "Byla jsi jmenovana kapitankou") + " pevnosti " + KeepName(keep.fort) + ".");
 		}
 
@@ -198,6 +199,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			captain.RemoveTag(keepTK);
 			PowerBadge.ClearTitle(captain);
+			RealmUniform.Remove(captain); //#1133 - kapitanmake(0) takes the uniform too
 			captain.RedMessage("Byl jsi odvolan z funkce kapitana pevnosti " + KeepName(keep.fort));
 		}
 

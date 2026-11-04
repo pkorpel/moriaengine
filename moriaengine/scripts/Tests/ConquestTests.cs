@@ -407,6 +407,64 @@ namespace SteamEngine.CompiledScripts {
 			rune.Delete();
 		}
 
+		private static Item uniChest, uniCape;
+
+		/// <summary>#1133 - a Gondor player of rank 3 with verite plate on legs, gloves, chest and arms, a cape in the pack, and a
+		/// realm uniform for 2 months from 4.11.2026.</summary>
+		[SteamFunction]
+		public static void TestUniformReady(Character self) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			player.Account.PLevel = 1;
+			player.Realm = Realm.Gondor;
+			player.SkillRank = SkillRank.Grandmaster;
+			player.Str = 200;
+			RealmUniform.clock = new DateTime(2026, 11, 4, 12, 0, 0);
+			RealmUniform.Remove(player);
+			foreach (string defname in new[] { "i_verite_platemail_leggings", "i_verite_platemail_gauntlets", "i_verite_platemail", "i_verite_platemail_arms" }) {
+				Item piece = (Item) ThingDef.GetByDefname(defname).Create(player.Backpack);
+				player.TryEquip(piece);
+				if (defname == "i_verite_platemail") {
+					uniChest = piece;
+				}
+			}
+			uniCape = (Item) ThingDef.GetByDefname("i_cape").Create(player.Backpack);
+			RealmUniform.Grant(player, 2, player);
+			Console.WriteLine("UNIFORM_READY |");
+		}
+
+		[SteamFunction]
+		public static void TestUniformState(Character self) {
+			RealmUniformEntry entry = RealmUniform.EntryOf(self);
+			Console.WriteLine("UNIFORM_STATE: until=" + ((entry == null) ? "none" : entry.until.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)) +
+				" chest=" + uniChest.Name + "/" + uniChest.Color.ToString("x", CultureInfo.InvariantCulture) + " cape=" + uniCape.Name + "/" + uniCape.Color.ToString("x", CultureInfo.InvariantCulture) +
+				" capeWorn=" + (uniCape.Cont == self) + " |");
+		}
+
+		/// <summary>"on": the cape put on; "off": taken off; "later": 3 months on, put on again.</summary>
+		[SteamFunction]
+		public static void TestUniformCape(Character self, ScriptArgs sa) {
+			string how = sa.Args.Trim().Trim('"');
+			if (how == "off") {
+				uniCape.Cont = self.Backpack;
+			} else {
+				if (how == "later") {
+					RealmUniform.clock = new DateTime(2027, 2, 5, 12, 0, 0);
+				}
+				((Player) self).TryEquip(uniCape);
+			}
+			Console.WriteLine("UNIFORM_CAPE");
+		}
+
+		/// <summary>The GM's dialog for myself, as a GM.</summary>
+		[SteamFunction]
+		public static void TestUniformDialog(Character self) {
+			self.Account.PLevel = 7;
+			RealmUniform.clock = new DateTime(2026, 11, 4, 12, 0, 0);
+			RealmUniform.ShowFor((Player) self, self);
+			Console.WriteLine("UNIFORM_DIALOG");
+		}
+
 		/// <summary>A declaration for the next evening, then a tick the day after it: it lapses.</summary>
 		[SteamFunction]
 		public static void TestConquestLapse(Character self) {
