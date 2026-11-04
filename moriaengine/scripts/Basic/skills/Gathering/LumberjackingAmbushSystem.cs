@@ -61,6 +61,9 @@ namespace SteamEngine.CompiledScripts {
 		/// on the Reaper category. No-op (including the roll itself not mattering) if the picked
 		/// defname has no matching content - fails safe rather than throwing.</summary>
 		public static void TryAmbush(IPoint4D location, WoodTier tierJustChopped) {
+			if (location.M == Camp.Plane) {
+				return; //#1107 - Erebor's randompotvora never on plane 1, the labour camp's
+			}
 			if (Globals.dice.Next(AmbushChanceDenominator) != 0) {
 				return;
 			}
