@@ -352,6 +352,13 @@ namespace SteamEngine.CompiledScripts {
 		/// basic home location which doesn't change for recall... lets leave recall away from
 		/// this"). Settable directly too, for test-harness convenience (same pattern as
 		/// LevelingTests.cs's TestSetProfession bypassing the real assignment flow).</summary>
+		/// <summary>#1116 - the RP rank, for .explevel. Not named RpRank: a GM's .rprank would find this before the command.</summary>
+		public int RoleplayRank {
+			get {
+				return CompiledScripts.RpRanks.Of(this);
+			}
+		}
+
 		public Point4D Home {
 			get {
 				return this.GetTag(homeTK) as Point4D;

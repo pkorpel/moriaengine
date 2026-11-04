@@ -384,6 +384,9 @@ namespace SteamEngine {
 		//readonly property for info dialogs...
 		public ReadOnlyCollection<AbstractCharacter> Characters {
 			get {
+				if (this.charactersReadOnly == null) { //#1116 - only a loaded account set it; one created live had none
+					this.charactersReadOnly = new ReadOnlyCollection<AbstractCharacter>(this.characters);
+				}
 				return this.charactersReadOnly;
 			}
 		}

@@ -27,6 +27,8 @@ argo.text 70 210 3 11
 argo.text 340 210 85 12
 argo.text 70 230 3 13
 argo.text 340 230 85 14
+argo.text 70 250 3 18
+argo.text 340 250 85 19
 
 // Buttons to the point-spend dialogs (#156) - each opens with no args needed, they read self directly.
 // Graphic 2445/2445 (flat "paper tab" look, same id for both up/down states) and offsets
@@ -58,6 +60,8 @@ Mind Power (P, M):
 Attributes
 Skills
 Abilities
+RP Rank:
+<RoleplayRank>
 
 [DIALOG d_explevel Button]
 on=1
