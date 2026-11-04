@@ -462,6 +462,7 @@ namespace SteamEngine.CompiledScripts {
 			LevelingSystem.TrimSkillsAtDeath(this);
 			base.On_Death(killedBy);
 			NazgulRings.OnDeath(this, killedBy, recentlyDead);
+			PvpLeague.OnDeath(this, killedBy, recentlyDead); //#1116
 			PlayerRecord.Died(this, killedBy); //#1011
 			FightMemory.Forget(this);
 		}

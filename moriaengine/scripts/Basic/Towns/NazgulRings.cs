@@ -195,13 +195,6 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>isPvPEvaluable, without the checks of systems this engine doesn't have.</summary>
-		private static bool Counts(Player victim, Character killer) {
-			FlaggedRegion area = RegionEventSystem.AreaOf(victim.Region);
-			return (victim.Realm != killer.Realm) && ((area == null) || !area.Flag_Arena) &&
-				!Professions.HasProfession(victim, Professions.Craftsman) && ((int) victim.SkillRank >= 3);
-		}
-
 		/// <summary>f_fightNazgulKillTest: the last few a Nazgul killed don't count again.</summary>
 		private static bool IsNewVictim(PowerBadge ring, Character victim) {
 			foreach (TagKey key in victimTKs) {
@@ -231,7 +224,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			foreach (Character fighter in LevelingSystem.FindFighters(victim, killer, false)) {
-				if ((fighter is Player) && Counts(victim, fighter)) {
+				if ((fighter is Player) && PvpRules.IsEvaluable(victim, fighter)) {
 					PowerBadge fightersRing = RingOf(fighter);
 					if ((fightersRing == null) || IsNewVictim(fightersRing, victim)) {
 						fighter.SetTag(killsTK, KillsOf(fighter) + 1);
