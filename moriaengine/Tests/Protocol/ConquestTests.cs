@@ -185,6 +185,67 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 11 - keep captains and their guards.</summary>
+	[Collection(ConquestCollection.Name)]
+	public class KeepCaptainTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private readonly GameServerPairFixture fixture;
+
+		public KeepCaptainTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private static (int, string, List<string>) GumpWith(TestGameClient client, string text) {
+			for (int i = 0; i < 6; i++) {
+				var gump = client.ReadGumpDialogWithStrings(Wait);
+				if (gump.Strings.Exists(s => s.Contains(text))) {
+					return gump;
+				}
+			}
+			throw new Xunit.Sdk.XunitException("No gump with '" + text + "'");
+		}
+
+		[Fact]
+		public void AppointHireFreeGuardsAndHandOverOnCapture() {
+			using var gm = CommandPermissionTests.Connect("conquest", "Conquest Keeper");
+			this.Ask(gm, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+			using var captain = CommandPermissionTests.Connect("conquestsecond", "Conquest Captain");
+			string ready = this.Ask(gm, ".TestCaptainReady", "CAPTAIN_READY:");
+			Assert.Contains("inKeep=True", ready);
+			uint stone = uint.Parse(ready.Substring(ready.IndexOf("stone=") + 6).Split(' ')[0]);
+			uint captainUid = uint.Parse(ready.Substring(ready.IndexOf("captain=") + 8).Split(' ')[0]);
+
+			//the GM at the stone: yes, then the target
+			gm.SendDoubleClick(stone);
+			var (confirm, _, _) = GumpWith(gm, "Prejes si dosadit");
+			gm.SendGumpResponse(confirm, 1, new Dictionary<int, string>());
+			Thread.Sleep(500);
+			gm.SendTargetUid(captainUid);
+			Thread.Sleep(500);
+			Assert.Contains("captain=Kapitan Conquest Captain isCaptain=True captainName=Kapitan Conquest Captain owner=Gondor guards= alive=False", this.Ask(gm, ".TestCaptainState", "CAPTAIN_STATE:"));
+
+			//the captain at the stone: the recruiter, a free guard
+			captain.SendDoubleClick(stone);
+			var (recruiter, _, strings) = GumpWith(captain, "Mozno najmout");
+			Assert.Contains("Mozno najmout: 3 neplacenych strazi", strings);
+			captain.SendGumpResponse(recruiter, 1000, new Dictionary<int, string>());
+			Thread.Sleep(500);
+			Assert.Contains("guards=c_vguard_gondor_hala_pesak,", this.Ask(gm, ".TestCaptainState", "CAPTAIN_STATE:"));
+			//posted too far, refused; near the stone, it stands and the palantir can't be breached
+			Assert.Contains("posted=False", this.Ask(gm, ".TestCaptainPost \"far\"", "CAPTAIN_POST:"));
+			Assert.Contains("posted=True", this.Ask(gm, ".TestCaptainPost \"near\"", "CAPTAIN_POST:"));
+			Assert.Contains("guards=c_vguard_gondor_hala_pesak(standing), alive=True", this.Ask(gm, ".TestCaptainState", "CAPTAIN_STATE:"));
+
+			//Mordor takes the keep: the captain goes, the guard is Mordor's, the war lord is the captain
+			Assert.Contains("lord=Kapitan Conquest Keeper", this.Ask(gm, ".TestCaptainCapture", "CAPTAIN_CAPTURE:"));
+			Assert.Contains("isCaptain=False captainName=Conquest Captain owner=Mordor guards=c_vguard_mordor_hala_pesak(standing),", this.Ask(gm, ".TestCaptainState", "CAPTAIN_STATE:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ConquestCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Conquest";

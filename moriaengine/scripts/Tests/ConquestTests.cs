@@ -9,7 +9,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static Player Named(string name) {
 			foreach (AbstractCharacter ch in GameServer.GetAllPlayers()) {
-				if ((ch is Player player) && (player.Name == name)) {
+				if ((ch is Player player) && player.Name.EndsWith(name, StringComparison.Ordinal)) { //"Kapitan " may lead
 					return player;
 				}
 			}
@@ -178,6 +178,65 @@ namespace SteamEngine.CompiledScripts {
 				" gondorConquered=" + Conquest.Front(Realm.Gondor).conquered + " mordorConquered=" + Conquest.Front(Realm.Mordor).conquered +
 				" right=" + Conquest.HasRight(self) + " cash=" + keep.cashGold + " collector=" + ((keep.cashCollector == null) ? "none" : keep.cashCollector.Name) +
 				" cheque=" + cheque + " |");
+		}
+
+		private static CaptainStone captainStone;
+
+		/// <summary>#1116 step 11 - me a GM and "Conquest Captain" a Gondor player, both in Gondor_1's keep beside its captain stone.</summary>
+		[SteamFunction]
+		public static void TestCaptainReady(Character self) {
+			Conquest.Reset();
+			SteamEngine.Regions.FlaggedRegion area = (SteamEngine.Regions.FlaggedRegion) SteamEngine.Regions.StaticRegion.GetByDefname("a_Osgiliath_zapadni_breh");
+			int[] spot = ConquestSetup.SpotIn(area, self, 3);
+			self.Go(spot[0], spot[1], spot[2], area.P.M);
+			self.Account.PLevel = 7;
+			if ((captainStone != null) && !captainStone.IsDeleted) {
+				captainStone.Delete();
+			}
+			captainStone = (CaptainStone) ThingDef.GetByDefname("i_captainstone").Create(self.X + 1, self.Y, self.Z, self.M);
+			captainStone.SetFort("Gondor_1");
+			Player captain = Named("Conquest Captain");
+			captain.Account.PLevel = 1;
+			captain.Realm = Realm.Gondor;
+			KeepCaptains.DismissFrom(captain);
+			captain.Go(self.X, self.Y + 1, self.Z, self.M);
+			Console.WriteLine("CAPTAIN_READY: stone=" + captainStone.FlaggedUid + " captain=" + captain.FlaggedUid + " inKeep=" + KeepCaptains.InKeep(self, "Gondor_1") + " |");
+		}
+
+		[SteamFunction]
+		public static void TestCaptainState(Character self) {
+			KeepState keep = Conquest.Keep("Gondor_1");
+			GuardForce force = KeepCaptains.ForceOf(keep);
+			string guards = "";
+			foreach (HiredGuard guard in force.guards) {
+				guards += guard.defname + (guard.IsStanding ? "(standing)" : "") + ",";
+			}
+			Player captain = Named("Conquest Captain");
+			Console.WriteLine("CAPTAIN_STATE: captain=" + ((keep.captain == null) ? "none" : keep.captain.Name) + " isCaptain=" + KeepCaptains.IsCaptain(captain) +
+				" captainName=" + captain.Name + " owner=" + keep.owner + " guards=" + guards + " alive=" + KeepCaptains.AnyGuardAlive("Gondor_1") + " |");
+		}
+
+		/// <summary>The keep's first guard posted "near" (2 tiles from the stone) or "far" (15 tiles), as its captain.</summary>
+		[SteamFunction]
+		public static void TestCaptainPost(Character self, ScriptArgs sa) {
+			Player captain = Named("Conquest Captain");
+			GuardForce force = KeepCaptains.ForceOf(Conquest.Keep("Gondor_1"));
+			int dx = (sa.Args.Trim().Trim('"') == "far") ? 15 : 2;
+			bool posted = force.TryPost(captain, force.guards[0], new Point3D(captainStone.X + dx, captainStone.Y, captainStone.Z));
+			Console.WriteLine("CAPTAIN_POST: posted=" + posted + " |");
+		}
+
+		/// <summary>Mordor takes Gondor_1 with me as its war lord, a Mordor player.</summary>
+		[SteamFunction]
+		public static void TestCaptainCapture(Character self) {
+			self.Account.PLevel = 1;
+			self.Realm = Realm.Mordor;
+			KeepState keep = Conquest.Keep("Gondor_1");
+			keep.owner = Realm.Mordor;
+			KeepCaptains.OnCapture("Gondor_1", (Player) self);
+			Console.WriteLine("CAPTAIN_CAPTURE: lord=" + ((keep.captain == null) ? "none" : keep.captain.Name) + " |");
+			KeepCaptains.DismissFrom(self);
+			self.Account.PLevel = 7;
 		}
 
 		/// <summary>A declaration for the next evening, then a tick the day after it: it lapses.</summary>

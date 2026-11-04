@@ -15,7 +15,8 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#1116 - Erebor's i_fortress_palantir (dobyvani/dobyvani-palantir.scp): the keep is taken at it. While the war
-	/// declared on its keep runs, an attacker with the right breaches it by a double click; then the attackers must hold it ConquestSettings.holdSeconds (900 live). A defender's double click turns the
+	/// declared on its keep runs, an attacker with the right breaches it by a double click once none of the keep's guards
+	/// stands (Erebor never looked at the last one hired); then the attackers must hold it ConquestSettings.holdSeconds (900 live). A defender's double click turns the
 	/// breach back, and the countdown fills up again second by second (a new breach goes on from where it stands). When it
 	/// reaches 0, the keep is the attackers'.
 	/// A GM's double click sets its keep from the battlefield it stands on.
@@ -128,6 +129,10 @@ namespace SteamEngine.CompiledScripts {
 					player.RedMessage("Nejsi " + Conquest.Word(player, "vyzyvatelem", "vyzyvatelkou") + ", nejsi " + Conquest.Word(player, "opravnen", "opravnena") + ".");
 					return;
 				}
+				if (KeepCaptains.AnyGuardAlive(fort)) {
+					player.SysMessage("Jeste zbyvaji nejake straze k zabiti.");
+					return;
+				}
 				keep.breached = true;
 				keep.conqueror = player.Realm;
 				palantir.Color = (player.Realm == Realm.Gondor) ? FortressPalantir.GondorHue : FortressPalantir.MordorHue;
@@ -227,7 +232,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>handleConqueredFort: the keep changes hands, the attackers' declaration and queue go (and their rights),
 		/// both fronts' lines move, the loser's own declaration aims at its new target, the cash box fills for the war lord
-		/// (the keep's captain stones and guards, and the rewards, come with the next steps of #1116).</summary>
+		/// the captain goes, the keep's guards turn to the winner's, the war lord becomes its captain (the rewards come with step
+	/// 13 of #1116).</summary>
 		internal static void Capture(KeepState keep) {
 			Realm winner = keep.conqueror, loser = keep.owner;
 			int level = Conquest.FortLevel(keep.fort);
@@ -253,6 +259,7 @@ namespace SteamEngine.CompiledScripts {
 			keep.cashCollector = lord;
 			keep.lastConquered = now;
 
+			KeepCaptains.OnCapture(keep.fort, lord);
 			if (lord != null) {
 				Conquest.TakeRight(lord);
 			}
@@ -307,6 +314,16 @@ namespace SteamEngine.CompiledScripts {
 
 		[SaveableData, CopyableData]
 		public Thing palantir;
+
+		[SaveableData, CopyableData]
+		public Player captain;
+
+		[SaveableData, CopyableData]
+		public Thing captainStone;
+
+		/// <summary>The keep's guards (Erebor's crystals in the captain stone's pouch).</summary>
+		[SaveableData]
+		public GuardForce guards;
 
 		[LoadingInitializer, DeepCopyImplementation]
 		public KeepState() {

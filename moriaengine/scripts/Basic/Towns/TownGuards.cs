@@ -82,6 +82,18 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public List<HiredGuard> guards = new List<HiredGuard>();
 
+		/// <summary>#1116 - a keep's force (Erebor's captain stone): the keep's fort ("Gondor_1"). Its guards are free and
+		/// never run out, its posts follow the keep rule, its table is Guard_king_&lt;keep&gt;_n.</summary>
+		[SaveableData]
+		public string keepFort;
+
+		[SaveableData]
+		public Thing keepStone;
+
+		public bool IsKeep {
+			get { return this.keepFort != null; }
+		}
+
 		public long Treasury {
 			get { return (this.town != null) ? this.town.treasury : this.funds; }
 			set {
@@ -111,6 +123,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1116 - a keep's guards are free (Erebor's "neplacenych").</summary>
+		public int Price(string defname) {
+			return this.IsKeep ? 0 : PriceOf(defname);
+		}
+
 		public static int PriceOf(string defname) {
 			object price = ThingDef.GetByDefname(defname).GetTag(TagKey.Acquire("guardhire"));
 			return (price != null) ? Convert.ToInt32(price, CultureInfo.InvariantCulture) : 0;
@@ -125,20 +142,31 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		/// <summary>max_guards_&lt;keep&gt;.</summary>
+		public int KeepLimit {
+			get {
+				Constant limit = Constant.GetByName("max_guards_" + this.city);
+				return (limit == null) ? 0 : Convert.ToInt32(limit.Value, CultureInfo.InvariantCulture);
+			}
+		}
+
 		public void Hire(Character by, string defname) {
 			Constant limit = this.isKings ? Constant.GetByName("max_guards_" + this.city) : null;
 			if ((limit != null) && (this.guards.Count >= Convert.ToInt32(limit.Value, CultureInfo.InvariantCulture))) {
-				by.SysMessage("Vic kralovskych strazi zde nelze najmout");
-			} else if (this.TryCharge(by, PriceOf(defname))) {
+				by.SysMessage(this.IsKeep ? "Prilis mnoho najatych neplacenych strazi" : "Vic kralovskych strazi zde nelze najmout");
+			} else if (this.TryCharge(by, this.Price(defname))) {
 				this.guards.Add(new HiredGuard {
 					defname = defname,
 					name = ThingDef.GetByDefname(defname).Name,
-					paidUntil = Globals.TimeInSeconds + (TownSettings.instance.guardPayDays * SecondsInDay)
+					paidUntil = this.IsKeep ? double.MaxValue : (Globals.TimeInSeconds + (TownSettings.instance.guardPayDays * SecondsInDay))
 				});
 			}
 		}
 
 		public void Extend(Character by, HiredGuard guard) {
+			if (this.IsKeep) {
+				return;
+			}
 			if (this.TryCharge(by, PriceOf(guard.defname))) {
 				guard.paidUntil += TownSettings.instance.guardPayDays * SecondsInDay;
 			}
@@ -151,17 +179,28 @@ namespace SteamEngine.CompiledScripts {
 			this.guards.Remove(guard);
 		}
 
-		/// <summary>i_guard_setp: within the city, and not on top of another post.</summary>
+		/// <summary>i_guard_setp: within the city, and not on top of another post. #1116 - a keep's post: on the keep's own
+		/// battlefield, within ConquestSettings.keepGuardReach of its captain stone, keepGuardSpacing from the others.</summary>
 		public bool TryPost(Player by, HiredGuard guard, IPoint3D at) {
 			Map map = by.GetMap();
 			FlaggedRegion area = RegionEventSystem.AreaOf(map.GetRegionFor(new Point2D(at.X, at.Y)));
-			if ((area == null) || !StringComparer.OrdinalIgnoreCase.Equals(area.City, this.city)) {
+			if (this.IsKeep) {
+				if ((this.keepStone != null) && ((this.keepStone.M != by.M) || (Point2D.GetSimpleDistance(this.keepStone.X, this.keepStone.Y, at.X, at.Y) > ConquestSettings.instance.keepGuardReach))) {
+					by.RedMessage("Pevnostniho strazce nelze umistit tak daleko od pevnosti");
+					return false;
+				}
+				if ((area == null) || (area.Battlefield == 0) || (Conquest.FortName(area.Battlefield) != this.keepFort)) {
+					by.RedMessage("Tam nemuzes strazce umistit");
+					return false;
+				}
+			} else if ((area == null) || !StringComparer.OrdinalIgnoreCase.Equals(area.City, this.city)) {
 				by.RedMessage("Tam nemuzes strazce umistit");
 				return false;
 			}
+			int spacing = this.IsKeep ? ConquestSettings.instance.keepGuardSpacing : TownSettings.instance.guardPostDistance;
 			foreach (HiredGuard other in this.guards) {
 				if ((other != guard) && other.hasPost && (other.m == by.M) &&
-						(Point2D.GetSimpleDistance(other.x, other.y, at.X, at.Y) <= TownSettings.instance.guardPostDistance)) {
+						(Point2D.GetSimpleDistance(other.x, other.y, at.X, at.Y) <= spacing)) {
 					by.SysMessage("Nemuzes umistit guarda tak blizko jineho");
 					return false;
 				}
@@ -176,6 +215,48 @@ namespace SteamEngine.CompiledScripts {
 			}
 			this.Spawn(guard);
 			return true;
+		}
+
+		/// <summary>#1116 - aretheremoreguards: is a guard of the keep standing? (Erebor never looked at the last one hired.)</summary>
+		public bool AnyStanding {
+			get { return this.guards.Exists(g => g.IsStanding); }
+		}
+
+		/// <summary>#1116 - respawnguards, at a war's start: every posted guard that's down stands up at once.</summary>
+		public void RespawnAll() {
+			foreach (HiredGuard guard in this.guards) {
+				if (guard.hasPost && !guard.IsStanding) {
+					this.Spawn(guard);
+				}
+			}
+		}
+
+		/// <summary>#1116 - swapGuards, on a capture: each guard becomes its def's guardopposite, standing ones are replaced at
+		/// their posts. A guard with no opposite is dismissed (Erebor dropped it from the hire table).</summary>
+		public void SwapToOpposite() {
+			foreach (HiredGuard guard in new List<HiredGuard>(this.guards)) {
+				string opposite = OppositeOf(guard.defname);
+				if (opposite == null) {
+					this.Dismiss(guard);
+					continue;
+				}
+				bool standing = guard.IsStanding;
+				if (standing) {
+					guard.npc.Delete();
+				}
+				guard.defname = opposite;
+				guard.name = ThingDef.GetByDefname(opposite).Name;
+				if (standing || guard.hasPost) {
+					this.Spawn(guard);
+				}
+			}
+		}
+
+		/// <summary>The def's tag.guardopposite (a def read, as Erebor's findres(chardef, ...).tag(guardopposite)).</summary>
+		public static string OppositeOf(string defname) {
+			object opposite = ThingDef.GetByDefname(defname)?.GetTag(TagKey.Acquire("guardopposite"));
+			string name = (opposite is ThingDef def) ? def.PrettyDefname : (opposite as string);
+			return ((name != null) && (ThingDef.GetByDefname(name.Trim()) != null)) ? ThingDef.GetByDefname(name.Trim()).PrettyDefname : null;
 		}
 
 		private void Spawn(HiredGuard guard) {
@@ -253,7 +334,7 @@ namespace SteamEngine.CompiledScripts {
 			if (player.Flag_Dead) {
 				player.SysMessage("Ve svem stavu nejsi niceho schopen");
 			} else if (force.guards.Count == 0) {
-				player.SysMessage("Mesto nevlastni zadne straze");
+				player.SysMessage(force.IsKeep ? "Nemas k dispozici zadne straze" : "Mesto nevlastni zadne straze");
 			} else if (order == GuardOrder.Kill) {
 				player.Target(SingletonScript<Targ_GuardKill>.Instance, force);
 			} else if (order == GuardOrder.Come) {
@@ -506,24 +587,26 @@ namespace SteamEngine.CompiledScripts {
 			this.SetLocation(40, 140);
 			this.AddPage(0);
 			this.AddBackground(0, 0, Width, contractsTop + ((force.guards.Count + 1) * RowHeight) + 16, 2620);
-			this.AddLabel(14, 12, 0x481, "Najimani - konto: " + force.Treasury + " gp");
+			this.AddLabel(14, 12, 0x481, force.IsKeep ? ("Mozno najmout: " + Math.Max(0, force.KeepLimit - force.guards.Count) + " neplacenych strazi") : ("Najimani - konto: " + force.Treasury + " gp"));
 			this.AddButton(Width - 45, 12, 0xfb1, 0xfb3, 0, GumpButtonType.Reply, 0);
-			this.AddLabel(14, 36, 0x481, "Navysit o: ");
-			this.AddTextEntry(94, 36, 150, 20, 0x481, DepositEntry, "0");
-			this.AddButton(260, 36, 0xfb7, 0xfb9, DepositButton, GumpButtonType.Reply, 0);
+			if (!force.IsKeep) {
+				this.AddLabel(14, 36, 0x481, "Navysit o: ");
+				this.AddTextEntry(94, 36, 150, 20, 0x481, DepositEntry, "0");
+				this.AddButton(260, 36, 0xfb7, 0xfb9, DepositButton, GumpButtonType.Reply, 0);
+			}
 			for (int i = 0; i < hireable.Count; i++) {
 				int y = 64 + (i * RowHeight);
 				this.AddButton(14, y, 4005, 4007, HireButton + i, GumpButtonType.Reply, 0);
 				this.AddLabel(50, y, Hue, ThingDef.GetByDefname(hireable[i]).Name);
-				this.AddLabel(340, y, Hue, GuardForce.PriceOf(hireable[i]).ToString(CultureInfo.InvariantCulture));
+				this.AddLabel(340, y, Hue, force.Price(hireable[i]).ToString(CultureInfo.InvariantCulture));
 			}
 			for (int i = 0; i < force.guards.Count; i++) {
 				int y = contractsTop + (i * RowHeight);
 				HiredGuard guard = force.guards[i];
 				this.AddButton(14, y, 4005, 4007, ExtendButton + i, GumpButtonType.Reply, 0);
 				this.AddLabel(50, y, Hue, guard.name);
-				this.AddLabel(250, y, Hue, GuardForce.PriceOf(guard.defname).ToString(CultureInfo.InvariantCulture));
-				this.AddLabel(340, y, Hue, TownDialogs.TimeLeft(guard.paidUntil));
+				this.AddLabel(250, y, Hue, force.Price(guard.defname).ToString(CultureInfo.InvariantCulture));
+				this.AddLabel(340, y, Hue, force.IsKeep ? "-" : TownDialogs.TimeLeft(guard.paidUntil));
 			}
 		}
 
