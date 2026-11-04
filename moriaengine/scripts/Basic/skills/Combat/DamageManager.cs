@@ -104,11 +104,17 @@ namespace SteamEngine.CompiledScripts {
 			return CauseDamage(attacker, defender, flags, damage, false, false, out unused);
 		}
 
-		/// <summary>#860 - a harmful spell's damage: rounded, and a monster's on a monster does at least 5.</summary>
+		/// <summary>#860 - a harmful spell's damage: rounded, and a monster's on a monster does at least 5. #1022 - the
+		/// target's hit reactions run on it too, as Erebor's @aftergetswing did for spells (the user's call).</summary>
 		public static int CauseSpellDamage(Character attacker, Character defender, DamageType flags, double damage) {
 			double unused;
 			damage = ShamanAbilities.AbsorbSpell(attacker, defender, damage); //#1017 - voodoo shield
-			return CauseDamage(attacker, defender, flags, damage, false, true, out unused);
+			int dealt = CauseDamage(attacker, defender, flags, damage, false, true, out unused);
+			if ((attacker != null) && !attacker.IsDeleted && !defender.IsDeleted && !defender.Flag_Dead) {
+				MonsterSpecialAttacks.TryEmoteDamage(defender, dealt, flags);
+				MonsterSpecialAttacks.TryReactToHit(attacker, defender);
+			}
+			return dealt;
 		}
 
 		/// <summary>#872 - a bleed's tick: casting is only sometimes interrupted (chance_to_fizz).</summary>
