@@ -1556,60 +1556,90 @@ namespace SteamEngine.CompiledScripts {
 
 		#region Go() overrides
 		public void Go(Region reg) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(reg.P);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(Point2D pnt) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(pnt.X, pnt.Y);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(Point3D pnt) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(pnt.X, pnt.Y, pnt.Z);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(Point4D pnt) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(pnt.X, pnt.Y, pnt.Z, pnt.M);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(IPoint2D pnt) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(pnt.X, pnt.Y);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(IPoint3D pnt) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(pnt.X, pnt.Y, pnt.Z);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(IPoint4D pnt) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(pnt.X, pnt.Y, pnt.Z, pnt.M);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(int x, int y) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(x, y);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(int x, int y, int z) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(x, y, z);
 			this.Fix();
 			//Update();
 		}
 
 		public void Go(int x, int y, int z, byte m) {
+			if (Jail.Redirect(this)) {
+				return; //#1107 - Sphere's Spell_Effect_Teleport
+			}
 			this.P(x, y, z, m);
 			this.Fix();
 			//Update();
