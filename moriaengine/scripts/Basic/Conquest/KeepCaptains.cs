@@ -126,12 +126,13 @@ namespace SteamEngine.CompiledScripts {
 			return (keep.captain == player) || ((office != null) && (office.holder == player));
 		}
 
-		/// <summary>f_captainmenu: orders, the recruiter and the posts.</summary>
+		/// <summary>f_captainmenu: orders, the recruiter, the posts and the blacklist.</summary>
 		internal static void OpenMenu(Player player, KeepState keep) {
 			GuardForce force = ForceOf(keep);
 			D_GuardCaptain.Show(force, player);
 			D_GuardRecruiter.Show(force, player);
 			D_GuardPosts.Show(force, player);
+			D_KeepBans.Show(keep, player);
 		}
 
 		/// <summary>Who Erebor wouldn't make a captain: what to tell them, or null.</summary>
@@ -208,7 +209,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static KeepState KeepOfCaptain(Character ch) {
+		internal static KeepState KeepOfCaptain(Character ch) {
 			if ((ch.GetTag(keepTK) is CaptainStone stone) && !stone.IsDeleted && (stone.Fort != null)) {
 				KeepState keep = Conquest.Keep(stone.Fort);
 				return (keep.captain == ch) ? keep : null;
@@ -278,6 +279,7 @@ namespace SteamEngine.CompiledScripts {
 				GuardForce force = ForceOf(keep);
 				D_GuardPosts.Show(force, player);
 				D_GuardCaptain.Show(force, player);
+				D_KeepBans.Show(keep, player);
 			}
 		}
 

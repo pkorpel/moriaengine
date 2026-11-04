@@ -246,6 +246,59 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 12 - the keep blacklist.</summary>
+	[Collection(ConquestCollection.Name)]
+	public class KeepBlacklistTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private readonly GameServerPairFixture fixture;
+
+		public KeepBlacklistTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		[Fact]
+		public void TheCaptainBlacklistsAndTheKeepsGuardsTurnOnThem() {
+			using var first = CommandPermissionTests.Connect("conquest", "Conquest Ban Opener");
+			this.Ask(first, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+			first.Dispose();
+			using var outlaw = CommandPermissionTests.Connect("conquestsecond", "Conquest Outlaw");
+			using var captain = CommandPermissionTests.Connect("conquestthird", "Conquest Ban Captain");
+			string ready = this.Ask(captain, ".TestBanReady", "BAN_READY:");
+			Assert.Contains("captain=True guard=True", ready);
+			uint outlawUid = uint.Parse(ready.Substring(ready.IndexOf("outlaw=") + 7).Split(' ')[0]);
+			Assert.Contains("bans=0 guardAttacks=False", this.Ask(captain, ".TestBanState", "BAN_STATE:"));
+
+			//.keep_blacklist, the target: the keep's guard turns on them; a second time changes nothing
+			captain.SendSpeech(".keep_blacklist");
+			Thread.Sleep(500);
+			captain.SendTargetUid(outlawUid);
+			Thread.Sleep(500);
+			Assert.Contains("bans=1 guardAttacks=True", this.Ask(captain, ".TestBanState", "BAN_STATE:"));
+			captain.SendSpeech(".keep_blacklist");
+			Thread.Sleep(500);
+			captain.SendTargetUid(outlawUid);
+			Thread.Sleep(500);
+			Assert.Contains("bans=1", this.Ask(captain, ".TestBanState", "BAN_STATE:"));
+
+			//off the list through the executioner dialog
+			captain.SendSpeech(".keepcontrol");
+			for (int i = 0; i < 6; i++) {
+				var (uid, _, strings) = captain.ReadGumpDialogWithStrings(Wait);
+				if (strings.Contains("Nepratel : 1")) {
+					Assert.Contains("Conquest Outlaw", strings);
+					captain.SendGumpResponse(uid, 100, new Dictionary<int, string>());
+					break;
+				}
+			}
+			Thread.Sleep(500);
+			Assert.Contains("bans=0 guardAttacks=False", this.Ask(captain, ".TestBanState", "BAN_STATE:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ConquestCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Conquest";

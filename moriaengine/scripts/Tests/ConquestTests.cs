@@ -239,6 +239,46 @@ namespace SteamEngine.CompiledScripts {
 			self.Account.PLevel = 7;
 		}
 
+		private static NPC keepGuard;
+
+		/// <summary>#1116 step 12 - "Conquest Ban Captain" the captain of Gondor_1, with a guard posted, "Conquest Outlaw" a Gondor
+		/// player beside them, all in the keep.</summary>
+		[SteamFunction]
+		public static void TestBanReady(Character self) {
+			Conquest.Reset();
+			SteamEngine.Regions.FlaggedRegion area = (SteamEngine.Regions.FlaggedRegion) SteamEngine.Regions.StaticRegion.GetByDefname("a_Osgiliath_zapadni_breh");
+			int[] spot = ConquestSetup.SpotIn(area, self, 3);
+			Player captain = (Player) self;
+			KeepCaptains.DismissFrom(captain);
+			captain.Go(spot[0], spot[1], spot[2], area.P.M);
+			captain.Account.PLevel = 1;
+			captain.Realm = Realm.Gondor;
+			if ((captainStone != null) && !captainStone.IsDeleted) {
+				captainStone.Delete();
+			}
+			captainStone = (CaptainStone) ThingDef.GetByDefname("i_captainstone").Create(self.X + 1, self.Y, self.Z, self.M);
+			captainStone.SetFort("Gondor_1");
+			KeepState keep = Conquest.Keep("Gondor_1");
+			KeepCaptains.Appoint(captain, keep, captain);
+			GuardForce force = KeepCaptains.ForceOf(keep);
+			force.Hire(captain, force.HireableDefnames()[0]);
+			force.TryPost(captain, force.guards[0], new Point3D(captainStone.X + 2, captainStone.Y, captainStone.Z));
+			keepGuard = force.guards[0].npc;
+			keepGuard.DeleteTimer(SteamEngine.Timers.TimerKey.Acquire("_npcAiTimer_"));
+			Player outlaw = Named("Conquest Outlaw");
+			outlaw.Account.PLevel = 1;
+			outlaw.Realm = Realm.Gondor;
+			outlaw.Go(self.X, self.Y + 1, self.Z, self.M);
+			Console.WriteLine("BAN_READY: outlaw=" + outlaw.FlaggedUid + " captain=" + KeepCaptains.IsCaptain(captain) + " guard=" + (keepGuard != null) + " |");
+		}
+
+		[SteamFunction]
+		public static void TestBanState(Character self) {
+			KeepState keep = Conquest.Keep("Gondor_1");
+			Player outlaw = Named("Conquest Outlaw");
+			Console.WriteLine("BAN_STATE: bans=" + keep.bans.Count + " guardAttacks=" + GuardSpeech.AttacksOnSight(keepGuard, outlaw) + " |");
+		}
+
 		/// <summary>A declaration for the next evening, then a tick the day after it: it lapses.</summary>
 		[SteamFunction]
 		public static void TestConquestLapse(Character self) {
