@@ -84,6 +84,7 @@ namespace SteamEngine.CompiledScripts {
 			TryBackstabHide(self);
 			TryMassLeapTick(self);
 			TryDispelBombTick(self);
+			TryDragonBrainSight(self); //#1022
 		}
 
 		/// <summary>Makes an NPC fight `enemy` now (archive "attack(src)").</summary>

@@ -56,6 +56,8 @@ namespace SteamEngine.CompiledScripts {
 		/// it walks onto, and e_inexhaustible's stamina.</summary>
 		internal static void OnStepTaken(Character stepping) {
 			CheckHazardTileStep(stepping);
+			CheckDragonTileStep(stepping); //#1022
+			DragonBlood.CheckStep(stepping);
 			TryApplyInexhaustible(stepping);
 		}
 

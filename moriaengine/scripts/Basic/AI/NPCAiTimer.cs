@@ -87,6 +87,31 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#892 - stop_guard: told to hold still, until a hit or an order says otherwise.</summary>
 		[SaveableData] public bool isHeld;
 
+		/// <summary>#1022 - Sphere's flag_immobile on a monster (a dragon drawing breath, a stamp): no thinking, so no
+		/// moving or attacking, until this Globals.TimeInSeconds.</summary>
+		internal double frozenUntil;
+
+		/// <summary>Holds the monster still for so many seconds (a later, longer freeze wins).</summary>
+		public static void Freeze(NPC self, double seconds) {
+			EnsureInstalled(self);
+			NPCAiTimer ai = GetFor(self);
+			if (ai != null) {
+				ai.frozenUntil = System.Math.Max(ai.frozenUntil, Globals.TimeInSeconds + seconds);
+			}
+		}
+
+		public static void Unfreeze(NPC self) {
+			NPCAiTimer ai = GetFor(self);
+			if (ai != null) {
+				ai.frozenUntil = 0;
+			}
+		}
+
+		public static bool IsFrozen(NPC self) {
+			NPCAiTimer ai = GetFor(self);
+			return (ai != null) && (ai.frozenUntil > Globals.TimeInSeconds);
+		}
+
 		[SaveableData] public int homeX;
 		[SaveableData] public int homeY;
 		[SaveableData] public sbyte homeZ;
@@ -267,7 +292,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void Think(NPC self) {
-			if (this.isHeld) {
+			if (this.isHeld || (this.frozenUntil > Globals.TimeInSeconds)) {
 				return;
 			}
 			if ((this.fleeSteps > 0) && (this.fleeingFrom != null) && !this.fleeingFrom.IsDeleted) {

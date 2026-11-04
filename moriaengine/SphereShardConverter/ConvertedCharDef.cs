@@ -950,7 +950,36 @@ namespace SteamEngine.Converter {
 				{ "tag.e_explosiondispell_chance", "DispelBombChance" },
 				{ "tag.e_explosiondispell_range", "DispelBombRange" },
 				{ "tag.e_explosiondispell_time", "DispelBombCooldown" },
-				{ "tag.npc_warcry_delay", "WarcryCooldown" }
+				{ "tag.npc_warcry_delay", "WarcryCooldown" },
+				//#1022 dragons, archive units (permille, seconds)
+				{ "tag.dragon_fire_chance", "FireDragonChance" },
+				{ "tag.dragon_fire_delay", "FireDragonCooldown" },
+				{ "tag.dragon_fire_dmg", "FireDragonDamage" },
+				{ "tag.dragon_fire_type", "FireDragonFireType" },
+				{ "tag.dragon_fire_bomb_chance", "FireDragonBombChance" },
+				{ "tag.dragon_fire_bomb_delay", "FireDragonBombCooldown" },
+				{ "tag.dragon_fire_bomb_dmg", "FireDragonBombDamage" },
+				{ "tag.dragon_fire_bomb_type", "FireDragonBombFireType" },
+				{ "tag.fire_dragon_round_chance", "FireDragonRoundChance" },
+				{ "tag.fire_dragon_round_delay", "FireDragonRoundCooldown" },
+				{ "tag.fire_dragon_round_dmg", "FireDragonRoundDamage" },
+				{ "tag.fire_dragon_round_type", "FireDragonRoundFireType" },
+				{ "tag.fire_dragon_round_turns", "FireDragonRoundTurns" },
+				{ "tag.dragon_fire_cage_chance", "FireDragonCageChance" },
+				{ "tag.dragon_fire_cage_delay", "FireDragonCageCooldown" },
+				{ "tag.dragon_fire_cage_type", "FireDragonCageFireType" },
+				{ "tag.dragon_fire_cage_duration", "FireDragonCageDuration" },
+				{ "tag.dragon_fire_aura_chance", "FireDragonAuraChance" },
+				{ "tag.dragon_fire_aura_delay", "FireDragonAuraCooldown" },
+				{ "tag.dragon_fire_aura_speed", "FireDragonAuraInterval" },
+				{ "tag.dragon_fire_aura_power", "FireDragonAuraTicks" },
+				{ "tag.dragon_fire_aura_dmg", "FireDragonAuraDamage" },
+				{ "tag.dragon_fire_aura_resist", "FireDragonAuraResist" },
+				{ "tag.bahenny_drak_aura_chance", "SwampDragonAuraChance" },
+				{ "tag.bahenny_drak_aura_delay", "SwampDragonAuraCooldown" },
+				{ "tag.bahenny_drak_aura_speed", "SwampDragonAuraInterval" },
+				{ "tag.bahenny_drak_aura_power", "SwampDragonAuraTicks" },
+				{ "tag.bahenny_drak_aura_dmg", "SwampDragonAuraDamage" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum

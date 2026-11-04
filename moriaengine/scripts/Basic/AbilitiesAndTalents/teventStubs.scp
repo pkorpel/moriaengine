@@ -18,6 +18,7 @@ Name = "(e_acid_damage)"
 [PassiveAbilityDef a_tevent_e_air]
 Name = "(e_air)"
 
+//#1022 nothing to port: its vampire part is commented out on Erebor, the one live line only zeroed Drakula's own fighting skills
 [PassiveAbilityDef a_tevent_e_aldaron_vamp]
 Name = "(e_aldaron_vamp)"
 
@@ -31,10 +32,12 @@ Name = "Auto Reflect"
 [BackstabAbilityDef a_tevent_e_backstub]
 Name = "Ambush"
 
-[PassiveAbilityDef a_tevent_e_bahenny_drak_aura]
+//#1022 dragons: real, DragonEvents.cs
+[SwampDragonAuraAbilityDef a_tevent_e_bahenny_drak_aura]
 Name = "(e_bahenny_drak_aura)"
 
-[PassiveAbilityDef a_tevent_e_bahenny_drak_krev]
+//#1022 dragons: real, DragonEvents.cs
+[DragonBloodAbilityDef a_tevent_e_bahenny_drak_krev]
 Name = "(e_bahenny_drak_krev)"
 
 [PassiveAbilityDef a_tevent_e_balrog]
@@ -46,6 +49,7 @@ Name = "(e_beridornecro)"
 [BerserkAbilityDef a_tevent_e_berserk_potvora]
 Name = "(e_berserk_potvora)"
 
+//#1022 nothing to port: a fix for a Sphere swing-range bug this engine doesn't have
 [PassiveAbilityDef a_tevent_e_berserkbrain_distance_fix]
 Name = "(e_berserkbrain_distance_fix)"
 
@@ -55,6 +59,7 @@ Name = "(e_blood)"
 [PassiveAbilityDef a_tevent_e_bomba_boy]
 Name = "(e_bomba_boy)"
 
+//#1022 nothing to port: it sets a tag nothing reads
 [PassiveAbilityDef a_tevent_e_brinbor]
 Name = "(e_brinbor)"
 
@@ -78,7 +83,8 @@ Name = "(e_darkmoon_boss)"
 [PassiveAbilityDef a_tevent_e_demon_lord]
 Name = "(e_demon_lord)"
 
-[PassiveAbilityDef a_tevent_e_dragon_brain]
+//#1022 dragons: real, DragonEvents.cs
+[DragonBrainAbilityDef a_tevent_e_dragon_brain]
 Name = "(e_dragon_brain)"
 
 //#797 batch 4: upgraded from a bare stub to a real DragonRegenerationAbilityDef
@@ -128,19 +134,24 @@ Name = "Draining Gaze"
 [PassiveAbilityDef a_tevent_e_fire]
 Name = "(e_fire)"
 
-[PassiveAbilityDef a_tevent_e_fire_dragon]
+//#1022 dragons: real, DragonEvents.cs
+[FireDragonAbilityDef a_tevent_e_fire_dragon]
 Name = "(e_fire_dragon)"
 
-[PassiveAbilityDef a_tevent_e_fire_dragon_aura]
+//#1022 dragons: real, DragonEvents.cs
+[FireDragonAuraAbilityDef a_tevent_e_fire_dragon_aura]
 Name = "(e_fire_dragon_aura)"
 
-[PassiveAbilityDef a_tevent_e_fire_dragon_bomb]
+//#1022 dragons: real, DragonEvents.cs
+[FireDragonBombAbilityDef a_tevent_e_fire_dragon_bomb]
 Name = "(e_fire_dragon_bomb)"
 
-[PassiveAbilityDef a_tevent_e_fire_dragon_cage]
+//#1022 dragons: real, DragonEvents.cs
+[FireDragonCageAbilityDef a_tevent_e_fire_dragon_cage]
 Name = "(e_fire_dragon_cage)"
 
-[PassiveAbilityDef a_tevent_e_fire_dragon_round]
+//#1022 dragons: real, DragonEvents.cs
+[FireDragonRoundAbilityDef a_tevent_e_fire_dragon_round]
 Name = "(e_fire_dragon_round)"
 
 [PassiveAbilityDef a_tevent_e_fire_lord]
@@ -264,6 +275,7 @@ Name = "(e_menavec_powerful)"
 forms = "c_cajun_lord_menavec,c_spider_elder_menavec,c_gladiator_lord_menavec,c_ophidian_mage_evil_menavec,c_golem_mithril_menavec,c_balrogh_menavec,c_eye_mithril_menavec,c_minotaur_strazce_menavec"
 
 
+//#1022 nothing to port: the rider's horse going with it is NPC.AutoSpawnedMount's already (#705)
 [PassiveAbilityDef a_tevent_e_miniq_kun]
 Name = "(e_miniq_kun)"
 
