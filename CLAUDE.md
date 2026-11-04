@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-04): 1148 monsters attack through floors (branch fix-1148-floor-attacks)
+## DONE (2026-11-04): 1148 monsters attack through floors (PR #1149; RoofLosTests' account fix PR #1150)
 
 User, live: player on a house floor at 2946,1229,45,0, titan/titan mage/titan ranger spawned below at z 0. The mage cast through the floor, the ranger shot through it, the titan's swing + knockback reached up and knocked the player down. Find where LOS/reach ignores the floor between them, fix at the cause, test at that spot.
 Found (probe at the spot): floor 0x2E6C z45 is Surface, not Noshoot, so LOS's vertical check passed it; the swing used flat distance (0 straight below); Go -> Fix -> Map.GetFixedZ returned the terrain Z (TODO), so knockback's landing (and every Go into a building) dropped to the street. Fixes: Map.IsFloorBetween in LOS, WeaponSkillDef.StrikeDistance (Sphere GetTopDist3D) in swing + AI, GetFixedZ = highest Surface at or below z+8, Go(x,y) from the terrain. FloorAttackTests (account floortests) red with the fixes off. Gotcha: Go(x,y,z) into a house used to land on the ground; a test placing someone on a floor needs P() (or this fix).
