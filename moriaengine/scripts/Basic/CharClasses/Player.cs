@@ -391,6 +391,7 @@ namespace SteamEngine.CompiledScripts {
 			ShamanPacts.OnGone(this); //#1017 - @Logout ends a pact
 			MysticHypnosis.OnLogout(this); //#1017 - and brings a possessing mystic home
 			Boosters.Pause(this); //#1090 - a booster's hours count only online
+			AfkCheck.OnLogout(this); //#1107 - e_afk_controlled @logout
 			//TODO: In safe/nonsafe areas, settings, etc.
 
 			if (LogoutSettings.instance.showLogoutEffect) {
@@ -432,6 +433,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 				PowerBadge.PutBackOn(this); //#1037
 				Jail.OnLogin(this); //#1107
+				AfkCheck.OnLogin(this); //#1107 - e_afk_controlled @login
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);
 				Guild.AnnounceConnection(this, true);
