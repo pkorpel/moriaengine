@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Xunit;
 
@@ -168,6 +169,68 @@ namespace SteamEngine.Tests.Protocol {
 			Thread.Sleep(3500);
 			Assert.Contains("dead=False at=5280,3472,35,55", this.Ask(client, ".TestPortZoneState", "PORTZONE_STATE:"));
 		}
+	}
+
+	/// <summary>#1133 - the team tournament tool.</summary>
+	[Collection(PvpCollection.Name)]
+	public class TournamentTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private readonly GameServerPairFixture fixture;
+
+		public TournamentTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private static int Value(string line, string key) {
+			return int.Parse(line.Substring(line.IndexOf(key + "=") + key.Length + 1).Split(' ')[0]);
+		}
+
+		[Fact]
+		public void TeamsChestsAndOneEntryPerTournament() {
+			using var client = CommandPermissionTests.Connect("pvp", "Tournament Fighter");
+			string ready = this.Ask(client, ".TestTournamentReady", "TOURNAMENT_READY:");
+			uint chest = (uint) Value(ready, "chest"), stone = (uint) Value(ready, "stone"), me = (uint) Value(ready, "me");
+
+			//the GM's dialogs: the warrior's chest, then team 2's first slot
+			client.SendSpeech(".pvpturnaj_arena");
+			var (main, _, strings) = client.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Turnaj - Hlavni Vyber", strings);
+			client.SendGumpResponse(main, D_ButtonChests, new Dictionary<int, string>());
+			var (chests, _, _) = client.ReadGumpDialogWithStrings(Wait);
+			client.SendGumpResponse(chests, Value(ready, "chestButton"), new Dictionary<int, string>());
+			Thread.Sleep(500);
+			client.SendTargetUid(chest);
+			client.ReadGumpDialogWithStrings(Wait);
+			client.SendSpeech(".pvpturnaj_arena");
+			(main, _, _) = client.ReadGumpDialogWithStrings(Wait);
+			client.SendGumpResponse(main, D_ButtonTeams, new Dictionary<int, string>());
+			var (teams, _, _) = client.ReadGumpDialogWithStrings(Wait);
+			client.SendGumpResponse(teams, Value(ready, "slotButton"), new Dictionary<int, string>());
+			Thread.Sleep(500);
+			client.SendTargetUid(me);
+			var (_, _, roster) = client.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Tournament Fighter", roster);
+
+			//the stone: own things to the bank, the chest's gear with a team 2 robe, off to the equip room
+			this.Ask(client, ".TestTournamentBack", "TOURNAMENT_BACK");
+			client.SendDoubleClick(stone);
+			Thread.Sleep(500);
+			Assert.Contains("team=2 chestSet=True at=2202,1794 robes=1 robeColor=480 bandages=10 katanas=1 daggerInBank=True", this.Ask(client, ".TestTournamentState", "TOURNAMENT_STATE:"));
+			//once per tournament
+			this.Ask(client, ".TestTournamentBack", "TOURNAMENT_BACK");
+			client.SendDoubleClick(stone);
+			Thread.Sleep(500);
+			Assert.Contains("robes=1 robeColor=480 bandages=10 katanas=1", this.Ask(client, ".TestTournamentState", "TOURNAMENT_STATE:"));
+			//a new tournament: no teams
+			this.Ask(client, ".TestTournamentNew", "TOURNAMENT_NEW");
+			Assert.Contains("team=0", this.Ask(client, ".TestTournamentState", "TOURNAMENT_STATE:"));
+		}
+
+		private const int D_ButtonChests = 101, D_ButtonTeams = 102;
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]

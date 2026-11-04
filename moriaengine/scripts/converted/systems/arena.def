@@ -327,10 +327,10 @@ type = t_eq_script
 layer = 30
 model = i_memory
 
-[ItemDef i_stone_pvp_turnaj]
-Name = "Cesta na turnaj"
-model = 0x1174
-Color = 00999
+//[ItemDef i_stone_pvp_turnaj] //(commented out by Converter) 
+//Name = "Cesta na turnaj"
+//model = 0x1174
+//Color = 00999
 
 //[function f_arena_findweapons] //(commented out by Converter) 
 

@@ -286,6 +286,66 @@ namespace SteamEngine.CompiledScripts {
 				" horseFar=" + (Point2D.GetSimpleDistance(self, portZoneHorse) > PortZone.MountReach) + " |");
 		}
 
+		private static Item tournamentChest, tournamentDagger;
+		private static PvpTournamentStone tournamentStone;
+
+		/// <summary>#1133 - me a GM warrior with a dagger; a chest (a robe, 10 bandages, an iron katana) and the stone beside me.</summary>
+		[SteamFunction]
+		public static void TestTournamentReady(Character self) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			player.Account.PLevel = 7;
+			player.Profession = Professions.Warrior;
+			PvpTournament.NewTournament();
+			foreach (AbstractItem item in new List<AbstractItem>(player.Backpack)) {
+				item.Delete();
+			}
+			tournamentDagger = (Item) ThingDef.GetByDefname("i_dagger").Create(player.Backpack);
+			tournamentChest = (Item) ThingDef.GetByDefname("i_backpack").Create(self.X + 1, self.Y, self.Z, self.M);
+			ThingDef.GetByDefname("i_robe").Create(tournamentChest);
+			((Item) ThingDef.GetByDefname("i_bandage").Create(tournamentChest)).Amount = 10;
+			ThingDef.GetByDefname("i_katana_iron").Create(tournamentChest);
+			tournamentStone = (PvpTournamentStone) ThingDef.GetByDefname("i_stone_pvp_turnaj").Create(self.X - 1, self.Y, self.Z, self.M);
+			string key = PvpTournament.KeyOf(player);
+			int button = (key.EndsWith("_zena", StringComparison.Ordinal) ? D_PvpTournamentChests.WomenFirst : D_PvpTournamentChests.MenFirst) + Array.IndexOf(PvpTournament.Classes, "war");
+			Console.WriteLine("TOURNAMENT_READY: chest=" + tournamentChest.FlaggedUid + " stone=" + tournamentStone.FlaggedUid + " me=" + self.FlaggedUid +
+				" chestButton=" + button + " slotButton=" + D_PvpTournamentTeams.ButtonOf(2, 1) + " |");
+		}
+
+		/// <summary>Back beside the stone as a plain player.</summary>
+		[SteamFunction]
+		public static void TestTournamentBack(Character self) {
+			self.Account.PLevel = 1;
+			self.Go(tournamentStone.X + 1, tournamentStone.Y, tournamentStone.Z, tournamentStone.M);
+			Console.WriteLine("TOURNAMENT_BACK");
+		}
+
+		[SteamFunction]
+		public static void TestTournamentState(Character self) {
+			int robes = 0, robeColor = 0, bandages = 0, katanas = 0;
+			foreach (AbstractItem item in self.Backpack) {
+				string defname = item.Def.PrettyDefname;
+				if (defname == "i_robe") {
+					robes++;
+					robeColor = item.Color;
+				} else if (defname == "i_bandage") {
+					bandages += item.Amount;
+				} else if (defname == "i_katana_iron") {
+					katanas++;
+				}
+			}
+			Console.WriteLine("TOURNAMENT_STATE: team=" + PvpTournament.TeamOf(self) + " chestSet=" + (PvpTournament.ChestOf(PvpTournament.KeyOf((Player) self)) == tournamentChest) +
+				" at=" + self.X + "," + self.Y + " robes=" + robes + " robeColor=" + robeColor.ToString("x", System.Globalization.CultureInfo.InvariantCulture) +
+				" bandages=" + bandages + " katanas=" + katanas + " daggerInBank=" + (tournamentDagger.TopObj() == self && tournamentDagger.Cont != self.Backpack) + " |");
+		}
+
+		[SteamFunction]
+		public static void TestTournamentNew(Character self) {
+			PvpTournament.NewTournament();
+			self.Account.PLevel = 7;
+			Console.WriteLine("TOURNAMENT_NEW");
+		}
+
 		/// <summary>The converter's tag.arena and tag.bf, as the regions loaded them.</summary>
 		[SteamFunction]
 		public static void TestPvpRegionTags(Character self) {
