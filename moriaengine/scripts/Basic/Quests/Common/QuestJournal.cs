@@ -127,6 +127,9 @@ namespace SteamEngine.CompiledScripts {
 				}
 			} else if (section == SectionWeekly) {
 				this.AddLabel((Width / 2) - 17, 45, TitleHue, "Tydenni Questy");
+			} else if (section >= SectionPvp) {
+				PvpLeague.CheckExpiration();
+				this.AddLabel((Width / 2) - 12, 45, TitleHue, "PvP Sezona " + PvpLeague.Season); //#1116
 			} else {
 				this.AddLabel((Width / 2) - 12, 45, TitleHue, "PvP Sezona");
 			}
@@ -139,8 +142,10 @@ namespace SteamEngine.CompiledScripts {
 				this.AddBoosters(player);
 			} else if (section == SectionWeekly) {
 				WeeklyPage.Add(this, player, Width);
+			} else if ((section >= SectionPvp) && (section <= SectionPvp + PvpLeaguePage.LastPage)) {
+				PvpLeaguePage.Add(this, player, section, Width, Height); //#1116
 			} else {
-				//not ported yet: dungeon marks, boosters, weekly quests, the PvP league - #840
+				//not ported yet: dungeon marks - #840
 				this.AddLabel((Width / 2) - 62, Height / 2, HintHue, loc.NotAvailableYet);
 			}
 		}
