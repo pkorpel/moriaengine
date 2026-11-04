@@ -109,6 +109,9 @@ plane, flags (kept in Sphere hex), and a parent computed from which other region
 `EVENTS`/`RESOURCES`/`RAINCHANCE`/`COLDCHANCE`/`GROUP` pass through as-is. `CLASS` is dropped.
 `tag.nomask` -> `NoMask = 1` (no thief's mask there) and `tag.cFlags` (Sphere hex) -> `CustomFlags` in decimal:
 `region_cf_denyRecall_in` 0x10, `_out` 0x20, `instantRes` 0x80 (#1070).
+`tag.arena=1` adds the Arena bit (0x10000) to the area's `FLAGS` line (21 arenas; before #1116 it was dropped, so no arena counted
+as one), and `tag.bf` -> `Battlefield` (the keep conquest's front: 1, 2 Gondor's keeps, -1, -2 Mordor's; Erebor's +-3 lines
+are comments there and stay out).
 Until #813 every area threw in the constructor (it wrote `createdat` as a `DateTime`, no longer
 saveable), so no region was ever emitted. `sphereregion.scp`'s `[RegionType]`/`[RegionResource]`
 are still commented out (region resources come next on #813).

@@ -40,6 +40,11 @@ namespace SteamEngine.Converter {
 		private bool mapplaneSet;
 		private PropsLine mapplaneLine;
 
+		//#1116 - tag.arena goes into the FLAGS line, whichever of the two comes first
+		private bool arenaTag;
+		private int engineFlags = -1;
+		private string flagsName, flagsComment;
+
 
 
 		private static LineImplTask[] firstStageImpl = {
@@ -58,6 +63,8 @@ namespace SteamEngine.Converter {
 				new LineImplTask("tag.nomask", ParseNoMaskTag),
 				new LineImplTask("tag.cflags", ParseCustomFlagsTag),
 				new LineImplTask("tag.elven", ParseElvenTag),
+				new LineImplTask("tag.arena", ParseArenaTag),
+				new LineImplTask("tag.bf", ParseBattlefieldTag),
 
 				new LineImplTask("p", ParseP), 
 				new LineImplTask("rect", ParseRect), 
@@ -177,6 +184,27 @@ namespace SteamEngine.Converter {
 			}
 		}
 
+		//#1116 - tag.arena=1 marks Erebor's arenas: the engine's Arena flag (no PvP league points, no Nazgul kills, no exp loss)
+		private static void ParseArenaTag(ConvertedDef def, PropsLine line) {
+			ConvertedRegion region = (ConvertedRegion) def;
+			if (ConvertTools.ParseInt32(line.Value.Trim()) != 0) {
+				def.headerType = "FlaggedRegion";
+				region.arenaTag = true;
+				if (region.engineFlags >= 0) {
+					region.engineFlags |= (int) RegionFlags.Arena;
+					def.Replace(region.flagsName, "0x" + region.engineFlags.ToString("x", CultureInfo.InvariantCulture), region.flagsComment + " + tag.arena");
+				}
+			}
+		}
+
+		//#1116 - tag.bf: the battlefield's place on the front between the realms, 1 and 2 Gondor's keeps, -1 and -2 Mordor's
+		private static void ParseBattlefieldTag(ConvertedDef def, PropsLine line) {
+			string value = line.Value.Trim();
+			if (value.Length > 0) {
+				def.Set("Battlefield", value, line.Comment);
+			}
+		}
+
 		private static void ParseCityTag(ConvertedDef def, PropsLine line) {
 			def.Set("City", line.Value.Trim(), line.Comment);
 		}
@@ -278,7 +306,15 @@ namespace SteamEngine.Converter {
 				string lowerName = name.ToLowerInvariant();
 				if ((lowerName == "flags") || (lowerName == "flag")) {
 					int engineFlags = (int) FlaggedRegion.FromSphereFlags(value); //#818
-					def.Set(name, "0x" + engineFlags.ToString("x", CultureInfo.InvariantCulture), ("Sphere " + line.Value.Trim() + " " + line.Comment).Trim());
+					ConvertedRegion region = (ConvertedRegion) def;
+					string comment = ("Sphere " + line.Value.Trim() + " " + line.Comment).Trim();
+					if (region.arenaTag) {
+						engineFlags |= (int) RegionFlags.Arena;
+					}
+					region.engineFlags = engineFlags;
+					region.flagsName = name;
+					region.flagsComment = comment;
+					def.Set(name, "0x" + engineFlags.ToString("x", CultureInfo.InvariantCulture), comment + (region.arenaTag ? " + tag.arena" : ""));
 				} else {
 					def.Set(name, line.Value, line.Comment);
 				}
@@ -288,6 +324,10 @@ namespace SteamEngine.Converter {
 		}
 
 		public override void SecondStage() {
+			if (this.arenaTag && (this.engineFlags < 0)) {
+				this.headerType = "FlaggedRegion";
+				this.Set("FLAGS", "0x" + ((int) RegionFlags.Arena).ToString("x", CultureInfo.InvariantCulture), "tag.arena");
+			}
 			int rectanglesCount = this.rectangles.Count;
 			this.points = new Point2D[rectanglesCount * 4];
 			for (int i = 0; i < rectanglesCount; i++) {

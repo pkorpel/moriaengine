@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): 1116 PvP: league/events, Mordor arena, RP rank, keep conquest + commanders
+
+User: port these (#1069's PvP side). Not porting (user's call): CTF, bomberman, sheep game, wedding rings, wands. Specs: scratchpad/spec-pvp-arena-rp.md, spec-conquest.md (read them before each step). Plan of 14 PRs on #1116; defaults: mirror Erebor but fix clear bugs (note each), spots via .SetupWorld unreviewed, dead pits arena + turnaj telepads dropped, tournament tool / Murdoc gates / realm uniform / season reward parked for the user. Realm.Mordor is -1 (Erebor 2). Step 1, branch converter-arena-bf: converter folds tag.arena into FLAGS (a separate Flag_arena line was overwritten by the later FLAGS assignment), tag.bf -> FlaggedRegion.Battlefield; map.def regen +31 lines only. Tests in Tests/Protocol/PvpTests.cs (account 'pvp', 5 character slots: chain checks). Next: step 2, the league core.
+
 ## DONE (2026-11-04): 1114 GM command dialog + jail/camp in .info (branch gm-menu)
 
 User: a small dialog for all the GM commands; .jail/.forgive by state and the lagr menu in a player's .info. .gmmenu runs commands through Commands.PlayerCommand (same auth and parsing as typed); CharacterDescriptor gets Jailed/InLabourCamp fields, a Jail / Forgive toggle, a Labour camp button. Note: GameCore has a '.x <command>' targeted prefix (PlayerCommand), I wrongly said there was none. Gotcha: the moderation test collection's account 'moderation' has used all 5 character slots; a new check goes into an existing Fact. The info dialog sends itself again after a button: skip gumps until the expected one.
