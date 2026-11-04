@@ -498,6 +498,13 @@ namespace SteamEngine.Converter {
 			//the base ProcessCreateTriggerLine's bare switch has no default case and silently
 			//drops anything it doesn't recognize - these were never reaching the engine at
 			//all before this. See resistFieldAliases/EmitResistFields above for the mapping.
+			//#1022 - Erebor's "tag.had=c_druid_had": the serpent druid's serpent form - NPCDef.SerpentForm
+			if (name == "tag.had") {
+				if (!this.IsPlayerDefByName) {
+					this.Replace("SerpentForm", "\"" + value.Trim().Trim('"') + "\"", comment);
+				}
+				return;
+			}
 			//#925 - Erebor's "tag(magic_horse,roan)": the mount's powers, jezditka.scp's roan_mif - NPCDef.MagicHorse
 			if (name == "tag.magic_horse") {
 				if (!this.IsPlayerDefByName) {
