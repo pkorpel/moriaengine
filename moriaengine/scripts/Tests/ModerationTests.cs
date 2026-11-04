@@ -141,7 +141,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Console.WriteLine("AFK_STATE: check=" + self.HasTimer(AfkCheckTimer.Key) + " countdown=" + self.HasTimer(AfkCountdownTimer.Key) + " letters=" + letters + " dots=" + dots +
 				" fails=" + AfkCheck.Failures(self) + " inCamp=" + Camp.IsInCamp(self) + " afkLevel=" + Camp.Level(self.Account, true) + " owed=" + Camp.Sentence(self) +
-				" logged=" + AfkLog.Lines.Count + " |");
+				" logged=" + AfkLogBook.Lines.Count + " |");
 		}
 
 		[SteamFunction]
@@ -152,6 +152,22 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Camp.SetLevel(self.Account, true, 0);
 			Console.WriteLine("AFK_RESTORED");
+		}
+
+		/// <summary>#1107 step 4 - one camp line in an otherwise empty AFK log, Mining 50.0, AFK level 2.</summary>
+		[SteamFunction]
+		public static void TestAfkLogSetup(Character self) {
+			AfkLogBook.Lines.Clear();
+			self.SetRealSkillValue((int) SkillName.Mining, 500);
+			Camp.SetLevel(self.Account, true, 2);
+			AfkLogBook.Add(self, "makrar do lagru za Skill_Mining", "Skill_Mining");
+			AfkLogBook.Add(self, "zacala AFK kontrola (15 s)", null);
+			Console.WriteLine("AFKLOG_SETUP: index=0 count=" + AfkLogBook.Lines.Count);
+		}
+
+		[SteamFunction]
+		public static void TestAfkLogState(Character self) {
+			Console.WriteLine("AFKLOG_STATE: mining=" + self.GetSkill(SkillName.Mining) + " afkLevel=" + Camp.Level(self.Account, true) + " count=" + AfkLogBook.Lines.Count + " |");
 		}
 
 		[SteamFunction]

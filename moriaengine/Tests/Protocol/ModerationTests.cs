@@ -178,6 +178,38 @@ namespace SteamEngine.Tests.Protocol {
 		}
 
 		private const int D_AfkCheckOk = 1;
+
+		/// <summary>#1107 step 4 - the AFK log: punish lowers the macroed skill, pardon takes back an AFK level, the filter,
+		/// delete.</summary>
+		[Fact]
+		public void TheLogPunishesPardonsFiltersAndDeletes() {
+			using var client = CommandPermissionTests.Connect("moderation", "Afk Log Tester");
+			this.Ask(client, ".TestAfkLogSetup", "AFKLOG_SETUP:");
+
+			client.SendSpeech(".afklog");
+			var (logUid, _, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			Assert.Contains(strings, s => s.Contains("makrar do lagru za Skill_Mining"));
+			client.SendGumpResponse(logUid, 100000, new System.Collections.Generic.Dictionary<int, string>()); //Trest on the camp line
+			var (inputUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+			client.SendGumpResponse(inputUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 1, "10.0" } });
+			Thread.Sleep(300);
+			Assert.Contains("mining=400 afkLevel=2 count=3", this.Ask(client, ".TestAfkLogState", "AFKLOG_STATE:")); //the punishment is logged too
+
+			client.SendSpeech(".afklog");
+			(logUid, _, _) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			client.SendGumpResponse(logUid, 1000000, new System.Collections.Generic.Dictionary<int, string>()); //Milost
+			var (confirmUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+			client.SendGumpResponse(confirmUid, 1, new System.Collections.Generic.Dictionary<int, string>());
+			Thread.Sleep(300);
+			Assert.Contains("afkLevel=1 count=4", this.Ask(client, ".TestAfkLogState", "AFKLOG_STATE:"));
+
+			client.SendSpeech(".afklog makrar");
+			(logUid, _, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			Assert.Contains(strings, s => s.StartsWith("Vyhovujici zpravy: 1 celkem: 4"));
+			client.SendGumpResponse(logUid, 10000, new System.Collections.Generic.Dictionary<int, string>()); //Smaz the first line
+			client.ReadGumpDialog(TimeSpan.FromSeconds(10));
+			Assert.Contains("count=3", this.Ask(client, ".TestAfkLogState", "AFKLOG_STATE:"));
+		}
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]
