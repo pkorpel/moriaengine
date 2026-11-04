@@ -327,6 +327,51 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 14 - recall and gate onto and off the battlefields.</summary>
+	[Collection(ConquestCollection.Name)]
+	public class ConquestTravelTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private readonly GameServerPairFixture fixture;
+
+		public ConquestTravelTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private static void SeeMessage(TestGameClient client, string text) {
+			List<string> seen = new List<string>();
+			for (int i = 0; i < 30; i++) {
+				string message = client.ReadSystemMessage(Wait);
+				if (message.Contains(text)) {
+					return;
+				}
+				seen.Add(message);
+			}
+			Assert.Fail("No '" + text + "' among: " + string.Join(" / ", seen));
+		}
+
+		[Fact]
+		public void RecallAndGateKeepToTheirOwnBattlefields() {
+			using var client = CommandPermissionTests.Connect("conquestthird", "Conquest Traveller");
+			this.Ask(client, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+			this.Ask(client, ".TestTravelReady", "TRAVEL_READY");
+			//the other realm's keep
+			Assert.Contains("refused=True allowsIn=False fort=Mordor_1", this.Ask(client, ".TestTravelCast \"recall enemy\"", "TRAVEL_CAST:"));
+			SeeMessage(client, "Toto uzemi bys napred musel dobyt.");
+			//our keep, with the enemy's war on it within the hour
+			Assert.Contains("refused=True allowsIn=False", this.Ask(client, ".TestTravelCast \"gate war\"", "TRAVEL_CAST:"));
+			SeeMessage(client, "Na uzemi, na kterem brzy Mordor zacne (nebo uz zacal) valku, se nelze premistovat.");
+			//no gate out of it either
+			Assert.Contains("refused=True", this.Ask(client, ".TestTravelCast \"gateout war\"", "TRAVEL_CAST:"));
+			SeeMessage(client, "Z uzemi, kteremu Mordor vyhlasil valku, nelze otvirat cestovni brany.");
+			//our keep with no war near: open
+			Assert.Contains("refused=False allowsIn=True", this.Ask(client, ".TestTravelCast \"recall free\"", "TRAVEL_CAST:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ConquestCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Conquest";

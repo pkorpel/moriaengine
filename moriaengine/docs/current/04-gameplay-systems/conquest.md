@@ -202,6 +202,21 @@ Fixed from Erebor:
   guard knows its keep, and the list holds characters, not names.
 - The "already listed" line names the target; Erebor's named the captain.
 
+## Travel
+
+Erebor's battlefield rules for Recall and Gate Travel (`e_allplayers` @spellcast, `ConquestTravel`), checked in the
+spells' `@start` (`teleportingSpells.def`). GMs aren't refused.
+
+- **A rune into a keep's battlefield** works only for a player of the realm that holds the keep: "Toto uzemi bys
+  napred musel dobyt.". It also doesn't work while a war on the keep runs, or on its day from an hour before the
+  start: "Na uzemi, na kterem brzy Mordor zacne (nebo uz zacal) valku, se nelze premistovat.".
+- **A gate from inside a keep's battlefield** doesn't open at those same times: "Z uzemi, kteremu Mordor vyhlasil
+  valku, nelze otvirat cestovni brany.".
+- Recall out of a battlefield isn't limited, nor is Mark, as on Erebor.
+
+Fixed from Erebor: Mordor's gate-out check read Gondor's declarator's day, and both compared the day of the month
+alone.
+
 ## Commands for players
 
 Erebor gave plevel 1 its conquest commands (`skillgains.scp`): `.dobyvani`, `.keep*`, `.mordorkeep*`,
@@ -254,3 +269,9 @@ the right for 100 000. `PalantirTests.BreachCounterCaptureAndTheCashBox`:
 - a capture gives the winners' war lord (7+1 points) a 2 h booster and a Mordor defender (3) a 1 h one;
 - a defended war rewards the defenders;
 - a craftsman isn't registered.
+
+`ConquestTravelTests.RecallAndGateKeepToTheirOwnBattlefields` runs the spells' real `@start`:
+- Recall into the other realm's keep is refused, with its message seen by the client;
+- Gate into an own keep is refused with the enemy's war half an hour off;
+- a gate out of it is refused too;
+- Recall into an own keep with no war near is let through.
