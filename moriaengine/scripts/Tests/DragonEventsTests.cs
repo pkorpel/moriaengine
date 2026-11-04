@@ -587,6 +587,12 @@ namespace SteamEngine.CompiledScripts {
 			MonsterSpecialAttacks.TryDarkmoonMorph(moon);
 			def.Chance = chance;
 			line += " hit: changed=" + (first != moon.Def) + " waits=" + (MonsterSpecialAttacks.TuningDef(moon) == first);
+			NPC spellMoon = (NPC) ThingDef.GetByDefname("c_darkmoon").Create(self.X - 2, self.Y, self.Z, self.M);
+			def.Chance = 1000;
+			DamageManager.CauseSpellDamage(self, spellMoon, DamageType.MagicFire, 1);
+			def.Chance = chance;
+			line += " spell: changed=" + (MonsterSpecialAttacks.TuningDef(spellMoon) != spellMoon.Def);
+			spellMoon.Delete();
 			Console.WriteLine("DARKMOON_TEST: " + line + " |");
 		}
 

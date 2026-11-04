@@ -184,6 +184,8 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.True(line.Contains("own: model=True dispel=True lightnings=False tuning=True blunt=850"), line);
 			//a blow changes her, then she waits out the cooldown
 			Assert.True(line.Contains("hit: changed=True waits=True"), line);
+			//a spell's hit makes her change too
+			Assert.True(line.Contains("spell: changed=True"), line);
 		}
 	}
 
