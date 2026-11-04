@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SteamEngine.Regions;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1116 - server side of Tests/Protocol/PvpTests.cs.</summary>
@@ -131,6 +132,80 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestRpRankState(Character self) {
 			List<string> log = RpRanks.Log(self);
 			Console.WriteLine("RP_STATE: rank=" + RpRanks.Of(self) + " last=" + ((log.Count > 0) ? log[log.Count - 1] : "") + " |");
+		}
+
+		private static NPC agent;
+
+		/// <summary>#1116 step 5 - a Gondor player with no murders, karma 50, fame 100, 200 gold, beside the arena agent.</summary>
+		[SteamFunction]
+		public static void TestArenaReady(Character self) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			player.Home = new Point4D(self.X, self.Y, self.Z, self.M);
+			self.Account.PLevel = 1;
+			player.Realm = Realm.Gondor;
+			Notoriety.SetMurderCount(player, 0);
+			player.Karma = 50;
+			player.Fame = 100;
+			foreach (AbstractItem item in new List<AbstractItem>(player.Backpack)) {
+				item.Delete();
+			}
+			((Item) ThingDef.GetByDefname("i_gold").Create(player.Backpack)).Amount = 200;
+			agent = (NPC) ThingDef.GetByDefname("c_arena_obchodnik").Create(self.X + 1, self.Y, self.Z, self.M);
+			agent.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			Console.WriteLine("ARENA_READY");
+		}
+
+		/// <summary>Skip the rest of the 30 s countdown.</summary>
+		[SteamFunction]
+		public static void TestArenaHurry(Character self) {
+			ArenaCountdown timer = self.GetTimer(ArenaCountdown.Key) as ArenaCountdown;
+			if (timer != null) {
+				timer.left = 0;
+			}
+			Console.WriteLine("ARENA_HURRY: counting=" + (timer != null));
+		}
+
+		[SteamFunction]
+		public static void TestArenaState(Character self) {
+			Player player = (Player) self;
+			FlaggedRegion area = RegionEventSystem.AreaOf(self.Region);
+			Point4D home = player.Home;
+			Console.WriteLine("ARENA_STATE: in=" + Arena.IsIn(player) + " area=" + ((area == null) ? "" : area.Defname) + " gold=" + GoldUtils.CountGoldIn(player.Backpack) +
+				" murders=" + Notoriety.GetMurderCount(player) + " karma=" + player.Karma + " fame=" + player.Fame + " realm=" + player.Realm +
+				" atHome=" + ((home != null) && (self.M == home.M) && (Point2D.GetSimpleDistance(self, home) <= 1)) +
+				" recallRefused=" + Arena.RefusesSpell(self, SpellDef.GetById(32)) + " |");
+		}
+
+		/// <summary>What the arena may change: murders, karma, fame.</summary>
+		[SteamFunction]
+		public static void TestArenaFight(Character self) {
+			Notoriety.SetMurderCount((Player) self, 3);
+			self.Karma = -100;
+			self.Fame = 0;
+			Console.WriteLine("ARENA_FIGHT");
+		}
+
+		/// <summary>Out through the exit gate, or moved out of the area.</summary>
+		[SteamFunction]
+		public static void TestArenaExit(Character self, ScriptArgs sa) {
+			string how = (sa == null) ? "" : sa.Args.Trim().Trim('"');
+			if (how == "gate") {
+				Item gate = (Item) ThingDef.GetByDefname(Arena.ExitGateDef).Create(self.X, self.Y, self.Z, self.M);
+				Arena.OnStep(self, gate);
+				gate.Delete();
+			} else {
+				self.Go(((Player) self).Home);
+			}
+			Console.WriteLine("ARENA_EXIT");
+		}
+
+		[SteamFunction]
+		public static void TestArenaEnterDirectly(Character self) {
+			Arena.Enter((Player) self);
+			self.Go(Arena.ArenaFor(Realm.Gondor).P);
+			Console.WriteLine("ARENA_ENTERED");
 		}
 
 		/// <summary>The converter's tag.arena and tag.bf, as the regions loaded them.</summary>

@@ -9,7 +9,7 @@ namespace SteamEngine.Tests.Protocol {
 	public class WorldSetupRestartTests {
 		private const string Account = "worldsetuprestart";
 		private const string Password = "worldsetuprestart";
-		private const int AllPieces = 475; //371 + 99 stall and field signs + 2 alchemists (#1017) + 2 Prodejce (#1070) + the camp guard (#1107)
+		private const int AllPieces = 481; //371 + 99 stall and field signs + 2 alchemists (#1017) + 2 Prodejce (#1070) + the camp guard (#1107) + 6 arena pieces (#1116)
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(30);
 
 		[Fact]

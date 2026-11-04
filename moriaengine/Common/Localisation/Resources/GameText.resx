@@ -2116,4 +2116,46 @@
   <data name="GmToolsLoc_NotFound" xml:space="preserve">
     <value>Nenalezeno: {0}</value>
   </data>
+  <data name="ArenaLoc_EnteredMale" xml:space="preserve">
+    <value>Vstoupil jsi do areny - pro jeji opusteni pouzij prislusnou gatu, bude ti vracena karma.</value>
+  </data>
+  <data name="ArenaLoc_EnteredFemale" xml:space="preserve">
+    <value>Vstoupila jsi do areny - pro jeji opusteni pouzij prislusnou gatu, bude ti vracena karma.</value>
+  </data>
+  <data name="ArenaLoc_LeftMale" xml:space="preserve">
+    <value>Odesel jsi z areny - byla ti vracena karma.</value>
+  </data>
+  <data name="ArenaLoc_LeftFemale" xml:space="preserve">
+    <value>Odesla jsi z areny - byla ti vracena karma.</value>
+  </data>
+  <data name="ArenaLoc_NoSpell" xml:space="preserve">
+    <value>V arene nelze pouzit.</value>
+  </data>
+  <data name="ArenaLoc_NoLooting" xml:space="preserve">
+    <value>Tady nesmis okradat cizi tela.</value>
+  </data>
+  <data name="ArenaLoc_NoCarving" xml:space="preserve">
+    <value>Tady nesmis rozrezavat cizi tela.</value>
+  </data>
+  <data name="ArenaLoc_Countdown" xml:space="preserve">
+    <value>Cas do presunu: {0} s</value>
+  </data>
+  <data name="ArenaLoc_AgentHello" xml:space="preserve">
+    <value>Zdravim! Mas zajem podivat se do areny? Poplatek je 200 zlatych. Mas-li je, staci rict ARENA!</value>
+  </data>
+  <data name="ArenaLoc_NoMoney" xml:space="preserve">
+    <value>Nemas u sebe 200 zlatych. Je mi lito, ale nejsme charita.</value>
+  </data>
+  <data name="ArenaLoc_GuardHello" xml:space="preserve">
+    <value>Vitej v arene {0}, potrebujes pomoci?</value>
+  </data>
+  <data name="ArenaLoc_GuardHelp" xml:space="preserve">
+    <value>Zde muzes trenovat svoje dovednosti v boji proti svym protivnikum. Potrebujes vedet, kde je vychod? Nebo chces do areny?</value>
+  </data>
+  <data name="ArenaLoc_GuardEntry" xml:space="preserve">
+    <value>Vchod do trenovaci areny je ta modra brana.</value>
+  </data>
+  <data name="ArenaLoc_GuardExit" xml:space="preserve">
+    <value>Tou cervenou branou.</value>
+  </data>
 </root>
