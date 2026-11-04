@@ -94,6 +94,7 @@ namespace SteamEngine.CompiledScripts {
 			if (oldArea == newArea) {
 				return;
 			}
+			Arena.OnAreaChanged(ch); //#1116 - out of the arena, the arena state ends
 			if (oldArea != null) {
 				foreach (string name in new List<string>(oldArea.RegionEvents)) {
 					Exit(name, ch);

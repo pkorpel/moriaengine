@@ -110,6 +110,42 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 5 - the training arena.</summary>
+	[Collection(PvpCollection.Name)]
+	public class ArenaTests {
+		private readonly GameServerPairFixture fixture;
+
+		public ArenaTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		[Fact]
+		public void InForAFeeOutWithEverythingBack() {
+			using var client = CommandPermissionTests.Connect("pvp", "Arena Tester");
+			this.Ask(client, ".TestArenaReady", "ARENA_READY");
+			client.SendSpeech("arena");
+			Thread.Sleep(500);
+			Assert.Contains("counting=True", this.Ask(client, ".TestArenaHurry", "ARENA_HURRY:"));
+			Thread.Sleep(2500);
+			Assert.Contains("in=True area=a_Gondorska_bojova_arena gold=0 murders=0 karma=50 fame=100 realm=Gondor atHome=False recallRefused=True", this.Ask(client, ".TestArenaState", "ARENA_STATE:"));
+			//what the arena changed comes back, a 0 too (Erebor kept arena murders when they had none), and the gate sends home
+			this.Ask(client, ".TestArenaFight", "ARENA_FIGHT");
+			this.Ask(client, ".TestArenaExit \"gate\"", "ARENA_EXIT");
+			Assert.Contains("in=False area=", this.Ask(client, ".TestArenaState", "ARENA_STATE:"));
+			Assert.Contains("murders=0 karma=50 fame=100 realm=Gondor atHome=True recallRefused=False", this.Ask(client, ".TestArenaState", "ARENA_STATE:"));
+			//moved out some other way, it ends there too
+			this.Ask(client, ".TestArenaEnterDirectly", "ARENA_ENTERED");
+			this.Ask(client, ".TestArenaFight", "ARENA_FIGHT");
+			this.Ask(client, ".TestArenaExit \"move\"", "ARENA_EXIT");
+			Assert.Contains("in=False", this.Ask(client, ".TestArenaState", "ARENA_STATE:"));
+			Assert.Contains("murders=0 karma=50 fame=100", this.Ask(client, ".TestArenaState", "ARENA_STATE:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class PvpCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Pvp";

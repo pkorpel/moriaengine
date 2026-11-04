@@ -50,6 +50,10 @@ namespace SteamEngine.CompiledScripts {
 			if (!(self is Player)) {
 				return true; //e_allplayers
 			}
+			if (Arena.RefusesSpell(self, spell)) {
+				fizzle = false;
+				return false; //#1116 - e_arena
+			}
 			MageryRulesLoc texts = Loc<MageryRulesLoc>.Get(self.Language);
 			if (spell.IsCustom) { //customspellcast knows nothing of @spellcast
 				fizzle = false;

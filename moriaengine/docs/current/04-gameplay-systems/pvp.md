@@ -69,3 +69,44 @@ rank; that event isn't ported.
 
 Test: `RpRankTests.GmSetsItThroughTheDialogsAndItMovesExperience` (protocol: Erebor's percentages, a refused 8, the
 real `.rprank` dialogs, `.explevel`).
+
+## Arenas
+
+Erebor's `systems/arena.scp`, `questy/arena_crunch.scp`, `questy/arena_chars.scp` (`Arena`, `ArenaSpeech`).
+
+**Arena areas.** 21 areas carry the Arena flag (Erebor's `tag.arena`, kept by the converter since #1117). Inside them:
+- a death doesn't count for PvP (no league points, no Nazgul kills);
+- a death costs no experience;
+- the region's attack rules allow fighting your own realm.
+
+**The training arena.**
+- The Umbar Company's agent (`c_arena_obchodnik`) stands in Minas Tirith and in Barad-dur. To *hi*/*ahoj*/*dobry den*
+  he offers the arena; to *arena* he takes 200 gold (`GoldUtils.Pay`). Then "Cas do presunu: n s" counts 30 seconds,
+  and the player goes to the Gondorska bojova arena (plane 5) if of Gondor, the Mordorska (plane 55) if of Mordor.
+- A player of neither realm is refused before paying. On Erebor the gold was taken and nothing happened.
+- His lines on seeing a new player aren't ported: there's no NPC "sees a new player" hook here.
+- In each arena stand its guard (`c_arena_strazce`) and the red exit gate (`I_gate_arena_vystup`). The guard answers
+  *hi*, *help*/*pomoc*, *arena* and *exit*/*vychod* with Erebor's lines.
+
+**The arena state.**
+- Going in keeps the player's karma, murders, fame, realm, deaths, player kills and monster kills. Leaving puts them
+  all back and forgives a crime.
+- Leaving is through the exit gate, which then sends the player home, or by being moved out of the arena area any
+  other way. Erebor's net was "a double-click outside an arena ends it and sends you home".
+- Fixed from Erebor: a 0 is put back too. Erebor's `if (TAG(x))` skipped zeroes, so arena murders stuck to anyone who
+  came in with none.
+- While inside: Recall, Mark and Gate Travel say "V arene nelze pouzit."; another player's body can't be looted
+  ("Tady nesmis okradat cizi tela.") or carved ("Tady nesmis rozrezavat cizi tela.").
+
+`.SetupWorld` places the agents, guards and gates (`ArenaSetup`). The spots are chosen here and unreviewed: Erebor's
+were GM-placed.
+
+**Dead on Erebor, not ported:**
+- the older "pits" arena (`spk_go_arena*`, whose NPCs no chardef used, `i_delay_arena`, `I_gate_arena_vstup`), which
+  sent players to 5521,3701,35, a spot inside no arena;
+- `tim/turnaj.scp`'s telepads, which no item used.
+
+**Not ported yet, the user's call (#1116):** the team tournament GM tool and the Murdoc PvP gates.
+
+Test: `ArenaTests.InForAFeeOutWithEverythingBack` (protocol). It checks the real *arena* speech and fee, the
+countdown, the state with recall refused, the way out through the gate with a 0 restored, and the way out by moving.
