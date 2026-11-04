@@ -1441,6 +1441,7 @@ namespace SteamEngine.CompiledScripts {
 				}
 
 				if (corpse != null) {
+					string undead = MonsterSpecialAttacks.UndeadFor(this); //#1022 e_necroslave, read while the gear is still on
 					corpse.InitFromChar(this);
 					corpse.NoteDeath(killedBy); //#962 - Forensics
 
@@ -1449,6 +1450,7 @@ namespace SteamEngine.CompiledScripts {
 					//must run here, before this.Delete() below, while this NPC's own position is
 					//still valid. See MonsterSpecialAttacks.TryApplySelfRes's own doc comment.
 					MonsterSpecialAttacks.TryApplySelfRes(this, corpse);
+					MonsterSpecialAttacks.OnBodyLaid(this, corpse, killedBy, undead); //#1022 OCS helpers, e_necroslave
 				}
 
 				//#797 - a_tevent_e_explode blasts everyone who fought it, same "position still

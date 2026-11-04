@@ -130,7 +130,7 @@ The 19 stubs with an empty block on Erebor and the 3 with no source stay as labe
 
 ## Bombs, illusions and shapeshifters (#1022)
 
-`BlowUp.cs`, `Illusionist.cs`, `Shapeshifter.cs`, `SummonFoes.cs`. `e_npc_blow_up` lights a two-stage fuse next to a player and blasts `16 * (9 - distance)` past armor, ten times that to NPCs, leaving no corpse. `e_illusionist` makes five one-hit copies for 30 s, with no wait, as Erebor's never worked. The three `e_menavec` abilities change the look for 20 s, not the stats. `e_npc_summonkiller` doubles blows on summons. `e_summonfrenzy` stops a masterless summon. `e_elem_terror` blasts its fighters as it dies. `e_undeads_ability_life` waits for #1017 and `e_necroslave` for the bosses.
+`BlowUp.cs`, `Illusionist.cs`, `Shapeshifter.cs`, `SummonFoes.cs`. `e_npc_blow_up` lights a two-stage fuse next to a player and blasts `16 * (9 - distance)` past armor, ten times that to NPCs, leaving no corpse. `e_illusionist` makes five one-hit copies for 30 s, with no wait, as Erebor's never worked. The three `e_menavec` abilities change the look for 20 s, not the stats. `e_npc_summonkiller` doubles blows on summons. `e_summonfrenzy` stops a masterless summon. `e_elem_terror` blasts its fighters as it dies. `e_undeads_ability_life` waits for #1017; `e_necroslave` is under Dying bosses.
 
 ## Guards on sight (#1022)
 
@@ -269,3 +269,55 @@ Test: `SummoningBossTests` (protocol):
 - SwARPUS: worms on sight once, poison refused, worms on a heal;
 - guardian: golem, vanishing without experience.
 
+
+## Dying bosses (#1022)
+
+`BossDeaths.cs`. Erebor's `systems/aldaron.scp`, `systems/new_events.scp` and `systems/macros.scp`. A boss that is "gone"
+is deleted: no death, body, loot or experience. "Zarici brana" is a variable gate (`i_varGate`) that goes after its time.
+
+**OCS (Rascal, `c_ocs_boss`):**
+- `e_explosionlava`, when hit:
+  - Chance 50 permille, at most once in 30 s, and the first one only 30 s after the first blow (Rascal's own: 350, 10 s);
+  - "throws lava bomb": a lit Lava Bomb on a random tile within 5 (Rascal: 6), fixed to the ground, which goes off as
+    the potion does.
+
+  Fixed from Erebor: the throw no longer sets the attacker's potion delay, and the spent bottle doesn't stay as litter.
+- `e_ocs_boss_resurrection_able` (the two helpers): a helper's body is remembered for 200 s, then it goes with what's
+  left in it.
+- `e_ocs_boss_resser` (Rascal), when hit, 100 permille: "Pomocnici moji, povstante!", and every remembered body rises as a
+  fresh helper worth no experience, kept within 3 tiles of the spot, gone after 7200 s. Erebor kept the bodies in a
+  container a GM set up by uid in the world; here the server remembers them.
+- `e_bomba_boy` (Duse Nakazeneho): after its first swing, landed or dodged, "Umrete!" and an explosion; a second later
+  every player within 4 takes 60 (the species' `tag.bomba_boy_dmg`), 5 less a tile beyond the first, and it's gone.
+
+**Gates:**
+- `e_ztracene_mesto_paladin_boss`: dying, black fire columns and a gate to 807,633,0 on plane 2 for 300 s.
+- `e_strach_lord1` (`c_strach_mage_chief`): below a sixth of his hits, "Beleg Faroth Kel", "Pokud mate odvahu se mi
+  postavit tak mne nasledujte!", he stands in fire, opens a gate to 5348,4063,1 on plane 10 for 1000 s, and is gone 3 s
+  later.
+
+  Fixed from Erebor: once (every blow in those 3 s opened another gate), and on plane 10 (Erebor's target had no plane,
+  so it led to plane 0).
+
+**Beridor:**
+- `e_beridornecro` (Arghelior): his first three blows taken get a line each, then "Aaaargh !", "Zhynte !" or "Neeee!".
+  Below half his hits, "Konec legrace !", "Heru Val Foalooke !", "Necht plamen pohlti vase duse!", a ring of fire, the
+  Beridor dragon where he stood, and he's gone 4 s later. Erebor fired a spawn a GM had placed; here the dragon comes at
+  his spot.
+- `e_necroslave` (Beridor's warriors, mages and dragon, and players dying in an `e_beridor` area): a while after death
+  (the monster's `SelfresDelay`, 10 s for a player) the body rises as an undead, picked by what the dead held:
+  - a bow or crossbow: an archer; a two-handed sword or axe: an axeman; a shield: a knight;
+  - else a one-handed sword, axe or fencing blade (not a dagger or skinning knife): a knight; else a mage;
+  - Erebor read Sphere's second hand for the two-handed weapons; they sit on the first hand here, so it goes by the
+    weapon's kind;
+  - a dragon: a bone dragon;
+  - level 2 or 3 for a monster; for a player by level: up to 11 the plain one, to 30 level 2, to 50 level 2 or 3, above
+    that level 3 or 4.
+
+  It takes the dead one's name and everything left in the body, gives no experience, and is gone after 3600 s. A carved
+  body doesn't rise: "Mas stesti, zes telo rozrezal!". Summons never rise.
+
+  Fixed from Erebor: a death with no body leaves nothing waiting, and the empty body goes.
+
+Test: `DyingBossTests` (protocol): the lava bomb's first delay and its one bomb, the ghost's blast, the paladin's and Lord
+Strachu's gates (once), OCS helpers rising, Arghelior's dragon, the undead by weapon and a carved body.

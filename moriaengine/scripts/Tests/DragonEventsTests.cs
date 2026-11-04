@@ -279,6 +279,184 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("BOSS_TEST: " + what + " " + line + " |");
 		}
 
+		private static NPC ghost;
+		private static readonly List<Corpse> risingBodies = new List<Corpse>();
+		private static readonly List<string> risingNames = new List<string>();
+
+		private static List<Item> ItemsNear(Character self, string defname) {
+			List<Item> found = new List<Item>();
+			foreach (AbstractItem item in self.GetMap().GetItemsInRange(self.X, self.Y, 8)) {
+				if ((item is Item it) && !it.IsDeleted && (it.Def == ThingDef.GetByDefname(defname))) {
+					found.Add(it);
+				}
+			}
+			return found;
+		}
+
+		/// <summary>The "Zarici brana" gates around as "x,y,plane;" each, then gone.</summary>
+		private static string TakeGates(Character self) {
+			string gates = "";
+			foreach (Item gate in ItemsNear(self, "i_varGate")) {
+				if (gate.Name == "Zarici brana") {
+					VarGate vg = (VarGate) gate;
+					gates += vg.MoreP.X + "," + vg.MoreP.Y + "," + vg.MoreP.M + (gate.GetTimer(TimerKey.Acquire("_bossVanish_")) != null ? "" : "!forever") + ";";
+					gate.Delete();
+				}
+			}
+			return (gates.Length == 0) ? "none" : gates;
+		}
+
+		/// <summary>A body waiting to rise at x,y not taken yet (the dead is deleted by now).</summary>
+		private static Corpse BodyOf(Character self, int x, int y) {
+			foreach (AbstractItem item in self.GetMap().GetItemsInRange(x, y, 0)) {
+				if ((item is Corpse corpse) && !corpse.IsDeleted && (corpse.GetTimer(NecroRiseTimer.Key) != null) && !risingBodies.Contains(corpse)) {
+					return corpse;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>#1022 PR 3 - the dying bosses.</summary>
+		[SteamFunction]
+		public static void TestDeathBoss(Character self, ScriptArgs sa) {
+			string what = sa.Args.Trim().Trim('"');
+			string line;
+			switch (what) {
+				case "lava": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC rascal = Boss(self, "c_ocs_boss", 2);
+						MonsterSpecialAttacks.TryDeathBossReactions(rascal, self);
+						int first = ItemsNear(self, "i_potion_Lava").Count;
+						rascal.SetTag(MonsterSpecialAttacks.lavaBombNextTK, 0.0);
+						for (int i = 0; i < 60; i++) {
+							MonsterSpecialAttacks.TryDeathBossReactions(rascal, self);
+						}
+						List<Item> bombs = ItemsNear(self, "i_potion_Lava");
+						bool armed = (bombs.Count == 1) && bombs[0].HasTimer(BombFuseTimer.Key) && bombs[0].Flag_NonMovable;
+						line = "first=" + first + " bombs=" + bombs.Count + " armed=" + armed + " cooldown=" + ((NPCDef) rascal.Def).AbilityTuning("lavaBombCooldown")?[0];
+						foreach (Item bomb in bombs) {
+							bomb.Delete();
+						}
+						break;
+					}
+				case "bomba": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						ghost = Boss(self, "c_ocs_dusa_nakazeneho", 2);
+						Mark(self);
+						MonsterSpecialAttacks.TryDeathBossOwnSwing(ghost);
+						line = "fuse=" + (ghost.GetTimer(BombaBoyTimer.Key) != null) + " tuned=" + ((NPCDef) ghost.Def).AbilityTuning("bombaBoyDamage")?[0];
+						break;
+					}
+				case "bombaafter":
+					line = "lost=" + (hitsBefore - self.Hits) + " gone=" + ghost.IsDeleted;
+					break;
+				case "paladin": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						TakeGates(self);
+						NPC paladin = Boss(self, "c_ztracene_mesto_paladin", 2);
+						paladin.CauseDeath(self);
+						line = "gates=" + TakeGates(self);
+						break;
+					}
+				case "lord1": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC lord = Boss(self, "c_strach_mage_chief", 2);
+						MonsterSpecialAttacks.TryDeathBossReactions(lord, self);
+						string early = TakeGates(self);
+						lord.Hits = (short) ((lord.MaxHits / 6) - 1);
+						MonsterSpecialAttacks.TryDeathBossReactions(lord, self);
+						MonsterSpecialAttacks.TryDeathBossReactions(lord, self);
+						line = "early=" + early + " gates=" + TakeGates(self) + " frozen=" + NPCAiTimer.IsFrozen(lord) +
+							" vanishing=" + (lord.GetTimer(TimerKey.Acquire("_bossVanish_")) != null);
+						break;
+					}
+				case "ocs": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						OcsHelperRecord.All.Clear();
+						foreach (string helperDef in new[] { "C_ocs_boss_helper_1", "C_ocs_boss_helper_2" }) {
+							NPC helper = (NPC) ThingDef.GetByDefname(helperDef).Create(self.X + 2, self.Y, self.Z, self.M);
+							helper.CauseDeath(self);
+						}
+						int bodies = OcsHelperRecord.All.Count;
+						List<Corpse> corpses = new List<Corpse>(OcsHelperRecord.All);
+						NPC rascal = Boss(self, "c_ocs_boss", 3);
+						int raised = MonsterSpecialAttacks.RaiseOcsHelpers(rascal, MonsterSpecialAttacks.OcsResserDef);
+						int noExp = 0;
+						foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, 6)) {
+							if ((ch is NPC npc) && !npc.IsDeleted && npc.Def.PrettyDefname.StartsWith("C_ocs_boss_helper", StringComparison.OrdinalIgnoreCase) &&
+									(npc.ExperienceReward == 0) && (npc.GetTimer(TimerKey.Acquire("_bossVanish_")) != null)) {
+								noExp++;
+							}
+						}
+						line = "bodies=" + bodies + " raised=" + raised + " risenNoExp=" + noExp + " bodiesGone=" + corpses.TrueForAll(c => c.IsDeleted) +
+							" again=" + MonsterSpecialAttacks.RaiseOcsHelpers(rascal, MonsterSpecialAttacks.OcsResserDef);
+						break;
+					}
+				case "beridor": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC necro = Boss(self, "c_beridor_necro", 2);
+						MonsterSpecialAttacks.TryDeathBossReactions(necro, self);
+						int early = Near(self, "c_dragon_beridor", null);
+						necro.Hits = (short) ((necro.MaxHits / 2) - 1);
+						MonsterSpecialAttacks.TryDeathBossReactions(necro, self);
+						MonsterSpecialAttacks.TryDeathBossReactions(necro, self);
+						line = "early=" + early + " dragons=" + Near(self, "c_dragon_beridor", null) + " frozen=" + NPCAiTimer.IsFrozen(necro) +
+							" vanishing=" + (necro.GetTimer(TimerKey.Acquire("_bossVanish_")) != null);
+						break;
+					}
+				case "necro": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						risingBodies.Clear();
+						risingNames.Clear();
+						string kinds = "";
+						//what the dead held decides the undead
+						NPC probe = (NPC) ThingDef.GetByDefname("c_beridor_war").Create(self.X + 2, self.Y, self.Z, self.M);
+						foreach (Item held in new List<Item> { probe.FindLayer(LayerNames.Hand1) as Item, probe.FindLayer(LayerNames.Hand2) as Item }) {
+							held?.Delete();
+						}
+						kinds += MonsterSpecialAttacks.UndeadFor(probe).Split('_')[2] + ",";
+						probe.TryEquip((Item) ThingDef.GetByDefname("i_bow").Create(probe.Backpack));
+						kinds += MonsterSpecialAttacks.UndeadFor(probe).Split('_')[2] + ",";
+						probe.Delete();
+						kinds += (MonsterSpecialAttacks.UndeadFor(self) ?? "none");
+						//two warriors die: one body rises, the other is carved first
+						for (int i = 0; i < 2; i++) {
+							NPC dead = (NPC) ThingDef.GetByDefname("c_beridor_war").Create(self.X + 2, self.Y + i, self.Z, self.M);
+							int x = dead.X, y = dead.Y;
+							dead.CauseDeath(self);
+							Corpse body = BodyOf(self, x, y);
+							if ((body != null) && (body.GetTimer(NecroRiseTimer.Key) is NecroRiseTimer rise)) {
+								rise.DueInSeconds = 0.5;
+								risingBodies.Add(body);
+								risingNames.Add(rise.name);
+								if (i == 1) {
+									body.SetTag(CorpseCarving.CarvedTK, 1);
+								}
+							}
+						}
+						line = "kinds=" + kinds + " rising=" + risingBodies.Count;
+						break;
+					}
+				case "necroafter": {
+						int risen = 0, noExp = 0;
+						foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X + 2, self.Y, 0)) {
+							if ((ch is NPC npc) && !npc.IsDeleted && (npc.Name == risingNames[0]) && npc.Def.PrettyDefname.StartsWith("c_skeleton", StringComparison.OrdinalIgnoreCase)) {
+								risen++;
+								if (npc.ExperienceReward == 0) {
+									noExp++;
+								}
+							}
+						}
+						line = "risen=" + risen + " noExp=" + noExp + " firstBodyGone=" + risingBodies[0].IsDeleted + " carvedStays=" + !risingBodies[1].IsDeleted;
+						break;
+					}
+				default:
+					line = "unknown";
+					break;
+			}
+			Console.WriteLine("DEATHBOSS_TEST: " + what + " " + line + " |");
+		}
+
 		private static int Puddles(NPC dragon) {
 			int count = 0;
 			foreach (AbstractItem item in dragon.GetMap().GetItemsInRange(dragon.X, dragon.Y, 4)) {

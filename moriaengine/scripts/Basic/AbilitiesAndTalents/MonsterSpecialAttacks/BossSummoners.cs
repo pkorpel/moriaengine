@@ -486,7 +486,7 @@ namespace SteamEngine.CompiledScripts {
 		#endregion
 	}
 
-	/// <summary>i_osklivejsmazse: the monster is gone after its time, no death, no body, no loot.</summary>
+	/// <summary>i_osklivejsmazse: the monster (or a gate) is gone after its time, no death, no body, no loot.</summary>
 	[SaveableClass, DeepCopyableClass]
 	public class BossVanishTimer : BoundTimer {
 		[LoadingInitializer, DeepCopyImplementation]
@@ -494,8 +494,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
-			if ((cont is NPC npc) && !npc.IsDeleted) {
-				npc.Delete();
+			if ((cont is Thing thing) && !thing.IsDeleted) {
+				thing.Delete();
 			}
 		}
 	}

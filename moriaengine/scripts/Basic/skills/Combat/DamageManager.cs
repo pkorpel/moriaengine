@@ -328,6 +328,7 @@ namespace SteamEngine.CompiledScripts {
 						}
 					}
 					swingArgs.InternalSetFinalDamage(0);
+					MonsterSpecialAttacks.TryDeathBossOwnSwing(attacker); //#1022 e_bomba_boy's @AfterSwing runs on a dodged blow too
 					Trigger_AfterSwing(swingArgs);
 					return;
 				}

@@ -1338,5 +1338,90 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.FanatikDef != null) { MonsterSpecialAttacks.FanatikDef.TauntOneIn = value; } }
 		}
 
+		public double[] LavaBombChance {
+			get { return MonsterSpecialAttacks.LavaBombDef?.Chance ?? null; }
+			set { if (MonsterSpecialAttacks.LavaBombDef != null) { MonsterSpecialAttacks.LavaBombDef.Chance = value; } }
+		}
+
+		public double[] LavaBombRange {
+			get { return MonsterSpecialAttacks.LavaBombDef?.Range ?? null; }
+			set { if (MonsterSpecialAttacks.LavaBombDef != null) { MonsterSpecialAttacks.LavaBombDef.Range = value; } }
+		}
+
+		public double[] LavaBombCooldown {
+			get { return MonsterSpecialAttacks.LavaBombDef?.Cooldown ?? null; }
+			set { if (MonsterSpecialAttacks.LavaBombDef != null) { MonsterSpecialAttacks.LavaBombDef.Cooldown = value; } }
+		}
+
+		public double[] BombaBoyDamage {
+			get { return MonsterSpecialAttacks.BombaBoyDef?.Damage ?? null; }
+			set { if (MonsterSpecialAttacks.BombaBoyDef != null) { MonsterSpecialAttacks.BombaBoyDef.Damage = value; } }
+		}
+
+		public string PaladinBossGateTarget {
+			get { return MonsterSpecialAttacks.PaladinBossDef?.GateTarget ?? null; }
+			set { if (MonsterSpecialAttacks.PaladinBossDef != null) { MonsterSpecialAttacks.PaladinBossDef.GateTarget = value; } }
+		}
+
+		public double PaladinBossGateSeconds {
+			get { return MonsterSpecialAttacks.PaladinBossDef?.GateSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.PaladinBossDef != null) { MonsterSpecialAttacks.PaladinBossDef.GateSeconds = value; } }
+		}
+
+		public string StrachLord1GateTarget {
+			get { return MonsterSpecialAttacks.StrachLord1Def?.GateTarget ?? null; }
+			set { if (MonsterSpecialAttacks.StrachLord1Def != null) { MonsterSpecialAttacks.StrachLord1Def.GateTarget = value; } }
+		}
+
+		public double StrachLord1GateSeconds {
+			get { return MonsterSpecialAttacks.StrachLord1Def?.GateSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.StrachLord1Def != null) { MonsterSpecialAttacks.StrachLord1Def.GateSeconds = value; } }
+		}
+
+		public double StrachLord1VanishSeconds {
+			get { return MonsterSpecialAttacks.StrachLord1Def?.VanishSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.StrachLord1Def != null) { MonsterSpecialAttacks.StrachLord1Def.VanishSeconds = value; } }
+		}
+
+		public double OcsHelperRecordSeconds {
+			get { return MonsterSpecialAttacks.OcsHelperDef?.RecordSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.OcsHelperDef != null) { MonsterSpecialAttacks.OcsHelperDef.RecordSeconds = value; } }
+		}
+
+		public double OcsResserChance {
+			get { return MonsterSpecialAttacks.OcsResserDef?.Chance ?? 0; }
+			set { if (MonsterSpecialAttacks.OcsResserDef != null) { MonsterSpecialAttacks.OcsResserDef.Chance = value; } }
+		}
+
+		public double OcsResserHelperLifetime {
+			get { return MonsterSpecialAttacks.OcsResserDef?.HelperLifetime ?? 0; }
+			set { if (MonsterSpecialAttacks.OcsResserDef != null) { MonsterSpecialAttacks.OcsResserDef.HelperLifetime = value; } }
+		}
+
+		public int OcsResserHomeDistance {
+			get { return MonsterSpecialAttacks.OcsResserDef?.HomeDistance ?? 0; }
+			set { if (MonsterSpecialAttacks.OcsResserDef != null) { MonsterSpecialAttacks.OcsResserDef.HomeDistance = value; } }
+		}
+
+		public string BeridorNecroSpawnDef {
+			get { return MonsterSpecialAttacks.BeridorNecroDef?.SpawnDef ?? null; }
+			set { if (MonsterSpecialAttacks.BeridorNecroDef != null) { MonsterSpecialAttacks.BeridorNecroDef.SpawnDef = value; } }
+		}
+
+		public double BeridorNecroVanishSeconds {
+			get { return MonsterSpecialAttacks.BeridorNecroDef?.VanishSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.BeridorNecroDef != null) { MonsterSpecialAttacks.BeridorNecroDef.VanishSeconds = value; } }
+		}
+
+		public double NecroSlavePlayerDelay {
+			get { return MonsterSpecialAttacks.NecroSlaveDef?.PlayerDelay ?? 0; }
+			set { if (MonsterSpecialAttacks.NecroSlaveDef != null) { MonsterSpecialAttacks.NecroSlaveDef.PlayerDelay = value; } }
+		}
+
+		public double NecroSlaveDecay {
+			get { return MonsterSpecialAttacks.NecroSlaveDef?.Decay ?? 0; }
+			set { if (MonsterSpecialAttacks.NecroSlaveDef != null) { MonsterSpecialAttacks.NecroSlaveDef.Decay = value; } }
+		}
+
 	}
 }

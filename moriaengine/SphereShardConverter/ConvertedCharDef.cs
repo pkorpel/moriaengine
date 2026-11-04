@@ -986,7 +986,12 @@ namespace SteamEngine.Converter {
 				{ "tag.bahenny_drak_aura_delay", "SwampDragonAuraCooldown" },
 				{ "tag.bahenny_drak_aura_speed", "SwampDragonAuraInterval" },
 				{ "tag.bahenny_drak_aura_power", "SwampDragonAuraTicks" },
-				{ "tag.bahenny_drak_aura_dmg", "SwampDragonAuraDamage" }
+				{ "tag.bahenny_drak_aura_dmg", "SwampDragonAuraDamage" },
+				//#1022 the dying bosses
+				{ "tag.e_explosionlava_chance", "LavaBombChance" },
+				{ "tag.e_explosionlava_range", "LavaBombRange" },
+				{ "tag.e_explosionlava_time", "LavaBombCooldown" },
+				{ "tag.bomba_boy_dmg", "BombaBoyDamage" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum
