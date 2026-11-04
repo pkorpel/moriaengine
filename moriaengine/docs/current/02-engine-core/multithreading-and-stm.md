@@ -167,7 +167,7 @@ Not at the target, and not as the next step at any target:
 - **STM would take that room away.** Every think would cost several times more, with at best 2.8× back from four cores, and
   GC would rise in exactly the place problem 4 shows it already hurts.
 - **Saves.** MVCC would give a consistent snapshot while the world keeps running. But it only covers state that is all
-  shielded, and freezing for a fast in-memory serialization (ModernUO, the review's problem 3b) gets the same result
+  shielded, and freezing for a fast in-memory serialization (ModernUO, the review's plan step D2) gets the same result
   cheaply.
 
 No narrow use worth it was found. The only state Shielded could protect is state that lives in its containers, and the
@@ -177,11 +177,11 @@ interesting state is everywhere.
 
 In order of value for effort, all of it compatible with the single game thread:
 
-1. **The #1161 fixes first** (its recommended order). They reduce the work itself.
+1. **The #1161 fixes first** (its implementation plan, section 8). They reduce the work itself.
 2. **Move separable work off the game thread.** None of these need STM, because what they read either doesn't change or is
    copied first:
    - **Save serialization:** freeze, serialize on parallel workers, write on the thread pool, as ModernUO does (review
-     problem 3b).
+     plan step D2).
    - **A\* path planning:** the map and statics never change, so path searches can run on worker threads and hand the path
      back to the game thread. Characters in the way are a snapshot, re-checked at each step, as `NpcPathCache` already
      does.
