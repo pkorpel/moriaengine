@@ -40,7 +40,7 @@ namespace SteamEngine.Regions {
 				//(same real static building, different floor) could still attack straight
 				//through the floor between them.
 				return !this.IsVerticalLosBlockedBetween(from.X, from.Y, from.Z, to.Z) &&
-					!this.IsFloorBetween(from.X, from.Y, from.Z, to.Z, true); //#1148
+					!this.IsFloorBetween(from.X, from.Y, from.Z, to.Z); //#1148
 			}
 
 			//#728 - real-user-reported: a ranged NPC one tile over but on a different floor (e.g.
@@ -63,17 +63,11 @@ namespace SteamEngine.Regions {
 				return false;
 			}
 
-			//#1148 - a floor between two levels: under the upper one it is the floor they stand on, up to their own feet;
-			//over the upper one's own column their own floor isn't in the way of a look down sideways
-			bool fromIsLower = from.Z <= to.Z;
-			if (this.IsFloorBetween(from.X, from.Y, from.Z, to.Z, fromIsLower) ||
-				this.IsFloorBetween(to.X, to.Y, from.Z, to.Z, !fromIsLower)) {
-				return false;
-			}
 
 			// CreateLosPath returns a pooled PointsInLine under the IEnumerable<Point3D> interface -
 			// it must be disposed (released back to its pool) however we leave this method.
 			IEnumerable<Point3D> path = CreateLosPath(from, to);
+			List<Point3D> columns = new List<Point3D> { new Point3D(from.X, from.Y, from.Z) };
 			try {
 				foreach (Point3D point in path) {
 					if (((point.X == from.X) && (point.Y == from.Y)) ||
@@ -83,11 +77,58 @@ namespace SteamEngine.Regions {
 					if (this.IsLosBlockedAt(point.X, point.Y, point.Z)) {
 						return false;
 					}
+					Point3D last = columns[columns.Count - 1];
+					if ((last.X != point.X) || (last.Y != point.Y)) {
+						columns.Add(point);
+					}
 				}
-				return true;
 			} finally {
 				(path as IDisposable)?.Dispose();
 			}
+			columns.Add(new Point3D(to.X, to.Y, to.Z));
+			return !this.CrossesAFloor(columns, Math.Abs(from.Z - to.Z));
+		}
+
+		/// <summary>#1148/#1158 - a floor (Surface or Roof, by its top) the sight line passes through. The line runs between
+		/// the characters' middles (half a character above their feet, where Sphere's sight starts); in each column it
+		/// crosses every height between where it enters and where it leaves, and in each one's own column between their
+		/// middle and where it leaves. A level line crosses nothing, so floors and ceilings never block sight on one level.
+		/// User's spot: a player 5 tiles in on a floor at z 45 and a ranger on the street just past its edge saw each other,
+		/// as #1149 only looked for floors right over or under the two of them. From the edge of such a floor the street
+		/// about 3 tiles out is in sight, the foot of the wall isn't.</summary>
+		private bool CrossesAFloor(List<Point3D> columns, int heightDifference) {
+			if (heightDifference <= (PlayerHeight / 2)) {
+				return false;
+			}
+			int middle = PlayerHeight / 2;
+			int last = columns.Count - 1;
+			for (int k = 0; k <= last; k++) {
+				double here = columns[k].Z + middle;
+				double enters = (k > 0) ? ((columns[k - 1].Z + middle + here) / 2) : here;
+				double leaves = (k < last) ? ((here + columns[k + 1].Z + middle) / 2) : here;
+				if (this.HasFloorTopIn(columns[k].X, columns[k].Y, Math.Min(enters, leaves), Math.Max(enters, leaves))) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>#1158 - a floor or ceiling (Surface or Roof, by its top) in this column with its top in (low, high].</summary>
+		private bool HasFloorTopIn(int x, int y, double low, double high) {
+			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
+				int top = s.Z + s.Height;
+				if ((TileData.HasFlag(s.Flags, TileFlag.Surface) || TileData.HasFlag(s.Flags, TileFlag.Roof)) && (top > low) && (top <= high)) {
+					return true;
+				}
+			}
+			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
+				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
+				int top = item.Z + idi.Height;
+				if ((TileData.HasFlag(idi.Flags, TileFlag.Surface) || TileData.HasFlag(idi.Flags, TileFlag.Roof)) && (top > low) && (top <= high)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -151,6 +192,20 @@ namespace SteamEngine.Regions {
 			return false;
 		}
 
+		/// <summary>#1148 - two in one column (one right over the other): a floor or ceiling (Surface or Roof, by its top)
+		/// above the lower one, up to and with the upper one's own floor, between heights more than half a character apart.
+		/// Floors are rarely Noshoot, so IsVerticalLosBlockedBetween missed them (user's report, #1148: a house floor 0x2E6C
+		/// at z 45 in Kralovstvi lesnich elfu). Sphere's own rule for one column: in sight only within half a character's
+		/// height (ccharstatus.cpp CanSeeLOS, dist 0). Two in different columns go by CrossesAFloor.</summary>
+		private bool IsFloorBetween(int x, int y, int fromZ, int toZ) {
+			int zLow = Math.Min(fromZ, toZ);
+			int zHigh = Math.Max(fromZ, toZ);
+			if ((zHigh - zLow) <= (PlayerHeight / 2) || !this.IsValidPos(x, y)) {
+				return false;
+			}
+			return this.HasFloorTopIn(x, y, zLow, zHigh);
+		}
+
 		/// <summary>Same data sources and Noshoot/Impassable split as IsLosBlockedAt (see its own
 		/// doc comment for the full #692 writeup), but for the same-column case: is anything
 		/// blocking between fromZ and toZ, regardless of which one is higher.
@@ -169,41 +224,6 @@ namespace SteamEngine.Regions {
 		/// treated as "in the way" regardless of the static's real height (an empty-or-not
 		/// zero-height band simply never starts strictly below zHigh when it starts exactly AT
 		/// zHigh).</summary>
-		/// <summary>#1148 - a floor or ceiling (anything you stand on: Surface, or a Roof) in this column between two heights
-		/// more than half a character apart. Floors are rarely Noshoot, so IsVerticalLosBlockedBetween missed them, and a
-		/// monster on the street saw, shot and cast at a player on the house floor right above it (user's report, a house
-		/// in Kralovstvi lesnich elfu, floor 0x2E6C at z 45). `upToHigh` counts a floor exactly at the upper height: in the
-		/// lower one's column, or a column both stand in, that is the upper one's floor and it's between them; in the
-		/// upper one's own column it is only what they stand on. Sphere's own rule for one column: in sight only within
-		/// half a character's height (ccharstatus.cpp CanSeeLOS, dist 0).</summary>
-		private bool IsFloorBetween(int x, int y, int fromZ, int toZ, bool upToHigh) {
-			int zLow = Math.Min(fromZ, toZ);
-			int zHigh = Math.Max(fromZ, toZ);
-			if ((zHigh - zLow) <= (PlayerHeight / 2) || !this.IsValidPos(x, y)) {
-				return false;
-			}
-			foreach (AbstractInternalItem s in this.GetStaticsAndMultiComponentsOnCoords(x, y)) {
-				if (IsFloorAt(s.Flags, s.Z + s.Height, zLow, zHigh, upToHigh)) {
-					return true;
-				}
-			}
-			foreach (AbstractItem item in this.GetItemsInRange(x, y, 0)) {
-				ItemDispidInfo idi = ItemDispidInfo.GetByModel(item.Model);
-				if (IsFloorAt(idi.Flags, item.Z + idi.Height, zLow, zHigh, upToHigh)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		//by its top: a stair step's base lies below whoever stands on it
-		private static bool IsFloorAt(TileFlag flags, int top, int zLow, int zHigh, bool upToHigh) {
-			if (!TileData.HasFlag(flags, TileFlag.Surface) && !TileData.HasFlag(flags, TileFlag.Roof)) {
-				return false;
-			}
-			return (top > zLow) && (upToHigh ? (top <= zHigh) : (top < zHigh));
-		}
-
 		private bool IsVerticalLosBlockedBetween(int x, int y, int fromZ, int toZ) {
 			if (!this.IsValidPos(x, y)) {
 				return true;

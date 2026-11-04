@@ -107,13 +107,19 @@ The user's report: a player on a house floor (2946,1229,45, Kralovstvi lesnich e
 ranger on the street right below. The mage cast through the floor, the ranger shot through it, and the titan's swing
 reached up and its knockback threw the player down to the street. Three fixes:
 
-- **Line of sight:** a floor or ceiling (a `Surface` or `Roof` tile, by its top) between two characters more than half
-  a character (8) apart in height blocks sight (`Map.IsFloorBetween`).
-  - It is checked in the column each one stands in. In the lower one's column, or a column both share, a floor at the
-    upper one's own height counts, since it is the floor they stand on.
-  - In the upper one's own column it doesn't count, so someone on a platform or stairs beside you stays visible.
-  - Floors are rarely `Noshoot`, which is all the older vertical check looked at. Sphere's own rule for a shared
-    column is "only within 8 in height".
+- **Line of sight:** a floor or ceiling (a `Surface` or `Roof` tile, by its top) that the sight line passes through
+  blocks sight, when the two are more than half a character (8) apart in height.
+  - The line runs between the characters' middles, 8 above their feet, where Sphere's sight starts (`Map.CrossesAFloor`).
+  - In each column on the way it crosses every height between where it enters and where it leaves. In each one's own
+    column it crosses the heights between their middle and where it leaves.
+  - A level line crosses nothing, so floors and ceilings never block sight between two people on one level.
+  - One right over the other (one column): a floor between them blocks (`Map.IsFloorBetween`). Sphere's own rule there
+    is "only within 8 in height".
+  - Floors are rarely `Noshoot`, which is all the older vertical check looked at.
+  - #1158, the user's second spot: a player 5 tiles in on a floor at z 45 (3000,1251) and a titan ranger on the street
+    just past its edge (3001,1256) saw each other, and the player looted its corpse. The first fix looked only right
+    over and under the two of them.
+  - From the edge of such a floor, the street about 3 tiles out is in sight; the foot of the wall isn't.
 - **Swing reach:** `WeaponSkillDef.StrikeDistance` is Sphere's `GetTopDist3D`: the flat distance, or the height
   difference / 8 when that's more. A swing needs 1 (or the weapon's range), so 45 below is 5 away. The AI's "close
   enough to attack" check uses the same distance.

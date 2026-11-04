@@ -1,5 +1,10 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): floors along the sight line (branch fix-floor-los-along-line)
+
+User: player at 3000,1251,45 on a floor, titan ranger at 3001,1256,0 outside (nothing above it) still shot the player; the player could loot its corpse. #1149 only checks the endpoint columns. Probe the spot, then make floors block wherever the sight line crosses them.
+Probe: floor z45 spans 1251-1255 (railing at 1255), ranger at 1256 one tile past the edge. Fix: Map.CrossesAFloor over the line between the characters' middles (feet + 8): per column, a Surface/Roof top between the heights it enters and leaves at (own columns: middle to exit) blocks; replaces #1149's endpoint rule for different columns (that overblocked looking out from under a porch), same-column rule stays. Assertions added to FloorAttackTests (edge: both blind, same-floor ranger sees, corpse below the edge out of reach); red without it.
+
 ## NOW (2026-11-04): 1155 knockback only with damage, 1156 NRE in SrcTcpConnection from the damage number (branch fix-1155-1156-knockback-damage-message)
 
 User: (1) knockback only when the blow does damage (their call against Erebor). (2) Log: NRE at Globals.SrcTcpConnection <- Thing.Message <- DamageManager.CauseDamage's overhead damage number, an NPC's swing on a timer.
