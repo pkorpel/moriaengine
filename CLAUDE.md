@@ -1,5 +1,10 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): 1152 pets walk towards their logged-out owner (branch fix-1152-pets-offline-owner)
+
+User, live: after logout the log kept showing Zostrich pathing to the logged-out Peco II. Find what the AI does with a disconnected follow target, compare Sphere 0.99z8, fix, test.
+User: the character was riding the zostrich. Cause: a ridden mount is Disconnect()ed at its mount spot but NPCAiTimer kept ticking it, so it followed its own rider out of the world (always, not only after logout). Fix: OnTimeout returns for Flag_Disconnected (Sphere ticks no disconnected char). A pet on foot already waits for an offline owner (IsAliveAndValid is false when disconnected). Test RiddenMountTests (FloorAttack collection, account mounttests), red without the fix.
+
 ## DONE (2026-11-04): 1148 monsters attack through floors (PR #1149; RoofLosTests' account fix PR #1150)
 
 User, live: player on a house floor at 2946,1229,45,0, titan/titan mage/titan ranger spawned below at z 0. The mage cast through the floor, the ranger shot through it, the titan's swing + knockback reached up and knocked the player down. Find where LOS/reach ignores the floor between them, fix at the cause, test at that spot.

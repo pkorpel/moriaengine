@@ -258,6 +258,12 @@ namespace SteamEngine.CompiledScripts {
 			if ((self == null) || self.IsDeleted || self.Flag_Dead) {
 				return;
 			}
+			if (self.Flag_Disconnected) {
+				//#1152 - out of the world (a ridden mount, a pet stocked in a player vendor): Sphere doesn't tick a
+				//disconnected character at all. A ridden zostrich kept "following" its rider invisibly, and after the
+				//rider logged out kept pathing to the offline character every tick.
+				return;
+			}
 
 			if (!this.hasHome) {
 				this.CaptureHome(self);

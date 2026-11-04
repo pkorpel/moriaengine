@@ -66,6 +66,14 @@ the two neighbouring directions, and `StepTowardsSmart`'s AStar routes around a 
 first step. Pets and summons follow the same rule. See
 [Movement & character collision](movement-and-collision.md).
 
+### Ridden mounts don't think (#1152)
+
+A mount being ridden is out of the world (`Disconnect()` at the spot where it was mounted), and so is a pet stocked in a
+player vendor. `NPCAiTimer` does nothing for a disconnected NPC, as Sphere doesn't tick one: no thinking, no abilities.
+Before, a ridden mount kept "following" its own rider out of the world, and after the rider logged off it tried to path
+to them every tick (the user's ridden zostrich filling the log with "found NO path"). A pet on foot whose owner logs out
+just waits: a disconnected owner isn't followed.
+
 ### Unseen targets (#1038)
 
 NPCs don't see hidden or invisible characters, as in Sphere. One that was fighting such a character breaks off, leaves war mode and goes back to wandering, and none picks it as a new target. It sees it again the moment that ends. A monster with `e_npc_detect` keeps at it, as that ability reveals people while fighting.
