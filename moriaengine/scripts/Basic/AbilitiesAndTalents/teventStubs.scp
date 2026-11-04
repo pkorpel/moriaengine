@@ -43,7 +43,7 @@ Name = "(e_bahenny_drak_krev)"
 [PassiveAbilityDef a_tevent_e_balrog]
 Name = "(e_balrog)"
 
-[PassiveAbilityDef a_tevent_e_beridornecro]
+[BeridorNecroAbilityDef a_tevent_e_beridornecro]
 Name = "(e_beridornecro)"
 
 [BerserkAbilityDef a_tevent_e_berserk_potvora]
@@ -56,7 +56,7 @@ Name = "(e_berserkbrain_distance_fix)"
 [PassiveAbilityDef a_tevent_e_blood]
 Name = "(e_blood)"
 
-[PassiveAbilityDef a_tevent_e_bomba_boy]
+[BombaBoyAbilityDef a_tevent_e_bomba_boy]
 Name = "(e_bomba_boy)"
 
 //#1022 nothing to port: it sets a tag nothing reads
@@ -125,7 +125,7 @@ Name = "Death Explosion"
 [DispelBombAbilityDef a_tevent_e_explosiondispell]
 Name = "Dispel Bomb"
 
-[PassiveAbilityDef a_tevent_e_explosionlava]
+[LavaBombAbilityDef a_tevent_e_explosionlava]
 Name = "(e_explosionlava)"
 
 //#799 batch 5: upgraded from a bare stub to a real EyeAbilityDef
@@ -288,7 +288,7 @@ Name = "(e_mistr_craft)"
 [PassiveAbilityDef a_tevent_e_monster]
 Name = "(e_monster)"
 
-[PassiveAbilityDef a_tevent_e_necroslave]
+[NecroSlaveAbilityDef a_tevent_e_necroslave]
 Name = "(e_necroslave)"
 
 [PassiveAbilityDef a_tevent_e_no_player_attack]
@@ -458,10 +458,10 @@ Name = "(e_npc_summonkiller)"
 [WarcryAbilityDef a_tevent_e_npc_warcry]
 Name = "War Cry"
 
-[PassiveAbilityDef a_tevent_e_ocs_boss_resser]
+[OcsResserAbilityDef a_tevent_e_ocs_boss_resser]
 Name = "(e_ocs_boss_resser)"
 
-[PassiveAbilityDef a_tevent_e_ocs_boss_resurrection_able]
+[OcsHelperAbilityDef a_tevent_e_ocs_boss_resurrection_able]
 Name = "(e_ocs_boss_resurrection_able)"
 
 [PassiveAbilityDef a_tevent_e_ocs_capitan]
@@ -581,7 +581,7 @@ Name = "(e_spider)"
 [PassiveAbilityDef a_tevent_e_spirit]
 Name = "(e_spirit)"
 
-[PassiveAbilityDef a_tevent_e_strach_lord1]
+[StrachLord1AbilityDef a_tevent_e_strach_lord1]
 Name = "(e_strach_lord1)"
 
 //#1022 summoning bosses: real, BossSummoners.cs
@@ -631,5 +631,5 @@ Name = "(e_wormdrop)"
 [PassiveAbilityDef a_tevent_e_ztracene_mesto_druid_medved]
 Name = "(e_ztracene_mesto_druid_medved)"
 
-[PassiveAbilityDef a_tevent_e_ztracene_mesto_paladin_boss]
+[PaladinBossAbilityDef a_tevent_e_ztracene_mesto_paladin_boss]
 Name = "(e_ztracene_mesto_paladin_boss)"

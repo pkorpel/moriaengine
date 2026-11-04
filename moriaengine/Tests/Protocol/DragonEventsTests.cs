@@ -94,6 +94,48 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1022 PR 3 - the dying bosses.</summary>
+	[Collection(DragonEventsCollection.Name)]
+	public class DyingBossTests {
+		private readonly GameServerPairFixture fixture;
+
+		public DyingBossTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Do(TestGameClient client, string what) {
+			return CommandPermissionTests.Ask(this.fixture, client, ".TestDeathBoss \"" + what + "\"", "DEATHBOSS_TEST: " + what + " ");
+		}
+
+		[Fact]
+		public void LavaKamikazeGatesRisingHelpersAndUndead() {
+			using var client = CommandPermissionTests.Connect("dragontests", "Dying Fighter");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestDragon \"ready\"", "DRAGON_TEST: ready ");
+			//Rascal: no bomb before his cooldown since the first blow, then one lit bomb nobody can pick up, Rascal's own 10 s
+			Assert.Contains("first=0 bombs=1 armed=True cooldown=10", this.Do(client, "lava"));
+			//the ghost: its fuse, a second later the blast and it's gone
+			Assert.Contains("fuse=True tuned=60", this.Do(client, "bomba"));
+			Thread.Sleep(1500);
+			string blast = this.Do(client, "bombaafter");
+			Assert.DoesNotContain("lost=0 ", blast);
+			Assert.Contains("gone=True", blast);
+			//the paladin's gate to 807,633 on plane 2, gone after its time
+			Assert.Contains("gates=807,633,2;", this.Do(client, "paladin"));
+			//Lord Strachu: nothing above a sixth; below, one gate to level 2 on plane 10 however many blows, he stands and goes
+			Assert.Contains("early=none gates=5348,4063,10; frozen=True vanishing=True", this.Do(client, "lord1"));
+			//OCS: two helpers' bodies remembered, Rascal raises both, worth nothing, gone in time; nothing left to raise
+			Assert.Contains("bodies=2 raised=2 risenNoExp=2 bodiesGone=True again=0", this.Do(client, "ocs"));
+			//Arghelior: a blow above half does nothing; below, one dragon, he stands and goes
+			Assert.Contains("early=0 dragons=1 frozen=True vanishing=True", this.Do(client, "beridor"));
+			//e_necroslave: bare hands a mage, a bow an archer, a player outside Beridor nothing; a body rises, a carved one doesn't
+			string necro = this.Do(client, "necro");
+			Assert.True(necro.Contains("kinds=mage,archer,none rising=2"), necro);
+			Thread.Sleep(1500);
+			string risen = this.Do(client, "necroafter");
+			Assert.True(risen.Contains("risen=1 noExp=1 firstBodyGone=True carvedStays=True"), risen);
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class DragonEventsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "DragonEvents";
