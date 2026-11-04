@@ -439,7 +439,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Sphere's @NPCSeeNewPlayer, from the AI's tick: a monster not fighting looks round, and a player in sight it
 		/// hasn't met in 5 minutes counts as new. A reaction that doesn't remember the player sees them new again next look.</summary>
 		internal static void TrySeeNewPlayers(NPC self) {
-			if (!HasAbilityDef(self, WormDropDef) && !HasAbilityDef(self, SandGuardianDef) && !HasAbilityDef(self, FanatikDef)) {
+			if (!HasAbilityDef(self, WormDropDef) && !HasAbilityDef(self, SandGuardianDef) && !HasAbilityDef(self, FanatikDef) && !HasHaldaMolleSight(self)) {
 				return;
 			}
 			NPCAiTimer ai = NPCAiTimer.GetFor(self);
@@ -482,6 +482,7 @@ namespace SteamEngine.CompiledScripts {
 					SummonGroup(self, new[] { "c_pisecny_sumon_golem" }, self.X, self.Y, 1, 0, null, false, false);
 				}
 			}
+			HaldaMolleSeesPlayer(self, player); //#1022 e_frosty_wave, e_drop_egg, e_warniak_drop
 			return true;
 		}
 		#endregion

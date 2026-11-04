@@ -70,6 +70,7 @@ namespace SteamEngine.CompiledScripts {
 					self.Account.PLevel = 1;
 					self.MaxHits = 30000;
 					player.Profession = Professions.Mage;
+					Globals.AutoAccountCreation = true; //the collection's later classes log in on their own accounts (dragontests is full)
 					line = "ready";
 					break;
 				case "cone": {
@@ -587,6 +588,111 @@ namespace SteamEngine.CompiledScripts {
 			def.Chance = chance;
 			line += " hit: changed=" + (first != moon.Def) + " waits=" + (MonsterSpecialAttacks.TuningDef(moon) == first);
 			Console.WriteLine("DARKMOON_TEST: " + line + " |");
+		}
+
+		private static int Warniaks(Character self) {
+			int count = 0;
+			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, 8)) {
+				if ((ch is NPC npc) && !npc.IsDeleted && npc.Def.PrettyDefname.StartsWith("c_hm_warniak_", StringComparison.OrdinalIgnoreCase)) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+		private static Item eggLight, eggStomped;
+		private static int warniaksBefore;
+
+		/// <summary>#1022 PR 5a - Halda Molle's fights.</summary>
+		[SteamFunction]
+		public static void TestHaldaMolle(Character self, ScriptArgs sa) {
+			string what = sa.Args.Trim().Trim('"');
+			Player player = (Player) self;
+			string line;
+			switch (what) {
+				case "split": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC boss = Boss(self, "c_hm_boss", 2);
+						int before = boss.Hits;
+						NPC copy = MonsterSpecialAttacks.Split(boss, MonsterSpecialAttacks.RozdeleniDef, self);
+						int kept = before * 90 / 100;
+						line = "copies=" + Near(self, "c_hm_boss", null) + " bossHits90=" + (boss.Hits == kept) + " copyHits81=" + (copy.Hits == Math.Min(copy.MaxHits, kept * 90 / 100)) +
+							" copyExp=" + (copy.ExperienceReward == boss.ExperienceReward / 3) + " copyFloorChance=" + ((NPCDef) boss.Def).AbilityTuning("rozdeleniCopyChance")?[0];
+						int hits = boss.Hits;
+						DamageManager.CauseDamage(self, boss, DamageType.Physical, 100);
+						line += " guarded=" + (boss.Hits == hits);
+						copy.Delete();
+						DamageManager.CauseDamage(self, boss, DamageType.Physical, 100);
+						line += " released=" + (boss.Hits < hits);
+						break;
+					}
+				case "frost": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC boss = Boss(self, "c_hm_boss", 2);
+						Mark(self);
+						MonsterSpecialAttacks.StartFrostWave(boss);
+						line = "lost=" + (hitsBefore - self.Hits) + " frozen=" + ParalyzeEffectPluginDef.IsParalyzed(self) + " wave=" + boss.HasTimer(FrostWaveTimer.Key);
+						self.RemovePlugin(MonsterSpecialAttacks.frostParalyzePK);
+						Mark(self);
+						break;
+					}
+				case "egg": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC warniak = Boss(self, "c_hm_warniak_2", 2);
+						DropEggAbilityDef def = MonsterSpecialAttacks.DropEggDef;
+						eggLight = MonsterSpecialAttacks.LayEgg(warniak, def);
+						WarniakEggTimer light = (WarniakEggTimer) eggLight.GetTimer(WarniakEggTimer.Key);
+						bool tooLight = !MonsterSpecialAttacks.StompEgg(player, eggLight, light);
+						light.DueInSeconds = 0.5;
+						eggStomped = MonsterSpecialAttacks.LayEgg(warniak, def);
+						WarniakEggTimer heavy = (WarniakEggTimer) eggStomped.GetTimer(WarniakEggTimer.Key);
+						double weight = def.StompWeight;
+						def.StompWeight = -1;
+						bool stomped = MonsterSpecialAttacks.StompEgg(player, eggStomped, heavy);
+						def.StompWeight = weight;
+						heavy.DueInSeconds = 0.5;
+						warniaksBefore = Warniaks(self);
+						line = "tooLight=" + tooLight + " stomped=" + stomped + " kind=" + light.warniak;
+						break;
+					}
+				case "eggafter":
+					line = "hatched=" + (Warniaks(self) - warniaksBefore) + " eggsGone=" + (eggLight.IsDeleted && eggStomped.IsDeleted);
+					break;
+				case "degrade": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC four = Boss(self, "c_hm_warniak_4", 2);
+						four.CauseDeath(self);
+						int threes = Near(self, "c_hm_warniak_3", null);
+						NPC three = null;
+						foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, 6)) {
+							if ((ch is NPC npc) && !npc.IsDeleted && (npc.Def == ThingDef.GetByDefname("c_hm_warniak_3"))) {
+								three = npc;
+							}
+						}
+						three?.CauseDeath(self);
+						line = "threes=" + threes + " twos=" + Near(self, "c_hm_warniak_2", null);
+						break;
+					}
+				case "drop": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC guard = Boss(self, "c_hm_guard", 2);
+						for (int i = 0; i < 100; i++) {
+							MonsterSpecialAttacks.TryHaldaMolleReactions(guard, self);
+						}
+						int onHits = Warniaks(self);
+						MonsterSpecialAttacks.HaldaMolleSeesPlayer(guard, player);
+						MonsterSpecialAttacks.HaldaMolleSeesPlayer(guard, player);
+						int onSight = Warniaks(self) - onHits;
+						guard.CauseDeath(self);
+						line = "onHits=" + onHits + " onSight=" + onSight + " atDeath=" + (Warniaks(self) - onHits - onSight);
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						break;
+					}
+				default:
+					line = "unknown";
+					break;
+			}
+			Console.WriteLine("HALDA_TEST: " + what + " " + line + " |");
 		}
 
 		private static int Puddles(NPC dragon) {

@@ -151,6 +151,9 @@ namespace SteamEngine.CompiledScripts {
 			if (MonsterSpecialAttacks.TryRinald(attacker, defender)) { //#1022 e_rinald: only players hurt him, his invulnerability answers too
 				return 0;
 			}
+			if (MonsterSpecialAttacks.CopyGuardRefuses(attacker, defender, flags)) { //#1022 e_rozdeleni: nothing hurts it while its copy lives
+				return 0;
+			}
 			if (defender.Flag_Invulnerable) {
 				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
 				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists

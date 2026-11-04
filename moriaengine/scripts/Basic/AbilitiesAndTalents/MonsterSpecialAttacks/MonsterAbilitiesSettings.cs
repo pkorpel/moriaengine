@@ -1608,5 +1608,80 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.DarkmoonDef != null) { MonsterSpecialAttacks.DarkmoonDef.Forms = value; } }
 		}
 
+		public double[] RozdeleniCopyChance {
+			get { return MonsterSpecialAttacks.RozdeleniDef?.CopyChance ?? null; }
+			set { if (MonsterSpecialAttacks.RozdeleniDef != null) { MonsterSpecialAttacks.RozdeleniDef.CopyChance = value; } }
+		}
+
+		public int RozdeleniCopyFloor {
+			get { return MonsterSpecialAttacks.RozdeleniDef?.CopyFloor ?? 0; }
+			set { if (MonsterSpecialAttacks.RozdeleniDef != null) { MonsterSpecialAttacks.RozdeleniDef.CopyFloor = value; } }
+		}
+
+		public double RozdeleniCopyLifetime {
+			get { return MonsterSpecialAttacks.RozdeleniDef?.CopyLifetime ?? 0; }
+			set { if (MonsterSpecialAttacks.RozdeleniDef != null) { MonsterSpecialAttacks.RozdeleniDef.CopyLifetime = value; } }
+		}
+
+		public double[] FrostWaveChance {
+			get { return MonsterSpecialAttacks.FrostWaveDef?.Chance ?? null; }
+			set { if (MonsterSpecialAttacks.FrostWaveDef != null) { MonsterSpecialAttacks.FrostWaveDef.Chance = value; } }
+		}
+
+		public double[] FrostWaveStrength {
+			get { return MonsterSpecialAttacks.FrostWaveDef?.Strength ?? null; }
+			set { if (MonsterSpecialAttacks.FrostWaveDef != null) { MonsterSpecialAttacks.FrostWaveDef.Strength = value; } }
+		}
+
+		public int FrostWaveDamage {
+			get { return MonsterSpecialAttacks.FrostWaveDef?.Damage ?? 0; }
+			set { if (MonsterSpecialAttacks.FrostWaveDef != null) { MonsterSpecialAttacks.FrostWaveDef.Damage = value; } }
+		}
+
+		public double FrostWaveParalyzeSeconds {
+			get { return MonsterSpecialAttacks.FrostWaveDef?.ParalyzeSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.FrostWaveDef != null) { MonsterSpecialAttacks.FrostWaveDef.ParalyzeSeconds = value; } }
+		}
+
+		public double DropEggEggChance {
+			get { return MonsterSpecialAttacks.DropEggDef?.EggChance ?? 0; }
+			set { if (MonsterSpecialAttacks.DropEggDef != null) { MonsterSpecialAttacks.DropEggDef.EggChance = value; } }
+		}
+
+		public double DropEggHatchDelay {
+			get { return MonsterSpecialAttacks.DropEggDef?.HatchDelay ?? 0; }
+			set { if (MonsterSpecialAttacks.DropEggDef != null) { MonsterSpecialAttacks.DropEggDef.HatchDelay = value; } }
+		}
+
+		public double DropEggStompWeight {
+			get { return MonsterSpecialAttacks.DropEggDef?.StompWeight ?? 0; }
+			set { if (MonsterSpecialAttacks.DropEggDef != null) { MonsterSpecialAttacks.DropEggDef.StompWeight = value; } }
+		}
+
+		public double DropEggCleanupDelay {
+			get { return MonsterSpecialAttacks.DropEggDef?.CleanupDelay ?? 0; }
+			set { if (MonsterSpecialAttacks.DropEggDef != null) { MonsterSpecialAttacks.DropEggDef.CleanupDelay = value; } }
+		}
+
+		public double[] WarniakDropHitChance {
+			get { return MonsterSpecialAttacks.WarniakDropDef?.HitChance ?? null; }
+			set { if (MonsterSpecialAttacks.WarniakDropDef != null) { MonsterSpecialAttacks.WarniakDropDef.HitChance = value; } }
+		}
+
+		public double WarniakDropHitCooldown {
+			get { return MonsterSpecialAttacks.WarniakDropDef?.HitCooldown ?? 0; }
+			set { if (MonsterSpecialAttacks.WarniakDropDef != null) { MonsterSpecialAttacks.WarniakDropDef.HitCooldown = value; } }
+		}
+
+		public double WarniakDropSightCooldown {
+			get { return MonsterSpecialAttacks.WarniakDropDef?.SightCooldown ?? 0; }
+			set { if (MonsterSpecialAttacks.WarniakDropDef != null) { MonsterSpecialAttacks.WarniakDropDef.SightCooldown = value; } }
+		}
+
+		public double WarniakDropLifetime {
+			get { return MonsterSpecialAttacks.WarniakDropDef?.Lifetime ?? 0; }
+			set { if (MonsterSpecialAttacks.WarniakDropDef != null) { MonsterSpecialAttacks.WarniakDropDef.Lifetime = value; } }
+		}
+
 	}
 }
