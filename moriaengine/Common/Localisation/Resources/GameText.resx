@@ -2158,4 +2158,16 @@
   <data name="ArenaLoc_GuardExit" xml:space="preserve">
     <value>Tou cervenou branou.</value>
   </data>
+  <data name="PortZoneLoc_MountTooFar" xml:space="preserve">
+    <value>Tve zvire je prilis daleko.</value>
+  </data>
+  <data name="PortZoneLoc_NotPortZone" xml:space="preserve">
+    <value>Tady neni PvP PortZone arena.</value>
+  </data>
+  <data name="PortZoneLoc_PointSet" xml:space="preserve">
+    <value>{0}: mrtvi pujdou na {1}.</value>
+  </data>
+  <data name="PortZoneLoc_PointCleared" xml:space="preserve">
+    <value>{0}: mrtvi pujdou na vychozi misto.</value>
+  </data>
 </root>

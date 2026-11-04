@@ -208,6 +208,53 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("ARENA_ENTERED");
 		}
 
+		private static Character portZoneHorse;
+
+		/// <summary>15 tiles east of Arena Mordor's spawn point, as a GM, for .PortZonePoint.</summary>
+		[SteamFunction]
+		public static void TestPortZoneGoAside(Character self) {
+			Point4D spot = Area("a_Arena_Mordor").P;
+			self.Go(spot.X + 15, spot.Y, spot.Z, spot.M);
+			self.Account.PLevel = 7;
+			Console.WriteLine("PORTZONE_ASIDE: at=" + self.X + "," + self.Y + "," + self.Z + "," + self.M + " |");
+		}
+
+		/// <summary>#1116 step 6 - a Mordor player with 5 gold dies at Arena Mordor's spawn point, riding a pet horse or
+		/// ("far") with the horse 30 tiles off.</summary>
+		[SteamFunction]
+		public static void TestPortZoneDie(Character self, ScriptArgs sa) {
+			string how = (sa == null) ? "" : sa.Args.Trim().Trim('"');
+			Player player = (Player) self;
+			player.Go(Area("a_Arena_Mordor").P);
+			self.Account.PLevel = 1;
+			player.Realm = Realm.Mordor;
+			foreach (AbstractItem item in new List<AbstractItem>(player.Backpack)) {
+				item.Delete();
+			}
+			((Item) ThingDef.GetByDefname("i_gold").Create(player.Backpack)).Amount = 5;
+			if (portZoneHorse != null) {
+				portZoneHorse.Delete();
+			}
+			portZoneHorse = (Character) ThingDef.GetByDefname("c_horse_brown_dk").Create(self.P());
+			portZoneHorse.ControlMaster = self;
+			self.Mount = portZoneHorse;
+			if (how == "far") {
+				self.Dismount();
+				portZoneHorse.Go(self.X + 30, self.Y, self.Z, self.M);
+			}
+			player.CauseDeath(null);
+			Console.WriteLine("PORTZONE_DIED: dead=" + player.Flag_Dead + " porter=" + (self.GetTimer(PortZoneTimer.Key) != null) + " portZone=" + PortZone.IsPortZone(RegionEventSystem.AreaOf(self.Region)) + " |");
+		}
+
+		[SteamFunction]
+		public static void TestPortZoneState(Character self) {
+			Player player = (Player) self;
+			self.Account.PLevel = 7;
+			Console.WriteLine("PORTZONE_STATE: dead=" + player.Flag_Dead + " at=" + self.X + "," + self.Y + "," + self.Z + "," + self.M +
+				" gold=" + GoldUtils.CountGoldIn(player.Backpack) + " riding=" + (self.Mount == portZoneHorse) +
+				" horseFar=" + (Point2D.GetSimpleDistance(self, portZoneHorse) > PortZone.MountReach) + " |");
+		}
+
 		/// <summary>The converter's tag.arena and tag.bf, as the regions loaded them.</summary>
 		[SteamFunction]
 		public static void TestPvpRegionTags(Character self) {
