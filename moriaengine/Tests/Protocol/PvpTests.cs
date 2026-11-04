@@ -27,6 +27,32 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 2 - the PvP league's points, rules, board and seasons.</summary>
+	[Collection(PvpCollection.Name)]
+	public class PvpLeagueTests {
+		private readonly GameServerPairFixture fixture;
+
+		public PvpLeagueTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		[Fact]
+		public void KillsAssistsRulesBoardAndSeasons() {
+			using var killer = CommandPermissionTests.Connect("pvp", "Pvp Killer");
+			this.Ask(killer, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+			using var victim = CommandPermissionTests.Connect("pvpvictim", "Pvp Victim");
+			Assert.Contains("victim=True", this.Ask(killer, ".TestLeagueReady", "LEAGUE_READY:"));
+			//3 for the kill; nothing for a death right after dying, the same realm, a craftsman, rank 2, an arena, a GM
+			Assert.Contains("kill=3 recentlyDead=3 sameRealm=3 craftsman=3 rank2=3 arena=3 gm=3 again=6", this.Ask(killer, ".TestLeagueKill", "LEAGUE_KILL:"));
+			//the board keeps 30 and the three tied with the 30th; a season roll clears it
+			Assert.Contains("shown=33 topIsNewcomer=True lastTie=5 season=1->2 afterRoll=1,0 endsDay=1", this.Ask(killer, ".TestLeagueBoard", "LEAGUE_BOARD:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class PvpCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Pvp";
