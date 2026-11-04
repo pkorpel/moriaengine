@@ -69,6 +69,7 @@ namespace SteamEngine.Regions {
 		private int customFlags;
 		private int elvenGroveX = -1, elvenGroveY = -1;
 		private int battlefield;
+		private Point4D portMeTo;
 
 		[LoadSection]
 		public FlaggedRegion(PropsSection input)
@@ -214,6 +215,17 @@ namespace SteamEngine.Regions {
 			this.houseRealmTag = 0;
 			this.noMask = false;
 			this.customFlags = 0;
+			this.portMeTo = null;
+		}
+
+		/// <summary>#1116 - Erebor's region tag PortMeTo, set by a GM and never in the archive: where a PortZone
+		/// arena sends its dead (PortZone). Null is the realm's default point.</summary>
+		public Point4D PortMeTo {
+			get { return this.portMeTo; }
+			set {
+				this.portMeTo = value;
+				this.MarkGmModified();
+			}
 		}
 
 		private static List<string> AddNames(List<string> list, string valueString) {
@@ -377,6 +389,9 @@ namespace SteamEngine.Regions {
 			if (this.battlefield != 0) {
 				output.WriteValue("battlefield", this.battlefield);
 			}
+			if (this.portMeTo != null) {
+				output.WriteLine("portmeto=" + this.portMeTo.ToNormalString());
+			}
 		}
 
 		public override void LoadLine(string filename, int line, string valueName, string valueString) {
@@ -479,6 +494,9 @@ namespace SteamEngine.Regions {
 					break;
 				case "battlefield":
 					this.battlefield = ConvertTools.ParseInt32(valueString.Trim());
+					break;
+				case "portmeto":
+					this.portMeTo = Point4D.Parse(valueString);
 					break;
 				case "elvengrove": {
 						string[] xy = valueString.Split(',');
