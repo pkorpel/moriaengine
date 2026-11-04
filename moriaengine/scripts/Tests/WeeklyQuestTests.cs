@@ -36,7 +36,7 @@ namespace SteamEngine.CompiledScripts {
 					for (int slot = 0; slot < set.Tasks.Count; slot++) {
 						WeeklyTask task = set.Tasks[slot];
 						noRepeat &= seen.Add(task.Pool + "/" + task.Id);
-						blockedNever &= !((task.Pool == WeeklyQuests.Medium) && (task.Id >= 5) && (task.Id <= 8)) && !((task.Pool == WeeklyQuests.High) && (task.Id != 0) && (task.Id != 3));
+						blockedNever &= !((task.Pool == WeeklyQuests.Medium) && ((task.Id == 5) || (task.Id == 7) || (task.Id == 8))) && !((task.Pool == WeeklyQuests.High) && (task.Id != 0) && (task.Id != 3)); //#1116 - medium 6, the palantir, is drawn now
 						pools &= task.Pool == ((slot < 4) ? WeeklyQuests.Low : ((slot < 6) ? WeeklyQuests.Medium : WeeklyQuests.High));
 						pools &= (task.Total >= 1) && (task.Kind != null) && (task.Description != null);
 					}

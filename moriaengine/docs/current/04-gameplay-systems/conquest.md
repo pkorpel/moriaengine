@@ -124,7 +124,22 @@ Fixed from Erebor:
 - The palantir works for as long as the war runs. Erebor's `canbewar` also wanted the hour 19-21, so every war stopped
   dead at 22:00.
 
-Still to come (#1116): participation rewards.
+## Rewards
+
+Erebor's `f_dobyvani_bonus_gain_point` and `f_dobyvani_GiveBonus` (`ConquestRewards`). Each running war keeps its
+participants:
+- A double click on its palantir registers a player ("Tva ucast v Dobyvani byla zaznamenana."), with 1 point.
+- A PvP death that counts (league rules) adds 2 for each fighter, the killer included, in every running war. As on
+  Erebor, the killing blow's own 1 only registers.
+- Craftsmen take no part ("Jako Kraft se nemuzes aktivne zucastnit Dobyvani."). Erebor said this on every PvP point,
+  war or not; here only while a war runs.
+
+When the war ends, taken or defended:
+- each participant (not a GM) gets the winners' extra point;
+- from 7 points a +25% 2 h booster, from 3 a 1 h one, told by a delayed message.
+
+The weekly medium task "Zucastni se dobyvani / aktivuj Palantir" counts a double click on a palantir while the war on
+its keep runs, as Erebor's.
 
 ## Keep captains and guards
 
@@ -232,3 +247,10 @@ the right for 100 000. `PalantirTests.BreachCounterCaptureAndTheCashBox`:
 - `.keep_blacklist` and a target list the player, and the keep's guard then attacks them on sight;
 - a second time changes nothing;
 - the executioner dialog takes them off again.
+
+`ConquestRewardsTests.PointsBoostersAndTheWeeklyPalantir`:
+- a palantir double click registers a player and counts their weekly task;
+- PvP fights add points;
+- a capture gives the winners' war lord (7+1 points) a 2 h booster and a Mordor defender (3) a 1 h one;
+- a defended war rewards the defenders;
+- a craftsman isn't registered.

@@ -279,6 +279,82 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("BAN_STATE: bans=" + keep.bans.Count + " guardAttacks=" + GuardSpeech.AttacksOnSight(keepGuard, outlaw) + " |");
 		}
 
+		private static WeeklyTask conquerorTask;
+
+		/// <summary>#1116 step 13 - me a Gondor attacker with the right, with the weekly palantir task and no boosters, Mordor_1's
+		/// palantir beside me and Gondor's war on it running.</summary>
+		[SteamFunction]
+		public static void TestRewardsReady(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			Conquest.Reset();
+			Palantirs.ticksByHand = true;
+			Conquest.clock = new DateTime(2026, 11, 4, 12, 0, 0);
+			Player player = (Player) self;
+			MakeAttacker(player);
+			player.Profession = Professions.Warrior;
+			player.Level = 50;
+			player.RemoveTag(TagKey.Acquire("_boosters_"));
+			player.RemoveTag(TagKey.Acquire("_weekly_"));
+			WeeklyQuests.Check(player);
+			WeeklySet set = WeeklyQuests.Of(player);
+			conquerorTask = new WeeklyTask { Kind = WeeklyQuests.Conqueror, Subject = "i_fortress_palantir", Total = 1, Description = "conqueror", RewGold = 1000, RewXP = 10 };
+			set.Tasks.Clear();
+			set.Tasks.Add(conquerorTask);
+			if ((palantir != null) && !palantir.IsDeleted) {
+				palantir.Delete();
+			}
+			palantir = (FortressPalantir) ThingDef.GetByDefname("i_fortress_palantir").Create(self.X + 1, self.Y, self.Z, self.M);
+			palantir.SetFort("Mordor_1");
+			WarFront front = Conquest.Front(Realm.Gondor);
+			Conquest.Declare(player, front, 5, 11, 20, out bool done, out _);
+			Conquest.clock = new DateTime(2026, 11, 5, 20, 0, 0);
+			Conquest.StartWar(front);
+			Console.WriteLine("REWARDS_READY: palantir=" + palantir.FlaggedUid + " declared=" + done + " |");
+		}
+
+		private static string Boosted(Player player) {
+			string line = "";
+			foreach (System.Collections.Generic.KeyValuePair<int, int> row in Boosters.Stored(player)) {
+				line += row.Key + "x" + row.Value + ",";
+			}
+			return line;
+		}
+
+		/// <summary>After the palantir's double click: PvP points, a craftsman left out, the capture's boosters, then a defended
+		/// war's.</summary>
+		[SteamFunction]
+		public static void TestRewardsFlow(Character self) {
+			Player player = (Player) self;
+			WarFront gondor = Conquest.Front(Realm.Gondor);
+			WarParticipant entry = gondor.participants.Find(p => p.player == player);
+			string line = "registered=" + (entry != null) + " points=" + ((entry == null) ? 0 : entry.points) + " weekly=" + conquerorTask.Done;
+			for (int i = 0; i < 3; i++) {
+				ConquestRewards.GainPoint(player, PvpLeague.FightPoints);
+			}
+			line += " afterFights=" + entry.points;
+			player.Profession = Professions.Craftsman;
+			ConquestRewards.GainPoint(player, 1, Conquest.Front(Realm.Gondor));
+			player.Profession = Professions.Warrior;
+			KeepState keep = Conquest.Keep("Mordor_1");
+			keep.conqueror = Realm.Gondor;
+			Palantirs.Capture(keep);
+			line += " afterCapture=" + Boosted(player) + " left=" + gondor.participants.Count;
+			//a war on Mordor_2 that Mordor holds: 3 points, no winners' point
+			Conquest.GiveRight(player);
+			Conquest.clock = new DateTime(2026, 11, 6, 12, 0, 0);
+			Conquest.Declare(player, gondor, 7, 11, 20, out bool done, out _);
+			Conquest.clock = new DateTime(2026, 11, 7, 20, 0, 0);
+			Conquest.StartWar(gondor);
+			ConquestRewards.GainPoint(player, 1, gondor);
+			ConquestRewards.GainPoint(player, PvpLeague.FightPoints, gondor);
+			Conquest.EndWar(gondor);
+			line += " declared2=" + done + " afterDefended=" + Boosted(player);
+			Conquest.clock = null;
+			Palantirs.ticksByHand = false;
+			KeepCaptains.DismissFrom(player);
+			Console.WriteLine("REWARDS_FLOW: " + line + " |");
+		}
+
 		/// <summary>A declaration for the next evening, then a tick the day after it: it lapses.</summary>
 		[SteamFunction]
 		public static void TestConquestLapse(Character self) {

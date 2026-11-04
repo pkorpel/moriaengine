@@ -338,6 +338,7 @@ namespace SteamEngine.CompiledScripts {
 			Logger.WriteInfo(true, "Conquest: EndWar on " + front.declaredOn + ", the keep was defended");
 			Herald(front.realm, "Nepritel pevnost " + area + " ubranil!");
 			Herald(Enemy(front.realm), "Ubranili jsme pevnost " + area + "!");
+			ConquestRewards.GiveBonus(front, Enemy(front.realm));
 			front.remaining = 0;
 			if (front.queue.Count == 0) {
 				front.Clear();
@@ -415,6 +416,10 @@ namespace SteamEngine.CompiledScripts {
 
 		[SaveableData, CopyableData]
 		public List<WarQueueEntry> queue = new List<WarQueueEntry>();
+
+		/// <summary>Who took part in the running war, with their points (Erebor's bonus stone).</summary>
+		[SaveableData, CopyableData]
+		public List<WarParticipant> participants = new List<WarParticipant>();
 
 		internal int lastHerald = -1, lastReminder = -1;
 

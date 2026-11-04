@@ -10,7 +10,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1090 - Erebor's player boosters (questy/System/boosters.scp): more experience for a while. Six kinds, +25% or
 	/// +50% for 1, 2 or 4 hours. A player keeps unused ones as counts, which never expire, and runs one at a time from the
 	/// journal's Boostery tab; the bonus is the percent of each experience gain (Erebor's addexp). Erebor's sources were
-	/// conquest and the gq058/mq057 quests, none of them ported, so for now only a GM's .AddBooster gives one.</summary>
+	/// conquest (ConquestRewards, #1116) and the gq058/mq057 quests, not ported; a GM's .AddBooster gives one too.</summary>
 	public static class Boosters {
 		internal sealed class Kind {
 			internal readonly string Description;
@@ -132,7 +132,7 @@ namespace SteamEngine.CompiledScripts {
 			return left.Minutes + " min " + left.Seconds + " sec";
 		}
 
-		/// <summary>No player source is ported (conquest, gq058/mq057): a GM gives one. .AddBooster kind (0-5), then the player.</summary>
+		/// <summary>A GM gives one, beside conquest's (gq058/mq057 aren't ported). .AddBooster kind (0-5), then the player.</summary>
 		[SteamFunction]
 		public static void AddBooster(Character self, ScriptArgs sa) {
 			Player gm = self as Player;

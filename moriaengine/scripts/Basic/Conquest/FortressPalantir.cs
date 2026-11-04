@@ -116,6 +116,8 @@ namespace SteamEngine.CompiledScripts {
 				player.RedMessage("Jeste neprisla hodina valky.");
 				return;
 			}
+			ConquestRewards.GainPoint(player, 1, attackers);
+			WeeklyQuests.OnPalantir(player);
 			string area = Conquest.AreaName(fort);
 			if (player.Realm != keep.owner) {
 				if (keep.breached) {
@@ -232,8 +234,8 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>handleConqueredFort: the keep changes hands, the attackers' declaration and queue go (and their rights),
 		/// both fronts' lines move, the loser's own declaration aims at its new target, the cash box fills for the war lord
-		/// the captain goes, the keep's guards turn to the winner's, the war lord becomes its captain (the rewards come with step
-	/// 13 of #1116).</summary>
+		/// the captain goes, the keep's guards turn to the winner's, the war lord becomes its captain, the war's participants get
+	/// their boosters.</summary>
 		internal static void Capture(KeepState keep) {
 			Realm winner = keep.conqueror, loser = keep.owner;
 			int level = Conquest.FortLevel(keep.fort);
@@ -241,6 +243,7 @@ namespace SteamEngine.CompiledScripts {
 			Reset(keep);
 
 			WarFront winners = Conquest.Front(winner);
+			ConquestRewards.GiveBonus(winners, winner);
 			Player lord = winners.lord;
 			foreach (WarQueueEntry queued in winners.queue) {
 				Conquest.TakeRight(queued.player);

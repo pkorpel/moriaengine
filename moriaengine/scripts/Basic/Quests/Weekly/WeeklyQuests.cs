@@ -15,7 +15,8 @@ namespace SteamEngine.CompiledScripts {
 		public const int MinLevel = 10, MaxTasks = 8, LowSlots = 4, MediumSlots = 6;
 		public const int Low = 0, Medium = 1, High = 2;
 		internal const string EatFood = "eatFood", DrinkPotion = "drinkPotion", Loot = "loot", MeetMaster = "meetMaster", HealPlayer = "healPlayer",
-			DmgNpc = "dmgNPC", ReceiveDmg = "receiveDmg", StepOnWeb = "stepOnWeb", KillInDung = "killInDung", KillStreak = "KillStreak";
+			DmgNpc = "dmgNPC", ReceiveDmg = "receiveDmg", StepOnWeb = "stepOnWeb", KillInDung = "killInDung", KillStreak = "KillStreak",
+			Conqueror = "conqueror";
 		private static readonly TimeSpan Week = TimeSpan.FromDays(7), StreakGap = TimeSpan.FromSeconds(15);
 		private static readonly TagKey setTK = TagKey.Acquire("_weekly_");
 		private static readonly TagKey corpseAmountTK = TagKey.Acquire("_weeklyCorpseAmount_");
@@ -40,7 +41,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>W:18-222. Blocked ones are never drawn: Erebor's own f_weekly_hasQuest kept its player-kill tasks out; the
-		/// conquest palantir, the hunting sign and "finish a dungeon" (whose hook Erebor never called) have no system here.</summary>
+		/// hunting sign and "finish a dungeon" (whose hook Erebor never called) have no system here.</summary>
 		private static readonly TaskDef[][] pools = {
 			new[] {
 				new TaskDef(60, 0, (p, s, t, l) => SetupEatFood(p, s, t, true)),
@@ -63,7 +64,7 @@ namespace SteamEngine.CompiledScripts {
 				new TaskDef(110, 1, (p, s, t, l) => SetupReceiveDmg(p, s, t, "neprime", 10, 30), 0x122D, 0, 5),
 				new TaskDef(115, 1, (p, s, t, l) => SetupKillInDung(s, t, 160, 100), 0x212E, 8, 9),
 				new TaskDef(115, 2, null, 0x27FA, 2, 4, true), //killPlayer(0)
-				new TaskDef(100, 1, null, 3629, 0, 0, true), //conqueror: the palantir, no conquest here
+				new TaskDef(100, 1, SetupConqueror, 3629), //#1116 - the conquest's palantir
 				new TaskDef(93, 1, null, 0x340E, -6, 12, true), //HuntingSign: i_sign_gquest isn't ported
 				new TaskDef(120, 2, null, 0x2203, -8, 0, true), //finishDungeon: f_vg_finishDng is called nowhere
 				new TaskDef(100, 1, (p, s, t, l) => SetupKillStreak(s, t, 2), 0x21FC, 15, 9)
@@ -243,6 +244,14 @@ namespace SteamEngine.CompiledScripts {
 				task.Description = "Utrz " + type + " poskozeni<br>v boji.";
 			}
 			task.Total = (int) total;
+		}
+
+		/// <summary>f_weekly_setup_conqueror (W:759-766): once, a palantir of a keep under a running war.</summary>
+		private static void SetupConqueror(Player player, WeeklySet set, WeeklyTask task, int level) {
+			task.Kind = Conqueror;
+			task.Total = 1;
+			task.Subject = "i_fortress_palantir";
+			task.Description = "Zucastni se dobyvani<br>aktivuj Palantir";
 		}
 
 		private static void SetupStepOnWeb(Player player, WeeklySet set, WeeklyTask task, int level) {
@@ -551,6 +560,18 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			return (attacker is Player) || ((attacker.GetTag(TagKey.Acquire("spawnGem")) is Thing gem) && !gem.IsDeleted);
+		}
+
+		/// <summary>e_weekly_itemDclick's palantir (W:823-833), from Palantirs.Use once the war on its keep runs: any realm,
+		/// alive and not paralysed.</summary>
+		internal static void OnPalantir(Player player) {
+			if (player.Flag_Dead || ParalyzeEffectPluginDef.IsParalyzed(player)) {
+				return;
+			}
+			foreach (WeeklyTask task in Open(player, Conqueror)) {
+				Increase(player, task, 1, true);
+				return;
+			}
 		}
 
 		/// <summary>e_weekly_stepOnWeb (W:1187-1201): each web counts once, for the first player with the task on it.</summary>
