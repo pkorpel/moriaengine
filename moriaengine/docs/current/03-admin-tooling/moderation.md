@@ -3,6 +3,24 @@
 The GM's tools for players who break the rules: the jail, Erebor's labour camp, the AFK check and its log. Code:
 `scripts/Basic/Moderation/`. Plan and sources: #1107.
 
+## GM menu and .info
+
+- **`.gmmenu`** (#1114) lists the GM commands in four groups: moderation, players, GM, world. Each has a line saying
+  what it does.
+  - A button runs the command exactly as if typed, through `Commands.PlayerCommand`, so it gets the same permission
+    check and argument parsing.
+  - A command that takes an argument (`.afk` seconds, `.afklog` filter, `.goname`, `.gouid`, `.gocli`,
+    `.addbooster`) has a field for it; text is sent quoted.
+  - A new command is added to the menu by a line in `D_GmCommands.groups`.
+- **A character's `.info`** shows *Jailed* and *InLabourCamp*.
+  - **Jail / Forgive** jails a free player or forgives a jailed one.
+  - **Labour camp** opens that player's `.lagrmenu` dialog.
+
+The engine also has Sphere's `.x <command>` prefix, which runs a command on a targeted object.
+
+Test: part of `GmToolsTests.SummonFreezeGoClientsKick` (protocol: the menu's `.goname` with its field filled, and
+`.info`'s Jail / Forgive both ways).
+
 ## Jail
 
 Sphere 0.99z8's JAIL and FORGIVE (EreborNext `CChar.PrivilegeMethods`).
