@@ -55,6 +55,7 @@ journal, and "Splnil jsi ukol tydenniho questu. Odmena byla vlozena do banky." (
 | Medium | Utrz neprime poskozeni / poskozeni jedem / krvacenim (RS 110) | poison (its strength each tick) and bleeding taken | `qCount*10*hits`, the same 30%; poison or bleeding alone half |
 | Medium | Zabij npc v dungeonu s alespon 100xp (RS 115) | as above; of several such tasks only the highest one a kill reaches | `(L*160 + {-500..100})/(200+L)` |
 | Medium | Zabij v kratkem sledu N monster (RS 100) | kills each with a share of at least qCount+2, each within 15 s of the last; N = qCount*2 | `qCount*2/3` streaks |
+| Medium | Zucastni se dobyvani / aktivuj Palantir (RS 100) | a double click on a palantir while the war on its keep runs, any realm, alive and not paralysed (#1116) | 1 |
 | High | Vypij lektvar: a greater boost potion (RS 100) | as above | mult 5 |
 | High | Zabij npc v dungeonu s alespon 200xp (RS 160) | as above | `(L*85 + {-500..100})/(200+L)` |
 
@@ -64,7 +65,6 @@ damage dealt and taken are silent until done.
 
 **Never drawn**, as Erebor kept out its own player-kill tasks (medium 5, high 1 and 2):
 
-- the conquest palantir (medium 6): conquest isn't ported (#892 left it out);
 - the hunting sign (medium 7): `i_sign_gquest` isn't ported;
 - "Dokonci Dungeon" (medium 8, high 4): Erebor never called its hook (`f_vg_finishDng`), so it could never be done there
   either, and the whole set's reward was lost whenever it was drawn.
