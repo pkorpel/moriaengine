@@ -1,8 +1,15 @@
 # moriaengine — working state
 
-## NOW (2026-11-04): performance review update + implementation plan (#1163 first), docs only, awaiting go-ahead
+## DONE (2026-11-04): 1168 performance review update + implementation plan (#1163 first), docs only, AWAITING GO-AHEAD
 
-User: autosave exists (PeriodicSave.scp, hourly; I'd missed it), asked about sector size (16 vs 32/64) and return home (direct step first, A* only when far/stuck); then: update the review with all of it and a full implementation plan, #1163 first, no implementation until the user approves. Measuring sector sizes and the probes (defs at load, A* by caller) in the harness worktree.
+User: autosave exists (PeriodicSave.scp, hourly; I'd missed it), asked about sector size and return home (straight step first, A* only when stuck), then: update the review and write a full implementation plan, #1163 first, no implementation until the user approves.
+Done, performance-review.md:
+- Problem 0 = #1163. 11 of 24 code-registered defs missing at WorldSaver.Load (combat queue/tracker, paralyze, discordance, warcry, magic charge, ignition, poisoned item, crafting, snooping, r_party). Snooping + discordance are never registered at all (no .Register()). Discordance lowers stats on assign, restores on unassign: a drop at load may keep them lowered. Second bug: SkillDef.cs:452 OptimizedLoad_Script(valueName) should be valueString.
+- Problem 3 corrected: hourly autosave exists; nothing saves on .exit/console exit.
+- Return home measured: 1,475 -> 15 A* searches/30 s, idle design world 57.7% -> 44.4%.
+- Sector size: keep 16 (64 makes dense queries 2-3x slower, P4 16% vs 13%); sleep gets its own 64x64 areas.
+- Section 8 = the plan: A1-A3 saves load cleanly, B1-B6 harness + cheap wins, C1 walk home, C2 NPC sleep, D1-D2 snapshot save, E1-E5. Four decisions listed for the user.
+**Next: wait for the user's go-ahead and answers. Then one issue + PR per step, starting with A1.** A1's design: force static initializers of Plugin/PluginDef/Role/RoleDef types after ScriptLoader.Load and before WorldSaver.Load (not earlier: GetByDefname in initializers would cache null), plus a boot self-check logging an ERROR for any unregistered static def.
 
 ## DONE (2026-11-04): 1165 Shielded STM / optimistic multithreading research (no implementation)
 

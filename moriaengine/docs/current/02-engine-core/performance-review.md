@@ -9,16 +9,25 @@ it is, whether or not a player is near.** With the estimated full world (30k NPC
 **with no players online**, timers run up to 2.3 s late and the process allocates 218 MB/s. With 50 players it reaches 82%,
 and at 50k NPCs it falls over (timers 2–5 s late). Sphere avoids this with *sector sleep*: nothing ticks where no player has
 been for 10 minutes. A throwaway prototype of the same idea plus two small fixes took the design world from **72% to 12%**
-busy and timer lateness p99 from **0.9 s to 37 ms**. The other big items are that saves block the whole server for 2.6–5 s
-(and nothing saves automatically at all), and that a Release build doesn't compile, so every server runs Debug, which costs
-2–3x per NPC think.
+busy and timer lateness p99 from **0.9 s to 37 ms**. The other big items: each save blocks the whole server for 2.6–5 s
+(the hourly autosave included), and a Release build doesn't compile, so every server runs Debug, which costs 2–3× per NPC
+think.
+
+**Second pass (2026-11-04, #1168).** Corrected and added after review:
+- The hourly autosave **does exist** (`scripts/Basic/PeriodicSave.scp`); the first pass missed it (problem 3).
+- **#1163, saves that don't load cleanly**, is now problem 0. 11 of 24 code-registered defs don't exist when a save loads,
+  and an in-progress skill loses its skill.
+- **The user's return-home idea** (straight step first, A* only when it fails) cut the idle design world from 58% to 44%
+  (problem 7).
+- **Sector size** 16 vs 32 vs 64 is measured: keep 16 (section 12).
+- **The full implementation plan** is section 8.
 
 Contents: [1. Assumptions and targets](#1-assumptions-and-targets) ·
 [2. Reference engines](#2-how-the-reference-engines-do-it) · [3. Comparison](#3-comparison) ·
 [4. Our engine](#4-our-engine-main-loop-and-threads) · [5. Measurements](#5-measurements) ·
 [6. Problems and proposals](#6-problems-ranked-with-proposals) · [7. Checked and fine](#7-checked-and-fine) ·
-[8. Order](#8-recommended-order) · [9. Benchmark setup](#9-benchmark-and-stress-test-setup) ·
-[10. Limits](#10-limits-of-this-study) · [11. More cores](#11-using-more-cores-stm)
+[8. Implementation plan](#8-implementation-plan) · [9. Benchmark setup](#9-benchmark-and-stress-test-setup) ·
+[10. Limits](#10-limits-of-this-study) · [11. More cores](#11-using-more-cores-stm) · [12. Sector size](#12-sector-size-measured)
 
 ## 1. Assumptions and targets
 
@@ -160,7 +169,7 @@ Analyzed at tag `56b-20130616` (commit `e2546c5181233357e211b10d8ead09cc7a00e125
 | Pathfinding | Greedy steps | Optional 24×24 A*, INT ≥ 75, probabilistic | A* up to 1000 iterations, cached 8 steps, retried every think when it fails |
 | Item decay / spawns | Timer items in sector lists; sleeping sectors every ~205 s | Same | One timer per decaying item or spawn; items in containers and fixtures cost nothing |
 | Networking | Select + sync sends, 31 KB cap drops the client | Priority queues, per-tick caps, optional I/O threads | Async receive, one send worker thread, pooled buffers and packets, shared packet groups |
-| Save | Text, one sector per tick (~10 min), forced save blocks | Text, stop-the-world by default | Text, **stop-the-world**, and **no autosave** |
+| Save | Text, one sector per tick (~10 min), forced save blocks | Text, stop-the-world by default | Text, **stop-the-world**; hourly autosave (`PeriodicSave.scp`); **no save on shutdown** |
 | Load | Text parse | Text parse | Text parse, 12 s for 709k items + 50k NPCs |
 | Scripts | Text interpreted per call, file opened per trigger | Text lines cached, parsed per execution | Compiled C# at boot; LScript only for `.scp`/`.def` bits |
 | Memory / GC | No pools, ~7 objects per item, default GC | Plain new/delete | Pools for packets and connections; default workstation GC; hot-path LINQ allocates |
@@ -274,6 +283,41 @@ or collisions between 50 walkers on one spot (78% of their steps were refused), 
 Severity: **Critical** misses the targets at the design load on its own; **High** misses them at peak or puts data at risk;
 **Medium** costs real headroom; **Low** is worth doing when nearby.
 
+### 0. Saves made mid-fight or mid-effect don't load cleanly (#1163) — High (correctness, first)
+
+- **Where:** 11 plugin and role defs are created in a static field initializer and nothing touches them before
+  `WorldSaver.Load`. A .NET static initializer only runs when its field is first read; the generated `Bootstrap()` that
+  `ClassManager.InitClasses` calls doesn't read it.
+
+  | Missing when a save loads | Defined in |
+  |---|---|
+  | `p_weaponSkillTargetQueue`, `p_weaponSkillTargetTracker` | `skills/Combat/WeaponSkillTarget*Plugin.cs` |
+  | `p_paralyze` | `skills/Magery/Spells/Paralyze/ParalyzeEffectPlugin.cs` |
+  | `p_discordanceEffect_` | `skills/Discordance/Discordance.cs` |
+  | `p_warcryEffect`, `p_magic_charge`, `p_ignitionEffect` | `AbilitiesAndTalents/…` |
+  | `p_poisoned_item`, `p_craftingProcess`, `p_snoopedBackpacks` | `skills/Poisoning`, `skills/Crafting`, `skills/Stealing/Snooping.cs` |
+  | `r_party` | `Roles/Party/PartyDef.cs` |
+
+  Already fixed one by one, by earlier `Bootstrap()`s: stat mods and curse/bless, magic reflection (#927), tracking (#444),
+  realm, regeneration, race, guild. Two of the missing, `p_snoopedBackpacks` (`skills/Stealing/Snooping.cs:151`) and
+  `p_discordanceEffect_` (`skills/Discordance/Discordance.cs:156`), are built without `.Register()` at all, so they are never
+  registered, not just late.
+
+  Measured: a probe at the start of `WorldSaver.Load` asked for each of 24 code-registered defs by name.
+- **What happens to a missing one:** `Plugin.LoadingFinished` (`GameCore/Plugin.cs:132`) logs `ERROR … No PluginDef
+  reference loaded … Deleting.` and drops the plugin:
+  - a fight, a paralysis, a poisoned weapon or a craft in progress is lost;
+  - **discordance lowers Str/Dex/Int and max hits/mana/stamina when it starts and puts them back only when it ends**
+    (`skills/Discordance/Discordance.cs:181-212`), so a dropped one may leave the stats lowered for good. To be proven by
+    the test in plan step A1.
+- **Second bug:** `SkillSequenceArgs.LoadLine` (`scripts/Basic/skills/SkillDef.cs:452`) resolves the field *name*
+  (`OptimizedLoad_Script(valueName)`) instead of its value. Every in-progress skill (swing, cast, craft) therefore loads
+  with no skill, logs `We really do not know what could the loaded string 'skilldef' refer to`, and its stroke quietly
+  does nothing after the restart. No other `[LoadLine]` has the same mistake.
+- **Evidence:** the 709k-item save from the stress run booted with 27 + 27 such lines (#1163); the probe above.
+- **Proposal:** plan steps A1 (every code-registered def exists before the world loads, enforced in one place) and A2
+  (the `skilldef` fix). **Effort:** S–M. **Risk:** L–M.
+
 ### 1. Every NPC thinks everywhere, all the time — Critical
 
 - **Where:** `NPCAiTimer.OnTimeout` (`scripts/Basic/AI/NPCAiTimer.cs:256`), scheduled by `RescheduleForMoveRate` (`:186`):
@@ -316,26 +360,31 @@ Severity: **Critical** misses the targets at the design load on its own; **High*
 - **Expected impact:** 2–3× less CPU per NPC think; no log I/O from debug lines. **Effort:** S. **Risk:** L. Run the fast
   tier and a protocol sample on Release once: nothing should depend on `#if DEBUG`, but that's unverified.
 
-### 3. Saves stop the world, and nothing saves automatically — High
+### 3. Saves stop the world, and nothing saves on shutdown — High
 
 - **Where:** `Globals.Save` (`GameCore/Globals.cs:749`) pauses server time and calls `WorldSaver.Save`
-  (`GameCore/Persistence/WorldSaver.cs:31`), which writes every object as text on the game thread. The only callers are the
-  GM `.save` command (`scripts/Basic/administration/Commands.cs:261`) and the save before a script recompile
-  (`GameCore/Main.cs:260`). Nothing saves periodically, and shutdown (`MainClass.Exit`) doesn't save either.
-- **Why:** a crash loses everything since the last manual save. Once an autosave exists, each one freezes every player.
-- **How it scales:** with **all things in the world**.
-- **Evidence:** measured 2.6–5.0 s at 626k items and 30k NPCs (94 MB); *extrapolated* 4–8 s at 1M items. The 50 walkers lost
-  sync waiting 5 s on the second save.
-- **Proposal, in two steps:**
-  - (a) Add an autosave now (every 30 min, setting on `.settings`, with Erebor's "Server is pausing for worldsave"
-    broadcast that `WorldSaver.Save` already sends), and save on a clean shutdown. **Effort:** S. **Risk:** L. Players see a
-    3–5 s pause per half hour, which beats losing a day.
-  - (b) Snapshot-then-write: under the lock, serialize every object into in-memory buffers (the text writer already
-    produces strings; give each coordinator a `StringWriter` or pooled buffer), release the lock, and write files and
-    rename the save folder on a worker thread. Measure the split first: the lock only needs to cover formatting, which is
-    likely well under half of the 2.6 s. A binary format can come later if formatting alone is still too slow.
-    **Effort:** M–L. **Risk:** M (consistency is easy while formatting stays under the lock; the work is in the plumbing).
-  - Don't copy Sphere's one-sector-per-tick background save: 0.56b's own notes show it loses items moving between sectors.
+  (`GameCore/Persistence/WorldSaver.cs:31`), which writes every object as text on the game thread.
+  - **The autosave:** `scripts/Basic/PeriodicSave.scp`, trigger group `e_periodicsave_global`, attached to `Globals` like
+    every `_global` group (`GameCore/TriggerGroup.cs:53`). It arms a timer at `@startup` and again after every save, every
+    `periodicSave_Interval` = 60×60 s, a constant in that file. Verified in a local log: a boot at 15:44:30 on 10-15, a
+    save at 16:44:45. *The first pass of this review missed it and said there was none.*
+  - **Other callers:** the GM `.save` command and the save before a script recompile.
+  - **Shutdown:** `.exit` (`Globals.Exit`, `GameCore/Globals.cs:741`) and the console both go straight to
+    `MainClass.CommandExit` and don't save.
+- **Why it's a problem:**
+  - **Every save freezes every player.** At the design world that is 2.6–5 s, once an hour plus every manual save.
+  - **A restart loses work.** Even a deliberate one drops up to an hour of play; Sphere saves before it shuts down.
+  - **The interval is buried** in a script constant, not on `.settings`.
+- **How it scales:** the freeze grows with **all things in the world**.
+- **Evidence:** measured 2.6–5.0 s at 626k items and 30k NPCs (94 MB); *extrapolated* 4–8 s at 1M items. The 50 walkers
+  lost sync waiting 5 s on a save.
+- **Proposal:** plan step A3 (save on shutdown, interval on `.settings`), then D1–D2:
+  - **D1:** measure how the save splits between formatting and disk writing.
+  - **D2:** snapshot then write. Format everything into memory under the lock, then write and rename the files on a worker
+    thread, as ModernUO does.
+
+  Don't copy Sphere's one-sector-per-tick background save: 0.56b's own notes show it loses items moving between sectors.
+  **Effort:** S (A3), M–L (D2). **Risk:** L, M.
 
 ### 4. Range queries allocate, and character queries walk items — High
 
@@ -380,22 +429,34 @@ Severity: **Critical** misses the targets at the design load on its own; **High*
 - **Proposal:** bound each round by time (for example 20 ms) or by count, then run `ProcessChanges` before continuing.
   **Effort:** S. **Risk:** L–M (timers re-armed into the past then run in order with the rest, which is the intent).
 
-### 7. Failed A* searches repeat every think — Medium-High
+### 7. Walking home and failed A* searches — Medium-High
 
-- **Where:** `NPCAiTimer.StepTowardsSmart` / `PlanPath` (`scripts/Basic/AI/NPCAiTimer.cs:868, 923`) with
-  `AStar.DefaultMaxIterations = 1000` (`scripts/Basic/AI/PathFinding/AStar.cs:36`). A successful path is cached for 8 steps
-  (`NpcPathCache`), but a failed search caches nothing, so an NPC that can't reach its home or target runs a full
-  1000-iteration search on every think. Each iteration calls `Map.CheckMovement`, which walks statics through an iterator
-  (`GetStaticsAndMultiComponentsOnCoords`).
-- **Why:** unreachable homes are common in practice: spawns next to walls, NPCs knocked or lured off ground they can't
-  walk back over. `Wander` sends every NPC past its leash home through A*.
-- **How it scales:** with **NPCs that can't reach where they're going**: all of them today, those near players after sleep.
-- **Evidence:** profile: 30% of the timer thread at P5. **Partly an artifact:** the harness placed NPCs at random spots,
-  more of them unreachable than real spawns would be. The single slowest think measured was 288 ms.
-- **Proposal:** after a failed search, back off (no new search for 5–10 s, step directly or stand). For wander-home, do what
-  Sphere and Erebor's guards do: give up and walk greedily, or teleport home past a distance. Make `CheckMovement`'s static
-  lookup allocation-free. **Effort:** S (back-off), M (`CheckMovement`). **Risk:** L–M (NPC movement looks different when
-  stuck).
+- **Where:** `NPCAiTimer.Wander` (`scripts/Basic/AI/NPCAiTimer.cs:957`):
+  - within `WanderLeash` (6 tiles) of home, an NPC steps randomly;
+  - at 6 or more it walks home with `StepTowardsSmart`, which is A* (`PlanPath`, `:923`) up to
+    `AStar.DefaultMaxIterations = 1000` (`scripts/Basic/AI/PathFinding/AStar.cs:36`).
+
+  A path is cached for 8 steps, but the random steps in between make it stale, so an NPC at the leash edge plans again
+  almost every time. A search that fails caches nothing and runs again on the next think. Every iteration calls
+  `Map.CheckMovement` (8 neighbours) and the character-blocking check.
+- **The user's idea, measured:** walking home takes a straight step toward home first and uses A* only when that step is
+  refused. That is also what Sphere does: NPCs walk greedily with side-steps and never use A*. Design world with no players,
+  today's code, back-to-back runs, one each:
+
+  | | A* searches walking home (30 s) | A* iterations | Failed | Game thread busy | GC pause | Timer lateness p99 |
+  |---|---|---|---|---|---|---|
+  | Today | 1,475 | 111,153 | 182 | 57.7% | 1.6 s | 607 ms |
+  | Straight step first | 15 | 1,611 | 2 | **44.4%** | 0.9 s | 290 ms |
+
+  This run's baseline busy% (57.7%) is lower than the first pass's 72% for the same world: the machine was quieter. Only
+  same-session pairs are compared.
+- **Why:** unreachable homes and leash-edge drifting are common (spawns by walls, NPCs knocked or lured away).
+- **How it scales:** with **NPCs walking home**: all of them today, those near players after sleep (problem 1).
+- **Evidence:** the table above. The P5 profile also showed A* at 30% of the timer thread, partly from fights; random
+  placement makes failures likelier than real spawns would.
+- **Proposal:** plan step C1. Straight step first when walking home (the user's idea). Back off for 5–10 s after a failed
+  search, for every caller, not just walking home. **Effort:** S. **Risk:** L–M (NPCs near walls move a little
+  differently, closer to Sphere).
 
 ### 8. Map and statics sectors: a file opened per sector, never evicted — Low-Medium
 
@@ -438,7 +499,7 @@ Severity: **Critical** misses the targets at the design load on its own; **High*
 
 ### Found on the way (not performance)
 
-- **#1163:** a world saved while NPCs fight loads with ERRORs (`p_weaponSkillTargetQueue` not registered at load), filed.
+- **#1163:** a world saved while NPCs fight loads with ERRORs. Now problem 0, with the full list and a second bug.
 - **Problem 2's `#error`** is also a plain build bug.
 
 ## 7. Checked and fine
@@ -459,31 +520,238 @@ Severity: **Critical** misses the targets at the design load on its own; **High*
 - **Boot and load:** 48 s for 709k items and 50k NPCs, 12 s of it the world.
 - **Memory:** 0.92 GB at the design world, about 1.1 GB extrapolated to 1M items, well within 4 GB.
 - **Scripts:** compiled C# at boot, so no text interpretation per call, unlike both references.
+- **Sector size (16×16):** measured against 32×32 and 64×64 in section 12. Bigger sectors make every range query in a busy
+  area slower, so keep 16. Sleep (problem 1) should use a coarser area of its own.
 - **One global lock:** contention isn't the problem, the amount of work is: with the prototypes the lock-wait probe's p99
   was 1–11 ms. Keep the single-threaded game model; both reference engines do the same.
 
-## 8. Recommended order
+## 8. Implementation plan
 
-Highest impact for lowest effort first:
+**Status: proposed, waiting for the go-ahead. Nothing here is implemented.**
 
-1. **Land the benchmark harness** (section 9), so every step below gets a before/after. S.
-2. **Make Release build and run it** (problem 2). S; 2–3× on NPC thinks.
-3. **Stop the timer thread signalling itself** (problem 5). S; ~19% of the game thread at load.
-4. **Define `NOLINQ`** (problem 4, first part). S; most of the allocation and GC.
-5. **Autosave every 30 min + save on shutdown** (problem 3a). S; protects data now, accepting a 3–5 s pause.
-6. **Bound the timer round** (problem 6). S; overload degrades gradually.
-7. **A* back-off after a failed search** (problem 7). S.
-8. **Sector sleep for NPC AI** (problem 1). M; the big one: 72% → ~12% or less on the design world. It comes after the cheap
-   ones only because it needs care, not because it matters less: **it is the only fix that makes 30–50k NPCs viable.**
-9. **Snapshot save, write on a worker thread** (problem 3b). M–L.
-10. **Split `Sector.Things`, allocation-free enumerators** (problem 4, rest). M.
-11. **Map files kept open or memory-mapped** (problem 8), **monotonic clock** (problem 11). S each.
-12. **Re-measure crowds and GC** (problems 9, 10) and tune from there.
+**How each step runs:**
+- one issue, one branch, one PR, as usual;
+- every change has a test that is red without it;
+- merges are gated on the test results;
+- every performance step reruns the harness at the same scale and phases, before and after, and the PR quotes both;
+- docs are updated in the same PR.
+
+Effort: S ≤ 1 day, M a few days, L a week or more.
+
+**Phases:**
+- **A**, correctness of saves (#1163 first, as asked).
+- **B**, measuring plus cheap wins.
+- **C**, NPC AI.
+- **D**, saves without the freeze.
+- **E**, the rest.
+
+A and B don't depend on each other; within C and D the order matters.
+
+### Phase A: saves that load cleanly (#1163)
+
+**A1. Every code-registered def exists before the world loads.**
+- **Work:**
+  - *Force them:* right after `ScriptLoader.Load` and before `WorldSaver.Load` (both in `Main.Init` and in `LoadAll`, the
+    recompile path), run the static initializer (`RuntimeHelpers.RunClassConstructor`) of every scripts type deriving from
+    `Plugin`, `PluginDef`, `Role` or `RoleDef` that declares a static field of an `AbstractDef` type. That covers all 11
+    missing defs.
+  - *Why that point:* it comes after the scripts load, so an initializer that looks another def up by name still finds it.
+    It is limited to plugin and role types, so unrelated static initializers keep running on first use as today.
+  - *Register the unregistered:* `Snooping.cs:151` and `Discordance.cs:156` build their def without `.Register()`, so those
+    two are never registered at all, not just late. They get `.Register()`.
+  - *Check every boot:* afterwards, every such static field must hold a def registered under its own name. One that isn't
+    logs an ERROR, which BootLogTests already fails on, so the next forgotten def is caught at once.
+  - *Kept, harmless:* the hand-written fixes of #444, #927 and `GuildDef`.
+  - *Rejected:* a `Bootstrap()` per class, which is what #444 and #927 did. It was missed 11 times; it will be missed again.
+- **Benefit:** after a restart a fight, paralysis, discordance, warcry, magic charge, ignition, poisoned weapon, craft,
+  snoop or party comes back as it was saved, instead of logging an ERROR and disappearing. Discordance can't leave lowered
+  stats behind.
+- **Test:** BootLogTests' saved-world boot, extended.
+  - *Setup:* before the save, give characters each of the 11 states: an NPC mid-swing (combat queue and tracker),
+    paralysis, discordance, warcry effect, magic charge, ignition, a poisoned weapon, a craft in progress, a snooped pack,
+    a party.
+  - *Then:* save, boot on the save.
+  - *Assert:* no ERROR or WARNING. Each plugin and the party are back with their defs. The discorded character's stats
+    return exactly to their pre-discord values when the effect ends.
+  - *Red check:* red without A1, since 11 defs were measured missing. It also answers whether today's code leaves
+    discordance's lowered stats behind.
+- **Effort:** S–M. **Risk:** L–M. A few static initializers run earlier than before, still after every script has
+  loaded; the boot tests show any that can't.
+
+**A2. In-progress skills load with their skill.**
+- **Work:** `scripts/Basic/skills/SkillDef.cs:452`, `valueName` → `valueString`.
+- **Behaviour change:** a skill saved mid-way finishes after the restart (the stroke lands, the craft completes) instead
+  of doing nothing, as Sphere, which saves the action and its timer.
+- **Benefit:** no `'skilldef'` warnings; a restart doesn't silently eat a craft, a swing or a cast.
+- **Test:** save during a craft and during a swing, boot; the item is made, the swing lands, no warning. Red without the
+  fix.
+- **Effort:** S. **Risk:** L.
+
+**A3. Save on shutdown; the autosave interval on `.settings`.**
+- **Work:**
+  - `.exit` and the console's exit save first, with the usual "Server is pausing for worldsave" broadcast. If the save fails, it says so and exits anyway.
+    *Alternative:* refuse to exit on a failed save. That's your call; I lean towards "say so and exit".
+  - `periodicSave_Interval` moves from the `PeriodicSave.scp` constant to a `.settings` value. The default stays 60
+    minutes until D2 makes saves cheap.
+  - A GM command shows when the next save is due (`periodicSaveInformation` already exists in the script).
+- **Benefit:** a deliberate restart loses nothing, and admins can tune the interval without editing scripts.
+- **Test:** protocol test: change something, `.exit`, boot again, the change is there. A setting test for the interval.
+- **Effort:** S. **Risk:** L.
+
+### Phase B: measure and cheap wins
+
+**B1. Land the benchmark harness** (section 9).
+- **Work:**
+  - `PerfCounters` behind a setting, off by default, plus a GM command printing the top `globalLock` holders.
+  - `.TestPerf`, `PerfProbeTests` and `PerfLoadTests` as opt-in test classes, outside the default tiers.
+  - `tools/perf` (dungeon rectangles, the STM benchmark).
+- **Benefit:** every later step gets real before/after numbers, and the live shard gets a "why is it slow right now"
+  answer.
+- **Test:** the harness's own smoke run at scale 0.1.
+- **Effort:** S. **Risk:** L.
+
+**B2. Release builds work and are what the server runs.**
+- **Work:**
+  - make the `AuxiliaryServer/Commands.cs:74` `#error` branch build;
+  - add `--release` to `run-local.sh`;
+  - a Release compile in `test-fast.sh`, so it can't break unnoticed again;
+  - run the fast tier and a protocol sample on Release once.
+- **Benefit:** 2–3× less CPU per NPC think, and no debug logging written synchronously under the lock (problem 2).
+- **Effort:** S. **Risk:** L.
+
+**B3. The timer thread stops signalling itself** (problem 5).
+- **Work:** no `Set()` from the timer thread itself.
+- **Benefit:** about 19% of the game thread at load.
+- **Test:** the timer tests (TimerBurstTests among them) and a protocol sample.
+- **Effort:** S. **Risk:** L.
+
+**B4. Range queries without LINQ** (problem 4, first part).
+- **Work:** define `NOLINQ`, or delete the LINQ branches.
+- **Benefit:** queries about 2× faster, allocation per query 9.5 KB → 0.5 KB, most of the GC pressure gone.
+- **Effort:** S. **Risk:** L.
+
+**B5. A bounded timer round** (problem 6).
+- **Work:** `ProcessTimingOut` stops after about 20 ms and lets `ProcessChanges` run.
+- **Benefit:** overload slows the world down gradually instead of freezing it in whole rounds.
+- **Test:** a timer test that floods due timers and checks a new timer still fires on time.
+- **Effort:** S. **Risk:** L–M.
+
+**B6. A monotonic game clock** (problem 11).
+- **Work:** `Stopwatch` instead of `DateTime.Now` in `Globals.TimeAsSpan`.
+- **Benefit:** a little CPU, and immune to clock jumps (NTP, DST).
+- **Effort:** S. **Risk:** L.
+
+### Phase C: NPC AI
+
+**C1. Walking home: straight step first; back off after failed searches** (problem 7, the user's idea).
+- **Work:**
+  - `Wander` past the leash takes `StepTowards(home)`, and `StepTowardsSmart` only if that step is refused.
+  - After any failed A* search, `NpcPathCache` remembers it and doesn't search again for 5–10 s (a setting); the NPC steps
+    directly or stands.
+- **Benefit:** measured 1,475 → 15 searches walking home per 30 s, game thread 57.7% → 44.4% on the idle design world.
+  Movement gets closer to Sphere's.
+- **Test:**
+  - an NPC past its leash on open ground walks home without searching;
+  - one with a wall in the way gets round it;
+  - one with an unreachable home doesn't search more than once per back-off;
+  - existing movement and A* tests.
+- **Effort:** S. **Risk:** L–M.
+
+**C2. NPCs sleep where no player is near** (problem 1).
+- **Work, (a) engine:** an activity grid per map plane in areas of 64×64 tiles (4×4 sectors, Sphere's size).
+  - An area is awake while a player is in it or in a neighbouring area, and for a while after the last one leaves. Start
+    at 2–5 minutes, a setting; Sphere uses 10.
+  - Waking and sleeping raise events. The movement code already sees players change sectors (`Map.ChangedP`).
+- **Work, (b) NPCAiTimer:**
+  - A sleeping NPC's timer is paused (`DueInSeconds = -1`), so there's no early return and no cost while it sleeps.
+  - Its area waking resumes it. A slow catch-up tick (about every 3 minutes, a setting) handles regeneration and walking
+    home.
+  - Never asleep: anything with a target, an owner, a follow target or a go-to point; guards in pursuit; boss events with
+    their own timers; anything a script marks.
+- **Work, (c) audit:** everything that runs from a think or `OnAiTick`: dragon regeneration, backstab hiding, mass leap,
+  dispel bombs, NPC see-new-player, elite escape, guard pursuit, proactive bosses. Each one is listed in the PR with what it
+  does while its NPC sleeps.
+- **Work, (d) tests:**
+  - an NPC far from players doesn't think, and wakes when a player arrives;
+  - pets and followers, guards, bosses keep working;
+  - the protocol tests that wait for NPCs all have a player in range already, so run the broad protocol set.
+- **Benefit:** the prototype (early return, timer still firing) took the idle design world from 72% to 12% and allocation
+  from 218 to 0.4 MB/s. Paused timers should go lower. This is **the step that makes 30–50k NPCs possible.**
+- **Effort:** M. **Risk:** M. Unseen NPCs stop wandering and regenerating until a player comes near, which is Sphere's
+  behaviour too.
+
+### Phase D: saves without the freeze
+
+**D1. Measure where a save's time goes.**
+- **Work:** formatting under the lock vs. disk writing, at the design world.
+- **Benefit:** shows how short D2 can make the freeze.
+- **Effort:** S.
+
+**D2. Snapshot, then write on a worker thread** (problem 3).
+- **Work:**
+  - each save coordinator formats into a pooled in-memory buffer while the world is paused;
+  - the lock is released;
+  - a worker thread writes, flushes and renames the save folder;
+  - the next save waits for the previous write.
+- **Benefit:** the freeze shrinks to the formatting time (*estimate* well under half of today's 2.6–5 s). The interval can
+  then drop to 15–30 minutes.
+- **Test:**
+  - the existing save/restart tests (AuctionRestart, GuildStoneRestart, WorldSetupRestart, BootLogTests);
+  - a test that changes things during the write and finds the save consistent;
+  - a test that kills the process mid-write and finds the previous save intact.
+- **Effort:** M–L. **Risk:** M.
+
+### Phase E: the rest
+
+- **E1. Split `Sector.Things` into characters and items** (problem 4).
+  - **Benefit:** character queries never see items, removing the 7.6% of type checks seen at load.
+  - **Effort:** M. **Risk:** M.
+- **E2. Allocation-free range enumerators**, struct enumerators or callbacks.
+  - **Effort:** M. **Risk:** L–M.
+- **E3. Keep the map files open or memory-mapped** (problem 8).
+  - **Benefit:** no file opens on the game thread as players explore.
+  - **Effort:** S–M. **Risk:** L.
+- **E4. Re-measure GC and tune** (problem 9).
+  - **Effort:** S.
+- **E5. Re-measure crowds** (problem 10) with walkers that don't collide; look at movement pacing if steps are still slow.
+  - **Effort:** S.
+
+### Summary
+
+| Step | What | Effort | Risk | Benefit (measured unless *estimate*) | Needs |
+|---|---|---|---|---|---|
+| **A1** | Every code-registered def exists before load | S–M | L–M | 11 kinds of state survive a restart; no ERRORs | – |
+| **A2** | In-progress skills load their skill | S | L | Crafts, swings and casts finish after a restart | – |
+| **A3** | Save on shutdown, interval on `.settings` | S | L | A restart loses nothing | – |
+| B1 | Land the harness | S | L | Before/after for everything below | – |
+| B2 | Release builds | S | L | 2–3× per NPC think | – |
+| B3 | No timer self-signal | S | L | ~19% of the game thread at load | B1 |
+| B4 | `NOLINQ` | S | L | Queries 2×, allocation ~95% less per query | B1 |
+| B5 | Bounded timer round | S | L–M | No freeze in whole rounds under overload | B1 |
+| B6 | Monotonic clock | S | L | ~1%, immune to clock jumps | – |
+| C1 | Walk home straight first, A* back-off | S | L–M | 57.7% → 44.4% idle design world | B1 |
+| C2 | NPC sleep | M | M | 72% → ~12% or less (prototype) | B1, C1 |
+| D1 | Measure save split | S | – | Sizes D2 | – |
+| D2 | Snapshot save, write on a worker | M–L | M | Freeze → *estimate* < half of 2.6–5 s | D1, A3 |
+| E1–E5 | Data structures, map files, GC, crowds | S–M each | L–M | Smaller; re-measure first | B1 |
+
+**Expected end state** (*estimate*, to be checked with the harness after each phase):
+- the design world idle at about 10% of a core;
+- 50 players at about 20%;
+- timers p99 well under 100 ms;
+- a save freeze cut to a fraction of today's 2.6–5 s (D1 will size it), every 15–30 minutes and on shutdown;
+- any save boots without an ERROR.
+
+**Decisions for you before starting:**
+1. A3: on a failed shutdown save, exit anyway (recommended) or refuse?
+2. A2: an in-progress skill finishes after a restart (recommended, as Sphere) or is cancelled?
+3. C2: how long an area stays awake after the last player leaves: 5 minutes (recommended to start), or Sphere's 10?
+4. Order: A first as you asked. Then B1 + B2 before anything else in B–E, so every later step is measured on Release.
 
 ## 9. Benchmark and stress-test setup
 
-The harness used here is on the local branch `1161-perf-harness` (worktree `../moria-1161`, two commits: the harness, then
-the prototypes). Landing it is step 1 above: everything except `AuxiliaryServer/Commands.cs`'s workaround and the prototype
+The harness used here is on the local branch `1161-perf-harness` (worktree `../moria-1161`, three commits: the harness,
+the prototypes, the STM benchmark of #1165). Landing it is plan step B1: everything except `AuxiliaryServer/Commands.cs`'s workaround and the prototype
 commit, with the counters behind a setting.
 
 **Pieces:**
@@ -558,3 +826,43 @@ measured about 95 ns per field access in a transaction, roughly as much as a who
 best 2.8×. Adopting it means converting about 3,600 mutable fields and deferring about 3,500 packet and log calls. The
 problems above are too much work, not too few cores. If cores are ever needed, keep the single game thread and move
 separable work (save serialization, path planning, map loading) off it first, as ModernUO does.
+
+## 12. Sector size, measured
+
+**Question (review):** sectors are 16×16 tiles (`Map.sectorFactor = 4`, `GameCore/Regions/Map.cs:31`), smaller than a
+player's 18-tile view. Should they be 32×32 or 64×64, like Sphere?
+
+**What sector size trades.** A range query visits every sector its square touches and checks every thing in them:
+- *Bigger sectors* mean fewer sectors to visit but more things outside the range to check and throw away. On average a
+  query of side *L* scans about (*L* − 1 + *S*)² tiles for sector size *S*:
+
+  | Query | Tiles in range | *S* = 16 | *S* = 32 | *S* = 64 |
+  |---|---|---|---|---|
+  | View range 18 (*L* = 37) | 1,369 | 2,704 (2.0×) | 4,624 (3.4×) | 10,000 (7.3×) |
+  | Aggro range 14 (*L* = 29) | 841 | 1,936 (2.3×) | 3,600 (4.3×) | 8,464 (10×) |
+
+- *Smaller sectors* mean more sector-to-sector moves. Each is two O(1) list operations, so cheap.
+- Sphere can afford 64 because its character searches never walk the item lists; ours do until problem 4's split (E1).
+
+**Measured:** the harness, design world, with the three prototypes on (NPC sleep among them), only `sectorFactor` changed.
+Same session, one run each:
+
+| | 16×16 | 32×32 | 64×64 |
+|---|---|---|---|
+| Range query, densest dungeon spot: characters within 14 | 4.2 µs | 5.6 µs | **14.0 µs** |
+| Range query there: things within 18 | 7.9 µs | 6.6 µs | 14.5 µs |
+| P2 idle design world, game thread busy | 12.2% | 8.0% | 6.4% |
+| P3 50 players crowded, game thread busy | 12.3% | 4.6% | 4.6% |
+| P4 50 players in a dense dungeon, game thread busy | 13.1% | 11.5% | **16.1%** |
+| P4 step round trip p99 | 50 ms | 41 ms | 75 ms |
+
+**Reading it:**
+- **The idle and crowd numbers favour big sectors only because of the prototype.** Its per-NPC "any player within 40
+  tiles?" check scans 36 sectors at 16×16, 9 at 32 and 4 at 64. Plan step C2 replaces that check with per-area wake flags,
+  so the difference disappears.
+- **Where NPCs are really active (P4), 64×64 is clearly worse:** queries 2–3× slower, more game-thread time, worse step
+  times. 32×32 is about even with 16.
+- **Recommendation: keep 16×16** for the sector grid. Give sleep (C2) its own coarser grid, 64×64 areas, which is the scale
+  where Sphere's 64 makes sense.
+- Re-measure 16 vs 32 once C2 and E1 are in. With characters in their own lists (E1), bigger sectors cost less, and 32 may
+  win.
