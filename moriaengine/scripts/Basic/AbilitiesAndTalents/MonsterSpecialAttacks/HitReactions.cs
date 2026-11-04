@@ -245,6 +245,7 @@ namespace SteamEngine.CompiledScripts {
 			TryLeechAboveMaxHits(attacker);
 			TryAcidSplash(attacker);
 			TryDrinkAfterOwnSwing(attacker);
+			TrySummonerOwnSwing(attacker, defender); //#1022 the summoning bosses
 			if (!defender.IsDeleted) {
 				TryKnockWeaponOut(attacker, defender, damage);
 				TryBlowUpOnOwnSwing(attacker, defender);
@@ -262,6 +263,7 @@ namespace SteamEngine.CompiledScripts {
 				TryShapeshift(hit);
 				TrySummonFrenzy(hit, attacker);
 				TryKillSummonHittingGuard(hit, attacker);
+				TrySummonerReactions(hit, attacker); //#1022 the summoning bosses
 			}
 			TryDrop(defender, GoldDropDef);
 			TryDrop(defender, ReagDropDef);

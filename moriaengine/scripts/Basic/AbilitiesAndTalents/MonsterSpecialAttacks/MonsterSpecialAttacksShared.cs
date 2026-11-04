@@ -85,6 +85,7 @@ namespace SteamEngine.CompiledScripts {
 			TryMassLeapTick(self);
 			TryDispelBombTick(self);
 			TryDragonBrainSight(self); //#1022
+			TrySeeNewPlayers(self); //#1022 Sphere's @NPCSeeNewPlayer
 		}
 
 		/// <summary>Makes an NPC fight `enemy` now (archive "attack(src)").</summary>

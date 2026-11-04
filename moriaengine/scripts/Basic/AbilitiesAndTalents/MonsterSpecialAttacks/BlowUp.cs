@@ -78,7 +78,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static BlowUpAbilityDef BlowUpDef { get { return Lookup<BlowUpAbilityDef>("a_tevent_e_npc_blow_up"); } }
 
 		internal static bool LeavesNoCorpse(Character self) {
-			return HasAbilityDef(self, BlowUpDef);
+			return HasAbilityDef(self, BlowUpDef) || VanishesAtDeath(self);
 		}
 
 		internal static void TryBlowUpOnHit(NPC self, Character attacker) {

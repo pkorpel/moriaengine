@@ -63,7 +63,8 @@ Name = "(e_bomba_boy)"
 [PassiveAbilityDef a_tevent_e_brinbor]
 Name = "(e_brinbor)"
 
-[PassiveAbilityDef a_tevent_e_cajun]
+//#1022 summoning bosses: real, BossSummoners.cs
+[CajunAbilityDef a_tevent_e_cajun]
 Name = "(e_cajun)"
 
 [PassiveAbilityDef a_tevent_e_character]
@@ -92,7 +93,8 @@ Name = "(e_dragon_brain)"
 [DragonRegenerationAbilityDef a_tevent_e_dragon_regeneration]
 Name = "Regeneration"
 
-[PassiveAbilityDef a_tevent_e_drone_large]
+//#1022 summoning bosses: real, BossSummoners.cs
+[DroneSummonerAbilityDef a_tevent_e_drone_large]
 Name = "(e_drone_large)"
 
 [PassiveAbilityDef a_tevent_e_drop_egg]
@@ -154,7 +156,8 @@ Name = "(e_fire_dragon_cage)"
 [FireDragonRoundAbilityDef a_tevent_e_fire_dragon_round]
 Name = "(e_fire_dragon_round)"
 
-[PassiveAbilityDef a_tevent_e_fire_lord]
+//#1022 summoning bosses: real, BossSummoners.cs
+[FireLordAbilityDef a_tevent_e_fire_lord]
 Name = "(e_fire_lord)"
 
 [PassiveAbilityDef a_tevent_e_frosty_wave]
@@ -515,7 +518,8 @@ Name = "Phoenix Fire"
 [PotionDrinkerAbilityDef a_tevent_e_potiondrinker]
 Name = "(e_potiondrinker)"
 
-[PassiveAbilityDef a_tevent_e_ps_fanatik]
+//#1022 summoning bosses: real, BossSummoners.cs
+[FanatikAbilityDef a_tevent_e_ps_fanatik]
 Name = "(e_ps_fanatik)"
 
 //#797 batch 4: upgraded from a bare stub to a real PushallAbilityDef
@@ -561,7 +565,8 @@ Name = "Self-Resurrection"
 [PassiveAbilityDef a_tevent_e_serpent]
 Name = "(e_serpent)"
 
-[PassiveAbilityDef a_tevent_e_serpentdruid]
+//#1022 summoning bosses: real, BossSummoners.cs
+[SerpentDruidAbilityDef a_tevent_e_serpentdruid]
 Name = "(e_serpentdruid)"
 
 [PassiveAbilityDef a_tevent_e_shadow_weapon_brother]
@@ -579,7 +584,8 @@ Name = "(e_spirit)"
 [PassiveAbilityDef a_tevent_e_strach_lord1]
 Name = "(e_strach_lord1)"
 
-[PassiveAbilityDef a_tevent_e_strach_lord2]
+//#1022 summoning bosses: real, BossSummoners.cs
+[StrachLord2AbilityDef a_tevent_e_strach_lord2]
 Name = "(e_strach_lord2)"
 
 //real-user-reported follow-up: upgraded from a bare zero-effect stub to a real
@@ -596,7 +602,8 @@ Name = "Summon Devourer"
 [PassiveAbilityDef a_tevent_e_summonfrenzy]
 Name = "(e_summonfrenzy)"
 
-[PassiveAbilityDef a_tevent_e_sumoner_strazce_spicich]
+//#1022 summoning bosses: real, BossSummoners.cs
+[SandGuardianAbilityDef a_tevent_e_sumoner_strazce_spicich]
 Name = "(e_sumoner_strazce_spicich)"
 
 [PassiveAbilityDef a_tevent_e_terathan]
@@ -617,7 +624,8 @@ Name = "(e_warniak_drop)"
 [PassiveAbilityDef a_tevent_e_water]
 Name = "(e_water)"
 
-[PassiveAbilityDef a_tevent_e_wormdrop]
+//#1022 summoning bosses: real, BossSummoners.cs
+[WormDropAbilityDef a_tevent_e_wormdrop]
 Name = "(e_wormdrop)"
 
 [PassiveAbilityDef a_tevent_e_ztracene_mesto_druid_medved]

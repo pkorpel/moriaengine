@@ -2084,6 +2084,9 @@ namespace SteamEngine.CompiledScripts {
 			if (PriestAbilities.TooSoonToRise(this, spellEffectArgs.SpellDef)) { //#1070 - 5 s after a death
 				return TriggerResult.Cancel;
 			}
+			if (MonsterSpecialAttacks.TryBossSpellEffect(this, spellEffectArgs.SpellDef)) { //#1022 SwARPUS shrugs off poison
+				return TriggerResult.Cancel;
+			}
 			if (ClassAbilities.TryAbsorbSpell(this, spellEffectArgs.Caster)) { //#1070 - speldodge
 				return TriggerResult.Cancel;
 			}

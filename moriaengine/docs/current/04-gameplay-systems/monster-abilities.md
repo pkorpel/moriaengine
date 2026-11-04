@@ -206,3 +206,66 @@ Nothing to port, the stubs kept as labels:
 Test: `DragonEventsTests` (protocol): breath with the species' own damage, resist, bomb, spin, aura tick, cage and its
 clicks, blood stages, the brain's stamp.
 
+## Summoning bosses (#1022)
+
+`BossSummoners.cs`. Erebor's `systems/macros.scp`, `systems/npc_ai.scp` and `questy/verbatim.scp`.
+
+**Shared pieces:**
+- A batch summon puts each def around a spot for a lifetime. Conjured summons give no loot or experience. Owned ones are
+  the boss's own (`ControlMaster`, Erebor's MEMORY_IPET), so they never hurt it.
+- Erebor's `fireexplosion` is fire columns on the hazard tiles.
+- A death blast hits everyone who fought the boss and is in sight, its damage divided by distance.
+- Sphere's `@NPCSeeNewPlayer`: from the AI's tick, a monster that isn't fighting reacts once to each player it sees
+  within 18 tiles, and remembers them for 5 minutes. GMs are left out.
+
+**The bosses:**
+- `e_fire_lord`, when hit:
+  - 1 in 12: "Heru Beleg Ruin Val" and 10 fire columns;
+  - 1 in 20: "Heru Ruin Val" and two fire phoenixes and a fire eye for 20 s.
+
+  Dying, it blasts 180.
+- `e_strach_lord2`:
+  - one swing in 3, a taunt;
+  - when hit, the first of: a fire daemon for 150 s (1 in 30), a fire tarantula for 60 s (1 in 30), a Fire Lord for 40 s
+    (1 in 100), fire columns (1 in 20).
+- `e_serpentdruid`:
+  - one swing in 10, three snakes of its own for 30 s;
+  - below half its hits, "hissing.", the serpent's look (`NPCDef.SerpentForm`, the archive's `tag.had`, through the
+    converter), no more snakes, and gone 2000 s later.
+
+  Changed from Erebor, the user's call: the look only, so the Arcidruid's serpent doesn't start regenerating.
+- `e_cajun`, when hit, unless asleep:
+  - 1 in 50 its three children around the attacker, and 1 in 50 the third, for 600 s.
+
+  Dying, it blasts 50, says "Ruth Mor" and two children rise. Fixed: those two also vanish after 600 s; Erebor's timer
+  landed on another item.
+- `e_drone_large`, when hit:
+  - 1 in 25 three drones, 1 in 20 one, for 60 s ("Heru Val Drone");
+  - then it goes back home.
+- `e_wormdrop`:
+  - a new player in sight: three worms, and it attacks;
+  - dying: six worms;
+  - Poison or Poison Field on it: "resist a poison attack", and the spell is cancelled;
+  - any other spell on it: two worms.
+- `e_sumoner_strazce_spicich`:
+  - a new player in sight: a necromancer may pass; a priest is attacked; anyone else brings a sand golem;
+  - hit by a warrior: "Valecniku blaznivej...";
+  - his blows and spells on him give him a Greater Heal;
+  - dying: 10 fire within 2, then gone, with no body, loot or experience.
+
+  Fixed from Erebor:
+  - the heal goes to himself (Erebor's went to his target);
+  - the warrior line goes to warriors (Erebor's test was turned round);
+  - the necromancer's line comes once per sighting.
+- `e_ps_fanatik`: "Nyni zemrete!" to each new player it sees, and one swing in 5 a taunt.
+
+Erebor's sleep and silence checks are Peacemaking's sleep and the mage's silence here.
+
+Test: `SummoningBossTests` (protocol):
+- fire lord: summons, columns, death blast;
+- cajun: children;
+- drone: home;
+- serpent druid: snakes, form, no snakes after;
+- SwARPUS: worms on sight once, poison refused, worms on a heal;
+- guardian: golem, vanishing without experience.
+

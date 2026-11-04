@@ -1079,6 +1079,19 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey hypnotizableTK = TagKey.Acquire("_npcHypnotizable_");
 		private static readonly TagKey resistSilenceTK = TagKey.Acquire("_npcResistSilence_");
 		private static readonly TagKey magicHorseTK = TagKey.Acquire("_npcMagicHorse_");
+		private static readonly TagKey serpentFormTK = TagKey.Acquire("_npcSerpentForm_");
+
+		/// <summary>#1022 - Erebor's tag.had: the serpent druid's serpent form, a chardef whose look it takes.</summary>
+		public string SerpentForm {
+			get { return this.GetTag(serpentFormTK) as string; }
+			set {
+				if (!string.IsNullOrEmpty(value)) {
+					this.SetTag(serpentFormTK, value);
+				} else {
+					this.RemoveTag(serpentFormTK);
+				}
+			}
+		}
 
 		/// <summary>#925 - Erebor's tag(magic_horse,name): the mount's powers, MountPowers' table of that name.</summary>
 		public string MagicHorse {
@@ -1625,6 +1638,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (param == "magichorse") {
 				this.MagicHorse = args.Trim().Trim('"');
+				return;
+			}
+			if (param == "serpentform") {
+				this.SerpentForm = args.Trim().Trim('"');
 				return;
 			}
 			if (param == "resistsilence") {
