@@ -103,6 +103,15 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine(line + " |");
 		}
 
+		/// <summary>#1116 step 3 - 7 points of one's own, for the journal's PvP side.</summary>
+		[SteamFunction]
+		public static void TestLeagueOwnPoints(Character self) {
+			self.Account.PLevel = 1;
+			PvpLeague.AddPoints(self, 7);
+			self.Account.PLevel = 7;
+			Console.WriteLine("LEAGUE_OWN: points=" + PvpLeague.PointsOf(self) + " season=" + PvpLeague.Season + " end=" + PvpLeague.SeasonEnd.ToString("d.M. yyyy", System.Globalization.CultureInfo.InvariantCulture));
+		}
+
 		/// <summary>The converter's tag.arena and tag.bf, as the regions loaded them.</summary>
 		[SteamFunction]
 		public static void TestPvpRegionTags(Character self) {
