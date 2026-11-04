@@ -67,6 +67,49 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 4 - Erebor's RP rank.</summary>
+	[Collection(PvpCollection.Name)]
+	public class RpRankTests {
+		private readonly GameServerPairFixture fixture;
+
+		public RpRankTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		[Fact]
+		public void GmSetsItThroughTheDialogsAndItMovesExperience() {
+			using var gm = CommandPermissionTests.Connect("pvp", "Rp Rank Tester");
+			string ready = this.Ask(gm, ".TestReportMyUid", "MY_UID:");
+			uint self = uint.Parse(ready.Substring(ready.IndexOf("MY_UID:") + 7).Trim().Split(' ')[0]);
+			//Erebor's table: +70% at 7, -30% at -3; 8 is refused; the log keeps every change
+			Assert.Contains("rank0=0 rank7=700 rank-3=-300 refused=True log=4", this.Ask(gm, ".TestRpRankGain", "RP_GAIN:"));
+
+			//.rprank, the info dialog, its button to the changer, OK with a rank and a reason
+			gm.SendSpeech(".rprank");
+			Thread.Sleep(500);
+			gm.SendTargetUid(self);
+			var (infoUid, _, strings) = gm.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			Assert.Contains("RP Rank - Rp Rank Tester", strings);
+			Assert.Contains("Prehled postav na acc:", strings);
+			gm.SendGumpResponse(infoUid, 1, new System.Collections.Generic.Dictionary<int, string>());
+			var (changerUid, _) = gm.ReadGumpDialog(TimeSpan.FromSeconds(10));
+			gm.SendGumpResponse(changerUid, 1, new System.Collections.Generic.Dictionary<int, string> { { 1, "5" }, { 2, "hezky RP" } });
+			var (_, _, after) = gm.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			Assert.Contains(after, s => s.EndsWith(": 0->5 - hezky RP", StringComparison.Ordinal));
+			Assert.Contains("rank=5", this.Ask(gm, ".TestRpRankState", "RP_STATE:"));
+
+			//the player sees it in .explevel
+			gm.SendSpeech(".explevel");
+			var (_, _, level) = gm.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			Assert.Contains("RP Rank:", level);
+			Assert.Contains("5", level);
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class PvpCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Pvp";

@@ -86,6 +86,14 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		/// <summary>#1116 - Erebor's character-info row "RP Rank".</summary>
+		[Button("RP Rank")]
+		public static void RpRankButton(object target) {
+			if (Globals.SrcCharacter is Character gm) {
+				RpRanks.Show(gm, (Character) target);
+			}
+		}
+
 		[GetMethod("Edit", typeof(ContainerView.ThingAsContainer))]
 		public static object Edit(object target) {
 			return new ContainerView.ThingAsContainer((Thing) target);

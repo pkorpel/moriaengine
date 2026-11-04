@@ -73,7 +73,9 @@ namespace SteamEngine.CompiledScripts {
 			if (MysticHypnosis.CountsExperience(player, amount)) { //#1017 - paid on the way home from a hypnosis
 				return;
 			}
-			amount += Boosters.Bonus(player, amount); //#1090 - Erebor's addexp: a running booster's percent of a gain
+			int baseAmount = amount;
+			amount += Boosters.Bonus(player, baseAmount); //#1090 - Erebor's addexp: a running booster's percent of a gain
+			amount += RpRanks.Bonus(player, baseAmount); //#1116 - and the RP rank's, both of the base, added
 			player.Experience += amount;
 			if (amount > 0) {
 				player.SysMessage("You have gained " + amount + " experience.");

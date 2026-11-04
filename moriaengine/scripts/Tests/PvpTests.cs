@@ -112,6 +112,27 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("LEAGUE_OWN: points=" + PvpLeague.PointsOf(self) + " season=" + PvpLeague.Season + " end=" + PvpLeague.SeasonEnd.ToString("d.M. yyyy", System.Globalization.CultureInfo.InvariantCulture));
 		}
 
+		/// <summary>#1116 step 4 - the RP rank's bonus on a gain of 1000, at rank 0, 7 and -3 (Erebor's table).</summary>
+		[SteamFunction]
+		public static void TestRpRankGain(Character self) {
+			Player player = (Player) self;
+			string line = "";
+			foreach (int rank in new[] { 0, 7, -3 }) {
+				RpRanks.Set(player, rank, "test");
+				int before = player.Experience + (player.Level * 1000000);
+				LevelingSystem.AddExperience(player, 1000);
+				line += " rank" + rank + "=" + RpRanks.Bonus(player, 1000);
+			}
+			RpRanks.Set(player, 0, "back");
+			Console.WriteLine("RP_GAIN:" + line + " refused=" + (RpRanks.Set(player, 8, "x") != null) + " log=" + RpRanks.Log(player).Count + " |");
+		}
+
+		[SteamFunction]
+		public static void TestRpRankState(Character self) {
+			List<string> log = RpRanks.Log(self);
+			Console.WriteLine("RP_STATE: rank=" + RpRanks.Of(self) + " last=" + ((log.Count > 0) ? log[log.Count - 1] : "") + " |");
+		}
+
 		/// <summary>The converter's tag.arena and tag.bf, as the regions loaded them.</summary>
 		[SteamFunction]
 		public static void TestPvpRegionTags(Character self) {
