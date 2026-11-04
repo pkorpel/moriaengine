@@ -91,6 +91,9 @@ namespace SteamEngine.CompiledScripts {
 		protected override void On_Success(SkillSequenceArgs skillSeqArgs) {
 			Character self = skillSeqArgs.Self;
 			IPoint3D targetted = skillSeqArgs.Target1;
+			if (!Camp.AllowsChop(self)) {
+				return; //#1107 - fixresource's convict part
+			}
 
 			//#422 - real per-tile wood-tier vein system (lazy per-tile veins, weighted roll on
 			//an untouched vein, skill-gated downgrade to copper, depletion/regen). Replaces the
@@ -99,7 +102,10 @@ namespace SteamEngine.CompiledScripts {
 			//camp/prisoner-punishment flavor item, not normal lumberjacking output.
 			ItemDef def = LumberjackingVeinSystem.Chop(self, self.GetMap().M, targetted.X, targetted.Y);
 			if (def != null) {
-				def.Create(self.Backpack);
+				Thing made = def.Create(self.Backpack);
+				if ((made is Item log) && (def == ThingDef.GetByDefname("i_log_lager"))) {
+					log.SetAttribute(ItemAttributes.attr_move_never, true); //#1107 - i_log_lager's @create
+				}
 				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).success);
 			} else if (LumberjackingVeinSystem.IsEmptySpot(self.GetMap().M, targetted.X, targetted.Y)) {
 				self.SysMessage(Loc<LumberjackingLoc>.Get(self.Language).notATree); //#813 - the region's roll was "nothing"

@@ -1984,4 +1984,61 @@
   <data name="JailLoc_NotJailed" xml:space="preserve">
     <value>{0} neni ve vezeni.</value>
   </data>
+  <data name="CampLoc_ConvictPrefix" xml:space="preserve">
+    <value>Trestanec</value>
+  </data>
+  <data name="CampLoc_YouMustEarn" xml:space="preserve">
+    <value>Musis ziskat {0} propoustecich zlataku.</value>
+  </data>
+  <data name="CampLoc_Recidivist" xml:space="preserve">
+    <value>Kontatuj GM pres page jsi recidivista dostanes zvlastni trest.</value>
+  </data>
+  <data name="CampLoc_RecidivistAfk" xml:space="preserve">
+    <value>Kontatuj GM pres page jsi recidivista a podle toho s tebou bude nalozeno</value>
+  </data>
+  <data name="CampLoc_Released" xml:space="preserve">
+    <value>Jsi propusten</value>
+  </data>
+  <data name="CampLoc_CantCarryMore" xml:space="preserve">
+    <value>Vic toho nepoberes</value>
+  </data>
+  <data name="CampLoc_GuardHello" xml:space="preserve">
+    <value>Musis ziskat {0} propoustecich zlataku. Ziskas je u me vymenou za drevo, kdyz reknes "vymena". Pokud nemas svetlo, rekni "svetlo", pokud postradas sekeru, rekni "sekera". Az budes mit propousteci zlataky, oslov mne "propustit". Mas-li hlad, rekni "jidlo".</value>
+  </data>
+  <data name="CampLoc_GuardRecidivist" xml:space="preserve">
+    <value>Kontaktuj GM pres page, tva postava je recidivista, ktery dostane specialni trest.</value>
+  </data>
+  <data name="CampLoc_GuardNotEnoughWood" xml:space="preserve">
+    <value>Nemas dost dreva - pokud mi reknes "vymena", vymenim 100 spruce logu za 1 propusteci zlatak.</value>
+  </data>
+  <data name="CampLoc_GuardHaveAxe" xml:space="preserve">
+    <value>Sekeru mas, tak sekej.</value>
+  </data>
+  <data name="CampLoc_GuardNewAxe" xml:space="preserve">
+    <value>Dal jsem ti novou sekeru.</value>
+  </data>
+  <data name="CampLoc_GuardOnlyHave" xml:space="preserve">
+    <value>Mas u sebe jen {0} zlataku. Dej mi je a pokracuj.</value>
+  </data>
+  <data name="CampLoc_GuardStillNeed" xml:space="preserve">
+    <value>Potrebujes jeste {0} propoustecich zlataku. Ty ziskas vymenou za normalni drevo. Az budes mit dostatek dreva, oslov me "vymena".</value>
+  </data>
+  <data name="CampLoc_GuardNeed" xml:space="preserve">
+    <value>Potrebujes {0} propoustecich zlataku, ty ziskas vymenou za normalni drevo, az budes mit dostatek dreva oslov me "vymena".</value>
+  </data>
+  <data name="CampCommandsLoc_WhichPlayer" xml:space="preserve">
+    <value>Na kterou postavu?</value>
+  </data>
+  <data name="CampCommandsLoc_OnlyPlayers" xml:space="preserve">
+    <value>Jen hrace.</value>
+  </data>
+  <data name="CampCommandsLoc_Sent" xml:space="preserve">
+    <value>{0} je v lagru.</value>
+  </data>
+  <data name="CampCommandsLoc_ReleasedThem" xml:space="preserve">
+    <value>{0} je propusten z lagru.</value>
+  </data>
+  <data name="CampCommandsLoc_Lowered" xml:space="preserve">
+    <value>{0}: o stupen lagru mene.</value>
+  </data>
 </root>
