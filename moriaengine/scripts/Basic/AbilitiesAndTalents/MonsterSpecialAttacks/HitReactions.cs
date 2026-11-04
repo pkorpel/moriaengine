@@ -248,6 +248,7 @@ namespace SteamEngine.CompiledScripts {
 			TrySummonerOwnSwing(attacker, defender); //#1022 the summoning bosses
 			TryDeathBossOwnSwing(attacker); //#1022 the dying bosses
 			TryBalrogSwing(attacker, defender); //#1022 e_balrog
+			TryHcnOwnSwing(attacker, defender, damage); //#1022 e_hcn_npcpoison, e_hcn_madnessability
 			if (!defender.IsDeleted) {
 				TryKnockWeaponOut(attacker, defender, damage);
 				TryBlowUpOnOwnSwing(attacker, defender);
@@ -270,6 +271,7 @@ namespace SteamEngine.CompiledScripts {
 				TryDamageRuleReactions(hit, attacker); //#1022 e_balrog, e_odinvis_krik
 				TryDarkmoonMorph(hit); //#1022 e_darkmoon_boss
 				TryHaldaMolleReactions(hit, attacker); //#1022 e_rozdeleni, e_frosty_wave, e_warniak_drop
+				TryHcnReactions(hit, attacker); //#1022 e_hcn_teletotarget
 			}
 			TryDrop(defender, GoldDropDef);
 			TryDrop(defender, ReagDropDef);

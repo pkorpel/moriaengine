@@ -418,6 +418,7 @@ MaxStam = 2000 3750
 MaxMana = 0
 Experience = 40 50
 NpcSpeed = 200 300
+NpcPortDistance = 5
 Hypnotizable = 9
 NaturalDamageType = DamageType.Stabbing|DamageType.Physical
 MonsterType = "animal,60"
