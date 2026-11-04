@@ -143,6 +143,27 @@ namespace SteamEngine.Tests.Protocol {
 			this.Ask(client, ".TestArenaExit \"move\"", "ARENA_EXIT");
 			Assert.Contains("in=False", this.Ask(client, ".TestArenaState", "ARENA_STATE:"));
 			Assert.Contains("murders=0 karma=50 fame=100", this.Ask(client, ".TestArenaState", "ARENA_STATE:"));
+
+			//#1116 step 6 - a death in a PortZone arena: 3 s later alive with the body's things, at Mordor's point, on the horse
+			Assert.Contains("dead=True porter=True portZone=True", this.Ask(client, ".TestPortZoneDie \"mount\"", "PORTZONE_DIED:"));
+			Assert.Contains("dead=True", this.Ask(client, ".TestPortZoneState", "PORTZONE_STATE:"));
+			Thread.Sleep(3500);
+			Assert.Contains("dead=False at=5280,3472,35,55 gold=5 riding=True", this.Ask(client, ".TestPortZoneState", "PORTZONE_STATE:"));
+			//a horse further than 20 tiles stays
+			this.Ask(client, ".TestPortZoneDie \"far\"", "PORTZONE_DIED:");
+			Thread.Sleep(3500);
+			Assert.Contains("dead=False at=5280,3472,35,55 gold=5 riding=False horseFar=True", this.Ask(client, ".TestPortZoneState", "PORTZONE_STATE:"));
+			//a GM's PortMeTo point wins, until cleared
+			string there = this.Ask(client, ".TestPortZoneGoAside", "PORTZONE_ASIDE:");
+			string gmPoint = there.Substring(there.IndexOf("at=") + 3).Split(' ')[0];
+			Assert.Contains("set=" + gmPoint, this.Ask(client, ".PortZonePoint", "PORTZONE_POINT:"));
+			this.Ask(client, ".TestPortZoneDie \"mount\"", "PORTZONE_DIED:");
+			Thread.Sleep(3500);
+			Assert.Contains("dead=False at=" + gmPoint + " gold=5 riding=True", this.Ask(client, ".TestPortZoneState", "PORTZONE_STATE:"));
+			Assert.Contains("set= ", this.Ask(client, ".PortZonePoint \"clear\"", "PORTZONE_POINT:"));
+			this.Ask(client, ".TestPortZoneDie \"mount\"", "PORTZONE_DIED:");
+			Thread.Sleep(3500);
+			Assert.Contains("dead=False at=5280,3472,35,55", this.Ask(client, ".TestPortZoneState", "PORTZONE_STATE:"));
 		}
 	}
 

@@ -397,6 +397,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		private static readonly TagKey lastMountTK = TagKey.Acquire("_lastMount_");
+
+		/// <summary>#1116 - Erebor's tag lastjezdik: the creature last ridden, left where its rider got off.</summary>
+		public Character LastMount {
+			get { return this.GetTag(lastMountTK) as Character; }
+		}
+
 		public void Dismount() {
 			if (this.mountorrider != null) {
 				if (this.Flag_Riding) {
@@ -409,6 +416,8 @@ namespace SteamEngine.CompiledScripts {
 
 					Sanity.IfTrueThrow(this.mountorrider.mountorrider != this, "this.mountorrider.mountorrider != this");
 					Sanity.IfTrueThrow(this.mountorrider.Flag_Riding, "this.mountorrider.Flag_Riding on Dismount()");
+
+					this.SetTag(lastMountTK, this.mountorrider); //#1116 - Erebor's lastjezdik
 
 					//set it's rider to null
 					this.mountorrider.mountorrider = null;

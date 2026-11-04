@@ -57,6 +57,7 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("freeze", "zmrazit na miste (kurzor)"),
 				new Entry("unfreeze", "rozmrazit (kurzor)"),
 				new Entry("info", "info dialog (kurzor)"),
+				new Entry("rprank", "RP rank hrace (kurzor)"),
 				new Entry("kill", "zabit (kurzor)")),
 			new Group("GM",
 				new Entry("gm", "GM rezim zapnout / vypnout"),
@@ -71,7 +72,8 @@ namespace SteamEngine.CompiledScripts {
 				new Entry("setupworld", "doplnit do sveta, co chybi"),
 				new Entry("housedoor", "dvere domu (kurzor)"),
 				new Entry("housepad", "dlazdice pred dvermi (kurzor)"),
-				new Entry("housemove", "presunout cedulku domu (kurzor)")),
+				new Entry("housemove", "presunout cedulku domu (kurzor)"),
+				new Entry("portzonepoint", "sem posilat mrtve z PvP areny")),
 		};
 
 		private const int Width = 760, Row = 20, Margin = 12, ColumnWidth = 370, Hue = 955, TitleHue = 0x481, CommandHue = 0x35;

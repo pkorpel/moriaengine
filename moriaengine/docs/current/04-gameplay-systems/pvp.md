@@ -110,3 +110,28 @@ were GM-placed.
 
 Test: `ArenaTests.InForAFeeOutWithEverythingBack` (protocol). It checks the real *arena* speech and fee, the
 countdown, the state with recall refused, the way out through the gate with a 0 restored, and the way out by moving.
+
+### PortZone arenas
+
+Erebor's `questy/pvp_events.scp` (GM Yavanna), through the `r_PvP_PortZone` region type (`PortZone`). Four areas have it:
+Arena Gondor, Arena Gondor Podzemi, Arena Mordor and Arena Mordor Podzemi.
+
+A player who dies in one of them comes back 3 seconds later (Erebor's `i_PvP_PortZonePorter`):
+1. back to the spot of death, where the body is, and resurrected (`s_resurrection` at 1000), so the things come back;
+   these areas resurrect at once (`region_cf_instantRes`), so the 5 s rule after a death doesn't apply;
+2. the last ridden creature (Erebor's `lastjezdik`, `Character.LastMount`, kept at every dismount) comes along if it's
+   the player's pet within 20 tiles, and is ridden again; further away, "Tve zvire je prilis daleko.";
+3. to the area's PortMeTo point if a GM set one, else 5280,3472,35 on plane 0 for a Gondor player, plane 55 for anyone
+   else (both inside the arena itself);
+4. paralysis goes.
+
+As in every arena area, the death costs no experience and counts for no PvP.
+
+`.PortZonePoint` (GM) makes where the GM stands the area's PortMeTo; `.PortZonePoint "clear"` goes back to the default.
+On Erebor it was a region tag set by hand, and none is in the archive. It's saved with the region (`portmeto`).
+
+Not ported: Erebor's `stone=0`, as nothing here sets Sphere's STONE (Erebor only set it during a name change).
+
+Test: the same `ArenaTests` fact, after the training arena. It covers a death on a horse (alive 3 s later at Mordor's
+point, gold from the body back, riding), a horse 30 tiles off (stays), and a GM's point, then cleared. It's red with the
+death hook off.
