@@ -1,0 +1,4 @@
+//#1107 - i_gold_lagr (systems/lagr.scp) names this type so the release coins are not gold; Erebor's typedef is empty,
+//which the converter comments out, and an item of an undefined type cannot be made (#921)
+
+[typedef t_lagr_gold]

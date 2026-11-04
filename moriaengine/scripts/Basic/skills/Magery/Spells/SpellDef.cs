@@ -722,6 +722,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void Trigger_EffectChar(Character target, SpellEffectArgs spellEffectArgs) {
+			if (Camp.ProtectsFrom(spellEffectArgs.Caster, target)) {
+				return; //#1107 - e_lagr_nodmg's @beforedoeffect
+			}
 			if (!this.CheckPermissionIncoming(spellEffectArgs.Caster, target)) {
 				return;
 			}

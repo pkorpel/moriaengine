@@ -50,6 +50,9 @@ namespace SteamEngine.CompiledScripts {
 		/// matching content - fails safe rather than throwing, same precedent as the sibling
 		/// systems.</summary>
 		public static void TryAmbush(IPoint4D location) {
+			if (location.M == Camp.Plane) {
+				return; //#1107 - Erebor's randompotvora never on plane 1, the labour camp's
+			}
 			if (Globals.dice.Next(AmbushChanceDenominator) != 0) {
 				return;
 			}
