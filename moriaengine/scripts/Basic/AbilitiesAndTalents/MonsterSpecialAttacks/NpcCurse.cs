@@ -157,7 +157,7 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>#npc_curse ("Dark Curse") - periodic area magic damage, same
 		/// once-per-think-tick-while-fighting pattern as roundattack/parakrik.</summary>
 		public static void TryApplyNpcCurse(NPC self) {
-			NPCDef npcDef = (NPCDef) self.Def;
+			NPCDef npcDef = TuningDef(self); //#1022 a form's while Darkmoon has one
 			TryApplyAreaCurse(self, NpcCurseDef, nextNpcCurseTimeTK,
 				npcDef.NpcCurseChance, npcDef.NpcCurseCooldown, npcDef.NpcCurseDamage,
 				delegate (Character target, double amount) {
@@ -170,7 +170,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#797 e_npc_curse_mana - same pulse, drains mana.</summary>
 		public static void TryApplyNpcCurseMana(NPC self) {
-			NPCDef npcDef = (NPCDef) self.Def;
+			NPCDef npcDef = TuningDef(self); //#1022 a form's while Darkmoon has one
 			TryApplyAreaCurse(self, NpcCurseManaDef, nextNpcCurseManaTimeTK,
 				npcDef.NpcCurseManaChance, npcDef.NpcCurseManaCooldown, npcDef.NpcCurseManaDamage,
 				delegate (Character target, double amount) {
@@ -181,7 +181,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#797 e_npc_curse_stam - same pulse, drains stamina.</summary>
 		public static void TryApplyNpcCurseStam(NPC self) {
-			NPCDef npcDef = (NPCDef) self.Def;
+			NPCDef npcDef = TuningDef(self); //#1022 a form's while Darkmoon has one
 			TryApplyAreaCurse(self, NpcCurseStamDef, nextNpcCurseStamTimeTK,
 				npcDef.NpcCurseStamChance, npcDef.NpcCurseStamCooldown, npcDef.NpcCurseStamDamage,
 				delegate (Character target, double amount) {

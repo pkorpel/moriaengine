@@ -75,7 +75,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			NPCDef npcDef = attacker.Def as NPCDef;
+			NPCDef npcDef = TuningDef(attacker); //#1022 a form's while Darkmoon has one
 			double chance = RollTunable(npcDef == null ? null : npcDef.CriticChance, def.Chance);
 			if (!RollChance(chance)) {
 				return;

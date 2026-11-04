@@ -98,7 +98,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 
-			NPCDef npcDef = (NPCDef) self.Def;
+			NPCDef npcDef = TuningDef(self); //#1022 a form's while Darkmoon has one
 			double cooldown = RollTunable(npcDef.ParaKrikCooldown, def.Cooldown);
 			//real archive unit: raw deciseconds (see StunAbilityDef's own doc comment for this
 			//same convention) - divide by 10 for real seconds, here at the point of use.

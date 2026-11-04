@@ -358,3 +358,29 @@ Strachu's gates (once), OCS helpers rising, Arghelior's dragon, the undead by we
 
 Test: `DamageRuleBossTests` (protocol): the Balrog's burn, weakening, reflection and curse; Rinald's invulnerable growth,
 players only, a warrior's and a mage's weakening; the helm finding the hidden; the druid's forms.
+
+## Darkmoon's forms (#1022)
+
+`Darkmoon.cs`, `darkmoonForms.def`. Erebor's `questy/darkmoon_chars.scp` (e_darkmoon_boss, getMorfBody, the f_c_* form
+functions).
+
+- When hit, 200 permille, at most once in 20 s, Darkmoon takes another of her forms, never the one she has: the fire ant
+  worker, the warrior, the giant beetle, the giant bug, the fire ant queen, or herself.
+- A form is an NPCDef that's never spawned (`c_darkmoon_worker` ... `c_darkmoon_queen`; her own is `c_darkmoon`). It
+  gives her its look, colour, a new maximum of hits, stamina and mana, Magery and Eval Int, resists, abilities, and the
+  numbers those abilities use.
+- The abilities are the form function's EVENTS and the creature's own TEVENTS, as Erebor's `BODY=` brought both: the
+  beetle and the bug self-resurrect, the queen throws lightnings and holds like the strangler vine.
+- `MonsterSpecialAttacks.TuningDef(npc)` is where an ability reads its per-species numbers: the form's while she has one,
+  else the NPC's own def. Bleed, critic, the three curses, summoning, multishot, round attack, dispel bomb, para krik and
+  lightnings read through it.
+
+Fixed from Erebor, as the plan on #1022 says:
+- a form replaces the last form's abilities and numbers. Erebor's `EVENTS=` only added, so after a few changes she had
+  every form's abilities at once with the latest numbers, and e_monster and the morph itself ran twice per trigger;
+- her hits never stay above a new, lower maximum.
+
+Not carried over: the forms' monster type (for slayers) and clothes coming off; her name stays "Darkmoon".
+
+Test: `DamageRuleBossTests.DarkmoonTakesAFormWithItsAbilitiesAndNumbers` (protocol): the worker's look, bleed and numbers
+without her dispel bomb, the queen's lightnings and Magery, back to herself, a blow and the cooldown.

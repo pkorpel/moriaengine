@@ -77,7 +77,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!HasAbilityDef(defender, def) || !defender.IsAliveAndValid) {
 				return false;
 			}
-			NPCDef npcDef = defender.Def as NPCDef;
+			NPCDef npcDef = TuningDef(defender); //#1022 a form's while Darkmoon has one
 			if (!RollChance(RollTunable(npcDef == null ? null : npcDef.LightningsChance, def.Chance))) {
 				return false;
 			}

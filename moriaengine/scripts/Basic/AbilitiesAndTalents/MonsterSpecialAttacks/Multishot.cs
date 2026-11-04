@@ -55,7 +55,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((self == null) || !self.IsAliveAndValid) {
 				return false;
 			}
-			NPCDef npcDef = (NPCDef) self.Def;
+			NPCDef npcDef = TuningDef(self); //#1022 a form's while Darkmoon has one
 			return TryApplyAreaCurse(self, MultishotDef, nextMultishotTimeTK,
 				npcDef.MultishotChance, npcDef.MultishotCooldown, npcDef.MultishotDamage,
 				delegate (Character target, double amount) {

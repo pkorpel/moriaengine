@@ -78,7 +78,7 @@ Name = "Crafter's Prey"
 [PassiveAbilityDef a_tevent_e_daemon]
 Name = "(e_daemon)"
 
-[PassiveAbilityDef a_tevent_e_darkmoon_boss]
+[DarkmoonAbilityDef a_tevent_e_darkmoon_boss]
 Name = "(e_darkmoon_boss)"
 
 [PassiveAbilityDef a_tevent_e_demon_lord]
