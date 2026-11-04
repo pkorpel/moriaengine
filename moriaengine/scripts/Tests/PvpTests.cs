@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
@@ -6,6 +7,100 @@ namespace SteamEngine.CompiledScripts {
 	public static class PvpTests {
 		private static FlaggedRegion Area(string defname) {
 			return (FlaggedRegion) StaticRegion.GetByDefname(defname);
+		}
+
+		private static Player victim;
+
+		private static void MakeEvaluable(Player player, Realm realm) {
+			player.Realm = realm;
+			player.Profession = Professions.Warrior;
+			((Player) player).SkillRank = SkillRank.Grandmaster;
+		}
+
+		/// <summary>#1116 step 2 - this one (the killer, made a Mordor player) and the "Pvp Victim" (Gondor) side by side.</summary>
+		[SteamFunction]
+		public static void TestLeagueReady(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			victim = null;
+			foreach (AbstractCharacter ch in SteamEngine.Networking.GameServer.GetAllPlayers()) {
+				if ((ch is Player player) && (player.Name == "Pvp Victim")) {
+					victim = player;
+				}
+			}
+			self.Account.PLevel = 1;
+			MakeEvaluable((Player) self, Realm.Mordor);
+			MakeEvaluable(victim, Realm.Gondor);
+			victim.Go(self.X + 1, self.Y, self.Z, self.M);
+			PvpLeague.Reset();
+			Console.WriteLine("LEAGUE_READY: victim=" + (victim != null));
+		}
+
+		/// <summary>A real death after a fight pays the killer 3; then each rule that makes a death not count.</summary>
+		[SteamFunction]
+		public static void TestLeagueKill(Character self) {
+			FightMemory.Record(victim, self);
+			FightMemory.Record(self, victim);
+			victim.CauseDeath(self);
+			int afterKill = PvpLeague.PointsOf(self);
+			victim.Resurrect();
+			string rules = "";
+			FightMemory.Record(victim, self);
+			PvpLeague.OnDeath(victim, self, true);
+			rules += " recentlyDead=" + PvpLeague.PointsOf(self);
+			victim.Realm = Realm.Mordor;
+			PvpLeague.OnDeath(victim, self, false);
+			rules += " sameRealm=" + PvpLeague.PointsOf(self);
+			victim.Realm = Realm.Gondor;
+			victim.Profession = Professions.Craftsman;
+			PvpLeague.OnDeath(victim, self, false);
+			rules += " craftsman=" + PvpLeague.PointsOf(self);
+			victim.Profession = Professions.Warrior;
+			victim.SkillRank = SkillRank.Master;
+			PvpLeague.OnDeath(victim, self, false);
+			rules += " rank2=" + PvpLeague.PointsOf(self);
+			victim.SkillRank = SkillRank.Grandmaster;
+			Point4D before = new Point4D(victim.X, victim.Y, victim.Z, victim.M);
+			Point4D arena = ((StaticRegion) StaticRegion.GetByDefname("a_Mordorska_bojova_arena")).P;
+			victim.Go(arena);
+			PvpLeague.OnDeath(victim, self, false);
+			rules += " arena=" + PvpLeague.PointsOf(self);
+			victim.Go(before);
+			self.Account.PLevel = 7;
+			PvpLeague.OnDeath(victim, self, false);
+			rules += " gm=" + PvpLeague.PointsOf(self);
+			self.Account.PLevel = 1;
+			PvpLeague.OnDeath(victim, self, false);
+			rules += " again=" + PvpLeague.PointsOf(self);
+			self.Account.PLevel = 7;
+			Console.WriteLine("LEAGUE_KILL: kill=" + afterKill + rules + " |");
+		}
+
+		/// <summary>The board: the top places and ties with the last; then a season roll.</summary>
+		[SteamFunction]
+		public static void TestLeagueBoard(Character self) {
+			PvpLeague.Reset();
+			List<NPC> npcs = new List<NPC>();
+			NPCDef def = (NPCDef) ThingDef.GetByDefname("c_wolf");
+			int stored = PvpLeagueSettings.instance.playersStored;
+			for (int i = 0; i < stored + 3; i++) {
+				NPC npc = (NPC) def.Create(self.X, self.Y + 2, self.Z, self.M);
+				npc.DeleteTimer(SteamEngine.Timers.TimerKey.Acquire("_npcAiTimer_"));
+				npcs.Add(npc);
+				PvpLeague.AddPoints(npc, (i < stored - 2) ? (100 - i) : 5); //five tied on 5, one of whom then climbs to the top
+			}
+			PvpLeague.AddPoints(npcs[stored + 2], 200); //the last to come goes to the top
+			List<PvpLeagueEntry> board = PvpLeague.Board;
+			int seasonBefore = PvpLeague.Season;
+			bool topIsNewcomer = board[0].player == npcs[stored + 2];
+			PvpLeague.EndSeasonYesterday();
+			PvpLeague.AddPoints(npcs[0], 1);
+			string line = "LEAGUE_BOARD: shown=" + board.Count + " topIsNewcomer=" + topIsNewcomer + " lastTie=" + board[board.Count - 1].points +
+				" season=" + seasonBefore + "->" + PvpLeague.Season + " afterRoll=" + PvpLeague.PointsOf(npcs[0]) + "," + PvpLeague.PointsOf(npcs[1]) +
+				" endsDay=" + PvpLeague.SeasonEnd.Day;
+			foreach (NPC npc in npcs) {
+				npc.Delete();
+			}
+			Console.WriteLine(line + " |");
 		}
 
 		/// <summary>The converter's tag.arena and tag.bf, as the regions loaded them.</summary>

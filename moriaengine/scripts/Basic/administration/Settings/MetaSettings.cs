@@ -146,6 +146,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("PvP League")]
+		public PvpLeagueSettings PvpLeagueSettings {
+			get {
+				return PvpLeagueSettings.instance;
+			}
+		}
+
 		[InfoField("AFK")]
 		public AfkSettings AfkSettings {
 			get {
