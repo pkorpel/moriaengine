@@ -169,15 +169,26 @@ namespace SteamEngine.Tests.Protocol {
 			return output.Substring(idx, end - idx);
 		}
 
+		//an account holds 5 characters and this class has more facts: the first login turns account creation on, and each
+		//later fact logs in on an account of its own (the 6th fact used to fail its login every run, a broken pipe)
+		private static int logins;
+
 		private TestGameClient ConnectLoginAndCreateCharacter(string charName) {
-			int redirectPort = this.WaitForServerListingAndGetRedirectPort();
+			string account = (logins == 0) ? Account : (Account + logins);
+			int redirectPort = this.WaitForServerListingAndGetRedirectPort(account);
 			InvalidOperationException lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				TestGameClient game = new TestGameClient("127.0.0.1", redirectPort);
 				try {
-					game.SendLogin(Account, Password);
+					game.SendLogin(account, account == Account ? Password : account);
 					game.ReadCharacterList();
 					game.SendCreateCharacter(charName);
+					if (logins == 0) {
+						int mark = this.fixture.GameOutputSnapshot().Length;
+						game.SendSpeech(".TestEnableAutoAccountCreation");
+						this.AssertSeen("AUTO_ACCOUNT_TEST:", mark, TimeSpan.FromSeconds(10));
+					}
+					logins++;
 					return game;
 				} catch (InvalidOperationException e) {
 					game.Dispose();
@@ -188,12 +199,12 @@ namespace SteamEngine.Tests.Protocol {
 			throw new TimeoutException("Could not log in and create character '" + charName + "' after retrying.", lastFailure);
 		}
 
-		private int WaitForServerListingAndGetRedirectPort() {
+		private int WaitForServerListingAndGetRedirectPort(string account) {
 			Exception lastFailure = null;
 			for (int attempt = 0; attempt < 40; attempt++) {
 				try {
 					using (var login = new TestLoginClient("127.0.0.1", GameServerPairFixture.LoginPort)) {
-						login.SendLogin(Account, Password);
+						login.SendLogin(account, account == Account ? Password : account);
 
 						int serverCount = login.ReadServersList();
 						if (serverCount < 1) {
