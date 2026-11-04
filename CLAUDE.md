@@ -1,11 +1,11 @@
 # moriaengine — working state
 
-## NOW (2026-11-04): floors along the sight line (branch fix-floor-los-along-line)
+## DONE (2026-11-04): floors along the sight line (#1158, PR #1159)
 
 User: player at 3000,1251,45 on a floor, titan ranger at 3001,1256,0 outside (nothing above it) still shot the player; the player could loot its corpse. #1149 only checks the endpoint columns. Probe the spot, then make floors block wherever the sight line crosses them.
 Probe: floor z45 spans 1251-1255 (railing at 1255), ranger at 1256 one tile past the edge. Fix: Map.CrossesAFloor over the line between the characters' middles (feet + 8): per column, a Surface/Roof top between the heights it enters and leaves at (own columns: middle to exit) blocks; replaces #1149's endpoint rule for different columns (that overblocked looking out from under a porch), same-column rule stays. Assertions added to FloorAttackTests (edge: both blind, same-floor ranger sees, corpse below the edge out of reach); red without it.
 
-## NOW (2026-11-04): 1155 knockback only with damage, 1156 NRE in SrcTcpConnection from the damage number (branch fix-1155-1156-knockback-damage-message)
+## DONE (2026-11-04): 1155 knockback only with damage, 1156 NRE in SrcTcpConnection from the damage number (PR #1157)
 
 User: (1) knockback only when the blow does damage (their call against Erebor). (2) Log: NRE at Globals.SrcTcpConnection <- Thing.Message <- DamageManager.CauseDamage's overhead damage number, an NPC's swing on a timer.
 Found: Globals.src is set per client packet and never reset, so a timer-driven NPC swing sees src = last packet sender; Thing.Message sends only to src: the damage number reached a bystander, and threw (GameState null) once they'd logged out, aborting the rest of the swing. Fix: SrcTcpConnection null-safe, damage number sent to attacker + defender explicitly, knockback needs actualDamage > 0. StaleSrcTests (FloorAttack collection, account floortests, now also RiddenMountTests': a collection auto-creates only its first account) red for both. Gotcha: Thing.Message from any timer goes to the last packet sender, not the people involved.
