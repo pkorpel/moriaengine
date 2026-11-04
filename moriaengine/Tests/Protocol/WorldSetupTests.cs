@@ -14,7 +14,8 @@ namespace SteamEngine.Tests.Protocol {
 		private const int TownPieces = 24, HouseSigns = 281, TravelStones = 30, StallAndFieldSigns = 99;
 		private const int CampGuard = 1; //#1107
 		private const int ArenaPieces = 6; //#1116 - two agents, two guards, two exit gates
-		private const int AllPieces = ExpertPieces + MasterPieces + GrandmasterPieces + EntrancePieces + TownPieces + HouseSigns + TravelStones + StallAndFieldSigns + CampGuard + ArenaPieces;
+		private const int ConquestPieces = 2; //#1116 - the two war declarators
+		private const int AllPieces = ExpertPieces + MasterPieces + GrandmasterPieces + EntrancePieces + TownPieces + HouseSigns + TravelStones + StallAndFieldSigns + CampGuard + ArenaPieces + ConquestPieces;
 		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(30);
 		private static bool autoAccountCreationEnabled;
 
