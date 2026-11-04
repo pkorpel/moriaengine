@@ -58,6 +58,42 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1022 PR 2 - the summoning bosses.</summary>
+	[Collection(DragonEventsCollection.Name)]
+	public class SummoningBossTests {
+		private readonly GameServerPairFixture fixture;
+
+		public SummoningBossTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Do(TestGameClient client, string what) {
+			return CommandPermissionTests.Ask(this.fixture, client, ".TestBoss \"" + what + "\"", "BOSS_TEST: " + what + " ");
+		}
+
+		[Fact]
+		public void SummonsSightDeathsAndForms() {
+			using var client = CommandPermissionTests.Connect("dragontests", "Boss Fighter");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestDragon \"ready\"", "DRAGON_TEST: ready ");
+			//the fire lord: columns, two phoenixes and an eye of its own; dying, it blasts whoever fought it
+			string lord = this.Do(client, "firelord");
+			Assert.Contains("phoenixes=2 eyes=1 columns=True", lord);
+			Assert.True(!lord.Contains("deathBlast=0 "), lord);
+			//the cajun: its three children and then a third one more around the attacker
+			Assert.Contains("children=4 third=2", this.Do(client, "cajun"));
+			//the elder drone: three drones, then home
+			Assert.Contains("drones=3 home=True", this.Do(client, "drone"));
+			//the serpent druid: snakes of its own; below half the serpent's look, and no more snakes
+			Assert.Contains("snakes=3 serpent=True model=True snakesAfter=3", this.Do(client, "druid"));
+			//SwARPUS: three worms on first sight, none the next look; poison shrugged off, a heal brings two
+			Assert.Contains("sightThreeEach=True noneAgain=True poisonRefused=True healRefused=False spellWorms=2", this.Do(client, "worms"));
+			//the guardian: a golem for a mage; dying, a blast, no body and no experience
+			string guardian = this.Do(client, "guardian");
+			Assert.Contains("golems=1 vanishes=True", guardian);
+			Assert.Contains("exp=0", guardian);
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class DragonEventsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "DragonEvents";

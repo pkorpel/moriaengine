@@ -1212,5 +1212,131 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.AcidDamage = value; } }
 		}
 
+			//#1022 summoning bosses
+		public int FireLordExplosionOneIn {
+			get { return MonsterSpecialAttacks.FireLordDef?.ExplosionOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.FireLordDef != null) { MonsterSpecialAttacks.FireLordDef.ExplosionOneIn = value; } }
+		}
+
+		public int FireLordColumns {
+			get { return MonsterSpecialAttacks.FireLordDef?.Columns ?? 0; }
+			set { if (MonsterSpecialAttacks.FireLordDef != null) { MonsterSpecialAttacks.FireLordDef.Columns = value; } }
+		}
+
+		public int FireLordSummonOneIn {
+			get { return MonsterSpecialAttacks.FireLordDef?.SummonOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.FireLordDef != null) { MonsterSpecialAttacks.FireLordDef.SummonOneIn = value; } }
+		}
+
+		public double FireLordSummonLifetime {
+			get { return MonsterSpecialAttacks.FireLordDef?.SummonLifetime ?? 0; }
+			set { if (MonsterSpecialAttacks.FireLordDef != null) { MonsterSpecialAttacks.FireLordDef.SummonLifetime = value; } }
+		}
+
+		public double FireLordDeathDamage {
+			get { return MonsterSpecialAttacks.FireLordDef?.DeathDamage ?? 0; }
+			set { if (MonsterSpecialAttacks.FireLordDef != null) { MonsterSpecialAttacks.FireLordDef.DeathDamage = value; } }
+		}
+
+		public int StrachLord2TauntOneIn {
+			get { return MonsterSpecialAttacks.StrachLord2Def?.TauntOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.StrachLord2Def != null) { MonsterSpecialAttacks.StrachLord2Def.TauntOneIn = value; } }
+		}
+
+		public int StrachLord2DaemonOneIn {
+			get { return MonsterSpecialAttacks.StrachLord2Def?.DaemonOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.StrachLord2Def != null) { MonsterSpecialAttacks.StrachLord2Def.DaemonOneIn = value; } }
+		}
+
+		public int StrachLord2TarantulaOneIn {
+			get { return MonsterSpecialAttacks.StrachLord2Def?.TarantulaOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.StrachLord2Def != null) { MonsterSpecialAttacks.StrachLord2Def.TarantulaOneIn = value; } }
+		}
+
+		public int StrachLord2FireLordOneIn {
+			get { return MonsterSpecialAttacks.StrachLord2Def?.FireLordOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.StrachLord2Def != null) { MonsterSpecialAttacks.StrachLord2Def.FireLordOneIn = value; } }
+		}
+
+		public int StrachLord2ExplosionOneIn {
+			get { return MonsterSpecialAttacks.StrachLord2Def?.ExplosionOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.StrachLord2Def != null) { MonsterSpecialAttacks.StrachLord2Def.ExplosionOneIn = value; } }
+		}
+
+		public int SerpentDruidSummonOneIn {
+			get { return MonsterSpecialAttacks.SerpentDruidDef?.SummonOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.SerpentDruidDef != null) { MonsterSpecialAttacks.SerpentDruidDef.SummonOneIn = value; } }
+		}
+
+		public double SerpentDruidSummonLifetime {
+			get { return MonsterSpecialAttacks.SerpentDruidDef?.SummonLifetime ?? 0; }
+			set { if (MonsterSpecialAttacks.SerpentDruidDef != null) { MonsterSpecialAttacks.SerpentDruidDef.SummonLifetime = value; } }
+		}
+
+		public double SerpentDruidFormLifetime {
+			get { return MonsterSpecialAttacks.SerpentDruidDef?.FormLifetime ?? 0; }
+			set { if (MonsterSpecialAttacks.SerpentDruidDef != null) { MonsterSpecialAttacks.SerpentDruidDef.FormLifetime = value; } }
+		}
+
+		public int CajunSummonOneIn {
+			get { return MonsterSpecialAttacks.CajunDef?.SummonOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.CajunDef != null) { MonsterSpecialAttacks.CajunDef.SummonOneIn = value; } }
+		}
+
+		public double CajunSummonLifetime {
+			get { return MonsterSpecialAttacks.CajunDef?.SummonLifetime ?? 0; }
+			set { if (MonsterSpecialAttacks.CajunDef != null) { MonsterSpecialAttacks.CajunDef.SummonLifetime = value; } }
+		}
+
+		public double CajunDeathDamage {
+			get { return MonsterSpecialAttacks.CajunDef?.DeathDamage ?? 0; }
+			set { if (MonsterSpecialAttacks.CajunDef != null) { MonsterSpecialAttacks.CajunDef.DeathDamage = value; } }
+		}
+
+		public int DroneSummonerThreeOneIn {
+			get { return MonsterSpecialAttacks.DroneSummonerDef?.ThreeOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.DroneSummonerDef != null) { MonsterSpecialAttacks.DroneSummonerDef.ThreeOneIn = value; } }
+		}
+
+		public int DroneSummonerOneOneIn {
+			get { return MonsterSpecialAttacks.DroneSummonerDef?.OneOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.DroneSummonerDef != null) { MonsterSpecialAttacks.DroneSummonerDef.OneOneIn = value; } }
+		}
+
+		public double DroneSummonerSummonLifetime {
+			get { return MonsterSpecialAttacks.DroneSummonerDef?.SummonLifetime ?? 0; }
+			set { if (MonsterSpecialAttacks.DroneSummonerDef != null) { MonsterSpecialAttacks.DroneSummonerDef.SummonLifetime = value; } }
+		}
+
+		public int WormDropOnSight {
+			get { return MonsterSpecialAttacks.WormDropDef?.OnSight ?? 0; }
+			set { if (MonsterSpecialAttacks.WormDropDef != null) { MonsterSpecialAttacks.WormDropDef.OnSight = value; } }
+		}
+
+		public int WormDropOnDeath {
+			get { return MonsterSpecialAttacks.WormDropDef?.OnDeath ?? 0; }
+			set { if (MonsterSpecialAttacks.WormDropDef != null) { MonsterSpecialAttacks.WormDropDef.OnDeath = value; } }
+		}
+
+		public int WormDropOnSpell {
+			get { return MonsterSpecialAttacks.WormDropDef?.OnSpell ?? 0; }
+			set { if (MonsterSpecialAttacks.WormDropDef != null) { MonsterSpecialAttacks.WormDropDef.OnSpell = value; } }
+		}
+
+		public int SandGuardianHealPower {
+			get { return MonsterSpecialAttacks.SandGuardianDef?.HealPower ?? 0; }
+			set { if (MonsterSpecialAttacks.SandGuardianDef != null) { MonsterSpecialAttacks.SandGuardianDef.HealPower = value; } }
+		}
+
+		public double SandGuardianDeathDamage {
+			get { return MonsterSpecialAttacks.SandGuardianDef?.DeathDamage ?? 0; }
+			set { if (MonsterSpecialAttacks.SandGuardianDef != null) { MonsterSpecialAttacks.SandGuardianDef.DeathDamage = value; } }
+		}
+
+		public int FanatikTauntOneIn {
+			get { return MonsterSpecialAttacks.FanatikDef?.TauntOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.FanatikDef != null) { MonsterSpecialAttacks.FanatikDef.TauntOneIn = value; } }
+		}
+
 	}
 }

@@ -62,6 +62,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static void OnMonsterDeath(NPC self, Character killedBy) {
+			OnSummonerDeath(self, killedBy); //#1022 the summoning bosses
 			ElemTerrorAbilityDef def = ElemTerrorDef;
 			if (!HasAbilityDef(self, def)) {
 				return;

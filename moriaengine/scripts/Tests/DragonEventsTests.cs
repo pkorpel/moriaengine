@@ -161,6 +161,124 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("DRAGON_TEST: " + what + " " + line + " |");
 		}
 
+		private static int Near(Character self, string defname, NPC owner) {
+			int count = 0;
+			foreach (AbstractCharacter ch in self.GetMap().GetCharsInRange(self.X, self.Y, 6)) {
+				if ((ch is NPC npc) && (npc.Def == ThingDef.GetByDefname(defname)) && ((owner == null) || (npc.ControlMaster == owner)) && !npc.IsDeleted) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+		private static NPC Boss(Character self, string defname, int dx) {
+			NPC boss = Dragon(self, defname, 0, Direction.West);
+			boss.P(self.X + dx, self.Y, self.Z, self.M);
+			return boss;
+		}
+
+		/// <summary>#1022 PR 2 - the summoning bosses, each roll forced by its odds set to 1 in 1.</summary>
+		[SteamFunction]
+		public static void TestBoss(Character self, ScriptArgs sa) {
+			string what = sa.Args.Trim().Trim('"');
+			Player player = (Player) self;
+			string line;
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			switch (what) {
+				case "firelord": {
+						NPC lord = Boss(self, "c_fire_lord", 2);
+						FireLordAbilityDef def = MonsterSpecialAttacks.FireLordDef;
+						int explosion = def.ExplosionOneIn, summon = def.SummonOneIn;
+						def.ExplosionOneIn = 1;
+						def.SummonOneIn = 1;
+						MonsterSpecialAttacks.TrySummonerReactions(lord, self);
+						def.ExplosionOneIn = explosion;
+						def.SummonOneIn = summon;
+						line = "phoenixes=" + Near(self, "c_m_phoenix_fire", lord) + " eyes=" + Near(self, "c_eye_fire", lord) + " columns=" + (MonsterSpecialAttacks.CountLiveHazardTiles() > 0);
+						Mark(self);
+						FightMemory.Record(lord, self);
+						lord.CauseDeath(self);
+						line += " deathBlast=" + (hitsBefore - self.Hits);
+						break;
+					}
+				case "cajun": {
+						NPC cajun = Boss(self, "c_cajun", 2);
+						CajunAbilityDef def = MonsterSpecialAttacks.CajunDef;
+						int odds = def.SummonOneIn;
+						def.SummonOneIn = 1;
+						MonsterSpecialAttacks.TrySummonerReactions(cajun, self);
+						def.SummonOneIn = odds;
+						line = "children=" + (Near(self, "c_cajun_child1", null) + Near(self, "c_cajun_child2", null) + Near(self, "c_cajun_child3", null)) +
+							" third=" + Near(self, "c_cajun_child3", null);
+						break;
+					}
+				case "drone": {
+						NPC drone = Boss(self, "c_drone_large", 2);
+						NPCAiTimer.EnsureInstalled(drone);
+						NPCAiTimer ai = NPCAiTimer.GetFor(drone);
+						ai.hasHome = true;
+						ai.homeX = self.X - 3;
+						ai.homeY = self.Y;
+						ai.homeZ = (sbyte) self.Z;
+						ai.homeM = self.M;
+						DroneSummonerAbilityDef def = MonsterSpecialAttacks.DroneSummonerDef;
+						int three = def.ThreeOneIn, one = def.OneOneIn;
+						def.ThreeOneIn = 1;
+						def.OneOneIn = 1000000;
+						MonsterSpecialAttacks.TrySummonerReactions(drone, self);
+						def.ThreeOneIn = three;
+						def.OneOneIn = one;
+						line = "drones=" + Near(self, "c_drone_small", null) + " home=" + ((drone.X == self.X - 3) && (drone.Y == self.Y));
+						break;
+					}
+				case "druid": {
+						NPC druid = Boss(self, "c_druid_serpent", 2);
+						SerpentDruidAbilityDef def = MonsterSpecialAttacks.SerpentDruidDef;
+						int odds = def.SummonOneIn;
+						def.SummonOneIn = 1;
+						MonsterSpecialAttacks.TrySummonerOwnSwing(druid, self);
+						int snakes = Near(self, "c_serpent_malej", druid);
+						druid.Hits = (short) ((druid.MaxHits / 2) - 1);
+						MonsterSpecialAttacks.TrySummonerReactions(druid, self);
+						MonsterSpecialAttacks.TrySummonerOwnSwing(druid, self);
+						def.SummonOneIn = odds;
+						line = "snakes=" + snakes + " serpent=" + MonsterSpecialAttacks.InSerpentForm(druid) +
+							" model=" + (druid.Model == ((NPCDef) ThingDef.GetByDefname("c_druid_had")).Model) + " snakesAfter=" + Near(self, "c_serpent_malej", druid);
+						break;
+					}
+				case "worms": {
+						NPC worm = Boss(self, "c_m_swarpus", 3);
+						NPCAiTimer.EnsureInstalled(worm);
+						MonsterSpecialAttacks.TrySeeNewPlayers(worm);
+						int sight = Near(self, "c_cerv", null);
+						NPCAiTimer.GetFor(worm).Disengage();
+						MonsterSpecialAttacks.TrySeeNewPlayers(worm);
+						int again = Near(self, "c_cerv", null);
+						bool poisonRefused = MonsterSpecialAttacks.TryBossSpellEffect(worm, SpellDef.GetById(20));
+						bool healRefused = MonsterSpecialAttacks.TryBossSpellEffect(worm, SpellDef.GetById(4));
+						//other test characters stand around too: three worms for each player it sees
+						line = "sightThreeEach=" + ((sight > 0) && (sight % 3 == 0)) + " noneAgain=" + (again == sight) + " poisonRefused=" + poisonRefused +
+							" healRefused=" + healRefused + " spellWorms=" + (Near(self, "c_cerv", null) - again);
+						break;
+					}
+				case "guardian": {
+						player.Profession = Professions.Mage;
+						NPC guardian = Boss(self, "c_Strazce_numerojcu", 2);
+						MonsterSpecialAttacks.SeeNewPlayer(guardian, player);
+						int golems = Near(self, "c_pisecny_sumon_golem", null);
+						Mark(self);
+						guardian.CauseDeath(self);
+						line = "golems=" + golems + " vanishes=" + MonsterSpecialAttacks.VanishesAtDeath(guardian) + " blast=" + (hitsBefore - self.Hits) +
+							" exp=" + guardian.ExperienceReward;
+						break;
+					}
+				default:
+					line = "unknown";
+					break;
+			}
+			Console.WriteLine("BOSS_TEST: " + what + " " + line + " |");
+		}
+
 		private static int Puddles(NPC dragon) {
 			int count = 0;
 			foreach (AbstractItem item in dragon.GetMap().GetItemsInRange(dragon.X, dragon.Y, 4)) {
