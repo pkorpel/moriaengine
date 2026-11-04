@@ -2211,6 +2211,7 @@ namespace SteamEngine.CompiledScripts {
 			base.On_ItemStep(i, repeated, movementType);
 			if (!repeated && (this is Player player) && (i is Item item)) {
 				WeeklyQuests.OnStepOnItem(player, item);
+				Arena.OnStep(player, item); //#1116 - the arena's exit gate
 			}
 		}
 

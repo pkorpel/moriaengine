@@ -28,7 +28,9 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			if (targetted is Corpse corpse) {
-				Carve(self, corpse);
+				if (!Arena.RefusesCarving(self, corpse)) { //#1116 - e_arena
+					Carve(self, corpse);
+				}
 				return true;
 			}
 			return false;

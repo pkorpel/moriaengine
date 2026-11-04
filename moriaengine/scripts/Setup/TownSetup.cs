@@ -110,7 +110,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>A tile `StepsFromSpawnPoint` from the area's spawn point, the `nth` of them, inside the area.</summary>
-		private static int[] SpotIn(FlaggedRegion area, Character gm, int nth = 0) {
+		internal static int[] SpotIn(FlaggedRegion area, Character gm, int nth = 0) {
 			Point4D spawnPoint = area.P;
 			Map map = Map.GetMap(spawnPoint.M);
 			foreach (int[] spot in WorldSpots.WalkableRing(map, spawnPoint, gm.MovementSettings, StepsFromSpawnPoint + (2 * nth))) {

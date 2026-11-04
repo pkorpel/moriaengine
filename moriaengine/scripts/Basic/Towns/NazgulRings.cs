@@ -71,6 +71,11 @@ namespace SteamEngine.CompiledScripts {
 			return Int(ch, killsTK);
 		}
 
+		/// <summary>#1116 - the arena puts the count back as it was.</summary>
+		internal static void SetKills(Character ch, int kills) {
+			ch.SetTag(killsTK, kills);
+		}
+
 		public static int DeathsOn(PowerBadge ring) {
 			return Int(ring, deathsTK);
 		}

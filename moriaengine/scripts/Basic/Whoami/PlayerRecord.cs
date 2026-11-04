@@ -28,6 +28,16 @@ namespace SteamEngine.CompiledScripts {
 			return (player.GetTag(key) is int count) ? count : 0;
 		}
 
+		/// <summary>#1116 - for the arena's snapshot: monster kills (deaths has its own reader below), and both put back.</summary>
+		internal static int MonsterKills(Player player) {
+			return Count(player, monsterKillsTK);
+		}
+
+		internal static void Restore(Player player, int deaths, int monsterKills) {
+			player.SetTag(deathsTK, deaths);
+			player.SetTag(monsterKillsTK, monsterKills);
+		}
+
 		/// <summary>The first login is as near to a character's birth as there is.</summary>
 		internal static void Login(Player player) {
 			if (player.GetTag(bornTK) == null) {
