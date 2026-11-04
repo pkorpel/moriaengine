@@ -165,6 +165,34 @@ Commands, for the keep's chiefs, with the Mordor names as aliases (`.mordorkeep*
 A captain's commands work for their own keep; anyone else's for the keep whose stone is nearest. The keep must be the
 caller's realm's: "Nemuzes ovladat pevnost, kterou jsi nedobyl". A General, the First or a GM must stand in the keep.
 
+## Keep blacklist
+
+Erebor's `i_keep_ban` and `d_captain_executioner` (`KeepBlacklist`, `D_KeepBans`).
+
+Adding a player:
+- `.keep_blacklist` (or `.mordorkeep_blacklist`), for a keep's captain, targets a player or a player's severed head.
+  The executioner dialog's "Pridat cloveka" does the same.
+- Refused, with Erebor's lines: no realm, a GM, another realm, the General, a Nazgul, a captain, a mayor, someone
+  already listed.
+- Otherwise the player is listed and told "Byl jsi dan na cernou listinu pevnosti ...".
+
+The keep's guards attack a listed player on sight, and warn them off outside: "Aaaa ..., mame prikaz nevpustit te do
+pevnosti, strez se vstoupit!".
+
+The dialog ("Nepratel : n") lists the names, and a row's button takes that player off the list. It opens with the
+captain stone's menu and `.keepcontrol`.
+
+Fixed from Erebor:
+- It works. Erebor's guards found their keep by a region tag no keep area had, so it most likely never fired. Here a
+  guard knows its keep, and the list holds characters, not names.
+- The "already listed" line names the target; Erebor's named the captain.
+
+## Commands for players
+
+Erebor gave plevel 1 its conquest commands (`skillgains.scp`): `.dobyvani`, `.keep*`, `.mordorkeep*`,
+`.keep_blacklist`, `.mordorkeep_blacklist`. Each checks who may use it. They are on the player list in
+`CommandsAuthorization` since step 12 of #1116; before that, only GMs could run them.
+
 Not ported:
 - the "Guards Kill" order (disabled on Erebor);
 - the realm uniform for 12 months that Erebor gave a war lord made captain (`uniforms.scp` isn't ported; the user's call).
@@ -199,3 +227,8 @@ the right for 100 000. `PalantirTests.BreachCounterCaptureAndTheCashBox`:
 - the captain hires a free guard through the recruiter;
 - a post 15 tiles off is refused, one 2 tiles off stands, and the palantir is guarded;
 - Mordor takes the keep: the captain is dismissed, the guard is Mordor's, and the war lord is captain.
+
+`KeepBlacklistTests.TheCaptainBlacklistsAndTheKeepsGuardsTurnOnThem` (a captain on a plain account):
+- `.keep_blacklist` and a target list the player, and the keep's guard then attacks them on sight;
+- a second time changes nothing;
+- the executioner dialog takes them off again.
