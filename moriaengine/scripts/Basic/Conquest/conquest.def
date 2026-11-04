@@ -3,3 +3,14 @@
 [WarDeclaratorDef i_war_declarator]
 name = "vyhlasovac valky"
 model = i_gravestone_5
+
+//Erebor's dobyvani-palantir.scp: a keep's palantir, one GM-placed in each keep (ConquestSetup). Its name becomes
+//"Palantir <keep>" when its keep is set.
+[FortressPalantirDef i_fortress_palantir]
+name = "Pevnostni palantir"
+model = i_crystal_ball
+
+//Erebor's cash box was a plain i_box_brass beside the palantir with the t_fort_cashbox event; here an item of its own.
+[FortCashBoxDef i_fort_cashbox]
+name = "Pokladna pevnosti"
+model = 0x9ab

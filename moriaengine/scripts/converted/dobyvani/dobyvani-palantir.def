@@ -2,10 +2,10 @@
 
 //[typedef t_fort_cashbox] //(commented out by Converter) 
 
-[ItemDef i_fortress_palantir]
-name = "Pevnostni palantir"
-type = t_script
-model = i_crystal_ball
+//[ItemDef i_fortress_palantir] //(commented out by Converter) 
+//name = "Pevnostni palantir"
+//type = t_script
+//model = i_crystal_ball
 
 //[function switchColor] //barva palantiru podle prolomeni //(commented out by Converter) 
 
