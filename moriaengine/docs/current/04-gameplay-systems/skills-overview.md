@@ -119,7 +119,7 @@ Double clicking `t_food` or `t_fruit` eats one piece, adding its weight in stone
 
 At 0 food hits don't regenerate, and a blow, a spell or starting to craft costs 10 hits with "Umiras hlady...". Under 7 food any skill's success can turn into a failure, 7 times in 10 at nothing; blows aren't skills here. GMs aren't troubled by that roll. Skills Erebor scripts on its own timers skip it, as their native skill is cancelled and its success never runs: Hiding among them (#1095), whose `i_hiding_timer` only rolls Hiding against `rand(1025)`.
 
-Not ported: the food box (`systems/foodbox.scp`), and dark stopping blows and spells (`nolightfizz` on `@hittry` and `@spellcast`).
+Not ported: the food box (`systems/foodbox.scp`). Darkness stopping blows and spells (`nolightfizz` on `@hittry` and `@spellcast`) is ported (#995, `WorkLight`).
 
 ## Lockpicking (#962)
 
