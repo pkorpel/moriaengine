@@ -384,3 +384,43 @@ Not carried over: the forms' monster type (for slayers) and clothes coming off; 
 
 Test: `DamageRuleBossTests.DarkmoonTakesAFormWithItsAbilitiesAndNumbers` (protocol): the worker's look, bleed and numbers
 without her dispel bomb, the queen's lightnings and Magery, back to herself, a blow and the cooldown.
+
+## Halda Molle's fights (#1022)
+
+`HaldaMolle.cs`. Erebor's `questy/halda_molle.scp` and `questy/halda_molle_char.scp`. None of these monsters is placed
+in the world yet: Halda Molle has no spawns (the user's question).
+
+- `e_rozdeleni` (Bezejmenny, the boss), when hit at 15% of its hits or more, 35 permille (the species' own,
+  `tag.e_copy_chance`):
+  - it loses a tenth of its hits, and a copy appears beside it with 90% of what's left, for 12 hours, worth a third of
+    its experience ("Mostrum se rozdelilo.");
+  - while the copy lives nothing hurts the boss ("Monstrum ti odolava."); damage with no resist type at all still does.
+
+  Fixed from Erebor:
+  - the guard ends when the copy is gone for any reason (Erebor's stayed for good if the copy timed out);
+  - the boss keeps its own resists (Erebor's guard functions blanked its summon and bleed resists on the first blow,
+    and could leave it immune).
+
+  Copies keep their loot, as Erebor's.
+- `e_frosty_wave` (Bezejmenny), when hit and once on sight of each new player, 240 permille: cold tiles on the 8 rays.
+  - Timing: tiles at 1-2 tiles, a second later at 3-4, then at 5-6 (the species' strength 2), each lasting a second.
+  - Effect: a player on one (not a GM) gets "Byl si zmrazen.", loses 59 hits whatever the armor, and is paralysed for
+    6 s.
+- `e_drop_egg` (the warniaks): on sight of a new player, half the time it lays an egg ("Vejce").
+  - Hatching: 60 s later a warniak of its kind (the species' `tag.warniak_type`) hatches, and is gone 700 s after the
+    egg was laid.
+  - Stomping: someone carrying more than 400 stones can stomp the egg ("Rozslapl si vejce."); anyone lighter gets
+    "Nedokazes rozeslapnout vejce."
+- `e_warniak_degrade` (warniak 4): dying, the next smaller warniak rises on the spot, and so on down to the smallest.
+- `e_warniak_drop` (Marali koren):
+  - when hit, 100 permille at most once in 10 s, a warniak (tier 2, 1 or 3, 3:1:1);
+  - on sight of a new player, at most once in 50 s, a tier 2 that attacks them;
+  - dying, one of each tier 1-4.
+
+  Each lives an hour.
+
+Converter: `tag.e_copy_chance`, `tag.e_frosty_wave_chance`, `tag.e_frosty_wave_strong`, `tag.warniak_type`,
+`tag.warniak_count`, `tag.e_warniak_hit_chance`.
+
+Test: `HaldaMolleTests` (protocol, account hmtests): the split and its guard, the frost, the eggs (too light, stomped,
+hatched), the degrading, Marali koren's warniaks.

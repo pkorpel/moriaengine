@@ -97,7 +97,7 @@ Name = "Regeneration"
 [DroneSummonerAbilityDef a_tevent_e_drone_large]
 Name = "(e_drone_large)"
 
-[PassiveAbilityDef a_tevent_e_drop_egg]
+[DropEggAbilityDef a_tevent_e_drop_egg]
 Name = "(e_drop_egg)"
 
 //#799 batch 5: upgraded from a bare stub to a real DuplicatorAbilityDef
@@ -160,7 +160,7 @@ Name = "(e_fire_dragon_round)"
 [FireLordAbilityDef a_tevent_e_fire_lord]
 Name = "(e_fire_lord)"
 
-[PassiveAbilityDef a_tevent_e_frosty_wave]
+[FrostWaveAbilityDef a_tevent_e_frosty_wave]
 Name = "(e_frosty_wave)"
 
 [WeaponKnockoutAbilityDef a_tevent_e_getwpn]
@@ -546,7 +546,7 @@ Name = "(e_resist_countdown)"
 [RinaldAbilityDef a_tevent_e_rinald]
 Name = "(e_rinald)"
 
-[PassiveAbilityDef a_tevent_e_rozdeleni]
+[RozdeleniAbilityDef a_tevent_e_rozdeleni]
 Name = "(e_rozdeleni)"
 
 [ScalesAbilityDef a_tevent_e_scales]
@@ -615,10 +615,10 @@ Name = "(e_undead)"
 [PassiveAbilityDef a_tevent_e_undeads_ability_life]
 Name = "(e_undeads_ability_life)"
 
-[PassiveAbilityDef a_tevent_e_warniak_degrade]
+[WarniakDegradeAbilityDef a_tevent_e_warniak_degrade]
 Name = "(e_warniak_degrade)"
 
-[PassiveAbilityDef a_tevent_e_warniak_drop]
+[WarniakDropAbilityDef a_tevent_e_warniak_drop]
 Name = "(e_warniak_drop)"
 
 [PassiveAbilityDef a_tevent_e_water]
