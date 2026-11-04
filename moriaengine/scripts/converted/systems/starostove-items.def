@@ -33,15 +33,15 @@ TYPE = t_normal
 model = i_grave_stone_5
 Color = 0990 //silver 
 
-[ItemDef i_captainstone]
-CATEGORY = GM Items
-SUBSECTION = Kameny
-DESCRIPTION = Captains Stone
-
-name = "Captains stone"
-type = t_captainmenu
-model = i_grave_stone_5
-Color = 099a //med 
+//[ItemDef i_captainstone] //(commented out by Converter) 
+//CATEGORY = GM Items
+//SUBSECTION = Kameny
+//DESCRIPTION = Captains Stone
+//
+//name = "Captains stone"
+//type = t_captainmenu
+//model = i_grave_stone_5
+//Color = 099a //med 
 
 [ItemDef i_town_crystal]
 type = t_eq_script

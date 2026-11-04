@@ -14,3 +14,15 @@ model = i_crystal_ball
 [FortCashBoxDef i_fort_cashbox]
 name = "Pokladna pevnosti"
 model = 0x9ab
+
+//Erebor's keep captain stones (systems/starostove-items.scp, nazguls_items.scp), one GM-placed in each keep
+//(ConquestSetup): Gondor's keeps get i_captainstone, Mordor's i_mordorcaptainstone. Either serves whoever holds the keep.
+[CaptainStoneDef i_captainstone]
+name = "Captains stone"
+model = i_grave_stone_5
+Color = 099a
+
+[CaptainStoneDef i_mordorcaptainstone]
+name = "Mordor Captain's stone"
+model = i_grave_stone_5
+Color = 099a
