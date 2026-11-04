@@ -123,3 +123,19 @@ Test: `AfkCheckTests.TheCheckItsFailuresAndTheCamp` (protocol, the real `.afk`/`
 dots match the font, a wrong answer brings the dialog back, a right one ends it, two failures are let go and the third
 sends to the camp, three more in the camp double what's owed, the warning leads to the check). The automatic round and
 the login resume aren't covered by a test.
+
+## AFK log
+
+Erebor's `d_afk_dialog` (`systems/administrace/afk_dia_log.scp`). `.afklog [text]` opens the AFK log (`D_AfkLog`), 20
+lines a page, filtered by any text: a name, an account, a word. Every line comes from the AFK check, the warning and
+the camp; the log keeps the last 2000 and is saved.
+
+- *Smaz* deletes a line.
+- *Trest*, on a line where a player went to the camp, lowers the skill they were macroing by an amount the GM types
+  (10.0 by default). It never goes below the profession's minimum. For someone still in the camp who was chopping,
+  it's the Lumberjacking they get back at release.
+- *Milost* takes back one AFK camp level after a yes, releasing them if they're in the camp.
+
+Erebor kept a log per GM, built from each GM's own messages. Here there's one shared log.
+
+Test: `AfkCheckTests.TheLogPunishesPardonsFiltersAndDeletes` (protocol, the real gumps).

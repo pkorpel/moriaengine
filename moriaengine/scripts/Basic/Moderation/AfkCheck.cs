@@ -58,7 +58,7 @@ namespace SteamEngine.CompiledScripts {
 			player.AddTimer(AfkCountdownTimer.Key, timer);
 			timer.PeriodInSeconds = 1;
 			timer.DueInSeconds = 0.1;
-			AfkLog.Add(player, "odpocet pred AFK kontrolou", null);
+			AfkLogBook.Add(player, "odpocet pred AFK kontrolou", null);
 		}
 
 		/// <summary>userafk: the check now, with `seconds` to answer (0 = AfkSettings.answerSeconds).</summary>
@@ -78,7 +78,7 @@ namespace SteamEngine.CompiledScripts {
 			timer.DueInSeconds = 1;
 			player.RedMessage(Loc<AfkLoc>.Get(player.Language).Check);
 			player.Sound(1153);
-			AfkLog.Add(player, "zacala AFK kontrola (" + seconds + " s)", null);
+			AfkLogBook.Add(player, "zacala AFK kontrola (" + seconds + " s)", null);
 			Show(player, timer);
 		}
 
@@ -103,12 +103,12 @@ namespace SteamEngine.CompiledScripts {
 		internal static void Answer(Player player, string written) {
 			AfkLoc texts = Loc<AfkLoc>.Get(player.Language);
 			if (!(player.GetTimer(AfkCheckTimer.Key) is AfkCheckTimer timer)) {
-				AfkLog.Add(player, "chyba pri AFK kontrole - chybel kontrolni item", null);
+				AfkLogBook.Add(player, "chyba pri AFK kontrole - chybel kontrolni item", null);
 				return;
 			}
 			if ((written ?? "").IndexOf(timer.letters, StringComparison.OrdinalIgnoreCase) >= 0) {
 				if (SecondsLeft(timer) >= AfkSettings.instance.answerSeconds - 2) {
-					AfkLog.Add(player, "byl podezrele rychly pri AFK - zbyl cas " + SecondsLeft(timer) + "s", null);
+					AfkLogBook.Add(player, "byl podezrele rychly pri AFK - zbyl cas " + SecondsLeft(timer) + "s", null);
 				}
 				player.SysMessage(texts.Correct);
 				player.DeleteTimer(AfkCheckTimer.Key);
@@ -119,7 +119,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			player.SysMessage(texts.Wrong);
-			AfkLog.Add(player, "zadal neplatne reseni AFK. Mel napsat: " + timer.letters + ", napsal: " + written + ", jeste ma cas..", null);
+			AfkLogBook.Add(player, "zadal neplatne reseni AFK. Mel napsat: " + timer.letters + ", napsal: " + written + ", jeste ma cas..", null);
 			if (SecondsLeft(timer) > 0) {
 				player.SysMessage(texts.TryAgain);
 			}
@@ -138,10 +138,10 @@ namespace SteamEngine.CompiledScripts {
 				Camp.SetLevel(player.Account, true, Camp.Level(player.Account, true) + 1);
 				Camp.SetSentence(player, Camp.Sentence(player) * 2);
 				player.RedMessage(string.Format(Loc<AfkLoc>.Get(player.Language).SentenceDoubled, Camp.Sentence(player)));
-				AfkLog.Add(player, "trestanec zdvojnasoben pocet logu - nyni: " + Camp.Sentence(player) + ". Celkem byl " + Camp.Level(player.Account, true) + "x AFK. Mel napsat: " + timer.letters, timer.action);
+				AfkLogBook.Add(player, "trestanec zdvojnasoben pocet logu - nyni: " + Camp.Sentence(player) + ". Celkem byl " + Camp.Level(player.Account, true) + "x AFK. Mel napsat: " + timer.letters, timer.action);
 				return;
 			}
-			AfkLog.Add(player, "makrar do lagru za " + timer.action + ". Celkem byl " + (Camp.Level(player.Account, true) + 1) + "x AFK. Mel napsat: " + timer.letters, timer.action);
+			AfkLogBook.Add(player, "makrar do lagru za " + timer.action + ". Celkem byl " + (Camp.Level(player.Account, true) + 1) + "x AFK. Mel napsat: " + timer.letters, timer.action);
 			Camp.Send(player, true);
 		}
 
@@ -157,13 +157,13 @@ namespace SteamEngine.CompiledScripts {
 			if (!(player.GetTag(periodEndTK) is long end)) {
 				StartPeriod(player);
 				player.SysMessage(string.Format(texts.FirstFailure, settings.allowedFailures));
-				AfkLog.Add(player, "po 1. selhal vubec pri AFK. Jeho skill: " + timer.action + ". Mel napsat: " + timer.letters, null);
+				AfkLogBook.Add(player, "po 1. selhal vubec pri AFK. Jeho skill: " + timer.action + ". Mel napsat: " + timer.letters, null);
 				return false;
 			}
 			if (Now > end) {
 				StartPeriod(player);
 				player.SysMessage(texts.FirstFailureOfPeriod);
-				AfkLog.Add(player, "po 1. selhal pri AFK v novem obdobi. Jeho skill: " + timer.action + ". Mel napsat: " + timer.letters, null);
+				AfkLogBook.Add(player, "po 1. selhal pri AFK v novem obdobi. Jeho skill: " + timer.action + ". Mel napsat: " + timer.letters, null);
 				return false;
 			}
 			int fails = Failures(player);
@@ -176,11 +176,11 @@ namespace SteamEngine.CompiledScripts {
 			if (fails < settings.allowedFailures) {
 				player.SetTag(failsTK, fails + 1);
 				player.SysMessage(string.Format(texts.NthFailure, fails + 1));
-				AfkLog.Add(player, "po " + (fails + 1) + ". selhal pri AFK v obdobi. Jeho skill: " + timer.action + ". Mel napsat: " + timer.letters, null);
+				AfkLogBook.Add(player, "po " + (fails + 1) + ". selhal pri AFK v obdobi. Jeho skill: " + timer.action + ". Mel napsat: " + timer.letters, null);
 				return false;
 			}
 			player.SysMessage(texts.ToleranceGone);
-			AfkLog.Add(player, "presahl limit AFK selhani. Sanci na uspech mel " + fails + ". Mel napsat: " + timer.letters, null);
+			AfkLogBook.Add(player, "presahl limit AFK selhani. Sanci na uspech mel " + fails + ". Mel napsat: " + timer.letters, null);
 			ClearPeriod(player);
 			return true;
 		}
@@ -252,10 +252,10 @@ namespace SteamEngine.CompiledScripts {
 			AfkTrigger.EnsureRunning();
 			if (player.GetTimer(AfkCheckTimer.Key) is AfkCheckTimer timer) {
 				if (timer.endsAt < Now) {
-					AfkLog.Add(player, "se lognul " + (-SecondsLeft(timer)) + "s po konci AFK kontroly", null);
+					AfkLogBook.Add(player, "se lognul " + (-SecondsLeft(timer)) + "s po konci AFK kontroly", null);
 					timer.endsAt = Now + TimeSpan.TicksPerSecond;
 				} else {
-					AfkLog.Add(player, "po lognuti zbyva " + SecondsLeft(timer) + "s do konce AFK kontroly", null);
+					AfkLogBook.Add(player, "po lognuti zbyva " + SecondsLeft(timer) + "s do konce AFK kontroly", null);
 				}
 				timer.shown = false;
 			}
@@ -264,9 +264,9 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>e_afk_controlled's @logout.</summary>
 		internal static void OnLogout(Player player) {
 			if (player.HasTimer(AfkCheckTimer.Key)) {
-				AfkLog.Add(player, "se odlogoval pri AFK kontrole", null);
+				AfkLogBook.Add(player, "se odlogoval pri AFK kontrole", null);
 			} else if (player.HasTimer(AfkCountdownTimer.Key)) {
-				AfkLog.Add(player, "se odlogoval pri odpocitavani AFK kontroly", null);
+				AfkLogBook.Add(player, "se odlogoval pri odpocitavani AFK kontroly", null);
 			}
 		}
 
@@ -319,10 +319,10 @@ namespace SteamEngine.CompiledScripts {
 			int seconds = (int) parameter;
 			if (seconds < 0) {
 				AfkCheck.StartCountdown(player);
-				AfkLog.Add(player, "odpocet pred AFK kontrolou pustil " + self.Name, null);
+				AfkLogBook.Add(player, "odpocet pred AFK kontrolou pustil " + self.Name, null);
 			} else {
 				AfkCheck.Start(player, seconds, null);
-				AfkLog.Add(player, "AFK kontrolu pustil " + self.Name + ((seconds > 0) ? (" s limitem " + seconds + "s") : " s default limitem"), null);
+				AfkLogBook.Add(player, "AFK kontrolu pustil " + self.Name + ((seconds > 0) ? (" s limitem " + seconds + "s") : " s default limitem"), null);
 			}
 			return TargetResult.Done;
 		}
