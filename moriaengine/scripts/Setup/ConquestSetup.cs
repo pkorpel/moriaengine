@@ -3,7 +3,7 @@ using SteamEngine.Regions;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1116 - the keep conquest's pieces, which Erebor's GMs placed and the archive doesn't keep: a war declarator in
-	/// each realm's capital. Spots chosen here, unreviewed.</summary>
+	/// each realm's capital, and the realm's war lieutenant beside it. Spots chosen here, unreviewed.</summary>
 	public sealed class ConquestSetup : WorldSetup {
 		public override string Name {
 			get {
@@ -28,7 +28,14 @@ namespace SteamEngine.CompiledScripts {
 				gm.SysMessage("No spot for the war declarator in " + city + ".");
 				return;
 			}
-			pieces.Item("conquest/" + Conquest.RealmName(realm).ToLowerInvariant() + "/declarator", "i_war_declarator", spot, area.P.M, item => ((WarDeclarator) item).SetRealm(realm));
+			string realmName = Conquest.RealmName(realm).ToLowerInvariant();
+			pieces.Item("conquest/" + realmName + "/declarator", "i_war_declarator", spot, area.P.M, item => ((WarDeclarator) item).SetRealm(realm));
+			int[] lieutenantSpot = TownSetup.SpotIn(area, gm, 9);
+			if (lieutenantSpot == null) {
+				gm.SysMessage("No spot for the war lieutenant in " + city + ".");
+				return;
+			}
+			pieces.Npc("conquest/" + realmName + "/lieutenant", (realm == Realm.Gondor) ? WarLieutenant.GondorDef : WarLieutenant.MordorDef, lieutenantSpot, area.P.M, realm, true, WorldPieces.StandsStill);
 		}
 	}
 }
