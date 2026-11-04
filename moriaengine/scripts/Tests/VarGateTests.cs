@@ -128,6 +128,7 @@ namespace SteamEngine.CompiledScripts {
 			Removals(self);
 			Additions(self);
 			Functions(self);
+			PvpKit(player);
 			RemovesGear(self);
 			Experience(player);
 			Destinations(player);
@@ -308,6 +309,80 @@ namespace SteamEngine.CompiledScripts {
 			WalkIs(self, "f_vg_bookDeny, carrying", "back");
 			book.Delete();
 			WalkIs(self, "f_vg_bookDeny, not carrying", "passed");
+		}
+
+		private static Item InPack(Character self, string defname) {
+			foreach (AbstractItem item in self.Backpack) {
+				if (!item.IsDeleted && VarGate.Matches((Item) item, defname, false)) {
+					return (Item) item;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>#1116 step 7 - the PvP event kit, as a gate's function line with its argument.</summary>
+		private static void PvpKit(Player self) {
+			ProfessionDef profession = self.Profession;
+			self.Profession = Professions.Warrior;
+			short str = self.Str;
+			self.Str = 200; //a warrior's whole iron kit, or the walker is too loaded to step (#779)
+			foreach (AbstractItem item in new List<AbstractItem>(self.Backpack)) {
+				item.Delete();
+			}
+			Item own = Give(self, Dagger, 1);
+			Item fixedOne = Give(self, "i_bandage", 3);
+			fixedOne.Flag_NonMovable = true;
+
+			Fresh(self);
+			gate.Flags = VarGateFlags.RunFunctions;
+			gate.Functions.Add(Entry("f_varGate_pvp_equip(iron)", 0));
+			WalkIs(self, "the PvP kit", "passed");
+			Item bag = null;
+			foreach (AbstractItem item in self.Bank) {
+				if (item.Name == PvpEventKit.BankBagName) {
+					bag = (Item) item;
+				}
+			}
+			Check("own things in the bank's tournament bag", (bag != null) && (own.Cont == bag) && (bag.Color == PvpEventKit.BankBagColor));
+			Check("a fixed one stays", fixedOne.Cont == self.Backpack);
+			Item plate = InPack(self, "i_iron_platemail");
+			Check("warrior's iron plate, marked", (plate != null) && (plate.Name == PvpEventKit.Marker));
+			Check("warrior's iron katana", InPack(self, "i_katana_iron") != null);
+			Item bandages = null;
+			foreach (AbstractItem item in self.Backpack) {
+				if ((item != fixedOne) && VarGate.Matches((Item) item, "i_bandage", false)) {
+					bandages = (Item) item;
+				}
+			}
+			Check("40 bandages", (bandages != null) && (bandages.Amount == 40), (bandages == null) ? "none" : bandages.Amount.ToString());
+			SpellBook book = InPack(self, "i_spellbook_pvp") as SpellBook;
+			Check("the PvP spellbook, flamestrike and reveal in it, the necro spells too", (book != null) && book.HasSpell(51) && book.HasSpell(48) && !book.HasSpell(2) && (book.necroSpells == 0x3f));
+
+			gate.Functions[0] = Entry("f_varGate_pvp_clearequip", 0);
+			WalkIs(self, "clearing the kit", "passed");
+			int left = 0;
+			foreach (AbstractItem item in self.Backpack) {
+				left++;
+			}
+			Check("only the fixed one is left", (left == 1) && (fixedOne.Cont == self.Backpack), left.ToString());
+
+			gate.Functions[0] = Entry("f_varGate_pvp_equip tin", 0);
+			WalkIs(self, "a metal with no plate", "passed");
+			Check("gives nothing", InPack(self, "i_spellbook_pvp") == null);
+
+			gate.Functions[0] = Entry("vg_pvp_denyMagic", 0, 0, false, true);
+			MagicBag pouch = (MagicBag) ThingDef.GetByDefname("i_mi_pouch_superhigh").Create(self.Backpack);
+			Item magic = MagicItems.Unpack(pouch, self);
+			MagicItems.Finish(magic);
+			WalkIs(self, "vg_pvp_denyMagic, carrying a magic item", "back");
+			magic.Delete();
+			WalkIs(self, "vg_pvp_denyMagic, without", "passed");
+			fixedOne.Delete();
+			bag?.Delete();
+			if (profession != null) {
+				self.Profession = profession;
+			}
+			self.Str = str;
 		}
 
 		private static void RemovesGear(Character self) {

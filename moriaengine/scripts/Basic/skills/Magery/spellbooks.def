@@ -107,6 +107,41 @@ this.Contents = 0xffffff
 this.AddSpell(40)
 this.necroSpells = 0x3f
 
+//#1116 - Erebor's i_spellbook_pvp (sphereitemb3.scp), the PvP event kit's book (PvpEventKit): 23 magery spells, and
+//morem=1 + morex=0ff, so that a necromancer opening it gets the necro book with every necro spell (f_necrobook).
+//Erebor's value=300 has nothing to read it here.
+[SpellBookDef i_spellbook_pvp]
+name = "PVPEVENT"
+model = i_spellbook
+layer = 1
+Color = 038d
+
+on=@create
+this.AddSpell(12) //harm
+this.AddSpell(18) //fireball
+this.AddSpell(41) //dispel
+this.AddSpell(42) //energy bolt
+this.AddSpell(36) //magic reflection
+this.AddSpell(37) //mind blast
+this.AddSpell(6) //night sight
+this.AddSpell(20) //poison
+this.AddSpell(11) //cure
+this.AddSpell(4) //heal
+this.AddSpell(29) //greater heal
+this.AddSpell(1) //clumsy
+this.AddSpell(3) //feeblemind
+this.AddSpell(5) //magic arrow
+this.AddSpell(8) //weaken
+this.AddSpell(38) //paralyze
+this.AddSpell(51) //flamestrike
+this.AddSpell(27) //curse
+this.AddSpell(22) //teleport
+this.AddSpell(7) //reactive armor
+this.AddSpell(48) //reveal
+this.AddSpell(10) //cunning
+this.AddSpell(15) //protection
+this.necroSpells = 0x3f
+
 [SpellBookDef 0x2252]
 name = "Book of Chivalry/Paladin"
 defname = i_spellbook_paladin

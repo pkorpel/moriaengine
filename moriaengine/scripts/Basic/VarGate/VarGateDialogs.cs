@@ -312,7 +312,8 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>What Erebor's button handlers checked, and names, which it left to fail at the gate.</summary>
 		private static string Problem(VarGateEntry entry, VarGateList list) {
 			if (list == VarGateList.Function) {
-				return (ScriptHolder.GetFunction(entry.name) == null) ? "Takova funkce neexistuje!" : null;
+				VarGate.SplitFunction(entry.name, out string name, out _);
+				return (ScriptHolder.GetFunction(name) == null) ? "Takova funkce neexistuje!" : null;
 			}
 			int kinds = (list == VarGateList.Remove) ? 2 : 1;
 			if ((entry.kind < 0) || (entry.kind > kinds)) {

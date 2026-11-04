@@ -357,12 +357,36 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private object RunFunction(Character ch, VarGateEntry entry) {
-			ScriptHolder function = ScriptHolder.GetFunction(entry.name);
+			SplitFunction(entry.name, out string name, out string argument);
+			ScriptHolder function = ScriptHolder.GetFunction(name);
 			if (function == null) {
 				Logger.WriteWarning("VarGate " + this.FlaggedUid + ": no function " + entry.name);
 				return null;
 			}
-			return function.TryRun(ch, this);
+			return (argument == null) ? function.TryRun(ch, this) : function.TryRun(ch, this, argument);
+		}
+
+		/// <summary>#1116 - Erebor ran a line as src.&lt;line&gt;, so it could carry an argument: "f_varGate_pvp_equip(iron)".
+		/// "name(argument)" or "name argument"; the function gets the gate first, then the argument.</summary>
+		internal static void SplitFunction(string line, out string name, out string argument) {
+			line = (line ?? "").Trim();
+			argument = null;
+			int paren = line.IndexOf('(');
+			if ((paren > 0) && line.EndsWith(")", StringComparison.Ordinal)) {
+				name = line.Substring(0, paren).Trim();
+				argument = line.Substring(paren + 1, line.Length - paren - 2).Trim();
+			} else {
+				int space = line.IndexOf(' ');
+				if (space > 0) {
+					name = line.Substring(0, space);
+					argument = line.Substring(space + 1).Trim();
+				} else {
+					name = line;
+				}
+			}
+			if (argument == "") {
+				argument = null;
+			}
 		}
 
 		private bool PassesFunctions(Character ch) {
@@ -643,13 +667,17 @@ namespace SteamEngine.CompiledScripts {
 		/// aside. Crafted ones and mounts may.</summary>
 		[SteamFunction]
 		public static bool vg_pvp_denyMagic(Character self) {
+			bool any = false;
 			foreach (Item item in VarGate.Carried(self)) {
 				if (MagicItemShop.IsRealMagicItem(item) && !VarGate.Matches(item, "t_eq_horse", true)) {
-					self.SysMessage("S magickymi predmety nesmis vstoupit!");
-					return true;
+					self.SysMessage("Nesmis projit s predmetem " + item.Name + "!"); //#1116 - each one, as Erebor's
+					any = true;
 				}
 			}
-			return false;
+			if (any) {
+				self.SysMessage("S magickymi predmety nesmis vstoupit!");
+			}
+			return any;
 		}
 
 		[SteamFunction]
