@@ -268,6 +268,7 @@ namespace SteamEngine.CompiledScripts {
 				TrySummonerReactions(hit, attacker); //#1022 the summoning bosses
 				TryDeathBossReactions(hit, attacker); //#1022 the dying bosses
 				TryDamageRuleReactions(hit, attacker); //#1022 e_balrog, e_odinvis_krik
+				TryDarkmoonMorph(hit); //#1022 e_darkmoon_boss
 			}
 			TryDrop(defender, GoldDropDef);
 			TryDrop(defender, ReagDropDef);

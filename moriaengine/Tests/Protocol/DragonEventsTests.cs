@@ -171,6 +171,20 @@ namespace SteamEngine.Tests.Protocol {
 			this.Expect(client, "druid", "name=Druid form=True back=True");
 			this.Expect(client, "titan", "emotes=True");
 		}
+
+		[Fact]
+		public void DarkmoonTakesAFormWithItsAbilitiesAndNumbers() {
+			using var client = CommandPermissionTests.Connect("dragontests", "Moon Fighter");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestDragon \"ready\"", "DRAGON_TEST: ready ");
+			string line = CommandPermissionTests.Ask(this.fixture, client, ".TestDarkmoon", "DARKMOON_TEST: ");
+			//a worker: its look, its bleed and numbers, not her own dispel bomb; the queen: no bleed, the queen's lightnings and magery
+			Assert.True(line.Contains("worker=True bleed=True dispelGone=True keepsMorph=True blunt=600 magery=0 bleedChance=300 hitsFit=True"), line);
+			Assert.True(line.Contains("queen: bleed=False lightnings=True magery=4500"), line);
+			//back to herself: her look, her abilities and numbers
+			Assert.True(line.Contains("own: model=True dispel=True lightnings=False tuning=True blunt=850"), line);
+			//a blow changes her, then she waits out the cooldown
+			Assert.True(line.Contains("hit: changed=True waits=True"), line);
+		}
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]

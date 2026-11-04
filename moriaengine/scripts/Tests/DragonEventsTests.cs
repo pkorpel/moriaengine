@@ -557,6 +557,38 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("DAMAGERULE_TEST: " + what + " " + line + " |");
 		}
 
+		private static bool Has(NPC npc, string ability) {
+			return npc.HasAbility(AbilityDef.GetByDefname(ability), out _);
+		}
+
+		/// <summary>#1022 PR 4b - Darkmoon's forms.</summary>
+		[SteamFunction]
+		public static void TestDarkmoon(Character self, ScriptArgs sa) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			NPC moon = Boss(self, "c_darkmoon", 2);
+			int ownModel = moon.Model;
+			NPCDef worker = (NPCDef) ThingDef.GetByDefname("c_darkmoon_worker");
+			MonsterSpecialAttacks.TakeForm(moon, worker);
+			string line = "worker=" + ((moon.Model == worker.Model) && (moon.Color == 0x98F)) + " bleed=" + Has(moon, "a_tevent_e_npc_bleed") +
+				" dispelGone=" + !Has(moon, "a_tevent_e_explosiondispell") + " keepsMorph=" + Has(moon, "a_tevent_e_darkmoon_boss") +
+				" blunt=" + moon.ResistBlunt + " magery=" + moon.GetSkill(SkillName.Magery) + " bleedChance=" + MonsterSpecialAttacks.TuningDef(moon).BleedChance?[0] +
+				" hitsFit=" + (moon.Hits <= moon.MaxHits);
+			MonsterSpecialAttacks.TakeForm(moon, (NPCDef) ThingDef.GetByDefname("c_darkmoon_queen"));
+			line += " queen: bleed=" + Has(moon, "a_tevent_e_npc_bleed") + " lightnings=" + Has(moon, "a_tevent_e_lightnings") + " magery=" + moon.GetSkill(SkillName.Magery);
+			MonsterSpecialAttacks.TakeForm(moon, (NPCDef) moon.Def);
+			line += " own: model=" + (moon.Model == ownModel) + " dispel=" + Has(moon, "a_tevent_e_explosiondispell") + " lightnings=" + Has(moon, "a_tevent_e_lightnings") +
+				" tuning=" + (MonsterSpecialAttacks.TuningDef(moon) == moon.Def) + " blunt=" + moon.ResistBlunt;
+			DarkmoonAbilityDef def = MonsterSpecialAttacks.DarkmoonDef;
+			double chance = def.Chance;
+			def.Chance = 1000;
+			MonsterSpecialAttacks.TryDarkmoonMorph(moon);
+			NPCDef first = MonsterSpecialAttacks.TuningDef(moon);
+			MonsterSpecialAttacks.TryDarkmoonMorph(moon);
+			def.Chance = chance;
+			line += " hit: changed=" + (first != moon.Def) + " waits=" + (MonsterSpecialAttacks.TuningDef(moon) == first);
+			Console.WriteLine("DARKMOON_TEST: " + line + " |");
+		}
+
 		private static int Puddles(NPC dragon) {
 			int count = 0;
 			foreach (AbstractItem item in dragon.GetMap().GetItemsInRange(dragon.X, dragon.Y, 4)) {

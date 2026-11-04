@@ -107,7 +107,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((self == null) || !HasAbilityDef(self, def) || !self.IsAliveAndValid) {
 				return false;
 			}
-			NPCDef npcDef = (NPCDef) self.Def;
+			NPCDef npcDef = TuningDef(self); //#1022 a form's while Darkmoon has one
 			if (!RollChance(RollTunable(npcDef.DispelBombChance, def.Chance))) {
 				return false;
 			}

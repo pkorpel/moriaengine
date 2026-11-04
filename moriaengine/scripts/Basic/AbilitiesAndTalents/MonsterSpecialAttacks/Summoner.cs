@@ -98,7 +98,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!self.HasAbility(def, out ability)) {
 				return;
 			}
-			NPCDef npcDef = (NPCDef) self.Def;
+			NPCDef npcDef = TuningDef(self); //#1022 a form's while Darkmoon has one
 			List<NPCDef> toSummon = npcDef.SummonedCreatures;
 			if ((toSummon == null) || (toSummon.Count == 0)) {
 				return;

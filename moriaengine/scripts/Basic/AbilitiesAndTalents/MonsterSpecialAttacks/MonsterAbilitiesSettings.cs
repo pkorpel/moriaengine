@@ -1593,5 +1593,20 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.MorphEmote = value; } }
 		}
 
+		public double DarkmoonChance {
+			get { return MonsterSpecialAttacks.DarkmoonDef?.Chance ?? 0; }
+			set { if (MonsterSpecialAttacks.DarkmoonDef != null) { MonsterSpecialAttacks.DarkmoonDef.Chance = value; } }
+		}
+
+		public double DarkmoonCooldown {
+			get { return MonsterSpecialAttacks.DarkmoonDef?.Cooldown ?? 0; }
+			set { if (MonsterSpecialAttacks.DarkmoonDef != null) { MonsterSpecialAttacks.DarkmoonDef.Cooldown = value; } }
+		}
+
+		public string DarkmoonForms {
+			get { return MonsterSpecialAttacks.DarkmoonDef?.Forms ?? null; }
+			set { if (MonsterSpecialAttacks.DarkmoonDef != null) { MonsterSpecialAttacks.DarkmoonDef.Forms = value; } }
+		}
+
 	}
 }
