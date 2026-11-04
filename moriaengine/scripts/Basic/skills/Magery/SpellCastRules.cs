@@ -54,6 +54,10 @@ namespace SteamEngine.CompiledScripts {
 				fizzle = false;
 				return false; //#1116 - e_arena
 			}
+			if (MonsterSpecialAttacks.BalrogCurseRefusesCast(self)) {
+				fizzle = false;
+				return false; //#1022 - e_prokleti_balroga
+			}
 			MageryRulesLoc texts = Loc<MageryRulesLoc>.Get(self.Language);
 			if (spell.IsCustom) { //customspellcast knows nothing of @spellcast
 				fizzle = false;

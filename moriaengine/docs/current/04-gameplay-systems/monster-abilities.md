@@ -321,3 +321,40 @@ is deleted: no death, body, loot or experience. "Zarici brana" is a variable gat
 
 Test: `DyingBossTests` (protocol): the lava bomb's first delay and its one bomb, the ghost's blast, the paladin's and Lord
 Strachu's gates (once), OCS helpers rising, Arghelior's dragon, the undead by weapon and a carved body.
+
+## Bosses with damage rules (#1022)
+
+`DamageRules.cs`, `Shapeshifter.cs`. Erebor's `systems/new_events.scp`, `systems/macros.scp`, `systems/aldaron.scp`,
+`sphereevents.scp`.
+
+- `e_balrog` (Balrogh, Zatraceny, Vidlak Ochrance):
+  - its swings, dodged ones too: 1 in 6 "Popalil te Balroghuv ohen!" and 10-26 fire, else 1 in 10 "Balroghuv ohen te
+    oslabil!" and no stamina left;
+  - a blow at it: 1 in 8 "Cast tveho uderu byla odrazena zpet!" and 10-40 magic back; 1 in 6 that kills an attacker with
+    25 hits or less;
+  - a spell on it: 1 in 6 its shadow curse on its target (Erebor's: the Balrog's target, not the caster), one at a time,
+    for 30 s: every 4 s (first after 2 s) "Dusis se!", 10 mana and 10-20 hits; trying to cast fails, for 10 hits and 15
+    mana.
+
+  Fixed from Erebor: the curse's mana loss read the curse item's mana, which zeroed the victim's; here it's 10 a tick.
+- `e_rinald` (the Grandmaster quest's Rinald, the GM event boss Rinald): only players hurt him, any other damage is lost.
+  Each player's blow or spell weakens him by their profession, as Erebor's:
+  - necromancer: summon, fire and cold resists -25; mage: summon, fire and electric -25;
+  - warrior: sharp, slashing, blunt -50; priest: blunt -50 and 1 in 3 a second's stun;
+  - ranger: stabbing -50 and 1 in 3 a second's stun; thief: poison and bleed -25 and 50 hits;
+  - mystic: 1-5 Dex, 1-10 Str, electric and cold -25; shaman: 25-50 hits, fire, electric and cold -50, 2 in 3 15 mana
+    to the shaman;
+  - craftsman: 75-100 hits, and for each weapon held, 1 in 20 his own work kills Rinald at once, else 2 in 3 another
+    50-100 hits.
+
+  Still invulnerable (before his name is spoken), each try gives "Pche! Pokud neznas me jmeno, tak me neporazis!" and
+  200 more hits, up to 5000. Fixed from Erebor: hits taken off directly leave him at 1 at least; the blow does the killing.
+- `e_odinvis_krik` (the living helm): when hit, 1 in 12 "crying.", and a second later every hidden or invisible player
+  in its 64x64 part of the map is found ("Byl jsi objeven!").
+- `e_ztracene_mesto_druid_medved`: Menivec's mechanism with a bear and a wolf, as "Druid", "changing!". A look only, as
+  Menivec. The shapeshifters' sparkle is now Erebor's `i_fx_sparkle` (0x375A); it was 0x373A.
+- `e_emotedmg` (the test titan, or anyone a GM gives it in .info): says each landed blow's damage and type, "-37: flags
+  0402". Erebor's number was before armor, this is what the blow did; Erebor's `.emotedmg` toggle isn't ported.
+
+Test: `DamageRuleBossTests` (protocol): the Balrog's burn, weakening, reflection and curse; Rinald's invulnerable growth,
+players only, a warrior's and a mage's weakening; the helm finding the hidden; the druid's forms.

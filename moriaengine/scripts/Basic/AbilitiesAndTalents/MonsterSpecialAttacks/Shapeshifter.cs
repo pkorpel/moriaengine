@@ -14,6 +14,8 @@ namespace SteamEngine.CompiledScripts {
 		private FieldValue formSeconds;
 		private FieldValue restSeconds;
 		private FieldValue nearDeathRest;
+		private FieldValue morphName;
+		private FieldValue morphEmote;
 
 		protected ShapeshifterAbilityDef(string defname, string filename, int headerLine)
 			: base(defname, filename, headerLine) {
@@ -23,6 +25,20 @@ namespace SteamEngine.CompiledScripts {
 			this.formSeconds = this.InitTypedField("formSeconds", (double) 20, typeof(double));
 			this.restSeconds = this.InitTypedField("restSeconds", (double) 10, typeof(double));
 			this.nearDeathRest = this.InitTypedField("nearDeathRest", (double) 1000, typeof(double));
+			this.morphName = this.InitTypedField("morphName", "Menivec", typeof(string));
+			this.morphEmote = this.InitTypedField("morphEmote", "polymorphing!", typeof(string));
+		}
+
+		/// <summary>The name it goes by in a form.</summary>
+		public string MorphName {
+			get { return (string) this.morphName.CurrentValue; }
+			set { this.morphName.CurrentValue = value; }
+		}
+
+		/// <summary>The emote at each change.</summary>
+		public string MorphEmote {
+			get { return (string) this.morphEmote.CurrentValue; }
+			set { this.morphEmote.CurrentValue = value; }
 		}
 
 		/// <summary>Defnames, split by commas.</summary>
@@ -78,8 +94,17 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>#1022 e_ztracene_mesto_druid_medved (the Ztracene mesto druid): Menivec's mechanism with a bear and a wolf, as
+	/// "Druid", "changing!". A look only, as Menivec's port.</summary>
+	[ViewableClass]
+	public class DruidMorphAbilityDef : ShapeshifterAbilityDef {
+		public DruidMorphAbilityDef(string defname, string filename, int headerLine)
+			: base(defname, filename, headerLine) {
+		}
+	}
+
 	public static partial class MonsterSpecialAttacks {
-		private const int SparkleEffect = 0x373A;
+		private const int SparkleEffect = 0x375A; //i_fx_sparkle; was 0x373A before #1022's druid
 		internal static readonly TimerKey shapeshiftTK = TimerKey.Acquire("_npcShapeshift_");
 		internal static readonly TagKey nextShapeshiftTK = TagKey.Acquire("_npcNextShapeshift_");
 		private static readonly TagKey ownModelTK = TagKey.Acquire("_npcOwnModel_");
@@ -88,10 +113,14 @@ namespace SteamEngine.CompiledScripts {
 		internal static MenivecAbilityDef MenivecDef { get { return Lookup<MenivecAbilityDef>("a_tevent_e_menavec"); } }
 		internal static PowerfulMenivecAbilityDef PowerfulMenivecDef { get { return Lookup<PowerfulMenivecAbilityDef>("a_tevent_e_menavec_powerful"); } }
 		internal static IceMenivecAbilityDef IceMenivecDef { get { return Lookup<IceMenivecAbilityDef>("a_tevent_e_menavec_ledovka"); } }
+		internal static DruidMorphAbilityDef DruidMorphDef { get { return Lookup<DruidMorphAbilityDef>("a_tevent_e_ztracene_mesto_druid_medved"); } }
 
 		private static ShapeshifterAbilityDef ShapeshifterOf(NPC self) {
 			if (HasAbilityDef(self, MenivecDef)) {
 				return MenivecDef;
+			}
+			if (HasAbilityDef(self, DruidMorphDef)) {
+				return DruidMorphDef;
 			}
 			return HasAbilityDef(self, PowerfulMenivecDef) ? PowerfulMenivecDef : (HasAbilityDef(self, IceMenivecDef) ? (ShapeshifterAbilityDef) IceMenivecDef : null);
 		}
@@ -125,9 +154,9 @@ namespace SteamEngine.CompiledScripts {
 			self.SetTag(ownModelTK, self.Model);
 			self.SetTag(ownNameTK, self.Name);
 			EffectFactory.StationaryEffect(self, SparkleEffect, 6, 20);
-			self.Emote("polymorphing!");
+			self.Emote(def.MorphEmote);
 			self.Model = form.Model;
-			self.Name = "Menivec";
+			self.Name = def.MorphName;
 			self.AddTimer(shapeshiftTK, new ShapeshiftTimer()).DueInSeconds = def.FormSeconds;
 		}
 
@@ -139,7 +168,7 @@ namespace SteamEngine.CompiledScripts {
 				self.RemoveTag(ownModelTK);
 				self.RemoveTag(ownNameTK);
 				EffectFactory.StationaryEffect(self, SparkleEffect, 6, 20);
-				self.Emote("polymorphing!");
+				self.Emote(def.MorphEmote);
 			}
 			if (rest) {
 				self.SetTag(nextShapeshiftTK, Globals.TimeInSeconds + def.RestSeconds);

@@ -40,7 +40,7 @@ Name = "(e_bahenny_drak_aura)"
 [DragonBloodAbilityDef a_tevent_e_bahenny_drak_krev]
 Name = "(e_bahenny_drak_krev)"
 
-[PassiveAbilityDef a_tevent_e_balrog]
+[BalrogAbilityDef a_tevent_e_balrog]
 Name = "(e_balrog)"
 
 [BeridorNecroAbilityDef a_tevent_e_beridornecro]
@@ -112,7 +112,7 @@ Name = "(e_earth)"
 Name = "(e_elem_terror)"
 
 
-[PassiveAbilityDef a_tevent_e_emotedmg]
+[EmoteDamageAbilityDef a_tevent_e_emotedmg]
 Name = "(e_emotedmg)"
 
 //#797 batch 4: upgraded from a bare stub to a real ExplodeAbilityDef
@@ -479,7 +479,7 @@ Name = "(e_ocs_guard_npc)"
 [PassiveAbilityDef a_tevent_e_ocs_town_guard]
 Name = "(e_ocs_town_guard)"
 
-[PassiveAbilityDef a_tevent_e_odinvis_krik]
+[OdinvisKrikAbilityDef a_tevent_e_odinvis_krik]
 Name = "(e_odinvis_krik)"
 
 [PassiveAbilityDef a_tevent_e_ooze]
@@ -543,7 +543,7 @@ Name = "(e_reaper)"
 Name = "(e_resist_countdown)"
 
 
-[PassiveAbilityDef a_tevent_e_rinald]
+[RinaldAbilityDef a_tevent_e_rinald]
 Name = "(e_rinald)"
 
 [PassiveAbilityDef a_tevent_e_rozdeleni]
@@ -628,8 +628,11 @@ Name = "(e_water)"
 [WormDropAbilityDef a_tevent_e_wormdrop]
 Name = "(e_wormdrop)"
 
-[PassiveAbilityDef a_tevent_e_ztracene_mesto_druid_medved]
+[DruidMorphAbilityDef a_tevent_e_ztracene_mesto_druid_medved]
 Name = "(e_ztracene_mesto_druid_medved)"
+forms = "c_ztracene_mesto_druid_medved_morf,c_ztracene_mesto_druid_vlk_morf"
+morphName = "Druid"
+morphEmote = "changing!"
 
 [PaladinBossAbilityDef a_tevent_e_ztracene_mesto_paladin_boss]
 Name = "(e_ztracene_mesto_paladin_boss)"

@@ -386,6 +386,7 @@ namespace SteamEngine.CompiledScripts {
 			if (HasAbilityDef(self, SandGuardianDef)) {
 				SandGuardianHeal(self);
 			}
+			TryBalrogSpellCurse(self); //#1022 e_balrog
 			return false;
 		}
 

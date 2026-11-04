@@ -148,6 +148,9 @@ namespace SteamEngine.CompiledScripts {
 
 		private static int CauseDamage(Character attacker, Character defender, DamageType flags, double damage, bool isSwing, bool isSpell, out double reactiveReturn, bool interruptCasting = true) {
 			reactiveReturn = 0;
+			if (MonsterSpecialAttacks.TryRinald(attacker, defender)) { //#1022 e_rinald: only players hurt him, his invulnerability answers too
+				return 0;
+			}
 			if (defender.Flag_Invulnerable) {
 				//same "nothing happened" eye-candy MagicReflectionPlugin.ReflectionEyeCandy already
 				//uses for a reflected harmful spell - no dedicated "attack bounced off" effect exists
@@ -329,6 +332,7 @@ namespace SteamEngine.CompiledScripts {
 					}
 					swingArgs.InternalSetFinalDamage(0);
 					MonsterSpecialAttacks.TryDeathBossOwnSwing(attacker); //#1022 e_bomba_boy's @AfterSwing runs on a dodged blow too
+					MonsterSpecialAttacks.TryBalrogSwing(attacker, defender); //#1022 so does e_balrog's
 					Trigger_AfterSwing(swingArgs);
 					return;
 				}
@@ -376,6 +380,7 @@ namespace SteamEngine.CompiledScripts {
 				//defender survived the blow (a killed NPC is already deleted here).
 				MonsterSpecialAttacks.TryApplyLifeLeech(attacker);
 				MonsterSpecialAttacks.TryReactToOwnSwing(attacker, defender, actualDamage); //#1022
+				MonsterSpecialAttacks.TryEmoteDamage(defender, actualDamage, damageType); //#1022 e_emotedmg
 				MonsterSpecialAttacks.TryApplyPhoenixFire(attacker);
 				MonsterSpecialAttacks.TryApplyEyeDrain(attacker, defender, actualDamage); //#799
 				MonsterSpecialAttacks.TryApplyBackstabAmbush(attacker, defender, actualDamage); //#799

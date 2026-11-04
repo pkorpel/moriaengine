@@ -1423,5 +1423,175 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.NecroSlaveDef != null) { MonsterSpecialAttacks.NecroSlaveDef.Decay = value; } }
 		}
 
+		public int BalrogBurnOneIn {
+			get { return MonsterSpecialAttacks.BalrogDef?.BurnOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.BurnOneIn = value; } }
+		}
+
+		public double[] BalrogBurnDamage {
+			get { return MonsterSpecialAttacks.BalrogDef?.BurnDamage ?? null; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.BurnDamage = value; } }
+		}
+
+		public int BalrogWeakenOneIn {
+			get { return MonsterSpecialAttacks.BalrogDef?.WeakenOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.WeakenOneIn = value; } }
+		}
+
+		public int BalrogReflectOneIn {
+			get { return MonsterSpecialAttacks.BalrogDef?.ReflectOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.ReflectOneIn = value; } }
+		}
+
+		public double[] BalrogReflectDamage {
+			get { return MonsterSpecialAttacks.BalrogDef?.ReflectDamage ?? null; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.ReflectDamage = value; } }
+		}
+
+		public int BalrogReflectKillOneIn {
+			get { return MonsterSpecialAttacks.BalrogDef?.ReflectKillOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.ReflectKillOneIn = value; } }
+		}
+
+		public int BalrogReflectKillHits {
+			get { return MonsterSpecialAttacks.BalrogDef?.ReflectKillHits ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.ReflectKillHits = value; } }
+		}
+
+		public int BalrogCurseOneIn {
+			get { return MonsterSpecialAttacks.BalrogDef?.CurseOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.CurseOneIn = value; } }
+		}
+
+		public double BalrogCurseSeconds {
+			get { return MonsterSpecialAttacks.BalrogDef?.CurseSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.CurseSeconds = value; } }
+		}
+
+		public double BalrogCurseTick {
+			get { return MonsterSpecialAttacks.BalrogDef?.CurseTick ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.CurseTick = value; } }
+		}
+
+		public double[] BalrogCurseDamage {
+			get { return MonsterSpecialAttacks.BalrogDef?.CurseDamage ?? null; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.CurseDamage = value; } }
+		}
+
+		public int BalrogCurseMana {
+			get { return MonsterSpecialAttacks.BalrogDef?.CurseMana ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.CurseMana = value; } }
+		}
+
+		public int BalrogCastDamage {
+			get { return MonsterSpecialAttacks.BalrogDef?.CastDamage ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.CastDamage = value; } }
+		}
+
+		public int BalrogCastMana {
+			get { return MonsterSpecialAttacks.BalrogDef?.CastMana ?? 0; }
+			set { if (MonsterSpecialAttacks.BalrogDef != null) { MonsterSpecialAttacks.BalrogDef.CastMana = value; } }
+		}
+
+		public int RinaldResistStep {
+			get { return MonsterSpecialAttacks.RinaldDef?.ResistStep ?? 0; }
+			set { if (MonsterSpecialAttacks.RinaldDef != null) { MonsterSpecialAttacks.RinaldDef.ResistStep = value; } }
+		}
+
+		public int RinaldArmorStep {
+			get { return MonsterSpecialAttacks.RinaldDef?.ArmorStep ?? 0; }
+			set { if (MonsterSpecialAttacks.RinaldDef != null) { MonsterSpecialAttacks.RinaldDef.ArmorStep = value; } }
+		}
+
+		public int RinaldCraftKillOneIn {
+			get { return MonsterSpecialAttacks.RinaldDef?.CraftKillOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.RinaldDef != null) { MonsterSpecialAttacks.RinaldDef.CraftKillOneIn = value; } }
+		}
+
+		public int RinaldInvulHitsStep {
+			get { return MonsterSpecialAttacks.RinaldDef?.InvulHitsStep ?? 0; }
+			set { if (MonsterSpecialAttacks.RinaldDef != null) { MonsterSpecialAttacks.RinaldDef.InvulHitsStep = value; } }
+		}
+
+		public int RinaldInvulHitsCap {
+			get { return MonsterSpecialAttacks.RinaldDef?.InvulHitsCap ?? 0; }
+			set { if (MonsterSpecialAttacks.RinaldDef != null) { MonsterSpecialAttacks.RinaldDef.InvulHitsCap = value; } }
+		}
+
+		public int OdinvisKrikCryOneIn {
+			get { return MonsterSpecialAttacks.OdinvisKrikDef?.CryOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.OdinvisKrikDef != null) { MonsterSpecialAttacks.OdinvisKrikDef.CryOneIn = value; } }
+		}
+
+		public string MenivecMorphName {
+			get { return MonsterSpecialAttacks.MenivecDef?.MorphName ?? null; }
+			set { if (MonsterSpecialAttacks.MenivecDef != null) { MonsterSpecialAttacks.MenivecDef.MorphName = value; } }
+		}
+
+		public string MenivecMorphEmote {
+			get { return MonsterSpecialAttacks.MenivecDef?.MorphEmote ?? null; }
+			set { if (MonsterSpecialAttacks.MenivecDef != null) { MonsterSpecialAttacks.MenivecDef.MorphEmote = value; } }
+		}
+
+		public string PowerfulMenivecMorphName {
+			get { return MonsterSpecialAttacks.PowerfulMenivecDef?.MorphName ?? null; }
+			set { if (MonsterSpecialAttacks.PowerfulMenivecDef != null) { MonsterSpecialAttacks.PowerfulMenivecDef.MorphName = value; } }
+		}
+
+		public string PowerfulMenivecMorphEmote {
+			get { return MonsterSpecialAttacks.PowerfulMenivecDef?.MorphEmote ?? null; }
+			set { if (MonsterSpecialAttacks.PowerfulMenivecDef != null) { MonsterSpecialAttacks.PowerfulMenivecDef.MorphEmote = value; } }
+		}
+
+		public string IceMenivecMorphName {
+			get { return MonsterSpecialAttacks.IceMenivecDef?.MorphName ?? null; }
+			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.MorphName = value; } }
+		}
+
+		public string IceMenivecMorphEmote {
+			get { return MonsterSpecialAttacks.IceMenivecDef?.MorphEmote ?? null; }
+			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.MorphEmote = value; } }
+		}
+
+		public string DruidMorphForms {
+			get { return MonsterSpecialAttacks.DruidMorphDef?.Forms ?? null; }
+			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.Forms = value; } }
+		}
+
+		public int DruidMorphMorphOneIn {
+			get { return MonsterSpecialAttacks.DruidMorphDef?.MorphOneIn ?? 0; }
+			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.MorphOneIn = value; } }
+		}
+
+		public double DruidMorphFirstDelay {
+			get { return MonsterSpecialAttacks.DruidMorphDef?.FirstDelay ?? 0; }
+			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.FirstDelay = value; } }
+		}
+
+		public double DruidMorphFormSeconds {
+			get { return MonsterSpecialAttacks.DruidMorphDef?.FormSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.FormSeconds = value; } }
+		}
+
+		public double DruidMorphRestSeconds {
+			get { return MonsterSpecialAttacks.DruidMorphDef?.RestSeconds ?? 0; }
+			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.RestSeconds = value; } }
+		}
+
+		public double DruidMorphNearDeathRest {
+			get { return MonsterSpecialAttacks.DruidMorphDef?.NearDeathRest ?? 0; }
+			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.NearDeathRest = value; } }
+		}
+
+		public string DruidMorphMorphName {
+			get { return MonsterSpecialAttacks.DruidMorphDef?.MorphName ?? null; }
+			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.MorphName = value; } }
+		}
+
+		public string DruidMorphMorphEmote {
+			get { return MonsterSpecialAttacks.DruidMorphDef?.MorphEmote ?? null; }
+			set { if (MonsterSpecialAttacks.DruidMorphDef != null) { MonsterSpecialAttacks.DruidMorphDef.MorphEmote = value; } }
+		}
+
 	}
 }

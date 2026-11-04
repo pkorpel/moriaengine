@@ -247,6 +247,7 @@ namespace SteamEngine.CompiledScripts {
 			TryDrinkAfterOwnSwing(attacker);
 			TrySummonerOwnSwing(attacker, defender); //#1022 the summoning bosses
 			TryDeathBossOwnSwing(attacker); //#1022 the dying bosses
+			TryBalrogSwing(attacker, defender); //#1022 e_balrog
 			if (!defender.IsDeleted) {
 				TryKnockWeaponOut(attacker, defender, damage);
 				TryBlowUpOnOwnSwing(attacker, defender);
@@ -266,6 +267,7 @@ namespace SteamEngine.CompiledScripts {
 				TryKillSummonHittingGuard(hit, attacker);
 				TrySummonerReactions(hit, attacker); //#1022 the summoning bosses
 				TryDeathBossReactions(hit, attacker); //#1022 the dying bosses
+				TryDamageRuleReactions(hit, attacker); //#1022 e_balrog, e_odinvis_krik
 			}
 			TryDrop(defender, GoldDropDef);
 			TryDrop(defender, ReagDropDef);
