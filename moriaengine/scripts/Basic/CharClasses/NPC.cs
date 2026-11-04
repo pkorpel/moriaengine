@@ -595,7 +595,12 @@ namespace SteamEngine.CompiledScripts {
 			{ "swampdragonauracooldown", TagKey.Acquire("_npcSwampDragonAuraCooldown_") },
 			{ "swampdragonaurainterval", TagKey.Acquire("_npcSwampDragonAuraInterval_") },
 			{ "swampdragonauraticks", TagKey.Acquire("_npcSwampDragonAuraTicks_") },
-			{ "swampdragonauradamage", TagKey.Acquire("_npcSwampDragonAuraDamage_") }
+			{ "swampdragonauradamage", TagKey.Acquire("_npcSwampDragonAuraDamage_") },
+			//#1022 the dying bosses: Erebor's tag.e_explosionlava_*, tag.bomba_boy_dmg
+			{ "lavabombchance", TagKey.Acquire("_npcLavaBombChance_") },
+			{ "lavabombrange", TagKey.Acquire("_npcLavaBombRange_") },
+			{ "lavabombcooldown", TagKey.Acquire("_npcLavaBombCooldown_") },
+			{ "bombaboydamage", TagKey.Acquire("_npcBombaBoyDamage_") }
 		};
 
 		/// <summary>#1022 - a per-species tunable by its .def field name, null when unset or unknown.</summary>
