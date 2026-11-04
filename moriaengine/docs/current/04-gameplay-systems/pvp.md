@@ -23,7 +23,13 @@ Erebor's `questy/pvpLeague.scp`. Points for killing players of the other realm, 
   where the killer had both the killing blow and a fight memory. GMs get nothing.
 - **Seasons.** A season lasts `monthsInSeason` (2) calendar months. It ends at the end of day 1 of the month two on
   from its start: Erebor's `isTimeDateExceeded` is true only past the day. The next point after that starts a new
-  season, and the old points are gone. Erebor never wrote a season reward (a TODO in the script), so there's none.
+  season, and the old points are gone.
+- **The season reward** (#1133, the user's call; Erebor never wrote one, a TODO in its script). When the next season
+  starts, the old board's players get boosters by place, with a delayed message:
+  - places 1-3 (`bigBoosterPlaces`) get kind 1 (+25% for 2 h, `bigBoosterKind`);
+  - places 4-10 (`smallBoosterPlaces`) get kind 0 (+25% for 1 h, `smallBoosterKind`).
+
+  A player tied with the one above gets the same. Tested in `PvpLeagueTests` (the 1st place gets the 2 h booster).
 - **The board** keeps the first `playersStored` (30), and anyone tied with the 30th. A player moves up past everyone
   with fewer points, so among equals the one who got there first stays above, as Erebor's insertion.
 - **Settings:** `.settings` -> PvP League.

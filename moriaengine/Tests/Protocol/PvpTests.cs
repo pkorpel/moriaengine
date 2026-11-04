@@ -64,6 +64,9 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("Tvuj Rank", strings);
 			Assert.Contains("7", strings);
 			Assert.Contains(end, strings);
+
+			//#1133 - the season's end: the 1st place gets a 2 h booster (kind 1)
+			Assert.Contains("boosters=1x1,", this.Ask(killer, ".TestLeagueSeasonReward", "LEAGUE_REWARD:"));
 		}
 	}
 

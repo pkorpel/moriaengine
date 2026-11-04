@@ -113,6 +113,37 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("LEAGUE_OWN: points=" + PvpLeague.PointsOf(self) + " season=" + PvpLeague.Season + " end=" + PvpLeague.SeasonEnd.ToString("d.M. yyyy", System.Globalization.CultureInfo.InvariantCulture));
 		}
 
+		/// <summary>#1133 - a season's end: me 1st of 12 gets a 2 h booster (the eleven wolves below me hold places, and get nothing
+		/// as they aren't players).</summary>
+		[SteamFunction]
+		public static void TestLeagueSeasonReward(Character self) {
+			Player player = (Player) self;
+			PvpLeague.Reset();
+			player.RemoveTag(TagKey.Acquire("_boosters_"));
+			self.Account.PLevel = 1;
+			PvpLeague.AddPoints(player, 100);
+			self.Account.PLevel = 7;
+			NPCDef def = (NPCDef) ThingDef.GetByDefname("c_wolf");
+			List<NPC> npcs = new List<NPC>();
+			for (int i = 0; i < 11; i++) {
+				NPC npc = (NPC) def.Create(self.X, self.Y + 2, self.Z, self.M);
+				npc.DeleteTimer(SteamEngine.Timers.TimerKey.Acquire("_npcAiTimer_"));
+				npcs.Add(npc);
+				PvpLeague.AddPoints(npc, 50 - i);
+			}
+			int season = PvpLeague.Season;
+			PvpLeague.EndSeasonYesterday();
+			PvpLeague.CheckExpiration();
+			string boosters = "";
+			foreach (KeyValuePair<int, int> row in Boosters.Stored(player)) {
+				boosters += row.Key + "x" + row.Value + ",";
+			}
+			foreach (NPC npc in npcs) {
+				npc.Delete();
+			}
+			Console.WriteLine("LEAGUE_REWARD: season=" + season + "->" + PvpLeague.Season + " boosters=" + boosters + " |");
+		}
+
 		/// <summary>#1116 step 4 - the RP rank's bonus on a gain of 1000, at rank 0, 7 and -3 (Erebor's table).</summary>
 		[SteamFunction]
 		public static void TestRpRankGain(Character self) {
