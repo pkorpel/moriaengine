@@ -384,7 +384,7 @@ namespace SteamEngine {
 			get {
 				AbstractCharacter ch = src as AbstractCharacter;
 				if (ch != null) {
-					return ch.GameState.Conn;
+					return ch.GameState?.Conn; //#1156 - a src with no client (logged out, or an NPC) has no GameState
 				}
 				return null;
 			}

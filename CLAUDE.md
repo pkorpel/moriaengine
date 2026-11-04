@@ -1,5 +1,10 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): 1155 knockback only with damage, 1156 NRE in SrcTcpConnection from the damage number (branch fix-1155-1156-knockback-damage-message)
+
+User: (1) knockback only when the blow does damage (their call against Erebor). (2) Log: NRE at Globals.SrcTcpConnection <- Thing.Message <- DamageManager.CauseDamage's overhead damage number, an NPC's swing on a timer.
+Found: Globals.src is set per client packet and never reset, so a timer-driven NPC swing sees src = last packet sender; Thing.Message sends only to src: the damage number reached a bystander, and threw (GameState null) once they'd logged out, aborting the rest of the swing. Fix: SrcTcpConnection null-safe, damage number sent to attacker + defender explicitly, knockback needs actualDamage > 0. StaleSrcTests (FloorAttack collection, account floortests, now also RiddenMountTests': a collection auto-creates only its first account) red for both. Gotcha: Thing.Message from any timer goes to the last packet sender, not the people involved.
+
 ## DONE (2026-11-04): 1152 a ridden mount kept thinking (PR #1153)
 
 User, live: after logout the log kept showing Zostrich pathing to the logged-out Peco II. Find what the AI does with a disconnected follow target, compare Sphere 0.99z8, fix, test.

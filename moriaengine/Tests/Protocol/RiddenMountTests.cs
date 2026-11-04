@@ -19,7 +19,7 @@ namespace SteamEngine.Tests.Protocol {
 
 		[Fact]
 		public void ARiddenMountDoesNotWalkAfterItsRider() {
-			using var client = CommandPermissionTests.Connect("mounttests", "Zostrich Rider");
+			using var client = CommandPermissionTests.Connect("floortests", "Zostrich Rider");
 			string ride = this.Do(client, "ride");
 			Assert.True(ride.Contains("riding=True mountOut=True"), ride);
 			Thread.Sleep(4000);

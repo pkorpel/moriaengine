@@ -104,6 +104,15 @@ namespace SteamEngine.CompiledScripts {
 			return CauseDamage(attacker, defender, flags, damage, false, false, out unused);
 		}
 
+		private static void ShowDamageNumber(Character attacker, Character defender, string text) {
+			var toDefender = defender.GameState?.Conn;
+			Networking.PacketSequences.SendOverheadMessageFrom(toDefender, defender, text, damageMessageColor);
+			var toAttacker = attacker?.GameState?.Conn;
+			if ((toAttacker != null) && (toAttacker != toDefender)) {
+				Networking.PacketSequences.SendOverheadMessageFrom(toAttacker, defender, text, damageMessageColor);
+			}
+		}
+
 		/// <summary>#860 - a harmful spell's damage: rounded, and a monster's on a monster does at least 5. #1022 - the
 		/// target's hit reactions run on it too, as Erebor's @aftergetswing did for spells (the user's call).</summary>
 		public static int CauseSpellDamage(Character attacker, Character defender, DamageType flags, double damage) {
@@ -255,7 +264,10 @@ namespace SteamEngine.CompiledScripts {
 						// dedicated binary "damage number" packet (which postdates this shard's
 						// targeted client era and isn't confirmed supported) - speech/overhead
 						// messages are already a solid, universally-supported path.
-						defender.Message("-" + actualDamage, damageMessageColor);
+						// #1156 - to the two in the fight. Message() went to Globals.src, which a timer-driven NPC
+						// swing leaves as whoever last sent a packet: the number showed to a bystander, and threw
+						// when that player had logged out.
+						ShowDamageNumber(attacker, defender, "-" + actualDamage);
 					}
 				}
 
@@ -366,7 +378,9 @@ namespace SteamEngine.CompiledScripts {
 
 				//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_knockback
 				//(if the attacker has it) can also push the defender back on a landed hit.
-				MonsterSpecialAttacks.TryApplyKnockback(attacker, defender);
+				if (actualDamage > 0) { //#1155 - the user's call: only a blow that hurt knocks back (Erebor's did on any landed one)
+					MonsterSpecialAttacks.TryApplyKnockback(attacker, defender);
+				}
 
 				//a_tevent_e_npc_bleed - scales off the REAL landed damage (actualDamage), not
 				//the pre-armor swing value, so this must run after CauseDamage above.

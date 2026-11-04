@@ -92,6 +92,8 @@ last tile reached, and the victim lands on that tile's real Z.
 
 - Knockback pushes up to `knockbackDistance` (3) tiles straight away from the attacker. Standing
   right by a wall means no push; 2 tiles from one means exactly 2.
+- It follows only a blow that did damage (#1155, the user's call). Erebor's pushed on any blow that
+  landed, even one the armor took whole.
 - The pull drags the target toward the monster until adjacent, stopping at the first wall.
 
 Before #781, both only looked at the terrain tile under each step and ignored statics: a
