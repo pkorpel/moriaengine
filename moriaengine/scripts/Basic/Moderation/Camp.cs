@@ -68,6 +68,15 @@ namespace SteamEngine.CompiledScripts {
 			ch.SetTag(sentenceTK, hundredths);
 		}
 
+		/// <summary>lumberpits: the Lumberjacking a convict gets back.</summary>
+		internal static int KeptLumberjacking(Character ch) {
+			return Convert.ToInt32(ch.GetTag(keptLumberTK) ?? 0, CultureInfo.InvariantCulture);
+		}
+
+		internal static void SetKeptLumberjacking(Character ch, int value) {
+			ch.SetTag(keptLumberTK, value);
+		}
+
 		internal static int SentenceSkill(Character ch) {
 			return Convert.ToInt32(ch.GetTag(sentenceSkillTK) ?? 0, CultureInfo.InvariantCulture);
 		}

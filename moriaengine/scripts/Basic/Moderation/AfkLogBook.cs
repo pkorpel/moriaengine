@@ -9,7 +9,7 @@ namespace SteamEngine.CompiledScripts {
 	/// time, player and account. A line where a player went to the camp keeps the skill they were at, for the AFK log
 	/// dialog's punishment. Saved; the oldest lines go past MaxLines.</summary>
 	[HasSavedMembers]
-	public static class AfkLog {
+	public static class AfkLogBook {
 		internal const int MaxLines = 2000;
 
 		[SavedMember]
