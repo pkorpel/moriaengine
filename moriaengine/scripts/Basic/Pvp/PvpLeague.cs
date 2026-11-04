@@ -12,8 +12,9 @@ namespace SteamEngine.CompiledScripts {
 	/// The board keeps the top PvpLeagueSettings.playersStored and anyone tied with the last of them, in Erebor's order:
 	/// a player moves up past everyone with fewer points, so among equals the earlier stays above.
 	/// A season ends at the end of day 1 of the month monthsInSeason after it began (Erebor's isTimeDateExceeded is true
-	/// only past the day), and the next point starts a new one; old points go. Erebor never wrote a season reward (a TODO),
-	/// so there's none. Erebor kept this on a chest of season books; here it's saved with the world.</summary>
+	/// only past the day), and the next point starts a new one; old points go. Erebor never wrote a season reward (a TODO);
+	/// the user's call (#1133): boosters for the top places. Erebor kept this on a chest of season books; here it's saved with
+	/// the world.</summary>
 	[HasSavedMembers]
 	public static class PvpLeague {
 		[SavedMember]
@@ -42,13 +43,39 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>f_pvpLeague_initSeason + i_pvpLeague's @create: the end is day 1 of the month monthsInSeason on.</summary>
+		/// <summary>f_pvpLeague_initSeason + i_pvpLeague's @create: the end is day 1 of the month monthsInSeason on. The season
+		/// that ends gives its board's top places their boosters first (#1133).</summary>
 		private static void StartSeason() {
+			if (season > 0) {
+				RewardSeason();
+			}
 			season++;
 			standings.Clear();
 			DateTime now = DateTime.Now;
 			seasonEnd = new DateTime(now.Year, now.Month, 1).AddMonths(PvpLeagueSettings.instance.monthsInSeason);
 			Logger.WriteInfo(true, "PvP league season " + season + " starts, ends " + seasonEnd.ToString("d.M.yyyy", System.Globalization.CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>#1133 - the user's call, as Erebor gave nothing (a TODO): boosters for the board's top places, by
+		/// PvpLeagueSettings. A player tied with the one above gets the same as they do.</summary>
+		private static void RewardSeason() {
+			PvpLeagueSettings settings = PvpLeagueSettings.instance;
+			List<PvpLeagueEntry> board = Board;
+			int kind = -1;
+			for (int i = 0; i < board.Count; i++) {
+				PvpLeagueEntry entry = board[i];
+				if ((i == 0) || (entry.points != board[i - 1].points)) {
+					kind = (i < settings.bigBoosterPlaces) ? settings.bigBoosterKind : ((i < settings.smallBoosterPlaces) ? settings.smallBoosterKind : -1);
+				}
+				if ((kind < 0) || (entry.points <= 0)) {
+					break;
+				}
+				if (entry.player is Player player) {
+					Boosters.Add(player, kind);
+					player.DelayedMessage("Za umisteni v PvP sezone " + season + " ziskavas booster " + Boosters.Kinds[kind].Description);
+					Logger.WriteInfo(true, "PvP league season " + season + ": " + player.Name + " (" + (i + 1) + ".) gets the booster " + Boosters.Kinds[kind].Description);
+				}
+			}
 		}
 
 		/// <summary>This season's points, 0 for none.</summary>
@@ -157,5 +184,19 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>def_pvpLeague_monthsInSeason.</summary>
 		[SaveableData]
 		public int monthsInSeason = 2;
+
+		/// <summary>#1133 - at a season's end, the first this many places get the big booster (kind 0-5, Boosters.Kinds).</summary>
+		[SaveableData]
+		public int bigBoosterPlaces = 3;
+
+		[SaveableData]
+		public int bigBoosterKind = 1;
+
+		/// <summary>The places up to this one that didn't get the big booster get the small one.</summary>
+		[SaveableData]
+		public int smallBoosterPlaces = 10;
+
+		[SaveableData]
+		public int smallBoosterKind = 0;
 	}
 }
