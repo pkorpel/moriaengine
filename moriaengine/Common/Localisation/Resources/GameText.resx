@@ -1951,4 +1951,37 @@
   <data name="QuestJournalLoc_NotAvailableYet" xml:space="preserve">
     <value>This section isn't available yet.</value>
   </data>
+  <data name="JailLoc_Jailed" xml:space="preserve">
+    <value>Byl jsi uveznen.</value>
+  </data>
+  <data name="JailLoc_YouAreForgiven" xml:space="preserve">
+    <value>Bylo ti odpusteno.</value>
+  </data>
+  <data name="JailLoc_Forgiven" xml:space="preserve">
+    <value>{0} je propusten z vezeni.</value>
+  </data>
+  <data name="JailLoc_NoReleasePoint" xml:space="preserve">
+    <value>Neni znamo, odkud prisel - zustava, kde je.</value>
+  </data>
+  <data name="JailLoc_Punishing" xml:space="preserve">
+    <value>Citis, ze te svet tresta.</value>
+  </data>
+  <data name="JailLoc_Ashamed" xml:space="preserve">
+    <value>Citis, ze by ses mel za sve ciny stydet.</value>
+  </data>
+  <data name="JailLoc_WhoToJail" xml:space="preserve">
+    <value>Koho zavrit do vezeni?</value>
+  </data>
+  <data name="JailLoc_WhoToForgive" xml:space="preserve">
+    <value>Komu odpustit?</value>
+  </data>
+  <data name="JailLoc_OnlyPlayers" xml:space="preserve">
+    <value>Do vezeni jen hrace.</value>
+  </data>
+  <data name="JailLoc_YouJailed" xml:space="preserve">
+    <value>{0} je ve vezeni.</value>
+  </data>
+  <data name="JailLoc_NotJailed" xml:space="preserve">
+    <value>{0} neni ve vezeni.</value>
+  </data>
 </root>

@@ -431,6 +431,7 @@ namespace SteamEngine.CompiledScripts {
 					this.Realm = NationData.GetRealm(this.Nation); //#1027 - a save used to lose Mordor's
 				}
 				PowerBadge.PutBackOn(this); //#1037
+				Jail.OnLogin(this); //#1107
 				this.RefreshTitle();
 				LevelingSystem.FixUncountedStartingStats(this);
 				Guild.AnnounceConnection(this, true);
