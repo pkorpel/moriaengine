@@ -47,6 +47,9 @@ on=@start //this = caster, argo = SkillArgs
 	if (!RecallRune.CheckTelePermissionIn(this, argo.Target1.MoreP))
 		return 1
 	endif
+	if (!ConquestTravel.AllowsIn(this, argo.Target1.MoreP)) //#1116 - the battlefields
+		return 1
+	endif
 
 
 on=@effectItem //this = targetted item, argo = SpellEffectArgs
@@ -133,6 +136,12 @@ on=@start //this = caster, argo = SkillArgs
 		return 1
 	endif	
 	if (!RecallRune.CheckTelePermissionIn(this, argo.Target1.MoreP))
+		return 1
+	endif
+	if (!ConquestTravel.AllowsIn(this, argo.Target1.MoreP)) //#1116 - the battlefields
+		return 1
+	endif
+	if (!ConquestTravel.AllowsGateOut(this))
 		return 1
 	endif
 

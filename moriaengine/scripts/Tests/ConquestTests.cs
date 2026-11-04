@@ -355,6 +355,58 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("REWARDS_FLOW: " + line + " |");
 		}
 
+		/// <summary>#1116 step 14 - me a Gondor mage with a full spellbook and reagents, outside any keep.</summary>
+		[SteamFunction]
+		public static void TestTravelReady(Character self) {
+			MagerySpellTests.TestGrantFullSpellbook(self);
+			Player player = (Player) self;
+			player.Account.PLevel = 1;
+			player.Realm = Realm.Gondor;
+			player.Profession = Professions.Mage;
+			foreach (string reagent in new[] { "i_reag_black_pearl", "i_reag_blood_moss", "i_reag_mandrake_root", "i_reag_sulfur_ash" }) {
+				((Item) ThingDef.GetByDefname(reagent).Create(player.Backpack)).Amount = 50;
+			}
+			Conquest.Reset();
+			Conquest.clock = new DateTime(2026, 11, 5, 19, 30, 0);
+			Console.WriteLine("TRAVEL_READY |");
+		}
+
+		/// <summary>The @start of Recall ("recall") or Gate Travel ("gate") at a rune into Mordor_1's battlefield, or a
+		/// gate from inside it ("gateout"). The keep is "enemy" (Mordor's), "war" (Gondor's, with Mordor's war on it at 20:00,
+		/// half an hour off), or "free" (Gondor's, no war).</summary>
+		[SteamFunction]
+		public static void TestTravelCast(Character self, ScriptArgs sa) {
+			string[] args = sa.Args.Trim().Trim('"').Split(' ');
+			string spell = args[0], keepState = args[1];
+			Conquest.Reset();
+			KeepState keep = Conquest.Keep("Mordor_1");
+			keep.owner = (keepState == "enemy") ? Realm.Mordor : Realm.Gondor;
+			if (keepState == "war") {
+				WarFront mordor = Conquest.Front(Realm.Mordor);
+				mordor.declaredOn = "Mordor_1";
+				mordor.begins = new DateTime(2026, 11, 5, 20, 0, 0);
+			}
+			Point4D battlefield = ((SteamEngine.Regions.StaticRegion) SteamEngine.Regions.StaticRegion.GetByDefname("a_Osgiliath_vychodni_breh")).P;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			Point4D elsewhere = new Point4D(self.X, self.Y, self.Z, self.M);
+			if (spell == "gateout") {
+				self.Go(battlefield);
+			}
+			Item rune = (Item) ThingDef.GetByDefname("i_rune_base").Create(self.Backpack);
+			rune.MoreP = (spell == "gateout") ? elsewhere : battlefield;
+			self.Mana = 1000;
+			SpellDef def = SpellDef.GetById((spell == "recall") ? 32 : 52);
+			SpellBook book = null;
+			foreach (AbstractItem item in self.Backpack) {
+				book = book ?? (item as SpellBook);
+			}
+			SkillSequenceArgs magery = SkillSequenceArgs.Acquire(self, SkillName.Magery, rune, null, book, def, null);
+			bool refused = def.Trigger_Start(magery) == TriggerResult.Cancel; //the spell's own @start, the .def line that calls ConquestTravel
+			Console.WriteLine("TRAVEL_CAST: refused=" + refused + " allowsIn=" + ConquestTravel.AllowsIn(self, rune.MoreP) + " fort=" + ConquestTravel.FortAt(battlefield) + " |");
+			self.AbortSkill();
+			rune.Delete();
+		}
+
 		/// <summary>A declaration for the next evening, then a tick the day after it: it lapses.</summary>
 		[SteamFunction]
 		public static void TestConquestLapse(Character self) {

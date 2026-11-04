@@ -20,7 +20,7 @@ using SteamEngine.Common;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#962 - Erebor's @spellcast: what may be cast at what, before a spell starts. Fizzles and quiet refusals both
-	/// stop it. The realm and conquest checks of recall and gate wait for those systems.</summary>
+	/// stop it. The conquest's battlefield checks of recall and gate are ConquestTravel's, from the spells' @start (#1116).</summary>
 	internal static class SpellCastRules {
 		private const string NoLight = "s_nightsight";
 		private static readonly string[] MysticSelfOnly = { "s_heal", "s_cunning", "s_cure", "s_harm", "s_protection", "s_bless", "s_greater_heal", "s_magic_reflection", "s_dispel" };
