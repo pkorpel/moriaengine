@@ -199,4 +199,4 @@ exists and can be assigned, but has nothing resembling its real spell kit to cas
 Besides the region FLAGS, Erebor's `tag.cFlags` (`CustomFlags` on the area): `region_cf_denyRecall_out` refuses recall and
 gate from inside, "Tva kouzla jsou rusena antimagickym polem.", `region_cf_denyRecall_in` refuses a rune that points
 inside (`RecallRune.CheckTelePermissionOut/In`). GMs aren't refused. The four arenas have both. Erebor's battlefield
-checks on the same spells wait for the keep conquest.
+checks on Recall and Gate Travel are `ConquestTravel` since #1116, see [conquest](conquest.md#travel).
