@@ -101,6 +101,85 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("LIEUTENANT_STATE: right=" + Conquest.HasRight(self) + " gold=" + GoldUtils.CountGoldIn(self.Backpack) + " |");
 		}
 
+		private static FortressPalantir palantir;
+		private static FortCashBox cashBox;
+
+		/// <summary>#1116 step 10 - me a Gondor attacker with the right, "Conquest Defender" a Mordor player beside me, Mordor_1's
+		/// palantir and cash box here, its last capture 1000 s before noon on 4.11, and Gondor's war on it running since 20:00 on 5.11.</summary>
+		[SteamFunction]
+		public static void TestPalantirReady(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			Conquest.Reset();
+			Palantirs.ticksByHand = true;
+			Conquest.clock = new DateTime(2026, 11, 4, 12, 0, 0);
+			MakeAttacker((Player) self);
+			foreach (AbstractItem item in new System.Collections.Generic.List<AbstractItem>(self.Backpack)) {
+				item.Delete();
+			}
+			Player defender = Named("Conquest Defender");
+			defender.Account.PLevel = 1;
+			defender.Realm = Realm.Mordor;
+			defender.Go(self.X, self.Y + 1, self.Z, self.M);
+			if ((palantir != null) && !palantir.IsDeleted) {
+				palantir.Delete();
+			}
+			if ((cashBox != null) && !cashBox.IsDeleted) {
+				cashBox.Delete();
+			}
+			palantir = (FortressPalantir) ThingDef.GetByDefname("i_fortress_palantir").Create(self.X + 1, self.Y, self.Z, self.M);
+			palantir.SetFort("Mordor_1");
+			cashBox = (FortCashBox) ThingDef.GetByDefname("i_fort_cashbox").Create(self.X - 1, self.Y, self.Z, self.M);
+			cashBox.Fort = "Mordor_1";
+			Conquest.Keep("Mordor_1").lastConquered = Conquest.clock.Value.AddSeconds(-1000);
+			WarFront front = Conquest.Front(Realm.Gondor);
+			Conquest.Declare((Player) self, front, 5, 11, 20, out bool done, out _);
+			Conquest.clock = new DateTime(2026, 11, 5, 20, 0, 0);
+			Conquest.StartWar(front);
+			Console.WriteLine("PALANTIR_READY: palantir=" + palantir.FlaggedUid + " box=" + cashBox.FlaggedUid + " declared=" + done + " name=" + palantir.Name + " |");
+		}
+
+		/// <summary>Where ConquestSetup would put each keep's palantir and cash box.</summary>
+		[SteamFunction]
+		public static void TestConquestSpots(Character self) {
+			string line = "";
+			foreach (string area in new[] { "a_Osgiliath_zapadni_breh", "a_Vychodni_Marka", "a_Osgiliath_vychodni_breh", "a_Minas_Morgul" }) {
+				SteamEngine.Regions.FlaggedRegion region = SteamEngine.Regions.StaticRegion.GetByDefname(area) as SteamEngine.Regions.FlaggedRegion;
+				line += " " + area + "=" + ((region != null) && (ConquestSetup.SpotIn(region, self, 0) != null)) + "," + ((region != null) && (ConquestSetup.SpotIn(region, self, 1) != null));
+			}
+			Console.WriteLine("CONQUEST_SPOTS:" + line + " |");
+		}
+
+		[SteamFunction]
+		public static void TestPalantirTicks(Character self, ScriptArgs sa) {
+			int n = int.Parse(sa.Args.Trim().Trim('"'), CultureInfo.InvariantCulture);
+			for (int i = 0; i < n; i++) {
+				Palantirs.Tick(palantir);
+			}
+			Console.WriteLine("PALANTIR_TICKS");
+		}
+
+		[SteamFunction]
+		public static void TestPalantirHold(Character self, ScriptArgs sa) {
+			Conquest.Keep("Mordor_1").hold = int.Parse(sa.Args.Trim().Trim('"'), CultureInfo.InvariantCulture);
+			Console.WriteLine("PALANTIR_HOLD");
+		}
+
+		[SteamFunction]
+		public static void TestPalantirState(Character self) {
+			KeepState keep = Conquest.Keep("Mordor_1");
+			int cheque = 0;
+			foreach (AbstractItem item in self.Backpack) {
+				if (item is CashiersItem check) {
+					cheque += check.CheckValue;
+				}
+			}
+			Console.WriteLine("PALANTIR_STATE: owner=" + keep.owner + " breached=" + keep.breached + " conqueror=" + keep.conqueror + " hold=" + keep.hold +
+				" color=" + palantir.Color + " gondorDeclared=" + (Conquest.Front(Realm.Gondor).declaredOn ?? "none") +
+				" gondorConquered=" + Conquest.Front(Realm.Gondor).conquered + " mordorConquered=" + Conquest.Front(Realm.Mordor).conquered +
+				" right=" + Conquest.HasRight(self) + " cash=" + keep.cashGold + " collector=" + ((keep.cashCollector == null) ? "none" : keep.cashCollector.Name) +
+				" cheque=" + cheque + " |");
+		}
+
 		/// <summary>A declaration for the next evening, then a tick the day after it: it lapses.</summary>
 		[SteamFunction]
 		public static void TestConquestLapse(Character self) {

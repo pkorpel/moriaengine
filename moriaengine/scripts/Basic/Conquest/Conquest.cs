@@ -34,6 +34,9 @@ namespace SteamEngine.CompiledScripts {
 		[SavedMember]
 		private static WarFront mordorFront;
 
+		[SavedMember]
+		private static List<KeepState> keeps = new List<KeepState>();
+
 		/// <summary>For a test: the clock the conquest goes by.</summary>
 		internal static DateTime? clock;
 
@@ -65,6 +68,30 @@ namespace SteamEngine.CompiledScripts {
 
 		public static string RealmName(Realm realm) {
 			return (realm == Realm.Gondor) ? "Gondor" : "Mordor";
+		}
+
+		/// <summary>A keep's state, new keeps held by their own realm (Erebor's palantir @create).</summary>
+		public static KeepState Keep(string fort) {
+			KeepState keep = keeps.Find(k => k.fort == fort);
+			if (keep == null) {
+				Realm own = (FortLevel(fort) < 0) ? Realm.Mordor : Realm.Gondor;
+				keep = new KeepState { fort = fort, owner = own, conqueror = own, hold = ConquestSettings.instance.holdSeconds, lastConquered = Now };
+				keeps.Add(keep);
+			}
+			return keep;
+		}
+
+		/// <summary>The battlefield level of "Mordor_2": -2.</summary>
+		public static int FortLevel(string fort) {
+			int underscore = fort.IndexOf('_');
+			int depth = int.Parse(fort.Substring(underscore + 1), CultureInfo.InvariantCulture);
+			return fort.StartsWith("Mordor", StringComparison.Ordinal) ? -depth : depth;
+		}
+
+		/// <summary>The palantir of a keep, null before one is set up.</summary>
+		internal static FortressPalantir PalantirOf(string fort) {
+			KeepState keep = keeps.Find(k => k.fort == fort);
+			return ((keep != null) && (keep.palantir is FortressPalantir palantir) && !palantir.IsDeleted) ? palantir : null;
 		}
 
 		/// <summary>"Gondor_1" from a battlefield level: + Gondor's, - Mordor's.</summary>
@@ -257,6 +284,7 @@ namespace SteamEngine.CompiledScripts {
 				if (front.lord != null) {
 					front.lord.RedMessage("Na uspesne dobyti zbyva " + front.remaining + " s.");
 				}
+				PalantirOf(front.declaredOn)?.Say("Na uspesne dobyti zbyva " + front.remaining + " s.");
 				int minute = (now.Hour * 60) + now.Minute;
 				if ((now.Minute % 5 == 0) && (front.lastHerald != minute)) {
 					front.lastHerald = minute;
@@ -301,6 +329,10 @@ namespace SteamEngine.CompiledScripts {
 			string area = AreaName(front.declaredOn);
 			if (front.lord != null) {
 				front.lord.RedMessage("Cas na dobyti pevnosti vyprsel. Pevnost byla ubranena!");
+			}
+			if (front.declaredOn != null) {
+				PalantirOf(front.declaredOn)?.Say("Cas na dobyti pevnosti vyprsel. Pevnost byla ubranena!");
+				Palantirs.Reset(Keep(front.declaredOn));
 			}
 			Logger.WriteInfo(true, "Conquest: EndWar on " + front.declaredOn + ", the keep was defended");
 			Herald(front.realm, "Nepritel pevnost " + area + " ubranil!");
@@ -352,6 +384,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static void Reset() {
 			gondorFront = null;
 			mordorFront = null;
+			keeps.Clear();
 		}
 	}
 

@@ -84,6 +84,49 @@ Each declarator stone ticks its realm's front every 10 s (`WarDeclaratorTimer`),
   queue takes over.
 - A declaration whose evening passed while the server was down lapses the same way.
 
+## The palantir
+
+Erebor's `dobyvani-palantir.scp` (`FortressPalantir`, `Palantirs`). There is one per keep, placed by `.SetupWorld` in the
+keep's first area; the spots are unreviewed. Minas Morgul's spawn point lies outside its own rectangle, so its spot
+is found from the rectangle's middle. A GM's double click sets the keep from the battlefield it stands on.
+
+Each keep's state is saved with the world (`KeepState`; Erebor kept it on the palantir): the owner, the breach and its
+countdown, and the cash box. Every keep starts held by its own realm.
+
+A player's double click while the war on the keep runs:
+- No war yet: "Teto pevnosti nebyla vyhlasena valka.", or "Jeste neprisla hodina valky." before its hour. A ghost
+  hears "Tahni pryc, mrtvolo!".
+- An attacker of the declaring realm with the right breaches it:
+  - the palantir turns blue (Gondor) or red (Mordor);
+  - it says "Obrana pevnosti byla prolomena! Uhlidej palantir po dobu 900 s.";
+  - the heralds tell both realms.
+  - Without the right: "Nejsi vyzyvatelem, nejsi opravnen."
+- A defender turns the breach back ("Prolomeni bylo prozatim zvraceno."). The countdown then fills again, a second at a
+  time, and a new breach goes on from where it stands.
+
+Each second (`PalantirTimer`):
+- **While breached** the countdown falls. The palantir speaks every 10 s and the heralds every 60 s. At 0 the keep is
+  taken:
+  - it changes hands;
+  - the attackers' declaration and queue go, with the war lord's and the queued attackers' rights;
+  - both fronts' lines move: the winner's to the keep's level (0 if it was their own first keep), the loser's to one
+    behind it;
+  - the loser's own declaration aims at its new target;
+  - the cash box fills with 1 gold for every 5 s since the keep was last taken, for the war lord.
+- **While not breached** the countdown fills, until "Prolomeni odvraceno.".
+- **When the war is over** the palantir says the keep was defended and resets.
+
+The cash box (`i_fort_cashbox`, beside the palantir; Erebor's was a brass box with the `t_fort_cashbox` event) pays its
+war lord a cheque on a double click ("Bylo ve me nashromazdeno n zlatych."). As on Erebor, a new capture overwrites
+what the last war lord didn't collect.
+
+Fixed from Erebor:
+- The palantir works for as long as the war runs. Erebor's `canbewar` also wanted the hour 19-21, so every war stopped
+  dead at 22:00.
+
+Still to come (#1116): the keep's guards must be dead before a breach; the captain stones and guards go over to the
+winner and the war lord becomes captain; participation rewards.
+
 `.dobyvani` tells a player what their realm prepares and what is coming at it. `.ResetWars` (GM) clears the front of the
 realm the GM stands in.
 
@@ -102,4 +145,9 @@ Test: `ConquestTests.DeclareQueueRunAndEnd` (protocol). Two players declare at t
 refused hour, a taken hour and the queue. It then checks `.dobyvani`, the start at its hour, the run-out handing over to
 the queued one, a cancel costing the right, and a lapse. `WarLieutenantTests.NorbertSellsTheRightToDeclareWar`:
 *ahoj* opens the dialog, level 29 is refused with nothing paid, and at level 30 a double click and "Vyhlasit utok" buys
-the right for 100 000.
+the right for 100 000. `PalantirTests.BreachCounterCaptureAndTheCashBox`:
+- every keep has spots;
+- an attacker breaches and the countdown runs;
+- a defender turns it back and it fills again;
+- held to 0, the keep is Gondor's, the lines are -1/-2 and the right is spent;
+- the cash box pays its war lord a cheque of 23240 for 32 hours.

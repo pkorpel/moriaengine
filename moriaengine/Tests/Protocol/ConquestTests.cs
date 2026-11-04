@@ -130,6 +130,61 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 10 - the palantir.</summary>
+	[Collection(ConquestCollection.Name)]
+	public class PalantirTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private readonly GameServerPairFixture fixture;
+
+		public PalantirTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private static uint Uid(string line, string key) {
+			return uint.Parse(line.Substring(line.IndexOf(key + "=") + key.Length + 1).Split(' ')[0]);
+		}
+
+		[Fact]
+		public void BreachCounterCaptureAndTheCashBox() {
+			using var attacker = CommandPermissionTests.Connect("conquest", "Conquest Attacker");
+			this.Ask(attacker, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+			using var defender = CommandPermissionTests.Connect("conquestsecond", "Conquest Defender");
+			string spots = this.Ask(attacker, ".TestConquestSpots", "CONQUEST_SPOTS:");
+			Assert.True(!spots.Contains("False"), spots);
+			string ready = this.Ask(attacker, ".TestPalantirReady", "PALANTIR_READY:");
+			Assert.Contains("declared=True name=Palantir Osgiliath vychodni breh", ready);
+			uint palantir = Uid(ready, "palantir"), box = Uid(ready, "box");
+
+			//the attacker breaches, the countdown runs
+			attacker.SendDoubleClick(palantir);
+			Thread.Sleep(500);
+			Assert.Contains("owner=Mordor breached=True conqueror=Gondor hold=900 color=5", this.Ask(attacker, ".TestPalantirState", "PALANTIR_STATE:"));
+			this.Ask(attacker, ".TestPalantirTicks \"5\"", "PALANTIR_TICKS");
+			Assert.Contains("hold=895", this.Ask(attacker, ".TestPalantirState", "PALANTIR_STATE:"));
+			//the defender turns it back, it fills up again
+			defender.SendDoubleClick(palantir);
+			Thread.Sleep(500);
+			this.Ask(attacker, ".TestPalantirTicks \"3\"", "PALANTIR_TICKS");
+			string state = this.Ask(attacker, ".TestPalantirState", "PALANTIR_STATE:");
+			Assert.True(state.Contains("owner=Mordor breached=False conqueror=Mordor hold=898"), state);
+			//breached again and held to the end: the keep is Gondor's, the line moves, the war lord's right is spent
+			attacker.SendDoubleClick(palantir);
+			Thread.Sleep(500);
+			this.Ask(attacker, ".TestPalantirHold \"2\"", "PALANTIR_HOLD");
+			this.Ask(attacker, ".TestPalantirTicks \"2\"", "PALANTIR_TICKS");
+			//1 gp for each 5 s from 11:43:20 on 4.11 to 20:00 on 5.11
+			Assert.Contains("owner=Gondor breached=False conqueror=Gondor hold=900 color=0 gondorDeclared=none gondorConquered=-1 mordorConquered=-2 right=False cash=23240 collector=Conquest Attacker cheque=0", this.Ask(attacker, ".TestPalantirState", "PALANTIR_STATE:"));
+			//the cash box pays its war lord a cheque
+			attacker.SendDoubleClick(box);
+			Thread.Sleep(500);
+			Assert.Contains("cash=0 collector=none cheque=23240", this.Ask(attacker, ".TestPalantirState", "PALANTIR_STATE:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ConquestCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Conquest";
