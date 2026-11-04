@@ -1,5 +1,10 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): 1148 monsters attack through floors (branch fix-1148-floor-attacks)
+
+User, live: player on a house floor at 2946,1229,45,0, titan/titan mage/titan ranger spawned below at z 0. The mage cast through the floor, the ranger shot through it, the titan's swing + knockback reached up and knocked the player down. Find where LOS/reach ignores the floor between them, fix at the cause, test at that spot.
+Found (probe at the spot): floor 0x2E6C z45 is Surface, not Noshoot, so LOS's vertical check passed it; the swing used flat distance (0 straight below); Go -> Fix -> Map.GetFixedZ returned the terrain Z (TODO), so knockback's landing (and every Go into a building) dropped to the street. Fixes: Map.IsFloorBetween in LOS, WeaponSkillDef.StrikeDistance (Sphere GetTopDist3D) in swing + AI, GetFixedZ = highest Surface at or below z+8, Go(x,y) from the terrain. FloorAttackTests (account floortests) red with the fixes off. Gotcha: Go(x,y,z) into a house used to land on the ground; a test placing someone on a floor needs P() (or this fix).
+
 ## DONE (2026-11-04): 1146 proactive bosses (branch proactive-monsters)
 
 User, answering #1022's questions: GMs place the bosses, spells trigger hit reactions (PR #1145), keep copy loot, keep gate targets; and make monsters proactive, picked "both": an AI initiative tick (NpcAggroSettings.monsterInitiativeSeconds 6) and rolls on their own landed blows (monsterInitiativeOnOwnBlows). Proactive.cs: Reacts(npc, def) = HasAbilityDef unless rolling initiative (never: Balrog reflect, split, Beridor lines, guardian's warrior line; monsterInitiativeOff list). Dragons' reactions now run on spells too. Found: Shapeshift picked a missing form (c_eye_adamantium_menavec) 1 in 8 and did nothing: MonsterLastSharedTests' flake, fixed. Gotcha: a loaded machine's boots take 90-130 s, BootLogTests' second boot can trip the 3 min hang detector in a long mixed run: run it alone.
