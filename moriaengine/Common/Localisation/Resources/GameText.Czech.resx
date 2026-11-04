@@ -2092,4 +2092,28 @@
   <data name="AfkLoc_OnlyOnline" xml:space="preserve">
     <value>Jen hrace, kteri jsou ve hre.</value>
   </data>
+  <data name="GmToolsLoc_WhichCharacter" xml:space="preserve">
+    <value>Na kterou postavu?</value>
+  </data>
+  <data name="GmToolsLoc_NotOnline" xml:space="preserve">
+    <value>{0} neni ve hre.</value>
+  </data>
+  <data name="GmToolsLoc_Kicked" xml:space="preserve">
+    <value>{0} byl vyhozen ze hry.</value>
+  </data>
+  <data name="GmToolsLoc_NowhereToReturn" xml:space="preserve">
+    <value>Neni znamo, odkud {0} prisel.</value>
+  </data>
+  <data name="GmToolsLoc_FrozenThem" xml:space="preserve">
+    <value>{0} je zmrazen.</value>
+  </data>
+  <data name="GmToolsLoc_UnfrozenThem" xml:space="preserve">
+    <value>{0} je rozmrazen.</value>
+  </data>
+  <data name="GmToolsLoc_Frozen" xml:space="preserve">
+    <value>Nemuzes se pohnout.</value>
+  </data>
+  <data name="GmToolsLoc_NotFound" xml:space="preserve">
+    <value>Nenalezeno: {0}</value>
+  </data>
 </root>

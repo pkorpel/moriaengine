@@ -212,6 +212,59 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1107 step 5 - Sphere's moderator verbs.</summary>
+	[Collection(ModerationCollection.Name)]
+	public class GmToolsTests {
+		private readonly GameServerPairFixture fixture;
+
+		public GmToolsTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private void Targeted(TestGameClient client, string command, uint target) {
+			client.SendSpeech(command);
+			Thread.Sleep(500);
+			client.SendTargetUid(target);
+			Thread.Sleep(300);
+		}
+
+		[Fact]
+		public void SummonFreezeGoClientsKick() {
+			using var client = CommandPermissionTests.Connect("moderation", "Gm Tools Tester");
+			string ready = this.Ask(client, ".TestGmToolsReady", "GMTOOLS_READY:");
+			uint wolf = uint.Parse(ready.Substring(ready.IndexOf("wolf=") + 5).Trim());
+
+			this.Targeted(client, ".summoncage", wolf);
+			Assert.Contains("wolfAtGm=True wolfHome=False frozen=True canMove=False", this.Ask(client, ".TestGmToolsState", "GMTOOLS_STATE:"));
+			this.Targeted(client, ".summondismiss", wolf);
+			Assert.Contains("wolfAtGm=False wolfHome=True frozen=False canMove=True", this.Ask(client, ".TestGmToolsState", "GMTOOLS_STATE:"));
+			this.Targeted(client, ".freeze", wolf);
+			Assert.Contains("frozen=True canMove=False", this.Ask(client, ".TestGmToolsState", "GMTOOLS_STATE:"));
+			this.Targeted(client, ".unfreeze", wolf);
+			Assert.Contains("frozen=False canMove=True", this.Ask(client, ".TestGmToolsState", "GMTOOLS_STATE:"));
+
+			client.SendSpeech(".gouid " + wolf);
+			Thread.Sleep(500);
+			Assert.Contains("gmAtWolf=True", this.Ask(client, ".TestGmToolsState", "GMTOOLS_STATE:"));
+			this.Ask(client, ".TestGmToolsGoBack", "GMTOOLS_BACK");
+			client.SendSpeech(".goname \"Gmtool Wolf\"");
+			Thread.Sleep(500);
+			Assert.Contains("gmAtWolf=True", this.Ask(client, ".TestGmToolsState", "GMTOOLS_STATE:"));
+
+			//.clients: this one is on it; its Kick takes it off the server
+			client.SendSpeech(".clients");
+			var (gumpUid, _, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			Assert.Contains("Gm Tools Tester", strings);
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendGumpResponse(gumpUid, 5000, new System.Collections.Generic.Dictionary<int, string>());
+			Assert.True(this.fixture.WaitForGameOutputSince("kicked Gm Tools Tester", mark, TimeSpan.FromSeconds(10)));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ModerationCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Moderation";

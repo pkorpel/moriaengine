@@ -170,6 +170,35 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("AFKLOG_STATE: mining=" + self.GetSkill(SkillName.Mining) + " afkLevel=" + Camp.Level(self.Account, true) + " count=" + AfkLogBook.Lines.Count + " |");
 		}
 
+		private static NPC wolf;
+		private static Point4D wolfHome, gmHome;
+
+		/// <summary>#1107 step 5 - a named wolf eight tiles off, its AI off.</summary>
+		[SteamFunction]
+		public static void TestGmToolsReady(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 20);
+			gmHome = new Point4D(self.X, self.Y, self.Z, self.M);
+			wolf = (NPC) ThingDef.GetByDefname("c_wolf").Create(self.X + 8, self.Y, self.Z, self.M);
+			wolf.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+			wolf.Name = "Gmtool Wolf";
+			wolfHome = new Point4D(wolf.X, wolf.Y, wolf.Z, wolf.M);
+			Console.WriteLine("GMTOOLS_READY: wolf=" + wolf.Uid);
+		}
+
+		[SteamFunction]
+		public static void TestGmToolsState(Character self) {
+			Console.WriteLine("GMTOOLS_STATE: wolfAtGm=" + (Point2D.GetSimpleDistance(wolf, self) <= 1) + " wolfHome=" + (Point2D.GetSimpleDistance(wolf, wolfHome) <= 1) +
+				" frozen=" + GmTools.IsFrozen(wolf) + " canMove=" + wolf.CheckCanMove(false) + " gmAtWolf=" + (Point2D.GetSimpleDistance(wolf, self) <= 1) + " |");
+		}
+
+		[SteamFunction]
+		public static void TestGmToolsGoBack(Character self) {
+			self.Go(gmHome);
+			wolf.Go(wolfHome);
+			Console.WriteLine("GMTOOLS_BACK");
+		}
+
 		[SteamFunction]
 		public static void TestForgiveReport(Character self) {
 			bool back = (self.M == before.M) && (Point2D.GetSimpleDistance(self, before) <= 1);

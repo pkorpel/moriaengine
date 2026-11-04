@@ -2216,7 +2216,7 @@ namespace SteamEngine.CompiledScripts {
 
 		//#778 strangler-vine hold, #779 Sphere's fatigue/overload refusals
 		public override bool CheckCanMove(bool running) {
-			return MonsterSpecialAttacks.CheckEntangledCanMove(this) && MysticMind.CheckCanMove(this) && MovementStamina.CheckCanMove(this);
+			return GmTools.CheckCanMove(this) && MonsterSpecialAttacks.CheckEntangledCanMove(this) && MysticMind.CheckCanMove(this) && MovementStamina.CheckCanMove(this); //#1107 - .freeze
 		}
 
 		//#779 walking stamina drain
