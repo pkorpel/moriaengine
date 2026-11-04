@@ -457,6 +457,106 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("DEATHBOSS_TEST: " + what + " " + line + " |");
 		}
 
+		/// <summary>#1022 PR 4 - bosses with damage rules of their own.</summary>
+		[SteamFunction]
+		public static void TestDamageRule(Character self, ScriptArgs sa) {
+			string what = sa.Args.Trim().Trim('"');
+			Player player = (Player) self;
+			string line;
+			switch (what) {
+				case "balrog": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC balrog = Boss(self, "c_balrogh", 2);
+						BalrogAbilityDef def = MonsterSpecialAttacks.BalrogDef;
+						int burn = def.BurnOneIn, weaken = def.WeakenOneIn, reflect = def.ReflectOneIn;
+						Mark(self);
+						def.BurnOneIn = 1;
+						MonsterSpecialAttacks.TryBalrogSwing(balrog, self);
+						line = "burnt=" + (self.Hits < hitsBefore);
+						Mark(self);
+						def.BurnOneIn = 1000000;
+						def.WeakenOneIn = 1;
+						MonsterSpecialAttacks.TryBalrogSwing(balrog, self);
+						line += " stam=" + self.Stam;
+						Mark(self);
+						def.ReflectOneIn = 1;
+						MonsterSpecialAttacks.TryDamageRuleReactions(balrog, self);
+						line += " reflected=" + (self.Hits < hitsBefore);
+						def.BurnOneIn = burn;
+						def.WeakenOneIn = weaken;
+						def.ReflectOneIn = reflect;
+						BalrogCurseTimer curse = MonsterSpecialAttacks.CurseWithShadow(balrog, self, def);
+						line += " cursed=" + self.HasTimer(BalrogCurseTimer.Key) + " noCast=" + MonsterSpecialAttacks.BalrogCurseRefusesCast(self) +
+							" oneAtATime=" + (MonsterSpecialAttacks.TryBalrogSpellCurse(balrog) == null);
+						MonsterSpecialAttacks.EndBalrogCurse(self, curse);
+						line += " castsAgain=" + !MonsterSpecialAttacks.BalrogCurseRefusesCast(self);
+						Mark(self);
+						break;
+					}
+				case "rinald": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC rinald = Boss(self, "c_q000_rinald", 2);
+						rinald.Flag_Invulnerable = true;
+						int max = rinald.MaxHits;
+						DamageManager.CauseDamage(self, rinald, DamageType.Physical, 10);
+						line = "invulGrows=" + (rinald.MaxHits - max);
+						rinald.Flag_Invulnerable = false;
+						int hits = rinald.Hits;
+						NPC worm = (NPC) ThingDef.GetByDefname("c_cerv").Create(self.X - 1, self.Y, self.Z, self.M);
+						DamageManager.CauseDamage(worm, rinald, DamageType.Physical, 50);
+						line += " npcHurts=" + (rinald.Hits < hits);
+						worm.Delete();
+						player.Profession = Professions.Warrior;
+						int sharp = rinald.ResistSharp;
+						DamageManager.CauseDamage(self, rinald, DamageType.Physical, 1);
+						line += " warriorArmor=" + (sharp - rinald.ResistSharp);
+						player.Profession = Professions.Mage;
+						int fire = rinald.ResistFire;
+						DamageManager.CauseDamage(self, rinald, DamageType.Physical, 1);
+						line += " mageFire=" + (fire - rinald.ResistFire);
+						break;
+					}
+				case "helm": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC helm = Boss(self, "c_item_helm", 2);
+						OdinvisKrikAbilityDef def = MonsterSpecialAttacks.OdinvisKrikDef;
+						int odds = def.CryOneIn;
+						def.CryOneIn = 1;
+						MonsterSpecialAttacks.TryDamageRuleReactions(helm, self);
+						def.CryOneIn = odds;
+						self.Flag_Hidden = true;
+						line = "crying=" + helm.HasTimer(OdinvisCryTimer.Key);
+						break;
+					}
+				case "helmafter":
+					line = "hidden=" + self.Flag_Hidden;
+					self.Flag_Hidden = false;
+					break;
+				case "druid": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC druid = Boss(self, "c_ztracene_mesto_druid", 2);
+						int model = druid.Model;
+						MonsterSpecialAttacks.Shapeshift(druid, MonsterSpecialAttacks.DruidMorphDef);
+						int bear = ((NPCDef) ThingDef.GetByDefname("c_ztracene_mesto_druid_medved_morf")).Model;
+						int wolf = ((NPCDef) ThingDef.GetByDefname("c_ztracene_mesto_druid_vlk_morf")).Model;
+						line = "name=" + druid.Name + " form=" + ((druid.Model == bear) || (druid.Model == wolf));
+						MonsterSpecialAttacks.ShapeshiftEnded(druid);
+						line += " back=" + (druid.Model == model);
+						break;
+					}
+				case "titan": {
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC titan = Boss(self, "c_titan_test", 2);
+						line = "emotes=" + titan.HasAbility(MonsterSpecialAttacks.EmoteDamageDef, out _);
+						break;
+					}
+				default:
+					line = "unknown";
+					break;
+			}
+			Console.WriteLine("DAMAGERULE_TEST: " + what + " " + line + " |");
+		}
+
 		private static int Puddles(NPC dragon) {
 			int count = 0;
 			foreach (AbstractItem item in dragon.GetMap().GetItemsInRange(dragon.X, dragon.Y, 4)) {
