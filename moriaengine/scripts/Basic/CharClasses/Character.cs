@@ -2412,7 +2412,7 @@ namespace SteamEngine.CompiledScripts {
 		//Character`s implementation of @Dclick trigger, 
 		//basic implementation = paperdoll sending and horse mounting
 		public override void On_DClick(AbstractCharacter from) {
-			if ((this is NPC npc) && (AlchemistShop.TryOpen(npc, from as Character) || ProdejceShop.TryOpen(npc, from as Character) || MagicItemShop.TryOpen(npc, from as Character) || DiyVendor.TryDClick(npc, from as Character))) {
+			if ((this is NPC npc) && (AlchemistShop.TryOpen(npc, from as Character) || ProdejceShop.TryOpen(npc, from as Character) || MagicItemShop.TryOpen(npc, from as Character) || DiyVendor.TryDClick(npc, from as Character) || WarLieutenant.TryDClick(npc, from as Character))) {
 				return; //#1017
 			}
 			if (from != null && from.IsPlayer) {

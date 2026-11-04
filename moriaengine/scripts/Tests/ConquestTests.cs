@@ -67,6 +67,40 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("CONQUEST_RUNOUT");
 		}
 
+		private static NPC lieutenant;
+
+		/// <summary>#1116 step 9 - a Gondor player of rank 3 and the given level, 100 000 gold, no right, Norbert beside them.</summary>
+		[SteamFunction]
+		public static void TestLieutenantReady(Character self, ScriptArgs sa) {
+			Player player = (Player) self;
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			player.Account.PLevel = 1;
+			player.Realm = Realm.Gondor;
+			player.SkillRank = SkillRank.Grandmaster;
+			player.Level = int.Parse(sa.Args.Trim().Trim('"'), CultureInfo.InvariantCulture);
+			Conquest.Reset();
+			Conquest.TakeRight(player);
+			foreach (AbstractItem item in new System.Collections.Generic.List<AbstractItem>(player.Backpack)) {
+				item.Delete();
+			}
+			((Item) ThingDef.GetByDefname("i_gold").Create(player.Backpack)).Amount = WarLieutenant.Price;
+			lieutenant = (NPC) ThingDef.GetByDefname(WarLieutenant.GondorDef).Create(self.X + 1, self.Y, self.Z, self.M);
+			lieutenant.DeleteTimer(SteamEngine.Timers.TimerKey.Acquire("_npcAiTimer_"));
+			Console.WriteLine("LIEUTENANT_READY: npc=" + lieutenant.FlaggedUid + " |");
+		}
+
+		[SteamFunction]
+		public static void TestLieutenantLevel(Character self, ScriptArgs sa) {
+			((Player) self).Level = int.Parse(sa.Args.Trim().Trim('"'), CultureInfo.InvariantCulture);
+			Console.WriteLine("LIEUTENANT_LEVEL");
+		}
+
+		[SteamFunction]
+		public static void TestLieutenantState(Character self) {
+			Console.WriteLine("LIEUTENANT_STATE: right=" + Conquest.HasRight(self) + " gold=" + GoldUtils.CountGoldIn(self.Backpack) + " |");
+		}
+
 		/// <summary>A declaration for the next evening, then a tick the day after it: it lapses.</summary>
 		[SteamFunction]
 		public static void TestConquestLapse(Character self) {

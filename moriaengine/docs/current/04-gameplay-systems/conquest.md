@@ -21,6 +21,31 @@ Each realm's front (`WarFront`, saved with the world; Erebor kept it on the real
 level of the last keep its realm took. Gondor's next target is one lower, Mordor's one higher. From the start (0) Gondor
 attacks Mordor_1 and Mordor attacks Gondor_1.
 
+## War lieutenants
+
+Erebor's `namestek_valky_*.scp` (`WarLieutenant`): Norbert (`c_namestek_valky_g`) for Gondor and Urdak
+(`c_namestek_valky_m`) for Mordor. `.SetupWorld` places each beside its realm's declarator; the spots are unreviewed.
+
+Talking to one:
+- A player of his realm opens his dialog with a double click within 3 tiles, or with *ahoj*/*hi*. He says "Chces
+  zautocit...?" (Norbert says "Hmmm?" to speech).
+- Anyone else hears "Tahni!" (Urdak's double click: "Tahni...").
+- The dialog has Erebor's six pages.
+
+"Vyhlasit utok" sells the right to declare war on the other realm for 100 000 gold (`GoldUtils.Pay`). He refuses, in
+Erebor's order:
+1. a player below skill rank 3 or level 30;
+2. a keep captain;
+3. a player of another realm;
+4. when the realm has taken all it can (Gondor at -2, Mordor at 2);
+5. a player who holds the right already.
+
+Fixed from Erebor:
+- The double click's distance is measured to him. Erebor measured to the player's last target.
+- A player of neither realm can't buy. Erebor refused only the other realm.
+
+Not ported: the older Minas Tirith lieutenant (`c_minas_namestek_valky_g`), which nothing placed.
+
 ## Declaring war
 
 The right to declare war is bought from the realm's war lieutenant. `.AllowMeDeclarator` gives it to a GM.
@@ -75,4 +100,6 @@ realm the GM stands in.
 
 Test: `ConquestTests.DeclareQueueRunAndEnd` (protocol). Two players declare at the stone through the dialog, with a
 refused hour, a taken hour and the queue. It then checks `.dobyvani`, the start at its hour, the run-out handing over to
-the queued one, a cancel costing the right, and a lapse.
+the queued one, a cancel costing the right, and a lapse. `WarLieutenantTests.NorbertSellsTheRightToDeclareWar`:
+*ahoj* opens the dialog, level 29 is refused with nothing paid, and at level 30 a double click and "Vyhlasit utok" buys
+the right for 100 000.
