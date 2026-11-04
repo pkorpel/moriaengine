@@ -1,8 +1,10 @@
 # moriaengine — working state
 
-## NOW (2026-11-04): 1161 performance review (research only, no engine code)
+## DONE (2026-11-04): 1161 performance review (research only, no engine code)
 
-User: find the bottlenecks before the world is populated. Target 50 players at peak, a fully populated world (several maps, big dungeons). Three phases: EreborNext's approach, Sphere 0.56b's approach, then ours against both, measured where possible with a throwaway harness in the scratchpad (never committed; scale down and extrapolate if the 5 GB container can't hold it). Deliverable: docs/current/02-engine-core/performance-review.md in one docs-only PR (assumptions, references with commits, comparison table, ranked problems, proposals, what's fine, order, a rerunnable benchmark setup).
+User: find the bottlenecks before the world is populated. Target 50 players at peak, a fully populated world (several maps, big dungeons). Three phases: EreborNext's approach, Sphere 0.56b's approach, then ours against both, measured where possible with a throwaway harness. Deliverable: docs/current/02-engine-core/performance-review.md, docs-only PR.
+Done. Main find: every NPC thinks every ~1 s wherever it is (no sector sleep): design world (30k NPCs, 626k items) 72% of the game thread with NO players, 82% with 50, 86% at 50k NPCs, timers seconds late. Prototype (sleep without a nearby player + no timer self-signal + NOLINQ) took it to 12%. Also: blocking 2.6-5 s text saves and no autosave at all; Release doesn't build (AuxiliaryServer/Commands.cs:74 #error), Debug costs 2-3x per think; A* retries failed searches every think. Recommended order in the doc, nothing implemented: each fix is its own issue when the user picks it.
+Harness: local unpushed branch 1161-perf-harness in ../moria-1161 (commit 1 harness, commit 2 prototypes); how to run in the doc's section 9. Found on the way: #1163 (mid-fight save loads with ERRORs). Gotchas: dotnet-trace 10 has no cpu-sampling profile (give the providers); test-full's "test-full: " also matches its "building..." line; a 5 s save trips a test client's 5 s read timeout and desyncs it.
 
 ## DONE (2026-11-04): floors along the sight line (#1158, PR #1159)
 
