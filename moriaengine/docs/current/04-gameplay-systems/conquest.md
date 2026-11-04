@@ -169,7 +169,7 @@ On a capture:
 - The captain is dismissed.
 - Each guard becomes its def's `guardopposite`; a guard with none is let go.
 - The war lord becomes the captain ("Kapitan " before the name), unless Erebor's rules stop it: GM, mayor, General,
-  captain, Nazgul.
+  captain, Nazgul. They also get the realm uniform for 12 months (#1133). A dismissed captain loses it, as on Erebor.
 - Becoming the General or the First Nazgul also ends a captaincy.
 
 Commands, for the keep's chiefs, with the Mordor names as aliases (`.mordorkeep*`):
@@ -225,7 +225,7 @@ Erebor gave plevel 1 its conquest commands (`skillgains.scp`): `.dobyvani`, `.ke
 
 Not ported:
 - the "Guards Kill" order (disabled on Erebor);
-- the realm uniform for 12 months that Erebor gave a war lord made captain (`uniforms.scp` isn't ported; the user's call).
+- nothing else: the realm uniform a war lord made captain gets is ported since #1133 (`towns.md#realm-uniform`).
 
 `.dobyvani` tells a player what their realm prepares and what is coming at it. `.ResetWars` (GM) clears the front of the
 realm the GM stands in.

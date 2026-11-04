@@ -165,3 +165,37 @@ area's spawn point. Moving a piece in game keeps it there.
 - "Najemni informace", the rent overview, belongs to Erebor's house system.
 - `.nazghulfell`, the First's fell beast, and the mount's uniform color.
 - The gates of `i_nazgulsonly_gate`: Erebor's GMs placed them, for what isn't recorded.
+
+## Realm uniform
+
+Erebor's paid uniform (`systems/uniforms.scp`, `RealmUniform`, #1133). For a number of months, a player of skill rank 3
+or more wears their realm's colours.
+
+The set:
+- needed: legs, gloves, chest, arms and cape;
+- joining in: helm, gorget and sash;
+- each armor piece verite or better; the cape and sash may be any.
+
+Worn complete:
+- Every piece takes the realm's colour: Gondor's armor 0x57C and clothes 0x98F, Mordor's 0x5EB and 0x993.
+- Every piece is named "Gondorska Uniforma" or "Mordorska Uniforma".
+- A piece taken off gets its own colour and name back, and so does the rest when the set is no longer complete.
+
+Who gets it:
+- A GM gives or lengthens it in months from a player's `.info` ("Uniforma", Erebor's `d_uniform_realm`), or ends it.
+- `.adminunif` lists everyone with one: name, account, until, last editor.
+- A war lord who becomes a keep's captain gets 12 months; a dismissed captain loses it.
+- Someone in an office's uniform (General, Nazgul) is left out, as Erebor's office uniform came first.
+
+The time runs on real dates. A uniform that ran out goes at the next equip, as on Erebor.
+
+Not ported:
+- Erebor's `denyDye`/`denyScissoring` tags, which nothing here reads;
+- the player switch `deniedUniform`, which nothing on Erebor set.
+
+Test: `RealmUniformTests.ACompleteSetTakesTheRealmsColoursForItsMonths`:
+- a set without its cape stays as it is; the cape completes it;
+- taking the cape off restores every piece;
+- three months on it has run out;
+- the GM dialog gives 3 months.
+

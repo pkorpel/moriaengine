@@ -94,6 +94,14 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		/// <summary>#1133 - Erebor's character-info row "Uniforma": the paid realm uniform.</summary>
+		[Button("Uniforma")]
+		public static void RealmUniformButton(object target) {
+			if ((Globals.SrcCharacter is Player gm) && gm.IsGM) {
+				RealmUniform.ShowFor(gm, (Character) target);
+			}
+		}
+
 		[GetMethod("Edit", typeof(ContainerView.ThingAsContainer))]
 		public static object Edit(object target) {
 			return new ContainerView.ThingAsContainer((Thing) target);

@@ -2506,6 +2506,7 @@ namespace SteamEngine.CompiledScripts {
 				MagicItems.OnEquip(this, worn); //#1017
 			}
 			Uniform.RefreshSoon(this);
+			RealmUniform.RefreshSoon(this); //#1133
 		}
 
 		public override void On_ItemUnequip(ItemInCharArgs args) {
@@ -2515,6 +2516,8 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Uniform.Restore(args.ManipulatedItem);
 			Uniform.RefreshSoon(this);
+			RealmUniform.Restore(args.ManipulatedItem); //#1133
+			RealmUniform.RefreshSoon(this);
 		}
 
 		public override void On_AosClick(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
