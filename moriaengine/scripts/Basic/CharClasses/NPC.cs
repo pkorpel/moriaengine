@@ -2183,6 +2183,9 @@ namespace SteamEngine.CompiledScripts {
 			if (candidate.Flag_Invulnerable) {
 				return false; //#267 - nobody autonomously targets an invulnerable character, even one otherwise immune to the resulting damage
 			}
+			if (Jail.IsJailed(candidate)) {
+				return false; //#1107 - Sphere's NPCs leave a jailed character alone
+			}
 			if (MonsterSpecialAttacks.LeavesPlayersAlone(this)) {
 				return false; //#1022
 			}

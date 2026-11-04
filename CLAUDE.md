@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): #1107 moderation toolkit, then the #1069 checklist tidy
+
+User: moderation toolkit, then tidy #1069. Plan on #1107, one PR each: (1) jail as Sphere's JAIL/FORGIVE, (2) Erebor's labour camp (lagr, afklagr, guard, release coins, no PvP damage), (3) AFK check (automatic off by default as Erebor), (4) AFK log, (5) GM commands (kick, summon, go to char, freeze, online list). Step 1, branch moderation-jail, scripts/Basic/Moderation: Jail.cs (account tag, release point on the character, Character.Go redirects a jailed one, login, NPCs ignore); Sphere's release time never fired (empty expiry branch), none here. Loc strings go to both resx: scratchpad/resxadd.py <file.cs> <LocClass>. Next: step 2, the camp.
+
 ## DONE (2026-11-03): #745 curing bleeding (PR #1102), #788 (PRs #1103, #1105; Blade Spirits flake left as #1104)
 
 #745, branch fix-745-one-bleed: bandages already stop Bleeding Strike's bleed (#980), not a monster's. On Erebor both are one item, i_krvaceni: e_npc_bleed's npc_bleed adds (damage/3)/2 to its more2 (no cap, no fade, ticks restart) via f_bleed_getMemory, f_thief_doBleed the thief's way. So the monster bite goes into BleedingEffectPlugin (BleedingEffectPluginDef.Bite), NpcBleedEffectPlugin goes. Then #788, its own branch.
