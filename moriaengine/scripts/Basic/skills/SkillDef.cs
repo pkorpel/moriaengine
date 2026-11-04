@@ -449,7 +449,7 @@ namespace SteamEngine.CompiledScripts {
 					}, filename, line);
 					break;
 				case "skilldef":
-					this.skillDef = (SkillDef) ObjectSaver.OptimizedLoad_Script(valueName);
+					this.skillDef = (SkillDef) ObjectSaver.OptimizedLoad_Script(valueString); //#1172 - was valueName, the word "skilldef"
 					break;
 			}
 		}
@@ -616,6 +616,14 @@ namespace SteamEngine.CompiledScripts {
 
 		private static TimerKey skillTimerKey = TimerKey.Acquire("_skillTimer_");
 
+		/// <summary>#1172 - Player.On_LogIn: a stroke that came due while the player was away goes on now.</summary>
+		public static void ResumeAfterLogin(Character self) {
+			SkillStrokeTimer timer = GetSkillSequenceTimer(self);
+			if ((timer != null) && (timer.DueInSeconds < 0)) {
+				timer.DueInSeconds = 0;
+			}
+		}
+
 		[SaveableClass]
 		[DeepCopyableClass]
 		public class SkillStrokeTimer : BoundTimer {
@@ -636,6 +644,14 @@ namespace SteamEngine.CompiledScripts {
 
 			protected sealed override void OnTimeout(TagHolder cont) {
 				Logger.WriteDebug("SkillStrokeTimer OnTimeout on " + cont);
+				Character self = cont as Character;
+				if ((self != null) && self.IsPlayer && self.Flag_Disconnected && !self.IsDeleted) {
+					//#1172 - as Sphere, which doesn't tick an offline character: the stroke waits, paused, for the player's login
+					//(ResumeAfterLogin), instead of being refused as not alive. A save made meanwhile keeps it, and players are
+					//offline after every restart.
+					self.AddTimer(skillTimerKey, new SkillStrokeTimer(this.skillSeqArgs));
+					return;
+				}
 				this.skillSeqArgs.PhaseStroke();
 			}
 		}

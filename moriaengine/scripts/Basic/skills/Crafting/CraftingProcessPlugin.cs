@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public static SimpleQueue<CraftingSelection> GetCraftingQueue(Character self) {
 			CraftingProcessPlugin p = self.GetPlugin(craftingProcessPK) as CraftingProcessPlugin;
-			if (p != null) {
+			if ((p != null) && (p.craftingOrder != null)) {
 				return p.craftingOrder.SelectionQueue;
 			}
 			return null;
@@ -65,6 +65,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void StartCrafting() {
+			if (this.craftingOrder == null) {
+				this.Delete(); //#1172 - an order lost with a save from before it was saveable: nothing to go on with
+				return;
+			}
 			SkillSequenceArgs ssa = SkillSequenceArgs.Acquire((Character) this.Cont, this.craftingOrder.CraftingSkill);
 
 			CraftingSelection csl = this.craftingOrder.SelectionQueue.Peek();
@@ -99,7 +103,7 @@ namespace SteamEngine.CompiledScripts {
 			if (pl == null) {
 				return;
 			}
-			if (pl.stopped) {
+			if (pl.stopped || (pl.craftingOrder == null)) { //#1172 - no order: the one in hand is done, nothing follows
 				pl.Delete();
 				return;
 			}
