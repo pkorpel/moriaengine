@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): performance review update + implementation plan (#1163 first), docs only, awaiting go-ahead
+
+User: autosave exists (PeriodicSave.scp, hourly; I'd missed it), asked about sector size (16 vs 32/64) and return home (direct step first, A* only when far/stuck); then: update the review with all of it and a full implementation plan, #1163 first, no implementation until the user approves. Measuring sector sizes and the probes (defs at load, A* by caller) in the harness worktree.
+
 ## DONE (2026-11-04): 1165 Shielded STM / optimistic multithreading research (no implementation)
 
 User: the original SteamEngine author recommended github.com/jbakic/Shielded (STM for .NET). Analyze it, find newer/better options, judge if it helps this server against #1161's measurements, write it up. Do NOT implement.
