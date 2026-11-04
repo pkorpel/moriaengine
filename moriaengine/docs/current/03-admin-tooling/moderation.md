@@ -139,3 +139,25 @@ the camp; the log keeps the last 2000 and is saved.
 Erebor kept a log per GM, built from each GM's own messages. Here there's one shared log.
 
 Test: `AfkCheckTests.TheLogPunishesPardonsFiltersAndDeletes` (protocol, the real gumps).
+
+## GM commands
+
+Sphere's moderator verbs (`spherehelp.scp`) that #102 found missing. Code: `GmTools.cs`.
+
+| Command | What it does |
+|---|---|
+| `.kick` (cursor) | takes a player off the server |
+| `.summonto` (cursor) | brings someone to the GM and remembers where from |
+| `.summoncage` (cursor) | the same, and holds them still |
+| `.summondismiss` (cursor) | sends them back and lets them move |
+| `.freeze`, `.unfreeze` (cursor) | holds someone still where they are ("Nemuzes se pohnout."); a GM is never held |
+| `.goname "text"` | to the first character whose name holds the text, an online player first |
+| `.gouid uid` | to a character or item by uid, decimal or 0x hex |
+| `.gocli n` | to the n-th online player, from 0, in `.clients`' order |
+| `.clients` | online players with account and place, and Go, Sum (summon), Info, Jail, Kick for each |
+
+Sphere's `.disconnect` isn't a command here: `Character.Disconnect` would take it, as a GM's own members come before
+commands. `.kick` does the same thing.
+
+Test: `GmToolsTests.SummonFreezeGoClientsKick` (protocol: the real cursors on an NPC, `.gouid`, `.goname`, the
+`.clients` dialog and its Kick).
