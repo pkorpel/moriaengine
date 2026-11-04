@@ -107,6 +107,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Character fighter in LevelingSystem.FindFighters(victim, killer, false)) {
 				if ((fighter is Player player) && (player != victim) && PvpRules.IsEvaluable(victim, player)) {
 					AddPoints(player, (player == killer) ? (FightPoints + KillingBlowPoints) : FightPoints);
+					ConquestRewards.GainPoint(player, FightPoints); //#1116 - f_pvpLeague_increaseRank's conquest part
 				}
 			}
 		}

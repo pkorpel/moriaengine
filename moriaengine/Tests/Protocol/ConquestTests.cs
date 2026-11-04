@@ -299,6 +299,34 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 13 - the conquest's rewards.</summary>
+	[Collection(ConquestCollection.Name)]
+	public class ConquestRewardsTests {
+		private readonly GameServerPairFixture fixture;
+
+		public ConquestRewardsTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		[Fact]
+		public void PointsBoostersAndTheWeeklyPalantir() {
+			using var client = CommandPermissionTests.Connect("conquestsecond", "Conquest Rewardee");
+			this.Ask(client, ".TestEnableAutoAccountCreation", "AUTO_ACCOUNT_TEST: ENABLED");
+			string ready = this.Ask(client, ".TestRewardsReady", "REWARDS_READY:");
+			Assert.Contains("declared=True", ready);
+			uint palantir = uint.Parse(ready.Substring(ready.IndexOf("palantir=") + 9).Split(' ')[0]);
+			client.SendDoubleClick(palantir);
+			Thread.Sleep(500);
+			//registered with 1, the weekly task done; 3 fights add 6; a craftsman is left out; the capture gives 7+1 a 2 h booster
+			//(kind 1); a defended war gives its 3 points a 1 h one (kind 0)
+			Assert.Contains("registered=True points=1 weekly=1 afterFights=7 afterCapture=1x1, left=0 declared2=True afterDefended=1x1,0x1,", this.Ask(client, ".TestRewardsFlow", "REWARDS_FLOW:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ConquestCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Conquest";

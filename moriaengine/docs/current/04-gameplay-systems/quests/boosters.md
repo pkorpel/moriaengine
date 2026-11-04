@@ -27,8 +27,8 @@ A booster gives more experience for a while. Erebor had six, all for experience:
 ## Where boosters come from
 
 On Erebor: taking part in conquest (`dobyvani`: 3 points gave kind 0, 7 gave kind 1) and the final rewards of the gq058
-Zaskodnice and mq057 Zaskodnik quests (kind 1). Conquest was left out by the user (#892) and the numbered quests aren't to be
-started, so **no player source exists yet**. A GM gives one with `.AddBooster <kind>` and then targets the player;
+Zaskodnice and mq057 Zaskodnik quests (kind 1). Conquest gives them since #1116 (`ConquestRewards`, see
+[conquest](../conquest.md#rewards)); the numbered quests aren't to be started yet. A GM gives one with `.AddBooster <kind>` and then targets the player;
 `.AddBooster` alone lists the kinds.
 
 ## Differences from Erebor
