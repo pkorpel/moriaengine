@@ -153,6 +153,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("Dobyvani")]
+		public ConquestSettings ConquestSettings {
+			get {
+				return ConquestSettings.instance;
+			}
+		}
+
 		[InfoField("AFK")]
 		public AfkSettings AfkSettings {
 			get {

@@ -1,0 +1,5 @@
+//#1116 - Erebor's dobyvani-declarator.scp: the war declarator, one GM-placed in each realm (ConquestSetup). Its name gets
+//the realm's adjective ("Gondorsky vyhlasovac valky") when its realm is set.
+[WarDeclaratorDef i_war_declarator]
+name = "vyhlasovac valky"
+model = i_gravestone_5
