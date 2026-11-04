@@ -189,13 +189,13 @@ Name = "(e_guard_ranged)"
 [PassiveAbilityDef a_tevent_e_hatlend]
 Name = "(e_hatlend)"
 
-[PassiveAbilityDef a_tevent_e_hcn_madnessability]
+[HcnMadnessAbilityDef a_tevent_e_hcn_madnessability]
 Name = "(e_hcn_madnessability)"
 
-[PassiveAbilityDef a_tevent_e_hcn_npcpoison]
+[HcnPoisonAbilityDef a_tevent_e_hcn_npcpoison]
 Name = "(e_hcn_npcpoison)"
 
-[PassiveAbilityDef a_tevent_e_hcn_teletotarget]
+[HcnPursuitAbilityDef a_tevent_e_hcn_teletotarget]
 Name = "(e_hcn_teletotarget)"
 
 [HealDrinkerAbilityDef a_tevent_e_healdrinker]

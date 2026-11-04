@@ -424,3 +424,49 @@ Converter: `tag.e_copy_chance`, `tag.e_frosty_wave_chance`, `tag.e_frosty_wave_s
 
 Test: `HaldaMolleTests` (protocol, account hmtests): the split and its guard, the frost, the eggs (too light, stomped,
 hatched), the degrading, Marali koren's warniaks.
+
+## The HCN tombs' monsters (#1022)
+
+`HcnTombs.cs`. Erebor's `systems/dungeon_bonusy_hcn_npcEvents.scp`. The tombs themselves (puzzles, spawner pads) aren't
+ported, so nothing places these monsters yet.
+
+- `e_hcn_teletotarget` (the rat, the wraiths): while it fights a player, every second it dashes at its target, within
+  20 tiles and in sight.
+  - Dash length: the species' own steps (rat 8, wraiths 3-6: Erebor's `tag.npc_port_distance`, converted for every
+    monster as `NpcPortDistance`), else up to 3 short of it.
+  - Retargeting: every 5 s it goes for the player it hates most among those it remembers within 30 tiles. Mage and
+    necromancer 1000, priest and shaman 950, mystic 930, the rest 900, less 10 a tile. It forgets them every 30 s and
+    looks again.
+
+  Fixed from Erebor:
+  - rangers count (Erebor's table left them out);
+  - GMs are left out (one as a target broke Erebor's memory);
+  - a player is remembered once.
+- `e_hcn_npcpoison` (the snake): a blow that does damage poisons with 14% of the victim's hits every 2 s (Erebor's
+  poison_c through the poison core). The snake's `tag.jed_sila(14)` is the default; the converter doesn't read that
+  call form.
+- `e_hcn_madnessability` (the mummies), on each swing, dodged ones too, at the species' chance (2%, 20%, 2 in 3):
+  - the player it swings at goes mad at the species' strength (25%, 40%, 65%) plus 0.4% a level, and turns their
+    profession on the players and pets around them;
+  - warrior, armed: up to 8 within 2, their own blow;
+  - thief, armed: one within 2, blow and bleed;
+  - mage: 5 within 8, a fire burn of a sixth of their mind power x10;
+  - ranger with a bow: one within 8, blow and knockback; without, a plain blow on one within 2;
+  - necromancer: 5 within 4, poison of their mind power;
+  - priest: 5 within 4, Curse at their Healing;
+  - shaman: a random voodoo on one within 8 who has none;
+  - mystic: 5 within 4, their mind-power blow and 20-30 s paralysis;
+  - anyone else: a plain blow on one within 2.
+
+  It costs them 10-20 stamina.
+
+  Departures:
+  - the mage's and necromancer's power is their mind power (Erebor's `tag.sm`);
+  - the mystic's strike is their own blow (Erebor's spell 103 isn't ported);
+  - all of it lands at once (Erebor's came 0.1 s later).
+
+Converter fix: `KARMA=-{4000 4999}` (the minus outside the braces) gave positive karma. It's `-4999 -4000` now: the HCN
+rat and two crunch monsters.
+
+Test: `HcnTombTests` (protocol, account hcntests): the pursuit's memory, dash and hate, the snake's poison, a mad
+warrior and mage, the rat's karma.

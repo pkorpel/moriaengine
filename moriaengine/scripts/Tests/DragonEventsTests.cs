@@ -695,6 +695,75 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HALDA_TEST: " + what + " " + line + " |");
 		}
 
+		/// <summary>#1022 PR 5b - the HCN tombs' monsters.</summary>
+		[SteamFunction]
+		public static void TestHcn(Character self, ScriptArgs sa) {
+			string what = sa.Args.Trim().Trim('"');
+			Player player = (Player) self;
+			string line;
+			VerificationTestUtils.CleanupNearbyNpcs(self, 12);
+			switch (what) {
+				case "pursuit": {
+						NPC wraith = Boss(self, "c_hcn_wraith_level_2", 8);
+						NPCAiTimer.EnsureInstalled(wraith);
+						NPCAiTimer.Attack(wraith, self);
+						MonsterSpecialAttacks.TryHcnPursuit(wraith, self);
+						HcnPursuitTimer pursuit = (HcnPursuitTimer) wraith.GetTimer(HcnPursuitTimer.Key);
+						int before = Point2D.GetSimpleDistance(wraith, self);
+						int steps = MonsterSpecialAttacks.HcnDash(wraith, NPCAiTimer.GetFor(wraith), self, MonsterSpecialAttacks.HcnPursuitDef);
+						player.Profession = Professions.Mage;
+						int mage = MonsterSpecialAttacks.HcnAggro(wraith, player);
+						player.Profession = Professions.Ranger;
+						int ranger = MonsterSpecialAttacks.HcnAggro(wraith, player);
+						player.Profession = Professions.Mage;
+						int distance = Point2D.GetSimpleDistance(wraith, self);
+						line = "remembers=" + ((pursuit != null) && pursuit.remembered.Contains(player)) + " steps=" + steps + " closer=" + (distance < before) +
+							" mageOverRanger=" + (mage - ranger) + " rangerCounts=" + (ranger > 0);
+						break;
+					}
+				case "poison": {
+						NPC snake = Boss(self, "c_hcn_snake", 1);
+						MonsterSpecialAttacks.TryHcnOwnSwing(snake, self, 0);
+						bool missNoPoison = !Poison.IsPoisoned(self);
+						MonsterSpecialAttacks.TryHcnOwnSwing(snake, self, 10);
+						line = "missNoPoison=" + missNoPoison + " poisoned=" + Poison.IsPoisoned(self);
+						Poison.RemoveAll(self);
+						break;
+					}
+				case "madness": {
+						NPC mummy = Boss(self, "c_hcn_mummy_level_4", 2);
+						NPC pet = (NPC) ThingDef.GetByDefname("c_cerv").Create(self.X + 1, self.Y, self.Z, self.M);
+						pet.ControlMaster = self;
+						pet.MaxHits = 1000;
+						pet.Hits = 1000;
+						player.Profession = Professions.Warrior;
+						int unarmed = MonsterSpecialAttacks.Madden(player, 1000);
+						Item dagger = (Item) ThingDef.GetByDefname("i_dagger").Create(self.Backpack);
+						player.TryEquip(dagger);
+						int warrior = MonsterSpecialAttacks.Madden(player, 1000);
+						pet.ControlMaster = self; //hitting your own pet turns it on you, as for anyone's
+						pet.Hits = 1000;
+						player.Profession = Professions.Mage;
+						int mage = MonsterSpecialAttacks.Madden(player, 1000);
+						dagger.Delete();
+						//other test characters may stand around too: at least the pet each time
+						line = "unarmedWarrior=" + unarmed + " warriorHit=" + (warrior >= 1) + " mageHit=" + (mage >= 1) + " petBurnt=" + (pet.Hits < 1000) +
+							" mummyChance=" + ((NPCDef) mummy.Def).AbilityTuning("hcnMadnessChance")?[0];
+						pet.Delete();
+						break;
+					}
+				case "karma": {
+						NPC rat = Boss(self, "c_hcn_undead_rat", 2);
+						line = "evil=" + (rat.Karma < 0) + " port=" + ((NPCDef) rat.Def).AbilityTuning("npcPortDistance")?[0];
+						break;
+					}
+				default:
+					line = "unknown";
+					break;
+			}
+			Console.WriteLine("HCN_TEST: " + what + " " + line + " |");
+		}
+
 		private static int Puddles(NPC dragon) {
 			int count = 0;
 			foreach (AbstractItem item in dragon.GetMap().GetItemsInRange(dragon.X, dragon.Y, 4)) {

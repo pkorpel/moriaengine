@@ -1683,5 +1683,45 @@ namespace SteamEngine.CompiledScripts {
 			set { if (MonsterSpecialAttacks.WarniakDropDef != null) { MonsterSpecialAttacks.WarniakDropDef.Lifetime = value; } }
 		}
 
+		public double[] HcnPursuitSteps {
+			get { return MonsterSpecialAttacks.HcnPursuitDef?.Steps ?? null; }
+			set { if (MonsterSpecialAttacks.HcnPursuitDef != null) { MonsterSpecialAttacks.HcnPursuitDef.Steps = value; } }
+		}
+
+		public int HcnPursuitMemoryRange {
+			get { return MonsterSpecialAttacks.HcnPursuitDef?.MemoryRange ?? 0; }
+			set { if (MonsterSpecialAttacks.HcnPursuitDef != null) { MonsterSpecialAttacks.HcnPursuitDef.MemoryRange = value; } }
+		}
+
+		public int HcnPursuitRetargetTicks {
+			get { return MonsterSpecialAttacks.HcnPursuitDef?.RetargetTicks ?? 0; }
+			set { if (MonsterSpecialAttacks.HcnPursuitDef != null) { MonsterSpecialAttacks.HcnPursuitDef.RetargetTicks = value; } }
+		}
+
+		public int HcnPursuitForgetTicks {
+			get { return MonsterSpecialAttacks.HcnPursuitDef?.ForgetTicks ?? 0; }
+			set { if (MonsterSpecialAttacks.HcnPursuitDef != null) { MonsterSpecialAttacks.HcnPursuitDef.ForgetTicks = value; } }
+		}
+
+		public double[] HcnPoisonStrength {
+			get { return MonsterSpecialAttacks.HcnPoisonDef?.Strength ?? null; }
+			set { if (MonsterSpecialAttacks.HcnPoisonDef != null) { MonsterSpecialAttacks.HcnPoisonDef.Strength = value; } }
+		}
+
+		public double HcnPoisonSeconds {
+			get { return MonsterSpecialAttacks.HcnPoisonDef?.Seconds ?? 0; }
+			set { if (MonsterSpecialAttacks.HcnPoisonDef != null) { MonsterSpecialAttacks.HcnPoisonDef.Seconds = value; } }
+		}
+
+		public double[] HcnMadnessChance {
+			get { return MonsterSpecialAttacks.HcnMadnessDef?.Chance ?? null; }
+			set { if (MonsterSpecialAttacks.HcnMadnessDef != null) { MonsterSpecialAttacks.HcnMadnessDef.Chance = value; } }
+		}
+
+		public double[] HcnMadnessStrength {
+			get { return MonsterSpecialAttacks.HcnMadnessDef?.Strength ?? null; }
+			set { if (MonsterSpecialAttacks.HcnMadnessDef != null) { MonsterSpecialAttacks.HcnMadnessDef.Strength = value; } }
+		}
+
 	}
 }

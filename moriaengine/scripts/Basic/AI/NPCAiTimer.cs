@@ -543,6 +543,7 @@ namespace SteamEngine.CompiledScripts {
 			if (GuardPursuit.OnFighting(self, this, target)) {
 				return; //#1100 - a guard left a town NPC alone and went home
 			}
+			MonsterSpecialAttacks.TryHcnPursuit(self, target); //#1022 - e_hcn_teletotarget
 			self.Flag_WarMode = true;
 
 			//real-user-reported follow-up to #653's teventStubs batch - a_tevent_e_npc_roundattack

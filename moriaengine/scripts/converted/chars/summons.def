@@ -468,6 +468,7 @@ Dex = 100
 Int = 50
 MaxHits = 400
 MaxStam = 100
+NpcPortDistance = 10
 NaturalDamageType = DamageType.Physical|DamageType.Sharp|DamageType.Summon
 Parry = 1850 2000
 Tactics = 850 900
