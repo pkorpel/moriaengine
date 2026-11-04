@@ -1,5 +1,10 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): performance plan, step A1 = #1163: every code-registered def exists before the world loads
+
+User approved the plan (performance-review.md section 8) with answers: (1) a failed shutdown save only warns, and there stays a way to shut down WITHOUT saving; (2) a skill in progress at a restart finishes, as Sphere; (3) NPC sleep areas stay awake 5 min, the value in steamengine.ini, not .settings; (4) order A1, A2, A3, B1, B2, then the rest. NEW RULE: every code change gets an independent review agent before merge.
+A1, branch 1163-defs-before-load: after ScriptLoader.Load and before WorldSaver.Load (Main.Init and LoadAll), run the static initializers of scripts types deriving from AbstractDef or Plugin that declare a static field of an AbstractDef type; .Register() for Snooping/Discordance; a boot self-check logging an ERROR for any such def not registered under its name. Test: BootLogTests' saved-world boot with the 11 states (red without), and discordance's stats back to pre-discord after a restart.
+
 ## DONE (2026-11-04): 1168 performance review update + implementation plan (#1163 first), docs only, AWAITING GO-AHEAD
 
 User: autosave exists (PeriodicSave.scp, hourly; I'd missed it), asked about sector size and return home (straight step first, A* only when stuck), then: update the review and write a full implementation plan, #1163 first, no implementation until the user approves.
@@ -8715,6 +8720,9 @@ and bin/obj already exist from prior sessions). Full suite:
 
 ## Workflow conventions for this repo (don't re-derive each session)
 
+- **Every code change gets an independent review agent before merging (user rule 2026-11-04).** Core work (saves, timers, AI,
+  the loop) must be bulletproof. Spawn a fresh, read-only review agent with the issue, the diff and the files, not my
+  conclusions; verify each finding, fix the real ones, re-review a substantial fix, and say in the PR what the review found.
 - **Anything that must exist in the world goes through `scripts/Setup` and `.SetupWorld` (#843, user rule 2026-10-30).** Quest
   stones, NPCs, teleports, spawn gems: a `WorldSetup` with permanent piece ids, added to `WorldSetups.All`. Setups only ever
   add what's missing, never replace. See docs/current/03-admin-tooling/world-setup.md.
