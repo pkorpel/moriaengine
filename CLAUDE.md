@@ -1,5 +1,9 @@
 # moriaengine — working state
 
+## NOW (2026-11-04): 1161 performance review (research only, no engine code)
+
+User: find the bottlenecks before the world is populated. Target 50 players at peak, a fully populated world (several maps, big dungeons). Three phases: EreborNext's approach, Sphere 0.56b's approach, then ours against both, measured where possible with a throwaway harness in the scratchpad (never committed; scale down and extrapolate if the 5 GB container can't hold it). Deliverable: docs/current/02-engine-core/performance-review.md in one docs-only PR (assumptions, references with commits, comparison table, ranked problems, proposals, what's fine, order, a rerunnable benchmark setup).
+
 ## DONE (2026-11-04): floors along the sight line (#1158, PR #1159)
 
 User: player at 3000,1251,45 on a floor, titan ranger at 3001,1256,0 outside (nothing above it) still shot the player; the player could loot its corpse. #1149 only checks the endpoint columns. Probe the spot, then make floors block wherever the sight line crosses them.
