@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SteamEngine.CompiledScripts.Dialogs;
 using SteamEngine.Persistence;
 using SteamEngine.Timers;
@@ -116,13 +117,13 @@ namespace SteamEngine.CompiledScripts {
 		internal static DruidMorphAbilityDef DruidMorphDef { get { return Lookup<DruidMorphAbilityDef>("a_tevent_e_ztracene_mesto_druid_medved"); } }
 
 		private static ShapeshifterAbilityDef ShapeshifterOf(NPC self) {
-			if (HasAbilityDef(self, MenivecDef)) {
+			if (Reacts(self, MenivecDef)) {
 				return MenivecDef;
 			}
-			if (HasAbilityDef(self, DruidMorphDef)) {
+			if (Reacts(self, DruidMorphDef)) {
 				return DruidMorphDef;
 			}
-			return HasAbilityDef(self, PowerfulMenivecDef) ? PowerfulMenivecDef : (HasAbilityDef(self, IceMenivecDef) ? (ShapeshifterAbilityDef) IceMenivecDef : null);
+			return Reacts(self, PowerfulMenivecDef) ? PowerfulMenivecDef : (Reacts(self, IceMenivecDef) ? (ShapeshifterAbilityDef) IceMenivecDef : null);
 		}
 
 		internal static void TryShapeshift(NPC self) {
@@ -146,11 +147,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static void Shapeshift(NPC self, ShapeshifterAbilityDef def) {
-			string[] forms = def.Forms.Split(',');
-			NPCDef form = ThingDef.GetByDefname(forms[Globals.dice.Next(forms.Length)].Trim()) as NPCDef;
-			if (form == null) {
+			List<NPCDef> forms = new List<NPCDef>(); //only those that exist: Menivec's c_eye_adamantium_menavec doesn't, and one change in 8 did nothing
+			foreach (string name in def.Forms.Split(',')) {
+				if (ThingDef.GetByDefname(name.Trim()) is NPCDef existing) {
+					forms.Add(existing);
+				}
+			}
+			if (forms.Count == 0) {
 				return;
 			}
+			NPCDef form = forms[Globals.dice.Next(forms.Count)];
 			self.SetTag(ownModelTK, self.Model);
 			self.SetTag(ownNameTK, self.Name);
 			EffectFactory.StationaryEffect(self, SparkleEffect, 6, 20);

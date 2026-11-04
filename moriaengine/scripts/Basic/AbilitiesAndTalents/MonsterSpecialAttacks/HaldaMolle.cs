@@ -134,18 +134,18 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>TrySeeNewPlayers' list: the Halda Molle monsters that react to a new player in sight.</summary>
 		internal static bool HasHaldaMolleSight(NPC self) {
-			return HasAbilityDef(self, FrostWaveDef) || HasAbilityDef(self, DropEggDef) || HasAbilityDef(self, WarniakDropDef);
+			return Reacts(self, FrostWaveDef) || Reacts(self, DropEggDef) || Reacts(self, WarniakDropDef);
 		}
 
 		/// <summary>TryReactToHit's part for Halda Molle.</summary>
 		internal static void TryHaldaMolleReactions(NPC self, Character attacker) {
 			TrySplit(self, attacker);
 			FrostWaveAbilityDef frost = FrostWaveDef;
-			if (HasAbilityDef(self, frost) && RollChance(Tuned(self, "frostWaveChance", frost.Chance))) {
+			if (Reacts(self, frost) && RollChance(Tuned(self, "frostWaveChance", frost.Chance))) {
 				StartFrostWave(self);
 			}
 			WarniakDropAbilityDef drop = WarniakDropDef;
-			if (HasAbilityDef(self, drop)) {
+			if (Reacts(self, drop)) {
 				double now = Globals.TimeInSeconds;
 				if (!((self.GetTag(warniakHitNextTK) is double next) && (next >= now)) && RollChance(Tuned(self, "warniakDropHitChance", drop.HitChance))) {
 					self.SetTag(warniakHitNextTK, now + drop.HitCooldown);
@@ -158,15 +158,15 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>SeeNewPlayer's part for Halda Molle.</summary>
 		internal static void HaldaMolleSeesPlayer(NPC self, Player player) {
 			FrostWaveAbilityDef frost = FrostWaveDef;
-			if (HasAbilityDef(self, frost) && RollChance(Tuned(self, "frostWaveChance", frost.Chance))) {
+			if (Reacts(self, frost) && RollChance(Tuned(self, "frostWaveChance", frost.Chance))) {
 				StartFrostWave(self);
 			}
 			DropEggAbilityDef egg = DropEggDef;
-			if (HasAbilityDef(self, egg) && RollChance(egg.EggChance)) {
+			if (Reacts(self, egg) && RollChance(egg.EggChance)) {
 				LayEgg(self, egg);
 			}
 			WarniakDropAbilityDef drop = WarniakDropDef;
-			if (HasAbilityDef(self, drop)) {
+			if (Reacts(self, drop)) {
 				double now = Globals.TimeInSeconds;
 				if (!((self.GetTag(warniakSightNextTK) is double next) && (next >= now))) {
 					self.SetTag(warniakSightNextTK, now + drop.SightCooldown);
@@ -178,13 +178,13 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>OnMonsterDeath's part for Halda Molle.</summary>
 		internal static void OnHaldaMolleDeath(NPC self) {
 			WarniakDropAbilityDef drop = WarniakDropDef;
-			if (HasAbilityDef(self, drop)) {
+			if (Reacts(self, drop)) {
 				SummonGroup(self, new[] { "c_hm_warniak_1", "c_hm_warniak_2", "c_hm_warniak_3", "c_hm_warniak_4" }, self.X, self.Y, 1, drop.Lifetime, null, false, false);
 			}
 			int count;
 			if (self.GetTag(warniakCountTK) is int left) {
 				count = left;
-			} else if (HasAbilityDef(self, WarniakDegradeDef)) {
+			} else if (Reacts(self, WarniakDegradeDef)) {
 				count = Tuned(self, "warniakCount", new double[] { 0, 0 });
 			} else {
 				return;
@@ -198,7 +198,7 @@ namespace SteamEngine.CompiledScripts {
 		#region e_rozdeleni
 		private static void TrySplit(NPC self, Character attacker) {
 			RozdeleniAbilityDef def = RozdeleniDef;
-			if (!HasAbilityDef(self, def) || IsGuardedByCopy(self) || (self.MaxHits <= 0) ||
+			if (!Reacts(self, def) || IsGuardedByCopy(self) || (self.MaxHits <= 0) ||
 					((self.Hits * 100 / self.MaxHits) < def.CopyFloor) || !RollChance(Tuned(self, "rozdeleniCopyChance", def.CopyChance))) {
 				return;
 			}

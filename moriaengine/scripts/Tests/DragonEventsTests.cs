@@ -770,6 +770,59 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("HCN_TEST: " + what + " " + line + " |");
 		}
 
+		/// <summary>#1146 - proactive bosses.</summary>
+		[SteamFunction]
+		public static void TestProactive(Character self, ScriptArgs sa) {
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			NpcAggroSettings settings = NpcAggroSettings.instance;
+			FireLordAbilityDef fire = MonsterSpecialAttacks.FireLordDef;
+			int explosion = fire.ExplosionOneIn, summon = fire.SummonOneIn;
+			fire.ExplosionOneIn = 1000000;
+			fire.SummonOneIn = 1;
+			//the tick: not at once, then on its interval, then not again before the next
+			NPC lord = Boss(self, "c_fire_lord", 2);
+			bool first = MonsterSpecialAttacks.TryInitiativeTick(lord, self);
+			lord.SetTag(MonsterSpecialAttacks.nextInitiativeTK, 0.0);
+			bool due = MonsterSpecialAttacks.TryInitiativeTick(lord, self);
+			int phoenixes = Near(self, "c_m_phoenix_fire", lord);
+			bool again = MonsterSpecialAttacks.TryInitiativeTick(lord, self);
+			string line = "first=" + first + " due=" + due + " phoenixes=" + phoenixes + " again=" + again;
+			//its own landed blow
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			lord = Boss(self, "c_fire_lord", 2);
+			MonsterSpecialAttacks.TryReactToOwnSwing(lord, self, 5);
+			line += " ownBlow=" + Near(self, "c_m_phoenix_fire", lord);
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			lord = Boss(self, "c_fire_lord", 2);
+			settings.monsterInitiativeOnOwnBlows = false;
+			MonsterSpecialAttacks.TryReactToOwnSwing(lord, self, 5);
+			settings.monsterInitiativeOnOwnBlows = true;
+			line += " ownBlowOff=" + Near(self, "c_m_phoenix_fire", lord);
+			//an ability on the off list stays a reaction
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			lord = Boss(self, "c_fire_lord", 2);
+			settings.monsterInitiativeOff = "a_tevent_e_fire_lord";
+			MonsterSpecialAttacks.TryInitiative(lord, self);
+			settings.monsterInitiativeOff = "";
+			line += " offList=" + Near(self, "c_m_phoenix_fire", lord);
+			fire.ExplosionOneIn = explosion;
+			fire.SummonOneIn = summon;
+			//the Balrog's reflection never acts on its own; as a reaction it still does
+			VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+			NPC balrog = Boss(self, "c_balrogh", 2);
+			BalrogAbilityDef bal = MonsterSpecialAttacks.BalrogDef;
+			int reflect = bal.ReflectOneIn;
+			bal.ReflectOneIn = 1;
+			Mark(self);
+			MonsterSpecialAttacks.TryInitiative(balrog, self);
+			line += " reflectOnOwn=" + (self.Hits < hitsBefore);
+			MonsterSpecialAttacks.TryDamageRuleReactions(balrog, self);
+			line += " reflectOnHit=" + (self.Hits < hitsBefore);
+			bal.ReflectOneIn = reflect;
+			Mark(self);
+			Console.WriteLine("PROACTIVE_TEST: " + line + " |");
+		}
+
 		private static int Puddles(NPC dragon) {
 			int count = 0;
 			foreach (AbstractItem item in dragon.GetMap().GetItemsInRange(dragon.X, dragon.Y, 4)) {
