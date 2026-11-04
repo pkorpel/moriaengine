@@ -399,6 +399,7 @@ namespace SteamEngine.CompiledScripts {
 					MonsterSpecialAttacks.TryInterruptBackstabHide(defender);
 					MonsterSpecialAttacks.TryApplyMultishot(defender);
 					MonsterSpecialAttacks.TryApplyDispelBomb(defender);
+					MonsterSpecialAttacks.TryDragonReactions(attacker, defender); //#1022 the dragons' @aftergetswing
 					if (!attacker.IsDeleted) {
 						MonsterSpecialAttacks.TryApplyCraftMonster(attacker, defender);
 						MonsterSpecialAttacks.TryApplyEyeAttention(attacker, defender);

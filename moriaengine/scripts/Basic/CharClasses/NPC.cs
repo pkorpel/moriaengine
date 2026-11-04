@@ -566,8 +566,42 @@ namespace SteamEngine.CompiledScripts {
 			{ "dispelbombchance", TagKey.Acquire("_npcDispelBombChance_") },
 			{ "dispelbombrange", TagKey.Acquire("_npcDispelBombRange_") },
 			{ "dispelbombcooldown", TagKey.Acquire("_npcDispelBombCooldown_") },
-			{ "warcrycooldown", TagKey.Acquire("_npcWarcryCooldown_") }
+			{ "warcrycooldown", TagKey.Acquire("_npcWarcryCooldown_") },
+			//#1022 dragons: Erebor's tag.dragon_fire_*, dragon_fire_bomb_*, fire_dragon_round_*, dragon_fire_cage_*, dragon_fire_aura_*, bahenny_drak_aura_*
+			{ "firedragonchance", TagKey.Acquire("_npcFireDragonChance_") },
+			{ "firedragoncooldown", TagKey.Acquire("_npcFireDragonCooldown_") },
+			{ "firedragondamage", TagKey.Acquire("_npcFireDragonDamage_") },
+			{ "firedragonfiretype", TagKey.Acquire("_npcFireDragonFireType_") },
+			{ "firedragonbombchance", TagKey.Acquire("_npcFireDragonBombChance_") },
+			{ "firedragonbombcooldown", TagKey.Acquire("_npcFireDragonBombCooldown_") },
+			{ "firedragonbombdamage", TagKey.Acquire("_npcFireDragonBombDamage_") },
+			{ "firedragonbombfiretype", TagKey.Acquire("_npcFireDragonBombFireType_") },
+			{ "firedragonroundchance", TagKey.Acquire("_npcFireDragonRoundChance_") },
+			{ "firedragonroundcooldown", TagKey.Acquire("_npcFireDragonRoundCooldown_") },
+			{ "firedragonrounddamage", TagKey.Acquire("_npcFireDragonRoundDamage_") },
+			{ "firedragonroundfiretype", TagKey.Acquire("_npcFireDragonRoundFireType_") },
+			{ "firedragonroundturns", TagKey.Acquire("_npcFireDragonRoundTurns_") },
+			{ "firedragoncagechance", TagKey.Acquire("_npcFireDragonCageChance_") },
+			{ "firedragoncagecooldown", TagKey.Acquire("_npcFireDragonCageCooldown_") },
+			{ "firedragoncagefiretype", TagKey.Acquire("_npcFireDragonCageFireType_") },
+			{ "firedragoncageduration", TagKey.Acquire("_npcFireDragonCageDuration_") },
+			{ "firedragonaurachance", TagKey.Acquire("_npcFireDragonAuraChance_") },
+			{ "firedragonauracooldown", TagKey.Acquire("_npcFireDragonAuraCooldown_") },
+			{ "firedragonaurainterval", TagKey.Acquire("_npcFireDragonAuraInterval_") },
+			{ "firedragonauraticks", TagKey.Acquire("_npcFireDragonAuraTicks_") },
+			{ "firedragonauradamage", TagKey.Acquire("_npcFireDragonAuraDamage_") },
+			{ "firedragonauraresist", TagKey.Acquire("_npcFireDragonAuraResist_") },
+			{ "swampdragonaurachance", TagKey.Acquire("_npcSwampDragonAuraChance_") },
+			{ "swampdragonauracooldown", TagKey.Acquire("_npcSwampDragonAuraCooldown_") },
+			{ "swampdragonaurainterval", TagKey.Acquire("_npcSwampDragonAuraInterval_") },
+			{ "swampdragonauraticks", TagKey.Acquire("_npcSwampDragonAuraTicks_") },
+			{ "swampdragonauradamage", TagKey.Acquire("_npcSwampDragonAuraDamage_") }
 		};
+
+		/// <summary>#1022 - a per-species tunable by its .def field name, null when unset or unknown.</summary>
+		internal int[] AbilityTuning(string fieldName) {
+			return moreAbilityRangeTags.TryGetValue(fieldName, out TagKey key) ? (this.GetTag(key) as int[]) : null;
+		}
 
 		private int[] GetAbilityRange(string fieldName) {
 			return this.GetTag(moreAbilityRangeTags[fieldName]) as int[];

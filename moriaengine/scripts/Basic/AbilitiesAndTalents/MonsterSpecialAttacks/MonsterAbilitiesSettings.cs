@@ -1011,5 +1011,206 @@ namespace SteamEngine.CompiledScripts {
 			get { return MonsterSpecialAttacks.IceMenivecDef == null ? 0 : MonsterSpecialAttacks.IceMenivecDef.NearDeathRest; }
 			set { if (MonsterSpecialAttacks.IceMenivecDef != null) { MonsterSpecialAttacks.IceMenivecDef.NearDeathRest = value; } }
 		}
+			//#1022 dragons
+		public double[] FireDragonChance {
+			get { return MonsterSpecialAttacks.FireDragonDef?.Chance; }
+			set { if (MonsterSpecialAttacks.FireDragonDef != null) { MonsterSpecialAttacks.FireDragonDef.Chance = value; } }
+		}
+
+		public double[] FireDragonCooldown {
+			get { return MonsterSpecialAttacks.FireDragonDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.FireDragonDef != null) { MonsterSpecialAttacks.FireDragonDef.Cooldown = value; } }
+		}
+
+		public double[] FireDragonDamage {
+			get { return MonsterSpecialAttacks.FireDragonDef?.Damage; }
+			set { if (MonsterSpecialAttacks.FireDragonDef != null) { MonsterSpecialAttacks.FireDragonDef.Damage = value; } }
+		}
+
+		public double[] FireDragonFireType {
+			get { return MonsterSpecialAttacks.FireDragonDef?.FireType; }
+			set { if (MonsterSpecialAttacks.FireDragonDef != null) { MonsterSpecialAttacks.FireDragonDef.FireType = value; } }
+		}
+
+		public double[] FireDragonBombChance {
+			get { return MonsterSpecialAttacks.FireDragonBombDef?.Chance; }
+			set { if (MonsterSpecialAttacks.FireDragonBombDef != null) { MonsterSpecialAttacks.FireDragonBombDef.Chance = value; } }
+		}
+
+		public double[] FireDragonBombCooldown {
+			get { return MonsterSpecialAttacks.FireDragonBombDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.FireDragonBombDef != null) { MonsterSpecialAttacks.FireDragonBombDef.Cooldown = value; } }
+		}
+
+		public double[] FireDragonBombDamage {
+			get { return MonsterSpecialAttacks.FireDragonBombDef?.Damage; }
+			set { if (MonsterSpecialAttacks.FireDragonBombDef != null) { MonsterSpecialAttacks.FireDragonBombDef.Damage = value; } }
+		}
+
+		public double[] FireDragonBombFireType {
+			get { return MonsterSpecialAttacks.FireDragonBombDef?.FireType; }
+			set { if (MonsterSpecialAttacks.FireDragonBombDef != null) { MonsterSpecialAttacks.FireDragonBombDef.FireType = value; } }
+		}
+
+		public double[] FireDragonRoundChance {
+			get { return MonsterSpecialAttacks.FireDragonRoundDef?.Chance; }
+			set { if (MonsterSpecialAttacks.FireDragonRoundDef != null) { MonsterSpecialAttacks.FireDragonRoundDef.Chance = value; } }
+		}
+
+		public double[] FireDragonRoundCooldown {
+			get { return MonsterSpecialAttacks.FireDragonRoundDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.FireDragonRoundDef != null) { MonsterSpecialAttacks.FireDragonRoundDef.Cooldown = value; } }
+		}
+
+		public double[] FireDragonRoundDamage {
+			get { return MonsterSpecialAttacks.FireDragonRoundDef?.Damage; }
+			set { if (MonsterSpecialAttacks.FireDragonRoundDef != null) { MonsterSpecialAttacks.FireDragonRoundDef.Damage = value; } }
+		}
+
+		public double[] FireDragonRoundFireType {
+			get { return MonsterSpecialAttacks.FireDragonRoundDef?.FireType; }
+			set { if (MonsterSpecialAttacks.FireDragonRoundDef != null) { MonsterSpecialAttacks.FireDragonRoundDef.FireType = value; } }
+		}
+
+		public double[] FireDragonRoundTurns {
+			get { return MonsterSpecialAttacks.FireDragonRoundDef?.Turns; }
+			set { if (MonsterSpecialAttacks.FireDragonRoundDef != null) { MonsterSpecialAttacks.FireDragonRoundDef.Turns = value; } }
+		}
+
+		public double[] FireDragonCageChance {
+			get { return MonsterSpecialAttacks.FireDragonCageDef?.Chance; }
+			set { if (MonsterSpecialAttacks.FireDragonCageDef != null) { MonsterSpecialAttacks.FireDragonCageDef.Chance = value; } }
+		}
+
+		public double[] FireDragonCageCooldown {
+			get { return MonsterSpecialAttacks.FireDragonCageDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.FireDragonCageDef != null) { MonsterSpecialAttacks.FireDragonCageDef.Cooldown = value; } }
+		}
+
+		public double[] FireDragonCageFireType {
+			get { return MonsterSpecialAttacks.FireDragonCageDef?.FireType; }
+			set { if (MonsterSpecialAttacks.FireDragonCageDef != null) { MonsterSpecialAttacks.FireDragonCageDef.FireType = value; } }
+		}
+
+		public double[] FireDragonCageDuration {
+			get { return MonsterSpecialAttacks.FireDragonCageDef?.Duration; }
+			set { if (MonsterSpecialAttacks.FireDragonCageDef != null) { MonsterSpecialAttacks.FireDragonCageDef.Duration = value; } }
+		}
+
+		public double FireDragonCageWarriorEscape {
+			get { return MonsterSpecialAttacks.FireDragonCageDef?.WarriorEscape ?? 0; }
+			set { if (MonsterSpecialAttacks.FireDragonCageDef != null) { MonsterSpecialAttacks.FireDragonCageDef.WarriorEscape = value; } }
+		}
+
+		public double[] FireDragonAuraChance {
+			get { return MonsterSpecialAttacks.FireDragonAuraDef?.Chance; }
+			set { if (MonsterSpecialAttacks.FireDragonAuraDef != null) { MonsterSpecialAttacks.FireDragonAuraDef.Chance = value; } }
+		}
+
+		public double[] FireDragonAuraCooldown {
+			get { return MonsterSpecialAttacks.FireDragonAuraDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.FireDragonAuraDef != null) { MonsterSpecialAttacks.FireDragonAuraDef.Cooldown = value; } }
+		}
+
+		public double[] FireDragonAuraInterval {
+			get { return MonsterSpecialAttacks.FireDragonAuraDef?.Interval; }
+			set { if (MonsterSpecialAttacks.FireDragonAuraDef != null) { MonsterSpecialAttacks.FireDragonAuraDef.Interval = value; } }
+		}
+
+		public double[] FireDragonAuraTicks {
+			get { return MonsterSpecialAttacks.FireDragonAuraDef?.Ticks; }
+			set { if (MonsterSpecialAttacks.FireDragonAuraDef != null) { MonsterSpecialAttacks.FireDragonAuraDef.Ticks = value; } }
+		}
+
+		public double[] FireDragonAuraDamage {
+			get { return MonsterSpecialAttacks.FireDragonAuraDef?.Damage; }
+			set { if (MonsterSpecialAttacks.FireDragonAuraDef != null) { MonsterSpecialAttacks.FireDragonAuraDef.Damage = value; } }
+		}
+
+		public double[] FireDragonAuraResist {
+			get { return MonsterSpecialAttacks.FireDragonAuraDef?.Resist; }
+			set { if (MonsterSpecialAttacks.FireDragonAuraDef != null) { MonsterSpecialAttacks.FireDragonAuraDef.Resist = value; } }
+		}
+
+		public double[] SwampDragonAuraChance {
+			get { return MonsterSpecialAttacks.SwampDragonAuraDef?.Chance; }
+			set { if (MonsterSpecialAttacks.SwampDragonAuraDef != null) { MonsterSpecialAttacks.SwampDragonAuraDef.Chance = value; } }
+		}
+
+		public double[] SwampDragonAuraCooldown {
+			get { return MonsterSpecialAttacks.SwampDragonAuraDef?.Cooldown; }
+			set { if (MonsterSpecialAttacks.SwampDragonAuraDef != null) { MonsterSpecialAttacks.SwampDragonAuraDef.Cooldown = value; } }
+		}
+
+		public double[] SwampDragonAuraInterval {
+			get { return MonsterSpecialAttacks.SwampDragonAuraDef?.Interval; }
+			set { if (MonsterSpecialAttacks.SwampDragonAuraDef != null) { MonsterSpecialAttacks.SwampDragonAuraDef.Interval = value; } }
+		}
+
+		public double[] SwampDragonAuraTicks {
+			get { return MonsterSpecialAttacks.SwampDragonAuraDef?.Ticks; }
+			set { if (MonsterSpecialAttacks.SwampDragonAuraDef != null) { MonsterSpecialAttacks.SwampDragonAuraDef.Ticks = value; } }
+		}
+
+		public double[] SwampDragonAuraDamage {
+			get { return MonsterSpecialAttacks.SwampDragonAuraDef?.Damage; }
+			set { if (MonsterSpecialAttacks.SwampDragonAuraDef != null) { MonsterSpecialAttacks.SwampDragonAuraDef.Damage = value; } }
+		}
+
+		public double DragonBloodDamage {
+			get { return MonsterSpecialAttacks.DragonBloodDef?.Damage ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBloodDef != null) { MonsterSpecialAttacks.DragonBloodDef.Damage = value; } }
+		}
+
+		public double DragonBloodPoisonDamage {
+			get { return MonsterSpecialAttacks.DragonBloodDef?.PoisonDamage ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBloodDef != null) { MonsterSpecialAttacks.DragonBloodDef.PoisonDamage = value; } }
+		}
+
+		public double DragonBloodPoisonTicks {
+			get { return MonsterSpecialAttacks.DragonBloodDef?.PoisonTicks ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBloodDef != null) { MonsterSpecialAttacks.DragonBloodDef.PoisonTicks = value; } }
+		}
+
+		public double[] DragonBrainInterval {
+			get { return MonsterSpecialAttacks.DragonBrainDef?.Interval; }
+			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.Interval = value; } }
+		}
+
+		public double DragonBrainRegeneration {
+			get { return MonsterSpecialAttacks.DragonBrainDef?.Regeneration ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.Regeneration = value; } }
+		}
+
+		public double[] DragonBrainWeights {
+			get { return MonsterSpecialAttacks.DragonBrainDef?.Weights; }
+			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.Weights = value; } }
+		}
+
+		public double DragonBrainStampDamage {
+			get { return MonsterSpecialAttacks.DragonBrainDef?.StampDamage ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.StampDamage = value; } }
+		}
+
+		public double DragonBrainStampParalysis {
+			get { return MonsterSpecialAttacks.DragonBrainDef?.StampParalysis ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.StampParalysis = value; } }
+		}
+
+		public double DragonBrainStampCritical {
+			get { return MonsterSpecialAttacks.DragonBrainDef?.StampCritical ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.StampCritical = value; } }
+		}
+
+		public double DragonBrainPoisonStrength {
+			get { return MonsterSpecialAttacks.DragonBrainDef?.PoisonStrength ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.PoisonStrength = value; } }
+		}
+
+		public double DragonBrainAcidDamage {
+			get { return MonsterSpecialAttacks.DragonBrainDef?.AcidDamage ?? 0; }
+			set { if (MonsterSpecialAttacks.DragonBrainDef != null) { MonsterSpecialAttacks.DragonBrainDef.AcidDamage = value; } }
+		}
+
 	}
 }
