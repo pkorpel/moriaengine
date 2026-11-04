@@ -136,6 +136,43 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1022 PR 4 - bosses with damage rules of their own.</summary>
+	[Collection(DragonEventsCollection.Name)]
+	public class DamageRuleBossTests {
+		private readonly GameServerPairFixture fixture;
+
+		public DamageRuleBossTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Do(TestGameClient client, string what) {
+			string line = CommandPermissionTests.Ask(this.fixture, client, ".TestDamageRule \"" + what + "\"", "DAMAGERULE_TEST: " + what + " ");
+			return line;
+		}
+
+		private void Expect(TestGameClient client, string what, string expected) {
+			string line = this.Do(client, what);
+			Assert.True(line.Contains(expected), line);
+		}
+
+		[Fact]
+		public void BalrogRinaldHelmDruidAndTitan() {
+			using var client = CommandPermissionTests.Connect("dragontests", "Rule Fighter");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestDragon \"ready\"", "DRAGON_TEST: ready ");
+			//the Balrog: its fire burns, else weakens; a blow comes back; its shadow curse stops casting, one at a time
+			this.Expect(client, "balrog", "burnt=True stam=0 reflected=True cursed=True noCast=True oneAtATime=True castsAgain=True");
+			//Rinald: hitting him early makes him tougher; nobody but players hurts him; a warrior takes his armor, a mage his fire
+			this.Expect(client, "rinald", "invulGrows=200 npcHurts=False warriorArmor=50 mageFire=25");
+			//the helm's cry finds the hidden a second later
+			this.Expect(client, "helm", "crying=True");
+			Thread.Sleep(1500);
+			this.Expect(client, "helmafter", "hidden=False");
+			//the druid: a bear or a wolf, as Druid, and back
+			this.Expect(client, "druid", "name=Druid form=True back=True");
+			this.Expect(client, "titan", "emotes=True");
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class DragonEventsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "DragonEvents";
