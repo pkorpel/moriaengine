@@ -559,10 +559,18 @@ namespace SteamEngine.Converter {
 				}
 				string fieldName = name == "fame" ? "Fame" : "Karma";
 				MatchCollection matches = numberRE.Matches(value);
+				//#1022 - "KARMA=-{4000 4999}": the minus sits outside the braces and negates the roll
+				string trimmed = value.TrimStart();
+				bool negatedRange = trimmed.StartsWith("-", StringComparison.Ordinal) && trimmed.Substring(1).TrimStart().StartsWith("{", StringComparison.Ordinal);
 				if (matches.Count > 0) {
 					int min = (int) Math.Round(double.Parse(matches[0].Value, CultureInfo.InvariantCulture));
 					if (matches.Count > 1) {
 						int max = (int) Math.Round(double.Parse(matches[1].Value, CultureInfo.InvariantCulture));
+						if (negatedRange) {
+							int lowest = -max;
+							max = -min;
+							min = lowest;
+						}
 						this.Set(fieldName, min + " " + max, comment);
 						//#565 - stash the karma midpoint for the AggroMode derivation in ThirdStage
 						if (name == "karma") {
@@ -998,7 +1006,11 @@ namespace SteamEngine.Converter {
 				{ "tag.e_frosty_wave_strong", "FrostWaveStrength" },
 				{ "tag.warniak_type", "WarniakType" },
 				{ "tag.warniak_count", "WarniakCount" },
-				{ "tag.e_warniak_hit_chance", "WarniakDropHitChance" }
+				{ "tag.e_warniak_hit_chance", "WarniakDropHitChance" },
+				//#1022 HCN tombs
+				{ "tag.npc_port_distance", "NpcPortDistance" }, //f_npc_portTimer's steps, read by e_hcn_teletotarget
+				{ "tag.hcn_madnessAbilityChance", "HcnMadnessChance" },
+				{ "tag.hcn_madnessAbilityStrength", "HcnMadnessStrength" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum

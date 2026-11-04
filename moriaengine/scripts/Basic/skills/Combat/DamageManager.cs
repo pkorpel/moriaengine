@@ -336,6 +336,7 @@ namespace SteamEngine.CompiledScripts {
 					swingArgs.InternalSetFinalDamage(0);
 					MonsterSpecialAttacks.TryDeathBossOwnSwing(attacker); //#1022 e_bomba_boy's @AfterSwing runs on a dodged blow too
 					MonsterSpecialAttacks.TryBalrogSwing(attacker, defender); //#1022 so does e_balrog's
+					MonsterSpecialAttacks.TryHcnMadness(attacker, defender); //#1022 and e_hcn_madnessability's
 					Trigger_AfterSwing(swingArgs);
 					return;
 				}

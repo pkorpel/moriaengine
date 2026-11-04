@@ -607,7 +607,11 @@ namespace SteamEngine.CompiledScripts {
 			{ "frostwavestrength", TagKey.Acquire("_npcFrostWaveStrength_") },
 			{ "warniaktype", TagKey.Acquire("_npcWarniakType_") },
 			{ "warniakcount", TagKey.Acquire("_npcWarniakCount_") },
-			{ "warniakdrophitchance", TagKey.Acquire("_npcWarniakDropHitChance_") }
+			{ "warniakdrophitchance", TagKey.Acquire("_npcWarniakDropHitChance_") },
+			//#1022 HCN tombs: Erebor's tag.npc_port_distance (f_npc_portTimer), tag.hcn_madnessAbilityChance/Strength
+			{ "npcportdistance", TagKey.Acquire("_npcPortDistance_") },
+			{ "hcnmadnesschance", TagKey.Acquire("_npcHcnMadnessChance_") },
+			{ "hcnmadnessstrength", TagKey.Acquire("_npcHcnMadnessStrength_") }
 		};
 
 		/// <summary>#1022 - a per-species tunable by its .def field name, null when unset or unknown.</summary>

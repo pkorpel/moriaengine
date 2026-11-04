@@ -220,6 +220,35 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1022 PR 5b - the HCN tombs' monsters.</summary>
+	[Collection(DragonEventsCollection.Name)]
+	public class HcnTombTests {
+		private readonly GameServerPairFixture fixture;
+
+		public HcnTombTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private void Expect(TestGameClient client, string what, string expected) {
+			string line = CommandPermissionTests.Ask(this.fixture, client, ".TestHcn \"" + what + "\"", "HCN_TEST: " + what + " ");
+			Assert.True(line.Contains(expected), line);
+		}
+
+		[Fact]
+		public void PursuitPoisonMadnessAndKarma() {
+			using var client = CommandPermissionTests.Connect("hcntests", "Tomb Fighter");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestDragon \"ready\"", "DRAGON_TEST: ready ");
+			//a wraith remembers the players, dashes its own 4 tiles, hates a mage over a ranger, and rangers count at all
+			this.Expect(client, "pursuit", "remembers=True steps=4 closer=True mageOverRanger=100 rangerCounts=True");
+			//the snake poisons on a blow that did damage only
+			this.Expect(client, "poison", "missNoPoison=True poisoned=True");
+			//a mad warrior needs a weapon and turns on the pet beside; a mad mage burns it
+			this.Expect(client, "madness", "unarmedWarrior=0 warriorHit=True mageHit=True petBurnt=True mummyChance=666");
+			//the converter's KARMA=-{...} is evil now
+			this.Expect(client, "karma", "evil=True port=8");
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class DragonEventsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "DragonEvents";
