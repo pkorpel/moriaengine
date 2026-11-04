@@ -39,6 +39,10 @@ namespace SteamEngine.Tests.Protocol {
 			this.Expect(client, "live", "started");
 			Thread.Sleep(6000);
 			this.Expect(client, "liveafter", "lost=0 z=45");
+			//#1158 - the user's second spot: 5 tiles in on a floor at z 45 and a ranger on the street just past its edge.
+			//The sight line crosses the floor between them: neither sees the other, a ranger on the same floor does, and
+			//a corpse below the edge is out of reach from a tile inside the railing
+			this.Expect(client, "edge", "at=3000,1251,45 rangerSees=False playerSees=False rangerInteract=False floorRangerSees=True lootFromEdge=False");
 		}
 	}
 

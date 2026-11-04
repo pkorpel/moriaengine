@@ -102,6 +102,25 @@ namespace SteamEngine.CompiledScripts {
 					line = "lost=" + (hitsBefore - self.Hits) + " z=" + self.Z;
 					VerificationTestUtils.CleanupNearbyNpcs(self, 10);
 					break;
+				case "edge": {
+						//#1158 - the user's second spot: player on a floor, ranger outside a few tiles off
+						self.P(3000, 1251, 45);
+						VerificationTestUtils.CleanupNearbyNpcs(self, 10);
+						NPC ranger = (NPC) ThingDef.GetByDefname("c_titan_ranger").Create(3001, 1256, 0, 0);
+						ranger.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+						NPC upstairs = (NPC) ThingDef.GetByDefname("c_titan_ranger").Create(3001, 1254, 0, 0);
+						upstairs.DeleteTimer(TimerKey.Acquire("_npcAiTimer_"));
+						upstairs.P(3001, 1254, 45);
+						line = "at=" + self.X + "," + self.Y + "," + self.Z + " rangerSees=" + ranger.CanSeeLOS(self).Allow + " playerSees=" + self.CanSeeLOS(ranger).Allow +
+							" rangerInteract=" + ranger.CanInteractWith(self).Allow + " floorRangerSees=" + upstairs.CanSeeLOS(self).Allow;
+						//the corpse below the edge, from a tile inside the railing
+						Item loot = (Item) ThingDef.GetByDefname("i_gold").Create(3001, 1256, 0, 0);
+						self.P(3000, 1254, 45);
+						line += " lootFromEdge=" + self.CanReach(loot).Allow;
+						loot.Delete();
+						self.P(X, Y, UpperZ);
+						break;
+					}
 				default:
 					line = "unknown";
 					break;
