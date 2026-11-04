@@ -2198,6 +2198,9 @@ namespace SteamEngine.CompiledScripts {
 				}
 				return false;
 			}
+			if (DragonCage.Refuses(this, x, y, this.M)) { //#1022 a dragon's fire cage
+				return false;
+			}
 			return CharacterCollision.CheckStep(this, map, x, y, z);
 		}
 
@@ -2441,6 +2444,9 @@ namespace SteamEngine.CompiledScripts {
 			CraftingProcessPlugin.Stop(this, true); //#962 - @itemuserdclick
 			if (this is Player player) {
 				WeeklyQuests.OnItemDClick(player, dClicked as Item); //#1090 - e_weekly_itemDclick, before the item's own use
+			}
+			if (DragonCage.TryClick(this, dClicked as Item)) { //#1022 weakening a dragon's fire cage
+				return;
 			}
 
 			//TODO? maybe not in all cases (healing?)? maybe not at all?

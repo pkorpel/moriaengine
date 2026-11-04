@@ -42,8 +42,10 @@ prefixed (`stunChance`, `npcCurseManaChance`...).
 `HazardTiles.cs` stands in for the archive's `i_fire_column_damage`/`i_lightning_damage`. These
 were items lasting 2 s that hurt the first player or pet (summons and mounts included) to step
 on them, then went out. No item is created here. The server keeps a tile registry and the
-client gets a stationary fire-column or lightning effect. **User decision:** a tile also hits
-whoever is already standing on it when it appears (the archive was step-on only).
+client gets a stationary fire-column or lightning effect. A tile also hits whoever is already
+standing on it when it appears. That is faithful to Erebor: Sphere fires an item's `@step` again
+about once a second for whoever stands on it. #797 had called it a change from a step-on-only
+archive; the #1022 spec checked it in EreborNext (`CChar.Tick` -> `CheckLocation`).
 
 ## The abilities
 
@@ -133,3 +135,74 @@ The 19 stubs with an empty block on Erebor and the 3 with no source stay as labe
 ## Guards on sight (#1022)
 
 `GuardSpeech.AttacksOnSight`: a guard attacks anyone it doesn't protect (`IsProtectedBy`, Sphere's `ismyguard`), so Gondor's guards go for Gondor's criminals and murderers unless they're citizens of the guard's town. Players of no realm are left alone unless banned, the user's call, and GMs always. Guards shout when they pick a target. A summon that strikes one dies. Ents attack anyone carrying a `t_weapon_sword`, swords and axes alike. Ostranena's guards go with the bosses.
+
+## Dragons (#1022)
+
+`DragonFire.cs` (the fire tiles and their lingering effects), `DragonEvents.cs` (the 8 abilities), `DragonCageAndBlood.cs`.
+Erebor's `systems/aldaron.scp` and `systems/dragon_events.scp`. Every tunable is on `.settings`, and each species' own
+values come from its archive tags through the converter (`NPCDef.AbilityTuning`).
+
+They react to a landed blow, Erebor's `@aftergetswing`.
+
+**The fire tiles:**
+- **Types:** 1 fire, 2 cold, 3 poison, 4 black, 5 white.
+- **Hitting:** a tile burns 2 s and hits the first living player on it (never pets, NPCs or GMs). A strong tile does its
+  damage, a weak one half, less the player's dragon resist percent. "Draci ohen te nezranil." when the resist is higher.
+- **Lingering effect:** a strong tile's victim takes the type's effect for 6 ticks, a weak tile's for 4:
+  - fire and poison: damage;
+  - cold: a second of paralysis;
+  - black: drains stamina;
+  - white: drains mana.
+
+  The first tick comes after 1 s, then one every 4 s, each weaker. One effect of a type at a time; a new hit renews its
+  count.
+
+**The abilities:**
+- `e_fire_dragon`: " se zhluboka nadychuje". The dragon stands still 1 s (a frozen state the AI keeps,
+  `NPCAiTimer.Freeze`), then breathes Erebor's cone where it faces: 22 or 25 tiles. Tiles out of its line of sight are
+  dropped.
+- `e_fire_dragon_bomb`: a cannonball onto its target and 29 tiles of fire there, with no line of sight needed. Fixed:
+  the ball flies from the dragon (Erebor's started at the attacker).
+- `e_fire_dragon_round`: 2 s later it spins: a turn clockwise and a breath each second, 9 per turn. These tiles skip line
+  of sight, resist and lingering effects.
+- `e_fire_dragon_cage`: every player in the dragon's 64x64 map cell is caged; a warrior slips out 66% of the time.
+  - Fire stands on the 8 tiles around the player for the cage's duration and doesn't burn.
+  - Players can't step through it: "Zar je prilis silny, neda se tam projit!". Erebor pushed them back; here the step is
+    refused.
+  - A double click weakens a tile, at most once a second; the duration/2+1th click puts it out.
+- `e_fire_dragon_aura`: every player in the attacker's 64x64 cell gets the aura, or has it renewed.
+  - It ticks every 5 s, each tick weaker, with fire damage less the dragon resist percent.
+  - It costs stamina too: all of it if less than the tick, else a third.
+  - Mages, necromancers and mystics take three quarters of the damage and lose a quarter of it in mana.
+  - Fixed: the resist counts once, and only where the aura resist is set (Erebor took it twice).
+- `e_bahenny_drak_aura`: the swamp dragon's aura, plain damage with no resist.
+- `e_bahenny_drak_krev`: below 85, 65, 45, 25 and 5% of its hits it bleeds 3 puddles within 3 tiles.
+  - A second later, each puddle hurts everyone next to it: players 80, pets 800.
+  - For 30 minutes, stepping on it (once every 10 s) does 80 fire and poisons a player with dragon-blood poison (40,
+    then less every 4 s, 8 times).
+  - Fixed: a blow that jumps past a threshold still bleeds; Erebor's then blocked every later stage.
+- `e_dragon_brain` (c_dragon_swamp): once it has seen a player within 18 or been hit, it thinks every 4-8 s.
+  - Each thought heals 50 hits and picks by weight 50/20/20/10:
+    - a round attack: a sound and a ripple. Erebor's swamp dragon had no round-attack damage set, so it hurt nobody;
+    - a stamp: it stands still 1 s, then everyone in its map cell takes 120 less 6 a tile (sometimes a piece of the
+      ceiling too) and 2 s of paralysis;
+    - a poison breath at its target, if within 10;
+    - acid on players within 4.
+  - Fixed: it stops thinking when no player is near (Erebor's ran forever).
+
+The 64x64 map cell is Erebor's `sector.allchars`, kept as is: a player 2 tiles away across a cell border is spared, one
+60 tiles away in the cell isn't.
+
+Not ported:
+- `e_q040_dragon_death`: waits for the q040 quest.
+- Dragon armor (q040's reward): so dragon resist comes from the potion only.
+
+Nothing to port, the stubs kept as labels:
+- `e_aldaron_vamp`: its vampire part is commented out on Erebor;
+- `e_berserkbrain_distance_fix`: a Sphere swing-range fix this engine doesn't need;
+- `e_miniq_kun`: the rider's horse already goes with it here;
+- `e_brinbor`: sets a tag nothing reads.
+
+Test: `DragonEventsTests` (protocol): breath with the species' own damage, resist, bomb, spin, aura tick, cage and its
+clicks, blood stages, the brain's stamp.
+
