@@ -93,6 +93,43 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1116 step 9 - the war lieutenants.</summary>
+	[Collection(ConquestCollection.Name)]
+	public class WarLieutenantTests {
+		private static readonly TimeSpan Wait = TimeSpan.FromSeconds(10);
+		private readonly GameServerPairFixture fixture;
+
+		public WarLieutenantTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		[Fact]
+		public void NorbertSellsTheRightToDeclareWar() {
+			using var client = CommandPermissionTests.Connect("conquest", "Conquest Buyer");
+			string ready = this.Ask(client, ".TestLieutenantReady \"29\"", "LIEUTENANT_READY:");
+			uint npc = uint.Parse(ready.Substring(ready.IndexOf("npc=") + 4).Split(' ')[0]);
+			//level 29: too green, nothing paid
+			client.SendSpeech("ahoj");
+			var (uid, _, strings) = client.ReadGumpDialogWithStrings(Wait);
+			Assert.Contains("Vyhlasit utok", strings);
+			Assert.Contains("Ano, to mi vyhovuje. Zaplatim 100 000 GP.", strings);
+			client.SendGumpResponse(uid, 1, new Dictionary<int, string>());
+			Thread.Sleep(500);
+			Assert.Contains("right=False gold=100000", this.Ask(client, ".TestLieutenantState", "LIEUTENANT_STATE:"));
+			//level 30: the right for 100 000
+			this.Ask(client, ".TestLieutenantLevel \"30\"", "LIEUTENANT_LEVEL");
+			client.SendDoubleClick(npc);
+			(uid, _, _) = client.ReadGumpDialogWithStrings(Wait);
+			client.SendGumpResponse(uid, 1, new Dictionary<int, string>());
+			Thread.Sleep(500);
+			Assert.Contains("right=True gold=0", this.Ask(client, ".TestLieutenantState", "LIEUTENANT_STATE:"));
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ConquestCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Conquest";
