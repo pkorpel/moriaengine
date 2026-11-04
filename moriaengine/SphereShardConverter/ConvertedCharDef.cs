@@ -991,7 +991,14 @@ namespace SteamEngine.Converter {
 				{ "tag.e_explosionlava_chance", "LavaBombChance" },
 				{ "tag.e_explosionlava_range", "LavaBombRange" },
 				{ "tag.e_explosionlava_time", "LavaBombCooldown" },
-				{ "tag.bomba_boy_dmg", "BombaBoyDamage" }
+				{ "tag.bomba_boy_dmg", "BombaBoyDamage" },
+				//#1022 Halda Molle
+				{ "tag.e_copy_chance", "RozdeleniCopyChance" },
+				{ "tag.e_frosty_wave_chance", "FrostWaveChance" },
+				{ "tag.e_frosty_wave_strong", "FrostWaveStrength" },
+				{ "tag.warniak_type", "WarniakType" },
+				{ "tag.warniak_count", "WarniakCount" },
+				{ "tag.e_warniak_hit_chance", "WarniakDropHitChance" }
 			};
 
 		//#607 - real archive dam_* token -> this engine's existing DamageType [Flags] enum

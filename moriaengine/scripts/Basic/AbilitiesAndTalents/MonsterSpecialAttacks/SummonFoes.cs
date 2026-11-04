@@ -64,6 +64,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static void OnMonsterDeath(NPC self, Character killedBy) {
 			OnSummonerDeath(self, killedBy); //#1022 the summoning bosses
 			OnDeathBossDeath(self); //#1022 the dying bosses
+			OnHaldaMolleDeath(self); //#1022 e_warniak_drop, e_warniak_degrade
 			ElemTerrorAbilityDef def = ElemTerrorDef;
 			if (!HasAbilityDef(self, def)) {
 				return;

@@ -366,7 +366,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>The NPCDef's per-species value, else the ability's default.</summary>
 		private static int Tuned(Character self, string field, double[] fallback) {
-			int[] own = (self.Def as NPCDef)?.AbilityTuning(field);
+			int[] own = TuningDef(self)?.AbilityTuning(field);
 			return (int) RollTunable(own, fallback);
 		}
 

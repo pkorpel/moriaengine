@@ -600,7 +600,14 @@ namespace SteamEngine.CompiledScripts {
 			{ "lavabombchance", TagKey.Acquire("_npcLavaBombChance_") },
 			{ "lavabombrange", TagKey.Acquire("_npcLavaBombRange_") },
 			{ "lavabombcooldown", TagKey.Acquire("_npcLavaBombCooldown_") },
-			{ "bombaboydamage", TagKey.Acquire("_npcBombaBoyDamage_") }
+			{ "bombaboydamage", TagKey.Acquire("_npcBombaBoyDamage_") },
+			//#1022 Halda Molle: Erebor's tag.e_copy_chance, e_frosty_wave_*, warniak_type, warniak_count, e_warniak_hit_chance
+			{ "rozdelenicopychance", TagKey.Acquire("_npcRozdeleniCopyChance_") },
+			{ "frostwavechance", TagKey.Acquire("_npcFrostWaveChance_") },
+			{ "frostwavestrength", TagKey.Acquire("_npcFrostWaveStrength_") },
+			{ "warniaktype", TagKey.Acquire("_npcWarniakType_") },
+			{ "warniakcount", TagKey.Acquire("_npcWarniakCount_") },
+			{ "warniakdrophitchance", TagKey.Acquire("_npcWarniakDropHitChance_") }
 		};
 
 		/// <summary>#1022 - a per-species tunable by its .def field name, null when unset or unknown.</summary>

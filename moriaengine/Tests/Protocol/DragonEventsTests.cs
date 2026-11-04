@@ -187,6 +187,39 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1022 PR 5a - Halda Molle's fights.</summary>
+	[Collection(DragonEventsCollection.Name)]
+	public class HaldaMolleTests {
+		private readonly GameServerPairFixture fixture;
+
+		public HaldaMolleTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private void Expect(TestGameClient client, string what, string expected) {
+			string line = CommandPermissionTests.Ask(this.fixture, client, ".TestHaldaMolle \"" + what + "\"", "HALDA_TEST: " + what + " ");
+			Assert.True(line.Contains(expected), line);
+		}
+
+		[Fact]
+		public void SplitFrostEggsAndWarniaks() {
+			using var client = CommandPermissionTests.Connect("hmtests", "Halda Fighter");
+			CommandPermissionTests.Ask(this.fixture, client, ".TestDragon \"ready\"", "DRAGON_TEST: ready ");
+			//Bezejmenny splits: 90% for it, 81% for the copy worth a third; nothing hurts it until the copy is gone
+			this.Expect(client, "split", "copies=2 bossHits90=True copyHits81=True copyExp=True copyFloorChance=35 guarded=True released=True");
+			//its frost wave: 59 hits whatever the armor and frozen
+			this.Expect(client, "frost", "lost=59 frozen=True wave=True");
+			//a warniak's eggs: too light to stomp; a stomped one doesn't hatch, the other does, its own kind
+			this.Expect(client, "egg", "tooLight=True stomped=True kind=c_hm_warniak_2");
+			Thread.Sleep(1500);
+			this.Expect(client, "eggafter", "hatched=1 eggsGone=True");
+			//warniak 4 dies into a 3, the 3 into a 2
+			this.Expect(client, "degrade", "threes=1 twos=1");
+			//Marali koren: one warniak for blows within the cooldown, one on sight within its cooldown, four at death
+			this.Expect(client, "drop", "onHits=1 onSight=1 atDeath=4");
+		}
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class DragonEventsCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "DragonEvents";

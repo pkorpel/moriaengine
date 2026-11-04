@@ -58,6 +58,8 @@ namespace SteamEngine.CompiledScripts {
 			CheckHazardTileStep(stepping);
 			CheckDragonTileStep(stepping); //#1022
 			DragonBlood.CheckStep(stepping);
+			CheckFrostStep(stepping); //#1022 e_frosty_wave
+			CheckEggStep(stepping); //#1022 e_drop_egg
 			TryApplyInexhaustible(stepping);
 		}
 
