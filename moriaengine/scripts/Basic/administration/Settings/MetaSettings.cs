@@ -146,6 +146,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
+		[InfoField("AFK")]
+		public AfkSettings AfkSettings {
+			get {
+				return AfkSettings.instance;
+			}
+		}
+
 		[InfoField("Loot")]
 		public LootSettings LootSettings {
 			get {

@@ -117,6 +117,43 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("CAMP_LEVELS: level=" + Camp.Level(self.Account, false) + " afk=" + Camp.Level(self.Account, true));
 		}
 
+		/// <summary>#1107 - a clean slate for the AFK check, a 2 s warning.</summary>
+		[SteamFunction]
+		public static void TestAfkReady(Character self) {
+			MovementSpeedTests.TestTeleportToOpenGround(self);
+			if (Camp.IsInCamp(self)) {
+				Camp.Release(self);
+			}
+			Camp.SetLevel(self.Account, true, 0);
+			while (AfkCheck.Failures(self) > 0) {
+				AfkCheck.ForgiveFailure(self);
+			}
+			AfkSettings.instance.countdownSeconds = 2;
+			Console.WriteLine("AFK_READY: uid=" + self.Uid);
+		}
+
+		[SteamFunction]
+		public static void TestAfkState(Character self) {
+			string letters = (self.GetTimer(AfkCheckTimer.Key) as AfkCheckTimer)?.letters ?? "";
+			int dots = 0;
+			foreach (char letter in letters) {
+				dots += D_AfkCheck.Points(letter).Count;
+			}
+			Console.WriteLine("AFK_STATE: check=" + self.HasTimer(AfkCheckTimer.Key) + " countdown=" + self.HasTimer(AfkCountdownTimer.Key) + " letters=" + letters + " dots=" + dots +
+				" fails=" + AfkCheck.Failures(self) + " inCamp=" + Camp.IsInCamp(self) + " afkLevel=" + Camp.Level(self.Account, true) + " owed=" + Camp.Sentence(self) +
+				" logged=" + AfkLog.Lines.Count + " |");
+		}
+
+		[SteamFunction]
+		public static void TestAfkRestore(Character self) {
+			AfkSettings.instance.countdownSeconds = 15;
+			if (Camp.IsInCamp(self)) {
+				Camp.Release(self);
+			}
+			Camp.SetLevel(self.Account, true, 0);
+			Console.WriteLine("AFK_RESTORED");
+		}
+
 		[SteamFunction]
 		public static void TestForgiveReport(Character self) {
 			bool back = (self.M == before.M) && (Point2D.GetSimpleDistance(self, before) <= 1);

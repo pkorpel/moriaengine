@@ -103,6 +103,83 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1107 - Erebor's AFK check.</summary>
+	[Collection(ModerationCollection.Name)]
+	public class AfkCheckTests {
+		private readonly GameServerPairFixture fixture;
+
+		public AfkCheckTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		private string Ask(TestGameClient client, string speech, string marker) {
+			return CommandPermissionTests.Ask(this.fixture, client, speech, marker);
+		}
+
+		private static string Field(string line, string key) {
+			int at = line.IndexOf(key) + key.Length;
+			return line.Substring(at, line.IndexOf(' ', at) - at);
+		}
+
+		private void Targeted(TestGameClient client, string command, uint self) {
+			client.SendSpeech(command);
+			Thread.Sleep(500);
+			client.SendTargetUid(self);
+			Thread.Sleep(300);
+		}
+
+		/// <summary>A check left to run out.</summary>
+		private string MissOne(TestGameClient client, uint self) {
+			this.Targeted(client, ".afk 2", self);
+			Thread.Sleep(3500);
+			return this.Ask(client, ".TestAfkState", "AFK_STATE:");
+		}
+
+		[Fact]
+		public void TheCheckItsFailuresAndTheCamp() {
+			using var client = CommandPermissionTests.Connect("moderation", "Afk Tester");
+			string ready = this.Ask(client, ".TestAfkReady", "AFK_READY:");
+			uint self = uint.Parse(ready.Substring(ready.IndexOf("uid=") + 4).Trim());
+
+			//the dialog: Erebor's words, and as many red dots as the four letters have in the font
+			this.Targeted(client, ".afk", self);
+			var (gumpUid, layout, strings) = client.ReadGumpDialogWithStrings(TimeSpan.FromSeconds(10));
+			string state = this.Ask(client, ".TestAfkState", "AFK_STATE:");
+			Assert.Contains("check=True", state);
+			Assert.Contains("AFK KONTROLA!", strings);
+			int dots = System.Text.RegularExpressions.Regex.Matches(layout, @"gumppic \d+ \d+ 2360").Count;
+			Assert.True(dots >= 4 * 8, state); //every letter of the font has 8 to 13 dots
+			Assert.Equal(int.Parse(Field(state, "dots=")), dots);
+
+			//a wrong answer: the check goes on and the dialog comes back
+			client.SendGumpResponse(gumpUid, D_AfkCheckOk, new System.Collections.Generic.Dictionary<int, string> { { 1, "TEXT: 1234" } });
+			var (againUid, _) = client.ReadGumpDialog(TimeSpan.FromSeconds(5));
+			Assert.Contains("check=True", this.Ask(client, ".TestAfkState", "AFK_STATE:"));
+			//the right one ends it
+			client.SendGumpResponse(againUid, D_AfkCheckOk, new System.Collections.Generic.Dictionary<int, string> { { 1, "TEXT: " + Field(state, "letters=").ToUpperInvariant() } });
+			Thread.Sleep(500);
+			Assert.Contains("check=False countdown=False letters= dots=0 fails=0 inCamp=False", this.Ask(client, ".TestAfkState", "AFK_STATE:"));
+
+			//two failures are let go, the third sends to the camp for AFK, at Erebor's first AFK level
+			Assert.Contains("fails=1 inCamp=False", this.MissOne(client, self));
+			Assert.Contains("fails=2 inCamp=False", this.MissOne(client, self));
+			Assert.Contains("fails=0 inCamp=True afkLevel=1 owed=1500", this.MissOne(client, self));
+			//in the camp, three more double what's owed
+			this.MissOne(client, self);
+			this.MissOne(client, self);
+			Assert.Contains("inCamp=True afkLevel=2 owed=3000", this.MissOne(client, self));
+
+			//.runafk: the warning, then the check
+			this.Targeted(client, ".runafk", self);
+			Assert.Contains("check=False countdown=True", this.Ask(client, ".TestAfkState", "AFK_STATE:"));
+			Thread.Sleep(3500);
+			Assert.Contains("check=True countdown=False", this.Ask(client, ".TestAfkState", "AFK_STATE:"));
+			this.Ask(client, ".TestAfkRestore", "AFK_RESTORED");
+		}
+
+		private const int D_AfkCheckOk = 1;
+	}
+
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ModerationCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "Moderation";
