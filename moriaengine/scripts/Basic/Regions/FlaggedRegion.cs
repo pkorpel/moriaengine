@@ -68,6 +68,7 @@ namespace SteamEngine.Regions {
 		private bool noMask;
 		private int customFlags;
 		private int elvenGroveX = -1, elvenGroveY = -1;
+		private int battlefield;
 
 		[LoadSection]
 		public FlaggedRegion(PropsSection input)
@@ -171,6 +172,12 @@ namespace SteamEngine.Regions {
 
 		public int ElvenGroveY {
 			get { return this.elvenGroveY; }
+		}
+
+		/// <summary>#1116 - Erebor's tag.bf: this area's place on the front of the keep conquest. 1 and 2 are Gondor's keeps
+		/// (Gondor_1, Gondor_2), -1 and -2 Mordor's; 0 is no battlefield.</summary>
+		public int Battlefield {
+			get { return this.battlefield; }
 		}
 
 		public const int DenyRecallIn = 0x10, DenyRecallOut = 0x20, InstantRes = 0x80;
@@ -367,6 +374,9 @@ namespace SteamEngine.Regions {
 			if (this.HasElvenGrove) {
 				output.WriteLine("elvengrove=" + this.elvenGroveX + "," + this.elvenGroveY);
 			}
+			if (this.battlefield != 0) {
+				output.WriteValue("battlefield", this.battlefield);
+			}
 		}
 
 		public override void LoadLine(string filename, int line, string valueName, string valueString) {
@@ -466,6 +476,9 @@ namespace SteamEngine.Regions {
 					break;
 				case "customflags":
 					this.customFlags = ConvertTools.ParseInt32(valueString.Trim());
+					break;
+				case "battlefield":
+					this.battlefield = ConvertTools.ParseInt32(valueString.Trim());
 					break;
 				case "elvengrove": {
 						string[] xy = valueString.Split(',');
