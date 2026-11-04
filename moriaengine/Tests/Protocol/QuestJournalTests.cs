@@ -28,15 +28,18 @@ namespace SteamEngine.Tests.Protocol {
 				var menu = client.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains(menu.Strings, s => s.Contains("You have no quests yet", StringComparison.Ordinal));
 
-				//the sections that aren't ported say so, and each can be reached
+				//the section that isn't ported says so; the PvP league's (#1116) shows its season
 				AssertWindowIsSolid(menu.LayoutText);
-				foreach (var section in new[] { (2, "Otevrene Dungeony"), (21, "PvP Sezona") }) {
-					client.SendGumpResponse(menu.GumpUid, section.Item1);
-					menu = client.ReadGumpDialogWithStrings(Wait);
-					AssertWindowIsSolid(menu.LayoutText);
-					Assert.Contains(section.Item2, menu.Strings);
-					Assert.Contains(menu.Strings, s => s.Contains("isn't available yet", StringComparison.Ordinal));
-				}
+				client.SendGumpResponse(menu.GumpUid, 2);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				AssertWindowIsSolid(menu.LayoutText);
+				Assert.Contains("Otevrene Dungeony", menu.Strings);
+				Assert.Contains(menu.Strings, s => s.Contains("isn't available yet", StringComparison.Ordinal));
+				client.SendGumpResponse(menu.GumpUid, 21);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				AssertWindowIsSolid(menu.LayoutText);
+				Assert.Contains(menu.Strings, s => s.StartsWith("PvP Sezona ", StringComparison.Ordinal));
+				Assert.Contains("Konec Sezony", menu.Strings);
 				//#1090 - the weekly section: below level 10, when the tasks open
 				client.SendGumpResponse(menu.GumpUid, 11);
 				menu = client.ReadGumpDialogWithStrings(Wait);

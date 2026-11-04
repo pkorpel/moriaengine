@@ -27,6 +27,12 @@ Erebor's `questy/pvpLeague.scp`. Points for killing players of the other realm, 
 - **The board** keeps the first `playersStored` (30), and anyone tied with the 30th. A player moves up past everyone
   with fewer points, so among equals the one who got there first stays above, as Erebor's insertion.
 - **Settings:** `.settings` -> PvP League.
+- **The journal** (`.questy`, the PvP side) shows Erebor's `f_questy_buildPvPLeagueDialog` (`PvpLeaguePage`).
+  - The title "PvP Sezona <n>".
+  - "Hrac" and "Rank", ten rows a page. Places 1-3 are in hue 94, 4-6 in 89, the rest in 51. A name over 14
+    letters is cut to 15 and "...".
+  - Below: "Tvuj Rank" with the player's points and "Konec Sezony" with the end date.
+  - Pages are the journal's sections 21-29, as Erebor's. Opening it starts a new season if the old one has ended.
 - **Storage:** Erebor kept the board on a chest of season books at 2282,2597,80,10. Here it's saved with the world
   (`PvpLeague`), and nothing stands in the world for it.
 
