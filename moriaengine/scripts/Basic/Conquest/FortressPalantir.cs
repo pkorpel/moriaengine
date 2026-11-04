@@ -325,6 +325,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public GuardForce guards;
 
+		/// <summary>The keep's blacklist (Erebor's crystals in the captain stone's "Nepratel" pouch).</summary>
+		[SaveableData]
+		public List<TownBan> bans = new List<TownBan>();
+
 		[LoadingInitializer, DeepCopyImplementation]
 		public KeepState() {
 		}
