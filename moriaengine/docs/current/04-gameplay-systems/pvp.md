@@ -39,3 +39,33 @@ Erebor's `questy/pvpLeague.scp`. Points for killing players of the other realm, 
 Test: `PvpLeagueTests.KillsAssistsRulesBoardAndSeasons` (protocol, two players and a real death). It checks 3 for a
 kill; nothing for a death right after dying, the same realm, a craftsman, rank 2, an arena or a GM; the board with
 ties; and a season roll.
+
+## RP rank
+
+Erebor's `questy/System/RP_rank.scp` (`RpRanks`). A GM rates a character's role-play from -3 to 7, with a short
+reason.
+
+**The bonus.** The rank adds the converted `RP_rank[n]` percent to every experience gain:
+- -3: -30%, -2: -20%, -1: -10%, 0: 0%;
+- 1: 5%, 2: 10%, 3: 20%, 4: 30%, 5: 40%, 6: 55%, 7: 70%.
+
+It's taken from the base amount and added next to a booster's (`LevelingSystem.AddExperience`, Erebor's `addexp`).
+Losses aren't changed.
+
+**For GMs.** `.rprank` (cursor), or the "RP Rank" button of a character's `.info` (Erebor's character-info row), opens
+"RP Rank - <name>":
+- the rank, with a button to change it;
+- "Poznamky:", the last 12 changes as "yyyy/mm/dd: old->new - reason";
+- "Prehled postav na acc:", every character of the account with race, level and rank.
+
+The changer asks for "Nova Hodnota Ranku:" and "Kratky Popis:". A rank outside -3 to 7 is refused with "RP Rank musi
+byt cele cislo mezi -3 a 7 !"; a word counts as 0, as Erebor's eval.
+
+**For players.** `.explevel` shows "RP Rank:".
+
+**Erebor quirks not copied:** its log keys started at "00" in some places and "0" in others, which could leave the
+newest line out of the dialog, and a comma cut the reason. Erebor's Christmas event also wrote its bonus into this
+rank; that event isn't ported.
+
+Test: `RpRankTests.GmSetsItThroughTheDialogsAndItMovesExperience` (protocol: Erebor's percentages, a refused 8, the
+real `.rprank` dialogs, `.explevel`).
