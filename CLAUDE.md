@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-04): 1152 pets walk towards their logged-out owner (branch fix-1152-pets-offline-owner)
+## DONE (2026-11-04): 1152 a ridden mount kept thinking (PR #1153)
 
 User, live: after logout the log kept showing Zostrich pathing to the logged-out Peco II. Find what the AI does with a disconnected follow target, compare Sphere 0.99z8, fix, test.
 User: the character was riding the zostrich. Cause: a ridden mount is Disconnect()ed at its mount spot but NPCAiTimer kept ticking it, so it followed its own rider out of the world (always, not only after logout). Fix: OnTimeout returns for Flag_Disconnected (Sphere ticks no disconnected char). A pet on foot already waits for an offline owner (IsAliveAndValid is false when disconnected). Test RiddenMountTests (FloorAttack collection, account mounttests), red without the fix.
