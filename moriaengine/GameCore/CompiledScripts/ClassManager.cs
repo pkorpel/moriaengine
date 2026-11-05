@@ -359,6 +359,45 @@ namespace SteamEngine.CompiledScripts {
 			*/
 		}
 
+		/// <summary>#1163 - a def made in code, as a static field like `instance = new XDef("p_x", "C# scripts", -1).Register()`,
+		/// only exists once that field is first read, and loading a save doesn't read it: a saved plugin or role naming such a def
+		/// lost it ("No PluginDef reference loaded ... Deleting.") along with its effect. Called after the scripts are loaded, so an
+		/// initializer that looks another def up by name still finds it, and before the world is. Runs the static initializers of
+		/// every def and plugin class holding a def in a static field, then checks that each def made in code is registered under its
+		/// own name (one built without .Register() never is). Only def and plugin classes are looked at: a def made in code belongs in a
+		/// static field of its own def or plugin class (a helper class making one, as StatModSpellsUtils does, needs a Bootstrap()).</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		internal static void InitStaticDefs() {
+			foreach (Type type in ScriptsAssembly.GetTypes()) {
+				if (type.ContainsGenericParameters ||
+						!(typeof(AbstractDef).IsAssignableFrom(type) || typeof(Plugin).IsAssignableFrom(type))) {
+					continue;
+				}
+				List<FieldInfo> defFields = new List<FieldInfo>();
+				foreach (FieldInfo field in type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
+					if (!field.IsLiteral && typeof(AbstractDef).IsAssignableFrom(field.FieldType)) {
+						defFields.Add(field);
+					}
+				}
+				if (defFields.Count == 0) {
+					continue;
+				}
+				try {
+					System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+				} catch (Exception e) {
+					Logger.WriteError("Static initializer of " + Tools.TypeToString(type) + " failed", e);
+					continue;
+				}
+				foreach (FieldInfo field in defFields) {
+					AbstractDef def = field.GetValue(null) as AbstractDef;
+					if ((def != null) && (def.HeaderLine < 0) && (AbstractScript.GetByDefname(def.Defname) != def)) {
+						Logger.WriteError(Tools.TypeToString(type) + "." + field.Name + " holds the def '" + def.Defname +
+							"', which isn't registered under that name: a saved plugin or role using it can't load. Register() it.");
+					}
+				}
+			}
+		}
+
 		//called by Main on the end of startup/recompile process
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal static void InitScripts() {

@@ -153,7 +153,7 @@ namespace SteamEngine.CompiledScripts {
 	public partial class DiscordanceEffectPlugin {
 		private const int LeastSeconds = 10, SkillForASecond = 20, Permille = 1000;
 
-		public static readonly DiscordanceEffectPluginDef defInstance = new DiscordanceEffectPluginDef("p_discordanceEffect_", "C#scripts", -1);
+		public static readonly DiscordanceEffectPluginDef defInstance = (DiscordanceEffectPluginDef) new DiscordanceEffectPluginDef("p_discordanceEffect_", "C#scripts", -1).Register(); //#1163 - never was
 
 		public void On_Assign() {
 			Character cont = (Character) this.Cont;
