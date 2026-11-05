@@ -1972,6 +1972,13 @@ namespace SteamEngine.CompiledScripts {
 			set { this.SetTag(swingStaminaTK, value); }
 		}
 
+		/// <summary>#1201 - an NPC saved asleep wakes after a load: whether a player is near is known only now, and it
+		/// falls asleep again at its first think if nobody is.</summary>
+		public override void On_AfterLoad() {
+			NPCAiTimer.WakeUp(this);
+			base.On_AfterLoad();
+		}
+
 		public override void On_Create() {
 			base.On_Create();
 

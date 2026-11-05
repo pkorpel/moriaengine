@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan #1176: A, B and the B perf comparison DONE, C1 = #1199 merging; next C2
+## NOW (2026-11-05): performance plan #1176: A, B, C1 DONE; C2 = #1201 (NPC sleep) in ../moria-c2, branch 1201-npc-sleep
 
 Plan: docs/current/02-engine-core/performance-review.md section 8 (approved; the user's 4 answers in DONE A1 below). Checklist on umbrella #1176: A1-A3, B1-B6 done; C1, C2, D1, D2, E1-E5 open. Work in the plan's order, one issue + one PR per step, tick #1176 and comment there after each merge.
 Rules for this work (user, 2026-11-04/05):
@@ -9,8 +9,9 @@ Rules for this work (user, 2026-11-04/05):
 - The full protocol suite (~3 h) runs ONCE, after all of #1176 is delivered, not per PR. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180).
 - SIGTERM (docker stop, run-local.sh stop) stays a quick way down WITHOUT saving (user, 2026-11-05).
 Step 1 DONE: B before/after (Release, scale 0.3, 8183f4c vs c5c6996) posted on #1176: alloc -30..-80% (B4), busy -0.4..-2 points, lateness p99 lower in P3-P5, no probe gaps either side (0.3 never overloads the timer thread; B5 shows in TimerFloodTests).
-Step 2: C1 = #1199, branch 1199-walk-home, worktree ../moria-c1 (PR below).
-Next: C2 (NPC sleep; 5 min awake, value in steamengine.ini not .settings).
+C1 = #1199 merged (PR #1200).
+C2 = #1201 in progress (user: start right after C1 merges). Design on the issue: GameCore/Regions/ActivityGrid (64x64 areas per plane, players counted in Sector.AddPlayer/RemovePlayer, awake = player in the 3x3 areas or within npcAreaAwakeSeconds (300, steamengine.ini) after; asleep at boot; AreaWoke + CharacterChangedArea static callbacks cleared in Map.ForgetScripts, grid cleared in Map.ClearThings). NPCAiTimer: at a think in an asleep area, an idle NPC (no target/owner/follow/go point/guarded item/flee, not NeverSleeps) pauses itself (DueInSeconds = -1, pausing inside OnTimeout works: the periodic re-arm happens before OnTimeout), a saved `sleeping` flag; beyond its leash it's put home first (unseen); wake resumes with a staggered first think. No catch-up tick: regen is RegenerationPlugin's own timer. An audit agent lists every per-NPC clock (OnAiTick, GuardPursuit, dragon/boss timers...) for the PR.
+Next after C2: D1, D2, E1-E5.
 Gotchas from this run: never edit scripts/ while a protocol run is going (each boot compiles scripts/ from disk); one test run or build at a time (5 GB box, OOM); worktrees per step (../moria-<step>), rebase = reset --hard origin/main + cherry-pick (git rebase is quirky here); CRLF vs LF per file, edit as bytes; no Co-Authored-By/Claude-Session trailers (hook rejects); commit subject <= 72.
 
 ## DONE (2026-11-05): performance plan C1 = #1199: walking home straight first, A* back-off

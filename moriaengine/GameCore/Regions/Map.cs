@@ -49,6 +49,8 @@ namespace SteamEngine.Regions {
 		private Sector[,] sectors;
 		private StaticRegion[] regions;
 		private readonly byte m;
+		private readonly ActivityGrid activity; //#1201
+		private const int areaSectorShift = ActivityGrid.AreaShift - sectorFactor;
 
 		//private SimpleQueue<Region> dynamicRegions = new SimpleQueue<Region>();
 
@@ -58,6 +60,7 @@ namespace SteamEngine.Regions {
 		private static GroundTileType t_dirt;
 
 		internal static void ForgetScripts() {
+			ActivityGrid.ForgetScripts();
 			t_rock = null;
 			t_grass = null;
 			t_lava = null;
@@ -83,6 +86,33 @@ namespace SteamEngine.Regions {
 		public byte M {
 			get {
 				return this.m;
+			}
+		}
+
+		/// <summary>#1201 - where on this plane a player is near (NPCs sleep elsewhere).</summary>
+		public ActivityGrid Activity {
+			get {
+				return this.activity;
+			}
+		}
+
+		/// <summary>While the world runs only: a load re-adds online players to their sectors, and NPC.On_AfterLoad wakes
+		/// every NPC saved asleep anyway.</summary>
+		private void AreaWoke(int ax, int ay) {
+			Action<Map, int, int> hook = ActivityGrid.AreaWoke;
+			if ((hook != null) && RunLevelManager.IsRunning) {
+				hook(this, ax, ay);
+			}
+		}
+
+		/// <summary>#1201 - a character that isn't a player came onto the map or into another area; while the world runs only.</summary>
+		private static void NotifyChangedArea(Thing thing) {
+			AbstractCharacter ch = thing as AbstractCharacter;
+			if ((ch != null) && !ch.IsPlayer && RunLevelManager.IsRunning) {
+				Action<AbstractCharacter> hook = ActivityGrid.CharacterChangedArea;
+				if (hook != null) {
+					hook(ch);
+				}
 			}
 		}
 
@@ -288,6 +318,7 @@ namespace SteamEngine.Regions {
 			this.numXSectors = this.sizeX >> sectorFactor;
 			this.numYSectors = this.sizeY >> sectorFactor;
 			this.sectors = new Sector[this.numXSectors, this.numYSectors];
+			this.activity = new ActivityGrid(this.sizeX, this.sizeY, this.AreaWoke);
 
 			//we dont do this, because individual sectors are now initialised on-demand
 			//for (ushort sx=0; sx<numXSectors; sx++) {
@@ -353,6 +384,7 @@ namespace SteamEngine.Regions {
 				if (t.IsMulti) {
 					this.AddMulti((AbstractItem) t);
 				}
+				NotifyChangedArea(t); //#1201 - a dismounted mount, a pet out of a vendor
 			}
 		}
 
@@ -368,6 +400,7 @@ namespace SteamEngine.Regions {
 			if (t.IsMulti) {
 				this.AddMulti((AbstractItem) t);
 			}
+			NotifyChangedArea(t);
 		}
 
 		private void AddMulti(AbstractItem multiItem) {
@@ -566,6 +599,9 @@ namespace SteamEngine.Regions {
 				Logger.WriteInfo(Globals.MapTracingOn, "Remove from sector " + oldSx + "," + oldSy + " and add to sector " + newSx + "," + newSy);
 				oldSector.Remove(thing);
 				newSector.Add(thing);
+				if (((oldSx >> areaSectorShift) != (newSx >> areaSectorShift)) || ((oldSy >> areaSectorShift) != (newSy >> areaSectorShift))) {
+					NotifyChangedArea(thing);
+				}
 			}
 			if (thing.IsMulti) {
 				AbstractItem multiItem = (AbstractItem) thing;
@@ -606,6 +642,7 @@ namespace SteamEngine.Regions {
 					sector.ClearThings();
 				}
 			}
+			this.activity.Clear(); //#1201 - the sectors forgot their players without telling it
 		}
 
 		internal static void Init() {
