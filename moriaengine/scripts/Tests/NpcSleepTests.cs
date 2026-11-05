@@ -7,7 +7,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// #1201 - NPCs sleep where no player is near. With the awake time cut to a few seconds: a wild NPC three areas
 	/// away falls asleep, one beyond its leash is put home as it does; one beside the player, a pet following its
-	/// owner, a follower and a NeverSleeps one keep thinking. A sleeper summoned next to the player wakes, a player
+	/// owner, a follower and a NeverSleeps one keep thinking; a pet told to stay sleeps where it stands. A sleeper summoned next to the player wakes, a player
 	/// coming to a sleeper wakes it, and it falls asleep again once the player has been gone the awake time.
 	/// </summary>
 	public static class NpcSleepTests {
@@ -54,6 +54,17 @@ namespace SteamEngine.CompiledScripts {
 			strayAi.hasHome = true;
 			npcs["E"] = stray;
 
+			NPC stayer = Spawn(map, self.X + Far + 20, self.Y + 20); //a pet told to stay, 20 tiles from its old home
+			stayer.ControlMaster = self;
+			stayer.ShouldFollowOwner = false;
+			NPCAiTimer stayerAi = NPCAiTimer.GetFor(stayer);
+			stayerAi.homeX = homeOfE.X;
+			stayerAi.homeY = homeOfE.Y + 4;
+			stayerAi.homeZ = (sbyte) homeOfE.Z;
+			stayerAi.homeM = homeOfE.M;
+			stayerAi.hasHome = true;
+			npcs["G"] = stayer;
+
 			Console.WriteLine("NPC_SLEEP_SETUP: player=" + start + " awakeSeconds=" + ActivityGrid.AwakeSeconds +
 				" playerArea=" + (self.X >> ActivityGrid.AreaShift) + " farArea=" + ((self.X + Far) >> ActivityGrid.AreaShift));
 		}
@@ -68,8 +79,8 @@ namespace SteamEngine.CompiledScripts {
 			foreach (KeyValuePair<string, NPC> pair in npcs) {
 				NPC npc = pair.Value;
 				NPCAiTimer ai = NPCAiTimer.GetFor(npc);
-				Console.WriteLine("NPC_SLEEP: at=" + label + " npc=" + pair.Key + " sleeping=" + ai.IsSleeping + " paused=" + (ai.DueInSeconds < 0) +
-					" pos=" + npc.X + "," + npc.Y + " atHome=" + ((npc.X == ai.homeX) && (npc.Y == ai.homeY)));
+				Console.WriteLine("NPC_SLEEP: at=" + label + " npc=" + pair.Key + " sleeping=" + ai.IsSleeping + " paused=" + ai.IsPaused +
+					" pos=" + npc.X + "," + npc.Y + " atHome=" + ((npc.X == ai.homeX) && (npc.Y == ai.homeY)) + " state=" + ai.LastState);
 			}
 			Console.WriteLine("NPC_SLEEP_REPORTED: " + label);
 		}

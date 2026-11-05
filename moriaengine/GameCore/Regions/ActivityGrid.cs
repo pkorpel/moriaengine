@@ -130,7 +130,10 @@ namespace SteamEngine.Regions {
 				return;
 			}
 			int self = (ay * this.width) + ax;
-			Sanity.IfTrueThrow(this.players[self] <= 0, "ActivityGrid.PlayerLeft(" + ax + "," + ay + ") with no player counted there");
+			if (this.players[self] <= 0) { //can't happen (the sectors pair every arrival with a leaving); never throw mid-move
+				Logger.WriteError("ActivityGrid.PlayerLeft(" + ax + "," + ay + ") with no player counted there");
+				return;
+			}
 			this.players[self]--;
 			for (int dy = -1; dy <= 1; dy++) {
 				for (int dx = -1; dx <= 1; dx++) {

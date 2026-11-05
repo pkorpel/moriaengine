@@ -38,8 +38,9 @@ all count.
   costs nothing until it wakes. Nothing to do means: no target, not fleeing, not held or
   frozen, no "go" point or guarded item, and not following someone it could follow (a
   pet of an offline owner, or a wild NPC a GM once stopped, only stands, so it sleeps).
-  `NeverSleeps` (saved) keeps one awake. One beyond its leash is put back home as it
-  falls asleep: the walk nobody would see.
+  `NeverSleeps` (saved) keeps one awake. A wild one beyond its leash is put back home as
+  it falls asleep, the walk nobody would see, unless a player is near home (then it stays
+  awake and walks); pets and NPCs a GM stopped aren't sent home, they only stand.
 - **Waking** (`NpcSleep`): an area that wakes resumes every sleeper in it; a sleeper
   moved into an awake area (a GM's summon, a teleport, a dismount, a pet out of a
   vendor) wakes at once; `EngageTarget` (pet orders, guards called, a hit from another
@@ -48,12 +49,14 @@ all count.
   after waking is staggered within one think period.
 - **While asleep:** nothing from `OnTimeout` runs, so neither `Think` nor
   `MonsterSpecialAttacks.OnAiTick` (dragon regeneration, backstab hiding, mass leap and
-  dispel bomb ticks, dragon brain sight, @NPCSeeNewPlayer): all of them need a player
-  near or a fight. Its other timers go on: regeneration (`RegenerationPlugin`), poison
+  dispel bomb ticks, dragon brain sight, @NPCSeeNewPlayer): all but a hurt dragon's
+  regeneration need a player near or a fight, and that one waits until it wakes. Its other timers go on: regeneration (`RegenerationPlugin`), poison
   and bleeding, spawn gems, an elite's escape and its 2 s regeneration tick (which only
   heals while hurt). Guard pursuit and boss timers only run in fights.
 - A pet whose owner logs in far from it stays asleep until someone comes near; before,
   it would have walked across the map to them.
+- `npcAreaAwakeSeconds` is read at boot and at a recompile, which reloads the world and
+  wakes every sleeper, so a changed value never strands one.
 
 ### A real "NPC swings but never hits" bug, found and fixed
 

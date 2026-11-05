@@ -33,7 +33,7 @@ namespace SteamEngine.CompiledScripts {
 			int x = ax << ActivityGrid.AreaShift;
 			int y = ay << ActivityGrid.AreaShift;
 			ImmutableRectangle area = new ImmutableRectangle(x, y, x + ActivityGrid.AreaSize - 1, y + ActivityGrid.AreaSize - 1);
-			foreach (AbstractCharacter ch in map.GetNPCsInRectangle(area)) {
+			foreach (AbstractCharacter ch in map.GetNPCsInLoadedSectors(area)) { //an area never visited has no sectors to make
 				NPC npc = ch as NPC;
 				if (npc != null) {
 					NPCAiTimer.WakeUp(npc);

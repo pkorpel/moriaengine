@@ -266,6 +266,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
+			this.sleeping = false; //#1201 - firing means awake, whoever restarted the timer
 			NPC self = cont as NPC;
 			if ((self == null) || self.IsDeleted || self.Flag_Dead) {
 				return;
@@ -314,11 +315,13 @@ namespace SteamEngine.CompiledScripts {
 			if (activity.IsAwake(self.X, self.Y, now)) {
 				return false;
 			}
-			if (this.hasHome && (this.homeM == self.M) && (Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) > this.WanderLeash)) {
-				self.Go(this.homeX, this.homeY, this.homeZ);
-				if (activity.IsAwake(self.X, self.Y, now)) {
-					return false; //someone is near home
+			if (this.hasHome && (this.homeM == self.M) && (self.ControlMaster == null) && (self.FollowTarget == null) &&
+					(Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) > this.WanderLeash)) {
+				//only what Think would walk home (Wander): a pet told to stay, or a wild NPC a GM stopped, stands where it is
+				if (activity.IsAwake(this.homeX, this.homeY, now)) {
+					return false; //someone is near home: it walks there, seen
 				}
+				self.Go(this.homeX, this.homeY, this.homeZ);
 			}
 			this.pathCache = null;
 			this.sleeping = true;
@@ -328,9 +331,10 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1201 - an NPC busy with something keeps thinking wherever it is: a fight, fleeing, an order, a guarded item,
 		/// following someone who is there to follow (as Think's Follow branch would; a pet of an offline owner, or a wild NPC a GM
-		/// once stopped, only stands, so it may sleep).</summary>
+		/// once stopped, only stands, so it may sleep). A held one only stands too; a hit or an order wakes it (EngageTarget).</summary>
 		private bool HasNothingToDo(NPC self) {
-			if ((this.target != null) || (this.fleeSteps > 0) || this.isHeld || (this.frozenUntil > Globals.TimeInSeconds) ||
+			bool fleeing = (this.fleeSteps > 0) && (this.fleeingFrom != null) && !this.fleeingFrom.IsDeleted; //as Think's
+			if ((this.target != null) || fleeing || (this.frozenUntil > Globals.TimeInSeconds) ||
 					(self.PetGoalPoint != null) || (self.GuardedItem != null)) {
 				return false;
 			}

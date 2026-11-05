@@ -101,7 +101,13 @@ namespace SteamEngine.Regions {
 		private void AreaWoke(int ax, int ay) {
 			Action<Map, int, int> hook = ActivityGrid.AreaWoke;
 			if ((hook != null) && RunLevelManager.IsRunning) {
-				hook(this, ax, ay);
+				try {
+					hook(this, ax, ay);
+				} catch (FatalException) {
+					throw;
+				} catch (Exception e) {
+					Logger.WriteError(e); //it runs in the middle of a sector change, which must finish
+				}
 			}
 		}
 
@@ -111,7 +117,13 @@ namespace SteamEngine.Regions {
 			if ((ch != null) && !ch.IsPlayer && RunLevelManager.IsRunning) {
 				Action<AbstractCharacter> hook = ActivityGrid.CharacterChangedArea;
 				if (hook != null) {
-					hook(ch);
+					try {
+						hook(ch);
+					} catch (FatalException) {
+						throw;
+					} catch (Exception e) {
+						Logger.WriteError(e);
+					}
 				}
 			}
 		}
@@ -836,6 +848,27 @@ namespace SteamEngine.Regions {
 				}
 			}
 		}
+		/// <summary>#1201 - as GetNPCsInRectangle, but only in sectors that exist: it makes none (a sector is made on first use
+		/// and never dropped, and one never made holds nothing).</summary>
+		public IEnumerable<AbstractCharacter> GetNPCsInLoadedSectors(ImmutableRectangle rectangle) {
+			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
+			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
+			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
+				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
+					Sector sector = this.sectors[sx, sy];
+					if (sector == null) {
+						continue;
+					}
+					foreach (Thing thing in sector.Things) {
+						AbstractCharacter ch = thing as AbstractCharacter;
+						if ((ch != null) && (ch.Account == null) && (rectangle.Contains(ch))) {
+							yield return ch;
+						}
+					}
+				}
+			}
+		}
+
 		/**
 			This is used by Thing's similarly named methods, but this version allows
 			you to explicitly specify a rectangle to look in.
