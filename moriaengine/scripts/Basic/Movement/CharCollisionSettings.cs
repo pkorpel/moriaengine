@@ -78,6 +78,12 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int npcDetourMaxIterations = 4000;
 
+		/// <summary>#1199 - seconds an NPC doesn't search again, from about the same place, toward a spot it found
+		/// no way to; meanwhile it walks the partial way it found toward a spot to its end, then steps straight at
+		/// the target or stands. 0 = no back-off.</summary>
+		[SaveableData]
+		public double npcFailedPathRetrySeconds = 8;
+
 		/// <summary>#779 - players at 0 stamina, or carrying more than maxLoadPercent of what they can
 		/// carry (STR*4+30 stones), can't move, and walking costs stamina depending on the load
 		/// (Sphere 0.99z8's CheckMoveWalkDir / Calc_DropStamWhileMoving). Off = none of that.</summary>

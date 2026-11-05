@@ -337,5 +337,46 @@ namespace SteamEngine.Tests {
 			}
 			Assert.False(cache.TryGetNextStep(0, NpcPathCache.ReplanEvery, 50, 0, out dir));
 		}
+
+		/// <summary>#1199 - a failed search holds off the next one from about the same spot toward about the same spot,
+		/// for the back-off only; walked away from there, the NPC may search again.</summary>
+		[Fact]
+		public void PathCacheBacksOffAfterAFailedSearch() {
+			NpcPathCache cache = new NpcPathCache();
+			Assert.False(cache.IsBackingOff(0, 0, 10, 0, 100)); //nothing failed yet
+
+			cache.RememberFailedSearch(0, 0, 10, 0, 100, 8);
+			Assert.True(cache.IsBackingOff(0, 0, 10, 0, 100));
+			Assert.True(cache.IsBackingOff(0, 0, 10, 0, 107.9));
+			Assert.True(cache.IsBackingOff(0, 0, 10 + NpcPathCache.FailedTargetDrift, 0, 101)); //about the same target
+			Assert.False(cache.IsBackingOff(0, 0, 10 + NpcPathCache.FailedTargetDrift + 1, 0, 101)); //another target
+			Assert.True(cache.IsBackingOff(NpcPathCache.FailedTargetDrift, 0, 10, 0, 101)); //about the same place
+			Assert.False(cache.IsBackingOff(-NpcPathCache.FailedTargetDrift - 1, 0, 10, 0, 101)); //walked away: search afresh
+			Assert.False(cache.IsBackingOff(0, 0, 10, 0, 108)); //back-off over
+
+			cache.RememberFailedSearch(0, 0, 10, 0, 200, 8);
+			cache.Invalidate(); //a failed step forgets the path, not the failure
+			Assert.True(cache.IsBackingOff(0, 0, 10, 0, 201));
+
+			cache.RememberFailedSearch(0, 0, 10, 0, 300, 0); //back-off of 0 = no back-off
+			Assert.False(cache.IsBackingOff(0, 0, 10, 0, 300));
+		}
+
+		/// <summary>#1199 - the walk home keeps to its path past ReplanEvery steps, but only a path to exactly that spot.</summary>
+		[Fact]
+		public void PathCacheTellsAWalkToItsExactTargetPastReplanEvery() {
+			NpcPathCache cache = new NpcPathCache();
+			Assert.False(cache.IsWalkingTo(0, 0, 20, 0));
+			cache.SetPath(new Direction[12], 0, 0, 20, 0);
+			Assert.False(cache.IsWalkingTo(0, 0, 21, 0)); //another target, even one TryGetNextStep would accept
+			for (int i = 0; i < 11; i++) {
+				Assert.True(cache.IsWalkingTo(i, 0, 20, 0));
+				cache.Advance(i + 1, 0);
+			}
+			Assert.False(cache.IsWalkingTo(10, 0, 20, 0)); //not where the path expects it
+			Assert.True(cache.IsWalkingTo(11, 0, 20, 0)); //a step left, past ReplanEvery
+			cache.Advance(12, 0);
+			Assert.False(cache.IsWalkingTo(12, 0, 20, 0)); //used up
+		}
 	}
 }
