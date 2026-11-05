@@ -54,8 +54,9 @@ namespace SteamEngine.Timers {
 		private static void TimerThread() {
 			while (true) {
 				wakeSignal.Wait();
+				bool cutShort;
 				try {
-					Cycle();
+					cutShort = Cycle();
 				} catch (Exception e) {
 					//this dedicated thread has no other protection - an exception escaping
 					//here (e.g. a rethrown FatalException from ProcessTimingOut) kills it
@@ -67,6 +68,9 @@ namespace SteamEngine.Timers {
 					throw;
 				}
 
+				if (cutShort) {
+					continue; //#1194 - more is due: the next round takes in the changes first, then goes on, no pause
+				}
 				if (priorityQueue.Count == 0) {
 					wakeSignal.Sleep(hasChanges); //it re-checks the changes after its reset: checking first lost a change made between
 				}
@@ -75,9 +79,10 @@ namespace SteamEngine.Timers {
 			}
 		}
 
-		private static void Cycle() {
+		/// <summary>One round; true if it stopped with timers still due (see ProcessTimingOut).</summary>
+		private static bool Cycle() {
 			ProcessChanges();
-			ProcessTimingOut();
+			return ProcessTimingOut();
 		}
 
 		private static bool HasChanges() {
@@ -133,9 +138,16 @@ namespace SteamEngine.Timers {
 			get { return currentTimer; }
 		}
 
+		//#1194 - a round of due timers stops after this long and lets the next round take in new and re-armed timers first.
+		//Before, it ran until none was due: overloaded, it never ended, and a new timer (a skill stroke, a spell) or a re-armed
+		//one waited in the change queue for the whole backlog, so the world froze in multi-second rounds instead of slowing down.
+		private static readonly long roundBudgetTicks = System.Diagnostics.Stopwatch.Frequency / 50; //20 ms
+
+		/// <summary>Runs the due timers; true if it stopped at the round's budget with more still due.</summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		private static void ProcessTimingOut() {
+		private static bool ProcessTimingOut() {
 			TimeSpan now = Globals.TimeAsSpan;
+			long roundStart = System.Diagnostics.Stopwatch.GetTimestamp();
 			while (priorityQueue.Count > 0) {
 				Timer timer = priorityQueue.Peek();
 				//Console.WriteLine("TimingOut timer "+timer);
@@ -156,7 +168,7 @@ namespace SteamEngine.Timers {
 									//#1188 - the world was cleared (a recompile) while this waited for globalLock: the timer is the
 									//old world's, and things aren't deleted by a clear, only forgotten. Fired, it would run for that
 									//world, and a periodic one would keep doing so from the new heap. The next round clears the rest.
-									return;
+									return true;
 								}
 								lock (timer) {
 									//re-check: it may have been deleted or rescheduled while this waited for globalLock
@@ -181,11 +193,15 @@ namespace SteamEngine.Timers {
 							}
 						}
 						currentTimer = null;
+						if (System.Diagnostics.Stopwatch.GetTimestamp() - roundStart >= roundBudgetTicks) {
+							return (priorityQueue.Count > 0) && (priorityQueue.Peek().fireAt < now);
+						}
 					}
 				} else {
-					return;
+					return false;
 				}
 			}
+			return false;
 		}
 
 		public static void Clear() {

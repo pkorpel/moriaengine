@@ -1,8 +1,13 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan B5 (#1194 bounded timer round), then B6 (monotonic clock)
+## NOW (2026-11-05): performance plan B6 = #1196: a monotonic game clock
 
-User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180). SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving. User 2026-11-05: B5 then B6; B4's before/after perf run folded into one comparison at the end of B.
+User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180). SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving. B4's before/after perf run folded into one comparison at the end of B.
+B6, branch b6-monotonic-clock in ../moria-b6: Common/MonotonicTime (Stopwatch, exact Elapsed without overflow), Globals' lastMarkRealTime is a Stopwatch timestamp; also Globals.Time (Sphere's tenths) divided by 10 instead of multiplying, nothing live reads it (serv.time only in unported quests). Fast tests MonotonicTimeTests.
+
+## DONE (2026-11-05): performance plan B5 = #1194: a bounded timer round
+
+ProcessTimingOut stops after a 20 ms budget when the heap's head is still due, Cycle returns that, the thread then skips its 5 ms sleep. Before, a round ran every timer due at its start, rounds grew under overload and a frequently re-armed timer fired once a round. Test TimerFloodTests (2000 periodic 1 ms timers a second = 2x overload, a 0.1 s probe): fix fires=40 maxGap ~220 ms, old code fires=7 maxGap 2011 ms. Review: clean (Monitor's starvation prevention keeps packet handlers bounded as before); attribute placement fixed.
 
 ## DONE (2026-11-05): performance plan B4 = #1192: range queries without LINQ
 
