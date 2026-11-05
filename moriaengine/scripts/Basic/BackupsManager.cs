@@ -226,6 +226,14 @@ namespace SteamEngine.CompiledScripts {
 				DateTime now = DateTime.Now;
 				string path = Tools.CombineMultiplePaths(
 					defaultPath, now.ToString(DateFormat), now.ToString(TimeFormat));
+				//#1183 - a folder per second: a second save within the same one would write over the first (and a failure
+				//would leave a mix of both, set aside whole), so it waits for the next second
+				while (Directory.Exists(path) || File.Exists(path)) {
+					System.Threading.Thread.Sleep(1000 - now.Millisecond);
+					now = DateTime.Now;
+					path = Tools.CombineMultiplePaths(
+						defaultPath, now.ToString(DateFormat), now.ToString(TimeFormat));
+				}
 				Tools.EnsureDirectory(path);
 
 				return path;
