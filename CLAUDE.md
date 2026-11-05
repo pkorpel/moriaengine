@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan #1176: phases A and B DONE; next = the B before/after perf comparison, then C1
+## NOW (2026-11-05): performance plan #1176: A, B and the B perf comparison DONE, C1 = #1199 merging; next C2
 
 Plan: docs/current/02-engine-core/performance-review.md section 8 (approved; the user's 4 answers in DONE A1 below). Checklist on umbrella #1176: A1-A3, B1-B6 done; C1, C2, D1, D2, E1-E5 open. Work in the plan's order, one issue + one PR per step, tick #1176 and comment there after each merge.
 Rules for this work (user, 2026-11-04/05):
@@ -8,9 +8,14 @@ Rules for this work (user, 2026-11-04/05):
 - Each PR: issue first, its own new test, a red check (break the fix, the test must fail), the fast tier (scripts/test-fast.sh, also compiles Release), a generous set of related protocol classes (scripts/test-full.sh "FullyQualifiedName~A|FullyQualifiedName~B"), then PR body listing ONLY what really ran, then `gh pr merge --squash --admin` (CI has no runners).
 - The full protocol suite (~3 h) runs ONCE, after all of #1176 is delivered, not per PR. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180).
 - SIGTERM (docker stop, run-local.sh stop) stays a quick way down WITHOUT saving (user, 2026-11-05).
-Next step 1, the perf comparison the user folded B4's into: Release (PERF_CONFIG=Release scripts/test-perf.sh, PERF_SCALE e.g. 0.3, absolute PERF_OUT) on main BEFORE B3 (8183f4c = B2 merged: Release builds + harness exist from there) vs main now; report game-thread busy, allocMBps, GC pause, timer lateness, probe gaps per phase in a comment on #1176. Release didn't build before B2, so B1/B2 themselves can't be in a Release comparison.
-Next step 2: C1 (walking home: straight step first, A* back-off after a failed search), then C2 (NPC sleep; 5 min awake, value in steamengine.ini not .settings).
+Step 1 DONE: B before/after (Release, scale 0.3, 8183f4c vs c5c6996) posted on #1176: alloc -30..-80% (B4), busy -0.4..-2 points, lateness p99 lower in P3-P5, no probe gaps either side (0.3 never overloads the timer thread; B5 shows in TimerFloodTests).
+Step 2: C1 = #1199, branch 1199-walk-home, worktree ../moria-c1 (PR below).
+Next: C2 (NPC sleep; 5 min awake, value in steamengine.ini not .settings).
 Gotchas from this run: never edit scripts/ while a protocol run is going (each boot compiles scripts/ from disk); one test run or build at a time (5 GB box, OOM); worktrees per step (../moria-<step>), rebase = reset --hard origin/main + cherry-pick (git rebase is quirky here); CRLF vs LF per file, edit as bytes; no Co-Authored-By/Claude-Session trailers (hook rejects); commit subject <= 72.
+
+## DONE (2026-11-05): performance plan C1 = #1199: walking home straight first, A* back-off
+
+NPCAiTimer.WalkHome: a straight step toward home; StepTowardsSmart only when it's refused or while a path planned to home is walked (IsWalkingTo, walked to its end: one search per obstacle; Wander's leash branch calls it). NpcPathCache.RememberFailedSearch/IsBackingOff: a search that failed on terrain (not HitBlocked: #1031 keeps its timing) blocks a new one from within 4 tiles of where it was made toward within 4 tiles of its target for CharCollisionSettings.npcFailedPathRetrySeconds (8); the partial way toward a spot (not a Character) is walked to its end. NPCAiTimer.PathSearches counts A* calls. Tests: AStarTests (back-off, IsWalkingTo), NpcWalkHomeTests (own collection; open 0 searches, wall 1, dead-end tube 1 and it leaves the tube, enclosed 1 vs control 20). Red checks: straight step off, back-off off, the 8-step gate (stuck in the tube after 80 steps), walk-to-end off (wall 2, pocket 4). Two reviews: first found the dead-end ping-pong, target-only back-off killing "go" orders, stale chase paths, test collection sharing; second found replans every 8 steps home; all fixed. Not changed: HitBlocked searches stay exempt (#1031 retries each think so a blocker stepping aside is noticed).
 
 ## DONE (2026-11-05): performance plan B6 = #1196: a monotonic game clock
 

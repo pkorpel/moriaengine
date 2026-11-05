@@ -144,6 +144,9 @@ namespace SteamEngine.CompiledScripts {
 		//#769 - transient, not saved: the path being walked by StepTowardsSmart. Re-planned from scratch after a reload.
 		private NpcPathCache pathCache;
 
+		/// <summary>#1199 - transient: A* searches this NPC has run (tests and measurements read it).</summary>
+		internal int PathSearches { get; private set; }
+
 		//#768 - transient: consecutive think-ticks a "go" order made no progress
 		private int goStuckTicks;
 
@@ -864,8 +867,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Like StepTowards, but routes around obstacles via the real AStar pathfinder (scripts/Basic/AI/PathFinding/AStar.cs) instead of only ever trying the single direct-line direction. Used by Follow, combat approach, the "go" goal point and home-return.
-		/// #769 - the path is cached (NpcPathCache) and walked step by step; it's only re-planned when a step fails, the target moved away from where it was planned to, or every few steps. A character target counts as reached when adjacent (its own tile is occupied), and a target that can't be reached still yields a partial path toward it.</summary>
-		private void StepTowardsSmart(NPC self, IPoint3D target, bool running = false) {
+		/// #769 - the path is cached (NpcPathCache) and walked step by step; it's only re-planned when a step fails, the target moved away from where it was planned to, or every few steps. A character target counts as reached when adjacent (its own tile is occupied), and a target that can't be reached still yields a partial path toward it.
+		/// #1199 - walkToEnd: a path is walked to its end, not replanned every few steps (for a target that doesn't move).</summary>
+		private void StepTowardsSmart(NPC self, IPoint3D target, bool running = false, bool walkToEnd = false) {
 			if (this.pathCache == null) {
 				this.pathCache = new NpcPathCache();
 			}
@@ -878,8 +882,19 @@ namespace SteamEngine.CompiledScripts {
 				this.pathCache.Invalidate(); //something moved into the way since the path was planned
 			}
 
+			double now = Globals.TimeInSeconds;
+			if (this.pathCache.IsBackingOff(self.X, self.Y, target.X, target.Y, now)) {
+				this.StepTowards(self, target, running); //#1199 - no way found there a moment ago, don't search again yet
+				return;
+			}
+
 			bool detour;
 			AStar.Result result = this.PlanPath(self, target, out detour);
+			bool failed = !result.ReachedGoal && !result.HitBlocked;
+			if (failed) {
+				//#1199 - terrain, not characters (#1031 times those itself): the same search would fail again next step
+				this.pathCache.RememberFailedSearch(self.X, self.Y, target.X, target.Y, now, CharCollisionSettings.instance.npcFailedPathRetrySeconds);
+			}
 			Direction[] path = result.Path;
 			if (path == null) {
 				Logger.WriteDebug("NPCAiTimer.StepTowardsSmart: " + self.Name + "#" + self.Uid + " found NO path to " + target + " (" + result.Iterations + " iterations) - falling back to direct step");
@@ -888,7 +903,9 @@ namespace SteamEngine.CompiledScripts {
 			} else if (path.Length == 0) {
 				this.pathCache.Invalidate(); //already there
 			} else {
-				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y, detour);
+				//#1199 - the partial way toward a spot that doesn't move is walked to its end, a replan would only fail again;
+				//toward a character it's replanned as usual, it may move to where it can be reached
+				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y, detour || walkToEnd || (failed && !(target is Character)));
 				if (this.TryStep(self, path[0], running)) {
 					this.pathCache.Advance(self.X, self.Y);
 				} else {
@@ -928,6 +945,7 @@ namespace SteamEngine.CompiledScripts {
 			options.StopWithin = (target is Character) ? 1 : 0;
 			options.BlockedWithin = settings.npcPathCharacterRadius;
 			options.Blocked = (x, y, z) => CharacterCollision.IsTileBlockedFor(self, map, x, y, z);
+			this.PathSearches++;
 			AStar.Result result = AStar.FindPathOnMap(self, target, map, self.MovementSettings, options);
 			if (result.ReachedGoal || !result.HitBlocked) {
 				this.blockedSince = 0;
@@ -945,6 +963,7 @@ namespace SteamEngine.CompiledScripts {
 			options.WindowMargin = settings.npcDetourSearchMargin;
 			options.MaxIterations = settings.npcDetourMaxIterations;
 			options.AllowPartial = false;
+			this.PathSearches++;
 			AStar.Result wide = AStar.FindPathOnMap(self, target, map, self.MovementSettings, options);
 			if (!wide.ReachedGoal) {
 				return result; //really sealed: NPCs can't shove, so it waits at the blockage
@@ -960,19 +979,30 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			if (Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) >= WanderLeash) {
-				//too far from home - head back instead of wandering further away. #211 - route
-				//around obstacles via the same AStar-backed helper Follow/Fight already use,
-				//instead of a bare direct step that could get an NPC stuck pacing against a wall
-				//it could easily have walked around.
+				//too far from home - head back instead of wandering further away
 				if (GuardPursuit.TeleportsHome(self, this)) {
 					return; //#1100 - e_guard's @skillstroke
 				}
-				this.StepTowardsSmart(self, new Point3D(this.homeX, this.homeY, this.homeZ));
+				this.WalkHome(self, new Point3D(this.homeX, this.homeY, this.homeZ));
 				return;
 			}
 
 			Direction dir = (Direction) Globals.dice.Next(8);
 			this.TryStep(self, dir);
+		}
+
+		/// <summary>#1199 - a straight step toward home first, as Sphere's NPCs walk; A* (StepTowardsSmart, #211) only
+		/// when that step is refused, or while a path it planned to home is still being walked (to its end, one
+		/// search per obstacle), so it doesn't step back into the pocket it was routed out of. Leash-edge NPCs used to search on nearly every step.</summary>
+		internal void WalkHome(NPC self, IPoint3D home) {
+			if ((self.X == home.X) && (self.Y == home.Y)) {
+				return; //a WanderLeash of 0 comes here at home too
+			}
+			bool walkingAPath = (this.pathCache != null) && this.pathCache.IsWalkingTo(self.X, self.Y, home.X, home.Y);
+			if (!walkingAPath && this.TryStep(self, Point2D.GetDirFromTo(self, home))) {
+				return;
+			}
+			this.StepTowardsSmart(self, home, false, true); //home doesn't move: no replan halfway, straight steps again after
 		}
 
 		private bool TryStep(NPC self, Direction dir, bool running = false) {
