@@ -17,7 +17,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net;
 using SteamEngine.Common;
 using SteamEngine.Communication;
@@ -70,19 +69,12 @@ namespace SteamEngine.Networking {
 
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
 		public static IEnumerable<AbstractCharacter> GetAllPlayers() {
-#if NOLINQ
 			foreach (GameState state in clients) {
 			    AbstractCharacter ch = state.Character;
 			    if (ch != null) {
 			        yield return ch;
 			    }
 			}
-#else
-			return from GameState state in clients
-				   let ch = state.Character
-				   where ch != null
-				   select ch;
-#endif
 		}
 
 		public static void SendToClientsWhoCanSee(Thing thing, OutgoingPacket outPacket) {

@@ -1,9 +1,12 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan B4 = #1192: range queries without LINQ
+## NOW (2026-11-05): performance plan B5 (#1194 bounded timer round), then B6 (monotonic clock)
 
-User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180). SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving.
-B4, branch b4-nolinq-queries in ../moria-b4: LINQ branches of Map.cs's range queries + GameServer.GetAllPlayers removed, loops kept (IsPlayer == Account != null, nothing overrides it), null guard in GetMultiComponentsInRectangle. Test: fast tier, a broad protocol sample, before/after test-perf on Release.
+User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180). SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving. User 2026-11-05: B5 then B6; B4's before/after perf run folded into one comparison at the end of B.
+
+## DONE (2026-11-05): performance plan B4 = #1192: range queries without LINQ
+
+Map.cs's LINQ branches (NOLINQ was never defined) and GameServer.GetAllPlayers' removed, the plain loops kept. Review: every loop returns what its LINQ did, same order; IsPlayer == Account != null; only GetConnectionsWhoCanSee's rectangle moved to first MoveNext, all callers enumerate at once. Verified: fast 342 (Debug + Release compile), 16 protocol classes / 40 tests green. No separate perf run (one comparison at the end of B).
 
 ## DONE (2026-11-05): #1190 a fallback load came up with no regions
 
