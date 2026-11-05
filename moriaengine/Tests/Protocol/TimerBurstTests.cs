@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
 
@@ -26,6 +27,54 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1187 - a recompile saves the world and loads it again with the timer thread running. The loaded timers wait in
+	/// the change queue for that thread (only it touches the timer heap), so a door opened before the recompile still closes
+	/// after it.</summary>
+	[Collection(TimerRecompileCollection.Name)]
+	public class TimerRecompileTests {
+		private static readonly TimeSpan RecompileWait = TimeSpan.FromSeconds(240);
+		private readonly GameServerPairFixture fixture;
+
+		public TimerRecompileTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		[Fact]
+		public void ASavedTimerFiresAfterARecompile() {
+			using var client = CommandPermissionTests.Connect("timerrecompile", "Recompile Tester");
+			string armed = CommandPermissionTests.Ask(this.fixture, client, ".TestTimerArmSaved 20", "TIMER_SAVED:");
+			Assert.Contains("open=True", armed);
+			string uid = Regex.Match(armed, @"uid=(\d+)").Groups[1].Value;
+
+			int mark = this.fixture.GameOutputSnapshot().Length;
+			client.SendSpeech(".serv.recompile");
+			Assert.True(this.fixture.WaitForGameOutputSince("Recompiling scripts...", mark, TimeSpan.FromSeconds(30)),
+				"No recompile:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
+
+			//commands wait while it recompiles: ask until the reloaded door answers, then until it has closed
+			DateTime until = DateTime.UtcNow + RecompileWait;
+			string state = null;
+			while (DateTime.UtcNow < until) {
+				int askMark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestTimerDoorAt " + uid);
+				if (this.fixture.WaitForGameOutputSince("TIMER_DOOR:", askMark, TimeSpan.FromSeconds(10))) {
+					string output = this.fixture.GameOutputSnapshot();
+					int index = output.LastIndexOf("TIMER_DOOR:", StringComparison.Ordinal);
+					int end = output.IndexOf('\n', index);
+					state = (end < 0) ? output.Substring(index) : output.Substring(index, end - index);
+					if (state.Contains("open=False")) {
+						break;
+					}
+				}
+				Thread.Sleep(2000);
+			}
+			Assert.True(state != null, "The server never answered after the recompile:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
+			Assert.Contains("found=True", state); //the door came back from the save
+			Assert.Contains("open=False", state); //and its timer, loaded during the recompile, fired
+			Assert.DoesNotContain("Timer thread dying", this.fixture.GameOutputSnapshot());
+		}
+	}
+
 	/// <summary>A Thing in the last slot of the array of all Things used to make enumerating them, saves included, throw.</summary>
 	[Collection(ThingsArrayCollection.Name)]
 	public class ThingsArrayTests {
@@ -45,6 +94,11 @@ namespace SteamEngine.Tests.Protocol {
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class ThingsArrayCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "ThingsArray";
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class TimerRecompileCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "TimerRecompile";
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]

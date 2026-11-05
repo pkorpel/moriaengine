@@ -31,7 +31,10 @@ namespace SteamEngine.Timers {
 		private static readonly object changesLock = new object();
 
 		private static TimerPriorityQueue priorityQueue = new TimerPriorityQueue();
-		private static ManualResetEvent manualResetEvent = new ManualResetEvent(false);
+		//#1187 - sets its event only while the timer thread sleeps (no timer scheduled at all); a Set on every change was a
+		//syscall on every re-arm, though the thread is nearly always awake, polling every 5 ms
+		private static readonly WakeSignal wakeSignal = new WakeSignal();
+		private static readonly Func<bool> hasChanges = HasChanges;
 
 		private bool isDeleted;
 		private bool isInChangesQueue;
@@ -49,7 +52,8 @@ namespace SteamEngine.Timers {
 		}
 
 		private static void TimerThread() {
-			while (manualResetEvent.WaitOne()) {
+			while (true) {
+				wakeSignal.Wait();
 				try {
 					Cycle();
 				} catch (Exception e) {
@@ -63,8 +67,8 @@ namespace SteamEngine.Timers {
 					throw;
 				}
 
-				if ((priorityQueue.Count == 0) && !HasChanges()) {
-					manualResetEvent.Reset();
+				if (priorityQueue.Count == 0) {
+					wakeSignal.Sleep(hasChanges); //it re-checks the changes after its reset: checking first lost a change made between
 				}
 
 				Thread.Sleep(5);
@@ -103,7 +107,6 @@ namespace SteamEngine.Timers {
 					priorityQueue.Remove(timer);
 					if (!timer.isDeleted && timer.fireAt >= TimeSpan.Zero) {
 						priorityQueue.Enqueue(timer);
-						manualResetEvent.Set();
 					}
 				}
 			}
@@ -138,8 +141,7 @@ namespace SteamEngine.Timers {
 									if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
 										if (timer.period >= TimeSpan.Zero) {
 											timer.fireAt = fireAt + timer.period;
-											QueueChange(timer);
-											manualResetEvent.Set();
+											QueueChange(timer); //the timer thread itself: the next round takes it, no signal needed
 											timer.isInChangesQueue = true;
 										}
 										currentTimer = timer;
@@ -257,7 +259,7 @@ namespace SteamEngine.Timers {
 				this.fireAt = value;
 				if (!this.isInChangesQueue) {
 					QueueChange(this);
-					manualResetEvent.Set();
+					wakeSignal.Signal();
 					this.isInChangesQueue = true;
 				}
 			}
@@ -268,7 +270,7 @@ namespace SteamEngine.Timers {
 				this.isDeleted = true;
 				if (!this.isInChangesQueue) {
 					QueueChange(this);
-					manualResetEvent.Set();
+					wakeSignal.Signal();
 					this.isInChangesQueue = true;
 				}
 			}
@@ -316,6 +318,13 @@ namespace SteamEngine.Timers {
 		}
 
 		internal static void LoadingFinished() {
+			if (timerThread != null) {
+				//#1187 - a recompile's reload, with the timer thread running: the loaded timers wait in changes for its next round
+				//(taking them into priorityQueue here raced that thread and its sleep, and the swap below could drop one queued meanwhile)
+				Logger.WriteDebug("Loaded timers, the timer thread takes them in.");
+				wakeSignal.Signal();
+				return;
+			}
 			Logger.WriteDebug("Loaded " + priorityQueue.Count + " timers.");
 
 			ProcessChanges();

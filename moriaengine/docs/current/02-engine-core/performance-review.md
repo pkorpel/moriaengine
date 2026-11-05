@@ -412,6 +412,11 @@ Release.
 
 ### 5. The timer thread signals itself on every re-arm — Medium-High (cheap)
 
+**Status: fixed by B3 (#1187).** `Common/WakeSignal` sets the timer thread's event only while that thread sleeps (nothing
+scheduled at all); the thread's own `Set` calls are gone. It also fixed a lost wakeup in the old sleep (check for changes, then
+`Reset`, which wiped a `Set` made between the two), and a script recompile's reload no longer takes the loaded timers into the
+heap from the loading thread while the timer thread runs (it left them in the change queue for that thread instead).
+
 - **Where:** `manualResetEvent.Set()` in `Timer.ProcessChanges`, `ProcessTimingOut` (`GameCore/Timers/Timer.cs:106, 139`)
   and `PrivateSetFireAt` / `Delete` (`:254, 265`). Every periodic timer re-arm, and every timer an NPC reschedules from
   inside its own think, signals the event the timer thread waits on, although that thread is already awake.
