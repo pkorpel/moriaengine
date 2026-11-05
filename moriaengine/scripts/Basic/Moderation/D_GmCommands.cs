@@ -69,6 +69,7 @@ namespace SteamEngine.CompiledScripts {
 			new Group("Svet",
 				new Entry("settings", "nastaveni serveru"),
 				new Entry("save", "ulozit svet"),
+				new Entry("nextsave", "kdy bude dalsi automaticke ulozeni"),
 				new Entry("setupworld", "doplnit do sveta, co chybi"),
 				new Entry("housedoor", "dvere domu (kurzor)"),
 				new Entry("housepad", "dlazdice pred dvermi (kurzor)"),

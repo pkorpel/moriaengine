@@ -264,6 +264,8 @@ namespace SteamEngine.CompiledScripts {
 			this.commands["SetupExpertQuest"] = PLEVEL_ADMIN;
 			this.commands["SetupMasterQuest"] = PLEVEL_ADMIN;
 			this.commands["SetupGrandmasterQuest"] = PLEVEL_ADMIN;
+			this.commands["Exit"] = PLEVEL_ADMIN;//shuts the server down, saving first (#1173)
+			this.commands["ExitNoSave"] = PLEVEL_ADMIN;//shuts the server down without a save (#1173)
 
 			this.commands["DeletePlayer"] = PLEVEL_ADMIN;//only admin can delete players
 			this.commands["DeleteAccount"] = PLEVEL_ADMIN;//only admin can delete accounts

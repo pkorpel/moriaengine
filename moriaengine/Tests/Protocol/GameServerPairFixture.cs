@@ -172,6 +172,21 @@ namespace SteamEngine.Tests.Protocol {
 			get { return this.gameProcess.HasExited ? this.gameProcess.ExitCode : 0; }
 		}
 
+		/// <summary>#1173 - waits for GameCore to go down on its own (.exit, the console); false if it's still up.</summary>
+		public bool WaitForGameExit(TimeSpan timeout) {
+			if (!this.gameProcess.WaitForExit((int) timeout.TotalMilliseconds)) {
+				return false;
+			}
+			this.gameProcess.WaitForExit(); //and its last output read
+			return true;
+		}
+
+		/// <summary>#1173 - a line typed at GameCore's own console: any line shuts it down (Main's Console.ReadLine).</summary>
+		public void SendGameConsoleLine(string line) {
+			this.gameProcess.StandardInput.WriteLine(line);
+			this.gameProcess.StandardInput.Flush();
+		}
+
 		private static FileStream AcquirePortLock() {
 			//machine-wide (temp dir), not per checkout: the ports are shared by every worktree
 			string path = Path.Combine(Path.GetTempPath(), "moria-protocol-servers.lock");
@@ -290,7 +305,7 @@ namespace SteamEngine.Tests.Protocol {
 			psi.Environment[SteamEngine.Common.TestHarness.CommandsVariable] = "1"; //#951 - Test* commands for this server only
 			psi.Environment[SteamEngine.Common.ParentProcessWatchdog.EnvironmentVariable] = Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture);
 			var proc = Process.Start(psi);
-			// Deliberately never write to or close StandardInput - see class comment.
+			// Never written to or closed, but by SendGameConsoleLine - see class comment.
 			return proc;
 		}
 

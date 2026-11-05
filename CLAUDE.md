@@ -1,8 +1,13 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan, step A3 = #1173: save on shutdown, a no-save exit, autosave interval in steamengine.ini
+## NOW (2026-11-05): performance plan, milestone A done: full protocol suite on main, then B1
 
-Branch 1173-shutdown-save in ../moria-1173. User rule 2026-11-05: the full protocol suite runs once per milestone (end of A, end of B), each PR gets its own test, the related classes, red checks and a review agent. A3 closes milestone A: full suite on main after it.
+User rule 2026-11-05: the full protocol suite runs once per milestone (end of A, end of B), each PR gets its own test, the related classes, red checks and a review agent. A1-A3 are merged: run scripts/test-full.sh on main, compare with A1's known 8 failing classes (AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro), then B1 (land the benchmark harness, branch 1161-perf-harness in ../moria-1161).
+Open question for the user: SIGTERM (run-local.sh stop, docker stop) still doesn't save; save on it like .exit, or keep it as a quick no-save way down?
+
+## DONE (2026-11-05): performance plan A3 = #1173: save on shutdown, a no-save exit, autosave interval in steamengine.ini
+
+Branch 1173-shutdown-save. .exit / console exit / a line at GameCore's stdin save first (MainClass.SaveAndExit, a failed save only WARNs); .exitnosave doesn't; both plevel 5, checked inside Globals.Exit/ExitNoSave too (Commands.AuthorizeAnywhereThrow: #406 checks only the first word, .serv.exitnosave let a plevel 4 GM down without a save). autosaveMinutes in steamengine.ini [files] (0 = off), .nextsave (also .information, .gmmenu). Found: a GM's .exit in game never worked (game commands resolve on the character, only the console's on Globals; .save has its own SteamFunction, now .exit/.exitnosave too). Fixed: EnsureDirectory inside the save's try (a throw there skipped @afterSave and the autosave never re-armed); BackupsManager renames a failed save's own folder to <time>.failed (boot gives up after 3 newest); RunLevel set to Shutdown under globalLock before cancelling (a queued .save can't save a world being taken apart); console exitnosave during AwaitingRetry exits; .save reports a failure. Test ShutdownSaveTests (5 boots), 5 red checks. Verified: 21 related classes (25 tests) green, fast 336/336. Gotcha: editing scripts/ during a protocol run contaminates boots (each boot compiles scripts from disk): stop and rerun.
 
 ## DONE (2026-11-05): performance plan A2 = #1172: a skill under way at a save goes on after the restart
 

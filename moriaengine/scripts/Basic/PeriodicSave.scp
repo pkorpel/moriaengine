@@ -1,20 +1,27 @@
-[constants]
-periodicSave_Interval	60*60	//in seconds
+//#1173 - the interval is steamengine.ini's autosaveMinutes ([files]), 0 = no autosave
 
 [triggergroup e_periodicsave_global]
 on=@startup
 RemoveTimer(%PeriodicSave)
-AddTimer(%PeriodicSave, periodicSave_Interval, Save)
+if (Globals.AutosaveMinutes > 0)
+	AddTimer(%PeriodicSave, Globals.AutosaveMinutes * 60, Save)
+endif
 
 on=@beforeSave
 RemoveTimer(%PeriodicSave)
 
 on=@afterSave
-AddTimer(%PeriodicSave, periodicSave_Interval, Save)
+if (Globals.AutosaveMinutes > 0)
+	AddTimer(%PeriodicSave, Globals.AutosaveMinutes * 60, Save)
+endif
 
-//shows info to src
-[function periodicSaveInformation]
+//.nextsave: when the next autosave is due
+[function nextsave]
 local t = serv.GetTimer(%PeriodicSave)
 if (t != null)
-	echo("Next save in <TagMath.TimeSpanToSimpleString(t.DueInSpan)>, interval is <System.TimeSpan.FromSeconds(periodicSave_Interval)>")
+	echo("Next save in <TagMath.TimeSpanToSimpleString(t.DueInSpan)>, interval is <Globals.AutosaveMinutes> minutes")
+elseif (Globals.AutosaveMinutes == 0)
+	echo("No autosave: autosaveMinutes is 0 in steamengine.ini")
+else
+	echo("No autosave due: its timer is not set")
 endif

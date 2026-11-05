@@ -143,7 +143,7 @@ namespace SteamEngine.CompiledScripts {
 		private static ScriptHolder PeriodicSaveInformationFunction {
 			get {
 				if (periodicSaveInformationFunction == null) {
-					periodicSaveInformationFunction = ScriptHolder.GetFunction("periodicSaveInformation");
+					periodicSaveInformationFunction = ScriptHolder.GetFunction("nextsave"); //#1173 - scripts/Basic/PeriodicSave.scp
 				}
 				if (periodicSaveInformationFunction != null) {
 					if (!periodicSaveInformationFunction.IsUnloaded) {

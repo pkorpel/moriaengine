@@ -110,3 +110,35 @@ party. Two of them never called `.Register()` at all.
 **Rule for a new plugin or role def made in code:** keep it in a static field of its def or plugin class and call
 `.Register()` on it. No `Bootstrap()` is needed for it any more. `BootLogTests` saves a world holding one of every such
 plugin and checks they all come back. Add a new one there.
+
+## When the world is saved
+
+- **Automatically**, every `autosaveMinutes` (60 by default), set in the `[files]` section of `steamengine.ini`. 0 turns
+  the autosave off. The timer lives in `scripts/Basic/PeriodicSave.scp`, and a GM's `.nextsave` says when the next save is
+  due. An older `steamengine.ini` without the line gets the default; the line only appears when the file is written anew.
+- **On demand**, with a GM's `.save`.
+- **On a deliberate shutdown** (#1173): an admin's `.exit` (plevel 5), the remote console's `exit`, and a line typed at
+  GameCore's own console all save first (`MainClass.SaveAndExit`). A save that fails or throws only logs a WARNING, and
+  the server goes down anyway: the user chose that over refusing to exit.
+- **Never** on `.exitnosave` (plevel 5; console: `exitnosave`). It logs a WARNING that the world wasn't saved. A crash, a
+  killed process, and the `exit` typed while scripts are waiting for a successful recompile don't save either. A killed
+  process includes `scripts/run-local.sh stop` and `docker stop` (SIGTERM): nothing handles that signal, so they don't save.
+
+Both commands need plevel 5, the console's too (a console login needs only 4, so a plevel 4 console account can't shut
+down any more). The check runs inside `Globals.Exit`/`ExitNoSave` (`Commands.AuthorizeAnywhereThrow`), not only on the
+typed word: #406 checks only a command's first word, so `.show exitnosave` or `.serv.exit` used to reach them unchecked.
+
+The run level drops from Running while the shutdown still holds `globalLock`, so a `.save` or an autosave queued behind it
+can't save a world `Main.Exit` is already taking apart.
+
+A save that fails leaves a half-written folder. A boot tries the newest folders first and gives up after three
+(`WorldSaver.Load`), so a few failed saves in a row could keep the server from starting. `E_BackupsManager_Global` renames
+the folder of a failed save to `<time>.failed`. That name isn't read as a backup, and the folder stays for an admin to look
+at. Only the folder made for that very save is renamed; when the save failed before making one, nothing is.
+
+Until #1173 a GM's `.exit` in the game did nothing ("This code line does nothing"). A command typed in the game resolves on
+the character typing it, and only the console's commands resolve on `Globals`, so `exit` read as a bare word. `.save` worked
+because it has its own `[SteamFunction]`; `.exit` and `.exitnosave` have one now too (`scripts/Basic/administration/Commands.cs`).
+
+A save whose folder can't be made fails the usual way: `@afterSave` still runs with success false, so the autosave timer
+is set again for the next try. A GM's `.save` says when it failed. `autosaveMinutes =` with no number reads as 0, no autosave.
