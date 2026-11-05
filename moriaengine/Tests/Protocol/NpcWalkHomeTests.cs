@@ -5,11 +5,12 @@ using Xunit;
 
 namespace SteamEngine.Tests.Protocol {
 	/// <summary>
-	/// #1199 - walking home: straight steps on open ground with no A* search, round a wall with one, and
-	/// with no way home one search per back-off, not one per step. Server side in
+	/// #1199 - walking home: straight steps on open ground with no A* search, round a wall with one, out of a
+	/// dead-end tube without stepping back in, and with no way home one search per back-off, not one per step.
+	/// Own collection: NpcDetourTests leaves a player standing in its wall's gap on the same ground. Server side in
 	/// scripts/Tests/NpcWalkHomeTests.cs.
 	/// </summary>
-	[Collection(NpcDetourCollection.Name)]
+	[Collection(NpcWalkHomeCollection.Name)]
 	public class NpcWalkHomeTests {
 		private const string TestAccount = "protocoltest";
 		private const string TestPassword = "protocoltest";
@@ -39,6 +40,10 @@ namespace SteamEngine.Tests.Protocol {
 			(bool reached, int searches) wall = Case(output, "wall");
 			Assert.True(wall.reached, output);
 			Assert.InRange(wall.searches, 1, 3);
+
+			(bool reached, int searches) pocket = Case(output, "pocket");
+			Assert.True(pocket.reached, output); //a replan every 8 steps, never a straight step back into the tube
+			Assert.InRange(pocket.searches, 1, 8);
 
 			(bool reached, int searches) enclosed = Case(output, "enclosed");
 			Assert.False(enclosed.reached, output);
@@ -75,5 +80,10 @@ namespace SteamEngine.Tests.Protocol {
 			}
 			throw new TimeoutException("Game server never appeared in AuxiliaryServer's list.", lastFailure);
 		}
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class NpcWalkHomeCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "NpcWalkHome";
 	}
 }

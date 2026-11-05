@@ -882,7 +882,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			double now = Globals.TimeInSeconds;
-			if (this.pathCache.IsBackingOff(target.X, target.Y, now)) {
+			if (this.pathCache.IsBackingOff(self.X, self.Y, target.X, target.Y, now)) {
 				this.StepTowards(self, target, running); //#1199 - no way found there a moment ago, don't search again yet
 				return;
 			}
@@ -892,7 +892,7 @@ namespace SteamEngine.CompiledScripts {
 			bool failed = !result.ReachedGoal && !result.HitBlocked;
 			if (failed) {
 				//#1199 - terrain, not characters (#1031 times those itself): the same search would fail again next step
-				this.pathCache.RememberFailedSearch(target.X, target.Y, now, CharCollisionSettings.instance.npcFailedPathRetrySeconds);
+				this.pathCache.RememberFailedSearch(self.X, self.Y, target.X, target.Y, now, CharCollisionSettings.instance.npcFailedPathRetrySeconds);
 			}
 			Direction[] path = result.Path;
 			if (path == null) {
@@ -902,7 +902,9 @@ namespace SteamEngine.CompiledScripts {
 			} else if (path.Length == 0) {
 				this.pathCache.Invalidate(); //already there
 			} else {
-				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y, detour || failed); //#1199 - a partial way is walked to its end, a replan would only fail again
+				//#1199 - the partial way toward a spot that doesn't move is walked to its end, a replan would only fail again;
+				//toward a character it's replanned as usual, it may move to where it can be reached
+				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y, detour || (failed && !(target is Character)));
 				if (this.TryStep(self, path[0], running)) {
 					this.pathCache.Advance(self.X, self.Y);
 				} else {
@@ -995,8 +997,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((self.X == home.X) && (self.Y == home.Y)) {
 				return; //a WanderLeash of 0 comes here at home too
 			}
-			Direction planned;
-			bool walkingAPath = (this.pathCache != null) && this.pathCache.TryGetNextStep(self.X, self.Y, home.X, home.Y, out planned);
+			bool walkingAPath = (this.pathCache != null) && this.pathCache.IsWalkingTo(self.X, self.Y, home.X, home.Y);
 			if (!walkingAPath && this.TryStep(self, Point2D.GetDirFromTo(self, home))) {
 				return;
 			}

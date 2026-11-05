@@ -27,8 +27,9 @@ namespace SteamEngine.CompiledScripts {
 	/// #1031 - a detour around a blocked passage is walked to its end, unless the target moves
 	/// DetourTargetDrift tiles: a replan halfway would lead back to the same blocked spot.
 	/// #1199 - a search that found no way to its target is remembered: no new search toward a
-	/// spot within FailedTargetDrift tiles of it until the back-off runs out. The partial way such a
-	/// search found is set as a detour, walked to its end.
+	/// spot within FailedTargetDrift tiles of it, from within FailedTargetDrift tiles of where it
+	/// was made, until the back-off runs out. Having walked away from there (the partial way it
+	/// found), the NPC may search again with a fresh budget.
 	/// </summary>
 	public sealed class NpcPathCache {
 		public const int TargetDrift = 2;
@@ -43,6 +44,7 @@ namespace SteamEngine.CompiledScripts {
 		private bool isDetour;
 
 		private bool hasFailure;
+		private int failedFromX, failedFromY;
 		private int failedTargetX, failedTargetY;
 		private double searchAgainAt;
 
@@ -71,6 +73,13 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
+		/// <summary>#1199 - the mover stands where its path to exactly (targetX, targetY) expects it and has steps
+		/// left, however many it took already: the walk home keeps to it rather than stepping back into a pocket.</summary>
+		public bool IsWalkingTo(int moverX, int moverY, int targetX, int targetY) {
+			return this.HasPath && (moverX == this.expectedX) && (moverY == this.expectedY) &&
+				(targetX == this.plannedTargetX) && (targetY == this.plannedTargetY);
+		}
+
 		/// <summary>The step handed out by TryGetNextStep was taken and the mover now stands at (x, y).</summary>
 		public void Advance(int moverX, int moverY) {
 			this.index++;
@@ -82,17 +91,20 @@ namespace SteamEngine.CompiledScripts {
 			this.path = null;
 		}
 
-		/// <summary>#1199 - a search toward (targetX, targetY) didn't reach it at time `now`.</summary>
-		public void RememberFailedSearch(int targetX, int targetY, double now, double backOffSeconds) {
+		/// <summary>#1199 - a search from (moverX, moverY) toward (targetX, targetY) didn't reach it at time `now`.</summary>
+		public void RememberFailedSearch(int moverX, int moverY, int targetX, int targetY, double now, double backOffSeconds) {
 			this.hasFailure = true;
+			this.failedFromX = moverX;
+			this.failedFromY = moverY;
 			this.failedTargetX = targetX;
 			this.failedTargetY = targetY;
 			this.searchAgainAt = now + backOffSeconds;
 		}
 
-		/// <summary>#1199 - true while a recent search toward about the same spot failed: don't search again yet.</summary>
-		public bool IsBackingOff(int targetX, int targetY, double now) {
+		/// <summary>#1199 - true while a recent search from about here toward about the same spot failed: don't search again yet.</summary>
+		public bool IsBackingOff(int moverX, int moverY, int targetX, int targetY, double now) {
 			return this.hasFailure && (now < this.searchAgainAt) &&
+				(Math.Max(Math.Abs(moverX - this.failedFromX), Math.Abs(moverY - this.failedFromY)) <= FailedTargetDrift) &&
 				(Math.Max(Math.Abs(targetX - this.failedTargetX), Math.Abs(targetY - this.failedTargetY)) <= FailedTargetDrift);
 		}
 	}

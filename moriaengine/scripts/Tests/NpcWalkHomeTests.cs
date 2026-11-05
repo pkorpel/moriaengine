@@ -5,14 +5,16 @@ using SteamEngine.Regions;
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// #1199 - an NPC past its leash walks home: straight steps on open ground, no A* search; round a wall
-	/// with one; and with no way home at all, one search per back-off, not one per step. The NPC's own AI
-	/// is paused and its walk home is driven step by step, all inside one command.
+	/// with one; out of a dead-end tube pointing home without stepping back into it; and with no way home
+	/// at all, one search per back-off, not one per step. The NPC's own AI is paused and its walk home is
+	/// driven step by step, all inside one command.
 	/// </summary>
 	public static class NpcWalkHomeTests {
 		private const int HomeDistance = 8;
 		private const int WallOffset = 4;
 		private const int WallHalfLength = 3;
 		private const int MaxSteps = 40;
+		private const int TubeLength = 11; //longer than NpcPathCache.ReplanEvery, so the way out takes a replan
 
 		[SteamFunction]
 		public static void TestNpcWalkHome(Character self) {
@@ -37,6 +39,16 @@ namespace SteamEngine.CompiledScripts {
 				wallDef.Create(wallX, y, map.GetTileZ(wallX, y), self.M);
 			}
 			Report("wall", WalkHomeFrom(start, home, self.M, MaxSteps), home);
+			VerificationTestUtils.CleanupNearbyItems(self, wallDef, 30);
+
+			for (int x = start.X - TubeLength + 1; x <= start.X + 1; x++) {
+				for (int y = start.Y - 1; y <= start.Y + 1; y++) {
+					if (IsTubeWall(start, x, y)) {
+						wallDef.Create(x, y, map.GetTileZ(x, y), self.M);
+					}
+				}
+			}
+			Report("pocket", WalkHomeFrom(start, home, self.M, 80), home);
 			VerificationTestUtils.CleanupNearbyItems(self, wallDef, 30);
 
 			for (int dx = -1; dx <= 1; dx++) {
@@ -76,8 +88,16 @@ namespace SteamEngine.CompiledScripts {
 			walker.Delete();
 		}
 
-		/// <summary>A straight row of HomeDistance steps east, with a way round the wall line within the
-		/// normal search window (asked of AStar itself with the line closed).</summary>
+		/// <summary>Walls along both sides of the row west of start, and across its east end: open only to the west.</summary>
+		private static bool IsTubeWall(Point3D start, int x, int y) {
+			if ((x < start.X - TubeLength + 1) || (x > start.X + 1) || (Math.Abs(y - start.Y) > 1)) {
+				return false;
+			}
+			return (y != start.Y) || (x == start.X + 1);
+		}
+
+		/// <summary>A straight row of HomeDistance steps east and TubeLength + 1 west, with a way round the
+		/// wall line and out of the tube within the normal search window (asked of AStar itself with them closed).</summary>
 		private static Point3D FindOpenGround(Character self) {
 			Map map = self.GetMap();
 			IMovementSettings settings = self.MovementSettings;
@@ -96,7 +116,11 @@ namespace SteamEngine.CompiledScripts {
 						for (int i = 0; (i < HomeDistance) && (end != null); i++) {
 							end = Walk(map, settings, end, Direction.East);
 						}
-						if ((end != null) && HasWayRoundTheWall(map, settings, start, end)) {
+						Point3D west = start;
+						for (int i = 0; (i <= TubeLength) && (west != null); i++) {
+							west = Walk(map, settings, west, Direction.West);
+						}
+						if ((end != null) && (west != null) && HasWayRound(map, settings, start, end, false) && HasWayRound(map, settings, start, end, true)) {
 							return start;
 						}
 					}
@@ -105,11 +129,12 @@ namespace SteamEngine.CompiledScripts {
 			throw new SEException("No ground found for the walk home test");
 		}
 
-		private static bool HasWayRoundTheWall(Map map, IMovementSettings settings, Point3D start, Point3D end) {
+		private static bool HasWayRound(Map map, IMovementSettings settings, Point3D start, Point3D end, bool tube) {
 			int lineX = start.X + WallOffset;
 			AStar.Options options = new AStar.Options {
 				BlockedWithin = int.MaxValue, AllowPartial = false,
-				Blocked = (x, y, z) => (x == lineX) && (Math.Abs(y - start.Y) <= WallHalfLength),
+				Blocked = tube ? (Func<int, int, int, bool>) ((x, y, z) => IsTubeWall(start, x, y)) :
+					((x, y, z) => (x == lineX) && (Math.Abs(y - start.Y) <= WallHalfLength)),
 			};
 			return AStar.FindPathOnMap(start, end, map, settings, options).ReachedGoal;
 		}
