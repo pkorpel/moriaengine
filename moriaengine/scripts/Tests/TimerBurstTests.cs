@@ -1,4 +1,6 @@
 using System;
+using SteamEngine.Persistence;
+using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
 
@@ -65,12 +67,56 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("TIMER_SAVED: uid=" + probe.Uid + " open=" + probe.IsDoorOpen + " |");
 		}
 
+		/// <summary>#1188 - many timers on Globals firing every tenth of a second, saved with it, so the timer thread is busy
+		/// firing them when a recompile takes globalLock and waits holding one. A recompile replaces Globals with a new instance
+		/// and the old one never reads as deleted (unlike a forgotten Thing, whose bound timers drop themselves): a probe firing
+		/// for a Globals that isn't the current one is an old timer the thread carried through the recompile.</summary>
+		[SteamFunction]
+		public static void TestStaleProbeArm(Character self, ScriptArgs sa) {
+			int count = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
+			for (int i = 0; i < count; i++) {
+				Globals.Instance.AddTimer(TimerKey.Acquire("_stale_probe_" + i), new StaleProbeTimer()).PeriodInSeconds = 0.1;
+			}
+			Console.WriteLine("STALE_ARMED: count=" + count + " |");
+		}
+
+		[SteamFunction]
+		public static void TestStaleProbeStop(Character self, ScriptArgs sa) {
+			int count = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
+			int found = 0;
+			for (int i = 0; i < count; i++) {
+				TimerKey key = TimerKey.Acquire("_stale_probe_" + i);
+				if (Globals.Instance.GetTimer(key) != null) {
+					found++;
+					Globals.Instance.DeleteTimer(key);
+				}
+			}
+			Console.WriteLine("STALE_STOPPED: found=" + found + " fired=" + StaleProbeTimer.fired + " |");
+		}
+
 		/// <summary>The door TestTimerArmSaved made, found by its uid (after a recompile no script static survives).</summary>
 		[SteamFunction]
 		public static void TestTimerDoorAt(Character self, ScriptArgs sa) {
 			int uid = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
 			Item door = Thing.UidGetThing(uid) as Item;
 			Console.WriteLine("TIMER_DOOR: found=" + (door != null) + " open=" + ((door != null) && door.IsDoorOpen) + " |");
+		}
+	}
+
+	/// <summary>#1188 - see TimerBurstTests.TestStaleProbeArm. Quiet but for a count, unless it fires for an old Globals.</summary>
+	[SaveableClass, DeepCopyableClass]
+	public class StaleProbeTimer : BoundTimer {
+		internal static int fired;
+
+		[LoadingInitializer, DeepCopyImplementation]
+		public StaleProbeTimer() {
+		}
+
+		protected override void OnTimeout(TagHolder cont) {
+			fired++;
+			if (cont != Globals.Instance) {
+				Console.WriteLine("STALE_PROBE: a timer of the old world fired |");
+			}
 		}
 	}
 }

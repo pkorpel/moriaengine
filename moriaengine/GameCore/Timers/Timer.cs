@@ -92,15 +92,31 @@ namespace SteamEngine.Timers {
 			}
 		}
 
-		private static Timer NextChange() {
+		//#1188 - Clear() with the timer thread running bumps this instead of touching priorityQueue, which only that thread may
+		//touch (Clear from the recompiling thread nulled the heap under its Peek, and the thread died). Its own heap belongs to
+		//seenGeneration, which only it reads and writes once it runs.
+		private static volatile int generation;
+		private static int seenGeneration;
+
+		/// <summary>The next change, and whether a Clear came since the last one: then the heap goes before this change goes in,
+		/// as the changes queued before that Clear were dropped with it.</summary>
+		private static Timer NextChange(out bool cleared) {
 			lock (changesLock) {
+				cleared = (generation != seenGeneration);
+				seenGeneration = generation;
 				return (changes.Count > 0) ? changes.Dequeue() : null;
 			}
 		}
 
 		private static void ProcessChanges() {
-			Timer timer;
-			while ((timer = NextChange()) != null) {
+			while (true) {
+				Timer timer = NextChange(out bool cleared);
+				if (cleared) {
+					priorityQueue.Clear();
+				}
+				if (timer == null) {
+					return;
+				}
 				lock (timer) {
 					timer.isInChangesQueue = false;
 
@@ -136,6 +152,12 @@ namespace SteamEngine.Timers {
 						lock (MainClass.globalLock) {
 							long perfT0 = PerfCounters.Acquired(perfW0);
 							try {
+								if (generation != seenGeneration) {
+									//#1188 - the world was cleared (a recompile) while this waited for globalLock: the timer is the
+									//old world's, and things aren't deleted by a clear, only forgotten. Fired, it would run for that
+									//world, and a periodic one would keep doing so from the new heap. The next round clears the rest.
+									return;
+								}
 								lock (timer) {
 									//re-check: it may have been deleted or rescheduled while this waited for globalLock
 									if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
@@ -167,10 +189,14 @@ namespace SteamEngine.Timers {
 		}
 
 		public static void Clear() {
-			priorityQueue.Clear();
 			lock (changesLock) {
 				changes.Clear();
+				if (timerThread != null) {
+					generation++; //#1188 - the timer thread clears its own heap, see NextChange
+					return;
+				}
 			}
+			priorityQueue.Clear(); //no timer thread yet: nothing else touches it
 		}
 
 		protected abstract void OnTimeout();
