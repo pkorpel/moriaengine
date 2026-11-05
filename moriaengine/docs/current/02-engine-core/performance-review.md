@@ -783,7 +783,8 @@ prototype commit there and its `AuxiliaryServer/Commands.cs` workaround didn't c
   - `rects <file> <npcs> <items>` spreads monsters and decoration over the dungeon rectangles by area;
   - `npcs`, `ground` and `stored` populate a rectangle or containers;
   - `start` (switches the counters on) and `report <label>` open and close a measurement window;
-  - `save` times a save;
+  - `save` times a save and prints where its time went (`WorldSaver.LastTimings`, #1203); `savesplit` does the same
+    with each file formatted into memory first, so formatting and disk writing are timed apart;
   - `bench <plane> <x> <y>` times range queries;
   - `scatter` moves the walkers.
 - `Tests/Perf/PerfProbeTests.cs`: phases P0–P5 as in section 5, 50 walkers. `Tests/Perf/PerfLoadTests.cs` boots on the

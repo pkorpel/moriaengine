@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan #1176: A, B, C DONE; #1204 (C2 regression: sleep in place) in ../moria-c2fix, then D1 = #1203 in ../moria-d1
+## NOW (2026-11-05): performance plan #1176: A, B, C DONE (+ #1204 regression fix, PR #1207); D1 = #1203 in ../moria-d1, branch 1203-save-timings
 
 Plan: docs/current/02-engine-core/performance-review.md section 8 (approved; the user's 4 answers in DONE A1 below). Checklist on umbrella #1176: A1-A3, B1-B6 done; C1, C2, D1, D2, E1-E5 open. Work in the plan's order, one issue + one PR per step, tick #1176 and comment there after each merge.
 Rules for this work (user, 2026-11-04/05):
@@ -10,7 +10,8 @@ Rules for this work (user, 2026-11-04/05):
 - SIGTERM (docker stop, run-local.sh stop) stays a quick way down WITHOUT saving (user, 2026-11-05).
 Step 1 DONE: B before/after (Release, scale 0.3, 8183f4c vs c5c6996) posted on #1176: alloc -30..-80% (B4), busy -0.4..-2 points, lateness p99 lower in P3-P5, no probe gaps either side (0.3 never overloads the timer thread; B5 shows in TimerFloodTests).
 C1 = #1199 merged (PR #1200).
-C2 = #1201 merged (PR below). Next: D1 (measure where a save's time goes: formatting under the lock vs disk writing, design world), then D2, E1-E5.
+C2 = #1201 merged (PR #1202).
+D1 = #1203 in progress: WorldSaver.LastTimings (triggers, purge, per file time/bytes, total, one log line per save) + WorldSaver.FormatInMemory measurement mode (format to a MemoryStream, then write + rename: splits format from write); .TestPerf save prints timings, .TestPerf savesplit; then a scale-1 harness run, results into performance-review.md + #1176. Then D2, E1-E5.
 Gotchas from this run: never edit scripts/ while a protocol run is going (each boot compiles scripts/ from disk); one test run or build at a time (5 GB box, OOM); worktrees per step (../moria-<step>), rebase = reset --hard origin/main + cherry-pick (git rebase is quirky here); CRLF vs LF per file, edit as bytes; no Co-Authored-By/Claude-Session trailers (hook rejects); commit subject <= 72.
 
 ## DONE (2026-11-05): performance plan C2 = #1201: NPCs sleep where no player is near

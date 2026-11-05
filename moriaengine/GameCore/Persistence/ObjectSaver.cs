@@ -1161,6 +1161,23 @@ namespace SteamEngine.Persistence {
 			this.writer.WriteLine(value);
 		}
 
+		/// <summary>#1203 - text made elsewhere (WorldSaver.FormatInMemory), written as it is.</summary>
+		internal void WriteText(System.Text.StringBuilder text) {
+			this.writer.Write(text);
+		}
+
+		/// <summary>#1203 - bytes written so far (flushed first), when the writer is a StreamWriter over a seekable stream; else 0.</summary>
+		internal long BytesWritten {
+			get {
+				StreamWriter streamWriter = this.writer as StreamWriter;
+				if ((streamWriter == null) || !streamWriter.BaseStream.CanSeek) {
+					return 0;
+				}
+				streamWriter.Flush();
+				return streamWriter.BaseStream.Length;
+			}
+		}
+
 		public void WriteLine() {
 			this.writer.WriteLine();
 		}
