@@ -16,7 +16,7 @@ namespace SteamEngine.AuxiliaryServer {
 			cmd = cmd.ToLowerInvariant();
 			switch (cmd) {
 				case "restart":
-					CmdRestart();
+					CmdRestart(state);
 					return;
 				case "help":
 					DisplayHelp(state);
@@ -30,8 +30,8 @@ namespace SteamEngine.AuxiliaryServer {
 		}
 
 		private static void DisplayHelp(ConsoleClient state) {
-			state.WriteLine(GameUid.AuxServer, "Available commands:"
-				+ "restart" + Environment.NewLine
+			state.WriteLine(GameUid.AuxServer, "Available commands:" + Environment.NewLine
+				+ "restart (says how to restart)" + Environment.NewLine
 				+ "processes" + Environment.NewLine
 				+ "help");
 		}
@@ -55,28 +55,10 @@ namespace SteamEngine.AuxiliaryServer {
 			state.WriteLine(GameUid.AuxServer, message.ToString());
 		}
 
-		public static void CmdRestart() {
-			new MsBuildProjectReStarter();
-		}
-
-		private class MsBuildProjectReStarter : AuxServMsBuildProjectStarter {
-			internal MsBuildProjectReStarter()
-				: base(BuildType.Release, ".", "buildRestarter") {
-			}
-
-			public override void StartProcess(string file) {
-				ProcessStartInfo psi = new ProcessStartInfo(file);
-#if DEBUG
-				psi.Arguments = string.Concat("\"", Process.GetCurrentProcess().MainModule.FileName, "\" \"", "Debug_AuxiliaryServer.bat", "\"");
-#elif SANE
-				psi.Arguments = string.Concat("\"", Process.GetCurrentProcess().MainModule.FileName, "\" \"", "Sane_AuxiliaryServer.bat", "\"");
-#else
-#error Optimized_AuxiliaryServer.bat not defined (?)
-#endif
-				Process.Start(psi);
-
-				MainClass.CommandExit();
-			}
+		//#1185 - "restart" built a restarter (a "buildRestarter" project and Windows .bat files that don't exist) and never
+		//started it, so it never did anything; its #error kept Release from building. The server is restarted from outside.
+		public static void CmdRestart(ConsoleClient state) {
+			state.WriteLine(GameUid.AuxServer, "'restart' isn't available here: stop and start the servers with scripts/run-local.sh, or restart the container.");
 		}
 	}
 

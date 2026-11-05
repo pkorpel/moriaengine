@@ -18,7 +18,7 @@ Last reviewed: 2026-10-16
 ## Build and test
 
 ```sh
-scripts/test-fast.sh                      # build + fast tier (~30 s)
+scripts/test-fast.sh                      # Debug build + Release compile + fast tier (~1 min)
 scripts/test-fast.sh "FullyQualifiedName~RaceTests"
 scripts/test-full.sh                      # whole suite, class by class (one run at a time)
 scripts/test-full.sh "FullyQualifiedName~LevelingTests"
@@ -28,6 +28,7 @@ scripts/test-full.sh "FullyQualifiedName~LevelingTests"
 
 ```sh
 scripts/run-local.sh start --build   # Aux (2593 login, 2594 console) + GameCore (2595)
+scripts/run-local.sh start --release # the same from the Release build (2-3x less CPU per NPC think)
 scripts/run-local.sh status
 scripts/run-local.sh logs            # moriaengine/logs/{aux,gamecore}.console.log
 scripts/run-local.sh stop

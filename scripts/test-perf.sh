@@ -9,7 +9,7 @@
 #
 # Knobs (environment): PERF_SCALE (1.0 = the design world: 30k NPCs, 626k items; 0.1 for a quick smoke run),
 # PERF_PLAYERS (50), PERF_SECONDS (30 per measuring window), PERF_PHASES (all, or a list of players,save,stress),
-# PERF_RECTS (default moriaengine/tools/perf/dungeon-rects.txt), PERF_CONFIG (Debug; Release once it builds, plan step B2).
+# PERF_RECTS (default moriaengine/tools/perf/dungeon-rects.txt), PERF_CONFIG (Debug, or Release: 2-3x less per NPC think, closer to a live shard).
 # PERF_OUT is read by the test process, whose working folder is its bin folder: give an absolute path.
 # A full-scale run takes about 8 minutes in Release (longer in Debug) and several GB: run nothing else beside it.
 set -u

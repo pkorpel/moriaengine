@@ -14,7 +14,7 @@ namespace SteamEngine.Tests.Perf {
 	/// section 9). Server side: scripts/Tests/PerfProbe.cs. Run it with scripts/test-perf.sh.
 	/// Env: PERF_OUT (results file), PERF_RECTS (dungeon rects file, default tools/perf/dungeon-rects.txt), PERF_SCALE
 	/// (1.0 = the design world), PERF_PLAYERS (50), PERF_SECONDS (30 per measuring window), PERF_PHASES (all, or a list of
-	/// players,save,stress), PERF_CONFIG (Debug, or Release once it builds).</summary>
+	/// players,save,stress), PERF_CONFIG (Debug or Release).</summary>
 	[Collection(PerfCollection.Name)]
 	public class PerfProbeTests {
 		private GameServerPairFixture fixture;

@@ -345,6 +345,11 @@ Severity: **Critical** misses the targets at the design load on its own; **High*
 
 ### 2. A Release build doesn't compile, so everything runs Debug — Critical (and cheap)
 
+**Status: fixed by B2 (#1185).** Release builds; `scripts/run-local.sh start --release` runs it; `test-fast.sh` and CI
+compile Release on every run. The `#error` guarded the console's `restart` command, which never did anything (it built a
+restarter and never started it); `restart` now says how to restart instead. The fast tier and a protocol sample passed on
+Release.
+
 - **Where:** `AuxiliaryServer/Commands.cs:74` has `#error Optimized_AuxiliaryServer.bat not defined (?)` in its non-DEBUG
   branch, so `build.ps1 -Configuration Release` fails. `scripts/run-local.sh` and the tests run Debug, and GameCore compiles
   the scripts in its own configuration (`CompilerInvoker`, `Build.Type`), so the scripts are Debug too.
@@ -781,7 +786,8 @@ prototype commit there and its `AuxiliaryServer/Commands.cs` workaround didn't c
   - **Opt-in:** both are `[PerfFact]`, skipped unless `PERF_RUN=1`, outside both test tiers. They boot their own servers,
     so a skipped one costs nothing.
 - `scripts/test-perf.sh` runs them (it sets `PERF_RUN=1` and generous stuck limits, and goes through `test-full.sh`).
-- `GameServerPairFixture` takes `PERF_CONFIG=Release` to boot the Release binaries, once step B2 makes Release build.
+- `GameServerPairFixture` takes `PERF_CONFIG=Release` to boot the Release binaries (built by `scripts/test-perf.sh`, or
+  `build.ps1 -Configuration Release`).
 - `tools/perf/dungeon-rects.txt`, the dungeon rectangles from `map.def`, and `tools/perf/stmbench`, the STM benchmark of
   section 11 (`dotnet run -c Release` in that folder; it isn't part of the solution).
 

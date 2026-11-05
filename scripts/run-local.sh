@@ -1,10 +1,10 @@
 #!/bin/sh
 # Run the local shard in the background: AuxiliaryServer (login 2593, console 2594)
-# and GameCore (game 2595), from this checkout's Debug build.
+# and GameCore (game 2595), from this checkout's build: Release with --release, else Debug.
 #
-#   scripts/run-local.sh start [--build]  # start both, wait until 2593 and 2595 listen
-#   scripts/run-local.sh status           # pids, listening ports, last log lines
-#   scripts/run-local.sh logs             # follow both console logs
+#   scripts/run-local.sh start [--build] [--release]  # start both, wait until 2593 and 2595 listen
+#   scripts/run-local.sh status                       # pids, listening ports, last log lines
+#   scripts/run-local.sh logs                         # follow both console logs
 #   scripts/run-local.sh stop
 #
 # Both servers shut down when their stdin closes, so each gets `tail -f /dev/null`
@@ -35,22 +35,31 @@ launch() {  # name dll
 cmd="${1:-status}"
 case "$cmd" in
   start)
+    shift
+    build=0; config=Debug
+    for a in "$@"; do
+      case "$a" in
+        --build) build=1 ;;
+        --release) config=Release ;; # #1185: 2-3x less CPU per NPC think than Debug (#1161)
+        *) die "unknown option $a (start [--build] [--release])" ;;
+      esac
+    done
     alive && die "already running (status / stop)"
     listening 2593 || listening 2595 && die "port 2593 or 2595 is busy (a test run?)"
-    if [ "${2:-}" = "--build" ] || [ ! -f "$me/GameCore/bin/Debug/net8.0/SteamEngine.GameCore.dll" ]; then
-      (cd "$me" && pwsh ./build.ps1 -Configuration Debug >/dev/null) || die "build failed, run scripts/test-fast.sh for the log"
+    if [ "$build" -eq 1 ] || [ ! -f "$me/GameCore/bin/$config/net8.0/SteamEngine.GameCore.dll" ]; then
+      (cd "$me" && pwsh ./build.ps1 -Configuration "$config" >/dev/null) || die "$config build failed, run scripts/test-fast.sh for the log"
     fi
     mkdir -p "$logs"; : > "$pids"
     cd "$me"
-    launch aux AuxiliaryServer/bin/Debug/net8.0/SteamEngine.AuxiliaryServer.dll
+    launch aux "AuxiliaryServer/bin/$config/net8.0/SteamEngine.AuxiliaryServer.dll"
     sleep 3
-    launch gamecore GameCore/bin/Debug/net8.0/SteamEngine.GameCore.dll
+    launch gamecore "GameCore/bin/$config/net8.0/SteamEngine.GameCore.dll"
     waited=0
     until listening 2593 && listening 2595; do
       [ "$waited" -ge "$TIMEOUT" ] && { tail -20 "$logs/gamecore.console.log" >&2; "$0" stop; die "ports not up after ${TIMEOUT}s"; }
       sleep 2; waited=$((waited + 2))
     done
-    echo "run-local: up after ${waited}s — login 127.0.0.1:2593, game 2595 (logs: $logs/*.console.log)"
+    echo "run-local: $config up after ${waited}s — login 127.0.0.1:2593, game 2595 (logs: $logs/*.console.log)"
     ;;
   status)
     if alive; then echo "run-local: running"; else echo "run-local: not running"; fi
