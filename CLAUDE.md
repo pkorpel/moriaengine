@@ -1,9 +1,10 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan: A and B1-B2 merged, next B3 (the timer thread stops signalling itself)
+## NOW (2026-11-05): performance plan B3 = #1187: the timer thread stops signalling itself
+
+Branch b3-timer-self-signal in ../moria-b3: Common/WakeSignal (Signal only while the consumer sleeps; Sleep = asleep, Reset, re-check), Timer uses it, its own Set calls go; also fixes a lost wakeup (check-then-Reset). Fast-tier stress test of WakeSignal, TimerBurst + timer-heavy protocol classes. SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving.
 
 User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180).
-Open question for the user: SIGTERM (run-local.sh stop, docker stop) still doesn't save; save on it like .exit, or keep it as a quick no-save way down?
 
 ## DONE (2026-11-05): performance plan B2 = #1185: Release builds
 

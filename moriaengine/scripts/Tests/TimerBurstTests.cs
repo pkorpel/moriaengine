@@ -53,5 +53,24 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestTimerFired(Character self) {
 			Console.WriteLine("TIMER_FIRED: open=" + lastProbe.IsDoorOpen);
 		}
+
+		/// <summary>#1187 - an open door whose close timer is due in the given seconds, saved with the world: a recompile saves it
+		/// and loads it again, timer included.</summary>
+		[SteamFunction]
+		public static void TestTimerArmSaved(Character self, ScriptArgs sa) {
+			int seconds = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
+			Item probe = (Item) ((ItemDef) ThingDef.GetByDefname("i_flip_door_probe")).Create(self.X, self.Y, self.Z, self.M);
+			probe.UseDoor();
+			probe.GetTimer(DoorCloseTimer.Key).DueInSeconds = seconds;
+			Console.WriteLine("TIMER_SAVED: uid=" + probe.Uid + " open=" + probe.IsDoorOpen + " |");
+		}
+
+		/// <summary>The door TestTimerArmSaved made, found by its uid (after a recompile no script static survives).</summary>
+		[SteamFunction]
+		public static void TestTimerDoorAt(Character self, ScriptArgs sa) {
+			int uid = int.Parse(sa.Args.Trim().Trim('"'), System.Globalization.CultureInfo.InvariantCulture);
+			Item door = Thing.UidGetThing(uid) as Item;
+			Console.WriteLine("TIMER_DOOR: found=" + (door != null) + " open=" + ((door != null) && door.IsDoorOpen) + " |");
+		}
 	}
 }
