@@ -893,7 +893,7 @@ namespace SteamEngine {
 				Logger.WriteWarning("The Globals section of save is missing the " + LogStr.Ident("Time") + " value or the value is invalid, setting server time to 0");
 				lastMarkServerTime = TimeSpan.Zero;
 			}
-			lastMarkRealTime = DateTime.Now;
+			lastMarkRealTime = MonotonicTime.Now();
 
 			instance.LoadSectionLines(input);
 		}
@@ -957,7 +957,7 @@ namespace SteamEngine {
 		//	return WorldSaver.CurrentFile; 
 		//} }
 
-		private static DateTime lastMarkRealTime = DateTime.Now;
+		private static long lastMarkRealTime = MonotonicTime.Now(); //#1196 - Stopwatch, not DateTime.Now: clock jumps don't move timers
 		private static TimeSpan lastMarkServerTime = TimeSpan.Zero;
 		private static int paused;
 
@@ -979,15 +979,14 @@ namespace SteamEngine {
 				if (paused > 0) {
 					return lastMarkServerTime;
 				}
-				DateTime current = DateTime.Now;
-				return lastMarkServerTime + (current - lastMarkRealTime);
+				return lastMarkServerTime + MonotonicTime.Elapsed(lastMarkRealTime, MonotonicTime.Now());
 			}
 		}
 
 		/// <summary>For sphere compatibility, this returns servertime in tenths of second</summary>
 		public long Time {
 			get {
-				return (long) (TimeAsSpan.TotalSeconds / 10d);
+				return (long) (TimeAsSpan.TotalSeconds * 10d); //#1196 - was / 10, tens of seconds; nothing live reads it yet (serv.time only in unported quests)
 			}
 		}
 
@@ -996,9 +995,9 @@ namespace SteamEngine {
 			//Logger.WriteDebug("paused level raised to " + paused);
 			//Logger.WriteDebug(new StackTrace());
 			if (paused == 1) {
-				DateTime current = DateTime.Now;
+				long current = MonotonicTime.Now();
 
-				lastMarkServerTime = lastMarkServerTime + (current - lastMarkRealTime);
+				lastMarkServerTime = lastMarkServerTime + MonotonicTime.Elapsed(lastMarkRealTime, current);
 				lastMarkRealTime = current;
 
 				RunLevelManager.SetPaused();
@@ -1011,7 +1010,7 @@ namespace SteamEngine {
 			//Logger.WriteDebug(new StackTrace());
 			Sanity.IfTrueThrow(paused < 0, "Can't UnPause when not paused");
 			if (paused == 0) {
-				lastMarkRealTime = DateTime.Now;
+				lastMarkRealTime = MonotonicTime.Now();
 				RunLevelManager.UnsetPaused();
 			}
 		}
