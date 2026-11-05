@@ -1,8 +1,14 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan, step A2 = #1172: a skill under way at a save goes on after the restart
+## NOW (2026-11-05): performance plan, step A3 = #1173: save on shutdown, a no-save exit, autosave interval in steamengine.ini
 
-A1 (#1163) DONE, see below. A2, branch 1172-skill-restart in ../moria-1172 (WIP commit c6576c4, not built yet; rebase on main after A1): SkillDef.cs:452 valueName -> valueString; CraftingOrder [SaveableClass] with its own Save/LoadLine (skill + item/count lines; before, saving a crafting plugin threw UnsaveableTypeException inside FlushCache, so the section had no def= and the craft was lost); null-order guards in CraftingProcessPlugin. Test SkillRestartTests (own collection, account skillrestart): smith making 2 copper daggers + a held orc mid-swing at a sheep, strokes pushed to 25 s, save, boot, daggers made and sheep hit. Review agent before merge.
+Branch 1173-shutdown-save in ../moria-1173. User rule 2026-11-05: the full protocol suite runs once per milestone (end of A, end of B), each PR gets its own test, the related classes, red checks and a review agent. A3 closes milestone A: full suite on main after it.
+
+## DONE (2026-11-05): performance plan A2 = #1172: a skill under way at a save goes on after the restart
+
+Branch 1172-skill-restart. Verified: full protocol suite 224/232 classes green, the 8 failing are A1's known set (AttrFlag, ContentRestoration, Healer, LevelingIsolated, Localization, Notoriety, NpcMoveRate, OwnerAggro), fast 336/336.
+Done: SkillDef.cs LoadLine read the name not the value, so every saved skill came back without its SkillDef; CraftingOrder [SaveableClass] (before, saving a crafting plugin threw UnsaveableTypeException in FlushCache and the craft was lost). As Sphere, an offline player isn't ticked: a SkillStrokeTimer coming due offline re-adds itself paused (fireAt -1) and SkillSequenceArgs.ResumeAfterLogin runs it at login (CheckAlive is false while Flag_Disconnected, so it used to fail). Craft queue between two items: On_Timer waits offline, CraftingProcessPlugin.ResumeAfterLogin (Player.On_LogIn) starts the next item. Stop with an item in hand clears the order (stopped isn't saved). A target deleted before the save is saved as null: SkillSequenceArgs saves targetGone and the stroke aborts instead of throwing (NPCs too). Behaviour change: player skills (meditation, tracking, casting) now finish after a relog instead of ending, as Sphere.
+Tests: SkillRestartTests (own collection, accounts skillrestart + skillrestart2): smith mid-item (both daggers = the order round trip), second smith between items, held orc mid-swing, a held orc whose sheep is deleted at "presave"; "presave" sets the due times just before the save and asserts the state the save catches; no ERROR after boot. Red-checked each: pause off (0 daggers), login resume off (smithyDaggers=0), targetGone off (NRE after boot). Found: the On_Timer guard alone isn't what saves the between-items queue, the login resume is (trace showed the offline select fails and leaves the plugin idle). Two review agents: first found the between-items/LoadLine/test gaps, second the presave/stopped/null-target ones; all fixed. Fast 336/336.
 
 ## DONE (2026-11-05): performance plan A1 = #1163: every code-registered def exists before the world loads
 

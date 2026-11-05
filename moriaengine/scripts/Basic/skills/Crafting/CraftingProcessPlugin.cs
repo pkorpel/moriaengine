@@ -37,7 +37,7 @@ namespace SteamEngine.CompiledScripts {
 
 		public static SimpleQueue<CraftingSelection> GetCraftingQueue(Character self) {
 			CraftingProcessPlugin p = self.GetPlugin(craftingProcessPK) as CraftingProcessPlugin;
-			if (p != null) {
+			if ((p != null) && (p.craftingOrder != null)) {
 				return p.craftingOrder.SelectionQueue;
 			}
 			return null;
@@ -65,6 +65,10 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private void StartCrafting() {
+			if ((this.craftingOrder == null) || (this.craftingOrder.CraftingSkill == null) || (this.craftingOrder.SelectionQueue.Count == 0)) {
+				this.Delete(); //#1172 - an order lost with an older save, or naming defs that are gone: nothing to go on with
+				return;
+			}
 			SkillSequenceArgs ssa = SkillSequenceArgs.Acquire((Character) this.Cont, this.craftingOrder.CraftingSkill);
 
 			CraftingSelection csl = this.craftingOrder.SelectionQueue.Peek();
@@ -74,7 +78,20 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void On_Timer() {
+			Character self = this.Cont as Character;
+			if ((self != null) && self.IsPlayer && self.Flag_Disconnected) {
+				return; //#1172 - offline between two items: the next one waits for the login (ResumeAfterLogin), as in Sphere
+			}
 			this.StartCrafting();
+		}
+
+		/// <summary>#1172 - Player.On_LogIn: a queue that was between two items when the player left (or the server went down)
+		/// goes on with the next one. One with an item in the hands goes on through its skill's stroke instead.</summary>
+		public static void ResumeAfterLogin(Character self) {
+			CraftingProcessPlugin pl = self.GetPlugin(craftingProcessPK) as CraftingProcessPlugin;
+			if ((pl != null) && (self.CurrentSkillArgs == null)) {
+				pl.Timer = SecondsBetweenItems;
+			}
 		}
 
 		/// <summary>#962 - Erebor's e_makestring: a blow, a spell or a skill stops what's queued, using an item
@@ -87,6 +104,8 @@ namespace SteamEngine.CompiledScripts {
 				self.RedMessage(byUsingAnItem ? texts.MakingCutShort : texts.MakingStopped);
 				if (pl.Timer > 0) { //between two items, nothing's in the hands
 					pl.Delete();
+				} else {
+					pl.craftingOrder = null; //#1172 - stopped isn't saved: after a restart the order itself must be gone
 				}
 			}
 		}
@@ -99,7 +118,7 @@ namespace SteamEngine.CompiledScripts {
 			if (pl == null) {
 				return;
 			}
-			if (pl.stopped) {
+			if (pl.stopped || (pl.craftingOrder == null) || (pl.craftingOrder.SelectionQueue.Count == 0)) { //#1172 - no order: the one in hand is done, nothing follows
 				pl.Delete();
 				return;
 			}

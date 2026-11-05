@@ -389,13 +389,55 @@ namespace SteamEngine.CompiledScripts {
 	/// Class encapsulating one instance of the crafting 'order list' - the queue of the CraftingSelections 
 	/// and the required used skill.
 	/// </summary>
+	/// <remarks>#1172 - saved with the crafting plugin, so a queue under way goes on after a restart, as Erebor's makestring
+	/// tag did. Before, saving one threw (no saver for the class) and the plugin was lost.</remarks>
+	[SaveableClass]
 	public class CraftingOrder {
-		private readonly CraftingSkillDef craftingSkill;
+		private CraftingSkillDef craftingSkill;
 		private SimpleQueue<CraftingSelection> selectionQueue;
+		private CraftingSelection lastLoaded;
 
 		public CraftingOrder(CraftingSkillDef craftingSkill, SimpleQueue<CraftingSelection> selectionQueue) {
 			this.craftingSkill = craftingSkill;
 			this.selectionQueue = selectionQueue;
+		}
+
+		[LoadingInitializer]
+		public CraftingOrder() {
+			this.selectionQueue = new SimpleQueue<CraftingSelection>();
+		}
+
+		[Save]
+		public void Save(SaveStream output) {
+			output.WriteValue("skill", this.craftingSkill);
+			for (int i = this.selectionQueue.Count; i > 0; i--) { //round it goes, ending as it was
+				CraftingSelection selection = this.selectionQueue.Dequeue();
+				output.WriteValue("item", selection.ItemDef);
+				output.WriteValue("count", selection.Count);
+				this.selectionQueue.Enqueue(selection);
+			}
+		}
+
+		[LoadLine]
+		public void LoadLine(string filename, int line, string valueName, string valueString) {
+			switch (valueName) {
+				case "skill":
+					this.craftingSkill = ObjectSaver.OptimizedLoad_Script(valueString) as CraftingSkillDef;
+					break;
+				case "item":
+					this.lastLoaded = null; //an item def that's gone (it throws, the line is skipped) takes its count with it
+					ItemDef itemDef = ObjectSaver.OptimizedLoad_Script(valueString) as ItemDef;
+					if (itemDef != null) {
+						this.lastLoaded = new CraftingSelection(itemDef, 1); //one, if its count line is lost (0 would never count down)
+						this.selectionQueue.Enqueue(this.lastLoaded);
+					}
+					break;
+				case "count":
+					if (this.lastLoaded != null) {
+						this.lastLoaded.Count = SteamEngine.Common.ConvertTools.ParseInt32(valueString);
+					}
+					break;
+			}
 		}
 
 		public CraftingSkillDef CraftingSkill {
