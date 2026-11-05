@@ -697,6 +697,36 @@ A and B don't depend on each other; within C and D the order matters.
 - **Benefit:** shows how short D2 can make the freeze.
 - **Effort:** S.
 
+**D1 results (#1203, 2026-11-05).** Every save now logs its timings (see persistence-and-saving.md), and
+`.TestPerf savesplit` formats each file into memory before writing it. Release, the design world at scale 1:
+626,043 items, 30,000 NPCs, 94.2 MB of text, 93.9 MB of it in `things.sav`. Harness `PERF_PHASES=save`, one run.
+
+| Save | Pause (total) | Formatting | Writing | `beforeSave` |
+|---|---|---|---|---|
+| First, right after the world was built | 7,659 ms | 7,429 ms (things 7,284) | 2 ms | 208 ms |
+| Second, normal | 1,930 ms | 1,923 ms (things 1,796) | 1 ms | 2 ms |
+| Third, formatted into memory first | 2,704 ms | **1,742 ms** (things 1,687) | **953 ms** (things 948) | 2 ms |
+
+- **Formatting is the pause.** About 1.7 s of the 1.9 s goes to turning the world into text.
+  - Interleaved with formatting, the buffered writes add about 0.2 s.
+  - Done separately afterwards, the write takes 0.95 s: encoding 94 MB of UTF-16 plus the write itself, into the page cache with no fsync.
+- **So D2 as planned would shrink the freeze by about 10%, not by half.** "Format under the lock, write on a worker" takes it from 1.9 s to about 1.7 s. The estimate above was wrong.
+- **The first save after building the world was 4x slower.** Formatting took 7.4 s against 1.9 s for the next save. It is probably one-time cost:
+  - JIT of the save implementors;
+  - growth of ObjectSaver's dictionaries;
+  - GC of a heap that has just grown by half a million objects.
+  
+  If a world that was loaded rather than built does the same, the first autosave after every restart is the longest freeze. Check that before D2.
+- **What D2 needs instead:**
+  - (a) Profile the formatting (`ObjectSaver`, the generated save implementors, number and string formatting) and make it cheaper.
+  - (b) Format `things` in parallel under the lock, N chunks into N buffers written in order: the pause becomes about 1.7 s / cores.
+  - (c) A copy-on-write snapshot formatted on a worker. This is the most complex.
+  - Writing on a worker is still worth having on top: the last 0.2 s, and no stall on a slow disk.
+  - Recommendation: (a), then (b), with the worker write; the user decides the scope of D2.
+- **Found on the way:**
+  - With `BackupsManager` (the default) every `.sav` is written straight into the save's folder; the engine's own `.tmp`-then-rename path is only the fallback.
+  - A failed final flush or close still counts as a successful save: #1205.
+
 **D2. Snapshot, then write on a worker thread** (problem 3).
 - **Work:**
   - each save coordinator formats into a pooled in-memory buffer while the world is paused;

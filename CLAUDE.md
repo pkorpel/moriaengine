@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan #1176: A, B, C DONE (+ #1204 regression fix, PR #1207); D1 = #1203 in ../moria-d1, branch 1203-save-timings
+## NOW (2026-11-05): performance plan #1176: A, B, C, D1 DONE (+ #1204 fix, PR #1207); D2's scope is the user's call (D1 found formatting is the pause)
 
 Plan: docs/current/02-engine-core/performance-review.md section 8 (approved; the user's 4 answers in DONE A1 below). Checklist on umbrella #1176: A1-A3, B1-B6 done; C1, C2, D1, D2, E1-E5 open. Work in the plan's order, one issue + one PR per step, tick #1176 and comment there after each merge.
 Rules for this work (user, 2026-11-04/05):
@@ -11,8 +11,12 @@ Rules for this work (user, 2026-11-04/05):
 Step 1 DONE: B before/after (Release, scale 0.3, 8183f4c vs c5c6996) posted on #1176: alloc -30..-80% (B4), busy -0.4..-2 points, lateness p99 lower in P3-P5, no probe gaps either side (0.3 never overloads the timer thread; B5 shows in TimerFloodTests).
 C1 = #1199 merged (PR #1200).
 C2 = #1201 merged (PR #1202).
-D1 = #1203 in progress: WorldSaver.LastTimings (triggers, purge, per file time/bytes, total, one log line per save) + WorldSaver.FormatInMemory measurement mode (format into a StringWriter, then write it to the same target: splits format from write); .TestPerf save prints timings, .TestPerf savesplit; then a scale-1 harness run, results into performance-review.md + #1176. Then D2, E1-E5.
+D1 = #1203 done (PR below). Results in performance-review.md under Phase D: at the design world a save pauses 1.9 s, 1.7 s of it formatting, write 0.2 s interleaved (0.95 s apart); the first save after building the world 7.7 s. So D2 as planned (worker write) saves ~10%: asked the user to pick D2's scope ((a) profile + cheaper formatting, (b) parallel formatting under the lock, (c) copy-on-write snapshot; recommended a then b + worker write). Follow-ups: #1205 (failed final flush counts as success), #1206 (GM-moved NPCs walk back home).
 Gotchas from this run: never edit scripts/ while a protocol run is going (each boot compiles scripts/ from disk); one test run or build at a time (5 GB box, OOM); worktrees per step (../moria-<step>), rebase = reset --hard origin/main + cherry-pick (git rebase is quirky here); CRLF vs LF per file, edit as bytes; no Co-Authored-By/Claude-Session trailers (hook rejects); commit subject <= 72.
+
+## DONE (2026-11-05): performance plan D1 = #1203: where a world save's time goes
+
+WorldSaver.LastTimings (SaveTimings: purge, beforeSave/afterSave triggers, per file open/format/write ms + bytes, folder, total), one Info line per save; WorldSaver.FormatInMemory measurement mode (StringWriter, then written to the same target, encoding in write); SaveStream.WriteText + BytesWritten (non-throwing); .TestPerf save prints timings, savesplit uses the mode; harness save phase runs both. Live saves go through BackupsManager's NormalFileManager writer (straight into the folder, no .tmp). Test SaveTimingsTests (own collection: both modes, same files, complete, no .tmp, sizes match, accounts/regions byte-identical across modes), red: sizes not recorded. Review: BytesWritten could throw outside Close's handling (fixed), test compared names only (content check added), open time untimed (OpenMs). Results above in NOW. #1204 found on the way (C2 teleport home snapped GM-moved NPCs back; fixed PR #1207).
 
 ## DONE (2026-11-05): performance plan C2 = #1201: NPCs sleep where no player is near
 
