@@ -23,6 +23,42 @@ NPC/NPCDef without touching the tick loop itself.
 `AIState` (Idle/Wandering/Fighting/Fleeing/Following/GoingToPoint) is informational only
 - recomputed fresh every tick from current conditions, never persisted.
 
+### NPCs sleep where no player is near (#1201)
+
+As Sphere's sleeping sectors. `Regions.ActivityGrid` (GameCore) cuts each map plane into
+areas of 64x64 tiles. An area is awake while a player (online, or lingering after logout)
+stands in it or in one of its 8 neighbours, and for `npcAreaAwakeSeconds` after the last
+of them left: 300 s, in steamengine.ini's `[features]`; 0 turns sleeping off. At boot
+nothing is awake until a player arrives. Players are counted where a sector's player
+list changes (`Sector.AddPlayer`/`RemovePlayer`), so steps, teleports, logins and logouts
+all count.
+
+- **Falling asleep** (`NPCAiTimer.TryFallAsleep`, at a think, after `CaptureHome`): in an
+  asleep area, an NPC with nothing to do pauses its own timer (`DueInSeconds = -1`) and
+  costs nothing until it wakes. Nothing to do means: no target, not fleeing, not frozen, no
+  "go" point or guarded item, and not following someone it could follow (a pet of an
+  offline owner, a wild NPC a GM once stopped, or a held one only stands, so it sleeps).
+  `NeverSleeps` (saved) keeps one awake. A wild one beyond its leash is put back home as
+  it falls asleep, the walk nobody would see, unless a player is near home (then it stays
+  awake and walks); pets, held NPCs and NPCs a GM stopped aren't sent home, they stand.
+- **Waking** (`NpcSleep`): an area that wakes resumes every sleeper in it; a sleeper
+  moved into an awake area (a GM's summon, a teleport, a dismount, a pet out of a
+  vendor) wakes at once; `EngageTarget` (pet orders, guards called, a hit from another
+  NPC) and `FleeFrom` wake it; a load wakes every saved sleeper (`NPC.On_AfterLoad`),
+  and each falls asleep again at its first think if nobody is near. The first think
+  after waking is staggered within one think period.
+- **While asleep:** nothing from `OnTimeout` runs, so neither `Think` nor
+  `MonsterSpecialAttacks.OnAiTick` (dragon regeneration, backstab hiding, mass leap and
+  dispel bomb ticks, dragon brain sight, @NPCSeeNewPlayer): all but a hurt dragon's
+  regeneration need a player near or a fight, and that one waits until it wakes. Its other timers go on: regeneration (`RegenerationPlugin`), poison
+  and bleeding, spawn gems, an elite's escape and its 2 s regeneration tick (which only
+  heals while hurt). Guard pursuit and boss timers only run in fights.
+- A pet whose owner logs in far from it stays asleep until someone comes near; before,
+  it would have walked across the map to them.
+- `npcAreaAwakeSeconds` is read at boot and at a recompile, which reloads the world and
+  wakes every sleeper, so changing it in the ini never strands one. Raising it by code at
+  runtime can: an area inside the new countdown sends no wake when a player comes.
+
 ### A real "NPC swings but never hits" bug, found and fixed
 
 `AddTarget` -> `FightCurrentTarget` always starts a *brand new* `SkillSequenceArgs` and

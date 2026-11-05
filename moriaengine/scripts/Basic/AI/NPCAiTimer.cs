@@ -124,6 +124,14 @@ namespace SteamEngine.CompiledScripts {
 		/// AI timer right after creation.</summary>
 		[SaveableData] public int WanderLeash = DefaultWanderLeash;
 
+		/// <summary>#1201 - asleep: no player near (Regions.ActivityGrid) and nothing to do, so its timer is paused until
+		/// its area wakes (NpcSleep). Saved, so a load wakes it (NPC.On_AfterLoad) and it falls asleep again at its first
+		/// think if nobody is near.</summary>
+		[SaveableData] public bool sleeping;
+
+		/// <summary>#1201 - never falls asleep: a script's or a GM's choice, for an NPC whose doings matter unseen.</summary>
+		[SaveableData] public bool NeverSleeps;
+
 		//transient - not saved. Re-acquired from scratch on the next think tick after a reload, which is fine for a live combat/aggro target.
 		private Character target;
 
@@ -195,13 +203,14 @@ namespace SteamEngine.CompiledScripts {
 				interval = MinThinkIntervalSeconds;
 			}
 			this.PeriodInSeconds = interval;
-			this.DueInSeconds = interval;
+			this.DueInSeconds = this.sleeping ? -1 : interval; //#1201 - a new period mustn't wake it (the setter starts a paused timer)
 		}
 
 		/// <summary>Directly sets this NPC's current combat target, bypassing ShouldAggroOn - used by the "kill" pet command and by guard duty (AlertGuardiansOf), both of which are explicit orders rather than autonomous aggro decisions.</summary>
 		public void EngageTarget(Character enemy) {
 			NPC self = this.Cont as NPC;
 			Logger.WriteDebug("NPCAiTimer.EngageTarget: " + (self != null ? self.Name + "#" + self.Uid : "?") + " explicitly engaging " + enemy.Name);
+			this.WakeUp(); //#1201 - an order or an attack from where no player is (another NPC, a script)
 			this.target = enemy;
 			this.lastEngagedTarget = null; //force the next Fight() tick to (re-)hand this target to WeaponSkillTargetQueuePlugin
 		}
@@ -257,6 +266,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
+			this.sleeping = false; //#1201 - firing means awake, whoever restarted the timer
 			NPC self = cont as NPC;
 			if ((self == null) || self.IsDeleted || self.Flag_Dead) {
 				return;
@@ -270,6 +280,9 @@ namespace SteamEngine.CompiledScripts {
 
 			if (!this.hasHome) {
 				this.CaptureHome(self);
+			}
+			if (this.TryFallAsleep(self)) {
+				return;
 			}
 
 			if (EliteMonster.IsLeaving(self)) {
@@ -286,6 +299,66 @@ namespace SteamEngine.CompiledScripts {
 			this.Think(self);
 		}
 
+		public bool IsSleeping {
+			get { return this.sleeping; }
+		}
+
+		/// <summary>#1201 - with no player near (Regions.ActivityGrid) and nothing to do, the NPC pauses its own timer until
+		/// its area wakes: no cost at all while it sleeps, as Sphere's sleeping sectors. Beyond its leash it's put back home
+		/// first, the walk nobody would see. Its other timers (regeneration, ...) go on.</summary>
+		private bool TryFallAsleep(NPC self) {
+			if (!ActivityGrid.SleepingEnabled || this.NeverSleeps || !this.HasNothingToDo(self)) {
+				return false;
+			}
+			double now = Globals.TimeInSeconds;
+			ActivityGrid activity = self.GetMap().Activity;
+			if (activity.IsAwake(self.X, self.Y, now)) {
+				return false;
+			}
+			if (this.hasHome && (this.homeM == self.M) && (self.ControlMaster == null) && (self.FollowTarget == null) && !this.isHeld &&
+					(Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) > this.WanderLeash)) {
+				//only what Think would walk home (Wander): a pet told to stay, a wild NPC a GM stopped, a held one stands where it is
+				if (activity.IsAwake(this.homeX, this.homeY, now)) {
+					return false; //someone is near home: it walks there, seen
+				}
+				self.Go(this.homeX, this.homeY, this.homeZ);
+			}
+			this.pathCache = null;
+			this.sleeping = true;
+			this.DueInSeconds = -1;
+			return true;
+		}
+
+		/// <summary>#1201 - an NPC busy with something keeps thinking wherever it is: a fight, fleeing, an order, a guarded item,
+		/// following someone who is there to follow (as Think's Follow branch would; a pet of an offline owner, or a wild NPC a GM
+		/// once stopped, only stands, so it may sleep). A held one only stands too; a hit or a kill order wakes it (EngageTarget).</summary>
+		private bool HasNothingToDo(NPC self) {
+			bool fleeing = (this.fleeSteps > 0) && (this.fleeingFrom != null) && !this.fleeingFrom.IsDeleted; //as Think's
+			if ((this.target != null) || fleeing || (this.frozenUntil > Globals.TimeInSeconds) ||
+					(self.PetGoalPoint != null) || (self.GuardedItem != null)) {
+				return false;
+			}
+			Character followTarget = self.FollowTarget ?? self.ControlMaster;
+			return !(self.ShouldFollowOwner && (followTarget != null) && followTarget.IsAliveAndValid && (followTarget.M == self.M));
+		}
+
+		/// <summary>#1201 - wakes it: its first think comes within one think period, staggered so a woken area doesn't think all at once.</summary>
+		public void WakeUp() {
+			if (!this.sleeping) {
+				return;
+			}
+			this.sleeping = false;
+			double period = (this.PeriodInSeconds > 0) ? this.PeriodInSeconds : ThinkIntervalSeconds;
+			this.DueInSeconds = Globals.dice.NextDouble() * period;
+		}
+
+		public static void WakeUp(NPC self) {
+			NPCAiTimer timer = GetFor(self);
+			if (timer != null) {
+				timer.WakeUp();
+			}
+		}
+
 		private void CaptureHome(NPC self) {
 			this.homeX = self.X;
 			this.homeY = self.Y;
@@ -296,6 +369,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#962 - Sphere's NPCACT_FLEE: away from them for so many steps, whatever else is going on.</summary>
 		public void FleeFrom(Character from, int steps) {
+			this.WakeUp(); //#1201
 			this.fleeingFrom = from;
 			this.fleeSteps = steps;
 		}

@@ -577,6 +577,8 @@ namespace SteamEngine {
 				IniFileSection features = iniH.GetNewOrParsedSection("features");
 				//features.Comment("These are features which can be toggled on or off.");
 				useAosToolTips = features.GetValue("useAosToolTips", true, "If this is on, AOS tooltips (onmouseover little windows instead of onclick texts) are enabled. Applies for clients > 3.0.8o");
+				//#1201 - Regions.ActivityGrid
+				Regions.ActivityGrid.AwakeSeconds = features.GetValue("npcAreaAwakeSeconds", 300.0, "NPCs sleep where no player is near: the world is cut into areas of 64x64 tiles, and an area is awake while a player is in it or in a neighbouring one, and for this many seconds after the last of them left. A sleeping NPC doesn't think at all until its area wakes. 0 turns sleeping off.");
 				//OneCharacterOnly = (bool) features.IniEntry("OneCharacterOnly", (bool)false, "Limits accounts to one character each (except GMs)).");
 
 				featuresFlags |= 0x2;

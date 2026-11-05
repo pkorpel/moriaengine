@@ -318,6 +318,13 @@ namespace SteamEngine.Timers {
 			}
 		}
 
+		/// <summary>Not ticking (DueInSeconds set to -1): unlike a negative DueInSeconds, which a timer overdue but not yet fired reads too.</summary>
+		public bool IsPaused {
+			get {
+				return this.fireAt == negativeOneSecond;
+			}
+		}
+
 		public bool IsDeleted {
 			get {
 				return this.isDeleted;
