@@ -127,7 +127,9 @@ namespace SteamEngine {
 
 				Thread t = new Thread(delegate () {
 					Console.ReadLine();
-					exitTokenSource.Cancel();
+					lock (globalLock) { //#1173 - Enter at the server's own console is a shutdown too, it saves as .exit does
+						SaveAndExit();
+					}
 				});
 				t.IsBackground = true;
 				t.Start();
@@ -412,6 +414,44 @@ namespace SteamEngine {
 		//}
 
 		internal static void CommandExit() {
+			exitTokenSource.Cancel();
+		}
+
+		/// <summary>#1173 - a deliberate shutdown (.exit, the console's exit) saves the world first. Called with globalLock
+		/// held, as a command is. A save that fails, or throws, only warns: the server goes down anyway, as the user chose.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		internal static void SaveAndExit() {
+			if (exitTokenSource.IsCancellationRequested) {
+				return; //already going down
+			}
+			if (RunLevelManager.IsRunning) {
+				bool saved = false;
+				try {
+					saved = Globals.TrySave();
+				} catch (Exception e) {
+					Logger.WriteError(e);
+				}
+				if (!saved) {
+					Logger.WriteWarning("The shutdown save failed, the world is NOT saved. Shutting down anyway.");
+				}
+			} else {
+				Logger.WriteWarning("Shutting down without a save: the server isn't running (" + RunLevelManager.RunLevel + ").");
+			}
+			GoDown();
+		}
+
+		/// <summary>#1173 - .exitnosave: down at once, no save. Called with globalLock held.</summary>
+		internal static void ExitWithoutSave() {
+			if (exitTokenSource.IsCancellationRequested) {
+				return; //already going down
+			}
+			GoDown();
+		}
+
+		//#1173 - the run level drops from Running while globalLock is still held, so nothing queued behind this command (a
+		//GM's .save, an autosave on the timer thread) saves a world the main thread is already taking apart in Exit()
+		private static void GoDown() {
+			RunLevelManager.SetShutdown();
 			exitTokenSource.Cancel();
 		}
 

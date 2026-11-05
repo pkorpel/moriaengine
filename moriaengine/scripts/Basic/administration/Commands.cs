@@ -258,8 +258,27 @@ namespace SteamEngine.CompiledScripts {
 		[SteamFunction]
 		public static void Save(Player self) {
 			self.SysMessage("Saving world...");
-			Globals.Save();
-			self.SysMessage("Save complete.");
+			if (Globals.TrySave()) {
+				self.SysMessage("Save complete.");
+			} else {
+				self.RedMessage("The save failed, see the server log."); //#1173
+			}
+		}
+
+		/// <summary>#1173 - shuts the server down, saving the world first (a failed save only warns). A GM's .exit used to
+		/// read as a bare word and do nothing: commands resolve on the GM, and only the console's resolve on Globals.
+		/// Admins only (CommandsAuthorization), as the setups.</summary>
+		[SteamFunction]
+		public static void Exit(Player self) {
+			self.SysMessage("Saving the world and shutting down...");
+			Globals.Exit();
+		}
+
+		/// <summary>#1173 - shuts the server down WITHOUT saving: everything since the last save is lost.</summary>
+		[SteamFunction]
+		public static void ExitNoSave(Player self) {
+			self.SysMessage("Shutting down without saving...");
+			Globals.ExitNoSave();
 		}
 
 		//public static void DragonTileTargon(GameConn c, IPoint3D point, object targData) {

@@ -109,7 +109,9 @@ namespace SteamEngine.AuxServerPipe {
 
 		protected override void Handle(NamedPipeConnection<AuxServerPipeClient> conn, AuxServerPipeClient state) {
 			if (RunLevelManager.IsAwaitingRetry) {
-				if (this.command == "exit") {//TODO? check authorisation somehow?
+				string typed = this.command.Trim();
+				//#1173 - exitnosave too (it used to start another recompile); nothing can be saved here either way
+				if (string.Equals(typed, "exit", System.StringComparison.OrdinalIgnoreCase) || string.Equals(typed, "exitnosave", System.StringComparison.OrdinalIgnoreCase)) {//TODO? check authorisation somehow?
 					MainClass.CommandExit();
 				} else {
 					MainClass.RetryRecompilingScripts();

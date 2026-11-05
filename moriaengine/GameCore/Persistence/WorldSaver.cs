@@ -57,13 +57,11 @@ namespace SteamEngine.Persistence {
 				path = Globals.SavePath;
 			}
 
-
-			Tools.EnsureDirectory(path, true);
-
 			ObjectSaver.StartingSaving();
 
 			bool success = false;
 			try {
+				Tools.EnsureDirectory(path, true); //#1173 - in here: a folder that can't be made fails the save the usual way, @afterSave included (the autosave re-arms there)
 
 				sa = new ScriptArgs(path, "globals");
 				Globals.Instance.TryTrigger(TriggerKey.openSaveStream, sa);
