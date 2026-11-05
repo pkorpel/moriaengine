@@ -15,6 +15,8 @@
 	Or visit http://www.gnu.org/copyleft/gpl.html
 */
 
+using System;
+using SteamEngine.Common;
 using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
@@ -36,7 +38,13 @@ namespace SteamEngine.CompiledScripts {
 			foreach (AbstractCharacter ch in map.GetNPCsInLoadedSectors(area)) { //an area never visited has no sectors to make
 				NPC npc = ch as NPC;
 				if (npc != null) {
-					NPCAiTimer.WakeUp(npc);
+					try {
+						NPCAiTimer.WakeUp(npc);
+					} catch (FatalException) {
+						throw;
+					} catch (Exception e) {
+						Logger.WriteError(e); //one NPC mustn't keep the rest of the area asleep: it won't wake again while a player is near
+					}
 				}
 			}
 		}

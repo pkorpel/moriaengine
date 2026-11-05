@@ -315,9 +315,9 @@ namespace SteamEngine.CompiledScripts {
 			if (activity.IsAwake(self.X, self.Y, now)) {
 				return false;
 			}
-			if (this.hasHome && (this.homeM == self.M) && (self.ControlMaster == null) && (self.FollowTarget == null) &&
+			if (this.hasHome && (this.homeM == self.M) && (self.ControlMaster == null) && (self.FollowTarget == null) && !this.isHeld &&
 					(Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) > this.WanderLeash)) {
-				//only what Think would walk home (Wander): a pet told to stay, or a wild NPC a GM stopped, stands where it is
+				//only what Think would walk home (Wander): a pet told to stay, a wild NPC a GM stopped, a held one stands where it is
 				if (activity.IsAwake(this.homeX, this.homeY, now)) {
 					return false; //someone is near home: it walks there, seen
 				}
@@ -331,7 +331,7 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>#1201 - an NPC busy with something keeps thinking wherever it is: a fight, fleeing, an order, a guarded item,
 		/// following someone who is there to follow (as Think's Follow branch would; a pet of an offline owner, or a wild NPC a GM
-		/// once stopped, only stands, so it may sleep). A held one only stands too; a hit or an order wakes it (EngageTarget).</summary>
+		/// once stopped, only stands, so it may sleep). A held one only stands too; a hit or a kill order wakes it (EngageTarget).</summary>
 		private bool HasNothingToDo(NPC self) {
 			bool fleeing = (this.fleeSteps > 0) && (this.fleeingFrom != null) && !this.fleeingFrom.IsDeleted; //as Think's
 			if ((this.target != null) || fleeing || (this.frozenUntil > Globals.TimeInSeconds) ||

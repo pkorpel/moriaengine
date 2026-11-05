@@ -7,7 +7,7 @@ namespace SteamEngine.Tests.Protocol {
 	/// <summary>
 	/// #1201 - NPCs sleep where no player is near, and wake when one comes. Server side in
 	/// scripts/Tests/NpcSleepTests.cs (the awake time cut to 3 s): A beside the player, B wild three areas away,
-	/// C a pet following its owner, D a follower, E beyond its leash, F NeverSleeps, G a pet told to stay far from its old home.
+	/// C a pet following its owner, D a follower, E beyond its leash, F NeverSleeps, G a pet told to stay and H a held NPC, both far from their homes.
 	/// </summary>
 	[Collection(NpcSleepCollection.Name)]
 	public class NpcSleepTests {
@@ -41,6 +41,7 @@ namespace SteamEngine.Tests.Protocol {
 					Assert.Matches(@"at=first npc=C sleeping=False paused=False pos=\S+ atHome=\S+ state=Following", first); //thinking, not just unpaused
 					Assert.Matches(@"at=first npc=D sleeping=False paused=False pos=\S+ atHome=\S+ state=Following", first);
 					Assert.Matches(@"at=first npc=G sleeping=True paused=True pos=\S+ atHome=False", first); //a pet told to stay isn't sent home
+					Assert.Matches(@"at=first npc=H sleeping=True paused=True pos=\S+ atHome=False", first); //nor a held NPC
 
 					string summon = this.Command(game, ".TestNpcSleepSummon", "NPC_SLEEP_SUMMON");
 					Assert.Contains("NPC_SLEEP_SUMMON: before=True after=False", summon);

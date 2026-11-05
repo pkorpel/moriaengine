@@ -7,7 +7,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// #1201 - NPCs sleep where no player is near. With the awake time cut to a few seconds: a wild NPC three areas
 	/// away falls asleep, one beyond its leash is put home as it does; one beside the player, a pet following its
-	/// owner, a follower and a NeverSleeps one keep thinking; a pet told to stay sleeps where it stands. A sleeper summoned next to the player wakes, a player
+	/// owner, a follower and a NeverSleeps one keep thinking; a pet told to stay and a held NPC sleep where they stand. A sleeper summoned next to the player wakes, a player
 	/// coming to a sleeper wakes it, and it falls asleep again once the player has been gone the awake time.
 	/// </summary>
 	public static class NpcSleepTests {
@@ -64,6 +64,16 @@ namespace SteamEngine.CompiledScripts {
 			stayerAi.homeM = homeOfE.M;
 			stayerAi.hasHome = true;
 			npcs["G"] = stayer;
+
+			NPC held = Spawn(map, self.X + Far + 20, self.Y + 24); //a held wild NPC (a guard told "stop"), 20 tiles from home
+			NPCAiTimer heldAi = NPCAiTimer.GetFor(held);
+			heldAi.isHeld = true;
+			heldAi.homeX = homeOfE.X;
+			heldAi.homeY = homeOfE.Y + 8;
+			heldAi.homeZ = (sbyte) homeOfE.Z;
+			heldAi.homeM = homeOfE.M;
+			heldAi.hasHome = true;
+			npcs["H"] = held;
 
 			Console.WriteLine("NPC_SLEEP_SETUP: player=" + start + " awakeSeconds=" + ActivityGrid.AwakeSeconds +
 				" playerArea=" + (self.X >> ActivityGrid.AreaShift) + " farArea=" + ((self.X + Far) >> ActivityGrid.AreaShift));

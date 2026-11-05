@@ -35,12 +35,12 @@ all count.
 
 - **Falling asleep** (`NPCAiTimer.TryFallAsleep`, at a think, after `CaptureHome`): in an
   asleep area, an NPC with nothing to do pauses its own timer (`DueInSeconds = -1`) and
-  costs nothing until it wakes. Nothing to do means: no target, not fleeing, not held or
-  frozen, no "go" point or guarded item, and not following someone it could follow (a
-  pet of an offline owner, or a wild NPC a GM once stopped, only stands, so it sleeps).
+  costs nothing until it wakes. Nothing to do means: no target, not fleeing, not frozen, no
+  "go" point or guarded item, and not following someone it could follow (a pet of an
+  offline owner, a wild NPC a GM once stopped, or a held one only stands, so it sleeps).
   `NeverSleeps` (saved) keeps one awake. A wild one beyond its leash is put back home as
   it falls asleep, the walk nobody would see, unless a player is near home (then it stays
-  awake and walks); pets and NPCs a GM stopped aren't sent home, they only stand.
+  awake and walks); pets, held NPCs and NPCs a GM stopped aren't sent home, they stand.
 - **Waking** (`NpcSleep`): an area that wakes resumes every sleeper in it; a sleeper
   moved into an awake area (a GM's summon, a teleport, a dismount, a pet out of a
   vendor) wakes at once; `EngageTarget` (pet orders, guards called, a hit from another
@@ -56,7 +56,8 @@ all count.
 - A pet whose owner logs in far from it stays asleep until someone comes near; before,
   it would have walked across the map to them.
 - `npcAreaAwakeSeconds` is read at boot and at a recompile, which reloads the world and
-  wakes every sleeper, so a changed value never strands one.
+  wakes every sleeper, so changing it in the ini never strands one. Raising it by code at
+  runtime can: an area inside the new countdown sends no wake when a player comes.
 
 ### A real "NPC swings but never hits" bug, found and fixed
 
