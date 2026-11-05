@@ -1,9 +1,13 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): #1190 a fallback load comes up with no regions, then B4 (range queries without LINQ)
+## NOW (2026-11-05): performance plan B4 = #1192: range queries without LINQ
 
-User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180). SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving. User 2026-11-05: #1190 right after #1188, then B4.
-#1190, branch 1190-fallback-load-regions in ../moria-1190: WorldSaver's failed-load and no-save paths ClearWorld, which empties StaticRegion (the archive map's regions come from scripts since #813) and nothing reloads them: StaticRegion.ReloadFromScripts (files recorded in LoadFromScripts) via ScriptLoader.ReloadSections; ClearAll clears deletedArchiveRegions. Test ShutdownSaveTests.AFallbackLoadKeepsTheRegions (newest save copy named 23_59_59 without [EOF] in things.sav). B4 code ready in ../moria-b4 (LINQ branches of Map.cs + GameServer.GetAllPlayers removed, loops kept).
+User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180). SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving.
+B4, branch b4-nolinq-queries in ../moria-b4: LINQ branches of Map.cs's range queries + GameServer.GetAllPlayers removed, loops kept (IsPlayer == Account != null, nothing overrides it), null guard in GetMultiComponentsInRectangle. Test: fast tier, a broad protocol sample, before/after test-perf on Release.
+
+## DONE (2026-11-05): #1190 a fallback load came up with no regions
+
+WorldSaver's failed-load and no-save paths ClearWorld, which emptied StaticRegion (the archive map's regions come from scripts since #813), and the retry only loaded the save: "No world region defined". StaticRegion.LoadFromScripts records the section type + files, ReloadFromScripts re-parses them via ScriptLoader.ReloadSections (per-file errors logged, a missing file can't crash the boot), ForgetScripts forgets the sources, ClearAll also clears deletedArchiveRegions. Test ShutdownSaveTests.AFallbackLoadKeepsTheRegions (a copy of the save in saves/2099-12-31/23_59_59 without [EOF] in things.sav), red without the reload. Review: no defects, hardening applied. Not covered: a GM-deleted archive region through a fallback.
 
 ## DONE (2026-11-05): #1188 Timer.Clear races the timer thread on a recompile (PR below)
 
