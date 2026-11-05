@@ -1,9 +1,13 @@
 # moriaengine — working state
 
-## NOW (2026-11-04): performance plan, step A1 = #1163: every code-registered def exists before the world loads
+## NOW (2026-11-05): performance plan, step A2 = #1172: a skill under way at a save goes on after the restart
+
+A1 (#1163) DONE, see below. A2, branch 1172-skill-restart in ../moria-1172 (WIP commit c6576c4, not built yet; rebase on main after A1): SkillDef.cs:452 valueName -> valueString; CraftingOrder [SaveableClass] with its own Save/LoadLine (skill + item/count lines; before, saving a crafting plugin threw UnsaveableTypeException inside FlushCache, so the section had no def= and the craft was lost); null-order guards in CraftingProcessPlugin. Test SkillRestartTests (own collection, account skillrestart): smith making 2 copper daggers + a held orc mid-swing at a sheep, strokes pushed to 25 s, save, boot, daggers made and sheep hit. Review agent before merge.
+
+## DONE (2026-11-05): performance plan A1 = #1163: every code-registered def exists before the world loads
 
 User approved the plan (performance-review.md section 8) with answers: (1) a failed shutdown save only warns, and there stays a way to shut down WITHOUT saving; (2) a skill in progress at a restart finishes, as Sphere; (3) NPC sleep areas stay awake 5 min, the value in steamengine.ini, not .settings; (4) order A1, A2, A3, B1, B2, then the rest. NEW RULE: every code change gets an independent review agent before merge.
-A1, branch 1163-defs-before-load: after ScriptLoader.Load and before WorldSaver.Load (Main.Init and LoadAll), run the static initializers of scripts types deriving from AbstractDef or Plugin that declare a static field of an AbstractDef type; .Register() for Snooping/Discordance; a boot self-check logging an ERROR for any such def not registered under its name. Test: BootLogTests' saved-world boot with the 11 states (red without), and discordance's stats back to pre-discord after a restart.
+A1 (branch 1163-defs-before-load): ClassManager.InitStaticDefs after ScriptLoader.Load and before WorldSaver.Load (Main.Init + LoadAll): static initializers of scripts types deriving from AbstractDef or Plugin with a static AbstractDef field, then an ERROR for any def made in code (HeaderLine < 0) not registered under its name; Snooping + Discordance got .Register() (they never had). BootLogTests saves one of each of the 10 plugins (party isn't saved: Party has no [SaveableClass]) and checks they come back. Red run proved the damage: discorded sheep kept Str 15/19, MaxHits 75/100; ignited player kept regen -0.5. Doc: persistence-and-saving.md. Review agent: no bugs; applied regen tolerance, try/finally, a comment on where code defs must live. Verified: BootLogTests red/green, fast 336/336, full protocol suite 222/231 classes green and the 9 failing ones A/B'd identical on main (StaleSrc a flake, passed both sides); untracked ones filed as #1174. Not repaired: characters already damaged by an earlier restart (a one-off fix if the user wants).
 
 ## DONE (2026-11-04): 1168 performance review update + implementation plan (#1163 first), docs only, AWAITING GO-AHEAD
 

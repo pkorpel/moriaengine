@@ -364,7 +364,8 @@ namespace SteamEngine.CompiledScripts {
 		/// lost it ("No PluginDef reference loaded ... Deleting.") along with its effect. Called after the scripts are loaded, so an
 		/// initializer that looks another def up by name still finds it, and before the world is. Runs the static initializers of
 		/// every def and plugin class holding a def in a static field, then checks that each def made in code is registered under its
-		/// own name (one built without .Register() never is).</summary>
+		/// own name (one built without .Register() never is). Only def and plugin classes are looked at: a def made in code belongs in a
+		/// static field of its own def or plugin class (a helper class making one, as StatModSpellsUtils does, needs a Bootstrap()).</summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal static void InitStaticDefs() {
 			foreach (Type type in ScriptsAssembly.GetTypes()) {

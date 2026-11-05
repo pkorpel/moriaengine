@@ -42,7 +42,8 @@ namespace SteamEngine.Tests.Protocol {
 				}
 				//discordance and ignition gave back what they took when they ended after the restart
 				Assert.Equal(Value(check, "sheepBefore"), Value(check, "sheepStats"));
-				Assert.Equal(Value(check, "regenBefore"), Value(check, "regen"));
+				Assert.Equal(double.Parse(Value(check, "regenBefore"), System.Globalization.CultureInfo.InvariantCulture),
+					double.Parse(Value(check, "regen"), System.Globalization.CultureInfo.InvariantCulture), 6);
 			}
 		}
 

@@ -64,8 +64,11 @@ namespace SteamEngine.CompiledScripts {
 
 				double chargeSeconds = ClassAbilitySettings.instance.chargeDurationSeconds;
 				ClassAbilitySettings.instance.chargeDurationSeconds = 7200;
-				MagicChargePlugin.AddCharge(self, MagicChargeSchool.Fire);
-				ClassAbilitySettings.instance.chargeDurationSeconds = chargeSeconds;
+				try {
+					MagicChargePlugin.AddCharge(self, MagicChargeSchool.Fire);
+				} finally {
+					ClassAbilitySettings.instance.chargeDurationSeconds = chargeSeconds;
+				}
 
 				self.SetTag(preRegenTK, self.HitsRegenSpeed);
 				IgnitionEffectPlugin ignition = (IgnitionEffectPlugin) IgnitionEffectPluginDef.instance.Create();
