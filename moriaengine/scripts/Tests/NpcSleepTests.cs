@@ -6,7 +6,7 @@ using SteamEngine.Regions;
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// #1201 - NPCs sleep where no player is near. With the awake time cut to a few seconds: a wild NPC three areas
-	/// away falls asleep, one beyond its leash is put home as it does; one beside the player, a pet following its
+	/// away falls asleep where it stands, even beyond its leash (#1204); one beside the player, a pet following its
 	/// owner, a follower and a NeverSleeps one keep thinking; a pet told to stay and a held NPC sleep where they stand. A sleeper summoned next to the player wakes, a player
 	/// coming to a sleeper wakes it, and it falls asleep again once the player has been gone the awake time.
 	/// </summary>
@@ -44,7 +44,7 @@ namespace SteamEngine.CompiledScripts {
 			NPCAiTimer.GetFor(keeper).NeverSleeps = true;
 			npcs["F"] = keeper;
 
-			NPC stray = Spawn(map, self.X + Far + 20, self.Y + 16); //20 tiles from its home, beyond the leash
+			NPC stray = Spawn(map, self.X + Far + 20, self.Y + 16); //20 tiles from its home, beyond the leash: sleeps there (#1204)
 			NPCAiTimer strayAi = NPCAiTimer.GetFor(stray);
 			homeOfE = new Point4D(self.X + Far, self.Y + 16, map.GetTileZ(self.X + Far, self.Y + 16), self.M);
 			strayAi.homeX = homeOfE.X;

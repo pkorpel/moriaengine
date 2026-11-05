@@ -304,8 +304,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1201 - with no player near (Regions.ActivityGrid) and nothing to do, the NPC pauses its own timer until
-		/// its area wakes: no cost at all while it sleeps, as Sphere's sleeping sectors. Beyond its leash it's put back home
-		/// first, the walk nobody would see. Its other timers (regeneration, ...) go on.</summary>
+		/// its area wakes: no cost at all while it sleeps, as Sphere's sleeping sectors. It sleeps where it stands (#1204).
+		/// Its other timers (regeneration, ...) go on.</summary>
 		private bool TryFallAsleep(NPC self) {
 			if (!ActivityGrid.SleepingEnabled || this.NeverSleeps || !this.HasNothingToDo(self)) {
 				return false;
@@ -315,14 +315,8 @@ namespace SteamEngine.CompiledScripts {
 			if (activity.IsAwake(self.X, self.Y, now)) {
 				return false;
 			}
-			if (this.hasHome && (this.homeM == self.M) && (self.ControlMaster == null) && (self.FollowTarget == null) && !this.isHeld &&
-					(Point2D.GetSimpleDistance(self.X, self.Y, this.homeX, this.homeY) > this.WanderLeash)) {
-				//only what Think would walk home (Wander): a pet told to stay, a wild NPC a GM stopped, a held one stands where it is
-				if (activity.IsAwake(this.homeX, this.homeY, now)) {
-					return false; //someone is near home: it walks there, seen
-				}
-				self.Go(this.homeX, this.homeY, this.homeZ);
-			}
+			//#1204 - it sleeps where it stands, as Sphere's do, and walks home once awake: putting it home unseen moved what a
+			//GM had placed (a quest NPC moved by hand snapped back at the first sleep)
 			this.pathCache = null;
 			this.sleeping = true;
 			this.DueInSeconds = -1;
