@@ -11,7 +11,7 @@ Rules for this work (user, 2026-11-04/05):
 Step 1 DONE: B before/after (Release, scale 0.3, 8183f4c vs c5c6996) posted on #1176: alloc -30..-80% (B4), busy -0.4..-2 points, lateness p99 lower in P3-P5, no probe gaps either side (0.3 never overloads the timer thread; B5 shows in TimerFloodTests).
 C1 = #1199 merged (PR #1200).
 C2 = #1201 merged (PR #1202).
-D1 = #1203 in progress: WorldSaver.LastTimings (triggers, purge, per file time/bytes, total, one log line per save) + WorldSaver.FormatInMemory measurement mode (format to a MemoryStream, then write + rename: splits format from write); .TestPerf save prints timings, .TestPerf savesplit; then a scale-1 harness run, results into performance-review.md + #1176. Then D2, E1-E5.
+D1 = #1203 in progress: WorldSaver.LastTimings (triggers, purge, per file time/bytes, total, one log line per save) + WorldSaver.FormatInMemory measurement mode (format into a StringWriter, then write it to the same target: splits format from write); .TestPerf save prints timings, .TestPerf savesplit; then a scale-1 harness run, results into performance-review.md + #1176. Then D2, E1-E5.
 Gotchas from this run: never edit scripts/ while a protocol run is going (each boot compiles scripts/ from disk); one test run or build at a time (5 GB box, OOM); worktrees per step (../moria-<step>), rebase = reset --hard origin/main + cherry-pick (git rebase is quirky here); CRLF vs LF per file, edit as bytes; no Co-Authored-By/Claude-Session trailers (hook rejects); commit subject <= 72.
 
 ## DONE (2026-11-05): performance plan C2 = #1201: NPCs sleep where no player is near

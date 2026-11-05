@@ -17,7 +17,7 @@ namespace SteamEngine.Tests.Protocol {
 				string check = output.Substring(output.IndexOf("SAVE_TIMINGS_CHECK:", StringComparison.Ordinal));
 				check = check.Substring(0, check.IndexOf('\n') < 0 ? check.Length : check.IndexOf('\n'));
 				foreach (string part in new[] { "success=True", "modes=True", "sameFiles=True", "noTmp=True", "allComplete=True",
-						"everyFileTimed=True", "bytesMatch=True", "sumsFit=True" }) {
+						"everyFileTimed=True", "bytesMatch=True", "sumsFit=True", "sameContent=True" }) {
 					Assert.True(check.Contains(part, StringComparison.Ordinal), part + " missing:\n" + check + "\n" + output);
 				}
 				Assert.Contains("things.sav", check);

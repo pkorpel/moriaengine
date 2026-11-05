@@ -35,7 +35,8 @@ namespace SteamEngine.Persistence {
 		public static SaveTimings LastTimings { get; private set; }
 
 		/// <summary>#1203 - a measurement mode, off by default: each file is formatted into memory, then written, so the
-		/// timings split formatting from disk writing. Costs the memory of the largest file's text while saving.</summary>
+		/// timings split formatting from disk writing. Costs about twice the largest file's size in memory while saving
+		/// (the text is UTF-16).</summary>
 		public static bool FormatInMemory { get; set; }
 
 		internal static bool Save() {
@@ -113,10 +114,12 @@ namespace SteamEngine.Persistence {
 		/// flush/close/rename error logging.</summary>
 		private static void SaveFile(string path, string name, SaveTimings timings, Action<SaveStream> content) {
 			SaveTimings.FileTiming timing = timings.AddFile(name);
+			long start = Stopwatch.GetTimestamp();
 			ScriptArgs sa = new ScriptArgs(path, name);
 			Globals.Instance.TryTrigger(TriggerKey.openSaveStream, sa);
 			object file = sa.Argv[1];
-			long start = Stopwatch.GetTimestamp();
+			timing.OpenMs = MsSince(start);
+			start = Stopwatch.GetTimestamp();
 			SaveStream saveStream;
 			if (timings.FormatInMemory) {
 				StringWriter text = new StringWriter(CultureInfo.InvariantCulture);
@@ -126,7 +129,10 @@ namespace SteamEngine.Persistence {
 				saveStream = GetSaveStream(path, file);
 				saveStream.WriteText(text.GetStringBuilder());
 			} else {
+				long openStart = Stopwatch.GetTimestamp();
 				saveStream = GetSaveStream(path, file);
+				timing.OpenMs += MsSince(openStart);
+				start = Stopwatch.GetTimestamp();
 				WriteContent(saveStream, content);
 				timing.FormatMs = MsSince(start);
 				start = Stopwatch.GetTimestamp();

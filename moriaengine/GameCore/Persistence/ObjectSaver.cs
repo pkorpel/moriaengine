@@ -1166,15 +1166,21 @@ namespace SteamEngine.Persistence {
 			this.writer.Write(text);
 		}
 
-		/// <summary>#1203 - bytes written so far (flushed first), when the writer is a StreamWriter over a seekable stream; else 0.</summary>
+		/// <summary>#1203 - bytes written so far (flushed first), when the writer is a StreamWriter over a seekable stream; else 0.
+		/// Never throws: a failing flush is Close()'s to report, as it always was.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal long BytesWritten {
 			get {
 				StreamWriter streamWriter = this.writer as StreamWriter;
 				if ((streamWriter == null) || !streamWriter.BaseStream.CanSeek) {
 					return 0;
 				}
-				streamWriter.Flush();
-				return streamWriter.BaseStream.Length;
+				try {
+					streamWriter.Flush();
+					return streamWriter.BaseStream.Length;
+				} catch (Exception) {
+					return 0;
+				}
 			}
 		}
 

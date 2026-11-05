@@ -25,11 +25,13 @@ namespace SteamEngine.Persistence {
 	/// beforeSave/afterSave triggers, the weak reference purge, and each file. A file's FormatMs is the time spent turning
 	/// the world into text, WriteMs putting it on disk (encoding, flush, close, rename). In a normal save the text goes
 	/// straight into a buffered file, so FormatMs holds most of the writing too; WorldSaver.FormatInMemory formats into
-	/// memory first, which splits them.
+	/// memory first, which splits them. Not timed: the broadcasts and the sync queues flushed before the save starts.
 	/// </summary>
 	public sealed class SaveTimings {
 		public sealed class FileTiming {
 			public string Name { get; internal set; }
+			/// <summary>The openSaveStream trigger and opening the file (in FormatInMemory mode the file is opened in WriteMs).</summary>
+			public double OpenMs { get; internal set; }
 			public double FormatMs { get; internal set; }
 			public double WriteMs { get; internal set; }
 			public long Bytes { get; internal set; }
@@ -56,6 +58,16 @@ namespace SteamEngine.Persistence {
 			FileTiming file = new FileTiming { Name = name };
 			this.files.Add(file);
 			return file;
+		}
+
+		public double OpenMs {
+			get {
+				double sum = 0;
+				foreach (FileTiming file in this.files) {
+					sum += file.OpenMs;
+				}
+				return sum;
+			}
 		}
 
 		public double FormatMs {
@@ -90,10 +102,10 @@ namespace SteamEngine.Persistence {
 
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
-			sb.AppendFormat(CultureInfo.InvariantCulture, "total={0:F0}ms format={1:F0}ms write={2:F0}ms purge={3:F0}ms beforeSave={4:F0}ms afterSave={5:F0}ms {6:F1}MB inMemory={7} success={8}",
-				this.TotalMs, this.FormatMs, this.WriteMs, this.PurgeMs, this.BeforeSaveMs, this.AfterSaveMs, this.Bytes / 1048576.0, this.FormatInMemory, this.Success);
+			sb.AppendFormat(CultureInfo.InvariantCulture, "total={0:F0}ms format={1:F0}ms write={2:F0}ms open={3:F0}ms purge={4:F0}ms beforeSave={5:F0}ms afterSave={6:F0}ms {7:F1}MB inMemory={8} success={9}",
+				this.TotalMs, this.FormatMs, this.WriteMs, this.OpenMs, this.PurgeMs, this.BeforeSaveMs, this.AfterSaveMs, this.Bytes / 1048576.0, this.FormatInMemory, this.Success);
 			foreach (FileTiming file in this.files) {
-				sb.AppendFormat(CultureInfo.InvariantCulture, " | {0} {1:F0}+{2:F0}ms {3:F1}MB", file.Name, file.FormatMs, file.WriteMs, file.Bytes / 1048576.0);
+				sb.AppendFormat(CultureInfo.InvariantCulture, " | {0} open {1:F0} format {2:F0} write {3:F0}ms {4:F1}MB", file.Name, file.OpenMs, file.FormatMs, file.WriteMs, file.Bytes / 1048576.0);
 			}
 			return sb.ToString();
 		}

@@ -27,10 +27,14 @@ namespace SteamEngine.CompiledScripts {
 			bool bytesMatch = normal.Files.Concat(split.Files).All(f => f.Bytes > 0) &&
 				normal.Files.All(f => f.Bytes == new FileInfo(Path.Combine(normal.Folder, f.Name + ".sav")).Length) &&
 				split.Files.All(f => f.Bytes == new FileInfo(Path.Combine(split.Folder, f.Name + ".sav")).Length);
-			bool sumsFit = (normal.FormatMs + normal.WriteMs <= normal.TotalMs) && (split.FormatMs + split.WriteMs <= split.TotalMs);
+			bool sumsFit = (normal.OpenMs + normal.FormatMs + normal.WriteMs <= normal.TotalMs) && (split.OpenMs + split.FormatMs + split.WriteMs <= split.TotalMs) &&
+				normal.Files.All(f => f.OpenMs > 0) && split.Files.All(f => f.OpenMs > 0);
+			//accounts and regions don't change between two saves a moment apart: the same text both ways
+			bool sameContent = new[] { "accounts.sav", "regions.sav" }.All(f =>
+				File.ReadAllBytes(Path.Combine(normal.Folder, f)).SequenceEqual(File.ReadAllBytes(Path.Combine(split.Folder, f))));
 			Console.WriteLine("SAVE_TIMINGS_CHECK: success=" + (normal.Success && split.Success) + " modes=" + (!normal.FormatInMemory && split.FormatInMemory) +
 				" sameFiles=" + sameFiles + " noTmp=" + noTmp + " allComplete=" + allComplete + " everyFileTimed=" + everyFileTimed +
-				" bytesMatch=" + bytesMatch + " sumsFit=" + sumsFit + " files=" + string.Join(",", normalFiles));
+				" bytesMatch=" + bytesMatch + " sumsFit=" + sumsFit + " sameContent=" + sameContent + " files=" + string.Join(",", normalFiles));
 		}
 
 		private static SaveTimings SaveOnce(bool inMemory) {
