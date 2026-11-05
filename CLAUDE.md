@@ -1,11 +1,17 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): #1181 split ShutdownSaveTests (5 boots in one test hit test-full's 3 min hang backstop), then B2
+## NOW (2026-11-05): performance plan: A and B1-B2 merged, next B3 (the timer thread stops signalling itself)
 
-Milestone A full suite done on main d31b44a: only the 8 known failing classes (AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro) plus a StaleSrc flake (passed 3/3 reruns, #1180). User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent.
-B1 (#1179) merged PR #1182: perf harness, PerfCounters off by default, steamengine.ini [diagnostics] perfCounters, admin .perf/.perfon/.perfoff/.perfreset, scripts/test-perf.sh. A red check found the window closed at once on enable (window=0ms while on); fixed + asserted.
-#1181, branch 1181-split-shutdown-tests in ../moria-1181: four Facts, each from a fresh world, at most two boots (exit + plevel 4, failed saves, exitnosave, console). Found #1183: two saves in the same second shared a folder (the second overwrote the first); GetSavingPath now waits for the next second. Then B2: AuxiliaryServer/Commands.cs #error branch builds in Release, run-local.sh --release, a Release compile in test-fast.
+User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180).
 Open question for the user: SIGTERM (run-local.sh stop, docker stop) still doesn't save; save on it like .exit, or keep it as a quick no-save way down?
+
+## DONE (2026-11-05): performance plan B2 = #1185: Release builds
+
+AuxiliaryServer/Commands.cs's #error guarded a dead restarter (CmdRestart constructed it and never Start()ed it, its .bat files don't exist): removed, `restart` now says how to restart. run-local.sh start [--build] [--release]; test-fast.sh and CI compile Release too (CI job timeout 15 min). Release = Logger.WriteDebug and packet logs gone ([Conditional("DEBUG")]), Sanity checks stay (TRACE), GameCore compiles scripts in its own configuration (scripts/bin/Release). Verified: fast 339/339 on Debug and Release, 11 protocol classes (22 tests) on Release servers (PERF_CONFIG=Release), run-local --release boots with 0 problems. Review clean, nits applied.
+
+## DONE (2026-11-05): #1181 ShutdownSaveTests split + #1183 one folder per save (PR #1184)
+
+Four Facts, each a fresh world and at most two boots (75-90 s each, the old one hit the 3 min hang backstop). Splitting found #1183: two saves in the same second shared saves/<date>/<HH_mm_ss>, the second overwrote the first (a failure then set the good save aside with it); GetSavingPath waits for the next second. Review clean.
 
 ## DONE (2026-11-05): performance plan B1 = #1179: land the benchmark harness (PR #1182)
 
