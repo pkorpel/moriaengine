@@ -192,6 +192,14 @@ namespace SteamEngine {
 			}
 		}
 
+		private static int autosaveMinutes;
+		/// <summary>#1173 - minutes between the automatic world saves (scripts/Basic/PeriodicSave.scp), 0 = none.</summary>
+		public static int AutosaveMinutes {
+			get {
+				return autosaveMinutes;
+			}
+		}
+
 		private static bool readBodyDefs;
 		public static bool ReadBodyDefs {
 			get {
@@ -481,6 +489,7 @@ namespace SteamEngine {
 				generateMissingDefs = files.GetValue("generateMissingDefs", false, "Whether to generate missing scripts based on tiledata.");
 				useMultiItems = files.GetValue("useMultiItems", true, "Whether to use multi items...");
 				flipDroppedItems = files.GetValue("flipDroppedItems", true, "Whether an item dropped on the ground turns to the next model of its flip group, as Sphere's FlipDroppedItems. Off, only items with FLIP=1 do.");
+				autosaveMinutes = Math.Max(0, files.GetValue("autosaveMinutes", 60, "Minutes between automatic world saves, 0 turns them off. A GM's .nextsave says when the next one is due. Shutting down with .exit saves too, .exitnosave doesn't."));
 				readBodyDefs = files.GetValue("readBodyDefs", true, "Whether to read Bodyconv.def (a client file) in order to determine what character models lack defs (and then to write new ones for them to 'scripts/defaults/chardefs/newCharDefsFromMuls.def').");
 				writeMulDocsFiles = files.GetValue("writeMulDocsFiles", false, "If this is true/on/1, then SteamEngine will write out some files with general information gathered from various MUL files into the 'docs/MUL file docs' folder. These should be distributed with SteamEngine anyways, but this is useful sometimes (like when a new UO expansion is released).");
 
@@ -738,8 +747,17 @@ namespace SteamEngine {
 		//    }
 		//}
 
+		/// <summary>#1173 - .exit and the console's exit: the world is saved first. A save that fails only warns,
+		/// the server goes down anyway. ExitNoSave is the way down without a save.</summary>
 		public static void Exit() {
-			MainClass.CommandExit();
+			Commands.AuthorizeAnywhereThrow("Exit");
+			MainClass.SaveAndExit();
+		}
+
+		public static void ExitNoSave() {
+			Commands.AuthorizeAnywhereThrow("ExitNoSave");
+			Logger.WriteWarning("Exiting without saving the world, as asked (.exitnosave).");
+			MainClass.ExitWithoutSave();
 		}
 
 		public static void SetConsoleTitle(string title) {
@@ -747,14 +765,22 @@ namespace SteamEngine {
 		}
 
 		public static void Save() {
+			TrySave();
+		}
+
+		/// <summary>Saves the world; false when the save failed (WorldSaver has logged why).</summary>
+		public static bool TrySave() {
 			Sanity.IfTrueThrow(!RunLevelManager.IsRunning, "!RunLevelManager.IsRunning @ Save()");
 
 			//Packets.NetState.ProcessAll();
 			SyncQueue.ProcessAll();
 
 			PauseServerTime();
-			WorldSaver.Save();
-			UnPauseServerTime();
+			try {
+				return WorldSaver.Save();
+			} finally {
+				UnPauseServerTime();
+			}
 		}
 
 		public static void G() {

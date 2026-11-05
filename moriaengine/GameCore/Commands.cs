@@ -180,6 +180,18 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>#1173 - authorizes a command by its name wherever it's reached, not only as the typed word: #406 checks only
+		/// the first word, so a nested call (.show exitnosave, .serv.exit) went unchecked. For the few that must never slip
+		/// through. Outside a command (a timer, the server's own console) there's nobody to check.</summary>
+		public static void AuthorizeAnywhereThrow(string name) {
+			if (commandRunning) {
+				ScriptArgs sa = new ScriptArgs(Globals.Src, name);
+				if (TriggerResult.Cancel == Globals.Instance.TryCancellableTrigger(TriggerKey.command, sa)) {
+					throw new SEException(commandAuthorisationFailed);
+				}
+			}
+		}
+
 		static CacheDictionary<string, LScriptHolder> gmCommandsCache = new CacheDictionary<string, LScriptHolder>(1000, false, StringComparer.Ordinal);
 
 		public static void ClearGMCommandsCache() {

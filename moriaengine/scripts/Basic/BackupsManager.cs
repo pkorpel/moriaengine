@@ -54,6 +54,7 @@ namespace SteamEngine.CompiledScripts {
 		private ISaveFileManager fileManager;
 		private ISavePathManager pathManager;
 		private int loadAttempts;
+		private string savingPath; //#1173 - the folder made for the save under way
 		private bool isLastLoadPossibility = true;
 
 
@@ -70,8 +71,10 @@ namespace SteamEngine.CompiledScripts {
 
 		public void On_BeforeSave(Globals ignored, ScriptArgs sa) {
 			string path = string.Concat(sa.Argv[0]);
+			this.savingPath = null;
 			if (this.pathManager != null) {
 				path = this.pathManager.GetSavingPath(path);
+				this.savingPath = path;
 			}
 			if (this.fileManager != null) {
 				this.fileManager.StartSaving(path);
@@ -95,6 +98,31 @@ namespace SteamEngine.CompiledScripts {
 				if (this.pathManager != null) {
 					this.pathManager.SavingFinished(string.Concat(sa.Argv[0]));
 				}
+			} else {
+				this.SetAsideFailedSave(string.Concat(sa.Argv[0]));
+			}
+			this.savingPath = null;
+		}
+
+		/// <summary>#1173 - a failed save leaves a half-written folder, and a boot tries the newest folders first and gives up
+		/// after a few (WorldSaver.Load): a run of failed saves would keep the server from starting. Renamed to *.failed, it's
+		/// no backup any more (InitBackupsLists can't read its name as a time) and stays there for an admin to look at. Only
+		/// the folder made for this very save: when the save failed before one was made, sa.Argv[0] is the saves root.</summary>
+		private void SetAsideFailedSave(string path) {
+			if ((this.savingPath == null) || !Directory.Exists(path) ||
+					!string.Equals(Path.GetFullPath(path), Path.GetFullPath(this.savingPath), StringComparison.Ordinal) ||
+					string.Equals(Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar), Path.GetFullPath(Globals.SavePath).TrimEnd(Path.DirectorySeparatorChar), StringComparison.Ordinal)) {
+				return;
+			}
+			string to = path.TrimEnd(Path.DirectorySeparatorChar) + ".failed";
+			for (int i = 2; Directory.Exists(to) || File.Exists(to); i++) {
+				to = path.TrimEnd(Path.DirectorySeparatorChar) + ".failed" + i.ToString(CultureInfo.InvariantCulture);
+			}
+			try {
+				Directory.Move(path, to);
+				Logger.WriteWarning("The failed save's folder is set aside as " + to + ", so no boot tries to load it.");
+			} catch (Exception e) {
+				Logger.WriteWarning("The failed save's folder " + path + " couldn't be set aside, a boot may try to load it: " + e.Message);
 			}
 		}
 
