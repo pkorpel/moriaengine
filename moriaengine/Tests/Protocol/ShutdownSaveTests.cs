@@ -16,10 +16,13 @@ namespace SteamEngine.Tests.Protocol {
 		private static readonly TimeSpan ExitWait = TimeSpan.FromSeconds(60);
 		private static readonly Regex ProblemRE = new Regex(@"\b(ERROR|WARNING|CRITICAL|FATAL):");
 
+		//#1181 - one test per way down, each from a fresh world and at most two boots: five boots in one test ran past
+		//test-full's 3 min hang backstop
+
 		[Fact]
-		public void ShuttingDownSavesUnlessToldNotTo() {
-			//1. .exit saves: the autosave interval comes from steamengine.ini, and a GM can see when it's due
-			string first, nextSave, firstExit;
+		public void ExitSavesAndAPlainGmCantShutDown() {
+			//the autosave interval comes from steamengine.ini, and a GM can see when it's due
+			string first, nextSave, exit;
 			using (var fixture = new GameServerPairFixture()) {
 				using (var client = Connect(Account, CharName)) {
 					first = Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark=");
@@ -34,24 +37,28 @@ namespace SteamEngine.Tests.Protocol {
 					}
 					Ask(fixture, client, ".TestShutdownSetMaxPlevel 7", "SHUTDOWN_SAVE: maxPlevel=7");
 					Ask(fixture, client, ".TestShutdownMark \"exit\"", "SHUTDOWN_SAVE: marked");
-					firstExit = ExitBy(fixture, () => client.SendSpeech(".exit"));
+					exit = ExitBy(fixture, () => client.SendSpeech(".exit"));
 				}
 			}
 			Assert.Contains("mark=none", first);
 			Assert.Equal("60", Value(first, "autosaveMinutes"));
 			Assert.Matches(@"^Next save in 0:5\d:\d\d, interval is 60 minutes$", nextSave);
-			Assert.Contains("Saving world data", firstExit);
-			Assert.DoesNotContain("the world is NOT saved", firstExit);
+			Assert.Contains("Saving world data", exit);
+			Assert.DoesNotContain("the world is NOT saved", exit);
 
-			//2. saves that fail. One whose writes fail leaves a half-written folder: it's set aside (*.failed), so no boot tries
-			//it, and the autosave timer is set again for the next try. One that can't even make its folder: the same timer,
-			//and .exit only warns and goes down anyway.
-			string second, afterFailedWrites, setAside, afterFailedFolder, secondExit, brokenSaveFile;
-			using (var fixture = GameServerPairFixture.BootPreservingSaves()) {
-				List<string> problems = ProblemsAtBoot(fixture);
-				Assert.True(problems.Count == 0, problems.Count + " at boot:\n" + string.Join("\n", problems));
-				using (var client = ConnectAs(Account, CharName)) {
-					second = Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark=");
+			Assert.Contains("mark=exit", ReportAfterBoot());
+		}
+
+		/// <summary>Saves that fail. One whose writes fail leaves a half-written folder: it's set aside (*.failed), so no boot
+		/// tries it, and the autosave timer is set again for the next try. One that can't even make its folder: the same timer,
+		/// and .exit only warns and goes down anyway. The world on disk stays the last good save.</summary>
+		[Fact]
+		public void AFailedSaveOnlyWarnsAndLeavesTheLastGoodSave() {
+			string before, afterFailedWrites, setAside, afterFailedFolder, exit, brokenSaveFile;
+			using (var fixture = new GameServerPairFixture()) {
+				using (var client = Connect(Account, CharName)) {
+					MarkAndSave(fixture, client, "good save");
+					before = Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark=");
 					Ask(fixture, client, ".TestShutdownMark \"failed save\"", "SHUTDOWN_SAVE: marked");
 					Ask(fixture, client, ".TestShutdownBreakSaveWrites", "SHUTDOWN_SAVE: next save's writes broken");
 					SaveAndWait(fixture, client);
@@ -60,51 +67,67 @@ namespace SteamEngine.Tests.Protocol {
 					brokenSaveFile = Value(Ask(fixture, client, ".TestShutdownBreakSaves", "SHUTDOWN_SAVE: saves broken"), "file");
 					SaveAndWait(fixture, client);
 					afterFailedFolder = Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark=");
-					secondExit = ExitBy(fixture, () => client.SendSpeech(".exit"));
+					exit = ExitBy(fixture, () => client.SendSpeech(".exit"));
 				}
 			}
 			System.IO.File.Delete(brokenSaveFile);
-			Assert.Contains("mark=exit", second);
-			Assert.Contains("autosaveTimer=True", second);
+			Assert.Contains("autosaveTimer=True", before);
 			Assert.Contains("autosaveTimer=True", afterFailedWrites);
 			Assert.Contains("setAside=True", setAside);
 			Assert.Contains("autosaveTimer=True", afterFailedFolder);
-			Assert.Contains("The shutdown save failed, the world is NOT saved. Shutting down anyway.", secondExit);
+			Assert.Contains("The shutdown save failed, the world is NOT saved. Shutting down anyway.", exit);
 
-			//3. .exitnosave: no save
-			string third, thirdExit;
-			using (var fixture = GameServerPairFixture.BootPreservingSaves()) {
-				List<string> problems = ProblemsAtBoot(fixture); //the half-written folder of step 2 isn't tried
-				Assert.True(problems.Count == 0, problems.Count + " at boot:\n" + string.Join("\n", problems));
-				using (var client = ConnectAs(Account, CharName)) {
-					third = Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark=");
+			Assert.Contains("mark=good save", ReportAfterBoot()); //the half-written folder isn't tried, the failed saves wrote nothing
+		}
+
+		[Fact]
+		public void ExitNoSaveDoesntSave() {
+			string exit;
+			using (var fixture = new GameServerPairFixture()) {
+				using (var client = Connect(Account, CharName)) {
+					MarkAndSave(fixture, client, "good save");
 					Ask(fixture, client, ".TestShutdownMark \"no save\"", "SHUTDOWN_SAVE: marked");
-					thirdExit = ExitBy(fixture, () => client.SendSpeech(".exitnosave"));
+					exit = ExitBy(fixture, () => client.SendSpeech(".exitnosave"));
 				}
 			}
-			Assert.Contains("mark=exit", third); //the failed saves wrote nothing
-			Assert.Contains("Exiting without saving the world", thirdExit);
-			Assert.DoesNotContain("Saving world data", thirdExit);
+			Assert.Contains("Exiting without saving the world", exit);
+			Assert.DoesNotContain("Saving world data", exit);
 
-			//4. a line at the server's own console saves, as .exit
-			string fourth;
-			using (var fixture = GameServerPairFixture.BootPreservingSaves()) {
-				using (var client = ConnectAs(Account, CharName)) {
-					fourth = Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark=");
+			Assert.Contains("mark=good save", ReportAfterBoot());
+		}
+
+		/// <summary>A line at the server's own console saves, as .exit.</summary>
+		[Fact]
+		public void AConsoleLineSaves() {
+			string exit;
+			using (var fixture = new GameServerPairFixture()) {
+				using (var client = Connect(Account, CharName)) {
 					Ask(fixture, client, ".TestShutdownMark \"console\"", "SHUTDOWN_SAVE: marked");
 				}
-				string consoleExit = ExitBy(fixture, () => fixture.SendGameConsoleLine(""));
-				Assert.Contains("Saving world data", consoleExit);
+				exit = ExitBy(fixture, () => fixture.SendGameConsoleLine(""));
 			}
-			Assert.Contains("mark=exit", fourth); //.exitnosave saved nothing
+			Assert.Contains("Saving world data", exit);
 
-			string fifth;
+			Assert.Contains("mark=console", ReportAfterBoot());
+		}
+
+		/// <summary>Boots on what the last server saved: a clean boot, and the character's mark.</summary>
+		private static string ReportAfterBoot() {
 			using (var fixture = GameServerPairFixture.BootPreservingSaves()) {
+				List<string> problems = ProblemsAtBoot(fixture);
+				Assert.True(problems.Count == 0, problems.Count + " at boot:\n" + string.Join("\n", problems));
 				using (var client = ConnectAs(Account, CharName)) {
-					fifth = Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark=");
+					string report = Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark=");
+					Assert.Contains("autosaveTimer=True", report); //booted from a save, the autosave is set again
+					return report;
 				}
 			}
-			Assert.Contains("mark=console", fifth);
+		}
+
+		/// <summary>Marks the character and saves it, the last good save a later boot should find.</summary>
+		private static void MarkAndSave(GameServerPairFixture fixture, TestGameClient client, string mark) {
+			Ask(fixture, client, ".TestShutdownMark \"" + mark + "\"", "SHUTDOWN_SAVE: marked");
+			SaveAndWait(fixture, client);
 		}
 
 		/// <summary>A command the account may not run: it's refused and the server stays up, with nothing saved.</summary>
@@ -120,7 +143,7 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.DoesNotContain("Saving world data", output);
 		}
 
-		/// <summary>A GM's .save, and waits for its end (it fails here, which a client only sees as a broadcast).</summary>
+		/// <summary>A GM's .save, and waits for its end (a failure a client only sees as a broadcast).</summary>
 		private static void SaveAndWait(GameServerPairFixture fixture, TestGameClient client) {
 			int mark = fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".save");
