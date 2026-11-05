@@ -86,3 +86,27 @@ For hand-written classes that aren't `.ct`-generated - settings categories
 examples - the same save/load machinery is opted into explicitly via `[SaveableClass]` on the
 class, `[SavedMember]` on fields that should persist, and a `[LoadingInitializer]`
 constructor the loader calls to reconstruct an instance before populating its saved fields.
+
+## Defs made in code, and what a save refers to by name
+
+A saved plugin writes its def as a name (`def=#p_paralyze`), and so does a saved role. Loading resolves the name with
+`AbstractScript.GetByDefname`, so the def has to be registered **before** `WorldSaver.Load` runs. Otherwise
+`Plugin.LoadingFinished` logs `No PluginDef reference loaded ... Deleting.` and the plugin is dropped together with its
+effect.
+
+Defs from `.def`/`.scp` files are registered by `ScriptLoader.Load`, before the world loads. A def made in code is a
+static field, `instance = (XDef) new XDef("p_x", "C# scripts", -1).Register()`. A static field initializer runs only when
+the field is first read, and loading a save doesn't read it. Until #1163, 11 such defs weren't there when a save loaded:
+the combat queue and tracker, paralyze, discordance, warcry, magic charge, ignition, poisoned item, crafting, snooping and
+party. Two of them never called `.Register()` at all.
+
+`ClassManager.InitStaticDefs` (#1163) closes this in one place:
+- **When:** right after the scripts load and before the world does, on a boot and on a recompile.
+- **What:** it runs the static initializers of every scripts class deriving from `AbstractDef` or `Plugin` that holds a def
+  in a static field.
+- **The check:** it then logs an ERROR for any def made in code (header line −1) that isn't registered under its own name.
+  BootLogTests fails on that ERROR, so a new def built without `.Register()` is caught at once.
+
+**Rule for a new plugin or role def made in code:** keep it in a static field of its def or plugin class and call
+`.Register()` on it. No `Bootstrap()` is needed for it any more. `BootLogTests` saves a world holding one of every such
+plugin and checks they all come back. Add a new one there.
