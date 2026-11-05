@@ -23,6 +23,13 @@ namespace SteamEngine.CompiledScripts {
 				" autosaveTimer=" + (Globals.Instance.GetTimer(autosaveTK) != null) + " |");
 		}
 
+		/// <summary>#1190 - how many static regions the world has (the archive map's, from scripts) and which one holds self.</summary>
+		[SteamFunction]
+		public static void TestShutdownRegionReport(Character self) {
+			Console.WriteLine("SHUTDOWN_REGIONS: count=" + SteamEngine.Regions.StaticRegion.AllRegions.Count + " world=" +
+				SteamEngine.Regions.StaticRegion.WorldRegion.Defname + " here=" + self.Region.Defname + " |");
+		}
+
 		/// <summary>Sets the account's max plevel, to try the shutdown commands as a plain GM (4).</summary>
 		[SteamFunction]
 		public static void TestShutdownSetMaxPlevel(Character self, ScriptArgs sa) {
