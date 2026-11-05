@@ -82,6 +82,39 @@ namespace SteamEngine.Tests.Protocol {
 		}
 	}
 
+	/// <summary>#1194 - an overloaded timer thread slows everything down evenly. A round used to run every timer due at its start
+	/// before taking in the re-armed ones, so as the backlog grew the rounds grew, and a timer due every tenth of a second fired
+	/// once a round, seconds apart. Rounds now stop after 20 ms.</summary>
+	[Collection(TimerFloodCollection.Name)]
+	public class TimerFloodTests {
+		private readonly GameServerPairFixture fixture;
+
+		public TimerFloodTests(GameServerPairFixture servers) {
+			this.fixture = servers;
+		}
+
+		[Fact]
+		public void AFrequentTimerKeepsFiringThroughAnOverload() {
+			using var client = CommandPermissionTests.Connect("timerflood", "Flood Tester");
+			//2000 timers a second, 1 ms each: twice what the thread can run
+			string started = CommandPermissionTests.Ask(this.fixture, client, ".TestTimerFloodStart \"2000 1\"", "TIMER_FLOOD: started");
+			string uid = Regex.Match(started, @"uid=(\d+)").Groups[1].Value;
+			string report;
+			try {
+				Thread.Sleep(8000);
+				report = CommandPermissionTests.Ask(this.fixture, client, ".TestTimerFloodReport", "TIMER_FLOOD: fires=");
+			} finally {
+				CommandPermissionTests.Ask(this.fixture, client, ".TestTimerFloodStop " + uid, "TIMER_FLOOD: stopped");
+			}
+			long maxGapMs = long.Parse(Regex.Match(report, @"maxGapMs=(\d+)").Groups[1].Value);
+			int fires = int.Parse(Regex.Match(report, @"fires=(\d+)").Groups[1].Value);
+			//at half speed the probe fires about every 200 ms; whole-backlog rounds left it seconds between fires
+			Assert.True(maxGapMs < 1000, report);
+			Assert.True(fires >= 20, report);
+			Assert.DoesNotContain("Timer thread dying", this.fixture.GameOutputSnapshot());
+		}
+	}
+
 	/// <summary>A Thing in the last slot of the array of all Things used to make enumerating them, saves included, throw.</summary>
 	[Collection(ThingsArrayCollection.Name)]
 	public class ThingsArrayTests {
@@ -106,6 +139,11 @@ namespace SteamEngine.Tests.Protocol {
 	[CollectionDefinition(Name, DisableParallelization = true)]
 	public class TimerRecompileCollection : ICollectionFixture<GameServerPairFixture> {
 		public const string Name = "TimerRecompile";
+	}
+
+	[CollectionDefinition(Name, DisableParallelization = true)]
+	public class TimerFloodCollection : ICollectionFixture<GameServerPairFixture> {
+		public const string Name = "TimerFlood";
 	}
 
 	[CollectionDefinition(Name, DisableParallelization = true)]
