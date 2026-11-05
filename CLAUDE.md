@@ -1,9 +1,20 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan B6 = #1196: a monotonic game clock
+## NOW (2026-11-05): performance plan #1176: phases A and B DONE; next = the B before/after perf comparison, then C1
 
-User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180). SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving. B4's before/after perf run folded into one comparison at the end of B.
-B6, branch b6-monotonic-clock in ../moria-b6: Common/MonotonicTime (Stopwatch, exact Elapsed without overflow), Globals' lastMarkRealTime is a Stopwatch timestamp; also Globals.Time (Sphere's tenths) divided by 10 instead of multiplying, nothing live reads it (serv.time only in unported quests). Fast tests MonotonicTimeTests.
+Plan: docs/current/02-engine-core/performance-review.md section 8 (approved; the user's 4 answers in DONE A1 below). Checklist on umbrella #1176: A1-A3, B1-B6 done; C1, C2, D1, D2, E1-E5 open. Work in the plan's order, one issue + one PR per step, tick #1176 and comment there after each merge.
+Rules for this work (user, 2026-11-04/05):
+- Every code change gets an independent review agent before merge; fix its findings (or say why not) and re-run what they touch.
+- Each PR: issue first, its own new test, a red check (break the fix, the test must fail), the fast tier (scripts/test-fast.sh, also compiles Release), a generous set of related protocol classes (scripts/test-full.sh "FullyQualifiedName~A|FullyQualifiedName~B"), then PR body listing ONLY what really ran, then `gh pr merge --squash --admin` (CI has no runners).
+- The full protocol suite (~3 h) runs ONCE, after all of #1176 is delivered, not per PR. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180).
+- SIGTERM (docker stop, run-local.sh stop) stays a quick way down WITHOUT saving (user, 2026-11-05).
+Next step 1, the perf comparison the user folded B4's into: Release (PERF_CONFIG=Release scripts/test-perf.sh, PERF_SCALE e.g. 0.3, absolute PERF_OUT) on main BEFORE B3 (8183f4c = B2 merged: Release builds + harness exist from there) vs main now; report game-thread busy, allocMBps, GC pause, timer lateness, probe gaps per phase in a comment on #1176. Release didn't build before B2, so B1/B2 themselves can't be in a Release comparison.
+Next step 2: C1 (walking home: straight step first, A* back-off after a failed search), then C2 (NPC sleep; 5 min awake, value in steamengine.ini not .settings).
+Gotchas from this run: never edit scripts/ while a protocol run is going (each boot compiles scripts/ from disk); one test run or build at a time (5 GB box, OOM); worktrees per step (../moria-<step>), rebase = reset --hard origin/main + cherry-pick (git rebase is quirky here); CRLF vs LF per file, edit as bytes; no Co-Authored-By/Claude-Session trailers (hook rejects); commit subject <= 72.
+
+## DONE (2026-11-05): performance plan B6 = #1196: a monotonic game clock
+
+Common/MonotonicTime (Stopwatch; Elapsed converts whole seconds and the remainder apart, exact, no overflow); Globals' lastMarkRealTime is a Stopwatch timestamp, so NTP/DST/clock changes no longer jump every timer and there's no local-time conversion per read. Also Globals.Time (Sphere's tenths) returned TotalSeconds / 10; now * 10 (nothing live reads it, serv.time only in unported quests). Fast MonotonicTimeTests (red: the naive formula overflows over a year). Review clean.
 
 ## DONE (2026-11-05): performance plan B5 = #1194: a bounded timer round
 
