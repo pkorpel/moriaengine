@@ -422,14 +422,20 @@ namespace SteamEngine.CompiledScripts {
 		public void LoadLine(string filename, int line, string valueName, string valueString) {
 			switch (valueName) {
 				case "skill":
-					this.craftingSkill = (CraftingSkillDef) ObjectSaver.OptimizedLoad_Script(valueString);
+					this.craftingSkill = ObjectSaver.OptimizedLoad_Script(valueString) as CraftingSkillDef;
 					break;
 				case "item":
-					this.lastLoaded = new CraftingSelection((ItemDef) ObjectSaver.OptimizedLoad_Script(valueString), 0);
-					this.selectionQueue.Enqueue(this.lastLoaded);
+					this.lastLoaded = null; //an item def that's gone (it throws, the line is skipped) takes its count with it
+					ItemDef itemDef = ObjectSaver.OptimizedLoad_Script(valueString) as ItemDef;
+					if (itemDef != null) {
+						this.lastLoaded = new CraftingSelection(itemDef, 1); //one, if its count line is lost (0 would never count down)
+						this.selectionQueue.Enqueue(this.lastLoaded);
+					}
 					break;
 				case "count":
-					this.lastLoaded.Count = SteamEngine.Common.ConvertTools.ParseInt32(valueString);
+					if (this.lastLoaded != null) {
+						this.lastLoaded.Count = SteamEngine.Common.ConvertTools.ParseInt32(valueString);
+					}
 					break;
 			}
 		}

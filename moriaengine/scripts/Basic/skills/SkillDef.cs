@@ -362,6 +362,7 @@ namespace SteamEngine.CompiledScripts {
 		private Item tool;
 		private TimeSpan delay; //set in @Start
 		private bool success;
+		private bool targetGone; //#1172 - a target deleted before the save comes back as null, see Save
 
 		public readonly ScriptArgs scriptArgs;
 
@@ -438,6 +439,14 @@ namespace SteamEngine.CompiledScripts {
 			if (this.skillDef != null) {
 				output.WriteValue("skillDef", this.skillDef);
 			}
+			if (IsGone(this.target1) || IsGone(this.target2)) {
+				output.WriteValue("targetGone", true); //#1172 - it's saved as null, which a stroke can't tell from no target at all
+			}
+		}
+
+		private static bool IsGone(IPoint3D target) {
+			IDeletable deletable = target as IDeletable;
+			return (deletable != null) && deletable.IsDeleted;
 		}
 
 		[LoadLine]
@@ -450,6 +459,9 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case "skilldef":
 					this.skillDef = (SkillDef) ObjectSaver.OptimizedLoad_Script(valueString); //#1172 - was valueName, the word "skilldef"
+					break;
+				case "targetgone":
+					this.targetGone = true;
 					break;
 			}
 		}
@@ -650,6 +662,10 @@ namespace SteamEngine.CompiledScripts {
 					//(ResumeAfterLogin), instead of being refused as not alive. A save made meanwhile keeps it, and players are
 					//offline after every restart.
 					self.AddTimer(skillTimerKey, new SkillStrokeTimer(this.skillSeqArgs));
+					return;
+				}
+				if (this.skillSeqArgs.targetGone) {
+					this.skillSeqArgs.PhaseAbort(); //#1172 - its target died before the save, there's nothing to finish it on
 					return;
 				}
 				this.skillSeqArgs.PhaseStroke();
