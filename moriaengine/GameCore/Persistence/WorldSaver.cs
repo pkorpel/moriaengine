@@ -21,6 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using SteamEngine.Common;
 using SteamEngine.Networking;
+using SteamEngine.Regions;
 using SteamEngine.Timers;
 
 namespace SteamEngine.Persistence {
@@ -182,6 +183,7 @@ namespace SteamEngine.Persistence {
 				Logger.WriteWarning(e.Message);
 				Logger.WriteWarning("No proper save files or backups found; Starting with a blank worldfile, no accounts, etc. The first account to log in will be set as admin.");
 				MainClass.ClearWorld();
+				StaticRegion.ReloadFromScripts(); //#1190 - the clear took the regions the scripts made
 				TriggerGroup.ReAddGlobals();
 			} catch (FatalException) {
 				throw;
@@ -189,6 +191,7 @@ namespace SteamEngine.Persistence {
 				Logger.WriteCritical(e);
 				Logger.WriteCritical("Loading failed.");
 				MainClass.ClearWorld();
+				StaticRegion.ReloadFromScripts(); //#1190 - the clear took the regions the scripts made, the next save tried needs them
 				TriggerGroup.ReAddGlobals();
 				Globals.Instance.TryTrigger(TriggerKey.afterLoad, new ScriptArgs(path, false));
 				return false;

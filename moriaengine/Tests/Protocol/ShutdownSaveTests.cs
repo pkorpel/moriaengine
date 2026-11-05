@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
@@ -109,6 +111,46 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.Contains("Saving world data", exit);
 
 			Assert.Contains("mark=console", ReportAfterBoot());
+		}
+
+		/// <summary>#1190 - a save that fails to load (its things.sav lost the EOF marker): the boot falls back to the save before
+		/// it, and that world still has all the regions of the archive map. The failed attempt's clear used to take them, and the
+		/// fallback came up with none ("No world region defined").</summary>
+		[Fact]
+		public void AFallbackLoadKeepsTheRegions() {
+			string before;
+			using (var fixture = new GameServerPairFixture()) {
+				using (var client = Connect(Account, CharName)) {
+					before = Ask(fixture, client, ".TestShutdownRegionReport", "SHUTDOWN_REGIONS:");
+					MarkAndSave(fixture, client, "good save");
+					ExitBy(fixture, () => client.SendSpeech(".exitnosave"));
+				}
+			}
+			//a copy of that save, newer than any (a day folder far ahead) and broken: the boot tries it first
+			string savesDir = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "saves");
+			string dayDir = Directory.GetDirectories(savesDir).Where(d => !d.EndsWith("2000-01-01", StringComparison.Ordinal))
+				.OrderBy(d => d, StringComparer.Ordinal).Last();
+			string good = Directory.GetDirectories(dayDir).Where(d => !d.Contains(".failed")).OrderBy(d => d, StringComparer.Ordinal).Last();
+			string broken = Path.Combine(savesDir, "2099-12-31", "23_59_59");
+			Directory.CreateDirectory(broken);
+			foreach (string file in Directory.GetFiles(good)) {
+				File.Copy(file, Path.Combine(broken, Path.GetFileName(file)));
+			}
+			string things = Path.Combine(broken, "things.sav");
+			File.WriteAllLines(things, File.ReadAllLines(things).Where(line => line.Trim() != "[EOF]"));
+
+			string after, output;
+			using (var fixture = GameServerPairFixture.BootPreservingSaves()) {
+				using (var client = ConnectAs(Account, CharName)) {
+					Assert.Contains("mark=good save", Ask(fixture, client, ".TestShutdownReport", "SHUTDOWN_SAVE: mark="));
+					after = Ask(fixture, client, ".TestShutdownRegionReport", "SHUTDOWN_REGIONS:");
+				}
+				output = fixture.GameOutputSnapshot();
+			}
+			Assert.Contains("Loading failed", output); //the broken save was tried first
+			Assert.DoesNotContain("No world region defined", output);
+			Assert.Matches(@"count=\d{3,} world=\w+ here=\w+", before);
+			Assert.Equal(before, after);
 		}
 
 		/// <summary>Boots on what the last server saved: a clean boot, and the character's mark.</summary>

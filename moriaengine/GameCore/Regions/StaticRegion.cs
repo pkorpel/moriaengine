@@ -41,6 +41,7 @@ namespace SteamEngine.Regions {
 		public static void ClearAll() {
 			byName = new Dictionary<string, StaticRegion>(StringComparer.OrdinalIgnoreCase);
 			byDefname = new Dictionary<string, StaticRegion>(StringComparer.OrdinalIgnoreCase);
+			deletedArchiveRegions.Clear(); //#1190 - the next load reads them from its save again
 
 			worldRegion = voidRegion;
 			highestHierarchyIndex = -1;
@@ -98,6 +99,13 @@ namespace SteamEngine.Regions {
 		/// registers it). A region that already exists (a script reload) is left as it is - region
 		/// changes in the archive take effect after a restart.</summary>
 		public static IUnloadable LoadFromScripts(PropsSection input, Func<PropsSection, StaticRegion> create) {
+			lock (scriptSources) {
+				if (!scriptSources.TryGetValue(input.HeaderType, out HashSet<string> files)) {
+					files = new HashSet<string>(StringComparer.Ordinal);
+					scriptSources[input.HeaderType] = files;
+				}
+				files.Add(input.Filename);
+			}
 			if (byDefname.ContainsKey(input.HeaderName)) {
 				Logger.WriteDebug("Region " + input.HeaderName + " already loaded, not reloading it from scripts.");
 				return ScriptRegionHandle.instance;
@@ -109,6 +117,31 @@ namespace SteamEngine.Regions {
 				loadingFromScripts = false;
 			}
 			return ScriptRegionHandle.instance;
+		}
+
+		//#1190 - where the regions loaded from scripts came from (section type -> script files), to load them again
+		private static readonly Dictionary<string, HashSet<string>> scriptSources = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+
+		/// <summary>#1190 - a world load that failed clears the world, the regions loaded from scripts with it (ClearAll), and the
+		/// next save tried doesn't load the scripts again: it would come up with no regions at all. This loads them as at boot.
+		/// A recompile doesn't need it, it loads the scripts anew.</summary>
+		public static void ReloadFromScripts() {
+			List<KeyValuePair<string, List<string>>> sources = new List<KeyValuePair<string, List<string>>>();
+			lock (scriptSources) { //copies: the reload records the same files into these sets again
+				foreach (KeyValuePair<string, HashSet<string>> source in scriptSources) {
+					sources.Add(new KeyValuePair<string, List<string>>(source.Key, new List<string>(source.Value)));
+				}
+			}
+			foreach (KeyValuePair<string, List<string>> source in sources) {
+				ScriptLoader.ReloadSections(source.Value, source.Key);
+			}
+			Logger.WriteDebug("Reloaded " + byDefname.Count + " static regions from scripts.");
+		}
+
+		internal static void ForgetScriptSources() {
+			lock (scriptSources) {
+				scriptSources.Clear();
+			}
 		}
 
 		private sealed class ScriptRegionHandle : IUnloadable {

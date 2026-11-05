@@ -22,6 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using SteamEngine.Common;
 using SteamEngine.CompiledScripts;
 using SteamEngine.LScript;
@@ -251,6 +252,37 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>#1190 - parses the given script files again and loads their sections of one registered type, as at boot. For a
+		/// world load that failed and cleared what such sections had made (the static regions) before another save is tried.</summary>
+		internal static void ReloadSections(IEnumerable<string> fileNames, string type) {
+			RegisteredScript rs;
+			if (!scriptTypesByName.TryGetValue(type, out rs)) {
+				return;
+			}
+			foreach (string fileName in fileNames) {
+				try { //this runs from a failed world load's handler: a script that went missing must not take the boot down with it
+					using (StreamReader stream = new StreamReader(fileName, Encoding.Default)) {
+						foreach (PropsSection section in PropsFileParser.Load(fileName, stream, StartsAsScript, false)) {
+							if (!string.Equals(section.HeaderType, type, StringComparison.OrdinalIgnoreCase)) {
+								continue;
+							}
+							try {
+								rs.deleg(section);
+							} catch (FatalException) {
+								throw;
+							} catch (Exception e) {
+								Logger.WriteError(section.Filename, section.HeaderLine, e);
+							}
+						}
+					}
+				} catch (FatalException) {
+					throw;
+				} catch (Exception e) {
+					Logger.WriteError("Reloading " + type + " sections from " + fileName + " failed: " + e.Message);
+				}
+			}
+		}
+
 		internal static bool StartsAsScript(string headerType) {
 			switch (headerType.ToLowerInvariant()) {
 				case "function":
@@ -331,6 +363,7 @@ namespace SteamEngine {
 		//forgets stuff that come from scripts.
 		internal static void ForgetScripts() {
 			allFiles.Clear();
+			StaticRegion.ForgetScriptSources(); //#1190 - the next load records them anew
 
 			Assembly coreAssembly = ClassManager.CoreAssembly;
 
