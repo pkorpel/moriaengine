@@ -28,8 +28,8 @@ namespace SteamEngine.Tests.Protocol {
 	}
 
 	/// <summary>#1187 - a recompile saves the world and loads it again with the timer thread running. The loaded timers wait in
-	/// the change queue for that thread (only it touches the timer heap), so a door opened before the recompile still closes
-	/// after it.</summary>
+	/// the change queue for that thread, so a door opened before the recompile still closes after it. #1188 - and no timer of
+	/// the old world fires after it.</summary>
 	[Collection(TimerRecompileCollection.Name)]
 	public class TimerRecompileTests {
 		private static readonly TimeSpan RecompileWait = TimeSpan.FromSeconds(240);
@@ -45,6 +45,7 @@ namespace SteamEngine.Tests.Protocol {
 			string armed = CommandPermissionTests.Ask(this.fixture, client, ".TestTimerArmSaved 20", "TIMER_SAVED:");
 			Assert.Contains("open=True", armed);
 			string uid = Regex.Match(armed, @"uid=(\d+)").Groups[1].Value;
+			Assert.Contains("count=500", CommandPermissionTests.Ask(this.fixture, client, ".TestStaleProbeArm 500", "STALE_ARMED:"));
 
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".serv.recompile");
@@ -71,6 +72,12 @@ namespace SteamEngine.Tests.Protocol {
 			Assert.True(state != null, "The server never answered after the recompile:\n" + this.fixture.GameOutputSnapshot().Substring(mark));
 			Assert.Contains("found=True", state); //the door came back from the save
 			Assert.Contains("open=False", state); //and its timer, loaded during the recompile, fired
+
+			//#1188 - the probe timers ticked through the recompile: only their reloaded copies fire, none of the old world's
+			string stopped = CommandPermissionTests.Ask(this.fixture, client, ".TestStaleProbeStop 500", "STALE_STOPPED:");
+			Assert.Contains("found=500 ", stopped); //all came back from the save
+			Assert.DoesNotContain("fired=0 ", stopped); //the reloaded ones did fire (the count restarts with the new scripts)
+			Assert.DoesNotContain("STALE_PROBE: a timer of the old world fired", this.fixture.GameOutputSnapshot().Substring(mark));
 			Assert.DoesNotContain("Timer thread dying", this.fixture.GameOutputSnapshot());
 		}
 	}
