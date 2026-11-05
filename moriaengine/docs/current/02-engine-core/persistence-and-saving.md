@@ -142,3 +142,13 @@ because it has its own `[SteamFunction]`; `.exit` and `.exitnosave` have one now
 
 A save whose folder can't be made fails the usual way: `@afterSave` still runs with success false, so the autosave timer
 is set again for the next try. A GM's `.save` says when it failed. `autosaveMinutes =` with no number reads as 0, no autosave.
+
+Every save logs where its time went (#1203), one line, `Save timings: total=... format=... write=...`, then each file
+as `name format+write ms size`. The same numbers are in `WorldSaver.LastTimings` (`SaveTimings`). The world is paused for
+all of it. In a normal save each file is formatted straight into a buffered file stream, so `format` holds most of the
+disk writing too and `write` is only the final flush and close. `WorldSaver.FormatInMemory`, a measurement mode off by
+default (the perf harness's `.TestPerf savesplit`), formats each file into memory first and then writes it (encoding
+included) to the same target, which splits the two: that is how much of the pause D2 (#1176: format under the lock,
+write on a worker thread) can remove. The files go where `scripts/Basic/BackupsManager.cs`'s `@openSaveStream` says:
+its `NormalFileManager` writes each `.sav` straight into the save's own folder (the engine's `.tmp`-then-rename path is
+only the fallback when no script answers).

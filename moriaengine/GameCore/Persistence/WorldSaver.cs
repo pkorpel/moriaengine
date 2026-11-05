@@ -17,7 +17,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using SteamEngine.Common;
 using SteamEngine.Networking;
@@ -29,15 +31,31 @@ namespace SteamEngine.Persistence {
 	public delegate bool CanStartAsScript(string data);
 
 	public static class WorldSaver {
+		/// <summary>#1203 - where the last save's time went; null before the first save.</summary>
+		public static SaveTimings LastTimings { get; private set; }
+
+		/// <summary>#1203 - a measurement mode, off by default: each file is formatted into memory, then written, so the
+		/// timings split formatting from disk writing. Costs about twice the largest file's size in memory while saving
+		/// (the text is UTF-16).</summary>
+		public static bool FormatInMemory { get; set; }
+
 		internal static bool Save() {
 
 			using (StopWatch.StartAndDisplay("Saving world data...")) {
 				PacketSequences.BroadCast("Server is pausing for worldsave...");
 
+				SaveTimings timings = new SaveTimings { FormatInMemory = FormatInMemory };
+				long start = Stopwatch.GetTimestamp();
 				WeakRefDictionaryUtils.PurgeAll();
+				timings.PurgeMs = MsSince(start);
 
 				//-1 because we will save new files now.
-				if (!TrySave()) {
+				bool success = TrySave(timings);
+				timings.Success = success;
+				timings.TotalMs = MsSince(start);
+				LastTimings = timings;
+				Logger.WriteInfo(true, "Save timings: " + timings);
+				if (!success) {
 					PacketSequences.BroadCast("Saving failed!");//we do not throw an exception to kill the server, 
 					//the admin should do that, after he tries to fix the problem somehow...
 					return false;
@@ -47,16 +65,23 @@ namespace SteamEngine.Persistence {
 			}
 		}
 
+		private static double MsSince(long timestamp) {
+			return (Stopwatch.GetTimestamp() - timestamp) * 1000.0 / Stopwatch.Frequency;
+		}
+
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		static bool TrySave() {
+		static bool TrySave(SaveTimings timings) {
 			string path = Globals.SavePath;
 
 			ScriptArgs sa = new ScriptArgs(path);
+			long start = Stopwatch.GetTimestamp();
 			Globals.Instance.TryTrigger(TriggerKey.beforeSave, sa);
+			timings.BeforeSaveMs = MsSince(start);
 			path = string.Concat(sa.Argv[0]);
 			if (path.Length < 1) {//scripts error or something...
 				path = Globals.SavePath;
 			}
+			timings.Folder = path;
 
 			ObjectSaver.StartingSaving();
 
@@ -64,25 +89,9 @@ namespace SteamEngine.Persistence {
 			try {
 				Tools.EnsureDirectory(path, true); //#1173 - in here: a folder that can't be made fails the save the usual way, @afterSave included (the autosave re-arms there)
 
-				sa = new ScriptArgs(path, "globals");
-				Globals.Instance.TryTrigger(TriggerKey.openSaveStream, sa);
-				SaveStream saveStream = GetSaveStream(path, sa.Argv[1]);
-				saveStream.WriteComment("Textual SteamEngine save");
-				Globals.SaveGlobals(saveStream);
-				saveStream.WriteLine("[EOF]");
-				// SaveStream.Close() handles its own flush/close/rename error logging internally -
-				// no try/catch needed here anymore.
-				saveStream.Close();
-
+				SaveFile(path, "globals", timings, Globals.SaveGlobals);
 				foreach (IBaseClassSaveCoordinator coordinator in ObjectSaver.AllCoordinators) {
-					string name = coordinator.FileNameToSave;
-					sa = new ScriptArgs(path, name);
-					Globals.Instance.TryTrigger(TriggerKey.openSaveStream, sa);
-					saveStream = GetSaveStream(path, sa.Argv[1]);
-					saveStream.WriteComment("Textual SteamEngine save");
-					coordinator.SaveAll(saveStream);
-					saveStream.WriteLine("[EOF]");
-					saveStream.Close();
+					SaveFile(path, coordinator.FileNameToSave, timings, coordinator.SaveAll);
 				}
 				success = true;
 			} catch (FatalException) {
@@ -90,11 +99,53 @@ namespace SteamEngine.Persistence {
 			} catch (Exception e) {
 				Logger.WriteCritical(e);
 			} finally {
+				long afterStart = Stopwatch.GetTimestamp();
 				Globals.Instance.TryTrigger(TriggerKey.afterSave, new ScriptArgs(path, success));
+				timings.AfterSaveMs = MsSince(afterStart);
 			}
 
 			ObjectSaver.SavingFinished();
 			return success;
+		}
+
+		/// <summary>One save file, to what the openSaveStream trigger hands (scripts' BackupsManager gives its own writer), else
+		/// path/name.sav through a .tmp renamed at the end. In FormatInMemory mode the text is made in memory first, then
+		/// written to the same target, so the write (encoding included) is timed apart. SaveStream.Close() handles its own
+		/// flush/close/rename error logging.</summary>
+		private static void SaveFile(string path, string name, SaveTimings timings, Action<SaveStream> content) {
+			SaveTimings.FileTiming timing = timings.AddFile(name);
+			long start = Stopwatch.GetTimestamp();
+			ScriptArgs sa = new ScriptArgs(path, name);
+			Globals.Instance.TryTrigger(TriggerKey.openSaveStream, sa);
+			object file = sa.Argv[1];
+			timing.OpenMs = MsSince(start);
+			start = Stopwatch.GetTimestamp();
+			SaveStream saveStream;
+			if (timings.FormatInMemory) {
+				StringWriter text = new StringWriter(CultureInfo.InvariantCulture);
+				WriteContent(new SaveStream(text), content);
+				timing.FormatMs = MsSince(start);
+				start = Stopwatch.GetTimestamp();
+				saveStream = GetSaveStream(path, file);
+				saveStream.WriteText(text.GetStringBuilder());
+			} else {
+				long openStart = Stopwatch.GetTimestamp();
+				saveStream = GetSaveStream(path, file);
+				timing.OpenMs += MsSince(openStart);
+				start = Stopwatch.GetTimestamp();
+				WriteContent(saveStream, content);
+				timing.FormatMs = MsSince(start);
+				start = Stopwatch.GetTimestamp();
+			}
+			timing.Bytes = saveStream.BytesWritten;
+			saveStream.Close();
+			timing.WriteMs = MsSince(start);
+		}
+
+		private static void WriteContent(SaveStream saveStream, Action<SaveStream> content) {
+			saveStream.WriteComment("Textual SteamEngine save");
+			content(saveStream);
+			saveStream.WriteLine("[EOF]");
 		}
 
 		static SaveStream GetSaveStream(string path, object file) {

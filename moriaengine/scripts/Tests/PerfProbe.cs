@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using SteamEngine.Common;
+using SteamEngine.Persistence;
 using SteamEngine.Networking;
 using SteamEngine.Regions;
 using Timer = SteamEngine.Timers.Timer;
@@ -195,13 +196,21 @@ namespace SteamEngine.CompiledScripts {
 				case "report":
 					Out(what, a.Length > 1 ? a[1] : "", true);
 					break;
-				case "save": {
-						Globals.Save();
+				case "save":
+				case "savesplit": { //#1203 - savesplit formats each file into memory first: formatting and writing timed apart
+						bool split = (a[0] == "savesplit");
+						WorldSaver.FormatInMemory = split;
+						try {
+							Globals.Save();
+						} finally {
+							WorldSaver.FormatInMemory = false;
+						}
 						long ms = sw.ElapsedMilliseconds;
 						string newest = Directory.GetDirectories("saves", "*", SearchOption.AllDirectories)
 							.Where(d => Directory.GetFiles(d).Length > 0).OrderByDescending(Directory.GetLastWriteTimeUtc).First();
 						long bytes = Directory.GetFiles(newest).Sum(f => new FileInfo(f).Length);
 						Out(what, string.Format(CultureInfo.InvariantCulture, "ms={0} sizeMB={1:F1} dir={2} {3}", ms, bytes / 1048576.0, newest, Counts()));
+						Out(what, "timings " + WorldSaver.LastTimings);
 						break;
 					}
 				case "bench": { //bench plane x y
