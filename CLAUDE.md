@@ -1,10 +1,17 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan B3 = #1187: the timer thread stops signalling itself
+## NOW (2026-11-05): #1190 a fallback load comes up with no regions, then B4 (range queries without LINQ)
 
-Branch b3-timer-self-signal in ../moria-b3: Common/WakeSignal (Signal only while the consumer sleeps; Sleep = asleep, Reset, re-check), Timer uses it, its own Set calls go; also fixes a lost wakeup (check-then-Reset). Fast-tier stress test of WakeSignal, TimerBurst + timer-heavy protocol classes. SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving.
+User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180). SIGTERM: user decided 2026-11-05, stays a quick way down WITHOUT saving. User 2026-11-05: #1190 right after #1188, then B4.
+#1190, branch 1190-fallback-load-regions in ../moria-1190: WorldSaver's failed-load and no-save paths ClearWorld, which empties StaticRegion (the archive map's regions come from scripts since #813) and nothing reloads them: StaticRegion.ReloadFromScripts (files recorded in LoadFromScripts) via ScriptLoader.ReloadSections; ClearAll clears deletedArchiveRegions. Test ShutdownSaveTests.AFallbackLoadKeepsTheRegions (newest save copy named 23_59_59 without [EOF] in things.sav). B4 code ready in ../moria-b4 (LINQ branches of Map.cs + GameServer.GetAllPlayers removed, loops kept).
 
-User rule 2026-11-05 (tightened): the full suite runs ONCE, after all of #1176 is delivered (it takes ~3 h); each PR its own test, generous related classes, red checks, a review agent. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180).
+## DONE (2026-11-05): #1188 Timer.Clear races the timer thread on a recompile (PR below)
+
+Clear() only empties changes + bumps a generation under changesLock while the timer thread runs (heap only touched by that thread); the thread clears its heap when it sees the bump and drops a timer it dequeued before the bump (checked after globalLock). TimerPriorityQueue.Clear resets indexes. Found: Thing.ClearAll only forgets things (uid -1 = IsDeleted, BoundTimers drop themselves) but the replaced Globals is never IsDeleted, so its timers kept firing after a recompile (500 probes on Globals: thousands of old-world fires 2/2, 0 after 3/3). Review's "clear timers on a failed load" was wrong: it wiped AnnounceStartupFinishedTimer (made before the load) and the server never registered with Aux; reverted. Found #1190.
+
+## DONE (2026-11-05): performance plan B3 = #1187: the timer thread stops signalling itself (PR #1189)
+
+Common/WakeSignal (Signal only while the consumer sleeps; Sleep = asleep, Reset, re-check), Timer uses it, its own Set calls go; fixed a lost wakeup (check-then-Reset) and LoadingFinished's recompile race (leaves loaded timers in changes for the timer thread). Tests: WakeSignalTests (stress, red for both old orders), TimerRecompileTests (first real .serv.recompile test; can't force the narrow race: the timer thread takes loaded timers during the load). Two reviews; second found #1188. Server clock: saved and restored, paused during saves/recompile, so timers never run while the server is off or paused.
 
 ## DONE (2026-11-05): performance plan B2 = #1185: Release builds
 

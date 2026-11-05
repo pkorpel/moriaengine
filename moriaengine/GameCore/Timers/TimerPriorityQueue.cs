@@ -45,6 +45,9 @@ namespace SteamEngine.Timers {
 		}
 
 		public void Clear() {
+			for (int i = 0; i < this.count; i++) {
+				this.heap[i].index = -1; //#1188 - a timer outliving the clear must not Remove() at its old place in the heap
+			}
 			Array.Clear(this.heap, 0, this.heap.Length);
 			this.count = 0;
 		}
