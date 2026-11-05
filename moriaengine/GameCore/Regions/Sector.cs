@@ -178,6 +178,7 @@ namespace SteamEngine.Regions {
 			private void AddPlayer(AbstractCharacter player) {
 				Sanity.IfTrueThrow(this.players.Contains(player), "Sector's AddPlayer(" + player + ") was called, but that character is ALREADY in our list of players!");
 				this.players.AddLast(player);
+				GetMap(this.m).activity.PlayerArrived(this.sx >> areaSectorShift, this.sy >> areaSectorShift, Globals.TimeInSeconds); //#1201
 			}
 
 			private void AddDisconnected(Thing thing) {
@@ -196,6 +197,7 @@ namespace SteamEngine.Regions {
 			private void RemovePlayer(AbstractCharacter thing) {
 				if (this.players.Remove(thing)) {
 					Sanity.IfTrueThrow(this.players.Contains(thing), "Removed player still exists in ArrayList - It was in there multiple times?");
+					GetMap(this.m).activity.PlayerLeft(this.sx >> areaSectorShift, this.sy >> areaSectorShift, Globals.TimeInSeconds); //#1201
 				} else {
 					Sanity.IfTrueSay(true, "Sector's RemovePlayer(" + thing + ") was called, but that character isn't in our list of players.");
 				}
