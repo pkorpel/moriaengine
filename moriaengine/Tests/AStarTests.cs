@@ -337,5 +337,27 @@ namespace SteamEngine.Tests {
 			}
 			Assert.False(cache.TryGetNextStep(0, NpcPathCache.ReplanEvery, 50, 0, out dir));
 		}
+
+		/// <summary>#1199 - a failed search toward a spot holds off the next one toward about the same spot, for the back-off only.</summary>
+		[Fact]
+		public void PathCacheBacksOffAfterAFailedSearch() {
+			NpcPathCache cache = new NpcPathCache();
+			Assert.False(cache.IsBackingOff(10, 0, 100)); //nothing failed yet
+
+			cache.RememberFailedSearch(10, 0, 100, 8);
+			Assert.True(cache.IsBackingOff(10, 0, 100));
+			Assert.True(cache.IsBackingOff(10, 0, 107.9));
+			Assert.True(cache.IsBackingOff(10 + NpcPathCache.FailedTargetDrift, 0, 101)); //about the same spot
+			Assert.False(cache.IsBackingOff(10 + NpcPathCache.FailedTargetDrift + 1, 0, 101)); //another target
+			Assert.False(cache.IsBackingOff(10, 0, 108)); //back-off over
+
+			cache.Invalidate(); //a failed step forgets the path, not the failure
+			cache.RememberFailedSearch(10, 0, 200, 8);
+			cache.Invalidate();
+			Assert.True(cache.IsBackingOff(10, 0, 201));
+
+			cache.RememberFailedSearch(10, 0, 300, 0); //back-off of 0 = search every step
+			Assert.False(cache.IsBackingOff(10, 0, 300));
+		}
 	}
 }

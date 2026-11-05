@@ -76,6 +76,7 @@ dead player can't body-block monsters in a doorway.
 | `npcDetourRetrySeconds` | 10 | seconds between one NPC's long searches |
 | `npcDetourSearchMargin` | 64 | tiles beyond the NPC and its target the long search may wander |
 | `npcDetourMaxIterations` | 4000 | nodes the long search may expand |
+| `npcFailedPathRetrySeconds` | 8 | #1199: seconds an NPC doesn't search again toward a spot it found no way to; 0 = every step |
 | `fatigueAndOverload` | true | #779 rules below; off = stamina and load never stop or slow anyone |
 | `maxLoadPercent` | 200 | players carrying more than this percent of their max can't move |
 | `staminaLossAtWeight` | 150 | load percent at which a step costs 1 stamina half the time (Sphere's `STAMINALOSSATWEIGHT`; Erebor ran 150) |

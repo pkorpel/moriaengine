@@ -41,7 +41,14 @@ spawned. `WanderLeash` (`NPCAiTimer.cs:70`, default 6 tiles) bounds how far it w
 from home; see [Spawning](spawning.md) for how a spawn gem's own `Homedist` setting now
 actually reaches this field (it didn't, before #206).
 
-### Home-return now uses A* (#211)
+### Home-return: a straight step first, A* when refused (#211, #1199)
+
+Since #1199 (`NPCAiTimer.WalkHome`) an NPC past its leash takes a straight step toward home, as
+Sphere's NPCs walk, and calls `StepTowardsSmart()` only when that step is refused or while it is
+still walking a path it planned (so it doesn't step back into the pocket it was routed out of).
+Before, leash-edge NPCs searched on nearly every step: 1,475 searches per 30 s on the idle design
+world, 15 after (performance-review.md, problem 7). The history below is #211's.
+
 
 The "too far from home, head back" branch now calls `StepTowardsSmart()` - the same
 A*-backed helper (`scripts/Basic/AI/PathFinding/AStar.cs`) already used by Follow/"come"
@@ -130,6 +137,11 @@ shared state, and replanned from scratch every think-tick. Now:
   re-plans when a step fails, when the NPC isn't where the path expects, when the target has
   moved more than 2 tiles, or every 8 steps. A detour around a blocked passage (#1031) is walked
   to its end, unless the target moves 8 tiles.
+- **Back-off after a failed search** (#1199): a search that doesn't reach its target because of
+  terrain is remembered, and the NPC doesn't search toward a spot within 4 tiles of it for
+  `npcFailedPathRetrySeconds` (8). It walks the partial way it got to its end, then steps straight
+  at the target or stands. Searches turned down by characters keep #1031's own timing. Applies to
+  every caller: follow, go, guard item, combat approach, walking home.
 - **Testable core**: `AStar.FindPath` only takes a step delegate. `FindPathOnMap` adapts
   `Map.CheckMovement` to it, and unit tests run the core on synthetic grids. All search state
   is per call, so the core is reentrant.

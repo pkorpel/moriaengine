@@ -1,6 +1,6 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan #1176: phases A and B DONE; next = the B before/after perf comparison, then C1
+## NOW (2026-11-05): performance plan #1176: phases A and B DONE; B perf comparison running, C1 = #1199 in ../moria-c1
 
 Plan: docs/current/02-engine-core/performance-review.md section 8 (approved; the user's 4 answers in DONE A1 below). Checklist on umbrella #1176: A1-A3, B1-B6 done; C1, C2, D1, D2, E1-E5 open. Work in the plan's order, one issue + one PR per step, tick #1176 and comment there after each merge.
 Rules for this work (user, 2026-11-04/05):
@@ -9,7 +9,9 @@ Rules for this work (user, 2026-11-04/05):
 - The full protocol suite (~3 h) runs ONCE, after all of #1176 is delivered, not per PR. Known failing classes on main: AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro (+ StaleSrc flake #1180).
 - SIGTERM (docker stop, run-local.sh stop) stays a quick way down WITHOUT saving (user, 2026-11-05).
 Next step 1, the perf comparison the user folded B4's into: Release (PERF_CONFIG=Release scripts/test-perf.sh, PERF_SCALE e.g. 0.3, absolute PERF_OUT) on main BEFORE B3 (8183f4c = B2 merged: Release builds + harness exist from there) vs main now; report game-thread busy, allocMBps, GC pause, timer lateness, probe gaps per phase in a comment on #1176. Release didn't build before B2, so B1/B2 themselves can't be in a Release comparison.
-Next step 2: C1 (walking home: straight step first, A* back-off after a failed search), then C2 (NPC sleep; 5 min awake, value in steamengine.ini not .settings).
+Step 1 in progress: worktree ../moria-perf-before (detached 8183f4c), outputs in the session scratchpad perf/ (before-8183f4c.txt, after-main.txt); then main.
+Step 2 in progress: C1 = #1199, branch 1199-walk-home, worktree ../moria-c1: NPCAiTimer.WalkHome (straight step unless refused or walking a planned path), NpcPathCache.RememberFailedSearch/IsBackingOff (terrain failures only, HitBlocked keeps #1031's timing; the partial way is walked to its end as a detour), CharCollisionSettings.npcFailedPathRetrySeconds = 8, NPCAiTimer.PathSearches counter. Tests: AStarTests.PathCacheBacksOffAfterAFailedSearch (fast), NpcWalkHomeTests (protocol, NpcDetour collection: open 0 searches, wall reached, enclosed 1 search vs control >= 10).
+Next: C2 (NPC sleep; 5 min awake, value in steamengine.ini not .settings).
 Gotchas from this run: never edit scripts/ while a protocol run is going (each boot compiles scripts/ from disk); one test run or build at a time (5 GB box, OOM); worktrees per step (../moria-<step>), rebase = reset --hard origin/main + cherry-pick (git rebase is quirky here); CRLF vs LF per file, edit as bytes; no Co-Authored-By/Claude-Session trailers (hook rejects); commit subject <= 72.
 
 ## DONE (2026-11-05): performance plan B6 = #1196: a monotonic game clock
