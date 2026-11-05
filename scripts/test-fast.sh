@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build the solution and run the fast test tier (no server processes, ~30 s).
+# Build the solution (Debug, and Release to check it compiles) and run the fast test tier (no server processes).
 # Same steps as CI's build-and-unit-test job; the pre-push hook runs it.
 #
 #   scripts/test-fast.sh                # build + fast tier
@@ -13,6 +13,13 @@ cd "$root/moriaengine"
 pwsh ./build.ps1 -Configuration Debug >"${TMPDIR:-/tmp}/moria-build.$$.log" 2>&1 || {
   tail -40 "${TMPDIR:-/tmp}/moria-build.$$.log" >&2
   echo "test-fast: build failed (full log ${TMPDIR:-/tmp}/moria-build.$$.log)" >&2
+  exit 1
+}
+# #1185: Release compiles too, so its #if branches can't break unnoticed again (an #error kept it from building until
+# then). Compiled, not tested: the tier below runs on Debug.
+pwsh ./build.ps1 -Configuration Release >"${TMPDIR:-/tmp}/moria-build.$$.log" 2>&1 || {
+  tail -40 "${TMPDIR:-/tmp}/moria-build.$$.log" >&2
+  echo "test-fast: Release build failed (full log ${TMPDIR:-/tmp}/moria-build.$$.log)" >&2
   exit 1
 }
 rm -f "${TMPDIR:-/tmp}/moria-build.$$.log"
