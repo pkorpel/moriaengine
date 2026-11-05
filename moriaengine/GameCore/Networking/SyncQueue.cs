@@ -37,10 +37,13 @@ namespace SteamEngine.Networking {
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		private void Cycle() {
 			while (this.autoResetEvent.WaitOne()) {
+				long perfW0 = PerfCounters.Now(); //#1179
 				lock (MainClass.globalLock) {
+					long perfT0 = PerfCounters.Acquired(perfW0);
 					try {
 						this.ProcessQueue();
 					} catch (Exception e) { Logger.WriteError(e); }
+					PerfCounters.Held(this.GetType(), perfT0);
 				}
 			}
 		}

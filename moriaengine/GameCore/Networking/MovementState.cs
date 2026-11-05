@@ -78,7 +78,9 @@ namespace SteamEngine.Networking {
 		//one (#17).
 		static void Cycle() {
 			while (manualResetEvent.WaitOne()) {
+				long perfW0 = PerfCounters.Now(); //#1179
 				lock (MainClass.globalLock) {
+					long perfT0 = PerfCounters.Acquired(perfW0);
 					lock (queue) {
 						LinkedListNode<MovementState> currentNode = queue.First;
 						while (currentNode != null) {
@@ -101,6 +103,7 @@ namespace SteamEngine.Networking {
 							manualResetEvent.Reset();
 						}
 					}
+					PerfCounters.Held("MovementState.Cycle", perfT0);
 				}
 
 				Thread.Sleep(5);

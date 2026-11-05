@@ -65,7 +65,7 @@ jobs:
       # full-regression below). No real server processes spawned here, so no hang risk
       # worth a --blame-hang safety net the way the full suite needs one.
       - name: Test (fast tier)
-        run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "FullyQualifiedName!~SteamEngine.Tests.Protocol"
+        run: dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "FullyQualifiedName!~SteamEngine.Tests.Protocol&FullyQualifiedName!~SteamEngine.Tests.Perf."
 
   full-regression:
     if: github.event_name == 'workflow_dispatch' && inputs.tier == 'full'

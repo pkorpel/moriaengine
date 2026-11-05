@@ -17,7 +17,7 @@ pwsh ./build.ps1 -Configuration Debug >"${TMPDIR:-/tmp}/moria-build.$$.log" 2>&1
 }
 rm -f "${TMPDIR:-/tmp}/moria-build.$$.log"
 
-filter="FullyQualifiedName!~SteamEngine.Tests.Protocol"
+filter="FullyQualifiedName!~SteamEngine.Tests.Protocol&FullyQualifiedName!~SteamEngine.Tests.Perf."
 [ $# -ge 1 ] && filter="$filter&($1)"
 cd "$root"
 exec dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "$filter"

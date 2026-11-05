@@ -100,7 +100,9 @@ namespace SteamEngine.Communication {
 			//lock (this.incomingPackets) {
 			//    this.incomingPackets.Enqueue(new IncomingMessage(conn, packet));
 			//}
+			long perfW0 = PerfCounters.Now(); //#1179
 			lock (this.lockObject) {
+				long perfT0 = PerfCounters.Acquired(perfW0);
 				try {
 					state.On_PacketBeingHandled(packet);
 					packet.Handle(conn, state);
@@ -109,6 +111,7 @@ namespace SteamEngine.Communication {
 				} catch (Exception e) {
 					Logger.WriteCritical("Exception while handling packet " + packet, e);
 				}
+				PerfCounters.Held(packet.GetType(), perfT0);
 			}
 			packet.Dispose();
 		}

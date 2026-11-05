@@ -228,7 +228,7 @@ add() { summary="$summary
   $1"; }
 
 say "test-full: fast tier"
-run "FullyQualifiedName!~SteamEngine.Tests.Protocol" "fast tier"; rc=$?
+run "FullyQualifiedName!~SteamEngine.Tests.Protocol&FullyQualifiedName!~SteamEngine.Tests.Perf." "fast tier"; rc=$?
 if [ "$rc" -eq 0 ]; then add "pass  fast tier"; else add "FAIL  fast tier - $(keep_log fast-tier)"; failure_details; bad=1; fi
 
 classes=$(dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --list-tests 2>/dev/null \
