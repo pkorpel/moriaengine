@@ -20,6 +20,15 @@ namespace SteamEngine.Tests.Fixtures {
 			Assert.True(File.Exists(Path.Combine(this.fixture.TempDir, "steamengine.ini")));
 		}
 
+		/// <summary>#1173, #1179 - a new steamengine.ini saves hourly and keeps the perf counters off.</summary>
+		[Fact]
+		public void DefaultIniAutosavesHourlyWithPerfCountersOff() {
+			string ini = File.ReadAllText(Path.Combine(this.fixture.TempDir, "steamengine.ini"));
+			Assert.Contains("autosaveMinutes = 60", ini);
+			Assert.Contains("[diagnostics]", ini);
+			Assert.Contains("perfCounters = False", ini);
+		}
+
 		[Fact]
 		public void LoggerIsUsable() {
 			// Should not throw, regardless of whether file logging is on.

@@ -192,6 +192,8 @@ namespace SteamEngine {
 			}
 		}
 
+		private static bool perfCountersApplied;
+
 		private static int autosaveMinutes;
 		/// <summary>#1173 - minutes between the automatic world saves (scripts/Basic/PeriodicSave.scp), 0 = none.</summary>
 		public static int AutosaveMinutes {
@@ -617,6 +619,13 @@ namespace SteamEngine {
 				//AOS					: LF 0x20 FF 0x8010
 				//Six Characters		: LF 0x40 FF 0x8020
 
+
+				IniFileSection diagnostics = iniH.GetNewOrParsedSection("diagnostics");
+				bool perfCounters = diagnostics.GetValue("perfCounters", false, "Whether to count from the start where the game's time goes: time spent holding the global lock, by what held it, and time spent waiting for it. An admin's .perfon/.perfoff switch it while running, .perf shows the counts. Costs a little while on, nothing while off.");
+				if (!perfCountersApplied) { //#1179 - only at the first load: a recompile reloads the ini too, and mustn't undo a GM's .perfon/.perfoff
+					perfCountersApplied = true;
+					PerfCounters.Enabled = perfCounters;
+				}
 
 				IniFileSection temporary = iniH.GetNewOrParsedSection("temporary");
 				temporary.AddComment("These are temporary INI settings, which will be going away in future versions.");

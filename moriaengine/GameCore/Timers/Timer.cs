@@ -129,25 +129,31 @@ namespace SteamEngine.Timers {
 						//lock the timer and wait for globalLock inside it, while a packet handler holding
 						//globalLock deleted the timer's owner and waited for the same timer in Timer.Delete -
 						//a deadlock that hung the server whenever the timer came due at that moment.
+						long perfW0 = PerfCounters.Now(); //#1179
 						lock (MainClass.globalLock) {
-							lock (timer) {
-								//re-check: it may have been deleted or rescheduled while this waited for globalLock
-								if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
-									if (timer.period >= TimeSpan.Zero) {
-										timer.fireAt = fireAt + timer.period;
-										QueueChange(timer);
-										manualResetEvent.Set();
-										timer.isInChangesQueue = true;
-									}
-									currentTimer = timer;
-									try {
-										timer.OnTimeout();
-									} catch (FatalException) {
-										throw;
-									} catch (Exception e) {
-										Logger.WriteError(e);
+							long perfT0 = PerfCounters.Acquired(perfW0);
+							try {
+								lock (timer) {
+									//re-check: it may have been deleted or rescheduled while this waited for globalLock
+									if ((!timer.isInChangesQueue) && (!timer.isDeleted)) {
+										if (timer.period >= TimeSpan.Zero) {
+											timer.fireAt = fireAt + timer.period;
+											QueueChange(timer);
+											manualResetEvent.Set();
+											timer.isInChangesQueue = true;
+										}
+										currentTimer = timer;
+										try {
+											timer.OnTimeout();
+										} catch (FatalException) {
+											throw;
+										} catch (Exception e) {
+											Logger.WriteError(e);
+										}
 									}
 								}
+							} finally {
+								PerfCounters.Held(timer.GetType(), perfT0);
 							}
 						}
 						currentTimer = null;
