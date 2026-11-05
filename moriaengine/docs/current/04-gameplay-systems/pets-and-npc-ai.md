@@ -38,9 +38,9 @@ all count.
   costs nothing until it wakes. Nothing to do means: no target, not fleeing, not frozen, no
   "go" point or guarded item, and not following someone it could follow (a pet of an
   offline owner, a wild NPC a GM once stopped, or a held one only stands, so it sleeps).
-  `NeverSleeps` (saved) keeps one awake. A wild one beyond its leash is put back home as
-  it falls asleep, the walk nobody would see, unless a player is near home (then it stays
-  awake and walks); pets, held NPCs and NPCs a GM stopped aren't sent home, they stand.
+  `NeverSleeps` (saved) keeps one awake. It sleeps where it stands, beyond its leash too,
+  as Sphere's do, and walks home once awake (#1204: putting it home unseen moved what a GM
+  had placed by hand).
 - **Waking** (`NpcSleep`): an area that wakes resumes every sleeper in it; a sleeper
   moved into an awake area (a GM's summon, a teleport, a dismount, a pet out of a
   vendor) wakes at once; `EngageTarget` (pet orders, guards called, a hit from another
