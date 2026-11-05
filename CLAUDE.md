@@ -1,8 +1,11 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan, milestone A done: full protocol suite on main, then B1
+## NOW (2026-11-05): performance plan B1 = #1179 merging, then B2 = Release builds
 
-User rule 2026-11-05: the full protocol suite runs once per milestone (end of A, end of B), each PR gets its own test, the related classes, red checks and a review agent. A1-A3 are merged: run scripts/test-full.sh on main, compare with A1's known 8 failing classes (AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro), then B1 (land the benchmark harness, branch 1161-perf-harness in ../moria-1161).
+Milestone A (A1-A3) full suite done on main d31b44a: only the 8 known failing classes (AttrFlag, ContentRestoration, Healer, LevelingIsolated, LocalizationVerification, Notoriety, NpcMoveRate, OwnerAggro) plus a StaleSrc flake (passed 3/3 reruns, #1180). User rule 2026-11-05: full suite once per milestone; each PR its own test, the related classes, red checks, a review agent.
+B1 (#1179, branch 1179-perf-harness in ../moria-1179): harness landed + hardened (PerfCounters off by default, steamengine.ini [diagnostics] perfCounters, admin .perf/.perfon/.perfoff/.perfreset, scenarios in SteamEngine.Tests.Perf skipped unless PERF_RUN=1, scripts/test-perf.sh). A red check found the window closed at once on enable (window=0ms while on); fixed + asserted. All verification done; merging.
+ShutdownSaveTests (5 boots in one test) runs into test-full's 3 min hang backstop: #1181, split it. Until then run it with HANG_TIMEOUT=10min.
+Next B2: make the AuxiliaryServer/Commands.cs #error branch build in Release, run-local.sh --release, a Release compile in test-fast. Own issue, review agent.
 Open question for the user: SIGTERM (run-local.sh stop, docker stop) still doesn't save; save on it like .exit, or keep it as a quick no-save way down?
 
 ## DONE (2026-11-05): performance plan A3 = #1173: save on shutdown, a no-save exit, autosave interval in steamengine.ini

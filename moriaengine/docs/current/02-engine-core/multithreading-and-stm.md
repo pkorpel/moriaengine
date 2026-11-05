@@ -87,7 +87,7 @@ How other servers use more than one core, for comparison:
 
 ## 3. What it costs: measured
 
-A throwaway benchmark (`tools/perf/stmbench` on the local branch `1161-perf-harness`, never pushed): .NET 8, Release,
+A benchmark (`tools/perf/stmbench`, in the repo since #1179, not part of the solution: `dotnet run -c Release` in its folder): .NET 8, Release,
 Shielded 4.4.9 from NuGet, in the same 8-core container as the review.
 
 **Per access:**

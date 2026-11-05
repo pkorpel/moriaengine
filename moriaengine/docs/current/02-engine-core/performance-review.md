@@ -204,8 +204,8 @@ What scales with what:
 
 ### How
 
-A throwaway harness was kept out of the repo, on a local, never-pushed branch `1161-perf-harness` in the worktree
-`../moria-1161` (see [9](#9-benchmark-and-stress-test-setup)):
+A harness written for this study, on a local branch at the time; it's on `main` since #1179 (see
+[9](#9-benchmark-and-stress-test-setup)):
 - **`PerfCounters`** times every holder of `globalLock`: each timer by its type, each packet handler by packet type, the
   sync queues and the movement thread, plus how long each waited for the lock.
 - **`.TestPerf`** is a server command that populates the world, starts and reports measurement windows, saves, and
@@ -750,42 +750,53 @@ A and B don't depend on each other; within C and D the order matters.
 
 ## 9. Benchmark and stress-test setup
 
-The harness used here is on the local branch `1161-perf-harness` (worktree `../moria-1161`, three commits: the harness,
-the prototypes, the STM benchmark of #1165). Landing it is plan step B1: everything except `AuxiliaryServer/Commands.cs`'s workaround and the prototype
-commit, with the counters behind a setting.
+The harness is on `main` since plan step B1 (#1179). It was written on the local branch `1161-perf-harness`; the
+prototype commit there and its `AuxiliaryServer/Commands.cs` workaround didn't come along (the workaround is step B2).
 
 **Pieces:**
-- `Common/PerfCounters.cs` plus five call sites (`Timer.ProcessTimingOut`, `AsyncCore.HandlePacket`, `SyncQueue.Cycle`,
-  `MovementState.Cycle`): time each `globalLock` holder by type and each wait for the lock. Cost: two
-  `Stopwatch.GetTimestamp` calls and a dictionary update per holder. Worth keeping permanently behind a setting, with a GM
-  command to print the top holders: it answers "why is the server slow right now" on the live shard.
-- `scripts/Tests/PerfProbe.cs`, `.TestPerf`:
+- `Common/PerfCounters.cs` plus four call sites (`Timer.ProcessTimingOut`, `AsyncCore.HandlePacket`, `SyncQueue.Cycle`,
+  `MovementState.Cycle`): the time the main `globalLock` holders held it, by type, and each wait for the lock, in a fixed
+  log-scale histogram so its memory doesn't grow on a live shard. Logins, logouts and the server's own console aren't
+  hooked.
+  - **Off by default:** `perfCounters` in steamengine.ini's `[diagnostics]`. While off, a call site only reads a flag.
+    While on, each holder costs three `Stopwatch.GetTimestamp` calls and two short locks of the counters' own, one of
+    them around a dictionary update.
+  - **The ini value applies at the first load only:** a script recompile reloads the ini but leaves what a GM set. An
+    older steamengine.ini doesn't get the `[diagnostics]` section (the file is only written when it's missing): add
+    `perfCounters = True` under it by hand to count from the start. After a recompile a timer type can show twice (old and
+    new scripts) until `.perfreset`.
+  - **GM commands:** `.perf` prints the busy share of the lock, the waits (p50, p99, max) and the top 15 holders.
+    `.perfon` starts a fresh window, `.perfoff` stops counting and keeps what was counted (the window stops too), and
+    `.perfreset` clears it. This answers "why is the server slow right now" on the live shard.
+- `scripts/Tests/PerfProbe.cs`, `.TestPerf`: it refuses to run unless the server was started by the test harness (its
+  environment variable), as it spawns tens of thousands of things, moves players and starts a thread that never stops:
   - `rects <file> <npcs> <items>` spreads monsters and decoration over the dungeon rectangles by area;
   - `npcs`, `ground` and `stored` populate a rectangle or containers;
-  - `start` and `report <label>` open and close a measurement window;
+  - `start` (switches the counters on) and `report <label>` open and close a measurement window;
   - `save` times a save;
   - `bench <plane> <x> <y>` times range queries;
   - `scatter` moves the walkers.
-- `Tests/Protocol/PerfProbeTests.cs`: phases P0–P5 as in section 5, 50 walkers. `Tests/Protocol/PerfLoadTests.cs` boots
-  on the last save and times it.
-- `GameServerPairFixture` takes `PERF_CONFIG=Release` to boot the Release binaries.
-- The dungeon rectangles file comes from `map.def` (a short script; the harness branch has the copy used here).
+- `Tests/Perf/PerfProbeTests.cs`: phases P0–P5 as in section 5, 50 walkers. `Tests/Perf/PerfLoadTests.cs` boots on the
+  last save and times it.
+  - **Opt-in:** both are `[PerfFact]`, skipped unless `PERF_RUN=1`, outside both test tiers. They boot their own servers,
+    so a skipped one costs nothing.
+- `scripts/test-perf.sh` runs them (it sets `PERF_RUN=1` and generous stuck limits, and goes through `test-full.sh`).
+- `GameServerPairFixture` takes `PERF_CONFIG=Release` to boot the Release binaries, once step B2 makes Release build.
+- `tools/perf/dungeon-rects.txt`, the dungeon rectangles from `map.def`, and `tools/perf/stmbench`, the STM benchmark of
+  section 11 (`dotnet run -c Release` in that folder; it isn't part of the solution).
 
 **Running it:**
 
 ```
-pwsh ./build.ps1 -Configuration Release
-DOTNET_gcServer=0 MSBUILDDISABLENODEREUSE=1 UseSharedCompilation=false MORIA_BOOT_SECONDS=300 \
-STUCK_SECONDS=5400 HANG_TIMEOUT=90min PERF_CONFIG=Release PERF_OUT=perf.txt PERF_RECTS=dungeon-rects.txt \
-PERF_SCALE=1 PERF_PLAYERS=50 PERF_SECONDS=30 PERF_PHASES=all \
-scripts/test-full.sh "FullyQualifiedName~PerfProbeTests"
+PERF_OUT=$PWD/perf.txt PERF_SCALE=1 PERF_PLAYERS=50 PERF_SECONDS=30 PERF_PHASES=all scripts/test-perf.sh
+scripts/test-perf.sh PerfLoadTests     # then: boot on the save it left, timing the load
 ```
 
 | Knob | Values |
 |---|---|
 | `PERF_SCALE` | 1 = the design world (about 8 min end to end); 0.1 is a 2-minute smoke run |
 | `PERF_PHASES` | `base` (P0–P2), `players`, `save`, `stress`, or `all` |
-| Then | `scripts/test-full.sh "FullyQualifiedName~PerfLoadTests"` boots on the save it left |
+| `PERF_RECTS` | the dungeon rectangles; `tools/perf/dungeon-rects.txt` by default |
 
 **What to compare, and the pass line** (the targets in section 1): at P3 and P4 the game thread ≤ 50% busy, timer lateness
 p99 ≤ 100 ms, step round trip p99 ≤ 100 ms, GC pause ≤ 2%; save pause ≤ 1 s; boot ≤ 2 min. Rerun the same scale and phases

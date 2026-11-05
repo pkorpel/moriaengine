@@ -93,8 +93,8 @@ namespace SteamEngine.Tests.Protocol {
 			//"Game server never appeared"/LoginDenied noise. The OS drops the lock with the process.
 			this.portLock = AcquirePortLock();
 
-			string auxDll = Path.Combine(this.RepoRoot, "AuxiliaryServer", "bin", "Debug", "net8.0", "SteamEngine.AuxiliaryServer.dll");
-			string gameDll = Path.Combine(this.RepoRoot, "GameCore", "bin", "Debug", "net8.0", "SteamEngine.GameCore.dll");
+			string auxDll = Path.Combine(this.RepoRoot, "AuxiliaryServer", "bin", (Environment.GetEnvironmentVariable("PERF_CONFIG") ?? "Debug"), "net8.0", "SteamEngine.AuxiliaryServer.dll");
+			string gameDll = Path.Combine(this.RepoRoot, "GameCore", "bin", (Environment.GetEnvironmentVariable("PERF_CONFIG") ?? "Debug"), "net8.0", "SteamEngine.GameCore.dll");
 
 			if (!File.Exists(auxDll)) {
 				this.ReleasePortLock();
