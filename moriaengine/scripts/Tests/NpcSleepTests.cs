@@ -6,7 +6,7 @@ using SteamEngine.Regions;
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
 	/// #1201 - NPCs sleep where no player is near. With the awake time cut to a few seconds: a wild NPC three areas
-	/// away falls asleep, one beyond its leash is put home as it does; one beside the player, a pet following its
+	/// away falls asleep where it stands, even beyond its leash (#1204); one beside the player, a pet following its
 	/// owner, a follower and a NeverSleeps one keep thinking; a pet told to stay and a held NPC sleep where they stand. A sleeper summoned next to the player wakes, a player
 	/// coming to a sleeper wakes it, and it falls asleep again once the player has been gone the awake time.
 	/// </summary>
@@ -14,6 +14,7 @@ namespace SteamEngine.CompiledScripts {
 		public const double TestAwakeSeconds = 3;
 		private const int Far = 3 * ActivityGrid.AreaSize; //three areas east: not a neighbour of the player's
 		private static readonly Dictionary<string, NPC> npcs = new Dictionary<string, NPC>();
+		private static readonly Dictionary<string, Point2D> spawnedAt = new Dictionary<string, Point2D>();
 		private static Point4D start, homeOfE, spotOfB;
 		private static double oldAwakeSeconds = -1;
 
@@ -28,6 +29,7 @@ namespace SteamEngine.CompiledScripts {
 			Map map = self.GetMap();
 			start = new Point4D(self.X, self.Y, self.Z, self.M);
 			npcs.Clear();
+			spawnedAt.Clear();
 
 			npcs["A"] = Spawn(map, self.X + 2, self.Y); //beside the player
 			npcs["B"] = Spawn(map, self.X + Far, self.Y); //wild, far
@@ -44,7 +46,7 @@ namespace SteamEngine.CompiledScripts {
 			NPCAiTimer.GetFor(keeper).NeverSleeps = true;
 			npcs["F"] = keeper;
 
-			NPC stray = Spawn(map, self.X + Far + 20, self.Y + 16); //20 tiles from its home, beyond the leash
+			NPC stray = Spawn(map, self.X + Far + 20, self.Y + 16); //20 tiles from its home, beyond the leash: sleeps there (#1204)
 			NPCAiTimer strayAi = NPCAiTimer.GetFor(stray);
 			homeOfE = new Point4D(self.X + Far, self.Y + 16, map.GetTileZ(self.X + Far, self.Y + 16), self.M);
 			strayAi.homeX = homeOfE.X;
@@ -75,6 +77,9 @@ namespace SteamEngine.CompiledScripts {
 			heldAi.hasHome = true;
 			npcs["H"] = held;
 
+			foreach (KeyValuePair<string, NPC> pair in npcs) {
+				spawnedAt[pair.Key] = new Point2D(pair.Value.X, pair.Value.Y);
+			}
 			Console.WriteLine("NPC_SLEEP_SETUP: player=" + start + " awakeSeconds=" + ActivityGrid.AwakeSeconds +
 				" playerArea=" + (self.X >> ActivityGrid.AreaShift) + " farArea=" + ((self.X + Far) >> ActivityGrid.AreaShift));
 		}
@@ -90,7 +95,8 @@ namespace SteamEngine.CompiledScripts {
 				NPC npc = pair.Value;
 				NPCAiTimer ai = NPCAiTimer.GetFor(npc);
 				Console.WriteLine("NPC_SLEEP: at=" + label + " npc=" + pair.Key + " sleeping=" + ai.IsSleeping + " paused=" + ai.IsPaused +
-					" pos=" + npc.X + "," + npc.Y + " atHome=" + ((npc.X == ai.homeX) && (npc.Y == ai.homeY)) + " state=" + ai.LastState);
+					" pos=" + npc.X + "," + npc.Y + " atHome=" + ((npc.X == ai.homeX) && (npc.Y == ai.homeY)) + " state=" + ai.LastState +
+					" atSpawn=" + ((npc.X == spawnedAt[pair.Key].X) && (npc.Y == spawnedAt[pair.Key].Y)));
 			}
 			Console.WriteLine("NPC_SLEEP_REPORTED: " + label);
 		}
