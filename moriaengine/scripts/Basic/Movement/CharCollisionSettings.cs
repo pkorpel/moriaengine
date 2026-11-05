@@ -79,7 +79,8 @@ namespace SteamEngine.CompiledScripts {
 		public int npcDetourMaxIterations = 4000;
 
 		/// <summary>#1199 - seconds an NPC doesn't search again, from about the same place, toward a spot it found
-		/// no way to; it steps straight at it or stands meanwhile. 0 = no back-off.</summary>
+		/// no way to; meanwhile it walks the partial way it found toward a spot to its end, then steps straight at
+		/// the target or stands. 0 = no back-off.</summary>
 		[SaveableData]
 		public double npcFailedPathRetrySeconds = 8;
 

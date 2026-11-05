@@ -32,13 +32,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Console.WriteLine("NPC_WALK_HOME_GROUND: start=" + start + " home=" + home);
 
-			Report("open", WalkHomeFrom(start, home, self.M, MaxSteps), home);
+			Report("open", WalkHomeFrom(self, start, home, MaxSteps), home);
 
 			int wallX = start.X + WallOffset;
 			for (int y = start.Y - WallHalfLength; y <= start.Y + WallHalfLength; y++) {
 				wallDef.Create(wallX, y, map.GetTileZ(wallX, y), self.M);
 			}
-			Report("wall", WalkHomeFrom(start, home, self.M, MaxSteps), home);
+			Report("wall", WalkHomeFrom(self, start, home, MaxSteps), home);
 			VerificationTestUtils.CleanupNearbyItems(self, wallDef, 30);
 
 			for (int x = start.X - TubeLength + 1; x <= start.X + 1; x++) {
@@ -48,7 +48,7 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 			}
-			Report("pocket", WalkHomeFrom(start, home, self.M, 80), home);
+			Report("pocket", WalkHomeFrom(self, start, home, 80), home);
 			VerificationTestUtils.CleanupNearbyItems(self, wallDef, 30);
 
 			for (int dx = -1; dx <= 1; dx++) {
@@ -58,12 +58,12 @@ namespace SteamEngine.CompiledScripts {
 					}
 				}
 			}
-			Report("enclosed", WalkHomeFrom(start, home, self.M, 20), home);
+			Report("enclosed", WalkHomeFrom(self, start, home, 20), home);
 			CharCollisionSettings settings = CharCollisionSettings.instance;
 			double backOff = settings.npcFailedPathRetrySeconds;
 			try {
 				settings.npcFailedPathRetrySeconds = 0; //control: without the back-off every step searches
-				Report("enclosedNoBackOff", WalkHomeFrom(start, home, self.M, 20), home);
+				Report("enclosedNoBackOff", WalkHomeFrom(self, start, home, 20), home);
 			} finally {
 				settings.npcFailedPathRetrySeconds = backOff;
 			}
@@ -71,20 +71,28 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("NPC_WALK_HOME_DONE");
 		}
 
-		private static NPC WalkHomeFrom(Point3D start, Point3D home, byte m, int steps) {
-			NPC walker = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(start.X, start.Y, start.Z, m);
+		private static int westmost;
+
+		/// <summary>The tester steps out of the search window meanwhile: a character near the walker would make
+		/// its searches HitBlocked ones, which don't back off.</summary>
+		private static NPC WalkHomeFrom(Character tester, Point3D start, Point3D home, int steps) {
+			NPC walker = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(start.X, start.Y, start.Z, tester.M);
 			NPCAiTimer timer = NPCAiTimer.GetFor(walker);
 			timer.DueInSeconds = -1; //its own thinking would add random steps
+			tester.Go(start.X, start.Y - 40);
+			westmost = walker.X;
 			for (int i = 0; (i < steps) && ((walker.X != home.X) || (walker.Y != home.Y)); i++) {
 				timer.WalkHome(walker, home);
+				westmost = Math.Min(westmost, walker.X);
 			}
+			tester.Go(start.X, start.Y, start.Z, tester.M);
 			return walker;
 		}
 
 		private static void Report(string name, NPC walker, Point3D home) {
 			bool reached = (walker.X == home.X) && (walker.Y == home.Y);
 			Console.WriteLine("NPC_WALK_HOME: case=" + name + " reached=" + reached + " searches=" + NPCAiTimer.GetFor(walker).PathSearches +
-				" at=" + walker.X + "," + walker.Y + "," + walker.Z);
+				" westmostOffset=" + (westmost - (home.X - HomeDistance)) + " at=" + walker.X + "," + walker.Y + "," + walker.Z);
 			walker.Delete();
 		}
 

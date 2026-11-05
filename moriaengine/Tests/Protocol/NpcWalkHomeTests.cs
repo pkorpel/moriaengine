@@ -39,11 +39,13 @@ namespace SteamEngine.Tests.Protocol {
 
 			(bool reached, int searches) wall = Case(output, "wall");
 			Assert.True(wall.reached, output);
-			Assert.InRange(wall.searches, 1, 3);
+			Assert.Equal(1, wall.searches); //one path round it, walked to its end
 
 			(bool reached, int searches) pocket = Case(output, "pocket");
-			Assert.True(pocket.reached, output); //a replan every 8 steps, never a straight step back into the tube
-			Assert.InRange(pocket.searches, 1, 8);
+			Assert.True(pocket.reached, output); //the way out, never a straight step back into the tube
+			Assert.Equal(1, pocket.searches); //one path, walked to its end past ReplanEvery
+			Match west = Regex.Match(output, "NPC_WALK_HOME: case=pocket .* westmostOffset=(-?\\d+)");
+			Assert.True(west.Success && (int.Parse(west.Groups[1].Value) <= -10), "the pocket walk never left the tube westward:\n" + output);
 
 			(bool reached, int searches) enclosed = Case(output, "enclosed");
 			Assert.False(enclosed.reached, output);

@@ -867,8 +867,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>Like StepTowards, but routes around obstacles via the real AStar pathfinder (scripts/Basic/AI/PathFinding/AStar.cs) instead of only ever trying the single direct-line direction. Used by Follow, combat approach, the "go" goal point and home-return.
-		/// #769 - the path is cached (NpcPathCache) and walked step by step; it's only re-planned when a step fails, the target moved away from where it was planned to, or every few steps. A character target counts as reached when adjacent (its own tile is occupied), and a target that can't be reached still yields a partial path toward it.</summary>
-		private void StepTowardsSmart(NPC self, IPoint3D target, bool running = false) {
+		/// #769 - the path is cached (NpcPathCache) and walked step by step; it's only re-planned when a step fails, the target moved away from where it was planned to, or every few steps. A character target counts as reached when adjacent (its own tile is occupied), and a target that can't be reached still yields a partial path toward it.
+		/// #1199 - walkToEnd: a path is walked to its end, not replanned every few steps (for a target that doesn't move).</summary>
+		private void StepTowardsSmart(NPC self, IPoint3D target, bool running = false, bool walkToEnd = false) {
 			if (this.pathCache == null) {
 				this.pathCache = new NpcPathCache();
 			}
@@ -904,7 +905,7 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				//#1199 - the partial way toward a spot that doesn't move is walked to its end, a replan would only fail again;
 				//toward a character it's replanned as usual, it may move to where it can be reached
-				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y, detour || (failed && !(target is Character)));
+				this.pathCache.SetPath(path, self.X, self.Y, target.X, target.Y, detour || walkToEnd || (failed && !(target is Character)));
 				if (this.TryStep(self, path[0], running)) {
 					this.pathCache.Advance(self.X, self.Y);
 				} else {
@@ -991,8 +992,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>#1199 - a straight step toward home first, as Sphere's NPCs walk; A* (StepTowardsSmart, #211) only
-		/// when that step is refused, or while a path it planned is still being walked, so it doesn't step back into
-		/// the pocket it was routed out of. Leash-edge NPCs used to search on nearly every step.</summary>
+		/// when that step is refused, or while a path it planned to home is still being walked (to its end, one
+		/// search per obstacle), so it doesn't step back into the pocket it was routed out of. Leash-edge NPCs used to search on nearly every step.</summary>
 		internal void WalkHome(NPC self, IPoint3D home) {
 			if ((self.X == home.X) && (self.Y == home.Y)) {
 				return; //a WanderLeash of 0 comes here at home too
@@ -1001,7 +1002,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!walkingAPath && this.TryStep(self, Point2D.GetDirFromTo(self, home))) {
 				return;
 			}
-			this.StepTowardsSmart(self, home);
+			this.StepTowardsSmart(self, home, false, true); //home doesn't move: no replan halfway, straight steps again after
 		}
 
 		private bool TryStep(NPC self, Direction dir, bool running = false) {
