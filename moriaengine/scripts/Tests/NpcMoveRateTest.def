@@ -1,5 +1,5 @@
 // #590 - test-only content proving NPCDef.MoveRate actually drives real per-tick movement
-// speed via NPCAiTimer's step-budget accumulator. Two otherwise-identical NPCs - one at
+// speed via NPCAiTimer's think cadence (RescheduleForMoveRate). Two otherwise-identical NPCs - one at
 // double the real baseline (MoveRate=6), one left unconfigured (defaults to the 3.0
 // baseline) - so a live side-by-side comparison proves "higher = faster" against the
 // actual engine, not just the data field round-tripping.

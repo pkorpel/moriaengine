@@ -2266,6 +2266,10 @@ namespace SteamEngine.CompiledScripts {
 			if (this.ControlMaster != null) {
 				return false; //tamed pets don't pick fights on their own - no "guard me"/"kill" command system yet (follow-up)
 			}
+			if (candidate == this.FollowTarget) {
+				return false; //#1174 - nor a wild monster a GM commands ("come"): never its commander. aee9d81 meant to add this
+				//and didn't, so FindTarget picked the commander every think and IsValidTarget dropped it on the next
+			}
 			if (MysticHypnosis.MonsterGoesFor(this, candidate)) {
 				return true; //#1070 - e_monster's @npcseenewplayer
 			}
