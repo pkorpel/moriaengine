@@ -862,6 +862,37 @@ A and B don't depend on each other; within C and D the order matters.
 - **E5. Re-measure crowds** (problem 10) with walkers that don't collide; look at movement pacing if steps are still slow.
   - **Effort:** S.
 
+**E5 results (#1222, 2026-11-06).**
+- **Cause of the crowd's slow steps: Nagle, not the server.**
+  - Game connections send every packet group as its own send, and nothing switched Nagle off.
+  - In a crowd a client always has data in flight (the other players' moves), so a small send (the step's ack) waited for the client's delayed ACK. That's ~40 ms on Linux, the test client; on Windows the delayed-ACK timer is up to 200 ms, so players there waited longer.
+  - The game lock was busy 1.2-3.1% of the time throughout (`lockBusy`).
+- **Fix:** `TCPServer.OnAccept` sets `NoDelay` on every accepted socket.
+  - ServUO, RunUO (unless `NagleEnabled`) and Sphere switch Nagle off too. They also collect a client's packets and flush them once per loop or network tick; this engine still sends each packet group on its own (see "Left" below).
+  - **Cost on the wire:** in a 50-player crowd each client gets ~220 moves a second. As separate segments that's roughly 130 kbit/s per client, mostly TCP/IP headers, against ~40 before. Server-wide that's ~6-7 Mbit/s out instead of ~2. Fine for broadband; it would matter only on a host that caps packets per second.
+- **Harness:**
+  - `.TestPerf lanes` gives each walker its own row segment in the crowd. A new phase, P3b, runs the walkers along their lanes, and a refused step resyncs them.
+  - `lanes` and `scatter` refill stamina: P3's minute of running leaves walkers unable to move (#779). P4's numbers didn't change measurably from it (82-83% refused, p50 1.2-1.5 ms, as in E4).
+  - P3b isn't P3's tight crowd: the lanes fill about 50×60 tiles around the spawn, wider than the 18-tile view range, so a step there reaches fewer viewers. A walker the search can't place (one of 50 in every run) is moved out of view.
+  - P3's random walkers stay as they were, so P3 is comparable with section 5. About 75% of their steps are still refused there: walls, other players, fatigue.
+- **Release, scale 0.1, 50 walkers, step round trip (client sends, server acks):**
+
+| | Without NoDelay | With NoDelay |
+|---|---|---|
+| P3 crowd, random walkers, p50 / p95 / p99 | 41.6 / 46.8 / 50.2 ms | **9.5 / 20.2 / 25.3 ms** |
+| P3b crowd on lanes (97% of steps accepted), p50 / p95 / p99 | 42.5 / 111.8 / 131.3 ms | **19.2 / 45.0 / 59.4 ms** |
+| P4 spread in a dungeon, p50 | 1.3 ms | 1.2 ms |
+
+  - Four earlier alternating runs (two each, before the lane resync) gave the same split for the median: P3 p50 41.8-41.9 without, 9.8-11.3 with.
+  - **The tails and P3b vary.** With NoDelay, P3's p95/p99 were 39-41 / 49 ms in two runs and 19-20 / 25-28 ms in two others. P3b's median was 19.2, 34.4 and 19.0 ms in three runs, against 42.5 without. So some steps still wait ~40 ms, and not always.
+  - It isn't the test client's own Nagle: one run with `NoDelay` on `TestGameClient` too (as ClassicUO/TazUO set it) gave the same (P3 9.3 / 33.5 / 46.7, P3b 19.0 / 47.6 / 56.0 ms).
+  - P4's p99 is noisy either way (8-42 ms without, 7-15 with); no conclusion from it.
+  - Every P3b run has one 0.5-0.7 s maximum, with or without NoDelay. It's probably the teleport's burst of nearby items still arriving when the window starts.
+- **Left (final master issue):** an accepted step among 50 walkers still takes ~19 ms at the median, against ~1 ms in a quiet place.
+  - Each step is broadcast to every player in view as its own small send, and logins and teleports send every nearby item and character the same way.
+  - Sending per cycle in batches (the connection already has an unused packet-joining path, `PacketGroupsJoiningAllowed`) or measuring where those 19 ms go (server sync vs. the test client reading 49 players' updates) is the next step.
+  - Movement pacing (`MovementState`'s reserves) wasn't seen in the round trips (walkers step every 220 ms, slower than a run step), though no counter measures it.
+
 ### Summary
 
 | Step | What | Effort | Risk | Benefit (measured unless *estimate*) | Needs |

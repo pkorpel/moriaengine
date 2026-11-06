@@ -24,6 +24,7 @@ namespace SteamEngine.Tests.Perf {
 		private static readonly int Players = int.Parse(Environment.GetEnvironmentVariable("PERF_PLAYERS") ?? "50");
 		private static readonly int MeasureSeconds = int.Parse(Environment.GetEnvironmentVariable("PERF_SECONDS") ?? "30");
 		private static readonly string Phases = Environment.GetEnvironmentVariable("PERF_PHASES") ?? "all";
+		private const int LaneLength = 6;
 
 		private static void Log(string line) {
 			File.AppendAllText(OutFile, DateTime.Now.ToString("HH:mm:ss") + " " + line.Replace(" ## ", "\n    ") + "\n");
@@ -72,6 +73,10 @@ namespace SteamEngine.Tests.Perf {
 			internal volatile bool alive = true;
 			private volatile bool run = true;
 			private Thread thread;
+			//#1222 - lanes: run east laneLength steps, turn, run back; 0 = the random walk. Set only while paused.
+			private volatile bool paused;
+			private volatile bool idle;
+			private int laneLength, lanePos, facing;
 
 			internal Walker(TestGameClient client, int seed) {
 				this.client = client;
@@ -80,7 +85,15 @@ namespace SteamEngine.Tests.Perf {
 					byte seq = 0;
 					int dir = rnd.Next(8);
 					while (this.run) {
-						if (rnd.Next(6) == 0) {
+						if (this.paused) {
+							this.idle = true;
+							Thread.Sleep(20);
+							continue;
+						}
+						this.idle = false;
+						if (this.laneLength > 0) {
+							dir = this.lanePos >= this.laneLength ? 6 : (this.lanePos <= 0 ? 2 : (this.facing == 6 ? 6 : 2)); //6 west, 2 east
+						} else if (rnd.Next(6) == 0) {
 							dir = rnd.Next(8);
 						}
 						var sw = Stopwatch.StartNew();
@@ -95,6 +108,18 @@ namespace SteamEngine.Tests.Perf {
 								}
 							}
 							seq = r.Accepted ? (byte) (seq == 255 ? 1 : seq + 1) : (byte) 0;
+							if (this.laneLength > 0) {
+								if (!r.Accepted) {
+									//refused: it stands at the end it was heading for (the server may not have counted a first step
+									//as one, if the walker wasn't facing that way yet), so it turns round from there
+									this.lanePos = (dir == 2) ? this.laneLength : 0;
+									this.facing = dir;
+								} else if (dir != this.facing) {
+									this.facing = dir; //a turn, no step
+								} else {
+									this.lanePos += (dir == 2) ? 1 : -1;
+								}
+							}
 						} catch (TimeoutException) {
 							lock (this.rtt) {
 								this.timeouts++;
@@ -112,6 +137,26 @@ namespace SteamEngine.Tests.Perf {
 				});
 				this.thread.IsBackground = true;
 				this.thread.Start();
+			}
+
+			/// <summary>Stops walking (waits until the current step's answer is in), so the walker can be placed.</summary>
+			internal void Pause() {
+				this.idle = false;
+				this.paused = true;
+				for (int i = 0; (i < 600) && !this.idle && this.alive; i++) { //longer than a step's 5 s answer timeout plus its 220 ms pause
+					Thread.Sleep(10);
+				}
+				if (!this.idle && this.alive) {
+					Log("WALKER did not go idle within 6 s; its lane state may be off until its first refused step");
+				}
+			}
+
+			/// <summary>Walks again: along a lane of the given length from its west end, facing east (0 = the random walk).</summary>
+			internal void Resume(int lane) {
+				this.laneLength = lane;
+				this.lanePos = 0;
+				this.facing = 2;
+				this.paused = false;
 			}
 
 			internal void Reset() {
@@ -182,6 +227,19 @@ namespace SteamEngine.Tests.Perf {
 				}
 				this.Do(gm, "players");
 				this.Measure(gm, "P3-" + Players + "-players-crowd-in-town", MeasureSeconds * 2, walkers);
+				//#1222 - the same crowd on lanes: nobody walks into anybody, so every step is a real one
+				foreach (Walker w in walkers) {
+					w.Pause();
+				}
+				this.Do(gm, "lanes " + LaneLength);
+				foreach (Walker w in walkers) {
+					w.Resume(LaneLength);
+				}
+				this.Measure(gm, "P3b-" + Players + "-players-crowd-on-lanes", MeasureSeconds * 2, walkers);
+				foreach (Walker w in walkers) {
+					w.Pause();
+					w.Resume(0);
+				}
 				//half of them in the largest dungeon (mass combat), the rest across a_MORIA
 				this.Do(gm, "scatter 10 5816 3257 120 120");
 				this.Measure(gm, "P4-players-in-dense-dungeon", MeasureSeconds * 2, walkers);
