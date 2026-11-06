@@ -77,6 +77,12 @@ spawned. `WanderLeash` (`NPCAiTimer.cs:70`, default 6 tiles) bounds how far it w
 from home; see [Spawning](spawning.md) for how a spawn gem's own `Homedist` setting now
 actually reaches this field (it didn't, before #206).
 
+The home is taken once, at the NPC's first think (`CaptureHome`), and is never moved after
+that: an NPC a GM moves by hand (`.go`, `.move`, `.summonto`, a quest step) keeps its old home and,
+once awake and past its leash, walks back to it. This is Sphere's behaviour (HOME stays until a GM
+sets it) and was kept on purpose (#1206, the user's choice): a quest NPC placed by `.SetupWorld` and
+moved by a GM goes back to its spot. There is no GM command to set an NPC's home yet.
+
 ### Home-return: a straight step first, A* when refused (#211, #1199)
 
 Since #1199 (`NPCAiTimer.WalkHome`) an NPC past its leash takes a straight step toward home, as
