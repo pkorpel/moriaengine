@@ -682,313 +682,124 @@ namespace SteamEngine.Regions {
 
 		//}
 
-		public IEnumerable<TcpConnection<GameState>> GetConnectionsInRange(int x, int y, int range) {
-			return this.GetConnectionsInRectangle(new ImmutableRectangle(x, y, range));
+		//#1216 - every range query below returns a struct (MapQueries.cs): a foreach over it allocates nothing.
+		//The ...InRange ones keep the bounds as numbers, no rectangle object.
+
+		public ConnectionsInArea GetConnectionsInRange(int x, int y, int range) {
+			return new ConnectionsInArea(new PlayersInArea(this, x - range, y - range, x + range, y + range), null);
 		}
 
-		public IEnumerable<AbstractCharacter> GetPlayersInRange(int x, int y, int range) {
-			return this.GetPlayersInRectangle(new ImmutableRectangle(x, y, range));
+		public PlayersInArea GetPlayersInRange(int x, int y, int range) {
+			return new PlayersInArea(this, x - range, y - range, x + range, y + range);
 		}
 
-		public IEnumerable<Thing> GetThingsInRange(int x, int y, int range) {
-			return this.GetThingsInRectangle(new ImmutableRectangle(x, y, range));
+		public ThingsInArea<Thing> GetThingsInRange(int x, int y, int range) {
+			return new ThingsInArea<Thing>(this, x - range, y - range, x + range, y + range, ThingWalk.Things);
 		}
 
-		public IEnumerable<AbstractItem> GetItemsInRange(int x, int y, int range) {
-			return this.GetItemsInRectangle(new ImmutableRectangle(x, y, range));
+		public ThingsInArea<AbstractItem> GetItemsInRange(int x, int y, int range) {
+			return new ThingsInArea<AbstractItem>(this, x - range, y - range, x + range, y + range, ThingWalk.Items);
 		}
 
-		public IEnumerable<AbstractCharacter> GetCharsInRange(int x, int y, int range) {
-			return this.GetCharsInRectangle(new ImmutableRectangle(x, y, range));
+		public ThingsInArea<AbstractCharacter> GetCharsInRange(int x, int y, int range) {
+			return new ThingsInArea<AbstractCharacter>(this, x - range, y - range, x + range, y + range, ThingWalk.Chars);
 		}
 
-		public IEnumerable<AbstractInternalItem> GetStaticsAndMultiComponentsInRange(int x, int y, int range) {
-			return this.GetStaticsAndMultiComponentsInRectangle(new ImmutableRectangle(x, y, range));
+		public InternalItemsInArea<AbstractInternalItem> GetStaticsAndMultiComponentsInRange(int x, int y, int range) {
+			return new InternalItemsInArea<AbstractInternalItem>(this, x - range, y - range, x + range, y + range, true);
 		}
 
-		public IEnumerable<Thing> GetDisconnectsInRange(int x, int y, int range) {
-			return this.GetDisconnectsInRectangle(new ImmutableRectangle(x, y, range));
+		public ThingsInArea<Thing> GetDisconnectsInRange(int x, int y, int range) {
+			return new ThingsInArea<Thing>(this, x - range, y - range, x + range, y + range, ThingWalk.Disconnects);
 		}
 
-		public IEnumerable<MultiItemComponent> GetMultiComponentsInRange(int x, int y, int range) {
-			return this.GetMultiComponentsInRectangle(new ImmutableRectangle(x, y, range));
+		public InternalItemsInArea<MultiItemComponent> GetMultiComponentsInRange(int x, int y, int range) {
+			return new InternalItemsInArea<MultiItemComponent>(this, x - range, y - range, x + range, y + range, false);
 		}
 
-		public IEnumerable<TcpConnection<GameState>> GetConnectionsInRange(int x, int y) {
-			return this.GetConnectionsInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
+		public ConnectionsInArea GetConnectionsInRange(int x, int y) {
+			return this.GetConnectionsInRange(x, y, Globals.MaxUpdateRange);
 		}
 
-		//public IEnumerable<GameConn> GetGameConnsInRange(ushort x, ushort y) {
-		//    return GetGameConnsInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
-		//}
-
-		public IEnumerable<AbstractCharacter> GetPlayersInRange(int x, int y) {
-			return this.GetPlayersInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
+		public PlayersInArea GetPlayersInRange(int x, int y) {
+			return this.GetPlayersInRange(x, y, Globals.MaxUpdateRange);
 		}
 
-		public IEnumerable<Thing> GetThingsInRange(int x, int y) {
-			return this.GetThingsInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
+		public ThingsInArea<Thing> GetThingsInRange(int x, int y) {
+			return this.GetThingsInRange(x, y, Globals.MaxUpdateRange);
 		}
 
-		public IEnumerable<AbstractItem> GetItemsInRange(int x, int y) {
-			return this.GetItemsInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
+		public ThingsInArea<AbstractItem> GetItemsInRange(int x, int y) {
+			return this.GetItemsInRange(x, y, Globals.MaxUpdateRange);
 		}
 
-		public IEnumerable<AbstractCharacter> GetCharsInRange(int x, int y) {
-			return this.GetCharsInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
+		public ThingsInArea<AbstractCharacter> GetCharsInRange(int x, int y) {
+			return this.GetCharsInRange(x, y, Globals.MaxUpdateRange);
 		}
 
-		public IEnumerable<AbstractInternalItem> GetStaticsAndMultiComponentsInRange(int x, int y) {
-			return this.GetStaticsAndMultiComponentsInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
+		public InternalItemsInArea<AbstractInternalItem> GetStaticsAndMultiComponentsInRange(int x, int y) {
+			return this.GetStaticsAndMultiComponentsInRange(x, y, Globals.MaxUpdateRange);
 		}
 
-		public IEnumerable<Thing> GetDisconnectsInRange(int x, int y) {
-			return this.GetDisconnectsInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
+		public ThingsInArea<Thing> GetDisconnectsInRange(int x, int y) {
+			return this.GetDisconnectsInRange(x, y, Globals.MaxUpdateRange);
 		}
 
-		public IEnumerable<MultiItemComponent> GetMultiComponentsInRange(int x, int y) {
-			return this.GetMultiComponentsInRectangle(new ImmutableRectangle(x, y, Globals.MaxUpdateRange));
+		public InternalItemsInArea<MultiItemComponent> GetMultiComponentsInRange(int x, int y) {
+			return this.GetMultiComponentsInRange(x, y, Globals.MaxUpdateRange);
 		}
 
-		//public IEnumerable<GameConn> GetGameConnsInRectangle(ImmutableRectangle rectangle) {
-		//    foreach (Sector sector in this.GetSectorsInRectangle(rectangle)) {
-		//        foreach (AbstractCharacter player in sector.players) {
-		//            GameConn conn = player.Conn;
-		//            if ((conn != null) && (rectangle.Contains(player))) {
-		//                yield return conn;
-		//            }
-		//        }
-		//    }
-		//}
-
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IEnumerable<TcpConnection<GameState>> GetConnectionsInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					foreach (AbstractCharacter player in sector.Players) {
-						GameState state = player.GameState;
-						if ((state != null) && (rectangle.Contains(player))) {
-							yield return state.Conn;
-						}
-					}
-				}
-			}
+		public ConnectionsInArea GetConnectionsInRectangle(ImmutableRectangle rectangle) {
+			return new ConnectionsInArea(this.GetPlayersInRectangle(rectangle), null);
 		}
 
-		public IEnumerable<AbstractCharacter> GetPlayersInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					foreach (AbstractCharacter player in sector.Players) {
-						if (rectangle.Contains(player)) {
-							yield return player;
-						}
-					}
-				}
-			}
+		public PlayersInArea GetPlayersInRectangle(ImmutableRectangle rectangle) {
+			return new PlayersInArea(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY);
 		}
-		/**
-			This is used by Thing's similarly named methods, but this version allows
-			you to explicitly specify a rectangle to look in.
-		*/
-		public IEnumerable<Thing> GetThingsInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					//#1214 - a sector's characters first, then its items, walked by hand: no enumerator per list.
-					//the items' head is read after the characters are done, so an item made meanwhile can be met
-					Thing thing = sector.Chars.firstThing;
-					while (thing != null) {
-						Thing next = thing.nextInList; //read before the yield, the thing may leave the list meanwhile
-						if (rectangle.Contains(thing)) {
-							yield return thing;
-						}
-						thing = next;
-					}
-					thing = sector.Items.firstThing;
-					while (thing != null) {
-						Thing next = thing.nextInList;
-						if (rectangle.Contains(thing)) {
-							yield return thing;
-						}
-						thing = next;
-					}
-				}
-			}
+
+		/// <summary>A sector's characters, then its items (#1214).</summary>
+		public ThingsInArea<Thing> GetThingsInRectangle(ImmutableRectangle rectangle) {
+			return new ThingsInArea<Thing>(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY, ThingWalk.Things);
 		}
-		/**
-			This is used by Thing's similarly named methods, but this version allows
-			you to explicitly specify a rectangle to look in.
-		*/
-		public IEnumerable<AbstractItem> GetItemsInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					foreach (Thing thing in sector.Items) {
-						AbstractItem i = (AbstractItem) thing;
-						if (rectangle.Contains(i)) {
-							yield return i;
-						}
-					}
-				}
-			}
+
+		public ThingsInArea<AbstractItem> GetItemsInRectangle(ImmutableRectangle rectangle) {
+			return new ThingsInArea<AbstractItem>(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY, ThingWalk.Items);
 		}
-		/**
-			This is used by Thing's similarly named methods, but this version allows
-			you to explicitly specify a rectangle to look in.
-		*/
-		public IEnumerable<AbstractCharacter> GetCharsInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					foreach (Thing thing in sector.Chars) {
-						AbstractCharacter ch = (AbstractCharacter) thing;
-						if (rectangle.Contains(ch)) {
-							yield return ch;
-						}
-					}
-				}
-			}
+
+		public ThingsInArea<AbstractCharacter> GetCharsInRectangle(ImmutableRectangle rectangle) {
+			return new ThingsInArea<AbstractCharacter>(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY, ThingWalk.Chars);
 		}
+
 		/// <summary>#1201 - as GetNPCsInRectangle, but only in sectors that exist: it makes none (a sector is made on first use
 		/// and never dropped, and one never made holds nothing).</summary>
-		public IEnumerable<AbstractCharacter> GetNPCsInLoadedSectors(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.sectors[sx, sy];
-					if (sector == null) {
-						continue;
-					}
-					foreach (Thing thing in sector.Chars) {
-						AbstractCharacter ch = (AbstractCharacter) thing;
-						if ((ch.Account == null) && (rectangle.Contains(ch))) {
-							yield return ch;
-						}
-					}
-				}
-			}
+		public ThingsInArea<AbstractCharacter> GetNPCsInLoadedSectors(ImmutableRectangle rectangle) {
+			return new ThingsInArea<AbstractCharacter>(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY, ThingWalk.NPCsInLoadedSectors);
 		}
 
-		/**
-			This is used by Thing's similarly named methods, but this version allows
-			you to explicitly specify a rectangle to look in.
-		*/
-		public IEnumerable<AbstractCharacter> GetNPCsInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					foreach (Thing thing in sector.Chars) {
-						AbstractCharacter ch = (AbstractCharacter) thing;
-						//Account == null is what IsPlayer says, read directly
-						if ((ch.Account == null) && (rectangle.Contains(ch))) {
-							yield return ch;
-						}
-					}
-				}
-			}
-		}
-		/**
-			This is used by Thing's similarly named methods, but this version allows
-			you to explicitly specify a rectangle to look in.
-		*/
-		public IEnumerable<AbstractInternalItem> GetStaticsAndMultiComponentsInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					foreach (StaticItem s in sector.Statics) {
-						if (rectangle.Contains(s)) {
-							yield return s;
-						}
-					}
-					if (sector.MultiComponents != null) {
-						foreach (MultiItemComponent s in sector.MultiComponents) {
-							if (rectangle.Contains(s)) {
-								yield return s;
-							}
-						}
-					}
-				}
-			}
+		public ThingsInArea<AbstractCharacter> GetNPCsInRectangle(ImmutableRectangle rectangle) {
+			return new ThingsInArea<AbstractCharacter>(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY, ThingWalk.NPCs);
 		}
 
-		/**
-			This is used by Thing's similarly named methods, but this version allows
-			you to explicitly specify a rectangle to look in.
-		*/
-		public IEnumerable<Thing> GetDisconnectsInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					foreach (Thing thing in sector.Disconnects) {
-						if (rectangle.Contains(thing)) {
-							yield return thing;
-						}
-					}
-				}
-			}
+		public InternalItemsInArea<AbstractInternalItem> GetStaticsAndMultiComponentsInRectangle(ImmutableRectangle rectangle) {
+			return new InternalItemsInArea<AbstractInternalItem>(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY, true);
 		}
 
-		/**
-			This is used by Thing's similarly named methods, but this version allows
-			you to explicitly specify a rectangle to look in.
-		*/
-		public IEnumerable<MultiItemComponent> GetMultiComponentsInRectangle(ImmutableRectangle rectangle) {
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					if (sector.MultiComponents == null) {
-						continue;
-					}
-					foreach (MultiItemComponent mic in sector.MultiComponents) {
-						if (rectangle.Contains(mic)) {
-							yield return mic;
-						}
-					}
-				}
-			}
+		public ThingsInArea<Thing> GetDisconnectsInRectangle(ImmutableRectangle rectangle) {
+			return new ThingsInArea<Thing>(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY, ThingWalk.Disconnects);
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IEnumerable<TcpConnection<GameState>> GetConnectionsWhoCanSee(Thing thing) {
+		public InternalItemsInArea<MultiItemComponent> GetMultiComponentsInRectangle(ImmutableRectangle rectangle) {
+			return new InternalItemsInArea<MultiItemComponent>(this, rectangle.MinX, rectangle.MinY, rectangle.MaxX, rectangle.MaxY, false);
+		}
+
+		/// <summary>The connections of the players within update range of the thing's top object who can see it.
+		/// The range is taken where the thing is now.</summary>
+		public ConnectionsInArea GetConnectionsWhoCanSee(Thing thing) {
 			Thing top = thing.TopObj();
-			ImmutableRectangle rectangle = new ImmutableRectangle(top.X, top.Y, Globals.MaxUpdateRange);
-
-			int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
-			this.GetSectorCoordsInRectangle(rectangle, out xSectorStart, out ySectorStart, out xSectorEnd, out ySectorEnd);
-			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
-				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
-					Sector sector = this.GetSector(sx, sy);
-					foreach (AbstractCharacter player in sector.Players) {
-						GameState state = player.GameState;
-						if ((state != null) && (rectangle.Contains(player)) && (player.CanSeeForUpdate(thing).Allow)) {
-							yield return state.Conn;
-						}
-					}
-				}
-			}
+			int x = top.X;
+			int y = top.Y;
+			int range = Globals.MaxUpdateRange;
+			return new ConnectionsInArea(new PlayersInArea(this, x - range, y - range, x + range, y + range), thing);
 		}
 
 		private IEnumerable<Sector> GetSectorsInRectangle(ImmutableRectangle rectangle) {
@@ -1014,23 +825,8 @@ namespace SteamEngine.Regions {
 		}
 
 
-		public IEnumerable<AbstractInternalItem> GetStaticsAndMultiComponentsOnCoords(int x, int y) {
-			int sx = x >> sectorFactor;
-			int sy = y >> sectorFactor;
-			Sector sector = this.GetSector(sx, sy);
-
-			foreach (StaticItem s in sector.Statics) {
-				if ((s.X == x) && (s.Y == y)) {
-					yield return s;
-				}
-			}
-			if (sector.MultiComponents != null) {
-				foreach (MultiItemComponent s in sector.MultiComponents) {
-					if ((s.X == x) && (s.Y == y)) {
-						yield return s;
-					}
-				}
-			}
+		public InternalItemsInArea<AbstractInternalItem> GetStaticsAndMultiComponentsOnCoords(int x, int y) {
+			return new InternalItemsInArea<AbstractInternalItem>(this, x, y, x, y, true);
 		}
 
 		/**
