@@ -862,6 +862,30 @@ A and B don't depend on each other; within C and D the order matters.
 - **E5. Re-measure crowds** (problem 10) with walkers that don't collide; look at movement pacing if steps are still slow.
   - **Effort:** S.
 
+**E5 results (#1222, 2026-11-06).**
+- **Cause of the crowd's slow steps: Nagle, not the server.**
+  - Game connections send every packet group as its own send, and nothing switched Nagle off.
+  - In a crowd a client always has data in flight (the other players' moves), so a small send (the step's ack) waited for the client's delayed ACK. That's ~40 ms on Linux, the test client; on Windows the delayed-ACK timer is up to 200 ms, so players there waited longer.
+  - The game thread was 7-11% busy throughout.
+- **Fix:** `TCPServer.OnAccept` sets `NoDelay` on every accepted socket, as ServUO, RunUO (unless `NagleEnabled`) and Sphere do.
+- **Harness:**
+  - `.TestPerf lanes` gives each walker its own row segment in the crowd. A new phase, P3b, runs the walkers along their lanes, and a refused step resyncs them.
+  - `lanes` and `scatter` refill stamina: P3's minute of running leaves walkers unable to move (#779).
+  - P3's random walkers stay as they were, so P3 is comparable with section 5. About 75% of their steps are still refused there: walls, other players, fatigue.
+- **Release, scale 0.1, 50 walkers, step round trip (client sends, server acks):**
+
+| | Without NoDelay | With NoDelay |
+|---|---|---|
+| P3 crowd, random walkers, p50 / p95 / p99 | 41.6 / 46.8 / 50.2 ms | **9.5 / 20.2 / 25.3 ms** |
+| P3b crowd on lanes (97% of steps accepted), p50 / p95 / p99 | 42.5 / 111.8 / 131.3 ms | **19.2 / 45.0 / 59.4 ms** |
+| P4 spread in a dungeon, p50 | 1.3 ms | 1.2 ms |
+
+  - Four earlier alternating runs (two each, before the lane resync) gave the same split: P3 p50 41.8-41.9 without, 9.8-11.3 with.
+- **Left (final master issue):** an accepted step in a 50-player crowd still takes ~19 ms at the median against ~1 ms in a quiet place.
+  - Each step is broadcast to every player in view as its own small send.
+  - Sending per cycle in batches (the connection already has an unused packet-joining path, `PacketGroupsJoiningAllowed`) or measuring where those 19 ms go (server sync vs. the test client reading 49 players' updates) is the next step.
+  - Movement pacing (`MovementState`'s reserves) didn't show up: no step waited on it.
+
 ### Summary
 
 | Step | What | Effort | Risk | Benefit (measured unless *estimate*) | Needs |
