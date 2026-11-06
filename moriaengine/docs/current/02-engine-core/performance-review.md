@@ -781,6 +781,26 @@ A and B don't depend on each other; within C and D the order matters.
 
 - **E2. Allocation-free range enumerators**, struct enumerators or callbacks.
   - **Effort:** M. **Risk:** L–M.
+
+**E2 results (#1216, 2026-11-06).**
+- **What changed:**
+  - Map's range queries return structs (`MapQueries.cs`: `ThingsInArea<T>`, `PlayersInArea`, `ConnectionsInArea`, `InternalItemsInArea<T>`). Each has a struct enumerator that walks the sectors and lists by hand, reading the next element before handing out the current one, as the iterators did.
+  - The `...InRange` queries keep their bounds as numbers, with no rectangle object.
+  - The structs also implement `IEnumerable<T>`, so LScript, LINQ and `new List<T>(...)` work unchanged (boxed, as costly as before).
+  - `ItemSyncQueue` walks the query directly instead of through an `IEnumerable` variable.
+- **Behaviour:**
+  - The players' list is walked by node. When the next player leaves the list during a walk, the walk goes on from the current one. `LinkedList`'s enumerator threw "collection was modified" there.
+  - Statics on a tile off the map now come back empty instead of throwing.
+  - The speech path still boxes, one allocation per speech, beside its arguments and packets.
+- **Release, scale 1, the design world, `.TestPerf bench` (2000 calls each); before = E1's final run:**
+
+| Query at the densest dungeon spot | Before (E1) | After |
+|---|---|---|
+| Characters within 14 (7 found) | 1.2 µs, 480 B | **0.7 µs, 0 B** |
+| Items within 18 (131 found) | 5.1 µs, 480 B | **3.1 µs, 0 B** |
+| Things within 18 (142 found) | 5.4 µs, 128 B | **4.4 µs, 0 B** |
+| Players within 18 | 0.2 µs, 144 B | 0.1 µs, 0 B |
+
 - **E3. Keep the map files open or memory-mapped** (problem 8).
   - **Benefit:** no file opens on the game thread as players explore.
   - **Effort:** S–M. **Risk:** L.
