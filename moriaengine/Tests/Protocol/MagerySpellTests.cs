@@ -506,12 +506,8 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendSpeech(".TestCastGroundTargetedSpellNearSelf s_blade_spirits 3");
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_GROUNDCAST_TEST: STARTED", mark, TimeSpan.FromSeconds(10)));
 
-				Thread.Sleep(4000); // CASTTIME is 2.5s; generous margin for the stroke + effect dispatch
-
-				mark = this.fixture.GameOutputSnapshot().Length;
-				client.SendSpeech(".TestReportNearbySummon");
-				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
-				string foundLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+				//#1104 - CASTTIME is 2.5 s: wait for the spirit itself, not a fixed 4 s, which a loaded machine most likely overran
+				string foundLine = this.WaitForNearbySummon(client, TimeSpan.FromSeconds(15));
 				Assert.True(foundLine.Contains("FOUND"), "Expected Blade Spirits to summon a creature. line: " + foundLine + "\nFULL:\n" + this.fixture.GameOutputSnapshot());
 				Assert.Contains("controlMasterUid=null", foundLine);
 
@@ -521,6 +517,22 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_NEUTRALIZE_TEST:", mark, TimeSpan.FromSeconds(10)));
 				string cleanupLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_NEUTRALIZE_TEST:");
 				Assert.Contains("neutralized=True", cleanupLine);
+			}
+		}
+
+		/// <summary>#1104 - asks for a nearby summon every half second until one is FOUND or the time is up; the last report.</summary>
+		private string WaitForNearbySummon(TestGameClient client, TimeSpan within) {
+			DateTime deadline = DateTime.UtcNow + within;
+			string line;
+			while (true) {
+				int mark = this.fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestReportNearbySummon");
+				Assert.True(this.fixture.WaitForGameOutputSince("MAGERY_SUMMON_TEST:", mark, TimeSpan.FromSeconds(10)));
+				line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MAGERY_SUMMON_TEST:");
+				if (line.Contains("FOUND") || (DateTime.UtcNow >= deadline)) {
+					return line;
+				}
+				Thread.Sleep(500);
 			}
 		}
 
