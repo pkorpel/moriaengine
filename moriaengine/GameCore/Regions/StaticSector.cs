@@ -103,8 +103,11 @@ namespace SteamEngine.Regions {
 			return sector;
 		}
 
-		/// <summary>#1217 - one .mul file, memory-mapped once and kept for the life of the process. Reads copy by position,
-		/// so they keep no state and any thread can make them; there's no file open or seek when a sector loads.</summary>
+		/// <summary>#1217 - one .mul file, memory-mapped once and kept for the life of the process: no file open or seek when a
+		/// sector loads. Reads copy by position, so they keep no state; that makes the file reads thread-safe, not sector loading
+		/// itself (GetStaticSector's caches are unguarded: every caller holds the global lock).
+		/// While the server runs, Windows won't let the mapped files be deleted or replaced (a git checkout changing them fails),
+		/// and on Linux a file rewritten in place (not replaced by rename) can kill the process when a page past its new end is read.</summary>
 		private sealed class MappedMul {
 			private readonly MemoryMappedViewAccessor view; //null for an empty file
 			private readonly long length; //the file's: the view's capacity is rounded up to a page
@@ -120,9 +123,14 @@ namespace SteamEngine.Regions {
 				}
 			}
 
+			/// <summary>Whether count bytes from pos lie inside the file.</summary>
+			internal bool Holds(long pos, long count) {
+				return (pos >= 0) && (count >= 0) && (pos + count <= this.length);
+			}
+
 			/// <summary>Copies count bytes from pos into buffer; past the end of the file throws, as BinaryReader's end of stream did.</summary>
 			internal void Read(long pos, byte[] buffer, int count) {
-				if ((pos < 0) || (pos + count > this.length)) {
+				if (!this.Holds(pos, count)) {
 					throw new EndOfStreamException("Reading " + count + " bytes at " + pos + " past the end of " + this.name + " (" + this.length + " bytes)");
 				}
 				if (count > 0) {
@@ -224,16 +232,20 @@ namespace SteamEngine.Regions {
 						uint blockStart = BinaryPrimitives.ReadUInt32LittleEndian(entry.AsSpan(0, 4));
 						uint blockLen = BinaryPrimitives.ReadUInt32LittleEndian(entry.AsSpan(4, 4));
 						versions[xblock, yblock] = BinaryPrimitives.ReadUInt32LittleEndian(entry.AsSpan(8, 4));
-						if (blockStart != 0xffffffff) {
-							int blockNumStatics = (int) (blockLen / StaticBytes);
-							int bytes = blockNumStatics * StaticBytes;
+						long blockNumStatics = blockLen / StaticBytes;
+						if ((blockStart != 0xffffffff) && (blockNumStatics > 0)) { //an empty block reads nothing, wherever it points, as the stream did
+							long bytes = blockNumStatics * StaticBytes;
+							if (!muls.statics.Holds(blockStart, bytes)) { //checked before renting: a garbage length must not allocate gigabytes
+								throw new EndOfStreamException("Statics block of " + bytes + " bytes at " + blockStart + " past the end of statics" + facet + ".mul");
+							}
 							if ((block == null) || (block.Length < bytes)) {
 								if (block != null) {
 									ArrayPool<byte>.Shared.Return(block);
+									block = null; //so a throwing Rent can't have the finally return it twice
 								}
-								block = ArrayPool<byte>.Shared.Rent(Math.Max(bytes, 1));
+								block = ArrayPool<byte>.Shared.Rent((int) bytes);
 							}
-							muls.statics.Read(blockStart, block, bytes);
+							muls.statics.Read(blockStart, block, (int) bytes);
 							for (int a = 0, at = 0; a < blockNumStatics; a++, at += StaticBytes) {
 								ushort tileID = BinaryPrimitives.ReadUInt16LittleEndian(block.AsSpan(at, 2));
 								byte relX = block[at + 2];

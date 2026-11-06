@@ -3,6 +3,7 @@
 ## NOW (2026-11-06): performance plan #1176: A-D, E1, E2 DONE; now E3 = #1217 (map files memory-mapped, branch 1217-mmap-map-files in ../moria-1217)
 
 E3 plan: StaticSector maps map/staidx/statics<facet>.mul once per facet (MappedMul: MemoryMappedFile + view, kept for the process, length checked against the file not the page-rounded view), reads each 8x8 block / staidx entry / statics block with one ReadArray into a pooled buffer, parses with BinaryPrimitives; same messages for missing files (map disabled). Test MapFileTests (protocol): 12 sectors on facets 0 and 2 (spawn, corners, spread), every tile id/z and the statics in file order vs the files read with plain FileStream; red = a wrong block offset. Measure: harness world-building round trips (npcs/ground/rects) at scale 1 Release, before/after.
+E3 done (PR below): MapFileTests green, 2 reds (map block offset, staidx entry: also showed the end-of-file guard disabling the map); review: no blocker, fixed the statics read (length checked before renting, block=null after Return, empty blocks skipped as before), comment says only file reads are thread-safe. Bench Release scale 1: ground 50k 9.2 -> 0.49 s, npcs 10k 3.9 -> 0.82 s, rects 3.0 -> 1.6 s; working set +97 MB of mapped file pages (heap same). Ops gotcha (in the review doc): Windows can't replace mapped uo-files/*.mul while a server runs; Linux in-place rewrite can kill it. Fast 356/356, 24 protocol classes 77/77 (before the hardening), MapFile + MultiMap green after.
 E2 = #1216 DONE, PR #1218.
 
 
