@@ -389,7 +389,7 @@ namespace SteamEngine.CompiledScripts {
 			Console.WriteLine("MAGERY_SUMMON_TEST: STARTED startMana=" + self.Mana);
 		}
 
-		/// <summary>#485 - scans for a nearby summoned creature owned by self. Reports "none"
+		/// <summary>#485 - scans for a nearby summoned creature, the first within 20 tiles, whoever summoned it. Reports "none"
 		/// rather than throwing if it's already despawned, so the same command can confirm both
 		/// "it appeared" (shortly after casting) and "it's gone" (after the duration elapses).
 		/// Range widened from 5 to 20 for #488's own Blade Spirits test, which deliberately
