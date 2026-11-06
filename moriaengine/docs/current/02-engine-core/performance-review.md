@@ -823,6 +823,31 @@ A and B don't depend on each other; within C and D the order matters.
 - **Operations:** while the server runs, Windows won't let the mapped files be deleted or replaced, so a git checkout that changes `uo-files/*.mul` fails until the server stops. On Linux, a file replaced by rename is fine; one rewritten in place can kill the process.
 - **E4. Re-measure GC and tune** (problem 9).
   - **Effort:** S.
+
+**E4 results (#1220, 2026-11-06): no GC setting changes.**
+- **Re-measured** on main after C2, B4, E1-E3 (Release, scale 1, all phases). The harness now also reports the longest single GC pause per window (`gcMaxPauseMs`, sampled every 20 ms per GC kind).
+
+| Phase | GC pause at the review | GC pause now (total / longest) | Allocation then → now |
+|---|---|---|---|
+| P0 empty world | 0.04% | 10 ms / 30 s, longest 10 ms | 0.1 → 0.1 MB/s |
+| P1 15k dungeon NPCs | 1.7% | 6 ms / 30 s, longest 6 ms | 87 → 0.1 MB/s |
+| P2 design world, no players | 7.0% | 9 ms / 30 s, longest 9 ms | 218 → 0.1 MB/s |
+| P3 50 players in a crowd | 10.5% | 188 ms / 60 s, longest **94 ms** (background gen2, 677 MB heap) | 220 → 3.0 MB/s |
+| P4 50 players in a dungeon | 9.3% | 132 ms / 60 s, longest 10 ms | 248 → 1.3 MB/s |
+| P5 stress, 50k NPCs | 11.9% | 193 ms / 60 s, longest 43 ms (background gen2, 874 MB) | 251 → 1.9 MB/s |
+
+- **Tried:** server GC, one full run each, against the default workstation concurrent GC.
+
+| | Workstation (kept) | Server + DATAS (`GCDynamicAdaptationMode=1`) | Server, 4 heaps |
+|---|---|---|---|
+| Longest pause P3 / P5 | 94 / 43 ms | 26 / 125 ms | 0 / 253 ms |
+| Total pause P5 (60 s) | 193 ms | 125 ms | 253 ms |
+| Working set P2 / P5 | 896 / 1117 MB | 1119 / 1297 MB | 1395 / 1781 MB |
+| Save at 50k NPCs | 1.4 s | 2.2 s | 2.0 s |
+| Timer lateness max P5 | 33 ms | 40 ms | 225 ms |
+
+- **Verdict:** GC is under 0.4% of wall time everywhere. Server GC moves the long pause into ephemeral collections and makes it longer, costs 200-660 MB and slows saves, so the default stays. TieredPGO is on (the .NET 8 default, nothing turns it off).
+- **Left for later (final master issue):** a background gen2 still stops the world once for up to ~0.1 s at a 680 MB heap. That pause scales with the number of live objects, so shrinking the heap's object count would shorten it; GC settings don't.
 - **E5. Re-measure crowds** (problem 10) with walkers that don't collide; look at movement pacing if steps are still slow.
   - **Effort:** S.
 
