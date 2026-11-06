@@ -804,6 +804,23 @@ A and B don't depend on each other; within C and D the order matters.
 - **E3. Keep the map files open or memory-mapped** (problem 8).
   - **Benefit:** no file opens on the game thread as players explore.
   - **Effort:** S–M. **Risk:** L.
+
+**E3 results (#1217, 2026-11-06).**
+- **What changed:**
+  - `StaticSector` memory-maps each facet's `map`, `staidx` and `statics` `.mul` files once, for the life of the process.
+  - A sector load copies each 8×8 block, staidx entry and statics block out of the view with one read and parses it. Before, every load opened three new `FileStream`s and read them a seek and a few bytes at a time.
+  - Missing, short or corrupt files still disable the map with the same messages.
+- **Release, scale 1, world-building steps of the harness (they load sectors all over the map), main a6dee8c vs E3:**
+
+| Step | Before (two runs) | After |
+|---|---|---|
+| 50,000 ground items over plane 0 | 9.2 / 9.3 s | **0.49 s** |
+| 10,000 NPCs over plane 0 | 3.9 / 3.7 s | **0.82 s** |
+| 5,000 NPCs over plane 1 | 1.5 / 1.5 s | 0.53 s |
+| 15,000 NPCs + 150,000 items in the dungeon rectangles | 3.0 / 2.9 s | 1.6 s |
+
+- **Memory:** the working set at the design world grows from 786 to 883 MB. That's the mapped files' pages counted as resident: file cache the kernel can drop, not heap (619 MB both sides).
+- **Operations:** while the server runs, Windows won't let the mapped files be deleted or replaced, so a git checkout that changes `uo-files/*.mul` fails until the server stops. On Linux, a file replaced by rename is fine; one rewritten in place can kill the process.
 - **E4. Re-measure GC and tune** (problem 9).
   - **Effort:** S.
 - **E5. Re-measure crowds** (problem 10) with walkers that don't collide; look at movement pacing if steps are still slow.
