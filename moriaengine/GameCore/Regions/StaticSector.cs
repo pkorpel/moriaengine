@@ -16,9 +16,12 @@
  */
 
 using System;
+using System.Buffers;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using SteamEngine.Common;
 
 namespace SteamEngine.Regions {
@@ -100,90 +103,158 @@ namespace SteamEngine.Regions {
 			return sector;
 		}
 
+		/// <summary>#1217 - one .mul file, memory-mapped once and kept for the life of the process. Reads copy by position,
+		/// so they keep no state and any thread can make them; there's no file open or seek when a sector loads.</summary>
+		private sealed class MappedMul {
+			private readonly MemoryMappedViewAccessor view; //null for an empty file
+			private readonly long length; //the file's: the view's capacity is rounded up to a page
+			private readonly string name;
+
+			internal MappedMul(string path) {
+				this.name = Path.GetFileName(path);
+				this.length = new FileInfo(path).Length;
+				if (this.length > 0) {
+					using (MemoryMappedFile file = MemoryMappedFile.CreateFromFile(path, FileMode.Open, null, 0, MemoryMappedFileAccess.Read)) {
+						this.view = file.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read); //the view keeps the mapping alive
+					}
+				}
+			}
+
+			/// <summary>Copies count bytes from pos into buffer; past the end of the file throws, as BinaryReader's end of stream did.</summary>
+			internal void Read(long pos, byte[] buffer, int count) {
+				if ((pos < 0) || (pos + count > this.length)) {
+					throw new EndOfStreamException("Reading " + count + " bytes at " + pos + " past the end of " + this.name + " (" + this.length + " bytes)");
+				}
+				if (count > 0) {
+					this.view.ReadArray(pos, buffer, 0, count);
+				}
+			}
+		}
+
+		/// <summary>A facet's map, staidx and statics files.</summary>
+		private sealed class FacetMuls {
+			internal readonly MappedMul map, staidx, statics;
+
+			internal FacetMuls(MappedMul map, MappedMul staidx, MappedMul statics) {
+				this.map = map;
+				this.staidx = staidx;
+				this.statics = statics;
+			}
+		}
+
+		private static readonly List<FacetMuls> facetMuls = new List<FacetMuls>(1); //by facet, as staticMaps
+		private static readonly object facetMulsLock = new object();
+
+		/// <summary>Opens the facet's files the first time; a missing one throws, with the messages loading always had.</summary>
+		private static FacetMuls GetFacetMuls(int facet) {
+			lock (facetMulsLock) {
+				while (facetMuls.Count <= facet) {
+					facetMuls.Add(null);
+				}
+				FacetMuls muls = facetMuls[facet];
+				if (muls == null) {
+					string mapPath = Path.Combine(Globals.MulPath, "map" + facet + ".mul");
+					string staidxPath = Path.Combine(Globals.MulPath, "staidx" + facet + ".mul");
+					string staticsPath = Path.Combine(Globals.MulPath, "statics" + facet + ".mul");
+					if (!File.Exists(staidxPath) || !File.Exists(staticsPath)) {
+						throw new SEException("Unable to locate statics" + facet + ".mul or staidx" + facet + ".mul. Using map disabled.");
+					}
+					if (!File.Exists(mapPath)) {
+						throw new SEException("Unable to locate map file.");
+					}
+					muls = new FacetMuls(new MappedMul(mapPath), new MappedMul(staidxPath), new MappedMul(staticsPath));
+					facetMuls[facet] = muls;
+				}
+				return muls;
+			}
+		}
+
+		private const int MapBlockBytes = 196; //a 4 byte header, then 8x8 cells of tile id (2) and z (1)
+		private const int MapCellsBytes = 192;
+		private const int StaidxEntryBytes = 12; //start, length, extra
+		private const int StaticBytes = 7; //id (2), x (1), y (1), z (1), colour (2)
+
 		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body")]
 		private static void LoadMapSector(int sx, int sy, int numMulSectors, int facet, out ushort[,] tile, out sbyte[,] z) {
-			string mulFileP = Path.Combine(Globals.MulPath, "map" + facet + ".mul");
+			MappedMul map = GetFacetMuls(facet).map;
+			int numTiles = numMulSectors << 3;
+			tile = new ushort[numTiles, numTiles];
+			z = new sbyte[numTiles, numTiles];
 
-			if (File.Exists(mulFileP)) {
-				using (BinaryReader mulbr = new BinaryReader(new FileStream(mulFileP, FileMode.Open, FileAccess.Read))) {
-					int numTiles = numMulSectors << 3;
-					tile = new ushort[numTiles, numTiles];
-					z = new sbyte[numTiles, numTiles];
-					//a single 8x8 block is 196 bytes.
-
-					for (int xblock = 0; xblock < numMulSectors; xblock++) {
-						long partialFilePos = ((xblock + sx) * Map.GetMulNumYSectors(facet));
-						long xblockamt = xblock << 3;
-						for (int yblock = 0; yblock < numMulSectors; yblock++) {
-							long yblockamt = yblock << 3;
-							long filePos = partialFilePos + yblock + sy;
-							filePos = 4 + (filePos << 2) + (filePos << 6) + (filePos << 7);	//That's filePos*196. The 4 is to skip the header.
-							mulbr.BaseStream.Seek(filePos, SeekOrigin.Begin);
-							for (int y = 0; y < 8; y++) {
-								for (int x = 0; x < 8; x++) {
-									//Console.WriteLine("{0},{1} / {2}",xblockamt+x,yblockamt+y,numTiles);
-									tile[xblockamt + x, yblockamt + y] = mulbr.ReadUInt16();
-									z[xblockamt + x, yblockamt + y] = mulbr.ReadSByte();
-								}
+			byte[] cells = ArrayPool<byte>.Shared.Rent(MapCellsBytes);
+			try {
+				for (int xblock = 0; xblock < numMulSectors; xblock++) {
+					long partialFilePos = ((xblock + sx) * Map.GetMulNumYSectors(facet));
+					int xblockamt = xblock << 3;
+					for (int yblock = 0; yblock < numMulSectors; yblock++) {
+						int yblockamt = yblock << 3;
+						long blockIndex = partialFilePos + yblock + sy;
+						map.Read((blockIndex * MapBlockBytes) + 4, cells, MapCellsBytes); //the 4 skips the block's header
+						int at = 0;
+						for (int y = 0; y < 8; y++) {
+							for (int x = 0; x < 8; x++) {
+								tile[xblockamt + x, yblockamt + y] = BinaryPrimitives.ReadUInt16LittleEndian(cells.AsSpan(at, 2));
+								z[xblockamt + x, yblockamt + y] = (sbyte) cells[at + 2];
+								at += 3;
 							}
 						}
 					}
 				}
-			} else {
-				throw new SEException("Unable to locate map file.");
+			} finally {
+				ArrayPool<byte>.Shared.Return(cells);
 			}
 		}
 
 		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body")]
 		private static StaticItem[] LoadStaticsSector(int mulsX, int mulsY, int sx, int sy, int numMulSectors, int facet, out uint[,] versions) {
 			versions = new uint[numMulSectors, numMulSectors];
-			string mulFilePI = Path.Combine(Globals.MulPath, "staidx" + facet + ".mul");
-			string mulFileP = Path.Combine(Globals.MulPath, "statics" + facet + ".mul");
+			FacetMuls muls = GetFacetMuls(facet);
+			List<StaticItem> statics = new List<StaticItem>();
 
-			if (File.Exists(mulFilePI) && File.Exists(mulFileP)) {
-				List<StaticItem> statics = new List<StaticItem>();
-
-				using (FileStream idxfs = new FileStream(mulFilePI, FileMode.Open, FileAccess.Read)) {
-					using (FileStream mulfs = new FileStream(mulFileP, FileMode.Open, FileAccess.Read)) {
-						BinaryReader idxbr = new BinaryReader(idxfs);
-						BinaryReader mulbr = new BinaryReader(mulfs);
-						//int numTiles=numMulSectors<<3;
-						
-						for (int xblock = 0; xblock < numMulSectors; xblock++) {
-							long partialFilePos = ((xblock + mulsX) * Map.GetMulNumYSectors(facet));
-							long xblockamt = xblock << 3;
-							for (int yblock = 0; yblock < numMulSectors; yblock++) {
-								long yblockamt = yblock << 3;
-								long filePos = partialFilePos + yblock + mulsY;
-								filePos = (filePos << 3) + (filePos << 2);
-								idxbr.BaseStream.Seek(filePos, SeekOrigin.Begin);
-								uint blockStart = idxbr.ReadUInt32();
-								uint blockLen = idxbr.ReadUInt32();
-								versions[xblock, yblock] = idxbr.ReadUInt32();
-								//Console.WriteLine("blockStart=[0x"+blockStart.ToString("x")+"] blockLen=[0x"+blockLen.ToString("x")+"] unk=[0x"+unk.ToString("x")+"]");
-								if (blockStart != 0xffffffff) {
-									mulbr.BaseStream.Seek(blockStart, SeekOrigin.Begin);
-									uint blockNumStatics = blockLen / 7;
-									for (int a = 0; a < blockNumStatics; a++) {
-										ushort tileID = mulbr.ReadUInt16();
-										byte relX = mulbr.ReadByte();
-										byte relY = mulbr.ReadByte();
-										sbyte z = mulbr.ReadSByte();
-										ushort color = mulbr.ReadUInt16();
-										ushort x = (ushort) (xblockamt + relX + sx);
-										ushort y = (ushort) (yblockamt + relY + sy);
-										statics.Add(new StaticItem(tileID, x, y, z, 255, color));
-										//the diff files would have statics which aren't on mapplane 255. Etc.
-									}
+			byte[] entry = ArrayPool<byte>.Shared.Rent(StaidxEntryBytes);
+			byte[] block = null;
+			try {
+				for (int xblock = 0; xblock < numMulSectors; xblock++) {
+					long partialFilePos = ((xblock + mulsX) * Map.GetMulNumYSectors(facet));
+					int xblockamt = xblock << 3;
+					for (int yblock = 0; yblock < numMulSectors; yblock++) {
+						int yblockamt = yblock << 3;
+						long blockIndex = partialFilePos + yblock + mulsY;
+						muls.staidx.Read(blockIndex * StaidxEntryBytes, entry, StaidxEntryBytes);
+						uint blockStart = BinaryPrimitives.ReadUInt32LittleEndian(entry.AsSpan(0, 4));
+						uint blockLen = BinaryPrimitives.ReadUInt32LittleEndian(entry.AsSpan(4, 4));
+						versions[xblock, yblock] = BinaryPrimitives.ReadUInt32LittleEndian(entry.AsSpan(8, 4));
+						if (blockStart != 0xffffffff) {
+							int blockNumStatics = (int) (blockLen / StaticBytes);
+							int bytes = blockNumStatics * StaticBytes;
+							if ((block == null) || (block.Length < bytes)) {
+								if (block != null) {
+									ArrayPool<byte>.Shared.Return(block);
 								}
+								block = ArrayPool<byte>.Shared.Rent(Math.Max(bytes, 1));
+							}
+							muls.statics.Read(blockStart, block, bytes);
+							for (int a = 0, at = 0; a < blockNumStatics; a++, at += StaticBytes) {
+								ushort tileID = BinaryPrimitives.ReadUInt16LittleEndian(block.AsSpan(at, 2));
+								byte relX = block[at + 2];
+								byte relY = block[at + 3];
+								sbyte staticZ = (sbyte) block[at + 4];
+								ushort color = BinaryPrimitives.ReadUInt16LittleEndian(block.AsSpan(at + 5, 2));
+								ushort x = (ushort) (xblockamt + relX + sx);
+								ushort y = (ushort) (yblockamt + relY + sy);
+								statics.Add(new StaticItem(tileID, x, y, staticZ, 255, color));
+								//the diff files would have statics which aren't on mapplane 255. Etc.
 							}
 						}
 					}
 				}
-
-				return statics.ToArray();
+			} finally {
+				ArrayPool<byte>.Shared.Return(entry);
+				if (block != null) {
+					ArrayPool<byte>.Shared.Return(block);
+				}
 			}
-			throw new SEException("Unable to locate statics" + facet + ".mul or staidx" + facet + ".mul. Using map disabled.");
+			return statics.ToArray();
 		}
 
 		internal bool HasStaticId(int x, int y, int staticId) {
