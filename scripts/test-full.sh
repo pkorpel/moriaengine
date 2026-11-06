@@ -30,6 +30,7 @@
 set -u
 
 root=$(cd "$(dirname "$0")/.." && pwd)
+. "$root/scripts/lean-build-env.sh"   # #1212: builds and test servers leave no idle MSBuild nodes or compiler server
 LOCK=/tmp/moria-fullboot.lock
 WAIT="${LOCK_WAIT:-1800}"
 STUCK="${STUCK_SECONDS:-120}"
@@ -115,7 +116,7 @@ stop_current() {
   # shellcheck disable=SC2046
   kill $(port_holders) 2>/dev/null
 }
-cleanup() { stop_current; rm -rf "$LOCK" "$out" "$progress" "$root/moriaengine/Tests/TestResults"; }
+cleanup() { stop_current; rm -rf "$LOCK" "$out" "$progress" "$root/moriaengine/Tests/TestResults"; lean_build_shutdown_compiler; }
 trap cleanup EXIT
 trap 'echo "test-full: stopped - killing the run" >&2; exit 130' INT TERM HUP
 set -m   # every background job gets its own process group: one kill takes dotnet test, testhost and both servers
