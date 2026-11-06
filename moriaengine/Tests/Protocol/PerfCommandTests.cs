@@ -41,6 +41,31 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		/// <summary>#1220 - the harness report's longest GC pause: a forced blocking gen2 after .TestPerf start shows up as a full
+		/// blocking GC with a pause above 0, and the line names it.</summary>
+		[Fact]
+		public void HarnessReportSamplesTheLongestGcPause() {
+			using (var fixture = new GameServerPairFixture())
+			using (var client = CommandPermissionTests.Connect(Account, "Perf Prober")) {
+				CommandPermissionTests.Ask(fixture, client, ".TestPerf \"start\"", "PERF_PROBE: start ok");
+				CommandPermissionTests.Ask(fixture, client, ".TestPerf \"gc\"", "PERF_PROBE: gc ok");
+				int mark = fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestPerf \"report gctest\"");
+				Assert.True(fixture.WaitForGameOutputSince("PERF_PROBE: report gctest", mark, Wait), "No report after .TestPerf report");
+				string output = fixture.GameOutputSnapshot();
+				int start = output.IndexOf("PERF_PROBE: report gctest", mark, StringComparison.Ordinal);
+				for (int i = 0; (output.IndexOf(" |", start, StringComparison.Ordinal) < 0) && (i < 50); i++) { //the line's end may still be on its way
+					Thread.Sleep(100);
+					output = fixture.GameOutputSnapshot();
+				}
+				string report = output.Substring(start, output.IndexOf(" |", start, StringComparison.Ordinal) - start);
+				var m = System.Text.RegularExpressions.Regex.Match(report, @"gcMaxPauseMs=([0-9.]+) \(([^)]*)\) gcSampled=([0-9]+) background=[0-9]+ fullBlocking=([0-9]+)");
+				Assert.True(m.Success, "no GC pause sampling in: " + report);
+				Assert.True(int.Parse(m.Groups[4].Value) >= 1, "the forced gen2 wasn't counted: " + report);
+				Assert.True(double.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture) > 0, "no pause measured: " + report);
+			}
+		}
+
 		/// <summary>.perf's report as the server logs it, all of its lines.</summary>
 		private static string Report(GameServerPairFixture fixture, TestGameClient client) {
 			int mark = fixture.GameOutputSnapshot().Length;
