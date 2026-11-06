@@ -274,10 +274,12 @@ namespace SteamEngine.Persistence {
 			}
 		}
 
-		/// <summary>#1209 - for TestWriteFailureFile: takes the bytes, then fails when flushed, as a full disk does.</summary>
+		/// <summary>#1209 - for TestWriteFailureFile: takes the bytes, then fails at the flush after them, as a full disk does.</summary>
 		private sealed class FailingOnFlushStream : MemoryStream {
 			public override void Flush() {
-				throw new IOException("Simulated failure flushing a save file (WorldSaver.TestWriteFailureFile)");
+				if (this.Length > 0) {
+					throw new IOException("Simulated failure flushing a save file (WorldSaver.TestWriteFailureFile)");
+				}
 			}
 		}
 
@@ -335,6 +337,8 @@ namespace SteamEngine.Persistence {
 				}
 				if (ok) {
 					try {
+						//a rename failing halfway would leave earlier files renamed: only the engine's own path (no script
+						//handing a writer) renames, live saves go through BackupsManager straight into the save's own folder
 						foreach (SaveFile file in this.files) {
 							file.Commit();
 						}

@@ -1181,9 +1181,9 @@ namespace SteamEngine.Persistence {
 			this.writer.WriteLine();
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		/// <summary>Flushes, closes and (with a temp file) renames it over the final one. #1205: a failed flush or close throws
-		/// after logging and leaves the final file as it was.</summary>
+		/// after logging, deletes the temp file and leaves the final file as it was.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public void Close() {
 			Exception failure = null;
 			try {
@@ -1199,6 +1199,9 @@ namespace SteamEngine.Persistence {
 			this.writer = null;
 			if (failure != null) {
 				Logger.WriteWarning("Error writing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + failure.Message);
+				if ((this.tempFilePath != null) && File.Exists(this.tempFilePath)) {
+					File.Delete(this.tempFilePath);
+				}
 				throw new IOException("Writing the save file failed", failure);
 			}
 			if (this.tempFilePath != null) {

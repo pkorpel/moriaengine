@@ -727,6 +727,23 @@ A and B don't depend on each other; within C and D the order matters.
   - With `BackupsManager` (the default) every `.sav` is written straight into the save's folder; the engine's own `.tmp`-then-rename path is only the fallback.
   - A failed final flush or close still counts as a successful save: #1205.
 
+**D2a results (#1209, 2026-11-06).** The user chose: profile, then parallel.
+- **What the profile showed:** half of a save's pause was neither formatting nor the disk. It was write calls.
+  - BackupsManager opened each file as `StreamWriter(File.Create)`: a 1K-char writer buffer and a 4 KB file buffer, so 94 MB became tens of thousands of `pwrite` calls.
+  - D1's "formatting is the pause" counted those calls as formatting, because they happen inside it.
+- **What changed:**
+  - big buffers, 64K chars and 1 MB;
+  - formatting into pooled 1 MB byte chunks under the lock;
+  - the autosave (`Globals.SaveInBackground`) writes the files on a worker after the pause, fsynced, with `@afterSave` once they're written;
+  - a failed write fails the save (#1205).
+- **Release, scale 1, the same world as D1:**
+
+| Save | Before | After |
+|---|---|---|
+| Autosave, world held | 1,930 ms | **790 ms** (then 160 ms writing off the lock) |
+| `.save`, shutdown, recompile (written before returning) | 1,930 ms | 951 ms |
+| First save after the world was built | 2.2-7.7 s | 1.6 s |
+
 **D2. Snapshot, then write on a worker thread** (problem 3).
 - **Work:**
   - each save coordinator formats into a pooled in-memory buffer while the world is paused;
