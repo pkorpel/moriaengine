@@ -143,8 +143,11 @@ namespace SteamEngine.Tests.Perf {
 			internal void Pause() {
 				this.idle = false;
 				this.paused = true;
-				for (int i = 0; (i < 500) && !this.idle && this.alive; i++) {
+				for (int i = 0; (i < 600) && !this.idle && this.alive; i++) { //longer than a step's 5 s answer timeout plus its 220 ms pause
 					Thread.Sleep(10);
+				}
+				if (!this.idle && this.alive) {
+					Log("WALKER did not go idle within 6 s; its lane state may be off until its first refused step");
 				}
 			}
 

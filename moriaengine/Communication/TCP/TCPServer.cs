@@ -97,8 +97,8 @@ namespace SteamEngine.Communication.TCP {
 				//up to 200 ms on Windows
 				try {
 					accepted.NoDelay = true;
-				} catch (Exception e) {
-					Logger.WriteWarning("Could not switch Nagle off on an accepted socket", e);
+				} catch (Exception e) { //a socket reset before it was accepted: expected churn (a port scanner), not worth a warning
+					Logger.WriteDebug("Could not switch Nagle off on an accepted socket: " + e.Message);
 				}
 				TcpConnection<TState> newConn = Pool<TcpConnection<TState>>.Acquire();
 				newConn.socket = accepted;

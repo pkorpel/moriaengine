@@ -297,8 +297,13 @@ namespace SteamEngine.CompiledScripts {
 									}
 								}
 							}
+							if (!found) { //out of everybody's view, so it doesn't walk into the lanes
+								int fx = cx + 100;
+								c.Stam = c.MaxStam;
+								c.Go(fx, cy, map.GetFixedZ(new Point3D(fx, cy, 100)), map.M);
+							}
 						}
-						Out(what, placed + " placed of " + (players.Count - 1) + " (" + searched + " spots tried)");
+						Out(what, placed + " placed of " + (players.Count - 1) + " (" + searched + " spots tried, the rest moved out of view)");
 						break;
 					}
 				case "players":
