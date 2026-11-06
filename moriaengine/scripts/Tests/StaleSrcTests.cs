@@ -6,7 +6,7 @@ namespace SteamEngine.CompiledScripts {
 	public static class StaleSrcTests {
 		private static NPC attacker, rabbit;
 		private static int rabbitX, rabbitY, rabbitHits;
-		private static bool moved;
+		private static bool moved, reported;
 
 		private static NPC Rabbit(Character self, int dx) {
 			NPC npc = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.X + dx, self.Y, self.Z, self.M);
@@ -52,6 +52,7 @@ namespace SteamEngine.CompiledScripts {
 						rabbitY = rabbit.Y;
 						rabbitHits = rabbit.Hits;
 						moved = false;
+						reported = false;
 						rabbit.AddTimer(TimerKey.Acquire("_staleSrcWatch_"), new StaleSrcWatchTimer()).DueInSeconds = 0.2;
 						line = "fighting";
 						break;
@@ -71,6 +72,10 @@ namespace SteamEngine.CompiledScripts {
 		internal static void Watch(NPC watched) {
 			if ((watched.X != rabbitX) || (watched.Y != rabbitY)) {
 				moved = true;
+			}
+			if (moved && (watched.Hits < rabbitHits) && !reported) {
+				reported = true; //#1180 - the client waits for this instead of a fixed time; no client is logged in meanwhile
+				Console.WriteLine("STALESRC_TEST: hit |");
 			}
 		}
 	}

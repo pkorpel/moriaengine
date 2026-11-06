@@ -25,12 +25,16 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(knock.Contains("noDamageNoPush=True hurt=True pushed=True"), knock);
 				this.Do(client, "setup");
 			}
-			//the player who sent the last packet is gone; the monster keeps swinging on its own timers
+			//the player who sent the last packet is gone; the monster keeps swinging on its own timers. #1180 - wait for the
+			//server to see a hurting, pushing blow (up to 20 s: a slow AI tick or a few misses made a fixed 5 s too short),
+			//then a second more of swings. No client logs in meanwhile, or it would be the last packet's sender.
 			int mark = this.fixture.GameOutputSnapshot().Length;
-			Thread.Sleep(5000);
+			bool hit = this.fixture.WaitForGameOutputSince("STALESRC_TEST: hit |", mark, TimeSpan.FromSeconds(20));
+			Thread.Sleep(1000);
 			string log = this.fixture.GameOutputSnapshot().Substring(mark);
 			using var back = CommandPermissionTests.Connect("floortests", "Src Returner");
 			string after = this.Do(back, "after");
+			Assert.True(hit, "no hurting, pushing blow within 20 s; then: " + after);
 			Assert.True(after.Contains("rabbitHurt=True knockedBack=True"), after);
 			Assert.DoesNotContain("get_SrcTcpConnection", log);
 		}
