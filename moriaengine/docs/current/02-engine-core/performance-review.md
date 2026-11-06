@@ -22,6 +22,10 @@ think.
 - **Sector size** 16 vs 32 vs 64 is measured: keep 16 (section 12).
 - **The full implementation plan** is section 8.
 
+**After the plan (2026-11-06, #1176).** Every step of section 8 is done. The same harness, run again, is in the
+[performance report after the plan](performance-report-2026-11.md): the design world idle went from 72% to 0.2% busy,
+50 players from 82% / 62% (crowd / dungeon) to 1.6% / 4.3%, and the autosave pause from 2.6–5 s to 0.74 s.
+
 Contents: [1. Assumptions and targets](#1-assumptions-and-targets) ·
 [2. Reference engines](#2-how-the-reference-engines-do-it) · [3. Comparison](#3-comparison) ·
 [4. Our engine](#4-our-engine-main-loop-and-threads) · [5. Measurements](#5-measurements) ·
