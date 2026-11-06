@@ -1,6 +1,10 @@
 # moriaengine — working state
 
-## NOW (2026-11-06): performance plan #1176: A-D, E1-E3 DONE; now E4 = #1220 (re-measure GC, tune only if the numbers ask; branch 1220-gc-remeasure in ../moria-1220)
+## NOW (2026-11-06): performance plan #1176: A-D, E1-E4 DONE; now E5 = #1222 (re-measure crowds; branch 1222-crowd-steps in ../moria-1222)
+
+E5 plan: harness walkers that don't collide (.TestPerf lanes: each walker its own row segment in the crowd, runs E/W); measure P3/P4 on main; then NoDelay on the game server's accepted sockets (Communication/TCP/TCPServer.cs OnAccept). Lead: crowd step p50 41 ms vs dungeon 1.4 ms with the game thread idle = Nagle holding the ack behind unacked data until the client's delayed ACK (GameState doesn't join packets, each group is its own BeginSend). Test: protocol check that a client's server-side socket has NoDelay, red without. Pacing (MovementState reserves) only if still slow.
+E4 = #1220 DONE, PR #1221 (no GC changes).
+
 
 E4 plan: full harness on main (Release, scale 1, all phases), GC counts/pauses/alloc/heap per phase; only if it asks: DOTNET_gcConcurrent=0, server GC with DOTNET_GCHeapCount=2, DOTNET_GCgen0size, one full run each; a winner goes into the GameCore csproj (runtimeconfig) with a test that the server reports it; otherwise docs only.
 E4 result: GC <0.4% of wall time in every phase (was 7-12%), alloc ~99% down; longest pause 94 ms (background gen2, 677 MB heap) in P3; server GC + DATAS and server 4 heaps collect less (total ~150/250 ms vs ~540) but their worst pause is longer (125/253 ms, one GC each) and they cost +180-660 MB (4 heaps also slower saves, DATAS mixed): no setting changes. Harness: gcMaxPauseMs per window (prober samples GC.GetGCMemoryInfo per kind every 20 ms), .TestPerf gc; test PerfCommandTests.HarnessReportSamplesTheLongestGcPause (red: fullBlocking never counted). Docs in performance-review.md under Phase E. Review: no code defects; the doc's verdict overreached (object-count claim unsupported by 2 samples, settings not all tried, DATAS saves mixed) - corrected; sampler skips GetGCMemoryInfo (allocates) unless a GC happened, counters read before the sample, test waits for its own marker. Open question for the final master issue: the ~0.1 s background gen2 pause (94 ms crowd/677 MB vs 43 ms stress/874 MB), measure with more samples.

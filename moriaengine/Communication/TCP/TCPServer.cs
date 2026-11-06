@@ -92,6 +92,14 @@ namespace SteamEngine.Communication.TCP {
 			}
 
 			if (accepted != null) {
+				//#1222 - no Nagle: every packet group is its own send, and with Nagle a small one (a step's ack) waited for the
+				//client's delayed ACK whenever earlier data was unacknowledged, as it always is in a crowd: ~40 ms on Linux,
+				//up to 200 ms on Windows
+				try {
+					accepted.NoDelay = true;
+				} catch (Exception e) {
+					Logger.WriteWarning("Could not switch Nagle off on an accepted socket", e);
+				}
 				TcpConnection<TState> newConn = Pool<TcpConnection<TState>>.Acquire();
 				newConn.socket = accepted;
 				this.InitNewConnection(newConn);
