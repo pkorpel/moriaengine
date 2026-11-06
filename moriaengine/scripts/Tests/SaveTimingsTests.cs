@@ -36,10 +36,11 @@ namespace SteamEngine.CompiledScripts {
 			//accounts and regions don't change between two saves a moment apart: the same bytes both ways
 			bool sameContent = new[] { "accounts.sav", "regions.sav" }.All(f =>
 				File.ReadAllBytes(Path.Combine(normal.Folder, f)).SequenceEqual(File.ReadAllBytes(Path.Combine(second.Folder, f))));
-			bool twoFolders = (first != null) && (first != second) && first.Background && (first.Folder != second.Folder) && first.Success;
+			//the second background save waited for the first one's write and ran its end before it formatted
+			bool firstEndedFirst = (first != null) && (first != second) && first.Background && (first.Folder != second.Folder) && first.Success;
 			Console.WriteLine("SAVE_TIMINGS_CHECK: success=" + (normal.Success && second.Success) + " modes=" + (!normal.Background && second.Background) +
 				" sameFiles=" + sameFiles + " noTmp=" + noTmp + " allComplete=" + allComplete + " everyFileTimed=" + everyFileTimed +
-				" bytesMatch=" + bytesMatch + " sumsFit=" + sumsFit + " sameContent=" + sameContent + " noOverlap=" + twoFolders +
+				" bytesMatch=" + bytesMatch + " sumsFit=" + sumsFit + " sameContent=" + sameContent + " firstEndedFirst=" + firstEndedFirst +
 				" files=" + string.Join(",", normalFiles));
 
 			//#1205 - a write that fails fails the save, and BackupsManager sets the folder aside
@@ -57,6 +58,25 @@ namespace SteamEngine.CompiledScripts {
 			Globals.Save();
 			Console.WriteLine("SAVE_TIMINGS_FAIL: formatted=" + formatted + " success=" + failed.Success + " setAside=" + setAside +
 				" nextSaveOk=" + WorldSaver.LastTimings.Success + " end");
+		}
+
+		/// <summary>The autosave's own timer (PeriodicSave.scp) comes due now: it saves in the background.</summary>
+		[SteamFunction]
+		public static void TestSaveAutosaveFire(Character self) {
+			SteamEngine.Timers.Timer timer = Globals.Instance.GetTimer(SteamEngine.Timers.TimerKey.Acquire("PeriodicSave"));
+			if (timer != null) {
+				timer.DueInSeconds = 0;
+			}
+			Console.WriteLine("SAVE_AUTOSAVE_FIRED: timer=" + (timer != null));
+		}
+
+		[SteamFunction]
+		public static void TestSaveAutosaveReport(Character self) {
+			WorldSaver.FinishPendingWrite();
+			SaveTimings last = WorldSaver.LastTimings;
+			SteamEngine.Timers.Timer timer = Globals.Instance.GetTimer(SteamEngine.Timers.TimerKey.Acquire("PeriodicSave"));
+			bool rearmed = (timer != null) && (timer.DueInSeconds > (Globals.AutosaveMinutes * 60) - 120);
+			Console.WriteLine("SAVE_AUTOSAVE: background=" + last.Background + " success=" + last.Success + " rearmed=" + rearmed + " end");
 		}
 
 		private static string[] FileNames(string folder) {

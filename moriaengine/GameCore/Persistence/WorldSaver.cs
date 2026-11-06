@@ -72,11 +72,16 @@ namespace SteamEngine.Persistence {
 				}
 				if (background) {
 					pending = save;
-					System.Threading.Thread writer = new System.Threading.Thread(save.WriteThenFinish);
-					writer.IsBackground = true;
-					writer.Name = "World save writer";
-					writer.Start();
-					return true;
+					try {
+						System.Threading.Thread writer = new System.Threading.Thread(save.WriteThenFinish);
+						writer.IsBackground = true;
+						writer.Name = "World save writer";
+						writer.Start();
+						return true;
+					} catch (Exception e) { //no thread to be had: write here instead
+						Logger.WriteError(e);
+						pending = null;
+					}
 				}
 				save.Write();
 				save.Finish();
@@ -128,12 +133,17 @@ namespace SteamEngine.Persistence {
 			try {
 				Tools.EnsureDirectory(path, true); //#1173 - in here: a folder that can't be made fails the save the usual way, @afterSave included (the autosave re-arms there)
 
-				save.Add(FormatFile(path, "globals", timings, Globals.SaveGlobals));
+				FormatFile(save, path, "globals", timings, Globals.SaveGlobals);
 				foreach (IBaseClassSaveCoordinator coordinator in ObjectSaver.AllCoordinators) {
-					save.Add(FormatFile(path, coordinator.FileNameToSave, timings, coordinator.SaveAll));
+					FormatFile(save, path, coordinator.FileNameToSave, timings, coordinator.SaveAll);
 				}
 			} catch (FatalException) {
 				save.Abandon();
+				try {
+					save.Finish(); //@afterSave(false): BackupsManager sets the folder aside, the autosave re-arms
+				} catch (Exception e) {
+					Logger.WriteError(e);
+				}
 				throw;
 			} catch (Exception e) {
 				Logger.WriteCritical(e);
@@ -146,13 +156,14 @@ namespace SteamEngine.Persistence {
 		}
 
 		/// <summary>One file: the openSaveStream trigger names where it goes (scripts' BackupsManager hands its own writer), and
-		/// the text is formatted and encoded into a SaveBuffer.</summary>
-		private static SaveFile FormatFile(string path, string name, SaveTimings timings, Action<SaveStream> content) {
+		/// the text is formatted and encoded into a SaveBuffer. Added to the save before it's formatted, so a failure closes it.</summary>
+		private static void FormatFile(PendingSave save, string path, string name, SaveTimings timings, Action<SaveStream> content) {
 			SaveTimings.FileTiming timing = timings.AddFile(name);
 			long start = Stopwatch.GetTimestamp();
 			ScriptArgs sa = new ScriptArgs(path, name);
 			Globals.Instance.TryTrigger(TriggerKey.openSaveStream, sa);
 			SaveFile file = new SaveFile(path, name, sa.Argv[1], timing);
+			save.Add(file);
 			timing.OpenMs = MsSince(start);
 
 			start = Stopwatch.GetTimestamp();
@@ -165,14 +176,14 @@ namespace SteamEngine.Persistence {
 			encoder.Dispose();
 			timing.FormatMs = MsSince(start);
 			timing.Bytes = file.Bytes.Length;
-			return file;
 		}
 
 		/// <summary>#1209 - one formatted file and where it goes.</summary>
 		private sealed class SaveFile {
 			internal readonly string folder;
 			internal readonly string name;
-			internal readonly object target; //what openSaveStream left: a TextWriter, a Stream, or a file name
+			internal object target; //what openSaveStream left: a TextWriter, a Stream, or a file name
+			internal string tempPath, finalPath; //the engine's own file, renamed only when every file of the save is written
 			internal readonly SaveTimings.FileTiming timing;
 			internal readonly SaveBuffer Bytes = new SaveBuffer();
 
@@ -183,10 +194,13 @@ namespace SteamEngine.Persistence {
 				this.timing = timing;
 			}
 
-			/// <summary>Writes the bytes to the target and closes it. Any failure throws (#1205: a failed write is a failed save).</summary>
+			/// <summary>Writes the bytes to the target, on disk (fsync), and closes it. Any failure throws (#1205: a failed write is
+			/// a failed save). The engine's own file stays a .tmp until Commit.</summary>
 			internal void Write() {
 				if (TestWriteFailureFile == this.name) {
-					throw new IOException("Simulated write failure of " + this.name + ".sav (WorldSaver.TestWriteFailureFile)");
+					//tests: the real path of a failed final flush, through a writer whose stream fails when it's flushed
+					this.CloseTarget();
+					this.target = new StreamWriter(new FailingOnFlushStream(), SaveStream.SaveEncoding);
 				}
 				TextWriter textWriter = this.target as TextWriter;
 				if (textWriter != null) {
@@ -194,6 +208,8 @@ namespace SteamEngine.Persistence {
 					if ((streamWriter != null) && IsPlainUtf8(streamWriter.Encoding)) {
 						streamWriter.Flush();
 						this.Bytes.CopyBytesTo(streamWriter.BaseStream); //the same bytes the writer would have made
+						streamWriter.Flush();
+						SyncToDisk(streamWriter.BaseStream);
 					} else {
 						textWriter.Write(this.Bytes.GetText(SaveStream.SaveEncoding));
 					}
@@ -203,15 +219,42 @@ namespace SteamEngine.Persistence {
 				Stream stream = this.target as Stream;
 				if (stream != null) {
 					this.Bytes.CopyBytesTo(stream);
+					SyncToDisk(stream);
 					stream.Dispose();
 					return;
 				}
-				string filepath = Path.Combine(this.folder, string.Concat(this.target) + ".sav");
-				string tempPath = filepath + ".tmp";
-				using (FileStream file = SaveStream.CreateFile(tempPath)) {
+				this.finalPath = Path.Combine(this.folder, string.Concat(this.target) + ".sav");
+				this.tempPath = this.finalPath + ".tmp";
+				using (FileStream file = SaveStream.CreateFile(this.tempPath)) {
 					this.Bytes.CopyBytesTo(file);
+					file.Flush(true);
 				}
-				File.Move(tempPath, filepath, true); //only once the whole file is written
+			}
+
+			/// <summary>The whole save is written: the engine's own .tmp becomes the .sav.</summary>
+			internal void Commit() {
+				if (this.tempPath != null) {
+					File.Move(this.tempPath, this.finalPath, true);
+				}
+			}
+
+			/// <summary>The save failed: the engine's own .tmp goes, the .sav before it stays.</summary>
+			[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+			internal void DiscardTemp() {
+				if ((this.tempPath != null) && File.Exists(this.tempPath)) {
+					try {
+						File.Delete(this.tempPath);
+					} catch (Exception e) {
+						Logger.WriteWarning("Couldn't delete " + this.tempPath + ": " + e.Message);
+					}
+				}
+			}
+
+			private static void SyncToDisk(Stream stream) {
+				FileStream file = stream as FileStream;
+				if (file != null) {
+					file.Flush(true); //a "successful" save lets BackupsManager prune the older ones
+				}
 			}
 
 			[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -228,6 +271,13 @@ namespace SteamEngine.Persistence {
 
 			private static bool IsPlainUtf8(Encoding encoding) {
 				return (encoding.CodePage == 65001) && (encoding.GetPreamble().Length == 0);
+			}
+		}
+
+		/// <summary>#1209 - for TestWriteFailureFile: takes the bytes, then fails when flushed, as a full disk does.</summary>
+		private sealed class FailingOnFlushStream : MemoryStream {
+			public override void Flush() {
+				throw new IOException("Simulated failure flushing a save file (WorldSaver.TestWriteFailureFile)");
 			}
 		}
 
@@ -283,6 +333,21 @@ namespace SteamEngine.Persistence {
 					file.timing.WriteMs = MsSince(fileStart);
 					file.Bytes.Release();
 				}
+				if (ok) {
+					try {
+						foreach (SaveFile file in this.files) {
+							file.Commit();
+						}
+					} catch (Exception e) {
+						Logger.WriteCritical("Finishing the save files failed, the save failed", e);
+						ok = false;
+					}
+				}
+				if (!ok) {
+					foreach (SaveFile file in this.files) {
+						file.DiscardTemp();
+					}
+				}
 				this.Success = ok;
 				this.written.Set();
 			}
@@ -298,7 +363,7 @@ namespace SteamEngine.Persistence {
 							pending = null;
 						}
 					}
-				} catch (Exception e) {
+				} catch (Exception e) { //FatalException too: nothing above this thread would see it
 					Logger.WriteCritical("The background save's writer failed", e);
 					this.written.Set();
 				}

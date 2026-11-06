@@ -1182,25 +1182,27 @@ namespace SteamEngine.Persistence {
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		/// <summary>Flushes, closes and (with a temp file) renames it over the final one. #1205: a failed flush or close throws
+		/// after logging and leaves the final file as it was.</summary>
 		public void Close() {
+			Exception failure = null;
 			try {
 				this.writer.Flush();
 			} catch (Exception e) {
-				Logger.WriteWarning("Error flushing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + e.Message);
+				failure = e;
 			}
 			try {
 				this.writer.Close();
 			} catch (Exception e) {
-				Logger.WriteWarning("Error closing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + e.Message);
+				failure = failure ?? e;
 			}
 			this.writer = null;
-
+			if (failure != null) {
+				Logger.WriteWarning("Error writing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + failure.Message);
+				throw new IOException("Writing the save file failed", failure);
+			}
 			if (this.tempFilePath != null) {
-				try {
-					File.Move(this.tempFilePath, this.finalFilePath, true);
-				} catch (Exception e) {
-					Logger.WriteCritical("Failed to finalize save file '" + this.finalFilePath + "' from temp file '" + this.tempFilePath + "': " + e.Message);
-				}
+				File.Move(this.tempFilePath, this.finalFilePath, true);
 			}
 		}
 

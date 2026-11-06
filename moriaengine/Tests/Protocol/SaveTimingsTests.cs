@@ -17,12 +17,18 @@ namespace SteamEngine.Tests.Protocol {
 				string check = output.Substring(output.IndexOf("SAVE_TIMINGS_CHECK:", StringComparison.Ordinal));
 				check = check.Substring(0, check.IndexOf('\n') < 0 ? check.Length : check.IndexOf('\n'));
 				foreach (string part in new[] { "success=True", "modes=True", "sameFiles=True", "noTmp=True", "allComplete=True",
-						"everyFileTimed=True", "bytesMatch=True", "sumsFit=True", "sameContent=True", "noOverlap=True" }) {
+						"everyFileTimed=True", "bytesMatch=True", "sumsFit=True", "sameContent=True", "firstEndedFirst=True" }) {
 					Assert.True(check.Contains(part, StringComparison.Ordinal), part + " missing:\n" + check + "\n" + output);
 				}
 				Assert.Contains("things.sav", check);
 				Assert.Contains("Save timings: pause=", output); //the log line every save writes
 				Assert.Contains("SAVE_TIMINGS_FAIL: formatted=True success=False setAside=True nextSaveOk=True end", output); //#1205
+
+				//the autosave's timer (PeriodicSave.scp) saves in the background and is set again by @afterSave
+				CommandPermissionTests.Ask(fixture, client, ".TestSaveAutosaveFire", "SAVE_AUTOSAVE_FIRED: timer=True");
+				System.Threading.Thread.Sleep(3000);
+				CommandPermissionTests.Ask(fixture, client, ".TestSaveAutosaveReport", "SAVE_AUTOSAVE:");
+				Assert.Contains("SAVE_AUTOSAVE: background=True success=True rearmed=True end", fixture.GameOutputSnapshot());
 			}
 		}
 	}
