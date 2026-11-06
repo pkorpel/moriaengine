@@ -95,17 +95,26 @@ namespace SteamEngine.Networking {
 
 		private static void SendItemPropertiesOnly(AbstractItem item) {
 			Logger.WriteInfo(Globals.NetSyncingTracingOn, "ProcessItemProperties " + item);
-			IEnumerable<AbstractCharacter> enumerator;
+			AosToolTips[] toolTipsArray = null;
 			AbstractItem contAsItem = item.Cont as AbstractItem;
 			if (contAsItem != null) {
-				enumerator = OpenedContainers.GetViewers(contAsItem);
+				foreach (AbstractCharacter player in OpenedContainers.GetViewers(contAsItem)) {
+					if (!SendTo(player)) {
+						break;
+					}
+				}
 			} else {
 				Thing top = item.TopObj();
-				enumerator = top.GetMap().GetPlayersInRange(top.X, top.Y, Globals.MaxUpdateRange);
+				//#1216 - the map's struct query straight in the foreach, not through an IEnumerable: no allocation
+				foreach (AbstractCharacter player in top.GetMap().GetPlayersInRange(top.X, top.Y, Globals.MaxUpdateRange)) {
+					if (!SendTo(player)) {
+						break;
+					}
+				}
 			}
 
-			AosToolTips[] toolTipsArray = null;
-			foreach (AbstractCharacter player in enumerator) {
+			//false: the item has no tooltips, nobody gets any
+			bool SendTo(AbstractCharacter player) {
 				GameState state = player.GameState;
 				if (state != null) {
 					TcpConnection<GameState> conn = state.Conn;
@@ -119,7 +128,7 @@ namespace SteamEngine.Networking {
 						if (toolTips == null) {
 							toolTips = item.GetAosToolTips(language);
 							if (toolTips == null) {
-								break;
+								return false;
 							}
 							if (toolTipsArray == null) {
 								toolTipsArray = new AosToolTips[Tools.GetEnumLength<Language>()];
@@ -129,6 +138,7 @@ namespace SteamEngine.Networking {
 						toolTips.SendIdPacket(state, conn);
 					}
 				}
+				return true;
 			}
 		}
 
@@ -155,18 +165,26 @@ namespace SteamEngine.Networking {
 				PacketGroup pg = null;//iteminfo or paperdollinfo or itemincontainer
 				AosToolTips[] toolTipsArray = null;
 
-				IEnumerable<AbstractCharacter> enumerator;
 				AbstractItem contAsItem = item.Cont as AbstractItem;
 				if (contAsItem != null) {
-					enumerator = OpenedContainers.GetViewers(contAsItem);
+					foreach (AbstractCharacter viewer in OpenedContainers.GetViewers(contAsItem)) {
+						SendTo(viewer);
+					}
 					//checkPreviousVisibility = false;
 				} else {
 					Thing newMapPoint = item.TopObj();
 					Map newMap = newMapPoint.GetMap();
-					enumerator = newMap.GetPlayersInRange(newMapPoint.X, newMapPoint.Y, Globals.MaxUpdateRange);
+					//#1216 - the map's struct query straight in the foreach, not through an IEnumerable: no allocation
+					foreach (AbstractCharacter viewer in newMap.GetPlayersInRange(newMapPoint.X, newMapPoint.Y, Globals.MaxUpdateRange)) {
+						SendTo(viewer);
+					}
 				}
 
-				foreach (AbstractCharacter viewer in enumerator) {
+				if (pg != null) {
+					pg.Dispose();
+				}
+
+				void SendTo(AbstractCharacter viewer) {
 					GameState state = viewer.GameState;
 					if (state != null) {
 						TcpConnection<GameState> conn = state.Conn;
@@ -200,7 +218,7 @@ namespace SteamEngine.Networking {
 										toolTips = item.GetAosToolTips(language);
 										if (toolTips == null) {
 											propertiesExist = false;
-											continue;
+											return;
 										}
 										if (toolTipsArray == null) {
 											toolTipsArray = new AosToolTips[Tools.GetEnumLength<Language>()];
@@ -212,10 +230,6 @@ namespace SteamEngine.Networking {
 							}
 						}
 					}
-				}
-
-				if (pg != null) {
-					pg.Dispose();
 				}
 			}
 		}
