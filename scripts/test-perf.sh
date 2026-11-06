@@ -15,6 +15,7 @@
 set -u
 
 root=$(cd "$(dirname "$0")/.." && pwd)
+. "$root/scripts/lean-build-env.sh"   # #1212: builds and test servers leave no idle MSBuild nodes or compiler server
 # test-full builds Debug; another configuration is built here, or the fixture would boot whatever was built last
 config="${PERF_CONFIG:-Debug}"
 if [ "$config" != "Debug" ]; then

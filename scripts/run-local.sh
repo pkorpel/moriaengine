@@ -17,6 +17,7 @@
 set -eu
 
 root=$(cd "$(dirname "$0")/.." && pwd)
+. "$root/scripts/lean-build-env.sh"   # #1212: builds and test servers leave no idle MSBuild nodes or compiler server
 me="$root/moriaengine"
 logs="$me/logs"
 pids="$logs/run-local.pids"

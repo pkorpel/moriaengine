@@ -7,6 +7,7 @@
 set -eu
 
 root=$(cd "$(dirname "$0")/.." && pwd)
+. "$root/scripts/lean-build-env.sh"   # #1212: builds and test servers leave no idle MSBuild nodes or compiler server
 command -v pwsh >/dev/null || { echo "test-fast: pwsh missing (build.ps1 needs PowerShell 7: brew install powershell, or see learn.microsoft.com/powershell for Linux)" >&2; exit 1; }
 
 cd "$root/moriaengine"
@@ -27,4 +28,5 @@ rm -f "${TMPDIR:-/tmp}/moria-build.$$.log"
 filter="FullyQualifiedName!~SteamEngine.Tests.Protocol&FullyQualifiedName!~SteamEngine.Tests.Perf."
 [ $# -ge 1 ] && filter="$filter&($1)"
 cd "$root"
+lean_build_shutdown_compiler   # #1212 - the builds are done, the tests compile nothing
 exec dotnet test moriaengine/Tests/SteamEngine.Tests.csproj --no-build -c Debug --filter "$filter"
