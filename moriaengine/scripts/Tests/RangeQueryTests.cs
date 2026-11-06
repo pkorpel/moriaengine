@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using SteamEngine.Communication.TCP;
 using SteamEngine.Networking;
@@ -56,6 +57,20 @@ namespace SteamEngine.CompiledScripts {
 				CompareRectangle(map, m, new ImmutableRectangle(cx - 10, cy - 2, cx + 3, cy + 9), mismatches);
 				int hx = home.X, hy = home.Y; //statics: the spawn point has one just east of it (#788)
 				CompareStatics(map, hx, hy, 6, mismatches);
+				//order too, against the sectors' own lists read by reflection (an oracle that shares no code with the queries)
+				CompareInOrder("thingsOrder", map.GetThingsInRange(cx, cy, 20), SectorWalk(map, cx - 20, cy - 20, cx + 20, cy + 20, "Chars", "Items"), mismatches);
+				CompareInOrder("charsOrder", map.GetCharsInRange(cx, cy, 20), SectorWalk(map, cx - 20, cy - 20, cx + 20, cy + 20, "Chars"), mismatches);
+				CompareInOrder("staticsOrder", map.GetStaticsAndMultiComponentsInRange(hx, hy, 18), SectorWalk(map, hx - 18, hy - 18, hx + 18, hy + 18, "Statics", "MultiComponents"), mismatches);
+				CompareInOrder("multisOrder", map.GetMultiComponentsInRange(hx, hy, 18), SectorWalk(map, hx - 18, hy - 18, hx + 18, hy + 18, "MultiComponents"), mismatches);
+				//LScript reaches a query by reflection and walks it as an IEnumerable (OpNode_Foreach): the boxed struct
+				int inCSharp = 0;
+				foreach (Thing t in map.GetThingsInRange(cx, cy, 5)) {
+					inCSharp++;
+				}
+				object inLScript = ScriptHolder.GetFunction("f_rangequery_lscript_count").Run(self, cx, cy); //RangeQueryTests.scp
+				if ((inCSharp == 0) || (Convert.ToInt32(inLScript) != inCSharp)) {
+					mismatches.Add("lscript found " + inLScript + " expected " + inCSharp);
+				}
 				report.Append(" match=").Append(mismatches.Count == 0);
 				if (mismatches.Count > 0) {
 					report.Append("(").Append(string.Join(";", mismatches)).Append(")");
@@ -96,9 +111,27 @@ namespace SteamEngine.CompiledScripts {
 				if (allocating.Count > 0) {
 					report.Append("(").Append(string.Join(";", allocating)).Append(")");
 				}
+
+				//the caller deletes each NPC it's handed: the walk read the next one before, so it still meets every one
+				var npcsBefore = new List<object>();
+				foreach (AbstractCharacter ch in map.GetNPCsInRectangle(rect14)) {
+					npcsBefore.Add(ch);
+				}
+				int deleted = 0;
+				foreach (AbstractCharacter ch in map.GetNPCsInRectangle(rect14)) {
+					ch.Delete();
+					deleted++;
+				}
+				report.Append(" deleteWhileWalking=").Append((npcsBefore.Count >= 3) && (deleted == npcsBefore.Count));
+				if (deleted != npcsBefore.Count) {
+					report.Append("(met " + deleted + " of " + npcsBefore.Count + ")");
+				}
 			} finally {
 				self.P(home);
 				foreach (Thing t in made) {
+					if (t.IsDeleted) {
+						continue;
+					}
 					if (t.Flag_Disconnected) {
 						((Character) t).Reconnect();
 					}
@@ -153,6 +186,64 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Compare("statics", map.GetStaticsAndMultiComponentsInRange(x, y, range), byTile, mismatches);
 			Compare("staticsRect", map.GetStaticsAndMultiComponentsInRectangle(new ImmutableRectangle(x, y, range)), byTile, mismatches);
+		}
+
+		/// <summary>What the sectors covering the rectangle hold in the named lists (Sector's own properties, by reflection),
+		/// sectors x outer and y inner, each list in its order, filtered by the rectangle: what each query should hand out.</summary>
+		private static List<object> SectorWalk(Map map, int minX, int minY, int maxX, int maxY, params string[] lists) {
+			const BindingFlags any = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+			Array sectors = (Array) typeof(Map).GetField("sectors", any).GetValue(map);
+			FieldInfo firstThing = typeof(Thing).Assembly.GetType("SteamEngine.ThingLinkedList").GetField("firstThing", any);
+			FieldInfo nextThing = typeof(Thing).GetField("nextInList", any);
+			FieldInfo firstComponent = typeof(MultiItemComponent).Assembly.GetType("SteamEngine.MultiComponentLinkedList").GetField("firstMultiComponent", any);
+			FieldInfo nextComponent = typeof(MultiItemComponent).GetField("nextInList", any);
+			var found = new List<object>();
+			int factor = (int) typeof(Map).GetField("sectorFactor", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+			int sxEnd = Math.Min(maxX >> factor, sectors.GetLength(0) - 1), syEnd = Math.Min(maxY >> factor, sectors.GetLength(1) - 1);
+			for (int sx = Math.Max(0, minX) >> factor; sx <= sxEnd; sx++) {
+				for (int sy = Math.Max(0, minY) >> factor; sy <= syEnd; sy++) {
+					object sector = sectors.GetValue(sx, sy);
+					if (sector == null) {
+						continue;
+					}
+					foreach (string list in lists) {
+						object value = sector.GetType().GetProperty(list, any).GetValue(sector);
+						var inList = new List<object>();
+						if (value is StaticItem[] statics) {
+							inList.AddRange(statics);
+						} else if (list == "MultiComponents") {
+							for (object c = (value == null) ? null : firstComponent.GetValue(value); c != null; c = nextComponent.GetValue(c)) {
+								inList.Add(c);
+							}
+						} else {
+							for (object t = firstThing.GetValue(value); t != null; t = nextThing.GetValue(t)) {
+								inList.Add(t);
+							}
+						}
+						foreach (object o in inList) {
+							IPoint2D p = (IPoint2D) o;
+							if ((minX <= p.X) && (minY <= p.Y) && (maxX >= p.X) && (maxY >= p.Y)) {
+								found.Add(o);
+							}
+						}
+					}
+				}
+			}
+			return found;
+		}
+
+		private static void CompareInOrder<T>(string what, IEnumerable<T> query, List<object> expected, List<string> mismatches) {
+			var got = new List<object>();
+			foreach (T t in query) {
+				got.Add(t);
+			}
+			bool same = got.Count == expected.Count;
+			for (int i = 0; same && (i < got.Count); i++) {
+				same = ReferenceEquals(got[i], expected[i]);
+			}
+			if (!same || ((what == "staticsOrder") && (got.Count == 0))) {
+				mismatches.Add(what + " got " + got.Count + " expected " + expected.Count + (same ? " (none at all)" : " or another order"));
+			}
 		}
 
 		/// <summary>Everything on the plane inside the rectangle, lying on the ground (characters always do), that the filter takes.</summary>

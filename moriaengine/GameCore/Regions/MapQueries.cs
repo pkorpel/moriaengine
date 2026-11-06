@@ -211,13 +211,15 @@ namespace SteamEngine.Regions {
 				return this.GetEnumerator();
 			}
 
-			/// <summary>Walks the players' list by its nodes. A player whose node leaves the list while it's the next one ends
-			/// that sector's walk (a removed node has no Next); LinkedList's own enumerator threw there.</summary>
+			/// <summary>Walks the players' list by its nodes. LinkedList's own enumerator threw once the list changed; here, when
+			/// the next player leaves the list meanwhile (a removed node keeps its player but has no Next), the walk goes on
+			/// from the current one's live Next. Only both leaving at once ends that sector's walk early.</summary>
 			public struct Enumerator : IEnumerator<AbstractCharacter> {
 				private readonly Map map;
 				private readonly int minX, minY, maxX, maxY;
 				private readonly int xSectorStart, ySectorStart, xSectorEnd, ySectorEnd;
 				private int sx, sy;
+				private LinkedListNode<AbstractCharacter> currentNode;
 				private LinkedListNode<AbstractCharacter> next;
 				private AbstractCharacter current;
 
@@ -230,6 +232,7 @@ namespace SteamEngine.Regions {
 					map.GetSectorCoords(minX, minY, maxX, maxY, out this.xSectorStart, out this.ySectorStart, out this.xSectorEnd, out this.ySectorEnd);
 					this.sx = this.xSectorStart;
 					this.sy = this.ySectorStart - 1;
+					this.currentNode = null;
 					this.next = null;
 					this.current = null;
 				}
@@ -249,7 +252,12 @@ namespace SteamEngine.Regions {
 				public bool MoveNext() {
 					while (true) {
 						LinkedListNode<AbstractCharacter> node = this.next;
+						if ((node != null) && (node.List == null)) { //left the list meanwhile: go on from the current one, if it's still in
+							LinkedListNode<AbstractCharacter> currentNode = this.currentNode;
+							node = ((currentNode != null) && (currentNode.List != null)) ? currentNode.Next : null;
+						}
 						if (node != null) {
+							this.currentNode = node;
 							this.next = node.Next;
 							AbstractCharacter player = node.Value;
 							int x = player.X;
@@ -276,6 +284,7 @@ namespace SteamEngine.Regions {
 						this.sy = this.ySectorEnd;
 						return false;
 					}
+					this.currentNode = null;
 					this.next = this.map.GetSector(this.sx, this.sy).Players.First;
 					return true;
 				}

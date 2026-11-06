@@ -10,11 +10,14 @@ namespace SteamEngine.Tests.Protocol {
 		public void RangeQueriesMatchABruteForceLookAndAllocateNothing() {
 			using (var fixture = new GameServerPairFixture())
 			using (var client = CommandPermissionTests.Connect("rangequeries", "Range Querier")) {
-				CommandPermissionTests.Ask(fixture, client, ".TestRangeQueries", "RANGE_QUERIES_END");
+				int mark = fixture.GameOutputSnapshot().Length;
+				client.SendSpeech(".TestRangeQueries");
+				bool ended = fixture.WaitForGameOutputSince("RANGE_QUERIES_END", mark, TimeSpan.FromSeconds(60));
 				string output = fixture.GameOutputSnapshot();
+				Assert.True(ended, "no end marker; the server said since the command:\n" + output.Substring(Math.Min(mark, output.Length)));
 				int start = output.IndexOf("RANGE_QUERIES:", StringComparison.Ordinal);
 				string report = output.Substring(start, output.IndexOf("RANGE_QUERIES_END", start, StringComparison.Ordinal) - start).TrimEnd();
-				Assert.True(report == "RANGE_QUERIES: match=True noAlloc=True end", "the server reported: " + report);
+				Assert.True(report == "RANGE_QUERIES: match=True noAlloc=True deleteWhileWalking=True end", "the server reported: " + report);
 			}
 		}
 	}
