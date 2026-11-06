@@ -253,10 +253,57 @@ namespace SteamEngine.CompiledScripts {
 							Character c = (Character) ch;
 							c.Str = 30000;
 							c.Hits = c.MaxHits;
+							c.Stam = c.MaxStam; //#1222 - P3's running leaves the walkers without stamina, and then no step is accepted
 							c.Go(x, y, map.GetFixedZ(new Point3D(x, y, 100)), m);
 							moved++;
 						}
 						Out(what, moved + " moved");
+						break;
+					}
+				case "lanes": { //lanes <length>: #1222 - every online player but self gets its own row segment near self, walkable east for
+						//<length> steps, and stands at its west end facing east: walkers running along their lanes never meet
+						int length = int.Parse(a[1]);
+						Map map = self.GetMap();
+						var taken = new HashSet<long>();
+						var players = new List<AbstractCharacter>(GameServer.GetAllPlayers());
+						int placed = 0, searched = 0;
+						int cx = self.X, cy = self.Y;
+						foreach (AbstractCharacter ch in players) {
+							if (ch == self) {
+								continue;
+							}
+							Character c = (Character) ch;
+							bool found = false;
+							//rows nearest the middle first, so the walkers stay within sight of each other
+							for (int dy = 0; (dy <= 30) && !found; dy++) {
+								foreach (int y in (dy == 0) ? new[] { cy } : new[] { cy - dy, cy + dy }) {
+									for (int x = cx - 25; (x <= cx + 25 - length) && !found; x++) {
+										searched++;
+										if (IsFreeLane(map, c.MovementSettings, taken, x, y, self.Z, length, out int z)) {
+											for (int i = -1; i <= length + 1; i++) {
+												taken.Add(((long) y << 32) | (uint) (x + i)); //a tile apart from the next lane on the row
+											}
+											c.Str = 30000;
+											c.Hits = c.MaxHits;
+											c.Stam = c.MaxStam; //#1222 - a walker run out of stamina can't move at all (#779)
+											c.Go(x, y, z, map.M);
+											c.Direction = Direction.East;
+											placed++;
+											found = true;
+										}
+									}
+									if (found) {
+										break;
+									}
+								}
+							}
+							if (!found) { //out of everybody's view, so it doesn't walk into the lanes
+								int fx = cx + 100;
+								c.Stam = c.MaxStam;
+								c.Go(fx, cy, map.GetFixedZ(new Point3D(fx, cy, 100)), map.M);
+							}
+						}
+						Out(what, placed + " placed of " + (players.Count - 1) + " (" + searched + " spots tried, the rest moved out of view)");
 						break;
 					}
 				case "players":
@@ -282,6 +329,29 @@ namespace SteamEngine.CompiledScripts {
 			double us = (Stopwatch.GetTimestamp() - t0) * 1e6 / Stopwatch.Frequency / Runs;
 			long bytes = (GC.GetAllocatedBytesForCurrentThread() - alloc0) / Runs;
 			sb.AppendFormat(CultureInfo.InvariantCulture, " {0}: found={1} {2:F1}us {3}B", name, found, us, bytes);
+		}
+
+		/// <summary>#1222 - (x, y) to (x + length, y) not taken and walkable east step by step, from the highest surface at x at or
+		/// below the given height (the spawn's floor is at z 10 over land at 0: starting from the land, every step failed).</summary>
+		private static bool IsFreeLane(Map map, IMovementSettings settings, HashSet<long> taken, int x, int y, int height, int length, out int z) {
+			z = 0;
+			for (int i = 0; i <= length; i++) {
+				if (taken.Contains(((long) y << 32) | (uint) (x + i))) {
+					return false;
+				}
+			}
+			if (!map.IsValidPos(x, y) || !map.IsValidPos(x + length, y)) {
+				return false;
+			}
+			z = map.GetFixedZ(new Point3D(x, y, height));
+			IPoint3D at = new Point3D(x, y, z);
+			for (int i = 0; i < length; i++) {
+				if (!map.CheckMovement(at, settings, Direction.East, false, out int nx, out int ny, out int nz) || (ny != y)) {
+					return false;
+				}
+				at = new Point3D(nx, ny, nz);
+			}
+			return true;
 		}
 
 		private static void StartMeasure() {

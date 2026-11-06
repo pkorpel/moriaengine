@@ -42,6 +42,18 @@ namespace SteamEngine.Communication.TCP {
 			}
 		}
 
+		/// <summary>#1222 - whether the socket sends small packets at once (Nagle off), as the server sets it at accept.</summary>
+		public bool NoDelay {
+			get {
+				Socket s = this.socket;
+				try {
+					return (s != null) && s.NoDelay;
+				} catch (ObjectDisposedException) {
+					return false;
+				}
+			}
+		}
+
 		public override bool IsConnected {
 			get {
 				if (this.socket != null) {
