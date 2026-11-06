@@ -1,0 +1,8 @@
+//#1216 - LScript reaches a map query by reflection and walks it as an IEnumerable (OpNode_Foreach): the struct, boxed.
+//Called by scripts/Tests/RangeQueryTests.cs with x, y; returns how many things it walked within 5 tiles.
+[function f_rangequery_lscript_count]
+arg.n = 0
+foreach (t in GetMap().GetThingsInRange(argv[0], argv[1], 5))
+	arg.n = arg.n + 1
+endforeach
+return arg.n
