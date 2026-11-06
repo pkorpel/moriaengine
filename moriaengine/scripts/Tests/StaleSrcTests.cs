@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using SteamEngine.Timers;
 
 namespace SteamEngine.CompiledScripts {
@@ -7,6 +8,10 @@ namespace SteamEngine.CompiledScripts {
 		private static NPC attacker, rabbit;
 		private static int rabbitX, rabbitY, rabbitHits;
 		private static bool moved, reported;
+		//#1180 - the hit the client waits for must come after the setup's player logged out: the watch arms then
+		private static Character leaver;
+		private static bool armed;
+		private static int armedX, armedY, armedHits;
 
 		private static NPC Rabbit(Character self, int dx) {
 			NPC npc = (NPC) ThingDef.GetByDefname("c_a_jackrabbit").Create(self.X + dx, self.Y, self.Z, self.M);
@@ -53,15 +58,32 @@ namespace SteamEngine.CompiledScripts {
 						rabbitHits = rabbit.Hits;
 						moved = false;
 						reported = false;
+						leaver = self;
+						armed = false;
 						rabbit.AddTimer(TimerKey.Acquire("_staleSrcWatch_"), new StaleSrcWatchTimer()).DueInSeconds = 0.2;
 						line = "fighting";
 						break;
 					}
-				case "after":
+				case "after": {
 					line = "rabbitHurt=" + (rabbit.Hits < rabbitHits) + " knockedBack=" + moved;
+					//#1156's other half (no swing reaches it since the damage number stopped using src, #1180): a src with no
+					//client, as an NPC or a player who logged out, has no connection, and reading it doesn't throw
+					ISrc previous = Globals.Src;
+					MethodInfo setSrc = typeof(Globals).GetMethod("SetSrc", BindingFlags.NonPublic | BindingFlags.Static);
+					bool noClientSrc;
+					try {
+						setSrc.Invoke(null, new object[] { rabbit });
+						noClientSrc = Globals.SrcTcpConnection == null;
+					} catch (Exception) {
+						noClientSrc = false;
+					} finally {
+						setSrc.Invoke(null, new object[] { previous });
+					}
+					line += " noClientSrc=" + noClientSrc;
 					attacker.Delete();
 					rabbit.Delete();
 					break;
+				}
 				default:
 					line = "unknown";
 					break;
@@ -73,8 +95,15 @@ namespace SteamEngine.CompiledScripts {
 			if ((watched.X != rabbitX) || (watched.Y != rabbitY)) {
 				moved = true;
 			}
-			if (moved && (watched.Hits < rabbitHits) && !reported) {
-				reported = true; //#1180 - the client waits for this instead of a fixed time; no client is logged in meanwhile
+			if (!armed) {
+				if ((leaver != null) && (leaver.GameState == null)) { //logged out: from here on, a blow comes with nobody's packet
+					armed = true;
+					armedX = watched.X;
+					armedY = watched.Y;
+					armedHits = watched.Hits;
+				}
+			} else if (!reported && ((watched.X != armedX) || (watched.Y != armedY)) && (watched.Hits < armedHits)) {
+				reported = true; //the client waits for this line instead of a fixed time; no client is logged in meanwhile
 				Console.WriteLine("STALESRC_TEST: hit |");
 			}
 		}
