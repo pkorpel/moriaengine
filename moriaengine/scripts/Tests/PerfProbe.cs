@@ -197,13 +197,12 @@ namespace SteamEngine.CompiledScripts {
 					Out(what, a.Length > 1 ? a[1] : "", true);
 					break;
 				case "save":
-				case "savesplit": { //#1203 - savesplit formats each file into memory first: formatting and writing timed apart
-						bool split = (a[0] == "savesplit");
-						WorldSaver.FormatInMemory = split;
-						try {
+				case "savebg": { //#1209 - savebg is the autosave's way: written on a worker after the pause (waited for here)
+						if (a[0] == "savebg") {
+							Globals.SaveInBackground();
+							WorldSaver.FinishPendingWrite();
+						} else {
 							Globals.Save();
-						} finally {
-							WorldSaver.FormatInMemory = false;
 						}
 						long ms = sw.ElapsedMilliseconds;
 						string newest = Directory.GetDirectories("saves", "*", SearchOption.AllDirectories)

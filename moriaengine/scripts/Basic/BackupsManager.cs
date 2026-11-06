@@ -23,6 +23,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using ICSharpCode.SharpZipLib.Zip;
 using SteamEngine.Common;
+using SteamEngine.Persistence;
 using ZipEntry = ICSharpCode.SharpZipLib.Zip.ZipEntry;
 
 namespace SteamEngine.CompiledScripts {
@@ -516,7 +517,7 @@ namespace SteamEngine.CompiledScripts {
 			public TextWriter GetSaveStream(string name) {
 				string fileName = Path.Combine(this.path, name + ".sav");
 				Console.WriteLine("Saving to " + LogStr.File(fileName));
-				return new StreamWriter(File.Create(fileName));
+				return SaveStream.CreateFileWriter(fileName); //#1209 - big buffers
 			}
 
 			public void FinishSaving() {

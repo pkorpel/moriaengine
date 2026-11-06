@@ -190,7 +190,7 @@ namespace SteamEngine.Tests.Perf {
 			if (this.Phase("save")) {
 				this.Do(gm, "save", 1800);
 				this.Do(gm, "save", 1800);
-				this.Do(gm, "savesplit", 1800); //#1203 - formatting and writing timed apart
+				this.Do(gm, "savebg", 1800); //#1209 - the autosave's way: the pause is formatting only
 			}
 
 			if (this.Phase("stress")) {

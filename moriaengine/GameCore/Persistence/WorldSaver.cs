@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using SteamEngine.Common;
 using SteamEngine.Networking;
 using SteamEngine.Regions;
@@ -31,37 +32,79 @@ namespace SteamEngine.Persistence {
 	public delegate bool CanStartAsScript(string data);
 
 	public static class WorldSaver {
-		/// <summary>#1203 - where the last save's time went; null before the first save.</summary>
+		/// <summary>#1203 - where the last finished save's time went; null before the first save.</summary>
 		public static SaveTimings LastTimings { get; private set; }
 
-		/// <summary>#1203 - a measurement mode, off by default: each file is formatted into memory, then written, so the
-		/// timings split formatting from disk writing. Costs about twice the largest file's size in memory while saving
-		/// (the text is UTF-16).</summary>
-		public static bool FormatInMemory { get; set; }
+		/// <summary>#1209 - for tests only: the save file of this name fails as it's written, as a full disk would. Null = off.</summary>
+		public static string TestWriteFailureFile { get; set; }
 
+		/// <summary>#1209 - a background save whose files are still being written (or whose end hasn't run yet), else null.
+		/// Only touched under globalLock.</summary>
+		private static PendingSave pending;
+
+		/// <summary>Saves the world and returns once the files are written and @afterSave has run. Called with globalLock held.</summary>
 		internal static bool Save() {
+			return Save(false);
+		}
 
-			using (StopWatch.StartAndDisplay("Saving world data...")) {
+		/// <summary>#1209 - the world is formatted into memory while the server is paused (the caller's pause), then written on a
+		/// worker thread as the game goes on; @afterSave runs once the files are written, with whether they were. Called with
+		/// globalLock held. False only when the formatting failed.</summary>
+		internal static bool SaveInBackground() {
+			return Save(true);
+		}
+
+		private static bool Save(bool background) {
+			FinishPendingWrite(); //one save at a time: the previous one's files written and its end run first
+
+			using (StopWatch.StartAndDisplay(background ? "Saving world data (written in the background)..." : "Saving world data...")) {
 				PacketSequences.BroadCast("Server is pausing for worldsave...");
 
-				SaveTimings timings = new SaveTimings { FormatInMemory = FormatInMemory };
 				long start = Stopwatch.GetTimestamp();
+				SaveTimings timings = new SaveTimings { Background = background };
 				WeakRefDictionaryUtils.PurgeAll();
 				timings.PurgeMs = MsSince(start);
 
-				//-1 because we will save new files now.
-				bool success = TrySave(timings);
-				timings.Success = success;
-				timings.TotalMs = MsSince(start);
-				LastTimings = timings;
-				Logger.WriteInfo(true, "Save timings: " + timings);
-				if (!success) {
-					PacketSequences.BroadCast("Saving failed!");//we do not throw an exception to kill the server, 
-					//the admin should do that, after he tries to fix the problem somehow...
+				PendingSave save = Format(timings, start);
+				if (save.FormatFailed) {
+					save.Finish();
 					return false;
 				}
-				PacketSequences.BroadCast("Saving finished.");
-				return true;
+				if (background) {
+					pending = save;
+					try {
+						System.Threading.Thread writer = new System.Threading.Thread(save.WriteThenFinish);
+						writer.IsBackground = true;
+						writer.Name = "World save writer";
+						writer.Start();
+						return true;
+					} catch (Exception e) { //no thread to be had: write here instead
+						Logger.WriteError(e);
+						pending = null;
+					}
+				}
+				save.Write();
+				save.Finish();
+				return save.Success;
+			}
+		}
+
+		/// <summary>#1209 - waits until a background save's files are written, then runs its end (@afterSave) here if its writer
+		/// hasn't yet. Takes globalLock for that (it may be held already). The next save, a recompile and the shutdown call it.</summary>
+		public static void FinishPendingWrite() {
+			PendingSave save;
+			lock (MainClass.globalLock) {
+				save = pending;
+			}
+			if (save == null) {
+				return;
+			}
+			save.WaitWritten();
+			lock (MainClass.globalLock) {
+				save.TryFinish();
+				if (pending == save) {
+					pending = null;
+				}
 			}
 		}
 
@@ -69,14 +112,15 @@ namespace SteamEngine.Persistence {
 			return (Stopwatch.GetTimestamp() - timestamp) * 1000.0 / Stopwatch.Frequency;
 		}
 
+		/// <summary>@beforeSave, then every file formatted into memory: all of the world's pause but the purge.</summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		static bool TrySave(SaveTimings timings) {
+		private static PendingSave Format(SaveTimings timings, long start) {
 			string path = Globals.SavePath;
 
 			ScriptArgs sa = new ScriptArgs(path);
-			long start = Stopwatch.GetTimestamp();
+			long beforeStart = Stopwatch.GetTimestamp();
 			Globals.Instance.TryTrigger(TriggerKey.beforeSave, sa);
-			timings.BeforeSaveMs = MsSince(start);
+			timings.BeforeSaveMs = MsSince(beforeStart);
 			path = string.Concat(sa.Argv[0]);
 			if (path.Length < 1) {//scripts error or something...
 				path = Globals.SavePath;
@@ -85,86 +129,281 @@ namespace SteamEngine.Persistence {
 
 			ObjectSaver.StartingSaving();
 
-			bool success = false;
+			PendingSave save = new PendingSave(path, timings, start);
 			try {
 				Tools.EnsureDirectory(path, true); //#1173 - in here: a folder that can't be made fails the save the usual way, @afterSave included (the autosave re-arms there)
 
-				SaveFile(path, "globals", timings, Globals.SaveGlobals);
+				FormatFile(save, path, "globals", timings, Globals.SaveGlobals);
 				foreach (IBaseClassSaveCoordinator coordinator in ObjectSaver.AllCoordinators) {
-					SaveFile(path, coordinator.FileNameToSave, timings, coordinator.SaveAll);
+					FormatFile(save, path, coordinator.FileNameToSave, timings, coordinator.SaveAll);
 				}
-				success = true;
 			} catch (FatalException) {
+				save.Abandon();
+				try {
+					save.Finish(); //@afterSave(false): BackupsManager sets the folder aside, the autosave re-arms
+				} catch (Exception e) {
+					Logger.WriteError(e);
+				}
 				throw;
 			} catch (Exception e) {
 				Logger.WriteCritical(e);
-			} finally {
-				long afterStart = Stopwatch.GetTimestamp();
-				Globals.Instance.TryTrigger(TriggerKey.afterSave, new ScriptArgs(path, success));
-				timings.AfterSaveMs = MsSince(afterStart);
+				save.Abandon();
 			}
 
 			ObjectSaver.SavingFinished();
-			return success;
+			timings.PauseMs = MsSince(start);
+			return save;
 		}
 
-		/// <summary>One save file, to what the openSaveStream trigger hands (scripts' BackupsManager gives its own writer), else
-		/// path/name.sav through a .tmp renamed at the end. In FormatInMemory mode the text is made in memory first, then
-		/// written to the same target, so the write (encoding included) is timed apart. SaveStream.Close() handles its own
-		/// flush/close/rename error logging.</summary>
-		private static void SaveFile(string path, string name, SaveTimings timings, Action<SaveStream> content) {
+		/// <summary>One file: the openSaveStream trigger names where it goes (scripts' BackupsManager hands its own writer), and
+		/// the text is formatted and encoded into a SaveBuffer. Added to the save before it's formatted, so a failure closes it.</summary>
+		private static void FormatFile(PendingSave save, string path, string name, SaveTimings timings, Action<SaveStream> content) {
 			SaveTimings.FileTiming timing = timings.AddFile(name);
 			long start = Stopwatch.GetTimestamp();
 			ScriptArgs sa = new ScriptArgs(path, name);
 			Globals.Instance.TryTrigger(TriggerKey.openSaveStream, sa);
-			object file = sa.Argv[1];
+			SaveFile file = new SaveFile(path, name, sa.Argv[1], timing);
+			save.Add(file);
 			timing.OpenMs = MsSince(start);
-			start = Stopwatch.GetTimestamp();
-			SaveStream saveStream;
-			if (timings.FormatInMemory) {
-				StringWriter text = new StringWriter(CultureInfo.InvariantCulture);
-				WriteContent(new SaveStream(text), content);
-				timing.FormatMs = MsSince(start);
-				start = Stopwatch.GetTimestamp();
-				saveStream = GetSaveStream(path, file);
-				saveStream.WriteText(text.GetStringBuilder());
-			} else {
-				long openStart = Stopwatch.GetTimestamp();
-				saveStream = GetSaveStream(path, file);
-				timing.OpenMs += MsSince(openStart);
-				start = Stopwatch.GetTimestamp();
-				WriteContent(saveStream, content);
-				timing.FormatMs = MsSince(start);
-				start = Stopwatch.GetTimestamp();
-			}
-			timing.Bytes = saveStream.BytesWritten;
-			saveStream.Close();
-			timing.WriteMs = MsSince(start);
-		}
 
-		private static void WriteContent(SaveStream saveStream, Action<SaveStream> content) {
+			start = Stopwatch.GetTimestamp();
+			StreamWriter encoder = new StreamWriter(file.Bytes, SaveStream.SaveEncoding, SaveStream.WriterBufferChars, true);
+			SaveStream saveStream = new SaveStream(encoder);
 			saveStream.WriteComment("Textual SteamEngine save");
 			content(saveStream);
 			saveStream.WriteLine("[EOF]");
+			encoder.Flush();
+			encoder.Dispose();
+			timing.FormatMs = MsSince(start);
+			timing.Bytes = file.Bytes.Length;
 		}
 
-		static SaveStream GetSaveStream(string path, object file) {
-			//object file is either string or Stream or TextWriter
-			TextWriter tw = file as TextWriter;
-			if (tw != null) {
-				//WriteLine("GetSaveStream got TextWriter: "+tw);
-				return new SaveStream(tw);
+		/// <summary>#1209 - one formatted file and where it goes.</summary>
+		private sealed class SaveFile {
+			internal readonly string folder;
+			internal readonly string name;
+			internal object target; //what openSaveStream left: a TextWriter, a Stream, or a file name
+			internal string tempPath, finalPath; //the engine's own file, renamed only when every file of the save is written
+			internal readonly SaveTimings.FileTiming timing;
+			internal readonly SaveBuffer Bytes = new SaveBuffer();
+
+			internal SaveFile(string folder, string name, object target, SaveTimings.FileTiming timing) {
+				this.folder = folder;
+				this.name = name;
+				this.target = target;
+				this.timing = timing;
 			}
-			Stream s = file as Stream;
-			if (s != null) {
-				//Console.WriteLine("GetSaveStream got Stream: "+s);
-				return new SaveStream(new StreamWriter(s));
+
+			/// <summary>Writes the bytes to the target, on disk (fsync), and closes it. Any failure throws (#1205: a failed write is
+			/// a failed save). The engine's own file stays a .tmp until Commit.</summary>
+			internal void Write() {
+				if (TestWriteFailureFile == this.name) {
+					//tests: the real path of a failed final flush, through a writer whose stream fails when it's flushed
+					this.CloseTarget();
+					this.target = new StreamWriter(new FailingOnFlushStream(), SaveStream.SaveEncoding);
+				}
+				TextWriter textWriter = this.target as TextWriter;
+				if (textWriter != null) {
+					StreamWriter streamWriter = textWriter as StreamWriter;
+					if ((streamWriter != null) && IsPlainUtf8(streamWriter.Encoding)) {
+						streamWriter.Flush();
+						this.Bytes.CopyBytesTo(streamWriter.BaseStream); //the same bytes the writer would have made
+						streamWriter.Flush();
+						SyncToDisk(streamWriter.BaseStream);
+					} else {
+						textWriter.Write(this.Bytes.GetText(SaveStream.SaveEncoding));
+					}
+					textWriter.Dispose();
+					return;
+				}
+				Stream stream = this.target as Stream;
+				if (stream != null) {
+					this.Bytes.CopyBytesTo(stream);
+					SyncToDisk(stream);
+					stream.Dispose();
+					return;
+				}
+				this.finalPath = Path.Combine(this.folder, string.Concat(this.target) + ".sav");
+				this.tempPath = this.finalPath + ".tmp";
+				using (FileStream file = SaveStream.CreateFile(this.tempPath)) {
+					this.Bytes.CopyBytesTo(file);
+					file.Flush(true);
+				}
 			}
-			string filename = string.Concat(file);
-			string filepath = Path.Combine(path, filename + ".sav");
-			string tempPath = filepath + ".tmp";
-			return new SaveStream(new StreamWriter(File.Create(tempPath)), tempPath, filepath);
+
+			/// <summary>The whole save is written: the engine's own .tmp becomes the .sav.</summary>
+			internal void Commit() {
+				if (this.tempPath != null) {
+					File.Move(this.tempPath, this.finalPath, true);
+				}
+			}
+
+			/// <summary>The save failed: the engine's own .tmp goes, the .sav before it stays.</summary>
+			[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+			internal void DiscardTemp() {
+				if ((this.tempPath != null) && File.Exists(this.tempPath)) {
+					try {
+						File.Delete(this.tempPath);
+					} catch (Exception e) {
+						Logger.WriteWarning("Couldn't delete " + this.tempPath + ": " + e.Message);
+					}
+				}
+			}
+
+			private static void SyncToDisk(Stream stream) {
+				FileStream file = stream as FileStream;
+				if (file != null) {
+					file.Flush(true); //a "successful" save lets BackupsManager prune the older ones
+				}
+			}
+
+			[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+			internal void CloseTarget() {
+				try {
+					IDisposable disposable = this.target as IDisposable;
+					if (disposable != null) {
+						disposable.Dispose();
+					}
+				} catch (Exception e) {
+					Logger.WriteWarning("Error closing the save file " + this.name + ": " + e.Message);
+				}
+			}
+
+			private static bool IsPlainUtf8(Encoding encoding) {
+				return (encoding.CodePage == 65001) && (encoding.GetPreamble().Length == 0);
+			}
 		}
+
+		/// <summary>#1209 - for TestWriteFailureFile: takes the bytes, then fails at the flush after them, as a full disk does.</summary>
+		private sealed class FailingOnFlushStream : MemoryStream {
+			public override void Flush() {
+				if (this.Length > 0) {
+					throw new IOException("Simulated failure flushing a save file (WorldSaver.TestWriteFailureFile)");
+				}
+			}
+		}
+
+		/// <summary>#1209 - a save between formatting and its end: written (on this thread or a worker), then @afterSave runs
+		/// once, under globalLock, on whichever side gets there first.</summary>
+		private sealed class PendingSave {
+			private readonly string folder;
+			private readonly SaveTimings timings;
+			private readonly long start;
+			private readonly List<SaveFile> files = new List<SaveFile>();
+			private readonly System.Threading.ManualResetEventSlim written = new System.Threading.ManualResetEventSlim(false);
+			private int finished;
+
+			internal bool FormatFailed { get; private set; }
+			internal bool Success { get; private set; }
+
+			internal PendingSave(string folder, SaveTimings timings, long start) {
+				this.folder = folder;
+				this.timings = timings;
+				this.start = start;
+			}
+
+			internal void Add(SaveFile file) {
+				this.files.Add(file);
+			}
+
+			/// <summary>Formatting failed: nothing gets written, what's open is closed.</summary>
+			internal void Abandon() {
+				this.FormatFailed = true;
+				foreach (SaveFile file in this.files) {
+					file.CloseTarget();
+					file.Bytes.Release();
+				}
+				this.written.Set();
+			}
+
+			[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+			internal void Write() {
+				bool ok = true;
+				foreach (SaveFile file in this.files) {
+					long fileStart = Stopwatch.GetTimestamp();
+					if (ok) {
+						try {
+							file.Write();
+						} catch (Exception e) {
+							Logger.WriteCritical("Writing the save file " + file.name + " failed, the save failed", e);
+							ok = false;
+							file.CloseTarget();
+						}
+					} else {
+						file.CloseTarget(); //after a failure the rest isn't written, only closed
+					}
+					file.timing.WriteMs = MsSince(fileStart);
+					file.Bytes.Release();
+				}
+				if (ok) {
+					try {
+						//a rename failing halfway would leave earlier files renamed: only the engine's own path (no script
+						//handing a writer) renames, live saves go through BackupsManager straight into the save's own folder
+						foreach (SaveFile file in this.files) {
+							file.Commit();
+						}
+					} catch (Exception e) {
+						Logger.WriteCritical("Finishing the save files failed, the save failed", e);
+						ok = false;
+					}
+				}
+				if (!ok) {
+					foreach (SaveFile file in this.files) {
+						file.DiscardTemp();
+					}
+				}
+				this.Success = ok;
+				this.written.Set();
+			}
+
+			/// <summary>The worker: writes, then takes globalLock to run the end, unless someone ran it meanwhile.</summary>
+			[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+			internal void WriteThenFinish() {
+				try {
+					this.Write();
+					lock (MainClass.globalLock) {
+						this.TryFinish();
+						if (pending == this) {
+							pending = null;
+						}
+					}
+				} catch (Exception e) { //FatalException too: nothing above this thread would see it
+					Logger.WriteCritical("The background save's writer failed", e);
+					this.written.Set();
+				}
+			}
+
+			internal void WaitWritten() {
+				this.written.Wait();
+			}
+
+			/// <summary>Runs Finish unless it has run. Under globalLock.</summary>
+			internal void TryFinish() {
+				if (System.Threading.Interlocked.Exchange(ref this.finished, 1) == 0) {
+					this.Finish();
+				}
+			}
+
+			/// <summary>@afterSave with whether the files are on disk, then the timings and the broadcast. Under globalLock.</summary>
+			internal void Finish() {
+				this.finished = 1;
+				bool success = !this.FormatFailed && this.Success;
+				long afterStart = Stopwatch.GetTimestamp();
+				Globals.Instance.TryTrigger(TriggerKey.afterSave, new ScriptArgs(this.folder, success));
+				this.timings.AfterSaveMs = MsSince(afterStart);
+				this.timings.Success = success;
+				this.timings.TotalMs = MsSince(this.start);
+				LastTimings = this.timings;
+				Logger.WriteInfo(true, "Save timings: " + this.timings);
+				if (success) {
+					PacketSequences.BroadCast("Saving finished.");
+				} else {
+					PacketSequences.BroadCast("Saving failed!");//we do not throw an exception to kill the server,
+					//the admin should do that, after he tries to fix the problem somehow...
+				}
+			}
+		}
+
 		////////////////////////////////////////////////////////////////////////////////
 
 		// A persistent I/O/parse error (locked file, corrupt save) would otherwise hang

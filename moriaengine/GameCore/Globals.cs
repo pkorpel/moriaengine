@@ -794,6 +794,19 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>#1209 - the autosave: the world is held only while it's formatted into memory, the files are written on a
+		/// worker thread meanwhile, and @afterSave runs once they are. False only when the formatting failed.</summary>
+		public static bool SaveInBackground() {
+			Sanity.IfTrueThrow(!RunLevelManager.IsRunning, "!RunLevelManager.IsRunning @ SaveInBackground()");
+			SyncQueue.ProcessAll();
+			PauseServerTime();
+			try {
+				return WorldSaver.SaveInBackground();
+			} finally {
+				UnPauseServerTime();
+			}
+		}
+
 		public static void G() {
 			MainClass.CollectGarbage();
 		}

@@ -143,12 +143,22 @@ because it has its own `[SteamFunction]`; `.exit` and `.exitnosave` have one now
 A save whose folder can't be made fails the usual way: `@afterSave` still runs with success false, so the autosave timer
 is set again for the next try. A GM's `.save` says when it failed. `autosaveMinutes =` with no number reads as 0, no autosave.
 
-Every save logs where its time went (#1203), one line, `Save timings: total=... format=... write=...`, then each file
-as `name format+write ms size`. The same numbers are in `WorldSaver.LastTimings` (`SaveTimings`). The world is paused for
-all of it. In a normal save each file is formatted straight into a buffered file stream, so `format` holds most of the
-disk writing too and `write` is only the final flush and close. `WorldSaver.FormatInMemory`, a measurement mode off by
-default (the perf harness's `.TestPerf savesplit`), formats each file into memory first and then writes it (encoding
-included) to the same target, which splits the two: that is how much of the pause D2 (#1176: format under the lock,
-write on a worker thread) can remove. The files go where `scripts/Basic/BackupsManager.cs`'s `@openSaveStream` says:
-its `NormalFileManager` writes each `.sav` straight into the save's own folder (the engine's `.tmp`-then-rename path is
-only the fallback when no script answers).
+Every save logs where its time went (#1203), one line, `Save timings: pause=... total=... format=... write=...`, then each
+file as `name open format write ms size`. The same numbers are in `WorldSaver.LastTimings` (`SaveTimings`).
+
+Since #1209 a save formats each file into memory (`SaveBuffer`, pooled 1 MB chunks, UTF-8 already) while the world is held,
+then writes the bytes:
+- **`Globals.Save` / `TrySave`** (`.save`, the shutdown save, the save before a recompile, tests) write before they return,
+  as before.
+- **`Globals.SaveInBackground`** (the autosave, `scripts/Basic/PeriodicSave.scp`) returns after the formatting: the world
+  is held only for that (`pause`), and a worker thread writes the files meanwhile. `@afterSave` runs once they are
+  written, under `globalLock`, with whether they were. The next save, a recompile and the shutdown wait for that write
+  first (`WorldSaver.FinishPendingWrite`).
+- **Writing**: to what `@openSaveStream` handed. `scripts/Basic/BackupsManager.cs`'s `NormalFileManager` opens each `.sav`
+  straight in the save's folder with big buffers (`SaveStream.CreateFileWriter`: a plain `StreamWriter(File.Create)` buffered
+  1K chars and 4 KB, so a 94 MB save was tens of thousands of write calls, half its pause). With no script answering, the
+  engine writes `name.sav.tmp` and renames it only once it's whole.
+- **A failed write fails the save** (#1205): a write, flush or close that throws makes `@afterSave` get false, so
+  BackupsManager sets the folder aside as `.failed` and no backup is pruned. Before, a failed final flush only warned and
+  the truncated file counted.
+- `WorldSaver.TestWriteFailureFile` (tests only) makes one file's write fail.

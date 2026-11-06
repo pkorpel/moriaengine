@@ -1,10 +1,11 @@
 //#1173 - the interval is steamengine.ini's autosaveMinutes ([files]), 0 = no autosave
+//#1209 - SaveInBackground: the world is held only while it's formatted, the files are written on a worker thread
 
 [triggergroup e_periodicsave_global]
 on=@startup
 RemoveTimer(%PeriodicSave)
 if (Globals.AutosaveMinutes > 0)
-	AddTimer(%PeriodicSave, Globals.AutosaveMinutes * 60, Save)
+	AddTimer(%PeriodicSave, Globals.AutosaveMinutes * 60, SaveInBackground)
 endif
 
 on=@beforeSave
@@ -12,7 +13,7 @@ RemoveTimer(%PeriodicSave)
 
 on=@afterSave
 if (Globals.AutosaveMinutes > 0)
-	AddTimer(%PeriodicSave, Globals.AutosaveMinutes * 60, Save)
+	AddTimer(%PeriodicSave, Globals.AutosaveMinutes * 60, SaveInBackground)
 endif
 
 //.nextsave: when the next autosave is due
