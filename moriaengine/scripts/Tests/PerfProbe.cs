@@ -34,6 +34,13 @@ namespace SteamEngine.CompiledScripts {
 		private static int gc0, gc1, gc2;
 		private static TimeSpan pauseAtStart;
 		private static long allocAtStart;
+		//#1220 - the longest single GC pause of the window: the prober samples the last GC of each kind every 20 ms
+		private static readonly GCKind[] gcKinds = { GCKind.Ephemeral, GCKind.FullBlocking, GCKind.Background };
+		private static readonly long[] gcLastIndex = new long[3];
+		private static double gcMaxPauseMs;
+		private static string gcMaxPauseOf = "none";
+		private static int gcSeen, gcBackground, gcFullBlocking;
+		private static int gcCountSampled = -1; //GC.CollectionCount(0) at the last sample: counts every GC, and reading it allocates nothing
 
 		private sealed class LatenessTimer : Timer {
 			internal readonly List<double> latenessMs = new List<double>();
@@ -196,6 +203,10 @@ namespace SteamEngine.CompiledScripts {
 				case "report":
 					Out(what, a.Length > 1 ? a[1] : "", true);
 					break;
+				case "gc": //#1220 - a forced blocking gen2, so a test can see the report's longest-pause sampling count it
+					GC.Collect(2, GCCollectionMode.Forced, true, true);
+					Out(what, "ok");
+					break;
 				case "save":
 				case "savebg": { //#1209 - savebg is the autosave's way: written on a worker after the pause (waited for here)
 						if (a[0] == "savebg") {
@@ -286,6 +297,7 @@ namespace SteamEngine.CompiledScripts {
 						double ms = (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
 						lock (lockProbeSync) {
 							lockProbeMs.Add(ms);
+							SampleGcPauses(false);
 						}
 						Thread.Sleep(20);
 					}
@@ -308,22 +320,70 @@ namespace SteamEngine.CompiledScripts {
 			gc2 = GC.CollectionCount(2);
 			pauseAtStart = GC.GetTotalPauseDuration();
 			allocAtStart = GC.GetTotalAllocatedBytes();
+			lock (lockProbeSync) {
+				SampleGcPauses(true); //right after the counters' baseline, so both start at the same GC
+			}
+		}
+
+		/// <summary>Records each GC of each kind not seen yet: its longest single pause (a background GC pauses twice, briefly).
+		/// A lower bound: two GCs of one kind between samples show as one, and the prober takes the global lock first, so while
+		/// the game thread holds it (a save, a populate step) only the last GC of each kind is seen. reset: forget what came
+		/// before, start counting.</summary>
+		private static void SampleGcPauses(bool reset) {
+			if (reset) {
+				gcMaxPauseMs = 0;
+				gcMaxPauseOf = "none";
+				gcSeen = gcBackground = gcFullBlocking = 0;
+			}
+			int count = GC.CollectionCount(0);
+			if ((count == gcCountSampled) && !reset) {
+				return; //no GC since the last look: skip GetGCMemoryInfo, which allocates
+			}
+			gcCountSampled = count;
+			for (int k = 0; k < gcKinds.Length; k++) {
+				GCMemoryInfo info = GC.GetGCMemoryInfo(gcKinds[k]);
+				if (info.Index == gcLastIndex[k]) {
+					continue;
+				}
+				gcLastIndex[k] = info.Index;
+				if (reset) {
+					continue;
+				}
+				gcSeen++;
+				if (gcKinds[k] == GCKind.Background) {
+					gcBackground++;
+				} else if (gcKinds[k] == GCKind.FullBlocking) {
+					gcFullBlocking++;
+				}
+				foreach (TimeSpan pause in info.PauseDurations) {
+					if (pause.TotalMilliseconds > gcMaxPauseMs) {
+						gcMaxPauseMs = pause.TotalMilliseconds;
+						gcMaxPauseOf = gcKinds[k] + " gen" + info.Generation + (info.Compacted ? " compacting" : "") +
+							" heap " + (info.HeapSizeBytes / 1048576) + "MB";
+					}
+				}
+			}
 		}
 
 		private static void Out(string what, string label, bool report) {
 			double wallS = (Stopwatch.GetTimestamp() - wallAtStart) / (double) Stopwatch.Frequency;
 			double cpuS = (Process.GetCurrentProcess().TotalProcessorTime - cpuAtStart).TotalSeconds;
-			string lockProbes;
+			//the GC counters first, then the sample: a GC between the two shows in the sample but not in the counts, never the other way
+			int gcs0 = GC.CollectionCount(0) - gc0, gcs1 = GC.CollectionCount(1) - gc1, gcs2 = GC.CollectionCount(2) - gc2;
+			double pausedMs = (GC.GetTotalPauseDuration() - pauseAtStart).TotalMilliseconds;
+			string lockProbes, gcPauses;
 			lock (lockProbeSync) {
 				lockProbes = Pct(lockProbeMs);
+				SampleGcPauses(false);
+				gcPauses = string.Format(CultureInfo.InvariantCulture, "gcMaxPauseMs={0:F1} ({1}) gcSampled={2} background={3} fullBlocking={4}",
+					gcMaxPauseMs, gcMaxPauseOf, gcSeen, gcBackground, gcFullBlocking);
 			}
 			string line = string.Format(CultureInfo.InvariantCulture,
-				"{0} wall={1:F1}s cpu={2:F0}%core gc0/1/2={3}/{4}/{5} gcPause={6:F0}ms allocMBps={7:F1} players={8} {9}\n  timerLatenessMs {10}\n  lockWaitProbeMs {11}\n  {12}",
+				"{0} wall={1:F1}s cpu={2:F0}%core gc0/1/2={3}/{4}/{5} gcPause={6:F0}ms allocMBps={7:F1} players={8} {9}\n  {13}\n  timerLatenessMs {10}\n  lockWaitProbeMs {11}\n  {12}",
 				label, wallS, 100 * cpuS / wallS,
-				GC.CollectionCount(0) - gc0, GC.CollectionCount(1) - gc1, GC.CollectionCount(2) - gc2,
-				(GC.GetTotalPauseDuration() - pauseAtStart).TotalMilliseconds,
+				gcs0, gcs1, gcs2, pausedMs,
 				(GC.GetTotalAllocatedBytes() - allocAtStart) / 1048576.0 / wallS,
-				GameServer.GetAllPlayers().Count(), Counts(), Pct(probe.latenessMs), lockProbes, PerfCounters.Report(14));
+				GameServer.GetAllPlayers().Count(), Counts(), Pct(probe.latenessMs), lockProbes, PerfCounters.Report(14), gcPauses);
 			Out(what, line.Replace("\n", " ## "));
 		}
 	}
