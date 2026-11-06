@@ -126,28 +126,30 @@ namespace SteamEngine.Regions {
 			}
 
 			Sector sector = this.GetSector(x >> sectorFactor, y >> sectorFactor);
-			foreach (Thing t in sector.Things) {
-				AbstractItem item = t as AbstractItem;
-				if (item != null) {
-					int itemX = item.X;
-					int itemY = item.Y;
-					int itemZ = item.Z;
-					int itemModel = item.Model;
-					if ((itemModel < 0x4000) && (itemX == x) && (itemY == y)) {
-						ItemDispidInfo dispidInfo = ItemDispidInfo.GetByModel(itemModel);
-						TileFlag staticFlag = dispidInfo.Flags;
-						surface = (staticFlag & TileFlag.Surface) == TileFlag.Surface;
-						impassable = (staticFlag & TileFlag.Impassable) == TileFlag.Impassable;
-						int itemHeight = item.Height;
+			//#1214 - a sector keeps its items and its characters in two lists
+			foreach (Thing t in sector.Items) {
+				AbstractItem item = (AbstractItem) t;
+				int itemX = item.X;
+				int itemY = item.Y;
+				int itemZ = item.Z;
+				int itemModel = item.Model;
+				if ((itemModel < 0x4000) && (itemX == x) && (itemY == y)) {
+					ItemDispidInfo dispidInfo = ItemDispidInfo.GetByModel(itemModel);
+					TileFlag staticFlag = dispidInfo.Flags;
+					surface = (staticFlag & TileFlag.Surface) == TileFlag.Surface;
+					impassable = (staticFlag & TileFlag.Impassable) == TileFlag.Impassable;
+					int itemHeight = item.Height;
 
-						if ((surface || impassable || (checkBlocksFit && item.BlocksFit)) && (itemZ + itemHeight) > z && (z + height) > itemZ) {
-							return false;
-						}
-						if (surface && !impassable && /*!item.Flag_Disconnected &&*/ z == (itemZ + itemHeight)) {
-							hasSurface = true;
-						}
+					if ((surface || impassable || (checkBlocksFit && item.BlocksFit)) && (itemZ + itemHeight) > z && (z + height) > itemZ) {
+						return false;
 					}
-				} else if (checkCharacters) {
+					if (surface && !impassable && /*!item.Flag_Disconnected &&*/ z == (itemZ + itemHeight)) {
+						hasSurface = true;
+					}
+				}
+			}
+			if (checkCharacters) {
+				foreach (Thing t in sector.Chars) {
 					AbstractCharacter ch = (AbstractCharacter) t;
 					if (ch.X == x && ch.Y == y && (!ch.Flag_Insubst)) {
 						int chZ = ch.Z;
@@ -224,7 +226,7 @@ namespace SteamEngine.Regions {
 				for (int i = 0; i < sectorsPool.Count; ++i) {
 					Sector sector = sectorsPool[i];
 
-					foreach (Thing t in sector.Things) {
+					foreach (Thing t in sector.Items) { //#1214 items only
 						AbstractItem item = t as AbstractItem;
 						if (item == null) {
 							continue;
@@ -256,7 +258,7 @@ namespace SteamEngine.Regions {
 				Sector sectorForward = this.GetSector(xForward >> sectorFactor, yForward >> sectorFactor);
 
 				if (sectorStart == sectorForward) {
-					foreach (Thing t in sectorStart.Things) {
+					foreach (Thing t in sectorStart.Items) { //#1214 items only
 						AbstractItem item = t as AbstractItem;
 						if (item == null) {
 							continue;
@@ -277,7 +279,7 @@ namespace SteamEngine.Regions {
 						}
 					}
 				} else {
-					foreach (Thing t in sectorForward.Things) {
+					foreach (Thing t in sectorForward.Items) { //#1214 items only
 						AbstractItem item = t as AbstractItem;
 						if (item == null) {
 							continue;
@@ -296,7 +298,7 @@ namespace SteamEngine.Regions {
 						}
 					}
 
-					foreach (Thing t in sectorStart.Things) {
+					foreach (Thing t in sectorStart.Items) { //#1214 items only
 						AbstractItem item = t as AbstractItem;
 						if (item == null) {
 							continue;

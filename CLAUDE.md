@@ -1,6 +1,9 @@
 # moriaengine — working state
 
-## NOW (2026-11-06): performance plan #1176: A, B, C, D1, D2a DONE; next D2b (#1211: profile formatting, single-threaded wins)
+## NOW (2026-11-06): performance plan #1176: A, B, C, D DONE; now E1 (split Sector.Things into characters and items)
+
+D2b #1211 closed: profiled (Release scale 1), no big single-threaded win (formatting spread over per-object saving; cheap pieces ~25%: enum type names by reflection, globals.sav defs 130 ms, SaveBuffer.Rent 80 ms with a warm pool?, TimeSpan formatting): parallel skipped by the user's call; the cheap wins go on the final master issue. Profiling gotcha: the run itself needs TMPDIR=/tmp/d2t (GameCore's diagnostics socket lives in its TMPDIR), not only dotnet-trace.
+E1 plan: Sector keeps chars and items in two ThingLinkedLists (cont = the sector, as before), Add/Remove/Disconnected/Reconnected route by type; Map's char/NPC queries walk chars only, item queries and MapCalculations' item loops items only, GetThingsInRectangle both. Test: scripted query counts across sector moves, disconnect/reconnect, delete; red = a char in the item list.
 
 User answers 2026-11-06 (back): #1206 = option (c), keep Sphere's behaviour: a GM-moved NPC keeps its home until a GM sets it (#1206 closed, documented in pets-and-npc-ai.md; no GM set-home command exists: list it in the final master issue). D2b: a ~0.8 s hourly autosave freeze is acceptable, so if the profile shows no big single-threaded win, skip parallel formatting (risk) and move on to E1-E5.
 
