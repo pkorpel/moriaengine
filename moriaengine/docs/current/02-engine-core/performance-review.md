@@ -763,6 +763,22 @@ A and B don't depend on each other; within C and D the order matters.
 - **E1. Split `Sector.Things` into characters and items** (problem 4).
   - **Benefit:** character queries never see items, removing the 7.6% of type checks seen at load.
   - **Effort:** M. **Risk:** M.
+
+**E1 results (#1214, 2026-11-06).**
+- **What changed:**
+  - `Sector` keeps two lists, characters and items; `Add`, `Remove`, `Disconnected` and `Reconnected` route by type.
+  - Character and NPC queries walk characters only, item queries items only.
+  - `GetThingsInRectangle` and `CanFit` walk the lists by hand, so they make no enumerator at all.
+- **Behaviour:** thing queries return a sector's characters, then its items. Before, the two were mixed in insertion order.
+  No caller depends on that order. An item made while the characters are being walked can now be met in the same query.
+- **Release, scale 1, the design world, `.TestPerf bench` (2000 calls each), one run each:**
+
+| Query at the densest dungeon spot | Before (main 2f1eea8) | After |
+|---|---|---|
+| Characters within 14 (7 found) | 3.0 µs | **1.2–1.6 µs** |
+| Items within 18 (131 found) | 6.9 µs | 4.8–5.1 µs |
+| Things within 18 (142 found) | 13.2 µs, 480 B | **5.4 µs, 128 B** |
+
 - **E2. Allocation-free range enumerators**, struct enumerators or callbacks.
   - **Effort:** M. **Risk:** L–M.
 - **E3. Keep the map files open or memory-mapped** (problem 8).

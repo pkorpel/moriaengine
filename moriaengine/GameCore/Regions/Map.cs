@@ -802,10 +802,23 @@ namespace SteamEngine.Regions {
 			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
 				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
 					Sector sector = this.GetSector(sx, sy);
-					foreach (Thing thing in sector.Things) {
+					//#1214 - a sector's characters first, then its items, walked by hand: no enumerator per list.
+					//the items' head is read after the characters are done, so an item made meanwhile can be met
+					Thing thing = sector.Chars.firstThing;
+					while (thing != null) {
+						Thing next = thing.nextInList; //read before the yield, the thing may leave the list meanwhile
 						if (rectangle.Contains(thing)) {
 							yield return thing;
 						}
+						thing = next;
+					}
+					thing = sector.Items.firstThing;
+					while (thing != null) {
+						Thing next = thing.nextInList;
+						if (rectangle.Contains(thing)) {
+							yield return thing;
+						}
+						thing = next;
 					}
 				}
 			}
@@ -820,9 +833,9 @@ namespace SteamEngine.Regions {
 			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
 				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
 					Sector sector = this.GetSector(sx, sy);
-					foreach (Thing thing in sector.Things) {
-						AbstractItem i = thing as AbstractItem;
-						if ((i != null) && (rectangle.Contains(i))) {
+					foreach (Thing thing in sector.Items) {
+						AbstractItem i = (AbstractItem) thing;
+						if (rectangle.Contains(i)) {
 							yield return i;
 						}
 					}
@@ -839,9 +852,9 @@ namespace SteamEngine.Regions {
 			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
 				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
 					Sector sector = this.GetSector(sx, sy);
-					foreach (Thing thing in sector.Things) {
-						AbstractCharacter ch = thing as AbstractCharacter;
-						if ((ch != null) && (rectangle.Contains(ch))) {
+					foreach (Thing thing in sector.Chars) {
+						AbstractCharacter ch = (AbstractCharacter) thing;
+						if (rectangle.Contains(ch)) {
 							yield return ch;
 						}
 					}
@@ -859,9 +872,9 @@ namespace SteamEngine.Regions {
 					if (sector == null) {
 						continue;
 					}
-					foreach (Thing thing in sector.Things) {
-						AbstractCharacter ch = thing as AbstractCharacter;
-						if ((ch != null) && (ch.Account == null) && (rectangle.Contains(ch))) {
+					foreach (Thing thing in sector.Chars) {
+						AbstractCharacter ch = (AbstractCharacter) thing;
+						if ((ch.Account == null) && (rectangle.Contains(ch))) {
 							yield return ch;
 						}
 					}
@@ -879,10 +892,10 @@ namespace SteamEngine.Regions {
 			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
 				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
 					Sector sector = this.GetSector(sx, sy);
-					foreach (Thing thing in sector.Things) {
-						AbstractCharacter ch = thing as AbstractCharacter;
+					foreach (Thing thing in sector.Chars) {
+						AbstractCharacter ch = (AbstractCharacter) thing;
 						//Account == null is what IsPlayer says, read directly
-						if ((ch != null) && (ch.Account == null) && (rectangle.Contains(ch))) {
+						if ((ch.Account == null) && (rectangle.Contains(ch))) {
 							yield return ch;
 						}
 					}
