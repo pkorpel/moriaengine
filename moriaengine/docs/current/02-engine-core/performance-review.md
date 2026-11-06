@@ -840,14 +840,25 @@ A and B don't depend on each other; within C and D the order matters.
 
 | | Workstation (kept) | Server + DATAS (`GCDynamicAdaptationMode=1`) | Server, 4 heaps |
 |---|---|---|---|
-| Longest pause P3 / P5 | 94 / 43 ms | 26 / 125 ms | 0 / 253 ms |
+| Longest pause P3 / P5 | 94 / 43 ms | 26 / 125 ms | no GC / 253 ms |
+| Total pause, all windows | ~540 ms | ~150 ms | ~250 ms |
 | Total pause P5 (60 s) | 193 ms | 125 ms | 253 ms |
 | Working set P2 / P5 | 896 / 1117 MB | 1119 / 1297 MB | 1395 / 1781 MB |
-| Save at 50k NPCs | 1.4 s | 2.2 s | 2.0 s |
+| Saves at 30k NPCs (3) / at 50k (1) | 1.4, 1.2, 1.0 / 1.4 s | 1.4, 0.8, 0.9 / 2.2 s | 2.2, 1.9, 1.9 / 2.0 s |
 | Timer lateness max P5 | 33 ms | 40 ms | 225 ms |
 
-- **Verdict:** GC is under 0.4% of wall time everywhere. Server GC moves the long pause into ephemeral collections and makes it longer, costs 200-660 MB and slows saves, so the default stays. TieredPGO is on (the .NET 8 default, nothing turns it off).
-- **Left for later (final master issue):** a background gen2 still stops the world once for up to ~0.1 s at a 680 MB heap. That pause scales with the number of live objects, so shrinking the heap's object count would shorten it; GC settings don't.
+- **Verdict: the default workstation GC stays.**
+  - GC is under 0.4% of wall time in every phase (the most is 193 ms in 60 s).
+  - Server GC collects less often: total pause time over the run fell from ~540 ms to ~150-250 ms, and in the 4-heap run P0-P4 had no GC at all.
+  - But each of its collections is longer: the worst pause was 125 and 253 ms, against 94. That's one GC per configuration in P5, so a small sample.
+  - It also costs 180-660 MB more working set. The 4-heap run made every save slower; DATAS was mixed.
+  - The worst pause is what a player feels as a hitch, and memory is tight on a shard like this one, so neither trade is worth it.
+  - TieredPGO is on (the .NET 8 default; nothing turns it off).
+- **Not tried:** concurrent GC off (would make every gen2 blocking) and a bigger gen0 budget (`GCgen0size`). The numbers didn't call for them.
+- **Open question (final master issue):** a background gen2 still stops the world once for up to ~0.1 s.
+  - Only two were seen: 94 ms in the P3 crowd at 677 MB and 43 ms in P5 at 874 MB, so the bigger heap paused shorter.
+  - A background gen2's pauses are its initial root mark and its final revisit of what changed meanwhile. They may follow how much the world changes during the collection (P3 is 50 players moving) more than heap size.
+  - Worth measuring with more samples before choosing a fix.
 - **E5. Re-measure crowds** (problem 10) with walkers that don't collide; look at movement pacing if steps are still slow.
   - **Effort:** S.
 
@@ -907,7 +918,11 @@ prototype commit there and its `AuxiliaryServer/Commands.cs` workaround didn't c
   environment variable), as it spawns tens of thousands of things, moves players and starts a thread that never stops:
   - `rects <file> <npcs> <items>` spreads monsters and decoration over the dungeon rectangles by area;
   - `npcs`, `ground` and `stored` populate a rectangle or containers;
-  - `start` (switches the counters on) and `report <label>` open and close a measurement window;
+  - `start` (switches the counters on) and `report <label>` open and close a measurement window. The report gives GC counts, total GC
+    pause and allocation rate, and since #1220 the longest single GC pause of the window (`gcMaxPauseMs`, with its kind and
+    generation). The lock prober samples it every 20 ms, so it's a lower bound: two GCs of one kind between samples, or GCs
+    while the game thread holds the lock, show as one;
+  - `gc` forces a blocking gen2 (for the test of the pause sampling);
   - `save` times a save and prints where its time went (`WorldSaver.LastTimings`, #1203); `savebg` saves as the
     autosave does (#1209: the pause is the formatting, the files are written on a worker) and waits for the write;
   - `bench <plane> <x> <y>` times range queries;

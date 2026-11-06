@@ -51,10 +51,13 @@ namespace SteamEngine.Tests.Protocol {
 				CommandPermissionTests.Ask(fixture, client, ".TestPerf \"gc\"", "PERF_PROBE: gc ok");
 				int mark = fixture.GameOutputSnapshot().Length;
 				client.SendSpeech(".TestPerf \"report gctest\"");
-				Assert.True(fixture.WaitForGameOutputSince(" |", mark, Wait), "No report after .TestPerf report");
+				Assert.True(fixture.WaitForGameOutputSince("PERF_PROBE: report gctest", mark, Wait), "No report after .TestPerf report");
 				string output = fixture.GameOutputSnapshot();
 				int start = output.IndexOf("PERF_PROBE: report gctest", mark, StringComparison.Ordinal);
-				Assert.True(start >= 0, "No report line:\n" + output.Substring(mark));
+				for (int i = 0; (output.IndexOf(" |", start, StringComparison.Ordinal) < 0) && (i < 50); i++) { //the line's end may still be on its way
+					Thread.Sleep(100);
+					output = fixture.GameOutputSnapshot();
+				}
 				string report = output.Substring(start, output.IndexOf(" |", start, StringComparison.Ordinal) - start);
 				var m = System.Text.RegularExpressions.Regex.Match(report, @"gcMaxPauseMs=([0-9.]+) \(([^)]*)\) gcSampled=([0-9]+) background=[0-9]+ fullBlocking=([0-9]+)");
 				Assert.True(m.Success, "no GC pause sampling in: " + report);
