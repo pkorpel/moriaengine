@@ -802,16 +802,23 @@ namespace SteamEngine.Regions {
 			for (int sx = xSectorStart; sx <= xSectorEnd; sx++) {
 				for (int sy = ySectorStart; sy <= ySectorEnd; sy++) {
 					Sector sector = this.GetSector(sx, sy);
-					//#1214 - a sector's characters first, then its items
-					foreach (Thing thing in sector.Chars) {
+					//#1214 - a sector's characters first, then its items, walked by hand: no enumerator per list.
+					//the items' head is read after the characters are done, so an item made meanwhile can be met
+					Thing thing = sector.Chars.firstThing;
+					while (thing != null) {
+						Thing next = thing.nextInList; //read before the yield, the thing may leave the list meanwhile
 						if (rectangle.Contains(thing)) {
 							yield return thing;
 						}
+						thing = next;
 					}
-					foreach (Thing thing in sector.Items) {
+					thing = sector.Items.firstThing;
+					while (thing != null) {
+						Thing next = thing.nextInList;
 						if (rectangle.Contains(thing)) {
 							yield return thing;
 						}
+						thing = next;
 					}
 				}
 			}

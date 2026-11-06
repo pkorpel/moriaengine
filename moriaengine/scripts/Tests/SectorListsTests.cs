@@ -43,9 +43,17 @@ namespace SteamEngine.CompiledScripts {
 				//a wall or field spell asks CanFit with characters: the NPC's own tile is taken, without them it's free
 				bool fitsWithoutChars = map.CanFit(npc.X, npc.Y, npc.Z, 16, false, false, false);
 				bool fitsWithChars = map.CanFit(npc.X, npc.Y, npc.Z, 16, false, true, false);
-				Check(report, "fit", fitsWithoutChars && !fitsWithChars);
-				if (!fitsWithoutChars || fitsWithChars) {
-					report.Append("(at=" + npc.X + "/" + npc.Y + "/" + npc.Z + ",withoutChars=" + fitsWithoutChars + ",withChars=" + fitsWithChars + ")");
+				//and an item that blocks: a wall on the free tile west of the NPC (CanFit's item loop)
+				int wz = map.GetTileZ(x2 - 1, y2);
+				bool freeBeforeWall = map.CanFit(x2 - 1, y2, wz, 16, false, false, false);
+				Item wall = (Item) ((ItemDef) ThingDef.GetByDefname("i_wall_stone")).Create(x2 - 1, y2, wz, m);
+				bool wallBlocks = !map.CanFit(x2 - 1, y2, wz, 16, false, false, false);
+				wall.Delete();
+				bool fit = fitsWithoutChars && !fitsWithChars && freeBeforeWall && wallBlocks;
+				Check(report, "fit", fit);
+				if (!fit) {
+					report.Append("(at=" + npc.X + "/" + npc.Y + "/" + npc.Z + ",withoutChars=" + fitsWithoutChars + ",withChars=" + fitsWithChars +
+						",freeBeforeWall=" + freeBeforeWall + ",wallBlocks=" + wallBlocks + ")");
 				}
 
 				item.Cont = self.Backpack;

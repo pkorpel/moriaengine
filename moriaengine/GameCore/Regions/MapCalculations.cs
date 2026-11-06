@@ -126,8 +126,8 @@ namespace SteamEngine.Regions {
 			}
 
 			Sector sector = this.GetSector(x >> sectorFactor, y >> sectorFactor);
-			//#1214 - a sector keeps its items and its characters in two lists
-			foreach (Thing t in sector.Items) {
+			//#1214 - a sector keeps its items and its characters in two lists, walked by hand (no enumerator, nothing yields here)
+			for (Thing t = sector.Items.firstThing; t != null; t = t.nextInList) {
 				AbstractItem item = (AbstractItem) t;
 				int itemX = item.X;
 				int itemY = item.Y;
@@ -149,7 +149,7 @@ namespace SteamEngine.Regions {
 				}
 			}
 			if (checkCharacters) {
-				foreach (Thing t in sector.Chars) {
+				for (Thing t = sector.Chars.firstThing; t != null; t = t.nextInList) {
 					AbstractCharacter ch = (AbstractCharacter) t;
 					if (ch.X == x && ch.Y == y && (!ch.Flag_Insubst)) {
 						int chZ = ch.Z;
