@@ -21,16 +21,16 @@ using System.Text;
 
 namespace SteamEngine.Persistence {
 	/// <summary>
-	/// #1203 - where a world save's time went (WorldSaver.LastTimings), all of it with the world paused: the scripts'
-	/// beforeSave/afterSave triggers, the weak reference purge, and each file. A file's FormatMs is the time spent turning
-	/// the world into text, WriteMs putting it on disk (encoding, flush, close, rename). In a normal save the text goes
-	/// straight into a buffered file, so FormatMs holds most of the writing too; WorldSaver.FormatInMemory formats into
-	/// memory first, which splits them. Not timed: the broadcasts and the sync queues flushed before the save starts.
+	/// #1203, #1209 - where a world save's time went (WorldSaver.LastTimings). The world is held for PauseMs: the weak
+	/// reference purge, the scripts' @beforeSave, each file's openSaveStream trigger (OpenMs) and its formatting into memory
+	/// (FormatMs, encoding included). Each file's WriteMs is putting those bytes on disk: before Save returns, or on a worker
+	/// thread after the pause for a background save (the autosave). @afterSave runs once the files are written. TotalMs runs
+	/// from the start to the end of @afterSave. Not timed: the broadcasts and the sync queues flushed before the save starts.
 	/// </summary>
 	public sealed class SaveTimings {
 		public sealed class FileTiming {
 			public string Name { get; internal set; }
-			/// <summary>The openSaveStream trigger and opening the file (in FormatInMemory mode the file is opened in WriteMs).</summary>
+			/// <summary>The openSaveStream trigger, which opens the file (scripts' BackupsManager); the engine's own .tmp is opened in WriteMs.</summary>
 			public double OpenMs { get; internal set; }
 			public double FormatMs { get; internal set; }
 			public double WriteMs { get; internal set; }
@@ -39,7 +39,10 @@ namespace SteamEngine.Persistence {
 
 		private readonly List<FileTiming> files = new List<FileTiming>();
 
-		public bool FormatInMemory { get; internal set; }
+		/// <summary>#1209 - written on a worker thread after the pause (the autosave), not before the save returned.</summary>
+		public bool Background { get; internal set; }
+		/// <summary>#1209 - how long the world was held: the purge, @beforeSave and the formatting.</summary>
+		public double PauseMs { get; internal set; }
 		/// <summary>The folder the files went to (the scripts' beforeSave picks it).</summary>
 		public string Folder { get; internal set; }
 		public bool Success { get; internal set; }
@@ -102,8 +105,8 @@ namespace SteamEngine.Persistence {
 
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
-			sb.AppendFormat(CultureInfo.InvariantCulture, "total={0:F0}ms format={1:F0}ms write={2:F0}ms open={3:F0}ms purge={4:F0}ms beforeSave={5:F0}ms afterSave={6:F0}ms {7:F1}MB inMemory={8} success={9}",
-				this.TotalMs, this.FormatMs, this.WriteMs, this.OpenMs, this.PurgeMs, this.BeforeSaveMs, this.AfterSaveMs, this.Bytes / 1048576.0, this.FormatInMemory, this.Success);
+			sb.AppendFormat(CultureInfo.InvariantCulture, "pause={0:F0}ms total={1:F0}ms format={2:F0}ms write={3:F0}ms open={4:F0}ms purge={5:F0}ms beforeSave={6:F0}ms afterSave={7:F0}ms {8:F1}MB background={9} success={10}",
+				this.PauseMs, this.TotalMs, this.FormatMs, this.WriteMs, this.OpenMs, this.PurgeMs, this.BeforeSaveMs, this.AfterSaveMs, this.Bytes / 1048576.0, this.Background, this.Success);
 			foreach (FileTiming file in this.files) {
 				sb.AppendFormat(CultureInfo.InvariantCulture, " | {0} open {1:F0} format {2:F0} write {3:F0}ms {4:F1}MB", file.Name, file.OpenMs, file.FormatMs, file.WriteMs, file.Bytes / 1048576.0);
 			}

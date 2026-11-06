@@ -1147,6 +1147,22 @@ namespace SteamEngine.Persistence {
 			this.writer = writer;
 		}
 
+		private const int FileBufferBytes = 1 << 20;
+		internal const int WriterBufferChars = 1 << 16;
+		/// <summary>#1209 - what a StreamWriter uses by default: UTF-8, no BOM, throwing on invalid text.</summary>
+		public static readonly System.Text.Encoding SaveEncoding = new System.Text.UTF8Encoding(false, true);
+
+		/// <summary>#1209 - a writer for a save file, with big buffers. A plain StreamWriter(File.Create) buffers 1K chars and
+		/// 4 KB, so a 94 MB save was tens of thousands of write calls, about half its pause. The bytes written are the same.</summary>
+		public static StreamWriter CreateFileWriter(string path) {
+			return new StreamWriter(CreateFile(path), SaveEncoding, WriterBufferChars);
+		}
+
+		/// <summary>#1209 - a save file opened for writing with a 1 MB buffer.</summary>
+		public static FileStream CreateFile(string path) {
+			return new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, FileBufferBytes);
+		}
+
 		/// <summary>
 		/// Writes to tempFilePath; Close() atomically renames it to finalFilePath only once
 		/// writing is done, so a crash mid-write can't truncate/corrupt the previous save.
@@ -1161,53 +1177,35 @@ namespace SteamEngine.Persistence {
 			this.writer.WriteLine(value);
 		}
 
-		/// <summary>#1203 - text made elsewhere (WorldSaver.FormatInMemory), written as it is.</summary>
-		internal void WriteText(System.Text.StringBuilder text) {
-			this.writer.Write(text);
-		}
-
-		/// <summary>#1203 - bytes written so far (flushed first), when the writer is a StreamWriter over a seekable stream; else 0.
-		/// Never throws: a failing flush is Close()'s to report, as it always was.</summary>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		internal long BytesWritten {
-			get {
-				StreamWriter streamWriter = this.writer as StreamWriter;
-				if ((streamWriter == null) || !streamWriter.BaseStream.CanSeek) {
-					return 0;
-				}
-				try {
-					streamWriter.Flush();
-					return streamWriter.BaseStream.Length;
-				} catch (Exception) {
-					return 0;
-				}
-			}
-		}
-
 		public void WriteLine() {
 			this.writer.WriteLine();
 		}
 
+		/// <summary>Flushes, closes and (with a temp file) renames it over the final one. #1205: a failed flush or close throws
+		/// after logging, deletes the temp file and leaves the final file as it was.</summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public void Close() {
+			Exception failure = null;
 			try {
 				this.writer.Flush();
 			} catch (Exception e) {
-				Logger.WriteWarning("Error flushing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + e.Message);
+				failure = e;
 			}
 			try {
 				this.writer.Close();
 			} catch (Exception e) {
-				Logger.WriteWarning("Error closing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + e.Message);
+				failure = failure ?? e;
 			}
 			this.writer = null;
-
-			if (this.tempFilePath != null) {
-				try {
-					File.Move(this.tempFilePath, this.finalFilePath, true);
-				} catch (Exception e) {
-					Logger.WriteCritical("Failed to finalize save file '" + this.finalFilePath + "' from temp file '" + this.tempFilePath + "': " + e.Message);
+			if (failure != null) {
+				Logger.WriteWarning("Error writing save stream" + (this.finalFilePath != null ? " for '" + this.finalFilePath + "'" : "") + ": " + failure.Message);
+				if ((this.tempFilePath != null) && File.Exists(this.tempFilePath)) {
+					File.Delete(this.tempFilePath);
 				}
+				throw new IOException("Writing the save file failed", failure);
+			}
+			if (this.tempFilePath != null) {
+				File.Move(this.tempFilePath, this.finalFilePath, true);
 			}
 		}
 
