@@ -7,8 +7,9 @@ namespace SteamEngine.Tests.Protocol {
 	/// #590/#603 - proves NPCDef.MoveRate actually drives real movement speed through
 	/// NPCAiTimer's own per-NPC think-tick cadence, not just that the `.def` field parses.
 	/// Spawns two otherwise-identical NPCs side by side - one with MoveRate=6 (double the
-	/// real baseline of 3), one left unconfigured (defaults to that same baseline) - sends
-	/// both toward the same distant goal point, waits several real AI ticks, and confirms
+	/// real baseline of 3), one left unconfigured (defaults to that same baseline) - sets
+	/// both chasing a far quarry (#1174: not a "go" order, which since #768 walks at Sphere's
+	/// fixed catch-up cadence whatever the MoveRate), waits several real AI ticks, and confirms
 	/// the faster one covered strictly more ground than the baseline one over the same
 	/// wall-clock window. A separate Fact confirms it does this by ticking (and thus
 	/// stepping) MORE OFTEN, one tile at a time - never by covering more than one tile in a
@@ -52,7 +53,7 @@ namespace SteamEngine.Tests.Protocol {
 						uint baselineUid = ExtractUidAfter(spawnLine, "baselineUid=");
 
 						//Several real 1.5s AI ticks' worth of wall-clock time - both NPCs need a
-						//real chance to act on their PetGoalPoint before comparing how far each
+						//real chance to chase their quarry before comparing how far each
 						//one got.
 						Thread.Sleep(4500);
 
@@ -158,6 +159,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.True(this.fixture.WaitForGameOutputSince("MOVERATE_TEST_SPAWNED:", mark, TimeSpan.FromSeconds(10)));
 				string spawnLine = LastLineContaining(this.fixture.GameOutputSnapshot(), "MOVERATE_TEST_SPAWNED:");
 				uint fastUid = ExtractUidAfter(spawnLine, "fastUid=");
+				this.lastSpawnLine = spawnLine;
 
 				int previous = 0;
 				int maxSingleStepJump = 0;
@@ -171,7 +173,7 @@ namespace SteamEngine.Tests.Protocol {
 					previous = current;
 				}
 
-				Assert.True(previous > 0, "Expected the fast NPC to have moved at all over 4 seconds.");
+				Assert.True(previous > 0, "Expected the fast NPC to have moved at all over 4 seconds; " + this.lastDisplacementLine + " / " + this.lastSpawnLine);
 				Assert.True(maxSingleStepJump <= 1,
 					"Expected no single ~250ms poll-to-poll window to cover more than 1 tile (saw a jump of " +
 					maxSingleStepJump + ") - a bigger jump means it's bursting multiple tile-steps into one " +
@@ -179,13 +181,21 @@ namespace SteamEngine.Tests.Protocol {
 			}
 		}
 
+		private string lastDisplacementLine = "";
+		private string lastSpawnLine = "";
+
 		private int ReportDisplacement(TestGameClient client, uint uid) {
 			int mark = this.fixture.GameOutputSnapshot().Length;
 			client.SendSpeech(".TestReportNpcDisplacement " + uid);
 			Assert.True(this.fixture.WaitForGameOutputSince("MOVERATE_TEST_DISPLACEMENT:", mark, TimeSpan.FromSeconds(10)));
 			string line = LastLineContaining(this.fixture.GameOutputSnapshot(), "MOVERATE_TEST_DISPLACEMENT: uid=" + uid + " ");
-			int idx = line.IndexOf("displacement=", StringComparison.Ordinal);
-			return int.Parse(line.Substring(idx + "displacement=".Length).Trim());
+			this.lastDisplacementLine = line;
+			int idx = line.IndexOf("displacement=", StringComparison.Ordinal) + "displacement=".Length;
+			int end = idx;
+			while ((end < line.Length) && ((line[end] == '-') || char.IsDigit(line[end]))) {
+				end++;
+			}
+			return int.Parse(line.Substring(idx, end - idx));
 		}
 
 		private static uint ExtractUidAfter(string line, string marker) {
