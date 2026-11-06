@@ -25,7 +25,9 @@ using SteamEngine.Common;
 namespace SteamEngine.Regions {
 	public partial class Map {
 		private class Sector {
-			private ThingLinkedList things;
+			//#1214 - characters and ground items apart, so a character query never walks the items (and an item one the characters)
+			private ThingLinkedList chars;
+			private ThingLinkedList items;
 			private LinkedList<AbstractCharacter> players;
 			private ThingLinkedList disconnects;//disconnected players/mounts/whatever
 			private MultiComponentLinkedList multiComponents;
@@ -52,9 +54,17 @@ namespace SteamEngine.Regions {
 				this.ClearThings();
 			}
 
-			internal ThingLinkedList Things {
+			/// <summary>The characters here, connected ones only (players and NPCs).</summary>
+			internal ThingLinkedList Chars {
 				get {
-					return this.things;
+					return this.chars;
+				}
+			}
+
+			/// <summary>The items lying here, connected ones only.</summary>
+			internal ThingLinkedList Items {
+				get {
+					return this.items;
 				}
 			}
 
@@ -107,7 +117,8 @@ namespace SteamEngine.Regions {
 
 			#region dynamic stuff
 			internal void ClearThings() {
-				this.things = new ThingLinkedList(this);
+				this.chars = new ThingLinkedList(this);
+				this.items = new ThingLinkedList(this);
 				this.players = new LinkedList<AbstractCharacter>();
 				this.disconnects = new ThingLinkedList(this);
 				this.multiComponents = new MultiComponentLinkedList();
@@ -170,9 +181,14 @@ namespace SteamEngine.Regions {
 				this.AddPlayer(cre);
 			}
 
+			private ThingLinkedList ListFor(Thing thing) {
+				return (thing is AbstractCharacter) ? this.chars : this.items;
+			}
+
 			private void AddThing(Thing thing) {
-				Sanity.IfTrueThrow(thing.contOrTLL == this.things, "Sector's AddThing(" + thing + ") was called, but that thing is ALREADY in our list of things!");
-				this.things.Add(thing);
+				ThingLinkedList list = this.ListFor(thing);
+				Sanity.IfTrueThrow(thing.contOrTLL == list, "Sector's AddThing(" + thing + ") was called, but that thing is ALREADY in our list of things!");
+				list.Add(thing);
 			}
 
 			private void AddPlayer(AbstractCharacter player) {
@@ -187,10 +203,11 @@ namespace SteamEngine.Regions {
 			}
 
 			private void RemoveThing(Thing thing) {
-				Sanity.IfTrueThrow(thing.contOrTLL != this.things,
+				ThingLinkedList list = this.ListFor(thing);
+				Sanity.IfTrueThrow(thing.contOrTLL != list,
 					"Sector's RemoveThing(" + thing + ") was called, but that thing isn't in our list of things.");
 
-				this.things.Remove(thing);
+				list.Remove(thing);
 				thing.contOrTLL = null;
 			}
 
