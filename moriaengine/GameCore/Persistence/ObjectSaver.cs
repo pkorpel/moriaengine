@@ -1147,6 +1147,22 @@ namespace SteamEngine.Persistence {
 			this.writer = writer;
 		}
 
+		private const int FileBufferBytes = 1 << 20;
+		internal const int WriterBufferChars = 1 << 16;
+		/// <summary>#1209 - what a StreamWriter uses by default: UTF-8, no BOM, throwing on invalid text.</summary>
+		public static readonly System.Text.Encoding SaveEncoding = new System.Text.UTF8Encoding(false, true);
+
+		/// <summary>#1209 - a writer for a save file, with big buffers. A plain StreamWriter(File.Create) buffers 1K chars and
+		/// 4 KB, so a 94 MB save was tens of thousands of write calls, about half its pause. The bytes written are the same.</summary>
+		public static StreamWriter CreateFileWriter(string path) {
+			return new StreamWriter(CreateFile(path), SaveEncoding, WriterBufferChars);
+		}
+
+		/// <summary>#1209 - a save file opened for writing with a 1 MB buffer.</summary>
+		public static FileStream CreateFile(string path) {
+			return new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, FileBufferBytes);
+		}
+
 		/// <summary>
 		/// Writes to tempFilePath; Close() atomically renames it to finalFilePath only once
 		/// writing is done, so a crash mid-write can't truncate/corrupt the previous save.
@@ -1159,29 +1175,6 @@ namespace SteamEngine.Persistence {
 
 		public void WriteLine(string value) {
 			this.writer.WriteLine(value);
-		}
-
-		/// <summary>#1203 - text made elsewhere (WorldSaver.FormatInMemory), written as it is.</summary>
-		internal void WriteText(System.Text.StringBuilder text) {
-			this.writer.Write(text);
-		}
-
-		/// <summary>#1203 - bytes written so far (flushed first), when the writer is a StreamWriter over a seekable stream; else 0.
-		/// Never throws: a failing flush is Close()'s to report, as it always was.</summary>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		internal long BytesWritten {
-			get {
-				StreamWriter streamWriter = this.writer as StreamWriter;
-				if ((streamWriter == null) || !streamWriter.BaseStream.CanSeek) {
-					return 0;
-				}
-				try {
-					streamWriter.Flush();
-					return streamWriter.BaseStream.Length;
-				} catch (Exception) {
-					return 0;
-				}
-			}
 		}
 
 		public void WriteLine() {

@@ -1,6 +1,9 @@
 # moriaengine — working state
 
-## NOW (2026-11-05): performance plan #1176: A, B, C, D1 DONE (+ #1204 fix, PR #1207); D2's scope is the user's call (D1 found formatting is the pause)
+## NOW (2026-11-06): performance plan #1176: A, B, C, D1 DONE; D2a = #1209 in ../moria-d2a, branch d2a-save-format
+
+User, 2026-11-06 (away a few hours): carry on through ALL performance items without asking for a go-ahead between them (D2a, D2b, E1-E5), then pick up every issue discovered along the way (#1205 failed final flush counts as success, #1206 GM-moved NPCs walk home = needs a user choice, #1174, #1180, #1104 and anything new); questions only at the end. D2 scope (user): D2a profile + cheaper formatting + worker write, then D2b parallel formatting under the lock.
+User, 2026-11-06, the finish: once ALL perf changes and the issues found along the way are done: (1) run the perf harness as the original review did (Release, scale 1, all phases), (2) compare every number to the initial findings (performance-review.md section 5, #1161), (3) write a new version of the perf report as its own docs page, (4) investigate further improvements and raise them all under one new master issue (and in that page), (5) ONLY THEN run the full protocol suite.
 
 Plan: docs/current/02-engine-core/performance-review.md section 8 (approved; the user's 4 answers in DONE A1 below). Checklist on umbrella #1176: A1-A3, B1-B6 done; C1, C2, D1, D2, E1-E5 open. Work in the plan's order, one issue + one PR per step, tick #1176 and comment there after each merge.
 Rules for this work (user, 2026-11-04/05):

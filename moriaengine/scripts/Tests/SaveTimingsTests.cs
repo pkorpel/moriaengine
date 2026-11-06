@@ -1,50 +1,62 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>
-	/// #1203 - a world save reports where its time went, file by file, and the measurement mode (each file formatted into
-	/// memory, then written) writes the same files as a normal save: all there, all complete, no .tmp left.
+	/// #1203, #1209 - a world save reports where its time went, file by file. A background save (the autosave) writes the same
+	/// files as a normal one, holding the world only while formatting; two in a row don't overlap; and a failed write fails
+	/// the save (#1205), so BackupsManager sets its folder aside.
 	/// </summary>
 	public static class SaveTimingsTests {
 		[SteamFunction]
 		public static void TestSaveTimings(Character self) {
-			SaveTimings normal = SaveOnce(false);
-			SaveTimings split = SaveOnce(true);
+			Globals.Save();
+			SaveTimings normal = WorldSaver.LastTimings;
+			Globals.SaveInBackground();
+			Globals.SaveInBackground(); //waits for the first one's write and runs its end before it starts
+			SaveTimings first = WorldSaver.LastTimings; //the first one: the second is still being written
+			WorldSaver.FinishPendingWrite();
+			SaveTimings second = WorldSaver.LastTimings;
 			Console.WriteLine("SAVE_TIMINGS: normal " + normal);
-			Console.WriteLine("SAVE_TIMINGS: split " + split);
+			Console.WriteLine("SAVE_TIMINGS: background " + second);
 
 			string[] normalFiles = FileNames(normal.Folder);
-			string[] splitFiles = FileNames(split.Folder);
-			bool sameFiles = normalFiles.SequenceEqual(splitFiles);
-			bool noTmp = !Directory.GetFiles(normal.Folder, "*.tmp").Any() && !Directory.GetFiles(split.Folder, "*.tmp").Any();
-			bool allComplete = Directory.GetFiles(normal.Folder, "*.sav").Concat(Directory.GetFiles(split.Folder, "*.sav")).All(EndsWithEof);
-			bool everyFileTimed = (normal.Files.Count == normalFiles.Length) && (split.Files.Count == splitFiles.Length) &&
-				normal.Files.All(f => normalFiles.Contains(f.Name + ".sav")) && split.Files.All(f => splitFiles.Contains(f.Name + ".sav"));
-			bool bytesMatch = normal.Files.Concat(split.Files).All(f => f.Bytes > 0) &&
+			bool sameFiles = normalFiles.SequenceEqual(FileNames(second.Folder)) && ((first == null) || normalFiles.SequenceEqual(FileNames(first.Folder)));
+			bool noTmp = new[] { normal.Folder, second.Folder }.All(f => !Directory.GetFiles(f, "*.tmp").Any());
+			bool allComplete = new[] { normal.Folder, second.Folder }.All(f => Directory.GetFiles(f, "*.sav").All(EndsWithEof)) &&
+				((first == null) || Directory.GetFiles(first.Folder, "*.sav").All(EndsWithEof));
+			bool everyFileTimed = (normal.Files.Count == normalFiles.Length) && (second.Files.Count == normalFiles.Length);
+			bool bytesMatch = normal.Files.Concat(second.Files).All(f => f.Bytes > 0) &&
 				normal.Files.All(f => f.Bytes == new FileInfo(Path.Combine(normal.Folder, f.Name + ".sav")).Length) &&
-				split.Files.All(f => f.Bytes == new FileInfo(Path.Combine(split.Folder, f.Name + ".sav")).Length);
-			bool sumsFit = (normal.OpenMs + normal.FormatMs + normal.WriteMs <= normal.TotalMs) && (split.OpenMs + split.FormatMs + split.WriteMs <= split.TotalMs) &&
-				normal.Files.All(f => f.OpenMs > 0) && split.Files.All(f => f.OpenMs > 0);
-			//accounts and regions don't change between two saves a moment apart: the same text both ways
+				second.Files.All(f => f.Bytes == new FileInfo(Path.Combine(second.Folder, f.Name + ".sav")).Length);
+			bool sumsFit = (second.OpenMs + second.FormatMs <= second.PauseMs) && (second.PauseMs <= second.TotalMs) &&
+				(normal.OpenMs + normal.FormatMs + normal.WriteMs <= normal.TotalMs) && second.Files.All(f => f.WriteMs > 0);
+			//accounts and regions don't change between two saves a moment apart: the same bytes both ways
 			bool sameContent = new[] { "accounts.sav", "regions.sav" }.All(f =>
-				File.ReadAllBytes(Path.Combine(normal.Folder, f)).SequenceEqual(File.ReadAllBytes(Path.Combine(split.Folder, f))));
-			Console.WriteLine("SAVE_TIMINGS_CHECK: success=" + (normal.Success && split.Success) + " modes=" + (!normal.FormatInMemory && split.FormatInMemory) +
+				File.ReadAllBytes(Path.Combine(normal.Folder, f)).SequenceEqual(File.ReadAllBytes(Path.Combine(second.Folder, f))));
+			bool twoFolders = (first != null) && (first != second) && first.Background && (first.Folder != second.Folder) && first.Success;
+			Console.WriteLine("SAVE_TIMINGS_CHECK: success=" + (normal.Success && second.Success) + " modes=" + (!normal.Background && second.Background) +
 				" sameFiles=" + sameFiles + " noTmp=" + noTmp + " allComplete=" + allComplete + " everyFileTimed=" + everyFileTimed +
-				" bytesMatch=" + bytesMatch + " sumsFit=" + sumsFit + " sameContent=" + sameContent + " files=" + string.Join(",", normalFiles));
-		}
+				" bytesMatch=" + bytesMatch + " sumsFit=" + sumsFit + " sameContent=" + sameContent + " noOverlap=" + twoFolders +
+				" files=" + string.Join(",", normalFiles));
 
-		private static SaveTimings SaveOnce(bool inMemory) {
-			WorldSaver.FormatInMemory = inMemory;
+			//#1205 - a write that fails fails the save, and BackupsManager sets the folder aside
+			WorldSaver.TestWriteFailureFile = "regions";
+			bool formatted;
 			try {
-				Globals.Save();
+				formatted = Globals.SaveInBackground();
+				WorldSaver.FinishPendingWrite();
 			} finally {
-				WorldSaver.FormatInMemory = false;
+				WorldSaver.TestWriteFailureFile = null;
 			}
-			return WorldSaver.LastTimings;
+			SaveTimings failed = WorldSaver.LastTimings;
+			string folder = failed.Folder.TrimEnd(Path.DirectorySeparatorChar);
+			bool setAside = !Directory.Exists(folder) && Directory.Exists(folder + ".failed");
+			Globals.Save();
+			Console.WriteLine("SAVE_TIMINGS_FAIL: formatted=" + formatted + " success=" + failed.Success + " setAside=" + setAside +
+				" nextSaveOk=" + WorldSaver.LastTimings.Success + " end");
 		}
 
 		private static string[] FileNames(string folder) {
@@ -52,8 +64,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private static bool EndsWithEof(string file) {
-			string text = File.ReadAllText(file);
-			return text.TrimEnd().EndsWith("[EOF]", StringComparison.Ordinal);
+			return File.ReadAllText(file).TrimEnd().EndsWith("[EOF]", StringComparison.Ordinal);
 		}
 	}
 }

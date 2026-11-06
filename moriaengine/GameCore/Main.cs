@@ -456,6 +456,7 @@ namespace SteamEngine {
 		}
 
 		private static void Exit() {
+			WorldSaver.FinishPendingWrite(); //#1209 - an autosave still being written finishes first
 			RunLevelManager.SetShutdown();
 			GameServer.Exit();
 			AuxServerPipeClient.Exit();
