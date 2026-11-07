@@ -112,6 +112,17 @@ namespace SteamEngine.CompiledScripts {
 			this.Response(isLong, isExit, target, isEmote);
 		}
 
+		/// <summary>#1264 - whether a response leads to `target` (a page or an exit button), on any page: what tests ask.</summary>
+		internal bool HasResponse(string target) {
+			return this.pages.Exists(p => p.responses.Exists(r => string.Equals(r.target, target, StringComparison.OrdinalIgnoreCase)));
+		}
+
+		/// <summary>#1264 - the NPC's text on the page `name`, or null.</summary>
+		internal string HtmlOf(string name) {
+			PageEntry entry = this.pages.Find(p => string.Equals(p.name, name, StringComparison.OrdinalIgnoreCase));
+			return (entry == null) ? null : entry.html;
+		}
+
 		/// <summary>questDialog_exitResponse: just closes the dialog.</summary>
 		public void ExitResponse(bool isLong, bool isEmote) {
 			this.page.responses.Add(new ResponseEntry { text = this.text, isLong = isLong, isExit = true, isEmote = isEmote });
@@ -230,6 +241,18 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				this.AddLabel(ResponseX + 35, y, response.isEmote ? QuestDialogContent.ColorEmote : QuestDialogContent.ColorResponse, response.text);
 			}
+		}
+
+		/// <summary>#1264 - what the player would see, without sending it (tests).</summary>
+		internal QuestDialogContent BuildFor(Character npc, Player player) {
+			QuestDialogContent d = new QuestDialogContent(npc, player);
+			this.Build(d, npc, player);
+			return d;
+		}
+
+		/// <summary>#1264 - an exit button pressed, as OnResponse does after its checks (tests).</summary>
+		internal void Press(string button, Character npc, Player player) {
+			this.OnButton(button, npc, player);
 		}
 
 		internal int ExitButtonId(string name) {

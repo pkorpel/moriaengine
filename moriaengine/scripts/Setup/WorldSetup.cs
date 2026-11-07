@@ -115,7 +115,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#843 - the .SetupWorld command, the way anything gets into the world.</summary>
 	public static class WorldSetups {
 		//in the order they run; a new setup goes at the end
-		public static readonly WorldSetup[] All = { new ExpertQuestSetup(), new MasterQuestSetup(), new GrandmasterQuestSetup(), new DungeonEntrancesSetup(), new TownSetup(), new HouseSetup(), new TravelStonesSetup(), new RentedPlacesSetup(), new CampSetup(), new ArenaSetup(), new ConquestSetup(), new VenueSetup() };
+		public static readonly WorldSetup[] All = { new ExpertQuestSetup(), new MasterQuestSetup(), new GrandmasterQuestSetup(), new DungeonEntrancesSetup(), new TownSetup(), new HouseSetup(), new TravelStonesSetup(), new RentedPlacesSetup(), new CampSetup(), new ArenaSetup(), new ConquestSetup(), new VenueSetup(), new QuestPortsSetup() };
 
 		/// <summary>Every setup: adds what's missing, leaves everything else alone. Safe to run at any time.</summary>
 		[SteamFunction]

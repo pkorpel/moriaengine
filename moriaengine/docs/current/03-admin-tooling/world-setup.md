@@ -30,6 +30,9 @@ would break.
 **Venues** (#1240) come from a file, `scripts/Setup/venues.txt`, which `.venues export` writes: `VenueSetup` places each venue that is missing,
 by its id. See [venues.md](../04-gameplay-systems/living-world/venues.md).
 
+**Quest ports** (#1264, `QuestPortsSetup`, `.SetupQuestPorts`): the NPCs of the Erebor quests ported for #1237, so far q006's Eriol,
+Qworet, Unas and the innkeeper. See [q006.md](../04-gameplay-systems/quests/q006.md).
+
 Every item piece is fixed in place (`attr_move_never`), which also stops it decaying and keeps players from picking it up. A run
 applies this to pieces that already exist too, and that's the only thing it does to them. GMs can still drag fixed items; with `.gm`
 off they can't.

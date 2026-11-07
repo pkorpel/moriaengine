@@ -11,9 +11,10 @@ One file per quest, for an overview. Quest systems that aren't a quest of their 
 | Boosters, more experience for a while | [boosters.md](boosters.md) | #1090 |
 | Weekly quests (Tydenni questy) | [weekly.md](weekly.md) | #1090 |
 | Collector bags (t_collector), counts taken from bodies | [collectors.md](collectors.md) | #1247 |
+| q006 Erioluv vnuk (Eriol's grandson), the alchemist's robe | [q006.md](q006.md) | #1264 |
 
-Not ported: the numbered quests (q006-q100, gq*, mq*: the user wants to revisit
-them first), and the rest listed on #1069. All of Erebor's quests, their rewards and
+Ported from the numbered quests so far: q006 (#1237's phase 4 ports them one by one). Not ported: the other numbered quests
+(q007-q100, gq*, mq*), and the rest listed on #1069. All of Erebor's quests, their rewards and
 what state they were in: [erebor-catalogue.md](erebor-catalogue.md) (#1235).
 
 The design for what comes next, living cities and dynamic quests (a proposal, #1237):
