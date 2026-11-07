@@ -8,6 +8,11 @@ Part of #
 - [ ] Full suite (`scripts/test-full.sh`) passed, or not needed because: 
 - [ ] New behaviour has a test
 
+## Review
+
+<!-- Required for any change beyond *.md (#1230; the merge hook denies an empty section):
+what the independent review agent found and what changed because of it, "no defects" included. -->
+
 ## Before merge
 
 - [ ] Rebased on main

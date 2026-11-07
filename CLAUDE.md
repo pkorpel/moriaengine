@@ -1,5 +1,8 @@
 # moriaengine — working state
 
+## NOW (2026-11-07): #1230 the review rule for every code change, enforced at merge (branch 1230-review-rule in ../moria-1230)
+User, 2026-11-07: "code review agent must run and check all the code changes, just like we've done with those performance improvements". Plan (on #1230): the conventions bullet below covers every code change, not only core work; task-ship.md gets a review step and the PR template a `## Review` section; a PreToolUse hook scripts/hooks/require_review.py denies `gh pr merge` / merge_pull_request when the PR changes anything but *.md and its body has no `## Review` heading (fails open, like protect_tests.py); a unit test of the hook with a red check; wiki Dev-Process + Agent-Workflow. The full protocol suite for #1176 runs meanwhile in ../moria-final: push this branch (pre-push builds) only after it ends.
+
 ## NOW (2026-11-06): #1176 A-E all DONE; now the issues found along the way: #1212 first (build scripts leave idle MSBuild nodes + compiler server; branch 1212-lean-builds in ../moria-1212), then #1180, #1174, #1104, then the finish
 FINISH progress: (1) harness run done (Release scale 1 all phases + PerfLoadTests; raw in scratchpad/final/perf.txt, second run prof.txt, profiled run prof2.txt + prof/p5.speedscope.json, analyze.py/kids.py); (2)+(3) docs/current/02-engine-core/performance-report-2026-11.md written, linked from README + review header; (4) master issue #1228 (11 items). Findings: busy P2 72->0.2%, P3 82->1.6%, P4 62->4.3%, P5 86->7.0%; lateness p99 7-20 ms; autosave 0.74 s; boot 48->36 s; first save after building 1.4 s (the one missed pass line); P5 stored containers decay mid-run (709k->407k items, harness fix on #1228); profile P5: timer thread 90.8% idle, TimeAsSpan = 21% of busy (#1228 item 6). Gotcha: a watcher started with ( ... &) inside a background command got killed; run the harness with & and the watcher in the foreground of one script, then wait. Review agent fact-checked the page against the raw files: fixed the probe count (300 in 30 s windows), added run 3 (P3 gen2 101 ms, P5 timer max 260 ms with the profiler, an ItemDecayTimer of 68 ms deleting a 150-item container), section 1's single-event limits now in the targets table (GC > 50 ms, step max > 300 ms in P4/P3b: not met), think rates without a P4/P5 before, boot gain mostly the compile (not plan work), rounding. #1228 updated to 12 items. Next: docs PR + merge, then the full protocol suite, report on #1176.
 FINISH (branch perf-final-report in ../moria-final): discovered issues all done (#1212 #1180 #1174 #1104 merged; #1122 Healer predates the perf work). Plan: (1) harness as the review did: PERF_CONFIG=Release PERF_SCALE=1 PERF_PLAYERS=50 PERF_SECONDS=30 PERF_PHASES=all scripts/test-perf.sh, then PerfLoadTests (boot on its save), out in scratchpad/final/; (2) compare every section 5 number (busy, AI, CPU, lateness, step RT, alloc, GC, saves, boot, memory, range queries); (3) new page docs/current/02-engine-core/performance-report-2026-11.md (+ link from performance-review.md); (4) master issue with every further improvement (gen2 pause, packet batching, D2b cheap save wins, GM set-home, crowd steps, TestReportNearbySummon owner, whatever the run shows), also listed on the page; docs PR, review agent on the page; (5) ONLY THEN the full protocol suite (~3 h), report on #1176.
@@ -8833,9 +8836,18 @@ and bin/obj already exist from prior sessions). Full suite:
 
 ## Workflow conventions for this repo (don't re-derive each session)
 
-- **Every code change gets an independent review agent before merging (user rule 2026-11-04).** Core work (saves, timers, AI,
-  the loop) must be bulletproof. Spawn a fresh, read-only review agent with the issue, the diff and the files, not my
-  conclusions; verify each finding, fix the real ones, re-review a substantial fix, and say in the PR what the review found.
+- **Every code change gets an independent review agent before merging (user rule 2026-11-04 for the perf plan, every change
+  since 2026-11-07, #1230).** Code means any file but `*.md`: C#, `.def`/`.scp` content, the converter, scripts, hooks,
+  CI, `.claude/settings.json` (`.claude/` command and agent pages are `*.md`, so docs). Before the merge:
+  - spawn a fresh, read-only review agent (`.claude/agents/reviewer.md`, or a general agent told not to edit, commit or push)
+    with the issue, `git diff origin/main...HEAD` and the files to read, not my conclusions, so its read is independent;
+  - verify each finding myself, fix the real ones or say why not, re-run the tests they touch, and get a second review when
+    the fix is substantial;
+  - put a `## Review` section in the PR body: what the review found and what changed because of it ("no defects" counts).
+    Add it with `gh pr edit --body-file` in its own call, not chained before the merge (the hook reads the body first).
+  The hook `scripts/hooks/require_review.py` denies `gh pr merge` and `merge_pull_request` on a PR that changes more than
+  `*.md` files and has no `## Review` heading with text under it (the template's empty one doesn't count). Docs-only PRs
+  are exempt; a page full of numbers still deserves a fact-check agent (as the perf report got).
 - **Anything that must exist in the world goes through `scripts/Setup` and `.SetupWorld` (#843, user rule 2026-10-30).** Quest
   stones, NPCs, teleports, spawn gems: a `WorldSetup` with permanent piece ids, added to `WorldSetups.All`. Setups only ever
   add what's missing, never replace. See docs/current/03-admin-tooling/world-setup.md.

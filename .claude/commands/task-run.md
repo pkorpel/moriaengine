@@ -36,7 +36,8 @@ end. Don't retry a stopped step another way.
    `developer` run to fix it; red again: stop.
 5. **Review.** `reviewer` agent. `changes` → a fresh `developer` with the blocking
    findings, then review again. Still `changes` after the second round: stop.
-   Non-blocking findings go into the PR body.
+   The PR body's `## Review` section lists the rounds, what was fixed and the
+   non-blocking findings (the merge hook requires the section, #1230).
 6. **Ship.** Follow `.claude/commands/task-ship.md` steps 2–8 from the worktree.
    Not merged: stop.
 7. **Verify.** A detached verify worktree at the merge commit:
