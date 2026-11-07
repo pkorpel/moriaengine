@@ -30,8 +30,11 @@ namespace SteamEngine.CompiledScripts {
 				get { return ErrandTier.Medium; }
 			}
 
+			/// <summary>Whom the letter goes to: the test names them, so the client knows whose dialog to open.</summary>
+			internal static Item receiver;
+
 			public override bool TryBuild(ErrandContext context, Errand errand) {
-				Item other = context.PickOther();
+				Item other = context.PickOther(gem => (receiver == null) || (gem == receiver) || (context.GiverGem == receiver));
 				if (other == null) {
 					return false;
 				}
@@ -67,6 +70,7 @@ namespace SteamEngine.CompiledScripts {
 					ErrandTemplates.Unregister(template.Key);
 				}
 				ErrandTemplates.Register(new TestTemplate());
+				TestTemplate.receiver = people[1];
 				foreach (Item gem in people) {
 					NPCAiTimer.Freeze(Residents.BodyOf(gem), 600); //they stay where the player talks to them
 				}

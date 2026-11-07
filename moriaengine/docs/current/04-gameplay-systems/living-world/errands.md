@@ -1,6 +1,6 @@
 # Errands
 
-Step 6 of the living world (#1237, #1250) builds the engine behind the small dynamic quests residents give (design sections 5 and 8). Code: `scripts/Basic/LivingWorld/Errands/`. The templates themselves arrive in step 7; until then nothing is offered.
+Step 6 of the living world (#1237, #1250) builds the engine behind the small dynamic quests residents give (design sections 5 and 8). Code: `scripts/Basic/LivingWorld/Errands/`. Step 7 (#1252) adds the first eight templates, listed below.
 
 ## Asking for one
 
@@ -40,6 +40,37 @@ A template is an `ErrandTemplate` subclass. It registers itself from a class's `
 `ErrandContext` gives the template the giver, the city's other residents (`PickOther`, with a filter) and `Pick` for text pools. `Errands.Talk/Deliver/Fetch/Collect/Wait/Choose` build the steps.
 
 A giver offers one template, drawn by weight among those that can be built for them.
+
+## The eight templates (#1252)
+
+`scripts/Basic/LivingWorld/Errands/BasicErrands.cs` holds design 9.1's first eight, with Czech text pools. The player's lines are worded so they fit a woman or a man, and residents' own lines follow their gender (`BasicErrands.Sex`).
+
+| Key | Name | Tier | Steps |
+|---|---|---|---|
+| letter | Dopis | small (medium with a reply) | Deliver a letter to another resident, then tell the giver. One time in three the answer goes back to the giver as a second letter. |
+| askaround | Vyptavani | medium | News of someone: two or three residents point onward, the last one knows, then back to the giver. |
+| market | Nakup | small | Bring N of a shop good: bread, apples, cheese, wine or candles. |
+| ingredients | Suroviny | medium | By the giver's venue: ingots (smithy, armoury, forge), raw fish (tavern, messhall, bakery), ginseng (healing, temple), logs (harbour, stable, farm), apples (brewery). Other venues don't offer it. |
+| lost | Ztracena vec | small | The giver's lost ring, necklace, book or hammer lies at a spot in another resident's venue (`ErrandStep.venueId`). Pick it up and bring it back. Giving up or running out clears it away. |
+| debt | Dluh | medium | At the debtor, choose one of three answers. Ask to pay: full pay. Forgive: half pay, and the debtor's friendship +2. Threaten: 120%, the debtor's friendship -2 and karma -100. Then back to the giver. |
+| walk | Doprovod | medium | An old resident (scholar, librarian, priest, pilgrim, patient, farmer, patron) follows the player (`ErrandStep.companionId`, `FollowTarget`) to a worker at another venue, and must be within 6 tiles there. When the errand ends they go back to their day; the schedule leaves a follower alone meanwhile. |
+| shift | Smena | small | A worker hands out mugs (tavern), bread (bakery, market) or papers to up to three people of their own venue, then pays wages. |
+
+Templates can scale their pay (`PayPercent`) and act at the end (`OnDone`), as the debt does.
+
+**The lost item:**
+- Only its errand's player can pick it up (a GM can too). Others are told "To hleda nekdo jiny."
+- When the errand ends, the item goes wherever it is: pack, worn, bank, another's pack.
+- The template offers it only in a venue with a spot to lie on.
+
+**A follower:** the resident schedule lets a follower go once no running errand of that player still needs them. That covers a player who is offline or deleted, and an errand that ended or ran out, even if nobody reads the player's errands again. A GM's "come" is untouched.
+
+**Other details:**
+- A step's companion is checked before anything is taken or spent.
+- An errand's own items are taken back from the bank too.
+- Friendship is floored at 0, so a threatened stranger can't fall further.
+- Only working people give ingredients; guests have no trade.
+- A shift goes to the venue's working people, in a random order.
 
 ## Limits (`.settings` "Ukoly")
 
@@ -101,3 +132,11 @@ Each errand has two buttons: one points the quest arrow (0xBA) at the resident, 
 - the cap on taken errands holds.
 
 **Known gaps:** a game day for the limits is the server clock / 24 minutes, which isn't aligned with LightAndWeather's dawn. Expiry runs on real time, so it keeps running while the server is down.
+
+`Tests/Protocol/ErrandTemplateTests.cs` (server side `scripts/Tests/ErrandTemplateTests.cs`, account `errandtpltests`) sets up a tavern, a smithy and a temple in Edoras. It checks:
+- all eight are registered, and the innkeeper offers one to a client;
+- each template's steps, and that its texts are plain ASCII;
+- the lost item lies in the venue, only its player may pick it up, bringing it back ends the errand, and giving up clears it even from the bank;
+- the debt's three answers (pay, friendship, karma);
+- the walk: the follower, no ending without them, back to their day, and let go by the schedule once no errand holds them;
+- a guest has no trade to supply.

@@ -23,6 +23,15 @@ namespace SteamEngine.CompiledScripts {
 			get { return 10; }
 		}
 
+		/// <summary>#1252 - the share of the tier's pay this errand earns as it ended (a forgiven debt pays half).</summary>
+		public virtual int PayPercent(Errand errand) {
+			return 100;
+		}
+
+		/// <summary>#1252 - anything the errand does as it's done, before the pay (a debtor's friendship).</summary>
+		public virtual void OnDone(Player player, Errand errand) {
+		}
+
 		/// <summary>Fills the errand's name, offer, thanks and steps from the context, or returns false when this giver, here and
 		/// now, can't offer it (no second resident in the city, say).</summary>
 		public abstract bool TryBuild(ErrandContext context, Errand errand);

@@ -60,6 +60,18 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData, CopyableData]
 		public string reply = "";
 
+		/// <summary>#1252 - Deliver: the item lies in this venue (CityVenue.VenueId) to be found, instead of in the pack.</summary>
+		[SaveableData, CopyableData]
+		public string venueId = "";
+
+		/// <summary>#1252 - the item laid in the venue, so it can be cleared away if the errand ends without it.</summary>
+		[SaveableData, CopyableData]
+		public Item placed;
+
+		/// <summary>#1252 - a resident who follows the player for this step and must be beside them when it's done (a slow walk).</summary>
+		[SaveableData, CopyableData]
+		public string companionId = "";
+
 		/// <summary>Choose: the answers, and the resident's line to each.</summary>
 		[SaveableData, CopyableData]
 		public List<string> choices = new List<string>();

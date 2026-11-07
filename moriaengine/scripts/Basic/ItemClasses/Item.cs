@@ -181,6 +181,10 @@ namespace SteamEngine.CompiledScripts {
 				args.Result = new DenyResult_StringSysMessage(hypno);
 				return TriggerResult.Cancel;
 			}
+			if (!Errands.MayPickUp(this, picker)) { //#1252 - another player's errand item, waiting for them
+				args.Result = new DenyResult_StringSysMessage("To hleda nekdo jiny.");
+				return TriggerResult.Cancel;
+			}
 			if ((this.LockedTo != null) && ((picker == null) || !picker.IsGM)) { //#941 - nobody's: it has to be unlocked first
 				args.Result = new DenyResult_StringSysMessage("Vec je zamcena k domu.");
 				return TriggerResult.Cancel;
