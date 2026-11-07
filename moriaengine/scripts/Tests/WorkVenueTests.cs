@@ -97,9 +97,8 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestWorkVenueAfterClient(Character self) {
 			Player player = (Player) self;
 			try {
-				Report("theClientWorkedTheBellows", player.GetTag(WorkVenues.BellowsAtTK) != null);
-				player.RemoveTag(WorkVenues.BellowsAtTK);
-				player.RemoveTag(WorkVenues.BellowsDayTK);
+				Report("theClientWorkedTheBellows", player.GetTag(VenueLabour.AtKey("smithy")) != null);
+				VenueLabour.Forget(player, "smithy");
 			} finally {
 				Console.WriteLine("WORKVENUE_CLIENT_DONE");
 			}
@@ -135,30 +134,30 @@ namespace SteamEngine.CompiledScripts {
 			int f0 = Friend(player, "smithy", "smith");
 			long g0 = GoldUtils.CountGoldOn(player);
 			Do(player, "smithy_bellows", "smithy", "smith");
-			bool worked = (player.Stam == 50 - VenueLifeSettings.instance.bellowsStamina) && (GoldUtils.CountGoldOn(player) - g0 == VenueLifeSettings.instance.bellowsWage) &&
+			bool worked = (player.Stam == 50 - VenueLifeSettings.instance.labourStamina) && (GoldUtils.CountGoldOn(player) - g0 == VenueLifeSettings.instance.labourWage) &&
 				(Friend(player, "smithy", "smith") == Math.Min(Residents.MaxFriendship, f0 + 1));
 			long g1 = GoldUtils.CountGoldOn(player);
 			Do(player, "smithy_bellows", "smithy", "smith");
 			bool rests = GoldUtils.CountGoldOn(player) == g1;
-			Errands.NowOverride = start.AddMinutes(VenueLifeSettings.instance.bellowsMinutes + 1);
+			Errands.NowOverride = start.AddMinutes(VenueLifeSettings.instance.labourMinutes + 1);
 			Do(player, "smithy_bellows", "smithy", "smith");
-			bool again = (GoldUtils.CountGoldOn(player) - g1 == VenueLifeSettings.instance.bellowsWage) && (Friend(player, "smithy", "smith") == Math.Min(Residents.MaxFriendship, f0 + 1));
-			Errands.NowOverride = start.AddMinutes(2 * (VenueLifeSettings.instance.bellowsMinutes + 1));
+			bool again = (GoldUtils.CountGoldOn(player) - g1 == VenueLifeSettings.instance.labourWage) && (Friend(player, "smithy", "smith") == Math.Min(Residents.MaxFriendship, f0 + 1));
+			Errands.NowOverride = start.AddMinutes(2 * (VenueLifeSettings.instance.labourMinutes + 1));
 			player.Stam = 3;
 			long g2 = GoldUtils.CountGoldOn(player);
 			Do(player, "smithy_bellows", "smithy", "smith");
 			Report("theBellowsTakeStaminaAndRest", worked && rests && again && (GoldUtils.CountGoldOn(player) == g2) && (player.Stam == 3));
 			player.Stam = 50;
-			int perDay = VenueLifeSettings.instance.bellowsPerDay;
-			VenueLifeSettings.instance.bellowsPerDay = 2; //two worked today already
-			Errands.NowOverride = start.AddMinutes(3 * (VenueLifeSettings.instance.bellowsMinutes + 1));
+			int perDay = VenueLifeSettings.instance.labourPerDay;
+			VenueLifeSettings.instance.labourPerDay = 2; //two worked today already
+			Errands.NowOverride = start.AddMinutes(3 * (VenueLifeSettings.instance.labourMinutes + 1));
 			long g4 = GoldUtils.CountGoldOn(player);
 			Do(player, "smithy_bellows", "smithy", "smith");
 			bool capped = (GoldUtils.CountGoldOn(player) == g4) && (player.Stam == 50);
 			Errands.NowOverride = start.AddHours(25);
 			Do(player, "smithy_bellows", "smithy", "smith");
-			Report("theBellowsHaveADailyCap", capped && (GoldUtils.CountGoldOn(player) - g4 == VenueLifeSettings.instance.bellowsWage));
-			VenueLifeSettings.instance.bellowsPerDay = perDay;
+			Report("theBellowsHaveADailyCap", capped && (GoldUtils.CountGoldOn(player) - g4 == VenueLifeSettings.instance.labourWage));
+			VenueLifeSettings.instance.labourPerDay = perDay;
 			player.Stam = 50;
 
 			Errands.NowOverride = start;
@@ -203,23 +202,23 @@ namespace SteamEngine.CompiledScripts {
 			bool byNight = Offers(player, "temple", "priest").Contains("temple_vigil");
 			int k1 = player.Karma;
 			Do(player, "temple_vigil", "temple", "priest");
-			VigilTimer vigil = player.GetTimer(VigilTimer.Key) as VigilTimer;
+			VenueStayTimer vigil = player.GetTimer(VenueStayTimer.Key) as VenueStayTimer;
 			bool started = (vigil != null) && !Offers(player, "temple", "priest").Contains("temple_vigil");
 			int half = VenueLifeSettings.instance.vigilSeconds / 2;
 			bool goesOn = (vigil != null) && vigil.Step(player, half);
 			bool ends = (vigil != null) && !vigil.Step(player, VenueLifeSettings.instance.vigilSeconds - half);
-			player.DeleteTimer(VigilTimer.Key);
+			player.DeleteTimer(VenueStayTimer.Key);
 			Report("aVigilAtNightToItsEnd", notByDay && byNight && started && goesOn && ends && (player.Karma == Math.Min(short.MaxValue, k1 + VenueLifeSettings.instance.vigilKarma)) &&
-				(player.GetTag(WorkVenues.VigilDoneTK) != null));
+				(player.GetTag(VenueStay.DoneKey("vigil")) != null));
 			Do(player, "temple_vigil", "temple", "priest");
-			bool onceADay = player.GetTimer(VigilTimer.Key) == null;
+			bool onceADay = player.GetTimer(VenueStayTimer.Key) == null;
 			Errands.NowOverride = start.AddHours(25);
 			Do(player, "temple_vigil", "temple", "priest");
-			VigilTimer second = player.GetTimer(VigilTimer.Key) as VigilTimer;
+			VenueStayTimer second = player.GetTimer(VenueStayTimer.Key) as VenueStayTimer;
 			int k2 = player.Karma;
 			player.Go(new Point4D((ushort) (player.X + 40), player.Y, player.Z, player.M));
 			bool broken = (second != null) && !second.Step(player, VenueLifeSettings.instance.vigilSeconds);
-			player.DeleteTimer(VigilTimer.Key);
+			player.DeleteTimer(VenueStayTimer.Key);
 			Report("leavingBreaksTheVigil", onceADay && broken && (player.Karma == k2));
 			VenueClock.Override = 12;
 			Errands.NowOverride = null;

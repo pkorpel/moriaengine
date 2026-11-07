@@ -68,6 +68,11 @@ namespace SteamEngine.CompiledScripts {
 
 	[ViewableClass]
 	public partial class Item : AbstractItem {
+		/// <summary>#1260 - an errand's item (a loaf on the bread round) keeps apart from the player's own of its kind.</summary>
+		public override bool CanStackWith(AbstractItem other) {
+			return !Errands.IsErrandItem(this) && !Errands.IsErrandItem(other);
+		}
+
 		/// <summary>Sphere-style ATTR bitflags (#215/#217), per-instance and independently
 		/// overridable from the ItemDef's own AttributesDefault once seeded (see On_Create).
 		///
