@@ -37,7 +37,8 @@ it shows.
 - A section with no builder shows its hint. `CityJournalPage` (`scripts/Basic/LivingWorld/Journal/`) is the first registered
   page.
 
-To add a ported quest: one `QuestJournalEntry` in `QuestJournal.Entries` and a `Report` call on each step.
+To add a ported quest: `QuestJournal.Register(new QuestJournalEntry(...))` from the quest class's `Bootstrap` (#1264; the rank quests
+are listed first, then the ports in the order they register), and a `Report` call on each step.
 
 Tests: `QuestJournalTests` (protocol): a plain player's `.questy`, the placeholder sections, the list and its colours, a page,
 and the scroll. Since #1245 it also covers the living world's four tabs. On the Mesto page, Edoras comes first with Vazeny and

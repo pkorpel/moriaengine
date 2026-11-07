@@ -52,14 +52,25 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>#839 - Erebor's quest journal (questy/System/questmenu.scp): the .questy menu with the active and finished
-	/// quests, a page for each, and the scroll that shows up when a quest moves on. Only the rank quests are ported, so only
-	/// they are listed; Erebor's list had 59 quests, all with their own pages there. Its other sections are placeholders.</summary>
+	/// quests, a page for each, and the scroll that shows up when a quest moves on. The rank quests are listed first, then the
+	/// ported quests in the order they Register (#1264); Erebor's list had 59 quests, all with their own pages there.</summary>
 	public static class QuestJournal {
 		public static readonly QuestJournalEntry Expert = new QuestJournalEntry("Povyseni na Experta", 0x3000, ExpertQuest.GetJournalText, p => p.SkillRank >= SkillRank.Expert);
 		public static readonly QuestJournalEntry Master = new QuestJournalEntry("Povyseni na Mistra", 0x3000, MasterQuest.GetJournalText, p => p.SkillRank >= SkillRank.Master);
 		public static readonly QuestJournalEntry Grandmaster = new QuestJournalEntry("Ztracene Dcery", 0x3000, GrandmasterQuest.GetJournalText, p => GrandmasterQuest.GetStage(p) == 13);
 
-		internal static readonly QuestJournalEntry[] Entries = { Expert, Master, Grandmaster };
+		internal static readonly List<QuestJournalEntry> Entries = new List<QuestJournalEntry> { Expert, Master, Grandmaster };
+
+		/// <summary>#1264 - a ported quest's entry, from its class's Bootstrap; registering it again (a recompile) replaces it in place.</summary>
+		public static QuestJournalEntry Register(QuestJournalEntry entry) {
+			int index = Entries.FindIndex(e => e.Name == entry.Name);
+			if (index >= 0) {
+				Entries[index] = entry;
+			} else {
+				Entries.Add(entry);
+			}
+			return entry;
+		}
 
 		/// <summary>Erebor's .questy command.</summary>
 		[SteamFunction]
@@ -83,10 +94,13 @@ namespace SteamEngine.CompiledScripts {
 			D_QuestJournalReport scroll = SingletonScript<D_QuestJournalReport>.Instance;
 			player.DialogClose(scroll, 0);
 			player.Sound(513);
-			player.Dialog(player, scroll, Array.IndexOf(Entries, entry));
+			player.Dialog(player, scroll, Entries.IndexOf(entry));
 		}
 
 		internal static void OpenPage(Player player, int entryIndex) {
+			if ((entryIndex < 0) || (entryIndex >= Entries.Count)) {
+				return; //a crafted button, or a scroll from before a recompile
+			}
 			D_QuestJournalPage page = SingletonScript<D_QuestJournalPage>.Instance;
 			player.DialogClose(page, 0);
 			player.Dialog(player, page, entryIndex);
@@ -280,7 +294,7 @@ namespace SteamEngine.CompiledScripts {
 		private void AddQuests(Player player, QuestJournalLoc loc) {
 			List<int> shown = new List<int>();
 			foreach (bool done in new[] { false, true }) {
-				for (int i = 0; i < QuestJournal.Entries.Length; i++) {
+				for (int i = 0; i < QuestJournal.Entries.Count; i++) {
 					QuestJournalEntry entry = QuestJournal.Entries[i];
 					if (entry.IsStarted(player) && (entry.IsDone(player) == done)) {
 						shown.Add(i);
