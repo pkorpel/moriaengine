@@ -23,8 +23,8 @@ namespace SteamEngine.Tests.Protocol {
 					//225 since #1107 (spk_strazcelagru) and #1116 (the arena's spk_crunch_arenaVchod and spk_crunch_strazceAreny, the war lieutenants' spk_namestek_valky_g/_m)
 					//221 since #1264 (q006: spk_q006_eriol, spk_q023_ShamanQworet, spk_q023_CarodejUnas, spk_q007_hospodsky)
 					//215 since #1266 (q007: spk_q007_haradir, _Carodejnice, _kovar, _maginscript, _divous, _rodrigo)
-					//214 since #1268 (spk_q017_sberatel)
-					AssertHas(report, "stubs=214 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech healer=HealerSpeech mistr=SkillTeacherSpeech");
+					//214 since #1268 (spk_q017_sberatel), 210 since #1270 (spk_q009_krejci, spk_q018_rybar/Mirrana/elnassir)
+					AssertHas(report, "stubs=210 chatter=77 first=*Vypravec* defHasIt=True banker=BankerSpeech shopkeep=ShopkeeperSpeech vendorCustom=ScriptedSpeech guard=GuardSpeech healer=HealerSpeech mistr=SkillTeacherSpeech");
 
 					Ask(fixture, client, ".TestSpawnSpeechStubListener", "SPEECH_STUB_LISTENER:");
 					client.SendSpeech("hello there");

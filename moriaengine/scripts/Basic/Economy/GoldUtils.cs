@@ -116,9 +116,7 @@ namespace SteamEngine.CompiledScripts {
 				payer.SysMessage("Jako GM nic neplatis.");
 				return true;
 			}
-			if ((source == PaySource.Usual) && (Globals.PaymentSource == Globals.PaymentSourceMode.BankOnly)) {
-				source = PaySource.Bank;
-			}
+			source = Effective(source);
 			Container backpack = payer.Backpack;
 			BankBox bank = payer.Bank;
 			long inPack = (source == PaySource.Bank) ? 0 : AvailableIn(backpack);
@@ -134,6 +132,21 @@ namespace SteamEngine.CompiledScripts {
 			TakeFrom(backpack, fromPack);
 			TakeFrom(bank, amount - fromPack);
 			return true;
+		}
+
+		/// <summary>#1270 - whether Pay would take `amount` from them, without taking it: an offer shown before the payment.</summary>
+		public static bool CanPay(Character payer, long amount, PaySource source = PaySource.Usual) {
+			if ((amount <= 0) || payer.IsGM) {
+				return amount >= 0;
+			}
+			source = Effective(source);
+			long inPack = (source == PaySource.Bank) ? 0 : AvailableIn(payer.Backpack);
+			long inBank = (source == PaySource.Pack) ? 0 : AvailableIn(payer.Bank);
+			return inPack + inBank >= amount;
+		}
+
+		private static PaySource Effective(PaySource source) {
+			return ((source == PaySource.Usual) && (Globals.PaymentSource == Globals.PaymentSourceMode.BankOnly)) ? PaySource.Bank : source;
 		}
 
 		private static long AvailableIn(Container container) {

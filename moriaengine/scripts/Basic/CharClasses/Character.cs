@@ -2518,6 +2518,7 @@ namespace SteamEngine.CompiledScripts {
 				MagicItems.OnEquip(this, worn); //#1017
 				Q006.OnEquip(this, worn); //#1264 the alchemist's robe
 				Q007.OnEquip(this, worn); //#1266 the adamantine hammer
+				Q009.OnEquip(this, worn); //#1270 the tailor's ring
 			}
 			Uniform.RefreshSoon(this);
 			RealmUniform.RefreshSoon(this); //#1133
@@ -2529,6 +2530,7 @@ namespace SteamEngine.CompiledScripts {
 				MagicItems.OnUnequip(this, worn); //#1017
 				Q006.OnUnequip(this, worn); //#1264
 				Q007.OnUnequip(this, worn); //#1266
+				Q009.OnUnequip(this, worn); //#1270
 			}
 			Uniform.Restore(args.ManipulatedItem);
 			Uniform.RefreshSoon(this);

@@ -72,6 +72,31 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			PlaceTerlak(pieces, gm);
+			PlaceTailorAndSalmon(pieces, gm);
+		}
+
+		/// <summary>#1270 - q009's tailor in Edoras (Erebor's spot: none written down), q018's three NPCs where Erebor's script header
+		/// says they stood, the golden rune in Osgiliath's eastern ruins and the wheel in the Pits of Death, at the spots its items
+		/// teleport to.</summary>
+		internal static void PlaceTailorAndSalmon(WorldPieces pieces, Character gm) {
+			Map world = Map.GetMap(0);
+			PlaceNear(pieces, gm, "q009/talathwen", Q009.TailorDef, "a_Edoras", 5, 3);
+			PlaceStill(pieces, gm, "q018/fisherman", Q018.FishermanDef, WorldSpots.NearestStandable(world, 3916, 3609, 8), 0);
+			PlaceStill(pieces, gm, "q018/mirrana", Q018.MirranaDef, WorldSpots.NearestStandable(world, 3014, 2467, 8), 0);
+			PlaceStill(pieces, gm, "q018/elnassir", Q018.ElnassirDef, WorldSpots.NearestStandable(world, 2462, 3324, 8), 0);
+			PlaceItem(pieces, gm, "q018/rune", Q018.RuneDef, Q018.RuneSpot, true); //Erebor's height: Osgiliath's ruins lie under other floors
+			PlaceItem(pieces, gm, "q018/wheel", Q018.WheelDef, Q018.WheelSpot, false);
+		}
+
+		private static void PlaceItem(WorldPieces pieces, Character gm, string id, string defname, Point4D near, bool withZ) {
+			Map map = Map.GetMap(near.M);
+			int[] at = (withZ && map.CanFit(near.X, near.Y, near.Z, 16, true, false, true)) ? new int[] { near.X, near.Y, near.Z }
+				: WorldSpots.NearestStandable(map, near.X, near.Y, 4);
+			if (at == null) {
+				gm.SysMessage("No spot for " + id + ".");
+				return;
+			}
+			pieces.Item("quests/" + id, defname, at, near.M);
 		}
 
 		/// <summary>#1268 - q017: the entry gate at the first of its four dungeon spots (it moves after each entry), the exit gate at the
