@@ -21,7 +21,7 @@ The fourth side panel (sections 31-34) shows the living world ([living-world-des
 | Tab | Section | Content |
 |---|---|---|
 | Ukoly | 31 | Errands, filled by the errand engine (#1237 step 6). Until then a line saying people in the city give them. |
-| Mesto | 32 | A page per city, the one the player stands in first. It shows the city's level and value, its factions ([reputation.md](../living-world/reputation.md)), and up to three residents who are friends (name, role, friendship out of 10). A button opens `.povest`. |
+| Mesto | 32 | A page per city, the one the player stands in first. It shows the city's level and value, its factions ([reputation.md](../living-world/reputation.md)), and up to three residents who are friends (name, where they work, friendship out of 10). A button opens `.povest`. |
 | Udalosti | 33 | World events (phase 6). For now, a line saying nothing is happening. |
 | Skutky | 34 | Deeds and titles (phase 7). For now, a line saying there are none yet. |
 

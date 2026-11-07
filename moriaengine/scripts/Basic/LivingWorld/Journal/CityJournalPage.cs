@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using SteamEngine.CompiledScripts.Dialogs;
@@ -5,10 +6,12 @@ using SteamEngine.CompiledScripts.Dialogs;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1245 - the journal's Mesto tab: a page per city, the one the player stands in first. The city's view of the player
-	/// and of its factions (as .povest), then the residents there who are the player's friends. A button opens .povest.</summary>
+	/// and of its factions (as .povest), then the residents there who are the player's friends and where they work. A button
+	/// opens .povest.</summary>
 	public static class CityJournalPage {
 		internal const int AllCitiesButton = QuestJournalPages.FirstButton;
 		private const int HeadHue = 95, LabelHue = 955, ValueHue = 52, BadHue = 33, FriendHue = 68, Row = 20, FriendsShown = 3;
+		private const int NameChars = 12, PlaceChars = 13; //what fits the window's columns
 
 		public static void Bootstrap() {
 			QuestJournalPages.Register(D_QuestJournal.SectionCity, Add, OnButton);
@@ -30,7 +33,7 @@ namespace SteamEngine.CompiledScripts {
 			List<Item> friends = new List<Item>();
 			foreach (Item gem in Residents.AllGems) {
 				CityVenue work = Residents.WorkplaceOf(gem);
-				if ((work != null) && (work.City == city) && (Residents.Friendship(player, Residents.IdOf(gem)) > 0)) {
+				if ((work != null) && string.Equals(work.City, city, StringComparison.OrdinalIgnoreCase) && (Residents.Friendship(player, Residents.IdOf(gem)) > 0)) {
 					friends.Add(gem);
 				}
 			}
@@ -80,10 +83,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 			for (int i = 0; (i < friends.Count) && (i < FriendsShown); i++) {
 				Item gem = friends[i];
-				VenueRole role = Residents.RoleOf(gem);
-				gump.AddLabel(90, y, FriendHue, Residents.NameOf(gem));
-				if (role != null) {
-					gump.AddLabel(180, y, LabelHue, role.Name);
+				CityVenue work = Residents.WorkplaceOf(gem);
+				gump.AddLabel(90, y, FriendHue, Cut(Residents.NameOf(gem), NameChars));
+				if (work != null) {
+					gump.AddLabel(180, y, LabelHue, Cut(work.Label, PlaceChars));
 				}
 				gump.AddLabel(275, y, ValueHue, Residents.Friendship(player, Residents.IdOf(gem)).ToString(CultureInfo.InvariantCulture) + "/" + Residents.MaxFriendship.ToString(CultureInfo.InvariantCulture));
 				y += Row;
@@ -91,6 +94,13 @@ namespace SteamEngine.CompiledScripts {
 			if (friends.Count > FriendsShown) {
 				gump.AddLabel(90, y, LabelHue, "a dalsi: " + (friends.Count - FriendsShown).ToString(CultureInfo.InvariantCulture));
 			}
+		}
+
+		internal static string Cut(string text, int chars) {
+			if (string.IsNullOrEmpty(text) || (text.Length <= chars)) {
+				return text ?? "";
+			}
+			return text.Substring(0, chars - 1) + ".";
 		}
 
 		private static void OnButton(Player player, int button) {
