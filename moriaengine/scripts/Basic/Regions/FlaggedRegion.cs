@@ -324,6 +324,7 @@ namespace SteamEngine.Regions {
 			Player asPlayer = ch as Player;
 			if (asPlayer != null) {
 				asPlayer.SendGlobalLightLevel(LightAndWeather.GetLightIn(this));
+				Reputation.OnEnterCity(asPlayer, this); //#1243 - a suspect is watched
 			}
 
 			return TriggerResult.Continue;//if forced is true, the return value is irrelevant

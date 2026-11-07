@@ -154,7 +154,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				}
 			}
 			long account = player.Gold;
-			int total = AlchemistShop.Total(counts);
+			int total = (int) Reputation.PriceFor(player, AlchemistShop.Total(counts)); //#1243 - what Deliver will charge
 			long left = account - total;
 			this.AddLabel(210, 300, 2301, "Soucet:");
 			this.AddLabel(272, 300, 52, total.ToString(CultureInfo.InvariantCulture));

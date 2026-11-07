@@ -112,6 +112,9 @@ namespace SteamEngine.CompiledScripts {
 			if (Town.IsBannedFor(guard, target)) {
 				return false;
 			}
+			if (Reputation.IsEnemyHere(target, guard)) { //#1243 - the city counts them its enemy: its guards stop protecting them
+				return false;
+			}
 			switch (guard.Realm) {
 				case Realm.Gondor:
 					return (target.Realm == Realm.Gondor) && (!Notoriety.IsCriminal(target) || Town.IsFromGuardsTown(guard, target)) && !MysticHypnosis.CountsAsMurderer(target);

@@ -2246,6 +2246,7 @@ namespace SteamEngine.CompiledScripts {
 
 			PlayerRecord.MonsterDied(this, killedBy); //#1011
 			MonsterSpecialAttacks.OnMonsterDeath(this, killedBy); //#1022
+			Reputation.OnDeath(this, killedBy); //#1243 - a resident's killer is remembered in the city
 			LevelingSystem.ShareMonsterExperience(this, killedBy);
 		}
 
