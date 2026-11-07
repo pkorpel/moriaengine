@@ -1,5 +1,6 @@
 using System;
 using SteamEngine.Common;
+using SteamEngine.Regions;
 
 namespace SteamEngine.CompiledScripts {
 	/// <summary>#1270 - q018 (the golden salmon) on the server, through the dialogs' own buttons: Mirrana, Elnassir's salve and its
@@ -81,15 +82,25 @@ namespace SteamEngine.CompiledScripts {
 				}
 				Q006.Consume(player, "i_reag_bone", 1);
 				bool notShort = !dElnassir.BuildFor(elnassir, player).HasResponse("elnassir:2");
-				((Item) ThingDef.GetByDefname("i_gold").Create(player.Bank)).Amount = Q018.SalveGold;
+				Item bankGold = (Item) ThingDef.GetByDefname("i_gold").Create(player.Bank);
+				bankGold.Amount = Q018.SalveGold;
 				dElnassir.Press("elnassir:2", elnassir, player);
 				bool refused = !QuestItems.Has(player, Q018.Salve) && (Q006.Count(player, "i_reag_nightshade") == 80);
 				Q006.Give(player, "i_reag_bone", 1);
+				Globals.PaymentSourceMode mode = Globals.PaymentSource;
+				bankGold.Cont = player.Backpack; //all of it in the pack: a bank-only payment can't take it
+				bool bankOnlyNotOffered;
+				try {
+					Globals.PaymentSource = Globals.PaymentSourceMode.BankOnly;
+					bankOnlyNotOffered = !dElnassir.BuildFor(elnassir, player).HasResponse("elnassir:2");
+				} finally {
+					Globals.PaymentSource = mode;
+				}
 				long gold = player.Gold;
 				bool offered = dElnassir.BuildFor(elnassir, player).HasResponse("elnassir:2");
 				dElnassir.Press("elnassir:2", elnassir, player);
 				bool allTaken = (Q006.Count(player, reagents[0]) == 0) && (Q006.Count(player, reagents[1]) == 0) && (Q006.Count(player, reagents[2]) == 0);
-				Report("elnassirsSalve", notShort && refused && offered && QuestItems.Has(player, Q018.Salve) && allTaken && (player.Gold == gold - Q018.SalveGold));
+				Report("elnassirsSalve", notShort && refused && bankOnlyNotOffered && offered && QuestItems.Has(player, Q018.Salve) && allTaken && (player.Gold == gold - Q018.SalveGold));
 
 				//the rune does nothing before Mirrana has her salve
 				Item rune = (Item) ThingDef.GetByDefname(Q018.RuneDef).Create(player.X, player.Y + 1, player.Z, player.M);
@@ -106,7 +117,9 @@ namespace SteamEngine.CompiledScripts {
 				Item wheel = (Item) ThingDef.GetByDefname(Q018.WheelDef).Create(player.X, player.Y, player.Z, player.M);
 				exp = ExpGained(player, () => Q018.UseWheel(wheel, player));
 				bool spun = QuestItems.Has(player, Q018.Thread) && (exp == 1500) && (player.GetRealSkillValue(SkillName.Tailoring) == 530) && (Q018.GetStage(player) == 5);
-				bool back = Near(player, Q018.RuneSpot);
+				bool fits = Map.GetMap(0).CanFit(Q018.RuneSpot.X, Q018.RuneSpot.Y, Q018.RuneSpot.Z, 16, true, false, true);
+				bool back = Near(player, Q018.RuneSpot) && (!fits || (player.Z == Q018.RuneSpot.Z)); //Erebor's height where it fits
+				Console.WriteLine("Q018_BACK: " + player.X + "," + player.Y + "," + player.Z + " runeSpotFits=" + fits);
 				Q018.UseWheel(wheel, player);
 				bool once = player.GetRealSkillValue(SkillName.Tailoring) == 530;
 				wheel.Delete();

@@ -27,7 +27,7 @@ namespace SteamEngine.CompiledScripts {
 			d.BaseButton(1, 57, "Kdo jsi?");
 			d.BaseButton(2, 45, "Mohu pomoci?");
 			d.BaseButton(3, 45, "-Prohlednout-", QuestDialogContent.ColorEmote);
-			d.BaseButton(6, 50, "Obchodovat?");
+			d.BaseButton(6, 50, "Obchodovat?", QuestDialogContent.ColorBaseButton);
 			d.Page("Pozdrav");
 			d.SetText("Vitej v mem kramku !");
 			d.Html();
@@ -79,7 +79,7 @@ namespace SteamEngine.CompiledScripts {
 		//d_q009_krejci_2
 		internal static void Krejci2(QuestDialogContent d) {
 			d.BaseButton(3, 45, "-Prohlednout-", QuestDialogContent.ColorEmote);
-			d.BaseButton(6, 50, "Obchodovat?");
+			d.BaseButton(6, 50, "Obchodovat?", QuestDialogContent.ColorBaseButton);
 			d.Page("Pozdrav");
 			d.SetText("Rada te tu opet vidim. Pamatuj, neprodam ten prsten za mene, jak 5M. Staci donest sek a bude tvuj.");
 			d.Html();
@@ -94,7 +94,7 @@ namespace SteamEngine.CompiledScripts {
 		//d_q009_krejci_3
 		internal static void Krejci3(QuestDialogContent d) {
 			d.BaseButton(3, 45, "-Prohlednout-", QuestDialogContent.ColorEmote);
-			d.BaseButton(6, 50, "Obchodovat?");
+			d.BaseButton(6, 50, "Obchodovat?", QuestDialogContent.ColorBaseButton);
 			d.Page("Pozdrav");
 			d.SetText("Rada te tu opet vidim. Koupis tedy ten prsten?");
 			d.Html();
@@ -123,7 +123,7 @@ namespace SteamEngine.CompiledScripts {
 		//d_q009_krejci_4
 		internal static void Krejci4(QuestDialogContent d) {
 			d.BaseButton(3, 45, "-Prohlednout-", QuestDialogContent.ColorEmote);
-			d.BaseButton(6, 50, "Obchodovat?");
+			d.BaseButton(6, 50, "Obchodovat?", QuestDialogContent.ColorBaseButton);
 			d.Page("Pozdrav");
 			d.SetText("Rada te tu opet vidim. Ten prsten jeste neni hotovy, stav se pozdeji.");
 			d.Html();
@@ -140,7 +140,7 @@ namespace SteamEngine.CompiledScripts {
 		//d_q009_krejci_5
 		internal static void Krejci5(QuestDialogContent d) {
 			d.BaseButton(3, 45, "-Prohlednout-", QuestDialogContent.ColorEmote);
-			d.BaseButton(6, 50, "Obchodovat?");
+			d.BaseButton(6, 50, "Obchodovat?", QuestDialogContent.ColorBaseButton);
 			d.Page("Pozdrav");
 			d.SetText("Aaah vyborne ! Tva odmena je hotova, tady vezmi si ji. Jeste ti vysvetlim, jak jej pouzit a bude to vse.");
 			d.Html();
@@ -157,7 +157,7 @@ namespace SteamEngine.CompiledScripts {
 		//d_q009_krejci_6
 		internal static void Krejci6(QuestDialogContent d) {
 			d.BaseButton(3, 45, "-Prohlednout-", QuestDialogContent.ColorEmote);
-			d.BaseButton(6, 50, "Obchodovat?");
+			d.BaseButton(6, 50, "Obchodovat?", QuestDialogContent.ColorBaseButton);
 			d.Page("Pozdrav");
 			d.SetText("Vitej v mem kramku! Jsem ti stale vdecna za tvou velkorysou nabidku za prsten. Muj obchod se od te doby postavil na nohy.");
 			d.Html();

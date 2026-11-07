@@ -89,10 +89,10 @@ namespace SteamEngine.CompiledScripts {
 			return ((stage < 1) || (stage > Done)) ? null : JournalTexts[stage - 1];
 		}
 
-		/// <summary>Erebor's condition on Elnassir's "Ano, tady to je.": all of it in the pack (gold counts the bank too, as Pay does).</summary>
+		/// <summary>Erebor's condition on Elnassir's "Ano, tady to je.": all of it in the pack, and the gold where Pay will take it.</summary>
 		internal static bool HasSalveGoods(Player player) {
 			return (Q006.Count(player, "i_reag_spider_silk") >= 20) && (Q006.Count(player, "i_reag_nightshade") >= 80)
-				&& (Q006.Count(player, "i_reag_bone") >= 150) && (player.IsGM || (player.Gold >= SalveGold));
+				&& (Q006.Count(player, "i_reag_bone") >= 150) && GoldUtils.CanPay(player, SalveGold);
 		}
 
 		internal static void Talk(NPC npc, Player player) {
@@ -114,16 +114,22 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>i_q018_portujici_runa's @userdclick.</summary>
 		internal static void UseRune(Player player) {
+			if (player.Flag_Dead) {
+				return;
+			}
 			if (GetStage(player) != 4) {
 				player.SysMessage("Nevis, jak bys tuto zvlastni runu " + ((player.Gender == Gender.Female) ? "pouzila" : "pouzil") + ". Asi nejsi " + ((player.Gender == Gender.Female) ? "ta prava" : "ten pravy") + " k jejimu upotrebeni.");
 				return;
 			}
 			player.Say("Wow, trochu se mi zveda zaludek!");
-			GoNear(player, WheelSpot);
+			GoNear(player, WheelSpot, false);
 		}
 
 		/// <summary>i_q018_zlate_kolo's @userdclick.</summary>
 		internal static void UseWheel(Item wheel, Player player) {
+			if (player.Flag_Dead) {
+				return;
+			}
 			if (GetStage(player) != 4) {
 				player.SysMessage("Kolo se ani nepohne.");
 				return;
@@ -135,12 +141,17 @@ namespace SteamEngine.CompiledScripts {
 			LevelingSystem.AddExperience(player, 1500);
 			player.SetRealSkillValue((int) SkillName.Tailoring, player.GetRealSkillValue(SkillName.Tailoring) + TailoringGain);
 			Advance(player, 5);
-			GoNear(player, RuneSpot);
+			GoNear(player, RuneSpot, true);
 		}
 
-		/// <summary>Erebor's src.go to a spot it wrote down: the standable tile nearest to it.</summary>
-		private static void GoNear(Player player, Point4D spot) {
+		/// <summary>Erebor's src.go to a spot it wrote down: exactly there when it gave a height and one fits there (Osgiliath's ruins
+		/// lie under other floors), else the standable tile nearest to it.</summary>
+		private static void GoNear(Player player, Point4D spot, bool withZ) {
 			Map map = Map.GetMap(spot.M);
+			if (withZ && map.CanFit(spot.X, spot.Y, spot.Z, 16, true, false, true)) {
+				player.Go(spot);
+				return;
+			}
 			int[] at = WorldSpots.NearestStandable(map, spot.X, spot.Y, 4);
 			if (at == null) {
 				player.Go(spot);

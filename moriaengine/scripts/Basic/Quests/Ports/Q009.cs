@@ -66,10 +66,11 @@ namespace SteamEngine.CompiledScripts {
 			QuestJournal.Report(player, Journal);
 		}
 
-		/// <summary>Seconds of the server's clock until the ring is ready (negative when it is).</summary>
+		/// <summary>Seconds of the server's clock until the ring is ready (negative when it is). No time at all reads as ready, as
+		/// Erebor's empty tag was 0, long past.</summary>
 		public static double SecondsToRing(Player player) {
 			object tag = player.GetTag(readyAtTK);
-			return (tag == null) ? 0 : Convert.ToDouble(tag, CultureInfo.InvariantCulture) - Globals.TimeInSeconds;
+			return (tag == null) ? -1 : Convert.ToDouble(tag, CultureInfo.InvariantCulture) - Globals.TimeInSeconds;
 		}
 
 		internal static void SetReadyIn(Player player, double seconds) {
@@ -87,14 +88,23 @@ namespace SteamEngine.CompiledScripts {
 			player.RemoveTag(readyAtTK);
 		}
 
-		/// <summary>Erebor's findlayer(layer_pack).findid(i_cashiers_check): the first cheque in the pack, if it's worth exactly 5M.</summary>
+		/// <summary>Erebor's findlayer(layer_pack).findid(i_cashiers_check): the first cheque in the pack, its bags too (Sphere's
+		/// FINDID goes down into them), if it's worth exactly 5M.</summary>
 		internal static CashiersItem PriceCheque(Player player) {
-			if (player.Backpack == null) {
-				return null;
-			}
-			foreach (AbstractItem item in player.Backpack) {
+			CashiersItem cheque = (player.Backpack == null) ? null : FirstCheque(player.Backpack);
+			return ((cheque != null) && (cheque.Value == Price)) ? cheque : null;
+		}
+
+		private static CashiersItem FirstCheque(Container container) {
+			foreach (AbstractItem item in container) {
 				if ((item is CashiersItem cheque) && (cheque.Def == ThingDef.GetByDefname(CashiersItem.CheckDef))) {
-					return (cheque.Value == Price) ? cheque : null;
+					return cheque;
+				}
+				if ((item is Container inside) && (inside.Count > 0)) { //depth first, as Sphere's ContentFind
+					CashiersItem found = FirstCheque(inside);
+					if (found != null) {
+						return found;
+					}
 				}
 			}
 			return null;

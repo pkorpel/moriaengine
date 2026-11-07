@@ -59,6 +59,8 @@ namespace SteamEngine.CompiledScripts {
 			bool keptIt = !wrong.IsDeleted && (Q009.GetStage(player) == 1);
 			wrong.Delete();
 			CashiersItem cheque = Cheque(player, Q009.Price);
+			Container bag = (Container) ThingDef.GetByDefname("i_bag").Create(player.Backpack);
+			cheque.Cont = bag; //Sphere's FINDID goes into bags
 			bool offered = dialog.BuildFor(tailor, player).HasResponse("krejci_3:1");
 			dialog.Press("krejci_3:1", tailor, player);
 			Report("exactlyFiveMillion", notForLess && keptIt && offered && cheque.IsDeleted && (Q009.GetStage(player) == 2)
@@ -72,8 +74,8 @@ namespace SteamEngine.CompiledScripts {
 			dialog.Press("krejci_5:1", tailor, player);
 			Report("theWaitMoves", notReady && putOff && nearer && (Q009.GetStage(player) == 2) && (FindRing(player) == null));
 
-			//ready: the ring, bound to its owner
-			Q009.SetReadyIn(player, -1);
+			//ready: the ring, bound to its owner (no time at all reads as ready, as Erebor's empty tag)
+			Q009.ForgetRingTime(player);
 			bool offersRing = dialog.BuildFor(tailor, player).HasResponse("krejci_5:1");
 			dialog.Press("krejci_5:1", tailor, player);
 			Item ring = FindRing(player);
@@ -87,19 +89,25 @@ namespace SteamEngine.CompiledScripts {
 			Wear(player, player, ring);
 			bool strangerRefused = ring.Cont is Container;
 			ring.SetTag(Q009.RingOwnerTK, player);
-			NPC friend = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(player.X + 1, player.Y + 1, player.Z, player.M);
-			Wear(friend, player, ring); //put on the owner's paperdoll by another: the owner's rules count
-			friend.Delete();
+			Player stranger = (Player) ThingDef.FindCharDef(0x190).Create(player.X + 1, player.Y + 1, player.Z, player.M);
+			bool strangerCant = Q009.RefusesEquip(ring, stranger);
+			Wear(stranger, player, ring); //put on the owner's paperdoll by a stranger: the owner's rules count
+			stranger.Delete();
 			bool worn = (ring.Cont == player) && (player.GetSkill((int) SkillName.Tailoring) == 1100);
 			player.TryEquip((Item) ThingDef.GetByDefname("i_ring_gold").Create(player.Backpack)); //same layer: takes the ring off
 			bool off = (player.GetSkill((int) SkillName.Tailoring) == 1000) && (ring.GetTag(Q009.RingBoostTK) == null);
-			Report("theRingsRules", lowRefused && strangerRefused && worn && off);
+			Report("theRingsRules", lowRefused && strangerRefused && strangerCant && worn && off);
 
 			//her last dialog, and her shop from every dialog
 			bool last = dialog.BuildFor(tailor, player).HasResponse("krejci_6:1") && dialog.BuildFor(tailor, player).HasResponse("krejci_6:2");
 			dialog.Press("krejci_6:2", tailor, player);
 			Report("herLastDialogAndShop", last && (Q009.GetStage(player) == 3));
-			Report("journalTextsArePlain", Plain(Q009.GetJournalText(player)));
+			bool plain = true;
+			for (int stage = 1; stage <= 3; stage++) {
+				Q009.SetStage(player, stage);
+				plain &= (Q009.GetJournalText(player) != null) && Plain(Q009.GetJournalText(player));
+			}
+			Report("journalTextsArePlain", plain);
 			Console.WriteLine("Q009_CHAIN_DONE: stage=" + Q009.GetStage(player));
 		}
 
