@@ -3,7 +3,8 @@ using SteamEngine.Persistence;
 
 namespace SteamEngine.CompiledScripts {
 
-	/// <summary>#1256 - .settings "Lazne a divadlo": the bath house, the theatre and Mordor's fighting pits (design 9.2).</summary>
+	/// <summary>#1256 - .settings "Podniky": the bath house, the theatre, Mordor's fighting pits (#1256) and the armoury, smithy,
+	/// temple and Houses of Healing (#1258) (design 9.2).</summary>
 	[SaveableClass]
 	[HasSavedMembers]
 	[ViewableClass]
@@ -38,5 +39,26 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The pits' three bets and how many a player places in a real hour.</summary>
 		[SaveableData]
 		public int pitBetSmall = 10, pitBetMedium = 50, pitBetLarge = 100, pitBetsPerHour = 10;
+
+		/// <summary>The smith pays this for a piece of iron ore, up to this many a real day.</summary>
+		[SaveableData]
+		public int oreWage = 4, orePerDay = 20;
+
+		/// <summary>Working the bellows: the stamina it takes, the pay, the real minutes before the same player works them again, and
+		/// how many times a real day.</summary>
+		[SaveableData]
+		public int bellowsStamina = 10, bellowsWage = 5, bellowsMinutes = 5, bellowsPerDay = 12;
+
+		/// <summary>A temple offering, once a real day: the gift and the karma it gives.</summary>
+		[SaveableData]
+		public int offeringPrice = 25, offeringKarma = 50;
+
+		/// <summary>A night vigil in the temple, once a real day: how long to stay, the experience and karma at its end.</summary>
+		[SaveableData]
+		public int vigilSeconds = 120, vigilExp = 100, vigilKarma = 50;
+
+		/// <summary>Dressing a patient's wounds: the Healing it needs in tenths, and the house's pay.</summary>
+		[SaveableData]
+		public int bandageHealing = 200, bandageWage = 10;
 	}
 }

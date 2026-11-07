@@ -251,7 +251,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 			}
 		}
 
-		[InfoField("Lazne a divadlo")]
+		[InfoField("Podniky")]
 		public VenueLifeSettings VenueLifeSettings {
 			get {
 				return VenueLifeSettings.instance;

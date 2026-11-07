@@ -65,7 +65,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		//a tag name holds only word characters (TagHolder reads saved names by \w+)
-		private static TagKey KeyFor(string prefix, string residentId) {
+		internal static TagKey KeyFor(string prefix, string residentId) {
 			StringBuilder key = new StringBuilder(prefix);
 			foreach (char c in residentId.ToLowerInvariant()) {
 				key.Append(((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9')) ? c : '_');

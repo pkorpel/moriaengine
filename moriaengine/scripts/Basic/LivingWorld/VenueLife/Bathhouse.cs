@@ -7,8 +7,6 @@ namespace SteamEngine.CompiledScripts {
 	/// gossip, and the stoker pays for logs. Offered through VenueActions.</summary>
 	public static class Bathhouse {
 		internal static readonly TagKey FreshUntilTK = TagKey.Acquire("_bath_fresh_until_");
-		internal static readonly TagKey WoodDayTK = TagKey.Acquire("_bath_wood_day_");
-		private static readonly TagKey woodCountTK = TagKey.Acquire("_bath_wood_count_");
 
 		private sealed class FreshSource : IActiveEffectSource {
 			public void AddEffects(Character ch, List<ActiveEffect> into) {
@@ -70,39 +68,14 @@ namespace SteamEngine.CompiledScripts {
 			player.SysMessage("Citis se svezi: obchody jsou k tobe vlidnejsi a lide take.");
 		}
 
+		private static readonly VenueGoods.Lines woodLines = new VenueGoods.Lines {
+			Ask = wage => "Prines polena, at mam cim topit. Zaplatim " + wage + " zlatych za kus.",
+			Full = "Dnes uz mam dreva dost. Prijd zitra.",
+			Thanks = (pieces, pay) => "Diky, " + pieces + " dreva se hodi. Tady mas " + pay + " zlatych."
+		};
+
 		internal static void BringWood(Player player, NPC npc, Item gem) {
-			ItemDef log = ThingDef.GetByDefname("i_log") as ItemDef;
-			string id = Residents.IdOf(gem);
-			if ((log == null) || (id == null)) {
-				return;
-			}
-			long now = Errands.Now.Ticks;
-			int today = 0;
-			if ((player.GetTag(WoodDayTK) is long since) && ((now - since) < TimeSpan.TicksPerDay)) {
-				today = (player.GetTag(woodCountTK) is int c) ? c : 0;
-			}
-			int room = Settings.woodPerDay - today;
-			if (room <= 0) {
-				npc.Say("Dnes uz mam dreva dost. Prijd zitra.");
-				return;
-			}
-			int count = Math.Min(room, Errands.CountIn(player.Backpack, log));
-			if (count <= 0) {
-				npc.Say("Prines polena, at mam cim topit. Zaplatim " + Settings.woodWage + " zlatych za kus.");
-				return;
-			}
-			count -= Errands.Consume(player.Backpack, log, count); //what was really taken
-			if (count <= 0) {
-				return;
-			}
-			if (today == 0) {
-				player.SetTag(WoodDayTK, now);
-				Residents.AddFriendship(player, id, 1);
-			}
-			player.SetTag(woodCountTK, today + count);
-			GoldUtils.Grant(player, (uint) (count * Settings.woodWage));
-			string logs = (count == 1) ? "poleno se hodi" : ((count < 5) ? count + " polena se hodi" : count + " polen se hodi");
-			npc.Say("Diky, " + logs + ". Tady mas " + (count * Settings.woodWage) + " zlatych.");
+			VenueGoods.Buy(player, npc, gem, "i_log", Settings.woodWage, Settings.woodPerDay, "bathwood", woodLines);
 		}
 	}
 }
