@@ -241,3 +241,9 @@ Erebor's live recipes (`nastaveni_cm_resources_*`, `nastaveni_cm_skillmake_*` in
 ## Live skill values (#962)
 
 `nastaveni_skilldelay_*`, `nastaveni_skilleffect_*` and `nastaveni_skilladvrate_*` in `save/sphereworld.scp` override spheretables.scp, as recipes do. `ConvertedSkillValues` writes them to `scripts/converted/systems/skillvalues.def`, and `SkillValuesDef` applies them at boot, over what the hand-written skill sections say. So to know a skill's real numbers, read that file, not spheretables.
+
+## Quest items in recipes (#1266)
+
+The port keeps special quest items as player tags, never items (the user's rule, see quests/README.md). A recipe can't ask for one in
+the pack, so `ConvertedRecipes` drops the ones listed in `questTagTools` (today `i_book_inscription`, q007's Inscription book) from a
+recipe's SKILLMAKE and writes a comment line in its place; the server checks the tag itself (`Q007.MayInscribe`).

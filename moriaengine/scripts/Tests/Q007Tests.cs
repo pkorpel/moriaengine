@@ -163,15 +163,19 @@ namespace SteamEngine.CompiledScripts {
 				chest.Delete();
 				SpellDef eighth = SpellDef.GetById(60);
 				bool noBookNoEighth = !Q007.MayInscribe(eighth, player) && Q007.MayInscribe(SpellDef.GetById(10), player);
+				SpellScrollDef airScroll = ReadyToScribeAirElemental(player);
+				bool menuWithoutBook = CraftingSkillDef.CanBeMade(airScroll, player);
 				exp = ExpGained(player, () => dInscripter.Press("maginscript5:1", inscripter, player));
+				Report("theBookOpensTheEighthCircleInTheCraftMenu", !menuWithoutBook && CraftingSkillDef.CanBeMade(airScroll, player));
 				Report("theStonesForTheBook", noBookNoEighth && (Q007.GetInscripter(player) == 2) && (exp == 2000) && QuestItems.Has(player, Q007.Book) && Q007.MayInscribe(eighth, player)
 					&& Q007.BookEntry.IsDone(player));
 				bool divousWantsIt = Offers(dDivous, divous, player, "divous2:1");
 				dDivous.Press("divous2:1", divous, player);
-				Report("theBookForThePen", divousWantsIt && (Q007.GetInscripter(player) == 3) && QuestItems.Has(player, Q007.Pen) && !QuestItems.Has(player, Q007.Book)
+				Report("theBookForThePen", !CraftingSkillDef.CanBeMade(airScroll, player) && divousWantsIt && (Q007.GetInscripter(player) == 3) && QuestItems.Has(player, Q007.Pen) && !QuestItems.Has(player, Q007.Book)
 					&& !Q007.MayInscribe(eighth, player) && Q007.BookEntry.GetText(player).Contains("Divous"));
 
 				//the pen writes a recall rune at Inscription 85
+				player.SetRealSkillValue((int) SkillName.Inscribe, 800);
 				Item rune = (Item) ThingDef.GetByDefname("i_rune_tinker").Create(player.Backpack);
 				Q007.TryInscribeRune(rune, player);
 				bool notAt80 = !rune.IsDeleted;
@@ -197,6 +201,22 @@ namespace SteamEngine.CompiledScripts {
 				player.Account.PLevel = plevel;
 			}
 			Console.WriteLine("Q007_CHAIN_DONE: stage=" + Q007.GetStage(player));
+		}
+
+		//a mage with everything an 8th-circle scroll asks but the book: Erebor's sm_inscrip_8 needed i_book_inscription
+		private static SpellScrollDef ReadyToScribeAirElemental(Player player) {
+			player.Profession = ProfessionDef.GetByDefname("profession_mage");
+			player.SetRealSkillValue((int) SkillName.Inscribe, 1000);
+			player.SetRealSkillValue((int) SkillName.Magery, 1000);
+			player.MaxMana = 100;
+			player.Mana = 100;
+			SpellScrollDef scroll = (SpellScrollDef) ThingDef.GetByDefname("i_scroll_summon_elem_air");
+			SpellBook book = (SpellBook) ((ItemDef) ThingDef.GetByDefname("i_spellbook_3")).Create(player.Backpack);
+			book.AddSpell(scroll.SpellDef);
+			foreach (string reagent in new[] { "i_reag_blood_moss", "i_reag_mandrake_root", "i_reag_spider_silk", "i_scroll_blank" }) {
+				Q006.Give(player, reagent, 5);
+			}
+			return scroll;
 		}
 
 		private static bool Plain(string[] texts) {

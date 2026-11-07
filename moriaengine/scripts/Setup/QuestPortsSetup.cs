@@ -41,14 +41,16 @@ namespace SteamEngine.CompiledScripts {
 			PlaceStill(pieces, gm, "q006/eriol", Q006.EriolDef, WorldSpots.NearestStandable(Map.GetMap(tirith.M), tirith.X - 8, tirith.Y + 4, 6), tirith.M);
 			PlaceStill(pieces, gm, "q006/qworet", Q006.QworetDef, WorldSpots.NearestStandable(world, 2893, 908, 8), 0);
 			PlaceStill(pieces, gm, "q006/unas", Q006.UnasDef, WorldSpots.NearestStandable(world, 3769, 1490, 8), 0);
-			PlaceStill(pieces, gm, "q006/innkeeper", Q006.InnkeeperDef, WorldSpots.NearestStandable(world, 164, 2150, 8), 0);
+			int[] inn = WorldSpots.NearestStandable(world, 164, 2150, 8);
+			PlaceStill(pieces, gm, "q006/innkeeper", Q006.InnkeeperDef, inn, 0);
 
 			//q007: the regions its texts name; the innkeeper is q006's piece (the same NPC)
 			PlaceNear(pieces, gm, "q007/haradir", Q007.HaradirDef, "a_Severni_Spoust", 3, 0);
 			PlaceStill(pieces, gm, "q007/inscripter", Q007.InscripterDef, WorldSpots.NearestStandable(world, 1510, 340, 12), 0); //"in his cellar in the Northern Waste"
 			PlaceNear(pieces, gm, "q007/rachel", Q007.RachelDef, "a_Slunecni_ostrov", -3, 0);
 			PlaceNear(pieces, gm, "q007/smith", Q007.SmithDef, "a_Zelezny_pas", 2, 2);
-			PlaceStill(pieces, gm, "q007/divous", Q007.DivousDef, WorldSpots.NearestStandable(world, 167, 2152, 8), 0); //drinking at the innkeeper's
+			//drinking by the innkeeper's, 4 tiles or more from him: both answer "ahoj" from 3 tiles
+			PlaceStill(pieces, gm, "q007/divous", Q007.DivousDef, (inn == null) ? null : WorldSpots.NearestStandable(world, inn[0] + 7, inn[1], 3), 0);
 			PlaceNear(pieces, gm, "q007/rodrigo", Q007.RodrigoDef, "a_Umbar", 4, 0);
 			int[] dryad = WorldSpots.NearestStandable(world, 300, 2060, 20); //the innkeeper's island, away from his inn
 			if (dryad != null) {
@@ -58,13 +60,13 @@ namespace SteamEngine.CompiledScripts {
 			int[] chest = (pirates == null) ? null : WorldSpots.NearestStandable(world, pirates.P.X + 2, pirates.P.Y, 6);
 			if (chest == null) {
 				gm.SysMessage("No spot for the pirates' chest.");
-				return;
-			}
-			pieces.Item("quests/q007/chest", Q007.ChestDef, chest, 0);
-			for (int i = 0; i < 2; i++) {
-				int[] pirate = WorldSpots.NearestStandable(world, chest[0] + 3 - (6 * i), chest[1] + 2, 4);
-				if (pirate != null) {
-					pieces.Npc("quests/q007/pirate" + i, "c_pirat", pirate, 0, Realm.None, false, WorldPieces.WandersAbout);
+			} else {
+				pieces.Item("quests/q007/chest", Q007.ChestDef, chest, 0);
+				for (int i = 0; i < 2; i++) {
+					int[] pirate = WorldSpots.NearestStandable(world, chest[0] + 3 - (6 * i), chest[1] + 2, 4);
+					if (pirate != null) {
+						pieces.Npc("quests/q007/pirate" + i, "c_pirat", pirate, 0, Realm.None, false, WorldPieces.WandersAbout);
+					}
 				}
 			}
 		}

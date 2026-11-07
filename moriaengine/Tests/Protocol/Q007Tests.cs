@@ -34,7 +34,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestQ007Chain", "Q007_CHAIN_DONE");
 				this.AssertChecks("theClientPromisedThePiglet", "theJournalListsAllThree", "deniedThenSentToRachel", "rachelWantsAThousandBatWings",
 					"theBowForThePiglet", "thePigletToHaradir", "theInnkeepersDrinks", "bothSendForTheStones", "theChestGivesTheStonesOncePiratesAreDead",
-					"theStonesForTheHammer", "theHammerGivesTen", "theStonesForTheBook", "theBookForThePen", "thePenMakesARecallRune",
+					"theStonesForTheHammer", "theHammerGivesTen", "theStonesForTheBook", "theBookOpensTheEighthCircleInTheCraftMenu", "theBookForThePen", "thePenMakesARecallRune",
 					"rodrigoSellsRumoursAndDolphins", "eachNpcOpensItsOwnDialog", "journalTextsArePlain");
 			}
 		}
