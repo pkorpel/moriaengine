@@ -223,6 +223,7 @@ namespace SteamEngine.CompiledScripts {
 				} else {
 					Item item = (Item) def.Create(player.Backpack);
 					item.SetTag(ItemTK, ItemMark(player, errand));
+					step.placed = item; //#1258 - Release clears it wherever it went: worn, dropped, in a chest (a sword to carry was a free sword)
 				}
 			}
 			NPC companion = Body(step.companionId);
@@ -245,8 +246,8 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>On a resident walking with a player for an errand (not a GM's "come").</summary>
 		internal static readonly TagKey FollowingTK = TagKey.Acquire("_errand_follow_");
 
-		//#1252 - whoever followed the player for this errand goes back to their day, and an item laid in a venue is cleared
-		//wherever it went: worn, in the bank, in another's pack
+		//#1252 - whoever followed the player for this errand goes back to their day, and an item the errand made (laid in a venue,
+		//or put in the pack since #1258) is cleared wherever it went: worn, in the bank, in a chest, in another's pack
 		private static void Release(Player player, Errand errand) {
 			foreach (ErrandStep step in errand.steps) {
 				NPC companion = Body(step.companionId);
