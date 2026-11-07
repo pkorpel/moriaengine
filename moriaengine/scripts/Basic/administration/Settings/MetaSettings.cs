@@ -229,6 +229,20 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return FishingSettings.instance;
 			}
 		}
+
+		[InfoField("Povest")]
+		public ReputationSettings ReputationSettings {
+			get {
+				return ReputationSettings.instance;
+			}
+		}
+
+		[InfoField("Ukoly")]
+		public ErrandSettings ErrandSettings {
+			get {
+				return ErrandSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {
