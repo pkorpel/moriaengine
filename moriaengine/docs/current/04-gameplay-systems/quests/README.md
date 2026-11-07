@@ -12,7 +12,8 @@ One file per quest, for an overview. Quest systems that aren't a quest of their 
 | Weekly quests (Tydenni questy) | [weekly.md](weekly.md) | #1090 |
 
 Not ported: the numbered quests (q006-q100, gq*, mq*: the user wants to revisit
-them first), and the rest listed on #1069.
+them first), and the rest listed on #1069. All of Erebor's quests, their rewards and
+what state they were in: [erebor-catalogue.md](erebor-catalogue.md) (#1235).
 
 ## Rules for quest ports
 
