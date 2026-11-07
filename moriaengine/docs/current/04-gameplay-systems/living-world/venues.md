@@ -48,7 +48,7 @@ Opening hours can run past midnight (a tavern opens 8 to 2), and 0 to 24 means a
 - *Nastavit rohy kurzorem* replaces the area with two cursor corners, which open-air venues use;
 - *Pridat dalsi obdelnik* adds one, for an L-shaped house;
 - *Ukazat obrys* shows the outline;
-- *Smazat*, then *Ulozit*.
+- *Smazat* deletes the venue at once; *Ulozit* saves the rest.
 
 The city is found by itself: the smallest area with Erebor's city name holding the spot, as houses find theirs.
 
@@ -56,7 +56,7 @@ The city is found by itself: the smallest area with Erebor's city name holding t
 
 `RoomScan.Scan` spreads from the tile you stand on over the floor, by the real movement rules and in straight steps only, so walls
 stop it. It takes only tiles with something overhead: a static with the Roof or Surface flag at least 12 above the floor. A doorway
-with the street beyond ends the room. It stops at 1600 tiles or 48 tiles from the start, and says when it did.
+with the street beyond ends the room. It stops at 1600 tiles or 48 tiles from the start, and the GM is told the room was cut short.
 
 **What the map gives** (a statics scan of the pilot cities, rooms of 12 tiles or more):
 - Minas Tirith about 75, Harad 25, Umbar 26, Barad-dur 5. Edoras 8 in the town; the engine finds 77 over all of Edoras's areas,
@@ -72,7 +72,8 @@ The world is rebuilt from an empty save now and then, so venues live in a file t
 as `x1,y1,x2,y2;...`.
 
 **The setup:** `VenueSetup`, part of `.SetupWorld`, places each line's venue where it's missing, by its id. A venue already in the
-world keeps what a GM changed, as every setup only adds. No venues are marked yet, so no file is committed: the first export
+world keeps what a GM changed, as every setup only adds. A new venue's id skips the file's ids too, so one marked on a rebuilt
+world before `.SetupWorld` ran can't take a filed venue's place. No venues are marked yet, so no file is committed: the first export
 starts it.
 
 ## Tests

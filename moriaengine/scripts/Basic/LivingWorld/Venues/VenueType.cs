@@ -136,7 +136,8 @@ namespace SteamEngine.CompiledScripts {
 			return VenueShift.Night;
 		}
 
-		/// <summary>Open between opens and closes, which can run past midnight (8 to 2); 0 to 24 is always.</summary>
+		/// <summary>Open between opens and closes, which can run past midnight (8 to 2); 0 to 24 is always, and so is opens = closes,
+		/// which names no closed hours.</summary>
 		public static bool IsOpen(int opens, int closes, double hour) {
 			if ((closes - opens) >= 24 || (opens == closes)) {
 				return true;

@@ -108,6 +108,10 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestVenueExport(Character self) {
 			CityVenue venue = VenueRegistry.ById("venue/Edoras/1");
 			Report("theVenueIsThere", venue != null);
+			if (venue == null) {
+				Console.WriteLine("VENUE_EXPORT_DONE");
+				return;
+			}
 			string path = Path.Combine(Path.GetTempPath(), "moria-venues-" + Guid.NewGuid().ToString("N") + ".txt");
 			VenueFile.PathOverride = path;
 			try {
@@ -116,6 +120,8 @@ namespace SteamEngine.CompiledScripts {
 				Report("oneIsWritten", VenueFile.Export(path) == 1);
 				venue.Delete();
 				Report("deletedIsGone", VenueRegistry.ById("venue/Edoras/1") == null);
+				//a venue marked on a rebuilt world before .SetupWorld ran doesn't take the file's id
+				Report("aNewIdSkipsTheFilesIds", VenueRegistry.NextId("Edoras") != "venue/Edoras/1");
 				new VenueSetup().Run(self);
 				CityVenue back = VenueRegistry.ById("venue/Edoras/1");
 				Report("setupBringsItBack", back != null);
@@ -127,17 +133,19 @@ namespace SteamEngine.CompiledScripts {
 				}
 				back.Title = "Prejmenovana";
 				new VenueSetup().Run(self);
-				int count = 0;
+				int count = 0, total = VenueRegistry.All.Count;
 				foreach (CityVenue v in VenueRegistry.All) {
 					count += (v.VenueId == "venue/Edoras/1") ? 1 : 0;
 				}
-				Report("aSecondRunAddsNothing", count == 1);
+				new VenueSetup().Run(self);
+				Report("aSecondRunAddsNothing", (count == 1) && (VenueRegistry.All.Count == total));
+
 				Report("andKeepsTheGmsChange", VenueRegistry.ById("venue/Edoras/1").Title == "Prejmenovana");
 			} finally {
 				VenueFile.PathOverride = null;
 				File.Delete(path);
+				Console.WriteLine("VENUE_EXPORT_DONE");
 			}
-			Console.WriteLine("VENUE_EXPORT_DONE");
 		}
 
 		/// <summary>An open-air spot of Edoras for the corners test, and the GM put there.</summary>

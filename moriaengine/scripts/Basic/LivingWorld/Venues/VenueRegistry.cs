@@ -107,8 +107,14 @@ namespace SteamEngine.CompiledScripts {
 		public static string NextId(string city) {
 			string prefix = IdPrefix + (city ?? "mimo") + "/";
 			int highest = 0;
+			List<string> ids = new List<string>();
 			foreach (CityVenue venue in All) {
-				string id = venue.VenueId;
+				ids.Add(venue.VenueId);
+			}
+			foreach (VenueLine line in VenueFile.Read(VenueFile.Path)) { //a world rebuilt before .SetupWorld ran mustn't reuse the file's ids
+				ids.Add(line.Id);
+			}
+			foreach (string id in ids) {
 				int n;
 				if ((id != null) && id.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) &&
 						int.TryParse(id.Substring(prefix.Length), NumberStyles.Integer, CultureInfo.InvariantCulture, out n)) {

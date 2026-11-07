@@ -26,6 +26,7 @@ namespace SteamEngine.CompiledScripts {
 		private const int BelowFloor = 5, AboveFloor = 15;
 
 		private List<ImmutableRectangle> rectsCache;
+		private string rectsCacheSource;
 
 		public VenueType VenueType {
 			get { return VenueType.Get(this.GetTag(typeTK) as string); }
@@ -83,8 +84,10 @@ namespace SteamEngine.CompiledScripts {
 
 		public IList<ImmutableRectangle> Rectangles {
 			get {
-				if (this.rectsCache == null) {
-					this.rectsCache = ParseRects(this.GetTag(rectsTK) as string);
+				string source = this.GetTag(rectsTK) as string;
+				if ((this.rectsCache == null) || !ReferenceEquals(source, this.rectsCacheSource)) { //a GM's .tag edit counts too
+					this.rectsCache = ParseRects(source);
+					this.rectsCacheSource = source;
 				}
 				return this.rectsCache;
 			}

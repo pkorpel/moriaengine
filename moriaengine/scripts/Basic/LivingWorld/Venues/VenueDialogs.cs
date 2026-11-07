@@ -49,11 +49,17 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>A new venue from where the GM stands: the room there, or nothing to set by corners.</summary>
 		public static VenueDraft At(Character gm) {
+			FoundRoom room;
+			return At(gm, out room);
+		}
+
+		public static VenueDraft At(Character gm, out FoundRoom room) {
 			VenueDraft draft = new VenueDraft();
 			draft.SetType(0);
 			draft.M = gm.M;
 			draft.City = VenueRegistry.CityAt(gm);
-			draft.TakeRoom(RoomScan.Scan(gm.GetMap(), gm, gm.MovementSettings));
+			room = RoomScan.Scan(gm.GetMap(), gm, gm.MovementSettings);
+			draft.TakeRoom(room);
 			return draft;
 		}
 
@@ -89,7 +95,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (this.Existing != null && !this.Existing.IsDeleted) {
 				string id = this.Existing.VenueId ?? VenueRegistry.NextId(this.City);
+				bool moved = CityVenue.FormatRects(this.Existing.Rectangles) != CityVenue.FormatRects(this.Rects);
 				VenueRegistry.Fill(this.Existing, id, this.Type, this.Title, this.City, this.Opens, this.Closes, this.Rects, this.ZMin, this.ZMax);
+				if (moved) { //the marker stands in the venue, where .venues sends a GM
+					Point4D spot = VenueRegistry.MarkerSpot(this.Rects, this.ZMin, this.ZMax, this.M);
+					this.Existing.P(spot.X, spot.Y, spot.Z, spot.M);
+				}
 				return this.Existing;
 			}
 			CityVenue venue = VenueRegistry.Create(VenueRegistry.NextId(this.City), this.Type, this.Title, this.City, this.Opens, this.Closes, this.Rects, this.ZMin, this.ZMax, this.M);
@@ -206,7 +217,7 @@ namespace SteamEngine.CompiledScripts {
 						draft.City = draft.City ?? VenueRegistry.CityAt(gm);
 						draft.ShowOutline(gm);
 						if (room.TooBig) {
-							gm.SysMessage("Mistnost je prilis velka (" + RoomScan.MaxTiles + " policek), vzata jen cast. Zkontroluj obrys.");
+							gm.SysMessage("Mistnost je prilis velka, vzata jen cast. Zkontroluj obrys.");
 						}
 					}
 					Show(gm, draft);
@@ -279,6 +290,10 @@ namespace SteamEngine.CompiledScripts {
 			gm.Dialog(gm, SingletonScript<D_Venues>.Instance, new DialogArgs(city ?? "", page));
 		}
 
+		internal static int Row(int page, int row) {
+			return (page * PageSize) + row;
+		}
+
 		private static List<CityVenue> Listed(string city) {
 			List<CityVenue> list = (city.Length == 0) ? new List<CityVenue>(VenueRegistry.All) : VenueRegistry.InCity(city);
 			list.Sort((a, b) => string.Compare(a.VenueId, b.VenueId, StringComparison.OrdinalIgnoreCase));
@@ -297,8 +312,9 @@ namespace SteamEngine.CompiledScripts {
 			for (int i = page * PageSize; (i < list.Count) && (i < (page + 1) * PageSize); i++) {
 				CityVenue venue = list[i];
 				VenueType type = venue.VenueType;
-				this.AddButton(14, y, 4005, 4007, GoBase + i, GumpButtonType.Reply, 0);
-				this.AddButton(46, y, 4011, 4013, EditBase + i, GumpButtonType.Reply, 0);
+				int row = i - (page * PageSize); //ids by row on the page: absolute ones of a long list run into the next range
+				this.AddButton(14, y, 4005, 4007, GoBase + row, GumpButtonType.Reply, 0);
+				this.AddButton(46, y, 4011, 4013, EditBase + row, GumpButtonType.Reply, 0);
 				this.AddLabel(84, y, LabelHue, venue.Label);
 				this.AddLabel(330, y, ValueHue, (venue.City ?? "-") + ", " + venue.TileCount + " pol., role " + ((type == null) ? 0 : type.RoleCount));
 				y += 22;
@@ -319,10 +335,10 @@ namespace SteamEngine.CompiledScripts {
 			int button = gr.PressedButton;
 			if (button == NextPage || button == PrevPage) {
 				Show(gm, city, page + ((button == NextPage) ? 1 : -1));
-			} else if ((button >= EditBase) && (button - EditBase < list.Count)) {
-				D_Venue.Show(gm, VenueDraft.For(list[button - EditBase]));
-			} else if ((button >= GoBase) && (button - GoBase < list.Count)) {
-				CityVenue venue = list[button - GoBase];
+			} else if ((button >= EditBase) && (button < EditBase + PageSize) && (Row(page, button - EditBase) < list.Count)) {
+				D_Venue.Show(gm, VenueDraft.For(list[Row(page, button - EditBase)]));
+			} else if ((button >= GoBase) && (button < GoBase + PageSize) && (Row(page, button - GoBase) < list.Count)) {
+				CityVenue venue = list[Row(page, button - GoBase)];
 				gm.Go(new Point4D(venue.X, venue.Y, venue.Z, venue.M));
 				Show(gm, city, page);
 			}
@@ -350,9 +366,10 @@ namespace SteamEngine.CompiledScripts {
 			for (int i = page * PageSize; (i < rooms.Count) && (i < (page + 1) * PageSize); i++) {
 				FoundRoom room = rooms[i];
 				int[] middle = room.Middle;
-				this.AddButton(14, y, 4005, 4007, GoBase + i, GumpButtonType.Reply, 0);
-				this.AddButton(46, y, 4011, 4013, MarkBase + i, GumpButtonType.Reply, 0);
-				this.AddButton(78, y, 4017, 4019, SkipBase + i, GumpButtonType.Reply, 0);
+				int row = i - (page * PageSize);
+				this.AddButton(14, y, 4005, 4007, GoBase + row, GumpButtonType.Reply, 0);
+				this.AddButton(46, y, 4011, 4013, MarkBase + row, GumpButtonType.Reply, 0);
+				this.AddButton(78, y, 4017, 4019, SkipBase + row, GumpButtonType.Reply, 0);
 				this.AddLabel(116, y, LabelHue, middle[0] + "," + middle[1] + "," + middle[2]);
 				this.AddLabel(260, y, ValueHue, room.Tiles.Count + " policek" + (room.TooBig ? " (cast)" : ""));
 				y += 22;
@@ -374,16 +391,17 @@ namespace SteamEngine.CompiledScripts {
 			int button = gr.PressedButton;
 			if (button == NextPage || button == PrevPage) {
 				Show(gm, city, rooms, page + ((button == NextPage) ? 1 : -1));
-			} else if ((button >= SkipBase) && (button - SkipBase < rooms.Count)) {
-				rooms.RemoveAt(button - SkipBase);
+			} else if ((button >= SkipBase) && (button < SkipBase + PageSize) && (D_Venues.Row(page, button - SkipBase) < rooms.Count)) {
+				rooms.RemoveAt(D_Venues.Row(page, button - SkipBase));
 				Show(gm, city, rooms, Math.Min(page, Math.Max(0, (rooms.Count - 1) / PageSize)));
-			} else if ((button >= MarkBase) && (button - MarkBase < rooms.Count)) {
-				FoundRoom room = rooms[button - MarkBase];
-				rooms.RemoveAt(button - MarkBase);
+			} else if ((button >= MarkBase) && (button < MarkBase + PageSize) && (D_Venues.Row(page, button - MarkBase) < rooms.Count)) {
+				FoundRoom room = rooms[D_Venues.Row(page, button - MarkBase)];
+				rooms.RemoveAt(D_Venues.Row(page, button - MarkBase));
 				D_Venue.Show(gm, VenueDraft.OfRoom(room, room.M, city));
-			} else if ((button >= GoBase) && (button - GoBase < rooms.Count)) {
-				int[] middle = rooms[button - GoBase].Middle;
-				gm.Go(new Point4D(middle[0], middle[1], middle[2], rooms[button - GoBase].M));
+			} else if ((button >= GoBase) && (button < GoBase + PageSize) && (D_Venues.Row(page, button - GoBase) < rooms.Count)) {
+				FoundRoom room = rooms[D_Venues.Row(page, button - GoBase)];
+				int[] middle = room.Middle;
+				gm.Go(new Point4D(middle[0], middle[1], middle[2], room.M));
 				Show(gm, city, rooms, page);
 			}
 		}

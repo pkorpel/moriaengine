@@ -22,7 +22,7 @@ namespace SteamEngine.Tests.Protocol {
 					"aSecondVenueGetsTheNextId", "theListFindsIt", "edorasHasOtherRooms", "aMarkedRoomIsntProposed");
 				this.Run(game, ".TestVenueExport", "VENUE_EXPORT_DONE");
 				this.AssertChecks("theVenueIsThere", "oneIsWritten", "deletedIsGone", "setupBringsItBack", "withItsTypeNameAndArea", "hiddenAndFixed",
-					"aSecondRunAddsNothing", "andKeepsTheGmsChange");
+					"aSecondRunAddsNothing", "andKeepsTheGmsChange", "aNewIdSkipsTheFilesIds");
 			}
 		}
 

@@ -11,7 +11,7 @@ namespace SteamEngine.CompiledScripts {
 		public readonly List<ImmutableRectangle> Rectangles;
 		public readonly int ZMin, ZMax;
 		public readonly bool TooBig;
-		public byte M;
+		public byte M { get; internal set; }
 
 		internal FoundRoom(List<int[]> tiles, bool tooBig) {
 			this.Tiles = tiles;
@@ -102,14 +102,22 @@ namespace SteamEngine.CompiledScripts {
 				tiles.Add(tile);
 				if (tiles.Count >= MaxTiles) {
 					tooBig = true;
+					foreach (int[] left in open) {
+						seen.Remove(Key(left[0], left[1])); //not this room's: another scan may start there
+					}
 					break;
 				}
 				Point3D probe = new Point3D(tile[0], tile[1], tile[2]);
 				for (int dir = 0; dir < 8; dir += 2) { //straight steps only: a diagonal squeezes past a wall's corner
 					int x, y, z;
-					if (map.CheckMovement(probe, settings, (Direction) dir, false, out x, out y, out z) &&
-							(Math.Abs(x - start.X) <= MaxSpan) && (Math.Abs(y - start.Y) <= MaxSpan) &&
-							!seen.Contains(Key(x, y)) && IsCovered(map, x, y, z) &&
+					if (!map.CheckMovement(probe, settings, (Direction) dir, false, out x, out y, out z)) {
+						continue;
+					}
+					if ((Math.Abs(x - start.X) > MaxSpan) || (Math.Abs(y - start.Y) > MaxSpan)) {
+						tooBig |= IsCovered(map, x, y, z); //the room goes on past the limit
+						continue;
+					}
+					if (!seen.Contains(Key(x, y)) && IsCovered(map, x, y, z) &&
 							(!outsideVenues || (VenueRegistry.At(new Point4D(x, y, z, map.M)) == null))) {
 						seen.Add(Key(x, y));
 						open.Enqueue(new[] { x, y, z });
@@ -125,9 +133,14 @@ namespace SteamEngine.CompiledScripts {
 		/// no room found so far holds starts a scan, which stops at a venue's tiles.</summary>
 		public static List<FoundRoom> Candidates(string city, IMovementSettings settings) {
 			List<FoundRoom> rooms = new List<FoundRoom>();
-			HashSet<long> seen = new HashSet<long>();
+			Dictionary<int, HashSet<long>> seenByPlane = new Dictionary<int, HashSet<long>>();
 			foreach (FlaggedRegion area in VenueRegistry.AreasOf(city)) {
 				Map map = Map.GetMap(area.Mapplane);
+				HashSet<long> seen;
+				if (!seenByPlane.TryGetValue(area.Mapplane, out seen)) {
+					seen = new HashSet<long>();
+					seenByPlane[area.Mapplane] = seen;
+				}
 				foreach (ImmutableRectangle rect in area.Rectangles) {
 					for (int x = rect.MinX; x <= rect.MaxX; x++) {
 						for (int y = rect.MinY; y <= rect.MaxY; y++) {

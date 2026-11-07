@@ -18,11 +18,15 @@ namespace SteamEngine.CompiledScripts {
 				D_Venue.Show(self, VenueDraft.For(here));
 				return;
 			}
-			VenueDraft draft = VenueDraft.At(self);
-			if (draft.Rects.Count == 0) {
+			FoundRoom room;
+			VenueDraft draft = VenueDraft.At(self, out room);
+			if (room == null) {
 				self.SysMessage("Tady nad tebou neni strecha: nastav plochu rohy kurzorem.");
 			} else {
 				draft.ShowOutline(self);
+				if (room.TooBig) {
+					self.SysMessage("Mistnost je prilis velka, vzata jen cast. Zkontroluj obrys.");
+				}
 			}
 			D_Venue.Show(self, draft);
 		}
@@ -79,7 +83,7 @@ namespace SteamEngine.CompiledScripts {
 					.Append(venue.Opens.ToString(CultureInfo.InvariantCulture)).Append('|').Append(venue.Closes.ToString(CultureInfo.InvariantCulture)).Append('|')
 					.Append(venue.M.ToString(CultureInfo.InvariantCulture)).Append('|').Append(venue.ZMin.ToString(CultureInfo.InvariantCulture)).Append('|')
 					.Append(venue.ZMax.ToString(CultureInfo.InvariantCulture)).Append('|').Append(CityVenue.FormatRects(venue.Rectangles)).Append('|')
-					.Append(venue.Title.Replace("|", "/").Replace("\n", " ")).Append('\n');
+					.Append(venue.Title.Replace("|", "/").Replace("\r", " ").Replace("\n", " ")).Append('\n');
 			}
 			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
 			File.WriteAllText(path, text.ToString());
