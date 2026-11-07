@@ -1,0 +1,7 @@
+// #1266 - the pirates' chest on the pirate island (a_Ostrov_Piratu), where q007's three stones are: Erebor's TM_poklad_piratu was a
+// GM's loot template ("nepouzivat!"), this one gives a player sent for the stones the mesicni kamen, meteorit and krvavy kamen (as
+// tags) once the pirates around it are dead. Placed by .SetupWorld (QuestPortsSetup).
+[ItemDef i_q007_poklad_piratu]
+NAME = "Piratska truhla"
+model = 0x0E40
+Color = 0995

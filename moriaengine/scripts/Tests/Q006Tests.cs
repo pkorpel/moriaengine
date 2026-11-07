@@ -184,7 +184,7 @@ namespace SteamEngine.CompiledScripts {
 				dEriol.Press("gq006_givePurityPotion", eriol, player);
 				Item robe = null;
 				foreach (AbstractItem item in player.Backpack) {
-					if (item.Def.PrettyDefname == Q006.RobeDef) {
+					if (item.Def == ThingDef.GetByDefname(Q006.RobeDef)) {
 						robe = (Item) item;
 					}
 				}
@@ -212,6 +212,8 @@ namespace SteamEngine.CompiledScripts {
 					&& (player.Gold == goldBefore));
 
 				Report("journalTextsArePlain", JournalPlain());
+				Report("eachNpcOpensItsOwnDialog", (Q006.DialogOf(eriol) is D_Q006Eriol) && (Q006.DialogOf(qworet) is D_Q006Qworet) && (Q006.DialogOf(unas) is D_Q006Unas)
+					&& (Q007.DialogOf(innkeeper) is D_Q007Hospodsky));
 
 				//an alchemist at stage 21 mixes it at Eriol's at once: the ingredients go, the potion is a tag
 				Q006.SetStage(player, 21);

@@ -43,7 +43,7 @@ namespace SteamEngine.CompiledScripts {
 			internal string label;
 		}
 
-		internal const int ColorResponse = 152, ColorEmote = 142, ColorBaseButton = 1152;
+		public const int ColorResponse = 152, ColorEmote = 142, ColorBaseButton = 1152;
 		private static readonly int[] defaultIndents = { 43, 25, 40, 30, 47, 38 };
 		private static readonly string[] defaultLabels = { "Kdo jsi?", "Mohu pomoci?", "Obchodovat", "Hledam praci", "Nesu ti", "Prohlednout" };
 
@@ -67,11 +67,16 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public void BaseButton(int number, int indent, string label) {
+			this.BaseButton(number, indent, label, (number == 6) ? ColorEmote : ColorBaseButton);
+		}
+
+		/// <summary>#1266 - Erebor's older dialogs put a button anywhere with its own colour ("-Prohlednout-" in the third slot).</summary>
+		public void BaseButton(int number, int indent, string label, int color) {
 			this.baseButtons.Add(new BaseButtonEntry {
 				number = number,
 				indent = indent,
 				label = label,
-				color = (number == 6) ? ColorEmote : ColorBaseButton
+				color = color
 			});
 		}
 

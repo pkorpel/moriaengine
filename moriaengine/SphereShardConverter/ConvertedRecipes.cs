@@ -11,14 +11,35 @@ namespace SteamEngine.Converter {
 	internal static class ConvertedRecipes {
 		private const string ResourcesVar = "nastaveni_cm_resources_", SkillMakeVar = "nastaveni_cm_skillmake_";
 
+		/// <summary>#1266 - quest items the port keeps as player tags (the user's rule), never as items: a recipe can't ask for one in
+		/// the pack, the server checks the tag itself (Q007.MayInscribe for the Inscription book's 8th circle).</summary>
+		private static readonly string[] questTagTools = { "i_book_inscription" };
+
+		//the recipe's SKILLMAKE without the quest-tag tools, which go to a comment line above it
+		private static string WithoutQuestTags(string skillMake, StringBuilder output) {
+			if (skillMake == null) {
+				return null;
+			}
+			List<string> kept = new List<string>();
+			foreach (string part in skillMake.Split(',')) {
+				string[] words = part.Trim().Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
+				if ((words.Length == 2) && Array.Exists(questTagTools, t => string.Equals(t, words[1], StringComparison.OrdinalIgnoreCase))) {
+					output.Append("//").Append(words[1]).Append(" is a quest tag (#1266), the server checks it\n");
+				} else {
+					kept.Add(part.Trim());
+				}
+			}
+			return (kept.Count == 0) ? null : string.Join(", ", kept);
+		}
+
 		public static void Write(string outputPath) {
 			StringBuilder output = new StringBuilder();
 			List<string> fromVars = SphereWorldVars.RecipeItems(ResourcesVar, SkillMakeVar);
 			foreach (string item in fromVars) {
 				if (HandWrittenScripts.Items.Contains(item)) {
 					string resources = SphereWorldVars.GetRecipe(ResourcesVar + item);
-					string skillMake = SphereWorldVars.GetRecipe(SkillMakeVar + item);
 					output.Append("[CraftRecipeDef craftrecipe_").Append(item).Append("]\n");
+					string skillMake = WithoutQuestTags(SphereWorldVars.GetRecipe(SkillMakeVar + item), output);
 					output.Append("Item = ").Append(item).Append('\n');
 					if (resources != null) {
 						output.Append("Resources = ").Append(resources).Append('\n');
@@ -42,6 +63,7 @@ namespace SteamEngine.Converter {
 					continue;
 				}
 				output.Append("[CraftRecipeDef craftrecipe_").Append(item).Append("]\n");
+				skillMake = WithoutQuestTags(skillMake, output);
 				output.Append("Item = ").Append(item).Append('\n');
 				if (resources != null) {
 					output.Append("Resources = ").Append(resources).Append('\n');

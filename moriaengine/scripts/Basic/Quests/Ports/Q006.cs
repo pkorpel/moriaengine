@@ -57,7 +57,7 @@ namespace SteamEngine.CompiledScripts {
 
 		//called by ClassManager on every startup/recompile, see ExpertQuest.Init
 		public static void Init() {
-			foreach (string npc in new[] { EriolDef, QworetDef, UnasDef, InnkeeperDef }) {
+			foreach (string npc in new[] { EriolDef, QworetDef, UnasDef }) { //the innkeeper is q007's (D_Q007Hospodsky has Eriol's line)
 				QuestNpc.Attach(npc, SingletonScript<E_Q006Npc>.Instance);
 			}
 			QuestNpc.Attach(RobeDef, SingletonScript<E_Q006Robe>.Instance);
@@ -150,7 +150,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static PetFigurine FindDog(Container container) {
 			foreach (AbstractItem item in container) {
-				if ((item is PetFigurine figurine) && (figurine.petDef != null) && (figurine.petDef.PrettyDefname == "c_dog")) {
+				if ((item is PetFigurine figurine) && (figurine.petDef != null) && (figurine.petDef == ThingDef.GetByDefname("c_dog"))) {
 					return figurine;
 				}
 				if ((item is Container inside) && (inside.Count > 0)) {
@@ -188,7 +188,7 @@ namespace SteamEngine.CompiledScripts {
 		#region the robe
 		/// <summary>Erebor's i_roba_alchemisty @equip: +10 Alchemy for its owner, if they're at 100 already.</summary>
 		internal static void OnEquip(Character ch, Item item) {
-			if (item.Def.PrettyDefname != RobeDef) {
+			if (item.Def != ThingDef.GetByDefname(RobeDef)) {
 				return;
 			}
 			Player player = ch as Player;
@@ -225,17 +225,14 @@ namespace SteamEngine.CompiledScripts {
 			npc.Dialog(player, DialogOf(npc), npc);
 		}
 
+		//by the def itself: PrettyDefname needn't keep the case its .def wrote (c_q023_ShamanQworet), #1266 found it
 		internal static QuestDialogDef DialogOf(NPC npc) {
-			switch (((NPCDef) npc.Def).PrettyDefname) {
-				case EriolDef:
-					return SingletonScript<D_Q006Eriol>.Instance;
-				case QworetDef:
-					return SingletonScript<D_Q006Qworet>.Instance;
-				case UnasDef:
-					return SingletonScript<D_Q006Unas>.Instance;
-				default:
-					return SingletonScript<D_Q007Hospodsky>.Instance;
+			if (npc.Def == ThingDef.GetByDefname(EriolDef)) {
+				return SingletonScript<D_Q006Eriol>.Instance;
+			} else if (npc.Def == ThingDef.GetByDefname(QworetDef)) {
+				return SingletonScript<D_Q006Qworet>.Instance;
 			}
+			return SingletonScript<D_Q006Unas>.Instance;
 		}
 		#endregion talking
 
@@ -292,8 +289,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1264 - spk_q006_eriol, spk_q023_ShamanQworet, spk_q023_CarodejUnas and spk_q007_hospodsky: their greetings, from
-	/// close enough.</summary>
+	/// <summary>#1264 - spk_q006_eriol, spk_q023_ShamanQworet and spk_q023_CarodejUnas: their greetings, from close enough. The
+	/// innkeeper's spk_q007_hospodsky is Q007Speech's.</summary>
 	public sealed class Q006Speech : AbstractSpeech {
 		private static readonly string[] greetings = { "ahoj", "zdravi", "dobry", "ukol" };
 		private readonly string[] patterns;
@@ -302,7 +299,6 @@ namespace SteamEngine.CompiledScripts {
 			new Q006Speech("spk_q006_eriol", greetings).Register();
 			new Q006Speech("spk_q023_ShamanQworet", greetings).Register();
 			new Q006Speech("spk_q023_CarodejUnas", greetings).Register();
-			new Q006Speech("spk_q007_hospodsky", new[] { "hi", "dobry", "ahoj", "selatko", "haradir", "eriol" }).Register();
 		}
 
 		private Q006Speech(string defname, string[] patterns)

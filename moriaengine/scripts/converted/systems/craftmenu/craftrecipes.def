@@ -177,9 +177,10 @@ Resources = 1 i_scroll_blank
 SkillMake = 720 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_earthquake]
+//i_book_inscription is a quest tag (#1266), the server checks it
 Item = i_scroll_earthquake
 Resources = 1 i_scroll_blank
-SkillMake = 2000 inscription, 1 i_book_inscription
+SkillMake = 2000 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_energy_bolt]
 Item = i_scroll_energy_bolt
@@ -192,9 +193,10 @@ Resources = 1 i_scroll_blank
 SkillMake = 880 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_energy_vortex]
+//i_book_inscription is a quest tag (#1266), the server checks it
 Item = i_scroll_energy_vortex
 Resources = 1 i_reag_black_pearl, 1 i_reag_mandrake_root, 1 i_reag_nightshade, 1 i_reag_blood_moss, 1 i_scroll_blank
-SkillMake = 930 inscription, 1 i_book_inscription
+SkillMake = 930 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_explosion]
 Item = i_scroll_explosion
@@ -372,9 +374,10 @@ Resources = 1 i_scroll_blank
 SkillMake = 550 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_resurrection]
+//i_book_inscription is a quest tag (#1266), the server checks it
 Item = i_scroll_resurrection
 Resources = 1 i_scroll_blank
-SkillMake = 950 inscription, 1 i_book_inscription
+SkillMake = 950 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_reveal]
 Item = i_scroll_reveal
@@ -392,29 +395,34 @@ Resources = 1 i_scroll_blank, 1 i_reag_blood_moss, 1 i_reag_mandrake_root, 1 i_r
 SkillMake = 650 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_summon_daemon]
+//i_book_inscription is a quest tag (#1266), the server checks it
 Item = i_scroll_summon_daemon
 Resources = 1 i_reag_blood_moss, 1 i_reag_spider_silk, 1 i_reag_sulfur_ash, 1 i_reag_mandrake_root, 1 i_scroll_blank
-SkillMake = 1 i_book_inscription, 960 inscription
+SkillMake = 960 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_summon_elem_air]
+//i_book_inscription is a quest tag (#1266), the server checks it
 Item = i_scroll_summon_elem_air
 Resources = 1 i_reag_blood_moss, 1 i_reag_mandrake_root, 1 i_reag_spider_silk, 1 i_scroll_blank
-SkillMake = 1 i_book_inscription, 930 inscription
+SkillMake = 930 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_summon_elem_earth]
+//i_book_inscription is a quest tag (#1266), the server checks it
 Item = i_scroll_summon_elem_earth
 Resources = 1 i_reag_blood_moss, 1 i_reag_spider_silk, 1 i_reag_mandrake_root, 1 i_scroll_blank
-SkillMake = 1 i_book_inscription, 940 inscription
+SkillMake = 940 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_summon_elem_fire]
+//i_book_inscription is a quest tag (#1266), the server checks it
 Item = i_scroll_summon_elem_fire
 Resources = 1 i_reag_spider_silk, 1 i_reag_mandrake_root, 1 i_reag_sulfur_ash, 1 i_scroll_blank
-SkillMake = 1 i_book_inscription, 950 inscription
+SkillMake = 950 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_summon_elem_water]
+//i_book_inscription is a quest tag (#1266), the server checks it
 Item = i_scroll_summon_elem_water
 Resources = 1 i_reag_blood_moss, 1 i_reag_spider_silk, 1 i_reag_mandrake_root, 1 i_scroll_blank
-SkillMake = 910 inscription, 1 i_book_inscription
+SkillMake = 910 inscription
 
 [CraftRecipeDef craftrecipe_i_scroll_telekinesis]
 Item = i_scroll_telekinesis
