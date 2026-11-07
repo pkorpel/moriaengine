@@ -17,6 +17,17 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestQ026Setup", "Q026_SETUP_DONE");
 				this.AssertChecks("theWraithCurses", "theCurseTicks", "thePotionThenEriol");
 
+				//the curse's own timer ticks over and over (it once died after its first tick)
+				this.Run(game, ".TestQ026CurseFast", "Q026_FAST: timer=True");
+				string food = "";
+				for (int i = 0; (i < 40) && !(food.Contains("food=8") || food.Contains("food=7") || food.Contains("food=6")); i++) {
+					System.Threading.Thread.Sleep(250);
+					this.Run(game, ".TestQ026CurseFood", "Q026_FOOD:");
+					food = this.LastLine("Q026_FOOD:");
+				}
+				Assert.Contains("timer=True", food);
+				Assert.Matches("food=[678] ", food);
+
 				game.SendSpeech("ahoj");
 				var gump = game.ReadGumpSkippingQuestScroll(Wait);
 				Assert.Contains(gump.Strings, s => s.Contains("Andor"));

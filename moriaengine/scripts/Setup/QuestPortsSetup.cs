@@ -87,7 +87,7 @@ namespace SteamEngine.CompiledScripts {
 			PlaceItem(pieces, gm, "q026/tapestry", Q026.TapestryDef, new Point4D(3941, 1503, 5, 0), false);
 			PlaceItem(pieces, gm, "q026/door", Q026.DoorDef, new Point4D(3944, 1503, 5, 0), false);
 			PlaceItem(pieces, gm, "q026/books", Q026.BookPileDef, new Point4D(3944, 1499, 5, 0), false);
-			PlaceItem(pieces, gm, "q026/alarm", Q026.AlarmDef, new Point4D(5396, 3384, 0, 10), false);
+			PlaceItem(pieces, gm, "q026/alarm", Q026.AlarmDef, new Point4D(5396, 3384, 0, 10), false)?.SetAttribute(ItemAttributes.attr_invis, true); //Erebor's attr 090
 			PlaceItem(pieces, gm, "q026/wall", Q026.WallDef, new Point4D(5398, 3384, 0, 10), false);
 			PlaceItem(pieces, gm, "q026/box", Q026.BoxDef, new Point4D(5396, 3381, 0, 10), false);
 		}
@@ -105,15 +105,15 @@ namespace SteamEngine.CompiledScripts {
 			PlaceItem(pieces, gm, "q018/wheel", Q018.WheelDef, Q018.WheelSpot, false);
 		}
 
-		private static void PlaceItem(WorldPieces pieces, Character gm, string id, string defname, Point4D near, bool withZ) {
+		private static Item PlaceItem(WorldPieces pieces, Character gm, string id, string defname, Point4D near, bool withZ) {
 			Map map = Map.GetMap(near.M);
 			int[] at = (withZ && map.CanFit(near.X, near.Y, near.Z, 16, true, false, true)) ? new int[] { near.X, near.Y, near.Z }
 				: WorldSpots.NearestStandable(map, near.X, near.Y, 4);
 			if (at == null) {
 				gm.SysMessage("No spot for " + id + ".");
-				return;
+				return null;
 			}
-			pieces.Item("quests/" + id, defname, at, near.M);
+			return pieces.Item("quests/" + id, defname, at, near.M);
 		}
 
 		/// <summary>#1268 - q017: the entry gate at the first of its four dungeon spots (it moves after each entry), the exit gate at the

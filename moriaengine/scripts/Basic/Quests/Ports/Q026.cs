@@ -116,7 +116,10 @@ namespace SteamEngine.CompiledScripts {
 			player.Sound(481);
 			Advance(player, 1);
 			Q026CurseTimer timer = new Q026CurseTimer();
-			player.AddTimer(Q026CurseTimer.Key, timer).DueInSeconds = Q026CurseTimer.NextSeconds();
+			player.AddTimer(Q026CurseTimer.Key, timer);
+			//a period that isn't "off", or BoundTimer deletes it as it fires and its own re-arm throws (PetHungerTimer says so too)
+			timer.PeriodInSeconds = Q026CurseTimer.NextSeconds();
+			timer.DueInSeconds = Q026CurseTimer.NextSeconds();
 		}
 
 		/// <summary>i_q026_hcn_memoryPoison's @timer.</summary>
@@ -427,7 +430,10 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>t_q026_TOK_slidingDoor's @UserDClick: with the key it slides down for a minute (Erebor swapped a door 30 lower).</summary>
+		public const int OpenDoorModel = 0x2a06; //i_q026_TOK_slidingDoorOpened: a door one walks onto, where its @step stops the keyless
+
+		/// <summary>t_q026_TOK_slidingDoor's @UserDClick: with the key it slides open for a minute. Erebor swapped the closed door 30
+		/// down and an open one 30 up; here the one door takes the open look where it stands.</summary>
 		internal static void UseDoor(Item door, Player player) {
 			int stage = GetStage(player);
 			if (stage == 9) {
@@ -442,8 +448,8 @@ namespace SteamEngine.CompiledScripts {
 			if (door.GetTag(OpenTK) != null) {
 				CloseDoor(door);
 			} else {
-				door.SetTag(OpenTK, 1);
-				door.P(door.X, door.Y, (int) door.Z - 30);
+				door.SetTag(OpenTK, door.Model);
+				door.Model = OpenDoorModel;
 				door.AddTimer(Q026CloseTimer.Key, new Q026CloseTimer()).DueInSeconds = OpenSeconds;
 			}
 			door.Sound(47);
@@ -453,9 +459,10 @@ namespace SteamEngine.CompiledScripts {
 			if (door.GetTag(OpenTK) == null) {
 				return;
 			}
+			object model = door.GetTag(OpenTK);
 			door.RemoveTag(OpenTK);
 			door.DeleteTimer(Q026CloseTimer.Key);
-			door.P(door.X, door.Y, (int) door.Z + 30);
+			door.Model = Convert.ToInt32(model, CultureInfo.InvariantCulture);
 		}
 
 		/// <summary>t_q026_TOK_slidingDoor's @step: a force keeps out anyone without the key.</summary>
@@ -494,8 +501,11 @@ namespace SteamEngine.CompiledScripts {
 		public Q026CurseTimer() {
 		}
 
+		/// <summary>Tests only: a short fixed cadence instead of Erebor's, 0 = off.</summary>
+		internal static double testSeconds;
+
 		internal static double NextSeconds() {
-			return 400 + Globals.dice.Next(401); //def_q026_poisonTimer {400 800}
+			return (testSeconds > 0) ? testSeconds : (400 + Globals.dice.Next(401)); //def_q026_poisonTimer {400 800}
 		}
 
 		protected override void OnTimeout(TagHolder cont) {
@@ -509,6 +519,7 @@ namespace SteamEngine.CompiledScripts {
 				Q026.CurseTick(player);
 			}
 			this.DueInSeconds = NextSeconds();
+			this.PeriodInSeconds = this.DueInSeconds;
 		}
 	}
 

@@ -94,6 +94,31 @@ namespace SteamEngine.CompiledScripts {
 			Report("thePotionThenEriol", potionFailed && eriolHears && (Q026.GetStage(player) == 3));
 		}
 
+		/// <summary>The curse's own timer at a 0.5 s cadence, from 10 food: the protocol test waits for two ticks.</summary>
+		[SteamFunction]
+		public static void TestQ026CurseFast(Character self) {
+			Player player = (Player) self;
+			PlayerHunger.SetFood(player, 10);
+			Q026CurseTimer.testSeconds = 0.5;
+			Q026CurseTimer timer = (Q026CurseTimer) player.GetTimer(Q026CurseTimer.Key);
+			if (timer != null) {
+				timer.DueInSeconds = 0.5;
+			}
+			Console.WriteLine("Q026_FAST: timer=" + (timer != null));
+		}
+
+		[SteamFunction]
+		public static void TestQ026CurseFood(Character self) {
+			Player player = (Player) self;
+			int food = PlayerHunger.FoodOf(player);
+			if (food <= 8) {
+				Q026CurseTimer.testSeconds = 0;
+				PlayerHunger.SetFood(player, 10);
+				((Q026CurseTimer) player.GetTimer(Q026CurseTimer.Key)).DueInSeconds = Q026CurseTimer.NextSeconds();
+			}
+			Console.WriteLine("Q026_FOOD: food=" + food + " timer=" + (player.GetTimer(Q026CurseTimer.Key) != null));
+		}
+
 		[SteamFunction]
 		public static void TestQ026Button(Character self, ScriptArgs sa) {
 			Console.WriteLine("Q026_BUTTON: id=" + SingletonScript<D_Q026Andor>.Instance.ExitButtonId(sa.Args.Trim().Trim('"')));
@@ -163,14 +188,16 @@ namespace SteamEngine.CompiledScripts {
 				Report("dolGuldur", tile && open && closed && (Q026.GetStage(player) == 9));
 
 				//with the key: the door slides, the force lets the hero by, a lucky search finds the book
+				int closedModel = door.Model;
 				fixture.On_DClick(door, player);
-				bool slid = (Q026.GetStage(player) == 10) && (door.Z == z - 30) && (door.GetTimer(Q026CloseTimer.Key) != null);
+				bool slid = (Q026.GetStage(player) == 10) && (door.Z == z) && (door.Model == Q026.OpenDoorModel) && (door.GetTimer(Q026CloseTimer.Key) != null);
 				player.Go(door.X, door.Y, door.Z, door.M);
+				slid &= player.IsStandingOn(door); //so a real step on the open door runs its @step
 				y = player.Y;
 				fixture.On_Step(door, player);
 				bool letBy = (player.Y == y) && (player.Hits == player.MaxHits);
 				fixture.On_DClick(door, player);
-				bool backUp = door.Z == z;
+				bool backUp = (door.Model == closedModel) && (door.GetTimer(Q026CloseTimer.Key) == null);
 				player.Go(books.X, books.Y + 5, books.Z, books.M);
 				Q026.SearchBooks(books, player, true);
 				bool tooFar = Q026.GetStage(player) == 10;
