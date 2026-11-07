@@ -213,7 +213,7 @@ Mining, Lumberjacking and Fishing start with Erebor's f_tezba_pauza (`Gathering.
 
 A pick or hatchet try takes about 2 s (#1001, from the user's memory of Erebor): `leastStrokes` and `mostStrokes` default to 1 extra swing at the skill's 1.0 s. Sphere's own numbers would be 2 and 6, so 3 to 7 s. Both are on `.settings`; a save that already holds them keeps its values.
 
-Not ported: the craft class's better material (ra_vigour), the Elven wood rule, prisoners' labor limits, the statistics.
+Ported since: the craftsman's vigour, a try at a fresh spot that can find the next metal or wood up (ra_vigour, #1017, `CraftsmanAbilities.Vigour`), the Elven wood rule (#427, `ElvenGrove`, see crafting-gathering.md) and the labour camp's carrying limit for convicts (#1107, see ../03-admin-tooling/moderation.md). Not ported: the crafting statistics.
 
 ## Magery's rules (#962)
 
