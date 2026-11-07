@@ -72,5 +72,17 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Target practice: the experience a hit gives, and the real minutes between two rounds of five shots.</summary>
 		[SaveableData]
 		public int archeryExp = 5, archeryMinutes = 30;
+
+		/// <summary>Barks (#1262): seconds between one resident's barks, the chance a tick, and how near a player must be.</summary>
+		[SaveableData]
+		public int barkSeconds = 90, barkChance = 50, barkRange = 4;
+
+		/// <summary>Conversations: the chance a tick for a pair, the real minutes before a pair talks again, seconds between lines.</summary>
+		[SaveableData]
+		public int talkChance = 25, talkMinutes = 10, talkLineSeconds = 4;
+
+		/// <summary>The crier: real minutes between calls; how long a piece of city news lasts, in real hours.</summary>
+		[SaveableData]
+		public int crierMinutes = 5, newsHours = 24;
 	}
 }

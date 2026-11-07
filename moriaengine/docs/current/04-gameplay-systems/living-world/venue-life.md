@@ -1,6 +1,6 @@
 # Venue life
 
-Phase 3 of the living world (#1237) gives each kind of venue something to do there (design section 9). Code: `scripts/Basic/LivingWorld/VenueLife/`. Step 8 (#1254) builds the shared part and the tavern; step 9 (#1256) the bath house, the theatre and Mordor's fighting pits; step 10 (#1258) the armoury, the smithy, the temple and the Houses of Healing; step 11 (#1260) the harbour, the stable, the market, the bakery and the barracks.
+Phase 3 of the living world (#1237) gives each kind of venue something to do there (design section 9). Code: `scripts/Basic/LivingWorld/VenueLife/`. Step 8 (#1254) builds the shared part and the tavern; step 9 (#1256) the bath house, the theatre and Mordor's fighting pits; step 10 (#1258) the armoury, the smithy, the temple and the Houses of Healing; step 11 (#1260) the harbour, the stable, the market, the bakery and the barracks; step 12 (#1262) the ambient life: barks, conversations and the crier.
 
 ## Venue actions
 
@@ -206,6 +206,31 @@ The crier's calls come in step 12, and the travelling merchant with the events.
 
 **Prvni hlidka** (medium errand, the captain): a recruit walks with the player (the errand engine's companion) to one of the city's working people, then back to the captain.
 
+## Ambient life
+
+`AmbientLife.Tick` runs from the residents' scheduler every 20 s, after the theatres' plays. It sleeps with the city: an area with no player around doesn't tick. Its timing is kept in memory and starts afresh with each server start.
+
+**Barks.** A resident says a short line when a player passes within `barkRange` tiles.
+- The line comes from the resident's role (the smith's hammering, the merchant's wares) two times in three. Otherwise it comes by the season or the time of day. Mordor's orc cities have lines of their own.
+- Each resident barks at most once in `barkSeconds`, with a `barkChance` each tick.
+- A venue has at most one bark each tick.
+- Residents who are singing, playing or talking don't bark.
+
+**Conversations.** Two residents of the same venue, within 2 tiles of each other, with a player within 12, may start talking (`talkChance` each tick). A `ConversationTimer` speaks four lines, A, B, A, B, every `talkLineSeconds`. The topics:
+- the season;
+- the city's news (the latest `CityNews`, else the tavern's lore of the region);
+- a third resident (the tavern's "about someone" lines).
+
+A venue has one conversation at a time, and a pair waits `talkMinutes` before talking again.
+
+**The crier** (a market's crier) calls every `crierMinutes` when a player is within 18 tiles.
+- It calls the city's news, each piece in turn; with no news, it calls market cries.
+- The news (`CityNews`) is a per-city feed kept in memory, each piece for `newsHours`. It is fed by:
+  - a player becoming the city's hero (`Reputation.Change` crossing into Hrdina): "Mesto ma noveho hrdinu: <jmeno>!";
+  - a GM's `.vyvolat "text"`, which gives the news to the city the GM stands in;
+  - later, the world events (phase 6).
+
+
 ## Settings: "Podniky"
 
 `VenueLifeSettings`:
@@ -227,6 +252,9 @@ The crier's calls come in step 12, and the travelling merchant with the events.
 | stallSeconds, stallWage | 120, 30 | tending a market stall |
 | sentrySeconds, sentryWage, sentryReputation | 120, 30, 2 | a night sentry |
 | archeryExp, archeryMinutes | 5, 30 | target practice: exp a hit, minutes between rounds |
+| barkSeconds, barkChance, barkRange | 90, 50, 4 | barks: a resident's rest, the chance a tick, how near a player |
+| talkChance, talkMinutes, talkLineSeconds | 25, 10, 4 | conversations: the chance a tick, a pair's rest, between lines |
+| crierMinutes, newsHours | 5, 24 | the crier's calls, how long news lasts |
 
 ## Settings: "Hospoda"
 
@@ -288,3 +316,12 @@ The crier's calls come in step 12, and the travelling merchant with the events.
   - a sentry broken by leaving, then its pay and reputation, not a deed;
   - target practice by Archery, with its rest;
   - all five errands, each only from its role: the fish, the two puzzles (the hint names the answer, the right one pays in full, three distinct payers), the bread round's three homes in 20 minutes with its loaf kept apart from the player's own, and the recruit walking the patrol.
+
+`Tests/Protocol/AmbientLifeTests.cs`, with `scripts/Tests/AmbientLifeTests.cs`, sets up a market and a tavern in Edoras. It then checks:
+- **through a client:** a bark heard as speech, and the GM's `.vyvolat`;
+- **on the server:**
+  - barks: one per venue, only near a player, a resident's rest, plain ASCII;
+  - a conversation's four lines, a pair's rest, one talk at a time in a venue;
+  - the crier: the GM's news called, every few minutes, and old news giving way to market cries;
+  - a new hero's news, given once;
+- **on real timers:** the scheduler barks by itself once barks are on.
