@@ -619,6 +619,13 @@ namespace SteamEngine.CompiledScripts {
 
 		protected override void OnTimeout(TagHolder cont) {
 			ResidentSchedule.ApplyAll();
+			try {
+				Theatre.Tick(); //#1256 - the theatres' plays at dusk
+			} catch (FatalException) {
+				throw;
+			} catch (Exception e) {
+				Logger.WriteError(e);
+			}
 		}
 	}
 }

@@ -309,9 +309,9 @@ namespace SteamEngine.CompiledScripts {
 				default: percent = s.priceKnown; break;
 			}
 			if (percent <= 0) {
-				return (Level(player, city) == ReputationLevel.Nepritel) ? 0 : price; //only an enemy is refused (Refuses); 0 elsewhere means list price, never free
+				return (Level(player, city) == ReputationLevel.Nepritel) ? 0 : Bathhouse.Freshen(player, price); //only an enemy is refused (Refuses); 0 elsewhere means list price, never free
 			}
-			return Math.Max(1, (price * percent + 50) / 100);
+			return Bathhouse.Freshen(player, Math.Max(1, (price * percent + 50) / 100)); //#1256 - a fresh player from the bath house pays less
 		}
 
 		/// <summary>True (and told why) when nobody in this city sells to the player.</summary>
