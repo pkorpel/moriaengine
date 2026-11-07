@@ -135,6 +135,7 @@ namespace SteamEngine.CompiledScripts {
 				int unasExp = 0;
 				for (int stage = 14; stage <= 17; stage++) {
 					Collector essences = Collectors.FindIn(player, Q006.EssenceBags[stage - 14]);
+					bagsOk &= (essences != null) && essences.HasAttribute(ItemAttributes.attr_newbie) && essences.HasAttribute(ItemAttributes.attr_move_never);
 					dUnas.Press((stage == 17) ? "q006_takePergamen" : "q006_esentials", unas, player);
 					bagsOk &= (essences != null) && !essences.IsDeleted && (Q006.GetStage(player) == stage); //not full yet
 					essences.SetTag(Collector.CountTK, 20);
@@ -172,8 +173,8 @@ namespace SteamEngine.CompiledScripts {
 				dEriol.Press("gq006_takePurityPotionResources", eriol, player);
 				bool refused = Q006.GetStage(player) == Q006.DoneWithoutRobe;
 				player.SetRealSkillValue((int) SkillName.Alchemy, 1000);
-				dEriol.Press("gq006_takePurityPotionResources", eriol, player);
-				Report("atAlchemyHundredEriolsIngredientsMakeThePotion", notBelowHundred && refused && (Q006.GetStage(player) == 23) && Q006.HasPotion(player)
+				exp = ExpGained(player, () => dEriol.Press("gq006_takePurityPotionResources", eriol, player));
+				Report("atAlchemyHundredEriolsIngredientsMakeThePotion", notBelowHundred && refused && (Q006.GetStage(player) == 23) && Q006.HasPotion(player) && (exp == 0)
 					&& !Q006.HasPotionIngredients(player));
 				Q006.SetPotion(player, false);
 				bool notWithoutThePotion = !Offers(dEriol, eriol, player, "gq006_havePurityPotion");
@@ -225,11 +226,23 @@ namespace SteamEngine.CompiledScripts {
 				Q006.SetStage(player, Q006.Done);
 
 				ItemDef potion = (ItemDef) ThingDef.GetByDefname("i_potion_ocisteni");
-				Report("thePotionIsNotBrewable", !CraftmenuContents.MainCategories[SkillName.Alchemy].Contents.Exists(e => (e is CraftmenuItem made) && (made.itemDef == potion)));
+				ItemDef refresh = (ItemDef) ThingDef.GetByDefname("i_potion_RefreshGreater");
+				CraftmenuCategory alchemyMenu = CraftmenuContents.MainCategories[SkillName.Alchemy];
+				Report("thePotionIsNotBrewable", (potion != null) && !InMenu(alchemyMenu, potion) && InMenu(alchemyMenu, refresh)); //the control: a potion that is in a section
 			} finally {
 				player.Account.PLevel = plevel;
 			}
 			Console.WriteLine("Q006_CHAIN_DONE: stage=" + Q006.GetStage(player));
+		}
+
+		//anywhere in the menu, sections too
+		private static bool InMenu(CraftmenuCategory category, ItemDef def) {
+			foreach (ICraftmenuElement element in category.Contents) {
+				if (((element is CraftmenuItem made) && (made.itemDef == def)) || ((element is CraftmenuCategory inner) && InMenu(inner, def))) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private static bool JournalPlain() {

@@ -132,7 +132,7 @@ namespace SteamEngine.CompiledScripts {
 						d.SetText("Prisady na lektvar jsi mi uz <src.sex(\"prinesl\",\"prinesla\")>. No, jeste nejsi dostatecne <src.sex(\"zrucny\",\"zrucna\")> na jeho zhotoveni. Bohuzel, pokud neovladas alchemii, budu muset pockat na nekoho jineho.");
 						d.Html();
 					} else {
-						d.SetText("Vyborne! Vidim, ze uz jsi dostatecne <src.sex(\"zrucny\",\"zrucna\")> na vyrobu lektvaru. Tady, vezmi si prisady a udelej Lektvar Ocisteni.");
+						d.SetText("Vyborne! Vidim, ze uz jsi dostatecne <src.sex(\"zrucny\",\"zrucna\")> na vyrobu lektvaru. Tady mas prisady, ktere jsi mi <src.sex(\"prinesl\",\"prinesla\")>, umichej z nich Lektvar Ocisteni.");
 						d.Html();
 						d.SetText("*vzit prisady a namichat lektvar*"); //Erebor's "*vzit prisady*": the player went off to brew it, here it's mixed at once
 						d.Response(false, true, "gq006_takePurityPotionResources"); //Erebor's response led to a page it never wrote, so it closed
