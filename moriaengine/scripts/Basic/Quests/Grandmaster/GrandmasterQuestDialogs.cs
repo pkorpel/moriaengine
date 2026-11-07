@@ -542,7 +542,8 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#833 - the q000 branch of d_gq030_zmocnenec and d_mq030_zmocnenec: the envoy who grants the rank.</summary>
 	public partial class D_Q000Envoy : QuestDialogDef {
 		protected override void Build(QuestDialogContent d, Character npc, Player player) {
-			d.BaseButton(3);
+			bool gondor = IsGondor(npc);
+			Q30.BaseButtons(d, player, gondor); //#1276 - q30, Erebor's d_gq030_zmocnenec / d_mq030_zmocnenec
 			d.Page("Obchodovat");
 			d.SetText("Kdepak, ja nejsem obchodnik.. ");
 			d.Html();
@@ -560,7 +561,9 @@ namespace SteamEngine.CompiledScripts {
 			} else {
 				d.SetText("Zdravim...");
 				d.Html();
+				Q30.GreetingLines(d, player, gondor);
 			}
+			Q30.Pages(d, player, gondor);
 		}
 	}
 

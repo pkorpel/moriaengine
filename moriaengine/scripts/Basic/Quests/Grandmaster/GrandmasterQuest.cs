@@ -197,10 +197,11 @@ namespace SteamEngine.CompiledScripts {
 
 		//Erebor's f_gq030_refuseQDialog / f_mq030_refuseQDialog
 		private static void TalkToEnvoy(NPC envoy, Player player, bool gondor) {
-			if (player.Realm != (gondor ? Realm.Gondor : Realm.Mordor)) {
-				envoy.Say(gondor ? "Vyhni se memu meci, prisluhovaci Mordoru !" : "Vyhni se memu meci, prisluhovaci Gondoru !");
+			string refusal = Q30.Refusal(player, gondor); //#1276 - also q30's realm changers and thieves
+			if (refusal != null) {
+				envoy.Say(refusal);
 			} else {
-				envoy.Dialog(player, SingletonScript<D_Q000Envoy>.Instance, envoy);
+				envoy.Dialog(player, gondor ? SingletonScript<D_Q000Envoy>.Instance : SingletonScript<D_Q000EnvoyMordor>.Instance, envoy);
 			}
 		}
 
@@ -615,6 +616,21 @@ namespace SteamEngine.CompiledScripts {
 				GrandmasterQuest.Advance(player, 13);
 				player.SkillRank = SkillRank.Grandmaster;
 				QuestNpc.CelebrateRank(player);
+			} else {
+				Q30.Button(button, (NPC) npc, player, IsGondor(npc)); //#1276
+			}
+		}
+
+		internal static bool IsGondor(Character npc) {
+			return npc.Def != ThingDef.GetByDefname(GrandmasterQuest.MordorEnvoyDef);
+		}
+	}
+
+	/// <summary>#1276 - Mordor's envoy: Erebor's d_mq030_zmocnenec had its own face.</summary>
+	public class D_Q000EnvoyMordor : D_Q000Envoy {
+		protected override int Face {
+			get {
+				return 0x3111;
 			}
 		}
 	}
