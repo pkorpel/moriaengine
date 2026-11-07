@@ -206,13 +206,54 @@ namespace SteamEngine.CompiledScripts {
 		//a Deliver step with an item puts it in the pack as it begins
 		private static void StartStep(Player player, Errand errand) {
 			ErrandStep step = errand.Current;
-			if ((step != null) && (step.Kind == ErrandStepKind.Deliver) && (step.itemDef.Length > 0)) {
+			if (step == null) {
+				return;
+			}
+			if ((step.Kind == ErrandStepKind.Deliver) && (step.itemDef.Length > 0)) {
 				ItemDef def = ThingDef.GetByDefname(step.itemDef) as ItemDef;
-				if (def != null) {
+				CityVenue venue = (step.venueId.Length > 0) ? VenueRegistry.ById(step.venueId) : null;
+				int[] spot = (venue == null) ? null : ResidentSchedule.SpotIn(venue, "errand/" + ItemMark(player, errand));
+				if (def == null) {
+					step.itemDef = ""; //no such item: a message to carry instead, or the step could never be done
+				} else if (spot != null) { //#1252 - lost somewhere in the venue: lying there to be found
+					Item item = (Item) def.Create(new Point4D((ushort) spot[0], (ushort) spot[1], (sbyte) spot[2], venue.M));
+					item.SetTag(ItemTK, ItemMark(player, errand));
+					ItemDecaySystem.Cancel(item); //it waits for whoever looks for it, until the errand ends
+					step.placed = item;
+				} else {
 					Item item = (Item) def.Create(player.Backpack);
 					item.SetTag(ItemTK, ItemMark(player, errand));
-				} else {
-					step.itemDef = ""; //no such item: a message to carry instead, or the step could never be done
+				}
+			}
+			NPC companion = Body(step.companionId);
+			if (companion != null) { //#1252 - walks with the player; the schedule leaves a follower alone
+				companion.PetGoalPoint = null;
+				companion.FollowTarget = player;
+				NPCAiTimer.GetFor(companion)?.WakeUp();
+			}
+		}
+
+		private static NPC Body(string residentId) {
+			if (string.IsNullOrEmpty(residentId)) {
+				return null;
+			}
+			Item gem = Residents.ById(residentId);
+			return (gem == null) ? null : Residents.BodyOf(gem);
+		}
+
+		//#1252 - whoever followed the player for this errand goes back to their day, and an item laid in a venue is cleared
+		private static void Release(Player player, Errand errand) {
+			foreach (ErrandStep step in errand.steps) {
+				NPC companion = Body(step.companionId);
+				if ((companion != null) && (companion.FollowTarget == player)) {
+					companion.FollowTarget = null;
+					Item gem = Residents.GemOf(companion);
+					if (gem != null) {
+						ResidentSchedule.Apply(gem, companion, false);
+					}
+				}
+				if ((step.placed != null) && !step.placed.IsDeleted && (step.placed.TopObj() != player)) {
+					step.placed.Delete();
 				}
 			}
 		}
@@ -278,6 +319,11 @@ namespace SteamEngine.CompiledScripts {
 					step.chosen = choice;
 					break;
 			}
+			NPC companion = Body(step.companionId);
+			if ((step.companionId.Length > 0) && ((companion == null) || (companion.M != player.M) || (Point2D.GetSimpleDistance(companion, player) > Reach + 3))) {
+				player.RedMessage((companion == null) ? "Ten, koho jsi mel doprovodit, tu neni." : companion.Name + " neni s tebou.");
+				return false;
+			}
 			string reply = (step.Kind == ErrandStepKind.Choose) && (choice < step.choiceReplies.Count) ? step.choiceReplies[choice] : step.reply;
 			if (!string.IsNullOrEmpty(reply)) {
 				resident.Say(reply);
@@ -297,6 +343,13 @@ namespace SteamEngine.CompiledScripts {
 		private static void Finish(Player player, Errand errand) {
 			ErrandLog log = Log(player);
 			log.active.Remove(errand);
+			Release(player, errand);
+			ErrandTemplate template = ErrandTemplates.Get(errand.key);
+			int share = errand.payPercent;
+			if (template != null) {
+				share = (share * template.PayPercent(errand)) / 100;
+				template.OnDone(player, errand);
+			}
 			log.streak = (log.lastKey == errand.key) ? log.streak + 1 : 1;
 			log.lastKey = errand.key;
 			log.done++;
@@ -307,7 +360,7 @@ namespace SteamEngine.CompiledScripts {
 				case ErrandTier.Medium: gold = s.goldMedium; exp = s.expMedium; friend = s.friendMedium; rep = s.repMedium; break;
 				default: gold = s.goldSmall; exp = s.expSmall; friend = s.friendSmall; rep = s.repSmall; break;
 			}
-			double scale = (1.0 + (player.Level / 50.0)) * (0.5 + (0.25 * errand.steps.Count)) * (errand.payPercent / 100.0);
+			double scale = (1.0 + (player.Level / 50.0)) * (0.5 + (0.25 * errand.steps.Count)) * (share / 100.0);
 			gold = (int) Math.Round(gold * scale);
 			exp = (int) Math.Round(exp * scale);
 			if (gold > 0) {
@@ -353,6 +406,7 @@ namespace SteamEngine.CompiledScripts {
 		private static void TakeBackItems(Player player, Errand errand) {
 			while (TakeMarked(player, errand)) {
 			}
+			Release(player, errand);
 		}
 
 		//the errand's item in the pack, taken away; false if there's none

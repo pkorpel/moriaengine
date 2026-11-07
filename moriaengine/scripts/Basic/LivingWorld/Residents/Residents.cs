@@ -463,6 +463,9 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Moves the resident's home point to its place for now; puts the body there at once where no player is near,
 		/// on another plane, or when `place` is set (a fresh body).</summary>
 		public static void Apply(Item gem, NPC npc, bool place) {
+			if (npc.FollowTarget != null) {
+				return; //#1252 - walking with a player on an errand: the day resumes when the errand lets them go
+			}
 			CityVenue venue = PlaceFor(gem, VenueClock.Shift);
 			if (venue == null) {
 				return;
