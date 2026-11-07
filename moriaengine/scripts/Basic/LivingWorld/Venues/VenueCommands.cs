@@ -51,12 +51,25 @@ namespace SteamEngine.CompiledScripts {
 					self.SysMessage("Budov bez mista: " + rooms.Count + ".");
 					D_VenueProposals.Show(self, city, rooms, 0);
 					break;
+				case "obsadit":
+					if (city == null) {
+						self.SysMessage("Nestojis v zadnem meste.");
+						return;
+					}
+					int filled = 0;
+					WorldPieces pieces = new WorldPieces();
+					foreach (CityVenue venue in VenueRegistry.InCity(city)) {
+						filled += Residents.FillRoles(venue, pieces);
+					}
+					self.SysMessage("Novych obyvatel ve meste " + city + ": " + filled + ".");
+					break;
 				case "export":
-					int written = VenueFile.Export(VenueFile.Path);
-					self.SysMessage("Zapsano " + written + " mist do " + VenueFile.Path + ". .SetupWorld je z nej obnovi.");
+					int residents;
+					int written = VenueFile.Export(VenueFile.Path, out residents);
+					self.SysMessage("Zapsano " + written + " mist a " + residents + " obyvatel do " + VenueFile.Path + ". .SetupWorld je z nej obnovi.");
 					break;
 				default:
-					self.SysMessage(".venues [vse | navrh | export]");
+					self.SysMessage(".venues [vse | navrh | obsadit | export]");
 					break;
 			}
 		}
@@ -72,6 +85,11 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static int Export(string path) {
+			int residents;
+			return Export(path, out residents);
+		}
+
+		public static int Export(string path, out int residents) {
 			StringBuilder text = new StringBuilder();
 			text.Append("# #1240 venues, written by .venues export; .SetupWorld places those missing\n");
 			text.Append("# id|city|type|opens|closes|m|zmin|zmax|rects|title\n");
@@ -83,11 +101,43 @@ namespace SteamEngine.CompiledScripts {
 					.Append(venue.Opens.ToString(CultureInfo.InvariantCulture)).Append('|').Append(venue.Closes.ToString(CultureInfo.InvariantCulture)).Append('|')
 					.Append(venue.M.ToString(CultureInfo.InvariantCulture)).Append('|').Append(venue.ZMin.ToString(CultureInfo.InvariantCulture)).Append('|')
 					.Append(venue.ZMax.ToString(CultureInfo.InvariantCulture)).Append('|').Append(CityVenue.FormatRects(venue.Rectangles)).Append('|')
-					.Append(venue.Title.Replace("|", "/").Replace("\r", " ").Replace("\n", " ")).Append('\n');
+					.Append(Clean(venue.Title)).Append('\n');
+			}
+			text.Append("# R|id|venue|role|female|name|home|traits (#1242 residents)\n");
+			List<Item> gems = new List<Item>(Residents.AllGems);
+			residents = gems.Count;
+			gems.Sort((a, b) => string.Compare(Residents.IdOf(a), Residents.IdOf(b), StringComparison.OrdinalIgnoreCase));
+			foreach (Item gem in gems) {
+				text.Append("R|").Append(Residents.IdOf(gem)).Append('|').Append(Residents.VenueIdOf(gem)).Append('|').Append(Residents.RoleKeyOf(gem)).Append('|')
+					.Append(Residents.IsFemale(gem) ? '1' : '0').Append('|').Append(Clean(Residents.NameOf(gem))).Append('|').Append(Residents.HomeIdOf(gem) ?? "").Append('|')
+					.Append(string.Join(",", Residents.TraitsOf(gem))).Append('\n');
 			}
 			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
 			File.WriteAllText(path, text.ToString());
 			return venues.Count;
+		}
+
+		private static string Clean(string text) {
+			return (text ?? "").Replace("|", "/").Replace("\r", " ").Replace("\n", " ");
+		}
+
+		/// <summary>The file's residents (lines starting R|), skipping broken ones.</summary>
+		public static List<ResidentLine> ReadResidents(string path) {
+			List<ResidentLine> lines = new List<ResidentLine>();
+			if (!File.Exists(path)) {
+				return lines;
+			}
+			foreach (string raw in File.ReadAllLines(path)) {
+				string line = raw.Trim();
+				if (!line.StartsWith("R|", StringComparison.Ordinal)) {
+					continue;
+				}
+				string[] parts = line.Split(new[] { '|' }, 8);
+				if ((parts.Length == 8) && (parts[1].Length > 0) && (parts[2].Length > 0) && (parts[3].Length > 0)) {
+					lines.Add(new ResidentLine(parts[1], parts[2], parts[3], parts[4] == "1", parts[5], (parts[6].Length == 0) ? null : parts[6], parts[7]));
+				}
+			}
+			return lines;
 		}
 
 		/// <summary>The file's venues, skipping comments and broken lines.</summary>
@@ -98,7 +148,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			foreach (string raw in File.ReadAllLines(path)) {
 				string line = raw.Trim();
-				if ((line.Length == 0) || line.StartsWith("#", StringComparison.Ordinal)) {
+				if ((line.Length == 0) || line.StartsWith("#", StringComparison.Ordinal) || line.StartsWith("R|", StringComparison.Ordinal)) {
 					continue;
 				}
 				string[] parts = line.Split(new[] { '|' }, 10);
@@ -114,6 +164,21 @@ namespace SteamEngine.CompiledScripts {
 				}
 			}
 			return lines;
+		}
+	}
+
+	public sealed class ResidentLine {
+		public readonly string Id, VenueId, RoleKey, Name, HomeId, Traits;
+		public readonly bool Female;
+
+		public ResidentLine(string id, string venueId, string roleKey, bool female, string name, string homeId, string traits) {
+			this.Id = id;
+			this.VenueId = venueId;
+			this.RoleKey = roleKey;
+			this.Female = female;
+			this.Name = name;
+			this.HomeId = homeId;
+			this.Traits = traits;
 		}
 	}
 

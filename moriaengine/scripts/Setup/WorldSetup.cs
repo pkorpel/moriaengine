@@ -166,15 +166,16 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>A lone NPC that belongs in the world, as a spawn of one (the user's call): the piece is a gem made by .spawn's
 		/// own f_spawninit, and SpawnedPieces gives each NPC it spawns, a respawn too, the realm and invulnerability kept on the
 		/// gem. Its first NPC comes at once, not a second later, as quest setups want it there.</summary>
-		public void Npc(string id, string defname, int[] at, byte m, Realm realm = Realm.None, bool invulnerable = false, short homeDist = WandersAbout) {
+		public Item Npc(string id, string defname, int[] at, byte m, Realm realm = Realm.None, bool invulnerable = false, short homeDist = WandersAbout, bool adopt = true) {
 			int addedBefore = this.added;
-			this.SpawnGem(id, new SpawnInfo(1, (IThingFactory) ThingDef.GetByDefname(defname), RespawnMinMinutes, RespawnMaxMinutes, homeDist), at, m);
+			this.SpawnGem(id, new SpawnInfo(1, (IThingFactory) ThingDef.GetByDefname(defname), RespawnMinMinutes, RespawnMaxMinutes, homeDist), at, m, adopt);
 			Item gem = (Item) this.existing[id];
 			SpawnedPieces.Mark(gem, realm, invulnerable);
 			if ((this.added > addedBefore) && (gem.GetTimer(spawnTimerTK) != null)) {
 				gem.DeleteTimer(spawnTimerTK);
 				gem.TryTrigger(spawnNowTK, new ScriptArgs());
 			}
+			return gem;
 		}
 
 		/// <summary>A lone NPC with no spawn, for one whose life its quest runs (Rinald).</summary>
@@ -182,9 +183,10 @@ namespace SteamEngine.CompiledScripts {
 			return (NPC) this.GetOrCreate(id, defname, at, m, onNew == null ? (Action<Thing>) null : t => onNew((NPC) t));
 		}
 
-		/// <summary>A spawn gem. What it spawned belongs to it, not to the setup.</summary>
-		public void SpawnGem(string id, SpawnInfo info, int[] at, byte m) {
-			if (this.existing.ContainsKey(id) || this.TryAdoptGem(id, at, m, 2)) {
+		/// <summary>A spawn gem. What it spawned belongs to it, not to the setup. `adopt` takes a GM's gem without an id near the
+		/// spot as this piece (a world set up before pieces had ids); residents (#1242) say no, a GM's own spawn there stays his.</summary>
+		public void SpawnGem(string id, SpawnInfo info, int[] at, byte m, bool adopt = true) {
+			if (this.existing.ContainsKey(id) || (adopt && this.TryAdoptGem(id, at, m, 2))) {
 				this.kept++;
 				return;
 			}
@@ -285,6 +287,13 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if (gem.GetTag(invulnerableTK) != null) {
 				ch.Flag_Invulnerable = true;
+			}
+			try {
+				Residents.Prepare(gem, ch); //#1242 - a resident's gem names its body
+			} catch (FatalException) {
+				throw;
+			} catch (Exception e) {
+				Logger.WriteError(e); //@spawnNow goes on counting its spawn whatever a resident's setup does
 			}
 		}
 	}

@@ -2,7 +2,7 @@ using SteamEngine.Common;
 
 namespace SteamEngine.CompiledScripts {
 
-	/// <summary>#1240 - the venues of scripts/Setup/venues.txt (.venues export), placed where missing. A venue already in the world
+	/// <summary>#1240 - the venues of scripts/Setup/venues.txt (.venues export), placed where missing, then their residents (#1242). A venue already in the world
 	/// keeps what a GM changed on it: setups only add.</summary>
 	public sealed class VenueSetup : WorldSetup {
 		public override string Name {
@@ -14,6 +14,13 @@ namespace SteamEngine.CompiledScripts {
 				Point4D at = VenueRegistry.MarkerSpot(line.Rects, line.ZMin, line.ZMax, line.M);
 				pieces.Item(line.Id, VenueRegistry.MarkerDefname, new[] { at.X, at.Y, at.Z }, at.M, item =>
 					VenueRegistry.Fill((CityVenue) item, line.Id, line.Type, line.Title, line.City, line.Opens, line.Closes, line.Rects, line.ZMin, line.ZMax));
+			}
+			//#1242 - the residents, once their venues are there; one already in the world keeps what it is
+			foreach (ResidentLine line in VenueFile.ReadResidents(VenueFile.Path)) {
+				CityVenue venue = VenueRegistry.ById(line.VenueId);
+				if ((venue != null) && (Residents.ById(line.Id) == null)) {
+					Residents.Create(pieces, line.Id, venue, line.RoleKey, line.Female, line.Name, line.HomeId, line.Traits);
+				}
 			}
 		}
 	}
