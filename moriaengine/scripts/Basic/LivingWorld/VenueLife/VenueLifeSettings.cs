@@ -44,9 +44,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int oreWage = 4, orePerDay = 20;
 
-		/// <summary>Working the bellows: the stamina it takes, the pay, and the real minutes before the same player works them again.</summary>
+		/// <summary>Working the bellows: the stamina it takes, the pay, the real minutes before the same player works them again, and
+		/// how many times a real day.</summary>
 		[SaveableData]
-		public int bellowsStamina = 10, bellowsWage = 5, bellowsMinutes = 5;
+		public int bellowsStamina = 10, bellowsWage = 5, bellowsMinutes = 5, bellowsPerDay = 12;
 
 		/// <summary>A temple offering, once a real day: the gift and the karma it gives.</summary>
 		[SaveableData]

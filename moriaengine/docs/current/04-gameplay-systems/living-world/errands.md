@@ -24,7 +24,7 @@ An `Errand`, saved on the player in the `_errands_` tag (an `ErrandLog`), holds:
 | Step kind | Done when, at the step's resident |
 |---|---|
 | Talk | the player picks the line |
-| Deliver | a message: the line. An item (made in the pack when the step begins, marked as the errand's) is taken back |
+| Deliver | a message: the line. An item (made in the pack when the step begins, marked as the errand's) is taken back. When the errand ends any other way, the item is deleted wherever it went: worn, dropped, in a chest (#1258; before that only the pack and bank were searched, so an errand's sword could be kept) |
 | Fetch | the pack holds N of an item def; they are taken |
 | Collect | a [collector bag](../quests/collectors.md) of a def has N or more; the bag is taken |
 | Wait | it is between two game hours (`VenueClock`) |

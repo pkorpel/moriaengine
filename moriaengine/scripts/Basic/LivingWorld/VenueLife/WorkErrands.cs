@@ -60,14 +60,16 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Item armourer = WorkErrands.SameVenue(c.GiverGem, "armourer");
 			CityVenue armoury = Residents.WorkplaceOf(c.GiverGem);
-			Item suspect = c.PickOther(gem => Residents.WorkplaceOf(gem) != armoury);
+			Item suspect = c.PickOther(gem => (Residents.WorkplaceOf(gem) != armoury) && BasicErrands.IsWorker(gem) &&
+				(Residents.RoleKeyOf(gem) != "captain") && (Residents.RoleKeyOf(gem) != "guard")); //someone who'd borrow a key, not the guard who'd arrest them
 			if ((armourer == null) || (suspect == null)) {
 				return false;
 			}
 			string thief = Residents.NameOf(suspect);
-			e.offer = "Pri inventure mi chybi tri mece. Nekdo kradl. Zeptej se zbrojire " + Residents.NameOf(armourer) + ", kdo mel klic.";
+			string ask = BasicErrands.Sex(armourer, "zbrojire ", "zbrojirky ") + Residents.NameOf(armourer);
+			e.offer = "Pri inventure mi chybi tri mece. Nekdo kradl. Zeptej se " + ask + ", kdo mel klic.";
 			e.thanks = "Diky. Aspon vim, na cem jsem.";
-			e.steps.Add(Errands.Talk(armourer, "Zeptej se zbrojire " + Residents.NameOf(armourer) + ", kdo mel klic od skladu", "Kdo mel vcera klic od skladu?",
+			e.steps.Add(Errands.Talk(armourer, "Zeptej se " + ask + ", kdo mel klic od skladu", "Kdo mel vcera klic od skladu?",
 				"Klic si vcera pujcil" + BasicErrands.Sex(suspect, "", "a") + " " + ErrandContext.Who(suspect) + "."));
 			e.steps.Add(Errands.Choose(suspect, "Promluv si s: " + ErrandContext.Who(suspect),
 				new[] { "Vrat ty mece a nikdo se nic nedozvi.", "Pujdes se mnou pred kapitana!" },
@@ -105,7 +107,7 @@ namespace SteamEngine.CompiledScripts {
 			if (owner == null) {
 				return false;
 			}
-			e.offer = "Opravil jsem mec pro: " + ErrandContext.Who(owner) + ". Odneses " + BasicErrands.Sex(owner, "mu", "ji") + " ho?";
+			e.offer = BasicErrands.Sex(c.GiverGem, "Opravil", "Opravila") + " jsem mec pro: " + ErrandContext.Who(owner) + ". Odneses " + BasicErrands.Sex(owner, "mu", "ji") + " ho?";
 			e.thanks = "Diky. Ten mec ted vydrzi dlouho.";
 			e.steps.Add(Errands.Deliver(owner, "i_sword_long_iron", "Odnes opraveny mec: " + ErrandContext.Who(owner), "Kovar posila tvuj opraveny mec.",
 				"Konecne! Bez nej jsem si pripadal" + BasicErrands.Sex(owner, " nahy", "a naha") + "."));
@@ -119,6 +121,16 @@ namespace SteamEngine.CompiledScripts {
 		public override string Key { get { return "pilgrim"; } }
 		public override string Name { get { return "Poutnik"; } }
 		public override ErrandTier Tier { get { return ErrandTier.Small; } }
+
+		//places that would answer the ask as well: never offered as a wrong way
+		private static readonly Dictionary<string, string[]> alsoRight = new Dictionary<string, string[]>(StringComparer.Ordinal) {
+			{ "tavern", new[] { "bakery", "market" } }, { "market", new[] { "bakery", "tavern" } }, { "bakery", new[] { "market", "tavern" } },
+			{ "barracks", new[] { "armoury" } }, { "armoury", new[] { "barracks" } }, { "smithy", new[] { "tailor" } }, { "stable", new[] { "farm" } },
+		};
+
+		internal static bool AlsoRight(string asked, string other) {
+			return (asked == other) || (alsoRight.TryGetValue(asked, out string[] also) && (Array.IndexOf(also, other) >= 0));
+		}
 
 		private static readonly Dictionary<string, string> asks = new Dictionary<string, string>(StringComparer.Ordinal) {
 			{ "tavern", "Kde se tu da najist a vyspat?" },
@@ -153,7 +165,7 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			CityVenue right = askable[Globals.dice.Next(askable.Count)];
-			others.RemoveAll(v => (v == right) || (v.VenueType == right.VenueType));
+			others.RemoveAll(v => (v == right) || AlsoRight(right.VenueType.Key, v.VenueType.Key));
 			if (others.Count < 2) {
 				return false;
 			}

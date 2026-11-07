@@ -94,7 +94,7 @@ The pitmaster tells the fight overhead. A bet on the winner takes double back, a
 The armoury's life is in its errands, both given by the quartermaster:
 - **Rekvizice** (medium): bring two iron weapons that smiths make: kryssy, dyky, dlouhe mece or kopi (`i_kryss_iron` and the rest).
 - **Kradez ze skladu** (medium): the stock doesn't add up.
-  - The armourer says who borrowed the key: another resident of the city.
+  - The armourer says who borrowed the key: another working resident of the city. Patrons, pilgrims, patients, prisoners and the guard aren't suspects.
   - The player then picks one of two answers at the suspect:
     - let them return it quietly: 100% of the pay, and the thief's friendship +2;
     - turn them in: 125% of the pay.
@@ -109,11 +109,11 @@ Lending gear to the militia during an event waits for the events (phase 6).
 | Pomoct u mechu | smith, apprentice | work the bellows |
 | Prinest rudu | smith | iron ore for wages |
 
-**The bellows** take `bellowsStamina` stamina and pay `bellowsWage`, once every `bellowsMinutes` real minutes. A player without the stamina is sent to rest. The first work of a real day adds 1 to that resident's friendship.
+**The bellows** take `bellowsStamina` stamina and pay `bellowsWage`, once every `bellowsMinutes` real minutes and at most `bellowsPerDay` times a real day. A player without the stamina is sent to rest. The first work of a real day, at whichever smithy, adds 1 to the friendship of the resident it was done for.
 
 **Ore:** `VenueGoods.Buy` takes iron ore (`i_ore_iron`) for `oreWage` a piece, up to `orePerDay` a real day. No vendor sells ore.
 
-**Opraveny mec** (small errand, the smith): take a repaired iron long sword to the city's barracks captain or a guard. The sword goes into the pack when the errand is taken.
+**Opraveny mec** (small errand, the smith): take a repaired iron long sword to the city's barracks captain or a guard. The sword goes into the pack when the errand is taken. If the errand is given up or runs out, the sword is deleted wherever it went (see [errands.md](errands.md)), so it can't be kept.
 
 ## The temple
 
@@ -124,11 +124,13 @@ Lending gear to the militia during an event waits for the events (phase 6).
 
 **An offering** costs `offeringPrice` and can be made once a real day. It gives `offeringKarma` karma and 1 friendship with that resident.
 
-**A vigil** starts in the temple at night (`VenueClock`'s night shift), once a real day. A `VigilTimer` on the player checks every 10 s that they are still in the temple, alive and online. Leaving, dying or logging out breaks it, with no reward. After `vigilSeconds` it ends with `vigilExp` experience, `vigilKarma` karma and the priest's friendship.
+**A vigil** starts inside the temple at night (a player at the door is asked in) (`VenueClock`'s night shift), once a real day. A `VigilTimer` on the player checks every 10 s that they are still in the temple, alive and online. Leaving, dying or logging out breaks it, with no reward. After `vigilSeconds` it ends with `vigilExp` experience, `vigilKarma` karma and the priest's friendship.
 
 **Poutnik** (small errand, a pilgrim): the pilgrim asks the way, for example "Boli me nohy. Kde najdu lecitele?". The player picks one of three venues of the city:
 - the right one (the healer's, here) pays 100%;
 - a wrong one still ends the errand, for 25%.
+
+A place that would answer the ask as well is never offered as a wrong way: a tavern, bakery and market for food; the barracks and armoury for the guard; a tailor for the smith's buckle; a farm for the stable.
 
 The right answer's place is kept in the choose step's `count`, which a choose step doesn't otherwise use.
 
@@ -159,7 +161,7 @@ Gathering herbs for the house is the general ingredients errand.
 | promptReward | 25 | gold for the right prompt |
 | pitBetSmall, pitBetMedium, pitBetLarge, pitBetsPerHour | 10, 50, 100, 10 | the pits' bets and hourly cap |
 | oreWage, orePerDay | 4, 20 | the smith's pay per ore and the daily cap |
-| bellowsStamina, bellowsWage, bellowsMinutes | 10, 5, 5 | working the bellows |
+| bellowsStamina, bellowsWage, bellowsMinutes, bellowsPerDay | 10, 5, 5, 12 | working the bellows |
 | offeringPrice, offeringKarma | 25, 50 | a temple offering |
 | vigilSeconds, vigilExp, vigilKarma | 120, 100, 50 | a night vigil |
 | bandageHealing, bandageWage | 200, 10 | dressing a patient (Healing in tenths) |
@@ -207,8 +209,8 @@ Gathering herbs for the house is the general ingredients errand.
 - **through a client:** the smith's dialog lines and a turn at the bellows;
 - **on the server:**
   - who offers what;
-  - the bellows' stamina, rest and pay, and the ore cap;
+  - the bellows' stamina, rest, pay and daily cap, and the ore cap;
   - an offering once a day;
   - a vigil at night only, run to its end, and broken by leaving;
   - dressing a patient: the skill, a bandage, once a day;
-  - all five errands, each asked only by its role: the requisition, both endings of the theft (compared as pay shares), the blade going to the barracks, the pilgrim's right and wrong ways, and the fever night.
+  - all five errands, each asked only by its role: the requisition, both endings of the theft (compared as pay shares), the blade going to the barracks and a given-up one deleted from a chest on the ground, the pilgrim's right and wrong ways (never a sensible place called wrong), and the fever night.

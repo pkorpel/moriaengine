@@ -3,7 +3,8 @@ using System;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1258 - a resident buying goods from the player's pack for wages: the bath house's logs, the smith's ore. A cap
-	/// of pieces a real day per player and resident, and friendship +1 for the first load of the day. Only goods nobody sells
+	/// of pieces a real day per player and key (one cap for all of a city's smiths, and all cities'), and friendship +1 with the
+	/// resident who takes the first load of the day. Only goods nobody sells
 	/// belong here, or the wages could be bought.</summary>
 	public static class VenueGoods {
 		/// <summary>The words a buyer says: when there's nothing to buy (with the wage), when the day's cap is met, and the thanks

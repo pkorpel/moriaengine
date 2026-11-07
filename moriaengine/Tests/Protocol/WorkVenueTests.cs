@@ -25,9 +25,9 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("theClientWorkedTheBellows");
 
 				this.Run(game, ".TestWorkVenueRules", "WORKVENUE_RULES_DONE");
-				this.AssertChecks("theSmithyOffers", "theBellowsTakeStaminaAndRest", "theSmithBuysOreUpToADay", "theTempleOffers", "anOfferingOnceADay",
+				this.AssertChecks("theSmithyOffers", "theBellowsTakeStaminaAndRest", "theBellowsHaveADailyCap", "theSmithBuysOreUpToADay", "theTempleOffers", "anOfferingOnceADay",
 					"aVigilAtNightToItsEnd", "leavingBreaksTheVigil", "patientsWantDressing", "dressingNeedsSkillABandageAndADay", "eachAskedOnlyByItsRole",
-					"aRequisitionWantsTwoIronWeapons", "theTheftEndsTwoWays", "theBladeGoesToTheBarracks", "thePilgrimsRightWayPaysMore", "aFeverNightToItsEnd");
+					"aRequisitionWantsTwoIronWeapons", "theTheftEndsTwoWays", "theBladeGoesToTheBarracks", "aGivenUpBladeIsTakenBack", "thePilgrimsRightWayPaysMore", "noSensibleWayIsCalledWrong", "aFeverNightToItsEnd");
 			}
 		}
 	}

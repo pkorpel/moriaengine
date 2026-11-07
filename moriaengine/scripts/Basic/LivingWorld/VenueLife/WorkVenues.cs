@@ -9,6 +9,7 @@ namespace SteamEngine.CompiledScripts {
 	public static class WorkVenues {
 		internal static readonly TagKey BellowsAtTK = TagKey.Acquire("_smithy_bellows_at_");
 		internal static readonly TagKey BellowsDayTK = TagKey.Acquire("_smithy_bellows_day_");
+		private static readonly TagKey bellowsCountTK = TagKey.Acquire("_smithy_bellows_count_");
 		internal static readonly TagKey OfferingTK = TagKey.Acquire("_temple_offering_");
 		internal static readonly TagKey VigilDoneTK = TagKey.Acquire("_temple_vigil_done_");
 
@@ -43,13 +44,20 @@ namespace SteamEngine.CompiledScripts {
 				npc.Say("Odpocin si chvili, vyhen to vydrzi.");
 				return;
 			}
+			bool newDay = !WithinADay(player.GetTag(BellowsDayTK));
+			int today = newDay ? 0 : ((player.GetTag(bellowsCountTK) is int c) ? c : 0);
+			if (today >= Settings.bellowsPerDay) {
+				npc.Say("Na dnesek staci. Prijd zitra.");
+				return;
+			}
 			if (player.Stam < Settings.bellowsStamina) {
 				npc.Say("Vypadas unavene. Prijd, az naberes sily.");
 				return;
 			}
 			player.Stam = (short) (player.Stam - Settings.bellowsStamina);
 			player.SetTag(BellowsAtTK, now);
-			if (!WithinADay(player.GetTag(BellowsDayTK))) {
+			player.SetTag(bellowsCountTK, today + 1);
+			if (newDay) {
 				player.SetTag(BellowsDayTK, now);
 				string id = Residents.IdOf(gem);
 				if (id != null) {
@@ -87,14 +95,18 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			CityVenue temple = Residents.WorkplaceOf(gem);
-			if ((temple == null) || (VenueRegistry.At(player) != temple)) {
+			if (temple == null) {
+				return;
+			}
+			if (VenueRegistry.At(player) != temple) {
+				npc.Say("Pojd dovnitr chramu. Bdi se uvnitr.");
 				return;
 			}
 			VigilTimer timer = new VigilTimer { venueId = temple.VenueId, priestId = Residents.IdOf(gem), left = Math.Max(1, Settings.vigilSeconds) };
 			player.AddTimer(VigilTimer.Key, timer);
 			timer.DueInSeconds = VigilTimer.StepSeconds;
 			timer.PeriodInSeconds = VigilTimer.StepSeconds;
-			npc.Say("Zustan tady do svitani a v tichu rozjimej. Kdo odejde, bdeni prerusi.");
+			npc.Say("Zustan tady a v tichu rozjimej. Kdo odejde, bdeni prerusi.");
 		}
 		#endregion
 

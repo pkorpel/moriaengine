@@ -149,6 +149,17 @@ namespace SteamEngine.CompiledScripts {
 			Do(player, "smithy_bellows", "smithy", "smith");
 			Report("theBellowsTakeStaminaAndRest", worked && rests && again && (GoldUtils.CountGoldOn(player) == g2) && (player.Stam == 3));
 			player.Stam = 50;
+			int perDay = VenueLifeSettings.instance.bellowsPerDay;
+			VenueLifeSettings.instance.bellowsPerDay = 2; //two worked today already
+			Errands.NowOverride = start.AddMinutes(3 * (VenueLifeSettings.instance.bellowsMinutes + 1));
+			long g4 = GoldUtils.CountGoldOn(player);
+			Do(player, "smithy_bellows", "smithy", "smith");
+			bool capped = (GoldUtils.CountGoldOn(player) == g4) && (player.Stam == 50);
+			Errands.NowOverride = start.AddHours(25);
+			Do(player, "smithy_bellows", "smithy", "smith");
+			Report("theBellowsHaveADailyCap", capped && (GoldUtils.CountGoldOn(player) - g4 == VenueLifeSettings.instance.bellowsWage));
+			VenueLifeSettings.instance.bellowsPerDay = perDay;
+			player.Stam = 50;
 
 			Errands.NowOverride = start;
 			VenueGoods.ForgetDay(player, "smithore");
@@ -313,6 +324,21 @@ namespace SteamEngine.CompiledScripts {
 			bool toBarracks = (owner != null) && (Residents.WorkplaceOf(owner) == Venue(player, "barracks")) && (Errands.CountIn(player.Backpack, (ItemDef) ThingDef.GetByDefname("i_sword_long_iron")) == 0);
 			Report("theBladeGoesToTheBarracks", toBarracks && Step(player, blade) && blade.IsDone);
 
+			//a sword to carry is no free sword: given up, it goes even from a chest on the ground
+			FreshLog(player);
+			Errand kept = Build(player, "blade", smith);
+			Errands.Accept(player, kept);
+			Item sword = kept.steps[0].placed;
+			Item chest = (Item) ((ItemDef) ThingDef.GetByDefname("i_backpack")).Create(new Point4D((ushort) (player.X + 1), player.Y, player.Z, player.M));
+			bool moved = false;
+			if (sword != null) {
+				sword.Cont = chest;
+				moved = sword.Cont == chest;
+			}
+			Errands.GiveUp(player, kept);
+			Report("aGivenUpBladeIsTakenBack", moved && sword.IsDeleted);
+			chest.Delete();
+
 			//the pilgrim: the right way pays more than a wrong one
 			long[] paid = new long[2];
 			bool threeWays = true;
@@ -328,6 +354,21 @@ namespace SteamEngine.CompiledScripts {
 				paid[round] = way.IsDone ? GoldUtils.CountGoldOn(player) - g : -1;
 			}
 			Report("thePilgrimsRightWayPaysMore", threeWays && (paid[0] > paid[1]) && (paid[1] >= 0));
+			//the armoury and the barracks answer each other's asks: neither is ever offered as the other's wrong way
+			string armoury = Venue(player, "armoury").Label, barracks = Venue(player, "barracks").Label;
+			bool sensible = PilgrimWayErrand.AlsoRight("barracks", "armoury") && PilgrimWayErrand.AlsoRight("armoury", "barracks");
+			for (int i = 0; i < 40; i++) {
+				FreshLog(player);
+				Errand way = Build(player, "pilgrim", pilgrim);
+				ErrandStep ask = way.steps[0];
+				string right = ask.choices[ask.count];
+				if (right == armoury) {
+					sensible &= !ask.choices.Contains(barracks);
+				} else if (right == barracks) {
+					sensible &= !ask.choices.Contains(armoury);
+				}
+			}
+			Report("noSensibleWayIsCalledWrong", sensible);
 
 			//the fever: sit with the patient, come back at night, tell the healer
 			FreshLog(player);
