@@ -530,6 +530,7 @@ Name = "Push All"
 [PassiveAbilityDef a_tevent_e_q019_pocestny]
 Name = "(e_q019_pocestny)"
 
+//#1272 - no longer a bare stub: Q026.WraithBlow (Quests/Ports/Q026.cs) reads it on the HCN wraiths' blows
 [PassiveAbilityDef a_tevent_e_q026_hcnpoisoning_npc]
 Name = "(e_q026_hcnpoisoning_npc)"
 

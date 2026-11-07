@@ -368,6 +368,7 @@ namespace SteamEngine.CompiledScripts {
 				if (ThiefDefence.WeakensOwnBlow(attacker, defender)) {
 					swingArgs.DamageAfterAC = swingArgs.DamageAfterAC * CombatSettings.instance.vigilanceOwnDamage;
 				}
+				swingArgs.DamageAfterAC = Q026.WraithBlow(attacker, defender, swingArgs.DamageAfterAC); //#1272 e_q026_hcnPoisoning_NPC: curses, then hits a cursed hero harder
 
 				int actualDamage = CauseDamage(attacker, defender, damageType, swingArgs.DamageAfterAC, true, false, out double reactiveReturn);
 

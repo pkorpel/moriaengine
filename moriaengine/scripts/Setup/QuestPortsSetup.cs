@@ -73,6 +73,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 			PlaceTerlak(pieces, gm);
 			PlaceTailorAndSalmon(pieces, gm);
+			PlaceTombPoison(pieces, gm);
+		}
+
+		/// <summary>#1272 - q026: Andor and Roxana where Erebor's chars files say (3200,2971; 2913,1988), the Temple of Knowledge's
+		/// tapestry at 3941,1503 (the journal's note), its door and book pile beside it, Dol Guldur's tile, secret wall and box in
+		/// the Dol Guldur bonus area at 5396,3384 on plane 10 (the journal's note). Erebor's GMs built the temple and the room; the
+		/// archive keeps neither, so these spots are only near the right places.</summary>
+		internal static void PlaceTombPoison(WorldPieces pieces, Character gm) {
+			Map world = Map.GetMap(0);
+			PlaceStill(pieces, gm, "q026/andor", Q026.AndorDef, WorldSpots.NearestStandable(world, 3200, 2971, 8), 0);
+			PlaceStill(pieces, gm, "q026/roxana", Q026.RoxanaDef, WorldSpots.NearestStandable(world, 2913, 1988, 8), 0);
+			PlaceItem(pieces, gm, "q026/tapestry", Q026.TapestryDef, new Point4D(3941, 1503, 5, 0), false);
+			PlaceItem(pieces, gm, "q026/door", Q026.DoorDef, new Point4D(3944, 1503, 5, 0), false);
+			PlaceItem(pieces, gm, "q026/books", Q026.BookPileDef, new Point4D(3944, 1499, 5, 0), false);
+			PlaceItem(pieces, gm, "q026/alarm", Q026.AlarmDef, new Point4D(5396, 3384, 0, 10), false)?.SetAttribute(ItemAttributes.attr_invis, true); //Erebor's attr 090
+			PlaceItem(pieces, gm, "q026/wall", Q026.WallDef, new Point4D(5398, 3384, 0, 10), false);
+			PlaceItem(pieces, gm, "q026/box", Q026.BoxDef, new Point4D(5396, 3381, 0, 10), false);
 		}
 
 		/// <summary>#1270 - q009's tailor in Edoras (Erebor's spot: none written down), q018's three NPCs where Erebor's script header
@@ -88,15 +105,15 @@ namespace SteamEngine.CompiledScripts {
 			PlaceItem(pieces, gm, "q018/wheel", Q018.WheelDef, Q018.WheelSpot, false);
 		}
 
-		private static void PlaceItem(WorldPieces pieces, Character gm, string id, string defname, Point4D near, bool withZ) {
+		private static Item PlaceItem(WorldPieces pieces, Character gm, string id, string defname, Point4D near, bool withZ) {
 			Map map = Map.GetMap(near.M);
 			int[] at = (withZ && map.CanFit(near.X, near.Y, near.Z, 16, true, false, true)) ? new int[] { near.X, near.Y, near.Z }
 				: WorldSpots.NearestStandable(map, near.X, near.Y, 4);
 			if (at == null) {
 				gm.SysMessage("No spot for " + id + ".");
-				return;
+				return null;
 			}
-			pieces.Item("quests/" + id, defname, at, near.M);
+			return pieces.Item("quests/" + id, defname, at, near.M);
 		}
 
 		/// <summary>#1268 - q017: the entry gate at the first of its four dungeon spots (it moves after each entry), the exit gate at the
