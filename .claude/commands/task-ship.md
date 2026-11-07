@@ -33,8 +33,17 @@ commit (a private repo on GitHub Free has no branch protection or required check
    (`create_pull_request`): base `main`; title = what the squashed commit should
    say, in the commit style; body from `.github/pull_request_template.md`:
    `Part of #<n>` (not "Closes": the issue closes only after it's verified on a
-   local boot of main), what and why, how it was checked, boxes ticked only where
-   true.
+   local boot of main), what and why, how it was checked, the review, boxes ticked
+   only where true.
+   **Review (standing rule, #1230):** a branch that changes anything but `*.md`
+   needs an independent review before merge. Coming from `/task-run`, its step 5 did
+   it. Otherwise run the `reviewer` agent now (worktree path, issue number), verify
+   its findings, fix the blocking ones (then rerun what they touch) and review again
+   after a substantial fix. The PR body's `## Review` section says what it found and
+   what changed ("no defects" counts); a review that ends after the PR is open goes
+   in with `update_pull_request` (or `gh pr edit --body-file` in its own call, not
+   chained before the merge). `scripts/hooks/require_review.py` denies the merge
+   while that section is missing or empty.
 7. Wiki: if the branch changes `scripts/`, `.github/`, `.pre-commit-config.yaml`,
    `.claude/`, the labels or a component's structure, the matching page in
    `docs/wiki/` changes in the same branch — `Runbooks/<Op>.md` for a script,

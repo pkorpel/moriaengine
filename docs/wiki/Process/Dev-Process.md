@@ -19,6 +19,10 @@ branch protection or required checks (if yours has them, they apply on top). So:
   green.
 - Locally, `pre-commit` refuses commits on `main`, and `.claude/settings.json`
   denies pushes to `main`, force pushes and `--no-verify` for Claude.
+- Every code change (anything but `*.md`) gets an independent review agent before
+  merge, and the PR body says what it found under `## Review` (#1230). For Claude,
+  `scripts/hooks/require_review.py` denies `gh pr merge` / `merge_pull_request`
+  while that section is missing or empty; see [Agent workflow](Agent-Workflow.md).
 - A person can still push to `main` directly — don't.
 
 ## Hooks (`.pre-commit-config.yaml`)
