@@ -24,9 +24,9 @@ namespace SteamEngine.Tests.Protocol {
 				this.AssertChecks("theClientUnloadedTheShip");
 
 				this.Run(game, ".TestTradeVenueRules", "TRADEVENUE_RULES_DONE");
-				this.AssertChecks("eachVenueOffersItsWork", "eachKindOfWorkRestsOnItsOwn", "theStallByDayTheSentryByNight", "aStallIsPaidAtTheEndOnceADay",
-					"aSentryPaysAndRaisesTheCity", "targetPracticeHitsByArcheryAndRests", "eachErrandOnlyFromItsRole", "aFishOrderWantsThreeFish",
-					"theHintNamesTheRightAnswer", "theRightAnswerPaysInFull", "theBreadRoundIsThreeHomesInTwentyMinutes", "aRecruitWalksThePatrol");
+				this.AssertChecks("theCitysEnemyGetsNothing", "eachVenueOffersItsWork", "eachKindOfWorkRestsOnItsOwn", "theDailyCapCoversAllKinds", "theStallByDayTheSentryByNight",
+					"aStallIsPaidAtTheEndOnceADay", "leavingBreaksASentry", "aSentryPaysAndRaisesTheCity", "targetPracticeHitsByArcheryAndRests", "eachErrandOnlyFromItsRole", "aFishOrderWantsThreeFish",
+					"theHintNamesTheRightAnswer", "theRightAnswerPaysInFull", "thePayersHaveThreeNames", "theErrandsLoafKeepsApart", "theBreadRoundIsThreeHomesInTwentyMinutes", "aRecruitWalksThePatrol");
 			}
 		}
 	}

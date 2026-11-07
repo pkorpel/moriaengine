@@ -12,14 +12,14 @@ Each line is a `VenueAction`, registered from a class's `Bootstrap()` with `Venu
 - an optional `Shows` check for whether it's offered right now (the bard sings only in the evening);
 - what it does.
 
-A resident offers actions only while standing in their own workplace. A patron met at home has no dice. A button is 50 plus the action's place in the registry, so it names the same action whatever else the dialog showed. On a click, the dialog checks the reach again (as for errands) and checks that the resident still offers that action.
+A resident offers actions only while standing in their own workplace. A patron met at home has no dice. The city's enemy (reputation Nepritel) is offered nothing, as with errands and shops; a GM always is. A button is 50 plus the action's place in the registry, so it names the same action whatever else the dialog showed. On a click, the dialog checks the reach again (as for errands) and checks that the resident still offers that action.
 
 ## Shared pieces
 
 - **`VenueGoods.Buy`** (#1258): a resident buys goods from the player's pack for wages: the stoker's logs, the smith's ore. There is a cap of pieces a real day per player and kind of goods, and friendship +1 for the first load of the day. Only goods nobody sells belong here, or the wages could be bought.
 - **`VenueLabour.Work`** (#1260): paid work for stamina: the bellows, the docks, the stable, the dough.
   - Each turn takes `labourStamina` and pays `labourWage`.
-  - The same kind of work rests `labourMinutes` real minutes, and has at most `labourPerDay` turns a real day. Each kind rests and counts on its own.
+  - The same kind of work rests `labourMinutes` real minutes, each kind on its own. A player has at most `labourPerDay` turns a real day of all kinds together, so going round four kinds doesn't give four days' wages.
   - The first turn of a day adds 1 to the friendship of the resident it was done for.
 - **`VenueStay`** (#1260): staying in a venue for a while (`VenueStayTimer` on the player, checked every 10 s): the temple's vigil, a market stall, the night sentry.
   - Leaving the venue, dying or logging out breaks the stay with no reward.
@@ -182,7 +182,7 @@ The stowaway waits for the events (phase 6).
 **Pohlidat stanek** (merchants, by day) is a stay (kind `stall`): `stallSeconds` at the market, then `stallWage` and the merchant's friendship.
 
 **Falesne mince** (medium errand, a merchant):
-1. The crier names the three people who paid today, and says whose coins shone too much.
+1. The crier names the three people who paid today (three different names), and says whose coins shone too much.
 2. The player names that one to the merchant. The right one pays 100%, a wrong one 25%.
 
 The crier's calls come in step 12, and the travelling merchant with the events.
@@ -191,7 +191,7 @@ The crier's calls come in step 12, and the travelling merchant with the events.
 
 **Pomoct s testem** (baker) is labour (kind `bakery`).
 
-**Ranni roznaska** (medium errand, the baker): bread (`i_bread_loaf`) to three residents of the city, each a deliver step, in 20 minutes ("before it cools"; the template's `Minutes`).
+**Ranni roznaska** (medium errand, the baker): bread (`i_bread_loaf`) to three residents of the city, each a deliver step, in 20 minutes ("before it cools"; the template's `Minutes`). The errand's loaf never stacks with the player's own bread (see [errands.md](errands.md)). Eaten, it is gone, and the errand can only be given up.
 
 ## The barracks
 
@@ -202,7 +202,7 @@ The crier's calls come in step 12, and the travelling merchant with the events.
 
 **Target practice:** five shots. Each hits when a roll of 0-999 comes under the player's Archery (in tenths), and each hit gives `archeryExp` experience. A player with no Archery is turned away. There is a round every `archeryMinutes` real minutes.
 
-**The night sentry:** `sentrySeconds` at the barracks, then `sentryWage`, `sentryReputation` with the city, and the guard's friendship. It is given by a guard, as the captain works by day.
+**The night sentry:** `sentrySeconds` at the barracks, then `sentryWage`, `sentryReputation` with the city, and the guard's friendship. The reputation doesn't count as a hero's deed (`Reputation.Change`'s `deed` false). It is given by a guard, as the captain works by day.
 
 **Prvni hlidka** (medium errand, the captain): a recruit walks with the player (the errand engine's companion) to one of the city's working people, then back to the captain.
 
@@ -220,7 +220,7 @@ The crier's calls come in step 12, and the travelling merchant with the events.
 | promptReward | 25 | gold for the right prompt |
 | pitBetSmall, pitBetMedium, pitBetLarge, pitBetsPerHour | 10, 50, 100, 10 | the pits' bets and hourly cap |
 | oreWage, orePerDay | 4, 20 | the smith's pay per ore and the daily cap |
-| labourStamina, labourWage, labourMinutes, labourPerDay | 10, 5, 5, 12 | a turn of labour: stamina, pay, rest, turns a day per kind |
+| labourStamina, labourWage, labourMinutes, labourPerDay | 10, 5, 5, 12 | a turn of labour: stamina, pay, rest per kind, turns a day of all kinds |
 | offeringPrice, offeringKarma | 25, 50 | a temple offering |
 | vigilSeconds, vigilExp, vigilKarma | 120, 100, 50 | a night vigil |
 | bandageHealing, bandageWage | 200, 10 | dressing a patient (Healing in tenths) |
@@ -281,9 +281,10 @@ The crier's calls come in step 12, and the travelling merchant with the events.
 - **through a client:** the harbourmaster's dialog line and a turn of unloading;
 - **on the server:**
   - who offers what;
-  - each kind of labour resting on its own;
+  - the city's enemy offered nothing;
+  - each kind of labour resting on its own, and the daily cap covering all kinds;
   - the stall by day and the sentry by night;
   - a stall paid at its end, once a day, one stay at a time;
-  - the sentry's pay and reputation;
+  - a sentry broken by leaving, then its pay and reputation, not a deed;
   - target practice by Archery, with its rest;
-  - all five errands, each only from its role: the fish, the two puzzles (the hint names the answer, and the right one pays in full), the bread round's three homes in 20 minutes, and the recruit walking the patrol.
+  - all five errands, each only from its role: the fish, the two puzzles (the hint names the answer, the right one pays in full, three distinct payers), the bread round's three homes in 20 minutes with its loaf kept apart from the player's own, and the recruit walking the patrol.

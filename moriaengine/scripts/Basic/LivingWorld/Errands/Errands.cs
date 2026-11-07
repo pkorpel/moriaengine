@@ -508,7 +508,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		//an errand's own item (a letter to deliver) never counts as something fetched
-		private static bool IsErrandItem(AbstractItem item) {
+		internal static bool IsErrandItem(AbstractItem item) {
 			return (item is Item i) && (i.GetTag(ItemTK) != null);
 		}
 

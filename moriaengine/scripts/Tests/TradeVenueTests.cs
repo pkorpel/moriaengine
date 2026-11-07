@@ -99,6 +99,12 @@ namespace SteamEngine.CompiledScripts {
 			try {
 				player.Account.PLevel = 1;
 				GoldUtils.Grant(player, 50000);
+				foreach (string kind in new[] { "harbour", "stable", "bakery" }) { //a clean day, whatever ran before on this server
+					VenueLabour.Forget(player, kind);
+				}
+				player.RemoveTag(VenueStay.DoneKey("stall"));
+				player.RemoveTag(VenueStay.DoneKey("sentry"));
+				Enemy(player);
 				Labour(player);
 				Stays(player);
 				Archery(player);
@@ -110,6 +116,16 @@ namespace SteamEngine.CompiledScripts {
 				player.DeleteTimer(VenueStayTimer.Key);
 				Console.WriteLine("TRADEVENUE_RULES_DONE");
 			}
+		}
+
+		//the city's enemy gets nothing from its people, as with errands and shops
+		private static void Enemy(Player player) {
+			int was = Reputation.Of(player, "Edoras");
+			Reputation.Set(player, "Edoras", Reputation.Min);
+			bool enemy = (Reputation.Level(player, "Edoras") == ReputationLevel.Nepritel) && (Offers(player, "harbour", "harbourmaster").Count == 0) &&
+				(Offers(player, "barracks", "captain").Count == 0);
+			Reputation.Set(player, "Edoras", was);
+			Report("theCitysEnemyGetsNothing", enemy && (Offers(player, "harbour", "harbourmaster").Count > 0));
 		}
 
 		private static void Labour(Player player) {
@@ -132,6 +148,15 @@ namespace SteamEngine.CompiledScripts {
 			int wage = VenueLifeSettings.instance.labourWage;
 			Report("eachKindOfWorkRestsOnItsOwn", (g1 - g0 == wage) && (g2 == g1) && (g3 - g2 == wage) && (GoldUtils.CountGoldOn(player) - g3 == wage) &&
 				(player.Stam == 50 - (3 * VenueLifeSettings.instance.labourStamina)));
+			//the day's cap counts all kinds together: three turns of three kinds are three of the day's
+			int perDay = VenueLifeSettings.instance.labourPerDay;
+			VenueLifeSettings.instance.labourPerDay = 3;
+			Errands.NowOverride = DateTime.UtcNow.AddMinutes(VenueLifeSettings.instance.labourMinutes + 1);
+			player.Stam = 50;
+			long g4 = GoldUtils.CountGoldOn(player);
+			Do(player, "harbour_unload", "harbour", "docker");
+			Report("theDailyCapCoversAllKinds", GoldUtils.CountGoldOn(player) == g4);
+			VenueLifeSettings.instance.labourPerDay = perDay;
 			Errands.NowOverride = null;
 			player.Stam = 50;
 		}
@@ -149,6 +174,7 @@ namespace SteamEngine.CompiledScripts {
 			Do(player, "market_stall", "market", "merchant");
 			VenueStayTimer stall = player.GetTimer(VenueStayTimer.Key) as VenueStayTimer;
 			Item guard = Gem(player, "barracks", "guard");
+			Near(player, Residents.BodyOf(guard)); //inside the barracks: only the stall under way can refuse it
 			bool oneAtATime = !VenueStay.Begin(player, Residents.BodyOf(guard), guard, "sentry") && (player.GetTimer(VenueStayTimer.Key) == stall);
 			Near(player, Body(player, "market", "merchant"));
 			int half = VenueLifeSettings.instance.stallSeconds / 2;
@@ -159,8 +185,16 @@ namespace SteamEngine.CompiledScripts {
 			Do(player, "market_stall", "market", "merchant");
 			Report("aStallIsPaidAtTheEndOnceADay", oneAtATime && goesOn && ends && paid && (player.GetTimer(VenueStayTimer.Key) == null));
 
-			//the night sentry: wages and the city's word
+			//the night sentry: leaving breaks it with nothing; then wages and the city's word, not a hero's deed
 			VenueClock.Override = 23;
+			long gLeft = GoldUtils.CountGoldOn(player);
+			Do(player, "barracks_sentry", "barracks", "guard");
+			VenueStayTimer left = player.GetTimer(VenueStayTimer.Key) as VenueStayTimer;
+			player.Go(new Point4D((ushort) (player.X + 40), player.Y, player.Z, player.M));
+			bool broken = (left != null) && !left.Step(player, VenueStayTimer.StepSeconds);
+			player.DeleteTimer(VenueStayTimer.Key);
+			Report("leavingBreaksASentry", broken && (GoldUtils.CountGoldOn(player) == gLeft) && !VenueStay.DoneToday(player, "sentry"));
+			player.RemoveTag(Reputation.CityDeedKey("Edoras"));
 			int rep0 = Reputation.Of(player, "Edoras");
 			long g1 = GoldUtils.CountGoldOn(player);
 			Do(player, "barracks_sentry", "barracks", "guard");
@@ -168,7 +202,7 @@ namespace SteamEngine.CompiledScripts {
 			bool done = (sentry != null) && !sentry.Step(player, VenueLifeSettings.instance.sentrySeconds);
 			player.DeleteTimer(VenueStayTimer.Key);
 			Report("aSentryPaysAndRaisesTheCity", done && (GoldUtils.CountGoldOn(player) - g1 == VenueLifeSettings.instance.sentryWage) &&
-				(Reputation.Of(player, "Edoras") == rep0 + VenueLifeSettings.instance.sentryReputation));
+				(Reputation.Of(player, "Edoras") == rep0 + VenueLifeSettings.instance.sentryReputation) && (player.GetTag(Reputation.CityDeedKey("Edoras")) == null));
 			VenueClock.Override = 12;
 		}
 
@@ -250,15 +284,31 @@ namespace SteamEngine.CompiledScripts {
 			Report("theHintNamesTheRightAnswer", hinted);
 			Report("theRightAnswerPaysInFull", sharesRight);
 
-			//the bread round: three homes, twenty minutes
+			//the counterfeit's three payers have three names: they're the choices
+			bool distinct = true;
+			for (int i = 0; i < 10; i++) {
+				Errand coins = Build(player, "counterfeit", merchant);
+				List<string> names = coins.steps[1].choices;
+				distinct &= (names.Count == 3) && (names[0] != names[1]) && (names[1] != names[2]) && (names[0] != names[2]);
+			}
+			Report("thePayersHaveThreeNames", distinct);
+
+			//the bread round: three homes, twenty minutes; the errand's loaf keeps apart from the player's own
 			FreshLog(player);
+			Item own = (Item) ((ItemDef) ThingDef.GetByDefname("i_bread_loaf")).Create(player.Backpack);
+			own.Amount = 2;
 			Errand bread = Build(player, "breadround", baker);
 			DateTime before = DateTime.UtcNow;
 			Errands.Accept(player, bread);
+			Item loaf = bread.steps[0].placed;
+			player.Backpack.TryStackToAnyInside(loaf);
+			player.Backpack.TryStackToAnyInside(own);
+			Report("theErrandsLoafKeepsApart", (loaf != null) && !loaf.IsDeleted && (loaf.Amount == 1) && !own.IsDeleted && (own.Amount == 2));
 			bool three = (bread.steps.Count == 3) && (bread.steps[0].residentId != bread.steps[1].residentId) && (bread.steps[1].residentId != bread.steps[2].residentId);
 			bool short20 = Math.Abs((bread.Expires - before).TotalMinutes - 20) < 1;
 			bool all = Step(player, bread) && Step(player, bread) && Step(player, bread);
-			Report("theBreadRoundIsThreeHomesInTwentyMinutes", three && short20 && all && bread.IsDone);
+			Report("theBreadRoundIsThreeHomesInTwentyMinutes", three && short20 && all && bread.IsDone && !own.IsDeleted && (own.Amount == 2));
+			own.Delete();
 
 			//the patrol: the recruit walks along
 			FreshLog(player);

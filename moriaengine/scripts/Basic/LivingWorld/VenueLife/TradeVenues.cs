@@ -42,7 +42,7 @@ namespace SteamEngine.CompiledScripts {
 				(player, npc, gem) => (VenueClock.Shift == VenueShift.Night) && !VenueStay.IsStaying(player), (player, npc, gem) => VenueStay.Begin(player, npc, gem, "sentry")));
 			VenueActions.Register(new VenueAction("barracks_archery", "Strelba do terce", new[] { "barracks" }, new[] { "captain", "guard" }, null, Archery));
 			VenueStay.Register(new StayKind("stall", () => Settings.stallSeconds, "Pohlidej mi to tu, hned jsem zpatky. A nikomu nic nedavej zadarmo!", StallEnds));
-			VenueStay.Register(new StayKind("sentry", () => Settings.sentrySeconds, "Vezmi si kopi a stuj u brany. Kdo opusti stanoviste, hlidku nedostal.", SentryEnds));
+			VenueStay.Register(new StayKind("sentry", () => Settings.sentrySeconds, "Hlidkuj tady v kasarnach. Kdo opusti stanoviste, nedostane nic.", SentryEnds));
 		}
 
 		private static VenueLifeSettings Settings {
@@ -54,13 +54,15 @@ namespace SteamEngine.CompiledScripts {
 			if (merchantId != null) {
 				Residents.AddFriendship(player, merchantId, 1);
 			}
-			player.SysMessage("Obchodnik je zpatky a za hlidani ti dal " + Settings.stallWage + " zlatych.");
+			Item merchant = (merchantId == null) ? null : Residents.ById(merchantId);
+			player.SysMessage((merchant == null) ? ("Za hlidani stanku mas " + Settings.stallWage + " zlatych.") :
+				(Residents.NameOf(merchant) + " je zpatky a za hlidani ti " + BasicErrands.Sex(merchant, "dal", "dala") + " " + Settings.stallWage + " zlatych."));
 		}
 
 		private static void SentryEnds(Player player, CityVenue barracks, string guardId) {
 			GoldUtils.Grant(player, (uint) Math.Max(0, Settings.sentryWage));
 			if (barracks.City != null) {
-				Reputation.Change(player, barracks.City, Settings.sentryReputation);
+				Reputation.Change(player, barracks.City, Settings.sentryReputation, null, false); //a routine night is no hero's deed
 			}
 			if (guardId != null) {
 				Residents.AddFriendship(player, guardId, 1);

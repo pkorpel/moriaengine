@@ -13,9 +13,19 @@ namespace SteamEngine.CompiledScripts {
 			ErrandTemplates.Register(new FeverErrand());
 		}
 
+		/// <summary>A living resident of the role in the giver's workplace (#1260: an errand around a dead one could never be done).</summary>
 		internal static Item SameVenue(Item gem, string role) {
 			CityVenue venue = Residents.WorkplaceOf(gem);
-			return (venue == null) ? null : Theatre.GemOf(venue, role);
+			if (venue == null) {
+				return null;
+			}
+			foreach (Item other in Residents.OfVenue(venue.VenueId)) {
+				NPC body = (Residents.RoleKeyOf(other) == role) ? Residents.BodyOf(other) : null;
+				if ((body != null) && !body.IsDeleted && !body.Flag_Dead) {
+					return other;
+				}
+			}
+			return null;
 		}
 	}
 

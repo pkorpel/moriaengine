@@ -76,7 +76,7 @@ namespace SteamEngine.CompiledScripts {
 				Residents.NameOf(docker) + ", co je na posledni lodi divneho.";
 			e.thanks = "Diky. Na tu bednu se podivam.";
 			e.steps.Add(Errands.Talk(docker, "Zeptej se: " + ErrandContext.Who(docker) + ", co je na lodi divneho", "Bylo na posledni lodi neco divneho?",
-				"Bedna oznacena \"" + heavy + "\" byla tezka jako olovo. To nebylo " + heavy + "."));
+				"Bedna oznacena \"" + heavy + "\" byla tezka jako olovo. Uvnitr bylo neco jineho nez " + heavy + "."));
 			string[] replies = new string[3];
 			for (int i = 0; i < 3; i++) {
 				replies[i] = (i == right) ? "Tezka jako olovo, rikas? Hned ji otevru." : "Tahle? Tu jsem uz otevrel" + BasicErrands.Sex(c.GiverGem, "", "a") + ", nic v ni nebylo.";
@@ -106,7 +106,7 @@ namespace SteamEngine.CompiledScripts {
 			CityVenue market = Residents.WorkplaceOf(c.GiverGem);
 			List<Item> buyers = new List<Item>();
 			for (int i = 0; i < 3; i++) {
-				Item buyer = c.PickOther(gem => (Residents.WorkplaceOf(gem) != market) && !buyers.Contains(gem));
+				Item buyer = c.PickOther(gem => (Residents.WorkplaceOf(gem) != market) && !buyers.Exists(b => Residents.NameOf(b) == Residents.NameOf(gem))); //names apart: they're the choices
 				if (buyer != null) {
 					buyers.Add(buyer);
 				}
@@ -124,13 +124,14 @@ namespace SteamEngine.CompiledScripts {
 			}
 			List<string> choices = new List<string>(others);
 			int right = TradeErrands.Shuffle(choices, cheatName);
-			e.offer = "V pokladne mam falesne mince! Vyvolavac videl, kdo dnes platil. Zeptej se " + BasicErrands.Sex(crier, "ho", "ji") + ".";
+			e.offer = "V pokladne mam falesne mince! " + BasicErrands.Sex(crier, "Vyvolavac videl", "Vyvolavacka videla") + ", kdo dnes platil. Zeptej se " +
+				BasicErrands.Sex(crier, "ho", "ji") + ".";
 			e.thanks = "Diky. Ted vim, komu uz neprodam.";
 			e.steps.Add(Errands.Talk(crier, "Zeptej se: " + ErrandContext.Who(crier) + ", kdo dnes platil u stanku", "Kdo dnes platil u stanku?",
 				"Platili " + string.Join(", ", choices) + ". " + cheatName + " mel" + BasicErrands.Sex(cheat, "", "a") + " mince, co se az moc leskly."));
 			string[] replies = new string[3];
 			for (int i = 0; i < 3; i++) {
-				replies[i] = (i == right) ? "Ano! Ty nove leskle mince. To je ono." : "To ne, ti platili starymi okoukanymi penezi.";
+				replies[i] = (i == right) ? "Ano! Ty nove leskle mince. To je ono." : "To ne, to byly stare okoukane penize.";
 			}
 			ErrandStep name = Errands.Choose(c.GiverGem, "Rekni " + c.GiverName + ", kdo platil falesnymi mincemi", choices.ToArray(), replies);
 			name.count = right;
@@ -200,7 +201,7 @@ namespace SteamEngine.CompiledScripts {
 			ErrandStep there = Errands.Talk(visit, "Dojdi s rekrutem za: " + ErrandContext.Who(visit), "Obchuzka. Je tu vse v poradku?", "Vse v poradku, diky za optani.");
 			there.companionId = Residents.IdOf(recruit);
 			e.steps.Add(there);
-			ErrandStep back = Errands.Talk(c.GiverGem, "Vrat se s rekrutem ke kapitanovi", "Obchuzka skoncila, nic se nedelo.", "Dobre.");
+			ErrandStep back = Errands.Talk(c.GiverGem, "Vrat se s rekrutem: " + ErrandContext.Who(c.GiverGem), "Obchuzka skoncila, nic se nedelo.", "Dobre.");
 			back.companionId = Residents.IdOf(recruit);
 			e.steps.Add(back);
 			return true;

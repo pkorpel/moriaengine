@@ -3,8 +3,8 @@ using System;
 namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1260 - paid work at a venue for stamina (#1258's bellows, generalised): labourStamina taken, labourWage paid, a rest
-	/// of labourMinutes real minutes, at most labourPerDay turns a real day for each kind of work, and friendship +1 with the
-	/// resident of the day's first turn. Per player and kind: one cap for all of the world's smithies.</summary>
+	/// of labourMinutes real minutes for each kind of work, at most labourPerDay turns a real day of all kinds together (a player
+	/// can't go round four kinds for four days' wages), and friendship +1 with the resident of the day's first turn.</summary>
 	public static class VenueLabour {
 		/// <summary>What the resident says: resting, too tired, the day's turns done, and thanks (one at random).</summary>
 		public sealed class Lines {
@@ -20,13 +20,8 @@ namespace SteamEngine.CompiledScripts {
 			return TagKey.Acquire("_labour_" + kind + "_at_");
 		}
 
-		internal static TagKey DayKey(string kind) {
-			return TagKey.Acquire("_labour_" + kind + "_day_");
-		}
-
-		private static TagKey CountKey(string kind) {
-			return TagKey.Acquire("_labour_" + kind + "_count_");
-		}
+		internal static readonly TagKey DayTK = TagKey.Acquire("_labour_day_");
+		private static readonly TagKey countTK = TagKey.Acquire("_labour_count_");
 
 		/// <summary>True when the turn was worked and paid.</summary>
 		public static bool Work(Player player, NPC npc, Item gem, string kind, Lines lines) {
@@ -35,8 +30,8 @@ namespace SteamEngine.CompiledScripts {
 				npc.Say(lines.Rest);
 				return false;
 			}
-			bool newDay = !((player.GetTag(DayKey(kind)) is long day) && ((now - day) < TimeSpan.TicksPerDay));
-			int today = newDay ? 0 : ((player.GetTag(CountKey(kind)) is int c) ? c : 0);
+			bool newDay = !((player.GetTag(DayTK) is long day) && ((now - day) < TimeSpan.TicksPerDay));
+			int today = newDay ? 0 : ((player.GetTag(countTK) is int c) ? c : 0);
 			if (today >= Settings.labourPerDay) {
 				npc.Say(lines.Done);
 				return false;
@@ -47,9 +42,9 @@ namespace SteamEngine.CompiledScripts {
 			}
 			player.Stam = (short) (player.Stam - Settings.labourStamina);
 			player.SetTag(AtKey(kind), now);
-			player.SetTag(CountKey(kind), today + 1);
+			player.SetTag(countTK, today + 1);
 			if (newDay) {
-				player.SetTag(DayKey(kind), now);
+				player.SetTag(DayTK, now);
 				string id = Residents.IdOf(gem);
 				if (id != null) {
 					Residents.AddFriendship(player, id, 1);
@@ -60,11 +55,11 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>Tests: the rest, the day's count and the day for a kind of work.</summary>
+		/// <summary>Tests: a kind's rest, and the day's count of all labour.</summary>
 		public static void Forget(Player player, string kind) {
 			player.RemoveTag(AtKey(kind));
-			player.RemoveTag(DayKey(kind));
-			player.RemoveTag(CountKey(kind));
+			player.RemoveTag(DayTK);
+			player.RemoveTag(countTK);
 		}
 	}
 }
