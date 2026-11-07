@@ -30,9 +30,9 @@ namespace SteamEngine.Tests.Protocol {
 
 				this.Run(game, ".TestErrandTemplatesRules", "ERRANDTPL_RULES_DONE");
 				this.AssertChecks("letterGoesToSomeoneElse", "askingAroundChainsPeople", "aMarketRunFetches", "aSmithWantsIngots",
-					"aTempleWantsHerbs", "aShiftCarriesMugsToTheTavernsPeople", "allTextsArePlainAscii", "theLostThingLiesInTheVenue",
-					"bringingItBackEndsIt", "givingUpClearsTheLostThing", "forgivingPaysLessThreateningMore", "aForgivenDebtorBecomesAFriend",
-					"threateningCostsKarma", "theOldOneFollows", "notWithoutThem", "arrivingTogetherEndsIt", "andTheyGoBackToTheirDay");
+					"aTempleWantsHerbs", "aGuestHasNoTradeToSupply", "aShiftCarriesMugsToTheTavernsPeople", "allTextsArePlainAscii", "theLostThingLiesInTheVenue",
+					"bringingItBackEndsIt", "onlyItsPlayerMayPickItUp", "givingUpClearsTheLostThing", "forgivingPaysLessThreateningMore", "aForgivenDebtorBecomesAFriend",
+					"threateningCostsKarma", "theOldOneFollows", "notWithoutThem", "arrivingTogetherEndsIt", "andTheyGoBackToTheirDay", "aWalkWithNoErrandLetsGo");
 			}
 		}
 	}

@@ -133,7 +133,8 @@ namespace SteamEngine.CompiledScripts {
 			Report("aMarketRunFetches", (market != null) && (market.steps[0].Kind == ErrandStepKind.Fetch) && (market.steps[0].count > 0));
 			Errand ingredients = Build(player, "ingredients", smith);
 			Report("aSmithWantsIngots", (ingredients != null) && (ingredients.steps[0].itemDef == "i_ingot_iron"));
-			Errand herbs = Build(player, "ingredients", Gem(player, "temple", "pilgrim"));
+			Errand herbs = Build(player, "ingredients", Gem(player, "temple", "priest"));
+			Report("aGuestHasNoTradeToSupply", Build(player, "ingredients", Gem(player, "temple", "pilgrim")) == null);
 			Report("aTempleWantsHerbs", (herbs != null) && (herbs.steps[0].itemDef == "i_reag_ginseng"));
 			Errand shift = Build(player, "shift", innkeeper);
 			Report("aShiftCarriesMugsToTheTavernsPeople", (shift != null) && (shift.steps[0].itemDef == "i_mug") &&
@@ -159,6 +160,8 @@ namespace SteamEngine.CompiledScripts {
 			Errand lostAgain = Build(player, "lost", innkeeper);
 			Errands.Accept(player, lostAgain);
 			Item lying = lostAgain.steps[0].placed;
+			Report("onlyItsPlayerMayPickItUp", Errands.MayPickUp(lying, player) && !Errands.MayPickUp(lying, Residents.BodyOf(patron)));
+			lying.Cont = player.Bank; //worn or banked, it still goes when the errand does
 			Errands.GiveUp(player, lostAgain);
 			Report("givingUpClearsTheLostThing", (lying != null) && lying.IsDeleted);
 
@@ -211,6 +214,19 @@ namespace SteamEngine.CompiledScripts {
 			walkerBody.Go(new Point4D(hostBody.X, hostBody.Y, hostBody.Z, hostBody.M));
 			Report("arrivingTogetherEndsIt", Errands.Do(player, walk, hostBody) && walk.IsDone);
 			Report("andTheyGoBackToTheirDay", walkerBody.FollowTarget == null);
+
+			//a walk that runs out lets its follower go at the schedule's next look, whoever reads the errands
+			Fresh(player);
+			Errand lapsed = Build(player, "walk", patron);
+			Errands.Accept(player, lapsed);
+			Item lapsedWalker = Residents.ById(lapsed.steps[0].residentId);
+			NPC lapsedBody = Residents.BodyOf(lapsedWalker);
+			Near(player, lapsedWalker);
+			Errands.Do(player, lapsed, lapsedBody);
+			bool following = lapsedBody.FollowTarget == player;
+			Errands.Log(player).active.Remove(lapsed); //gone without a release, as a deleted character's or a lost log's would be
+			ResidentSchedule.Apply(lapsedWalker, lapsedBody, false);
+			Report("aWalkWithNoErrandLetsGo", following && (lapsedBody.FollowTarget == null));
 		}
 	}
 }

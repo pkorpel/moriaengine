@@ -30,6 +30,11 @@ namespace SteamEngine.CompiledScripts {
 			return ((work == null) || (work.VenueType == null)) ? "" : work.VenueType.Key;
 		}
 
+		/// <summary>A word as the resident's gender wants it: Sex(gem, "chtel", "chtela").</summary>
+		internal static string Sex(Item gem, string male, string female) {
+			return Residents.IsFemale(gem) ? female : male;
+		}
+
 		internal static bool IsWorker(Item gem) {
 			string role = RoleKey(gem);
 			return (role != "patron") && (role != "spectator") && (role != "bather") && (role != "pilgrim") && (role != "patient") && (role != "prisoner");
@@ -56,11 +61,11 @@ namespace SteamEngine.CompiledScripts {
 			string giver = c.GiverName, receiver = BasicErrands.Name(to);
 			e.offer = ErrandContext.Pick(
 				"Odneses tenhle dopis " + ErrandContext.Who(to) + "? Je to dulezite a nemam na to cas.",
-				"Potreboval bych dorucit psani. Adresat je " + ErrandContext.Who(to) + ". Zaplatim ti cestu.",
+				"Mam psani k doruceni. Adresat je " + ErrandContext.Who(to) + ". Zaplatim ti cestu.",
 				"Tady mam dopis pro " + ErrandContext.Who(to) + ". Neotvirej ho, prosim.");
 			e.thanks = ErrandContext.Pick("Dekuji. Na tebe je spoleh.", "Vyborne, presne tak to melo byt.", "Diky, priteli.");
 			e.steps.Add(Errands.Deliver(to, "i_scroll_blank", "Odnes dopis: " + ErrandContext.Who(to),
-				"Nesu ti dopis od " + giver + ".", ErrandContext.Pick("Konecne! Uz jsem na nej cekal.", "Od " + giver + "? To je mi novina.", "Dekuji, hned si ho prectu.")));
+				"Nesu ti dopis od " + giver + ".", ErrandContext.Pick("Konecne! Uz na nej cekam.", "Od " + giver + "? To je mi novina.", "Dekuji, hned si ho prectu.")));
 			if (Globals.dice.Next(3) == 0) {
 				//the reply goes back
 				e.steps.Add(Errands.Deliver(c.GiverGem, "i_scroll_blank", "Odnes odpoved " + giver,
@@ -79,7 +84,8 @@ namespace SteamEngine.CompiledScripts {
 		public override string Name { get { return "Vyptavani"; } }
 		public override ErrandTier Tier { get { return ErrandTier.Medium; } }
 
-		private static readonly string[] subjects = { "meho bratra", "toulave kocky z nasi ulice", "jednoho cizince v sedem plasti", "meho synovce", "obchodnika s latkami" };
+		//"o kom": the locative, as "nevim nic o ..." wants it
+		private static readonly string[] subjects = { "mem bratrovi", "toulave kocce z nasi ulice", "jednom cizinci v sedem plasti", "mem synovci", "obchodnikovi s latkami" };
 
 		public override bool TryBuild(ErrandContext c, Errand e) {
 			List<Item> chain = new List<Item>();
@@ -99,8 +105,8 @@ namespace SteamEngine.CompiledScripts {
 			e.thanks = "Takze je v poradku! Dekuji ti, to je velka uleva.";
 			for (int i = 0; i < chain.Count; i++) {
 				bool last = i == chain.Count - 1;
-				string reply = last ? "Ano, videl jsem ho. Je v poradku, jen ma hodne prace. Vyrid to." :
-					"Nevim, ale zeptej se " + ErrandContext.Who(chain[i + 1]) + ". Ten vi o vsem.";
+				string reply = last ? "Ano, vim o tom. Vse je v poradku, jen je toho ted hodne. Vyrid to." :
+					"Nevim, ale zeptej se " + ErrandContext.Who(chain[i + 1]) + ". Vi o vsem, co se tu deje.";
 				string task = (i == 0) ? "Zeptej se " + ErrandContext.Who(chain[i]) : "Zeptej se dal: " + ErrandContext.Who(chain[i]);
 				e.steps.Add(Errands.Talk(chain[i], task, "Nevis neco o " + subject + "?", reply));
 			}
@@ -115,9 +121,10 @@ namespace SteamEngine.CompiledScripts {
 		public override string Name { get { return "Nakup"; } }
 		public override ErrandTier Tier { get { return ErrandTier.Small; } }
 
+		//the def, the count and the counted noun as it goes with that count
 		private static readonly string[][] goods = {
-			new[] { "i_bread_loaf", "bochniku chleba", "3" }, new[] { "i_fruit_apple", "jablek", "5" },
-			new[] { "i_cheese_wedge", "kusu syra", "2" }, new[] { "i_bottle_wine", "lahve vina", "1" }, new[] { "i_candle", "svicek", "3" }
+			new[] { "i_bread_loaf", "bochniky chleba", "3" }, new[] { "i_fruit_apple", "jablek", "5" },
+			new[] { "i_cheese_wedge", "kusy syra", "2" }, new[] { "i_bottle_wine", "lahev vina", "1" }, new[] { "i_candle", "svicky", "3" }
 		};
 
 		public override bool TryBuild(ErrandContext c, Errand e) {
@@ -126,8 +133,8 @@ namespace SteamEngine.CompiledScripts {
 				return false;
 			}
 			int count = int.Parse(item[2], System.Globalization.CultureInfo.InvariantCulture);
-			e.offer = "Nestiham dojit na trh. Prines mi " + item[2] + " " + item[1] + ", penize ti vratim i s neco navic.";
-			e.thanks = "Presne to jsem potreboval. Tady mas za namahu.";
+			e.offer = "Nestiham dojit na trh. Prines mi " + item[2] + " " + item[1] + ", penize ti vratim i s necim navic.";
+			e.thanks = "Presne tohle bylo potreba. Tady mas za namahu.";
 			e.steps.Add(Errands.Fetch(c.GiverGem, item[0], count, "Prines " + c.GiverName + " " + item[2] + " " + item[1], "Tady je nakup.", "Diky!"));
 			return true;
 		}
@@ -140,6 +147,9 @@ namespace SteamEngine.CompiledScripts {
 		public override ErrandTier Tier { get { return ErrandTier.Medium; } }
 
 		public override bool TryBuild(ErrandContext c, Errand e) {
+			if (!BasicErrands.IsWorker(c.GiverGem)) {
+				return false; //a guest has no trade to supply
+			}
 			string def, what;
 			int count;
 			switch (BasicErrands.VenueKey(c.GiverGem)) {
@@ -147,15 +157,15 @@ namespace SteamEngine.CompiledScripts {
 				case "tavern": case "messhall": case "bakery": def = "i_fish_raw"; what = "syrovych ryb"; count = 5; break;
 				case "healing": case "temple": def = "i_reag_ginseng"; what = "korenu zensenu"; count = 10; break;
 				case "harbour": case "stable": case "farm": def = "i_log"; what = "polen dreva"; count = 20; break;
-				case "brewery": def = "i_fruit_apple"; what = "jablek na mosht"; count = 10; break;
+				case "brewery": def = "i_fruit_apple"; what = "jablek na most"; count = 10; break;
 				default: return false;
 			}
 			if (!(ThingDef.GetByDefname(def) is ItemDef)) {
 				return false;
 			}
-			e.offer = "Dochazi mi " + what + ". Kdyby se ti jich podarilo sehnat " + count + ", dobre zaplatim. Kde je vezmes, je na tobe.";
+			e.offer = "Uz mi skoro nezbylo " + what + ". Kdyby se ti jich podarilo sehnat " + count + ", dobre zaplatim. Kde je vezmes, je na tobe.";
 			e.thanks = "Ted muzu zase pracovat. Dekuji!";
-			e.steps.Add(Errands.Fetch(c.GiverGem, def, count, "Prines " + c.GiverName + " " + count + " " + what, "Nesu, co jsi chtel.", "Vyborne, to mi vystaci."));
+			e.steps.Add(Errands.Fetch(c.GiverGem, def, count, "Prines " + c.GiverName + " " + count + " " + what, "Nesu, co jsi " + BasicErrands.Sex(c.GiverGem, "chtel", "chtela") + ".", "Vyborne, to mi vystaci."));
 			return true;
 		}
 	}
@@ -166,25 +176,25 @@ namespace SteamEngine.CompiledScripts {
 		public override string Name { get { return "Ztracena vec"; } }
 		public override ErrandTier Tier { get { return ErrandTier.Small; } }
 
-		//the item, what was lost (as the giver says it) and "here is your ..." (as the player says it)
+		//the item, what was lost (as the giver says it), "here is your ..." (as the player says it) and "bring it" (vrat ho/ji/ho)
 		private static readonly string[][] things = {
-			new[] { "i_ring_gold", "zlaty prsten", "tvuj zlaty prsten" }, new[] { "i_necklace_silver", "stribrny nahrdelnik", "tvuj stribrny nahrdelnik" },
-			new[] { "i_book_sm", "knizku", "tvoje knizka" }, new[] { "i_hammer", "kladivo", "tvoje kladivo" }
+			new[] { "i_ring_gold", "zlaty prsten", "tvuj zlaty prsten", "ho" }, new[] { "i_necklace_silver", "stribrny nahrdelnik", "tvuj stribrny nahrdelnik", "ho" },
+			new[] { "i_book_sm", "knizku", "tvoje knizka", "ji" }, new[] { "i_hammer", "kladivo", "tvoje kladivo", "ho" }
 		};
 
 		public override bool TryBuild(ErrandContext c, Errand e) {
 			Item where = c.PickOther();
 			CityVenue venue = (where == null) ? null : Residents.WorkplaceOf(where);
-			if (venue == null) {
-				return false;
+			if ((venue == null) || (ResidentSchedule.SpotIn(venue, "lost") == null)) {
+				return false; //nowhere in it to lie: it would end up in the pack, and that's no search
 			}
 			string[] thing = things[Globals.dice.Next(things.Length)];
 			if (!(ThingDef.GetByDefname(thing[0]) is ItemDef)) {
 				return false;
 			}
-			e.offer = "Nemuzu najit " + thing[1] + "! Naposledy jsem byl v: " + venue.Label + ". Podivas se tam?";
-			e.thanks = "To je ono! Myslel jsem, ze uz to neuvidim.";
-			ErrandStep find = Errands.Deliver(c.GiverGem, thing[0], "Najdi " + thing[1] + " (" + venue.Label + ") a vrat ho " + c.GiverName,
+			e.offer = "Nemuzu najit " + thing[1] + "! Naposledy " + BasicErrands.Sex(c.GiverGem, "jsem byl", "jsem byla") + " v: " + venue.Label + ". Podivas se tam?";
+			e.thanks = "To je ono! " + BasicErrands.Sex(c.GiverGem, "Myslel", "Myslela") + " jsem, ze uz to neuvidim.";
+			ErrandStep find = Errands.Deliver(c.GiverGem, thing[0], "Najdi " + thing[1] + " (" + venue.Label + ") a vrat " + thing[3] + " " + c.GiverName,
 				"Tady je " + thing[2] + ".", "Dekuji!");
 			find.venueId = venue.VenueId; //lies in the venue, not in the pack
 			e.steps.Add(find);
@@ -204,12 +214,12 @@ namespace SteamEngine.CompiledScripts {
 			if (debtor == null) {
 				return false;
 			}
-			e.offer = ErrandContext.Who(debtor) + " mi dluzi uz dlouho. Zajdi za nim a pripomen mu to. Slusne, jestli to pujde.";
+			e.offer = ErrandContext.Who(debtor) + " mi dluzi uz dlouho. Zajdi tam a pripomen to. Slusne, jestli to pujde.";
 			e.thanks = "Tak to je vyrizene.";
 			e.steps.Add(Errands.Choose(debtor, "Vyrid dluh u " + ErrandContext.Who(debtor),
-				new[] { "Mel bys zaplatit, co dluzis.", "Odpustim ti to, tentokrat.", "Zaplat, nebo toho budes litovat!" },
+				new[] { BasicErrands.Sex(debtor, "Mel", "Mela") + " bys zaplatit, co dluzis.", "Odpustim ti to, tentokrat.", "Zaplat, nebo toho budes litovat!" },
 				new[] { "Mas pravdu... tady to je.", "Opravdu? Nikdy ti to nezapomenu!", "Dobre, dobre! Tady, vezmi si to!" }));
-			e.steps.Add(Errands.Talk(c.GiverGem, "Vrat se za " + c.GiverName, "Tvuj dluh je vyrizeny.", "A jak?"));
+			e.steps.Add(Errands.Talk(c.GiverGem, "Vrat se za " + c.GiverName, "Ten dluh je vyrizeny.", "A jak?"));
 			return true;
 		}
 
@@ -250,7 +260,7 @@ namespace SteamEngine.CompiledScripts {
 			CityVenue to = Residents.WorkplaceOf(host);
 			string who = BasicErrands.Name(walker);
 			e.offer = (walker == c.GiverGem) ? "Nohy uz mi neslouzi jako driv. Doprovodis me do: " + to.Label + "?" :
-				who + " potrebuje doprovod do: " + to.Label + ". Sam by tam nedosel. Pomuzes mu?";
+				who + " potrebuje doprovod do: " + to.Label + ". " + BasicErrands.Sex(walker, "Sam by tam nedosel. Pomuzes mu?", "Sama by tam nedosla. Pomuzes ji?");
 			e.thanks = "Dekuji ti za tvou laskavost.";
 			e.steps.Add(Errands.Talk(walker, "Vyzvedni " + ErrandContext.Who(walker), "Pujdeme?", "Ano, ano. Jen pomalu."));
 			ErrandStep arrive = Errands.Talk(host, "Doprovod " + who + " do: " + to.Label + " (" + BasicErrands.Name(host) + ")", "Tady je " + who + ".", "Vitej! Posad se.");
@@ -271,10 +281,11 @@ namespace SteamEngine.CompiledScripts {
 			if ((work == null) || !BasicErrands.IsWorker(c.GiverGem)) {
 				return false;
 			}
+			//the venue's working people, in a random order (guests come only at their hours)
 			List<Item> here = new List<Item>();
 			foreach (Item gem in Residents.OfVenue(work.VenueId)) {
-				if (gem != c.GiverGem) {
-					here.Add(gem);
+				if ((gem != c.GiverGem) && BasicErrands.IsWorker(gem)) {
+					here.Insert(Globals.dice.Next(here.Count + 1), gem);
 				}
 			}
 			if (here.Count == 0) {

@@ -43,7 +43,7 @@ A giver offers one template, drawn by weight among those that can be built for t
 
 ## The eight templates (#1252)
 
-`scripts/Basic/LivingWorld/Errands/BasicErrands.cs` holds design 9.1's first eight, with Czech text pools. The player's lines are worded so they fit a woman or a man.
+`scripts/Basic/LivingWorld/Errands/BasicErrands.cs` holds design 9.1's first eight, with Czech text pools. The player's lines are worded so they fit a woman or a man, and residents' own lines follow their gender (`BasicErrands.Sex`).
 
 | Key | Name | Tier | Steps |
 |---|---|---|---|
@@ -57,6 +57,20 @@ A giver offers one template, drawn by weight among those that can be built for t
 | shift | Smena | small | A worker hands out mugs (tavern), bread (bakery, market) or papers to up to three people of their own venue, then pays wages. |
 
 Templates can scale their pay (`PayPercent`) and act at the end (`OnDone`), as the debt does.
+
+**The lost item:**
+- Only its errand's player can pick it up (a GM can too). Others are told "To hleda nekdo jiny."
+- When the errand ends, the item goes wherever it is: pack, worn, bank, another's pack.
+- The template offers it only in a venue with a spot to lie on.
+
+**A follower:** the resident schedule lets a follower go once no running errand of that player still needs them. That covers a player who is offline or deleted, and an errand that ended or ran out, even if nobody reads the player's errands again. A GM's "come" is untouched.
+
+**Other details:**
+- A step's companion is checked before anything is taken or spent.
+- An errand's own items are taken back from the bank too.
+- Friendship is floored at 0, so a threatened stranger can't fall further.
+- Only working people give ingredients; guests have no trade.
+- A shift goes to the venue's working people, in a random order.
 
 ## Limits (`.settings` "Ukoly")
 
@@ -122,6 +136,7 @@ Each errand has two buttons: one points the quest arrow (0xBA) at the resident, 
 `Tests/Protocol/ErrandTemplateTests.cs` (server side `scripts/Tests/ErrandTemplateTests.cs`, account `errandtpltests`) sets up a tavern, a smithy and a temple in Edoras. It checks:
 - all eight are registered, and the innkeeper offers one to a client;
 - each template's steps, and that its texts are plain ASCII;
-- the lost item lies in the venue, bringing it back ends the errand, and giving up clears it;
+- the lost item lies in the venue, only its player may pick it up, bringing it back ends the errand, and giving up clears it even from the bank;
 - the debt's three answers (pay, friendship, karma);
-- the walk: the follower, no ending without them, and back to their day.
+- the walk: the follower, no ending without them, back to their day, and let go by the schedule once no errand holds them;
+- a guest has no trade to supply.
