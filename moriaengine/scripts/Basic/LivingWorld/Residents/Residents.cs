@@ -626,6 +626,13 @@ namespace SteamEngine.CompiledScripts {
 			} catch (Exception e) {
 				Logger.WriteError(e);
 			}
+			try {
+				AmbientLife.Tick(); //#1262 - barks, conversations, the crier
+			} catch (FatalException) {
+				throw;
+			} catch (Exception e) {
+				Logger.WriteError(e);
+			}
 		}
 	}
 }

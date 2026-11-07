@@ -244,11 +244,19 @@ namespace SteamEngine.CompiledScripts {
 			if ((player == null) || !player.IsPlayer || string.IsNullOrEmpty(city) || (delta == 0)) {
 				return Of(player, city);
 			}
+			bool wasHero = Level(player, city) == ReputationLevel.Hrdina;
 			int now = Math.Max(Min, Math.Min(Max, Of(player, city) + delta)); //Of applies the drift so far, then it starts again
 			player.SetTag(CityKey(city), now);
 			player.SetTag(CityTimeKey(city), Now.Ticks);
 			if ((delta > 0) && deed) {
 				player.SetTag(CityDeedKey(city), Now.Ticks);
+			}
+			if (!wasHero && (Level(player, city) == ReputationLevel.Hrdina)) {
+				TagKey told = Tavern.KeyFor("_hero_told_", city);
+				if (player.GetTag(told) == null) { //#1262 - the criers tell it, once: a lapsed hero's next deed is no news
+					player.SetTag(told, 1);
+					CityNews.Add(city, (player.IsFemale ? "Mesto ma novou hrdinku: " : "Mesto ma noveho hrdinu: ") + player.Name + "!");
+				}
 			}
 			Faction f = (faction == null) ? null : Faction.Get(faction);
 			if (f != null) {
