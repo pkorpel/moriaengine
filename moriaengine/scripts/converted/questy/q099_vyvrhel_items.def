@@ -46,34 +46,67 @@ MagicResist = 1200 1500
 Tactics = 1500 2000
 AggroMode = Calm
 
-[EquippableDef i_q099_vyvrhel_1]
+[CollectorDef i_q099_vyvrhel_1]
 name = "Vacek na stehna grizliho"
-type = t_collector
+TYPE = t_normal
 weight = 10
 model = i_bag
-layer = 0 //Set by Converter 
 Color = 059
+tag.contentsinfo = "Ve vacku je" //#1247 - from @create 
+tag.contentstype = "grizliho ocasku." //#1247 - from @create 
+tag.maxcontents = 100 //#1247 - from @create 
+tag.target_remove = 1 //#1247 - from @create 
+tag.target_desc = "Kteremu grizlimu ocasek? " //#1247 - from @create 
+tag.target_id = "Body of Grizzly" //#1247 - from @create 
+tag.absolute_success = 100 //#1247 - from @create 
+tag.value_to_check = 50 //#1247 - from @create 
+tag.fail_msg = "Nepovedlo se!" //#1247 - from @create 
 
-[EquippableDef i_q099_vyvrhel_2]
+[CollectorDef i_q099_vyvrhel_2]
 name = "Vacek na esenci elementala zeme"
-type = t_collector
+TYPE = t_normal
 weight = 10
 model = i_bag
-layer = 0 //Set by Converter 
 Color = 042
+tag.contentsinfo = "Ve vacku je" //#1247 - from @create 
+tag.contentstype = "usi elementala zeme" //#1247 - from @create 
+tag.maxcontents = 80 //#1247 - from @create 
+tag.target_remove = 1 //#1247 - from @create 
+tag.target_desc = "Kteremu elementalovy chces vzit ucho?" //#1247 - from @create 
+tag.target_id = "Body of Earth Elemental" //#1247 - from @create 
+tag.absolute_success = 100 //#1247 - from @create 
+tag.value_to_check = 50 //#1247 - from @create 
+tag.fail_msg = "Nepovedlo se!" //#1247 - from @create 
 
-[EquippableDef i_q099_vyvrhel_3]
+[CollectorDef i_q099_vyvrhel_3]
 name = "Vacek na esenci oci"
-type = t_collector
+TYPE = t_normal
 weight = 10
 model = i_bag
-layer = 0 //Set by Converter 
 Color = 042
+tag.contentsinfo = "Ve vacku je" //#1247 - from @create 
+tag.contentstype = "esenci oci." //#1247 - from @create 
+tag.maxcontents = 50 //#1247 - from @create 
+tag.target_remove = 1 //#1247 - from @create 
+tag.target_desc = "Kteremu oku chces vzit esenci?" //#1247 - from @create 
+tag.target_id = "Body of Eye" //#1247 - from @create 
+tag.absolute_success = 100 //#1247 - from @create 
+tag.value_to_check = 50 //#1247 - from @create 
+tag.fail_msg = "Nepovedlo se!" //#1247 - from @create 
 
-[EquippableDef i_q099_vyvrhel_4]
+[CollectorDef i_q099_vyvrhel_4]
 name = "Vacek na pirka z Jedoveho Fenixe"
-type = t_collector
+TYPE = t_normal
 weight = 10
 model = i_bag
-layer = 0 //Set by Converter 
 Color = 042
+tag.contentsinfo = "Ve vacku je" //#1247 - from @create 
+tag.contentstype = "pirek Fenixe" //#1247 - from @create 
+tag.maxcontents = 5 //#1247 - from @create 
+tag.target_remove = 1 //#1247 - from @create 
+tag.target_desc = "Kteremu Fenixovi vytrhnes pirko? " //#1247 - from @create 
+tag.target_id = "Body of Phoenix" //#1247 - from @create 
+tag.color = 2431 //#1247 - from @create 
+tag.absolute_success = 100 //#1247 - from @create 
+tag.value_to_check = 50 //#1247 - from @create 
+tag.fail_msg = "Nepovedlo se!" //#1247 - from @create 
