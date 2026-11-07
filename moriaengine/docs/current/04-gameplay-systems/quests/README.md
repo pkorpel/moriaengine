@@ -15,6 +15,9 @@ Not ported: the numbered quests (q006-q100, gq*, mq*: the user wants to revisit
 them first), and the rest listed on #1069. All of Erebor's quests, their rewards and
 what state they were in: [erebor-catalogue.md](erebor-catalogue.md) (#1235).
 
+The design for what comes next, living cities and dynamic quests (a proposal, #1237):
+[living-world-design.md](living-world-design.md).
+
 ## Rules for quest ports
 
 - **Quest items are tags** (the user's rule, 2026-11-03, changing Erebor and the quests ported before): a special item a quest
