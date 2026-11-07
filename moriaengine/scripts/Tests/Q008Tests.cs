@@ -114,22 +114,43 @@ namespace SteamEngine.CompiledScripts {
 			//the corral: the outside pad unlocks the gate, the inside one locks it behind them; out only once the mustang is tamed
 			Item gate = (Item) ThingDef.GetByDefname(Q008.GateDef).Create(player.X + 5, player.Y + 3, player.Z, player.M);
 			gate.AddTriggerGroup(SingletonScript<E_Q008Gate>.Instance);
-			Item padOut = (Item) ThingDef.GetByDefname(Q008.PadOutsideDef).Create(gate.X - 1, gate.Y, gate.Z, gate.M);
-			Item padIn = (Item) ThingDef.GetByDefname(Q008.PadInsideDef).Create(gate.X + 1, gate.Y, gate.Z, gate.M);
+			gate.LockUid = gate.Uid;
+			Item padOut = (Item) ThingDef.GetByDefname(Q008.PadOutsideDef).Create(gate.X, gate.Y - 1, gate.Z, gate.M);
+			Item padIn = (Item) ThingDef.GetByDefname(Q008.PadInsideDef).Create(gate.X, gate.Y + 1, gate.Z, gate.M);
 			E_Q008Pad pads = SingletonScript<E_Q008Pad>.Instance;
 			bool lockedFirst = !Q008.UseGate(gate, player) && !gate.IsDoorOpen;
+			bool notTheirsYet = Q008.RefusesTaming(player, mustang);
 			pads.On_Step(padOut, player);
 			bool opens = Q008.UseGate(gate, player) && gate.IsDoorOpen;
 			int before = player.Experience;
 			pads.On_Step(padIn, player);
 			bool lockedBehind = (Q008.GetStage(player) == 3) && !gate.IsDoorOpen && (player.Experience - before == Q008.CorralExp) && !Q008.UseGate(gate, player);
+			bool nowTheirs = !Q008.RefusesTaming(player, mustang);
 			mustang.ControlMaster = player; //tamed
-			pads.On_Step(padIn, player);
 			bool wayOut = Q008.UseGate(gate, player) && gate.IsDoorOpen;
 			pads.On_Step(padOut, player);
 			bool done = (Q008.GetStage(player) == 4) && !gate.IsDoorOpen && Q008.Journal.IsDone(player) && !Q008.UseGate(gate, player);
-			Report("theCorral", lockedFirst && opens && lockedBehind && wayOut && done);
+			Report("theCorral", lockedFirst && notTheirsYet && opens && lockedBehind && nowTheirs && wayOut && done);
 
+			//the gate: the outside pad's unlock lasts a minute and only for a hero at stage 2; no key opens it (the open-door macro)
+			mustang.ControlMaster = null;
+			Q008.SetStage(player, 2);
+			pads.On_Step(padOut, player);
+			Q008.SetStage(player, 0);
+			bool notForOthers = !Q008.UseGate(gate, player);
+			Q008.SetStage(player, 2);
+			gate.SetTag(Q008.UnlockedTK, Globals.TimeInSeconds - Q008.UnlockSeconds - 1);
+			bool expires = !Q008.UseGate(gate, player);
+			Item key = (Item) ThingDef.GetByDefname("i_key_copper").Create(player.Backpack);
+			bool noKey = !gate.TryUseDoor(player) && !gate.IsDoorOpen;
+			key.Delete();
+			mustang.ControlMaster = player;
+			Q008.SetStage(player, 4);
+			Report("gateRules", notForOthers && expires && noKey);
+
+			//kills count only on the quest (stage 1), a pet's for its master
+			KillAll(player);
+			bool notAfter = !Q008.AllKilled(player);
 			//a new mustang: another round
 			mustang.Delete();
 			mustang = Mustang(player);
@@ -137,6 +158,13 @@ namespace SteamEngine.CompiledScripts {
 			dialog.Press("ancam_10:1", ancam, player);
 			crate = Q008.FindCrate(player);
 			Report("anotherRound", again && (Q008.GetStage(player) == 1) && (crate != null));
+			NPC pet = (NPC) ((NPCDef) ThingDef.GetByDefname("c_rabbit")).Create(player.X + 3, player.Y, player.Z, player.M);
+			pet.ControlMaster = player;
+			NPC victim = (NPC) ((NPCDef) ThingDef.GetByDefname(Q008.MonsterDefs[0])).Create(player.X + 4, player.Y, player.Z, player.M);
+			NPCAiTimer.Freeze(victim, 900);
+			victim.CauseDeath(pet);
+			Report("killsOnlyOnTheQuest", notAfter && Q008.Killed(player, 0) && !Q008.Killed(player, 1));
+			pet.Delete();
 			if (crate == null) {
 				return;
 			}

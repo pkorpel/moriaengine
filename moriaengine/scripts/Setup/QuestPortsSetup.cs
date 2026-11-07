@@ -87,11 +87,13 @@ namespace SteamEngine.CompiledScripts {
 			PlaceStill(pieces, gm, "q008/ancam", Q008.AncamDef, ancam, 0);
 			if (ancam != null) {
 				Item gate = PlaceItem(pieces, gm, "q008/gate", Q008.GateDef, new Point4D(ancam[0] + 6, ancam[1], 0, 0), false);
-				gate?.AddTriggerGroup(SingletonScript<E_Q008Gate>.Instance); //before its locked door's own handler
 				if (gate != null) {
-					PlaceItem(pieces, gm, "q008/padOutside", Q008.PadOutsideDef, new Point4D(gate.X - 1, gate.Y, 0, 0), false)?.SetAttribute(ItemAttributes.attr_invis, true);
-					PlaceItem(pieces, gm, "q008/padInside", Q008.PadInsideDef, new Point4D(gate.X + 1, gate.Y, 0, 0), false)?.SetAttribute(ItemAttributes.attr_invis, true);
-					int[] corral = WorldSpots.NearestStandable(world, gate.X + 5, gate.Y, 4);
+					gate.AddTriggerGroup(SingletonScript<E_Q008Gate>.Instance); //before its locked door's own handler
+					gate.LockUid = gate.Uid; //a lock no key fits: the open-door macro asks for one and skips the trigger group
+					//i_gate_wood_3 stands in an east-west fence: walked through north to south
+					PlaceItem(pieces, gm, "q008/padOutside", Q008.PadOutsideDef, new Point4D(gate.X, gate.Y - 1, 0, 0), false)?.SetAttribute(ItemAttributes.attr_invis, true);
+					PlaceItem(pieces, gm, "q008/padInside", Q008.PadInsideDef, new Point4D(gate.X, gate.Y + 1, 0, 0), false)?.SetAttribute(ItemAttributes.attr_invis, true);
+					int[] corral = WorldSpots.NearestStandable(world, gate.X, gate.Y + 5, 4);
 					if (corral != null) {
 						pieces.Npc("quests/q008/mustang", Q008.MustangDef, corral, 0, Realm.None, false, WorldPieces.WandersAbout);
 					}

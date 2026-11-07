@@ -129,6 +129,7 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage(texts.devoted);
 			} else if (Point2D.GetSimpleDistance(self, npc) > Reach) {
 				self.SysMessage(texts.tooFar);
+			} else if (Q008.RefusesTaming(self, npc)) { //#1274 - Ancam's corral mustang, only for the hero locked in with it
 			} else {
 				Talk(self, npc);
 				TamingTimer timer = new TamingTimer();

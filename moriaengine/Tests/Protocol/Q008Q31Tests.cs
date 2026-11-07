@@ -20,7 +20,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains(gump.Strings, s => s.Contains("Mustang"));
 				Q008Q31Steps.Press(game, gump.GumpUid, "Q008", "ancam_2:1", "stage=1", this.RunFor, this.LastLineFor);
 				this.Run(game, ".TestQ008Chain", "Q008_CHAIN_DONE");
-				this.AssertChecks("theClientTookTheCrate", "rangersOnly", "reagentsAndKills", "theCrateHandedIn", "theCorral", "anotherRound",
+				this.AssertChecks("theClientTookTheCrate", "rangersOnly", "reagentsAndKills", "theCrateHandedIn", "theCorral", "gateRules", "anotherRound", "killsOnlyOnTheQuest",
 					"theWaitPath", "banned", "journalTextsArePlain");
 			}
 		}

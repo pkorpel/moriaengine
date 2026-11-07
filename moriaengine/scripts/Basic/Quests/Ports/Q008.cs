@@ -38,6 +38,7 @@ namespace SteamEngine.CompiledScripts {
 		public const int SkillNeeded = 950, ReagentsNeeded = 2500;
 		public const int CorralRange = 30, GateRange = 10;
 		public const int WaitExp = 400, CorralExp = 100;
+		public const double UnlockSeconds = 60; //the gate's door closes itself after a minute; so does its unlock (Erebor's @Timer more1=1)
 
 		private static readonly TagKey stageTK = TagKey.Acquire("_q008Black_");
 		private static readonly TagKey handedInTK = TagKey.Acquire("_q008BlackA_");
@@ -45,7 +46,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey[] killTKs = { TagKey.Acquire("_q008Monster1_"), TagKey.Acquire("_q008Monster2_"), TagKey.Acquire("_q008Monster3_"), TagKey.Acquire("_q008Monster4_") };
 		internal static readonly TagKey ReagentsTK = TagKey.Acquire("_q008Reagents_"); //on the crate: Erebor's mnozstvi_regu
 		internal static readonly TagKey FullTK = TagKey.Acquire("_q008Full_"); //on the crate: Erebor's nasbirano
-		internal static readonly TagKey UnlockedTK = TagKey.Acquire("_q008Unlocked_"); //on the gate: Erebor's more1 = 0
+		internal static readonly TagKey UnlockedTK = TagKey.Acquire("_q008Unlocked_"); //on the gate: when Erebor's more1 went 0
 
 		public static QuestJournalEntry Journal { get; private set; }
 
@@ -95,6 +96,7 @@ namespace SteamEngine.CompiledScripts {
 		internal static void Reject(Player player) {
 			player.SetTag(rejectedTK, 1);
 			player.RemoveTag(stageTK);
+			QuestJournal.Report(player, Journal);
 		}
 
 		public static bool Killed(Player player, int index) {
@@ -124,9 +126,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>The four quest monsters' @Death (NPC.On_Death): a tag on the killer (Erebor's act), whatever experience they're worth.</summary>
-		internal static void OnKillCredit(Player player, Character victim) {
-			if (player == null) {
+		/// <summary>The four quest monsters' @Death (NPC.On_Death): a tag on the killer (Erebor's act), or a pet's master, at stage 1 as
+		/// Erebor's, whatever experience they're worth.</summary>
+		internal static void OnKillCredit(Character killer, Character victim) {
+			Player player = (killer as Player) ?? (killer?.ControlMaster as Player);
+			if ((player == null) || (GetStage(player) != 1)) {
 				return;
 			}
 			for (int i = 0; i < MonsterDefs.Length; i++) {
@@ -204,14 +208,53 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
+		/// <summary>The hero's own black mustang, ridden or within CorralRange of `near`.</summary>
+		public static bool HasTamed(Player player, Thing near) {
+			ThingDef def = ThingDef.GetByDefname(MustangDef);
+			if ((player.Mount != null) && (player.Mount.Def == def)) {
+				return true;
+			}
+			foreach (AbstractCharacter ch in near.GetMap().GetCharsInRange(near.X, near.Y, CorralRange)) {
+				if ((ch.Def == def) && (ch is Character mustang) && (mustang.ControlMaster == player)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>TamingSkillDef.Tame: the corral's mustang is Ancam's; only a hero locked in with it (stage 3) may tame it.</summary>
+		public static bool RefusesTaming(Character tamer, NPC npc) {
+			if ((npc.Def != ThingDef.GetByDefname(MustangDef)) || tamer.IsGM || (GateNear(npc, CorralRange) == null)) {
+				return false;
+			}
+			if ((tamer is Player player) && (GetStage(player) == 3)) {
+				return false;
+			}
+			tamer.SysMessage("Tento mustang patri Ancamovi.");
+			return true;
+		}
+
 		internal static Item GateNear(Thing near) {
+			return GateNear(near, GateRange);
+		}
+
+		internal static Item GateNear(Thing near, int range) {
 			ThingDef def = ThingDef.GetByDefname(GateDef);
-			foreach (AbstractItem item in near.GetMap().GetItemsInRange(near.X, near.Y, GateRange)) {
+			foreach (AbstractItem item in near.GetMap().GetItemsInRange(near.X, near.Y, range)) {
 				if (item.Def == def) {
 					return (Item) item;
 				}
 			}
 			return null;
+		}
+
+		public static bool IsUnlocked(Item gate) {
+			object tag = gate.GetTag(UnlockedTK);
+			return (tag != null) && (Globals.TimeInSeconds - Convert.ToDouble(tag, CultureInfo.InvariantCulture) < UnlockSeconds);
+		}
+
+		internal static void Unlock(Item gate) {
+			gate.SetTag(UnlockedTK, Globals.TimeInSeconds);
 		}
 
 		internal static void CloseGate(Item gate) {
@@ -221,20 +264,11 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>i_q008_vrata_1's @UserDClick. True when it swings.</summary>
+		/// <summary>i_q008_vrata_1's @UserDClick: in for a hero at stage 2 the outside pad has just let in, out for one locked in whose
+		/// mustang is tamed (or gone, as Erebor's). Anyone else finds it shut. True when it swings.</summary>
 		internal static bool UseGate(Item gate, Player player) {
 			int stage = GetStage(player);
-			bool allowed;
-			if (player.IsGM) {
-				allowed = true;
-			} else if (stage == 4) {
-				allowed = false;
-			} else if ((stage == 3) && !MustangThere(gate)) { //tamed: the way out
-				gate.SetTag(UnlockedTK, 1);
-				allowed = true;
-			} else {
-				allowed = gate.GetTag(UnlockedTK) != null; //stage 2 once the outside pad has unlocked it
-			}
+			bool allowed = player.IsGM || ((stage == 2) && IsUnlocked(gate)) || ((stage == 3) && (HasTamed(player, gate) || !MustangThere(gate)));
 			if (!allowed) {
 				player.SysMessage("Dvere jsou pevne zavrene.");
 				return false;
@@ -243,15 +277,14 @@ namespace SteamEngine.CompiledScripts {
 			return true;
 		}
 
-		/// <summary>i_q008_pad_closeDoor_inside's @step.</summary>
+		/// <summary>i_q008_pad_closeDoor_inside's @step: it locks the gate behind a hero coming in for the mustang. Erebor's also unlocked
+		/// it once the mustang was gone; here the way out is UseGate's own rule.</summary>
 		internal static void StepInside(Item pad, Player player) {
 			Item gate = GateNear(pad);
-			if (player.IsGM || (gate == null)) {
+			if (player.IsGM || player.Flag_Dead || (gate == null)) {
 				return;
 			}
-			if (!MustangThere(gate)) {
-				gate.SetTag(UnlockedTK, 1);
-			} else if ((gate.GetTag(UnlockedTK) != null) && (GetStage(player) == 2)) { //Erebor's ran on anyone not at 3, sneaking in too
+			if ((GetStage(player) == 2) && IsUnlocked(gate) && MustangThere(gate)) { //Erebor's ran on anyone not at 3, sneaking in too
 				CloseGate(gate);
 				player.SysMessage("Zaviras za sebou branku.");
 				player.SysMessage("Ted jiz neni cesty zpet!");
@@ -260,23 +293,22 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		/// <summary>i_q008_pad_closeDoor_outside's @step.</summary>
+		/// <summary>i_q008_pad_closeDoor_outside's @step: it lets a hero at stage 2 in, ends the quest for one coming out with their
+		/// mustang, and shuts the gate behind anyone else.</summary>
 		internal static void StepOutside(Item pad, Player player) {
 			Item gate = GateNear(pad);
-			if (player.IsGM || (gate == null)) {
+			if (player.IsGM || player.Flag_Dead || (gate == null)) {
 				return;
 			}
 			int stage = GetStage(player);
-			if (!MustangThere(gate)) {
-				if (stage == 3) {
-					SetStage(player, 4);
-				}
+			if ((stage == 3) && (HasTamed(player, gate) || !MustangThere(gate))) {
+				SetStage(player, 4);
 				CloseGate(gate);
 			} else if (stage == 2) {
-				if (gate.GetTag(UnlockedTK) == null) {
+				if (!IsUnlocked(gate)) {
 					player.SysMessage("Oteviras branku k mustangovi");
 				}
-				gate.SetTag(UnlockedTK, 1);
+				Unlock(gate);
 			} else {
 				CloseGate(gate);
 			}
@@ -442,6 +474,8 @@ namespace SteamEngine.CompiledScripts {
 				self.SysMessage("Nevidis na to, z tehle strany to nepujde");
 			} else if (Point2D.GetSimpleDistance(self, targetted.TopObj()) > 3) {
 				self.SysMessage("Je to prilis daleko.");
+			} else if ((targetted.TopObj() != self) && !targetted.IsOnGround) { //Erebor's took any in sight, someone else's bag too
+				self.SysMessage("Tohle ti nepatri.");
 			} else if ((targetted == crate) || (targetted.Type == null) || (targetted.Type.Defname != "t_reagent")) {
 				self.SysMessage("Jsi si temer jisty, ze tohle se Ancamovi hodit nebude.");
 			} else {
