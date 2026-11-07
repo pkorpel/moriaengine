@@ -1,0 +1,6 @@
+//#1272 - q026's sliding doors and tapestry name these types; Erebor's typedefs hold only triggers, which the converter comments
+//out, and an item of an undefined type cannot be made (#921). Their behaviour is in Q026.cs (E_Q026Fixture).
+
+[typedef t_q026_TOK_slidingDoor]
+
+[typedef t_q026_TOK_tapestry]

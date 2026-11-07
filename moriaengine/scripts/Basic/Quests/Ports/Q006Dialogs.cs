@@ -145,6 +145,7 @@ namespace SteamEngine.CompiledScripts {
 					d.Html();
 				}
 			}
+			Q026.HealerLines(d, npc, player); //#1272 - the tomb curse, asked on whichever of the two pages this is
 
 			d.Page("Obchodovat");
 			if ((q == Q006.Done) && (alchemy > 999)) {
@@ -328,6 +329,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnButton(string button, Character npc, Player player) {
+			if (Q026.HealerButton(button, player)) { //#1272
+				return;
+			}
 			int q = Q006.GetStage(player);
 			switch (q) {
 				case 0:
@@ -535,6 +539,7 @@ namespace SteamEngine.CompiledScripts {
 			d.Page("Kdo jsi?");
 			d.SetText("Jmenuji se Unas. Jsem kouzelnik.");
 			d.Html();
+			Q026.UnasLines(d, player); //#1272 - the tomb curse
 			d.Page("Mohu pomoci?");
 			d.SetText("Nepotrebuji pomoc.");
 			d.Html();
@@ -592,6 +597,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		protected override void OnButton(string button, Character npc, Player player) {
+			if (Q026.UnasButton(button, player)) { //#1272
+				return;
+			}
 			int q = Q006.GetStage(player);
 			if ((q == 13) && (button == "q006_esentials") && (player.Level >= Q006.UnasMinLevel)) {
 				Q006.GiveBag(player, Q006.EssenceBags[0]);
