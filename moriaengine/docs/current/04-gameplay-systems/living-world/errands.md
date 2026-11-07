@@ -10,7 +10,7 @@ A **double click on a resident** opens their dialog (`D_ResidentTalk`). It shows
 - **"Potrebujes neco?"**, which opens an offer (`D_ErrandOffer`: the giver's words, then "Rad pomuzu" or "Ted ne"). If there is no offer, the resident says why;
 - **"Sbohem."**
 
-Steps are done only by picking a line in the dialog, never by a typed word (design 5.5).
+Steps are done only by picking a line in the dialog, never by a typed word (design 5.5). The player must be alive, within 3 tiles of the resident and see them, both to open the dialog and when a button is pressed. A button names its errand by the errand's number (`Errand.id`, given when taken), not by its place in a list, so a list changed while the dialog was open can't send it to another errand. The offer travels in its own dialog's args, and a new offer closes the old one.
 
 ## What an errand is
 
@@ -43,13 +43,17 @@ A giver offers one template, drawn by weight among those that can be built for t
 
 ## Limits (`.settings` "Ukoly")
 
+Both `.settings` categories, "Ukoly" and #1243's "Povest", are now in the settings dialog.
+
 | Setting | Default | Meaning |
 |---|---|---|
 | maxActive | 3 | errands taken at once |
 | perCityPerDay, perGiverPerDay | 6, 1 | errands taken per game day (24 real minutes) in a city and from one resident |
 | repeatPenalty, payFloor | 25, 25 | the same template again in a row pays 25% less each time, down to 25% |
 
-The giver won't offer a second errand while the first is open. An errand that runs out is dropped, and its item is taken back, the next time the player's errands are read.
+The giver won't offer a second errand while the first is open. Nobody offers errands to the city's enemy (reputation Nepritel): an enemy earns no standing this way, and the shops refuse them too. The repeat penalty counts the same template done in a row and also the same one held now, so holding three at once doesn't avoid it. An errand's time runs from when it's taken. An errand that runs out is dropped, and its item is taken back, the next time the player's errands are read.
+
+A fetch never counts an errand's own item, such as a letter to deliver. A collect step takes a bag in the pack that holds enough, not merely the first one found. A deliver step whose item def doesn't exist becomes a message, so it can still be done.
 
 ## Pay
 
@@ -80,15 +84,20 @@ Each errand has two buttons: one points the quest arrow (0xBA) at the resident, 
 **In the client:**
 - double click the giver, ask, see the offer naming the second resident, take it;
 - the journal's Ukoly tab shows "(1/4)" and the task;
-- the second resident's dialog has the letter's line, and picking it delivers the letter.
+- beside the second resident, their dialog has the letter's line, and picking it delivers the letter.
 
 **On the server:**
 - the giver offers no second one, and the wrong resident can't do the step;
 - no apples means no step, and two of three are taken;
+- not from 8 tiles away;
 - not in the morning, but in the evening;
 - the answer is kept;
 - done and paid: gold, friendship +2 and reputation +10;
 - one a day from a giver, and a new day brings a new one, paying 75%;
 - the letter is in the pack, and giving up takes it back;
+- the city's enemy gets no errand;
+- errands are numbered, and found by their number;
 - an errand runs out;
 - the cap on taken errands holds.
+
+**Known gaps:** a game day for the limits is the server clock / 24 minutes, which isn't aligned with LightAndWeather's dawn. Expiry runs on real time, so it keeps running while the server is down.

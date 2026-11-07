@@ -44,18 +44,19 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("Odnes dopis: " + otherName, texts);
 				game.SendGumpResponse(journal.GumpUid, 0);
 
-				//the second resident's dialog has the letter's line
+				//the second resident's dialog has the letter's line, once the player stands beside them
+				this.Run(game, ".TestErrandGoTo \"other\"", "ERRAND_WENT:");
 				game.SendDoubleClick(other);
 				talk = game.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains(talk.Strings, s => s.StartsWith("Nesu ti dopis od ", StringComparison.Ordinal));
-				game.SendGumpResponse(talk.GumpUid, FirstStepButton);
+				game.SendGumpResponse(talk.GumpUid, FirstStepButton + 10); //the first errand taken is number 1
 				this.Run(game, ".TestErrandAfterClient", "ERRAND_AFTER_DONE");
 				this.AssertChecks("theClientTookIt", "theLetterWasDelivered");
 
 				this.Run(game, ".TestErrandRules", "ERRAND_RULES_DONE");
 				this.AssertChecks("theGiverGivesNoSecond", "theWrongResidentCant", "noApplesNoStep", "twoApplesTaken", "notInTheMorning",
-					"butInTheEvening", "theAnswerIsKept", "itsDoneAndPaid", "oneADayFromAGiver", "aNewDayANewOne", "theSameAgainPaysLess",
-					"theLetterIsInThePack", "givingUpTakesTheLetterBack", "anErrandRunsOut", "aCapOnTakenErrands");
+					"notFromAfar", "butInTheEvening", "theAnswerIsKept", "itsDoneAndPaid", "oneADayFromAGiver", "aNewDayANewOne", "theSameAgainPaysLess",
+					"theLetterIsInThePack", "givingUpTakesTheLetterBack", "anEnemyOfTheCityGetsNone", "errandsAreNumbered", "anErrandRunsOut", "aCapOnTakenErrands");
 			}
 		}
 	}

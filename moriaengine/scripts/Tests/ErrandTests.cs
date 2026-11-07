@@ -67,6 +67,9 @@ namespace SteamEngine.CompiledScripts {
 					ErrandTemplates.Unregister(template.Key);
 				}
 				ErrandTemplates.Register(new TestTemplate());
+				foreach (Item gem in people) {
+					NPCAiTimer.Freeze(Residents.BodyOf(gem), 600); //they stay where the player talks to them
+				}
 				Item giver = people[0];
 				player.SetTag(giverTK, giver);
 				player.SetTag(otherTK, people[1]);
@@ -82,6 +85,36 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>Args "giver" or "other": stand beside that resident (talking needs reach).</summary>
+		[SteamFunction]
+		public static void TestErrandGoTo(Character self, ScriptArgs sa) {
+			Player player = (Player) self;
+			Item gem = (Item) player.GetTag(sa.Args.Trim().Trim('"') == "other" ? otherTK : giverTK);
+			Near(player, Residents.BodyOf(gem));
+			Console.WriteLine("ERRAND_WENT: done");
+		}
+
+		//the errand's letters in the pack: its own items, which Errands.CountIn leaves out on purpose
+		private static int Letters(Player player) {
+			return CountAll(player.Backpack, ThingDef.GetByDefname(LetterDef));
+		}
+
+		private static int CountAll(Container container, ThingDef def) {
+			int count = 0;
+			foreach (AbstractItem item in container) {
+				if (item.Def == def) {
+					count += item.Amount;
+				} else if (item is Container inside) {
+					count += CountAll(inside, def);
+				}
+			}
+			return count;
+		}
+
+		private static void Near(Player player, NPC npc) {
+			player.Go(new Point4D(npc.X, npc.Y, npc.Z, npc.M));
+		}
+
 		/// <summary>After the client took the errand from the giver and gave the letter to the other resident.</summary>
 		[SteamFunction]
 		public static void TestErrandAfterClient(Character self) {
@@ -89,7 +122,7 @@ namespace SteamEngine.CompiledScripts {
 			List<Errand> active = Errands.Active(player);
 			Errand errand = (active.Count == 1) ? active[0] : null;
 			Report("theClientTookIt", (errand != null) && (errand.key == "test_errand"));
-			Report("theLetterWasDelivered", (errand != null) && (errand.index == 1) && (Errands.CountIn(player.Backpack, (ItemDef) ThingDef.GetByDefname(LetterDef)) == 0));
+			Report("theLetterWasDelivered", (errand != null) && (errand.index == 1) && (Letters(player) == 0));
 			Console.WriteLine("ERRAND_AFTER_DONE");
 		}
 
@@ -114,11 +147,16 @@ namespace SteamEngine.CompiledScripts {
 			Errand errand = Errands.Active(player)[0];
 
 			Report("theGiverGivesNoSecond", Errands.WhyNot(player, giver, "Edoras") != null);
+			Near(player, otherBody);
 			Report("theWrongResidentCant", !Errands.Do(player, errand, otherBody));
+			Near(player, giverBody);
 			Report("noApplesNoStep", !Errands.Do(player, errand, giverBody) && (errand.index == 1));
 			ItemDef apple = (ItemDef) ThingDef.GetByDefname(FetchDef);
 			Item apples = (Item) apple.Create(player.Backpack);
 			apples.Amount = 3;
+			player.Go(new Point4D((ushort) (giverBody.X + 8), giverBody.Y, giverBody.Z, giverBody.M));
+			Report("notFromAfar", !Errands.Do(player, errand, giverBody) && (errand.index == 1));
+			Near(player, giverBody);
 			Report("twoApplesTaken", Errands.Do(player, errand, giverBody) && (Errands.CountIn(player.Backpack, apple) == 1) && (errand.index == 2));
 			VenueClock.Override = 10;
 			Report("notInTheMorning", !Errands.Do(player, errand, giverBody));
@@ -140,18 +178,26 @@ namespace SteamEngine.CompiledScripts {
 			Errand second = Errands.Make(player, giver);
 			Report("aNewDayANewOne", (second != null) && Errands.Accept(player, second));
 			Report("theSameAgainPaysLess", second.payPercent == 100 - ErrandSettings.instance.repeatPenalty);
-			Report("theLetterIsInThePack", Errands.CountIn(player.Backpack, (ItemDef) ThingDef.GetByDefname(LetterDef)) == 1);
+			Report("theLetterIsInThePack", Letters(player) == 1);
 
 			//giving up takes the letter back
 			Errands.GiveUp(player, second);
-			Report("givingUpTakesTheLetterBack", (Errands.Active(player).Count == 0) && (Errands.CountIn(player.Backpack, (ItemDef) ThingDef.GetByDefname(LetterDef)) == 0));
+			Report("givingUpTakesTheLetterBack", (Errands.Active(player).Count == 0) && (Letters(player) == 0));
+
+			//the city's enemy gets none
+			int standing = Reputation.Of(player, "Edoras");
+			log.day = -1;
+			Reputation.Set(player, "Edoras", -900);
+			Report("anEnemyOfTheCityGetsNone", (Errands.WhyNot(player, giver, "Edoras") != null) && (Errands.Make(player, giver) == null));
+			Reputation.Set(player, "Edoras", standing);
 
 			//an errand runs out
 			log.day = -1;
 			Errand third = Errands.Make(player, other);
 			Errands.Accept(player, third);
+			Report("errandsAreNumbered", (third.id > second.id) && (Errands.ById(player, third.id) == third));
 			Errands.NowOverride = DateTime.UtcNow.AddHours(5);
-			Report("anErrandRunsOut", (Errands.Active(player).Count == 0) && (Errands.CountIn(player.Backpack, (ItemDef) ThingDef.GetByDefname(LetterDef)) == 0));
+			Report("anErrandRunsOut", (Errands.Active(player).Count == 0) && (Letters(player) == 0));
 			Errands.NowOverride = null;
 
 			//no more than maxActive at once

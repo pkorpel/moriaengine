@@ -84,6 +84,11 @@ namespace SteamEngine.CompiledScripts {
 	/// which decides the pay (design 5.6).</summary>
 	[SaveableClass, DeepCopyableClass]
 	public sealed class Errand {
+		/// <summary>The player's own number for it, given when taken: dialogs' buttons name an errand by it, not by its place in a
+		/// list that can change while a dialog is open.</summary>
+		[SaveableData, CopyableData]
+		public int id;
+
 		/// <summary>The template's key (ErrandTemplate.Key).</summary>
 		[SaveableData, CopyableData]
 		public string key = "";
@@ -106,7 +111,7 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData, CopyableData]
 		public int index;
 
-		/// <summary>Real time (UTC ticks) it runs out at.</summary>
+		/// <summary>Real time (UTC ticks) it runs out at, set when taken.</summary>
 		[SaveableData, CopyableData]
 		public long expiresTicks;
 
@@ -170,6 +175,9 @@ namespace SteamEngine.CompiledScripts {
 
 		[SaveableData, CopyableData]
 		public int done;
+
+		[SaveableData, CopyableData]
+		public int nextId = 1;
 
 		[LoadingInitializer, DeepCopyImplementation]
 		public ErrandLog() {

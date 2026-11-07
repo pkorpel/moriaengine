@@ -12,10 +12,12 @@ namespace SteamEngine.CompiledScripts {
 		public static bool TryDClick(NPC npc, Character from) {
 			Player player = from as Player;
 			Item gem = (npc == null) ? null : Residents.GemOf(npc);
-			if ((player == null) || (gem == null) || npc.Flag_Dead) {
+			if ((player == null) || (gem == null) || npc.Flag_Dead || player.Flag_Dead) {
 				return false;
 			}
-			Open(player, npc);
+			if (Errands.CanTalk(player, npc)) {
+				Open(player, npc);
+			}
 			return true;
 		}
 
@@ -37,6 +39,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>Buttons: 1 asks, 0 goes; a step's line is FirstStepButton + its errand's id * 10 + the answer, so a button still
+	/// names the right errand when the list changed while the dialog was open.</summary>
 	public class D_ResidentTalk : CompiledGumpDef {
 		internal const int AskButton = 1, FirstStepButton = 100;
 		private const int Width = 380, TitleHue = 95, TextHue = 955, SayHue = 68, Row = 24;
@@ -60,14 +64,15 @@ namespace SteamEngine.CompiledScripts {
 			int y = 100;
 			for (int i = 0; i < here.Count; i++) {
 				ErrandStep step = here[i].Current;
+				int first = FirstStepButton + (here[i].id * 10);
 				if (step.Kind == ErrandStepKind.Choose) {
 					for (int c = 0; c < step.choices.Count; c++) {
-						this.AddButton(16, y, 0xFA5, 0xFA7, FirstStepButton + (i * 10) + c, GumpButtonType.Reply, 0);
+						this.AddButton(16, y, 0xFA5, 0xFA7, first + c, GumpButtonType.Reply, 0);
 						this.AddLabel(52, y + 2, SayHue, step.choices[c]);
 						y += Row;
 					}
 				} else {
-					this.AddButton(16, y, 0xFA5, 0xFA7, FirstStepButton + (i * 10), GumpButtonType.Reply, 0);
+					this.AddButton(16, y, 0xFA5, 0xFA7, first, GumpButtonType.Reply, 0);
 					this.AddLabel(52, y + 2, SayHue, string.IsNullOrEmpty(step.say) ? here[i].name : step.say);
 					y += Row;
 				}
@@ -87,7 +92,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			Item gem = Residents.GemOf(npc);
-			if (gem == null) {
+			if ((gem == null) || !Errands.CanTalk(player, npc)) {
 				return;
 			}
 			if (button == AskButton) {
@@ -98,16 +103,15 @@ namespace SteamEngine.CompiledScripts {
 					npc.Say(why ?? "Ted pro tebe nic nemam.");
 					return;
 				}
-				Errands.SetOffer(player, errand);
-				player.Dialog(player, SingletonScript<D_ErrandOffer>.Instance, new DialogArgs(npc));
+				D_ErrandOffer offer = SingletonScript<D_ErrandOffer>.Instance;
+				player.DialogClose(offer, 0); //one offer at a time: its errand travels in its own args
+				player.Dialog(player, offer, new DialogArgs(npc, errand));
 				return;
 			}
 			if (button >= FirstStepButton) {
-				List<Errand> here = Errands.At(player, gem);
-				int index = (button - FirstStepButton) / 10;
+				Errand errand = Errands.ById(player, (button - FirstStepButton) / 10);
 				int choice = (button - FirstStepButton) % 10;
-				if (index < here.Count) {
-					Errand errand = here[index];
+				if ((errand != null) && (errand.Current != null)) {
 					bool isChoice = errand.Current.Kind == ErrandStepKind.Choose;
 					Errands.Do(player, errand, npc, isChoice ? choice : -1);
 				}
@@ -115,14 +119,14 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>The giver's offer: what they want, and whether the player takes it.</summary>
+	/// <summary>The giver's offer: what they want, and whether the player takes it. args: the giver, the errand offered (made, not
+	/// taken; it lives while this dialog does and is never saved).</summary>
 	public class D_ErrandOffer : CompiledGumpDef {
 		internal const int AcceptButton = 1;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Player player = (Player) sendTo;
-			NPC npc = (NPC) args[0];
-			Errand errand = Errands.PeekOffer(player);
+			Errand errand = args[1] as Errand;
 			this.SetLocation(60, 60);
 			this.AddPage(0);
 			this.AddBackground(0, 0, 380, 220, 2620);
@@ -140,8 +144,8 @@ namespace SteamEngine.CompiledScripts {
 			if (player == null) {
 				return;
 			}
-			Errand errand = Errands.TakeOffer(player);
-			if ((errand == null) || (gr.PressedButton != AcceptButton)) {
+			Errand errand = args[1] as Errand;
+			if ((errand == null) || (gr.PressedButton != AcceptButton) || !Errands.CanTalk(player, npc)) {
 				return;
 			}
 			if (!Errands.Accept(player, errand)) {
@@ -169,29 +173,28 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			int y = 135;
-			for (int i = 0; i < active.Count; i++) {
+			for (int i = 0; (i < active.Count) && (i < 3); i++) { //three fit the window; the rest show once these are done
 				Errand errand = active[i];
 				ErrandStep step = errand.Current;
 				int minutes = Math.Max(0, (int) (errand.Expires - Errands.Now).TotalMinutes);
 				gump.AddLabel(85, y, HeadHue, CityJournalPage.Cut(errand.name, 20) + " (" + (errand.index + 1).ToString(CultureInfo.InvariantCulture) + "/" +
 					errand.steps.Count.ToString(CultureInfo.InvariantCulture) + ")");
-				gump.AddHtml(85, y + 18, width - 90, 36, "<basefont color=#FFFFFF size=2>" + ((step == null) ? "" : step.task) + "</basefont>", false, false);
+				gump.AddHtml(85, y + 18, width - 100, 36, "<basefont color=#FFFFFF size=2>" + ((step == null) ? "" : step.task) + "</basefont>", false, false);
 				gump.AddLabel(85, y + 54, WhereHue, CityJournalPage.Cut((step == null) ? "" : Errands.Where(step), 24));
 				gump.AddLabel(width - 40, y, TextHue, minutes.ToString(CultureInfo.InvariantCulture) + "m");
-				gump.AddButton(width - 10, y + 20, 0x15E1, 0x15E5, FirstButton + (i * 2), GumpButtonType.Reply, 0); //the arrow
-				gump.AddButton(width - 10, y + 48, 0xFB1, 0xFB3, FirstButton + (i * 2) + 1, GumpButtonType.Reply, 0); //give up
+				gump.AddButton(width - 10, y + 20, 0x15E1, 0x15E5, FirstButton + (errand.id * 2), GumpButtonType.Reply, 0); //the arrow
+				gump.AddButton(width - 10, y + 48, 0xFB1, 0xFB3, FirstButton + (errand.id * 2) + 1, GumpButtonType.Reply, 0); //give up
 				y += Block;
 			}
 		}
 
 		private static void OnButton(Player player, int button) {
-			List<Errand> active = Errands.Active(player);
-			int index = (button - FirstButton) / 2;
-			if (index < active.Count) {
+			Errand errand = Errands.ById(player, (button - FirstButton) / 2);
+			if (errand != null) {
 				if (((button - FirstButton) % 2) == 0) {
-					Errands.PointTo(player, active[index]);
+					Errands.PointTo(player, errand);
 				} else {
-					Errands.GiveUp(player, active[index]);
+					Errands.GiveUp(player, errand);
 				}
 			}
 			QuestJournal.Open(player, D_QuestJournal.SectionErrands);

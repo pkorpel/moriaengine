@@ -56,8 +56,8 @@ namespace SteamEngine.CompiledScripts {
 	public static class Errands {
 		internal static readonly TagKey LogTK = TagKey.Acquire("_errands_");
 		internal static readonly TagKey ItemTK = TagKey.Acquire("_errand_item_");
-		//an offer waiting for its answer lives while its dialog does: never in a tag, which a world save would try to write
-		private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Player, Errand> offers = new System.Runtime.CompilerServices.ConditionalWeakTable<Player, Errand>();
+		/// <summary>How near a resident a player must be to talk to them, and see them.</summary>
+		public const int Reach = 3;
 
 		public static DateTime? NowOverride;
 
@@ -115,6 +115,31 @@ namespace SteamEngine.CompiledScripts {
 			if ((city != null) && (log.Count(city) >= s.perCityPerDay)) {
 				return "Pro dnesek jsi pomohl dost. Mesto si poradi i bez tebe.";
 			}
+			if ((city != null) && (Reputation.Level(player, city) == ReputationLevel.Nepritel)) {
+				return "S nepritelem mesta nemluvim."; //an enemy earns no standing by errands; the shops refuse them too
+			}
+			return null;
+		}
+
+		/// <summary>Whether the player can talk to the resident now: alive, near, in sight. Told why not.</summary>
+		public static bool CanTalk(Player player, NPC resident) {
+			if ((resident == null) || resident.IsDeleted || resident.Flag_Dead || player.Flag_Dead) {
+				return false;
+			}
+			if ((resident.M != player.M) || (Point2D.GetSimpleDistance(resident, player) > Reach) || !player.CanSeeLOS(resident).Allow) {
+				player.SysMessage("Jsi od " + resident.Name + " prilis daleko.");
+				return false;
+			}
+			return true;
+		}
+
+		/// <summary>The player's errand of this number, or null (done, given up, run out).</summary>
+		public static Errand ById(Player player, int id) {
+			foreach (Errand errand in Active(player)) {
+				if (errand.id == id) {
+					return errand;
+				}
+			}
 			return null;
 		}
 
@@ -133,8 +158,7 @@ namespace SteamEngine.CompiledScripts {
 				Errand errand = new Errand { key = template.Key, name = template.Name, giverId = Residents.IdOf(giverGem), city = city, tier = (int) template.Tier };
 				ErrandContext context = new ErrandContext(player, giverGem, city);
 				if (template.TryBuild(context, errand) && (errand.steps.Count > 0)) {
-					errand.expiresTicks = Now.AddMinutes(template.Minutes).Ticks;
-					return errand;
+					return errand; //its time runs from when it's taken
 				}
 			}
 			return null;
@@ -155,35 +179,22 @@ namespace SteamEngine.CompiledScripts {
 			return pool[pool.Count - 1];
 		}
 
-		/// <summary>The errand offered to the player and waiting for their answer.</summary>
-		internal static void SetOffer(Player player, Errand errand) {
-			offers.Remove(player);
-			offers.Add(player, errand);
-		}
-
-		internal static Errand PeekOffer(Player player) {
-			Errand errand;
-			return offers.TryGetValue(player, out errand) ? errand : null;
-		}
-
-		internal static Errand TakeOffer(Player player) {
-			Errand errand;
-			if (offers.TryGetValue(player, out errand)) {
-				offers.Remove(player);
-				return errand;
-			}
-			return null;
-		}
-
 		/// <summary>The player takes the errand: it joins their log and counts for the day's limits.</summary>
 		public static bool Accept(Player player, Errand errand) {
 			Item giver = Residents.ById(errand.giverId);
 			if ((giver == null) || (WhyNot(player, giver, errand.city) != null)) {
 				return false;
 			}
+			if (Log(player).active.Contains(errand)) {
+				return false;
+			}
 			ErrandLog log = Log(player);
-			int repeats = (log.lastKey == errand.key) ? log.streak : 0;
+			//the same template done in a row, and the same held now: holding three at once is no way round the penalty
+			int repeats = ((log.lastKey == errand.key) ? log.streak : 0) + log.active.FindAll(a => a.key == errand.key).Count;
 			errand.payPercent = Math.Max(Settings.payFloor, 100 - (repeats * Settings.repeatPenalty));
+			ErrandTemplate template = ErrandTemplates.Get(errand.key);
+			errand.expiresTicks = Now.AddMinutes((template == null) ? 60 : template.Minutes).Ticks;
+			errand.id = log.nextId++;
 			log.active.Add(errand);
 			log.Add(errand.giverId);
 			log.Add(errand.city);
@@ -200,6 +211,8 @@ namespace SteamEngine.CompiledScripts {
 				if (def != null) {
 					Item item = (Item) def.Create(player.Backpack);
 					item.SetTag(ItemTK, ItemMark(player, errand));
+				} else {
+					step.itemDef = ""; //no such item: a message to carry instead, or the step could never be done
 				}
 			}
 		}
@@ -225,7 +238,8 @@ namespace SteamEngine.CompiledScripts {
 		/// reason told, when the step's terms aren't met.</summary>
 		public static bool Do(Player player, Errand errand, NPC resident, int choice = -1) {
 			ErrandStep step = errand.Current;
-			if ((step == null) || !Active(player).Contains(errand) || (Residents.IdOf(Residents.GemOf(resident)) != step.residentId)) {
+			Item gem = (resident == null) ? null : Residents.GemOf(resident);
+			if ((step == null) || (gem == null) || !Active(player).Contains(errand) || (Residents.IdOf(gem) != step.residentId) || !CanTalk(player, resident)) {
 				return false;
 			}
 			switch (step.Kind) {
@@ -244,8 +258,8 @@ namespace SteamEngine.CompiledScripts {
 					Consume(player.Backpack, def, step.count);
 					break;
 				case ErrandStepKind.Collect:
-					Collector bag = Collectors.FindIn(player, step.itemDef);
-					if ((bag == null) || (bag.Collected < step.count)) {
+					Collector bag = FullBag(player.Backpack, ThingDef.GetByDefname(step.itemDef), step.count);
+					if (bag == null) {
 						player.RedMessage("Jeste toho nemas dost (" + step.count.ToString(CultureInfo.InvariantCulture) + ").");
 						return false;
 					}
@@ -371,13 +385,37 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
+		//a bag of the def in the pack holding at least `count`: not merely the first one found
+		private static Collector FullBag(Container container, ThingDef def, int count) {
+			if ((container == null) || (def == null)) {
+				return null;
+			}
+			foreach (AbstractItem item in container) {
+				if ((item is Collector bag) && (bag.Def == def) && (bag.Collected >= count)) {
+					return bag;
+				}
+				if (item is Container inside) {
+					Collector found = FullBag(inside, def, count);
+					if (found != null) {
+						return found;
+					}
+				}
+			}
+			return null;
+		}
+
+		//an errand's own item (a letter to deliver) never counts as something fetched
+		private static bool IsErrandItem(AbstractItem item) {
+			return (item is Item i) && (i.GetTag(ItemTK) != null);
+		}
+
 		internal static int CountIn(Container container, ItemDef def) {
 			int count = 0;
 			if (container == null) {
 				return 0;
 			}
 			foreach (AbstractItem item in container) {
-				if (item.Def == def) {
+				if ((item.Def == def) && !IsErrandItem(item)) {
 					count += item.Amount;
 				} else if (item is Container inside) {
 					count += CountIn(inside, def);
@@ -395,7 +433,7 @@ namespace SteamEngine.CompiledScripts {
 				if (count <= 0) {
 					break;
 				}
-				if (item.Def == def) {
+				if ((item.Def == def) && !IsErrandItem(item)) {
 					int amount = item.Amount;
 					if (amount <= count) {
 						count -= amount;
@@ -457,6 +495,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static ErrandStep Choose(Item resident, string task, string[] choices, string[] replies) {
+			if ((choices.Length < 1) || (choices.Length > 9)) {
+				throw new SEException("an errand's choice has 1 to 9 answers"); //a dialog button holds the answer as one digit
+			}
 			ErrandStep step = new ErrandStep { kind = (int) ErrandStepKind.Choose, residentId = Residents.IdOf(resident), task = task };
 			step.choices.AddRange(choices);
 			step.choiceReplies.AddRange(replies);
