@@ -27,7 +27,6 @@ namespace SteamEngine.CompiledScripts {
 		public static readonly string[] AllTraits = { "spolecensky", "zbozny", "morous", "uzvaneny", "lakomy", "romanticky", "zvedavy", "pracovity" };
 
 		public const int MaxFriendship = 10;
-		private const int LeashInside = 2;
 
 		private static List<Item> all;
 
@@ -93,6 +92,10 @@ namespace SteamEngine.CompiledScripts {
 			return string.IsNullOrEmpty(traits) ? new string[0] : traits.Split(',');
 		}
 
+		public static void SetTraits(Thing gem, string traits) {
+			gem.SetTag(traitsTK, traits ?? "");
+		}
+
 		public static bool HasTrait(Thing gem, string trait) {
 			return Array.IndexOf(TraitsOf(gem), trait) >= 0;
 		}
@@ -129,7 +132,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			foreach (AbstractCharacter ch in gem.GetMap().GetCharsInRange(gem.X, gem.Y, 24)) { //a body made before the gem knew it
 				npc = ch as NPC;
-				if ((npc != null) && !npc.IsDeleted && (npc.GetTag(spawnGemTK) == gem)) {
+				if ((npc != null) && !npc.IsDeleted && !npc.Flag_Dead && (npc.GetTag(spawnGemTK) == gem)) {
 					gem.SetTag(bodyTK, npc);
 					return npc;
 				}
@@ -158,6 +161,22 @@ namespace SteamEngine.CompiledScripts {
 				gem.Delete();
 			}
 			return gems.Count;
+		}
+
+		/// <summary>After a venue's type changed: residents of roles the new type doesn't have leave. Returns how many.</summary>
+		public static int RemoveStrayRoles(CityVenue venue) {
+			int gone = 0;
+			foreach (Item gem in OfVenue(venue.VenueId)) {
+				if (RoleOf(gem) == null) {
+					NPC body = BodyOf(gem);
+					if (body != null) {
+						body.Delete();
+					}
+					gem.Delete();
+					gone++;
+				}
+			}
+			return gone;
 		}
 
 		public static void Rename(Item gem, string name) {
@@ -189,11 +208,16 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>The roles of a venue that have nobody yet, filled: the count each role wants, by ids that stay
 		/// (venue id/role/n), so filling again adds only what's missing. Returns how many were added.</summary>
 		public static int FillRoles(CityVenue venue) {
+			return FillRoles(venue, null);
+		}
+
+		/// <summary>One WorldPieces for many venues: it reads the whole world when made.</summary>
+		public static int FillRoles(CityVenue venue, WorldPieces pieces) {
 			VenueType type = venue.VenueType;
 			if ((type == null) || (venue.VenueId == null)) {
 				return 0;
 			}
-			WorldPieces pieces = new WorldPieces();
+			pieces = pieces ?? new WorldPieces();
 			int added = 0;
 			List<string> namesInCity = NamesInCity(venue.City);
 			foreach (VenueRole role in type.Roles) {
@@ -219,8 +243,10 @@ namespace SteamEngine.CompiledScripts {
 				spot = new[] { venue.X, venue.Y, venue.Z };
 			}
 			string defname = IsOrcCity(venue.City) ? "c_resident_orc" : (female ? "c_resident_woman" : "c_resident_man");
-			pieces.Npc(id, defname, spot, venue.M, RealmOf(venue), false, LeashInside);
-			Item gem = ById(id, true);
+			Item gem = pieces.Npc(id, defname, spot, venue.M, RealmOf(venue), false, ResidentSchedule.LeashInside, false);
+			if (string.IsNullOrWhiteSpace(name)) {
+				name = female ? "Obyvatelka" : "Obyvatel";
+			}
 			gem.SetTag(nameTK, name);
 			if (female) {
 				gem.SetTag(femaleTK, 1);
@@ -242,18 +268,6 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static Item ById(string id) {
-			return ById(id, false);
-		}
-
-		private static Item ById(string id, bool rescan) {
-			if (rescan) {
-				foreach (Thing thing in Thing.AllThings) {
-					if (string.Equals(thing.GetTag(pieceIdTK) as string, id, StringComparison.OrdinalIgnoreCase) && !thing.IsDeleted) {
-						return thing as Item;
-					}
-				}
-				return null;
-			}
 			foreach (Item gem in AllGems) {
 				if (string.Equals(IdOf(gem), id, StringComparison.OrdinalIgnoreCase)) {
 					return gem;
@@ -267,15 +281,25 @@ namespace SteamEngine.CompiledScripts {
 			return string.Equals(city, "Barad-dur", StringComparison.OrdinalIgnoreCase);
 		}
 
+		/// <summary>The realm of the city's own area holding the venue, by geometry as VenueRegistry.CityAt: a house's Parent is often
+		/// the territory around the city, not the city.</summary>
 		private static Realm RealmOf(CityVenue venue) {
-			FlaggedRegion area = venue.GetMap().GetRegionFor(venue) as FlaggedRegion;
-			while (area != null) {
-				if (area.Realm != Realm.None) {
-					return area.Realm;
+			Realm realm = Realm.None;
+			int smallest = int.MaxValue;
+			Point2D p = new Point2D(venue.X, venue.Y);
+			foreach (FlaggedRegion area in VenueRegistry.AreasOf(venue.City)) {
+				if ((area.Mapplane == venue.M) && area.ContainsPoint(p) && (area.Realm != Realm.None)) {
+					int tiles = 0;
+					foreach (ImmutableRectangle rect in area.Rectangles) {
+						tiles += (rect.Width + 1) * (rect.Height + 1);
+					}
+					if (tiles < smallest) {
+						smallest = tiles;
+						realm = area.Realm;
+					}
 				}
-				area = area.Parent as FlaggedRegion;
 			}
-			return Realm.None;
+			return realm;
 		}
 
 		private static string NameList(string city, bool female) {
@@ -355,8 +379,14 @@ namespace SteamEngine.CompiledScripts {
 			return now;
 		}
 
-		private static TagKey FriendshipKey(string residentId) {
-			return TagKey.Acquire("_rf_" + residentId.ToLowerInvariant());
+		/// <summary>Only word characters: a saved tag's name is read back by \w+ (TagHolder), and an id holds slashes, so
+		/// venue/Edoras/1/innkeeper/1 becomes _rf_venue_edoras_1_innkeeper_1.</summary>
+		internal static TagKey FriendshipKey(string residentId) {
+			System.Text.StringBuilder key = new System.Text.StringBuilder("_rf_");
+			foreach (char c in residentId.ToLowerInvariant()) {
+				key.Append(((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9')) ? c : '_');
+			}
+			return TagKey.Acquire(key.ToString());
 		}
 	}
 
@@ -367,9 +397,15 @@ namespace SteamEngine.CompiledScripts {
 	public static class ResidentSchedule {
 		private static readonly TimerKey schedulerTK = TimerKey.Acquire("_resident_scheduler_");
 		public const double TickSeconds = 20;
-		private const int LeashInside = 2, LeashOpenAir = 4;
+		internal const int LeashInside = 2, LeashOpenAir = 4;
 
-		private static readonly Dictionary<string, List<int[]>> spotsByVenue = new Dictionary<string, List<int[]>>();
+		private sealed class VenueSpots {
+			internal IList<ImmutableRectangle> rects;
+			internal int zMin, zMax;
+			internal List<int[]> spots;
+		}
+
+		private static readonly Dictionary<int, VenueSpots> spotsByVenue = new Dictionary<int, VenueSpots>();
 
 		public static void EnsureRunning() {
 			if (!Globals.Instance.HasTimer(schedulerTK)) {
@@ -436,9 +472,16 @@ namespace SteamEngine.CompiledScripts {
 				ai.hasHome = true;
 				ai.WanderLeash = venue.IsOpenAir ? LeashOpenAir : LeashInside;
 			}
-			bool asleep = !npc.GetMap().Activity.IsAwake(npc.X, npc.Y, Globals.TimeInSeconds);
-			if ((place || asleep || (npc.M != venue.M)) && !venue.Contains(npc)) {
-				npc.Go(new Point4D(spot[0], spot[1], spot[2], venue.M));
+			if (venue.Contains(npc)) {
+				return;
+			}
+			double now = Globals.TimeInSeconds;
+			bool bodyAsleep = !npc.GetMap().Activity.IsAwake(npc.X, npc.Y, now);
+			bool placeAsleep = !Map.GetMap(venue.M).Activity.IsAwake(spot[0], spot[1], now);
+			if (place || (npc.M != venue.M) || (bodyAsleep && placeAsleep)) {
+				npc.Go(new Point4D(spot[0], spot[1], spot[2], venue.M)); //nobody sees it happen
+			} else if (bodyAsleep) {
+				NPCAiTimer.WakeUp(npc); //players wait there: walk in rather than appear out of nowhere
 			}
 		}
 
@@ -456,26 +499,53 @@ namespace SteamEngine.CompiledScripts {
 			return spots[(hash & 0x7FFFFFFF) % spots.Count];
 		}
 
+		/// <summary>For tests: spots are found again on next use.</summary>
+		internal static void ForgetSpots() {
+			spotsByVenue.Clear();
+		}
+
+		/// <summary>Kept per venue until its area changes (the rectangles list is a new object then).</summary>
 		private static List<int[]> SpotsOf(CityVenue venue) {
-			string key = venue.Uid + "|" + CityVenue.FormatRects(venue.Rectangles) + "|" + venue.ZMin;
-			List<int[]> spots;
-			if (spotsByVenue.TryGetValue(key, out spots)) {
-				return spots;
+			VenueSpots cached;
+			IList<ImmutableRectangle> rects = venue.Rectangles;
+			if (spotsByVenue.TryGetValue(venue.Uid, out cached) && ReferenceEquals(cached.rects, rects) && (cached.zMin == venue.ZMin) && (cached.zMax == venue.ZMax)) {
+				return cached.spots;
 			}
-			spots = new List<int[]>();
+			List<int[]> spots = new List<int[]>();
 			Map map = venue.GetMap();
-			foreach (ImmutableRectangle rect in venue.Rectangles) {
+			foreach (ImmutableRectangle rect in rects) {
 				for (int x = rect.MinX; x <= rect.MaxX; x++) {
 					for (int y = rect.MinY; y <= rect.MaxY; y++) {
-						int z = venue.IsOpenAir ? WorldSpots.StandZ(map, x, y) : WorldSpots.LowestStandZ(map, x, y);
-						if (map.IsValidPos(x, y) && venue.Contains(x, y, z) && map.CanFit(x, y, z, 16, true, false, true)) {
+						int z;
+						if (map.IsValidPos(x, y) && FloorIn(venue, map, x, y, out z)) {
 							spots.Add(new[] { x, y, z });
 						}
 					}
 				}
 			}
-			spotsByVenue[key] = spots;
+			spotsByVenue[venue.Uid] = new VenueSpots { rects = rects, zMin = venue.ZMin, zMax = venue.ZMax, spots = spots };
 			return spots;
+		}
+
+		/// <summary>A floor at x,y inside the venue's heights: the ground under the open sky (not a roof), indoors the floor of the
+		/// venue's own storey, which needn't be the ground one.</summary>
+		private static bool FloorIn(CityVenue venue, Map map, int x, int y, out int z) {
+			if (venue.IsOpenAir) {
+				z = WorldSpots.LowestStandZ(map, x, y);
+				return map.CanFit(x, y, z, 16, true, false, true);
+			}
+			z = map.GetTileZ(x, y);
+			if (venue.Contains(x, y, z) && map.CanFit(x, y, z, 16, true, false, true)) {
+				return true;
+			}
+			foreach (AbstractInternalItem s in map.GetStaticsAndMultiComponentsOnCoords(x, y)) {
+				int top = s.Z + s.Height;
+				if (venue.Contains(x, y, top) && map.CanFit(x, y, top, 16, true, false, true)) {
+					z = top;
+					return true;
+				}
+			}
+			return false;
 		}
 
 		/// <summary>One round for every resident with a body: the scheduler's tick, and tests'.</summary>

@@ -57,14 +57,15 @@ namespace SteamEngine.CompiledScripts {
 						return;
 					}
 					int filled = 0;
+					WorldPieces pieces = new WorldPieces();
 					foreach (CityVenue venue in VenueRegistry.InCity(city)) {
-						filled += Residents.FillRoles(venue);
+						filled += Residents.FillRoles(venue, pieces);
 					}
 					self.SysMessage("Novych obyvatel ve meste " + city + ": " + filled + ".");
 					break;
 				case "export":
 					int written = VenueFile.Export(VenueFile.Path);
-					self.SysMessage("Zapsano " + written + " mist do " + VenueFile.Path + ". .SetupWorld je z nej obnovi.");
+					self.SysMessage("Zapsano " + written + " mist a " + Residents.AllGems.Count + " obyvatel do " + VenueFile.Path + ". .SetupWorld je z nej obnovi.");
 					break;
 				default:
 					self.SysMessage(".venues [vse | navrh | obsadit | export]");

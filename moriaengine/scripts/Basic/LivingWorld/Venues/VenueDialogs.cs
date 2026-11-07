@@ -243,7 +243,9 @@ namespace SteamEngine.CompiledScripts {
 					if ((draft.Existing != null) && !draft.Existing.IsDeleted) {
 						string problem2;
 						CityVenue saved = draft.Save(out problem2); //roles follow the type picked now
-						if (saved != null) {
+						if (saved == null) {
+							gm.RedMessage(problem2);
+						} else {
 							gm.SysMessage("Novych obyvatel: " + Residents.FillRoles(saved) + ".");
 						}
 						Show(gm, VenueDraft.For(draft.Existing));
@@ -251,7 +253,7 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case Delete:
 					if ((draft.Existing != null) && !draft.Existing.IsDeleted) {
-						int gone = Residents.RemoveOfVenue(draft.Existing.VenueId); //#1242 - nobody works in a venue that isn't
+						int gone = Residents.OfVenue(draft.Existing.VenueId).Count; //#1242 - its residents go with it (CityVenue.On_Destroy)
 						gm.SysMessage("Misto " + draft.Existing.Label + " smazano" + ((gone > 0) ? ", i s " + gone + " obyvateli." : "."));
 						draft.Existing.Delete();
 					}
@@ -263,7 +265,8 @@ namespace SteamEngine.CompiledScripts {
 						gm.RedMessage(problem);
 						Show(gm, draft);
 					} else {
-						gm.SysMessage("Ulozeno: " + venue.Label + " (" + venue.VenueId + ").");
+						int stray = Residents.RemoveStrayRoles(venue); //#1242 - a new type drops the old type's people
+						gm.SysMessage("Ulozeno: " + venue.Label + " (" + venue.VenueId + ")." + ((stray > 0) ? " Odeslo obyvatel jine role: " + stray + "." : ""));
 					}
 					break;
 			}

@@ -118,17 +118,33 @@ namespace SteamEngine.CompiledScripts {
 			Report("atMiddayTheInnkeeperIsAtWork", tavern.Contains(Residents.BodyOf(innkeeper)));
 			Report("andThePatronAtHome", house.Contains(Residents.BodyOf(patron)));
 			VenueClock.Override = 20; //evening: the patrons come to the tavern
+			Residents.SetTraits(cook, "morous,lakomy"); //a sociable cook would go to the tavern too: fixed traits, both ways checked
 			ResidentSchedule.ApplyAll();
 			Report("inTheEveningThePatronHeadsForTheTavern", HomePointIn(Residents.BodyOf(patron), tavern));
 			Report("andTheCookGoesHome", HomePointIn(Residents.BodyOf(cook), house));
+			Residents.SetTraits(cook, "spolecensky,morous");
+			ResidentSchedule.ApplyAll();
+			Report("aSociableCookGoesToTheTavernInstead", HomePointIn(Residents.BodyOf(cook), tavern));
 			VenueClock.Override = 2; //night: everyone home but those always at work
 			ResidentSchedule.ApplyAll();
 			Report("atNightTheInnkeeperIsHomeToo", HomePointIn(Residents.BodyOf(innkeeper), house));
 			Report("theLeashIsSmall", NPCAiTimer.GetFor(Residents.BodyOf(innkeeper)).WanderLeash == 2);
-			Report("eachHasAFixedSpot", ResidentSchedule.SpotIn(tavern, Residents.IdOf(innkeeper)) == ResidentSchedule.SpotIn(tavern, Residents.IdOf(innkeeper)));
+			int[] first = ResidentSchedule.SpotIn(tavern, Residents.IdOf(innkeeper));
+			ResidentSchedule.ForgetSpots();
+			int[] again = ResidentSchedule.SpotIn(tavern, Residents.IdOf(innkeeper));
+			Report("eachHasAFixedSpot", (first != null) && (again != null) && (first[0] == again[0]) && (first[1] == again[1]) && (first[2] == again[2]));
+			HashSet<long> spread = new HashSet<long>();
+			foreach (Item gem in gems) {
+				int[] spot = ResidentSchedule.SpotIn(tavern, Residents.IdOf(gem));
+				spread.Add(((long) spot[0] << 16) | (uint) spot[1]);
+			}
+			Report("theySpreadOverTheRoom", spread.Count >= 3);
 
 			//what a resident thinks of you lives on you
 			string id = Residents.IdOf(innkeeper);
+			//a saved tag's name is read back by \w+: the key must hold word characters only, or a restart loses it
+			Report("theFriendshipKeyLoadsBack", System.Text.RegularExpressions.Regex.IsMatch(Residents.FriendshipKey(id).Name, @"^\w+$") &&
+				(Residents.FriendshipKey(id) != Residents.FriendshipKey("venue/Edoras/1/innkeeper/2")));
 			Report("aStrangerIsZero", Residents.Friendship(self, id) == 0);
 			Residents.AddFriendship(self, id, 3);
 			Report("helpRaisesIt", Residents.Friendship(self, id) == 3);
