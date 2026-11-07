@@ -1,6 +1,6 @@
 # Venue life
 
-Phase 3 of the living world (#1237) gives each kind of venue something to do there (design section 9). Code: `scripts/Basic/LivingWorld/VenueLife/`. Step 8 (#1254) builds the shared part and the tavern.
+Phase 3 of the living world (#1237) gives each kind of venue something to do there (design section 9). Code: `scripts/Basic/LivingWorld/VenueLife/`. Step 8 (#1254) builds the shared part and the tavern; step 9 (#1256) the bath house, the theatre and Mordor's fighting pits.
 
 ## Venue actions
 
@@ -38,9 +38,74 @@ Each resident tells a player one rumour a minute (`rumourSeconds`); another play
 
 **The bard.** "Zahraj neco" starts one of three songs. The first line comes at once, then one every `songLineSeconds`, overhead (`BardSongTimer`, a periodic timer that deletes itself after the last line). "Spropitne" pays `tip` from the pack. The first tip to a bard in a real day adds 1 to that bard's friendship.
 
-## Settings
+## The bath house
 
-`.settings`, **"Hospoda"** (`TavernSettings`):
+| Line | Who | What |
+|---|---|---|
+| Vykoupat se | attendant | a bath |
+| Co se povida v pare? | attendant, bathers | a rumour, the same as the tavern's |
+| Prinest drevo | stoker | logs for wages |
+
+**A bath** costs `bathPrice` and makes the player **fresh** (Svezest) for `freshMinutes` minutes of play. A player who is already fresh can't pay again. While fresh:
+- shop prices are `freshDiscount` percent lower. This is applied in `Reputation.PriceFor` after the reputation's own percent, and a price never drops to nothing;
+- a finished errand gives its giver 1 more friendship (`Errands.Finish`).
+
+The freshness shows in `.boosts` as an effect with its time left. It counts on `Globals.TimeInSeconds`, so time spent offline doesn't use it up.
+
+**The stoker** takes logs (`i_log`) from the pack and pays `woodWage` for each, up to `woodPerDay` logs a real day. The first load of the day adds 1 to the stoker's friendship.
+
+## The theatre
+
+| Line | Who | What |
+|---|---|---|
+| Kdy hrajete? | everyone there | when the next play is, or that one is on now |
+| Muzu hrat kompars? | the director, until the player has signed up | an extra's part in the next play |
+| Napovez! | the prompter, while an actor has forgotten a line | the prompt |
+
+**The play.** At dusk (19:00 to 21:00 on `VenueClock`), the residents' scheduler (`ResidentSchedule`'s timer, every 20 s) starts a play in each theatre that has a director and a player within 18 tiles. A theatre doesn't play again for `playEveryMinutes` real minutes. A play runs on the director's `TheatrePlayTimer`:
+- the director opens it and the actors speak its lines overhead, one every `playLineSeconds`;
+- at one forgotten line the actor stammers and waits `promptLines` lines for a prompt. With no prompt, the prompter whispers the line and the actor says it;
+- at the end the audience claps and the director thanks them.
+
+There are three short plays, each with three speaking parts. A theatre with fewer actors gives the parts to those it has, and one with none gives them to the director.
+
+**An extra** needs Musicianship `extraMusicianship` (30.0). Anyone in the theatre at the end of the play gets `extraWage` gold, `extraExp` experience and 1 friendship with the director. The list is cleared after each play.
+
+**The prompt.** "Napovez!" opens a dialog of three lines for the forgotten one. The actor says whichever the player picks:
+- the right one pays `promptReward` gold and 1 friendship with the prompter;
+- a wrong one makes the audience laugh.
+
+Only the first answer counts.
+
+**Errands** (director only):
+- **Chybejici herec:** find one of the theatre's actors, wherever their day has taken them, then report back.
+- **Zapomenuta rekvizita:** a prop (a script, a crown ring, a goblet) lies in another venue of the city. Bring it to the director. It works like the lost-item errand: the item is the player's alone to pick up.
+
+## The fighting pits (Mordor)
+
+The pitmaster offers **"Vsadit na zapasnika"**. A dialog lists three bets (`pitBetSmall`, `pitBetMedium`, `pitBetLarge`) on each of the pit's two fighters: residents in the fighter role, or two stock names when the pit has fewer. The fight is rolled round by round:
+- both fighters roll a d6, and the higher hits for the difference;
+- the first to take 10 falls. After 12 rounds the one hurt less wins.
+
+The pitmaster tells the fight overhead, and a bet on the winner takes double back. The stake comes from the pack. A player has `pitBetsPerHour` bets in a real hour, and a GM doesn't bet. Tests put rolls in `Pits.RollOverride`.
+
+## Settings: "Lazne a divadlo"
+
+`VenueLifeSettings`:
+
+| Setting | Default | |
+|---|---|---|
+| bathPrice, freshMinutes, freshDiscount | 20, 30, 5 | a bath, how long it lasts, the shops' percent off |
+| woodWage, woodPerDay | 3, 30 | the stoker's pay per log and the daily cap |
+| playLineSeconds, promptLines | 5, 2 | between a play's lines; how long an actor waits for a prompt |
+| playEveryMinutes | 20 | real minutes between two plays in one theatre |
+| extraWage, extraExp, extraMusicianship | 40, 60, 300 | an extra's pay and the Musicianship they need (tenths) |
+| promptReward | 25 | gold for the right prompt |
+| pitBetSmall, pitBetMedium, pitBetLarge, pitBetsPerHour | 10, 50, 100, 10 | the pits' bets and hourly cap |
+
+## Settings: "Hospoda"
+
+`TavernSettings`:
 
 | Setting | Default | |
 |---|---|---|
@@ -64,3 +129,15 @@ Each resident tells a player one rumour a minute (`rumourSeconds`); another play
   - dice won, lost and tied, the hourly cap (a new hour starts afresh even when its first bet can't be paid), and no game for a GM;
   - the song starting, and a tip's friendship once a day;
 - **later:** a few seconds on, the song has gone on line by line.
+
+`Tests/Protocol/VenueLifeTests.cs`, with `scripts/Tests/VenueLifeTests.cs`, sets up a bath house, a theatre and a pit in Edoras. It then checks:
+- **through a client:** the attendant's dialog lines and a bath;
+- **on the server:**
+  - the bath: who offers what, its price, once while fresh, `.boosts`, cheaper shops, the warmer errand;
+  - the stoker's wages and daily cap;
+  - the extra's Musicianship;
+  - three plays stepped by hand: a wrong prompt, the right prompt, no prompt, and the extra's pay;
+  - a play at dusk only, once;
+  - both errand templates;
+  - the pit's winning and losing bets, its cap, and no bets for a GM;
+- **later:** the scheduler starts a play by itself and it runs to its end on its real timer.
