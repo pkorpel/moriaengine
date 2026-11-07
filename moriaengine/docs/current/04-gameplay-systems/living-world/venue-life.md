@@ -26,9 +26,13 @@ The tavern also covers Mordor's mess hall (`messhall`) where noted.
 | Zahraj neco | the bard, in the evening, while not singing | a song |
 | Spropitne | the bard | a tip |
 
-**Rumours.** Half of them are about another resident of the same city: what they're like, by one of their traits, and where to find them. The other half are the region's news. Minas Tirith, Edoras, Hobitin, Barad-dur, Harad and Umbar have their own news; any city also gets a common pool, one time in three. Each resident tells one rumour a minute (`rumourSeconds`). Asked again sooner, they say they have nothing new. This limit is kept in memory and starts afresh with each server start.
+**Rumours.** Half of them are about another resident of the same city: what they're like, by one of their traits, and where to find them. The other half are the region's news. Cities are matched by `FlaggedRegion.City`'s key, such as `Minas_Tirith`.
+- Minas Tirith, Edoras, Hobitin, Harad and Umbar have their own news. They also get the common pool one time in three, and a city with no news of its own gets only that pool.
+- Mordor's cities (Barad-dur, Nurn, Rhun) share Mordor's news and never get the common pool, which is Gondor-side talk.
 
-**A room for the night.** The room costs `roomPrice`, taken as any payment through `GoldUtils.Pay`, and can be had once a real day. At the player's next login (`Player.On_LogIn`), the night turns into a stored booster of kind `roomBoosterKind` (0 = +25% experience for an hour). The player starts it from the journal's booster tab. A player who has paid and not yet logged in again can't pay twice.
+Each resident tells a player one rumour a minute (`rumourSeconds`); another player can still ask at once. Asked again sooner, they say they have nothing new. This limit is kept in memory and starts afresh with each server start.
+
+**A room for the night.** The room costs `roomPrice`, taken as any payment through `GoldUtils.Pay`, and can be had once a real day. At the player's next login (`Player.On_LogIn`), the night turns into a stored booster of kind `roomBoosterKind` (0 = +25% experience for an hour; an out-of-range setting is clamped to 0-5). The player starts it from the journal's booster tab. A player who has paid and not yet logged in again can't pay twice.
 
 **Dice.** A small dialog (`D_TavernDice`) offers three bets (`betSmall`, `betMedium`, `betLarge`). The stake comes from the pack. Both sides throw 2d6: the higher sum wins double the stake back, and a tie returns it. Each game says the throws overhead, and the dialog comes back for another game. A player has `gamesPerHour` games in a real hour. A GM doesn't play: a GM pays nothing, so a GM's game would make money from nothing. Tests put throws in `Tavern.RollOverride`.
 
@@ -55,8 +59,8 @@ The tavern also covers Mordor's mess hall (`messhall`) where noted.
 - **on the server:**
   - who offers what, and nothing outside the tavern;
   - the bard only in the evening;
-  - rumours about others, in plain ASCII, one a minute;
+  - rumours about others, in plain ASCII, each city's news (Mordor only its own), one a minute;
   - the room's price, once a real day, and the booster from a real `On_LogIn`, only once;
-  - dice won, lost and tied, the hourly cap, and no game for a GM;
+  - dice won, lost and tied, the hourly cap (a new hour starts afresh even when its first bet can't be paid), and no game for a GM;
   - the song starting, and a tip's friendship once a day;
 - **later:** a few seconds on, the song has gone on line by line.

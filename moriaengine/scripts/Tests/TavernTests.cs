@@ -87,7 +87,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void TestTavernAfterClient(Character self) {
 			Player player = (Player) self;
 			try {
-				Report("theInnkeeperToldARumour", Tavern.LastRumourOf(Residents.IdOf(Gem(player, "innkeeper"))) != null);
+				Report("theInnkeeperToldARumour", Tavern.LastRumourOf(player, Residents.IdOf(Gem(player, "innkeeper"))) != null);
 				Report("theRoomIsTaken", player.GetTag(Tavern.RestedTK) != null);
 				player.RemoveTag(Tavern.RestedTK);
 				player.RemoveTag(Tavern.RoomPaidTK); //the rules' room starts the day afresh
@@ -141,17 +141,23 @@ namespace SteamEngine.CompiledScripts {
 			}
 			Report("rumoursTellOfOthers", about);
 			Report("rumoursArePlainAscii", plain);
+			bool ownNews = true;
+			for (int i = 0; i < 30; i++) {
+				ownNews &= (Array.IndexOf(Tavern.CommonLore, Tavern.Lore("Barad-dur")) < 0) && (Array.IndexOf(Tavern.CommonLore, Tavern.Lore("Nurn")) < 0);
+			}
+			Report("eachCityHasItsNewsAndMordorOnlyItsOwn", (Tavern.LocalLore("Minas_Tirith") != null) && (Tavern.LocalLore("Edoras") != null) &&
+				(Tavern.LocalLore("Rhun") == Tavern.LocalLore("Barad-dur")) && ownNews);
 			Tavern.ForgetRumours();
 			DateTime start = DateTime.UtcNow;
 			Errands.NowOverride = start;
 			VenueActions.Get("tavern_rumour").Do(player, patronBody, patron);
-			DateTime? first = Tavern.LastRumourOf(Residents.IdOf(patron));
+			DateTime? first = Tavern.LastRumourOf(player, Residents.IdOf(patron));
 			Errands.NowOverride = start.AddSeconds(30);
 			VenueActions.Get("tavern_rumour").Do(player, patronBody, patron);
-			bool heldBack = Tavern.LastRumourOf(Residents.IdOf(patron)) == first;
+			bool heldBack = Tavern.LastRumourOf(player, Residents.IdOf(patron)) == first;
 			Errands.NowOverride = start.AddSeconds(61);
 			VenueActions.Get("tavern_rumour").Do(player, patronBody, patron);
-			Report("aRumourAMinute", (first == start) && heldBack && (Tavern.LastRumourOf(Residents.IdOf(patron)) == start.AddSeconds(61)));
+			Report("aRumourAMinute", (first == start) && heldBack && (Tavern.LastRumourOf(player, Residents.IdOf(patron)) == start.AddSeconds(61)));
 
 			//the room: paid once a real day, a booster at the next login
 			player.Account.PLevel = 1;
@@ -197,8 +203,9 @@ namespace SteamEngine.CompiledScripts {
 			bool fifth = Tavern.Play(player, patronBody, bet);
 			bool untouched = GoldUtils.CountGoldOn(player) == capped;
 			Errands.NowOverride = start.AddHours(31.1);
+			bool broke = Tavern.Play(player, patronBody, 100000000); //a new hour whose first bet can't be paid still starts the count afresh
 			bool nextHour = Tavern.Play(player, patronBody, bet);
-			Report("gamesAreCappedAnHour", fourth && !fifth && untouched && nextHour);
+			Report("gamesAreCappedAnHour", fourth && !fifth && untouched && !broke && nextHour);
 			player.Account.PLevel = 7;
 			Report("aGmDoesNotGamble", !Tavern.Play(player, patronBody, bet));
 			player.Account.PLevel = 1;

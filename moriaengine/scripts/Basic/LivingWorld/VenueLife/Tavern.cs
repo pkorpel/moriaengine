@@ -79,14 +79,23 @@ namespace SteamEngine.CompiledScripts {
 
 		#region Rumours
 		internal static void TellRumour(Player player, NPC npc, Item gem) {
-			string id = Residents.IdOf(gem);
-			DateTime now = Errands.Now;
-			if (lastRumour.TryGetValue(id, out DateTime last) && ((now - last).TotalSeconds < Settings.rumourSeconds)) {
-				npc.Say(ErrandContext.Pick("Uz jsem ti rekl vsechno, co vim.", "Nic noveho. Zkus to pozdeji.", "Zatim nic, ale usi mam otevrene."));
+			string key = RumourKey(player, Residents.IdOf(gem));
+			if (key == null) {
 				return;
 			}
-			lastRumour[id] = now;
+			DateTime now = Errands.Now;
+			if (lastRumour.TryGetValue(key, out DateTime last) && ((now - last).TotalSeconds < Settings.rumourSeconds)) {
+				npc.Say(ErrandContext.Pick("Uz jsem ti " + BasicErrands.Sex(gem, "rekl", "rekla") + " vsechno, co vim.", "Nic noveho. Zkus to pozdeji.",
+					"Zatim nic, ale usi mam otevrene."));
+				return;
+			}
+			lastRumour[key] = now;
 			npc.Say(Rumour(gem));
+		}
+
+		//one a minute from each resident to each player: another player hasn't heard it
+		private static string RumourKey(Player player, string residentId) {
+			return (residentId == null) ? null : residentId + "|" + player.Uid;
 		}
 
 		/// <summary>Tests: a resident may tell the next rumour at once.</summary>
@@ -94,9 +103,10 @@ namespace SteamEngine.CompiledScripts {
 			lastRumour.Clear();
 		}
 
-		/// <summary>When the resident last told a rumour, if since the server started.</summary>
-		public static DateTime? LastRumourOf(string residentId) {
-			return lastRumour.TryGetValue(residentId, out DateTime at) ? at : (DateTime?) null;
+		/// <summary>When the resident last told the player a rumour, if since the server started.</summary>
+		public static DateTime? LastRumourOf(Player player, string residentId) {
+			string key = RumourKey(player, residentId);
+			return ((key != null) && lastRumour.TryGetValue(key, out DateTime at)) ? at : (DateTime?) null;
 		}
 
 		/// <summary>Half about one of the city's other people and where to find them, half the region's news.</summary>
@@ -151,12 +161,12 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
-		private static readonly string[] commonLore = {
+		internal static readonly string[] CommonLore = {
 			"Na cestach je ted nebezpecno, skreti prepadavaji kupce.",
 			"Ceny zeleza zase stoupaji. Kovari si nestezuji.",
 			"Prej nekdo videl v horach obrovsky stin. Mozna drak, mozna jen mrak.",
 			"Kupci z vychodu nosi divne zpravy. Nikdo jim nechce verit.",
-			"V lesich se prej ztraceji lovci. Ja bych tam nechodil.",
+			"V lesich se prej ztraceji lovci. Lepsi tam ted nechodit.",
 		};
 		private static readonly string[] gondorLore = {
 			"Straz na hradbach se zdvojnasobila. Z vychodu je videt kour.",
@@ -170,13 +180,13 @@ namespace SteamEngine.CompiledScripts {
 			"V Helmove zlebu prej opravuji hradby. Na neco se chystaji.",
 		};
 		private static readonly string[] shireLore = {
-			"Letosni urodu dyni bude nejvetsi za posledni roky.",
-			"U Brandyvine videli cizince v cernych platech. Nikdo nevi, co hledaji.",
+			"Letosni uroda dyni bude nejvetsi za posledni roky.",
+			"U Brandyvine videli cizince v cernych plastich. Nikdo nevi, co hledaji.",
 			"Na tom kopci za mlynem prej nekdo zakopal truhlu.",
 		};
 		private static readonly string[] mordorLore = {
 			"Oko se diva na zapad. Brzy pochodujeme.",
-			"Nazgulove prej hledaji neco ztraceneho. Nechtel bych byt v kuzi toho, kdo to ma.",
+			"Nazgulove prej hledaji neco ztraceneho. Beda tomu, kdo to ma.",
 			"V jamach Nurnu je malo otroku a dozorci zuri.",
 			"Kovarny jedou dnem i noci. Kdo nekuje, ten nese.",
 		};
@@ -191,31 +201,36 @@ namespace SteamEngine.CompiledScripts {
 			"Kapitani se hadaji o kotviste. Brzy bude tect krev.",
 		};
 
-		public static string Lore(string city) {
-			string[] local = null;
-			switch ((city ?? "").ToLowerInvariant()) {
+		/// <summary>The city's own news, or null: city keys are FlaggedRegion.City's (Minas_Tirith, Barad-dur).</summary>
+		internal static string[] LocalLore(string city) {
+			switch ((city ?? "").Replace('_', ' ').ToLowerInvariant()) {
 				case "minas tirith":
-					local = gondorLore;
-					break;
+					return gondorLore;
 				case "edoras":
-					local = rohanLore;
-					break;
+					return rohanLore;
 				case "hobitin":
-					local = shireLore;
-					break;
+					return shireLore;
 				case "barad-dur":
-					local = mordorLore;
-					break;
+				case "nurn":
+				case "rhun":
+					return mordorLore;
 				case "harad":
-					local = haradLore;
-					break;
+					return haradLore;
 				case "umbar":
-					local = umbarLore;
-					break;
+					return umbarLore;
+				default:
+					return null;
 			}
-			string[] pool = ((local == null) || (Globals.dice.Next(3) == 0)) ? commonLore : local;
+		}
+
+		/// <summary>The common news is Gondor's talk, so Mordor's orcs keep to their own.</summary>
+		public static string Lore(string city) {
+			string[] local = LocalLore(city);
+			bool mordor = local == mordorLore;
+			string[] pool = ((local == null) || (!mordor && (Globals.dice.Next(3) == 0))) ? CommonLore : local;
 			return pool[Globals.dice.Next(pool.Length)];
 		}
+
 		#endregion
 
 		#region A room for the night
@@ -236,7 +251,7 @@ namespace SteamEngine.CompiledScripts {
 			player.SetTag(RoomPaidTK, Errands.Now.Ticks);
 			player.SetTag(RestedTK, 1);
 			npc.Say("Pokoj je tvuj. Postel je cista a nikdo te nebude rusit.");
-			player.SysMessage("Az se priste prihlasis, budes odpocaty: dostanes booster zkusenosti.");
+			player.SysMessage("Az se priste prihlasis, dostanes za noc v hostinci booster zkusenosti.");
 		}
 
 		/// <summary>Player.On_LogIn: a night in a tavern's room gives a stored booster.</summary>
@@ -245,10 +260,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			player.RemoveTag(RestedTK);
-			int kind = Settings.roomBoosterKind;
-			if ((kind < 0) || (kind >= Boosters.Kinds.Length)) {
-				return;
-			}
+			int kind = Math.Max(0, Math.Min(Boosters.Kinds.Length - 1, Settings.roomBoosterKind)); //a paid night isn't lost to a bad setting
 			Boosters.Add(player, kind);
 			player.SysMessage("Noc v hostinci ti prospela. Mezi boostery mas novy: " + Boosters.Kinds[kind].Description + ".");
 		}
@@ -257,7 +269,7 @@ namespace SteamEngine.CompiledScripts {
 		#region Dice
 		internal static void OfferDice(Player player, NPC npc, Item gem) {
 			if (player.IsGM) {
-				npc.Say("S GMem nehraju. Ty bys vyhral vzdycky.");
+				npc.Say("S GMem nehraju. GM za sazku neplati, to by nebyla hra.");
 				return;
 			}
 			D_TavernDice dice = SingletonScript<D_TavernDice>.Instance;
@@ -281,6 +293,7 @@ namespace SteamEngine.CompiledScripts {
 				count = (player.GetTag(diceCountTK) is int c) ? c : 0;
 			} else {
 				player.SetTag(diceHourTK, now);
+				player.SetTag(diceCountTK, 0); //a new hour, even if its first game isn't paid for
 			}
 			if (count >= Settings.gamesPerHour) {
 				npc.Say("Dost bylo, nechci te obrat o vsechno. Prijd za hodinu.");
@@ -361,12 +374,15 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static void Tip(Player player, NPC npc, Item gem) {
+			string id = Residents.IdOf(gem);
+			if (id == null) {
+				return;
+			}
 			int tip = Settings.tip;
 			if (!GoldUtils.Pay(player, tip, PaySource.Pack, "")) {
 				npc.Say("Diky za dobrou vuli, ale kapsy mas prazdne.");
 				return;
 			}
-			string id = Residents.IdOf(gem);
 			TagKey key = KeyFor("_tavern_tip_", id);
 			if (!WithinADay(player.GetTag(key))) {
 				player.SetTag(key, Errands.Now.Ticks);
@@ -423,7 +439,7 @@ namespace SteamEngine.CompiledScripts {
 			this.SetLocation(60, 60);
 			this.AddPage(0);
 			this.AddBackground(0, 0, 320, 110 + (bets.Length * 24), 2620);
-			this.AddLabel(16, 12, 95, "Kostky s " + npc.Name);
+			this.AddLabel(16, 12, 95, "Kostky: " + npc.Name);
 			this.AddHtml(16, 36, 288, 40, "<basefont color=#FFFFFF>Dve kostky proti dvema. Vyssi soucet bere dvojnasobek, remiza vraci sazku.</basefont>", false, false);
 			int y = 80;
 			for (int i = 0; i < bets.Length; i++) {

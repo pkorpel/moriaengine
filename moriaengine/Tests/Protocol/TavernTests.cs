@@ -25,7 +25,6 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("Co je noveho?", talk.Strings);
 				Assert.Contains("Pokoj na noc", talk.Strings);
 				Assert.Contains("Zahrajeme kostky?", talk.Strings);
-				Assert.DoesNotContain("Zahraj neco", talk.Strings);
 				game.SendGumpResponse(talk.GumpUid, Number(setup, "rumour"));
 
 				game.SendDoubleClick(innkeeper);
@@ -36,7 +35,7 @@ namespace SteamEngine.Tests.Protocol {
 
 				this.Run(game, ".TestTavernRules", "TAVERN_RULES_DONE");
 				this.AssertChecks("theInnkeeperOffersRumoursARoomAndDice", "aPatronHasNoRooms", "theBardSingsInTheEvening", "outsideTheTavernNothing",
-					"rumoursTellOfOthers", "rumoursArePlainAscii", "aRumourAMinute", "aRoomCostsItsPrice", "notTwiceBeforeSleeping", "theNextLoginGivesABooster",
+					"rumoursTellOfOthers", "rumoursArePlainAscii", "eachCityHasItsNewsAndMordorOnlyItsOwn", "aRumourAMinute", "aRoomCostsItsPrice", "notTwiceBeforeSleeping", "theNextLoginGivesABooster",
 					"onlyOnce", "aRoomOnceARealDay", "diceWinLoseTie", "gamesAreCappedAnHour", "aGmDoesNotGamble", "theBardSings", "aTipMakesAFriendOnceADay");
 
 				Thread.Sleep(TimeSpan.FromSeconds(6)); //a line every 4 s: the second has come, the shortest song (4 lines) hasn't ended
