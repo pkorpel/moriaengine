@@ -208,25 +208,25 @@ The crier's calls come in step 12, and the travelling merchant with the events.
 
 ## Ambient life
 
-`AmbientLife.Tick` runs from the residents' scheduler every 20 s, after the theatres' plays. It sleeps with the city: an area with no player around doesn't tick. Its timing is kept in memory and starts afresh with each server start.
+`AmbientLife.Tick` runs from the residents' scheduler every 20 s, after the theatres' plays. Each tick first gathers, in one pass, the residents with a player within 12 tiles and the venue each stands in; nobody else does anything. Its timing is kept in memory and starts afresh with each server start. A theatre during a play is hushed: nobody there barks or talks.
 
 **Barks.** A resident says a short line when a player passes within `barkRange` tiles.
-- The line comes from the resident's role (the smith's hammering, the merchant's wares) two times in three. Otherwise it comes by the season or the time of day. Mordor's orc cities have lines of their own.
-- Each resident barks at most once in `barkSeconds`, with a `barkChance` each tick.
-- A venue has at most one bark each tick.
-- Residents who are singing, playing or talking don't bark.
+- The line comes from the resident's role (the smith's hammering, the merchant's wares) two times in three, but only while at their own workplace. Otherwise it comes by the season or the time of day. Mordor's orc cities have lines of their own. The crier has no barks; its calls are its voice.
+- Each venue rolls `barkChance` once each tick, then one of its ready people barks.
+- Each resident barks at most once in `barkSeconds`.
+- Residents singing or in a conversation (either side) don't bark.
 
-**Conversations.** Two residents of the same venue, within 2 tiles of each other, with a player within 12, may start talking (`talkChance` each tick). A `ConversationTimer` speaks four lines, A, B, A, B, every `talkLineSeconds`. The topics:
+**Conversations.** Each venue with a player near rolls `talkChance` once each tick. Two of its residents, within 2 tiles of each other, may then start talking. A `ConversationTimer` speaks four lines, A, B, A, B, every `talkLineSeconds`. The topics:
 - the season;
 - the city's news (the latest `CityNews`, else the tavern's lore of the region);
-- a third resident (the tavern's "about someone" lines).
+- a third resident (the tavern's "about someone" lines), never the one listening.
 
-A venue has one conversation at a time, and a pair waits `talkMinutes` before talking again.
+A venue has one conversation at a time, and rests `talkVenueSeconds` after one starts. A pair waits `talkMinutes` before talking again.
 
-**The crier** (a market's crier) calls every `crierMinutes` when a player is within 18 tiles.
+**The crier** (a market's crier) calls every `crierMinutes` when a player is within 18 tiles, but only while standing at the market; at home or in the tavern a crier is off duty.
 - It calls the city's news, each piece in turn; with no news, it calls market cries.
-- The news (`CityNews`) is a per-city feed kept in memory, each piece for `newsHours`. It is fed by:
-  - a player becoming the city's hero (`Reputation.Change` crossing into Hrdina): "Mesto ma noveho hrdinu: <jmeno>!";
+- The news (`CityNews`) is a per-city feed kept in memory, each piece for `newsHours`. A city keeps its 10 newest, and the same text isn't added twice. It is fed by:
+  - a player becoming the city's hero (`Reputation.Change` crossing into Hrdina), told once per player and city: "Mesto ma noveho hrdinu: <jmeno>!" ("novou hrdinku" for a woman). A hero whose deed lapses and comes back is no news;
   - a GM's `.vyvolat "text"`, which gives the news to the city the GM stands in;
   - later, the world events (phase 6).
 
@@ -252,8 +252,8 @@ A venue has one conversation at a time, and a pair waits `talkMinutes` before ta
 | stallSeconds, stallWage | 120, 30 | tending a market stall |
 | sentrySeconds, sentryWage, sentryReputation | 120, 30, 2 | a night sentry |
 | archeryExp, archeryMinutes | 5, 30 | target practice: exp a hit, minutes between rounds |
-| barkSeconds, barkChance, barkRange | 90, 50, 4 | barks: a resident's rest, the chance a tick, how near a player |
-| talkChance, talkMinutes, talkLineSeconds | 25, 10, 4 | conversations: the chance a tick, a pair's rest, between lines |
+| barkSeconds, barkChance, barkRange | 90, 50, 4 | barks: a resident's rest, a venue's chance a tick, how near a player |
+| talkChance, talkMinutes, talkLineSeconds, talkVenueSeconds | 25, 10, 4, 120 | conversations: a venue's chance a tick, a pair's rest, between lines, a venue's rest |
 | crierMinutes, newsHours | 5, 24 | the crier's calls, how long news lasts |
 
 ## Settings: "Hospoda"
@@ -320,8 +320,8 @@ A venue has one conversation at a time, and a pair waits `talkMinutes` before ta
 `Tests/Protocol/AmbientLifeTests.cs`, with `scripts/Tests/AmbientLifeTests.cs`, sets up a market and a tavern in Edoras. It then checks:
 - **through a client:** a bark heard as speech, and the GM's `.vyvolat`;
 - **on the server:**
-  - barks: one per venue, only near a player, a resident's rest, plain ASCII;
-  - a conversation's four lines, a pair's rest, one talk at a time in a venue;
-  - the crier: the GM's news called, every few minutes, and old news giving way to market cries;
-  - a new hero's news, given once;
+  - barks: one per venue, only near a player, a resident's rest, plain ASCII, a theatre hushed during a play;
+  - conversations: four lines, a pair's rest, the talkers not barking, one talk at a time in a venue, the venue's rest;
+  - the crier: the GM's news called, every few minutes, quiet away from the market, old news giving way to market cries;
+  - a new hero's news, given once, even after a lapsed deed;
 - **on real timers:** the scheduler barks by itself once barks are on.

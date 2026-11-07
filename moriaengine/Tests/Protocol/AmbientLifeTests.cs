@@ -28,8 +28,9 @@ namespace SteamEngine.Tests.Protocol {
 
 				game.SendSpeech(".vyvolat \"Na trhu se prodava zlato\"");
 				this.Run(game, ".TestAmbientRules", "AMBIENT_RULES_DONE");
-				this.AssertChecks("oneBarkPerVenueOnlyNearAPlayer", "aResidentBarksOnceInAWhile", "barksArePlainAscii", "aConversationIsFourLinesAndAPairRests",
-					"oneTalkAtATimeInAVenue", "theGmsNewsIsCalled", "theCrierCallsEveryFewMinutes", "oldNewsGivesWayToMarketCries", "aNewHeroIsNewsOnce");
+				this.AssertChecks("oneBarkPerVenueOnlyNearAPlayer", "aResidentBarksOnceInAWhile", "barksArePlainAscii", "aPlayHushesTheTheatre",
+					"aConversationIsFourLinesAndAPairRests", "talkersDontBark", "oneTalkAtATimeInAVenue", "aVenueRestsBetweenTalks", "theGmsNewsIsCalled",
+					"theCrierCallsEveryFewMinutes", "aCrierAwayFromTheMarketIsQuiet", "oldNewsGivesWayToMarketCries", "aNewHeroIsNewsOnce");
 
 				this.Run(game, ".TestAmbientLive", "AMBIENT_LIVE_DONE");
 				string state = "";

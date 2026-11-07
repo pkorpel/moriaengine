@@ -18,15 +18,27 @@ namespace SteamEngine.CompiledScripts {
 
 		private static readonly Dictionary<string, List<Item>> news = new Dictionary<string, List<Item>>(StringComparer.OrdinalIgnoreCase);
 
+		public const int MaxPerCity = 10;
+
+		/// <summary>A piece of news; the same text still fresh isn't added twice, and a city keeps its MaxPerCity newest.</summary>
 		public static void Add(string city, string text) {
 			if (string.IsNullOrEmpty(city) || string.IsNullOrEmpty(text)) {
 				return;
 			}
+			text = text.Replace('\n', ' ').Replace('\r', ' ');
 			if (!news.TryGetValue(city, out List<Item> list)) {
 				list = new List<Item>();
 				news[city] = list;
 			}
+			long now = Errands.Now.Ticks;
+			list.RemoveAll(i => i.until <= now);
+			if (list.Exists(i => i.text == text)) {
+				return;
+			}
 			list.Add(new Item { text = text, until = Errands.Now.AddHours(VenueLifeSettings.instance.newsHours).Ticks });
+			if (list.Count > MaxPerCity) {
+				list.RemoveRange(0, list.Count - MaxPerCity);
+			}
 		}
 
 		/// <summary>The city's news still fresh, oldest first.</summary>
@@ -65,24 +77,34 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
-	/// <summary>#1262 - the city's ambient life, from the residents' scheduler (every 20 s, sleeping with the city): barks when a
-	/// player passes, two residents talking, the crier's calls (design 4.4).</summary>
+	/// <summary>#1262 - the city's ambient life, from the residents' scheduler (every 20 s): barks when a player passes, two
+	/// residents talking, the crier's calls (design 4.4). Only residents with a player near do anything.</summary>
 	public static class AmbientLife {
 		private static readonly Dictionary<string, DateTime> lastBark = new Dictionary<string, DateTime>(StringComparer.Ordinal);
 		private static readonly Dictionary<string, DateTime> lastTalk = new Dictionary<string, DateTime>(StringComparer.Ordinal);
+		private static readonly Dictionary<string, DateTime> lastVenueTalk = new Dictionary<string, DateTime>(StringComparer.Ordinal);
 		private static readonly Dictionary<string, DateTime> lastCall = new Dictionary<string, DateTime>(StringComparer.Ordinal);
 		private static readonly Dictionary<string, int> nextNews = new Dictionary<string, int>(StringComparer.Ordinal);
 
-		/// <summary>Tests: the last bark said, and who said it.</summary>
+		/// <summary>Tests: the last bark said in a pass, and who said it (null when nobody barked).</summary>
 		public static string LastBarkText, LastBarkBy;
 
 		private static VenueLifeSettings Settings {
 			get { return VenueLifeSettings.instance; }
 		}
 
+		/// <summary>A resident with a player near enough to be heard, where they stand now.</summary>
+		public sealed class Present {
+			public Item Gem;
+			public NPC Body;
+			public CityVenue Venue;
+			public string Id;
+		}
+
 		public static void Tick() {
-			Barks(Settings.barkChance);
-			Conversations(Settings.talkChance);
+			List<Present> near = Gather();
+			Barks(near, Settings.barkChance);
+			Conversations(near, Settings.talkChance);
 			Criers();
 		}
 
@@ -90,12 +112,31 @@ namespace SteamEngine.CompiledScripts {
 		public static void Forget() {
 			lastBark.Clear();
 			lastTalk.Clear();
+			lastVenueTalk.Clear();
 			lastCall.Clear();
 			nextNews.Clear();
 			LastBarkText = LastBarkBy = null;
 		}
 
 		#region Who's around
+		/// <summary>The residents with a player within 12 tiles, and the venue each stands in: the cheap checks first, the
+		/// venue (a walk over the venues) only for those. One pass a tick, shared by barks and conversations.</summary>
+		public static List<Present> Gather() {
+			List<Present> near = new List<Present>();
+			foreach (Item gem in new List<Item>(Residents.AllGems)) {
+				NPC npc = Residents.BodyOf(gem);
+				string id = Residents.IdOf(gem);
+				if (!IsUp(npc) || (id == null) || !PlayerWithin(npc, 12)) {
+					continue;
+				}
+				CityVenue venue = VenueRegistry.At(npc);
+				if (venue != null) {
+					near.Add(new Present { Gem = gem, Body = npc, Venue = venue, Id = id });
+				}
+			}
+			return near;
+		}
+
 		private static bool PlayerWithin(NPC npc, int range) {
 			Map map = npc.GetMap();
 			if (map == null) {
@@ -109,13 +150,30 @@ namespace SteamEngine.CompiledScripts {
 			return false;
 		}
 
-		//busy saying something else: a song, a play, a conversation
-		private static bool IsBusy(NPC npc) {
-			return (npc.GetTimer(ConversationTimer.Key) != null) || (npc.GetTimer(BardSongTimer.Key) != null) || (npc.GetTimer(TheatrePlayTimer.Key) != null);
-		}
-
 		private static bool IsUp(NPC npc) {
 			return (npc != null) && !npc.IsDeleted && !npc.Flag_Dead;
+		}
+
+		//a song, or a conversation the resident is in (as either side)
+		private static bool IsBusy(NPC npc, HashSet<string> talking, string id) {
+			return talking.Contains(id) || (npc.GetTimer(BardSongTimer.Key) != null);
+		}
+
+		//the residents in a conversation now: the timer sits on its first speaker
+		private static HashSet<string> Talking(List<Present> near) {
+			HashSet<string> talking = new HashSet<string>(StringComparer.Ordinal);
+			foreach (Present p in near) {
+				if (p.Body.GetTimer(ConversationTimer.Key) is ConversationTimer t) {
+					talking.Add(t.aId ?? "");
+					talking.Add(t.bId ?? "");
+				}
+			}
+			return talking;
+		}
+
+		//a play is on: the venue listens
+		private static bool IsHushed(CityVenue venue) {
+			return (venue.VenueType != null) && (venue.VenueType.Key == "theatre") && (Theatre.PlayIn(venue) != null);
 		}
 
 		private static bool WithinSeconds(Dictionary<string, DateTime> last, string key, double seconds) {
@@ -124,48 +182,61 @@ namespace SteamEngine.CompiledScripts {
 		#endregion
 
 		#region Barks
-		/// <summary>One pass: each venue lets at most one of its people bark at a passing player; a resident barks at most once in
-		/// barkSeconds. Returns how many barked.</summary>
 		public static int Barks(int chancePercent) {
-			HashSet<CityVenue> spoke = new HashSet<CityVenue>();
+			return Barks(Gather(), chancePercent);
+		}
+
+		/// <summary>One pass: each venue rolls barkChance once, then one of its people within barkRange of a player and not barked
+		/// in barkSeconds says a line. Returns how many barked.</summary>
+		public static int Barks(List<Present> near, int chancePercent) {
+			LastBarkText = LastBarkBy = null;
+			HashSet<string> talking = Talking(near);
+			Dictionary<CityVenue, List<Present>> byVenue = ByVenue(near);
 			int count = 0;
-			foreach (Item gem in new List<Item>(Residents.AllGems)) {
-				NPC npc = Residents.BodyOf(gem);
-				string id = Residents.IdOf(gem);
-				if (!IsUp(npc) || (id == null) || IsBusy(npc)) {
+			foreach (KeyValuePair<CityVenue, List<Present>> pair in byVenue) {
+				if (IsHushed(pair.Key) || (Globals.dice.Next(100) >= chancePercent)) {
 					continue;
 				}
-				CityVenue venue = VenueRegistry.At(npc);
-				if ((venue == null) || spoke.Contains(venue) || WithinSeconds(lastBark, id, Settings.barkSeconds) || !PlayerWithin(npc, Settings.barkRange)) {
+				List<Present> ready = pair.Value.FindAll(p => !IsBusy(p.Body, talking, p.Id) && !WithinSeconds(lastBark, p.Id, Settings.barkSeconds) &&
+					PlayerWithin(p.Body, Settings.barkRange));
+				if (ready.Count == 0) {
 					continue;
 				}
-				if (Globals.dice.Next(100) >= chancePercent) {
-					continue;
-				}
-				string line = BarkFor(gem, venue);
+				Present who = ready[Globals.dice.Next(ready.Count)];
+				string line = BarkFor(who.Gem, pair.Key);
 				if (line == null) {
 					continue;
 				}
-				spoke.Add(venue);
-				lastBark[id] = Errands.Now;
-				npc.Say(line);
+				lastBark[who.Id] = Errands.Now;
+				who.Body.Say(line);
 				LastBarkText = line;
-				LastBarkBy = id;
+				LastBarkBy = who.Id;
 				count++;
 			}
 			return count;
 		}
 
+		private static Dictionary<CityVenue, List<Present>> ByVenue(List<Present> near) {
+			Dictionary<CityVenue, List<Present>> byVenue = new Dictionary<CityVenue, List<Present>>();
+			foreach (Present p in near) {
+				if (!byVenue.TryGetValue(p.Venue, out List<Present> list)) {
+					list = new List<Present>();
+					byVenue[p.Venue] = list;
+				}
+				list.Add(p);
+			}
+			return byVenue;
+		}
+
 		private static readonly Dictionary<string, string[]> roleBarks = new Dictionary<string, string[]>(StringComparer.Ordinal) {
 			{ "innkeeper", new[] { "Pivo tece proudem! Pojdte dal!", "Mame volne pokoje!", "Dnes peceme kance." } },
 			{ "server", new[] { "Jeste jedno? Hned to bude.", "Pozor, horka polevka!" } },
-			{ "cook", new[] { "Kdo mi zase vzal nabeckar?", "Polevka je skoro hotova." } },
+			{ "cook", new[] { "Kdo mi zase vzal naberacku?", "Polevka je skoro hotova." } },
 			{ "bard", new[] { "La la la... kde jsem to skoncil?", "Pisen za minci, pribeh za dve!" } },
 			{ "baker", new[] { "Cerstvy chleba! Jeste teply!", "Rohliky, kolace, chleba!" } },
 			{ "smith", new[] { "*buch* *buch*", "Kdo potrebuje podkovy?", "Tohle zelezo je mekke jako maslo." } },
-			{ "apprentice", new[] { "Uz zase mech...", "Mistr rika, ze z me jednou neco bude." } },
+			{ "apprentice", new[] { "Uz zase mech...", "Mistr rika, ze jednou budu umet vic nez on." } },
 			{ "merchant", new[] { "Nejlepsi zbozi v cele zemi!", "Pojdte blize, levne prodam!", "Sukno z jihu, koreni z vychodu!" } },
-			{ "crier", new[] { "Slyste, slyste!" } },
 			{ "harbourmaster", new[] { "Kotviste je plne, at pockaji!", "Kdo zase nechal lano na mole?" } },
 			{ "docker", new[] { "Hej rup!", "Tahle bedna vazi jako kun." } },
 			{ "fisher", new[] { "Dneska neberou.", "Cerstve ryby!" } },
@@ -178,9 +249,9 @@ namespace SteamEngine.CompiledScripts {
 			{ "patient", new[] { "Au...", "Uz je mi lip, opravdu." } },
 			{ "quartermaster", new[] { "Kdo podepise prevzeti?", "Zase chybi tri kopi." } },
 			{ "armourer", new[] { "Tohle brneni vydrzi vsechno.", "Neopirej se o ty stity." } },
-			{ "captain", new[] { "Do radu!", "Hlidky se stridaji za soumraku." } },
+			{ "captain", new[] { "Nastoupit!", "Hlidky se stridaji za soumraku." } },
 			{ "guard", new[] { "Stuj! Ah, to jsi ty.", "Klid ve meste." } },
-			{ "recruit", new[] { "Kopi je tezsi, nez vypada.", "Uz brzo budu straznym." } },
+			{ "recruit", new[] { "Kopi je tezsi, nez vypada.", "Jednou z me bude strazny." } },
 			{ "director", new[] { "Jeste jednou, od zacatku!", "Kde je zase ten herec?" } },
 			{ "actor", new[] { "Mam to... mam to... ne, nemam.", "Vecer hrajeme, prijdte!" } },
 			{ "attendant", new[] { "Horka koupel za par minci!", "Rucniky jsou cerstve." } },
@@ -194,9 +265,9 @@ namespace SteamEngine.CompiledScripts {
 		};
 
 		private static readonly string[] morning = { "Dobre rano.", "Uz je zase rano?", "Ranni ptace dal doskace." };
-		private static readonly string[] day = { "Krasny den.", "Prace nepocka.", "Kde jsem jen nechal ty klice?" };
+		private static readonly string[] day = { "Krasny den.", "Prace nepocka.", "Kde jen jsou ty klice?" };
 		private static readonly string[] evening = { "Konecne vecer.", "Na pivo by to chtelo.", "Den byl dlouhy." };
-		private static readonly string[] night = { "*zivne*", "Uz bych mel spat.", "Psst, vsichni spi." };
+		private static readonly string[] night = { "*zivne*", "Uz je cas jit spat.", "Psst, vsichni spi." };
 		private static readonly string[] orcs = { "Co cumis?", "Gash! Zase hlad.", "Oko vidi vsechno.", "Uruk nespi." };
 		private static readonly Dictionary<Season, string[]> seasons = new Dictionary<Season, string[]> {
 			{ Season.Spring, new[] { "Konecne jaro.", "Vsechno kvete." } },
@@ -205,13 +276,19 @@ namespace SteamEngine.CompiledScripts {
 			{ Season.Winter, new[] { "Brr, to je zima.", "Snad uz brzy jaro." } },
 		};
 
-		/// <summary>A line for the resident: their role's, else the time of day's or the season's; Mordor's orcs their own.</summary>
+		/// <summary>A line for the resident: their role's while at their own workplace, else the season's or the time of day's;
+		/// Mordor's orcs their own. The crier has no barks: its calls are its voice.</summary>
 		public static string BarkFor(Item gem, CityVenue venue) {
 			string city = (venue == null) ? null : venue.City;
+			string role = Residents.RoleKeyOf(gem) ?? "";
+			if (role == "crier") {
+				return null;
+			}
 			if (Residents.IsOrcCity(city) && (Globals.dice.Next(2) == 0)) {
 				return ErrandContext.Pick(orcs);
 			}
-			if (roleBarks.TryGetValue(Residents.RoleKeyOf(gem) ?? "", out string[] lines) && (Globals.dice.Next(3) != 0)) {
+			bool atWork = (venue != null) && (Residents.WorkplaceOf(gem) == venue);
+			if (atWork && roleBarks.TryGetValue(role, out string[] lines) && (Globals.dice.Next(3) != 0)) {
 				return ErrandContext.Pick(lines);
 			}
 			if ((Globals.dice.Next(3) == 0) && seasons.TryGetValue(LightAndWeather.CurrentSeason, out string[] season)) {
@@ -227,39 +304,33 @@ namespace SteamEngine.CompiledScripts {
 		#endregion
 
 		#region Conversations
-		/// <summary>One pass: in each venue with a player near and no talk under way, two of its residents within 2 tiles may start
-		/// one. Returns how many started.</summary>
 		public static int Conversations(int chancePercent) {
-			Dictionary<CityVenue, List<KeyValuePair<Item, NPC>>> byVenue = new Dictionary<CityVenue, List<KeyValuePair<Item, NPC>>>();
-			foreach (Item gem in new List<Item>(Residents.AllGems)) {
-				NPC npc = Residents.BodyOf(gem);
-				CityVenue venue = IsUp(npc) ? VenueRegistry.At(npc) : null;
-				if (venue == null) {
+			return Conversations(Gather(), chancePercent);
+		}
+
+		/// <summary>One pass: each venue with no talk under way and none in talkVenueSeconds rolls talkChance once, then two of its
+		/// people within 2 tiles who haven't talked in talkMinutes start. Returns how many started.</summary>
+		public static int Conversations(List<Present> near, int chancePercent) {
+			HashSet<string> talking = Talking(near);
+			int started = 0;
+			foreach (KeyValuePair<CityVenue, List<Present>> pair in ByVenue(near)) {
+				CityVenue venue = pair.Key;
+				List<Present> people = pair.Value;
+				if (IsHushed(venue) || people.Exists(p => talking.Contains(p.Id)) || WithinSeconds(lastVenueTalk, venue.VenueId ?? "", Settings.talkVenueSeconds)) {
 					continue;
 				}
-				if (!byVenue.TryGetValue(venue, out List<KeyValuePair<Item, NPC>> list)) {
-					list = new List<KeyValuePair<Item, NPC>>();
-					byVenue[venue] = list;
-				}
-				list.Add(new KeyValuePair<Item, NPC>(gem, npc));
-			}
-			int started = 0;
-			foreach (KeyValuePair<CityVenue, List<KeyValuePair<Item, NPC>>> pair in byVenue) {
-				List<KeyValuePair<Item, NPC>> people = pair.Value;
-				if (people.Exists(p => p.Value.GetTimer(ConversationTimer.Key) != null)) {
-					continue; //one at a time in a venue
+				if (Globals.dice.Next(100) >= chancePercent) {
+					continue;
 				}
 				bool done = false;
 				for (int i = 0; (i < people.Count) && !done; i++) {
 					for (int j = i + 1; (j < people.Count) && !done; j++) {
-						NPC a = people[i].Value, b = people[j].Value;
-						if (IsBusy(a) || IsBusy(b) || (Point2D.GetSimpleDistance(a, b) > 2) || !PlayerWithin(a, 12)) {
+						Present a = people[i], b = people[j];
+						if (IsBusy(a.Body, talking, a.Id) || IsBusy(b.Body, talking, b.Id) || (Point2D.GetSimpleDistance(a.Body, b.Body) > 2)) {
 							continue;
 						}
-						if (Globals.dice.Next(100) >= chancePercent) {
-							continue;
-						}
-						if (Start(people[i].Key, people[j].Key) != null) {
+						if (Start(a.Gem, b.Gem) != null) {
+							lastVenueTalk[venue.VenueId ?? ""] = Errands.Now;
 							started++;
 							done = true;
 						}
@@ -288,10 +359,10 @@ namespace SteamEngine.CompiledScripts {
 			CityVenue venue = Residents.WorkplaceOf(a);
 			string[] lines = Script(a, b, (venue == null) ? null : venue.City);
 			ConversationTimer timer = new ConversationTimer { aId = Residents.IdOf(a), bId = Residents.IdOf(b), lines = string.Join("\n", lines), line = 0 };
-			first.AddTimer(ConversationTimer.Key, timer);
 			timer.Step();
-			if (!timer.Done) {
+			if (!timer.Done) { //only a talk that goes on keeps a timer: one left without a due time would hold the venue for good
 				int seconds = Math.Max(1, Settings.talkLineSeconds);
+				first.AddTimer(ConversationTimer.Key, timer);
 				timer.DueInSeconds = seconds;
 				timer.PeriodInSeconds = seconds;
 			}
@@ -304,10 +375,10 @@ namespace SteamEngine.CompiledScripts {
 			{ Season.Spring, new[] { "Konecne trochu slunce.", "A bahno vsude kolem.", "Aspon zase roste trava.", "To jo. Kone budou radi." } },
 			{ Season.Summer, new[] { "To je ale horko.", "Ani mi nemluv, studna skoro vyschla.", "Snad brzo zaprsi.", "Kez by." } },
 			{ Season.Autumn, new[] { "Listi uz pada.", "A noci jsou chladne.", "Musim nasekat drevo na zimu.", "Ja taky. Pomuzeme si." } },
-			{ Season.Winter, new[] { "Ta zima snad nikdy neskonci.", "Drevo uz mi dochazi.", "U mne je teplo, stav se.", "Rad prijdu." } },
+			{ Season.Winter, new[] { "Ta zima snad nikdy neskonci.", "Drevo uz mi dochazi.", "U mne je teplo, stav se.", "To se mi hodi, diky." } },
 		};
 
-		/// <summary>Four lines, A, B, A, B: the season, the city's news, or a third resident.</summary>
+		/// <summary>Four lines, A, B, A, B: the season, the city's news, or a third resident (never B, who'd hear about themselves).</summary>
 		internal static string[] Script(Item a, Item b, string city) {
 			List<string> news = CityNews.Of(city);
 			int topic = Globals.dice.Next(3);
@@ -316,9 +387,12 @@ namespace SteamEngine.CompiledScripts {
 				return new[] { BasicErrands.Sex(a, "Slysel", "Slysela") + " jsi, co se povida?", "Ne, povidej.", item, ErrandContext.Pick(reactions) };
 			}
 			if (topic == 2) {
-				string about = Tavern.AboutSomeone(a, city);
-				if (about != null) {
-					return new[] { "Vis, co se rika?", "Povidej.", about, ErrandContext.Pick(reactions) };
+				string bName = Residents.NameOf(b);
+				for (int tries = 0; tries < 4; tries++) {
+					string about = Tavern.AboutSomeone(a, city);
+					if ((about != null) && !about.Contains(bName)) {
+						return new[] { "Vis, co se rika?", "Povidej.", about, ErrandContext.Pick(reactions) };
+					}
 				}
 			}
 			return seasonTalk.TryGetValue(LightAndWeather.CurrentSeason, out string[] talk) ? talk : seasonTalk[Season.Summer];
@@ -326,19 +400,22 @@ namespace SteamEngine.CompiledScripts {
 		#endregion
 
 		#region The crier
-		/// <summary>One pass: each market crier with a player near calls every crierMinutes: the city's news in turn, or market
-		/// cries when there is none. Returns how many called.</summary>
+		/// <summary>One pass: each market's crier, standing at the market with a player within 18 tiles, calls every crierMinutes:
+		/// the city's news in turn, or market cries when there is none. Returns how many called.</summary>
 		public static int Criers() {
 			int called = 0;
 			foreach (CityVenue venue in VenueRegistry.All) {
 				if ((venue.VenueType == null) || (venue.VenueType.Key != "market")) {
 					continue;
 				}
-				Item gem = WorkErrands.SameVenue(Theatre.GemOf(venue, "merchant") ?? Theatre.GemOf(venue, "crier"), "crier");
+				Item gem = Theatre.GemOf(venue, "crier");
 				NPC crier = (gem == null) ? null : Residents.BodyOf(gem);
 				string id = (gem == null) ? null : Residents.IdOf(gem);
-				if (!IsUp(crier) || (id == null) || IsBusy(crier) || WithinSeconds(lastCall, id, Settings.crierMinutes * 60.0) || !PlayerWithin(crier, 18)) {
+				if (!IsUp(crier) || (id == null) || (crier.GetTimer(ConversationTimer.Key) != null) || WithinSeconds(lastCall, id, Settings.crierMinutes * 60.0)) {
 					continue;
+				}
+				if (!PlayerWithin(crier, 18) || (VenueRegistry.At(crier) != venue)) {
+					continue; //at home or in the tavern, a crier is off duty
 				}
 				lastCall[id] = Errands.Now;
 				crier.Say(CallFor(id, venue.City));

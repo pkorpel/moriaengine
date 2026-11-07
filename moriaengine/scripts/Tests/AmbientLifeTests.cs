@@ -6,7 +6,7 @@ namespace SteamEngine.CompiledScripts {
 	/// <summary>#1262 - barks, conversations and the crier checked on the server; Tests/Protocol/AmbientLifeTests.cs hears a bark
 	/// through a client and sends the GM's .vyvolat. Edoras gets a market and a tavern, by day.</summary>
 	public static class AmbientLifeTests {
-		private static readonly TagKey marketTK = TagKey.Acquire("_ambient_market_"), tavernTK = TagKey.Acquire("_ambient_tavern_");
+		private static readonly TagKey marketTK = TagKey.Acquire("_ambient_market_"), tavernTK = TagKey.Acquire("_ambient_tavern_"), theatreTK = TagKey.Acquire("_ambient_theatre_");
 
 		private static void Report(string name, bool ok) {
 			Console.WriteLine("AMBIENT_CHECK: " + name + "=" + ok);
@@ -66,7 +66,8 @@ namespace SteamEngine.CompiledScripts {
 				s.talkChance = 0;
 				s.crierMinutes = 100000;
 				List<FoundRoom> rooms = RoomScan.Candidates("Edoras", player.MovementSettings);
-				string[] types = { "market", "tavern" };
+				string[] types = { "market", "tavern", "theatre" };
+				Theatre.StepByHand = true;
 				for (int i = 0; i < types.Length; i++) {
 					VenueDraft draft = VenueDraft.OfRoom(rooms[i], rooms[i].M, "Edoras");
 					draft.SetType(VenueType.Get(types[i]).IndexOf());
@@ -80,7 +81,10 @@ namespace SteamEngine.CompiledScripts {
 						NPCAiTimer.Freeze(Residents.BodyOf(gem), 900);
 						Inside(venue, gem);
 					}
-					player.SetTag((i == 0) ? marketTK : tavernTK, venue);
+					player.SetTag((i == 0) ? marketTK : ((i == 1) ? tavernTK : theatreTK), venue);
+					if (types[i] == "theatre") {
+						venue.SetTag(Theatre.LastPlayTK, Globals.TimeInSeconds); //no play of its own before the checks start one
+					}
 				}
 				AmbientLife.Forget();
 				CityNews.Clear();
@@ -136,7 +140,7 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Item gem in Residents.AllGems) {
 				NPC npc = Residents.BodyOf(gem);
 				CityVenue at = (npc == null) ? null : VenueRegistry.At(npc);
-				if ((at != null) && (npc.M == player.M) && (Point2D.GetSimpleDistance(npc, player) <= VenueLifeSettings.instance.barkRange)) {
+				if ((at != null) && (npc.M == player.M) && (Point2D.GetSimpleDistance(npc, player) <= VenueLifeSettings.instance.barkRange) && (Residents.RoleKeyOf(gem) != "crier")) {
 					inReach.Add(at);
 				}
 			}
@@ -158,10 +162,23 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Item gem in Residents.OfVenue(market.VenueId)) {
 				for (int i = 0; i < 20; i++) {
 					string line = AmbientLife.BarkFor(gem, market);
-					plain &= (line != null) && IsPlain(line);
+					plain &= (Residents.RoleKeyOf(gem) == "crier") ? (line == null) : ((line != null) && IsPlain(line)); //the crier speaks in calls only
 				}
 			}
 			Report("barksArePlainAscii", plain);
+
+			//a play hushes the theatre: nobody there barks or talks until it ends
+			CityVenue theatre = (CityVenue) player.GetTag(theatreTK);
+			NPC actor = Residents.BodyOf(Of(theatre, "actor")[0]);
+			Near(player, actor);
+			AmbientLife.Forget();
+			TheatrePlayTimer play = Theatre.StartPlay(theatre);
+			List<AmbientLife.Present> inTheatre = AmbientLife.Gather().FindAll(p => p.Venue == theatre);
+			bool hushed = (play != null) && (inTheatre.Count > 0) && (AmbientLife.Barks(inTheatre, 100) == 0) && (AmbientLife.Conversations(inTheatre, 100) == 0);
+			Theatre.DirectorOf(theatre).DeleteTimer(TheatrePlayTimer.Key);
+			bool speaksAfter = AmbientLife.Barks(AmbientLife.Gather().FindAll(p => p.Venue == theatre), 100) >= 1;
+			Report("aPlayHushesTheTheatre", hushed && speaksAfter);
+			Near(player, merchant);
 		}
 
 		private static void Talks(Player player) {
@@ -178,6 +195,13 @@ namespace SteamEngine.CompiledScripts {
 			bool pairRests = AmbientLife.Start(merchants[0], merchants[1]) == null;
 			Report("aConversationIsFourLinesAndAPairRests", four && plain && pairRests);
 
+			//while two talk, neither barks (the timer sits on the first, the second is in it too)
+			AmbientLife.Forget();
+			ConversationTimer chat = AmbientLife.Start(merchants[0], merchants[1]);
+			List<AmbientLife.Present> pair = AmbientLife.Gather().FindAll(p => (p.Gem == merchants[0]) || (p.Gem == merchants[1]));
+			Report("talkersDontBark", (chat != null) && (pair.Count == 2) && (AmbientLife.Barks(pair, 100) == 0));
+			a.DeleteTimer(ConversationTimer.Key);
+
 			//a pass starts one talk in the venue, and no second one while it runs
 			AmbientLife.Forget();
 			int started = AmbientLife.Conversations(100);
@@ -185,6 +209,24 @@ namespace SteamEngine.CompiledScripts {
 			AmbientLife.Forget(); //pairs could talk again: only the running talk holds the venue back
 			AmbientLife.Conversations(100);
 			Report("oneTalkAtATimeInAVenue", (started >= 1) && (runningAfterFirst == 1) && (Talking(market) == 1));
+
+			//a venue rests talkVenueSeconds after a talk starts, even when it's over
+			foreach (Item gem in Residents.OfVenue(market.VenueId)) {
+				Residents.BodyOf(gem).DeleteTimer(ConversationTimer.Key);
+			}
+			DateTime start = DateTime.UtcNow;
+			Errands.NowOverride = start;
+			AmbientLife.Forget();
+			List<AmbientLife.Present> inMarket = AmbientLife.Gather().FindAll(p => p.Venue == market);
+			int firstTalk = AmbientLife.Conversations(inMarket, 100);
+			foreach (Item gem in Residents.OfVenue(market.VenueId)) {
+				Residents.BodyOf(gem).DeleteTimer(ConversationTimer.Key);
+			}
+			int resting = AmbientLife.Conversations(inMarket, 100);
+			Errands.NowOverride = start.AddSeconds(VenueLifeSettings.instance.talkVenueSeconds + 1);
+			int rested = AmbientLife.Conversations(inMarket, 100);
+			Errands.NowOverride = null;
+			Report("aVenueRestsBetweenTalks", (firstTalk == 1) && (resting == 0) && (rested == 1));
 			foreach (Item gem in Residents.OfVenue(market.VenueId)) {
 				Residents.BodyOf(gem).DeleteTimer(ConversationTimer.Key);
 			}
@@ -210,6 +252,15 @@ namespace SteamEngine.CompiledScripts {
 			Errands.NowOverride = start.AddMinutes(6);
 			int later = AmbientLife.Criers();
 			Report("theCrierCallsEveryFewMinutes", (firstCall == 1) && (soon == 0) && (later == 1));
+
+			//away from the market, a crier is off duty
+			crier.Go(new Point4D((ushort) (crier.X + 40), crier.Y, crier.Z, crier.M));
+			Near(player, crier);
+			Errands.NowOverride = start.AddMinutes(12);
+			int offDuty = AmbientLife.Criers();
+			Inside(market, crierGem);
+			Near(player, crier);
+			Report("aCrierAwayFromTheMarketIsQuiet", offDuty == 0);
 
 			Errands.NowOverride = start.AddHours(VenueLifeSettings.instance.newsHours + 1);
 			string stale = AmbientLife.CallFor(Residents.IdOf(crierGem), "Edoras");
@@ -254,7 +305,11 @@ namespace SteamEngine.CompiledScripts {
 			List<string> news = CityNews.Of("Edoras");
 			bool told = (Reputation.Level(player, "Edoras") == ReputationLevel.Hrdina) && news.Exists(n => n.Contains(player.Name));
 			Reputation.Change(player, "Edoras", 1);
-			bool once = CityNews.Of("Edoras").Count == news.Count;
+			player.RemoveTag(Reputation.CityDeedKey("Edoras")); //the deed lapses and the first news is long gone; the next deed makes a hero again, but no news
+			Errands.NowOverride = DateTime.UtcNow.AddHours(VenueLifeSettings.instance.newsHours + 1);
+			Reputation.Change(player, "Edoras", 1);
+			bool once = CityNews.Of("Edoras").Count == 0;
+			Errands.NowOverride = null;
 			Report("aNewHeroIsNewsOnce", notYet && told && once);
 			Reputation.Set(player, "Edoras", was);
 			CityNews.Clear();

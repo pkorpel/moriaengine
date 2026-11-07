@@ -252,7 +252,11 @@ namespace SteamEngine.CompiledScripts {
 				player.SetTag(CityDeedKey(city), Now.Ticks);
 			}
 			if (!wasHero && (Level(player, city) == ReputationLevel.Hrdina)) {
-				CityNews.Add(city, "Mesto ma noveho hrdinu: " + player.Name + "!"); //#1262 - the criers tell it, the residents talk of it
+				TagKey told = Tavern.KeyFor("_hero_told_", city);
+				if (player.GetTag(told) == null) { //#1262 - the criers tell it, once: a lapsed hero's next deed is no news
+					player.SetTag(told, 1);
+					CityNews.Add(city, (player.IsFemale ? "Mesto ma novou hrdinku: " : "Mesto ma noveho hrdinu: ") + player.Name + "!");
+				}
 			}
 			Faction f = (faction == null) ? null : Faction.Get(faction);
 			if (f != null) {
