@@ -431,6 +431,7 @@ namespace SteamEngine.CompiledScripts {
 			var result = base.On_LogIn();
 			if (result != TriggerResult.Cancel) {
 				Boosters.Resume(this); //#1090
+				Tavern.OnLogin(this); //#1254 - a night in a tavern's room
 				SkillSequenceArgs.ResumeAfterLogin(this); //#1172 - a skill under way when the player left, or when the server went down
 				CraftingProcessPlugin.ResumeAfterLogin(this); //#1172 - a craft queue between two items then
 				WeeklyQuests.OnLogin(this); //#1090 - e_weekly_quest @login

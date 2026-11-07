@@ -243,6 +243,13 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				return ErrandSettings.instance;
 			}
 		}
+
+		[InfoField("Hospoda")]
+		public TavernSettings TavernSettings {
+			get {
+				return TavernSettings.instance;
+			}
+		}
 	}
 
 	public class AllAbilitiesMassSetting : MassSettings_ByClass_List<AbilityDef> {
