@@ -615,30 +615,4 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 	}
-
-	/// <summary>#1264 - d_q007_hospodsky: for now only its greeting and Eriol's line (q006); q007 is step 14 of #1237.</summary>
-	public partial class D_Q007Hospodsky : QuestDialogDef {
-		protected override void Build(QuestDialogContent d, Character npc, Player player) {
-			d.Page("Pozdrav");
-			d.SetText("Vitej v me krcme namorniku!");
-			d.Html();
-			if ((Q006.GetStage(player) == 19) && Q006.HasParchment(player)) {
-				d.SetText("*povedet o Eriolovy, pergamenu...*");
-				d.Response(false, false, "q006_innkeeper");
-				d.Page("q006_innkeeper");
-				d.SetText("Muj znamy Eriol ma problemy s Mohylovymi duchy? To je nemile, tem je lepsi se vyhybat! Kazdopadne chlapci by mohl pomoci lektvar Ocisteni. Na nej je treba dve srdce ptaka krvavce, tri nejsilnejsi protijedy a vzacna bylina. Rekni to Eriolovy on uz bude vedet co delat.");
-				d.Html();
-				d.SetText("Dekuji, reknu mu to.");
-				d.Response(false, true, "q006_toldInnkeeper");
-			}
-		}
-
-		protected override void OnButton(string button, Character npc, Player player) {
-			if ((button == "q006_toldInnkeeper") && (Q006.GetStage(player) == 19) && Q006.HasParchment(player)) {
-				Q006.SetParchment(player, false);
-				Q006.Advance(player, 20);
-				Q006.Reward(player, 300);
-			}
-		}
-	}
 }

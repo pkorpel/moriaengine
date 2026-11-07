@@ -42,6 +42,37 @@ namespace SteamEngine.CompiledScripts {
 			PlaceStill(pieces, gm, "q006/qworet", Q006.QworetDef, WorldSpots.NearestStandable(world, 2893, 908, 8), 0);
 			PlaceStill(pieces, gm, "q006/unas", Q006.UnasDef, WorldSpots.NearestStandable(world, 3769, 1490, 8), 0);
 			PlaceStill(pieces, gm, "q006/innkeeper", Q006.InnkeeperDef, WorldSpots.NearestStandable(world, 164, 2150, 8), 0);
+
+			//q007: the regions its texts name; the innkeeper is q006's piece (the same NPC)
+			PlaceNear(pieces, gm, "q007/haradir", Q007.HaradirDef, "a_Severni_Spoust", 3, 0);
+			PlaceStill(pieces, gm, "q007/inscripter", Q007.InscripterDef, WorldSpots.NearestStandable(world, 1510, 340, 12), 0); //"in his cellar in the Northern Waste"
+			PlaceNear(pieces, gm, "q007/rachel", Q007.RachelDef, "a_Slunecni_ostrov", -3, 0);
+			PlaceNear(pieces, gm, "q007/smith", Q007.SmithDef, "a_Zelezny_pas", 2, 2);
+			PlaceStill(pieces, gm, "q007/divous", Q007.DivousDef, WorldSpots.NearestStandable(world, 167, 2152, 8), 0); //drinking at the innkeeper's
+			PlaceNear(pieces, gm, "q007/rodrigo", Q007.RodrigoDef, "a_Umbar", 4, 0);
+			int[] dryad = WorldSpots.NearestStandable(world, 300, 2060, 20); //the innkeeper's island, away from his inn
+			if (dryad != null) {
+				pieces.Npc("quests/q007/dryad", Q007.DryadDef, dryad, 0, Realm.None, false, WorldPieces.WandersAbout);
+			}
+			FlaggedRegion pirates = StaticRegion.GetByDefname("a_Ostrov_Piratu") as FlaggedRegion;
+			int[] chest = (pirates == null) ? null : WorldSpots.NearestStandable(world, pirates.P.X + 2, pirates.P.Y, 6);
+			if (chest == null) {
+				gm.SysMessage("No spot for the pirates' chest.");
+				return;
+			}
+			pieces.Item("quests/q007/chest", Q007.ChestDef, chest, 0);
+			for (int i = 0; i < 2; i++) {
+				int[] pirate = WorldSpots.NearestStandable(world, chest[0] + 3 - (6 * i), chest[1] + 2, 4);
+				if (pirate != null) {
+					pieces.Npc("quests/q007/pirate" + i, "c_pirat", pirate, 0, Realm.None, false, WorldPieces.WandersAbout);
+				}
+			}
+		}
+
+		private static void PlaceNear(WorldPieces pieces, Character gm, string id, string defname, string region, int dx, int dy) {
+			StaticRegion area = StaticRegion.GetByDefname(region);
+			int[] at = (area == null) ? null : WorldSpots.NearestStandable(Map.GetMap(area.P.M), area.P.X + dx, area.P.Y + dy, 6);
+			PlaceStill(pieces, gm, id, defname, at, (area == null) ? (byte) 0 : area.P.M);
 		}
 
 		private static void PlaceStill(WorldPieces pieces, Character gm, string id, string defname, int[] at, byte m) {

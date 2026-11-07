@@ -37,7 +37,7 @@ namespace SteamEngine.Tests.Protocol {
 					"aFullBagOfThighs", "qworetKnowsNothing", "eriolSendsToUnas", "unasWantsLevelFifteen", "unasFourBagsThenTheParchment",
 					"theInnkeeperTakesTheParchment", "eriolAsksForTheIngredients", "withoutAlchemyItEndsWithoutTheRobe", "atAlchemyHundredEriolsIngredientsMakeThePotion",
 					"thePotionForTheRobe", "theRobeGivesItsOwnerTen", "aNewRobeForTwoMillion", "journalTextsArePlain", "theQuestBagsCantBeLost",
-					"anAlchemistMixesItAtEriols", "thePotionIsNotBrewable");
+					"anAlchemistMixesItAtEriols", "thePotionIsNotBrewable", "eachNpcOpensItsOwnDialog");
 			}
 		}
 	}
