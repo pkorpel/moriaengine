@@ -31,7 +31,8 @@ would break.
 by its id. See [venues.md](../04-gameplay-systems/living-world/venues.md).
 
 **Quest ports** (#1264, `QuestPortsSetup`, `.SetupQuestPorts`): the NPCs of the Erebor quests ported for #1237, so far q006's, q007's, q009's,
-q017's, q018's, q026's, q008's and q31's NPCs, gates, chest, rune, wheel, the temple and Dol Guldur fixtures and Ancam's corral. See the quests' pages in [quests/](../04-gameplay-systems/quests/README.md).
+q017's, q018's, q026's, q008's, q31's, q041's and q099's NPCs, gates, chest, rune, wheel, the temple and Dol Guldur fixtures, Ancam's corral
+and the smuggler's portal and realm gate. See the quests' pages in [quests/](../04-gameplay-systems/quests/README.md).
 
 Every item piece is fixed in place (`attr_move_never`), which also stops it decaying and keeps players from picking it up. A run
 applies this to pieces that already exist too, and that's the only thing it does to them. GMs can still drag fixed items; with `.gm`

@@ -75,6 +75,42 @@ namespace SteamEngine.CompiledScripts {
 			PlaceTailorAndSalmon(pieces, gm);
 			PlaceTombPoison(pieces, gm);
 			PlaceMustangAndCook(pieces, gm);
+			PlaceSmugglerAndOutcast(pieces, gm);
+		}
+
+		/// <summary>#1278 - q041: the smuggler on Ostrov nestalosti, where his portal throws the refused (1142,3897, Erebor's
+		/// zmodrani.scp), the portal beside him, the realm gate further west on the island (the portal's MOREP lands beside it), the elf a little south
+		/// of Rivendell, farmer Borek on a field west of Nurn. q099: Podivin 8 tiles from the smuggler. Erebor's GMs placed all of them; the
+		/// archive keeps no spot, so all are unreviewed.</summary>
+		internal static void PlaceSmugglerAndOutcast(WorldPieces pieces, Character gm) {
+			Map world = Map.GetMap(0);
+			int[] paserak = WorldSpots.NearestStandable(world, 1149, 3883, 8);
+			PlaceStill(pieces, gm, "q041/paserak", Q041.PaserakDef, paserak, 0);
+			int[] gate = WorldSpots.NearestStandable(world, 1120, 3880, 10);
+			if (gate == null) {
+				gm.SysMessage("No spot for q041's realm gate.");
+			} else {
+				pieces.Item("quests/q041/gate", Q041.GateDef, gate, 0);
+				int[] portal = (paserak == null) ? null : WorldSpots.NearestStandable(world, paserak[0] + 3, paserak[1], 4);
+				int[] landing = WorldSpots.NearestStandable(world, gate[0] + 2, gate[1], 3); //beside the gate, not on it: arriving fires its step
+				if ((landing != null) && (landing[0] == gate[0]) && (landing[1] == gate[1])) {
+					landing = null;
+				}
+				if ((portal == null) || (landing == null)) {
+					gm.SysMessage("No spot for q041's portal.");
+				} else {
+					Point4D toGate = new Point4D(landing[0], landing[1], landing[2], 0);
+					pieces.Item("quests/q041/portal", Q041.PortalDef, portal, 0, item => item.MoreP = toGate);
+				}
+			}
+			int[] elf = WorldSpots.NearestStandable(world, 2335, 1250, 10);
+			if (elf == null) {
+				gm.SysMessage("No spot for q041's elf.");
+			} else {
+				pieces.Npc("quests/q041/elf", Q041.ElfDef, elf, 0, Realm.None, false, WorldPieces.WandersAbout);
+			}
+			PlaceStill(pieces, gm, "q041/borek", Q041.BorekDef, WorldSpots.NearestStandable(world, 3390, 3270, 10), 0);
+			PlaceStill(pieces, gm, "q099/podivin", Q099.PodivinDef, (paserak == null) ? null : WorldSpots.NearestStandable(world, paserak[0] - 8, paserak[1] + 2, 4), 0); //out of the smuggler's talking range: their greetings overlap
 		}
 
 		/// <summary>#1274 - q008: Ancam by his house (571,3547, Erebor's script header), his corral beside it (Erebor's was GM-built:
