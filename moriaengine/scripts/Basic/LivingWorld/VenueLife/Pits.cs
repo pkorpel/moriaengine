@@ -57,8 +57,8 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		/// <summary>A bet on fighter 0 or 1, from the pack. Each round both roll a d6, the higher hits for the difference (a tie
-		/// is a miss); the first to lose 10 falls, or the one hurt more after 12 rounds, or fighter 1 on a dead even fight.
-		/// A winning bet takes double back. False when no bet was placed.</summary>
+		/// is a miss); the first to lose 10 falls, or the one hurt more after 12 rounds. A winning bet takes double back and an even
+		/// fight returns the stake, so neither fighter is the better bet. False when no bet was placed.</summary>
 		public static bool Bet(Player player, NPC pitmaster, int fighter, int bet) {
 			if (player.IsGM || (fighter < 0) || (fighter > 1)) {
 				return false;
@@ -93,8 +93,13 @@ namespace SteamEngine.CompiledScripts {
 					hurt[0] += b - a;
 				}
 			}
-			int winner = (hurt[0] < hurt[1]) ? 0 : 1;
 			pitmaster.Say(names[0] + " a " + names[1] + " se do sebe pustili!");
+			if (hurt[0] == hurt[1]) {
+				GoldUtils.Grant(player, (uint) bet);
+				pitmaster.Say("Po " + rounds + " kolech stoji oba. Nerozhodne, sazka se vraci.");
+				return true;
+			}
+			int winner = (hurt[0] < hurt[1]) ? 0 : 1;
 			string said = "Po " + rounds + " kolech pada " + names[1 - winner] + ". Vitez: " + names[winner] + "! ";
 			if (winner == fighter) {
 				GoldUtils.Grant(player, (uint) (bet * 2));

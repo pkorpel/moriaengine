@@ -31,7 +31,7 @@ namespace SteamEngine.Tests.Protocol {
 					"theStokerPaysForLogsUpToADay", "theDirectorTellsTheHourAndTakesExtras", "anExtraNeedsMusicianship", "theForgottenLineWaitsForAPrompt",
 					"aWrongPromptGetsLaughs", "theExtraIsPaidAtTheEnd", "theRightPromptPays", "withoutAPromptThePrompterWhispers", "aPlayAtDuskOnce",
 					"onlyTheDirectorAsks", "theMissingActorIsATheatreActor", "aFreshErrandWarmsTheGiverMore", "aForgottenPropLiesElsewhere",
-					"thePitsHaveTwoFighters", "aWinningBetPaysDouble", "betsAreCappedAndGmsDontBet");
+					"thePitsHaveTwoFighters", "aWinningBetPaysDouble", "anEvenFightReturnsTheStake", "betsAreCappedAndGmsDontBet");
 
 				this.Run(game, ".TestVenueLifeRealPlay", "VENUELIFE_REALPLAY_DONE");
 				this.AssertChecks("noPlayYet");

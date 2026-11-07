@@ -47,27 +47,27 @@ Each resident tells a player one rumour a minute (`rumourSeconds`); another play
 | Prinest drevo | stoker | logs for wages |
 
 **A bath** costs `bathPrice` and makes the player **fresh** (Svezest) for `freshMinutes` minutes of play. A player who is already fresh can't pay again. While fresh:
-- shop prices are `freshDiscount` percent lower. This is applied in `Reputation.PriceFor` after the reputation's own percent, and a price never drops to nothing;
+- shop prices in a city are `freshDiscount` percent lower. This is applied in `Reputation.PriceFor` after the reputation's own percent. A shop outside any city has no reputation price, so no discount either, and a price never drops to nothing;
 - a finished errand gives its giver 1 more friendship (`Errands.Finish`).
 
-The freshness shows in `.boosts` as an effect with its time left. It counts on `Globals.TimeInSeconds`, so time spent offline doesn't use it up.
+The freshness shows in `.boosts` as an effect with its time left. It counts on the server's clock (`Globals.TimeInSeconds`), which runs while the server is up whether the player is online or not and stops only while the server is down.
 
-**The stoker** takes logs (`i_log`) from the pack and pays `woodWage` for each, up to `woodPerDay` logs a real day. The first load of the day adds 1 to the stoker's friendship.
+**The stoker** takes logs (`i_log`) from the pack and pays `woodWage` for each, up to `woodPerDay` logs a real day. The first load of the day adds 1 to the stoker's friendship. No vendor sells logs; they come only from lumberjacking, so the wages can't be bought.
 
 ## The theatre
 
 | Line | Who | What |
 |---|---|---|
-| Kdy hrajete? | everyone there | when the next play is, or that one is on now |
-| Muzu hrat kompars? | the director, until the player has signed up | an extra's part in the next play |
+| Kdy hrajete? | everyone there | when the next play is, that one is on now, or (at dusk, after it) that tonight's is over |
+| Muzu hrat v komparzu? | the director, until the player has signed up | an extra's part in the next play |
 | Napovez! | the prompter, while an actor has forgotten a line | the prompt |
 
 **The play.** At dusk (19:00 to 21:00 on `VenueClock`), the residents' scheduler (`ResidentSchedule`'s timer, every 20 s) starts a play in each theatre that has a director and a player within 18 tiles. A theatre doesn't play again for `playEveryMinutes` real minutes. A play runs on the director's `TheatrePlayTimer`:
-- the director opens it and the actors speak its lines overhead, one every `playLineSeconds`;
+- the director opens it and the actors in the theatre speak its lines overhead, one every `playLineSeconds`;
 - at one forgotten line the actor stammers and waits `promptLines` lines for a prompt. With no prompt, the prompter whispers the line and the actor says it;
-- at the end the audience claps and the director thanks them.
+- at the end the spectators in the theatre clap and the director thanks them.
 
-There are three short plays, each with three speaking parts. A theatre with fewer actors gives the parts to those it has, and one with none gives them to the director.
+There are three short plays, each with three speaking parts. A theatre with fewer actors present gives the parts to those it has, and one with none gives them to the director.
 
 **An extra** needs Musicianship `extraMusicianship` (30.0). Anyone in the theatre at the end of the play gets `extraWage` gold, `extraExp` experience and 1 friendship with the director. The list is cleared after each play.
 
@@ -87,7 +87,7 @@ The pitmaster offers **"Vsadit na zapasnika"**. A dialog lists three bets (`pitB
 - both fighters roll a d6, and the higher hits for the difference;
 - the first to take 10 falls. After 12 rounds the one hurt less wins.
 
-The pitmaster tells the fight overhead, and a bet on the winner takes double back. The stake comes from the pack. A player has `pitBetsPerHour` bets in a real hour, and a GM doesn't bet. Tests put rolls in `Pits.RollOverride`.
+The pitmaster tells the fight overhead. A bet on the winner takes double back, and an even fight returns the stake, so neither fighter is the better bet. The stake comes from the pack. A player has `pitBetsPerHour` bets in a real hour, and a GM doesn't bet. Tests put rolls in `Pits.RollOverride`.
 
 ## Settings: "Lazne a divadlo"
 
@@ -139,5 +139,5 @@ The pitmaster tells the fight overhead, and a bet on the winner takes double bac
   - three plays stepped by hand: a wrong prompt, the right prompt, no prompt, and the extra's pay;
   - a play at dusk only, once;
   - both errand templates;
-  - the pit's winning and losing bets, its cap, and no bets for a GM;
+  - the pit's winning, losing and even bets, its cap, and no bets for a GM;
 - **later:** the scheduler starts a play by itself and it runs to its end on its real timer.

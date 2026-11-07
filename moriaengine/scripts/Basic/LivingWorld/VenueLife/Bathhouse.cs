@@ -15,7 +15,7 @@ namespace SteamEngine.CompiledScripts {
 				double left = FreshSecondsLeft(ch);
 				if (left > 0) {
 					into.Add(new ActiveEffect(EffectSection.Positive, "Svezest") {
-						SecondsLeft = left, Detail = "Obchody -" + Settings.freshDiscount + "%, lide jsou k tobe vlidnejsi", Source = "Lazne"
+						SecondsLeft = left, Detail = "Obchody ve mestech -" + Settings.freshDiscount + "%, lide jsou k tobe vlidnejsi", Source = "Lazne"
 					});
 				}
 			}
@@ -91,14 +91,18 @@ namespace SteamEngine.CompiledScripts {
 				npc.Say("Prines polena, at mam cim topit. Zaplatim " + Settings.woodWage + " zlatych za kus.");
 				return;
 			}
-			Errands.Consume(player.Backpack, log, count);
+			count -= Errands.Consume(player.Backpack, log, count); //what was really taken
+			if (count <= 0) {
+				return;
+			}
 			if (today == 0) {
 				player.SetTag(WoodDayTK, now);
 				Residents.AddFriendship(player, id, 1);
 			}
 			player.SetTag(woodCountTK, today + count);
 			GoldUtils.Grant(player, (uint) (count * Settings.woodWage));
-			npc.Say("Diky, " + count + " polen se hodi. Tady mas " + (count * Settings.woodWage) + " zlatych.");
+			string logs = (count == 1) ? "poleno se hodi" : ((count < 5) ? count + " polena se hodi" : count + " polen se hodi");
+			npc.Say("Diky, " + logs + ". Tady mas " + (count * Settings.woodWage) + " zlatych.");
 		}
 	}
 }

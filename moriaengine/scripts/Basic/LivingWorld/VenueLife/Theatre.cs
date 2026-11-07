@@ -80,7 +80,7 @@ namespace SteamEngine.CompiledScripts {
 		public static void Bootstrap() {
 			string[] all = { "director", "actor", "prompter", "spectator" };
 			VenueActions.Register(new VenueAction("theatre_when", "Kdy hrajete?", new[] { "theatre" }, all, null, TellWhen));
-			VenueActions.Register(new VenueAction("theatre_extra", "Muzu hrat kompars?", new[] { "theatre" }, new[] { "director" },
+			VenueActions.Register(new VenueAction("theatre_extra", "Muzu hrat v komparzu?", new[] { "theatre" }, new[] { "director" },
 				(player, npc, gem) => !IsExtra(player, Residents.WorkplaceOf(gem)), BecomeExtra));
 			VenueActions.Register(new VenueAction("theatre_prompt", "Napovez!", new[] { "theatre" }, new[] { "prompter" },
 				(player, npc, gem) => WaitsForPrompt(Residents.WorkplaceOf(gem)), OfferPrompt));
@@ -102,11 +102,13 @@ namespace SteamEngine.CompiledScripts {
 			return null;
 		}
 
+		/// <summary>The venue's living residents of a role who are in it now: an actor out on an errand doesn't speak, an absent
+		/// audience doesn't clap.</summary>
 		internal static List<NPC> BodiesOf(CityVenue venue, string role) {
 			List<NPC> bodies = new List<NPC>();
 			foreach (Item gem in Residents.OfVenue(venue.VenueId)) {
 				NPC npc = (Residents.RoleKeyOf(gem) == role) ? Residents.BodyOf(gem) : null;
-				if ((npc != null) && !npc.Flag_Dead) {
+				if ((npc != null) && !npc.Flag_Dead && (VenueRegistry.At(npc) == venue)) {
 					bodies.Add(npc);
 				}
 			}
@@ -187,10 +189,12 @@ namespace SteamEngine.CompiledScripts {
 		#region Lines in the dialog
 		internal static void TellWhen(Player player, NPC npc, Item gem) {
 			CityVenue venue = Residents.WorkplaceOf(gem);
+			double hour = VenueClock.Hour;
+			bool dusk = (hour >= Dusk) && (hour < Dusk + 2);
 			if (PlayIn(venue) != null) {
 				npc.Say("Prave hrajeme! Pojd dal a bud zticha.");
-			} else if (!MayStart(venue) && (DirectorOf(venue) != null)) {
-				npc.Say("Dnes uz bylo po predstaveni. Hrajeme zase zitra za soumraku.");
+			} else if (dusk && !MayStart(venue) && (DirectorOf(venue) != null)) { //tonight's has been
+				npc.Say("Dnes uz je po predstaveni. Hrajeme zase zitra za soumraku.");
 			} else {
 				npc.Say("Hrajeme kazdy vecer za soumraku, v sedm.");
 			}
@@ -395,6 +399,10 @@ namespace SteamEngine.CompiledScripts {
 			if ((player == null) || (prompter == null) || prompter.IsDeleted || (gr.PressedButton <= 0) || !Errands.CanTalk(player, prompter)) {
 				return;
 			}
+			VenueAction action = VenueActions.Get("theatre_prompt");
+			if ((action == null) || !VenueActions.For(player, prompter, Residents.GemOf(prompter)).Contains(action)) {
+				return;
+			}
 			Theatre.Prompt(player, prompter, gr.PressedButton - 1);
 		}
 	}
@@ -417,7 +425,7 @@ namespace SteamEngine.CompiledScripts {
 			string name = Residents.NameOf(actor);
 			e.offer = "Za chvili zvedame oponu a " + name + " nikde! Najdi " + BasicErrands.Sex(actor, "ho", "ji") + " a posli sem, prosim.";
 			e.thanks = "Uz je tady! Predstaveni je zachranene.";
-			e.steps.Add(Errands.Talk(actor, "Najdi herce " + name + " a posli " + BasicErrands.Sex(actor, "ho", "ji") + " do divadla",
+			e.steps.Add(Errands.Talk(actor, "Najdi " + BasicErrands.Sex(actor, "herce ", "herecku ") + name + " a posli " + BasicErrands.Sex(actor, "ho", "ji") + " do divadla",
 				"Reziser te shani, za chvili se hraje!", "Proboha, ja zapomnel" + BasicErrands.Sex(actor, "", "a") + "! Uz bezim."));
 			e.steps.Add(Errands.Talk(c.GiverGem, "Vrat se k " + c.GiverName, "Uz je na ceste.", "Diky."));
 			return true;
@@ -450,7 +458,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!(ThingDef.GetByDefname(prop[0]) is ItemDef)) {
 				return false;
 			}
-			e.offer = "Herci nechali " + prop[1] + " tady: " + venue.Label + ". Bez toho nemuzeme hrat! Doneses " + prop[3] + "?";
+			e.offer = "Herci nechali " + prop[1] + " v: " + venue.Label + ". Bez toho nemuzeme hrat! Doneses " + prop[3] + "?";
 			e.thanks = "Konecne! Ted muze predstaveni zacit.";
 			ErrandStep find = Errands.Deliver(c.GiverGem, prop[0], "Najdi " + prop[1] + " (" + venue.Label + ") a dones " + prop[3] + " " + c.GiverName,
 				"Tady je " + prop[2] + ".", "Vyborne!");

@@ -70,6 +70,9 @@ namespace SteamEngine.CompiledScripts {
 						Inside(venue, gem);
 					}
 					player.SetTag(TagKey.Acquire("_venuelife_" + types[i] + "_"), venue);
+					if (types[i] == "theatre") {
+						venue.SetTag(Theatre.LastPlayTK, Globals.TimeInSeconds); //the scheduler's own tick mustn't start a play before the rules do
+					}
 				}
 				NPC attendant = Body(player, "bathhouse", "attendant");
 				Near(player, attendant);
@@ -309,7 +312,13 @@ namespace SteamEngine.CompiledScripts {
 				gained[i] = GoldUtils.CountGoldOn(player) - g;
 			}
 			Report("aWinningBetPaysDouble", (gained[0] == bet) && (gained[1] == -bet));
-			VenueLifeSettings.instance.pitBetsPerHour = 3;
+			for (int i = 0; i < 24; i++) {
+				Pits.RollOverride.Enqueue(3); //twelve even rounds
+			}
+			long beforeDraw = GoldUtils.CountGoldOn(player);
+			bool drew = Pits.Bet(player, pitmaster, 1, bet);
+			Report("anEvenFightReturnsTheStake", drew && (GoldUtils.CountGoldOn(player) == beforeDraw) && (Pits.RollOverride.Count == 0));
+			VenueLifeSettings.instance.pitBetsPerHour = 4;
 			bool third = Pits.Bet(player, pitmaster, 0, bet);
 			long capped = GoldUtils.CountGoldOn(player);
 			bool fourth = Pits.Bet(player, pitmaster, 0, bet);
