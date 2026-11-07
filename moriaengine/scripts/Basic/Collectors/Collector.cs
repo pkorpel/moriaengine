@@ -61,11 +61,7 @@ namespace SteamEngine.CompiledScripts {
 			if (value == null) {
 				return 0;
 			}
-			try {
-				return Convert.ToInt32(value, CultureInfo.InvariantCulture);
-			} catch (FormatException) {
-				return 0;
-			}
+			return Collectors.ToInt(value);
 		}
 
 		/// <summary>"Ve vacku je 3 stehen grizliho".</summary>
@@ -73,17 +69,18 @@ namespace SteamEngine.CompiledScripts {
 			return this.Text(InfoTK) + " " + this.Collected.ToString(CultureInfo.InvariantCulture) + " " + this.Text(TypeTK);
 		}
 
+		//overhead from the bag, as its name is: TazUO sends a click on hover, and a journal line each time would flood it (#958)
 		public override void On_Click(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
 			base.On_Click(clicker, clickerState, clickerConn);
 			if (clicker is Character ch) {
-				ch.SysMessage(this.Describe());
+				this.ClickMessage(ch, this.Describe());
 			}
 		}
 
 		public override void On_AosClick(AbstractCharacter clicker, GameState clickerState, TcpConnection<GameState> clickerConn) {
 			base.On_AosClick(clicker, clickerState, clickerConn);
 			if (clicker is Character ch) {
-				ch.SysMessage(this.Describe());
+				this.ClickMessage(ch, this.Describe());
 			}
 		}
 
@@ -115,7 +112,11 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (Collectors.IsTaken(target)) {
-				player.SysMessage((target is Character) ? "Uz nelze ziskat vice" : "Co jsi potreboval uz jsi ziskal");
+				if (target is Character) {
+					player.RedMessage("Uz nelze ziskat vice");
+				} else {
+					player.SysMessage("Co jsi potreboval uz jsi ziskal");
+				}
 				return;
 			}
 			int color = this.Number(ColorTK);
@@ -145,9 +146,9 @@ namespace SteamEngine.CompiledScripts {
 			if (taken) {
 				this.AddOne(player);
 			} else {
-				player.RedMessage(this.Text(FailMsgTK));
+				player.RedMessage(QuestDialogContent.ExpandMarkup(this.Text(FailMsgTK), player, "")); //<src.sex(poskodil,poskodila)>
 			}
-			this.UseUp(target);
+			this.UseUp(target, taken);
 			if (taken) {
 				player.SysMessage(this.Describe());
 			}
@@ -166,10 +167,12 @@ namespace SteamEngine.CompiledScripts {
 			this.Collected++;
 		}
 
-		//a target gone or marked as taken, whether the try worked or not, as Erebor's: one try a body
-		private void UseUp(Thing target) {
-			bool remove = this.Number(TargetRemoveTK) == 1;
-			bool repeated = this.Number(RepeatedTK) != 0;
+		//a target gone or marked as taken, whether the try worked or not, as Erebor's: one try a body. Repeated collecting
+		//spares the mark, except on an item a try failed on (Erebor's item branch marks those always). A player is never
+		//removed, only marked: Sphere's remove refuses a player.
+		private void UseUp(Thing target, bool taken) {
+			bool remove = (this.Number(TargetRemoveTK) == 1) && !((target is Character ch) && ch.IsPlayer);
+			bool repeated = (this.Number(RepeatedTK) != 0) && (taken || (target is Character));
 			if (remove) {
 				target.Delete();
 			} else if (!repeated) {
@@ -191,7 +194,7 @@ namespace SteamEngine.CompiledScripts {
 				return;
 			}
 			if (!this.Roll()) {
-				player.RedMessage(this.Text(FailMsgTK));
+				player.RedMessage(QuestDialogContent.ExpandMarkup(this.Text(FailMsgTK), player, ""));
 				return;
 			}
 			this.AddOne(player);
@@ -228,8 +231,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		private int Int(TagKey key) {
-			object value = this.Get(key);
-			return (value == null) ? 0 : Convert.ToInt32(value, CultureInfo.InvariantCulture);
+			return Collectors.ToInt(this.Get(key));
 		}
 
 		public string CollectorId {
@@ -252,7 +254,11 @@ namespace SteamEngine.CompiledScripts {
 		public double NextPick {
 			get {
 				object value = this.item.GetTag(NextPickTK);
-				return (value == null) ? 0 : Convert.ToDouble(value, CultureInfo.InvariantCulture);
+				try {
+					return (value == null) ? 0 : Convert.ToDouble(value, CultureInfo.InvariantCulture);
+				} catch (Exception e) when ((e is FormatException) || (e is InvalidCastException) || (e is OverflowException)) {
+					return 0;
+				}
 			}
 			set { this.item.SetTag(NextPickTK, value); }
 		}
@@ -282,13 +288,27 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>What quests and errands ask of collectors (Erebor's f_collector_isFull, findid(...).tag.contentscount).</summary>
 	public static class Collectors {
-		/// <summary>The first bag of def `defname` the player carries (pack and its bags), or null.</summary>
+		/// <summary>The first bag of def `defname` the player has, in the pack (and its bags) or the bank, or null (Sphere's
+		/// findid walks all a character holds).</summary>
 		public static Collector FindIn(Character player, string defname) {
 			ThingDef def = ThingDef.GetByDefname(defname);
-			if ((def == null) || (player.Backpack == null)) {
+			if (def == null) {
 				return null;
 			}
-			return Find(player.Backpack, def);
+			Collector bag = (player.Backpack == null) ? null : Find(player.Backpack, def);
+			return bag ?? ((player.Bank == null) ? null : Find(player.Bank, def));
+		}
+
+		/// <summary>A tag's number, 0 for anything that isn't one (a GM can set any tag to anything).</summary>
+		internal static int ToInt(object value) {
+			if (value == null) {
+				return 0;
+			}
+			try {
+				return Convert.ToInt32(value, CultureInfo.InvariantCulture);
+			} catch (Exception e) when ((e is FormatException) || (e is InvalidCastException) || (e is OverflowException)) {
+				return 0;
+			}
 		}
 
 		private static Collector Find(Container container, ThingDef def) {
@@ -313,8 +333,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static bool IsTaken(Thing target) {
-			object value = target.GetTag(Collector.UncollectableTK);
-			return (value != null) && (Convert.ToInt32(value, CultureInfo.InvariantCulture) == 1);
+			return ToInt(target.GetTag(Collector.UncollectableTK)) == 1;
 		}
 	}
 }

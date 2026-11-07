@@ -16,15 +16,17 @@ Each setting is a tag. The bag's def holds them, because the converter writes ea
 | `target_desc` | Told when the cursor comes up. |
 | `target_id` | The name to aim at, e.g. "Body of Grizzly". A body is named after its NPC's def. |
 | `value_to_check`, `absolute_success` | A try works when value_to_check >= rand(0..absolute_success), so 50/100 is about half the time. |
-| `fail_msg` | Told on a failed try. |
-| `target_remove` | 1: the target is removed after a try, failed or not. 0: it stays, marked as taken (`uncollectable`). |
-| `repeatedcollecting` | 1: a kept target isn't marked, so it can be taken again. |
+| `fail_msg` | Told on a failed try, Erebor's `<src.sex(a,b)>` markup expanded. |
+| `target_remove` | 1: the target is removed after a try, failed or not (a player never is: only marked). 0: it stays, marked as taken (`uncollectable`). |
+| `repeatedcollecting` | 1: a kept target isn't marked, so it can be taken again (an item a try failed on is marked anyway, as on Erebor). |
 | `color` | For items: only that colour counts. |
 | `contentscount` | The count, on the bag itself. Quests read it through `Collector.Collected`, `Collectors.FindIn(player, def)` or `Collectors.IsFull(player, def)`. |
 
 ## What happens
 
-**Double click:** a dead player or a full bag is refused. Otherwise the bag tells `target_desc` and gives a cursor.
+**Click:** the count shows overhead from the bag, not in the journal (TazUO clicks on hover, #958).
+
+**Double click:** a dead player or a full bag is refused (Erebor told a dead player "Takhle to nepujde" and gave the cursor anyway). Otherwise the bag tells `target_desc` and gives a cursor.
 
 **On a target,** checked in this order:
 1. **Reach:** line of sight.
@@ -36,6 +38,10 @@ Each setting is a tag. The bag's def holds them, because the converter writes ea
 7. **Roll:** a success adds one; a failure tells `fail_msg`. Either way the target is then removed or marked.
 
 **Full bag:** a bag that filled up while the cursor was up refuses the target and leaves the body unspent. Erebor spent it anyway.
+
+**Finding a bag:** `Collectors.FindIn` looks in the pack and its bags, then the bank, as Sphere's findid walks all a character holds.
+
+**Worn bags:** a collector is a plain item, so the two Erebor bags that could be worn (q015's bead necklace, q31's backpack) no longer can.
 
 **Collection sources:** Erebor's `t_collection` is an item the bag picks from, such as a bush. It is set by tags on the item:
 - `collector_id`: the bag's def;
@@ -52,7 +58,7 @@ No Erebor item used one, but errands can.
 - **Numbers** follow Sphere's literals: a leading 0 is hex (`097F`), and a dot means tenths.
 - **Expressions** such as `<argv(1)>` are left to whoever makes the bag.
 
-Both the `tag.x=...` and `tag("x",...)` forms are read. The regen changed only the collector defs in 20 quest files, 67 bags in all.
+Both the `tag.x=...` and `tag("x",...)` forms are read. The regen changed only the collector defs in 20 quest files, 68 bags in all.
 
 ## Tests
 
@@ -68,4 +74,6 @@ Both the `tag.x=...` and `tag("x",...)` forms are read. The regen changed only t
   - a full bag spends nothing;
   - only the right colour counts;
   - a source gives, waits, then runs out;
+  - a player whose name matches is marked, never removed;
+  - a failed item is marked even with repeated collecting;
   - `FindIn` finds the bag.

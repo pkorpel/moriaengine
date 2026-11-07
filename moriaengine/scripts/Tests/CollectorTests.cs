@@ -167,6 +167,22 @@ namespace SteamEngine.CompiledScripts {
 			bag.Collect(player, bush);
 			Report("aSourceGivesThenWaitsThenEmpties", (afterFirst == 1) && (afterWait == 1) && (bag.Collected == 1) && !bush.IsDeleted);
 
+			//a player whose name matches is never removed, only marked
+			bag = NewBag(player, made, 100, 0, 1);
+			bag.SetTag(Collector.TargetIdTK, player.Name);
+			bag.Collect(player, player);
+			Report("aPlayerIsNeverRemoved", !player.IsDeleted && (bag.Collected == 1) && Collectors.IsTaken(player));
+			player.RemoveTag(Collector.UncollectableTK);
+
+			//repeated collecting spares a failed item no mark (Erebor's item branch)
+			bag = NewBag(player, made, -1, 100, 0);
+			bag.SetTag(Collector.RepeatedTK, 1);
+			Item stone = (Item) ThingDef.GetByDefname("i_bag").Create(player.P());
+			made.Add(stone);
+			bag.SetTag(Collector.TargetIdTK, stone.Name);
+			bag.Collect(player, stone);
+			Report("aFailedItemIsMarkedEvenWhenRepeated", (bag.Collected == 0) && Collectors.IsTaken(stone));
+
 			//found in the pack by def, as quests ask
 			Report("questsFindTheBag", Collectors.FindIn(player, BagDef) != null);
 		}

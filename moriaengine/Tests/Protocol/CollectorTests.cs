@@ -32,7 +32,7 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestCollectorRules", "COLLECTOR_RULES_DONE");
 				this.AssertChecks("aFailCountsNothingAndSpendsTheBody", "aKeptBodyIsMarkedTakenOnce", "aRepeatedOneCanBeTakenAgain",
 					"theWrongBodyIsRefused", "aPlayersBodySpoilsTheBag", "aFullBagTakesNoMore", "onlyTheRightColourCounts",
-					"aSourceGivesThenWaitsThenEmpties", "questsFindTheBag");
+					"aSourceGivesThenWaitsThenEmpties", "aPlayerIsNeverRemoved", "aFailedItemIsMarkedEvenWhenRepeated", "questsFindTheBag");
 			}
 		}
 
