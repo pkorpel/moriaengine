@@ -286,6 +286,7 @@ namespace SteamEngine.CompiledScripts {
 			if (gem.GetTag(invulnerableTK) != null) {
 				ch.Flag_Invulnerable = true;
 			}
+			Residents.Prepare(gem, ch); //#1242 - a resident's gem names its body
 		}
 	}
 

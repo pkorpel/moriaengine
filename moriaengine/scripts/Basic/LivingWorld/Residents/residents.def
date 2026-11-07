@@ -1,0 +1,110 @@
+//#1242 - residents of the living cities (Residents.cs). Calm townsfolk on the peasants' pattern; a resident's name, title and
+//schedule come from its spawn gem, not from here.
+
+[NPCDef c_resident_man]
+TEVENTS = e_character
+NAME = "Obyvatel"
+model = C_MAN
+Color = colors_skin
+Str = 120
+Dex = 100
+Int = 80
+Wrestling = 300 500
+Tactics = 300 500
+NoAnimate = 1
+Equip = random_male_hair
+EquipColor = colors_hair
+Equip = random_facial_hair
+EquipColor = match_hair
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_pants
+EquipColor = colors_all
+AggroMode = Calm
+
+[NPCDef c_resident_woman]
+TEVENTS = e_character
+NAME = "Obyvatelka"
+model = C_WOMAN
+Color = colors_skin
+Str = 100
+Dex = 100
+Int = 90
+Wrestling = 300 500
+Tactics = 300 500
+NoAnimate = 1
+Equip = random_female_hair
+EquipColor = colors_hair
+Equip = i_shirt_plain
+EquipColor = colors_all
+Equip = random_skirt
+EquipColor = colors_all
+AggroMode = Calm
+
+//Barad-dur's folk: an orc who works there, not a raider
+[NPCDef c_resident_orc]
+TEVENTS = e_character
+NAME = "Skret"
+model = 0x11
+AngerSound = snd_MONSTER_ORC1
+IdleSound = snd_MONSTER_ORC1 + 1
+AttackSound = snd_MONSTER_ORC1 + 2
+HurtSound = snd_MONSTER_ORC1 + 3
+DeathSound = snd_MONSTER_ORC1 + 4
+CAN = MT_WALK|MT_USEHANDS|MT_EQUIP
+Str = 180
+Dex = 90
+Int = 50
+MaxHits = 250 350
+Wrestling = 400 600
+Tactics = 400 600
+NoAnimate = 1
+AggroMode = Calm
+
+//hobbits of the Shire, names in the Shire's own style
+[NameList NAMES_HOBBIT_MALE]
+Name = "Bilbo"
+Name = "Bungo"
+Name = "Drogo"
+Name = "Folco"
+Name = "Fredegar"
+Name = "Hamfast"
+Name = "Halfred"
+Name = "Hob"
+Name = "Isembard"
+Name = "Largo"
+Name = "Lotho"
+Name = "Milo"
+Name = "Mungo"
+Name = "Odo"
+Name = "Otho"
+Name = "Paladin"
+Name = "Posco"
+Name = "Ponto"
+Name = "Robin"
+Name = "Sancho"
+Name = "Tolman"
+Name = "Wilcome"
+Name = "Wiseman"
+
+[NameList NAMES_HOBBIT_FEMALE]
+Name = "Angelica"
+Name = "Belba"
+Name = "Bell"
+Name = "Daisy"
+Name = "Dora"
+Name = "Elanor"
+Name = "Esmeralda"
+Name = "Lily"
+Name = "Lobelia"
+Name = "Marigold"
+Name = "Mentha"
+Name = "Mimosa"
+Name = "Pansy"
+Name = "Pearl"
+Name = "Peony"
+Name = "Poppy"
+Name = "Primula"
+Name = "Rose"
+Name = "Ruby"
+Name = "Tanta"
