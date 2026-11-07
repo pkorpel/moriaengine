@@ -240,6 +240,9 @@ namespace SteamEngine.CompiledScripts {
 				if (isSwing) {
 					WeeklyQuests.OnSwingDamage(attacker, defender, Math.Min(actualDamage, previousHits)); //#1090 - min(ubrano, hits)
 				}
+				if (actualDamage > 0) {
+					Reputation.OnHarm(attacker, defender); //#1243 - hurting a resident costs standing in the city
+				}
 				if (isSwing && (actualDamage > 0) && !defender.IsDeleted) {
 					defender.Trigger_Disrupt(DoesSwingInterrupt(attacker.IsPlayerForCombat, attacker.WeaponProjectileType != ProjectileType.None,
 						defender.IsPlayerForCombat, actualDamage, defender.MaxHits));

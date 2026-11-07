@@ -43,6 +43,7 @@ namespace SteamEngine.CompiledScripts {
 			player.Account.PLevel = 1;
 			if (qualified) {
 				GoldUtils.Grant(player, 300000);
+				Reputation.Set(player, VenueRegistry.CityAt(stone), ReputationSettings.instance.respectedFrom); //#1243 - citizenship wants a respected name
 			}
 			Console.WriteLine("TOWN_READY: stone=" + (uint) stone.FlaggedUid + " end");
 		}

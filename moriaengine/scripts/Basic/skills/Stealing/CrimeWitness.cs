@@ -40,6 +40,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!npc.IsHuman) {
 				return;
 			}
+			Reputation.OnCrime(criminal, mark, npc); //#1243 - the city the witness belongs to hears of it
 			Notoriety.FlagCriminal(criminal);
 			FlaggedRegion area = npc.Region as FlaggedRegion;
 			if ((area == null) || !area.Flag_Guarded) {

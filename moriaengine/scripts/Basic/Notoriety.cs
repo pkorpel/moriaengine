@@ -100,6 +100,7 @@ namespace SteamEngine.CompiledScripts {
 			if ((victimGuild != null) && (enemyGuild != null) && Guild.AreInWar(victimGuild, enemyGuild)) {
 				return; //declared guild war - legal pvp
 			}
+			Reputation.OnCrime(enemy, victim); //#1243 - the city where it happened remembers, unless the victim was of the enemy realm
 			FlagCriminal(enemy);
 		}
 
@@ -120,6 +121,7 @@ namespace SteamEngine.CompiledScripts {
 			if (Party.AreInOneParty(owner, looter) && Party.CanLootMe(owner)) {
 				return;
 			}
+			Reputation.OnCrime(looter, owner, looter); //#1243 - where the body lies, not where its ghost went
 			FlagCriminal(looter);
 			looter.SysMessage("Okradat mrtveho ze sve rise je zlocin!");
 		}
@@ -147,6 +149,7 @@ namespace SteamEngine.CompiledScripts {
 				return; //killing a criminal/murderer is not a murder
 			}
 			killedBy.SetTag(murderCountTK, GetMurderCount(killedBy) + 1);
+			Reputation.OnMurder(victim, killedBy); //#1243
 		}
 
 		/// <summary>The real UO client colors the health-bar/status overlay from the

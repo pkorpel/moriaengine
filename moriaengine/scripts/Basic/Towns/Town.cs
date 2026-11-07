@@ -402,6 +402,11 @@ namespace SteamEngine.CompiledScripts {
 				player.RedMessage("Jsi na cerne listine! Nemuzes se stat obcanem!");
 				return false;
 			}
+			string city = (this.stone == null) ? null : VenueRegistry.CityAt(this.stone); //#1243 - the city must think well of you
+			if (!Reputation.MayBecomeCitizen(player, city)) {
+				player.RedMessage("Mesto te jeste dost nezna. Obcanem se muze stat jen clovek dobre povesti.");
+				return false;
+			}
 			Town current = OfCitizen(player);
 			if (current != null) {
 				player.RedMessage("Jiz jsi obcanem mesta " + current.Name);

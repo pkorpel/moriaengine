@@ -46,7 +46,7 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 				NpcVendorStock.Entry entry = entries[i];
 				dlg.LastTable[i, 0] = GUTAImage.Builder.Gump(entry.Def.Model).Build();
 				dlg.LastTable[i, 1] = GUTAText.Builder.Text(entry.Def.Name).Valign(DialogAlignment.Valign_Center).Build();
-				dlg.LastTable[i, 2] = GUTAText.Builder.Text(entry.BuyPrice + " gold").Valign(DialogAlignment.Valign_Center).Build();
+				dlg.LastTable[i, 2] = GUTAText.Builder.Text(Reputation.PriceFor((Character) sendTo, entry.BuyPrice) + " gold").Valign(DialogAlignment.Valign_Center).Build(); //#1243 - by the city's view of you
 				dlg.LastTable[i, 3] = GUTAButton.Builder.Type(LeafComponentTypes.ButtonPaper).Id(10 + i).Valign(DialogAlignment.Valign_Center).Build();
 			}
 			dlg.MakeLastTableTransparent();
@@ -68,7 +68,10 @@ namespace SteamEngine.CompiledScripts.Dialogs {
 
 			NpcVendorStock.Entry entry = entries[index];
 			Player buyer = (Player) gi.Cont;
-			if (!GoldUtils.Pay(buyer, entry.BuyPrice, notEnough: "Thou dost not have enough gold.")) {
+			if (Reputation.Refuses(buyer)) { //#1243
+				return;
+			}
+			if (!GoldUtils.Pay(buyer, Reputation.PriceFor(buyer, entry.BuyPrice), notEnough: "Thou dost not have enough gold.")) {
 				return;
 			}
 
