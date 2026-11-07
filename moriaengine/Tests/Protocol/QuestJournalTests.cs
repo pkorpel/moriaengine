@@ -106,6 +106,43 @@ namespace SteamEngine.Tests.Protocol {
 				client.SendGumpResponse(scroll.GumpUid, 1);
 				page = client.ReadGumpDialogWithStrings(Wait);
 				Assert.Contains("jsi Elvire koren Este", string.Join("|", page.Strings));
+				client.SendGumpResponse(page.GumpUid, 0);
+
+				//#1245 - the living world's side: its four tabs, the city page with my standing, its factions and a friend
+				string city = this.Ask(client, ".TestJournalCity", "JOURNAL_CITY:");
+				Assert.Contains("here=Edoras", city);
+				string friend = city.Substring(city.IndexOf("friend=", StringComparison.Ordinal) + 7);
+				friend = friend.Substring(0, friend.IndexOf(" here=", StringComparison.Ordinal));
+				client.SendSpeech(".questy");
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				client.SendGumpResponse(menu.GumpUid, 31);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				AssertWindowIsSolid(menu.LayoutText);
+				texts = string.Join("|", menu.Strings);
+				Assert.Contains("Ukoly", menu.Strings);
+				Assert.Contains("Ukoly ti daji lide ve meste.", texts);
+				client.SendGumpResponse(menu.GumpUid, 32);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				AssertWindowIsSolid(menu.LayoutText);
+				texts = string.Join("|", menu.Strings);
+				int edoras = menu.Strings.IndexOf("Edoras");
+				Assert.True(edoras >= 0, texts);
+				Assert.Equal("Vazeny", menu.Strings[edoras + 1]); //where I stand comes first, with my standing
+				Assert.Contains("Povest 250", menu.Strings);
+				Assert.Contains("Kraluv dvur", menu.Strings);
+				Assert.Contains(friend, menu.Strings);
+				Assert.Contains("7/10", menu.Strings);
+				client.SendGumpResponse(menu.GumpUid, 33);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Ve svete se ted nic zvlastniho nedeje.", string.Join("|", menu.Strings));
+				client.SendGumpResponse(menu.GumpUid, 34);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				Assert.Contains("Zatim nemas zadne skutky.", string.Join("|", menu.Strings));
+				//the city page's button: .povest, and the journal stays open on the city
+				client.SendGumpResponse(menu.GumpUid, 32);
+				menu = client.ReadGumpDialogWithStrings(Wait);
+				client.SendGumpResponse(menu.GumpUid, 5000);
+				ReadUntil(client, "Povest ve mestech");
 			}
 		}
 
