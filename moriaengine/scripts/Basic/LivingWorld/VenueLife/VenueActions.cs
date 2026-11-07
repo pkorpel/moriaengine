@@ -60,11 +60,15 @@ namespace SteamEngine.CompiledScripts {
 			return all.Find(a => a.Key == key);
 		}
 
-		/// <summary>What this resident offers the player now: only at their own workplace, as a patron at home has no dice.</summary>
+		/// <summary>What this resident offers the player now: only at their own workplace, as a patron at home has no dice; and
+		/// nothing to the city's enemy (#1260), as with errands and shops.</summary>
 		public static List<VenueAction> For(Player player, NPC npc, Item gem) {
 			List<VenueAction> list = new List<VenueAction>();
 			CityVenue work = (gem == null) ? null : Residents.WorkplaceOf(gem);
 			if ((work == null) || (npc == null) || (VenueRegistry.At(npc) != work)) {
+				return list;
+			}
+			if (!player.IsGM && (work.City != null) && (Reputation.Level(player, work.City) == ReputationLevel.Nepritel)) {
 				return list;
 			}
 			string type = work.VenueType.Key, role = Residents.RoleKeyOf(gem);

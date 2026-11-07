@@ -120,6 +120,12 @@ namespace SteamEngine {
 			}
 		}
 
+		/// <summary>#1260 - scripts' say on stacking two otherwise equal items: an item marked as an errand's mustn't merge with the
+		/// player's own (the mark would go to the whole pile, or vanish with the item it was on).</summary>
+		public virtual bool CanStackWith(AbstractItem other) {
+			return true;
+		}
+
 		public bool IsStackable {
 			get {
 				return ((AbstractItemDef) this.Def).IsStackable;

@@ -44,10 +44,10 @@ namespace SteamEngine.CompiledScripts {
 		[SaveableData]
 		public int oreWage = 4, orePerDay = 20;
 
-		/// <summary>Working the bellows: the stamina it takes, the pay, the real minutes before the same player works them again, and
-		/// how many times a real day.</summary>
+		/// <summary>Paid work at a venue (the bellows, unloading ships, the stable, the dough; VenueLabour): the stamina a turn takes,
+		/// its pay, the real minutes before the same player works again, and how many turns of each kind of work a real day.</summary>
 		[SaveableData]
-		public int bellowsStamina = 10, bellowsWage = 5, bellowsMinutes = 5, bellowsPerDay = 12;
+		public int labourStamina = 10, labourWage = 5, labourMinutes = 5, labourPerDay = 12;
 
 		/// <summary>A temple offering, once a real day: the gift and the karma it gives.</summary>
 		[SaveableData]
@@ -60,5 +60,17 @@ namespace SteamEngine.CompiledScripts {
 		/// <summary>Dressing a patient's wounds: the Healing it needs in tenths, and the house's pay.</summary>
 		[SaveableData]
 		public int bandageHealing = 200, bandageWage = 10;
+
+		/// <summary>Tending a market stall: how long to stay, and the pay.</summary>
+		[SaveableData]
+		public int stallSeconds = 120, stallWage = 30;
+
+		/// <summary>A night sentry at the barracks: how long to stay, the pay, and the city's reputation for it.</summary>
+		[SaveableData]
+		public int sentrySeconds = 120, sentryWage = 30, sentryReputation = 2;
+
+		/// <summary>Target practice: the experience a hit gives, and the real minutes between two rounds of five shots.</summary>
+		[SaveableData]
+		public int archeryExp = 5, archeryMinutes = 30;
 	}
 }

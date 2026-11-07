@@ -355,7 +355,8 @@ namespace SteamEngine {
 			return ((a.IsStackable && b.IsStackable) &&
 					(a.def == b.def) &&
 					(a.Color == b.Color) &&
-					(a.Model == b.Model));
+					(a.Model == b.Model) &&
+					a.CanStackWith(b) && b.CanStackWith(a));
 		}
 
 		//add "toStack" to this stack, if possible

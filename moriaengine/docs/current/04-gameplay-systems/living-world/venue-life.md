@@ -1,6 +1,6 @@
 # Venue life
 
-Phase 3 of the living world (#1237) gives each kind of venue something to do there (design section 9). Code: `scripts/Basic/LivingWorld/VenueLife/`. Step 8 (#1254) builds the shared part and the tavern; step 9 (#1256) the bath house, the theatre and Mordor's fighting pits; step 10 (#1258) the armoury, the smithy, the temple and the Houses of Healing.
+Phase 3 of the living world (#1237) gives each kind of venue something to do there (design section 9). Code: `scripts/Basic/LivingWorld/VenueLife/`. Step 8 (#1254) builds the shared part and the tavern; step 9 (#1256) the bath house, the theatre and Mordor's fighting pits; step 10 (#1258) the armoury, the smithy, the temple and the Houses of Healing; step 11 (#1260) the harbour, the stable, the market, the bakery and the barracks.
 
 ## Venue actions
 
@@ -12,7 +12,19 @@ Each line is a `VenueAction`, registered from a class's `Bootstrap()` with `Venu
 - an optional `Shows` check for whether it's offered right now (the bard sings only in the evening);
 - what it does.
 
-A resident offers actions only while standing in their own workplace. A patron met at home has no dice. A button is 50 plus the action's place in the registry, so it names the same action whatever else the dialog showed. On a click, the dialog checks the reach again (as for errands) and checks that the resident still offers that action.
+A resident offers actions only while standing in their own workplace. A patron met at home has no dice. The city's enemy (reputation Nepritel) is offered nothing, as with errands and shops; a GM always is. A button is 50 plus the action's place in the registry, so it names the same action whatever else the dialog showed. On a click, the dialog checks the reach again (as for errands) and checks that the resident still offers that action.
+
+## Shared pieces
+
+- **`VenueGoods.Buy`** (#1258): a resident buys goods from the player's pack for wages: the stoker's logs, the smith's ore. There is a cap of pieces a real day per player and kind of goods, and friendship +1 for the first load of the day. Only goods nobody sells belong here, or the wages could be bought.
+- **`VenueLabour.Work`** (#1260): paid work for stamina: the bellows, the docks, the stable, the dough.
+  - Each turn takes `labourStamina` and pays `labourWage`.
+  - The same kind of work rests `labourMinutes` real minutes, each kind on its own. A player has at most `labourPerDay` turns a real day of all kinds together, so going round four kinds doesn't give four days' wages.
+  - The first turn of a day adds 1 to the friendship of the resident it was done for.
+- **`VenueStay`** (#1260): staying in a venue for a while (`VenueStayTimer` on the player, checked every 10 s): the temple's vigil, a market stall, the night sentry.
+  - Leaving the venue, dying or logging out breaks the stay with no reward.
+  - A player has one stay at a time, and each kind once a real day.
+  - A player at the door is asked in.
 
 ## The tavern
 
@@ -109,7 +121,7 @@ Lending gear to the militia during an event waits for the events (phase 6).
 | Pomoct u mechu | smith, apprentice | work the bellows |
 | Prinest rudu | smith | iron ore for wages |
 
-**The bellows** take `bellowsStamina` stamina and pay `bellowsWage`, once every `bellowsMinutes` real minutes and at most `bellowsPerDay` times a real day. A player without the stamina is sent to rest. The first work of a real day, at whichever smithy, adds 1 to the friendship of the resident it was done for.
+**The bellows** are labour (`VenueLabour`, kind `smithy`). A player without the stamina is sent to rest.
 
 **Ore:** `VenueGoods.Buy` takes iron ore (`i_ore_iron`) for `oreWage` a piece, up to `orePerDay` a real day. No vendor sells ore.
 
@@ -124,7 +136,7 @@ Lending gear to the militia during an event waits for the events (phase 6).
 
 **An offering** costs `offeringPrice` and can be made once a real day. It gives `offeringKarma` karma and 1 friendship with that resident.
 
-**A vigil** starts inside the temple at night (a player at the door is asked in) (`VenueClock`'s night shift), once a real day. A `VigilTimer` on the player checks every 10 s that they are still in the temple, alive and online. Leaving, dying or logging out breaks it, with no reward. After `vigilSeconds` it ends with `vigilExp` experience, `vigilKarma` karma and the priest's friendship.
+**A vigil** is a stay (`VenueStay`, kind `vigil`), begun inside the temple at night (`VenueClock`'s night shift). After `vigilSeconds` it ends with `vigilExp` experience, `vigilKarma` karma and the priest's friendship.
 
 **Poutnik** (small errand, a pilgrim): the pilgrim asks the way, for example "Boli me nohy. Kde najdu lecitele?". The player picks one of three venues of the city:
 - the right one (the healer's, here) pays 100%;
@@ -147,6 +159,53 @@ The restless ghost waits for the events (phase 6).
 
 Gathering herbs for the house is the general ingredients errand.
 
+## The harbour
+
+| Line | Who | What |
+|---|---|---|
+| Pomoct s vykladkou | harbourmaster, dockers, sailors | labour (kind `harbour`) |
+
+**Errands:**
+- **Rybi zakazka** (small; the harbourmaster or a fisher): three big fish (`i_fish_big_1`, from fishing).
+- **Pasovani** (medium; the harbourmaster):
+  1. A docker says which crate was "heavy as lead", far too heavy for its label (feathers, hay, wool and the like).
+  2. The player then names the crate to the harbourmaster, out of three. The right one pays 100%, a wrong one 25%.
+
+The stowaway waits for the events (phase 6).
+
+## The stable
+
+**Pomoct ve stajich** (stablemaster, groom) is labour (kind `stable`). Hay is sold by vendors, so the stable pays for work, never for hay. The runaway horse and the horse race wait for the events (phase 6).
+
+## The market
+
+**Pohlidat stanek** (merchants, by day) is a stay (kind `stall`): `stallSeconds` at the market, then `stallWage` and the merchant's friendship.
+
+**Falesne mince** (medium errand, a merchant):
+1. The crier names the three people who paid today (three different names), and says whose coins shone too much.
+2. The player names that one to the merchant. The right one pays 100%, a wrong one 25%.
+
+The crier's calls come in step 12, and the travelling merchant with the events.
+
+## The bakery
+
+**Pomoct s testem** (baker) is labour (kind `bakery`).
+
+**Ranni roznaska** (medium errand, the baker): bread (`i_bread_loaf`) to three residents of the city, each a deliver step, in 20 minutes ("before it cools"; the template's `Minutes`). The errand's loaf never stacks with the player's own bread (see [errands.md](errands.md)). Eaten, it is gone, and the errand can only be given up.
+
+## The barracks
+
+| Line | Who | What |
+|---|---|---|
+| Strelba do terce | captain, guards | target practice |
+| Nocni hlidka | guards, at night | a stay (kind `sentry`) |
+
+**Target practice:** five shots. Each hits when a roll of 0-999 comes under the player's Archery (in tenths), and each hit gives `archeryExp` experience. A player with no Archery is turned away. There is a round every `archeryMinutes` real minutes.
+
+**The night sentry:** `sentrySeconds` at the barracks, then `sentryWage`, `sentryReputation` with the city, and the guard's friendship. The reputation doesn't count as a hero's deed (`Reputation.Change`'s `deed` false). It is given by a guard, as the captain works by day.
+
+**Prvni hlidka** (medium errand, the captain): a recruit walks with the player (the errand engine's companion) to one of the city's working people, then back to the captain.
+
 ## Settings: "Podniky"
 
 `VenueLifeSettings`:
@@ -161,10 +220,13 @@ Gathering herbs for the house is the general ingredients errand.
 | promptReward | 25 | gold for the right prompt |
 | pitBetSmall, pitBetMedium, pitBetLarge, pitBetsPerHour | 10, 50, 100, 10 | the pits' bets and hourly cap |
 | oreWage, orePerDay | 4, 20 | the smith's pay per ore and the daily cap |
-| bellowsStamina, bellowsWage, bellowsMinutes, bellowsPerDay | 10, 5, 5, 12 | working the bellows |
+| labourStamina, labourWage, labourMinutes, labourPerDay | 10, 5, 5, 12 | a turn of labour: stamina, pay, rest per kind, turns a day of all kinds |
 | offeringPrice, offeringKarma | 25, 50 | a temple offering |
 | vigilSeconds, vigilExp, vigilKarma | 120, 100, 50 | a night vigil |
 | bandageHealing, bandageWage | 200, 10 | dressing a patient (Healing in tenths) |
+| stallSeconds, stallWage | 120, 30 | tending a market stall |
+| sentrySeconds, sentryWage, sentryReputation | 120, 30, 2 | a night sentry |
+| archeryExp, archeryMinutes | 5, 30 | target practice: exp a hit, minutes between rounds |
 
 ## Settings: "Hospoda"
 
@@ -214,3 +276,15 @@ Gathering herbs for the house is the general ingredients errand.
   - a vigil at night only, run to its end, and broken by leaving;
   - dressing a patient: the skill, a bandage, once a day;
   - all five errands, each asked only by its role: the requisition, both endings of the theft (compared as pay shares), the blade going to the barracks and a given-up one deleted from a chest on the ground, the pilgrim's right and wrong ways (never a sensible place called wrong), and the fever night.
+
+`Tests/Protocol/TradeVenueTests.cs`, with `scripts/Tests/TradeVenueTests.cs`, sets up a harbour, a stable, a market, a bakery and a barracks in Edoras. It then checks:
+- **through a client:** the harbourmaster's dialog line and a turn of unloading;
+- **on the server:**
+  - who offers what;
+  - the city's enemy offered nothing;
+  - each kind of labour resting on its own, and the daily cap covering all kinds;
+  - the stall by day and the sentry by night;
+  - a stall paid at its end, once a day, one stay at a time;
+  - a sentry broken by leaving, then its pay and reputation, not a deed;
+  - target practice by Archery, with its rest;
+  - all five errands, each only from its role: the fish, the two puzzles (the hint names the answer, the right one pays in full, three distinct payers), the bread round's three homes in 20 minutes with its loaf kept apart from the player's own, and the recruit walking the patrol.

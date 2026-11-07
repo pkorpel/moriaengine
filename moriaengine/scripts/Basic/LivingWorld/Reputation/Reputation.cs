@@ -130,7 +130,7 @@ namespace SteamEngine.CompiledScripts {
 			return TagKey.Acquire("_rep_ct_" + Word(city));
 		}
 
-		private static TagKey CityDeedKey(string city) {
+		internal static TagKey CityDeedKey(string city) {
 			return TagKey.Acquire("_rep_cg_" + Word(city));
 		}
 
@@ -239,14 +239,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>Raises or lowers a city's view; with a faction, that faction's too, and its rival's the other way by half.
 		/// Returns the city's new value.</summary>
-		public static int Change(Character player, string city, int delta, string faction = null) {
+		/// <summary>deed false: a gain that isn't a hero's deed (a routine night sentry, #1260).</summary>
+		public static int Change(Character player, string city, int delta, string faction = null, bool deed = true) {
 			if ((player == null) || !player.IsPlayer || string.IsNullOrEmpty(city) || (delta == 0)) {
 				return Of(player, city);
 			}
 			int now = Math.Max(Min, Math.Min(Max, Of(player, city) + delta)); //Of applies the drift so far, then it starts again
 			player.SetTag(CityKey(city), now);
 			player.SetTag(CityTimeKey(city), Now.Ticks);
-			if (delta > 0) {
+			if ((delta > 0) && deed) {
 				player.SetTag(CityDeedKey(city), Now.Ticks);
 			}
 			Faction f = (faction == null) ? null : Faction.Get(faction);
