@@ -111,6 +111,7 @@ namespace SteamEngine.CompiledScripts {
 				Collector bag = Collectors.FindIn(player, Q006.ThighBag);
 				Q006.Give(player, "i_potion_refreshgreater", 3);
 				bool notWithAnEmptyBag = (bag != null) && !Offers(dEriol, eriol, player, "gq006_haveSubQuestResources_5");
+				Report("theQuestBagsCantBeLost", bag.HasAttribute(ItemAttributes.attr_newbie) && bag.HasAttribute(ItemAttributes.attr_move_never));
 				bag.SetTag(Collector.CountTK, 10);
 				exp = ExpGained(player, () => dEriol.Press("gq006_giveSubQuestResources_5", eriol, player));
 				Report("aFullBagOfThighs", notWithAnEmptyBag && bag.IsDeleted && (Q006.GetStage(player) == 10) && (exp == 200) && (Q006.Count(player, "i_potion_refreshgreater") == 0));
@@ -166,15 +167,19 @@ namespace SteamEngine.CompiledScripts {
 				Report("withoutAlchemyItEndsWithoutTheRobe", noMixing && stillAt21 && (Q006.GetStage(player) == Q006.DoneWithoutRobe) && (exp == 2000)
 					&& !Q006.HasPotionIngredients(player) && (Q006.Count(player, Q006.RobeDef) == 0) && !Q006.Journal.IsDone(player));
 
-				//Alchemy 100 later: the ingredients back, the potion, the robe
+				//Alchemy 100 later: Eriol mixes it with the ingredients he kept, the potion (a tag) for the robe
 				bool notBelowHundred = !Offers(dEriol, eriol, player, "gq006_takePurityPotionResources");
 				dEriol.Press("gq006_takePurityPotionResources", eriol, player);
 				bool refused = Q006.GetStage(player) == Q006.DoneWithoutRobe;
 				player.SetRealSkillValue((int) SkillName.Alchemy, 1000);
 				dEriol.Press("gq006_takePurityPotionResources", eriol, player);
-				Report("atAlchemyHundredTheIngredientsComeBack", notBelowHundred && refused && (Q006.GetStage(player) == 23) && Q006.HasPotionIngredients(player));
+				Report("atAlchemyHundredEriolsIngredientsMakeThePotion", notBelowHundred && refused && (Q006.GetStage(player) == 23) && Q006.HasPotion(player)
+					&& !Q006.HasPotionIngredients(player));
+				Q006.SetPotion(player, false);
 				bool notWithoutThePotion = !Offers(dEriol, eriol, player, "gq006_havePurityPotion");
-				Q006.Give(player, "i_potion_ocisteni");
+				dEriol.Press("gq006_givePurityPotion", eriol, player);
+				bool stillAt23 = Q006.GetStage(player) == 23;
+				Q006.SetPotion(player, true);
 				dEriol.Press("gq006_givePurityPotion", eriol, player);
 				Item robe = null;
 				foreach (AbstractItem item in player.Backpack) {
@@ -182,8 +187,8 @@ namespace SteamEngine.CompiledScripts {
 						robe = (Item) item;
 					}
 				}
-				Report("thePotionForTheRobe", notWithoutThePotion && (Q006.GetStage(player) == Q006.Done) && (robe != null) && (robe.GetTag(Q006.RobeOwnerTK) == player)
-					&& (Q006.Count(player, "i_potion_ocisteni") == 0) && Q006.Journal.IsDone(player));
+				Report("thePotionForTheRobe", notWithoutThePotion && stillAt23 && (Q006.GetStage(player) == Q006.Done) && (robe != null) && (robe.GetTag(Q006.RobeOwnerTK) == player)
+					&& !Q006.HasPotion(player) && Q006.Journal.IsDone(player));
 
 				//the robe: +10 Alchemy for its owner at 100, back when taken off
 				player.TryEquip(robe);
@@ -206,6 +211,21 @@ namespace SteamEngine.CompiledScripts {
 					&& (player.Gold == goldBefore));
 
 				Report("journalTextsArePlain", JournalPlain());
+
+				//an alchemist at stage 21 mixes it at Eriol's at once: the ingredients go, the potion is a tag
+				Q006.SetStage(player, 21);
+				Q006.Give(player, "i_potion_curegreat", 3);
+				Q006.Give(player, "i_srdiczko", 2);
+				Q006.Give(player, "i_bylina");
+				bool offersMixing = Offers(dEriol, eriol, player, "gq006_createPurityPotion") && !Offers(dEriol, eriol, player, "gq006_giveSubQuestResources_7");
+				exp = ExpGained(player, () => dEriol.Press("gq006_createPurityPotion", eriol, player));
+				Report("anAlchemistMixesItAtEriols", offersMixing && (Q006.GetStage(player) == 23) && (exp == 2000)
+					&& !Q006.HasPotionIngredients(player) && Q006.HasPotion(player) && (Q006.Count(player, "i_potion_ocisteni") == 0));
+				Q006.SetPotion(player, false);
+				Q006.SetStage(player, Q006.Done);
+
+				ItemDef potion = (ItemDef) ThingDef.GetByDefname("i_potion_ocisteni");
+				Report("thePotionIsNotBrewable", !CraftmenuContents.MainCategories[SkillName.Alchemy].Contents.Exists(e => (e is CraftmenuItem made) && (made.itemDef == potion)));
 			} finally {
 				player.Account.PLevel = plevel;
 			}

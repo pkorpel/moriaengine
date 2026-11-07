@@ -98,6 +98,9 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		internal static void OpenPage(Player player, int entryIndex) {
+			if ((entryIndex < 0) || (entryIndex >= Entries.Count)) {
+				return; //a crafted button, or a scroll from before a recompile
+			}
 			D_QuestJournalPage page = SingletonScript<D_QuestJournalPage>.Instance;
 			player.DialogClose(page, 0);
 			player.Dialog(player, page, entryIndex);

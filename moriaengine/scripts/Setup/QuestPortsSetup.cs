@@ -21,7 +21,8 @@ namespace SteamEngine.CompiledScripts {
 
 	/// <summary>#1264 - the NPCs of the ported Erebor quests (#1237 phase 4), which Erebor's GMs placed and the archive doesn't keep.
 	/// q006: Qworet, Unas and the innkeeper where Erebor's q006 GM page says they stood (2893,908; 3769,1490; 164,2150); Eriol had
-	/// no spot written down, he stands by Minas Tirith's spawn point. All unreviewed.</summary>
+	/// no spot written down, he stands 8 tiles west of Minas Tirith's spawn point, 10 from the
+	/// Grandmaster envoy, so a greeting from close to one doesn't open both dialogs. All unreviewed.</summary>
 	public sealed class QuestPortsSetup : WorldSetup {
 		public override string Name {
 			get {
@@ -37,7 +38,7 @@ namespace SteamEngine.CompiledScripts {
 		protected internal override void Place(WorldPieces pieces, Character gm) {
 			Map world = Map.GetMap(0);
 			Point4D tirith = StaticRegion.GetByDefname("a_Minas_Tirith").P;
-			PlaceStill(pieces, gm, "q006/eriol", Q006.EriolDef, WorldSpots.NearestStandable(Map.GetMap(tirith.M), tirith.X - 3, tirith.Y + 2, 6), tirith.M);
+			PlaceStill(pieces, gm, "q006/eriol", Q006.EriolDef, WorldSpots.NearestStandable(Map.GetMap(tirith.M), tirith.X - 8, tirith.Y + 4, 6), tirith.M);
 			PlaceStill(pieces, gm, "q006/qworet", Q006.QworetDef, WorldSpots.NearestStandable(world, 2893, 908, 8), 0);
 			PlaceStill(pieces, gm, "q006/unas", Q006.UnasDef, WorldSpots.NearestStandable(world, 3769, 1490, 8), 0);
 			PlaceStill(pieces, gm, "q006/innkeeper", Q006.InnkeeperDef, WorldSpots.NearestStandable(world, 164, 2150, 8), 0);

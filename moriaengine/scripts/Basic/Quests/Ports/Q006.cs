@@ -25,9 +25,9 @@ namespace SteamEngine.CompiledScripts {
 	/// #1264 - Erebor's q006 "Erioluv vnuk" (questy/q006_erioluv_vnuk.scp): the healer Eriol's grandson, lost and then sick with the
 	/// barrow-wights' touch. 24 stages, Erebor's qtag(q006) numbers: torches, a shrunk dog, cures, grizzly thighs in a collector
 	/// bag, the shaman Qworet, the wizard Unas and his four essence bags, the innkeeper, then the potion of purification. A player
-	/// with Alchemy 100 mixes it and gets the alchemist's robe (+10 Alchemy for its owner); one without hands the ingredients in
-	/// and stops at stage 22, until they reach Alchemy 100 and come back for them.
-	/// <para>Unas's parchment is a player tag, the quest-item rule. Qworet's and Unas's own quest (q023) isn't ported: only their
+	/// with Alchemy 100 mixes it at Eriol's and gets the alchemist's robe (+10 Alchemy for its owner); one without hands the ingredients
+	/// in and stops at stage 22, until they reach Alchemy 100 and come back to mix it.
+	/// <para>Unas's parchment and the potion are player tags, the quest-item rule; the potion can't be brewed (the user's call). Qworet's and Unas's own quest (q023) isn't ported: only their
 	/// q006 lines and their plain pages. The innkeeper (q007's c_hospod) gets only Eriol's line here; q007 is step 14.</para>
 	/// </summary>
 	public static class Q006 {
@@ -45,6 +45,7 @@ namespace SteamEngine.CompiledScripts {
 
 		private static readonly TagKey stageTK = TagKey.Acquire("_q006Stage_");
 		private static readonly TagKey parchmentTK = TagKey.Acquire("_q006Pergamen_");
+		private static readonly TagKey potionTK = TagKey.Acquire("_q006Lektvar_");
 		internal static readonly TagKey RobeOwnerTK = TagKey.Acquire("_q006RobeOwner_");
 		internal static readonly TagKey RobeBoostTK = TagKey.Acquire("_q006RobeBoost_");
 
@@ -89,6 +90,19 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>The potion of purification: a quest item, so a tag (the user, 2026-11-07: not brewable, only from the quest's NPC).</summary>
+		public static bool HasPotion(Player player) {
+			return player.GetTag(potionTK) != null;
+		}
+
+		internal static void SetPotion(Player player, bool has) {
+			if (has) {
+				player.SetTag(potionTK, true);
+			} else {
+				player.RemoveTag(potionTK);
+			}
+		}
+
 		internal static string GetJournalText(Player player) {
 			int stage = GetStage(player);
 			return ((stage < 1) || (stage > Done)) ? null : JournalTexts[stage - 1];
@@ -110,6 +124,15 @@ namespace SteamEngine.CompiledScripts {
 			if ((def != null) && (player.Backpack != null)) {
 				Errands.Consume(player.Backpack, def, count);
 			}
+		}
+
+		/// <summary>A collector bag the quest hands out, newbie and fixed in the pack as Erebor's ATTR=010|04 (the converter drops
+		/// @create's ATTR): it can't be dropped, sold, traded or lost at death, and nothing would give another.</summary>
+		internal static Item GiveBag(Player player, string defname) {
+			Item bag = Give(player, defname);
+			bag.SetAttribute(ItemAttributes.attr_newbie, true);
+			bag.SetAttribute(ItemAttributes.attr_move_never, true);
+			return bag;
 		}
 
 		internal static Item Give(Player player, string defname, int amount = 1) {

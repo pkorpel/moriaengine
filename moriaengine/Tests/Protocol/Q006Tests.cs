@@ -35,8 +35,9 @@ namespace SteamEngine.Tests.Protocol {
 				this.Run(game, ".TestQ006Chain", "Q006_CHAIN_DONE");
 				this.AssertChecks("theClientAcceptedTheTorches", "theJournalListsIt", "tenTorchesAndNoFewer", "aShrunkDogOnly", "threeLesserThenTenGreaterCures",
 					"aFullBagOfThighs", "qworetKnowsNothing", "eriolSendsToUnas", "unasWantsLevelFifteen", "unasFourBagsThenTheParchment",
-					"theInnkeeperTakesTheParchment", "eriolAsksForTheIngredients", "withoutAlchemyItEndsWithoutTheRobe", "atAlchemyHundredTheIngredientsComeBack",
-					"thePotionForTheRobe", "theRobeGivesItsOwnerTen", "aNewRobeForTwoMillion", "journalTextsArePlain");
+					"theInnkeeperTakesTheParchment", "eriolAsksForTheIngredients", "withoutAlchemyItEndsWithoutTheRobe", "atAlchemyHundredEriolsIngredientsMakeThePotion",
+					"thePotionForTheRobe", "theRobeGivesItsOwnerTen", "aNewRobeForTwoMillion", "journalTextsArePlain", "theQuestBagsCantBeLost",
+					"anAlchemistMixesItAtEriols", "thePotionIsNotBrewable");
 			}
 		}
 	}

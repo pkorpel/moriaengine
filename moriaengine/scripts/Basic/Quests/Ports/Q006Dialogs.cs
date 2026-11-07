@@ -61,7 +61,7 @@ namespace SteamEngine.CompiledScripts {
 				d.Page("q006_GM_Info");
 				d.SetText("Stav: " + q + ". 1: 10 pochodni; 3: zmenseny pes (c_dog); 5: 3 i_potion_cureless; 7: 10 i_potion_curegreat; 9: plny " + Q006.ThighBag
 					+ " + 3 i_potion_refreshgreater; 11: Qworet; 13: Unas (level " + Q006.UnasMinLevel + "); 14-17: Unasovy vacky; 18: pergamen (tag) Eriolovi; "
-					+ "19: hospodsky; 21: 2 i_srdiczko, 1 i_bylina, 3 i_potion_curegreat; 22: konec bez roby (bez Alchemy 100); 23: ceka na i_potion_ocisteni; 24: konec s robou.");
+					+ "19: hospodsky; 21: 2 i_srdiczko, 1 i_bylina, 3 i_potion_curegreat; 22: konec bez roby (bez Alchemy 100); 23: ma lektvar (tag, nevari se); 24: konec s robou.");
 				d.Html();
 			}
 
@@ -134,7 +134,7 @@ namespace SteamEngine.CompiledScripts {
 					} else {
 						d.SetText("Vyborne! Vidim, ze uz jsi dostatecne <src.sex(\"zrucny\",\"zrucna\")> na vyrobu lektvaru. Tady, vezmi si prisady a udelej Lektvar Ocisteni.");
 						d.Html();
-						d.SetText("*vzit prisady*");
+						d.SetText("*vzit prisady a namichat lektvar*"); //Erebor's "*vzit prisady*": the player went off to brew it, here it's mixed at once
 						d.Response(false, true, "gq006_takePurityPotionResources"); //Erebor's response led to a page it never wrote, so it closed
 					}
 				} else if (q == Q006.Done) {
@@ -178,7 +178,7 @@ namespace SteamEngine.CompiledScripts {
 					Ask(d, "Mas ty prisady?", Q006.HasPotionIngredients(player), "Ano, mam to.", "gq006_haveSubQuestResources_7", "Bohuzel jeste ne");
 					break;
 				case 23:
-					Ask(d, "Uz jsi <src.sex(\"namichal\",\"namichala\")> ten lektvar?", Q006.Count(player, "i_potion_ocisteni") >= 1, "Ano, tady je.", "gq006_havePurityPotion", "Jeste ne, delam na tom.");
+					Ask(d, "Uz jsi <src.sex(\"namichal\",\"namichala\")> ten lektvar?", Q006.HasPotion(player), "Ano, tady je.", "gq006_havePurityPotion", "Jeste ne, delam na tom.");
 					break;
 				default:
 					d.SetText("Co pro me mas ?");
@@ -201,6 +201,15 @@ namespace SteamEngine.CompiledScripts {
 			d.Html();
 
 			this.BuildAnswers(d, player, q, alchemy);
+		}
+
+		//the ingredients go, the potion is the player's tag
+		private static void MixPotion(Player player) {
+			Q006.Consume(player, "i_potion_curegreat", 3);
+			Q006.Consume(player, "i_srdiczko", 2);
+			Q006.Consume(player, "i_bylina", 1);
+			Q006.SetPotion(player, true);
+			player.SysMessage("Pod Eriolovym dohledem jsi " + ((player.Gender == Gender.Female) ? "namichala" : "namichal") + " Lektvar Ocisteni.");
 		}
 
 		private static bool HasThighsAndRefresh(Player player) {
@@ -292,7 +301,7 @@ namespace SteamEngine.CompiledScripts {
 					NotYet(d, "Pospes.", "Prinesu to.");
 					break;
 				case 23:
-					Give(d, Q006.Count(player, "i_potion_ocisteni") >= 1, "Vyborne! Podej mi lektvar a vezmi si svou odmenu.", "*podat Lektvar Ocisteni*", "gq006_givePurityPotion",
+					Give(d, Q006.HasPotion(player), "Vyborne! Podej mi lektvar a vezmi si svou odmenu.", "*podat Lektvar Ocisteni*", "gq006_givePurityPotion",
 						"Pospes.", "Pokusim se.");
 					break;
 			}
@@ -375,7 +384,7 @@ namespace SteamEngine.CompiledScripts {
 					break;
 				case 8:
 					if (button == "gq006_acceptSubquest_5") {
-						Q006.Give(player, Q006.ThighBag);
+						Q006.GiveBag(player, Q006.ThighBag);
 						Q006.Advance(player, 9);
 					}
 					break;
@@ -420,22 +429,22 @@ namespace SteamEngine.CompiledScripts {
 						Q006.Consume(player, "i_bylina", 1);
 						Q006.Advance(player, Q006.DoneWithoutRobe);
 						Q006.Reward(player, 2000);
-					} else if ((button == "gq006_createPurityPotion") && (Q006.Alchemy(player) >= 1000)) { //the ingredients stay with the player
+					} else if ((button == "gq006_createPurityPotion") && (Q006.Alchemy(player) >= 1000)) {
+						MixPotion(player); //Erebor sent the player off to brew it; here it's mixed at Eriol's, a quest item
 						Q006.Advance(player, 23);
 						Q006.Reward(player, 2000);
 					}
 					break;
 				case 22:
 					if ((button == "gq006_takePurityPotionResources") && (Q006.Alchemy(player) >= 1000)) {
-						Q006.Give(player, "i_potion_curegreat", 3);
-						Q006.Give(player, "i_srdiczko", 2);
-						Q006.Give(player, "i_bylina");
+						Q006.SetPotion(player, true); //Eriol kept the ingredients handed in at 21; mixed with them at his place
+						player.SysMessage("Z Eriolovych prisad jsi " + ((player.Gender == Gender.Female) ? "namichala" : "namichal") + " Lektvar Ocisteni.");
 						Q006.Advance(player, 23);
 					}
 					break;
 				case 23:
-					if ((button == "gq006_givePurityPotion") && (Q006.Count(player, "i_potion_ocisteni") >= 1)) {
-						Q006.Consume(player, "i_potion_ocisteni", 1);
+					if ((button == "gq006_givePurityPotion") && Q006.HasPotion(player)) {
+						Q006.SetPotion(player, false);
 						Q006.GiveRobe(player);
 						Q006.Advance(player, Q006.Done);
 					}
@@ -585,7 +594,7 @@ namespace SteamEngine.CompiledScripts {
 		protected override void OnButton(string button, Character npc, Player player) {
 			int q = Q006.GetStage(player);
 			if ((q == 13) && (button == "q006_esentials") && (player.Level >= Q006.UnasMinLevel)) {
-				Q006.Give(player, Q006.EssenceBags[0]);
+				Q006.GiveBag(player, Q006.EssenceBags[0]);
 				Q006.Advance(player, 14);
 				return;
 			}
@@ -595,7 +604,7 @@ namespace SteamEngine.CompiledScripts {
 			}
 			if ((q < 17) && (button == "q006_esentials")) {
 				Collectors.FindIn(player, bag).Delete();
-				Q006.Give(player, Q006.EssenceBags[q - 13]);
+				Q006.GiveBag(player, Q006.EssenceBags[q - 13]);
 				Q006.Advance(player, q + 1);
 				Q006.Reward(player, 500);
 			} else if ((q == 17) && (button == "q006_takePergamen")) {
