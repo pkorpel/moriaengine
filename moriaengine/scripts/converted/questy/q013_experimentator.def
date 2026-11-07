@@ -36,10 +36,18 @@ ON=*ahoj*
 
 //[dialog d_mq013_experimentator button] //(commented out by Converter) 
 
-[EquippableDef i_q013_experimentator_kolektor]
+[CollectorDef i_q013_experimentator_kolektor]
 NAME = "Vacek na mozky Zlobru Valecniku"
-TYPE = t_collector
+TYPE = t_normal
 WEIGHT = 4
 model = i_bag
-layer = 0 //Set by Converter 
 Color = 025
+tag.contentsinfo = "Ve vacku je" //#1247 - from @create 
+tag.contentstype = "mozku Zlobru Valecniku" //#1247 - from @create 
+tag.maxcontents = 10 //#1247 - from @create 
+tag.target_remove = 0 //#1247 - from @create 
+tag.target_desc = "Kteremu Zlobrovi chces otevrit lebku? " //#1247 - from @create 
+tag.target_id = "Body of Zlobr Valecnik" //#1247 - from @create 
+tag.absolute_success = 200 //#1247 - from @create 
+tag.value_to_check = 175 //#1247 - from @create 
+tag.fail_msg = "Pri otvirani lebky jsi poskodil mozek! Nezbyva, nez se vesele rypat ve zbytcich." //#1247 - from @create 
