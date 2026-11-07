@@ -7,6 +7,7 @@ Step 6 of the living world (#1237, #1250) builds the engine behind the small dyn
 A **double click on a resident** opens their dialog (`D_ResidentTalk`). It shows:
 - a greeting that follows friendship: a stranger, a known face at 3+, a friend at 7+;
 - one line per errand step the player has with this resident. A choose step shows its two or three answers instead;
+- what the resident's venue offers, such as a tavern's rumours, room and dice (#1254, see [venue-life.md](venue-life.md));
 - **"Potrebujes neco?"**, which opens an offer (`D_ErrandOffer`: the giver's words, then "Rad pomuzu" or "Ted ne"). If there is no offer, the resident says why;
 - **"Sbohem."**
 

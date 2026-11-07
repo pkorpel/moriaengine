@@ -40,10 +40,10 @@ namespace SteamEngine.CompiledScripts {
 	}
 
 	/// <summary>Buttons: 1 asks, 0 goes; a step's line is FirstStepButton + its errand's id * 10 + the answer, so a button still
-	/// names the right errand when the list changed while the dialog was open.</summary>
+	/// names the right errand when the list changed while the dialog was open; a venue's offers (#1254) are VenueActions' 50-99.</summary>
 	public class D_ResidentTalk : CompiledGumpDef {
 		internal const int AskButton = 1, FirstStepButton = 100;
-		private const int Width = 380, TitleHue = 95, TextHue = 955, SayHue = 68, Row = 24;
+		private const int Width = 380, TitleHue = 95, TextHue = 955, SayHue = 68, OfferHue = 53, Row = 24;
 
 		public override void Construct(Thing focus, AbstractCharacter sendTo, DialogArgs args) {
 			Player player = (Player) sendTo;
@@ -54,6 +54,8 @@ namespace SteamEngine.CompiledScripts {
 			foreach (Errand errand in here) {
 				lines += (errand.Current.Kind == ErrandStepKind.Choose) ? errand.Current.choices.Count : 1;
 			}
+			List<VenueAction> offers = VenueActions.For(player, npc, gem);
+			lines += offers.Count;
 			int height = 120 + ((lines + 2) * Row);
 			this.SetLocation(60, 60);
 			this.AddPage(0);
@@ -76,6 +78,11 @@ namespace SteamEngine.CompiledScripts {
 					this.AddLabel(52, y + 2, SayHue, string.IsNullOrEmpty(step.say) ? here[i].name : step.say);
 					y += Row;
 				}
+			}
+			foreach (VenueAction offer in offers) {
+				this.AddButton(16, y, 0xFA5, 0xFA7, VenueActions.ButtonOf(offer), GumpButtonType.Reply, 0);
+				this.AddLabel(52, y + 2, OfferHue, offer.Label);
+				y += Row;
 			}
 			this.AddButton(16, y, 0xFA5, 0xFA7, AskButton, GumpButtonType.Reply, 0);
 			this.AddLabel(52, y + 2, TextHue, "Potrebujes neco?");
@@ -106,6 +113,13 @@ namespace SteamEngine.CompiledScripts {
 				D_ErrandOffer offer = SingletonScript<D_ErrandOffer>.Instance;
 				player.DialogClose(offer, 0); //one offer at a time: its errand travels in its own args
 				player.Dialog(player, offer, new DialogArgs(npc, errand));
+				return;
+			}
+			if (VenueActions.IsButton(button)) {
+				VenueAction action = VenueActions.ByButton(button, player, npc, gem);
+				if (action != null) {
+					action.Do(player, npc, gem);
+				}
 				return;
 			}
 			if (button >= FirstStepButton) {
