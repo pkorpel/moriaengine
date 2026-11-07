@@ -1,7 +1,10 @@
 # moriaengine — working state
 
-## NOW (2026-11-07): #1232 docs: skills overview's stale "not ported" line + this file's state (branch 1232-docs-state in ../moria-1232)
-skills-overview.md said ra_vigour, the Elven wood rule and the labour limits aren't ported; all three are (#1017, #427, #1107), only the crafting statistics aren't. Docs only, so no review agent (the hook exempts *.md). Then the final report; open for the user: #1228 picks, "Guard boss system" on #1069, #1122 Healer, bare dotnet idle nodes.
+## NOW (2026-11-07): #1235 catalogue of Erebor's quests + special rewards, then a quest plan (branch 1235-quest-catalogue in ../moria-1235)
+User: list every quest (ported or not), flag the ones rewarding a special magic item (like Terlak q017); NOT to port blindly, many are boring and the user wants better ideas, some are worth keeping. Plan: 4 research agents read scripts/questy in quarters (A kvest0001-4, q006-q016, q1, q14; B q017-q033, q29-q31; C q034-q100, Halda Molle, q043/q044, Darkmoon, prestupak; D gq/mq, start_dung, goblin labyrinth, misc + the full questMenu index), notes in scratchpad/quests/group?.md; then docs page quests/erebor-catalogue.md (summary table, special rewards list, a section per quest), docs-only PR (fact-check agent on the page), then the user picks port/rework/drop and the plan goes on #1235. Archive clone: scratchpad/erebor-archive.
+Done: catalogue + erebor-notes/group-{a..d}.md (agents' notes with a corrections header), fact-check agent fixed 18 points (q040 dragonslayer weapon needs a gold scale nothing drops; q017 collector buys only OLD versions; q009 wait 2.4 h, serv.time is tenths; q044 7 bags; q099 srazitlevely exists, only tag.vykoupeni missing; q026/q022 do work; ~20 t_collector quests; 15 quest stubs). Next: the user picks port/rework/drop per quest, then the quest plan on #1235.
+
+## DONE (2026-11-07): #1232 docs: skills overview's stale "not ported" line + this file's state = PR #1233
 
 ## DONE (2026-11-07): #1230 the review rule for every code change, enforced at merge = PR #1231
 Merged 3eeb3ee: hook scripts/hooks/require_review.py + 21 tests (scripts/hooks/test_require_review.py), 12 red checks, 2 review rounds (fixed: number before a redirect, the template's empty section, cd, ### rounds). Its own merge passed the hook (dry run: allowed).
