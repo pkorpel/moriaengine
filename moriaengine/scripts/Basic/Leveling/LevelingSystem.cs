@@ -403,6 +403,7 @@ namespace SteamEngine.CompiledScripts {
 				AddExperience(fighter as Player, share);
 				ShamanPacts.ShareKillExp(fighter as Player, share);
 				WeeklyQuests.OnKillCredit(fighter as Player, victim, share); //#1090 - @playerKill with added_experience_bydeath
+				Q017.OnKillCredit(fighter as Player, victim); //#1268 - Terlak's gate crystals
 			}
 		}
 

@@ -16,7 +16,7 @@
 */
 
 //#1266 - which of q007's dialogs (Q007Pages) a player gets, Erebor's f_q007_*_DClick, and what their buttons do. The innkeeper's
-//dialog is Erebor's d_q007_hospodsky, written by hand: it decides page by page. Its q017 lines come with q017 (step 15).
+//dialog is Erebor's d_q007_hospodsky, written by hand: it decides page by page; its q017 pages since #1268.
 
 namespace SteamEngine.CompiledScripts {
 
@@ -335,6 +335,8 @@ namespace SteamEngine.CompiledScripts {
 			d.BaseButton(4, 60, "Nabidka");
 			if ((s == 1) || (s == 5)) {
 				d.BaseButton(5, 55, "Selatko");
+			} else if (Collectors.IsFull(player, Q017.DeerEyesBag)) {
+				d.BaseButton(5, 55, "Nesu ti"); //#1268 - q017's bag of deer eyes
 			}
 
 			d.Page("Pozdrav");
@@ -351,8 +353,17 @@ namespace SteamEngine.CompiledScripts {
 			}
 
 			d.Page(first);
-			d.SetText((s > 6) ? "Je mi ted mnohem lepe. Obchody se zacaly hybat... Konecne si mohu dovolit prodat tolik jidla jako driv. Ale ostrov ma ted velmi spatnou povest. Bude trvat jeste dlouho, nez se vse vrati do starych koleji. Minulou noc tu dokonce byla skupina dobrodruhu a obchodniku... Jeden z nich tu utratil hotove jmeni, coz byla jedina vec, diky ktere sem ho tu jeste snesl.. Porad mel usta plna nelibosti k Terlakovi..." : ((s == 6) ? "Nejsem ted ve sve kuzi... Prosim, spechej se svym ukolem nez bude pozde!" : ((s >= 2) ? "Nadherne... Hospudka stoji, lide chteji veci z nabidek... Zadna selatka ... Nemuze mi byt lepe." : "Kdo jsem? .. *nasilne se rozesmal* .. Jsem hospodsky a stastny vlastnik tehle krcmy ! Das si neco ?"))); //q017's "Terlak hmm..." answer comes with q017
-			d.Html();
+			if ((s > 6) && ((Q017.GetProtection(player) != 0) || (Q017.GetRuns(player) != 0))) {
+				d.SetText("Je mi ted mnohem lepe. Obchody se zacaly hybat... Konecne si mohu dovolit prodat tolik jidla jako driv. Ale ostrov ma ted velmi spatnou povest. Bude trvat jeste dlouho, nez se vse vrati do starych koleji.");
+				d.Html();
+			} else {
+				d.SetText((s > 6) ? "Je mi ted mnohem lepe. Obchody se zacaly hybat... Konecne si mohu dovolit prodat tolik jidla jako driv. Ale ostrov ma ted velmi spatnou povest. Bude trvat jeste dlouho, nez se vse vrati do starych koleji. Minulou noc tu dokonce byla skupina dobrodruhu a obchodniku... Jeden z nich tu utratil hotove jmeni, coz byla jedina vec, diky ktere sem ho tu jeste snesl.. Porad mel usta plna nelibosti k Terlakovi..." : ((s == 6) ? "Nejsem ted ve sve kuzi... Prosim, spechej se svym ukolem nez bude pozde!" : ((s >= 2) ? "Nadherne... Hospudka stoji, lide chteji veci z nabidek... Zadna selatka ... Nemuze mi byt lepe." : "Kdo jsem? .. *nasilne se rozesmal* .. Jsem hospodsky a stastny vlastnik tehle krcmy ! Das si neco ?")));
+				d.Html();
+				if (s > 6) {
+					d.SetText("Terlak hmm... rekni mi vic.."); //#1268 - q017 starts here
+					d.Response(false, false, "Selatko");
+				}
+			}
 
 			d.Page("Mohu pomoci?");
 			if (s > 6) {
@@ -382,6 +393,10 @@ namespace SteamEngine.CompiledScripts {
 				d.SetText(labels[i] + " (" + drinkPrices[i] + "gp)");
 				d.Response(false, true, "drink:" + i);
 			}
+			if ((s > 6) && (((Q017.GetProtection(player) == 0) && (Q017.GetRuns(player) != 0)) || ((Q017.GetProtection(player) == 1) && Q017.NeedsDeerBag(player)))) {
+				d.SetText("Nemel by jsi dalsi lektvar na zpevneni tela ?");
+				d.Response(false, false, "p10");
+			}
 
 			if (s == 1) {
 				this.Stingy(d);
@@ -393,6 +408,54 @@ namespace SteamEngine.CompiledScripts {
 				d.Html();
 				d.SetText("*Predat luk a pockat si na selatko...*");
 				d.Response(false, true, "hospodsky:7", true);
+			} else if (s > 6) {
+				this.Terlak(d, player);
+			}
+		}
+
+		//#1268 - q017: Terlak's story and the protection potion, the first free, later ones for deer eyes and gold
+		private void Terlak(QuestDialogContent d, Player player) {
+			int protection = Q017.GetProtection(player);
+			if ((protection == 0) && (Q017.GetRuns(player) == 0)) {
+				d.Page("Selatko");
+				d.SetText("Aahh.. Alchymista Terlak. Je to muj dlouholety pritel. Nevidel jsem ho od dob, kdy odtud utekl. To bylo jeste pred utokem dryady. Odjel odsud hned jak to bylo mozne pry si nemohl dovolit zadne riziko povazoval svou praci za velike riziko. Leta se snazil spoutat magicke sily ruznych bylin, kamenu a mocnych slov, aby je vlozil do beznych predmetu... Po nocich jsme se obcas zavreli do kuchyne a zkouseli vsemozne kombinace *hospodsky se rozesmal*. To byly doby. Pamatuji si jeho vyraz kdykoliv prisel s novou myslenkou a byl si jisty, ze ted neco objevil, ale nasim nejlepsim vysledkem byl nakonec obycejny lektvar na zpevneni tela...");
+				d.Html();
+				d.SetText("Lektvar na zpevneni tela ?");
+				d.Response(false, false, "p7");
+				d.Page("p7");
+				d.SetText("Ano ! *Hospodsky se opet rozesmal*. Terlak znal nejake kouzlo uzivane k ochrane ruznych mist. Je to neprilis silne kouzlo vetsinou slouzi jen k odstraseni zvedavcu... Ovsem pokud jsi jeho sile vystaven prilis dlouho, roztrha te na kusy. *Hospodsky vyvalil z ust dalsi davka smichu* Ucinnek lektvaru je schopen absorbovat negativni energii kouzla a umozni ti nejaky cas pretrvat.");
+				d.Html();
+				d.SetText("Kde je alchymista ted ?");
+				d.Response(false, false, "p8");
+				d.Page("p8");
+				d.SetText("Dlouho jsem o nem neslysel, az ten opilec vcera tvrdil, ze ma s Terlakem schuzku... Drzel v ruce velmi zajimave krystaly, porad si s nimi pohraval a tvrdil, ze jsou to klice... <?src.sex(veril,verila)?> by jsi tomu? Navic hledal zoldaka, ktery by mu pomohl dostat se do jeskyni kdesi severne od Belfalske zatoky... Nakonec se mu podarilo za par mescu zlatych najmout Gargamela, znameho a neprilis prijemneho zoldaka.");
+				d.Html();
+				d.SetText("Mohl by jsi mi pripravit ten ochranny lektvar?");
+				d.Response(false, false, "p9");
+				d.Page("p9");
+				d.SetText("*Hospodsky se na tebe uprene podival* Nezminoval jsem se, ze je ten lektvar v podstate k nicemu ? Proti utocnemu kouzlu neobstoji a divil bych se, kdyby jsi poznal rozdil... Zvlastni asi to vsichni maji potrebu zkusit... Ten hlupak Gargamel byl tim lektvarem take posedly a jeste pred odjezdem mi za jednu davku zaplatil celych tisic zlatych. Nedivil bych se, kdyby to byla jeho plna mzda za cestu k Terlakovi... Neustale zvanil o nejakych krystalech bran a ze konecne prisel na to jak je pouzit, rekl bych ze byl blazen, ale kdo vi. Ze jsi to ty, jednu davku toho lektvaru ti namicham zdarma, stale ti to dluzim. Aby byl ucinek platny, musis lektvar vypit jeste horky. Dokud se s obrannym kouzlem nestretnes, bude lektvar pusobit. Nemysli si ale, ze te jeho ucinky ochrani podruhe. Jak jednou zapusobi, telo jej vyplavi a je potreba dat si novou davku.");
+				d.Html();
+				d.SetText("*Pockat nez hospodsky pripravi lektvar a napit se...*");
+				d.Response(false, true, "hospodsky:8", true);
+			}
+			if (Q017.NeedsDeerBag(player)) { //no potion, or the bag asked for and lost
+				d.Page("p10");
+				d.SetText("K cemu ? ! *Hospodsky vytrestene vyhrkl* ... Nejsem si jisty, jestli to chci vubec vedet ... A hlavne si nejsem jisty, zda si uvedomujes skutecnou cenu toho lektvaru. Jeden takovy lektvar vyzaduje desitky ingredienci a nektere jsou velice vzacne !");
+				d.Html();
+				d.SetText("Je mi lito, ale skutecne potrebuji ten lektvar.");
+				d.Response(false, false, "p11");
+				d.Page("p11");
+				d.SetText("*Hospodsky si otrel celo*. No dobra... naber mi do tohodle mesce 200 srncich oci. Aby lektvar spravne pusobil, je treba kazde oko vyjmout jinemu zvireti. Dve oci jedne srny mi jsou k nicemu a lektvar nebude pusobit! Navrch po tobe budu chtit deset tisic zlatych. Stale nechapu, k cemu takove mrhani zivotem...");
+				d.Html();
+				d.SetText("Dej mi ten mesec, ja uz si s tim poradim...");
+				d.Response(false, true, "hospodsky:9");
+			}
+			if (protection == 1) {
+				d.Page("Nesu ti");
+				d.SetText("Mas ty oci ? Vyborne, dej mi je spolu s 10 000 gp jak jsme se dohodli a uvarim ti dalsi lektvar...");
+				d.Html();
+				d.SetText("*Predat oci a penize*");
+				d.Response(false, true, "hospodsky:8", true);
 			}
 		}
 
@@ -523,6 +586,10 @@ namespace SteamEngine.CompiledScripts {
 				} else {
 					npc.Say("Ty ho nemas ! Thalione smiluj se ! Chces sem zavleci valku a smrt ? Prines mi ten luk!");
 				}
+			} else if ((button == "hospodsky:8") && (s > 6)) {
+				Q017.BrewPotion((NPC) npc, player);
+			} else if ((button == "hospodsky:9") && (s > 6)) {
+				Q017.GiveDeerBag((NPC) npc, player);
 			} else if ((button == "q006_toldInnkeeper") && (Q006.GetStage(player) == 19) && Q006.HasParchment(player)) {
 				Q006.SetParchment(player, false);
 				Q006.Advance(player, 20);
