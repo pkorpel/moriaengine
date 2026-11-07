@@ -46,7 +46,8 @@ Running `/task-run` or `/task-ship` is the go-ahead to push and merge for that i
   agent) before merge, inside `/task-run` or not (standing rule since 2026-11-07,
   #1230). `scripts/hooks/require_review.py` (PreToolUse on `gh pr merge` and
   `merge_pull_request`) denies merging a PR that changes anything but `*.md` when
-  its body has no `## Review` heading. It fails open when `gh` can't look the PR up.
+  its body has no `## Review` heading with text under it (the template's empty one
+  doesn't count). It fails open when `gh` can't look the PR up.
   Its tests: `python3 scripts/hooks/test_require_review.py`.
 - The analyst and reviewer are kept read-only by their tool lists: GitHub goes
   through the MCP server, so they get only the issue tools they need.

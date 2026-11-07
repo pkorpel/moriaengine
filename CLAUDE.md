@@ -8837,16 +8837,17 @@ and bin/obj already exist from prior sessions). Full suite:
 ## Workflow conventions for this repo (don't re-derive each session)
 
 - **Every code change gets an independent review agent before merging (user rule 2026-11-04 for the perf plan, every change
-  since 2026-11-07, #1230).** Code means anything but docs: C#, `.def`/`.scp` content, the converter, scripts, hooks, CI,
-  `.claude/`. Before the merge:
+  since 2026-11-07, #1230).** Code means any file but `*.md`: C#, `.def`/`.scp` content, the converter, scripts, hooks,
+  CI, `.claude/settings.json` (`.claude/` command and agent pages are `*.md`, so docs). Before the merge:
   - spawn a fresh, read-only review agent (`.claude/agents/reviewer.md`, or a general agent told not to edit, commit or push)
     with the issue, `git diff origin/main...HEAD` and the files to read, not my conclusions, so its read is independent;
   - verify each finding myself, fix the real ones or say why not, re-run the tests they touch, and get a second review when
     the fix is substantial;
   - put a `## Review` section in the PR body: what the review found and what changed because of it ("no defects" counts).
+    Add it with `gh pr edit --body-file` in its own call, not chained before the merge (the hook reads the body first).
   The hook `scripts/hooks/require_review.py` denies `gh pr merge` and `merge_pull_request` on a PR that changes more than
-  `*.md` files and has no `## Review` heading. Docs-only PRs are exempt; a page full of numbers still deserves a
-  fact-check agent (as the perf report got).
+  `*.md` files and has no `## Review` heading with text under it (the template's empty one doesn't count). Docs-only PRs
+  are exempt; a page full of numbers still deserves a fact-check agent (as the perf report got).
 - **Anything that must exist in the world goes through `scripts/Setup` and `.SetupWorld` (#843, user rule 2026-10-30).** Quest
   stones, NPCs, teleports, spawn gems: a `WorldSetup` with permanent piece ids, added to `WorldSetups.All`. Setups only ever
   add what's missing, never replace. See docs/current/03-admin-tooling/world-setup.md.
