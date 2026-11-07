@@ -86,7 +86,10 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>The button "ON=13": pays, then hands out what was ordered.</summary>
 		internal static void Deliver(NPC alchemist, Player player, int[] counts) {
-			int total = Total(counts);
+			if (Reputation.Refuses(player)) { //#1243
+				return;
+			}
+			int total = (int) Reputation.PriceFor(player, Total(counts)); //#1243 - by the city's view of you
 			if (!GoldUtils.Pay(player, total)) {
 				return;
 			}

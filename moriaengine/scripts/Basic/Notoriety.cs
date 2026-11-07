@@ -73,6 +73,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static void FlagCriminal(Character self) {
+			Reputation.OnCrime(self); //#1243 - the city where it happened remembers
 			if (!IsMurderer(self)) { //murderers are already the worst notoriety, flagging them criminal too would add nothing
 				self.AddTimer(criminalTimerTK, new CriminalExpiryTimer()).DueInSeconds = CriminalFlagSeconds;
 			}
@@ -147,6 +148,7 @@ namespace SteamEngine.CompiledScripts {
 				return; //killing a criminal/murderer is not a murder
 			}
 			killedBy.SetTag(murderCountTK, GetMurderCount(killedBy) + 1);
+			Reputation.OnMurder(victim, killedBy); //#1243
 		}
 
 		/// <summary>The real UO client colors the health-bar/status overlay from the
