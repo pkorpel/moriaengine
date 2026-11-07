@@ -446,7 +446,7 @@ The numbers are proposals and would live in `.settings`.
 
 ## 16. How `.venue` would work
 
-A venue is a small region inside the city's region, as houses are. GM-made regions are already saved with the world. As a region, a venue gets entry events and an answer to "who is in the tavern" for free.
+**Built as a hidden marker, not a region (#1240).** The plan below first said region. Building it showed that a city's name and realm aren't inherited by a child region and much of the game asks which area a player stands in, so a venue region would change those answers. A venue is a hidden marker item with its area in tags, like a house's gem; see [venues.md](../living-world/venues.md).
 
 **Marking a building:**
 1. Stand inside the building and type `.venue`.

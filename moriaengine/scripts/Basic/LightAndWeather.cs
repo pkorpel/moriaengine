@@ -77,6 +77,17 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1240 - where in the day cycle we are, 0 to 1: the first half is day, the second night.</summary>
+		public static double DayPhase {
+			get {
+				if (dayLengthSeconds <= 0) {
+					return 0.25;
+				}
+				double elapsed = Globals.TimeInSeconds - dayCycleAnchorSeconds;
+				return (elapsed % dayLengthSeconds) / dayLengthSeconds;
+			}
+		}
+
 		/// <summary>First half of the day cycle is day, second half is night - simple and good enough without a real sunrise/sunset curve.</summary>
 		public static bool IsNight {
 			get {

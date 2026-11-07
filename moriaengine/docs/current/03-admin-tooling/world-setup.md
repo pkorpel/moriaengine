@@ -27,6 +27,9 @@ respawns too; a still NPC has homedist 0, the rest 6. To move one for good, a GM
 (`NpcWithoutSpawn`): his quest makes a new one for each hero and keeps the cave shut while he lives, which a spawn's own timer
 would break.
 
+**Venues** (#1240) come from a file, `scripts/Setup/venues.txt`, which `.venues export` writes: `VenueSetup` places each venue that is missing,
+by its id. See [venues.md](../04-gameplay-systems/living-world/venues.md).
+
 Every item piece is fixed in place (`attr_move_never`), which also stops it decaying and keeps players from picking it up. A run
 applies this to pieces that already exist too, and that's the only thing it does to them. GMs can still drag fixed items; with `.gm`
 off they can't.
