@@ -67,8 +67,20 @@ namespace SteamEngine.CompiledScripts {
 				Collector bag = Collectors.FindIn(player, Q017.DeerEyesBag);
 				Report("laterPotionsWantDeerEyes", notFreeAgain && offersTheBag && (Q017.GetProtection(player) == 1) && (bag != null)
 					&& bag.HasAttribute(ItemAttributes.attr_newbie) && bag.HasAttribute(ItemAttributes.attr_move_never));
+				bag.Delete(); //lost: another one for the asking, as Erebor's button 9
+				bool offersAnotherBag = Offers(innkeeper, player, "hospodsky:9");
+				dInn.Press("hospodsky:9", innkeeper, player);
+				bag = Collectors.FindIn(player, Q017.DeerEyesBag);
+				Report("aLostBagCanBeAskedForAgain", offersAnotherBag && (bag != null) && (Q017.GetProtection(player) == 1));
+				dInn.Press("hospodsky:9", innkeeper, player);
+				int bags = 0;
+				foreach (AbstractItem item in player.Backpack) {
+					if (item.Def == ThingDef.GetByDefname(Q017.DeerEyesBag)) {
+						bags++;
+					}
+				}
 				dInn.Press("hospodsky:8", innkeeper, player);
-				bool notWithAnEmptyBag = Q017.GetProtection(player) == 1;
+				bool notWithAnEmptyBag = (Q017.GetProtection(player) == 1) && (bags == 1);
 				bag.SetTag(Collector.CountTK, 200);
 				bool offersWithAFullBag = Offers(innkeeper, player, "hospodsky:8");
 				long gold = player.Gold;
@@ -119,6 +131,10 @@ namespace SteamEngine.CompiledScripts {
 				player.Level = 30;
 				Wear(player, shield);
 				bool lowRefused = shield.Cont is Container; //still in the pack
+				NPC friend = (NPC) ((NPCDef) ThingDef.GetByDefname("c_a_jackrabbit")).Create(player.X + 1, player.Y + 1, player.Z, player.M);
+				Wear(friend, player, shield); //someone else drops it on the paperdoll: the wearer's rules count
+				bool droppedOnRefused = shield.Cont is Container;
+				friend.Delete();
 				player.Level = 40;
 				Wear(player, shield);
 				bool worn = (shield.Cont == player) && (MagicItems.WearerValue(player, 134) == 10);
@@ -132,7 +148,7 @@ namespace SteamEngine.CompiledScripts {
 				Wear(player, hat);
 				bool twoRefused = (hat.Cont is Container) && (hat.Name == "Klobouk maga") && (MagicItems.Value(hat, 25) == 10);
 				player.Profession = ProfessionDef.GetByDefname("profession_warrior");
-				Report("theRewardsRules", lowRefused && worn && otherProfessionRefused && twoRefused);
+				Report("theRewardsRules", lowRefused && droppedOnRefused && worn && otherProfessionRefused && twoRefused);
 
 				//later entries want as many crystals as the run count; one hero in 4 hours
 				Q017.AddCrystals(player, 2, 2);
@@ -186,7 +202,8 @@ namespace SteamEngine.CompiledScripts {
 			if (sa.Args.Trim().Trim('"') == "death") {
 				Q017.OnDeath(player); //what Player.On_Death calls
 			} else {
-				player.SetTag(TagKey.Acquire("_q017RunEnds_"), Globals.TimeInSeconds - 1);
+				started &= Q017.SecondsLeft(player) == Q017.RunSeconds;
+				Q017.SetSecondsLeft(player, 0);
 				timer.DueInSeconds = 1;
 			}
 			Console.WriteLine("Q017_RUN_STARTED: onRun=" + started);
@@ -202,10 +219,14 @@ namespace SteamEngine.CompiledScripts {
 		//putting it on as a drag onto the paperdoll does: the item's @DenyEquip first (TryEquipItemOnChar needs the item dragged, and a
 		//test's pickup from a pack the client never opened is refused), then on if allowed
 		private static void Wear(Player player, Item item) {
-			DenyEquipArgs args = new DenyEquipArgs(player, item, player, item.Layer);
+			Wear(player, player, item);
+		}
+
+		private static void Wear(Character putter, Player wearer, Item item) {
+			DenyEquipArgs args = new DenyEquipArgs(putter, item, wearer, item.Layer);
 			item.On_DenyEquip(args);
 			if (args.Result.Allow) {
-				player.TryEquip(item);
+				wearer.TryEquip(item);
 			}
 		}
 

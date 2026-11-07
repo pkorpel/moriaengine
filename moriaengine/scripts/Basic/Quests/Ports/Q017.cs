@@ -60,7 +60,7 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TagKey runsTK = TagKey.Acquire("_q017Terlak_"); //qtag q017_terlak
 		private static readonly TagKey protectionTK = TagKey.Acquire("_q017Ochrana_"); //qtag q017_terlak_ochrana
 		private static readonly TagKey redTK = TagKey.Acquire("_q017RedCrystals_"), blueTK = TagKey.Acquire("_q017BlueCrystals_");
-		private static readonly TagKey runEndsTK = TagKey.Acquire("_q017RunEnds_"), returnTK = TagKey.Acquire("_q017Return_");
+		private static readonly TagKey runLeftTK = TagKey.Acquire("_q017RunLeft_"), returnTK = TagKey.Acquire("_q017Return_");
 		internal static readonly TagKey LastEntryTK = TagKey.Acquire("_q017LastEntry_");
 		internal static readonly TagKey RewardTK = TagKey.Acquire("_q017Reward_");
 		internal static readonly TimerKey RunTimerTK = TimerKey.Acquire("_q017RunTimer_");
@@ -117,7 +117,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static bool IsOnRun(Player player) {
-			return player.GetTag(runEndsTK) != null;
+			return player.GetTag(runLeftTK) != null;
 		}
 
 		/// <summary>The quest is under way: the innkeeper's potion asked for or drunk, or a run done.</summary>
@@ -169,9 +169,15 @@ namespace SteamEngine.CompiledScripts {
 			QuestJournal.Report(player, Journal);
 		}
 
+		/// <summary>No potion and no bag, or a bag asked for and lost (Erebor's button 9 gave another any time).</summary>
+		internal static bool NeedsDeerBag(Player player) {
+			int protection = GetProtection(player);
+			return (protection == 0) || ((protection == 1) && (Collectors.FindIn(player, DeerEyesBag) == null));
+		}
+
 		/// <summary>The innkeeper's button 9: the bag for 200 deer eyes, newbie and fixed as Erebor's ATTR=010|04.</summary>
 		internal static void GiveDeerBag(NPC innkeeper, Player player) {
-			if ((GetProtection(player) != 0) || !CanHear(player)) {
+			if (!NeedsDeerBag(player) || !CanHear(player)) {
 				return;
 			}
 			Q006.GiveBag(player, DeerEyesBag);
@@ -265,23 +271,27 @@ namespace SteamEngine.CompiledScripts {
 		#endregion the gates
 
 		#region the run
+		/// <summary>The run's time counts only while the hero is in the game, as Erebor's timer item didn't tick for someone logged out.</summary>
 		internal static void StartRun(Player player) {
-			player.SetTag(runEndsTK, Globals.TimeInSeconds + RunSeconds);
+			SetSecondsLeft(player, RunSeconds);
 			Q017RunTimer timer = new Q017RunTimer();
-			player.AddTimer(RunTimerTK, timer);
+			player.AddTimer(RunTimerTK, timer); //replaces a leftover one
 			timer.DueInSeconds = Q017RunTimer.Tick;
 			timer.PeriodInSeconds = Q017RunTimer.Tick;
 		}
 
 		internal static void EndRun(Player player) {
-			player.RemoveTag(runEndsTK);
+			player.RemoveTag(runLeftTK);
 			player.RemoveTag(returnTK);
-			player.RemoveTimer(RunTimerTK);
+			player.DeleteTimer(RunTimerTK);
 		}
 
-		internal static double SecondsLeft(Player player) {
-			object ends = player.GetTag(runEndsTK);
-			return (ends == null) ? 0 : Convert.ToDouble(ends, CultureInfo.InvariantCulture) - Globals.TimeInSeconds;
+		internal static int SecondsLeft(Player player) {
+			return Get(player, runLeftTK);
+		}
+
+		internal static void SetSecondsLeft(Player player, int seconds) {
+			player.SetTag(runLeftTK, seconds); //0 still means on a run, about to end
 		}
 
 		/// <summary>Out of time: back outside, the run lost.</summary>
@@ -296,7 +306,7 @@ namespace SteamEngine.CompiledScripts {
 			if (!IsOnRun(player)) {
 				return;
 			}
-			player.RemoveTag(runEndsTK);
+			player.RemoveTag(runLeftTK);
 			player.RemoveTag(returnTK);
 			Q017RunTimer timer = player.GetTimer(RunTimerTK) as Q017RunTimer;
 			if (timer == null) {
@@ -421,7 +431,7 @@ namespace SteamEngine.CompiledScripts {
 		};
 	}
 
-	/// <summary>#1268 - Erebor's i_alchymistuv_timer: the run's 4 hours, told now and then, and a dead hero's way out.</summary>
+	/// <summary>#1268 - Erebor's i_alchymistuv_timer: the run's 4 hours of play, told now and then, and a dead hero's way out.</summary>
 	[SaveableClass, DeepCopyableClass]
 	public class Q017RunTimer : BoundTimer {
 		internal const int Tick = 30;
@@ -445,14 +455,17 @@ namespace SteamEngine.CompiledScripts {
 				this.Delete();
 				return;
 			}
-			double left = Q017.SecondsLeft(player);
+			if (player.Flag_Disconnected) {
+				return; //logged out: the clock stands, as Erebor's timer item didn't tick offline
+			}
+			int left = Q017.SecondsLeft(player) - Tick;
 			if (left <= 0) {
 				Q017.TimeOut(player);
 				return;
 			}
+			Q017.SetSecondsLeft(player, left);
 			//Erebor told the seconds every 30 s; here every 10 minutes, and each half minute of the last two
-			int seconds = (int) left;
-			if ((seconds <= 120) || ((seconds % 600) < Tick)) {
+			if ((left <= 120) || ((left % 600) < Tick)) {
 				player.SysMessage("Zbyva ti " + Q017.Remaining(left) + ".");
 			}
 		}

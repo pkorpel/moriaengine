@@ -31,7 +31,7 @@ namespace SteamEngine.Tests.Protocol {
 				Assert.Contains("protection=2", state);
 
 				this.Run(game, ".TestQ017Chain", "Q017_CHAIN_DONE");
-				this.AssertChecks("theClientDrankTheFreePotion", "laterPotionsWantDeerEyes", "theFullBagAndGoldForAPotion", "theEntryGatesRules",
+				this.AssertChecks("theClientDrankTheFreePotion", "laterPotionsWantDeerEyes", "aLostBagCanBeAskedForAgain", "theFullBagAndGoldForAPotion", "theEntryGatesRules",
 					"theExitGivesTheProfessionsItem", "theRewardsRules", "laterRunsWantMoreCrystalsAndWaitFourHours", "crystalsDropInTheGatesDungeons",
 					"journalTextsArePlain");
 

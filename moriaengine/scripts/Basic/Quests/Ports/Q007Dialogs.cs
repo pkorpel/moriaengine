@@ -393,7 +393,7 @@ namespace SteamEngine.CompiledScripts {
 				d.SetText(labels[i] + " (" + drinkPrices[i] + "gp)");
 				d.Response(false, true, "drink:" + i);
 			}
-			if ((s > 6) && (Q017.GetProtection(player) == 0) && (Q017.GetRuns(player) != 0)) {
+			if ((s > 6) && (((Q017.GetProtection(player) == 0) && (Q017.GetRuns(player) != 0)) || ((Q017.GetProtection(player) == 1) && Q017.NeedsDeerBag(player)))) {
 				d.SetText("Nemel by jsi dalsi lektvar na zpevneni tela ?");
 				d.Response(false, false, "p10");
 			}
@@ -438,7 +438,7 @@ namespace SteamEngine.CompiledScripts {
 				d.SetText("*Pockat nez hospodsky pripravi lektvar a napit se...*");
 				d.Response(false, true, "hospodsky:8", true);
 			}
-			if (protection == 0) {
+			if (Q017.NeedsDeerBag(player)) { //no potion, or the bag asked for and lost
 				d.Page("p10");
 				d.SetText("K cemu ? ! *Hospodsky vytrestene vyhrkl* ... Nejsem si jisty, jestli to chci vubec vedet ... A hlavne si nejsem jisty, zda si uvedomujes skutecnou cenu toho lektvaru. Jeden takovy lektvar vyzaduje desitky ingredienci a nektere jsou velice vzacne !");
 				d.Html();
@@ -449,7 +449,8 @@ namespace SteamEngine.CompiledScripts {
 				d.Html();
 				d.SetText("Dej mi ten mesec, ja uz si s tim poradim...");
 				d.Response(false, true, "hospodsky:9");
-			} else if (protection == 1) {
+			}
+			if (protection == 1) {
 				d.Page("Nesu ti");
 				d.SetText("Mas ty oci ? Vyborne, dej mi je spolu s 10 000 gp jak jsme se dohodli a uvarim ti dalsi lektvar...");
 				d.Html();
