@@ -604,13 +604,9 @@ namespace SteamEngine.CompiledScripts {
 		private static readonly TimerKey rinaldTimerTK = TimerKey.Acquire("_q000RinaldTimer_");
 	}
 
-	public partial class D_Q000Envoy {
-		protected override int Face {
-			get {
-				return 0x3002;
-			}
-		}
-
+	/// <summary>#1276 - both envoys' dialog; each realm's own sealed class gives its face. Sealed, not one deriving from the other:
+	/// SingletonScript&lt;T&gt; takes any subclass of T, so Gondor's could come back as Mordor's (#674).</summary>
+	public abstract partial class D_Q000EnvoyBase {
 		protected override void OnButton(string button, Character npc, Player player) {
 			if ((button == "q000_getVM") && GrandmasterQuest.CanBePromoted(player)) {
 				GrandmasterQuest.Advance(player, 13);
@@ -626,8 +622,17 @@ namespace SteamEngine.CompiledScripts {
 		}
 	}
 
+	/// <summary>#833 - Gondor's envoy, Erebor's d_gq030_zmocnenec.</summary>
+	public sealed class D_Q000Envoy : D_Q000EnvoyBase {
+		protected override int Face {
+			get {
+				return 0x3002;
+			}
+		}
+	}
+
 	/// <summary>#1276 - Mordor's envoy: Erebor's d_mq030_zmocnenec had its own face.</summary>
-	public class D_Q000EnvoyMordor : D_Q000Envoy {
+	public sealed class D_Q000EnvoyMordor : D_Q000EnvoyBase {
 		protected override int Face {
 			get {
 				return 0x3111;

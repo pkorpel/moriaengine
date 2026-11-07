@@ -18,6 +18,7 @@ namespace SteamEngine.Tests.Protocol {
 				var gump = game.ReadGumpSkippingQuestScroll(Wait);
 				Assert.Contains(gump.Strings, s => s.Contains("Zdravim..."));
 				Assert.Contains(gump.Strings, s => s.Contains("Nejake drby ?"));
+				Assert.Matches(@"gumppic 38 217 12290\b", gump.LayoutText); //Gondor's face, 0x3002 (#674's trap gave Mordor's 0x3111 on some boots)
 				this.Run(game, ".TestQ30Button \"work_accept\"", "Q30_BUTTON:");
 				string line = this.LastLine("Q30_BUTTON:");
 				game.SendGumpResponse(gump.GumpUid, int.Parse(line.Substring(line.IndexOf("id=", System.StringComparison.Ordinal) + 3).Trim(), CultureInfo.InvariantCulture));

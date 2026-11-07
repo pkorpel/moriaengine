@@ -59,8 +59,7 @@ namespace SteamEngine.CompiledScripts {
 
 		#region tags
 		public static int GetStage(Player player, bool gondor) {
-			object tag = player.GetTag(gondor ? gondorTK : mordorTK);
-			return (tag == null) ? 0 : Convert.ToInt32(tag, CultureInfo.InvariantCulture);
+			return Collectors.ToInt(player.GetTag(gondor ? gondorTK : mordorTK)); //a GM's text in the tag reads as 0
 		}
 
 		internal static void SetStage(Player player, bool gondor, int stage) {
@@ -73,8 +72,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static int Finished(Player player) {
-			object tag = player.GetTag(finishedTK);
-			return (tag == null) ? 0 : Convert.ToInt32(tag, CultureInfo.InvariantCulture);
+			return Collectors.ToInt(player.GetTag(finishedTK));
 		}
 
 		internal static void SetFinished(Player player, int value) {
@@ -86,8 +84,7 @@ namespace SteamEngine.CompiledScripts {
 		}
 
 		public static int Presel(Player player) {
-			object tag = player.GetTag(preselTK);
-			return (tag == null) ? 0 : Convert.ToInt32(tag, CultureInfo.InvariantCulture);
+			return Collectors.ToInt(player.GetTag(preselTK));
 		}
 
 		internal static void ForgetPresel(Player player) {
@@ -264,10 +261,15 @@ namespace SteamEngine.CompiledScripts {
 
 		/// <summary>d_gq030_zmocnenec button / d_mq030_zmocnenec button. True when the button was q30's.</summary>
 		internal static bool Button(string button, NPC npc, Player player, bool gondor) {
-			if (Refusal(player, gondor) != null) {
+			string refusal = Refusal(player, gondor);
+			if (refusal != null) { //Erebor's button handler ran refuseQDialog too, and said it
+				npc.Say(refusal);
 				return true;
 			}
 			int stage = GetStage(player, gondor);
+			if ((stage < 0) || (stage > Done)) { //a GM's typo in the tag: nothing to hand out
+				return false;
+			}
 			if (CanGetWork(stage)) {
 				if (button == "refuse") {
 					npc.Say("Aha...");
