@@ -2247,6 +2247,7 @@ namespace SteamEngine.CompiledScripts {
 			PlayerRecord.MonsterDied(this, killedBy); //#1011
 			MonsterSpecialAttacks.OnMonsterDeath(this, killedBy); //#1022
 			Reputation.OnDeath(this, killedBy); //#1243 - a resident's killer is remembered in the city
+			Q008.OnKillCredit(killedBy as Player, this); //#1274 - Ancam's monsters: Erebor's @Death tag on act, whatever their experience
 			LevelingSystem.ShareMonsterExperience(this, killedBy);
 		}
 
