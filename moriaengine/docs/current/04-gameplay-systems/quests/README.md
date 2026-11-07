@@ -17,8 +17,10 @@ One file per quest, for an overview. Quest systems that aren't a quest of their 
 | q009 Mistr krejci (the master tailor), Talathwen's ring | [q009.md](q009.md) | #1270 |
 | q018 Zlaty losos (the golden salmon), the golden thread | [q018.md](q018.md) | #1270 |
 | q026 Otrava z hrobek (the tomb poison), immunity to the tomb curse | [q026.md](q026.md) | #1272 |
+| q008 Black Mustang, a magic mount for rangers | [q008.md](q008.md) | #1274 |
+| q31 Kuchar Mrkvicka (the cook), a llama figurine | [q31.md](q31.md) | #1274 |
 
-Ported from the numbered quests so far: q006, q007, q009, q017, q018, q026 (#1237's phase 4 ports them one by one). Not ported: the other numbered quests
+Ported from the numbered quests so far: q006, q007, q008, q009, q017, q018, q026, q31 (#1237's phase 4 ports them one by one). Not ported: the other numbered quests
 (q008-q100, gq*, mq*), and the rest listed on #1069. All of Erebor's quests, their rewards and
 what state they were in: [erebor-catalogue.md](erebor-catalogue.md) (#1235).
 

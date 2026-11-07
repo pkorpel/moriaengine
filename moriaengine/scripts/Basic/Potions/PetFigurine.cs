@@ -19,6 +19,17 @@ namespace SteamEngine.CompiledScripts {
 			}
 		}
 
+		/// <summary>#1274 - a figurine of a creature nobody has yet (Erebor's i_pet_llama and its kin, whose t_figurine did nothing here).</summary>
+		internal void Hold(NPCDef def) {
+			this.petDef = def;
+			this.petName = def.Name;
+			this.Name = def.Name;
+			int icon = IconOf(def);
+			if (icon != 0) {
+				this.Model = icon;
+			}
+		}
+
 		//Erebor makes the item its ICON names; two of the archive's name nothing, and 394 creatures have none
 		internal static int IconOf(NPCDef def) {
 			try {

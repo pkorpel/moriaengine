@@ -74,6 +74,42 @@ namespace SteamEngine.CompiledScripts {
 			PlaceTerlak(pieces, gm);
 			PlaceTailorAndSalmon(pieces, gm);
 			PlaceTombPoison(pieces, gm);
+			PlaceMustangAndCook(pieces, gm);
+		}
+
+		/// <summary>#1274 - q008: Ancam by his house (571,3547, Erebor's script header), his corral beside it (Erebor's was GM-built:
+		/// a gate with a pad on each side and the black mustang's spawn behind it), the four quest monsters where the header says
+		/// (snow elemental and ice eye at 106,2099; snow eye 1005,101; ice elemental 955,112). q31: the cooks had no spot on Erebor,
+		/// Gondor's stands in Pelargir, Mordor's in Harad. All unreviewed.</summary>
+		internal static void PlaceMustangAndCook(WorldPieces pieces, Character gm) {
+			Map world = Map.GetMap(0);
+			int[] ancam = WorldSpots.NearestStandable(world, 571, 3547, 8);
+			PlaceStill(pieces, gm, "q008/ancam", Q008.AncamDef, ancam, 0);
+			if (ancam != null) {
+				Item gate = PlaceItem(pieces, gm, "q008/gate", Q008.GateDef, new Point4D(ancam[0] + 6, ancam[1], 0, 0), false);
+				if (gate != null) {
+					gate.AddTriggerGroup(SingletonScript<E_Q008Gate>.Instance); //before its locked door's own handler
+					gate.LockUid = gate.Uid; //a lock no key fits: the open-door macro asks for one and skips the trigger group
+					//i_gate_wood_3 stands in an east-west fence: walked through north to south
+					PlaceItem(pieces, gm, "q008/padOutside", Q008.PadOutsideDef, new Point4D(gate.X, gate.Y - 1, 0, 0), false)?.SetAttribute(ItemAttributes.attr_invis, true);
+					PlaceItem(pieces, gm, "q008/padInside", Q008.PadInsideDef, new Point4D(gate.X, gate.Y + 1, 0, 0), false)?.SetAttribute(ItemAttributes.attr_invis, true);
+					int[] corral = WorldSpots.NearestStandable(world, gate.X, gate.Y + 5, 4);
+					if (corral != null) {
+						pieces.Npc("quests/q008/mustang", Q008.MustangDef, corral, 0, Realm.None, false, WorldPieces.WandersAbout);
+					}
+				}
+			}
+			int[][] monsterSpots = { new[] { 106, 2099 }, new[] { 955, 112 }, new[] { 1005, 101 }, new[] { 108, 2101 } };
+			for (int i = 0; i < Q008.MonsterDefs.Length; i++) {
+				int[] at = WorldSpots.NearestStandable(world, monsterSpots[i][0], monsterSpots[i][1], 8);
+				if (at == null) {
+					gm.SysMessage("No spot for q008's " + Q008.MonsterDefs[i] + ".");
+				} else {
+					pieces.Npc("quests/q008/monster" + i, Q008.MonsterDefs[i], at, 0, Realm.None, false, WorldPieces.WandersAbout);
+				}
+			}
+			PlaceNear(pieces, gm, "q31/gondor", Q31.GondorCookDef, "a_Pelargir", 4, 2);
+			PlaceNear(pieces, gm, "q31/mordor", Q31.MordorCookDef, "a_Harad", 4, 2);
 		}
 
 		/// <summary>#1272 - q026: Andor and Roxana where Erebor's chars files say (3200,2971; 2913,1988), the Temple of Knowledge's
