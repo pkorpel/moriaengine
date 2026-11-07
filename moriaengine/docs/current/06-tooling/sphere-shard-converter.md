@@ -123,6 +123,9 @@ few other trigger bodies are emitted as-is, keyed by defname in `ConvertedThingD
 `@NPCRefuseItem` (`c_namestek_valky_g/_m`, `C_m_GUARD_ent1`, `C_f_GUARD_ent2`,
 `c_ocs_guard_npc_killer`); the 4 bareword-SAY ones (kvest0001/0002, `c_strazce_knihovny`) are not.
 
+**Collector bags (#1247).** A `TYPE=t_collector` item becomes a `CollectorDef` (`TYPE t_normal`), and its `@create`
+settings (`tag.x=` or `tag("x",v)`) become def tags, see [collectors](../04-gameplay-systems/quests/collectors.md).
+
 **Monster ability tuning (#653 onward).** `tag.*` lines in a chardef's `ON=@Create` that tune a
 monster ability (`tag.npc_stun_chance`, `tag.explode_dmg`, `tag(e_lightnings_chance,100)`...)
 become `NPCDef` override fields via the `ConvertedCharDef.abilityTuningFieldNames` table,

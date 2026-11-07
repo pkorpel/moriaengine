@@ -217,6 +217,11 @@ namespace SteamEngine.Converter {
 					def.Replace("TYPE", "t_normal", "");
 					def.neverWorn = true; //a candle in the pack, whatever its model
 					break;
+				case "t_collector":
+					def.headerType = "CollectorDef"; //#1247 - its @create tags become def tags, see ProcessCreateTriggerLine
+					def.Replace("TYPE", "t_normal", "");
+					def.neverWorn = true; //a bag in the pack, not a worn one
+					break;
 				case "t_stone_travel":
 					def.headerType = "TravelStoneDef"; //#1035
 					def.Replace("TYPE", "t_normal", "");
@@ -982,7 +987,58 @@ namespace SteamEngine.Converter {
 					this.Set("PoisonType", "p_"+value, comment);
 					break;
 			}
+			if (this.type == "t_collector") {
+				this.SetCollectorTag(name, value, comment);
+			}
 			base.ProcessCreateTriggerLine(name, value, comment, lineNum);
+		}
+
+		//#1247 - what a t_collector's @create sets on each new bag: the same for every bag of a def, so def tags here
+		//(an instance tag of the same name overrides one, which is how errands make their own bags). The count stays on the bag.
+		private static readonly HashSet<string> collectorTextTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+			"contentsinfo", "contentstype", "target_desc", "target_id", "fail_msg"
+		};
+		private static readonly HashSet<string> collectorNumberTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+			"maxcontents", "target_remove", "absolute_success", "value_to_check", "repeatedcollecting", "color"
+		};
+
+		private void SetCollectorTag(string name, string value, string comment) {
+			if (!name.StartsWith("tag.", StringComparison.OrdinalIgnoreCase)) {
+				return;
+			}
+			string key = name.Substring(4).Trim().Trim('"').ToLowerInvariant(); //tag("x",v) arrives as tag."x"
+			string trimmed = value.Trim();
+			if (collectorTextTags.Contains(key)) {
+				if ((trimmed.Length >= 2) && trimmed.StartsWith('"') && trimmed.EndsWith('"')) {
+					trimmed = trimmed.Substring(1, trimmed.Length - 2);
+				}
+				this.Set("tag." + key, "\"" + trimmed.Replace("\"", "") + "\"", "#1247 - from @create");
+			} else if (collectorNumberTags.Contains(key)) {
+				int number;
+				if (TryParseSphereNumber(trimmed, out number)) {
+					this.Set("tag." + key, number.ToString(CultureInfo.InvariantCulture), "#1247 - from @create");
+				} //an expression (<argv(1)>) is set by whoever makes the bag, not here
+			}
+		}
+
+		//Sphere's literals: a leading 0 is hex, a dot is tenths (120.0 = 1200)
+		private static bool TryParseSphereNumber(string text, out int number) {
+			number = 0;
+			if (text.Length == 0) {
+				return false;
+			}
+			if (text.Contains(".")) {
+				decimal d;
+				if (decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out d)) {
+					number = (int) Math.Round(d * 10);
+					return true;
+				}
+				return false;
+			}
+			if ((text.Length > 1) && (text[0] == '0')) {
+				return int.TryParse(text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out number);
+			}
+			return int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out number);
 		}
 
 		private bool IsColoredMetal() {

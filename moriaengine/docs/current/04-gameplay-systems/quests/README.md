@@ -10,6 +10,7 @@ One file per quest, for an overview. Quest systems that aren't a quest of their 
 | The quest journal, `.questy` | [journal.md](journal.md) | #839 |
 | Boosters, more experience for a while | [boosters.md](boosters.md) | #1090 |
 | Weekly quests (Tydenni questy) | [weekly.md](weekly.md) | #1090 |
+| Collector bags (t_collector), counts taken from bodies | [collectors.md](collectors.md) | #1247 |
 
 Not ported: the numbered quests (q006-q100, gq*, mq*: the user wants to revisit
 them first), and the rest listed on #1069. All of Erebor's quests, their rewards and

@@ -32,13 +32,21 @@ type = t_script
 model = i_moongate_red
 Color = colors_red
 
-[EquippableDef i_q017_kolektor_srnky]
+[CollectorDef i_q017_kolektor_srnky]
 NAME = "Mesec na srnci oci"
-TYPE = t_collector
+TYPE = t_normal
 WEIGHT = 3
 model = i_bag
-layer = 0 //Set by Converter 
 Color = 037
+tag.contentsinfo = "V batohu je umisteno" //#1247 - from @create 
+tag.contentstype = "srncich oci." //#1247 - from @create 
+tag.maxcontents = 200 //#1247 - from @create 
+tag.target_remove = 1 //#1247 - from @create 
+tag.target_desc = "Ktere srnce chces vyjmout oko?" //#1247 - from @create 
+tag.target_id = "Body of Srnec" //#1247 - from @create 
+tag.absolute_success = 400 //#1247 - from @create 
+tag.value_to_check = 398 //#1247 - from @create 
+tag.fail_msg = "A u Valar! ... Ta srnka nema oci.. Co to tady v tech bulvach leze ? No fuj ..." //#1247 - from @create 
 
 //[function warova_odmena] //(commented out by Converter) 
 

@@ -13,10 +13,19 @@ TYPE = t_normal
 model = 0xe7c
 Color = 098C
 
-[EquippableDef i_q037_zarik_collector_strazce]
+[CollectorDef i_q037_zarik_collector_strazce]
 NAME = "Vacek na chlupy z podpazdi Strazcu"
-TYPE = t_collector
+TYPE = t_normal
 WEIGHT = 4
 model = i_bag
-layer = 0 //Set by Converter 
 Color = 025
+tag.contentsinfo = "Ve vacku je" //#1247 - from @create 
+tag.contentstype = "chlupu Strazcu" //#1247 - from @create 
+tag.maxcontents = 4 //#1247 - from @create 
+tag.target_remove = 1 //#1247 - from @create 
+tag.target_desc = "Kteremu strazci vytrhnes chlupy? " //#1247 - from @create 
+tag.target_id = "Body of Strazce" //#1247 - from @create 
+tag.absolute_success = 100 //#1247 - from @create 
+tag.value_to_check = 60 //#1247 - from @create 
+tag.color = 2444 //#1247 - from @create 
+tag.fail_msg = "Tento si ich asi holil alebo co..." //#1247 - from @create 
