@@ -4,6 +4,15 @@ A proposal for review (#1237). Nothing here is built. The plan comes from your a
 
 The goal, in your words: cities that feel alive instead of empty, many NPCs offering small quests again and again that are always a little different, and a modern take on quests inspired by other games and by Tolkien's world. The Erebor quests you picked (#1235: the special item rewards and the realm envoy q30) fit in as story quests; section 10 says where.
 
+**Your answers so far (2026-11-07):**
+- **Pilot cities:** Minas Tirith, Edoras and Hobitin for Gondor; Barad-dur, Harad and Umbar for Mordor (all three carry Mordor's realm tag).
+- **Dialog text:** Czech, without diacritics.
+- **Rewards:** scaled by difficulty, never over the line, no cosmetics. Mostly experience, with something alongside: magic items, boosters, money, a mount and the like.
+- **Reputation:** I propose the system in section 15.
+- **Ports:** all of them, including q018, q041 and q099.
+- **Ideas:** all kept.
+- **Still open:** how `.venue` works (section 16) and Mordor's flavour (section 17).
+
 ## 1. What success looks like
 
 - A player walking through Minas Tirith or Barad-dur at any hour sees people doing things: the smith at the anvil, patrons in the tavern, an actor rehearsing, a guard changing shift, a crier shouting news.
@@ -149,12 +158,16 @@ Small and many, with the meaningful part in relationships:
 - gold and experience scaled by the errand's length and the player's level;
 - friendship with the resident and reputation with the city or faction;
 - **favours** for friends: discounts at their shop, a free night at the inn, a repair, a secret, an introduction to someone who gives a real quest;
-- **city tokens** (marks of the city, e.g. "pecet Minas Tirith") traded at the town hall for cosmetics (dyes, clothing, house decorations), titles and boosters;
-- rarely a magic item pouch (`i_mi_pouch`), so a long evening of errands can surprise.
+- by difficulty (your call: no cosmetics, nothing over the line):
+  - **small** errands give exp and a little money;
+  - **medium** add a potion, reagents or a chance of a magic pouch (`i_mi_pouch`);
+  - **large** ones and chains add a magic bag or a booster;
+  - **story quests** give the big things: magic items, mounts, skill gains.
+  The reputation levels in section 15 open better errands, and so better rewards.
 
 ### 5.7 Reputation and factions
 
-Reputation per city, and with factions inside it:
+The full proposal is section 15. In short, reputation is per city, and with factions inside it:
 - **Gondor:** the merchants, the city guard, the temple, the theatre company, the Rangers;
 - **Mordor:** the orc captains (rivals: serving one angers the other), the overseers, the Mouth of Sauron's spies;
 - **neutral:** the dwarves, the elves of the woodland realm, the hobbits, the corsairs, the thieves' den (hidden, found through rumours).
@@ -329,12 +342,15 @@ The picks from #1235 become story quests placed in venues, fully in the journal'
 | q008 / tameblack | the stable | the black mustang |
 | q31 the cook | the tavern's kitchen | a llama |
 | q30 the realm's envoy (both realms) | the town hall, the realm office | the warrior's cloak |
+| q018 the golden salmon | the harbour (the fisherman) | +3.0 Tailoring |
+| q041 the smuggler | a back room of the tavern, then the realm-change gate | a change of realm |
+| q099 the outcast | outside the walls, by the outcasts' camp | an outcast's realm restored; Erebor never set what starts it (`tag.vykoupeni`), so the start is designed new, e.g. a reputation level or an act of atonement |
 
 They need the corpse-collecting bag (`t_collector`, about 20 quests use it), spots for their NPCs, and their bugs fixed (listed in the catalogue).
 
 ## 11. Tools for GMs
 
-- `.venue`: mark a venue with two corners, a type, a name, opening hours and its city. Saved as a world piece. `.venues` lists them, with how many roles are filled.
+- `.venue` and `.venues`: marking venues, described in section 16.
 - **Population from venue types:** once a venue is marked, `.SetupWorld` creates its residents from the type's roles (names, homes, schedules), add-only as everything there.
 - `.resident`: inspect or edit a resident (traits, relations, schedule, friendships).
 - **Templates as data:** errand templates and text pools in `.def` files, so new errands are written without C#.
@@ -357,7 +373,7 @@ The cost is the number of NPCs. Roughly 18 cities with 8-15 venues and 2-5 peopl
 
 Each step its own issue and PR, as usual.
 
-## 14. Questions for you
+## 14. Questions for you (answered 2026-11-07, see the top; 2 and 7 are explained in sections 16 and 17)
 
 1. **Pilot cities:** Minas Tirith and Barad-dur, or another pair (Hobitin is the cosiest to start with)?
 2. **Marking venues:** will you or your GMs walk the cities with `.venue`, or should I propose venues for each city from the map (buildings near the city's spots) for you to review in game?
@@ -367,3 +383,121 @@ Each step its own issue and PR, as usual.
 6. **Your list of ports:** I read "special item reward" as q006, q007 (a, b, c), q009, q017, q026, q008/tameblack, q31, plus q30. Should q018 (+3 Tailoring, a skill rather than an item), q041 (realm change) or q099 (outcast redemption) be in it?
 7. **Mordor:** the same living-city machinery with a grim flavour, or less (camps are rougher, with fewer errands and more orders)?
 8. **What to cut:** anything in section 9 you don't want at all?
+
+## 15. Reputation: the proposal
+
+### 15.1 What is tracked
+
+- **City reputation**, per city, from -1000 to +1000. It starts at 0 in your own realm's cities. In the other realm's cities it starts at -600, where guards already attack you as they do today.
+- **Faction reputation**, a few factions per city, on the same scale. Factions can be rivals, so helping one costs standing with the other.
+- **Friendship** with single residents, 0 to 10 (section 4.2). It is personal, and apart from the city's view of you.
+
+Factions in the pilot cities, a proposal:
+
+| City | Factions |
+|---|---|
+| Minas Tirith | the Citadel guard, the merchants of the lower circles, the Houses of Healing, the archives (scholars) |
+| Edoras | the king's household, the riders (eored), the horse breeders |
+| Hobitin | the post, the farmers, the inn-keepers (with their own little rivalries) |
+| Barad-dur | two rival orc captains, the overseers, the Mouth of Sauron's spies |
+| Harad | the caravan masters, the mumak handlers, the temple of the serpent |
+| Umbar | the corsair captains, the slave traders and fences, the harbour lords |
+
+### 15.2 Levels
+
+| Level | From | What it means |
+|---|---|---|
+| Nepritel (enemy) | -1000 | guards attack on sight; a bounty may be posted on you; no trade |
+| Podezrely (suspect) | -300 | residents refuse errands; vendors won't sell, or only at +50%; a guard follows you and asks what you're doing |
+| Neznamy (stranger) | -100 | small errands only; vendors +10% |
+| Znamy (known) | 0 | ordinary errands and prices |
+| Vazeny (respected) | 200 | medium errands; 5% off; a free night at the inn now and then |
+| Cteny (honoured) | 450 | large errands and chains; 10% off; back rooms and faction vendors open (boosters, mounts, magic items for gold) |
+| Hrdina mesta (city hero) | 750 | the city's story quests; 15% off; the title "Hrdina Minas Tirith"; the crier tells your deeds; guards salute you |
+
+The numbers are proposals and would live in `.settings`.
+
+### 15.3 Gains and losses
+
+**Gains:**
+- errands, by difficulty;
+- world events in and around the city;
+- story quests, which give the most;
+- a choice in an errand, which raises one faction (and can lower its rival).
+
+**Losses:**
+- **crimes seen in the city:** criminal status, theft or snooping caught, the Gondor looting crime (#918), murder. Murder costs the most;
+- harming a resident;
+- failing or abandoning an errand (a little);
+- choices that side against a faction.
+
+**Recovery:**
+- negative reputation drifts back towards 0 over real days;
+- an **atonement** errand speeds it up: penance at the temple in Gondor, a tribute to the captain in Mordor;
+- positive reputation doesn't decay, but the top level wants you to have done something there recently, or it rests one level lower.
+
+### 15.4 How it ties in
+
+- **Errands:** a resident only offers errands your level allows.
+- **Vendors:** prices and refusals go through one place, as payments go through `GoldUtils.Pay` (#956).
+- **Guards:** the existing realm rules stay. Reputation only adds the suspect's follower and the enemy's bounty for players of your own realm who made trouble.
+- **The town stone:** citizenship (#892) could ask for Vazeny or higher.
+- **Where you see it:** the journal's Mesto tab shows each city and faction, your level and the next one; `.whoami` shows your best title.
+
+## 16. How `.venue` would work
+
+A venue is a small region inside the city's region, as houses are. GM-made regions are already saved with the world. As a region, a venue gets entry events and an answer to "who is in the tavern" for free.
+
+**Marking a building:**
+1. Stand inside the building and type `.venue`.
+2. The server finds the room: it spreads from your tile over walkable floor under a roof until it meets walls and doors (capped at about 40 by 40 tiles). It shows the outline with short-lived markers along the edge.
+3. A dialog in Czech asks for:
+   - the **type** (tavern, bath house, theatre...);
+   - a **name** ("U Zlateho bazanta");
+   - the **opening hours**, filled from the type and changeable;
+   - the **city**, found by itself.
+   The dialog also has buttons to fix the outline with two cursor corners, or to add a second rectangle for an L-shaped house.
+4. For open-air venues (the market, the harbour, a training yard) there's no roof to find: you set the corners with the cursor.
+5. Confirm. The venue is made, with its entrance (the nearest door) and its list of roles to fill. A sign for the type can go up over the door if you want one.
+
+**Managing venues:**
+- `.venues` lists the venues of the city you stand in, or all of them. Each row shows the type, the name and how many roles are filled, with buttons to go there, edit, remove, and fill its roles.
+- `.venues navrh` (proposals) scans a city for roofed, closed buildings and lists the ones not yet marked. You go through them one by one: Go, look, pick a type or skip. For six pilot cities this is an evening's work, not a week's.
+- **Filling roles:** each role becomes a resident with a name, traits and a schedule.
+- **Homes:** a resident needs one. Unrented houses would serve; failing that, a back room of the venue.
+
+**Keeping it across a rebuild:**
+- You rebuild the world from an empty save, so venues must survive that.
+- `.venues export` writes every venue (area, type, name, hours, roles, residents' names) into a setup file in `scripts/Setup`.
+- `.SetupWorld` then recreates them on a fresh world, add-only and with permanent ids, like everything else it places.
+
+## 17. Mordor: the two options
+
+The question is whether Mordor's cities run on the same machinery as Gondor's, or on something rougher. One fact first: of the Mordor pilot cities only Barad-dur is an orc stronghold. Harad and Umbar are cities of Men allied with Mordor.
+
+**Option A: the same machinery, grim words.**
+- Barad-dur gets venues like any city, under different names: the mess hall for the tavern, the fighting pits for the theatre, the forge-halls, the warg kennels, the overseer's post.
+- Residents have names, schedules and friendship, and errands come from the same templates with Mordor's texts. Bribes, threats and theft are ordinary there.
+- **For:** equal content for both realms, one system to build.
+- **Against:** Mordor risks feeling like Gondor with orcs.
+
+**Option B: orders, not favours.**
+- In Barad-dur nobody asks for favours. Superiors give **orders**: a duty roster with deadlines.
+  - Carry this to the tower before the second watch.
+  - Bring twenty orc-draughts to the pits.
+  - Find out who stole from the overseer.
+- An order can't be refused freely: refusing or failing costs standing.
+- Standing is your **rank in the war camp**, not a friendship. Promotion brings rewards, a better share of loot and bigger orders.
+- **Fear and favour** replace friendship. The existing `.fear` and `.honor` (#892) fit here.
+- Most of the camp's dynamic life comes from the **rival captains**:
+  - they rise, fall and challenge each other;
+  - you pick a side, and the other captain remembers;
+  - a captain who beats you is promoted and taunts you next time (nemesis lite).
+- **For:** a Mordor that plays differently and feels like Tolkien's.
+- **Against:** more design and content of its own.
+
+**My recommendation: both, by city.**
+- Underneath it's one engine: venues, residents and templates.
+- **Barad-dur runs as option B.** Givers are superiors, friendship becomes the captain's favour, city reputation becomes rank in the camp, and the rival captains drive it.
+- **Harad and Umbar run as option A,** with their own colour: caravan masters, corsairs, fences and slave traders.
+- So Mordor gets one place that feels truly different, and the extra work stays limited to one city's rules and texts.
